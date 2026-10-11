@@ -8,25 +8,51 @@
   <link rel="icon" href="../favicon.svg" type="image/svg+xml"><script type="module" src="./app.mjs"></script>
 </head>
 <body>
-  <p class="small">Kushyameln Works / ブラウザツール</p>
-  <header><h1>Animator Composer</h1><span class="badge">構造統合・比較版</span></header>
-  <nav class="site-nav"><a href="../">トップ</a><a href="../ft-workbench/">従来のFT生成</a><a href="../ft-workbench-next/">FT生成・操作比較版</a></nav>
-  <div class="intro"><p>使いたいLayerとMotionを選び、ControllerとMA Installerへまとめます。</p><p class="small">素材はブラウザ内で処理します。サーバーへの送信はありません。Expressionを指定すれば登録設定を固定でき、未設定の部分だけ編集します。</p></div>
-  <nav class="steps" aria-label="作業の順序"><a href="#inputs">1 素材</a><a href="#composition">2 構成</a><a href="#parameters">3 登録</a><a href="#export">4 生成</a></nav>
-  <div class="toolbar"><p id="status" role="status" aria-live="polite">Unitypackageを読み込んでください。</p><button id="cancel" disabled>処理を取り消す</button></div>
-  <div id="error" class="notice error" role="alert" tabindex="-1" hidden></div>
-  <main>
-    <section id="inputs"><div class="heading"><h2>1. 素材を読み込む</h2><span id="asset-count" class="badge">未読込み</span></div>
+  <a class="skip-link" href="#inputs">素材の読込みへ進む</a>
+  <p class="small"><a href="../">Kushyameln Works</a> / ブラウザツール</p>
+  <header><h1>Animator Composer</h1><span class="badge">Controllerの統合・Installer生成</span></header>
+  <div class="intro"><p>素材のUnitypackageからControllerやLayerを選び、統合したControllerとModular Avatar用Installerを生成します。</p><p class="small">素材はブラウザ内で処理します。サーバーへ送信しません。生成後はUnityへImportして使います。</p></div>
+  <details id="tool-guide" class="tool-guide"><summary>使い方・対応範囲・従来FT生成との違い</summary>
+    <h2>このツールの使い方</h2>
+    <ol class="quick-start"><li>使うControllerを含むUnitypackageを読み込みます。</li><li>各出力のベースを選び、必要に応じて別ControllerのLayerを追加します。</li><li>Expressionを指定するか、Parameterごとに外部登録・同期・初期値を確定します。</li><li>導入方法を確認して生成し、UnityでInstallerを対象アバターへ配置します。</li></ol>
+    <h3>原本の準備と対応範囲</h3>
+<p>編集・収集するController・Clip・BlendTreeを含むUnitypackageを指定してください。変更しない外部Assetは、構成を解析した後に参照の維持を選べます。同じpackageから複数の構造を選べます。原本を事前に分割する必要はありません。</p><p>登録設定を固定する場合は、対象範囲のExpression Parametersに、登録名・型・初期値・Saved・同期を指定してください。AAPなど外部登録しない項目は記載しません。全体用を指定した場合は、その1ファイルを全体の登録設定として使います。Animatorにも同じ初期値を設定したい項目は、登録表の「Animator初期値にも反映」を選択します。</p><p>Unityテキスト形式の構造を解析します。FBX内のAnimation抽出、Unityスクリプトの実行、Shapeの作成は含みません。編集・収集が必要な構造に不足・未対応の依存があれば、対象を示して生成を止めます。維持する外部Assetは出力packageに含まれず、導入先で必要です。</p><p class="small">同期LayerのMotion／Behaviour上書き、別Playableを対象とするAnimatorLayerControl、未対応の独自Behaviourは診断対象です。対応できない構造が含まれる場合は生成を止めます。</p><p class="small">packageは展開後1ファイル128 MiB、素材合計256 MiBまで。Unity Import・MAビルド・VRChatでの実動作は、このページの静的検査とは別に確認してください。</p>
+    <section><h3>従来のFT生成との比較</h3><div class="table-scroll"><table><thead><tr><th>項目</th><th>従来・FT操作比較版</th><th>Animator Composer</th></tr></thead><tbody><tr><td>入力</td><td>確認済みの4原本</td><td>読み込んだpackage内から選択</td></tr><tr><td>取り込む構造</td><td>固定のFT構成</td><td>Controller・Layer・Motionを指定</td></tr><tr><td>外部登録</td><td>FT専用の確定規則</td><td>Expression指定で固定／未設定を編集</td></tr><tr><td>生成する処理</td><td>Binary・Decode・Smooth等を構築</td><td>指定構造を保持して統合</td></tr><tr><td>Installer</td><td>固定構成のFX・Additive</td><td>選択したPlayableと任意Menu</td></tr></tbody></table></div><p class="small">既存のFT生成ページは継続して利用できます。このページでは素材の構造を統合し、FT専用の変換規則は自動適用しません。</p></section>
+    <nav class="site-nav" aria-label="関連するFTツール"><a href="../ft-workbench/">従来のFT生成を開く</a><a href="../ft-workbench-next/">FT生成・操作比較版を開く</a></nav>
+  </details>
+  <div class="workspace">
+    <aside class="task-panel" aria-labelledby="task-title">
+      <h2 id="task-title">作業ガイド</h2>
+      <p id="task-headline" class="task-headline">素材のUnitypackageを選んで始めます。</p>
+      <a id="task-next" class="button primary task-next" href="#inputs">素材の読込みへ</a>
+      <p id="status" role="status" aria-live="polite">Unitypackageを読み込んでください。</p>
+      <details id="task-details" open><summary>工程とショートカット</summary>
+        <nav aria-label="作業の工程"><ol class="task-list">
+          <li><a id="task-inputs" href="#inputs"><span>1. 素材を読み込む</span><span id="task-inputs-status" class="task-status">未読込み</span></a></li>
+          <li><a id="task-composition" href="#composition"><span>2. 構成を選ぶ</span><span id="task-composition-status" class="task-status">素材待ち</span></a></li>
+          <li><a id="task-parameters" href="#parameters"><span>3. 登録を確定する</span><span id="task-parameters-status" class="task-status">素材待ち</span></a></li>
+          <li><a id="task-export" href="#export"><span>4. 生成する</span><span id="task-export-status" class="task-status">設定の確認待ち</span></a></li>
+        </ol></nav>
+        <div class="task-actions"><button id="task-analyze" type="button" disabled>構成を再解析</button><button id="task-save" type="button" disabled>構成を保存</button></div>
+      </details>
+      <button id="cancel" type="button" disabled>処理を取り消す</button>
+      <p id="task-note" class="small">生成後はUnityへImportし、Installerを配置します。</p>
+    </aside>
+    <main id="workspace-main">
+    <div id="error" class="notice error" role="alert" tabindex="-1" hidden></div>
+    <section id="inputs" tabindex="-1"><div class="heading"><h2>1. 素材を読み込む</h2><span id="asset-count" class="badge">未読込み</span></div>
+      <p class="section-help">まず、統合のベースと追加する素材を選びます。読み込み後に構成を編集できます。</p>
       <div class="drop-area"><label for="files">Unitypackageを追加</label><input id="files" type="file" accept=".unitypackage,.asset" multiple><p class="small">複数選択できます。Expression Parametersは単体の.assetでも追加できます。</p></div>
       <ul id="file-list" class="file-list"></ul><button id="clear" class="quiet">素材をすべて解除</button> <button id="reload" class="quiet" hidden>素材を再読込み</button>
       <p class="small">商品原本と追加FXをまとめて読み込めます。選択した構造の依存素材も必要です。展開後は1ファイル128 MiB、合計256 MiBまで対応します。</p>
       <div id="material-cards" class="material-grid" aria-live="polite"></div>
       <div id="asset-conflicts" hidden></div>
       <details><summary>読込み素材の一覧</summary><label for="asset-search">名前・パスで検索</label><input id="asset-search" type="search" placeholder="Controller、Expression、Clipなど"><p id="asset-list-count" class="small"></p><div id="asset-list" class="asset-list"></div></details>
-      <details><summary>原本の準備と対応範囲</summary><p>編集・収集するController・Clip・BlendTreeを含むUnitypackageを指定してください。変更しない外部Assetは、構成を解析した後に参照の維持を選べます。同じpackageから複数の構造を選べます。原本を事前に分割する必要はありません。</p><p>登録設定を固定する場合は、対象範囲のExpression Parametersに、登録名・型・初期値・Saved・同期を指定してください。AAPなど外部登録しない項目は記載しません。全体用を指定した場合は、その1ファイルを全体の登録設定として使います。Animatorにも同じ初期値を設定したい項目は、登録表の「Animator初期値にも反映」を選択します。</p><p>Unityテキスト形式の構造を解析します。FBX内のAnimation抽出、Unityスクリプトの実行、Shapeの作成は含みません。編集・収集が必要な構造に不足・未対応の依存があれば、対象を示して生成を止めます。維持する外部Assetは出力packageに含まれず、導入先で必要です。</p><p class="small">同期LayerのMotion／Behaviour上書き、別Playableを対象とするAnimatorLayerControl、未対応の独自Behaviourは診断対象です。対応できない構造が含まれる場合は生成を止めます。</p><p class="small">packageは展開後1ファイル128 MiB、素材合計256 MiBまで。Unity Import・MAビルド・VRChatでの実動作は、このページの静的検査とは別に確認してください。</p></details>
+
     </section>
     <fieldset id="configuration" disabled>
-      <section id="composition"><div class="heading"><h2>2. 構成を選ぶ</h2><button id="add-output" type="button">出力Controllerを追加</button></div>
+      <section id="composition" tabindex="-1"><div class="heading"><h2>2. 構成を選ぶ</h2><button id="add-output" type="button">出力Controllerを追加</button></div>
+        <p class="section-help">ベースは統合の土台です。各出力のベースControllerを選び、追加ブロックで取り込むLayerを指定してください。</p>
         <p class="small">Clipの適用先Path・Component型・Property名は保持します。Controllerの統合に、対象AvatarのMesh・Transform・Prefabの添付は不要です。</p>
         <details id="avatar-panel"><summary>商品Prefabの設定からベースを選ぶ</summary><p>Descriptorに登録されたController・Expression・元Menuを確認できます。使用する項目を選んで採用してください。改変済みAvatarの現在の設定とは異なる場合があります。</p><div class="fields"><label>参照するPrefab<select id="avatar-select"></select></label><label>採用先の出力<select id="avatar-output"></select></label></div><div id="avatar-details"></div></details>
         <div class="fields"><label>出力フォルダ名<input id="output-name" type="text" value="AnimatorComposer" maxlength="64" pattern="[A-Za-z0-9][A-Za-z0-9_-]*"></label><label>統合後の全Parameterを確定するExpression<select id="global-expression"></select></label></div>
@@ -35,22 +61,24 @@
         <div id="outputs"></div>
         <details id="motion-panel"><summary>単独Clip・BlendTreeで既存Motionを置換</summary><p>構成を解析すると、StateのMotionとBlendTreeの子を選んで置換できます。ControllerからLayerを追加した場合、その参照Motionは原則として取り込みます。外部参照の維持を選んだMotionは対象外です。単独Motionから新しいLayer・Stateを作る機能はありません。</p><div class="fields"><label>割当先のState・Treeで検索<input id="motion-slot-search" type="search" placeholder="State・Tree・Controller名"></label><label>候補Motionを名前・パスで検索<input id="motion-choice-search" type="search" placeholder="Clip・BlendTree名"></label></div><p id="motion-count" class="small"></p><div id="motion-slots"></div><div id="motion-paging" class="actions"></div></details>
       </section>
-      <section id="parameters"><div class="heading"><h2>3. Parameterの登録を確定する</h2><button id="analyze" type="button">構成を解析</button></div>
+      <section id="parameters" tabindex="-1"><div class="heading"><h2>3. Parameterの登録を確定する</h2><button id="analyze" type="button">構成を解析</button></div>
         <p>Expression指定済みの項目は固定されます。記載されていない項目も、その範囲では外部登録しません。必要なAnimator宣言は残ります。</p>
         <p id="analysis-status" class="notice" role="status" aria-live="polite">構成を選ぶと解析結果を表示します。</p>
         <div id="block-status" class="material-grid"></div>
-        <div id="summary" class="metrics"></div><div id="issues" hidden></div>
-        <section id="dependencies" hidden><h3>不足・競合している依存素材</h3><p id="dependency-count"></p><p id="dependency-recovery" class="small" aria-live="polite"></p><p class="small">同じGUIDとfileIDを持つ原本の依存素材を追加して再検査してください。編集しない外部Assetは、下の「外部Assetの参照を維持する」で個別に選択できます。GUIDだけから欠落ファイル名は確定できません。競合の場合は、読み込んだ版の内容を確認して採用元を選びます。</p><label>参照元・GUIDで検索<input id="dependency-search" type="search" placeholder="Layer・State・Tree名、GUID"></label><button id="save-diagnostics" type="button" class="quiet">不足一覧を保存</button><div id="dependency-list"></div></section>
+        <div id="summary" class="metrics"></div><div id="issues" tabindex="-1" hidden></div>
+        <section id="dependencies" tabindex="-1" hidden><h3>不足・競合している依存素材</h3><p id="dependency-count"></p><p id="dependency-recovery" class="small" aria-live="polite"></p><p class="small">同じGUIDとfileIDを持つ原本の依存素材を追加して再検査してください。編集しない外部Assetは、下の「外部Assetの参照を維持する」で個別に選択できます。GUIDだけから欠落ファイル名は確定できません。競合の場合は、読み込んだ版の内容を確認して採用元を選びます。</p><label>参照元・GUIDで検索<input id="dependency-search" type="search" placeholder="Layer・State・Tree名、GUID"></label><button id="save-diagnostics" type="button" class="quiet">不足一覧を保存</button><div id="dependency-list"></div></section>
         <p id="external-context" class="notice warning" hidden></p>
         <details id="reference-panel"><summary id="reference-summary">外部Assetの参照を維持する</summary><p>変更しないMotion・AvatarMask・参照リソースは、Sourceへ収集せず原本の参照を維持できます。選んだGUID・fileIDのAssetが導入先に存在することが条件です。同じPathだけでは代用できません。</p><p class="small">Controller・State・Transitionなど、編集に必要な構造は対象外です。外部Motion内の使用Parameterは未確認になるため、該当する追加元ControllerのParameter宣言を全て保持します。外部登録は引き続きExpressionと登録表に従います。</p><label>参照元・Path・GUIDで検索<input id="reference-search" type="search" placeholder="Controller・Layer名、GUID"></label><p id="reference-count" class="small"></p><div id="reference-list"></div><div id="reference-paging" class="actions"></div><details><summary>保存した維持設定を確認・解除</summary><ul id="reference-saved" class="file-list"></ul></details></details>
         <div id="animator-conflicts"></div><details><summary>保存されたサイト編集を確認・解除</summary><p class="small">構成変更で対象外になった設定も残しています。不要な設定はここで解除できます。</p><ul id="saved-settings" class="file-list"></ul></details>
-        <div class="fields"><label>名前で検索<input id="parameter-search" type="search" placeholder="例：EyeLid、EyeLeftX"></label><label>表示<select id="parameter-filter"><option value="attention">要確認（未設定・競合・エラー）</option><option value="all">すべて</option><option value="registered">外部登録</option><option value="internal">外部登録しない項目</option><option value="fixed">固定済み</option></select></label></div>
+        <div id="registration-controls" tabindex="-1" class="fields"><label>名前で検索<input id="parameter-search" type="search" placeholder="例：EyeLid、EyeLeftX"></label><label>表示<select id="parameter-filter"><option value="attention">要確認（未設定・競合・エラー）</option><option value="all">すべて</option><option value="registered">外部登録</option><option value="internal">外部登録しない項目</option><option value="fixed">固定済み</option></select></label></div>
         <div class="actions"><button id="register-pending" type="button" class="quiet">未設定をまとめて登録</button><button id="exclude-pending" type="button" class="quiet">未設定をまとめて除外</button></div>
         <p class="small">まとめて登録する場合も、同期とSavedは表示された設定を採用します。同期が必要な入力は同期をONにしてください。</p>
         <p id="parameter-count" class="small" aria-live="polite"></p>
         <div class="table-scroll"><table><thead><tr><th>名前・出所</th><th>外部登録</th><th>型</th><th>初期値</th><th>同期</th><th>Saved</th><th>Animator初期値にも反映</th></tr></thead><tbody id="parameter-rows"></tbody></table></div>
       </section>
-      <section id="export"><h2>4. Installerを生成する</h2>
+      <section id="export" tabindex="-1"><h2>4. Installerを生成する</h2>
+        <p id="export-gate" class="notice">素材・構成・登録を確認すると生成できます。</p>
+        <div class="output-overview"><h3>今回生成する内容</h3><div id="output-overview"></div><a id="review-composition" href="#composition">構成の選択に戻る</a></div>
         <div class="fields"><label>Controllerの導入<select id="merge-mode"><option value="Append">追加（Append）</option><option value="Replace">既存Controllerを置換（Replace）</option></select></label><label>Animationパスの基準<select id="path-mode"><option value="Absolute">アバターのルート</option><option value="Relative">Installer Object</option></select></label><label>追加するMenu（任意）<select id="menu"></select></label></div>
         <label class="check"><input id="match-wd" type="checkbox">Write Defaultsを対象アバターに合わせる</label>
         <p id="merge-explanation" class="small">追加するControllerに対象アバターの既存Layerが含まれている場合は、二重導入を避けるため置換を選んでください。</p>
@@ -60,11 +88,12 @@
         <p class="small">登録済みExpressionの手動割当は必須ではありません。MA Parametersを持つInstallerから、今回の外部登録を追加します。</p>
       </section>
     </fieldset>
-    <section id="results"><h2>生成結果</h2><p id="result-placeholder" class="empty">生成後にダウンロードと検査結果を表示します。</p>
+    <section id="results" tabindex="-1"><h2>生成結果</h2><p id="result-placeholder" class="empty">生成後にダウンロードと検査結果を表示します。</p>
       <div id="result" hidden><p id="result-summary"></p><div class="actions"><a id="download" class="button primary">Unitypackageを保存</a><a id="report-download" class="button">検査結果を保存</a><a id="result-plan" class="button">構成を保存</a></div><p id="result-validation" class="notice">静的検査済み。Unity Import・MAビルド・VRChatの実動作は未確認です。</p><ol><li>VRChat SDKとModular AvatarのあるUnityプロジェクトへImportします。</li><li><code id="installer-path"></code>を対象アバターへ配置します。</li><li>MAビルド後の登録・同期量・既存構成との競合と、実際の動作を確認します。</li></ol><details><summary>出力したAssetの対応と検査記録</summary><pre id="report-view"></pre></details></div>
     </section>
-    <section><h2>従来のFT生成との比較</h2><div class="table-scroll"><table><thead><tr><th>項目</th><th>従来・FT操作比較版</th><th>Animator Composer</th></tr></thead><tbody><tr><td>入力</td><td>確認済みの4原本</td><td>読み込んだpackage内から選択</td></tr><tr><td>取り込む構造</td><td>固定のFT構成</td><td>Controller・Layer・Motionを指定</td></tr><tr><td>外部登録</td><td>FT専用の確定規則</td><td>Expression指定で固定／未設定を編集</td></tr><tr><td>生成する処理</td><td>Binary・Decode・Smooth等を構築</td><td>指定構造を保持して統合</td></tr><tr><td>Installer</td><td>固定構成のFX・Additive</td><td>選択したPlayableと任意Menu</td></tr></tbody></table></div><p class="small">既存のFT生成ページは継続して利用できます。このページでは素材の構造を統合し、FT専用の変換規則は自動適用しません。</p></section>
+
     <noscript><p class="notice error">このツールにはJavaScriptとWebAssemblyが必要です。</p></noscript>
-  </main>
+    </main>
+  </div>
 </body>
 </html>

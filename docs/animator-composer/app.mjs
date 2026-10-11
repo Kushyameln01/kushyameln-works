@@ -1,8 +1,9 @@
+import {taskGuide} from './lib/task-guide.mjs';
 const $=id=>document.getElementById(id);
 const own=(map,key)=>map&&Object.prototype.hasOwnProperty.call(map,key)?map[key]:undefined;
 const put=(map,key,value)=>Object.defineProperty(map,key,{value,writable:true,enumerable:true,configurable:true});
 const state={files:[],inputs:[],catalog:null,view:null,worker:null,busy:null,job:0,loaded:false,restored:false,urls:[],timer:null,pending:false,
-  previousAnalysis:null,avatarId:'',avatarOutput:'',motionPage:0,referencePage:0,layerQueries:new Map(),viewStale:true};
+  previousAnalysis:null,avatarId:'',avatarOutput:'',motionPage:0,referencePage:0,layerQueries:new Map(),viewStale:true,lastError:null,unsupported:false};
 let serial=0;
 const uid=prefix=>`${prefix}-${Date.now().toString(36)}-${++serial}`;
 function output(){return {id:uid('output'),name:'CombinedFX',playable:'FX',base:{id:uid('base'),controllerId:'',expressionId:null},additions:[],layerOrder:[],layerNames:{},motionAssignments:[]};}
@@ -18,11 +19,41 @@ function sourceLabel(id){if(id==='menu'||id.startsWith('menu:'))return '選択Me
 function controller(id){return state.catalog?.controllers?.find(c=>c.id===id);}
 function assetOptions(items,empty='未指定'){return [{value:'',label:empty},...(items??[]).map(a=>({value:a.id,label:`${a.name||a.path.split('/').at(-1)} — ${a.path}`}))];}
 function clearDownloads(){for(const u of state.urls)URL.revokeObjectURL(u);state.urls=[];}
-function invalidate(){state.viewStale=true;clearDownloads();$('result').hidden=true;$('result-placeholder').hidden=false;$('result-placeholder').textContent='現在の設定で生成すると、結果を表示します。';$('generate').disabled=true;$('analysis-status').textContent='設定が変わりました。再解析後の結果を確認してください。';renderReferences();}
-function setStatus(message){$('status').textContent=message;}
-function showError(message,issues=[]){$('error').replaceChildren(el('p',message));if(issues.length){const ul=el('ul');for(const i of issues)ul.append(el('li',i.message??i));$('error').append(ul);}$('error').hidden=false;}
-function resetError(){$('error').hidden=true;$('error').replaceChildren();}
-function setBusy(kind){state.busy=kind;$('configuration').disabled=!state.loaded||!!kind;$('cancel').disabled=!kind;$('files').disabled=!!kind;$('clear').disabled=!!kind;$('reload').disabled=!!kind;for(const b of $('file-list').querySelectorAll('button'))b.disabled=!!kind;for(const s of $('asset-conflicts').querySelectorAll('select'))s.disabled=!!kind;}
+function invalidate(){state.viewStale=true;clearDownloads();$('result').hidden=true;$('result-placeholder').hidden=false;$('result-placeholder').textContent='現在の設定で生成すると、結果を表示します。';$('generate').disabled=true;$('analysis-status').textContent='設定が変わりました。再解析後の結果を確認してください。';renderReferences();renderTaskGuide();}
+function setStatus(message){$('status').textContent=message;renderTaskGuide();}
+function showError(message,issues=[]){state.lastError=message;$('error').replaceChildren(el('p',message));if(issues.length){const ul=el('ul');for(const i of issues)ul.append(el('li',i.message??i));$('error').append(ul);}$('error').hidden=false;renderTaskGuide();}
+function resetError(){state.lastError=null;$('error').hidden=true;$('error').replaceChildren();renderTaskGuide();}
+function setBusy(kind){state.busy=kind;$('configuration').disabled=!state.loaded||!!kind;$('cancel').disabled=!kind;$('files').disabled=!!kind;$('clear').disabled=!!kind;$('reload').disabled=!!kind;for(const b of $('file-list').querySelectorAll('button'))b.disabled=!!kind;for(const s of $('asset-conflicts').querySelectorAll('select'))s.disabled=!!kind;renderTaskGuide();}
+function renderTaskGuide(){
+  const guide=taskGuide(state,plan);
+  $('task-headline').textContent=guide.title;
+  $('task-next').textContent=guide.label;$('task-next').setAttribute('href',`#${guide.next}`);
+  $('task-note').textContent=guide.note;
+  for(const step of guide.steps)$(`task-${step.id}-status`).textContent=step.status;
+  $('task-analyze').disabled=guide.analyzeDisabled;$('task-save').disabled=guide.saveDisabled;
+  $('cancel').disabled=guide.cancelDisabled;
+  $('export-gate').textContent=state.busy==='generate'?'生成しています。完了後にダウンロードを表示します。':state.loaded&&!state.viewStale&&state.view?.ready?'生成可能です。下の導入方法とパスの基準を確認してください。':guide.title;
+  renderOutputOverview();
+}
+function renderOutputOverview(){
+  const host=$('output-overview');host.replaceChildren();
+  for(const o of plan.outputs){
+    const base=controller(o.base.controllerId),item=el('div',null,{class:'output-overview-item'});
+    item.append(el('strong',`${o.name} / ${o.playable}`),el('p',`ベース：${base?.name??'未選択'}${base?`（${base.layers.length} Layer）`:''}`));
+    const selected=o.additions.flatMap(b=>(controller(b.controllerId)?.layers??[]).filter(l=>b.layerIndices.includes(l.index)).map(l=>`${controller(b.controllerId).name} / ${l.name}`));
+    item.append(el('p',selected.length?`追加：${selected.length} Layer — ${selected.slice(0,4).join('、')}${selected.length>4?`、ほか${selected.length-4} Layer`:''}`:'追加Layer：なし'));
+    host.append(item);
+  }
+  const expression=state.catalog?.expressions?.find(e=>e.id===plan.globalExpressionId);
+  host.append(el('p',plan.globalExpressionId?`登録の基準：全体Expression（${expression?.name??'素材内で未確認'}）`:'登録の基準：ブロック別Expressionと登録表の指定',{class:'small'}));
+  if(state.loaded&&!state.viewStale&&state.view?.analysisComplete!==false&&state.view)host.append(el('p',`外部登録 ${(state.view.rows??[]).filter(r=>r.registered===true).length}項目 / 同期 ${state.view.bitCost??0} bit（静的解析）`,{class:'small'}));
+}
+function jumpTo(id){
+  const target=$(id);if(!target)return;
+  for(let parent=target.parentElement;parent;parent=parent.parentElement)if(parent.tagName==='DETAILS')parent.open=true;
+  target.scrollIntoView?.({block:'start'});target.focus?.({preventScroll:true});
+}
+function analyze(){clearTimeout(state.timer);state.timer=null;if(state.loaded&&!state.busy){invalidate();post('analyze',{plan:structuredClone(plan)});}}
 function getWorker(){
   if(state.worker)return state.worker;
   const w=new Worker(new URL('./worker.mjs',import.meta.url),{type:'module'});state.worker=w;
@@ -32,7 +63,9 @@ function getWorker(){
     const kind=state.busy;setBusy(null);
     if(data.type==='error'){
       if(kind==='load'){state.loaded=false;$('configuration').disabled=true;$('reload').hidden=!state.files.length;}
+      if(kind==='analyze'||kind==='generate')invalidate();
       showError(data.message,data.issues);setStatus('処理を完了できませんでした。表示された項目を確認してください。');
+      $('error').append(el('p',state.loaded?'設定と表示された問題を確認し、「構成を再解析」で再検査してください。':'素材の形式・容量を確認し、不要な素材を解除してから「素材を再読込み」を押してください。'));
     }else if(data.type==='loaded'){
       state.loaded=true;state.inputs=data.inputs;state.catalog=data.catalog;state.view=null;
       if(!state.restored)plan.inputHashes=data.inputs.map(i=>i.hash);
@@ -49,6 +82,7 @@ function getWorker(){
       $('generate').disabled=false;
     }
     if(state.pending&&!state.busy){state.pending=false;scheduleAnalysis();}
+    renderTaskGuide();
   });
   w.addEventListener('error',()=>{if(state.worker!==w)return;w.terminate();state.worker=null;state.loaded=false;setBusy(null);invalidate();$('reload').hidden=!state.files.length;showError('処理用Workerを起動・実行できませんでした。素材の再読込みを試してください。');});
   return w;
@@ -62,7 +96,7 @@ function scheduleAnalysis(){
   state.timer=setTimeout(()=>{state.timer=null;if(state.busy){state.pending=true;return;}post('analyze',{plan:structuredClone(plan)});},180);
 }
 function changed(rerender=false){invalidate();if(rerender)renderConfig();scheduleAnalysis();}
-function stop(){clearTimeout(state.timer);state.timer=null;state.pending=false;state.worker?.terminate();state.worker=null;state.job++;state.loaded=false;setBusy(null);invalidate();$('reload').hidden=!state.files.length;setStatus('処理を取り消しました。素材は再読込みできます。');}
+function stop(){clearTimeout(state.timer);state.timer=null;state.pending=false;state.worker?.terminate();state.worker=null;state.job++;state.loaded=false;setBusy(null);invalidate();resetError();$('reload').hidden=!state.files.length;setStatus('処理を取り消しました。素材は再読込みできます。');}
 
 function renderFiles(){
   $('file-list').replaceChildren();
@@ -361,7 +395,7 @@ function renderResult(data){
   $('installer-path').textContent=`${data.report.outputRoot}/Installer.prefab`;$('report-view').textContent=JSON.stringify(data.report,null,2);
 }
 function updateRebind(){const expected=[...plan.inputHashes].sort(),actual=state.inputs.map(i=>i.hash).sort();$('rebind').hidden=!state.loaded||JSON.stringify(expected)===JSON.stringify(actual);}
-function savePlan(){const a=el('a');const url=URL.createObjectURL(new Blob([JSON.stringify(plan,null,2)],{type:'application/json'}));a.href=url;a.download='CompositionPlan.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function savePlan(){if(!state.loaded||state.busy)return;const a=el('a');const url=URL.createObjectURL(new Blob([JSON.stringify(plan,null,2)],{type:'application/json'}));a.href=url;a.download='CompositionPlan.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setStatus('構成ファイルのダウンロードを開始しました。再開時には元の素材も読み込んでください。');}
 function shapeOfPlan(p){
   if(!p||p.schemaVersion!==1||typeof p.name!=='string'||!Array.isArray(p.outputs)||!p.outputs.length||p.outputs.length>8||!Array.isArray(p.inputHashes)||!p.installer)throw new Error('対応する構成ファイルではありません。');
   for(const o of p.outputs)if(!o?.base||!Array.isArray(o.additions)||!Array.isArray(o.layerOrder)||!Array.isArray(o.motionAssignments))throw new Error('構成ファイルのブロックまたはLayer設定が不正です。');
@@ -383,7 +417,9 @@ $('save-diagnostics').addEventListener('click',()=>{if(!state.view||state.viewSt
 $('output-name').addEventListener('change',()=>{plan.name=$('output-name').value;changed();});
 $('global-expression').addEventListener('change',()=>{plan.globalExpressionId=$('global-expression').value||null;changed(true);});
 $('add-output').addEventListener('click',()=>{if(plan.outputs.length>=8)return;const o=output();o.name=`Combined${plan.outputs.length+1}`;o.playable=['FX','Additive','Gesture','Action','Base','Sitting','TPose','IKPose'].find(p=>!plan.outputs.some(o=>o.playable===p))??'FX';plan.outputs.push(o);changed(true);});
-$('analyze').addEventListener('click',()=>{clearTimeout(state.timer);state.timer=null;if(state.loaded&&!state.busy){invalidate();post('analyze',{plan:structuredClone(plan)});}});
+$('analyze').addEventListener('click',analyze);
+$('task-analyze').addEventListener('click',analyze);$('task-save').addEventListener('click',savePlan);
+for(const id of ['task-next','task-inputs','task-composition','task-parameters','task-export','review-composition'])$(id).addEventListener('click',event=>{event.preventDefault?.();const target=$(id).getAttribute('href').slice(1);if(target==='registration-controls'){$('parameter-search').value='';$('parameter-filter').value='attention';renderParameters();}if(target==='dependencies'){$('dependency-search').value='';renderDependencies();}jumpTo(target);});
 $('parameter-search').addEventListener('input',renderParameters);$('parameter-filter').addEventListener('change',renderParameters);
 for(const [id,registered]of [['register-pending',true],['exclude-pending',false]])$(id).addEventListener('click',()=>{for(const r of state.view?.rows??[])if(rowPending(r))put(plan.parameterEdits,r.name,{...valueFor(r),registered});changed();});
 for(const [id,key]of [['merge-mode','mergeMode'],['path-mode','pathMode'],['menu','menuId']])$(id).addEventListener('change',()=>{plan.installer[key]=$(id).value||null;changed();renderInstallContext();});
@@ -393,5 +429,6 @@ $('save-plan').addEventListener('click',savePlan);
 $('plan-file').addEventListener('change',async()=>{const file=$('plan-file').files[0];$('plan-file').value='';if(!file)return;try{if(file.size>2*1024*1024)throw new Error('構成ファイルが大きすぎます。');const loaded=shapeOfPlan(JSON.parse(await file.text()));plan=loaded;state.restored=true;state.view=null;invalidate();renderConfig();renderSavedSettings();updateRebind();post('catalog',{assetChoices:plan.assetChoices});}catch(e){showError(e.message);}});
 $('rebind').addEventListener('click',()=>{plan.inputHashes=state.inputs.map(i=>i.hash);state.restored=false;updateRebind();changed();setStatus('現在の素材で構成を再検査します。参照先が変わった項目は再指定してください。');});
 window.addEventListener('beforeunload',()=>{state.worker?.terminate();for(const url of state.urls)URL.revokeObjectURL(url);});
-renderConfig();renderAnalysis();
-if(typeof Worker==='undefined'||typeof WebAssembly==='undefined'){$('files').disabled=true;showError('このツールにはWeb WorkerとWebAssemblyに対応したブラウザが必要です。');}
+renderConfig();renderAnalysis();renderTaskGuide();
+if(window.matchMedia?.('(max-width: 960px)').matches)$('task-details').open=false;
+if(typeof Worker==='undefined'||typeof WebAssembly==='undefined'){state.unsupported=true;$('files').disabled=true;showError('このツールにはWeb WorkerとWebAssemblyに対応したブラウザが必要です。');}
