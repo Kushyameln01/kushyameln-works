@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FTアセット生成（静的検証版）｜ふぁっしょん</title>
+  <meta name="description" content="手元のUnitypackageからFT用アセットを生成するツール。ファイルはブラウザ内で処理します。">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="./workbench.css">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <p class="ai-notice">このページの説明文はAIによる自動生成です。</p>
+  <header><h1>FTアセット生成（静的検証版）</h1></header>
+  <nav class="site-nav" aria-label="サイト内"><a href="../">トップ</a><a href="../github/">GitHub・ツール</a><a href="../technical-memos/">VRC技術メモ</a></nav>
+  <main>
+    <p>指定の元データから、フェイストラッキングの動作と導入に必要なアセットを一組で生成します。Animator・BlendTree・AnimationClipに加え、Parameter登録とMAのInstallerを出力します。</p>
+    <p class="small">ファイルはこのブラウザ内で処理し、サーバーへ送信しません。計算にはHike/WASMを使用します。</p>
+
+    <section aria-labelledby="overview-title">
+      <h2 id="overview-title">生成する構成と導入方法</h2>
+      <p>Binary・Decode・Smoothを分けた表情処理に、独立したEyeXYとAdditiveの眼球制御を組み込みます。生成したInstallerをアバターへ配置すると、Modular AvatarがFX・Additive・FaceTrackingメニュー・必要なParameterを追加します。</p>
+      <p>FT用Expression Parametersの事前登録は不要です。MAと付属Expression assetは共通の設定から生成します。付属Expression assetは手動導入・確認用で、MA導入時の別途割当ては必要ありません。</p>
+      <details>
+        <summary>対応範囲と設定の決め方</summary>
+        <p>現在は下記4原本の確認済み版に対応しています。元のMeshパス・ARKit Shape bindingに適合するアバターと、導入済みのVRChat SDK・Modular Avatarが必要です。</p>
+        <p>Localの生入力、RemoteのBinary入力、視線、追跡状態、メニューの役割から登録と同期を決めます。左右EyeLidの生入力初期値は0.75、左右EyeXとEyeYは同期Floatです。内部Proxyは外部登録しません。</p>
+        <p>対象Meshは検査しないため、空Shapeを理由とする同期削減は行いません。既存アバターの設定との競合・統合後の総bit数・実際の動作はUnityとVRChatでの確認が必要です。</p>
+      </details>
+    </section>
+
+    <section aria-labelledby="input-title">
+      <h2 id="input-title">元ファイルを選択</h2>
+      <p>次の4ファイルをまとめて選んでください。対応する原本と内容が一致するファイルだけを使用できます。</p>
+      <ul class="required-files">
+        <li>ARKIT.unitypackage</li>
+        <li>DontHaveARKIT.unitypackage</li>
+        <li>FT_PARAMETER_PROXY.unitypackage</li>
+        <li>DecodeParameter_Sample_ver1.01.unitypackage</li>
+      </ul>
+      <form id="generator-form">
+        <label for="source-files">Unitypackage（4ファイル）</label>
+        <input id="source-files" type="file" accept=".unitypackage" multiple aria-describedby="selection-status">
+        <p id="selection-status" class="small">ファイルはまだ選択されていません。</p>
+        <ul id="selected-files" class="selected-files" aria-label="選択したファイル"></ul>
+        <div class="actions">
+          <button id="generate-button" type="submit" disabled>アセットを生成</button>
+          <button id="cancel-button" type="button" disabled>取消</button>
+        </div>
+      </form>
+      <progress id="generation-progress" max="6" value="0" hidden aria-label="生成の進捗"></progress>
+      <p id="generation-status" role="status" aria-live="polite">ファイルを選択してから、生成ボタンを押してください。</p>
+      <div id="generation-error" class="error" role="alert" tabindex="-1" hidden>
+        <p id="error-summary"></p>
+        <ul id="error-details"></ul>
+      </div>
+      <noscript><p>このツールを使用するにはJavaScriptを有効にしてください。</p></noscript>
+    </section>
+
+    <section id="result" aria-labelledby="result-title" hidden>
+      <h2 id="result-title">生成結果</h2>
+      <p id="result-summary"></p>
+      <p id="parameter-summary"></p>
+      <div class="downloads">
+        <a id="package-download" download="FT_Hike_StaticPreview.unitypackage">Unitypackageをダウンロード</a>
+        <a id="report-download" download="report.json">原本比較レポート（report.json）</a>
+        <a id="readme-download" download="README.md">構成案内（README.md）</a>
+        <a id="index-download" download="StructureIndex.json">構造索引（StructureIndex.json）</a>
+        <a id="spec-download" download="GenerationSpec.json">生成仕様・Parameter設定（GenerationSpec.json）</a>
+      </div>
+      <p class="small">UnityへのImportとVRChatでの動作は未検証です。</p>
+      <p class="small">必要な外部登録と同期設定は生成器で検査します。既存アバターにEyeXYや同じ表情制御がある場合は、二重導入と競合をUnity側で確認してください。</p>
+      <p class="small">導入は出力フォルダ直下の<code>Installer/ARKit_FT_Installed.prefab</code>をアバターへ配置します。FX・AdditiveとFaceTracking SubMenuをまとめて追加します。FXとAdditiveのControllerは、<code>Assets/KushyamelnFT_Hike_r11/Modules/Controllers</code>にまとまっています。モジュールの入口は同じ出力フォルダの<code>Modules/Source/Root</code>にあります。</p>
+      <p class="small">構成案内から目的のLayerとRootを探せます。構造索引は入出力・Mask・共有参照、生成仕様はParameterの採用値・同期理由・元設定を記録します。これらはUnitypackageにも含まれます。</p>
+      <p class="small"><a href="./FTHikeImportAudit.cs" download>Unity Import監査スクリプト</a>を対象プロジェクトのAssets/Editorへ置き、Tools → FT Hike → Validate Generated Importを実行すると、読み込まれたMotion実体・参照・Parameter登録を検査できます。Avatarの設定は変更しません。</p>
+    </section>
+  </main>
+</body>
+</html>
