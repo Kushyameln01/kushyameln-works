@@ -1,7 +1,7 @@
 // Generic registration policy. No avatar-specific names, defaults, or sync rules.
 // MA schema: modular-avatar 1.18.7 Runtime/{ModularAvatarParameters,
 // ModularAvatarMergeAnimator,Menu/ModularAvatarMenuInstaller}.cs and their .meta files.
-import {splitUnityDocuments, extractReferences, parseUnityScalar} from '../../ft-workbench/lib/unity-text.mjs';
+import {splitUnityDocuments, extractReferences, parseUnityScalar} from '../../shared/ft/unity-text.mjs';
 
 const SDK_GUID = '67cc4cb7839cd3741b63733d5adf0442';
 const EXPRESSION_SCRIPT_ID = '-1506855854';

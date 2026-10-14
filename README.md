@@ -4,11 +4,15 @@
 
 第三者向けの配信先としてGitHub Pagesに静的版を公開しました。元のSites配布物の内容とHike/WASM・Worker・Google Analyticsを維持し、サイト内リンクを相対化しています。
 
-## 更新
+## 更新と安全な配布範囲
 
-`python3 scripts/sync-static.py /path/to/reviewed/dist`
+現在の変更では旧FTツール2ページとXアーカイブを配布対象から外し、既存Composerの共有依存をバイトを変えずに `docs/shared/ft/` へ移動しています。新しいSites機能の同期は含みません。
 
-差分を確認して main に push すると、GitHub Pages が docs フォルダを公開します。同期は手動実行です。元Sitesの変更が自動的に反映される設定ではありません。入力するdistは公開用ファイルのみを含むことを事前確認してください。
+`python3 scripts/sync-static.py docs --output /absolute/path/to/new-stage`
+
+[公開対象一覧](security/public-files.json)の完全一致と参照を検査し、新規ディレクトリへ出力します。失敗時に公開用出力は残りません。既存docsの上書き・push・公開は実行しません。公開担当者が検証済み成果物と差分を確認し、別途反映してください。Sitesの新機能を同期するときは公開対象一覧の再審査が必要です。
+
+[境界と検査](security/README.md)を参照してください。以下は初回公開時の記録であり、今回の公開後検証結果ではありません。
 
 ## 確認結果
 

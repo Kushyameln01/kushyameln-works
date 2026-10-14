@@ -1,6 +1,6 @@
 // Unity text composition. No input mutation, runtime simulation, or FT policy.
 import {splitUnityDocuments, extractReferences, extractAnimatorParameters,
-  parseUnityScalar, canonicalizeObjectReferences, replaceDocumentFileId} from '../../ft-workbench/lib/unity-text.mjs';
+  parseUnityScalar, canonicalizeObjectReferences, replaceDocumentFileId} from '../../shared/ft/unity-text.mjs';
 import {buildMaterialCatalog} from './materials.mjs';
 
 const enc=new TextEncoder(), dec=new TextDecoder('utf-8',{fatal:true});

@@ -1,6 +1,6 @@
-import {readUnityPackage,MAX_UNITY_PACKAGE_BYTES} from '../ft-workbench/lib/unity-package.mjs';
-import {instantiateFtKernel} from '../ft-workbench/lib/kernel/load-kernel.mjs';
-import {splitUnityDocuments,extractReferences} from '../ft-workbench/lib/unity-text.mjs';
+import {readUnityPackage,MAX_UNITY_PACKAGE_BYTES} from '../shared/ft/unity-package.mjs';
+import {instantiateFtKernel} from '../shared/ft/kernel/load-kernel.mjs';
+import {splitUnityDocuments,extractReferences} from '../shared/ft/unity-text.mjs';
 import {parseExpression} from './lib/registration.mjs';
 import {digest,inspect,analyze,generate} from './lib/generate.mjs';
 
@@ -8,7 +8,7 @@ let packages=[], kernel=null, busy=false;
 const send=(id,type,data={})=>self.postMessage({id,type,...data});
 async function getKernel(){
   if(kernel)return kernel;
-  const r=await fetch(new URL('../ft-workbench/lib/kernel/ft-kernel.wasm',import.meta.url));
+  const r=await fetch(new URL('../shared/ft/kernel/ft-kernel.wasm',import.meta.url));
   if(!r.ok)throw new Error('Hike/WASMを読み込めませんでした。再読込みしてください。');
   kernel=await instantiateFtKernel(await r.arrayBuffer());return kernel;
 }

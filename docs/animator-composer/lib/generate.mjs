@@ -1,7 +1,7 @@
 import {indexPackages, analyzeComposition, generateComposition, makeGeneratedAsset} from './composition.mjs';
 import {parseExpression, resolveRegistration, serializeExpression, serializeInstaller} from './registration.mjs';
-import {splitUnityDocuments, extractReferences} from '../../ft-workbench/lib/unity-text.mjs';
-import {writeUnityPackage, readUnityPackage} from '../../ft-workbench/lib/unity-package.mjs';
+import {splitUnityDocuments, extractReferences} from '../../shared/ft/unity-text.mjs';
+import {writeUnityPackage, readUnityPackage} from '../../shared/ft/unity-package.mjs';
 
 export const VERSION = 1;
 const enc = new TextEncoder(), dec = new TextDecoder('utf-8', {fatal:true});

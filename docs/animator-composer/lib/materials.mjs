@@ -1,5 +1,5 @@
 // Read-only material facts. This module does not select a composition or resolve prefab inheritance.
-import {extractReferences,parseUnityScalar,splitUnityDocuments} from '../../ft-workbench/lib/unity-text.mjs';
+import {extractReferences,parseUnityScalar,splitUnityDocuments} from '../../shared/ft/unity-text.mjs';
 
 // Corroborated by Maho's source prefab and MA 1.18.7 official MinimalAvatarVRC.prefab.
 const DESCRIPTOR_SCRIPT={guid:'67cc4cb7839cd3741b63733d5adf0442',fileId:'542108242'};
