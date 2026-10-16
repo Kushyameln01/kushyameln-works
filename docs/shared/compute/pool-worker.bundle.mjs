@@ -4,7 +4,7 @@ var __export = (target, all) => {
     __defProp(target, name, { get: all[name], enumerable: true });
 };
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/compute/protocol.mjs
+// static-src/shared/compute/protocol.mjs
 var BUILD_ID = "compute-unity-b2";
 var WASM_SHA256 = "b260ac37862014a9ebb3ebb25739283fe2778e638969e757b2fd34769cd989ad";
 var MAX_MASKS = 262144;
@@ -21,9 +21,10 @@ function validateRequest(input, { copy = true } = {}) {
   return { protocolVersion: 1, jobId: input.jobId, inputRevision: input.inputRevision, taskType: input.taskType, taskVersion: 1, payload: { masks: copy ? masks.slice() : masks, weights: copy ? weights.slice() : weights }, limits: { timeoutMs } };
 }
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/compute/registered-tasks.mjs
+// static-src/shared/compute/registered-tasks.mjs
 var registered_tasks_exports = {};
 __export(registered_tasks_exports, {
+  MAX_MEDIA_INPUT_BYTES: () => MAX_MEDIA_INPUT_BYTES,
   executeTask: () => executeTask,
   freezeTaskResult: () => freezeTaskResult,
   inputBytes: () => inputBytes,
@@ -40,7 +41,584 @@ __export(registered_tasks_exports, {
   validTaskResult: () => validTaskResult
 });
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/compute/kernel.mjs
+// static-src/shared/media/paper/identities.mjs
+var PAPER_KERNEL_IDENTITY = Object.freeze({ sha256: "2921e9c69e92dbd8ee2f3ee92f5c9787346134ee39bd26a11058eda672f39cf3", abi: "hike-paper-features-v1" });
+
+// static-src/shared/media/paper/registry.mjs
+var PAPER_KERNEL = Object.freeze({ ...PAPER_KERNEL_IDENTITY, url: new URL("../media/paper/paper.wasm", import.meta.url).href });
+
+// static-src/shared/media/paper/paper.mjs
+var MAX_MEMORY = 16777216;
+var MAX_ARENA = 12582912;
+var MAX_HOST = 4194304;
+var KINDS = ["svd-diagonal-v1", "paper-alg2-diagonal-v1"];
+var ERRORS = ["", "SOLVER_NONCONVERGENCE", "ZERO_SIGNAL", "RANK_LIMIT", "EIGENSPACE_AMBIGUOUS", "PATTERN_AMBIGUOUS", "NUMERIC_ACCURACY", "INVALID_ARGUMENT", "WORKSPACE_LIMIT"];
+var encoder = new TextEncoder();
+var align = (n) => Math.ceil(n / 8) * 8;
+var integer = (v, a, b) => Number.isSafeInteger(v) && v >= a && v <= b;
+var hashPattern = /^[a-f0-9]{64}$/;
+var idPattern = /^[A-Za-z0-9_.:-]{1,64}$/;
+var validId = (value2) => typeof value2 === "string" && idPattern.test(value2);
+var typedPrototype = Object.getPrototypeOf(Uint8Array.prototype);
+var typedGet = Object.fromEntries(["length", "buffer", "byteOffset", "byteLength"].map((k) => [k, Object.getOwnPropertyDescriptor(typedPrototype, k).get]));
+var typed = (data, key) => Reflect.apply(typedGet[key], data, []);
+function jsonSnapshot(value2, limit2) {
+  let bytes2 = 0;
+  const add = (s) => {
+    bytes2 += encoder.encode(s).byteLength;
+    if (bytes2 > limit2) throw RangeError("METADATA_LIMIT");
+    return s;
+  };
+  function visit(v, depth) {
+    if (depth > 16) throw RangeError("METADATA_DEPTH");
+    if (v === null) return add("null");
+    if (typeof v === "string") {
+      if (v.length > limit2) throw RangeError("METADATA_LIMIT");
+      return add(JSON.stringify(v));
+    }
+    if (typeof v === "boolean") return add(String(v));
+    if (typeof v === "number" && Number.isFinite(v)) return add(JSON.stringify(v));
+    if (Array.isArray(v)) {
+      if (v.length > 4096) throw RangeError("METADATA_COUNT");
+      return add("[") + v.map((x, i) => (i ? add(",") : "") + visit(x, depth + 1)).join("") + add("]");
+    }
+    if (v && Object.getPrototypeOf(v) === Object.prototype) {
+      const keys2 = Object.keys(v).sort();
+      if (keys2.length > 8192) throw RangeError("METADATA_COUNT");
+      return add("{") + keys2.map((k, i) => {
+        if (k.length > limit2) throw RangeError("METADATA_LIMIT");
+        const descriptor = Object.getOwnPropertyDescriptor(v, k);
+        if (!descriptor || !("value" in descriptor)) throw TypeError("METADATA_ACCESSOR");
+        return (i ? add(",") : "") + add(JSON.stringify(k)) + add(":") + visit(descriptor.value, depth + 1);
+      }).join("") + add("}");
+    }
+    throw TypeError("METADATA_JSON_REQUIRED");
+  }
+  const text2 = visit(value2, 0);
+  if (encoder.encode(text2).byteLength > limit2) throw RangeError("METADATA_LIMIT");
+  return { value: JSON.parse(text2), text: text2, bytes: encoder.encode(text2).byteLength };
+}
+async function sha(data) {
+  return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", data)), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+function abort(signal) {
+  if (signal?.aborted) throw new DOMException("Paper preparation aborted", "AbortError");
+}
+async function preparePaperKernel({ signal, onCompile, onResponse } = {}) {
+  abort(signal);
+  const response = await fetch(PAPER_KERNEL.url, { signal, credentials: "omit" });
+  abort(signal);
+  if (!response.ok) throw Error(`Paper kernel fetch ${response.status}`);
+  onResponse?.(response.headers.get("content-type") ?? "");
+  const bytes2 = await response.arrayBuffer();
+  abort(signal);
+  if (await sha(bytes2) !== PAPER_KERNEL.sha256) throw Error("PAPER_KERNEL_HASH");
+  abort(signal);
+  onCompile?.();
+  abort(signal);
+  const module = await WebAssembly.compile(bytes2);
+  abort(signal);
+  return module;
+}
+function dimensions(width, height) {
+  if (!integer(width, 1, 64) || !integer(height, 1, 64)) throw RangeError("GRID_LIMIT");
+  return width * height;
+}
+function preprocessingKind(p, width, height) {
+  const keys2 = ["version", "grid", "roi", "resize", "luma", "lbp", "border"];
+  if (!p || typeof p !== "object" || Array.isArray(p) || Object.keys(p).length !== keys2.length || Object.keys(p).some((k) => !keys2.includes(k)) || p.version !== 1 || !p.grid || Object.keys(p.grid).length !== 2 || p.grid.width !== width || p.grid.height !== height || p.resize !== "none" || p.luma !== "integer77-150-29-white-alpha" || p.lbp !== "3x3-ge-NW-N-NE-E-SE-S-SW-W" || p.border !== "zero-gray-halo") throw TypeError("PREPROCESSING_CONTRACT");
+  if (["synthetic-numeric-fixture", "maximum-numeric-fixture"].includes(p.roi)) return "synthetic-numeric";
+  const r = p.roi, roiKeys = ["x", "y", "width", "height", "sourceWidth", "sourceHeight", "coordinateSpace"];
+  if (!r || typeof r !== "object" || Array.isArray(r) || Object.keys(r).length !== roiKeys.length || Object.keys(r).some((k) => !roiKeys.includes(k)) || r.coordinateSpace !== "display-pixels" || r.width !== width || r.height !== height || !integer(r.x, 0, 16777216) || !integer(r.y, 0, 16777216) || !integer(r.sourceWidth, 1, 16777216) || !integer(r.sourceHeight, 1, 16777216) || r.sourceWidth * r.sourceHeight > 16777216 || r.x + width > r.sourceWidth || r.y + height > r.sourceHeight) throw TypeError("PREPROCESSING_ROI");
+  return "media-crop";
+}
+function checkedArray(data, Type, length, memory) {
+  if (!(data instanceof Type)) throw TypeError("ARRAY_SHAPE");
+  const buffer = typed(data, "buffer");
+  if (!(buffer instanceof ArrayBuffer) || buffer.resizable || buffer === memory?.buffer || typed(data, "length") !== length) throw TypeError("ARRAY_SHAPE");
+  new Uint8Array(buffer, typed(data, "byteOffset"), typed(data, "byteLength"));
+  return data;
+}
+function modelParts(model, memory) {
+  const p = dimensions(model.width, model.height), k = model.featureCount;
+  if (model.schema !== 1 || !KINDS.includes(model.kind) || !integer(k, 1, 16) || !integer(model.requestedFeatureCount, k, 16) || !["strict", "allow-fewer"].includes(model.rankPolicy) || model.status !== (k < model.requestedFeatureCount ? "rank-limited" : "complete") || !["synthetic-numeric", "media-crop"].includes(model.preprocessingKind) || model.abi !== PAPER_KERNEL.abi || model.kernelSha256 !== PAPER_KERNEL.sha256 || !hashPattern.test(model.modelHash) || !hashPattern.test(model.preprocessingSha256)) throw TypeError("MODEL_IDENTITY");
+  const coefficientKeys = model.kind === KINDS[0] ? ["spatial", "pattern"] : ["spatial", "selectedCodes"];
+  if (!model.coefficients || Object.keys(model.coefficients).length !== 2 || Object.keys(model.coefficients).some((k2) => !coefficientKeys.includes(k2))) throw TypeError("MODEL_COEFFICIENTS");
+  const spatial = checkedArray(model.coefficients?.spatial, Float64Array, p * k, memory);
+  if (!Reflect.apply(Float64Array.prototype.every, spatial, [Number.isFinite])) throw TypeError("MODEL_NONFINITE");
+  const second = model.kind === KINDS[0] ? checkedArray(model.coefficients.pattern, Float64Array, 256 * k, memory) : checkedArray(model.coefficients.selectedCodes, Uint8Array, k, memory);
+  if (second instanceof Float64Array && !Reflect.apply(Float64Array.prototype.every, second, [Number.isFinite])) throw TypeError("MODEL_NONFINITE");
+  if (second instanceof Uint8Array && new Set(second).size !== k) throw TypeError("MODEL_SELECTED_CODES");
+  const meta = {};
+  for (const key of Object.keys(model)) if (key !== "coefficients" && key !== "modelHash") meta[key] = model[key];
+  const metadata3 = jsonSnapshot(meta, 65536);
+  return { p, k, spatial, second, metadata: metadata3, modelHash: model.modelHash, bytes: typed(spatial, "byteLength") + typed(second, "byteLength") + metadata3.bytes };
+}
+async function modelHash(metadata3, spatial, second) {
+  const text2 = encoder.encode(metadata3.text), bytes2 = new Uint8Array(4 + text2.length + spatial.byteLength + second.byteLength), view = new DataView(bytes2.buffer);
+  view.setUint32(0, text2.length, true);
+  bytes2.set(text2, 4);
+  let offset = 4 + text2.length;
+  for (const x of spatial) {
+    view.setFloat64(offset, x, true);
+    offset += 8;
+  }
+  if (second instanceof Float64Array) {
+    for (const x of second) {
+      view.setFloat64(offset, x, true);
+      offset += 8;
+    }
+  } else bytes2.set(second, offset);
+  return sha(bytes2);
+}
+function validateSplit(manifest, samples) {
+  if (manifest.version !== 1 || !hashPattern.test(manifest.preprocessingSha256) || !Array.isArray(manifest.groups) || !Array.isArray(manifest.samples) || manifest.groups.length > 1536 || manifest.samples.length > 1536) throw TypeError("SPLIT_MANIFEST");
+  const groups = /* @__PURE__ */ new Map(), ids = /* @__PURE__ */ new Map(), sources = /* @__PURE__ */ new Map();
+  for (const g of manifest.groups) {
+    if (!validId(g.groupId) || !["train", "calibration", "evaluation"].includes(g.split) || groups.has(g.groupId)) throw Error("SPLIT_GROUP_CONFLICT");
+    groups.set(g.groupId, g.split);
+  }
+  for (const s of manifest.samples) {
+    const split2 = groups.get(s.groupId);
+    if (!validId(s.sampleId) || ids.has(s.sampleId) || !split2 || ![0, 1].includes(s.label) || !hashPattern.test(s.sourceSha256) || !hashPattern.test(s.codeSha256)) throw Error("SPLIT_SAMPLE_INVALID");
+    if (sources.has(s.sourceSha256) && sources.get(s.sourceSha256) !== split2) throw Error("SPLIT_SOURCE_LEAKAGE");
+    sources.set(s.sourceSha256, split2);
+    ids.set(s.sampleId, { ...s, split: split2 });
+  }
+  const expected = Array.from(ids.values()).filter((s) => s.split === "train");
+  if (expected.length !== samples.length) throw Error("TRAINING_SET_MISMATCH");
+  const seen = /* @__PURE__ */ new Set(), counts = [0, 0];
+  const records = samples.map((s) => {
+    const info = ids.get(s.sampleId);
+    if (!info || info.split !== "train" || seen.has(s.sampleId)) throw Error("TRAINING_SET_MISMATCH");
+    seen.add(s.sampleId);
+    counts[info.label]++;
+    return info;
+  });
+  if (!counts[0] || !counts[1]) throw Error("EMPTY_CLASS");
+  return { records, counts };
+}
+function instantiatePaperKernel(module) {
+  const expected = "FitAlg2:function,FitDirect:function,Gram:function,InferAlg2:function,InferDirect:function,MeanAdd:function,memory:memory";
+  if (!(module instanceof WebAssembly.Module) || WebAssembly.Module.imports(module).length || WebAssembly.Module.exports(module).map((x) => `${x.name}:${x.kind}`).sort().join(",") !== expected) throw TypeError("PAPER_ABI");
+  let instance = new WebAssembly.Instance(module), memory = instance.exports.memory;
+  const arenaBase = memory.buffer.byteLength, instanceId = `paper-${crypto.randomUUID()}`;
+  if (arenaBase > MAX_MEMORY || instance.exports.MeanAdd.length !== 4 || instance.exports.Gram.length !== 3 || instance.exports.FitDirect.length !== 14 || instance.exports.FitAlg2.length !== 14 || instance.exports.InferDirect.length !== 6 || instance.exports.InferAlg2.length !== 6) throw TypeError("PAPER_ABI");
+  let disposed = false, busy = false, liveBytes = 0, peakBytes = 0, hostSnapshotBytes = 0, peakHostSnapshotBytes = 0, fits = 0, inferences = 0;
+  function check() {
+    if (disposed) throw Error("DISPOSED");
+  }
+  function begin() {
+    check();
+    if (busy) throw Error("BUSY");
+    busy = true;
+  }
+  function reserveHost(bytes2) {
+    if (bytes2 > MAX_HOST) throw RangeError("HOST_SNAPSHOT_LIMIT");
+    hostSnapshotBytes = bytes2;
+    peakHostSnapshotBytes = Math.max(peakHostSnapshotBytes, bytes2);
+  }
+  function end() {
+    hostSnapshotBytes = 0;
+    busy = false;
+  }
+  function arena(sizes, body) {
+    check();
+    let end2 = arenaBase;
+    const ptr = sizes.map((n) => {
+      const x = end2;
+      end2 = align(end2 + n);
+      return x;
+    });
+    if (end2 - arenaBase > MAX_ARENA || end2 > MAX_MEMORY) throw RangeError("WORKSPACE_LIMIT");
+    const mem = memory;
+    let reserved = false;
+    try {
+      const pages = Math.ceil((end2 - mem.buffer.byteLength) / 65536);
+      if (pages > 0) mem.grow(pages);
+      new Uint8Array(mem.buffer, arenaBase, end2 - arenaBase).fill(0);
+      liveBytes = end2 - arenaBase;
+      peakBytes = Math.max(peakBytes, liveBytes);
+      reserved = true;
+      return body(ptr, mem);
+    } finally {
+      if (reserved) new Uint8Array(mem.buffer, arenaBase, end2 - arenaBase).fill(0);
+      liveBytes = 0;
+    }
+  }
+  async function fit(input) {
+    begin();
+    let snapshot;
+    try {
+      const p = dimensions(input?.width, input?.height), requested = input.featureCount, kind = input.kind, rankPolicy = input.rankPolicy ?? "strict";
+      if (!KINDS.includes(kind) || !integer(requested, 1, 16) || !["strict", "allow-fewer"].includes(rankPolicy) || !Array.isArray(input.samples) || input.samples.length < 2 || input.samples.length > 512) throw RangeError("FIT_OPTIONS");
+      const preprocessing = jsonSnapshot(input.preprocessing, 16384), manifest = jsonSnapshot(input.splitManifest, 524288), provenance = preprocessingKind(preprocessing.value, input.width, input.height);
+      const sources = Array.prototype.map.call(input.samples, (s) => {
+        const sampleId = s?.sampleId, codes = s?.codes;
+        if (!validId(sampleId)) throw TypeError("SAMPLE_ID");
+        checkedArray(codes, Uint8Array, p, memory);
+        return { sampleId, codes };
+      });
+      reserveHost(sources.length * p + preprocessing.bytes + manifest.bytes);
+      snapshot = { width: input.width, height: input.height, p, requested, kind, rankPolicy, preprocessing, manifest, samples: sources.map((s) => ({ sampleId: s.sampleId, codes: new Uint8Array(s.codes) })) };
+      const split2 = validateSplit(manifest.value, snapshot.samples), preprocessingSha256 = await sha(encoder.encode(preprocessing.text));
+      check();
+      if (preprocessingSha256 !== manifest.value.preprocessingSha256) throw Error("PREPROCESSING_HASH");
+      for (let i = 0; i < snapshot.samples.length; i++) {
+        if (await sha(snapshot.samples[i].codes) !== split2.records[i].codeSha256) throw Error("CODE_HASH");
+        check();
+      }
+      const splitHash = await sha(encoder.encode(manifest.text));
+      check();
+      const trainingHash = await sha(encoder.encode(jsonSnapshot(split2.records.map((s) => ({ sampleId: s.sampleId, label: s.label, groupId: s.groupId, sourceSha256: s.sourceSha256, codeSha256: s.codeSha256 })), 524288).text));
+      check();
+      const numerical = arena([p * 256 * 8, 65536 * 8, 65536 * 8, 65536 * 8, requested * p * 8, 256 * requested * 8, p, 65536], ([d, g, work, v, t, h, code, diag], mem) => {
+        const ex = instance.exports, bytes2 = new Uint8Array(mem.buffer);
+        for (let i = 0; i < snapshot.samples.length; i++) {
+          bytes2.set(snapshot.samples[i].codes, code);
+          const label = split2.records[i].label;
+          const status = ex.MeanAdd(d, code, p, label ? 1 / split2.counts[1] : -1 / split2.counts[0]);
+          if (status !== 0) throw Error(ERRORS[-status] ?? "KERNEL_ERROR");
+          bytes2.fill(0, code, code + p);
+        }
+        if (ex.Gram(d, g, p) !== 0) throw Error("KERNEL_ERROR");
+        new Float64Array(mem.buffer, diag, 16)[9] = liveBytes;
+        const selected = diag + 3200, fn = kind === KINDS[0] ? ex.FitDirect : ex.FitAlg2, count = fn(d, g, work, v, t, kind === KINDS[0] ? h : selected, diag, p, requested, rankPolicy === "allow-fewer" ? 1 : 0, 64, 1e-12, 1e-8, 1e-10);
+        if (count < 1) throw Error(ERRORS[-count] ?? "KERNEL_ERROR");
+        if (count > requested) throw Error("INVALID_RESULT");
+        const spatial = Float64Array.from(new Float64Array(mem.buffer, t, count * p)), second = kind === KINDS[0] ? Float64Array.from(new Float64Array(mem.buffer, h, 256 * count)) : Uint8Array.from(new Int32Array(mem.buffer, selected, count)), values = Array.from(new Float64Array(mem.buffer, diag, 10));
+        if (!spatial.every(Number.isFinite) || !second.every(Number.isFinite) || !values.every(Number.isFinite)) throw Error("NUMERIC_ACCURACY");
+        return { count, spatial, second, diagnostics: { alpha: values[0], eigenResidual: values[1], eigenOrthogonality: values[2], selectedUOrthogonality: values[3], selectedPairResidual: values[4], initialRankInterval: [values[5], values[6]], rankAmbiguous: values[5] !== values[6], maxSweeps: values[8], workspaceBytes: values[9] } };
+      });
+      const model = { schema: 1, abi: PAPER_KERNEL.abi, kernelSha256: PAPER_KERNEL.sha256, kind, width: snapshot.width, height: snapshot.height, featureCount: numerical.count, requestedFeatureCount: requested, status: numerical.count < requested ? "rank-limited" : "complete", rankPolicy, preprocessingSha256, preprocessingKind: provenance, trainingHash, splitHash, classCounts: split2.counts, rankScale: "max(1,trace(G_initial))", numericPolicy: { maxSweeps: 64, tolerance: 1e-12, rankCutoff: 1e-8, rankGuard: 1e-10, eigenspaceGap: 1e-8, patternGap: 1e-8 }, diagnostics: numerical.diagnostics };
+      const metadata3 = jsonSnapshot(model, 65536), digest = await modelHash(metadata3, numerical.spatial, numerical.second);
+      check();
+      fits++;
+      return { ...model, coefficients: kind === KINDS[0] ? { spatial: numerical.spatial, pattern: numerical.second } : { spatial: numerical.spatial, selectedCodes: numerical.second }, modelHash: digest };
+    } finally {
+      snapshot = null;
+      end();
+    }
+  }
+  async function infer(input) {
+    begin();
+    let snapshot;
+    try {
+      const parts = modelParts(input?.model, memory), preprocessing = jsonSnapshot(input.preprocessing, 16384), provenance = preprocessingKind(preprocessing.value, parts.metadata.value.width, parts.metadata.value.height);
+      if (provenance !== parts.metadata.value.preprocessingKind) throw TypeError("PREPROCESSING_PROVENANCE");
+      checkedArray(input.codes, Uint8Array, parts.p, memory);
+      reserveHost(parts.bytes + parts.p + preprocessing.bytes);
+      snapshot = { ...parts, spatial: new Float64Array(parts.spatial), second: parts.second instanceof Float64Array ? new Float64Array(parts.second) : new Uint8Array(parts.second), codes: new Uint8Array(input.codes), preprocessing };
+      const preprocessingHash = await sha(encoder.encode(snapshot.preprocessing.text));
+      check();
+      if (preprocessingHash !== snapshot.metadata.value.preprocessingSha256) throw Error("PREPROCESSING_HASH");
+      if (await modelHash(snapshot.metadata, snapshot.spatial, snapshot.second) !== snapshot.modelHash) throw Error("MODEL_HASH");
+      check();
+      const { p, k } = snapshot, result = arena([snapshot.spatial.byteLength, snapshot.second instanceof Float64Array ? snapshot.second.byteLength : k * 4, p, k * 8], ([t, h, code, out], mem) => {
+        new Float64Array(mem.buffer, t, snapshot.spatial.length).set(snapshot.spatial);
+        if (snapshot.second instanceof Float64Array) new Float64Array(mem.buffer, h, snapshot.second.length).set(snapshot.second);
+        else new Int32Array(mem.buffer, h, k).set(snapshot.second);
+        new Uint8Array(mem.buffer, code, p).set(snapshot.codes);
+        const status = (snapshot.second instanceof Float64Array ? instance.exports.InferDirect : instance.exports.InferAlg2)(t, h, code, out, p, k);
+        if (status !== 0) throw Error(ERRORS[-status] ?? "KERNEL_ERROR");
+        const output = Float64Array.from(new Float64Array(mem.buffer, out, k));
+        if (!output.every(Number.isFinite)) throw Error("NUMERIC_ACCURACY");
+        return output;
+      });
+      inferences++;
+      return result;
+    } finally {
+      snapshot = null;
+      end();
+    }
+  }
+  function dispose() {
+    if (disposed) return;
+    disposed = true;
+    instance = null;
+    memory = null;
+    module = null;
+    liveBytes = 0;
+    hostSnapshotBytes = 0;
+  }
+  return Object.freeze({ instanceId, get memory() {
+    return memory;
+  }, fit, infer, dispose, resourceStats: () => ({ disposed, busy, liveBytes, peakBytes, hostSnapshotBytes, peakHostSnapshotBytes, arenaBase, memoryBytes: memory?.buffer.byteLength ?? 0, maxMemoryBytes: MAX_MEMORY, fits, inferences }) });
+}
+
+// static-src/shared/media/paper/pool-task.mjs
+var PAPER_TASK_TYPES = Object.freeze(["media-paper-fit", "media-paper-infer"]);
+var MAX_PAPER_INPUT_BYTES = 4194304;
+var MAX_PAPER_RESULT_BYTES = 2097152;
+var [FIT, INFER] = PAPER_TASK_TYPES;
+var KINDS2 = ["svd-diagonal-v1", "paper-alg2-diagonal-v1"];
+var enc = new TextEncoder();
+var int = (v, a, b) => Number.isSafeInteger(v) && v >= a && v <= b;
+var hash = (v) => typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
+var id = (v) => typeof v === "string" && /^[A-Za-z0-9_.:-]{1,64}$/.test(v);
+var typedProto = Object.getPrototypeOf(Uint8Array.prototype);
+var getters = Object.fromEntries(["length", "buffer", "byteOffset", "byteLength"].map((k) => [k, Object.getOwnPropertyDescriptor(typedProto, k).get]));
+var typed2 = (a, k) => Reflect.apply(getters[k], a, []);
+var resizableGetter = Object.getOwnPropertyDescriptor(ArrayBuffer.prototype, "resizable")?.get;
+function record(v) {
+  if (!v || Object.getPrototypeOf(v) !== Object.prototype) throw TypeError("PAPER_RECORD");
+  return v;
+}
+function own(v, key, optional = false) {
+  record(v);
+  const d = Object.getOwnPropertyDescriptor(v, key);
+  if (!d && optional) return void 0;
+  if (!d || !("value" in d)) throw TypeError("PAPER_ACCESSOR_OR_FIELD");
+  return d.value;
+}
+function keys(v, allowed, required = allowed) {
+  record(v);
+  if (Object.keys(v).some((k) => !allowed.includes(k)) || required.some((k) => !Object.hasOwn(v, k))) throw TypeError("PAPER_FIELDS");
+  for (const k of Object.keys(v)) own(v, k);
+}
+function json(value2, limit2) {
+  let size = 0;
+  const add = (s) => {
+    size += enc.encode(s).byteLength;
+    if (size > limit2) throw RangeError("PAPER_METADATA_LIMIT");
+    return s;
+  };
+  function visit(v, depth) {
+    if (depth > 16) throw RangeError("PAPER_METADATA_DEPTH");
+    if (v === null) return add("null");
+    if (typeof v === "boolean") return add(String(v));
+    if (typeof v === "number" && Number.isFinite(v)) return add(JSON.stringify(v));
+    if (typeof v === "string") {
+      if (v.length > limit2) throw RangeError("PAPER_METADATA_LIMIT");
+      return add(JSON.stringify(v));
+    }
+    if (Array.isArray(v)) {
+      if (v.length > 4096) throw RangeError("PAPER_METADATA_COUNT");
+      const parts = [];
+      for (let i = 0; i < v.length; i++) {
+        const d = Object.getOwnPropertyDescriptor(v, String(i));
+        if (!d || !("value" in d)) throw TypeError("PAPER_METADATA_ACCESSOR");
+        parts.push((i ? add(",") : "") + visit(d.value, depth + 1));
+      }
+      return add("[") + parts.join("") + add("]");
+    }
+    record(v);
+    const names = Object.keys(v).sort();
+    if (names.length > 8192) throw RangeError("PAPER_METADATA_COUNT");
+    return add("{") + names.map((k, i) => {
+      if (k.length > limit2) throw RangeError("PAPER_METADATA_LIMIT");
+      return (i ? add(",") : "") + add(JSON.stringify(k)) + add(":") + visit(own(v, k), depth + 1);
+    }).join("") + add("}");
+  }
+  const text2 = visit(value2, 0);
+  return { value: JSON.parse(text2), text: text2, bytes: size };
+}
+function array(a, Type, n) {
+  if (!(a instanceof Type) || typed2(a, "length") !== n) throw TypeError("PAPER_ARRAY");
+  const b = typed2(a, "buffer");
+  if (!(b instanceof ArrayBuffer) || resizableGetter && Reflect.apply(resizableGetter, b, [])) throw TypeError("PAPER_ARRAY");
+  new Uint8Array(b, typed2(a, "byteOffset"), typed2(a, "byteLength"));
+  return a;
+}
+function grid(w, h) {
+  if (!int(w, 1, 64) || !int(h, 1, 64)) throw RangeError("PAPER_GRID");
+  return w * h;
+}
+function preprocess(value2, w, h) {
+  const p = json(value2, 16384).value;
+  keys(p, ["version", "grid", "roi", "resize", "luma", "lbp", "border"]);
+  keys(p.grid, ["width", "height"]);
+  if (p.version !== 1 || p.grid.width !== w || p.grid.height !== h || p.resize !== "none" || p.luma !== "integer77-150-29-white-alpha" || p.lbp !== "3x3-ge-NW-N-NE-E-SE-S-SW-W" || p.border !== "zero-gray-halo") throw TypeError("PAPER_PREPROCESSING");
+  if (["synthetic-numeric-fixture", "maximum-numeric-fixture"].includes(p.roi)) return p;
+  const r = p.roi;
+  keys(r, ["x", "y", "width", "height", "sourceWidth", "sourceHeight", "coordinateSpace"]);
+  if (r.coordinateSpace !== "display-pixels" || r.width !== w || r.height !== h || !int(r.x, 0, 16777216) || !int(r.y, 0, 16777216) || !int(r.sourceWidth, 1, 16777216) || !int(r.sourceHeight, 1, 16777216) || r.sourceWidth * r.sourceHeight > 16777216 || r.x + w > r.sourceWidth || r.y + h > r.sourceHeight) throw TypeError("PAPER_ROI");
+  return p;
+}
+var preprocessingKind2 = (p) => typeof p.roi === "string" ? "synthetic-numeric" : "media-crop";
+function split(value2, samples) {
+  const m = json(value2, 524288).value;
+  if (m.version !== 1 || !hash(m.preprocessingSha256) || !Array.isArray(m.groups) || !Array.isArray(m.samples) || m.groups.length > 1536 || m.samples.length > 1536) throw TypeError("PAPER_SPLIT");
+  const groups = /* @__PURE__ */ new Map(), ids = /* @__PURE__ */ new Map(), sources = /* @__PURE__ */ new Map();
+  for (const g of m.groups) {
+    if (!id(g.groupId) || !["train", "calibration", "evaluation"].includes(g.split) || groups.has(g.groupId)) throw TypeError("PAPER_SPLIT_GROUP");
+    groups.set(g.groupId, g.split);
+  }
+  for (const s of m.samples) {
+    const part = groups.get(s.groupId);
+    if (!id(s.sampleId) || ids.has(s.sampleId) || !part || ![0, 1].includes(s.label) || !hash(s.sourceSha256) || !hash(s.codeSha256)) throw TypeError("PAPER_SPLIT_SAMPLE");
+    if (sources.has(s.sourceSha256) && sources.get(s.sourceSha256) !== part) throw TypeError("PAPER_SPLIT_LEAKAGE");
+    sources.set(s.sourceSha256, part);
+    ids.set(s.sampleId, { ...s, split: part });
+  }
+  const training = Array.from(ids.values()).filter((x) => x.split === "train");
+  if (samples) {
+    if (training.length !== samples.length) throw TypeError("PAPER_TRAINING_SET");
+    const seen = /* @__PURE__ */ new Set(), counts = [0, 0];
+    for (const s of samples) {
+      const v = ids.get(s.sampleId);
+      if (!v || v.split !== "train" || seen.has(s.sampleId)) throw TypeError("PAPER_TRAINING_SET");
+      seen.add(s.sampleId);
+      counts[v.label]++;
+    }
+    if (!counts[0] || !counts[1]) throw TypeError("PAPER_EMPTY_CLASS");
+  }
+  return m;
+}
+function source(value2) {
+  const s = json(value2, 1024).value;
+  keys(s, ["sampleId", "groupId", "sourceSha256", "codeSha256", "split"]);
+  if (!id(s.sampleId) || !id(s.groupId) || !hash(s.sourceSha256) || !hash(s.codeSha256) || !["train", "calibration", "evaluation"].includes(s.split)) throw TypeError("PAPER_SOURCE");
+  return s;
+}
+function modelParts2(value2) {
+  record(value2);
+  const raw = {};
+  for (const key of Object.keys(value2)) if (key !== "coefficients") raw[key] = own(value2, key);
+  const m = json(raw, 65536).value, p = grid(m.width, m.height), k = m.featureCount;
+  if (m.schema !== 1 || !KINDS2.includes(m.kind) || !int(k, 1, 16) || !int(m.requestedFeatureCount, k, 16) || !["strict", "allow-fewer"].includes(m.rankPolicy) || m.status !== (k < m.requestedFeatureCount ? "rank-limited" : "complete") || m.rankPolicy === "strict" && k !== m.requestedFeatureCount || !["synthetic-numeric", "media-crop"].includes(m.preprocessingKind) || m.abi !== PAPER_KERNEL.abi || m.kernelSha256 !== PAPER_KERNEL.sha256 || !hash(m.modelHash) || !hash(m.preprocessingSha256) || !hash(m.trainingHash) || !hash(m.splitHash)) throw TypeError("PAPER_MODEL_IDENTITY");
+  if (!Array.isArray(m.classCounts) || m.classCounts.length !== 2 || m.classCounts.some((n) => !int(n, 1, 511)) || m.classCounts[0] + m.classCounts[1] > 512 || m.rankScale !== "max(1,trace(G_initial))") throw TypeError("PAPER_MODEL_POLICY");
+  const policy = { maxSweeps: 64, tolerance: 1e-12, rankCutoff: 1e-8, rankGuard: 1e-10, eigenspaceGap: 1e-8, patternGap: 1e-8 };
+  if (json(m.numericPolicy, 1024).text !== json(policy, 1024).text) throw TypeError("PAPER_MODEL_POLICY");
+  const d = m.diagnostics;
+  if (!d || !["alpha", "eigenResidual", "eigenOrthogonality", "selectedUOrthogonality", "selectedPairResidual", "maxSweeps", "workspaceBytes"].every((k2) => typeof d[k2] === "number" && Number.isFinite(d[k2])) || d.alpha < 1 || d.eigenResidual < 0 || d.eigenResidual > 1e-10 || d.eigenOrthogonality < 0 || d.eigenOrthogonality > 1e-10 || d.selectedUOrthogonality < 0 || d.selectedUOrthogonality > 1e-8 || d.selectedPairResidual < 0 || d.selectedPairResidual > 1e-8 || !int(d.maxSweeps, 0, 64) || !int(d.workspaceBytes, 0, 12582912) || !Array.isArray(d.initialRankInterval) || d.initialRankInterval.length !== 2 || !int(d.initialRankInterval[0], 0, 256) || !int(d.initialRankInterval[1], d.initialRankInterval[0], 256) || d.rankAmbiguous !== (d.initialRankInterval[0] !== d.initialRankInterval[1])) throw TypeError("PAPER_MODEL_DIAGNOSTICS");
+  const c = own(value2, "coefficients"), secondKey = m.kind === KINDS2[0] ? "pattern" : "selectedCodes";
+  keys(c, ["spatial", secondKey]);
+  const spatial = array(own(c, "spatial"), Float64Array, p * k), second = array(own(c, secondKey), secondKey === "pattern" ? Float64Array : Uint8Array, secondKey === "pattern" ? 256 * k : k);
+  if (!Reflect.apply(Float64Array.prototype.every, spatial, [Number.isFinite]) || secondKey === "pattern" && !Reflect.apply(Float64Array.prototype.every, second, [Number.isFinite])) throw TypeError("PAPER_MODEL_NONFINITE");
+  if (secondKey === "selectedCodes") {
+    const seen = /* @__PURE__ */ new Set();
+    for (let i = 0; i < k; i++) seen.add(second[i]);
+    if (seen.size !== k) throw TypeError("PAPER_MODEL_CODES");
+  }
+  return { ...m, coefficients: { spatial, [secondKey]: second } };
+}
+function checkType(type) {
+  if (!PAPER_TASK_TYPES.includes(type)) throw TypeError("PAPER_TASK_TYPE");
+}
+function metadata(type, p) {
+  if (type === FIT) return { ...p, samples: p.samples.map((s) => ({ sampleId: s.sampleId })) };
+  const { codes, model, ...rest } = p, { coefficients, ...meta } = model;
+  return { ...rest, model: meta };
+}
+function inputArrays(type, p) {
+  return type === FIT ? p.samples.map((s) => s.codes) : [p.model.coefficients.spatial, p.model.coefficients.pattern ?? p.model.coefficients.selectedCodes, p.codes];
+}
+function paperInputBytes(type, p) {
+  checkType(type);
+  return inputArrays(type, p).reduce((n, a) => n + typed2(a, "byteLength"), 0) + json(metadata(type, p), MAX_PAPER_INPUT_BYTES).bytes;
+}
+function inspectPaperPayload(type, p) {
+  checkType(type);
+  let normalized;
+  if (type === FIT) {
+    keys(p, ["kind", "width", "height", "featureCount", "rankPolicy", "preprocessing", "samples", "splitManifest"], ["kind", "width", "height", "featureCount", "preprocessing", "samples", "splitManifest"]);
+    const width = own(p, "width"), height = own(p, "height"), n = grid(width, height), kind = own(p, "kind"), featureCount = own(p, "featureCount"), rankPolicy = own(p, "rankPolicy", true) ?? "strict", raw = own(p, "samples");
+    if (!KINDS2.includes(kind) || !int(featureCount, 1, 16) || !["strict", "allow-fewer"].includes(rankPolicy) || !Array.isArray(raw) || raw.length < 2 || raw.length > 512) throw RangeError("PAPER_FIT_OPTIONS");
+    const samples = [];
+    for (let i = 0; i < raw.length; i++) {
+      const d = Object.getOwnPropertyDescriptor(raw, String(i));
+      if (!d || !("value" in d)) throw TypeError("PAPER_SAMPLE_ACCESSOR");
+      keys(d.value, ["sampleId", "codes"]);
+      const sampleId = own(d.value, "sampleId");
+      if (!id(sampleId)) throw TypeError("PAPER_SAMPLE_ID");
+      samples.push({ sampleId, codes: array(own(d.value, "codes"), Uint8Array, n) });
+    }
+    normalized = { kind, width, height, featureCount, rankPolicy, preprocessing: preprocess(own(p, "preprocessing"), width, height), samples, splitManifest: split(own(p, "splitManifest"), samples) };
+  } else {
+    keys(p, ["model", "codes", "preprocessing", "source"]);
+    const model = modelParts2(own(p, "model")), preprocessing = preprocess(own(p, "preprocessing"), model.width, model.height);
+    if (preprocessingKind2(preprocessing) !== model.preprocessingKind) throw TypeError("PAPER_PREPROCESSING_PROVENANCE");
+    normalized = { model, codes: array(own(p, "codes"), Uint8Array, model.width * model.height), preprocessing, source: source(own(p, "source")) };
+  }
+  if (paperInputBytes(type, normalized) > MAX_PAPER_INPUT_BYTES) throw RangeError("PAPER_INPUT_LIMIT");
+  return normalized;
+}
+function snapshotPaperPayload(type, p) {
+  checkType(type);
+  const meta = json(metadata(type, p), MAX_PAPER_INPUT_BYTES).value;
+  if (type === FIT) return { ...meta, samples: p.samples.map((s, i) => ({ sampleId: meta.samples[i].sampleId, codes: new Uint8Array(s.codes) })) };
+  const c = p.model.coefficients;
+  return { ...meta, model: { ...meta.model, coefficients: { spatial: new Float64Array(c.spatial), ...c.pattern ? { pattern: new Float64Array(c.pattern) } : { selectedCodes: new Uint8Array(c.selectedCodes) } } }, codes: new Uint8Array(p.codes) };
+}
+var paperInfo = () => ({ ...PAPER_KERNEL, variant: "scalar", key: `${PAPER_KERNEL.abi}:${PAPER_KERNEL.sha256}:scalar` });
+function transferPaperInput(type, p) {
+  checkType(type);
+  return inputArrays(type, p).map((a) => typed2(a, "buffer"));
+}
+function paperResultShape(type, p) {
+  checkType(type);
+  if (type === FIT) return { kind: p.kind, width: p.width, height: p.height, featureCount: p.featureCount, rankPolicy: p.rankPolicy, preprocessingText: json(p.preprocessing, 16384).text, splitText: json(p.splitManifest, 524288).text };
+  return { modelHash: p.model.modelHash, modelKind: p.model.kind, width: p.model.width, height: p.model.height, featureCount: p.model.featureCount, trainingHash: p.model.trainingHash, splitHash: p.model.splitHash, preprocessingText: json(p.preprocessing, 16384).text, sourceText: json(p.source, 1024).text };
+}
+var verification = () => ({ source: "caller-declared", codeSha256: "verified" });
+async function runPaperTask(kernel, type, p) {
+  checkType(type);
+  if (type === FIT) {
+    const preprocessing = json(p.preprocessing, 16384).value, splitManifest = json(p.splitManifest, 524288).value;
+    const model = await kernel.fit(p);
+    return { kind: "media-paper-model", model, preprocessing, splitManifest };
+  }
+  const owned = snapshotPaperPayload(type, p), digest = await crypto.subtle.digest("SHA-256", owned.codes);
+  const actual = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+  if (actual !== owned.source.codeSha256) throw Error("PAPER_CODE_HASH");
+  const features = await kernel.infer(owned), m = owned.model;
+  return { kind: "media-paper-features", modelHash: m.modelHash, modelKind: m.kind, width: m.width, height: m.height, featureCount: m.featureCount, features, preprocessing: owned.preprocessing, source: owned.source, provenanceVerification: verification(), trainingHash: m.trainingHash, splitHash: m.splitHash };
+}
+function resultParts(r) {
+  if (r?.kind === "media-paper-model") {
+    const { coefficients, ...meta } = r.model;
+    return { arrays: [coefficients.spatial, coefficients.pattern ?? coefficients.selectedCodes], metadata: { ...r, model: meta } };
+  }
+  if (r?.kind === "media-paper-features") {
+    const { features, ...meta } = r;
+    return { arrays: [features], metadata: meta };
+  }
+  throw TypeError("PAPER_RESULT_KIND");
+}
+function paperResultBytes(r) {
+  const p = resultParts(r);
+  return p.arrays.reduce((n, a) => n + typed2(a, "byteLength"), 0) + json(p.metadata, MAX_PAPER_RESULT_BYTES).bytes;
+}
+function transferPaperResult(r) {
+  return resultParts(r).arrays.map((a) => typed2(a, "buffer"));
+}
+function validPaperResult(type, shape, r) {
+  try {
+    checkType(type);
+    if (paperResultBytes(r) > MAX_PAPER_RESULT_BYTES) return false;
+    if (type === FIT) {
+      keys(r, ["kind", "model", "preprocessing", "splitManifest"]);
+      if (r.kind !== "media-paper-model") return false;
+      const m = modelParts2(r.model);
+      if (m.kind !== shape.kind || m.width !== shape.width || m.height !== shape.height || m.requestedFeatureCount !== shape.featureCount || m.rankPolicy !== shape.rankPolicy) return false;
+      const preprocessing = preprocess(r.preprocessing, m.width, m.height), manifest = split(r.splitManifest);
+      if (preprocessingKind2(preprocessing) !== m.preprocessingKind || json(preprocessing, 16384).text !== shape.preprocessingText || json(manifest, 524288).text !== shape.splitText || manifest.preprocessingSha256 !== m.preprocessingSha256) return false;
+      const groups = new Map(manifest.groups.map((g) => [g.groupId, g.split])), counts = [0, 0];
+      for (const s of manifest.samples) if (groups.get(s.groupId) === "train") counts[s.label]++;
+      return counts.every((n, i) => n === m.classCounts[i]);
+    }
+    keys(r, ["kind", "modelHash", "modelKind", "width", "height", "featureCount", "features", "preprocessing", "source", "provenanceVerification", "trainingHash", "splitHash"]);
+    if (r.kind !== "media-paper-features" || !["modelHash", "modelKind", "width", "height", "featureCount", "trainingHash", "splitHash"].every((k) => r[k] === shape[k])) return false;
+    array(r.features, Float64Array, shape.featureCount);
+    if (!Reflect.apply(Float64Array.prototype.every, r.features, [Number.isFinite])) return false;
+    return json(preprocess(r.preprocessing, r.width, r.height), 16384).text === shape.preprocessingText && json(source(r.source), 1024).text === shape.sourceText && json(r.provenanceVerification, 1024).text === json(verification(), 1024).text;
+  } catch {
+    return false;
+  }
+}
+function freezePaperResult(r) {
+  function freeze(v) {
+    if (v && typeof v === "object" && !ArrayBuffer.isView(v)) {
+      for (const value2 of Object.values(v)) freeze(value2);
+      Object.freeze(v);
+    }
+    return v;
+  }
+  return freeze(r);
+}
+
+// static-src/shared/compute/kernel.mjs
 async function prepareKernelModule({ signal, fetchImpl = fetch, onCompile = () => {
 }, onResponse = () => {
 } } = {}) {
@@ -80,23 +658,463 @@ function instantiateKernel(module) {
   });
 }
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/compute/registered-tasks.mjs
-var inspectTaskRequest = (r) => validateRequest(r, { copy: false });
-var snapshotTaskRequest = (r) => ({ ...r, payload: { masks: r.payload.masks.slice(), weights: r.payload.weights.slice() } });
-var inputBytes = (r) => (r.payload.masks.length + r.payload.weights.length) * 8;
-var kernelInfo = () => ({ sha256: WASM_SHA256, variant: "scalar", abi: "ft-v1", key: `ft-v1:${WASM_SHA256}:scalar` });
-var resultShape = (r) => ({ length: r.payload.masks.length });
-var validTaskResult = (t, s, r) => Array.isArray(r) && r.length === s.length && Array.from(r).every((x) => typeof x === "number" && Number.isFinite(x));
-var resultBytes = (r) => r ? r.length * 8 : 0;
-var freezeTaskResult = (r) => r === void 0 ? void 0 : Object.freeze(r);
-var transferTaskInput = () => [];
-var transferTaskResult = () => [];
-var prepareTaskModule = prepareKernelModule;
-var instantiateTask = (r, m) => instantiateKernel(m);
-var executeTask = (r, k) => r.payload.masks.map((mask) => k.magnitude(mask, r.payload.weights));
-var taskInputCount = (r, v) => v.length;
+// static-src/shared/media/kernel/identities.mjs
+var MEDIA_KERNEL_IDENTITIES = Object.freeze({
+  scalar: Object.freeze({ sha256: "f3b9cc4c5dd16bc5022d0013831c37349c0c9b8f96226421de0e5ac263d7bdd3", abi: "hike-lbp3x3-gray8-v1" }),
+  simd: Object.freeze({ sha256: "b99825035ed525260e360ea68d549cbeaa6972703ed3856139fbb6aa36d90228", abi: "hike-lbp3x3-gray8-v1" })
+});
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/unity-analysis/pool-task.mjs
+// static-src/shared/media/kernel/registry.mjs
+var MEDIA_KERNELS = Object.freeze({
+  scalar: Object.freeze({ ...MEDIA_KERNEL_IDENTITIES.scalar, url: new URL("../media/kernel/lbp-scalar.wasm", import.meta.url).href }),
+  simd: Object.freeze({ ...MEDIA_KERNEL_IDENTITIES.simd, url: new URL("../media/kernel/lbp-simd.wasm", import.meta.url).href })
+});
+
+// static-src/shared/media/kernel/media-kernel.mjs
+var MAX_MEMORY_BYTES = 16 * 1024 * 1024;
+var MAX_INPUT_BYTES = 4 * 1024 * 1024;
+var PAGE_BYTES = 65536;
+function registered(variant) {
+  if (!Object.hasOwn(MEDIA_KERNELS, variant)) throw new TypeError("Unknown media kernel variant");
+  return MEDIA_KERNELS[variant];
+}
+function checkAbort(signal) {
+  if (signal?.aborted) throw new DOMException("Media kernel preparation aborted", "AbortError");
+}
+async function prepareMediaKernel({ variant = "scalar", signal, onCompile, onResponse } = {}) {
+  const entry = registered(variant);
+  checkAbort(signal);
+  const response = await fetch(entry.url, { signal, credentials: "omit" });
+  checkAbort(signal);
+  if (!response.ok) throw new Error(`Media kernel fetch failed (${response.status})`);
+  onResponse?.(response.headers.get("content-type") ?? "");
+  const bytes2 = await response.arrayBuffer();
+  checkAbort(signal);
+  const digest = await crypto.subtle.digest("SHA-256", bytes2);
+  const hex = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+  checkAbort(signal);
+  if (hex !== entry.sha256) throw new Error("Media kernel SHA-256 digest mismatch");
+  onCompile?.();
+  checkAbort(signal);
+  const module = await WebAssembly.compile(bytes2);
+  checkAbort(signal);
+  return module;
+}
+function validateInput({ data, width, height, stride }) {
+  if (!(data instanceof Uint8Array) || !(data.buffer instanceof ArrayBuffer)) {
+    throw new TypeError("Media kernel data must be a non-shared Uint8Array");
+  }
+  new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+  if (data.byteLength > MAX_INPUT_BYTES) throw new RangeError("Media kernel input exceeds 4 MiB");
+  for (const value2 of [width, height, stride]) {
+    if (!Number.isSafeInteger(value2) || value2 < 1) throw new RangeError("Invalid media dimensions or stride");
+  }
+  if (stride < width) throw new RangeError("Stride must be at least width");
+  const inputBytes4 = stride * height;
+  const outputBytes = width * height;
+  if (!Number.isSafeInteger(inputBytes4) || !Number.isSafeInteger(outputBytes) || inputBytes4 > MAX_INPUT_BYTES || outputBytes > MAX_INPUT_BYTES || data.byteLength < inputBytes4) {
+    throw new RangeError("Media dimensions exceed the input or arena budget");
+  }
+  return { data, width, height, stride, inputBytes: inputBytes4, outputBytes };
+}
+function instantiateMediaKernel(module, { variant = "scalar" } = {}) {
+  registered(variant);
+  if (!(module instanceof WebAssembly.Module)) throw new TypeError("Expected a verified WebAssembly.Module");
+  const names = WebAssembly.Module.exports(module).map((x) => `${x.name}:${x.kind}`).sort();
+  if (WebAssembly.Module.imports(module).length || names.join(",") !== "Lbp3x3:function,memory:memory") {
+    throw new TypeError("Unexpected media kernel module ABI");
+  }
+  let instance = new WebAssembly.Instance(module);
+  let memory = instance.exports.memory;
+  if (!(memory instanceof WebAssembly.Memory) || instance.exports.Lbp3x3.length !== 6 || memory.buffer.byteLength > MAX_MEMORY_BYTES || !(memory.buffer instanceof ArrayBuffer)) {
+    throw new TypeError("Unexpected media kernel instance ABI");
+  }
+  const arenaBase = Math.max(131072, memory.buffer.byteLength);
+  const instanceId = `media-${variant}-${crypto.randomUUID()}`;
+  let disposed = false, busy = false, liveBytes = 0, runs = 0;
+  function run(input) {
+    if (disposed) throw new Error("Media kernel is disposed");
+    if (busy) throw new Error("Media kernel is already running");
+    const { data, width, height, stride, inputBytes: inputBytes4, outputBytes } = validateInput(input);
+    if (data.buffer === memory.buffer) throw new TypeError("Input must not alias the kernel Memory");
+    if (width <= 2 || height <= 2) {
+      runs++;
+      return new Uint8Array(outputBytes);
+    }
+    const outputStart = Math.ceil((arenaBase + inputBytes4) / 16) * 16;
+    const arenaEnd = outputStart + outputBytes;
+    if (arenaEnd > MAX_MEMORY_BYTES || memory.buffer.byteLength > MAX_MEMORY_BYTES) {
+      throw new RangeError("Media kernel arena exceeds 16 MiB");
+    }
+    const source2 = data.subarray(0, inputBytes4);
+    busy = true;
+    let arenaReserved = false;
+    try {
+      const extraPages = Math.ceil((arenaEnd - memory.buffer.byteLength) / PAGE_BYTES);
+      if (extraPages > 0) memory.grow(extraPages);
+      liveBytes = arenaEnd - arenaBase;
+      arenaReserved = true;
+      const bytes2 = new Uint8Array(memory.buffer);
+      bytes2.fill(0, arenaBase, arenaEnd);
+      bytes2.set(source2, arenaBase);
+      const count = instance.exports.Lbp3x3(arenaBase, outputStart, width, height, stride, width);
+      if (count !== (width - 2) * (height - 2)) throw new Error("Media kernel returned an invalid interior count");
+      const output = bytes2.slice(outputStart, arenaEnd);
+      runs++;
+      return output;
+    } finally {
+      if (arenaReserved) new Uint8Array(memory.buffer).fill(0, arenaBase, arenaEnd);
+      liveBytes = 0;
+      busy = false;
+    }
+  }
+  function dispose() {
+    if (busy) throw new Error("Cannot dispose a running media kernel");
+    disposed = true;
+    instance = null;
+    memory = null;
+    module = null;
+    liveBytes = 0;
+  }
+  return Object.freeze({
+    instanceId,
+    get memory() {
+      return memory;
+    },
+    run,
+    dispose,
+    resourceStats: () => ({
+      disposed,
+      busy,
+      liveBytes,
+      arenaBase,
+      memoryBytes: memory?.buffer.byteLength ?? 0,
+      maxMemoryBytes: MAX_MEMORY_BYTES,
+      maxInputBytes: MAX_INPUT_BYTES,
+      runs
+    })
+  });
+}
+
+// static-src/shared/media/alignment/registry.mjs
+var ALIGNMENT_KERNEL = Object.freeze({ sha256: "232ed3612783b40760eb4a2f27506ffd6aab475e11ba28fa53e5eca78a4756a3", abi: "hike-roi-translation-v1", url: new URL("../media/alignment/alignment.wasm", import.meta.url).href });
+
+// static-src/shared/media/alignment/alignment.mjs
+var MAX_MEMORY2 = 16777216;
+var MAX_BYTES = 4194304;
+var MAX_PIXELS = 1048576;
+var align2 = (n) => Math.ceil(n / 8) * 8;
+var integer2 = (x, min, max2) => Number.isSafeInteger(x) && x >= min && x <= max2;
+function aborted(signal) {
+  if (signal?.aborted) throw new DOMException("Alignment preparation aborted", "AbortError");
+}
+async function prepareAlignmentKernel({ signal, onCompile, onResponse } = {}) {
+  aborted(signal);
+  const r = await fetch(ALIGNMENT_KERNEL.url, { signal, credentials: "omit" });
+  aborted(signal);
+  if (!r.ok) throw Error(`Alignment kernel fetch failed (${r.status})`);
+  onResponse?.(r.headers.get("content-type") ?? "");
+  const bytes2 = await r.arrayBuffer();
+  aborted(signal);
+  const hash2 = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes2)), (b) => b.toString(16).padStart(2, "0")).join("");
+  if (hash2 !== ALIGNMENT_KERNEL.sha256) throw Error("Alignment kernel SHA-256 mismatch");
+  aborted(signal);
+  onCompile?.();
+  aborted(signal);
+  const module = await WebAssembly.compile(bytes2);
+  aborted(signal);
+  return module;
+}
+function checkedBuffer(data, { clamped = false } = {}) {
+  if (!(data instanceof Uint8Array || clamped && data instanceof Uint8ClampedArray) || !(data.buffer instanceof ArrayBuffer) || data.buffer.resizable) throw TypeError("Expected fixed non-shared pixel bytes");
+  new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+  if (data.byteLength > MAX_BYTES) throw RangeError("Pixel input exceeds 4 MiB");
+  return data;
+}
+function dimensions2(width, height) {
+  if (!integer2(width, 1, MAX_PIXELS) || !integer2(height, 1, MAX_PIXELS) || width * height > MAX_PIXELS) throw RangeError("Invalid alignment dimensions");
+}
+function strideSize(data, stride, width, height, channels = 1) {
+  if (!integer2(stride, width * channels, MAX_BYTES) || stride * height > data.byteLength) throw RangeError("Invalid alignment stride/bytes");
+  return stride * height;
+}
+var POLICY_KEYS = ["maxCost", "minGap", "minTexture", "minMatches", "minInlierRatio", "maxFbError", "consensusTolerance"];
+function policyArray(p) {
+  if (p === void 0) return new Float64Array([1, 0, 0, 1, 0, 32, 16]);
+  if (!p || Object.keys(p).some((k) => !POLICY_KEYS.includes(k))) throw TypeError("Invalid confidence policy");
+  for (const k of ["maxCost", "minGap", "minTexture", "minInlierRatio"]) if (!Number.isFinite(p[k]) || p[k] < 0 || p[k] > 1) throw RangeError(`Invalid policy ${k}`);
+  if (!integer2(p.minMatches, 1, 4) || !integer2(p.maxFbError, 0, 32) || !integer2(p.consensusTolerance, 0, 16)) throw RangeError("Invalid confidence count/distance");
+  return Float64Array.from(POLICY_KEYS, (k) => p[k]);
+}
+var PATCH_REASONS = ["accepted", "low-texture", "cost-too-high", "ambiguous", "forward-backward-inconsistent", "insufficient-search-support"];
+function instantiateAlignmentKernel(module) {
+  if (!(module instanceof WebAssembly.Module) || WebAssembly.Module.imports(module).length || WebAssembly.Module.exports(module).map((e) => `${e.name}:${e.kind}`).sort().join(",") !== "AlignEstimate:function,WarpRgba:function,memory:memory") throw TypeError("Unexpected alignment ABI");
+  let instance = new WebAssembly.Instance(module), memory = instance.exports.memory;
+  if (instance.exports.AlignEstimate.length !== 13 || instance.exports.WarpRgba.length !== 8 || !(memory.buffer instanceof ArrayBuffer) || memory.buffer.byteLength > MAX_MEMORY2) throw TypeError("Unexpected alignment instance ABI");
+  const arenaBase = Math.max(131072, memory.buffer.byteLength), instanceId = `alignment-${crypto.randomUUID()}`;
+  let disposed = false, busy = false, liveBytes = 0, runs = 0;
+  function alive() {
+    if (disposed) throw Error("Alignment kernel is disposed");
+    if (busy) throw Error("Alignment kernel is busy");
+  }
+  function noAlias(data) {
+    if (data.buffer === memory.buffer) throw TypeError("Input must not alias alignment Memory");
+  }
+  function arena(parts, body) {
+    alive();
+    let end = arenaBase;
+    const offsets = parts.map((p) => {
+      const offset = end;
+      end = align2(end + p.bytes);
+      return offset;
+    });
+    if (end > MAX_MEMORY2) throw RangeError("Alignment arena exceeds 16 MiB");
+    busy = true;
+    let reserved = false;
+    try {
+      const pages = Math.ceil((end - memory.buffer.byteLength) / 65536);
+      if (pages > 0) memory.grow(pages);
+      liveBytes = end - arenaBase;
+      reserved = true;
+      const bytes2 = new Uint8Array(memory.buffer);
+      bytes2.fill(0, arenaBase, end);
+      for (let i = 0; i < parts.length; i++) {
+        const p = parts[i];
+        if (p.data) bytes2.set(new Uint8Array(p.data.buffer, p.data.byteOffset, p.bytes), offsets[i]);
+      }
+      const result = body(offsets, bytes2);
+      runs++;
+      return result;
+    } finally {
+      if (reserved) new Uint8Array(memory.buffer).fill(0, arenaBase, end);
+      liveBytes = 0;
+      busy = false;
+    }
+  }
+  function estimate({ referenceCodes, currentCodes, width, height, referenceStride = width, currentStride = width, roi, searchRadius, policy } = {}) {
+    alive();
+    dimensions2(width, height);
+    checkedBuffer(referenceCodes);
+    checkedBuffer(currentCodes);
+    noAlias(referenceCodes);
+    noAlias(currentCodes);
+    const refBytes = strideSize(referenceCodes, referenceStride, width, height), curBytes = strideSize(currentCodes, currentStride, width, height);
+    if (!roi || !integer2(roi.x, 1, width - 2) || !integer2(roi.y, 1, height - 2) || !integer2(roi.width, 8, 128) || !integer2(roi.height, 8, 128) || roi.x + roi.width > width - 1 || roi.y + roi.height > height - 1 || !integer2(searchRadius, 0, 16)) throw RangeError("Invalid alignment ROI/search radius");
+    const policyData = policyArray(policy);
+    return arena([{ data: referenceCodes, bytes: refBytes }, { data: currentCodes, bytes: curBytes }, { data: policyData, bytes: 56 }, { bytes: 64 * 8 }], ([ref, cur, policyPtr, out]) => {
+      const status = instance.exports.AlignEstimate(ref, cur, width, height, referenceStride, currentStride, roi.x, roi.y, roi.width, roi.height, searchRadius, policyPtr, out);
+      if (status !== 0) throw Error("Alignment search failed");
+      const values = new Float64Array(memory.buffer, out, 64);
+      const patches = Array.from({ length: 4 }, (_, i) => {
+        const b = 8 + i * 12;
+        return { patch: i, dx: values[b], dy: values[b + 1], cost: values[b + 2], gap: values[b + 3], texture: values[b + 4], forwardBackwardError: values[b + 5], reason: PATCH_REASONS[values[b + 6]] ?? "invalid-result", candidates: values[b + 7], comparedPixels: values[b + 10] };
+      });
+      const candidate = values[1] > 0 ? { dx: values[3], dy: values[4] } : null;
+      const applied = policy !== void 0 && values[0] === 0;
+      let reason = policy === void 0 ? "policy-required" : values[0] === 0 ? "accepted" : values[0] === 1 ? "insufficient-matches" : "inconsistent-translation";
+      if (policy !== void 0 && values[1] === 0 && patches.every((p) => p.reason === patches[0].reason)) reason = patches[0].reason;
+      return { applied, reason, candidate, currentToReference: applied ? [1, 0, 0, 1, -candidate.dx, -candidate.dy] : null, referenceToCurrent: applied ? [1, 0, 0, 1, candidate.dx, candidate.dy] : null, coordinateSpace: "display-pixels", roi: { ...roi }, evidence: { acceptedMatches: values[1], inliers: values[2], inlierRatio: values[1] ? values[2] / values[1] : 0 }, patches };
+    });
+  }
+  function warp({ data, width, height, stride = width * 4, dx, dy } = {}) {
+    alive();
+    dimensions2(width, height);
+    checkedBuffer(data, { clamped: true });
+    noAlias(data);
+    const inputBytes4 = strideSize(data, stride, width, height, 4);
+    if (!integer2(dx, -16, 16) || !integer2(dy, -16, 16)) throw RangeError("Invalid integer translation");
+    const pixels = width * height;
+    return arena([{ data, bytes: inputBytes4 }, { bytes: pixels * 4 }, { bytes: pixels }], ([src, dst, mask], bytes2) => {
+      const validPixels = instance.exports.WarpRgba(src, dst, mask, width, height, stride, dx, dy);
+      if (validPixels < 0 || validPixels > pixels) throw Error("Invalid warp count");
+      return { data: bytes2.slice(dst, dst + pixels * 4), validMask: bytes2.slice(mask, mask + pixels), width, height, stride: width * 4, validPixels };
+    });
+  }
+  function dispose() {
+    if (busy) throw Error("Alignment kernel is busy");
+    disposed = true;
+    instance = null;
+    memory = null;
+    module = null;
+    liveBytes = 0;
+  }
+  return Object.freeze({ instanceId, get memory() {
+    return memory;
+  }, estimate, warp, dispose, resourceStats: () => ({ disposed, busy, liveBytes, arenaBase, memoryBytes: memory?.buffer.byteLength ?? 0, maxMemoryBytes: MAX_MEMORY2, runs }) });
+}
+
+// static-src/shared/media/alignment/pool-task.mjs
+var int2 = (v, min, max2) => Number.isSafeInteger(v) && v >= min && v <= max2;
+var policyKeys = ["maxCost", "minGap", "minTexture", "minMatches", "minInlierRatio", "maxFbError", "consensusTolerance"];
+function inspectAlignmentPayload(p = {}) {
+  const { width, height } = p, n = width * height;
+  if (!int2(width, 1, 1048576) || !int2(height, 1, 1048576) || n > 1048576 || p.stride !== width * 4) throw RangeError("ALIGNMENT_DIMENSIONS");
+  for (const [key, size] of [["referenceCodes", n], ["currentCodes", n], ["data", n * 4]]) {
+    const value2 = p[key];
+    if (!(value2 instanceof Uint8Array) || !(value2.buffer instanceof ArrayBuffer) || value2.buffer.resizable || value2.byteLength !== size) throw TypeError("ALIGNMENT_BYTES");
+    new Uint8Array(value2.buffer, value2.byteOffset, value2.byteLength);
+  }
+  const { roi, policy } = inspectAlignmentGeometry(p);
+  return { width, height, stride: width * 4, referenceCodes: p.referenceCodes, currentCodes: p.currentCodes, data: p.data, roi, searchRadius: p.searchRadius, policy };
+}
+function snapshotAlignment(p) {
+  return { ...p, roi: { ...p.roi }, policy: { ...p.policy }, referenceCodes: new Uint8Array(p.referenceCodes), currentCodes: new Uint8Array(p.currentCodes), data: new Uint8Array(p.data) };
+}
+var alignmentInfo = () => ({ ...ALIGNMENT_KERNEL, variant: "scalar", key: `${ALIGNMENT_KERNEL.abi}:${ALIGNMENT_KERNEL.sha256}:scalar` });
+var alignmentInputBytes = (p) => p.referenceCodes.byteLength + p.currentCodes.byteLength + p.data.byteLength;
+var reasons = ["accepted", "low-texture", "cost-too-high", "ambiguous", "forward-backward-inconsistent", "insufficient-search-support", "insufficient-matches", "inconsistent-translation"];
+function validAlignmentResult(shape, r) {
+  if (r?.kind !== "media-alignment" || r.width !== shape.width || r.height !== shape.height || typeof r.decision?.applied !== "boolean" || !reasons.includes(r.decision.reason)) return false;
+  const d = r.decision, c = d.candidate;
+  if (c !== null && (!int2(c?.dx, -16, 16) || !int2(c?.dy, -16, 16))) return false;
+  if (!Array.isArray(d.patches) || d.patches.length !== 4 || !d.patches.every((p) => ["dx", "dy", "cost", "gap", "texture", "forwardBackwardError", "candidates", "comparedPixels"].every((k) => Number.isFinite(p[k])))) return false;
+  if (!d.applied) return r.derivative === null && d.currentToReference === null;
+  if (!c || d.reason !== "accepted" || !Array.isArray(d.currentToReference) || d.currentToReference.length !== 6 || !d.currentToReference.every((v, i) => v === [1, 0, 0, 1, -c.dx, -c.dy][i])) return false;
+  const a = r.derivative, n = shape.width * shape.height;
+  return !!(a && a.width === shape.width && a.height === shape.height && a.stride === shape.width * 4 && a.data instanceof Uint8Array && a.data.byteLength === n * 4 && a.validMask instanceof Uint8Array && a.validMask.byteLength === n && a.validMask.every((v) => v === 0 || v === 1) && a.validMask.reduce((s, v) => s + v, 0) === a.validPixels);
+}
+function runAlignment(kernel, p) {
+  const decision = kernel.estimate(p), derivative = decision.applied ? kernel.warp({ ...p, ...decision.candidate }) : null;
+  return { kind: "media-alignment", width: p.width, height: p.height, decision, derivative };
+}
+function inspectAlignmentGeometry(p) {
+  const { width, height } = p;
+  const r = p.roi;
+  if (!r || !int2(r.x, 1, width - 2) || !int2(r.y, 1, height - 2) || !int2(r.width, 8, 128) || !int2(r.height, 8, 128) || r.x + r.width > width - 1 || r.y + r.height > height - 1 || !int2(p.searchRadius, 0, 16)) throw RangeError("ALIGNMENT_ROI");
+  const c = p.policy;
+  if (!c || Object.keys(c).length !== policyKeys.length || Object.keys(c).some((k) => !policyKeys.includes(k))) throw TypeError("ALIGNMENT_POLICY");
+  for (const k of ["maxCost", "minGap", "minTexture", "minInlierRatio"]) if (!Number.isFinite(c[k]) || c[k] < 0 || c[k] > 1) throw RangeError("ALIGNMENT_POLICY");
+  if (!int2(c.minMatches, 1, 4) || !int2(c.maxFbError, 0, 32) || !int2(c.consensusTolerance, 0, 16)) throw RangeError("ALIGNMENT_POLICY");
+  return { roi: { x: r.x, y: r.y, width: r.width, height: r.height }, policy: Object.fromEntries(policyKeys.map((k) => [k, c[k]])) };
+}
+
+// static-src/shared/compute/registered-tasks.mjs
+var isPaper = (type) => PAPER_TASK_TYPES.includes(type);
+var MAX_MEDIA_INPUT_BYTES = 4 * 1024 * 1024;
+var int3 = (v, min, max2) => Number.isSafeInteger(v) && v >= min && v <= max2;
+function inspectTaskRequest(input) {
+  if (input?.taskType === "ft-magnitude-batch") return validateRequest(input, { copy: false });
+  if (!input || input.protocolVersion !== 1 || !["media-lbp-tile", "media-lbp-chunk", "media-align", ...PAPER_TASK_TYPES].includes(input.taskType) || input.taskVersion !== 1) throw TypeError("Unsupported task/version");
+  if (typeof input.jobId !== "string" || !/^[A-Za-z0-9_.:-]{1,64}$/.test(input.jobId) || !int3(input.inputRevision, 0, Number.MAX_SAFE_INTEGER)) throw TypeError("Invalid job identity");
+  if (!["scalar", "simd"].includes(input.wasmVariant)) throw TypeError("Explicit scalar/simd variant required");
+  const timeoutMs = input.limits?.timeoutMs ?? 3e4;
+  if (!int3(timeoutMs, 1, 3e4)) throw RangeError("Invalid timeout");
+  if (isPaper(input.taskType)) {
+    if (input.wasmVariant !== "scalar") throw TypeError("Paper is scalar only");
+    return { protocolVersion: 1, taskType: input.taskType, taskVersion: 1, jobId: input.jobId, inputRevision: input.inputRevision, wasmVariant: "scalar", kernelHash: paperInfo().sha256, payload: inspectPaperPayload(input.taskType, input.payload), limits: { timeoutMs } };
+  }
+  if (input.taskType === "media-align") {
+    if (input.wasmVariant !== "scalar") throw TypeError("Alignment is scalar only");
+    return { protocolVersion: 1, taskType: input.taskType, taskVersion: 1, jobId: input.jobId, inputRevision: input.inputRevision, wasmVariant: "scalar", kernelHash: alignmentInfo().sha256, payload: inspectAlignmentPayload(input.payload), limits: { timeoutMs } };
+  }
+  if (input.taskType === "media-lbp-chunk") {
+    const units = input.payload?.units;
+    if (!Array.isArray(units) || units.length < 1 || units.length > 4) throw RangeError("Chunk requires 1..4 units");
+    let bytes2 = 0;
+    const seen = /* @__PURE__ */ new Set();
+    const normalized = Array.from(units, (u) => {
+      if (!int3(u?.frameSequence, 0, Number.MAX_SAFE_INTEGER) || !int3(u?.tileIndex, 0, Number.MAX_SAFE_INTEGER)) throw RangeError("Invalid unit identity");
+      const key = `${u.frameSequence}:${u.tileIndex}`;
+      if (seen.has(key)) throw RangeError("Duplicate unit");
+      seen.add(key);
+      const tile = inspectTile(u.tile);
+      bytes2 += tile.data.byteLength;
+      if (bytes2 > MAX_MEDIA_INPUT_BYTES) throw RangeError("Chunk input budget");
+      return { frameSequence: u.frameSequence, tileIndex: u.tileIndex, tile };
+    });
+    return { protocolVersion: 1, taskType: input.taskType, taskVersion: 1, jobId: input.jobId, inputRevision: input.inputRevision, wasmVariant: input.wasmVariant, kernelHash: MEDIA_KERNELS[input.wasmVariant].sha256, payload: { units: normalized }, limits: { timeoutMs } };
+  }
+  return { protocolVersion: 1, taskType: input.taskType, taskVersion: 1, jobId: input.jobId, inputRevision: input.inputRevision, wasmVariant: input.wasmVariant, kernelHash: MEDIA_KERNELS[input.wasmVariant].sha256, payload: inspectTile(input.payload), limits: { timeoutMs } };
+}
+function inspectTile(p = {}) {
+  const r = p.region ?? {};
+  if (p.pixelFormat !== "gray8" || !(p.data instanceof Uint8Array) || !(p.data.buffer instanceof ArrayBuffer) || p.data.buffer.resizable || p.data.byteLength > MAX_MEDIA_INPUT_BYTES) throw TypeError("Expected bounded, fixed gray8 bytes");
+  for (const key of ["width", "height", "stride", "imageWidth", "imageHeight"]) if (!int3(p[key], 1, 16777216)) throw RangeError("Invalid media dimensions");
+  if (p.stride < p.width || p.stride * p.height > p.data.byteLength || p.width * p.height > MAX_MEDIA_INPUT_BYTES) throw RangeError("Invalid stride/byte length");
+  if (!int3(p.originX, 0, p.imageWidth - p.width) || !int3(p.originY, 0, p.imageHeight - p.height)) throw RangeError("Tile outside image");
+  if (!int3(r.x, 0, p.width - 1) || !int3(r.y, 0, p.height - 1) || !int3(r.width, 1, p.width - r.x) || !int3(r.height, 1, p.height - r.y)) throw RangeError("Invalid owned region");
+  if (p.originX + r.x > 0 && r.x === 0 || p.originY + r.y > 0 && r.y === 0 || p.originX + r.x + r.width < p.imageWidth && r.x + r.width === p.width || p.originY + r.y + r.height < p.imageHeight && r.y + r.height === p.height) throw RangeError("Missing LBP halo");
+  return { pixelFormat: "gray8", width: p.width, height: p.height, stride: p.stride, imageWidth: p.imageWidth, imageHeight: p.imageHeight, originX: p.originX, originY: p.originY, region: { x: r.x, y: r.y, width: r.width, height: r.height }, data: p.data };
+}
+var copyTile = (p) => ({ ...p, region: { ...p.region }, data: new Uint8Array(p.data) });
+function snapshotTaskRequest(r) {
+  return { ...r, payload: isPaper(r.taskType) ? snapshotPaperPayload(r.taskType, r.payload) : r.taskType === "media-align" ? snapshotAlignment(r.payload) : r.taskType === "ft-magnitude-batch" ? { masks: r.payload.masks.slice(), weights: r.payload.weights.slice() } : r.taskType === "media-lbp-chunk" ? { units: r.payload.units.map((u) => ({ ...u, tile: copyTile(u.tile) })) } : copyTile(r.payload) };
+}
+function inputBytes(r) {
+  if (isPaper(r.taskType)) return paperInputBytes(r.taskType, r.payload);
+  return r.taskType === "media-align" ? alignmentInputBytes(r.payload) : r.taskType === "ft-magnitude-batch" ? (r.payload.masks.length + r.payload.weights.length) * 8 : r.taskType === "media-lbp-chunk" ? r.payload.units.reduce((n, u) => n + u.tile.data.byteLength, 0) : r.payload.data.byteLength;
+}
+function kernelInfo(r) {
+  if (isPaper(r.taskType)) return paperInfo();
+  return r.taskType === "media-align" ? alignmentInfo() : r.taskType === "ft-magnitude-batch" ? { sha256: WASM_SHA256, variant: "scalar", abi: "ft-v1", key: `ft-v1:${WASM_SHA256}:scalar` } : { ...MEDIA_KERNELS[r.wasmVariant], variant: r.wasmVariant, key: `${MEDIA_KERNELS[r.wasmVariant].abi}:${r.kernelHash}:${r.wasmVariant}` };
+}
+var tileShape = (p) => ({ ...p.region, interiorCount: Math.max(0, Math.min(p.originX + p.region.x + p.region.width, p.imageWidth - 1) - Math.max(p.originX + p.region.x, 1)) * Math.max(0, Math.min(p.originY + p.region.y + p.region.height, p.imageHeight - 1) - Math.max(p.originY + p.region.y, 1)) });
+function resultShape(r) {
+  if (isPaper(r.taskType)) return paperResultShape(r.taskType, r.payload);
+  return r.taskType === "media-align" ? { width: r.payload.width, height: r.payload.height } : r.taskType === "ft-magnitude-batch" ? { length: r.payload.masks.length } : r.taskType === "media-lbp-chunk" ? { units: r.payload.units.map((u) => ({ frameSequence: u.frameSequence, tileIndex: u.tileIndex, ...tileShape(u.tile) })) } : tileShape(r.payload);
+}
+function validTaskResult(taskType, shape, result) {
+  if (isPaper(taskType)) return validPaperResult(taskType, shape, result);
+  if (taskType === "media-align") return validAlignmentResult(shape, result);
+  if (taskType === "ft-magnitude-batch") return Array.isArray(result) && result.length === shape.length && Array.from(result).every((x) => typeof x === "number" && Number.isFinite(x));
+  if (taskType === "media-lbp-chunk") return !!(result && Array.isArray(result.units) && result.units.length === shape.units.length && result.units.every((u, i) => u?.frameSequence === shape.units[i].frameSequence && u?.tileIndex === shape.units[i].tileIndex && validTaskResult("media-lbp-tile", shape.units[i], u)));
+  return result && result.width === shape.width && result.height === shape.height && result.codes instanceof Uint8Array && result.codes.byteLength === shape.width * shape.height && result.histogram instanceof Uint32Array && result.histogram.length === 256 && result.histogram.reduce((a, b) => a + b, 0) === shape.interiorCount;
+}
+function resultBytes(result) {
+  if (result?.kind === "media-paper-model" || result?.kind === "media-paper-features") return paperResultBytes(result);
+  return result?.kind === "media-alignment" ? result.derivative ? result.derivative.data.byteLength + result.derivative.validMask.byteLength : 0 : Array.isArray(result) ? result.length * 8 : result?.units ? result.units.reduce((n, u) => n + resultBytes(u), 0) : result ? result.codes.byteLength + result.histogram.byteLength : 0;
+}
+function freezeTaskResult(result) {
+  if (result?.kind === "media-paper-model" || result?.kind === "media-paper-features") return freezePaperResult(result);
+  if (result?.kind === "media-alignment") {
+    Object.freeze(result.decision);
+    if (result.derivative) Object.freeze(result.derivative);
+  }
+  if (result?.units) {
+    result.units.forEach(Object.freeze);
+    Object.freeze(result.units);
+  }
+  return result === void 0 ? void 0 : Object.freeze(result);
+}
+function transferTaskInput(r) {
+  if (isPaper(r.taskType)) return transferPaperInput(r.taskType, r.payload);
+  return r.taskType === "media-align" ? [r.payload.referenceCodes.buffer, r.payload.currentCodes.buffer, r.payload.data.buffer] : r.taskType === "media-lbp-chunk" ? r.payload.units.map((u) => u.tile.data.buffer) : r.taskType === "media-lbp-tile" ? [r.payload.data.buffer] : [];
+}
+function prepareTaskModule(options) {
+  if (isPaper(options.taskType)) return preparePaperKernel(options);
+  return options.taskType === "media-align" ? prepareAlignmentKernel(options) : options.taskType !== "ft-magnitude-batch" ? prepareMediaKernel({ ...options, variant: options.wasmVariant }) : prepareKernelModule(options);
+}
+function instantiateTask(request, module) {
+  return isPaper(request.taskType) ? instantiatePaperKernel(module) : request.taskType === "media-align" ? instantiateAlignmentKernel(module) : request.taskType !== "ft-magnitude-batch" ? instantiateMediaKernel(module, { variant: request.wasmVariant }) : instantiateKernel(module);
+}
+function executeTask(request, kernel) {
+  if (isPaper(request.taskType)) return runPaperTask(kernel, request.taskType, request.payload);
+  if (request.taskType === "media-align") return runAlignment(kernel, request.payload);
+  if (request.taskType === "ft-magnitude-batch") return request.payload.masks.map((mask) => kernel.magnitude(mask, request.payload.weights));
+  const units = request.taskType === "media-lbp-chunk" ? request.payload.units : [{ tile: request.payload }];
+  const values = units.map((unit) => {
+    const p = unit.tile, r = p.region, allCodes = kernel.run(p), codes = new Uint8Array(r.width * r.height), histogram = new Uint32Array(256);
+    for (let y = 0; y < r.height; y++) for (let x = 0; x < r.width; x++) {
+      const code = allCodes[(y + r.y) * p.width + x + r.x];
+      codes[y * r.width + x] = code;
+      const gx = p.originX + r.x + x, gy = p.originY + r.y + y;
+      if (gx > 0 && gx < p.imageWidth - 1 && gy > 0 && gy < p.imageHeight - 1) histogram[code]++;
+    }
+    return { ...request.taskType === "media-lbp-chunk" ? { frameSequence: unit.frameSequence, tileIndex: unit.tileIndex } : {}, width: r.width, height: r.height, codes, histogram };
+  });
+  return request.taskType === "media-lbp-chunk" ? { units: values } : values[0];
+}
+function transferTaskResult(result) {
+  if (result?.kind === "media-paper-model" || result?.kind === "media-paper-features") return transferPaperResult(result);
+  if (result?.kind === "media-alignment") return result.derivative ? [result.derivative.data.buffer, result.derivative.validMask.buffer] : [];
+  if (Array.isArray(result)) return [];
+  return result?.units ? result.units.flatMap(transferTaskResult) : result ? [result.codes.buffer, result.histogram.buffer] : [];
+}
+function taskInputCount(request, result) {
+  return isPaper(request.taskType) ? request.taskType === "media-paper-fit" ? request.payload.samples.length : 1 : request.taskType === "media-align" ? request.payload.width * request.payload.height : request.taskType === "media-lbp-chunk" ? request.payload.units.reduce((n, u) => n + u.tile.width * u.tile.height, 0) : request.taskType === "media-lbp-tile" ? request.payload.width * request.payload.height : result.length;
+}
+
+// static-src/shared/unity-analysis/pool-task.mjs
 var pool_task_exports = {};
 __export(pool_task_exports, {
   executeTask: () => executeTask2,
@@ -116,13 +1134,13 @@ __export(pool_task_exports, {
   validTaskResult: () => validTaskResult2
 });
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/unity-analysis/model.mjs
+// static-src/shared/unity-analysis/model.mjs
 var SCHEMA = "unity-analysis-snapshot/1";
 var ANALYZER_VERSION = "unity-analysis-0.2.0";
 var RULES_VERSION = "unity-static-2";
 var TYPES = Object.freeze({ Unknown: 0, Float: 1, Int: 2, Bool: 3, Trigger: 4 });
 var LIMITS = Object.freeze({ maxFiles: 4096, maxObjects: 65536, maxEdges: 262144, maxProperties: 262144, maxInputBytes: 4 * 1024 * 1024, maxReportBytes: 8 * 1024 * 1024, maxDiffPairs: 262144, maxOwnerContexts: 262144, maxGraphSteps: 2e6 });
-var own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+var own2 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 var plain = (o) => !!o && typeof o === "object" && !Array.isArray(o) && (Object.getPrototypeOf(o) === Object.prototype || Object.getPrototypeOf(o) === null);
 function bytes(value2) {
   return new TextEncoder().encode(JSON.stringify(value2)).byteLength;
@@ -162,10 +1180,10 @@ function value(v, depth = 0, counter = { n: 0 }) {
   }
   throw TypeError("Properties must be JSON values");
 }
-function sourcePosition(source) {
-  if (source == null) return {};
-  if (!plain(source) || Object.keys(source).some((k) => !["line", "column", "start", "end", "endLine", "endColumn"].includes(k)) || Object.values(source).some((v) => !Number.isSafeInteger(v) || v < 0)) throw TypeError("Invalid source position");
-  return { ...source };
+function sourcePosition(source2) {
+  if (source2 == null) return {};
+  if (!plain(source2) || Object.keys(source2).some((k) => !["line", "column", "start", "end", "endLine", "endColumn"].includes(k)) || Object.values(source2).some((v) => !Number.isSafeInteger(v) || v < 0)) throw TypeError("Invalid source position");
+  return { ...source2 };
 }
 function inspectSnapshot(input) {
   if (!plain(input) || input.schemaVersion !== SCHEMA || !Array.isArray(input.files) || input.files.length > LIMITS.maxFiles) throw TypeError("Expected " + SCHEMA + " and bounded files");
@@ -200,9 +1218,9 @@ function inspectSnapshot(input) {
       sourcePosition(o.source);
       if (o.propertySources != null) {
         if (!plain(o.propertySources)) throw TypeError("Invalid property sources");
-        for (const [path, source] of Object.entries(o.propertySources)) {
+        for (const [path, source2] of Object.entries(o.propertySources)) {
           boundedText(path);
-          sourcePosition(source);
+          sourcePosition(source2);
         }
       }
       boundedText(o.classId ?? "", 32);
@@ -220,13 +1238,13 @@ function inspectSnapshot(input) {
         sourcePosition(p.source);
         if (p.domain != null && !["animator", "vrchat-expression"].includes(p.domain)) throw TypeError("Invalid parameter domain");
         boundedText(p.name);
-        if (!own(TYPES, p.type)) throw TypeError("Unknown parameter type tag");
+        if (!own2(TYPES, p.type)) throw TypeError("Unknown parameter type tag");
       }
       for (const u of o.parameterUses ?? []) {
         boundedText(u.name);
         sourcePosition(u.source);
         boundedText(u.rule ?? "supplied-rule");
-        if (!Array.isArray(u.allowedTypes) || u.allowedTypes.some((t) => !own(TYPES, t) || t === "Unknown")) throw TypeError("Invalid allowed types");
+        if (!Array.isArray(u.allowedTypes) || u.allowedTypes.some((t) => !own2(TYPES, t) || t === "Unknown")) throw TypeError("Invalid allowed types");
         if (u.domain != null && u.domain !== "animator") throw TypeError("Invalid use domain");
         if (u.scope) {
           boundedText(u.scope.assetId, 1100);
@@ -277,11 +1295,11 @@ function buildIndex(input) {
     }
   }
   for (const [assetId, entries] of assetMap) if (entries.length > 1) findings.push({ code: "DUPLICATE_ASSET_ID", category: "reference", severity: "warning", confidence: "confirmed", assetId, paths: entries.map((e) => e.path) });
-  for (const entries of assetMap.values()) for (const e of entries) for (const [id, ns] of e.nodes) if (ns.length > 1) findings.push({ code: "DUPLICATE_FILE_ID", category: "reference", severity: "error", confidence: "confirmed", path: e.path, fileId: id });
+  for (const entries of assetMap.values()) for (const e of entries) for (const [id2, ns] of e.nodes) if (ns.length > 1) findings.push({ code: "DUPLICATE_FILE_ID", category: "reference", severity: "error", confidence: "confirmed", path: e.path, fileId: id2 });
   return { nodes, assetMap, guidMap, findings };
 }
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/unity-analysis/analysis.mjs
+// static-src/shared/unity-analysis/analysis.mjs
 var builtin = (g) => /^0{16}[def]0{15}$/i.test(g ?? "");
 var withoutSources = (value2) => Array.isArray(value2) ? value2.map(withoutSources) : value2 && typeof value2 === "object" ? Object.fromEntries(Object.entries(value2).filter(([k]) => k !== "source").map(([k, v]) => [k, withoutSources(v)])) : value2;
 var pointer = (k) => String(k).replaceAll("~", "~0").replaceAll("/", "~1");
@@ -375,12 +1393,12 @@ function analyzeSnapshot(input, kernel) {
     const stack = [controller.index], seen = /* @__PURE__ */ new Set();
     while (stack.length) {
       if (++steps > LIMITS.maxGraphSteps) throw RangeError("GRAPH_STEP_LIMIT");
-      const id = stack.pop();
-      if (seen.has(id)) continue;
-      seen.add(id);
+      const id2 = stack.pop();
+      if (seen.has(id2)) continue;
+      seen.add(id2);
       if (++ownerCount > LIMITS.maxOwnerContexts) throw RangeError("OWNER_CONTEXT_LIMIT");
-      owners[id].add(controller.key);
-      for (const target of ownerEdges[id]) stack.push(target);
+      owners[id2].add(controller.key);
+      for (const target of ownerEdges[id2]) stack.push(target);
     }
   }
   const declarations = [], declarationMap = /* @__PURE__ */ new Map(), checks = [], actual = [], allowed = [];
@@ -450,7 +1468,7 @@ function compareSnapshots(before, after, kernel) {
   };
   const bm = byKey(b), am = byKey(a), pairs = [], bv = [], av = [], intern = /* @__PURE__ */ new Map();
   let next = 1;
-  const id = (v) => {
+  const id2 = (v) => {
     const s = canonical(v);
     if (!intern.has(s)) intern.set(s, next++);
     return intern.get(s);
@@ -466,13 +1484,13 @@ function compareSnapshots(before, after, kernel) {
       changes.push({ kind: bn ? "object-removed" : "object-added", identity: key, source: (bn ?? an).source, matching: (bn ?? an).file.guid ? "exact-guid-fileID" : "provisional-input-path-fileID", before: bn?.properties ?? null, after: an?.properties ?? null });
       continue;
     }
-    const domains = [["property", leaves(bn.properties ?? {}), leaves(an.properties ?? {})], ["structure", structures(bn.properties ?? {}), structures(an.properties ?? {})], ["metadata", /* @__PURE__ */ new Map([["classId", bn.classId]]), /* @__PURE__ */ new Map([["classId", an.classId]])], ["references", /* @__PURE__ */ new Map([["references", (bn.references ?? []).map(({ source, ...r }) => r)]]), /* @__PURE__ */ new Map([["references", (an.references ?? []).map(({ source, ...r }) => r)]])], ["parameters", /* @__PURE__ */ new Map([["declarations", withoutSources(bn.parameters ?? [])], ["uses", withoutSources(bn.parameterUses ?? [])]]), /* @__PURE__ */ new Map([["declarations", withoutSources(an.parameters ?? [])], ["uses", withoutSources(an.parameterUses ?? [])]])]];
+    const domains = [["property", leaves(bn.properties ?? {}), leaves(an.properties ?? {})], ["structure", structures(bn.properties ?? {}), structures(an.properties ?? {})], ["metadata", /* @__PURE__ */ new Map([["classId", bn.classId]]), /* @__PURE__ */ new Map([["classId", an.classId]])], ["references", /* @__PURE__ */ new Map([["references", (bn.references ?? []).map(({ source: source2, ...r }) => r)]]), /* @__PURE__ */ new Map([["references", (an.references ?? []).map(({ source: source2, ...r }) => r)]])], ["parameters", /* @__PURE__ */ new Map([["declarations", withoutSources(bn.parameters ?? [])], ["uses", withoutSources(bn.parameterUses ?? [])]]), /* @__PURE__ */ new Map([["declarations", withoutSources(an.parameters ?? [])], ["uses", withoutSources(an.parameterUses ?? [])]])]];
     for (const [domain, bp, ap] of domains) for (const property of /* @__PURE__ */ new Set([...bp.keys(), ...ap.keys()])) {
       if (pairs.length >= LIMITS.maxDiffPairs) throw RangeError("DIFF_PAIR_LIMIT");
       const presentB = bp.has(property), presentA = ap.has(property);
       pairs.push({ domain, kind: !presentB ? "property-added" : !presentA ? "property-removed" : "property-changed", identity: key, property, before: presentB ? bp.get(property) : null, after: presentA ? ap.get(property) : null, beforePresent: presentB, afterPresent: presentA, beforeSource: { ...bn.source, ...bn.propertySources?.[property] ?? {} }, source: { ...an.source, ...an.propertySources?.[property] ?? {} }, matching: an.file.guid ? "exact-guid-fileID" : "provisional-input-path-fileID" });
-      bv.push(presentB ? id(bp.get(property)) : 0);
-      av.push(presentA ? id(ap.get(property)) : 0);
+      bv.push(presentB ? id2(bp.get(property)) : 0);
+      av.push(presentA ? id2(ap.get(property)) : 0);
     }
   }
   const diffs = kernel.diff(Int32Array.from(bv), Int32Array.from(av));
@@ -502,45 +1520,45 @@ function compareSnapshots(before, after, kernel) {
   return { kind: "unity-diff", changes, ambiguous, fileChanges, completeness: { totalCount: changes.length, returnedCount: changes.length, truncated: false }, identityPolicy: "GUID/fileID exact; missing GUID uses explicit provisional input path; no heuristic remapping" };
 }
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/unity-analysis/kernel/registry.mjs
+// static-src/shared/unity-analysis/kernel/registry.mjs
 var UNITY_KERNEL = Object.freeze({ key: "hike-unity-i32-v1:e7c1049626826d3dabe2f53a7935efa69cd6f2cfa85fa11375b7bdd877088520:scalar", variant: "scalar", abi: "hike-unity-i32-v1", sha256: "e7c1049626826d3dabe2f53a7935efa69cd6f2cfa85fa11375b7bdd877088520", url: new URL("../unity-analysis/kernel/unity-analysis.wasm", import.meta.url).href });
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/unity-analysis/kernel/kernel.mjs
+// static-src/shared/unity-analysis/kernel/kernel.mjs
 var MAX_VECTOR = 262144;
-var MAX_MEMORY = 16777216;
-var PAGE_BYTES = 65536;
-var typedPrototype = Object.getPrototypeOf(Int32Array.prototype);
-var typedGet = Object.fromEntries(["length", "buffer", "byteOffset", "byteLength"].map((key) => [key, Object.getOwnPropertyDescriptor(typedPrototype, key).get]));
-var typed = (value2, key) => Reflect.apply(typedGet[key], value2, []);
-var integer = (value2, min, max2) => Number.isSafeInteger(value2) && value2 >= min && value2 <= max2;
+var MAX_MEMORY3 = 16777216;
+var PAGE_BYTES2 = 65536;
+var typedPrototype2 = Object.getPrototypeOf(Int32Array.prototype);
+var typedGet2 = Object.fromEntries(["length", "buffer", "byteOffset", "byteLength"].map((key) => [key, Object.getOwnPropertyDescriptor(typedPrototype2, key).get]));
+var typed3 = (value2, key) => Reflect.apply(typedGet2[key], value2, []);
+var integer3 = (value2, min, max2) => Number.isSafeInteger(value2) && value2 >= min && value2 <= max2;
 var errors = { [-1]: "UA_INVALID_COUNT", [-2]: "UA_INVALID_VALUE" };
-function aborted(signal) {
+function aborted2(signal) {
   if (signal?.aborted) throw new DOMException("Unity kernel preparation aborted", "AbortError");
 }
 async function prepareUnityKernel({ signal, fetchImpl = fetch, onCompile = () => {
 }, onResponse = () => {
 } } = {}) {
-  aborted(signal);
+  aborted2(signal);
   const response = await fetchImpl(UNITY_KERNEL.url, { credentials: "omit", signal });
-  aborted(signal);
+  aborted2(signal);
   if (!response.ok) throw Error(`UA_KERNEL_FETCH:${response.status}`);
   onResponse(response.headers?.get("content-type") ?? null);
   const bytes2 = await response.arrayBuffer();
-  aborted(signal);
-  const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes2)), (x) => x.toString(16).padStart(2, "0")).join("");
-  aborted(signal);
-  if (hash !== UNITY_KERNEL.sha256) throw Error("UA_KERNEL_HASH");
+  aborted2(signal);
+  const hash2 = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes2)), (x) => x.toString(16).padStart(2, "0")).join("");
+  aborted2(signal);
+  if (hash2 !== UNITY_KERNEL.sha256) throw Error("UA_KERNEL_HASH");
   onCompile();
-  aborted(signal);
+  aborted2(signal);
   const module = await WebAssembly.compile(bytes2);
-  aborted(signal);
+  aborted2(signal);
   return module;
 }
 function instantiateUnityKernel(module) {
   const expected = "UaDiff:function,UaIncoming:function,UaTypeCheck:function,memory:memory";
   if (!(module instanceof WebAssembly.Module) || WebAssembly.Module.imports(module).length || WebAssembly.Module.exports(module).map((x) => `${x.name}:${x.kind}`).sort().join(",") !== expected) throw TypeError("UA_KERNEL_ABI");
   let instance = new WebAssembly.Instance(module), memory = instance.exports.memory;
-  if (!(memory instanceof WebAssembly.Memory) || !(memory.buffer instanceof ArrayBuffer) || memory.buffer.byteLength < 65536 || memory.buffer.byteLength > MAX_MEMORY || ["UaIncoming", "UaTypeCheck", "UaDiff"].some((name) => instance.exports[name].length !== 5)) throw TypeError("UA_KERNEL_ABI");
+  if (!(memory instanceof WebAssembly.Memory) || !(memory.buffer instanceof ArrayBuffer) || memory.buffer.byteLength < 65536 || memory.buffer.byteLength > MAX_MEMORY3 || ["UaIncoming", "UaTypeCheck", "UaDiff"].some((name) => instance.exports[name].length !== 5)) throw TypeError("UA_KERNEL_ABI");
   const instanceId = `unity-${crypto.randomUUID()}`, arenaBase = memory.buffer.byteLength;
   let disposed = false, busy = false, liveBytes = 0, peakBytes = 0, runs = 0;
   function check() {
@@ -549,32 +1567,32 @@ function instantiateUnityKernel(module) {
   }
   function vector(data) {
     if (!(data instanceof Int32Array)) throw TypeError("UA_INT32_REQUIRED");
-    const buffer = typed(data, "buffer"), length = typed(data, "length"), offset = typed(data, "byteOffset"), bytes2 = typed(data, "byteLength");
+    const buffer = typed3(data, "buffer"), length = typed3(data, "length"), offset = typed3(data, "byteOffset"), bytes2 = typed3(data, "byteLength");
     if (!(buffer instanceof ArrayBuffer) || buffer.resizable) throw TypeError("UA_BUFFER");
     if (buffer === memory.buffer) throw TypeError("UA_MEMORY_ALIAS");
     new Int32Array(buffer, offset, length);
-    if (!integer(length, 0, MAX_VECTOR) || bytes2 !== length * 4) throw RangeError("UA_VECTOR_LIMIT");
+    if (!integer3(length, 0, MAX_VECTOR) || bytes2 !== length * 4) throw RangeError("UA_VECTOR_LIMIT");
     return { data, length };
   }
   function values(v, min, max2, code) {
-    for (let i = 0; i < v.length; i++) if (!integer(v.data[i], min, max2)) throw RangeError(code);
+    for (let i = 0; i < v.length; i++) if (!integer3(v.data[i], min, max2)) throw RangeError(code);
   }
   function execute(name, inputs, outputCount, argumentsFor, validResult) {
     check();
     const lengths = [...inputs.map((x) => x.length), outputCount];
     let end = arenaBase;
     const pointers = lengths.map((length) => {
-      if (!integer(length, 0, MAX_VECTOR)) throw RangeError("UA_VECTOR_LIMIT");
+      if (!integer3(length, 0, MAX_VECTOR)) throw RangeError("UA_VECTOR_LIMIT");
       const bytes2 = length * 4, start = end;
       end = Math.ceil((end + bytes2) / 8) * 8;
-      if (!Number.isSafeInteger(end) || start % 8 || end < start || end > MAX_MEMORY || end > 2147483647) throw RangeError("UA_ARENA_LIMIT");
+      if (!Number.isSafeInteger(end) || start % 8 || end < start || end > MAX_MEMORY3 || end > 2147483647) throw RangeError("UA_ARENA_LIMIT");
       return start;
     });
-    if (memory.buffer.byteLength > MAX_MEMORY) throw RangeError("UA_MEMORY_LIMIT");
+    if (memory.buffer.byteLength > MAX_MEMORY3) throw RangeError("UA_MEMORY_LIMIT");
     busy = true;
     let reserved = false;
     try {
-      const pages = Math.ceil((end - memory.buffer.byteLength) / PAGE_BYTES);
+      const pages = Math.ceil((end - memory.buffer.byteLength) / PAGE_BYTES2);
       if (pages > 0) memory.grow(pages);
       const mem = memory;
       new Uint8Array(mem.buffer, arenaBase, end - arenaBase).fill(0);
@@ -584,7 +1602,7 @@ function instantiateUnityKernel(module) {
       for (let i = 0; i < inputs.length; i++) new Int32Array(mem.buffer, pointers[i], inputs[i].length).set(inputs[i].data);
       const status = instance.exports[name](...argumentsFor(pointers));
       if (status !== 0) throw Error(errors[status] ?? "UA_KERNEL_STATUS");
-      if (mem.buffer.byteLength > MAX_MEMORY) throw Error("UA_MEMORY_LIMIT");
+      if (mem.buffer.byteLength > MAX_MEMORY3) throw Error("UA_MEMORY_LIMIT");
       const result = Int32Array.from(new Int32Array(mem.buffer, pointers[pointers.length - 1], outputCount));
       if (!validResult(result)) throw Error("UA_INVALID_RESULT");
       runs++;
@@ -598,12 +1616,12 @@ function instantiateUnityKernel(module) {
   function incoming(targets, nodeCount) {
     check();
     const edges = vector(targets);
-    if (!integer(nodeCount, 0, MAX_VECTOR)) throw RangeError("UA_NODE_COUNT");
+    if (!integer3(nodeCount, 0, MAX_VECTOR)) throw RangeError("UA_NODE_COUNT");
     values(edges, 0, nodeCount - 1, "UA_TARGET");
     return execute("UaIncoming", [edges], nodeCount, ([input, out]) => [input, edges.length, nodeCount, out, nodeCount], (result) => {
       let total = 0;
       for (const count of result) {
-        if (!integer(count, 0, edges.length)) return false;
+        if (!integer3(count, 0, edges.length)) return false;
         total += count;
       }
       return total === edges.length;
@@ -643,11 +1661,11 @@ function instantiateUnityKernel(module) {
     types,
     diff,
     dispose,
-    resourceStats: () => ({ disposed, busy, runs, liveBytes, peakBytes, arenaBase, memoryBytes: memory?.buffer.byteLength ?? 0, maxMemoryBytes: MAX_MEMORY, maxVectorElements: MAX_VECTOR, boundsScope: "prototype" })
+    resourceStats: () => ({ disposed, busy, runs, liveBytes, peakBytes, arenaBase, memoryBytes: memory?.buffer.byteLength ?? 0, maxMemoryBytes: MAX_MEMORY3, maxVectorElements: MAX_VECTOR, boundsScope: "prototype" })
   });
 }
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/unity-analysis/pool-task.mjs
+// static-src/shared/unity-analysis/pool-task.mjs
 var isUnity = (t) => t === "unity-analyze" || t === "unity-diff";
 function inspectTaskRequest2(r) {
   if (!r || r.protocolVersion !== 1 || !isUnity(r.taskType) || r.taskVersion !== 1 || typeof r.jobId !== "string" || !/^[A-Za-z0-9_.:-]{1,64}$/.test(r.jobId) || !Number.isSafeInteger(r.inputRevision) || r.inputRevision < 0) throw TypeError("Invalid Unity task identity");
@@ -681,7 +1699,7 @@ function executeTask2(r, kernel) {
 }
 var taskInputCount2 = (r) => r.taskType === "unity-analyze" ? r.payload.files.reduce((n, f) => n + f.objects.length, 0) : r.payload.before.files.length + r.payload.after.files.length;
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/unity-analysis/ingest-task.mjs
+// static-src/shared/unity-analysis/ingest-task.mjs
 var ingest_task_exports = {};
 __export(ingest_task_exports, {
   PARSER_VERSION: () => PARSER_VERSION,
@@ -702,7 +1720,7 @@ __export(ingest_task_exports, {
   validTaskResult: () => validTaskResult3
 });
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/ft/vendor/fflate.mjs
+// static-src/shared/ft/vendor/fflate.mjs
 var u8 = Uint8Array;
 var u16 = Uint16Array;
 var i32 = Int32Array;
@@ -1346,11 +2364,11 @@ var Unzip = /* @__PURE__ */ (function() {
   return Unzip2;
 })();
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/unity-analysis/package-reader.mjs
+// static-src/shared/unity-analysis/package-reader.mjs
 var MAX_UNITY_PACKAGE_BYTES = 64 * 1024 * 1024;
 var BLOCK = 512;
 var POSIX_MAGIC = "ustar\x0000";
-var encoder = new TextEncoder();
+var encoder2 = new TextEncoder();
 var decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
 var GUID = /^[0-9a-f]{32}$/;
 var children = /* @__PURE__ */ new Set(["asset", "asset.meta", "pathname", "preview.png"]);
@@ -1564,11 +2582,11 @@ function readUnityPackage(bytes2) {
   return new Map(entries.map((entry) => [entry.guid, entry]));
 }
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/unity-analysis/archive.mjs
+// static-src/shared/unity-analysis/archive.mjs
 var MAX_IN = 32 * 1024 * 1024;
 var MAX_OUT = 64 * 1024 * 1024;
 var MAX_FILES = 2048;
-var encoder2 = new TextEncoder();
+var encoder3 = new TextEncoder();
 var decoder2 = new TextDecoder("utf-8", { fatal: true });
 function safePath2(path) {
   if (typeof path !== "string" || !path || path.length > 1024 || path.startsWith("/") || path.includes("\\") || /[<>"|?*\u0000-\u001f\u007f:]/.test(path) || path.split("/").some((s) => !s || s === "." || s === ".." || s.length > 255 || /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(s) || /[ .]$/.test(s))) throw new Error("\u4E0D\u6B63\u306A\u30A2\u30FC\u30AB\u30A4\u30D6\u30D1\u30B9");
@@ -1642,7 +2660,7 @@ function readFiles(inputs) {
     if (/\.unitypackage$/i.test(input.path)) {
       for (const e of readUnityPackage(input.bytes).values()) {
         if (e.asset) accept(e.path, e.asset);
-        accept(e.path + ".meta", encoder2.encode(e.meta));
+        accept(e.path + ".meta", encoder3.encode(e.meta));
       }
       continue;
     }
@@ -1695,8 +2713,8 @@ function expandInput(input) {
   return readFiles([input]);
 }
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/ft/unity-text.mjs
-var own2 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+// static-src/shared/ft/unity-text.mjs
+var own3 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 function parseUnityScalar(value2) {
   if (typeof value2 !== "string") throw new TypeError("Expected Unity scalar text");
   value2 = value2.trim();
@@ -1732,7 +2750,7 @@ function parseUnityScalar(value2) {
         continue;
       }
       const escaped = body[++index];
-      if (own2(escapes, escaped)) {
+      if (own3(escapes, escaped)) {
         result += escapes[escaped];
         continue;
       }
@@ -1756,14 +2774,14 @@ function parseUnityScalar(value2) {
   return value2.replace(/\s+#.*$/, "").trimEnd();
 }
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/unity-analysis/rules.mjs
+// static-src/shared/unity-analysis/rules.mjs
 var TEXT_RULES_VERSION = "unity-text-rules/1";
 var EXPRESSION_SCHEMA = Object.freeze({ kind: "vrchat-expression", scriptGuid: "67cc4cb7839cd3741b63733d5adf0442", scriptFileId: "-1506855854", profile: "known-five-field-parameters/1" });
 var animatorTypes = Object.freeze({ "1": "Float", "3": "Int", "4": "Bool", "9": "Trigger" });
 var expressionTypes = Object.freeze({ "0": "Int", "1": "Float", "2": "Bool" });
 var conditions = Object.freeze({ "1": ["Bool", "Trigger"], "2": ["Bool"], "3": ["Float", "Int"], "4": ["Float", "Int"], "6": ["Int"], "7": ["Int"] });
 var map = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
-var own3 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+var own4 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 var pointerPart = (v) => String(v).replaceAll("~", "~0").replaceAll("/", "~1");
 var conditionBasis = "https://docs.unity3d.com/ScriptReference/Animations.AnimatorCondition.html";
 var blendBasis = "https://docs.unity3d.com/2022.3/Documentation/Manual/BlendTrees.html";
@@ -1776,8 +2794,8 @@ function referenceRole(classId, property) {
 }
 function deriveParameterRules(object) {
   const p = object.properties, parameters = [], parameterUses = [], issues = [];
-  const source = (path) => object.propertySources[path] ?? object.source;
-  const issue = (code, message, path) => issues.push({ code, message, source: source(path), propertyPath: path });
+  const source2 = (path) => object.propertySources[path] ?? object.source;
+  const issue = (code, message, path) => issues.push({ code, message, source: source2(path), propertyPath: path });
   const validName = (name, path) => {
     if (typeof name !== "string" || !name || name.length > 1024 || /[\u0000-\u001f\u007f]/.test(name)) {
       issue("PARAMETER_NAME_UNSUPPORTED", "A parameter name is missing or outside the supported text contract", path);
@@ -1786,7 +2804,7 @@ function deriveParameterRules(object) {
     return true;
   };
   const use = (name, path, allowedTypes, rule, ruleBasis) => {
-    if (validName(name, path)) parameterUses.push({ domain: "animator", unowned: true, name, allowedTypes: [...allowedTypes], rule, property: path, source: source(path), ...ruleBasis ? { ruleBasis } : {} });
+    if (validName(name, path)) parameterUses.push({ domain: "animator", unowned: true, name, allowedTypes: [...allowedTypes], rule, property: path, source: source2(path), ...ruleBasis ? { ruleBasis } : {} });
   };
   const records = (value2, path) => {
     if (!Array.isArray(value2)) {
@@ -1804,9 +2822,9 @@ function deriveParameterRules(object) {
         continue;
       }
       if (!validName(row.m_Name, path + "/m_Name")) continue;
-      const type = typeof row.m_Type === "string" && own3(animatorTypes, row.m_Type) ? animatorTypes[row.m_Type] : "Unknown";
+      const type = typeof row.m_Type === "string" && own4(animatorTypes, row.m_Type) ? animatorTypes[row.m_Type] : "Unknown";
       if (type === "Unknown") issue("PARAMETER_TYPE_UNKNOWN", "Unknown serialized Animator parameter type", path + "/m_Type");
-      parameters.push({ domain: "animator", name: row.m_Name, type, property: path + "/m_Name", source: source(path), serializedType: typeof row.m_Type === "string" ? row.m_Type : null });
+      parameters.push({ domain: "animator", name: row.m_Name, type, property: path + "/m_Name", source: source2(path), serializedType: typeof row.m_Type === "string" ? row.m_Type : null });
     }
   } else if (object.classId === "1101" || object.classId === "1109") {
     const rows = records(p.m_Conditions, "/m_Conditions");
@@ -1816,7 +2834,7 @@ function deriveParameterRules(object) {
         issue("CONDITION_UNSUPPORTED", "A transition condition is not a mapping", path);
         continue;
       }
-      const mode = typeof row.m_ConditionMode === "string" ? row.m_ConditionMode : "unknown", allowed = own3(conditions, mode) ? conditions[mode] : [];
+      const mode = typeof row.m_ConditionMode === "string" ? row.m_ConditionMode : "unknown", allowed = own4(conditions, mode) ? conditions[mode] : [];
       if (!allowed.length) issue("CONDITION_MODE_UNKNOWN", "Unknown transition condition mode; no type constraint asserted", path + "/m_ConditionMode");
       use(row.m_ConditionEvent, path + "/m_ConditionEvent", allowed, `unity.transition-condition.${mode}`, conditionBasis);
     }
@@ -1829,7 +2847,7 @@ function deriveParameterRules(object) {
       else issue("BLEND_CHILD_UNSUPPORTED", "A BlendTree child is not a mapping", `/m_Childs/${i}`);
     } else {
       use(p.m_BlendParameter, "/m_BlendParameter", known ? ["Float"] : [], "unity.blendtree.axis-x", blendBasis);
-      if (mode !== "0" && (known || own3(p, "m_BlendParameterY"))) use(p.m_BlendParameterY, "/m_BlendParameterY", known ? ["Float"] : [], "unity.blendtree.axis-y", blendBasis);
+      if (mode !== "0" && (known || own4(p, "m_BlendParameterY"))) use(p.m_BlendParameterY, "/m_BlendParameterY", known ? ["Float"] : [], "unity.blendtree.axis-y", blendBasis);
     }
   } else if (object.classId === "1102") {
     for (const part of ["Speed", "CycleOffset", "Mirror", "Time"]) {
@@ -1842,7 +2860,7 @@ function deriveParameterRules(object) {
       issue("STATE_PARAMETER_RULE_UNVERIFIED", `${part} usage is recorded; its target-version type rule is not yet verified`, path);
       use(p[`m_${part}Parameter`], path, [], `unity.state.${part.toLowerCase()}.unverified`);
     }
-  } else if (object.classId === "114" && own3(p, "parameters")) {
+  } else if (object.classId === "114" && own4(p, "parameters")) {
     const script = p.m_Script;
     if (!map(script) || typeof script.guid !== "string" || script.guid.toLowerCase() !== EXPRESSION_SCHEMA.scriptGuid || script.fileID !== EXPRESSION_SCHEMA.scriptFileId || script.type !== "3") {
       issue("EXPRESSION_SCHEMA_UNRECOGNIZED", "A parameters field alone does not identify the VRChat Expression schema", "/m_Script");
@@ -1859,9 +2877,9 @@ function deriveParameterRules(object) {
           issue("EXPRESSION_SETTINGS_UNSUPPORTED", "Expression flags/default are not supported serialized values", path);
           continue;
         }
-        const type = typeof row.valueType === "string" && own3(expressionTypes, row.valueType) ? expressionTypes[row.valueType] : "Unknown";
+        const type = typeof row.valueType === "string" && own4(expressionTypes, row.valueType) ? expressionTypes[row.valueType] : "Unknown";
         if (type === "Unknown") issue("PARAMETER_TYPE_UNKNOWN", "Unknown serialized Expression parameter type", path + "/valueType");
-        parameters.push({ domain: "vrchat-expression", name: row.name, type, property: path + "/name", source: source(path), schemaIdentity: { ...EXPRESSION_SCHEMA }, serializedType: typeof row.valueType === "string" ? row.valueType : null, defaultValue: row.defaultValue, saved: row.saved === "1", networkSynced: row.networkSynced === "1" });
+        parameters.push({ domain: "vrchat-expression", name: row.name, type, property: path + "/name", source: source2(path), schemaIdentity: { ...EXPRESSION_SCHEMA }, serializedType: typeof row.valueType === "string" ? row.valueType : null, defaultValue: row.defaultValue, saved: row.saved === "1", networkSynced: row.networkSynced === "1" });
       }
     }
   }
@@ -1870,10 +2888,10 @@ function deriveParameterRules(object) {
 }
 var jsonPointerPart = pointerPart;
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/unity-analysis/text.mjs
+// static-src/shared/unity-analysis/text.mjs
 var TEXT_PARSER_VERSION = "unity-text-subset/1";
 var TEXT_LIMITS = Object.freeze({ maxTextBytes: 4 * 1024 * 1024, maxCodeUnits: 4 * 1024 * 1024, maxLines: 262144, maxNodes: 262144, maxDocuments: 65536, maxDepth: 64, maxPath: 1024 });
-var own4 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+var own5 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 var roots = Object.freeze({ "1": "GameObject", "4": "Transform", "74": "AnimationClip", "91": "AnimatorController", "95": "Animator", "114": "MonoBehaviour", "206": "BlendTree", "1101": "AnimatorStateTransition", "1102": "AnimatorState", "1107": "AnimatorStateMachine", "1109": "AnimatorTransition", "221": "AnimatorOverrideController" });
 var SyntaxIssue = class extends Error {
   constructor(code, message, start, end, related = []) {
@@ -1916,15 +2934,15 @@ function textContext(text2) {
     }
     return { line: lo + 1, column: offset - starts[lo] + 1 };
   };
-  const source = (start, end) => {
+  const source2 = (start, end) => {
     const a = locate(start), b = locate(end);
     return { start, end, line: a.line, column: a.column, endLine: b.line, endColumn: b.column };
   };
-  const issue = (e) => ({ code: e.code, message: e.message, source: source(e.start, e.end), ...e.related.length ? { relatedSources: e.related.map((r) => source(r.start, r.end)) } : {} });
-  return { text: text2, lines, source, issue, nodes: 0 };
+  const issue = (e) => ({ code: e.code, message: e.message, source: source2(e.start, e.end), ...e.related.length ? { relatedSources: e.related.map((r) => source2(r.start, r.end)) } : {} });
+  return { text: text2, lines, source: source2, issue, nodes: 0 };
 }
 function parseSubset(context, start, end, issues) {
-  const { text: text2, source } = context;
+  const { text: text2, source: source2 } = context;
   const lines = [];
   let first = 0, stop = context.lines.length;
   while (first < stop) {
@@ -1962,7 +2980,7 @@ function parseSubset(context, start, end, issues) {
     const prior = mapping2.keys.get(key);
     if (prior) {
       duplicate = true;
-      issues.push({ code: "YAML_DUPLICATE_KEY", message: `Duplicate mapping key: ${key}`, source: source(keyStart, keyEnd), relatedSources: [source(prior.start, prior.end)] });
+      issues.push({ code: "YAML_DUPLICATE_KEY", message: `Duplicate mapping key: ${key}`, source: source2(keyStart, keyEnd), relatedSources: [source2(prior.start, prior.end)] });
     } else mapping2.keys.set(key, { start: keyStart, end: keyEnd });
     if (++context.nodes > TEXT_LIMITS.maxNodes) limit("YAML_NODE_LIMIT");
     mapping2.value.push({ key, keyStart, keyEnd, node: value2 });
@@ -2190,18 +3208,18 @@ function referencesFrom(ast, context, classId, issues) {
       return;
     }
     if (values.has("fileID")) {
-      const source = context.source(n.start, n.end), bad = (message) => issues.push({ code: "REFERENCE_SYNTAX_UNSUPPORTED", message, source, propertyPath: path });
+      const source2 = context.source(n.start, n.end), bad = (message) => issues.push({ code: "REFERENCE_SYNTAX_UNSUPPORTED", message, source: source2, propertyPath: path });
       if ([...values.keys()].some((k) => !["fileID", "guid", "type"].includes(k)) || [...values.values()].some((v) => v.kind !== "scalar")) {
         bad("Object-reference-like mapping has unsupported fields");
         return;
       }
       try {
-        const id = fileId(values.get("fileID").value), g = values.get("guid")?.value, type = values.get("type")?.value;
+        const id2 = fileId(values.get("fileID").value), g = values.get("guid")?.value, type = values.get("type")?.value;
         if (g !== void 0) {
           guid(g);
           if (type === void 0 || !/^(?:0|[1-9][0-9]*)$/.test(type)) throw Error("External reference requires a numeric type");
         } else if (type !== void 0) throw Error("Reference type without GUID");
-        result.push({ property: path, fileId: id, ...g !== void 0 ? { guid: g.toLowerCase(), type } : {}, source, role: referenceRole(classId, path) });
+        result.push({ property: path, fileId: id2, ...g !== void 0 ? { guid: g.toLowerCase(), type } : {}, source: source2, role: referenceRole(classId, path) });
       } catch (e) {
         bad(e.message);
       }
@@ -2212,7 +3230,7 @@ function referencesFrom(ast, context, classId, issues) {
   visit(ast, "");
   return result;
 }
-function metadata(context, path) {
+function metadata2(context, path) {
   const issues = [];
   let parsed;
   try {
@@ -2248,7 +3266,7 @@ function parseUnityFile({ path, text: text2 } = {}) {
   const context = textContext(text2), issues = [], objects = [], unparsedDocuments = [];
   const controls = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]|[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/u.exec(text2);
   if (controls) return { path, objects, coverage: "opaque", reason: "Unsupported text encoding/control character", issues: [{ code: "TEXT_CHARACTER_UNSUPPORTED", message: "Invalid control character or Unicode scalar", source: context.source(controls.index, controls.index + controls[0].length) }], parserVersion: TEXT_PARSER_VERSION };
-  if (/\.meta$/i.test(path)) return metadata(context, path);
+  if (/\.meta$/i.test(path)) return metadata2(context, path);
   const headers = context.lines.filter((l) => l.indent === 0 && l.content.startsWith("---"));
   if (headers.length > TEXT_LIMITS.maxDocuments) limit("UNITY_DOCUMENT_LIMIT");
   if (!headers.length) return { path, objects, coverage: "opaque", reason: "No Unity serialized document header", issues: [{ code: "UNITY_HEADER_MISSING", message: "Expected a Unity !u! document header", source: context.source(0, text2.length) }], rawText: text2, parserVersion: TEXT_PARSER_VERSION };
@@ -2267,27 +3285,27 @@ function parseUnityFile({ path, text: text2 } = {}) {
   if (!preambleValid) unparsedDocuments.push({ source: context.source(0, headers[0].start), rawText: text2.slice(0, headers[0].start), reason: "Unsupported Unity preamble" });
   const ids = /* @__PURE__ */ new Map();
   for (let i = 0; i < headers.length; i++) {
-    const header = headers[i], end = headers[i + 1]?.start ?? text2.length, source = context.source(header.start, end), match = /^--- !u!([0-9]+) &(-?(?:0|[1-9][0-9]*))(?: stripped)?$/.exec(header.content);
+    const header = headers[i], end = headers[i + 1]?.start ?? text2.length, source2 = context.source(header.start, end), match = /^--- !u!([0-9]+) &(-?(?:0|[1-9][0-9]*))(?: stripped)?$/.exec(header.content);
     if (!match) {
       issues.push({ code: "UNITY_HEADER_INVALID", message: "Malformed Unity document header", source: context.source(header.start, header.end) });
-      unparsedDocuments.push({ source, rawText: text2.slice(header.start, end), reason: "Malformed Unity document header" });
+      unparsedDocuments.push({ source: source2, rawText: text2.slice(header.start, end), reason: "Malformed Unity document header" });
       continue;
     }
     const classId = match[1];
     if (classId.length > 32) limit("UNITY_CLASS_ID_LIMIT");
-    let id;
+    let id2;
     try {
-      id = fileId(match[2], { zero: false });
+      id2 = fileId(match[2], { zero: false });
     } catch (e) {
       issues.push({ code: "UNITY_FILE_ID_INVALID", message: e.message, source: context.source(header.start, header.end) });
-      unparsedDocuments.push({ source, rawText: text2.slice(header.start, end), reason: e.message });
+      unparsedDocuments.push({ source: source2, rawText: text2.slice(header.start, end), reason: e.message });
       continue;
     }
-    const object = { fileId: id, classId, rootType: null, properties: /* @__PURE__ */ Object.create(null), propertySources: /* @__PURE__ */ Object.create(null), references: [], parameters: [], parameterUses: [], source, coverage: "partial" };
+    const object = { fileId: id2, classId, rootType: null, properties: /* @__PURE__ */ Object.create(null), propertySources: /* @__PURE__ */ Object.create(null), references: [], parameters: [], parameterUses: [], source: source2, coverage: "partial" };
     objects.push(object);
-    const same = ids.get(id) ?? [];
+    const same = ids.get(id2) ?? [];
     same.push(object);
-    ids.set(id, same);
+    ids.set(id2, same);
     const localIssues = [];
     let parsed;
     try {
@@ -2297,11 +3315,11 @@ function parseUnityFile({ path, text: text2 } = {}) {
       localIssues.push(context.issue(e));
     }
     if (parsed && !parsed.duplicate) {
-      if (parsed.ast.kind !== "map" || parsed.ast.value.length !== 1 || parsed.ast.value[0].node.kind !== "map") localIssues.push({ code: "UNITY_ROOT_UNSUPPORTED", message: "A Unity document needs exactly one mapping root", source });
+      if (parsed.ast.kind !== "map" || parsed.ast.value.length !== 1 || parsed.ast.value[0].node.kind !== "map") localIssues.push({ code: "UNITY_ROOT_UNSUPPORTED", message: "A Unity document needs exactly one mapping root", source: source2 });
       else {
         const entry = parsed.ast.value[0];
         object.rootType = entry.key;
-        if (own4(roots, classId) && roots[classId] !== entry.key) localIssues.push({ code: "UNITY_CLASS_ROOT_MISMATCH", message: "Unity classID and root name disagree", source });
+        if (own5(roots, classId) && roots[classId] !== entry.key) localIssues.push({ code: "UNITY_CLASS_ROOT_MISMATCH", message: "Unity classID and root name disagree", source: source2 });
         else {
           const data = materialize(entry.node, context);
           object.properties = data.value;
@@ -2340,7 +3358,7 @@ function parseUnityFile({ path, text: text2 } = {}) {
   return { path, objects, coverage, ...coverage === "partial" ? { reason: "Some document syntax, identity or rule semantics are unresolved" } : {}, issues, unparsedDocuments, parserVersion: TEXT_PARSER_VERSION };
 }
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/unity-analysis/ingest-task.mjs
+// static-src/shared/unity-analysis/ingest-task.mjs
 var PARSER_VERSION = "unity-text-1";
 var isIngest = (t) => t === "unity-expand" || t === "unity-parse";
 var MAX_IN2 = 16 * 1024 * 1024;
@@ -2385,7 +3403,7 @@ var instantiateTask3 = () => null;
 async function executeTask3(r) {
   const { path, bytes: raw } = r.payload;
   if (r.taskType === "unity-expand") return { kind: "unity-expanded", path, parserVersion: PARSER_VERSION, files: expandInput(r.payload) };
-  const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", raw)), (b) => b.toString(16).padStart(2, "0")).join("");
+  const hash2 = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", raw)), (b) => b.toString(16).padStart(2, "0")).join("");
   let file;
   const supported = /\.(controller|anim|prefab|unity|asset|mat|overrideController|meta)$/i.test(path);
   if (!supported) file = { path, objects: [], coverage: "opaque", reason: "Unsupported extension; bytes inventoried", issues: [] };
@@ -2402,7 +3420,7 @@ async function executeTask3(r) {
       else file = parseUnityFile({ path, text: text2 });
     }
   }
-  file.contentHash = hash;
+  file.contentHash = hash2;
   file.byteLength = raw.byteLength;
   const result = { kind: "unity-parsed", path, parserVersion: PARSER_VERSION, file };
   if (bytes(result) > MAX_TEXT) throw RangeError("FILE_IR_LIMIT");
@@ -2410,8 +3428,8 @@ async function executeTask3(r) {
 }
 var taskInputCount3 = (r) => r.payload.bytes.byteLength;
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/compute/tasks.mjs
-var MAX_MEDIA_INPUT_BYTES = Reflect.get(registered_tasks_exports, "MAX_MEDIA_INPUT_BYTES");
+// static-src/shared/compute/tasks.mjs
+var MAX_MEDIA_INPUT_BYTES2 = Reflect.get(registered_tasks_exports, "MAX_MEDIA_INPUT_BYTES");
 var adapter = (r) => isIngest(typeof r === "string" ? r : r?.taskType) ? ingest_task_exports : isUnity(typeof r === "string" ? r : r?.taskType) ? pool_task_exports : registered_tasks_exports;
 var resultAdapter = (r) => ["unity-expanded", "unity-parsed"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports : registered_tasks_exports;
 var inspectTaskRequest4 = (r) => adapter(r).inspectTaskRequest(r);
@@ -2422,7 +3440,7 @@ var instantiateTask4 = (r, m) => adapter(r).instantiateTask(r, m);
 var executeTask4 = (r, k) => adapter(r).executeTask(r, k);
 var taskInputCount4 = (r, v) => adapter(r).taskInputCount(r, v);
 
-// ../../scratch/a12324e000fc/pages-unity-b2/docs/shared/compute/pool-worker.mjs
+// static-src/shared/compute/pool-worker.mjs
 var workerId = crypto.randomUUID();
 var bootEpochMs = performance.timeOrigin + performance.now();
 var received = false;

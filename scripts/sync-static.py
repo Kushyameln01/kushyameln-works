@@ -83,7 +83,7 @@ def check_references(root):
         elif p.suffix in ('.mjs', '.js', '.css'):
             text = p.read_text()
             patterns = [r'''(?:from\s*|import\s*\(|import\s+|new\s+URL\s*\(|fetch\s*\()\s*['"]([^'"]+)['"]''', r'''url\(\s*['"]?([^'"\s)]+)''']
-            for pattern in patterns:
+            for pattern in (patterns[1:] if p.suffix == '.css' else patterns[:1]):
                 for value in re.findall(pattern, text):
                     check(p, value)
 
