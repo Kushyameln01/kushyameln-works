@@ -24,3 +24,9 @@
 - v64→v65はREADME・通常比較gate・説明文だけで、pool/worker/WASM/prepared/lifecycle/recovery不変を独立確認。v64受入証拠は対象版を明記して引き継ぐ。Sites全live bytes未確認の限界はdelivery receiptへ明記。
 - Pages候補は81公開ファイル維持、追加/削除0、変更7件、登録表とWASM不変。既存publication15件PASS、静的media公開検査PASS。元公開アーカイブ43ファイルもbaseline blobとSHA256照合。既存runtime検査は本番の全81配信一致receipt後に実行する。
 - 目的確認：複数Workerへの投入・入力との対応・結果回収・失敗後の復帰を既存利用経路で確認。FT最適化は根拠不足で不採用。公開前の独立最終判定へ進む。
+
+### 調整F/G・本実装確認
+
+独立Reviewer PASS・手順監査PROCEED後、main期待SHA一致を再確認してruntime34368e769def983d7709ed21a6ac4a93c9b4b2b4へfast-forward。56 source変更blobと7 public変更を照合、81公開ファイルの追加削除なし。Actions38974723548success後に実HTTP81件のGitblob一致receiptを取得。既存のverified-deployed-pages-copy gateを満たしてpublication/Unityminimum/filesを実行しPASS。候補を配信済みと偽装していない。
+
+本実装ブラウザでFT2件の正答とID対応、prepared両順序の2/4全数重複、準備復帰、Unityファイル比較5ジョブを確認。JSON保存の同期失敗は回収済み同一rawのfsync保存で解消し、製品の再試行で観測を差し替えていない。全記録と初回Sites失敗を保持。最終批評後に証拠のみを追記し、公開コードは変更しない。

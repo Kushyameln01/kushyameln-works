@@ -97,3 +97,20 @@ FT計算の最適化は不採用です。変更前と候補の8192／262144要�
 | 画面と例外 | 入力変更で旧応答抑止、明示取消→空結果、拒否→正しい再投入。sites-ui-checks.json |
 
 証拠はすべて[evidence-adjustment](evidence-adjustment/)に保存しています。初回timeoutは原因未特定であり、v65全正答をもって原因解消とは主張しません。Sites v64/v65とsource/archive/deploymentの対応はsites-delivery.json / sites-delivery-v65.jsonを参照してください。ブラウザ実測のsourceCommit=nullは未取得の意味を保持し、外部receiptで対応付けます。
+
+### 本実装の配信確認（compute-unity-b5）
+
+2026-10-17 JST、runtime commit `34368e769def983d7709ed21a6ac4a93c9b4b2b4` をexpectedSHA `0ee9b175b75890f42c965770af0d06b0b77cd003`、force=falseでmainへ反映しました。Git tree全56変更ファイルを候補のblob hashと照合し、公開差分は7件、公開81件の追加・削除は0でした。Actions `38974723548` はsuccessです。
+
+| 配信後の確認 | 結果 |
+| --- | --- |
+| 実配信81ファイル | 全件Git blob一致、HTTP200、WASM application/wasm。pages-acquisition.json |
+| FT画面往復 | 別Worker/Instanceへ2ジョブ、revision303、[0,3,5]/[0,7]正答。pages-ft.json |
+| 準備後並行計算 | 両順序・16ジョブ正答。2Worker全数重複126.7002/114.6001ms、4Worker67.7000/60.2000ms。pages-prepared.json |
+| Module準備復帰 | 未決準備→個別timeout→明示再投入成功。一方取消で同key生存ジョブを保護。dispose後論理会計0。pages-preparation-recovery.json |
+| Unityの既存画面 | 公開ファイルサンプルから5ジョブ成功、差分Idle→Idle revised。pages-unity-browser.json |
+| 配信物を要求する既存検査 | 実取得receipt確認後、publication runtimeでmodule/bundleの6タスクと旧mediaタスク拒否PASS。Unity minimum/filesは各1/2/4Worker×reuse両方式の6構成PASS。pages-runtime-publication.log、pages-unity-minimum.log、pages-unity-files.log |
+
+相対パスは候補の静的export検査と実配信のworker-runner/Unity画面→shared Worker/WASM読込みで確認しました。詳細な配信対応はpages-deployment.json、全証拠のhashはpages-evidence-manifest.jsonに保存しました。後続の証拠追記commitは公開docsファイルを変更しません。
+
+最終批評では、保存手順と最新指示への準拠を先に確認し、原目的の「権限を持つChatGPTが、複数Workerへ計算を投入して結果を回収できる共有基盤」を維持したと判定しました。仕様表、計測、復帰処理のP1を完了し、FT最適化は不採用です。初回Sites通常比較の起動timeoutは原因未特定として残し、全端末の速度向上・物理コア同時稼働・自然GC/最大メモリ・タブ終了後の継続処理を保証しません。
