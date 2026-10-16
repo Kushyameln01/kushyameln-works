@@ -1,0 +1,5478 @@
+{
+  "status": "PASS",
+  "runtime": "v24.19.0",
+  "baselineCommit": "1a3bd7ce3791cdd18a0eda7fd569b46e5cdd2b05",
+  "candidateCommit": "aa4b92cd9e8f6189ee3ab8e59a86e231513d5486",
+  "buildId": "compute-unity-b4",
+  "analyzerVersion": "unity-analysis-0.3.1",
+  "ruleSetVersion": "unity-static-3",
+  "baselineSamples": 114,
+  "candidateSamples": 114,
+  "scope": "Node worker_threads running identified deployed Pages code; not browser timing",
+  "configuration": {
+    "datasets": [
+      "small",
+      "manySmall",
+      "large"
+    ],
+    "concurrencies": [
+      1,
+      2,
+      4
+    ],
+    "reuseSettings": [
+      false,
+      true
+    ],
+    "modes": [
+      "fresh",
+      "warm"
+    ],
+    "runs": 5,
+    "warmRuns": 5,
+    "workerMode": "module",
+    "fresh": "A fresh pool/analyzer for every sample, matching the UI lifetime; outerWallMs includes their construction",
+    "warm": "2 Workers, initial call separate, then repeated calls in the same pool"
+  },
+  "fixtures": {
+    "small": {
+      "files": 6,
+      "objects": 8,
+      "rawBytes": 2287,
+      "inventory": [
+        {
+          "path": "Assets/Clip.anim",
+          "bytes": 169,
+          "sha256": "f4e840b4fe70ac570b5b2f87f0550ee004db4e8d3d14d605fd18f8af70ab0526"
+        },
+        {
+          "path": "Assets/Clip.anim.meta",
+          "bytes": 126,
+          "sha256": "fdea4d133cbc3842e91c18f933dc28aa85d6d021139394917773e4d90f5409bc"
+        },
+        {
+          "path": "Assets/Demo.controller",
+          "bytes": 1366,
+          "sha256": "58ab26b33e6188569e3e4deb25c4bc8e3f28f0f3328aef79efdd740070facc45"
+        },
+        {
+          "path": "Assets/Demo.controller.meta",
+          "bytes": 126,
+          "sha256": "85bc117ea66f5d15c7859babd47f8c2fd1253a4dee6b22dc3d5748c98e7ac39f"
+        },
+        {
+          "path": "Assets/Shared.asset",
+          "bytes": 374,
+          "sha256": "06826f86abba68254c2ef4e552e9b184d7d5cdd458d6df413285c359b8a0afa8"
+        },
+        {
+          "path": "Assets/Shared.asset.meta",
+          "bytes": 126,
+          "sha256": "e0a57a8864758a9797824038cf59f83072921b059dc6a92604b2796fb1e9dde1"
+        }
+      ],
+      "inventorySha256": "38349dda6a1d7c139937a1ddd3c42ff6e38521f6b8de9c335c550e625f8555f9"
+    },
+    "manySmall": {
+      "files": 64,
+      "objects": 128,
+      "rawBytes": 13612,
+      "inventory": [
+        {
+          "path": "Assets/synthetic-000.asset",
+          "bytes": 211,
+          "sha256": "92ba9ae6da11d79978e8b11d3e3d17107c86f4df735f0c97c43009b44dbbe7fd"
+        },
+        {
+          "path": "Assets/synthetic-001.asset",
+          "bytes": 211,
+          "sha256": "3f3884d51281918b0a372929265def6cd8f217985d7f38ffe0c1da14645d05fa"
+        },
+        {
+          "path": "Assets/synthetic-002.asset",
+          "bytes": 211,
+          "sha256": "3ac6217680b7185cd71cc36f78d5eef2aa952cae8ea93da9738314e0e73e5b64"
+        },
+        {
+          "path": "Assets/synthetic-003.asset",
+          "bytes": 211,
+          "sha256": "90551f4948657b194eeae02061767ef20a612d3b3f5a048bd73aa9110c486fd4"
+        },
+        {
+          "path": "Assets/synthetic-004.asset",
+          "bytes": 211,
+          "sha256": "ad2301e97c960d97f88243d67463b513eadb9db425b6398d8834a821032ac408"
+        },
+        {
+          "path": "Assets/synthetic-005.asset",
+          "bytes": 211,
+          "sha256": "71ff08726eadc884da86d8c23c685193e1220f41a518d8271e4fcd622a7fd3dc"
+        },
+        {
+          "path": "Assets/synthetic-006.asset",
+          "bytes": 211,
+          "sha256": "83db98cf16767d39d1b00de67c819e57bbae05aef792c6b9e155eb41d282e9bb"
+        },
+        {
+          "path": "Assets/synthetic-007.asset",
+          "bytes": 211,
+          "sha256": "7c9076c3cdc91050e2bcb62d6235b094ec4da9e8c4671eaefc6444c5d2049e77"
+        },
+        {
+          "path": "Assets/synthetic-008.asset",
+          "bytes": 211,
+          "sha256": "4bd8952eea8e6b5fe5e62a2b8c7f56f61149d498a5eb4792969053fcaf16ec60"
+        },
+        {
+          "path": "Assets/synthetic-009.asset",
+          "bytes": 211,
+          "sha256": "d0fdd3c5091f495f73bcc51de4c12f2d544732c07cd1521236cbc8286f8b40c7"
+        },
+        {
+          "path": "Assets/synthetic-010.asset",
+          "bytes": 213,
+          "sha256": "64c13a474c59e6aac47b9e29b35337ca4e2c8eec89ea2d441a168739b51ecd42"
+        },
+        {
+          "path": "Assets/synthetic-011.asset",
+          "bytes": 213,
+          "sha256": "155551afcb864099be4c1c95826637fe0e7a4cdb3d0b84da5cea1d81f6bee20d"
+        },
+        {
+          "path": "Assets/synthetic-012.asset",
+          "bytes": 213,
+          "sha256": "2e696664633374b56b848814e57646fb9b35ad82549e970e4bd2107226c2639d"
+        },
+        {
+          "path": "Assets/synthetic-013.asset",
+          "bytes": 213,
+          "sha256": "7c185f454358e6eac6f3349750da44038d04c86ce7e1b1ed457fc13176e42a8f"
+        },
+        {
+          "path": "Assets/synthetic-014.asset",
+          "bytes": 213,
+          "sha256": "ee0683da7dd303fcc3c310261e37264ae4e1812d081d60583d326dcdbf838e12"
+        },
+        {
+          "path": "Assets/synthetic-015.asset",
+          "bytes": 213,
+          "sha256": "bccfe314caf12da36786e2e8c9aaa76957c440292932df5f9098667b2329a1d8"
+        },
+        {
+          "path": "Assets/synthetic-016.asset",
+          "bytes": 213,
+          "sha256": "637089b687341bbf051c6ae1a496ef44e26f5e0aeb90672a2f0d1f1678c9e7b0"
+        },
+        {
+          "path": "Assets/synthetic-017.asset",
+          "bytes": 213,
+          "sha256": "e36746e07a3f43c87571f4e6de6f2f3be165213c4c48ea550a6e28b663f30f66"
+        },
+        {
+          "path": "Assets/synthetic-018.asset",
+          "bytes": 213,
+          "sha256": "e75c74a9d82f7b29eaf89d58e6dc153229d3014fed1ea8f5644ceb4036b91096"
+        },
+        {
+          "path": "Assets/synthetic-019.asset",
+          "bytes": 213,
+          "sha256": "63915f099e983bcbc8df429f0a80e767309d0d9c540653a190d1ca776026aa96"
+        },
+        {
+          "path": "Assets/synthetic-020.asset",
+          "bytes": 213,
+          "sha256": "68d19ef4ad0379ae6b39794dd4e11a4b7441f198bffcc0241617a5a28fceb528"
+        },
+        {
+          "path": "Assets/synthetic-021.asset",
+          "bytes": 213,
+          "sha256": "224c41b263df23b153d7a44c10034e0c5a01e2f756f45b159c5f76db2a0d6e87"
+        },
+        {
+          "path": "Assets/synthetic-022.asset",
+          "bytes": 213,
+          "sha256": "8b71a406cc934257bac53cb71199e51c75f26af71361ddc92142f84084ff9d23"
+        },
+        {
+          "path": "Assets/synthetic-023.asset",
+          "bytes": 213,
+          "sha256": "533662a3ee604905ebcdce876c9e2ebd1bb4b868f58749273562d5a498cd85d7"
+        },
+        {
+          "path": "Assets/synthetic-024.asset",
+          "bytes": 213,
+          "sha256": "7fbadb5cacf009ac74cbed57fb94ad108208676b43d9f632c9b56c6d958323d4"
+        },
+        {
+          "path": "Assets/synthetic-025.asset",
+          "bytes": 213,
+          "sha256": "f474ee3370270cc9305637d55819f7792cdbf00b7c2e1c23520e1e0f91c7b8a2"
+        },
+        {
+          "path": "Assets/synthetic-026.asset",
+          "bytes": 213,
+          "sha256": "348707c2fcb7a008788cbeff41d2c3a9ffca271dfe8d831ba50b0fc9cc0a9c26"
+        },
+        {
+          "path": "Assets/synthetic-027.asset",
+          "bytes": 213,
+          "sha256": "8013b13c0fc5a4b4fb1f761e1b353764515f418b605bc10754c995a02504021a"
+        },
+        {
+          "path": "Assets/synthetic-028.asset",
+          "bytes": 213,
+          "sha256": "1b803476be0757247a22bd4c338660493e91314620fe4d92dbb1db7fc780b9a4"
+        },
+        {
+          "path": "Assets/synthetic-029.asset",
+          "bytes": 213,
+          "sha256": "18757e40d03a61efa5a56545f75ac807627e66320bbfd307c3225b978a4feb2c"
+        },
+        {
+          "path": "Assets/synthetic-030.asset",
+          "bytes": 213,
+          "sha256": "c9d32558affea59a7811afb7af1e92bc03a3a0c9b10f372e43b1c133fc0d608b"
+        },
+        {
+          "path": "Assets/synthetic-031.asset",
+          "bytes": 213,
+          "sha256": "b5c4a550da7f112a4739876fab433fbe5282e90c7b007d98301fd2d78c4c42c0"
+        },
+        {
+          "path": "Assets/synthetic-032.asset",
+          "bytes": 213,
+          "sha256": "ab5f69e3fa01a1e03fae8488defa901233b39d26fb49f6c0061e5a8431cd01b9"
+        },
+        {
+          "path": "Assets/synthetic-033.asset",
+          "bytes": 213,
+          "sha256": "b940f996cfa38eee11dd9eecb8813f25375667e059a862047770b31a92bc059a"
+        },
+        {
+          "path": "Assets/synthetic-034.asset",
+          "bytes": 213,
+          "sha256": "d60f909e2edbb49dc70b2c1c8edc994b44c3a988451b6b0f1591e94938cf9335"
+        },
+        {
+          "path": "Assets/synthetic-035.asset",
+          "bytes": 213,
+          "sha256": "cf8a2566687a0c1c2a0c416a9222a3f606250cd998381d84c1d503ed9910422d"
+        },
+        {
+          "path": "Assets/synthetic-036.asset",
+          "bytes": 213,
+          "sha256": "b339a312966e60cdb0a27fc36c694ddddf52cd792754bcd7272111d004b8eb94"
+        },
+        {
+          "path": "Assets/synthetic-037.asset",
+          "bytes": 213,
+          "sha256": "6bb795b4beee7d8c8c79c2943e087376352908307d3cc8386a8a2a53195e9a86"
+        },
+        {
+          "path": "Assets/synthetic-038.asset",
+          "bytes": 213,
+          "sha256": "4abef202ac36d05c3b3958f685ab4e3ac99f899f3a79635dbf9d5aa54d84d1ae"
+        },
+        {
+          "path": "Assets/synthetic-039.asset",
+          "bytes": 213,
+          "sha256": "36b6276b8699be6a00a6b88153019768e89aafe39d364928adf9eb83a41e468d"
+        },
+        {
+          "path": "Assets/synthetic-040.asset",
+          "bytes": 213,
+          "sha256": "be6202e3d1d68279838dfadf121610e5d721b8cee65ea4fca4a6b318c8cfea5c"
+        },
+        {
+          "path": "Assets/synthetic-041.asset",
+          "bytes": 213,
+          "sha256": "035e12d52d72beb2aa13a3d010772d52a6a0001483314e01028694bc40b4c81d"
+        },
+        {
+          "path": "Assets/synthetic-042.asset",
+          "bytes": 213,
+          "sha256": "922e34411138413fa654d6a404be7d0061ab9a694d8a9f1e5b249310c6a8e122"
+        },
+        {
+          "path": "Assets/synthetic-043.asset",
+          "bytes": 213,
+          "sha256": "0e4545e01afe52106d57912cbba0f3fef13d9fcdcd7ce6e12d83cc8e8daa1204"
+        },
+        {
+          "path": "Assets/synthetic-044.asset",
+          "bytes": 213,
+          "sha256": "a2f338086baaaf28f52a03d5d48180b26c738569c6814f9b94b6162e77456cd5"
+        },
+        {
+          "path": "Assets/synthetic-045.asset",
+          "bytes": 213,
+          "sha256": "cf4b304bbef1747545ae4c7b32e5568cd84cc139d813f0cf296dc17c756de183"
+        },
+        {
+          "path": "Assets/synthetic-046.asset",
+          "bytes": 213,
+          "sha256": "0e4a9e33ae562615a383c796824e270e837c2fd5d78e3d4f838e04f2efbecff0"
+        },
+        {
+          "path": "Assets/synthetic-047.asset",
+          "bytes": 213,
+          "sha256": "2c0f04695b81d90596f54f1fc8fbe61addaec74dcc413656653ebe2b423e7965"
+        },
+        {
+          "path": "Assets/synthetic-048.asset",
+          "bytes": 213,
+          "sha256": "2726d8ccb94353429f115eedb0720f0448db8a31eab027ba3def7e0a2fa14df7"
+        },
+        {
+          "path": "Assets/synthetic-049.asset",
+          "bytes": 213,
+          "sha256": "8c4782da4a0c9079ac0085ad4b59861113d56a29b09eeb0f6d6969d3aa404253"
+        },
+        {
+          "path": "Assets/synthetic-050.asset",
+          "bytes": 213,
+          "sha256": "d36913f8d0f0235badcad2d81c82f7779224d3ca12358800dfd9401773218c92"
+        },
+        {
+          "path": "Assets/synthetic-051.asset",
+          "bytes": 213,
+          "sha256": "ce07092fbb37803db3e22f458bde37bbd3a4cb5688e278a02b792f4013c55b4f"
+        },
+        {
+          "path": "Assets/synthetic-052.asset",
+          "bytes": 213,
+          "sha256": "4e94708f592893c79986d3b069ac9a7b7a0fa87fe8dec061b4af1a5f9a1fb926"
+        },
+        {
+          "path": "Assets/synthetic-053.asset",
+          "bytes": 213,
+          "sha256": "90e7a2bbe580e55d64dd035d28ef571297acf6b13834aa7048c4b4dd120be4b4"
+        },
+        {
+          "path": "Assets/synthetic-054.asset",
+          "bytes": 213,
+          "sha256": "9bd88d4162cab6aa9c1167b6527a322a2607a70281028002477f4ffe7bbed089"
+        },
+        {
+          "path": "Assets/synthetic-055.asset",
+          "bytes": 213,
+          "sha256": "d94cd5e0df89c3b4688afc4778888581aa5628467fdf3075bafaa60be31a533d"
+        },
+        {
+          "path": "Assets/synthetic-056.asset",
+          "bytes": 213,
+          "sha256": "ec644a0019795549e3a646914abd5a016635cff64f47cc72922324e758601465"
+        },
+        {
+          "path": "Assets/synthetic-057.asset",
+          "bytes": 213,
+          "sha256": "d5972cb9e41694ed09f17250a0ba9e859adee2c0b0af3ddf9116998feb1272e1"
+        },
+        {
+          "path": "Assets/synthetic-058.asset",
+          "bytes": 213,
+          "sha256": "89b09f0901ffae2c13cb98db671ee4a2cf341174849ffbe228d8c47de386716e"
+        },
+        {
+          "path": "Assets/synthetic-059.asset",
+          "bytes": 213,
+          "sha256": "75c72e4ee1952f0fe31943481189b7171f10cd4a3a1bf690dace4902b41298aa"
+        },
+        {
+          "path": "Assets/synthetic-060.asset",
+          "bytes": 213,
+          "sha256": "f0b0591cc184934899fe31b8f08b5e25015b727f8e16a9434fd2396ed5639d41"
+        },
+        {
+          "path": "Assets/synthetic-061.asset",
+          "bytes": 213,
+          "sha256": "c0e0fd0c29786ae2058b3da7cb16334e8d85df117ef3fe6e5fe26a8393b085ef"
+        },
+        {
+          "path": "Assets/synthetic-062.asset",
+          "bytes": 213,
+          "sha256": "1eff77047008060b493e74fa067b0f1defe89a4a8fa2c1ceef93b4c64f33cc5b"
+        },
+        {
+          "path": "Assets/synthetic-063.asset",
+          "bytes": 213,
+          "sha256": "7831286b61a5a736f3240c06a6aeb8d38bc8335f1eb5eebf4d9dcad8a531cd82"
+        }
+      ],
+      "inventorySha256": "67566bf18fd573321e8d522f895655479c772b09ff4702fc9b35ac4f9b7be922"
+    },
+    "large": {
+      "files": 8,
+      "objects": 1024,
+      "rawBytes": 89720,
+      "inventory": [
+        {
+          "path": "Assets/synthetic-000.asset",
+          "bytes": 11215,
+          "sha256": "3833741ed7d927fde07b89196dbca022b83d4ba1f111360363133775ad826afe"
+        },
+        {
+          "path": "Assets/synthetic-001.asset",
+          "bytes": 11215,
+          "sha256": "24d3f0556228343e390660bfd60616dc8f094e20ce29892262b5427f4640330c"
+        },
+        {
+          "path": "Assets/synthetic-002.asset",
+          "bytes": 11215,
+          "sha256": "599aba9923b83442a2abf9ff296e525075cba4286992038df7e645f3d2db029d"
+        },
+        {
+          "path": "Assets/synthetic-003.asset",
+          "bytes": 11215,
+          "sha256": "3041eb28379ce02a2ec1a5c4c7210983a96a5d7297b49056cdcfc1f59d5f0078"
+        },
+        {
+          "path": "Assets/synthetic-004.asset",
+          "bytes": 11215,
+          "sha256": "53cc68531d785d5452f43a29cb2df0cfd8d382c66030a3a6f52d385d64213038"
+        },
+        {
+          "path": "Assets/synthetic-005.asset",
+          "bytes": 11215,
+          "sha256": "64497897877a46cdb72902e24ed4692ab607cf61f28f1dcc62f5a515c0df1155"
+        },
+        {
+          "path": "Assets/synthetic-006.asset",
+          "bytes": 11215,
+          "sha256": "adf67c5941e20b2076f78ca2e29b965e26d14a21ee9228a90db9616ebcaa2931"
+        },
+        {
+          "path": "Assets/synthetic-007.asset",
+          "bytes": 11215,
+          "sha256": "1da883395c202e6abe3f735394fbc9913b97f4ce7c1ac1b0bc01118155f91f2e"
+        }
+      ],
+      "inventorySha256": "471c8151531c5177717fef5fd160c1664cccf68a89a93dc936dd49e66a7efc47"
+    }
+  },
+  "comparison": {
+    "status": "PASS",
+    "baselineCommit": "1a3bd7ce3791cdd18a0eda7fd569b46e5cdd2b05",
+    "candidateCommit": "aa4b92cd9e8f6189ee3ab8e59a86e231513d5486",
+    "baselineBuildIds": [
+      "compute-unity-b3"
+    ],
+    "candidateBuildId": "compute-unity-b4",
+    "candidateAnalyzerVersion": "unity-analysis-0.3.1",
+    "baselineAnalyzerVersion": "unity-analysis-0.3.0",
+    "baselineAnalyzerVersionSource": "UNITY_STAGE_COMPARE_ANALYZER_VERSION",
+    "normalization": {
+      "paths": [
+        "before.analyzerVersion",
+        "after.analyzerVersion"
+      ],
+      "value": "unity-analysis-0.3.0",
+      "scope": "Cross-version comparison only; absent after remains null. Raw semanticSha256 and actual versions are preserved separately. No ruleSetVersion, functional value, path or hash is excluded or normalized."
+    },
+    "metric": "outerWallMs",
+    "reason": "Caller elapsed includes final report validation/freeze and fresh pool construction; report.metrics.totalMs excludes final validation/freeze.",
+    "datasets": [
+      {
+        "dataset": "small",
+        "fixtureSha256": "38349dda6a1d7c139937a1ddd3c42ff6e38521f6b8de9c335c550e625f8555f9",
+        "baselineSemanticSha256": "295f1ba830c8035b506d3caea4adc2c795965aa65514821b643c6804b2c7e850",
+        "candidateRawSemanticSha256": [
+          "d4a70639d99cfb20d169ef2574dc85bf0825a70552480f0e523f83d29c8b13bc"
+        ],
+        "candidateComparisonSemanticSha256": "295f1ba830c8035b506d3caea4adc2c795965aa65514821b643c6804b2c7e850",
+        "equal": true
+      },
+      {
+        "dataset": "manySmall",
+        "fixtureSha256": "67566bf18fd573321e8d522f895655479c772b09ff4702fc9b35ac4f9b7be922",
+        "baselineSemanticSha256": "949b6f545e18305f76b25bfb344bbf174c0455030559030826936ae8366777dc",
+        "candidateRawSemanticSha256": [
+          "be63eed65c9126f523d4ffd943c02063f6c5d7ed491698455eb0ab32490b11fd"
+        ],
+        "candidateComparisonSemanticSha256": "949b6f545e18305f76b25bfb344bbf174c0455030559030826936ae8366777dc",
+        "equal": true
+      },
+      {
+        "dataset": "large",
+        "fixtureSha256": "471c8151531c5177717fef5fd160c1664cccf68a89a93dc936dd49e66a7efc47",
+        "baselineSemanticSha256": "df90b24612b2b25a634154cd8236dffe6ea600504bb0fdb671fa54662f2d21bf",
+        "candidateRawSemanticSha256": [
+          "9a4bf971f7b0dfa2c4933bc0cbb1c5f43309a64cb73311928bc7ef7c49d95f9f"
+        ],
+        "candidateComparisonSemanticSha256": "df90b24612b2b25a634154cd8236dffe6ea600504bb0fdb671fa54662f2d21bf",
+        "equal": true
+      }
+    ],
+    "groups": [
+      {
+        "key": "fresh/small/1/false",
+        "baselineMedianMs": 505.205962,
+        "candidateMedianMs": 149.16425300000003,
+        "improvementPercent": 70.47456597513391
+      },
+      {
+        "key": "fresh/small/1/true",
+        "baselineMedianMs": 478.7424659999997,
+        "candidateMedianMs": 143.44248300000004,
+        "improvementPercent": 70.0376521434386
+      },
+      {
+        "key": "fresh/small/2/false",
+        "baselineMedianMs": 299.0826650000008,
+        "candidateMedianMs": 148.96998799999983,
+        "improvementPercent": 50.191032302056215
+      },
+      {
+        "key": "fresh/small/2/true",
+        "baselineMedianMs": 301.535879,
+        "candidateMedianMs": 172.4765950000001,
+        "improvementPercent": 42.80063932292446
+      },
+      {
+        "key": "fresh/small/4/false",
+        "baselineMedianMs": 226.11252799999966,
+        "candidateMedianMs": 168.5038129999998,
+        "improvementPercent": 25.477896120819953
+      },
+      {
+        "key": "fresh/small/4/true",
+        "baselineMedianMs": 212.42208500000015,
+        "candidateMedianMs": 151.3731810000004,
+        "improvementPercent": 28.739433566900413
+      },
+      {
+        "key": "fresh/manySmall/1/false",
+        "baselineMedianMs": 4358.028905000003,
+        "candidateMedianMs": 645.491,
+        "improvementPercent": 85.18846446246782
+      },
+      {
+        "key": "fresh/manySmall/1/true",
+        "baselineMedianMs": 4297.930222000003,
+        "candidateMedianMs": 636.4968799999988,
+        "improvementPercent": 85.19061857398394
+      },
+      {
+        "key": "fresh/manySmall/2/false",
+        "baselineMedianMs": 2399.136154,
+        "candidateMedianMs": 393.72405700000127,
+        "improvementPercent": 83.58892402402597
+      },
+      {
+        "key": "fresh/manySmall/2/true",
+        "baselineMedianMs": 2515.8828639999992,
+        "candidateMedianMs": 386.59754299999986,
+        "improvementPercent": 84.63372247842457
+      },
+      {
+        "key": "fresh/manySmall/4/false",
+        "baselineMedianMs": 1432.3293980000017,
+        "candidateMedianMs": 240.43812900000012,
+        "improvementPercent": 83.2134892060632
+      },
+      {
+        "key": "fresh/manySmall/4/true",
+        "baselineMedianMs": 1376.6189789999917,
+        "candidateMedianMs": 251.39266599999974,
+        "improvementPercent": 81.73839894444741
+      },
+      {
+        "key": "fresh/large/1/false",
+        "baselineMedianMs": 742.7134870000009,
+        "candidateMedianMs": 254.27090999999928,
+        "improvementPercent": 65.76460311404053
+      },
+      {
+        "key": "fresh/large/1/true",
+        "baselineMedianMs": 702.3847490000044,
+        "candidateMedianMs": 252.985563000002,
+        "improvementPercent": 63.981911144827485
+      },
+      {
+        "key": "fresh/large/2/false",
+        "baselineMedianMs": 441.27494300001126,
+        "candidateMedianMs": 268.0057689999994,
+        "improvementPercent": 39.265581866498
+      },
+      {
+        "key": "fresh/large/2/true",
+        "baselineMedianMs": 480.1194620000024,
+        "candidateMedianMs": 253.79586500000005,
+        "improvementPercent": 47.139017455618415
+      },
+      {
+        "key": "fresh/large/4/false",
+        "baselineMedianMs": 343.45513400000345,
+        "candidateMedianMs": 267.46022900000025,
+        "improvementPercent": 22.12658873808025
+      },
+      {
+        "key": "fresh/large/4/true",
+        "baselineMedianMs": 347.70488500001375,
+        "candidateMedianMs": 268.11858199999915,
+        "improvementPercent": 22.889037926519627
+      },
+      {
+        "key": "warm-initial/small/2/false",
+        "baselineMedianMs": 318.27621499999077,
+        "candidateMedianMs": 191.27774900000077,
+        "improvementPercent": 39.90196565583567
+      },
+      {
+        "key": "warm/small/2/false",
+        "baselineMedianMs": 326.5998350000009,
+        "candidateMedianMs": 139.37783399999898,
+        "improvementPercent": 57.324585298703965
+      },
+      {
+        "key": "warm-initial/small/2/true",
+        "baselineMedianMs": 298.2483329999959,
+        "candidateMedianMs": 130.17593999999735,
+        "improvementPercent": 56.353170966424436
+      },
+      {
+        "key": "warm/small/2/true",
+        "baselineMedianMs": 297.50162999999884,
+        "candidateMedianMs": 139.60888500000146,
+        "improvementPercent": 53.07290081066043
+      },
+      {
+        "key": "warm-initial/manySmall/2/false",
+        "baselineMedianMs": 2662.228223000013,
+        "candidateMedianMs": 380.7803669999994,
+        "improvementPercent": 85.69692997353528
+      },
+      {
+        "key": "warm/manySmall/2/false",
+        "baselineMedianMs": 2405.8002780000097,
+        "candidateMedianMs": 387.9302860000025,
+        "improvementPercent": 83.87520819797658
+      },
+      {
+        "key": "warm-initial/manySmall/2/true",
+        "baselineMedianMs": 2456.4143829999957,
+        "candidateMedianMs": 376.2162470000003,
+        "improvementPercent": 84.684333001644
+      },
+      {
+        "key": "warm/manySmall/2/true",
+        "baselineMedianMs": 2384.864474000002,
+        "candidateMedianMs": 385.13148100000035,
+        "improvementPercent": 83.85101186257178
+      }
+    ],
+    "fixtureAndSemanticEquality": true
+  },
+  "groups": [
+    {
+      "key": "fresh/small/1/false",
+      "baselineMedianMs": 505.205962,
+      "candidateMedianMs": 149.16425300000003,
+      "improvementPercent": 70.47456597513391,
+      "baseline": {
+        "samples": 5,
+        "min": 465.460023,
+        "median": 505.205962,
+        "max": 513.3007680000001
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 140.521727,
+        "median": 149.16425300000003,
+        "max": 180.44464899999997
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 424.40478700000017,
+          "median": 457.28431900000004,
+          "max": 472.3491869999998
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 23.29736200000002,
+          "median": 25.33434699999998,
+          "max": 27.921996999999465
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 7.9788750000006985,
+          "median": 8.468065000000081,
+          "max": 8.696208000000183
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.1351830000000973,
+          "median": 0.19020400000044901,
+          "max": 0.4278300000000428
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 423.90253499999983,
+          "median": 456.1446109999999,
+          "max": 471.04063699999915
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 3.080914999999777,
+          "median": 3.241667000000689,
+          "max": 5.5592289999999736
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.20217800000000352,
+          "median": 0.2623139999996056,
+          "max": 0.3443880000000945
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.40834300000005896,
+          "median": 0.5198189999999556,
+          "max": 0.5260889999999563
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.8304450000009638,
+          "median": 0.9885229999995317,
+          "max": 1.2474180000001525
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.8699380000000474,
+          "median": 4.16079400000001,
+          "max": 4.427436000000398
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.20178500000019994,
+          "median": 0.21983200000022407,
+          "max": 0.2831939999998667
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 117.26258100000001,
+          "median": 125.68653899999993,
+          "max": 140.445809
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 9.030763999999976,
+          "median": 9.837739,
+          "max": 11.791412999999977
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 6.621600999999828,
+          "median": 7.2347399999999595,
+          "max": 8.483131000000071
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.0415619999998853,
+          "median": 0.05889900000011039,
+          "max": 0.1559129999999982
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 116.29604700000004,
+          "median": 125.20249799999999,
+          "max": 141.00646400000005
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.8203800000000001,
+          "median": 0.8808410000000322,
+          "max": 2.2356820000000113
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.09558400000003076,
+          "median": 0.13114599999994425,
+          "max": 0.21584300000000667
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.38843199999996614,
+          "median": 0.45636400000000776,
+          "max": 0.6727990000000261
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.46833200000003217,
+          "median": 0.5593090000000984,
+          "max": 0.7954330000000027
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 4.257534999999962,
+          "median": 4.854099000000019,
+          "max": 5.863243000000011
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.20272399999998925,
+          "median": 0.21107600000004823,
+          "max": 0.2449579999999969
+        }
+      }
+    },
+    {
+      "key": "fresh/small/1/true",
+      "baselineMedianMs": 478.7424659999997,
+      "candidateMedianMs": 143.44248300000004,
+      "improvementPercent": 70.0376521434386,
+      "baseline": {
+        "samples": 5,
+        "min": 452.46971799999983,
+        "median": 478.7424659999997,
+        "max": 483.34436000000005
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 134.55219499999998,
+        "median": 143.44248300000004,
+        "max": 153.08448799999996
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 416.78353000000016,
+          "median": 441.97776900000144,
+          "max": 445.51042600000073
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 23.605580000001282,
+          "median": 24.56101400000034,
+          "max": 25.44314300000042
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 3.9139209999998457,
+          "median": 4.300932999999532,
+          "max": 4.443279999999504
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.13409200000023702,
+          "median": 0.13564499999938562,
+          "max": 0.3066930000013599
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.8760229999998046,
+          "median": 1.0253179999999702,
+          "max": 3.5306729999997515
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 415.8036070000003,
+          "median": 440.60299199999963,
+          "max": 444.5975150000004
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 2.604016999999658,
+          "median": 2.9619649999985995,
+          "max": 3.522250000000895
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.18194600000060746,
+          "median": 0.2309770000001663,
+          "max": 0.27180999999927735
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.34739300000001094,
+          "median": 0.3680869999998322,
+          "max": 0.45060100000046077
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.7068069999991167,
+          "median": 0.7808289999998124,
+          "max": 1.2211430000006658
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0009719999998196727,
+          "median": 0.0010619999998198182,
+          "max": 0.0011419999996178376
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19396299999971234,
+          "median": 0.2009130000001278,
+          "max": 0.25255100000049424
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 118.71589599999993,
+          "median": 128.02275299999997,
+          "max": 131.77550099999996
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 8.350072000000182,
+          "median": 8.878175000000056,
+          "max": 10.345575000000167
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 2.110053999999991,
+          "median": 2.380841000000146,
+          "max": 2.865176999999676
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.02694999999994252,
+          "median": 0.028684000000112064,
+          "max": 0.0319569999999203
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.8467499999999291,
+          "median": 1.060549999999921,
+          "max": 3.421361000000047
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 118.20061099999998,
+          "median": 127.38242799999966,
+          "max": 131.23009299999967
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.5989990000000489,
+          "median": 0.613580000000411,
+          "max": 0.7577459999999974
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.09879799999998795,
+          "median": 0.1284019999998236,
+          "max": 0.1370160000000169
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.3435349999999744,
+          "median": 0.4019630000000234,
+          "max": 0.41503199999988283
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.35798799999997755,
+          "median": 0.3951819999997497,
+          "max": 0.44516699999985576
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0009519999998701678,
+          "median": 0.0010520000000724394,
+          "max": 0.001592999999957101
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.2186370000001716,
+          "median": 0.24209300000006806,
+          "max": 0.5495750000000044
+        }
+      }
+    },
+    {
+      "key": "fresh/small/2/false",
+      "baselineMedianMs": 299.0826650000008,
+      "candidateMedianMs": 148.96998799999983,
+      "improvementPercent": 50.191032302056215,
+      "baseline": {
+        "samples": 5,
+        "min": 282.48965099999987,
+        "median": 299.0826650000008,
+        "max": 300.90919399999984
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 135.56140400000004,
+        "median": 148.96998799999983,
+        "max": 153.89137200000005
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 444.4730790000003,
+          "median": 457.5788990000019,
+          "max": 467.89572899999894
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 24.61865999999918,
+          "median": 26.355435999999827,
+          "max": 28.867936999999984
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 7.920794000001479,
+          "median": 8.940693000000465,
+          "max": 10.277694000000338
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.08248399999956746,
+          "median": 0.10135400000035588,
+          "max": 0.15805899999941175
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 444.20149200000014,
+          "median": 455.9118350000008,
+          "max": 466.9449149999991
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 2.1764249999996537,
+          "median": 2.479417999999896,
+          "max": 3.4048550000015894
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.14540800000031595,
+          "median": 0.15634699999918666,
+          "max": 0.40502199999991717
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.3443699999997989,
+          "median": 0.4146309999996447,
+          "max": 0.6737659999989773
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.6148389999998471,
+          "median": 0.6767300000001342,
+          "max": 0.9817429999993692
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.930406000000403,
+          "median": 4.188224999999875,
+          "max": 5.487466999999924
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19859699999960867,
+          "median": 0.20755299999927956,
+          "max": 0.21738800000002811
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 116.34239700000035,
+          "median": 126.13765699999999,
+          "max": 133.38264100000015
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 8.985175000000254,
+          "median": 10.112845000000107,
+          "max": 11.472415000000183
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 6.02236199999993,
+          "median": 6.481089000000338,
+          "max": 7.679166000000123
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.027110999999877095,
+          "median": 0.029502999999976964,
+          "max": 0.09506299999998191
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 115.88518599999998,
+          "median": 125.56819299999961,
+          "max": 133.02411400000005
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.671697000000222,
+          "median": 0.7150719999997364,
+          "max": 0.8187679999996362
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.09389099999998507,
+          "median": 0.11555400000042937,
+          "max": 0.1273110000001907
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.33861700000011297,
+          "median": 0.38020099999971535,
+          "max": 0.4650770000000648
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.3819939999998496,
+          "median": 0.44233399999984613,
+          "max": 0.5606099999999969
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.7836439999998674,
+          "median": 4.085497000000032,
+          "max": 4.432577999999921
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19673499999998967,
+          "median": 0.22276400000009744,
+          "max": 0.30118099999981496
+        }
+      }
+    },
+    {
+      "key": "fresh/small/2/true",
+      "baselineMedianMs": 301.535879,
+      "candidateMedianMs": 172.4765950000001,
+      "improvementPercent": 42.80063932292446,
+      "baseline": {
+        "samples": 5,
+        "min": 285.87970399999995,
+        "median": 301.535879,
+        "max": 306.3526329999995
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 147.50493600000027,
+        "median": 172.4765950000001,
+        "max": 189.82285899999988
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 441.93195500000184,
+          "median": 469.1720320000004,
+          "max": 489.7612790000003
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 23.995998000001237,
+          "median": 24.40059100000053,
+          "max": 26.6400050000002
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 4.312321000000338,
+          "median": 4.587069999999585,
+          "max": 5.010262999999213
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.08983399999851827,
+          "median": 0.09683700000005047,
+          "max": 0.10755999999855703
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.8810969999994995,
+          "median": 1.0898000000006505,
+          "max": 1.4464029999999184
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 440.06507500000043,
+          "median": 467.92368799999804,
+          "max": 488.429634000001
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 2.064257999999427,
+          "median": 2.1791490000014164,
+          "max": 2.7096709999996165
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.13198699999793462,
+          "median": 0.13842599999952654,
+          "max": 0.17452900000171212
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.30680799999936426,
+          "median": 0.3337690000025759,
+          "max": 0.35684500000024855
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.6785630000003948,
+          "median": 0.7107819999991989,
+          "max": 0.802892000000611
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0009909999998853891,
+          "median": 0.0010309999997843988,
+          "max": 0.0012219999998706044
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.1937899999993533,
+          "median": 0.20042999999986932,
+          "max": 0.24664900000061607
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 131.30998800000043,
+          "median": 154.11869300000035,
+          "max": 165.50579199999993
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 9.239255999999841,
+          "median": 10.249561000000085,
+          "max": 10.433897999999772
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 2.5770449999999983,
+          "median": 2.6557629999997516,
+          "max": 2.818406000000323
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.02924399999983507,
+          "median": 0.03070599999955448,
+          "max": 0.0415419999999358
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.9439160000001721,
+          "median": 1.3090979999997217,
+          "max": 3.5748610000000554
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 130.42022500000076,
+          "median": 153.83274500000016,
+          "max": 164.63772000000017
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.6005109999996421,
+          "median": 0.6809610000000248,
+          "max": 1.0195079999998597
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.09816799999998693,
+          "median": 0.11400199999980032,
+          "max": 0.18660900000031688
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.3186479999999392,
+          "median": 0.3803100000000086,
+          "max": 0.3993789999994988
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.3736410000001342,
+          "median": 0.3904449999999997,
+          "max": 0.45085599999993065
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.001071999999567197,
+          "median": 0.001111999999920954,
+          "max": 0.001803000000109023
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.21333999999978914,
+          "median": 0.21632499999986976,
+          "max": 0.29260900000008405
+        }
+      }
+    },
+    {
+      "key": "fresh/small/4/false",
+      "baselineMedianMs": 226.11252799999966,
+      "candidateMedianMs": 168.5038129999998,
+      "improvementPercent": 25.477896120819953,
+      "baseline": {
+        "samples": 5,
+        "min": 217.1012609999998,
+        "median": 226.11252799999966,
+        "max": 253.05336499999976
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 151.45902999999998,
+        "median": 168.5038129999998,
+        "max": 188.424031
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 454.82735499999944,
+          "median": 462.85529099999985,
+          "max": 520.9794340000008
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 27.798954999998386,
+          "median": 30.364653000000544,
+          "max": 30.831199999998717
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 7.918951000000561,
+          "median": 9.106490000000122,
+          "max": 9.47751799999969
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.0657969999992929,
+          "median": 0.07099700000253506,
+          "max": 0.0798689999992348
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 453.7169030000059,
+          "median": 461.49719900000036,
+          "max": 519.8564639999986
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 1.6379410000008647,
+          "median": 1.7302979999994932,
+          "max": 3.641555000001972
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.1221930000001521,
+          "median": 0.12912299999879906,
+          "max": 0.1313269999991462
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.312778000000435,
+          "median": 0.32292400000187627,
+          "max": 0.5873679999986052
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.5843329999997877,
+          "median": 0.6357809999972233,
+          "max": 0.8113240000020596
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.696538000000146,
+          "median": 4.28332600000067,
+          "max": 4.479778999999326
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.18795099999988452,
+          "median": 0.20589800000016112,
+          "max": 0.2474500000007538
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 124.71452200000022,
+          "median": 145.59431500000028,
+          "max": 161.85998400000017
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 9.84367199999997,
+          "median": 10.686321000000135,
+          "max": 14.956398999999692
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 6.492115999999896,
+          "median": 6.682812000000013,
+          "max": 7.41342799999984
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.02658000000019456,
+          "median": 0.028403000000253087,
+          "max": 0.03367099999968559
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 124.57913899999994,
+          "median": 145.85486200000014,
+          "max": 163.28474900000037
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.5913580000005823,
+          "median": 0.6723589999996875,
+          "max": 1.266153000000486
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.08980400000018562,
+          "median": 0.09557299999960378,
+          "max": 0.1545910000004369
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.32525699999996505,
+          "median": 0.34164300000020376,
+          "max": 0.5708160000003772
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.374641999999767,
+          "median": 0.4112270000000535,
+          "max": 2.5081410000002506
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.8391579999997703,
+          "median": 4.083553999999822,
+          "max": 5.012818000000152
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.2004309999997531,
+          "median": 0.24708099999998012,
+          "max": 0.4276310000000194
+        }
+      }
+    },
+    {
+      "key": "fresh/small/4/true",
+      "baselineMedianMs": 212.42208500000015,
+      "candidateMedianMs": 151.3731810000004,
+      "improvementPercent": 28.739433566900413,
+      "baseline": {
+        "samples": 5,
+        "min": 205.43727300000137,
+        "median": 212.42208500000015,
+        "max": 223.68996499999957
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 139.8931109999994,
+        "median": 151.3731810000004,
+        "max": 152.70334099999945
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 425.04583999999886,
+          "median": 456.97625900000276,
+          "max": 463.4543969999995
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 24.825528999997914,
+          "median": 26.081778000003396,
+          "max": 28.81327799999781
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 4.087175000002389,
+          "median": 4.487742999999682,
+          "max": 4.897509000000355
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.07282999999733875,
+          "median": 0.08349599999928614,
+          "max": 0.10617099999763013
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.707457999998951,
+          "median": 0.7622400000000198,
+          "max": 1.0004059999992023
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 423.7116050000004,
+          "median": 455.4936509999952,
+          "max": 462.65416299999197
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 1.6532230000029813,
+          "median": 1.9802920000020094,
+          "max": 2.4443869999995513
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.13071599999966566,
+          "median": 0.14300399999956426,
+          "max": 0.15425099999993108
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.3352469999990717,
+          "median": 0.36708200000066427,
+          "max": 0.41401500000029046
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.5974530000003142,
+          "median": 0.778809999997975,
+          "max": 0.8191449999994802
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0008920000000216532,
+          "median": 0.001001999999061809,
+          "max": 0.0016620000005787006
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.18925300000046263,
+          "median": 0.2184400000005553,
+          "max": 0.30470900000000256
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 123.718292999999,
+          "median": 133.0737879999997,
+          "max": 133.4598330000008
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 9.004433000000972,
+          "median": 9.665955999999824,
+          "max": 12.014679000000797
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 2.1042260000003807,
+          "median": 2.443525000000591,
+          "max": 3.8783170000006066
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.027161000000432978,
+          "median": 0.030635999999503838,
+          "max": 0.06844300000011572
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.7747620000000097,
+          "median": 1.0251469999993787,
+          "max": 1.2500099999997474
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 123.14545299999827,
+          "median": 131.52596600000015,
+          "max": 132.97863499999858
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.6676409999990938,
+          "median": 0.7429350000006707,
+          "max": 1.8244460000005347
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.09722599999986414,
+          "median": 0.09759699999995064,
+          "max": 0.11990999999943597
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.3199299999996583,
+          "median": 0.34357599999930244,
+          "max": 0.4603110000007291
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.3827840000003562,
+          "median": 0.39820700000018405,
+          "max": 0.6005010000008042
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0009209999998347485,
+          "median": 0.0010709999996834085,
+          "max": 0.001142000000072585
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.2107160000005024,
+          "median": 0.2508669999997437,
+          "max": 0.660000000000764
+        }
+      }
+    },
+    {
+      "key": "fresh/manySmall/1/false",
+      "baselineMedianMs": 4358.028905000003,
+      "candidateMedianMs": 645.491,
+      "improvementPercent": 85.18846446246782,
+      "baseline": {
+        "samples": 5,
+        "min": 4195.079407000001,
+        "median": 4358.028905000003,
+        "max": 4418.387045000001
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 624.9170919999997,
+        "median": 645.491,
+        "max": 674.5530479999998
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 3883.5597209999905,
+          "median": 4038.934323000023,
+          "max": 4099.7372
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 228.8394650000082,
+          "median": 235.7143680000081,
+          "max": 241.9932599999811
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 34.14352699999654,
+          "median": 34.88582000000315,
+          "max": 36.04955499999778
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 1.0267690000328002,
+          "median": 1.4397049999788578,
+          "max": 1.777380000003177
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 3876.087959999997,
+          "median": 4035.635219,
+          "max": 4091.8862690000187
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 24.780448999994405,
+          "median": 25.62423099998705,
+          "max": 29.70785299999625
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 1.5594469999959983,
+          "median": 1.5947939999750815,
+          "max": 1.6382119999889255
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 2.10551100001976,
+          "median": 2.3661579999752576,
+          "max": 2.7025900000007823
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 6.032541000011406,
+          "median": 6.464489999998477,
+          "max": 6.9742260000093665
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.9418320000004314,
+          "median": 4.274287000000186,
+          "max": 5.168113000003359
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.1938929999996617,
+          "median": 0.2291960000002291,
+          "max": 0.3924409999999625
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 541.6215120000006,
+          "median": 563.8637960000005,
+          "max": 587.2810010000003
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 49.4559590000008,
+          "median": 49.7542450000019,
+          "max": 54.99785999999949
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 11.231712000000698,
+          "median": 11.842534000000342,
+          "max": 13.13133199999811
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.20950300000095012,
+          "median": 0.2290629999997691,
+          "max": 0.3546599999990576
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 541.7882040000013,
+          "median": 564.0277459999998,
+          "max": 586.818280000004
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 3.859175000000505,
+          "median": 4.122341999999662,
+          "max": 4.37228899999991
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.5756819999996878,
+          "median": 0.6139080000011745,
+          "max": 0.9137279999995371
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 1.4881359999999404,
+          "median": 1.664984000001823,
+          "max": 2.215594999998757
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 1.5056750000003376,
+          "median": 1.5210589999978765,
+          "max": 1.8609230000001844
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 4.149959000000308,
+          "median": 4.418555999999626,
+          "max": 5.088141000000178
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.20766100000037113,
+          "median": 0.21453999999994267,
+          "max": 0.6661859999994704
+        }
+      }
+    },
+    {
+      "key": "fresh/manySmall/1/true",
+      "baselineMedianMs": 4297.930222000003,
+      "candidateMedianMs": 636.4968799999988,
+      "improvementPercent": 85.19061857398394,
+      "baseline": {
+        "samples": 5,
+        "min": 4226.016419000007,
+        "median": 4297.930222000003,
+        "max": 4384.823122000002
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 591.3971169999986,
+        "median": 636.4968799999988,
+        "max": 684.3566860000001
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 3927.100373000023,
+          "median": 4004.077165999981,
+          "max": 4074.933778999988
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 226.67234299999836,
+          "median": 231.81426799996552,
+          "max": 239.1165289999626
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 29.783753999945475,
+          "median": 30.49045400004252,
+          "max": 32.671624999937194
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.8052260000040405,
+          "median": 0.8891690000018571,
+          "max": 0.983602000051178
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.729072999994969,
+          "median": 0.9668339999989257,
+          "max": 1.860672999995586
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 3919.4993110000796,
+          "median": 3994.0512669999443,
+          "max": 4066.559594000086
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 24.078949000009743,
+          "median": 25.059098000012455,
+          "max": 25.45679399997607
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 1.3315560000119149,
+          "median": 1.4237119999961578,
+          "max": 1.4986629999621073
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 2.128158999978041,
+          "median": 2.227340000037657,
+          "max": 2.4556050000101095
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 4.77639999998064,
+          "median": 5.3262700000123,
+          "max": 6.075687000029575
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.001061999995727092,
+          "median": 0.0012020000067423098,
+          "max": 0.0014420000006793998
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19966099999874132,
+          "median": 0.20531900000059977,
+          "max": 0.3119909999950323
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 516.8215100000016,
+          "median": 563.2903889999961,
+          "max": 601.8907450000006
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 47.816576000004716,
+          "median": 48.837468000005174,
+          "max": 52.455298000001676
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 6.837423999997554,
+          "median": 7.4002179999934015,
+          "max": 7.588941000001796
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.212137000000439,
+          "median": 0.23726699999861012,
+          "max": 0.26387500000146247
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 1.1162139999996725,
+          "median": 1.3279810000003636,
+          "max": 1.7144210000005842
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 517.865699,
+          "median": 562.7183670000031,
+          "max": 602.1800460000004
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 3.6511480000008305,
+          "median": 4.029904000000897,
+          "max": 4.570634999998219
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.5793700000012905,
+          "median": 0.720367999998416,
+          "max": 1.0740799999975934
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 1.482270000000426,
+          "median": 1.511586000002353,
+          "max": 2.004345999997895
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 1.5881519999984448,
+          "median": 1.6205010000012408,
+          "max": 2.905055999999604
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0009609999997337582,
+          "median": 0.001051999999617692,
+          "max": 0.0011009999998350395
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19889800000055402,
+          "median": 0.20335499999964668,
+          "max": 0.2529690000010305
+        }
+      }
+    },
+    {
+      "key": "fresh/manySmall/2/false",
+      "baselineMedianMs": 2399.136154,
+      "candidateMedianMs": 393.72405700000127,
+      "improvementPercent": 83.58892402402597,
+      "baseline": {
+        "samples": 5,
+        "min": 2283.7492100000018,
+        "median": 2399.136154,
+        "max": 2486.3955459999997
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 373.6160180000006,
+        "median": 393.72405700000127,
+        "max": 419.3012340000005
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 4086.8941949999717,
+          "median": 4251.530779000059,
+          "max": 4363.096687999998
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 232.34095100002742,
+          "median": 248.92822500005423,
+          "max": 261.8129810000537
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 33.48003800002334,
+          "median": 36.309299000036845,
+          "max": 39.767964999977266
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.5094220000464702,
+          "median": 0.6709219999829656,
+          "max": 0.7275349999617902
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 4079.592591999928,
+          "median": 4243.786132999958,
+          "max": 4356.38546499997
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 20.26999699998123,
+          "median": 21.377508000041416,
+          "max": 21.934886999959417
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 1.092378999972425,
+          "median": 1.1511330000066664,
+          "max": 1.3315829999555717
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 2.034373999973468,
+          "median": 2.819281000025512,
+          "max": 3.037863000012294
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 3.862896000027831,
+          "median": 4.257420999965689,
+          "max": 4.444903000010527
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.770133000005444,
+          "median": 4.119768999997177,
+          "max": 5.9173679999948945
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19368099999701371,
+          "median": 0.20739200000389246,
+          "max": 0.24443800000153715
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 554.8440919999975,
+          "median": 593.8911099999987,
+          "max": 648.5056990000012
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 50.98090299999967,
+          "median": 56.3442660000037,
+          "max": 58.75964500000009
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 11.60529200000201,
+          "median": 11.719779999999446,
+          "max": 12.178376000001663
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.12883399999736866,
+          "median": 0.14644099999713944,
+          "max": 0.4648529999976745
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 554.936987000001,
+          "median": 593.9771149999906,
+          "max": 649.5348380000014
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 3.194140999996307,
+          "median": 3.4582380000028934,
+          "max": 3.507841999999073
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.4947009999978036,
+          "median": 0.5729890000002342,
+          "max": 0.6419720000012603
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 1.4864569999990636,
+          "median": 1.9364039999982197,
+          "max": 2.0260880000023462
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 1.4254280000022845,
+          "median": 1.5371980000036274,
+          "max": 1.599450000001525
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.9361170000011043,
+          "median": 4.029393000000709,
+          "max": 4.9088620000002265
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.205417999999554,
+          "median": 0.24173200000041106,
+          "max": 0.332258999998885
+        }
+      }
+    },
+    {
+      "key": "fresh/manySmall/2/true",
+      "baselineMedianMs": 2515.8828639999992,
+      "candidateMedianMs": 386.59754299999986,
+      "improvementPercent": 84.63372247842457,
+      "baseline": {
+        "samples": 5,
+        "min": 2359.9264140000014,
+        "median": 2515.8828639999992,
+        "max": 2585.3609359999973
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 350.4287890000014,
+        "median": 386.59754299999986,
+        "max": 409.45193199999994
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 4193.285157000049,
+          "median": 4476.0910429999785,
+          "max": 4612.060015999996
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 237.58228400003281,
+          "median": 256.99992100003874,
+          "max": 270.9405909999914
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 30.10324999994191,
+          "median": 32.831455999898026,
+          "max": 37.34323599995696
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.6539429999829736,
+          "median": 0.723723999937647,
+          "max": 0.7541379999456694
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.8857830000051763,
+          "median": 1.2160239999939222,
+          "max": 1.4135970000061207
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 4186.26956400006,
+          "median": 4466.683729000026,
+          "max": 4604.023900000022
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 19.06837299992185,
+          "median": 21.296431999930064,
+          "max": 23.954263999970863
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 1.18737299994973,
+          "median": 1.337418000024627,
+          "max": 1.588237999996636
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 2.3657010000606533,
+          "median": 2.517323000021861,
+          "max": 2.863993999941158
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 4.016442999964056,
+          "median": 4.545509000046877,
+          "max": 5.005009000102291
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0010409999958937988,
+          "median": 0.0010909999982686713,
+          "max": 0.0015120000025490299
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19193800000357442,
+          "median": 0.2151130000129342,
+          "max": 0.2472120000020368
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 532.2191480000038,
+          "median": 594.6069909999969,
+          "max": 631.0318709999974
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 48.156073999998625,
+          "median": 57.754126999998334,
+          "max": 59.05522500000188
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 7.335997999995016,
+          "median": 7.715404999999009,
+          "max": 9.163854999993418
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.14347599999746308,
+          "median": 0.15831399999842688,
+          "max": 0.17484399999921152
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.832868999999846,
+          "median": 0.9813460000004852,
+          "max": 1.5218710000008286
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 531.0955240000039,
+          "median": 593.3775520000017,
+          "max": 631.4876439999935
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 2.715260999997554,
+          "median": 3.23935700000402,
+          "max": 3.5099109999955544
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.5127579999989393,
+          "median": 0.5381570000008651,
+          "max": 0.7291510000013659
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 1.4712780000027124,
+          "median": 1.4823820000037813,
+          "max": 1.8453879999997298
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 1.3967440000014903,
+          "median": 1.5340009999963513,
+          "max": 1.7002100000008795
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0010220000003755558,
+          "median": 0.0012620000015886035,
+          "max": 0.0014730000002600718
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.20300400000087393,
+          "median": 0.21800699999948847,
+          "max": 0.2836059999990539
+        }
+      }
+    },
+    {
+      "key": "fresh/manySmall/4/false",
+      "baselineMedianMs": 1432.3293980000017,
+      "candidateMedianMs": 240.43812900000012,
+      "improvementPercent": 83.2134892060632,
+      "baseline": {
+        "samples": 5,
+        "min": 1365.6068069999892,
+        "median": 1432.3293980000017,
+        "max": 1450.8472330000077
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 231.78634899999997,
+        "median": 240.43812900000012,
+        "max": 265.9072789999991
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 4458.95784699994,
+          "median": 4653.123635000069,
+          "max": 4782.231276999984
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 268.5481299998937,
+          "median": 278.2136989999999,
+          "max": 347.17513100011274
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 34.946009999970556,
+          "median": 37.256139000019175,
+          "max": 41.23185600002762
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.42582499992568046,
+          "median": 0.43606399997952394,
+          "max": 0.4572259999840753
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 4454.980327000027,
+          "median": 4624.39495099998,
+          "max": 4729.4848209998745
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 15.387032999948133,
+          "median": 16.75490300002275,
+          "max": 19.09596399993461
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.9233089999906952,
+          "median": 0.9836559999093879,
+          "max": 1.0997700000007171
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 2.469723000016529,
+          "median": 2.6946659999375697,
+          "max": 4.349230000007083
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 3.92326000011235,
+          "median": 4.170749999990221,
+          "max": 4.298692999858758
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.85477799999353,
+          "median": 4.046155999996699,
+          "max": 4.669503999990411
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.20798300000024028,
+          "median": 0.21499400000902824,
+          "max": 0.3088750000024447
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 560.8379960000038,
+          "median": 589.7415599999986,
+          "max": 659.0882839999995
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 58.17763500000001,
+          "median": 60.84478500000296,
+          "max": 72.5761480000001
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 11.268384000000879,
+          "median": 12.298718000000008,
+          "max": 16.132391999997708
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.08975599999939732,
+          "median": 0.10290600000007544,
+          "max": 0.11895999999978812
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 560.7295230000036,
+          "median": 588.3414060000014,
+          "max": 654.7142290000011
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 2.1866449999997712,
+          "median": 2.3073479999984556,
+          "max": 2.9460159999980533
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.47779600000285427,
+          "median": 0.5412509999987378,
+          "max": 0.7832859999998618
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 1.6194259999992937,
+          "median": 1.8912149999996473,
+          "max": 1.9054749999959313
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 1.2563539999991917,
+          "median": 1.3693620000030933,
+          "max": 1.5940990000017337
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 4.0000660000005155,
+          "median": 4.214977999999974,
+          "max": 5.0833199999997305
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.20612900000014633,
+          "median": 0.3182070000002568,
+          "max": 0.5651770000004035
+        }
+      }
+    },
+    {
+      "key": "fresh/manySmall/4/true",
+      "baselineMedianMs": 1376.6189789999917,
+      "candidateMedianMs": 251.39266599999974,
+      "improvementPercent": 81.73839894444741,
+      "baseline": {
+        "samples": 5,
+        "min": 1294.776371999993,
+        "median": 1376.6189789999917,
+        "max": 1435.750675000003
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 241.5859300000011,
+        "median": 251.39266599999974,
+        "max": 266.28875100000005
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 4312.192992999961,
+          "median": 4523.819268000021,
+          "max": 4791.059026000046
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 267.43444300000556,
+          "median": 284.05578700007754,
+          "max": 289.4907740000199
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 31.998486000069533,
+          "median": 32.88060200003383,
+          "max": 38.46700099999725
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.40710199998284224,
+          "median": 0.43740700000489596,
+          "max": 0.5236560000048485
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.774623999997857,
+          "median": 0.9097980000078678,
+          "max": 1.388849000009941
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 4281.916635999834,
+          "median": 4513.772970999926,
+          "max": 4767.126235000062
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 15.477951000066241,
+          "median": 16.32956200002809,
+          "max": 18.038350999966497
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.9320339999976568,
+          "median": 1.030053999988013,
+          "max": 1.2776570000423817
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 2.055067000022973,
+          "median": 2.5340959999884944,
+          "max": 3.4076749999803724
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 3.812335000009625,
+          "median": 4.06761100004951,
+          "max": 5.529979999904754
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0010320000001229346,
+          "median": 0.0011020000092685223,
+          "max": 0.0012719999940600246
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.20225400000344962,
+          "median": 0.21288999999524094,
+          "max": 0.23437199999170844
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 591.7451690000053,
+          "median": 618.8506110000035,
+          "max": 659.5642940000034
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 57.49903600000107,
+          "median": 68.30089600000065,
+          "max": 69.48430099999678
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 7.646913999997196,
+          "median": 9.605208999990282,
+          "max": 11.929492000002938
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.10470799999893643,
+          "median": 0.11072400000557536,
+          "max": 0.15375200000562472
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.670814999997674,
+          "median": 0.9594980000001669,
+          "max": 1.802241999997932
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 589.6026890000103,
+          "median": 615.7978809999931,
+          "max": 655.9770170000047
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 2.171896999996534,
+          "median": 2.5621920000012324,
+          "max": 3.3165099999932863
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.5184050000025309,
+          "median": 0.5390490000027057,
+          "max": 0.7275700000100187
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 1.4459880000031262,
+          "median": 1.6382179999964137,
+          "max": 1.658955999999307
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 1.2535090000019409,
+          "median": 1.4341889999996056,
+          "max": 1.5439429999969434
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0010809999985212926,
+          "median": 0.0011420000009820797,
+          "max": 0.001653000002988847
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.21444200000041747,
+          "median": 0.2343010000004142,
+          "max": 0.3320579999999609
+        }
+      }
+    },
+    {
+      "key": "fresh/large/1/false",
+      "baselineMedianMs": 742.7134870000009,
+      "candidateMedianMs": 254.27090999999928,
+      "improvementPercent": 65.76460311404053,
+      "baseline": {
+        "samples": 5,
+        "min": 694.3866640000051,
+        "median": 742.7134870000009,
+        "max": 779.8427800000063
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 249.2969890000022,
+        "median": 254.27090999999928,
+        "max": 275.2047610000009
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 533.6746220000059,
+          "median": 574.7261259999941,
+          "max": 608.3880080000381
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 65.70037299999967,
+          "median": 68.72369300000719,
+          "max": 74.87663600000087
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 21.340156999998726,
+          "median": 23.11728099999891,
+          "max": 24.40360699998564
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.15822900000785012,
+          "median": 0.26442599996516947,
+          "max": 0.5733519999630516
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 544.504900000029,
+          "median": 583.7105460000312,
+          "max": 618.8199660000537
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 3.0896860000066226,
+          "median": 3.1896060000144644,
+          "max": 3.8652160000201548
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 2.363454999984242,
+          "median": 2.6324210000166204,
+          "max": 7.1444769999798154
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 4.0171729999856325,
+          "median": 4.230112999983248,
+          "max": 4.250875000027008
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 6.2581130000180565,
+          "median": 6.818893999996362,
+          "max": 7.040550999969128
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 7.749095999999554,
+          "median": 7.988381000002846,
+          "max": 8.877813999992213
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19449199999507982,
+          "median": 0.19691600000078324,
+          "max": 0.25663600000552833
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 124.11383599999681,
+          "median": 126.73734800000238,
+          "max": 134.24299899999824
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 33.43333999999959,
+          "median": 37.767737000001944,
+          "max": 43.195872999996936
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 18.08350900000005,
+          "median": 20.403361000000587,
+          "max": 21.190965999998298
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.05485200000111945,
+          "median": 0.05742599999939557,
+          "max": 0.06042099999831407
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 140.70143099999768,
+          "median": 142.7771629999952,
+          "max": 154.6810480000022
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.6926380000004428,
+          "median": 0.7449369999994815,
+          "max": 0.8664890000000014
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 2.217734999998356,
+          "median": 2.4302430000025197,
+          "max": 3.591044000000693
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 7.576398000001063,
+          "median": 8.073621999999887,
+          "max": 12.107660999998188
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 6.055246999996598,
+          "median": 6.377189000002545,
+          "max": 7.39828999999736
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 6.590869999999995,
+          "median": 8.161063999999897,
+          "max": 9.237623000000895
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19696599999952014,
+          "median": 0.2361540000019886,
+          "max": 0.2604299999984505
+        }
+      }
+    },
+    {
+      "key": "fresh/large/1/true",
+      "baselineMedianMs": 702.3847490000044,
+      "candidateMedianMs": 252.985563000002,
+      "improvementPercent": 63.981911144827485,
+      "baseline": {
+        "samples": 5,
+        "min": 690.0510800000047,
+        "median": 702.3847490000044,
+        "max": 735.9849539999996
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 245.80391800000143,
+        "median": 252.985563000002,
+        "max": 265.7706599999983
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 527.3644209999911,
+          "median": 546.3076450000372,
+          "max": 579.7658320000046
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 64.66194099996937,
+          "median": 66.21994899999117,
+          "max": 70.99698900000658
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 13.065545999997994,
+          "median": 13.532294999982696,
+          "max": 16.717477000012877
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.16356599998835009,
+          "median": 0.16723199999250937,
+          "max": 0.20934299999498762
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 1.3241610000113724,
+          "median": 1.3804410000011558,
+          "max": 4.057501000002958
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 543.9020479999745,
+          "median": 556.2060250000068,
+          "max": 594.0139889999991
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 3.201816000029794,
+          "median": 3.6951070000213804,
+          "max": 4.1541570000117645
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 2.5224210000014864,
+          "median": 2.756412000002456,
+          "max": 3.724871999991592
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 4.019865000009304,
+          "median": 4.440875999993295,
+          "max": 6.465381000030902
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 6.354925000021467,
+          "median": 6.625853999983519,
+          "max": 8.096293999973568
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.001221999991685152,
+          "median": 0.0012920000008307397,
+          "max": 0.0016020000039134175
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.23781799999414943,
+          "median": 0.23827800000435673,
+          "max": 0.2906070000026375
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 122.11820500000249,
+          "median": 127.03221100000155,
+          "max": 138.34387799999968
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 34.32649700000184,
+          "median": 35.80087900000217,
+          "max": 39.21630400000504
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 10.177327999997942,
+          "median": 10.462464999996882,
+          "max": 11.06421599999885
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.056824999999662396,
+          "median": 0.06384600000092178,
+          "max": 0.32469700000001467
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 1.0685520000006363,
+          "median": 1.3052260000004026,
+          "max": 8.581675000001269
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 141.48363300000346,
+          "median": 143.86887099999512,
+          "max": 160.9272649999948
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.5872410000010859,
+          "median": 0.6018320000002859,
+          "max": 0.6718970000001718
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 2.2548289999976987,
+          "median": 3.5759299999990617,
+          "max": 3.9636019999998098
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 7.095847000000504,
+          "median": 7.750878999999259,
+          "max": 10.333840999999666
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 6.009438000000955,
+          "median": 6.652141999999003,
+          "max": 7.873372999998537
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0012920000008307397,
+          "median": 0.0015420000017911661,
+          "max": 0.0016630000027362257
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.22314399999959278,
+          "median": 0.2904759999983071,
+          "max": 0.33854799999971874
+        }
+      }
+    },
+    {
+      "key": "fresh/large/2/false",
+      "baselineMedianMs": 441.27494300001126,
+      "candidateMedianMs": 268.0057689999994,
+      "improvementPercent": 39.265581866498,
+      "baseline": {
+        "samples": 5,
+        "min": 436.6979820000124,
+        "median": 441.27494300001126,
+        "max": 468.2940510000044
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 254.42119599999933,
+        "median": 268.0057689999994,
+        "max": 306.36108500000046
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 534.5937859999976,
+          "median": 544.0789379999915,
+          "max": 578.9116480000375
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 67.03279500000644,
+          "median": 67.95639800002391,
+          "max": 76.00126499999897
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 21.434788999977172,
+          "median": 22.21445000001404,
+          "max": 22.509995999993407
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.10099199999240227,
+          "median": 0.11592400001245551,
+          "max": 0.120690999989165
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 547.2258860000293,
+          "median": 557.4273809999722,
+          "max": 590.6185120000155
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 2.3536179999500746,
+          "median": 2.526358999995864,
+          "max": 2.7359440000000177
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 2.2327689999947324,
+          "median": 2.3872379999957047,
+          "max": 3.591411000015796
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 3.914285999999265,
+          "median": 4.230451000010362,
+          "max": 4.611563999977079
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 6.341933999981848,
+          "median": 6.7158199999976205,
+          "max": 7.954167999996571
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 7.872246999992058,
+          "median": 8.317435999997542,
+          "max": 8.474676999991061
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19738700000743847,
+          "median": 0.29564399999799207,
+          "max": 0.49130899998999666
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 130.85592299999917,
+          "median": 137.64167700000326,
+          "max": 162.13061000000016
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 33.621220999997604,
+          "median": 38.5833300000013,
+          "max": 43.28151099999741
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 18.320493000002898,
+          "median": 19.124469000002136,
+          "max": 22.886280999999144
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.05514400000174646,
+          "median": 0.06137199999648146,
+          "max": 0.13337999999930616
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 147.70188599999892,
+          "median": 154.05933899999945,
+          "max": 180.3898029999982
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.6754829999990761,
+          "median": 0.7481919999991078,
+          "max": 0.8780929999993532
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 2.3391929999997956,
+          "median": 2.605394999995042,
+          "max": 3.872823999998218
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 7.296588000001066,
+          "median": 8.770948000001226,
+          "max": 9.123455999993894
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 6.15802099999928,
+          "median": 6.636191999998118,
+          "max": 6.868726000000606
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 7.587994999998045,
+          "median": 8.002893000000768,
+          "max": 9.68934100000115
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19083599999794387,
+          "median": 0.20980400000189547,
+          "max": 0.355080999997881
+        }
+      }
+    },
+    {
+      "key": "fresh/large/2/true",
+      "baselineMedianMs": 480.1194620000024,
+      "candidateMedianMs": 253.79586500000005,
+      "improvementPercent": 47.139017455618415,
+      "baseline": {
+        "samples": 5,
+        "min": 478.2288259999914,
+        "median": 480.1194620000024,
+        "max": 486.51469900000666
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 250.12162399999943,
+        "median": 253.79586500000005,
+        "max": 264.23916299999837
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 588.1193159999966,
+          "median": 598.7969299999968,
+          "max": 620.2166939999879
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 72.41389000001072,
+          "median": 73.52118300000438,
+          "max": 81.18594800002757
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 14.337958000032813,
+          "median": 14.658039000001736,
+          "max": 15.861100999973132
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.11039399998844601,
+          "median": 0.14242300001205876,
+          "max": 0.19266900002548937
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 1.1444909999991069,
+          "median": 1.2879160000011325,
+          "max": 1.8031619999965187
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 604.002824999945,
+          "median": 614.5576570000121,
+          "max": 633.6798609999241
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 2.1943109999992885,
+          "median": 2.6490230000054,
+          "max": 3.6957150000234833
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 2.272705000039423,
+          "median": 2.4479519999877084,
+          "max": 3.4269919999933336
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 4.403168999982881,
+          "median": 5.478411000003689,
+          "max": 8.04381000000285
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 7.085281000021496,
+          "median": 7.698894000015571,
+          "max": 8.98049699999683
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0011919999960809946,
+          "median": 0.0014019999944139272,
+          "max": 0.0016829999949550256
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.2346430000034161,
+          "median": 0.24256400000012945,
+          "max": 0.26559900000575
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 129.0377120000012,
+          "median": 132.99788599999738,
+          "max": 139.68445700000302
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 35.97111500000028,
+          "median": 36.25416100000075,
+          "max": 39.42378099999769
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 10.51695699999982,
+          "median": 11.011356000002706,
+          "max": 13.304319999995641
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.043544999996811384,
+          "median": 0.05536299999948824,
+          "max": 0.11758500000360073
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 1.4589689999993425,
+          "median": 1.7611400000023423,
+          "max": 2.8793299999997544
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 147.08494600000267,
+          "median": 151.04298299999937,
+          "max": 156.14166100000875
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.6170710000005784,
+          "median": 0.7053740000010293,
+          "max": 0.8641199999983655
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 2.3995240000003832,
+          "median": 2.534734999997454,
+          "max": 7.092854000002262
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 7.910824999999022,
+          "median": 8.20536500000162,
+          "max": 8.66234699999768
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 6.350505000002158,
+          "median": 6.537262999998347,
+          "max": 6.6801569999988715
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.001432000000932021,
+          "median": 0.001432000000932021,
+          "max": 0.0021630000010190997
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.23581299999932526,
+          "median": 0.24719999999797437,
+          "max": 0.28924199999892153
+        }
+      }
+    },
+    {
+      "key": "fresh/large/4/false",
+      "baselineMedianMs": 343.45513400000345,
+      "candidateMedianMs": 267.46022900000025,
+      "improvementPercent": 22.12658873808025,
+      "baseline": {
+        "samples": 5,
+        "min": 328.5691680000018,
+        "median": 343.45513400000345,
+        "max": 355.88928599999053
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 257.5757679999988,
+        "median": 267.46022900000025,
+        "max": 280.58390000000145
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 591.8755000000092,
+          "median": 624.9968360000494,
+          "max": 692.3761969999905
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 74.85980000000563,
+          "median": 80.50183100001595,
+          "max": 90.51478000001225
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 21.855638000008184,
+          "median": 23.399634999994305,
+          "max": 24.54753099998925
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.06896600003528874,
+          "median": 0.07684500000323169,
+          "max": 0.09649400002672337
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 607.3418390000006,
+          "median": 640.6784860000189,
+          "max": 761.1051879999723
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 1.7542360000225017,
+          "median": 2.170531999974628,
+          "max": 2.2514240000018617
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 2.3064070000109496,
+          "median": 2.634476999999606,
+          "max": 3.584936999992351
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 4.335684999983641,
+          "median": 4.676639999990584,
+          "max": 4.839444999990519
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 7.186661999992793,
+          "median": 7.650701999969897,
+          "max": 18.27278899998055
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 8.06242800000473,
+          "median": 8.888340000004973,
+          "max": 9.024543999999878
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.1879519999929471,
+          "median": 0.19698599999537691,
+          "max": 0.2400610000040615
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 127.82723299999634,
+          "median": 133.50103200000376,
+          "max": 138.70514900000126
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 36.475226999998995,
+          "median": 38.65614199999982,
+          "max": 40.495976000001974
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 17.5640999999996,
+          "median": 18.645737999999255,
+          "max": 22.42120700000305
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.043273999999655643,
+          "median": 0.04799099999945611,
+          "max": 0.12330500000098255
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 145.48697600000014,
+          "median": 150.02419500000178,
+          "max": 153.95856099999946
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.641617999997834,
+          "median": 0.7537599999996019,
+          "max": 0.9462969999985944
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 2.242549999999028,
+          "median": 2.3428380000041216,
+          "max": 2.872426000001724
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 7.606952000001911,
+          "median": 7.994343999998819,
+          "max": 9.140702999997302
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 6.354374999998981,
+          "median": 7.090138999999908,
+          "max": 8.873253000001569
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 4.589349999998376,
+          "median": 7.993959000003088,
+          "max": 8.955935999998474
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19624400000247988,
+          "median": 0.20026900000084424,
+          "max": 0.3217819999990752
+        }
+      }
+    },
+    {
+      "key": "fresh/large/4/true",
+      "baselineMedianMs": 347.70488500001375,
+      "candidateMedianMs": 268.11858199999915,
+      "improvementPercent": 22.889037926519627,
+      "baseline": {
+        "samples": 5,
+        "min": 342.8685120000009,
+        "median": 347.70488500001375,
+        "max": 387.1676739999966
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 253.69428899999912,
+        "median": 268.11858199999915,
+        "max": 341.09953499999756
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 660.3557709999877,
+          "median": 666.9559960000042,
+          "max": 686.3643510000111
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 77.01739799999632,
+          "median": 86.19616599997971,
+          "max": 93.78691199998138
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 14.296086000002106,
+          "median": 15.920488999967347,
+          "max": 17.564683000004152
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.06868299997586291,
+          "median": 0.07484299998031929,
+          "max": 0.08154999997350387
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 1.2362580000044545,
+          "median": 1.396840000001248,
+          "max": 4.7593289999931585
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 672.5813550000166,
+          "median": 678.7671599999885,
+          "max": 704.9702569999936
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 1.771431000015582,
+          "median": 2.251125000009779,
+          "max": 3.9879819999914616
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 2.4609489999857033,
+          "median": 2.554891999985557,
+          "max": 4.84584399999585
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 4.188234999979613,
+          "median": 4.694457999969018,
+          "max": 5.6126660000009
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 7.089504000017769,
+          "median": 7.947534999999334,
+          "max": 9.699080000005779
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0011209999938728288,
+          "median": 0.0013820000021951273,
+          "max": 0.0016219999961322173
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.23467200000595767,
+          "median": 0.25411199999507517,
+          "max": 0.7009330000000773
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 131.6941360000019,
+          "median": 134.16045300000042,
+          "max": 187.51120699999592
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 34.85879399999976,
+          "median": 35.68814900000143,
+          "max": 59.683272999998735
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 10.057395999996515,
+          "median": 11.636172999998962,
+          "max": 20.558327000006102
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.04602999999769963,
+          "median": 0.053360000001703156,
+          "max": 0.09291999999913969
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 1.124085000003106,
+          "median": 3.8467260000034003,
+          "max": 12.489332000001014
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 149.25121500000387,
+          "median": 157.3760779999975,
+          "max": 202.31394899999214
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.5751119999949879,
+          "median": 0.7912760000035632,
+          "max": 0.9142810000012105
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 2.2554699999964214,
+          "median": 2.61370800000077,
+          "max": 3.042089999995369
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 7.986343000004126,
+          "median": 9.018869999999879,
+          "max": 10.993288999998185
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 6.81071499999598,
+          "median": 7.431280000000697,
+          "max": 11.021050999999716
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.001432000000932021,
+          "median": 0.0014920000030542724,
+          "max": 0.0016429999996034894
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.22864300000219373,
+          "median": 0.2535699999971257,
+          "max": 0.3232049999969604
+        }
+      }
+    },
+    {
+      "key": "warm-initial/small/2/false",
+      "baselineMedianMs": 318.27621499999077,
+      "candidateMedianMs": 191.27774900000077,
+      "improvementPercent": 39.90196565583567,
+      "baseline": {
+        "samples": 1,
+        "min": 318.27621499999077,
+        "median": 318.27621499999077,
+        "max": 318.27621499999077
+      },
+      "candidate": {
+        "samples": 1,
+        "min": 191.27774900000077,
+        "median": 191.27774900000077,
+        "max": 191.27774900000077
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 1,
+          "min": 466.40042900000117,
+          "median": 466.40042900000117,
+          "max": 466.40042900000117
+        },
+        "computeMs": {
+          "samples": 1,
+          "min": 26.361220999984653,
+          "median": 26.361220999984653,
+          "max": 26.361220999984653
+        },
+        "loadMs": {
+          "samples": 1,
+          "min": 11.576960999998846,
+          "median": 11.576960999998846,
+          "max": 11.576960999998846
+        },
+        "queueMs": {
+          "samples": 1,
+          "min": 0.08597900001041126,
+          "median": 0.08597900001041126,
+          "max": 0.08597900001041126
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 1,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 1,
+          "min": 465.61514999998326,
+          "median": 465.61514999998326,
+          "max": 465.61514999998326
+        },
+        "workerConstructMs": {
+          "samples": 1,
+          "min": 1.8495590000093216,
+          "median": 1.8495590000093216,
+          "max": 1.8495590000093216
+        },
+        "inputPostMs": {
+          "samples": 1,
+          "min": 0.21242800002801232,
+          "median": 0.21242800002801232,
+          "max": 0.21242800002801232
+        },
+        "hostValidationMs": {
+          "samples": 1,
+          "min": 0.3952760000101989,
+          "median": 0.3952760000101989,
+          "max": 0.3952760000101989
+        },
+        "hostFinishMs": {
+          "samples": 1,
+          "min": 0.9207639999804087,
+          "median": 0.9207639999804087,
+          "max": 0.9207639999804087
+        },
+        "modulePrepareMs": {
+          "samples": 1,
+          "min": 6.621481999987736,
+          "median": 6.621481999987736,
+          "max": 6.621481999987736
+        },
+        "instantiateMs": {
+          "samples": 1,
+          "min": 0.2846179999905871,
+          "median": 0.2846179999905871,
+          "max": 0.2846179999905871
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 1,
+          "min": 165.52882500000123,
+          "median": 165.52882500000123,
+          "max": 165.52882500000123
+        },
+        "computeMs": {
+          "samples": 1,
+          "min": 14.872770000001765,
+          "median": 14.872770000001765,
+          "max": 14.872770000001765
+        },
+        "loadMs": {
+          "samples": 1,
+          "min": 6.897649000002275,
+          "median": 6.897649000002275,
+          "max": 6.897649000002275
+        },
+        "queueMs": {
+          "samples": 1,
+          "min": 0.027842000003147405,
+          "median": 0.027842000003147405,
+          "max": 0.027842000003147405
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 1,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 1,
+          "min": 165.46450899999763,
+          "median": 165.46450899999763,
+          "max": 165.46450899999763
+        },
+        "workerConstructMs": {
+          "samples": 1,
+          "min": 0.7052670000011858,
+          "median": 0.7052670000011858,
+          "max": 0.7052670000011858
+        },
+        "inputPostMs": {
+          "samples": 1,
+          "min": 0.09865699999863864,
+          "median": 0.09865699999863864,
+          "max": 0.09865699999863864
+        },
+        "hostValidationMs": {
+          "samples": 1,
+          "min": 0.3188689999951748,
+          "median": 0.3188689999951748,
+          "max": 0.3188689999951748
+        },
+        "hostFinishMs": {
+          "samples": 1,
+          "min": 0.404197000003478,
+          "median": 0.404197000003478,
+          "max": 0.404197000003478
+        },
+        "modulePrepareMs": {
+          "samples": 1,
+          "min": 4.304211999999097,
+          "median": 4.304211999999097,
+          "max": 4.304211999999097
+        },
+        "instantiateMs": {
+          "samples": 1,
+          "min": 0.21046500000011292,
+          "median": 0.21046500000011292,
+          "max": 0.21046500000011292
+        }
+      }
+    },
+    {
+      "key": "warm/small/2/false",
+      "baselineMedianMs": 326.5998350000009,
+      "candidateMedianMs": 139.37783399999898,
+      "improvementPercent": 57.324585298703965,
+      "baseline": {
+        "samples": 5,
+        "min": 287.93262399999367,
+        "median": 326.5998350000009,
+        "max": 348.1716860000015
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 135.7978719999992,
+        "median": 139.37783399999898,
+        "max": 170.0860479999974
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 455.27376899999217,
+          "median": 517.935525999972,
+          "max": 550.9012769999972
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 25.90837299998384,
+          "median": 27.51762400000007,
+          "max": 28.69729599999846
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 8.248799000008148,
+          "median": 8.86056300002383,
+          "max": 9.327849000008428
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.058567999993101694,
+          "median": 0.06330500000331085,
+          "max": 0.10161400001379661
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 453.269707000014,
+          "median": 517.5028319999838,
+          "max": 549.7709960000066
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 1.866645999980392,
+          "median": 2.1477479999884963,
+          "max": 2.5789660000009462
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.12880500000028405,
+          "median": 0.15132800000719726,
+          "max": 0.1785879999952158
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.31825699999171775,
+          "median": 0.3530709999904502,
+          "max": 0.47867799999949057
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.5819840000040131,
+          "median": 0.6504680000361986,
+          "max": 0.8761269999668002
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.9202120000118157,
+          "median": 4.263252000004286,
+          "max": 4.309179999996559
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19706700000097044,
+          "median": 0.21770700000342913,
+          "max": 0.3552440000057686
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 116.72500500000024,
+          "median": 120.4033500000005,
+          "max": 143.5657140000003
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 8.60153299999729,
+          "median": 9.303905999997369,
+          "max": 11.115206999998918
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 5.783090000000811,
+          "median": 5.998381999997946,
+          "max": 11.247309999998834
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.01652499999909196,
+          "median": 0.02086100000087754,
+          "max": 0.02293400000053225
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 116.55568700000003,
+          "median": 120.21461699999418,
+          "max": 142.78270500000508
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.5100739999979851,
+          "median": 0.6666489999988698,
+          "max": 0.8762829999977839
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.09179799999765237,
+          "median": 0.10197300000072573,
+          "max": 0.2765850000032515
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.3205400000042573,
+          "median": 0.4204610000051616,
+          "max": 0.6606600000013714
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.36185200000181794,
+          "median": 0.3641159999970114,
+          "max": 0.4391479999976582
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.624864000001253,
+          "median": 3.875038999998651,
+          "max": 8.510016999996878
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19790700000157813,
+          "median": 0.20134200000029523,
+          "max": 0.22268399999666144
+        }
+      }
+    },
+    {
+      "key": "warm-initial/small/2/true",
+      "baselineMedianMs": 298.2483329999959,
+      "candidateMedianMs": 130.17593999999735,
+      "improvementPercent": 56.353170966424436,
+      "baseline": {
+        "samples": 1,
+        "min": 298.2483329999959,
+        "median": 298.2483329999959,
+        "max": 298.2483329999959
+      },
+      "candidate": {
+        "samples": 1,
+        "min": 130.17593999999735,
+        "median": 130.17593999999735,
+        "max": 130.17593999999735
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 1,
+          "min": 484.01003299999866,
+          "median": 484.01003299999866,
+          "max": 484.01003299999866
+        },
+        "computeMs": {
+          "samples": 1,
+          "min": 24.592634000000544,
+          "median": 24.592634000000544,
+          "max": 24.592634000000544
+        },
+        "loadMs": {
+          "samples": 1,
+          "min": 3.97858399998222,
+          "median": 3.97858399998222,
+          "max": 3.97858399998222
+        },
+        "queueMs": {
+          "samples": 1,
+          "min": 0.066129999991972,
+          "median": 0.066129999991972,
+          "max": 0.066129999991972
+        },
+        "preparationMs": {
+          "samples": 1,
+          "min": 0.9682660000107717,
+          "median": 0.9682660000107717,
+          "max": 0.9682660000107717
+        },
+        "readyWaitMs": {
+          "samples": 1,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 1,
+          "min": 483.1151670000545,
+          "median": 483.1151670000545,
+          "max": 483.1151670000545
+        },
+        "workerConstructMs": {
+          "samples": 1,
+          "min": 1.9016700000065612,
+          "median": 1.9016700000065612,
+          "max": 1.9016700000065612
+        },
+        "inputPostMs": {
+          "samples": 1,
+          "min": 0.16070100001525134,
+          "median": 0.16070100001525134,
+          "max": 0.16070100001525134
+        },
+        "hostValidationMs": {
+          "samples": 1,
+          "min": 0.3611310000269441,
+          "median": 0.3611310000269441,
+          "max": 0.3611310000269441
+        },
+        "hostFinishMs": {
+          "samples": 1,
+          "min": 0.5884249999944586,
+          "median": 0.5884249999944586,
+          "max": 0.5884249999944586
+        },
+        "modulePrepareMs": {
+          "samples": 1,
+          "min": 0.000981999997748062,
+          "median": 0.000981999997748062,
+          "max": 0.000981999997748062
+        },
+        "instantiateMs": {
+          "samples": 1,
+          "min": 0.1947130000044126,
+          "median": 0.1947130000044126,
+          "max": 0.1947130000044126
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 1,
+          "min": 114.57932900000014,
+          "median": 114.57932900000014,
+          "max": 114.57932900000014
+        },
+        "computeMs": {
+          "samples": 1,
+          "min": 8.541234000003897,
+          "median": 8.541234000003897,
+          "max": 8.541234000003897
+        },
+        "loadMs": {
+          "samples": 1,
+          "min": 2.0784160000039265,
+          "median": 2.0784160000039265,
+          "max": 2.0784160000039265
+        },
+        "queueMs": {
+          "samples": 1,
+          "min": 0.020831000001635402,
+          "median": 0.020831000001635402,
+          "max": 0.020831000001635402
+        },
+        "preparationMs": {
+          "samples": 1,
+          "min": 0.7550220000011905,
+          "median": 0.7550220000011905,
+          "max": 0.7550220000011905
+        },
+        "readyWaitMs": {
+          "samples": 1,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 1,
+          "min": 114.25214199999391,
+          "median": 114.25214199999391,
+          "max": 114.25214199999391
+        },
+        "workerConstructMs": {
+          "samples": 1,
+          "min": 0.6899649999977555,
+          "median": 0.6899649999977555,
+          "max": 0.6899649999977555
+        },
+        "inputPostMs": {
+          "samples": 1,
+          "min": 0.09752699999444303,
+          "median": 0.09752699999444303,
+          "max": 0.09752699999444303
+        },
+        "hostValidationMs": {
+          "samples": 1,
+          "min": 0.3351120000006631,
+          "median": 0.3351120000006631,
+          "max": 0.3351120000006631
+        },
+        "hostFinishMs": {
+          "samples": 1,
+          "min": 0.389844000001176,
+          "median": 0.389844000001176,
+          "max": 0.389844000001176
+        },
+        "modulePrepareMs": {
+          "samples": 1,
+          "min": 0.0010110000002896413,
+          "median": 0.0010110000002896413,
+          "max": 0.0010110000002896413
+        },
+        "instantiateMs": {
+          "samples": 1,
+          "min": 0.18937399999776972,
+          "median": 0.18937399999776972,
+          "max": 0.18937399999776972
+        }
+      }
+    },
+    {
+      "key": "warm/small/2/true",
+      "baselineMedianMs": 297.50162999999884,
+      "candidateMedianMs": 139.60888500000146,
+      "improvementPercent": 53.07290081066043,
+      "baseline": {
+        "samples": 5,
+        "min": 292.29632700000366,
+        "median": 297.50162999999884,
+        "max": 310.3602070000052
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 134.4830469999979,
+        "median": 139.60888500000146,
+        "max": 154.6777039999979
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 450.5968679999787,
+          "median": 479.71827599998505,
+          "max": 493.1849030000012
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 25.66213999998581,
+          "median": 26.1421370000171,
+          "max": 28.518961999958265
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 4.083249999996042,
+          "median": 4.302169000016875,
+          "max": 4.631331000040518
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.05440300001646392,
+          "median": 0.061683000007178634,
+          "max": 0.0665700000099605
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.008352000004379079,
+          "median": 0.009153999999398366,
+          "max": 0.10084100000676699
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 450.158328000005,
+          "median": 478.5490069999505,
+          "max": 492.16661700000986
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 1.5771810000005644,
+          "median": 1.9235630000039237,
+          "max": 2.0564420000155224
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.13642399999662302,
+          "median": 0.1512889999867184,
+          "max": 0.16887499997392297
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.2879629999806639,
+          "median": 0.32885500001430046,
+          "max": 0.5008530000050087
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.5472829999926034,
+          "median": 0.6559459999989485,
+          "max": 0.7485569999989821
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0009620000055292621,
+          "median": 0.0010310000070603564,
+          "max": 0.0011620000004768372
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.1952129999990575,
+          "median": 0.20583900000201538,
+          "max": 0.20775299999513663
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 119.70527900000161,
+          "median": 124.17903000000297,
+          "max": 139.26786400000128
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 8.634524000000965,
+          "median": 9.186195000002044,
+          "max": 9.770616000005248
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 2.1297619999968447,
+          "median": 2.3012500000004366,
+          "max": 2.7227120000025025
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.017527000003610738,
+          "median": 0.01960000000326545,
+          "max": 0.10825100000147359
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.007832000002963468,
+          "median": 0.008141999998770189,
+          "max": 0.00968500000089989
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 119.00963100000445,
+          "median": 124.12724700000399,
+          "max": 138.69779100000233
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 0.5281009999998787,
+          "median": 0.5859689999997499,
+          "max": 0.7103449999958684
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.09248900000238791,
+          "median": 0.09941899999830639,
+          "max": 0.16171199999735109
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 0.3219329999956244,
+          "median": 0.39151700000002165,
+          "max": 0.43785700000080396
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 0.35489199999938137,
+          "median": 0.3881920000021637,
+          "max": 0.4422520000007353
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0009609999979147688,
+          "median": 0.0010220000003755558,
+          "max": 0.0010320000001229346
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.18643900000097346,
+          "median": 0.19549299999926006,
+          "max": 0.3035149999996065
+        }
+      }
+    },
+    {
+      "key": "warm-initial/manySmall/2/false",
+      "baselineMedianMs": 2662.228223000013,
+      "candidateMedianMs": 380.7803669999994,
+      "improvementPercent": 85.69692997353528,
+      "baseline": {
+        "samples": 1,
+        "min": 2662.228223000013,
+        "median": 2662.228223000013,
+        "max": 2662.228223000013
+      },
+      "candidate": {
+        "samples": 1,
+        "min": 380.7803669999994,
+        "median": 380.7803669999994,
+        "max": 380.7803669999994
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 1,
+          "min": 4655.907999999923,
+          "median": 4655.907999999923,
+          "max": 4655.907999999923
+        },
+        "computeMs": {
+          "samples": 1,
+          "min": 273.6076869999961,
+          "median": 273.6076869999961,
+          "max": 273.6076869999961
+        },
+        "loadMs": {
+          "samples": 1,
+          "min": 37.83597699999518,
+          "median": 37.83597699999518,
+          "max": 37.83597699999518
+        },
+        "queueMs": {
+          "samples": 1,
+          "min": 0.6865530000359286,
+          "median": 0.6865530000359286,
+          "max": 0.6865530000359286
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 1,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 1,
+          "min": 4645.629378999962,
+          "median": 4645.629378999962,
+          "max": 4645.629378999962
+        },
+        "workerConstructMs": {
+          "samples": 1,
+          "min": 20.026960000017425,
+          "median": 20.026960000017425,
+          "max": 20.026960000017425
+        },
+        "inputPostMs": {
+          "samples": 1,
+          "min": 1.3026679999748012,
+          "median": 1.3026679999748012,
+          "max": 1.3026679999748012
+        },
+        "hostValidationMs": {
+          "samples": 1,
+          "min": 2.51490400005423,
+          "median": 2.51490400005423,
+          "max": 2.51490400005423
+        },
+        "hostFinishMs": {
+          "samples": 1,
+          "min": 4.895999999949709,
+          "median": 4.895999999949709,
+          "max": 4.895999999949709
+        },
+        "modulePrepareMs": {
+          "samples": 1,
+          "min": 4.366334999998799,
+          "median": 4.366334999998799,
+          "max": 4.366334999998799
+        },
+        "instantiateMs": {
+          "samples": 1,
+          "min": 0.2073309999977937,
+          "median": 0.2073309999977937,
+          "max": 0.2073309999977937
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 1,
+          "min": 589.7705169999972,
+          "median": 589.7705169999972,
+          "max": 589.7705169999972
+        },
+        "computeMs": {
+          "samples": 1,
+          "min": 53.76045599999634,
+          "median": 53.76045599999634,
+          "max": 53.76045599999634
+        },
+        "loadMs": {
+          "samples": 1,
+          "min": 11.487432000001718,
+          "median": 11.487432000001718,
+          "max": 11.487432000001718
+        },
+        "queueMs": {
+          "samples": 1,
+          "min": 0.07516400000167778,
+          "median": 0.07516400000167778,
+          "max": 0.07516400000167778
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 1,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 1,
+          "min": 589.0915970000024,
+          "median": 589.0915970000024,
+          "max": 589.0915970000024
+        },
+        "workerConstructMs": {
+          "samples": 1,
+          "min": 2.832033999991836,
+          "median": 2.832033999991836,
+          "max": 2.832033999991836
+        },
+        "inputPostMs": {
+          "samples": 1,
+          "min": 0.5281920000015816,
+          "median": 0.5281920000015816,
+          "max": 0.5281920000015816
+        },
+        "hostValidationMs": {
+          "samples": 1,
+          "min": 1.6177529999949911,
+          "median": 1.6177529999949911,
+          "max": 1.6177529999949911
+        },
+        "hostFinishMs": {
+          "samples": 1,
+          "min": 1.3559800000075484,
+          "median": 1.3559800000075484,
+          "max": 1.3559800000075484
+        },
+        "modulePrepareMs": {
+          "samples": 1,
+          "min": 4.201869000000443,
+          "median": 4.201869000000443,
+          "max": 4.201869000000443
+        },
+        "instantiateMs": {
+          "samples": 1,
+          "min": 0.1998989999992773,
+          "median": 0.1998989999992773,
+          "max": 0.1998989999992773
+        }
+      }
+    },
+    {
+      "key": "warm/manySmall/2/false",
+      "baselineMedianMs": 2405.8002780000097,
+      "candidateMedianMs": 387.9302860000025,
+      "improvementPercent": 83.87520819797658,
+      "baseline": {
+        "samples": 5,
+        "min": 2348.5403619999997,
+        "median": 2405.8002780000097,
+        "max": 2476.5242509999953
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 380.0249100000001,
+        "median": 387.9302860000025,
+        "max": 400.60623699999996
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 4158.4976450000395,
+          "median": 4270.959243999969,
+          "max": 4400.557951000053
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 235.4044220000069,
+          "median": 247.94102999995812,
+          "max": 255.01370399998268
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 34.61307699998724,
+          "median": 35.670422999945,
+          "max": 37.58307299991429
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.6224190000066301,
+          "median": 0.6827190000331029,
+          "max": 0.9016270000429358
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 4152.078697000106,
+          "median": 4261.377620000087,
+          "max": 4393.0157579999795
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 18.240640000076382,
+          "median": 19.14839899992512,
+          "max": 20.38223100003961
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 1.0096019999618875,
+          "median": 1.1266510000423295,
+          "max": 1.2298839999566553
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 1.8537199998972937,
+          "median": 2.225566000051913,
+          "max": 2.475730999998632
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 4.167373999982374,
+          "median": 4.277501999953529,
+          "max": 5.091013999932329
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.740376000001561,
+          "median": 4.161617000005208,
+          "max": 5.881091999995988
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.20029199999407865,
+          "median": 0.20957500000076834,
+          "max": 0.2155639999982668
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 567.8847949999945,
+          "median": 576.6474339999986,
+          "max": 614.952828999998
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 50.979716000001645,
+          "median": 52.0000140000011,
+          "max": 57.62391199999547
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 11.394008000002941,
+          "median": 12.015714000001026,
+          "max": 13.248719999992318
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.07029500000498956,
+          "median": 0.09993000000031316,
+          "max": 0.10773300000437303
+        },
+        "preparationMs": null,
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 567.1660139999985,
+          "median": 575.9156930000026,
+          "max": 615.000713999998
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 2.954777999995713,
+          "median": 3.2589070000067295,
+          "max": 3.9819470000038564
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.4930180000010296,
+          "median": 0.5936479999945732,
+          "max": 0.6022529999936523
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 1.4529569999940577,
+          "median": 1.4760329999953683,
+          "max": 1.510151999998925
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 1.3830009999983304,
+          "median": 1.5134980000038922,
+          "max": 1.6406910000041535
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 3.661091000001761,
+          "median": 4.075448999999935,
+          "max": 5.004381000002468
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.2054680000001099,
+          "median": 0.21667399999932968,
+          "max": 0.279448000001139
+        }
+      }
+    },
+    {
+      "key": "warm-initial/manySmall/2/true",
+      "baselineMedianMs": 2456.4143829999957,
+      "candidateMedianMs": 376.2162470000003,
+      "improvementPercent": 84.684333001644,
+      "baseline": {
+        "samples": 1,
+        "min": 2456.4143829999957,
+        "median": 2456.4143829999957,
+        "max": 2456.4143829999957
+      },
+      "candidate": {
+        "samples": 1,
+        "min": 376.2162470000003,
+        "median": 376.2162470000003,
+        "max": 376.2162470000003
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 1,
+          "min": 4345.614525000041,
+          "median": 4345.614525000041,
+          "max": 4345.614525000041
+        },
+        "computeMs": {
+          "samples": 1,
+          "min": 261.9591509999591,
+          "median": 261.9591509999591,
+          "max": 261.9591509999591
+        },
+        "loadMs": {
+          "samples": 1,
+          "min": 32.45477900003607,
+          "median": 32.45477900003607,
+          "max": 32.45477900003607
+        },
+        "queueMs": {
+          "samples": 1,
+          "min": 1.0822250000492204,
+          "median": 1.0822250000492204,
+          "max": 1.0822250000492204
+        },
+        "preparationMs": {
+          "samples": 1,
+          "min": 1.0897789999871748,
+          "median": 1.0897789999871748,
+          "max": 1.0897789999871748
+        },
+        "readyWaitMs": {
+          "samples": 1,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 1,
+          "min": 4336.715662000017,
+          "median": 4336.715662000017,
+          "max": 4336.715662000017
+        },
+        "workerConstructMs": {
+          "samples": 1,
+          "min": 20.846922000026098,
+          "median": 20.846922000026098,
+          "max": 20.846922000026098
+        },
+        "inputPostMs": {
+          "samples": 1,
+          "min": 1.290532000042731,
+          "median": 1.290532000042731,
+          "max": 1.290532000042731
+        },
+        "hostValidationMs": {
+          "samples": 1,
+          "min": 2.886469000004581,
+          "median": 2.886469000004581,
+          "max": 2.886469000004581
+        },
+        "hostFinishMs": {
+          "samples": 1,
+          "min": 4.822372000009636,
+          "median": 4.822372000009636,
+          "max": 4.822372000009636
+        },
+        "modulePrepareMs": {
+          "samples": 1,
+          "min": 0.0010710000060498714,
+          "median": 0.0010710000060498714,
+          "max": 0.0010710000060498714
+        },
+        "instantiateMs": {
+          "samples": 1,
+          "min": 0.20349400000122841,
+          "median": 0.20349400000122841,
+          "max": 0.20349400000122841
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 1,
+          "min": 566.1045529999974,
+          "median": 566.1045529999974,
+          "max": 566.1045529999974
+        },
+        "computeMs": {
+          "samples": 1,
+          "min": 52.81339799999478,
+          "median": 52.81339799999478,
+          "max": 52.81339799999478
+        },
+        "loadMs": {
+          "samples": 1,
+          "min": 7.6831940000010945,
+          "median": 7.6831940000010945,
+          "max": 7.6831940000010945
+        },
+        "queueMs": {
+          "samples": 1,
+          "min": 0.07532400000127382,
+          "median": 0.07532400000127382,
+          "max": 0.07532400000127382
+        },
+        "preparationMs": {
+          "samples": 1,
+          "min": 0.9311540000016976,
+          "median": 0.9311540000016976,
+          "max": 0.9311540000016976
+        },
+        "readyWaitMs": {
+          "samples": 1,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 1,
+          "min": 565.038537000004,
+          "median": 565.038537000004,
+          "max": 565.038537000004
+        },
+        "workerConstructMs": {
+          "samples": 1,
+          "min": 2.91808100000344,
+          "median": 2.91808100000344,
+          "max": 2.91808100000344
+        },
+        "inputPostMs": {
+          "samples": 1,
+          "min": 0.5357529999964754,
+          "median": 0.5357529999964754,
+          "max": 0.5357529999964754
+        },
+        "hostValidationMs": {
+          "samples": 1,
+          "min": 1.604404000008799,
+          "median": 1.604404000008799,
+          "max": 1.604404000008799
+        },
+        "hostFinishMs": {
+          "samples": 1,
+          "min": 1.4003990000055637,
+          "median": 1.4003990000055637,
+          "max": 1.4003990000055637
+        },
+        "modulePrepareMs": {
+          "samples": 1,
+          "min": 0.0010719999991124496,
+          "median": 0.0010719999991124496,
+          "max": 0.0010719999991124496
+        },
+        "instantiateMs": {
+          "samples": 1,
+          "min": 0.19617400000061025,
+          "median": 0.19617400000061025,
+          "max": 0.19617400000061025
+        }
+      }
+    },
+    {
+      "key": "warm/manySmall/2/true",
+      "baselineMedianMs": 2384.864474000002,
+      "candidateMedianMs": 385.13148100000035,
+      "improvementPercent": 83.85101186257178,
+      "baseline": {
+        "samples": 5,
+        "min": 2375.8415289999975,
+        "median": 2384.864474000002,
+        "max": 2405.8252890000003
+      },
+      "candidate": {
+        "samples": 5,
+        "min": 365.26086600000053,
+        "median": 385.13148100000035,
+        "max": 415.7080500000011
+      },
+      "baselineJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 4234.655565999914,
+          "median": 4248.435768999931,
+          "max": 4308.714390000154
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 250.4740429998492,
+          "median": 252.8921270001738,
+          "max": 261.4499249997898
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 31.01544899996952,
+          "median": 32.01960400004464,
+          "max": 33.445593999902485
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.7094500000530388,
+          "median": 0.9375350000336766,
+          "max": 1.1786230001453077
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.009604999999282882,
+          "median": 0.009965000004740432,
+          "max": 0.011045999999623746
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 4226.546588999932,
+          "median": 4238.597223999648,
+          "max": 4300.770276000374
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 19.437562000064645,
+          "median": 19.79581500007771,
+          "max": 21.16384400006791
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 1.0387319999863394,
+          "median": 1.2129380000988021,
+          "max": 2.923534999965341
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 1.8422670000290964,
+          "median": 2.4157200000045123,
+          "max": 2.731695999886142
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 4.20361099994625,
+          "median": 4.257502999942517,
+          "max": 4.793801000007079
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0009609999833628535,
+          "median": 0.0011319999757688493,
+          "max": 0.0013720000279136002
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.20540899998741224,
+          "median": 0.21236800000770018,
+          "max": 0.23639400000683963
+        }
+      },
+      "candidateJobStageSums": {
+        "startupMs": {
+          "samples": 5,
+          "min": 569.7824339999934,
+          "median": 594.2422159999951,
+          "max": 642.2921719999977
+        },
+        "computeMs": {
+          "samples": 5,
+          "min": 51.47455799999079,
+          "median": 58.38145900000018,
+          "max": 62.42056600000069
+        },
+        "loadMs": {
+          "samples": 5,
+          "min": 7.273919000002934,
+          "median": 7.553719000003184,
+          "max": 8.725993999996717
+        },
+        "queueMs": {
+          "samples": 5,
+          "min": 0.08113999999477528,
+          "median": 0.08820299999570125,
+          "max": 0.12316099999588914
+        },
+        "preparationMs": {
+          "samples": 5,
+          "min": 0.007852000002458226,
+          "median": 0.00877300000138348,
+          "max": 0.010826000001543434
+        },
+        "readyWaitMs": {
+          "samples": 5,
+          "min": 0,
+          "median": 0,
+          "max": 0
+        },
+        "transferResidualMs": {
+          "samples": 5,
+          "min": 570.1561680000013,
+          "median": 594.0563060000095,
+          "max": 642.0135109999974
+        },
+        "workerConstructMs": {
+          "samples": 5,
+          "min": 2.767955000006623,
+          "median": 2.796095999998215,
+          "max": 3.100923000001785
+        },
+        "inputPostMs": {
+          "samples": 5,
+          "min": 0.4985780000060913,
+          "median": 0.5459170000031008,
+          "max": 0.6523069999966538
+        },
+        "hostValidationMs": {
+          "samples": 5,
+          "min": 1.3899309999978868,
+          "median": 1.499035000000731,
+          "max": 1.63919700000406
+        },
+        "hostFinishMs": {
+          "samples": 5,
+          "min": 1.3431620000010298,
+          "median": 1.427557999999408,
+          "max": 1.6545180000102846
+        },
+        "modulePrepareMs": {
+          "samples": 5,
+          "min": 0.0009620000018912833,
+          "median": 0.0010909999982686713,
+          "max": 0.0011620000004768372
+        },
+        "instantiateMs": {
+          "samples": 5,
+          "min": 0.19621399999959976,
+          "median": 0.20264399999723537,
+          "max": 0.23552199999903678
+        }
+      }
+    }
+  ],
+  "adoptionCriteria": {
+    "batch": {
+      "minimumManySmallImprovementPercent": 15,
+      "maximumSmallRegressionPercent": 10,
+      "requiredWorkers": [
+        1,
+        4
+      ],
+      "scope": "Fresh pool, moduleReuse=false, per-condition median of 5; proposed implementation acceptance criteria, not user-stated requirements."
+    },
+    "moduleReuse": {
+      "minimumFresh2WImprovementPercent": 10,
+      "datasets": [
+        "small",
+        "manySmall"
+      ],
+      "scope": "Single-snapshot analyze(); no inference about compare() or general browsers."
+    }
+  },
+  "decisions": {
+    "batch": {
+      "adopt": true,
+      "defaultFiles": 8,
+      "maxGroupInputBytes": 262144,
+      "maxWaveInputBytes": 16777216,
+      "residentWorkers": false
+    },
+    "moduleReuse": {
+      "default": false,
+      "fresh2WorkerComparisons": [
+        {
+          "dataset": "small",
+          "offMedianMs": 148.96998799999983,
+          "onMedianMs": 172.4765950000001,
+          "improvementPercent": -15.779424644915917
+        },
+        {
+          "dataset": "manySmall",
+          "offMedianMs": 393.72405700000127,
+          "onMedianMs": 386.59754299999986,
+          "improvementPercent": 1.810027574718754
+        }
+      ],
+      "reason": "10% criterion not met consistently; Instance isolation retained."
+    },
+    "memory": {
+      "singleOutputBuffer": true,
+      "significantRssImprovementEstablished": false,
+      "totalCopyReductionEstablished": false,
+      "fullInputStreaming": false,
+      "reason": "Simplify ZIP output ownership while preserving CRC/path/length/full-inventory checks. Observed RSS difference is too small for a reliable peak-reduction claim."
+    }
+  },
+  "memory": {
+    "baselineCommit": "1a3bd7ce3791cdd18a0eda7fd569b46e5cdd2b05",
+    "candidateCommit": "aa4b92cd9e8f6189ee3ab8e59a86e231513d5486",
+    "intervalMs": 10,
+    "cases": [
+      {
+        "fixture": {
+          "name": "opaque-63MiB.zip",
+          "archive": "/tmp/unity-memory-tZM5FY/opaque-63MiB.zip",
+          "files": 63,
+          "expandedBytes": 66060288,
+          "compressedBytes": 72535,
+          "compressedSha256": "d296ab6e10af6c3a68d54f16321157ae5aff6aeaec0c257e8649576b0c00d453",
+          "entrySha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+          "expected": "success"
+        },
+        "baselineStatus": "PASS",
+        "candidateStatus": "PASS",
+        "baselineRange": {
+          "rss": {
+            "min": 45744128,
+            "max": 229867520,
+            "baseline": 45744128,
+            "observedRise": 184123392
+          },
+          "heapUsed": {
+            "min": 8525528,
+            "max": 11334488,
+            "baseline": 8881280,
+            "observedRise": 2453208
+          },
+          "heapTotal": {
+            "min": 11005952,
+            "max": 14413824,
+            "baseline": 12840960,
+            "observedRise": 1572864
+          },
+          "external": {
+            "min": 4187773,
+            "max": 70688059,
+            "baseline": 4187773,
+            "observedRise": 66500286
+          },
+          "arrayBuffers": {
+            "min": 413723,
+            "max": 3708001,
+            "baseline": 413723,
+            "observedRise": 3294278
+          }
+        },
+        "candidateRange": {
+          "rss": {
+            "min": 46137344,
+            "max": 227520512,
+            "baseline": 46137344,
+            "observedRise": 181383168
+          },
+          "heapUsed": {
+            "min": 8545712,
+            "max": 10840272,
+            "baseline": 9314944,
+            "observedRise": 1525328
+          },
+          "heapTotal": {
+            "min": 12578816,
+            "max": 14413824,
+            "baseline": 12578816,
+            "observedRise": 1835008
+          },
+          "external": {
+            "min": 4187773,
+            "max": 70688189,
+            "baseline": 4187773,
+            "observedRise": 66500416
+          },
+          "arrayBuffers": {
+            "min": 413723,
+            "max": 2675247,
+            "baseline": 413723,
+            "observedRise": 2261524
+          }
+        },
+        "baselineMaximumSampleGapMs": 13.28691200000003,
+        "candidateMaximumSampleGapMs": 12.92431600000009,
+        "error": null
+      },
+      {
+        "fixture": {
+          "name": "opaque-64MiB.zip",
+          "archive": "/tmp/unity-memory-tZM5FY/opaque-64MiB.zip",
+          "files": 64,
+          "expandedBytes": 67108864,
+          "compressedBytes": 73686,
+          "compressedSha256": "95c25e2f9d7032f102bcd59f48dd8da38d4ad1086bb402b4fab4574c489e680a",
+          "entrySha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+          "expected": "success"
+        },
+        "baselineStatus": "PASS",
+        "candidateStatus": "PASS",
+        "baselineRange": {
+          "rss": {
+            "min": 45613056,
+            "max": 236179456,
+            "baseline": 45613056,
+            "observedRise": 190566400
+          },
+          "heapUsed": {
+            "min": 8546032,
+            "max": 10940584,
+            "baseline": 9207808,
+            "observedRise": 1732776
+          },
+          "heapTotal": {
+            "min": 10743808,
+            "max": 18345984,
+            "baseline": 12578816,
+            "observedRise": 5767168
+          },
+          "external": {
+            "min": 4187773,
+            "max": 71743116,
+            "baseline": 4187773,
+            "observedRise": 67555343
+          },
+          "arrayBuffers": {
+            "min": 413723,
+            "max": 2676901,
+            "baseline": 413723,
+            "observedRise": 2263178
+          }
+        },
+        "candidateRange": {
+          "rss": {
+            "min": 45940736,
+            "max": 235589632,
+            "baseline": 45940736,
+            "observedRise": 189648896
+          },
+          "heapUsed": {
+            "min": 8528680,
+            "max": 10952304,
+            "baseline": 9225888,
+            "observedRise": 1726416
+          },
+          "heapTotal": {
+            "min": 11005952,
+            "max": 18083840,
+            "baseline": 12578816,
+            "observedRise": 5505024
+          },
+          "external": {
+            "min": 4187773,
+            "max": 71743138,
+            "baseline": 4187773,
+            "observedRise": 67555365
+          },
+          "arrayBuffers": {
+            "min": 413723,
+            "max": 3715577,
+            "baseline": 413723,
+            "observedRise": 3301854
+          }
+        },
+        "baselineMaximumSampleGapMs": 12.220132000000376,
+        "candidateMaximumSampleGapMs": 13.573946000000433,
+        "error": null
+      },
+      {
+        "fixture": {
+          "name": "opaque-65MiB.zip",
+          "archive": "/tmp/unity-memory-tZM5FY/opaque-65MiB.zip",
+          "files": 65,
+          "expandedBytes": 68157440,
+          "compressedBytes": 74837,
+          "compressedSha256": "84ebcb208af567d8bce3d0fc684759b065808681647a80403cdfd6d14b5aec2d",
+          "entrySha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+          "expected": "expanded-limit-error"
+        },
+        "baselineStatus": "PASS",
+        "candidateStatus": "PASS",
+        "baselineRange": {
+          "rss": {
+            "min": 45871104,
+            "max": 67510272,
+            "baseline": 45871104,
+            "observedRise": 21639168
+          },
+          "heapUsed": {
+            "min": 8827704,
+            "max": 9338328,
+            "baseline": 8827704,
+            "observedRise": 510624
+          },
+          "heapTotal": {
+            "min": 12578816,
+            "max": 12840960,
+            "baseline": 12578816,
+            "observedRise": 262144
+          },
+          "external": {
+            "min": 4187773,
+            "max": 4436035,
+            "baseline": 4187773,
+            "observedRise": 248262
+          },
+          "arrayBuffers": {
+            "min": 413723,
+            "max": 713695,
+            "baseline": 413723,
+            "observedRise": 299972
+          }
+        },
+        "candidateRange": {
+          "rss": {
+            "min": 44433408,
+            "max": 68481024,
+            "baseline": 44433408,
+            "observedRise": 24047616
+          },
+          "heapUsed": {
+            "min": 8978184,
+            "max": 9550424,
+            "baseline": 9550424,
+            "observedRise": 0
+          },
+          "heapTotal": {
+            "min": 12840960,
+            "max": 12840960,
+            "baseline": 12840960,
+            "observedRise": 0
+          },
+          "external": {
+            "min": 4187773,
+            "max": 4436035,
+            "baseline": 4187773,
+            "observedRise": 248262
+          },
+          "arrayBuffers": {
+            "min": 413723,
+            "max": 713695,
+            "baseline": 413723,
+            "observedRise": 299972
+          }
+        },
+        "baselineMaximumSampleGapMs": 10.294106999999997,
+        "candidateMaximumSampleGapMs": 10.574221000000009,
+        "error": "TASK_FAILED: 展開容量超過"
+      }
+    ],
+    "interpretation": "Every case has a fresh Node process. Fixture creation occurs in the parent before sampling. At/below limit requires complete opaque inventory/hash preservation; above limit requires an explicit limit error. Sampled memory is not a browser measurement or a memory ceiling."
+  },
+  "limitations": [
+    "Synthetic single-snapshot analyze() measurements using Node worker_threads, not browser timings or general Unity-project speed guarantees.",
+    "Fresh pool lifetime and default moduleReuse match the UI; browser scheduling/GC still differ.",
+    "Repeated conditions are sequential, not a randomized cross-over experiment; retain observed ranges and avoid causal precision beyond the measured fixtures.",
+    "Job stage sums can overlap and nested intervals must not be summed into wall time. startupMs includes module import, scheduling and delivery, not only OS thread creation.",
+    "Observed RSS covers the Node process including Workers; heap/external/arrayBuffers cover the main isolate. Samples can miss transient peaks and there is no forced GC or leak conclusion.",
+    "The first candidate run completed sampling but failed final cross-version comparison before printing samples. stderr is preserved; corrected run retains raw versions/hashes and normalizes only before/after.analyzerVersion for semantic comparison."
+  ]
+}

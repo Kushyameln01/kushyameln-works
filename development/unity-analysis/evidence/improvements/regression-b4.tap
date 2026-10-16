@@ -1,0 +1,32 @@
+✔ batch request limits, path conflicts, byte ownership and order are explicit (3.085884ms)
+✔ batch response verifies count, ordered identity, bytes, hash and parser contract (9.483661ms)
+✔ malformed batch response settles INVALID_RESPONSE and does not poison later jobs (2.327112ms)
+✔ 64 small files preserve semantics, hashes and order with fewer jobs at one and four Workers (6709.464264ms)
+✔ raw before/after four-function results and all inventory remain identical (1081.418738ms)
+✔ one file and files above 256 KiB retain single-job behavior; exactly eight files form one job (718.82395ms)
+✔ batch output may exceed its raw input budget without truncation or a new normal-input rejection (687.86759ms)
+✔ waves keep the shared 16 MiB admission budget with oversized single files (271.509528ms)
+✔ cancelling an admitted batch preserves a second caller, retained FT data and retry (539.890788ms)
+✔ GUID case alone changes neither file nor object identity and never mutates input (3.368155ms)
+✔ normalized GUID identity retains rename and raw hash changes (0.593755ms)
+✔ case variants of one GUID stay ambiguous within each snapshot (1.894164ms)
+✔ explicit scopes and Expression links normalize GUID case without rewriting supplied values (2.235898ms)
+✔ recognized reference identity is case-insensitive while original property differences remain (0.59092ms)
+✔ path case and unknown property values are not normalized as GUID identities (0.333442ms)
+✔ compact size is computed once; rendering does not create pretty JSON; display and save reuse full output (1.01529ms)
+✔ input change/pagehide reset releases report text; old reports cannot replace the current revision (0.57699ms)
+✔ multiple ZIP input chunks preserve every byte, empty entry and independent output ownership (260.743299ms)
+✔ declared size cannot permit overrun or truncated output (2.407988ms)
+✔ CRC still verifies completed bytes before accepting an entry (0.419802ms)
+✔ path and normalized identity conflicts remain errors (1.530075ms)
+✔ entry count is complete at 2048 and rejects 2049 (334.23514ms)
+✔ expanded header limit is checked before allocating a 65 MiB output (0.903621ms)
+✔ truncated archive never returns a partial inventory (0.398561ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10938.542502
