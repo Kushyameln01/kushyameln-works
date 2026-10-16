@@ -1,15 +1,33 @@
-# Unity data analysis (0.1.0 minimum gate)
+# Unity data analysis — shared browser SDK
 
-Shared read-only SDK; initial structured snapshot schema `unity-analysis-snapshot/1`.
-The bundled example.json contains before/after snapshots with string fileIDs, objects,
-raw properties, references, parameter declarations and explicit type-use constraints.
-Caller-provided structured semantics are labelled as such, not independently proven.
+Read-only local analysis of serialized Unity data. Four outputs: unresolved/missing references, parameter constraints, incoming shared references, and before/after differences. Hike/WASM performs the incoming-count, type-mask and diff-vector operations in the existing bounded compute pool. JavaScript parses and indexes the input. Neither mode runs Unity or uploads input.
 
-`createUnityAnalyzer({pool?,concurrency:2})` returns analyze(snapshot,options), compare(before,after,options), cancel(sessionId), getReport(sessionId), dispose(sessionId?).
-The returned Promise has sessionId. Options inputRevision, timeoutMs (1..30000), sessionTimeoutMs (1..300000).
-Only owned job IDs are cancelled; injected pool is never disposed. Default-owned pool is released on dispose().
+## Browser
+Open `../../unity-analyzer/`. Select files or a folder, including `.meta` files, or a ZIP / unitypackage. Optional second selection enables comparison. The sample includes synthetic Controller, shared BlendTree/Clip, missing references and one renamed state. Display filters/pagination never remove data from the JSON download.
 
-Prototype bounds: 4096 files, 65536 objects, 262144 refs/properties, 4 MiB serialized input per task, 8 MiB complete report. These are admission bounds, not a guarantee for arbitrary Unity projects. No partial report is silently exported. Unknown/opaque content and unresolved refs do not imply normality.
-Hike uses its own memory per job and computes incoming counts, type constraints and interned property differences. GUID/fileID remain strings in host dictionaries.
+## Shared use
+```js
+import {createUnityFileAnalyzer} from './file-sdk.mjs';
+const analyzer = createUnityFileAnalyzer({pool: existingPool, concurrency: 2});
+const pending = analyzer.compare(beforeFiles, afterFiles, {inputRevision: 3});
+const report = await pending;
+// cancel only this caller's jobs: analyzer.cancel(pending.sessionId)
+analyzer.dispose(); // caller-owned pool stays alive
+```
+Inputs are browser File objects or `{path,bytes:Uint8Array}`. `analyze(files)` handles a single selection. `sdk.mjs` accepts `unity-analysis-snapshot/1` JSON with `files:[{path,guid?,objects:[{fileId,classId,properties,references?,parameters?,parameterUses?}]}]`; compare accepts two snapshots. fileID must be a signed64 decimal **string**. See `example.json`.
 
-Development: static checks -> Sites save -> GitHub Pages update/deployment verification -> exact-version cloud copy -> dynamic tests. Source publication and passed runtime validation are separate states. This minimum gate is not a claim that the full planned file/archive adapters are complete.
+File ingestion uses actual byte SHA256 hashes in `report.ingestion`; JSON snapshot inputs are hashed as canonical JSON and their supplied content hashes remain unverified claims. Reports include build/parser/rules/kernel identity, job receipts, coverage and full counts. No report is truncated to fit a budget. Delivery-only parse/expansion results bypass pool retention, so `getResult` is unavailable for those stages; consume their Promise result. Other pool tasks retain the existing behavior.
+
+## Interpretation
+- `missing-local` / `missing-target-object`: confirmed absent only inside a provided, completely parsed target. `external-unprovided`, `unparsed-target`, `builtin-unverified`, `ambiguous` are unverified, not proof of a broken project. fileID 0 is null.
+- Shared references list every incoming source. They do not imply a defect. Cycles are strongly connected components; they do not enumerate every elementary cycle or imply a runtime error.
+- Animator rules follow Controller ownership through resolved serialized containment/motion references, including external shared BlendTrees. Unknown ownership or use semantics remains unknown. Same-name declarations alone never establish ownership.
+- VRChat Expression parameters require recognized script GUID/fileID. Explicit `parameterLinks:[{expression:{assetId,fileId},controller:{assetId,fileId}}]` on a snapshot provides association. File SDK takes `options.parameterLinks.before/after`. Int/Float/Bool mismatches may be permitted conversions, recorded separately; no AvatarDescriptor attachment is inferred. Conversion basis: https://creators.vrchat.com/avatars/animator-parameters/#mismatched-parameter-type-conversion .
+- Diff identities use GUID/fileID; absent GUID uses a labeled provisional path/fileID. Files can be added/removed/renamed/changed; ambiguous identities are listed separately. Object values use JSON Pointer paths. Unknown components remain structurally visible without runtime semantics.
+
+## Input coverage and limits
+Text extensions: `.controller`, `.anim`, `.prefab`, `.unity`, `.asset`, `.mat`, `.overrideController`, `.meta`. The bounded YAML subset covers Unity document headers, maps, sequences, flow maps/sequences and quoted/plain scalar strings. Unsupported tags, aliases, directives, block scalars and malformed/duplicate mappings are reported as incomplete coverage. Binary/unknown assets are inventoried with hashes; no AssetBundle/binary Unity object decoding is claimed. Duplicate fileIDs/GUIDs remain conflicts. Source offsets use UTF-16 code units, zero-based/end-exclusive; line/column are one-based.
+
+Prototype limits per snapshot: raw selection32 MiB; one file/archive16 MiB; expanded64 MiB; 2048 input/expanded files; text4 MiB; normalized snapshot4 MiB; complete report8 MiB; 65536 objects; 262144 references/diff pairs/owner contexts; graph traversal2000000 steps. Before/after normalized task combined budget8 MiB. Exceeding a limit produces a named failure. Peak temporary/string memory is additional to these logical limits. ZIP64, encrypted/special-entry ZIP, links and malformed packages are rejected. Existing FT's package limit is unchanged.
+
+`computeMs` is the Worker execution interval including JavaScript. It is not WASM-only duration. Worker concurrency is 1–4; separate file parsing can overlap, global analyses wait for complete input indexing. Cancellation, deadlines and input revisions prevent stale UI results. Module caching is optional; no general speedup is promised.

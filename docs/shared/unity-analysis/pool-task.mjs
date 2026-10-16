@@ -7,7 +7,7 @@ export function inspectTaskRequest(r){
  if(!r||r.protocolVersion!==1||!isUnity(r.taskType)||r.taskVersion!==1||typeof r.jobId!=='string'||!/^[A-Za-z0-9_.:-]{1,64}$/.test(r.jobId)||!Number.isSafeInteger(r.inputRevision)||r.inputRevision<0)throw TypeError('Invalid Unity task identity');
  const timeoutMs=r.limits?.timeoutMs??30000;if(!Number.isSafeInteger(timeoutMs)||timeoutMs<1||timeoutMs>30000)throw RangeError('Invalid Unity task timeout');
  if(r.taskType==='unity-analyze')inspectSnapshot(r.payload);else{inspectSnapshot(r.payload?.before);inspectSnapshot(r.payload?.after);}
- if(bytes(r.payload)>LIMITS.maxInputBytes)throw RangeError('Unity task input budget');
+ if(bytes(r.payload)>LIMITS.maxInputBytes*(r.taskType==='unity-diff'?2:1))throw RangeError('Unity task input budget');
  return {protocolVersion:1,taskType:r.taskType,taskVersion:1,jobId:r.jobId,inputRevision:r.inputRevision,wasmVariant:'scalar',kernelHash:UNITY_KERNEL.sha256,payload:r.payload,limits:{timeoutMs}};
 }
 export const snapshotTaskRequest=r=>({...r,payload:structuredClone(r.payload)});

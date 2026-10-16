@@ -69,3 +69,5 @@ preparedPool.dispose();
 ## Unity解析タスク
 
 `unity-analyze` と `unity-diff` を追加しています。入力仕様と上限は [Unity解析README](../unity-analysis/README.md) を参照してください。既存FTタスクの入力と計算内容は維持します。タスクごとに容量と結果を検査し、ModuleキャッシュをABI・hashで区別します。
+
+Unity b2 adds `unity-expand` and `unity-parse` JavaScript-only tasks. Their owned byte inputs/expanded ArrayBuffers are transferred, WASM metrics are null, and terminal results are delivery-only (Promise consumption, no retained record). This bypass does not evict another caller's retained results. Existing FT/media and Unity Hike analysis tasks keep their result policy.

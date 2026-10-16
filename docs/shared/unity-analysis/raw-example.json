@@ -1,0 +1,54 @@
+{
+  "before": [
+    {
+      "path": "Assets/Clip.anim",
+      "text": "%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n--- !u!74 &9223372036854775807\nAnimationClip:\n  m_Name: Shared Clip\n  m_AnimationClipSettings:\n    m_LoopTime: 1\n  m_Events: []\n"
+    },
+    {
+      "path": "Assets/Clip.anim.meta",
+      "text": "fileFormatVersion: 2\nguid: dddddddddddddddddddddddddddddddd\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: 0\n"
+    },
+    {
+      "path": "Assets/Demo.controller",
+      "text": "%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n--- !u!91 &9100000\nAnimatorController:\n  m_Name: Demo\n  m_AnimatorParameters:\n  - m_Name: Speed\n    m_Type: 1\n    m_DefaultFloat: 0\n    m_DefaultInt: 0\n    m_DefaultBool: 0\n  m_AnimatorLayers:\n  - m_Name: Base\n    m_StateMachine: {fileID: 11070000}\n  m_Invalid: {fileID: 999}\n  m_Unprovided: {fileID: 7400000, guid: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, type: 2}\n  m_Null: {fileID: 0}\n--- !u!1107 &11070000\nAnimatorStateMachine:\n  m_Name: Base\n  m_ChildStates:\n  - m_State: {fileID: 11020000}\n    m_Position: {x: 0, y: 0, z: 0}\n  - m_State: {fileID: 11020001}\n    m_Position: {x: 100, y: 0, z: 0}\n  m_AnyStateTransitions: []\n  m_DefaultState: {fileID: 11020000}\n--- !u!1102 &11020000\nAnimatorState:\n  m_Name: Idle\n  m_Motion: {fileID: 20600000, guid: cccccccccccccccccccccccccccccccc, type: 2}\n  m_Transitions:\n  - {fileID: 11010000}\n  m_SpeedParameterActive: 0\n  m_SpeedParameter: unused\n--- !u!1102 &11020001\nAnimatorState:\n  m_Name: Run\n  m_Motion: {fileID: 20600000, guid: cccccccccccccccccccccccccccccccc, type: 2}\n  m_Transitions:\n  - {fileID: 11010001}\n--- !u!1101 &11010000\nAnimatorStateTransition:\n  m_Conditions:\n  - m_ConditionMode: 1\n    m_ConditionEvent: Speed\n    m_EventTreshold: 0\n  m_DstState: {fileID: 11020001}\n--- !u!1101 &11010001\nAnimatorStateTransition:\n  m_Conditions: []\n  m_DstState: {fileID: 11020000}\n"
+    },
+    {
+      "path": "Assets/Demo.controller.meta",
+      "text": "fileFormatVersion: 2\nguid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: 0\n"
+    },
+    {
+      "path": "Assets/Shared.asset",
+      "text": "%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n--- !u!206 &20600000\nBlendTree:\n  m_Name: Shared Tree\n  m_BlendType: 0\n  m_BlendParameter: Speed\n  m_Childs:\n  - m_Motion: {fileID: 9223372036854775807, guid: dddddddddddddddddddddddddddddddd, type: 2}\n    m_Threshold: 0\n  - m_Motion: {fileID: 9223372036854775807, guid: dddddddddddddddddddddddddddddddd, type: 2}\n    m_Threshold: 1\n"
+    },
+    {
+      "path": "Assets/Shared.asset.meta",
+      "text": "fileFormatVersion: 2\nguid: cccccccccccccccccccccccccccccccc\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: 0\n"
+    }
+  ],
+  "after": [
+    {
+      "path": "Assets/Clip.anim",
+      "text": "%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n--- !u!74 &9223372036854775807\nAnimationClip:\n  m_Name: Shared Clip\n  m_AnimationClipSettings:\n    m_LoopTime: 1\n  m_Events: []\n"
+    },
+    {
+      "path": "Assets/Clip.anim.meta",
+      "text": "fileFormatVersion: 2\nguid: dddddddddddddddddddddddddddddddd\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: 0\n"
+    },
+    {
+      "path": "Assets/Demo.controller",
+      "text": "%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n--- !u!91 &9100000\nAnimatorController:\n  m_Name: Demo\n  m_AnimatorParameters:\n  - m_Name: Speed\n    m_Type: 1\n    m_DefaultFloat: 0\n    m_DefaultInt: 0\n    m_DefaultBool: 0\n  m_AnimatorLayers:\n  - m_Name: Base\n    m_StateMachine: {fileID: 11070000}\n  m_Invalid: {fileID: 999}\n  m_Unprovided: {fileID: 7400000, guid: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, type: 2}\n  m_Null: {fileID: 0}\n--- !u!1107 &11070000\nAnimatorStateMachine:\n  m_Name: Base\n  m_ChildStates:\n  - m_State: {fileID: 11020000}\n    m_Position: {x: 0, y: 0, z: 0}\n  - m_State: {fileID: 11020001}\n    m_Position: {x: 100, y: 0, z: 0}\n  m_AnyStateTransitions: []\n  m_DefaultState: {fileID: 11020000}\n--- !u!1102 &11020000\nAnimatorState:\n  m_Name: Idle revised\n  m_Motion: {fileID: 20600000, guid: cccccccccccccccccccccccccccccccc, type: 2}\n  m_Transitions:\n  - {fileID: 11010000}\n  m_SpeedParameterActive: 0\n  m_SpeedParameter: unused\n--- !u!1102 &11020001\nAnimatorState:\n  m_Name: Run\n  m_Motion: {fileID: 20600000, guid: cccccccccccccccccccccccccccccccc, type: 2}\n  m_Transitions:\n  - {fileID: 11010001}\n--- !u!1101 &11010000\nAnimatorStateTransition:\n  m_Conditions:\n  - m_ConditionMode: 1\n    m_ConditionEvent: Speed\n    m_EventTreshold: 0\n  m_DstState: {fileID: 11020001}\n--- !u!1101 &11010001\nAnimatorStateTransition:\n  m_Conditions: []\n  m_DstState: {fileID: 11020000}\n"
+    },
+    {
+      "path": "Assets/Demo.controller.meta",
+      "text": "fileFormatVersion: 2\nguid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: 0\n"
+    },
+    {
+      "path": "Assets/Shared.asset",
+      "text": "%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n--- !u!206 &20600000\nBlendTree:\n  m_Name: Shared Tree\n  m_BlendType: 0\n  m_BlendParameter: Speed\n  m_Childs:\n  - m_Motion: {fileID: 9223372036854775807, guid: dddddddddddddddddddddddddddddddd, type: 2}\n    m_Threshold: 0\n  - m_Motion: {fileID: 9223372036854775807, guid: dddddddddddddddddddddddddddddddd, type: 2}\n    m_Threshold: 1\n"
+    },
+    {
+      "path": "Assets/Shared.asset.meta",
+      "text": "fileFormatVersion: 2\nguid: cccccccccccccccccccccccccccccccc\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: 0\n"
+    }
+  ]
+}

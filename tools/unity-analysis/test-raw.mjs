@@ -1,0 +1,10 @@
+// Expectations authored before implementation. Requires verified deployed Pages copy.
+import test from 'node:test';import assert from 'node:assert/strict';import {pathToFileURL} from 'node:url';import {readFile,readdir} from 'node:fs/promises';
+const root=process.env.UNITY_PAGES_ROOT;if(!root)throw Error('Verified Pages root required');
+const {parseUnityFile}=await import(pathToFileURL(root+'/shared/unity-analysis/text.mjs'));
+const {analyzeSnapshot,compareSnapshots}=await import(pathToFileURL(root+'/shared/unity-analysis/analysis.mjs'));
+const {instantiateUnityKernel}=await import(pathToFileURL(root+'/shared/unity-analysis/kernel/kernel.mjs'));
+const mod=await WebAssembly.compile(await readFile(root+'/shared/unity-analysis/kernel/unity-analysis.wasm'));
+const kernel=await instantiateUnityKernel(mod);
+async function snapshot(dir){const files=[];for(const path of await readdir(new URL('./fixtures/'+dir+'/Assets/',import.meta.url)))files.push(parseUnityFile({path:'Assets/'+path,text:await readFile(new URL('./fixtures/'+dir+'/Assets/'+path,import.meta.url),'utf8')}));for(const f of files){const m=files.find(x=>x.path===f.path+'.meta');if(m?.meta?.guid)f.guid=m.meta.guid;}return {schemaVersion:'unity-analysis-snapshot/1',files};}
+test('real-shaped raw graph, source evidence, 64-bit identity and semantic diff',async()=>{const before=await snapshot('raw-before'),after=await snapshot('raw-after'),r=analyzeSnapshot(before,kernel),d=compareSnapshots(before,after,kernel);assert(r.references.some(x=>x.fileId==='999'&&x.state==='missing-local'));assert(r.references.some(x=>x.guid==='e'.repeat(32)&&x.state==='external-unprovided'));assert(r.findings.some(x=>x.code==='PARAMETER_TYPE_CONSTRAINT'&&x.name==='Speed'&&x.declared==='Float'));assert(r.shared.some(x=>x.fileId==='20600000'&&x.incoming===2));assert(r.shared.some(x=>x.fileId==='9223372036854775807'&&x.incoming===2));assert(r.cycles.length>0);assert(d.changes.some(x=>x.property==='/m_Name'&&x.before==='Idle'&&x.after==='Idle revised'));assert(r.parameters.checks.some(x=>x.rule?.includes('blend')&&x.verdict==='compatible'));});

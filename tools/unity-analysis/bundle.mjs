@@ -1,0 +1,11 @@
+// Build-time bundling only. Does not execute product modules.
+import {build,version} from '../../site-runtime/node_modules/.pnpm/esbuild@0.28.0/node_modules/esbuild/lib/main.js';
+import {readFile,writeFile} from 'node:fs/promises';
+import {resolve,relative,dirname,posix} from 'node:path';
+import {createHash} from 'node:crypto';
+const base=resolve(process.argv[2]),record=resolve(process.argv[3]);
+const allowedURLs=new Set(['shared/compute/kernel.mjs','shared/media/kernel/registry.mjs','shared/media/alignment/registry.mjs','shared/unity-analysis/kernel/registry.mjs']);
+const result=await build({entryPoints:[resolve(base,'shared/compute/pool-worker.mjs')],outfile:resolve(base,'shared/compute/pool-worker.bundle.mjs'),bundle:true,format:'esm',platform:'browser',target:'es2022',minify:false,sourcemap:false,metafile:true,write:false,plugins:[{name:'module-url',setup(b){b.onLoad({filter:/\.mjs$/},async a=>{let s=await readFile(a.path,'utf8');const n=relative(base,a.path).split('\\').join('/');if(s.includes('import.meta.url')){if(!allowedURLs.has(n))throw Error('Unreviewed module URL '+n);const re=/new URL\(\s*(['"])([^'"]+)\1,\s*import\.meta\.url\s*\)/g;if(s.replace(re,'').includes('import.meta.url'))throw Error('Nonliteral module URL');s=s.replace(re,(_,q,v)=>{const target=posix.normalize(posix.join(posix.dirname(n),v));if(!target.startsWith('shared/')||!target.endsWith('.wasm'))throw Error('Unexpected asset');let r=posix.relative('shared/compute',target);if(!r.startsWith('.'))r='./'+r;return `new URL(${JSON.stringify(r)},import.meta.url)`;});}return{contents:s,loader:'js',resolveDir:dirname(a.path)};});}}]});
+if(result.outputFiles.length!==1||Object.values(result.metafile.outputs).some(x=>x.imports.length))throw Error('External bundle imports');
+if(base.includes('pages-')&&Object.keys(result.metafile.inputs).some(x=>x.includes('/shared/media/')))throw Error('Unpublished media in Pages');
+const f=result.outputFiles[0];await writeFile(f.path,f.contents);await writeFile(record,JSON.stringify({version,inputs:Object.keys(result.metafile.inputs),sha256:createHash('sha256').update(f.contents).digest('hex'),bytes:f.contents.length,externalImports:0},null,2)+'\n');console.log(`Bundle: ${f.contents.length} bytes, ${Object.keys(result.metafile.inputs).length} modules`);

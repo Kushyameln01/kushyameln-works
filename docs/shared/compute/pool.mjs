@@ -69,7 +69,7 @@ export function createComputePool({concurrency=2,moduleReuse=false,onUpdate=()=>
     const metrics=Object.freeze({...workerMetrics,buildId:BUILD_ID,wasmSha256:record.kernel.sha256,wasmVariant:record.kernel.variant,kernelAbi:record.kernel.abi,queueMs:record.startedAt===null?totalMs:record.startedAt-record.acceptedAt,startupMs:record.bootAt===null||record.workerStartedAt===null?null:record.bootAt-record.workerStartedAt,preparationMs:record.preparationMs,moduleReuse,startTogether:record.startTogether,totalMs,transferResidualMs:workerRoundtripMs===null||measuredWorkerMs===null?null:Math.max(0,workerRoundtripMs-measuredWorkerMs),memoryMeasurement:null});
     record.result=Object.freeze({protocolVersion:1,buildId:BUILD_ID,taskType:record.taskType,taskVersion:1,jobId:record.jobId,inputRevision:record.inputRevision,generation:record.generation,status,...extra,...(result===undefined?{}:{result}),metrics,totalMs});
     record.resultBytes=resultBytes;
-    if(disposed){records.delete(record.jobId);}else{retained.push(record);retainedBytes+=record.resultBytes;evict();}
+    if(disposed||record.kernel.retainResult===false){records.delete(record.jobId);}else{retained.push(record);retainedBytes+=record.resultBytes;evict();}
     const resolve=record.resolve;record.resolve=null;
     resolve(record.result);
     notify(record);

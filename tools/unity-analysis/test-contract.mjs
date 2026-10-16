@@ -14,7 +14,7 @@ export async function checkMinimum(pool){
   for(const [state,n] of Object.entries({null:1,resolved:2,'missing-local':1,'external-unprovided':1}))assert.equal(snapshot.references.filter(r=>r.state===state).length,n,state);
   assert.ok(snapshot.shared.some(x=>x.fileId==='9223372036854775807'&&x.incoming===2));
   assert.ok(snapshot.findings.some(x=>x.code==='PARAMETER_TYPE_CONSTRAINT'&&x.name==='Speed'));
-  assert.ok(report.diff.changes.some(x=>x.property==='m_Name'&&x.before==='Idle'&&x.after==='Idle revised'));
+  assert.ok(report.diff.changes.some(x=>x.property==='/m_Name'&&x.before==='Idle'&&x.after==='Idle revised'));
   assert.equal(report.completeness.truncated,false);
   return report;
  }finally{analyzer.dispose();}
@@ -23,10 +23,20 @@ export async function checkMinimum(pool){
 export async function checkReservedProperties(pool){
  const analyzer=createUnityAnalyzer({pool});const a=structuredClone(fixture.before),b=structuredClone(fixture.before);
  a.files[0].objects[0].properties.$references='original';b.files[0].objects[0].properties.$references='changed';b.files[0].objects[0].classId='92';
- try{const report=await analyzer.compare(a,b);assert.ok(report.diff.changes.some(c=>c.domain==='property'&&c.property==='$references'));assert.ok(report.diff.changes.some(c=>c.domain==='metadata'&&c.property==='classId'));return report;}finally{analyzer.dispose();}
+ try{const report=await analyzer.compare(a,b);assert.ok(report.diff.changes.some(c=>c.domain==='property'&&c.property==='/$references'));assert.ok(report.diff.changes.some(c=>c.domain==='metadata'&&c.property==='classId'));return report;}finally{analyzer.dispose();}
 }
 
 export async function checkProvenance(pool){
  const analyzer=createUnityAnalyzer({pool});const input=structuredClone(fixture.before);
- try{const r=await analyzer.analyze(input);assert.match(r.inputs.before.sha256,/^[0-9a-f]{64}$/);assert.equal(r.before.coverage.source,'caller-supplied schema');input.files[0].objects[0].references[0].source={path:'forged',line:1};assert.throws(()=>analyzer.analyze(input),/source|position/i);}finally{analyzer.dispose();}
+ try{const r=await analyzer.analyze(input);assert.match(r.inputs.before.sha256,/^[0-9a-f]{64}$/);assert.equal(r.before.coverage.source,'caller-supplied schema');input.files[0].objects[0].references[0].source={path:'forged',line:1};assert.throws(()=>analyzer.analyze(input),/source|position/i);delete input.files[0].objects[0].references[0].source;input.files[0].objects[0].propertySources={'/m_Name':{path:'forged'}};assert.throws(()=>analyzer.analyze(input),/source|position/i);}finally{analyzer.dispose();}
+}
+
+export async function checkContainerKinds(pool){
+ const analyzer=createUnityAnalyzer({pool});const a=structuredClone(fixture.before),b=structuredClone(fixture.before);a.files[0].objects[0].properties.container=['a'];b.files[0].objects[0].properties.container={'0':'a'};
+ try{const r=await analyzer.compare(a,b);assert.ok(r.diff.changes.some(c=>c.domain==='structure'&&c.property==='/container'&&c.before==='array'&&c.after==='object'));}finally{analyzer.dispose();}
+}
+
+export async function checkIssueProvenance(pool){
+ const analyzer=createUnityAnalyzer({pool});const input=structuredClone(fixture.before);input.files[0].issues=[{code:'PARSER_ISSUE',message:'caller issue',path:'forged.asset',confidence:'confirmed',category:'reference',source:{line:1}}];
+ try{assert.throws(()=>analyzer.analyze(input),/issue/i);}finally{analyzer.dispose();}
 }
