@@ -50,3 +50,18 @@ Parser expectation suite PASS. Core13/14 PASS, one harness fixture error: builti
 - Source reviewer and procedure auditor independently checked deployment/file/output evidence. Their remaining HOLD was stale NOT RUN completion text; updated VALIDATION and browser receipt, preserving historical red/blocked observations. No optional product test cycle added.
 - Final records/evidence saved alongside source. Test-graph fixture correction and records are the only post-validation changes; publication must preserve the tested product bytes.
 - Final documentation re-audit: PROCEED; record HOLD released after reading VALIDATION, RESULT and browser receipt. No further product edit or test requested.
+- Final-record source push rejected normally because remote advanced to7b212c55. Opened a fresh checkout; newer90 media documentation/tool files have zero overlap with the30 Unity record/fixture files. Preserved all newer changes and integrated only Unity records; no force push or product modification.
+- GitHub final-record commit b6a8b0231da02ae09ac7f111db4dc33d7c3b0a9a saved30 evidence/document/fixture changes. All158 resulting repository blobs verified before guarded ref update; all66 public product blobs are identical to tested6dc93ea. Follow-up Pages workflow38951930675 is being observed; no new runtime test is necessary for unchanged public bytes.
+- Final-record Pages workflow38951930675 succeeded2026-10-16T19:03:15Z. Official Sites rebuild passed136 public files/8 frameworkJS/192 artifact files; shared and Unity public bytes match prior product projection.
+
+## 2026-10-17 — improvement request, revision1.3
+- User requests GUID identity repair, lazy full JSON, same-condition stage measurements, then evidence-based batching/Module/memory decisions. No SIMD/FS/JSPI/external logging or universal Editor gate.
+- Read exact plan Page, saved full workflow, Tips1.2 (current Library version2)08/09, current DESIGN/VALIDATION/RESULT and source. Independent ZIP not located after bounded Library searches; supplied review/403 claims remain attributed, not newly verified.
+- Fresh official source97b07ce, Pagesfe707873. New media publication preserved; do not restore obsolete FT-only registry.
+- Independent audit PROCEED for candidate implementation/publication after static gate. Accepted advisory: numerical15%/10% adoption thresholds marked implementation proposals; historical FT-only section labeled.
+- Technical reviewer confirmed GUID file-key mismatch and UI JSON duplication. Reviewer suggested eager prettyJSON, but that conflicts with user's lazy formatting requirement; retain compact-size-once and lazy pretty cache instead. No user condition was changed.
+- Expected regressions authored before product edits; two bounded Workers handle GUID/UI and measurement harness, root handles instrumentation/integration/publication. Auditor read-only. No product runtime at this checkpoint.
+
+- Static review found duplicate final report serialization introduced by instrumentation; removed it before publication. Retained one 8 MiB limit check, with exact timing exclusions and caller elapsed for adoption. Constructor and finish interval definitions corrected.
+- Syntax gate41 modules PASS; Pages106 base public blobs matched, nine intended public changes (including one new cache module), isolated107-file export PASS. Sites static build137 assets/8 generated JS/193 artifact files PASS. No product execution yet.
+- Existing paper registry is already in current Pages base. Updated build-only URL allowlist and retired obsolete no-media Pages guard; no task or media product behavior changed. First bundle attempt failed at that stale allowlist and produced no bundle; corrected bounded registry entry and rebuilt successfully.

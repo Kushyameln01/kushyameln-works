@@ -1,7 +1,7 @@
 export const SCHEMA='unity-analysis-snapshot/1';
 export const REPORT_SCHEMA='unity-analysis-report/1';
-export const ANALYZER_VERSION='unity-analysis-0.2.0';
-export const RULES_VERSION='unity-static-2';
+export const ANALYZER_VERSION='unity-analysis-0.3.0';
+export const RULES_VERSION='unity-static-3';
 export const TYPES=Object.freeze({Unknown:0,Float:1,Int:2,Bool:3,Trigger:4});
 export const LIMITS=Object.freeze({maxFiles:4096,maxObjects:65536,maxEdges:262144,maxProperties:262144,maxInputBytes:4*1024*1024,maxReportBytes:8*1024*1024,maxDiffPairs:262144,maxOwnerContexts:262144,maxGraphSteps:2000000});
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
@@ -9,6 +9,9 @@ export const plain=o=>!!o&&typeof o==='object'&&!Array.isArray(o)&&(Object.getPr
 export function bytes(value){return new TextEncoder().encode(JSON.stringify(value)).byteLength;}
 export function fileId(value,{zero=true}={}){if(typeof value!=='string'||! /^-?(0|[1-9][0-9]*)$/.test(value)||value==='-0')throw TypeError('fileID must be a decimal string');const n=BigInt(value);if(n<-(1n<<63n)||n>(1n<<63n)-1n||(!zero&&n===0n))throw RangeError('fileID outside signed 64-bit range');return value;}
 export function guid(value){if(typeof value!=='string'||!/^[0-9a-fA-F]{32}$/.test(value))throw TypeError('Invalid GUID');return value.toLowerCase();}
+// Normalize identity only. Caller properties, path spelling and input hashes retain their original values.
+export function normalizeAssetId(value){boundedText(value,1100);return /^[0-9a-fA-F]{32}$/.test(value)?guid(value):value;}
+export function fileAssetId(file){return file.guid==null?`input:${file.path}`:guid(file.guid);}
 export function safePath(path){if(typeof path!=='string'||!path||path.length>1024||/[\\\x00-\x1f]/.test(path)||path.startsWith('/')||path.split('/').some(x=>!x||x==='.'||x==='..')||path.includes(':'))throw TypeError('Unsafe relative input path');return path;}
 function boundedText(v,max=1024){if(typeof v!=='string'||v.length>max)throw TypeError('Invalid text field');return v;}
 function value(v,depth=0,counter={n:0}){if(++counter.n>LIMITS.maxProperties)throw RangeError('PROPERTY_COUNT_LIMIT');if(depth>64)throw RangeError('Property depth limit');if(v===null||typeof v==='string'||typeof v==='boolean'||typeof v==='number'&&Number.isFinite(v))return;if(Array.isArray(v)){for(const x of v)value(x,depth+1,counter);return;}if(plain(v)){for(const [k,x]of Object.entries(v)){boundedText(k);value(x,depth+1,counter);}return;}throw TypeError('Properties must be JSON values');}
@@ -32,7 +35,7 @@ export function freezeDeep(v){if(v&&typeof v==='object'&&!ArrayBuffer.isView(v)&
 export function buildIndex(input){
  inspectSnapshot(input);const nodes=[],assetMap=new Map(),guidMap=new Map(),findings=[];
  for(const [fi,f]of input.files.entries()){
-  const assetId=f.guid?guid(f.guid):`input:${f.path}`;const entry={...f,assetId,inputFileIndex:fi,nodes:new Map()};const byAsset=assetMap.get(assetId)??[];byAsset.push(entry);assetMap.set(assetId,byAsset);if(f.guid)guidMap.set(guid(f.guid),byAsset);
+  const assetId=fileAssetId(f);const entry={...f,assetId,inputFileIndex:fi,nodes:new Map()};const byAsset=assetMap.get(assetId)??[];byAsset.push(entry);assetMap.set(assetId,byAsset);if(f.guid)guidMap.set(assetId,byAsset);
   for(const o of f.objects){const n={...o,index:nodes.length,assetId,file:f,fileIndex:fi,key:`${assetId}:${o.fileId}`,source:{...(o.source??{}),path:f.path,fileId:o.fileId,classId:o.classId}};nodes.push(n);const matches=entry.nodes.get(o.fileId)??[];matches.push(n);entry.nodes.set(o.fileId,matches);}
  }
  for(const [assetId,entries]of assetMap)if(entries.length>1)findings.push({code:'DUPLICATE_ASSET_ID',category:'reference',severity:'warning',confidence:'confirmed',assetId,paths:entries.map(e=>e.path)});

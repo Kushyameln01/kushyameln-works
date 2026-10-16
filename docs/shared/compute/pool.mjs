@@ -49,7 +49,7 @@ export function createComputePool({concurrency=2,moduleReuse=false,onUpdate=()=>
   }
   function finish(record,status,extra={}) {
     if(terminal(record.status))return false;
-    let result,resultBytes;
+    const finishStarted=performance.now();let result,resultBytes;
     try{result=freezeTaskResult(extra.result);resultBytes=countResultBytes(result);if(!Number.isSafeInteger(resultBytes)||resultBytes<0)throw TypeError('Invalid result size');}
     catch{status='failed';extra={errorCode:'INVALID_RESPONSE'};result=undefined;resultBytes=0;}
     const oldStatus=record.status;
@@ -66,7 +66,7 @@ export function createComputePool({concurrency=2,moduleReuse=false,onUpdate=()=>
     const workerMetrics=extra.metrics??{};
     const measuredWorkerMs=Number.isFinite(workerMetrics.loadMs)&&Number.isFinite(workerMetrics.computeMs)?workerMetrics.loadMs+workerMetrics.computeMs+(Number.isFinite(workerMetrics.readyWaitMs)?workerMetrics.readyWaitMs:0):null;
     const workerRoundtripMs=record.workerStartedAt===null?null:performance.now()-record.workerStartedAt;
-    const metrics=Object.freeze({...workerMetrics,buildId:BUILD_ID,wasmSha256:record.kernel.sha256,wasmVariant:record.kernel.variant,kernelAbi:record.kernel.abi,queueMs:record.startedAt===null?totalMs:record.startedAt-record.acceptedAt,startupMs:record.bootAt===null||record.workerStartedAt===null?null:record.bootAt-record.workerStartedAt,preparationMs:record.preparationMs,moduleReuse,startTogether:record.startTogether,totalMs,transferResidualMs:workerRoundtripMs===null||measuredWorkerMs===null?null:Math.max(0,workerRoundtripMs-measuredWorkerMs),memoryMeasurement:null});
+    const metrics=Object.freeze({...workerMetrics,buildId:BUILD_ID,wasmSha256:record.kernel.sha256,wasmVariant:record.kernel.variant,kernelAbi:record.kernel.abi,queueMs:record.startedAt===null?totalMs:record.startedAt-record.acceptedAt,startupMs:record.bootAt===null||record.workerStartedAt===null?null:record.bootAt-record.workerStartedAt,preparationMs:record.preparationMs,moduleReuse,startTogether:record.startTogether,totalMs,transferResidualMs:workerRoundtripMs===null||measuredWorkerMs===null?null:Math.max(0,workerRoundtripMs-measuredWorkerMs),workerConstructMs:record.workerConstructMs,inputPostMs:record.inputPostMs,hostValidationMs:record.hostValidationMs,hostFinishMs:performance.now()-finishStarted,memoryMeasurement:null});
     record.result=Object.freeze({protocolVersion:1,buildId:BUILD_ID,taskType:record.taskType,taskVersion:1,jobId:record.jobId,inputRevision:record.inputRevision,generation:record.generation,status,...extra,...(result===undefined?{}:{result}),metrics,totalMs});
     record.resultBytes=resultBytes;
     if(disposed||record.kernel.retainResult===false){records.delete(record.jobId);}else{retained.push(record);retainedBytes+=record.resultBytes;evict();}
@@ -93,7 +93,8 @@ export function createComputePool({concurrency=2,moduleReuse=false,onUpdate=()=>
   function launch(record,module) {
     if(disposed||record.status!=='running')return;
     try {
-      const worker=workerFactory();
+      const constructStarted=performance.now(),worker=workerFactory();
+      record.workerConstructMs=performance.now()-constructStarted;
       if(disposed||record.status!=='running'){try{worker.terminate();}catch{}return;}
       record.worker=worker;record.workerStartedAt=performance.now();record.phase='starting';
       worker.onmessage=({data})=>{
@@ -108,7 +109,8 @@ export function createComputePool({concurrency=2,moduleReuse=false,onUpdate=()=>
           if(record.bootAt===null)record.bootAt=performance.now();
           record.phase=data.phase;notify(record);
         }else if(data.type==='result'){
-          let valid=false;try{valid=validTaskResult(record.taskType,record.resultShape,data.result);}catch{}
+          const validateStarted=performance.now();let valid=false;try{valid=validTaskResult(record.taskType,record.resultShape,data.result);}catch{}
+          record.hostValidationMs=performance.now()-validateStarted;
           if(!record.startSent||!valid||typeof data.workerId!=='string'||!data.workerId||(record.kernel.requiresWasm===false?data.instanceId!==null:typeof data.instanceId!=='string'||!data.instanceId)){finish(record,'failed',{errorCode:'INVALID_RESPONSE'});return;}
           if(!moduleReuse&&Number.isInteger(data.metrics?.compileCalls)&&data.metrics.compileCalls>=0)compileCalls+=data.metrics.compileCalls;
           finish(record,'succeeded',{result:data.result,workerId:data.workerId,instanceId:data.instanceId,metrics:data.metrics});
@@ -117,7 +119,7 @@ export function createComputePool({concurrency=2,moduleReuse=false,onUpdate=()=>
       };
       worker.onerror=event=>{event?.preventDefault?.();finish(record,'failed',{errorCode:'WORKER_ERROR'});};
       worker.onmessageerror=()=>finish(record,'failed',{errorCode:'MESSAGE_ERROR'});
-      worker.postMessage({...record.request,buildId:BUILD_ID,generation:record.generation,startTogether:record.startTogether,...(module?{module}:{})},transferTaskInput(record.request));
+      const postStarted=performance.now();worker.postMessage({...record.request,buildId:BUILD_ID,generation:record.generation,startTogether:record.startTogether,...(module?{module}:{})},transferTaskInput(record.request));record.inputPostMs=performance.now()-postStarted;
       if(record.status==='running')notify(record);
     } catch(error) {finish(record,'failed',{errorCode:'WORKER_START_OR_SEND_FAILED',message:String(error?.message??error).slice(0,240)});}
   }
@@ -158,7 +160,7 @@ export function createComputePool({concurrency=2,moduleReuse=false,onUpdate=()=>
       if(disposed)throw Error('Compute pool is disposed');
       const cohort=startTogether?{members:new Set(),released:false}:null;
       for(const request of requests){
-        const record={jobId:request.jobId,inputRevision:request.inputRevision,taskType:request.taskType,generation:++generation,status:'queued',phase:'queued',request,resultShape:resultShape(request),wasmVariant:request.wasmVariant,kernel:kernelInfo(request),inputBytes:countInputBytes(request),acceptedAt:performance.now(),startedAt:null,workerStartedAt:null,bootAt:null,preparationMs:null,worker:null,result:null,startTogether,cohort,ready:false,startSent:!startTogether};
+        const record={jobId:request.jobId,inputRevision:request.inputRevision,taskType:request.taskType,generation:++generation,status:'queued',phase:'queued',request,resultShape:resultShape(request),wasmVariant:request.wasmVariant,kernel:kernelInfo(request),inputBytes:countInputBytes(request),acceptedAt:performance.now(),startedAt:null,workerStartedAt:null,bootAt:null,preparationMs:null,workerConstructMs:null,inputPostMs:null,hostValidationMs:null,worker:null,result:null,startTogether,cohort,ready:false,startSent:!startTogether};
         cohort?.members.add(record);
         const promise=new Promise(resolve=>{record.resolve=resolve;});
         records.set(record.jobId,record);queue.push(record);created.push(record);

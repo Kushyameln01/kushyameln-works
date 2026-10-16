@@ -5,7 +5,7 @@ var __export = (target, all) => {
 };
 
 // static-src/shared/compute/protocol.mjs
-var BUILD_ID = "compute-unity-b2";
+var BUILD_ID = "compute-unity-b3";
 var WASM_SHA256 = "b260ac37862014a9ebb3ebb25739283fe2778e638969e757b2fd34769cd989ad";
 var MAX_MASKS = 262144;
 function validateRequest(input, { copy = true } = {}) {
@@ -1136,8 +1136,8 @@ __export(pool_task_exports, {
 
 // static-src/shared/unity-analysis/model.mjs
 var SCHEMA = "unity-analysis-snapshot/1";
-var ANALYZER_VERSION = "unity-analysis-0.2.0";
-var RULES_VERSION = "unity-static-2";
+var ANALYZER_VERSION = "unity-analysis-0.3.0";
+var RULES_VERSION = "unity-static-3";
 var TYPES = Object.freeze({ Unknown: 0, Float: 1, Int: 2, Bool: 3, Trigger: 4 });
 var LIMITS = Object.freeze({ maxFiles: 4096, maxObjects: 65536, maxEdges: 262144, maxProperties: 262144, maxInputBytes: 4 * 1024 * 1024, maxReportBytes: 8 * 1024 * 1024, maxDiffPairs: 262144, maxOwnerContexts: 262144, maxGraphSteps: 2e6 });
 var own2 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
@@ -1154,6 +1154,13 @@ function fileId(value2, { zero = true } = {}) {
 function guid(value2) {
   if (typeof value2 !== "string" || !/^[0-9a-fA-F]{32}$/.test(value2)) throw TypeError("Invalid GUID");
   return value2.toLowerCase();
+}
+function normalizeAssetId(value2) {
+  boundedText(value2, 1100);
+  return /^[0-9a-fA-F]{32}$/.test(value2) ? guid(value2) : value2;
+}
+function fileAssetId(file) {
+  return file.guid == null ? `input:${file.path}` : guid(file.guid);
 }
 function safePath(path) {
   if (typeof path !== "string" || !path || path.length > 1024 || /[\\\x00-\x1f]/.test(path) || path.startsWith("/") || path.split("/").some((x) => !x || x === "." || x === "..") || path.includes(":")) throw TypeError("Unsafe relative input path");
@@ -1280,12 +1287,12 @@ function buildIndex(input) {
   inspectSnapshot(input);
   const nodes = [], assetMap = /* @__PURE__ */ new Map(), guidMap = /* @__PURE__ */ new Map(), findings = [];
   for (const [fi, f] of input.files.entries()) {
-    const assetId = f.guid ? guid(f.guid) : `input:${f.path}`;
+    const assetId = fileAssetId(f);
     const entry = { ...f, assetId, inputFileIndex: fi, nodes: /* @__PURE__ */ new Map() };
     const byAsset = assetMap.get(assetId) ?? [];
     byAsset.push(entry);
     assetMap.set(assetId, byAsset);
-    if (f.guid) guidMap.set(guid(f.guid), byAsset);
+    if (f.guid) guidMap.set(assetId, byAsset);
     for (const o of f.objects) {
       const n = { ...o, index: nodes.length, assetId, file: f, fileIndex: fi, key: `${assetId}:${o.fileId}`, source: { ...o.source ?? {}, path: f.path, fileId: o.fileId, classId: o.classId } };
       nodes.push(n);
@@ -1303,7 +1310,9 @@ function buildIndex(input) {
 var builtin = (g) => /^0{16}[def]0{15}$/i.test(g ?? "");
 var withoutSources = (value2) => Array.isArray(value2) ? value2.map(withoutSources) : value2 && typeof value2 === "object" ? Object.fromEntries(Object.entries(value2).filter(([k]) => k !== "source").map(([k, v]) => [k, withoutSources(v)])) : value2;
 var pointer = (k) => String(k).replaceAll("~", "~0").replaceAll("/", "~1");
-var keyOf = (assetId, fileId2) => `${assetId}:${fileId2}`;
+var keyOf = (assetId, fileId2) => `${normalizeAssetId(assetId)}:${fileId2}`;
+var referenceValues = (references) => references.map(({ source: source2, ...r }) => ({ ...r, ...r.guid != null ? { guid: guid(r.guid) } : {} }));
+var useValues = (uses) => withoutSources(uses.map((u) => u.scope ? { ...u, scope: { ...u.scope, assetId: normalizeAssetId(u.scope.assetId) } } : u));
 function graphComponents(nodes, edges) {
   const out = nodes.map(() => []), rev2 = nodes.map(() => []);
   for (const [a, b] of edges) {
@@ -1362,7 +1371,7 @@ function analyzeSnapshot(input, kernel) {
     if (r.fileId === "0") reference.state = "null";
     else if (builtin(r.guid)) reference.state = "builtin-unverified";
     else {
-      const candidates = r.guid ? guidMap.get(r.guid.toLowerCase()) : assetMap.get(n.assetId);
+      const candidates = r.guid ? guidMap.get(guid(r.guid)) : assetMap.get(n.assetId);
       if (!candidates?.length) reference.state = "external-unprovided";
       else if (candidates.length !== 1) reference.state = "ambiguous";
       else {
@@ -1484,7 +1493,7 @@ function compareSnapshots(before, after, kernel) {
       changes.push({ kind: bn ? "object-removed" : "object-added", identity: key, source: (bn ?? an).source, matching: (bn ?? an).file.guid ? "exact-guid-fileID" : "provisional-input-path-fileID", before: bn?.properties ?? null, after: an?.properties ?? null });
       continue;
     }
-    const domains = [["property", leaves(bn.properties ?? {}), leaves(an.properties ?? {})], ["structure", structures(bn.properties ?? {}), structures(an.properties ?? {})], ["metadata", /* @__PURE__ */ new Map([["classId", bn.classId]]), /* @__PURE__ */ new Map([["classId", an.classId]])], ["references", /* @__PURE__ */ new Map([["references", (bn.references ?? []).map(({ source: source2, ...r }) => r)]]), /* @__PURE__ */ new Map([["references", (an.references ?? []).map(({ source: source2, ...r }) => r)]])], ["parameters", /* @__PURE__ */ new Map([["declarations", withoutSources(bn.parameters ?? [])], ["uses", withoutSources(bn.parameterUses ?? [])]]), /* @__PURE__ */ new Map([["declarations", withoutSources(an.parameters ?? [])], ["uses", withoutSources(an.parameterUses ?? [])]])]];
+    const domains = [["property", leaves(bn.properties ?? {}), leaves(an.properties ?? {})], ["structure", structures(bn.properties ?? {}), structures(an.properties ?? {})], ["metadata", /* @__PURE__ */ new Map([["classId", bn.classId]]), /* @__PURE__ */ new Map([["classId", an.classId]])], ["references", /* @__PURE__ */ new Map([["references", referenceValues(bn.references ?? [])]]), /* @__PURE__ */ new Map([["references", referenceValues(an.references ?? [])]])], ["parameters", /* @__PURE__ */ new Map([["declarations", withoutSources(bn.parameters ?? [])], ["uses", useValues(bn.parameterUses ?? [])]]), /* @__PURE__ */ new Map([["declarations", withoutSources(an.parameters ?? [])], ["uses", useValues(an.parameterUses ?? [])]])]];
     for (const [domain, bp, ap] of domains) for (const property of /* @__PURE__ */ new Set([...bp.keys(), ...ap.keys()])) {
       if (pairs.length >= LIMITS.maxDiffPairs) throw RangeError("DIFF_PAIR_LIMIT");
       const presentB = bp.has(property), presentA = ap.has(property);
@@ -1498,7 +1507,7 @@ function compareSnapshots(before, after, kernel) {
   const fileChanges = [], fm = (files) => {
     const m = /* @__PURE__ */ new Map();
     for (const f of files) {
-      const k = f.guid ?? "input:" + f.path, v = m.get(k) ?? [];
+      const k = fileAssetId(f), v = m.get(k) ?? [];
       v.push(f);
       m.set(k, v);
     }
@@ -3479,10 +3488,13 @@ self.onmessage = async ({ data }) => {
     self.postMessage({ ...identity, type: "phase", phase: "loading", bootEpochMs });
     let compileCalls = 0, wasmContentType = null;
     const startTogether = data.startTogether === true, needsWasm = info.requiresWasm !== false;
+    const moduleStarted = performance.now();
     const module = needsWasm ? data.module ?? await prepareTaskModule4({ taskType: request.taskType, wasmVariant: request.wasmVariant, onCompile: () => compileCalls++, onResponse: (value2) => {
       wasmContentType = value2;
     } }) : null;
+    const modulePrepareMs = performance.now() - moduleStarted, instantiateStarted = performance.now();
     kernel = needsWasm ? instantiateTask4(request, module) : null;
+    const instantiateMs = needsWasm ? performance.now() - instantiateStarted : null;
     const preparedAt = performance.now();
     const compute = async () => {
       try {
@@ -3490,7 +3502,7 @@ self.onmessage = async ({ data }) => {
         self.postMessage({ ...identity, type: "phase", phase: "computing", instanceId: kernel?.instanceId ?? null, bootEpochMs });
         const result = await executeTask4(request, kernel), transfer = transferTaskResult4(result);
         const computeEnd = performance.now();
-        self.postMessage({ ...identity, type: "result", instanceId: kernel?.instanceId ?? null, result, metrics: { buildId: BUILD_ID, wasmSha256: info.sha256, wasmVariant: info.variant, kernelAbi: info.abi, wasmContentType, bootEpochMs, loadMs: preparedAt - started, readyWaitMs: startTogether ? computeStart - preparedAt : 0, startTogether, computeMs: computeEnd - computeStart, computeStartEpochMs: performance.timeOrigin + computeStart, computeEndEpochMs: performance.timeOrigin + computeEnd, memoryBytes: kernel?.memory.buffer.byteLength ?? null, wasmNotApplicable: needsWasm ? null : "JavaScript parsing task", inputCount: taskInputCount4(request, result), compileCalls, moduleReuse: needsWasm && data.module instanceof WebAssembly.Module, arena: kernel?.resourceStats?.() ?? null, memoryMeasurement: null } }, transfer);
+        self.postMessage({ ...identity, type: "result", instanceId: kernel?.instanceId ?? null, result, metrics: { buildId: BUILD_ID, wasmSha256: info.sha256, wasmVariant: info.variant, kernelAbi: info.abi, wasmContentType, bootEpochMs, modulePrepareMs: needsWasm ? modulePrepareMs : null, instantiateMs, loadMs: preparedAt - started, readyWaitMs: startTogether ? computeStart - preparedAt : 0, startTogether, computeMs: computeEnd - computeStart, computeStartEpochMs: performance.timeOrigin + computeStart, computeEndEpochMs: performance.timeOrigin + computeEnd, memoryBytes: kernel?.memory.buffer.byteLength ?? null, wasmNotApplicable: needsWasm ? null : "JavaScript parsing task", inputCount: taskInputCount4(request, result), compileCalls, moduleReuse: needsWasm && data.module instanceof WebAssembly.Module, arena: kernel?.resourceStats?.() ?? null, memoryMeasurement: null } }, transfer);
         cleanup();
       } catch (error) {
         fail2(error);

@@ -1,8 +1,10 @@
-import {buildIndex,canonical,TYPES,ANALYZER_VERSION,RULES_VERSION,sourcePosition,LIMITS} from './model.mjs';
+import {buildIndex,canonical,TYPES,ANALYZER_VERSION,RULES_VERSION,sourcePosition,LIMITS,guid,normalizeAssetId,fileAssetId} from './model.mjs';
 const builtin=g=>/^0{16}[def]0{15}$/i.test(g??'');
 const withoutSources=value=>Array.isArray(value)?value.map(withoutSources):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([k])=>k!=='source').map(([k,v])=>[k,withoutSources(v)])):value;
 const pointer=k=>String(k).replaceAll('~','~0').replaceAll('/','~1');
-const keyOf=(assetId,fileId)=>`${assetId}:${fileId}`;
+const keyOf=(assetId,fileId)=>`${normalizeAssetId(assetId)}:${fileId}`;
+const referenceValues=references=>references.map(({source,...r})=>({...r,...(r.guid!=null?{guid:guid(r.guid)}:{})}));
+const useValues=uses=>withoutSources(uses.map(u=>u.scope?{...u,scope:{...u.scope,assetId:normalizeAssetId(u.scope.assetId)}}:u));
 function graphComponents(nodes,edges){
  const out=nodes.map(()=>[]),rev=nodes.map(()=>[]);for(const [a,b]of edges){out[a].push(b);rev[b].push(a);}let steps=0;const step=()=>{if(++steps>LIMITS.maxGraphSteps)throw RangeError('GRAPH_STEP_LIMIT');};
  const seen=new Set(),order=[];
@@ -16,7 +18,7 @@ export function analyzeSnapshot(input,kernel){
  for(const n of nodes)for(const r of n.references??[]){
   const reference={source:{...n.source,...sourcePosition(r.source),property:r.property},assetId:n.assetId,fileId:r.fileId,guid:r.guid??null,property:r.property,role:r.role??'reference',state:null,targetIndex:null};
   if(r.fileId==='0')reference.state='null';else if(builtin(r.guid))reference.state='builtin-unverified';else{
-   const candidates=r.guid?guidMap.get(r.guid.toLowerCase()):assetMap.get(n.assetId);
+   const candidates=r.guid?guidMap.get(guid(r.guid)):assetMap.get(n.assetId);
    if(!candidates?.length)reference.state='external-unprovided';else if(candidates.length!==1)reference.state='ambiguous';else {const file=candidates[0],found=file.nodes.get(r.fileId)??[];
     if(found.length>1)reference.state='ambiguous';else if(found.length===1){reference.state='resolved';reference.targetIndex=found[0].index;reference.target={path:file.path,assetId:file.assetId,fileId:r.fileId};targets.push(found[0].index);edges.push([n.index,found[0].index]);if(r.role==='animator-owner')ownerEdges[n.index].push(found[0].index);const refs=targetSources.get(found[0].index)??[];refs.push(reference.source);targetSources.set(found[0].index,refs);}
     else if(file.coverage==='opaque'||file.coverage==='partial')reference.state='unparsed-target';else reference.state=r.guid?'missing-target-object':'missing-local';
@@ -44,11 +46,11 @@ function structures(value,path='',result=new Map()){if(value&&typeof value==='ob
 export function compareSnapshots(before,after,kernel){
  const b=buildIndex(before),a=buildIndex(after),changes=[],ambiguous=[];const byKey=index=>{const m=new Map();for(const n of index.nodes){const v=m.get(n.key)??[];v.push(n);m.set(n.key,v);}return m;};const bm=byKey(b),am=byKey(a),pairs=[],bv=[],av=[],intern=new Map();let next=1;const id=v=>{const s=canonical(v);if(!intern.has(s))intern.set(s,next++);return intern.get(s);};
  for(const key of new Set([...bm.keys(),...am.keys()])){const bs=bm.get(key)??[],as=am.get(key)??[];if(bs.length>1||as.length>1){ambiguous.push({key,beforeCount:bs.length,afterCount:as.length});continue;}const bn=bs[0],an=as[0];if(!bn||!an){changes.push({kind:bn?'object-removed':'object-added',identity:key,source:(bn??an).source,matching:(bn??an).file.guid?'exact-guid-fileID':'provisional-input-path-fileID',before:bn?.properties??null,after:an?.properties??null});continue;}
-  const domains=[['property',leaves(bn.properties??{}),leaves(an.properties??{})],['structure',structures(bn.properties??{}),structures(an.properties??{})],['metadata',new Map([['classId',bn.classId]]),new Map([['classId',an.classId]])],['references',new Map([['references',(bn.references??[]).map(({source,...r})=>r)]]),new Map([['references',(an.references??[]).map(({source,...r})=>r)]])],['parameters',new Map([['declarations',withoutSources(bn.parameters??[])],['uses',withoutSources(bn.parameterUses??[])]]),new Map([['declarations',withoutSources(an.parameters??[])],['uses',withoutSources(an.parameterUses??[])]])]];
+  const domains=[['property',leaves(bn.properties??{}),leaves(an.properties??{})],['structure',structures(bn.properties??{}),structures(an.properties??{})],['metadata',new Map([['classId',bn.classId]]),new Map([['classId',an.classId]])],['references',new Map([['references',referenceValues(bn.references??[])]]),new Map([['references',referenceValues(an.references??[])]])],['parameters',new Map([['declarations',withoutSources(bn.parameters??[])],['uses',useValues(bn.parameterUses??[])]]),new Map([['declarations',withoutSources(an.parameters??[])],['uses',useValues(an.parameterUses??[])]])]];
   for(const [domain,bp,ap]of domains)for(const property of new Set([...bp.keys(),...ap.keys()])){if(pairs.length>=LIMITS.maxDiffPairs)throw RangeError('DIFF_PAIR_LIMIT');const presentB=bp.has(property),presentA=ap.has(property);pairs.push({domain,kind:!presentB?'property-added':!presentA?'property-removed':'property-changed',identity:key,property,before:presentB?bp.get(property):null,after:presentA?ap.get(property):null,beforePresent:presentB,afterPresent:presentA,beforeSource:{...bn.source,...(bn.propertySources?.[property]??{})},source:{...an.source,...(an.propertySources?.[property]??{})},matching:an.file.guid?'exact-guid-fileID':'provisional-input-path-fileID'});bv.push(presentB?id(bp.get(property)):0);av.push(presentA?id(ap.get(property)):0);}
  }
  const diffs=kernel.diff(Int32Array.from(bv),Int32Array.from(av));for(let i=0;i<diffs.length;i++)if(diffs[i])changes.push(pairs[i]);
- const fileChanges=[],fm=files=>{const m=new Map();for(const f of files){const k=f.guid??'input:'+f.path,v=m.get(k)??[];v.push(f);m.set(k,v);}return m;},bf=fm(before.files),af=fm(after.files);
+ const fileChanges=[],fm=files=>{const m=new Map();for(const f of files){const k=fileAssetId(f),v=m.get(k)??[];v.push(f);m.set(k,v);}return m;},bf=fm(before.files),af=fm(after.files);
  for(const key of new Set([...bf.keys(),...af.keys()])){const bs=bf.get(key)??[],as=af.get(key)??[];if(bs.length>1||as.length>1){ambiguous.push({kind:'file-identity',identity:key,beforeCount:bs.length,afterCount:as.length});continue;}const f=bs[0],g=as[0];if(!f||!g)fileChanges.push({kind:f?'file-removed':'file-added',identity:key,pathBefore:f?.path??null,pathAfter:g?.path??null});else{if(f.path!==g.path)fileChanges.push({kind:'file-renamed',identity:key,pathBefore:f.path,pathAfter:g.path});if(f.contentHash&&g.contentHash&&f.contentHash!==g.contentHash)fileChanges.push({kind:'raw-bytes-changed',identity:key,pathBefore:f.path,pathAfter:g.path,beforeHash:f.contentHash,afterHash:g.contentHash});}}
  return {kind:'unity-diff',changes,ambiguous,fileChanges,completeness:{totalCount:changes.length,returnedCount:changes.length,truncated:false},identityPolicy:'GUID/fileID exact; missing GUID uses explicit provisional input path; no heuristic remapping'};
 }

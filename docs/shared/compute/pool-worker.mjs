@@ -25,8 +25,11 @@ self.onmessage=async({data})=>{
     self.postMessage({...identity,type:'phase',phase:'loading',bootEpochMs});
     let compileCalls=0,wasmContentType=null;
     const startTogether=data.startTogether===true,needsWasm=info.requiresWasm!==false;
+    const moduleStarted=performance.now();
     const module=needsWasm?(data.module??await prepareTaskModule({taskType:request.taskType,wasmVariant:request.wasmVariant,onCompile:()=>compileCalls++,onResponse:value=>{wasmContentType=value;}})):null;
+    const modulePrepareMs=performance.now()-moduleStarted,instantiateStarted=performance.now();
     kernel=needsWasm?instantiateTask(request,module):null;
+    const instantiateMs=needsWasm?performance.now()-instantiateStarted:null;
     const preparedAt=performance.now();
     const compute=async()=>{
       try {
@@ -34,7 +37,7 @@ self.onmessage=async({data})=>{
         self.postMessage({...identity,type:'phase',phase:'computing',instanceId:kernel?.instanceId??null,bootEpochMs});
         const result=await executeTask(request,kernel),transfer=transferTaskResult(result);
         const computeEnd=performance.now();
-        self.postMessage({...identity,type:'result',instanceId:kernel?.instanceId??null,result,metrics:{buildId:BUILD_ID,wasmSha256:info.sha256,wasmVariant:info.variant,kernelAbi:info.abi,wasmContentType,bootEpochMs,loadMs:preparedAt-started,readyWaitMs:startTogether?computeStart-preparedAt:0,startTogether,computeMs:computeEnd-computeStart,computeStartEpochMs:performance.timeOrigin+computeStart,computeEndEpochMs:performance.timeOrigin+computeEnd,memoryBytes:kernel?.memory.buffer.byteLength??null,wasmNotApplicable:needsWasm?null:'JavaScript parsing task',inputCount:taskInputCount(request,result),compileCalls,moduleReuse:needsWasm&&data.module instanceof WebAssembly.Module,arena:kernel?.resourceStats?.()??null,memoryMeasurement:null}},transfer);
+        self.postMessage({...identity,type:'result',instanceId:kernel?.instanceId??null,result,metrics:{buildId:BUILD_ID,wasmSha256:info.sha256,wasmVariant:info.variant,kernelAbi:info.abi,wasmContentType,bootEpochMs,modulePrepareMs:needsWasm?modulePrepareMs:null,instantiateMs,loadMs:preparedAt-started,readyWaitMs:startTogether?computeStart-preparedAt:0,startTogether,computeMs:computeEnd-computeStart,computeStartEpochMs:performance.timeOrigin+computeStart,computeEndEpochMs:performance.timeOrigin+computeEnd,memoryBytes:kernel?.memory.buffer.byteLength??null,wasmNotApplicable:needsWasm?null:'JavaScript parsing task',inputCount:taskInputCount(request,result),compileCalls,moduleReuse:needsWasm&&data.module instanceof WebAssembly.Module,arena:kernel?.resourceStats?.()??null,memoryMeasurement:null}},transfer);
         cleanup();
       }catch(error){fail(error);}
     };
