@@ -31,3 +31,13 @@ Module再利用の比較は同一8192要素を各6回。後半5回中央値が75
 共有APIはsubmit/submitBatch/getStatus/getResult/cancel/disposeを提供し、実行画面と独立した検証呼出し元で使用できる。上限は同時1〜4、待機含む12ジョブ、論理入力16MiB、保持16件/8MiB。終端でWorkerを破棄し、取消・失敗もPromiseを一度だけ確定する。ページ内セッションのCPU計算であり、ページを閉じた後の常駐処理やサーバーMCPではない。新規タスクはREADMEに従ってコード・検査を追加する。任意コード評価や新規認証は追加していない。
 
 GitHub Pagesの反映・配信後の実測結果は実行後に追記する。未実施の配信確認を合格にはしない。
+
+## 本実装の配信後確認
+
+2026-10-16、commit `bad511c1d51683b6bd19bd803b95e781956382f2` をmainへ反映。作成したGit treeの全22変更ファイルをローカルのGit blob hashと照合し、削除・無関係な変更がないことを確認した。expectedSHAを指定したforce:false更新で反映し、GitHub Actions `38863237492`（pages build and deployment）がsuccessになった。
+
+GitHub Pagesの実行画面 `https://kushyameln01.github.io/kushyameln-works/worker-runner/` を直接操作し、build compute-pool-b2を確認。通常バッチは `[0,3,5]` と `[0,7]` を返した。準備後開始の2/4 Workerは両方correct/overlap/parallelVerified=true、各4Worker/Instance、全ジョブが期待checksumと件数に一致。実取得したWASMのMIMEはapplication/wasmだった。原記録は `kushyameln-production-b2.json`、画面は `kushyameln-production-b2.png`。
+
+既存トップ→GitHub・ツール（共有計算入口を含む3件）→Animator Composerの導線と初期表示を確認。既存Composerの生成・Unity importは今回の変更対象ではなく、再検証したとは扱わない。公開対象一覧と配布コードはSites検証版と照合済み。検証記録の追記は公開docsツリーを変更しない。
+
+最終批評では保存手順への準拠を先に確認し、共有API、独立Workerの計算と正答、ChatGPTによる投入と結果回収、取消・復帰・保持上限、配布一致の必須条件が成立したと判定する。全端末での高速化・物理コア同時稼働・ページを閉じた後の継続・任意コード実行は提供範囲に含まれない。将来の計算タスクは共有READMEに沿った追加実装と検証が必要。
