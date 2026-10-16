@@ -1,0 +1,221 @@
+{
+  "schema": "vr180-metadata-independent-verification-v1",
+  "generated_at": "2026-10-16T22:32:23.350908+00:00",
+  "verifier": {
+    "path": "/workspace/sites/kushyameln-vr180/tools/vr180/verify-metadata.py",
+    "sha256": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96",
+    "python": "3.12.14",
+    "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+  },
+  "passed": true,
+  "input": {
+    "path": "/workspace/sites/kushyameln-vr180/docs/vr180-studio/fixtures/stereo180-tb.mp4",
+    "bytes": 26830,
+    "sha256": "4a00229ce015530ceb1ea7da529d6f7e50ea4f6fb33e161c17b5b9efd5f9c675"
+  },
+  "output": {
+    "path": "/workspace/sites/kushyameln-vr180/development/vr180/evidence/metadata/stereo180-tb-tagged.mp4",
+    "bytes": 30352,
+    "sha256": "de60b0dae9e1017e468e75d61d660c718eed44a49b60f23f8ba47aa3f78a73c5"
+  },
+  "layout": "tb",
+  "append_contract": {
+    "old_moov": {
+      "type": "moov",
+      "start": 32,
+      "end": 3435,
+      "payload": 40,
+      "size": 3403
+    },
+    "new_moov": {
+      "type": "moov",
+      "start": 26830,
+      "end": 30352,
+      "payload": 26838,
+      "size": 3522
+    },
+    "old_moov_became_same_size_free": true,
+    "original_prefix_unchanged_except_fourcc": true,
+    "active_moov_count": 1
+  },
+  "mdats": [
+    {
+      "start": 3443,
+      "end": 26830,
+      "sha256": "fbb7063b6b5833b11d4cb1c4a69bd261a037d7f3ca723c3d29d4eb66eed377ad"
+    }
+  ],
+  "sample_and_timing_tables": [
+    {
+      "handler": "vide",
+      "box_hashes": {
+        "stts": "c469f810f8e1000c90fbac9594d1a0f2bd56ac7363f6805f1b158d0908cd0431",
+        "stss": "ba32f13acaf822f7ea3ecc784b3783e80a891afe1d25de9a5f74f3fab242904f",
+        "ctts": "43030fc6fb0879fdb09f120b2abbed5446292219b18ed075348bb38d4aa4030f",
+        "stsc": "9ec1f3ef2bce97c2e26ccc0fee8f84cfe72d983ee47df6a31452abd02b568eb2",
+        "stsz": "070348ec8f16077c16a5cccda9eccd24c0624ce09725004e9ecd2519dfb2a38b",
+        "stco": "cfb2247da01c226c959700e2509d4d490ab1e2536b2895280615177d21030364",
+        "mdhd": "0eefa1c65e2f25e9e304319130f8b06f9f1208a2bb05d1e80f8c529ecad66929",
+        "tkhd": "a46d8511e9d7fa0b5cf79a89518f2cf615db8f4b279e9ec32e156ff169881deb",
+        "edts": "d32be303208311074a5bb70cb54227f48ac8835e4d7372b8d56b5d74282d9ff1"
+      },
+      "all_equal": true
+    },
+    {
+      "handler": "soun",
+      "box_hashes": {
+        "stts": "586ea1d61456c098a16ddeeae3df9c325bffa85dd6b7fffa6a4949cb69e919fa",
+        "stsc": "6b4e31038b620b309c76075087d9ef99c1b428734d44e0bd9a0b83d254e6e16b",
+        "stsz": "107821228d27c5f2ab6198a7a5e8aeb6dea5bc19a0ec1c0756ddb6ae278fbdfa",
+        "stco": "d1bda807ee77284c30ee51daf041c4e194f58ade3fd1427143432940c2c6fbb1",
+        "sgpd": "92b9b296cb0f465c18266e76442a7a115e91aeef26a5715225d17e0adb4fb477",
+        "sbgp": "5fb8fe82c07e933561c15178f712c5114e752bd47ecbb7d738fbf2c1a6d6cc93",
+        "mdhd": "155fc1f1a126fad3197f1c1156c8bf1b235c937c9af77a79279886852733a5ea",
+        "tkhd": "4105cb88f8bddc52fc4fddbd49d6e5300a5d9281817aef10ce6264cb036b1e9e",
+        "edts": "d32be303208311074a5bb70cb54227f48ac8835e4d7372b8d56b5d74282d9ff1"
+      },
+      "all_equal": true
+    }
+  ],
+  "independent_box_metadata": {
+    "path": "moov/trak(vide)/mdia/minf/stbl/stsd/avc1",
+    "width": 256,
+    "height": 512,
+    "stereo_mode": 1,
+    "projection": "equi",
+    "pose_degrees": [
+      0,
+      0,
+      0
+    ],
+    "bounds_u0_32": {
+      "top": 0,
+      "bottom": 0,
+      "left": 1073741824,
+      "right": 1073741824
+    },
+    "metadata_source": "Kushyameln Works VR180 b1",
+    "active_st3d_count": 1,
+    "active_sv3d_count": 1,
+    "entry_children": [
+      "avcC",
+      "st3d",
+      "sv3d",
+      "btrt"
+    ]
+  },
+  "ffprobe": {
+    "all_packet_fields_equal": true,
+    "compressed_packet_count": 155,
+    "packet_sequence_sha256": "67e7df5987bd0c2094e25cbb8d24eec53c8078399d637e21f21db109f990d0bb",
+    "streams": [
+      {
+        "stream_index": 0,
+        "type": "video",
+        "codec": "h264",
+        "time_base": "1/15360",
+        "packet_count": 60,
+        "packet_sequence_sha256": "fd69cc0dc1cf42dd2c4392022c7277cf03e5faaac2e17befd208a7d725aa97f4",
+        "first_packet": {
+          "codec_type": "video",
+          "stream_index": 0,
+          "pts": 0,
+          "pts_time": "0.000000",
+          "dts": -1024,
+          "dts_time": "-0.066667",
+          "duration": 512,
+          "duration_time": "0.033333",
+          "size": "6865",
+          "pos": "3451",
+          "flags": "K__",
+          "data_hash": "SHA256:1da043267c7855b7a59e5c83c5e12b9b54db6d40f942665e891bb1472b662ec0"
+        },
+        "last_packet": {
+          "codec_type": "video",
+          "stream_index": 0,
+          "pts": 29696,
+          "pts_time": "1.933333",
+          "dts": 29184,
+          "dts_time": "1.900000",
+          "duration": 512,
+          "duration_time": "0.033333",
+          "size": "93",
+          "pos": "26721",
+          "flags": "___",
+          "data_hash": "SHA256:62cb76c55b154bbf90e6b3b69972a99eef9ac878eb400f8fed89f0e8a00ee020"
+        },
+        "all_fields_equal": true
+      },
+      {
+        "stream_index": 1,
+        "type": "audio",
+        "codec": "aac",
+        "time_base": "1/48000",
+        "packet_count": 95,
+        "packet_sequence_sha256": "4f442496d1c9ec297b4cc947d4204848f2f2431eb2fd85896d71034652a58039",
+        "first_packet": {
+          "codec_type": "audio",
+          "stream_index": 1,
+          "pts": -1024,
+          "pts_time": "-0.021333",
+          "dts": -1024,
+          "dts_time": "-0.021333",
+          "duration": 1024,
+          "duration_time": "0.021333",
+          "size": "21",
+          "pos": "10777",
+          "flags": "KD_",
+          "data_hash": "SHA256:cd48905f923be4595ca6fc76bc5d1963a2b63563dd702f068fd0c147cf9bcb6b",
+          "side_data_list": [
+            {
+              "side_data_type": "Skip Samples",
+              "skip_samples": 1024,
+              "discard_padding": 0,
+              "skip_reason": 0,
+              "discard_reason": 0
+            }
+          ]
+        },
+        "last_packet": {
+          "codec_type": "audio",
+          "stream_index": 1,
+          "pts": 95232,
+          "pts_time": "1.984000",
+          "dts": 95232,
+          "dts_time": "1.984000",
+          "duration": 768,
+          "duration_time": "0.016000",
+          "size": "4",
+          "pos": "26826",
+          "flags": "K__",
+          "data_hash": "SHA256:f5f1a32ceb34bfa3b26d8a2c19cc1534e66920a4bb2131c3bd66b8f5b93463ec"
+        },
+        "all_fields_equal": true
+      }
+    ],
+    "video_side_data": [
+      {
+        "side_data_type": "Stereo 3D",
+        "type": "top and bottom",
+        "inverted": 0
+      },
+      {
+        "side_data_type": "Spherical Mapping",
+        "projection": "tiled equirectangular",
+        "bound_left": 129,
+        "bound_top": 0,
+        "bound_right": 127,
+        "bound_bottom": 0,
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      }
+    ]
+  },
+  "limits": [
+    "No target headset/player verification.",
+    "ffprobe displayed crop bounds are pixel conversions, not raw unsigned 0.32 values.",
+    "This verifies metadata-only preservation, not pixel-transcode audio edit handling."
+  ],
+  "verification_wall_seconds": 0.15613
+}
