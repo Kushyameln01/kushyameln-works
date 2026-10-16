@@ -70,4 +70,10 @@ preparedPool.dispose();
 
 `unity-analyze` と `unity-diff` を追加しています。入力仕様と上限は [Unity解析README](../unity-analysis/README.md) を参照してください。既存FTタスクの入力と計算内容は維持します。タスクごとに容量と結果を検査し、ModuleキャッシュをABI・hashで区別します。
 
-Unity b2 adds `unity-expand` and `unity-parse` JavaScript-only tasks. Their owned byte inputs/expanded ArrayBuffers are transferred, WASM metrics are null, and terminal results are delivery-only (Promise consumption, no retained record). This bypass does not evict another caller's retained results. Existing FT/media and Unity Hike analysis tasks keep their result policy.
+Unity b2 adds `unity-expand` and `unity-parse` JavaScript-only tasks. Their owned byte inputs/expanded ArrayBuffers are transferred, WASM metrics are null, and terminal results are delivery-only (Promise consumption, no retained record). This bypass does not evict another caller's retained results. Existing FT and Unity Hike analysis tasks keep their result policy.
+
+Unity b4 also registers `unity-parse-batch` for bounded groups of files. Its current limits and ownership contract are documented in the Unity analysis README; the public Worker bundle preserves that task alongside individual parsing.
+
+## 画像・動画の基準運用への移行
+
+GitHub Pagesの公開WorkerはFTとUnity解析・取込みタスクを維持し、LBP・位置補正・論文系タスクを受け付けません。公開版の画像／動画ツールは `shared/media-basic/` に分離し、全フレームの復号・PNG出力を行います。以前の前処理コードはリポジトリの `development/media-preprocessing/` に保存され、Pagesの配信一覧には含めません。
