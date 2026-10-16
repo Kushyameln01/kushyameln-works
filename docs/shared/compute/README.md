@@ -1,6 +1,8 @@
 # Web Worker共有計算API
 
-Kushyameln Worksの共有ライブラリです。ブラウザのDedicated Workerへ独立ジョブを分配し、各ジョブが固有のHike/WASM InstanceとMemoryを使います。共有メモリやサーバー常駐処理は使いません。ページを閉じる前にdisposeしてください。ChatGPTは権限を与えられたブラウザ操作でworker-runnerを開き、JSONを入力し、結果JSONを読み取れます。
+権限を持つChatGPTと既存のサイト機能が、複数のDedicated Workerへ独立したジョブを投入し、対応する結果を回収する共有基盤です。ChatGPTは許可されたブラウザ操作で `worker-runner/` にJSONを入力し、結果JSONを読み取り・保存できます。任意コードの実行入口、新しい認証、共有Memory、常駐処理、外部への入力送信は追加しません。
+
+## 最小の利用例
 
 ```js
 import {createComputePool} from './client.mjs';
@@ -11,69 +13,107 @@ const request = (jobId, masks) => ({
   payload: {masks, weights: [1, 2, 4]},
   limits: {timeoutMs: 30000}
 });
-const batch = pool.submitBatch([
-  request('first', [0, 3, 5]), request('second', [7])
-]);
-const results = await batch.promise; // 入力順。結果は[0,3,5]と[7]
-console.log(results, pool.getStatus());
-pool.dispose();
+try {
+  const results = await pool.submitBatch([
+    request('first', [0, 3, 5]), request('second', [7])
+  ]).promise; // 入力順。正常結果は [0,3,5] と [7]
+  for (const response of results) {
+    if (response.status === 'succeeded') console.log(response.jobId, response.result);
+  }
+} finally {
+  pool.dispose();
+}
 ```
 
-## 契約
+## 全タスクに共通する契約
 
-- `submit(request)` → `{jobId, promise}`、`submitBatch(requests)` → `{jobIds, promise}`。batchは全入力を検査してから一括で受け付けます。
-- `getStatus()`はキュー・実行中・保持量、`getStatus(jobId)`は個別状態、`getResult(jobId)`は保持している終端応答です。未知・破棄済みIDはnullです。
-- `cancel(jobId)`は待機中なら除去、実行中なら該当Workerを終了します。旧応答は反映しません。`dispose()`は全ジョブを終端化し、保持参照を解除します。OSやGCによる即時メモリ解放は保証しません。
-- 不正入力、重複ID、容量超過、dispose後の投入は受付前にthrowします。受付済みPromiseはsucceeded・failed・cancelledの応答へ一度だけresolveします。自動再試行はしません。
-- 応答のprotocolVersion・buildId・taskType/taskVersion・jobId・inputRevision・generationを保持します。statusを確認してからresultを利用してください。0と空配列は正常値です。
-- 同時数1〜4、既定2。未完了12件、入力は数値1要素8byteの論理会計で16MiBまで。1ジョブ最大262144 masks、weightsは1〜5個の正の有限数（合計も有限）。maskは0以上2^weights.length未満の整数です。
-- timeoutMsは1〜30000、既定30000。待機・読込みも時間に含みます。jobIdは1〜64文字の英数字・`_.:-`。inputRevisionは非負の安全な整数です。
-- 終端結果は最大16件・論理8MiBまで、古い完了順で破棄します。保持中のIDは再使用できません。呼出し側が保存した入力・Promise・結果は呼出し側で解放してください。
-- `onUpdate`はジョブ状態と`snapshot`を通知します。例外は隔離されます。入力が変わった場合、呼出し側でも古いinputRevisionの画面反映を抑止してください。
+- `submit(request)` → `{jobId, promise}`、`submitBatch(requests)` → `{jobIds, promise}`。batchは全入力の検査、容量判定、予約を済ませてからコピーし、一括で受け付けます。
+- `getStatus()`はキュー・実行中・保持量、`getStatus(jobId)`は個別状態、`getResult(jobId)`は保持している終端応答です。未知・解放済み・delivery-onlyの終端IDは `null` です。
+- `releaseResult(jobId)`は保持済み終端結果の参照を外します。解放した場合 `true`、未知・実行中は `false`。Promiseや取得済み結果を呼出し側が保持していれば、その参照は呼出し側で解放します。
+- `cancel(jobId)`は待機ジョブを除去し、実行中なら該当Workerを終了します。`dispose()`は全未完了ジョブを終端化し、Worker・準備・保持参照を解除します。利用終了時とページを閉じる前に呼び出してください。OSやGCの即時解放は保証しません。
+- 不正入力、重複ID、容量超過、dispose後の投入は受付前にthrowします。受付済みPromiseは `succeeded`・`failed`・`cancelled` の応答へ一度だけresolveします。自動再試行はありません。
+- 応答の `protocolVersion`、`buildId`、`taskType/taskVersion`、`jobId`、`inputRevision`、`generation` を照合します。`status` を確認してから結果を使ってください。数値0と空配列は正常値です。
+- 同時Worker数1〜4、既定2。未完了12件、プール全体の論理入力16MiBまで。タスク固有の上限・計数方法は下表の仕様を参照してください。
+- `timeoutMs` は1〜30000、既定30000。受付後のキュー・準備・読込み・計算を含み、入力検査・コピー前からの時間ではありません。`jobId` は1〜64文字の英数字・`_.:-`、`inputRevision` は非負の安全な整数です。
+- 保持対象の終端結果は最大16件・論理8MiBまで、古い完了順で破棄します。保持中のIDは再使用できません。delivery-onlyは他ジョブの保持結果を追い出しません。
+- `onUpdate`は状態と`snapshot`を通知し、callbackの例外は隔離します。画面・SDK側も現在の操作と `inputRevision` を確認し、古い応答を反映しないようにします。
 
-## WASMと計測
+## タスク別のWASM・搬送・保持
 
-既存の`../ft/kernel/ft-kernel.wasm`を変更せず使います。SHA256は`b260ac37862014a9ebb3ebb25739283fe2778e638969e757b2fd34769cd989ad`。i32/f64 ABIを使い、FtValidate・FtMagnitudeで値を検査・計算します。参照元は[Hike](https://github.com/kanryu/hike-lang)と[Kanryu氏の記事](https://qiita.com/kanryu/items/a031d4928ddb7caa0784)です。記事の共有ヒープruntimeを完成したWorkerプールとして流用したものではありません。
+GitHub Pages本実装で登録される6タスクです。structured cloneはWorker境界のコピー、transferはプール所有のArrayBufferの所有権移動です。入力時にコピーするため、呼出し側の元バッファはdetachしません。
 
-`moduleReuse:true`は比較用の任意設定です。既定false。trueでは同じプール内のcompiled Moduleを再利用しますが、InstanceとMemoryはジョブごとに新規です。準備に失敗したキャッシュは除去し、次の明示投入で回復できます。終了したプールのキャッシュは残しません。
+| taskType（taskVersionは全て1） | 実処理 | 入力の搬送 | 結果の搬送 | 終端結果の保持・回収 |
+| --- | --- | --- | --- | --- |
+| `ft-magnitude-batch` | Hike/WASM＋JS検査 | 数値配列をコピーしてclone | 数値配列をclone | 保持。Promise／getResult |
+| `unity-analyze` | Hike/WASM＋JS静的解析 | snapshotをコピーしてclone | 解析結果をclone | 保持。Promise／getResult |
+| `unity-diff` | Hike/WASM＋JS差分処理 | before／afterをコピーしてclone | 差分結果をclone | 保持。Promise／getResult |
+| `unity-expand` | JSのみ | 所有するbytes.bufferをtransfer | 展開した各ArrayBufferをtransfer | delivery-only。Promise |
+| `unity-parse` | JSのみ | 所有するbytes.bufferをtransfer | 構造化した解析結果をclone | delivery-only。Promise |
+| `unity-parse-batch` | JSのみ | 所有する各bytes.bufferをtransfer | 構造化した解析結果群をclone | delivery-only。Promise |
 
-Worker/Instance ID、queue・startup・load・compute・totalの時間と正規化した計算区間を記録します。transferResidualMsは起動やイベント待ち等を含む残差で、純粋な転送時間ではありません。memoryBytesはWASM Memoryの容量、保持byteは論理値です。JSヒープ実測値はnullです。複数Workerの区間が重なっても物理コアの同時実行を保証しません。高速化は入力・ブラウザごとの測定が必要です。
+FTは最大262144 masks、weightsは1〜5個の**正の有限数**で合計も有限。maskは0以上 `2 ** weights.length` 未満の整数です。論理入力は数値1要素8byteで数えます。Unityのsnapshot・ファイル・アーカイブ上限、対応形式、結果の読取りは [Unity解析README](../unity-analysis/README.md) を参照してください。
 
-## タスク追加
-
-権限のある開発者・AIが、以下の順でコードを追加します。入力文字列をevalする入口はありません。
-
-1. taskType/taskVersion、期待値、最大入力・出力と所有権、ABIを設計書で定めます。
-2. protocol.mjsの登録済みタスク検査と、pool-worker.mjs内の明示的なディスパッチを追加します。CPU計算はHikeのソース・WASMと識別hashを揃えます。
-3. kernelアダプターでimports/exports、引数型、有限値とMemoryの独立性を検査します。既存タスクのABIを黙って変えません。
-4. 正常値・0/空・境界・失敗・取消・古い応答・復帰の検査を先に用意し、単一Workerと並行実行の結果を照合します。
-5. Sites仮実装を保存して静的確認し、公開対象一覧を更新してGitHub Pagesへ反映します。配信版と一致する最新版をクラウドへ取得してから、ChatGPTによる入力・実行・結果回収を動的検証します。製品のNode/WASM実行も反映後です。
-
-今回のデータ搬送はstructured cloneによるコピーです。ArrayBuffer移譲・detachや共有Memoryの最適化は実装していません。入力・結果の外部送信や新しい認証は追加していません。
-
-## 準備完了後にまとめて開始する
-
-`pool.submitBatch(requests, {startTogether: true})` は、受け付けたbatchの全WorkerがWASMの準備を終えてから計算を開始します。既定falseです。未完了ジョブが0件（`outstanding === 0`）かつbatch件数が同時Worker数以下の場合に使えます。保持済み結果があっても利用できますが、ID重複は従来どおり拒否します。後続投入はこのbatchの待機対象へ加えません。
+Unity取込みの最小例です。delivery-onlyの結果はPromiseから回収します。
 
 ```js
-const preparedPool = createComputePool({concurrency: 2});
-const prepared = preparedPool.submitBatch([
-  request('prepared-1', [0, 3, 5]), request('prepared-2', [7])
-], {startTogether: true});
-const preparedResults = await prepared.promise;
-preparedPool.dispose();
+const sourceBytes = new TextEncoder().encode(
+  '%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n--- !u!1 &1\nGameObject:\n  m_Name: Example\n'
+);
+const parserPool = createComputePool({concurrency: 2});
+try {
+  const response = await parserPool.submit({
+    protocolVersion: 1, taskType: 'unity-parse', taskVersion: 1,
+    jobId: 'parse-example', inputRevision: 1,
+    payload: {path: 'Assets/Example.prefab', bytes: sourceBytes}
+  }).promise;
+  if (response.status === 'succeeded') console.log(response.result.file);
+  console.log(sourceBytes.byteLength); // 元の入力はdetachしていない
+  console.log(parserPool.getResult('parse-example')); // null。回収先は上のPromise
+} finally {
+  parserPool.dispose();
+}
 ```
 
-取消・失敗・timeoutとなったジョブは待機対象から外し、生存するジョブがすべて準備できれば開始します。timeoutには準備待ちも含みます。`readyWaitMs`は準備後の待機時間で、`computeMs`には含みません。起動時刻のずれを分離できるオプションであり、高速化や物理コアの同時実行は保証しません。
+ChatGPT-Sites仮実装には既存のmedia実験タスクも残っています。その登録は `registered-tasks.mjs` とmedia各仕様に従い、Pagesの6タスクと同一だとは扱いません。今回の調整で両環境の登録タスクを増減しません。共通の `tasks.mjs` がFT等の登録表とUnityの解析・取込みadapterを束ねます。
 
-## Unity解析タスク
+## Moduleの準備・再利用・復帰
 
-`unity-analyze` と `unity-diff` を追加しています。入力仕様と上限は [Unity解析README](../unity-analysis/README.md) を参照してください。既存FTタスクの入力と計算内容は維持します。タスクごとに容量と結果を検査し、ModuleキャッシュをABI・hashで区別します。
+`moduleReuse:true`は任意設定で、**既定false**です。同じプール・同じABI/hash/variantの準備済みModuleを再利用します。成功済みModuleは最大3 keyを保持し、未決の準備は別に管理します。Moduleを渡しても、ブラウザ内部で再コンパイルが絶対に起きない保証にはなりません。WASMを使うジョブは毎回独立したInstanceとMemoryを作ります。
 
-Unity b2 adds `unity-expand` and `unity-parse` JavaScript-only tasks. Their owned byte inputs/expanded ArrayBuffers are transferred, WASM metrics are null, and terminal results are delivery-only (Promise consumption, no retained record). This bypass does not evict another caller's retained results. Existing FT and Unity Hike analysis tasks keep their result policy.
+未決の準備にはkeyごとのAbortController、待機集合、準備開始から30,000msの期限を設けます。後から加わるジョブは期限を延長しません。個別の取消・timeoutでは、そのジョブを待機集合から外します。同keyのqueued／preparingが残れば準備を共有し、全て消えたら未決準備を切り離します。次の**明示投入**は新しい準備を開始できます。成功済みModuleは依存ジョブが0になっても、通常のキャッシュ上限またはdisposeまで保持します。
 
-Unity b4 also registers `unity-parse-batch` for bounded groups of files. Its current limits and ownership contract are documented in the Unity analysis README; the public Worker bundle preserves that task alongside individual parsing.
+| 状況 | 終端応答 | 後続への扱い |
+| --- | --- | --- |
+| 個別ジョブの期限 | failed / `TIMEOUT` | 他の生存ジョブを継続 |
+| 明示取消／dispose | cancelled / `CANCELLED` または `DISPOSED` | 該当ジョブだけ／全ジョブを終端化 |
+| 準備の通常失敗 | failed / `PREPARATION_FAILED` | その時点で受付済みの同key依存ジョブを終端化 |
+| 準備そのものの期限 | failed / `PREPARATION_TIMEOUT` | 同上。未決entryを除去し明示再投入で復帰 |
 
-## 画像・動画の基準運用への移行
+個別期限と準備期限が競合した場合は先に確定した終端を維持します。旧準備の遅延resolve／rejectは、新準備や新ジョブへ反映しません。abortは取得中止を要求しますが、abortを無視する処理やWASMコンパイルの物理的停止は保証しません。バックグラウンドのタイマー制限下で正確に30秒後に処理される保証もありません。
 
-GitHub Pagesの公開WorkerはFTとUnity解析・取込みタスクを維持し、LBP・位置補正・論文系タスクを受け付けません。公開版の画像／動画ツールは `shared/media-basic/` に分離し、全フレームの復号・PNG出力を行います。以前の前処理コードはリポジトリの `development/media-preprocessing/` に保存され、Pagesの配信一覧には含めません。
+JS-onlyタスクはModule準備を行いません。WASM hash、Instance ID、WASM Memoryの指標は `null`、`wasmNotApplicable` に理由を記録します。`metrics.moduleReuse` はプール設定であり、各ジョブがWASMを使った証拠ではありません。
+
+## 準備後開始と時間の読み方
+
+`submitBatch(requests, {startTogether:true})` は、そのbatchの全生存Workerが各タスクの準備を終えてから計算を開始します。既定false。未完了0件かつbatch件数が同時Worker数以下で使えます。保持結果があっても利用できますが、ID重複は拒否します。後続投入は開始待ち集合に加えません。取消・失敗・timeoutのジョブは集合から外します。`readyWaitMs` は準備後の待機で、`computeMs` には含みません。
+
+Worker/Instance ID、queue・startup・load・compute・totalと計算開始終了の正規化時刻を記録します。`computeMs` はadapterのJS検査・配列整形・WASM呼出しを含み、WASM単独の時間ではありません。`transferResidualMs` は起動・イベント待ち等を含む残差で、純粋な転送時間ではありません。`memoryBytes` はWASM Memory容量、入力・保持byteは論理値、JSヒープ実測値は `null` です。
+
+worker-runnerの比較JSONは `schemaVersion:2` です。APIの `protocolVersion:1` と区別してください。主指標 `callerElapsedMs` は**投入呼出し直前から結果Promise回収直後**まで。request生成、正答確認、表示、disposeは外側です。既存ジョブの `totalMs` は入力検査・コピー後からの内訳として残します。prepared試験は波ごとの時間とその合計を記録し、波間の処理を含む全体時間と区別します。
+
+`parallelVerified`／`overlap` は異なるWorkerの少なくとも一組に正の計算区間重複があるという指標です。設定Worker数すべての同時実行を意味しません。`maxConcurrentWorkers`、`overlapDurationByConcurrency`（同時Worker数ごとの正の重複ms）、`fullConcurrencyOverlapMs`、`intervalValidation` も併記します。同一Worker IDは重複計上せず、区間が端点で接するだけなら重複0、時刻欠測・異常は未確認 (`null`) とします。物理コアの同時実行の証明ではありません。
+
+通常1／2／4比較は全6順列、準備後開始2／4は両順序、Module off／onも両順序を記録します。通常比較の `performanceComparable` は全試行が正答し、全caller時間が有限・非負で、1 Workerの中央値が正の場合だけtrueです。不成立時は短縮率をnull、理由を `performanceComparisonReason` に残し、失敗と生時間を削除しません。初回と後続を分け、キャッシュ状態不明を隠しません。Moduleの採用候補は正答・両方式の取消復帰が合格し、**両順序それぞれ**で後続5回のcallerElapsedMs中央値が10%以上短縮した場合だけです。候補判定後も既定falseは維持します。結果を別環境の高速化保証に一般化しません。
+
+診断の「Module準備からの復帰」は固定した未決準備を内部で再現する検査です。通常計算には障害を注入しません。「全件JSONを保存」は、その操作の全検証記録を保存します。外部テレメトリは追加しません。
+
+## タスク追加と検証の手順
+
+1. taskType/taskVersion、期待結果、最大入力・出力、所有権、保持方針、必要なABIを設計書で定めます。
+2. **実装前に**局所の設計とChatGPTからの利用経路・目的適合を別に批評します。各批評の冒頭で開発手順への準拠を確認し、不一致は修正・再確認してから続行します。
+3. 正常・0/空・境界・拒否・取消・古い応答・復帰の検査を先に用意し、必要最小限を実装します。`tasks.mjs` から対応adapterへ明示的に振り分け、環境ごとの `registered-tasks.mjs` の公開範囲を維持します。JS-onlyの取込みも既存の許可されたタスクです。WASMの追加・変更ではHikeソース・バイナリ・hashを揃え、imports/exports、引数型、有限値、Instance/Memory独立を検査します。ABIや許容入力を黙って変えません。
+4. 実装後も手順準拠を先に確認し、成果物を設計・期待結果と照合します。不一致は修正と再検査を行い、再批評してから候補へ進みます。
+5. 検査済みソースをSites仮実装へ保存・配信し、実ブラウザで投入・回収・失敗からの復帰と既存呼出し元を確認します。候補を配信済みPagesと偽装して検査しません。
+6. 公開差分・許可範囲・生成bundleを確認してGitHub Pages本実装へ反映し、配信commit/hash・HTTP/MIME・相対パスと実際の投入・回収を確認します。両環境の状態と証拠は別々に記録します。
+
+FTは既存 `../ft/kernel/ft-kernel.wasm`（SHA256 `b260ac37862014a9ebb3ebb25739283fe2778e638969e757b2fd34769cd989ad`）のi32/f64 ABI、FtValidate・FtMagnitudeを使います。参照元は [Hike](https://github.com/kanryu/hike-lang) と [Kanryu氏の記事](https://qiita.com/kanryu/items/a031d4928ddb7caa0784) です。記事の共有ヒープruntimeを完成したWorkerプールとして流用したものではありません。

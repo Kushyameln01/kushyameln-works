@@ -41,3 +41,59 @@ GitHub Pagesの実行画面 `https://kushyameln01.github.io/kushyameln-works/wor
 既存トップ→GitHub・ツール（共有計算入口を含む3件）→Animator Composerの導線と初期表示を確認。既存Composerの生成・Unity importは今回の変更対象ではなく、再検証したとは扱わない。公開対象一覧と配布コードはSites検証版と照合済み。検証記録の追記は公開docsツリーを変更しない。
 
 最終批評では保存手順への準拠を先に確認し、共有API、独立Workerの計算と正答、ChatGPTによる投入と結果回収、取消・復帰・保持上限、配布一致の必須条件が成立したと判定する。全端末での高速化・物理コア同時稼働・ページを閉じた後の継続・任意コード実行は提供範囲に含まれない。将来の計算タスクは共有READMEに沿った追加実装と検証が必要。
+
+
+## compute-unity-b5 調整（2026-10-17 JST）
+
+この節はb2の記録を更新対象版ごとに補うものです。上の当時の未確認・不合格を現在の全条件へ一般化しません。
+
+基準はPages `0ee9b175b75890f42c965770af0d06b0b77cd003`／Sites v63 `ce9a98d49d153491ebeeaac74b65637b38a82deb`。実装根拠は[調整計画](https://chatgpt.com/space/page_34045a8cecec8191a2b2702f41773653)と保存されたWORKFLOW_PLAN.mdの共通手順です。元の「開発手順確認」チャット全文を取得したとは主張しません。既存Sites DESIGNへ差分を反映してから二批評、要件由来のRED検査、最小実装、是正後再批評、Sites候補受入の順に進めました。各批評の冒頭で準拠を確認しました。
+
+### 変更と目的への対応
+
+| 変更 | 目的との関係 | 維持した条件 |
+| --- | --- | --- |
+| 共通APIと6タスクの仕様表 | AIが正しい入力搬送・結果回収を選べる | WASM不要のタスク、コピー後transfer、delivery-onlyと保持結果を区別 |
+| schema2の比較JSON | 投入呼出し直前→Promise回収直後を同じ尺度で比較する | API protocolVersion/taskVersionは1、既存totalMsの意味は不変 |
+| 最大同時計算数と重複時間 | any-pairと全数重複を区別できる | 不正・欠測区間はnull/NOT VERIFIED。物理コアの同時実行は保証しない |
+| 未決Moduleの期限と依存管理 | 取消・timeout後の明示再投入が古い準備に固定されない | 他の生存ジョブ、世代照合、once-only終端、独立Instance/Memory、既定reuse=false |
+
+Module準備は固定30秒の絶対期限を持ち、resolve時にも期限を確認します。依存ジョブが消えたpending entryは通知前に切り離します。成功Moduleの既存cache寿命は維持し、abortを無視する処理やcompile自体の物理中断は保証しません。新認証・任意コード実行・外部テレメトリ・登録タスクの追加は行っていません。
+
+### 検査・失敗・是正
+
+- poolの未決準備検査は修正前6件FAIL、修正後37件PASS。独立レビューでabort同期listenerから同ID再投入した時の旧結果evict境界が見つかり、再現RED→是正後38件PASSと独立再実行PASSを確認しました。
+- Node回帰はSites側52件PASS（その後、FT入力境界を追加して候補5件PASS）、Pages側45件中43件PASS・Sites専用media2件skipです。6タスクは実Node Workerでmodule/bundle × reuse false/trueの4組を確認。Nodeをブラウザの代替証拠とはしません。
+- 比較検査は半開区間、端点、ゼロ長、同一Worker ID、欠測、全6順列、AB/BA、呼出し時間境界、prepared波合計、固定復帰診断を確認しました。
+- Sites v64/source `61c1b91f1edc18fac2b3c9a1413943d433613f8b` の最初の通常比較は4件TIMEOUT、後続17試行は正答。startup未取得の原因は未特定です。生JSON `evidence-adjustment/sites-normal-first-failed.json` を保持し、この比較の短縮率は性能根拠に採用しません。
+- 失敗込みでも短縮率を出す不足を、先行RED検査から是正。全試行正答、有効caller時間、正の1Worker中央値を満たす場合のみperformanceComparable=trueとし、不成立時は短縮率null＋理由を返します。生時間と失敗は保持します。独立Reviewerと監査が再確認しました。
+- この是正だけを加えたSites v65/source `c3b3c2666c106e91bd99cd888a8fd074741096bf` を保存・公開しました。pool/worker/WASM/Unity経路はv64と同一です。比較の再検査は別試行として記録し、初回失敗を取り消しません。
+
+### FT最適化の判断
+
+FT計算の最適化は不採用です。変更前と候補の8192／262144要素を同じ外部測定器で各4回計測しました。後続3回の中央値はNode環境で、変更前caller 75.01／154.20ms・compute 5.98／56.47ms、候補caller 77.69／155.24ms・compute 6.00／58.24msでした。この計測はローカルファイルWASMとNode Workerでありブラウザ速度に一般化しません。実ブラウザでは起動・取得を含む時間が支配的で、毎要素処理の変更が必要という根拠は得られていません。FT adapter・WASM・ABI・loaderは変更せず、P1の正確な回収・復帰・計測に範囲を保ちます。
+
+### 証拠の読み分け
+
+| 証拠 | 対象版・配信経路 | 判断できる範囲 |
+| --- | --- | --- |
+| b2初期48ジョブ | 当時のSites通常開始、上の記録 | 正答、対象条件で重複未観測。通常開始全般の不能ではない |
+| b2準備後開始 | e0b8c9cの[kushyameln-production-b2.json](https://github.com/Kushyameln01/kushyameln-works/blob/e0b8c9c4411af76e9051baa99a8c2640f7c74e2b/development/shared-compute/kushyameln-production-b2.json) | 対象入力の2／4 Workerの重複。速度一般化とは別 |
+| 後続クラウド報告 | ユーザー提示の2026-10-16報告、ローカルHTTP | 報告値は1/2/4中央値365.7/246.2/180.8ms。元測定JSONは今回未取得、再集計済みとはしない |
+| 調整後候補 | Sites v64/v65、evidence-adjustment/ | 版・実行順序・生時間・失敗と回復を保持 |
+| 調整後Pages | 配信確認後の追記と取得receipt | 候補試験とは別に本実装の配信一致と利用経路を確認 |
+
+ヒープ/自然GC/Worker peak/browser全体メモリは今回測定していません。論理入力や未完了件数0を全参照解放やメモリ0とは表現しません。外部の全利用者テレメトリは追加しない原条件を維持します。
+
+### Sites候補受入の結果
+
+| 確認 | 結果・証拠 |
+| --- | --- |
+| 通常比較 v65 | 18試行72ジョブ全正答、performanceComparable=true。1/2/4中央値11822/6726/3658.95ms。通常開始のcompute重複は未観測。sites-normal-v65.json |
+| prepared v64 | 両順序とも正答、2/4全数重複。2Workerは143.1001/135.8999ms、4Workerは68.2998/75.5ms。別算法による再集計一致。sites-prepared.json |
+| Module比較 v64 | 全正答・lifecycle成立、両順序約1.1%/4.3%短縮で10%未達。recommendReuse=false。sites-module-comparison.json |
+| 取消・復帰 v64 | 両reuse方式のlifecycle、未決準備からの明示再投入、同key生存ジョブ保護、disposeがPASS。sites-lifecycle.json / sites-preparation-recovery.json |
+| 6タスクの実ブラウザ往復 | FT2ジョブ、ZIPexpand/parse-batch/analyze、単独.anim parse/analyze、構造化analyze/diff。jobId/revision/status、fileID文字列、Idle→Idle revised一致。sites-ui-checks.json / sites-unity-{zip,single,diff}.json |
+| 画面と例外 | 入力変更で旧応答抑止、明示取消→空結果、拒否→正しい再投入。sites-ui-checks.json |
+
+証拠はすべて[evidence-adjustment](evidence-adjustment/)に保存しています。初回timeoutは原因未特定であり、v65全正答をもって原因解消とは主張しません。Sites v64/v65とsource/archive/deploymentの対応はsites-delivery.json / sites-delivery-v65.jsonを参照してください。ブラウザ実測のsourceCommit=nullは未取得の意味を保持し、外部receiptで対応付けます。

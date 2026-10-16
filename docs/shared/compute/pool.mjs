@@ -3,15 +3,15 @@ import {inspectTaskRequest,snapshotTaskRequest,inputBytes as countInputBytes,ker
 
 const WORKER_URLS=Object.freeze({module:new URL('./pool-worker.mjs',import.meta.url),bundle:new URL('./pool-worker.bundle.mjs',import.meta.url)});
 const MAX_OUTSTANDING=12,MAX_INPUT_BYTES=16*1024*1024,MAX_RESULTS=16,MAX_RESULT_BYTES=8*1024*1024;
+const MAX_CACHED_MODULES=3,PREPARATION_TIMEOUT_MS=30000;
 const terminal=status=>status==='succeeded'||status==='failed'||status==='cancelled';
 
 export function createComputePool({concurrency=2,moduleReuse=false,onUpdate=()=>{},workerMode='module',workerFactory=()=>new Worker(WORKER_URLS[workerMode],{type:'module'}),prepareModule=prepareTaskModule}={}) {
   if(!['module','bundle'].includes(workerMode))throw RangeError('Invalid worker mode');
   if(!Number.isInteger(concurrency)||concurrency<1||concurrency>4)throw RangeError('concurrency must be 1..4');
   if(typeof moduleReuse!=='boolean'||typeof onUpdate!=='function'||typeof workerFactory!=='function'||typeof prepareModule!=='function')throw TypeError('Invalid pool options');
-  const records=new Map(),queue=[],retained=[],pendingCohorts=new Set();
-  const abortController=new AbortController();
-  let disposed=false,accepting=false,generation=0,running=0,outstanding=0,inputBytes=0,retainedBytes=0,draining=false,cachedModules=new Map(),compileCalls=0,preparationFailures=new Map(),notificationDepth=0,releasing=false;
+  const records=new Map(),queue=[],retained=[],pendingCohorts=new Set(),pendingModules=new Map(),cachedModules=new Map(),preparationFailures=new Map();
+  let disposed=false,accepting=false,generation=0,preparationGeneration=0,running=0,outstanding=0,inputBytes=0,retainedBytes=0,draining=false,compileCalls=0,notificationDepth=0,releasing=false;
 
   const statusOf=r=>({jobId:r.jobId,inputRevision:r.inputRevision,generation:r.generation,status:r.status,phase:r.phase});
   const snapshot=()=>({buildId:BUILD_ID,disposed,concurrency,moduleReuse,workerMode,queued:outstanding-running,running,outstanding,inputBytes,retainedCount:retained.length,retainedBytes,compileCalls});
@@ -20,7 +20,7 @@ export function createComputePool({concurrency=2,moduleReuse=false,onUpdate=()=>
     return data&&data.protocolVersion===1&&data.buildId===BUILD_ID&&data.taskType===record.taskType&&data.taskVersion===1&&data.jobId===record.jobId&&data.inputRevision===record.inputRevision&&data.generation===record.generation&&(record.taskType==='ft-magnitude-batch'||(data.wasmVariant===record.wasmVariant&&data.kernelHash===record.kernel.sha256));
   }
   function evict() {
-    while(retained.length>MAX_RESULTS||retainedBytes>MAX_RESULT_BYTES){const r=retained.shift();retainedBytes-=r.resultBytes;records.delete(r.jobId);}
+    while(retained.length>MAX_RESULTS||retainedBytes>MAX_RESULT_BYTES){const r=retained.shift();retainedBytes-=r.resultBytes;if(records.get(r.jobId)===r)records.delete(r.jobId);}
   }
   function releaseWhenReady(cohort) {
     if(!cohort||cohort.released)return;
@@ -70,25 +70,67 @@ export function createComputePool({concurrency=2,moduleReuse=false,onUpdate=()=>
     record.result=Object.freeze({protocolVersion:1,buildId:BUILD_ID,taskType:record.taskType,taskVersion:1,jobId:record.jobId,inputRevision:record.inputRevision,generation:record.generation,status,...extra,...(result===undefined?{}:{result}),metrics,totalMs});
     record.resultBytes=resultBytes;
     if(disposed||record.kernel.retainResult===false){records.delete(record.jobId);}else{retained.push(record);retainedBytes+=record.resultBytes;evict();}
-    const resolve=record.resolve;record.resolve=null;
-    resolve(record.result);
+    const resolve=record.resolve,response=record.result;record.resolve=null;
+    // Abort listeners can release this completed ID and submit a new generation.
+    // Publish retention first, then detach; keep this Promise's response independent of releaseResult.
+    detachPreparation(record);
+    resolve(response);
     notify(record);
     releaseWhenReady(cohort);
     drain();
     return true;
   }
-  function moduleForPool(record) {
-    const key=record.kernel.key;
-    if(!cachedModules.has(key)){
-      if(cachedModules.size>=3)cachedModules.delete(cachedModules.keys().next().value);
-      const attempt=Promise.resolve().then(()=>prepareModule({taskType:record.taskType,wasmVariant:record.wasmVariant,kernelHash:record.kernel.sha256,signal:abortController.signal,onCompile:()=>{compileCalls++;}})).then(module=>{
-        if(!(module instanceof WebAssembly.Module))throw TypeError('Preparation did not return a WASM module');
-        return module;
-      });
-      cachedModules.set(key,attempt);
-      attempt.catch(error=>{if(cachedModules.get(key)===attempt){cachedModules.delete(key);preparationFailures.set(key,{error,maxGeneration:generation});}});
+  const dependsOnPreparation=r=>r.kernel.requiresWasm!==false&&(r.status==='queued'||(r.status==='running'&&r.phase==='preparing'&&!r.worker));
+  const currentPreparation=entry=>entry.state==='pending'&&pendingModules.get(entry.key)===entry;
+  function invalidatePreparation(entry,state='retired') {
+    if(!currentPreparation(entry))return false;
+    entry.state=state;pendingModules.delete(entry.key);clearTimeout(entry.timer);entry.timer=null;
+    for(const r of entry.waiters)r.preparation=null;
+    entry.waiters.clear();return true;
+  }
+  function detachPreparation(record) {
+    const entry=record.preparation??pendingModules.get(record.kernel.key);record.preparation=null;
+    if(!entry||!currentPreparation(entry))return;
+    entry.waiters.delete(record);
+    if(!Array.from(records.values()).some(r=>r.kernel.key===entry.key&&dependsOnPreparation(r))){
+      invalidatePreparation(entry);entry.controller.abort();
     }
-    return cachedModules.get(key);
+  }
+  function failPreparation(entry,errorCode,error) {
+    if(!currentPreparation(entry))return;
+    const maxGeneration=generation;
+    const affected=Array.from(records.values()).filter(r=>r.kernel.key===entry.key&&r.generation<=maxGeneration&&dependsOnPreparation(r));
+    invalidatePreparation(entry);
+    // Freeze the accepted cohort before abort handlers or notifications can submit again.
+    preparationFailures.set(entry.key,{errorCode,error,maxGeneration});
+    entry.controller.abort();
+    for(const r of affected)finish(r,'failed',{errorCode,message:String(error?.message??error).slice(0,240)});
+  }
+  function beginPreparation(key,options) {
+    const entry={key,generation:++preparationGeneration,state:'pending',controller:new AbortController(),deadline:performance.now()+PREPARATION_TIMEOUT_MS,timer:null,waiters:new Set()};
+    pendingModules.set(key,entry);
+    entry.timer=setTimeout(()=>failPreparation(entry,'PREPARATION_TIMEOUT','Module preparation deadline exceeded'),PREPARATION_TIMEOUT_MS);
+    // Only this handler closes over the entry. Cancelled records leave its removable Set.
+    Promise.resolve().then(()=>currentPreparation(entry)?prepareModule({...options,signal:entry.controller.signal,onCompile:()=>{compileCalls++;}}):null).then(module=>{
+      if(!currentPreparation(entry))return;
+      if(performance.now()>=entry.deadline){failPreparation(entry,'PREPARATION_TIMEOUT','Module preparation deadline exceeded');return;}
+      if(!(module instanceof WebAssembly.Module)){failPreparation(entry,'PREPARATION_FAILED',new TypeError('Preparation did not return a WASM module'));return;}
+      const waiters=Array.from(entry.waiters);invalidatePreparation(entry,'ready');
+      // Completed Modules are bounded separately: never evict an in-flight preparation.
+      if(cachedModules.size>=MAX_CACHED_MODULES)cachedModules.delete(cachedModules.keys().next().value);
+      cachedModules.set(key,module);
+      for(const r of waiters){r.preparationMs=performance.now()-r.preparationBegan;launch(r,module);}
+    },error=>failPreparation(entry,'PREPARATION_FAILED',error));
+    return entry;
+  }
+  function prepareForRecord(record) {
+    const key=record.kernel.key;record.preparationBegan=performance.now();
+    if(cachedModules.has(key)){
+      const module=cachedModules.get(key);
+      queueMicrotask(()=>{record.preparationMs=performance.now()-record.preparationBegan;launch(record,module);});return;
+    }
+    const entry=pendingModules.get(key)??beginPreparation(key,{taskType:record.taskType,wasmVariant:record.wasmVariant,kernelHash:record.kernel.sha256});
+    entry.waiters.add(record);record.preparation=entry;
   }
   function launch(record,module) {
     if(disposed||record.status!=='running')return;
@@ -129,11 +171,8 @@ export function createComputePool({concurrency=2,moduleReuse=false,onUpdate=()=>
     if(disposed||record.status!=='running')return;
     if(moduleReuse&&record.kernel.requiresWasm!==false){
       const preparationFailure=preparationFailures.get(record.kernel.key);
-      if(preparationFailure&&record.generation<=preparationFailure.maxGeneration){finish(record,'failed',{errorCode:'PREPARATION_FAILED',message:String(preparationFailure.error?.message??preparationFailure.error).slice(0,240)});return;}
-      const began=performance.now();
-      moduleForPool(record).then(module=>{record.preparationMs=performance.now()-began;launch(record,module);},error=>{
-        if(!terminal(record.status))finish(record,'failed',{errorCode:'PREPARATION_FAILED',message:String(error?.message??error).slice(0,240)});
-      });
+      if(preparationFailure&&record.generation<=preparationFailure.maxGeneration){finish(record,'failed',{errorCode:preparationFailure.errorCode,message:String(preparationFailure.error?.message??preparationFailure.error).slice(0,240)});return;}
+      prepareForRecord(record);
     }else launch(record,null);
   }
   function drain() {
@@ -181,6 +220,6 @@ export function createComputePool({concurrency=2,moduleReuse=false,onUpdate=()=>
     getResult(jobId){return records.get(jobId)?.result??null;},
     releaseResult(jobId){const r=records.get(jobId);if(!r||!terminal(r.status))return false;const i=retained.indexOf(r);if(i!==-1){retained.splice(i,1);retainedBytes-=r.resultBytes;}records.delete(jobId);r.result=null;return true;},
     cancel(jobId){const r=records.get(jobId);return r&&!terminal(r.status)?finish(r,'cancelled',{errorCode:'CANCELLED'}):false;},
-    dispose(){if(disposed)return;disposed=true;abortController.abort();cachedModules.clear();preparationFailures.clear();for(const r of Array.from(records.values()))if(!terminal(r.status))finish(r,'cancelled',{errorCode:'DISPOSED'});records.clear();queue.length=0;retained.length=0;pendingCohorts.clear();retainedBytes=0;}
+    dispose(){if(disposed)return;disposed=true;const entries=Array.from(pendingModules.values());for(const entry of entries)invalidatePreparation(entry);cachedModules.clear();preparationFailures.clear();for(const entry of entries)entry.controller.abort();for(const r of Array.from(records.values()))if(!terminal(r.status))finish(r,'cancelled',{errorCode:'DISPOSED'});records.clear();queue.length=0;retained.length=0;pendingCohorts.clear();retainedBytes=0;}
   });
 }

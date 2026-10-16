@@ -1,0 +1,63 @@
+✔ media result preserves unsigned typed buffers, counts bytes, and releases only pool retention (4.070604ms)
+✔ caller data remains usable and cannot mutate a submitted media snapshot (0.664007ms)
+✔ oversized batch is rejected before any pixel copy or Worker creation (0.776447ms)
+✔ dimensions, non-finite sizes, short stride, region overflow and missing halo reject atomically (0.601744ms)
+✔ cancel one media job leaves another operation alive and ignores stale completion (4.080358ms)
+✔ malformed media result length cannot be accepted (0.46598ms)
+✔ FT and media can share the same pool and finish out of order (1.332932ms)
+✔ typed input overrides cannot reenter admission, and failed snapshot rolls reservation back (0.709756ms)
+✔ six contracts, ownership and SDK caller: module, reuse=false (473.501318ms)
+✔ six contracts, ownership and SDK caller: module, reuse=true (425.814985ms)
+✔ six contracts, ownership and SDK caller: bundle, reuse=false (381.3097ms)
+✔ six contracts, ownership and SDK caller: bundle, reuse=true (357.291379ms)
+PASS prototype validation, zero/empty, stale identity, cancellation, disposal and failure settlement
+✔ tools/shared-compute/test-client.mjs (97.232573ms)
+✔ two independent slots, queued third, exact ordered batch results and bounded disposal (4.248741ms)
+✔ prepared batch does not start before every cohort member is ready; later jobs never join (0.950357ms)
+✔ prepared batch rejection is atomic; retained results alone do not block admission (0.926762ms)
+✔ cancel, task failure and timeout remove cohort members and release ready survivors (21.508963ms)
+✔ dispose within ready callback never sends start, including cancel-then-dispose reentrancy (0.673121ms)
+✔ late and identity-mismatched ready cannot release another cohort (0.454933ms)
+✔ synchronous completion callbacks can submit a new cohort without stranding its ready members (1.114965ms)
+✔ batch acceptance is atomic for validation, duplicate IDs, count and input bytes (53.58764ms)
+✔ requests are snapshotted and IDs remain reserved until bounded retention evicts them (3.085544ms)
+✔ retained result byte limit evicts oldest and keeps caller-owned resolved results (102.498723ms)
+✔ active and queued cancellation settle once, reject late responses, and recover (0.539079ms)
+✔ queued timeout includes waiting, releases admission bytes, then recovers (5.697246ms)
+✔ generation, revision, build, protocol and task identities reject stale replies (0.382184ms)
+✔ malformed current response, task error, worker error and messageerror release and recover (0.982516ms)
+✔ constructor and postMessage failures settle accepted jobs and allow subsequent success (0.559821ms)
+✔ reentrant callbacks cannot leak records, oversubscribe or strand accepted jobs (0.35997ms)
+✔ module preparation is once per pool, failure resets and explicit next submission retries (4.862022ms)
+✔ dispose while preparing aborts fetch and prevents late worker launch (0.917899ms)
+✔ a failed module attempt fails already accepted queued jobs without an implicit retry (1.516838ms)
+✔ pending preparation: individual timeout retires an orphan and explicit submission starts fresh (2.232893ms)
+✔ pending preparation: cancellation protects live and queued waiters and releases the last dependant (1.046672ms)
+✔ pending preparation: absolute deadline fails accepted cohort without retry and ignores old completion (1.63791ms)
+✔ pending preparation: a resolve after the absolute deadline cannot beat a delayed timer (0.767804ms)
+✔ pending preparation: orphan is detached before cancellation callback resubmits (0.895184ms)
+✔ pending preparation: abort callback can release and reuse an ID without eviction deleting its live replacement (1.435186ms)
+✔ pending preparation: repeated cancellation retires each attempt; success stays reusable (1.423538ms)
+✔ pending preparation: cancel one active waiter then share one success with the survivor (0.649816ms)
+✔ pending preparation: another kernel and a delivery-only JS task survive FT failure (3.058133ms)
+✔ pending preparation: a failed kernel releases a ready survivor in a prepared cohort (0.944349ms)
+✔ pending preparation: Sites fourth kernel never evicts a pending dependency of queued work (1.449567ms)
+✔ pending preparation: completed Module cache retains only three keys without cancelling work (3.059305ms)
+✔ disposal during injected Worker construction terminates the returned worker without sending (0.355784ms)
+✔ real Hike WASM has independent memories, correct numeric results and failure rejection (2.966315ms)
+✔ fixed kernel fetch verifies actual digest and propagates failure (7.954396ms)
+✔ real browser Worker code through Node adapter returns independent IDs, zero/empty and metrics (87.621563ms)
+✔ real WASM trap reaches TASK_FAILED, releases its slot and next submission recovers (219.496558ms)
+✔ real prepared Worker ignores wrong/early/duplicate start and separates ready waiting (70.507766ms)
+✔ real two-Worker prepared batch records comparable compute intervals without a hardware guarantee (239.489537ms)
+ℹ {"kind":"Node interval observation only","overlapMs":58.724365234375,"intervals":[{"workerId":"fd20025c-5db5-4c5f-a638-a3347cfd901a","start":1792187230982.6152,"end":1792187231048.8416,"readyWaitMs":0.31668600000000424},{"workerId":"d792deea-5c02-4538-bd72-fc1fcc94d874","start":1792187230982.667,"end":1792187231041.3914,"readyWaitMs":2.9132749999999987}]}
+PASS actual Hike WASM worker handler, fixed fetch, zero/empty and metrics; Node only, browser pending
+✔ tools/shared-compute/test-worker.mjs (88.042361ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1756.261758

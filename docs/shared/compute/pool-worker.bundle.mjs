@@ -4,8 +4,8 @@ var __export = (target, all) => {
     __defProp(target, name, { get: all[name], enumerable: true });
 };
 
-// docs/shared/compute/protocol.mjs
-var BUILD_ID = "compute-unity-b4";
+// ../pages-adjustment/docs/shared/compute/protocol.mjs
+var BUILD_ID = "compute-unity-b5";
 var WASM_SHA256 = "b260ac37862014a9ebb3ebb25739283fe2778e638969e757b2fd34769cd989ad";
 var MAX_MASKS = 262144;
 function validateRequest(input, { copy = true } = {}) {
@@ -21,7 +21,7 @@ function validateRequest(input, { copy = true } = {}) {
   return { protocolVersion: 1, jobId: input.jobId, inputRevision: input.inputRevision, taskType: input.taskType, taskVersion: 1, payload: { masks: copy ? masks.slice() : masks, weights: copy ? weights.slice() : weights }, limits: { timeoutMs } };
 }
 
-// docs/shared/compute/registered-tasks.mjs
+// ../pages-adjustment/docs/shared/compute/registered-tasks.mjs
 var registered_tasks_exports = {};
 __export(registered_tasks_exports, {
   executeTask: () => executeTask,
@@ -40,7 +40,7 @@ __export(registered_tasks_exports, {
   validTaskResult: () => validTaskResult
 });
 
-// docs/shared/compute/kernel.mjs
+// ../pages-adjustment/docs/shared/compute/kernel.mjs
 async function prepareKernelModule({ signal, fetchImpl = fetch, onCompile = () => {
 }, onResponse = () => {
 } } = {}) {
@@ -80,7 +80,7 @@ function instantiateKernel(module) {
   });
 }
 
-// docs/shared/compute/registered-tasks.mjs
+// ../pages-adjustment/docs/shared/compute/registered-tasks.mjs
 var inspectTaskRequest = (r) => validateRequest(r, { copy: false });
 var snapshotTaskRequest = (r) => ({ ...r, payload: { masks: r.payload.masks.slice(), weights: r.payload.weights.slice() } });
 var inputBytes = (r) => (r.payload.masks.length + r.payload.weights.length) * 8;
@@ -96,7 +96,7 @@ var instantiateTask = (r, m) => instantiateKernel(m);
 var executeTask = (r, k) => r.payload.masks.map((mask) => k.magnitude(mask, r.payload.weights));
 var taskInputCount = (r, v) => v.length;
 
-// docs/shared/unity-analysis/pool-task.mjs
+// ../pages-adjustment/docs/shared/unity-analysis/pool-task.mjs
 var pool_task_exports = {};
 __export(pool_task_exports, {
   executeTask: () => executeTask2,
@@ -116,7 +116,7 @@ __export(pool_task_exports, {
   validTaskResult: () => validTaskResult2
 });
 
-// docs/shared/unity-analysis/model.mjs
+// ../pages-adjustment/docs/shared/unity-analysis/model.mjs
 var SCHEMA = "unity-analysis-snapshot/1";
 var ANALYZER_VERSION = "unity-analysis-0.3.1";
 var RULES_VERSION = "unity-static-3";
@@ -288,7 +288,7 @@ function buildIndex(input) {
   return { nodes, assetMap, guidMap, findings };
 }
 
-// docs/shared/unity-analysis/analysis.mjs
+// ../pages-adjustment/docs/shared/unity-analysis/analysis.mjs
 var builtin = (g) => /^0{16}[def]0{15}$/i.test(g ?? "");
 var withoutSources = (value2) => Array.isArray(value2) ? value2.map(withoutSources) : value2 && typeof value2 === "object" ? Object.fromEntries(Object.entries(value2).filter(([k]) => k !== "source").map(([k, v]) => [k, withoutSources(v)])) : value2;
 var pointer = (k) => String(k).replaceAll("~", "~0").replaceAll("/", "~1");
@@ -511,10 +511,10 @@ function compareSnapshots(before, after, kernel) {
   return { kind: "unity-diff", changes, ambiguous, fileChanges, completeness: { totalCount: changes.length, returnedCount: changes.length, truncated: false }, identityPolicy: "GUID/fileID exact; missing GUID uses explicit provisional input path; no heuristic remapping" };
 }
 
-// docs/shared/unity-analysis/kernel/registry.mjs
+// ../pages-adjustment/docs/shared/unity-analysis/kernel/registry.mjs
 var UNITY_KERNEL = Object.freeze({ key: "hike-unity-i32-v1:e7c1049626826d3dabe2f53a7935efa69cd6f2cfa85fa11375b7bdd877088520:scalar", variant: "scalar", abi: "hike-unity-i32-v1", sha256: "e7c1049626826d3dabe2f53a7935efa69cd6f2cfa85fa11375b7bdd877088520", url: new URL("../unity-analysis/kernel/unity-analysis.wasm", import.meta.url).href });
 
-// docs/shared/unity-analysis/kernel/kernel.mjs
+// ../pages-adjustment/docs/shared/unity-analysis/kernel/kernel.mjs
 var MAX_VECTOR = 262144;
 var MAX_MEMORY = 16777216;
 var PAGE_BYTES = 65536;
@@ -656,7 +656,7 @@ function instantiateUnityKernel(module) {
   });
 }
 
-// docs/shared/unity-analysis/pool-task.mjs
+// ../pages-adjustment/docs/shared/unity-analysis/pool-task.mjs
 var isUnity = (t) => t === "unity-analyze" || t === "unity-diff";
 function inspectTaskRequest2(r) {
   if (!r || r.protocolVersion !== 1 || !isUnity(r.taskType) || r.taskVersion !== 1 || typeof r.jobId !== "string" || !/^[A-Za-z0-9_.:-]{1,64}$/.test(r.jobId) || !Number.isSafeInteger(r.inputRevision) || r.inputRevision < 0) throw TypeError("Invalid Unity task identity");
@@ -690,7 +690,7 @@ function executeTask2(r, kernel) {
 }
 var taskInputCount2 = (r) => r.taskType === "unity-analyze" ? r.payload.files.reduce((n, f) => n + f.objects.length, 0) : r.payload.before.files.length + r.payload.after.files.length;
 
-// docs/shared/unity-analysis/ingest-task.mjs
+// ../pages-adjustment/docs/shared/unity-analysis/ingest-task.mjs
 var ingest_task_exports = {};
 __export(ingest_task_exports, {
   PARSER_VERSION: () => PARSER_VERSION,
@@ -712,7 +712,7 @@ __export(ingest_task_exports, {
   validTaskResult: () => validTaskResult3
 });
 
-// docs/shared/ft/vendor/fflate.mjs
+// ../pages-adjustment/docs/shared/ft/vendor/fflate.mjs
 var u8 = Uint8Array;
 var u16 = Uint16Array;
 var i32 = Int32Array;
@@ -1356,7 +1356,7 @@ var Unzip = /* @__PURE__ */ (function() {
   return Unzip2;
 })();
 
-// docs/shared/unity-analysis/package-reader.mjs
+// ../pages-adjustment/docs/shared/unity-analysis/package-reader.mjs
 var MAX_UNITY_PACKAGE_BYTES = 64 * 1024 * 1024;
 var BLOCK = 512;
 var POSIX_MAGIC = "ustar\x0000";
@@ -1574,7 +1574,7 @@ function readUnityPackage(bytes2) {
   return new Map(entries.map((entry) => [entry.guid, entry]));
 }
 
-// docs/shared/unity-analysis/archive.mjs
+// ../pages-adjustment/docs/shared/unity-analysis/archive.mjs
 var MAX_IN = 32 * 1024 * 1024;
 var MAX_OUT = 64 * 1024 * 1024;
 var MAX_FILES = 2048;
@@ -1702,7 +1702,7 @@ function expandInput(input) {
   return readFiles([input]);
 }
 
-// docs/shared/ft/unity-text.mjs
+// ../pages-adjustment/docs/shared/ft/unity-text.mjs
 var own2 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 function parseUnityScalar(value2) {
   if (typeof value2 !== "string") throw new TypeError("Expected Unity scalar text");
@@ -1763,7 +1763,7 @@ function parseUnityScalar(value2) {
   return value2.replace(/\s+#.*$/, "").trimEnd();
 }
 
-// docs/shared/unity-analysis/rules.mjs
+// ../pages-adjustment/docs/shared/unity-analysis/rules.mjs
 var TEXT_RULES_VERSION = "unity-text-rules/1";
 var EXPRESSION_SCHEMA = Object.freeze({ kind: "vrchat-expression", scriptGuid: "67cc4cb7839cd3741b63733d5adf0442", scriptFileId: "-1506855854", profile: "known-five-field-parameters/1" });
 var animatorTypes = Object.freeze({ "1": "Float", "3": "Int", "4": "Bool", "9": "Trigger" });
@@ -1877,7 +1877,7 @@ function deriveParameterRules(object) {
 }
 var jsonPointerPart = pointerPart;
 
-// docs/shared/unity-analysis/text.mjs
+// ../pages-adjustment/docs/shared/unity-analysis/text.mjs
 var TEXT_PARSER_VERSION = "unity-text-subset/1";
 var TEXT_LIMITS = Object.freeze({ maxTextBytes: 4 * 1024 * 1024, maxCodeUnits: 4 * 1024 * 1024, maxLines: 262144, maxNodes: 262144, maxDocuments: 65536, maxDepth: 64, maxPath: 1024 });
 var own4 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
@@ -2347,7 +2347,7 @@ function parseUnityFile({ path, text: text2 } = {}) {
   return { path, objects, coverage, ...coverage === "partial" ? { reason: "Some document syntax, identity or rule semantics are unresolved" } : {}, issues, unparsedDocuments, parserVersion: TEXT_PARSER_VERSION };
 }
 
-// docs/shared/unity-analysis/ingest-task.mjs
+// ../pages-adjustment/docs/shared/unity-analysis/ingest-task.mjs
 var PARSER_VERSION = "unity-text-1";
 var isIngest = (t) => t === "unity-expand" || t === "unity-parse" || t === "unity-parse-batch";
 var MAX_IN2 = 16 * 1024 * 1024;
@@ -2457,7 +2457,7 @@ async function executeTask3(r) {
 }
 var taskInputCount3 = inputBytes3;
 
-// docs/shared/compute/tasks.mjs
+// ../pages-adjustment/docs/shared/compute/tasks.mjs
 var MAX_MEDIA_INPUT_BYTES = Reflect.get(registered_tasks_exports, "MAX_MEDIA_INPUT_BYTES");
 var adapter = (r) => isIngest(typeof r === "string" ? r : r?.taskType) ? ingest_task_exports : isUnity(typeof r === "string" ? r : r?.taskType) ? pool_task_exports : registered_tasks_exports;
 var resultAdapter = (r) => ["unity-expanded", "unity-parsed", "unity-parsed-batch"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports : registered_tasks_exports;
@@ -2469,7 +2469,7 @@ var instantiateTask4 = (r, m) => adapter(r).instantiateTask(r, m);
 var executeTask4 = (r, k) => adapter(r).executeTask(r, k);
 var taskInputCount4 = (r, v) => adapter(r).taskInputCount(r, v);
 
-// docs/shared/compute/pool-worker.mjs
+// ../pages-adjustment/docs/shared/compute/pool-worker.mjs
 var workerId = crypto.randomUUID();
 var bootEpochMs = performance.timeOrigin + performance.now();
 var received = false;

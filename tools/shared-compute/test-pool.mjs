@@ -5,6 +5,7 @@ import {Worker as NodeWorker} from 'node:worker_threads';
 import {createComputePool} from '../../docs/shared/compute/pool.mjs';
 import {instantiateKernel, prepareKernelModule} from '../../docs/shared/compute/kernel.mjs';
 import {BUILD_ID, WASM_SHA256} from '../../docs/shared/compute/protocol.mjs';
+import {MAX_MEDIA_INPUT_BYTES} from '../../docs/shared/compute/tasks.mjs';
 
 const tick = () => new Promise(resolve => setImmediate(resolve));
 const request = (jobId, masks=[0,3,5], timeoutMs=30000) => ({protocolVersion:1,jobId,inputRevision:1,taskType:'ft-magnitude-batch',taskVersion:1,payload:{masks,weights:[1,2,4]},limits:{timeoutMs}});
@@ -148,6 +149,132 @@ test('a failed module attempt fails already accepted queued jobs without an impl
   const batch=pool.submitBatch([request('a'),request('b'),request('c',[0,3,5],20)]);
   const results=await batch.promise;assert.ok(results.every(r=>r.errorCode==='PREPARATION_FAILED'));assert.equal(count,1);assert.equal(workers.length,0);
   const retry=pool.submit(request('explicit-retry'));await tick();workers[0].emit();assert.equal((await retry.promise).status,'succeeded');assert.equal(count,2);pool.dispose();
+});
+
+// Adjustment requirements: a pending shared preparation must not poison later submissions.
+const emptyModule=()=>new WebAssembly.Module(new Uint8Array([0,97,115,109,1,0,0,0]));
+function pendingPreparationHarness(options={}) {
+  const attempts=[];
+  const state=harness({...options,moduleReuse:true,prepareModule:input=>new Promise((resolve,reject)=>{attempts.push({input,resolve,reject});})});
+  return {...state,attempts};
+}
+function preparationClock(t) {
+  let now=0;t.mock.timers.enable({apis:['setTimeout']});t.mock.method(performance,'now',()=>now);
+  return {advance(ms){now+=ms;t.mock.timers.tick(ms);},withoutTimers(ms){now+=ms;}};
+}
+test('pending preparation: individual timeout retires an orphan and explicit submission starts fresh',async t=>{
+  const clock=preparationClock(t),{pool,workers,attempts}=pendingPreparationHarness();
+  const first=pool.submit(request('timed',[0],5));await tick();clock.advance(5);
+  assert.equal((await first.promise).errorCode,'TIMEOUT');assert.equal(attempts[0].input.signal.aborted,true);
+  const next=pool.submit(request('retry'));await tick();assert.equal(attempts.length,2);
+  attempts[1].resolve(emptyModule());await tick();workers[0].emit();assert.equal((await next.promise).status,'succeeded');
+  attempts[0].resolve(emptyModule());await tick();assert.equal(workers.length,1);assert.equal(pool.getStatus().outstanding,0);
+});
+test('pending preparation: cancellation protects live and queued waiters and releases the last dependant',async t=>{
+  const clock=preparationClock(t),{pool,attempts}=pendingPreparationHarness({concurrency:1});
+  const a=pool.submit(request('a',[0],5)),b=pool.submit(request('b'));await tick();clock.advance(5);
+  assert.equal((await a.promise).errorCode,'TIMEOUT');assert.equal(attempts[0].input.signal.aborted,false);
+  await tick();assert.equal(attempts.length,1);assert.equal(pool.getStatus('b').phase,'preparing');
+  const c=pool.submit(request('c'));pool.cancel('b');await b.promise;
+  assert.equal(attempts[0].input.signal.aborted,false);assert.equal(attempts.length,1);
+  pool.cancel('c');assert.equal((await c.promise).errorCode,'CANCELLED');assert.equal(attempts[0].input.signal.aborted,true);
+  assert.equal(pool.getStatus().outstanding,0);assert.equal(pool.getStatus().inputBytes,0);
+});
+test('pending preparation: absolute deadline fails accepted cohort without retry and ignores old completion',async t=>{
+  const clock=preparationClock(t),{pool,workers,attempts}=pendingPreparationHarness({concurrency:2});
+  const first=pool.submit(request('first'));await tick();clock.advance(1000);
+  const batch=pool.submitBatch([request('later'),request('queued')]);await tick();clock.advance(29000);
+  assert.equal((await first.promise).errorCode,'TIMEOUT');
+  assert.equal(pool.getResult('later')?.errorCode,'PREPARATION_TIMEOUT');
+  assert.deepEqual((await batch.promise).map(r=>r.errorCode),['PREPARATION_TIMEOUT','PREPARATION_TIMEOUT']);
+  assert.equal(attempts.length,1);assert.equal(attempts[0].input.signal.aborted,true);assert.equal(workers.length,0);
+  const next=pool.submit(request('new'));await tick();assert.equal(attempts.length,2);
+  attempts[0].reject(Error('late old failure'));await tick();assert.equal(pool.getStatus('new').phase,'preparing');
+  attempts[1].resolve(emptyModule());await tick();workers[0].emit();assert.equal((await next.promise).status,'succeeded');
+});
+test('pending preparation: a resolve after the absolute deadline cannot beat a delayed timer',async t=>{
+  const clock=preparationClock(t),{pool,workers,attempts}=pendingPreparationHarness();
+  const h=pool.submit(request('delayed-timer'));await tick();clock.withoutTimers(30001);attempts[0].resolve(emptyModule());await tick();
+  assert.equal(pool.getResult('delayed-timer')?.errorCode,'PREPARATION_TIMEOUT');assert.equal((await h.promise).status,'failed');
+  assert.equal(workers.length,0);assert.equal(attempts[0].input.signal.aborted,true);
+});
+test('pending preparation: orphan is detached before cancellation callback resubmits',async()=>{
+  let replacement;const {pool,workers,attempts}=pendingPreparationHarness({onUpdate:s=>{if(s.jobId==='old'&&s.status==='cancelled')replacement=pool.submit(request('replacement'));}});
+  const old=pool.submit(request('old'));await tick();pool.cancel('old');await old.promise;await tick();
+  assert.equal(attempts[0].input.signal.aborted,true);assert.equal(attempts.length,2);
+  attempts[0].reject(Error('old late reject'));attempts[1].resolve(emptyModule());await tick();
+  assert.equal(workers.length,1);assert.equal(workers[0].sent.jobId,'replacement');workers[0].emit();assert.equal((await replacement.promise).status,'succeeded');
+});
+test('pending preparation: abort callback can release and reuse an ID without eviction deleting its live replacement',async()=>{
+  let pool,replacement,released,settlements=0;const attempts=[],workers=[];
+  pool=createComputePool({concurrency:2,moduleReuse:true,workerFactory:()=>{const worker=new FakeWorker();workers.push(worker);return worker;},prepareModule:input=>new Promise((resolve,reject)=>{
+    attempts.push({input,resolve,reject});
+    if(attempts.length===1)input.signal.addEventListener('abort',()=>{released=pool.releaseResult('same');replacement=pool.submit(request('same'));},{once:true});
+  })});harnessPools.add(pool);
+  const first=pool.submit(request('same'));first.promise.then(()=>settlements++);await tick();
+  const firstGeneration=pool.getStatus('same').generation;pool.cancel('same');const original=await first.promise;await tick();
+  assert.equal(released,true);assert.equal(original?.status,'cancelled');assert.equal(original.generation,firstGeneration);assert.equal(settlements,1);
+  assert.equal(attempts.length,2);const replacementGeneration=pool.getStatus('same').generation;assert.notEqual(replacementGeneration,firstGeneration);
+  for(let i=0;i<16;i++){const h=pool.submit(request('retention-'+i));pool.cancel(h.jobId);assert.equal((await h.promise).status,'cancelled');}
+  assert.equal(pool.getStatus('same')?.generation,replacementGeneration);assert.equal(pool.getStatus().outstanding,1);assert.equal(pool.getResult('same'),null);
+  attempts[0].resolve(emptyModule());await tick();assert.equal(workers.length,0);assert.equal(pool.getStatus('same').generation,replacementGeneration);
+  attempts[1].resolve(emptyModule());await tick();assert.equal(workers.length,1);workers[0].emit();
+  const result=await replacement.promise;assert.equal(result.status,'succeeded');assert.equal(result.generation,replacementGeneration);assert.equal(settlements,1);assert.equal(pool.getStatus().outstanding,0);
+});
+test('pending preparation: repeated cancellation retires each attempt; success stays reusable',async()=>{
+  const {pool,workers,attempts}=pendingPreparationHarness();
+  for(let i=0;i<8;i++){const h=pool.submit(request('cancel-'+i));await tick();assert.equal(attempts.length,i+1);pool.cancel(h.jobId);await h.promise;assert.equal(attempts[i].input.signal.aborted,true);assert.equal(pool.getStatus().inputBytes,0);}
+  const ok=pool.submit(request('ok'));await tick();attempts.at(-1).resolve(emptyModule());await tick();workers[0].emit();await ok.promise;
+  for(const attempt of attempts.slice(0,-1))attempt.resolve(emptyModule());await tick();assert.equal(workers.length,1);
+  const reused=pool.submit(request('reused'));await tick();assert.equal(attempts.length,9);workers[1].emit();assert.equal((await reused.promise).status,'succeeded');
+});
+const unityRequest=jobId=>({...request(jobId),taskType:'unity-analyze',payload:{schemaVersion:'unity-analysis-snapshot/1',files:[]}});
+const taskMessage=(worker,extra)=>worker.onmessage?.({data:{...worker.sent,workerId:'worker-'+worker.sent.generation,instanceId:'instance-'+worker.sent.generation,...extra}});
+const emptyUnityResult=()=>({kind:'unity-analysis',snapshotId:'snapshot',completeness:{truncated:false,totalCount:0,returnedCount:0},findings:[],references:[],shared:[]});
+test('pending preparation: cancel one active waiter then share one success with the survivor',async()=>{
+  const {pool,workers,attempts}=pendingPreparationHarness({concurrency:2});
+  const a=pool.submit(request('a')),b=pool.submit(request('b'));await tick();pool.cancel('a');await a.promise;
+  assert.equal(attempts[0].input.signal.aborted,false);attempts[0].resolve(emptyModule());await tick();
+  assert.equal(workers.length,1);assert.equal(workers[0].sent.jobId,'b');workers[0].emit();assert.equal((await b.promise).status,'succeeded');assert.equal(attempts.length,1);
+});
+test('pending preparation: another kernel and a delivery-only JS task survive FT failure',async()=>{
+  const {pool,workers,attempts}=pendingPreparationHarness({concurrency:3});
+  const parsed={...request('parse'),taskType:'unity-parse',payload:{path:'Assets/Empty.asset',bytes:new Uint8Array(0)}};
+  const batch=pool.submitBatch([request('ft'),unityRequest('unity'),parsed]);await tick();
+  assert.equal(attempts.length,2);assert.equal(workers.length,1);assert.equal(workers[0].sent.jobId,'parse');
+  taskMessage(workers[0],{type:'result',instanceId:null,result:{kind:'unity-parsed',path:parsed.payload.path,parserVersion:'unity-text-1',file:{path:parsed.payload.path,byteLength:0,contentHash:'0'.repeat(64),objects:[],issues:[],coverage:'opaque'}}});
+  assert.equal(pool.getResult('parse'),null);
+  attempts[0].reject(Error('FT prepare failed'));await tick();assert.equal(attempts[1].input.signal.aborted,false);
+  attempts[1].resolve(emptyModule());await tick();taskMessage(workers[1],{type:'result',result:emptyUnityResult()});
+  const results=await batch.promise;assert.deepEqual(results.map(r=>r.status),['failed','succeeded','succeeded']);assert.equal(results[0].errorCode,'PREPARATION_FAILED');assert.equal(pool.getStatus().inputBytes,0);
+});
+test('pending preparation: a failed kernel releases a ready survivor in a prepared cohort',async()=>{
+  const {pool,workers,attempts}=pendingPreparationHarness({concurrency:2});
+  const batch=pool.submitBatch([request('ft'),unityRequest('unity')],{startTogether:true});await tick();
+  attempts[1].resolve(emptyModule());await tick();taskMessage(workers[0],{type:'phase',phase:'ready'});
+  assert.equal(workers[0].messages.length,1);attempts[0].reject(Error('FT prepare failed'));await tick();
+  assert.equal(workers[0].messages[1]?.type,'start');taskMessage(workers[0],{type:'result',result:emptyUnityResult()});
+  assert.deepEqual((await batch.promise).map(r=>r.status),['failed','succeeded']);assert.equal(pool.getStatus().outstanding,0);
+});
+const mediaRequest=(jobId,wasmVariant)=>({...request(jobId),taskType:'media-lbp-tile',wasmVariant,payload:{pixelFormat:'gray8',width:1,height:1,stride:1,imageWidth:1,imageHeight:1,originX:0,originY:0,region:{x:0,y:0,width:1,height:1},data:new Uint8Array(1)}});
+test('pending preparation: Sites fourth kernel never evicts a pending dependency of queued work',async t=>{
+  if(MAX_MEDIA_INPUT_BYTES===undefined){t.skip('Sites-only media keys are intentionally absent from Pages');return;}
+  const {pool,workers,attempts}=pendingPreparationHarness({concurrency:4});
+  const batch=pool.submitBatch([request('ft'),unityRequest('unity'),mediaRequest('scalar','scalar'),mediaRequest('simd','simd'),request('queued-ft')]);await tick();
+  assert.equal(attempts.length,4);assert.equal(new Set(attempts.map(a=>a.input.kernelHash)).size,4);
+  pool.cancel('ft');await tick();assert.equal(attempts.length,4);assert.equal(attempts[0].input.signal.aborted,false);
+  attempts[0].resolve(emptyModule());await tick();assert.equal(workers.length,1);assert.equal(workers[0].sent.jobId,'queued-ft');workers[0].emit();
+  for(const id of ['unity','scalar','simd'])pool.cancel(id);assert.ok(attempts.slice(1).every(a=>a.input.signal.aborted));
+  const results=await batch.promise;assert.equal(results.at(-1).status,'succeeded');assert.equal(pool.getStatus().outstanding,0);
+});
+test('pending preparation: completed Module cache retains only three keys without cancelling work',async t=>{
+  if(MAX_MEDIA_INPUT_BYTES===undefined){t.skip('Sites-only media keys are intentionally absent from Pages');return;}
+  const {pool,attempts}=pendingPreparationHarness();
+  const inputs=[request('ft'),unityRequest('unity'),mediaRequest('scalar','scalar'),mediaRequest('simd','simd')];
+  for(const input of inputs){const h=pool.submit(input);await tick();attempts.at(-1).resolve(emptyModule());await tick();pool.cancel(h.jobId);await h.promise;}
+  assert.equal(attempts.length,4);
+  const retained=pool.submit(unityRequest('retained-unity'));await tick();assert.equal(attempts.length,4);pool.cancel(retained.jobId);await retained.promise;
+  const evicted=pool.submit(request('evicted-ft'));await tick();assert.equal(attempts.length,5);pool.cancel(evicted.jobId);await evicted.promise;
 });
 test('disposal during injected Worker construction terminates the returned worker without sending',async()=>{
   let pool,worker;pool=createComputePool({workerFactory:()=>{pool.dispose();worker=new FakeWorker();return worker;}});

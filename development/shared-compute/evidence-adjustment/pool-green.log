@@ -1,0 +1,46 @@
+✔ two independent slots, queued third, exact ordered batch results and bounded disposal (4.905393ms)
+✔ prepared batch does not start before every cohort member is ready; later jobs never join (0.87345ms)
+✔ prepared batch rejection is atomic; retained results alone do not block admission (0.836195ms)
+✔ cancel, task failure and timeout remove cohort members and release ready survivors (20.851413ms)
+✔ dispose within ready callback never sends start, including cancel-then-dispose reentrancy (0.684179ms)
+✔ late and identity-mismatched ready cannot release another cohort (0.330241ms)
+✔ synchronous completion callbacks can submit a new cohort without stranding its ready members (0.916945ms)
+✔ batch acceptance is atomic for validation, duplicate IDs, count and input bytes (56.478545ms)
+✔ requests are snapshotted and IDs remain reserved until bounded retention evicts them (1.754883ms)
+✔ retained result byte limit evicts oldest and keeps caller-owned resolved results (88.356499ms)
+✔ active and queued cancellation settle once, reject late responses, and recover (0.458613ms)
+✔ queued timeout includes waiting, releases admission bytes, then recovers (5.603903ms)
+✔ generation, revision, build, protocol and task identities reject stale replies (0.399876ms)
+✔ malformed current response, task error, worker error and messageerror release and recover (0.666072ms)
+✔ constructor and postMessage failures settle accepted jobs and allow subsequent success (0.439494ms)
+✔ reentrant callbacks cannot leak records, oversubscribe or strand accepted jobs (0.271344ms)
+✔ module preparation is once per pool, failure resets and explicit next submission retries (4.854452ms)
+✔ dispose while preparing aborts fetch and prevents late worker launch (0.65865ms)
+✔ a failed module attempt fails already accepted queued jobs without an implicit retry (1.418321ms)
+✔ pending preparation: individual timeout retires an orphan and explicit submission starts fresh (2.070002ms)
+✔ pending preparation: cancellation protects live and queued waiters and releases the last dependant (0.999718ms)
+✔ pending preparation: absolute deadline fails accepted cohort without retry and ignores old completion (1.135942ms)
+✔ pending preparation: a resolve after the absolute deadline cannot beat a delayed timer (0.9064ms)
+✔ pending preparation: orphan is detached before cancellation callback resubmits (0.77889ms)
+✔ pending preparation: repeated cancellation retires each attempt; success stays reusable (1.205745ms)
+✔ pending preparation: cancel one active waiter then share one success with the survivor (0.460876ms)
+✔ pending preparation: another kernel and a delivery-only JS task survive FT failure (2.130883ms)
+✔ pending preparation: a failed kernel releases a ready survivor in a prepared cohort (0.75224ms)
+✔ pending preparation: Sites fourth kernel never evicts a pending dependency of queued work (1.241578ms)
+✔ pending preparation: completed Module cache retains only three keys without cancelling work (1.102772ms)
+✔ disposal during injected Worker construction terminates the returned worker without sending (0.316681ms)
+✔ real Hike WASM has independent memories, correct numeric results and failure rejection (2.92887ms)
+✔ fixed kernel fetch verifies actual digest and propagates failure (5.611534ms)
+✔ real browser Worker code through Node adapter returns independent IDs, zero/empty and metrics (92.232495ms)
+✔ real WASM trap reaches TASK_FAILED, releases its slot and next submission recovers (196.707837ms)
+✔ real prepared Worker ignores wrong/early/duplicate start and separates ready waiting (68.809793ms)
+✔ real two-Worker prepared batch records comparable compute intervals without a hardware guarantee (288.901404ms)
+ℹ {"kind":"Node interval observation only","overlapMs":96.394287109375,"intervals":[{"workerId":"4ef155d2-6940-42ad-8fda-c2e5bfc09d5c","start":1792186740091.387,"end":1792186740191.754,"readyWaitMs":4.262857000000054},{"workerId":"2f60fdea-0a5e-42a9-8b8b-5bacfeb08384","start":1792186740091.2644,"end":1792186740187.7812,"readyWaitMs":0.34666600000002745}]}
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 974.313415

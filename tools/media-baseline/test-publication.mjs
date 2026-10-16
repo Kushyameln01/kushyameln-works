@@ -55,7 +55,7 @@ const base=pathToFileURL(root+'/');
 const allowedFetch=['shared/ft/kernel/ft-kernel.wasm','shared/unity-analysis/kernel/unity-analysis.wasm'].map(p=>new URL(p,base).href);
 const {BUILD_ID}=await import(new URL('shared/compute/protocol.mjs',base));
 const {UNITY_KERNEL}=await import(new URL('shared/unity-analysis/kernel/registry.mjs',base));
-assert.equal(BUILD_ID,'compute-unity-b4');
+assert.equal(BUILD_ID,'compute-unity-b5');
 const identity=(taskType,payload,extra={})=>({protocolVersion:1,buildId:BUILD_ID,taskType,taskVersion:1,jobId:'publication-'+taskType,inputRevision:23,generation:5,payload,...extra});
 async function run(module,request){
  const worker=new Worker(adapter,{eval:true,workerData:{module:new URL(module,base).href,allowed:allowedFetch}});

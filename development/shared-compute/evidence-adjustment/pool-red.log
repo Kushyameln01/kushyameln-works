@@ -1,0 +1,122 @@
+✖ pending preparation: individual timeout retires an orphan and explicit submission starts fresh (8.216803ms)
+✖ pending preparation: cancellation protects live and queued waiters and releases the last dependant (2.210201ms)
+✖ pending preparation: absolute deadline fails accepted cohort without retry and ignores old completion (1.700292ms)
+✖ pending preparation: a resolve after the absolute deadline cannot beat a delayed timer (1.795963ms)
+✖ pending preparation: orphan is detached before cancellation callback resubmits (1.607303ms)
+✖ pending preparation: repeated cancellation retires each attempt; success stays reusable (1.126227ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 0
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 115.386524
+
+✖ failing tests:
+
+test at tools/shared-compute/test-pool.mjs:164:1
+✖ pending preparation: individual timeout retires an orphan and explicit submission starts fresh (8.216803ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/4246c790c21b/site-adjustment/tools/shared-compute/test-pool.mjs:167:66)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/shared-compute/test-pool.mjs:172:1
+✖ pending preparation: cancellation protects live and queued waiters and releases the last dependant (2.210201ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/4246c790c21b/site-adjustment/tools/shared-compute/test-pool.mjs:179:81)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/shared-compute/test-pool.mjs:182:1
+✖ pending preparation: absolute deadline fails accepted cohort without retry and ignores old completion (1.700292ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'PREPARATION_TIMEOUT'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/4246c790c21b/site-adjustment/tools/shared-compute/test-pool.mjs:187:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'PREPARATION_TIMEOUT',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/shared-compute/test-pool.mjs:194:1
+✖ pending preparation: a resolve after the absolute deadline cannot beat a delayed timer (1.795963ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'PREPARATION_TIMEOUT'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/4246c790c21b/site-adjustment/tools/shared-compute/test-pool.mjs:197:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'PREPARATION_TIMEOUT',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/shared-compute/test-pool.mjs:200:1
+✖ pending preparation: orphan is detached before cancellation callback resubmits (1.607303ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/4246c790c21b/site-adjustment/tools/shared-compute/test-pool.mjs:203:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/shared-compute/test-pool.mjs:207:1
+✖ pending preparation: repeated cancellation retires each attempt; success stays reusable (1.126227ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/4246c790c21b/site-adjustment/tools/shared-compute/test-pool.mjs:209:157)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
