@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>共有計算｜Kushyameln Works</title><meta name="description" content="Web WorkerとHike/WASMによる並行計算。"><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="style.css"><link rel="icon" href="../favicon.svg"></head>
+<body><header><h1>共有計算</h1><span>Kushyameln Works</span></header><nav><a href="../">トップ</a> · <a href="../github/">ツール一覧</a></nav>
+<main><p id="build">Web Worker共有基盤</p><p>JSONジョブを複数のWeb Workerへ分配し、Hike/WASMで計算します。結果は入力順で返ります。処理するのはこのページを開いているブラウザです。ページを閉じると処理も終了します。</p>
+<section><h2>入力</h2><p>単独ジョブはオブジェクト、複数ジョブは配列で指定します。入力例はビットに対応する重みの合計を求めます。例：masks [0,3,5]・weights [1,2,4] → [0,3,5]。</p>
+<div class="actions"><button id="sample">単独の例</button><button id="batch">並行処理の例</button><button id="empty">空配列の例</button></div>
+<label for="concurrency">同時Worker数</label><select id="concurrency"><option value="1">1</option><option value="2" selected>2</option><option value="4">4</option></select>
+<label class="inline"><input type="checkbox" id="reuse">WASM Moduleを再利用する（比較用・既定は無効）</label>
+<label class="inline"><input type="checkbox" id="together">全Workerの準備完了後に開始（ジョブ数は同時Worker数まで）</label>
+<label for="request">ジョブJSON</label><textarea id="request" rows="15" spellcheck="false"></textarea><div class="actions"><button id="run" class="primary">実行</button><button id="cancel" disabled>すべて取消</button></div>
+<p class="small">1回1〜12ジョブ、1ジョブ最大262,144要素。同時保持する入力は論理16MiBまで。jobIdはジョブごとに変えてください。入力の変更は実行中の処理を取り消します。</p></section>
+<p id="status" role="status" aria-live="polite">待機中</p><details><summary>処理件数と保持量</summary><pre id="resources"></pre><p>数値は共有基盤が管理する件数と論理byteです。ブラウザ全体の使用メモリではありません。</p></details>
+<section><h2>結果</h2><label for="result">結果JSON</label><textarea id="result" readonly rows="14" spellcheck="false"></textarea></section>
+<details><summary>動作の検証</summary><p>同じ共有APIを別モジュールから呼びます。数十秒かかる場合があります。計算結果・Worker ID・計算区間を検査し、性能は観測値として記録します。</p><div class="actions"><button id="prepared">準備後の並行計算を検査</button><button id="compare">1・2・4 Workerを比較</button><button id="lifecycle">取消・復帰・保持上限を検査</button><button id="module-test">Module再利用を比較（各6回）</button></div><p>Module比較の前に取消・復帰の検査を実行してください。検証結果はこの画面にだけ保持します。</p><label for="diagnostics">検証結果JSON</label><textarea id="diagnostics" readonly rows="18" spellcheck="false"></textarea><pre id="environment"></pre></details>
+<details><summary>ChatGPT・開発者向けの使い方</summary><ol><li>ジョブJSONを入力し、実行を押します。</li><li>完了後、結果JSONを読みます。statusとjobId・inputRevisionを照合してください。</li><li>必要なら「すべて取消」を使い、新しいjobIdで再実行します。</li></ol><p>共有APIは <code>shared/compute/client.mjs</code> の <code>createComputePool</code> です。submit・submitBatch・getStatus・getResult・cancel・disposeに対応します。登録済みタスクはft-magnitude-batchのversion1です。任意のコード文字列は実行しません。タスク追加とAPIの詳細は<a href="../shared/compute/README.md">開発者向け説明</a>を参照してください。</p></details>
+</main><script type="module" src="app.mjs"></script></body></html>

@@ -6,13 +6,13 @@
 
 ## 更新と安全な配布範囲
 
-現在の変更では旧FTツール2ページとXアーカイブを配布対象から外し、既存Composerの共有依存をバイトを変えずに `docs/shared/ft/` へ移動しています。新しいSites機能の同期は含みません。
+2026-10-14の変更では旧FTツール2ページとXアーカイブを配布対象から外し、既存Composerの共有依存をバイトを変えずに `docs/shared/ft/` へ移動しています。新しいSites機能の同期は含みません。
 
 `python3 scripts/sync-static.py docs --output /absolute/path/to/new-stage`
 
 [公開対象一覧](security/public-files.json)の完全一致と参照を検査し、新規ディレクトリへ出力します。失敗時に公開用出力は残りません。既存docsの上書き・push・公開は実行しません。公開担当者が検証済み成果物と差分を確認し、別途反映してください。Sitesの新機能を同期するときは公開対象一覧の再審査が必要です。
 
-[境界と検査](security/README.md)を参照してください。以下は初回公開時の記録であり、今回の公開後検証結果ではありません。
+[境界と検査](security/README.md)を参照してください。以下は初回公開時の記録であり、共有計算追加後の検証結果ではありません。
 
 ## 確認結果
 
@@ -23,3 +23,8 @@
 - **表示遅延の改善はまだ実証できていません。** 各5回のクラウド環境curl計測ではTTFB中央値が元Sites 5.559秒、Pages 5.716秒。日本の実ユーザー環境の描画時間を示すものではありません。FCP/LCPは未計測です。
 
 詳細: [移行・検証記録](MIGRATION_REPORT.md)、[HTTP測定値](http-measurements.json)、[配布照合](deployment-checks.json)。
+
+
+## 共有計算基盤（2026-10-16）
+
+ChatGPT-Sitesを仮実装、GitHub Pagesを本実装として扱います。公開API・利用方法は[共有計算README](docs/shared/compute/README.md)、実行画面は[worker-runner](https://kushyameln01.github.io/kushyameln-works/worker-runner/)です。既存Hike/WASMは変更せず、独立したDedicated Workerへジョブを分配します。公開対象は明示リストで検査します。[実装・検証記録](development/shared-compute/VALIDATION.md)に対象版と検証範囲を記載しています。
