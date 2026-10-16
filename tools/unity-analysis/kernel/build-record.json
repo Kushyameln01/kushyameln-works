@@ -1,0 +1,129 @@
+{
+  "status": "built-and-statically-inspected; NOT EXECUTED",
+  "hikeCommit": "fdad7bb974b208b9e8edba19af7cff1f9f9061be",
+  "archiveSha256": "91250b9c613c26a22ab2469d55a774fade8d97a71a38f0847ace3a7dbc8d26c2",
+  "runtimePatch": {
+    "beforeSha256": "fff32213b77b921f3f37432264dad00193f65874256c52aa74b96f15d0b983ac",
+    "afterSha256": "99b0cb1faf774e32aa0d730ce4d81eb1814de94323c8a7a45ec67f61e9968605",
+    "before": "%hash_match = icmp eq i64 %ehash, %hash",
+    "after": "%hash_match = icmp eq i32 %ehash, %hash"
+  },
+  "compilerSha256": "c4466857c3ba655807b7e9b658263128e8e23ebb62ccb6546aa3772fa6819e92",
+  "versions": {
+    "go": "go version go1.22.12 linux/amd64",
+    "zig": "0.13.0",
+    "wabt": "1.0.39"
+  },
+  "sourceSha256": "cc8f53260748c9af0f4c4a1bc7e2e65091d43e88a3392ef21f2a112a1d420698",
+  "llvmSha256": "027b996db5465e4de42bb465435f22399fdf10cd410e6f757132cd43be2b8a01",
+  "wasmSha256": "e7c1049626826d3dabe2f53a7935efa69cd6f2cfa85fa11375b7bdd877088520",
+  "wasmBytes": 1124,
+  "watSha256": "7f1b11be17a13fdf88fb63492e7fae042ed2a6162788bd570a9baa20aa57e405",
+  "abi": "hike-unity-i32-v1",
+  "exports": {
+    "UaIncoming": "(i32,i32,i32,i32,i32)->i32",
+    "UaTypeCheck": "(i32,i32,i32,i32,i32)->i32",
+    "UaDiff": "(i32,i32,i32,i32,i32)->i32"
+  },
+  "imports": [],
+  "memoryPages": {
+    "initial": 16,
+    "maximum": 256
+  },
+  "simd": false,
+  "commands": [
+    {
+      "command": [
+        "/workspace/scratch/9c8ffa8409fe/hike-feasibility/toolchain/go/bin/go",
+        "version"
+      ],
+      "seconds": 0.0027,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/9c8ffa8409fe/hike-feasibility/toolchain/zig-package/ziglang/zig",
+        "version"
+      ],
+      "seconds": 0.0041,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "/workspace/scratch/9c8ffa8409fe/hike-feasibility/toolchain/wabt-package/package/bin/wasm2wat",
+        "--version"
+      ],
+      "seconds": 0.0767,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/9c8ffa8409fe/hike-feasibility/toolchain/go/bin/go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/workspace/sites/kushyameln-unity-analysis/tools/unity-analysis/kernel/.build/hikec",
+        "./cmd/hikec"
+      ],
+      "seconds": 0.041,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/workspace/sites/kushyameln-unity-analysis/tools/unity-analysis/kernel/.build/hikec",
+        "emit-ir",
+        "-target",
+        "wasm32",
+        "-o",
+        "/workspace/sites/kushyameln-unity-analysis/tools/unity-analysis/kernel/.build/unity-analysis.ll",
+        "/workspace/sites/kushyameln-unity-analysis/tools/unity-analysis/kernel/unity-analysis.hike"
+      ],
+      "seconds": 0.0031,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/9c8ffa8409fe/hike-feasibility/toolchain/zig-package/ziglang/zig",
+        "cc",
+        "-target",
+        "wasm32-freestanding",
+        "-O3",
+        "-Xclang",
+        "-O3",
+        "-Xclang",
+        "-target-feature",
+        "-Xclang",
+        "-simd128",
+        "-Xclang",
+        "-vectorize-loops",
+        "-Xclang",
+        "-vectorize-slp",
+        "-nostdlib",
+        "-Wl,--no-entry",
+        "-Wl,--strip-debug",
+        "-Wl,--max-memory=0x1000000",
+        "-Wl,--export=UaIncoming",
+        "-Wl,--export=UaTypeCheck",
+        "-Wl,--export=UaDiff",
+        "/workspace/sites/kushyameln-unity-analysis/tools/unity-analysis/kernel/.build/unity-analysis.ll",
+        "-o",
+        "/workspace/sites/kushyameln-unity-analysis/static-src/shared/unity-analysis/kernel/unity-analysis.wasm"
+      ],
+      "seconds": 0.0089,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "/workspace/scratch/9c8ffa8409fe/hike-feasibility/toolchain/wabt-package/package/bin/wasm2wat",
+        "/workspace/sites/kushyameln-unity-analysis/static-src/shared/unity-analysis/kernel/unity-analysis.wasm",
+        "-o",
+        "/workspace/sites/kushyameln-unity-analysis/tools/unity-analysis/kernel/.build/unity-analysis.wat"
+      ],
+      "seconds": 0.1045,
+      "exitCode": 0
+    }
+  ]
+}

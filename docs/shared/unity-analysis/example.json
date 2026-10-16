@@ -1,0 +1,154 @@
+{
+  "before": {
+    "schemaVersion": "unity-analysis-snapshot/1",
+    "snapshotId": "before",
+    "files": [
+      {
+        "path": "Assets/Demo.controller",
+        "guid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "objects": [
+          {
+            "fileId": "91",
+            "classId": "91",
+            "properties": {
+              "m_Name": "Demo"
+            },
+            "parameters": [
+              {
+                "name": "Speed",
+                "type": "Float"
+              }
+            ],
+            "references": [
+              {
+                "property": "m_Null",
+                "fileId": "0"
+              },
+              {
+                "property": "m_Clip",
+                "fileId": "9223372036854775807"
+              },
+              {
+                "property": "m_Missing",
+                "fileId": "999"
+              },
+              {
+                "property": "m_External",
+                "fileId": "7400000",
+                "guid": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            ]
+          },
+          {
+            "fileId": "1102",
+            "classId": "1102",
+            "properties": {
+              "m_Name": "Idle"
+            },
+            "references": [
+              {
+                "property": "m_Motion",
+                "fileId": "9223372036854775807"
+              }
+            ],
+            "parameterUses": [
+              {
+                "name": "Speed",
+                "allowedTypes": [
+                  "Bool",
+                  "Trigger"
+                ],
+                "rule": "unity-condition-if",
+                "scopeFileId": "91"
+              }
+            ]
+          },
+          {
+            "fileId": "9223372036854775807",
+            "classId": "74",
+            "properties": {
+              "m_Name": "Shared Clip"
+            }
+          }
+        ],
+        "coverage": "structured-input"
+      }
+    ]
+  },
+  "after": {
+    "schemaVersion": "unity-analysis-snapshot/1",
+    "snapshotId": "after",
+    "files": [
+      {
+        "path": "Assets/Demo.controller",
+        "guid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "objects": [
+          {
+            "fileId": "91",
+            "classId": "91",
+            "properties": {
+              "m_Name": "Demo"
+            },
+            "parameters": [
+              {
+                "name": "Speed",
+                "type": "Float"
+              }
+            ],
+            "references": [
+              {
+                "property": "m_Null",
+                "fileId": "0"
+              },
+              {
+                "property": "m_Clip",
+                "fileId": "9223372036854775807"
+              },
+              {
+                "property": "m_Missing",
+                "fileId": "999"
+              },
+              {
+                "property": "m_External",
+                "fileId": "7400000",
+                "guid": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            ]
+          },
+          {
+            "fileId": "1102",
+            "classId": "1102",
+            "properties": {
+              "m_Name": "Idle revised"
+            },
+            "references": [
+              {
+                "property": "m_Motion",
+                "fileId": "9223372036854775807"
+              }
+            ],
+            "parameterUses": [
+              {
+                "name": "Speed",
+                "allowedTypes": [
+                  "Bool",
+                  "Trigger"
+                ],
+                "rule": "unity-condition-if",
+                "scopeFileId": "91"
+              }
+            ]
+          },
+          {
+            "fileId": "9223372036854775807",
+            "classId": "74",
+            "properties": {
+              "m_Name": "Shared Clip"
+            }
+          }
+        ],
+        "coverage": "structured-input"
+      }
+    ]
+  }
+}

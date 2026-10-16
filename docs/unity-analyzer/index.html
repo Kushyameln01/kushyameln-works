@@ -1,0 +1,10 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Unityデータの参照・Parameter・共有関係・差分を解析し、根拠付きJSONで取り出すKushyameln Worksのツール"><title>Unityデータ解析 | Kushyameln Works</title><link rel="stylesheet" href="./style.css"></head><body>
+<header><a href="../">Kushyameln Works</a><span>Unity tools</span></header>
+<main><div class="intro"><p class="eyebrow">UNITY DATA ANALYZER</p><h1>データのつながりを、<br>根拠とともに確認。</h1><p>参照不足、Parameterの型、共有参照、変更前後の差分を調べ、JSONとして取り出します。</p></div>
+<div class="workspace"><section class="input-panel"><div class="section-title"><span class="step">01</span><h2>解析するデータ</h2></div><p class="muted" id="scope">構造化JSONを受け付けます。現在は最小試作の検証段階です。</p>
+<div class="toolbar"><button id="example" class="subtle">サンプルを読み込む</button><label>Worker数 <select id="concurrency"><option>1</option><option selected>2</option><option>4</option></select></label></div>
+<label for="input">入力JSON <span class="muted">単一snapshot、または before / after の組</span></label><textarea id="input" spellcheck="false" placeholder='{"schemaVersion":"unity-analysis-snapshot/1","files":[]}'></textarea>
+<div class="actions"><button id="analyze" class="primary">解析する</button><button id="cancel" disabled>取り消す</button></div><p id="status" role="status" aria-live="polite">データを入力してください。</p>
+<details><summary>対応範囲と読み方</summary><p>この解析は保存済みデータの静的な関係を調べます。Unityの実行結果や、未提供の素材・ビルド時生成まで正常と判定するものではありません。共有参照は構造情報です。</p><a href="../shared/unity-analysis/README.md">入力仕様・制限</a></details></section>
+<section class="results-panel"><div class="section-title"><span class="step">02</span><h2>解析結果</h2></div><div id="summary" class="summary"><p class="muted">結果はここに表示されます。</p></div><div id="findings"></div><div class="toolbar"><button id="download" disabled>全件JSONを保存</button><button id="show-json" disabled>JSONを表示</button></div><label for="output">出力JSON</label><textarea id="output" readonly spellcheck="false" placeholder="解析結果の全件JSON" hidden></textarea></section></div>
+<footer>ファイルは端末内で処理します。入力を外部へ送信しません。</footer></main><script type="module" src="./app.mjs"></script></body></html>

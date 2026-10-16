@@ -47,7 +47,7 @@ Worker/Instance ID、queue・startup・load・compute・totalの時間と正規�
 2. protocol.mjsの登録済みタスク検査と、pool-worker.mjs内の明示的なディスパッチを追加します。CPU計算はHikeのソース・WASMと識別hashを揃えます。
 3. kernelアダプターでimports/exports、引数型、有限値とMemoryの独立性を検査します。既存タスクのABIを黙って変えません。
 4. 正常値・0/空・境界・失敗・取消・古い応答・復帰の検査を先に用意し、単一Workerと並行実行の結果を照合します。
-5. Sites仮実装でChatGPTから入力と結果回収を検証し、公開対象一覧を明示更新してからGitHub Pagesへ反映します。
+5. Sites仮実装を保存して静的確認し、公開対象一覧を更新してGitHub Pagesへ反映します。配信版と一致する最新版をクラウドへ取得してから、ChatGPTによる入力・実行・結果回収を動的検証します。製品のNode/WASM実行も反映後です。
 
 今回のデータ搬送はstructured cloneによるコピーです。ArrayBuffer移譲・detachや共有Memoryの最適化は実装していません。入力・結果の外部送信や新しい認証は追加していません。
 
@@ -65,3 +65,7 @@ preparedPool.dispose();
 ```
 
 取消・失敗・timeoutとなったジョブは待機対象から外し、生存するジョブがすべて準備できれば開始します。timeoutには準備待ちも含みます。`readyWaitMs`は準備後の待機時間で、`computeMs`には含みません。起動時刻のずれを分離できるオプションであり、高速化や物理コアの同時実行は保証しません。
+
+## Unity解析タスク
+
+`unity-analyze` と `unity-diff` を追加しています。入力仕様と上限は [Unity解析README](../unity-analysis/README.md) を参照してください。既存FTタスクの入力と計算内容は維持します。タスクごとに容量と結果を検査し、ModuleキャッシュをABI・hashで区別します。
