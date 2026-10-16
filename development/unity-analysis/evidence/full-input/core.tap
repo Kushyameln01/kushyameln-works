@@ -1,0 +1,38 @@
+✔ archive preserves unknown bytes and direct/ZIP equality (4.58548ms)
+✔ unsafe path, case conflict, corrupt CRC and archive bound rejected (1.416469ms)
+✔ external shared tree is checked independently in both controller contexts (4.155067ms)
+✖ partial target, duplicated identity, null and builtin remain distinct (0.330344ms)
+✔ explicit expression conversion is separate from type-constraint violations (0.396594ms)
+✔ file add/remove/rename and empty snapshots are explicit (1.0158ms)
+✔ single-snapshot JSON retains unknown properties and unparsed evidence (0.980707ms)
+✔ independent incoming, type and diff expected vectors; inputs remain unchanged (17.939079ms)
+✔ empty input is successful and returned arrays do not alias subsequent calls or Memory (35.787861ms)
+✔ adapter rejects invalid shape, range, alias, shared and detached inputs and then recovers (2.34616ms)
+✔ prototype maximum, grow-view refresh and independent instances (22.188045ms)
+✔ raw ABI validates counts and values before writing output (1.802276ms)
+✔ preparation verifies identity, rejects corrupt bytes and honors abort (10.84131ms)
+✔ real-shaped raw graph, source evidence, 64-bit identity and semantic diff (59.641167ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 13
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 225.566177
+
+✖ failing tests:
+
+test at tools/unity-analysis/test-graph.mjs:6:1
+✖ partial target, duplicated identity, null and builtin remain distinct (0.330344ms)
+  TypeError: Invalid GUID
+      at guid (file:///workspace/scratch/a12324e000fc/pages-cloud-6dc93ea/kushyameln-works/shared/unity-analysis/model.mjs:11:96)
+      at inspectSnapshot (file:///workspace/scratch/a12324e000fc/pages-cloud-6dc93ea/kushyameln-works/shared/unity-analysis/model.mjs:21:119)
+      at buildIndex (file:///workspace/scratch/a12324e000fc/pages-cloud-6dc93ea/kushyameln-works/shared/unity-analysis/model.mjs:33:2)
+      at analyzeSnapshot (file:///workspace/scratch/a12324e000fc/pages-cloud-6dc93ea/kushyameln-works/shared/unity-analysis/analysis.mjs:14:14)
+      at TestContext.<anonymous> (file:///workspace/sites/kushyameln-unity-b2/tools/unity-analysis/test-graph.mjs:6:114)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)

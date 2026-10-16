@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "url": "https://kushyameln01.github.io/kushyameln-works/unity-analyzer/",
+  "observedBuild": "compute-unity-b2",
+  "bytes": 141485,
+  "sha256": "778d1c444939b97754262ee275ab15de4bb52b79b2f423dc3f3fc388b2657fa3",
+  "input": "Actual before/after ZIP File selection via file chooser",
+  "checks": [
+    "before/after/diff/inputs/completeness equal Node direct files",
+    "expanded file hash inventory equal Node",
+    "selected ZIP hashes equal actual bytes"
+  ],
+  "totalMs": 2716.10000000149,
+  "browserResponseHashes": "unavailable",
+  "fullBrowserVersion": "unavailable",
+  "initialChooserTimeout": "one timed-out call; documented bounded retry recovered",
+  "uiObservations": [
+    {
+      "operator": "primary agent",
+      "action": "Cancel a running synthetic 100-file/20-object-per-file ZIP with one Worker",
+      "result": "CANCELLED visible; initial small-input attempt completed before cancellation and is not counted as a cancellation pass"
+    },
+    {
+      "operator": "primary agent",
+      "action": "Start again then change Worker setting to four",
+      "result": "Input-changed status, empty summary and disabled JSON download; stale result not retained"
+    },
+    {
+      "operator": "primary agent",
+      "action": "Restore actual before/after ZIP inputs and analyze with four Workers",
+      "result": "Complete, 17 jobs, approximately 1050 ms, same diagnostic counts"
+    },
+    {
+      "operator": "primary agent",
+      "action": "Expand Parameter finding details",
+      "result": "Speed Float versus Bool/Trigger, Controller GUID and source line 46 visible"
+    }
+  ],
+  "screenshot": {
+    "path": "browser.jpg",
+    "bytes": 52038,
+    "fullPageAttempt": "Page.captureScreenshot timeout",
+    "recovery": "Ordinary viewport screenshot succeeded; no security or browser launch settings changed"
+  }
+}

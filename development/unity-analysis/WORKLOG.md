@@ -35,3 +35,18 @@ Opened current Sites source 70303a7ba15b114b5eef0657cc721430e5aba580 (v56) with 
 Technical integration review: clone optional parameterLinks at session start to prevent caller mutation; expose parameter checks/conversions/declarations in UI filter. Added immutable-context expectation. First projection rejected conditional sample URL; literal URLs corrected and revalidated.
 
 Technical final review: check cancellation immediately after progress notification before child analysis; completion notification is terminal. No further blocking integration defects reported.
+
+### First full-input runtime — Pages 6dc93ea
+Parser expectation suite PASS. Core13/14 PASS, one harness fixture error: builtin GUID accidentally had33 characters and correctly failed GUID validation. Corrected expected input to32 characters; product bytes unchanged. Initial red TAP retained; only affected case rerun against the same verified deployed version.
+
+### Full-input completion — 2026-10-16
+- Sites v57/source39abed6 and Pages6dc93ea published. Pages workflow38925723680 succeeded before runtime; all66 public blobs verified.
+- Parser PASS; initial core13/14 with erroneous33-character fixture GUID, corrected affected case1/1 PASS against unchanged product.
+- Minimum and raw SDK matrices each six conditions PASS: workers1/2/4 × module reuse off/on, module/bundle execution, full JSON, direct/ZIP/unitypackage equivalence, FT coexistence, ownership/cancellation/timeout/bad-archive recovery.
+- Performance45 synthetic Node runs completed; parallel parse intervals overlap. Largest fixture87,744 bytes/1,024 objects. Worker intervals include JavaScript; no WASM-only or universal speed claim.
+- Public HTTPS browser actual before/after ZIP input and141,485-byte JSON readback PASS. Hash/content/input evidence matches Node. Browser version/individual response hashes remain unavailable.
+- Primary operator observed cancellation on a bounded longer fixture, Worker-setting stale-result reset, and recovery using actual ZIPs. Initial small-input cancel attempt completed too quickly and is not counted as a cancel pass. Full observations in browser-receipt.json.
+- Browser filechooser timeout recovered with one bounded retry; full-page screenshot timeout recovered through ordinary viewport capture. No browser security setting or product byte changed.
+- Source reviewer and procedure auditor independently checked deployment/file/output evidence. Their remaining HOLD was stale NOT RUN completion text; updated VALIDATION and browser receipt, preserving historical red/blocked observations. No optional product test cycle added.
+- Final records/evidence saved alongside source. Test-graph fixture correction and records are the only post-validation changes; publication must preserve the tested product bytes.
+- Final documentation re-audit: PROCEED; record HOLD released after reading VALIDATION, RESULT and browser receipt. No further product edit or test requested.
