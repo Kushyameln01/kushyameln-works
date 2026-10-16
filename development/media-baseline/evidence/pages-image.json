@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "trialId": "pages-basic-image-01",
+  "callerHost": "8a45c7a2f0b0c13b",
+  "clock": "time.monotonic_ns on one host",
+  "condition": "new-page",
+  "cacheState": "unknown",
+  "events": [
+    {
+      "name": "operationStart",
+      "monotonicNs": 47381505796143,
+      "epochNs": 1792181389159674933
+    },
+    {
+      "name": "pagePreparationStart",
+      "monotonicNs": 47381551158474,
+      "epochNs": 1792181389205037133
+    },
+    {
+      "name": "pagePreparationEnd",
+      "monotonicNs": 47391554346588,
+      "epochNs": 1792181399208224407
+    },
+    {
+      "name": "inputStart",
+      "monotonicNs": 47391593482790,
+      "epochNs": 1792181399247360498
+    },
+    {
+      "name": "inputTransferred",
+      "monotonicNs": 47404094590078,
+      "epochNs": 1792181411748467826
+    },
+    {
+      "name": "downloadStart",
+      "monotonicNs": 47404136039883,
+      "epochNs": 1792181411789918112
+    },
+    {
+      "name": "premature-downloadRecovered",
+      "monotonicNs": 47418260387596,
+      "epochNs": 1792181425914265365,
+      "valid": false
+    },
+    {
+      "name": "premature-aiStart",
+      "monotonicNs": 47418363521272,
+      "epochNs": 1792181426017399220,
+      "valid": false
+    }
+  ],
+  "status": "recovery-blocked",
+  "observedFailures": [
+    "Browser downloadMedia returned paths absent from shared main filesystem after5 seconds. Initial copy/recovery failed; AI has not started.",
+    "Standard download event retry also returned a ZIP path with no file (ENOENT); receipt JSON was recovered. No further ZIP retries.",
+    "Browser chrome://downloads inspection was denied by URL policy; no bypass or alternative inspection was attempted."
+  ],
+  "conclusion": "Browser processing ready and log ACK observed; ZIP recovery and AI roundtrip unverified. Cause not established."
+}
