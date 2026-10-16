@@ -1,0 +1,85 @@
+{
+  "testedCommit": "795571eda65dcc95be2c5eeabfca59a070d68bf4",
+  "decision": "FAIL_SPEED_NO_SKILL",
+  "trials": [
+    {
+      "trial": "image-a1",
+      "totalMs": 30068,
+      "quality": "pass",
+      "viewedFrames": 1
+    },
+    {
+      "trial": "image-d1",
+      "totalMs": 113626,
+      "quality": "pass",
+      "viewedFrames": 1,
+      "pageReadyMs": 2251,
+      "browserMs": 1253.6000000014901,
+      "stored": 2,
+      "pending": 0,
+      "variant": "simd",
+      "retainedBytes": 0
+    },
+    {
+      "trial": "image-d2",
+      "totalMs": 43838,
+      "quality": "pass",
+      "viewedFrames": 1,
+      "pageReadyMs": 316,
+      "browserMs": 1135.8000000044703,
+      "stored": 2,
+      "pending": 0,
+      "variant": "simd",
+      "retainedBytes": 0
+    },
+    {
+      "trial": "image-a2",
+      "totalMs": 29372,
+      "quality": "pass",
+      "viewedFrames": 1
+    },
+    {
+      "trial": "video-a1",
+      "totalMs": 34288,
+      "quality": "pass",
+      "viewedFrames": 10
+    },
+    {
+      "trial": "video-d1",
+      "totalMs": 54310,
+      "quality": "pass",
+      "viewedFrames": 4,
+      "pageReadyMs": 295,
+      "browserMs": 1371.2999999970198,
+      "stored": 2,
+      "pending": 0,
+      "variant": "simd",
+      "retainedBytes": 0
+    },
+    {
+      "trial": "video-d2",
+      "totalMs": 50642,
+      "quality": "pass",
+      "viewedFrames": 4,
+      "pageReadyMs": 361,
+      "browserMs": 1233,
+      "stored": 2,
+      "pending": 0,
+      "variant": "simd",
+      "retainedBytes": 0
+    },
+    {
+      "trial": "video-a2",
+      "totalMs": 35708,
+      "quality": "pass",
+      "viewedFrames": 10
+    }
+  ],
+  "limitations": [
+    "Total includes browser/tool orchestration and reader dispatch/wait, not model inference alone",
+    "New pages, browser cache not reset",
+    "No simultaneous Sites comparison; no causal host-only speed claim",
+    "Each condition n=2 per fixture; no population percentile or statistical speed estimate"
+  ],
+  "skillCreated": false
+}

@@ -29,8 +29,8 @@
 
 ChatGPT-Sitesを仮実装、GitHub Pagesを本実装として扱います。公開API・利用方法は[共有計算README](docs/shared/compute/README.md)、実行画面は[worker-runner](https://kushyameln01.github.io/kushyameln-works/worker-runner/)です。既存Hike/WASMは変更せず、独立したDedicated Workerへジョブを分配します。公開対象は明示リストで検査します。[実装・検証記録](development/shared-compute/VALIDATION.md)に対象版と検証範囲を記載しています。
 
-## 画像・動画の前処理（2026-10-17 本実装候補）
+## 画像・動画の前処理（2026-10-17 本実装・試験結果）
 
 `docs/media-runner/` と `docs/shared/media/` に既存の前処理基盤を追加しています。共有計算のタスク登録とWorker bundleにメディア処理を統合し、既存Unity解析とFT処理の実装を保持します。APIと制限は[共有メディアREADME](docs/shared/media/README.md)を参照してください。
 
-この段階は公開前の準備結果です。クラウド上で新しいページの読込から前処理・結果回収・AI回答までを測定する試験は未完了です。高速化・安定性・回答品質の合格やSkill利用経路の成立を示しません。利用ログの受信先は既存のChatGPT-Sites APIであり、Pagesからの保存確認は公開後に検証します。準備した公開ファイルと検査範囲は[準備記録](development/media-production/preparation-manifest.json)に記載しています。
+GitHub Pagesへの反映とクラウドでの8試行を完了しました。今回の合成画像・短動画では全回答が正しく、前処理4操作のログも各2件の保存応答を確認しました。ただし、前処理込みのAI回答までの総時間は比較基準より長く、高速化条件は不合格でした。指定された終了条件に従い、この利用経路のSkillは作成していません。一般の入力や安定性を保証する結果ではありません。[試験結果](development/media-production/RESULT-2026-10-17.md)と[測定値](development/media-production/cloud-results.json)を参照してください。公開実装は保持し、ChatGPT-Sitesの製品コードは今回変更していません。
