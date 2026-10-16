@@ -5,7 +5,7 @@ var __export = (target, all) => {
 };
 
 // static-src/shared/compute/protocol.mjs
-var BUILD_ID = "compute-unity-b3";
+var BUILD_ID = "compute-unity-b4";
 var WASM_SHA256 = "b260ac37862014a9ebb3ebb25739283fe2778e638969e757b2fd34769cd989ad";
 var MAX_MASKS = 262144;
 function validateRequest(input, { copy = true } = {}) {
@@ -1136,7 +1136,7 @@ __export(pool_task_exports, {
 
 // static-src/shared/unity-analysis/model.mjs
 var SCHEMA = "unity-analysis-snapshot/1";
-var ANALYZER_VERSION = "unity-analysis-0.3.0";
+var ANALYZER_VERSION = "unity-analysis-0.3.1";
 var RULES_VERSION = "unity-static-3";
 var TYPES = Object.freeze({ Unknown: 0, Float: 1, Int: 2, Bool: 3, Trigger: 4 });
 var LIMITS = Object.freeze({ maxFiles: 4096, maxObjects: 65536, maxEdges: 262144, maxProperties: 262144, maxInputBytes: 4 * 1024 * 1024, maxReportBytes: 8 * 1024 * 1024, maxDiffPairs: 262144, maxOwnerContexts: 262144, maxGraphSteps: 2e6 });
@@ -1712,6 +1712,7 @@ var taskInputCount2 = (r) => r.taskType === "unity-analyze" ? r.payload.files.re
 var ingest_task_exports = {};
 __export(ingest_task_exports, {
   PARSER_VERSION: () => PARSER_VERSION,
+  PARSE_BATCH_LIMITS: () => PARSE_BATCH_LIMITS,
   executeTask: () => executeTask3,
   freezeTaskResult: () => freezeTaskResult3,
   inputBytes: () => inputBytes3,
@@ -2689,22 +2690,19 @@ function readFiles(inputs) {
       const e = entries.get(file.name);
       if (!e) throw new Error("ZIP\u672A\u767B\u9332entry");
       entries.delete(file.name);
-      let length = 0, chunks = [];
+      if (actual + e.length + priorExpanded > MAX_OUT) throw new Error("\u5B9F\u5C55\u958B\u5BB9\u91CF\u8D85\u904E");
+      let length = 0, output = new Uint8Array(e.length);
       file.ondata = (error, data, final) => {
         if (error) throw error;
+        if (length + data.length > e.length || actual + data.length + priorExpanded > MAX_OUT) throw new Error("\u5B9F\u5C55\u958B\u5BB9\u91CF\u8D85\u904E");
+        output.set(data, length);
         length += data.length;
         actual += data.length;
-        if (length > e.length || actual + priorExpanded > MAX_OUT) throw new Error("\u5B9F\u5C55\u958B\u5BB9\u91CF\u8D85\u904E");
-        chunks.push(data);
         if (final) {
           if (length !== e.length) throw new Error("\u5C55\u958B\u9577\u4E0D\u4E00\u81F4");
-          const bytes2 = new Uint8Array(length);
-          let at = 0;
-          for (const chunk of chunks) {
-            bytes2.set(chunk, at);
-            at += chunk.length;
-          }
-          if (crc322(bytes2) !== e.crc) throw new Error("CRC\u4E0D\u4E00\u81F4");
+          if (crc322(output) !== e.crc) throw new Error("CRC\u4E0D\u4E00\u81F4");
+          const bytes2 = output;
+          output = null;
           accept(e.name, bytes2, e.directory);
           done++;
         }
@@ -3369,29 +3367,56 @@ function parseUnityFile({ path, text: text2 } = {}) {
 
 // static-src/shared/unity-analysis/ingest-task.mjs
 var PARSER_VERSION = "unity-text-1";
-var isIngest = (t) => t === "unity-expand" || t === "unity-parse";
+var isIngest = (t) => t === "unity-expand" || t === "unity-parse" || t === "unity-parse-batch";
 var MAX_IN2 = 16 * 1024 * 1024;
 var MAX_OUT2 = 64 * 1024 * 1024;
 var MAX_TEXT = 4 * 1024 * 1024;
+var PARSE_BATCH_LIMITS = Object.freeze({ maxFiles: 8, maxInputBytes: 256 * 1024, maxFileIRBytes: LIMITS.maxInputBytes, maxResultBytes: LIMITS.maxInputBytes + 64 * 1024 });
 function byteArray(b) {
   if (!(b instanceof Uint8Array) || typeof SharedArrayBuffer !== "undefined" && b.buffer instanceof SharedArrayBuffer || b.buffer.resizable || b.byteLength > MAX_IN2) throw TypeError("Invalid owned ingestion bytes");
   return b;
+}
+function batchFiles(files) {
+  if (!Array.isArray(files) || files.length < 1 || files.length > PARSE_BATCH_LIMITS.maxFiles) throw RangeError("PARSE_BATCH_FILE_COUNT_LIMIT");
+  let total = 0;
+  const seen = /* @__PURE__ */ new Set();
+  return files.map((file) => {
+    const path = safePath2(file?.path), data = byteArray(file?.bytes), key = path.normalize("NFC").toLowerCase();
+    total += data.byteLength;
+    if (total > PARSE_BATCH_LIMITS.maxInputBytes) throw RangeError("PARSE_BATCH_INPUT_LIMIT");
+    if (seen.has(key)) throw TypeError("PARSE_BATCH_PATH_CONFLICT");
+    for (const prior of seen) if (key.startsWith(prior + "/") || prior.startsWith(key + "/")) throw TypeError("PARSE_BATCH_PATH_CONFLICT");
+    seen.add(key);
+    return { path, bytes: data };
+  });
 }
 function inspectTaskRequest3(r) {
   if (!r || r.protocolVersion !== 1 || !isIngest(r.taskType) || r.taskVersion !== 1 || typeof r.jobId !== "string" || !/^[A-Za-z0-9_.:-]{1,64}$/.test(r.jobId) || !Number.isSafeInteger(r.inputRevision) || r.inputRevision < 0) throw TypeError("Invalid ingestion identity");
   const timeoutMs = r.limits?.timeoutMs ?? 3e4;
   if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 3e4) throw RangeError("Invalid ingestion timeout");
-  safePath2(r.payload?.path);
-  byteArray(r.payload?.bytes);
-  return { protocolVersion: 1, taskType: r.taskType, taskVersion: 1, jobId: r.jobId, inputRevision: r.inputRevision, wasmVariant: "javascript", kernelHash: null, payload: { path: r.payload.path, bytes: r.payload.bytes }, limits: { timeoutMs } };
+  const payload = r.taskType === "unity-parse-batch" ? { files: batchFiles(r.payload?.files) } : { path: safePath2(r.payload?.path), bytes: byteArray(r.payload?.bytes) };
+  return { protocolVersion: 1, taskType: r.taskType, taskVersion: 1, jobId: r.jobId, inputRevision: r.inputRevision, wasmVariant: "javascript", kernelHash: null, payload, limits: { timeoutMs } };
 }
-var snapshotTaskRequest3 = (r) => ({ ...r, payload: { path: r.payload.path, bytes: r.payload.bytes.slice() } });
-var inputBytes3 = (r) => r.payload.bytes.byteLength;
+var snapshotTaskRequest3 = (r) => ({ ...r, payload: r.taskType === "unity-parse-batch" ? { files: r.payload.files.map((f) => ({ path: f.path, bytes: f.bytes.slice() })) } : { path: r.payload.path, bytes: r.payload.bytes.slice() } });
+var inputBytes3 = (r) => r.taskType === "unity-parse-batch" ? r.payload.files.reduce((n, f) => n + f.bytes.byteLength, 0) : r.payload.bytes.byteLength;
 var kernelInfo3 = () => ({ key: PARSER_VERSION, requiresWasm: false, retainResult: false, sha256: null, variant: "javascript", abi: PARSER_VERSION });
-var resultShape3 = (r) => ({ kind: r.taskType === "unity-expand" ? "unity-expanded" : "unity-parsed", path: r.payload.path });
+var resultShape3 = (r) => r.taskType === "unity-parse-batch" ? { kind: "unity-parsed-batch", count: r.payload.files.length, paths: r.payload.files.map((f) => f.path), byteLengths: r.payload.files.map((f) => f.bytes.byteLength) } : { kind: r.taskType === "unity-expand" ? "unity-expanded" : "unity-parsed", path: r.payload.path, byteLength: r.payload.bytes.byteLength };
+var validFile = (f, path, length) => plain(f) && f.path === path && f.byteLength === length && /^[0-9a-f]{64}$/.test(f.contentHash) && Array.isArray(f.objects) && Array.isArray(f.issues) && ["serialized", "partial", "opaque", "meta-only"].includes(f.coverage);
 function validTaskResult3(t, s, r) {
-  if (!r || r.kind !== s.kind || r.path !== s.path || r.parserVersion !== PARSER_VERSION) return false;
-  if (t === "unity-parse") return r.file?.path === s.path && Array.isArray(r.file.objects) && bytes(r) <= MAX_TEXT;
+  if (!r || r.kind !== s.kind || r.parserVersion !== PARSER_VERSION) return false;
+  if (t === "unity-parse-batch") {
+    if (!Array.isArray(r.files) || r.files.length !== s.count || s.count < 1 || s.count > PARSE_BATCH_LIMITS.maxFiles) return false;
+    let total2 = 0;
+    for (let i = 0; i < r.files.length; i++) {
+      const f = r.files[i];
+      if (!validFile(f, s.paths[i], s.byteLengths[i])) return false;
+      total2 += bytes(f);
+      if (total2 > PARSE_BATCH_LIMITS.maxFileIRBytes || bytes({ kind: "unity-parsed", path: f.path, parserVersion: PARSER_VERSION, file: f }) > MAX_TEXT) return false;
+    }
+    return bytes(r) <= PARSE_BATCH_LIMITS.maxResultBytes;
+  }
+  if (r.path !== s.path) return false;
+  if (t === "unity-parse") return validFile(r.file, s.path, s.byteLength) && bytes(r) <= MAX_TEXT;
   if (!Array.isArray(r.files) || r.files.length > 2048) return false;
   let total = 0;
   for (const f of r.files) {
@@ -3403,15 +3428,13 @@ function validTaskResult3(t, s, r) {
 }
 var resultBytes3 = (r) => r?.kind === "unity-expanded" ? r.files.reduce((n, f) => n + f.bytes.byteLength, 0) : r ? bytes(r) : 0;
 var freezeTaskResult3 = freezeDeep;
-var transferTaskInput3 = (r) => [r.payload.bytes.buffer];
+var transferTaskInput3 = (r) => r.taskType === "unity-parse-batch" ? [...new Set(r.payload.files.map((f) => f.bytes.buffer))] : [r.payload.bytes.buffer];
 var transferTaskResult3 = (r) => r.kind === "unity-expanded" ? [...new Set(r.files.map((f) => f.bytes.buffer))] : [];
 var prepareTaskModule3 = () => {
   throw Error("Ingestion has no WASM");
 };
 var instantiateTask3 = () => null;
-async function executeTask3(r) {
-  const { path, bytes: raw } = r.payload;
-  if (r.taskType === "unity-expand") return { kind: "unity-expanded", path, parserVersion: PARSER_VERSION, files: expandInput(r.payload) };
+async function parseFile({ path, bytes: raw }) {
   const hash2 = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", raw)), (b) => b.toString(16).padStart(2, "0")).join("");
   let file;
   const supported = /\.(controller|anim|prefab|unity|asset|mat|overrideController|meta)$/i.test(path);
@@ -3435,12 +3458,27 @@ async function executeTask3(r) {
   if (bytes(result) > MAX_TEXT) throw RangeError("FILE_IR_LIMIT");
   return result;
 }
-var taskInputCount3 = (r) => r.payload.bytes.byteLength;
+async function executeTask3(r) {
+  if (r.taskType === "unity-expand") return { kind: "unity-expanded", path: r.payload.path, parserVersion: PARSER_VERSION, files: expandInput(r.payload) };
+  if (r.taskType !== "unity-parse-batch") return parseFile(r.payload);
+  const files = [];
+  let total = 0;
+  for (const input of r.payload.files) {
+    const result2 = await parseFile(input);
+    total += bytes(result2.file);
+    if (total > PARSE_BATCH_LIMITS.maxFileIRBytes) throw RangeError("SNAPSHOT_IR_LIMIT");
+    files.push(result2.file);
+  }
+  const result = { kind: "unity-parsed-batch", parserVersion: PARSER_VERSION, files };
+  if (bytes(result) > PARSE_BATCH_LIMITS.maxResultBytes) throw RangeError("PARSE_BATCH_RESULT_LIMIT");
+  return result;
+}
+var taskInputCount3 = inputBytes3;
 
 // static-src/shared/compute/tasks.mjs
 var MAX_MEDIA_INPUT_BYTES2 = Reflect.get(registered_tasks_exports, "MAX_MEDIA_INPUT_BYTES");
 var adapter = (r) => isIngest(typeof r === "string" ? r : r?.taskType) ? ingest_task_exports : isUnity(typeof r === "string" ? r : r?.taskType) ? pool_task_exports : registered_tasks_exports;
-var resultAdapter = (r) => ["unity-expanded", "unity-parsed"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports : registered_tasks_exports;
+var resultAdapter = (r) => ["unity-expanded", "unity-parsed", "unity-parsed-batch"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports : registered_tasks_exports;
 var inspectTaskRequest4 = (r) => adapter(r).inspectTaskRequest(r);
 var kernelInfo4 = (r) => adapter(r).kernelInfo(r);
 var transferTaskResult4 = (r) => resultAdapter(r).transferTaskResult(r);

@@ -27,7 +27,19 @@ export function readFiles(inputs){
   if(/\.unitypackage$/i.test(input.path)){for(const e of readUnityPackage(input.bytes).values()){if(e.asset)accept(e.path,e.asset);accept(e.path+'.meta',encoder.encode(e.meta))}continue}
   if(!/\.zip$/i.test(input.path)){accept(input.path,input.bytes);continue}
   const expected=zipHeaders(input.bytes);const entries=new Map();for(const e of expected){if(entries.has(e.name))throw new Error('ZIP重複');entries.set(e.name,e)}let done=0,actual=0;const priorExpanded=expanded;
-  const unzip=new Unzip(file=>{const e=entries.get(file.name);if(!e)throw new Error('ZIP未登録entry');entries.delete(file.name);let length=0,chunks=[];file.ondata=(error,data,final)=>{if(error)throw error;length+=data.length;actual+=data.length;if(length>e.length||actual+priorExpanded>MAX_OUT)throw new Error('実展開容量超過');chunks.push(data);if(final){if(length!==e.length)throw new Error('展開長不一致');const bytes=new Uint8Array(length);let at=0;for(const chunk of chunks){bytes.set(chunk,at);at+=chunk.length}if(crc32(bytes)!==e.crc)throw new Error('CRC不一致');accept(e.name,bytes,e.directory);done++}};file.start()});unzip.register(UnzipInflate);
+  const unzip=new Unzip(file=>{
+   const e=entries.get(file.name);if(!e)throw new Error('ZIP未登録entry');entries.delete(file.name);
+   if(actual+e.length+priorExpanded>MAX_OUT)throw new Error('実展開容量超過');
+   // Header lengths are already bounded. Own one output buffer; do not retain decompressor chunks.
+   let length=0,output=new Uint8Array(e.length);
+   file.ondata=(error,data,final)=>{
+    if(error)throw error;
+    if(length+data.length>e.length||actual+data.length+priorExpanded>MAX_OUT)throw new Error('実展開容量超過');
+    output.set(data,length);length+=data.length;actual+=data.length;
+    if(final){if(length!==e.length)throw new Error('展開長不一致');if(crc32(output)!==e.crc)throw new Error('CRC不一致');const bytes=output;output=null;accept(e.name,bytes,e.directory);done++;}
+   };
+   file.start();
+  });unzip.register(UnzipInflate);
   for(let pos=0;pos<input.bytes.length;pos+=4096)unzip.push(input.bytes.subarray(pos,pos+4096),pos+4096>=input.bytes.length);
   if(done!==expected.length||entries.size)throw new Error('ZIP展開未完了');
  }

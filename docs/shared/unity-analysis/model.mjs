@@ -1,6 +1,6 @@
 export const SCHEMA='unity-analysis-snapshot/1';
 export const REPORT_SCHEMA='unity-analysis-report/1';
-export const ANALYZER_VERSION='unity-analysis-0.3.0';
+export const ANALYZER_VERSION='unity-analysis-0.3.1';
 export const RULES_VERSION='unity-static-3';
 export const TYPES=Object.freeze({Unknown:0,Float:1,Int:2,Bool:3,Trigger:4});
 export const LIMITS=Object.freeze({maxFiles:4096,maxObjects:65536,maxEdges:262144,maxProperties:262144,maxInputBytes:4*1024*1024,maxReportBytes:8*1024*1024,maxDiffPairs:262144,maxOwnerContexts:262144,maxGraphSteps:2000000});

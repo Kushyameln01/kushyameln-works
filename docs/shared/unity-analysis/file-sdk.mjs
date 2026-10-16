@@ -3,11 +3,12 @@ import {BUILD_ID} from '../compute/protocol.mjs';
 import {createUnityAnalyzer} from './sdk.mjs';
 import {SCHEMA,bytes,freezeDeep,LIMITS,inspectSnapshot} from './model.mjs';
 import {safePath} from './archive.mjs';
-import {PARSER_VERSION} from './ingest-task.mjs';
+import {PARSER_VERSION,PARSE_BATCH_LIMITS} from './ingest-task.mjs';
 const MAX_RAW=32*1024*1024,MAX_EXPANDED=64*1024*1024,MAX_FILES=2048;
 const sha=async b=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',b)),v=>v.toString(16).padStart(2,'0')).join('');
-export function createUnityFileAnalyzer({pool,concurrency=2,moduleReuse=false,workerMode='module',onProgress=()=>{}}={}){
+export function createUnityFileAnalyzer({pool,concurrency=2,moduleReuse=false,workerMode='module',parseBatchSize=8,onProgress=()=>{}}={}){
  if(!Number.isInteger(concurrency)||concurrency<1||concurrency>4)throw RangeError('concurrency must be 1..4');
+ if(!Number.isInteger(parseBatchSize)||parseBatchSize<1||parseBatchSize>PARSE_BATCH_LIMITS.maxFiles)throw RangeError('parseBatchSize must be 1..8');
  const ownsPool=!pool;pool??=createComputePool({concurrency,moduleReuse,workerMode});const analyzer=createUnityAnalyzer({pool});const sessions=new Map();let disposed=false,sequence=0;
  const progress=e=>{try{onProgress(e);}catch{}};
  function cancel(id){const s=sessions.get(id);if(!s||s.done)return false;s.cancelled=true;for(const job of s.jobs)pool.cancel(job);if(s.analysisId)analyzer.cancel(s.analysisId);return true;}
@@ -30,10 +31,25 @@ export function createUnityFileAnalyzer({pool,concurrency=2,moduleReuse=false,wo
    }
    ownership.expandedRetainedPeakBytes=Math.max(ownership.expandedRetainedPeakBytes,expanded);const parseStarted=performance.now();
    files.sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);const parsed=new Array(files.length);let cursor=0,irBytes=0;
-   // Batches cap both Worker count and admitted input bytes. Each result is delivery-only.
-   while(cursor<files.length){check();const batch=[];let amount=0;while(cursor<files.length&&batch.length<concurrency){const f=files[cursor];if(batch.length&&amount+f.bytes.byteLength>16*1024*1024)break;amount+=f.bytes.byteLength;batch.push({index:cursor++,file:f});}
-    const results=await Promise.all(batch.map(async ({index,file})=>{progress({sessionId,inputRevision,stage:'parsing',snapshot:label,path:file.path,completed:index,total:files.length});const r=await submit('unity-parse',file);file.bytes=null;return {index,file:r.file};}));
-    for(const r of results){irBytes+=bytes(r.file);if(irBytes>LIMITS.maxInputBytes)throw RangeError('SNAPSHOT_IR_LIMIT');parsed[r.index]={...r.file};}
+   // Each job owns whole files. Small-file groups and each wave have independent byte/count bounds.
+   while(cursor<files.length){check();const wave=[];let waveBytes=0;
+    while(cursor<files.length&&wave.length<concurrency){
+     let end=cursor+1,amount=files[cursor].bytes.byteLength;
+     if(amount>16*1024*1024)throw RangeError('INPUT_FILE_SIZE_LIMIT');
+     if(parseBatchSize>1&&amount<=PARSE_BATCH_LIMITS.maxInputBytes){
+      while(end<files.length&&end-cursor<parseBatchSize&&amount+files[end].bytes.byteLength<=PARSE_BATCH_LIMITS.maxInputBytes){amount+=files[end].bytes.byteLength;end++;}
+     }
+     if(wave.length&&waveBytes+amount>16*1024*1024)break;
+     const members=[];for(let i=cursor;i<end;i++)members.push({index:i,file:files[i]});
+     wave.push(members);waveBytes+=amount;cursor=end;
+    }
+    const results=await Promise.all(wave.map(async members=>{
+     for(const {index,file} of members){progress({sessionId,inputRevision,stage:'parsing',snapshot:label,path:file.path,completed:index,total:files.length});check();}
+     const grouped=members.length>1,result=await submit(grouped?'unity-parse-batch':'unity-parse',grouped?{files:members.map(m=>m.file)}:members[0].file);
+     const output=grouped?result.files:[result.file];
+     return members.map(({index,file},i)=>{file.bytes=null;return {index,file:output[i]};});
+    }));
+    for(const group of results)for(const r of group){irBytes+=bytes(r.file);if(irBytes>LIMITS.maxInputBytes)throw RangeError('SNAPSHOT_IR_LIMIT');parsed[r.index]={...r.file};}
    }
    stages.parseWallMs+=performance.now()-parseStarted;const metadataStarted=performance.now();const metas=new Map();for(const f of parsed)if(f.path.endsWith('.meta')&&f.meta?.guid&&f.coverage!=='partial'&&f.coverage!=='opaque'){const path=f.path.slice(0,-5),m=metas.get(path)??[];m.push(f);metas.set(path,m);}
    for(const f of parsed){const ms=metas.get(f.path);if(ms?.length===1){f.guid=ms[0].meta.guid;f.metaPath=ms[0].path;}else if(ms?.length>1){f.coverage='partial';f.reason='Ambiguous metadata';}}
@@ -42,7 +58,7 @@ export function createUnityFileAnalyzer({pool,concurrency=2,moduleReuse=false,wo
   }
   const promise=(async()=>{try{const b=await snapshot(before,'before');before=null;const a=after?await snapshot(after,'after'):null;after=null;check();progress({sessionId,inputRevision,stage:'analyzing'});check();s.analysisId=sessionId+'.a';const opts={inputRevision,sessionId:s.analysisId,timeoutMs,sessionTimeoutMs:Math.max(1,Math.min(300000,sessionTimeoutMs-(performance.now()-started))|0)};
    const analysisStarted=performance.now();const report=await (a?analyzer.compare(b.snapshot,a.snapshot,opts):analyzer.analyze(b.snapshot,opts));check();stages.analysisWallMs=performance.now()-analysisStarted;const finalizeStarted=performance.now();
-   const final={...report,sessionId,inputRevision,ingestion:{parserVersion:PARSER_VERSION,before:b.inventory,...(a?{after:a.inventory}:{}),jobs:s.receipts},metrics:{...report.metrics,totalMs:performance.now()-started,analysisStageMs:report.metrics.totalMs,stages,ownership,settings:{concurrency,moduleReuse:pool.getStatus().moduleReuse,workerMode:pool.getStatus().workerMode},timingNotes:'Stage wall sums across snapshots; parse includes task admission/validation, metadata includes IR validation. Startup includes imports/message delivery. reportFinalize and total end before the final report byte-limit check and freeze; caller elapsed includes both.'}};
+   const final={...report,sessionId,inputRevision,ingestion:{parserVersion:PARSER_VERSION,before:b.inventory,...(a?{after:a.inventory}:{}),jobs:s.receipts},metrics:{...report.metrics,totalMs:performance.now()-started,analysisStageMs:report.metrics.totalMs,stages,ownership,settings:{concurrency,parseBatchSize,moduleReuse:pool.getStatus().moduleReuse,workerMode:pool.getStatus().workerMode},timingNotes:'Stage wall sums across snapshots; parse includes task admission/validation, metadata includes IR validation. Startup includes imports/message delivery. reportFinalize and total end before the final report byte-limit check and freeze; caller elapsed includes both.'}};
    stages.reportFinalizeMs=performance.now()-finalizeStarted;final.metrics.totalMs=performance.now()-started;if(bytes(final)>LIMITS.maxReportBytes)throw RangeError('REPORT_BYTE_LIMIT');s.report=freezeDeep(final);s.done=true;progress({sessionId,inputRevision,stage:'complete'});return s.report;
   }finally{clearTimeout(timer);s.done=true;s.cancelled=true;for(const id of s.jobs){pool.cancel(id);pool.releaseResult?.(id);}s.jobs.clear();if(s.analysisId)analyzer.dispose(s.analysisId);s.receipts=[];before=null;after=null;}})();promise.sessionId=sessionId;return promise;
  }
