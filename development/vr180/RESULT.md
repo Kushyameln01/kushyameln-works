@@ -55,7 +55,7 @@ TinyFishの `list_profiles` ではDefaultプロファイルに対象サイトの
 
 ## 保存・配信
 
-GitHub作業ブランチ: `codex/vr180-browser-b1`。ベースは `34368e769def983d7709ed21a6ac4a93c9b4b2b4`。
+GitHub作業ブランチ: `codex/vr180-browser-b1`。実装保存commitは `31d3d2023480c9a363dd9666e5f5af99f44ee738`、ベースは `34368e769def983d7709ed21a6ac4a93c9b4b2b4`。通常pushの認証不備を接続済みGitHubコネクターで復旧し、42ファイルのblob SHAと全体treeがローカルと一致することを確認した。この結果追記は実装保存後の文書更新で、配信したアセットを変えない。
 
 Sites候補: `appgprj_6ad2a14bdd54819188aae0b453eef8e3`、所有者のみ。配信対象の22ファイルは `evidence/staging-files.json` に記録。Sites source `a9d94a87c54d5a73ef931a5515d7f7526ed7b5ee` をpushし、所有者のみの配信が成功した。これはGitHub作業ブランチのcommitとは別。配信の成功はブラウザ検証を意味しない。詳細IDは `evidence/deployment.json`。
 
