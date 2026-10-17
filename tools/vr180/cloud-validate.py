@@ -1492,9 +1492,9 @@ def main():
             raise Blocked('Backend/range probes require this run to complete both small UI trials first')
         if args.suite in ('followup', 'scale12', 'recovery', 'direct-scale12'):
             require(args.defer_independent_verification, 'Followup requires explicit deferred independent verification; the fixed small pixel oracle is bounded to 512px/eye and 120 frames')
-            prerequisite_path = ROOT / 'development/vr180/evidence/2026-10-17-b5-small.json'
+            prerequisite_path = ROOT / 'development/vr180/evidence/2026-10-17-b7-small-gate.json'
             if not prerequisite_path.is_file():
-                raise Blocked('This b5 build requires independently verified b5-small evidence; earlier build results are not reusable')
+                raise Blocked('This build requires independently verified matching small-suite evidence; earlier build results are not reusable')
             prerequisite = json.loads(prerequisite_path.read_text())
             require(prerequisite['status'] == 'PASS' and prerequisite['build'] == BUILD, 'Small-suite regression has not passed for this build')
             require(set(PUBLIC_PATHS).issubset(prerequisite['sourceFiles']), 'Incomplete small-suite source provenance')
