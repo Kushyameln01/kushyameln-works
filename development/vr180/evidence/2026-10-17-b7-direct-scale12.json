@@ -1,0 +1,397 @@
+{
+  "sourceCommit": "d239aa057b6080bd824a89653ec7dedcc5febc75",
+  "runId": "39033789285-1",
+  "browser": "155.0.8059.39",
+  "transport": {
+    "schema": "vr180-log-transport-v1",
+    "runId": "39033789285-1",
+    "status": "RECOVERED_PENDING_VERIFICATION",
+    "archiveFormat": "tar+gzip",
+    "bytes": 3103171,
+    "sha256": "46e916b2b765298a60a1969fc1aad274e8d8b3a76adf84059b5be738dba9f3ee",
+    "base64Bytes": 4137564,
+    "chunkChars": 4096,
+    "chunks": 1011,
+    "manifestSHA256": "255b8534921a2c1899da491dff80b73c10de21b4e9bc216a5a634efc7926eea6",
+    "complete": true
+  },
+  "manifestFileCount": 14,
+  "wholeOutputRecovery": true,
+  "independentChecks": [
+    {
+      "trialId": "39033789285-1-direct-scale12",
+      "exitCode": 0,
+      "status": "PASS",
+      "completeScan": true,
+      "outputBytes": 2701752,
+      "outputSHA256": "38563ce044e6e323f184e28546bb0f2943bb36b583c580891e3dc82a8d055f79",
+      "timings": {
+        "inspect": 42.400000000001455,
+        "inputHash": 14.299999999995634,
+        "transformLoad": 37.30000000000291,
+        "convert": 18662.600000000006,
+        "directFinalizeAndSave": 117.69999999999709,
+        "filePhases": {
+          "getFileBefore": {
+            "durationMs": 4.19999999999709,
+            "count": 1,
+            "requestedBytes": 0,
+            "status": "completed"
+          },
+          "createWritable": {
+            "durationMs": 0.5,
+            "count": 1,
+            "requestedBytes": 0,
+            "status": "completed"
+          },
+          "write": {
+            "durationMs": 160.79999999999563,
+            "count": 6,
+            "requestedBytes": 2701764,
+            "status": "completed"
+          },
+          "truncate": {
+            "durationMs": 0.39999999999417923,
+            "count": 1,
+            "requestedBytes": 0,
+            "status": "completed"
+          },
+          "close": {
+            "durationMs": 0.40000000000873115,
+            "count": 1,
+            "requestedBytes": 0,
+            "status": "completed"
+          },
+          "getFile": {
+            "durationMs": 0.29999999998835847,
+            "count": 1,
+            "requestedBytes": 0,
+            "status": "completed"
+          },
+          "savedFileHash": {
+            "durationMs": 25.5,
+            "count": 1,
+            "requestedBytes": 2701752,
+            "status": "completed"
+          },
+          "tagPlan": {
+            "durationMs": 39.19999999999709,
+            "count": 1,
+            "requestedBytes": 0,
+            "status": "completed"
+          },
+          "metadataExpectedHash": {
+            "durationMs": 0.6000000000058208,
+            "count": 1,
+            "requestedBytes": 5407,
+            "status": "completed"
+          },
+          "metadataWrite": {
+            "durationMs": 1.5,
+            "count": 1,
+            "requestedBytes": 5411,
+            "status": "completed"
+          },
+          "metadataReadback": {
+            "durationMs": 0.6999999999970896,
+            "count": 1,
+            "requestedBytes": 5407,
+            "status": "completed"
+          },
+          "savedInspect": {
+            "durationMs": 48.5,
+            "count": 1,
+            "requestedBytes": 0,
+            "status": "completed"
+          }
+        },
+        "outputPrepared": 18874.699999999997
+      },
+      "wallSeconds": 27.4426767,
+      "independentResult": {
+        "status": "PASS",
+        "completeScan": true,
+        "eyePSNRdB": [
+          41.233132375224166,
+          36.64316942962819
+        ],
+        "maxPtsErrorSeconds": 0.0,
+        "decodedAudioIdentical": true,
+        "audioPackets": {
+          "present": true,
+          "inputCount": 559,
+          "outputCount": 559,
+          "payloadOrderEqual": true,
+          "sideDataEqual": true,
+          "maxTimeErrorSeconds": {
+            "pts": 0.0,
+            "dts": 0.0,
+            "duration": 0.0
+          },
+          "maxTimeErrorPacket": {
+            "pts": null,
+            "dts": null,
+            "duration": null
+          }
+        }
+      }
+    }
+  ],
+  "scope": "Published Pages bytes checked against checkout, then sandboxed loopback-copy direct OPFS backend; OS picker and public-origin browser processing not verified",
+  "status": "PASS",
+  "browserTrial": {
+    "trialId": "39033789285-1-direct-scale12",
+    "build": "vr180-b7-phases1",
+    "fixture": "stereo180-4k-12s-sbs",
+    "mode": "convert",
+    "scenario": "direct-scale12",
+    "startedAt": "2026-10-17T12:45:35.821979+00:00",
+    "status": "RECOVERED_PENDING_VERIFICATION",
+    "inputSHA256": "97bb3a4335514436374b35c202275dde2cfca27f8f7cec3a224fd77c8ede6582",
+    "inputBytes": 944087,
+    "inputGeneration": 1,
+    "expectedInputRevision": 2,
+    "expectedSettings": {
+      "mode": "convert",
+      "layout": "sbs",
+      "fov": 180,
+      "eyeSize": 2048,
+      "bitrate": 25165824
+    },
+    "cancelAfterWrite": true,
+    "requireMultipleMuxWrites": true,
+    "maxOutputBytes": 6291456,
+    "expectedVideoFrames": 360,
+    "mediaOperationStarted": true,
+    "mediaOperationCount": 2,
+    "downloadRecovered": true,
+    "independentVerificationPassed": false,
+    "scope": "Independent production-client/Worker direct-save backend with a real OPFS handle; not application UI",
+    "receiptOrigin": "Unmodified production Worker receipt, serialized and downloaded by the harness",
+    "probeSHA256": "a3ce9970e610d43a0b3b0f0a1d09fe78823723da4cf7f9cfd673d8898123444d",
+    "cleanupProbeSHA256": "0ec7fcb4a8eb17bae604475746fe44677686e125defb93890b4f10377327d2dd",
+    "notVerified": [
+      "OS save dialog",
+      "external save destination",
+      "application save UI",
+      "5-10GB real video/full-file recovery",
+      "VR playback",
+      "real footage quality"
+    ],
+    "browserUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+    "operationId": "6d6bfe3a-bfa3-447c-8929-3dc949d27137",
+    "inputRevision": 2,
+    "receiptIdentityVerified": true,
+    "observedMuxWrites": 4,
+    "receiptStatus": "saved",
+    "codecCapabilities": {
+      "input": {
+        "codec": "avc",
+        "width": 4096,
+        "height": 2048,
+        "decodable": true
+      },
+      "output": {
+        "codec": "avc",
+        "width": 4096,
+        "height": 2048,
+        "bitrate": 25165824,
+        "latencyMode": "quality",
+        "encodable": true
+      }
+    },
+    "previousAttempt": {
+      "kind": "direct-cancel",
+      "status": "CANCELED_EMPTY_FILE_OBSERVED",
+      "operationId": "cfc4781f-6cb0-4b7d-b888-c1c712a334b5",
+      "inputRevision": 1,
+      "receipt": "receipt-canceled.json",
+      "sameInput": true,
+      "sameHandle": true,
+      "triggerProgress": {
+        "phase": "convert",
+        "jobId": "cfc4781f-6cb0-4b7d-b888-c1c712a334b5",
+        "videoFrames": 141,
+        "audioPackets": 218,
+        "outputBytes": 1048576,
+        "timestamp": 4.7,
+        "durationEstimate": 12,
+        "ratio": 0.39166666666666666
+      },
+      "cancelAfterWrite": true
+    },
+    "recoveryLink": {
+      "previousOperationId": "cfc4781f-6cb0-4b7d-b888-c1c712a334b5",
+      "previousInputRevision": 1,
+      "operationId": "6d6bfe3a-bfa3-447c-8929-3dc949d27137",
+      "inputRevision": 2,
+      "sameClient": true,
+      "sameHandle": true,
+      "sameInput": true,
+      "inputGeneration": 1
+    },
+    "outputFile": "direct-opfs.mp4",
+    "outputBytes": 2701752,
+    "outputSHA256": "38563ce044e6e323f184e28546bb0f2943bb36b583c580891e3dc82a8d055f79",
+    "browserDownloadRecoveredAt": "2026-10-17T12:46:04.936243+00:00",
+    "postCommitWholeFileComparison": "Fresh OPFS File, Worker-returned File, raw receipt and complete downloaded MP4 agree",
+    "verifierDeferred": "Explicit CLI request: independently verify recovered direct-output MP4 in the evidence receiver",
+    "cleanup": {
+      "status": "REMOVED",
+      "clientDisposed": true,
+      "directory": "vr180-direct-output-probe-e2ede3aa-610c-4e5d-9b77-6d2b10e61bb0",
+      "absenceObserved": true
+    },
+    "recoveredReceipts": [
+      "canceled",
+      "failure",
+      "receipt"
+    ],
+    "pageErrors": [],
+    "workers": [
+      {
+        "url": "blob:http://127.0.0.1:36511/6fc932fe-4340-493e-b555-70afd7104791",
+        "observedAt": "2026-10-17T12:45:38.515077+00:00"
+      },
+      {
+        "url": "http://127.0.0.1:36511/shared/vr180/worker.mjs",
+        "observedAt": "2026-10-17T12:45:38.719037+00:00"
+      },
+      {
+        "url": "http://127.0.0.1:36511/shared/vr180/worker.mjs",
+        "observedAt": "2026-10-17T12:45:45.850132+00:00"
+      }
+    ],
+    "wallSeconds": 27.4426767,
+    "finishedAt": "2026-10-17T12:46:04.993995+00:00"
+  },
+  "pagesByteCheck": {
+    "status": "PASS",
+    "scope": "public static bytes only; no browser/media test",
+    "checkoutCommit": "d239aa057b6080bd824a89653ec7dedcc5febc75",
+    "startedAt": "2026-10-17T12:45:29.957917+00:00",
+    "timeoutSeconds": 300,
+    "attempts": [
+      {
+        "number": 1,
+        "at": "2026-10-17T12:45:30.355028+00:00",
+        "files": [
+          {
+            "path": "vr180-studio/index.html",
+            "expectedBytes": 5075,
+            "expectedSHA256": "ce191a05890ae6b507fd6ef35fb96ba4b3a2fe2d97c69b12353d9d320c80c6ca",
+            "httpStatus": 200,
+            "bytes": 5075,
+            "sha256": "ce191a05890ae6b507fd6ef35fb96ba4b3a2fe2d97c69b12353d9d320c80c6ca",
+            "matched": true
+          },
+          {
+            "path": "vr180-studio/app.mjs",
+            "expectedBytes": 23567,
+            "expectedSHA256": "4740340ccf435cf28b75f8ff9c694825ee47127a61c065804fabbd594b383ab2",
+            "httpStatus": 200,
+            "bytes": 23567,
+            "sha256": "4740340ccf435cf28b75f8ff9c694825ee47127a61c065804fabbd594b383ab2",
+            "matched": true
+          },
+          {
+            "path": "shared/vr180/client.mjs",
+            "expectedBytes": 9944,
+            "expectedSHA256": "5b7afeb38d5b202760f8821c01b5499bfdc41bc83ac7888b22958c4840f8c8b1",
+            "httpStatus": 200,
+            "bytes": 9944,
+            "sha256": "5b7afeb38d5b202760f8821c01b5499bfdc41bc83ac7888b22958c4840f8c8b1",
+            "matched": true
+          },
+          {
+            "path": "shared/vr180/geometry.mjs",
+            "expectedBytes": 1499,
+            "expectedSHA256": "3c83e493ac29d37f37139cbad20019ae809796462c6774046b0d4f9ad6c76ff4",
+            "httpStatus": 200,
+            "bytes": 1499,
+            "sha256": "3c83e493ac29d37f37139cbad20019ae809796462c6774046b0d4f9ad6c76ff4",
+            "matched": true
+          },
+          {
+            "path": "shared/vr180/mp4.mjs",
+            "expectedBytes": 35569,
+            "expectedSHA256": "1e7189d7b4d9e55b7502fb4d3b985bf8344a1b905bfa1942a926c388345bb892",
+            "httpStatus": 200,
+            "bytes": 35569,
+            "sha256": "1e7189d7b4d9e55b7502fb4d3b985bf8344a1b905bfa1942a926c388345bb892",
+            "matched": true
+          },
+          {
+            "path": "shared/vr180/operations.mjs",
+            "expectedBytes": 698,
+            "expectedSHA256": "d739b0182aa82691261d23bd617f8d0b864d08e7eafba13a3c0d4ef57df98be6",
+            "httpStatus": 200,
+            "bytes": 698,
+            "sha256": "d739b0182aa82691261d23bd617f8d0b864d08e7eafba13a3c0d4ef57df98be6",
+            "matched": true
+          },
+          {
+            "path": "shared/vr180/transform.mjs",
+            "expectedBytes": 25892,
+            "expectedSHA256": "7bd8ade1cc5983d173760266f65062a20468d7dc9acaa7b8a8117aa97b8dc6c3",
+            "httpStatus": 200,
+            "bytes": 25892,
+            "sha256": "7bd8ade1cc5983d173760266f65062a20468d7dc9acaa7b8a8117aa97b8dc6c3",
+            "matched": true
+          },
+          {
+            "path": "shared/vr180/worker.mjs",
+            "expectedBytes": 13940,
+            "expectedSHA256": "54104a2eb521461a02576988b646f6d6c7ac4b5cfd712e0a57902bdda428604c",
+            "httpStatus": 200,
+            "bytes": 13940,
+            "sha256": "54104a2eb521461a02576988b646f6d6c7ac4b5cfd712e0a57902bdda428604c",
+            "matched": true
+          },
+          {
+            "path": "shared/vr180/file-output.mjs",
+            "expectedBytes": 12276,
+            "expectedSHA256": "2cd7bcbdc0cf616e9c32aa3afa0543a56e5a2715bf00c6e2223014ad68757050",
+            "httpStatus": 200,
+            "bytes": 12276,
+            "sha256": "2cd7bcbdc0cf616e9c32aa3afa0543a56e5a2715bf00c6e2223014ad68757050",
+            "matched": true
+          },
+          {
+            "path": "shared/vr180/sha256.mjs",
+            "expectedBytes": 6970,
+            "expectedSHA256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+            "httpStatus": 200,
+            "bytes": 6970,
+            "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+            "matched": true
+          },
+          {
+            "path": "shared/vr180/mux-capture.mjs",
+            "expectedBytes": 3065,
+            "expectedSHA256": "c168c5f8bafd299ddb1c3ca5dce78f1046592149d8410dd5625c33c61b79fe32",
+            "httpStatus": 200,
+            "bytes": 3065,
+            "sha256": "c168c5f8bafd299ddb1c3ca5dce78f1046592149d8410dd5625c33c61b79fe32",
+            "matched": true
+          },
+          {
+            "path": "shared/vr180/save-record.mjs",
+            "expectedBytes": 4351,
+            "expectedSHA256": "faabff3f1b5f4080f2fbb7d4491edbcf0dc51f2cb62675a852454d51b4d8297f",
+            "httpStatus": 200,
+            "bytes": 4351,
+            "sha256": "faabff3f1b5f4080f2fbb7d4491edbcf0dc51f2cb62675a852454d51b4d8297f",
+            "matched": true
+          }
+        ]
+      }
+    ],
+    "finishedAt": "2026-10-17T12:45:30.355046+00:00"
+  },
+  "smallSuitePrerequisite": {
+    "runId": "39032727155-1",
+    "checkoutCommit": "8bc0fc9795dba4ce975fd36b62c95e9eb14cdfa6",
+    "basis": "Recovered small outputs independently verified PASS; all recorded product-module hashes match this checkout"
+  }
+}
