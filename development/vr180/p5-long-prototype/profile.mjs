@@ -2,10 +2,10 @@
 export const LONG_PROFILES = Object.freeze({
   'p5-5gb': Object.freeze({id:'p5-5gb',targetPayloadBytes:5_000_000_000,inputFileBytes:5_100_000_000,
     outputFileBytes:5_200_000_000,runnerFreeBytes:33_416_582_400,generationSeconds:900,conversionSeconds:900,
-    transferSeconds:600,verificationSeconds:900}),
+    transferSeconds:600,verificationSeconds:900,producerSeconds:3600}),
   'p5-10gb': Object.freeze({id:'p5-10gb',targetPayloadBytes:10_000_000_000,inputFileBytes:10_100_000_000,
     outputFileBytes:10_200_000_000,runnerFreeBytes:63_416_582_400,generationSeconds:1500,conversionSeconds:1500,
-    transferSeconds:900,verificationSeconds:1500}),
+    transferSeconds:900,verificationSeconds:1500,producerSeconds:5100}),
 });
 export const LONG_CONTRACT=Object.freeze({width:1024,height:512,eyeSize:512,fps:30,silent:true,
   bitrate:32_000_000,maxFrames:100_000,maxMetadataBytes:16*1024**2,indexBytes:8*1024**2,

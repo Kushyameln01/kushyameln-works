@@ -3,7 +3,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { execFileSync } = require('node:child_process');
-const { runTransfer, validateIdentity } = require('./transfer.cjs');
+const { runTransfer, validateIdentity, validateSourceManifest, readBoundedJson } = require('./transfer.cjs');
 
 function assert(ok, message) { if (!ok) throw new Error(message); }
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
@@ -23,8 +23,13 @@ async function checkedInputs(env) {
   assert(path.isAbsolute(env['INPUT_SOURCE-MANIFEST'] || '') && path.isAbsolute(env['INPUT_OUTPUT-DIRECTORY'] || ''), 'INPUTS_REQUIRE_ABSOLUTE_PATHS');
   const head = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: workspace, timeout: 10000, maxBuffer: 1024 }).toString().trim();
   assert(head === identity.commit, 'CHECKOUT_COMMIT_MISMATCH');
+  const sourceManifest = (await readBoundedJson(manifestPath)).value;
+  const profile = validateSourceManifest(sourceManifest, identity);
+  // Only a code-defined profile can choose a producer. Never execute or attest
+  // a source path supplied by a manifest.
+  const producer = profile.producer;
   const sourceHashes = {};
-  const files = [...OWN_FILES.map(name => path.join(__dirname, name)), path.join(workspace, 'tools/vr180/probe-segmented-transfer.py')];
+  const files = [...OWN_FILES.map(name => path.join(__dirname, name)), path.join(workspace, producer)];
   for (const file of files) {
     const relative = path.relative(workspace, file).split(path.sep).join('/');
     assert(!relative.startsWith('../'), 'ACTION_OUTSIDE_CHECKOUT');
@@ -45,7 +50,7 @@ async function checkedInputs(env) {
   return { manifestPath, outputDirectory, identity, verifyProvenance, provenance: { ...provenance,
     declaredActionRuntime: 'node20', observedNodeVersion: process.version, platform: process.platform,
     arch: process.arch, sourceHashes, installedSdkVersion: installed.version,
-    generatorScriptSHA256: sourceHashes['tools/vr180/probe-segmented-transfer.py'],
+    generatorScriptPath: producer, generatorScriptSHA256: sourceHashes[producer],
     dependencyInstallation: 'npm ci --ignore-scripts --omit=dev from checked fixed lock; no floating install',
     noCredentialsRecorded: true } };
 }
@@ -59,7 +64,7 @@ async function main() {
   finally { process.off('SIGTERM', cancel); process.off('SIGINT', cancel); }
   console.log(JSON.stringify(result));
   if (process.env.GITHUB_OUTPUT) await fs.appendFile(process.env.GITHUB_OUTPUT,
-    `completion-artifact-id=${result.completion.artifact.id}\ncompletion-artifact-name=${result.completion.artifact.name}\ncompletion-artifact-digest=${result.completion.artifact.digest}\n`);
+    `completion-artifact-id=${result.completion.artifact.id}\ncompletion-artifact-name=${result.completion.artifact.name}\ncompletion-artifact-digest=${result.completion.artifact.digest}\nreceipt-json=${JSON.stringify(result)}\n`);
 }
 if (require.main === module) main().catch(error => {
   console.error(/^[-A-Z0-9_]+$/.test(error.message || '') ? error.message : 'BOUNDED_ARTIFACT_TRANSFER_FAILED');

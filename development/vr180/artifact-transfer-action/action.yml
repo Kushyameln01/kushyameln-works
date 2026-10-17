@@ -7,6 +7,9 @@ inputs:
   output-directory:
     description: New owned directory under RUNNER_TEMP for bounded receipts and temporary chunks.
     required: true
+outputs:
+  receipt-json:
+    description: Bounded completion receipt for a separately bound same-run receiver.
 runs:
   using: node20
   main: main.cjs

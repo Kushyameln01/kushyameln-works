@@ -6,13 +6,18 @@ const { fork } = require('node:child_process');
 
 const MiB = 1024 * 1024;
 const MAX_MANIFEST = 256 * 1024;
+const MAX_QUALITY = 64 * 1024;
 const MAX_PARTS = 200;
 const BLOCK = MiB;
 const REPOSITORY = 'Kushyameln01/kushyameln-works';
 const SCHEMA = 'vr180-segmented-transfer-v1';
+const SMALL_PRODUCER = 'tools/vr180/probe-segmented-transfer.py';
+const LONG_PRODUCER = 'development/vr180/p5-long-prototype/probe-long.py';
 const PROFILES = Object.freeze({
-  'service-8mib': Object.freeze({ partBytes: 8 * MiB, fileBytes: [60 * MiB, 60 * MiB], timeoutMs: 600000 }),
-  'single-128mib': Object.freeze({ partBytes: 128 * MiB, fileBytes: [128 * MiB], timeoutMs: 300000 }),
+  'service-8mib': Object.freeze({ partBytes: 8 * MiB, fileBytes: Object.freeze([60 * MiB, 60 * MiB]), timeoutMs: 600000, producer: SMALL_PRODUCER }),
+  'single-128mib': Object.freeze({ partBytes: 128 * MiB, fileBytes: Object.freeze([128 * MiB]), timeoutMs: 300000, producer: SMALL_PRODUCER }),
+  'p5-5gb': Object.freeze({ partBytes: 128 * MiB, fileCaps: Object.freeze([5100000000, 5200000000]), targetPayloadBytes: 5000000000, timeoutMs: 1200000, producer: LONG_PRODUCER }),
+  'p5-10gb': Object.freeze({ partBytes: 128 * MiB, fileCaps: Object.freeze([10100000000, 10200000000]), targetPayloadBytes: 10000000000, timeoutMs: 1800000, producer: LONG_PRODUCER }),
 });
 function requireThat(value, code) { if (!value) throw new Error(code); }
 function isHash(value) { return typeof value === 'string' && /^[0-9a-f]{64}$/.test(value); }
@@ -38,26 +43,77 @@ function validateSourceManifest(m, identity) {
   const p = Object.hasOwn(PROFILES, m.profile) ? PROFILES[m.profile] : null;
   requireThat(p, 'PROFILE_NOT_ENABLED');
   requireThat(m.partBytes === p.partBytes && p.partBytes <= 128 * MiB, 'PART_SIZE');
-  requireThat(Array.isArray(m.files) && m.files.length === p.fileBytes.length, 'SOURCE_FILE_COUNT');
+  const sizes = p.fileCaps || p.fileBytes;
+  requireThat(Array.isArray(m.files) && m.files.length === sizes.length, 'SOURCE_FILE_COUNT');
   let total = 0, parts = 0;
   m.files.forEach((f, index) => {
-    const id = index === 0 ? 'payload-a' : 'payload-b';
-    requireThat(f && f.id === id && f.name === id + '.bin', 'SOURCE_FILE_NAME');
-    requireThat(f.bytes === p.fileBytes[index] && isHash(f.sha256), 'SOURCE_FILE_SIZE_HASH');
+    const id = p.fileCaps ? (index === 0 ? 'input' : 'output') : (index === 0 ? 'payload-a' : 'payload-b');
+    requireThat(f && f.id === id && f.name === id + (p.fileCaps ? '.mp4' : '.bin'), 'SOURCE_FILE_NAME');
+    requireThat(Number.isSafeInteger(f.bytes) && f.bytes > 0 &&
+      (p.fileCaps ? f.bytes <= sizes[index] : f.bytes === sizes[index]) && isHash(f.sha256), 'SOURCE_FILE_SIZE_HASH');
     total += f.bytes; parts += Math.ceil(f.bytes / p.partBytes);
   });
   requireThat(m.totalBytes === total && parts <= MAX_PARTS, 'SOURCE_TOTAL_PART_COUNT');
-  requireThat(m.generator?.algorithm === 'SHAKE256(seed+NUL+fileId+NUL+decimal-byte-offset)-1MiB-blocks-v1'
-    && m.generator.seed === 'vr180-public-segmented-transfer-2026-10-17'
-    && m.generator.blockBytes === BLOCK, 'SOURCE_GENERATOR');
+  if (p.fileCaps) {
+    const g = m.generator;
+    requireThat(g?.algorithm === 'vr180-long-xorshift32-sbs180-webcodecs-v1'
+      && g.seed === 0x1802026 && g.width === 1024 && g.height === 512 && g.fps === 30 && g.silent === true
+      && g.inputRequestedBitrate === 32000000 && g.outputRequestedBitrate === 32000000
+      && g.eventPeriodFrames === 300 && Array.isArray(g.eventFrameOffsets)
+      && g.eventFrameOffsets.length === 3 && g.eventFrameOffsets.every((v, i) => v === [29, 30, 31][i])
+      && g.maxFrames === 100000 && Number.isSafeInteger(g.frames) && g.frames >= 1 && g.frames <= g.maxFrames
+      && g.targetPayloadBytes === p.targetPayloadBytes, 'SOURCE_LONG_GENERATOR');
+    requireThat(isHash(m.sourceSHA256), 'SOURCE_PRODUCER_HASH');
+    const q = m.qualityEvidence;
+    requireThat(q && q.name === 'quality-evidence.json' && Number.isSafeInteger(q.bytes)
+      && q.bytes > 0 && q.bytes <= MAX_QUALITY && isHash(q.sha256)
+      && ['PASS', 'FAIL'].includes(q.status) && q.completeScan === true, 'QUALITY_DESCRIPTOR');
+  } else {
+    requireThat(m.generator?.algorithm === 'SHAKE256(seed+NUL+fileId+NUL+decimal-byte-offset)-1MiB-blocks-v1'
+      && m.generator.seed === 'vr180-public-segmented-transfer-2026-10-17'
+      && m.generator.blockBytes === BLOCK, 'SOURCE_GENERATOR');
+  }
   return p;
 }
-async function readBoundedJson(file) {
+function validateQualityEvidence(q, m) {
+  requireThat(q && q.schema === 'vr180-p5-long-quality-evidence-v1' && q.profile === m.profile,
+    'QUALITY_SCHEMA_PROFILE');
+  sameIdentity(q.identity, m.identity);
+  requireThat(q.sourceSHA256 === m.sourceSHA256 && q.mediaVerdict === m.qualityEvidence.status
+    && q.completeScan === true, 'QUALITY_SOURCE_STATUS');
+  requireThat(Array.isArray(q.files) && q.files.length === m.files.length, 'QUALITY_FILES');
+  for (let i = 0; i < m.files.length; i++) for (const key of ['id', 'name', 'bytes', 'sha256'])
+    requireThat(q.files[i]?.[key] === m.files[i][key], 'QUALITY_FILE_MISMATCH');
+  requireThat(Array.isArray(q.evidence) && q.evidence.length > 0 && q.evidence.length <= 256, 'QUALITY_EVIDENCE_BOUND');
+  const seen = new Set();
+  for (const e of q.evidence) {
+    requireThat(e && typeof e.path === 'string' && e.path.length <= 240
+      && e.path.split('/').every(v => /^[A-Za-z0-9_-][A-Za-z0-9_.-]*$/.test(v))
+      && !seen.has(e.path) && Number.isSafeInteger(e.bytes) && e.bytes > 0 && isHash(e.sha256), 'QUALITY_EVIDENCE_ENTRY');
+    seen.add(e.path);
+  }
+  // References are metadata-archive paths. Their bytes and media conclusions
+  // are verified by the producer and host, never inferred by the transport.
+}
+async function readBoundedJson(file, maximum = MAX_MANIFEST) {
   const st = await fs.lstat(file);
-  requireThat(st.isFile() && !st.isSymbolicLink() && st.size > 0 && st.size <= MAX_MANIFEST, 'MANIFEST_FILE_BOUND');
-  const data = await fs.readFile(file);
-  requireThat(data.length === st.size, 'MANIFEST_CHANGED');
-  return { data, value: JSON.parse(data.toString('utf8')) };
+  requireThat(st.isFile() && !st.isSymbolicLink() && st.size > 0 && st.size <= maximum, 'MANIFEST_FILE_BOUND');
+  const h = await fs.open(file, 'r');
+  try {
+    const opened = await h.stat();
+    requireThat(opened.isFile() && opened.dev === st.dev && opened.ino === st.ino && opened.size === st.size, 'MANIFEST_CHANGED');
+    const buffer = Buffer.allocUnsafe(maximum + 1);
+    let count = 0;
+    while (count < buffer.length) {
+      const { bytesRead } = await h.read(buffer, count, buffer.length - count, count);
+      if (!bytesRead) break;
+      count += bytesRead;
+    }
+    const after = await h.stat();
+    requireThat(count === st.size && after.size === st.size && after.mtimeMs === st.mtimeMs, 'MANIFEST_CHANGED');
+    const data = buffer.subarray(0, count);
+    return { data, value: JSON.parse(data.toString('utf8')) };
+  } finally { await h.close(); }
 }
 async function writeJson(file, data) {
   const bytes = Buffer.from(JSON.stringify(data, null, 2) + '\n');
@@ -164,10 +220,21 @@ async function runTransfer({ manifestPath, outputDirectory, identity, provenance
   const started = clock();
   const { data, value: m } = await readBoundedJson(manifestPath);
   const profile = validateSourceManifest(m, identity);
+  if (profile.fileCaps) requireThat(provenance?.generatorScriptPath === profile.producer
+    && isHash(provenance?.generatorScriptSHA256), 'LONG_PRODUCER_PROVENANCE');
   if (provenance?.generatorScriptSHA256) requireThat(m.sourceSHA256 === provenance.generatorScriptSHA256, 'GENERATOR_SOURCE_HASH_MISMATCH');
   const deadline = performance.now() + profile.timeoutMs;
   const sourceRoot = await fs.realpath(path.dirname(manifestPath));
   for (const file of m.files) await safeFile(path.join(sourceRoot, file.name), sourceRoot);
+  let quality;
+  const qualityPath = path.join(sourceRoot, 'quality-evidence.json');
+  if (profile.fileCaps) {
+    await safeFile(qualityPath, sourceRoot);
+    quality = await readBoundedJson(qualityPath, MAX_QUALITY);
+    requireThat(quality.data.length === m.qualityEvidence.bytes
+      && crypto.createHash('sha256').update(quality.data).digest('hex') === m.qualityEvidence.sha256, 'QUALITY_RAW_HASH_SIZE');
+    validateQualityEvidence(quality.value, m);
+  }
   await fs.mkdir(outputDirectory, { recursive: false, mode: 0o700 });
   const stage = path.join(outputDirectory, 'stage');
   await fs.mkdir(stage, { mode: 0o700 });
@@ -181,6 +248,8 @@ async function runTransfer({ manifestPath, outputDirectory, identity, provenance
       sdkWholeProcessMemoryBoundedByThatBuffer: false },
     notVerified: ['browser/media processing', '5/10GB media capacity', 'OS save dialog', 'VR playback', 'immediate artifact deletion'],
   };
+  if (quality) receipt.qualityEvidence = { name: m.qualityEvidence.name, bytes: m.qualityEvidence.bytes,
+    sha256: m.qualityEvidence.sha256, status: m.qualityEvidence.status, completeScan: true };
   let completed = false, completionUploadAttempted = false, completionUploaded = false;
   try {
     receipt.disk = await diskCheck(outputDirectory, profile.partBytes);
@@ -216,6 +285,7 @@ async function runTransfer({ manifestPath, outputDirectory, identity, provenance
     }
     for (let fi = 0; fi < m.files.length; fi++) requireThat(await hashFile(sources[fi], m.files[fi].bytes, deadline, signal) === m.files[fi].sha256, 'SOURCE_CHANGED_AFTER_UPLOAD');
     requireThat((await readBoundedJson(manifestPath)).data.equals(data), 'SOURCE_MANIFEST_CHANGED');
+    if (quality) requireThat((await readBoundedJson(qualityPath, MAX_QUALITY)).data.equals(quality.data), 'QUALITY_CHANGED_DURING_TRANSFER');
     await verifyProvenance();
     deadlineCheck(deadline, signal);
     receipt.status = 'COMPLETE'; receipt.elapsedSecondsBeforeCompletion = (clock() - started) / 1000;
@@ -252,5 +322,5 @@ async function runTransfer({ manifestPath, outputDirectory, identity, provenance
     requireThat(!cleanupFailed, 'OWN_STAGE_CLEANUP_FAILED');
   }
 }
-module.exports = { PROFILES, MAX_MANIFEST, MAX_PARTS, MiB, SCHEMA, validateIdentity,
-  validateSourceManifest, normalizeReceipt, prefix, hashFile, writePart, runTransfer, uploadWithChild };
+module.exports = { PROFILES, MAX_MANIFEST, MAX_QUALITY, MAX_PARTS, MiB, SCHEMA, validateIdentity,
+  validateSourceManifest, validateQualityEvidence, readBoundedJson, normalizeReceipt, prefix, hashFile, writePart, runTransfer, uploadWithChild };

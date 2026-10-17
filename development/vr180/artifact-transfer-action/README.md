@@ -1,8 +1,9 @@
 # Private segmented artifact transport qualification
 
 This action qualifies transfer of actual public synthetic bytes through the
-official GitHub artifact SDK. It does not generate or process media, change the
-public VR180 runtime, enable a 5/10 GB profile, or change billing settings.
+official GitHub artifact SDK. It also provides explicitly bounded transport
+profiles for the separate private long-media experiment. It does not generate
+or process media, enable a public VR180 capacity profile, or change billing settings.
 The files live outside the Pages deployment tree.
 
 ## Enabled trials
@@ -19,8 +20,22 @@ does not establish this new action's behavior. Both need actual cloud upload,
 complete download, API metadata/digest comparison, and independent byte checks.
 Local tests use a mock SDK and establish none of those service outcomes.
 
-No large profile is enabled. The protocol reserves at most two files, 200 data
-parts, and 128 MiB per part, but those limits are not a claim of media capacity.
+The protocol permits at most two files, 200 data parts, and 128 MiB per part.
+The private long-media transport profiles below do not establish media capacity;
+their enablement is separate from authorization to run a large native trial.
+
+| Private transport profile | Input file maximum | Output file maximum | Part size | Total action deadline |
+| --- | ---: | ---: | ---: | ---: |
+| `p5-5gb` | 5,100,000,000 B | 5,200,000,000 B | 128 MiB | 20 minutes |
+| `p5-10gb` | 10,100,000,000 B | 10,200,000,000 B | 128 MiB | 30 minutes |
+
+Both require ordered `input.mp4` / `output.mp4` files with IDs `input` / `output`.
+Every file must have a positive integer byte length within its cap. The sender
+does not impose a target-size minimum: a complete quality failure must remain
+recoverable. Actual payload targets, output greater than 4 GiB, full decoding,
+PSNR, timestamps, and resource acceptance are producer/host verdicts. A completed
+transport is not a successful media experiment. The small service profiles keep
+their exact original byte counts and generator contract.
 
 ## Fixed source and dependency contract
 
@@ -49,7 +64,12 @@ Before upload, the action checks the candidate commit and every executable
 action source, lock, package manifest, provenance file, and generator against
 that commit. It checks those source hashes again before publishing completion.
 The installed SDK version must match the checked lock. The completed record
-contains the source hashes and generator script hash. Package installation
+contains the source hashes and generator script path/hash. Producer paths are
+selected only by the code-defined profile: small trials use
+`tools/vr180/probe-segmented-transfer.py`; long trials use
+`development/vr180/p5-long-prototype/probe-long.py`. A manifest cannot select
+another script. Both the selected script's actual bytes and its source-manifest
+hash must match the checked candidate. Package installation
 integrity is supplied by `npm ci`; a lock hash alone is not represented as a
 full post-install dependency tree audit.
 
@@ -81,6 +101,12 @@ request or print credentials and does not call unpublished endpoints itself.
 The SDK's child-process stdout/stderr are not forwarded. Only bounded receipts
 and fixed error codes are printed.
 
+For a long trial, the separate producer creates `source-manifest.json`,
+`input.mp4`, `output.mp4`, and `quality-evidence.json` together in its new
+`media/` directory. The same action inputs point at that manifest and a new
+upload directory. The long-media producer's calibration, disk/quota, time and
+quality gates remain prerequisites; this action neither runs nor bypasses them.
+
 ## Bytes and manifest protocol
 
 For each file ID (`payload-a` / `payload-b`) and each absolute byte offset
@@ -99,6 +125,33 @@ closed, and reread completely. The source manifest has schema
 `files:[{id,name,bytes,sha256}]`, generator formula, sourceSHA256, timing and disk
 observations. File names are `payload-a.bin` and `payload-b.bin`.
 
+The long generator descriptor is fixed to algorithm
+`vr180-long-xorshift32-sbs180-webcodecs-v1`, seed `0x1802026`, 1024×512,
+30 fps, silent, requested input/output bitrates 32,000,000 bit/s, event period
+300 frames and offsets `[29,30,31]`, maximum 100,000 frames, target payload
+5,000,000,000 or 10,000,000,000 bytes according to profile, and actual frame
+count `1..100000`. Requested bitrate is not substituted for observed payload.
+
+Long source manifests additionally bind:
+
+```text
+qualityEvidence: {name: "quality-evidence.json", bytes, sha256,
+                  status: "PASS" | "FAIL", completeScan: true}
+```
+
+That regular, nonsymlink file is at most 64 KiB. The sender reads its actual
+bounded bytes, verifies length/hash, and checks schema
+`vr180-p5-long-quality-evidence-v1`, identity, profile, sourceSHA256, ordered
+file IDs/names/bytes/hashes, `mediaVerdict` and `completeScan` against the source
+manifest. Its `evidence:[{path,bytes,sha256}]` has 1–256 unique bounded relative
+paths and positive byte counts. The sender checks descriptor syntax but does
+not open those referenced reports or reinterpret their media verdicts. The
+producer verifies all referenced files and includes them with the identical
+raw quality JSON in its separate metadata archive; the host verifies that
+archive independently. A complete `FAIL` is transportable; an incomplete scan
+cannot pass the sender gate. Quality bytes are reread unchanged before the
+completion artifact is published.
+
 Each data artifact contains exactly one ZIP entry, **`chunk.bin`**. Its name is:
 
 ```text
@@ -116,6 +169,12 @@ files: [{id, name, bytes, sha256, partCount,
          parts: [{index, offset, length, sha256,
                   artifact: {id, name, sizeBytes, digest}, elapsedSeconds}]}]
 ```
+
+For long profiles only, the completion record also copies the bounded
+`qualityEvidence` descriptor. This ties the separate metadata archive's raw
+quality JSON to the reconstructed media and source manifest, without adding a
+second ZIP entry to any artifact. Host verification must compare that raw hash
+and the quality record's identities, files and evidence references.
 
 `digest` is normalized as `sha256:<64 lowercase hex>` and covers the whole ZIP;
 part `sha256` covers the raw bytes. Offsets must be consecutive with no holes,
@@ -161,11 +220,14 @@ Each upload runs in a child process, with a 120-second maximum and the remaining
 trial deadline, whichever is shorter. The normal SDK stall timeout is 60
 seconds. On timeout/cancellation the child is terminated, with a SIGKILL after
 5 seconds if needed, and cleanup waits for its exit. Total action deadlines are
-600 seconds (`service-8mib`) and 300 seconds (`single-128mib`); workflow timeouts
-must include startup, the 5-second kill grace and cleanup. The generator has a
-separate 300-second deadline. These are upper limits, not expected throughput.
+600 seconds (`service-8mib`), 300 seconds (`single-128mib`), 1200 seconds
+(`p5-5gb`) and 1800 seconds (`p5-10gb`); workflow timeouts
+must include startup, the 5-second kill grace and cleanup. The small source
+generator has a separate 300-second deadline; the long-media producer enforces
+its own phase deadlines. These are upper limits, not expected throughput.
 
-The source generator's disk admission is `3*sourceBytes + 2*partBytes + 512 MiB`.
+The small source generator's disk admission is `3*sourceBytes + 2*partBytes + 512 MiB`.
+The long producer has separate input/output/OPFS/temporary disk admission.
 After sources exist, the uploader requires an additional
 `2*partBytes + 2 MiB + 256 MiB`. These are conservative free-space checks, not
 reservations. Host receiver capacity and deadlines are separately enforced.
@@ -174,8 +236,8 @@ Failure before completion does not publish a completed record. If the last
 upload times out, whether its manifest reached the service is explicitly
 `UNKNOWN`; a false absence is not recorded. Successful part receipts remain
 bounded evidence. `cleanup-result.json` records removal of the owned stage;
-cleanup failure fails the action. The caller's `always` cleanup handles its
-owned directories if the process/runner is forcibly terminated. Artifacts use
+cleanup failure fails the action. On forced process/runner termination, stage
+cleanup is not guaranteed; immediate cleanup is not claimed. Artifacts use
 one-day retention; immediate deletion is not promised and no remote deletion
 or account setting change is attempted.
 
@@ -201,5 +263,8 @@ hours; this action's much smaller trial deadlines remain in force.
 Run local checks with `node --test test-transfer.cjs` and `python test-probe.py`.
 The tests cover actual local split/reread hashes, ordered manifests, both part
 sizes, mutation, deadlines, cancellation, existing-path ownership, interrupted
-uploads, and unknown completion. Cloud service acceptance remains a separate
+uploads, unknown completion, explicit long-profile caps, fixed producer paths,
+bounded quality correspondence and mutation, and recovery of complete `FAIL`
+records. Long-profile unit fixtures use tiny arbitrary bytes and a mocked SDK;
+they are not valid media or evidence of 5/10 GB capacity. Cloud service acceptance remains a separate
 record after the coordinating task runs and fully recovers the artifacts.
