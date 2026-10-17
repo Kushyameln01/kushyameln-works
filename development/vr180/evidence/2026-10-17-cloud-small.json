@@ -1,0 +1,347 @@
+{
+  "status": "PASS",
+  "verifiedAt": "2026-10-17T05:46:23.623698+00:00",
+  "runId": "39007380358-1",
+  "checkoutCommit": "78c9c2bce9f21a9cf70d28e120e7855cb607ddd0",
+  "browserVersion": "155.0.8059.39",
+  "transport": {
+    "status": "PASS",
+    "runId": "39007380358-1",
+    "chunks": 112,
+    "archiveBytes": 342067,
+    "archiveSHA256": "5700e2aeae539790ac95dbd06a09003be8e37fdd5560c85de2c24ef93917007e",
+    "verifiedFiles": 22,
+    "browserRunStatus": "RECOVERED_PENDING_VERIFICATION"
+  },
+  "trials": [
+    {
+      "trialId": "39007380358-1-stereo180-sbs",
+      "operationId": "024c7132-61ae-4394-9f6d-47d84209ddf0",
+      "inputRevision": 2,
+      "inputSHA256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+      "outputSHA256": "15fca1666e5cf4a135b933398d4f9f56eb302b3901b90d7bb787ce3b9d82bc3c",
+      "outputBytes": 30137,
+      "verifierSHA256": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96",
+      "verifierExitCode": 0,
+      "status": "PASS",
+      "settings": {
+        "mode": "copy",
+        "layout": "sbs",
+        "fov": 180,
+        "eyeSize": 1024,
+        "bitrate": 6291456,
+        "confirmed": true
+      },
+      "capabilities": null,
+      "workerOPFSRoundTrip": true,
+      "workerOPFSCleanup": true,
+      "independentReport": {
+        "schema": "vr180-metadata-independent-verification-v1",
+        "generated_at": "2026-10-17T05:46:22.926930+00:00",
+        "verifier": {
+          "path": "/workspace/vr180-release-20261017/tools/vr180/verify-metadata.py",
+          "sha256": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96",
+          "python": "3.12.14",
+          "ffprobe": "ffprobe version 7.1.5-0+deb13u1 Copyright (c) 2007-2026 the FFmpeg developers"
+        },
+        "passed": true,
+        "layout": "sbs",
+        "append_contract": {
+          "old_moov": {
+            "type": "moov",
+            "start": 32,
+            "end": 3435,
+            "payload": 40,
+            "size": 3403
+          },
+          "new_moov": {
+            "type": "moov",
+            "start": 26615,
+            "end": 30137,
+            "payload": 26623,
+            "size": 3522
+          },
+          "old_moov_became_same_size_free": true,
+          "original_prefix_unchanged_except_fourcc": true,
+          "active_moov_count": 1
+        },
+        "mdats": [
+          {
+            "start": 3443,
+            "end": 26615,
+            "sha256": "24ae7b7c992e72d9c135947eca9705abbd14ff6fc7e7855dfe0dba5719b0565f"
+          }
+        ],
+        "sample_and_timing_tables": [
+          {
+            "handler": "vide",
+            "box_hashes": {
+              "stts": "c469f810f8e1000c90fbac9594d1a0f2bd56ac7363f6805f1b158d0908cd0431",
+              "stss": "ba32f13acaf822f7ea3ecc784b3783e80a891afe1d25de9a5f74f3fab242904f",
+              "ctts": "43030fc6fb0879fdb09f120b2abbed5446292219b18ed075348bb38d4aa4030f",
+              "stsc": "9ec1f3ef2bce97c2e26ccc0fee8f84cfe72d983ee47df6a31452abd02b568eb2",
+              "stsz": "11636bac40c5449edc3e3cc29a34f9df9cbc2f974a48eff004e014a1a30b730b",
+              "stco": "4c1c2f3b561840974cab5e5ff78e0bf2509353a28abbc1a28824913471950ce2",
+              "mdhd": "0eefa1c65e2f25e9e304319130f8b06f9f1208a2bb05d1e80f8c529ecad66929",
+              "tkhd": "8a9f48dcf65be857a542c5c635241e4e8dc762e4f0594b5a8e07f6e6f4e1d33c",
+              "edts": "d32be303208311074a5bb70cb54227f48ac8835e4d7372b8d56b5d74282d9ff1"
+            },
+            "all_equal": true
+          },
+          {
+            "handler": "soun",
+            "box_hashes": {
+              "stts": "586ea1d61456c098a16ddeeae3df9c325bffa85dd6b7fffa6a4949cb69e919fa",
+              "stsc": "6b4e31038b620b309c76075087d9ef99c1b428734d44e0bd9a0b83d254e6e16b",
+              "stsz": "107821228d27c5f2ab6198a7a5e8aeb6dea5bc19a0ec1c0756ddb6ae278fbdfa",
+              "stco": "b7beb2004821b756bffd0d9f07f87781175e05fbac2ff670864416a7c8c365f3",
+              "sgpd": "92b9b296cb0f465c18266e76442a7a115e91aeef26a5715225d17e0adb4fb477",
+              "sbgp": "5fb8fe82c07e933561c15178f712c5114e752bd47ecbb7d738fbf2c1a6d6cc93",
+              "mdhd": "155fc1f1a126fad3197f1c1156c8bf1b235c937c9af77a79279886852733a5ea",
+              "tkhd": "4105cb88f8bddc52fc4fddbd49d6e5300a5d9281817aef10ce6264cb036b1e9e",
+              "edts": "d32be303208311074a5bb70cb54227f48ac8835e4d7372b8d56b5d74282d9ff1"
+            },
+            "all_equal": true
+          }
+        ],
+        "independent_box_metadata": {
+          "path": "moov/trak(vide)/mdia/minf/stbl/stsd/avc1",
+          "width": 512,
+          "height": 256,
+          "stereo_mode": 2,
+          "projection": "equi",
+          "pose_degrees": [
+            0,
+            0,
+            0
+          ],
+          "bounds_u0_32": {
+            "top": 0,
+            "bottom": 0,
+            "left": 1073741824,
+            "right": 1073741824
+          },
+          "metadata_source": "Kushyameln Works VR180 b1",
+          "active_st3d_count": 1,
+          "active_sv3d_count": 1,
+          "entry_children": [
+            "avcC",
+            "st3d",
+            "sv3d",
+            "btrt"
+          ]
+        },
+        "ffprobe": {
+          "all_packet_fields_equal": true,
+          "compressed_packet_count": 155,
+          "packet_sequence_sha256": "6cd3a7136684fe8c172b79167a0e754d16b518566341718f893d4cc2afcf3259",
+          "streams": [
+            {
+              "stream_index": 0,
+              "type": "video",
+              "codec": "h264",
+              "time_base": "1/15360",
+              "packet_count": 60,
+              "packet_sequence_sha256": "9ba736d21fa19cba623aa4cde81ac342d6ba3bd7c06b44d68f5645123f6fc87b",
+              "first_packet": {
+                "codec_type": "video",
+                "stream_index": 0,
+                "pts": 0,
+                "pts_time": "0.000000",
+                "dts": -1024,
+                "dts_time": "-0.066667",
+                "duration": 512,
+                "duration_time": "0.033333",
+                "size": "6744",
+                "pos": "3451",
+                "flags": "K__",
+                "data_hash": "SHA256:5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d"
+              },
+              "last_packet": {
+                "codec_type": "video",
+                "stream_index": 0,
+                "pts": 29696,
+                "pts_time": "1.933333",
+                "dts": 29184,
+                "dts_time": "1.900000",
+                "duration": 512,
+                "duration_time": "0.033333",
+                "size": "94",
+                "pos": "26505",
+                "flags": "___",
+                "data_hash": "SHA256:36d972ca1483fb6babd735df5e2f8cdf61b63b4a0fd3bc77bbc5a24b6f9c1f23"
+              },
+              "all_fields_equal": true
+            },
+            {
+              "stream_index": 1,
+              "type": "audio",
+              "codec": "aac",
+              "time_base": "1/48000",
+              "packet_count": 95,
+              "packet_sequence_sha256": "aafc8bedb9c3c1b93f4c4b5589e10bf1bc1b4e1b1811ee35cd1850c0fae5542a",
+              "first_packet": {
+                "codec_type": "audio",
+                "stream_index": 1,
+                "pts": -1024,
+                "pts_time": "-0.021333",
+                "dts": -1024,
+                "dts_time": "-0.021333",
+                "duration": 1024,
+                "duration_time": "0.021333",
+                "size": "21",
+                "pos": "10651",
+                "flags": "KD_",
+                "data_hash": "SHA256:cd48905f923be4595ca6fc76bc5d1963a2b63563dd702f068fd0c147cf9bcb6b",
+                "side_data_list": [
+                  {
+                    "side_data_type": "Skip Samples",
+                    "skip_samples": 1024,
+                    "discard_padding": 0,
+                    "skip_reason": 0,
+                    "discard_reason": 0
+                  }
+                ]
+              },
+              "last_packet": {
+                "codec_type": "audio",
+                "stream_index": 1,
+                "pts": 95232,
+                "pts_time": "1.984000",
+                "dts": 95232,
+                "dts_time": "1.984000",
+                "duration": 768,
+                "duration_time": "0.016000",
+                "size": "4",
+                "pos": "26611",
+                "flags": "K__",
+                "data_hash": "SHA256:f5f1a32ceb34bfa3b26d8a2c19cc1534e66920a4bb2131c3bd66b8f5b93463ec"
+              },
+              "all_fields_equal": true
+            }
+          ],
+          "video_side_data": [
+            {
+              "side_data_type": "Stereo 3D",
+              "type": "side by side",
+              "inverted": 0,
+              "view": "packed",
+              "primary_eye": "none",
+              "baseline": 0,
+              "horizontal_disparity_adjustment": "0/1",
+              "horizontal_field_of_view": "0/1"
+            },
+            {
+              "side_data_type": "Spherical Mapping",
+              "projection": "tiled equirectangular",
+              "bound_left": 257,
+              "bound_top": 0,
+              "bound_right": 255,
+              "bound_bottom": 0,
+              "yaw": 0,
+              "pitch": 0,
+              "roll": 0
+            }
+          ]
+        },
+        "limits": [
+          "No target headset/player verification.",
+          "ffprobe displayed crop bounds are pixel conversions, not raw unsigned 0.32 values.",
+          "This verifies metadata-only preservation, not pixel-transcode audio edit handling."
+        ],
+        "verification_wall_seconds": 0.228278
+      }
+    },
+    {
+      "trialId": "39007380358-1-stereo360-tb",
+      "operationId": "a34739c7-8574-4b98-8ea6-2c68b1a91935",
+      "inputRevision": 2,
+      "inputSHA256": "72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9",
+      "outputSHA256": "ade47d9414e1b30c0dc357a6d6d023e8c3082c4d389206fdf63655a44003c45f",
+      "outputBytes": 52784,
+      "verifierSHA256": "8e13537f5c74f8207f670eb898b082a1962ae35e0db10a6ffeddb7be4c695f64",
+      "verifierExitCode": 0,
+      "status": "PASS",
+      "sphericalMetadataStatus": "PASS",
+      "settings": {
+        "mode": "convert",
+        "layout": "tb",
+        "fov": 360,
+        "eyeSize": 256,
+        "bitrate": 2000000,
+        "confirmed": true
+      },
+      "capabilities": {
+        "input": {
+          "codec": "avc",
+          "width": 512,
+          "height": 512,
+          "decodable": true
+        },
+        "output": {
+          "codec": "avc",
+          "width": 512,
+          "height": 256,
+          "bitrate": 2000000,
+          "latencyMode": "quality",
+          "encodable": true
+        }
+      },
+      "workerOPFSRoundTrip": true,
+      "workerOPFSCleanup": true,
+      "independentReport": {
+        "status": "PASS",
+        "outputSHA256": "ade47d9414e1b30c0dc357a6d6d023e8c3082c4d389206fdf63655a44003c45f",
+        "frames": 60,
+        "eyePSNRdB": [
+          38.4501205091097,
+          34.66050224007317
+        ],
+        "maxPtsErrorSeconds": 0.0,
+        "redFrameIndicesByEye": [
+          [
+            14,
+            15,
+            16,
+            44,
+            45,
+            46
+          ],
+          [
+            14,
+            15,
+            16,
+            44,
+            45,
+            46
+          ]
+        ],
+        "decodedAudioIdentical": true,
+        "scope": "synthetic saved output; target VR consumer and novice usability not verified"
+      }
+    }
+  ],
+  "scope": "Recovered cloud-browser MP4s independently analyzed here; no VR headset, real footage, usability, or speed claim.",
+  "workflowUrl": "https://github.com/Kushyameln01/kushyameln-works/actions/runs/39007380358",
+  "candidateCodeCommit": "e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60",
+  "build": "vr180-b1-diag1",
+  "browserSandboxRequired": true,
+  "pagesByteCheck": {
+    "status": "PASS",
+    "matchedFiles": 8,
+    "scope": "Public source bytes; browser processing used the cloud loopback copy."
+  },
+  "verificationEnvironment": {
+    "ffprobe": "7.1.5-0+deb13u1",
+    "numpy": "2.3.5"
+  },
+  "saveMethod": "UI download link, actual Playwright Download.save_as, complete log transport and receiver SHA-256 verification. Native save picker was not exercised. Original receipts remain unchanged.",
+  "remaining": [
+    "Cancel/retry and 4K follow-up pending",
+    "VR player/headset compatibility",
+    "real footage quality",
+    "novice usability",
+    "speed improvement",
+    "ChatGPT Sites source/deployment blocked by missing official helper"
+  ]
+}

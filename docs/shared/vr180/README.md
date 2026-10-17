@@ -1,6 +1,6 @@
 # VR180 b1 shared module
 
-目的は、VR180撮影素材・左右2眼動画をブラウザで簡単に加工することです。このブランチは最小縦断試作です。ブラウザ変換・保存・VR利用先の合格や、製品全体の完成を示しません。
+目的は、VR180撮影素材・左右2眼動画をブラウザで簡単に加工することです。小さな合成素材で加工・ダウンロードの成立を確認した検証版です。全環境での動作、VR利用先の互換性、製品全体の完成を示しません。
 
 ## 実装した入口
 
@@ -17,7 +17,7 @@
 
 ## 対応範囲
 
-1ファイルに格納した左右／上下の正距円筒MP4、H.264 SDR、音声なしまたはAAC 1トラック。既存メッシュ、魚眼、カメラ固有補正、左右別ファイル、HDR、追加データトラック、複雑な編集リストは対象外です。左右別ファイルの将来の同期契約は `development/vr180/IMPLEMENTATION.md` にあります。
+1ファイルに格納した左右／上下の正距円筒MP4、H.264 SDR、音声なしまたはAAC 1トラック。既存メッシュ、魚眼、カメラ固有補正、左右別ファイル、HDR、追加データトラック、複雑な編集リストは対象外です。左右別ファイルの将来の同期契約は[固定候補のIMPLEMENTATION.md](https://github.com/Kushyameln01/kushyameln-works/blob/e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60/development/vr180/IMPLEMENTATION.md)にあります。
 
 出力はSpherical Video V2のcropped equirectangular 180度ステレオです。Googleのカメラ固有メッシュ形式への準拠を意味しません。変換はOPFS、OffscreenCanvas、WebCodecsへの対応を実行時に確認します。AACの対応する先頭調整は保持しますが、変換後の音声seek用sample-groupは再生成されず、途中からの再生品質は未検証です。
 
@@ -31,6 +31,6 @@
 
 `node --test tests/vr180-*.test.mjs`
 
-独立メタデータ照合は `tools/vr180/verify-metadata.py`、ブラウザから回収した小素材の画素・時刻・音声照合は `tools/vr180/verify-conversion.py` を使います。後者はブラウザ出力をまだ取得していないため未実行です。現時点の判定と再開条件は `development/vr180/RESULT.md` に記録します。
+独立メタデータ照合は `tools/vr180/verify-metadata.py`、ブラウザから回収した小素材の画素・時刻・音声照合は `tools/vr180/verify-conversion.py` を使います。2026-10-17にChrome 155のクラウド複製で小素材2件の加工・ダウンロードを行い、回収MP4の独立照合が成功しました。これは合成素材とダウンロード経路の判定です。VR再生・実写品質・操作性・性能改善や保存先選択APIの合格は意味しません。[現在の反映・検証記録](https://github.com/Kushyameln01/kushyameln-works/blob/main/development/vr180/RELEASE-2026-10-17.md)と[元候補時点のRESULT.md](https://github.com/Kushyameln01/kushyameln-works/blob/e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60/development/vr180/RESULT.md)を区別してください。
 
 依存は既存の `media-basic/vendor/mediabunny.mjs` 1.61.5です。既存のソース配布・MPL-2.0ライセンスを維持し、依存本体や既存ツールは変更しません。

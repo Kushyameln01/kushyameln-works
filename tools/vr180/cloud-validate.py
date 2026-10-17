@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check published bytes, then exercise a checked-out cloud copy in sandboxed Chrome.
 
-Only the two small, public synthetic fixtures are used. The UI supplies both the
+Only public synthetic fixtures are used. The UI supplies both the
 MP4 and its original receipt. The fixed independent verifiers inspect the saved
 bytes unless explicitly deferred to the evidence receiver. Nothing here
 publishes a site, installs Chrome/FFmpeg, changes a codec,
@@ -58,6 +58,8 @@ VERIFIERS = {
 FIXTURES = {
     'stereo180-sbs': '4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83',
     'stereo360-tb': '72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9',
+    'stereo180-4k-2s-sbs': '50624d8850a380ad759a712a7cae9f5f767a966271ca8a671b433c6146895db0',
+    'stereo180-4k-12s-sbs': '97bb3a4335514436374b35c202275dde2cfca27f8f7cec3a224fd77c8ede6582',
 }
 PUBLIC_PATHS = (
     'vr180-studio/index.html', 'vr180-studio/app.mjs',
@@ -72,6 +74,10 @@ class Blocked(RuntimeError):
 
 
 class Deadline(RuntimeError):
+    pass
+
+
+class NotCanceled(RuntimeError):
     pass
 
 
@@ -260,6 +266,153 @@ API_PROBE = r"""async () => {
 }"""
 
 
+# Followup-only observation: forward the original this, arguments, return value
+# and exception unchanged. Do not copy Blob bytes or modify message/settings.
+# This is harness evidence, never an application-generated cancellation receipt.
+WORKER_POST_OBSERVER = r"""(() => {
+  globalThis.__vr180HarnessWorkerPosts = [];
+  const original = Worker.prototype.postMessage;
+  Worker.prototype.postMessage = function(...args) {
+    const returned = Reflect.apply(original, this, args);
+    try {
+      const m = args[0];
+      if (m?.type === 'run') globalThis.__vr180HarnessWorkerPosts.push({
+        at: performance.now(), operationId: m.operationId, inputRevision: m.inputRevision,
+        inputName: m.file?.name, inputBytes: m.file?.size,
+        settings: {mode: m.settings?.mode, layout: m.settings?.layout, fov: m.settings?.fov,
+          eyeSize: m.settings?.eyeSize, bitrate: m.settings?.bitrate}
+      });
+    } catch (_) { /* The observer cannot change the original call's outcome. */ }
+    return returned;
+  };
+})();"""
+
+OPFS_JOBS = r"""async () => {
+  const root = await navigator.storage.getDirectory();
+  try {
+    const jobs = await root.getDirectoryHandle('vr180-jobs');
+    const entries = [];
+    for await (const [name, handle] of jobs.entries()) entries.push({name, kind: handle.kind});
+    return entries;
+  } catch (error) { if (error.name === 'NotFoundError') return []; throw error; }
+}"""
+
+
+def select_input(page, fixture):
+    page.locator('#file').set_input_files(str(fixture))
+    page.wait_for_function("document.querySelector('#status').textContent.includes('左右配置と視野角を確認して')")
+
+
+def configure(page, mode, layout, fov, eye_size=256):
+    for selector, value in [('#layout', layout), ('#fov', str(fov)), ('#mode', mode)]:
+        page.locator(selector).select_option(value)
+        page.wait_for_function("document.querySelector('#cancel').disabled")
+    if mode == 'convert':
+        page.locator('#size').select_option(str(eye_size))
+        page.wait_for_function("document.querySelector('#cancel').disabled")
+    page.locator('#confirmed').check()
+    page.wait_for_function("document.querySelector('#cancel').disabled && !document.querySelector('#run').disabled")
+
+
+def start_operation(page, record):
+    page.locator('#run').click()
+    record['mediaOperationStarted'] = True
+    record['mediaOperationCount'] = record.get('mediaOperationCount', 0) + 1
+
+
+def last_post(page, revision=2):
+    page.wait_for_function("revision => globalThis.__vr180HarnessWorkerPosts.at(-1)?.inputRevision === revision", arg=revision)
+    observation = page.evaluate("globalThis.__vr180HarnessWorkerPosts.at(-1)")
+    require(observation and observation['settings']['mode'] != 'inspect', 'No media Worker post observed')
+    return observation
+
+
+def recovery_prelude(page, trial, record, scenario, fixture):
+    """Perform the first attempt, keeping this page alive for the later recovery."""
+    require(page.evaluate(OPFS_JOBS) == [], 'Preexisting OPFS jobs would confound recovery evidence')
+    if scenario == 'cancel-retry':
+        first_input = DOCS / 'vr180-studio/fixtures/stereo180-4k-12s-sbs.mp4'
+        shutil.copyfile(first_input, trial / 'cancel-input.mp4')
+        select_input(page, first_input)
+        configure(page, 'convert', 'sbs', 180, 2048)
+        start_operation(page, record)
+        previous = {'kind': 'cancel', 'inputGeneration': 1, 'inputSHA256': digest(first_input),
+                    'workerPost': last_post(page), 'status': 'RUNNING'}
+        record['previousAttempt'] = previous
+        require(previous['workerPost']['inputRevision'] == 2, 'Unexpected cancellation input revision')
+        require(previous['workerPost']['inputName'] == first_input.name and previous['workerPost']['inputBytes'] == first_input.stat().st_size, 'Cancellation input differs from the observed Worker post')
+        require(previous['workerPost']['settings'] == {'mode': 'convert', 'layout': 'sbs', 'fov': 180, 'eyeSize': 2048, 'bitrate': 25165824}, 'Cancellation conversion settings differ')
+        page.wait_for_function("document.querySelector('#cancel').disabled || (document.querySelector('#progress').value > 0 && document.querySelector('#progress').value < 1)", timeout=120000)
+        progress = page.evaluate("({busy: !document.querySelector('#cancel').disabled, value: document.querySelector('#progress').value, status: document.querySelector('#status').textContent})")
+        previous['progressBeforeCancel'] = progress
+        if not progress['busy'] or not 0 < progress['value'] < 1:
+            if page.locator('#receipt').is_enabled():
+                early = download_receipt(page, trial / 'receipt-before-cancel-opportunity.json')
+                if early.get('status') == 'failed':
+                    previous['status'] = 'FAIL'
+                    raise RuntimeError('Application failed before cancellation: ' + json.dumps(early.get('error')))
+            previous['status'] = 'OBSERVED_NOT_CANCELED'
+            raise NotCanceled('No incomplete positive progress was available for cancellation')
+        previous['opfsJobsBeforeCancel'] = page.evaluate(OPFS_JOBS)
+        require(previous['opfsJobsBeforeCancel'] == [{'name': previous['workerPost']['operationId'], 'kind': 'directory'}], 'OPFS job differs from observed operationId')
+        try:
+            page.locator('#cancel').click(timeout=1000)
+        except Exception as error:
+            previous['status'] = 'OBSERVED_NOT_CANCELED'
+            raise NotCanceled(f'Cancellation click could not be delivered: {error}') from error
+        page.wait_for_function("document.querySelector('#cancel').disabled && !document.querySelector('#run').disabled", timeout=15000)
+        previous['statusAfterCancel'] = page.locator('#status').inner_text()
+        if '取り消しました' not in previous['statusAfterCancel']:
+            if page.locator('#receipt').is_enabled():
+                ended = download_receipt(page, trial / 'receipt-after-cancel-request.json')
+                if ended.get('status') == 'failed':
+                    previous['status'] = 'FAIL'
+                    raise RuntimeError('Application failed during cancellation attempt: ' + json.dumps(ended.get('error')))
+            previous['status'] = 'OBSERVED_NOT_CANCELED'
+            raise NotCanceled('Completion/failure was observed instead of the cancellation acknowledgement')
+        page.wait_for_function(f'async () => (await ({OPFS_JOBS})()).length === 0', timeout=15000, polling=100)
+        previous.update(status='CANCELED_OBSERVED', opfsJobsAfterCancel=page.evaluate(OPFS_JOBS),
+                        runEnabled=page.locator('#run').is_enabled(),
+                        applicationCancellationReceipt=None,
+                        receiptNote='The application terminates the Worker on cancel and does not produce a cancellation receipt; this is external observation.')
+        require(previous['opfsJobsAfterCancel'] == [] and previous['runEnabled'], 'Cancellation cleanup or retry readiness failed')
+        record.update(inputGeneration=2, expectedInputRevision=4,
+                      recoveryScenario='Cancel 4K 12s conversion, then replace it with the small 180-degree input on the same page and run metadata-only copy; not a retry of the canceled input')
+        select_input(page, fixture)
+    else:
+        select_input(page, fixture)
+        configure(page, 'copy', 'tb', 360)
+        start_operation(page, record)
+        observed = last_post(page)
+        page.wait_for_function("document.querySelector('#cancel').disabled && !document.querySelector('#receipt').disabled", timeout=15000)
+        failure = download_receipt(page, trial / 'receipt-expected-failure.json')
+        require(failure.get('status') == 'failed' and failure.get('error', {}).get('message') == 'COPY_REQUIRES_180_DEGREES', 'Expected 360-degree copy rejection was not observed')
+        require(failure.get('output') is None, 'Rejected operation unexpectedly produced an output')
+        rejected = {'inputSHA256': digest(fixture), 'expectedInputRevision': 2,
+                    'expectedSettings': {'mode': 'copy', 'layout': 'tb', 'fov': 360}}
+        validate_receipt(failure, rejected, fixture, 'copy', expect_input_hash=False)
+        require((failure['operationId'], failure['inputRevision']) == (observed['operationId'], observed['inputRevision']), 'Failure receipt differs from observed Worker operation')
+        record['previousAttempt'] = {'kind': 'expected-failure', 'status': 'EXPECTED_FAILURE_OBSERVED',
+                                     'inputGeneration': 1, 'inputSHA256': digest(fixture),
+                                     'workerPost': observed, 'receipt': 'receipt-expected-failure.json',
+                                     'error': failure['error'], 'inputHashNote': 'Validation rejects before the application computes its input hash.'}
+        record['expectedInputRevision'] = 3
+
+
+def check_recovery_budget(out, trial, announced_bytes):
+    require(isinstance(announced_bytes, int) and announced_bytes > 0, 'Invalid prepared output size')
+    existing = sum(path.stat().st_size for path in out.rglob('*') if path.is_file())
+    # Conservative uncompressed/base64 bound leaves room for screenshots, final
+    # reports and tar/chunk overhead. Do not change output settings to fit it.
+    projected = ((existing + announced_bytes + 384 * 1024) * 4 + 2) // 3 + 64 * 1024
+    budget = {'existingEvidenceBytes': existing, 'announcedOutputBytes': announced_bytes,
+              'conservativeLogBytes': projected, 'limitBytes': LIMIT,
+              'scope': 'capacity of this evidence recovery route; not a user input/output limit',
+              'status': 'READY' if projected <= LIMIT else 'CAPACITY_BLOCKED'}
+    write(trial / 'recovery-budget.json', budget)
+    require(projected <= LIMIT, 'EVIDENCE_RECOVERY_CAPACITY: prepared MP4 exceeds this log recovery route budget; not downloaded; previous evidence retained')
+
+
 def download_receipt(page, path):
     details = page.locator('details.card')
     if details.get_attribute('open') is None:
@@ -272,19 +425,19 @@ def download_receipt(page, path):
     return json.loads(path.read_text(encoding='utf-8'))
 
 
-def validate_receipt(raw, record, fixture, mode):
+def validate_receipt(raw, record, fixture, mode, expect_input_hash=True):
     require(raw['build'] == BUILD, 'Wrong application build')
     require(isinstance(raw.get('operationId'), str) and re.fullmatch(r'[0-9a-f-]{36}', raw['operationId']), 'Missing operation ID')
-    # A fresh page runs inspect at revision 1, then the one media operation at 2.
-    require(raw.get('inputRevision') == 2, 'Unexpected input revision for this fresh page')
-    require(raw['input']['sha256'] == record['inputSHA256'], 'Receipt input hash differs')
+    require(raw.get('inputRevision') == record.get('expectedInputRevision', 2), 'Unexpected input revision')
+    require(raw['input']['sha256'] == (record['inputSHA256'] if expect_input_hash else None), 'Receipt input hash differs')
     require(raw['input']['bytes'] == fixture.stat().st_size, 'Receipt input size differs')
     settings = raw['settings']
     require(settings['mode'] == mode and settings['confirmed'] is True, 'Wrong mode/confirmation')
-    require(settings['layout'] == ('sbs' if mode == 'copy' else 'tb'), 'Wrong source eye layout')
-    require(settings['fov'] == (180 if mode == 'copy' else 360), 'Wrong source field of view')
+    expected = record['expectedSettings']
+    require(settings['layout'] == expected['layout'], 'Wrong source eye layout')
+    require(settings['fov'] == expected['fov'], 'Wrong source field of view')
     if mode == 'convert':
-        require(settings['eyeSize'] == 256 and settings['bitrate'] == 2000000, 'Wrong conversion size/bitrate')
+        require(settings['eyeSize'] == expected['eyeSize'] and settings['bitrate'] == expected['bitrate'], 'Wrong conversion size/bitrate')
         if raw.get('metrics'):
             require(raw['metrics']['jobId'] == raw['operationId'], 'Metric jobId differs from receipt operationId')
     record.update(operationId=raw['operationId'], inputRevision=raw['inputRevision'], receiptIdentityVerified=True)
@@ -320,16 +473,22 @@ def independent_check(trial, fixture, output, mode):
             'outputSHA256': digest(output), 'metadata': data})
 
 
-def run_trial(context, origin, out, name, mode, run_id, defer_verification=False):
-    trial = out / name
+def run_trial(context, origin, out, name, mode, run_id, defer_verification=False, scenario=None, eye_size=256):
+    trial = out / (scenario or name)
     trial.mkdir()
     fixture = DOCS / 'vr180-studio/fixtures' / f'{name}.mp4'
     shutil.copyfile(fixture, trial / 'input.mp4')
-    record = {'trialId': f'{run_id}-{name}', 'fixture': name, 'mode': mode,
+    layout, fov = ('sbs' if name.endswith('sbs') else 'tb'), (360 if '360' in name else 180)
+    record = {'trialId': f'{run_id}-{scenario or name}', 'fixture': name, 'mode': mode, 'scenario': scenario,
               'inputSHA256': digest(fixture), 'inputBytes': fixture.stat().st_size,
-              'inputGeneration': 1, 'startedAt': now(), 'status': 'STARTED',
+              'inputGeneration': 1, 'expectedInputRevision': 2, 'startedAt': now(), 'status': 'STARTED',
+              'expectedSettings': {'mode': mode, 'layout': layout, 'fov': fov, 'eyeSize': eye_size,
+                                   'bitrate': min(40000000, max(2000000, eye_size ** 2 * 6))},
               'mediaOperationStarted': False, 'downloadRecovered': False, 'independentVerificationPassed': False,
               'scope': 'synthetic cloud-copy UI test; VR player, real footage, usability and speed improvements untested'}
+    if mode == 'copy':
+        record['expectedSettings'].pop('eyeSize')
+        record['expectedSettings'].pop('bitrate')
     page = context.new_page()
     page.set_default_timeout(15000)
     errors, workers = [], []
@@ -341,25 +500,28 @@ def run_trial(context, origin, out, name, mode, run_id, defer_verification=False
         api = page.evaluate(API_PROBE)
         write(trial / 'browser-capabilities.json', api)
         record['browserUserAgent'] = api['userAgent']
-        page.locator('#file').set_input_files(str(fixture))
-        page.wait_for_function("document.querySelector('#status').textContent.includes('左右配置と視野角を確認して')")
-        for selector, value in [('#layout', 'sbs' if mode == 'copy' else 'tb'),
-                                ('#fov', '180' if mode == 'copy' else '360'), ('#mode', mode)]:
-            page.locator(selector).select_option(value)
-            page.wait_for_function("document.querySelector('#cancel').disabled")
-        if mode == 'convert':
-            page.locator('#size').select_option('256')
-            page.wait_for_function("document.querySelector('#cancel').disabled")
-        page.locator('#confirmed').check()
-        page.wait_for_function("document.querySelector('#cancel').disabled && !document.querySelector('#run').disabled")
-        page.locator('#run').click()
-        record['mediaOperationStarted'] = True
-        page.wait_for_function("document.querySelector('#cancel').disabled && !document.querySelector('#receipt').disabled", timeout=120000)
+        if scenario:
+            record['samePageRecovery'] = True
+            recovery_prelude(page, trial, record, scenario, fixture)
+        else:
+            select_input(page, fixture)
+        configure(page, mode, layout, fov, eye_size)
+        start_operation(page, record)
+        page.wait_for_function("document.querySelector('#cancel').disabled && !document.querySelector('#receipt').disabled", timeout=180000 if '4k' in name else 120000)
         raw = download_receipt(page, trial / 'receipt-pre-download.json')
         record['receiptStatus'] = raw.get('status')
         record['codecCapabilities'] = raw.get('capabilities') or (raw.get('metrics') or {}).get('capabilities')
         validate_receipt(raw, record, fixture, mode)
         require(raw['status'] == 'prepared', 'Application failure: ' + json.dumps(raw.get('error'), ensure_ascii=False))
+        if scenario:
+            current = last_post(page, record['expectedInputRevision'])
+            previous = record['previousAttempt']['workerPost']
+            require(raw['operationId'] == current['operationId'] != previous['operationId'], 'Retry operation IDs were not distinct/consistent')
+            record['recoveryLink'] = {'previousOperationId': previous['operationId'], 'previousInputRevision': previous['inputRevision'],
+                                      'operationId': raw['operationId'], 'inputRevision': raw['inputRevision'],
+                                      'previousInputGeneration': 1, 'inputGeneration': record['inputGeneration'],
+                                      'samePage': True, 'workerPost': current}
+        check_recovery_budget(out, trial, raw['output']['bytes'])
         with page.expect_download(timeout=15000) as event:
             page.locator('#download').click()
         suggested = event.value.suggested_filename
@@ -383,7 +545,7 @@ def run_trial(context, origin, out, name, mode, run_id, defer_verification=False
             independent_check(trial, fixture, output, mode)
             record.update(status='PASS', independentVerificationPassed=True)
     except (Exception, KeyboardInterrupt) as error:
-        record.update(status='FAIL', error=f'{type(error).__name__}: {error}')
+        record.update(status='OBSERVED_NOT_CANCELED' if isinstance(error, NotCanceled) else 'FAIL', error=f'{type(error).__name__}: {error}')
         (trial / 'failure-traceback.txt').write_text(traceback.format_exc(), encoding='utf-8')
         try:
             failure = download_receipt(page, trial / 'receipt-on-failure.json')
@@ -394,6 +556,13 @@ def run_trial(context, origin, out, name, mode, run_id, defer_verification=False
             record.update(failureReceiptRecovered=False, failureReceiptError=str(recovery_error))
     finally:
         record.update(wallSeconds=time.monotonic() - start, pageErrors=errors, workers=workers, finishedAt=now())
+        try:
+            posts = page.evaluate('globalThis.__vr180HarnessWorkerPosts ?? null')
+            if posts is not None:
+                write(trial / 'worker-post-observations.json', {'observerSHA256': hashlib.sha256(WORKER_POST_OBSERVER.encode()).hexdigest(),
+                      'scope': 'External harness observation; not an application receipt', 'posts': posts})
+        except Exception as error:
+            record['observerCaptureError'] = str(error)
         for filename, action in [
             ('page.jpg', lambda: page.screenshot(path=str(trial / 'page.jpg'), type='jpeg', quality=65, full_page=True, timeout=5000)),
             ('diagnostics.txt', lambda: (trial / 'diagnostics.txt').write_text(page.locator('#diagnostics').inner_text(timeout=3000), encoding='utf-8')),
@@ -471,13 +640,15 @@ def emit_evidence(out, result):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True, help='New evidence directory outside the checkout')
+    parser.add_argument('--suite', choices=['small', 'followup'], default='small',
+                        help='Followup runs cancel/retry, expected failure/retry and native 4K 2s/12s; it does not rerun the small suite')
     parser.add_argument('--defer-independent-verification', action='store_true',
-                        help='Recover both small outputs; report verification pending until fixed verifiers run in the receiving environment')
+                        help='Recover outputs; report verification pending until independent verifiers run in the receiving environment')
     args = parser.parse_args()
     out = args.output.resolve()
     require(not out.is_relative_to(ROOT), 'Evidence must be outside the checkout')
     out.mkdir(parents=True, exist_ok=False)
-    result = {'schema': 'vr180-cloud-validation-v1', 'status': 'BLOCKED', 'startedAt': now(),
+    result = {'schema': 'vr180-cloud-validation-v1', 'suite': args.suite, 'status': 'BLOCKED', 'startedAt': now(),
               'runId': f"{os.environ.get('GITHUB_RUN_ID', 'missing')}-{os.environ.get('GITHUB_RUN_ATTEMPT', 'missing')}",
               'github': {key: os.environ.get(key) for key in ('GITHUB_REPOSITORY', 'GITHUB_SHA', 'GITHUB_REF', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT')},
               'browserSandboxRequired': True, 'browserTrials': [], 'pagesByteCheck': 'NOT_RUN',
@@ -494,6 +665,12 @@ def main():
     try:
         if os.environ.get('GITHUB_REPOSITORY') != 'Kushyameln01/kushyameln-works':
             raise Blocked('This harness is scoped to Kushyameln01/kushyameln-works')
+        if args.suite == 'followup':
+            require(args.defer_independent_verification, 'Followup requires explicit deferred independent verification; the fixed small pixel oracle is bounded to 512px/eye and 120 frames')
+            result['smallSuitePrerequisite'] = {'runId': '39007380358-1', 'checkoutCommit': '78c9c2bce9f21a9cf70d28e120e7855cb607ddd0',
+                                               'basis': 'Recovered outputs independently verified PASS in the receiving environment; not rerun by this suite'}
+            result['workerPostObserver'] = {'enabled': True, 'sha256': hashlib.sha256(WORKER_POST_OBSERVER.encode()).hexdigest(),
+                                           'scope': 'Forwards original Worker.postMessage this/args/return/exception; observes only IDs/settings/file metadata'}
         source = source_check(out)
         result['checkoutCommit'] = source['checkoutCommit']
         wait_for_pages(out, source['checkoutCommit'])
@@ -511,6 +688,8 @@ def main():
             browser = p.chromium.launch(executable_path='/usr/bin/google-chrome', headless=True, chromium_sandbox=True, timeout=30000)
             result['browserVersion'] = browser.version
             context = browser.new_context(accept_downloads=True)
+            if args.suite == 'followup':
+                context.add_init_script(WORKER_POST_OBSERVER)
             blocked_requests = []
             def local_only(route):
                 url = route.request.url
@@ -522,12 +701,17 @@ def main():
             context.route('**/*', local_only)
             try:
                 completed_status = RECOVERED if args.defer_independent_verification else 'PASS'
-                for name, mode in [('stereo180-sbs', 'copy'), ('stereo360-tb', 'convert')]:
-                    trial = run_trial(context, origin, out, name, mode, result['runId'], args.defer_independent_verification)
+                cases = [('stereo180-sbs', 'copy', None, 256), ('stereo360-tb', 'convert', None, 256)] if args.suite == 'small' else [
+                    ('stereo180-sbs', 'copy', 'cancel-retry', 256),
+                    ('stereo360-tb', 'convert', 'failure-retry', 256),
+                    ('stereo180-4k-2s-sbs', 'convert', None, 2048),
+                    ('stereo180-4k-12s-sbs', 'convert', None, 2048)]
+                for name, mode, scenario, eye_size in cases:
+                    trial = run_trial(context, origin, out, name, mode, result['runId'], args.defer_independent_verification, scenario, eye_size)
                     result['browserTrials'].append(trial)
                     if trial['status'] != completed_status:
                         break
-                result['status'] = completed_status if len(result['browserTrials']) == 2 and all(t['status'] == completed_status for t in result['browserTrials']) else 'FAIL'
+                result['status'] = completed_status if len(result['browserTrials']) == len(cases) and all(t['status'] == completed_status for t in result['browserTrials']) else result['browserTrials'][-1]['status']
                 result['independentVerificationPassed'] = result['status'] == 'PASS'
                 result['blockedBrowserRequests'] = blocked_requests
             finally:
@@ -547,7 +731,7 @@ def main():
             server.shutdown()
             server.server_close()
         result.update(finishedAt=now(), wallSeconds=time.monotonic() - started,
-                      executedMediaTrials=sum(t['mediaOperationStarted'] for t in result['browserTrials']))
+                      executedMediaTrials=sum(t.get('mediaOperationCount', int(t['mediaOperationStarted'])) for t in result['browserTrials']))
         write(out / 'run.json', result)
         try:
             complete = emit_evidence(out, result)
