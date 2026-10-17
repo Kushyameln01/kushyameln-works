@@ -6,7 +6,7 @@
  */
 // VR180 private prototype. Fixed upstream adapter; never imported by the public product.
 import {createIndexBudget, createIndexStore, INDEX_PAGE_BYTES as PAGE} from '../index-prototype/index-store.mjs';
-import {inspectMp4} from '../../../docs/shared/vr180/mp4.mjs';
+import {inspectMp4} from './mp4-output-inspect.mjs';
 
 export const PROFILE = Object.freeze({maxSamples: 100000, maxTracks: 2, maxChunkSamples: 4096,
   maxChunkBytes: 4 * 1024 ** 2, sortReservedBytes: 2 * 100000 * 8, maxLeafBytes: PAGE});
@@ -45,14 +45,19 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
   if (!/^[A-Za-z0-9_-]{1,64}$/.test(jobId)) fail('INVALID_OUTPUT_INDEX_JOB');
   if (!root?.getDirectoryHandle || !root?.removeEntry) fail('OUTPUT_INDEX_ROOT_UNAVAILABLE');
   if (layout !== null && !['sbs', 'tb'].includes(layout)) fail('INVALID_OUTPUT_INDEX_LAYOUT');
+  const canceler = new AbortController();
+  const externalAbort = () => canceler.abort(signal?.reason);
+  signal?.addEventListener('abort', externalAbort, {once: true});
+  if (signal?.aborted) externalAbort();
+  const workSignal = canceler.signal;
   let pendingCleanup, releaseLease, directory, ownsJob = false, removed = false, disposing, active, stopped = false, bound;
   let sort, page, releaseBuffers = () => {}, spool, spoolClosed = false, spoolFile, ftyp;
   let spoolBytes = 0, sampleCount = 0, moovPosition = null, verification = null, metadataSource = null;
   const tracks = [], stores = [];
-  const stats = {peakChunkSamples: 0, peakChunkBytes: 0, peakTimestampSamples: 0, peakSortBytes: 0,
+  const stats = {peakChunkSamples: 0, peakChunkBytes: 0, peakChunkBackingBytes: 0, peakTimestampSamples: 0, peakSortBytes: 0,
     metadataWriteBytes: 0, metadataWriteCalls: 0, metadataReadBytes: 0, metadataReads: 0, metadataFlushes: 0,
     metadataClosed: false, peakWriterSections: 0, peakWriterChunks: 0, peakExplicitReservedBytes: 0};
-  const check = () => { if (stopped || signal?.aborted) throw new DOMException('Output index canceled.', 'AbortError'); };
+  const check = () => { if (stopped || workSignal.aborted) throw new DOMException('Output index canceled.', 'AbortError'); };
   const peak = () => { stats.peakExplicitReservedBytes = Math.max(stats.peakExplicitReservedBytes, budget.usedBytes); };
   const operation = work => {
     if (active) return Promise.reject(Error('OUTPUT_INDEX_BUSY'));
@@ -60,21 +65,23 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
     p.finally(() => { if (active === p) active = null; }).catch(() => {}); return p;
   };
   async function dispose() {
-    if (removed) return; if (disposing) return disposing; stopped = true;
+    if (removed) return; if (disposing) return disposing; stopped = true; canceler.abort();
     disposing = (async () => {
       try {
         await active?.catch(() => {});
+        for (const state of tracks) state.chunk = null;
         if (pendingCleanup) { await pendingCleanup(); pendingCleanup = null; }
         for (const store of stores) await store.dispose();
         if (spool && !spoolClosed) { spool.close(); spoolClosed = true; }
         if (ownsJob) await root.removeEntry(jobId, {recursive: true});
         if (releaseLease) { await releaseLease(); releaseLease = null; }
         releaseBuffers(); sort = null; page = null; removed = true;
+        signal?.removeEventListener('abort', externalAbort);
       } finally { disposing = null; }
     })(); return disposing;
   }
   try {
-    check(); releaseLease = await lease(lockManager, `vr180:output-index:${jobId}`); check();
+    check(); releaseLease = await lease(lockManager, `vr180:index-job:${jobId}`); check();
     try { await root.getDirectoryHandle(jobId); fail('OUTPUT_INDEX_JOB_ALREADY_EXISTS'); }
     catch (error) { if (error.name !== 'NotFoundError') throw error; }
     directory = await root.getDirectoryHandle(jobId, {create: true}); ownsJob = true;
@@ -89,7 +96,7 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
   async function makeStore(track, name, width) {
     check(); let store;
     try { store = await createIndexStore({root: directory, jobId: `${jobId}-t${track.track.id}-${name}`,
-      schema: {version: 1, recordBytes: width, endianness: 'little'}, budget, signal, lockManager, yieldTask}); }
+      schema: {version: 1, recordBytes: width, endianness: 'little'}, budget, signal: workSignal, lockManager, yieldTask}); }
     catch (error) { pendingCleanup = error.retryCleanup; throw error; }
     stores.push(store); peak(); return store;
   }
@@ -158,14 +165,18 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
       state.chunk.start = Math.min(state.chunk.start, sample.timestamp);
       if (sample.timestamp - state.chunk.start >= 0.5) await flushChunk(state, muxer.writer);
     }
-    state.chunk ??= {start: sample.timestamp, bytes: 0, samples: []};
+    state.chunk ??= {start: sample.timestamp, bytes: 0, backingBytes: 0, samples: []};
     if (state.chunk.samples.length >= PROFILE.maxChunkSamples || sample.size > PROFILE.maxChunkBytes - state.chunk.bytes) fail('OUTPUT_INDEX_CHUNK_LIMIT');
+    // Conservatively count every borrowed backing allocation, even shared buffers.
+    const backingBytes = checked(original.data?.buffer?.byteLength);
+    if (backingBytes > PROFILE.maxChunkBytes - state.chunk.backingBytes) fail('OUTPUT_INDEX_CHUNK_BACKING_LIMIT');
     await state.tables.samples.appendRecord(writeSample(buffer(64), sample));
-    state.chunk.samples.push({id: state.count, data: original.data}); state.chunk.bytes += sample.size;
+    state.chunk.samples.push({id: state.count, data: original.data}); state.chunk.bytes += sample.size; state.chunk.backingBytes += backingBytes;
     state.count++; sampleCount++; state.bytes += sample.size;
     state.min = Math.min(state.min, sample.timestamp); state.end = Math.max(state.end, sample.timestamp + sample.duration);
     stats.peakChunkSamples = Math.max(stats.peakChunkSamples, state.chunk.samples.length);
-    stats.peakChunkBytes = Math.max(stats.peakChunkBytes, state.chunk.bytes); peak();
+    stats.peakChunkBytes = Math.max(stats.peakChunkBytes, state.chunk.bytes);
+    stats.peakChunkBackingBytes = Math.max(stats.peakChunkBackingBytes, state.chunk.backingBytes); peak();
   }
   async function appendRun(store, values) {
     const bytes = buffer(values.length * 4), d = view(bytes);
@@ -223,7 +234,7 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
     if (layout && box.type === 'avc1') {
       const state = tracks.find(s => s.track.type === 'video'), {width, height} = state.track.info;
       if (layout === 'sbs' ? width !== height * 2 : height !== width * 2) fail('VR180_GEOMETRY_MISMATCH');
-      box.children = [...box.children.filter(b => !['st3d', 'sv3d'].includes(b.type)),
+      box.children = [...box.children.filter(b => b && !['st3d', 'sv3d'].includes(b.type)),
         full('st3d', Uint8Array.of(0, 0, 0, 0, layout === 'sbs' ? 2 : 1)),
         {type: 'sv3d', children: [full('svhd', new Uint8Array([0, 0, 0, 0, ...new TextEncoder().encode('Kushyameln Works VR180 b1\0')])),
           {type: 'proj', children: [full('prhd', be(0, 0, 0, 0)), full('equi', be(0, 0, 0, 0x40000000, 0x40000000))]}]}];
@@ -289,7 +300,7 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
     get metrics() { peak(); return {profile: PROFILE, jobId, sampleCount, moovPosition, moovBytes: spoolBytes, verification,
       ...stats, explicitReservedBytes: budget.usedBytes, budgetPeakBytes: budget.peakBytes, disposed: removed,
       tracks: tracks.map(s => ({id: s.track.track.id, samples: s.count, chunks: s.chunkCount,
-        liveChunkSamples: s.chunk?.samples.length ?? 0, liveChunkBytes: s.chunk?.bytes ?? 0,
+        liveChunkSamples: s.chunk?.samples.length ?? 0, liveChunkBytes: s.chunk?.bytes ?? 0, liveChunkBackingBytes: s.chunk?.backingBytes ?? 0,
         tables: Object.fromEntries(Object.entries(s.tables).map(([name, store]) => [name, store.metrics]))}))}; },
     get metadataSource() { return metadataSource; },
     start(muxer) {
@@ -311,7 +322,7 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
       check(); spool.flush(); stats.metadataFlushes++; spool.close(); spoolClosed = true; stats.metadataClosed = true;
       const file = await spoolFile.getFile(); if (file.size !== size) fail('OUTPUT_INDEX_SPOOL_FILE_MISMATCH');
       const extent = checked(moovPosition + size); metadataSource = sourceFor(file, mdatPosition, mdatBytes, extent);
-      verification = await inspectMp4(metadataSource, {signal}); check();
+      verification = await inspectMp4(metadataSource, {signal: workSignal}); check();
       if (layout && !verification.projection) fail('OUTPUT_INDEX_VR_METADATA_MISSING');
       return {size, extent, source: metadataSource};
     }); },

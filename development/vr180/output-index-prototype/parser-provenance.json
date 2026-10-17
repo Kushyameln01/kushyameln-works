@@ -1,0 +1,14 @@
+{
+  "source": "docs/shared/vr180/mp4.mjs",
+  "sourceSha256": "1e7189d7b4d9e55b7502fb4d3b985bf8344a1b905bfa1942a926c388345bb892",
+  "privateSha256": "d841bab27d299316a890f8b16c628ed486ea803982269293f3faf10fe66ef229",
+  "patchSha256": "4a86f965c2ebfbacc4373f055cde567f3f976bdf0df3eb38378625d5a3344bb7",
+  "scope": "Output-only pinned version-0 signed cslg + signed ctts; no public input acceptance change",
+  "reason": "Unmodified fixed Mediabunny alternating-ctts output is rejected by the public parser because cslg is not permitted.",
+  "references": [
+    "https://mp4ra.org/registered-types/boxes",
+    "https://developer.apple.com/documentation/quicktime-file-format/composition_shift_least_greatest_atom",
+    "https://github.com/Vanilagy/mediabunny/blob/0664a57bf2f40e5c4efa176c75ebf1d60df69eb8/src/isobmff/isobmff-boxes.ts#L1320"
+  ],
+  "semanticScope": "MP4RA identifies the ISO box; Apple documents the summary fields. Exact signed-field and positive shift interpretation here is the pinned ISO generator contract, not generic QuickTime ctts semantics."
+}
