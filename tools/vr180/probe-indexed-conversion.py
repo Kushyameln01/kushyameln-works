@@ -40,6 +40,15 @@ def cases_for(suite):
                 case('tb360-aac',PUBLIC+'stereo360-tb.mp4','tb',360),
                 case('cancel',PUBLIC+'stereo180-sbs.mp4',expectCancel=True,handleKey='retry'),
                 case('retry',PUBLIC+'stereo180-sbs.mp4',handleKey='retry')]
+    if suite=='scale':
+        def scale(name,source,**extra):
+            item=case(name,PUBLIC+source,**extra)
+            item['settings'].update(eyeSize=2048,bitrate=25165824)
+            return item
+        return [scale('4k-2s','stereo180-4k-2s-sbs.mp4'),
+                scale('4k-12s-cancel','stereo180-4k-12s-sbs.mp4',expectCancel=True,
+                      cancelAfterBytes=1048576,handleKey='retry-scale'),
+                scale('4k-12s-retry','stereo180-4k-12s-sbs.mp4',handleKey='retry-scale')]
     raise ValueError('Unknown suite')
 
 WORKER=r"""import * as fork from '/fork.mjs';
@@ -73,7 +82,10 @@ async function run({namespace,cases}){
       onCleanup:cleanup=>{ownerCleanup=cleanup;},onOutputCreated:output=>{tx=output;},
       onMetrics:metrics=>{latestMetrics=metrics;},onProgress:progress=>{
        row.progressEvents++;row.lastProgress=progress;
-       if(trial.expectCancel&&!row.cancelRequested&&progress.videoFrames>=10){
+       const cancelReady=trial.cancelAfterBytes
+        ? progress.phase==='convert'&&progress.outputBytes>=trial.cancelAfterBytes
+        : progress.videoFrames>=10;
+       if(trial.expectCancel&&!row.cancelRequested&&cancelReady){
         row.cancelRequested=true;row.cancelAt=progress;aborter.abort();
        }
       }});
@@ -128,7 +140,7 @@ CLEANUP=base.PAGE_CLEANUP.replace('__outputProbe','__indexedProbe')
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--bundle',type=Path,required=True);parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument('--suite',choices=['small'],default='small');args=parser.parse_args()
+    parser.add_argument('--suite',choices=['small','scale'],default='small');args=parser.parse_args()
     out,bundle=args.output.resolve(),args.bundle.resolve()
     cloud.require(not out.exists() and not out.is_relative_to(cloud.ROOT),'Use new output directory outside checkout')
     cloud.require(bundle.is_file() and not bundle.is_symlink() and not bundle.is_relative_to(cloud.ROOT),'Use built fork outside checkout')

@@ -278,7 +278,8 @@ jobs:
       github.repository == 'Kushyameln01/kushyameln-works' &&
       github.event.repository.private == false &&
       startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
-      contains(github.event.head_commit.message, '[vr180-indexed-conversion-small]')
+      (contains(github.event.head_commit.message, '[vr180-indexed-conversion-small]') ||
+      contains(github.event.head_commit.message, '[vr180-indexed-conversion-scale]'))
     runs-on: ubuntu-24.04
     timeout-minutes: 13
     env:
@@ -308,6 +309,7 @@ jobs:
         timeout-minutes: 10
         env:
           VR180_DEPENDENCIES_READY: ${{ steps.dependencies.outcome == 'success' }}
+          VR180_INDEXED_SUITE: ${{ contains(github.event.head_commit.message, '[vr180-indexed-conversion-scale]') && 'scale' || 'small' }}
         shell: bash
         run: |
           vr180_combined_prefix="$(mktemp -d "$RUNNER_TEMP/vr180-combined-esbuild.XXXXXX")"
@@ -317,7 +319,7 @@ jobs:
           cp development/vr180/build-inputs/toolchain/package-lock.json "$vr180_combined_prefix/"
           npm ci --prefix "$vr180_combined_prefix" --ignore-scripts --include=dev --include=optional --no-audit --no-fund
           node tools/vr180/build-input-index.mjs --combined --esbuild-dir "$vr180_combined_prefix/node_modules/esbuild" --output-dir "$vr180_combined_build/result"
-          python3 tools/vr180/probe-indexed-conversion.py --bundle "$vr180_combined_build/result/mediabunny-input-output-index.mjs" --suite small --output "$RUNNER_TEMP/vr180-indexed-conversion-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          python3 tools/vr180/probe-indexed-conversion.py --bundle "$vr180_combined_build/result/mediabunny-input-output-index.mjs" --suite "$VR180_INDEXED_SUITE" --output "$RUNNER_TEMP/vr180-indexed-conversion-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
 
   artifact-transfer-64:
     if: >-
