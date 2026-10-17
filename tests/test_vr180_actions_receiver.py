@@ -106,8 +106,20 @@ class ActionsReceiverTests(unittest.TestCase):
         self.assertNotIn('Authorization', requests[0].headers)
         self.assertIn('/runs/42/artifacts?', requests[0].full_url)
 
-    def test_large_profile_not_enabled_by_receipt(self):
-        with self.assertRaisesRegex(ValueError, 'SMALL_PROFILE_ONLY'):
+    def test_long_profile_identity_requires_its_own_producer_and_receiver_jobs(self):
+        for profile in ('p5-5gb', 'p5-10gb'):
+            receipt = copy.deepcopy(self.receipt); receipt['profile'] = profile
+            receipt['identity']['job'] = 'p5-long-producer'
+            i = receipt['identity']
+            receipt['completion']['artifact']['name'] = f"vr180-seg-{profile}-{i['runId']}-{i['runAttempt']}-{i['job']}-complete"
+            env = dict(self.env, GITHUB_JOB='p5-long-receiver')
+            self.assertEqual(m.validate_receipt(receipt,profile,env),i)
+            with self.assertRaisesRegex(ValueError,'PRODUCER_IDENTITY'):
+                m.validate_receipt(receipt,profile,dict(env,GITHUB_JOB='p5-calibration-receiver'))
+        self.assertEqual(m.DEADLINE_SECONDS,{'p5-5gb':2700,'p5-10gb':3600})
+
+    def test_profile_mismatch_not_enabled_by_receipt(self):
+        with self.assertRaisesRegex(ValueError, 'ENABLED_PROFILE_REQUIRED'):
             m.validate_receipt(self.receipt, 'p5-10gb', self.env)
 
     def test_cancellation_waits_for_adapter_group_before_failure_evidence(self):

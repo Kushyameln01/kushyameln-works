@@ -20,7 +20,9 @@ r = load('segmented_receiver', Path(__file__).with_name('receive-segmented-artif
 c = load('cloud_evidence', Path(__file__).with_name('cloud-validate.py'))
 SMALL = ('service-8mib', 'single-128mib')
 MEDIA = 'p5-receiver-calibration32'
-ENABLED = SMALL + (MEDIA,)
+LONG = ('p5-5gb', 'p5-10gb')
+ENABLED = SMALL + (MEDIA,) + LONG
+DEADLINE_SECONDS = {'p5-5gb': 2700, 'p5-10gb': 3600}
 SENDER_FILES = ['action.yml', 'main.cjs', 'transfer.cjs', 'sdk-worker.cjs',
                 'package.json', 'package-lock.json', 'sdk-provenance.json']
 
@@ -53,14 +55,15 @@ def install_cancellation():
 
 
 def validate_receipt(receipt, profile, env):
-    r.need(profile in ENABLED and receipt['profile'] == profile, 'SMALL_PROFILE_ONLY')
-    is_media = profile == MEDIA
+    r.need(profile in ENABLED and receipt['profile'] == profile, 'ENABLED_PROFILE_REQUIRED')
+    is_media = profile not in SMALL
+    is_long = profile in LONG
     expected = {'repository': env['GITHUB_REPOSITORY'], 'commit': env['GITHUB_SHA'],
                 'ref': env['GITHUB_REF'], 'runId': env['GITHUB_RUN_ID'],
                 'runAttempt': int(env['GITHUB_RUN_ATTEMPT']),
-                'job': 'p5-receiver-calibration' if is_media else 'segmented-artifact-probe'}
+                'job': 'p5-long-producer' if is_long else 'p5-receiver-calibration' if is_media else 'segmented-artifact-probe'}
     r.need(receipt['identity'] == expected and expected['repository'] == 'Kushyameln01/kushyameln-works'
-           and env['GITHUB_JOB'] == ('p5-calibration-receiver' if is_media else 'segmented-artifact-receiver')
+           and env['GITHUB_JOB'] == ('p5-long-receiver' if is_long else 'p5-calibration-receiver' if is_media else 'segmented-artifact-receiver')
            and re.fullmatch(r'[0-9a-f]{40}', expected['commit'])
            and re.fullmatch(r'[0-9]+', expected['runId'])
            and expected['ref'].startswith('refs/heads/codex/vr180-plan-'), 'PRODUCER_IDENTITY')
@@ -164,7 +167,8 @@ def download(artifact, directory, deadline):
 
 def recover(receipt, profile, out, env=os.environ):
     identity = validate_receipt(receipt, profile, env)
-    is_media = profile == MEDIA
+    is_media = profile not in SMALL
+    is_long = profile in LONG
     r.need(not out.exists() and not out.is_symlink()
            and out.parent.resolve() == Path(env['RUNNER_TEMP']).resolve(), 'NEW_RUNNER_TEMP_DIRECTORY')
     out.mkdir(); evidence = out/'evidence'; evidence.mkdir(); stage = out/'stage'; stage.mkdir()
@@ -174,7 +178,7 @@ def recover(receipt, profile, out, env=os.environ):
         'receiverJob': env['GITHUB_JOB'], 'checkoutCommit': identity['commit'],
         'hostKind': 'Separate fresh GitHub Actions job, not the Codex local filesystem',
         'fullMediaValidation': 'PENDING' if is_media else 'NOT_APPLICABLE_SYNTHETIC_BYTES', 'startedUnix': time.time()}
-    deadline = time.time()+1200; downloads = []
+    deadline = time.time()+DEADLINE_SECONDS.get(profile, 1200); downloads = []
     try:
         own = ['tools/vr180/receive-in-actions.py', 'tools/vr180/receive-segmented-artifact.py',
                'tools/vr180/cloud-validate.py', '.github/workflows/vr180-candidate-validation.yml']
@@ -185,10 +189,25 @@ def recover(receipt, profile, out, env=os.environ):
                     'tools/vr180/verify-metadata.py', 'tools/vr180/record-ffmpeg-toolchain.py',
                     'development/vr180/p5-calibration-prototype/probe-calibration.py',
                     'tools/vr180/probe-output-index.py', 'tools/vr180/probe-indexed-conversion.py']
+        if is_long:
+            own += ['tools/vr180/receive-long-media-evidence.py',
+                    'development/vr180/p5-long-prototype/probe-long.py',
+                    'development/vr180/p5-long-prototype/oracle.py',
+                    'development/vr180/p5-long-prototype/streaming.py',
+                    'development/vr180/p5-long-prototype/evidence-bundle.py',
+                    'development/vr180/p5-long-prototype/frame.mjs',
+                    'development/vr180/p5-long-prototype/profile.mjs',
+                    'development/vr180/p5-long-prototype/worker.mjs',
+                    'development/vr180/p5-long-prototype/frame-provenance.json',
+                    'development/vr180/p5-calibration-prototype/frame.mjs',
+                    'tools/vr180/probe-persistent-storage.py']
         source_hashes = exact_sources(own, identity['commit']); report['sourceSHA256'] = source_hashes
         if is_media:
             media_helper = load('media_receiver', Path(__file__).with_name('receive-media-evidence.py'))
-            cal, oracle, dependencies = media_helper.prepare_oracle(Path(env['RUNNER_TEMP'])/'vr180-receiver-oracle.json', evidence)
+            common_helper = media_helper
+            if is_long:
+                media_helper = load('long_media_receiver', Path(__file__).with_name('receive-long-media-evidence.py'))
+            cal, oracle, dependencies = common_helper.prepare_oracle(Path(env['RUNNER_TEMP'])/'vr180-receiver-oracle.json', evidence)
             r.write_json(evidence/'receiver-oracle-dependencies.json', dependencies)
         r.write_json(evidence/'producer-receipt.json', receipt)
         metadata = public_metadata(identity, deadline); r.write_json(evidence/'service-metadata.json', metadata)
@@ -203,13 +222,13 @@ def recover(receipt, profile, out, env=os.environ):
         r.write_json(recovery/'recovery.json', state, deadline)
         manifest = r.read_json(recovery/'completion.json', 256*1024)
         producer_paths = ['development/vr180/artifact-transfer-action/'+n for n in SENDER_FILES]
-        producer_paths += ([media_helper.PREPARE, media_helper.CALIBRATION] if is_media else ['tools/vr180/probe-segmented-transfer.py'])
+        producer_paths += ([media_helper.PRODUCER] if is_long else [media_helper.PREPARE, media_helper.CALIBRATION] if is_media else ['tools/vr180/probe-segmented-transfer.py'])
         producer_hashes = exact_sources(producer_paths, identity['commit'])
         r.need(manifest['provenance']['sourceHashes'] == producer_hashes, 'PRODUCER_SOURCE_CLOSURE')
         if is_media:
             media_helper.validate_generator(manifest, producer_hashes)
             report.update(phase='producer-evidence-download', activeArtifactId=manifest['evidenceBundle']['artifact']['id'])
-            quality = recover_bundle(manifest, receipt, metadata, stage, evidence, deadline, downloads, media_helper)
+            quality = recover_bundle(manifest, receipt, metadata, stage, evidence, deadline, downloads, common_helper)
             report['producerMediaVerification'] = media_helper.validate_original_records(evidence/'producer', manifest, exact_sources)
         r.write_json(evidence/'completion.json', manifest)
         for f in manifest['files']:
@@ -225,7 +244,7 @@ def recover(receipt, profile, out, env=os.environ):
         r.write_json(evidence/'downloads.json', downloads)
         if is_media:
             report['phase'] = 'independent-complete-media-inspection'
-            report['receiverMediaVerification'] = media_helper.verify_media(recovery, evidence, deadline, cal, oracle, result['wholeFiles'])
+            report['receiverMediaVerification'] = media_helper.verify_media(recovery, evidence, deadline, cal, oracle, result['wholeFiles'], manifest) if is_long else media_helper.verify_media(recovery, evidence, deadline, cal, oracle, result['wholeFiles'])
             media_pass = quality['mediaVerdict'] == 'PASS' and report['receiverMediaVerification']['status'] == 'PASS'
             report['fullMediaValidation'] = 'PASS' if media_pass else 'FAIL_COMPLETE_SCAN'
         r.need(exact_sources(own, identity['commit']) == source_hashes, 'RECEIVER_SOURCE_CHANGED')

@@ -37,8 +37,11 @@ deadline is also checked after cleanup and before/after manifest publication;
 every stage/transfer/oracle deadline is capped by it. A caught deadline during
 cleanup is rethrown after the independent cleanup attempts. Failure cleanup
 and bounded evidence emission may finish later, but cannot become READY.
-Only this run's recorded publication inodes are rolled back on failure. An unfinished stage
-is FAIL with no source/completion manifest. Upload is a separate root-owned
+Only this run's recorded publication inodes are rolled back on failure. Each
+owner is attempted independently; unknown replacements and failed removals are
+reported as HOLD while the primary error is preserved. An unfinished stage
+is FAIL, never ready for sending. If a failed removal leaves a manifest on disk,
+the nonzero producer exit still prohibits sender execution. Upload is a separate root-owned
 20/30-minute stage within the 90/120-minute job. These budgets are candidate
 bounds, not measured completion promises; the workflow's overall deadline is
 also authoritative. 10 GB may start only after the separate 5 GB acceptance
@@ -114,8 +117,8 @@ python development/vr180/p5-long-prototype/probe-long.py \
 ```
 
 The new output directory must be under `RUNNER_TEMP` and outside the checkout.
-`media/` contains `input.mp4`, `output.mp4`, `source-manifest.json` and
-`quality-evidence.json`. `evidence/` contains bounded observations, full-scan
+`media/` contains `input.mp4`, `output.mp4`, `source-manifest.json`,
+`quality-evidence.json` and `producer-evidence.tar.gz`. `evidence/` contains bounded observations, full-scan
 reports, logs, source hashes and the **identical raw quality manifest**.
 Only `evidence/` is emitted by the bounded log transport. The media directory
 is the input to the separately reviewed segmented artifact sender.
@@ -130,11 +133,40 @@ payload, storage, transfer or full scans are incomplete.
 
 `quality-evidence.json` is at most 64 KiB and uses
 `vr180-p5-long-quality-evidence-v1`. It binds the same identity/profile/files/
-source SHA, `completeScan`, `mediaVerdict` and at most 256 unique fixed relative
+source SHA, `completeScan`, `mediaVerdict` and at most 255 unique fixed relative
 `evidence:[{path,bytes,sha256}]` references. Absolute paths, `..` and symlink
 references are not used. The producer hashes those references; sender validation
 binds the raw manifest and media identities without rejudging quality. The host
-must check every referenced raw report from the metadata archive.
+must check every referenced raw report from the metadata archive. Zero-byte
+stderr logs are retained as references with `bytes=0`; they are not silently
+discarded. Unknown files/directories and detected signed URLs or credentials
+are rejected rather than adopted or redacted.
+
+The sender receives a mandatory `evidenceBundle` descriptor with the fixed name
+`producer-evidence.tar.gz`, whole compressed bytes and SHA-256. The archive's
+entry set is **exactly** the raw quality manifest plus all its referenced raw
+files. It is bounded to 8 MiB compressed, 16 MiB regular-file payload and 256
+safe regular entries; its complete tar stream is additionally bounded to
+17 MiB for the receiver. Each metadata file is at most 4 MiB. No media file is
+copied into the bundle, no symlink/directory entry is emitted, and media-file
+copies are not increased. The stream is fsynced and closed, fully reread and
+hashed, then every member is reopened and checked against its prior size/hash
+without extraction. The identical quality copies and final source manifest
+also undergo readback. `evidence-bundle.py` is included in the producer's fixed
+source closure, which is checked again after bundle creation. Existing bounded
+log transport remains an independent, potentially stricter evidence limit.
+
+Before bundle creation, `producer-record.json` records the existing long
+producer's six-field identity, original `runId`, profile, frame count, files,
+complete-scan result, preserved media verdict and script SHA. Its status is
+`FULL_MEDIA_AND_SCAN_COMPLETED`; it does not claim completed artifact recovery.
+Its `sourceProvenance` descriptor binds the original `source-provenance.json`
+bytes. `main` passes the original report run ID, which must equal
+`<runId>-<long-profile>-<runAttempt>`; a short-calibration identity is refused.
+This record avoids a self-hash cycle: final `run.json` contains the finished
+source manifest and bundle descriptor, so final `run.json` is not inside that
+same bundle. The nine existing required records, available environment/source
+inventories, and all diagnostics are included with the producer record.
 
 A complete quality **FAIL** still gets the two full files and manifests for
 independent recovery; it is never converted to PASS. Incomplete media is not

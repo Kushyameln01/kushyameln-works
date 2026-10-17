@@ -22,9 +22,8 @@ PROFILES = {
     'service-8mib': {'part': 8*MIB, 'files': [('payload-a', 'payload-a.bin', 60*MIB), ('payload-b', 'payload-b.bin', 60*MIB)]},
     'single-128mib': {'part': 128*MIB, 'files': [('payload-a', 'payload-a.bin', 128*MIB)]},
     'p5-receiver-calibration32': {'part': 128*MIB, 'files': [('input', 'input.mp4', 80*MIB), ('output', 'output.mp4', 80*MIB)]},
-}
-# Design reservations only. Enabling these requires the separate long-media gate.
-RESERVED_PROFILES = {
+    # Workflow gates require separate receiver short-media acceptance first.
+
     'p5-5gb': {'part': 128*MIB, 'files': [('input', 'input.mp4', 5_100_000_000), ('output', 'output.mp4', 5_200_000_000)]},
     'p5-10gb': {'part': 128*MIB, 'files': [('input', 'input.mp4', 10_100_000_000), ('output', 'output.mp4', 10_200_000_000)]},
 }

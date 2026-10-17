@@ -188,8 +188,11 @@ async function makeLongFixture(name, profile = 'p5-5gb', verdict = 'FAIL') {
     sourceSHA256, mediaVerdict: verdict, completeScan: true,
     evidence: [{ path: 'quality-report.json', bytes: 100, sha256: 'd'.repeat(64) }] };
   const qualityData = Buffer.from(JSON.stringify(quality));
+  const bundle = Buffer.from('opaque long producer bundle fixture');
+  await fs.writeFile(path.join(directory, 'producer-evidence.tar.gz'), bundle);
   const value = { schema: 'vr180-segmented-source-v1', status: 'GENERATED_AND_REREAD', identity,
-    profile, partBytes: 128 * MiB, totalBytes: files.reduce((n, f) => n + f.bytes, 0), files, sourceSHA256,
+    profile, evidenceBundle: { name: 'producer-evidence.tar.gz', bytes: bundle.length, sha256: sha(bundle) },
+    partBytes: 128 * MiB, totalBytes: files.reduce((n, f) => n + f.bytes, 0), files, sourceSHA256,
     generator: { algorithm: 'vr180-long-xorshift32-sbs180-webcodecs-v1', seed: 0x1802026,
       width: 1024, height: 512, fps: 30, silent: true, inputRequestedBitrate: 32000000,
       outputRequestedBitrate: 32000000, eventPeriodFrames: 300, eventFrameOffsets: [29, 30, 31],
@@ -246,7 +249,7 @@ test('quality descriptors and bounded correspondence reject incomplete or unrela
     q => q.files.reverse(), q => q.files.pop(), q => q.evidence = [],
     q => q.evidence = Array(257).fill(q.evidence[0]), q => q.evidence.push(q.evidence[0]),
     q => q.evidence[0].path = '../quality.json', q => q.evidence[0].path = '/tmp/quality.json',
-    q => q.evidence[0].path = 'dir\\quality.json', q => q.evidence[0].bytes = 0]) {
+    q => q.evidence[0].path = 'dir\\quality.json', q => q.evidence[0].bytes = -1]) {
     const q = structuredClone(f.quality); change(q); assert.throws(() => validateQualityEvidence(q, f.value));
   }
 });
@@ -289,7 +292,7 @@ test('quality changed after data upload prevents a completion artifact', async (
     if (seen.length === 2) await fs.appendFile(f.qualityPath, ' ');
     return receipt;
   } })), /QUALITY_CHANGED_DURING_TRANSFER/);
-  assert.equal(seen.length, 2); assert.equal(seen.some(x => x.name.endsWith('-complete')), false);
+  assert.equal(seen.length, 3); assert.equal(seen.some(x => x.name.endsWith('-complete')), false);
 });
 test('bounded metadata read rejects oversized and symbolic-link quality files', async () => {
   const file = path.join(base, 'oversized.json'), link = path.join(base, 'linked.json');
@@ -330,7 +333,7 @@ module.write_transport_manifests(meta,media,json.loads(sys.argv[4]),'p5-5gb',jso
   await runTransfer(args('actual-producer-transfer', { manifestPath,
     provenance: { generatorScriptPath: PROFILES[m.profile].producer, generatorScriptSHA256: m.sourceSHA256 },
     upload: mockUpload(seen) }));
-  assert.equal(seen.length, 3);
+  assert.equal(seen.length, 4);
   assert.deepEqual(seen.at(-1).completion.qualityEvidence, m.qualityEvidence);
   assert.equal(seen.at(-1).completion.qualityEvidence.status, 'FAIL');
 });
@@ -438,7 +441,7 @@ test('evidence timeout records unknown presence and never emits completion', asy
   assert.equal(seen.length, 2); assert.equal(failure.successfulPartUploads, 2);
   assert.equal(failure.evidenceBundleArtifactUploaded, 'UNKNOWN'); assert.equal(failure.completionManifestUploaded, false);
 });
-test('calibration preserves zero-byte stderr evidence references without relaxing long profile rules', async () => {
+test('both media profiles preserve zero-byte stderr and reject negative reference sizes', async () => {
   const f = await makeCalibrationFixture('empty-calibration-ref');
   f.quality.evidence.push({ path: 'oracle-logs/ffmpeg.stderr.log', bytes: 0, sha256: sha(Buffer.alloc(0)) });
   validateQualityEvidence(f.quality, f.value);
@@ -446,5 +449,16 @@ test('calibration preserves zero-byte stderr evidence references without relaxin
   assert.throws(() => validateQualityEvidence(f.quality, f.value), /QUALITY_EVIDENCE_ENTRY/);
   const long = await makeLongFixture('empty-long-ref');
   long.quality.evidence[0].bytes = 0;
+  long.quality.evidence[0].sha256 = sha(Buffer.alloc(0));
+  validateQualityEvidence(long.quality, long.value);
+  long.quality.evidence[0].bytes = -1;
   assert.throws(() => validateQualityEvidence(long.quality, long.value), /QUALITY_EVIDENCE_ENTRY/);
+});
+
+test('long profiles require original evidence bundle and preserve empty metadata references', async () => {
+  const f = await makeLongFixture('long-required-bundle');
+  const m = structuredClone(f.value); delete m.evidenceBundle;
+  assert.throws(() => validateSourceManifest(m, identity), /EVIDENCE_BUNDLE/);
+  f.quality.evidence.push({ path: 'empty.stderr.log', bytes: 0, sha256: sha(Buffer.alloc(0)) });
+  validateQualityEvidence(f.quality, f.value);
 });

@@ -19,8 +19,8 @@ const ORIGINAL_CALIBRATION = 'development/vr180/p5-calibration-prototype/probe-c
 const PROFILES = Object.freeze({
   'service-8mib': Object.freeze({ partBytes: 8 * MiB, fileBytes: Object.freeze([60 * MiB, 60 * MiB]), timeoutMs: 600000, producer: SMALL_PRODUCER }),
   'single-128mib': Object.freeze({ partBytes: 128 * MiB, fileBytes: Object.freeze([128 * MiB]), timeoutMs: 300000, producer: SMALL_PRODUCER }),
-  'p5-5gb': Object.freeze({ partBytes: 128 * MiB, fileCaps: Object.freeze([5100000000, 5200000000]), targetPayloadBytes: 5000000000, timeoutMs: 1200000, producer: LONG_PRODUCER }),
-  'p5-10gb': Object.freeze({ partBytes: 128 * MiB, fileCaps: Object.freeze([10100000000, 10200000000]), targetPayloadBytes: 10000000000, timeoutMs: 1800000, producer: LONG_PRODUCER }),
+  'p5-5gb': Object.freeze({ partBytes: 128 * MiB, fileCaps: Object.freeze([5100000000, 5200000000]), targetPayloadBytes: 5000000000, timeoutMs: 1200000, producer: LONG_PRODUCER, evidenceBundleRequired: true }),
+  'p5-10gb': Object.freeze({ partBytes: 128 * MiB, fileCaps: Object.freeze([10100000000, 10200000000]), targetPayloadBytes: 10000000000, timeoutMs: 1800000, producer: LONG_PRODUCER, evidenceBundleRequired: true }),
   'p5-receiver-calibration32': Object.freeze({ partBytes: 128 * MiB, fileCaps: Object.freeze([80 * MiB, 80 * MiB]),
     totalBytesCap: 120 * MiB, timeoutMs: 600000, producer: CALIBRATION_PRODUCER,
     originalProducer: ORIGINAL_CALIBRATION, requiredJob: 'p5-receiver-calibration', evidenceBundleRequired: true }),
@@ -106,9 +106,9 @@ function validateQualityEvidence(q, m) {
   requireThat(Array.isArray(q.files) && q.files.length === m.files.length, 'QUALITY_FILES');
   for (let i = 0; i < m.files.length; i++) for (const key of ['id', 'name', 'bytes', 'sha256'])
     requireThat(q.files[i]?.[key] === m.files[i][key], 'QUALITY_FILE_MISMATCH');
-  requireThat(Array.isArray(q.evidence) && q.evidence.length > 0 && q.evidence.length <= 256, 'QUALITY_EVIDENCE_BOUND');
+  requireThat(Array.isArray(q.evidence) && q.evidence.length > 0 && q.evidence.length <= 255, 'QUALITY_EVIDENCE_BOUND');
   const seen = new Set();
-  const minimumEvidenceBytes = m.profile === 'p5-receiver-calibration32' ? 0 : 1;
+  const minimumEvidenceBytes = 0; // Empty raw logs are meaningful evidence too.
   for (const e of q.evidence) {
     requireThat(e && typeof e.path === 'string' && e.path.length <= 240
       && e.path.split('/').every(v => /^[A-Za-z0-9_-][A-Za-z0-9_.-]*$/.test(v))

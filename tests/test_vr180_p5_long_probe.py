@@ -46,7 +46,9 @@ class LongProbeTests(unittest.TestCase):
             raw=(meta/'quality-evidence.json').read_bytes();self.assertEqual(raw,(media/'quality-evidence.json').read_bytes())
             quality=json.loads(raw);self.assertEqual(quality['mediaVerdict'],'FAIL');self.assertEqual(manifest['status'],'GENERATED_AND_REREAD')
             self.assertEqual(manifest['qualityEvidence']['sha256'],hashlib.sha256(raw).hexdigest())
-            self.assertEqual(manifest['sourceSHA256'],quality['sourceSHA256']);self.assertEqual(len(quality['evidence']),10)
+            self.assertEqual(manifest['sourceSHA256'],quality['sourceSHA256']);self.assertEqual(len(quality['evidence']),11)
+            self.assertIn('producer-record.json',{ref['path'] for ref in quality['evidence']})
+            self.assertEqual(manifest['evidenceBundle']['sha256'],hashlib.sha256((media/'producer-evidence.tar.gz').read_bytes()).hexdigest())
             for ref in quality['evidence']:
                 actual=(meta/ref['path']).read_bytes();self.assertEqual(ref['bytes'],len(actual));self.assertEqual(ref['sha256'],hashlib.sha256(actual).hexdigest())
     def test_partial_scan_or_symlink_reference_never_produces_source_manifest(self):

@@ -26,14 +26,62 @@ base=calibration.base;cloud=base.cloud;indexed=calibration.indexed
 persistent=load('long_profile_helpers',ROOT/'tools/vr180/probe-persistent-storage.py')
 streaming=load('long_streaming',HERE/'streaming.py')
 long_oracle=load('long_oracle',HERE/'oracle.py')
+evidence_bundle=load('long_evidence_bundle',HERE/'evidence-bundle.py')
 PROFILES={
  'p5-5gb':{'targetPayloadBytes':5_000_000_000,'inputFileBytes':5_100_000_000,'outputFileBytes':5_200_000_000,
   'runnerFreeBytes':33_416_582_400,'generationSeconds':900,'conversionSeconds':900,'transferSeconds':600,'verificationSeconds':900,'producerSeconds':3600},
  'p5-10gb':{'targetPayloadBytes':10_000_000_000,'inputFileBytes':10_100_000_000,'outputFileBytes':10_200_000_000,
   'runnerFreeBytes':63_416_582_400,'generationSeconds':1500,'conversionSeconds':1500,'transferSeconds':900,'verificationSeconds':1500,'producerSeconds':5100}}
 SCRIPT_PATH='development/vr180/p5-long-prototype/probe-long.py'
+BUNDLE_SOURCE_PATH='development/vr180/p5-long-prototype/evidence-bundle.py'
 WORKER_ROUTE='/development/vr180/p5-long-prototype/worker.mjs'
 SOURCE_FILES=sorted(set(indexed.SOURCES+['development/vr180/p5-long-prototype/'+name for name in ['frame.mjs','profile.mjs','worker.mjs']]))
+
+
+class ProducerInterrupted(BaseException):
+    """Deliberately bypass the fixed oracle's ordinary-error collection."""
+
+
+class ProducerSignals:
+    CLEANUP_GRACE_SECONDS=30
+
+    def __init__(self,report,*,clock=None,hard_exit=None,grace_seconds=None):
+        self.report=report;self.clock=clock or time.monotonic;self.hard_exit=hard_exit or os._exit
+        self.grace=self.CLEANUP_GRACE_SECONDS if grace_seconds is None else grace_seconds
+        self.interruption=None;self.cleanup_phase=False;self.previous={};self.grace_deadline=None
+
+    def install(self,seconds):
+        for number in (signal.SIGALRM,signal.SIGTERM):
+            self.previous[number]=signal.getsignal(number);signal.signal(number,self.handle)
+        signal.alarm(seconds)
+
+    def handle(self,number,_frame=None):
+        now=self.clock()
+        if self.interruption is not None:
+            self.interruption['repeatedSignals']+=1
+            if now>=self.grace_deadline:
+                # No successful cleanup or complete evidence is claimed on this path.
+                self.hard_exit(124)
+            return
+        name=signal.Signals(number).name
+        self.grace_deadline=now+self.grace
+        self.interruption={'signal':name,'repeatedSignals':0,'cleanupGraceSeconds':self.grace,
+          'forcedExitCode':124,'forcedExitMayLeaveResourcesAndIncompleteEvidence':True}
+        self.report['interruption']=self.interruption
+        self.report.update(status='FAIL',mediaArtifactReady=False)
+        self.report.setdefault('error','PRODUCER_INTERRUPTED:'+name)
+        signal.alarm(self.grace)
+        if not self.cleanup_phase:raise ProducerInterrupted('PRODUCER_INTERRUPTED:'+name)
+
+    def begin_cleanup(self):
+        # Keep the initial producer alarm, or the already armed grace alarm.
+        # A first signal here latches FAIL but cannot skip the current owner cleanup.
+        self.cleanup_phase=True
+
+    def restore(self):
+        signal.alarm(0)
+        for number,handler in self.previous.items():signal.signal(number,handler)
+
 PAGE=r"""profileId=>{
  const s=globalThis.__long={namespace:'v-'+crypto.randomUUID(),namespaceOwned:false,workerStarted:true,worker:null,
   phase:'starting',result:null,files:[],ownedMediaFiles:[],unhandledErrors:[],transfer:null};
@@ -172,34 +220,45 @@ def browser_trial(playwright,owned,origin,profile_id,receiver,token,out,report,p
         report['completeCloudMedia']=True
         return observed
     finally:
+        active_error=sys.exc_info()[1]
+        if isinstance(active_error,(ProducerInterrupted,cloud.Deadline)):deadline_error=active_error
         if page:
             try:report['namespaceCleanup']=page.evaluate(CLEANUP)
-            except Exception as e:
+            except (Exception,ProducerInterrupted) as e:
                 report['namespaceCleanup']={'status':'HOLD','error':str(e)[:1000]};owned['unknownContent']=True
-                if isinstance(e,cloud.Deadline):deadline_error=e
+                if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
         else:report['namespaceCleanup']={'status':'NOT_CREATED'}
         if context:
             try:report['profileBeforeClose']=persistent.profile_snapshot(owned['path'])
-            except Exception as e:
+            except (Exception,ProducerInterrupted) as e:
                 report['profileSnapshotError']=str(e)[:1000]
-                if isinstance(e,cloud.Deadline):deadline_error=e
+                if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
             try:
                 context.close();cloud.require(browser is not None and not browser.is_connected(),'LONG_BROWSER_STILL_CONNECTED');owned['browserClosed']=True
-            except Exception as e:
+            except (Exception,ProducerInterrupted) as e:
                 report['browserCloseError']=str(e)[:1000]
-                if isinstance(e,cloud.Deadline):deadline_error=e
-        report['browserRss']=sampler.stop()
+                if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
+        try:report['browserRss']=sampler.stop()
+        except (Exception,ProducerInterrupted) as e:
+            report['browserRss']={'status':'HOLD','error':str(e)[:1000]}
+            if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
         if not owned['browserClosed']:
             report['profileCleanup']={'status':'HOLD','reason':'Browser closure unverified; owned profile retained.'}
         report['browserClosed']=owned['browserClosed']
         if owned['browserClosed']:
-            report['profileAfterClose']=persistent.profile_snapshot(owned['path'])
+            try:report['profileAfterClose']=persistent.profile_snapshot(owned['path'])
+            except (Exception,ProducerInterrupted) as e:
+                report['profileAfterCloseError']=str(e)[:1000]
+                if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
             try:report['profileCleanup']=persistent.cleanup_owned_profile(owned)
-            except Exception as e:
+            except (Exception,ProducerInterrupted) as e:
                 report['profileCleanup']={'status':'HOLD','error':str(e)[:1000]}
-                if isinstance(e,cloud.Deadline):deadline_error=e
-        cloud.write(out/'browser-lifecycle.json',{key:report.get(key) for key in ['launchMs','browserVersion','profileBeforeLaunch',
+                if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
+        try:cloud.write(out/'browser-lifecycle.json',{key:report.get(key) for key in ['launchMs','browserVersion','profileBeforeLaunch',
           'profileBeforeClose','profileAfterClose','namespaceCleanup','browserClosed','profileCleanup','browserRss']})
+        except (Exception,ProducerInterrupted) as e:
+            if deadline_error is None:raise
+            report['browserLifecycleWriteError']=str(e)[:1000]
         if deadline_error:raise deadline_error
         remaining(producer_deadline)
 
@@ -220,33 +279,53 @@ def cleanup_publications(publications):
             info=row['path'].lstat()
             cloud.require(stat.S_ISREG(info.st_mode) and (info.st_dev,info.st_ino)==row['identity'],'PUBLICATION_OWNERSHIP_CHANGED')
             row['path'].unlink();row['removed']=True;removed.append(row['path'].name)
+        except FileNotFoundError:
+            row['removed']=True;removed.append(row['path'].name)
         except Exception as error:errors.append({'name':row['path'].name,'error':str(error)[:256]})
     return {'status':'HOLD' if errors else 'REMOVED','removed':removed,'errors':errors}
 
 
-def write_transport_manifests(meta,media,identity,profile_id,files,frames,verdict,source_sha,*,deadline=float('inf'),publications=None):
+def write_transport_manifests(meta,media,identity,profile_id,files,frames,verdict,source_sha,*,deadline=float('inf'),publications=None,run_id=None):
+    publications=[] if publications is None else publications
+    try:
+        return _write_transport_manifests(meta,media,identity,profile_id,files,frames,verdict,source_sha,
+          deadline=deadline,publications=publications,run_id=run_id)
+    except BaseException as error:
+        # A failed owner must not prevent cleanup of the other publications or
+        # replace the primary error. main may independently retry held owners.
+        error.publicationCleanup=cleanup_publications(publications)
+        if error.publicationCleanup['status']=='HOLD':error.add_note('Evidence publication cleanup HOLD; primary error preserved')
+        raise
+
+
+def _write_transport_manifests(meta,media,identity,profile_id,files,frames,verdict,source_sha,*,deadline,publications,run_id):
     remaining(deadline)
-    if publications is None:publications=[]
     cloud.require(verdict['completeScan'] and verdict['mediaVerdict'] in ['PASS','FAIL'],'LONG_COMPLETE_QUALITY_REQUIRED')
-    root_names={'browser-observations.json','browser-lifecycle.json','runner-transfer.json','private-source-inventory.json',
-      'fork-build-result.json','oracle-toolchain.json','independent-verification.json','packet-statistics.json','source-provenance.json'}
-    references=[]
-    for path in sorted(meta.rglob('*')):
-        remaining(deadline);relative=path.relative_to(meta)
-        cloud.require(not path.is_symlink(),'QUALITY_SYMLINK_REFUSED')
-        if not path.is_file():continue
-        allowed=(len(relative.parts)==1 and relative.name in root_names) or (len(relative.parts)==2
-          and relative.parts[0] in ['oracle-logs','input-packet-stats','output-packet-stats'] and re.fullmatch('[a-z0-9-]+\\.stderr\\.log',relative.name))
-        if not allowed or path.stat().st_size==0:continue
-        references.append({'path':relative.as_posix(),'bytes':path.stat().st_size,'sha256':cloud.digest(path)})
-    cloud.require(root_names.issubset({r['path'] for r in references}) and len(references)<=256,'QUALITY_REFERENCE_SET')
+    profile=PROFILES[profile_id]
+    expected_run=f"{identity['runId']}-{profile_id}-{identity['runAttempt']}"
+    run_id=expected_run if run_id is None else run_id
+    cloud.require(run_id==expected_run,'LONG_PRODUCER_RECORD_RUN_ID')
+    cloud.require(type(frames) is int and 1<=frames<=100000,'LONG_PRODUCER_RECORD_FRAMES')
+    references=evidence_bundle.collect_references(meta,deadline)
+    provenance=next(row for row in references if row['path']=='source-provenance.json')
+    producer={'schema':'vr180-p5-long-producer-record-v1','status':'FULL_MEDIA_AND_SCAN_COMPLETED',
+      'identity':identity,'runId':run_id,'profile':profile_id,'frames':frames,'files':files,
+      'completeScan':True,'mediaVerdict':verdict['mediaVerdict'],'sourceSHA256':source_sha,
+      'sourceProvenance':provenance}
+    producer_raw=(json.dumps(producer,indent=2,sort_keys=True)+'\n').encode()
+    cloud.require(len(producer_raw)<=65536,'LONG_PRODUCER_RECORD_BOUND')
+    write_owned_publication(meta/'producer-record.json',producer_raw,publications,deadline)
+    references.append(evidence_bundle.descriptor('producer-record.json',producer_raw))
+    references.sort(key=lambda row:row['path'])
+    cloud.require(len(references)<=255,'QUALITY_REFERENCE_SET')
     quality={'schema':'vr180-p5-long-quality-evidence-v1','identity':identity,'profile':profile_id,'files':files,
       'sourceSHA256':source_sha,'mediaVerdict':verdict['mediaVerdict'],'completeScan':True,'evidence':references,
       'acceptance':verdict,'hostRecovery':'PENDING','independentHostValidation':'PENDING'}
     raw=(json.dumps(quality,indent=2,sort_keys=True)+'\n').encode();cloud.require(len(raw)<=65536,'QUALITY_MANIFEST_BOUND')
     for directory in [meta,media]:
         write_owned_publication(directory/'quality-evidence.json',raw,publications,deadline)
-    profile=PROFILES[profile_id]
+        cloud.require(evidence_bundle.read_raw(directory/'quality-evidence.json',deadline,65536)==raw,'LONG_QUALITY_REREAD_DIFFERS')
+    bundle=evidence_bundle.create_bundle(meta,media/'producer-evidence.tar.gz',references,raw,publications,deadline)
     manifest={'schema':'vr180-segmented-source-v1','status':'GENERATED_AND_REREAD','identity':identity,'profile':profile_id,
       'partBytes':134217728,'totalBytes':sum(item['bytes'] for item in files),'files':files,'sourceSHA256':source_sha,
       'generator':{'algorithm':'vr180-long-xorshift32-sbs180-webcodecs-v1','seed':0x1802026,'width':1024,'height':512,
@@ -254,9 +333,44 @@ def write_transport_manifests(meta,media,identity,profile_id,files,frames,verdic
        'eventPeriodFrames':300,'eventFrameOffsets':[29,30,31],'maxFrames':100000,
        'targetPayloadBytes':profile['targetPayloadBytes'],'frames':frames},
       'qualityEvidence':{'name':'quality-evidence.json','bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),
-       'status':verdict['mediaVerdict'],'completeScan':True}}
-    write_owned_publication(media/'source-manifest.json',(json.dumps(manifest,indent=2,sort_keys=True)+'\n').encode(),publications,deadline)
+       'status':verdict['mediaVerdict'],'completeScan':True},'evidenceBundle':bundle}
+    manifest_raw=(json.dumps(manifest,indent=2,sort_keys=True)+'\n').encode()
+    write_owned_publication(media/'source-manifest.json',manifest_raw,publications,deadline)
+    cloud.require(evidence_bundle.read_raw(media/'source-manifest.json',deadline,65536)==manifest_raw,'LONG_SOURCE_MANIFEST_REREAD_DIFFERS')
     remaining(deadline);return manifest
+
+
+def finish_run(out,meta,report,signals,*,owned,receiver,server,publications,started,producer_deadline):
+    signals.begin_cleanup();revoked_after_interruption=False
+    def invalidate_outputs():
+        nonlocal revoked_after_interruption
+        if publications:report['publicationCleanup']=cleanup_publications(publications)
+        if receiver:
+            try:report['incompleteMediaCleanup']=receiver.abort()
+            except Exception as e:report['incompleteMediaCleanup']={'status':'HOLD','error':str(e)}
+        revoked_after_interruption=signals.interruption is not None
+    if owned and 'profileCleanup' not in report:
+        try:report['profileCleanup']=persistent.cleanup_owned_profile(owned)
+        except Exception as e:report['profileCleanup']={'status':'HOLD','error':str(e)[:1000]}
+    if receiver:receiver.deadline=0
+    if server:server.shutdown();server.server_close()
+    if report['mediaArtifactReady'] and time.monotonic()>=producer_deadline:
+        report.update(status='FAIL',mediaArtifactReady=False,error='LONG_PRODUCER_DEADLINE_DURING_FINAL_CLEANUP')
+    if not report['mediaArtifactReady']:invalidate_outputs()
+    report['elapsedSeconds']=time.monotonic()-started;report['diskAfter']={'freeBytes':shutil.disk_usage(out).free}
+    cloud.write(meta/'run.json',report)
+    if signals.interruption is not None and not revoked_after_interruption:
+        invalidate_outputs();cloud.write(meta/'run.json',report)
+    transported=cloud.emit_evidence(meta,report)
+    if signals.interruption is not None and not revoked_after_interruption:
+        # The first interruption may arrive while emission is already in progress.
+        # Invalidate owned readiness files and identify that archive as nonfinal.
+        invalidate_outputs();report['interruption']['evidenceEmissionInvalidated']=True
+        cloud.write(meta/'run.json',report)
+        print('VR180_LONG_INTERRUPTED '+json.dumps({'runId':report['runId'],'status':'FAIL',
+          'mediaArtifactReady':False,'completeEvidence':False,'reason':'INTERRUPTED_DURING_EVIDENCE_EMISSION'}),flush=True)
+        transported=False
+    return transported
 
 
 def main(argv=None):
@@ -272,9 +386,7 @@ def main(argv=None):
       'independentHostValidation':'PENDING','pageErrors':[],'workers':[],
       'notVerified':['host full-media recovery/independent verification','real-camera media','60 fps','long AAC',
        'OS save dialog','VR playback','public integration','crash recovery','capacity reservation','storage survival after execution environment ends']}
-    def deadline(*_):raise cloud.Deadline('Private long producer deadline')
-    signal.signal(signal.SIGALRM,deadline);signal.signal(signal.SIGTERM,deadline)
-    signal.alarm(profile['producerSeconds'])  # Whole producer deadline may preempt a stage's own budget.
+    signals=ProducerSignals(report);signals.install(profile['producerSeconds'])
     try:
         report['oracleToolchain']=calibration.require_toolchain(args.oracle_toolchain,meta/'oracle-toolchain.json')
         oracle,report['oracleDependencies']=calibration.require_oracle_dependencies()
@@ -294,7 +406,7 @@ def main(argv=None):
           and build['presentationSha256']==cloud.digest(ROOT/'development/vr180/input-index-prototype/presentation-index.mjs')
           and build['publicInputParserSha256']==cloud.digest(ROOT/'docs/shared/vr180/mp4.mjs'),'LONG_CONTROLLER_SOURCE_DIFFERS')
         cloud.write(meta/'fork-build-result.json',build)
-        evidence_sources=sorted(set(SOURCE_FILES+[SCRIPT_PATH,'development/vr180/p5-long-prototype/streaming.py',
+        evidence_sources=sorted(set(SOURCE_FILES+[SCRIPT_PATH,BUNDLE_SOURCE_PATH,'development/vr180/p5-long-prototype/streaming.py',
           'development/vr180/p5-long-prototype/oracle.py','development/vr180/p5-long-prototype/frame-provenance.json',
           'development/vr180/p5-calibration-prototype/probe-calibration.py','tools/vr180/probe-persistent-storage.py',
           'tools/vr180/probe-indexed-conversion.py','tools/vr180/probe-output-index.py','tools/vr180/cloud-validate.py',
@@ -335,28 +447,21 @@ def main(argv=None):
           'actualOutputBytes':files[1]['bytes'],'outputExceeds4GiB':files[1]['bytes']>2**32,
           'verificationSeconds':time.monotonic()-verify_started,'hostRecovery':'PENDING','scope':verdict['scope']}
         remaining(producer_deadline)
-        manifest=write_transport_manifests(meta,media,identity,args.profile,files,frames,acceptance,hashes[SCRIPT_PATH],deadline=producer_deadline,publications=publications)
+        manifest=write_transport_manifests(meta,media,identity,args.profile,files,frames,acceptance,hashes[SCRIPT_PATH],
+          deadline=producer_deadline,publications=publications,run_id=report['runId'])
         remaining(producer_deadline)
+        cloud.require({name:cloud.digest(ROOT/name) for name in evidence_sources}==hashes
+          and cloud.digest(bundle)==build['bundleSha256'],'LONG_SOURCES_CHANGED_DURING_BUNDLE')
         report.update(status='READY_FOR_SEGMENTED_RECOVERY',completeScan=True,mediaArtifactReady=True,mediaVerdict=verdict['status'],
           acceptance=acceptance,sourceManifest=manifest)
-    except Exception as e:
+    except (Exception,ProducerInterrupted) as e:
         report.update(status='BLOCKED' if isinstance(e,cloud.Blocked) and not isinstance(e,cloud.Deadline) else 'FAIL',error=f'{type(e).__name__}: {e}')
+        if hasattr(e,'publicationCleanup'):report['publicationCleanupBeforeFinal']=e.publicationCleanup
         (meta/'failure-traceback.txt').write_text(traceback.format_exc())
     finally:
-        signal.alarm(0)
-        if owned and 'profileCleanup' not in report:
-            try:report['profileCleanup']=persistent.cleanup_owned_profile(owned)
-            except Exception as e:report['profileCleanup']={'status':'HOLD','error':str(e)[:1000]}
-        if receiver:receiver.deadline=0
-        if server:server.shutdown();server.server_close()
-        if report['mediaArtifactReady'] and time.monotonic()>=producer_deadline:
-            report.update(status='FAIL',mediaArtifactReady=False,error='LONG_PRODUCER_DEADLINE_DURING_FINAL_CLEANUP')
-        if not report['mediaArtifactReady'] and publications:report['publicationCleanup']=cleanup_publications(publications)
-        if receiver and not report['mediaArtifactReady']:
-            try:report['incompleteMediaCleanup']=receiver.abort()
-            except Exception as e:report['incompleteMediaCleanup']={'status':'HOLD','error':str(e)}
-        report['elapsedSeconds']=time.monotonic()-started;report['diskAfter']={'freeBytes':shutil.disk_usage(out).free}
-        cloud.write(meta/'run.json',report);transported=cloud.emit_evidence(meta,report)
+        try:transported=finish_run(out,meta,report,signals,owned=owned,receiver=receiver,server=server,
+          publications=publications,started=started,producer_deadline=producer_deadline)
+        finally:signals.restore()
     return 0 if transported and report['status']=='READY_FOR_SEGMENTED_RECOVERY' else 1
 
 if __name__=='__main__':raise SystemExit(main())

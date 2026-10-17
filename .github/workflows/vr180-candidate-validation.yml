@@ -22,6 +22,8 @@ on:
       - development/vr180/artifact-receive-action/**
       - tools/vr180/receive-in-actions.py
       - tools/vr180/receive-media-evidence.py
+      - tools/vr180/receive-long-media-evidence.py
+      - development/vr180/p5-long-prototype/**
       - development/vr180/p5-receiver-calibration/**
       - tools/vr180/receive-segmented-artifact.py
       - tools/vr180/record-ffmpeg-toolchain.py
@@ -389,6 +391,146 @@ jobs:
         with:
           receipt-json: ${{ needs.p5-receiver-calibration.outputs.receipt-json }}
           profile: p5-receiver-calibration32
+
+  p5-long-producer:
+    if: >-
+      github.repository == 'Kushyameln01/kushyameln-works' &&
+      github.event.repository.private == false &&
+      startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
+      (contains(github.event.head_commit.message, '[vr180-p5-5gb]') ||
+      contains(github.event.head_commit.message, '[vr180-p5-10gb]'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: ${{ contains(github.event.head_commit.message, '[vr180-p5-10gb]') && 135 || 100 }}
+    outputs:
+      receipt-json: ${{ steps.transfer.outputs.receipt-json }}
+      profile: ${{ env.VR180_LONG_PROFILE }}
+    env:
+      DO_NOT_TRACK: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PIP_NO_CACHE_DIR: '1'
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      VR180_LONG_PROFILE: ${{ contains(github.event.head_commit.message, '[vr180-p5-10gb]') && 'p5-10gb' || 'p5-5gb' }}
+    steps:
+      - name: Check out the exact private long-media candidate
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require fixed short-media acceptance and accepted 5GB before 10GB
+        timeout-minutes: 1
+        run: |
+          python3 - <<'PYGATE'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('development/vr180/evidence/2026-10-17-actions-receiver-media.json').read_text())
+          assert r['status']=='PASS_COMPLETE_MEDIA' and r['runId']==39046224628
+          assert r['sourceCommit']=='47dd0c9470cdc32351deae9e73475b507e94f34c'
+          assert r['independentReview']['status']=='PASS'
+          v=r['receiverRecords']['run.json']
+          assert v['status']=='PASS_COMPLETE_MEDIA' and v['recoveredBytes']==117814299
+          assert v['receiverMediaVerification']['decodedFramesCompared']==300
+          if os.environ['VR180_LONG_PROFILE']=='p5-10gb':
+              a=json.loads(Path('development/vr180/evidence/2026-10-17-p5-5gb.json').read_text())
+              assert a['status']=='PASS_COMPLETE_MEDIA' and a['profile']=='p5-5gb'
+              assert a['independentReview']['status']=='PASS'
+              w=a['receiverRecords']['run.json']
+              assert w['status']=='PASS_COMPLETE_MEDIA' and w['receiverMediaVerification']['actualInputPayloadBytes']>=5000000000
+          PYGATE
+      - name: Use the pinned Python setup
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install pinned driver and independent oracle dependencies
+        id: dependencies
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          test -x /usr/bin/google-chrome
+          python3 -m pip install --no-cache-dir playwright==1.62.0 numpy==2.3.3
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends 'ffmpeg=7:6.1.1-3ubuntu5'
+          python3 tools/vr180/record-ffmpeg-toolchain.py --output "$RUNNER_TEMP/vr180-long-oracle-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.json"
+      - name: Rebuild the fixed combined fork separately from the media deadline
+        timeout-minutes: 2
+        shell: bash
+        run: |
+          vr180_p5_prefix="$(mktemp -d "$RUNNER_TEMP/vr180-long-esbuild.XXXXXX")"
+          trap 'rm -rf "$vr180_p5_prefix"' EXIT
+          cp development/vr180/build-inputs/toolchain/package.json "$vr180_p5_prefix/"
+          cp development/vr180/build-inputs/toolchain/package-lock.json "$vr180_p5_prefix/"
+          npm ci --prefix "$vr180_p5_prefix" --ignore-scripts --include=dev --include=optional --no-audit --no-fund
+          node tools/vr180/build-input-index.mjs --combined --esbuild-dir "$vr180_p5_prefix/node_modules/esbuild" --output-dir "$RUNNER_TEMP/vr180-long-build-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+      - name: Generate, convert, save and inspect actual long media
+        id: media
+        timeout-minutes: ${{ env.VR180_LONG_PROFILE == 'p5-10gb' && 86 || 61 }}
+        env:
+          VR180_DEPENDENCIES_READY: ${{ steps.dependencies.outcome == 'success' }}
+        run: >-
+          python3 development/vr180/p5-long-prototype/probe-long.py
+          --bundle "$RUNNER_TEMP/vr180-long-build-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/mediabunny-input-output-index.mjs"
+          --oracle-toolchain "$RUNNER_TEMP/vr180-long-oracle-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.json"
+          --profile "$VR180_LONG_PROFILE"
+          --output "$RUNNER_TEMP/vr180-long-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+      - name: Install the fixed artifact SDK dependency closure
+        timeout-minutes: 3
+        working-directory: development/vr180/artifact-transfer-action
+        run: npm ci --ignore-scripts --omit=dev --no-audit --no-fund
+      - name: Upload complete media and bounded original evidence
+        id: transfer
+        timeout-minutes: ${{ env.VR180_LONG_PROFILE == 'p5-10gb' && 31 || 21 }}
+        uses: ./development/vr180/artifact-transfer-action
+        with:
+          source-manifest: ${{ runner.temp }}/vr180-long-${{ github.run_id }}-${{ github.run_attempt }}/media/source-manifest.json
+          output-directory: ${{ runner.temp }}/vr180-long-upload-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Return bounded sender records
+        if: ${{ always() && steps.media.outcome == 'success' }}
+        timeout-minutes: 1
+        run: >-
+          python3 tools/vr180/emit-segmented-transfer-evidence.py
+          --source "$RUNNER_TEMP/vr180-long-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/media"
+          --upload "$RUNNER_TEMP/vr180-long-upload-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          --output "$RUNNER_TEMP/vr180-long-sender-evidence-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+
+  p5-long-receiver:
+    needs: p5-long-producer
+    if: needs.p5-long-producer.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: ${{ needs.p5-long-producer.outputs.profile == 'p5-10gb' && 70 || 55 }}
+    env:
+      DO_NOT_TRACK: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PIP_NO_CACHE_DIR: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Check out the identical receiver source commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Use pinned Python setup
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install fixed independent media oracle dependencies
+        timeout-minutes: 4
+        run: |
+          python3 -m pip install --no-cache-dir numpy==2.3.3
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends 'ffmpeg=7:6.1.1-3ubuntu5'
+          python3 tools/vr180/record-ffmpeg-toolchain.py --output "$RUNNER_TEMP/vr180-receiver-oracle.json"
+      - name: Install the same fixed artifact SDK dependency closure
+        timeout-minutes: 3
+        working-directory: development/vr180/artifact-transfer-action
+        run: npm ci --ignore-scripts --omit=dev --no-audit --no-fund
+      - name: Recover all input and output bytes and independently inspect all media
+        timeout-minutes: ${{ needs.p5-long-producer.outputs.profile == 'p5-10gb' && 61 || 46 }}
+        uses: ./development/vr180/artifact-receive-action
+        with:
+          receipt-json: ${{ needs.p5-long-producer.outputs.receipt-json }}
+          profile: ${{ needs.p5-long-producer.outputs.profile }}
 
   recover-fixed-build-toolchain:
     if: >-

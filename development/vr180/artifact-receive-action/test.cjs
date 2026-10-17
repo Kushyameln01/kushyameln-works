@@ -154,7 +154,7 @@ test('bounded CLI JSON and action inputs reject symlinks oversized files and lon
   await fs.symlink(file, file + '.link'); await assert.rejects(readJson(file + '.link'), /REQUEST_FILE_BOUND/);
   await fs.writeFile(file + '.large', Buffer.alloc(16385)); await assert.rejects(readJson(file + '.large'), /REQUEST_FILE_BOUND/);
   assert.equal(validateInputs({ 'INPUT_RECEIPT-JSON': '{}', INPUT_PROFILE: 'service-8mib' }).profile, 'service-8mib');
-  assert.throws(() => validateInputs({ 'INPUT_RECEIPT-JSON': '{}', INPUT_PROFILE: 'p5-5gb' }), /ACTION_INPUT_INVALID/);
+  assert.throws(() => validateInputs({ 'INPUT_RECEIPT-JSON': '{}', INPUT_PROFILE: 'p5-20gb' }), /ACTION_INPUT_INVALID/);
 });
 test('real installed fixed SDK exposes the internal calls without invoking a service', () => {
   const sdk = require('./sdk-worker.cjs').installedSdk();

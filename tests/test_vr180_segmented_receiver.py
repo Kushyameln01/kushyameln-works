@@ -130,8 +130,29 @@ class ReceiverTests(unittest.TestCase):
             with self.assertRaisesRegex(OSError,'init state'): self.initialize()
         self.assertFalse(self.out.exists())
 
-    def test_large_profile_is_reserved_and_rejected(self):
-        m = copy.deepcopy(self.manifest); m['profile'] = 'p5-5gb'
+    def test_long_profile_caps_and_all_part_offsets_without_allocating_media(self):
+        for profile in ('p5-5gb', 'p5-10gb'):
+            m = copy.deepcopy(self.manifest); m.update(profile=profile, partBytes=128*r.MIB, files=[], generator={})
+            aid = 1
+            for fid,name,cap in r.PROFILES[profile]['files']:
+                parts = []
+                for index,offset in enumerate(range(0,cap,128*r.MIB)):
+                    length = min(128*r.MIB,cap-offset)
+                    parts.append({'index': index, 'offset': offset, 'length': length, 'sha256': 'e'*64,
+                                  'artifact': {'id': aid, 'name': f'{r.prefix(m)}-{fid}-{index:05d}',
+                                               'sizeBytes': length+132, 'digest': 'sha256:'+'f'*64}})
+                    aid += 1
+                m['files'].append({'id':fid,'name':name,'bytes':cap,'sha256':'c'*64,'partCount':len(parts),'parts':parts})
+            m['totalBytes'] = sum(f['bytes'] for f in m['files']); m['partCount'] = aid-1
+            self.assertIs(r.validate_manifest(m,self.identity),m)
+            for side in (0,1):
+                bad = copy.deepcopy(m); bad['files'][side]['bytes'] += 1
+                with self.assertRaisesRegex(ValueError,'FILE_CONTRACT'): r.validate_manifest(bad,self.identity)
+            bad = copy.deepcopy(m); bad['files'][1]['parts'][-1]['offset'] += 1
+            with self.assertRaisesRegex(ValueError,'PART_CONTIGUITY'): r.validate_manifest(bad,self.identity)
+
+    def test_unknown_profile_is_rejected(self):
+        m = copy.deepcopy(self.manifest); m['profile'] = 'p5-20gb'
         with self.assertRaisesRegex(ValueError,'PROFILE'): r.validate_manifest(m,self.identity)
 
     def test_deadline_during_finalization_never_commits_pass(self):

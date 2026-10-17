@@ -75,7 +75,7 @@ def unpack_bundle(path, manifest, output, deadline):
     need(qd['name'] == 'quality-evidence.json' and 0 < len(qraw) == qd['bytes'] <= 65536
          and hashlib.sha256(qraw).hexdigest() == qd['sha256'], 'QUALITY_RAW_BYTES')
     q = json.loads(qraw)
-    need(q['schema'] == 'vr180-p5-long-quality-evidence-v1' and q['profile'] == PROFILE
+    need(q['schema'] == 'vr180-p5-long-quality-evidence-v1' and q['profile'] == manifest['profile']
          and q['identity'] == manifest['identity'] and q['sourceSHA256'] == manifest['provenance']['generatorScriptSHA256']
          and q['completeScan'] is True and q['mediaVerdict'] in ('PASS', 'FAIL')
          and q['mediaVerdict'] == qd['status'] and qd['completeScan'] is True, 'QUALITY_IDENTITY_STATUS')

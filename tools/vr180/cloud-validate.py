@@ -1400,7 +1400,7 @@ def emit_evidence(out, result):
     """Emit all evidence or an explicit bounded transport failure, never truncation."""
     files = []
     for path in sorted(out.rglob('*')):
-        if path.is_file() and path.name != 'manifest.json':
+        if path.is_file() and path != out / 'manifest.json':
             require(not path.is_symlink(), 'Evidence must not contain symlinks')
             files.append({'name': path.relative_to(out).as_posix(), 'bytes': path.stat().st_size, 'sha256': digest(path)})
     manifest = {'schema': 'vr180-evidence-manifest-v1', 'runId': result['runId'],

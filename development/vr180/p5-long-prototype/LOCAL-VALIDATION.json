@@ -1,35 +1,70 @@
 {
-  "schema": "vr180-p5-long-local-validation-v1",
-  "status": "LOCAL_CONTRACT_TESTS_PASS",
-  "nodeTests": 24,
-  "pythonTests": 18,
-  "nativeLongMedia": "NOT_RUN",
-  "publicAndCalibrationDiffFromBase": "",
-  "scope": "Small temporary files, injected Worker/browser contracts and real loopback HTTP; no large media or native WebCodecs/OPFS acceptance.",
+  "bundleCorrection": "Raw quality plus exact refs (empty diagnostics preserved), non-circular producer record, 8MiB compressed /16MiB payload /17MiB tar bounds, source closure, complete reread, deadline/cancel/primary-preserving independent owner cleanup.",
+  "bundleNativeLongMedia": "NOT_RUN",
+  "bundleSenderAndReceiver": "NOT_RUN",
+  "cancellationCorrection": {
+    "affectedProbeSeconds": 0.305,
+    "affectedProbeTests": 9,
+    "commands": [
+      "python -m unittest discover -s tests -p test_vr180_p5_long_cancel.py -v",
+      "python -m unittest discover -s tests -p test_vr180_p5_long_probe.py -v"
+    ],
+    "fixedOracleModified": false,
+    "forcedExitContract": {
+      "cleanupGuaranteed": false,
+      "completeEvidenceGuaranteed": false,
+      "exitCode": 124,
+      "seconds": 30
+    },
+    "nativeLongMedia": "NOT_RUN",
+    "newSignalSeconds": 1.157,
+    "newSignalTests": 5,
+    "observed": [
+      "Actual SIGTERM escapes fixed oracle before frames/packets; Runtime.close runs.",
+      "Actual SIGTERM and SIGALRM reach main FAIL/evidence boundary.",
+      "First signal during final cleanup or emission removes all owned readiness publications; later signals do not restart work.",
+      "Repeated signals do not reset the grace; isolated 1-second test process exits 124; production grace is 30 seconds.",
+      "Browser finally preserves primary interruption while attempting close/sampler/profile cleanup."
+    ],
+    "scope": "Only new signal tests (5) and affected existing probe tests (9) rerun after cancellation fix; prior unchanged Node24/Python17 coverage retained separately.",
+    "sourceSHA256": "f581adee2b3ef0abb0db4b853db087998255b23bf95155c74725b535e1a34327",
+    "status": "PASS",
+    "testSHA256": "84e808628b63cc5455533fad83c4b0bc6792792ac6637699db6f16bf21629f1e"
+  },
   "deadlineCorrection": "Monotonic global deadline caps stages and publication; captured cleanup Deadline is rethrown after independent cleanup; exact owned manifest inodes rolled back.",
-  "recovery": "Reconstructed after second workspace loss; no claim of byte-identical restoration to unrecorded pre-loss working tree.",
   "files": {
     "development/vr180/indexed-transform-prototype/README.md": "dbc5c8558fe6cb9472f1916d934bf49978c3e299e07653faa29da740491535d5",
     "development/vr180/indexed-transform-prototype/make-transform.py": "a9ee2d51e7e2891c419f0b3f9045c69c1ed828d079f3fc647e61505aa061b029",
     "development/vr180/indexed-transform-prototype/provenance.json": "23257cafc0ca6aea6c7d29c52daefea7dbe3e1e12d986d1e3a73d35c1afe3389",
     "development/vr180/indexed-transform-prototype/transform.mjs": "6bebc1f08112f56f58190e69d0bce862fe9c9aca1deae2d0a40dfb6c77c748cf",
     "development/vr180/indexed-transform-prototype/transform.patch": "f5f0977d4084fb8d4c4b8d93cd083b4e55fa769a5c502bdb076cd83f9d6b672f",
-    "development/vr180/p5-long-prototype/README.md": "098aebd5463efe38f45333cf493a6ead2ba7e47f1186749863d3623da9a8eee0",
+    "development/vr180/p5-long-prototype/README.md": "718a2907f59b2b5450018c490fa7838673b6a0bcf39da04eacf7e09e9f7617ef",
+    "development/vr180/p5-long-prototype/evidence-bundle.py": "8416dbad1749cc563f97ae70243ea1075629a8838f6181abd2ea216a8149009c",
     "development/vr180/p5-long-prototype/frame-provenance.json": "e7559b24fbfa9914b9961becd4fe9df1e3f53df28407157b84f8ea57fd8ea9f5",
     "development/vr180/p5-long-prototype/frame.mjs": "2868174cce6b654eb269ddbcf775b01b35a5e3689bd19e51e9192f42ea9edcb3",
     "development/vr180/p5-long-prototype/oracle.py": "526e5ee18091b37130dd2489bf6bdec2f1a12d1132c80b5838c73fba3cab02e3",
-    "development/vr180/p5-long-prototype/probe-long.py": "3d3c913e2821cfe893510d9e017792aef644cfb838fb6f6398e1c8a1addf5d09",
+    "development/vr180/p5-long-prototype/probe-long.py": "f581adee2b3ef0abb0db4b853db087998255b23bf95155c74725b535e1a34327",
     "development/vr180/p5-long-prototype/profile.mjs": "d86c97cfbe9148267eded599f59ce312188c9f431e7b63b832d597306f2224be",
     "development/vr180/p5-long-prototype/streaming.py": "db7704fa29d20a9aad9ccad8c350dde69c10f02a53ba95c231e36ecf5a3961dc",
     "development/vr180/p5-long-prototype/worker.mjs": "308e7ecb42783af9049f2a5a8e60cfbc668eb553ff2d6e37bb7e49bd35d27d20",
     "tests/test_vr180_p5_long.py": "a86fbd403ce6d71469e4bef5c1b8419f20f94e271bbd20ffc0c237f6fe3ca6f8",
-    "tests/test_vr180_p5_long_probe.py": "60ec2637fd3b7928e81b0e8cb597c690c405d1b48cdbd23c49f793987ea62185",
+    "tests/test_vr180_p5_long_bundle.py": "0870c80e79a86bd569658bd3a765fe040bea3efcf3e4d53da9569834476b270d",
+    "tests/test_vr180_p5_long_cancel.py": "84e808628b63cc5455533fad83c4b0bc6792792ac6637699db6f16bf21629f1e",
+    "tests/test_vr180_p5_long_probe.py": "f9d14a58ca1907b07d8d29edda3ba70b1590e79984386e4adee58e6c2bf782cc",
     "tests/vr180-indexed-transform.test.mjs": "2bafeecf896cbb97c64d270e533aa363a6b1d33a5228063f4c969b935646ec33",
     "tests/vr180-p5-long-worker.test.mjs": "f7945e2d7615b8b088f71dc124a84f5ebb532428b9c1500467d79e189ca03946",
     "tests/vr180-p5-long.test.mjs": "62db2696c50c46b391ca3502d4c3ed0ab8d817702f00cc5ac732cb0e1e6751fa"
   },
+  "nativeLongMedia": "NOT_RUN",
+  "nodeTests": 24,
+  "publicAndCalibrationDiffFromBase": "",
+  "pythonTests": 26,
+  "recovery": "Reconstructed after second workspace loss; no claim of byte-identical restoration to unrecorded pre-loss working tree.",
+  "schema": "vr180-p5-long-local-validation-v1",
+  "scope": "Small temporary files, injected Worker/browser contracts and real loopback HTTP; no large media or native WebCodecs/OPFS acceptance.",
+  "status": "LOCAL_CONTRACT_TESTS_PASS",
   "testLogs": {
-    "node.txt": "29f84d1447ab4db60d74d61a12f9f31a86dce616591bc17a113bed5caf443a08",
-    "python.txt": "26713abc8e7af51b39e2fc80ffb25f3202ed3b1d8c55652bafc01b80920b0288"
+    "development/vr180/p5-long-prototype/bundle-node-validation.log": "73b3902516b8a52bf8f0f110df700a1b0399a01a53f00a07b3da79e3344f6df7",
+    "development/vr180/p5-long-prototype/bundle-python-validation.log": "898155920c3ed49d34b348f328295b070cfb377680cdd4be6bc31c4e2efaf017"
   }
 }

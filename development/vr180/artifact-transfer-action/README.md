@@ -120,7 +120,8 @@ The SDK's child-process stdout/stderr are not forwarded. Only bounded receipts
 and fixed error codes are printed.
 
 For a long trial, the separate producer creates `source-manifest.json`,
-`input.mp4`, `output.mp4`, and `quality-evidence.json` together in its new
+`input.mp4`, `output.mp4`, `quality-evidence.json`, and
+`producer-evidence.tar.gz` together in its new
 `media/` directory. The same action inputs point at that manifest and a new
 upload directory. The long-media producer's calibration, disk/quota, time and
 quality gates remain prerequisites; this action neither runs nor bypasses them.
@@ -161,8 +162,8 @@ That regular, nonsymlink file is at most 64 KiB. The sender reads its actual
 bounded bytes, verifies length/hash, and checks schema
 `vr180-p5-long-quality-evidence-v1`, identity, profile, sourceSHA256, ordered
 file IDs/names/bytes/hashes, `mediaVerdict` and `completeScan` against the source
-manifest. Its `evidence:[{path,bytes,sha256}]` has 1–256 unique bounded relative
-paths and positive byte counts. The sender checks descriptor syntax but does
+manifest. Its `evidence:[{path,bytes,sha256}]` has 1–255 unique bounded relative
+paths and nonnegative byte counts. The sender checks descriptor syntax but does
 not open those referenced reports or reinterpret their media verdicts. The
 producer verifies all referenced files and includes them with the identical
 raw quality JSON in its separate metadata archive; the host verifies that
@@ -170,12 +171,11 @@ archive independently. A complete `FAIL` is transportable; an incomplete scan
 cannot pass the sender gate. Quality bytes are reread unchanged before the
 completion artifact is published.
 
-Only `p5-receiver-calibration32` permits zero-byte evidence references, because
-the original calibration manifest includes empty stderr logs. Those files must
-remain in the producer bundle and are checked as empty files by the receiver.
-The long profile's positive-reference-size rule is unchanged.
+Both calibration and long profiles preserve zero-byte original stderr logs.
+Those files remain in the producer bundle and are verified as empty files by
+the receiver; a missing file cannot substitute for a zero-byte file.
 
-The media-receiver calibration profile additionally requires the following
+All media profiles additionally require the following
 source descriptor and a regular nonsymlink file next to the media:
 
 ```text
@@ -192,10 +192,11 @@ Missing, incomplete, changed or oversized bundle bytes prevent completion.
 The independent receiver must validate the recovered tar structure, original
 quality bytes, every evidence reference/hash and the actual media independently.
 
-The existing long source contract is preserved: a bundle is optional there,
-and if explicitly provided receives the same raw-byte checks and binding.
-That compatibility does not enable long receiver trials. Long reception still
-requires its separate gate and complete producer metadata bundle preparation.
+Long profiles now require this bundle too. The earlier bundle-optional
+prototype contract is superseded before any long native run. Complete original
+metadata reception, source/run binding, full-media recovery and fresh long
+oracle validation remain separate gates. Short-media acceptance permits only
+the first 5GB trial; 10GB additionally requires reviewed 5GB acceptance.
 
 Each data artifact contains exactly one ZIP entry, **`chunk.bin`**. Its name is:
 

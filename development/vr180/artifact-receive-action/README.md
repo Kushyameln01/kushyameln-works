@@ -10,7 +10,9 @@ The wrapper accepts `service-8mib`, `single-128mib`, and the separately gated
 `p5-receiver-calibration32`. The first two passed real same-run service recovery
 in runs 39044433711 and 39044958599. Calibration accepts only a newly executed
 300-frame, silent 32-to-32 Mbps case, at most 80 MiB per file and 120 MiB total.
-Long-media profiles remain refused. Local mocks do not establish service access
+The explicitly gated long profiles are `p5-5gb` and `p5-10gb`; workflow
+requires reviewed short-media acceptance before 5GB and reviewed full 5GB
+acceptance before 10GB. Profile support alone is not native media acceptance. Local mocks do not establish service access
 or large-media capacity.
 
 ## Fixed upstream and adaptation
@@ -61,7 +63,7 @@ The fixed Python CLI receives:
 
 ```text
 --receipt-json <producer completion receipt JSON>
---profile service-8mib|single-128mib|p5-receiver-calibration32
+--profile service-8mib|single-128mib|p5-receiver-calibration32|p5-5gb|p5-10gb
 --output <new owned directory>
 ```
 
@@ -150,3 +152,15 @@ and cancellation, descriptor closure/readback, existing-path preservation,
 ownership-safe cleanup, input bounds, fixed SDK imports and reconstruction
 patch hashes. They make no service calls. `test-child.cjs` is never selected
 by production inputs or code.
+
+
+Long media uses `receive-long-media-evidence.py`, its original noncircular
+producer record, fixed complete source closure, and long packet/event verdict.
+The fixed 300-frame calibration verdict is never substituted. It verifies real
+input payload reaches 5,000,000,000 / 10,000,000,000 bytes and records actual
+output size; capacity acceptance also requires an actual output over 4 GiB.
+Input/output file caps are 5.1/5.2 or 10.1/10.2 decimal GB. Total recovery is
+bounded to 45/60 minutes; one combined packet/full-frame oracle phase is bounded
+to 15/25 minutes within the remaining overall deadline. Per-artifact limits are
+unchanged. The output stays on the fresh receiver until runner termination;
+this is not a claim that Codex locally recovered every original media byte.
