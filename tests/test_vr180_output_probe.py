@@ -15,6 +15,20 @@ spec=importlib.util.spec_from_file_location('output_probe',ROOT/'tools/vr180/pro
 probe=importlib.util.module_from_spec(spec);spec.loader.exec_module(probe)
 
 class ProbeTransport(unittest.TestCase):
+    def test_public_origin_preflight_failure_keeps_run_attempt_identity(self):
+        spec=importlib.util.spec_from_file_location('public_probe',ROOT/'tools/vr180/probe-public-origin.py')
+        public=importlib.util.module_from_spec(spec);spec.loader.exec_module(public)
+        with tempfile.TemporaryDirectory(prefix='vr180-public-probe-contract-') as temp:
+            output=Path(temp)/'result';logs=io.StringIO()
+            with patch.dict(os.environ,{'GITHUB_REPOSITORY':'rejected/test','GITHUB_RUN_ID':'contract','GITHUB_RUN_ATTEMPT':'4'}),patch.object(sys,'argv',[str(public.__file__),'--output',str(output)]),contextlib.redirect_stdout(logs):
+                code=public.main()
+            self.assertEqual(code,1)
+            report=json.loads((output/'run.json').read_text())
+            self.assertEqual(report['runId'],'contract-published-origin-4')
+            begin=next(line for line in logs.getvalue().splitlines() if line.startswith('VR180_EVIDENCE_BEGIN '))
+            transport=json.loads(begin.split(' ',1)[1]);self.assertTrue(transport['complete'])
+            self.assertEqual(transport['runId'],report['runId'])
+
     def test_indexed_conversion_preflight_failure_keeps_transport_identity(self):
         spec=importlib.util.spec_from_file_location('indexed_probe',ROOT/'tools/vr180/probe-indexed-conversion.py')
         indexed=importlib.util.module_from_spec(spec);spec.loader.exec_module(indexed)

@@ -1,0 +1,4561 @@
+{
+  "schema": "vr180-indexed-conversion-recovered-acceptance-v1",
+  "status": "PASS",
+  "sourceCommit": "8920ac6f6e4a07e56376c1b414fa34f878a22f3b",
+  "workflowRun": 39037079164,
+  "jobId": 117408978068,
+  "transport": {
+    "schema": "vr180-log-transport-v1",
+    "runId": "39037079164-indexed-conversion-1",
+    "status": "PASS",
+    "archiveFormat": "tar+gzip",
+    "bytes": 3640348,
+    "sha256": "657f4af641a43ddee57b26cfae2e9a2361469e09a4e7999a24764f847badecc1",
+    "base64Bytes": 4853800,
+    "chunkChars": 4096,
+    "chunks": 1186,
+    "manifestSHA256": "5d7cb3aa4b710dfe9e82e03de559635556d626af26693b198fdf27ed31358d75",
+    "complete": true
+  },
+  "run": {
+    "schema": "vr180-indexed-conversion-probe-v1",
+    "runId": "39037079164-indexed-conversion-1",
+    "status": "PASS",
+    "suite": "scale",
+    "prototypeOnly": true,
+    "pageErrors": [],
+    "workers": [
+      "http://127.0.0.1:35499/probe-worker.mjs"
+    ],
+    "fullOutputsRecovered": 2,
+    "cleanup": {
+      "status": "REMOVED",
+      "scope": "fresh UUID harness namespace, never shared or adopted by another owner; sole Worker terminated"
+    },
+    "independentMediaAcceptance": "PENDING",
+    "notVerified": [
+      "OS picker",
+      "whole-browser native/GPU memory",
+      "large media",
+      "target VR player",
+      "public deployment"
+    ],
+    "checkoutCommit": "8920ac6f6e4a07e56376c1b414fa34f878a22f3b",
+    "harnessSHA256": "098dbe9f5d73408ab93552912a56146a780845d4733dff25b016931bd60e4816",
+    "sharedHarnessSHA256": "d6fb935eabc976f6589a7461719429b8ef099f87fe90dcf3fa96abb7b6530a6c",
+    "baseHarnessSHA256": "ed8806c80e99d2bc16c666c25cff6973669a08ba5ed9e392cfafea0411f28cbb",
+    "forkSHA256": "65a96894f5442fe92d3672e09b80e6841b7a30a745b002b071636352f5b790cd",
+    "browserVersion": "155.0.8059.39",
+    "browserStatus": "READY_FOR_DOWNLOAD",
+    "elapsedSeconds": 47.482829095
+  },
+  "observations": {
+    "status": "READY_FOR_DOWNLOAD",
+    "cases": [
+      {
+        "name": "4k-2s",
+        "source": "docs/vr180-studio/fixtures/stereo180-4k-2s-sbs.mp4",
+        "settings": {
+          "mode": "convert",
+          "confirmed": true,
+          "layout": "sbs",
+          "fov": 180,
+          "eyeSize": 2048,
+          "bitrate": 25165824
+        },
+        "operationId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0",
+        "inputRevision": 1,
+        "inputBytes": 167765,
+        "inputSHA256": "50624d8850a380ad759a712a7cae9f5f767a966271ca8a671b433c6146895db0",
+        "status": "PASS",
+        "targetInitiallyEmpty": true,
+        "saveWriteCommitted": true,
+        "progressEvents": 25,
+        "cancelRequested": false,
+        "lastProgress": {
+          "phase": "complete",
+          "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0",
+          "videoFrames": 60,
+          "audioPackets": 95,
+          "outputBytes": 456788,
+          "timestamp": 2,
+          "durationEstimate": 2,
+          "ratio": 1
+        },
+        "verification": {
+          "wholeFileHashCompared": false,
+          "savedFileSHA256": "cf240367edff8cd62a7f6e1f97556073b72a9de012eabfffb2db12478b9cd2ec",
+          "metadataHashMatched": true,
+          "expectedMetadataHash": "ecd2d8722ae7a9d7d90064c32621aeee4755f56b72db574dcd9cc6ae74f895bf",
+          "metadataOffset": 454817,
+          "metadataBytes": 1971,
+          "savedWriteCommitted": true
+        },
+        "metrics": {
+          "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0",
+          "settings": {
+            "layout": "sbs",
+            "fov": 180,
+            "eyeSize": 2048,
+            "bitrate": 25165824
+          },
+          "startedAt": "2026-10-17T13:34:18.648Z",
+          "inputBytes": 167765,
+          "outputBytes": 456788,
+          "videoFrames": 60,
+          "encodedVideoPackets": 60,
+          "audioPackets": 95,
+          "totalSamples": 155,
+          "sourceCacheBudgetBytes": 1048576,
+          "outputLimitBytes": 1073741824,
+          "sampleLimit": 100000,
+          "writeChunkBytes": 1048576,
+          "sourceAnalysisMs": 354.09999999999854,
+          "capabilityCheckMs": 138.5,
+          "capabilities": {
+            "input": {
+              "codec": "avc",
+              "width": 4096,
+              "height": 2048,
+              "decodable": true
+            },
+            "output": {
+              "codec": "avc",
+              "width": 4096,
+              "height": 2048,
+              "bitrate": 25165824,
+              "latencyMode": "quality",
+              "encodable": true
+            }
+          },
+          "temporarySetupMs": 27.80000000000291,
+          "conversionLoopMs": 3290.699999999997,
+          "videoIteratorWaitMs": 144.90000000000873,
+          "canvasDrawMs": 2028.8000000000247,
+          "videoAddWaitMs": 94.29999999998108,
+          "audioReadMs": 49.400000000001455,
+          "audioAddWaitMs": 968.8999999999869,
+          "finalizeMs": 688,
+          "outputPreparationMs": 49.200000000004366,
+          "totalMs": 4624.300000000003,
+          "firstVideoTimestamp": 0,
+          "lastVideoEndTimestamp": 2,
+          "firstAudioTimestamp": -0.021333333333333333,
+          "lastAudioEndTimestamp": 2,
+          "audioTimeline": {
+            "packetCount": 95,
+            "sampleRate": 48000,
+            "leadingTrimSamples": 1024,
+            "firstTimestamp": -0.021333333333333333,
+            "lastEndTimestamp": 2
+          },
+          "storageQuotaBytes": null,
+          "storageUsageBytes": null,
+          "storageAvailableBytes": null,
+          "cpuPeakBytes": null,
+          "gpuPeakBytes": null,
+          "nativePeakBytes": null,
+          "containerMetadataGrowth": "private bounded disk input/output indices; unchanged public sample/metadata/output limits",
+          "metadataPatched": true,
+          "status": "saved-and-verified",
+          "cleanupError": null,
+          "outputBackend": "private-indexed-direct-file",
+          "opfsDirectory": null,
+          "admission": {
+            "width": 4096,
+            "height": 2048,
+            "videoCodec": "avc1",
+            "audioCodecs": [
+              "mp4a"
+            ],
+            "stereoMode": null,
+            "projection": null,
+            "bounds": null,
+            "pose": null,
+            "transcodeSafe": true,
+            "transcodeIssues": [],
+            "sampleCounts": {
+              "video": 60,
+              "audio": 95,
+              "total": 155
+            },
+            "containerMetadataBytes": 3533
+          },
+          "indexSortBytes": {
+            "input": 2594304,
+            "output": 1600000
+          },
+          "indexBudgetBytes": 8388608,
+          "inputIndex": {
+            "tableReadBytes": 2324,
+            "tableReadCalls": 22,
+            "tableMaxReadBytes": 612,
+            "tableCacheMisses": 10,
+            "inspectorReadBytes": 3581,
+            "inspectorMaxReadBytes": 620,
+            "metadataReadBytes": 1719,
+            "metadataMaxReadBytes": 177,
+            "metadataSmallBytes": 1011,
+            "metadataSkeletonBytes": 1091,
+            "retainedDescriptionBytes": 52,
+            "maxSkeletonBuildBytes": 66679,
+            "boxCount": 80,
+            "sampleCount": 155,
+            "peakOwnedStores": 4,
+            "initializationCount": 1,
+            "queryCount": 160,
+            "peakPendingOperations": 2,
+            "initialized": true,
+            "disposed": true,
+            "inspection": {
+              "width": 4096,
+              "height": 2048,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 60,
+                "audio": 95,
+                "total": 155
+              },
+              "containerMetadataBytes": 3533
+            },
+            "validationProfile": "unchanged-public-parser",
+            "ownedStores": 0,
+            "budgetReservedBytes": 0,
+            "budgetPeakBytes": 3319608,
+            "tracks": []
+          },
+          "outputIndex": {
+            "profile": {
+              "maxSamples": 100000,
+              "maxTracks": 2,
+              "maxChunkSamples": 4096,
+              "maxChunkBytes": 4194304,
+              "sortReservedBytes": 1600000,
+              "maxLeafBytes": 65536
+            },
+            "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out",
+            "sampleCount": 155,
+            "moovPosition": 454817,
+            "moovBytes": 1971,
+            "verification": {
+              "width": 4096,
+              "height": 2048,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": 2,
+              "projection": "equi",
+              "bounds": {
+                "top": 0,
+                "bottom": 0,
+                "left": 1073741824,
+                "right": 1073741824
+              },
+              "pose": [
+                0,
+                0,
+                0
+              ],
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 60,
+                "audio": 95,
+                "total": 155
+              },
+              "containerMetadataBytes": 1971
+            },
+            "peakChunkSamples": 24,
+            "peakChunkBytes": 169195,
+            "peakChunkBackingBytes": 3145728,
+            "peakTimestampSamples": 60,
+            "peakSortBytes": 480,
+            "metadataWriteBytes": 1971,
+            "metadataWriteCalls": 95,
+            "metadataReadBytes": 3978,
+            "metadataReads": 103,
+            "metadataFlushes": 1,
+            "metadataClosed": true,
+            "peakWriterSections": 1,
+            "peakWriterChunks": 1,
+            "peakExplicitReservedBytes": 2722304,
+            "explicitReservedBytes": 0,
+            "budgetPeakBytes": 3319608,
+            "disposed": true,
+            "tracks": [
+              {
+                "id": 2,
+                "samples": 95,
+                "chunks": 4,
+                "liveChunkSamples": 0,
+                "liveChunkBytes": 0,
+                "liveChunkBackingBytes": 0,
+                "tables": {
+                  "samples": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t2-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 95,
+                    "extent": 6080,
+                    "internalBufferBytes": 0,
+                    "readBytes": 64,
+                    "writeBytes": 24256,
+                    "readCalls": 1,
+                    "writeCalls": 379,
+                    "cacheHits": 759,
+                    "cacheWriteThroughBytes": 24192,
+                    "yields": 5,
+                    "flushes": 1,
+                    "observedFileBytes": 6080,
+                    "peakInternalBufferBytes": 65600,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "chunks": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t2-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 4,
+                    "extent": 96,
+                    "internalBufferBytes": 0,
+                    "readBytes": 96,
+                    "writeBytes": 96,
+                    "readCalls": 1,
+                    "writeCalls": 4,
+                    "cacheHits": 7,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 96,
+                    "peakInternalBufferBytes": 65560,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stts": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t2-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 2,
+                    "extent": 16,
+                    "internalBufferBytes": 0,
+                    "readBytes": 16,
+                    "writeBytes": 16,
+                    "readCalls": 1,
+                    "writeCalls": 2,
+                    "cacheHits": 1,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 16,
+                    "peakInternalBufferBytes": 65544,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "ctts": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t2-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 8,
+                    "readCalls": 0,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stsc": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t2-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 2,
+                    "extent": 24,
+                    "internalBufferBytes": 0,
+                    "readBytes": 24,
+                    "writeBytes": 24,
+                    "readCalls": 1,
+                    "writeCalls": 2,
+                    "cacheHits": 1,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 24,
+                    "peakInternalBufferBytes": 65548,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stss": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t2-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 95,
+                    "extent": 380,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 380,
+                    "readCalls": 0,
+                    "writeCalls": 95,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 1,
+                    "flushes": 1,
+                    "observedFileBytes": 380,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  }
+                }
+              },
+              {
+                "id": 1,
+                "samples": 60,
+                "chunks": 4,
+                "liveChunkSamples": 0,
+                "liveChunkBytes": 0,
+                "liveChunkBackingBytes": 0,
+                "tables": {
+                  "samples": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 60,
+                    "extent": 3840,
+                    "internalBufferBytes": 0,
+                    "readBytes": 960,
+                    "writeBytes": 15296,
+                    "readCalls": 1,
+                    "writeCalls": 239,
+                    "cacheHits": 476,
+                    "cacheWriteThroughBytes": 14336,
+                    "yields": 3,
+                    "flushes": 1,
+                    "observedFileBytes": 3840,
+                    "peakInternalBufferBytes": 65600,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "chunks": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t1-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 4,
+                    "extent": 96,
+                    "internalBufferBytes": 0,
+                    "readBytes": 96,
+                    "writeBytes": 96,
+                    "readCalls": 1,
+                    "writeCalls": 4,
+                    "cacheHits": 7,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 96,
+                    "peakInternalBufferBytes": 65560,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stts": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t1-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 0,
+                    "readBytes": 8,
+                    "writeBytes": 8,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65544,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "ctts": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t1-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 8,
+                    "readCalls": 0,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stsc": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t1-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 12,
+                    "internalBufferBytes": 0,
+                    "readBytes": 12,
+                    "writeBytes": 12,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 12,
+                    "peakInternalBufferBytes": 65548,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stss": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t1-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 4,
+                    "internalBufferBytes": 0,
+                    "readBytes": 4,
+                    "writeBytes": 4,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 4,
+                    "peakInternalBufferBytes": 65540,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  }
+                }
+              }
+            ]
+          },
+          "inputIndexBeforeCleanup": {
+            "tableReadBytes": 2324,
+            "tableReadCalls": 22,
+            "tableMaxReadBytes": 612,
+            "tableCacheMisses": 10,
+            "inspectorReadBytes": 3581,
+            "inspectorMaxReadBytes": 620,
+            "metadataReadBytes": 1719,
+            "metadataMaxReadBytes": 177,
+            "metadataSmallBytes": 1011,
+            "metadataSkeletonBytes": 1091,
+            "retainedDescriptionBytes": 52,
+            "maxSkeletonBuildBytes": 66679,
+            "boxCount": 80,
+            "sampleCount": 155,
+            "peakOwnedStores": 4,
+            "initializationCount": 1,
+            "queryCount": 160,
+            "peakPendingOperations": 2,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 4096,
+              "height": 2048,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 60,
+                "audio": 95,
+                "total": 155
+              },
+              "containerMetadataBytes": 3533
+            },
+            "validationProfile": "unchanged-public-parser",
+            "ownedStores": 4,
+            "budgetReservedBytes": 2722304,
+            "budgetPeakBytes": 3319608,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 60,
+                "hasComposition": true,
+                "sortCapacityRecords": 162144,
+                "sortReservedBytes": 2594304,
+                "sortPasses": 1,
+                "presentationRecords": 60,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-in-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 60,
+                  "extent": 3840,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 128,
+                  "writeBytes": 7680,
+                  "readCalls": 1,
+                  "writeCalls": 120,
+                  "cacheHits": 180,
+                  "cacheWriteThroughBytes": 7552,
+                  "yields": 1,
+                  "flushes": 1,
+                  "observedFileBytes": 3840,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 2722304,
+                  "budgetPeakBytes": 3319608
+                },
+                "presentationStore": {
+                  "state": "sealed",
+                  "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-in-t1-presentation-run-0",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 16,
+                    "endianness": "little"
+                  },
+                  "count": 60,
+                  "extent": 960,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 960,
+                  "writeBytes": 960,
+                  "readCalls": 1,
+                  "writeCalls": 60,
+                  "cacheHits": 125,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 0,
+                  "flushes": 1,
+                  "observedFileBytes": 960,
+                  "peakInternalBufferBytes": 65552,
+                  "lastError": null,
+                  "budgetReservedBytes": 2722304,
+                  "budgetPeakBytes": 3319608
+                },
+                "inverseStore": {
+                  "state": "sealed",
+                  "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-in-t1-presentation-inverse",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 8,
+                    "endianness": "little"
+                  },
+                  "count": 60,
+                  "extent": 480,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 480,
+                  "writeBytes": 960,
+                  "readCalls": 1,
+                  "writeCalls": 120,
+                  "cacheHits": 60,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 1,
+                  "flushes": 1,
+                  "observedFileBytes": 480,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 2722304,
+                  "budgetPeakBytes": 3319608
+                }
+              },
+              {
+                "id": 2,
+                "count": 95,
+                "hasComposition": false,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-in-t2-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 95,
+                  "extent": 6080,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 64,
+                  "writeBytes": 12160,
+                  "readCalls": 1,
+                  "writeCalls": 190,
+                  "cacheHits": 190,
+                  "cacheWriteThroughBytes": 12096,
+                  "yields": 2,
+                  "flushes": 1,
+                  "observedFileBytes": 6080,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 2722304,
+                  "budgetPeakBytes": 3319608
+                },
+                "presentationStore": null,
+                "inverseStore": null
+              }
+            ]
+          },
+          "outputIndexBeforeCleanup": {
+            "profile": {
+              "maxSamples": 100000,
+              "maxTracks": 2,
+              "maxChunkSamples": 4096,
+              "maxChunkBytes": 4194304,
+              "sortReservedBytes": 1600000,
+              "maxLeafBytes": 65536
+            },
+            "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out",
+            "sampleCount": 155,
+            "moovPosition": 454817,
+            "moovBytes": 1971,
+            "verification": {
+              "width": 4096,
+              "height": 2048,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": 2,
+              "projection": "equi",
+              "bounds": {
+                "top": 0,
+                "bottom": 0,
+                "left": 1073741824,
+                "right": 1073741824
+              },
+              "pose": [
+                0,
+                0,
+                0
+              ],
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 60,
+                "audio": 95,
+                "total": 155
+              },
+              "containerMetadataBytes": 1971
+            },
+            "peakChunkSamples": 24,
+            "peakChunkBytes": 169195,
+            "peakChunkBackingBytes": 3145728,
+            "peakTimestampSamples": 60,
+            "peakSortBytes": 480,
+            "metadataWriteBytes": 1971,
+            "metadataWriteCalls": 95,
+            "metadataReadBytes": 3978,
+            "metadataReads": 103,
+            "metadataFlushes": 1,
+            "metadataClosed": true,
+            "peakWriterSections": 1,
+            "peakWriterChunks": 1,
+            "peakExplicitReservedBytes": 2722304,
+            "explicitReservedBytes": 2722304,
+            "budgetPeakBytes": 3319608,
+            "disposed": false,
+            "tracks": [
+              {
+                "id": 2,
+                "samples": 95,
+                "chunks": 4,
+                "liveChunkSamples": 0,
+                "liveChunkBytes": 0,
+                "liveChunkBackingBytes": 0,
+                "tables": {
+                  "samples": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t2-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 95,
+                    "extent": 6080,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 64,
+                    "writeBytes": 24256,
+                    "readCalls": 1,
+                    "writeCalls": 379,
+                    "cacheHits": 759,
+                    "cacheWriteThroughBytes": 24192,
+                    "yields": 5,
+                    "flushes": 1,
+                    "observedFileBytes": 6080,
+                    "peakInternalBufferBytes": 65600,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "chunks": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t2-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 4,
+                    "extent": 96,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 96,
+                    "writeBytes": 96,
+                    "readCalls": 1,
+                    "writeCalls": 4,
+                    "cacheHits": 7,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 96,
+                    "peakInternalBufferBytes": 65560,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stts": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t2-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 2,
+                    "extent": 16,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 16,
+                    "writeBytes": 16,
+                    "readCalls": 1,
+                    "writeCalls": 2,
+                    "cacheHits": 1,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 16,
+                    "peakInternalBufferBytes": 65544,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "ctts": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t2-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 8,
+                    "readCalls": 0,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stsc": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t2-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 2,
+                    "extent": 24,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 24,
+                    "writeBytes": 24,
+                    "readCalls": 1,
+                    "writeCalls": 2,
+                    "cacheHits": 1,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 24,
+                    "peakInternalBufferBytes": 65548,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stss": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t2-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 95,
+                    "extent": 380,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 380,
+                    "readCalls": 0,
+                    "writeCalls": 95,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 1,
+                    "flushes": 1,
+                    "observedFileBytes": 380,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  }
+                }
+              },
+              {
+                "id": 1,
+                "samples": 60,
+                "chunks": 4,
+                "liveChunkSamples": 0,
+                "liveChunkBytes": 0,
+                "liveChunkBackingBytes": 0,
+                "tables": {
+                  "samples": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 60,
+                    "extent": 3840,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 960,
+                    "writeBytes": 15296,
+                    "readCalls": 1,
+                    "writeCalls": 239,
+                    "cacheHits": 476,
+                    "cacheWriteThroughBytes": 14336,
+                    "yields": 3,
+                    "flushes": 1,
+                    "observedFileBytes": 3840,
+                    "peakInternalBufferBytes": 65600,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "chunks": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t1-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 4,
+                    "extent": 96,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 96,
+                    "writeBytes": 96,
+                    "readCalls": 1,
+                    "writeCalls": 4,
+                    "cacheHits": 7,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 96,
+                    "peakInternalBufferBytes": 65560,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stts": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t1-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 8,
+                    "writeBytes": 8,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65544,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "ctts": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t1-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 8,
+                    "readCalls": 0,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stsc": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t1-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 12,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 12,
+                    "writeBytes": 12,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 12,
+                    "peakInternalBufferBytes": 65548,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stss": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-0-out-t1-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 4,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 4,
+                    "writeBytes": 4,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 4,
+                    "peakInternalBufferBytes": 65540,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  }
+                }
+              }
+            ]
+          },
+          "indexReservedAfterCleanup": 0
+        },
+        "savedInfo": {
+          "width": 4096,
+          "height": 2048,
+          "videoCodec": "avc1",
+          "audioCodecs": [
+            "mp4a"
+          ],
+          "stereoMode": 2,
+          "projection": "equi",
+          "bounds": {
+            "top": 0,
+            "bottom": 0,
+            "left": 1073741824,
+            "right": 1073741824
+          },
+          "pose": [
+            0,
+            0,
+            0
+          ],
+          "transcodeSafe": true,
+          "transcodeIssues": [],
+          "sampleCounts": {
+            "video": 60,
+            "audio": 95,
+            "total": 155
+          },
+          "containerMetadataBytes": 1971
+        },
+        "bytes": 456788,
+        "sha256": "cf240367edff8cd62a7f6e1f97556073b72a9de012eabfffb2db12478b9cd2ec",
+        "elapsedMs": 4630.300000000003,
+        "finalFileState": {
+          "state": "verified",
+          "writerAcquired": true,
+          "extent": 456788,
+          "committed": true,
+          "muxerClosed": true,
+          "cleanupError": null
+        },
+        "indexDirectoriesRemoved": true,
+        "heldJobLocks": 0,
+        "indexReservedAfterCleanup": 0
+      },
+      {
+        "name": "4k-12s-cancel",
+        "source": "docs/vr180-studio/fixtures/stereo180-4k-12s-sbs.mp4",
+        "settings": {
+          "mode": "convert",
+          "confirmed": true,
+          "layout": "sbs",
+          "fov": 180,
+          "eyeSize": 2048,
+          "bitrate": 25165824
+        },
+        "expectCancel": true,
+        "cancelAfterBytes": 1048576,
+        "handleKey": "retry-scale",
+        "operationId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1",
+        "inputRevision": 2,
+        "inputBytes": 944087,
+        "inputSHA256": "97bb3a4335514436374b35c202275dde2cfca27f8f7cec3a224fd77c8ede6582",
+        "status": "EXPECTED_CANCELLATION",
+        "targetInitiallyEmpty": true,
+        "saveWriteCommitted": false,
+        "progressEvents": 63,
+        "cancelRequested": true,
+        "lastProgress": {
+          "phase": "convert",
+          "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1",
+          "videoFrames": 139,
+          "audioPackets": 215,
+          "outputBytes": 1048576,
+          "timestamp": 4.633333333333333,
+          "durationEstimate": 12,
+          "ratio": 0.38611111111111107
+        },
+        "cancelAt": {
+          "phase": "convert",
+          "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1",
+          "videoFrames": 139,
+          "audioPackets": 215,
+          "outputBytes": 1048576,
+          "timestamp": 4.633333333333333,
+          "durationEstimate": 12,
+          "ratio": 0.38611111111111107
+        },
+        "error": {
+          "name": "AbortError",
+          "message": "Conversion was canceled.",
+          "status": null
+        },
+        "metrics": {
+          "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1",
+          "settings": {
+            "layout": "sbs",
+            "fov": 180,
+            "eyeSize": 2048,
+            "bitrate": 25165824
+          },
+          "startedAt": "2026-10-17T13:34:23.284Z",
+          "inputBytes": 944087,
+          "outputBytes": 1048576,
+          "videoFrames": 139,
+          "encodedVideoPackets": 138,
+          "audioPackets": 215,
+          "totalSamples": 354,
+          "sourceCacheBudgetBytes": 1048576,
+          "outputLimitBytes": 1073741824,
+          "sampleLimit": 100000,
+          "writeChunkBytes": 1048576,
+          "sourceAnalysisMs": 1392.9000000000015,
+          "capabilityCheckMs": 0.19999999999708962,
+          "capabilities": {
+            "input": {
+              "codec": "avc",
+              "width": 4096,
+              "height": 2048,
+              "decodable": true
+            },
+            "output": {
+              "codec": "avc",
+              "width": 4096,
+              "height": 2048,
+              "bitrate": 25165824,
+              "latencyMode": "quality",
+              "encodable": true
+            }
+          },
+          "temporarySetupMs": 2.8000000000029104,
+          "conversionLoopMs": null,
+          "videoIteratorWaitMs": 46.59999999991851,
+          "canvasDrawMs": 4986.300000000039,
+          "videoAddWaitMs": 268.099999999984,
+          "audioReadMs": 155.49999999991996,
+          "audioAddWaitMs": 2366.1000000001295,
+          "finalizeMs": null,
+          "outputPreparationMs": null,
+          "totalMs": 9275.699999999997,
+          "firstVideoTimestamp": 0,
+          "lastVideoEndTimestamp": 4.633333333333333,
+          "firstAudioTimestamp": -0.021333333333333333,
+          "lastAudioEndTimestamp": 4.6080000000000005,
+          "audioTimeline": null,
+          "storageQuotaBytes": null,
+          "storageUsageBytes": null,
+          "storageAvailableBytes": null,
+          "cpuPeakBytes": null,
+          "gpuPeakBytes": null,
+          "nativePeakBytes": null,
+          "containerMetadataGrowth": "private bounded disk input/output indices; unchanged public sample/metadata/output limits",
+          "metadataPatched": false,
+          "status": "canceled",
+          "cleanupError": null,
+          "outputBackend": "private-indexed-direct-file",
+          "opfsDirectory": null,
+          "admission": {
+            "width": 4096,
+            "height": 2048,
+            "videoCodec": "avc1",
+            "audioCodecs": [
+              "mp4a"
+            ],
+            "stereoMode": null,
+            "projection": null,
+            "bounds": null,
+            "pose": null,
+            "transcodeSafe": true,
+            "transcodeIssues": [],
+            "sampleCounts": {
+              "video": 360,
+              "audio": 559,
+              "total": 919
+            },
+            "containerMetadataBytes": 14429
+          },
+          "indexSortBytes": {
+            "input": 2594304,
+            "output": 1600000
+          },
+          "indexBudgetBytes": 8388608,
+          "inputIndex": {
+            "tableReadBytes": 13220,
+            "tableReadCalls": 22,
+            "tableMaxReadBytes": 3672,
+            "tableCacheMisses": 10,
+            "inspectorReadBytes": 14477,
+            "inspectorMaxReadBytes": 3680,
+            "metadataReadBytes": 1719,
+            "metadataMaxReadBytes": 177,
+            "metadataSmallBytes": 1011,
+            "metadataSkeletonBytes": 1091,
+            "retainedDescriptionBytes": 52,
+            "maxSkeletonBuildBytes": 66679,
+            "boxCount": 80,
+            "sampleCount": 919,
+            "peakOwnedStores": 4,
+            "initializationCount": 1,
+            "queryCount": 388,
+            "peakPendingOperations": 2,
+            "initialized": true,
+            "disposed": true,
+            "inspection": {
+              "width": 4096,
+              "height": 2048,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 360,
+                "audio": 559,
+                "total": 919
+              },
+              "containerMetadataBytes": 14429
+            },
+            "validationProfile": "unchanged-public-parser",
+            "ownedStores": 0,
+            "budgetReservedBytes": 0,
+            "budgetPeakBytes": 3319608,
+            "tracks": []
+          },
+          "outputIndex": {
+            "profile": {
+              "maxSamples": 100000,
+              "maxTracks": 2,
+              "maxChunkSamples": 4096,
+              "maxChunkBytes": 4194304,
+              "sortReservedBytes": 1600000,
+              "maxLeafBytes": 65536
+            },
+            "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out",
+            "sampleCount": 352,
+            "moovPosition": null,
+            "moovBytes": 0,
+            "verification": null,
+            "peakChunkSamples": 24,
+            "peakChunkBytes": 169595,
+            "peakChunkBackingBytes": 3145728,
+            "peakTimestampSamples": 60,
+            "peakSortBytes": 480,
+            "metadataWriteBytes": 0,
+            "metadataWriteCalls": 0,
+            "metadataReadBytes": 0,
+            "metadataReads": 0,
+            "metadataFlushes": 0,
+            "metadataClosed": false,
+            "peakWriterSections": 1,
+            "peakWriterChunks": 1,
+            "peakExplicitReservedBytes": 2722368,
+            "explicitReservedBytes": 0,
+            "budgetPeakBytes": 3319608,
+            "disposed": true,
+            "tracks": [
+              {
+                "id": 2,
+                "samples": 215,
+                "chunks": 9,
+                "liveChunkSamples": 0,
+                "liveChunkBytes": 0,
+                "liveChunkBackingBytes": 0,
+                "tables": {
+                  "samples": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t2-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 215,
+                    "extent": 13760,
+                    "internalBufferBytes": 0,
+                    "readBytes": 64,
+                    "writeBytes": 54784,
+                    "readCalls": 1,
+                    "writeCalls": 856,
+                    "cacheHits": 854,
+                    "cacheWriteThroughBytes": 54720,
+                    "yields": 13,
+                    "flushes": 0,
+                    "observedFileBytes": 13760,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "chunks": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t2-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 9,
+                    "extent": 216,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 216,
+                    "readCalls": 0,
+                    "writeCalls": 9,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 216,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stts": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t2-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "ctts": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t2-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stsc": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t2-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stss": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t2-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  }
+                }
+              },
+              {
+                "id": 1,
+                "samples": 137,
+                "chunks": 9,
+                "liveChunkSamples": 0,
+                "liveChunkBytes": 0,
+                "liveChunkBackingBytes": 0,
+                "tables": {
+                  "samples": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 138,
+                    "extent": 8832,
+                    "internalBufferBytes": 0,
+                    "readBytes": 960,
+                    "writeBytes": 32768,
+                    "readCalls": 1,
+                    "writeCalls": 512,
+                    "cacheHits": 493,
+                    "cacheWriteThroughBytes": 31808,
+                    "yields": 8,
+                    "flushes": 0,
+                    "observedFileBytes": 8832,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": "Index operation canceled.",
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "chunks": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t1-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 9,
+                    "extent": 216,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 216,
+                    "readCalls": 0,
+                    "writeCalls": 9,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 216,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stts": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t1-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "ctts": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t1-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stsc": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t1-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stss": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t1-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  }
+                }
+              }
+            ]
+          },
+          "error": "Conversion was canceled.",
+          "inputIndexBeforeCleanup": {
+            "tableReadBytes": 13220,
+            "tableReadCalls": 22,
+            "tableMaxReadBytes": 3672,
+            "tableCacheMisses": 10,
+            "inspectorReadBytes": 14477,
+            "inspectorMaxReadBytes": 3680,
+            "metadataReadBytes": 1719,
+            "metadataMaxReadBytes": 177,
+            "metadataSmallBytes": 1011,
+            "metadataSkeletonBytes": 1091,
+            "retainedDescriptionBytes": 52,
+            "maxSkeletonBuildBytes": 66679,
+            "boxCount": 80,
+            "sampleCount": 919,
+            "peakOwnedStores": 4,
+            "initializationCount": 1,
+            "queryCount": 388,
+            "peakPendingOperations": 2,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 4096,
+              "height": 2048,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 360,
+                "audio": 559,
+                "total": 919
+              },
+              "containerMetadataBytes": 14429
+            },
+            "validationProfile": "unchanged-public-parser",
+            "ownedStores": 4,
+            "budgetReservedBytes": 2722368,
+            "budgetPeakBytes": 3319608,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 360,
+                "hasComposition": true,
+                "sortCapacityRecords": 162144,
+                "sortReservedBytes": 2594304,
+                "sortPasses": 1,
+                "presentationRecords": 360,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-in-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 360,
+                  "extent": 23040,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 128,
+                  "writeBytes": 46080,
+                  "readCalls": 1,
+                  "writeCalls": 720,
+                  "cacheHits": 889,
+                  "cacheWriteThroughBytes": 45952,
+                  "yields": 11,
+                  "flushes": 1,
+                  "observedFileBytes": 23040,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 2722368,
+                  "budgetPeakBytes": 3319608
+                },
+                "presentationStore": {
+                  "state": "sealed",
+                  "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-in-t1-presentation-run-0",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 16,
+                    "endianness": "little"
+                  },
+                  "count": 360,
+                  "extent": 5760,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 5760,
+                  "writeBytes": 5760,
+                  "readCalls": 1,
+                  "writeCalls": 360,
+                  "cacheHits": 538,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 5,
+                  "flushes": 1,
+                  "observedFileBytes": 5760,
+                  "peakInternalBufferBytes": 65552,
+                  "lastError": null,
+                  "budgetReservedBytes": 2722368,
+                  "budgetPeakBytes": 3319608
+                },
+                "inverseStore": {
+                  "state": "sealed",
+                  "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-in-t1-presentation-inverse",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 8,
+                    "endianness": "little"
+                  },
+                  "count": 360,
+                  "extent": 2880,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 2880,
+                  "writeBytes": 5760,
+                  "readCalls": 1,
+                  "writeCalls": 720,
+                  "cacheHits": 169,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 11,
+                  "flushes": 1,
+                  "observedFileBytes": 2880,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 2722368,
+                  "budgetPeakBytes": 3319608
+                }
+              },
+              {
+                "id": 2,
+                "count": 559,
+                "hasComposition": false,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-in-t2-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 559,
+                  "extent": 35776,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 64,
+                  "writeBytes": 71552,
+                  "readCalls": 1,
+                  "writeCalls": 1118,
+                  "cacheHits": 775,
+                  "cacheWriteThroughBytes": 71488,
+                  "yields": 17,
+                  "flushes": 1,
+                  "observedFileBytes": 35776,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 2722368,
+                  "budgetPeakBytes": 3319608
+                },
+                "presentationStore": null,
+                "inverseStore": null
+              }
+            ]
+          },
+          "outputIndexBeforeCleanup": {
+            "profile": {
+              "maxSamples": 100000,
+              "maxTracks": 2,
+              "maxChunkSamples": 4096,
+              "maxChunkBytes": 4194304,
+              "sortReservedBytes": 1600000,
+              "maxLeafBytes": 65536
+            },
+            "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out",
+            "sampleCount": 352,
+            "moovPosition": null,
+            "moovBytes": 0,
+            "verification": null,
+            "peakChunkSamples": 24,
+            "peakChunkBytes": 169595,
+            "peakChunkBackingBytes": 3145728,
+            "peakTimestampSamples": 60,
+            "peakSortBytes": 480,
+            "metadataWriteBytes": 0,
+            "metadataWriteCalls": 0,
+            "metadataReadBytes": 0,
+            "metadataReads": 0,
+            "metadataFlushes": 0,
+            "metadataClosed": false,
+            "peakWriterSections": 1,
+            "peakWriterChunks": 1,
+            "peakExplicitReservedBytes": 2722368,
+            "explicitReservedBytes": 2722368,
+            "budgetPeakBytes": 3319608,
+            "disposed": false,
+            "tracks": [
+              {
+                "id": 2,
+                "samples": 215,
+                "chunks": 9,
+                "liveChunkSamples": 1,
+                "liveChunkBytes": 314,
+                "liveChunkBackingBytes": 65536,
+                "tables": {
+                  "samples": {
+                    "state": "open",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t2-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 215,
+                    "extent": 13760,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 64,
+                    "writeBytes": 54784,
+                    "readCalls": 1,
+                    "writeCalls": 856,
+                    "cacheHits": 854,
+                    "cacheWriteThroughBytes": 54720,
+                    "yields": 13,
+                    "flushes": 0,
+                    "observedFileBytes": 13760,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722368,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "chunks": {
+                    "state": "open",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t2-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 9,
+                    "extent": 216,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 216,
+                    "readCalls": 0,
+                    "writeCalls": 9,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 216,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722368,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stts": {
+                    "state": "open",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t2-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722368,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "ctts": {
+                    "state": "open",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t2-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722368,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stsc": {
+                    "state": "open",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t2-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722368,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stss": {
+                    "state": "open",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t2-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722368,
+                    "budgetPeakBytes": 3319608
+                  }
+                }
+              },
+              {
+                "id": 1,
+                "samples": 137,
+                "chunks": 9,
+                "liveChunkSamples": 2,
+                "liveChunkBytes": 15702,
+                "liveChunkBackingBytes": 15702,
+                "tables": {
+                  "samples": {
+                    "state": "open",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 137,
+                    "extent": 8768,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 960,
+                    "writeBytes": 32768,
+                    "readCalls": 1,
+                    "writeCalls": 512,
+                    "cacheHits": 493,
+                    "cacheWriteThroughBytes": 31808,
+                    "yields": 8,
+                    "flushes": 0,
+                    "observedFileBytes": 8832,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722368,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "chunks": {
+                    "state": "open",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t1-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 9,
+                    "extent": 216,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 216,
+                    "readCalls": 0,
+                    "writeCalls": 9,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 216,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722368,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stts": {
+                    "state": "open",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t1-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722368,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "ctts": {
+                    "state": "open",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t1-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722368,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stsc": {
+                    "state": "open",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t1-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722368,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stss": {
+                    "state": "open",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-1-out-t1-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 0,
+                    "extent": 0,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 0,
+                    "readCalls": 0,
+                    "writeCalls": 0,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 0,
+                    "observedFileBytes": 0,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722368,
+                    "budgetPeakBytes": 3319608
+                  }
+                }
+              }
+            ]
+          },
+          "indexReservedAfterCleanup": 0
+        },
+        "saveOutputState": {
+          "state": "aborted",
+          "writerAcquired": true,
+          "extent": 1048576,
+          "committed": false,
+          "muxerClosed": true,
+          "cleanupError": null
+        },
+        "elapsedMs": 9276.099999999999,
+        "finalFileState": {
+          "state": "aborted",
+          "writerAcquired": true,
+          "extent": 1048576,
+          "committed": false,
+          "muxerClosed": true,
+          "cleanupError": null
+        },
+        "indexDirectoriesRemoved": true,
+        "heldJobLocks": 0,
+        "indexReservedAfterCleanup": 0,
+        "savedBytes": 0
+      },
+      {
+        "name": "4k-12s-retry",
+        "source": "docs/vr180-studio/fixtures/stereo180-4k-12s-sbs.mp4",
+        "settings": {
+          "mode": "convert",
+          "confirmed": true,
+          "layout": "sbs",
+          "fov": 180,
+          "eyeSize": 2048,
+          "bitrate": 25165824
+        },
+        "handleKey": "retry-scale",
+        "operationId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2",
+        "inputRevision": 3,
+        "inputBytes": 944087,
+        "inputSHA256": "97bb3a4335514436374b35c202275dde2cfca27f8f7cec3a224fd77c8ede6582",
+        "status": "PASS",
+        "targetInitiallyEmpty": true,
+        "saveWriteCommitted": true,
+        "progressEvents": 156,
+        "cancelRequested": false,
+        "lastProgress": {
+          "phase": "complete",
+          "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2",
+          "videoFrames": 360,
+          "audioPackets": 559,
+          "outputBytes": 2705574,
+          "timestamp": 12,
+          "durationEstimate": 12,
+          "ratio": 1
+        },
+        "verification": {
+          "wholeFileHashCompared": false,
+          "savedFileSHA256": "28b81b1684ad6c7e10664a15496e3c2fe479299556489581f44af53200454e5f",
+          "metadataHashMatched": true,
+          "expectedMetadataHash": "b72b8a448350dbd5429e5266751f09f5cb3e5fa350ab3e481358f43542819f74",
+          "metadataOffset": 2700167,
+          "metadataBytes": 5407,
+          "savedWriteCommitted": true
+        },
+        "metrics": {
+          "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2",
+          "settings": {
+            "layout": "sbs",
+            "fov": 180,
+            "eyeSize": 2048,
+            "bitrate": 25165824
+          },
+          "startedAt": "2026-10-17T13:34:32.581Z",
+          "inputBytes": 944087,
+          "outputBytes": 2705574,
+          "videoFrames": 360,
+          "encodedVideoPackets": 360,
+          "audioPackets": 559,
+          "totalSamples": 919,
+          "sourceCacheBudgetBytes": 1048576,
+          "outputLimitBytes": 1073741824,
+          "sampleLimit": 100000,
+          "writeChunkBytes": 1048576,
+          "sourceAnalysisMs": 1382,
+          "capabilityCheckMs": 0.09999999999126885,
+          "capabilities": {
+            "input": {
+              "codec": "avc",
+              "width": 4096,
+              "height": 2048,
+              "decodable": true
+            },
+            "output": {
+              "codec": "avc",
+              "width": 4096,
+              "height": 2048,
+              "bitrate": 25165824,
+              "latencyMode": "quality",
+              "encodable": true
+            }
+          },
+          "temporarySetupMs": 3,
+          "conversionLoopMs": 19456.100000000006,
+          "videoIteratorWaitMs": 56.49999999992724,
+          "canvasDrawMs": 12514.200000000099,
+          "videoAddWaitMs": 534.8999999998196,
+          "audioReadMs": 378.7999999998574,
+          "audioAddWaitMs": 5959.60000000021,
+          "finalizeMs": 892.5999999999913,
+          "outputPreparationMs": 69.70000000001164,
+          "totalMs": 21845,
+          "firstVideoTimestamp": 0,
+          "lastVideoEndTimestamp": 12,
+          "firstAudioTimestamp": -0.021333333333333333,
+          "lastAudioEndTimestamp": 12,
+          "audioTimeline": {
+            "packetCount": 559,
+            "sampleRate": 48000,
+            "leadingTrimSamples": 1024,
+            "firstTimestamp": -0.021333333333333333,
+            "lastEndTimestamp": 12
+          },
+          "storageQuotaBytes": null,
+          "storageUsageBytes": null,
+          "storageAvailableBytes": null,
+          "cpuPeakBytes": null,
+          "gpuPeakBytes": null,
+          "nativePeakBytes": null,
+          "containerMetadataGrowth": "private bounded disk input/output indices; unchanged public sample/metadata/output limits",
+          "metadataPatched": true,
+          "status": "saved-and-verified",
+          "cleanupError": null,
+          "outputBackend": "private-indexed-direct-file",
+          "opfsDirectory": null,
+          "admission": {
+            "width": 4096,
+            "height": 2048,
+            "videoCodec": "avc1",
+            "audioCodecs": [
+              "mp4a"
+            ],
+            "stereoMode": null,
+            "projection": null,
+            "bounds": null,
+            "pose": null,
+            "transcodeSafe": true,
+            "transcodeIssues": [],
+            "sampleCounts": {
+              "video": 360,
+              "audio": 559,
+              "total": 919
+            },
+            "containerMetadataBytes": 14429
+          },
+          "indexSortBytes": {
+            "input": 2594304,
+            "output": 1600000
+          },
+          "indexBudgetBytes": 8388608,
+          "inputIndex": {
+            "tableReadBytes": 13220,
+            "tableReadCalls": 22,
+            "tableMaxReadBytes": 3672,
+            "tableCacheMisses": 10,
+            "inspectorReadBytes": 14477,
+            "inspectorMaxReadBytes": 3680,
+            "metadataReadBytes": 1719,
+            "metadataMaxReadBytes": 177,
+            "metadataSmallBytes": 1011,
+            "metadataSkeletonBytes": 1091,
+            "retainedDescriptionBytes": 52,
+            "maxSkeletonBuildBytes": 66679,
+            "boxCount": 80,
+            "sampleCount": 919,
+            "peakOwnedStores": 4,
+            "initializationCount": 1,
+            "queryCount": 924,
+            "peakPendingOperations": 2,
+            "initialized": true,
+            "disposed": true,
+            "inspection": {
+              "width": 4096,
+              "height": 2048,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 360,
+                "audio": 559,
+                "total": 919
+              },
+              "containerMetadataBytes": 14429
+            },
+            "validationProfile": "unchanged-public-parser",
+            "ownedStores": 0,
+            "budgetReservedBytes": 0,
+            "budgetPeakBytes": 3319608,
+            "tracks": []
+          },
+          "outputIndex": {
+            "profile": {
+              "maxSamples": 100000,
+              "maxTracks": 2,
+              "maxChunkSamples": 4096,
+              "maxChunkBytes": 4194304,
+              "sortReservedBytes": 1600000,
+              "maxLeafBytes": 65536
+            },
+            "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out",
+            "sampleCount": 919,
+            "moovPosition": 2700167,
+            "moovBytes": 5407,
+            "verification": {
+              "width": 4096,
+              "height": 2048,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": 2,
+              "projection": "equi",
+              "bounds": {
+                "top": 0,
+                "bottom": 0,
+                "left": 1073741824,
+                "right": 1073741824
+              },
+              "pose": [
+                0,
+                0,
+                0
+              ],
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 360,
+                "audio": 559,
+                "total": 919
+              },
+              "containerMetadataBytes": 5407
+            },
+            "peakChunkSamples": 24,
+            "peakChunkBytes": 168976,
+            "peakChunkBackingBytes": 3145728,
+            "peakTimestampSamples": 60,
+            "peakSortBytes": 480,
+            "metadataWriteBytes": 5407,
+            "metadataWriteCalls": 95,
+            "metadataReadBytes": 10850,
+            "metadataReads": 103,
+            "metadataFlushes": 1,
+            "metadataClosed": true,
+            "peakWriterSections": 1,
+            "peakWriterChunks": 2,
+            "peakExplicitReservedBytes": 2722304,
+            "explicitReservedBytes": 0,
+            "budgetPeakBytes": 3319608,
+            "disposed": true,
+            "tracks": [
+              {
+                "id": 2,
+                "samples": 559,
+                "chunks": 24,
+                "liveChunkSamples": 0,
+                "liveChunkBytes": 0,
+                "liveChunkBackingBytes": 0,
+                "tables": {
+                  "samples": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t2-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 559,
+                    "extent": 35776,
+                    "internalBufferBytes": 0,
+                    "readBytes": 64,
+                    "writeBytes": 143040,
+                    "readCalls": 1,
+                    "writeCalls": 2235,
+                    "cacheHits": 4935,
+                    "cacheWriteThroughBytes": 142976,
+                    "yields": 34,
+                    "flushes": 1,
+                    "observedFileBytes": 35776,
+                    "peakInternalBufferBytes": 65600,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "chunks": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t2-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 24,
+                    "extent": 576,
+                    "internalBufferBytes": 0,
+                    "readBytes": 576,
+                    "writeBytes": 576,
+                    "readCalls": 1,
+                    "writeCalls": 24,
+                    "cacheHits": 47,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 576,
+                    "peakInternalBufferBytes": 65560,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stts": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t2-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 12,
+                    "extent": 96,
+                    "internalBufferBytes": 0,
+                    "readBytes": 96,
+                    "writeBytes": 96,
+                    "readCalls": 1,
+                    "writeCalls": 12,
+                    "cacheHits": 11,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 96,
+                    "peakInternalBufferBytes": 65544,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "ctts": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t2-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 8,
+                    "readCalls": 0,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stsc": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t2-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 12,
+                    "extent": 144,
+                    "internalBufferBytes": 0,
+                    "readBytes": 144,
+                    "writeBytes": 144,
+                    "readCalls": 1,
+                    "writeCalls": 12,
+                    "cacheHits": 11,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 144,
+                    "peakInternalBufferBytes": 65548,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stss": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t2-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 559,
+                    "extent": 2236,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 2236,
+                    "readCalls": 0,
+                    "writeCalls": 559,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 8,
+                    "flushes": 1,
+                    "observedFileBytes": 2236,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  }
+                }
+              },
+              {
+                "id": 1,
+                "samples": 360,
+                "chunks": 24,
+                "liveChunkSamples": 0,
+                "liveChunkBytes": 0,
+                "liveChunkBackingBytes": 0,
+                "tables": {
+                  "samples": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 360,
+                    "extent": 23040,
+                    "internalBufferBytes": 0,
+                    "readBytes": 960,
+                    "writeBytes": 92096,
+                    "readCalls": 1,
+                    "writeCalls": 1439,
+                    "cacheHits": 3178,
+                    "cacheWriteThroughBytes": 91136,
+                    "yields": 22,
+                    "flushes": 1,
+                    "observedFileBytes": 23040,
+                    "peakInternalBufferBytes": 65600,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "chunks": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t1-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 24,
+                    "extent": 576,
+                    "internalBufferBytes": 0,
+                    "readBytes": 576,
+                    "writeBytes": 576,
+                    "readCalls": 1,
+                    "writeCalls": 24,
+                    "cacheHits": 47,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 576,
+                    "peakInternalBufferBytes": 65560,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stts": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t1-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 0,
+                    "readBytes": 8,
+                    "writeBytes": 8,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65544,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "ctts": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t1-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 8,
+                    "readCalls": 0,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stsc": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t1-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 12,
+                    "internalBufferBytes": 0,
+                    "readBytes": 12,
+                    "writeBytes": 12,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 12,
+                    "peakInternalBufferBytes": 65548,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stss": {
+                    "state": "disposed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t1-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 6,
+                    "extent": 24,
+                    "internalBufferBytes": 0,
+                    "readBytes": 24,
+                    "writeBytes": 24,
+                    "readCalls": 1,
+                    "writeCalls": 6,
+                    "cacheHits": 5,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 24,
+                    "peakInternalBufferBytes": 65540,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 3319608
+                  }
+                }
+              }
+            ]
+          },
+          "inputIndexBeforeCleanup": {
+            "tableReadBytes": 13220,
+            "tableReadCalls": 22,
+            "tableMaxReadBytes": 3672,
+            "tableCacheMisses": 10,
+            "inspectorReadBytes": 14477,
+            "inspectorMaxReadBytes": 3680,
+            "metadataReadBytes": 1719,
+            "metadataMaxReadBytes": 177,
+            "metadataSmallBytes": 1011,
+            "metadataSkeletonBytes": 1091,
+            "retainedDescriptionBytes": 52,
+            "maxSkeletonBuildBytes": 66679,
+            "boxCount": 80,
+            "sampleCount": 919,
+            "peakOwnedStores": 4,
+            "initializationCount": 1,
+            "queryCount": 924,
+            "peakPendingOperations": 2,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 4096,
+              "height": 2048,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 360,
+                "audio": 559,
+                "total": 919
+              },
+              "containerMetadataBytes": 14429
+            },
+            "validationProfile": "unchanged-public-parser",
+            "ownedStores": 4,
+            "budgetReservedBytes": 2722304,
+            "budgetPeakBytes": 3319608,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 360,
+                "hasComposition": true,
+                "sortCapacityRecords": 162144,
+                "sortReservedBytes": 2594304,
+                "sortPasses": 1,
+                "presentationRecords": 360,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-in-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 360,
+                  "extent": 23040,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 128,
+                  "writeBytes": 46080,
+                  "readCalls": 1,
+                  "writeCalls": 720,
+                  "cacheHits": 1080,
+                  "cacheWriteThroughBytes": 45952,
+                  "yields": 11,
+                  "flushes": 1,
+                  "observedFileBytes": 23040,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 2722304,
+                  "budgetPeakBytes": 3319608
+                },
+                "presentationStore": {
+                  "state": "sealed",
+                  "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-in-t1-presentation-run-0",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 16,
+                    "endianness": "little"
+                  },
+                  "count": 360,
+                  "extent": 5760,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 5760,
+                  "writeBytes": 5760,
+                  "readCalls": 1,
+                  "writeCalls": 360,
+                  "cacheHits": 728,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 5,
+                  "flushes": 1,
+                  "observedFileBytes": 5760,
+                  "peakInternalBufferBytes": 65552,
+                  "lastError": null,
+                  "budgetReservedBytes": 2722304,
+                  "budgetPeakBytes": 3319608
+                },
+                "inverseStore": {
+                  "state": "sealed",
+                  "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-in-t1-presentation-inverse",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 8,
+                    "endianness": "little"
+                  },
+                  "count": 360,
+                  "extent": 2880,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 2880,
+                  "writeBytes": 5760,
+                  "readCalls": 1,
+                  "writeCalls": 720,
+                  "cacheHits": 360,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 11,
+                  "flushes": 1,
+                  "observedFileBytes": 2880,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 2722304,
+                  "budgetPeakBytes": 3319608
+                }
+              },
+              {
+                "id": 2,
+                "count": 559,
+                "hasComposition": false,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-in-t2-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 559,
+                  "extent": 35776,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 64,
+                  "writeBytes": 71552,
+                  "readCalls": 1,
+                  "writeCalls": 1118,
+                  "cacheHits": 1118,
+                  "cacheWriteThroughBytes": 71488,
+                  "yields": 17,
+                  "flushes": 1,
+                  "observedFileBytes": 35776,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 2722304,
+                  "budgetPeakBytes": 3319608
+                },
+                "presentationStore": null,
+                "inverseStore": null
+              }
+            ]
+          },
+          "outputIndexBeforeCleanup": {
+            "profile": {
+              "maxSamples": 100000,
+              "maxTracks": 2,
+              "maxChunkSamples": 4096,
+              "maxChunkBytes": 4194304,
+              "sortReservedBytes": 1600000,
+              "maxLeafBytes": 65536
+            },
+            "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out",
+            "sampleCount": 919,
+            "moovPosition": 2700167,
+            "moovBytes": 5407,
+            "verification": {
+              "width": 4096,
+              "height": 2048,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": 2,
+              "projection": "equi",
+              "bounds": {
+                "top": 0,
+                "bottom": 0,
+                "left": 1073741824,
+                "right": 1073741824
+              },
+              "pose": [
+                0,
+                0,
+                0
+              ],
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 360,
+                "audio": 559,
+                "total": 919
+              },
+              "containerMetadataBytes": 5407
+            },
+            "peakChunkSamples": 24,
+            "peakChunkBytes": 168976,
+            "peakChunkBackingBytes": 3145728,
+            "peakTimestampSamples": 60,
+            "peakSortBytes": 480,
+            "metadataWriteBytes": 5407,
+            "metadataWriteCalls": 95,
+            "metadataReadBytes": 10850,
+            "metadataReads": 103,
+            "metadataFlushes": 1,
+            "metadataClosed": true,
+            "peakWriterSections": 1,
+            "peakWriterChunks": 2,
+            "peakExplicitReservedBytes": 2722304,
+            "explicitReservedBytes": 2722304,
+            "budgetPeakBytes": 3319608,
+            "disposed": false,
+            "tracks": [
+              {
+                "id": 2,
+                "samples": 559,
+                "chunks": 24,
+                "liveChunkSamples": 0,
+                "liveChunkBytes": 0,
+                "liveChunkBackingBytes": 0,
+                "tables": {
+                  "samples": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t2-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 559,
+                    "extent": 35776,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 64,
+                    "writeBytes": 143040,
+                    "readCalls": 1,
+                    "writeCalls": 2235,
+                    "cacheHits": 4935,
+                    "cacheWriteThroughBytes": 142976,
+                    "yields": 34,
+                    "flushes": 1,
+                    "observedFileBytes": 35776,
+                    "peakInternalBufferBytes": 65600,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "chunks": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t2-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 24,
+                    "extent": 576,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 576,
+                    "writeBytes": 576,
+                    "readCalls": 1,
+                    "writeCalls": 24,
+                    "cacheHits": 47,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 576,
+                    "peakInternalBufferBytes": 65560,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stts": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t2-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 12,
+                    "extent": 96,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 96,
+                    "writeBytes": 96,
+                    "readCalls": 1,
+                    "writeCalls": 12,
+                    "cacheHits": 11,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 96,
+                    "peakInternalBufferBytes": 65544,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "ctts": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t2-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 8,
+                    "readCalls": 0,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stsc": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t2-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 12,
+                    "extent": 144,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 144,
+                    "writeBytes": 144,
+                    "readCalls": 1,
+                    "writeCalls": 12,
+                    "cacheHits": 11,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 144,
+                    "peakInternalBufferBytes": 65548,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stss": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t2-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 559,
+                    "extent": 2236,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 2236,
+                    "readCalls": 0,
+                    "writeCalls": 559,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 8,
+                    "flushes": 1,
+                    "observedFileBytes": 2236,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  }
+                }
+              },
+              {
+                "id": 1,
+                "samples": 360,
+                "chunks": 24,
+                "liveChunkSamples": 0,
+                "liveChunkBytes": 0,
+                "liveChunkBackingBytes": 0,
+                "tables": {
+                  "samples": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 360,
+                    "extent": 23040,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 960,
+                    "writeBytes": 92096,
+                    "readCalls": 1,
+                    "writeCalls": 1439,
+                    "cacheHits": 3178,
+                    "cacheWriteThroughBytes": 91136,
+                    "yields": 22,
+                    "flushes": 1,
+                    "observedFileBytes": 23040,
+                    "peakInternalBufferBytes": 65600,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "chunks": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t1-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 24,
+                    "extent": 576,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 576,
+                    "writeBytes": 576,
+                    "readCalls": 1,
+                    "writeCalls": 24,
+                    "cacheHits": 47,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 576,
+                    "peakInternalBufferBytes": 65560,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stts": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t1-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 8,
+                    "writeBytes": 8,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65544,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "ctts": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t1-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 8,
+                    "readCalls": 0,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stsc": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t1-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 12,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 12,
+                    "writeBytes": 12,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 12,
+                    "peakInternalBufferBytes": 65548,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  },
+                  "stss": {
+                    "state": "sealed",
+                    "jobId": "v-0e061b96-77b1-4d0e-9181-58591d25ded6-2-out-t1-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 6,
+                    "extent": 24,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 24,
+                    "writeBytes": 24,
+                    "readCalls": 1,
+                    "writeCalls": 6,
+                    "cacheHits": 5,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 24,
+                    "peakInternalBufferBytes": 65540,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 3319608
+                  }
+                }
+              }
+            ]
+          },
+          "indexReservedAfterCleanup": 0
+        },
+        "savedInfo": {
+          "width": 4096,
+          "height": 2048,
+          "videoCodec": "avc1",
+          "audioCodecs": [
+            "mp4a"
+          ],
+          "stereoMode": 2,
+          "projection": "equi",
+          "bounds": {
+            "top": 0,
+            "bottom": 0,
+            "left": 1073741824,
+            "right": 1073741824
+          },
+          "pose": [
+            0,
+            0,
+            0
+          ],
+          "transcodeSafe": true,
+          "transcodeIssues": [],
+          "sampleCounts": {
+            "video": 360,
+            "audio": 559,
+            "total": 919
+          },
+          "containerMetadataBytes": 5407
+        },
+        "bytes": 2705574,
+        "sha256": "28b81b1684ad6c7e10664a15496e3c2fe479299556489581f44af53200454e5f",
+        "elapsedMs": 21870.79999999999,
+        "finalFileState": {
+          "state": "verified",
+          "writerAcquired": true,
+          "extent": 2705574,
+          "committed": true,
+          "muxerClosed": true,
+          "cleanupError": null
+        },
+        "indexDirectoriesRemoved": true,
+        "heldJobLocks": 0,
+        "indexReservedAfterCleanup": 0
+      }
+    ],
+    "files": [
+      {
+        "caseIndex": 0,
+        "name": "4k-2s.mp4"
+      },
+      {
+        "caseIndex": 2,
+        "name": "4k-12s-retry.mp4"
+      }
+    ],
+    "nativeOPFS": true,
+    "nativeWebLocks": true,
+    "decoded": true,
+    "pixelConversion": true,
+    "publicProduct": false,
+    "unhandledRejectionCount": 0,
+    "unhandledErrors": []
+  },
+  "independent": [
+    {
+      "case": "4k-12s-retry",
+      "reportSHA256": "95431bbed33d4b62f382d9b0f6b3b1ca54b774c3c432c3aa130170c2feced752",
+      "report": {
+        "schema": "vr180-independent-large-verifier-v1",
+        "status": "PASS",
+        "input": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/input.mp4",
+        "output": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/output.mp4",
+        "mode": "convert",
+        "settings": {
+          "layout": "sbs",
+          "fov": 180,
+          "eyeSize": 2048
+        },
+        "oracle": "verify-conversion-large.py",
+        "scans": {
+          "input-video-frames": {
+            "count": 360,
+            "endReached": true
+          },
+          "output-video-frames": {
+            "count": 360,
+            "endReached": true
+          },
+          "input-audio-frames": {
+            "count": 558,
+            "endReached": true
+          },
+          "output-audio-frames": {
+            "count": 558,
+            "endReached": true
+          },
+          "input-packets": {
+            "count": 919,
+            "endReached": true
+          },
+          "output-packets": {
+            "count": 919,
+            "endReached": true
+          },
+          "input-audio-packets": {
+            "count": 559,
+            "endReached": true
+          },
+          "output-audio-packets": {
+            "count": 559,
+            "endReached": true
+          },
+          "expected-rgb": {
+            "count": 360,
+            "endReached": true
+          },
+          "actual-rgb": {
+            "count": 360,
+            "endReached": true
+          },
+          "input-pcm": {
+            "count": 1142784,
+            "endReached": true
+          },
+          "output-pcm": {
+            "count": 1142784,
+            "endReached": true
+          },
+          "input-hash": {
+            "count": 944087,
+            "endReached": true
+          },
+          "output-hash": {
+            "count": 2705574,
+            "endReached": true
+          }
+        },
+        "errors": {
+          "total": 0,
+          "byKind": {},
+          "details": [],
+          "dropped": 0,
+          "limit": 32
+        },
+        "completeScan": true,
+        "copyTablesIdentical": null,
+        "bounds": {
+          "eyePixels": 2048,
+          "framePixels": 8388608,
+          "probeRecordBytes": 131072,
+          "streamDescriptionBytes": 262144,
+          "metadataPayloadBytes": 16777216,
+          "metadataBoxCount": 100000,
+          "pcmBlockBytes": 65536,
+          "stderrBytesPerProcess": 65536,
+          "detailLimit": 32,
+          "wallTimeoutSeconds": 1800,
+          "frameCountLimit": null,
+          "fileBytesLimit": null
+        },
+        "scope": "synthetic full scans; native FFmpeg memory, 5/10 GB capacity, real-camera quality, target VR playback and usability are not established by this report",
+        "inputBytes": 944087,
+        "outputBytes": 2705574,
+        "tools": {
+          "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+          "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+        },
+        "streams": {
+          "input": [
+            {
+              "index": 0,
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 4096,
+              "height": 2048,
+              "time_base": "1/15360",
+              "start_time": "0.000000",
+              "extradata_hash": "SHA256:54f8ce527c352447b69dbaeda80ca5057ae682d759ed1ec2dea71f858804ac06",
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "non_diegetic": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              },
+              "tags": {
+                "language": "und",
+                "handler_name": "VideoHandler",
+                "vendor_id": "[0][0][0][0]",
+                "encoder": "Lavc60.31.102 libx264"
+              }
+            },
+            {
+              "index": 1,
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "sample_rate": "48000",
+              "channels": 1,
+              "time_base": "1/48000",
+              "start_time": "0.000000",
+              "extradata_hash": "SHA256:643b0e23faf2831be78dddd3de11c0f1b4aac4d4f762554c9bdaab7cc1e9e409",
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "non_diegetic": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              },
+              "tags": {
+                "language": "und",
+                "handler_name": "SoundHandler",
+                "vendor_id": "[0][0][0][0]"
+              }
+            }
+          ],
+          "output": [
+            {
+              "index": 0,
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 4096,
+              "height": 2048,
+              "time_base": "1/57600",
+              "start_time": "0.000000",
+              "extradata_hash": "SHA256:9821eb320b2bd50826ab0d4ec8160316d21ad47762a55c4d6fc550e6c9e098c1",
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "non_diegetic": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              },
+              "tags": {
+                "creation_time": "2026-10-17T13:34:33.000000Z",
+                "language": "und",
+                "handler_name": "MediabunnyVideoHandler",
+                "vendor_id": "[0][0][0][0]",
+                "encoder": "Mediabunny v1.61.5"
+              },
+              "side_data_list": [
+                {
+                  "side_data_type": "Stereo 3D",
+                  "type": "side by side",
+                  "inverted": 0
+                },
+                {
+                  "side_data_type": "Spherical Mapping",
+                  "projection": "tiled equirectangular",
+                  "bound_left": 2049,
+                  "bound_top": 0,
+                  "bound_right": 2047,
+                  "bound_bottom": 0,
+                  "yaw": 0,
+                  "pitch": 0,
+                  "roll": 0
+                }
+              ]
+            },
+            {
+              "index": 1,
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "sample_rate": "48000",
+              "channels": 1,
+              "time_base": "1/48000",
+              "start_time": "0.000000",
+              "extradata_hash": "SHA256:643b0e23faf2831be78dddd3de11c0f1b4aac4d4f762554c9bdaab7cc1e9e409",
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "non_diegetic": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              },
+              "tags": {
+                "creation_time": "2026-10-17T13:34:33.000000Z",
+                "language": "und",
+                "handler_name": "MediabunnySoundHandler",
+                "vendor_id": "[0][0][0][0]"
+              }
+            }
+          ]
+        },
+        "vrMetadata": {
+          "path": "moov/trak(vide)/mdia/minf/stbl/stsd/avc1",
+          "width": 4096,
+          "height": 2048,
+          "stereo_mode": 2,
+          "projection": "equi",
+          "pose_degrees": [
+            0,
+            0,
+            0
+          ],
+          "bounds_u0_32": {
+            "top": 0,
+            "bottom": 0,
+            "left": 1073741824,
+            "right": 1073741824
+          },
+          "metadata_source": "Kushyameln Works VR180 b1",
+          "active_st3d_count": 1,
+          "active_sv3d_count": 1,
+          "entry_children": [
+            "avcC",
+            "colr",
+            "btrt",
+            "st3d",
+            "sv3d"
+          ]
+        },
+        "frameMetadata": {
+          "inputVideoFrames": 360,
+          "outputVideoFrames": 360,
+          "inputAudioFrames": 558,
+          "outputAudioFrames": 558
+        },
+        "maxPtsErrorSeconds": 0.0,
+        "maxPtsErrorFrame": null,
+        "frames": 360,
+        "packets": {
+          "allFieldsEqual": null,
+          "input": {
+            "count": 919,
+            "byStream": {
+              "0": 360,
+              "1": 559
+            },
+            "sequenceSHA256": "029cf5b9344f6a70aaca0d1d7ab872a6476b1dd15764523ed398ffb4facc63f5"
+          },
+          "output": {
+            "count": 919,
+            "byStream": {
+              "1": 559,
+              "0": 360
+            },
+            "sequenceSHA256": "7735a4b81fa4e82f5e903785705c48eb44521f7b25a6900d3164671faa147d3d"
+          }
+        },
+        "audioPackets": {
+          "present": true,
+          "inputCount": 559,
+          "outputCount": 559,
+          "payloadOrderEqual": true,
+          "sideDataEqual": true,
+          "maxTimeErrorSeconds": {
+            "pts": 0.0,
+            "dts": 0.0,
+            "duration": 0.0
+          },
+          "maxTimeErrorPacket": {
+            "pts": null,
+            "dts": null,
+            "duration": null
+          }
+        },
+        "pixels": {
+          "inputFrames": 360,
+          "outputFrames": 360,
+          "comparedFrames": 360,
+          "missingOutputFrames": 0,
+          "extraOutputFrames": 0,
+          "maxChannelError": 28,
+          "maxChannelErrorLocation": {
+            "frame": 46,
+            "eye": 1,
+            "x": 914,
+            "y": 1024,
+            "channel": 1
+          }
+        },
+        "events": {
+          "inputCountByEye": [
+            36,
+            36
+          ],
+          "outputCountByEye": [
+            36,
+            36
+          ],
+          "outputIndicesDroppedByEye": [
+            4,
+            4
+          ],
+          "allFrameFlagsEqual": true,
+          "inputSequenceSHA256ByEye": [
+            "656b78accb956b46dacf60da50ab7104273d55116f840e2dc457d4a736987489",
+            "656b78accb956b46dacf60da50ab7104273d55116f840e2dc457d4a736987489"
+          ],
+          "outputSequenceSHA256ByEye": [
+            "656b78accb956b46dacf60da50ab7104273d55116f840e2dc457d4a736987489",
+            "656b78accb956b46dacf60da50ab7104273d55116f840e2dc457d4a736987489"
+          ]
+        },
+        "eyePSNRdB": [
+          41.238034240396104,
+          36.64384370399658
+        ],
+        "decodedFramesCompared": 360,
+        "redFrameIndicesByEye": [
+          [
+            14,
+            15,
+            16,
+            44,
+            45,
+            46,
+            75,
+            76,
+            77,
+            105,
+            106,
+            107,
+            136,
+            137,
+            138,
+            166,
+            167,
+            168,
+            196,
+            197,
+            198,
+            226,
+            227,
+            228,
+            257,
+            258,
+            259,
+            287,
+            288,
+            289,
+            318,
+            319
+          ],
+          [
+            14,
+            15,
+            16,
+            44,
+            45,
+            46,
+            75,
+            76,
+            77,
+            105,
+            106,
+            107,
+            136,
+            137,
+            138,
+            166,
+            167,
+            168,
+            196,
+            197,
+            198,
+            226,
+            227,
+            228,
+            257,
+            258,
+            259,
+            287,
+            288,
+            289,
+            318,
+            319
+          ]
+        ],
+        "decodedAudioIdentical": true,
+        "audio": {
+          "present": true,
+          "inputBytes": 1142784,
+          "outputBytes": 1142784,
+          "differentBytes": 0,
+          "firstDifferentByte": null,
+          "startErrorSeconds": 0.0
+        },
+        "inputSHA256": "97bb3a4335514436374b35c202275dde2cfca27f8f7cec3a224fd77c8ede6582",
+        "outputSHA256": "28b81b1684ad6c7e10664a15496e3c2fe479299556489581f44af53200454e5f",
+        "elapsedSeconds": 26.938958,
+        "stderrLogs": {
+          "ffmpeg-version": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/ffmpeg-version.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "ffprobe-version": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/ffprobe-version.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "input-streams": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/input-streams.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "output-streams": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/output-streams.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "input-video-frames": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/input-video-frames.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "output-video-frames": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/output-video-frames.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "input-audio-frames": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/input-audio-frames.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "output-audio-frames": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/output-audio-frames.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "input-packets": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/input-packets.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "output-packets": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/output-packets.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "input-audio-packets": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/input-audio-packets.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "output-audio-packets": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/output-audio-packets.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "expected-rgb": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/expected-rgb.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "actual-rgb": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/actual-rgb.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "input-pcm": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/input-pcm.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "output-pcm": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-12s-retry/independent-large-stderr/output-pcm.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          }
+        },
+        "stderrLogsRetained": true,
+        "verifierSHA256": "713a6ff75001b01792645fcf35cc792ce83cb70b833a66321f055754b9dabda5",
+        "metadataVerifierSHA256": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96"
+      }
+    },
+    {
+      "case": "4k-2s",
+      "reportSHA256": "bed7fad08378193baf9cc569ee9e3384dc6a0ac666ed03a22b90b90140585676",
+      "report": {
+        "schema": "vr180-independent-large-verifier-v1",
+        "status": "PASS",
+        "input": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/input.mp4",
+        "output": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/output.mp4",
+        "mode": "convert",
+        "settings": {
+          "layout": "sbs",
+          "fov": 180,
+          "eyeSize": 2048
+        },
+        "oracle": "verify-conversion-large.py",
+        "scans": {
+          "input-video-frames": {
+            "count": 60,
+            "endReached": true
+          },
+          "output-video-frames": {
+            "count": 60,
+            "endReached": true
+          },
+          "input-audio-frames": {
+            "count": 94,
+            "endReached": true
+          },
+          "output-audio-frames": {
+            "count": 94,
+            "endReached": true
+          },
+          "input-packets": {
+            "count": 155,
+            "endReached": true
+          },
+          "output-packets": {
+            "count": 155,
+            "endReached": true
+          },
+          "input-audio-packets": {
+            "count": 95,
+            "endReached": true
+          },
+          "output-audio-packets": {
+            "count": 95,
+            "endReached": true
+          },
+          "expected-rgb": {
+            "count": 60,
+            "endReached": true
+          },
+          "actual-rgb": {
+            "count": 60,
+            "endReached": true
+          },
+          "input-pcm": {
+            "count": 192512,
+            "endReached": true
+          },
+          "output-pcm": {
+            "count": 192512,
+            "endReached": true
+          },
+          "input-hash": {
+            "count": 167765,
+            "endReached": true
+          },
+          "output-hash": {
+            "count": 456788,
+            "endReached": true
+          }
+        },
+        "errors": {
+          "total": 0,
+          "byKind": {},
+          "details": [],
+          "dropped": 0,
+          "limit": 32
+        },
+        "completeScan": true,
+        "copyTablesIdentical": null,
+        "bounds": {
+          "eyePixels": 2048,
+          "framePixels": 8388608,
+          "probeRecordBytes": 131072,
+          "streamDescriptionBytes": 262144,
+          "metadataPayloadBytes": 16777216,
+          "metadataBoxCount": 100000,
+          "pcmBlockBytes": 65536,
+          "stderrBytesPerProcess": 65536,
+          "detailLimit": 32,
+          "wallTimeoutSeconds": 1800,
+          "frameCountLimit": null,
+          "fileBytesLimit": null
+        },
+        "scope": "synthetic full scans; native FFmpeg memory, 5/10 GB capacity, real-camera quality, target VR playback and usability are not established by this report",
+        "inputBytes": 167765,
+        "outputBytes": 456788,
+        "tools": {
+          "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+          "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+        },
+        "streams": {
+          "input": [
+            {
+              "index": 0,
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 4096,
+              "height": 2048,
+              "time_base": "1/15360",
+              "start_time": "0.000000",
+              "extradata_hash": "SHA256:54f8ce527c352447b69dbaeda80ca5057ae682d759ed1ec2dea71f858804ac06",
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "non_diegetic": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              },
+              "tags": {
+                "language": "und",
+                "handler_name": "VideoHandler",
+                "vendor_id": "[0][0][0][0]",
+                "encoder": "Lavc60.31.102 libx264"
+              }
+            },
+            {
+              "index": 1,
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "sample_rate": "48000",
+              "channels": 1,
+              "time_base": "1/48000",
+              "start_time": "0.000000",
+              "extradata_hash": "SHA256:643b0e23faf2831be78dddd3de11c0f1b4aac4d4f762554c9bdaab7cc1e9e409",
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "non_diegetic": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              },
+              "tags": {
+                "language": "und",
+                "handler_name": "SoundHandler",
+                "vendor_id": "[0][0][0][0]"
+              }
+            }
+          ],
+          "output": [
+            {
+              "index": 0,
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 4096,
+              "height": 2048,
+              "time_base": "1/57600",
+              "start_time": "0.000000",
+              "extradata_hash": "SHA256:9821eb320b2bd50826ab0d4ec8160316d21ad47762a55c4d6fc550e6c9e098c1",
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "non_diegetic": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              },
+              "tags": {
+                "creation_time": "2026-10-17T13:34:19.000000Z",
+                "language": "und",
+                "handler_name": "MediabunnyVideoHandler",
+                "vendor_id": "[0][0][0][0]",
+                "encoder": "Mediabunny v1.61.5"
+              },
+              "side_data_list": [
+                {
+                  "side_data_type": "Stereo 3D",
+                  "type": "side by side",
+                  "inverted": 0
+                },
+                {
+                  "side_data_type": "Spherical Mapping",
+                  "projection": "tiled equirectangular",
+                  "bound_left": 2049,
+                  "bound_top": 0,
+                  "bound_right": 2047,
+                  "bound_bottom": 0,
+                  "yaw": 0,
+                  "pitch": 0,
+                  "roll": 0
+                }
+              ]
+            },
+            {
+              "index": 1,
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "sample_rate": "48000",
+              "channels": 1,
+              "time_base": "1/48000",
+              "start_time": "0.000000",
+              "extradata_hash": "SHA256:643b0e23faf2831be78dddd3de11c0f1b4aac4d4f762554c9bdaab7cc1e9e409",
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "non_diegetic": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              },
+              "tags": {
+                "creation_time": "2026-10-17T13:34:19.000000Z",
+                "language": "und",
+                "handler_name": "MediabunnySoundHandler",
+                "vendor_id": "[0][0][0][0]"
+              }
+            }
+          ]
+        },
+        "vrMetadata": {
+          "path": "moov/trak(vide)/mdia/minf/stbl/stsd/avc1",
+          "width": 4096,
+          "height": 2048,
+          "stereo_mode": 2,
+          "projection": "equi",
+          "pose_degrees": [
+            0,
+            0,
+            0
+          ],
+          "bounds_u0_32": {
+            "top": 0,
+            "bottom": 0,
+            "left": 1073741824,
+            "right": 1073741824
+          },
+          "metadata_source": "Kushyameln Works VR180 b1",
+          "active_st3d_count": 1,
+          "active_sv3d_count": 1,
+          "entry_children": [
+            "avcC",
+            "colr",
+            "btrt",
+            "st3d",
+            "sv3d"
+          ]
+        },
+        "frameMetadata": {
+          "inputVideoFrames": 60,
+          "outputVideoFrames": 60,
+          "inputAudioFrames": 94,
+          "outputAudioFrames": 94
+        },
+        "maxPtsErrorSeconds": 0.0,
+        "maxPtsErrorFrame": null,
+        "frames": 60,
+        "packets": {
+          "allFieldsEqual": null,
+          "input": {
+            "count": 155,
+            "byStream": {
+              "0": 60,
+              "1": 95
+            },
+            "sequenceSHA256": "63661a46fdb5972b71475016f6f8b4b8159ae443489121f4c1109099da62be45"
+          },
+          "output": {
+            "count": 155,
+            "byStream": {
+              "1": 95,
+              "0": 60
+            },
+            "sequenceSHA256": "a0e354b1bd3d78dd8402a0fb88d94f3a607add06431bd4a01c9d8bf25f29357d"
+          }
+        },
+        "audioPackets": {
+          "present": true,
+          "inputCount": 95,
+          "outputCount": 95,
+          "payloadOrderEqual": true,
+          "sideDataEqual": true,
+          "maxTimeErrorSeconds": {
+            "pts": 0.0,
+            "dts": 0.0,
+            "duration": 0.0
+          },
+          "maxTimeErrorPacket": {
+            "pts": null,
+            "dts": null,
+            "duration": null
+          }
+        },
+        "pixels": {
+          "inputFrames": 60,
+          "outputFrames": 60,
+          "comparedFrames": 60,
+          "missingOutputFrames": 0,
+          "extraOutputFrames": 0,
+          "maxChannelError": 28,
+          "maxChannelErrorLocation": {
+            "frame": 46,
+            "eye": 1,
+            "x": 914,
+            "y": 1024,
+            "channel": 1
+          }
+        },
+        "events": {
+          "inputCountByEye": [
+            6,
+            6
+          ],
+          "outputCountByEye": [
+            6,
+            6
+          ],
+          "outputIndicesDroppedByEye": [
+            0,
+            0
+          ],
+          "allFrameFlagsEqual": true,
+          "inputSequenceSHA256ByEye": [
+            "848859be4e10ea57309f6683037fe4ae4556707ea95b3edbb5e1def14210ac20",
+            "848859be4e10ea57309f6683037fe4ae4556707ea95b3edbb5e1def14210ac20"
+          ],
+          "outputSequenceSHA256ByEye": [
+            "848859be4e10ea57309f6683037fe4ae4556707ea95b3edbb5e1def14210ac20",
+            "848859be4e10ea57309f6683037fe4ae4556707ea95b3edbb5e1def14210ac20"
+          ]
+        },
+        "eyePSNRdB": [
+          41.176330071646355,
+          36.58795954206056
+        ],
+        "decodedFramesCompared": 60,
+        "redFrameIndicesByEye": [
+          [
+            14,
+            15,
+            16,
+            44,
+            45,
+            46
+          ],
+          [
+            14,
+            15,
+            16,
+            44,
+            45,
+            46
+          ]
+        ],
+        "decodedAudioIdentical": true,
+        "audio": {
+          "present": true,
+          "inputBytes": 192512,
+          "outputBytes": 192512,
+          "differentBytes": 0,
+          "firstDifferentByte": null,
+          "startErrorSeconds": 0.0
+        },
+        "inputSHA256": "50624d8850a380ad759a712a7cae9f5f767a966271ca8a671b433c6146895db0",
+        "outputSHA256": "cf240367edff8cd62a7f6e1f97556073b72a9de012eabfffb2db12478b9cd2ec",
+        "elapsedSeconds": 5.324279,
+        "stderrLogs": {
+          "ffmpeg-version": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/ffmpeg-version.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "ffprobe-version": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/ffprobe-version.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "input-streams": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/input-streams.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "output-streams": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/output-streams.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "input-video-frames": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/input-video-frames.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "output-video-frames": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/output-video-frames.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "input-audio-frames": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/input-audio-frames.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "output-audio-frames": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/output-audio-frames.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "input-packets": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/input-packets.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "output-packets": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/output-packets.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "input-audio-packets": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/input-audio-packets.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "output-audio-packets": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/output-audio-packets.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "expected-rgb": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/expected-rgb.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "actual-rgb": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/actual-rgb.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "input-pcm": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/input-pcm.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "output-pcm": {
+            "path": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-scale-39037079164/4k-2s/independent-large-stderr/output-pcm.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          }
+        },
+        "stderrLogsRetained": true,
+        "verifierSHA256": "713a6ff75001b01792645fcf35cc792ce83cb70b833a66321f055754b9dabda5",
+        "metadataVerifierSHA256": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96"
+      }
+    }
+  ],
+  "scope": "Private 4K2s and 4K12s full recovered conversion, cancellation after awaited 1MiB write API acknowledgement (not durability/commit), same input and same handle retry. No large-media, OS picker, whole native memory, real footage or VR player acceptance."
+}
