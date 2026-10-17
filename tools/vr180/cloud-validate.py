@@ -370,8 +370,19 @@ def recovery_prelude(page, trial, record, scenario, fixture):
                     raise RuntimeError('Application failed during cancellation attempt: ' + json.dumps(ended.get('error')))
             previous['status'] = 'OBSERVED_NOT_CANCELED'
             raise NotCanceled('Completion/failure was observed instead of the cancellation acknowledgement')
-        page.wait_for_function(f'async () => (await ({OPFS_JOBS})()).length === 0', timeout=15000, polling=100)
-        previous.update(status='CANCELED_OBSERVED', opfsJobsAfterCancel=page.evaluate(OPFS_JOBS),
+        # wait_for_function treats a returned Promise as truthy before its value
+        # resolves. Poll evaluate instead, so each OPFS enumeration is awaited.
+        cleanup_started = time.monotonic()
+        previous['cleanupObservations'] = []
+        while True:
+            remaining_jobs = page.evaluate(OPFS_JOBS)
+            previous['cleanupObservations'].append({'elapsedMs': (time.monotonic() - cleanup_started) * 1000,
+                                                    'jobs': remaining_jobs})
+            if not remaining_jobs:
+                break
+            require(time.monotonic() - cleanup_started < 15, 'Cancellation OPFS cleanup did not finish within 15 seconds')
+            page.wait_for_timeout(100)
+        previous.update(status='CANCELED_OBSERVED', opfsJobsAfterCancel=remaining_jobs,
                         runEnabled=page.locator('#run').is_enabled(),
                         applicationCancellationReceipt=None,
                         receiptNote='The application terminates the Worker on cancel and does not produce a cancellation receipt; this is external observation.')
