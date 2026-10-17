@@ -1,0 +1,1831 @@
+{
+  "schemaVersion": 1,
+  "timestamp": "2026-10-17T07:58:57.538Z",
+  "baselineCommit": "2bf0441f118329674c7612323ec141c98d51ae44",
+  "scriptSha256": "f20ca5c884c8d9e329698515dbcaef6e904cae7d62babe192d4cbbafcee7fdf1",
+  "mediabunnyVersion": "1.61.5",
+  "vendorSha256": "5c3514965f106dd165cc6474979ba302ef85d8c84935a0ad3ea5202ccedfe51b",
+  "command": [
+    "node",
+    "tools/vr180/measure-index-retention.mjs",
+    "--out-dir",
+    "evidence/index-retention-b5/run-2",
+    "--counts",
+    "5000,25000,100000"
+  ],
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "linux",
+    "arch": "x64",
+    "cpusAvailable": 4,
+    "machineMemoryBytes": 18882674688,
+    "execArgv": [
+      "--expose-gc"
+    ]
+  },
+  "methods": [
+    "Fresh process per stage and case; packet count <= current 100000 limit.",
+    "Real first key packet repeated with synthetic 30 Hz metadata; alternating-ctts repeats the real key/delta pair with neighboring PTS swapped. No decoding.",
+    "Output discards streamed media after counting; separate generator streams the same workload to disk.",
+    "Input uses disk-backed BlobSource, 1 MiB cache, explicit range path, metadata-only first/last packet lookup.",
+    "Retained snapshots follow two explicit GC cycles; temporary finalization peaks are not captured.",
+    "Internal array lengths are observed read-only in pinned 1.61.5; no private method or product limit is modified.",
+    "external contains arrayBuffers: do not add them; RSS is process memory, not whole-system/CPU/GPU memory.",
+    "One run per point; JIT, allocator, GC and OS caching affect differences. No Chrome/VR/60fps/5GB conclusion."
+  ],
+  "generated": [
+    {
+      "schemaVersion": 1,
+      "pid": 11007,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:51.956Z",
+      "kind": "fixture-generation",
+      "samples": 5000,
+      "pattern": "monotonic",
+      "seed": {
+        "fixture": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+        "fixtureSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "packetBytes": 6744,
+        "packetSha256": "5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d",
+        "packetType": "key",
+        "deltaPacketBytes": 456,
+        "deltaPacketSha256": "42cd4b8f8cc20e4e349528e6794dc0d4a554db19a6df681e4d7425cb3a3d655d",
+        "deltaPacketType": "delta"
+      },
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 33742057,
+      "moovBytes": 22013,
+      "moovPosition": 33720044,
+      "mediaPayloadBytes": 33720000,
+      "indexSource": "read-only pinned _muxer.trackDatas",
+      "target": "positioned file writes",
+      "cacheBytes": 1048576,
+      "writeChunkBytes": 1048576,
+      "onMoov": "library tracking enabled; callback retains length/position only, not bytes",
+      "writes": {
+        "calls": 34,
+        "bytes": 33742065,
+        "extent": 33742057,
+        "maxWriteBytes": 1048576,
+        "backwardWrites": 1,
+        "closeCalls": 1
+      },
+      "phases": [],
+      "totalMs": 53.16477499999999
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11040,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:52.634Z",
+      "kind": "fixture-generation",
+      "samples": 25000,
+      "pattern": "monotonic",
+      "seed": {
+        "fixture": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+        "fixtureSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "packetBytes": 6744,
+        "packetSha256": "5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d",
+        "packetType": "key",
+        "deltaPacketBytes": 456,
+        "deltaPacketSha256": "42cd4b8f8cc20e4e349528e6794dc0d4a554db19a6df681e4d7425cb3a3d655d",
+        "deltaPacketType": "delta"
+      },
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 168707389,
+      "moovBytes": 107345,
+      "moovPosition": 168600044,
+      "mediaPayloadBytes": 168600000,
+      "indexSource": "read-only pinned _muxer.trackDatas",
+      "target": "positioned file writes",
+      "cacheBytes": 1048576,
+      "writeChunkBytes": 1048576,
+      "onMoov": "library tracking enabled; callback retains length/position only, not bytes",
+      "writes": {
+        "calls": 162,
+        "bytes": 168707397,
+        "extent": 168707389,
+        "maxWriteBytes": 1048576,
+        "backwardWrites": 1,
+        "closeCalls": 1
+      },
+      "phases": [],
+      "totalMs": 200.23480700000002
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11081,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:54.459Z",
+      "kind": "fixture-generation",
+      "samples": 100000,
+      "pattern": "monotonic",
+      "seed": {
+        "fixture": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+        "fixtureSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "packetBytes": 6744,
+        "packetSha256": "5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d",
+        "packetType": "key",
+        "deltaPacketBytes": 456,
+        "deltaPacketSha256": "42cd4b8f8cc20e4e349528e6794dc0d4a554db19a6df681e4d7425cb3a3d655d",
+        "deltaPacketType": "delta"
+      },
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 674827389,
+      "moovBytes": 427345,
+      "moovPosition": 674400044,
+      "mediaPayloadBytes": 674400000,
+      "indexSource": "read-only pinned _muxer.trackDatas",
+      "target": "positioned file writes",
+      "cacheBytes": 1048576,
+      "writeChunkBytes": 1048576,
+      "onMoov": "library tracking enabled; callback retains length/position only, not bytes",
+      "writes": {
+        "calls": 645,
+        "bytes": 674827397,
+        "extent": 674827389,
+        "maxWriteBytes": 1048576,
+        "backwardWrites": 1,
+        "closeCalls": 1
+      },
+      "phases": [],
+      "totalMs": 900.0667579999999
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11117,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:54.925Z",
+      "kind": "fixture-generation",
+      "samples": 5000,
+      "pattern": "alternating-ctts",
+      "seed": {
+        "fixture": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+        "fixtureSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "packetBytes": 6744,
+        "packetSha256": "5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d",
+        "packetType": "key",
+        "deltaPacketBytes": 456,
+        "deltaPacketSha256": "42cd4b8f8cc20e4e349528e6794dc0d4a554db19a6df681e4d7425cb3a3d655d",
+        "deltaPacketType": "delta"
+      },
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 18072217,
+      "moovBytes": 72173,
+      "moovPosition": 18000044,
+      "mediaPayloadBytes": 18000000,
+      "indexSource": "read-only pinned _muxer.trackDatas",
+      "target": "positioned file writes",
+      "cacheBytes": 1048576,
+      "writeChunkBytes": 1048576,
+      "onMoov": "library tracking enabled; callback retains length/position only, not bytes",
+      "writes": {
+        "calls": 19,
+        "bytes": 18072225,
+        "extent": 18072217,
+        "maxWriteBytes": 1048576,
+        "backwardWrites": 1,
+        "closeCalls": 1
+      },
+      "phases": [],
+      "totalMs": 68.263741
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11150,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:55.635Z",
+      "kind": "fixture-generation",
+      "samples": 25000,
+      "pattern": "alternating-ctts",
+      "seed": {
+        "fixture": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+        "fixtureSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "packetBytes": 6744,
+        "packetSha256": "5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d",
+        "packetType": "key",
+        "deltaPacketBytes": 456,
+        "deltaPacketSha256": "42cd4b8f8cc20e4e349528e6794dc0d4a554db19a6df681e4d7425cb3a3d655d",
+        "deltaPacketType": "delta"
+      },
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 90357953,
+      "moovBytes": 357909,
+      "moovPosition": 90000044,
+      "mediaPayloadBytes": 90000000,
+      "indexSource": "read-only pinned _muxer.trackDatas",
+      "target": "positioned file writes",
+      "cacheBytes": 1048576,
+      "writeChunkBytes": 1048576,
+      "onMoov": "library tracking enabled; callback retains length/position only, not bytes",
+      "writes": {
+        "calls": 88,
+        "bytes": 90357961,
+        "extent": 90357953,
+        "maxWriteBytes": 1048576,
+        "backwardWrites": 1,
+        "closeCalls": 1
+      },
+      "phases": [],
+      "totalMs": 196.97768000000002
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11185,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:57.293Z",
+      "kind": "fixture-generation",
+      "samples": 100000,
+      "pattern": "alternating-ctts",
+      "seed": {
+        "fixture": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+        "fixtureSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "packetBytes": 6744,
+        "packetSha256": "5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d",
+        "packetType": "key",
+        "deltaPacketBytes": 456,
+        "deltaPacketSha256": "42cd4b8f8cc20e4e349528e6794dc0d4a554db19a6df681e4d7425cb3a3d655d",
+        "deltaPacketType": "delta"
+      },
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 361429381,
+      "moovBytes": 1429337,
+      "moovPosition": 360000044,
+      "mediaPayloadBytes": 360000000,
+      "indexSource": "read-only pinned _muxer.trackDatas",
+      "target": "positioned file writes",
+      "cacheBytes": 1048576,
+      "writeChunkBytes": 1048576,
+      "onMoov": "library tracking enabled; callback retains length/position only, not bytes",
+      "writes": {
+        "calls": 346,
+        "bytes": 361429389,
+        "extent": 361429381,
+        "maxWriteBytes": 1048576,
+        "backwardWrites": 1,
+        "closeCalls": 1
+      },
+      "phases": [],
+      "totalMs": 734.378054
+    }
+  ],
+  "results": [
+    {
+      "schemaVersion": 1,
+      "pid": 10996,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:51.810Z",
+      "kind": "mux-retention",
+      "samples": 5000,
+      "pattern": "monotonic",
+      "seed": {
+        "fixture": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+        "fixtureSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "packetBytes": 6744,
+        "packetSha256": "5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d",
+        "packetType": "key",
+        "deltaPacketBytes": 456,
+        "deltaPacketSha256": "42cd4b8f8cc20e4e349528e6794dc0d4a554db19a6df681e4d7425cb3a3d655d",
+        "deltaPacketType": "delta"
+      },
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 33742057,
+      "moovBytes": 22013,
+      "moovPosition": 33720044,
+      "mediaPayloadBytes": 33720000,
+      "indexSource": "read-only pinned _muxer.trackDatas",
+      "target": "StreamTarget discard/count, no retained media output",
+      "cacheBytes": 1048576,
+      "writeChunkBytes": 1048576,
+      "onMoov": "library tracking enabled; callback retains length/position only, not bytes",
+      "writes": {
+        "calls": 34,
+        "bytes": 33742065,
+        "extent": 33742057,
+        "maxWriteBytes": 1048576,
+        "backwardWrites": 1,
+        "closeCalls": 1
+      },
+      "phases": [
+        {
+          "phase": "mux-created-before-packets",
+          "operationMs": 1.353353999999996,
+          "gcPauseMs": 5.608542,
+          "memory": {
+            "rss": 39600128,
+            "heapTotal": 12951552,
+            "heapUsed": 7660720,
+            "external": 3862940,
+            "arrayBuffers": 1234238
+          },
+          "indices": []
+        },
+        {
+          "phase": "mux-after-packets-before-finalize",
+          "operationMs": 40.85032199999999,
+          "gcPauseMs": 6.295193000000012,
+          "memory": {
+            "rss": 89747456,
+            "heapTotal": 18194432,
+            "heapUsed": 8739936,
+            "external": 3862980,
+            "arrayBuffers": 1234238
+          },
+          "indices": [
+            {
+              "samples": 5000,
+              "chunks": 333,
+              "chunkSampleReferences": 4995,
+              "pendingChunkSamples": 5,
+              "samplesStillHoldingPayload": 5,
+              "timingRuns": 1,
+              "compositionRuns": 1,
+              "sampleToChunkRuns": 1,
+              "timestampProcessingQueue": 1
+            }
+          ],
+          "writes": {
+            "calls": 32,
+            "bytes": 33554432,
+            "extent": 33554432,
+            "maxWriteBytes": 1048576,
+            "backwardWrites": 0,
+            "closeCalls": 0
+          }
+        },
+        {
+          "phase": "mux-finalized-index-retained",
+          "operationMs": 5.571055000000001,
+          "gcPauseMs": 6.978171000000003,
+          "memory": {
+            "rss": 88846336,
+            "heapTotal": 18194432,
+            "heapUsed": 8781808,
+            "external": 2814404,
+            "arrayBuffers": 185662
+          },
+          "indices": [
+            {
+              "samples": 5000,
+              "chunks": 334,
+              "chunkSampleReferences": 5000,
+              "pendingChunkSamples": 5,
+              "samplesStillHoldingPayload": 0,
+              "timingRuns": 1,
+              "compositionRuns": 1,
+              "sampleToChunkRuns": 2,
+              "timestampProcessingQueue": 0
+            }
+          ],
+          "writes": {
+            "calls": 34,
+            "bytes": 33742065,
+            "extent": 33742057,
+            "maxWriteBytes": 1048576,
+            "backwardWrites": 1,
+            "closeCalls": 1
+          }
+        }
+      ],
+      "totalMs": 66.903249,
+      "retainedDeltaBytes": {
+        "heapUsed": 1121088,
+        "external": -1048536,
+        "arrayBuffers": -1048576,
+        "rss": 49246208
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11018,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:52.056Z",
+      "kind": "demux-retention",
+      "samples": 5000,
+      "pattern": "monotonic",
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 33742057,
+      "moovBytes": 22013,
+      "top": [
+        {
+          "type": "ftyp",
+          "start": 0,
+          "payload": 8,
+          "end": 28
+        },
+        {
+          "type": "mdat",
+          "start": 28,
+          "payload": 36,
+          "end": 33720044
+        },
+        {
+          "type": "moov",
+          "start": 33720044,
+          "payload": 33720052,
+          "end": 33742057
+        }
+      ],
+      "source": "Node openAsBlob disk-backed Blob -> unmodified BlobSource; useStreamReader:false",
+      "sourceDifferenceFromChrome": "arrayBuffer range path selected explicitly; no claim about Chrome prefetch/native memory",
+      "cacheBytes": 1048576,
+      "reads": {
+        "calls": 2,
+        "bytes": 253161,
+        "maxReadBytes": 131072,
+        "moovOverlapBytes": 22013,
+        "mdatPayloadOverlapBytes": 231112
+      },
+      "indexSource": "read-only pinned video._backing.internalTrack",
+      "phases": [
+        {
+          "phase": "demux-created-before-metadata",
+          "operationMs": 0.06399599999998884,
+          "gcPauseMs": 5.450713999999991,
+          "memory": {
+            "rss": 37986304,
+            "heapTotal": 12165120,
+            "heapUsed": 7067344,
+            "external": 2586409,
+            "arrayBuffers": 151831
+          },
+          "reads": {
+            "calls": 0,
+            "bytes": 0,
+            "maxReadBytes": 0,
+            "moovOverlapBytes": 0,
+            "mdatPayloadOverlapBytes": 0
+          }
+        },
+        {
+          "phase": "demux-metadata-retained",
+          "operationMs": 4.321016,
+          "gcPauseMs": 4.544652999999997,
+          "memory": {
+            "rss": 39165952,
+            "heapTotal": 12165120,
+            "heapUsed": 7339632,
+            "external": 2839610,
+            "arrayBuffers": 404992
+          },
+          "indices": {
+            "moovSliceViewBytes": 22005,
+            "moovBackingBytes": 122089,
+            "arrays": null
+          },
+          "reads": {
+            "calls": 2,
+            "bytes": 253161,
+            "maxReadBytes": 131072,
+            "moovOverlapBytes": 22013,
+            "mdatPayloadOverlapBytes": 231112
+          }
+        },
+        {
+          "phase": "demux-sample-index-retained",
+          "operationMs": 1.1664640000000048,
+          "gcPauseMs": 3.8003829999999965,
+          "memory": {
+            "rss": 39165952,
+            "heapTotal": 12951552,
+            "heapUsed": 7433152,
+            "external": 2839610,
+            "arrayBuffers": 404992
+          },
+          "indices": {
+            "moovSliceViewBytes": 22005,
+            "moovBackingBytes": 122089,
+            "arrays": {
+              "sampleTimingEntries": 1,
+              "sampleCompositionTimeOffsets": 0,
+              "sampleSizes": 5000,
+              "keySampleIndices": null,
+              "chunkOffsets": 334,
+              "sampleToChunk": 2,
+              "presentationTimestamps": null,
+              "presentationTimestampIndexMap": null
+            }
+          },
+          "reads": {
+            "calls": 2,
+            "bytes": 253161,
+            "maxReadBytes": 131072,
+            "moovOverlapBytes": 22013,
+            "mdatPayloadOverlapBytes": 231112
+          }
+        }
+      ],
+      "totalMs": 19.588688999999988,
+      "retainedDeltaBytes": {
+        "heapUsed": 365808,
+        "external": 253201,
+        "arrayBuffers": 253161,
+        "rss": 1179648
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11029,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:52.343Z",
+      "kind": "mux-retention",
+      "samples": 25000,
+      "pattern": "monotonic",
+      "seed": {
+        "fixture": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+        "fixtureSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "packetBytes": 6744,
+        "packetSha256": "5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d",
+        "packetType": "key",
+        "deltaPacketBytes": 456,
+        "deltaPacketSha256": "42cd4b8f8cc20e4e349528e6794dc0d4a554db19a6df681e4d7425cb3a3d655d",
+        "deltaPacketType": "delta"
+      },
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 168707389,
+      "moovBytes": 107345,
+      "moovPosition": 168600044,
+      "mediaPayloadBytes": 168600000,
+      "indexSource": "read-only pinned _muxer.trackDatas",
+      "target": "StreamTarget discard/count, no retained media output",
+      "cacheBytes": 1048576,
+      "writeChunkBytes": 1048576,
+      "onMoov": "library tracking enabled; callback retains length/position only, not bytes",
+      "writes": {
+        "calls": 162,
+        "bytes": 168707397,
+        "extent": 168707389,
+        "maxWriteBytes": 1048576,
+        "backwardWrites": 1,
+        "closeCalls": 1
+      },
+      "phases": [
+        {
+          "phase": "mux-created-before-packets",
+          "operationMs": 1.276258999999996,
+          "gcPauseMs": 5.271253999999999,
+          "memory": {
+            "rss": 39612416,
+            "heapTotal": 12951552,
+            "heapUsed": 7660720,
+            "external": 3862940,
+            "arrayBuffers": 1234238
+          },
+          "indices": []
+        },
+        {
+          "phase": "mux-after-packets-before-finalize",
+          "operationMs": 150.060002,
+          "gcPauseMs": 9.190877,
+          "memory": {
+            "rss": 130744320,
+            "heapTotal": 46780416,
+            "heapUsed": 10699312,
+            "external": 3859377,
+            "arrayBuffers": 1234238
+          },
+          "indices": [
+            {
+              "samples": 25000,
+              "chunks": 1666,
+              "chunkSampleReferences": 24990,
+              "pendingChunkSamples": 10,
+              "samplesStillHoldingPayload": 10,
+              "timingRuns": 1,
+              "compositionRuns": 1,
+              "sampleToChunkRuns": 1,
+              "timestampProcessingQueue": 1
+            }
+          ],
+          "writes": {
+            "calls": 160,
+            "bytes": 167772160,
+            "extent": 167772160,
+            "maxWriteBytes": 1048576,
+            "backwardWrites": 0,
+            "closeCalls": 0
+          }
+        },
+        {
+          "phase": "mux-finalized-index-retained",
+          "operationMs": 13.61538900000005,
+          "gcPauseMs": 7.194655999999952,
+          "memory": {
+            "rss": 131080192,
+            "heapTotal": 47042560,
+            "heapUsed": 10722176,
+            "external": 2810801,
+            "arrayBuffers": 185662
+          },
+          "indices": [
+            {
+              "samples": 25000,
+              "chunks": 1667,
+              "chunkSampleReferences": 25000,
+              "pendingChunkSamples": 10,
+              "samplesStillHoldingPayload": 0,
+              "timingRuns": 1,
+              "compositionRuns": 1,
+              "sampleToChunkRuns": 2,
+              "timestampProcessingQueue": 0
+            }
+          ],
+          "writes": {
+            "calls": 162,
+            "bytes": 168707397,
+            "extent": 168707389,
+            "maxWriteBytes": 1048576,
+            "backwardWrites": 1,
+            "closeCalls": 1
+          }
+        }
+      ],
+      "totalMs": 186.987277,
+      "retainedDeltaBytes": {
+        "heapUsed": 3061456,
+        "external": -1052139,
+        "arrayBuffers": -1048576,
+        "rss": 91467776
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11052,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:52.743Z",
+      "kind": "demux-retention",
+      "samples": 25000,
+      "pattern": "monotonic",
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 168707389,
+      "moovBytes": 107345,
+      "top": [
+        {
+          "type": "ftyp",
+          "start": 0,
+          "payload": 8,
+          "end": 28
+        },
+        {
+          "type": "mdat",
+          "start": 28,
+          "payload": 36,
+          "end": 168600044
+        },
+        {
+          "type": "moov",
+          "start": 168600044,
+          "payload": 168600052,
+          "end": 168707389
+        }
+      ],
+      "source": "Node openAsBlob disk-backed Blob -> unmodified BlobSource; useStreamReader:false",
+      "sourceDifferenceFromChrome": "arrayBuffer range path selected explicitly; no claim about Chrome prefetch/native memory",
+      "cacheBytes": 1048576,
+      "reads": {
+        "calls": 3,
+        "bytes": 345405,
+        "maxReadBytes": 196608,
+        "moovOverlapBytes": 107345,
+        "mdatPayloadOverlapBytes": 238024
+      },
+      "indexSource": "read-only pinned video._backing.internalTrack",
+      "phases": [
+        {
+          "phase": "demux-created-before-metadata",
+          "operationMs": 0.06476800000000082,
+          "gcPauseMs": 6.104567000000003,
+          "memory": {
+            "rss": 39636992,
+            "heapTotal": 12427264,
+            "heapUsed": 7067344,
+            "external": 2586409,
+            "arrayBuffers": 151831
+          },
+          "reads": {
+            "calls": 0,
+            "bytes": 0,
+            "maxReadBytes": 0,
+            "moovOverlapBytes": 0,
+            "mdatPayloadOverlapBytes": 0
+          }
+        },
+        {
+          "phase": "demux-metadata-retained",
+          "operationMs": 4.49262499999999,
+          "gcPauseMs": 5.0617890000000045,
+          "memory": {
+            "rss": 40161280,
+            "heapTotal": 12689408,
+            "heapUsed": 7345032,
+            "external": 3039191,
+            "arrayBuffers": 604573
+          },
+          "indices": {
+            "moovSliceViewBytes": 107337,
+            "moovBackingBytes": 107337,
+            "arrays": null
+          },
+          "reads": {
+            "calls": 3,
+            "bytes": 345405,
+            "maxReadBytes": 196608,
+            "moovOverlapBytes": 107345,
+            "mdatPayloadOverlapBytes": 238024
+          }
+        },
+        {
+          "phase": "demux-sample-index-retained",
+          "operationMs": 3.8388510000000053,
+          "gcPauseMs": 5.876293999999987,
+          "memory": {
+            "rss": 44457984,
+            "heapTotal": 12963840,
+            "heapUsed": 7670344,
+            "external": 3039191,
+            "arrayBuffers": 604573
+          },
+          "indices": {
+            "moovSliceViewBytes": 107337,
+            "moovBackingBytes": 107337,
+            "arrays": {
+              "sampleTimingEntries": 1,
+              "sampleCompositionTimeOffsets": 0,
+              "sampleSizes": 25000,
+              "keySampleIndices": null,
+              "chunkOffsets": 1667,
+              "sampleToChunk": 2,
+              "presentationTimestamps": null,
+              "presentationTimestampIndexMap": null
+            }
+          },
+          "reads": {
+            "calls": 3,
+            "bytes": 345405,
+            "maxReadBytes": 196608,
+            "moovOverlapBytes": 107345,
+            "mdatPayloadOverlapBytes": 238024
+          }
+        }
+      ],
+      "totalMs": 25.745374999999996,
+      "retainedDeltaBytes": {
+        "heapUsed": 603000,
+        "external": 452782,
+        "arrayBuffers": 452742,
+        "rss": 4820992
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11063,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:53.467Z",
+      "kind": "mux-retention",
+      "samples": 100000,
+      "pattern": "monotonic",
+      "seed": {
+        "fixture": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+        "fixtureSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "packetBytes": 6744,
+        "packetSha256": "5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d",
+        "packetType": "key",
+        "deltaPacketBytes": 456,
+        "deltaPacketSha256": "42cd4b8f8cc20e4e349528e6794dc0d4a554db19a6df681e4d7425cb3a3d655d",
+        "deltaPacketType": "delta"
+      },
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 674827389,
+      "moovBytes": 427345,
+      "moovPosition": 674400044,
+      "mediaPayloadBytes": 674400000,
+      "indexSource": "read-only pinned _muxer.trackDatas",
+      "target": "StreamTarget discard/count, no retained media output",
+      "cacheBytes": 1048576,
+      "writeChunkBytes": 1048576,
+      "onMoov": "library tracking enabled; callback retains length/position only, not bytes",
+      "writes": {
+        "calls": 645,
+        "bytes": 674827397,
+        "extent": 674827389,
+        "maxWriteBytes": 1048576,
+        "backwardWrites": 1,
+        "closeCalls": 1
+      },
+      "phases": [
+        {
+          "phase": "mux-created-before-packets",
+          "operationMs": 1.1749169999999935,
+          "gcPauseMs": 5.840641000000005,
+          "memory": {
+            "rss": 39657472,
+            "heapTotal": 12951552,
+            "heapUsed": 7660720,
+            "external": 3862940,
+            "arrayBuffers": 1234238
+          },
+          "indices": []
+        },
+        {
+          "phase": "mux-after-packets-before-finalize",
+          "operationMs": 553.606997,
+          "gcPauseMs": 15.393193999999994,
+          "memory": {
+            "rss": 183242752,
+            "heapTotal": 57909248,
+            "heapUsed": 22386752,
+            "external": 3859377,
+            "arrayBuffers": 1234238
+          },
+          "indices": [
+            {
+              "samples": 100000,
+              "chunks": 6666,
+              "chunkSampleReferences": 99990,
+              "pendingChunkSamples": 10,
+              "samplesStillHoldingPayload": 10,
+              "timingRuns": 1,
+              "compositionRuns": 1,
+              "sampleToChunkRuns": 1,
+              "timestampProcessingQueue": 1
+            }
+          ],
+          "writes": {
+            "calls": 643,
+            "bytes": 674234368,
+            "extent": 674234368,
+            "maxWriteBytes": 1048576,
+            "backwardWrites": 0,
+            "closeCalls": 0
+          }
+        },
+        {
+          "phase": "mux-finalized-index-retained",
+          "operationMs": 45.03744400000005,
+          "gcPauseMs": 13.291181999999935,
+          "memory": {
+            "rss": 188760064,
+            "heapTotal": 91725824,
+            "heapUsed": 22398024,
+            "external": 2810801,
+            "arrayBuffers": 185662
+          },
+          "indices": [
+            {
+              "samples": 100000,
+              "chunks": 6667,
+              "chunkSampleReferences": 100000,
+              "pendingChunkSamples": 10,
+              "samplesStillHoldingPayload": 0,
+              "timingRuns": 1,
+              "compositionRuns": 1,
+              "sampleToChunkRuns": 2,
+              "timestampProcessingQueue": 0
+            }
+          ],
+          "writes": {
+            "calls": 645,
+            "bytes": 674827397,
+            "extent": 674827389,
+            "maxWriteBytes": 1048576,
+            "backwardWrites": 1,
+            "closeCalls": 1
+          }
+        }
+      ],
+      "totalMs": 634.8206409999999,
+      "retainedDeltaBytes": {
+        "heapUsed": 14737304,
+        "external": -1052139,
+        "arrayBuffers": -1048576,
+        "rss": 149102592
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11094,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:54.585Z",
+      "kind": "demux-retention",
+      "samples": 100000,
+      "pattern": "monotonic",
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 674827389,
+      "moovBytes": 427345,
+      "top": [
+        {
+          "type": "ftyp",
+          "start": 0,
+          "payload": 8,
+          "end": 28
+        },
+        {
+          "type": "mdat",
+          "start": 28,
+          "payload": 36,
+          "end": 674400044
+        },
+        {
+          "type": "moov",
+          "start": 674400044,
+          "payload": 674400052,
+          "end": 674827389
+        }
+      ],
+      "source": "Node openAsBlob disk-backed Blob -> unmodified BlobSource; useStreamReader:false",
+      "sourceDifferenceFromChrome": "arrayBuffer range path selected explicitly; no claim about Chrome prefetch/native memory",
+      "cacheBytes": 1048576,
+      "reads": {
+        "calls": 3,
+        "bytes": 658557,
+        "maxReadBytes": 330877,
+        "moovOverlapBytes": 427345,
+        "mdatPayloadOverlapBytes": 231176
+      },
+      "indexSource": "read-only pinned video._backing.internalTrack",
+      "phases": [
+        {
+          "phase": "demux-created-before-metadata",
+          "operationMs": 0.06740100000000382,
+          "gcPauseMs": 9.732359000000002,
+          "memory": {
+            "rss": 39985152,
+            "heapTotal": 12165120,
+            "heapUsed": 7067272,
+            "external": 2586409,
+            "arrayBuffers": 151831
+          },
+          "reads": {
+            "calls": 0,
+            "bytes": 0,
+            "maxReadBytes": 0,
+            "moovOverlapBytes": 0,
+            "mdatPayloadOverlapBytes": 0
+          }
+        },
+        {
+          "phase": "demux-metadata-retained",
+          "operationMs": 4.999719999999996,
+          "gcPauseMs": 5.549927999999994,
+          "memory": {
+            "rss": 40640512,
+            "heapTotal": 12427264,
+            "heapUsed": 7349112,
+            "external": 3672343,
+            "arrayBuffers": 1237725
+          },
+          "indices": {
+            "moovSliceViewBytes": 427337,
+            "moovBackingBytes": 427337,
+            "arrays": null
+          },
+          "reads": {
+            "calls": 3,
+            "bytes": 658557,
+            "maxReadBytes": 330877,
+            "moovOverlapBytes": 427345,
+            "mdatPayloadOverlapBytes": 231176
+          }
+        },
+        {
+          "phase": "demux-sample-index-retained",
+          "operationMs": 6.675832,
+          "gcPauseMs": 6.987541000000007,
+          "memory": {
+            "rss": 44998656,
+            "heapTotal": 13606912,
+            "heapUsed": 8356288,
+            "external": 3672343,
+            "arrayBuffers": 1237725
+          },
+          "indices": {
+            "moovSliceViewBytes": 427337,
+            "moovBackingBytes": 427337,
+            "arrays": {
+              "sampleTimingEntries": 1,
+              "sampleCompositionTimeOffsets": 0,
+              "sampleSizes": 100000,
+              "keySampleIndices": null,
+              "chunkOffsets": 6667,
+              "sampleToChunk": 2,
+              "presentationTimestamps": null,
+              "presentationTimestampIndexMap": null
+            }
+          },
+          "reads": {
+            "calls": 3,
+            "bytes": 658557,
+            "maxReadBytes": 330877,
+            "moovOverlapBytes": 427345,
+            "mdatPayloadOverlapBytes": 231176
+          }
+        }
+      ],
+      "totalMs": 34.612052000000006,
+      "retainedDeltaBytes": {
+        "heapUsed": 1289016,
+        "external": 1085934,
+        "arrayBuffers": 1085894,
+        "rss": 5013504
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11105,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:54.760Z",
+      "kind": "mux-retention",
+      "samples": 5000,
+      "pattern": "alternating-ctts",
+      "seed": {
+        "fixture": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+        "fixtureSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "packetBytes": 6744,
+        "packetSha256": "5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d",
+        "packetType": "key",
+        "deltaPacketBytes": 456,
+        "deltaPacketSha256": "42cd4b8f8cc20e4e349528e6794dc0d4a554db19a6df681e4d7425cb3a3d655d",
+        "deltaPacketType": "delta"
+      },
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 18072217,
+      "moovBytes": 72173,
+      "moovPosition": 18000044,
+      "mediaPayloadBytes": 18000000,
+      "indexSource": "read-only pinned _muxer.trackDatas",
+      "target": "StreamTarget discard/count, no retained media output",
+      "cacheBytes": 1048576,
+      "writeChunkBytes": 1048576,
+      "onMoov": "library tracking enabled; callback retains length/position only, not bytes",
+      "writes": {
+        "calls": 19,
+        "bytes": 18072225,
+        "extent": 18072217,
+        "maxWriteBytes": 1048576,
+        "backwardWrites": 1,
+        "closeCalls": 1
+      },
+      "phases": [
+        {
+          "phase": "mux-created-before-packets",
+          "operationMs": 1.5791849999999954,
+          "gcPauseMs": 10.293382999999992,
+          "memory": {
+            "rss": 39575552,
+            "heapTotal": 12951552,
+            "heapUsed": 7660720,
+            "external": 3862940,
+            "arrayBuffers": 1234238
+          },
+          "indices": []
+        },
+        {
+          "phase": "mux-after-packets-before-finalize",
+          "operationMs": 37.773448,
+          "gcPauseMs": 7.279398999999984,
+          "memory": {
+            "rss": 60477440,
+            "heapTotal": 18194432,
+            "heapUsed": 8994936,
+            "external": 3862980,
+            "arrayBuffers": 1234238
+          },
+          "indices": [
+            {
+              "samples": 5000,
+              "chunks": 357,
+              "chunkSampleReferences": 4998,
+              "pendingChunkSamples": 2,
+              "samplesStillHoldingPayload": 2,
+              "timingRuns": 1,
+              "compositionRuns": 4998,
+              "sampleToChunkRuns": 1,
+              "timestampProcessingQueue": 2
+            }
+          ],
+          "writes": {
+            "calls": 17,
+            "bytes": 17825792,
+            "extent": 17825792,
+            "maxWriteBytes": 1048576,
+            "backwardWrites": 0,
+            "closeCalls": 0
+          }
+        },
+        {
+          "phase": "mux-finalized-index-retained",
+          "operationMs": 11.346677999999997,
+          "gcPauseMs": 6.802903999999984,
+          "memory": {
+            "rss": 63717376,
+            "heapTotal": 18718720,
+            "heapUsed": 9552320,
+            "external": 2814404,
+            "arrayBuffers": 185662
+          },
+          "indices": [
+            {
+              "samples": 5000,
+              "chunks": 358,
+              "chunkSampleReferences": 5000,
+              "pendingChunkSamples": 2,
+              "samplesStillHoldingPayload": 0,
+              "timingRuns": 1,
+              "compositionRuns": 5000,
+              "sampleToChunkRuns": 2,
+              "timestampProcessingQueue": 0
+            }
+          ],
+          "writes": {
+            "calls": 19,
+            "bytes": 18072225,
+            "extent": 18072217,
+            "maxWriteBytes": 1048576,
+            "backwardWrites": 1,
+            "closeCalls": 1
+          }
+        }
+      ],
+      "totalMs": 75.51638000000001,
+      "retainedDeltaBytes": {
+        "heapUsed": 1891600,
+        "external": -1048536,
+        "arrayBuffers": -1048576,
+        "rss": 24141824
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11128,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:55.042Z",
+      "kind": "demux-retention",
+      "samples": 5000,
+      "pattern": "alternating-ctts",
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 18072217,
+      "moovBytes": 72173,
+      "top": [
+        {
+          "type": "ftyp",
+          "start": 0,
+          "payload": 8,
+          "end": 28
+        },
+        {
+          "type": "mdat",
+          "start": 28,
+          "payload": 36,
+          "end": 18000044
+        },
+        {
+          "type": "moov",
+          "start": 18000044,
+          "payload": 18000052,
+          "end": 18072217
+        }
+      ],
+      "source": "Node openAsBlob disk-backed Blob -> unmodified BlobSource; useStreamReader:false",
+      "sourceDifferenceFromChrome": "arrayBuffer range path selected explicitly; no claim about Chrome prefetch/native memory",
+      "cacheBytes": 1048576,
+      "reads": {
+        "calls": 2,
+        "bytes": 311961,
+        "maxReadBytes": 180889,
+        "moovOverlapBytes": 72173,
+        "mdatPayloadOverlapBytes": 239752
+      },
+      "indexSource": "read-only pinned video._backing.internalTrack",
+      "phases": [
+        {
+          "phase": "demux-created-before-metadata",
+          "operationMs": 0.06959499999999252,
+          "gcPauseMs": 6.077487000000005,
+          "memory": {
+            "rss": 37486592,
+            "heapTotal": 12427264,
+            "heapUsed": 7067288,
+            "external": 2586409,
+            "arrayBuffers": 151831
+          },
+          "reads": {
+            "calls": 0,
+            "bytes": 0,
+            "maxReadBytes": 0,
+            "moovOverlapBytes": 0,
+            "mdatPayloadOverlapBytes": 0
+          }
+        },
+        {
+          "phase": "demux-metadata-retained",
+          "operationMs": 5.085718999999997,
+          "gcPauseMs": 4.821661999999989,
+          "memory": {
+            "rss": 39059456,
+            "heapTotal": 12689408,
+            "heapUsed": 7339624,
+            "external": 2898410,
+            "arrayBuffers": 463792
+          },
+          "indices": {
+            "moovSliceViewBytes": 72165,
+            "moovBackingBytes": 180889,
+            "arrays": null
+          },
+          "reads": {
+            "calls": 2,
+            "bytes": 311961,
+            "maxReadBytes": 180889,
+            "moovOverlapBytes": 72173,
+            "mdatPayloadOverlapBytes": 239752
+          }
+        },
+        {
+          "phase": "demux-sample-index-retained",
+          "operationMs": 3.6524940000000043,
+          "gcPauseMs": 4.865870000000001,
+          "memory": {
+            "rss": 44171264,
+            "heapTotal": 13475840,
+            "heapUsed": 8059072,
+            "external": 2898410,
+            "arrayBuffers": 463792
+          },
+          "indices": {
+            "moovSliceViewBytes": 72165,
+            "moovBackingBytes": 180889,
+            "arrays": {
+              "sampleTimingEntries": 1,
+              "sampleCompositionTimeOffsets": 5000,
+              "sampleSizes": 5000,
+              "keySampleIndices": 2500,
+              "chunkOffsets": 358,
+              "sampleToChunk": 2,
+              "presentationTimestamps": 5000,
+              "presentationTimestampIndexMap": 5000
+            }
+          },
+          "reads": {
+            "calls": 2,
+            "bytes": 311961,
+            "maxReadBytes": 180889,
+            "moovOverlapBytes": 72173,
+            "mdatPayloadOverlapBytes": 239752
+          }
+        }
+      ],
+      "totalMs": 25.026639000000003,
+      "retainedDeltaBytes": {
+        "heapUsed": 991784,
+        "external": 312001,
+        "arrayBuffers": 311961,
+        "rss": 6684672
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11139,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:55.336Z",
+      "kind": "mux-retention",
+      "samples": 25000,
+      "pattern": "alternating-ctts",
+      "seed": {
+        "fixture": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+        "fixtureSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "packetBytes": 6744,
+        "packetSha256": "5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d",
+        "packetType": "key",
+        "deltaPacketBytes": 456,
+        "deltaPacketSha256": "42cd4b8f8cc20e4e349528e6794dc0d4a554db19a6df681e4d7425cb3a3d655d",
+        "deltaPacketType": "delta"
+      },
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 90357953,
+      "moovBytes": 357909,
+      "moovPosition": 90000044,
+      "mediaPayloadBytes": 90000000,
+      "indexSource": "read-only pinned _muxer.trackDatas",
+      "target": "StreamTarget discard/count, no retained media output",
+      "cacheBytes": 1048576,
+      "writeChunkBytes": 1048576,
+      "onMoov": "library tracking enabled; callback retains length/position only, not bytes",
+      "writes": {
+        "calls": 88,
+        "bytes": 90357961,
+        "extent": 90357953,
+        "maxWriteBytes": 1048576,
+        "backwardWrites": 1,
+        "closeCalls": 1
+      },
+      "phases": [
+        {
+          "phase": "mux-created-before-packets",
+          "operationMs": 1.2308519999999987,
+          "gcPauseMs": 5.576257999999996,
+          "memory": {
+            "rss": 39673856,
+            "heapTotal": 12951552,
+            "heapUsed": 7660720,
+            "external": 3862940,
+            "arrayBuffers": 1234238
+          },
+          "indices": []
+        },
+        {
+          "phase": "mux-after-packets-before-finalize",
+          "operationMs": 133.037221,
+          "gcPauseMs": 9.654041000000007,
+          "memory": {
+            "rss": 102903808,
+            "heapTotal": 32112640,
+            "heapUsed": 13225520,
+            "external": 3862980,
+            "arrayBuffers": 1234238
+          },
+          "indices": [
+            {
+              "samples": 25000,
+              "chunks": 1785,
+              "chunkSampleReferences": 24992,
+              "pendingChunkSamples": 8,
+              "samplesStillHoldingPayload": 8,
+              "timingRuns": 1,
+              "compositionRuns": 24998,
+              "sampleToChunkRuns": 3,
+              "timestampProcessingQueue": 2
+            }
+          ],
+          "writes": {
+            "calls": 85,
+            "bytes": 89128960,
+            "extent": 89128960,
+            "maxWriteBytes": 1048576,
+            "backwardWrites": 0,
+            "closeCalls": 0
+          }
+        },
+        {
+          "phase": "mux-finalized-index-retained",
+          "operationMs": 38.42830299999997,
+          "gcPauseMs": 9.863987000000009,
+          "memory": {
+            "rss": 113664000,
+            "heapTotal": 48889856,
+            "heapUsed": 13268504,
+            "external": 2814404,
+            "arrayBuffers": 185662
+          },
+          "indices": [
+            {
+              "samples": 25000,
+              "chunks": 1786,
+              "chunkSampleReferences": 25000,
+              "pendingChunkSamples": 8,
+              "samplesStillHoldingPayload": 0,
+              "timingRuns": 1,
+              "compositionRuns": 25000,
+              "sampleToChunkRuns": 4,
+              "timestampProcessingQueue": 0
+            }
+          ],
+          "writes": {
+            "calls": 88,
+            "bytes": 90357961,
+            "extent": 90357953,
+            "maxWriteBytes": 1048576,
+            "backwardWrites": 1,
+            "closeCalls": 1
+          }
+        }
+      ],
+      "totalMs": 198.11091399999998,
+      "retainedDeltaBytes": {
+        "heapUsed": 5607784,
+        "external": -1048536,
+        "arrayBuffers": -1048576,
+        "rss": 73990144
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11162,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:55.757Z",
+      "kind": "demux-retention",
+      "samples": 25000,
+      "pattern": "alternating-ctts",
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 90357953,
+      "moovBytes": 357909,
+      "top": [
+        {
+          "type": "ftyp",
+          "start": 0,
+          "payload": 8,
+          "end": 28
+        },
+        {
+          "type": "mdat",
+          "start": 28,
+          "payload": 36,
+          "end": 90000044
+        },
+        {
+          "type": "moov",
+          "start": 90000044,
+          "payload": 90000052,
+          "end": 90357953
+        }
+      ],
+      "source": "Node openAsBlob disk-backed Blob -> unmodified BlobSource; useStreamReader:false",
+      "sourceDifferenceFromChrome": "arrayBuffer range path selected explicitly; no claim about Chrome prefetch/native memory",
+      "cacheBytes": 1048576,
+      "reads": {
+        "calls": 3,
+        "bytes": 573633,
+        "maxReadBytes": 245953,
+        "moovOverlapBytes": 357909,
+        "mdatPayloadOverlapBytes": 215688
+      },
+      "indexSource": "read-only pinned video._backing.internalTrack",
+      "phases": [
+        {
+          "phase": "demux-created-before-metadata",
+          "operationMs": 0.06849300000000369,
+          "gcPauseMs": 5.373511999999991,
+          "memory": {
+            "rss": 37687296,
+            "heapTotal": 12427264,
+            "heapUsed": 7067360,
+            "external": 2586409,
+            "arrayBuffers": 151831
+          },
+          "reads": {
+            "calls": 0,
+            "bytes": 0,
+            "maxReadBytes": 0,
+            "moovOverlapBytes": 0,
+            "mdatPayloadOverlapBytes": 0
+          }
+        },
+        {
+          "phase": "demux-metadata-retained",
+          "operationMs": 5.267764000000014,
+          "gcPauseMs": 5.35106900000001,
+          "memory": {
+            "rss": 40308736,
+            "heapTotal": 12427264,
+            "heapUsed": 7348984,
+            "external": 3517983,
+            "arrayBuffers": 1083365
+          },
+          "indices": {
+            "moovSliceViewBytes": 357901,
+            "moovBackingBytes": 357901,
+            "arrays": null
+          },
+          "reads": {
+            "calls": 3,
+            "bytes": 573633,
+            "maxReadBytes": 245953,
+            "moovOverlapBytes": 357909,
+            "mdatPayloadOverlapBytes": 215688
+          }
+        },
+        {
+          "phase": "demux-sample-index-retained",
+          "operationMs": 12.775967000000009,
+          "gcPauseMs": 6.574028000000013,
+          "memory": {
+            "rss": 50663424,
+            "heapTotal": 20267008,
+            "heapUsed": 10752896,
+            "external": 3517983,
+            "arrayBuffers": 1083365
+          },
+          "indices": {
+            "moovSliceViewBytes": 357901,
+            "moovBackingBytes": 357901,
+            "arrays": {
+              "sampleTimingEntries": 1,
+              "sampleCompositionTimeOffsets": 25000,
+              "sampleSizes": 25000,
+              "keySampleIndices": 12500,
+              "chunkOffsets": 1786,
+              "sampleToChunk": 4,
+              "presentationTimestamps": 25000,
+              "presentationTimestampIndexMap": 25000
+            }
+          },
+          "reads": {
+            "calls": 3,
+            "bytes": 573633,
+            "maxReadBytes": 245953,
+            "moovOverlapBytes": 357909,
+            "mdatPayloadOverlapBytes": 215688
+          }
+        }
+      ],
+      "totalMs": 35.954432,
+      "retainedDeltaBytes": {
+        "heapUsed": 3685536,
+        "external": 931574,
+        "arrayBuffers": 931534,
+        "rss": 12976128
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11173,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:56.456Z",
+      "kind": "mux-retention",
+      "samples": 100000,
+      "pattern": "alternating-ctts",
+      "seed": {
+        "fixture": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+        "fixtureSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "packetBytes": 6744,
+        "packetSha256": "5dd68f042fb14ddc03faf6441e68eacba133f91d41779f9f8f28f5da3e63e78d",
+        "packetType": "key",
+        "deltaPacketBytes": 456,
+        "deltaPacketSha256": "42cd4b8f8cc20e4e349528e6794dc0d4a554db19a6df681e4d7425cb3a3d655d",
+        "deltaPacketType": "delta"
+      },
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 361429381,
+      "moovBytes": 1429337,
+      "moovPosition": 360000044,
+      "mediaPayloadBytes": 360000000,
+      "indexSource": "read-only pinned _muxer.trackDatas",
+      "target": "StreamTarget discard/count, no retained media output",
+      "cacheBytes": 1048576,
+      "writeChunkBytes": 1048576,
+      "onMoov": "library tracking enabled; callback retains length/position only, not bytes",
+      "writes": {
+        "calls": 346,
+        "bytes": 361429389,
+        "extent": 361429381,
+        "maxWriteBytes": 1048576,
+        "backwardWrites": 1,
+        "closeCalls": 1
+      },
+      "phases": [
+        {
+          "phase": "mux-created-before-packets",
+          "operationMs": 1.204262,
+          "gcPauseMs": 6.065343999999996,
+          "memory": {
+            "rss": 41295872,
+            "heapTotal": 12951552,
+            "heapUsed": 7660720,
+            "external": 3862940,
+            "arrayBuffers": 1234238
+          },
+          "indices": []
+        },
+        {
+          "phase": "mux-after-packets-before-finalize",
+          "operationMs": 416.375886,
+          "gcPauseMs": 21.465193,
+          "memory": {
+            "rss": 165367808,
+            "heapTotal": 64069632,
+            "heapUsed": 28661496,
+            "external": 3862980,
+            "arrayBuffers": 1234238
+          },
+          "indices": [
+            {
+              "samples": 100000,
+              "chunks": 7142,
+              "chunkSampleReferences": 99990,
+              "pendingChunkSamples": 10,
+              "samplesStillHoldingPayload": 10,
+              "timingRuns": 1,
+              "compositionRuns": 99998,
+              "sampleToChunkRuns": 3,
+              "timestampProcessingQueue": 2
+            }
+          ],
+          "writes": {
+            "calls": 343,
+            "bytes": 359661568,
+            "extent": 359661568,
+            "maxWriteBytes": 1048576,
+            "backwardWrites": 0,
+            "closeCalls": 0
+          }
+        },
+        {
+          "phase": "mux-finalized-index-retained",
+          "operationMs": 121.75345900000002,
+          "gcPauseMs": 30.81838700000003,
+          "memory": {
+            "rss": 201699328,
+            "heapTotal": 97624064,
+            "heapUsed": 28707224,
+            "external": 2814404,
+            "arrayBuffers": 185662
+          },
+          "indices": [
+            {
+              "samples": 100000,
+              "chunks": 7143,
+              "chunkSampleReferences": 100000,
+              "pendingChunkSamples": 10,
+              "samplesStillHoldingPayload": 0,
+              "timingRuns": 1,
+              "compositionRuns": 100000,
+              "sampleToChunkRuns": 4,
+              "timestampProcessingQueue": 0
+            }
+          ],
+          "writes": {
+            "calls": 346,
+            "bytes": 361429389,
+            "extent": 361429381,
+            "maxWriteBytes": 1048576,
+            "backwardWrites": 1,
+            "closeCalls": 1
+          }
+        }
+      ],
+      "totalMs": 598.057133,
+      "retainedDeltaBytes": {
+        "heapUsed": 21046504,
+        "external": -1048536,
+        "arrayBuffers": -1048576,
+        "rss": 160403456
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "pid": 11197,
+      "node": "v24.19.0",
+      "timestamp": "2026-10-17T07:58:57.532Z",
+      "kind": "demux-retention",
+      "samples": 100000,
+      "pattern": "alternating-ctts",
+      "synthetic": true,
+      "decoded": false,
+      "audioTracks": 0,
+      "fileBytes": 361429381,
+      "moovBytes": 1429337,
+      "top": [
+        {
+          "type": "ftyp",
+          "start": 0,
+          "payload": 8,
+          "end": 28
+        },
+        {
+          "type": "mdat",
+          "start": 28,
+          "payload": 36,
+          "end": 360000044
+        },
+        {
+          "type": "moov",
+          "start": 360000044,
+          "payload": 360000052,
+          "end": 361429381
+        }
+      ],
+      "source": "Node openAsBlob disk-backed Blob -> unmodified BlobSource; useStreamReader:false",
+      "sourceDifferenceFromChrome": "arrayBuffer range path selected explicitly; no claim about Chrome prefetch/native memory",
+      "cacheBytes": 1048576,
+      "reads": {
+        "calls": 3,
+        "bytes": 1636741,
+        "maxReadBytes": 1309061,
+        "moovOverlapBytes": 1429337,
+        "mdatPayloadOverlapBytes": 207368
+      },
+      "indexSource": "read-only pinned video._backing.internalTrack",
+      "phases": [
+        {
+          "phase": "demux-created-before-metadata",
+          "operationMs": 0.06699100000000158,
+          "gcPauseMs": 8.517757000000003,
+          "memory": {
+            "rss": 40132608,
+            "heapTotal": 12427264,
+            "heapUsed": 7067288,
+            "external": 2586409,
+            "arrayBuffers": 151831
+          },
+          "reads": {
+            "calls": 0,
+            "bytes": 0,
+            "maxReadBytes": 0,
+            "moovOverlapBytes": 0,
+            "mdatPayloadOverlapBytes": 0
+          }
+        },
+        {
+          "phase": "demux-metadata-retained",
+          "operationMs": 7.41503400000002,
+          "gcPauseMs": 7.855079999999987,
+          "memory": {
+            "rss": 43278336,
+            "heapTotal": 12689408,
+            "heapUsed": 7348424,
+            "external": 5324839,
+            "arrayBuffers": 2890221
+          },
+          "indices": {
+            "moovSliceViewBytes": 1429329,
+            "moovBackingBytes": 1429329,
+            "arrays": null
+          },
+          "reads": {
+            "calls": 3,
+            "bytes": 1636741,
+            "maxReadBytes": 1309061,
+            "moovOverlapBytes": 1429337,
+            "mdatPayloadOverlapBytes": 207368
+          }
+        },
+        {
+          "phase": "demux-sample-index-retained",
+          "operationMs": 47.558446,
+          "gcPauseMs": 19.579762000000017,
+          "memory": {
+            "rss": 69791744,
+            "heapTotal": 54665216,
+            "heapUsed": 20239184,
+            "external": 5324839,
+            "arrayBuffers": 2890221
+          },
+          "indices": {
+            "moovSliceViewBytes": 1429329,
+            "moovBackingBytes": 1429329,
+            "arrays": {
+              "sampleTimingEntries": 1,
+              "sampleCompositionTimeOffsets": 100000,
+              "sampleSizes": 100000,
+              "keySampleIndices": 50000,
+              "chunkOffsets": 7143,
+              "sampleToChunk": 4,
+              "presentationTimestamps": 100000,
+              "presentationTimestampIndexMap": 100000
+            }
+          },
+          "reads": {
+            "calls": 3,
+            "bytes": 1636741,
+            "maxReadBytes": 1309061,
+            "moovOverlapBytes": 1429337,
+            "mdatPayloadOverlapBytes": 207368
+          }
+        }
+      ],
+      "totalMs": 91.61774900000002,
+      "retainedDeltaBytes": {
+        "heapUsed": 13171896,
+        "external": 2738430,
+        "arrayBuffers": 2738390,
+        "rss": 29659136
+      }
+    }
+  ],
+  "totalMs": 5891.193953999999,
+  "baselineCommitMeaning": "Repository HEAD recorded after measurements; vendor and seed fixture unchanged from f0e6d32f3b90e92fa76958e17175da67b6248d0b. This is not a product integration test.",
+  "redaction": "Only the output-directory argument is replaced by an artifact-relative path; numerical measurements are unchanged."
+}

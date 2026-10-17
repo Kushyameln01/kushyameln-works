@@ -146,3 +146,15 @@ Workerが実行する順序：
 - [Works同梱出典・hash記録](https://github.com/Kushyameln01/kushyameln-works/blob/5241a95ac24019b4cbe6a8272d0720ff80a785be/docs/shared/media-basic/vendor/mediabunny-source.json)。同梱module SHA-256 `5c3514965f106dd165cc6474979ba302ef85d8c84935a0ad3ea5202ccedfe51b`。vendorは基準版時点で未変更。
 
 次の着手点：transformの出力先分離とmetadata捕捉器の契約を実装し、物理commitがWorkerの明示操作以外で起きないことを最初に確認する。
+
+## 8. 小単位の実装・回収検証（b5）
+
+上記の最小単位は `f0e6d32f3b90e92fa76958e17175da67b6248d0b`、build `vr180-b5-direct1` で実装した。metadata捕捉は先頭2048 bytes＋16MiB以下の末尾moov、未捕捉領域は例外とした。物理commitの後に実Fileの全体hashを観測し、追加moovだけは書込み前の期待hashと照合してからMP4構造を再検査する。全体hashの事前比較成功とは記録しない。
+
+Worker異常終了時のunknownは原Worker receiptと分けて保持し、明示終了で次のジョブへ進める。この離脱はcleanup-completeを通知しない。既に確認したcommit/保存完了は保持し、取消との競合でも未保存へ戻さない。Node142件、公開検査15件が合格。
+
+実Chromeで小素材のdirect保存・取消再実行を全回収・独立照合した。さらに4K12秒を1MiB書込み後に取り消し、保存先0Bを確認して同handleで再実行。mux write 4回、2,703,581 bytesの保存MP4を全回収し、360フレーム・時刻・音声・VR情報の独立照合がPASS。詳細は[RELEASE](RELEASE-2026-10-17.md)と[小素材](evidence/2026-10-17-b5-small.json)、[4K12秒](evidence/2026-10-17-b5-direct-scale12.json)に保存した。
+
+この検証は本番client/Workerに実OPFS handleを渡したbackend試験で、OS保存ダイアログ・外部保存先・appの直接保存UIの実操作は未検証。5～10GB・長尺60fps・VR再生・実写品質・操作性・速度改善も未判定。次の中心課題は第6節の入力/出力索引管理、全moov捕捉の除去と大容量全出力回収である。
+
+固定libraryの入力・出力索引について、[独立Nodeの保持量計測](INDEX-RETENTION-B5.md)を完了した。payload解放後もsample/chunk参照とcttsの全PTS索引が残るため、出力索引の分割・逐次moov生成を次の改修単位にする。

@@ -56,3 +56,5 @@ b3では小素材のUI加工・実ダウンロード、取消と再実行、独�
 `planMp4Tag` はBlob経路とdirect経路で共用。directの捕捉器は先頭2048 bytesと末尾moov（上限16MiB）だけを保持し、未捕捉範囲の読込みを拒否する。mdat本体は捕捉しないが、Mediabunny内部の入力・出力索引は引き続きサンプル件数に比例する。長尺用の索引退避・逐次moov出力は未実装。
 
 `directSave.wholeFileHashCompared:false` は、全体SHA-256が保存後の観測値であることを示す。追加したVR metadataは事前期待hashと照合し、保存後MP4も再解析する。ブラウザからの出力回収と独立した画素・時刻・音声解析は別の検証。Node142件・公開用15件・harness6件が合格し、実ブラウザ試験の結果はRELEASEへ記録する。
+
+b5の実Chrome・OPFS backendでは、小素材の直接保存と取消再実行に加え、4K12秒で1MiB書込み後取消→0B→同handle再実行が合格。再実行は4回のmux writeで2,703,581 bytesを全回収し、360映像フレーム・時刻・559 AAC packets・VR情報を独立照合した。規模拡大harnessの陰性検査は11件。これはOS保存ダイアログ、外部保存先、appの直接保存UI、5～10GB実動画の成功を意味しない。
