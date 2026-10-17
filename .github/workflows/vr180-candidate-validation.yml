@@ -16,6 +16,9 @@ on:
       - tools/vr180/probe-public-origin.py
       - tools/vr180/probe-index-owner.py
       - tools/vr180/probe-persistent-storage.py
+      - tools/vr180/probe-segmented-transfer.py
+      - tools/vr180/emit-segmented-transfer-evidence.py
+      - development/vr180/artifact-transfer-action/**
       - tools/vr180/record-ffmpeg-toolchain.py
       - development/vr180/p5-calibration-prototype/**
       - tools/vr180/build-input-index.mjs
@@ -32,6 +35,55 @@ permissions:
   contents: read
 
 jobs:
+  segmented-artifact-probe:
+    if: >-
+      github.repository == 'Kushyameln01/kushyameln-works' &&
+      github.event.repository.private == false &&
+      startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
+      (contains(github.event.head_commit.message, '[vr180-segmented-service]') ||
+      contains(github.event.head_commit.message, '[vr180-segmented-128]'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    env:
+      DO_NOT_TRACK: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      VR180_SEGMENT_PROFILE: ${{ contains(github.event.head_commit.message, '[vr180-segmented-128]') && 'single-128mib' || 'service-8mib' }}
+    steps:
+      - name: Check out the exact private transport candidate
+        id: checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install the fixed official artifact SDK dependency closure
+        timeout-minutes: 3
+        working-directory: development/vr180/artifact-transfer-action
+        run: |
+          node --version
+          npm --version
+          npm ci --ignore-scripts --omit=dev --no-audit --no-fund
+      - name: Generate and reread actual bounded public synthetic bytes
+        timeout-minutes: 2
+        run: >-
+          python3 tools/vr180/probe-segmented-transfer.py
+          --profile "$VR180_SEGMENT_PROFILE"
+          --output-directory "$RUNNER_TEMP/vr180-segment-source-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+      - name: Upload one part at a time through the official action runtime
+        timeout-minutes: 11
+        uses: ./development/vr180/artifact-transfer-action
+        with:
+          source-manifest: ${{ runner.temp }}/vr180-segment-source-${{ github.run_id }}-${{ github.run_attempt }}/source-manifest.json
+          output-directory: ${{ runner.temp }}/vr180-segment-upload-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Return bounded protocol records without credentials or raw parts
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        timeout-minutes: 1
+        run: >-
+          python3 tools/vr180/emit-segmented-transfer-evidence.py
+          --source "$RUNNER_TEMP/vr180-segment-source-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          --upload "$RUNNER_TEMP/vr180-segment-upload-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          --output "$RUNNER_TEMP/vr180-segment-evidence-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+
   persistent-storage-probe:
     if: >-
       github.repository == 'Kushyameln01/kushyameln-works' &&

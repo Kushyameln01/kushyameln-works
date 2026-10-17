@@ -1,0 +1,25 @@
+{
+  "schema": "vr180-segmented-local-review-v1",
+  "status": "LOCAL_PASS_SERVICE_PENDING",
+  "files": {
+    "tools/vr180/receive-segmented-artifact.py": "b42d9c7653096faf579f3d891f780b19c58fb84737541012607d65ca04f398d3",
+    "tests/test_vr180_segmented_receiver.py": "f0113e430b799e0d2a5ca007551d9c18eb90a8665c83f22c1bd2a7fcc8fea1ad",
+    "tools/vr180/emit-segmented-transfer-evidence.py": "07d513f50222818b7586e059cd3ea40d66673879d30d33faa5cb4c99a596328f",
+    ".github/workflows/vr180-candidate-validation.yml": "9aee5bb59c3160a5318e551e1921919becc77edfa22c171667491e8ec86e518e"
+  },
+  "receiverTests": 13,
+  "senderTests": {
+    "node": 16,
+    "python": 5
+  },
+  "fixes": [
+    "Append or state-write failure rolls back the owned destination to its prior offset and permits same-part retry",
+    "Initialization failure removes only newly created inode-checked files; unexpected entries are retained",
+    "Large profiles remain reserved and rejected",
+    "Deadline checked during bounded reads and before state commit",
+    "Missing cleanup record emits BLOCKED complete metadata evidence"
+  ],
+  "serviceUpload": "PENDING",
+  "fullHostRecovery": "PENDING",
+  "independentHostFormulaValidation": "PENDING"
+}
