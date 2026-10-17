@@ -28,6 +28,16 @@ def sequence(repetition):
     return ('baseline', 'candidate') if repetition % 2 == 0 else ('candidate', 'baseline')
 
 
+def local_only(origin):
+    # Playwright supplies (route, request); keep the origin in the closure.
+    def handle(route, request):
+        if request.url.startswith(origin + '/'):
+            route.continue_()
+        else:
+            route.abort()
+    return handle
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--baseline', type=Path, required=True)
@@ -88,7 +98,7 @@ def main():
                         context = browser.new_context(accept_downloads=True)
                         contexts[variant] = context
                         origin = inventory[variant]['origin']
-                        context.route('**/*', lambda route, allowed=origin: route.continue_() if route.request.url.startswith(allowed + '/') else route.abort())
+                        context.route('**/*', local_only(origin))
                         pages[variant] = context.new_page()
                     for condition in CONDITIONS:
                         if condition == 'new-page-same-context':
