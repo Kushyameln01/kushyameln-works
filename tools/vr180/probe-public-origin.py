@@ -18,7 +18,7 @@ def keyboard_probe(context,origin,out):
         c.require(page.evaluate('document.activeElement.id')=='run','RUN_FOCUS')
         page.keyboard.press('Enter')
         page.wait_for_function("!document.querySelector('#result').hidden && document.querySelector('#cancel').disabled")
-        receipt=json.loads(page.locator('#diagnostics').inner_text())
+        receipt=json.loads(page.locator('#diagnostics').text_content())
         record['afterRun']=status.inner_text();record['operationId']=receipt['operationId']
         url=page.locator('#output-video').get_attribute('src');c.require(url and url.startswith('blob:'),'RESULT_URL')
         record['resultURLBytesBeforeClear']=page.evaluate('async u=>(await (await fetch(u)).blob()).size',url)
@@ -31,7 +31,7 @@ def keyboard_probe(context,origin,out):
         c.require(not page.locator('#output-video').get_attribute('src'),'OUTPUT_MEDIA_REFERENCE_REMAINS')
         page.locator('#run').focus();page.keyboard.press('Enter')
         page.wait_for_function("!document.querySelector('#result').hidden && document.querySelector('#cancel').disabled")
-        record['retryOperationId']=json.loads(page.locator('#diagnostics').inner_text())['operationId']
+        record['retryOperationId']=json.loads(page.locator('#diagnostics').text_content())['operationId']
         c.require(record['operationId']!=record['retryOperationId'],'OPERATION_ID_REUSED')
         page.locator('#clear').click();page.wait_for_function("document.querySelector('#result').hidden")
         page.reload(wait_until='networkidle')
