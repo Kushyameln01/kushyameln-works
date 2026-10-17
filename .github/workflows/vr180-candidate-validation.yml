@@ -227,6 +227,49 @@ jobs:
           test -n "$RUNNER_TEMP"
           rm -rf -- "$RUNNER_TEMP/vr180-transfer-64-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
 
+  artifact-transfer-128:
+    if: >-
+      github.repository == 'Kushyameln01/kushyameln-works' &&
+      github.event.repository.private == false &&
+      startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
+      contains(github.event.head_commit.message, '[vr180-artifact-128]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out the exact public synthetic probe
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require the independently recovered 64 MiB proof
+        run: |
+          python3 - <<'PYCODE'
+          import hashlib,json
+          from pathlib import Path
+          d=json.loads(Path('development/vr180/evidence/2026-10-17-artifact-64.json').read_text())
+          assert d['status']=='PASS' and d['outputBytes']==67108864 and d['allPayloadBytesIndependentlyCompared']
+          assert d['source']['scriptSHA256']==hashlib.sha256(Path('tools/vr180/probe-artifact-transfer.py').read_bytes()).hexdigest()
+          PYCODE
+      - name: Generate and reread 128 MiB actual bytes
+        timeout-minutes: 5
+        run: python3 tools/vr180/probe-artifact-transfer.py generate --size-mib 128 --output "$RUNNER_TEMP/vr180-transfer-128-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+      - name: Retain only this public synthetic output for one day
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        timeout-minutes: 2
+        with:
+          name: vr180-transfer-128mib-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/vr180-transfer-128-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: false
+      - name: Remove only this trial's temporary payload
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          test -n "$RUNNER_TEMP"
+          rm -rf -- "$RUNNER_TEMP/vr180-transfer-128-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+
   vendor-rebuild:
     if: >-
       github.repository == 'Kushyameln01/kushyameln-works' &&
