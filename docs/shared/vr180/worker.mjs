@@ -1,9 +1,6 @@
 import {inspectMp4, tagMp4} from './mp4.mjs';
-const BUILD = 'vr180-b2-cancel1';
-async function digestSmall(blob) {
-  if (blob.size > 16 * 1024 * 1024) return null;
-  return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', await blob.arrayBuffer())), x => x.toString(16).padStart(2, '0')).join('');
-}
+import {sha256Blob} from './sha256.mjs';
+const BUILD = 'vr180-b3-io1';
 function validate(info, s) {
   if (!s.confirmed) throw Error('CONFIRM_PROJECTION_AND_EYES');
   if (!['sbs', 'tb'].includes(s.layout) || ![180, 360].includes(s.fov)) throw Error('INPUT_SETTINGS_UNSUPPORTED');
@@ -24,7 +21,7 @@ function validate(info, s) {
 // Tests exercise the actual lifecycle with delayed cleanup, without pretending
 // that substituted codec work verifies real browser encoding or OPFS behavior.
 export function createWorkerController({postMessage, inspect = inspectMp4, tag = tagMp4,
-  loadTransform = () => import('./transform.mjs'), hash = digestSmall} = {}) {
+  loadTransform = () => import('./transform.mjs'), hash = sha256Blob} = {}) {
   let job = null;
   const send = (type, extra) => postMessage({type, operationId: job.operationId, inputRevision: job.inputRevision, ...extra});
   const check = () => { if (job.controller.signal.aborted) throw new DOMException('Conversion was canceled.', 'AbortError'); };
@@ -41,11 +38,18 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
     const {file, settings} = message, clock = performance.now(), timings = {}, events = [];
     let info = null, inputHash = null;
     const mark = async (name, fn) => { const start = performance.now(); try { return await fn(); } finally { timings[name] = performance.now() - start; } };
+    const digest = (blob, phase) => hash(blob, {
+      signal: job.controller.signal,
+      onProgress: ({bytesHashed, totalBytes}) => {
+        check();
+        send('progress', {progress: {phase, bytesHashed, totalBytes, ratio: totalBytes ? bytesHashed / totalBytes : 1}});
+      },
+    });
     try {
       info = await mark('inspect', () => inspect(file, {signal: job.controller.signal})); check();
       if (settings.mode === 'inspect') { send('result', {result: {info, build: BUILD}}); return; }
       validate(info, settings);
-      inputHash = await mark('inputHash', () => hash(file)); check();
+      inputHash = await mark('inputHash', () => digest(file, 'inputHash')); check();
       let media = file, metrics = null;
       if (settings.mode === 'convert') {
         const {convertStereo} = await mark('transformLoad', loadTransform); check();
@@ -58,11 +62,11 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
       } else if (settings.mode !== 'copy') throw Error('MODE_UNSUPPORTED');
       const blob = await mark('metadata', () => tag(media, {layout: settings.mode === 'copy' ? settings.layout : 'sbs', signal: job.controller.signal})); check();
       const outputInfo = await mark('outputInspect', () => inspect(blob, {signal: job.controller.signal})); check();
-      const outputHash = await mark('outputHash', () => hash(blob)); check();
+      const outputHash = await mark('outputHash', () => digest(blob, 'outputHash')); check();
       timings.outputPrepared = performance.now() - clock;
       const receipt = {schemaVersion: 1, build: BUILD, operationId: job.operationId, inputRevision: job.inputRevision,
         status: 'prepared', settings, input: {bytes: file.size, sha256: inputHash, info}, output: {bytes: blob.size, sha256: outputHash, info: outputInfo},
-        hashNote: 'SHA-256 calculated only for files <=16MiB; larger hashes remain null', timings, metrics, events,
+        hashNote: 'SHA-256 calculated incrementally for the complete input and prepared output', timings, metrics, events,
         clock: 'performance.now, worker', nativePeakBytes: null,
         audioMetadataCoverage: settings.mode === 'copy' ? 'original audio track boxes preserved' : 'AAC payload, decoder configuration and supported timeline retained; seek-preroll sample groups are not reproduced by the muxer; seek quality unverified',
         saveWriteCommitted: false, saveCompleted: false, downloadRecovered: false, targetVRPlayerVerified: false};

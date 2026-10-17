@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {readFile} from 'node:fs/promises';
 import {createWorkerController} from '../docs/shared/vr180/worker.mjs';
 
 const tick = () => new Promise(resolve => setImmediate(resolve));
@@ -33,7 +35,7 @@ test('cooperative cancellation waits for conversion unwind and cleanup before ma
   const [failure, ack] = h.messages;
   assert.equal(failure.diagnostics.status, 'canceled'); assert.equal(failure.cleanupComplete, true);
   assert.equal(ack.requestId, 'cleanup-1'); assert.equal(ack.operationId, 'this-job'); assert.equal(ack.inputRevision, 7);
-  assert.equal(ack.diagnostics, failure.diagnostics); assert.equal(ack.diagnostics.build, 'vr180-b2-cancel1');
+  assert.equal(ack.diagnostics, failure.diagnostics); assert.equal(ack.diagnostics.build, 'vr180-b3-io1');
 });
 
 test('failed deletion remains retryable without replacing the original canceled receipt', async () => {
@@ -113,4 +115,148 @@ test('uncertain codec shutdown is exposed in both raw diagnostics and cleanup ac
   assert.equal(h.messages[0].requiresWorkerTermination, true);
   assert.equal(h.messages.at(-1).requiresWorkerTermination, true);
   assert.equal(h.messages.at(-1).type, 'cleanup-error');
+});
+
+// Valid synthetic MP4 plus an inert top-level free box. This exercises actual
+// inspection/tagging/hashing; extra bytes are not representative camera media.
+class NoWholeReadBlob extends Blob {
+  arrayBuffer() { throw Error('Whole input arrayBuffer is forbidden'); }
+}
+async function paddedFixture(paddingBytes) {
+  const media = await readFile(new URL('../docs/vr180-studio/fixtures/stereo180-sbs.mp4', import.meta.url));
+  const header = new Uint8Array(8);
+  new DataView(header.buffer).setUint32(0, paddingBytes + header.byteLength);
+  header.set(new TextEncoder().encode('free'), 4);
+  const padding = new Uint8Array(paddingBytes);
+  const sha256 = createHash('sha256').update(media).update(header).update(padding).digest('hex');
+  return {file: new NoWholeReadBlob([media, header, padding], {type: 'video/mp4'}), sha256};
+}
+async function nodeBlobHash(blob) {
+  const hash = createHash('sha256');
+  for await (const chunk of blob.stream()) hash.update(chunk);
+  return hash.digest('hex');
+}
+function copyRun(file, options = {}) {
+  return {data: {type: 'run', operationId: 'hash-job', inputRevision: 11,
+    file, settings: {...settings, mode: 'copy', ...options}}};
+}
+const hashCancel = requestId => ({data: {type: 'cancel', operationId: 'hash-job', inputRevision: 11, requestId}});
+
+test('actual worker controller hashes all input/output bytes above the former 16 MiB cutoff', async () => {
+  const {file, sha256} = await paddedFixture(16 * 1024 * 1024), messages = [];
+  assert(file.size > 16 * 1024 * 1024);
+  const receive = createWorkerController({postMessage: message => messages.push(message)});
+  await receive(copyRun(file));
+  assert.equal(messages.some(message => message.type === 'error'), false);
+  const result = messages.find(message => message.type === 'result').result;
+  const receipt = result.receipt;
+  assert.equal(receipt.build, 'vr180-b3-io1');
+  assert.equal(receipt.input.sha256, sha256);
+  assert.equal(receipt.output.sha256, await nodeBlobHash(result.blob));
+  assert.match(receipt.output.sha256, /^[0-9a-f]{64}$/);
+  assert.equal(receipt.status, 'prepared');
+  assert.equal(receipt.saveWriteCommitted, false);
+  assert.equal(receipt.saveCompleted, false);
+  assert.equal(receipt.downloadRecovered, false);
+  assert.doesNotMatch(receipt.hashNote, /16MiB|null/);
+  for (const [phase, bytes] of [['inputHash', file.size], ['outputHash', result.blob.size]]) {
+    const progress = messages.filter(m => m.type === 'progress' && m.progress.phase === phase).map(m => m.progress);
+    assert(progress.length > 2);
+    assert.deepEqual(progress[0], {phase, bytesHashed: 0, totalBytes: bytes, ratio: 0});
+    assert.deepEqual(progress.at(-1), {phase, bytesHashed: bytes, totalBytes: bytes, ratio: 1});
+    for (let i = 1; i < progress.length; i++) {
+      assert(progress[i].bytesHashed > progress[i - 1].bytesHashed);
+      assert.equal(progress[i].totalBytes, bytes);
+      assert.equal(progress[i].ratio, progress[i].bytesHashed / bytes);
+    }
+  }
+  assert(messages.every(m => m.operationId === 'hash-job' && m.inputRevision === 11));
+  await receive({data: {type: 'release', operationId: 'hash-job', inputRevision: 11, requestId: 'release-hash'}});
+  assert.equal(messages.at(-1).type, 'cleanup-complete');
+});
+
+test('cancel during actual input hashing leaves its unfinished hash null and acknowledges cleanup', async () => {
+  const {file} = await paddedFixture(3 * 1024 * 1024), messages = [];
+  let stop, tagCalls = 0;
+  const receive = createWorkerController({
+    tag: async () => { tagCalls++; throw Error('tagging must not start'); },
+    postMessage: message => {
+      messages.push(message);
+      if (!stop && message.type === 'progress' && message.progress.phase === 'inputHash' && message.progress.bytesHashed > 0) {
+        stop = new Promise(resolve => setTimeout(() => resolve(receive(hashCancel('input-hash-cancel'))), 0));
+      }
+    },
+  });
+  await receive(copyRun(file)); await stop;
+  const failure = messages.find(m => m.type === 'error'), ack = messages.at(-1);
+  assert.equal(tagCalls, 0);
+  assert.equal(messages.some(m => m.type === 'result'), false);
+  assert.equal(failure.diagnostics.status, 'canceled');
+  assert.equal(failure.diagnostics.error.name, 'AbortError');
+  assert.equal(failure.diagnostics.input.sha256, null);
+  assert.equal(failure.diagnostics.output, null);
+  assert.equal(failure.diagnostics.cleanup.status, 'complete');
+  assert.equal(ack.type, 'cleanup-complete');
+  assert.equal(ack.requestId, 'input-hash-cancel');
+  assert.equal(ack.diagnostics, failure.diagnostics);
+  const progress = messages.filter(m => m.type === 'progress').map(m => m.progress);
+  assert(progress.every(p => p.phase === 'inputHash'));
+  assert(progress.at(-1).bytesHashed > 0 && progress.at(-1).bytesHashed < file.size);
+});
+
+test('cancel during actual output hashing retains completed input hash and waits for cleanup', async () => {
+  const {file, sha256} = await paddedFixture(3 * 1024 * 1024), messages = [];
+  const cleanupStarted = deferred(), deleted = deferred();
+  let stop, cleanupCalls = 0;
+  const cleanup = async () => { cleanupCalls++; cleanupStarted.resolve(); await deleted.promise; };
+  const receive = createWorkerController({
+    // Only codec/resource work is substituted. Inspection, tagging and both
+    // hashes are production code; this does not verify browser codecs or OPFS.
+    loadTransform: async () => ({convertStereo: async (_file, _settings, {onCleanup}) => {
+      onCleanup(cleanup); return {file, cleanup, metrics: {test: 'substituted-codec-work'}};
+    }}),
+    postMessage: message => {
+      messages.push(message);
+      if (!stop && message.type === 'progress' && message.progress.phase === 'outputHash' && message.progress.bytesHashed > 0) {
+        stop = new Promise(resolve => setTimeout(() => resolve(receive(hashCancel('output-hash-cancel'))), 0));
+      }
+    },
+  });
+  const work = receive(copyRun(file, {mode: 'convert'}));
+  await cleanupStarted.promise;
+  assert.equal(messages.some(m => ['error', 'cleanup-complete', 'result'].includes(m.type)), false);
+  deleted.resolve(); await work; await stop;
+  const failure = messages.find(m => m.type === 'error'), ack = messages.at(-1);
+  assert.equal(cleanupCalls, 1);
+  assert.equal(failure.diagnostics.status, 'canceled');
+  assert.equal(failure.diagnostics.input.sha256, sha256);
+  assert.equal(failure.diagnostics.output, null);
+  assert.equal(failure.diagnostics.cleanup.status, 'complete');
+  assert.equal(ack.type, 'cleanup-complete');
+  assert.equal(ack.requestId, 'output-hash-cancel');
+  assert.equal(ack.diagnostics, failure.diagnostics);
+  assert.equal(messages.some(m => m.type === 'result'), false);
+  const progress = messages.filter(m => m.type === 'progress' && m.progress.phase === 'outputHash').map(m => m.progress);
+  assert(progress.at(-1).bytesHashed > 0 && progress.at(-1).bytesHashed < progress.at(-1).totalBytes);
+});
+
+test('inspection/settings rejection occurs before hashing and leaves diagnostics hash null', async () => {
+  const {file} = await paddedFixture(0);
+  for (const message of [copyRun(new Blob(['not an MP4'])), copyRun(file, {confirmed: false})]) {
+    const messages = [];
+    const receive = createWorkerController({postMessage: value => messages.push(value), hash: async () => { throw Error('HASH_MUST_NOT_RUN'); }});
+    await receive(message);
+    assert.deepEqual(messages.map(m => m.type), ['error']);
+    assert.equal(messages[0].diagnostics.status, 'failed');
+    assert.equal(messages[0].diagnostics.input.sha256, null);
+    assert.equal(messages[0].diagnostics.output, null);
+    assert.doesNotMatch(messages[0].error, /HASH_MUST_NOT_RUN/);
+    assert.equal('inputHash' in messages[0].diagnostics.timings, false);
+  }
+  const messages = [];
+  const receive = createWorkerController({postMessage: value => messages.push(value), hash: async () => { throw Error('HASH_MUST_NOT_RUN'); }});
+  await receive(copyRun(file, {mode: 'inspect'}));
+  assert.deepEqual(messages.map(m => m.type), ['result']);
+  assert.equal(messages[0].result.build, 'vr180-b3-io1');
+  assert.equal(messages[0].result.receipt, undefined);
 });

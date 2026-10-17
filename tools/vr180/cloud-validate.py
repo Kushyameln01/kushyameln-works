@@ -46,7 +46,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / 'docs'
 CHROME = Path('/usr/bin/google-chrome')
 PAGES = 'https://kushyameln01.github.io/kushyameln-works/'
-BUILD = 'vr180-b2-cancel1'
+BUILD = 'vr180-b3-io1'
 RECOVERED = 'RECOVERED_PENDING_VERIFICATION'
 CANDIDATE_COMMIT = 'e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60'
 LIMIT = 8 * 1024 * 1024
@@ -66,6 +66,7 @@ PUBLIC_PATHS = (
     'shared/vr180/client.mjs', 'shared/vr180/geometry.mjs',
     'shared/vr180/mp4.mjs', 'shared/vr180/operations.mjs',
     'shared/vr180/transform.mjs', 'shared/vr180/worker.mjs',
+    'shared/vr180/file-output.mjs', 'shared/vr180/sha256.mjs',
 )
 
 
@@ -295,6 +296,103 @@ OPFS_JOBS = r"""async () => {
     for await (const [name, handle] of jobs.entries()) entries.push({name, kind: handle.kind});
     return entries;
   } catch (error) { if (error.name === 'NotFoundError') return []; throw error; }
+}"""
+
+
+# Independent backend exercise: import the unchanged production save function
+# and pass a real OPFS handle. This never replaces showSaveFilePicker or claims
+# to test its OS dialog, an external destination, or the application's save UI.
+FILE_OUTPUT_PROBE = r"""async ({fixtureURL, expectedBytes, expectedSHA256}) => {
+  const record = {status: 'STARTED', userAgent: navigator.userAgent, isSecureContext,
+    scope: 'Production save backend with a real OPFS FileSystemFileHandle; separate from application UI trials',
+    osSaveDialogTested: false, externalDestinationTested: false, savePickerOverridden: false,
+    positionRewriteTested: false, cleanup: {status: 'NOT_RUN'}};
+  const state = globalThis.__vr180FileOutputProbe = {record, root: null, directoryName: null, created: false, url: null};
+  const originalPicker = globalThis.showSaveFilePicker;
+  const require = (ok, text) => { if (!ok) throw Error(text); };
+  const sha256 = async bytes => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)),
+    b => b.toString(16).padStart(2, '0')).join('');
+  try {
+    const {saveBlobToFile} = await import('/shared/vr180/file-output.mjs');
+    const response = await fetch(fixtureURL, {cache: 'no-store'});
+    require(response.ok, 'PROBE_FIXTURE_UNAVAILABLE');
+    const source = await response.blob();
+    require(source.size === expectedBytes && source.size <= 2 * 1024 * 1024, 'PROBE_INPUT_SIZE');
+    const inputBytes = new Uint8Array(await source.arrayBuffer());
+    const inputHash = await sha256(inputBytes);
+    require(inputHash === expectedSHA256, 'PROBE_FIXTURE_HASH');
+    record.input = {bytes: source.size, sha256: inputHash, source: 'public synthetic stereo180-sbs fixture'};
+    state.root = await navigator.storage.getDirectory();
+    state.directoryName = 'vr180-file-output-probe-' + crypto.randomUUID();
+    // Never adopt or clean a preexisting directory, even if the random name collides.
+    try {
+      await state.root.getDirectoryHandle(state.directoryName);
+      throw Error('PROBE_DIRECTORY_ALREADY_EXISTS');
+    } catch (error) { if (error.name !== 'NotFoundError') throw error; }
+    const dir = await state.root.getDirectoryHandle(state.directoryName, {create: true});
+    state.created = true;
+    record.opfsDirectory = state.directoryName;
+    const handle = await dir.getFileHandle('saved.mp4', {create: true});
+    require(handle.kind === 'file' && (await handle.getFile()).size === 0, 'PROBE_TARGET_NOT_EMPTY');
+    const progress = record.saveProgress = [];
+    const saved = await saveBlobToFile(source, handle, {expectedSha256: inputHash,
+      onProgress: item => progress.push(item)});
+    record.productionResult = {bytes: saved.bytes, sha256: saved.sha256, committed: saved.committed, hashMatched: saved.hashMatched};
+    const actual = await handle.getFile(); // A new read through the actual OPFS handle.
+    require(actual.size === source.size, 'PROBE_SAVED_SIZE');
+    const actualBytes = new Uint8Array(await actual.arrayBuffer());
+    record.saved = {bytes: actual.size, webCryptoSHA256: await sha256(actualBytes),
+      rawBytesEqual: actualBytes.length === inputBytes.length && actualBytes.every((b, i) => b === inputBytes[i])};
+    require(saved.committed && saved.hashMatched && saved.sha256 === inputHash
+      && record.saved.webCryptoSHA256 === inputHash && record.saved.rawBytesEqual, 'PROBE_SAVED_BYTES');
+    state.url = URL.createObjectURL(actual);
+
+    const abortHandle = await dir.getFileHandle('uncommitted.bin', {create: true});
+    const abortSource = new Blob([new Uint8Array(2 * 1024 * 1024).fill(7)]);
+    const controller = new AbortController();
+    const cancellation = record.cancellation = {inputBytes: abortSource.size,
+      beforeBytes: (await abortHandle.getFile()).size, abortRequested: false, progress: []};
+    require(cancellation.beforeBytes === 0, 'PROBE_ABORT_TARGET_NOT_EMPTY');
+    try {
+      await saveBlobToFile(abortSource, abortHandle, {signal: controller.signal,
+        onProgress: item => {
+          cancellation.progress.push(item);
+          if (item.phase === 'write' && item.bytes >= 1024 * 1024 && !controller.signal.aborted) {
+            cancellation.abortRequested = true; controller.abort();
+          }
+        }});
+      throw Error('PROBE_ABORT_WAS_NOT_OBSERVED');
+    } catch (error) {
+      cancellation.error = {name: error.name, message: error.message,
+        saveWriteCommitted: error.saveWriteCommitted ?? null, cleanupError: error.cleanupError ?? null};
+      require(error.name === 'AbortError' && error.saveWriteCommitted === false && !error.cleanupError,
+        'PROBE_ABORT_DID_NOT_ROLL_BACK: ' + error.message);
+    }
+    cancellation.afterBytes = (await abortHandle.getFile()).size;
+    require(cancellation.abortRequested && cancellation.afterBytes === 0, 'PROBE_ABORT_LEFT_COMMITTED_BYTES');
+    cancellation.status = 'ABORTED_EMPTY_FILE_OBSERVED';
+    require(globalThis.showSaveFilePicker === originalPicker, 'PROBE_SAVE_PICKER_CHANGED');
+    record.status = 'READY_FOR_DOWNLOAD';
+  } catch (error) { record.status = 'FAIL'; record.error = {name: error.name, message: error.message}; }
+  return record;
+}"""
+
+FILE_OUTPUT_CLEANUP = r"""async () => {
+  const state = globalThis.__vr180FileOutputProbe;
+  if (!state) return {status: 'NOT_CREATED'};
+  if (state.url) { URL.revokeObjectURL(state.url); state.url = null; }
+  if (!state.created) return (state.record.cleanup = {status: 'NOT_CREATED'});
+  try {
+    await state.root.removeEntry(state.directoryName, {recursive: true});
+    try {
+      await state.root.getDirectoryHandle(state.directoryName);
+      throw Error('PROBE_DIRECTORY_REMAINS');
+    } catch (error) { if (error.name !== 'NotFoundError') throw error; }
+    state.created = false;
+    return (state.record.cleanup = {status: 'REMOVED', directory: state.directoryName, absenceObserved: true});
+  } catch (error) {
+    return (state.record.cleanup = {status: 'FAIL', directory: state.directoryName, error: String(error)});
+  }
 }"""
 
 
@@ -604,6 +702,77 @@ def run_trial(context, origin, out, name, mode, run_id, defer_verification=False
     return record
 
 
+def run_file_output_probe(context, origin, out, run_id):
+    """Recover the real saved bytes; report backend evidence separately from UI."""
+    trial = out / 'file-output-probe'
+    trial.mkdir()
+    fixture = DOCS / 'vr180-studio/fixtures/stereo180-sbs.mp4'
+    record = {'trialId': f'{run_id}-file-output-probe', 'build': BUILD, 'status': 'STARTED', 'startedAt': now(),
+              'scope': 'Independent production-save-backend OPFS test; not application save UI or OS dialog coverage',
+              'downloadRecovered': False, 'rawBytesVerified': False,
+              'inputBytes': fixture.stat().st_size, 'inputSHA256': digest(fixture),
+              'probeSHA256': hashlib.sha256(FILE_OUTPUT_PROBE.encode()).hexdigest(),
+              'cleanupProbeSHA256': hashlib.sha256(FILE_OUTPUT_CLEANUP.encode()).hexdigest(),
+              'productionModuleSHA256': {name: digest(DOCS / 'shared/vr180' / name)
+                                         for name in ('file-output.mjs', 'sha256.mjs')},
+              'notVerified': ['OS save dialog', 'external save destination', 'application save UI',
+                              'position rewriting', 'large-file memory/performance']}
+    page = context.new_page()
+    page.set_default_timeout(15000)
+    errors = []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    try:
+        shutil.copyfile(fixture, trial / 'input.mp4')
+        check_recovery_budget(out, trial, record['inputBytes'])
+        page.goto(origin + '/vr180-studio/', wait_until='networkidle')
+        observed = page.evaluate(FILE_OUTPUT_PROBE, {'fixtureURL': origin + '/vr180-studio/fixtures/stereo180-sbs.mp4',
+                                'expectedBytes': record['inputBytes'], 'expectedSHA256': record['inputSHA256']})
+        write(trial / 'backend-observations.json', observed)
+        record['browserUserAgent'] = observed['userAgent']
+        require(observed['status'] == 'READY_FOR_DOWNLOAD', 'File-output backend failed: ' + json.dumps(observed.get('error')))
+        check_recovery_budget(out, trial, observed['saved']['bytes'])
+        with page.expect_download(timeout=15000) as event:
+            page.evaluate("""() => {
+              const state = globalThis.__vr180FileOutputProbe;
+              if (!state?.url) throw Error('No saved OPFS file URL');
+              const a = document.createElement('a'); a.href = state.url;
+              a.download = 'saved-opfs.mp4'; a.click();
+            }""")
+        require(event.value.suggested_filename == 'saved-opfs.mp4', 'Unexpected backend download filename')
+        output = trial / 'saved-opfs.mp4'
+        event.value.save_as(str(output))
+        require(event.value.failure() is None, 'Backend MP4 download failed')
+        require(output.stat().st_size == record['inputBytes'], 'Recovered backend bytes differ in size')
+        require(digest(output) == record['inputSHA256'], 'Recovered backend hash differs')
+        require(output.read_bytes() == fixture.read_bytes(), 'Recovered backend raw bytes differ')
+        record.update(status='PASS', outputFile=output.name, outputBytes=output.stat().st_size,
+                      outputSHA256=digest(output), downloadRecovered=True, rawBytesVerified=True,
+                      verificationMethod='Python compares complete recovered bytes and hashlib SHA-256 against fixed synthetic fixture',
+                      browserDownloadRecoveredAt=now())
+    except (Exception, KeyboardInterrupt) as error:
+        record.update(status='FAIL', error=f'{type(error).__name__}: {error}')
+        (trial / 'failure-traceback.txt').write_text(traceback.format_exc(), encoding='utf-8')
+    finally:
+        try:
+            cleanup = page.evaluate(FILE_OUTPUT_CLEANUP)
+            record['cleanup'] = cleanup
+            write(trial / 'cleanup-observations.json', cleanup)
+            observed = page.evaluate('globalThis.__vr180FileOutputProbe?.record ?? null')
+            if observed is not None:
+                write(trial / 'backend-observations.json', observed)
+            require(cleanup['status'] == 'REMOVED' or record['status'] != 'PASS', 'Backend probe cleanup was not confirmed')
+            require(cleanup['status'] != 'FAIL', 'Backend probe directory cleanup failed')
+        except Exception as error:
+            record.update(status='FAIL', cleanupError=str(error))
+        record.update(pageErrors=errors, finishedAt=now())
+        try:
+            page.close()
+        except Exception as error:
+            record['pageCloseError'] = str(error)
+        write(trial / 'trial.json', record)
+    return record
+
+
 def emit_evidence(out, result):
     """Emit all evidence or an explicit bounded transport failure, never truncation."""
     files = []
@@ -660,6 +829,8 @@ def main():
                         help='Followup requires independent verification of the small suite on the same product sources before this separate run')
     parser.add_argument('--defer-independent-verification', action='store_true',
                         help='Recover outputs; report verification pending until independent verifiers run in the receiving environment')
+    parser.add_argument('--file-output-probe', action='store_true',
+                        help='After both small UI outputs are recovered, separately exercise production file saving with real OPFS handles')
     args = parser.parse_args()
     out = args.output.resolve()
     require(not out.is_relative_to(ROOT), 'Evidence must be outside the checkout')
@@ -668,9 +839,11 @@ def main():
               'runId': f"{os.environ.get('GITHUB_RUN_ID', 'missing')}-{os.environ.get('GITHUB_RUN_ATTEMPT', 'missing')}",
               'github': {key: os.environ.get(key) for key in ('GITHUB_REPOSITORY', 'GITHUB_SHA', 'GITHUB_REF', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT')},
               'browserSandboxRequired': True, 'browserTrials': [], 'pagesByteCheck': 'NOT_RUN',
+              'fileOutputProbe': {'requested': args.file_output_probe, 'status': 'NOT_RUN'},
               'independentVerificationDeferred': args.defer_independent_verification, 'independentVerificationPassed': False,
               'notVerified': ['VR player/headset compatibility', 'real footage quality', 'novice usability',
-                              'speed improvement', 'cancel/retry behavior', '4K scale', 'product completion']}
+                              'speed improvement', 'cancel/retry behavior', '4K scale', 'product completion',
+                              'OS save dialog', 'external save destination', 'application save UI']}
     server = browser = context = None
     started = time.monotonic()
     def deadline(_signum, _frame):
@@ -681,9 +854,14 @@ def main():
     try:
         if os.environ.get('GITHUB_REPOSITORY') != 'Kushyameln01/kushyameln-works':
             raise Blocked('This harness is scoped to Kushyameln01/kushyameln-works')
+        if args.file_output_probe and args.suite != 'small':
+            raise Blocked('--file-output-probe requires this run to complete both small UI trials first')
         if args.suite in ('followup', 'scale12'):
             require(args.defer_independent_verification, 'Followup requires explicit deferred independent verification; the fixed small pixel oracle is bounded to 512px/eye and 120 frames')
-            prerequisite = json.loads((ROOT / 'development/vr180/evidence/2026-10-17-b2-small.json').read_text())
+            prerequisite_path = ROOT / 'development/vr180/evidence/2026-10-17-b3-small.json'
+            if not prerequisite_path.is_file():
+                raise Blocked('This b3 build requires independently verified b3-small evidence; b2 results are not reusable')
+            prerequisite = json.loads(prerequisite_path.read_text())
             require(prerequisite['status'] == 'PASS' and prerequisite['build'] == BUILD, 'Small-suite regression has not passed for this build')
             require(set(PUBLIC_PATHS).issubset(prerequisite['sourceFiles']), 'Incomplete small-suite source provenance')
             for path, expected in prerequisite['sourceFiles'].items():
@@ -735,6 +913,13 @@ def main():
                     if trial['status'] != completed_status:
                         break
                 result['status'] = completed_status if len(result['browserTrials']) == len(cases) and all(t['status'] == completed_status for t in result['browserTrials']) else result['browserTrials'][-1]['status']
+                if args.file_output_probe:
+                    if result['status'] == completed_status and len(result['browserTrials']) == 2 and all(t['downloadRecovered'] for t in result['browserTrials']):
+                        result['fileOutputProbe'] = run_file_output_probe(context, origin, out, result['runId'])
+                        if result['fileOutputProbe']['status'] != 'PASS':
+                            result['status'] = 'FAIL'
+                    else:
+                        result['fileOutputProbe']['reason'] = 'Both same-run small UI trials did not complete output/receipt recovery and hash checks'
                 result['independentVerificationPassed'] = result['status'] == 'PASS'
                 result['blockedBrowserRequests'] = blocked_requests
             finally:
