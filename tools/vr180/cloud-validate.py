@@ -3,7 +3,8 @@
 
 Only the two small, public synthetic fixtures are used. The UI supplies both the
 MP4 and its original receipt. The fixed independent verifiers inspect the saved
-bytes. Nothing here publishes a site, installs Chrome/FFmpeg, changes a codec,
+bytes unless explicitly deferred to the evidence receiver. Nothing here
+publishes a site, installs Chrome/FFmpeg, changes a codec,
 or falls back to disabling the browser sandbox.
 
 Evidence transport is deliberately Actions logs, without artifacts or caches.
@@ -46,6 +47,7 @@ DOCS = ROOT / 'docs'
 CHROME = Path('/usr/bin/google-chrome')
 PAGES = 'https://kushyameln01.github.io/kushyameln-works/'
 BUILD = 'vr180-b1-diag1'
+RECOVERED = 'RECOVERED_PENDING_VERIFICATION'
 CANDIDATE_COMMIT = 'e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60'
 LIMIT = 8 * 1024 * 1024
 CHUNK_CHARS = 4096
@@ -168,11 +170,16 @@ def wait_for_pages(out, commit):
         write(out / 'pages-byte-check.json', report)
 
 
-def preflight(out):
+def preflight(out, defer_verification=False):
     report = {'python': sys.version, 'uid': os.getuid(), 'sandboxRequired': True,
               'chromePath': str(CHROME), 'chromeExecutable': CHROME.is_file() and os.access(CHROME, os.X_OK),
               'ffmpegPath': shutil.which('ffmpeg'), 'ffprobePath': shutil.which('ffprobe'),
-              'dependencySetupSucceeded': os.environ.get('VR180_DEPENDENCIES_READY') == 'true'}
+              'dependencySetupSucceeded': os.environ.get('VR180_DEPENDENCIES_READY') == 'true',
+              'independentVerificationDeferred': defer_verification}
+    try:
+        report['numpyVersion'] = importlib.metadata.version('numpy')
+    except importlib.metadata.PackageNotFoundError:
+        report['numpyVersion'] = None
     try:
         if sys.version_info[:2] != (3, 12):
             raise Blocked('Python 3.12 is required')
@@ -180,17 +187,17 @@ def preflight(out):
             raise Blocked('A non-root runner user is required; no privilege changes are attempted')
         if not report['chromeExecutable']:
             raise Blocked('Preinstalled /usr/bin/google-chrome is unavailable; no browser installation or fallback')
-        if not report['ffmpegPath'] or not report['ffprobePath']:
+        if not defer_verification and (not report['ffmpegPath'] or not report['ffprobePath']):
             raise Blocked('Preinstalled FFmpeg/ffprobe unavailable; no codec installation')
         if not report['dependencySetupSucceeded']:
             raise Blocked('Pinned Python dependency setup did not succeed')
         report['playwrightVersion'] = importlib.metadata.version('playwright')
-        report['numpyVersion'] = importlib.metadata.version('numpy')
         require(report['playwrightVersion'] == '1.62.0', 'Unexpected Playwright version')
-        require(report['numpyVersion'] == '2.3.3', 'Unexpected NumPy version')
+        if not defer_verification:
+            require(report['numpyVersion'] == '2.3.3', 'Unexpected NumPy version')
         report['chromeVersion'] = command([str(CHROME), '--version'])
-        report['ffmpegVersion'] = command(['ffmpeg', '-version']).splitlines()[0]
-        report['ffprobeVersion'] = command(['ffprobe', '-version']).splitlines()[0]
+        report['ffmpegVersion'] = command(['ffmpeg', '-version']).splitlines()[0] if report['ffmpegPath'] and not defer_verification else None
+        report['ffprobeVersion'] = command(['ffprobe', '-version']).splitlines()[0] if report['ffprobePath'] and not defer_verification else None
         report['status'] = 'READY'
     except Exception as error:
         report.update(status='BLOCKED', error=str(error))
@@ -313,7 +320,7 @@ def independent_check(trial, fixture, output, mode):
             'outputSHA256': digest(output), 'metadata': data})
 
 
-def run_trial(context, origin, out, name, mode, run_id):
+def run_trial(context, origin, out, name, mode, run_id, defer_verification=False):
     trial = out / name
     trial.mkdir()
     fixture = DOCS / 'vr180-studio/fixtures' / f'{name}.mp4'
@@ -369,9 +376,12 @@ def run_trial(context, origin, out, name, mode, run_id):
         require(final.get('downloadRequestedAt'), 'Download request absent from final receipt')
         record.update(outputFile=output.name, outputSHA256=digest(output), outputBytes=output.stat().st_size,
                       downloadRecovered=True, browserDownloadRecoveredAt=now())
-        independent_check(trial, fixture, output, mode)
         require(any(w['url'] == origin + '/shared/vr180/worker.mjs' for w in workers), 'Application Worker was not observed')
-        record.update(status='PASS', independentVerificationPassed=True)
+        if defer_verification:
+            record.update(status=RECOVERED, verifierDeferred='Explicit CLI request: run fixed independent verifiers on recovered bytes in the evidence receiver environment')
+        else:
+            independent_check(trial, fixture, output, mode)
+            record.update(status='PASS', independentVerificationPassed=True)
     except (Exception, KeyboardInterrupt) as error:
         record.update(status='FAIL', error=f'{type(error).__name__}: {error}')
         (trial / 'failure-traceback.txt').write_text(traceback.format_exc(), encoding='utf-8')
@@ -461,6 +471,8 @@ def emit_evidence(out, result):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True, help='New evidence directory outside the checkout')
+    parser.add_argument('--defer-independent-verification', action='store_true',
+                        help='Recover both small outputs; report verification pending until fixed verifiers run in the receiving environment')
     args = parser.parse_args()
     out = args.output.resolve()
     require(not out.is_relative_to(ROOT), 'Evidence must be outside the checkout')
@@ -469,6 +481,7 @@ def main():
               'runId': f"{os.environ.get('GITHUB_RUN_ID', 'missing')}-{os.environ.get('GITHUB_RUN_ATTEMPT', 'missing')}",
               'github': {key: os.environ.get(key) for key in ('GITHUB_REPOSITORY', 'GITHUB_SHA', 'GITHUB_REF', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT')},
               'browserSandboxRequired': True, 'browserTrials': [], 'pagesByteCheck': 'NOT_RUN',
+              'independentVerificationDeferred': args.defer_independent_verification, 'independentVerificationPassed': False,
               'notVerified': ['VR player/headset compatibility', 'real footage quality', 'novice usability',
                               'speed improvement', 'cancel/retry behavior', '4K scale', 'product completion']}
     server = browser = context = None
@@ -485,7 +498,7 @@ def main():
         result['checkoutCommit'] = source['checkoutCommit']
         wait_for_pages(out, source['checkoutCommit'])
         result['pagesByteCheck'] = 'PASS'
-        preflight(out)
+        preflight(out, args.defer_independent_verification)
         from playwright.sync_api import sync_playwright
         server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Handler, directory=str(DOCS)))
         threading.Thread(target=server.serve_forever, daemon=True).start()
@@ -508,12 +521,14 @@ def main():
                     route.abort()
             context.route('**/*', local_only)
             try:
+                completed_status = RECOVERED if args.defer_independent_verification else 'PASS'
                 for name, mode in [('stereo180-sbs', 'copy'), ('stereo360-tb', 'convert')]:
-                    trial = run_trial(context, origin, out, name, mode, result['runId'])
+                    trial = run_trial(context, origin, out, name, mode, result['runId'], args.defer_independent_verification)
                     result['browserTrials'].append(trial)
-                    if trial['status'] != 'PASS':
+                    if trial['status'] != completed_status:
                         break
-                result['status'] = 'PASS' if len(result['browserTrials']) == 2 and all(t['status'] == 'PASS' for t in result['browserTrials']) else 'FAIL'
+                result['status'] = completed_status if len(result['browserTrials']) == 2 and all(t['status'] == completed_status for t in result['browserTrials']) else 'FAIL'
+                result['independentVerificationPassed'] = result['status'] == 'PASS'
                 result['blockedBrowserRequests'] = blocked_requests
             finally:
                 context.close()
@@ -543,7 +558,7 @@ def main():
         print('VR180_RUN_SUMMARY ' + json.dumps({'status': result['status'], 'runId': result['runId'],
               'pagesByteCheck': result['pagesByteCheck'], 'executedMediaTrials': result['executedMediaTrials'],
               'completeEvidenceEmitted': complete, 'error': result.get('error')}), flush=True)
-    return 0 if result['status'] == 'PASS' and complete else 1
+    return 0 if result['status'] in ('PASS', RECOVERED) and complete else 1
 
 
 if __name__ == '__main__':
