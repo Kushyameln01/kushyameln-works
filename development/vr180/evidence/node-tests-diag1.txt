@@ -1,0 +1,46 @@
+✔ cancelled input A cannot replace input B with late success or error (3.168959ms)
+✔ revision mismatch is ignored and worker failure cleans its own job (0.295196ms)
+✔ disposing a retained result releases worker and matching temporary storage (0.363269ms)
+✔ synchronous postMessage failure releases Worker and permits retry (0.303058ms)
+✔ failed capability receipt survives the worker boundary without becoming a successful result (0.321917ms)
+✔ inspect obtains one avc1 track and optional AAC without requiring spherical metadata (4.702837ms)
+✔ tag writes cropped equi 180, zero pose and SBS/TB st3d in VisualSampleEntry before pasp (4.420831ms)
+✔ append replacement preserves media offsets, bytes and timing/sample tables including co64 (3.199274ms)
+✔ tagging twice has one active moov and one metadata pair (2.452496ms)
+✔ faststart with an extended-size moov keeps mdat and chunk offsets fixed (1.591606ms)
+✔ existing 360 metadata is inspectable but cannot be relabeled 180 without pixel conversion (1.999261ms)
+✔ unsupported metadata orientation, mesh and eye order cannot silently be overwritten (2.499226ms)
+✔ equivalent legacy spherical UUID is removed and disagreement is rejected (3.431025ms)
+✔ unsafe edit lists prevent transcode but remain byte-preserved for metadata copy (3.392707ms)
+✔ single edit-list trailing trim or extension is not treated as safe transcode (2.199895ms)
+✔ AAC leading edit is admitted only when source end and pinned muxer movie ticks are exactly preserved (2.809886ms)
+✔ independent real AAC fixtures satisfy the limited edit admission contract (10.364412ms)
+✔ unsupported tracks, fragmentation, references, codecs and duplicate entries fail closed (3.787263ms)
+✔ HDR color metadata is explicitly refused (0.402608ms)
+✔ malformed sizes, unsafe offsets and dimensions are rejected (1.182818ms)
+✔ moov budget and box-count limit stop hostile metadata (55.162059ms)
+✔ movie orientation and unrecognized sample groups cannot bypass track checks (0.939459ms)
+✔ metadata scanner never reads mdat payload and observes cancellation (0.745687ms)
+✔ cancellation during cleanup prevents subsequent Worker creation (1.685107ms)
+✔ fetch completion after cancellation cannot select its file (0.223318ms)
+✔ save picker blocks second operation; stale completion cannot clear new state (0.613206ms)
+✔ 180 SBS keeps the complete left and right views while downscaling equally (1.939306ms)
+✔ 180 top-bottom puts the upper left-eye image on the left without rotating it (0.320805ms)
+✔ 360 SBS crops the central 180 degrees of each eye, not the center of the packed frame (0.166001ms)
+✔ 360 top-bottom preserves both vertical poles and selects each front hemisphere (0.231379ms)
+✔ the user-confirmed projection is not inferred from frame aspect ratio (0.186492ms)
+✔ invalid geometry is rejected before a canvas or output file is created (0.446054ms)
+✔ AAC copying retains negative priming timestamps and supplies configuration only once (1.220755ms)
+✔ AAC passthrough refuses sample rounding, gaps and MP4 edit-duration rounding (1.891789ms)
+✔ AAC add is awaited and a second in-flight packet is refused (0.31779ms)
+✔ stereo180-tb: production AAC copier preserves all packets, priming, duration and decoded PCM (249.337108ms)
+✔ stereo180-sbs: production AAC copier preserves all packets, priming, duration and decoded PCM (248.73301ms)
+✔ stereo360-tb: production AAC copier preserves all packets, priming, duration and decoded PCM (222.916279ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 843.59546

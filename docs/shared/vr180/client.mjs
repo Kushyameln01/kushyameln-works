@@ -21,7 +21,7 @@ export class StereoClient {
       worker.onmessage=({data:m})=>{
         if(this.current!==job||job.settled||m.operationId!==operationId||m.inputRevision!==inputRevision)return;
         if(m.type==='result'){job.settled=true;this.emit(m);resolve(m.result);}
-        else if(m.type==='error'){job.settled=true;this.emit(m);reject(Error(m.error));this.release(job);}
+        else if(m.type==='error'){job.settled=true;this.emit(m);reject(Object.assign(Error(m.error),{diagnostics:m.diagnostics??null}));this.release(job);}
         else this.emit(m);
       };
       worker.onerror=e=>{if(this.current===job&&!job.settled){job.settled=true;reject(Error(e.message||'WORKER_FAILED'));this.release(job);}};

@@ -36,3 +36,16 @@ test('synchronous postMessage failure releases Worker and permits retry',async()
   await assert.rejects(c.run(new Blob(),{}),/DATA_CLONE_FAILED/);
   await c.dispose();assert.equal(c.current,null);assert.equal(removed.length,1);assert.equal(MockWorker.instances.at(-1).terminated,true);
 });
+test('failed capability receipt survives the worker boundary without becoming a successful result',async()=>{
+  const events=[],removed=[];
+  const c=new StereoClient({WorkerClass:MockWorker,onEvent:e=>events.push(e),cleanup:async id=>removed.push(id)});
+  const pending=c.run(new Blob(),{mode:'convert'}),w=MockWorker.instances.at(-1);
+  const identity=message(w,'error');
+  const diagnostics={status:'failed',operationId:identity.operationId,inputRevision:identity.inputRevision,
+    capabilities:{input:{decodable:true},output:{encodable:false}}};
+  w.emit({...identity,error:'OUTPUT_ENCODE_UNSUPPORTED',diagnostics});
+  await assert.rejects(pending,error=>error.message==='OUTPUT_ENCODE_UNSUPPORTED'&&error.diagnostics===diagnostics);
+  await c.dispose();
+  assert.equal(c.current,null);assert.equal(removed[0],identity.operationId);
+  assert.equal(events.some(e=>e.type==='result'),false);
+});

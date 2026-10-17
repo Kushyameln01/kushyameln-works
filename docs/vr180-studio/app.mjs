@@ -2,6 +2,7 @@ import {StereoClient} from '../shared/vr180/client.mjs';
 import {OperationScope} from '../shared/vr180/operations.mjs';
 const $ = id => document.getElementById(id);
 const operations = new OperationScope();
+let record = null;
 let source = null, result = null, inputURL = null, outputURL = null, selectionClock = null, selectionAt = null;
 const client = new StereoClient({onEvent: m => {
   if (m.type === 'progress') {
@@ -12,6 +13,9 @@ const client = new StereoClient({onEvent: m => {
   if (m.type === 'cleanup-error') $('cleanup-warning').textContent = '一時ファイルの削除に失敗しました。 ' + m.error;
 }});
 const errors = {
+  INPUT_DECODE_UNSUPPORTED: 'このブラウザでは入力動画を復号できません。処理記録で対応状況を確認できます。',
+  OUTPUT_ENCODE_UNSUPPORTED: 'このブラウザでは指定サイズのH.264動画を書き出せません。処理記録で対応状況を確認できます。',
+  INPUT_DECODE_AND_OUTPUT_ENCODE_UNSUPPORTED: 'このブラウザでは入力の復号と、指定サイズのH.264書出しの両方に対応できません。',
   CONFIRM_PROJECTION_AND_EYES: '元映像の投影・左右配置を確認してください。',
   STEREO_METADATA_CONFLICT: '選んだ左右配置と、動画に記録された情報が一致しません。',
   FOV_METADATA_CONFLICT: '選んだ視野角と、動画に記録された情報が一致しません。',
@@ -21,6 +25,7 @@ const errors = {
   OPFS_UNAVAILABLE: 'このブラウザでは変換用の一時保存を利用できません。'
 };
 function statusError(e) {
+  if (e.diagnostics) { record = e.diagnostics; $('diagnostics').textContent = JSON.stringify(record, null, 2); }
   $('status').textContent = e.name === 'AbortError' ? '取り消しました。再実行できます。' : errors[e.message] || `処理できませんでした：${e.message}`;
 }
 function update() {
@@ -31,6 +36,7 @@ function update() {
   $('cancel').disabled = !busy;
   for (const id of ['layout', 'fov', 'mode', 'size', 'confirmed', 'file', 'clear', 'receipt']) $(id).disabled = busy;
   $('save').disabled = busy || !result;
+  $('receipt').disabled = busy || !record;
   $('download').setAttribute('aria-disabled', String(busy));
   for (const button of document.querySelectorAll('[data-demo]')) button.disabled = busy;
 }
@@ -39,7 +45,8 @@ function finish(op) { if (operations.finish(op)) update(); }
 async function clearResult() {
   $('output-video').pause(); $('output-video').removeAttribute('src'); $('output-video').load();
   if (outputURL) URL.revokeObjectURL(outputURL);
-  outputURL = null; result = null; $('result').hidden = true;
+  outputURL = null; result = null; record = null; $('result').hidden = true;
+  $('diagnostics').textContent = '処理記録はありません。';
   await client.dispose();
 }
 async function prepare(file, preset, op) {
@@ -97,7 +104,7 @@ $('run').onclick = async () => {
   try {
     await clearResult(); operations.check(op);
     const r = await client.run(input, settings); operations.check(op);
-    result = r;
+    result = r; record = r.receipt;
     r.receipt.page = {selectedAt: selectionAt, runClickToPreparedMs: performance.now() - started, selectionToPreparedMs: performance.now() - selectionClock, selectionToSavedFileMs: null, fileRecoveryMs: null, playbackVerificationMs: null, timingNote: 'selection starts when a File is accepted after prior-result cleanup; includes user settings time; save completion is separate from independent file recovery', cacheState: 'unknown', userAgent: navigator.userAgent};
     outputURL = URL.createObjectURL(r.blob); $('output-video').src = outputURL; $('download').href = outputURL;
     $('download').download = input.name.replace(/\.[^.]*$/, '') + '-vr180.mp4';
@@ -153,8 +160,8 @@ $('save').onclick = async () => {
   } finally { reader?.releaseLock(); finish(op); }
 };
 $('receipt').onclick = () => {
-  if (operations.current || !result) return;
-  const url = URL.createObjectURL(new Blob([JSON.stringify(result.receipt, null, 2)], {type: 'application/json'})), a = document.createElement('a');
+  if (operations.current || !record) return;
+  const url = URL.createObjectURL(new Blob([JSON.stringify(record, null, 2)], {type: 'application/json'})), a = document.createElement('a');
   a.href = url; a.download = 'vr180-receipt.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 30000);
 };
 addEventListener('pagehide', () => { operations.cancel(); client.dispose().catch(() => {}); if (inputURL) URL.revokeObjectURL(inputURL); if (outputURL) URL.revokeObjectURL(outputURL); });

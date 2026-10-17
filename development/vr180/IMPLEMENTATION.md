@@ -49,4 +49,8 @@ Sites is the staging environment; Pages production follows only after required c
 - Saved workflow: libfile_6ef17a0847c4819196e76712738e1756; existing reference_workflow.md is a saved procedure, not full chat. Original full chat remains unavailable.
 - Audit A1 addressed by separate-eye rejection plus future acceptance contract; A2 early representative resolution/storage check; A3 fixed identifiers; A4 both adopted routes require testing; A5 usability evidence records operator experience/instructions.
 
-Not yet observed: browser execution, saved output playback, target VR consumer, real camera footage, practical full-length scale or speed improvement.
+At the original contract freeze, not yet observed: browser execution, saved output playback, target VR consumer, real camera footage, practical full-length scale or speed improvement. See RESULT.md for subsequent cloud execution, diagnostic findings and the remaining gates; this sentence records the original baseline.
+
+## Diagnosis revision after first cloud trial
+
+Keep Route A/B contracts unchanged. First cloud trial reached Route A prepared state but returned only an edited automation report, not recovered media. Route B failed at combined decoder/encoder capability validation. Revision vr180-b1-diag1 adds nullable per-direction capability results and required configurations to failure metrics, carries failed status with operationId/inputRevision through the existing Worker boundary, and exports the local failure receipt from the diagnostics area. A failure never exposes a successful result or downloadable media. Existing cleanup and stale-response checks remain mandatory. Real codec capability values require the next browser observation; Node tests only validate transport/state behavior.

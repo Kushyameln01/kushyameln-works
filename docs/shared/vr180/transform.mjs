@@ -121,7 +121,7 @@ export async function convertStereo(file, settings, {
     totalSamples: 0, sourceCacheBudgetBytes: CACHE_BYTES,
     outputLimitBytes: MAX_OUTPUT_BYTES, sampleLimit: MAX_SAMPLES,
     writeChunkBytes: WRITE_CHUNK_BYTES, sourceAnalysisMs: null,
-    capabilityCheckMs: null, temporarySetupMs: null, conversionLoopMs: null,
+    capabilityCheckMs: null, capabilities: null, temporarySetupMs: null, conversionLoopMs: null,
     videoIteratorWaitMs: 0, canvasDrawMs: 0, videoAddWaitMs: 0,
     audioReadMs: 0, audioAddWaitMs: 0, finalizeMs: null, outputPreparationMs: null,
     totalMs: null, firstVideoTimestamp: null, lastVideoEndTimestamp: null,
@@ -221,13 +221,22 @@ export async function convertStereo(file, settings, {
 
     const capabilityStart = performance.now();
     const quality = new Quality({ bitrate: chosenSettings.bitrate, bitrateMode: 'variable' });
-    const canDecode = await video.canDecode();
-    const canEncode = await canEncodeVideo('avc', {
-      width: geometry.width, height: geometry.height, quality, latencyMode: 'quality',
-    });
+    metrics.capabilities = {
+      input: { codec, width, height, decodable: null },
+      output: { codec: 'avc', width: geometry.width, height: geometry.height,
+        bitrate: chosenSettings.bitrate, latencyMode: 'quality', encodable: null },
+    };
+    try {
+      metrics.capabilities.input.decodable = await video.canDecode();
+      metrics.capabilities.output.encodable = await canEncodeVideo('avc', {
+        width: geometry.width, height: geometry.height, quality, latencyMode: 'quality',
+      });
+    } finally { metrics.capabilityCheckMs = performance.now() - capabilityStart; }
     checkAbort();
-    if (!canDecode || !canEncode) throw new Error('This browser cannot decode the input or encode the requested H.264 dimensions.');
-    metrics.capabilityCheckMs = performance.now() - capabilityStart;
+    const { decodable } = metrics.capabilities.input, { encodable } = metrics.capabilities.output;
+    if (!decodable && !encodable) throw new Error('INPUT_DECODE_AND_OUTPUT_ENCODE_UNSUPPORTED');
+    if (!decodable) throw new Error('INPUT_DECODE_UNSUPPORTED');
+    if (!encodable) throw new Error('OUTPUT_ENCODE_UNSUPPORTED');
 
     canvas = new OffscreenCanvas(geometry.width, geometry.height);
     const context = canvas.getContext('2d', { alpha: false, colorSpace: 'srgb' });
