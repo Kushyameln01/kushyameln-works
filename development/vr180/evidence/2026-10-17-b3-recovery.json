@@ -1,0 +1,87 @@
+{
+  "status": "PASS",
+  "runId": "39011885143-1",
+  "checkoutCommit": "ca59a6052144f0e5bd5849b37294b00cdc4af719",
+  "browserVersion": "155.0.8059.39",
+  "scope": "Recovered synthetic outputs only; original receipts and browser sidecars remain unmodified",
+  "build": "vr180-b3-io1",
+  "transport": {
+    "status": "PASS",
+    "runId": "39011885143-1",
+    "chunks": 403,
+    "archiveBytes": 1237766,
+    "archiveSHA256": "27805c9b91c720162e13ceb59bdca0ef2a855df319124287d9fe06bccb4b8280",
+    "verifiedFiles": 29,
+    "browserRunStatus": "RECOVERED_PENDING_VERIFICATION"
+  },
+  "cases": [
+    {
+      "case": "cancel-retry",
+      "returncode": 0,
+      "script": "verify-metadata.py",
+      "scriptSHA256": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96",
+      "inputSHA256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+      "outputSHA256": "15fca1666e5cf4a135b933398d4f9f56eb302b3901b90d7bb787ce3b9d82bc3c",
+      "outputBytes": 30137,
+      "operationId": "04b6749b-819d-4dd6-b0b7-8eae4af4f941",
+      "inputRevision": 4,
+      "status": "PASS"
+    },
+    {
+      "case": "failure-retry",
+      "returncode": 0,
+      "script": "verify-conversion.py",
+      "scriptSHA256": "8e13537f5c74f8207f670eb898b082a1962ae35e0db10a6ffeddb7be4c695f64",
+      "inputSHA256": "72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9",
+      "outputSHA256": "b397a018257773228c8a036539e9e1229f6d35e8b97bb9a8a55307c4ef0e0251",
+      "outputBytes": 52784,
+      "operationId": "afdbf1a5-df26-45b2-bf57-e3bcff8c2b1d",
+      "inputRevision": 3,
+      "sphericalMetadata": "PASS",
+      "status": "PASS"
+    }
+  ],
+  "cancellation": {
+    "kind": "cancel",
+    "inputGeneration": 1,
+    "inputSHA256": "97bb3a4335514436374b35c202275dde2cfca27f8f7cec3a224fd77c8ede6582",
+    "workerPost": {
+      "at": 1540.6000000000058,
+      "operationId": "1cb3d702-2103-4278-bc03-341b7424e423",
+      "inputRevision": 2,
+      "inputName": "stereo180-4k-12s-sbs.mp4",
+      "inputBytes": 944087,
+      "settings": {
+        "mode": "convert",
+        "layout": "sbs",
+        "fov": 180,
+        "eyeSize": 2048,
+        "bitrate": 25165824
+      }
+    },
+    "status": "CANCELED_OBSERVED",
+    "progressBeforeCancel": {
+      "busy": true,
+      "value": 0.002777777777777778,
+      "status": "動画を変換しています…"
+    },
+    "opfsJobsBeforeCancel": [
+      {
+        "name": "1cb3d702-2103-4278-bc03-341b7424e423",
+        "kind": "directory"
+      }
+    ],
+    "statusAfterCancel": "取り消しました。再実行できます。",
+    "cleanupObservations": [
+      {
+        "elapsedMs": 1.562712999998439,
+        "jobs": []
+      }
+    ],
+    "opfsJobsAfterCancel": [],
+    "runEnabled": true,
+    "applicationCancellationReceipt": "receipt-canceled.json",
+    "receiptNote": "The unmodified application cancellation receipt is separate from this external OPFS/UI observation."
+  },
+  "nativeSavePickerVerified": false
+}

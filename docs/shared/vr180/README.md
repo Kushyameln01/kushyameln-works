@@ -40,3 +40,5 @@
 `sha256.mjs` は逐次SHA-256、`file-output.mjs` は位置付きwrite、truncate、commit、abortを提供する。muxer用streamのcloseはラッパーの終了だけで、実ファイルの確定はcommitが行う。確定後に読戻しhashを計算し、期待hashと比較する。確定後の検証取消・失敗では書込み済みの事実を記録し、巻戻し成功とは扱わない。
 
 `saveBlobToFile(blob, handle, {signal, expectedSha256})` は1MiBずつコピーし、読戻し照合まで待つ。清掃失敗のerrorにはretryCleanupを残すため、呼出側は明示再試行が成功するまで次の操作を止める。現UIでは既存非空保存先を拒否し、各保存試行をsaveAttemptsへ保存する。保存先は作成前にも選べるが、変換の出力はまだOPFS経由であり、直接mux出力にはなっていない。5～10GB対応は未成立。
+
+現行b3は小素材のUI加工・実ダウンロード、取消と再実行、独立した実OPFS保存backendを検証済み。4K 2秒・12秒の実回収と独立照合は変換器が同一のb2で実施した。最新の識別子と判定はRELEASE記録を参照。ネイティブ保存先ダイアログ、5～10GB、VR再生互換性・実写品質・使いやすさ・速度改善は未検証。
