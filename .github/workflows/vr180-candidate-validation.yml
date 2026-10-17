@@ -13,6 +13,7 @@ on:
       - tools/vr180/build-output-index.mjs
       - development/vr180/output-index-prototype/**
       - tools/vr180/probe-artifact-transfer.py
+      - tools/vr180/package-build-toolchain.py
       - development/vr180/build-inputs/**
   workflow_dispatch:
 
@@ -20,6 +21,33 @@ permissions:
   contents: read
 
 jobs:
+  recover-fixed-build-toolchain:
+    if: >-
+      github.repository == 'Kushyameln01/kushyameln-works' &&
+      github.event.repository.private == false &&
+      startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
+      contains(github.event.head_commit.message, '[vr180-toolchain-recovery]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - name: Check out the exact build tools
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Rebuild unchanged vendor and return only pinned build tooling
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          vr180_tool_prefix="$(mktemp -d "$RUNNER_TEMP/vr180-toolchain.XXXXXX")"
+          vr180_tool_result="$(mktemp -d "$RUNNER_TEMP/vr180-tool-recovery.XXXXXX")"
+          trap 'rm -rf "$vr180_tool_prefix" "$vr180_tool_result"' EXIT
+          cp development/vr180/build-inputs/toolchain/package.json "$vr180_tool_prefix/"
+          cp development/vr180/build-inputs/toolchain/package-lock.json "$vr180_tool_prefix/"
+          npm ci --prefix "$vr180_tool_prefix" --ignore-scripts --include=dev --include=optional --no-audit --no-fund
+          node tools/vr180/rebuild-vendor-core.mjs --esbuild-dir "$vr180_tool_prefix/node_modules/esbuild" --output-dir "$vr180_tool_result/result"
+          python3 tools/vr180/package-build-toolchain.py --prefix "$vr180_tool_prefix" --output "$vr180_tool_result/result"
+
   synthetic-browser-check:
     if: >-
       github.repository == 'Kushyameln01/kushyameln-works' &&
