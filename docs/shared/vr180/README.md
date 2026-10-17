@@ -36,7 +36,7 @@
 
 出力はSpherical Video V2のcropped equirectangular 180度ステレオで、Googleのカメラ固有mesh形式への準拠を意味しません。変換でAAC payload、decoder configuration、対応する先頭調整を保持しますが、音声seek用sample-groupは再生成せず、途中からの再生品質は未検証です。
 
-現行の変換制限は映像・音声の合計100000 samples、入力moov等16 MiB、mux出力1 GiBです。directはVR情報を含む最終出力にも1 GiBを適用します。通常OPFS経路のVR追記後サイズ検査の統一は別変更P1bです。copyへ変換専用の上限を適用しません。
+現行の変換制限は映像・音声の合計100000 samples、入力moov等16 MiB、VR情報を含む最終変換出力1 GiBです。direct・通常OPFSの両方で最終サイズを検査し、超過時は成果物として返しません。copyへ変換専用の上限を適用しません。
 
 再圧縮なしの解析はmoovを全量配列化せず、表を64 KiB単位で走査します。小さい構造・説明metadataは合計16 MiB、各trackは1000万samples、boxは2万個・深さ16までです。directの捕捉器は先頭2048 bytesと末尾moov（16 MiB以下）を保持し、未捕捉範囲の読込みを拒否します。Mediabunny内部の入力・出力索引は現在もsample数に比例します。これらの読込み単位・capture量を、codecやブラウザを含む総メモリ量の上限としません。
 

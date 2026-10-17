@@ -101,6 +101,9 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
           metadataHashMatched: directSave.metadataHashMatched === true, finishedAt: new Date().toISOString()});
       } else {
         blob = await mark('metadata', () => tag(media, {layout: settings.mode === 'copy' ? settings.layout : 'sbs', signal: job.controller.signal})); check();
+        // The conversion limit applies to the final tagged MP4, not only mux bytes.
+        // Copy has separate parser budgets and must not inherit this limit.
+        if (settings.mode === 'convert' && blob.size > 1024 ** 3) throw Error('CONVERSION_OUTPUT_LIMIT_EXCEEDED');
         outputInfo = await mark('outputInspect', () => inspect(blob, {signal: job.controller.signal})); check();
         outputHash = await mark('outputHash', () => digest(blob, 'outputHash')); check();
       }

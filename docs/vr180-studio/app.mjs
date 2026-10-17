@@ -40,6 +40,7 @@ const errors = {
   CONVERSION_SAMPLE_LIMIT_EXCEEDED: 'この動画の映像・音声サンプル数は、現在の変換上限10万件を超えています。大容量・長時間の変換にはまだ対応していません。',
   CONVERSION_METADATA_LIMIT_EXCEEDED: 'この動画の索引・メタデータ量は、現在の変換上限16MiBを超えています。',
   DIRECT_OUTPUT_LIMIT_EXCEEDED: 'VR情報を含めた直接保存の出力が、現在の1GiB上限を超えました。',
+  CONVERSION_OUTPUT_LIMIT_EXCEEDED: 'VR情報を含めた変換後の動画が、現在の1GiB上限を超えました。',
   OUTPUT_MUST_BE_NEW_FILE: '保存用の新しいファイル名を指定してください。既存の内容は上書きしていません。',
   OPFS_UNAVAILABLE: 'このブラウザでは変換用の一時保存を利用できません。'
 };
