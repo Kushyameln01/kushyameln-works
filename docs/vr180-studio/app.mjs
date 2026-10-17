@@ -1,6 +1,7 @@
 import {StereoClient} from '../shared/vr180/client.mjs';
 import {OperationScope} from '../shared/vr180/operations.mjs';
 import {saveBlobToFile} from '../shared/vr180/file-output.mjs';
+import {bindSaveSummary, createSaveAttempt, summarizeSaves} from '../shared/vr180/save-record.mjs';
 const $ = id => document.getElementById(id);
 const operations = new OperationScope();
 let record = null;
@@ -135,6 +136,7 @@ $('run').onclick = async () => {
     const r = await client.run(input, settings, {outputHandle: settings.mode === 'convert' ? chosenSaveHandle : undefined});
     try { operations.check(op); }
     catch (error) { error.diagnostics = {...r.receipt, status: 'canceled'}; throw error; }
+    bindSaveSummary(r.receipt);
     result = r; record = r.receipt;
     r.receipt.page = {selectedAt: selectionAt, runClickToPreparedMs: performance.now() - started, selectionToPreparedMs: performance.now() - selectionClock, selectionToSavedFileMs: null, fileRecoveryMs: null, playbackVerificationMs: null, timingNote: 'selection starts when a File is accepted after prior-result cleanup; includes user settings time; save completion is separate from independent file recovery', cacheState: 'unknown', userAgent: navigator.userAgent};
     outputURL = URL.createObjectURL(r.blob); $('output-video').src = outputURL; $('download').href = outputURL;
@@ -163,7 +165,9 @@ $('cancel').onclick = async () => {
   if (pendingSaveCleanup && !operations.current) {
     const op = begin('saveCleanup'), pending = pendingSaveCleanup;
     try {
-      await pending.retry(); pending.attempt.cleanupRetrySucceededAt = new Date().toISOString();
+      const cleanup = await pending.retry();
+      if (cleanup?.state === 'aborted' && cleanup.committed === false) pending.attempt.commitState = 'aborted';
+      pending.attempt.cleanup = {...pending.attempt.cleanup, status: 'complete', retrySucceededAt: new Date().toISOString()};
       pendingSaveCleanup = null; $('cleanup-warning').textContent = '';
       $('diagnostics').textContent = JSON.stringify(record, null, 2);
       $('status').textContent = '保存処理の清掃が完了しました。保存を再実行できます。';
@@ -194,7 +198,8 @@ $('clear').onclick = async () => {
 };
 $('download').onclick = event => {
   if (operations.current || pendingSaveCleanup || client.cleanupPending || !result) { event.preventDefault(); return; }
-  result.receipt.downloadRequestedAt = new Date().toISOString();
+  const attempt = createSaveAttempt(result.receipt, 'download-request', {status: 'download-requested'});
+  attempt.finishedAt = attempt.startedAt; result.receipt.saveAttempts.push(attempt);
   $('save-status').textContent = 'ダウンロードを開始しました。保存先でファイルを確認してください。';
 };
 async function pickSaveDestination() {
@@ -214,47 +219,66 @@ $('save').onclick = async () => {
   if (operations.current || pendingSaveCleanup || client.cleanupPending || !result) return;
   if (typeof showSaveFilePicker !== 'function') { $('download').click(); return; }
   const op = begin('save'), captured = result, saveRequestStarted = performance.now();
-  const attempt = {startedAt: new Date().toISOString(), status: 'saving', saveWriteCommitted: false, saveCompleted: false};
-  (captured.receipt.saveAttempts ??= []).push(attempt);
-  captured.receipt.saveWriteCommitted = false; captured.receipt.saveCompleted = false;
-  captured.receipt.savedSize = null; captured.receipt.savedSha256 = null;
-  captured.receipt.saveApiMs = null; captured.receipt.savePermissionWaitMs = null;
-  captured.receipt.page.selectionToSavedFileMs = null;
+  const attempt = createSaveAttempt(captured.receipt, 'prepared-copy', {status: 'saving'});
+  captured.receipt.saveAttempts.push(attempt);
   const check = () => { operations.check(op); if (captured !== result) throw new DOMException('Result changed', 'AbortError'); };
+  let saveStarted = null;
   try {
     const handle = chosenSaveHandle ?? await pickSaveDestination(); check();
-    const start = performance.now(); captured.receipt.savePermissionWaitMs = start - saveRequestStarted;
+    saveStarted = performance.now(); attempt.timings.permissionWaitMs = saveStarted - saveRequestStarted;
+    attempt.commitState = 'pending';
     const saved = await saveBlobToFile(captured.blob, handle, {signal: op.controller.signal,
-      expectedSha256: captured.receipt.output.sha256 ?? undefined,
+      expectedSha256: captured.receipt.output.sha256,
       onProgress: p => {
+        if (p.phase === 'verify') { attempt.commitState = 'committed'; attempt.verificationState = 'running'; }
+        if (!operations.owns(op) || captured !== result) return;
         $('progress').value = (p.bytesHashed ?? p.bytes ?? 0) / captured.blob.size;
         $('status').textContent = p.phase === 'verify' ? '保存したファイルの内容を照合しています…' : '保存先へ書き込んでいます…';
       }});
-    attempt.saveWriteCommitted = true; captured.receipt.saveWriteCommitted = true; chosenSaveHandle = null; check();
-    captured.receipt.page.selectionToSavedFileMs = performance.now() - selectionClock;
-    captured.receipt.saveCompleted = true; captured.receipt.saveApiMs = performance.now() - start;
-    captured.receipt.savedSize = saved.bytes; captured.receipt.savedSha256 = saved.sha256;
-    Object.assign(attempt, {status: 'verified', saveCompleted: true, bytes: saved.bytes, sha256: saved.sha256,
-      saveApiMs: captured.receipt.saveApiMs, permissionWaitMs: captured.receipt.savePermissionWaitMs,
-      selectionToSavedFileMs: captured.receipt.page.selectionToSavedFileMs});
+    // Backend observations belong to this result even if a cancel arrived just
+    // before this continuation. Never turn an acknowledged commit into rollback.
+    Object.assign(attempt, {commitState: 'committed', bytes: saved.bytes, sha256: saved.sha256,
+      hashBasis: 'prepared-output-compared', wholeFileHashCompared: saved.hashMatched === true});
+    if (saved.bytes !== captured.receipt.output.bytes || saved.sha256 !== captured.receipt.output.sha256 || !saved.hashMatched) {
+      throw Error('SAVED_RESULT_VERIFICATION_MISMATCH');
+    }
+    Object.assign(attempt, {status: 'verified', verificationState: 'passed'});
+    attempt.timings.saveApiMs = performance.now() - saveStarted;
+    attempt.timings.selectionToSavedFileMs = performance.now() - selectionClock;
+    captured.receipt.page.selectionToSavedFileMs = attempt.timings.selectionToSavedFileMs;
+    chosenSaveHandle = null; check();
     $('save-status').textContent = '保存したファイルのサイズと全体ハッシュが一致しました。';
     $('status').textContent = '保存と内容の照合が完了しました。';
   } catch (e) {
-    attempt.saveWriteCommitted ||= !!e.saveWriteCommitted;
-    captured.receipt.saveWriteCommitted = attempt.saveWriteCommitted;
-    Object.assign(attempt, {status: e.name === 'AbortError' ? 'canceled' : 'failed', error: e.message, cleanupError: e.cleanupError ?? null});
+    if (e.saveWriteCommitted) attempt.commitState = 'committed';
+    else if (attempt.commitState === 'pending') attempt.commitState = e.retryCleanup ? 'unknown' : 'aborted';
+    if (attempt.verificationState !== 'passed') {
+      attempt.status = e.name === 'AbortError' ? 'canceled' : 'failed';
+      attempt.verificationState = attempt.commitState === 'committed' ? e.name === 'AbortError' ? 'canceled' : 'failed' : 'not-run';
+    }
+    attempt.errorCode = e.message;
     if (e.retryCleanup) {
+      attempt.cleanup = {status: 'failed', errorCode: e.cleanupError ?? null};
       pendingSaveCleanup = {retry: e.retryCleanup, attempt};
       $('cleanup-warning').textContent = `保存処理の清掃が未完了です。清掃を再試行してください。 ${e.cleanupError}`;
     }
-    if (attempt.saveWriteCommitted || e.message === 'OUTPUT_MUST_BE_NEW_FILE') chosenSaveHandle = null;
-    if (operations.owns(op)) {
-      $('save-status').textContent = attempt.saveWriteCommitted ? '書き込みは完了していますが、保存後の照合を完了できませんでした。' : e.message === 'OUTPUT_MUST_BE_NEW_FILE' ? '保存用の新しいファイル名を指定してください。' : e.name === 'AbortError' ? '保存を取り消しました。' : `保存に失敗しました：${e.message}`;
-      $('status').textContent = pendingSaveCleanup ? '清掃を再試行してから次の処理へ進んでください。' : attempt.saveWriteCommitted ? '保存先のファイルを確認してください。作成した出力も保持しています。' : '出力を保持しています。保存を再実行できます。';
+    if (attempt.commitState === 'committed' || e.message === 'OUTPUT_MUST_BE_NEW_FILE') chosenSaveHandle = null;
+    if (operations.owns(op) && captured === result) {
+      const savedBefore = summarizeSaves(captured.receipt).saveCompleted;
+      $('save-status').textContent = attempt.verificationState === 'passed' ? '取消要求より先に保存と内容の照合が完了しました。'
+        : savedBefore ? `前回の保存・照合は完了しています。今回の追加保存は${e.name === 'AbortError' ? '取り消しました。' : '完了できませんでした。'}`
+        : attempt.commitState === 'committed' ? '書き込みは完了していますが、保存後の照合を完了できませんでした。'
+        : e.message === 'OUTPUT_MUST_BE_NEW_FILE' ? '保存用の新しいファイル名を指定してください。'
+        : e.name === 'AbortError' ? '保存を取り消しました。' : `保存に失敗しました：${e.message}`;
+      $('status').textContent = pendingSaveCleanup ? '清掃を再試行してから次の処理へ進んでください。'
+        : attempt.commitState === 'committed' ? '保存先のファイルを確認してください。作成した出力も保持しています。'
+        : '出力を保持しています。保存を再実行できます。';
     }
   } finally {
-    attempt.finishedAt = new Date().toISOString(); attempt.requestToFinishedMs = performance.now() - saveRequestStarted;
-    $('diagnostics').textContent = JSON.stringify(captured.receipt, null, 2); finish(op);
+    attempt.finishedAt = new Date().toISOString(); attempt.timings.requestToFinishedMs = performance.now() - saveRequestStarted;
+    if (saveStarted !== null) attempt.timings.saveApiMs ??= performance.now() - saveStarted;
+    if (captured === result) $('diagnostics').textContent = JSON.stringify(captured.receipt, null, 2);
+    finish(op);
   }
 };
 $('receipt').onclick = () => {

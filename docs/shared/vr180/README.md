@@ -1,60 +1,89 @@
 # VR180 shared module
 
-目的は、VR180撮影素材・左右2眼動画をブラウザで簡単に加工することです。小さな合成素材で加工・ダウンロードの成立を確認した検証版です。全環境での動作、VR利用先の互換性、製品全体の完成を示しません。
+現行候補：`vr180-b6-save1`。公開前の変更は候補branchで検証し、公開版との一致は別記します。
 
-## 実装した入口
+目的は、VR180撮影素材・左右2眼動画をブラウザで簡単に加工することです。現在の対応範囲と実際に検証した範囲を以下に分けます。5〜10 GBの実動画を加工・保存・全回収する目標は未達です。
+
+## 現在のAPI
 
 `client.mjs` の `StereoClient` が専用Module Workerを作成します。
 
 - `run(file, {mode: 'inspect'})`: MP4の構造、既存VR情報、変換時刻条件を検査。
 - `run(file, {mode: 'copy', layout: 'sbs'|'tb', fov: 180, confirmed: true})`: 元の圧縮サンプル・時刻・音声を保持し、180度のVR情報を付与。
-- `run(file, {mode: 'convert', layout, fov: 180|360, eyeSize, bitrate, confirmed: true})`: 正面180度の切出し、横並びへの配置、H.264再圧縮、条件付きAACコピー。
-- `cancel()` / `dispose()`: Workerに停止を要求し、writer・codecの解放とそのジョブの一時保存削除を待ち、清掃応答後にWorkerを終了。清掃失敗中は再実行を止め、明示的な清掃再試行を受け付ける。
+- `run(file, {mode: 'convert', layout, fov: 180|360, eyeSize, bitrate, confirmed: true}, {outputHandle})`: 正面180度の切出し、横並びへの配置、H.264再圧縮、条件付きAACコピー。`outputHandle` は任意で、指定時は保存先へ直接出力。
+- `cancel()` / `dispose()`: writer・codec解放とそのジョブの一時保存削除を待ち、清掃応答後にWorkerを終了。清掃失敗中は次の処理を止め、明示的な清掃再試行を受け付ける。
+- `acknowledgeUnknownOutput()`: 異常終了で保存状態不明になったdirectジョブを明示的に終了。不明記録を返すだけで、保存成功・取消成功・清掃成功へ変更しない。
 
-`confirmed` は呼出側が入力の投影と左右配置を確認したことを示します。ファイルの縦横比だけから付与してはいけません。この検証版は180度の各眼を正方形、360度の各眼を2:1に制限します。
+`confirmed` は、呼出側が入力の投影と左右配置を確認したことを示します。ファイルの縦横比だけから付与してはいけません。180度の各眼は正方形、360度の各眼は2:1に制限します。
 
-成功時は `{blob, receipt, info}` を返し、保存が終わるまで結果を保持します。Blobを取得した直後に `dispose()` してはいけません。結果保存または明示的な破棄の後に呼び出します。同じclientで次のジョブを始める前にも `dispose()` をawaitします。
+作成成功時は `{blob, receipt, info}` を返します。directの `blob` は保存後に取得した実File、通常経路は保存待ちのBlobです。結果を保存又は明示破棄するまで保持し、その後 `dispose()` をawaitします。同じclientで次のジョブを開始する前にも `dispose()` が必要です。結果の取得直後に一時ファイルを削除しないでください。
 
-## 対応範囲
+## 経路と必要な能力
 
-1ファイルに格納した左右／上下の正距円筒MP4、H.264 SDR、音声なしまたはAAC 1トラック。既存メッシュ、魚眼、カメラ固有補正、左右別ファイル、HDR、追加データトラック、複雑な編集リストは対象外です。左右別ファイルの将来の同期契約は[固定候補のIMPLEMENTATION.md](https://github.com/Kushyameln01/kushyameln-works/blob/e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60/development/vr180/IMPLEMENTATION.md)にあります。
+| 経路 | 保存先と必要な能力 | 作成成功の意味 |
+| --- | --- | --- |
+| convert + `outputHandle` | 空のFileSystemFileHandle、WebCodecs、OffscreenCanvas、Module Worker。OPFSは不要 | 直接muxし、VR情報の追記、物理close、読戻し検査まで完了したFile |
+| convert、handleなし | OPFS、WebCodecs、OffscreenCanvas、Module Worker | OPFS経由で準備した出力。外部保存は未完了 |
+| copy | Module WorkerとBlob範囲読込み。変換用OPFS・codecは不要 | 元の圧縮サンプルを保つ出力。外部保存は未完了 |
+| 準備済み出力を保存 | `saveBlobToFile(blob, handle, {signal, expectedSha256})` | 1 MiBずつコピーし、保存後のサイズ・全体hashを事前期待値と照合 |
+| Blobダウンロード | ブラウザのダウンロード操作 | 要求を出した事実のみ。保存完了・外部回収を証明しない |
 
-出力はSpherical Video V2のcropped equirectangular 180度ステレオです。Googleのカメラ固有メッシュ形式への準拠を意味しません。変換はOPFS、OffscreenCanvas、WebCodecsへの対応を実行時に確認します。AACの対応する先頭調整は保持しますが、変換後の音声seek用sample-groupは再生成されず、途中からの再生品質は未検証です。
+画面は作成前にも保存先を選択できます。選択した保存先への直接muxはconvertだけに適用し、copyは作成後に保存します。非空の既存保存先を拒否し、入力原本の上書きを避けます。保存APIの存在だけではOS保存ダイアログを操作できた証拠にはなりません。
 
-## 記録と上限
+## 対応形式と上限
 
-記録は画面からJSONで保存します。外部ログ収集は追加していません。Worker内の区間時間、ページ内の作成・保存時間、設定、ジョブID、入力・出力サイズ、全体SHA-256を残します。hashは最大1MiBずつ読み、取消を受け付けます。完了していないhash、実測していないCPU/GPUピーク、外部へのファイル回収、VR再生は未取得として残します。
+1ファイルに格納したSBS/TB正距円筒MP4、H.264 SDR、音声なし又はAAC 1トラックが対象です。既存メッシュ、魚眼、カメラ固有補正、左右別ファイル、HDR、追加データトラック、複雑な編集リストは未対応です。左右別ファイルの将来の同期契約は[固定候補のIMPLEMENTATION.md](https://github.com/Kushyameln01/kushyameln-works/blob/e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60/development/vr180/IMPLEMENTATION.md)にあります。
 
-画素変換は出力1GiB・映像と音声の合計100000サンプル・moov等16MiBまでです。変換器の読込み前にも索引量を検査します。再圧縮なしの解析はmoovを全量配列化せず、表を64KiB単位で走査します。小さい構造・説明メタデータの保持は合計16MiB、各トラックは1000万サンプル、boxは2万個・深さ16までです。範囲読込みの単位を、codecやブラウザを含む総メモリ上限とは扱いません。変換成功時の出力は明示破棄までOPFSを使用します。
+出力はSpherical Video V2のcropped equirectangular 180度ステレオで、Googleのカメラ固有mesh形式への準拠を意味しません。変換でAAC payload、decoder configuration、対応する先頭調整を保持しますが、音声seek用sample-groupは再生成せず、途中からの再生品質は未検証です。
 
-## 検証
+現行の変換制限は映像・音声の合計100000 samples、入力moov等16 MiB、mux出力1 GiBです。directはVR情報を含む最終出力にも1 GiBを適用します。通常OPFS経路のVR追記後サイズ検査の統一は別変更P1bです。copyへ変換専用の上限を適用しません。
+
+再圧縮なしの解析はmoovを全量配列化せず、表を64 KiB単位で走査します。小さい構造・説明metadataは合計16 MiB、各trackは1000万samples、boxは2万個・深さ16までです。directの捕捉器は先頭2048 bytesと末尾moov（16 MiB以下）を保持し、未捕捉範囲の読込みを拒否します。Mediabunny内部の入力・出力索引は現在もsample数に比例します。これらの読込み単位・capture量を、codecやブラウザを含む総メモリ量の上限としません。
+
+## 保存記録 schema 2
+
+記録の正本は `saveAttempts` です。生成結果の `operationId`、`inputRevision`、生成時の設定snapshot、入力・出力bytes/hashを保持し、各試行に固有の `id`、`resultOperationId`、`inputRevision` を付けます。保存時のDOMから生成設定を取り直しません。試行は `direct`、`prepared-copy`、`download-request` を区別します。
+
+各試行は `commitState`（not-started / pending / committed / aborted / unknown）と `verificationState`（not-run / running / passed / failed / canceled）を分離し、観測したbytes/hash、`hashBasis`、開始・終了時刻、所要時間、エラー、清掃結果を記録します。完了した旧試行を追加保存の開始・取消で書き換えません。保存後照合に失敗しても、既知の `committed` は保持し、保存先を自動削除しません。
+
+`save-record.mjs` の `summarizeSaves()` は同一結果に属する試行だけを検査して要約します。foreign ID、重複試行ID、出力bytes/hashと一致しない照合成功を拒否します。`bindSaveSummary()` は以下を読み取り専用の導出欄として設定します。Workerのstructured cloneやJSONでは導出時点の値となり、clientはschema 2のgetterを復元します。上位フラグを別々に更新する第二の正本は作りません。
+
+| 導出欄 | 意味 |
+| --- | --- |
+| `saveWriteCommitted` | 1件以上の既知commitがあればtrue。既知commitがなくunknownを含む場合はnull。それ以外はfalse |
+| `saveCompleted` | この結果に保存後照合passedの試行が1件以上ある |
+| `savedSize` / `savedSha256` / `saveObservedAt` | 最後の照合成功試行のサイズ、hash、確認時刻。未確認はnull |
+| `lastSaveAttemptId` | 最後の試行。取消や失敗も含む |
+| `lastVerifiedSaveAttemptId` | 最後に照合成功した試行。追加取消では変わらない |
+| `saveApiMs` / `savePermissionWaitMs` | 最後の照合成功試行の対応区間。未測定はnull |
+| `downloadRequestedAt` | 最後のダウンロード要求時刻。保存完了ではない |
+
+**hashの根拠は分けます。** `output.hashBasis` は準備済み出力の `prepared-output` 又はdirect保存後観測の `post-commit-observed` です。prepared-copy試行の `prepared-output-compared` は事前に完成していた出力hashとの比較です。directの `wholeFileHashCompared:false` は、全体hashが保存後の観測値であることを示します。directでは追加VR metadataだけを事前期待hashと比較し、保存後MP4を再解析します。directの試行hashと結果hashが同じことを、別の事前全体hashとの独立一致に読み替えません。
+
+元のdirect観測は `directSave` に保持します。Worker異常終了の不明記録は元記録を `workerReceipt` に保持し、明示終了でもunknownのまま残します。既に生成・照合が完了した結果との取消競合は `preparedBeforeCancel` に同一世代の結果を保持し、成功履歴を残します。過去schema 1の証拠をschema 2へ自動変換する互換・移行処理は設けません。
+
+保存は記録時点の観測であり、その後の外部編集・削除や、電源断後の永続保持を監視したという意味ではありません。`downloadRecovered` と `targetVRPlayerVerified` は保存成功と別です。
+
+## 記録の取得と失敗後の操作
+
+画面からJSONを保存できます。新しい遠隔ログ収集は追加していません。提供されなかった利用ログは自動集計できません。ファイル名や保存先パスを遠隔ログへ送りません。
+
+Workerとページの区間時間、設定、ID、入出力bytes/hashを記録します。全体hashは最大1 MiBずつ読み、取消を受け付けます。未完了hash、未測定CPU/GPUピーク、外部回収、VR再生を成功や0へ補完しません。ページ時間とWorker時間は別時計で、選択からの時間には設定操作が含まれます。
+
+`saveBlobToFile()` の清掃失敗は `retryCleanup` を持ちます。画面はその成功まで次の作成・保存を止めます。保存済み履歴と今回の追加保存結果を分けて表示します。未知のdirect状態は、記録保存と明示終了の後も成功扱いせず、保存先ファイルの確認を促します。
+
+## 検証と履歴
 
 `node --test tests/vr180-*.test.mjs`
 
-独立メタデータ照合は `tools/vr180/verify-metadata.py`、ブラウザから回収した小素材の画素・時刻・音声照合は `tools/vr180/verify-conversion.py` を使います。2026-10-17にChrome 155のクラウド複製で小素材2件の加工・ダウンロードを行い、回収MP4の独立照合が成功しました。これは合成素材とダウンロード経路の判定です。VR再生・実写品質・操作性・性能改善や保存先選択APIの合格は意味しません。[現在の反映・検証記録](https://github.com/Kushyameln01/kushyameln-works/blob/main/development/vr180/RELEASE-2026-10-17.md)と[元候補時点のRESULT.md](https://github.com/Kushyameln01/kushyameln-works/blob/e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60/development/vr180/RESULT.md)を区別してください。
+P1aは実appイベント経路の模擬DOM試験で、初回保存、追加保存取消、direct後の追加保存取消・失敗、commit後の照合失敗・取消、清掃再試行を検査します。client/Workerの世代照合、unknownの明示終了、取消競合も対象です。模擬DOM・模擬backend試験は、OS保存ダイアログや実ブラウザでの保存成功ではありません。
 
-依存は既存の `media-basic/vendor/mediabunny.mjs` 1.61.5です。既存のソース配布・MPL-2.0ライセンスを維持し、依存本体や既存ツールは変更しません。
+独立メタデータ照合は `tools/vr180/verify-metadata.py`、回収した小素材の画素・時刻・音声照合は `tools/vr180/verify-conversion.py` を使います。実施版・判定は[反映・検証記録](https://github.com/Kushyameln01/kushyameln-works/blob/main/development/vr180/RELEASE-2026-10-17.md)を参照してください。
 
-## 保存基盤 b3
+- b3は逐次hashと位置指定保存を導入し、小素材UIの実ダウンロード、取消・再実行、実OPFS backendを検証しました。当時の変換はOPFS経由でした。
+- b4はサンプル表等の範囲走査、取消可能なmetadata再構築を導入しました。4 GiB境界の構造adapter試験は、実ブラウザでの同容量出力の証拠ではありません。
+- b5 `vr180-b5-direct1` は選択handleへの直接muxを導入しました。実Chrome・OPFS backendで小素材と4K12秒の直接保存、1 MiB書込み後取消→0 B→同handle再実行を検証。4回のmux write、2,703,581 bytesを全回収し、360フレーム・時刻・559 AAC packets・VR情報を独立照合しました。
 
-`sha256.mjs` は逐次SHA-256、`file-output.mjs` は位置付きwrite、truncate、commit、abortを提供する。muxer用streamのcloseはラッパーの終了だけで、実ファイルの確定はcommitが行う。確定後に読戻しhashを計算し、期待hashと比較する。確定後の検証取消・失敗では書込み済みの事実を記録し、巻戻し成功とは扱わない。
+これらの既存証拠は、P1a変更後のOS保存ダイアログ、外部保存先、app direct UI、5〜10 GB実動画、VR再生互換性、実写品質、操作性、速度改善の合格を示しません。
 
-`saveBlobToFile(blob, handle, {signal, expectedSha256})` は1MiBずつコピーし、読戻し照合まで待つ。清掃失敗のerrorにはretryCleanupを残すため、呼出側は明示再試行が成功するまで次の操作を止める。現UIでは既存非空保存先を拒否し、各保存試行をsaveAttemptsへ保存する。保存先は作成前にも選べるが、変換の出力はまだOPFS経由であり、直接mux出力にはなっていない。5～10GB対応は未成立。
-
-b3では小素材のUI加工・実ダウンロード、取消と再実行、独立した実OPFS保存backendを検証済み。4K 2秒・12秒の実回収と独立照合は変換器が同一のb2で実施した。最新の識別子と判定はRELEASE記録を参照。ネイティブ保存先ダイアログ、5～10GB、VR再生互換性・実写品質・使いやすさ・速度改善は未検証。
-
-## 範囲読込み b4
-
-`vr180-b4-range1` はサンプル表・時刻表・編集リストを範囲ごとに全件検査し、旧moovとmdatの位置を維持して、新moovを入力Blobの断片と新規メタデータから再構築する。長い走査・再構築は取消を処理するため周期的に制御を戻す。表の64KiBキャッシュのほか、参照中の行が直前のページを一時保持することがある。断片数は構造上のbox数・深さ制限で制限する。
-
-ローカルでは16MiB超の実サンプル表、末尾・ページ境界の不正値、取消、64bit位置の構造検査を含む127件と公開用15件が合格。Node環境の4GiB超Blob問題により、同境界の試験は実疎ファイルの範囲読取りと試験用合成adapterで行った。実ブラウザの結果はRELEASE記録へ別記する。これらは5～10GB実動画の対応証拠ではない。
-
-## 直接変換出力 b5
-
-事前に選んだ空の保存先がある場合、画素変換はそのhandleへ直接muxし、VR情報を付与してから物理closeする。返すFileは保存済みの実ファイル。保存先なしの変換は引き続きOPFS経由、再圧縮なし経路は作成後保存とする。非空の既存保存先は拒否する。
-
-`planMp4Tag` はBlob経路とdirect経路で共用。directの捕捉器は先頭2048 bytesと末尾moov（上限16MiB）だけを保持し、未捕捉範囲の読込みを拒否する。mdat本体は捕捉しないが、Mediabunny内部の入力・出力索引は引き続きサンプル件数に比例する。長尺用の索引退避・逐次moov出力は未実装。
-
-`directSave.wholeFileHashCompared:false` は、全体SHA-256が保存後の観測値であることを示す。追加したVR metadataは事前期待hashと照合し、保存後MP4も再解析する。ブラウザからの出力回収と独立した画素・時刻・音声解析は別の検証。Node142件・公開用15件・harness6件が合格し、実ブラウザ試験の結果はRELEASEへ記録する。
-
-b5の実Chrome・OPFS backendでは、小素材の直接保存と取消再実行に加え、4K12秒で1MiB書込み後取消→0B→同handle再実行が合格。再実行は4回のmux writeで2,703,581 bytesを全回収し、360映像フレーム・時刻・559 AAC packets・VR情報を独立照合した。規模拡大harnessの陰性検査は11件。これはOS保存ダイアログ、外部保存先、appの直接保存UI、5～10GB実動画の成功を意味しない。
+依存は既存 `media-basic/vendor/mediabunny.mjs` 1.61.5です。本変更で共有vendorを変更せず、既存ソース配布・MPL-2.0ライセンスを維持します。

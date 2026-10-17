@@ -1,7 +1,8 @@
 import {inspectMp4, tagMp4} from './mp4.mjs';
 import {sha256Blob} from './sha256.mjs';
 import {finalizeDirectOutput} from './file-output.mjs';
-const BUILD = 'vr180-b5-direct1';
+import {bindSaveSummary, createSaveAttempt} from './save-record.mjs';
+const BUILD = 'vr180-b6-save1';
 // The current conversion demuxer/muxer retains sample indices and moov bytes.
 // Admit bounded inputs before hashing or loading it; paged copy does not need
 // these conversion-only limits.
@@ -55,7 +56,10 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
     }
   }
   async function execute(message) {
-    const {file, settings, outputHandle} = message, clock = performance.now(), timings = {}, events = [];
+    const {file, outputHandle} = message, settings = structuredClone(message.settings), clock = performance.now(), timings = {}, events = [];
+    const identity = {schemaVersion: 2, operationId: job.operationId, inputRevision: job.inputRevision, saveAttempts: []};
+    const directAttempt = outputHandle ? createSaveAttempt(identity, 'direct', {id: message.saveAttemptId ?? crypto.randomUUID()}) : null;
+    if (directAttempt) identity.saveAttempts.push(directAttempt);
     let info = null, inputHash = null;
     const mark = async (name, fn) => { const start = performance.now(); try { return await fn(); } finally { timings[name] = performance.now() - start; } };
     const digest = (blob, phase) => hash(blob, {
@@ -74,6 +78,7 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
       let media = file, metrics = null, direct = null;
       if (settings.mode === 'convert') {
         const {convertStereo} = await mark('transformLoad', loadTransform); check();
+        if (directAttempt) { directAttempt.commitState = 'pending'; job.directStarted = true; }
         const result = await mark('convert', () => convertStereo(file, settings, {
           signal: job.controller.signal, jobId: job.operationId, outputHandle,
           onCleanup: cleanup => { job.cleanup = cleanup; },
@@ -89,38 +94,49 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
           signal: job.controller.signal, onProgress: progress => send('progress', {progress}),
         }));
         blob = finalized.saved.file; outputInfo = finalized.info; outputHash = finalized.saved.sha256;
-        directSave = {...finalized.verification, capture: direct.metrics}; check();
+        directSave = {...finalized.verification, capture: direct.metrics};
+        job.directSave = structuredClone(directSave);
+        Object.assign(directAttempt, {status: 'verified', commitState: 'committed', verificationState: 'passed',
+          bytes: blob.size, sha256: outputHash, hashBasis: 'post-commit-observed', wholeFileHashCompared: false,
+          metadataHashMatched: directSave.metadataHashMatched === true, finishedAt: new Date().toISOString()});
       } else {
         blob = await mark('metadata', () => tag(media, {layout: settings.mode === 'copy' ? settings.layout : 'sbs', signal: job.controller.signal})); check();
         outputInfo = await mark('outputInspect', () => inspect(blob, {signal: job.controller.signal})); check();
         outputHash = await mark('outputHash', () => digest(blob, 'outputHash')); check();
       }
       timings.outputPrepared = performance.now() - clock;
-      const receipt = {schemaVersion: 1, build: BUILD, operationId: job.operationId, inputRevision: job.inputRevision,
-        status: direct ? 'saved' : 'prepared', settings, input: {bytes: file.size, sha256: inputHash, info}, output: {bytes: blob.size, sha256: outputHash, info: outputInfo},
+      const receipt = bindSaveSummary({...identity, build: BUILD,
+        status: direct ? 'saved' : 'prepared', settings, input: {bytes: file.size, sha256: inputHash, info, hashBasis: 'whole-input'},
+        output: {bytes: blob.size, sha256: outputHash, info: outputInfo, hashBasis: direct ? 'post-commit-observed' : 'prepared-output'},
         hashNote: direct ? 'Input SHA-256 calculated incrementally; whole output SHA-256 observed from the committed file, not compared with a pre-write whole-file hash' : 'SHA-256 calculated incrementally for the complete input and prepared output', timings, metrics, events,
         clock: 'performance.now, worker', nativePeakBytes: null,
         audioMetadataCoverage: settings.mode === 'copy' ? 'original audio track boxes preserved' : 'AAC payload, decoder configuration and supported timeline retained; seek-preroll sample groups are not reproduced by the muxer; seek quality unverified',
-        saveWriteCommitted: !!direct, saveCompleted: !!direct, savedSize: direct ? blob.size : null,
-        savedSha256: direct ? outputHash : null, directSave,
-        downloadRecovered: false, targetVRPlayerVerified: false};
-      job.prepared = receipt;
+        directSave, downloadRecovered: false, targetVRPlayerVerified: false});
+      job.prepared = receipt; check();
       send('result', {result: {blob, receipt, info: outputInfo}});
     } catch (error) {
       const cleanupComplete = await clean();
       timings.failedAfter = performance.now() - clock;
       const metrics = events.at(-1) ?? null;
-      job.diagnostics = {schemaVersion: 1, build: BUILD, operationId: job.operationId, inputRevision: job.inputRevision,
+      const committed = !!job.directOutput?.status.committed || !!error.saveWriteCommitted;
+      if (directAttempt && directAttempt.verificationState !== 'passed') {
+        Object.assign(directAttempt, {status: job.controller.signal.aborted ? 'canceled' : 'failed',
+          commitState: committed ? 'committed' : !job.directStarted ? 'not-started' : cleanupComplete ? 'aborted' : 'unknown',
+          verificationState: committed ? job.controller.signal.aborted ? 'canceled' : 'failed' : 'not-run',
+          errorCode: error?.message || String(error), finishedAt: new Date().toISOString(),
+          cleanup: {status: cleanupComplete ? 'complete' : 'failed', errorCode: job.cleanupError}});
+      }
+      job.diagnostics = bindSaveSummary({...identity, build: BUILD,
         status: job.controller.signal.aborted ? 'canceled' : 'failed',
         error: {name: error?.name ?? 'Error', message: error?.message || String(error)}, settings,
-        input: {bytes: file.size, sha256: inputHash, info}, output: null, timings, metrics,
+        input: {bytes: file.size, sha256: inputHash, info, hashBasis: inputHash ? 'whole-input' : null}, output: null, timings, metrics,
+        ...(job.prepared ? {preparedBeforeCancel: job.prepared} : {}),
         capabilities: metrics?.capabilities ?? null, events, clock: 'performance.now, worker',
         cleanup: {status: cleanupComplete ? 'complete' : 'failed', error: job.cleanupError,
           requiresWorkerTermination: !!job.requiresWorkerTermination},
-        saveWriteCommitted: !!job.directOutput?.status.committed || !!error.saveWriteCommitted,
-        saveCompleted: false, directSave: outputHandle ? {status: 'failed', outputState: job.directOutput?.status ?? null,
-          wholeFileHashCompared: false} : null,
-        downloadRecovered: false, targetVRPlayerVerified: false};
+        directSave: job.directSave ?? (outputHandle ? {status: 'failed', outputState: job.directOutput?.status ?? null,
+          wholeFileHashCompared: false} : null),
+        downloadRecovered: false, targetVRPlayerVerified: false});
       send('error', {error: error?.message || String(error), diagnostics: job.diagnostics, cleanupComplete,
         cleanupError: job.cleanupError, requiresWorkerTermination: !!job.requiresWorkerTermination});
     }
@@ -145,11 +161,11 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
       // message arrives. Preserve that prepared receipt and create a separate
       // cancellation record for the response the page deliberately discarded.
       if (message.type === 'cancel' && !job.diagnostics && job.prepared) {
-        job.diagnostics = {...job.prepared, status: 'canceled', output: null,
+        job.diagnostics = bindSaveSummary({...job.prepared, status: 'canceled', output: null,
           error: {name: 'AbortError', message: 'Conversion was canceled before the result was accepted.'},
           preparedBeforeCancel: job.prepared,
           cleanup: {status: complete ? 'complete' : 'failed', error: job.cleanupError,
-            requiresWorkerTermination: !!job.requiresWorkerTermination}};
+            requiresWorkerTermination: !!job.requiresWorkerTermination}});
       }
       send(complete ? 'cleanup-complete' : 'cleanup-error', {
         requestId: message.requestId, error: job.cleanupError, diagnostics: job.diagnostics,

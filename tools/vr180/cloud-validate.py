@@ -46,9 +46,9 @@ ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / 'docs'
 CHROME = Path('/usr/bin/google-chrome')
 PAGES = 'https://kushyameln01.github.io/kushyameln-works/'
-BUILD = 'vr180-b5-direct1'
+BUILD = 'vr180-b6-save1'
 RECOVERED = 'RECOVERED_PENDING_VERIFICATION'
-CANDIDATE_COMMIT = 'e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60'
+INITIAL_IMPLEMENTATION_COMMIT = 'e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60'
 LIMIT = 8 * 1024 * 1024
 CHUNK_CHARS = 4096
 VERIFIERS = {
@@ -67,7 +67,7 @@ PUBLIC_PATHS = (
     'shared/vr180/mp4.mjs', 'shared/vr180/operations.mjs',
     'shared/vr180/transform.mjs', 'shared/vr180/worker.mjs',
     'shared/vr180/file-output.mjs', 'shared/vr180/sha256.mjs',
-    'shared/vr180/mux-capture.mjs',
+    'shared/vr180/mux-capture.mjs', 'shared/vr180/save-record.mjs',
 )
 
 
@@ -133,7 +133,7 @@ def source_check(out, *, candidate=False):
         require(not path.is_symlink(), f'Symlink in cloud copy: {path.relative_to(DOCS)}')
         if path.is_file():
             files.append({'name': path.relative_to(DOCS).as_posix(), 'bytes': path.stat().st_size, 'sha256': digest(path)})
-    report = {'checkoutCommit': commit, 'candidateCodeBaseline': CANDIDATE_COMMIT,
+    report = {'checkoutCommit': commit, 'historicalInitialImplementationCommit': INITIAL_IMPLEMENTATION_COMMIT,
               'build': BUILD, 'fixtures': fixtures, 'fixedVerifierSHA256': VERIFIERS,
               'cloudCopySource': 'this exact checkout docs/; HTTP loopback only',
               'sourceScope': 'unpublished-candidate' if candidate else 'production-main', 'files': files}
@@ -892,8 +892,40 @@ def download_receipt(page, path):
     return json.loads(path.read_text(encoding='utf-8'))
 
 
+def validate_save_history(raw):
+    """Admit schema 2 facts independently of the production summary getters."""
+    require(raw.get('schemaVersion') == 2, 'Expected save schema 2')
+    attempts = raw.get('saveAttempts')
+    require(isinstance(attempts, list), 'Missing save attempts')
+    ids, committed, unknown, verified = set(), False, False, None
+    expected = raw.get('output')
+    for attempt in attempts:
+        identity = attempt.get('id')
+        require(isinstance(identity, str) and identity and identity not in ids, 'Invalid/duplicate save attempt ID')
+        ids.add(identity)
+        require(attempt.get('resultOperationId') == raw.get('operationId') and attempt.get('inputRevision') == raw.get('inputRevision'), 'Save attempt identity differs')
+        require(attempt.get('kind') in ('direct', 'prepared-copy', 'download-request'), 'Invalid save kind')
+        require(attempt.get('commitState') in ('not-started', 'pending', 'committed', 'aborted', 'unknown'), 'Invalid commit state')
+        require(attempt.get('verificationState') in ('not-run', 'running', 'passed', 'failed', 'canceled'), 'Invalid verification state')
+        committed |= attempt['commitState'] == 'committed'
+        unknown |= attempt['commitState'] == 'unknown'
+        if attempt['verificationState'] == 'passed':
+            require(attempt['commitState'] == 'committed' and expected is not None, 'Verified save lacks committed output')
+            require(attempt.get('bytes') == expected.get('bytes') and attempt.get('sha256') == expected.get('sha256'), 'Saved attempt differs from generated result')
+            if attempt['kind'] == 'direct':
+                require(attempt.get('wholeFileHashCompared') is False and attempt.get('metadataHashMatched') is True, 'Direct hash semantics differ')
+            else:
+                require(attempt['kind'] == 'prepared-copy' and attempt.get('wholeFileHashCompared') is True, 'Prepared-copy verification is missing')
+            verified = attempt
+    require(raw.get('saveWriteCommitted') is (True if committed else None if unknown else False), 'Commit summary differs from history')
+    require(raw.get('saveCompleted') is bool(verified), 'Verification summary differs from history')
+    require(raw.get('savedSize') == (verified.get('bytes') if verified else None), 'Saved size summary differs')
+    require(raw.get('savedSha256') == (verified.get('sha256') if verified else None), 'Saved hash summary differs')
+
+
 def validate_receipt(raw, record, fixture, mode, expect_input_hash=True):
     require(raw['build'] == BUILD, 'Wrong application build')
+    validate_save_history(raw)
     require(isinstance(raw.get('operationId'), str) and re.fullmatch(r'[0-9a-f-]{36}', raw['operationId']), 'Missing operation ID')
     require(raw.get('inputRevision') == record.get('expectedInputRevision', 2), 'Unexpected input revision')
     require(raw['input']['sha256'] == (record['inputSHA256'] if expect_input_hash else None), 'Receipt input hash differs')

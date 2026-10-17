@@ -1,3 +1,4 @@
+import {bindSaveSummary, createSaveAttempt} from './save-record.mjs';
 export async function cleanupTemporaryJob(id) {
   if (!/^[a-zA-Z0-9_-]{1,96}$/.test(id)) throw Error('INVALID_JOB_ID');
   if (!globalThis.navigator?.storage?.getDirectory) return;
@@ -19,14 +20,24 @@ export class StereoClient {
   emit(event) { try { this.onEvent(event); } catch {} }
   run(file, settings, {outputHandle} = {}) {
     if (this.current) throw Error('PREVIOUS_JOB_NOT_DISPOSED');
+    const settingsSnapshot = structuredClone(settings);
     const worker = new this.WorkerClass(new URL('./worker.mjs', import.meta.url), {type: 'module'});
     const operationId = crypto.randomUUID(), inputRevision = ++this.revision;
+    const saveAttemptId = outputHandle ? crypto.randomUUID() : undefined;
     return new Promise((resolve, reject) => {
       const job = {worker, operationId, inputRevision, resolve, reject, settled: false,
-        stopping: false, cleanupPending: false, stop: null, attempt: 0, dead: false, error: null, diagnostics: null, directOutput: !!outputHandle};
+        stopping: false, cleanupPending: false, stop: null, attempt: 0, dead: false, error: null, diagnostics: null, directOutput: !!outputHandle, saveAttemptId, settings: settingsSnapshot, inputBytes: file.size, startedAt: new Date().toISOString()};
       this.current = job;
       worker.onmessage = ({data: message}) => {
         if (this.current !== job || message.operationId !== operationId || message.inputRevision !== inputRevision) return;
+        // Structured cloning materializes derived getters; restore schema 2
+        // derivation locally without upgrading historical records.
+        for (const receipt of [message.diagnostics, message.result?.receipt]) {
+          if (receipt?.schemaVersion !== 2) continue;
+          if (receipt.operationId !== operationId || receipt.inputRevision !== inputRevision) return;
+          try { bindSaveSummary(receipt); }
+          catch (cause) { this.workerFailed(job, new Error('INVALID_SAVE_RECEIPT', {cause})); return; }
+        }
         if (message.type === 'cleanup-complete' || message.type === 'cleanup-error') {
           if (!job.stop || message.requestId !== job.stop.requestId) return;
           if (message.diagnostics) job.diagnostics ??= message.diagnostics;
@@ -53,7 +64,7 @@ export class StereoClient {
         }
       };
       worker.onerror = event => this.workerFailed(job, Error(event.message || 'WORKER_FAILED'));
-      try { worker.postMessage({type: 'run', file, settings, operationId, inputRevision, outputHandle}); job.dispatched = true; }
+      try { worker.postMessage({type: 'run', file, settings: settingsSnapshot, operationId, inputRevision, outputHandle, saveAttemptId}); job.dispatched = true; }
       catch (error) { this.workerFailed(job, error); }
     });
   }
@@ -100,12 +111,18 @@ export class StereoClient {
         return Promise.resolve();
       }
       const error = Error('DIRECT_SAVE_STATE_UNKNOWN');
-      if (!job.unknownOutput) job.diagnostics = {schemaVersion: 1, operationId: job.operationId, inputRevision: job.inputRevision,
-        status: 'failed', error: {name: 'Error', message: error.message},
-        workerReceipt: known ?? null,
-        saveWriteCommitted: null, saveCompleted: false,
-        directSave: {status: 'unknown', reason: 'Worker terminated without acknowledging the direct output writer state'},
-        cleanup: {status: 'unconfirmed', error: error.message}};
+      if (!job.unknownOutput) {
+        const receipt = {schemaVersion: 2, operationId: job.operationId, inputRevision: job.inputRevision,
+          status: 'failed', error: {name: 'Error', message: error.message}, settings: job.settings,
+          input: known?.input ?? {bytes: job.inputBytes, sha256: null, info: null, hashBasis: null}, output: null,
+          workerReceipt: known ?? null, saveAttempts: [],
+          directSave: {status: 'unknown', reason: 'Worker terminated without acknowledging the direct output writer state'},
+          cleanup: {status: 'unconfirmed', error: error.message}};
+        receipt.saveAttempts.push(createSaveAttempt(receipt, 'direct', {id: job.saveAttemptId,
+          startedAt: job.startedAt, finishedAt: new Date().toISOString(), status: 'unknown', commitState: 'unknown',
+          errorCode: error.message, cleanup: {status: 'unconfirmed', errorCode: error.message}}));
+        job.diagnostics = bindSaveSummary(receipt);
+      }
       job.unknownOutput = true;
       this.cleanupFailed(job, error, {diagnostics: job.diagnostics});
       return Promise.reject(error);

@@ -29,6 +29,10 @@ class DirectReceiptAdmission(unittest.TestCase):
                         'directSave': {'status': 'verified', 'saveWriteCommitted': True,
                                        'saveCompleted': True, 'metadataHashMatched': True,
                                        'wholeFileHashCompared': False}}
+        self.receipt.update(schemaVersion=2, saveAttempts=[{
+            'id': 'save-1', 'resultOperationId': self.receipt['operationId'], 'inputRevision': 1,
+            'kind': 'direct', 'commitState': 'committed', 'verificationState': 'passed',
+            'bytes': 100, 'sha256': 'a' * 64, 'wholeFileHashCompared': False, 'metadataHashMatched': True}])
         self.observed = {'resultIsFile': True, 'saved': {'bytes': 100, 'returnedBytes': 100,
                          'webCryptoSHA256': 'a' * 64, 'returnedWebCryptoSHA256': 'a' * 64,
                          'rawBytesEqual': True}}
@@ -91,6 +95,26 @@ class DirectReceiptAdmission(unittest.TestCase):
         self.validate()
         self.assertEqual(self.record['observedMuxWrites'], 2)
         self.receipt['metrics']['videoFrames'] = 359
+        with self.assertRaises(ValueError):
+            self.validate()
+
+
+    def test_save_history_identity_and_values_must_match(self):
+        for field, value in [('inputRevision', 2), ('bytes', 99), ('sha256', 'b' * 64), ('wholeFileHashCompared', True)]:
+            with self.subTest(field=field):
+                attempt = self.receipt['saveAttempts'][0]
+                original = attempt[field]
+                attempt[field] = value
+                with self.assertRaises(ValueError):
+                    self.validate()
+                attempt[field] = original
+
+    def test_old_schema_or_missing_attempts_is_not_silently_migrated(self):
+        self.receipt['schemaVersion'] = 1
+        with self.assertRaises(ValueError):
+            self.validate()
+        self.receipt['schemaVersion'] = 2
+        self.receipt['saveAttempts'] = []
         with self.assertRaises(ValueError):
             self.validate()
 

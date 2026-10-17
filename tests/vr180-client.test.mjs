@@ -27,10 +27,17 @@ test('direct worker death keeps its original receipt, requires explicit detachme
   const record = client.current.diagnostics;
   assert.equal(record.workerReceipt, original); assert.equal(original.error.message, 'WRITE_FAILED');
   assert.equal(record.saveWriteCommitted, null); assert.equal(record.cleanup.status, 'unconfirmed');
+  assert.equal(record.schemaVersion, 2); assert.equal(record.saveAttempts.length, 1);
+  assert.equal(record.saveAttempts[0].id, worker.messages[0].saveAttemptId);
+  assert.equal(record.saveAttempts[0].resultOperationId, record.operationId);
+  assert.equal(record.saveAttempts[0].inputRevision, record.inputRevision);
+  assert.equal(record.saveAttempts[0].commitState, 'unknown');
+  const unknownSnapshot = JSON.stringify(record);
   await assert.rejects(client.cancel(), /DIRECT_SAVE_STATE_UNKNOWN/);
   assert.equal(client.current.diagnostics, record); assert.deepEqual(removed, []);
   const rejection = assert.rejects(run, e => e.message === 'DIRECT_SAVE_STATE_UNKNOWN' && e.diagnostics === record);
   assert.equal(client.acknowledgeUnknownOutput(), record); await rejection;
+  assert.equal(JSON.stringify(record), unknownSnapshot); // S06: explicit exit does not resolve unknown.
   assert.equal(client.current, null); assert.equal(events.some(e => e.type === 'cleanup-complete'), false);
   assert.equal(events.at(-1).type, 'output-unconfirmed-detached');
   const next = client.run(new Blob(['next']), {}), nextWorker = MockWorker.instances.at(-1);
@@ -83,6 +90,44 @@ test('revision mismatch is ignored; a cleaned Worker failure preserves its origi
   worker.emit(message(worker, 'error', {error: 'CODEC_UNSUPPORTED', diagnostics, cleanupComplete: true}));
   await assert.rejects(pending, error => error.message === 'CODEC_UNSUPPORTED' && error.diagnostics === diagnostics);
   assert.equal(client.current, null); assert.equal(worker.terminated, true); assert.deepEqual(removed, []);
+});
+
+test('S07 schema 2: stale input A cannot alter B history and settings are captured before dispatch', async () => {
+  const client = new StereoClient({WorkerClass: MockWorker});
+  const settings = {mode: 'copy', layout: 'sbs', nested: {confirmed: true}};
+  const a = client.run(new Blob(['A']), settings), wa = MockWorker.instances.at(-1);
+  settings.layout = 'tb'; settings.nested.confirmed = false;
+  assert.equal(wa.messages[0].settings.layout, 'sbs'); assert.equal(wa.messages[0].settings.nested.confirmed, true);
+  const recordFor = worker => ({schemaVersion: 2, operationId: worker.messages[0].operationId,
+    inputRevision: worker.messages[0].inputRevision, saveAttempts: [], settings: worker.messages[0].settings});
+  const receiptA = recordFor(wa);
+  wa.emit(message(wa, 'result', {result: {receipt: receiptA}})); await a; await dispose(client, wa);
+  const b = client.run(new Blob(['B']), {mode: 'copy'}), wb = MockWorker.instances.at(-1), receiptB = recordFor(wb);
+  // A foreign receipt inside a current envelope is also not the current result.
+  wb.emit(message(wb, 'result', {result: {receipt: receiptA}}));
+  assert.equal(client.current.settled, false);
+  wa.emit(message(wa, 'result', {result: {receipt: receiptA}}));
+  wb.emit(message(wb, 'result', {result: {receipt: receiptB}}));
+  const accepted = await b, before = JSON.stringify(accepted.receipt);
+  wa.emit(message(wa, 'error', {diagnostics: receiptA, error: 'LATE_A'}));
+  assert.equal(accepted.receipt, receiptB); assert.equal(JSON.stringify(accepted.receipt), before);
+  assert.equal(accepted.receipt.saveCompleted, false); assert.equal(accepted.receipt.lastSaveAttemptId, null);
+  await dispose(client, wb);
+});
+
+test('invalid schema 2 receipt follows Worker failure cleanup and rejects instead of leaving run unsettled', async () => {
+  const deletion = deferred(), removed = [];
+  const client = new StereoClient({WorkerClass: MockWorker, cleanup: async id => { removed.push(id); await deletion.promise; }});
+  const pending = client.run(new Blob(['input']), {mode: 'copy'}), worker = MockWorker.instances.at(-1);
+  const rejected = assert.rejects(pending, /INVALID_SAVE_RECEIPT/);
+  const {operationId, inputRevision} = worker.messages[0];
+  assert.doesNotThrow(() => worker.emit(message(worker, 'result', {result: {receipt: {
+    schemaVersion: 2, operationId, inputRevision, saveAttempts: [{id: 'foreign', resultOperationId: 'wrong-result', inputRevision}],
+  }}})));
+  await tick();
+  assert.equal(worker.terminated, true); assert.equal(client.current?.operationId, operationId);
+  assert.deepEqual(removed, [operationId]);
+  deletion.resolve(); await rejected; assert.equal(client.current, null);
 });
 
 test('retained result releases only after Worker cleanup, without accepting a duplicate terminal response', async () => {
