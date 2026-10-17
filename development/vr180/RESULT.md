@@ -70,7 +70,7 @@ GitHub作業ブランチ: `codex/vr180-browser-b1`。実装保存commitは `31d3
 
 Sites候補: `appgprj_6ad2a14bdd54819188aae0b453eef8e3`、所有者のみ。配信対象の22ファイルは `evidence/staging-files.json` に記録。Sites source `a9d94a87c54d5a73ef931a5515d7f7526ed7b5ee` をpushし、所有者のみの配信が成功した。これはGitHub作業ブランチのcommitとは別。配信の成功はブラウザ検証を意味しない。詳細IDは `evidence/deployment.json`。
 
-診断版のSites sourceは `c6321630d2832757d85a3f2d1086e967be4ba2c0`。所有者限定の配信成功は `evidence/deployment-diag1.json`、22アセットのSHA-256は `evidence/staging-files-diag1.json`。旧版の記録は上書きしていない。診断版ソースと試験記録は同じGitHub作業ブランチへ保存する。
+診断版のSites sourceは `c6321630d2832757d85a3f2d1086e967be4ba2c0`。所有者限定の配信成功は `evidence/deployment-diag1.json`、22アセットのSHA-256は `evidence/staging-files-diag1.json`。旧版の記録は上書きしていない。診断版ソースと試験記録はGitHub commit `8ebcebc755e0a8d398019d998d037b9ec3ddf2e6` として同じ作業ブランチへ保存済み。14ファイルのblob SHAと全体tree `5b7c8c01ae51db87e6f17bf5dc64c6f013eee77b` の一致、ブランチ更新後のfetchを確認した。この追記は保存確認の文書更新であり、配信アセットを変えない。
 
 候補URL: https://kushyameln-vr180-studio-lab.vde6fedxrbh7fbbb740t.chatgpt.site/vr180-studio/
 
