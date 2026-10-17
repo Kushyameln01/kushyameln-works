@@ -1,0 +1,105 @@
+{
+  "status": "PARTIAL_PASS",
+  "runId": "39011100962-1",
+  "checkoutCommit": "0534f99bb105ad707c117ec48e29bf22aa23d19a",
+  "build": "vr180-b2-cancel1",
+  "browserVersion": "155.0.8059.39",
+  "transport": {
+    "status": "PASS",
+    "runId": "39011100962-1",
+    "chunks": 941,
+    "archiveBytes": 2888521,
+    "archiveSHA256": "fe48dcbd21d911d8c2ddf6c4eb9655c2b8209eed10e4baf7ad669a4bcf0217a2",
+    "verifiedFiles": 51,
+    "browserRunStatus": "FAIL"
+  },
+  "cases": [
+    {
+      "case": "cancel-retry",
+      "returncode": 0,
+      "script": "verify-metadata.py",
+      "scriptSHA256": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96",
+      "inputSHA256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+      "outputSHA256": "15fca1666e5cf4a135b933398d4f9f56eb302b3901b90d7bb787ce3b9d82bc3c",
+      "outputBytes": 30137,
+      "operationId": "2dcd5805-7a78-4bd3-884f-aac69782a4c8",
+      "inputRevision": 4,
+      "status": "PASS"
+    },
+    {
+      "case": "failure-retry",
+      "returncode": 0,
+      "script": "verify-conversion.py",
+      "scriptSHA256": "8e13537f5c74f8207f670eb898b082a1962ae35e0db10a6ffeddb7be4c695f64",
+      "inputSHA256": "72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9",
+      "outputSHA256": "0d3d2893cd00de8638d24cc51afcf27cdddad6cc88e6dfabc1d76c4414adfac3",
+      "outputBytes": 52784,
+      "operationId": "e62f7f3f-1d9a-4af2-ba03-fafa825f4241",
+      "inputRevision": 3,
+      "sphericalMetadata": "PASS",
+      "status": "PASS"
+    },
+    {
+      "case": "stereo180-4k-2s-sbs",
+      "returncode": 0,
+      "script": "verify-conversion-streaming.py",
+      "scriptSHA256": "469ac8b2aa3cd330484869484c82ba81f944a57c2131f30ed261e8b946328b9f",
+      "inputSHA256": "50624d8850a380ad759a712a7cae9f5f767a966271ca8a671b433c6146895db0",
+      "outputSHA256": "0a465e04b7ca1503eebe875309e6738d7bec1191674c8d522aed6b7de4e9282c",
+      "outputBytes": 456546,
+      "operationId": "2783cd74-9d46-419e-9ef7-112ddd638292",
+      "inputRevision": 2,
+      "sphericalMetadata": "PASS",
+      "status": "PASS"
+    }
+  ],
+  "cancellation": {
+    "kind": "cancel",
+    "inputGeneration": 1,
+    "inputSHA256": "97bb3a4335514436374b35c202275dde2cfca27f8f7cec3a224fd77c8ede6582",
+    "workerPost": {
+      "at": 1185.800000000003,
+      "operationId": "d899bb69-75b7-49e2-a297-afc123d9ea35",
+      "inputRevision": 2,
+      "inputName": "stereo180-4k-12s-sbs.mp4",
+      "inputBytes": 944087,
+      "settings": {
+        "mode": "convert",
+        "layout": "sbs",
+        "fov": 180,
+        "eyeSize": 2048,
+        "bitrate": 25165824
+      }
+    },
+    "status": "CANCELED_OBSERVED",
+    "progressBeforeCancel": {
+      "busy": true,
+      "value": 0.002777777777777778,
+      "status": "動画を変換しています…"
+    },
+    "opfsJobsBeforeCancel": [
+      {
+        "name": "d899bb69-75b7-49e2-a297-afc123d9ea35",
+        "kind": "directory"
+      }
+    ],
+    "statusAfterCancel": "取り消しました。再実行できます。",
+    "cleanupObservations": [
+      {
+        "elapsedMs": 1.593964000008441,
+        "jobs": []
+      }
+    ],
+    "opfsJobsAfterCancel": [],
+    "runEnabled": true,
+    "applicationCancellationReceipt": "receipt-canceled.json",
+    "receiptNote": "The unmodified application cancellation receipt is separate from this external OPFS/UI observation."
+  },
+  "scale12": {
+    "status": "PREPARED_NOT_RECOVERED",
+    "reason": "Aggregate evidence budget exceeded; no output settings changed",
+    "preparedOutputBytes": 2681676,
+    "downloadRecovered": false
+  },
+  "scope": "Synthetic cloud-copy tests; native save picker and VR playback unverified"
+}

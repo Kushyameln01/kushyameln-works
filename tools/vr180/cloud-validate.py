@@ -656,7 +656,7 @@ def emit_evidence(out, result):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True, help='New evidence directory outside the checkout')
-    parser.add_argument('--suite', choices=['small', 'followup'], default='small',
+    parser.add_argument('--suite', choices=['small', 'followup', 'scale12'], default='small',
                         help='Followup requires independent verification of the small suite on the same product sources before this separate run')
     parser.add_argument('--defer-independent-verification', action='store_true',
                         help='Recover outputs; report verification pending until independent verifiers run in the receiving environment')
@@ -681,7 +681,7 @@ def main():
     try:
         if os.environ.get('GITHUB_REPOSITORY') != 'Kushyameln01/kushyameln-works':
             raise Blocked('This harness is scoped to Kushyameln01/kushyameln-works')
-        if args.suite == 'followup':
+        if args.suite in ('followup', 'scale12'):
             require(args.defer_independent_verification, 'Followup requires explicit deferred independent verification; the fixed small pixel oracle is bounded to 512px/eye and 120 frames')
             prerequisite = json.loads((ROOT / 'development/vr180/evidence/2026-10-17-b2-small.json').read_text())
             require(prerequisite['status'] == 'PASS' and prerequisite['build'] == BUILD, 'Small-suite regression has not passed for this build')
@@ -727,6 +727,8 @@ def main():
                     ('stereo360-tb', 'convert', 'failure-retry', 256),
                     ('stereo180-4k-2s-sbs', 'convert', None, 2048),
                     ('stereo180-4k-12s-sbs', 'convert', None, 2048)]
+                if args.suite == 'scale12':
+                    cases = [('stereo180-4k-12s-sbs', 'convert', None, 2048)]
                 for name, mode, scenario, eye_size in cases:
                     trial = run_trial(context, origin, out, name, mode, result['runId'], args.defer_independent_verification, scenario, eye_size)
                     result['browserTrials'].append(trial)

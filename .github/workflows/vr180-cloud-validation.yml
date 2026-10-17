@@ -57,7 +57,7 @@ jobs:
         env:
           VR180_DEPENDENCIES_READY: ${{ steps.dependencies.outcome == 'success' }}
         shell: bash
-        run: python3 tools/vr180/cloud-validate.py --suite followup --defer-independent-verification --output "$RUNNER_TEMP/vr180-evidence-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+        run: python3 tools/vr180/cloud-validate.py --suite scale12 --defer-independent-verification --output "$RUNNER_TEMP/vr180-evidence-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
 
       - name: Record checkout failure without claiming a media test
         if: ${{ always() && steps.checkout.outcome != 'success' }}
