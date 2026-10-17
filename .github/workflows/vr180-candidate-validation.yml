@@ -10,6 +10,9 @@ on:
       - tools/vr180/rebuild-vendor-core.mjs
       - tools/vr180/probe-index-store.py
       - development/vr180/index-prototype/**
+      - tools/vr180/build-output-index.mjs
+      - development/vr180/output-index-prototype/**
+      - tools/vr180/probe-artifact-transfer.py
       - development/vr180/build-inputs/**
   workflow_dispatch:
 
@@ -147,6 +150,76 @@ jobs:
         env:
           VR180_DEPENDENCIES_READY: ${{ steps.dependencies.outcome == 'success' }}
         run: python3 tools/vr180/probe-index-store.py --output "$RUNNER_TEMP/vr180-index-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+
+  output-index-build:
+    if: >-
+      github.repository == 'Kushyameln01/kushyameln-works' &&
+      github.event.repository.private == false &&
+      startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
+      contains(github.event.head_commit.message, '[vr180-output-index-build]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - name: Check out the exact private prototype
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Build fixed-source fork and return the complete module
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          vr180_build_prefix="$(mktemp -d "$RUNNER_TEMP/vr180-fork-esbuild.XXXXXX")"
+          vr180_fork_parent="$(mktemp -d "$RUNNER_TEMP/vr180-fork.XXXXXX")"
+          trap 'rm -rf "$vr180_build_prefix"' EXIT
+          cp development/vr180/build-inputs/toolchain/package.json "$vr180_build_prefix/"
+          cp development/vr180/build-inputs/toolchain/package-lock.json "$vr180_build_prefix/"
+          npm ci --prefix "$vr180_build_prefix" --ignore-scripts --include=dev --include=optional --no-audit --no-fund
+          export VR180_FORK_OUTPUT="$vr180_fork_parent/result"
+          set +e
+          node tools/vr180/build-output-index.mjs --esbuild-dir "$vr180_build_prefix/node_modules/esbuild" --output-dir "$VR180_FORK_OUTPUT"
+          vr180_fork_status=$?
+          set -e
+          python3 - <<'PY'
+          import importlib.util,json,os,subprocess
+          from pathlib import Path
+          spec=importlib.util.spec_from_file_location('cloud','tools/vr180/cloud-validate.py')
+          cloud=importlib.util.module_from_spec(spec);spec.loader.exec_module(cloud)
+          out=Path(os.environ['VR180_FORK_OUTPUT'])
+          fork=json.loads((out/'fork-build-result.json').read_text())
+          run={'runId':os.environ['GITHUB_RUN_ID']+'-output-index-build-'+os.environ['GITHUB_RUN_ATTEMPT'],'checkoutCommit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'status':fork['status'],'scope':'Private fork compilation only; product integration and media verification not performed'}
+          cloud.write(out/'run.json',run)
+          if not cloud.emit_evidence(out,run):raise SystemExit(1)
+          PY
+          exit "$vr180_fork_status"
+
+  artifact-transfer-64:
+    if: >-
+      github.repository == 'Kushyameln01/kushyameln-works' &&
+      github.event.repository.private == false &&
+      startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
+      contains(github.event.head_commit.message, '[vr180-artifact-64]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out the exact public synthetic probe
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Generate and reread 64 MiB actual bytes
+        timeout-minutes: 5
+        run: python3 tools/vr180/probe-artifact-transfer.py generate --size-mib 64 --output "$RUNNER_TEMP/vr180-transfer-64-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+      - name: Retain only this public synthetic output for one day
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        timeout-minutes: 2
+        with:
+          name: vr180-transfer-64mib-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/vr180-transfer-64-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: false
 
   vendor-rebuild:
     if: >-

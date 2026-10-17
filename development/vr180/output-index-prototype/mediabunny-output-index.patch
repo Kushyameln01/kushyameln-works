@@ -1,0 +1,176 @@
+--- a/src/isobmff/isobmff-muxer.ts
++++ b/src/isobmff/isobmff-muxer.ts
+@@ -78,6 +78,8 @@
+ };
+ 
+ export type IsobmffTrackData = {
++	/** VR180 private disk-index adapter; absent in the original path. */
++	vr180Index?: any;
+ 	muxer: IsobmffMuxer;
+ 	timescale: number;
+ 	samples: Sample[];
+@@ -174,6 +176,7 @@
+ };
+ 
+ export const presentationSpan = (trackData: IsobmffTrackData) => {
++	if (trackData.vr180Index) return trackData.vr180Index.presentationSpan;
+ 	if (trackData.samples.length === 0) {
+ 		return 0;
+ 	}
+@@ -200,6 +203,7 @@
+ };
+ 
+ export class IsobmffMuxer extends Muxer {
++	private get vr180Index() { return (this.formatOptions as any).vr180Index; }
+ 	format: IsobmffOutputFormat;
+ 	formatOptions: IsobmffOutputFormatOptions;
+ 	private writer: Writer | null = null;
+@@ -249,6 +253,7 @@
+ 
+ 	async start() {
+ 		const release = await this.mutex.acquire();
++		try {
+ 
+ 		if (!this.isCmaf) {
+ 			this.writer = await this.output._getRootWriter(target => (
+@@ -286,6 +291,8 @@
+ 		}
+ 
+ 		const holdsAvc = this.output.tracks.some(x => x.isVideoTrack() && x.source._codec === 'avc');
++
++		this.vr180Index?.start(this);
+ 
+ 		// Write the header
+ 		{
+@@ -361,7 +368,7 @@
+ 			}
+ 		}
+ 
+-		release();
++		} finally { release(); }
+ 	}
+ 
+ 	private allTracksAreKnown() {
+@@ -1092,6 +1099,7 @@
+ 	}
+ 
+ 	private async registerSample(trackData: IsobmffTrackData, sample: Sample) {
++		if (this.vr180Index) return this.vr180Index.register(this, trackData, sample);
+ 		if (sample.type === 'key') {
+ 			this.processTimestamps(trackData, sample);
+ 		}
+@@ -1487,6 +1495,7 @@
+ 	// eslint-disable-next-line @typescript-eslint/no-misused-promises
+ 	override async onTrackClose(track: OutputTrack) {
+ 		const release = await this.mutex.acquire();
++		try {
+ 
+ 		const trackData = this.trackDatas.find(x => x.track === track);
+ 		if (trackData) {
+@@ -1496,7 +1505,8 @@
+ 				await this.processWebVTTCues(trackData, Infinity);
+ 			}
+ 
+-			this.processTimestamps(trackData);
++			if (this.vr180Index) await this.vr180Index.closeTrack(trackData);
++			else this.processTimestamps(trackData);
+ 		}
+ 
+ 		if (this.allTracksAreKnown()) {
+@@ -1508,7 +1518,7 @@
+ 			await this.interleaveSamples();
+ 		}
+ 
+-		release();
++		} finally { release(); }
+ 	}
+ 
+ 	ensureOneEnabledTrack() {
+@@ -1558,9 +1568,11 @@
+ 	/** Finalizes the file, making it ready for use. Must be called after all video and audio chunks have been added. */
+ 	async finalize() {
+ 		const release = await this.mutex.acquire();
++		try {
+ 
+ 		this.allTracksKnown.resolve();
+ 		this.ensureOneEnabledTrack();
++		if (this.vr180Index) return await this.vr180Index.finalize(this, moov);
+ 
+ 		if (!this.mdat && this.fastStart === 'reserve') {
+ 			await this.createFastStartReserveMdat();
+@@ -1756,6 +1768,6 @@
+ 			}
+ 		}
+ 
+-		release();
++		} finally { release(); }
+ 	}
+ }
+--- a/src/isobmff/isobmff-boxes.ts
++++ b/src/isobmff/isobmff-boxes.ts
+@@ -688,7 +688,8 @@
+  * also indicates how to interpret the sample (for example, whether to decompress the video data and, if so, how).
+  */
+ export const stbl = (trackData: IsobmffTrackData) => {
+-	const needsCtts = trackData.compositionTimeOffsetTable.length > 1
++	const needsCtts = trackData.vr180Index ? trackData.vr180Index.needsCtts
++		: trackData.compositionTimeOffsetTable.length > 1
+ 		|| trackData.compositionTimeOffsetTable.some(x => x.sampleCompositionTimeOffset !== 0);
+ 
+ 	return box('stbl', undefined, [
+@@ -1227,6 +1228,7 @@
+  * will be grouped.
+  */
+ export const stts = (trackData: IsobmffTrackData) => {
++	if (trackData.vr180Index) return trackData.vr180Index.tableBox('stts');
+ 	return fullBox('stts', 0, 0, [
+ 		u32(trackData.timeToSampleTable.length), // Number of entries
+ 		trackData.timeToSampleTable.map(x => [ // Time-to-sample table
+@@ -1238,6 +1240,7 @@
+ 
+ /** Sync Sample Box: Identifies the key frames in the media, marking the random access points within a stream. */
+ export const stss = (trackData: IsobmffTrackData) => {
++	if (trackData.vr180Index) return trackData.vr180Index.tableBox('stss');
+ 	if (trackData.samples.every(x => x.type === 'key')) return null; // No stss box -> every frame is a key frame
+ 
+ 	const keySamples = [...trackData.samples.entries()].filter(([, sample]) => sample.type === 'key');
+@@ -1254,6 +1257,7 @@
+  * in a compactly-coded fashion.
+  */
+ export const stsc = (trackData: IsobmffTrackData) => {
++	if (trackData.vr180Index) return trackData.vr180Index.tableBox('stsc');
+ 	return fullBox('stsc', 0, 0, [
+ 		u32(trackData.compactlyCodedChunkTable.length), // Number of entries
+ 		trackData.compactlyCodedChunkTable.map(x => [ // Sample-to-chunk table
+@@ -1266,6 +1270,7 @@
+ 
+ /** Sample Size Box: Specifies the byte size of each sample in the media. */
+ export const stsz = (trackData: IsobmffTrackData) => {
++	if (trackData.vr180Index) return trackData.vr180Index.tableBox('stsz');
+ 	if (trackData.type === 'audio' && trackData.info.requiresPcmTransformation) {
+ 		const { sampleSize } = parsePcmCodec(trackData.track.source._codec as PcmAudioCodec);
+ 
+@@ -1285,6 +1290,7 @@
+ 
+ /** Chunk Offset Box: Identifies the location of each chunk of data in the media's data stream, relative to the file. */
+ export const stco = (trackData: IsobmffTrackData) => {
++	if (trackData.vr180Index) return trackData.vr180Index.tableBox('stco');
+ 	if (trackData.finalizedChunks.length > 0 && last(trackData.finalizedChunks)!.offset! >= 2 ** 32) {
+ 		// If the file is large, use the co64 box
+ 		return fullBox('co64', 0, 0, [
+@@ -1305,6 +1311,7 @@
+  * composition time offset will be grouped.
+  */
+ export const ctts = (trackData: IsobmffTrackData) => {
++	if (trackData.vr180Index) return trackData.vr180Index.tableBox('ctts');
+ 	return fullBox('ctts', 1, 0, [
+ 		u32(trackData.compositionTimeOffsetTable.length), // Number of entries
+ 		trackData.compositionTimeOffsetTable.map(x => [ // Time-to-sample table
+@@ -1318,6 +1325,7 @@
+  * Composition to Decode Box: Stores information about the composition and display times of the media samples.
+  */
+ export const cslg = (trackData: IsobmffTrackData) => {
++	if (trackData.vr180Index) return trackData.vr180Index.tableBox('cslg');
+ 	let leastDecodeToDisplayDelta = Infinity;
+ 	let greatestDecodeToDisplayDelta = -Infinity;
+ 	let compositionStartTime = Infinity;
