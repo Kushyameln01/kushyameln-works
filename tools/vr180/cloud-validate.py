@@ -399,11 +399,12 @@ FILE_OUTPUT_CLEANUP = r"""async () => {
 
 # This calls the production client/Worker, passing a real empty OPFS handle.
 # It does not substitute a picker, a Worker, a file handle, or a product API.
-DIRECT_OUTPUT_PROBE = r"""async ({fixtureURL, expectedBytes, expectedSHA256, cancelFirst}) => {
+DIRECT_OUTPUT_PROBE = r"""async ({fixtureURL, sourceName, settings, expectedBytes, expectedSHA256,
+  cancelFirst, cancelAfterWrite, maxOutputBytes}) => {
   const record = {status: 'STARTED', userAgent: navigator.userAgent, isSecureContext,
     scope: 'Production StereoClient and Worker direct-output backend; actual OPFS handle, not OS picker/application UI',
     osSaveDialogTested: false, externalDestinationTested: false, savePickerOverridden: false,
-    mediaOperationCount: 0, events: [], cleanup: {status: 'NOT_RUN'}};
+    mediaOperationCount: 0, events: [], cancelAfterWrite, maxOutputBytes, cleanup: {status: 'NOT_RUN'}};
   const state = globalThis.__vr180DirectOutputProbe = {record, client: null, root: null,
     directoryName: null, created: false, urls: {}, receipts: {}};
   const originalPicker = globalThis.showSaveFilePicker;
@@ -415,11 +416,11 @@ DIRECT_OUTPUT_PROBE = r"""async ({fixtureURL, expectedBytes, expectedSHA256, can
     const {StereoClient} = await import('/shared/vr180/client.mjs');
     const response = await fetch(fixtureURL, {cache: 'no-store'});
     require(response.ok, 'DIRECT_FIXTURE_UNAVAILABLE');
-    const source = new File([await response.blob()], 'stereo360-tb.mp4', {type: 'video/mp4'});
+    const source = new File([await response.blob()], sourceName + '.mp4', {type: 'video/mp4'});
     require(source.size === expectedBytes && source.size <= 2 * 1024 * 1024, 'DIRECT_FIXTURE_SIZE');
     const inputHash = await sha256(await source.arrayBuffer());
     require(inputHash === expectedSHA256, 'DIRECT_FIXTURE_HASH');
-    record.input = {bytes: source.size, sha256: inputHash, source: 'public synthetic stereo360-tb'};
+    record.input = {bytes: source.size, sha256: inputHash, source: 'public synthetic ' + sourceName};
     state.root = await navigator.storage.getDirectory();
     state.directoryName = 'vr180-direct-output-probe-' + crypto.randomUUID();
     try {
@@ -437,7 +438,8 @@ DIRECT_OUTPUT_PROBE = r"""async ({fixtureURL, expectedBytes, expectedSHA256, can
         inputRevision: event.inputRevision, progress: event.progress ?? null, error: event.error ?? null};
       record.events.push(observed);
       if (event.diagnostics) state.receipts.failure = event.diagnostics;
-      if (cancelMode && !cancelRequested && event.type === 'progress' && event.progress?.phase === 'convert') {
+      if (cancelMode && !cancelRequested && event.type === 'progress' && event.progress?.phase === 'convert'
+        && (!cancelAfterWrite || event.progress.outputBytes > 0)) {
         cancelRequested = true;
         record.cancellation.trigger = observed;
         record.cancellation.requestedAt = performance.now();
@@ -445,7 +447,6 @@ DIRECT_OUTPUT_PROBE = r"""async ({fixtureURL, expectedBytes, expectedSHA256, can
           error => ({status: 'FAIL', name: error.name, message: error.message}));
       }
     }});
-    const settings = {mode: 'convert', layout: 'tb', fov: 360, eyeSize: 256, bitrate: 2000000, confirmed: true};
     const run = () => { record.mediaOperationCount++; return state.client.run(source, settings, {outputHandle: handle}); };
     if (cancelFirst) {
       const cancellation = record.cancellation = {status: 'STARTED', sameHandleRetry: true, sameInputRetry: true};
@@ -461,6 +462,8 @@ DIRECT_OUTPUT_PROBE = r"""async ({fixtureURL, expectedBytes, expectedSHA256, can
       cancellation.ack = cancelPromise ? await cancelPromise : null;
       require(cancelRequested && stopped.error.name === 'AbortError'
         && cancellation.ack?.status === 'ACKNOWLEDGED', 'DIRECT_CANCEL_FAILED');
+      require(!cancelAfterWrite || cancellation.trigger?.progress?.outputBytes > 0,
+        'DIRECT_CANCEL_BEFORE_WRITE_NOT_ACCEPTED');
       const receipt = state.receipts.canceled;
       require(receipt?.status === 'canceled' && receipt.cleanup?.status === 'complete'
         && receipt.output === null && receipt.saveWriteCommitted === false && receipt.saveCompleted === false,
@@ -484,7 +487,7 @@ DIRECT_OUTPUT_PROBE = r"""async ({fixtureURL, expectedBytes, expectedSHA256, can
       && receipt.directSave.wholeFileHashCompared === false && receipt.directSave.metadataHashMatched === true,
       'DIRECT_SAVED_RECEIPT_CONTRACT');
     const actual = await handle.getFile();
-    require(actual.size > 0 && actual.size <= 2 * 1024 * 1024, 'DIRECT_SMALL_PROBE_OUTPUT_SIZE');
+    require(actual.size > 0 && actual.size <= maxOutputBytes, 'DIRECT_PROBE_OUTPUT_SIZE_LIMIT');
     const actualBytes = new Uint8Array(await actual.arrayBuffer());
     const returnedBytes = new Uint8Array(await result.blob.arrayBuffer());
     record.saved = {bytes: actual.size, webCryptoSHA256: await sha256(actualBytes),
@@ -1145,18 +1148,46 @@ def validate_direct_receipt(raw, record, fixture, observed):
             and raw['output']['bytes'] == raw.get('savedSize') == saved['bytes'] == saved['returnedBytes']
             and raw['output']['sha256'] == raw.get('savedSha256') == saved['webCryptoSHA256']
             == saved['returnedWebCryptoSHA256'], 'Direct receipt/fresh OPFS/returned File differ')
+    if record.get('requireMultipleMuxWrites'):
+        writes = direct.get('capture', {}).get('muxWrites')
+        require(type(writes) is int and writes > 1, 'Direct-scale output did not prove multiple mux writes')
+        require(raw.get('metrics', {}).get('videoFrames') == record['expectedVideoFrames'],
+                'Direct-scale output frame count differs')
+        record['observedMuxWrites'] = writes
 
 
-def run_direct_output_probe(context, origin, out, run_id, defer_verification=False, cancel_first=False):
-    scenario = 'direct-cancel-retry' if cancel_first else 'direct-output-probe'
+def validate_direct_cancellation(observed, cancel_after_write=False):
+    cancellation = observed.get('cancellation', {})
+    trigger = cancellation.get('trigger', {})
+    progress = trigger.get('progress') or {}
+    require(cancellation.get('status') == 'CANCELED_EMPTY_FILE_OBSERVED'
+            and cancellation.get('requested') is True and cancellation.get('afterBytes') == 0
+            and cancellation.get('cleanupPending') is False and cancellation.get('disposeCompleted') is True
+            and cancellation.get('ack', {}).get('status') == 'ACKNOWLEDGED'
+            and cancellation.get('error', {}).get('name') == 'AbortError', 'Direct cancellation was not completed')
+    require(trigger.get('type') == 'progress' and progress.get('phase') == 'convert',
+            'Direct cancellation did not follow conversion progress')
+    if cancel_after_write:
+        written = progress.get('outputBytes')
+        require(type(written) is int and written > 0, 'No actual write was observed before cancellation')
+
+
+def run_direct_output_probe(context, origin, out, run_id, defer_verification=False, cancel_first=False,
+                            name='stereo360-tb', settings=None, scenario=None, cancel_after_write=False,
+                            max_output_bytes=2 * 1024 * 1024):
+    scenario = scenario or ('direct-cancel-retry' if cancel_first else 'direct-output-probe')
     trial = out / scenario
     trial.mkdir()
-    fixture = DOCS / 'vr180-studio/fixtures/stereo360-tb.mp4'
-    record = {'trialId': f'{run_id}-{scenario}', 'build': BUILD, 'fixture': 'stereo360-tb',
+    fixture = DOCS / 'vr180-studio/fixtures' / f'{name}.mp4'
+    settings = dict(settings or {'mode': 'convert', 'layout': 'tb', 'fov': 360, 'eyeSize': 256, 'bitrate': 2000000})
+    settings['confirmed'] = True
+    record = {'trialId': f'{run_id}-{scenario}', 'build': BUILD, 'fixture': name,
               'mode': 'convert', 'scenario': scenario, 'startedAt': now(), 'status': 'STARTED',
               'inputSHA256': digest(fixture), 'inputBytes': fixture.stat().st_size, 'inputGeneration': 1,
               'expectedInputRevision': 2 if cancel_first else 1,
-              'expectedSettings': {'mode': 'convert', 'layout': 'tb', 'fov': 360, 'eyeSize': 256, 'bitrate': 2000000},
+              'expectedSettings': {key: value for key, value in settings.items() if key != 'confirmed'},
+              'cancelAfterWrite': cancel_after_write, 'requireMultipleMuxWrites': cancel_after_write,
+              'maxOutputBytes': max_output_bytes, 'expectedVideoFrames': 360 if name == 'stereo180-4k-12s-sbs' else None,
               'mediaOperationStarted': False, 'mediaOperationCount': 0, 'downloadRecovered': False,
               'independentVerificationPassed': False,
               'scope': 'Independent production-client/Worker direct-save backend with a real OPFS handle; not application UI',
@@ -1174,6 +1205,10 @@ def run_direct_output_probe(context, origin, out, run_id, defer_verification=Fal
     recovered_receipts = set()
     start = time.monotonic()
     try:
+        require(not cancel_after_write or cancel_first, 'Cancel-after-write requires a cancellation attempt')
+        require(settings['eyeSize'] <= 512 or defer_verification, 'Direct scale output requires deferred streaming verification')
+        require(name in FIXTURES and record['inputSHA256'] == FIXTURES[name], 'Direct fixture is not fixed')
+        require(record['inputBytes'] <= 2 * 1024 * 1024, 'Direct fixture exceeds this probe input limit')
         shutil.copyfile(fixture, trial / 'input.mp4')
         check_recovery_budget(out, trial, record['inputBytes'])
         page.goto(origin + '/vr180-studio/', wait_until='networkidle')
@@ -1181,10 +1216,11 @@ def run_direct_output_probe(context, origin, out, run_id, defer_verification=Fal
         write(trial / 'browser-capabilities.json', api)
         record['browserUserAgent'] = api['userAgent']
         launch = "args => { globalThis.__vr180DirectResult = null; (" + DIRECT_OUTPUT_PROBE + ")(args).then(r => { globalThis.__vr180DirectResult = r; }, e => { globalThis.__vr180DirectResult = {status: 'FAIL', error: {name: e.name, message: e.message}}; }); }"
-        page.evaluate(launch, {'fixtureURL': origin + '/vr180-studio/fixtures/stereo360-tb.mp4',
+        page.evaluate(launch, {'fixtureURL': origin + '/vr180-studio/fixtures/' + name + '.mp4',
+                              'sourceName': name, 'settings': settings, 'maxOutputBytes': max_output_bytes,
                               'expectedBytes': record['inputBytes'], 'expectedSHA256': record['inputSHA256'],
-                              'cancelFirst': cancel_first})
-        page.wait_for_function('globalThis.__vr180DirectResult !== null', timeout=180000)
+                              'cancelFirst': cancel_first, 'cancelAfterWrite': cancel_after_write})
+        page.wait_for_function('globalThis.__vr180DirectResult !== null', timeout=300000 if cancel_after_write else 180000)
         observed = page.evaluate('globalThis.__vr180DirectResult')
         write(trial / 'backend-observations.json', observed)
         require(observed['status'] == 'READY_FOR_DOWNLOAD', 'Direct backend failed: ' + json.dumps(observed.get('error')))
@@ -1194,6 +1230,7 @@ def run_direct_output_probe(context, origin, out, run_id, defer_verification=Fal
         record['receiptStatus'] = raw['status']
         record['codecCapabilities'] = raw.get('capabilities') or (raw.get('metrics') or {}).get('capabilities')
         if cancel_first:
+            validate_direct_cancellation(observed, cancel_after_write)
             canceled = download_direct_file(page, 'canceled', trial / 'receipt-canceled.json', receipt=True)
             recovered_receipts.add('canceled')
             previous = {'inputSHA256': record['inputSHA256'], 'expectedInputRevision': 1,
@@ -1205,9 +1242,13 @@ def run_direct_output_probe(context, origin, out, run_id, defer_verification=Fal
                     'Direct cancellation receipt is incomplete')
             require(canceled['operationId'] != raw['operationId'] and raw['inputRevision'] == canceled['inputRevision'] + 1,
                     'Direct cancellation/retry identities differ')
+            trigger = observed['cancellation']['trigger']
+            require((trigger['operationId'], trigger['inputRevision']) == (canceled['operationId'], canceled['inputRevision']),
+                    'Cancellation progress belongs to a different operation')
             record.update(previousAttempt={'kind': 'direct-cancel', 'status': observed['cancellation']['status'],
                           'operationId': canceled['operationId'], 'inputRevision': canceled['inputRevision'],
-                          'receipt': 'receipt-canceled.json', 'sameInput': True, 'sameHandle': True},
+                          'receipt': 'receipt-canceled.json', 'sameInput': True, 'sameHandle': True,
+                          'triggerProgress': trigger['progress'], 'cancelAfterWrite': cancel_after_write},
                           recoveryLink=observed['recoveryLink'])
         check_recovery_budget(out, trial, raw['output']['bytes'])
         output = trial / 'direct-opfs.mp4'
@@ -1358,7 +1399,7 @@ def emit_evidence(out, result):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True, help='New evidence directory outside the checkout')
-    parser.add_argument('--suite', choices=['small', 'followup', 'scale12', 'recovery'], default='small',
+    parser.add_argument('--suite', choices=['small', 'followup', 'scale12', 'recovery', 'direct-scale12'], default='small',
                         help='Followup requires independent verification of the small suite on the same product sources before this separate run')
     parser.add_argument('--defer-independent-verification', action='store_true',
                         help='Recover outputs; report verification pending until independent verifiers run in the receiving environment')
@@ -1378,7 +1419,8 @@ def main():
               'browserSandboxRequired': True, 'browserTrials': [], 'pagesByteCheck': 'NOT_RUN',
               'fileOutputProbe': {'requested': args.file_output_probe, 'status': 'NOT_RUN'},
               'rangeProbe': {'requested': args.range_probe, 'status': 'NOT_RUN'},
-              'directOutputProbe': {'requested': args.direct_output_probe, 'status': 'NOT_RUN', 'cases': []},
+              'directOutputProbe': {'requested': args.direct_output_probe or args.suite == 'direct-scale12',
+                                    'status': 'NOT_RUN', 'cases': []},
               'independentVerificationDeferred': args.defer_independent_verification, 'independentVerificationPassed': False,
               'notVerified': ['VR player/headset compatibility', 'real footage quality', 'novice usability',
                               'speed improvement', 'cancel/retry behavior', '4K scale', 'product completion',
@@ -1396,7 +1438,7 @@ def main():
             raise Blocked('This harness is scoped to Kushyameln01/kushyameln-works')
         if (args.file_output_probe or args.range_probe or args.direct_output_probe) and args.suite != 'small':
             raise Blocked('Backend/range probes require this run to complete both small UI trials first')
-        if args.suite in ('followup', 'scale12', 'recovery'):
+        if args.suite in ('followup', 'scale12', 'recovery', 'direct-scale12'):
             require(args.defer_independent_verification, 'Followup requires explicit deferred independent verification; the fixed small pixel oracle is bounded to 512px/eye and 120 frames')
             prerequisite_path = ROOT / 'development/vr180/evidence/2026-10-17-b5-small.json'
             if not prerequisite_path.is_file():
@@ -1449,8 +1491,17 @@ def main():
                     cases = [('stereo180-4k-12s-sbs', 'convert', None, 2048)]
                 if args.suite == 'recovery':
                     cases = cases[:2]
+                if args.suite == 'direct-scale12':
+                    cases = [('stereo180-4k-12s-sbs', 'convert', 'direct-scale12', 2048)]
                 for name, mode, scenario, eye_size in cases:
-                    trial = run_trial(context, origin, out, name, mode, result['runId'], args.defer_independent_verification, scenario, eye_size)
+                    if args.suite == 'direct-scale12':
+                        trial = run_direct_output_probe(context, origin, out, result['runId'],
+                            defer_verification=args.defer_independent_verification, cancel_first=True,
+                            name=name, scenario=scenario, cancel_after_write=True, max_output_bytes=6 * 1024 * 1024,
+                            settings={'mode': 'convert', 'layout': 'sbs', 'fov': 180, 'eyeSize': 2048, 'bitrate': 25165824})
+                        result['directOutputProbe'].update(status=trial['status'], cases=[{'scenario': scenario, 'status': trial['status']}])
+                    else:
+                        trial = run_trial(context, origin, out, name, mode, result['runId'], args.defer_independent_verification, scenario, eye_size)
                     result['browserTrials'].append(trial)
                     if trial['status'] != completed_status:
                         break

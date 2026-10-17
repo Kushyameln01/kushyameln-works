@@ -79,6 +79,52 @@ class DirectReceiptAdmission(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.validate()
 
+    def test_scale_requires_multiple_mux_writes_and_complete_frame_count(self):
+        self.record.update(requireMultipleMuxWrites=True, expectedVideoFrames=360)
+        self.receipt['metrics'] = {'videoFrames': 360, 'jobId': self.receipt['operationId']}
+        for writes in [None, 0, 1, True, '2']:
+            with self.subTest(muxWrites=writes):
+                self.receipt['directSave']['capture'] = {'muxWrites': writes}
+                with self.assertRaises(ValueError):
+                    self.validate()
+        self.receipt['directSave']['capture']['muxWrites'] = 2
+        self.validate()
+        self.assertEqual(self.record['observedMuxWrites'], 2)
+        self.receipt['metrics']['videoFrames'] = 359
+        with self.assertRaises(ValueError):
+            self.validate()
+
+
+class DirectCancellationAdmission(unittest.TestCase):
+    def setUp(self):
+        self.observed = {'cancellation': {'status': 'CANCELED_EMPTY_FILE_OBSERVED',
+            'requested': True, 'afterBytes': 0, 'cleanupPending': False, 'disposeCompleted': True,
+            'ack': {'status': 'ACKNOWLEDGED'}, 'error': {'name': 'AbortError'},
+            'trigger': {'type': 'progress', 'progress': {'phase': 'convert', 'outputBytes': 1048576}}}}
+
+    def test_written_then_canceled_and_empty_is_admitted(self):
+        harness.validate_direct_cancellation(self.observed, cancel_after_write=True)
+
+    def test_zero_missing_or_non_numeric_write_is_rejected(self):
+        for value in [0, None, -1, True, '1048576']:
+            with self.subTest(outputBytes=value):
+                self.observed['cancellation']['trigger']['progress']['outputBytes'] = value
+                with self.assertRaises(ValueError):
+                    harness.validate_direct_cancellation(self.observed, cancel_after_write=True)
+
+    def test_finalization_or_nonempty_target_does_not_count_as_cancel(self):
+        self.observed['cancellation']['trigger']['progress']['phase'] = 'finalize'
+        with self.assertRaises(ValueError):
+            harness.validate_direct_cancellation(self.observed, cancel_after_write=True)
+        self.observed['cancellation']['trigger']['progress']['phase'] = 'convert'
+        self.observed['cancellation']['afterBytes'] = 1
+        with self.assertRaises(ValueError):
+            harness.validate_direct_cancellation(self.observed, cancel_after_write=True)
+
+    def test_existing_small_cancel_still_accepts_zero_written_bytes(self):
+        self.observed['cancellation']['trigger']['progress']['outputBytes'] = 0
+        harness.validate_direct_cancellation(self.observed, cancel_after_write=False)
+
 
 if __name__ == '__main__':
     unittest.main()
