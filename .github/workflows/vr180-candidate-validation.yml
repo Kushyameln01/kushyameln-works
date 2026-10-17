@@ -55,6 +55,7 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONUNBUFFERED: '1'
       VR180_SEGMENT_PROFILE: ${{ contains(github.event.head_commit.message, '[vr180-segmented-128]') && 'single-128mib' || 'service-8mib' }}
+      VR180_CLOUD_RECEIVER_PROBE: ${{ contains(github.event.head_commit.message, '[vr180-cloud-receiver]') }}
     steps:
       - name: Check out the exact private transport candidate
         id: checkout
@@ -80,6 +81,14 @@ jobs:
           assert r['status']=='PASS_FULL_RECOVERY' and r['workflowRun']==39041763123
           assert r['artifactCount']==17 and r['partCount']==16 and r['recovery']['status']=='PASS'
           assert sum(f['independentGeneratorComparedBytes'] for f in r['recovery']['wholeFiles'])==125829120
+          import os
+          if os.environ['VR180_CLOUD_RECEIVER_PROBE']=='true':
+              r=json.loads(Path('development/vr180/evidence/2026-10-17-actions-receiver-service.json').read_text())
+              assert r['status']=='PASS_SEPARATE_ACTIONS_BYTES' and r['runId']==39044433711
+              assert r['independentReview']['status']=='PASS'
+              v=r['receiverRecords']['run.json']
+              assert v['recoveredBytes']==v['independentComparedBytes']==125829120
+              assert v['downloadArtifacts']==17 and v['dataArtifacts']==16
           PY
           fi
           python3 tools/vr180/probe-segmented-transfer.py \
