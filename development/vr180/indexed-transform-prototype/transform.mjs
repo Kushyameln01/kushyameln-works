@@ -1,5 +1,5 @@
 // Private indexed pixel-conversion prototype; generated from the public transform.
-// No public worker, vendor bundle, input admission, or supported limit is changed.
+// Public/default limits stay unchanged; named private output profiles are explicit trial options.
 import { buildStereoGeometry } from '../../../docs/shared/vr180/geometry.mjs';
 import { createFileOutput } from '../../../docs/shared/vr180/file-output.mjs';
 import { inspectMp4 } from '../../../docs/shared/vr180/mp4.mjs';
@@ -10,7 +10,15 @@ import { createInputIndex } from '../input-index-prototype/input-index.mjs';
 import { createOutputIndex, PROFILE } from '../output-index-prototype/output-index.mjs';
 
 const MAX_SAMPLES = 100_000;
-const MAX_OUTPUT_BYTES = 1024 ** 3;
+export const PRIVATE_OUTPUT_PROFILES = Object.freeze({
+  default: Object.freeze({id: 'default', maxBytes: 1024 ** 3}),
+  'p5-5gb': Object.freeze({id: 'p5-5gb', maxBytes: 5_200_000_000}),
+  'p5-10gb': Object.freeze({id: 'p5-10gb', maxBytes: 10_200_000_000}),
+});
+export function resolvePrivateOutputProfile(id = 'default') {
+  if (typeof id !== 'string' || !Object.hasOwn(PRIVATE_OUTPUT_PROFILES, id)) throw Error('PRIVATE_OUTPUT_PROFILE_UNSUPPORTED');
+  return PRIVATE_OUTPUT_PROFILES[id];
+}
 const CACHE_BYTES = 1024 ** 2;
 const WRITE_CHUNK_BYTES = 1024 ** 2;
 const MAX_METADATA_BYTES = 16 * 1024 ** 2;
@@ -20,7 +28,8 @@ function abortError() {
 }
 
 /** Production direct-mux sink; exposed so the pinned muxer can be tested without WebCodecs. */
-export async function createDirectMuxDestination(handle, { signal, onWrite = () => {}, onOutputCreated } = {}) {
+export async function createDirectMuxDestination(handle, { signal, onWrite = () => {}, onOutputCreated, outputProfileId = 'default' } = {}) {
+  const outputProfile = resolvePrivateOutputProfile(outputProfileId);
   const output = await createFileOutput(handle, { signal, onCreated: onOutputCreated });
   const logicalWriter = output.stream.getWriter();
   let logicalClosed = false;
@@ -30,8 +39,8 @@ export async function createDirectMuxDestination(handle, { signal, onWrite = () 
       if (type !== 'write' || !(data instanceof Uint8Array)
           || !Number.isSafeInteger(position) || position < 0
           || !Number.isSafeInteger(position + data.byteLength)
-          || position + data.byteLength > MAX_OUTPUT_BYTES) {
-        throw new RangeError('Experimental output limit: 1 GiB; invalid or oversized write.');
+          || position + data.byteLength > outputProfile.maxBytes) {
+        throw new RangeError(outputProfile.id === 'default' ? 'Experimental output limit: 1 GiB; invalid or oversized write.' : 'Private output limit: ' + outputProfile.id + ' ' + outputProfile.maxBytes + ' bytes; invalid or oversized write.');
       }
       await output.writeAt(position, data);
       onWrite(output.status.extent);
@@ -179,9 +188,10 @@ export const inspectSavedOutput = (file, options) => inspectOutputMp4(file, opti
 
 /** Private direct-file pixel route. One supplied combined-fork module owns every media class. */
 export async function convertStereo(file, settings, {
-  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated, fork, indexRoot, onIndexOwnership,
+  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated, fork, indexRoot, onIndexOwnership, outputProfileId = 'default',
 } = {}) {
   const started = performance.now();
+  const outputProfile = resolvePrivateOutputProfile(outputProfileId);
   const {Input, BlobSource, MP4, VideoSampleSink, EncodedPacketSink, CanvasSource,
     EncodedAudioPacketSource, Output, Mp4OutputFormat, StreamTarget, Quality, canEncodeVideo} = fork ?? {};
   if (![Input, BlobSource, VideoSampleSink, EncodedPacketSink, CanvasSource, EncodedAudioPacketSource,
@@ -221,7 +231,7 @@ export async function convertStereo(file, settings, {
     jobId: id, settings: chosenSettings, startedAt: new Date().toISOString(),
     inputBytes: file.size, outputBytes: 0, videoFrames: 0, encodedVideoPackets: 0, audioPackets: 0,
     totalSamples: 0, sourceCacheBudgetBytes: CACHE_BYTES,
-    outputLimitBytes: MAX_OUTPUT_BYTES, sampleLimit: MAX_SAMPLES,
+    outputLimitBytes: outputProfile.maxBytes, outputProfileId: outputProfile.id, sampleLimit: MAX_SAMPLES,
     writeChunkBytes: WRITE_CHUNK_BYTES, sourceAnalysisMs: null,
     capabilityCheckMs: null, capabilities: null, temporarySetupMs: null, conversionLoopMs: null,
     videoIteratorWaitMs: 0, canvasDrawMs: 0, videoAddWaitMs: 0,
@@ -230,7 +240,7 @@ export async function convertStereo(file, settings, {
     firstAudioTimestamp: null, lastAudioEndTimestamp: null, audioTimeline: null,
     storageQuotaBytes: null, storageUsageBytes: null, storageAvailableBytes: null,
     cpuPeakBytes: null, gpuPeakBytes: null, nativePeakBytes: null,
-    containerMetadataGrowth: 'private bounded disk input/output indices; unchanged public sample/metadata/output limits',
+    containerMetadataGrowth: 'private bounded disk input/output indices; unchanged sample/metadata limits; explicit private output profile',
     metadataPatched: false, status: 'preparing', cleanupError: null,
     outputBackend: 'private-indexed-direct-file', opfsDirectory: null, admission,
     indexSortBytes: {input: 4 * 1024 ** 2 - PROFILE.sortReservedBytes, output: PROFILE.sortReservedBytes},
@@ -397,7 +407,7 @@ export async function convertStereo(file, settings, {
     outputIndex = await acquire(() => createOutputIndex({root: indexRoot, jobId: outputOwnership.jobId,
       ownerToken: outputOwnership.ownerToken, budget, signal, layout: 'sbs'}));
     directDestination = await createDirectMuxDestination(outputHandle, {
-      signal, onWrite: extent => { metrics.outputBytes = extent; },
+      signal, outputProfileId: outputProfile.id, onWrite: extent => { metrics.outputBytes = extent; },
       onOutputCreated: acquired => { directOutput = acquired; onOutputCreated?.(acquired); },
     });
     const format = new Mp4OutputFormat({fastStart: false}); format._options.vr180Index = outputIndex;
@@ -483,7 +493,7 @@ export async function convertStereo(file, settings, {
     const prepareStarted = performance.now();
     const direct = directDestination.finish();
     metrics.outputBytes = direct.extent;
-    if (!metrics.outputBytes || metrics.outputBytes > MAX_OUTPUT_BYTES) throw Error('The finalized output size is invalid.');
+    if (!metrics.outputBytes || metrics.outputBytes > outputProfile.maxBytes) throw Error('The finalized output size is invalid.');
     const indexed = outputIndex.metrics;
     if (!indexed.metadataClosed || !indexed.verification || indexed.sampleCount !== metrics.totalSamples
       || indexed.verification.sampleCounts.total !== metrics.totalSamples) throw Error('INDEXED_METADATA_NOT_VERIFIED');

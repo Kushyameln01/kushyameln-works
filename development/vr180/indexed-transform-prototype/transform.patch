@@ -1,6 +1,6 @@
 --- a/docs/shared/vr180/transform.mjs
 +++ b/development/vr180/indexed-transform-prototype/transform.mjs
-@@ -1,17 +1,19 @@
+@@ -1,26 +1,37 @@
 -import {
 -  Input, BlobSource, MP4, VideoSampleSink, EncodedPacketSink,
 -  CanvasSource, EncodedAudioPacketSource, Output, Mp4OutputFormat,
@@ -10,7 +10,7 @@
 -import { createFileOutput } from './file-output.mjs';
 -import { createMuxCapture } from './mux-capture.mjs';
 +// Private indexed pixel-conversion prototype; generated from the public transform.
-+// No public worker, vendor bundle, input admission, or supported limit is changed.
++// Public/default limits stay unchanged; named private output profiles are explicit trial options.
 +import { buildStereoGeometry } from '../../../docs/shared/vr180/geometry.mjs';
 +import { createFileOutput } from '../../../docs/shared/vr180/file-output.mjs';
 +import { inspectMp4 } from '../../../docs/shared/vr180/mp4.mjs';
@@ -21,7 +21,16 @@
 +import { createOutputIndex, PROFILE } from '../output-index-prototype/output-index.mjs';
  
  const MAX_SAMPLES = 100_000;
- const MAX_OUTPUT_BYTES = 1024 ** 3;
+-const MAX_OUTPUT_BYTES = 1024 ** 3;
++export const PRIVATE_OUTPUT_PROFILES = Object.freeze({
++  default: Object.freeze({id: 'default', maxBytes: 1024 ** 3}),
++  'p5-5gb': Object.freeze({id: 'p5-5gb', maxBytes: 5_200_000_000}),
++  'p5-10gb': Object.freeze({id: 'p5-10gb', maxBytes: 10_200_000_000}),
++});
++export function resolvePrivateOutputProfile(id = 'default') {
++  if (typeof id !== 'string' || !Object.hasOwn(PRIVATE_OUTPUT_PROFILES, id)) throw Error('PRIVATE_OUTPUT_PROFILE_UNSUPPORTED');
++  return PRIVATE_OUTPUT_PROFILES[id];
++}
  const CACHE_BYTES = 1024 ** 2;
  const WRITE_CHUNK_BYTES = 1024 ** 2;
 -const OPFS_ROOT = 'vr180-jobs';
@@ -29,24 +38,33 @@
  
  function abortError() {
    return new DOMException('Conversion was canceled.', 'AbortError');
-@@ -20,7 +22,7 @@
+ }
+ 
  /** Production direct-mux sink; exposed so the pinned muxer can be tested without WebCodecs. */
- export async function createDirectMuxDestination(handle, { signal, onWrite = () => {}, onOutputCreated } = {}) {
+-export async function createDirectMuxDestination(handle, { signal, onWrite = () => {}, onOutputCreated } = {}) {
++export async function createDirectMuxDestination(handle, { signal, onWrite = () => {}, onOutputCreated, outputProfileId = 'default' } = {}) {
++  const outputProfile = resolvePrivateOutputProfile(outputProfileId);
    const output = await createFileOutput(handle, { signal, onCreated: onOutputCreated });
 -  const capture = createMuxCapture(), logicalWriter = output.stream.getWriter();
 +  const logicalWriter = output.stream.getWriter();
    let logicalClosed = false;
    const stream = new WritableStream({
      async write({ type, position, data }) {
-@@ -32,7 +34,6 @@
-         throw new RangeError('Experimental output limit: 1 GiB; invalid or oversized write.');
+@@ -28,11 +39,10 @@
+       if (type !== 'write' || !(data instanceof Uint8Array)
+           || !Number.isSafeInteger(position) || position < 0
+           || !Number.isSafeInteger(position + data.byteLength)
+-          || position + data.byteLength > MAX_OUTPUT_BYTES) {
+-        throw new RangeError('Experimental output limit: 1 GiB; invalid or oversized write.');
++          || position + data.byteLength > outputProfile.maxBytes) {
++        throw new RangeError(outputProfile.id === 'default' ? 'Experimental output limit: 1 GiB; invalid or oversized write.' : 'Private output limit: ' + outputProfile.id + ' ' + outputProfile.maxBytes + ' bytes; invalid or oversized write.');
        }
        await output.writeAt(position, data);
 -      capture.write({position, data}); // Capture only acknowledged writes, including header rewrites.
        onWrite(output.status.extent);
      },
      async close() {
-@@ -45,12 +46,11 @@
+@@ -45,12 +55,11 @@
      },
    }, { highWaterMark: 1 });
    return {
@@ -61,7 +79,7 @@
      },
    };
  }
-@@ -142,18 +142,58 @@
+@@ -142,18 +151,59 @@
    };
  }
  
@@ -111,9 +129,10 @@
 +/** Private direct-file pixel route. One supplied combined-fork module owns every media class. */
  export async function convertStereo(file, settings, {
 -  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated,
-+  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated, fork, indexRoot, onIndexOwnership,
++  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated, fork, indexRoot, onIndexOwnership, outputProfileId = 'default',
  } = {}) {
    const started = performance.now();
++  const outputProfile = resolvePrivateOutputProfile(outputProfileId);
 +  const {Input, BlobSource, MP4, VideoSampleSink, EncodedPacketSink, CanvasSource,
 +    EncodedAudioPacketSource, Output, Mp4OutputFormat, StreamTarget, Quality, canEncodeVideo} = fork ?? {};
 +  if (![Input, BlobSource, VideoSampleSink, EncodedPacketSink, CanvasSource, EncodedAudioPacketSource,
@@ -129,7 +148,7 @@
    const checkAbort = () => { if (signal?.aborted) throw abortError(); };
    checkAbort();
    if (!(file instanceof Blob)) throw new TypeError('Input must be a File or Blob.');
-@@ -165,14 +205,17 @@
+@@ -165,20 +215,23 @@
      eyeSize: settings.eyeSize, bitrate: settings.bitrate,
    };
    const id = jobId ?? globalThis.crypto?.randomUUID();
@@ -155,12 +174,19 @@
  
    const metrics = {
      jobId: id, settings: chosenSettings, startedAt: new Date().toISOString(),
-@@ -187,16 +230,15 @@
+     inputBytes: file.size, outputBytes: 0, videoFrames: 0, encodedVideoPackets: 0, audioPackets: 0,
+     totalSamples: 0, sourceCacheBudgetBytes: CACHE_BYTES,
+-    outputLimitBytes: MAX_OUTPUT_BYTES, sampleLimit: MAX_SAMPLES,
++    outputLimitBytes: outputProfile.maxBytes, outputProfileId: outputProfile.id, sampleLimit: MAX_SAMPLES,
+     writeChunkBytes: WRITE_CHUNK_BYTES, sourceAnalysisMs: null,
+     capabilityCheckMs: null, capabilities: null, temporarySetupMs: null, conversionLoopMs: null,
+     videoIteratorWaitMs: 0, canvasDrawMs: 0, videoAddWaitMs: 0,
+@@ -187,16 +240,15 @@
      firstAudioTimestamp: null, lastAudioEndTimestamp: null, audioTimeline: null,
      storageQuotaBytes: null, storageUsageBytes: null, storageAvailableBytes: null,
      cpuPeakBytes: null, gpuPeakBytes: null, nativePeakBytes: null,
 -    containerMetadataGrowth: 'O(total samples); media buffers are streamed',
-+    containerMetadataGrowth: 'private bounded disk input/output indices; unchanged public sample/metadata/output limits',
++    containerMetadataGrowth: 'private bounded disk input/output indices; unchanged sample/metadata limits; explicit private output profile',
      metadataPatched: false, status: 'preparing', cleanupError: null,
 -    outputBackend: outputHandle ? 'direct-file' : 'opfs',
 -    opfsDirectory: outputHandle ? null : `${OPFS_ROOT}/${id}`,
@@ -179,7 +205,7 @@
    let cancellationPromise;
    let estimatedDuration = null;
    let lastProgressAt = -Infinity;
-@@ -227,26 +269,45 @@
+@@ -227,26 +279,45 @@
      // The awaited cleanup path below observes cancellation errors.
      void cancelOutput().catch(() => {});
    };
@@ -245,7 +271,7 @@
    // Register before acquiring resources, so the Worker can retry a failed
    // deletion after convertStereo has rejected and its finally has completed.
    onCleanup?.(cleanupResources);
-@@ -260,7 +321,11 @@
+@@ -260,7 +331,11 @@
    try {
      progress('inspect', null, true);
      const analysisStart = performance.now();
@@ -258,7 +284,7 @@
      const tracks = await input.getTracks();
      const videos = tracks.filter(track => track.type === 'video');
      const audios = tracks.filter(track => track.type === 'audio');
-@@ -313,6 +378,7 @@
+@@ -313,6 +388,7 @@
      if (!decodable) throw new Error('INPUT_DECODE_UNSUPPORTED');
      if (!encodable) throw new Error('OUTPUT_ENCODE_UNSUPPORTED');
  
@@ -266,7 +292,7 @@
      canvas = new OffscreenCanvas(geometry.width, geometry.height);
      const context = canvas.getContext('2d', { alpha: false, colorSpace: 'srgb' });
      if (!context) throw new Error('A 2D OffscreenCanvas could not be created.');
-@@ -328,63 +394,15 @@
+@@ -328,63 +404,15 @@
      }
  
      const setupStart = performance.now();
@@ -330,7 +356,7 @@
 +    outputIndex = await acquire(() => createOutputIndex({root: indexRoot, jobId: outputOwnership.jobId,
 +      ownerToken: outputOwnership.ownerToken, budget, signal, layout: 'sbs'}));
 +    directDestination = await createDirectMuxDestination(outputHandle, {
-+      signal, onWrite: extent => { metrics.outputBytes = extent; },
++      signal, outputProfileId: outputProfile.id, onWrite: extent => { metrics.outputBytes = extent; },
 +      onOutputCreated: acquired => { directOutput = acquired; onOutputCreated?.(acquired); },
 +    });
 +    const format = new Mp4OutputFormat({fastStart: false}); format._options.vr180Index = outputIndex;
@@ -339,7 +365,7 @@
      });
      output.addVideoTrack(videoSource);
      if (audioSource) output.addAudioTrack(audioSource);
-@@ -463,19 +481,32 @@
+@@ -463,19 +491,32 @@
        throw new Error('The encoder did not emit one video packet per submitted frame.');
      }
      const prepareStarted = performance.now();
@@ -355,7 +381,7 @@
 -    if (!metrics.outputBytes || metrics.outputBytes > MAX_OUTPUT_BYTES) throw new Error('The finalized output size is invalid.');
 +    const direct = directDestination.finish();
 +    metrics.outputBytes = direct.extent;
-+    if (!metrics.outputBytes || metrics.outputBytes > MAX_OUTPUT_BYTES) throw Error('The finalized output size is invalid.');
++    if (!metrics.outputBytes || metrics.outputBytes > outputProfile.maxBytes) throw Error('The finalized output size is invalid.');
 +    const indexed = outputIndex.metrics;
 +    if (!indexed.metadataClosed || !indexed.verification || indexed.sampleCount !== metrics.totalSamples
 +      || indexed.verification.sampleCounts.total !== metrics.totalSamples) throw Error('INDEXED_METADATA_NOT_VERIFIED');
@@ -383,7 +409,7 @@
      checkAbort();
      publishMetrics();
      progress('complete', metrics.lastVideoEndTimestamp, true);
-@@ -483,14 +514,16 @@
+@@ -483,14 +524,16 @@
        layout: 'sbs', fov: 180, eyeSize: chosenSettings.eyeSize,
        width: geometry.width, height: geometry.height,
        videoCodec: 'avc', audioCodec: audio ? 'aac' : null,
@@ -404,7 +430,7 @@
      if (outputHandle) {
        const priorState = error.saveOutputState;
        Object.defineProperty(failure, 'saveOutputState', {enumerable: true, configurable: true,
-@@ -502,21 +535,21 @@
+@@ -502,21 +545,21 @@
      throw failure;
    } finally {
      signal?.removeEventListener('abort', onAbort);
@@ -427,6 +453,8 @@
 +    try { await cleanupResources(); } catch (error) { releaseErrors.push(error); }
 +    try { await videoIterator?.return(); } catch { /* Input disposal cancels the decoder. */ }
      if (canvas) { canvas.width = 0; canvas.height = 0; }
+-  }
+-}
 +    metrics.totalMs = performance.now() - started;
 +    if (releaseErrors.length) {
 +      metrics.cleanupError = releaseErrors.map(error => error.message).join('; ');
@@ -439,5 +467,5 @@
 +      if (!failure) throw cleanupFailure;
 +    }
 +    try { publishMetrics(); } catch (error) { metrics.metricsCallbackError = String(error?.message ?? error); }
-   }
- }
++  }
++}

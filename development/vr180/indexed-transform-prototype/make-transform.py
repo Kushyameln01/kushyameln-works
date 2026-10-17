@@ -17,7 +17,7 @@ def change(old,new):
  s=s.replace(old,new)
 start=s.index('import {');end=s.index('\nconst MAX_SAMPLES')
 s='''// Private indexed pixel-conversion prototype; generated from the public transform.
-// No public worker, vendor bundle, input admission, or supported limit is changed.
+// Public/default limits stay unchanged; named private output profiles are explicit trial options.
 import { buildStereoGeometry } from '../../../docs/shared/vr180/geometry.mjs';
 import { createFileOutput } from '../../../docs/shared/vr180/file-output.mjs';
 import { inspectMp4 } from '../../../docs/shared/vr180/mp4.mjs';
@@ -185,6 +185,25 @@ s=s[:start]+'''  } finally {
   }
 }
 '''
+# Only explicit private final-output profiles vary; every public/default limit remains unchanged.
+change('const MAX_OUTPUT_BYTES = 1024 ** 3;', """export const PRIVATE_OUTPUT_PROFILES = Object.freeze({
+  default: Object.freeze({id: 'default', maxBytes: 1024 ** 3}),
+  'p5-5gb': Object.freeze({id: 'p5-5gb', maxBytes: 5_200_000_000}),
+  'p5-10gb': Object.freeze({id: 'p5-10gb', maxBytes: 10_200_000_000}),
+});
+export function resolvePrivateOutputProfile(id = 'default') {
+  if (typeof id !== 'string' || !Object.hasOwn(PRIVATE_OUTPUT_PROFILES, id)) throw Error('PRIVATE_OUTPUT_PROFILE_UNSUPPORTED');
+  return PRIVATE_OUTPUT_PROFILES[id];
+}""")
+change('onOutputCreated } = {}) {', "onOutputCreated, outputProfileId = 'default' } = {}) {\n  const outputProfile = resolvePrivateOutputProfile(outputProfileId);")
+change('position + data.byteLength > MAX_OUTPUT_BYTES', 'position + data.byteLength > outputProfile.maxBytes')
+change("throw new RangeError('Experimental output limit: 1 GiB; invalid or oversized write.');", "throw new RangeError(outputProfile.id === 'default' ? 'Experimental output limit: 1 GiB; invalid or oversized write.' : 'Private output limit: ' + outputProfile.id + ' ' + outputProfile.maxBytes + ' bytes; invalid or oversized write.');")
+change('fork, indexRoot, onIndexOwnership,', "fork, indexRoot, onIndexOwnership, outputProfileId = 'default',")
+change('  const started = performance.now();', '  const started = performance.now();\n  const outputProfile = resolvePrivateOutputProfile(outputProfileId);')
+change('outputLimitBytes: MAX_OUTPUT_BYTES,', 'outputLimitBytes: outputProfile.maxBytes, outputProfileId: outputProfile.id,')
+change('      signal, onWrite: extent =>', '      signal, outputProfileId: outputProfile.id, onWrite: extent =>')
+change('metrics.outputBytes > MAX_OUTPUT_BYTES', 'metrics.outputBytes > outputProfile.maxBytes')
+change('private bounded disk input/output indices; unchanged public sample/metadata/output limits', 'private bounded disk input/output indices; unchanged sample/metadata limits; explicit private output profile')
 # Pin unchanged substantive calculation sections independently of the integration patch.
 def section(text,start,end):return text[text.index(start):text.index(end,text.index(start))]
 aac_start='export function createAacPacketCopier';aac_end='\n}\n'
@@ -195,4 +214,4 @@ path=HERE/'transform.mjs';path.write_text(s)
 patch=''.join(difflib.unified_diff(original.splitlines(True),s.splitlines(True),fromfile='a/docs/shared/vr180/transform.mjs',tofile='b/development/vr180/indexed-transform-prototype/transform.mjs'))
 (HERE/'transform.patch').write_text(patch)
 sha=lambda value:hashlib.sha256(value.encode()).hexdigest()
-(HERE/'provenance.json').write_text(json.dumps({'source':'docs/shared/vr180/transform.mjs','sourceSHA256':sha(original),'workerAdmissionSource':'docs/shared/vr180/worker.mjs','workerSHA256':sha(worker),'privateSHA256':sha(s),'patchSHA256':sha(patch),'unchangedAACCopierSHA256':sha(section(s,aac_start,aac_end)),'unchangedGeometryCanvasWebCodecsLoopSHA256':sha(section(s,loop_start,loop_end)),'publicModified':False,'inputParser':'unchanged public mp4.mjs before any index acquisition; private cslg input acceptance is not enabled','savedOutputParser':'existing output-only mp4-output-inspect.mjs with verified cslg contract; not used for input admission','library':'one combined fork passed in options.fork; no bundled vendor import','ownershipHook':'optional awaited onIndexOwnership receives immutable schema1 ticket before each controller creation; exact jobId/token forwarded; caller owns persistence and registry removal'},indent=2)+'\n')
+(HERE/'provenance.json').write_text(json.dumps({'source':'docs/shared/vr180/transform.mjs','sourceSHA256':sha(original),'workerAdmissionSource':'docs/shared/vr180/worker.mjs','workerSHA256':sha(worker),'privateSHA256':sha(s),'patchSHA256':sha(patch),'unchangedAACCopierSHA256':sha(section(s,aac_start,aac_end)),'unchangedGeometryCanvasWebCodecsLoopSHA256':sha(section(s,loop_start,loop_end)),'publicModified':False,'privateOutputProfiles':{'default':1073741824,'p5-5gb':5200000000,'p5-10gb':10200000000},'privateProfileScope':'Only named final-output byte caps vary; sample, metadata, index, sort, chunk and default/public limits stay unchanged','inputParser':'unchanged public mp4.mjs before any index acquisition; private cslg input acceptance is not enabled','savedOutputParser':'existing output-only mp4-output-inspect.mjs with verified cslg contract; not used for input admission','library':'one combined fork passed in options.fork; no bundled vendor import','ownershipHook':'optional awaited onIndexOwnership receives immutable schema1 ticket before each controller creation; exact jobId/token forwarded; caller owns persistence and registry removal'},indent=2)+'\n')

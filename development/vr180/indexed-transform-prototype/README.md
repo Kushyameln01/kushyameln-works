@@ -84,3 +84,16 @@ Held samples and the canvas are released on all exits. Final failure preserves a
 ## Local verification
 
 `node --test tests/vr180-indexed-transform.test.mjs` passes thirteen contract/owner tests. They exercise the actual generated function with substituted codecs/index backends, while using the real file transaction and SHA implementation. Tests cover strict admission and limits, index attachment order/shared budget, the pixel loop, commit/readback, acquisition cancellation, codec-cancel failure, postcommit cleanup retry, postcommit metadata mismatch, and the retained AAC rejection rules. Three additional cases pause each ownership callback to prove awaiting/token correspondence, reject each callback to prove acquisition is stopped and existing cleanup still runs, and cancel during persistence to prove no late index creation. A real fixed-original `cslg` MP4 also passes saved-output inspection and fails the actual public input preflight before resource acquisition. They do not claim real browser decoding, encoding, OPFS, registry durability, VR playback, or performance. The separate native harness must recover and independently inspect complete output files before qualification.
+
+## Named P5 trial output caps (private only)
+
+`outputProfileId` defaults to `default` (1 GiB). Only `p5-5gb`
+(5,200,000,000 bytes) and `p5-10gb` (10,200,000,000 bytes) add explicit
+private final-output caps; arbitrary numeric caps are refused before inspection
+or resource acquisition. The sink and the post-finalize extent use the same
+resolved profile. Public source and default behavior are unchanged. The shared
+100,000-sample, 16 MiB metadata, 8 MiB index, 4 MiB aggregate sort and bounded
+chunk/backing contracts do not change. These limits are trial design values,
+not evidence of a successful large conversion, capacity reservation, or public
+support. P5 must separately establish actual payload, complete recovery and
+independent quality before any large-profile acceptance.

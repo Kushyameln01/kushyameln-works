@@ -177,3 +177,26 @@ test('real fixed-original cslg media passes saved-output inspection but is refus
     await rm(root,{recursive:true,force:true});
   }
 });
+
+test('named private output profiles retain the shared conversion contract and reject arbitrary cap selection',async()=>{
+ for(const [id,cap] of [['default',1024**3],['p5-5gb',5_200_000_000],['p5-10gb',10_200_000_000]]){
+  const f=await fixture(),result=await f.run({outputProfileId:id});assert.equal(result.metrics.outputLimitBytes,cap);
+  assert.equal(result.metrics.outputProfileId,id);assert.equal(result.metrics.sampleLimit,100000);
+  assert.equal(f.calls.controllers[0].options.budget,f.calls.controllers[1].options.budget);assert.equal(result.metrics.indexReservedAfterCleanup,0);
+ }
+ for(const id of ['unknown','toString',5200000000,{}]){
+  const f=await fixture();await assert.rejects(f.run({outputProfileId:id}),/PRIVATE_OUTPUT_PROFILE_UNSUPPORTED/);
+  assert.equal(f.calls.inspect.length,0);assert.equal(f.calls.controllers.length,0);assert.equal(f.calls.write,0);
+ }
+});
+
+test('private cap guard handles exact boundary and 4 GiB offsets without creating a giant test file',async()=>{
+ for(const [id,cap] of [['p5-5gb',5_200_000_000],['p5-10gb',10_200_000_000]]){
+  const writes=[],handle={getFile:async()=>new Blob(),createWritable:async()=>({write:async value=>writes.push(value.position),abort:async()=>{}})};
+  const dest=await createDirectMuxDestination(handle,{outputProfileId:id}),writer=dest.stream.getWriter();
+  await writer.write({type:'write',position:2**32,data:new Uint8Array(1)});
+  await writer.write({type:'write',position:cap-1,data:new Uint8Array(1)});
+  await assert.rejects(writer.write({type:'write',position:cap,data:new Uint8Array(1)}),/Private output limit/);
+  assert.deepEqual(writes,[2**32,cap-1]);await dest.output.abort();
+ }
+});
