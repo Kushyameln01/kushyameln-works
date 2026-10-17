@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync, mkdirSync, statSync, writeFileSync, openSync, readSync, writeSync, fsyncSync, fstatSync, closeSync, rmSync, existsSync} from 'node:fs';
+import {mkdtempSync, mkdirSync, readFileSync, statSync, writeFileSync, openSync, readSync, writeSync, fsyncSync, fstatSync, closeSync, rmSync, existsSync} from 'node:fs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {createIndexStore, createIndexBudget, recordByteOffset, INDEX_PAGE_BYTES as PAGE} from '../development/vr180/index-prototype/index-store.mjs';
@@ -262,4 +262,36 @@ test('initialization cancellation keeps its lease while retryCleanup is required
   failRemove = false; await failure.retryCleanup();
   assert.equal(h.lockManager.held.size, 0); assert.equal(h.calls.close, 1);
   const next = await createIndexStore(options); await next.dispose();
+});
+
+
+test('sequential append/read/patch retains bounded read I/O while disk records remain exact', async t => {
+  const h = temporaryRoot(t), width = 64, count = 4096;
+  const store = await createIndexStore({root: h.root, lockManager: h.lockManager, jobId: 'write-through', schema: {...schema, recordBytes: width}, yieldTask: tick});
+  const bytes = new Uint8Array(width), result = new Uint8Array(width), d = new DataView(bytes.buffer);
+  try {
+    for (let index = 0; index < count; index++) {
+      d.setUint32(0, index, true); d.setUint32(4, 0, true); await store.appendRecord(bytes);
+      await store.readRecord(index, result); assert.deepEqual(result, bytes);
+      d.setUint32(4, index + 1, true); await store.patchRecord(index, bytes);
+      await store.readRecord(index, result); assert.deepEqual(result, bytes);
+    }
+    const disk = readFileSync(join(h.path, 'write-through', 'records.bin')), v = new DataView(disk.buffer, disk.byteOffset, disk.length);
+    for (let index = 0; index < count; index++) { assert.equal(v.getUint32(index * width, true), index); assert.equal(v.getUint32(index * width + 4, true), index + 1); }
+    assert(store.metrics.readBytes <= count * width, `read amplification: ${store.metrics.readBytes} > ${count * width}`);
+  } finally { await store.dispose(); }
+});
+
+test('partial cached-page patch canceled during short I/O cannot be read as a completed update', async t => {
+  let pause = false, entered, release;
+  const reached = new Promise(r => { entered = r; }), aborter = new AbortController();
+  const h = temporaryRoot(t, {shortWrite: 1});
+  const store = await createIndexStore({root: h.root, lockManager: h.lockManager, jobId: 'cached-cancel', schema: {...schema, recordBytes: PAGE},
+    yieldTask: () => pause ? new Promise(r => { release = r; entered(); }) : tick()});
+  await store.appendRecord(new Uint8Array(PAGE)); await store.readPage(0, new Uint8Array(PAGE));
+  pause = true; const patch = store.patchRecord(0, new Uint8Array(PAGE).fill(77), {signal: aborter.signal});
+  const rejected = assert.rejects(patch, {name: 'AbortError'}); await reached; aborter.abort(); release(); await rejected;
+  await assert.rejects(store.readPage(0, new Uint8Array(PAGE)), /INDEX_NOT_OPEN/);
+  const disk = readFileSync(join(h.path, 'cached-cancel', 'records.bin')); assert.equal(disk[0], 77); assert.equal(disk[64], 0);
+  await store.dispose();
 });

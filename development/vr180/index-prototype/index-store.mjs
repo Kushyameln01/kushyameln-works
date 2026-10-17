@@ -91,7 +91,7 @@ export async function createIndexStore({root, jobId = globalThis.crypto.randomUU
   let busy = false, pending = null, disposing = null, closing = false, internalBufferBytes = INDEX_PAGE_BYTES;
   let ioBytesSinceYield = 0, ioCallsSinceYield = 0;
   const controller = new AbortController();
-  const stats = {readBytes: 0, writeBytes: 0, readCalls: 0, writeCalls: 0, cacheHits: 0, yields: 0, flushes: 0,
+  const stats = {readBytes: 0, writeBytes: 0, readCalls: 0, writeCalls: 0, cacheHits: 0, cacheWriteThroughBytes: 0, yields: 0, flushes: 0,
     observedFileBytes: 0, peakInternalBufferBytes: INDEX_PAGE_BYTES, lastError: null};
   const check = operationSignal => { if (controller.signal.aborted || signal?.aborted || operationSignal?.aborted) throw abortError(); };
   const add = (key, n) => {
@@ -127,22 +127,33 @@ export async function createIndexStore({root, jobId = globalThis.crypto.randomUU
     return bytes.buffer.byteLength;
   }
   async function writeFully(bytes, at, operationSignal) {
-    cachePage = -1; cacheValid = 0;
     for (let done = 0; done < bytes.length;) {
       check(operationSignal);
       const position = at + done, length = Math.min(bytes.length - done, INDEX_PAGE_BYTES - position % INDEX_PAGE_BYTES);
       const written = handle.write(bytes.subarray(done, done + length), {at: position}); add('writeCalls', 1);
       if (!safe(written) || written > length) throw Error('INVALID_INDEX_WRITE_COUNT');
       if (written === 0) throw Error('INDEX_NO_WRITE_PROGRESS');
+      // The synchronous backend has accepted these bytes. Preserve other cached
+      // pages, update overlapping bytes, and extend only a contiguous valid prefix.
+      // No write-back queue is introduced; failed/canceled operations still poison
+      // the store, so partially written records cannot subsequently be read.
+      if (cachePage >= 0) {
+        const base = recordByteOffset(cachePage, INDEX_PAGE_BYTES);
+        const start = Math.max(base, position), end = Math.min(base + INDEX_PAGE_BYTES, position + written);
+        if (start < end && start <= base + cacheValid) {
+          page.set(bytes.subarray(done + start - position, done + end - position), start - base);
+          cacheValid = Math.max(cacheValid, end - base); add('cacheWriteThroughBytes', end - start);
+        }
+      }
       done += written; add('writeBytes', written); stats.observedFileBytes = Math.max(stats.observedFileBytes, at + done);
       await yieldIO(written, operationSignal);
     }
   }
   async function loadPage(index, operationSignal) {
     if (!safe(index)) throw Error('INVALID_INDEX_POSITION');
-    if (index === cachePage) { add('cacheHits', 1); return; }
     const base = recordByteOffset(index, INDEX_PAGE_BYTES), length = Math.min(INDEX_PAGE_BYTES, extent - base);
     if (length <= 0) throw Error('INDEX_READ_OUT_OF_RANGE');
+    if (index === cachePage && cacheValid === length) { add('cacheHits', 1); return; }
     cachePage = -1; cacheValid = 0;
     for (let done = 0; done < length;) {
       check(operationSignal);

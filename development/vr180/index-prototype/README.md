@@ -58,3 +58,7 @@ Nodeの実temp fileをSyncAccessHandle形のadapterで読み書きします。�
 実OPFS/SyncAccessHandleのブラウザ実行、固定12索引ケースの意味照合、実Chrome peak、逐次moov、mux/demux forkとの接続は未確認です。製品上限を変更する根拠には使いません。
 
 Web Locksの参照仕様：<https://www.w3.org/TR/web-locks/>（exclusive / ifAvailable、callback Promise完了で解放、request Promiseで解放完了を待つ規則）。
+
+## Write-through cache revision
+
+The output-index prototype exposed 6.99 GB of read I/O for a 6.4 MB sample table. After each acknowledged synchronous write, overlapping cached bytes now update in place; unrelated cached pages remain valid. A growing partial page is reused only when its valid prefix matches the requested extent. Failed or canceled partial writes still poison the store until disposal. The 4,096-record append/read/patch regression independently reads the real disk file and bounds index read bytes. This corrects measured I/O amplification; native/browser and complete output comparisons must be repeated for this revision before adoption.
