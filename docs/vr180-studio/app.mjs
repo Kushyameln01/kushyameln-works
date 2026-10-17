@@ -251,8 +251,10 @@ $('save').onclick = async () => {
     $('save-status').textContent = '保存したファイルのサイズと全体ハッシュが一致しました。';
     $('status').textContent = '保存と内容の照合が完了しました。';
   } catch (e) {
-    if (e.saveWriteCommitted) attempt.commitState = 'committed';
-    else if (attempt.commitState === 'pending') attempt.commitState = e.retryCleanup ? 'unknown' : 'aborted';
+    const outputState = e.saveOutputState;
+    if (e.saveWriteCommitted || outputState?.committed) attempt.commitState = 'committed';
+    else if (attempt.commitState === 'pending') attempt.commitState = outputState?.state === 'not-started' ? 'not-started'
+      : outputState?.state === 'aborted' ? 'aborted' : 'unknown';
     if (attempt.verificationState !== 'passed') {
       attempt.status = e.name === 'AbortError' ? 'canceled' : 'failed';
       attempt.verificationState = attempt.commitState === 'committed' ? e.name === 'AbortError' ? 'canceled' : 'failed' : 'not-run';

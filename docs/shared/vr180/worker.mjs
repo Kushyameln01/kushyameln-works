@@ -78,14 +78,14 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
       let media = file, metrics = null, direct = null;
       if (settings.mode === 'convert') {
         const {convertStereo} = await mark('transformLoad', loadTransform); check();
-        if (directAttempt) { directAttempt.commitState = 'pending'; job.directStarted = true; }
         const result = await mark('convert', () => convertStereo(file, settings, {
           signal: job.controller.signal, jobId: job.operationId, outputHandle,
           onCleanup: cleanup => { job.cleanup = cleanup; },
+          onOutputCreated: output => { job.directOutput = output; directAttempt.commitState = 'pending'; },
           onProgress: progress => send('progress', {progress}), onMetrics: value => events.push(value),
         }));
         media = result.file; job.cleanup = result.cleanup; metrics = result.metrics;
-        direct = result.direct ?? null; job.directOutput = direct?.output ?? null; check();
+        direct = result.direct ?? null; job.directOutput = direct?.output ?? job.directOutput ?? null; check();
         if (Boolean(outputHandle) !== Boolean(direct)) throw Error('DIRECT_OUTPUT_RESULT_MISMATCH');
       } else if (settings.mode !== 'copy') throw Error('MODE_UNSUPPORTED');
       let blob, outputInfo, outputHash, directSave = null;
@@ -121,10 +121,11 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
       const cleanupComplete = await clean();
       timings.failedAfter = performance.now() - clock;
       const metrics = events.at(-1) ?? null;
-      const committed = !!job.directOutput?.status.committed || !!error.saveWriteCommitted;
+      const outputState = job.directOutput?.status ?? error.saveOutputState ?? {state: 'not-started', writerAcquired: false, committed: false};
+      const committed = outputState.committed === true || error.saveWriteCommitted === true;
       if (directAttempt && directAttempt.verificationState !== 'passed') {
         Object.assign(directAttempt, {status: job.controller.signal.aborted ? 'canceled' : 'failed',
-          commitState: committed ? 'committed' : !job.directStarted ? 'not-started' : cleanupComplete ? 'aborted' : 'unknown',
+          commitState: committed ? 'committed' : outputState.state === 'not-started' ? 'not-started' : outputState.state === 'aborted' ? 'aborted' : 'unknown',
           verificationState: committed ? job.controller.signal.aborted ? 'canceled' : 'failed' : 'not-run',
           errorCode: error?.message || String(error), finishedAt: new Date().toISOString(),
           cleanup: {status: cleanupComplete ? 'complete' : 'failed', errorCode: job.cleanupError}});
@@ -137,7 +138,7 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
         capabilities: metrics?.capabilities ?? null, events, clock: 'performance.now, worker',
         cleanup: {status: cleanupComplete ? 'complete' : 'failed', error: job.cleanupError,
           requiresWorkerTermination: !!job.requiresWorkerTermination},
-        directSave: job.directSave ?? (outputHandle ? {status: 'failed', outputState: job.directOutput?.status ?? null,
+        directSave: job.directSave ?? (outputHandle ? {status: 'failed', outputState,
           wholeFileHashCompared: false} : null),
         downloadRecovered: false, targetVRPlayerVerified: false});
       send('error', {error: error?.message || String(error), diagnostics: job.diagnostics, cleanupComplete,

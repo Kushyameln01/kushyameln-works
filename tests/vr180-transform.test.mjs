@@ -2,13 +2,49 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
+import vm from 'node:vm';
 import { buildStereoGeometry } from '../docs/shared/vr180/geometry.mjs';
 import { inspectMp4 } from '../docs/shared/vr180/mp4.mjs';
+import { createFileOutput } from '../docs/shared/vr180/file-output.mjs';
+import { createMuxCapture } from '../docs/shared/vr180/mux-capture.mjs';
 import * as transform from '../docs/shared/vr180/transform.mjs';
 import {
   Input, BlobSource, MP4, EncodedPacketSink, EncodedAudioPacketSource,
   EncodedVideoPacketSource, Output, Mp4OutputFormat, BufferTarget, StreamTarget,
 } from '../docs/shared/media-basic/vendor/mediabunny.mjs';
+
+test('actual conversion catch retains acquired writer state when cancellation wraps another error', async () => {
+  // Execute the production conversion body with substituted codecs/DOM. This
+  // exercises ownership and error propagation, not browser codec capability.
+  const source = (await readFile(new URL('../docs/shared/vr180/transform.mjs', import.meta.url), 'utf8'))
+    .replace(/^import[\s\S]*?from [^\n]*;\n/gm, '').replace(/^export /gm, '');
+  const video = {type: 'video', getCodec: async () => 'avc', hasHighDynamicRange: async () => false,
+    getRotation: async () => 0, getFlip: async () => false, getPixelAspectRatio: async () => ({num: 1, den: 1}),
+    getDisplayWidth: async () => 512, getDisplayHeight: async () => 256, canDecode: async () => true};
+  const context = vm.createContext({Blob, DOMException, AbortController, WritableStream, performance,
+    createFileOutput, createMuxCapture, buildStereoGeometry,
+    Input: class { async getTracks() { return [video]; } async getDurationFromMetadata() { return 1; } dispose() {} },
+    BlobSource: class {}, MP4: {}, Quality: class {}, CanvasSource: class {}, canEncodeVideo: async () => true,
+    VideoEncoder: class {}, VideoDecoder: class {},
+    OffscreenCanvas: class { constructor(width, height) { this.width = width; this.height = height; } getContext() { return {}; } },
+  });
+  new vm.Script(source, {filename: 'docs/shared/vr180/transform.mjs'}).runInContext(context);
+  const controller = new AbortController();
+  let failAbort = true, aborts = 0, cleanup, acquired, failure;
+  const handle = {getFile: async () => new Blob(), createWritable: async () => ({
+    async abort() { aborts++; if (failAbort) throw Error('ABORT_FAILED'); },
+  })};
+  await assert.rejects(context.convertStereo(new Blob(['input']), {layout: 'sbs', fov: 180, eyeSize: 256, bitrate: 2000000}, {
+    signal: controller.signal, jobId: 'ownership-test', outputHandle: handle, onCleanup: fn => { cleanup = fn; },
+    onOutputCreated: output => { acquired = output; controller.abort(); throw Error('OWNER_CALLBACK_FAILED'); },
+  }), error => { failure = error; return error.name === 'AbortError'; });
+  assert.equal(failure.cause.message, 'OWNER_CALLBACK_FAILED');
+  assert.equal(failure.saveOutputState.state, 'cleanup-failed');
+  assert.equal(failure.saveOutputState.writerAcquired, true); assert.equal(acquired.status.committed, false);
+  assert.equal(aborts, 1);
+  failAbort = false; await cleanup();
+  assert.equal(failure.saveOutputState.state, 'aborted'); assert.equal(aborts, 2);
+});
 
 test('180 SBS keeps the complete left and right views while downscaling equally', () => {
   const result = buildStereoGeometry({ width: 800, height: 400, layout: 'sbs', fov: 180, eyeSize: 200 });

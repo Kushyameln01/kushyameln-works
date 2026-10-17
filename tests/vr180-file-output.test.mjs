@@ -53,6 +53,24 @@ test('existing contents and source identity are rejected before opening a writer
   assert.deepEqual(h.metrics.saved, Uint8Array.of(7));
 });
 
+for (const stage of ['getFile', 'nonempty', 'createWritable']) test(`pre-writer ${stage} rejection reports not-started without abort`, async () => {
+  const h = memoryFile(stage === 'nonempty' ? Uint8Array.of(1) : undefined, {
+    getFile() { if (stage === 'getFile') throw Error('GET_FILE_DENIED'); },
+    createWritable() { throw Error('CREATE_WRITABLE_DENIED'); },
+  });
+  let notified = false;
+  await assert.rejects(saveBlobToFile(new Blob(['input']), h, {onCreated() { notified = true; }}), error =>
+    error.saveOutputState?.state === 'not-started' && error.saveOutputState.writerAcquired === false && error.saveWriteCommitted === false);
+  assert.equal(notified, false); assert.equal(h.metrics.writes + h.metrics.closes + h.metrics.aborts, 0);
+});
+
+test('write rejection with an acknowledged writer abort reports aborted, not not-started or unknown', async () => {
+  const h = memoryFile(undefined, {write() { throw Error('WRITE_FAILED'); }});
+  await assert.rejects(saveBlobToFile(new Blob(['input']), h), error => error.saveOutputState?.state === 'aborted'
+    && error.saveOutputState.writerAcquired === true && error.saveWriteCommitted === false);
+  assert.equal(h.metrics.writes, 1); assert.equal(h.metrics.aborts, 1); assert.equal(h.metrics.closes, 0);
+});
+
 test('position arithmetic preserves values beyond 4 GiB without allocating a large file', async () => {
   let observed;
   const h = memoryFile(undefined, { write: position => { observed = position; } });
@@ -132,7 +150,9 @@ test('a failed copy retains a callable cleanup retry instead of losing its write
   let failure;
   await assert.rejects(saveBlobToFile(new Blob([Uint8Array.of(3)]), h), e => { failure = e; return e.message === 'WRITE_FAILED'; });
   assert.equal(failure.cleanupError, 'ABORT_FAILED'); assert.equal(typeof failure.retryCleanup, 'function');
+  assert.equal(failure.saveOutputState.state, 'cleanup-failed');
   fail = false; await failure.retryCleanup();
+  assert.equal(failure.saveOutputState.state, 'aborted');
   assert.equal(h.metrics.aborts, 2); assert.equal(h.metrics.closes, 0);
 });
 
@@ -141,12 +161,16 @@ test('cancellation while acquiring a writer preserves a failed cleanup and expli
   const waiting = new Promise(resolve => { entered = resolve; });
   const controller = new AbortController();
   const h = memoryFile(undefined, { createWritable: () => new Promise(resolve => { release = resolve; entered(); }), abort: () => { if (fail) throw Error('ABORT_FAILED'); } });
-  const saving = saveBlobToFile(new Blob([Uint8Array.of(3)]), h, {signal: controller.signal, expectedSha256: hash(Uint8Array.of(3))});
+  let acquired;
+  const saving = saveBlobToFile(new Blob([Uint8Array.of(3)]), h, {signal: controller.signal,
+    expectedSha256: hash(Uint8Array.of(3)), onCreated: output => { acquired = output; }});
   let failure;
   const rejected = assert.rejects(saving, e => { failure = e; return e.name === 'AbortError' && e.saveWriteCommitted === false; });
   await waiting; controller.abort(); release(); await rejected;
   assert.equal(failure.cleanupError, 'ABORT_FAILED'); assert.equal(typeof failure.retryCleanup, 'function');
+  assert.equal(acquired.status.state, 'cleanup-failed'); assert.equal(failure.saveOutputState.writerAcquired, true);
   fail = false; await failure.retryCleanup();
+  assert.equal(failure.saveOutputState.state, 'aborted');
   assert.equal(h.metrics.aborts, 2); assert.equal(h.metrics.closes, 0);
 });
 

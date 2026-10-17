@@ -3,23 +3,35 @@ import { inspectMp4, planMp4Tag } from './mp4.mjs';
 
 const COPY_CHUNK_BYTES = 1024 * 1024;
 const abortError = () => new DOMException('保存を取り消しました', 'AbortError');
+const notStarted = () => ({state: 'not-started', writerAcquired: false, committed: false, extent: 0});
+// Keep the observation live through explicit cleanup retries; serialization reads
+// a snapshot. Absence of a writer is not evidence that writer.abort() succeeded.
+function withOutputState(error, snapshot) {
+  if (!error || typeof error !== 'object') error = new Error(String(error));
+  error.saveWriteCommitted = snapshot().committed === true;
+  Object.defineProperty(error, 'saveOutputState', {enumerable: true, configurable: true, get: snapshot});
+  return error;
+}
 const sizeCheck = n => {
   if (!Number.isSafeInteger(n) || n < 0) throw new RangeError('INVALID_FILE_POSITION');
 };
 
 /** A position-aware file transaction. A muxer's stream close does NOT commit the file. */
-export async function createFileOutput(handle, { signal, sourceHandle, allowExisting = false, onProgress = () => {} } = {}) {
-  if (signal?.aborted) throw abortError();
-  if (sourceHandle && await handle.isSameEntry(sourceHandle)) throw Error('OUTPUT_IS_INPUT');
-  const before = await handle.getFile();
-  // With a File-only input we cannot prove identity. Protect all existing nonempty targets.
-  if (before.size && (!sourceHandle || !allowExisting)) throw Error('OUTPUT_MUST_BE_NEW_FILE');
-  if (signal?.aborted) throw abortError();
-  const writer = await handle.createWritable();
+export async function createFileOutput(handle, { signal, sourceHandle, allowExisting = false, onProgress = () => {}, onCreated } = {}) {
+  let writer;
+  try {
+    if (signal?.aborted) throw abortError();
+    if (sourceHandle && await handle.isSameEntry(sourceHandle)) throw Error('OUTPUT_IS_INPUT');
+    const before = await handle.getFile();
+    // With a File-only input we cannot prove identity. Protect all existing nonempty targets.
+    if (before.size && (!sourceHandle || !allowExisting)) throw Error('OUTPUT_MUST_BE_NEW_FILE');
+    if (signal?.aborted) throw abortError();
+    writer = await handle.createWritable();
+  } catch (error) { throw withOutputState(error, notStarted); }
   const verificationController = new AbortController();
   let state = 'open', extent = 0, pending = null, abortPromise = null, committed = false, cleanupError = null;
   let cancelRequested = signal?.aborted ?? false, muxerClosed = false;
-  const snapshot = () => ({ state, extent, committed, muxerClosed, cleanupError: cleanupError?.message ?? null });
+  const snapshot = () => ({ state, writerAcquired: true, extent, committed, muxerClosed, cleanupError: cleanupError?.message ?? null });
   const check = () => {
     if (cancelRequested || signal?.aborted) throw abortError();
     if (state !== 'open') throw Error('OUTPUT_NOT_OPEN');
@@ -52,13 +64,6 @@ export async function createFileOutput(handle, { signal, sourceHandle, allowExis
     return abortPromise;
   }
   function onAbort() { cancelRequested = true; abort().catch(error => { cleanupError = error; }); }
-  signal?.addEventListener('abort', onAbort, { once: true });
-  if (cancelRequested) {
-    const error = abortError(); error.saveWriteCommitted = false;
-    try { await abort(error); }
-    catch (cleanup) { error.cleanupError = cleanup.message; error.retryCleanup = () => abort(error); }
-    throw error;
-  }
   async function writeAt(position, data) {
     check(); sizeCheck(position);
     if (!(data instanceof Uint8Array)) throw TypeError('OUTPUT_BYTES_REQUIRED');
@@ -94,11 +99,10 @@ export async function createFileOutput(handle, { signal, sourceHandle, allowExis
       });
     } catch (error) {
       if (committed) { state = 'verification-failed'; removeListener(); }
-      error.saveWriteCommitted = committed;
-      throw error;
+      throw withOutputState(error, snapshot);
     }
   }
-  return {
+  const output = {
     writeAt, truncate, commit, abort,
     get status() { return snapshot(); },
     // Mediabunny finalization/cancel closes this wrapper. Only commit() closes the real writer.
@@ -111,13 +115,26 @@ export async function createFileOutput(handle, { signal, sourceHandle, allowExis
       abort(reason) { return abort(reason); },
     }, { highWaterMark: 1 }),
   };
+  signal?.addEventListener('abort', onAbort, { once: true });
+  try {
+    // Notify the owner immediately after acquisition, including a cancellation
+    // that arrived while createWritable() was pending. Cleanup can still retry.
+    onCreated?.(output);
+    if (cancelRequested || signal?.aborted) throw abortError();
+    return output;
+  } catch (error) {
+    try { await abort(error); }
+    catch (cleanup) { error.cleanupError = cleanup.message; error.retryCleanup = () => abort(error); }
+    throw withOutputState(error, snapshot);
+  }
 }
 
 /** Stream an already prepared Blob/File, then compare the saved bytes with its full hash. */
 export async function saveBlobToFile(blob, handle, { signal, expectedSha256, onProgress = () => {}, ...options } = {}) {
-  const hash = expectedSha256 ?? await sha256Blob(blob, { signal, onProgress: p => onProgress({ phase: 'source-hash', ...p }) });
-  const output = await createFileOutput(handle, { signal, onProgress, ...options });
+  let output;
   try {
+    const hash = expectedSha256 ?? await sha256Blob(blob, { signal, onProgress: p => onProgress({ phase: 'source-hash', ...p }) });
+    output = await createFileOutput(handle, { signal, onProgress, ...options });
     for (let position = 0; position < blob.size; position += COPY_CHUNK_BYTES) {
       if (signal?.aborted) throw abortError();
       const end = Math.min(position + COPY_CHUNK_BYTES, blob.size);
@@ -127,6 +144,7 @@ export async function saveBlobToFile(blob, handle, { signal, expectedSha256, onP
     }
     return await output.commit({ expectedBytes: blob.size, expectedSha256: hash });
   } catch (error) {
+    if (!output) throw error?.saveOutputState ? error : withOutputState(error, notStarted);
     try { await output.abort(error); }
     catch (cleanup) {
       error.cleanupError = cleanup.message;
@@ -134,8 +152,7 @@ export async function saveBlobToFile(blob, handle, { signal, expectedSha256, onP
       // another operation until this cleanup succeeds.
       error.retryCleanup = () => output.abort(error);
     }
-    error.saveWriteCommitted = output.status.committed;
-    throw error;
+    throw withOutputState(error, () => output.status);
   }
 }
 
@@ -168,5 +185,5 @@ export async function finalizeDirectOutput({output, source}, {signal, onProgress
       wholeFileHashCompared: false, metadataHashMatched: true, metadataSHA256: actualMetadataHash,
       metadataOffset: plan.appendAt, metadataBytes: plan.append.size,
       hashNote: 'Whole saved-file SHA-256 observed after commit; final metadata compared with its pre-write SHA-256'}};
-  } catch (error) { error.saveWriteCommitted = output.status.committed; throw error; }
+  } catch (error) { throw withOutputState(error, () => output.status); }
 }

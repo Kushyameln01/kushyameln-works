@@ -18,8 +18,8 @@ function abortError() {
 }
 
 /** Production direct-mux sink; exposed so the pinned muxer can be tested without WebCodecs. */
-export async function createDirectMuxDestination(handle, { signal, onWrite = () => {} } = {}) {
-  const output = await createFileOutput(handle, { signal });
+export async function createDirectMuxDestination(handle, { signal, onWrite = () => {}, onOutputCreated } = {}) {
+  const output = await createFileOutput(handle, { signal, onCreated: onOutputCreated });
   const capture = createMuxCapture(), logicalWriter = output.stream.getWriter();
   let logicalClosed = false;
   const stream = new WritableStream({
@@ -151,7 +151,7 @@ export function createAacPacketCopier(source, decoderConfig) {
  * VR metadata is deliberately left to the independent MP4 patcher.
  */
 export async function convertStereo(file, settings, {
-  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle,
+  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated,
 } = {}) {
   const started = performance.now();
   const checkAbort = () => { if (signal?.aborted) throw abortError(); };
@@ -192,7 +192,7 @@ export async function convertStereo(file, settings, {
     outputBackend: outputHandle ? 'direct-file' : 'opfs',
     opfsDirectory: outputHandle ? null : `${OPFS_ROOT}/${id}`,
   };
-  let input, output, canvas, storageWriter, root, temporaryDirectory, opfsHandle, directDestination, acquisitionCleanup;
+  let input, output, canvas, storageWriter, root, temporaryDirectory, opfsHandle, directDestination, directOutput;
   let videoIterator, heldSample, audioPacket, audioSink, audioSource, audioCopier, videoSource;
   let temporaryCreated = false;
   let storageClosed = false;
@@ -242,8 +242,7 @@ export async function convertStereo(file, settings, {
     // Wait for that close, and abort an unclosed writer before deleting files.
     cancelOutput,
     abortWriter: async () => {
-      if (directDestination) { await directDestination.output.abort(); return; }
-      if (acquisitionCleanup) { await acquisitionCleanup(); acquisitionCleanup = null; return; }
+      if (directOutput) { await directOutput.abort(); return; }
       if (storageWriter && !storageClosed) { await storageWriter.abort(); storageClosed = true; }
     },
     removeTemporary,
@@ -331,16 +330,12 @@ export async function convertStereo(file, settings, {
     const setupStart = performance.now();
     let writable;
     if (outputHandle) {
-      try {
-        directDestination = await createDirectMuxDestination(outputHandle, {
-          signal, onWrite: extent => { metrics.outputBytes = extent; },
-        });
-      } catch (error) {
-        // A cancellation while acquiring the writer can leave abort pending or
-        // failed. Keep its retry reachable through the registered job cleanup.
-        if (typeof error.retryCleanup === 'function') acquisitionCleanup = error.retryCleanup;
-        throw error;
-      }
+      directDestination = await createDirectMuxDestination(outputHandle, {
+        signal, onWrite: extent => { metrics.outputBytes = extent; },
+        // Ownership is established before acquisition-time cancellation is
+        // thrown, so registered cleanup always reaches the real writer.
+        onOutputCreated: acquired => { directOutput = acquired; onOutputCreated?.(acquired); },
+      });
       writable = directDestination.stream;
     } else {
       if (navigator.storage.estimate) {
@@ -495,7 +490,16 @@ export async function convertStereo(file, settings, {
   } catch (error) {
     metrics.status = signal?.aborted ? 'canceled' : 'failed';
     metrics.error = signal?.aborted ? 'Conversion was canceled.' : String(error?.message ?? error);
-    throw signal?.aborted ? abortError() : error;
+    const failure = signal?.aborted && error.name !== 'AbortError' ? Object.assign(abortError(), {cause: error}) : error;
+    if (outputHandle) {
+      const priorState = error.saveOutputState;
+      Object.defineProperty(failure, 'saveOutputState', {enumerable: true, configurable: true,
+        get: () => directOutput?.status ?? priorState ?? {state: 'not-started', writerAcquired: false, committed: false}});
+      failure.saveWriteCommitted = failure.saveOutputState.committed === true;
+      if (error.retryCleanup) failure.retryCleanup = error.retryCleanup;
+      if (error.cleanupError) failure.cleanupError = error.cleanupError;
+    }
+    throw failure;
   } finally {
     signal?.removeEventListener('abort', onAbort);
     heldSample?.close();

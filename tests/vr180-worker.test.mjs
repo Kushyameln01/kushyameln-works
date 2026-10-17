@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {createWorkerController} from '../docs/shared/vr180/worker.mjs';
+import {createFileOutput} from '../docs/shared/vr180/file-output.mjs';
 
 const tick = () => new Promise(resolve => setImmediate(resolve));
 const deferred = () => { let resolve; const promise = new Promise(yes => { resolve = yes; }); return {promise, resolve}; };
@@ -65,6 +66,46 @@ test('direct Worker failure after physical commit reports retained bytes and fai
   assert.equal(messages[0].diagnostics.saveAttempts[0].commitState, 'committed');
   assert.equal(messages[0].diagnostics.saveAttempts[0].verificationState, 'failed');
   assert.equal(messages[0].diagnostics.saveAttempts[0].sha256, null);
+});
+
+test('direct codec rejection before acquiring a writer is not an aborted save', async () => {
+  const messages = [];
+  const receive = createWorkerController({postMessage: m => messages.push(m), inspect: async () => info,
+    hash: async () => 'input-hash', loadTransform: async () => ({convertStereo: async () => { throw Error('OUTPUT_ENCODE_UNSUPPORTED'); }})});
+  await receive({data: {type: 'run', operationId: 'pre-writer-codec', inputRevision: 8, file: input, settings, outputHandle: {}}});
+  const receipt = messages[0].diagnostics;
+  assert.equal(receipt.saveAttempts[0].commitState, 'not-started');
+  assert.equal(receipt.saveWriteCommitted, false); assert.equal(receipt.saveCompleted, false);
+});
+
+for (const stage of ['getFile', 'nonempty', 'createWritable', 'write', 'abort']) test(`direct Worker uses actual writer state after ${stage} rejection`, async () => {
+  const messages = [], calls = {acquired: 0, writes: 0, aborts: 0};
+  const handle = {
+    async getFile() { if (stage === 'getFile') throw Error('GET_FILE_DENIED'); return new Blob(stage === 'nonempty' ? ['old'] : []); },
+    async createWritable() {
+      if (stage === 'createWritable') throw Error('CREATE_WRITABLE_DENIED');
+      calls.acquired++;
+      return {async write() { calls.writes++; throw Error('WRITE_FAILED'); },
+        async abort() { calls.aborts++; if (stage === 'abort') throw Error('ABORT_FAILED'); }};
+    },
+  };
+  const receive = createWorkerController({postMessage: m => messages.push(m), inspect: async () => info, hash: async () => 'input-hash',
+    loadTransform: async () => ({convertStereo: async (file, config, options) => {
+      let output;
+      options.onCleanup(async () => { if (output) await output.abort(); });
+      output = await createFileOutput(options.outputHandle, {signal: options.signal,
+        onCreated: acquired => { output = acquired; options.onOutputCreated(acquired); }});
+      await output.writeAt(0, Uint8Array.of(1));
+    }})});
+  await receive({data: {type: 'run', operationId: 'writer-state', inputRevision: 5, file: input, settings, outputHandle: handle}});
+  const receipt = messages[0].diagnostics;
+  const expected = stage === 'write' ? 'aborted' : stage === 'abort' ? 'unknown' : 'not-started';
+  assert.equal(receipt.saveAttempts[0].commitState, expected);
+  assert.equal(receipt.saveWriteCommitted, expected === 'unknown' ? null : false);
+  assert.equal(receipt.saveCompleted, false);
+  assert.equal(calls.acquired, ['write', 'abort'].includes(stage) ? 1 : 0);
+  assert.equal(calls.aborts, calls.acquired);
+  assert.equal(receipt.directSave.outputState.writerAcquired, !!calls.acquired);
 });
 
 test('direct verification completed before a queued cancel keeps its successful observation in diagnostics', async () => {

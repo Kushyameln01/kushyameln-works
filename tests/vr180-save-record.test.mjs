@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import {webcrypto} from 'node:crypto';
 import {OperationScope} from '../docs/shared/vr180/operations.mjs';
 import * as saveRecord from '../docs/shared/vr180/save-record.mjs';
+import {saveBlobToFile as actualSaveBlobToFile} from '../docs/shared/vr180/file-output.mjs';
 
 const appSource = (await readFile(new URL('../docs/vr180-studio/app.mjs', import.meta.url), 'utf8')).replace(/^import .*;\n/gm, '');
 const tick = () => new Promise(resolve => setImmediate(resolve));
@@ -102,7 +103,12 @@ test('S01 actual save event: first verified copy has its own identity and genera
 });
 
 test('S03 actual save event: additional write failure retains the original direct observation', async () => {
-  const h = await appHarness({generated: fixture(true), save: async () => { throw Object.assign(Error('WRITE_FAILED'), {saveWriteCommitted: false}); }});
+  const calls = {write: 0, abort: 0};
+  const handle = {getFile: async () => new Blob(), createWritable: async () => ({
+    async write() { calls.write++; throw Error('WRITE_FAILED'); },
+    async abort() { calls.abort++; },
+  })};
+  const h = await appHarness({generated: fixture(true), pick: async () => handle, save: actualSaveBlobToFile});
   const direct = JSON.stringify(h.receipt.directSave), original = JSON.stringify(h.receipt.saveAttempts[0]);
   await h.element('save').onclick();
   assert.equal(h.receipt.saveCompleted, true);
@@ -110,6 +116,7 @@ test('S03 actual save event: additional write failure retains the original direc
   assert.equal(h.receipt.lastVerifiedSaveAttemptId, 'original-direct');
   assert.equal(h.receipt.saveAttempts[1].commitState, 'aborted');
   assert.equal(h.receipt.saveAttempts[1].errorCode, 'WRITE_FAILED');
+  assert.deepEqual(calls, {write: 1, abort: 1});
   assert.equal(JSON.stringify(h.receipt.directSave), direct);
   assert.equal(JSON.stringify(h.receipt.saveAttempts[0]), original);
   assert.match(h.element('save-status').textContent, /前回の保存・照合は完了/);
@@ -125,6 +132,23 @@ test('S04 actual save event: cancel before first save does not invent a saved re
   await h.element('save').onclick();
   assert.equal(h.calls.save, 1); assert.equal(h.receipt.saveCompleted, true);
   assert.notEqual(h.receipt.saveAttempts[0].id, h.receipt.saveAttempts[1].id);
+});
+
+for (const stage of ['getFile', 'nonempty', 'createWritable']) test(`pre-writer ${stage} rejection remains not-started in the actual save event`, async () => {
+  const calls = {getFile: 0, createWritable: 0, write: 0, abort: 0};
+  const handle = {
+    async getFile() {
+      if (++calls.getFile > 1 && stage === 'getFile') throw Error('GET_FILE_DENIED');
+      return new Blob(calls.getFile > 1 && stage === 'nonempty' ? ['existing'] : []);
+    },
+    async createWritable() { calls.createWritable++; throw Error('CREATE_WRITABLE_DENIED'); },
+  };
+  const h = await appHarness({pick: async () => handle, save: actualSaveBlobToFile});
+  await h.element('save').onclick();
+  assert.equal(h.receipt.saveAttempts[0].commitState, 'not-started');
+  assert.equal(h.receipt.saveWriteCommitted, false); assert.equal(h.receipt.saveCompleted, false);
+  assert.equal(calls.write, 0); assert.equal(calls.abort, 0);
+  assert.equal(calls.createWritable, stage === 'createWritable' ? 1 : 0);
 });
 
 for (const canceled of [false, true]) test(`S05 actual save event: post-close verification ${canceled ? 'cancel' : 'failure'} retains commit`, async () => {
