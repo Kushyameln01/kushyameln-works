@@ -21,6 +21,8 @@ on:
       - development/vr180/artifact-transfer-action/**
       - development/vr180/artifact-receive-action/**
       - tools/vr180/receive-in-actions.py
+      - tools/vr180/receive-media-evidence.py
+      - development/vr180/p5-receiver-calibration/**
       - tools/vr180/receive-segmented-artifact.py
       - tools/vr180/record-ffmpeg-toolchain.py
       - development/vr180/p5-calibration-prototype/**
@@ -251,6 +253,142 @@ jobs:
         run: |
           rm -rf "$RUNNER_TEMP/vr180-p5-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/media" "$RUNNER_TEMP/vr180-p5-build-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           rm -f "$RUNNER_TEMP/vr180-p5-oracle-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.json"
+
+  p5-receiver-calibration:
+    if: >-
+      github.repository == 'Kushyameln01/kushyameln-works' &&
+      github.event.repository.private == false &&
+      startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
+      contains(github.event.head_commit.message, '[vr180-receiver-media]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    outputs:
+      receipt-json: ${{ steps.transfer.outputs.receipt-json }}
+    env:
+      DO_NOT_TRACK: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PIP_NO_CACHE_DIR: '1'
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      VR180_P5_CASE: '32-32'
+    steps:
+      - name: Check out the exact private calibration candidate
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require accepted separate-receiver maximum-part recovery
+        run: |
+          python3 - <<'PYGATE'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('development/vr180/evidence/2026-10-17-actions-receiver-128.json').read_text())
+          assert r['status']=='PASS_SEPARATE_ACTIONS_BYTES' and r['runId']==39044958599
+          assert r['independentReview']['status']=='PASS'
+          v=r['receiverRecords']['run.json']
+          assert v['recoveredBytes']==v['independentComparedBytes']==134217728
+          assert v['downloadArtifacts']==2
+          PYGATE
+      - name: Use the pinned Python setup
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install pinned driver and independent oracle dependencies
+        id: dependencies
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          test -x /usr/bin/google-chrome
+          python3 -m pip install --no-cache-dir playwright==1.62.0 numpy==2.3.3
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends 'ffmpeg=7:6.1.1-3ubuntu5'
+          python3 tools/vr180/record-ffmpeg-toolchain.py --output "$RUNNER_TEMP/vr180-p5-oracle-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.json"
+      - name: Rebuild the fixed combined fork separately from the media deadline
+        timeout-minutes: 2
+        shell: bash
+        run: |
+          vr180_p5_prefix="$(mktemp -d "$RUNNER_TEMP/vr180-p5-esbuild.XXXXXX")"
+          trap 'rm -rf "$vr180_p5_prefix"' EXIT
+          cp development/vr180/build-inputs/toolchain/package.json "$vr180_p5_prefix/"
+          cp development/vr180/build-inputs/toolchain/package-lock.json "$vr180_p5_prefix/"
+          npm ci --prefix "$vr180_p5_prefix" --ignore-scripts --include=dev --include=optional --no-audit --no-fund
+          node tools/vr180/build-input-index.mjs --combined --esbuild-dir "$vr180_p5_prefix/node_modules/esbuild" --output-dir "$RUNNER_TEMP/vr180-p5-build-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+      - name: Calibrate bounded native media and emit complete metadata evidence
+        id: calibration
+        timeout-minutes: 11
+        env:
+          VR180_DEPENDENCIES_READY: ${{ steps.dependencies.outcome == 'success' }}
+        run: >-
+          python3 development/vr180/p5-calibration-prototype/probe-calibration.py
+          --bundle "$RUNNER_TEMP/vr180-p5-build-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/mediabunny-input-output-index.mjs"
+          --oracle-toolchain "$RUNNER_TEMP/vr180-p5-oracle-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.json"
+          --case "$VR180_P5_CASE"
+          --output "$RUNNER_TEMP/vr180-p5-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+      - name: Bind same-job original media and complete evidence without altering calibration
+        timeout-minutes: 4
+        run: >-
+          python3 development/vr180/p5-receiver-calibration/prepare.py
+          --calibration-output "$RUNNER_TEMP/vr180-p5-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          --output "$RUNNER_TEMP/vr180-calibration-transfer-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+      - name: Install the fixed artifact SDK dependency closure
+        timeout-minutes: 3
+        working-directory: development/vr180/artifact-transfer-action
+        run: npm ci --ignore-scripts --omit=dev --no-audit --no-fund
+      - name: Upload complete media and bounded original evidence
+        id: transfer
+        timeout-minutes: 11
+        uses: ./development/vr180/artifact-transfer-action
+        with:
+          source-manifest: ${{ runner.temp }}/vr180-calibration-transfer-${{ github.run_id }}-${{ github.run_attempt }}/media/source-manifest.json
+          output-directory: ${{ runner.temp }}/vr180-calibration-upload-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Return bounded sender records
+        if: ${{ always() && steps.calibration.outcome == 'success' }}
+        timeout-minutes: 1
+        run: >-
+          python3 tools/vr180/emit-segmented-transfer-evidence.py
+          --source "$RUNNER_TEMP/vr180-calibration-transfer-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/media"
+          --upload "$RUNNER_TEMP/vr180-calibration-upload-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          --output "$RUNNER_TEMP/vr180-calibration-sender-evidence-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+
+  p5-calibration-receiver:
+    needs: p5-receiver-calibration
+    if: needs.p5-receiver-calibration.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      DO_NOT_TRACK: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PIP_NO_CACHE_DIR: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Check out the identical receiver source commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Use pinned Python setup
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install fixed independent media oracle dependencies
+        timeout-minutes: 4
+        run: |
+          python3 -m pip install --no-cache-dir numpy==2.3.3
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends 'ffmpeg=7:6.1.1-3ubuntu5'
+          python3 tools/vr180/record-ffmpeg-toolchain.py --output "$RUNNER_TEMP/vr180-receiver-oracle.json"
+      - name: Install the same fixed artifact SDK dependency closure
+        timeout-minutes: 3
+        working-directory: development/vr180/artifact-transfer-action
+        run: npm ci --ignore-scripts --omit=dev --no-audit --no-fund
+      - name: Recover all input and output bytes and independently inspect all media
+        timeout-minutes: 21
+        uses: ./development/vr180/artifact-receive-action
+        with:
+          receipt-json: ${{ needs.p5-receiver-calibration.outputs.receipt-json }}
+          profile: p5-receiver-calibration32
 
   recover-fixed-build-toolchain:
     if: >-

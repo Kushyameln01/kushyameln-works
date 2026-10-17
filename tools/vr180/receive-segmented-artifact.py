@@ -21,6 +21,7 @@ HEX = re.compile(r'^[0-9a-f]{64}$')
 PROFILES = {
     'service-8mib': {'part': 8*MIB, 'files': [('payload-a', 'payload-a.bin', 60*MIB), ('payload-b', 'payload-b.bin', 60*MIB)]},
     'single-128mib': {'part': 128*MIB, 'files': [('payload-a', 'payload-a.bin', 128*MIB)]},
+    'p5-receiver-calibration32': {'part': 128*MIB, 'files': [('input', 'input.mp4', 80*MIB), ('output', 'output.mp4', 80*MIB)]},
 }
 # Design reservations only. Enabling these requires the separate long-media gate.
 RESERVED_PROFILES = {
@@ -122,6 +123,8 @@ def validate_manifest(m, identity):
             artifact_ids.add(a['id']); offset += size
         total += f['bytes']; parts += count
     need(m['totalBytes'] == total and m['partCount'] == parts and 1 <= parts <= 200, 'TOTALS')
+    if m['profile'] == 'p5-receiver-calibration32':
+        need(total <= 120*MIB and parts == 2, 'CALIBRATION_PAIR_BOUND')
     return m
 
 

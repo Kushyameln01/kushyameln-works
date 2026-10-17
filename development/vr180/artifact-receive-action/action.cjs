@@ -3,7 +3,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { spawn } = require('node:child_process');
 const { need, checkedEnvironment } = require('./checked.cjs');
-const PROFILES = Object.freeze(['service-8mib', 'single-128mib']);
+const PROFILES = Object.freeze(['service-8mib', 'single-128mib', 'p5-receiver-calibration32']);
 function validateInputs(env) {
   const raw = env['INPUT_RECEIPT-JSON'], profile = env.INPUT_PROFILE;
   need(typeof raw === 'string' && Buffer.byteLength(raw) > 0 && Buffer.byteLength(raw) <= 16384

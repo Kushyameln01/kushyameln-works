@@ -6,10 +6,12 @@ unmodified ZIP bytes. It does not extract the ZIP, reconstruct media, decide
 media quality, request a PAT, add permissions, or use the SDK's `findBy` route.
 Files remain outside the Pages deployment tree.
 
-The initial wrapper accepts only `service-8mib` and `single-128mib`. Their actual
-same-run service downloads and independent byte checks must pass before a
-separate change enables the wrapper for long-media reception. Local mocks do
-not establish service access or large-media capacity.
+The wrapper accepts `service-8mib`, `single-128mib`, and the separately gated
+`p5-receiver-calibration32`. The first two passed real same-run service recovery
+in runs 39044433711 and 39044958599. Calibration accepts only a newly executed
+300-frame, silent 32-to-32 Mbps case, at most 80 MiB per file and 120 MiB total.
+Long-media profiles remain refused. Local mocks do not establish service access
+or large-media capacity.
 
 ## Fixed upstream and adaptation
 
@@ -59,7 +61,7 @@ The fixed Python CLI receives:
 
 ```text
 --receipt-json <producer completion receipt JSON>
---profile service-8mib|single-128mib
+--profile service-8mib|single-128mib|p5-receiver-calibration32
 --output <new owned directory>
 ```
 
@@ -124,6 +126,19 @@ environment context is a separate field; SDK rows are never presented as REST
 public REST metadata and ZIP structure/entry/full reconstruction checks.
 
 ## Local checks
+
+Calibration recovery downloads the completion, a bounded original-evidence
+bundle, and every media part. The bundle is at most 8 MiB compressed, 16 MiB
+regular-file payload, and 256 regular entries; decompressed tar framing is
+bounded separately at 17 MiB. Links, sparse files, duplicate paths and unknown
+entries are refused. Raw metadata bytes, including empty logs, are verified
+against the quality references and original manifest. A fresh, fixed FFmpeg
+oracle scans all recovered media, and its whole-file sizes/hashes must equal
+the reconstructed files. Producer PASS and receiver PASS are both required.
+`COMPLETE_MEDIA_FAIL` preserves a complete negative quality result; it is not
+media acceptance. Cancellation uses a dedicated exception that cannot be
+absorbed by an oracle's ordinary error handling, closes its runtime, and records
+`FAIL`. Short-media jobs are separate from the original calibration job.
 
 ```sh
 node --test development/vr180/artifact-receive-action/test.cjs

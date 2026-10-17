@@ -86,7 +86,7 @@ async function main(argv = process.argv.slice(2)) {
   }
   const request = await readJson(requestFile); need(request && Object.keys(request).length === 1, 'REQUEST_INVALID');
   const expected = validateExpected(request.expected);
-  need(['service-8mib', 'single-128mib', 'p5-5gb', 'p5-10gb'].some(profile =>
+  need(['service-8mib', 'single-128mib', 'p5-receiver-calibration32', 'p5-5gb', 'p5-10gb'].some(profile =>
     expected.name.startsWith(`vr180-seg-${profile}-${checked.context.runId}-${checked.context.runAttempt}-`)), 'REQUEST_INVALID');
   const controller = new AbortController(), abort = () => controller.abort();
   process.on('SIGTERM', abort); process.on('SIGINT', abort);

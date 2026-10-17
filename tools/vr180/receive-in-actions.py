@@ -19,8 +19,14 @@ def load(name, path):
 r = load('segmented_receiver', Path(__file__).with_name('receive-segmented-artifact.py'))
 c = load('cloud_evidence', Path(__file__).with_name('cloud-validate.py'))
 SMALL = ('service-8mib', 'single-128mib')
+MEDIA = 'p5-receiver-calibration32'
+ENABLED = SMALL + (MEDIA,)
 SENDER_FILES = ['action.yml', 'main.cjs', 'transfer.cjs', 'sdk-worker.cjs',
                 'package.json', 'package-lock.json', 'sdk-provenance.json']
+
+
+class ReceiverCancelled(BaseException):
+    """Bypasses codec helpers that aggregate ordinary Exceptions as quality errors."""
 
 
 def stop_group(process):
@@ -40,19 +46,21 @@ def install_cancellation():
         nonlocal interrupted
         if interrupted: return
         interrupted = True
-        raise ValueError('RECEIVER_CANCELLED')
+        raise ReceiverCancelled('RECEIVER_CANCELLED')
     for sig in (signal.SIGTERM, signal.SIGINT):
         previous[sig] = signal.signal(sig, cancel)
     return lambda: [signal.signal(sig, handler) for sig, handler in previous.items()]
 
 
 def validate_receipt(receipt, profile, env):
-    r.need(profile in SMALL and receipt['profile'] == profile, 'SMALL_PROFILE_ONLY')
+    r.need(profile in ENABLED and receipt['profile'] == profile, 'SMALL_PROFILE_ONLY')
+    is_media = profile == MEDIA
     expected = {'repository': env['GITHUB_REPOSITORY'], 'commit': env['GITHUB_SHA'],
                 'ref': env['GITHUB_REF'], 'runId': env['GITHUB_RUN_ID'],
-                'runAttempt': int(env['GITHUB_RUN_ATTEMPT']), 'job': 'segmented-artifact-probe'}
+                'runAttempt': int(env['GITHUB_RUN_ATTEMPT']),
+                'job': 'p5-receiver-calibration' if is_media else 'segmented-artifact-probe'}
     r.need(receipt['identity'] == expected and expected['repository'] == 'Kushyameln01/kushyameln-works'
-           and env['GITHUB_JOB'] == 'segmented-artifact-receiver'
+           and env['GITHUB_JOB'] == ('p5-calibration-receiver' if is_media else 'segmented-artifact-receiver')
            and re.fullmatch(r'[0-9a-f]{40}', expected['commit'])
            and re.fullmatch(r'[0-9]+', expected['runId'])
            and expected['ref'].startswith('refs/heads/codex/vr180-plan-'), 'PRODUCER_IDENTITY')
@@ -66,6 +74,29 @@ def validate_receipt(receipt, profile, env):
            and r.integer(receipt['completion']['bytes'], 1, 256*1024)
            and r.HEX.fullmatch(receipt['completion']['sha256']), 'COMPLETION_RECEIPT_BOUND')
     return expected
+
+
+def recover_bundle(manifest, receipt, metadata, stage, evidence, deadline, downloads, helper):
+    b = manifest['evidenceBundle']; a = b['artifact']
+    r.need(a['id'] != receipt['completion']['artifact']['id'] and manifest['metadataArtifactCount'] == 1
+           and receipt['metadataArtifactCount'] == 1 and receipt['artifactCount'] == receipt['partCount']+2,
+           'METADATA_ARTIFACT_COUNT_IDENTITY')
+    row = r.artifact_metadata(metadata, a['name'], manifest['identity'])
+    r.need(row['id'] == a['id'] and row['size_in_bytes'] == a['sizeBytes'] and row['digest'] == a['digest'], 'BUNDLE_SERVICE_METADATA')
+    path, proof = download(a, stage, deadline); downloads.append(proof)
+    archive, archive_proof = r.verified_archive(path, row, 'evidence.bin', 8*r.MIB, deadline)
+    bundle = stage/'producer-evidence.tar.gz'
+    with archive:
+        r.need(archive.getinfo('evidence.bin').file_size == b['bytes'], 'BUNDLE_ENTRY_SIZE')
+        with archive.open('evidence.bin') as source, bundle.open('xb') as target:
+            r.copy_payload(source, target, deadline); target.flush(); os.fsync(target.fileno())
+    size, sha = r.hash_file(bundle, deadline)
+    r.need(size == b['bytes'] and sha == b['sha256'], 'BUNDLE_EXTRACTED_HASH')
+    path.unlink()
+    quality, verified = helper.unpack_bundle(bundle, manifest, evidence/'producer', deadline)
+    r.write_json(evidence/'producer-bundle-verification.json', {**verified, **archive_proof, 'zipCrcCheckedByFullRead': True})
+    bundle.unlink()
+    return quality
 
 
 def exact_sources(paths, commit):
@@ -133,6 +164,7 @@ def download(artifact, directory, deadline):
 
 def recover(receipt, profile, out, env=os.environ):
     identity = validate_receipt(receipt, profile, env)
+    is_media = profile == MEDIA
     r.need(not out.exists() and not out.is_symlink()
            and out.parent.resolve() == Path(env['RUNNER_TEMP']).resolve(), 'NEW_RUNNER_TEMP_DIRECTORY')
     out.mkdir(); evidence = out/'evidence'; evidence.mkdir(); stage = out/'stage'; stage.mkdir()
@@ -141,14 +173,23 @@ def recover(receipt, profile, out, env=os.environ):
         'status': 'BLOCKED', 'profile': profile, 'producerIdentity': identity,
         'receiverJob': env['GITHUB_JOB'], 'checkoutCommit': identity['commit'],
         'hostKind': 'Separate fresh GitHub Actions job, not the Codex local filesystem',
-        'fullMediaValidation': 'NOT_APPLICABLE_SYNTHETIC_BYTES', 'startedUnix': time.time()}
+        'fullMediaValidation': 'PENDING' if is_media else 'NOT_APPLICABLE_SYNTHETIC_BYTES', 'startedUnix': time.time()}
     deadline = time.time()+1200; downloads = []
     try:
         own = ['tools/vr180/receive-in-actions.py', 'tools/vr180/receive-segmented-artifact.py',
                'tools/vr180/cloud-validate.py', '.github/workflows/vr180-candidate-validation.yml']
         own += [p.relative_to(ROOT).as_posix() for p in (ROOT/'development/vr180/artifact-receive-action').iterdir()
                 if p.is_file() and p.suffix in ('.cjs', '.json', '.yml')]
+        if is_media:
+            own += ['tools/vr180/receive-media-evidence.py', 'tools/vr180/verify-conversion-large.py',
+                    'tools/vr180/verify-metadata.py', 'tools/vr180/record-ffmpeg-toolchain.py',
+                    'development/vr180/p5-calibration-prototype/probe-calibration.py',
+                    'tools/vr180/probe-output-index.py', 'tools/vr180/probe-indexed-conversion.py']
         source_hashes = exact_sources(own, identity['commit']); report['sourceSHA256'] = source_hashes
+        if is_media:
+            media_helper = load('media_receiver', Path(__file__).with_name('receive-media-evidence.py'))
+            cal, oracle, dependencies = media_helper.prepare_oracle(Path(env['RUNNER_TEMP'])/'vr180-receiver-oracle.json', evidence)
+            r.write_json(evidence/'receiver-oracle-dependencies.json', dependencies)
         r.write_json(evidence/'producer-receipt.json', receipt)
         metadata = public_metadata(identity, deadline); r.write_json(evidence/'service-metadata.json', metadata)
         a = receipt['completion']['artifact']
@@ -162,9 +203,14 @@ def recover(receipt, profile, out, env=os.environ):
         r.write_json(recovery/'recovery.json', state, deadline)
         manifest = r.read_json(recovery/'completion.json', 256*1024)
         producer_paths = ['development/vr180/artifact-transfer-action/'+n for n in SENDER_FILES]
-        producer_paths += ['tools/vr180/probe-segmented-transfer.py']
+        producer_paths += ([media_helper.PREPARE, media_helper.CALIBRATION] if is_media else ['tools/vr180/probe-segmented-transfer.py'])
         producer_hashes = exact_sources(producer_paths, identity['commit'])
         r.need(manifest['provenance']['sourceHashes'] == producer_hashes, 'PRODUCER_SOURCE_CLOSURE')
+        if is_media:
+            media_helper.validate_generator(manifest, producer_hashes)
+            report.update(phase='producer-evidence-download', activeArtifactId=manifest['evidenceBundle']['artifact']['id'])
+            quality = recover_bundle(manifest, receipt, metadata, stage, evidence, deadline, downloads, media_helper)
+            report['producerMediaVerification'] = media_helper.validate_original_records(evidence/'producer', manifest, exact_sources)
         r.write_json(evidence/'completion.json', manifest)
         for f in manifest['files']:
             for part in f['parts']:
@@ -173,20 +219,26 @@ def recover(receipt, profile, out, env=os.environ):
                 archive, proof = download(a, stage, deadline); downloads.append(proof)
                 report['phase'] = 'part-verify-and-append'
                 r.receive_part(recovery, archive, metadata, f['id'], part['index']); archive.unlink()
-        report['phase'] = 'whole-readback-and-independent-formula'
+        report['phase'] = 'whole-readback' if is_media else 'whole-readback-and-independent-formula'
         result = r.finalize(recovery)
         r.write_json(evidence/'recovery.json', result)
         r.write_json(evidence/'downloads.json', downloads)
+        if is_media:
+            report['phase'] = 'independent-complete-media-inspection'
+            report['receiverMediaVerification'] = media_helper.verify_media(recovery, evidence, deadline, cal, oracle, result['wholeFiles'])
+            media_pass = quality['mediaVerdict'] == 'PASS' and report['receiverMediaVerification']['status'] == 'PASS'
+            report['fullMediaValidation'] = 'PASS' if media_pass else 'FAIL_COMPLETE_SCAN'
         r.need(exact_sources(own, identity['commit']) == source_hashes, 'RECEIVER_SOURCE_CHANGED')
         r.check_deadline(deadline)
-        report.update(status='PASS_BYTES_ONLY', phase='complete', activeArtifactId=None, completedUnix=time.time(),
+        report.update(status=('PASS_COMPLETE_MEDIA' if media_pass else 'COMPLETE_MEDIA_FAIL') if is_media else 'PASS_BYTES_ONLY',
+                      phase='complete', activeArtifactId=None, completedUnix=time.time(),
                       recoveredBytes=sum(f['bytes'] for f in result['wholeFiles']),
-                      independentComparedBytes=sum(f['independentGeneratorComparedBytes'] for f in result['wholeFiles']),
+                      independentComparedBytes=None if is_media else sum(f['independentGeneratorComparedBytes'] for f in result['wholeFiles']),
                       dataArtifacts=manifest['partCount'], downloadArtifacts=len(downloads),
                       metadataOrigin='Unauthenticated GitHub public REST API',
                       bytesOrigin='Same-run ordinary action runtime SDK internal raw ZIP adapter',
                       mediaRetainedUntilRunnerEnds=True, publicCapabilityChanged=False)
-    except Exception as error:
+    except (Exception, ReceiverCancelled) as error:
         report.update(status='FAIL', completedUnix=time.time(), errorType=type(error).__name__,
                       reason=str(error) if re.fullmatch(r'[A-Z0-9_]{1,100}', str(error)) else 'RECEIVER_FAILED')
         for name in ('recovery.json', 'completion.json'):
@@ -201,17 +253,17 @@ def recover(receipt, profile, out, env=os.environ):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--receipt-json', required=True); parser.add_argument('--profile', choices=SMALL, required=True)
+    parser.add_argument('--receipt-json', required=True); parser.add_argument('--profile', choices=ENABLED, required=True)
     parser.add_argument('--output', type=Path, required=True); args = parser.parse_args()
     r.need(len(args.receipt_json.encode()) <= 16*1024, 'RECEIPT_ARGUMENT_BOUND')
     restore = install_cancellation()
     try: report, emitted = recover(json.loads(args.receipt_json), args.profile, args.output)
     finally: restore()
-    return 0 if emitted and report['status'] == 'PASS_BYTES_ONLY' else 1
+    return 0 if emitted and report['status'] in ('PASS_BYTES_ONLY', 'PASS_COMPLETE_MEDIA', 'COMPLETE_MEDIA_FAIL') else 1
 
 
 if __name__ == '__main__':
     try: raise SystemExit(main())
-    except Exception as error:
+    except (Exception, ReceiverCancelled) as error:
         print(json.dumps({'status': 'FAIL', 'reason': 'RECEIVER_SETUP_FAILED', 'errorType': type(error).__name__}))
         raise SystemExit(1)

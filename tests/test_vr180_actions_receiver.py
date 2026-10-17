@@ -136,7 +136,7 @@ class ActionsReceiverTests(unittest.TestCase):
         restore = m.install_cancellation()
         try:
             handler = signal.getsignal(signal.SIGTERM)
-            with self.assertRaisesRegex(ValueError, 'RECEIVER_CANCELLED'): handler(signal.SIGTERM, None)
+            with self.assertRaisesRegex(m.ReceiverCancelled, 'RECEIVER_CANCELLED'): handler(signal.SIGTERM, None)
             handler(signal.SIGTERM, None)
         finally: restore()
 

@@ -96,3 +96,15 @@ receiverは全ZIP digest・全entry CRC・part SHA・連続offsetを検査して
 長尺producerの全体期限は5GB60分、10GB85分を候補とし、各生成/変換/検査上限より全体期限を優先する。upload20/30分とjob90/120分の余裕を残す。期限後はcompletionを発行しない。各stage上限を単純加算した所要時間を、job枠内に収まると誤認しない。新receiver受入が終わるまで5/10GB実行はBLOCKED。公開b7の1GiB上限と未確認事項は変わらない。
 
 公式根拠：https://docs.github.com/en/actions/tutorials/store-and-share-data 、https://docs.github.com/en/rest/actions/artifacts 。受信主体の変更は全量検査を省略するためではなく、全量を保持して独立検査を完了するための変更である。
+
+## 別receiverの短尺媒体ゲート
+
+新規Actions receiverの16分割120MiB（39044433711）と単独128MiB（39044958599）は、全ZIP・全byte・独立生成式の照合に合格した。前者の受信37.130秒、後者7.940秒は各1観測であり、長尺への速度保証に使わない。元記録と独立レビューは `2026-10-17-actions-receiver-service.json` と `2026-10-17-actions-receiver-128.json` に固定した。
+
+次に `[vr180-receiver-media]` による同runの2jobで、元の32→32校正を新規実行する。元校正コードは変更せず、wrapperが原媒体・原metadataを全hashで照合して新規所有出力へ包装する。原校正にはjob IDがないため、jobとの結び付けは固定workflowの同job連続実行による事実と明記する。repo/commit/run/attempt/caseの一致は原記録自身でも検査する。原品質の完全FAILも保持し、不完全走査は送信しない。
+
+送信は入力・出力の2part、8MiB以下の証拠bundle、completionの計4artifact。bundleは元検査記録を原bytesのまま含み、空stderrもhash対象とする。receiverはcompletion→証拠→媒体の順に取得し、ZIP全検査、原記録全hash、固定source closure、同runの公開REST metadataを照合する。別hostの固定FFmpeg/NumPyが全300frame/packet/PTS/左右/短いイベント/PSNR/VR情報を再検査し、検査器の全媒体bytes/hashも回収結果へ結び付ける。生成側と受信側の両方が品質PASSの場合だけ `PASS_COMPLETE_MEDIA`。完全品質FAILは `COMPLETE_MEDIA_FAIL` として残し、取消・欠落・不完全走査は `FAIL` とする。
+
+短尺producer job40分、元校正内部600秒・step11分、包装内部180秒・清掃余裕込みstep4分、upload内部600秒・step11分。receiver job30分、内部20分・step21分、各artifact120秒＋子process終了待ち。取消は検査器の通常例外捕捉に吸収されない専用例外で中断し、runtime close後に失敗証拠を残す。包装の清掃は所有物ごとに継続し、不明物と撤去失敗をHOLDとして記録する。これらの期限は成功条件を延ばす目的で自動更新しない。
+
+局所試験では実wrapper→senderの模擬SDK連携を品質PASS/完全FAIL両方で確認した。receiverは4ZIP統合、破損・未知metadata・rawhash不一致、完全FAIL・不完全走査、実SIGTERMで後続stage未開始とruntime closeを確認する。実クラウドの媒体生成・回収・独立品質は別ゲートとして記録する。短尺ゲート合格後も、長尺向け証拠包装とreceiver上限・独立全走査を別差分で審査するまで5/10GBは実行しない。
