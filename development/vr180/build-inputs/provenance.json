@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "upstreamRepository": "https://github.com/Vanilagy/mediabunny",
+  "upstreamCommit": "0664a57bf2f40e5c4efa176c75ebf1d60df69eb8",
+  "package": "mediabunny",
+  "version": "1.61.5",
+  "license": "MPL-2.0",
+  "licensePath": "docs/shared/media-basic/vendor/mediabunny-LICENSE",
+  "licenseSha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04",
+  "modifications": "None in recovered source. Build runner selects only the official minified browser ESM core variant. No fork edits.",
+  "sourceArchive": {
+    "path": "docs/shared/media-basic/vendor/mediabunny-1.61.5-source.tgz",
+    "url": "https://registry.npmjs.org/mediabunny/-/mediabunny-1.61.5.tgz",
+    "sha256": "95c03a00ca69a7d5ed9805e424349ffeb0cdecbe8cabd0e17749a39e8117802f"
+  },
+  "expectedBundle": {
+    "path": "docs/shared/media-basic/vendor/mediabunny.mjs",
+    "sha256": "5c3514965f106dd165cc6474979ba302ef85d8c84935a0ad3ea5202ccedfe51b",
+    "upstreamArchiveMember": "package/dist/bundles/mediabunny.min.mjs",
+    "bytes": 692359
+  },
+  "recoveredFiles": [
+    {
+      "path": "tsconfig.json",
+      "bytes": 403,
+      "gitBlobSha": "128e38ff54dc18936ba52e39454d35003d7b5357",
+      "sha256": "c4d6a8188a01e0ce5448aa6b431e43353894e8f66f77094eb8ba9b768c9fe146"
+    },
+    {
+      "path": "shared/aac-misc.ts",
+      "bytes": 7099,
+      "gitBlobSha": "e1ecaf7c33126ff60cf94e92ccc375c3c2893f5e",
+      "sha256": "5d5cb7fd115281e20571048339d5c50acb074432514d71e7ab67f3a5b7669044"
+    },
+    {
+      "path": "shared/ac3-misc.ts",
+      "bytes": 506,
+      "gitBlobSha": "fa3145fee2c3a75509443a73a8d4ea1172610a23",
+      "sha256": "843dfe3a94d751c292226b2f7775cf728fbf83e87c5ea092aaec2406634225c8"
+    },
+    {
+      "path": "shared/bitstream.ts",
+      "bytes": 1949,
+      "gitBlobSha": "7baa2b276645325c7527ced643f225f94aa9ed50",
+      "sha256": "6b380f4b02631abb36eecb3b8837c9dcf722a32702169817acd91fefa93a69d1"
+    },
+    {
+      "path": "shared/mp3-misc.ts",
+      "bytes": 5843,
+      "gitBlobSha": "6ff3a8c8b3dc403571d984a9e2c126a0f58bfb26",
+      "sha256": "51f7b4178cf2de9c2a21ec5028f7bdae95f1758e262a4f7f282a10a19cd8ec72"
+    },
+    {
+      "path": "shared/tsconfig.json",
+      "bytes": 127,
+      "gitBlobSha": "8e005134c0e7cbe5dd80a6ee1d2c90c6bb2b266d",
+      "sha256": "ffeae49f31caf0078587c17fc6c0d91d5829a5531c11988a93f2eb4de161ba63"
+    }
+  ],
+  "buildOptionsSource": {
+    "path": "scripts/bundle.ts",
+    "url": "https://github.com/Vanilagy/mediabunny/blob/0664a57bf2f40e5c4efa176c75ebf1d60df69eb8/scripts/bundle.ts",
+    "gitBlobSha": "43633fd517cfd5391ef4fd78de8e6952453cfbd7",
+    "sha256": "26e5c5fa70e1f50788a0dfb0fb23061a772b3bfdb4cc6ef7913e90086af38ad1",
+    "selectedLines": [
+      "16-34",
+      "46-49",
+      "70-75",
+      "92-100"
+    ],
+    "execution": "Create only the official minified browser ESM esbuild context, rebuild, then dispose; no optional codec bundles, node/UMD variants or plugins."
+  },
+  "toolchainLockSource": {
+    "path": "package-lock.json",
+    "url": "https://github.com/Vanilagy/mediabunny/blob/0664a57bf2f40e5c4efa176c75ebf1d60df69eb8/package-lock.json",
+    "gitBlobSha": "5b4db814cd7125dd2e154314910eb50c350149b4",
+    "sha256": "bce297669d9de9990e42cd934c3640b07eac61cb3dc362745a9bb6acbb91aa2b",
+    "derivation": "Retain node_modules/esbuild and all node_modules/@esbuild/* records without modifying them. Replace only root package metadata with an isolated package depending on exact esbuild 0.25.1."
+  },
+  "toolchain": {
+    "esbuildVersion": "0.25.1",
+    "license": "MIT",
+    "esbuildIntegrity": "sha512-BGO5LtrGC7vxnqucAe/rmvKdJllfGaYWdyABvyMoXQlfYMb2bbRuReWR5tEGE//4LcNJj9XrkovTqNYRFZHAMQ==",
+    "linuxX64Integrity": "sha512-xbfUhu/gnvSEg+EGovRc+kjBAkrvtk38RlerAzQxvMzlB4fXpCFCeUAYzJvrnhFtdeyVCDANSjJvOvGYoeKzFA==",
+    "supportedGatePlatform": "linux-x64",
+    "installationPolicy": "npm ci in an isolated temporary prefix, --ignore-scripts --include=dev --include=optional; never silently use a different installed version."
+  },
+  "status": "Build inputs prepared; exact-version build has not yet been run."
+}
