@@ -15,6 +15,22 @@ function abortError() {
   return new DOMException('Conversion was canceled.', 'AbortError');
 }
 
+export async function cleanupConversionResources({cancelOutput, abortWriter, removeTemporary}) {
+  let cancellationError, writerError;
+  try { await cancelOutput(); } catch (error) { cancellationError = error; }
+  try { await abortWriter(); } catch (error) { writerError = error; }
+  if (cancellationError) {
+    // Pinned Output.cancel() retains its rejected promise. A writer abort alone
+    // cannot prove all codecs closed. Report this, then allow an explicit retry
+    // to terminate the failed Worker before main-thread deletion of its own job.
+    throw Object.assign(new Error('OUTPUT_CANCEL_FAILED: ' + String(cancellationError?.message ?? cancellationError)
+      + (writerError ? '; WRITER_ABORT_FAILED: ' + String(writerError?.message ?? writerError) : '')),
+    {requiresWorkerTermination: true});
+  }
+  if (writerError) throw writerError;
+  await removeTemporary();
+}
+
 /**
  * Preserve AAC packets, including negative timestamps that encode leading trim.
  * Mediabunny 1.61.5: isobmff-demuxer.ts subtracts elst.media_time;
@@ -93,7 +109,7 @@ export function createAacPacketCopier(source, decoderConfig) {
  * VR metadata is deliberately left to the independent MP4 patcher.
  */
 export async function convertStereo(file, settings, {
-  signal, onProgress, onMetrics, jobId,
+  signal, onProgress, onMetrics, jobId, onCleanup,
 } = {}) {
   const started = performance.now();
   const checkAbort = () => { if (signal?.aborted) throw abortError(); };
@@ -155,7 +171,9 @@ export async function convertStereo(file, settings, {
     });
   };
   const cancelOutput = () => {
-    if (output && output.state !== 'finalized') {
+    // Mediabunny 1.61.5 cannot interrupt finalizing. execute() must finish its
+    // awaited finalize before the Worker can acknowledge cleanup.
+    if (output && !['finalizing', 'finalized'].includes(output.state)) {
       cancellationPromise ??= output.cancel();
     }
     return cancellationPromise ?? Promise.resolve();
@@ -175,6 +193,18 @@ export async function convertStereo(file, settings, {
       temporaryCreated = false;
     }
   };
+  const cleanupResources = () => cleanupConversionResources({
+    // output.cancel() closes its target; it does not abort the OPFS writer.
+    // Wait for that close, and abort an unclosed writer before deleting files.
+    cancelOutput,
+    abortWriter: async () => {
+      if (storageWriter && !storageClosed) { await storageWriter.abort(); storageClosed = true; }
+    },
+    removeTemporary,
+  });
+  // Register before acquiring resources, so the Worker can retry a failed
+  // deletion after convertStereo has rejected and its finally has completed.
+  onCleanup?.(cleanupResources);
   const countSample = () => {
     checkAbort();
     if (metrics.totalSamples >= MAX_SAMPLES) throw new RangeError('Experimental limit: 100000 total samples.');
@@ -393,7 +423,7 @@ export async function convertStereo(file, settings, {
       requiresMetadataPatch: true, opfsDirectory: metrics.opfsDirectory,
     };
     succeeded = true;
-    return { file: resultFile, cleanup: removeTemporary, metrics: { ...metrics }, info };
+    return { file: resultFile, cleanup: cleanupResources, metrics: { ...metrics }, info };
   } catch (error) {
     metrics.status = signal?.aborted ? 'canceled' : 'failed';
     metrics.error = signal?.aborted ? 'Conversion was canceled.' : String(error?.message ?? error);
@@ -404,13 +434,12 @@ export async function convertStereo(file, settings, {
     input?.dispose();
     try { await videoIterator?.return(); } catch { /* Input disposal already canceled the decoder. */ }
     if (!succeeded) {
-      try { await cancelOutput(); } catch (error) { metrics.cancelError = String(error?.message ?? error); }
-      if (storageWriter && !storageClosed) {
-        try { await storageWriter.abort(); storageClosed = true; }
-        catch (error) { metrics.storageCloseError = String(error?.message ?? error); }
+      // The Worker owns cleanup and acknowledges it only after this function
+      // has unwound. Standalone callers keep the original cleanup behavior.
+      if (!onCleanup) {
+        try { await cleanupResources(); }
+        catch (error) { metrics.cleanupError = String(error?.message ?? error); }
       }
-      try { await removeTemporary(); }
-      catch (error) { metrics.cleanupError = String(error?.message ?? error); }
       metrics.totalMs = performance.now() - started;
       // Reporting must not replace the original failure or skip canvas release.
       try { publishMetrics(); }

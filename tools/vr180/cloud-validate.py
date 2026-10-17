@@ -46,7 +46,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / 'docs'
 CHROME = Path('/usr/bin/google-chrome')
 PAGES = 'https://kushyameln01.github.io/kushyameln-works/'
-BUILD = 'vr180-b1-diag1'
+BUILD = 'vr180-b2-cancel1'
 RECOVERED = 'RECOVERED_PENDING_VERIFICATION'
 CANDIDATE_COMMIT = 'e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60'
 LIMIT = 8 * 1024 * 1024
@@ -384,8 +384,13 @@ def recovery_prelude(page, trial, record, scenario, fixture):
             page.wait_for_timeout(100)
         previous.update(status='CANCELED_OBSERVED', opfsJobsAfterCancel=remaining_jobs,
                         runEnabled=page.locator('#run').is_enabled(),
-                        applicationCancellationReceipt=None,
-                        receiptNote='The application terminates the Worker on cancel and does not produce a cancellation receipt; this is external observation.')
+                        applicationCancellationReceipt='receipt-canceled.json',
+                        receiptNote='The unmodified application cancellation receipt is separate from this external OPFS/UI observation.')
+        canceled = download_receipt(page, trial / 'receipt-canceled.json')
+        require(canceled.get('build') == BUILD and canceled.get('status') == 'canceled', 'Expected cancellation receipt was not recovered')
+        require((canceled.get('operationId'), canceled.get('inputRevision')) ==
+                (previous['workerPost']['operationId'], previous['workerPost']['inputRevision']), 'Cancellation receipt identity differs')
+        require(canceled.get('output') is None and canceled.get('cleanup', {}).get('status') == 'complete', 'Canceled operation did not report complete cleanup without output')
         require(previous['opfsJobsAfterCancel'] == [] and previous['runEnabled'], 'Cancellation cleanup or retry readiness failed')
         record.update(inputGeneration=2, expectedInputRevision=4,
                       recoveryScenario='Cancel 4K 12s conversion, then replace it with the small 180-degree input on the same page and run metadata-only copy; not a retry of the canceled input')
@@ -652,7 +657,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True, help='New evidence directory outside the checkout')
     parser.add_argument('--suite', choices=['small', 'followup'], default='small',
-                        help='Followup runs cancel/retry, expected failure/retry and native 4K 2s/12s; it does not rerun the small suite')
+                        help='Followup requires independent verification of the small suite on the same product sources before this separate run')
     parser.add_argument('--defer-independent-verification', action='store_true',
                         help='Recover outputs; report verification pending until independent verifiers run in the receiving environment')
     args = parser.parse_args()
@@ -678,8 +683,7 @@ def main():
             raise Blocked('This harness is scoped to Kushyameln01/kushyameln-works')
         if args.suite == 'followup':
             require(args.defer_independent_verification, 'Followup requires explicit deferred independent verification; the fixed small pixel oracle is bounded to 512px/eye and 120 frames')
-            result['smallSuitePrerequisite'] = {'runId': '39007380358-1', 'checkoutCommit': '78c9c2bce9f21a9cf70d28e120e7855cb607ddd0',
-                                               'basis': 'Recovered outputs independently verified PASS in the receiving environment; not rerun by this suite'}
+            raise Blocked('Small-suite independent verification for build vr180-b2-cancel1 is required before enabling followup')
             result['workerPostObserver'] = {'enabled': True, 'sha256': hashlib.sha256(WORKER_POST_OBSERVER.encode()).hexdigest(),
                                            'scope': 'Forwards original Worker.postMessage this/args/return/exception; observes only IDs/settings/file metadata'}
         source = source_check(out)

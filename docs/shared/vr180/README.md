@@ -9,7 +9,7 @@
 - `run(file, {mode: 'inspect'})`: MP4の構造、既存VR情報、変換時刻条件を検査。
 - `run(file, {mode: 'copy', layout: 'sbs'|'tb', fov: 180, confirmed: true})`: 元の圧縮サンプル・時刻・音声を保持し、180度のVR情報を付与。
 - `run(file, {mode: 'convert', layout, fov: 180|360, eyeSize, bitrate, confirmed: true})`: 正面180度の切出し、横並びへの配置、H.264再圧縮、条件付きAACコピー。
-- `cancel()` / `dispose()`: Workerを終了し、そのジョブの一時保存を削除。
+- `cancel()` / `dispose()`: Workerに停止を要求し、writer・codecの解放とそのジョブの一時保存削除を待ち、清掃応答後にWorkerを終了。清掃失敗中は再実行を止め、明示的な清掃再試行を受け付ける。
 
 `confirmed` は呼出側が入力の投影と左右配置を確認したことを示します。ファイルの縦横比だけから付与してはいけません。b1は180度の各眼を正方形、360度の各眼を2:1に制限します。
 

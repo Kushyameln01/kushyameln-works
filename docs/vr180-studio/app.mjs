@@ -10,7 +10,13 @@ const client = new StereoClient({onEvent: m => {
     $('progress').value = typeof p === 'number' ? p : p?.ratio ?? 0;
     $('status').textContent = p?.phase === 'finalize' ? '動画ファイルを仕上げています…' : '動画を変換しています…';
   }
-  if (m.type === 'cleanup-error') $('cleanup-warning').textContent = '一時ファイルの削除に失敗しました。 ' + m.error;
+  if (m.type === 'cleanup-error') {
+    if (m.diagnostics) { record = m.diagnostics; $('diagnostics').textContent = JSON.stringify(record, null, 2); }
+    $('cleanup-warning').textContent = '一時ファイルの清掃が完了していません。削除を再試行してください。 ' + m.error;
+    $('status').textContent = '清掃の完了を待っています。新しい処理はまだ開始できません。';
+    update();
+  }
+  if (m.type === 'cleanup-complete') { $('cleanup-warning').textContent = ''; update(); }
 }});
 const errors = {
   INPUT_DECODE_UNSUPPORTED: 'このブラウザでは入力動画を復号できません。処理記録で対応状況を確認できます。',
@@ -26,28 +32,29 @@ const errors = {
 };
 function statusError(e) {
   if (e.diagnostics) { record = e.diagnostics; $('diagnostics').textContent = JSON.stringify(record, null, 2); }
-  $('status').textContent = e.name === 'AbortError' ? '取り消しました。再実行できます。' : errors[e.message] || `処理できませんでした：${e.message}`;
+  $('status').textContent = client.cleanupPending ? '清掃が完了していません。削除を再試行してください。' : e.name === 'AbortError' ? '取り消しました。再実行できます。' : errors[e.message] || `処理できませんでした：${e.message}`;
 }
 function update() {
-  const busy = !!operations.current;
+  const busy = !!operations.current, cleanupPending = client.cleanupPending;
   $('size-label').hidden = $('mode').value === 'copy';
   $('mode-note').textContent = $('mode').value === 'copy' ? '180°の映像と音声をそのまま保ち、VR情報を整えます。' : '各眼の正面180°を横並びにして再圧縮します。360°素材の背面は出力されません。';
-  $('run').disabled = busy || !source || !$('confirmed').checked;
-  $('cancel').disabled = !busy;
-  for (const id of ['layout', 'fov', 'mode', 'size', 'confirmed', 'file', 'clear', 'receipt']) $(id).disabled = busy;
-  $('save').disabled = busy || !result;
-  $('receipt').disabled = busy || !record;
-  $('download').setAttribute('aria-disabled', String(busy));
-  for (const button of document.querySelectorAll('[data-demo]')) button.disabled = busy;
+  $('run').disabled = busy || cleanupPending || !source || !$('confirmed').checked;
+  $('cancel').disabled = !busy && !cleanupPending;
+  $('cancel').textContent = cleanupPending ? '一時ファイル削除を再試行' : '取り消す';
+  for (const id of ['layout', 'fov', 'mode', 'size', 'confirmed', 'file', 'clear', 'receipt']) $(id).disabled = busy || cleanupPending;
+  $('save').disabled = busy || cleanupPending || !result;
+  $('receipt').disabled = (busy && !cleanupPending) || !record;
+  $('download').setAttribute('aria-disabled', String(busy || cleanupPending));
+  for (const button of document.querySelectorAll('[data-demo]')) button.disabled = busy || cleanupPending;
 }
 function begin(kind) { const op = operations.begin(kind); update(); return op; }
 function finish(op) { if (operations.finish(op)) update(); }
 async function clearResult() {
   $('output-video').pause(); $('output-video').removeAttribute('src'); $('output-video').load();
   if (outputURL) URL.revokeObjectURL(outputURL);
-  outputURL = null; result = null; record = null; $('result').hidden = true;
-  $('diagnostics').textContent = '処理記録はありません。';
+  outputURL = null; result = null; $('result').hidden = true;
   await client.dispose();
+  record = null; $('diagnostics').textContent = '処理記録はありません。';
 }
 async function prepare(file, preset, op) {
   await clearResult(); operations.check(op);
@@ -116,10 +123,18 @@ $('run').onclick = async () => {
   finally { finish(op); }
 };
 $('cancel').onclick = async () => {
-  const op = operations.current; if (!op) return;
+  const op = operations.current;
+  if (!op && client.cleanupPending) {
+    const retry = begin('cleanup');
+    try { await client.dispose(); $('status').textContent = '一時ファイルを削除しました。再実行できます。'; }
+    catch (error) { statusError(error); }
+    finally { finish(retry); }
+    return;
+  }
+  if (!op) return;
   operations.cancel(); $('status').textContent = '取消処理中です。保存先の選択画面が開いている場合は閉じてください。';
   if (op.kind === 'save') return; // Keep the output available for another save attempt.
-  try { await client.cancel(); }
+  try { const pending = client.cancel(); update(); await pending; }
   catch (e) { $('cleanup-warning').textContent = '一時ファイルの削除に失敗しました。 ' + e.message; }
 };
 $('clear').onclick = async () => {
@@ -160,7 +175,7 @@ $('save').onclick = async () => {
   } finally { reader?.releaseLock(); finish(op); }
 };
 $('receipt').onclick = () => {
-  if (operations.current || !record) return;
+  if ((operations.current && !client.cleanupPending) || !record) return;
   const url = URL.createObjectURL(new Blob([JSON.stringify(record, null, 2)], {type: 'application/json'})), a = document.createElement('a');
   a.href = url; a.download = 'vr180-receipt.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 30000);
 };
