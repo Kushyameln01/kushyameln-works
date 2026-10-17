@@ -15,6 +15,30 @@
 
 現在の1 GiB変換出力・合計10万sample・16 MiB変換metadata上限を維持する。P1aの受入は追加保存取消、direct後の追加取消、commit後検査失敗、unknown、古い入力応答、清掃失敗→再試行の実状態更新・UI経路を含む。新経路は採用候補であり、未実装部分を公開能力として記載しない。実行記録と停止・復旧判断はRELEASEへ追記する。
 
+### P2の測定・比較契約（候補測定前に固定）
+
+- baselineのソース・入力・設定・全回収照合は `evidence/2026-10-17-plan12-baseline.json`。P1後の保存履歴差分もcommitで分ける。比較に使うTB360小素材は入力27,952 bytes・256px/眼・2Mbps、copyはSBS180小素材26,615 bytes。directと通常OPFSを混ぜず集計する。
+- 初回（新規context）、再訪（同contextの新page）、同じpageでの再実行を別条件として各3試行、baseline/candidateの順序を交互にする。cache消去の証拠がなければcoldと呼ばない。現在の1回の小素材往復はこの反復群の代用ではない。
+- P2の目的は保存事実と区間の観測であり速度改善を主張しない。既存totalと各区間の非負の値、終了status、固定phase数、取得できなかったnative/GPU量のnull、同じ出力品質を必須にする。明確な退行があれば原因調査し、不明な差を高速化成功としない。高速化を目的にする後続変更の許容差は、baseline反復のばらつきが得られるまで未設定とし、その変更を性能合格にしない。
+- `requestedBytes` は処理要求量。writeが拒否された場合に成功bytesへ読み替えない。成功writeのextent・集計値、実保存bytes、readbackしたbytesと区別する。区間は同一 `performance.now()` 時計内で測り、重なるmetadataWriteとwriteなどを加算しない。
+- P3の局所索引試作は速度とは別に、固定12ケース（5千/2万5千/10万sample、通常/交互ctts、mux/demux）と、64KiB page・明示索引buffer合計8MiB・sort内数4MiB・merge fan-in8の予算で検査する。Node GC後heap、明示buffer、実Chromeのpeakを区別する。局所試作だけで既存mux/demuxの比例保持が解消したとはしない。
+
+### P2の資源所有権
+
+| 資源 | 所有・最終利用 | 正常・失敗・取消時の扱い |
+|---|---|---|
+| 入力File | ページが借用、Workerは処理中のみ参照 | 原本を変更しない。結果破棄で参照を外す |
+| prepared Blob / 保存後File | 当該operationの結果が保持 | 追加保存に使い、release/入力変更で結果とURLを破棄 |
+| VideoSample / VideoFrame | transformの現在frame・iterator | frame処理のfinallyでclose、iterator終了と入力dispose。native memoryは未計測 |
+| AAC packet | copierが現在packetを借用 | add完了まで保持、次packetへ進むと参照を外す。AACを復号する経路ではない |
+| 外部writer | createFileOutputのtransaction | 実取得を即通知。未commitならabort、commit後は保存済みファイルを削除せず検査状態を残す |
+| OPFS writer / 自job directory | transform | mux停止・writer終了の後、自jobだけを削除。失敗はretry可能な所有者を保持 |
+| Object URL | appの現在結果・記録download | 差替え/終了でrevoke。ページ終了時の非同期清掃を完了保証にしない |
+| Worker | clientの現在operation | cleanup応答後にterminate。不明状態は記録を保存して明示終了 |
+| 将来の索引page / metadata spool | P3 job内のstore | 明示予算予約とI/O終了を確認してclose/削除。未導入の資源量を0と記録しない |
+
+高頻度のmetricsは固定件数の記録と最後の値、超過数へ制限する。保存試行の事実履歴はこの打切り対象に含めない。遠隔テレメトリは追加せず、端末内JSONを利用するため、共有されない利用ログは自動集計できない。
+
 ## 1. 目的と維持する条件
 
 5〜10 GBの素材をブラウザで扱い、設定に対応したVR180 MP4を保存・回収できる状態を目指す。容量は実bytesを記録し、GB（10進）とGiB（2進）を混同しない。容量だけでなく、継続時間、映像・音声サンプル数、moovサイズを別々に評価する。
