@@ -20,7 +20,7 @@ const tick = () => new Promise(resolve => setImmediate(resolve));
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 export async function runtimeProvenance() {
   const paths = ['tools/vr180/compare-output-index.mjs', 'development/vr180/output-index-prototype/output-index.mjs',
-    'development/vr180/index-prototype/index-store.mjs', 'development/vr180/output-index-prototype/mp4-output-inspect.mjs',
+    'development/vr180/index-prototype/index-store.mjs', 'development/vr180/index-prototype/job-owner.mjs', 'development/vr180/output-index-prototype/mp4-output-inspect.mjs',
     'development/vr180/output-index-prototype/node-backend.mjs'];
   const root = fileURLToPath(new URL('../../', import.meta.url));
   return Object.fromEntries(await Promise.all(paths.map(async path => [path, digest(await readFile(resolve(root, path)))])));

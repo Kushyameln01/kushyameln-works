@@ -37,6 +37,10 @@ else {
     await writeFile(path.join(out, 'mediabunny-output-index.mjs'), bundle, {flag: 'wx'});
     Object.assign(report, {status: 'PASS', patch: proof, bundleBytes: bundle.length, bundleSha256: sha(bundle),
       controllerSha256: sha(await readFile(path.join(prototype, 'output-index.mjs'))), buildOptions: CORE_OPTIONS});
+    report.runtimeFiles = {};
+    for (const relative of ['index-prototype/index-store.mjs', 'index-prototype/job-owner.mjs', 'output-index-prototype/mp4-output-inspect.mjs']) {
+      report.runtimeFiles[relative] = sha(await readFile(path.join(repo, 'development/vr180', relative)));
+    }
   } catch (error) { report.error = error.stack; }
   finally { esbuild?.stop(); await rm(work, {recursive: true, force: true}); }
   await writeFile(path.join(out, 'fork-build-result.json'), JSON.stringify(report, null, 2) + '\n', {flag: 'wx'});

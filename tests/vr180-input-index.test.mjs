@@ -210,8 +210,8 @@ test('input/output share a budget and disjoint IDs; same ID fails before taking 
     sortBytes: 4 * 1024 ** 2 - OUTPUT_PROFILE.sortReservedBytes});
   const output = await createOutputIndex({...h.options, jobId: 'trial-out'});
   try {
-    await assert.rejects(createOutputIndex({...h.options, jobId: 'trial-in'}), /OUTPUT_INDEX_LOCK_BUSY/);
-    await assert.rejects(createInputIndex({...h.options, source: blob, jobId: 'trial-out'}), /INPUT_INDEX_LOCK_BUSY/);
+    await assert.rejects(createOutputIndex({...h.options, jobId: 'trial-in'}), /INDEX_OWNER_LOCK_BUSY/);
+    await assert.rejects(createInputIndex({...h.options, source: blob, jobId: 'trial-out'}), /INDEX_OWNER_LOCK_BUSY/);
     assert.equal(h.backend.calls.remove.length, 0); assert.equal(h.lockManager.held.size, 2);
     const parsed = await initialize(input, blob); parsed.input.dispose();
     assert(h.budget.peakBytes <= 8 * 1024 ** 2);
@@ -244,10 +244,10 @@ test('exhausted explicit budget fails without an unbounded memory fallback', asy
 });
 
 test('cleanup close failure retains owner and a retry closes the same owned job', async t => {
-  let failClose = true; const h = setup(t, {close() { if (failClose) throw Error('INJECTED_CLOSE_FAILURE'); }}), blob = await fixture();
+  let failClose = true; const h = setup(t, {close(path) { if (failClose && path.endsWith('records.bin')) throw Error('INJECTED_CLOSE_FAILURE'); }}), blob = await fixture();
   const controller = await createInputIndex({...h.options, source: blob}); const parsed = await initialize(controller, blob); parsed.input.dispose();
   await assert.rejects(controller.dispose(), /INJECTED_CLOSE_FAILURE/);
-  await assert.rejects(createInputIndex({...h.options, source: blob}), /INPUT_INDEX_LOCK_BUSY/);
+  await assert.rejects(createInputIndex({...h.options, source: blob}), /INDEX_OWNER_LOCK_BUSY/);
   assert.equal(h.backend.calls.remove.length, 0);
   failClose = false; await controller.dispose(); assert.equal(h.lockManager.held.size, 0); assert.equal(h.budget.usedBytes, 0);
 });

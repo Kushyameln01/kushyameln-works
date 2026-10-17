@@ -6,6 +6,7 @@
  */
 // VR180 private prototype. Fixed upstream adapter; never imported by the public product.
 import {createIndexBudget, createIndexStore, INDEX_PAGE_BYTES as PAGE} from '../index-prototype/index-store.mjs';
+import {createOwnedIndexJob} from '../index-prototype/job-owner.mjs';
 import {inspectMp4} from './mp4-output-inspect.mjs';
 
 export const PROFILE = Object.freeze({maxSamples: 100000, maxTracks: 2, maxChunkSamples: 4096,
@@ -29,19 +30,9 @@ function writeSample(bytes, sample) { bytes.fill(0); const d = view(bytes);
   }
   d.setUint32(24, u32(sample.size), true); d.setUint32(28, +sample.key, true); d.setInt32(40, i32(sample.composition ?? 0), true); return bytes;
 }
-async function lease(manager, name) {
-  if (typeof manager?.request !== 'function') throw Object.assign(Error('OUTPUT_INDEX_LOCK_UNAVAILABLE'), {status: 'BLOCKED'});
-  let ok, bad, release; const ready = new Promise((r, j) => { ok = r; bad = j; }), held = new Promise(r => { release = r; });
-  const released = Promise.resolve().then(() => manager.request(name, {mode: 'exclusive', ifAvailable: true}, lock => {
-    if (!lock) { bad(Object.assign(Error('OUTPUT_INDEX_LOCK_BUSY'), {status: 'BLOCKED'})); return; } ok(); return held;
-  }));
-  released.catch(error => bad(Object.assign(Error(`OUTPUT_INDEX_LOCK_UNAVAILABLE: ${error.message}`, {cause: error}), {status: 'BLOCKED'})));
-  await ready; return async () => { release(); await released; };
-}
-
 /** Creates a job-owned private controller. Bind it to only one fork Output. */
 export async function createOutputIndex({root, jobId = crypto.randomUUID(), signal, lockManager = globalThis.navigator?.locks,
-  budget = createIndexBudget(), layout = null, yieldTask = tick} = {}) {
+  budget = createIndexBudget(), layout = null, yieldTask = tick, ownerToken} = {}) {
   if (!/^[A-Za-z0-9_-]{1,64}$/.test(jobId)) fail('INVALID_OUTPUT_INDEX_JOB');
   if (!root?.getDirectoryHandle || !root?.removeEntry) fail('OUTPUT_INDEX_ROOT_UNAVAILABLE');
   if (layout !== null && !['sbs', 'tb'].includes(layout)) fail('INVALID_OUTPUT_INDEX_LAYOUT');
@@ -50,7 +41,7 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
   signal?.addEventListener('abort', externalAbort, {once: true});
   if (signal?.aborted) externalAbort();
   const workSignal = canceler.signal;
-  let pendingCleanup, releaseLease, directory, ownsJob = false, removed = false, disposing, active, stopped = false, bound;
+  let pendingCleanup, owner, directory, removed = false, disposing, active, stopped = false, bound;
   let sort, page, releaseBuffers = () => {}, spool, spoolClosed = false, spoolFile, ftyp;
   let spoolBytes = 0, sampleCount = 0, moovPosition = null, verification = null, metadataSource = null;
   const tracks = [], stores = [];
@@ -73,18 +64,17 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
         if (pendingCleanup) { await pendingCleanup(); pendingCleanup = null; }
         for (const store of stores) await store.dispose();
         if (spool && !spoolClosed) { spool.close(); spoolClosed = true; }
-        if (ownsJob) await root.removeEntry(jobId, {recursive: true});
-        if (releaseLease) { await releaseLease(); releaseLease = null; }
+        await owner?.dispose();
         releaseBuffers(); sort = null; page = null; removed = true;
         signal?.removeEventListener('abort', externalAbort);
       } finally { disposing = null; }
     })(); return disposing;
   }
   try {
-    check(); releaseLease = await lease(lockManager, `vr180:index-job:${jobId}`); check();
-    try { await root.getDirectoryHandle(jobId); fail('OUTPUT_INDEX_JOB_ALREADY_EXISTS'); }
-    catch (error) { if (error.name !== 'NotFoundError') throw error; }
-    directory = await root.getDirectoryHandle(jobId, {create: true}); ownsJob = true;
+    check();
+    try { owner = await createOwnedIndexJob({root, jobId, ownerToken, kind: 'output', budget, signal: workSignal, lockManager}); }
+    catch (error) { pendingCleanup = error.retryCleanup; throw error; }
+    directory = owner.directory; check();
     releaseBuffers = budget.reserve(PROFILE.sortReservedBytes + PAGE + 4096);
     sort = new Float64Array(PROFILE.maxSamples); page = buffer(PAGE); peak();
     const file = await directory.getFileHandle('metadata.bin', {create: true});
@@ -297,6 +287,7 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
   }
   const api = {
     profile: PROFILE,
+    get owner() { return owner.ticket; },
     get metrics() { peak(); return {profile: PROFILE, jobId, sampleCount, moovPosition, moovBytes: spoolBytes, verification,
       ...stats, explicitReservedBytes: budget.usedBytes, budgetPeakBytes: budget.peakBytes, disposed: removed,
       tracks: tracks.map(s => ({id: s.track.track.id, samples: s.count, chunks: s.chunkCount,

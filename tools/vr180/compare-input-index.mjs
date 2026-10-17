@@ -18,7 +18,7 @@ const valuesOf = packet => packet && [packet.timestamp, packet.duration, packet.
 const fileSha = async file => { const digest = hash(); for await (const bytes of createReadStream(file, {highWaterMark: 65536})) digest.update(bytes); return digest.digest('hex'); };
 export async function runtimeProvenance() {
   const names = ['development/vr180/input-index-prototype/input-index.mjs', 'development/vr180/input-index-prototype/presentation-index.mjs',
-    'development/vr180/index-prototype/index-store.mjs', 'development/vr180/output-index-prototype/output-index.mjs',
+    'development/vr180/index-prototype/index-store.mjs', 'development/vr180/index-prototype/job-owner.mjs', 'development/vr180/output-index-prototype/output-index.mjs',
     'development/vr180/output-index-prototype/mp4-output-inspect.mjs', 'development/vr180/output-index-prototype/node-backend.mjs',
     'docs/shared/vr180/mp4.mjs', 'docs/shared/media-basic/vendor/mediabunny.mjs',
     'tools/vr180/compare-output-index.mjs', 'tools/vr180/compare-input-index.mjs', 'tools/vr180/compare-input-output-index.mjs'];

@@ -22,6 +22,7 @@ SOURCES=[
  'development/vr180/output-index-prototype/output-index.mjs',
  'development/vr180/output-index-prototype/mp4-output-inspect.mjs',
  'development/vr180/index-prototype/index-store.mjs',
+ 'development/vr180/index-prototype/job-owner.mjs',
  'docs/shared/vr180/geometry.mjs','docs/shared/vr180/file-output.mjs',
  'docs/shared/vr180/sha256.mjs','docs/shared/vr180/mp4.mjs',
 ]

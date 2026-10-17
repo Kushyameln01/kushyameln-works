@@ -21,6 +21,7 @@ FILES = [
     'development/vr180/output-index-prototype/output-index.mjs',
     'development/vr180/output-index-prototype/mp4-output-inspect.mjs',
     'development/vr180/index-prototype/index-store.mjs',
+    'development/vr180/index-prototype/job-owner.mjs',
     'docs/shared/vr180/file-output.mjs', 'docs/shared/vr180/sha256.mjs', 'docs/shared/vr180/mp4.mjs',
     'docs/vr180-studio/fixtures/stereo180-sbs.mp4',
 ]
@@ -156,6 +157,8 @@ def main():
         cloud.require(build_report['status']=='PASS' and build_report['baseline']['status']=='PASS' and build_report['baseline']['comparison']['identical'],'Fork rebuild gate failed')
         cloud.require(build_report['bundleBytes']==bundle.stat().st_size and build_report['bundleSha256']==cloud.digest(bundle),'Fork bundle differs from build proof')
         cloud.require(build_report['controllerSha256']==cloud.digest(cloud.ROOT/'development/vr180/output-index-prototype/output-index.mjs'),'Controller differs from build proof')
+        for name,digest in build_report['runtimeFiles'].items():
+            cloud.require(cloud.digest(cloud.ROOT/'development/vr180'/name)==digest,'Runtime differs: '+name)
         cloud.write(out/'fork-build-result.json',build_report)
         cloud.command(['git','ls-files','--error-unmatch',*FILES,str(Path(__file__).resolve().relative_to(cloud.ROOT))])
         report['harnessSHA256']=cloud.digest(Path(__file__));report['sharedHarnessSHA256']=cloud.digest(Path(cloud.__file__))

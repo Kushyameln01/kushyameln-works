@@ -45,7 +45,7 @@ else {
       presentationSha256: sha(await readFile(path.join(prototype, 'presentation-index.mjs'))), buildOptions: CORE_OPTIONS});
     report.runtimeFiles = {};
     report.publicInputParserSha256 = sha(await readFile(path.join(repo, 'docs/shared/vr180/mp4.mjs')));
-    for (const relative of ['index-prototype/index-store.mjs', 'output-index-prototype/mp4-output-inspect.mjs',
+    for (const relative of ['index-prototype/index-store.mjs', 'index-prototype/job-owner.mjs', 'output-index-prototype/mp4-output-inspect.mjs',
       ...(combined ? ['output-index-prototype/output-index.mjs'] : [])]) {
       report.runtimeFiles[relative] = sha(await readFile(path.join(repo, 'development/vr180', relative)));
     }

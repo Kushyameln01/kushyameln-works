@@ -5,6 +5,7 @@
  * Modifications: VR180 private asynchronous input-index prototype, 2026-10-17.
  */
 import {createIndexBudget, createIndexStore, INDEX_PAGE_BYTES as PAGE} from '../index-prototype/index-store.mjs';
+import {createOwnedIndexJob} from '../index-prototype/job-owner.mjs';
 import {inspectMp4 as inspectPublicMp4} from '../../../docs/shared/vr180/mp4.mjs';
 import {inspectMp4 as inspectFixedMuxerFixture} from '../output-index-prototype/mp4-output-inspect.mjs';
 import {buildPresentationIndex} from './presentation-index.mjs';
@@ -29,26 +30,16 @@ function sampleBytes(bytes, value) { const d = dv(bytes); bytes.fill(0);
     [32, 'duration'], [40, 'chunkOffset'], [48, 'chunkSize']]) {
     if (!Number.isSafeInteger(value[key])) fail('INPUT_UNSAFE_SAMPLE_FIELD'); d.setFloat64(at, value[key], true);
   } return bytes; }
-async function lease(manager, name) {
-  if (!manager?.request) throw Object.assign(Error('INPUT_INDEX_LOCK_UNAVAILABLE'), {status: 'BLOCKED'});
-  let ok, bad, release; const ready = new Promise((r, j) => { ok = r; bad = j; }), held = new Promise(r => { release = r; });
-  const released = Promise.resolve().then(() => manager.request(name, {mode: 'exclusive', ifAvailable: true}, lock => {
-    if (!lock) { bad(Object.assign(Error('INPUT_INDEX_LOCK_BUSY'), {status: 'BLOCKED'})); return; } ok(); return held;
-  }));
-  released.catch(error => bad(Object.assign(Error('INPUT_INDEX_LOCK_UNAVAILABLE', {cause: error}), {status: 'BLOCKED'})));
-  await ready; return async () => { release(); await released; };
-}
-
 /** One explicit private fork Input per controller. No in-memory fallback.
  * source is the same Blob/range source passed to that Input. Dispose in finally,
  * after Input.dispose(); failed cleanup keeps ownership and is retryable.
  */
 export async function createInputIndex({source, root, jobId = crypto.randomUUID(), signal,
   budget = createIndexBudget(), lockManager = globalThis.navigator?.locks, yieldTask = tick,
-  sortBytes = INPUT_PROFILE.sortBytes, mergeFanIn = INPUT_PROFILE.mergeFanIn, fixedMuxerFixture = false} = {}) {
+  sortBytes = INPUT_PROFILE.sortBytes, mergeFanIn = INPUT_PROFILE.mergeFanIn, fixedMuxerFixture = false, ownerToken} = {}) {
   if (!source?.slice || !safe(source.size) || !source.size || !root?.getDirectoryHandle || !root?.removeEntry
     || !/^[A-Za-z0-9_-]{1,64}$/.test(jobId) || typeof fixedMuxerFixture !== 'boolean') fail('INPUT_INDEX_OPTIONS_INVALID');
-  let releaseLease, releaseScratch = () => {}, directory, owned = false, removed = false, stopped = false, active, disposing, pendingCleanup;
+  let owner, releaseScratch = () => {}, directory, removed = false, stopped = false, active, disposing, pendingCleanup;
   let bound, initialized = false, inspection = null, queued = 0, tail = Promise.resolve();
   const ownedStores = new Set(), tracks = new Map();
   const stats = {tableReadBytes: 0, tableReadCalls: 0, tableMaxReadBytes: 0, tableCacheMisses: 0,
@@ -69,17 +60,16 @@ export async function createInputIndex({source, root, jobId = crypto.randomUUID(
         await active?.catch(() => {});
         if (pendingCleanup) { await pendingCleanup(); pendingCleanup = null; }
         for (const store of ownedStores) { await store.dispose(); ownedStores.delete(store); }
-        if (owned) await root.removeEntry(jobId, {recursive: true});
-        if (releaseLease) { await releaseLease(); releaseLease = null; }
+        await owner?.dispose();
         releaseScratch(); tracks.clear(); removed = true;
       } finally { disposing = null; }
     })(); return disposing;
   }
   try {
-    check(); releaseLease = await lease(lockManager, `vr180:index-job:${jobId}`); check();
-    try { await root.getDirectoryHandle(jobId); fail('INPUT_INDEX_JOB_ALREADY_EXISTS'); }
-    catch (error) { if (error.name !== 'NotFoundError') throw error; }
-    directory = await root.getDirectoryHandle(jobId, {create: true}); owned = true;
+    check();
+    try { owner = await createOwnedIndexJob({root, jobId, ownerToken, kind: 'input', budget, signal, lockManager}); }
+    catch (error) { pendingCleanup = error.retryCleanup; throw error; }
+    directory = owner.directory; check();
     releaseScratch = budget.reserve(4096); // bounded query rows, scalar headers and record scratch
   } catch (error) { try { await dispose(); } catch (cleanup) { error.cleanupError = cleanup.message; error.retryCleanup = dispose; } throw error; }
 
@@ -313,6 +303,7 @@ export async function createInputIndex({source, root, jobId = crypto.randomUUID(
     return -1;
   }
   return Object.freeze({readMetadata, dispose,
+    get owner() { return owner.ticket; },
     sampleInfo(track, id) { return operation(async () => { stats.queryCount++; return info(stateFor(track), id); }); },
     sampleIndex(track, timestamp, keyOnly = false) { return operation(async () => { stats.queryCount++; return find(stateFor(track), timestamp, keyOnly); }); },
     nextKeyIndex(track, id) { return operation(async () => {
