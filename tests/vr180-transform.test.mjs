@@ -3,10 +3,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { buildStereoGeometry } from '../docs/shared/vr180/geometry.mjs';
+import { inspectMp4 } from '../docs/shared/vr180/mp4.mjs';
 import * as transform from '../docs/shared/vr180/transform.mjs';
 import {
   Input, BlobSource, MP4, EncodedPacketSink, EncodedAudioPacketSource,
-  EncodedVideoPacketSource, Output, Mp4OutputFormat, BufferTarget,
+  EncodedVideoPacketSource, Output, Mp4OutputFormat, BufferTarget, StreamTarget,
 } from '../docs/shared/media-basic/vendor/mediabunny.mjs';
 
 test('180 SBS keeps the complete left and right views while downscaling equally', () => {
@@ -126,7 +127,7 @@ function probeAudio(bytes) {
 for (const name of ['stereo180-tb', 'stereo180-sbs', 'stereo360-tb']) {
   test(`${name}: production AAC copier preserves all packets, priming, duration and decoded PCM`, async () => {
     // Independent FFmpeg fixtures and decoders exercise the actual pinned MP4 muxer.
-    // Only this small test uses BufferTarget; production output remains streamed to OPFS.
+    // Only this small test uses BufferTarget; production media output is streamed.
     const original = await readFile(new URL(`../docs/vr180-studio/fixtures/${name}.mp4`, import.meta.url));
     const input = new Input({ source: new BlobSource(new Blob([original])), formats: [MP4] });
     const target = new BufferTarget();
@@ -171,3 +172,142 @@ for (const name of ['stereo180-tb', 'stereo180-sbs', 'stereo360-tb']) {
     }
   });
 }
+
+// A transaction-shaped test double, not evidence of native file-system or
+// WebCodecs behavior. The tests below use the real pinned MP4 muxer/sink.
+function directHandle(hooks = {}) {
+  let saved = new Uint8Array(), draft = new Uint8Array(), writes = 0, closes = 0, aborts = 0;
+  const handle = {
+    async getFile() { return new Blob([saved]); },
+    async createWritable() {
+      return {
+        async write({position, data}) {
+          writes++; await hooks.write?.(position, data);
+          const next = new Uint8Array(Math.max(draft.length, position + data.length));
+          next.set(draft); next.set(data, position); draft = next;
+        },
+        async truncate(size) { const next = new Uint8Array(size); next.set(draft.subarray(0, size)); draft = next; },
+        async close() { closes++; saved = draft.slice(); },
+        async abort() { aborts++; await hooks.abort?.(); draft = new Uint8Array(); },
+      };
+    },
+    get counts() { return {writes, closes, aborts}; },
+  };
+  return handle;
+}
+async function remuxToDirect(sink, {cancel = false} = {}) {
+  const bytes = await readFile(new URL('../docs/vr180-studio/fixtures/stereo180-sbs.mp4', import.meta.url));
+  // Generate a small, valid no-B-frame stream for the sink test. Remuxing the
+  // original B-frame stream introduces cslg, which the production parser
+  // intentionally rejects. No production codec/metadata scope is expanded.
+  const noBFrames = external('ffmpeg', ['-v', 'error', '-i', 'pipe:0', '-map', '0:v:0', '-an',
+    '-c:v', 'libx264', '-bf', '0', '-preset', 'ultrafast', '-movflags', 'frag_keyframe+empty_moov',
+    '-f', 'mp4', 'pipe:1'], bytes);
+  const input = new Input({source: new BlobSource(new Blob([noBFrames])), formats: [MP4]});
+  const output = new Output({
+    format: new Mp4OutputFormat({fastStart: false, onMoov: sink.onMoov}),
+    target: new StreamTarget(sink.stream, {chunked: true, chunkSize: 1024 ** 2}),
+  });
+  try {
+    const video = (await input.getTracks()).find(track => track.type === 'video');
+    const source = new EncodedVideoPacketSource('avc'); output.addVideoTrack(source);
+    const packets = new EncodedPacketSink(video), config = await video.getDecoderConfig();
+    let packet = await packets.getFirstPacket(), first = true;
+    await output.start();
+    while (packet) {
+      await source.add(packet, first ? {decoderConfig: config} : undefined); first = false;
+      if (cancel) { await output.cancel(); return; }
+      packet = await packets.getNextPacket(packet);
+    }
+    source.close(); await output.finalize();
+  } finally {
+    input.dispose();
+    if (!['finalized', 'canceled'].includes(output.state)) await output.cancel();
+  }
+}
+
+test('production direct sink accepts pinned muxer header rewrites and retains an uncommitted metadata source', async () => {
+  const handle = directHandle(), observed = [];
+  const sink = await transform.createDirectMuxDestination(handle, {onWrite: extent => observed.push(extent)});
+  await remuxToDirect(sink);
+  assert.equal(handle.counts.closes, 0);
+  assert.equal((await handle.getFile()).size, 0);
+  assert.equal(sink.output.status.muxerClosed, true);
+  assert.equal(sink.output.status.committed, false);
+  const direct = sink.finish();
+  const info = await inspectMp4(direct.source);
+  assert.deepEqual(info.sampleCounts, {video: 60, audio: 0, total: 60});
+  assert(direct.metrics.capturedPrefixBytes <= 2048);
+  assert(direct.metrics.capturedMoovBytes < 16 * 1024 ** 2);
+  assert(direct.metrics.retainedSourceBytes < direct.source.size);
+  assert.equal(observed.at(-1), direct.source.size);
+  for (let i = 1; i < observed.length; i++) assert(observed[i] >= observed[i - 1]);
+  assert.throws(() => direct.source.slice(4096, 4100), /DIRECT_UNCAPTURED_RANGE/);
+  // Explicit caller commit is exercised without claiming a VR metadata patch.
+  const saved = await direct.output.commit({expectedBytes: direct.source.size, expectedSha256: null});
+  assert.equal(saved.hashMatched, false); assert.equal(handle.counts.closes, 1);
+  assert.deepEqual(await inspectMp4(saved.file), info);
+  const committed = new Uint8Array(await saved.file.arrayBuffer());
+  await direct.output.abort();
+  assert.equal(handle.counts.aborts, 0);
+  assert.deepEqual(new Uint8Array(await (await handle.getFile()).arrayBuffer()), committed);
+});
+
+test('pinned muxer cancellation closes the direct wrapper without committing the destination', async () => {
+  const handle = directHandle(), sink = await transform.createDirectMuxDestination(handle);
+  await remuxToDirect(sink, {cancel: true});
+  assert.equal(sink.output.status.muxerClosed, true);
+  assert.equal(handle.counts.closes, 0);
+  assert.throws(() => sink.finish(), /DIRECT_MUX_NOT_FINALIZED/);
+  await sink.output.abort();
+  assert.equal(handle.counts.aborts, 1);
+  assert.equal((await handle.getFile()).size, 0);
+});
+
+test('direct mux sink rejects oversized and malformed writes before touching the physical writer', async () => {
+  for (const message of [
+    {type: 'write', position: 1024 ** 3, data: Uint8Array.of(1)},
+    {type: 'write', position: -1, data: Uint8Array.of(1)},
+    {type: 'write', position: 0.5, data: Uint8Array.of(1)},
+    {type: 'write', position: 0, data: [1]},
+    {type: 'truncate', position: 0, data: Uint8Array.of(1)},
+  ]) {
+    const handle = directHandle(), sink = await transform.createDirectMuxDestination(handle);
+    await assert.rejects(sink.stream.getWriter().write(message), /1 GiB|invalid/);
+    assert.equal(handle.counts.writes, 0); assert.equal(handle.counts.closes, 0);
+    await sink.output.abort();
+  }
+});
+
+test('direct mux write failure cannot produce a prepared source and abort can be retried', async () => {
+  let failAbort = true;
+  const handle = directHandle({write: () => { throw Error('DISK_WRITE_FAILED'); },
+    abort: () => { if (failAbort) throw Error('DISK_ABORT_FAILED'); }});
+  const sink = await transform.createDirectMuxDestination(handle), writer = sink.stream.getWriter();
+  await assert.rejects(writer.write({type: 'write', position: 0, data: Uint8Array.of(1)}), /DISK_WRITE_FAILED/);
+  assert.equal(sink.output.status.extent, 0);
+  assert.throws(() => sink.finish(), /DIRECT_MUX_NOT_FINALIZED/);
+  await assert.rejects(sink.output.abort(), /DISK_ABORT_FAILED/);
+  assert.equal(sink.output.status.state, 'cleanup-failed');
+  failAbort = false; await sink.output.abort();
+  assert.equal(sink.output.status.state, 'aborted');
+  assert.deepEqual(handle.counts, {writes: 1, closes: 0, aborts: 2});
+});
+
+test('cancel during a direct write waits for that write and prevents completion or physical close', async () => {
+  let entered, release;
+  const started = new Promise(resolve => { entered = resolve; });
+  const controller = new AbortController(), handle = directHandle({write: async () => {
+    entered(); await new Promise(resolve => { release = resolve; });
+  }});
+  let progressCalls = 0;
+  const sink = await transform.createDirectMuxDestination(handle, {signal: controller.signal, onWrite: () => { progressCalls++; }});
+  const work = sink.stream.getWriter().write({type: 'write', position: 0, data: Uint8Array.of(1)});
+  const rejected = assert.rejects(work, {name: 'AbortError'});
+  await started; controller.abort();
+  assert.equal(handle.counts.aborts, 0); release();
+  await rejected; await sink.output.abort();
+  assert.equal(progressCalls, 0);
+  assert.deepEqual(handle.counts, {writes: 1, closes: 0, aborts: 1});
+  assert.throws(() => sink.finish(), /DIRECT_MUX_NOT_FINALIZED/);
+});

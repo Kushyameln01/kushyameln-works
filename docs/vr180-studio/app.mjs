@@ -10,12 +10,17 @@ const client = new StereoClient({onEvent: m => {
   if (m.type === 'progress') {
     const p = m.progress;
     $('progress').value = typeof p === 'number' ? p : p?.ratio ?? 0;
-    $('status').textContent = ({finalize: '動画ファイルを仕上げています…', inputHash: '入力ファイルの照合用ハッシュを計算しています…', outputHash: '出力ファイルの照合用ハッシュを計算しています…'})[p?.phase] ?? '動画を変換しています…';
+    $('status').textContent = ({finalize: '動画ファイルを仕上げています…', saveCommit: '保存ファイルを確定して内容を確認しています…', inputHash: '入力ファイルの照合用ハッシュを計算しています…', outputHash: '出力ファイルの照合用ハッシュを計算しています…'})[p?.phase] ?? '動画を変換しています…';
   }
   if (m.type === 'cleanup-error') {
     if (m.diagnostics) { record = m.diagnostics; $('diagnostics').textContent = JSON.stringify(record, null, 2); }
     $('cleanup-warning').textContent = '一時ファイルの清掃が完了していません。削除を再試行してください。 ' + m.error;
     $('status').textContent = '清掃の完了を待っています。新しい処理はまだ開始できません。';
+    if (m.error === 'DIRECT_SAVE_STATE_UNKNOWN') {
+      chosenSaveHandle = null;
+      $('cleanup-warning').textContent = '処理担当が停止したため、保存先への書き込み・取消の結果を確認できません。「記録を保存して処理を終了」で記録を残し、保存先のファイルを確認してください。';
+      $('status').textContent = '保存状態が不明です。取消完了とは判定していません。';
+    }
     update();
   }
   if (m.type === 'cleanup-complete') { $('cleanup-warning').textContent = ''; update(); }
@@ -33,23 +38,32 @@ const errors = {
   CONVERSION_INDEX_INFO_INVALID: '変換前に動画の索引を確認できませんでした。処理記録を確認してください。',
   CONVERSION_SAMPLE_LIMIT_EXCEEDED: 'この動画の映像・音声サンプル数は、現在の変換上限10万件を超えています。大容量・長時間の変換にはまだ対応していません。',
   CONVERSION_METADATA_LIMIT_EXCEEDED: 'この動画の索引・メタデータ量は、現在の変換上限16MiBを超えています。',
+  DIRECT_OUTPUT_LIMIT_EXCEEDED: 'VR情報を含めた直接保存の出力が、現在の1GiB上限を超えました。',
+  OUTPUT_MUST_BE_NEW_FILE: '保存用の新しいファイル名を指定してください。既存の内容は上書きしていません。',
   OPFS_UNAVAILABLE: 'このブラウザでは変換用の一時保存を利用できません。'
 };
 function statusError(e) {
   if (e.diagnostics) { record = e.diagnostics; $('diagnostics').textContent = JSON.stringify(record, null, 2); }
   $('status').textContent = client.cleanupPending ? '清掃が完了していません。削除を再試行してください。' : e.name === 'AbortError' ? '取り消しました。再実行できます。' : errors[e.message] || errors[e.message?.split(':')[0]] || `処理できませんでした：${e.message}`;
+  if (e.diagnostics?.saveWriteCommitted) {
+    chosenSaveHandle = null;
+    $('status').textContent = e.diagnostics.saveCompleted ? '取消要求が届く前に、保存と内容の確認が完了しています。保存先のファイルを確認してください。' : '保存先への書き込みは完了しましたが、その後の確認を完了できませんでした。保存先のファイルと処理記録を確認してください。';
+  }
+  if (e.diagnostics?.directSave?.status === 'unknown') $('status').textContent = '保存状態が不明な処理を終了しました。保存先のファイルを確認し、次の処理には新しい保存先を選んでください。';
 }
 function update() {
   const busy = !!operations.current, cleanupPending = client.cleanupPending || !!pendingSaveCleanup;
   $('size-label').hidden = $('mode').value === 'copy';
   $('mode-note').textContent = $('mode').value === 'copy' ? '180°の映像と音声をそのまま保ち、VR情報を整えます。' : '各眼の正面180°を横並びにして再圧縮します。360°素材の背面は出力されません。';
   $('run').disabled = busy || cleanupPending || !source || !$('confirmed').checked;
+  $('run').textContent = chosenSaveHandle && $('mode').value === 'convert' ? '動画を作成して保存' : 'VR180動画を作成';
   $('cancel').disabled = (!busy && !cleanupPending) || operations.current?.kind === 'saveCleanup';
   $('cancel').textContent = pendingSaveCleanup ? '保存処理の清掃を再試行' : cleanupPending ? '一時ファイル削除を再試行' : '取り消す';
+  if (client.outputStateUnknown) $('cancel').textContent = '記録を保存して処理を終了';
   for (const id of ['layout', 'fov', 'mode', 'size', 'confirmed', 'file', 'clear', 'receipt']) $(id).disabled = busy || cleanupPending;
   $('save').disabled = busy || cleanupPending || !result;
   $('choose-save').disabled = busy || cleanupPending || !source || typeof globalThis.showSaveFilePicker !== 'function';
-  $('save-destination').textContent = chosenSaveHandle ? `保存先：${chosenSaveHandle.name}` : typeof globalThis.showSaveFilePicker === 'function' ? '保存先は作成前にも選べます。保存用の新しいファイル名を指定してください。' : 'このブラウザでは、作成後にダウンロードして保存します。';
+  $('save-destination').textContent = chosenSaveHandle ? `保存先：${chosenSaveHandle.name}${$('mode').value === 'convert' ? '。作成時にこの保存先へ直接書き込みます。' : '。作成後に保存してください。'}` : typeof globalThis.showSaveFilePicker === 'function' ? '保存先は作成前にも選べます。保存用の新しいファイル名を指定してください。' : 'このブラウザでは、作成後にダウンロードして保存します。';
   $('receipt').disabled = (busy && !cleanupPending) || !record;
   $('download').setAttribute('aria-disabled', String(busy || cleanupPending));
   for (const button of document.querySelectorAll('[data-demo]')) button.disabled = busy || cleanupPending;
@@ -118,7 +132,9 @@ $('run').onclick = async () => {
   $('progress').removeAttribute('value'); $('status').textContent = '動画を作成しています…';
   try {
     await clearResult(); operations.check(op);
-    const r = await client.run(input, settings); operations.check(op);
+    const r = await client.run(input, settings, {outputHandle: settings.mode === 'convert' ? chosenSaveHandle : undefined});
+    try { operations.check(op); }
+    catch (error) { error.diagnostics = {...r.receipt, status: 'canceled'}; throw error; }
     result = r; record = r.receipt;
     r.receipt.page = {selectedAt: selectionAt, runClickToPreparedMs: performance.now() - started, selectionToPreparedMs: performance.now() - selectionClock, selectionToSavedFileMs: null, fileRecoveryMs: null, playbackVerificationMs: null, timingNote: 'selection starts when a File is accepted after prior-result cleanup; includes user settings time; save completion is separate from independent file recovery', cacheState: 'unknown', userAgent: navigator.userAgent};
     outputURL = URL.createObjectURL(r.blob); $('output-video').src = outputURL; $('download').href = outputURL;
@@ -127,10 +143,23 @@ $('run').onclick = async () => {
     $('diagnostics').textContent = JSON.stringify(r.receipt, null, 2); $('result').hidden = false;
     $('save-status').textContent = '出力の準備ができました。動画を確認して保存してください。';
     $('status').textContent = '作成できました。保存はまだ完了していません。'; $('progress').value = 1;
+    if (r.receipt.saveCompleted) {
+      chosenSaveHandle = null;
+      r.receipt.page.selectionToSavedFileMs = performance.now() - selectionClock;
+      $('save-status').textContent = '選択した保存先への直接保存と、VR情報の書き込み後の照合が完了しました。全体ハッシュは保存済みファイルから取得しています。';
+      $('status').textContent = '作成と保存が完了しました。';
+      $('diagnostics').textContent = JSON.stringify(r.receipt, null, 2);
+    }
   } catch (e) { if (operations.owns(op)) statusError(e); }
   finally { finish(op); }
 };
 $('cancel').onclick = async () => {
+  if (client.outputStateUnknown) {
+    $('receipt').click();
+    record = client.acknowledgeUnknownOutput(); chosenSaveHandle = null;
+    $('cleanup-warning').textContent = '前の保存状態は不明のまま記録しました。保存先のファイルを確認してください。';
+    update(); return;
+  }
   if (pendingSaveCleanup && !operations.current) {
     const op = begin('saveCleanup'), pending = pendingSaveCleanup;
     try {
@@ -154,7 +183,7 @@ $('cancel').onclick = async () => {
   operations.cancel(); $('status').textContent = '取消処理中です。保存先の選択画面が開いている場合は閉じてください。';
   if (['save', 'chooseSave', 'saveCleanup'].includes(op.kind)) return; // Keep the prepared output for another save attempt.
   try { const pending = client.cancel(); update(); await pending; }
-  catch (e) { $('cleanup-warning').textContent = '一時ファイルの削除に失敗しました。 ' + e.message; }
+  catch (e) { if (!client.outputStateUnknown) $('cleanup-warning').textContent = '一時ファイルの削除に失敗しました。 ' + e.message; }
 };
 $('clear').onclick = async () => {
   if (operations.current) return;

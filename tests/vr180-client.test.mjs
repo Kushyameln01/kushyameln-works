@@ -15,6 +15,47 @@ const message = (worker, type, extra = {}) => ({type, operationId: worker.messag
 const ack = (worker, extra = {}) => worker.emit(message(worker, 'cleanup-complete', {requestId: worker.messages.at(-1).requestId, ...extra}));
 const dispose = async (client, worker) => { const pending = client.dispose(); ack(worker); await pending; };
 
+test('direct worker death keeps its original receipt, requires explicit detachment, and permits a new job afterwards', async () => {
+  const events = [], removed = [], client = new StereoClient({WorkerClass: MockWorker,
+    onEvent: e => events.push(e), cleanup: async id => removed.push(id)});
+  const handle = {}, run = client.run(new Blob(['input']), {mode: 'convert'}, {outputHandle: handle});
+  const worker = MockWorker.instances.at(-1); assert.equal(worker.messages[0].outputHandle, handle);
+  const original = {status: 'failed', error: {name: 'Error', message: 'WRITE_FAILED'}, saveWriteCommitted: false, cleanup: {status: 'failed'}};
+  worker.emit(message(worker, 'error', {error: 'WRITE_FAILED', diagnostics: original, cleanupComplete: false, cleanupError: 'ABORT_FAILED'}));
+  worker.onerror({message: 'WORKER_CRASH'}); await tick();
+  assert.equal(client.outputStateUnknown, true); assert.equal(client.cleanupPending, true);
+  const record = client.current.diagnostics;
+  assert.equal(record.workerReceipt, original); assert.equal(original.error.message, 'WRITE_FAILED');
+  assert.equal(record.saveWriteCommitted, null); assert.equal(record.cleanup.status, 'unconfirmed');
+  await assert.rejects(client.cancel(), /DIRECT_SAVE_STATE_UNKNOWN/);
+  assert.equal(client.current.diagnostics, record); assert.deepEqual(removed, []);
+  const rejection = assert.rejects(run, e => e.message === 'DIRECT_SAVE_STATE_UNKNOWN' && e.diagnostics === record);
+  assert.equal(client.acknowledgeUnknownOutput(), record); await rejection;
+  assert.equal(client.current, null); assert.equal(events.some(e => e.type === 'cleanup-complete'), false);
+  assert.equal(events.at(-1).type, 'output-unconfirmed-detached');
+  const next = client.run(new Blob(['next']), {}), nextWorker = MockWorker.instances.at(-1);
+  nextWorker.emit(message(nextWorker, 'result', {result: {ok: true}})); await next; await dispose(client, nextWorker);
+});
+
+test('a confirmed direct save is never downgraded to unknown after Worker death', async () => {
+  const events = [], client = new StereoClient({WorkerClass: MockWorker, onEvent: e => events.push(e)});
+  const run = client.run(new Blob(), {}, {outputHandle: {}}), worker = MockWorker.instances.at(-1);
+  const receipt = {status: 'saved', saveWriteCommitted: true, saveCompleted: true};
+  worker.emit(message(worker, 'result', {result: {receipt, blob: new Blob(['saved'])}})); await run;
+  worker.onerror({message: 'LATE_CRASH'}); await tick();
+  assert.equal(client.current, null); assert.equal(client.outputStateUnknown, false);
+  assert.equal(receipt.saveWriteCommitted, true); assert.equal(receipt.saveCompleted, true);
+  assert.equal(events.at(-1).diagnostics, receipt);
+  assert.match(events.at(-1).cleanup.scope, /saved file retained/);
+});
+
+test('direct handle cloning failure is known not to have started a write', async () => {
+  class BadWorker extends MockWorker { postMessage() { throw Error('HANDLE_CLONE_FAILED'); } }
+  const client = new StereoClient({WorkerClass: BadWorker, cleanup: async () => {}});
+  await assert.rejects(client.run(new Blob(), {}, {outputHandle: {}}), /HANDLE_CLONE_FAILED/);
+  assert.equal(client.current, null); assert.equal(client.outputStateUnknown, false);
+});
+
 test('cancel waits for matching cleanup ack; late success/error from input A cannot replace B', async () => {
   const events = [], removed = [];
   const client = new StereoClient({WorkerClass: MockWorker, onEvent: e => events.push(e), cleanup: async id => removed.push(id)});

@@ -46,7 +46,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / 'docs'
 CHROME = Path('/usr/bin/google-chrome')
 PAGES = 'https://kushyameln01.github.io/kushyameln-works/'
-BUILD = 'vr180-b4-range1'
+BUILD = 'vr180-b5-direct1'
 RECOVERED = 'RECOVERED_PENDING_VERIFICATION'
 CANDIDATE_COMMIT = 'e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60'
 LIMIT = 8 * 1024 * 1024
@@ -67,6 +67,7 @@ PUBLIC_PATHS = (
     'shared/vr180/mp4.mjs', 'shared/vr180/operations.mjs',
     'shared/vr180/transform.mjs', 'shared/vr180/worker.mjs',
     'shared/vr180/file-output.mjs', 'shared/vr180/sha256.mjs',
+    'shared/vr180/mux-capture.mjs',
 )
 
 
@@ -390,6 +391,145 @@ FILE_OUTPUT_CLEANUP = r"""async () => {
     } catch (error) { if (error.name !== 'NotFoundError') throw error; }
     state.created = false;
     return (state.record.cleanup = {status: 'REMOVED', directory: state.directoryName, absenceObserved: true});
+  } catch (error) {
+    return (state.record.cleanup = {status: 'FAIL', directory: state.directoryName, error: String(error)});
+  }
+}"""
+
+
+# This calls the production client/Worker, passing a real empty OPFS handle.
+# It does not substitute a picker, a Worker, a file handle, or a product API.
+DIRECT_OUTPUT_PROBE = r"""async ({fixtureURL, expectedBytes, expectedSHA256, cancelFirst}) => {
+  const record = {status: 'STARTED', userAgent: navigator.userAgent, isSecureContext,
+    scope: 'Production StereoClient and Worker direct-output backend; actual OPFS handle, not OS picker/application UI',
+    osSaveDialogTested: false, externalDestinationTested: false, savePickerOverridden: false,
+    mediaOperationCount: 0, events: [], cleanup: {status: 'NOT_RUN'}};
+  const state = globalThis.__vr180DirectOutputProbe = {record, client: null, root: null,
+    directoryName: null, created: false, urls: {}, receipts: {}};
+  const originalPicker = globalThis.showSaveFilePicker;
+  const require = (ok, message) => { if (!ok) throw Error(message); };
+  const sha256 = async bytes => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)),
+    b => b.toString(16).padStart(2, '0')).join('');
+  let cancelRequested = false, cancelPromise = null, cancelMode = cancelFirst;
+  try {
+    const {StereoClient} = await import('/shared/vr180/client.mjs');
+    const response = await fetch(fixtureURL, {cache: 'no-store'});
+    require(response.ok, 'DIRECT_FIXTURE_UNAVAILABLE');
+    const source = new File([await response.blob()], 'stereo360-tb.mp4', {type: 'video/mp4'});
+    require(source.size === expectedBytes && source.size <= 2 * 1024 * 1024, 'DIRECT_FIXTURE_SIZE');
+    const inputHash = await sha256(await source.arrayBuffer());
+    require(inputHash === expectedSHA256, 'DIRECT_FIXTURE_HASH');
+    record.input = {bytes: source.size, sha256: inputHash, source: 'public synthetic stereo360-tb'};
+    state.root = await navigator.storage.getDirectory();
+    state.directoryName = 'vr180-direct-output-probe-' + crypto.randomUUID();
+    try {
+      await state.root.getDirectoryHandle(state.directoryName);
+      throw Error('DIRECT_DIRECTORY_ALREADY_EXISTS');
+    } catch (error) { if (error.name !== 'NotFoundError') throw error; }
+    const dir = await state.root.getDirectoryHandle(state.directoryName, {create: true});
+    state.created = true;
+    record.opfsDirectory = state.directoryName;
+    const handle = await dir.getFileHandle('direct.mp4', {create: true});
+    record.targetBeforeBytes = (await handle.getFile()).size;
+    require(handle.kind === 'file' && record.targetBeforeBytes === 0, 'DIRECT_TARGET_NOT_EMPTY');
+    state.client = new StereoClient({onEvent: event => {
+      const observed = {type: event.type, at: performance.now(), operationId: event.operationId,
+        inputRevision: event.inputRevision, progress: event.progress ?? null, error: event.error ?? null};
+      record.events.push(observed);
+      if (event.diagnostics) state.receipts.failure = event.diagnostics;
+      if (cancelMode && !cancelRequested && event.type === 'progress' && event.progress?.phase === 'convert') {
+        cancelRequested = true;
+        record.cancellation.trigger = observed;
+        record.cancellation.requestedAt = performance.now();
+        cancelPromise = state.client.cancel().then(() => ({status: 'ACKNOWLEDGED'}),
+          error => ({status: 'FAIL', name: error.name, message: error.message}));
+      }
+    }});
+    const settings = {mode: 'convert', layout: 'tb', fov: 360, eyeSize: 256, bitrate: 2000000, confirmed: true};
+    const run = () => { record.mediaOperationCount++; return state.client.run(source, settings, {outputHandle: handle}); };
+    if (cancelFirst) {
+      const cancellation = record.cancellation = {status: 'STARTED', sameHandleRetry: true, sameInputRetry: true};
+      const stopped = await run().then(result => ({resolved: true, result}), error => ({resolved: false, error}));
+      cancellation.requested = cancelRequested;
+      if (stopped.resolved) {
+        state.receipts.failure = stopped.result.receipt;
+        cancellation.status = 'OBSERVED_NOT_CANCELED';
+        throw Error('DIRECT_CANCEL_NOT_OBSERVED');
+      }
+      if (stopped.error.diagnostics) state.receipts.canceled = stopped.error.diagnostics;
+      cancellation.error = {name: stopped.error.name, message: stopped.error.message};
+      cancellation.ack = cancelPromise ? await cancelPromise : null;
+      require(cancelRequested && stopped.error.name === 'AbortError'
+        && cancellation.ack?.status === 'ACKNOWLEDGED', 'DIRECT_CANCEL_FAILED');
+      const receipt = state.receipts.canceled;
+      require(receipt?.status === 'canceled' && receipt.cleanup?.status === 'complete'
+        && receipt.output === null && receipt.saveWriteCommitted === false && receipt.saveCompleted === false,
+        'DIRECT_CANCEL_RECEIPT_CONTRACT');
+      cancellation.identity = {operationId: receipt.operationId, inputRevision: receipt.inputRevision};
+      cancellation.afterBytes = (await handle.getFile()).size;
+      cancellation.cleanupPending = state.client.cleanupPending;
+      require(cancellation.afterBytes === 0 && !cancellation.cleanupPending, 'DIRECT_CANCEL_TARGET_NOT_EMPTY');
+      await state.client.dispose();
+      cancellation.disposeCompleted = true;
+      cancellation.status = 'CANCELED_EMPTY_FILE_OBSERVED';
+      cancelMode = false;
+    }
+    const result = await run();
+    state.receipts.receipt = result.receipt; // Preserve the production receipt without edits.
+    const receipt = result.receipt;
+    record.resultIsFile = result.blob instanceof File;
+    require(record.resultIsFile && receipt?.status === 'saved' && receipt.saveWriteCommitted === true
+      && receipt.saveCompleted === true && receipt.directSave?.status === 'verified'
+      && receipt.directSave.saveWriteCommitted === true && receipt.directSave.saveCompleted === true
+      && receipt.directSave.wholeFileHashCompared === false && receipt.directSave.metadataHashMatched === true,
+      'DIRECT_SAVED_RECEIPT_CONTRACT');
+    const actual = await handle.getFile();
+    require(actual.size > 0 && actual.size <= 2 * 1024 * 1024, 'DIRECT_SMALL_PROBE_OUTPUT_SIZE');
+    const actualBytes = new Uint8Array(await actual.arrayBuffer());
+    const returnedBytes = new Uint8Array(await result.blob.arrayBuffer());
+    record.saved = {bytes: actual.size, webCryptoSHA256: await sha256(actualBytes),
+      returnedBytes: result.blob.size, returnedWebCryptoSHA256: await sha256(returnedBytes),
+      rawBytesEqual: actualBytes.length === returnedBytes.length && actualBytes.every((b, i) => b === returnedBytes[i]),
+      comparisonBasis: 'Post-commit fresh OPFS read vs returned File vs receipt; not a pre-commit whole-file expected hash'};
+    require(record.saved.rawBytesEqual && record.saved.webCryptoSHA256 === record.saved.returnedWebCryptoSHA256
+      && receipt.output.bytes === actual.size && receipt.savedSize === actual.size
+      && receipt.output.sha256 === record.saved.webCryptoSHA256 && receipt.savedSha256 === record.saved.webCryptoSHA256,
+      'DIRECT_SAVED_BYTES_DIFFER');
+    if (cancelFirst) {
+      const previous = record.cancellation.identity;
+      require(receipt.operationId !== previous.operationId && receipt.inputRevision === previous.inputRevision + 1,
+        'DIRECT_RETRY_IDENTITY');
+      record.recoveryLink = {previousOperationId: previous.operationId, previousInputRevision: previous.inputRevision,
+        operationId: receipt.operationId, inputRevision: receipt.inputRevision, sameClient: true, sameHandle: true,
+        sameInput: true, inputGeneration: 1};
+    }
+    state.urls.output = URL.createObjectURL(actual);
+    require(globalThis.showSaveFilePicker === originalPicker, 'DIRECT_PICKER_CHANGED');
+    record.status = 'READY_FOR_DOWNLOAD';
+  } catch (error) {
+    if (error.diagnostics) state.receipts.failure = error.diagnostics;
+    record.status = record.cancellation?.status === 'OBSERVED_NOT_CANCELED' ? 'OBSERVED_NOT_CANCELED' : 'FAIL';
+    record.error = {name: error.name, message: error.message};
+  }
+  return record;
+}"""
+
+DIRECT_OUTPUT_CLEANUP = r"""async () => {
+  const state = globalThis.__vr180DirectOutputProbe;
+  if (!state) return {status: 'NOT_CREATED'};
+  try {
+    await state.client?.dispose();
+    if (state.client?.cleanupPending) throw Error('DIRECT_CLEANUP_PENDING');
+    for (const url of Object.values(state.urls)) URL.revokeObjectURL(url);
+    state.urls = {};
+    if (!state.created) return (state.record.cleanup = {status: 'NOT_CREATED', clientDisposed: true});
+    await state.root.removeEntry(state.directoryName, {recursive: true});
+    try {
+      await state.root.getDirectoryHandle(state.directoryName);
+      throw Error('DIRECT_DIRECTORY_REMAINS');
+    } catch (error) { if (error.name !== 'NotFoundError') throw error; }
+    state.created = false;
+    return (state.record.cleanup = {status: 'REMOVED', clientDisposed: true, directory: state.directoryName, absenceObserved: true});
   } catch (error) {
     return (state.record.cleanup = {status: 'FAIL', directory: state.directoryName, error: String(error)});
   }
@@ -974,6 +1114,155 @@ def run_file_output_probe(context, origin, out, run_id):
     return record
 
 
+def download_direct_file(page, key, path, receipt=False):
+    """Download a real saved File or serialize an unchanged Worker receipt."""
+    with page.expect_download(timeout=15000) as event:
+        page.evaluate("""({key, filename, receipt}) => {
+          const state = globalThis.__vr180DirectOutputProbe;
+          if (receipt) {
+            if (!state?.receipts[key]) throw Error('DIRECT_RECEIPT_MISSING');
+            state.urls[key] ??= URL.createObjectURL(new Blob([JSON.stringify(state.receipts[key], null, 2)],
+              {type: 'application/json'}));
+          }
+          if (!state?.urls[key]) throw Error('DIRECT_DOWNLOAD_MISSING');
+          const a = document.createElement('a'); a.href = state.urls[key]; a.download = filename; a.click();
+        }""", {'key': key, 'filename': path.name, 'receipt': receipt})
+    require(event.value.suggested_filename == path.name, 'Unexpected direct-backend download filename')
+    event.value.save_as(str(path))
+    require(event.value.failure() is None, 'Direct-backend download failed')
+    return json.loads(path.read_text(encoding='utf-8')) if receipt else None
+
+
+def validate_direct_receipt(raw, record, fixture, observed):
+    validate_receipt(raw, record, fixture, 'convert')
+    saved, direct = observed['saved'], raw.get('directSave', {})
+    require(raw.get('status') == 'saved' and raw.get('saveWriteCommitted') is True
+            and raw.get('saveCompleted') is True, 'Direct output was not committed/saved')
+    require(direct.get('status') == 'verified' and direct.get('saveWriteCommitted') is True
+            and direct.get('saveCompleted') is True and direct.get('metadataHashMatched') is True
+            and direct.get('wholeFileHashCompared') is False, 'Direct receipt verification contract differs')
+    require(observed.get('resultIsFile') is True and saved.get('rawBytesEqual') is True
+            and raw['output']['bytes'] == raw.get('savedSize') == saved['bytes'] == saved['returnedBytes']
+            and raw['output']['sha256'] == raw.get('savedSha256') == saved['webCryptoSHA256']
+            == saved['returnedWebCryptoSHA256'], 'Direct receipt/fresh OPFS/returned File differ')
+
+
+def run_direct_output_probe(context, origin, out, run_id, defer_verification=False, cancel_first=False):
+    scenario = 'direct-cancel-retry' if cancel_first else 'direct-output-probe'
+    trial = out / scenario
+    trial.mkdir()
+    fixture = DOCS / 'vr180-studio/fixtures/stereo360-tb.mp4'
+    record = {'trialId': f'{run_id}-{scenario}', 'build': BUILD, 'fixture': 'stereo360-tb',
+              'mode': 'convert', 'scenario': scenario, 'startedAt': now(), 'status': 'STARTED',
+              'inputSHA256': digest(fixture), 'inputBytes': fixture.stat().st_size, 'inputGeneration': 1,
+              'expectedInputRevision': 2 if cancel_first else 1,
+              'expectedSettings': {'mode': 'convert', 'layout': 'tb', 'fov': 360, 'eyeSize': 256, 'bitrate': 2000000},
+              'mediaOperationStarted': False, 'mediaOperationCount': 0, 'downloadRecovered': False,
+              'independentVerificationPassed': False,
+              'scope': 'Independent production-client/Worker direct-save backend with a real OPFS handle; not application UI',
+              'receiptOrigin': 'Unmodified production Worker receipt, serialized and downloaded by the harness',
+              'probeSHA256': hashlib.sha256(DIRECT_OUTPUT_PROBE.encode()).hexdigest(),
+              'cleanupProbeSHA256': hashlib.sha256(DIRECT_OUTPUT_CLEANUP.encode()).hexdigest(),
+              'notVerified': ['OS save dialog', 'external save destination', 'application save UI',
+                              '5-10GB real video/full-file recovery', 'VR playback', 'real footage quality']}
+    page = context.new_page()
+    page.set_default_timeout(15000)
+    errors, workers = [], []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    page.on('worker', lambda worker: workers.append({'url': worker.url, 'observedAt': now()}))
+    observed = {}
+    recovered_receipts = set()
+    start = time.monotonic()
+    try:
+        shutil.copyfile(fixture, trial / 'input.mp4')
+        check_recovery_budget(out, trial, record['inputBytes'])
+        page.goto(origin + '/vr180-studio/', wait_until='networkidle')
+        api = page.evaluate(API_PROBE)
+        write(trial / 'browser-capabilities.json', api)
+        record['browserUserAgent'] = api['userAgent']
+        launch = "args => { globalThis.__vr180DirectResult = null; (" + DIRECT_OUTPUT_PROBE + ")(args).then(r => { globalThis.__vr180DirectResult = r; }, e => { globalThis.__vr180DirectResult = {status: 'FAIL', error: {name: e.name, message: e.message}}; }); }"
+        page.evaluate(launch, {'fixtureURL': origin + '/vr180-studio/fixtures/stereo360-tb.mp4',
+                              'expectedBytes': record['inputBytes'], 'expectedSHA256': record['inputSHA256'],
+                              'cancelFirst': cancel_first})
+        page.wait_for_function('globalThis.__vr180DirectResult !== null', timeout=180000)
+        observed = page.evaluate('globalThis.__vr180DirectResult')
+        write(trial / 'backend-observations.json', observed)
+        require(observed['status'] == 'READY_FOR_DOWNLOAD', 'Direct backend failed: ' + json.dumps(observed.get('error')))
+        raw = download_direct_file(page, 'receipt', trial / 'receipt.json', receipt=True)
+        recovered_receipts.add('receipt')
+        validate_direct_receipt(raw, record, fixture, observed)
+        record['receiptStatus'] = raw['status']
+        record['codecCapabilities'] = raw.get('capabilities') or (raw.get('metrics') or {}).get('capabilities')
+        if cancel_first:
+            canceled = download_direct_file(page, 'canceled', trial / 'receipt-canceled.json', receipt=True)
+            recovered_receipts.add('canceled')
+            previous = {'inputSHA256': record['inputSHA256'], 'expectedInputRevision': 1,
+                        'expectedSettings': record['expectedSettings']}
+            validate_receipt(canceled, previous, fixture, 'convert')
+            require(canceled.get('status') == 'canceled' and canceled.get('output') is None
+                    and canceled.get('cleanup', {}).get('status') == 'complete'
+                    and canceled.get('saveWriteCommitted') is False and canceled.get('saveCompleted') is False,
+                    'Direct cancellation receipt is incomplete')
+            require(canceled['operationId'] != raw['operationId'] and raw['inputRevision'] == canceled['inputRevision'] + 1,
+                    'Direct cancellation/retry identities differ')
+            record.update(previousAttempt={'kind': 'direct-cancel', 'status': observed['cancellation']['status'],
+                          'operationId': canceled['operationId'], 'inputRevision': canceled['inputRevision'],
+                          'receipt': 'receipt-canceled.json', 'sameInput': True, 'sameHandle': True},
+                          recoveryLink=observed['recoveryLink'])
+        check_recovery_budget(out, trial, raw['output']['bytes'])
+        output = trial / 'direct-opfs.mp4'
+        download_direct_file(page, 'output', output)
+        require(output.stat().st_size == raw['output']['bytes'], 'Recovered direct file size differs')
+        require(digest(output) == raw['output']['sha256'], 'Recovered direct file hash differs')
+        require(any(w['url'] == origin + '/shared/vr180/worker.mjs' for w in workers), 'Production Worker not observed')
+        record.update(outputFile=output.name, outputBytes=output.stat().st_size, outputSHA256=digest(output),
+                      downloadRecovered=True, browserDownloadRecoveredAt=now(),
+                      postCommitWholeFileComparison='Fresh OPFS File, Worker-returned File, raw receipt and complete downloaded MP4 agree')
+        if defer_verification:
+            record.update(status=RECOVERED, verifierDeferred='Explicit CLI request: independently verify recovered direct-output MP4 in the evidence receiver')
+        else:
+            independent_check(trial, fixture, output, 'convert')
+            record.update(status='PASS', independentVerificationPassed=True)
+    except (Exception, KeyboardInterrupt) as error:
+        record.update(status='OBSERVED_NOT_CANCELED' if observed.get('status') == 'OBSERVED_NOT_CANCELED' else 'FAIL',
+                      error=f'{type(error).__name__}: {error}')
+        (trial / 'failure-traceback.txt').write_text(traceback.format_exc(), encoding='utf-8')
+    finally:
+        # Recover original success/failure/cancel records even when a later check
+        # failed. The sidecar, never the receipt, states download/verification.
+        try:
+            keys = page.evaluate('Object.keys(globalThis.__vr180DirectOutputProbe?.receipts ?? {})')
+            for key in keys:
+                if key not in recovered_receipts:
+                    require(key in ('receipt', 'canceled', 'failure'), 'Unexpected direct receipt key')
+                    filename = 'receipt.json' if key == 'receipt' else f'receipt-{key}.json'
+                    download_direct_file(page, key, trial / filename, receipt=True)
+                    recovered_receipts.add(key)
+        except Exception as error:
+            record['receiptRecoveryError'] = str(error)
+            record['status'] = 'FAIL'
+        try:
+            cleanup = page.evaluate(DIRECT_OUTPUT_CLEANUP)
+            record['cleanup'] = cleanup
+            write(trial / 'cleanup-observations.json', cleanup)
+            observed = page.evaluate('globalThis.__vr180DirectOutputProbe?.record ?? null') or observed
+            write(trial / 'backend-observations.json', observed)
+            require(cleanup['status'] != 'FAIL', 'Direct backend cleanup failed')
+            require(cleanup['status'] == 'REMOVED' or record['status'] not in ('PASS', RECOVERED), 'Direct cleanup not confirmed')
+        except Exception as error:
+            record.update(status='FAIL', cleanupError=str(error))
+        record.update(mediaOperationCount=observed.get('mediaOperationCount', 0),
+                      mediaOperationStarted=observed.get('mediaOperationCount', 0) > 0,
+                      recoveredReceipts=sorted(recovered_receipts), pageErrors=errors, workers=workers,
+                      wallSeconds=time.monotonic() - start, finishedAt=now())
+        try:
+            page.close()
+        except Exception as error:
+            record['pageCloseError'] = str(error)
+        write(trial / 'trial.json', record)
+    return record
+
+
 def run_range_probe(context, origin, out, run_id):
     """Observe native-Blob structure; never download/hash an entire large Blob."""
     trial = out / 'range-probe'
@@ -1077,6 +1366,8 @@ def main():
                         help='After both small UI outputs are recovered, separately exercise production file saving with real OPFS handles')
     parser.add_argument('--range-probe', action='store_true',
                         help='After both small UI outputs are recovered, separately inspect/tag native-Blob structural boundary fixtures; no full large-file download')
+    parser.add_argument('--direct-output-probe', action='store_true',
+                        help='After both small UI outputs are recovered, separately test Worker direct OPFS conversion and cancellation/retry; recover MP4 and original receipts')
     args = parser.parse_args()
     out = args.output.resolve()
     require(not out.is_relative_to(ROOT), 'Evidence must be outside the checkout')
@@ -1087,6 +1378,7 @@ def main():
               'browserSandboxRequired': True, 'browserTrials': [], 'pagesByteCheck': 'NOT_RUN',
               'fileOutputProbe': {'requested': args.file_output_probe, 'status': 'NOT_RUN'},
               'rangeProbe': {'requested': args.range_probe, 'status': 'NOT_RUN'},
+              'directOutputProbe': {'requested': args.direct_output_probe, 'status': 'NOT_RUN', 'cases': []},
               'independentVerificationDeferred': args.defer_independent_verification, 'independentVerificationPassed': False,
               'notVerified': ['VR player/headset compatibility', 'real footage quality', 'novice usability',
                               'speed improvement', 'cancel/retry behavior', '4K scale', 'product completion',
@@ -1102,13 +1394,13 @@ def main():
     try:
         if os.environ.get('GITHUB_REPOSITORY') != 'Kushyameln01/kushyameln-works':
             raise Blocked('This harness is scoped to Kushyameln01/kushyameln-works')
-        if (args.file_output_probe or args.range_probe) and args.suite != 'small':
+        if (args.file_output_probe or args.range_probe or args.direct_output_probe) and args.suite != 'small':
             raise Blocked('Backend/range probes require this run to complete both small UI trials first')
         if args.suite in ('followup', 'scale12', 'recovery'):
             require(args.defer_independent_verification, 'Followup requires explicit deferred independent verification; the fixed small pixel oracle is bounded to 512px/eye and 120 frames')
-            prerequisite_path = ROOT / 'development/vr180/evidence/2026-10-17-b4-small.json'
+            prerequisite_path = ROOT / 'development/vr180/evidence/2026-10-17-b5-small.json'
             if not prerequisite_path.is_file():
-                raise Blocked('This b4 build requires independently verified b4-small evidence; earlier build results are not reusable')
+                raise Blocked('This b5 build requires independently verified b5-small evidence; earlier build results are not reusable')
             prerequisite = json.loads(prerequisite_path.read_text())
             require(prerequisite['status'] == 'PASS' and prerequisite['build'] == BUILD, 'Small-suite regression has not passed for this build')
             require(set(PUBLIC_PATHS).issubset(prerequisite['sourceFiles']), 'Incomplete small-suite source provenance')
@@ -1178,6 +1470,19 @@ def main():
                             result['status'] = result['rangeProbe']['status']
                     else:
                         result['rangeProbe']['reason'] = 'Required same-run small recovery or preceding requested probe did not complete'
+                if args.direct_output_probe:
+                    if result['status'] == completed_status and len(result['browserTrials']) == 2 and all(t['downloadRecovered'] for t in result['browserTrials']):
+                        for cancel_first in (False, True):
+                            trial = run_direct_output_probe(context, origin, out, result['runId'],
+                                                            args.defer_independent_verification, cancel_first)
+                            result['browserTrials'].append(trial)
+                            result['directOutputProbe']['cases'].append({'scenario': trial['scenario'], 'status': trial['status']})
+                            if trial['status'] != completed_status:
+                                result['status'] = trial['status']
+                                break
+                        result['directOutputProbe']['status'] = result['status']
+                    else:
+                        result['directOutputProbe']['reason'] = 'Required same-run small recovery or preceding requested probe did not complete'
                 result['independentVerificationPassed'] = result['status'] == 'PASS'
                 result['blockedBrowserRequests'] = blocked_requests
             finally:

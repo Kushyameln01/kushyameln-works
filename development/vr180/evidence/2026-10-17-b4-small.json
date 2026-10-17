@@ -1,0 +1,264 @@
+{
+  "status": "PASS",
+  "runId": "39014372995-1",
+  "checkoutCommit": "5241a95ac24019b4cbe6a8272d0720ff80a785be",
+  "browserVersion": "155.0.8059.39",
+  "cases": [
+    {
+      "case": "stereo180-sbs",
+      "returncode": 0,
+      "script": "verify-metadata.py",
+      "scriptSHA256": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96",
+      "inputSHA256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+      "outputSHA256": "15fca1666e5cf4a135b933398d4f9f56eb302b3901b90d7bb787ce3b9d82bc3c",
+      "outputBytes": 30137,
+      "operationId": "6e5ec2d8-2598-4b07-bee9-a4f34487bbec",
+      "inputRevision": 2,
+      "status": "PASS"
+    },
+    {
+      "case": "stereo360-tb",
+      "returncode": 0,
+      "script": "verify-conversion.py",
+      "scriptSHA256": "8e13537f5c74f8207f670eb898b082a1962ae35e0db10a6ffeddb7be4c695f64",
+      "inputSHA256": "72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9",
+      "outputSHA256": "c4af7681187e53d7c80d8cc50d073571a13cfe0ae9392ee39465944aaeb35bd3",
+      "outputBytes": 52784,
+      "operationId": "b83e5c2f-5bea-4057-8fb0-2f145fc352e3",
+      "inputRevision": 2,
+      "sphericalMetadata": "PASS",
+      "status": "PASS"
+    }
+  ],
+  "scope": "Recovered synthetic outputs only; original receipts and browser sidecars remain unmodified",
+  "build": "vr180-b4-range1",
+  "transport": {
+    "status": "PASS",
+    "runId": "39014372995-1",
+    "chunks": 118,
+    "archiveBytes": 362451,
+    "archiveSHA256": "d6a3748b375705979969b9c9ef5f8cfe86e2d7a036285f38cef4bc5a2cd3ac18",
+    "verifiedFiles": 27,
+    "browserRunStatus": "RECOVERED_PENDING_VERIFICATION"
+  },
+  "pagesByteCheck": "PASS",
+  "browserSandboxRequired": true,
+  "rangeProbe": {
+    "trialId": "39014372995-1-range-probe",
+    "build": "vr180-b4-range1",
+    "requested": true,
+    "status": "PASS",
+    "startedAt": "2026-10-17T07:38:50.174762+00:00",
+    "scope": "Separate structural parser test; not a large real video or full-file recovery",
+    "probeSHA256": "83f6803243c1a7633c0c9f118923f6337372278556a2e4b415acd2ecd8c83bd2",
+    "parserModuleSHA256": "ef6d51fc2d1cc378108b0750dbb4a893deeaffc023159cbe56942239ce163d50",
+    "largeFilesDownloaded": false,
+    "wholeLargeFileHashesComputed": false,
+    "finishedAt": "2026-10-17T07:38:52.508168+00:00",
+    "cases": [
+      {
+        "kind": "large-stsz",
+        "status": "PASS",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "isSecureContext": true,
+        "scope": "Native-browser container structure and bounded reads only; not a real large video or a decode/encode trial",
+        "nativeBlobUsed": true,
+        "productionApisReplaced": false,
+        "downloaded": false,
+        "fullFileHashComputed": false,
+        "inputFullyRecovered": false,
+        "outputFullyRecovered": false,
+        "realVideoTested": false,
+        "notVerified": [
+          "5-10GB real video processing",
+          "full large-file recovery",
+          "H.264 decoding",
+          "VR playback",
+          "large-file memory peak"
+        ],
+        "parserReads": {
+          "calls": 957,
+          "bytes": 50596555,
+          "maximumBytes": 65536,
+          "wholeBlobReadAttempts": 0,
+          "slices": 980
+        },
+        "baseFixtureSHA256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "inputLogicalBytes": 20972205,
+        "inputMoovBytes": 16777860,
+        "outputLogicalBytes": 37750184,
+        "tableCancellation": {
+          "status": "PASS",
+          "requestedAfterReadAt": 4194953,
+          "readBytes": 65536,
+          "observedError": "AbortError"
+        },
+        "wallMilliseconds": 653.4000000000015,
+        "preservedRanges": [
+          {
+            "label": "mdat payload",
+            "inputOffset": 40,
+            "outputOffset": 40,
+            "bytes": 4194305,
+            "chunkBytes": 65536,
+            "chunks": 65,
+            "allChunksMatched": true
+          },
+          {
+            "label": "stsz",
+            "inputOffset": 4194945,
+            "outputOffset": 20972924,
+            "bytes": 16777240,
+            "chunkBytes": 65536,
+            "chunks": 257,
+            "allChunksMatched": true
+          },
+          {
+            "label": "stts",
+            "inputOffset": 4194893,
+            "outputOffset": 20972872,
+            "bytes": 24,
+            "chunkBytes": 65536,
+            "chunks": 1,
+            "allChunksMatched": true
+          },
+          {
+            "label": "stsc",
+            "inputOffset": 4194917,
+            "outputOffset": 20972896,
+            "bytes": 28,
+            "chunkBytes": 65536,
+            "chunks": 1,
+            "allChunksMatched": true
+          },
+          {
+            "label": "stco",
+            "inputOffset": 20972185,
+            "outputOffset": 37750164,
+            "bytes": 20,
+            "chunkBytes": 65536,
+            "chunks": 1,
+            "allChunksMatched": true
+          }
+        ],
+        "sampleCounts": {
+          "video": 4194305,
+          "audio": 0,
+          "total": 4194305
+        }
+      },
+      {
+        "kind": "large-offset",
+        "status": "PASS",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "isSecureContext": true,
+        "scope": "Native-browser container structure and bounded reads only; not a real large video or a decode/encode trial",
+        "nativeBlobUsed": true,
+        "productionApisReplaced": false,
+        "downloaded": false,
+        "fullFileHashComputed": false,
+        "inputFullyRecovered": false,
+        "outputFullyRecovered": false,
+        "realVideoTested": false,
+        "notVerified": [
+          "5-10GB real video processing",
+          "full large-file recovery",
+          "H.264 decoding",
+          "VR playback",
+          "large-file memory peak"
+        ],
+        "parserReads": {
+          "calls": 155,
+          "bytes": 2259,
+          "maximumBytes": 100,
+          "wholeBlobReadAttempts": 0,
+          "slices": 179
+        },
+        "baseFixtureSHA256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+        "logicalPadding": {
+          "bytes": 4294967312,
+          "construction": "4096 references to one native 1MiB zero Blob, plus extended box header",
+          "wholePaddingRead": false
+        },
+        "inputLogicalBytes": 4294968005,
+        "inputMoovBytes": 4294967964,
+        "outputLogicalBytes": 8589936088,
+        "largeOffset": {
+          "offset": 4294968004,
+          "outputMoovHeaderBytes": 16,
+          "outputMoovBytes": 4294968083,
+          "tailSliceBytes": 1,
+          "expectedTailByte": 167,
+          "tailSliceMatched": true,
+          "paddingHashComputed": false
+        },
+        "wallMilliseconds": 290.8000000000029,
+        "preservedRanges": [
+          {
+            "label": "mdat payload",
+            "inputOffset": 4294968004,
+            "outputOffset": 4294968004,
+            "bytes": 1,
+            "chunkBytes": 65536,
+            "chunks": 1,
+            "allChunksMatched": true
+          },
+          {
+            "label": "stsz",
+            "inputOffset": 640,
+            "outputOffset": 4294968732,
+            "bytes": 20,
+            "chunkBytes": 65536,
+            "chunks": 1,
+            "allChunksMatched": true
+          },
+          {
+            "label": "stts",
+            "inputOffset": 588,
+            "outputOffset": 4294968680,
+            "bytes": 24,
+            "chunkBytes": 65536,
+            "chunks": 1,
+            "allChunksMatched": true
+          },
+          {
+            "label": "stsc",
+            "inputOffset": 612,
+            "outputOffset": 4294968704,
+            "bytes": 28,
+            "chunkBytes": 65536,
+            "chunks": 1,
+            "allChunksMatched": true
+          },
+          {
+            "label": "co64",
+            "inputOffset": 660,
+            "outputOffset": 4294968752,
+            "bytes": 24,
+            "chunkBytes": 65536,
+            "chunks": 1,
+            "allChunksMatched": true
+          }
+        ],
+        "sampleCounts": {
+          "video": 1,
+          "audio": 0,
+          "total": 1
+        }
+      }
+    ]
+  },
+  "nativeSavePickerVerified": false,
+  "sourceFiles": {
+    "vr180-studio/index.html": "d48419eca2fe87269505207378bae89ab0abd06d9684145aafec9d5e56770bc0",
+    "vr180-studio/app.mjs": "dba3e2675afd78007992eb8b1d6653ba8d064ec22b14e3ba6f04e07133671539",
+    "shared/vr180/client.mjs": "fbfcb490ec97d9eed7fa7a1d9db82c01b642be5d38cb65180cf6a211ea934a5c",
+    "shared/vr180/geometry.mjs": "3c83e493ac29d37f37139cbad20019ae809796462c6774046b0d4f9ad6c76ff4",
+    "shared/vr180/mp4.mjs": "ef6d51fc2d1cc378108b0750dbb4a893deeaffc023159cbe56942239ce163d50",
+    "shared/vr180/operations.mjs": "d739b0182aa82691261d23bd617f8d0b864d08e7eafba13a3c0d4ef57df98be6",
+    "shared/vr180/transform.mjs": "6199e7194d35e55684a8113bfc1348536e67906d2b4985c986960ea0b91c869e",
+    "shared/vr180/worker.mjs": "fb8ace7d039f6bb4bcd851e54f1362d234b99535da1d9dd0fa844fe743f8d6b0",
+    "shared/vr180/file-output.mjs": "c9671f34cc96e01a21df4958bc56e5b0e9777d970802a04e19a8339b6acec294",
+    "shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+  }
+}

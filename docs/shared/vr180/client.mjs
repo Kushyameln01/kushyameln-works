@@ -15,14 +15,15 @@ export class StereoClient {
     this.cleanupTimeoutMs = cleanupTimeoutMs; this.revision = 0; this.current = null;
   }
   get cleanupPending() { return !!this.current?.cleanupPending; }
+  get outputStateUnknown() { return !!this.current?.unknownOutput; }
   emit(event) { try { this.onEvent(event); } catch {} }
-  run(file, settings) {
+  run(file, settings, {outputHandle} = {}) {
     if (this.current) throw Error('PREVIOUS_JOB_NOT_DISPOSED');
     const worker = new this.WorkerClass(new URL('./worker.mjs', import.meta.url), {type: 'module'});
     const operationId = crypto.randomUUID(), inputRevision = ++this.revision;
     return new Promise((resolve, reject) => {
       const job = {worker, operationId, inputRevision, resolve, reject, settled: false,
-        stopping: false, cleanupPending: false, stop: null, attempt: 0, dead: false, error: null, diagnostics: null};
+        stopping: false, cleanupPending: false, stop: null, attempt: 0, dead: false, error: null, diagnostics: null, directOutput: !!outputHandle};
       this.current = job;
       worker.onmessage = ({data: message}) => {
         if (this.current !== job || message.operationId !== operationId || message.inputRevision !== inputRevision) return;
@@ -47,12 +48,12 @@ export class StereoClient {
           if (message.cleanupComplete) this.completeCleanup(job, message);
           else this.cleanupFailed(job, Error(message.cleanupError || 'WORKER_CLEANUP_INCOMPLETE'), message);
         } else if (!job.stopping && !job.settled) {
-          if (message.type === 'result') { job.settled = true; this.emit(message); resolve(message.result); }
+          if (message.type === 'result') { job.settled = true; job.preparedReceipt = message.result?.receipt ?? null; this.emit(message); resolve(message.result); }
           else this.emit(message);
         }
       };
       worker.onerror = event => this.workerFailed(job, Error(event.message || 'WORKER_FAILED'));
-      try { worker.postMessage({type: 'run', file, settings, operationId, inputRevision}); }
+      try { worker.postMessage({type: 'run', file, settings, operationId, inputRevision, outputHandle}); job.dispatched = true; }
       catch (error) { this.workerFailed(job, error); }
     });
   }
@@ -86,9 +87,29 @@ export class StereoClient {
     job.worker.terminate();
     // An abnormal Worker failure cannot acknowledge. The narrow main-thread
     // fallback still blocks reuse until its matching job deletion succeeds.
-    this.cleanupDeadWorker(job);
+    this.cleanupDeadWorker(job).catch(() => {});
   }
   cleanupDeadWorker(job) {
+    if (job.directOutput && job.dispatched) {
+      const known = job.diagnostics ?? job.preparedReceipt;
+      if (known?.saveWriteCommitted === true) {
+        // An acknowledged commit already closed the writer. Keep the saved
+        // file and the original receipt; no rollback or new verification.
+        this.completeCleanup(job, {diagnostics: known,
+          cleanup: {status: 'complete', scope: 'previously acknowledged closed direct writer; saved file retained'}});
+        return Promise.resolve();
+      }
+      const error = Error('DIRECT_SAVE_STATE_UNKNOWN');
+      if (!job.unknownOutput) job.diagnostics = {schemaVersion: 1, operationId: job.operationId, inputRevision: job.inputRevision,
+        status: 'failed', error: {name: 'Error', message: error.message},
+        workerReceipt: known ?? null,
+        saveWriteCommitted: null, saveCompleted: false,
+        directSave: {status: 'unknown', reason: 'Worker terminated without acknowledging the direct output writer state'},
+        cleanup: {status: 'unconfirmed', error: error.message}};
+      job.unknownOutput = true;
+      this.cleanupFailed(job, error, {diagnostics: job.diagnostics});
+      return Promise.reject(error);
+    }
     if (job.fallback) return job.fallback;
     job.fallback = Promise.resolve().then(() => this.cleanup(job.operationId))
       .then(() => this.completeCleanup(job), error => { this.cleanupFailed(job, error); throw error; })
@@ -116,6 +137,19 @@ export class StereoClient {
         operationId: job.operationId, inputRevision: job.inputRevision, requestId});
     } catch (error) { this.workerFailed(job, error); }
     return promise;
+  }
+  acknowledgeUnknownOutput() {
+    const job = this.current;
+    if (!job?.dead || !job.unknownOutput) throw Error('NO_UNKNOWN_DIRECT_OUTPUT');
+    clearTimeout(job.stop?.timer);
+    const error = Object.assign(Error('DIRECT_SAVE_STATE_UNKNOWN'), {diagnostics: job.diagnostics});
+    job.stop?.reject(error); job.stop = null;
+    if (!job.settled) { job.settled = true; job.reject(error); }
+    // Explicitly detach an unconfirmed outcome; never emit cleanup-complete.
+    this.current = null;
+    this.emit({type: 'output-unconfirmed-detached', diagnostics: job.diagnostics,
+      operationId: job.operationId, inputRevision: job.inputRevision});
+    return job.diagnostics;
   }
   dispose() { return this.cancel(); }
 }

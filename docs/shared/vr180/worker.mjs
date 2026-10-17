@@ -1,6 +1,7 @@
 import {inspectMp4, tagMp4} from './mp4.mjs';
 import {sha256Blob} from './sha256.mjs';
-const BUILD = 'vr180-b4-range1';
+import {finalizeDirectOutput} from './file-output.mjs';
+const BUILD = 'vr180-b5-direct1';
 // The current conversion demuxer/muxer retains sample indices and moov bytes.
 // Admit bounded inputs before hashing or loading it; paged copy does not need
 // these conversion-only limits.
@@ -40,7 +41,7 @@ function validate(info, s) {
 // Tests exercise the actual lifecycle with delayed cleanup, without pretending
 // that substituted codec work verifies real browser encoding or OPFS behavior.
 export function createWorkerController({postMessage, inspect = inspectMp4, tag = tagMp4,
-  loadTransform = () => import('./transform.mjs'), hash = sha256Blob} = {}) {
+  loadTransform = () => import('./transform.mjs'), hash = sha256Blob, finalizeDirect = finalizeDirectOutput} = {}) {
   let job = null;
   const send = (type, extra) => postMessage({type, operationId: job.operationId, inputRevision: job.inputRevision, ...extra});
   const check = () => { if (job.controller.signal.aborted) throw new DOMException('Conversion was canceled.', 'AbortError'); };
@@ -54,7 +55,7 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
     }
   }
   async function execute(message) {
-    const {file, settings} = message, clock = performance.now(), timings = {}, events = [];
+    const {file, settings, outputHandle} = message, clock = performance.now(), timings = {}, events = [];
     let info = null, inputHash = null;
     const mark = async (name, fn) => { const start = performance.now(); try { return await fn(); } finally { timings[name] = performance.now() - start; } };
     const digest = (blob, phase) => hash(blob, {
@@ -69,26 +70,40 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
       if (settings.mode === 'inspect') { send('result', {result: {info, build: BUILD}}); return; }
       validate(info, settings);
       inputHash = await mark('inputHash', () => digest(file, 'inputHash')); check();
-      let media = file, metrics = null;
+      if (outputHandle && settings.mode !== 'convert') throw Error('DIRECT_OUTPUT_MODE_UNSUPPORTED');
+      let media = file, metrics = null, direct = null;
       if (settings.mode === 'convert') {
         const {convertStereo} = await mark('transformLoad', loadTransform); check();
         const result = await mark('convert', () => convertStereo(file, settings, {
-          signal: job.controller.signal, jobId: job.operationId,
+          signal: job.controller.signal, jobId: job.operationId, outputHandle,
           onCleanup: cleanup => { job.cleanup = cleanup; },
           onProgress: progress => send('progress', {progress}), onMetrics: value => events.push(value),
         }));
-        media = result.file; job.cleanup = result.cleanup; metrics = result.metrics; check();
+        media = result.file; job.cleanup = result.cleanup; metrics = result.metrics;
+        direct = result.direct ?? null; job.directOutput = direct?.output ?? null; check();
+        if (Boolean(outputHandle) !== Boolean(direct)) throw Error('DIRECT_OUTPUT_RESULT_MISMATCH');
       } else if (settings.mode !== 'copy') throw Error('MODE_UNSUPPORTED');
-      const blob = await mark('metadata', () => tag(media, {layout: settings.mode === 'copy' ? settings.layout : 'sbs', signal: job.controller.signal})); check();
-      const outputInfo = await mark('outputInspect', () => inspect(blob, {signal: job.controller.signal})); check();
-      const outputHash = await mark('outputHash', () => digest(blob, 'outputHash')); check();
+      let blob, outputInfo, outputHash, directSave = null;
+      if (direct) {
+        const finalized = await mark('directFinalizeAndSave', () => finalizeDirect(direct, {
+          signal: job.controller.signal, onProgress: progress => send('progress', {progress}),
+        }));
+        blob = finalized.saved.file; outputInfo = finalized.info; outputHash = finalized.saved.sha256;
+        directSave = {...finalized.verification, capture: direct.metrics}; check();
+      } else {
+        blob = await mark('metadata', () => tag(media, {layout: settings.mode === 'copy' ? settings.layout : 'sbs', signal: job.controller.signal})); check();
+        outputInfo = await mark('outputInspect', () => inspect(blob, {signal: job.controller.signal})); check();
+        outputHash = await mark('outputHash', () => digest(blob, 'outputHash')); check();
+      }
       timings.outputPrepared = performance.now() - clock;
       const receipt = {schemaVersion: 1, build: BUILD, operationId: job.operationId, inputRevision: job.inputRevision,
-        status: 'prepared', settings, input: {bytes: file.size, sha256: inputHash, info}, output: {bytes: blob.size, sha256: outputHash, info: outputInfo},
-        hashNote: 'SHA-256 calculated incrementally for the complete input and prepared output', timings, metrics, events,
+        status: direct ? 'saved' : 'prepared', settings, input: {bytes: file.size, sha256: inputHash, info}, output: {bytes: blob.size, sha256: outputHash, info: outputInfo},
+        hashNote: direct ? 'Input SHA-256 calculated incrementally; whole output SHA-256 observed from the committed file, not compared with a pre-write whole-file hash' : 'SHA-256 calculated incrementally for the complete input and prepared output', timings, metrics, events,
         clock: 'performance.now, worker', nativePeakBytes: null,
         audioMetadataCoverage: settings.mode === 'copy' ? 'original audio track boxes preserved' : 'AAC payload, decoder configuration and supported timeline retained; seek-preroll sample groups are not reproduced by the muxer; seek quality unverified',
-        saveWriteCommitted: false, saveCompleted: false, downloadRecovered: false, targetVRPlayerVerified: false};
+        saveWriteCommitted: !!direct, saveCompleted: !!direct, savedSize: direct ? blob.size : null,
+        savedSha256: direct ? outputHash : null, directSave,
+        downloadRecovered: false, targetVRPlayerVerified: false};
       job.prepared = receipt;
       send('result', {result: {blob, receipt, info: outputInfo}});
     } catch (error) {
@@ -102,7 +117,10 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
         capabilities: metrics?.capabilities ?? null, events, clock: 'performance.now, worker',
         cleanup: {status: cleanupComplete ? 'complete' : 'failed', error: job.cleanupError,
           requiresWorkerTermination: !!job.requiresWorkerTermination},
-        saveWriteCommitted: false, saveCompleted: false, downloadRecovered: false, targetVRPlayerVerified: false};
+        saveWriteCommitted: !!job.directOutput?.status.committed || !!error.saveWriteCommitted,
+        saveCompleted: false, directSave: outputHandle ? {status: 'failed', outputState: job.directOutput?.status ?? null,
+          wholeFileHashCompared: false} : null,
+        downloadRecovered: false, targetVRPlayerVerified: false};
       send('error', {error: error?.message || String(error), diagnostics: job.diagnostics, cleanupComplete,
         cleanupError: job.cleanupError, requiresWorkerTermination: !!job.requiresWorkerTermination});
     }

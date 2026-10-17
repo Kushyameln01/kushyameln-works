@@ -459,8 +459,8 @@ async function parse(blob, { signal } = {}) {
 /** Scan all structural tables with bounded reads. Does not decode samples or certify headset compatibility. */
 export async function inspectMp4(blob, options = {}) { return (await parse(blob, options)).info; }
 
-/** Tag an already cropped 180x180-per-eye stereo sample stream, retaining every sample and timestamp. */
-export async function tagMp4(blob, { layout, signal } = {}) {
+/** Plan metadata-only writes. The source needs readable container ranges, not sample payloads. */
+export async function planMp4Tag(blob, { layout, signal } = {}) {
   check(layout === 'sbs' || layout === 'tb', 'layout must be sbs or tb');
   const parsed = await parse(blob, { signal }); const { video, movie, top } = parsed; const mode = layout === 'sbs' ? 2 : 1;
   check(video.projection !== 'mesh', 'mesh projection cannot be relabeled equirectangular');
@@ -490,11 +490,20 @@ export async function tagMp4(blob, { layout, signal } = {}) {
     return new Blob([h, ...parts]);
   }
   const replacement = await rewrite(movie); abort(signal);
+  const patches = top.filter(n => n.type === 'moov' || n.type === 'uuid')
+    .map(node => ({position: node.start + 4, data: enc.encode('free')}));
+  check(Number.isSafeInteger(blob.size + replacement.size), 'tagged output exceeds safe integer range');
+  return {patches, append: replacement, appendAt: blob.size, outputBytes: blob.size + replacement.size};
+}
+
+/** Tag an already cropped 180x180-per-eye stereo sample stream, retaining every sample and timestamp. */
+export async function tagMp4(blob, options = {}) {
+  const plan = await planMp4Tag(blob, options);
   // Changing only the fourcc preserves the old box's exact size/header and all mdat positions.
   const pieces = []; let cursor = 0;
-  for (const node of top.filter(n => n.type === 'moov' || n.type === 'uuid')) {
-    pieces.push(blob.slice(cursor, node.start + 4), enc.encode('free')); cursor = node.start + 8;
+  for (const patch of plan.patches) {
+    pieces.push(blob.slice(cursor, patch.position), patch.data); cursor = patch.position + patch.data.byteLength;
   }
-  pieces.push(blob.slice(cursor), replacement); abort(signal);
+  pieces.push(blob.slice(cursor), plan.append); abort(options.signal);
   return new Blob(pieces, { type: 'video/mp4' });
 }

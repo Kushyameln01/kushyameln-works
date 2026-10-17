@@ -4,6 +4,8 @@ import {
   StreamTarget, Quality, canEncodeVideo,
 } from '../media-basic/vendor/mediabunny.mjs';
 import { buildStereoGeometry } from './geometry.mjs';
+import { createFileOutput } from './file-output.mjs';
+import { createMuxCapture } from './mux-capture.mjs';
 
 const MAX_SAMPLES = 100_000;
 const MAX_OUTPUT_BYTES = 1024 ** 3;
@@ -13,6 +15,44 @@ const OPFS_ROOT = 'vr180-jobs';
 
 function abortError() {
   return new DOMException('Conversion was canceled.', 'AbortError');
+}
+
+/** Production direct-mux sink; exposed so the pinned muxer can be tested without WebCodecs. */
+export async function createDirectMuxDestination(handle, { signal, onWrite = () => {} } = {}) {
+  const output = await createFileOutput(handle, { signal });
+  const capture = createMuxCapture(), logicalWriter = output.stream.getWriter();
+  let logicalClosed = false;
+  const stream = new WritableStream({
+    async write({ type, position, data }) {
+      if (signal?.aborted) throw abortError();
+      if (type !== 'write' || !(data instanceof Uint8Array)
+          || !Number.isSafeInteger(position) || position < 0
+          || !Number.isSafeInteger(position + data.byteLength)
+          || position + data.byteLength > MAX_OUTPUT_BYTES) {
+        throw new RangeError('Experimental output limit: 1 GiB; invalid or oversized write.');
+      }
+      await output.writeAt(position, data);
+      capture.write({position, data}); // Capture only acknowledged writes, including header rewrites.
+      onWrite(output.status.extent);
+    },
+    async close() {
+      if (logicalClosed) return;
+      await logicalWriter.close(); logicalClosed = true; logicalWriter.releaseLock();
+    },
+    async abort(reason) {
+      await output.abort(reason);
+      if (!logicalClosed) { logicalClosed = true; logicalWriter.releaseLock(); }
+    },
+  }, { highWaterMark: 1 });
+  return {
+    output, stream, onMoov: capture.onMoov,
+    finish() {
+      const status = output.status;
+      if (!status.muxerClosed || status.committed || status.state !== 'open') throw Error('DIRECT_MUX_NOT_FINALIZED');
+      const {source, metrics} = capture.finish(status.extent);
+      return {output, source, metrics};
+    },
+  };
 }
 
 export async function cleanupConversionResources({cancelOutput, abortWriter, removeTemporary}) {
@@ -106,10 +146,12 @@ export function createAacPacketCopier(source, decoderConfig) {
  * b1 pixel route. The caller must first require inspectMp4(...).transcodeSafe;
  * this module additionally checks the actual decoder track properties.
  * The returned OPFS File remains available until cleanup() is awaited.
+ * With outputHandle, return an uncommitted direct transaction and metadata-only
+ * source instead. The Worker patches VR metadata and explicitly commits it.
  * VR metadata is deliberately left to the independent MP4 patcher.
  */
 export async function convertStereo(file, settings, {
-  signal, onProgress, onMetrics, jobId, onCleanup,
+  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle,
 } = {}) {
   const started = performance.now();
   const checkAbort = () => { if (signal?.aborted) throw abortError(); };
@@ -126,9 +168,10 @@ export async function convertStereo(file, settings, {
   if (typeof id !== 'string' || !/^[A-Za-z0-9_-]{1,96}$/.test(id)) {
     throw new TypeError('jobId must contain 1–96 letters, numbers, underscores or hyphens.');
   }
-  if (!globalThis.navigator?.storage?.getDirectory || !globalThis.OffscreenCanvas
+  if ((!outputHandle && !globalThis.navigator?.storage?.getDirectory) || !globalThis.OffscreenCanvas
       || !globalThis.VideoEncoder || !globalThis.VideoDecoder || !globalThis.WritableStream) {
-    throw new Error('This route requires OPFS, OffscreenCanvas, WebCodecs and WritableStream.');
+    throw new Error(outputHandle ? 'This route requires OffscreenCanvas, WebCodecs and WritableStream.'
+      : 'This route requires OPFS, OffscreenCanvas, WebCodecs and WritableStream.');
   }
 
   const metrics = {
@@ -146,9 +189,10 @@ export async function convertStereo(file, settings, {
     cpuPeakBytes: null, gpuPeakBytes: null, nativePeakBytes: null,
     containerMetadataGrowth: 'O(total samples); media buffers are streamed',
     metadataPatched: false, status: 'preparing', cleanupError: null,
-    opfsDirectory: `${OPFS_ROOT}/${id}`,
+    outputBackend: outputHandle ? 'direct-file' : 'opfs',
+    opfsDirectory: outputHandle ? null : `${OPFS_ROOT}/${id}`,
   };
-  let input, output, canvas, storageWriter, root, temporaryDirectory;
+  let input, output, canvas, storageWriter, root, temporaryDirectory, opfsHandle, directDestination, acquisitionCleanup;
   let videoIterator, heldSample, audioPacket, audioSink, audioSource, audioCopier, videoSource;
   let temporaryCreated = false;
   let storageClosed = false;
@@ -198,6 +242,8 @@ export async function convertStereo(file, settings, {
     // Wait for that close, and abort an unclosed writer before deleting files.
     cancelOutput,
     abortWriter: async () => {
+      if (directDestination) { await directDestination.output.abort(); return; }
+      if (acquisitionCleanup) { await acquisitionCleanup(); acquisitionCleanup = null; return; }
       if (storageWriter && !storageClosed) { await storageWriter.abort(); storageClosed = true; }
     },
     removeTemporary,
@@ -283,51 +329,66 @@ export async function convertStereo(file, settings, {
     }
 
     const setupStart = performance.now();
-    if (navigator.storage.estimate) {
-      const estimate = await navigator.storage.estimate();
-      metrics.storageQuotaBytes = Number.isFinite(estimate.quota) ? estimate.quota : null;
-      metrics.storageUsageBytes = Number.isFinite(estimate.usage) ? estimate.usage : null;
-      if (metrics.storageQuotaBytes !== null && metrics.storageUsageBytes !== null) {
-        metrics.storageAvailableBytes = Math.max(0, estimate.quota - estimate.usage);
-        if (metrics.storageAvailableBytes < WRITE_CHUNK_BYTES) throw new Error('Insufficient estimated OPFS space to start conversion.');
+    let writable;
+    if (outputHandle) {
+      try {
+        directDestination = await createDirectMuxDestination(outputHandle, {
+          signal, onWrite: extent => { metrics.outputBytes = extent; },
+        });
+      } catch (error) {
+        // A cancellation while acquiring the writer can leave abort pending or
+        // failed. Keep its retry reachable through the registered job cleanup.
+        if (typeof error.retryCleanup === 'function') acquisitionCleanup = error.retryCleanup;
+        throw error;
       }
-    }
-    root = await (await navigator.storage.getDirectory()).getDirectoryHandle(OPFS_ROOT, { create: true });
-    try {
-      await root.getDirectoryHandle(id);
-      throw new Error('The job temporary directory already exists; use a new jobId.');
-    } catch (error) {
-      if (error.name !== 'NotFoundError') throw error;
-    }
-    checkAbort();
-    temporaryDirectory = await root.getDirectoryHandle(id, { create: true });
-    temporaryCreated = true;
-    const outputHandle = await temporaryDirectory.getFileHandle('converted.mp4', { create: true });
-    storageWriter = await outputHandle.createWritable();
-    const writable = new WritableStream({
-      async write({ type, position, data }) {
-        checkAbort();
-        if (type !== 'write' || !Number.isSafeInteger(position) || position < 0
-            || !Number.isSafeInteger(position + data.byteLength)
-            || position + data.byteLength > MAX_OUTPUT_BYTES) {
-          throw new RangeError('Experimental output limit: 1 GiB; invalid or oversized write.');
+      writable = directDestination.stream;
+    } else {
+      if (navigator.storage.estimate) {
+        const estimate = await navigator.storage.estimate();
+        metrics.storageQuotaBytes = Number.isFinite(estimate.quota) ? estimate.quota : null;
+        metrics.storageUsageBytes = Number.isFinite(estimate.usage) ? estimate.usage : null;
+        if (metrics.storageQuotaBytes !== null && metrics.storageUsageBytes !== null) {
+          metrics.storageAvailableBytes = Math.max(0, estimate.quota - estimate.usage);
+          if (metrics.storageAvailableBytes < WRITE_CHUNK_BYTES) throw new Error('Insufficient estimated OPFS space to start conversion.');
         }
-        await storageWriter.write({ type: 'write', position, data });
-        metrics.outputBytes = Math.max(metrics.outputBytes, position + data.byteLength);
-      },
-      async close() {
-        if (storageClosed) return;
-        await storageWriter.close();
-        storageClosed = true;
-      },
-      async abort(reason) {
-        if (storageClosed) return;
-        await storageWriter.abort(reason);
-        storageClosed = true;
-      },
-    }, { highWaterMark: 1 });
+      }
+      root = await (await navigator.storage.getDirectory()).getDirectoryHandle(OPFS_ROOT, { create: true });
+      try {
+        await root.getDirectoryHandle(id);
+        throw new Error('The job temporary directory already exists; use a new jobId.');
+      } catch (error) {
+        if (error.name !== 'NotFoundError') throw error;
+      }
+      checkAbort();
+      temporaryDirectory = await root.getDirectoryHandle(id, { create: true });
+      temporaryCreated = true;
+      opfsHandle = await temporaryDirectory.getFileHandle('converted.mp4', { create: true });
+      storageWriter = await opfsHandle.createWritable();
+      writable = new WritableStream({
+        async write({ type, position, data }) {
+          checkAbort();
+          if (type !== 'write' || !Number.isSafeInteger(position) || position < 0
+              || !Number.isSafeInteger(position + data.byteLength)
+              || position + data.byteLength > MAX_OUTPUT_BYTES) {
+            throw new RangeError('Experimental output limit: 1 GiB; invalid or oversized write.');
+          }
+          await storageWriter.write({ type: 'write', position, data });
+          metrics.outputBytes = Math.max(metrics.outputBytes, position + data.byteLength);
+        },
+        async close() {
+          if (storageClosed) return;
+          await storageWriter.close();
+          storageClosed = true;
+        },
+        async abort(reason) {
+          if (storageClosed) return;
+          await storageWriter.abort(reason);
+          storageClosed = true;
+        },
+      }, { highWaterMark: 1 });
+    }
     output = new Output({
-      format: new Mp4OutputFormat({ fastStart: false }),
+      format: new Mp4OutputFormat({ fastStart: false, ...(directDestination ? {onMoov: directDestination.onMoov} : {}) }),
       target: new StreamTarget(writable, { chunked: true, chunkSize: WRITE_CHUNK_BYTES }),
     });
     output.addVideoTrack(videoSource);
@@ -407,9 +468,16 @@ export async function convertStereo(file, settings, {
       throw new Error('The encoder did not emit one video packet per submitted frame.');
     }
     const prepareStarted = performance.now();
-    const resultFile = await outputHandle.getFile();
-    if (!resultFile.size || resultFile.size > MAX_OUTPUT_BYTES) throw new Error('The finalized output size is invalid.');
-    metrics.outputBytes = resultFile.size;
+    let resultFile, direct;
+    if (directDestination) {
+      direct = directDestination.finish();
+      metrics.outputBytes = direct.output.status.extent;
+      Object.assign(metrics, direct.metrics);
+    } else {
+      resultFile = await opfsHandle.getFile();
+      metrics.outputBytes = resultFile.size;
+    }
+    if (!metrics.outputBytes || metrics.outputBytes > MAX_OUTPUT_BYTES) throw new Error('The finalized output size is invalid.');
     metrics.outputPreparationMs = performance.now() - prepareStarted;
     metrics.totalMs = performance.now() - started;
     metrics.status = 'converted-awaiting-metadata';
@@ -423,7 +491,7 @@ export async function convertStereo(file, settings, {
       requiresMetadataPatch: true, opfsDirectory: metrics.opfsDirectory,
     };
     succeeded = true;
-    return { file: resultFile, cleanup: cleanupResources, metrics: { ...metrics }, info };
+    return { ...(direct ? {direct} : {file: resultFile}), cleanup: cleanupResources, metrics: { ...metrics }, info };
   } catch (error) {
     metrics.status = signal?.aborted ? 'canceled' : 'failed';
     metrics.error = signal?.aborted ? 'Conversion was canceled.' : String(error?.message ?? error);

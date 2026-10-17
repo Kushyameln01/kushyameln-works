@@ -1,4 +1,5 @@
 import { sha256Blob } from './sha256.mjs';
+import { inspectMp4, planMp4Tag } from './mp4.mjs';
 
 const COPY_CHUNK_BYTES = 1024 * 1024;
 const abortError = () => new DOMException('保存を取り消しました', 'AbortError');
@@ -136,4 +137,36 @@ export async function saveBlobToFile(blob, handle, { signal, expectedSha256, onP
     error.saveWriteCommitted = output.status.committed;
     throw error;
   }
+}
+
+/** Finalize a bounded direct mux transaction before physically committing it.
+ * The complete file hash is observed after close; only the replacement metadata
+ * has a pre-write expected digest. This does not certify decoded pixel content.
+ */
+export async function finalizeDirectOutput({output, source}, {signal, onProgress = () => {}} = {}) {
+  const check = () => { if (signal?.aborted) throw abortError(); };
+  try {
+    check();
+    if (!output.status.muxerClosed || output.status.committed) throw Error('DIRECT_MUX_NOT_CLOSED');
+    const plan = await planMp4Tag(source, {layout: 'sbs', signal});
+    if (plan.outputBytes > 1024 ** 3) throw Error('DIRECT_OUTPUT_LIMIT_EXCEEDED');
+    const expectedMetadataHash = await sha256Blob(plan.append, {signal});
+    check();
+    for (const patch of plan.patches) { check(); await output.writeAt(patch.position, patch.data); }
+    for (let at = 0; at < plan.append.size; at += COPY_CHUNK_BYTES) {
+      check();
+      const bytes = new Uint8Array(await plan.append.slice(at, Math.min(at + COPY_CHUNK_BYTES, plan.append.size)).arrayBuffer());
+      await output.writeAt(plan.appendAt + at, bytes);
+    }
+    check(); onProgress({phase: 'saveCommit'});
+    const saved = await output.commit({expectedBytes: plan.outputBytes});
+    check();
+    const actualMetadataHash = await sha256Blob(saved.file.slice(plan.appendAt), {signal});
+    if (actualMetadataHash !== expectedMetadataHash) throw Error('DIRECT_METADATA_HASH_MISMATCH');
+    const info = await inspectMp4(saved.file, {signal}); check();
+    return {saved, info, verification: {status: 'verified', saveWriteCommitted: true, saveCompleted: true,
+      wholeFileHashCompared: false, metadataHashMatched: true, metadataSHA256: actualMetadataHash,
+      metadataOffset: plan.appendAt, metadataBytes: plan.append.size,
+      hashNote: 'Whole saved-file SHA-256 observed after commit; final metadata compared with its pre-write SHA-256'}};
+  } catch (error) { error.saveWriteCommitted = output.status.committed; throw error; }
 }
