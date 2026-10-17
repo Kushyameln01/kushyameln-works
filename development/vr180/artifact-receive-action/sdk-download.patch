@@ -1,0 +1,338 @@
+--- a/sdk/lib/internal/download/download-artifact.js
++++ b/development/vr180/artifact-receive-action/raw.cjs
+@@ -1,233 +1,103 @@
+-"use strict";
+-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+-    if (k2 === undefined) k2 = k;
+-    var desc = Object.getOwnPropertyDescriptor(m, k);
+-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+-      desc = { enumerable: true, get: function() { return m[k]; } };
++'use strict';
++// Narrow private adaptation of @actions/artifact 2.3.2 downloadArtifactInternal.
++// Upstream MIT notice is retained in LICENSE.sdk.md; see sdk-download.patch.
++const crypto = require('node:crypto');
++const MAX_ZIP = 130 * 1024 * 1024;
++const MAX_CHUNK = 1024 * 1024;
++const CODES = new Set(['REQUEST_INVALID', 'ARTIFACT_NOT_UNIQUE', 'ARTIFACT_METADATA_MISMATCH',
++  'ARTIFACT_RUN_MISMATCH', 'SIGNED_URL_INVALID', 'HTTP_STATUS', 'HTTP_LENGTH', 'HTTP_ENCODING',
++  'ZIP_SIZE_LIMIT', 'ZIP_CHUNK_LIMIT', 'ZIP_TRUNCATED', 'ZIP_HASH_MISMATCH', 'ZIP_SHORT_WRITE',
++  'DOWNLOAD_CANCELLED', 'DOWNLOAD_DEADLINE', 'DOWNLOAD_IDLE', 'OUTPUT_CHANGED', 'SDK_UNAVAILABLE',
++  'DOWNLOAD_FAILED', 'OUTPUT_CLEANUP_FAILED']);
++function need(ok, code) { if (!ok) throw new Error(code); }
++function safeCode(error) { return CODES.has(error?.message) ? error.message : 'DOWNLOAD_FAILED'; }
++function validateExpected(e) {
++  need(e && Number.isSafeInteger(e.id) && e.id > 0 && typeof e.name === 'string'
++    && /^vr180-seg-[A-Za-z0-9_-]{1,220}$/.test(e.name)
++    && Number.isSafeInteger(e.sizeBytes) && e.sizeBytes >= 22 && e.sizeBytes <= MAX_ZIP
++    && typeof e.digest === 'string' && /^sha256:[0-9a-f]{64}$/.test(e.digest), 'REQUEST_INVALID');
++  return { id: e.id, name: e.name, sizeBytes: e.sizeBytes, digest: e.digest };
++}
++function selectArtifact(artifacts, expected, backendIds) {
++  need(Array.isArray(artifacts) && artifacts.length === 1, 'ARTIFACT_NOT_UNIQUE');
++  const a = artifacts[0], digest = a?.digest?.value;
++  const normalized = typeof digest === 'string' ? 'sha256:' + digest.replace(/^sha256:/, '') : '';
++  need(a && a.databaseId === String(expected.id) && a.name === expected.name
++    && a.size === String(expected.sizeBytes) && normalized === expected.digest, 'ARTIFACT_METADATA_MISMATCH');
++  need(typeof backendIds.workflowRunBackendId === 'string' && backendIds.workflowRunBackendId.length > 0
++    && a.workflowRunBackendId === backendIds.workflowRunBackendId
++    && typeof a.workflowJobRunBackendId === 'string' && a.workflowJobRunBackendId.length > 0
++    && a.workflowJobRunBackendId.length <= 128, 'ARTIFACT_RUN_MISMATCH');
++  return a;
++}
++function check(deadline, signal) {
++  need(!signal?.aborted, 'DOWNLOAD_CANCELLED');
++  need(performance.now() < deadline, 'DOWNLOAD_DEADLINE');
++}
++async function downloadRaw({ expected, writer, sdk, deadline, signal, idleMs = 30000 }) {
++  expected = validateExpected(expected); check(deadline, signal);
++  const backendIds = sdk.getBackendIdsFromToken();
++  const client = sdk.internalArtifactTwirpClient();
++  // This is the SDK's normal current-run request, not REST/findBy/PAT access.
++  const listed = await client.ListArtifacts({ ...backendIds,
++    idFilter: sdk.Int64Value.create({ value: String(expected.id) }) });
++  check(deadline, signal);
++  const a = selectArtifact(listed.artifacts, expected, backendIds);
++  const signed = await client.GetSignedArtifactURL({ workflowRunBackendId: a.workflowRunBackendId,
++    workflowJobRunBackendId: a.workflowJobRunBackendId, name: a.name });
++  check(deadline, signal);
++  need(typeof signed.signedUrl === 'string' && signed.signedUrl.length <= 16384, 'SIGNED_URL_INVALID');
++  let url;
++  try { url = new URL(signed.signedUrl); } catch { throw new Error('SIGNED_URL_INVALID'); }
++  need(url.protocol === 'https:' && !url.username && !url.password && !url.hash, 'SIGNED_URL_INVALID');
++  const http = sdk.createHttpClient();
++  let response, timer, idle = false;
++  const abort = () => response?.message.destroy(new Error('DOWNLOAD_CANCELLED'));
++  signal?.addEventListener('abort', abort, { once: true });
++  try {
++    response = await http.get(url.href); check(deadline, signal);
++    const stream = response.message;
++    need(stream.statusCode === 200, 'HTTP_STATUS');
++    const headers = stream.headers || {};
++    need(headers['content-length'] === undefined || headers['content-length'] === String(expected.sizeBytes), 'HTTP_LENGTH');
++    need(headers['content-encoding'] === undefined || headers['content-encoding'] === 'identity', 'HTTP_ENCODING');
++    const reset = () => { clearTimeout(timer); timer = setTimeout(() => {
++      idle = true; stream.destroy(new Error('DOWNLOAD_IDLE'));
++    }, idleMs); };
++    reset();
++    let bytes = 0; const sha = crypto.createHash('sha256');
++    for await (const chunk of stream) {
++      reset(); check(deadline, signal);
++      need(Buffer.isBuffer(chunk) && chunk.length <= MAX_CHUNK, 'ZIP_CHUNK_LIMIT');
++      need(bytes + chunk.length <= expected.sizeBytes, 'ZIP_SIZE_LIMIT');
++      let offset = 0;
++      while (offset < chunk.length) {
++        check(deadline, signal);
++        const result = await writer.write(chunk, offset, chunk.length - offset, bytes + offset);
++        need(Number.isInteger(result.bytesWritten) && result.bytesWritten > 0
++          && result.bytesWritten <= chunk.length - offset, 'ZIP_SHORT_WRITE');
++        offset += result.bytesWritten;
++      }
++      sha.update(chunk); bytes += chunk.length;
+     }
+-    Object.defineProperty(o, k2, desc);
+-}) : (function(o, m, k, k2) {
+-    if (k2 === undefined) k2 = k;
+-    o[k2] = m[k];
+-}));
+-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+-    Object.defineProperty(o, "default", { enumerable: true, value: v });
+-}) : function(o, v) {
+-    o["default"] = v;
+-});
+-var __importStar = (this && this.__importStar) || function (mod) {
+-    if (mod && mod.__esModule) return mod;
+-    var result = {};
+-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+-    __setModuleDefault(result, mod);
+-    return result;
+-};
+-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+-    return new (P || (P = Promise))(function (resolve, reject) {
+-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+-        step((generator = generator.apply(thisArg, _arguments || [])).next());
+-    });
+-};
+-var __importDefault = (this && this.__importDefault) || function (mod) {
+-    return (mod && mod.__esModule) ? mod : { "default": mod };
+-};
+-Object.defineProperty(exports, "__esModule", { value: true });
+-exports.downloadArtifactInternal = exports.downloadArtifactPublic = exports.streamExtractExternal = void 0;
+-const promises_1 = __importDefault(require("fs/promises"));
+-const crypto = __importStar(require("crypto"));
+-const stream = __importStar(require("stream"));
+-const github = __importStar(require("@actions/github"));
+-const core = __importStar(require("@actions/core"));
+-const httpClient = __importStar(require("@actions/http-client"));
+-const unzip_stream_1 = __importDefault(require("unzip-stream"));
+-const user_agent_1 = require("../shared/user-agent");
+-const config_1 = require("../shared/config");
+-const artifact_twirp_client_1 = require("../shared/artifact-twirp-client");
+-const generated_1 = require("../../generated");
+-const util_1 = require("../shared/util");
+-const errors_1 = require("../shared/errors");
+-const scrubQueryParameters = (url) => {
+-    const parsed = new URL(url);
+-    parsed.search = '';
+-    return parsed.toString();
+-};
+-function exists(path) {
+-    return __awaiter(this, void 0, void 0, function* () {
+-        try {
+-            yield promises_1.default.access(path);
+-            return true;
+-        }
+-        catch (error) {
+-            if (error.code === 'ENOENT') {
+-                return false;
+-            }
+-            else {
+-                throw error;
+-            }
+-        }
+-    });
++    clearTimeout(timer); check(deadline, signal);
++    need(bytes === expected.sizeBytes, 'ZIP_TRUNCATED');
++    const digest = 'sha256:' + sha.digest('hex'); need(digest === expected.digest, 'ZIP_HASH_MISMATCH');
++    await writer.sync(); check(deadline, signal);
++    need((await writer.stat()).size === bytes, 'OUTPUT_CHANGED');
++    return { schema: 'vr180-same-run-raw-artifact-v1', status: 'RAW_ZIP_VERIFIED',
++      artifact: expected, bytes, digest, fsynced: true,
++      metadata: { source: '@actions/artifact@2.3.2 ListArtifacts(idFilter)',
++        scope: 'current-workflow-run-runtime-token', id: expected.id, name: expected.name,
++        sizeBytes: expected.sizeBytes, digest: expected.digest,
++        backendRunMatched: true, producerJobBackendObserved: true,
++        restWorkflowRunVerified: false },
++      zipStructureVerified: false, rawStreamBufferLimitBytes: MAX_CHUNK,
++      processRssBoundedByBuffer: false };
++  } catch (error) { throw new Error(idle ? 'DOWNLOAD_IDLE' : safeCode(error)); }
++  finally {
++    clearTimeout(timer); signal?.removeEventListener('abort', abort);
++    response?.message.destroy(); http.dispose?.();
++  }
+ }
+-function streamExtract(url, directory) {
+-    return __awaiter(this, void 0, void 0, function* () {
+-        let retryCount = 0;
+-        while (retryCount < 5) {
+-            try {
+-                return yield streamExtractExternal(url, directory);
+-            }
+-            catch (error) {
+-                retryCount++;
+-                core.debug(`Failed to download artifact after ${retryCount} retries due to ${error.message}. Retrying in 5 seconds...`);
+-                // wait 5 seconds before retrying
+-                yield new Promise(resolve => setTimeout(resolve, 5000));
+-            }
+-        }
+-        throw new Error(`Artifact download failed after ${retryCount} retries.`);
+-    });
+-}
+-function streamExtractExternal(url, directory) {
+-    return __awaiter(this, void 0, void 0, function* () {
+-        const client = new httpClient.HttpClient((0, user_agent_1.getUserAgentString)());
+-        const response = yield client.get(url);
+-        if (response.message.statusCode !== 200) {
+-            throw new Error(`Unexpected HTTP response from blob storage: ${response.message.statusCode} ${response.message.statusMessage}`);
+-        }
+-        const timeout = 30 * 1000; // 30 seconds
+-        let sha256Digest = undefined;
+-        return new Promise((resolve, reject) => {
+-            const timerFn = () => {
+-                response.message.destroy(new Error(`Blob storage chunk did not respond in ${timeout}ms`));
+-            };
+-            const timer = setTimeout(timerFn, timeout);
+-            const hashStream = crypto.createHash('sha256').setEncoding('hex');
+-            const passThrough = new stream.PassThrough();
+-            response.message.pipe(passThrough);
+-            passThrough.pipe(hashStream);
+-            const extractStream = passThrough;
+-            extractStream
+-                .on('data', () => {
+-                timer.refresh();
+-            })
+-                .on('error', (error) => {
+-                core.debug(`response.message: Artifact download failed: ${error.message}`);
+-                clearTimeout(timer);
+-                reject(error);
+-            })
+-                .pipe(unzip_stream_1.default.Extract({ path: directory }))
+-                .on('close', () => {
+-                clearTimeout(timer);
+-                if (hashStream) {
+-                    hashStream.end();
+-                    sha256Digest = hashStream.read();
+-                    core.info(`SHA256 digest of downloaded artifact is ${sha256Digest}`);
+-                }
+-                resolve({ sha256Digest: `sha256:${sha256Digest}` });
+-            })
+-                .on('error', (error) => {
+-                reject(error);
+-            });
+-        });
+-    });
+-}
+-exports.streamExtractExternal = streamExtractExternal;
+-function downloadArtifactPublic(artifactId, repositoryOwner, repositoryName, token, options) {
+-    return __awaiter(this, void 0, void 0, function* () {
+-        const downloadPath = yield resolveOrCreateDirectory(options === null || options === void 0 ? void 0 : options.path);
+-        const api = github.getOctokit(token);
+-        let digestMismatch = false;
+-        core.info(`Downloading artifact '${artifactId}' from '${repositoryOwner}/${repositoryName}'`);
+-        const { headers, status } = yield api.rest.actions.downloadArtifact({
+-            owner: repositoryOwner,
+-            repo: repositoryName,
+-            artifact_id: artifactId,
+-            archive_format: 'zip',
+-            request: {
+-                redirect: 'manual'
+-            }
+-        });
+-        if (status !== 302) {
+-            throw new Error(`Unable to download artifact. Unexpected status: ${status}`);
+-        }
+-        const { location } = headers;
+-        if (!location) {
+-            throw new Error(`Unable to redirect to artifact download url`);
+-        }
+-        core.info(`Redirecting to blob download url: ${scrubQueryParameters(location)}`);
+-        try {
+-            core.info(`Starting download of artifact to: ${downloadPath}`);
+-            const extractResponse = yield streamExtract(location, downloadPath);
+-            core.info(`Artifact download completed successfully.`);
+-            if (options === null || options === void 0 ? void 0 : options.expectedHash) {
+-                if ((options === null || options === void 0 ? void 0 : options.expectedHash) !== extractResponse.sha256Digest) {
+-                    digestMismatch = true;
+-                    core.debug(`Computed digest: ${extractResponse.sha256Digest}`);
+-                    core.debug(`Expected digest: ${options.expectedHash}`);
+-                }
+-            }
+-        }
+-        catch (error) {
+-            throw new Error(`Unable to download and extract artifact: ${error.message}`);
+-        }
+-        return { downloadPath, digestMismatch };
+-    });
+-}
+-exports.downloadArtifactPublic = downloadArtifactPublic;
+-function downloadArtifactInternal(artifactId, options) {
+-    return __awaiter(this, void 0, void 0, function* () {
+-        const downloadPath = yield resolveOrCreateDirectory(options === null || options === void 0 ? void 0 : options.path);
+-        const artifactClient = (0, artifact_twirp_client_1.internalArtifactTwirpClient)();
+-        let digestMismatch = false;
+-        const { workflowRunBackendId, workflowJobRunBackendId } = (0, util_1.getBackendIdsFromToken)();
+-        const listReq = {
+-            workflowRunBackendId,
+-            workflowJobRunBackendId,
+-            idFilter: generated_1.Int64Value.create({ value: artifactId.toString() })
+-        };
+-        const { artifacts } = yield artifactClient.ListArtifacts(listReq);
+-        if (artifacts.length === 0) {
+-            throw new errors_1.ArtifactNotFoundError(`No artifacts found for ID: ${artifactId}\nAre you trying to download from a different run? Try specifying a github-token with \`actions:read\` scope.`);
+-        }
+-        if (artifacts.length > 1) {
+-            core.warning('Multiple artifacts found, defaulting to first.');
+-        }
+-        const signedReq = {
+-            workflowRunBackendId: artifacts[0].workflowRunBackendId,
+-            workflowJobRunBackendId: artifacts[0].workflowJobRunBackendId,
+-            name: artifacts[0].name
+-        };
+-        const { signedUrl } = yield artifactClient.GetSignedArtifactURL(signedReq);
+-        core.info(`Redirecting to blob download url: ${scrubQueryParameters(signedUrl)}`);
+-        try {
+-            core.info(`Starting download of artifact to: ${downloadPath}`);
+-            const extractResponse = yield streamExtract(signedUrl, downloadPath);
+-            core.info(`Artifact download completed successfully.`);
+-            if (options === null || options === void 0 ? void 0 : options.expectedHash) {
+-                if ((options === null || options === void 0 ? void 0 : options.expectedHash) !== extractResponse.sha256Digest) {
+-                    digestMismatch = true;
+-                    core.debug(`Computed digest: ${extractResponse.sha256Digest}`);
+-                    core.debug(`Expected digest: ${options.expectedHash}`);
+-                }
+-            }
+-        }
+-        catch (error) {
+-            throw new Error(`Unable to download and extract artifact: ${error.message}`);
+-        }
+-        return { downloadPath, digestMismatch };
+-    });
+-}
+-exports.downloadArtifactInternal = downloadArtifactInternal;
+-function resolveOrCreateDirectory(downloadPath = (0, config_1.getGitHubWorkspaceDir)()) {
+-    return __awaiter(this, void 0, void 0, function* () {
+-        if (!(yield exists(downloadPath))) {
+-            core.debug(`Artifact destination folder does not exist, creating: ${downloadPath}`);
+-            yield promises_1.default.mkdir(downloadPath, { recursive: true });
+-        }
+-        else {
+-            core.debug(`Artifact destination folder already exists: ${downloadPath}`);
+-        }
+-        return downloadPath;
+-    });
+-}
+-//# sourceMappingURL=download-artifact.js.map
+\ No newline at end of file
++module.exports = { MAX_ZIP, MAX_CHUNK, safeCode, validateExpected, selectArtifact, downloadRaw };

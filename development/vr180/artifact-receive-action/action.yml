@@ -1,0 +1,12 @@
+name: Private same-run raw artifact receiver
+description: Run the fixed independent Python receiver with the normal Actions runtime capability.
+inputs:
+  receipt-json:
+    description: Producer completion receipt JSON; no credentials.
+    required: true
+  profile:
+    description: Explicit small service profile.
+    required: true
+runs:
+  using: node20
+  main: action.cjs

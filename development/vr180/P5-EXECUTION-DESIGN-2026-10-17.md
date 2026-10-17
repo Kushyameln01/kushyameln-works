@@ -78,3 +78,21 @@ private profileで最終出力上限だけを分離する。30fps・無音、10�
 短尺からの線形試算は5GBの生成417/変換448/cloud検査426秒、10GBの834/896/851秒、host検査313/627秒。転送・起動等を含む実測ではない。初回jobの候補期限は5GB90分、10GB120分、生成/変換各15/25分、検査15/25分、upload20/30分。全jobは標準Actions上限内とする。新輸送試験の実効速度・artifact固定費を確認してから実行枠を確定し、不足時は理由を記録して停止する。受信側期限は各120分以内。性能向上の証明には使わない。
 
 根拠：Chromiumのquota表示提案 https://groups.google.com/a/chromium.org/g/blink-dev/c/7q0YGQNVkjs/m/BJH9kfmIEgAJ 、公式artifact仕様 https://docs.github.com/en/rest/actions/artifacts 、固定upload action https://github.com/actions/upload-artifact/tree/ea165f8d65b6e75b540449e92b4886f43607fa02 、Actions上限 https://docs.github.com/en/actions/reference/limits 。各実行は保存されたsource hashと実測証拠へ結び付ける。
+
+## 受信ホストの変更と追加受入（128MiB試験後）
+
+通常profileの16MiB再起動、16分割120MiB、単独128MiBは実サービスで全量受入済み。単独128MiBの最初の回収経路は58.217秒、そのうちdata取得は35.708秒だった。操作間隔を含む値であり純通信速度ではない。仮にdata取得時間だけを152回へ線形に延ばしても約90.5分となり、10GBの回収＋独立検査を120分で終える保証はない。同時2取得による短縮も128MiBでは未実測である。
+
+単独128MiBは最初のroot全量照合後・独立レビュー前に作業領域が消失した。同じ原artifact2件を再取得（35.853秒）し、別担当がZIP/CRC/全134,217,728B/独立式を全走査して合格を確認した。履歴と原記録は`evidence/2026-10-17-segmented-128.json`に保存し、新receiverの受入とは区別する。
+
+さらにCodex側の作業ディレクトリが2回消失したため、長尺の全回収を続けながら全原本を保持できる保証がない。計画1.2 §8.3の全量回収・独立検査は維持し、受信ホストを生成jobとは別の新規Actions jobへ移す。これはrootローカルへの全量回収とは報告しない。単なるproducer判定の再利用ではなく、別hostで全ZIP・全媒体を実際に読み直す。課金・アカウント・権限設定を変更せず、通常runtimeと`contents: read`の範囲を保つ。
+
+同runの`needs` outputからproducerのrepo/commit/run/attempt/jobとcompletionのID/name/ZIP digest/raw bytes/raw hashを受ける。無認証の公開REST APIから実metadataを取得し、run/commit/branch/expiryを別に照合する。SDKの内部metadataにはこれらのREST fieldsがないため、同等の応答へ作り替えない。固定SDK2.3.2の同run ListArtifacts/GetSignedArtifactURL経路を限定的に使い、unzip先をraw ZIPの逐次保存へ変更したprivate adapterとしてsource・差分・license・依存を固定する。新しい認証情報や署名URLをログ・証拠に保存しない。
+
+receiverは全ZIP digest・全entry CRC・part SHA・連続offsetを検査してから追記し、fsync後に状態を更新する。全体hashを再読し、小容量では独立生成式と全byte比較する。長尺を有効にする場合は同じ固定FFmpeg/NumPy検査器で全frame/packet/PTS/左右/イベント/画質/VR情報を走査する。producerの品質FAILをreceiverのbyte PASSで上書きしない。完全FAILは証拠を保存し、欠落・時間切れ・不完全走査・清掃不明はPASSにしない。
+
+追加受入は(1)16分割120MiB、(2)単独128MiB、(3)短尺媒体の全回収・独立検査、(4)identity不一致・欠落・破損・期限・完全品質FAIL・不完全走査の拒否である。既存root回収の受入を転用しない。まずwrapperとreceiverは小容量profileだけ許可する。小容量job25分、receiver内部20分、1artifact120秒＋終了待ち、同時取得1。実測後に長尺期限を再審査する。原bytesはreceiver runner終了まで保持し、rootへは元記録・service metadata・全hash・全走査件数・失敗・終了状態を含むbounded証拠を回収し保存する。
+
+長尺producerの全体期限は5GB60分、10GB85分を候補とし、各生成/変換/検査上限より全体期限を優先する。upload20/30分とjob90/120分の余裕を残す。期限後はcompletionを発行しない。各stage上限を単純加算した所要時間を、job枠内に収まると誤認しない。新receiver受入が終わるまで5/10GB実行はBLOCKED。公開b7の1GiB上限と未確認事項は変わらない。
+
+公式根拠：https://docs.github.com/en/actions/tutorials/store-and-share-data 、https://docs.github.com/en/rest/actions/artifacts 。受信主体の変更は全量検査を省略するためではなく、全量を保持して独立検査を完了するための変更である。

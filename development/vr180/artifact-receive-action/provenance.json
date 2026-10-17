@@ -1,0 +1,37 @@
+{
+  "schema": "vr180-private-raw-artifact-adapter-v1",
+  "sdkVersion": "2.3.2",
+  "sdkArchiveSHA256": "498e687ccee76b1a6782838194aa6069034694832419c403e0fd76d9ac590073",
+  "sdkArchiveIntegrity": "sha512-uX2Mr5KEPcwnzqa0Og9wOTEKIae6C/yx9P/m8bIglzCS5nZDkcQC/zRWjjoEsyVecL6oQpBx5BuqQj/yuVm0gw==",
+  "sharedLock": "development/vr180/artifact-transfer-action/package-lock.json",
+  "sharedLockSHA256": "e9ccb8ab1c9daddc910511374015eeac5fc090e56f5b697fb201c748eece87f8",
+  "upstreamUploadActionCommit": "ea165f8d65b6e75b540449e92b4886f43607fa02",
+  "installedSourceSHA256": {
+    "lib/internal/download/download-artifact.js": "2319720245331b85e4393e79ed193a8a3cd7f0e5e36721e4891ed8a6638783db",
+    "lib/internal/shared/artifact-twirp-client.js": "9f6b8e666388b91e526fd87201e0fe8958f9896c8b50203946606e690b5951a4",
+    "lib/internal/shared/util.js": "721810b668c69128a2869d8ba97f74c06ee215568332b8136db172c28ef66e1d",
+    "lib/internal/shared/config.js": "f2167429ca33570b9e2e860806f144be1dc43ca123a269199864cb8789cf0a1f",
+    "lib/internal/shared/user-agent.js": "894b4d6c2b8f4b7e8765e61be950e9aa467d9759399debe0b30614e04a03d4fd",
+    "lib/internal/shared/errors.js": "1abe2175b7ba1889bea285904a31f59e9259ecde405f3474c8689015c53ac115",
+    "lib/generated/index.js": "3e1b0a351100d27ddf166e32e2625ac96757605543cf0833b1070f42b4196df1",
+    "lib/generated/results/api/v1/artifact.js": "f0478eeda29ab1b35c68480f499a94fb2c3a68db028147c089e37432c34a6c05",
+    "lib/generated/results/api/v1/artifact.twirp-client.js": "8334460ce54ae01c5e2067007604fa5b3262f3d27433558b4c75cb49d50efcef",
+    "lib/generated/google/protobuf/wrappers.js": "cbe686aeb3f2a2cab00176c3a2a9aebcd36510f15008e7888fe65ef0fda35826",
+    "LICENSE.md": "e7ceb6a6926e76a67981a440f4107d6152ac1fc2250c90a66460444518328b75"
+  },
+  "adaptation": {
+    "source": "lib/internal/download/download-artifact.js",
+    "target": "raw.cjs",
+    "targetSHA256": "c3d673a8f86b3ae0394b777ccaa3b6876d9fd6777e05b6650599d11aa0f07a1e",
+    "reconstructionPatch": "sdk-download.patch",
+    "patchSHA256": "de3bd9195349c1f2dd1afdf444b7eda046d280e53f8fe1f43589a3ab26cca83e",
+    "runtimePatchesInstalledSdk": false,
+    "changes": [
+      "Retain same-run ListArtifacts(idFilter) and GetSignedArtifactURL sequence with the normal runtime token.",
+      "Reject zero/multiple records and exact id/name/size/digest/run mismatch instead of choosing first.",
+      "Stream unchanged ZIP bytes to an exclusively owned descriptor; no automatic extraction.",
+      "Fail on digest mismatch; enforce exact bytes, chunk bound, fsync, descriptor close and reread.",
+      "Suppress SDK output in a separately terminated child; expose only fixed receipts/errors."
+    ]
+  }
+}
