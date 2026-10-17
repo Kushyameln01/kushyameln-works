@@ -143,7 +143,8 @@ def main():
     cloud.require(not out.exists() and not out.is_relative_to(cloud.ROOT),'Use new output directory outside checkout')
     cloud.require(bundle.is_file() and not bundle.is_symlink() and not bundle.is_relative_to(cloud.ROOT),'Use separately built fork outside checkout')
     out.mkdir(parents=True);started=time.monotonic();server=None
-    report={'schema':'vr180-output-index-native-probe-v1','status':'BLOCKED','prototypeOnly':True,'decoded':False,'inputForkImplemented':False,
+    report={'schema':'vr180-output-index-native-probe-v1','runId':os.environ.get('GITHUB_RUN_ID','local')+'-output-index-'+os.environ.get('GITHUB_RUN_ATTEMPT','1'),
+            'status':'BLOCKED','prototypeOnly':True,'decoded':False,'inputForkImplemented':False,
             'pageErrors':[],'workers':[],'cleanup':{'status':'NOT_RUN'},'fullOutputRecovered':False,
             'notVerified':['pixel conversion','WebCodecs pipeline','OS picker','large media','whole-browser memory','public deployment']}
     def deadline(*args):raise cloud.Deadline('Output-index probe deadline')

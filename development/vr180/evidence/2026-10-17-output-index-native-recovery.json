@@ -1,0 +1,17 @@
+{
+  "status": "FAILED_EVIDENCE_RECOVERY",
+  "runId": 39035239264,
+  "jobId": 117403610016,
+  "sourceCommit": "96e5b76f3ac3ba67bf52bbbb9f0cc1dac15a5f77",
+  "reason": "Native probe report omitted runId required by emit_evidence; KeyError occurred in final evidence transport.",
+  "archiveRecovered": false,
+  "mediaAcceptance": "UNKNOWN: no completed report or MP4 was recovered; do not count browser activity as PASS.",
+  "retainedError": [
+    "2026-10-17T13:07:30.0105246Z   File \"/home/runner/work/kushyameln-works/kushyameln-works/tools/vr180/probe-output-index.py\", line 206, in main",
+    "2026-10-17T13:07:30.0107848Z   File \"/home/runner/work/kushyameln-works/kushyameln-works/tools/vr180/cloud-validate.py\", line 1406, in emit_evidence",
+    "2026-10-17T13:07:30.0108825Z     manifest = {'schema': 'vr180-evidence-manifest-v1', 'runId': result['runId'],",
+    "2026-10-17T13:07:30.0109649Z KeyError: 'runId'"
+  ],
+  "correction": "Initialize runId before all preflight work; regression executes actual emit_evidence on an early preflight failure and checks complete matching transport markers.",
+  "retryReason": "Concrete harness contract defect corrected; media code unchanged."
+}
