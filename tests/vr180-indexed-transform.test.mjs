@@ -14,7 +14,7 @@ const info={width:512,height:256,stereoMode:null,projection:null,pose:null,bound
 const sha=b=>createHash('sha256').update(b).digest('hex');
 async function fixture(options={}) {
   const calls={inspect:[],controllers:[],write:0,abort:0,cancel:0,inputDispose:0,draw:0,sampleClose:0,canvas:null,controllerDispose:[]};
-  let buffer=new Uint8Array(),committed=false,abortFails=!!options.abortFails,disposeFails=!!options.disposeFails;
+  let buffer=new Uint8Array(),committed=false,abortFails=!!options.abortFails,disposeFails=!!options.disposeFails,inputDisposeFails=!!options.inputDisposeFails;
   const inputFile=new Blob(['input']);
   const handle={async getFile(){const copy=buffer.slice();if(committed&&options.corruptSavedMetadata)copy[4]^=1;return new Blob([copy]);},async createWritable(){return {
     async write({position,data}){calls.write++;if(buffer.length<position+data.length){const next=new Uint8Array(position+data.length);next.set(buffer);buffer=next;}buffer.set(data,position);},
@@ -29,7 +29,7 @@ async function fixture(options={}) {
       if(type==='input'&&disposeFails)throw Error('INDEX_CLOSE_FAILED');if(!metrics.disposed){metrics.disposed=true;release();}}};
   };
   const fork={MP4:{},BlobSource:class {constructor(file){assert.equal(file,inputFile);}},Quality:class {},EncodedPacketSink:class {},EncodedAudioPacketSource:class {},
-    Input:class {async getTracks(){assert(this._vr180InputIndex,'index must be attached before getTracks');return [video];}async getDurationFromMetadata(){return .1;}dispose(){calls.inputDispose++;}},
+    Input:class {async getTracks(){assert(this._vr180InputIndex,'index must be attached before getTracks');return [video];}async getDurationFromMetadata(){return .1;}dispose(){calls.inputDispose++;if(inputDisposeFails)throw Error('INPUT_DISPOSE_FAILED');}},
     VideoSampleSink:class {samples(){let i=0;return {async next(){if(i===3)return {done:true};const index=i++;return {done:false,value:{displayWidth:512,displayHeight:256,timestamp:index/30,duration:1/30,draw(){calls.draw++;},close(){calls.sampleClose++;}}};},async return(){return {done:true};}};}},
     CanvasSource:class {constructor(canvas,config){this.config=config;}async add(){this.config.onEncodedPacket();}close(){}},
     Mp4OutputFormat:class {constructor(options){this._options=options;}},StreamTarget:class {constructor(stream,opts){assert.equal(opts.chunked,true);assert.equal(opts.chunkSize,1048576);this.stream=stream;}},
@@ -40,14 +40,14 @@ async function fixture(options={}) {
         this.format._options.vr180Index.metrics.metadataClosed=true;this.state='finalized';}
       async cancel(){calls.cancel++;if(options.cancelFails)throw Error('CODEC_CANCEL_FAILED');this.state='canceled';}},canEncodeVideo:async()=>true};
   const source=(await readFile(privateURL,'utf8')).replace(/^import[\s\S]*?from [^\n]*;\n/gm,'').replace(/^export /gm,'');
-  const context=vm.createContext({Uint8Array,Blob,DOMException,AbortController,WritableStream,performance,createFileOutput,sha256Blob,buildStereoGeometry,createIndexBudget,
+  const context=vm.createContext({Uint8Array,Blob,DOMException,AbortController,WritableStream,performance,crypto:globalThis.crypto,createFileOutput,sha256Blob,buildStereoGeometry,createIndexBudget,
     inspectMp4:async file=>{calls.inspect.push(file);if(file===inputFile){if(options.admissionFails)throw Error('PUBLIC_PARSER_REFUSED');return info;}return {...info,width:256,height:128,stereoMode:2,projection:'equi'};},
     inspectOutputMp4:async()=>({...info,width:256,height:128,stereoMode:2,projection:'equi'}),
     createInputIndex:async opts=>createController('input',opts),createOutputIndex:async opts=>createController('output',opts),PROFILE:{sortReservedBytes:1600000},
     VideoEncoder:class {},VideoDecoder:class {},OffscreenCanvas:class {constructor(w,h){this.width=w;this.height=h;calls.canvas=this;}getContext(){return {};}}});
   new vm.Script(source,{filename:'private-indexed-transform.mjs'}).runInContext(context);
   return {calls,inputFile,handle,fork,indexRoot,run:extra=>context.convertStereo(inputFile,settings,{fork,indexRoot,outputHandle:handle,jobId:'trial',...extra}),
-    recover(){abortFails=false;disposeFails=false;},committed:()=>committed};
+    recover(){abortFails=false;disposeFails=false;inputDisposeFails=false;},committed:()=>committed};
 }
 
 test('private source is bound to public source and unchanged AAC / WebCodecs loop sections',async()=>{
@@ -73,6 +73,49 @@ test('actual private loop binds both indices to one budget, converts frames, com
   assert.equal(result.saved.committed,true);assert.equal(result.saved.hashMatched,false);assert.equal(result.verification.metadataHashMatched,true);
   assert.equal(result.metrics.indexReservedAfterCleanup,0);assert(result.metrics.inputIndex.disposed&&result.metrics.outputIndex.disposed);assert.equal(result.info.requiresMetadataPatch,false);
   assert.equal(result.file.size,8);assert.equal(f.calls.canvas.width,0);assert.equal(f.calls.canvas.height,0);
+});
+
+test('ownership hook is awaited before each index and the exact immutable ticket token reaches its controller',async()=>{
+  const f=await fixture(),announced=[],release={},entered={};
+  const reached=Object.fromEntries(['input','output'].map(kind=>[kind,new Promise(resolve=>entered[kind]=resolve)]));
+  const run=f.run({async onIndexOwnership(ticket){announced.push(ticket);entered[ticket.kind]();await new Promise(resolve=>release[ticket.kind]=resolve);}});
+  // A hook omitted by the implementation must fail promptly instead of hanging.
+  await Promise.race([reached.input,run.then(()=>{throw Error('INPUT_HOOK_NOT_CALLED');})]);
+  assert.equal(f.calls.controllers.length,0);assert.equal(f.calls.inputDispose,0);assert.equal(f.calls.write,0);
+  release.input();await Promise.race([reached.output,run.then(()=>{throw Error('OUTPUT_HOOK_NOT_CALLED');})]);
+  assert.equal(f.calls.controllers.length,1);assert.equal(f.calls.controllers[0].type,'input');assert.equal(f.calls.write,0);
+  release.output();const result=await run;
+  for(let i=0;i<2;i++){
+    const ticket=announced[i],controller=f.calls.controllers[i];assert(Object.isFrozen(ticket));
+    assert.equal(ticket.format,'vr180-private-index-owner');assert.equal(ticket.schema,1);
+    assert.equal(ticket.kind,controller.type);assert.equal(ticket.jobId,controller.options.jobId);
+    assert.match(ticket.ownerToken,/^[0-9a-f]{32}$/);assert.equal(ticket.ownerToken,controller.options.ownerToken);
+  }
+  assert.notEqual(announced[0].ownerToken,announced[1].ownerToken);assert.equal(result.metrics.indexReservedAfterCleanup,0);
+});
+
+test('ownership hook refusal creates no corresponding index and cannot skip existing owner cleanup',async()=>{
+  for(const rejectedKind of ['input','output']){
+    const f=await fixture({inputDisposeFails:rejectedKind==='output'}),announced=[];let failure;
+    await assert.rejects(f.run({async onIndexOwnership(ticket){announced.push(ticket);if(ticket.kind===rejectedKind)throw Error('OWNERSHIP_RECORD_REFUSED_'+rejectedKind);}}),error=>{failure=error;return error.message==='OWNERSHIP_RECORD_REFUSED_'+rejectedKind;});
+    assert.equal(announced.length,rejectedKind==='input'?1:2);
+    assert.equal(f.calls.controllers.length,rejectedKind==='input'?0:1);assert.equal(f.calls.write,0);assert.equal(f.committed(),false);
+    assert.equal(failure.saveOutputState.state,'not-started');
+    if(rejectedKind==='output'){
+      assert(f.calls.controllers[0].metrics.disposed);assert.equal(f.calls.controllers[0].options.budget.usedBytes,0);
+      assert.match(failure.cleanupError,/INPUT_DISPOSE_FAILED/);assert.equal(failure.requiresWorkerTermination,true);
+      f.recover();await failure.retryCleanup();
+    }
+  }
+});
+
+test('cancel while ownership persistence is pending cannot acquire that index after acknowledgment',async()=>{
+  const f=await fixture(),aborter=new AbortController();let release,entered;
+  const reached=new Promise(resolve=>entered=resolve);
+  const run=f.run({signal:aborter.signal,async onIndexOwnership(){entered();await new Promise(resolve=>release=resolve);}});
+  await Promise.race([reached,run.then(()=>{throw Error('HOOK_NOT_CALLED');})]);
+  aborter.abort();release();await assert.rejects(run,{name:'AbortError'});
+  assert.equal(f.calls.controllers.length,0);assert.equal(f.calls.write,0);assert.equal(f.calls.inputDispose,0);
 });
 
 test('writer-acquisition cancellation retains live failure state and retry while both index owners still dispose',async()=>{

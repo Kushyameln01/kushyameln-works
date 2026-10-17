@@ -61,7 +61,7 @@
      },
    };
  }
-@@ -142,18 +142,55 @@
+@@ -142,18 +142,58 @@
    };
  }
  
@@ -111,7 +111,7 @@
 +/** Private direct-file pixel route. One supplied combined-fork module owns every media class. */
  export async function convertStereo(file, settings, {
 -  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated,
-+  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated, fork, indexRoot,
++  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated, fork, indexRoot, onIndexOwnership,
  } = {}) {
    const started = performance.now();
 +  const {Input, BlobSource, MP4, VideoSampleSink, EncodedPacketSink, CanvasSource,
@@ -123,10 +123,13 @@
 +  if (!outputHandle?.getFile || !outputHandle?.createWritable || !indexRoot?.getDirectoryHandle) {
 +    throw Error('INDEXED_ROUTE_REQUIRES_OUTPUT_HANDLE_AND_INDEX_ROOT');
 +  }
++  if (onIndexOwnership !== undefined && typeof onIndexOwnership !== 'function') {
++    throw new TypeError('onIndexOwnership must be a function when supplied.');
++  }
    const checkAbort = () => { if (signal?.aborted) throw abortError(); };
    checkAbort();
    if (!(file instanceof Blob)) throw new TypeError('Input must be a File or Blob.');
-@@ -165,14 +202,17 @@
+@@ -165,14 +205,17 @@
      eyeSize: settings.eyeSize, bitrate: settings.bitrate,
    };
    const id = jobId ?? globalThis.crypto?.randomUUID();
@@ -152,7 +155,7 @@
  
    const metrics = {
      jobId: id, settings: chosenSettings, startedAt: new Date().toISOString(),
-@@ -187,16 +227,15 @@
+@@ -187,16 +230,15 @@
      firstAudioTimestamp: null, lastAudioEndTimestamp: null, audioTimeline: null,
      storageQuotaBytes: null, storageUsageBytes: null, storageAvailableBytes: null,
      cpuPeakBytes: null, gpuPeakBytes: null, nativePeakBytes: null,
@@ -176,7 +179,7 @@
    let cancellationPromise;
    let estimatedDuration = null;
    let lastProgressAt = -Infinity;
-@@ -227,26 +266,33 @@
+@@ -227,26 +269,45 @@
      // The awaited cleanup path below observes cancellation errors.
      void cancelOutput().catch(() => {});
    };
@@ -227,22 +230,43 @@
 +    try { return await factory(); }
 +    catch (error) { if (error.retryCleanup) pendingCleanup.push(error.retryCleanup); throw error; }
 +  };
++  const prepareIndexOwnership = async kind => {
++    checkAbort();
++    const ownerToken = [...globalThis.crypto.getRandomValues(new Uint8Array(16))]
++      .map(value => value.toString(16).padStart(2, '0')).join('');
++    const ticket = Object.freeze({format: 'vr180-private-index-owner', schema: 1,
++      jobId: `${id}-${kind === 'input' ? 'in' : 'out'}`, ownerToken, kind});
++    // The caller may persist this exact ticket before the corresponding job
++    // exists. A resolved callback is its acknowledgment, not proof of storage.
++    await onIndexOwnership?.(ticket);
++    checkAbort();
++    return ticket;
++  };
    // Register before acquiring resources, so the Worker can retry a failed
    // deletion after convertStereo has rejected and its finally has completed.
    onCleanup?.(cleanupResources);
-@@ -260,7 +306,10 @@
+@@ -260,7 +321,11 @@
    try {
      progress('inspect', null, true);
      const analysisStart = performance.now();
 -    input = new Input({ source: new BlobSource(file, { maxCacheSize: CACHE_BYTES }), formats: [MP4] });
++    const inputOwnership = await prepareIndexOwnership('input');
 +    input = new Input({ source: new BlobSource(file, { maxCacheSize: CACHE_BYTES, useStreamReader: false }), formats: [MP4] });
-+    inputIndex = await acquire(() => createInputIndex({source: file, root: indexRoot, jobId: `${id}-in`,
++    inputIndex = await acquire(() => createInputIndex({source: file, root: indexRoot, jobId: inputOwnership.jobId, ownerToken: inputOwnership.ownerToken,
 +      budget, signal, sortBytes: 4 * 1024 ** 2 - PROFILE.sortReservedBytes}));
 +    input._vr180InputIndex = inputIndex; // Must precede the first getTracks/readMetadata.
      const tracks = await input.getTracks();
      const videos = tracks.filter(track => track.type === 'video');
      const audios = tracks.filter(track => track.type === 'audio');
-@@ -328,63 +377,14 @@
+@@ -313,6 +378,7 @@
+     if (!decodable) throw new Error('INPUT_DECODE_UNSUPPORTED');
+     if (!encodable) throw new Error('OUTPUT_ENCODE_UNSUPPORTED');
+ 
++    const outputOwnership = await prepareIndexOwnership('output');
+     canvas = new OffscreenCanvas(geometry.width, geometry.height);
+     const context = canvas.getContext('2d', { alpha: false, colorSpace: 'srgb' });
+     if (!context) throw new Error('A 2D OffscreenCanvas could not be created.');
+@@ -328,63 +394,15 @@
      }
  
      const setupStart = performance.now();
@@ -303,7 +327,8 @@
 -    output = new Output({
 -      format: new Mp4OutputFormat({ fastStart: false, ...(directDestination ? {onMoov: directDestination.onMoov} : {}) }),
 -      target: new StreamTarget(writable, { chunked: true, chunkSize: WRITE_CHUNK_BYTES }),
-+    outputIndex = await acquire(() => createOutputIndex({root: indexRoot, jobId: `${id}-out`, budget, signal, layout: 'sbs'}));
++    outputIndex = await acquire(() => createOutputIndex({root: indexRoot, jobId: outputOwnership.jobId,
++      ownerToken: outputOwnership.ownerToken, budget, signal, layout: 'sbs'}));
 +    directDestination = await createDirectMuxDestination(outputHandle, {
 +      signal, onWrite: extent => { metrics.outputBytes = extent; },
 +      onOutputCreated: acquired => { directOutput = acquired; onOutputCreated?.(acquired); },
@@ -314,7 +339,7 @@
      });
      output.addVideoTrack(videoSource);
      if (audioSource) output.addAudioTrack(audioSource);
-@@ -463,19 +463,32 @@
+@@ -463,19 +481,32 @@
        throw new Error('The encoder did not emit one video packet per submitted frame.');
      }
      const prepareStarted = performance.now();
@@ -358,7 +383,7 @@
      checkAbort();
      publishMetrics();
      progress('complete', metrics.lastVideoEndTimestamp, true);
-@@ -483,14 +496,16 @@
+@@ -483,14 +514,16 @@
        layout: 'sbs', fov: 180, eyeSize: chosenSettings.eyeSize,
        width: geometry.width, height: geometry.height,
        videoCodec: 'avc', audioCodec: audio ? 'aac' : null,
@@ -379,7 +404,7 @@
      if (outputHandle) {
        const priorState = error.saveOutputState;
        Object.defineProperty(failure, 'saveOutputState', {enumerable: true, configurable: true,
-@@ -502,21 +517,21 @@
+@@ -502,21 +535,21 @@
      throw failure;
    } finally {
      signal?.removeEventListener('abort', onAbort);

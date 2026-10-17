@@ -39,7 +39,7 @@ validate=validate.replace("  if (!s.confirmed)", "  if (s.mode !== 'convert') th
 pos=s.index('/**\n * b1 pixel route.')
 end=s.index('export async function convertStereo',pos)
 s=s[:pos]+validate+'\n\nexport const inspectSavedOutput = (file, options) => inspectOutputMp4(file, options);\n\n/** Private direct-file pixel route. One supplied combined-fork module owns every media class. */\n'+s[end:]
-change('  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated,', '  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated, fork, indexRoot,')
+change('  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated,', '  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated, fork, indexRoot, onIndexOwnership,')
 change('  const started = performance.now();', '''  const started = performance.now();
   const {Input, BlobSource, MP4, VideoSampleSink, EncodedPacketSink, CanvasSource,
     EncodedAudioPacketSource, Output, Mp4OutputFormat, StreamTarget, Quality, canEncodeVideo} = fork ?? {};
@@ -49,6 +49,9 @@ change('  const started = performance.now();', '''  const started = performance.
   }
   if (!outputHandle?.getFile || !outputHandle?.createWritable || !indexRoot?.getDirectoryHandle) {
     throw Error('INDEXED_ROUTE_REQUIRES_OUTPUT_HANDLE_AND_INDEX_ROOT');
+  }
+  if (onIndexOwnership !== undefined && typeof onIndexOwnership !== 'function') {
+    throw new TypeError('onIndexOwnership must be a function when supplied.');
   }''')
 change("!/^[A-Za-z0-9_-]{1,96}$/.test(id)", "!/^[A-Za-z0-9_-]{1,60}$/.test(id)")
 change("jobId must contain 1–96 letters, numbers, underscores or hyphens.", "Private jobId must contain 1–60 letters, numbers, underscores or hyphens.")
@@ -96,14 +99,29 @@ s=s[:start]+'''  const cleanupResources = async () => {
     try { return await factory(); }
     catch (error) { if (error.retryCleanup) pendingCleanup.push(error.retryCleanup); throw error; }
   };
+  const prepareIndexOwnership = async kind => {
+    checkAbort();
+    const ownerToken = [...globalThis.crypto.getRandomValues(new Uint8Array(16))]
+      .map(value => value.toString(16).padStart(2, '0')).join('');
+    const ticket = Object.freeze({format: 'vr180-private-index-owner', schema: 1,
+      jobId: `${id}-${kind === 'input' ? 'in' : 'out'}`, ownerToken, kind});
+    // The caller may persist this exact ticket before the corresponding job
+    // exists. A resolved callback is its acknowledgment, not proof of storage.
+    await onIndexOwnership?.(ticket);
+    checkAbort();
+    return ticket;
+  };
 '''+s[end:]
-change("    input = new Input({ source: new BlobSource(file, { maxCacheSize: CACHE_BYTES }), formats: [MP4] });\n    const tracks = await input.getTracks();", """    input = new Input({ source: new BlobSource(file, { maxCacheSize: CACHE_BYTES, useStreamReader: false }), formats: [MP4] });
-    inputIndex = await acquire(() => createInputIndex({source: file, root: indexRoot, jobId: `${id}-in`,
+change("    input = new Input({ source: new BlobSource(file, { maxCacheSize: CACHE_BYTES }), formats: [MP4] });\n    const tracks = await input.getTracks();", """    const inputOwnership = await prepareIndexOwnership('input');
+    input = new Input({ source: new BlobSource(file, { maxCacheSize: CACHE_BYTES, useStreamReader: false }), formats: [MP4] });
+    inputIndex = await acquire(() => createInputIndex({source: file, root: indexRoot, jobId: inputOwnership.jobId, ownerToken: inputOwnership.ownerToken,
       budget, signal, sortBytes: 4 * 1024 ** 2 - PROFILE.sortReservedBytes}));
     input._vr180InputIndex = inputIndex; // Must precede the first getTracks/readMetadata.
     const tracks = await input.getTracks();""")
+change('    canvas = new OffscreenCanvas(geometry.width, geometry.height);', "    const outputOwnership = await prepareIndexOwnership('output');\n    canvas = new OffscreenCanvas(geometry.width, geometry.height);")
 start=s.index('    let writable;');end=s.index('    output.addVideoTrack(videoSource);',start)
-s=s[:start]+'''    outputIndex = await acquire(() => createOutputIndex({root: indexRoot, jobId: `${id}-out`, budget, signal, layout: 'sbs'}));
+s=s[:start]+'''    outputIndex = await acquire(() => createOutputIndex({root: indexRoot, jobId: outputOwnership.jobId,
+      ownerToken: outputOwnership.ownerToken, budget, signal, layout: 'sbs'}));
     directDestination = await createDirectMuxDestination(outputHandle, {
       signal, onWrite: extent => { metrics.outputBytes = extent; },
       onOutputCreated: acquired => { directOutput = acquired; onOutputCreated?.(acquired); },
@@ -177,4 +195,4 @@ path=HERE/'transform.mjs';path.write_text(s)
 patch=''.join(difflib.unified_diff(original.splitlines(True),s.splitlines(True),fromfile='a/docs/shared/vr180/transform.mjs',tofile='b/development/vr180/indexed-transform-prototype/transform.mjs'))
 (HERE/'transform.patch').write_text(patch)
 sha=lambda value:hashlib.sha256(value.encode()).hexdigest()
-(HERE/'provenance.json').write_text(json.dumps({'source':'docs/shared/vr180/transform.mjs','sourceSHA256':sha(original),'workerAdmissionSource':'docs/shared/vr180/worker.mjs','workerSHA256':sha(worker),'privateSHA256':sha(s),'patchSHA256':sha(patch),'unchangedAACCopierSHA256':sha(section(s,aac_start,aac_end)),'unchangedGeometryCanvasWebCodecsLoopSHA256':sha(section(s,loop_start,loop_end)),'publicModified':False,'inputParser':'unchanged public mp4.mjs before any index acquisition; private cslg input acceptance is not enabled','savedOutputParser':'existing output-only mp4-output-inspect.mjs with verified cslg contract; not used for input admission','library':'one combined fork passed in options.fork; no bundled vendor import'},indent=2)+'\n')
+(HERE/'provenance.json').write_text(json.dumps({'source':'docs/shared/vr180/transform.mjs','sourceSHA256':sha(original),'workerAdmissionSource':'docs/shared/vr180/worker.mjs','workerSHA256':sha(worker),'privateSHA256':sha(s),'patchSHA256':sha(patch),'unchangedAACCopierSHA256':sha(section(s,aac_start,aac_end)),'unchangedGeometryCanvasWebCodecsLoopSHA256':sha(section(s,loop_start,loop_end)),'publicModified':False,'inputParser':'unchanged public mp4.mjs before any index acquisition; private cslg input acceptance is not enabled','savedOutputParser':'existing output-only mp4-output-inspect.mjs with verified cslg contract; not used for input admission','library':'one combined fork passed in options.fork; no bundled vendor import','ownershipHook':'optional awaited onIndexOwnership receives immutable schema1 ticket before each controller creation; exact jobId/token forwarded; caller owns persistence and registry removal'},indent=2)+'\n')

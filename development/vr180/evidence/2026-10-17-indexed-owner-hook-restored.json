@@ -1,0 +1,205 @@
+{
+  "schema": "vr180-indexed-owner-hook-restoration-v1",
+  "status": "PASS",
+  "restoredAt": "2026-10-17T14:00:48.519654+00:00",
+  "baseCommit": "052aa6adcc8d52861d94a719bec6008da01281b1",
+  "restoredFrom": "GitHub candidate checkout plus exact prior tool-call patches preserved in conversation",
+  "expectedSourceSHA256FromPriorToolOutput": {
+    "development/vr180/indexed-transform-prototype/make-transform.py": "1526ec57ee99d94004ab4d2af1bdf12fcdb79409fd34fb108cf118b1672a3a0b",
+    "development/vr180/indexed-transform-prototype/transform.mjs": "01254c7c15a69a34332c3bc803e2865e775566848e13ce5262732e6d747da98f",
+    "development/vr180/indexed-transform-prototype/transform.patch": "1d19890b2db7e17a692466e4170ddda48e59a2934126f7a9f41674a9858f63ad",
+    "development/vr180/indexed-transform-prototype/provenance.json": "5b3ee282e72a71e3be405a49922e94a854b35e03c1b25bab3572453e205d7000",
+    "development/vr180/indexed-transform-prototype/README.md": "ee3013f02bb95ecb0cb2f54859a059ced44e5881bbfd3477f0f43cdee01dcda2",
+    "tests/vr180-indexed-transform.test.mjs": "f62874f2eb7127fcd805d7d0ff54f3c7119cfeea7762bb662f44958b3404c435"
+  },
+  "sourceAtStart": {
+    "development/vr180/indexed-transform-prototype/make-transform.py": "1526ec57ee99d94004ab4d2af1bdf12fcdb79409fd34fb108cf118b1672a3a0b",
+    "development/vr180/indexed-transform-prototype/transform.mjs": "01254c7c15a69a34332c3bc803e2865e775566848e13ce5262732e6d747da98f",
+    "development/vr180/indexed-transform-prototype/transform.patch": "1d19890b2db7e17a692466e4170ddda48e59a2934126f7a9f41674a9858f63ad",
+    "development/vr180/indexed-transform-prototype/provenance.json": "5b3ee282e72a71e3be405a49922e94a854b35e03c1b25bab3572453e205d7000",
+    "development/vr180/indexed-transform-prototype/README.md": "ee3013f02bb95ecb0cb2f54859a059ced44e5881bbfd3477f0f43cdee01dcda2",
+    "tests/vr180-indexed-transform.test.mjs": "f62874f2eb7127fcd805d7d0ff54f3c7119cfeea7762bb662f44958b3404c435"
+  },
+  "sourceAtEnd": {
+    "development/vr180/indexed-transform-prototype/make-transform.py": "1526ec57ee99d94004ab4d2af1bdf12fcdb79409fd34fb108cf118b1672a3a0b",
+    "development/vr180/indexed-transform-prototype/transform.mjs": "01254c7c15a69a34332c3bc803e2865e775566848e13ce5262732e6d747da98f",
+    "development/vr180/indexed-transform-prototype/transform.patch": "1d19890b2db7e17a692466e4170ddda48e59a2934126f7a9f41674a9858f63ad",
+    "development/vr180/indexed-transform-prototype/provenance.json": "5b3ee282e72a71e3be405a49922e94a854b35e03c1b25bab3572453e205d7000",
+    "development/vr180/indexed-transform-prototype/README.md": "ee3013f02bb95ecb0cb2f54859a059ced44e5881bbfd3477f0f43cdee01dcda2",
+    "tests/vr180-indexed-transform.test.mjs": "f62874f2eb7127fcd805d7d0ff54f3c7119cfeea7762bb662f44958b3404c435"
+  },
+  "allSixFilesMatchHistoricalHashes": true,
+  "sourceAndRegenerationUnchanged": true,
+  "frozenOwnerControllers": {
+    "development/vr180/index-prototype/job-owner.mjs": "8abfa8351570aefeed8a075a5848ea10130a057c5760a126914c82476f371447",
+    "development/vr180/input-index-prototype/input-index.mjs": "ff6f826e7b16b61283d736c4996e6feb8297a35eece311802aee4e8ef57e2e1b",
+    "development/vr180/output-index-prototype/output-index.mjs": "baac33b77abebf388f030dd351c96669f7eb69ea100fde6503c04c16178b919f"
+  },
+  "frozenOwnerControllersMatchHistoricalHashes": true,
+  "nodeTests": {
+    "command": "node --test --test-reporter=tap tests/vr180-indexed-transform.test.mjs",
+    "tests": 13,
+    "greenExitCode": 0,
+    "negativeControlExitCode": 1,
+    "negativeControlBaselineSHA256": "f6d11006a01aad71e678c63cd413bfcdda1efec282415953df79cf149763ea89",
+    "negativeControlObserved": "Old ten pass, new three ownership tests fail against unchanged baseline; newly repeated after recovery."
+  },
+  "logs": [
+    {
+      "name": "red-repeated-after-recovery.tap",
+      "bytes": 5090,
+      "sha256": "4485ce92100a9840e7065f6b15dfe657a9829dadde783ba03c3ec27bdc1c5ec7"
+    },
+    {
+      "name": "green-restored.tap",
+      "bytes": 3532,
+      "sha256": "f5dff89920d71f2b269653edcb64f1e3df73f249f61d4117cda09c38942619d5"
+    }
+  ],
+  "lostHistoricalArtifacts": [
+    "Original pre-disappearance before.tap, after.tap, before.json and result.json under /workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/indexed-owner-hook-local are not recovered."
+  ],
+  "historicalEvidenceBoundary": "Historical file hashes are preserved in prior tool output. Current source matches all six; current logs are newly executed evidence, not recovered historical logs.",
+  "nativeBrowserExecutedInThisRestoration": false,
+  "registryPersistenceTested": false,
+  "publicSourceChanged": false,
+  "upstreamPatchChanged": false,
+  "durableSummary": true,
+  "rawLogRetention": "New raw TAP logs are under /workspace/vr180-recovery/evidence/indexed-owner-hook-restored; their hashes and all per-test outcomes are retained here. These are reruns, not the lost original logs.",
+  "newlyExecutedTestOutcomes": {
+    "negativeControl": [
+      {
+        "passed": true,
+        "number": 1,
+        "name": "private source is bound to public source and unchanged AAC / WebCodecs loop sections"
+      },
+      {
+        "passed": true,
+        "number": 2,
+        "name": "public admission and unchanged sample/metadata limits refuse before index or writer acquisition"
+      },
+      {
+        "passed": true,
+        "number": 3,
+        "name": "actual private loop binds both indices to one budget, converts frames, commits, verifies and disposes before return"
+      },
+      {
+        "passed": false,
+        "number": 4,
+        "name": "ownership hook is awaited before each index and the exact immutable ticket token reaches its controller"
+      },
+      {
+        "passed": false,
+        "number": 5,
+        "name": "ownership hook refusal creates no corresponding index and cannot skip existing owner cleanup"
+      },
+      {
+        "passed": false,
+        "number": 6,
+        "name": "cancel while ownership persistence is pending cannot acquire that index after acknowledgment"
+      },
+      {
+        "passed": true,
+        "number": 7,
+        "name": "writer-acquisition cancellation retains live failure state and retry while both index owners still dispose"
+      },
+      {
+        "passed": true,
+        "number": 8,
+        "name": "failed codec cancel cannot skip writer abort or either index owner cleanup"
+      },
+      {
+        "passed": true,
+        "number": 9,
+        "name": "cleanup failure after verified commit preserves saved fact and retains failed index for retry"
+      },
+      {
+        "passed": true,
+        "number": 10,
+        "name": "saved metadata mismatch after commit cannot become a successful result or claim rollback"
+      },
+      {
+        "passed": true,
+        "number": 11,
+        "name": "private destination refuses a write beyond one GiB before passing it to real transaction writer"
+      },
+      {
+        "passed": true,
+        "number": 12,
+        "name": "retained AAC copier still rejects gaps and non-grid timing without altering priming packets"
+      },
+      {
+        "passed": true,
+        "number": 13,
+        "name": "real fixed-original cslg media passes saved-output inspection but is refused by the actual strict conversion entry"
+      }
+    ],
+    "restored": [
+      {
+        "passed": true,
+        "number": 1,
+        "name": "private source is bound to public source and unchanged AAC / WebCodecs loop sections"
+      },
+      {
+        "passed": true,
+        "number": 2,
+        "name": "public admission and unchanged sample/metadata limits refuse before index or writer acquisition"
+      },
+      {
+        "passed": true,
+        "number": 3,
+        "name": "actual private loop binds both indices to one budget, converts frames, commits, verifies and disposes before return"
+      },
+      {
+        "passed": true,
+        "number": 4,
+        "name": "ownership hook is awaited before each index and the exact immutable ticket token reaches its controller"
+      },
+      {
+        "passed": true,
+        "number": 5,
+        "name": "ownership hook refusal creates no corresponding index and cannot skip existing owner cleanup"
+      },
+      {
+        "passed": true,
+        "number": 6,
+        "name": "cancel while ownership persistence is pending cannot acquire that index after acknowledgment"
+      },
+      {
+        "passed": true,
+        "number": 7,
+        "name": "writer-acquisition cancellation retains live failure state and retry while both index owners still dispose"
+      },
+      {
+        "passed": true,
+        "number": 8,
+        "name": "failed codec cancel cannot skip writer abort or either index owner cleanup"
+      },
+      {
+        "passed": true,
+        "number": 9,
+        "name": "cleanup failure after verified commit preserves saved fact and retains failed index for retry"
+      },
+      {
+        "passed": true,
+        "number": 10,
+        "name": "saved metadata mismatch after commit cannot become a successful result or claim rollback"
+      },
+      {
+        "passed": true,
+        "number": 11,
+        "name": "private destination refuses a write beyond one GiB before passing it to real transaction writer"
+      },
+      {
+        "passed": true,
+        "number": 12,
+        "name": "retained AAC copier still rejects gaps and non-grid timing without altering priming packets"
+      },
+      {
+        "passed": true,
+        "number": 13,
+        "name": "real fixed-original cslg media passes saved-output inspection but is refused by the actual strict conversion entry"
+      }
+    ]
+  }
+}

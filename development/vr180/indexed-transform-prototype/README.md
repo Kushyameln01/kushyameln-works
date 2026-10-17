@@ -21,10 +21,47 @@ const result = await convertStereo(inputFile, {
 }, {
   fork: Fork, indexRoot, outputHandle, jobId: trialId,
   signal, onProgress, onMetrics, onCleanup, onOutputCreated,
+  onIndexOwnership: async ticket => {
+    await callerOwnedRegistry.put(ticket); // Await the registry's durable acknowledgment.
+  },
 });
 ```
 
 `indexRoot` is a native OPFS directory owned by the caller's trial namespace. `outputHandle` must be a new/empty destination accepted by the unchanged `createFileOutput`. `trialId` is 1–60 ASCII letters/digits/underscore/hyphen, leaving room for distinct `-in` and `-out` job IDs. Both use the shared `vr180:index-job:<jobId>` ownership rule. Passing a single ID to both controllers is never used as a convenience shortcut.
+
+`onIndexOwnership` is an optional awaited hook. Before creating each controller,
+the entry generates a separate random 128-bit token and passes an immutable
+ticket with `{format:'vr180-private-index-owner', schema:1, jobId, ownerToken,
+kind:'input'|'output'}`. The job ID is `<trialId>-in` or `<trialId>-out`; the token
+is 32 lowercase hexadecimal characters. Only after that callback resolves does
+the entry pass the exact same job ID/token to the corresponding controller.
+An input-hook rejection precedes Input/index/writer acquisition. An output-hook
+rejection precedes output index/canvas/source/writer acquisition and still runs
+the independent cleanup of the input owner already created. Cancellation is
+checked before and after each acknowledgment, so cancellation during persistence
+cannot create that index when the callback later resolves.
+
+The registry in the example is supplied by the caller; it is not a new product
+database or UI. Its acknowledgment must mean its own persistence operation has
+completed. A callback that only starts a write and returns does not establish
+durability. The callback must settle, and should honor the caller's cancellation
+policy; the entry cannot interrupt an arbitrary unresolved callback. Without
+the hook, conversion remains available but the entry does not claim that a
+caller ticket survives reload. The ticket intentionally contains no file handle
+or unbounded media data. The caller must retain the matching origin/root
+namespace separately and must not infer it from a job ID alone.
+
+Registry entries must not be removed merely because conversion rejected. Keep
+them when cleanup failed or the Worker disappeared. Successful conversion has
+already awaited index disposal and reports `indexReservedAfterCleanup:0`; the
+caller can then remove its corresponding records. For failed or interrupted
+work, first finish the still-live `retryCleanup`, or invoke the existing
+`cleanupAbandonedIndexJob` with the explicit ticket after ownership can be
+acquired. Remove the registry entry only after cleanup/absence is confirmed.
+A ticket persisted just before acquisition may correspond to no directory;
+the cleanup API reports that as `already-absent`. Unknown/damaged record or active
+owner refusal must retain the registry entry for explanation/retry. There is no
+TTL scan, conversion restart, public recovery UI, or automatic registry deletion.
 
 The entry creates one 8 MiB explicit index budget. Input index sort gets `4 MiB - PROFILE.sortReservedBytes` (2,594,304 B), output reserves 1,600,000 B, keeping the combined sort allowance at 4 MiB. The input controller is attached before the first `getTracks`. Both controllers remain bounded by their reviewed profiles; this is not a whole-process/native/codec memory guarantee.
 
@@ -46,4 +83,4 @@ Held samples and the canvas are released on all exits. Final failure preserves a
 
 ## Local verification
 
-`node --test tests/vr180-indexed-transform.test.mjs` passes ten contract/owner tests. They exercise the actual generated function with substituted codecs/index backends, while using the real file transaction and SHA implementation. Tests cover strict admission and limits, index attachment order/shared budget, the pixel loop, commit/readback, acquisition cancellation, codec-cancel failure, postcommit cleanup retry, postcommit metadata mismatch, and the retained AAC rejection rules. A real fixed-original `cslg` MP4 also passes saved-output inspection and fails the actual public input preflight before resource acquisition. They do not claim real browser decoding, encoding, OPFS, VR playback, or performance. The separate native harness must recover and independently inspect complete output files before qualification.
+`node --test tests/vr180-indexed-transform.test.mjs` passes thirteen contract/owner tests. They exercise the actual generated function with substituted codecs/index backends, while using the real file transaction and SHA implementation. Tests cover strict admission and limits, index attachment order/shared budget, the pixel loop, commit/readback, acquisition cancellation, codec-cancel failure, postcommit cleanup retry, postcommit metadata mismatch, and the retained AAC rejection rules. Three additional cases pause each ownership callback to prove awaiting/token correspondence, reject each callback to prove acquisition is stopped and existing cleanup still runs, and cancel during persistence to prove no late index creation. A real fixed-original `cslg` MP4 also passes saved-output inspection and fails the actual public input preflight before resource acquisition. They do not claim real browser decoding, encoding, OPFS, registry durability, VR playback, or performance. The separate native harness must recover and independently inspect complete output files before qualification.

@@ -179,7 +179,7 @@ export const inspectSavedOutput = (file, options) => inspectOutputMp4(file, opti
 
 /** Private direct-file pixel route. One supplied combined-fork module owns every media class. */
 export async function convertStereo(file, settings, {
-  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated, fork, indexRoot,
+  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated, fork, indexRoot, onIndexOwnership,
 } = {}) {
   const started = performance.now();
   const {Input, BlobSource, MP4, VideoSampleSink, EncodedPacketSink, CanvasSource,
@@ -190,6 +190,9 @@ export async function convertStereo(file, settings, {
   }
   if (!outputHandle?.getFile || !outputHandle?.createWritable || !indexRoot?.getDirectoryHandle) {
     throw Error('INDEXED_ROUTE_REQUIRES_OUTPUT_HANDLE_AND_INDEX_ROOT');
+  }
+  if (onIndexOwnership !== undefined && typeof onIndexOwnership !== 'function') {
+    throw new TypeError('onIndexOwnership must be a function when supplied.');
   }
   const checkAbort = () => { if (signal?.aborted) throw abortError(); };
   checkAbort();
@@ -293,6 +296,18 @@ export async function convertStereo(file, settings, {
     try { return await factory(); }
     catch (error) { if (error.retryCleanup) pendingCleanup.push(error.retryCleanup); throw error; }
   };
+  const prepareIndexOwnership = async kind => {
+    checkAbort();
+    const ownerToken = [...globalThis.crypto.getRandomValues(new Uint8Array(16))]
+      .map(value => value.toString(16).padStart(2, '0')).join('');
+    const ticket = Object.freeze({format: 'vr180-private-index-owner', schema: 1,
+      jobId: `${id}-${kind === 'input' ? 'in' : 'out'}`, ownerToken, kind});
+    // The caller may persist this exact ticket before the corresponding job
+    // exists. A resolved callback is its acknowledgment, not proof of storage.
+    await onIndexOwnership?.(ticket);
+    checkAbort();
+    return ticket;
+  };
   // Register before acquiring resources, so the Worker can retry a failed
   // deletion after convertStereo has rejected and its finally has completed.
   onCleanup?.(cleanupResources);
@@ -306,8 +321,9 @@ export async function convertStereo(file, settings, {
   try {
     progress('inspect', null, true);
     const analysisStart = performance.now();
+    const inputOwnership = await prepareIndexOwnership('input');
     input = new Input({ source: new BlobSource(file, { maxCacheSize: CACHE_BYTES, useStreamReader: false }), formats: [MP4] });
-    inputIndex = await acquire(() => createInputIndex({source: file, root: indexRoot, jobId: `${id}-in`,
+    inputIndex = await acquire(() => createInputIndex({source: file, root: indexRoot, jobId: inputOwnership.jobId, ownerToken: inputOwnership.ownerToken,
       budget, signal, sortBytes: 4 * 1024 ** 2 - PROFILE.sortReservedBytes}));
     input._vr180InputIndex = inputIndex; // Must precede the first getTracks/readMetadata.
     const tracks = await input.getTracks();
@@ -362,6 +378,7 @@ export async function convertStereo(file, settings, {
     if (!decodable) throw new Error('INPUT_DECODE_UNSUPPORTED');
     if (!encodable) throw new Error('OUTPUT_ENCODE_UNSUPPORTED');
 
+    const outputOwnership = await prepareIndexOwnership('output');
     canvas = new OffscreenCanvas(geometry.width, geometry.height);
     const context = canvas.getContext('2d', { alpha: false, colorSpace: 'srgb' });
     if (!context) throw new Error('A 2D OffscreenCanvas could not be created.');
@@ -377,7 +394,8 @@ export async function convertStereo(file, settings, {
     }
 
     const setupStart = performance.now();
-    outputIndex = await acquire(() => createOutputIndex({root: indexRoot, jobId: `${id}-out`, budget, signal, layout: 'sbs'}));
+    outputIndex = await acquire(() => createOutputIndex({root: indexRoot, jobId: outputOwnership.jobId,
+      ownerToken: outputOwnership.ownerToken, budget, signal, layout: 'sbs'}));
     directDestination = await createDirectMuxDestination(outputHandle, {
       signal, onWrite: extent => { metrics.outputBytes = extent; },
       onOutputCreated: acquired => { directOutput = acquired; onOutputCreated?.(acquired); },

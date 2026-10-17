@@ -1,0 +1,54 @@
+{
+  "recordedAt": "2026-10-17T14:06:26.326069+00:00",
+  "status": "PASS",
+  "scope": "Independent local review; no native/browser calibration",
+  "hashesBefore": {
+    "development/vr180/p5-calibration-prototype/README.md": "5032af324f68387e5554ce2107d738da3065dfadee3af05c6b54c618d0682936",
+    "development/vr180/p5-calibration-prototype/frame.mjs": "75b9fbd94923bdc2b6123eedda1baa152e897bdbf1b74f44a0c16e86f8590a3b",
+    "development/vr180/p5-calibration-prototype/probe-calibration.py": "8619fe1769e8bb62de9a886b6378a3b17917713ba9866921ad3c74c439a61a2d",
+    "development/vr180/p5-calibration-prototype/test-frame.mjs": "0c6aee85aa3a4793ff6afd39772779c9267f540744b03117a8cbdef135a29aa4",
+    "development/vr180/p5-calibration-prototype/test-harness.py": "50c82436ca25f5518d35cacbc32a8d2b44c4a2f7eeecc711771c2ce16e37166b",
+    "development/vr180/p5-calibration-prototype/worker.mjs": "a9715387b8714e2260ab66d0e35712bc9a1ce6c651c2d58d63b63661ee2efa21",
+    ".github/workflows/vr180-candidate-validation.yml": "1d7dfb718956a0e8fdde883e8a1ae55b5199aeba630e42f1191354f76cfbc60f",
+    "tools/vr180/record-ffmpeg-toolchain.py": "82b10743ef5df030fcebd25303f5ccb5915bc514f2f89e7b1028724a06ad2af8",
+    "tools/vr180/verify-calibration-artifact.py": "aaf6734993f4f60c8477b31660f7fe695790830c158d6dbdde22223a3cece9f3"
+  },
+  "hashesAfter": {
+    "development/vr180/p5-calibration-prototype/README.md": "5032af324f68387e5554ce2107d738da3065dfadee3af05c6b54c618d0682936",
+    "development/vr180/p5-calibration-prototype/frame.mjs": "75b9fbd94923bdc2b6123eedda1baa152e897bdbf1b74f44a0c16e86f8590a3b",
+    "development/vr180/p5-calibration-prototype/probe-calibration.py": "8619fe1769e8bb62de9a886b6378a3b17917713ba9866921ad3c74c439a61a2d",
+    "development/vr180/p5-calibration-prototype/test-frame.mjs": "0c6aee85aa3a4793ff6afd39772779c9267f540744b03117a8cbdef135a29aa4",
+    "development/vr180/p5-calibration-prototype/test-harness.py": "50c82436ca25f5518d35cacbc32a8d2b44c4a2f7eeecc711771c2ce16e37166b",
+    "development/vr180/p5-calibration-prototype/worker.mjs": "a9715387b8714e2260ab66d0e35712bc9a1ce6c651c2d58d63b63661ee2efa21",
+    ".github/workflows/vr180-candidate-validation.yml": "1d7dfb718956a0e8fdde883e8a1ae55b5199aeba630e42f1191354f76cfbc60f",
+    "tools/vr180/record-ffmpeg-toolchain.py": "82b10743ef5df030fcebd25303f5ccb5915bc514f2f89e7b1028724a06ad2af8",
+    "tools/vr180/verify-calibration-artifact.py": "aaf6734993f4f60c8477b31660f7fe695790830c158d6dbdde22223a3cece9f3"
+  },
+  "checks": [
+    {
+      "command": [
+        "python",
+        "development/vr180/p5-calibration-prototype/test-harness.py"
+      ],
+      "exitCode": 0,
+      "output": "................\n----------------------------------------------------------------------\nRan 16 tests in 0.144s\n\nOK\n"
+    },
+    {
+      "command": [
+        "node",
+        "development/vr180/p5-calibration-prototype/test-frame.mjs"
+      ],
+      "exitCode": 0,
+      "output": "{\n  \"status\": \"PIXEL_GENERATOR_ONLY_PASS\",\n  \"reconstruction\": true,\n  \"explicitRgbaBufferBytes\": 2097152,\n  \"framesChecked\": 8,\n  \"repeatedFrameHashes\": 0,\n  \"decoded\": false,\n  \"encoded\": false,\n  \"browserExecuted\": false,\n  \"capacityProfileChanged\": false,\n  \"records\": [\n    {\n      \"frameId\": 0,\n      \"timestamp\": 0,\n      \"duration\": 0.03333333333333333,\n      \"redEvent\": false,\n      \"bytes\": 2097152,\n      \"sha256\": \"66d2b00e8786634a827ca63f513b9aa07eac7c1c16737a641d3e9d832ca27f16\"\n    },\n    {\n      \"frameId\": 1,\n      \"timestamp\": 0.03333333333333333,\n      \"duration\": 0.03333333333333333,\n      \"redEvent\": false,\n      \"bytes\": 2097152,\n      \"sha256\": \"78fc8230a3f4f4d9e03bc3d5ce037ffdd08a6d7519951164815b05f6fd138a29\"\n    },\n    {\n      \"frameId\": 28,\n      \"timestamp\": 0.9333333333333333,\n      \"duration\": 0.03333333333333333,\n      \"redEvent\": false,\n      \"bytes\": 2097152,\n      \"sha256\": \"853f25ade3e91816cfa91da6ca647724c7a27e525c9075385e55c169f17950c3\"\n    },\n    {\n      \"frameId\": 29,\n      \"timestamp\": 0.9666666666666667,\n      \"duration\": 0.03333333333333333,\n      \"redEvent\": true,\n      \"bytes\": 2097152,\n      \"sha256\": \"32fe1a7c273f430bfc36db97bda950a7d7878c46abc28117fe6c8df83bdf3d1d\"\n    },\n    {\n      \"frameId\": 30,\n      \"timestamp\": 1,\n      \"duration\": 0.03333333333333333,\n      \"redEvent\": true,\n      \"bytes\": 2097152,\n      \"sha256\": \"e34b71c8767dc90942d288bd9cce19dc3419ab97f3a4acb3572323ca22a66d63\"\n    },\n    {\n      \"frameId\": 31,\n      \"timestamp\": 1.0333333333333334,\n      \"duration\": 0.03333333333333333,\n      \"redEvent\": true,\n      \"bytes\": 2097152,\n      \"sha256\": \"6da29eabb0b0d9e93a34bd270f3df7ddaa508e61cdb125ac0216da58ca0d2d34\"\n    },\n    {\n      \"frameId\": 32,\n      \"timestamp\": 1.0666666666666667,\n      \"duration\": 0.03333333333333333,\n      \"redEvent\": false,\n      \"bytes\": 2097152,\n      \"sha256\": \"0fe9229715b640beb118565a43eb063bbe3dec409aba6b61955ad86780c5d34f\"\n    },\n    {\n      \"frameId\": 299,\n      \"timestamp\": 9.966666666666667,\n      \"duration\": 0.03333333333333333,\n      \"redEvent\": false,\n      \"bytes\": 2097152,\n      \"sha256\": \"28f22a86fe747da7bff80af7a49698f001129979440792ac4a90ce4f03b4c4e2\"\n    }\n  ]\n}\n"
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "development/vr180/p5-calibration-prototype/worker.mjs"
+      ],
+      "exitCode": 0,
+      "output": ""
+    }
+  ]
+}

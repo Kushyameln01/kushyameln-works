@@ -31,6 +31,81 @@ permissions:
   contents: read
 
 jobs:
+  p5-short-calibration:
+    if: >-
+      github.repository == 'Kushyameln01/kushyameln-works' &&
+      github.event.repository.private == false &&
+      startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
+      (contains(github.event.head_commit.message, '[vr180-p5-calibrate-32]') ||
+      contains(github.event.head_commit.message, '[vr180-p5-calibrate-48]'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 21
+    env:
+      DO_NOT_TRACK: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PIP_NO_CACHE_DIR: '1'
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      VR180_P5_CASE: ${{ contains(github.event.head_commit.message, '[vr180-p5-calibrate-48]') && '48-24' || '32-32' }}
+    steps:
+      - name: Check out the exact private calibration candidate
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Use the pinned Python setup
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install pinned driver and independent oracle dependencies
+        id: dependencies
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          test -x /usr/bin/google-chrome
+          python3 -m pip install --no-cache-dir playwright==1.62.0 numpy==2.3.3
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends 'ffmpeg=7:6.1.1-3ubuntu5'
+          python3 tools/vr180/record-ffmpeg-toolchain.py --output "$RUNNER_TEMP/vr180-p5-oracle-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.json"
+      - name: Rebuild the fixed combined fork separately from the media deadline
+        timeout-minutes: 2
+        shell: bash
+        run: |
+          vr180_p5_prefix="$(mktemp -d "$RUNNER_TEMP/vr180-p5-esbuild.XXXXXX")"
+          trap 'rm -rf "$vr180_p5_prefix"' EXIT
+          cp development/vr180/build-inputs/toolchain/package.json "$vr180_p5_prefix/"
+          cp development/vr180/build-inputs/toolchain/package-lock.json "$vr180_p5_prefix/"
+          npm ci --prefix "$vr180_p5_prefix" --ignore-scripts --include=dev --include=optional --no-audit --no-fund
+          node tools/vr180/build-input-index.mjs --combined --esbuild-dir "$vr180_p5_prefix/node_modules/esbuild" --output-dir "$RUNNER_TEMP/vr180-p5-build-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+      - name: Calibrate bounded native media and emit complete metadata evidence
+        id: calibration
+        timeout-minutes: 11
+        env:
+          VR180_DEPENDENCIES_READY: ${{ steps.dependencies.outcome == 'success' }}
+        run: >-
+          python3 development/vr180/p5-calibration-prototype/probe-calibration.py
+          --bundle "$RUNNER_TEMP/vr180-p5-build-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/mediabunny-input-output-index.mjs"
+          --oracle-toolchain "$RUNNER_TEMP/vr180-p5-oracle-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.json"
+          --case "$VR180_P5_CASE"
+          --output "$RUNNER_TEMP/vr180-p5-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+      - name: Recover all bounded calibration media, including complete quality failures
+        if: ${{ steps.calibration.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        timeout-minutes: 2
+        with:
+          name: vr180-p5-${{ env.VR180_P5_CASE }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/vr180-p5-${{ github.run_id }}-${{ github.run_attempt }}/media/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+      - name: Remove only this attempt's calibration media and build files
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          rm -rf "$RUNNER_TEMP/vr180-p5-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/media" "$RUNNER_TEMP/vr180-p5-build-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          rm -f "$RUNNER_TEMP/vr180-p5-oracle-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.json"
+
   recover-fixed-build-toolchain:
     if: >-
       github.repository == 'Kushyameln01/kushyameln-works' &&
