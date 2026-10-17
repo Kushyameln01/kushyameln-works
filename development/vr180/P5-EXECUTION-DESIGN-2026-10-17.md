@@ -20,6 +20,8 @@ workflowは標準公開Actions、contents read、固定action、保持1日、圧
 
 ## 大容量profileの審査条件
 
+以下の要求bitrate・4.8GB出力を使った仮案は履歴として残す。実行には末尾「校正後の設計」を適用する。仮案を採用済みとは扱わない。
+
 短尺の全回収・独立品質PASS後に、実効bitrate、生成/変換/検査時間、最大packetとchunk、native資源量から長尺の実行期限を見積もる。5GB/10GBは10進の実媒体payloadで達成する。free padding、疎ファイル、同じBlob参照の水増しは採らない。下表は要求bitrateによる設計値であり実測ではない。
 
 | 入力目標 | 仮の要求bitrate | 仮の長さ | 30fps video samples |
@@ -53,3 +55,26 @@ runnerは入力と出力の3組相当（OPFS、回収ファイル、artifact包�
 Actions39039504709 / a581d96d68ad7bb57744dfb5570b6a71e718c913では、入力58,952,806B・出力58,862,233Bを全回収し、cloud/hostの全300frame独立品質検査がPASS。要求32Mbpsに対し実payloadは47.1604872/47.0880288Mbpsだった。上記4.8GB出力capの仮案は、5GB入力にも足りない可能性があるため採用しない。48→24条件の校正後、実効量から再審査する。
 
 同試行のrunner空き91,484,504,064Bに対して、非永続browser contextのOPFS事前quotaは10,737,418,240B、usage0だった。保存後はquota10,855,233,831B・usage117,815,591Bで、表示上のquotaが変化している。長尺で利用可能な上限をこの2点から確定できない。既存contextで入力と出力20GBを同時保持できるとは仮定しない。通常の所有persistent profileを使う案は、別の能力・保存試験と設計審査を行う候補であり、quota制限を無効化するflagは導入しない。
+
+## 校正後の設計（大容量実行前の条件）
+
+32→32は短尺300frameのcloud/host全検査PASS。48→24は全回収しても両眼PSNR約25.82dBでFAILとなり、不採用。以下は32→32だけから算出した仮説で、長尺実測ではない。実packet payloadが目標へ到達するまで生成し、実file sizeを別途上限で止める。指定bitrateやpaddingを容量達成の証明にしない。
+
+| 条件 | 入力payload目標 | 入力/最終出力file上限 | 推定frame数/長さ | runner空き必要量 | 受信側空き必要量 |
+|---|---:|---:|---:|---:|---:|
+| 5GB | 5,000,000,000B | 5.1/5.2GB | 約25,446 / 848.2秒 | 33,416,582,400B | 12,749,473,536B |
+| 10GB | 10,000,000,000B | 10.1/10.2GB | 約50,891 / 1,696.4秒 | 63,416,582,400B | 22,749,473,536B |
+
+runnerはfile上限合計の3組＋64MiB索引＋32MiB証拠＋2×128MiB輸送＋2GiB余裕。受信側は1組＋32MiB証拠＋2×128MiB輸送＋2GiB余裕。開始直前の実空きで判定する。5GB組と10GB組を同時保持する空きは確認していないため、5GB全検証と証拠固定後、自己生成媒体の保管・清掃を判定してから10GBに進む。
+
+private profileで最終出力上限だけを分離する。30fps・無音、10万sample、16MiB metadata、共有8MiB索引、4MiB同時sort、4MiB chunk/backing等は維持する。公開b7の1GiB上限と共有vendorは変更しない。
+
+所有する新規persistent profileを通常のsandbox付きChromeで使う。先に16MiBの実書込み→close→全読戻し→正常終了→同profile再起動→全読戻し→清掃を試す。この合格は大容量や障害耐久性を保証しない。`storage.estimate()`の表示は容量予約やenforced quotaの証明に使わず、実書込み・close・QuotaExceeded時の失敗清掃で確認する。quota変更flagは使わない。
+
+固定公式`@actions/artifact 2.3.2`をlocal actionから通常のruntime認証で呼ぶ。source全hashを保持し、128MiBの実partファイルを1個だけ作り、圧縮0・保持1日・同時upload1で送る。全part成功・原本全再読一致後だけcompletion manifestを最後に送る。5GBは最大78、10GBは最大153 artifacts（completion含む）。上限200 partsとし、先に8MiB part×16件＋completionと、新経路の128MiB単独を実サービス上で全回収する。
+
+受信側は独立に回収したcompletion receiptとGitHub metadataを照合し、各ZIP digest・CRC・raw part hash・連続offsetを検査して逐次再構成する。全体を再読してwhole hashを確認し、全frame/packetを独立検査する。受信待ちを成功へ読み替えない。署名URLやruntime tokenは証拠・ログへ保存しない。artifact保持1日は即時削除の約束ではない。
+
+短尺からの線形試算は5GBの生成417/変換448/cloud検査426秒、10GBの834/896/851秒、host検査313/627秒。転送・起動等を含む実測ではない。初回jobの候補期限は5GB90分、10GB120分、生成/変換各15/25分、検査15/25分、upload20/30分。全jobは標準Actions上限内とする。新輸送試験の実効速度・artifact固定費を確認してから実行枠を確定し、不足時は理由を記録して停止する。受信側期限は各120分以内。性能向上の証明には使わない。
+
+根拠：Chromiumのquota表示提案 https://groups.google.com/a/chromium.org/g/blink-dev/c/7q0YGQNVkjs/m/BJH9kfmIEgAJ 、公式artifact仕様 https://docs.github.com/en/rest/actions/artifacts 、固定upload action https://github.com/actions/upload-artifact/tree/ea165f8d65b6e75b540449e92b4886f43607fa02 、Actions上限 https://docs.github.com/en/actions/reference/limits 。各実行は保存されたsource hashと実測証拠へ結び付ける。

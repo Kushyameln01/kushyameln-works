@@ -15,6 +15,7 @@ on:
       - tools/vr180/probe-indexed-conversion.py
       - tools/vr180/probe-public-origin.py
       - tools/vr180/probe-index-owner.py
+      - tools/vr180/probe-persistent-storage.py
       - tools/vr180/record-ffmpeg-toolchain.py
       - development/vr180/p5-calibration-prototype/**
       - tools/vr180/build-input-index.mjs
@@ -31,6 +32,45 @@ permissions:
   contents: read
 
 jobs:
+  persistent-storage-probe:
+    if: >-
+      github.repository == 'Kushyameln01/kushyameln-works' &&
+      github.event.repository.private == false &&
+      startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
+      contains(github.event.head_commit.message, '[vr180-persistent-storage]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      DO_NOT_TRACK: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PIP_NO_CACHE_DIR: '1'
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Check out the exact private storage probe
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Use pinned Python setup
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install the pinned browser driver
+        id: dependencies
+        timeout-minutes: 2
+        run: |
+          test -x /usr/bin/google-chrome
+          python3 -m pip install --no-cache-dir playwright==1.62.0
+      - name: Write, close, restart and independently compare an owned 16 MiB witness
+        timeout-minutes: 5
+        env:
+          VR180_DEPENDENCIES_READY: ${{ steps.dependencies.outcome == 'success' }}
+        run: >-
+          python3 tools/vr180/probe-persistent-storage.py
+          --output "$RUNNER_TEMP/vr180-persistent-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+
   p5-short-calibration:
     if: >-
       github.repository == 'Kushyameln01/kushyameln-works' &&
