@@ -1,0 +1,73 @@
+--- a/src/isobmff/isobmff-demuxer.ts
++++ b/src/isobmff/isobmff-demuxer.ts
+@@ -317,6 +317,8 @@
+ };
+ 
+ export class IsobmffDemuxer extends Demuxer {
++	/** VR180 private explicit adapter; never a failure fallback. */
++	get vr180InputIndex() { return (this.input as any)._vr180InputIndex; }
+ 	reader: Reader;
+ 	moovSlice: FileSlice | null = null;
+ 
+@@ -376,6 +378,10 @@
+ 
+ 	readMetadata() {
+ 		return this.metadataPromise ??= (async () => {
++			if (this.vr180InputIndex) {
++				await this.vr180InputIndex.readMetadata(this, FileSlice);
++				return;
++			}
+ 			let currentPos = 0;
+ 			let lookForMfraBox = false;
+ 			let foundMovieBoxes = false;
+@@ -545,6 +551,7 @@
+ 	}
+ 
+ 	getSampleTableForTrack(internalTrack: InternalTrack) {
++		if (this.vr180InputIndex) throw new Error("PRIVATE_INPUT_SYNC_TABLE_ACCESS");
+ 		if (internalTrack.sampleTable) {
+ 			return internalTrack.sampleTable;
+ 		}
+@@ -3013,6 +3020,9 @@
+ 
+ 	async getPacket(timestamp: number, options: PacketRetrievalOptions) {
+ 		const timestampInTimescale = this.mapTimestampIntoTimescale(timestamp);
++		const adapter = this.internalTrack.demuxer.vr180InputIndex;
++		if (adapter) return this.fetchPacketForSampleIndex(
++			await adapter.sampleIndex(this.internalTrack, timestampInTimescale, false), options);
+ 
+ 		const sampleTable = this.internalTrack.demuxer.getSampleTableForTrack(this.internalTrack);
+ 		const sampleIndex = getSampleIndexForTimestamp(sampleTable, timestampInTimescale);
+@@ -3096,6 +3106,9 @@
+ 
+ 	async getKeyPacket(timestamp: number, options: PacketRetrievalOptions) {
+ 		const timestampInTimescale = this.mapTimestampIntoTimescale(timestamp);
++		const adapter = this.internalTrack.demuxer.vr180InputIndex;
++		if (adapter) return this.fetchPacketForSampleIndex(
++			await adapter.sampleIndex(this.internalTrack, timestampInTimescale, true), options);
+ 
+ 		const sampleTable = this.internalTrack.demuxer.getSampleTableForTrack(this.internalTrack);
+ 		const sampleIndex = getKeyframeSampleIndexForTimestamp(sampleTable, timestampInTimescale);
+@@ -3132,6 +3145,9 @@
+ 
+ 	async getNextKeyPacket(packet: EncodedPacket, options: PacketRetrievalOptions) {
+ 		const regularSampleIndex = this.packetToSampleIndex.get(packet);
++		const adapter = this.internalTrack.demuxer.vr180InputIndex;
++		if (adapter && regularSampleIndex !== undefined) return this.fetchPacketForSampleIndex(
++			await adapter.nextKeyIndex(this.internalTrack, regularSampleIndex), options);
+ 		if (regularSampleIndex !== undefined) {
+ 			// Prefer the non-fragmented packet
+ 			const sampleTable = this.internalTrack.demuxer.getSampleTableForTrack(this.internalTrack);
+@@ -3189,8 +3205,10 @@
+ 			return null;
+ 		}
+ 
+-		const sampleTable = this.internalTrack.demuxer.getSampleTableForTrack(this.internalTrack);
+-		const sampleInfo = getSampleInfo(sampleTable, sampleIndex);
++		const adapter = this.internalTrack.demuxer.vr180InputIndex;
++		const sampleInfo = adapter
++			? await adapter.sampleInfo(this.internalTrack, sampleIndex)
++			: getSampleInfo(this.internalTrack.demuxer.getSampleTableForTrack(this.internalTrack), sampleIndex);
+ 		if (!sampleInfo) {
+ 			return null;
+ 		}

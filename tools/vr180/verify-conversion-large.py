@@ -6,6 +6,9 @@ PSNR >=30 dB per eye, frame count/order and PTS <=1 ms, red-event frame flags,
 identical decoded s16 PCM and audio start <=1 ms. Every frame and packet is
 scanned, not sampled. --mode copy additionally checks the existing append-only
 metadata contract, all timing tables and every compressed packet record/hash.
+--mode remux separately validates packet-preserving repackaging: every video
+and AAC payload, decoder configuration, rational timestamp, and decoded RGB/PCM.
+It permits changed container offsets and time-base units, not changed content.
 
 Python retains one RGB frame pair, fixed PCM blocks and bounded probe records
 and diagnostics, not a movie-wide JSON document/timestamp/event array. The
@@ -420,9 +423,49 @@ def ffmpeg_args(path):
             '-filter_complex_threads', '1', '-i', str(path)]
 
 
+def compare_video_packets(source, output, info, runtime, report, errors):
+    """Independent ordered-packet oracle for the private encoded-remux path."""
+    tracks = [side['video'] for side in info]
+    require(tracks[0].get('extradata_hash') and
+            tracks[0]['extradata_hash'] == tracks[1].get('extradata_hash'),
+            'H.264 decoder configuration changed or is unavailable')
+    bases = [Fraction(track['time_base']) for track in tracks]
+    require(all(base > 0 for base in bases), 'invalid video time base')
+    result = report['videoPackets'] = {'inputCount': 0, 'outputCount': 0,
+        'payloadOrderEqual': True, 'flagsAndSideDataEqual': True,
+        'maxTimeErrorSeconds': {'pts': 0., 'dts': 0., 'duration': 0.},
+        'maxTimeErrorPacket': {'pts': None, 'dts': None, 'duration': None}}
+    streams = [probe_records(path, label+'-video-packets', 'packet', runtime,
+                             report['scans'], 'v:0')
+               for path,label in ((source,'input'),(output,'output'))]
+    for index, pair in enumerate(itertools.zip_longest(*streams)):
+        for side, packet in enumerate(pair):
+            if packet is not None: result['inputCount' if side == 0 else 'outputCount'] += 1
+        if None in pair:
+            result['payloadOrderEqual'] = False
+            errors.add('videoPacketCount', 'H.264 packet absent on one side', packet=index)
+            continue
+        left, right = pair
+        if any(left.get(key) != right.get(key) for key in ('size','data_hash')):
+            result['payloadOrderEqual'] = False
+            errors.add('videoPacketPayload', 'ordered H.264 payload differs', packet=index)
+        if left.get('flags') != right.get('flags') or left.get('_sideData',[]) != right.get('_sideData',[]):
+            result['flagsAndSideDataEqual'] = False
+            errors.add('videoPacketFlags', 'H.264 key/discard flags or side-data changed', packet=index)
+        for field in ('pts','dts','duration'):
+            require(field in left and field in right, 'missing H.264 packet '+field)
+            delta = abs(int(left[field])*bases[0]-int(right[field])*bases[1])
+            if float(delta) > result['maxTimeErrorSeconds'][field]:
+                result['maxTimeErrorSeconds'][field] = float(delta)
+                result['maxTimeErrorPacket'][field] = index
+            if delta > Fraction(1,1000):
+                errors.add('videoPacketTime', 'H.264 packet time differs by more than 1 ms', packet=index,field=field,seconds=float(delta))
+    require(result['inputCount'] > 0 and result['outputCount'] > 0, 'no H.264 packets')
+
+
 def compare_pixels(source, output, info, layout, fov, n, mode, limit, runtime, report, errors):
     sv, dv = info[0]['video'], info[1]['video']
-    if mode == 'copy':
+    if mode in ('copy','remux'):
         require((sv['width'], sv['height']) == (dv['width'], dv['height']), 'copy dimensions changed')
         require((dv['width'], dv['height']) == ((2 * n, n) if layout == 'sbs' else (n, 2 * n)),
                 'copy oracle expects square packed eyes matching --eye-size')
@@ -520,6 +563,8 @@ def compare_pixels(source, output, info, layout, fov, n, mode, limit, runtime, r
             errors.add('psnr', 'aggregate eye PSNR below 30 dB', eye=eye, dB=value)
     report.update(eyePSNRdB=psnr, decodedFramesCompared=result['comparedFrames'],
                   redFrameIndicesByEye=kept_events)
+    if mode == 'remux' and result['maxChannelError'] != 0:
+        errors.add('remuxPixels', 'packet-preserving remux changed decoded RGB pixels')
     events['inputSequenceSHA256ByEye'] = [h.hexdigest() for h in event_hashes[0]]
     events['outputSequenceSHA256ByEye'] = [h.hexdigest() for h in event_hashes[1]]
     if result['missingOutputFrames'] or result['extraOutputFrames']:
@@ -584,7 +629,7 @@ def check_metadata(source, output, layout, mode, runtime, report):
     try:
         top = saved.boxes()
         moov = metadata.exactly(top, 'moov')
-        report['vrMetadata'] = metadata.verify_metadata(saved, moov, layout if mode == 'copy' else 'sbs')
+        report['vrMetadata'] = metadata.verify_metadata(saved, moov, layout if mode in ('copy','remux') else 'sbs')
         if mode == 'copy':
             old_moov = metadata.exactly(original.boxes(), 'moov')
             require(moov['start'] == original.length and moov['end'] == saved.length,
@@ -633,8 +678,9 @@ def file_hash(path, label, runtime, report):
 def verify_files(source, output, *, layout, fov, eye_size, mode='convert', timeout=1800,
                  detail_limit=32, log_dir=None):
     source, output = Path(source), Path(output)
-    require(layout in ('sbs', 'tb') and fov in (180, 360) and mode in ('copy', 'convert'), 'invalid mode/settings')
+    require(layout in ('sbs', 'tb') and fov in (180, 360) and mode in ('copy', 'convert', 'remux'), 'invalid mode/settings')
     require(mode != 'copy' or fov == 180, 'copy requires 180 degree input')
+    require(mode != 'remux' or fov == 180, 'remux requires 180 degree input')
     require(16 <= eye_size <= MAX_EYE_SIZE, 'eye size must be 16..2048')
     require(math.isfinite(timeout) and 0 < timeout <= 7 * 86400, 'invalid wall-clock budget')
     require(0 <= detail_limit <= 1000, 'detail limit must be 0..1000')
@@ -681,6 +727,8 @@ def verify_files(source, output, *, layout, fov, eye_size, mode='convert', timeo
                                               detail_limit, runtime, report, errors)),
             ('audio', lambda: compare_audio(source, output, info, runtime, report, errors)),
         ]
+        if mode == 'remux':
+            stages.insert(3,('videoPackets',lambda:compare_video_packets(source,output,info,runtime,report,errors)))
         for name, action in stages:
             runtime.check()
             try:
@@ -694,6 +742,7 @@ def verify_files(source, output, *, layout, fov, eye_size, mode='convert', timeo
             require(before == (after.st_size, after.st_mtime_ns, after.st_ino), 'file changed during verification')
         required = ['input-video-frames', 'output-video-frames', 'input-packets', 'output-packets',
                     'expected-rgb', 'actual-rgb', 'input-hash', 'output-hash']
+        if mode == 'remux': required += ['input-video-packets','output-video-packets']
         for side, name in enumerate(('input', 'output')):
             if info[side]['audio']:
                 required += [name + '-audio-frames', name + '-audio-packets', name + '-pcm']
@@ -725,7 +774,7 @@ def main():
     parser.add_argument('--layout', choices=['sbs', 'tb'], required=True)
     parser.add_argument('--fov', choices=[180, 360], type=int, required=True)
     parser.add_argument('--eye-size', type=int, required=True)
-    parser.add_argument('--mode', choices=['convert', 'copy'], default='convert')
+    parser.add_argument('--mode', choices=['convert', 'copy', 'remux'], default='convert')
     parser.add_argument('--timeout', type=float, default=1800)
     parser.add_argument('--detail-limit', type=int, default=32)
     parser.add_argument('--report', type=Path)

@@ -1,0 +1,4269 @@
+{
+  "schemaVersion": 1,
+  "status": "LOCAL_PASS_NATIVE_UNVERIFIED",
+  "workingTreeHead": "5f23e51946b1720aaae8e722be7a4288fada8b5e",
+  "trackedCommitClaim": false,
+  "sourceSha256AtEvidenceAssembly": {
+    "development/vr180/input-index-prototype/input-index.mjs": "406ed2f3f4265ebd689c0d52a815794ea4d50296e07020c2b00e232271c0267d",
+    "development/vr180/input-index-prototype/presentation-index.mjs": "da4c9c11aae35a5efb07771f7734304879fd0fe9673179809c0360fe5205f55b",
+    "development/vr180/input-index-prototype/mediabunny-input-index.patch": "78d58817a74896e7f1840096c20df67c82d038d5c724c2136f905e6dc9e02feb",
+    "development/vr180/input-index-prototype/patch-provenance.json": "b7e805ee91d8dfbe096294ed235e3a11e90f7d2997d41fe7d354076137e62463",
+    "development/vr180/input-index-prototype/make-patch.py": "93e20602e9e04c19e87fbf049f5fa8a249aba096ee6fc544ab2c7c5c001987d2",
+    "tools/vr180/build-input-index.mjs": "bdfb0ca3f27892c9fe791262bed1ad0eeb6ac7896f56bef1831a3538e163eef1",
+    "tools/vr180/compare-input-index.mjs": "0739de28f956e48b3f936900a63107f275894f351ffe71145ff3e088e3918618",
+    "tools/vr180/compare-input-output-index.mjs": "f4a05ffd1a726b254bc82fff2095ccea34ce8a4f79932aa86bd3310c6937ae7e",
+    "tests/vr180-input-index.test.mjs": "96bab0c7d6a2f533bf5df6ffdccbb6a707619f80c9ec5c2d0b93dfd66fd1c667",
+    "development/vr180/index-prototype/index-store.mjs": "a9d6c420e8acd894a0a657120c9f78765766c698103cf52bd18b7793472d0e7d",
+    "development/vr180/output-index-prototype/output-index.mjs": "812d284e501017a634d2852a14b1d2c41cf65b74fe514b41d8883b968941364c",
+    "development/vr180/output-index-prototype/mp4-output-inspect.mjs": "d841bab27d299316a890f8b16c628ed486ea803982269293f3faf10fe66ef229",
+    "development/vr180/output-index-prototype/node-backend.mjs": "ae3037ec74c040c5d91d928fc5445670d42ec673c794130883021bd93057cabf",
+    "development/vr180/input-index-prototype/node-tests-2026-10-17.txt": "fdc7f22e8f5d7a8f7323b24068d53c436d21566ff0868e990f27a74fc86f1f9c"
+  },
+  "builds": {
+    "input-index-build-1": {
+      "schemaVersion": 1,
+      "status": "PASS",
+      "baseline": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "phase": "complete",
+        "startedAt": "2026-10-17T13:06:23.868Z",
+        "upstreamCommit": "0664a57bf2f40e5c4efa176c75ebf1d60df69eb8",
+        "packageVersion": "1.61.5",
+        "nodeVersion": "v24.19.0",
+        "platform": "linux",
+        "arch": "x64",
+        "networkAttempted": false,
+        "buildAttempted": true,
+        "productFilesWritten": false,
+        "outputDirectory": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/input-index-build-1",
+        "sourceArchive": {
+          "bytes": 2188923,
+          "sha256": "95c03a00ca69a7d5ed9805e424349ffeb0cdecbe8cabd0e17749a39e8117802f"
+        },
+        "referenceBundle": {
+          "bytes": 692359,
+          "sha256": "5c3514965f106dd165cc6474979ba302ef85d8c84935a0ad3ea5202ccedfe51b"
+        },
+        "licenseSha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04",
+        "recoveredSources": [
+          {
+            "path": "tsconfig.json",
+            "gitBlobSha": "128e38ff54dc18936ba52e39454d35003d7b5357",
+            "sha256": "c4d6a8188a01e0ce5448aa6b431e43353894e8f66f77094eb8ba9b768c9fe146",
+            "bytes": 403
+          },
+          {
+            "path": "shared/tsconfig.json",
+            "gitBlobSha": "8e005134c0e7cbe5dd80a6ee1d2c90c6bb2b266d",
+            "sha256": "ffeae49f31caf0078587c17fc6c0d91d5829a5531c11988a93f2eb4de161ba63",
+            "bytes": 127
+          },
+          {
+            "path": "shared/aac-misc.ts",
+            "gitBlobSha": "e1ecaf7c33126ff60cf94e92ccc375c3c2893f5e",
+            "sha256": "5d5cb7fd115281e20571048339d5c50acb074432514d71e7ab67f3a5b7669044",
+            "bytes": 7099
+          },
+          {
+            "path": "shared/ac3-misc.ts",
+            "gitBlobSha": "fa3145fee2c3a75509443a73a8d4ea1172610a23",
+            "sha256": "843dfe3a94d751c292226b2f7775cf728fbf83e87c5ea092aaec2406634225c8",
+            "bytes": 506
+          },
+          {
+            "path": "shared/bitstream.ts",
+            "gitBlobSha": "7baa2b276645325c7527ced643f225f94aa9ed50",
+            "sha256": "6b380f4b02631abb36eecb3b8837c9dcf722a32702169817acd91fefa93a69d1",
+            "bytes": 1949
+          },
+          {
+            "path": "shared/mp3-misc.ts",
+            "gitBlobSha": "6ff3a8c8b3dc403571d984a9e2c126a0f58bfb26",
+            "sha256": "51f7b4178cf2de9c2a21ec5028f7bdae95f1758e262a4f7f282a10a19cd8ec72",
+            "bytes": 5843
+          }
+        ],
+        "provenanceSha256": "7dbaf4693583aaf6aab1e0d84079b7c2d39188a0b705f3fa0af4af6519179074",
+        "esbuild": {
+          "directory": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/recovered-esbuild-0.25.1/node_modules/esbuild",
+          "packageVersion": "0.25.1",
+          "requiredVersion": "0.25.1",
+          "lockSha256": "0fd5affe1f6c2e2561423e55c9323edba434a30fdc9d047860890121a1a6677d",
+          "binaryVersion": "0.25.1",
+          "binarySha256": "cfbfcac245e272a19c709cea06cda74d8cdebf3c033ba9f4dc2b7fc5985fd516",
+          "apiVersion": "0.25.1"
+        },
+        "buildOptions": {
+          "entryPoints": [
+            "src/index.ts"
+          ],
+          "bundle": true,
+          "logLevel": "info",
+          "target": "es2021",
+          "logOverride": {
+            "import-is-undefined": "silent"
+          },
+          "banner": {
+            "js": "/*!\n * Copyright (c) 2026-present, Vanilagy and contributors\n *\n * This Source Code Form is subject to the terms of the Mozilla Public\n * License, v. 2.0. If a copy of the MPL was not distributed with this\n * file, You can obtain one at https://mozilla.org/MPL/2.0/.\n */"
+          },
+          "legalComments": "none",
+          "format": "esm",
+          "minify": true,
+          "outfile": "dist/bundles/mediabunny.min.mjs"
+        },
+        "comparison": {
+          "identical": true,
+          "referenceBytes": 692359,
+          "rebuiltBytes": 692359,
+          "referenceSha256": "5c3514965f106dd165cc6474979ba302ef85d8c84935a0ad3ea5202ccedfe51b",
+          "rebuiltSha256": "5c3514965f106dd165cc6474979ba302ef85d8c84935a0ad3ea5202ccedfe51b",
+          "firstDifferentByte": null,
+          "equalPrefixBytes": 692359,
+          "equalSuffixBytes": 692359,
+          "differentAlignedBytes": 0,
+          "trailingLengthDifference": 0,
+          "firstDifferenceContext": null,
+          "interpretation": "Byte-for-byte identity."
+        },
+        "workspaceRemoved": true,
+        "finishedAt": "2026-10-17T13:06:24.066Z"
+      },
+      "publicFilesWritten": false,
+      "version": "private-input-index-1",
+      "variant": "input-only",
+      "patches": [
+        {
+          "kind": "input",
+          "upstreamCommit": "0664a57bf2f40e5c4efa176c75ebf1d60df69eb8",
+          "version": "1.61.5",
+          "license": "MPL-2.0",
+          "files": {
+            "src/isobmff/isobmff-demuxer.ts": {
+              "originalSha256": "452f1faa94435afcdbf9ddb500b51753b127920fa3e4f5d565f8cb84bc31495b",
+              "patchedSha256": "a9bce08968717f383811ad60e2960b931e9964c9e9ab87f55f39087899a693ca"
+            }
+          },
+          "patchSha256": "78d58817a74896e7f1840096c20df67c82d038d5c724c2136f905e6dc9e02feb"
+        }
+      ],
+      "bundleName": "mediabunny-input-index.mjs",
+      "bundleBytes": 693082,
+      "bundleSha256": "a7d9c22fe2d277edf12e6cda82f7e48b5d62e2e472442b2b5c213bdd65f6dc07",
+      "controllerSha256": "406ed2f3f4265ebd689c0d52a815794ea4d50296e07020c2b00e232271c0267d",
+      "presentationSha256": "da4c9c11aae35a5efb07771f7734304879fd0fe9673179809c0360fe5205f55b",
+      "buildOptions": {
+        "entryPoints": [
+          "src/index.ts"
+        ],
+        "bundle": true,
+        "logLevel": "info",
+        "target": "es2021",
+        "logOverride": {
+          "import-is-undefined": "silent"
+        },
+        "banner": {
+          "js": "/*!\n * Copyright (c) 2026-present, Vanilagy and contributors\n *\n * This Source Code Form is subject to the terms of the Mozilla Public\n * License, v. 2.0. If a copy of the MPL was not distributed with this\n * file, You can obtain one at https://mozilla.org/MPL/2.0/.\n */"
+        },
+        "legalComments": "none",
+        "format": "esm",
+        "minify": true,
+        "outfile": "dist/bundles/mediabunny.min.mjs"
+      },
+      "runtimeFiles": {
+        "index-prototype/index-store.mjs": "a9d6c420e8acd894a0a657120c9f78765766c698103cf52bd18b7793472d0e7d",
+        "output-index-prototype/mp4-output-inspect.mjs": "d841bab27d299316a890f8b16c628ed486ea803982269293f3faf10fe66ef229"
+      }
+    },
+    "input-output-index-build-1": {
+      "schemaVersion": 1,
+      "status": "PASS",
+      "baseline": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "phase": "complete",
+        "startedAt": "2026-10-17T13:06:23.882Z",
+        "upstreamCommit": "0664a57bf2f40e5c4efa176c75ebf1d60df69eb8",
+        "packageVersion": "1.61.5",
+        "nodeVersion": "v24.19.0",
+        "platform": "linux",
+        "arch": "x64",
+        "networkAttempted": false,
+        "buildAttempted": true,
+        "productFilesWritten": false,
+        "outputDirectory": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/input-output-index-build-1",
+        "sourceArchive": {
+          "bytes": 2188923,
+          "sha256": "95c03a00ca69a7d5ed9805e424349ffeb0cdecbe8cabd0e17749a39e8117802f"
+        },
+        "referenceBundle": {
+          "bytes": 692359,
+          "sha256": "5c3514965f106dd165cc6474979ba302ef85d8c84935a0ad3ea5202ccedfe51b"
+        },
+        "licenseSha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04",
+        "recoveredSources": [
+          {
+            "path": "tsconfig.json",
+            "gitBlobSha": "128e38ff54dc18936ba52e39454d35003d7b5357",
+            "sha256": "c4d6a8188a01e0ce5448aa6b431e43353894e8f66f77094eb8ba9b768c9fe146",
+            "bytes": 403
+          },
+          {
+            "path": "shared/tsconfig.json",
+            "gitBlobSha": "8e005134c0e7cbe5dd80a6ee1d2c90c6bb2b266d",
+            "sha256": "ffeae49f31caf0078587c17fc6c0d91d5829a5531c11988a93f2eb4de161ba63",
+            "bytes": 127
+          },
+          {
+            "path": "shared/aac-misc.ts",
+            "gitBlobSha": "e1ecaf7c33126ff60cf94e92ccc375c3c2893f5e",
+            "sha256": "5d5cb7fd115281e20571048339d5c50acb074432514d71e7ab67f3a5b7669044",
+            "bytes": 7099
+          },
+          {
+            "path": "shared/ac3-misc.ts",
+            "gitBlobSha": "fa3145fee2c3a75509443a73a8d4ea1172610a23",
+            "sha256": "843dfe3a94d751c292226b2f7775cf728fbf83e87c5ea092aaec2406634225c8",
+            "bytes": 506
+          },
+          {
+            "path": "shared/bitstream.ts",
+            "gitBlobSha": "7baa2b276645325c7527ced643f225f94aa9ed50",
+            "sha256": "6b380f4b02631abb36eecb3b8837c9dcf722a32702169817acd91fefa93a69d1",
+            "bytes": 1949
+          },
+          {
+            "path": "shared/mp3-misc.ts",
+            "gitBlobSha": "6ff3a8c8b3dc403571d984a9e2c126a0f58bfb26",
+            "sha256": "51f7b4178cf2de9c2a21ec5028f7bdae95f1758e262a4f7f282a10a19cd8ec72",
+            "bytes": 5843
+          }
+        ],
+        "provenanceSha256": "7dbaf4693583aaf6aab1e0d84079b7c2d39188a0b705f3fa0af4af6519179074",
+        "esbuild": {
+          "directory": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/recovered-esbuild-0.25.1/node_modules/esbuild",
+          "packageVersion": "0.25.1",
+          "requiredVersion": "0.25.1",
+          "lockSha256": "0fd5affe1f6c2e2561423e55c9323edba434a30fdc9d047860890121a1a6677d",
+          "binaryVersion": "0.25.1",
+          "binarySha256": "cfbfcac245e272a19c709cea06cda74d8cdebf3c033ba9f4dc2b7fc5985fd516",
+          "apiVersion": "0.25.1"
+        },
+        "buildOptions": {
+          "entryPoints": [
+            "src/index.ts"
+          ],
+          "bundle": true,
+          "logLevel": "info",
+          "target": "es2021",
+          "logOverride": {
+            "import-is-undefined": "silent"
+          },
+          "banner": {
+            "js": "/*!\n * Copyright (c) 2026-present, Vanilagy and contributors\n *\n * This Source Code Form is subject to the terms of the Mozilla Public\n * License, v. 2.0. If a copy of the MPL was not distributed with this\n * file, You can obtain one at https://mozilla.org/MPL/2.0/.\n */"
+          },
+          "legalComments": "none",
+          "format": "esm",
+          "minify": true,
+          "outfile": "dist/bundles/mediabunny.min.mjs"
+        },
+        "comparison": {
+          "identical": true,
+          "referenceBytes": 692359,
+          "rebuiltBytes": 692359,
+          "referenceSha256": "5c3514965f106dd165cc6474979ba302ef85d8c84935a0ad3ea5202ccedfe51b",
+          "rebuiltSha256": "5c3514965f106dd165cc6474979ba302ef85d8c84935a0ad3ea5202ccedfe51b",
+          "firstDifferentByte": null,
+          "equalPrefixBytes": 692359,
+          "equalSuffixBytes": 692359,
+          "differentAlignedBytes": 0,
+          "trailingLengthDifference": 0,
+          "firstDifferenceContext": null,
+          "interpretation": "Byte-for-byte identity."
+        },
+        "workspaceRemoved": true,
+        "finishedAt": "2026-10-17T13:06:24.090Z"
+      },
+      "publicFilesWritten": false,
+      "version": "private-input-index-1",
+      "variant": "combined-input-output",
+      "patches": [
+        {
+          "kind": "output",
+          "upstreamCommit": "0664a57bf2f40e5c4efa176c75ebf1d60df69eb8",
+          "version": "1.61.5",
+          "license": "MPL-2.0",
+          "files": {
+            "src/isobmff/isobmff-muxer.ts": {
+              "originalSha256": "8a1d5cf1a9f689ed75be84397485c071c7c2f18180be8d8ccfc0f56f648eb362",
+              "patchedSha256": "33de70395fca5f76188322df1c78848077208a914a306c3ce9495ff94a960068"
+            },
+            "src/isobmff/isobmff-boxes.ts": {
+              "originalSha256": "eadc70c46fe39c37544f2561501ccf531d1ba60bfe1938015c158b880c02f1cd",
+              "patchedSha256": "b4fbf17fc42f3df02ac4818b5c40f7a7e53b2286a88bdb93ecb265e26d9ee8cb"
+            }
+          },
+          "patchSha256": "0f33762be867a42315b1c3d50a2ef3c990755a7afc72c8238382fc09b86585e3"
+        },
+        {
+          "kind": "input",
+          "upstreamCommit": "0664a57bf2f40e5c4efa176c75ebf1d60df69eb8",
+          "version": "1.61.5",
+          "license": "MPL-2.0",
+          "files": {
+            "src/isobmff/isobmff-demuxer.ts": {
+              "originalSha256": "452f1faa94435afcdbf9ddb500b51753b127920fa3e4f5d565f8cb84bc31495b",
+              "patchedSha256": "a9bce08968717f383811ad60e2960b931e9964c9e9ab87f55f39087899a693ca"
+            }
+          },
+          "patchSha256": "78d58817a74896e7f1840096c20df67c82d038d5c724c2136f905e6dc9e02feb"
+        }
+      ],
+      "bundleName": "mediabunny-input-output-index.mjs",
+      "bundleBytes": 693808,
+      "bundleSha256": "6860f19a395ee8db3fca902264f6247ffae975b1d91c2a06982f1beca16e265a",
+      "controllerSha256": "406ed2f3f4265ebd689c0d52a815794ea4d50296e07020c2b00e232271c0267d",
+      "presentationSha256": "da4c9c11aae35a5efb07771f7734304879fd0fe9673179809c0360fe5205f55b",
+      "buildOptions": {
+        "entryPoints": [
+          "src/index.ts"
+        ],
+        "bundle": true,
+        "logLevel": "info",
+        "target": "es2021",
+        "logOverride": {
+          "import-is-undefined": "silent"
+        },
+        "banner": {
+          "js": "/*!\n * Copyright (c) 2026-present, Vanilagy and contributors\n *\n * This Source Code Form is subject to the terms of the Mozilla Public\n * License, v. 2.0. If a copy of the MPL was not distributed with this\n * file, You can obtain one at https://mozilla.org/MPL/2.0/.\n */"
+        },
+        "legalComments": "none",
+        "format": "esm",
+        "minify": true,
+        "outfile": "dist/bundles/mediabunny.min.mjs"
+      },
+      "runtimeFiles": {
+        "index-prototype/index-store.mjs": "a9d6c420e8acd894a0a657120c9f78765766c698103cf52bd18b7793472d0e7d",
+        "output-index-prototype/mp4-output-inspect.mjs": "d841bab27d299316a890f8b16c628ed486ea803982269293f3faf10fe66ef229",
+        "output-index-prototype/output-index.mjs": "812d284e501017a634d2852a14b1d2c41cf65b74fe514b41d8883b968941364c"
+      }
+    }
+  },
+  "comparisons": {
+    "p4-input-small-1": {
+      "status": "PASS",
+      "results": [
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "file": "stereo180-sbs.mp4",
+          "inputBytes": 26615,
+          "inputSha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+          "bundleSha256": "a7d9c22fe2d277edf12e6cda82f7e48b5d62e2e472442b2b5c213bdd65f6dc07",
+          "classIdentityMixedWithinInput": false,
+          "decoded": false,
+          "browserExecuted": false,
+          "publicFilesChanged": false,
+          "tracks": [
+            {
+              "type": "video",
+              "count": 60,
+              "payloadBytes": 19046,
+              "seekCount": 24,
+              "completeEndReached": true,
+              "allPacketPayloadsCompared": true,
+              "allPacketMetadataCompared": true,
+              "payloadSha256": "48acf78c8edf8ff1726ceb408aaacac5826e72d995be60fd50dee0abc72fa5d3",
+              "metadataSha256": "5a00fd08f637a444cae099fb54f96ef80e24e4a6e33f627687301ec8cd3dd738"
+            },
+            {
+              "type": "audio",
+              "count": 95,
+              "payloadBytes": 4118,
+              "seekCount": 24,
+              "completeEndReached": true,
+              "allPacketPayloadsCompared": true,
+              "allPacketMetadataCompared": true,
+              "payloadSha256": "1cdb76133ba0791f6565e1d479b1bdd8b263578f50d99fa5bad89f5beb825842",
+              "metadataSha256": "aaf02e54fcfe2649a8660189b25562efe69ce2eed72dbc8354cf73ddb9dd2e24"
+            }
+          ],
+          "metrics": {
+            "tableReadBytes": 2196,
+            "tableReadCalls": 22,
+            "tableMaxReadBytes": 612,
+            "tableCacheMisses": 10,
+            "inspectorReadBytes": 3451,
+            "inspectorMaxReadBytes": 620,
+            "metadataReadBytes": 1717,
+            "metadataMaxReadBytes": 175,
+            "metadataSmallBytes": 1009,
+            "metadataSkeletonBytes": 1089,
+            "retainedDescriptionBytes": 50,
+            "maxSkeletonBuildBytes": 66675,
+            "boxCount": 80,
+            "sampleCount": 155,
+            "peakOwnedStores": 4,
+            "initializationCount": 1,
+            "queryCount": 241,
+            "peakPendingOperations": 1,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 512,
+              "height": 256,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 60,
+                "audio": 95,
+                "total": 155
+              },
+              "containerMetadataBytes": 3403
+            },
+            "ownedStores": 4,
+            "budgetReservedBytes": 266240,
+            "budgetPeakBytes": 4919608,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 60,
+                "hasComposition": true,
+                "sortCapacityRecords": 262144,
+                "sortReservedBytes": 4194304,
+                "sortPasses": 1,
+                "presentationRecords": 60,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 60,
+                  "extent": 3840,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 128,
+                  "writeBytes": 7680,
+                  "readCalls": 1,
+                  "writeCalls": 120,
+                  "cacheHits": 677,
+                  "cacheWriteThroughBytes": 7552,
+                  "yields": 1,
+                  "flushes": 1,
+                  "observedFileBytes": 3840,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 266240,
+                  "budgetPeakBytes": 4919608
+                },
+                "presentationStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-presentation-run-0",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 16,
+                    "endianness": "little"
+                  },
+                  "count": 60,
+                  "extent": 960,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 960,
+                  "writeBytes": 960,
+                  "readCalls": 1,
+                  "writeCalls": 60,
+                  "cacheHits": 959,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 0,
+                  "flushes": 1,
+                  "observedFileBytes": 960,
+                  "peakInternalBufferBytes": 65552,
+                  "lastError": null,
+                  "budgetReservedBytes": 266240,
+                  "budgetPeakBytes": 4919608
+                },
+                "inverseStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-presentation-inverse",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 8,
+                    "endianness": "little"
+                  },
+                  "count": 60,
+                  "extent": 480,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 480,
+                  "writeBytes": 960,
+                  "readCalls": 1,
+                  "writeCalls": 120,
+                  "cacheHits": 557,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 1,
+                  "flushes": 1,
+                  "observedFileBytes": 480,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 266240,
+                  "budgetPeakBytes": 4919608
+                }
+              },
+              {
+                "id": 2,
+                "count": 95,
+                "hasComposition": false,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t2-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 95,
+                  "extent": 6080,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 64,
+                  "writeBytes": 12160,
+                  "readCalls": 1,
+                  "writeCalls": 190,
+                  "cacheHits": 381,
+                  "cacheWriteThroughBytes": 12096,
+                  "yields": 2,
+                  "flushes": 1,
+                  "observedFileBytes": 6080,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 266240,
+                  "budgetPeakBytes": 4919608
+                }
+              }
+            ]
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0,
+            "disposed": true
+          }
+        },
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "file": "stereo180-tb.mp4",
+          "inputBytes": 26830,
+          "inputSha256": "4a00229ce015530ceb1ea7da529d6f7e50ea4f6fb33e161c17b5b9efd5f9c675",
+          "bundleSha256": "a7d9c22fe2d277edf12e6cda82f7e48b5d62e2e472442b2b5c213bdd65f6dc07",
+          "classIdentityMixedWithinInput": false,
+          "decoded": false,
+          "browserExecuted": false,
+          "publicFilesChanged": false,
+          "tracks": [
+            {
+              "type": "video",
+              "count": 60,
+              "payloadBytes": 19261,
+              "seekCount": 24,
+              "completeEndReached": true,
+              "allPacketPayloadsCompared": true,
+              "allPacketMetadataCompared": true,
+              "payloadSha256": "b76f5e6d3ac97279027f4fedd49aaf8603d6a6a19599f1afd766dc0d08058535",
+              "metadataSha256": "a96a4c375b261de045be109371adbbb7605101728d1a7489844761c233d55281"
+            },
+            {
+              "type": "audio",
+              "count": 95,
+              "payloadBytes": 4118,
+              "seekCount": 24,
+              "completeEndReached": true,
+              "allPacketPayloadsCompared": true,
+              "allPacketMetadataCompared": true,
+              "payloadSha256": "1cdb76133ba0791f6565e1d479b1bdd8b263578f50d99fa5bad89f5beb825842",
+              "metadataSha256": "aaf02e54fcfe2649a8660189b25562efe69ce2eed72dbc8354cf73ddb9dd2e24"
+            }
+          ],
+          "metrics": {
+            "tableReadBytes": 2196,
+            "tableReadCalls": 22,
+            "tableMaxReadBytes": 612,
+            "tableCacheMisses": 10,
+            "inspectorReadBytes": 3451,
+            "inspectorMaxReadBytes": 620,
+            "metadataReadBytes": 1717,
+            "metadataMaxReadBytes": 175,
+            "metadataSmallBytes": 1009,
+            "metadataSkeletonBytes": 1089,
+            "retainedDescriptionBytes": 50,
+            "maxSkeletonBuildBytes": 66675,
+            "boxCount": 80,
+            "sampleCount": 155,
+            "peakOwnedStores": 4,
+            "initializationCount": 1,
+            "queryCount": 241,
+            "peakPendingOperations": 1,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 256,
+              "height": 512,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 60,
+                "audio": 95,
+                "total": 155
+              },
+              "containerMetadataBytes": 3403
+            },
+            "ownedStores": 4,
+            "budgetReservedBytes": 266240,
+            "budgetPeakBytes": 4919608,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 60,
+                "hasComposition": true,
+                "sortCapacityRecords": 262144,
+                "sortReservedBytes": 4194304,
+                "sortPasses": 1,
+                "presentationRecords": 60,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 60,
+                  "extent": 3840,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 128,
+                  "writeBytes": 7680,
+                  "readCalls": 1,
+                  "writeCalls": 120,
+                  "cacheHits": 677,
+                  "cacheWriteThroughBytes": 7552,
+                  "yields": 1,
+                  "flushes": 1,
+                  "observedFileBytes": 3840,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 266240,
+                  "budgetPeakBytes": 4919608
+                },
+                "presentationStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-presentation-run-0",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 16,
+                    "endianness": "little"
+                  },
+                  "count": 60,
+                  "extent": 960,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 960,
+                  "writeBytes": 960,
+                  "readCalls": 1,
+                  "writeCalls": 60,
+                  "cacheHits": 959,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 0,
+                  "flushes": 1,
+                  "observedFileBytes": 960,
+                  "peakInternalBufferBytes": 65552,
+                  "lastError": null,
+                  "budgetReservedBytes": 266240,
+                  "budgetPeakBytes": 4919608
+                },
+                "inverseStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-presentation-inverse",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 8,
+                    "endianness": "little"
+                  },
+                  "count": 60,
+                  "extent": 480,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 480,
+                  "writeBytes": 960,
+                  "readCalls": 1,
+                  "writeCalls": 120,
+                  "cacheHits": 557,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 1,
+                  "flushes": 1,
+                  "observedFileBytes": 480,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 266240,
+                  "budgetPeakBytes": 4919608
+                }
+              },
+              {
+                "id": 2,
+                "count": 95,
+                "hasComposition": false,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t2-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 95,
+                  "extent": 6080,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 64,
+                  "writeBytes": 12160,
+                  "readCalls": 1,
+                  "writeCalls": 190,
+                  "cacheHits": 381,
+                  "cacheWriteThroughBytes": 12096,
+                  "yields": 2,
+                  "flushes": 1,
+                  "observedFileBytes": 6080,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 266240,
+                  "budgetPeakBytes": 4919608
+                }
+              }
+            ]
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0,
+            "disposed": true
+          }
+        },
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "file": "stereo360-tb.mp4",
+          "inputBytes": 27952,
+          "inputSha256": "72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9",
+          "bundleSha256": "a7d9c22fe2d277edf12e6cda82f7e48b5d62e2e472442b2b5c213bdd65f6dc07",
+          "classIdentityMixedWithinInput": false,
+          "decoded": false,
+          "browserExecuted": false,
+          "publicFilesChanged": false,
+          "tracks": [
+            {
+              "type": "video",
+              "count": 60,
+              "payloadBytes": 20383,
+              "seekCount": 24,
+              "completeEndReached": true,
+              "allPacketPayloadsCompared": true,
+              "allPacketMetadataCompared": true,
+              "payloadSha256": "88bc430e8b99ce82b2057be7f10fb98c25bfb0d64e9e9d9194a0fe8098203e69",
+              "metadataSha256": "d8e8c284505fbac3b2cdf610be7aec32b504327720dbea5b3dd175cdfdc178ad"
+            },
+            {
+              "type": "audio",
+              "count": 95,
+              "payloadBytes": 4118,
+              "seekCount": 24,
+              "completeEndReached": true,
+              "allPacketPayloadsCompared": true,
+              "allPacketMetadataCompared": true,
+              "payloadSha256": "1cdb76133ba0791f6565e1d479b1bdd8b263578f50d99fa5bad89f5beb825842",
+              "metadataSha256": "aaf02e54fcfe2649a8660189b25562efe69ce2eed72dbc8354cf73ddb9dd2e24"
+            }
+          ],
+          "metrics": {
+            "tableReadBytes": 2196,
+            "tableReadCalls": 22,
+            "tableMaxReadBytes": 612,
+            "tableCacheMisses": 10,
+            "inspectorReadBytes": 3451,
+            "inspectorMaxReadBytes": 620,
+            "metadataReadBytes": 1717,
+            "metadataMaxReadBytes": 175,
+            "metadataSmallBytes": 1009,
+            "metadataSkeletonBytes": 1089,
+            "retainedDescriptionBytes": 50,
+            "maxSkeletonBuildBytes": 66675,
+            "boxCount": 80,
+            "sampleCount": 155,
+            "peakOwnedStores": 4,
+            "initializationCount": 1,
+            "queryCount": 241,
+            "peakPendingOperations": 1,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 512,
+              "height": 512,
+              "videoCodec": "avc1",
+              "audioCodecs": [
+                "mp4a"
+              ],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 60,
+                "audio": 95,
+                "total": 155
+              },
+              "containerMetadataBytes": 3403
+            },
+            "ownedStores": 4,
+            "budgetReservedBytes": 266240,
+            "budgetPeakBytes": 4919608,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 60,
+                "hasComposition": true,
+                "sortCapacityRecords": 262144,
+                "sortReservedBytes": 4194304,
+                "sortPasses": 1,
+                "presentationRecords": 60,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 60,
+                  "extent": 3840,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 128,
+                  "writeBytes": 7680,
+                  "readCalls": 1,
+                  "writeCalls": 120,
+                  "cacheHits": 677,
+                  "cacheWriteThroughBytes": 7552,
+                  "yields": 1,
+                  "flushes": 1,
+                  "observedFileBytes": 3840,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 266240,
+                  "budgetPeakBytes": 4919608
+                },
+                "presentationStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-presentation-run-0",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 16,
+                    "endianness": "little"
+                  },
+                  "count": 60,
+                  "extent": 960,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 960,
+                  "writeBytes": 960,
+                  "readCalls": 1,
+                  "writeCalls": 60,
+                  "cacheHits": 959,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 0,
+                  "flushes": 1,
+                  "observedFileBytes": 960,
+                  "peakInternalBufferBytes": 65552,
+                  "lastError": null,
+                  "budgetReservedBytes": 266240,
+                  "budgetPeakBytes": 4919608
+                },
+                "inverseStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-presentation-inverse",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 8,
+                    "endianness": "little"
+                  },
+                  "count": 60,
+                  "extent": 480,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 480,
+                  "writeBytes": 960,
+                  "readCalls": 1,
+                  "writeCalls": 120,
+                  "cacheHits": 557,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 1,
+                  "flushes": 1,
+                  "observedFileBytes": 480,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 266240,
+                  "budgetPeakBytes": 4919608
+                }
+              },
+              {
+                "id": 2,
+                "count": 95,
+                "hasComposition": false,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t2-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 95,
+                  "extent": 6080,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 64,
+                  "writeBytes": 12160,
+                  "readCalls": 1,
+                  "writeCalls": 190,
+                  "cacheHits": 381,
+                  "cacheWriteThroughBytes": 12096,
+                  "yields": 2,
+                  "flushes": 1,
+                  "observedFileBytes": 6080,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 266240,
+                  "budgetPeakBytes": 4919608
+                }
+              }
+            ]
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0,
+            "disposed": true
+          }
+        }
+      ]
+    },
+    "p4-input-counts-1": {
+      "status": "PASS",
+      "results": [
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "file": "monotonic-5000-reference.mp4",
+          "inputBytes": 33742057,
+          "inputSha256": "f486ad865c34a534503f27bd273b9975ee486671949d139ccbef68a41bca3a68",
+          "bundleSha256": "a7d9c22fe2d277edf12e6cda82f7e48b5d62e2e472442b2b5c213bdd65f6dc07",
+          "classIdentityMixedWithinInput": false,
+          "decoded": false,
+          "browserExecuted": false,
+          "publicFilesChanged": false,
+          "tracks": [
+            {
+              "type": "video",
+              "count": 5000,
+              "payloadBytes": 33720000,
+              "seekCount": 24,
+              "completeEndReached": true,
+              "allPacketPayloadsCompared": true,
+              "allPacketMetadataCompared": true,
+              "payloadSha256": "1eb697f8fcdda1be6044056ea369495c08e113c0e98519b0a48ca87051f77cfe",
+              "metadataSha256": "f83162722ccfdf5861216c2d345c4f51f5d8a4ca226bf925096bbaf3f0bafb36"
+            }
+          ],
+          "metrics": {
+            "tableReadBytes": 21416,
+            "tableReadCalls": 9,
+            "tableMaxReadBytes": 20000,
+            "tableCacheMisses": 4,
+            "inspectorReadBytes": 22049,
+            "inspectorMaxReadBytes": 20012,
+            "metadataReadBytes": 837,
+            "metadataMaxReadBytes": 194,
+            "metadataSmallBytes": 537,
+            "metadataSkeletonBytes": 569,
+            "retainedDescriptionBytes": 45,
+            "maxSkeletonBuildBytes": 66150,
+            "boxCount": 33,
+            "sampleCount": 5000,
+            "peakOwnedStores": 1,
+            "initializationCount": 1,
+            "queryCount": 5047,
+            "peakPendingOperations": 1,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 512,
+              "height": 256,
+              "videoCodec": "avc1",
+              "audioCodecs": [],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 5000,
+                "audio": 0,
+                "total": 5000
+              },
+              "containerMetadataBytes": 22013
+            },
+            "ownedStores": 1,
+            "budgetReservedBytes": 69632,
+            "budgetPeakBytes": 332160,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 5000,
+                "hasComposition": false,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 5000,
+                  "extent": 320000,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 3947136,
+                  "writeBytes": 640000,
+                  "readCalls": 66,
+                  "writeCalls": 10000,
+                  "cacheHits": 10240,
+                  "cacheWriteThroughBytes": 636800,
+                  "yields": 210,
+                  "flushes": 1,
+                  "observedFileBytes": 320000,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 69632,
+                  "budgetPeakBytes": 332160
+                }
+              }
+            ]
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0,
+            "disposed": true
+          }
+        },
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "file": "monotonic-25000-reference.mp4",
+          "inputBytes": 168707389,
+          "inputSha256": "5f27c6388ccbb8be35593282a4f08b715fc175c47314d5b48b4f8d0fa6875380",
+          "bundleSha256": "a7d9c22fe2d277edf12e6cda82f7e48b5d62e2e472442b2b5c213bdd65f6dc07",
+          "classIdentityMixedWithinInput": false,
+          "decoded": false,
+          "browserExecuted": false,
+          "publicFilesChanged": false,
+          "tracks": [
+            {
+              "type": "video",
+              "count": 25000,
+              "payloadBytes": 168600000,
+              "seekCount": 24,
+              "completeEndReached": true,
+              "allPacketPayloadsCompared": true,
+              "allPacketMetadataCompared": true,
+              "payloadSha256": "1472894e0cd2f2a858d85e1a711cfc94fdcd4e26c92f2820f063db7eac7ac560",
+              "metadataSha256": "c9d5fd8c6395bf7dee1ad6e48058bfc55e194649caad79cd792e04b7f0375f57"
+            }
+          ],
+          "metrics": {
+            "tableReadBytes": 106748,
+            "tableReadCalls": 10,
+            "tableMaxReadBytes": 65536,
+            "tableCacheMisses": 5,
+            "inspectorReadBytes": 107385,
+            "inspectorMaxReadBytes": 65536,
+            "metadataReadBytes": 837,
+            "metadataMaxReadBytes": 194,
+            "metadataSmallBytes": 537,
+            "metadataSkeletonBytes": 569,
+            "retainedDescriptionBytes": 45,
+            "maxSkeletonBuildBytes": 66150,
+            "boxCount": 33,
+            "sampleCount": 25000,
+            "peakOwnedStores": 1,
+            "initializationCount": 1,
+            "queryCount": 25047,
+            "peakPendingOperations": 1,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 512,
+              "height": 256,
+              "videoCodec": "avc1",
+              "audioCodecs": [],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 25000,
+                "audio": 0,
+                "total": 25000
+              },
+              "containerMetadataBytes": 107345
+            },
+            "ownedStores": 1,
+            "budgetReservedBytes": 69632,
+            "budgetPeakBytes": 332160,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 25000,
+                "hasComposition": false,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 25000,
+                  "extent": 1600000,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 7828096,
+                  "writeBytes": 3200000,
+                  "readCalls": 146,
+                  "writeCalls": 50000,
+                  "cacheHits": 50198,
+                  "cacheWriteThroughBytes": 3186560,
+                  "yields": 899,
+                  "flushes": 1,
+                  "observedFileBytes": 1600000,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 69632,
+                  "budgetPeakBytes": 332160
+                }
+              }
+            ]
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0,
+            "disposed": true
+          }
+        },
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "file": "monotonic-100000-reference.mp4",
+          "inputBytes": 674827389,
+          "inputSha256": "8815d5f01e1cca03528ae8f5efdf4ed13a434309e99c72fa26b2c00a4b7f7f9b",
+          "bundleSha256": "a7d9c22fe2d277edf12e6cda82f7e48b5d62e2e472442b2b5c213bdd65f6dc07",
+          "classIdentityMixedWithinInput": false,
+          "decoded": false,
+          "browserExecuted": false,
+          "publicFilesChanged": false,
+          "tracks": [
+            {
+              "type": "video",
+              "count": 100000,
+              "payloadBytes": 674400000,
+              "seekCount": 24,
+              "completeEndReached": true,
+              "allPacketPayloadsCompared": true,
+              "allPacketMetadataCompared": true,
+              "payloadSha256": "e7668e217802db3e228332152cd9a6076025f070154965f515a9661e0ec5d488",
+              "metadataSha256": "a13e040da7e6087fff0ba73e507d03e9101a0616b93ef8d9574f741dcaff6b67"
+            }
+          ],
+          "metrics": {
+            "tableReadBytes": 426748,
+            "tableReadCalls": 15,
+            "tableMaxReadBytes": 65536,
+            "tableCacheMisses": 10,
+            "inspectorReadBytes": 427465,
+            "inspectorMaxReadBytes": 65536,
+            "metadataReadBytes": 837,
+            "metadataMaxReadBytes": 194,
+            "metadataSmallBytes": 537,
+            "metadataSkeletonBytes": 569,
+            "retainedDescriptionBytes": 45,
+            "maxSkeletonBuildBytes": 66150,
+            "boxCount": 33,
+            "sampleCount": 100000,
+            "peakOwnedStores": 1,
+            "initializationCount": 1,
+            "queryCount": 100047,
+            "peakPendingOperations": 1,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 512,
+              "height": 256,
+              "videoCodec": "avc1",
+              "audioCodecs": [],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 100000,
+                "audio": 0,
+                "total": 100000
+              },
+              "containerMetadataBytes": 427345
+            },
+            "ownedStores": 1,
+            "budgetReservedBytes": 69632,
+            "budgetPeakBytes": 332160,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 100000,
+                "hasComposition": false,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 100000,
+                  "extent": 6400000,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 15318272,
+                  "writeBytes": 12800000,
+                  "readCalls": 332,
+                  "writeCalls": 200000,
+                  "cacheHits": 200050,
+                  "cacheWriteThroughBytes": 12749568,
+                  "yields": 3357,
+                  "flushes": 1,
+                  "observedFileBytes": 6400000,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 69632,
+                  "budgetPeakBytes": 332160
+                }
+              }
+            ]
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0,
+            "disposed": true
+          }
+        },
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "file": "alternating-ctts-5000-reference.mp4",
+          "inputBytes": 18072217,
+          "inputSha256": "18a5afad1942d3303c194d529bd3a868be6e348f29f79eb348fac45cf7fc06fa",
+          "bundleSha256": "a7d9c22fe2d277edf12e6cda82f7e48b5d62e2e472442b2b5c213bdd65f6dc07",
+          "classIdentityMixedWithinInput": false,
+          "decoded": false,
+          "browserExecuted": false,
+          "publicFilesChanged": false,
+          "tracks": [
+            {
+              "type": "video",
+              "count": 5000,
+              "payloadBytes": 18000000,
+              "seekCount": 24,
+              "completeEndReached": true,
+              "allPacketPayloadsCompared": true,
+              "allPacketMetadataCompared": true,
+              "payloadSha256": "9d13409adc718a2f2b999373ccbf532c498ed7090bcf00e1e12619881ce79561",
+              "metadataSha256": "481cfe8318b328828f4f8fccab93e9a63da3eafb48aebca49305ca57290a7bf4"
+            }
+          ],
+          "metrics": {
+            "tableReadBytes": 71528,
+            "tableReadCalls": 13,
+            "tableMaxReadBytes": 40000,
+            "tableCacheMisses": 6,
+            "inspectorReadBytes": 72209,
+            "inspectorMaxReadBytes": 40008,
+            "metadataReadBytes": 917,
+            "metadataMaxReadBytes": 194,
+            "metadataSmallBytes": 569,
+            "metadataSkeletonBytes": 601,
+            "retainedDescriptionBytes": 45,
+            "maxSkeletonBuildBytes": 66182,
+            "boxCount": 39,
+            "sampleCount": 5000,
+            "peakOwnedStores": 3,
+            "initializationCount": 1,
+            "queryCount": 5047,
+            "peakPendingOperations": 1,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 512,
+              "height": 256,
+              "videoCodec": "avc1",
+              "audioCodecs": [],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 5000,
+                "audio": 0,
+                "total": 5000
+              },
+              "containerMetadataBytes": 72173
+            },
+            "ownedStores": 3,
+            "budgetReservedBytes": 200704,
+            "budgetPeakBytes": 4919608,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 5000,
+                "hasComposition": true,
+                "sortCapacityRecords": 262144,
+                "sortReservedBytes": 4194304,
+                "sortPasses": 1,
+                "presentationRecords": 5000,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 5000,
+                  "extent": 320000,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 766592,
+                  "writeBytes": 640000,
+                  "readCalls": 17,
+                  "writeCalls": 10000,
+                  "cacheHits": 15034,
+                  "cacheWriteThroughBytes": 636800,
+                  "yields": 165,
+                  "flushes": 1,
+                  "observedFileBytes": 320000,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 200704,
+                  "budgetPeakBytes": 4919608
+                },
+                "presentationStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-presentation-run-0",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 16,
+                    "endianness": "little"
+                  },
+                  "count": 5000,
+                  "extent": 80000,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 880000,
+                  "writeBytes": 80000,
+                  "readCalls": 22,
+                  "writeCalls": 5000,
+                  "cacheHits": 10283,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 89,
+                  "flushes": 1,
+                  "observedFileBytes": 80000,
+                  "peakInternalBufferBytes": 65552,
+                  "lastError": null,
+                  "budgetReservedBytes": 200704,
+                  "budgetPeakBytes": 4919608
+                },
+                "inverseStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-presentation-inverse",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 8,
+                    "endianness": "little"
+                  },
+                  "count": 5000,
+                  "extent": 40000,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 40000,
+                  "writeBytes": 80000,
+                  "readCalls": 1,
+                  "writeCalls": 10000,
+                  "cacheHits": 5050,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 156,
+                  "flushes": 1,
+                  "observedFileBytes": 40000,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 200704,
+                  "budgetPeakBytes": 4919608
+                }
+              }
+            ]
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0,
+            "disposed": true
+          }
+        },
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "file": "alternating-ctts-25000-reference.mp4",
+          "inputBytes": 90357953,
+          "inputSha256": "d068e500402645c0616e46eb824c061ac57aff19d474679aa2ae62ec10bd63ad",
+          "bundleSha256": "a7d9c22fe2d277edf12e6cda82f7e48b5d62e2e472442b2b5c213bdd65f6dc07",
+          "classIdentityMixedWithinInput": false,
+          "decoded": false,
+          "browserExecuted": false,
+          "publicFilesChanged": false,
+          "tracks": [
+            {
+              "type": "video",
+              "count": 25000,
+              "payloadBytes": 90000000,
+              "seekCount": 24,
+              "completeEndReached": true,
+              "allPacketPayloadsCompared": true,
+              "allPacketMetadataCompared": true,
+              "payloadSha256": "f9b9ddb497c54c5de1dcb1168448b15d135478da9f2427eadf3fc32e9d94936b",
+              "metadataSha256": "9262e2771a51b66edf6120e0b7487a575f00ab055d9412198199a90c34d2c6eb"
+            }
+          ],
+          "metrics": {
+            "tableReadBytes": 357264,
+            "tableReadCalls": 17,
+            "tableMaxReadBytes": 65536,
+            "tableCacheMisses": 10,
+            "inspectorReadBytes": 557997,
+            "inspectorMaxReadBytes": 65536,
+            "metadataReadBytes": 917,
+            "metadataMaxReadBytes": 194,
+            "metadataSmallBytes": 569,
+            "metadataSkeletonBytes": 601,
+            "retainedDescriptionBytes": 45,
+            "maxSkeletonBuildBytes": 66182,
+            "boxCount": 39,
+            "sampleCount": 25000,
+            "peakOwnedStores": 3,
+            "initializationCount": 1,
+            "queryCount": 25047,
+            "peakPendingOperations": 1,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 512,
+              "height": 256,
+              "videoCodec": "avc1",
+              "audioCodecs": [],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 25000,
+                "audio": 0,
+                "total": 25000
+              },
+              "containerMetadataBytes": 357909
+            },
+            "ownedStores": 3,
+            "budgetReservedBytes": 200704,
+            "budgetPeakBytes": 4919608,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 25000,
+                "hasComposition": true,
+                "sortCapacityRecords": 262144,
+                "sortReservedBytes": 4194304,
+                "sortPasses": 1,
+                "presentationRecords": 25000,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 25000,
+                  "extent": 1600000,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 3306624,
+                  "writeBytes": 3200000,
+                  "readCalls": 77,
+                  "writeCalls": 50000,
+                  "cacheHits": 74974,
+                  "cacheWriteThroughBytes": 3186048,
+                  "yields": 830,
+                  "flushes": 1,
+                  "observedFileBytes": 1600000,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 200704,
+                  "budgetPeakBytes": 4919608
+                },
+                "presentationStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-presentation-run-0",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 16,
+                    "endianness": "little"
+                  },
+                  "count": 25000,
+                  "extent": 400000,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 5866624,
+                  "writeBytes": 400000,
+                  "readCalls": 94,
+                  "writeCalls": 25000,
+                  "cacheHits": 50251,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 479,
+                  "flushes": 1,
+                  "observedFileBytes": 400000,
+                  "peakInternalBufferBytes": 65552,
+                  "lastError": null,
+                  "budgetReservedBytes": 200704,
+                  "budgetPeakBytes": 4919608
+                },
+                "inverseStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-presentation-inverse",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 8,
+                    "endianness": "little"
+                  },
+                  "count": 25000,
+                  "extent": 200000,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 268928,
+                  "writeBytes": 400000,
+                  "readCalls": 6,
+                  "writeCalls": 50000,
+                  "cacheHits": 25045,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 785,
+                  "flushes": 1,
+                  "observedFileBytes": 200000,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 200704,
+                  "budgetPeakBytes": 4919608
+                }
+              }
+            ]
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0,
+            "disposed": true
+          }
+        },
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "file": "alternating-ctts-100000-reference.mp4",
+          "inputBytes": 361429381,
+          "inputSha256": "fd3c399c8366d4d313a76d87c87cf7f009669c839130efb80502fd417f3c0bc0",
+          "bundleSha256": "a7d9c22fe2d277edf12e6cda82f7e48b5d62e2e472442b2b5c213bdd65f6dc07",
+          "classIdentityMixedWithinInput": false,
+          "decoded": false,
+          "browserExecuted": false,
+          "publicFilesChanged": false,
+          "tracks": [
+            {
+              "type": "video",
+              "count": 100000,
+              "payloadBytes": 360000000,
+              "seekCount": 24,
+              "completeEndReached": true,
+              "allPacketPayloadsCompared": true,
+              "allPacketMetadataCompared": true,
+              "payloadSha256": "99aba95eb2898ff921103b57a52f40521a349d9c6b8f7eaf4ee08962a4c247ae",
+              "metadataSha256": "be611cebc013d6cb9a77a132c9e2c2d796b22f075e954e3503c3a73879cba3b5"
+            }
+          ],
+          "metrics": {
+            "tableReadBytes": 1428692,
+            "tableReadCalls": 34,
+            "tableMaxReadBytes": 65536,
+            "tableCacheMisses": 27,
+            "inspectorReadBytes": 2229505,
+            "inspectorMaxReadBytes": 65536,
+            "metadataReadBytes": 917,
+            "metadataMaxReadBytes": 194,
+            "metadataSmallBytes": 569,
+            "metadataSkeletonBytes": 601,
+            "retainedDescriptionBytes": 45,
+            "maxSkeletonBuildBytes": 66182,
+            "boxCount": 39,
+            "sampleCount": 100000,
+            "peakOwnedStores": 3,
+            "initializationCount": 1,
+            "queryCount": 100047,
+            "peakPendingOperations": 1,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 512,
+              "height": 256,
+              "videoCodec": "avc1",
+              "audioCodecs": [],
+              "stereoMode": null,
+              "projection": null,
+              "bounds": null,
+              "pose": null,
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 100000,
+                "audio": 0,
+                "total": 100000
+              },
+              "containerMetadataBytes": 1429337
+            },
+            "ownedStores": 3,
+            "budgetReservedBytes": 200704,
+            "budgetPeakBytes": 4919608,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 100000,
+                "hasComposition": true,
+                "sortCapacityRecords": 262144,
+                "sortReservedBytes": 4194304,
+                "sortPasses": 1,
+                "presentationRecords": 100000,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 100000,
+                  "extent": 6400000,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 12959488,
+                  "writeBytes": 12800000,
+                  "readCalls": 296,
+                  "writeCalls": 200000,
+                  "cacheHits": 299755,
+                  "cacheWriteThroughBytes": 12749056,
+                  "yields": 3321,
+                  "flushes": 1,
+                  "observedFileBytes": 6400000,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 200704,
+                  "budgetPeakBytes": 4919608
+                },
+                "presentationStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-presentation-run-0",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 16,
+                    "endianness": "little"
+                  },
+                  "count": 100000,
+                  "extent": 1600000,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 12521984,
+                  "writeBytes": 1600000,
+                  "readCalls": 194,
+                  "writeCalls": 100000,
+                  "cacheHits": 200193,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 1751,
+                  "flushes": 1,
+                  "observedFileBytes": 1600000,
+                  "peakInternalBufferBytes": 65552,
+                  "lastError": null,
+                  "budgetReservedBytes": 200704,
+                  "budgetPeakBytes": 4919608
+                },
+                "inverseStore": {
+                  "state": "sealed",
+                  "jobId": "input-comparison-t1-presentation-inverse",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 8,
+                    "endianness": "little"
+                  },
+                  "count": 100000,
+                  "extent": 800000,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 879104,
+                  "writeBytes": 1600000,
+                  "readCalls": 15,
+                  "writeCalls": 200000,
+                  "cacheHits": 100036,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 3138,
+                  "flushes": 1,
+                  "observedFileBytes": 800000,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 200704,
+                  "budgetPeakBytes": 4919608
+                }
+              }
+            ]
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0,
+            "disposed": true
+          }
+        }
+      ]
+    },
+    "p4-combined-sortbudget-1": {
+      "schemaVersion": 1,
+      "status": "PASS",
+      "bundle": {
+        "bytes": 693808,
+        "sha256": "6860f19a395ee8db3fca902264f6247ffae975b1d91c2a06982f1beca16e265a"
+      },
+      "classesMixedWithinRemux": false,
+      "backend": "Node real files/test locks",
+      "browserExecuted": false,
+      "decoded": false,
+      "vrMetadataAdded": false,
+      "publicFilesChanged": false,
+      "cases": [
+        {
+          "file": "stereo180-sbs.mp4",
+          "status": "PASS",
+          "source": {
+            "bytes": 26615,
+            "sha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83"
+          },
+          "baseline": {
+            "counts": {
+              "video": 60,
+              "audio": 95
+            },
+            "sameModuleForInputOutputAndPackets": true,
+            "sharedBudgetPeakBytes": 0,
+            "simultaneousSortReservedBytes": null
+          },
+          "candidate": {
+            "counts": {
+              "video": 60,
+              "audio": 95
+            },
+            "inputIndex": {
+              "tableReadBytes": 2196,
+              "tableReadCalls": 22,
+              "tableMaxReadBytes": 612,
+              "tableCacheMisses": 10,
+              "inspectorReadBytes": 3451,
+              "inspectorMaxReadBytes": 620,
+              "metadataReadBytes": 1717,
+              "metadataMaxReadBytes": 175,
+              "metadataSmallBytes": 1009,
+              "metadataSkeletonBytes": 1089,
+              "retainedDescriptionBytes": 50,
+              "maxSkeletonBuildBytes": 66675,
+              "boxCount": 80,
+              "sampleCount": 155,
+              "peakOwnedStores": 4,
+              "initializationCount": 1,
+              "queryCount": 157,
+              "peakPendingOperations": 2,
+              "initialized": true,
+              "disposed": false,
+              "inspection": {
+                "width": 512,
+                "height": 256,
+                "videoCodec": "avc1",
+                "audioCodecs": [
+                  "mp4a"
+                ],
+                "stereoMode": null,
+                "projection": null,
+                "bounds": null,
+                "pose": null,
+                "transcodeSafe": true,
+                "transcodeIssues": [],
+                "sampleCounts": {
+                  "video": 60,
+                  "audio": 95,
+                  "total": 155
+                },
+                "containerMetadataBytes": 3403
+              },
+              "ownedStores": 4,
+              "budgetReservedBytes": 2722304,
+              "budgetPeakBytes": 4989240,
+              "tracks": [
+                {
+                  "id": 1,
+                  "count": 60,
+                  "hasComposition": true,
+                  "sortCapacityRecords": 162144,
+                  "sortReservedBytes": 2594304,
+                  "sortPasses": 1,
+                  "presentationRecords": 60,
+                  "sampleStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 60,
+                    "extent": 3840,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 128,
+                    "writeBytes": 7680,
+                    "readCalls": 1,
+                    "writeCalls": 120,
+                    "cacheHits": 179,
+                    "cacheWriteThroughBytes": 7552,
+                    "yields": 1,
+                    "flushes": 1,
+                    "observedFileBytes": 3840,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 4989240
+                  },
+                  "presentationStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-presentation-run-0",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 16,
+                      "endianness": "little"
+                    },
+                    "count": 60,
+                    "extent": 960,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 960,
+                    "writeBytes": 960,
+                    "readCalls": 1,
+                    "writeCalls": 60,
+                    "cacheHits": 118,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 960,
+                    "peakInternalBufferBytes": 65552,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 4989240
+                  },
+                  "inverseStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-presentation-inverse",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 60,
+                    "extent": 480,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 480,
+                    "writeBytes": 960,
+                    "readCalls": 1,
+                    "writeCalls": 120,
+                    "cacheHits": 59,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 1,
+                    "flushes": 1,
+                    "observedFileBytes": 480,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 4989240
+                  }
+                },
+                {
+                  "id": 2,
+                  "count": 95,
+                  "hasComposition": false,
+                  "sampleStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t2-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 95,
+                    "extent": 6080,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 64,
+                    "writeBytes": 12160,
+                    "readCalls": 1,
+                    "writeCalls": 190,
+                    "cacheHits": 189,
+                    "cacheWriteThroughBytes": 12096,
+                    "yields": 2,
+                    "flushes": 1,
+                    "observedFileBytes": 6080,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 4989240
+                  }
+                }
+              ]
+            },
+            "outputIndex": {
+              "profile": {
+                "maxSamples": 100000,
+                "maxTracks": 2,
+                "maxChunkSamples": 4096,
+                "maxChunkBytes": 4194304,
+                "sortReservedBytes": 1600000,
+                "maxLeafBytes": 65536
+              },
+              "jobId": "remux-out",
+              "sampleCount": 155,
+              "moovPosition": 23208,
+              "moovBytes": 2274,
+              "verification": {
+                "width": 512,
+                "height": 256,
+                "videoCodec": "avc1",
+                "audioCodecs": [
+                  "mp4a"
+                ],
+                "stereoMode": null,
+                "projection": null,
+                "bounds": null,
+                "pose": null,
+                "transcodeSafe": true,
+                "transcodeIssues": [],
+                "sampleCounts": {
+                  "video": 60,
+                  "audio": 95,
+                  "total": 155
+                },
+                "containerMetadataBytes": 2274
+              },
+              "peakChunkSamples": 24,
+              "peakChunkBytes": 9226,
+              "peakChunkBackingBytes": 638760,
+              "peakTimestampSamples": 60,
+              "peakSortBytes": 480,
+              "metadataWriteBytes": 2274,
+              "metadataWriteCalls": 90,
+              "metadataReadBytes": 2310,
+              "metadataReads": 94,
+              "metadataFlushes": 1,
+              "metadataClosed": true,
+              "peakWriterSections": 1,
+              "peakWriterChunks": 1,
+              "peakExplicitReservedBytes": 2722304,
+              "explicitReservedBytes": 2722304,
+              "budgetPeakBytes": 4989240,
+              "disposed": false,
+              "tracks": [
+                {
+                  "id": 1,
+                  "samples": 60,
+                  "chunks": 5,
+                  "liveChunkSamples": 0,
+                  "liveChunkBytes": 0,
+                  "liveChunkBackingBytes": 0,
+                  "tables": {
+                    "samples": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-samples",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 64,
+                        "endianness": "little"
+                      },
+                      "count": 60,
+                      "extent": 3840,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 832,
+                      "writeBytes": 15296,
+                      "readCalls": 1,
+                      "writeCalls": 239,
+                      "cacheHits": 476,
+                      "cacheWriteThroughBytes": 14464,
+                      "yields": 3,
+                      "flushes": 1,
+                      "observedFileBytes": 3840,
+                      "peakInternalBufferBytes": 65600,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "chunks": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-chunks",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 24,
+                        "endianness": "little"
+                      },
+                      "count": 5,
+                      "extent": 120,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 120,
+                      "writeBytes": 120,
+                      "readCalls": 1,
+                      "writeCalls": 5,
+                      "cacheHits": 9,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 120,
+                      "peakInternalBufferBytes": 65560,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 1,
+                      "extent": 8,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 8,
+                      "writeBytes": 8,
+                      "readCalls": 1,
+                      "writeCalls": 1,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 8,
+                      "peakInternalBufferBytes": 65544,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "ctts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-ctts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 41,
+                      "extent": 328,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 328,
+                      "writeBytes": 328,
+                      "readCalls": 1,
+                      "writeCalls": 41,
+                      "cacheHits": 40,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 328,
+                      "peakInternalBufferBytes": 65544,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stsc": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stsc",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 12,
+                        "endianness": "little"
+                      },
+                      "count": 4,
+                      "extent": 48,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 48,
+                      "writeBytes": 48,
+                      "readCalls": 1,
+                      "writeCalls": 4,
+                      "cacheHits": 3,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 48,
+                      "peakInternalBufferBytes": 65548,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stss": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stss",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 4,
+                        "endianness": "little"
+                      },
+                      "count": 1,
+                      "extent": 4,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 4,
+                      "writeBytes": 4,
+                      "readCalls": 1,
+                      "writeCalls": 1,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 4,
+                      "peakInternalBufferBytes": 65540,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    }
+                  }
+                },
+                {
+                  "id": 2,
+                  "samples": 95,
+                  "chunks": 4,
+                  "liveChunkSamples": 0,
+                  "liveChunkBytes": 0,
+                  "liveChunkBackingBytes": 0,
+                  "tables": {
+                    "samples": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-samples",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 64,
+                        "endianness": "little"
+                      },
+                      "count": 95,
+                      "extent": 6080,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 64,
+                      "writeBytes": 24256,
+                      "readCalls": 1,
+                      "writeCalls": 379,
+                      "cacheHits": 759,
+                      "cacheWriteThroughBytes": 24192,
+                      "yields": 5,
+                      "flushes": 1,
+                      "observedFileBytes": 6080,
+                      "peakInternalBufferBytes": 65600,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "chunks": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-chunks",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 24,
+                        "endianness": "little"
+                      },
+                      "count": 4,
+                      "extent": 96,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 96,
+                      "writeBytes": 96,
+                      "readCalls": 1,
+                      "writeCalls": 4,
+                      "cacheHits": 7,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 96,
+                      "peakInternalBufferBytes": 65560,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-stts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 2,
+                      "extent": 16,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 16,
+                      "writeBytes": 16,
+                      "readCalls": 1,
+                      "writeCalls": 2,
+                      "cacheHits": 1,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 16,
+                      "peakInternalBufferBytes": 65544,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "ctts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-ctts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 1,
+                      "extent": 8,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 0,
+                      "writeBytes": 8,
+                      "readCalls": 0,
+                      "writeCalls": 1,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 8,
+                      "peakInternalBufferBytes": 65536,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stsc": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-stsc",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 12,
+                        "endianness": "little"
+                      },
+                      "count": 2,
+                      "extent": 24,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 24,
+                      "writeBytes": 24,
+                      "readCalls": 1,
+                      "writeCalls": 2,
+                      "cacheHits": 1,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 24,
+                      "peakInternalBufferBytes": 65548,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stss": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-stss",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 4,
+                        "endianness": "little"
+                      },
+                      "count": 95,
+                      "extent": 380,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 0,
+                      "writeBytes": 380,
+                      "readCalls": 0,
+                      "writeCalls": 95,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 1,
+                      "flushes": 1,
+                      "observedFileBytes": 380,
+                      "peakInternalBufferBytes": 65536,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    }
+                  }
+                }
+              ]
+            },
+            "sameModuleForInputOutputAndPackets": true,
+            "sharedBudgetPeakBytes": 4989240,
+            "simultaneousSortReservedBytes": 4194304
+          },
+          "reference": {
+            "bytes": 25482,
+            "sha256": "d60736a0e84af908be755caf7ac65081fc192bd83717c050ce69fef72f963b48"
+          },
+          "produced": {
+            "bytes": 25482,
+            "sha256": "d60736a0e84af908be755caf7ac65081fc192bd83717c050ce69fef72f963b48"
+          },
+          "packets": {
+            "count": 155,
+            "payloadBytes": 23164,
+            "metadataSha256": "569554044ed8182021238d7690a753f9d0ccd9f77615c9ae212c8f9679400294",
+            "payloadSha256": "af2cc45483cf10301fbdc53a6ff855bbc59e45736788dbc1c96a2a7397c01eef",
+            "completeEndReached": true,
+            "verifier": "unchanged Mediabunny 1.61.5 full-packet demux; input indexes remain unbounded"
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0
+          }
+        },
+        {
+          "file": "stereo180-tb.mp4",
+          "status": "PASS",
+          "source": {
+            "bytes": 26830,
+            "sha256": "4a00229ce015530ceb1ea7da529d6f7e50ea4f6fb33e161c17b5b9efd5f9c675"
+          },
+          "baseline": {
+            "counts": {
+              "video": 60,
+              "audio": 95
+            },
+            "sameModuleForInputOutputAndPackets": true,
+            "sharedBudgetPeakBytes": 0,
+            "simultaneousSortReservedBytes": null
+          },
+          "candidate": {
+            "counts": {
+              "video": 60,
+              "audio": 95
+            },
+            "inputIndex": {
+              "tableReadBytes": 2196,
+              "tableReadCalls": 22,
+              "tableMaxReadBytes": 612,
+              "tableCacheMisses": 10,
+              "inspectorReadBytes": 3451,
+              "inspectorMaxReadBytes": 620,
+              "metadataReadBytes": 1717,
+              "metadataMaxReadBytes": 175,
+              "metadataSmallBytes": 1009,
+              "metadataSkeletonBytes": 1089,
+              "retainedDescriptionBytes": 50,
+              "maxSkeletonBuildBytes": 66675,
+              "boxCount": 80,
+              "sampleCount": 155,
+              "peakOwnedStores": 4,
+              "initializationCount": 1,
+              "queryCount": 157,
+              "peakPendingOperations": 2,
+              "initialized": true,
+              "disposed": false,
+              "inspection": {
+                "width": 256,
+                "height": 512,
+                "videoCodec": "avc1",
+                "audioCodecs": [
+                  "mp4a"
+                ],
+                "stereoMode": null,
+                "projection": null,
+                "bounds": null,
+                "pose": null,
+                "transcodeSafe": true,
+                "transcodeIssues": [],
+                "sampleCounts": {
+                  "video": 60,
+                  "audio": 95,
+                  "total": 155
+                },
+                "containerMetadataBytes": 3403
+              },
+              "ownedStores": 4,
+              "budgetReservedBytes": 2722304,
+              "budgetPeakBytes": 4989240,
+              "tracks": [
+                {
+                  "id": 1,
+                  "count": 60,
+                  "hasComposition": true,
+                  "sortCapacityRecords": 162144,
+                  "sortReservedBytes": 2594304,
+                  "sortPasses": 1,
+                  "presentationRecords": 60,
+                  "sampleStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 60,
+                    "extent": 3840,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 128,
+                    "writeBytes": 7680,
+                    "readCalls": 1,
+                    "writeCalls": 120,
+                    "cacheHits": 179,
+                    "cacheWriteThroughBytes": 7552,
+                    "yields": 1,
+                    "flushes": 1,
+                    "observedFileBytes": 3840,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 4989240
+                  },
+                  "presentationStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-presentation-run-0",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 16,
+                      "endianness": "little"
+                    },
+                    "count": 60,
+                    "extent": 960,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 960,
+                    "writeBytes": 960,
+                    "readCalls": 1,
+                    "writeCalls": 60,
+                    "cacheHits": 118,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 960,
+                    "peakInternalBufferBytes": 65552,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 4989240
+                  },
+                  "inverseStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-presentation-inverse",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 60,
+                    "extent": 480,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 480,
+                    "writeBytes": 960,
+                    "readCalls": 1,
+                    "writeCalls": 120,
+                    "cacheHits": 59,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 1,
+                    "flushes": 1,
+                    "observedFileBytes": 480,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 4989240
+                  }
+                },
+                {
+                  "id": 2,
+                  "count": 95,
+                  "hasComposition": false,
+                  "sampleStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t2-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 95,
+                    "extent": 6080,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 64,
+                    "writeBytes": 12160,
+                    "readCalls": 1,
+                    "writeCalls": 190,
+                    "cacheHits": 189,
+                    "cacheWriteThroughBytes": 12096,
+                    "yields": 2,
+                    "flushes": 1,
+                    "observedFileBytes": 6080,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 4989240
+                  }
+                }
+              ]
+            },
+            "outputIndex": {
+              "profile": {
+                "maxSamples": 100000,
+                "maxTracks": 2,
+                "maxChunkSamples": 4096,
+                "maxChunkBytes": 4194304,
+                "sortReservedBytes": 1600000,
+                "maxLeafBytes": 65536
+              },
+              "jobId": "remux-out",
+              "sampleCount": 155,
+              "moovPosition": 23423,
+              "moovBytes": 2274,
+              "verification": {
+                "width": 256,
+                "height": 512,
+                "videoCodec": "avc1",
+                "audioCodecs": [
+                  "mp4a"
+                ],
+                "stereoMode": null,
+                "projection": null,
+                "bounds": null,
+                "pose": null,
+                "transcodeSafe": true,
+                "transcodeIssues": [],
+                "sampleCounts": {
+                  "video": 60,
+                  "audio": 95,
+                  "total": 155
+                },
+                "containerMetadataBytes": 2274
+              },
+              "peakChunkSamples": 24,
+              "peakChunkBytes": 9371,
+              "peakChunkBackingBytes": 643920,
+              "peakTimestampSamples": 60,
+              "peakSortBytes": 480,
+              "metadataWriteBytes": 2274,
+              "metadataWriteCalls": 90,
+              "metadataReadBytes": 2310,
+              "metadataReads": 94,
+              "metadataFlushes": 1,
+              "metadataClosed": true,
+              "peakWriterSections": 1,
+              "peakWriterChunks": 1,
+              "peakExplicitReservedBytes": 2722304,
+              "explicitReservedBytes": 2722304,
+              "budgetPeakBytes": 4989240,
+              "disposed": false,
+              "tracks": [
+                {
+                  "id": 1,
+                  "samples": 60,
+                  "chunks": 5,
+                  "liveChunkSamples": 0,
+                  "liveChunkBytes": 0,
+                  "liveChunkBackingBytes": 0,
+                  "tables": {
+                    "samples": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-samples",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 64,
+                        "endianness": "little"
+                      },
+                      "count": 60,
+                      "extent": 3840,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 832,
+                      "writeBytes": 15296,
+                      "readCalls": 1,
+                      "writeCalls": 239,
+                      "cacheHits": 476,
+                      "cacheWriteThroughBytes": 14464,
+                      "yields": 3,
+                      "flushes": 1,
+                      "observedFileBytes": 3840,
+                      "peakInternalBufferBytes": 65600,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "chunks": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-chunks",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 24,
+                        "endianness": "little"
+                      },
+                      "count": 5,
+                      "extent": 120,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 120,
+                      "writeBytes": 120,
+                      "readCalls": 1,
+                      "writeCalls": 5,
+                      "cacheHits": 9,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 120,
+                      "peakInternalBufferBytes": 65560,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 1,
+                      "extent": 8,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 8,
+                      "writeBytes": 8,
+                      "readCalls": 1,
+                      "writeCalls": 1,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 8,
+                      "peakInternalBufferBytes": 65544,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "ctts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-ctts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 41,
+                      "extent": 328,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 328,
+                      "writeBytes": 328,
+                      "readCalls": 1,
+                      "writeCalls": 41,
+                      "cacheHits": 40,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 328,
+                      "peakInternalBufferBytes": 65544,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stsc": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stsc",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 12,
+                        "endianness": "little"
+                      },
+                      "count": 4,
+                      "extent": 48,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 48,
+                      "writeBytes": 48,
+                      "readCalls": 1,
+                      "writeCalls": 4,
+                      "cacheHits": 3,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 48,
+                      "peakInternalBufferBytes": 65548,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stss": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stss",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 4,
+                        "endianness": "little"
+                      },
+                      "count": 1,
+                      "extent": 4,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 4,
+                      "writeBytes": 4,
+                      "readCalls": 1,
+                      "writeCalls": 1,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 4,
+                      "peakInternalBufferBytes": 65540,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    }
+                  }
+                },
+                {
+                  "id": 2,
+                  "samples": 95,
+                  "chunks": 4,
+                  "liveChunkSamples": 0,
+                  "liveChunkBytes": 0,
+                  "liveChunkBackingBytes": 0,
+                  "tables": {
+                    "samples": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-samples",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 64,
+                        "endianness": "little"
+                      },
+                      "count": 95,
+                      "extent": 6080,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 64,
+                      "writeBytes": 24256,
+                      "readCalls": 1,
+                      "writeCalls": 379,
+                      "cacheHits": 759,
+                      "cacheWriteThroughBytes": 24192,
+                      "yields": 5,
+                      "flushes": 1,
+                      "observedFileBytes": 6080,
+                      "peakInternalBufferBytes": 65600,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "chunks": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-chunks",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 24,
+                        "endianness": "little"
+                      },
+                      "count": 4,
+                      "extent": 96,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 96,
+                      "writeBytes": 96,
+                      "readCalls": 1,
+                      "writeCalls": 4,
+                      "cacheHits": 7,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 96,
+                      "peakInternalBufferBytes": 65560,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-stts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 2,
+                      "extent": 16,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 16,
+                      "writeBytes": 16,
+                      "readCalls": 1,
+                      "writeCalls": 2,
+                      "cacheHits": 1,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 16,
+                      "peakInternalBufferBytes": 65544,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "ctts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-ctts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 1,
+                      "extent": 8,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 0,
+                      "writeBytes": 8,
+                      "readCalls": 0,
+                      "writeCalls": 1,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 8,
+                      "peakInternalBufferBytes": 65536,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stsc": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-stsc",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 12,
+                        "endianness": "little"
+                      },
+                      "count": 2,
+                      "extent": 24,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 24,
+                      "writeBytes": 24,
+                      "readCalls": 1,
+                      "writeCalls": 2,
+                      "cacheHits": 1,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 24,
+                      "peakInternalBufferBytes": 65548,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stss": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-stss",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 4,
+                        "endianness": "little"
+                      },
+                      "count": 95,
+                      "extent": 380,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 0,
+                      "writeBytes": 380,
+                      "readCalls": 0,
+                      "writeCalls": 95,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 1,
+                      "flushes": 1,
+                      "observedFileBytes": 380,
+                      "peakInternalBufferBytes": 65536,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    }
+                  }
+                }
+              ]
+            },
+            "sameModuleForInputOutputAndPackets": true,
+            "sharedBudgetPeakBytes": 4989240,
+            "simultaneousSortReservedBytes": 4194304
+          },
+          "reference": {
+            "bytes": 25697,
+            "sha256": "9002a6cb0c0d66679acbf26d22c269594033653a212b7017dab715d3adad0aa7"
+          },
+          "produced": {
+            "bytes": 25697,
+            "sha256": "9002a6cb0c0d66679acbf26d22c269594033653a212b7017dab715d3adad0aa7"
+          },
+          "packets": {
+            "count": 155,
+            "payloadBytes": 23379,
+            "metadataSha256": "1512a2edf095971e39cc7584ea2814709b7eb6722388a4029be39092f02bf07e",
+            "payloadSha256": "cc2d236e3503fc66c539d31c2974ae57ed57aa658c570af4cfeb2af5a7b39194",
+            "completeEndReached": true,
+            "verifier": "unchanged Mediabunny 1.61.5 full-packet demux; input indexes remain unbounded"
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0
+          }
+        },
+        {
+          "file": "stereo360-tb.mp4",
+          "status": "PASS",
+          "source": {
+            "bytes": 27952,
+            "sha256": "72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9"
+          },
+          "baseline": {
+            "counts": {
+              "video": 60,
+              "audio": 95
+            },
+            "sameModuleForInputOutputAndPackets": true,
+            "sharedBudgetPeakBytes": 0,
+            "simultaneousSortReservedBytes": null
+          },
+          "candidate": {
+            "counts": {
+              "video": 60,
+              "audio": 95
+            },
+            "inputIndex": {
+              "tableReadBytes": 2196,
+              "tableReadCalls": 22,
+              "tableMaxReadBytes": 612,
+              "tableCacheMisses": 10,
+              "inspectorReadBytes": 3451,
+              "inspectorMaxReadBytes": 620,
+              "metadataReadBytes": 1717,
+              "metadataMaxReadBytes": 175,
+              "metadataSmallBytes": 1009,
+              "metadataSkeletonBytes": 1089,
+              "retainedDescriptionBytes": 50,
+              "maxSkeletonBuildBytes": 66675,
+              "boxCount": 80,
+              "sampleCount": 155,
+              "peakOwnedStores": 4,
+              "initializationCount": 1,
+              "queryCount": 157,
+              "peakPendingOperations": 2,
+              "initialized": true,
+              "disposed": false,
+              "inspection": {
+                "width": 512,
+                "height": 512,
+                "videoCodec": "avc1",
+                "audioCodecs": [
+                  "mp4a"
+                ],
+                "stereoMode": null,
+                "projection": null,
+                "bounds": null,
+                "pose": null,
+                "transcodeSafe": true,
+                "transcodeIssues": [],
+                "sampleCounts": {
+                  "video": 60,
+                  "audio": 95,
+                  "total": 155
+                },
+                "containerMetadataBytes": 3403
+              },
+              "ownedStores": 4,
+              "budgetReservedBytes": 2722304,
+              "budgetPeakBytes": 4989240,
+              "tracks": [
+                {
+                  "id": 1,
+                  "count": 60,
+                  "hasComposition": true,
+                  "sortCapacityRecords": 162144,
+                  "sortReservedBytes": 2594304,
+                  "sortPasses": 1,
+                  "presentationRecords": 60,
+                  "sampleStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 60,
+                    "extent": 3840,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 128,
+                    "writeBytes": 7680,
+                    "readCalls": 1,
+                    "writeCalls": 120,
+                    "cacheHits": 179,
+                    "cacheWriteThroughBytes": 7552,
+                    "yields": 1,
+                    "flushes": 1,
+                    "observedFileBytes": 3840,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 4989240
+                  },
+                  "presentationStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-presentation-run-0",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 16,
+                      "endianness": "little"
+                    },
+                    "count": 60,
+                    "extent": 960,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 960,
+                    "writeBytes": 960,
+                    "readCalls": 1,
+                    "writeCalls": 60,
+                    "cacheHits": 118,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 960,
+                    "peakInternalBufferBytes": 65552,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 4989240
+                  },
+                  "inverseStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-presentation-inverse",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 60,
+                    "extent": 480,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 480,
+                    "writeBytes": 960,
+                    "readCalls": 1,
+                    "writeCalls": 120,
+                    "cacheHits": 59,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 1,
+                    "flushes": 1,
+                    "observedFileBytes": 480,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 4989240
+                  }
+                },
+                {
+                  "id": 2,
+                  "count": 95,
+                  "hasComposition": false,
+                  "sampleStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t2-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 95,
+                    "extent": 6080,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 64,
+                    "writeBytes": 12160,
+                    "readCalls": 1,
+                    "writeCalls": 190,
+                    "cacheHits": 189,
+                    "cacheWriteThroughBytes": 12096,
+                    "yields": 2,
+                    "flushes": 1,
+                    "observedFileBytes": 6080,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2722304,
+                    "budgetPeakBytes": 4989240
+                  }
+                }
+              ]
+            },
+            "outputIndex": {
+              "profile": {
+                "maxSamples": 100000,
+                "maxTracks": 2,
+                "maxChunkSamples": 4096,
+                "maxChunkBytes": 4194304,
+                "sortReservedBytes": 1600000,
+                "maxLeafBytes": 65536
+              },
+              "jobId": "remux-out",
+              "sampleCount": 155,
+              "moovPosition": 24545,
+              "moovBytes": 2274,
+              "verification": {
+                "width": 512,
+                "height": 512,
+                "videoCodec": "avc1",
+                "audioCodecs": [
+                  "mp4a"
+                ],
+                "stereoMode": null,
+                "projection": null,
+                "bounds": null,
+                "pose": null,
+                "transcodeSafe": true,
+                "transcodeIssues": [],
+                "sampleCounts": {
+                  "video": 60,
+                  "audio": 95,
+                  "total": 155
+                },
+                "containerMetadataBytes": 2274
+              },
+              "peakChunkSamples": 24,
+              "peakChunkBytes": 10247,
+              "peakChunkBackingBytes": 670848,
+              "peakTimestampSamples": 60,
+              "peakSortBytes": 480,
+              "metadataWriteBytes": 2274,
+              "metadataWriteCalls": 90,
+              "metadataReadBytes": 2310,
+              "metadataReads": 94,
+              "metadataFlushes": 1,
+              "metadataClosed": true,
+              "peakWriterSections": 1,
+              "peakWriterChunks": 1,
+              "peakExplicitReservedBytes": 2722304,
+              "explicitReservedBytes": 2722304,
+              "budgetPeakBytes": 4989240,
+              "disposed": false,
+              "tracks": [
+                {
+                  "id": 1,
+                  "samples": 60,
+                  "chunks": 5,
+                  "liveChunkSamples": 0,
+                  "liveChunkBytes": 0,
+                  "liveChunkBackingBytes": 0,
+                  "tables": {
+                    "samples": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-samples",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 64,
+                        "endianness": "little"
+                      },
+                      "count": 60,
+                      "extent": 3840,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 832,
+                      "writeBytes": 15296,
+                      "readCalls": 1,
+                      "writeCalls": 239,
+                      "cacheHits": 476,
+                      "cacheWriteThroughBytes": 14464,
+                      "yields": 3,
+                      "flushes": 1,
+                      "observedFileBytes": 3840,
+                      "peakInternalBufferBytes": 65600,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "chunks": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-chunks",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 24,
+                        "endianness": "little"
+                      },
+                      "count": 5,
+                      "extent": 120,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 120,
+                      "writeBytes": 120,
+                      "readCalls": 1,
+                      "writeCalls": 5,
+                      "cacheHits": 9,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 120,
+                      "peakInternalBufferBytes": 65560,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 1,
+                      "extent": 8,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 8,
+                      "writeBytes": 8,
+                      "readCalls": 1,
+                      "writeCalls": 1,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 8,
+                      "peakInternalBufferBytes": 65544,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "ctts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-ctts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 41,
+                      "extent": 328,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 328,
+                      "writeBytes": 328,
+                      "readCalls": 1,
+                      "writeCalls": 41,
+                      "cacheHits": 40,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 328,
+                      "peakInternalBufferBytes": 65544,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stsc": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stsc",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 12,
+                        "endianness": "little"
+                      },
+                      "count": 4,
+                      "extent": 48,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 48,
+                      "writeBytes": 48,
+                      "readCalls": 1,
+                      "writeCalls": 4,
+                      "cacheHits": 3,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 48,
+                      "peakInternalBufferBytes": 65548,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stss": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stss",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 4,
+                        "endianness": "little"
+                      },
+                      "count": 1,
+                      "extent": 4,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 4,
+                      "writeBytes": 4,
+                      "readCalls": 1,
+                      "writeCalls": 1,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 4,
+                      "peakInternalBufferBytes": 65540,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    }
+                  }
+                },
+                {
+                  "id": 2,
+                  "samples": 95,
+                  "chunks": 4,
+                  "liveChunkSamples": 0,
+                  "liveChunkBytes": 0,
+                  "liveChunkBackingBytes": 0,
+                  "tables": {
+                    "samples": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-samples",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 64,
+                        "endianness": "little"
+                      },
+                      "count": 95,
+                      "extent": 6080,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 64,
+                      "writeBytes": 24256,
+                      "readCalls": 1,
+                      "writeCalls": 379,
+                      "cacheHits": 759,
+                      "cacheWriteThroughBytes": 24192,
+                      "yields": 5,
+                      "flushes": 1,
+                      "observedFileBytes": 6080,
+                      "peakInternalBufferBytes": 65600,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "chunks": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-chunks",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 24,
+                        "endianness": "little"
+                      },
+                      "count": 4,
+                      "extent": 96,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 96,
+                      "writeBytes": 96,
+                      "readCalls": 1,
+                      "writeCalls": 4,
+                      "cacheHits": 7,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 96,
+                      "peakInternalBufferBytes": 65560,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-stts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 2,
+                      "extent": 16,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 16,
+                      "writeBytes": 16,
+                      "readCalls": 1,
+                      "writeCalls": 2,
+                      "cacheHits": 1,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 16,
+                      "peakInternalBufferBytes": 65544,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "ctts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-ctts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 1,
+                      "extent": 8,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 0,
+                      "writeBytes": 8,
+                      "readCalls": 0,
+                      "writeCalls": 1,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 8,
+                      "peakInternalBufferBytes": 65536,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stsc": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-stsc",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 12,
+                        "endianness": "little"
+                      },
+                      "count": 2,
+                      "extent": 24,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 24,
+                      "writeBytes": 24,
+                      "readCalls": 1,
+                      "writeCalls": 2,
+                      "cacheHits": 1,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 24,
+                      "peakInternalBufferBytes": 65548,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stss": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t2-stss",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 4,
+                        "endianness": "little"
+                      },
+                      "count": 95,
+                      "extent": 380,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 0,
+                      "writeBytes": 380,
+                      "readCalls": 0,
+                      "writeCalls": 95,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 1,
+                      "flushes": 1,
+                      "observedFileBytes": 380,
+                      "peakInternalBufferBytes": 65536,
+                      "lastError": null,
+                      "budgetReservedBytes": 2722304,
+                      "budgetPeakBytes": 4989240
+                    }
+                  }
+                }
+              ]
+            },
+            "sameModuleForInputOutputAndPackets": true,
+            "sharedBudgetPeakBytes": 4989240,
+            "simultaneousSortReservedBytes": 4194304
+          },
+          "reference": {
+            "bytes": 26819,
+            "sha256": "d17e1a0c9f4cac552a68f6c466e578ebf6d9289519e1c2b43d2ceb9449b9cac3"
+          },
+          "produced": {
+            "bytes": 26819,
+            "sha256": "d17e1a0c9f4cac552a68f6c466e578ebf6d9289519e1c2b43d2ceb9449b9cac3"
+          },
+          "packets": {
+            "count": 155,
+            "payloadBytes": 24501,
+            "metadataSha256": "0e65d45fe552c1cc2d4043528fad5524d4d798932c686347ee926c70aeb77cd0",
+            "payloadSha256": "2481139564867d49f3451e429b4208bcd1db45d80914b3d5df13149918fd9b63",
+            "completeEndReached": true,
+            "verifier": "unchanged Mediabunny 1.61.5 full-packet demux; input indexes remain unbounded"
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0
+          }
+        },
+        {
+          "file": "monotonic-100000-reference.mp4",
+          "status": "PASS",
+          "source": {
+            "bytes": 674827389,
+            "sha256": "8815d5f01e1cca03528ae8f5efdf4ed13a434309e99c72fa26b2c00a4b7f7f9b"
+          },
+          "baseline": {
+            "counts": {
+              "video": 100000,
+              "audio": 0
+            },
+            "sameModuleForInputOutputAndPackets": true,
+            "sharedBudgetPeakBytes": 0,
+            "simultaneousSortReservedBytes": null
+          },
+          "candidate": {
+            "counts": {
+              "video": 100000,
+              "audio": 0
+            },
+            "inputIndex": {
+              "tableReadBytes": 426748,
+              "tableReadCalls": 15,
+              "tableMaxReadBytes": 65536,
+              "tableCacheMisses": 10,
+              "inspectorReadBytes": 427465,
+              "inspectorMaxReadBytes": 65536,
+              "metadataReadBytes": 837,
+              "metadataMaxReadBytes": 194,
+              "metadataSmallBytes": 537,
+              "metadataSkeletonBytes": 569,
+              "retainedDescriptionBytes": 45,
+              "maxSkeletonBuildBytes": 66150,
+              "boxCount": 33,
+              "sampleCount": 100000,
+              "peakOwnedStores": 1,
+              "initializationCount": 1,
+              "queryCount": 100001,
+              "peakPendingOperations": 1,
+              "initialized": true,
+              "disposed": false,
+              "inspection": {
+                "width": 512,
+                "height": 256,
+                "videoCodec": "avc1",
+                "audioCodecs": [],
+                "stereoMode": null,
+                "projection": null,
+                "bounds": null,
+                "pose": null,
+                "transcodeSafe": true,
+                "transcodeIssues": [],
+                "sampleCounts": {
+                  "video": 100000,
+                  "audio": 0,
+                  "total": 100000
+                },
+                "containerMetadataBytes": 427345
+              },
+              "ownedStores": 1,
+              "budgetReservedBytes": 2132480,
+              "budgetPeakBytes": 2132544,
+              "tracks": [
+                {
+                  "id": 1,
+                  "count": 100000,
+                  "hasComposition": false,
+                  "sampleStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 100000,
+                    "extent": 6400000,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 6450432,
+                    "writeBytes": 12800000,
+                    "readCalls": 196,
+                    "writeCalls": 200000,
+                    "cacheHits": 199804,
+                    "cacheWriteThroughBytes": 12749568,
+                    "yields": 3223,
+                    "flushes": 1,
+                    "observedFileBytes": 6400000,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2132480,
+                    "budgetPeakBytes": 2132544
+                  }
+                }
+              ]
+            },
+            "outputIndex": {
+              "profile": {
+                "maxSamples": 100000,
+                "maxTracks": 2,
+                "maxChunkSamples": 4096,
+                "maxChunkBytes": 4194304,
+                "sortReservedBytes": 1600000,
+                "maxLeafBytes": 65536
+              },
+              "jobId": "remux-out",
+              "sampleCount": 100000,
+              "moovPosition": 674400044,
+              "moovBytes": 427345,
+              "verification": {
+                "width": 512,
+                "height": 256,
+                "videoCodec": "avc1",
+                "audioCodecs": [],
+                "stereoMode": null,
+                "projection": null,
+                "bounds": null,
+                "pose": null,
+                "transcodeSafe": true,
+                "transcodeIssues": [],
+                "sampleCounts": {
+                  "video": 100000,
+                  "audio": 0,
+                  "total": 100000
+                },
+                "containerMetadataBytes": 427345
+              },
+              "peakChunkSamples": 15,
+              "peakChunkBytes": 101160,
+              "peakChunkBackingBytes": 1966080,
+              "peakTimestampSamples": 1,
+              "peakSortBytes": 8,
+              "metadataWriteBytes": 427345,
+              "metadataWriteCalls": 48,
+              "metadataReadBytes": 427465,
+              "metadataReads": 52,
+              "metadataFlushes": 1,
+              "metadataClosed": true,
+              "peakWriterSections": 1,
+              "peakWriterChunks": 2,
+              "peakExplicitReservedBytes": 2132480,
+              "explicitReservedBytes": 2132480,
+              "budgetPeakBytes": 2132544,
+              "disposed": false,
+              "tracks": [
+                {
+                  "id": 1,
+                  "samples": 100000,
+                  "chunks": 6667,
+                  "liveChunkSamples": 0,
+                  "liveChunkBytes": 0,
+                  "liveChunkBackingBytes": 0,
+                  "tables": {
+                    "samples": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-samples",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 64,
+                        "endianness": "little"
+                      },
+                      "count": 100000,
+                      "extent": 6400000,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 405532864,
+                      "writeBytes": 25599936,
+                      "readCalls": 6478,
+                      "writeCalls": 399999,
+                      "cacheHits": 893461,
+                      "cacheWriteThroughBytes": 25581632,
+                      "yields": 12344,
+                      "flushes": 1,
+                      "observedFileBytes": 6400000,
+                      "peakInternalBufferBytes": 65600,
+                      "lastError": null,
+                      "budgetReservedBytes": 2132480,
+                      "budgetPeakBytes": 2132544
+                    },
+                    "chunks": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-chunks",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 24,
+                        "endianness": "little"
+                      },
+                      "count": 6667,
+                      "extent": 160008,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 320016,
+                      "writeBytes": 160008,
+                      "readCalls": 6,
+                      "writeCalls": 6669,
+                      "cacheHits": 13332,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 108,
+                      "flushes": 1,
+                      "observedFileBytes": 160008,
+                      "peakInternalBufferBytes": 65560,
+                      "lastError": null,
+                      "budgetReservedBytes": 2132480,
+                      "budgetPeakBytes": 2132544
+                    },
+                    "stts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 1,
+                      "extent": 8,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 8,
+                      "writeBytes": 8,
+                      "readCalls": 1,
+                      "writeCalls": 1,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 8,
+                      "peakInternalBufferBytes": 65544,
+                      "lastError": null,
+                      "budgetReservedBytes": 2132480,
+                      "budgetPeakBytes": 2132544
+                    },
+                    "ctts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-ctts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 1,
+                      "extent": 8,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 0,
+                      "writeBytes": 8,
+                      "readCalls": 0,
+                      "writeCalls": 1,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 8,
+                      "peakInternalBufferBytes": 65536,
+                      "lastError": null,
+                      "budgetReservedBytes": 2132480,
+                      "budgetPeakBytes": 2132544
+                    },
+                    "stsc": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stsc",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 12,
+                        "endianness": "little"
+                      },
+                      "count": 2,
+                      "extent": 24,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 24,
+                      "writeBytes": 24,
+                      "readCalls": 1,
+                      "writeCalls": 2,
+                      "cacheHits": 1,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 24,
+                      "peakInternalBufferBytes": 65548,
+                      "lastError": null,
+                      "budgetReservedBytes": 2132480,
+                      "budgetPeakBytes": 2132544
+                    },
+                    "stss": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stss",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 4,
+                        "endianness": "little"
+                      },
+                      "count": 100000,
+                      "extent": 400000,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 0,
+                      "writeBytes": 400000,
+                      "readCalls": 0,
+                      "writeCalls": 100000,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 1562,
+                      "flushes": 1,
+                      "observedFileBytes": 400000,
+                      "peakInternalBufferBytes": 65536,
+                      "lastError": null,
+                      "budgetReservedBytes": 2132480,
+                      "budgetPeakBytes": 2132544
+                    }
+                  }
+                }
+              ]
+            },
+            "sameModuleForInputOutputAndPackets": true,
+            "sharedBudgetPeakBytes": 2132544,
+            "simultaneousSortReservedBytes": 4194304
+          },
+          "reference": {
+            "bytes": 674827389,
+            "sha256": "8815d5f01e1cca03528ae8f5efdf4ed13a434309e99c72fa26b2c00a4b7f7f9b"
+          },
+          "produced": {
+            "bytes": 674827389,
+            "sha256": "8815d5f01e1cca03528ae8f5efdf4ed13a434309e99c72fa26b2c00a4b7f7f9b"
+          },
+          "packets": {
+            "count": 100000,
+            "payloadBytes": 674400000,
+            "metadataSha256": "9517d244c9318079aef2b18bf60886cacaaae66264cbe9a1b8c167bb0ed1566f",
+            "payloadSha256": "e7668e217802db3e228332152cd9a6076025f070154965f515a9661e0ec5d488",
+            "completeEndReached": true,
+            "verifier": "unchanged Mediabunny 1.61.5 full-packet demux; input indexes remain unbounded"
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0
+          }
+        },
+        {
+          "file": "alternating-ctts-100000-reference.mp4",
+          "status": "PASS",
+          "source": {
+            "bytes": 361429381,
+            "sha256": "fd3c399c8366d4d313a76d87c87cf7f009669c839130efb80502fd417f3c0bc0"
+          },
+          "baseline": {
+            "counts": {
+              "video": 100000,
+              "audio": 0
+            },
+            "sameModuleForInputOutputAndPackets": true,
+            "sharedBudgetPeakBytes": 0,
+            "simultaneousSortReservedBytes": null
+          },
+          "candidate": {
+            "counts": {
+              "video": 100000,
+              "audio": 0
+            },
+            "inputIndex": {
+              "tableReadBytes": 1428692,
+              "tableReadCalls": 34,
+              "tableMaxReadBytes": 65536,
+              "tableCacheMisses": 27,
+              "inspectorReadBytes": 2229505,
+              "inspectorMaxReadBytes": 65536,
+              "metadataReadBytes": 917,
+              "metadataMaxReadBytes": 194,
+              "metadataSmallBytes": 569,
+              "metadataSkeletonBytes": 601,
+              "retainedDescriptionBytes": 45,
+              "maxSkeletonBuildBytes": 66182,
+              "boxCount": 39,
+              "sampleCount": 100000,
+              "peakOwnedStores": 3,
+              "initializationCount": 1,
+              "queryCount": 100001,
+              "peakPendingOperations": 1,
+              "initialized": true,
+              "disposed": false,
+              "inspection": {
+                "width": 512,
+                "height": 256,
+                "videoCodec": "avc1",
+                "audioCodecs": [],
+                "stereoMode": null,
+                "projection": null,
+                "bounds": null,
+                "pose": null,
+                "transcodeSafe": true,
+                "transcodeIssues": [],
+                "sampleCounts": {
+                  "video": 100000,
+                  "audio": 0,
+                  "total": 100000
+                },
+                "containerMetadataBytes": 1429337
+              },
+              "ownedStores": 3,
+              "budgetReservedBytes": 2263552,
+              "budgetPeakBytes": 4989240,
+              "tracks": [
+                {
+                  "id": 1,
+                  "count": 100000,
+                  "hasComposition": true,
+                  "sortCapacityRecords": 162144,
+                  "sortReservedBytes": 2594304,
+                  "sortPasses": 1,
+                  "presentationRecords": 100000,
+                  "sampleStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 100000,
+                    "extent": 6400000,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 12850944,
+                    "writeBytes": 12800000,
+                    "readCalls": 294,
+                    "writeCalls": 200000,
+                    "cacheHits": 299706,
+                    "cacheWriteThroughBytes": 12749056,
+                    "yields": 3320,
+                    "flushes": 1,
+                    "observedFileBytes": 6400000,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2263552,
+                    "budgetPeakBytes": 4989240
+                  },
+                  "presentationStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-presentation-run-0",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 16,
+                      "endianness": "little"
+                    },
+                    "count": 100000,
+                    "extent": 1600000,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 6307328,
+                    "writeBytes": 1600000,
+                    "readCalls": 98,
+                    "writeCalls": 100000,
+                    "cacheHits": 199901,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 1657,
+                    "flushes": 1,
+                    "observedFileBytes": 1600000,
+                    "peakInternalBufferBytes": 65552,
+                    "lastError": null,
+                    "budgetReservedBytes": 2263552,
+                    "budgetPeakBytes": 4989240
+                  },
+                  "inverseStore": {
+                    "state": "sealed",
+                    "jobId": "remux-in-t1-presentation-inverse",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 100000,
+                    "extent": 800000,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 800000,
+                    "writeBytes": 1600000,
+                    "readCalls": 13,
+                    "writeCalls": 200000,
+                    "cacheHits": 99987,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 3137,
+                    "flushes": 1,
+                    "observedFileBytes": 800000,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2263552,
+                    "budgetPeakBytes": 4989240
+                  }
+                }
+              ]
+            },
+            "outputIndex": {
+              "profile": {
+                "maxSamples": 100000,
+                "maxTracks": 2,
+                "maxChunkSamples": 4096,
+                "maxChunkBytes": 4194304,
+                "sortReservedBytes": 1600000,
+                "maxLeafBytes": 65536
+              },
+              "jobId": "remux-out",
+              "sampleCount": 100000,
+              "moovPosition": 360000044,
+              "moovBytes": 1429337,
+              "verification": {
+                "width": 512,
+                "height": 256,
+                "videoCodec": "avc1",
+                "audioCodecs": [],
+                "stereoMode": null,
+                "projection": null,
+                "bounds": null,
+                "pose": null,
+                "transcodeSafe": true,
+                "transcodeIssues": [],
+                "sampleCounts": {
+                  "video": 100000,
+                  "audio": 0,
+                  "total": 100000
+                },
+                "containerMetadataBytes": 1429337
+              },
+              "peakChunkSamples": 16,
+              "peakChunkBytes": 57600,
+              "peakChunkBackingBytes": 1835008,
+              "peakTimestampSamples": 2,
+              "peakSortBytes": 16,
+              "metadataWriteBytes": 1429337,
+              "metadataWriteCalls": 71,
+              "metadataReadBytes": 2229505,
+              "metadataReads": 86,
+              "metadataFlushes": 1,
+              "metadataClosed": true,
+              "peakWriterSections": 1,
+              "peakWriterChunks": 2,
+              "peakExplicitReservedBytes": 2263552,
+              "explicitReservedBytes": 2263552,
+              "budgetPeakBytes": 4989240,
+              "disposed": false,
+              "tracks": [
+                {
+                  "id": 1,
+                  "samples": 100000,
+                  "chunks": 7143,
+                  "liveChunkSamples": 0,
+                  "liveChunkBytes": 0,
+                  "liveChunkBackingBytes": 0,
+                  "tables": {
+                    "samples": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-samples",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 64,
+                        "endianness": "little"
+                      },
+                      "count": 100000,
+                      "extent": 6400000,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 405469056,
+                      "writeBytes": 25599936,
+                      "readCalls": 6476,
+                      "writeCalls": 399999,
+                      "cacheHits": 893463,
+                      "cacheWriteThroughBytes": 25581184,
+                      "yields": 12344,
+                      "flushes": 1,
+                      "observedFileBytes": 6400000,
+                      "peakInternalBufferBytes": 65600,
+                      "lastError": null,
+                      "budgetReservedBytes": 2263552,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "chunks": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-chunks",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 24,
+                        "endianness": "little"
+                      },
+                      "count": 7143,
+                      "extent": 171432,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 342864,
+                      "writeBytes": 171432,
+                      "readCalls": 6,
+                      "writeCalls": 7145,
+                      "cacheHits": 14284,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 115,
+                      "flushes": 1,
+                      "observedFileBytes": 171432,
+                      "peakInternalBufferBytes": 65560,
+                      "lastError": null,
+                      "budgetReservedBytes": 2263552,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 1,
+                      "extent": 8,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 8,
+                      "writeBytes": 8,
+                      "readCalls": 1,
+                      "writeCalls": 1,
+                      "cacheHits": 0,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 8,
+                      "peakInternalBufferBytes": 65544,
+                      "lastError": null,
+                      "budgetReservedBytes": 2263552,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "ctts": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-ctts",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 8,
+                        "endianness": "little"
+                      },
+                      "count": 100000,
+                      "extent": 800000,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 800000,
+                      "writeBytes": 800000,
+                      "readCalls": 13,
+                      "writeCalls": 100000,
+                      "cacheHits": 99987,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 1574,
+                      "flushes": 1,
+                      "observedFileBytes": 800000,
+                      "peakInternalBufferBytes": 65544,
+                      "lastError": null,
+                      "budgetReservedBytes": 2263552,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stsc": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stsc",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 12,
+                        "endianness": "little"
+                      },
+                      "count": 4,
+                      "extent": 48,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 48,
+                      "writeBytes": 48,
+                      "readCalls": 1,
+                      "writeCalls": 4,
+                      "cacheHits": 3,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 0,
+                      "flushes": 1,
+                      "observedFileBytes": 48,
+                      "peakInternalBufferBytes": 65548,
+                      "lastError": null,
+                      "budgetReservedBytes": 2263552,
+                      "budgetPeakBytes": 4989240
+                    },
+                    "stss": {
+                      "state": "sealed",
+                      "jobId": "remux-out-t1-stss",
+                      "schema": {
+                        "version": 1,
+                        "recordBytes": 4,
+                        "endianness": "little"
+                      },
+                      "count": 50000,
+                      "extent": 200000,
+                      "internalBufferBytes": 65536,
+                      "readBytes": 200000,
+                      "writeBytes": 200000,
+                      "readCalls": 4,
+                      "writeCalls": 50000,
+                      "cacheHits": 49996,
+                      "cacheWriteThroughBytes": 0,
+                      "yields": 784,
+                      "flushes": 1,
+                      "observedFileBytes": 200000,
+                      "peakInternalBufferBytes": 65540,
+                      "lastError": null,
+                      "budgetReservedBytes": 2263552,
+                      "budgetPeakBytes": 4989240
+                    }
+                  }
+                }
+              ]
+            },
+            "sameModuleForInputOutputAndPackets": true,
+            "sharedBudgetPeakBytes": 4989240,
+            "simultaneousSortReservedBytes": 4194304
+          },
+          "reference": {
+            "bytes": 361429381,
+            "sha256": "fd3c399c8366d4d313a76d87c87cf7f009669c839130efb80502fd417f3c0bc0"
+          },
+          "produced": {
+            "bytes": 361429381,
+            "sha256": "fd3c399c8366d4d313a76d87c87cf7f009669c839130efb80502fd417f3c0bc0"
+          },
+          "packets": {
+            "count": 100000,
+            "payloadBytes": 360000000,
+            "metadataSha256": "653eedd8bddf7c99e2204371fbafede50b5f3fe68362eab5dfc5c083d8597c9d",
+            "payloadSha256": "99aba95eb2898ff921103b57a52f40521a349d9c6b8f7eaf4ee08962a4c247ae",
+            "completeEndReached": true,
+            "verifier": "unchanged Mediabunny 1.61.5 full-packet demux; input indexes remain unbounded"
+          },
+          "cleanup": {
+            "openHandles": 0,
+            "heldLocks": 0,
+            "reservedBytes": 0
+          }
+        }
+      ]
+    }
+  },
+  "focusedTests": {
+    "pass": 11,
+    "fail": 0,
+    "backend": "Node real files/test LockManager",
+    "log": "node-tests-2026-10-17.txt"
+  },
+  "superseded": [
+    "p4-combined-small-1",
+    "p4-combined-counts-1"
+  ],
+  "supersededReason": "simultaneous sort reservations 5794304 > 4194304 bytes; corrected rerun preserved separately",
+  "notVerified": [
+    "native combined OPFS",
+    "WebCodecs conversion",
+    "5-10 GB capacity",
+    "browser latency/memory",
+    "save dialogs",
+    "headset playback"
+  ]
+}

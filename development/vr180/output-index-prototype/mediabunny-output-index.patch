@@ -174,3 +174,18 @@
  	let leastDecodeToDisplayDelta = Infinity;
  	let greatestDecodeToDisplayDelta = -Infinity;
  	let compositionStartTime = Infinity;
+--- a/src/media-source.ts
++++ b/src/media-source.ts
+@@ -158,8 +158,11 @@
+ 				return;
+ 			}
+ 
+-			connectedTrack.output._muxer.onTrackClose(connectedTrack);
++			await connectedTrack.output._muxer.onTrackClose(connectedTrack);
+ 		})();
++		// close() is void: observe early rejection without replacing its promise.
++		// finalize()/cancel() still await the original rejected _closingPromise.
++		this._closingPromise.catch(() => {});
+ 	}
+ 
+ 	/** @internal */

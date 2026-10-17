@@ -1,0 +1,42 @@
+{
+  "purpose": "Private WebCodecs regression inputs without AAC; synthetic public fixtures only",
+  "generation": [
+    "ffmpeg",
+    "-v",
+    "error",
+    "-nostdin",
+    "-i",
+    "<source>",
+    "-map",
+    "0:v:0",
+    "-c:v",
+    "copy",
+    "-an",
+    "-map_metadata",
+    "-1",
+    "-movflags",
+    "+faststart",
+    "<output>"
+  ],
+  "ffmpegVersion": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "files": [
+    {
+      "source": "docs/vr180-studio/fixtures/stereo180-sbs.mp4",
+      "sourceSHA256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+      "output": "development/vr180/indexed-conversion-fixtures/stereo180-sbs-silent.mp4",
+      "bytes": 20472,
+      "sha256": "b75dd89581f5caf3b4fe87a18a2f9fb35870d8ae01ad074eaeb732867273c4f8",
+      "completeVideoPacketComparison": true,
+      "packets": 60
+    },
+    {
+      "source": "docs/vr180-studio/fixtures/stereo180-tb.mp4",
+      "sourceSHA256": "4a00229ce015530ceb1ea7da529d6f7e50ea4f6fb33e161c17b5b9efd5f9c675",
+      "output": "development/vr180/indexed-conversion-fixtures/stereo180-tb-silent.mp4",
+      "bytes": 20687,
+      "sha256": "43c4f1f9c958eb5b73ebf12ebec4530bd69fe4885306d33aaf7d2de4ae58607c",
+      "completeVideoPacketComparison": true,
+      "packets": 60
+    }
+  ]
+}

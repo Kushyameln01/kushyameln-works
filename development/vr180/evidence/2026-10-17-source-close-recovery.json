@@ -1,0 +1,168 @@
+{
+  "status": "CORRECTED",
+  "oldNativeScope": "Earlier native PASS verified the successful/selected negative paths at old bundle 8346d2bd\u2026; it did not cover the source-close rejection path below.",
+  "reason": "Original MediaSource.close invoked asynchronous muxer.onTrackClose without awaiting it; source.close is void, so the retained closing promise also needs an observer while preserving rejection for later finalize/cancel.",
+  "patchScope": "Third pinned upstream source media-source.ts: await onTrackClose; observe original _closingPromise with catch without replacing it. Existing muxer/box calculation patches unchanged.",
+  "trials": {
+    "source-close-before": {
+      "expect": "old",
+      "bundle": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/p3-fork-build-39033942446/mediabunny-output-index.mjs",
+      "bundleSHA256": "8346d2bdeda770ec24d73383419b471b8554ce0162b7466161151f6f9be6c233",
+      "harnessSHA256": "30b0edebc97c3a0ff2d947be7985b1967b2b1580f1dccbf58e6546063ebf671f",
+      "results": [
+        {
+          "mode": "delayed-finalize-read-failure",
+          "unhandled": [
+            {
+              "name": "Error",
+              "message": "INDEX_READ_FAILURE"
+            }
+          ],
+          "terminalState": "rejected",
+          "terminalError": {
+            "name": "Error",
+            "message": "INDEX_NOT_OPEN"
+          },
+          "closeError": null,
+          "ownedResourcesAfterCleanup": 0
+        },
+        {
+          "mode": "pending-finalize-write-failure",
+          "unhandled": [
+            {
+              "name": "Error",
+              "message": "INDEX_WRITE_FAILURE"
+            }
+          ],
+          "terminalState": "rejected",
+          "terminalError": {
+            "name": "Error",
+            "message": "INDEX_NOT_OPEN"
+          },
+          "closeError": null,
+          "pendingObserved": true,
+          "ownedResourcesAfterCleanup": 0
+        },
+        {
+          "mode": "pending-cancel",
+          "unhandled": [
+            {
+              "name": "AbortError",
+              "message": "Output index canceled."
+            }
+          ],
+          "terminalState": "resolved",
+          "terminalError": null,
+          "closeError": null,
+          "pendingObserved": false,
+          "ownedResourcesAfterCleanup": 0
+        }
+      ]
+    },
+    "source-close-after": {
+      "expect": "fixed",
+      "bundle": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/p3-source-close-fixed-build/mediabunny-output-index.mjs",
+      "bundleSHA256": "5c97e2e45a2e4d4ac659f6574c3862182fe541a36fc861d80f171eb3cd3f8023",
+      "harnessSHA256": "30b0edebc97c3a0ff2d947be7985b1967b2b1580f1dccbf58e6546063ebf671f",
+      "results": [
+        {
+          "mode": "delayed-finalize-read-failure",
+          "unhandled": [],
+          "terminalState": "rejected",
+          "terminalError": {
+            "name": "Error",
+            "message": "INDEX_READ_FAILURE"
+          },
+          "closeError": {
+            "name": "Error",
+            "message": "INDEX_READ_FAILURE"
+          },
+          "ownedResourcesAfterCleanup": 0
+        },
+        {
+          "mode": "pending-finalize-write-failure",
+          "unhandled": [],
+          "terminalState": "rejected",
+          "terminalError": {
+            "name": "Error",
+            "message": "INDEX_WRITE_FAILURE"
+          },
+          "closeError": {
+            "name": "Error",
+            "message": "INDEX_WRITE_FAILURE"
+          },
+          "pendingObserved": true,
+          "ownedResourcesAfterCleanup": 0
+        },
+        {
+          "mode": "pending-cancel",
+          "unhandled": [],
+          "terminalState": "rejected",
+          "terminalError": {
+            "name": "AbortError",
+            "message": "Output index canceled."
+          },
+          "closeError": {
+            "name": "AbortError",
+            "message": "Output index canceled."
+          },
+          "pendingObserved": true,
+          "ownedResourcesAfterCleanup": 0
+        }
+      ]
+    },
+    "source-close-combined-after": {
+      "expect": "fixed",
+      "bundle": "/workspace/scratch/9c8ffa8409fe/vr180-sync-review/evidence/p4-source-close-fixed-build/mediabunny-input-output-index.mjs",
+      "bundleSHA256": "65a96894f5442fe92d3672e09b80e6841b7a30a745b002b071636352f5b790cd",
+      "harnessSHA256": "30b0edebc97c3a0ff2d947be7985b1967b2b1580f1dccbf58e6546063ebf671f",
+      "results": [
+        {
+          "mode": "delayed-finalize-read-failure",
+          "unhandled": [],
+          "terminalState": "rejected",
+          "terminalError": {
+            "name": "Error",
+            "message": "INDEX_READ_FAILURE"
+          },
+          "closeError": {
+            "name": "Error",
+            "message": "INDEX_READ_FAILURE"
+          },
+          "ownedResourcesAfterCleanup": 0
+        },
+        {
+          "mode": "pending-finalize-write-failure",
+          "unhandled": [],
+          "terminalState": "rejected",
+          "terminalError": {
+            "name": "Error",
+            "message": "INDEX_WRITE_FAILURE"
+          },
+          "closeError": {
+            "name": "Error",
+            "message": "INDEX_WRITE_FAILURE"
+          },
+          "pendingObserved": true,
+          "ownedResourcesAfterCleanup": 0
+        },
+        {
+          "mode": "pending-cancel",
+          "unhandled": [],
+          "terminalState": "rejected",
+          "terminalError": {
+            "name": "AbortError",
+            "message": "Output index canceled."
+          },
+          "closeError": {
+            "name": "AbortError",
+            "message": "Output index canceled."
+          },
+          "pendingObserved": true,
+          "ownedResourcesAfterCleanup": 0
+        }
+      ]
+    }
+  },
+  "nextGate": "Native combined WebCodecs tests use new bundle; old bundle hash is not relabeled."
+}

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Private local fault and small audio/VR regressions. Uses ONE candidate bundle.
 import assert from 'node:assert/strict';
-import {openAsBlob} from 'node:fs';
+import {openAsBlob, createReadStream} from 'node:fs';
+import {createHash} from 'node:crypto';
 import {mkdir, open, writeFile} from 'node:fs/promises';
 import {resolve, join} from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -11,6 +12,15 @@ import {nodeRoot, testLocks} from '../../development/vr180/output-index-prototyp
 import {inspectMp4} from '../../development/vr180/output-index-prototype/mp4-output-inspect.mjs';
 import {generate, runtimeProvenance} from './compare-output-index.mjs';
 const {values} = parseArgs({options: {bundle: {type: 'string'}, 'out-dir': {type: 'string'}, reference: {type: 'boolean', default: false}}});
+async function fingerprint(file) {
+  const hash=createHash('sha256');let bytes=0;
+  for await(const chunk of createReadStream(file,{highWaterMark:1024*1024})){hash.update(chunk);bytes+=chunk.length;}
+  return {path:resolve(file),bytes,sha256:hash.digest('hex')};
+}
+async function provenance() { return {runtime:await runtimeProvenance(),
+  files:await Promise.all([process.argv[1],values.bundle,'docs/vr180-studio/fixtures/stereo180-sbs.mp4',
+    'docs/vr180-studio/fixtures/stereo180-tb.mp4'].map(fingerprint))}; }
+const startedProvenance=await provenance();
 assert(values.bundle && values['out-dir']); const M = await import(pathToFileURL(resolve(values.bundle)));
 const out = resolve(values['out-dir']); await mkdir(out); const tick = () => new Promise(r => setImmediate(r));
 const fixture = resolve('docs/vr180-studio/fixtures/stereo180-sbs.mp4');
@@ -116,5 +126,9 @@ for (const layout of ['sbs', 'tb']) for (const audio of [false, true]) {
     verifier: 'same candidate bundle, unchanged demuxer; independent fixed-original check still required for small regressions'});
   } finally { try { input.dispose(); } finally { await controller?.dispose(); } }
 }
-await writeFile(join(out, 'probe.json'), JSON.stringify({schemaVersion: 1, runtimeProvenance: await runtimeProvenance(), onlyBundleLoaded: resolve(values.bundle), results}, null, 2) + '\n');
+const endedProvenance=await provenance();assert.deepEqual(endedProvenance,startedProvenance,'Executed source/fixtures changed');
+const outputFingerprints=await Promise.all(results.filter(row=>row.mode==='small-remux').map(row=>fingerprint(row.file)));
+await writeFile(join(out, 'probe.json'), JSON.stringify({schemaVersion: 1, runtimeProvenance: await runtimeProvenance(),
+  startedProvenance,endedProvenance,outputFingerprints,reference:values.reference,
+  onlyBundleLoaded: resolve(values.bundle), results}, null, 2) + '\n');
 console.log(JSON.stringify({pass: results.length, cases: results.map(row => row.mode)}));

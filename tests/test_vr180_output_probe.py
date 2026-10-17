@@ -15,6 +15,21 @@ spec=importlib.util.spec_from_file_location('output_probe',ROOT/'tools/vr180/pro
 probe=importlib.util.module_from_spec(spec);spec.loader.exec_module(probe)
 
 class ProbeTransport(unittest.TestCase):
+    def test_indexed_conversion_preflight_failure_keeps_transport_identity(self):
+        spec=importlib.util.spec_from_file_location('indexed_probe',ROOT/'tools/vr180/probe-indexed-conversion.py')
+        indexed=importlib.util.module_from_spec(spec);spec.loader.exec_module(indexed)
+        with tempfile.TemporaryDirectory(prefix='vr180-indexed-probe-contract-') as temp:
+            root=Path(temp);bundle=root/'fork.mjs';bundle.write_text('// no browser is started\n');output=root/'result';logs=io.StringIO()
+            with patch.dict(os.environ,{'GITHUB_REPOSITORY':'rejected/test','GITHUB_RUN_ID':'contract','GITHUB_RUN_ATTEMPT':'3'}), patch.object(sys,'argv',[str(indexed.__file__),'--bundle',str(bundle),'--output',str(output)]),contextlib.redirect_stdout(logs):
+                code=indexed.main()
+            self.assertEqual(code,1)
+            report=json.loads((output/'run.json').read_text())
+            self.assertEqual(report['runId'],'contract-indexed-conversion-3')
+            self.assertEqual(report['fullOutputsRecovered'],0)
+            begin=next(line for line in logs.getvalue().splitlines() if line.startswith('VR180_EVIDENCE_BEGIN '))
+            transport=json.loads(begin.split(' ',1)[1]);self.assertTrue(transport['complete'])
+            self.assertEqual(transport['runId'],report['runId'])
+
     def test_preflight_failure_still_emits_complete_identifiable_evidence(self):
         with tempfile.TemporaryDirectory(prefix='vr180-probe-contract-') as temp:
             root=Path(temp);bundle=root/'fork.mjs';bundle.write_text('// no browser is started\n')

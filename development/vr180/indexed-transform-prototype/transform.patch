@@ -1,0 +1,418 @@
+--- a/docs/shared/vr180/transform.mjs
++++ b/development/vr180/indexed-transform-prototype/transform.mjs
+@@ -1,17 +1,19 @@
+-import {
+-  Input, BlobSource, MP4, VideoSampleSink, EncodedPacketSink,
+-  CanvasSource, EncodedAudioPacketSource, Output, Mp4OutputFormat,
+-  StreamTarget, Quality, canEncodeVideo,
+-} from '../media-basic/vendor/mediabunny.mjs';
+-import { buildStereoGeometry } from './geometry.mjs';
+-import { createFileOutput } from './file-output.mjs';
+-import { createMuxCapture } from './mux-capture.mjs';
++// Private indexed pixel-conversion prototype; generated from the public transform.
++// No public worker, vendor bundle, input admission, or supported limit is changed.
++import { buildStereoGeometry } from '../../../docs/shared/vr180/geometry.mjs';
++import { createFileOutput } from '../../../docs/shared/vr180/file-output.mjs';
++import { inspectMp4 } from '../../../docs/shared/vr180/mp4.mjs';
++import { inspectMp4 as inspectOutputMp4 } from '../output-index-prototype/mp4-output-inspect.mjs';
++import { sha256Blob } from '../../../docs/shared/vr180/sha256.mjs';
++import { createIndexBudget } from '../index-prototype/index-store.mjs';
++import { createInputIndex } from '../input-index-prototype/input-index.mjs';
++import { createOutputIndex, PROFILE } from '../output-index-prototype/output-index.mjs';
+ 
+ const MAX_SAMPLES = 100_000;
+ const MAX_OUTPUT_BYTES = 1024 ** 3;
+ const CACHE_BYTES = 1024 ** 2;
+ const WRITE_CHUNK_BYTES = 1024 ** 2;
+-const OPFS_ROOT = 'vr180-jobs';
++const MAX_METADATA_BYTES = 16 * 1024 ** 2;
+ 
+ function abortError() {
+   return new DOMException('Conversion was canceled.', 'AbortError');
+@@ -20,7 +22,7 @@
+ /** Production direct-mux sink; exposed so the pinned muxer can be tested without WebCodecs. */
+ export async function createDirectMuxDestination(handle, { signal, onWrite = () => {}, onOutputCreated } = {}) {
+   const output = await createFileOutput(handle, { signal, onCreated: onOutputCreated });
+-  const capture = createMuxCapture(), logicalWriter = output.stream.getWriter();
++  const logicalWriter = output.stream.getWriter();
+   let logicalClosed = false;
+   const stream = new WritableStream({
+     async write({ type, position, data }) {
+@@ -32,7 +34,6 @@
+         throw new RangeError('Experimental output limit: 1 GiB; invalid or oversized write.');
+       }
+       await output.writeAt(position, data);
+-      capture.write({position, data}); // Capture only acknowledged writes, including header rewrites.
+       onWrite(output.status.extent);
+     },
+     async close() {
+@@ -45,12 +46,11 @@
+     },
+   }, { highWaterMark: 1 });
+   return {
+-    output, stream, onMoov: capture.onMoov,
++    output, stream,
+     finish() {
+       const status = output.status;
+       if (!status.muxerClosed || status.committed || status.state !== 'open') throw Error('DIRECT_MUX_NOT_FINALIZED');
+-      const {source, metrics} = capture.finish(status.extent);
+-      return {output, source, metrics};
++      return {output, extent: status.extent};
+     },
+   };
+ }
+@@ -142,18 +142,55 @@
+   };
+ }
+ 
+-/**
+- * b1 pixel route. The caller must first require inspectMp4(...).transcodeSafe;
+- * this module additionally checks the actual decoder track properties.
+- * The returned OPFS File remains available until cleanup() is awaited.
+- * With outputHandle, return an uncommitted direct transaction and metadata-only
+- * source instead. The Worker patches VR metadata and explicitly commits it.
+- * VR metadata is deliberately left to the independent MP4 patcher.
+- */
++export function validateIndexedAdmission(info, s) {
++  if (s.mode !== 'convert') throw Error('INDEXED_CONVERT_MODE_REQUIRED');
++  if (!s.confirmed) throw Error('CONFIRM_PROJECTION_AND_EYES');
++  if (!['sbs', 'tb'].includes(s.layout) || ![180, 360].includes(s.fov)) throw Error('INPUT_SETTINGS_UNSUPPORTED');
++  if (info.projection === 'mesh') throw Error('CAMERA_MESH_NOT_SUPPORTED_YET');
++  if (info.pose?.some(x => x !== 0)) throw Error('DIRECTION_METADATA_NOT_SUPPORTED');
++  const expected = s.layout === 'sbs' ? 2 : 1;
++  if (info.stereoMode !== null && info.stereoMode !== undefined && info.stereoMode !== expected) throw Error('STEREO_METADATA_CONFLICT');
++  if (info.bounds) {
++    const b = info.bounds, want = s.fov === 180 ? 0x40000000 : 0;
++    if (b.top !== 0 || b.bottom !== 0 || b.left !== want || b.right !== want) throw Error('FOV_METADATA_CONFLICT');
++  }
++  const ew = info.width / (s.layout === 'sbs' ? 2 : 1), eh = info.height / (s.layout === 'tb' ? 2 : 1);
++  if (!Number.isInteger(ew) || !Number.isInteger(eh) || ew / eh !== s.fov / 180) throw Error('EYE_DIMENSIONS_AND_FOV_CONFLICT');
++  if (s.mode === 'copy' && s.fov !== 180) throw Error('COPY_REQUIRES_180_DEGREES');
++  if (s.mode === 'convert') {
++    if (!info.transcodeSafe) throw Error('TIMELINE_NOT_SUPPORTED: ' + info.transcodeIssues.join(', '));
++    const counts = info.sampleCounts, metadataBytes = info.containerMetadataBytes;
++    const safeCount = n => Number.isSafeInteger(n) && n >= 0;
++    if (!counts || ![counts.video, counts.audio, counts.total, metadataBytes].every(safeCount)
++      || !Number.isSafeInteger(counts.video + counts.audio) || counts.total !== counts.video + counts.audio) {
++      throw Error('CONVERSION_INDEX_INFO_INVALID');
++    }
++    if (counts.total > MAX_SAMPLES) {
++      throw Error(`CONVERSION_SAMPLE_LIMIT_EXCEEDED: ${counts.total} > ${MAX_SAMPLES}`);
++    }
++    if (metadataBytes > MAX_METADATA_BYTES) {
++      throw Error(`CONVERSION_METADATA_LIMIT_EXCEEDED: ${metadataBytes} > ${MAX_METADATA_BYTES}`);
++    }
++  }
++}
++
++
++export const inspectSavedOutput = (file, options) => inspectOutputMp4(file, options);
++
++/** Private direct-file pixel route. One supplied combined-fork module owns every media class. */
+ export async function convertStereo(file, settings, {
+-  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated,
++  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated, fork, indexRoot,
+ } = {}) {
+   const started = performance.now();
++  const {Input, BlobSource, MP4, VideoSampleSink, EncodedPacketSink, CanvasSource,
++    EncodedAudioPacketSource, Output, Mp4OutputFormat, StreamTarget, Quality, canEncodeVideo} = fork ?? {};
++  if (![Input, BlobSource, VideoSampleSink, EncodedPacketSink, CanvasSource, EncodedAudioPacketSource,
++    Output, Mp4OutputFormat, StreamTarget, Quality, canEncodeVideo].every(value => typeof value === 'function') || !MP4) {
++    throw Error('ONE_COMBINED_FORK_MODULE_REQUIRED');
++  }
++  if (!outputHandle?.getFile || !outputHandle?.createWritable || !indexRoot?.getDirectoryHandle) {
++    throw Error('INDEXED_ROUTE_REQUIRES_OUTPUT_HANDLE_AND_INDEX_ROOT');
++  }
+   const checkAbort = () => { if (signal?.aborted) throw abortError(); };
+   checkAbort();
+   if (!(file instanceof Blob)) throw new TypeError('Input must be a File or Blob.');
+@@ -165,14 +202,17 @@
+     eyeSize: settings.eyeSize, bitrate: settings.bitrate,
+   };
+   const id = jobId ?? globalThis.crypto?.randomUUID();
+-  if (typeof id !== 'string' || !/^[A-Za-z0-9_-]{1,96}$/.test(id)) {
+-    throw new TypeError('jobId must contain 1–96 letters, numbers, underscores or hyphens.');
+-  }
+-  if ((!outputHandle && !globalThis.navigator?.storage?.getDirectory) || !globalThis.OffscreenCanvas
+-      || !globalThis.VideoEncoder || !globalThis.VideoDecoder || !globalThis.WritableStream) {
+-    throw new Error(outputHandle ? 'This route requires OffscreenCanvas, WebCodecs and WritableStream.'
+-      : 'This route requires OPFS, OffscreenCanvas, WebCodecs and WritableStream.');
+-  }
++  if (typeof id !== 'string' || !/^[A-Za-z0-9_-]{1,60}$/.test(id)) {
++    throw new TypeError('Private jobId must contain 1–60 letters, numbers, underscores or hyphens.');
++  }
++  if (!globalThis.OffscreenCanvas || !globalThis.VideoEncoder || !globalThis.VideoDecoder || !globalThis.WritableStream) {
++    throw new Error('This route requires OffscreenCanvas, WebCodecs and WritableStream.');
++  }
++  const admission = await inspectMp4(file, {signal});
++  validateIndexedAdmission(admission, settings);
++  checkAbort();
++  const budget = createIndexBudget();
++
+ 
+   const metrics = {
+     jobId: id, settings: chosenSettings, startedAt: new Date().toISOString(),
+@@ -187,16 +227,15 @@
+     firstAudioTimestamp: null, lastAudioEndTimestamp: null, audioTimeline: null,
+     storageQuotaBytes: null, storageUsageBytes: null, storageAvailableBytes: null,
+     cpuPeakBytes: null, gpuPeakBytes: null, nativePeakBytes: null,
+-    containerMetadataGrowth: 'O(total samples); media buffers are streamed',
++    containerMetadataGrowth: 'private bounded disk input/output indices; unchanged public sample/metadata/output limits',
+     metadataPatched: false, status: 'preparing', cleanupError: null,
+-    outputBackend: outputHandle ? 'direct-file' : 'opfs',
+-    opfsDirectory: outputHandle ? null : `${OPFS_ROOT}/${id}`,
+-  };
+-  let input, output, canvas, storageWriter, root, temporaryDirectory, opfsHandle, directDestination, directOutput;
++    outputBackend: 'private-indexed-direct-file', opfsDirectory: null, admission,
++    indexSortBytes: {input: 4 * 1024 ** 2 - PROFILE.sortReservedBytes, output: PROFILE.sortReservedBytes},
++    indexBudgetBytes: 8 * 1024 ** 2, inputIndex: null, outputIndex: null,
++  };
++  let input, output, canvas, directDestination, directOutput, inputIndex, outputIndex, result, failure;
++  const pendingCleanup = [];
+   let videoIterator, heldSample, audioPacket, audioSink, audioSource, audioCopier, videoSource;
+-  let temporaryCreated = false;
+-  let storageClosed = false;
+-  let succeeded = false;
+   let cancellationPromise;
+   let estimatedDuration = null;
+   let lastProgressAt = -Infinity;
+@@ -227,26 +266,33 @@
+     // The awaited cleanup path below observes cancellation errors.
+     void cancelOutput().catch(() => {});
+   };
+-  const removeTemporary = async () => {
+-    if (!temporaryCreated) return;
+-    try {
+-      await root.removeEntry(id, { recursive: true });
+-      temporaryCreated = false;
+-    } catch (error) {
+-      if (error.name !== 'NotFoundError') throw error;
+-      temporaryCreated = false;
+-    }
+-  };
+-  const cleanupResources = () => cleanupConversionResources({
+-    // output.cancel() closes its target; it does not abort the OPFS writer.
+-    // Wait for that close, and abort an unclosed writer before deleting files.
+-    cancelOutput,
+-    abortWriter: async () => {
+-      if (directOutput) { await directOutput.abort(); return; }
+-      if (storageWriter && !storageClosed) { await storageWriter.abort(); storageClosed = true; }
+-    },
+-    removeTemporary,
+-  });
++  const cleanupResources = async () => {
++    const errors = [];
++    metrics.inputIndexBeforeCleanup ??= inputIndex?.metrics ?? null;
++    metrics.outputIndexBeforeCleanup ??= outputIndex?.metrics ?? null;
++    try { if (heldSample) { heldSample.close(); heldSample = null; } } catch (error) { errors.push(error); }
++    try { input?.dispose(); } catch (error) { error.requiresWorkerTermination = true; errors.push(error); }
++    // A failed codec cancel must not skip abort/owned index cleanup. It remains
++    // an explicit Worker-termination requirement, never a claim that codecs closed.
++    try { await cleanupConversionResources({cancelOutput,
++      abortWriter: async () => { if (directOutput) await directOutput.abort(); },
++      removeTemporary: async () => {},
++    }); } catch (error) { errors.push(error); }
++    for (const cleanup of [...pendingCleanup]) {
++      try { await cleanup(); pendingCleanup.splice(pendingCleanup.indexOf(cleanup), 1); } catch (error) { errors.push(error); }
++    }
++    for (const controller of [outputIndex, inputIndex]) {
++      try { await controller?.dispose(); } catch (error) { errors.push(error); }
++    }
++    metrics.inputIndex = inputIndex?.metrics ?? null; metrics.outputIndex = outputIndex?.metrics ?? null;
++    metrics.indexReservedAfterCleanup = budget.usedBytes;
++    if (errors.length) throw Object.assign(new Error(errors.map(error => error.message).join('; ')),
++      {requiresWorkerTermination: errors.some(error => error.requiresWorkerTermination), causes: errors});
++  };
++  const acquire = async factory => {
++    try { return await factory(); }
++    catch (error) { if (error.retryCleanup) pendingCleanup.push(error.retryCleanup); throw error; }
++  };
+   // Register before acquiring resources, so the Worker can retry a failed
+   // deletion after convertStereo has rejected and its finally has completed.
+   onCleanup?.(cleanupResources);
+@@ -260,7 +306,10 @@
+   try {
+     progress('inspect', null, true);
+     const analysisStart = performance.now();
+-    input = new Input({ source: new BlobSource(file, { maxCacheSize: CACHE_BYTES }), formats: [MP4] });
++    input = new Input({ source: new BlobSource(file, { maxCacheSize: CACHE_BYTES, useStreamReader: false }), formats: [MP4] });
++    inputIndex = await acquire(() => createInputIndex({source: file, root: indexRoot, jobId: `${id}-in`,
++      budget, signal, sortBytes: 4 * 1024 ** 2 - PROFILE.sortReservedBytes}));
++    input._vr180InputIndex = inputIndex; // Must precede the first getTracks/readMetadata.
+     const tracks = await input.getTracks();
+     const videos = tracks.filter(track => track.type === 'video');
+     const audios = tracks.filter(track => track.type === 'audio');
+@@ -328,63 +377,14 @@
+     }
+ 
+     const setupStart = performance.now();
+-    let writable;
+-    if (outputHandle) {
+-      directDestination = await createDirectMuxDestination(outputHandle, {
+-        signal, onWrite: extent => { metrics.outputBytes = extent; },
+-        // Ownership is established before acquisition-time cancellation is
+-        // thrown, so registered cleanup always reaches the real writer.
+-        onOutputCreated: acquired => { directOutput = acquired; onOutputCreated?.(acquired); },
+-      });
+-      writable = directDestination.stream;
+-    } else {
+-      if (navigator.storage.estimate) {
+-        const estimate = await navigator.storage.estimate();
+-        metrics.storageQuotaBytes = Number.isFinite(estimate.quota) ? estimate.quota : null;
+-        metrics.storageUsageBytes = Number.isFinite(estimate.usage) ? estimate.usage : null;
+-        if (metrics.storageQuotaBytes !== null && metrics.storageUsageBytes !== null) {
+-          metrics.storageAvailableBytes = Math.max(0, estimate.quota - estimate.usage);
+-          if (metrics.storageAvailableBytes < WRITE_CHUNK_BYTES) throw new Error('Insufficient estimated OPFS space to start conversion.');
+-        }
+-      }
+-      root = await (await navigator.storage.getDirectory()).getDirectoryHandle(OPFS_ROOT, { create: true });
+-      try {
+-        await root.getDirectoryHandle(id);
+-        throw new Error('The job temporary directory already exists; use a new jobId.');
+-      } catch (error) {
+-        if (error.name !== 'NotFoundError') throw error;
+-      }
+-      checkAbort();
+-      temporaryDirectory = await root.getDirectoryHandle(id, { create: true });
+-      temporaryCreated = true;
+-      opfsHandle = await temporaryDirectory.getFileHandle('converted.mp4', { create: true });
+-      storageWriter = await opfsHandle.createWritable();
+-      writable = new WritableStream({
+-        async write({ type, position, data }) {
+-          checkAbort();
+-          if (type !== 'write' || !Number.isSafeInteger(position) || position < 0
+-              || !Number.isSafeInteger(position + data.byteLength)
+-              || position + data.byteLength > MAX_OUTPUT_BYTES) {
+-            throw new RangeError('Experimental output limit: 1 GiB; invalid or oversized write.');
+-          }
+-          await storageWriter.write({ type: 'write', position, data });
+-          metrics.outputBytes = Math.max(metrics.outputBytes, position + data.byteLength);
+-        },
+-        async close() {
+-          if (storageClosed) return;
+-          await storageWriter.close();
+-          storageClosed = true;
+-        },
+-        async abort(reason) {
+-          if (storageClosed) return;
+-          await storageWriter.abort(reason);
+-          storageClosed = true;
+-        },
+-      }, { highWaterMark: 1 });
+-    }
+-    output = new Output({
+-      format: new Mp4OutputFormat({ fastStart: false, ...(directDestination ? {onMoov: directDestination.onMoov} : {}) }),
+-      target: new StreamTarget(writable, { chunked: true, chunkSize: WRITE_CHUNK_BYTES }),
++    outputIndex = await acquire(() => createOutputIndex({root: indexRoot, jobId: `${id}-out`, budget, signal, layout: 'sbs'}));
++    directDestination = await createDirectMuxDestination(outputHandle, {
++      signal, onWrite: extent => { metrics.outputBytes = extent; },
++      onOutputCreated: acquired => { directOutput = acquired; onOutputCreated?.(acquired); },
++    });
++    const format = new Mp4OutputFormat({fastStart: false}); format._options.vr180Index = outputIndex;
++    output = new Output({format,
++      target: new StreamTarget(directDestination.stream, {chunked: true, chunkSize: WRITE_CHUNK_BYTES}),
+     });
+     output.addVideoTrack(videoSource);
+     if (audioSource) output.addAudioTrack(audioSource);
+@@ -463,19 +463,32 @@
+       throw new Error('The encoder did not emit one video packet per submitted frame.');
+     }
+     const prepareStarted = performance.now();
+-    let resultFile, direct;
+-    if (directDestination) {
+-      direct = directDestination.finish();
+-      metrics.outputBytes = direct.output.status.extent;
+-      Object.assign(metrics, direct.metrics);
+-    } else {
+-      resultFile = await opfsHandle.getFile();
+-      metrics.outputBytes = resultFile.size;
+-    }
+-    if (!metrics.outputBytes || metrics.outputBytes > MAX_OUTPUT_BYTES) throw new Error('The finalized output size is invalid.');
++    const direct = directDestination.finish();
++    metrics.outputBytes = direct.extent;
++    if (!metrics.outputBytes || metrics.outputBytes > MAX_OUTPUT_BYTES) throw Error('The finalized output size is invalid.');
++    const indexed = outputIndex.metrics;
++    if (!indexed.metadataClosed || !indexed.verification || indexed.sampleCount !== metrics.totalSamples
++      || indexed.verification.sampleCounts.total !== metrics.totalSamples) throw Error('INDEXED_METADATA_NOT_VERIFIED');
++    const offset = indexed.moovPosition, metadataBytes = indexed.moovBytes;
++    if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(metadataBytes) || metadataBytes <= 0
++      || offset + metadataBytes !== metrics.outputBytes
++      || metadataBytes > MAX_METADATA_BYTES) throw Error('INDEXED_METADATA_EXTENT_INVALID');
++    const expectedMetadataHash = await sha256Blob(outputIndex.metadataSource.slice(offset, metrics.outputBytes), {signal});
++    checkAbort();
++    const saved = await direct.output.commit({expectedBytes: metrics.outputBytes});
++    checkAbort();
++    const actualMetadataHash = await sha256Blob(saved.file.slice(offset), {signal});
++    if (actualMetadataHash !== expectedMetadataHash) throw Error('INDEXED_SAVED_METADATA_HASH_MISMATCH');
++    const savedInfo = await inspectSavedOutput(saved.file, {signal});
++    if (savedInfo.stereoMode !== 2 || savedInfo.projection !== 'equi' || savedInfo.width !== geometry.width
++      || savedInfo.height !== geometry.height || savedInfo.sampleCounts.total !== metrics.totalSamples) {
++      throw Error('INDEXED_SAVED_OUTPUT_INVALID');
++    }
++    metrics.metadataPatched = true;
++    metrics.inputIndex = inputIndex.metrics; metrics.outputIndex = outputIndex.metrics;
+     metrics.outputPreparationMs = performance.now() - prepareStarted;
+     metrics.totalMs = performance.now() - started;
+-    metrics.status = 'converted-awaiting-metadata';
++    metrics.status = 'saved-and-verified';
+     checkAbort();
+     publishMetrics();
+     progress('complete', metrics.lastVideoEndTimestamp, true);
+@@ -483,14 +496,16 @@
+       layout: 'sbs', fov: 180, eyeSize: chosenSettings.eyeSize,
+       width: geometry.width, height: geometry.height,
+       videoCodec: 'avc', audioCodec: audio ? 'aac' : null,
+-      requiresMetadataPatch: true, opfsDirectory: metrics.opfsDirectory,
++      requiresMetadataPatch: false, opfsDirectory: null,
+     };
+-    succeeded = true;
+-    return { ...(direct ? {direct} : {file: resultFile}), cleanup: cleanupResources, metrics: { ...metrics }, info };
++    result = {file: saved.file, saved, cleanup: cleanupResources, metrics, info, savedInfo,
++      verification: {wholeFileHashCompared: false, savedFileSHA256: saved.sha256, metadataHashMatched: true,
++        expectedMetadataHash, metadataOffset: offset, metadataBytes, savedWriteCommitted: true}};
++    return result;
+   } catch (error) {
+     metrics.status = signal?.aborted ? 'canceled' : 'failed';
+     metrics.error = signal?.aborted ? 'Conversion was canceled.' : String(error?.message ?? error);
+-    const failure = signal?.aborted && error.name !== 'AbortError' ? Object.assign(abortError(), {cause: error}) : error;
++    failure = signal?.aborted && error.name !== 'AbortError' ? Object.assign(abortError(), {cause: error}) : error;
+     if (outputHandle) {
+       const priorState = error.saveOutputState;
+       Object.defineProperty(failure, 'saveOutputState', {enumerable: true, configurable: true,
+@@ -502,21 +517,21 @@
+     throw failure;
+   } finally {
+     signal?.removeEventListener('abort', onAbort);
+-    heldSample?.close();
+-    input?.dispose();
+-    try { await videoIterator?.return(); } catch { /* Input disposal already canceled the decoder. */ }
+-    if (!succeeded) {
+-      // The Worker owns cleanup and acknowledges it only after this function
+-      // has unwound. Standalone callers keep the original cleanup behavior.
+-      if (!onCleanup) {
+-        try { await cleanupResources(); }
+-        catch (error) { metrics.cleanupError = String(error?.message ?? error); }
+-      }
+-      metrics.totalMs = performance.now() - started;
+-      // Reporting must not replace the original failure or skip canvas release.
+-      try { publishMetrics(); }
+-      catch (error) { metrics.metricsCallbackError = String(error?.message ?? error); }
+-    }
++    const releaseErrors = [];
++    try { await cleanupResources(); } catch (error) { releaseErrors.push(error); }
++    try { await videoIterator?.return(); } catch { /* Input disposal cancels the decoder. */ }
+     if (canvas) { canvas.width = 0; canvas.height = 0; }
++    metrics.totalMs = performance.now() - started;
++    if (releaseErrors.length) {
++      metrics.cleanupError = releaseErrors.map(error => error.message).join('; ');
++      const cleanupFailure = failure ?? Error('INDEXED_CLEANUP_FAILED: ' + metrics.cleanupError);
++      cleanupFailure.cleanupError = metrics.cleanupError; cleanupFailure.retryCleanup = cleanupResources;
++      cleanupFailure.requiresWorkerTermination = releaseErrors.some(error => error.requiresWorkerTermination);
++      if (!failure) Object.defineProperty(cleanupFailure, 'saveOutputState', {enumerable: true,
++        get: () => directOutput?.status ?? {state: 'not-started', writerAcquired: false, committed: false}});
++      cleanupFailure.saveWriteCommitted = directOutput?.status.committed === true;
++      if (!failure) throw cleanupFailure;
++    }
++    try { publishMetrics(); } catch (error) { metrics.metricsCallbackError = String(error?.message ?? error); }
+   }
+ }

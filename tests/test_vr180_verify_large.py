@@ -118,6 +118,25 @@ class LargeOracle(unittest.TestCase):
         self.assertTrue(report['copyTablesIdentical'])
         self.assertEqual(report['packets']['input']['count'], report['packets']['output']['count'])
 
+    def test_remux_compares_every_video_packet_and_exact_decoded_pixels(self):
+        report = self.verify(mode='remux')
+        self.assertEqual(report['status'], 'PASS', report)
+        self.assertTrue(report['videoPackets']['payloadOrderEqual'])
+        self.assertEqual(report['videoPackets']['inputCount'], 60)
+        self.assertEqual(report['pixels']['maxChannelError'], 0)
+        self.assertTrue(report['completeScan'])
+
+    def test_remux_refuses_reencoded_packets_even_with_similar_images(self):
+        report = self.verify(self.transcode('not-a-remux', []), mode='remux')
+        self.assertEqual(report['status'], 'FAIL')
+        self.assertTrue('videoPacketPayload' in report['errors']['byKind'] or
+                        'videoPackets' in report['errors']['byKind'])
+
+    def test_remux_does_not_claim_360_to_180_projection(self):
+        with self.assertRaisesRegex(ValueError, 'remux requires 180'):
+            oracle.verify_files(self.source, self.good, layout='sbs', fov=360,
+                                eye_size=256, mode='remux', timeout=90)
+
     def test_missing_vr_metadata_fails(self):
         report = self.verify(self.source)
         self.assertEqual(report['status'], 'FAIL')

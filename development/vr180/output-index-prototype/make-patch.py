@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Recreate a two-file unified patch against the pinned npm source (no network)."""
+"""Recreate a three-file unified patch against the pinned npm source (no network)."""
 from pathlib import Path
 import argparse,difflib,hashlib,json
 p=argparse.ArgumentParser();p.add_argument('--source',type=Path,required=True);a=p.parse_args()
 out=Path(__file__).parent
 files={}
-for name in ['src/isobmff/isobmff-muxer.ts','src/isobmff/isobmff-boxes.ts']:
+for name in ['src/isobmff/isobmff-muxer.ts','src/isobmff/isobmff-boxes.ts','src/media-source.ts']:
  original=(a.source/name).read_text();s=original
  def replace(old,new):
   global s
@@ -26,12 +26,15 @@ for name in ['src/isobmff/isobmff-muxer.ts','src/isobmff/isobmff-boxes.ts']:
    segment=segment.replace('const release = await this.mutex.acquire();','const release = await this.mutex.acquire();\n\t\ttry {',1)
    segment=segment.replace('\n\t\trelease();','\n\t\t} finally { release(); }',1)
    s=s[:at]+segment+s[stop:]
- else:
+ elif name.endswith('boxes.ts'):
   replace('const needsCtts = trackData.compositionTimeOffsetTable.length > 1\n\t\t|| trackData.compositionTimeOffsetTable.some(x => x.sampleCompositionTimeOffset !== 0);',
    'const needsCtts = trackData.vr180Index ? trackData.vr180Index.needsCtts\n\t\t: trackData.compositionTimeOffsetTable.length > 1\n\t\t|| trackData.compositionTimeOffsetTable.some(x => x.sampleCompositionTimeOffset !== 0);')
   for table in ['stts','stss','stsc','stsz','stco','ctts','cslg']:
    old=f'export const {table} = (trackData: IsobmffTrackData) => {{'
    replace(old,old+f'\n\tif (trackData.vr180Index) return trackData.vr180Index.tableBox(\'{table}\');')
+ else:
+  replace('\t\t\tconnectedTrack.output._muxer.onTrackClose(connectedTrack);', '\t\t\tawait connectedTrack.output._muxer.onTrackClose(connectedTrack);')
+  replace('\t\t\tawait connectedTrack.output._muxer.onTrackClose(connectedTrack);\n\t\t})();', '\t\t\tawait connectedTrack.output._muxer.onTrackClose(connectedTrack);\n\t\t})();\n\t\t// close() is void: observe early rejection without replacing its promise.\n\t\t// finalize()/cancel() still await the original rejected _closingPromise.\n\t\tthis._closingPromise.catch(() => {});')
  files[name]=(original,s)
 patch=''.join(''.join(difflib.unified_diff(o.splitlines(True),s.splitlines(True),fromfile='a/'+n,tofile='b/'+n)) for n,(o,s) in files.items())
 (out/'mediabunny-output-index.patch').write_text(patch)
