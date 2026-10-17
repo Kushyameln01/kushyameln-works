@@ -30,6 +30,7 @@ async function checkedInputs(env) {
   const producer = profile.producer;
   const sourceHashes = {};
   const files = [...OWN_FILES.map(name => path.join(__dirname, name)), path.join(workspace, producer)];
+  if (profile.originalProducer) files.push(path.join(workspace, profile.originalProducer));
   for (const file of files) {
     const relative = path.relative(workspace, file).split(path.sep).join('/');
     assert(!relative.startsWith('../'), 'ACTION_OUTSIDE_CHECKOUT');

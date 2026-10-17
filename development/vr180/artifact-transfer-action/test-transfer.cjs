@@ -334,3 +334,117 @@ module.write_transport_manifests(meta,media,json.loads(sys.argv[4]),'p5-5gb',jso
   assert.deepEqual(seen.at(-1).completion.qualityEvidence, m.qualityEvidence);
   assert.equal(seen.at(-1).completion.qualityEvidence.status, 'FAIL');
 });
+
+async function makeCalibrationFixture(name) {
+  const f = await makeLongFixture(name), p = PROFILES['p5-receiver-calibration32'];
+  f.identity = { ...identity, job: 'p5-receiver-calibration' };
+  f.value.profile = f.quality.profile = 'p5-receiver-calibration32';
+  f.value.identity = f.quality.identity = f.identity;
+  f.value.generator = { algorithm: 'vr180-fixed300-sbs180-webcodecs-calibration-v1', seed: 0x1802026,
+    width: 1024, height: 512, fps: 30, frames: 300, silent: true,
+    inputRequestedBitrate: 32000000, outputRequestedBitrate: 32000000, eventFrameIndices: [29, 30, 31],
+    producerPath: p.originalProducer, producerSHA256: 'e'.repeat(64),
+    producerReportRunId: `${f.identity.runId}-p5-32-32-${f.identity.runAttempt}` };
+  f.provenance.generatorScriptPath = p.producer;
+  f.provenance.sourceHashes = { [p.originalProducer]: f.value.generator.producerSHA256 };
+  // Deliberately opaque bytes: tar structure is the independent receiver's job.
+  const bundle = Buffer.from('opaque producer evidence bundle contract fixture\n');
+  f.bundlePath = path.join(path.dirname(f.manifestPath), 'producer-evidence.tar.gz');
+  await fs.writeFile(f.bundlePath, bundle);
+  f.value.evidenceBundle = { name: 'producer-evidence.tar.gz', bytes: bundle.length, sha256: sha(bundle) };
+  const quality = Buffer.from(JSON.stringify(f.quality));
+  f.value.qualityEvidence.bytes = quality.length; f.value.qualityEvidence.sha256 = sha(quality);
+  await fs.writeFile(f.qualityPath, quality); await fs.writeFile(f.manifestPath, JSON.stringify(f.value));
+  return f;
+}
+test('calibration profile fixes pair/file caps, producer job and exact 300-frame descriptor', async () => {
+  const f = await makeCalibrationFixture('calibration-caps');
+  assert.equal(validateSourceManifest(f.value, f.identity).timeoutMs, 600000);
+  for (const change of [m => m.files[0].bytes = 80 * MiB + 1,
+    m => { m.files[0].bytes = 80 * MiB; m.files[1].bytes = 80 * MiB; m.totalBytes = 160 * MiB; },
+    m => m.generator.frames = 299, m => m.generator.fps = 60, m => m.generator.silent = false,
+    m => m.generator.inputRequestedBitrate++, m => m.generator.outputRequestedBitrate--,
+    m => m.generator.producerPath = '/tmp/fake.py', m => m.generator.producerSHA256 = 'bad',
+    m => m.generator.producerReportRunId = 'previous-run', m => m.generator.eventFrameIndices = [29, 30],
+    m => delete m.evidenceBundle, m => m.evidenceBundle.bytes = 8 * MiB + 1,
+    m => m.evidenceBundle.name = '../bundle.tar.gz', m => m.evidenceBundle.sha256 = 'bad']) {
+    const m = structuredClone(f.value); change(m); assert.throws(() => validateSourceManifest(m, f.identity));
+  }
+  const m = structuredClone(f.value); m.identity.job = 'other-producer';
+  assert.throws(() => validateSourceManifest(m, m.identity), /SOURCE_PRODUCER_JOB/);
+});
+test('calibration uploads two media artifacts, one opaque evidence artifact, then completion', async () => {
+  const f = await makeCalibrationFixture('calibration-success'), seen = [];
+  const result = await runTransfer(args('calibration-upload', { ...f, upload: mockUpload(seen) }));
+  assert.equal(seen.length, 4); assert.equal(result.partCount, 2);
+  assert.equal(result.totalBytes, f.value.totalBytes); assert.equal(result.metadataArtifactCount, 1); assert.equal(result.artifactCount, 4);
+  assert.equal(path.basename(seen[2].file), 'evidence.bin'); assert.equal(seen[2].name, prefix(f.identity, f.value.profile) + '-evidence');
+  const completion = seen[3].completion;
+  assert.equal(completion.partCount, 2); assert.equal(completion.files.length, 2); assert.equal(completion.metadataArtifactCount, 1);
+  assert.deepEqual({ ...completion.evidenceBundle, artifact: undefined }, { ...f.value.evidenceBundle, artifact: undefined });
+  assert.equal(completion.evidenceBundle.artifact.name, seen[2].name);
+  assert.equal(completion.qualityEvidence.status, 'FAIL');
+  await fs.stat(f.bundlePath); await assert.rejects(fs.stat(path.join(base, 'calibration-upload/stage')), /ENOENT/);
+});
+test('original generator hash must match separately attested source, not wrapper sourceSHA', async () => {
+  const f = await makeCalibrationFixture('calibration-producer-hash');
+  f.provenance.sourceHashes[PROFILES[f.value.profile].originalProducer] = f.value.sourceSHA256;
+  await assert.rejects(runTransfer(args('calibration-hash-refusal', { ...f,
+    upload: async () => assert.fail('must not upload') })), /ORIGINAL_PRODUCER_HASH_MISMATCH/);
+});
+test('missing or changed source bundle fails before media uploads', async () => {
+  for (const missing of [false, true]) {
+    const f = await makeCalibrationFixture('bundle-preflight-' + missing);
+    if (missing) await fs.unlink(f.bundlePath); else {
+      const bytes = await fs.readFile(f.bundlePath); bytes[0] ^= 255; await fs.writeFile(f.bundlePath, bytes);
+    }
+    await assert.rejects(runTransfer(args('bundle-preflight-output-' + missing, { ...f,
+      upload: async () => assert.fail('must not upload') })), /EVIDENCE_BUNDLE_SOURCE_HASH|ENOENT/);
+  }
+});
+test('staged bundle mutation prevents completion and records the observed upload', async () => {
+  const f = await makeCalibrationFixture('bundle-staged-mutation'), seen = [], upload = mockUpload(seen);
+  await assert.rejects(runTransfer(args('bundle-staged-output', { ...f, upload: async request => {
+    const receipt = await upload(request);
+    if (request.name.endsWith('-evidence')) {
+      const data = await fs.readFile(request.file); data[0] ^= 255; await fs.writeFile(request.file, data);
+    }
+    return receipt;
+  } })), /EVIDENCE_BUNDLE_CHANGED_DURING_UPLOAD/);
+  assert.equal(seen.length, 3);
+  const failure = JSON.parse(await fs.readFile(path.join(base, 'bundle-staged-output/incomplete.json')));
+  assert.equal(failure.evidenceBundleArtifactUploaded, true); assert.equal(failure.completionManifestUploaded, false);
+});
+test('original bundle and quality mutations during evidence upload are detected before completion', async () => {
+  for (const which of ['bundle', 'quality']) {
+    const f = await makeCalibrationFixture('late-evidence-' + which), seen = [], upload = mockUpload(seen);
+    await assert.rejects(runTransfer(args('late-evidence-output-' + which, { ...f, upload: async request => {
+      const receipt = await upload(request);
+      if (request.name.endsWith('-evidence')) {
+        const file = which === 'bundle' ? f.bundlePath : f.qualityPath;
+        const data = await fs.readFile(file); data[0] ^= 1; await fs.writeFile(file, data);
+      }
+      return receipt;
+    } })), /EVIDENCE_BUNDLE_CHANGED_AFTER_UPLOAD|Unexpected token|JSON|QUALITY_CHANGED/);
+    assert.equal(seen.length, 3);
+  }
+});
+test('evidence timeout records unknown presence and never emits completion', async () => {
+  const f = await makeCalibrationFixture('evidence-timeout'), seen = [], upload = mockUpload(seen);
+  await assert.rejects(runTransfer(args('evidence-timeout-output', { ...f, upload: async request => {
+    if (request.name.endsWith('-evidence')) throw Error('ARTIFACT_UPLOAD_DEADLINE'); return upload(request);
+  } })), /ARTIFACT_UPLOAD_DEADLINE/);
+  const failure = JSON.parse(await fs.readFile(path.join(base, 'evidence-timeout-output/incomplete.json')));
+  assert.equal(seen.length, 2); assert.equal(failure.successfulPartUploads, 2);
+  assert.equal(failure.evidenceBundleArtifactUploaded, 'UNKNOWN'); assert.equal(failure.completionManifestUploaded, false);
+});
+test('calibration preserves zero-byte stderr evidence references without relaxing long profile rules', async () => {
+  const f = await makeCalibrationFixture('empty-calibration-ref');
+  f.quality.evidence.push({ path: 'oracle-logs/ffmpeg.stderr.log', bytes: 0, sha256: sha(Buffer.alloc(0)) });
+  validateQualityEvidence(f.quality, f.value);
+  f.quality.evidence.at(-1).bytes = -1;
+  assert.throws(() => validateQualityEvidence(f.quality, f.value), /QUALITY_EVIDENCE_ENTRY/);
+  const long = await makeLongFixture('empty-long-ref');
+  long.quality.evidence[0].bytes = 0;
+  assert.throws(() => validateQualityEvidence(long.quality, long.value), /QUALITY_EVIDENCE_ENTRY/);
+});

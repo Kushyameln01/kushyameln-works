@@ -13,6 +13,13 @@ The files live outside the Pages deployment tree.
 | `service-8mib` | Two distinct 60 MiB files | 8 MiB; final part 4 MiB | 16 | 1 |
 | `single-128mib` | One 128 MiB file | 128 MiB | 1 | 1 |
 
+The separate media-receiver gate uses `p5-receiver-calibration32`: a new execution
+of the existing silent 32→32 Mbps calibration, 300 frames at 30 fps. Each real
+input/output file is at most 80 MiB and the pair at most 120 MiB. It uses two
+128 MiB-capacity data parts, one bounded producer-evidence artifact, then one
+completion artifact. Its sender deadline is 600 seconds. The fixed producer job
+is `p5-receiver-calibration`; old media cannot be assigned a new trial identity.
+
 These are separate service trials. The first checks more than ten immutable
 artifacts in one job and ordered reconstruction. The second checks the intended
 maximum part size with this new uploader. Earlier 64/128 MiB transfer acceptance
@@ -72,6 +79,17 @@ another script. Both the selected script's actual bytes and its source-manifest
 hash must match the checked candidate. Package installation
 integrity is supplied by `npm ci`; a lock hash alone is not represented as a
 full post-install dependency tree audit.
+
+The media-receiver calibration profile instead fixes its wrapper to
+`development/vr180/p5-receiver-calibration/prepare.py`. The top-level
+`sourceSHA256` identifies that wrapper. Its generator descriptor separately
+names `development/vr180/p5-calibration-prototype/probe-calibration.py` and that
+original script's `producerSHA256`; both actual files must match HEAD. The
+descriptor fixes algorithm `vr180-fixed300-sbs180-webcodecs-calibration-v1`,
+seed `0x1802026`, 1024×512, 300 frames, 30 fps, silent, requested bitrates
+32,000,000→32,000,000, and event indices `[29,30,31]`. Its
+`producerReportRunId` must be `{runId}-p5-32-32-{runAttempt}`. These source
+identities do not replace the independent media-quality checks.
 
 ## Workflow interface
 
@@ -152,6 +170,33 @@ archive independently. A complete `FAIL` is transportable; an incomplete scan
 cannot pass the sender gate. Quality bytes are reread unchanged before the
 completion artifact is published.
 
+Only `p5-receiver-calibration32` permits zero-byte evidence references, because
+the original calibration manifest includes empty stderr logs. Those files must
+remain in the producer bundle and are checked as empty files by the receiver.
+The long profile's positive-reference-size rule is unchanged.
+
+The media-receiver calibration profile additionally requires the following
+source descriptor and a regular nonsymlink file next to the media:
+
+```text
+evidenceBundle: {name: "producer-evidence.tar.gz", bytes: 1..8388608, sha256}
+```
+
+The producer packs the original `quality-evidence.json` and every referenced
+evidence file, with no media, into that bounded archive. The sender treats the
+archive as opaque bytes: it hashes the original before any uploads, copies it
+to the owned stage as `evidence.bin` after the two media parts, rereads it before
+and after upload, and rechecks the original before completion. Its artifact is
+named `{prefix}-evidence` and contains exactly one ZIP entry, `evidence.bin`.
+Missing, incomplete, changed or oversized bundle bytes prevent completion.
+The independent receiver must validate the recovered tar structure, original
+quality bytes, every evidence reference/hash and the actual media independently.
+
+The existing long source contract is preserved: a bundle is optional there,
+and if explicitly provided receives the same raw-byte checks and binding.
+That compatibility does not enable long receiver trials. Long reception still
+requires its separate gate and complete producer metadata bundle preparation.
+
 Each data artifact contains exactly one ZIP entry, **`chunk.bin`**. Its name is:
 
 ```text
@@ -175,6 +220,16 @@ For long profiles only, the completion record also copies the bounded
 quality JSON to the reconstructed media and source manifest, without adding a
 second ZIP entry to any artifact. Host verification must compare that raw hash
 and the quality record's identities, files and evidence references.
+
+The calibration profile uses the same quality descriptor. When a bundle is
+present, completion also contains
+`evidenceBundle:{name,bytes,sha256,artifact:{id,name,sizeBytes,digest}}` and
+`metadataArtifactCount:1`. Media `partCount` and `totalBytes` exclude metadata.
+The external final receipt adds `metadataArtifactCount:1` and total
+`artifactCount = partCount + 2`, including the evidence and completion artifacts.
+The separate maximum is 200 media parts plus one evidence artifact plus one
+completion artifact. An evidence-upload timeout is recorded as `UNKNOWN` in
+`incomplete.json`, and no completion is published.
 
 `digest` is normalized as `sha256:<64 lowercase hex>` and covers the whole ZIP;
 part `sha256` covers the raw bytes. Offsets must be consecutive with no holes,
@@ -226,6 +281,11 @@ must include startup, the 5-second kill grace and cleanup. The small source
 generator has a separate 300-second deadline; the long-media producer enforces
 its own phase deadlines. These are upper limits, not expected throughput.
 
+`p5-receiver-calibration32` has a separate 600-second sender deadline with the
+same 120-second maximum per artifact; its browser calibration has its own
+existing deadlines. The evidence stage never overlaps a live media-part file,
+so the uploader's additional disk admission already covers it.
+
 The small source generator's disk admission is `3*sourceBytes + 2*partBytes + 512 MiB`.
 The long producer has separate input/output/OPFS/temporary disk admission.
 After sources exist, the uploader requires an additional
@@ -268,3 +328,7 @@ bounded quality correspondence and mutation, and recovery of complete `FAIL`
 records. Long-profile unit fixtures use tiny arbitrary bytes and a mocked SDK;
 they are not valid media or evidence of 5/10 GB capacity. Cloud service acceptance remains a separate
 record after the coordinating task runs and fully recovers the artifacts.
+Calibration transport tests likewise use tiny arbitrary media/bundle bytes to
+exercise correspondence, upload ordering, source/ZIP mutations, unknown timeout
+and complete quality failure preservation. Tar and codec correctness belong to
+the independent receiver, not these sender mocks.

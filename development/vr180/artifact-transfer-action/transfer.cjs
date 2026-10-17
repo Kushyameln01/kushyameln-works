@@ -7,17 +7,23 @@ const { fork } = require('node:child_process');
 const MiB = 1024 * 1024;
 const MAX_MANIFEST = 256 * 1024;
 const MAX_QUALITY = 64 * 1024;
+const MAX_EVIDENCE_BUNDLE = 8 * 1024 * 1024;
 const MAX_PARTS = 200;
 const BLOCK = MiB;
 const REPOSITORY = 'Kushyameln01/kushyameln-works';
 const SCHEMA = 'vr180-segmented-transfer-v1';
 const SMALL_PRODUCER = 'tools/vr180/probe-segmented-transfer.py';
 const LONG_PRODUCER = 'development/vr180/p5-long-prototype/probe-long.py';
+const CALIBRATION_PRODUCER = 'development/vr180/p5-receiver-calibration/prepare.py';
+const ORIGINAL_CALIBRATION = 'development/vr180/p5-calibration-prototype/probe-calibration.py';
 const PROFILES = Object.freeze({
   'service-8mib': Object.freeze({ partBytes: 8 * MiB, fileBytes: Object.freeze([60 * MiB, 60 * MiB]), timeoutMs: 600000, producer: SMALL_PRODUCER }),
   'single-128mib': Object.freeze({ partBytes: 128 * MiB, fileBytes: Object.freeze([128 * MiB]), timeoutMs: 300000, producer: SMALL_PRODUCER }),
   'p5-5gb': Object.freeze({ partBytes: 128 * MiB, fileCaps: Object.freeze([5100000000, 5200000000]), targetPayloadBytes: 5000000000, timeoutMs: 1200000, producer: LONG_PRODUCER }),
   'p5-10gb': Object.freeze({ partBytes: 128 * MiB, fileCaps: Object.freeze([10100000000, 10200000000]), targetPayloadBytes: 10000000000, timeoutMs: 1800000, producer: LONG_PRODUCER }),
+  'p5-receiver-calibration32': Object.freeze({ partBytes: 128 * MiB, fileCaps: Object.freeze([80 * MiB, 80 * MiB]),
+    totalBytesCap: 120 * MiB, timeoutMs: 600000, producer: CALIBRATION_PRODUCER,
+    originalProducer: ORIGINAL_CALIBRATION, requiredJob: 'p5-receiver-calibration', evidenceBundleRequired: true }),
 });
 function requireThat(value, code) { if (!value) throw new Error(code); }
 function isHash(value) { return typeof value === 'string' && /^[0-9a-f]{64}$/.test(value); }
@@ -54,9 +60,19 @@ function validateSourceManifest(m, identity) {
     total += f.bytes; parts += Math.ceil(f.bytes / p.partBytes);
   });
   requireThat(m.totalBytes === total && parts <= MAX_PARTS, 'SOURCE_TOTAL_PART_COUNT');
+  if (p.totalBytesCap) requireThat(total <= p.totalBytesCap, 'SOURCE_TOTAL_SIZE');
+  if (p.requiredJob) requireThat(identity.job === p.requiredJob, 'SOURCE_PRODUCER_JOB');
   if (p.fileCaps) {
     const g = m.generator;
-    requireThat(g?.algorithm === 'vr180-long-xorshift32-sbs180-webcodecs-v1'
+    if (p.originalProducer) {
+      requireThat(g?.algorithm === 'vr180-fixed300-sbs180-webcodecs-calibration-v1'
+        && g.seed === 0x1802026 && g.width === 1024 && g.height === 512 && g.fps === 30
+        && g.frames === 300 && g.silent === true && g.inputRequestedBitrate === 32000000
+        && g.outputRequestedBitrate === 32000000 && Array.isArray(g.eventFrameIndices)
+        && g.eventFrameIndices.length === 3 && g.eventFrameIndices.every((v, i) => v === [29, 30, 31][i])
+        && g.producerPath === p.originalProducer && isHash(g.producerSHA256)
+        && g.producerReportRunId === `${identity.runId}-p5-32-32-${identity.runAttempt}`, 'SOURCE_CALIBRATION_GENERATOR');
+    } else requireThat(g?.algorithm === 'vr180-long-xorshift32-sbs180-webcodecs-v1'
       && g.seed === 0x1802026 && g.width === 1024 && g.height === 512 && g.fps === 30 && g.silent === true
       && g.inputRequestedBitrate === 32000000 && g.outputRequestedBitrate === 32000000
       && g.eventPeriodFrames === 300 && Array.isArray(g.eventFrameOffsets)
@@ -73,6 +89,12 @@ function validateSourceManifest(m, identity) {
       && m.generator.seed === 'vr180-public-segmented-transfer-2026-10-17'
       && m.generator.blockBytes === BLOCK, 'SOURCE_GENERATOR');
   }
+  if (p.evidenceBundleRequired || m.evidenceBundle !== undefined) {
+    const b = m.evidenceBundle;
+    requireThat(p.fileCaps && b && b.name === 'producer-evidence.tar.gz'
+      && Number.isSafeInteger(b.bytes) && b.bytes > 0 && b.bytes <= MAX_EVIDENCE_BUNDLE
+      && isHash(b.sha256), 'EVIDENCE_BUNDLE_DESCRIPTOR');
+  }
   return p;
 }
 function validateQualityEvidence(q, m) {
@@ -86,10 +108,11 @@ function validateQualityEvidence(q, m) {
     requireThat(q.files[i]?.[key] === m.files[i][key], 'QUALITY_FILE_MISMATCH');
   requireThat(Array.isArray(q.evidence) && q.evidence.length > 0 && q.evidence.length <= 256, 'QUALITY_EVIDENCE_BOUND');
   const seen = new Set();
+  const minimumEvidenceBytes = m.profile === 'p5-receiver-calibration32' ? 0 : 1;
   for (const e of q.evidence) {
     requireThat(e && typeof e.path === 'string' && e.path.length <= 240
       && e.path.split('/').every(v => /^[A-Za-z0-9_-][A-Za-z0-9_.-]*$/.test(v))
-      && !seen.has(e.path) && Number.isSafeInteger(e.bytes) && e.bytes > 0 && isHash(e.sha256), 'QUALITY_EVIDENCE_ENTRY');
+      && !seen.has(e.path) && Number.isSafeInteger(e.bytes) && e.bytes >= minimumEvidenceBytes && isHash(e.sha256), 'QUALITY_EVIDENCE_ENTRY');
     seen.add(e.path);
   }
   // References are metadata-archive paths. Their bytes and media conclusions
@@ -223,6 +246,8 @@ async function runTransfer({ manifestPath, outputDirectory, identity, provenance
   if (profile.fileCaps) requireThat(provenance?.generatorScriptPath === profile.producer
     && isHash(provenance?.generatorScriptSHA256), 'LONG_PRODUCER_PROVENANCE');
   if (provenance?.generatorScriptSHA256) requireThat(m.sourceSHA256 === provenance.generatorScriptSHA256, 'GENERATOR_SOURCE_HASH_MISMATCH');
+  if (profile.originalProducer) requireThat(provenance?.sourceHashes?.[profile.originalProducer] === m.generator.producerSHA256,
+    'ORIGINAL_PRODUCER_HASH_MISMATCH');
   const deadline = performance.now() + profile.timeoutMs;
   const sourceRoot = await fs.realpath(path.dirname(manifestPath));
   for (const file of m.files) await safeFile(path.join(sourceRoot, file.name), sourceRoot);
@@ -234,6 +259,12 @@ async function runTransfer({ manifestPath, outputDirectory, identity, provenance
     requireThat(quality.data.length === m.qualityEvidence.bytes
       && crypto.createHash('sha256').update(quality.data).digest('hex') === m.qualityEvidence.sha256, 'QUALITY_RAW_HASH_SIZE');
     validateQualityEvidence(quality.value, m);
+  }
+  const bundlePath = m.evidenceBundle ? path.join(sourceRoot, m.evidenceBundle.name) : null;
+  if (bundlePath) {
+    await safeFile(bundlePath, sourceRoot);
+    requireThat(await hashFile(bundlePath, m.evidenceBundle.bytes, deadline, signal) === m.evidenceBundle.sha256,
+      'EVIDENCE_BUNDLE_SOURCE_HASH');
   }
   await fs.mkdir(outputDirectory, { recursive: false, mode: 0o700 });
   const stage = path.join(outputDirectory, 'stage');
@@ -250,7 +281,13 @@ async function runTransfer({ manifestPath, outputDirectory, identity, provenance
   };
   if (quality) receipt.qualityEvidence = { name: m.qualityEvidence.name, bytes: m.qualityEvidence.bytes,
     sha256: m.qualityEvidence.sha256, status: m.qualityEvidence.status, completeScan: true };
+  if (bundlePath) {
+    receipt.metadataArtifactCount = 0;
+    receipt.uploads.maxArtifacts = MAX_PARTS + 2;
+    receipt.uploads.maxEvidenceBundleBytes = MAX_EVIDENCE_BUNDLE;
+  }
   let completed = false, completionUploadAttempted = false, completionUploaded = false;
+  let evidenceUploadAttempted = false, evidenceUploaded = false;
   try {
     receipt.disk = await diskCheck(outputDirectory, profile.partBytes);
     const sources = [];
@@ -283,9 +320,31 @@ async function runTransfer({ manifestPath, outputDirectory, identity, provenance
       }
       requireThat(whole.digest('hex') === f.sha256, 'SOURCE_CHANGED_WHILE_SPLITTING');
     }
+    if (bundlePath) {
+      const b = m.evidenceBundle, staged = path.join(stage, 'evidence.bin');
+      await safeFile(bundlePath, sourceRoot);
+      const sha256 = await writePart(bundlePath, staged, 0, b.bytes, crypto.createHash('sha256'), deadline, signal);
+      requireThat(sha256 === b.sha256 && await hashFile(staged, b.bytes, deadline, signal) === b.sha256,
+        'EVIDENCE_BUNDLE_COPY_HASH');
+      const name = artifactPrefix + '-evidence';
+      const left = Math.floor(deadline - performance.now()); requireThat(left > 0, 'TRANSFER_DEADLINE');
+      evidenceUploadAttempted = true;
+      const response = await upload({ name, file: staged, rootDirectory: stage }, Math.min(120000, left), { signal });
+      const artifact = normalizeReceipt(response, name, b.bytes + 2 * MiB); evidenceUploaded = true;
+      requireThat(await hashFile(staged, b.bytes, deadline, signal) === b.sha256, 'EVIDENCE_BUNDLE_CHANGED_DURING_UPLOAD');
+      receipt.evidenceBundle = { name: b.name, bytes: b.bytes, sha256: b.sha256, artifact };
+      receipt.metadataArtifactCount = 1;
+      await writeJson(path.join(outputDirectory, 'evidence-receipt.json'), receipt.evidenceBundle);
+      await fs.unlink(staged);
+    }
     for (let fi = 0; fi < m.files.length; fi++) requireThat(await hashFile(sources[fi], m.files[fi].bytes, deadline, signal) === m.files[fi].sha256, 'SOURCE_CHANGED_AFTER_UPLOAD');
     requireThat((await readBoundedJson(manifestPath)).data.equals(data), 'SOURCE_MANIFEST_CHANGED');
     if (quality) requireThat((await readBoundedJson(qualityPath, MAX_QUALITY)).data.equals(quality.data), 'QUALITY_CHANGED_DURING_TRANSFER');
+    if (bundlePath) {
+      await safeFile(bundlePath, sourceRoot);
+      requireThat(await hashFile(bundlePath, m.evidenceBundle.bytes, deadline, signal) === m.evidenceBundle.sha256,
+        'EVIDENCE_BUNDLE_CHANGED_AFTER_UPLOAD');
+    }
     await verifyProvenance();
     deadlineCheck(deadline, signal);
     receipt.status = 'COMPLETE'; receipt.elapsedSecondsBeforeCompletion = (clock() - started) / 1000;
@@ -302,6 +361,10 @@ async function runTransfer({ manifestPath, outputDirectory, identity, provenance
       completion: { ...record, artifact: completionArtifact },
       totalBytes: receipt.totalBytes, partCount: receipt.partCount, elapsedSeconds: (clock() - started) / 1000,
       fullHostRecovery: 'PENDING', independentHostValidation: 'PENDING' };
+    if (bundlePath) {
+      finalReceipt.metadataArtifactCount = 1;
+      finalReceipt.artifactCount = receipt.partCount + 2;
+    }
     await fs.copyFile(completion, path.join(outputDirectory, 'completion.json'), fs.constants.COPYFILE_EXCL);
     await writeJson(path.join(outputDirectory, 'upload-result.json'), finalReceipt);
     completed = true;
@@ -317,10 +380,11 @@ async function runTransfer({ manifestPath, outputDirectory, identity, provenance
       schema: SCHEMA, status: 'INCOMPLETE', identity, profile: m.profile,
       successfulPartUploads: receipt.partCount,
       completionManifestUploaded: completionUploaded ? true : completionUploadAttempted ? 'UNKNOWN' : false,
+      ...(bundlePath ? { evidenceBundleArtifactUploaded: evidenceUploaded ? true : evidenceUploadAttempted ? 'UNKNOWN' : false } : {}),
       sourceFilesDeleted: false, stageRemoved: !cleanupFailed, reason: 'TRANSFER_DID_NOT_COMPLETE',
     });
     requireThat(!cleanupFailed, 'OWN_STAGE_CLEANUP_FAILED');
   }
 }
-module.exports = { PROFILES, MAX_MANIFEST, MAX_QUALITY, MAX_PARTS, MiB, SCHEMA, validateIdentity,
+module.exports = { PROFILES, MAX_MANIFEST, MAX_QUALITY, MAX_EVIDENCE_BUNDLE, MAX_PARTS, MiB, SCHEMA, validateIdentity,
   validateSourceManifest, validateQualityEvidence, readBoundedJson, normalizeReceipt, prefix, hashFile, writePart, runTransfer, uploadWithChild };
