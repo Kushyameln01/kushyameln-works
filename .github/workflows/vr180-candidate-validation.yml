@@ -65,9 +65,19 @@ jobs:
           npm ci --ignore-scripts --omit=dev --no-audit --no-fund
       - name: Generate and reread actual bounded public synthetic bytes
         timeout-minutes: 2
-        run: >-
-          python3 tools/vr180/probe-segmented-transfer.py
-          --profile "$VR180_SEGMENT_PROFILE"
+        run: |
+          if [ "$VR180_SEGMENT_PROFILE" = 'single-128mib' ]; then
+            python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('development/vr180/evidence/2026-10-17-segmented-service.json').read_text())
+          assert r['status']=='PASS_FULL_RECOVERY' and r['workflowRun']==39041763123
+          assert r['artifactCount']==17 and r['partCount']==16 and r['recovery']['status']=='PASS'
+          assert sum(f['independentGeneratorComparedBytes'] for f in r['recovery']['wholeFiles'])==125829120
+          PY
+          fi
+          python3 tools/vr180/probe-segmented-transfer.py \
+          --profile "$VR180_SEGMENT_PROFILE" \
           --output-directory "$RUNNER_TEMP/vr180-segment-source-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
       - name: Upload one part at a time through the official action runtime
         timeout-minutes: 11
