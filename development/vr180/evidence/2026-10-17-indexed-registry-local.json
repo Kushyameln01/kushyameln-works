@@ -1,0 +1,84 @@
+{
+  "schema": "vr180-indexed-registry-local-v1",
+  "status": "PASS",
+  "sourceStart": {
+    "tools/vr180/probe-indexed-conversion.py": "745045498f86bc6b7f1b02e37770e4c6b785cf935a789335af93cf124f759724",
+    "tests/vr180-indexed-registry.test.mjs": "3f00c5b7d00262b916d766f9437444cf332af06c29922c7c73a10880fd6e61ac",
+    "tests/test_vr180_indexed_registry_probe.py": "35a13f0609bda50a74c0234ca08ebf4df097312c0575c922c252dd716b95c077",
+    "development/vr180/indexed-transform-prototype/transform.mjs": "01254c7c15a69a34332c3bc803e2865e775566848e13ce5262732e6d747da98f",
+    "tests/vr180-indexed-transform.test.mjs": "f62874f2eb7127fcd805d7d0ff54f3c7119cfeea7762bb662f44958b3404c435"
+  },
+  "sourceEnd": {
+    "tools/vr180/probe-indexed-conversion.py": "745045498f86bc6b7f1b02e37770e4c6b785cf935a789335af93cf124f759724",
+    "tests/vr180-indexed-registry.test.mjs": "3f00c5b7d00262b916d766f9437444cf332af06c29922c7c73a10880fd6e61ac",
+    "tests/test_vr180_indexed_registry_probe.py": "35a13f0609bda50a74c0234ca08ebf4df097312c0575c922c252dd716b95c077",
+    "development/vr180/indexed-transform-prototype/transform.mjs": "01254c7c15a69a34332c3bc803e2865e775566848e13ce5262732e6d747da98f",
+    "tests/vr180-indexed-transform.test.mjs": "f62874f2eb7127fcd805d7d0ff54f3c7119cfeea7762bb662f44958b3404c435"
+  },
+  "sourceUnchanged": true,
+  "tests": [
+    {
+      "command": [
+        "node",
+        "--test",
+        "tests/vr180-indexed-transform.test.mjs",
+        "tests/vr180-indexed-registry.test.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.3441660349999438,
+      "log": "/workspace/vr180-recovery/evidence/indexed-registry-local/tests-0.txt",
+      "logSHA256": "a4a4f4a565cbe295c5aae1fc156872234673bf9f7a17aae525be80debf79aaf6"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_vr180_indexed_registry_probe.py",
+        "-v"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.29554933000326855,
+      "log": "/workspace/vr180-recovery/evidence/indexed-registry-local/tests-1.txt",
+      "logSHA256": "2e4d3336e94c5a91f38cac08ae736f0792c7962719a9dc194e5eb3720dac1c51"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_vr180_output_probe.py",
+        "-v"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.12529467799322447,
+      "log": "/workspace/vr180-recovery/evidence/indexed-registry-local/tests-2.txt",
+      "logSHA256": "1424e593840796d4c73583c85cfab73e7bd265b48726a3f727a788ea5113d83d"
+    }
+  ],
+  "passedCounts": {
+    "registryNode": 9,
+    "existingEntryNode": 13,
+    "registryPython": 4,
+    "existingTransportPython": 3
+  },
+  "scope": "Actual embedded registry/Worker/Page protocol using real temporary file adapter and conversion mock; source closure and complete evidence transport. Native OPFS/WebCodecs execution remains pending.",
+  "notVerified": [
+    "native browser registry persistence",
+    "cross-context durability",
+    "power-loss durability",
+    "product recovery UI"
+  ],
+  "limitations": [
+    "Unknown or unverified namespace is retained only until temporary browser context closes.",
+    "Registry deletion uses nonrecursive known-file removals; a deletion failure may leave a partial registry, with per-record removal facts and ticket JSON preserved in evidence."
+  ]
+}

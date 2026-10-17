@@ -1,0 +1,2345 @@
+{
+  "schema": "vr180-p5-calibration-acceptance-v1",
+  "status": "PASS_LIMITED_TO_TEN_SECOND_CALIBRATION",
+  "runId": 39039504709,
+  "jobId": 117415930813,
+  "sourceCommit": "a581d96d68ad7bb57744dfb5570b6a71e718c913",
+  "case": "32-32",
+  "cloudRun": {
+    "schema": "vr180-p5-ten-second-calibration-v1",
+    "reconstructedAfterWorkspaceLoss": true,
+    "runId": "39039504709-p5-32-32-1",
+    "status": "READY_FOR_ARTIFACT_RECOVERY",
+    "case": "32-32",
+    "prototypeOnly": true,
+    "seconds": 10,
+    "frames": 300,
+    "fps": 30,
+    "silent": true,
+    "publicProfileChanged": false,
+    "maxPairBytes": 125829120,
+    "pageErrors": [],
+    "workers": [
+      "http://127.0.0.1:34795/development/vr180/p5-calibration-prototype/worker.mjs"
+    ],
+    "cleanup": {
+      "status": "REMOVED",
+      "heldLocks": 0
+    },
+    "completeCloudMedia": true,
+    "independentVerification": "PASS",
+    "hostArtifactRecovery": "PENDING",
+    "browserRss": {
+      "status": "SAMPLED",
+      "intervalMs": 200,
+      "samples": 75,
+      "samplesWithChrome": 75,
+      "maxSummedRssBytes": 1847869440,
+      "maxProcessCount": 10,
+      "failures": 0,
+      "processReadFailures": 1,
+      "rootPid": 3797,
+      "retainedSampleArray": false,
+      "sharedPagesMayBeCountedMultipleTimes": true,
+      "truePeakMeasured": false,
+      "gpuMemoryBytes": null,
+      "nativeMemoryBreakdown": null,
+      "includesOnlyChromeDescendantsOfThisPython": true,
+      "processInventoryBound": 8192,
+      "samplerThreadStopped": true
+    },
+    "calibrationVerdict": "PASS",
+    "mediaArtifactReady": true,
+    "notVerified": [
+      "5/10 GB",
+      "large AAC media",
+      "60 fps",
+      "whole-browser memory",
+      "OS picker",
+      "VR player",
+      "public deployment"
+    ],
+    "oracleToolchain": {
+      "manifestSHA256": "c48368b92d47c1cccfc7ee0c0dbc5c8ad2c743efce981917852c61bdc74845c6",
+      "source": "Ubuntu 24.04 official signed APT distribution package; exact ffmpeg version installed by the scoped workflow",
+      "packageVersion": "7:6.1.1-3ubuntu5",
+      "tools": {
+        "ffmpeg": {
+          "path": "/usr/bin/ffmpeg",
+          "sha256": "ed16af623947494a72e284b6eb8ff225f2da22b38b5d5069c2fd4b4ba3384e41",
+          "version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers\nbuilt with gcc 13 (Ubuntu 13.2.0-23ubuntu3)\nconfiguration: --prefix=/usr --extra-version=3ubuntu5 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libglslang --enable-libgme --enable-libgsm --enable-libharfbuzz --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg --enable-openal --enable-opencl --enable-opengl --disable-sndio --enable-libvpl --disable-libmfx --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-ladspa --enable-libbluray --enable-libjack --enable-libpulse --enable-librabbitmq --enable-librist --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libx264 --enable-libzmq --enable-libzvbi --enable-lv2 --enable-sdl2 --enable-libplacebo --enable-librav1e --enable-pocketsphinx --enable-librsvg --enable-libjxl --enable-shared\nlibavutil      58. 29.100 / 58. 29.100\nlibavcodec     60. 31.102 / 60. 31.102\nlibavformat    60. 16.100 / 60. 16.100\nlibavdevice    60.  3.100 / 60.  3.100\nlibavfilter     9. 12.100 /  9. 12.100\nlibswscale      7.  5.100 /  7.  5.100\nlibswresample   4. 12.100 /  4. 12.100\nlibpostproc    57.  3.100 / 57.  3.100\n",
+          "oraclePath": "/usr/bin/ffmpeg"
+        },
+        "ffprobe": {
+          "path": "/usr/bin/ffprobe",
+          "sha256": "272f6ebc634a63d9c8b4ca68e964119d980f25154e5aa2c35e5487da48e9a58f",
+          "version": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers\nbuilt with gcc 13 (Ubuntu 13.2.0-23ubuntu3)\nconfiguration: --prefix=/usr --extra-version=3ubuntu5 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libglslang --enable-libgme --enable-libgsm --enable-libharfbuzz --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg --enable-openal --enable-opencl --enable-opengl --disable-sndio --enable-libvpl --disable-libmfx --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-ladspa --enable-libbluray --enable-libjack --enable-libpulse --enable-librabbitmq --enable-librist --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libx264 --enable-libzmq --enable-libzvbi --enable-lv2 --enable-sdl2 --enable-libplacebo --enable-librav1e --enable-pocketsphinx --enable-librsvg --enable-libjxl --enable-shared\nlibavutil      58. 29.100 / 58. 29.100\nlibavcodec     60. 31.102 / 60. 31.102\nlibavformat    60. 16.100 / 60. 16.100\nlibavdevice    60.  3.100 / 60.  3.100\nlibavfilter     9. 12.100 /  9. 12.100\nlibswscale      7.  5.100 /  7.  5.100\nlibswresample   4. 12.100 /  4. 12.100\nlibpostproc    57.  3.100 / 57.  3.100\n",
+          "oraclePath": "/usr/bin/ffprobe"
+        }
+      }
+    },
+    "oracleDependencies": {
+      "numpyVersion": "2.3.3",
+      "numpyPath": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/__init__.py",
+      "pythonVersion": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+      "pythonExecutable": "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python3",
+      "oracleImportedBeforeMedia": true,
+      "oracleSHA256": "713a6ff75001b01792645fcf35cc792ce83cb70b833a66321f055754b9dabda5"
+    },
+    "diskPreflight": {
+      "freeBytes": 91484504064,
+      "requiredAdditionalBytes": 2147483648,
+      "reservationGuaranteed": false
+    },
+    "checkoutCommit": "a581d96d68ad7bb57744dfb5570b6a71e718c913",
+    "sourceHashesBefore": {
+      "development/vr180/index-prototype/index-store.mjs": "a9d6c420e8acd894a0a657120c9f78765766c698103cf52bd18b7793472d0e7d",
+      "development/vr180/index-prototype/job-owner.mjs": "8abfa8351570aefeed8a075a5848ea10130a057c5760a126914c82476f371447",
+      "development/vr180/indexed-transform-prototype/transform.mjs": "01254c7c15a69a34332c3bc803e2865e775566848e13ce5262732e6d747da98f",
+      "development/vr180/input-index-prototype/input-index.mjs": "ff6f826e7b16b61283d736c4996e6feb8297a35eece311802aee4e8ef57e2e1b",
+      "development/vr180/input-index-prototype/presentation-index.mjs": "da4c9c11aae35a5efb07771f7734304879fd0fe9673179809c0360fe5205f55b",
+      "development/vr180/output-index-prototype/mp4-output-inspect.mjs": "d841bab27d299316a890f8b16c628ed486ea803982269293f3faf10fe66ef229",
+      "development/vr180/output-index-prototype/output-index.mjs": "baac33b77abebf388f030dd351c96669f7eb69ea100fde6503c04c16178b919f",
+      "development/vr180/p5-calibration-prototype/frame.mjs": "75b9fbd94923bdc2b6123eedda1baa152e897bdbf1b74f44a0c16e86f8590a3b",
+      "development/vr180/p5-calibration-prototype/probe-calibration.py": "8619fe1769e8bb62de9a886b6378a3b17917713ba9866921ad3c74c439a61a2d",
+      "development/vr180/p5-calibration-prototype/worker.mjs": "a9715387b8714e2260ab66d0e35712bc9a1ce6c651c2d58d63b63661ee2efa21",
+      "docs/shared/vr180/file-output.mjs": "2cd7bcbdc0cf616e9c32aa3afa0543a56e5a2715bf00c6e2223014ad68757050",
+      "docs/shared/vr180/geometry.mjs": "3c83e493ac29d37f37139cbad20019ae809796462c6774046b0d4f9ad6c76ff4",
+      "docs/shared/vr180/mp4.mjs": "1e7189d7b4d9e55b7502fb4d3b985bf8344a1b905bfa1942a926c388345bb892",
+      "docs/shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+      "tools/vr180/cloud-validate.py": "d6fb935eabc976f6589a7461719429b8ef099f87fe90dcf3fa96abb7b6530a6c",
+      "tools/vr180/probe-indexed-conversion.py": "20cee38fb579f4099fdeebe68d256b071b34201b9227d1564df3e0baaf7e7e97",
+      "tools/vr180/probe-output-index.py": "a1522e1efe3a3a7669703b93fdacc28ca81a0365927960b60630cb3d6a006fbe",
+      "tools/vr180/verify-conversion-large.py": "713a6ff75001b01792645fcf35cc792ce83cb70b833a66321f055754b9dabda5",
+      "tools/vr180/verify-metadata.py": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96"
+    },
+    "harnessSHA256": "8619fe1769e8bb62de9a886b6378a3b17917713ba9866921ad3c74c439a61a2d",
+    "sharedHarnessSHA256": "d6fb935eabc976f6589a7461719429b8ef099f87fe90dcf3fa96abb7b6530a6c",
+    "browserVersion": "155.0.8059.39",
+    "browserMetrics": {
+      "generation": {
+        "frames": 300,
+        "fps": 30,
+        "seconds": 10,
+        "requestedBitrate": 32000000,
+        "packets": 300,
+        "payloadBytes": 58950609,
+        "maxPacketBytes": 416880,
+        "encoderConfigCandidates": [
+          {
+            "codec": "avc1.640029",
+            "width": 1024,
+            "height": 512,
+            "displayWidth": 1024,
+            "displayHeight": 512,
+            "bitrate": 32000000,
+            "bitrateMode": "variable",
+            "alpha": "discard",
+            "framerate": 30,
+            "latencyMode": "realtime",
+            "hardwareAcceleration": null,
+            "scalabilityMode": null,
+            "contentHint": null,
+            "avc": {
+              "format": "avc"
+            }
+          }
+        ],
+        "droppedEncoderConfigCandidates": 0,
+        "actualDecoderConfig": {
+          "source": "first encoded packet metadata",
+          "codec": "avc1.640c29",
+          "codedWidth": 1024,
+          "codedHeight": 512,
+          "descriptionBytes": 38
+        },
+        "decoderConfigEvents": 1,
+        "selectedEncoderConfigObserved": false,
+        "drawMs": 1719.7999999997846,
+        "nativeMemoryMeasured": false,
+        "latencyMode": "realtime",
+        "packetTimestampsStrictlyIncreasing": true,
+        "addMs": 3258.7000000000116,
+        "finalizeMs": 368,
+        "bytes": 58952806,
+        "sha256": "8664c9fb23d611ec0502a9a215dfcfea655d94b963e1a1bcf6e63c2239228676",
+        "index": {
+          "profile": {
+            "maxSamples": 100000,
+            "maxTracks": 2,
+            "maxChunkSamples": 4096,
+            "maxChunkBytes": 4194304,
+            "sortReservedBytes": 1600000,
+            "maxLeafBytes": 65536
+          },
+          "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-gen",
+          "sampleCount": 300,
+          "moovPosition": 58950653,
+          "moovBytes": 2153,
+          "verification": {
+            "width": 1024,
+            "height": 512,
+            "videoCodec": "avc1",
+            "audioCodecs": [],
+            "stereoMode": 2,
+            "projection": "equi",
+            "bounds": {
+              "top": 0,
+              "bottom": 0,
+              "left": 1073741824,
+              "right": 1073741824
+            },
+            "pose": [
+              0,
+              0,
+              0
+            ],
+            "transcodeSafe": true,
+            "transcodeIssues": [],
+            "sampleCounts": {
+              "video": 300,
+              "audio": 0,
+              "total": 300
+            },
+            "containerMetadataBytes": 2153
+          },
+          "peakChunkSamples": 15,
+          "peakChunkBytes": 2978365,
+          "peakChunkBackingBytes": 2978365,
+          "peakTimestampSamples": 17,
+          "peakSortBytes": 136,
+          "metadataWriteBytes": 2153,
+          "metadataWriteCalls": 55,
+          "metadataReadBytes": 2189,
+          "metadataReads": 60,
+          "metadataFlushes": 1,
+          "metadataClosed": true,
+          "peakWriterSections": 1,
+          "peakWriterChunks": 2,
+          "peakExplicitReservedBytes": 2066944,
+          "explicitReservedBytes": 2066944,
+          "budgetPeakBytes": 2067008,
+          "disposed": false,
+          "tracks": [
+            {
+              "id": 1,
+              "samples": 300,
+              "chunks": 20,
+              "liveChunkSamples": 0,
+              "liveChunkBytes": 0,
+              "liveChunkBackingBytes": 0,
+              "tables": {
+                "samples": {
+                  "state": "sealed",
+                  "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-gen-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 300,
+                  "extent": 19200,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 960,
+                  "writeBytes": 76736,
+                  "readCalls": 1,
+                  "writeCalls": 1199,
+                  "cacheHits": 2638,
+                  "cacheWriteThroughBytes": 75776,
+                  "yields": 18,
+                  "flushes": 1,
+                  "observedFileBytes": 19200,
+                  "peakInternalBufferBytes": 65600,
+                  "lastError": null,
+                  "budgetReservedBytes": 2066944,
+                  "budgetPeakBytes": 2067008
+                },
+                "chunks": {
+                  "state": "sealed",
+                  "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-gen-t1-chunks",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 24,
+                    "endianness": "little"
+                  },
+                  "count": 20,
+                  "extent": 480,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 480,
+                  "writeBytes": 480,
+                  "readCalls": 1,
+                  "writeCalls": 20,
+                  "cacheHits": 39,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 0,
+                  "flushes": 1,
+                  "observedFileBytes": 480,
+                  "peakInternalBufferBytes": 65560,
+                  "lastError": null,
+                  "budgetReservedBytes": 2066944,
+                  "budgetPeakBytes": 2067008
+                },
+                "stts": {
+                  "state": "sealed",
+                  "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-gen-t1-stts",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 8,
+                    "endianness": "little"
+                  },
+                  "count": 1,
+                  "extent": 8,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 8,
+                  "writeBytes": 8,
+                  "readCalls": 1,
+                  "writeCalls": 1,
+                  "cacheHits": 0,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 0,
+                  "flushes": 1,
+                  "observedFileBytes": 8,
+                  "peakInternalBufferBytes": 65544,
+                  "lastError": null,
+                  "budgetReservedBytes": 2066944,
+                  "budgetPeakBytes": 2067008
+                },
+                "ctts": {
+                  "state": "sealed",
+                  "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-gen-t1-ctts",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 8,
+                    "endianness": "little"
+                  },
+                  "count": 1,
+                  "extent": 8,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 0,
+                  "writeBytes": 8,
+                  "readCalls": 0,
+                  "writeCalls": 1,
+                  "cacheHits": 0,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 0,
+                  "flushes": 1,
+                  "observedFileBytes": 8,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 2066944,
+                  "budgetPeakBytes": 2067008
+                },
+                "stsc": {
+                  "state": "sealed",
+                  "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-gen-t1-stsc",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 12,
+                    "endianness": "little"
+                  },
+                  "count": 1,
+                  "extent": 12,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 12,
+                  "writeBytes": 12,
+                  "readCalls": 1,
+                  "writeCalls": 1,
+                  "cacheHits": 0,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 0,
+                  "flushes": 1,
+                  "observedFileBytes": 12,
+                  "peakInternalBufferBytes": 65548,
+                  "lastError": null,
+                  "budgetReservedBytes": 2066944,
+                  "budgetPeakBytes": 2067008
+                },
+                "stss": {
+                  "state": "sealed",
+                  "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-gen-t1-stss",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 4,
+                    "endianness": "little"
+                  },
+                  "count": 20,
+                  "extent": 80,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 80,
+                  "writeBytes": 80,
+                  "readCalls": 1,
+                  "writeCalls": 20,
+                  "cacheHits": 19,
+                  "cacheWriteThroughBytes": 0,
+                  "yields": 0,
+                  "flushes": 1,
+                  "observedFileBytes": 80,
+                  "peakInternalBufferBytes": 65540,
+                  "lastError": null,
+                  "budgetReservedBytes": 2066944,
+                  "budgetPeakBytes": 2067008
+                }
+              }
+            }
+          ]
+        },
+        "requestedTimelinePayloadBitsPerSecond": 47160487.2,
+        "elapsedMs": 4913.599999999977,
+        "submitFramesPerSecond": 92.0612514192773,
+        "cleanup": {
+          "indexReservedBytes": 0,
+          "directoryRemoved": true,
+          "error": null
+        }
+      },
+      "conversion": {
+        "elapsedMs": 5284.599999999977,
+        "metrics": {
+          "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert",
+          "settings": {
+            "layout": "sbs",
+            "fov": 180,
+            "eyeSize": 512,
+            "bitrate": 32000000
+          },
+          "startedAt": "2026-10-17T14:09:43.374Z",
+          "inputBytes": 58952806,
+          "outputBytes": 58862233,
+          "videoFrames": 300,
+          "encodedVideoPackets": 300,
+          "audioPackets": 0,
+          "totalSamples": 300,
+          "sourceCacheBudgetBytes": 1048576,
+          "outputLimitBytes": 1073741824,
+          "sampleLimit": 100000,
+          "writeChunkBytes": 1048576,
+          "sourceAnalysisMs": 376.29999999998836,
+          "capabilityCheckMs": 6.800000000017462,
+          "capabilities": {
+            "input": {
+              "codec": "avc",
+              "width": 1024,
+              "height": 512,
+              "decodable": true
+            },
+            "output": {
+              "codec": "avc",
+              "width": 1024,
+              "height": 512,
+              "bitrate": 32000000,
+              "latencyMode": "quality",
+              "encodable": true
+            }
+          },
+          "temporarySetupMs": 6,
+          "conversionLoopMs": 3850,
+          "videoIteratorWaitMs": 845.7000000001863,
+          "canvasDrawMs": 1711.0999999998894,
+          "videoAddWaitMs": 1288.9999999997963,
+          "audioReadMs": 0,
+          "audioAddWaitMs": 0,
+          "finalizeMs": 359.9000000000233,
+          "outputPreparationMs": 634.5,
+          "totalMs": 5284,
+          "firstVideoTimestamp": 0,
+          "lastVideoEndTimestamp": 10,
+          "firstAudioTimestamp": null,
+          "lastAudioEndTimestamp": null,
+          "audioTimeline": null,
+          "storageQuotaBytes": null,
+          "storageUsageBytes": null,
+          "storageAvailableBytes": null,
+          "cpuPeakBytes": null,
+          "gpuPeakBytes": null,
+          "nativePeakBytes": null,
+          "containerMetadataGrowth": "private bounded disk input/output indices; unchanged public sample/metadata/output limits",
+          "metadataPatched": true,
+          "status": "saved-and-verified",
+          "cleanupError": null,
+          "outputBackend": "private-indexed-direct-file",
+          "opfsDirectory": null,
+          "admission": {
+            "width": 1024,
+            "height": 512,
+            "videoCodec": "avc1",
+            "audioCodecs": [],
+            "stereoMode": 2,
+            "projection": "equi",
+            "bounds": {
+              "top": 0,
+              "bottom": 0,
+              "left": 1073741824,
+              "right": 1073741824
+            },
+            "pose": [
+              0,
+              0,
+              0
+            ],
+            "transcodeSafe": true,
+            "transcodeIssues": [],
+            "sampleCounts": {
+              "video": 300,
+              "audio": 0,
+              "total": 300
+            },
+            "containerMetadataBytes": 2153
+          },
+          "indexSortBytes": {
+            "input": 2594304,
+            "output": 1600000
+          },
+          "indexBudgetBytes": 8388608,
+          "inputIndex": {
+            "tableReadBytes": 1436,
+            "tableReadCalls": 11,
+            "tableMaxReadBytes": 1200,
+            "tableCacheMisses": 5,
+            "inspectorReadBytes": 2189,
+            "inspectorMaxReadBytes": 1212,
+            "metadataReadBytes": 965,
+            "metadataMaxReadBytes": 306,
+            "metadataSmallBytes": 649,
+            "metadataSkeletonBytes": 681,
+            "retainedDescriptionBytes": 38,
+            "maxSkeletonBuildBytes": 66255,
+            "boxCount": 35,
+            "sampleCount": 300,
+            "peakOwnedStores": 1,
+            "initializationCount": 1,
+            "queryCount": 303,
+            "peakPendingOperations": 1,
+            "initialized": true,
+            "disposed": true,
+            "inspection": {
+              "width": 1024,
+              "height": 512,
+              "videoCodec": "avc1",
+              "audioCodecs": [],
+              "stereoMode": 2,
+              "projection": "equi",
+              "bounds": {
+                "top": 0,
+                "bottom": 0,
+                "left": 1073741824,
+                "right": 1073741824
+              },
+              "pose": [
+                0,
+                0,
+                0
+              ],
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 300,
+                "audio": 0,
+                "total": 300
+              },
+              "containerMetadataBytes": 2153
+            },
+            "validationProfile": "unchanged-public-parser",
+            "ownedStores": 0,
+            "budgetReservedBytes": 0,
+            "budgetPeakBytes": 2140800,
+            "tracks": []
+          },
+          "outputIndex": {
+            "profile": {
+              "maxSamples": 100000,
+              "maxTracks": 2,
+              "maxChunkSamples": 4096,
+              "maxChunkBytes": 4194304,
+              "sortReservedBytes": 1600000,
+              "maxLeafBytes": 65536
+            },
+            "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out",
+            "sampleCount": 300,
+            "moovPosition": 58860080,
+            "moovBytes": 2153,
+            "verification": {
+              "width": 1024,
+              "height": 512,
+              "videoCodec": "avc1",
+              "audioCodecs": [],
+              "stereoMode": 2,
+              "projection": "equi",
+              "bounds": {
+                "top": 0,
+                "bottom": 0,
+                "left": 1073741824,
+                "right": 1073741824
+              },
+              "pose": [
+                0,
+                0,
+                0
+              ],
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 300,
+                "audio": 0,
+                "total": 300
+              },
+              "containerMetadataBytes": 2153
+            },
+            "peakChunkSamples": 15,
+            "peakChunkBytes": 2976626,
+            "peakChunkBackingBytes": 2976626,
+            "peakTimestampSamples": 17,
+            "peakSortBytes": 136,
+            "metadataWriteBytes": 2153,
+            "metadataWriteCalls": 55,
+            "metadataReadBytes": 4342,
+            "metadataReads": 61,
+            "metadataFlushes": 1,
+            "metadataClosed": true,
+            "peakWriterSections": 1,
+            "peakWriterChunks": 2,
+            "peakExplicitReservedBytes": 2140672,
+            "explicitReservedBytes": 0,
+            "budgetPeakBytes": 2140800,
+            "disposed": true,
+            "tracks": [
+              {
+                "id": 1,
+                "samples": 300,
+                "chunks": 20,
+                "liveChunkSamples": 0,
+                "liveChunkBytes": 0,
+                "liveChunkBackingBytes": 0,
+                "tables": {
+                  "samples": {
+                    "state": "disposed",
+                    "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 300,
+                    "extent": 19200,
+                    "internalBufferBytes": 0,
+                    "readBytes": 960,
+                    "writeBytes": 76736,
+                    "readCalls": 1,
+                    "writeCalls": 1199,
+                    "cacheHits": 2638,
+                    "cacheWriteThroughBytes": 75776,
+                    "yields": 18,
+                    "flushes": 1,
+                    "observedFileBytes": 19200,
+                    "peakInternalBufferBytes": 65600,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 2140800
+                  },
+                  "chunks": {
+                    "state": "disposed",
+                    "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out-t1-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 20,
+                    "extent": 480,
+                    "internalBufferBytes": 0,
+                    "readBytes": 480,
+                    "writeBytes": 480,
+                    "readCalls": 1,
+                    "writeCalls": 20,
+                    "cacheHits": 39,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 480,
+                    "peakInternalBufferBytes": 65560,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 2140800
+                  },
+                  "stts": {
+                    "state": "disposed",
+                    "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out-t1-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 0,
+                    "readBytes": 8,
+                    "writeBytes": 8,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65544,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 2140800
+                  },
+                  "ctts": {
+                    "state": "disposed",
+                    "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out-t1-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 0,
+                    "readBytes": 0,
+                    "writeBytes": 8,
+                    "readCalls": 0,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 2140800
+                  },
+                  "stsc": {
+                    "state": "disposed",
+                    "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out-t1-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 12,
+                    "internalBufferBytes": 0,
+                    "readBytes": 12,
+                    "writeBytes": 12,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 12,
+                    "peakInternalBufferBytes": 65548,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 2140800
+                  },
+                  "stss": {
+                    "state": "disposed",
+                    "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out-t1-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 20,
+                    "extent": 80,
+                    "internalBufferBytes": 0,
+                    "readBytes": 80,
+                    "writeBytes": 80,
+                    "readCalls": 1,
+                    "writeCalls": 20,
+                    "cacheHits": 19,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 80,
+                    "peakInternalBufferBytes": 65540,
+                    "lastError": null,
+                    "budgetReservedBytes": 0,
+                    "budgetPeakBytes": 2140800
+                  }
+                }
+              }
+            ]
+          },
+          "inputIndexBeforeCleanup": {
+            "tableReadBytes": 1436,
+            "tableReadCalls": 11,
+            "tableMaxReadBytes": 1200,
+            "tableCacheMisses": 5,
+            "inspectorReadBytes": 2189,
+            "inspectorMaxReadBytes": 1212,
+            "metadataReadBytes": 965,
+            "metadataMaxReadBytes": 306,
+            "metadataSmallBytes": 649,
+            "metadataSkeletonBytes": 681,
+            "retainedDescriptionBytes": 38,
+            "maxSkeletonBuildBytes": 66255,
+            "boxCount": 35,
+            "sampleCount": 300,
+            "peakOwnedStores": 1,
+            "initializationCount": 1,
+            "queryCount": 303,
+            "peakPendingOperations": 1,
+            "initialized": true,
+            "disposed": false,
+            "inspection": {
+              "width": 1024,
+              "height": 512,
+              "videoCodec": "avc1",
+              "audioCodecs": [],
+              "stereoMode": 2,
+              "projection": "equi",
+              "bounds": {
+                "top": 0,
+                "bottom": 0,
+                "left": 1073741824,
+                "right": 1073741824
+              },
+              "pose": [
+                0,
+                0,
+                0
+              ],
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 300,
+                "audio": 0,
+                "total": 300
+              },
+              "containerMetadataBytes": 2153
+            },
+            "validationProfile": "unchanged-public-parser",
+            "ownedStores": 1,
+            "budgetReservedBytes": 2140672,
+            "budgetPeakBytes": 2140800,
+            "tracks": [
+              {
+                "id": 1,
+                "count": 300,
+                "hasComposition": false,
+                "sampleStore": {
+                  "state": "sealed",
+                  "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-in-t1-samples",
+                  "schema": {
+                    "version": 1,
+                    "recordBytes": 64,
+                    "endianness": "little"
+                  },
+                  "count": 300,
+                  "extent": 19200,
+                  "internalBufferBytes": 65536,
+                  "readBytes": 960,
+                  "writeBytes": 38400,
+                  "readCalls": 1,
+                  "writeCalls": 600,
+                  "cacheHits": 609,
+                  "cacheWriteThroughBytes": 37440,
+                  "yields": 9,
+                  "flushes": 1,
+                  "observedFileBytes": 19200,
+                  "peakInternalBufferBytes": 65536,
+                  "lastError": null,
+                  "budgetReservedBytes": 2140672,
+                  "budgetPeakBytes": 2140800
+                },
+                "presentationStore": null,
+                "inverseStore": null
+              }
+            ]
+          },
+          "outputIndexBeforeCleanup": {
+            "profile": {
+              "maxSamples": 100000,
+              "maxTracks": 2,
+              "maxChunkSamples": 4096,
+              "maxChunkBytes": 4194304,
+              "sortReservedBytes": 1600000,
+              "maxLeafBytes": 65536
+            },
+            "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out",
+            "sampleCount": 300,
+            "moovPosition": 58860080,
+            "moovBytes": 2153,
+            "verification": {
+              "width": 1024,
+              "height": 512,
+              "videoCodec": "avc1",
+              "audioCodecs": [],
+              "stereoMode": 2,
+              "projection": "equi",
+              "bounds": {
+                "top": 0,
+                "bottom": 0,
+                "left": 1073741824,
+                "right": 1073741824
+              },
+              "pose": [
+                0,
+                0,
+                0
+              ],
+              "transcodeSafe": true,
+              "transcodeIssues": [],
+              "sampleCounts": {
+                "video": 300,
+                "audio": 0,
+                "total": 300
+              },
+              "containerMetadataBytes": 2153
+            },
+            "peakChunkSamples": 15,
+            "peakChunkBytes": 2976626,
+            "peakChunkBackingBytes": 2976626,
+            "peakTimestampSamples": 17,
+            "peakSortBytes": 136,
+            "metadataWriteBytes": 2153,
+            "metadataWriteCalls": 55,
+            "metadataReadBytes": 4342,
+            "metadataReads": 61,
+            "metadataFlushes": 1,
+            "metadataClosed": true,
+            "peakWriterSections": 1,
+            "peakWriterChunks": 2,
+            "peakExplicitReservedBytes": 2140672,
+            "explicitReservedBytes": 2140672,
+            "budgetPeakBytes": 2140800,
+            "disposed": false,
+            "tracks": [
+              {
+                "id": 1,
+                "samples": 300,
+                "chunks": 20,
+                "liveChunkSamples": 0,
+                "liveChunkBytes": 0,
+                "liveChunkBackingBytes": 0,
+                "tables": {
+                  "samples": {
+                    "state": "sealed",
+                    "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out-t1-samples",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 64,
+                      "endianness": "little"
+                    },
+                    "count": 300,
+                    "extent": 19200,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 960,
+                    "writeBytes": 76736,
+                    "readCalls": 1,
+                    "writeCalls": 1199,
+                    "cacheHits": 2638,
+                    "cacheWriteThroughBytes": 75776,
+                    "yields": 18,
+                    "flushes": 1,
+                    "observedFileBytes": 19200,
+                    "peakInternalBufferBytes": 65600,
+                    "lastError": null,
+                    "budgetReservedBytes": 2140672,
+                    "budgetPeakBytes": 2140800
+                  },
+                  "chunks": {
+                    "state": "sealed",
+                    "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out-t1-chunks",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 24,
+                      "endianness": "little"
+                    },
+                    "count": 20,
+                    "extent": 480,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 480,
+                    "writeBytes": 480,
+                    "readCalls": 1,
+                    "writeCalls": 20,
+                    "cacheHits": 39,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 480,
+                    "peakInternalBufferBytes": 65560,
+                    "lastError": null,
+                    "budgetReservedBytes": 2140672,
+                    "budgetPeakBytes": 2140800
+                  },
+                  "stts": {
+                    "state": "sealed",
+                    "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out-t1-stts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 8,
+                    "writeBytes": 8,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65544,
+                    "lastError": null,
+                    "budgetReservedBytes": 2140672,
+                    "budgetPeakBytes": 2140800
+                  },
+                  "ctts": {
+                    "state": "sealed",
+                    "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out-t1-ctts",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 8,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 8,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 0,
+                    "writeBytes": 8,
+                    "readCalls": 0,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 8,
+                    "peakInternalBufferBytes": 65536,
+                    "lastError": null,
+                    "budgetReservedBytes": 2140672,
+                    "budgetPeakBytes": 2140800
+                  },
+                  "stsc": {
+                    "state": "sealed",
+                    "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out-t1-stsc",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 12,
+                      "endianness": "little"
+                    },
+                    "count": 1,
+                    "extent": 12,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 12,
+                    "writeBytes": 12,
+                    "readCalls": 1,
+                    "writeCalls": 1,
+                    "cacheHits": 0,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 12,
+                    "peakInternalBufferBytes": 65548,
+                    "lastError": null,
+                    "budgetReservedBytes": 2140672,
+                    "budgetPeakBytes": 2140800
+                  },
+                  "stss": {
+                    "state": "sealed",
+                    "jobId": "v-3d5672cb-e6bb-43bf-9631-3706bb5021cd-convert-out-t1-stss",
+                    "schema": {
+                      "version": 1,
+                      "recordBytes": 4,
+                      "endianness": "little"
+                    },
+                    "count": 20,
+                    "extent": 80,
+                    "internalBufferBytes": 65536,
+                    "readBytes": 80,
+                    "writeBytes": 80,
+                    "readCalls": 1,
+                    "writeCalls": 20,
+                    "cacheHits": 19,
+                    "cacheWriteThroughBytes": 0,
+                    "yields": 0,
+                    "flushes": 1,
+                    "observedFileBytes": 80,
+                    "peakInternalBufferBytes": 65540,
+                    "lastError": null,
+                    "budgetReservedBytes": 2140672,
+                    "budgetPeakBytes": 2140800
+                  }
+                }
+              }
+            ]
+          },
+          "indexReservedAfterCleanup": 0
+        },
+        "saved": {
+          "file": {},
+          "bytes": 58862233,
+          "sha256": "7fe10d55b9b7d51d492ffdf3bf4be2a7b0db2ae8a0ff390273792f25deb1d599",
+          "committed": true,
+          "hashMatched": false,
+          "timings": {
+            "getFileBefore": {
+              "durationMs": 0.29999999998835847,
+              "count": 1,
+              "requestedBytes": 0,
+              "status": "completed"
+            },
+            "createWritable": {
+              "durationMs": 0.39999999999417923,
+              "count": 1,
+              "requestedBytes": 0,
+              "status": "completed"
+            },
+            "write": {
+              "durationMs": 478.9000000001688,
+              "count": 58,
+              "requestedBytes": 58862241,
+              "status": "completed"
+            },
+            "truncate": {
+              "durationMs": 0.5,
+              "count": 1,
+              "requestedBytes": 0,
+              "status": "completed"
+            },
+            "close": {
+              "durationMs": 0.40000000002328306,
+              "count": 1,
+              "requestedBytes": 0,
+              "status": "completed"
+            },
+            "getFile": {
+              "durationMs": 0.39999999999417923,
+              "count": 1,
+              "requestedBytes": 0,
+              "status": "completed"
+            },
+            "savedFileHash": {
+              "durationMs": 601.1000000000058,
+              "count": 1,
+              "requestedBytes": 58862233,
+              "status": "completed"
+            }
+          }
+        },
+        "verification": {
+          "wholeFileHashCompared": false,
+          "savedFileSHA256": "7fe10d55b9b7d51d492ffdf3bf4be2a7b0db2ae8a0ff390273792f25deb1d599",
+          "metadataHashMatched": true,
+          "expectedMetadataHash": "2cd479496cfcdecf50ecaf8419b20949a6cda7c27029549a55fd031ed823cae1",
+          "metadataOffset": 58860080,
+          "metadataBytes": 2153,
+          "savedWriteCommitted": true
+        },
+        "savedInfo": {
+          "width": 1024,
+          "height": 512,
+          "videoCodec": "avc1",
+          "audioCodecs": [],
+          "stereoMode": 2,
+          "projection": "equi",
+          "bounds": {
+            "top": 0,
+            "bottom": 0,
+            "left": 1073741824,
+            "right": 1073741824
+          },
+          "pose": [
+            0,
+            0,
+            0
+          ],
+          "transcodeSafe": true,
+          "transcodeIssues": [],
+          "sampleCounts": {
+            "video": 300,
+            "audio": 0,
+            "total": 300
+          },
+          "containerMetadataBytes": 2153
+        }
+      }
+    },
+    "packetStatistics": {
+      "input": {
+        "packets": 300,
+        "payloadBytes": 58950609,
+        "maxPacketBytes": 416880,
+        "timeBase": "1/30",
+        "firstPtsRational": "0",
+        "endPtsRational": "10",
+        "timelineSecondsRational": "10",
+        "timelineSeconds": 10.0,
+        "actualPayloadBitsPerSecond": 47160487.2,
+        "actualStream": {
+          "index": 0,
+          "codec_name": "h264",
+          "profile": "High",
+          "codec_type": "video",
+          "width": 1024,
+          "height": 512,
+          "pix_fmt": "yuvj420p",
+          "level": 41,
+          "time_base": "1/30",
+          "disposition": {
+            "default": 1,
+            "dub": 0,
+            "original": 0,
+            "comment": 0,
+            "lyrics": 0,
+            "karaoke": 0,
+            "forced": 0,
+            "hearing_impaired": 0,
+            "visual_impaired": 0,
+            "clean_effects": 0,
+            "attached_pic": 0,
+            "timed_thumbnails": 0,
+            "non_diegetic": 0,
+            "captions": 0,
+            "descriptions": 0,
+            "metadata": 0,
+            "dependent": 0,
+            "still_image": 0
+          },
+          "tags": {
+            "creation_time": "2026-10-17T14:09:38.000000Z",
+            "language": "und",
+            "handler_name": "MediabunnyVideoHandler",
+            "vendor_id": "[0][0][0][0]",
+            "encoder": "Mediabunny v1.61.5"
+          },
+          "side_data_list": [
+            {
+              "side_data_type": "Stereo 3D",
+              "type": "side by side",
+              "inverted": 0
+            },
+            {
+              "side_data_type": "Spherical Mapping",
+              "projection": "tiled equirectangular",
+              "bound_left": 513,
+              "bound_top": 0,
+              "bound_right": 511,
+              "bound_bottom": 0,
+              "yaw": 0,
+              "pitch": 0,
+              "roll": 0
+            }
+          ]
+        },
+        "completeScan": true,
+        "scans": {
+          "video-packets": {
+            "count": 300,
+            "endReached": true
+          }
+        },
+        "stderrLogs": {
+          "stream-profile": {
+            "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/input-packet-stats/stream-profile.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "video-packets": {
+            "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/input-packet-stats/video-packets.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          }
+        }
+      },
+      "output": {
+        "packets": 300,
+        "payloadBytes": 58860036,
+        "maxPacketBytes": 416934,
+        "timeBase": "1/57600",
+        "firstPtsRational": "0",
+        "endPtsRational": "10",
+        "timelineSecondsRational": "10",
+        "timelineSeconds": 10.0,
+        "actualPayloadBitsPerSecond": 47088028.8,
+        "actualStream": {
+          "index": 0,
+          "codec_name": "h264",
+          "profile": "High",
+          "codec_type": "video",
+          "width": 1024,
+          "height": 512,
+          "pix_fmt": "yuvj420p",
+          "level": 41,
+          "time_base": "1/57600",
+          "disposition": {
+            "default": 1,
+            "dub": 0,
+            "original": 0,
+            "comment": 0,
+            "lyrics": 0,
+            "karaoke": 0,
+            "forced": 0,
+            "hearing_impaired": 0,
+            "visual_impaired": 0,
+            "clean_effects": 0,
+            "attached_pic": 0,
+            "timed_thumbnails": 0,
+            "non_diegetic": 0,
+            "captions": 0,
+            "descriptions": 0,
+            "metadata": 0,
+            "dependent": 0,
+            "still_image": 0
+          },
+          "tags": {
+            "creation_time": "2026-10-17T14:09:43.000000Z",
+            "language": "und",
+            "handler_name": "MediabunnyVideoHandler",
+            "vendor_id": "[0][0][0][0]",
+            "encoder": "Mediabunny v1.61.5"
+          },
+          "side_data_list": [
+            {
+              "side_data_type": "Stereo 3D",
+              "type": "side by side",
+              "inverted": 0
+            },
+            {
+              "side_data_type": "Spherical Mapping",
+              "projection": "tiled equirectangular",
+              "bound_left": 513,
+              "bound_top": 0,
+              "bound_right": 511,
+              "bound_bottom": 0,
+              "yaw": 0,
+              "pitch": 0,
+              "roll": 0
+            }
+          ]
+        },
+        "completeScan": true,
+        "scans": {
+          "video-packets": {
+            "count": 300,
+            "endReached": true
+          }
+        },
+        "stderrLogs": {
+          "stream-profile": {
+            "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/output-packet-stats/stream-profile.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          },
+          "video-packets": {
+            "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/output-packet-stats/video-packets.stderr.log",
+            "totalBytes": 0,
+            "retainedBytes": 0,
+            "droppedBytes": 0
+          }
+        }
+      }
+    },
+    "sourceHashesAfter": {
+      "development/vr180/index-prototype/index-store.mjs": "a9d6c420e8acd894a0a657120c9f78765766c698103cf52bd18b7793472d0e7d",
+      "development/vr180/index-prototype/job-owner.mjs": "8abfa8351570aefeed8a075a5848ea10130a057c5760a126914c82476f371447",
+      "development/vr180/indexed-transform-prototype/transform.mjs": "01254c7c15a69a34332c3bc803e2865e775566848e13ce5262732e6d747da98f",
+      "development/vr180/input-index-prototype/input-index.mjs": "ff6f826e7b16b61283d736c4996e6feb8297a35eece311802aee4e8ef57e2e1b",
+      "development/vr180/input-index-prototype/presentation-index.mjs": "da4c9c11aae35a5efb07771f7734304879fd0fe9673179809c0360fe5205f55b",
+      "development/vr180/output-index-prototype/mp4-output-inspect.mjs": "d841bab27d299316a890f8b16c628ed486ea803982269293f3faf10fe66ef229",
+      "development/vr180/output-index-prototype/output-index.mjs": "baac33b77abebf388f030dd351c96669f7eb69ea100fde6503c04c16178b919f",
+      "development/vr180/p5-calibration-prototype/frame.mjs": "75b9fbd94923bdc2b6123eedda1baa152e897bdbf1b74f44a0c16e86f8590a3b",
+      "development/vr180/p5-calibration-prototype/probe-calibration.py": "8619fe1769e8bb62de9a886b6378a3b17917713ba9866921ad3c74c439a61a2d",
+      "development/vr180/p5-calibration-prototype/worker.mjs": "a9715387b8714e2260ab66d0e35712bc9a1ce6c651c2d58d63b63661ee2efa21",
+      "docs/shared/vr180/file-output.mjs": "2cd7bcbdc0cf616e9c32aa3afa0543a56e5a2715bf00c6e2223014ad68757050",
+      "docs/shared/vr180/geometry.mjs": "3c83e493ac29d37f37139cbad20019ae809796462c6774046b0d4f9ad6c76ff4",
+      "docs/shared/vr180/mp4.mjs": "1e7189d7b4d9e55b7502fb4d3b985bf8344a1b905bfa1942a926c388345bb892",
+      "docs/shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+      "tools/vr180/cloud-validate.py": "d6fb935eabc976f6589a7461719429b8ef099f87fe90dcf3fa96abb7b6530a6c",
+      "tools/vr180/probe-indexed-conversion.py": "20cee38fb579f4099fdeebe68d256b071b34201b9227d1564df3e0baaf7e7e97",
+      "tools/vr180/probe-output-index.py": "a1522e1efe3a3a7669703b93fdacc28ca81a0365927960b60630cb3d6a006fbe",
+      "tools/vr180/verify-conversion-large.py": "713a6ff75001b01792645fcf35cc792ce83cb70b833a66321f055754b9dabda5",
+      "tools/vr180/verify-metadata.py": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96"
+    },
+    "mediaManifest": {
+      "schema": "vr180-calibration-media-artifact-v1",
+      "runId": "39039504709-p5-32-32-1",
+      "checkoutCommit": "a581d96d68ad7bb57744dfb5570b6a71e718c913",
+      "case": "32-32",
+      "files": [
+        {
+          "name": "input.mp4",
+          "bytes": 58952806,
+          "sha256": "8664c9fb23d611ec0502a9a215dfcfea655d94b963e1a1bcf6e63c2239228676"
+        },
+        {
+          "name": "output.mp4",
+          "bytes": 58862233,
+          "sha256": "7fe10d55b9b7d51d492ffdf3bf4be2a7b0db2ae8a0ff390273792f25deb1d599"
+        }
+      ],
+      "independentVerification": "PASS",
+      "completeScan": true,
+      "calibrationVerdict": "PASS",
+      "verifierSHA256": "713a6ff75001b01792645fcf35cc792ce83cb70b833a66321f055754b9dabda5",
+      "hostRecovery": "PENDING",
+      "retentionDays": 1,
+      "compressionLevel": 0
+    },
+    "elapsedSeconds": 27.577031432000013
+  },
+  "cloudIndependentVerification": {
+    "schema": "vr180-independent-large-verifier-v1",
+    "status": "PASS",
+    "input": "/home/runner/work/_temp/vr180-p5-39039504709-1/media/input.mp4",
+    "output": "/home/runner/work/_temp/vr180-p5-39039504709-1/media/output.mp4",
+    "mode": "convert",
+    "settings": {
+      "layout": "sbs",
+      "fov": 180,
+      "eyeSize": 512
+    },
+    "oracle": "verify-conversion-large.py",
+    "scans": {
+      "input-video-frames": {
+        "count": 300,
+        "endReached": true
+      },
+      "output-video-frames": {
+        "count": 300,
+        "endReached": true
+      },
+      "input-packets": {
+        "count": 300,
+        "endReached": true
+      },
+      "output-packets": {
+        "count": 300,
+        "endReached": true
+      },
+      "expected-rgb": {
+        "count": 300,
+        "endReached": true
+      },
+      "actual-rgb": {
+        "count": 300,
+        "endReached": true
+      },
+      "input-hash": {
+        "count": 58952806,
+        "endReached": true
+      },
+      "output-hash": {
+        "count": 58862233,
+        "endReached": true
+      }
+    },
+    "errors": {
+      "total": 0,
+      "byKind": {},
+      "details": [],
+      "dropped": 0,
+      "limit": 32
+    },
+    "completeScan": true,
+    "copyTablesIdentical": null,
+    "bounds": {
+      "eyePixels": 2048,
+      "framePixels": 8388608,
+      "probeRecordBytes": 131072,
+      "streamDescriptionBytes": 262144,
+      "metadataPayloadBytes": 16777216,
+      "metadataBoxCount": 100000,
+      "pcmBlockBytes": 65536,
+      "stderrBytesPerProcess": 65536,
+      "detailLimit": 32,
+      "wallTimeoutSeconds": 180,
+      "frameCountLimit": null,
+      "fileBytesLimit": null
+    },
+    "scope": "synthetic full scans; native FFmpeg memory, 5/10 GB capacity, real-camera quality, target VR playback and usability are not established by this report",
+    "inputBytes": 58952806,
+    "outputBytes": 58862233,
+    "tools": {
+      "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+      "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+    },
+    "streams": {
+      "input": [
+        {
+          "index": 0,
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1024,
+          "height": 512,
+          "time_base": "1/30",
+          "start_time": "0.000000",
+          "extradata_hash": "SHA256:6fc82d29c7db4eb8a8e817485116c23cab37218590d4ba1decf9f2d329792a97",
+          "disposition": {
+            "default": 1,
+            "dub": 0,
+            "original": 0,
+            "comment": 0,
+            "lyrics": 0,
+            "karaoke": 0,
+            "forced": 0,
+            "hearing_impaired": 0,
+            "visual_impaired": 0,
+            "clean_effects": 0,
+            "attached_pic": 0,
+            "timed_thumbnails": 0,
+            "non_diegetic": 0,
+            "captions": 0,
+            "descriptions": 0,
+            "metadata": 0,
+            "dependent": 0,
+            "still_image": 0
+          },
+          "tags": {
+            "creation_time": "2026-10-17T14:09:38.000000Z",
+            "language": "und",
+            "handler_name": "MediabunnyVideoHandler",
+            "vendor_id": "[0][0][0][0]",
+            "encoder": "Mediabunny v1.61.5"
+          },
+          "side_data_list": [
+            {
+              "side_data_type": "Stereo 3D",
+              "type": "side by side",
+              "inverted": 0
+            },
+            {
+              "side_data_type": "Spherical Mapping",
+              "projection": "tiled equirectangular",
+              "bound_left": 513,
+              "bound_top": 0,
+              "bound_right": 511,
+              "bound_bottom": 0,
+              "yaw": 0,
+              "pitch": 0,
+              "roll": 0
+            }
+          ]
+        }
+      ],
+      "output": [
+        {
+          "index": 0,
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1024,
+          "height": 512,
+          "time_base": "1/57600",
+          "start_time": "0.000000",
+          "extradata_hash": "SHA256:6fc82d29c7db4eb8a8e817485116c23cab37218590d4ba1decf9f2d329792a97",
+          "disposition": {
+            "default": 1,
+            "dub": 0,
+            "original": 0,
+            "comment": 0,
+            "lyrics": 0,
+            "karaoke": 0,
+            "forced": 0,
+            "hearing_impaired": 0,
+            "visual_impaired": 0,
+            "clean_effects": 0,
+            "attached_pic": 0,
+            "timed_thumbnails": 0,
+            "non_diegetic": 0,
+            "captions": 0,
+            "descriptions": 0,
+            "metadata": 0,
+            "dependent": 0,
+            "still_image": 0
+          },
+          "tags": {
+            "creation_time": "2026-10-17T14:09:43.000000Z",
+            "language": "und",
+            "handler_name": "MediabunnyVideoHandler",
+            "vendor_id": "[0][0][0][0]",
+            "encoder": "Mediabunny v1.61.5"
+          },
+          "side_data_list": [
+            {
+              "side_data_type": "Stereo 3D",
+              "type": "side by side",
+              "inverted": 0
+            },
+            {
+              "side_data_type": "Spherical Mapping",
+              "projection": "tiled equirectangular",
+              "bound_left": 513,
+              "bound_top": 0,
+              "bound_right": 511,
+              "bound_bottom": 0,
+              "yaw": 0,
+              "pitch": 0,
+              "roll": 0
+            }
+          ]
+        }
+      ]
+    },
+    "vrMetadata": {
+      "path": "moov/trak(vide)/mdia/minf/stbl/stsd/avc1",
+      "width": 1024,
+      "height": 512,
+      "stereo_mode": 2,
+      "projection": "equi",
+      "pose_degrees": [
+        0,
+        0,
+        0
+      ],
+      "bounds_u0_32": {
+        "top": 0,
+        "bottom": 0,
+        "left": 1073741824,
+        "right": 1073741824
+      },
+      "metadata_source": "Kushyameln Works VR180 b1",
+      "active_st3d_count": 1,
+      "active_sv3d_count": 1,
+      "entry_children": [
+        "avcC",
+        "colr",
+        "btrt",
+        "st3d",
+        "sv3d"
+      ]
+    },
+    "frameMetadata": {
+      "inputVideoFrames": 300,
+      "outputVideoFrames": 300,
+      "inputAudioFrames": 0,
+      "outputAudioFrames": 0
+    },
+    "maxPtsErrorSeconds": 0.0,
+    "maxPtsErrorFrame": null,
+    "frames": 300,
+    "packets": {
+      "allFieldsEqual": null,
+      "input": {
+        "count": 300,
+        "byStream": {
+          "0": 300
+        },
+        "sequenceSHA256": "29918bd21d258f04cead1cba1195954abd2a6679cb9e515d7d4bc6e27c83f97d"
+      },
+      "output": {
+        "count": 300,
+        "byStream": {
+          "0": 300
+        },
+        "sequenceSHA256": "0fea776c4a9d6b2c4d8868288b622afcb7aa1f5e9dc058aab8708e67d4eb5e50"
+      }
+    },
+    "audioPackets": {
+      "present": false
+    },
+    "pixels": {
+      "inputFrames": 300,
+      "outputFrames": 300,
+      "comparedFrames": 300,
+      "missingOutputFrames": 0,
+      "extraOutputFrames": 0,
+      "maxChannelError": 133,
+      "maxChannelErrorLocation": {
+        "frame": 147,
+        "eye": 1,
+        "x": 4,
+        "y": 44,
+        "channel": 0
+      }
+    },
+    "events": {
+      "inputCountByEye": [
+        3,
+        3
+      ],
+      "outputCountByEye": [
+        3,
+        3
+      ],
+      "outputIndicesDroppedByEye": [
+        0,
+        0
+      ],
+      "allFrameFlagsEqual": true,
+      "inputSequenceSHA256ByEye": [
+        "866d22b784c2a021c53db3664abe28621504da94692235b3885f7e99f0d9c428",
+        "866d22b784c2a021c53db3664abe28621504da94692235b3885f7e99f0d9c428"
+      ],
+      "outputSequenceSHA256ByEye": [
+        "866d22b784c2a021c53db3664abe28621504da94692235b3885f7e99f0d9c428",
+        "866d22b784c2a021c53db3664abe28621504da94692235b3885f7e99f0d9c428"
+      ]
+    },
+    "eyePSNRdB": [
+      39.22705744520337,
+      39.2504578670444
+    ],
+    "decodedFramesCompared": 300,
+    "redFrameIndicesByEye": [
+      [
+        29,
+        30,
+        31
+      ],
+      [
+        29,
+        30,
+        31
+      ]
+    ],
+    "decodedAudioIdentical": null,
+    "audio": {
+      "present": false
+    },
+    "inputSHA256": "8664c9fb23d611ec0502a9a215dfcfea655d94b963e1a1bcf6e63c2239228676",
+    "outputSHA256": "7fe10d55b9b7d51d492ffdf3bf4be2a7b0db2ae8a0ff390273792f25deb1d599",
+    "elapsedSeconds": 5.01899,
+    "stderrLogs": {
+      "ffmpeg-version": {
+        "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/oracle-logs/ffmpeg-version.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "ffprobe-version": {
+        "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/oracle-logs/ffprobe-version.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "input-streams": {
+        "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/oracle-logs/input-streams.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "output-streams": {
+        "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/oracle-logs/output-streams.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "input-video-frames": {
+        "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/oracle-logs/input-video-frames.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "output-video-frames": {
+        "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/oracle-logs/output-video-frames.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "input-packets": {
+        "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/oracle-logs/input-packets.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "output-packets": {
+        "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/oracle-logs/output-packets.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "expected-rgb": {
+        "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/oracle-logs/expected-rgb.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "actual-rgb": {
+        "path": "/home/runner/work/_temp/vr180-p5-39039504709-1/evidence/oracle-logs/actual-rgb.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      }
+    },
+    "stderrLogsRetained": true,
+    "verifierSHA256": "713a6ff75001b01792645fcf35cc792ce83cb70b833a66321f055754b9dabda5",
+    "metadataVerifierSHA256": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96"
+  },
+  "cloudManifest": {
+    "schema": "vr180-evidence-manifest-v1",
+    "runId": "39039504709-p5-32-32-1",
+    "manifestExcludesItself": true,
+    "files": [
+      {
+        "name": "browser-observations.json",
+        "bytes": 56190,
+        "sha256": "02ad7e531739868f90a1a3224909dfc0d10753fa98f3faaf5bfded26f36abb6e"
+      },
+      {
+        "name": "environment.json",
+        "bytes": 514,
+        "sha256": "e4a7345ccf62db801b2f919823d7d475275006fed4af8fd7c461f34da296cfb5"
+      },
+      {
+        "name": "fork-build-result.json",
+        "bytes": 7311,
+        "sha256": "28ce6709c684e63350b244525d7580e9ba488bc3a0def90732aefdcf2cf139ef"
+      },
+      {
+        "name": "independent-verification.json",
+        "bytes": 10122,
+        "sha256": "a30f3f176ea9f83b13e736abfa5a15898b32b897a73d277cb19044e37198bc36"
+      },
+      {
+        "name": "input-packet-stats/stream-profile.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "input-packet-stats/video-packets.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "oracle-logs/actual-rgb.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "oracle-logs/expected-rgb.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "oracle-logs/ffmpeg-version.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "oracle-logs/ffprobe-version.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "oracle-logs/input-packets.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "oracle-logs/input-streams.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "oracle-logs/input-video-frames.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "oracle-logs/output-packets.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "oracle-logs/output-streams.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "oracle-logs/output-video-frames.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "oracle-toolchain.json",
+        "bytes": 35906,
+        "sha256": "c48368b92d47c1cccfc7ee0c0dbc5c8ad2c743efce981917852c61bdc74845c6"
+      },
+      {
+        "name": "output-packet-stats/stream-profile.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "output-packet-stats/video-packets.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "packet-statistics.json",
+        "bytes": 4648,
+        "sha256": "31a0bac6a2c4768003d26f3c442a4cd8edecb927e331f231f06c4698af3e8fb6"
+      },
+      {
+        "name": "private-source-inventory.json",
+        "bytes": 2768,
+        "sha256": "19f8f6f6e9c5777eea2c5e8923fe016219c7d80e984d2a0188dc919bfabb949b"
+      },
+      {
+        "name": "run.json",
+        "bytes": 51912,
+        "sha256": "68ec1427a6a70271175de5780e15cdc96f66d122d79ef3d29870078e72d0d77b"
+      },
+      {
+        "name": "source-inventory.json",
+        "bytes": 18262,
+        "sha256": "821def028d8a8dbdf7520a0d35d492646c478b25726ffe264223a72804b081e1"
+      }
+    ]
+  },
+  "transport": {
+    "schema": "vr180-log-transport-v1",
+    "runId": "39039504709-p5-32-32-1",
+    "status": "READY_FOR_ARTIFACT_RECOVERY",
+    "archiveFormat": "tar+gzip",
+    "bytes": 31644,
+    "sha256": "65746b0356da3e1f0e5a50313342af7972db0f2b1987f939e914f65193a6795f",
+    "base64Bytes": 42192,
+    "chunkChars": 4096,
+    "chunks": 11,
+    "manifestSHA256": "8ca6e2300b69738579c53bb7369cdcb8588ca1aaabc5a6dafee6bed28694235b",
+    "complete": true
+  },
+  "artifactMetadata": {
+    "artifacts": [
+      {
+        "id": 12103666360,
+        "name": "vr180-p5-32-32-39039504709-1",
+        "size_in_bytes": 117816158,
+        "url": "https://api.github.com/repos/Kushyameln01/kushyameln-works/actions/artifacts/12103666360",
+        "archive_download_url": "https://api.github.com/repos/Kushyameln01/kushyameln-works/actions/artifacts/12103666360/zip",
+        "expired": false,
+        "created_at": "2026-10-17T14:09:58Z",
+        "expires_at": "2026-10-18T14:09:57Z",
+        "updated_at": "2026-10-17T14:09:58Z",
+        "digest": "sha256:8cfaf1632f3591082c7671d9494ca59db19599db5e057a8979da94737598c48d",
+        "workflow_run": {
+          "id": 39039504709,
+          "repository_id": 1414730902,
+          "head_repository_id": 1414730902,
+          "head_branch": "codex/vr180-plan-1-2",
+          "head_sha": "a581d96d68ad7bb57744dfb5570b6a71e718c913"
+        }
+      }
+    ]
+  },
+  "receiver": {
+    "schema": "vr180-calibration-artifact-recovery-v1",
+    "status": "PASS",
+    "scope": "Full media-byte recovery only; calibration quality verdict remains separate",
+    "calibrationVerdict": "PASS",
+    "sourceCommit": "a581d96d68ad7bb57744dfb5570b6a71e718c913",
+    "workflowRun": "39039504709",
+    "runAttempt": "1",
+    "artifactId": 12103666360,
+    "artifactName": "vr180-p5-32-32-39039504709-1",
+    "archiveBytes": 117816158,
+    "archiveSHA256": "8cfaf1632f3591082c7671d9494ca59db19599db5e057a8979da94737598c48d",
+    "zipStructure": {
+      "entries": 3,
+      "centralDirectoryBytes": 176,
+      "checkedBeforeZipFile": true
+    },
+    "files": [
+      {
+        "name": "input.mp4",
+        "bytes": 58952806,
+        "sha256": "8664c9fb23d611ec0502a9a215dfcfea655d94b963e1a1bcf6e63c2239228676",
+        "crcCheckedByFullRead": true,
+        "receiverRereadSHA256": "8664c9fb23d611ec0502a9a215dfcfea655d94b963e1a1bcf6e63c2239228676"
+      },
+      {
+        "name": "output.mp4",
+        "bytes": 58862233,
+        "sha256": "7fe10d55b9b7d51d492ffdf3bf4be2a7b0db2ae8a0ff390273792f25deb1d599",
+        "crcCheckedByFullRead": true,
+        "receiverRereadSHA256": "7fe10d55b9b7d51d492ffdf3bf4be2a7b0db2ae8a0ff390273792f25deb1d599"
+      }
+    ],
+    "mediaManifestSHA256": "5d0e37c423d618cedcac0e6403ec40690511a601d7c56545df6fe1cea6cd16b6",
+    "hostIndependentVerification": "PENDING"
+  },
+  "hostIndependentVerification": {
+    "schema": "vr180-independent-large-verifier-v1",
+    "status": "PASS",
+    "input": "/workspace/vr180-recovery/evidence/p5-32-media/input.mp4",
+    "output": "/workspace/vr180-recovery/evidence/p5-32-media/output.mp4",
+    "mode": "convert",
+    "settings": {
+      "layout": "sbs",
+      "fov": 180,
+      "eyeSize": 512
+    },
+    "oracle": "verify-conversion-large.py",
+    "scans": {
+      "input-video-frames": {
+        "count": 300,
+        "endReached": true
+      },
+      "output-video-frames": {
+        "count": 300,
+        "endReached": true
+      },
+      "input-packets": {
+        "count": 300,
+        "endReached": true
+      },
+      "output-packets": {
+        "count": 300,
+        "endReached": true
+      },
+      "expected-rgb": {
+        "count": 300,
+        "endReached": true
+      },
+      "actual-rgb": {
+        "count": 300,
+        "endReached": true
+      },
+      "input-hash": {
+        "count": 58952806,
+        "endReached": true
+      },
+      "output-hash": {
+        "count": 58862233,
+        "endReached": true
+      }
+    },
+    "errors": {
+      "total": 0,
+      "byKind": {},
+      "details": [],
+      "dropped": 0,
+      "limit": 32
+    },
+    "completeScan": true,
+    "copyTablesIdentical": null,
+    "bounds": {
+      "eyePixels": 2048,
+      "framePixels": 8388608,
+      "probeRecordBytes": 131072,
+      "streamDescriptionBytes": 262144,
+      "metadataPayloadBytes": 16777216,
+      "metadataBoxCount": 100000,
+      "pcmBlockBytes": 65536,
+      "stderrBytesPerProcess": 65536,
+      "detailLimit": 32,
+      "wallTimeoutSeconds": 180.0,
+      "frameCountLimit": null,
+      "fileBytesLimit": null
+    },
+    "scope": "synthetic full scans; native FFmpeg memory, 5/10 GB capacity, real-camera quality, target VR playback and usability are not established by this report",
+    "inputBytes": 58952806,
+    "outputBytes": 58862233,
+    "tools": {
+      "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+      "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+    },
+    "streams": {
+      "input": [
+        {
+          "index": 0,
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1024,
+          "height": 512,
+          "time_base": "1/30",
+          "start_time": "0.000000",
+          "extradata_hash": "SHA256:6fc82d29c7db4eb8a8e817485116c23cab37218590d4ba1decf9f2d329792a97",
+          "disposition": {
+            "default": 1,
+            "dub": 0,
+            "original": 0,
+            "comment": 0,
+            "lyrics": 0,
+            "karaoke": 0,
+            "forced": 0,
+            "hearing_impaired": 0,
+            "visual_impaired": 0,
+            "clean_effects": 0,
+            "attached_pic": 0,
+            "timed_thumbnails": 0,
+            "non_diegetic": 0,
+            "captions": 0,
+            "descriptions": 0,
+            "metadata": 0,
+            "dependent": 0,
+            "still_image": 0
+          },
+          "tags": {
+            "creation_time": "2026-10-17T14:09:38.000000Z",
+            "language": "und",
+            "handler_name": "MediabunnyVideoHandler",
+            "vendor_id": "[0][0][0][0]",
+            "encoder": "Mediabunny v1.61.5"
+          },
+          "side_data_list": [
+            {
+              "side_data_type": "Stereo 3D",
+              "type": "side by side",
+              "inverted": 0
+            },
+            {
+              "side_data_type": "Spherical Mapping",
+              "projection": "tiled equirectangular",
+              "bound_left": 513,
+              "bound_top": 0,
+              "bound_right": 511,
+              "bound_bottom": 0,
+              "yaw": 0,
+              "pitch": 0,
+              "roll": 0
+            }
+          ]
+        }
+      ],
+      "output": [
+        {
+          "index": 0,
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1024,
+          "height": 512,
+          "time_base": "1/57600",
+          "start_time": "0.000000",
+          "extradata_hash": "SHA256:6fc82d29c7db4eb8a8e817485116c23cab37218590d4ba1decf9f2d329792a97",
+          "disposition": {
+            "default": 1,
+            "dub": 0,
+            "original": 0,
+            "comment": 0,
+            "lyrics": 0,
+            "karaoke": 0,
+            "forced": 0,
+            "hearing_impaired": 0,
+            "visual_impaired": 0,
+            "clean_effects": 0,
+            "attached_pic": 0,
+            "timed_thumbnails": 0,
+            "non_diegetic": 0,
+            "captions": 0,
+            "descriptions": 0,
+            "metadata": 0,
+            "dependent": 0,
+            "still_image": 0
+          },
+          "tags": {
+            "creation_time": "2026-10-17T14:09:43.000000Z",
+            "language": "und",
+            "handler_name": "MediabunnyVideoHandler",
+            "vendor_id": "[0][0][0][0]",
+            "encoder": "Mediabunny v1.61.5"
+          },
+          "side_data_list": [
+            {
+              "side_data_type": "Stereo 3D",
+              "type": "side by side",
+              "inverted": 0
+            },
+            {
+              "side_data_type": "Spherical Mapping",
+              "projection": "tiled equirectangular",
+              "bound_left": 513,
+              "bound_top": 0,
+              "bound_right": 511,
+              "bound_bottom": 0,
+              "yaw": 0,
+              "pitch": 0,
+              "roll": 0
+            }
+          ]
+        }
+      ]
+    },
+    "vrMetadata": {
+      "path": "moov/trak(vide)/mdia/minf/stbl/stsd/avc1",
+      "width": 1024,
+      "height": 512,
+      "stereo_mode": 2,
+      "projection": "equi",
+      "pose_degrees": [
+        0,
+        0,
+        0
+      ],
+      "bounds_u0_32": {
+        "top": 0,
+        "bottom": 0,
+        "left": 1073741824,
+        "right": 1073741824
+      },
+      "metadata_source": "Kushyameln Works VR180 b1",
+      "active_st3d_count": 1,
+      "active_sv3d_count": 1,
+      "entry_children": [
+        "avcC",
+        "colr",
+        "btrt",
+        "st3d",
+        "sv3d"
+      ]
+    },
+    "frameMetadata": {
+      "inputVideoFrames": 300,
+      "outputVideoFrames": 300,
+      "inputAudioFrames": 0,
+      "outputAudioFrames": 0
+    },
+    "maxPtsErrorSeconds": 0.0,
+    "maxPtsErrorFrame": null,
+    "frames": 300,
+    "packets": {
+      "allFieldsEqual": null,
+      "input": {
+        "count": 300,
+        "byStream": {
+          "0": 300
+        },
+        "sequenceSHA256": "29918bd21d258f04cead1cba1195954abd2a6679cb9e515d7d4bc6e27c83f97d"
+      },
+      "output": {
+        "count": 300,
+        "byStream": {
+          "0": 300
+        },
+        "sequenceSHA256": "0fea776c4a9d6b2c4d8868288b622afcb7aa1f5e9dc058aab8708e67d4eb5e50"
+      }
+    },
+    "audioPackets": {
+      "present": false
+    },
+    "pixels": {
+      "inputFrames": 300,
+      "outputFrames": 300,
+      "comparedFrames": 300,
+      "missingOutputFrames": 0,
+      "extraOutputFrames": 0,
+      "maxChannelError": 133,
+      "maxChannelErrorLocation": {
+        "frame": 147,
+        "eye": 1,
+        "x": 4,
+        "y": 44,
+        "channel": 0
+      }
+    },
+    "events": {
+      "inputCountByEye": [
+        3,
+        3
+      ],
+      "outputCountByEye": [
+        3,
+        3
+      ],
+      "outputIndicesDroppedByEye": [
+        0,
+        0
+      ],
+      "allFrameFlagsEqual": true,
+      "inputSequenceSHA256ByEye": [
+        "866d22b784c2a021c53db3664abe28621504da94692235b3885f7e99f0d9c428",
+        "866d22b784c2a021c53db3664abe28621504da94692235b3885f7e99f0d9c428"
+      ],
+      "outputSequenceSHA256ByEye": [
+        "866d22b784c2a021c53db3664abe28621504da94692235b3885f7e99f0d9c428",
+        "866d22b784c2a021c53db3664abe28621504da94692235b3885f7e99f0d9c428"
+      ]
+    },
+    "eyePSNRdB": [
+      39.22705744520337,
+      39.2504578670444
+    ],
+    "decodedFramesCompared": 300,
+    "redFrameIndicesByEye": [
+      [
+        29,
+        30,
+        31
+      ],
+      [
+        29,
+        30,
+        31
+      ]
+    ],
+    "decodedAudioIdentical": null,
+    "audio": {
+      "present": false
+    },
+    "inputSHA256": "8664c9fb23d611ec0502a9a215dfcfea655d94b963e1a1bcf6e63c2239228676",
+    "outputSHA256": "7fe10d55b9b7d51d492ffdf3bf4be2a7b0db2ae8a0ff390273792f25deb1d599",
+    "elapsedSeconds": 3.693815,
+    "stderrLogs": {
+      "ffmpeg-version": {
+        "path": "/workspace/vr180-recovery/evidence/p5-32-media/independent-host-stderr/ffmpeg-version.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "ffprobe-version": {
+        "path": "/workspace/vr180-recovery/evidence/p5-32-media/independent-host-stderr/ffprobe-version.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "input-streams": {
+        "path": "/workspace/vr180-recovery/evidence/p5-32-media/independent-host-stderr/input-streams.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "output-streams": {
+        "path": "/workspace/vr180-recovery/evidence/p5-32-media/independent-host-stderr/output-streams.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "input-video-frames": {
+        "path": "/workspace/vr180-recovery/evidence/p5-32-media/independent-host-stderr/input-video-frames.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "output-video-frames": {
+        "path": "/workspace/vr180-recovery/evidence/p5-32-media/independent-host-stderr/output-video-frames.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "input-packets": {
+        "path": "/workspace/vr180-recovery/evidence/p5-32-media/independent-host-stderr/input-packets.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "output-packets": {
+        "path": "/workspace/vr180-recovery/evidence/p5-32-media/independent-host-stderr/output-packets.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "expected-rgb": {
+        "path": "/workspace/vr180-recovery/evidence/p5-32-media/independent-host-stderr/expected-rgb.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      },
+      "actual-rgb": {
+        "path": "/workspace/vr180-recovery/evidence/p5-32-media/independent-host-stderr/actual-rgb.stderr.log",
+        "totalBytes": 0,
+        "retainedBytes": 0,
+        "droppedBytes": 0
+      }
+    },
+    "stderrLogsRetained": true,
+    "verifierSHA256": "713a6ff75001b01792645fcf35cc792ce83cb70b833a66321f055754b9dabda5",
+    "metadataVerifierSHA256": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96"
+  },
+  "hostEnvironment": {
+    "numpy": "2.3.5",
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "ffmpegSHA256": "ed16af623947494a72e284b6eb8ff225f2da22b38b5d5069c2fd4b4ba3384e41"
+  },
+  "capacityDecision": "Requested 32Mbps differs from measured payload 47.16Mbps. Input/output near-equal. 4.8GB final output design is not accepted for 5GB input from this observation. Quota/long profile pending; public limits unchanged."
+}

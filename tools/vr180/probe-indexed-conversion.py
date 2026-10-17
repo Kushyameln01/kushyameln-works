@@ -5,6 +5,8 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import math
+import re
 import os
 from pathlib import Path
 import signal
@@ -52,6 +54,80 @@ def cases_for(suite):
                 scale('4k-12s-retry','stereo180-4k-12s-sbs.mp4',handleKey='retry-scale')]
     raise ValueError('Unknown suite')
 
+REGISTRY=r"""const registryMaxBytes=1024;
+const recordHash=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(n=>n.toString(16).padStart(2,'0')).join('');
+const sameBytes=(a,b)=>a.length===b.length&&a.every((value,index)=>value===b[index]);
+async function createOwnershipRegistry(root,jobId,row){
+ const name='registry-'+jobId;require(await missing(root,name),'REGISTRY_ALREADY_EXISTS');
+ const directory=await root.getDirectoryHandle(name,{create:true});
+ const records=row.indexOwnership=[];row.registry={name,status:'OPEN',removed:false,maxTickets:2,maxRecordBytes:registryMaxBytes};
+ async function persist(ticket){
+  require(records.length<2&&!records.some(record=>record.ticket.kind===ticket.kind),'REGISTRY_TICKET_LIMIT');
+  require(ticket.format==='vr180-private-index-owner'&&ticket.schema===1&&['input','output'].includes(ticket.kind)
+   &&ticket.jobId===jobId+(ticket.kind==='input'?'-in':'-out')&&/^[0-9a-f]{32}$/.test(ticket.ownerToken),'REGISTRY_TICKET_INVALID');
+  const stored=Object.freeze({format:ticket.format,schema:ticket.schema,jobId:ticket.jobId,ownerToken:ticket.ownerToken,kind:ticket.kind});
+  const text=JSON.stringify(stored),expected=new TextEncoder().encode(text);require(expected.length<=registryMaxBytes,'REGISTRY_RECORD_TOO_LARGE');
+  const record={ticket:stored,name:ticket.kind+'.json',status:'WRITING',startedMs:performance.now(),endedMs:null,durationMs:null,
+   bytes:expected.length,writeCalls:0,readCalls:0,flushed:false,closed:false,readbackMatched:false,removed:false};
+  records.push(record);let access;
+  try{
+   const file=await directory.getFileHandle(record.name,{create:true});access=await file.createSyncAccessHandle();
+   require(access.getSize()===0,'REGISTRY_RECORD_NOT_EMPTY');
+   for(let at=0;at<expected.length;){const n=access.write(expected.subarray(at),{at});record.writeCalls++;
+    require(Number.isSafeInteger(n)&&n>0&&n<=expected.length-at,'REGISTRY_WRITE_PROGRESS');at+=n;}
+   access.flush();record.flushed=true;require(access.getSize()===expected.length,'REGISTRY_SIZE_MISMATCH');
+   const observed=new Uint8Array(expected.length);
+   for(let at=0;at<observed.length;){const n=access.read(observed.subarray(at),{at});record.readCalls++;
+    require(Number.isSafeInteger(n)&&n>0&&n<=observed.length-at,'REGISTRY_READ_PROGRESS');at+=n;}
+   require(sameBytes(expected,observed),'REGISTRY_HANDLE_READBACK_MISMATCH');
+   access.close();access=null;record.closed=true;
+   const snapshot=await file.getFile();require(snapshot.size===expected.length,'REGISTRY_CLOSED_FILE_SIZE_MISMATCH');
+   const saved=new Uint8Array(await snapshot.arrayBuffer());require(sameBytes(expected,saved),'REGISTRY_CLOSED_FILE_READBACK_MISMATCH');
+   record.readbackMatched=true;record.persistedJSON=new TextDecoder('utf-8',{fatal:true}).decode(saved);
+   record.sha256=await recordHash(saved);record.status='PERSISTED';
+  }catch(error){record.status='FAILED';record.error=describe(error);row.registry.status='RETAINED';throw error;}
+  finally{
+   if(access){try{access.close();access=null;record.closed=true;}catch(error){record.closeError=describe(error);row.registry.status='RETAINED';}}
+   record.endedMs=performance.now();record.durationMs=record.endedMs-record.startedMs;
+   row.registry.persistenceMs=records.reduce((sum,item)=>sum+(item.durationMs??0),0);
+  }
+ }
+ async function removeAfterVerifiedCleanup(){
+  const names=[jobId+'-in',jobId+'-out'];
+  row.indexDirectoriesRemoved=await missing(root,names[0])&&await missing(root,names[1]);
+  const related=lock=>names.some(name=>lock.name==='vr180:index-job:'+name||lock.name.startsWith('vr180:index-store:job:'+name+'-'));
+  row.heldJobLocks=(await navigator.locks.query()).held.filter(related).length;
+  row.indexReservedAfterCleanup=row.metrics?.indexReservedAfterCleanup??null;
+  const proven=['PASS','EXPECTED_CANCELLATION'].includes(row.status)&&!row.cleanupError&&!row.cleanupFailureObserved
+   &&row.indexDirectoriesRemoved&&row.heldJobLocks===0&&row.indexReservedAfterCleanup===0
+   &&records.length===2&&records.every(record=>record.status==='PERSISTED'&&record.flushed&&record.closed&&record.readbackMatched);
+  if(!proven){row.registry.status='RETAINED';row.registry.reason='INDEX_OR_REGISTRY_CLEANUP_NOT_PROVEN';return false;}
+  // Acquire both existing job leases, then recheck absence. A query snapshot
+  // alone never authorizes removing a ticket while a new same-ID owner starts.
+  try{
+   await navigator.locks.request('vr180:index-job:'+names[0],{mode:'exclusive',ifAvailable:true},async first=>{
+    require(first,'REGISTRY_INPUT_LEASE_BUSY');
+    await navigator.locks.request('vr180:index-job:'+names[1],{mode:'exclusive',ifAvailable:true},async second=>{
+     require(second,'REGISTRY_OUTPUT_LEASE_BUSY');require(await missing(root,names[0])&&await missing(root,names[1]),'REGISTRY_INDEX_REAPPEARED');
+     // Validate every closed file before removing the first one.
+     const known=new Set(records.map(record=>record.name));
+     for await(const [name,entry]of directory.entries())require(entry.kind==='file'&&known.has(name),'REGISTRY_UNKNOWN_ENTRY');
+     for(const record of records){const file=await(await directory.getFileHandle(record.name)).getFile();
+      require(file.size===record.bytes&&file.size<=registryMaxBytes,'REGISTRY_REMOVAL_SIZE_MISMATCH');
+      const bytes=new Uint8Array(await file.arrayBuffer());require(await recordHash(bytes)===record.sha256
+       &&new TextDecoder('utf-8',{fatal:true}).decode(bytes)===record.persistedJSON,'REGISTRY_REMOVAL_CONTENT_MISMATCH');}
+     for(const record of records){await directory.removeEntry(record.name);record.removed=true;}
+     await root.removeEntry(name);require(await missing(root,name),'REGISTRY_DIRECTORY_REMAINS');
+    });
+   });
+   row.heldJobLocks=(await navigator.locks.query()).held.filter(related).length;require(row.heldJobLocks===0,'REGISTRY_LEASE_RETAINED');
+   row.registry.status='REMOVED';row.registry.removed=true;return true;
+  }catch(error){row.registry.status='RETAINED';row.registry.error=describe(error);return false;}
+ }
+ return {persist,removeAfterVerifiedCleanup};
+}
+"""
+
 WORKER=r"""import * as fork from '/fork.mjs';
 import {convertStereo} from '/development/vr180/indexed-transform-prototype/transform.mjs';
 import {sha256Blob} from '/docs/shared/vr180/sha256.mjs';
@@ -62,11 +138,11 @@ self.addEventListener('unhandledrejection',event=>{
  unhandledCount++;if(unhandledCount<=8)self.postMessage({unhandledError:describe(event.reason??Error('Unknown rejection'))});
 });
 async function missing(root,name){try{await root.getDirectoryHandle(name);return false;}catch(e){if(e.name==='NotFoundError')return true;throw e;}}
-async function run({namespace,cases}){
- const result={status:'READY_FOR_DOWNLOAD',cases:[],files:[],nativeOPFS:true,nativeWebLocks:true,
+"""+REGISTRY+r"""async function run({namespace,cases}){
+ const result={status:'READY_FOR_DOWNLOAD',cases:[],files:[],nativeOPFS:true,nativeWebLocks:true,registryPersistence:'native SyncAccessHandle write/flush/readback/close plus closed-file readback; two bounded tickets per trial',
    decoded:true,pixelConversion:true,publicProduct:false};
  try{
-  require(isSecureContext&&navigator.storage?.getDirectory&&navigator.locks?.request,'NATIVE_CAPABILITY_UNAVAILABLE');
+  require(isSecureContext&&navigator.storage?.getDirectory&&navigator.locks?.request&&navigator.locks?.query,'NATIVE_CAPABILITY_UNAVAILABLE');
   const origin=await navigator.storage.getDirectory();require(await missing(origin,namespace),'NAMESPACE_EXISTS');
   const root=await origin.getDirectoryHandle(namespace,{create:true});
   for(let index=0;index<cases.length;index++){
@@ -78,9 +154,12 @@ async function run({namespace,cases}){
    const row={...trial,operationId,inputRevision,inputBytes:file.size,inputSHA256,status:'STARTED',
      targetInitiallyEmpty:true,saveWriteCommitted:false,progressEvents:0,cancelRequested:false};
    result.cases.push(row);let ownerCleanup,tx,latestMetrics,outcome;
+   let registry;
    try{
+    registry=await createOwnershipRegistry(root,jobId,row);
     outcome=await convertStereo(file,trial.settings,{fork,indexRoot:root,outputHandle:handle,jobId,signal:aborter.signal,
       onCleanup:cleanup=>{ownerCleanup=cleanup;},onOutputCreated:output=>{tx=output;},
+      onIndexOwnership:async ticket=>{await registry.persist(ticket);self.postMessage({ownershipRecord:{operationId,inputRevision,registryName:row.registry.name,record:row.indexOwnership.at(-1)}});},
       onMetrics:metrics=>{latestMetrics=metrics;},onProgress:progress=>{
        row.progressEvents++;row.lastProgress=progress;
        const cancelReady=trial.cancelAfterBytes
@@ -98,7 +177,9 @@ async function run({namespace,cases}){
     result.files.push({caseIndex:index,name:trial.name+'.mp4',file:reread});
     row.status='PASS';
    }catch(error){
-    row.error=describe(error);row.metrics=latestMetrics;row.saveOutputState=error.saveOutputState??tx?.status??null;
+    row.error=describe(error);row.metrics=latestMetrics;
+    if(error.cleanupError||error.requiresWorkerTermination){row.cleanupFailureObserved=true;row.conversionCleanupError=error.cleanupError??'Worker termination required';}
+    row.saveOutputState=error.saveOutputState??tx?.status??null;
     row.saveWriteCommitted=row.saveOutputState?.committed===true;
     if(trial.expectCancel&&row.cancelRequested&&error.name==='AbortError'&&!row.saveWriteCommitted){
      row.status='EXPECTED_CANCELLATION';
@@ -106,13 +187,11 @@ async function run({namespace,cases}){
    }finally{
     try{await ownerCleanup?.();}catch(error){row.cleanupError=describe(error);row.status='FAIL';result.status='FAIL';}
    }
-   row.elapsedMs=performance.now()-started;row.finalFileState=tx?.status??null;
-   row.indexDirectoriesRemoved=await missing(root,jobId+'-in')&&await missing(root,jobId+'-out');
-   row.heldJobLocks=(await navigator.locks.query()).held.filter(lock=>lock.name.includes(jobId)).length;
-   row.indexReservedAfterCleanup=row.metrics?.indexReservedAfterCleanup??null;
-   if(!row.indexDirectoriesRemoved||row.heldJobLocks!==0||row.indexReservedAfterCleanup!==0){row.status='FAIL';result.status='FAIL';}
+   row.finalFileState=tx?.status??null;
    if(trial.expectCancel){row.savedBytes=(await handle.getFile()).size;
     if(row.savedBytes!==0||row.finalFileState?.state!=='aborted'){row.status='FAIL';result.status='FAIL';}}
+   if(!registry||!await registry.removeAfterVerifiedCleanup()){row.status='FAIL';result.status='FAIL';}
+   row.elapsedMs=performance.now()-started;
    if(result.status==='FAIL')break;
   }
  }catch(error){result.status=/UNAVAILABLE|not supported|not allowed/i.test(error.message)?'BLOCKED':'FAIL';result.error=describe(error);}
@@ -121,22 +200,71 @@ async function run({namespace,cases}){
 self.onmessage=({data})=>run(data).then(result=>self.postMessage({result}),error=>self.postMessage({result:{status:'FAIL',error:describe(error),cases:[],files:[]}}));
 """
 PAGE=r"""async(cases)=>{
- const state=globalThis.__indexedProbe={namespace:'v-'+crypto.randomUUID(),worker:null,urls:[],record:null,unhandledErrors:[]};
+ const state=globalThis.__indexedProbe={namespace:'v-'+crypto.randomUUID(),worker:null,urls:[],record:null,unhandledErrors:[],ownershipRecords:[],expectedCases:cases.length};
  try{
   const worker=state.worker=new Worker('/probe-worker.mjs',{type:'module'});
   const result=await new Promise((resolve,reject)=>{worker.onmessage=({data})=>{
-   if(data.unhandledError){if(state.unhandledErrors.length<8)state.unhandledErrors.push(data.unhandledError);}
+   if(data.ownershipRecord){if(state.ownershipRecords.length>=2*cases.length){reject(Error('PAGE_OWNERSHIP_RECORD_LIMIT'));}else state.ownershipRecords.push(data.ownershipRecord);}
+   else if(data.unhandledError){if(state.unhandledErrors.length<8)state.unhandledErrors.push(data.unhandledError);}
    else if(data.result)resolve(data.result);
   };worker.onerror=e=>reject(Error(e.message));worker.postMessage({namespace:state.namespace,cases});});
   await new Promise(resolve=>setTimeout(resolve,0));result.unhandledErrors=state.unhandledErrors;
   if(result.unhandledErrors.length)result.status='FAIL';
+  result.persistedOwnershipAnnouncements=state.ownershipRecords;
   const files=result.files;result.files=files.map(({caseIndex,name})=>({caseIndex,name}));
   state.urls=files.map(({file})=>URL.createObjectURL(file));state.record=result;
   state.urls.push(URL.createObjectURL(new Blob([JSON.stringify(result,null,2)],{type:'application/json'})));
  }catch(error){state.record={status:'FAIL',error:{name:error.name,message:error.message},cases:[],files:[]};}
  return state.record;
 }"""
-CLEANUP=base.PAGE_CLEANUP.replace('__outputProbe','__indexedProbe')
+CLEANUP=r"""async()=>{
+ const state=globalThis.__indexedProbe;if(!state)return {status:'NOT_CREATED'};
+ state.worker?.terminate();for(const url of state.urls)URL.revokeObjectURL(url);
+ const record=state.record;
+ const retained=reason=>({status:'RETAINED',reason,namespace:state.namespace,
+  ownershipRecords:state.ownershipRecords??[],scope:'No namespace deletion; registry remains in the temporary browser context until that context is closed. Tickets are also retained in this evidence.'});
+ if(!record||record.status!=='READY_FOR_DOWNLOAD'||record.cases.length!==state.expectedCases
+  ||record.cases.some(row=>!row.registry?.removed||!row.indexDirectoriesRemoved||row.heldJobLocks!==0||row.indexReservedAfterCleanup!==0))return retained('TRIAL_CLEANUP_NOT_PROVEN');
+ if(typeof navigator.locks?.query!=='function')return retained('LOCK_QUERY_UNAVAILABLE');
+ if((await navigator.locks.query()).held.some(lock=>lock.name.includes(state.namespace)))return retained('OWNER_LEASE_REMAINS');
+ const origin=await navigator.storage.getDirectory();let root;
+ try{root=await origin.getDirectoryHandle(state.namespace);}catch(error){if(error.name==='NotFoundError')return {status:'NOT_CREATED'};throw error;}
+ const known=new Set(record.cases.map(row=>(row.handleKey??row.name)+'.mp4'));
+ for await(const [name,entry]of root.entries())if(entry.kind!=='file'||!known.has(name))return retained('UNKNOWN_NAMESPACE_ENTRY');
+ for(const name of known){try{await root.removeEntry(name);}catch(error){if(error.name!=='NotFoundError')throw error;}}
+ await origin.removeEntry(state.namespace);
+ return {status:'REMOVED',scope:'Only verified-clean trial registry and known output files; empty namespace removed nonrecursively'};
+}"""
+
+def verify_registry(observed):
+    """Independently check all recovered physical registry-file bytes and identity."""
+    verified=[];announcements=[]
+    for row in observed['cases']:
+        registry=row['registry'];records=row['indexOwnership']
+        cloud.require(registry['removed'] and registry['status']=='REMOVED' and len(records)==2,'Registry not removed after verified cleanup')
+        cloud.require(row['indexDirectoriesRemoved'] and row['heldJobLocks']==0 and row['indexReservedAfterCleanup']==0,'Index cleanup not proved')
+        cloud.require({record['ticket']['kind'] for record in records}=={'input','output'},'Missing ownership role')
+        total=0.0
+        for record in records:
+            ticket=record['ticket'];raw=record['persistedJSON'].encode('utf-8')
+            cloud.require(set(ticket)=={'format','schema','jobId','ownerToken','kind'} and ticket['format']=='vr180-private-index-owner' and ticket['schema']==1,'Ticket schema differs')
+            cloud.require(ticket['jobId']==row['operationId']+('-in' if ticket['kind']=='input' else '-out') and re.fullmatch('[0-9a-f]{32}',ticket['ownerToken']) is not None,'Ticket identity differs')
+            cloud.require(json.loads(raw)==ticket and len(raw)==record['bytes'] and len(raw)<=1024,'Recovered registry bytes differ')
+            cloud.require(hashlib.sha256(raw).hexdigest()==record['sha256'],'Recovered registry hash differs')
+            cloud.require(record['status']=='PERSISTED' and record['flushed'] and record['closed'] and record['readbackMatched'] and record['removed'],'Registry lifecycle not completed')
+            cloud.require(record['writeCalls']>=1 and record['readCalls']>=1,'Registry native I/O not observed')
+            start,end,duration=(record[key] for key in ['startedMs','endedMs','durationMs'])
+            cloud.require(all(isinstance(value,(int,float)) and math.isfinite(value) for value in [start,end,duration]) and end>=start and math.isclose(end-start,duration,abs_tol=1e-7),'Registry phase interval invalid')
+            total+=duration
+            verified.append({'operationId':row['operationId'],'kind':ticket['kind'],'bytes':len(raw),'sha256':record['sha256'],'durationMs':duration})
+            announcements.append((row['operationId'],row['inputRevision'],registry['name'],ticket,record['persistedJSON'],record['sha256']))
+        cloud.require(math.isclose(total,registry['persistenceMs'],abs_tol=1e-7),'Registry total duration differs')
+    received=observed.get('persistedOwnershipAnnouncements',[])
+    cloud.require(len(received)==len(announcements),'Ownership acknowledgment announcements missing')
+    for item,expected in zip(received,announcements):
+        record=item['record']
+        cloud.require((item['operationId'],item['inputRevision'],item['registryName'],record['ticket'],record['persistedJSON'],record['sha256'])==expected,'Ownership acknowledgment identity differs')
+    return {'status':'PASS','records':verified,'scope':'All recovered registry JSON bytes/identity/hash plus reported native I/O, duration and verified cleanup; no power-loss or cross-context durability claim'}
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
@@ -150,7 +278,8 @@ def main():
       'runId':os.environ.get('GITHUB_RUN_ID','local')+'-indexed-conversion-'+os.environ.get('GITHUB_RUN_ATTEMPT','1'),
       'status':'BLOCKED','suite':args.suite,'prototypeOnly':True,'pageErrors':[],'workers':[],
       'fullOutputsRecovered':0,'cleanup':{'status':'NOT_RUN'},'independentMediaAcceptance':'PENDING',
-      'notVerified':['OS picker','whole-browser native/GPU memory','large media','target VR player','public deployment']}
+      'notVerified':['OS picker','whole-browser native/GPU memory','large media','target VR player','public deployment',
+       'registry retention after this temporary browser context closes','power-loss persistence','product recovery UI','UI crash recovery']}
     def deadline(*args):raise cloud.Deadline('Indexed conversion probe deadline')
     signal.signal(signal.SIGALRM,deadline);signal.signal(signal.SIGTERM,deadline);signal.alarm(540)
     try:
@@ -161,6 +290,8 @@ def main():
         cloud.require(build['variant']=='combined-input-output' and build['bundleBytes']==bundle.stat().st_size and build['bundleSha256']==cloud.digest(bundle),'Combined bundle differs')
         cloud.require(build['controllerSha256']==cloud.digest(cloud.ROOT/'development/vr180/input-index-prototype/input-index.mjs'),'Input controller differs')
         cloud.require(build['presentationSha256']==cloud.digest(cloud.ROOT/'development/vr180/input-index-prototype/presentation-index.mjs'),'Presentation controller differs')
+        required_runtime={'index-prototype/index-store.mjs','index-prototype/job-owner.mjs','output-index-prototype/output-index.mjs','output-index-prototype/mp4-output-inspect.mjs'}
+        cloud.require(required_runtime<=set(build.get('runtimeFiles',{})),'Required runtime provenance missing')
         for file,digest in build['runtimeFiles'].items():cloud.require(cloud.digest(cloud.ROOT/'development/vr180'/file)==digest,'Runtime differs: '+file)
         cloud.write(out/'fork-build-result.json',build)
         cases=cases_for(args.suite);paths=sorted(set(SOURCES+[case['source'] for case in cases]))
@@ -199,6 +330,7 @@ def main():
                     if observed['status']=='BLOCKED':raise cloud.Blocked(str(observed.get('error')))
                     cloud.require(observed['status']=='READY_FOR_DOWNLOAD' and len(observed['cases'])==len(cases),'Indexed conversion failed')
                     cloud.require(report['fullOutputsRecovered']==sum(not case.get('expectCancel',False) for case in cases),'Missing complete output')
+                    report['registryVerification']=verify_registry(observed)
                     cloud.require(not report['pageErrors'],'Unexpected browser page error');report['status']='PASS'
                 finally:
                     try:
