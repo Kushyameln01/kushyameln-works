@@ -825,7 +825,7 @@ def emit_evidence(out, result):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True, help='New evidence directory outside the checkout')
-    parser.add_argument('--suite', choices=['small', 'followup', 'scale12'], default='small',
+    parser.add_argument('--suite', choices=['small', 'followup', 'scale12', 'recovery'], default='small',
                         help='Followup requires independent verification of the small suite on the same product sources before this separate run')
     parser.add_argument('--defer-independent-verification', action='store_true',
                         help='Recover outputs; report verification pending until independent verifiers run in the receiving environment')
@@ -856,7 +856,7 @@ def main():
             raise Blocked('This harness is scoped to Kushyameln01/kushyameln-works')
         if args.file_output_probe and args.suite != 'small':
             raise Blocked('--file-output-probe requires this run to complete both small UI trials first')
-        if args.suite in ('followup', 'scale12'):
+        if args.suite in ('followup', 'scale12', 'recovery'):
             require(args.defer_independent_verification, 'Followup requires explicit deferred independent verification; the fixed small pixel oracle is bounded to 512px/eye and 120 frames')
             prerequisite_path = ROOT / 'development/vr180/evidence/2026-10-17-b3-small.json'
             if not prerequisite_path.is_file():
@@ -868,7 +868,7 @@ def main():
                 require(digest(DOCS / path) == expected, f'Product source changed after small-suite verification: {path}')
             result['smallSuitePrerequisite'] = {'runId': prerequisite['runId'], 'checkoutCommit': prerequisite['checkoutCommit'],
                 'basis': 'Recovered small outputs independently verified PASS; all recorded product-module hashes match this checkout'}
-            result['workerPostObserver'] = {'enabled': True, 'sha256': hashlib.sha256(WORKER_POST_OBSERVER.encode()).hexdigest(),
+            result['workerPostObserver'] = {'enabled': args.suite in ('followup', 'recovery'), 'sha256': hashlib.sha256(WORKER_POST_OBSERVER.encode()).hexdigest(),
                                            'scope': 'Forwards original Worker.postMessage this/args/return/exception; observes only IDs/settings/file metadata'}
         source = source_check(out)
         result['checkoutCommit'] = source['checkoutCommit']
@@ -887,7 +887,7 @@ def main():
             browser = p.chromium.launch(executable_path='/usr/bin/google-chrome', headless=True, chromium_sandbox=True, timeout=30000)
             result['browserVersion'] = browser.version
             context = browser.new_context(accept_downloads=True)
-            if args.suite == 'followup':
+            if args.suite in ('followup', 'recovery'):
                 context.add_init_script(WORKER_POST_OBSERVER)
             blocked_requests = []
             def local_only(route):
@@ -907,6 +907,8 @@ def main():
                     ('stereo180-4k-12s-sbs', 'convert', None, 2048)]
                 if args.suite == 'scale12':
                     cases = [('stereo180-4k-12s-sbs', 'convert', None, 2048)]
+                if args.suite == 'recovery':
+                    cases = cases[:2]
                 for name, mode, scenario, eye_size in cases:
                     trial = run_trial(context, origin, out, name, mode, result['runId'], args.defer_independent_verification, scenario, eye_size)
                     result['browserTrials'].append(trial)

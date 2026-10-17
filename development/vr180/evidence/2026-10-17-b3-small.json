@@ -1,0 +1,95 @@
+{
+  "status": "PASS",
+  "runId": "39011725192-1",
+  "checkoutCommit": "e5cb3ff7ac7f64705f480828af33edde1ff55208",
+  "browserVersion": "155.0.8059.39",
+  "scope": "Recovered synthetic outputs only; original receipts and browser sidecars remain unmodified",
+  "build": "vr180-b3-io1",
+  "sourceFiles": {
+    "shared/media-basic/vendor/mediabunny.mjs": "5c3514965f106dd165cc6474979ba302ef85d8c84935a0ad3ea5202ccedfe51b",
+    "shared/vr180/client.mjs": "fbfcb490ec97d9eed7fa7a1d9db82c01b642be5d38cb65180cf6a211ea934a5c",
+    "shared/vr180/file-output.mjs": "c9671f34cc96e01a21df4958bc56e5b0e9777d970802a04e19a8339b6acec294",
+    "shared/vr180/geometry.mjs": "3c83e493ac29d37f37139cbad20019ae809796462c6774046b0d4f9ad6c76ff4",
+    "shared/vr180/mp4.mjs": "ce9d7ac715b66ba31c9d6c9f1f0d6f68b04e8483301ae82ae3b4b2081e4a89fb",
+    "shared/vr180/operations.mjs": "d739b0182aa82691261d23bd617f8d0b864d08e7eafba13a3c0d4ef57df98be6",
+    "shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+    "shared/vr180/transform.mjs": "6199e7194d35e55684a8113bfc1348536e67906d2b4985c986960ea0b91c869e",
+    "shared/vr180/worker.mjs": "d99025adf1cf6798d52eff8b0916634bec2d7a0149d449ddd9d2be4c4ac6d40a",
+    "vr180-studio/app.mjs": "cc132270da671ad382e44601e890cd9201335dab3655c69a60e1c9a7f673d42d",
+    "vr180-studio/index.html": "171721b6180eb8520e0ed6f854e6dc90496feb2a4a0b61ad4e45f938ebfaa26e"
+  },
+  "transport": {
+    "status": "PASS",
+    "runId": "39011725192-1",
+    "chunks": 124,
+    "archiveBytes": 378944,
+    "archiveSHA256": "bea2ca505ee800c8b6ae821260785dd8f8f1ae12921a5e09a1508e5a274a363f",
+    "verifiedFiles": 30,
+    "browserRunStatus": "RECOVERED_PENDING_VERIFICATION"
+  },
+  "cases": [
+    {
+      "case": "stereo180-sbs",
+      "returncode": 0,
+      "script": "verify-metadata.py",
+      "scriptSHA256": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96",
+      "inputSHA256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+      "outputSHA256": "15fca1666e5cf4a135b933398d4f9f56eb302b3901b90d7bb787ce3b9d82bc3c",
+      "outputBytes": 30137,
+      "operationId": "a0024ed9-049f-4d89-af7d-121929981377",
+      "inputRevision": 2,
+      "status": "PASS"
+    },
+    {
+      "case": "stereo360-tb",
+      "returncode": 0,
+      "script": "verify-conversion.py",
+      "scriptSHA256": "8e13537f5c74f8207f670eb898b082a1962ae35e0db10a6ffeddb7be4c695f64",
+      "inputSHA256": "72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9",
+      "outputSHA256": "b6f68e3ad44dd42e99901d2405af810ab026f7627af4c6ec160de2bd4efc6117",
+      "outputBytes": 52784,
+      "operationId": "3d23f507-984d-492d-bdb1-00d224c546ec",
+      "inputRevision": 2,
+      "sphericalMetadata": "PASS",
+      "status": "PASS"
+    }
+  ],
+  "fileOutputProbe": {
+    "trialId": "39011725192-1-file-output-probe",
+    "build": "vr180-b3-io1",
+    "status": "PASS",
+    "startedAt": "2026-10-17T06:56:15.595555+00:00",
+    "scope": "Independent production-save-backend OPFS test; not application save UI or OS dialog coverage",
+    "downloadRecovered": true,
+    "rawBytesVerified": true,
+    "inputBytes": 26615,
+    "inputSHA256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+    "probeSHA256": "8a823f5631c92964ddf16450797fc309500e92e82726a7a90abecd29085a8495",
+    "cleanupProbeSHA256": "34dca10933023978248ad884aec1d3da89741f453b7f81f3c0a495a99d860766",
+    "productionModuleSHA256": {
+      "file-output.mjs": "c9671f34cc96e01a21df4958bc56e5b0e9777d970802a04e19a8339b6acec294",
+      "sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+    },
+    "notVerified": [
+      "OS save dialog",
+      "external save destination",
+      "application save UI",
+      "position rewriting",
+      "large-file memory/performance"
+    ],
+    "browserUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+    "outputFile": "saved-opfs.mp4",
+    "outputBytes": 26615,
+    "outputSHA256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+    "verificationMethod": "Python compares complete recovered bytes and hashlib SHA-256 against fixed synthetic fixture",
+    "browserDownloadRecoveredAt": "2026-10-17T06:56:16.370350+00:00",
+    "cleanup": {
+      "status": "REMOVED",
+      "directory": "vr180-file-output-probe-2172ee1f-9c64-4daf-8f90-f7909f9fcda1",
+      "absenceObserved": true
+    },
+    "pageErrors": [],
+    "finishedAt": "2026-10-17T06:56:16.391905+00:00"
+  },
+  "nativeSavePickerVerified": false
+}
