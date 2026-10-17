@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VR180 Studio — Kushyameln Works</title><link rel="stylesheet" href="./style.css"></head>
-<body><header><a href="../">Kushyameln Works</a><span class="badge">検証版</span><h1>VR180 Studio</h1><p>左右の映像を確かめて、180度動画へ。</p><p class="muted">検証中の機能です。小さな合成動画の加工・ダウンロードを確認済みです。VR再生・実写品質は未確認です。</p></header>
+<body><header><a href="../">Kushyameln Works</a><span class="badge">検証版</span><h1>VR180 Studio</h1><p>左右の映像を確かめて、180度動画へ。</p><p class="muted">検証中の機能です。小さな合成動画の加工・ダウンロードを確認済みです。VR再生・実写品質は未確認です。</p><p class="muted">変換の取消後に、一時ファイルが残る問題を確認しています。</p></header>
 <main><section class="card"><h2><span>1</span> 動画を選ぶ</h2><p>左右映像が1ファイルに入った、正距円筒のMP4を選んでください。</p><label class="file">動画ファイル<input id="file" type="file" accept="video/mp4,.mp4"></label><p id="input-info" class="muted">映像はこのブラウザで処理します。</p>
 <details><summary>サンプルで試す</summary><div class="row"><button data-demo="stereo180-sbs">180°・左右</button><button data-demo="stereo180-tb">180°・上下</button><button data-demo="stereo360-tb">360°・上下</button></div><p class="muted">2秒の合成映像。左右の文字、動く目印、確認用の音が入っています。</p><details><summary>大きな解像度での動作確認</summary><div class="row"><button data-demo="stereo180-4k-2s-sbs">4096 × 2048・2秒</button><button data-demo="stereo180-4k-12s-sbs">4096 × 2048・12秒</button></div><p class="muted">同じ合成素材を拡大した試験用映像です。実写素材の複雑さを再現するものではありません。</p></details></details>
 <video id="input-video" controls playsinline preload="metadata" hidden></video></section>

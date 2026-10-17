@@ -1,0 +1,71 @@
+{
+  "status": "FAIL",
+  "scope": "Cancellation cleanup acceptance failed; later follow-up cases were not started.",
+  "runId": "39008177828-1",
+  "checkoutCommit": "0154143580c614784154f1412008055e1c763827",
+  "browserVersion": "155.0.8059.39",
+  "workflowUrl": "https://github.com/Kushyameln01/kushyameln-works/actions/runs/39008177828",
+  "pagesByteCheck": "PASS",
+  "executedMediaTrials": 1,
+  "operation": {
+    "at": 1126.2000000000116,
+    "operationId": "f6d00b0d-11b2-4e3d-baab-35d1b6697913",
+    "inputRevision": 2,
+    "inputName": "stereo180-4k-12s-sbs.mp4",
+    "inputBytes": 944087,
+    "settings": {
+      "mode": "convert",
+      "layout": "sbs",
+      "fov": 180,
+      "eyeSize": 2048,
+      "bitrate": 25165824
+    }
+  },
+  "inputSHA256": "97bb3a4335514436374b35c202275dde2cfca27f8f7cec3a224fd77c8ede6582",
+  "progressBeforeCancel": {
+    "busy": true,
+    "value": 0.002777777777777778,
+    "status": "動画を変換しています…"
+  },
+  "statusAfterCancel": "取り消しました。再実行できます。",
+  "cleanupObservationCount": 147,
+  "firstObservation": {
+    "elapsedMs": 7.850651000012476,
+    "jobs": [
+      {
+        "name": "f6d00b0d-11b2-4e3d-baab-35d1b6697913",
+        "kind": "directory"
+      }
+    ]
+  },
+  "lastObservation": {
+    "elapsedMs": 15016.33244200002,
+    "jobs": [
+      {
+        "name": "f6d00b0d-11b2-4e3d-baab-35d1b6697913",
+        "kind": "directory"
+      }
+    ]
+  },
+  "allObservationsRetainSameJob": true,
+  "error": "ValueError: Cancellation OPFS cleanup did not finish within 15 seconds",
+  "cleanupErrorVisibleInScreenshot": "Failed to execute 'removeEntry' on 'FileSystemDirectoryHandle': An attempt was made to modify an object where modifications are not allowed.",
+  "applicationCancellationReceipt": null,
+  "notRun": [
+    "retry after cancellation",
+    "expected failure/retry",
+    "4K 2s completed output",
+    "4K 12s completed output"
+  ],
+  "transport": {
+    "status": "PASS",
+    "runId": "39008177828-1",
+    "chunks": 332,
+    "archiveBytes": 1017235,
+    "archiveSHA256": "b34de4105d7c11da7113581f84945f007b9a79c4c14f2c8be68a24d90aca2cca",
+    "verifiedFiles": 13,
+    "browserRunStatus": "FAIL"
+  },
+  "diagnosis": "Removal failed while the worker was being terminated; a storage lock/release race is a hypothesis, not a confirmed root cause.",
+  "productCodeChanged": false
+}
