@@ -107,11 +107,19 @@ def command(args, timeout=20):
     return result.stdout.strip()
 
 
-def source_check(out):
+def validate_source_ref(ref, *, candidate=False):
+    if candidate:
+        require(isinstance(ref, str) and re.fullmatch(r'refs/heads/codex/vr180-plan-[a-zA-Z0-9-]+', ref),
+                'Candidate validation requires the explicit codex/vr180-plan-* branch')
+    else:
+        require(ref == 'refs/heads/main', 'Expected main checkout')
+
+
+def source_check(out, *, candidate=False):
     commit = command(['git', 'rev-parse', 'HEAD'])
     require(re.fullmatch(r'[0-9a-f]{40}', commit), 'Invalid checkout commit')
     require(commit == os.environ.get('GITHUB_SHA'), 'Checkout differs from GITHUB_SHA')
-    require(os.environ.get('GITHUB_REF') == 'refs/heads/main', 'Expected main checkout')
+    validate_source_ref(os.environ.get('GITHUB_REF'), candidate=candidate)
     require(not command(['git', 'status', '--porcelain', '--untracked-files=no']), 'Tracked checkout is dirty')
     for name, expected in VERIFIERS.items():
         require(digest(ROOT / 'tools/vr180' / name) == expected, f'Fixed verifier differs: {name}')
@@ -127,7 +135,8 @@ def source_check(out):
             files.append({'name': path.relative_to(DOCS).as_posix(), 'bytes': path.stat().st_size, 'sha256': digest(path)})
     report = {'checkoutCommit': commit, 'candidateCodeBaseline': CANDIDATE_COMMIT,
               'build': BUILD, 'fixtures': fixtures, 'fixedVerifierSHA256': VERIFIERS,
-              'cloudCopySource': 'this main checkout docs/; HTTP loopback only', 'files': files}
+              'cloudCopySource': 'this exact checkout docs/; HTTP loopback only',
+              'sourceScope': 'unpublished-candidate' if candidate else 'production-main', 'files': files}
     write(out / 'source-inventory.json', report)
     return report
 
@@ -1403,6 +1412,8 @@ def main():
                         help='Followup requires independent verification of the small suite on the same product sources before this separate run')
     parser.add_argument('--defer-independent-verification', action='store_true',
                         help='Recover outputs; report verification pending until independent verifiers run in the receiving environment')
+    parser.add_argument('--candidate', action='store_true',
+                        help='Explicit scoped candidate branch; no public Pages equivalence or deployment is claimed')
     parser.add_argument('--file-output-probe', action='store_true',
                         help='After both small UI outputs are recovered, separately exercise production file saving with real OPFS handles')
     parser.add_argument('--range-probe', action='store_true',
@@ -1417,6 +1428,7 @@ def main():
               'runId': f"{os.environ.get('GITHUB_RUN_ID', 'missing')}-{os.environ.get('GITHUB_RUN_ATTEMPT', 'missing')}",
               'github': {key: os.environ.get(key) for key in ('GITHUB_REPOSITORY', 'GITHUB_SHA', 'GITHUB_REF', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT')},
               'browserSandboxRequired': True, 'browserTrials': [], 'pagesByteCheck': 'NOT_RUN',
+              'sourceScope': 'unpublished-candidate' if args.candidate else 'production-main',
               'fileOutputProbe': {'requested': args.file_output_probe, 'status': 'NOT_RUN'},
               'rangeProbe': {'requested': args.range_probe, 'status': 'NOT_RUN'},
               'directOutputProbe': {'requested': args.direct_output_probe or args.suite == 'direct-scale12',
@@ -1452,10 +1464,15 @@ def main():
                 'basis': 'Recovered small outputs independently verified PASS; all recorded product-module hashes match this checkout'}
             result['workerPostObserver'] = {'enabled': args.suite in ('followup', 'recovery'), 'sha256': hashlib.sha256(WORKER_POST_OBSERVER.encode()).hexdigest(),
                                            'scope': 'Forwards original Worker.postMessage this/args/return/exception; observes only IDs/settings/file metadata'}
-        source = source_check(out)
+        source = source_check(out, candidate=args.candidate)
         result['checkoutCommit'] = source['checkoutCommit']
-        wait_for_pages(out, source['checkoutCommit'])
-        result['pagesByteCheck'] = 'PASS'
+        if args.candidate:
+            result['pagesByteCheck'] = 'NOT_APPLICABLE_UNPUBLISHED_CANDIDATE'
+            write(out / 'pages-byte-check.json', {'status': result['pagesByteCheck'],
+                'checkoutCommit': source['checkoutCommit'], 'note': 'Candidate is served only inside the cloud runner; public delivery is not tested.'})
+        else:
+            wait_for_pages(out, source['checkoutCommit'])
+            result['pagesByteCheck'] = 'PASS'
         preflight(out, args.defer_independent_verification)
         from playwright.sync_api import sync_playwright
         server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Handler, directory=str(DOCS)))

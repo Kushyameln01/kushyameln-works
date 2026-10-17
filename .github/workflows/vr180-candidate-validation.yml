@@ -1,0 +1,67 @@
+name: VR180 candidate validation
+
+on:
+  push:
+    branches: [codex/vr180-plan-*]
+    paths:
+      - .github/workflows/vr180-candidate-validation.yml
+      - tools/vr180/cloud-validate.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-browser-check:
+    if: >-
+      github.repository == 'Kushyameln01/kushyameln-works' &&
+      github.event.repository.private == false &&
+      startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
+      (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[vr180-candidate-check]'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      DO_NOT_TRACK: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PIP_NO_CACHE_DIR: '1'
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Check out the exact candidate commit
+        id: checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1, official tag resolved 2026-10-17
+        timeout-minutes: 1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Use Python 3.12 without dependency caching
+        id: python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0, official tag resolved 2026-10-17
+        timeout-minutes: 1
+        with:
+          python-version: '3.12'
+
+      - name: Install only the pinned Python harness dependencies
+        id: dependencies
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          test -x /usr/bin/google-chrome
+          python3 -m pip install --no-cache-dir playwright==1.62.0
+
+      - name: Run sandboxed candidate trials and emit complete evidence to logs
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        timeout-minutes: 12
+        env:
+          VR180_DEPENDENCIES_READY: ${{ steps.dependencies.outcome == 'success' }}
+        shell: bash
+        run: python3 tools/vr180/cloud-validate.py --candidate --suite small --file-output-probe --direct-output-probe --defer-independent-verification --output "$RUNNER_TEMP/vr180-evidence-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+
+      - name: Record checkout failure without claiming a media test
+        if: ${{ always() && steps.checkout.outcome != 'success' }}
+        shell: bash
+        run: |
+          printf '%s\n' 'VR180_EVIDENCE_ERROR {"status":"BLOCKED","complete":false,"reason":"Checkout failed; harness unavailable","executedMediaTrials":0}'
+          exit 1

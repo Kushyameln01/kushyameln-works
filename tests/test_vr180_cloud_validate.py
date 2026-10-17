@@ -126,5 +126,17 @@ class DirectCancellationAdmission(unittest.TestCase):
         harness.validate_direct_cancellation(self.observed, cancel_after_write=False)
 
 
+class SourceScopeAdmission(unittest.TestCase):
+    def test_production_requires_main(self):
+        harness.validate_source_ref('refs/heads/main', candidate=False)
+        with self.assertRaises(ValueError):
+            harness.validate_source_ref('refs/heads/codex/vr180-plan-1-2', candidate=False)
+
+    def test_candidate_requires_explicit_scoped_branch(self):
+        harness.validate_source_ref('refs/heads/codex/vr180-plan-1-2', candidate=True)
+        for ref in ['refs/heads/main', 'refs/pull/1/merge', 'refs/heads/other', None]:
+            with self.subTest(ref=ref), self.assertRaises(ValueError):
+                harness.validate_source_ref(ref, candidate=True)
+
 if __name__ == '__main__':
     unittest.main()
