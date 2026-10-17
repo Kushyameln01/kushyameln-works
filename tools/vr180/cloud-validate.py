@@ -683,7 +683,13 @@ def main():
             raise Blocked('This harness is scoped to Kushyameln01/kushyameln-works')
         if args.suite == 'followup':
             require(args.defer_independent_verification, 'Followup requires explicit deferred independent verification; the fixed small pixel oracle is bounded to 512px/eye and 120 frames')
-            raise Blocked('Small-suite independent verification for build vr180-b2-cancel1 is required before enabling followup')
+            prerequisite = json.loads((ROOT / 'development/vr180/evidence/2026-10-17-b2-small.json').read_text())
+            require(prerequisite['status'] == 'PASS' and prerequisite['build'] == BUILD, 'Small-suite regression has not passed for this build')
+            require(set(PUBLIC_PATHS).issubset(prerequisite['sourceFiles']), 'Incomplete small-suite source provenance')
+            for path, expected in prerequisite['sourceFiles'].items():
+                require(digest(DOCS / path) == expected, f'Product source changed after small-suite verification: {path}')
+            result['smallSuitePrerequisite'] = {'runId': prerequisite['runId'], 'checkoutCommit': prerequisite['checkoutCommit'],
+                'basis': 'Recovered small outputs independently verified PASS; all recorded product-module hashes match this checkout'}
             result['workerPostObserver'] = {'enabled': True, 'sha256': hashlib.sha256(WORKER_POST_OBSERVER.encode()).hexdigest(),
                                            'scope': 'Forwards original Worker.postMessage this/args/return/exception; observes only IDs/settings/file metadata'}
         source = source_check(out)
