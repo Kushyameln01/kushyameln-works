@@ -46,7 +46,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / 'docs'
 CHROME = Path('/usr/bin/google-chrome')
 PAGES = 'https://kushyameln01.github.io/kushyameln-works/'
-BUILD = 'vr180-b3-io1'
+BUILD = 'vr180-b4-range1'
 RECOVERED = 'RECOVERED_PENDING_VERIFICATION'
 CANDIDATE_COMMIT = 'e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60'
 LIMIT = 8 * 1024 * 1024
@@ -393,6 +393,207 @@ FILE_OUTPUT_CLEANUP = r"""async () => {
   } catch (error) {
     return (state.record.cleanup = {status: 'FAIL', directory: state.directoryName, error: String(error)});
   }
+}"""
+
+
+# Structural fixtures only: production parser/tagger, native Chrome Blobs, and
+# independent bounded reads. Zero sample bytes are not decodable H.264 media.
+RANGE_PROBE = r"""async ({kind, fixtureURL, expectedSHA256}) => {
+  const record = {kind, status: 'STARTED', userAgent: navigator.userAgent, isSecureContext,
+    scope: 'Native-browser container structure and bounded reads only; not a real large video or a decode/encode trial',
+    nativeBlobUsed: true, productionApisReplaced: false, downloaded: false, fullFileHashComputed: false,
+    inputFullyRecovered: false, outputFullyRecovered: false, realVideoTested: false,
+    notVerified: ['5-10GB real video processing', 'full large-file recovery', 'H.264 decoding', 'VR playback', 'large-file memory peak']};
+  const require = (ok, message) => { if (!ok) throw Error(message); };
+  const encoder = new TextEncoder(), decoder = new TextDecoder();
+  const nativeSlice = Blob.prototype.slice, nativeArrayBuffer = Blob.prototype.arrayBuffer;
+  const slice = (blob, start = 0, end = blob.size) => Reflect.apply(nativeSlice, blob, [start, end]);
+  const read = async (blob, start, length) => {
+    require(length <= 65536 && start >= 0 && start + length <= blob.size, 'HARNESS_RANGE_BOUND');
+    const part = slice(blob, start, start + length);
+    require(part instanceof Blob && part.size === length, 'NATIVE_SLICE_SIZE_MISMATCH');
+    const bytes = new Uint8Array(await Reflect.apply(nativeArrayBuffer, part, []));
+    require(bytes.length === length, 'NATIVE_READ_SIZE_MISMATCH'); return bytes;
+  };
+  const u32 = n => { const b = new Uint8Array(4); new DataView(b.buffer).setUint32(0, n); return b; };
+  const u64 = n => { const b = new Uint8Array(8); new DataView(b.buffer).setBigUint64(0, BigInt(n)); return b; };
+  const box = (type, ...parts) => {
+    const payload = parts.reduce((n, p) => n + (p.size ?? p.byteLength), 0);
+    const extended = payload + 8 > 0xffffffff;
+    const size = payload + (extended ? 16 : 8);
+    const value = new Blob([u32(extended ? 1 : size), encoder.encode(type), ...(extended ? [u64(size)] : []), ...parts]);
+    require(value.size === size, 'NATIVE_BLOB_SIZE_MISMATCH'); return value;
+  };
+  const full = (type, ...parts) => box(type, u32(0), ...parts);
+  async function children(blob, start = 0, end = blob.size) {
+    const list = [];
+    while (start < end) {
+      require(list.length < 100 && end - start >= 8, 'HARNESS_BOX_COUNT_OR_BOUNDS');
+      const h = await read(blob, start, 8), d = new DataView(h.buffer), type = decoder.decode(h.subarray(4));
+      let size = d.getUint32(0), header = 8;
+      if (size === 1) { size = Number(new DataView((await read(blob, start + 8, 8)).buffer).getBigUint64(0)); header = 16; }
+      require(Number.isSafeInteger(size) && size >= header && start + size <= end, 'HARNESS_BOX_SIZE');
+      list.push({type, start, end: start + size, payload: start + header, header}); start += size;
+    }
+    return list;
+  }
+  async function find(blob, path) {
+    let list = await children(blob), node;
+    for (let i = 0; i < path.length; i++) {
+      node = list.find(n => n.type === path[i]); require(node, 'HARNESS_MISSING_' + path[i]);
+      if (i < path.length - 1) list = await children(blob, node.payload, node.end);
+    }
+    return node;
+  }
+  const digest = async bytes => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)),
+    x => x.toString(16).padStart(2, '0')).join('');
+  const stats = record.parserReads = {calls: 0, bytes: 0, maximumBytes: 0, wholeBlobReadAttempts: 0, slices: 0};
+  let cancelOnTableRead = null;
+  function observe(blob) {
+    require(blob instanceof Blob, 'PARSER_INPUT_IS_NOT_NATIVE_BLOB');
+    Object.defineProperty(blob, 'arrayBuffer', {value() { stats.wholeBlobReadAttempts++; throw Error('WHOLE_BLOB_READ_FORBIDDEN'); }});
+    Object.defineProperty(blob, 'slice', {value(...args) {
+      const part = Reflect.apply(nativeSlice, this, args); stats.slices++;
+      require(part instanceof Blob, 'SLICE_IS_NOT_NATIVE_BLOB');
+      Object.defineProperty(part, 'arrayBuffer', {value() {
+        stats.calls++; stats.bytes += part.size; stats.maximumBytes = Math.max(stats.maximumBytes, part.size);
+        require(part.size <= 65536, 'PARSER_READ_EXCEEDS_64K');
+        if (cancelOnTableRead && part.size === 65536) { const request = cancelOnTableRead; cancelOnTableRead = null; request.at = args[0]; setTimeout(() => request.controller.abort(), 0); }
+        return Reflect.apply(nativeArrayBuffer, part, []);
+      }});
+      return part;
+    }});
+    return blob;
+  }
+  const controller = new AbortController();
+  const started = performance.now();
+  const timeout = setTimeout(() => { record.resourceDeadlineReached = true; controller.abort(); }, 120000);
+  try {
+    const {inspectMp4, tagMp4} = await import('/shared/vr180/mp4.mjs');
+    const response = await fetch(fixtureURL, {cache: 'no-store'}); require(response.ok, 'BASE_FIXTURE_UNAVAILABLE');
+    const base = await response.blob(); require(base.size <= 1024 * 1024, 'BASE_FIXTURE_TOO_LARGE');
+    require(await digest(new Uint8Array(await Reflect.apply(nativeArrayBuffer, base, []))) === expectedSHA256, 'BASE_FIXTURE_HASH');
+    record.baseFixtureSHA256 = expectedSHA256;
+    const top = await children(base), movie = top.find(n => n.type === 'moov'), ft = top.find(n => n.type === 'ftyp');
+    require(movie && ft, 'BASE_MOVIE_MISSING');
+    const movieChildren = await children(base, movie.payload, movie.end);
+    let video;
+    for (const track of movieChildren.filter(n => n.type === 'trak')) {
+      const mdia = (await children(base, track.payload, track.end)).find(n => n.type === 'mdia');
+      const handler = (await children(base, mdia.payload, mdia.end)).find(n => n.type === 'hdlr');
+      if (decoder.decode(await read(base, handler.payload + 8, 4)) === 'vide') video = track;
+    }
+    require(video, 'BASE_VIDEO_MISSING');
+    const samples = kind === 'large-stsz' ? 4194305 : 1;
+    const ftyp = slice(base, ft.start, ft.end);
+    const originalStsd = await find(base, ['moov', 'trak', 'mdia', 'minf', 'stbl', 'stsd']);
+    // The known fixture's video track is first; fail rather than adopt an audio stsd.
+    const entries = await children(base, originalStsd.payload + 8, originalStsd.end);
+    require(entries.length === 1 && entries[0].type === 'avc1', 'BASE_FIRST_TRACK_NOT_AVC1');
+    const tableParts = [];
+    if (kind === 'large-stsz') {
+      const page = new Uint8Array(65536), d = new DataView(page.buffer);
+      for (let i = 0; i < page.length; i += 4) d.setUint32(i, 1);
+      const nativePage = new Blob([page]);
+      for (let remaining = samples * 4; remaining > 0; remaining -= Math.min(remaining, page.length))
+        tableParts.push(slice(nativePage, 0, Math.min(remaining, page.length)));
+    }
+    const stsz = kind === 'large-stsz' ? full('stsz', u32(0), u32(samples), ...tableParts) : full('stsz', u32(1), u32(samples));
+    const timing = full('stts', u32(1), u32(samples), u32(1));
+    const chunks = full('stsc', u32(1), u32(1), u32(samples), u32(1));
+    const mdat = box('mdat', kind === 'large-offset' ? Uint8Array.of(167) : new Uint8Array(samples));
+    const headerCopy = async node => {
+      const b = await read(base, node.start, node.end - node.start), d = new DataView(b.buffer);
+      require(b[node.header] === 0, 'BASE_HEADER_VERSION');
+      if (node.type === 'tkhd') d.setUint32(node.header + 20, samples);
+      else { d.setUint32(node.header + 12, 1000); d.setUint32(node.header + 16, samples); }
+      return new Blob([b]);
+    };
+    async function buildTrack(node, stbl) {
+      if (node.type === 'edts') return null;
+      if (node.type === 'tkhd' || node.type === 'mdhd') return headerCopy(node);
+      if (node.type === 'stbl') return stbl;
+      if (!['trak', 'mdia', 'minf'].includes(node.type)) return slice(base, node.start, node.end);
+      const parts = await Promise.all((await children(base, node.payload, node.end)).map(n => buildTrack(n, stbl)));
+      return box(node.type, ...parts.filter(Boolean));
+    }
+    const mvhd = await headerCopy(movieChildren.find(n => n.type === 'mvhd'));
+    let hugeFree = null;
+    if (kind === 'large-offset') {
+      const zeroMiB = new Blob([new Uint8Array(1024 * 1024)]);
+      hugeFree = box('free', ...Array(4096).fill(zeroMiB));
+      record.logicalPadding = {bytes: hugeFree.size, construction: '4096 references to one native 1MiB zero Blob, plus extended box header', wholePaddingRead: false};
+    }
+    async function buildMovie(offset) {
+      const offsets = kind === 'large-offset' ? full('co64', u32(1), u64(offset)) : full('stco', u32(1), u32(offset));
+      const stbl = box('stbl', slice(base, originalStsd.start, originalStsd.end), timing, chunks, stsz, offsets);
+      return box('moov', mvhd, await buildTrack(video, stbl), ...(hugeFree ? [hugeFree] : []));
+    }
+    let moov = await buildMovie(kind === 'large-stsz' ? ftyp.size + 8 : 0);
+    if (kind === 'large-offset') moov = await buildMovie(ftyp.size + moov.size + 8);
+    const input = observe(new Blob(kind === 'large-stsz' ? [ftyp, mdat, moov] : [ftyp, moov, mdat], {type: 'video/mp4'}));
+    record.inputLogicalBytes = input.size; record.inputMoovBytes = moov.size;
+    require(kind === 'large-stsz' ? moov.size > 16 * 1024 * 1024 : input.size > 2 ** 32, 'STRUCTURAL_BOUNDARY_NOT_REACHED');
+    const before = await inspectMp4(input, {signal: controller.signal});
+    record.before = before;
+    require(before.sampleCounts.video === samples && before.sampleCounts.audio === 0 && before.sampleCounts.total === samples, 'INPUT_SAMPLE_COUNTS');
+    require(before.containerMetadataBytes === moov.size, 'INPUT_METADATA_SIZE');
+    const output = observe(await tagMp4(input, {layout: 'sbs', signal: controller.signal}));
+    record.outputLogicalBytes = output.size;
+    const after = await inspectMp4(output, {signal: controller.signal}); record.after = after;
+    require(after.sampleCounts.video === samples && after.sampleCounts.audio === 0 && after.sampleCounts.total === samples, 'OUTPUT_SAMPLE_COUNTS');
+    require(after.stereoMode === 2 && after.projection === 'equi' && after.bounds.top === 0 && after.bounds.bottom === 0
+      && after.bounds.left === 0x40000000 && after.bounds.right === 0x40000000 && after.pose.every(n => n === 0), 'TAG_METADATA');
+    const oldMovie = await find(input, ['moov']), newMovie = await find(output, ['moov']);
+    require(newMovie.start === input.size, 'TAG_NOT_APPENDED');
+    require(after.containerMetadataBytes === newMovie.end - newMovie.start, 'OUTPUT_METADATA_SIZE');
+    require(decoder.decode(await read(output, oldMovie.start + 4, 4)) === 'free', 'OLD_MOOV_NOT_FREE');
+    const sourceMedia = await find(input, ['mdat']), savedMedia = await find(output, ['mdat']);
+    require(sourceMedia.start === savedMedia.start && sourceMedia.end === savedMedia.end, 'MDAT_POSITION_CHANGED');
+    async function compareRange(label, leftAt, rightAt, bytes) {
+      const hashes = [], otherHashes = [];
+      for (let at = 0; at < bytes; at += 65536) {
+        if (controller.signal.aborted) throw new DOMException('Probe deadline', 'AbortError');
+        const n = Math.min(65536, bytes - at);
+        hashes.push(await digest(await read(input, leftAt + at, n)));
+        otherHashes.push(await digest(await read(output, rightAt + at, n)));
+        require(hashes.at(-1) === otherHashes.at(-1), 'PRESERVED_RANGE_MISMATCH_' + label);
+      }
+      return {label, inputOffset: leftAt, outputOffset: rightAt, bytes, chunkBytes: 65536, chunks: hashes.length,
+        inputSHA256PerChunk: hashes, outputSHA256PerChunk: otherHashes, allChunksMatched: true};
+    }
+    record.preservedRanges = [await compareRange('mdat payload', sourceMedia.payload, savedMedia.payload, sourceMedia.end - sourceMedia.payload)];
+    for (const type of ['stsz', 'stts', 'stsc', kind === 'large-offset' ? 'co64' : 'stco']) {
+      const path = ['moov', 'trak', 'mdia', 'minf', 'stbl', type], a = await find(input, path), b = await find(output, path);
+      require(a.end - a.start === b.end - b.start, 'TABLE_SIZE_CHANGED_' + type);
+      record.preservedRanges.push(await compareRange(type, a.start, b.start, a.end - a.start));
+    }
+    if (kind === 'large-offset') {
+      require(newMovie.header === 16 && newMovie.end - newMovie.start > 2 ** 32, 'OUTPUT_PARENT_LARGESIZE');
+      const co64 = await find(output, ['moov', 'trak', 'mdia', 'minf', 'stbl', 'co64']);
+      const offset = Number(new DataView((await read(output, co64.payload + 8, 8)).buffer).getBigUint64(0));
+      require(offset === sourceMedia.payload && offset > 2 ** 32, 'CO64_OFFSET_NOT_PRESERVED');
+      require((await read(input, offset, 1))[0] === 167 && (await read(output, offset, 1))[0] === 167, 'NATIVE_TAIL_SLICE');
+      record.largeOffset = {offset, outputMoovHeaderBytes: newMovie.header, outputMoovBytes: newMovie.end - newMovie.start,
+        tailSliceBytes: 1, expectedTailByte: 167, tailSliceMatched: true, paddingHashComputed: false};
+    }
+    if (kind === 'large-stsz') {
+      const request = {controller: new AbortController(), at: null}; cancelOnTableRead = request;
+      let stopped = false;
+      try { await inspectMp4(input, {signal: request.controller.signal}); }
+      catch (error) { require(error.name === 'AbortError', 'WRONG_TABLE_CANCEL_ERROR'); stopped = true; }
+      cancelOnTableRead = null;
+      require(stopped && request.at !== null, 'TABLE_CANCEL_NOT_OBSERVED');
+      record.tableCancellation = {status: 'PASS', requestedAfterReadAt: request.at, readBytes: 65536, observedError: 'AbortError'};
+    }
+    require(stats.wholeBlobReadAttempts === 0 && stats.maximumBytes <= 65536, 'UNBOUNDED_PRODUCTION_READ');
+    record.status = 'PASS';
+  } catch (error) {
+    record.status = record.resourceDeadlineReached || ['QuotaExceededError', 'NotReadableError'].includes(error.name)
+      || /out of memory|allocation failed/i.test(error.message) ? 'BLOCKED' : 'FAIL';
+    record.error = {name: error.name, message: error.message};
+  } finally { clearTimeout(timeout); record.wallMilliseconds = performance.now() - started; }
+  return record;
 }"""
 
 
@@ -773,6 +974,49 @@ def run_file_output_probe(context, origin, out, run_id):
     return record
 
 
+def run_range_probe(context, origin, out, run_id):
+    """Observe native-Blob structure; never download/hash an entire large Blob."""
+    trial = out / 'range-probe'
+    trial.mkdir()
+    report = {'trialId': f'{run_id}-range-probe', 'build': BUILD, 'requested': True,
+              'status': 'STARTED', 'startedAt': now(), 'cases': [],
+              'scope': 'Separate structural parser test; not a large real video or full-file recovery',
+              'probeSHA256': hashlib.sha256(RANGE_PROBE.encode()).hexdigest(),
+              'parserModuleSHA256': digest(DOCS / 'shared/vr180/mp4.mjs'),
+              'largeFilesDownloaded': False, 'wholeLargeFileHashesComputed': False}
+    for kind in ('large-stsz', 'large-offset'):
+        observed = {'kind': kind, 'status': 'STARTED'}
+        page = None
+        try:
+            page = context.new_page()
+            page.set_default_timeout(15000)
+            page.goto(origin + '/vr180-studio/', wait_until='networkidle')
+            # Run in the page with a bounded wait. A resource/crash failure is a
+            # separate BLOCKED structural case, never a failed/accepted UI output.
+            launch = "args => { globalThis.__vr180RangeResult = null; (" + RANGE_PROBE + ")(args).then(r => { globalThis.__vr180RangeResult = r; }, e => { globalThis.__vr180RangeResult = {kind: args.kind, status: 'FAIL', error: {name: e.name, message: e.message}}; }); }"
+            page.evaluate(launch, {'kind': kind, 'fixtureURL': origin + '/vr180-studio/fixtures/stereo180-sbs.mp4',
+                                  'expectedSHA256': FIXTURES['stereo180-sbs']})
+            page.wait_for_function('globalThis.__vr180RangeResult !== null', timeout=135000)
+            observed = page.evaluate('globalThis.__vr180RangeResult')
+        except (Exception, KeyboardInterrupt) as error:
+            observed.update(status='BLOCKED', error={'name': type(error).__name__, 'message': str(error)},
+                            limitation='Browser execution/resource availability was not established for this structural case')
+        finally:
+            if page is not None:
+                try:
+                    page.close()
+                except Exception as error:
+                    observed['pageCloseError'] = str(error)
+            write(trial / f'{kind}.json', observed)
+            report['cases'].append(observed)
+        if observed['status'] != 'PASS':
+            break
+    report.update(status='PASS' if len(report['cases']) == 2 and all(c['status'] == 'PASS' for c in report['cases'])
+                  else report['cases'][-1]['status'], finishedAt=now())
+    write(trial / 'trial.json', report)
+    return report
+
+
 def emit_evidence(out, result):
     """Emit all evidence or an explicit bounded transport failure, never truncation."""
     files = []
@@ -831,6 +1075,8 @@ def main():
                         help='Recover outputs; report verification pending until independent verifiers run in the receiving environment')
     parser.add_argument('--file-output-probe', action='store_true',
                         help='After both small UI outputs are recovered, separately exercise production file saving with real OPFS handles')
+    parser.add_argument('--range-probe', action='store_true',
+                        help='After both small UI outputs are recovered, separately inspect/tag native-Blob structural boundary fixtures; no full large-file download')
     args = parser.parse_args()
     out = args.output.resolve()
     require(not out.is_relative_to(ROOT), 'Evidence must be outside the checkout')
@@ -840,10 +1086,12 @@ def main():
               'github': {key: os.environ.get(key) for key in ('GITHUB_REPOSITORY', 'GITHUB_SHA', 'GITHUB_REF', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT')},
               'browserSandboxRequired': True, 'browserTrials': [], 'pagesByteCheck': 'NOT_RUN',
               'fileOutputProbe': {'requested': args.file_output_probe, 'status': 'NOT_RUN'},
+              'rangeProbe': {'requested': args.range_probe, 'status': 'NOT_RUN'},
               'independentVerificationDeferred': args.defer_independent_verification, 'independentVerificationPassed': False,
               'notVerified': ['VR player/headset compatibility', 'real footage quality', 'novice usability',
                               'speed improvement', 'cancel/retry behavior', '4K scale', 'product completion',
-                              'OS save dialog', 'external save destination', 'application save UI']}
+                              'OS save dialog', 'external save destination', 'application save UI',
+                              '5-10GB real video processing and full-file recovery']}
     server = browser = context = None
     started = time.monotonic()
     def deadline(_signum, _frame):
@@ -854,13 +1102,13 @@ def main():
     try:
         if os.environ.get('GITHUB_REPOSITORY') != 'Kushyameln01/kushyameln-works':
             raise Blocked('This harness is scoped to Kushyameln01/kushyameln-works')
-        if args.file_output_probe and args.suite != 'small':
-            raise Blocked('--file-output-probe requires this run to complete both small UI trials first')
+        if (args.file_output_probe or args.range_probe) and args.suite != 'small':
+            raise Blocked('Backend/range probes require this run to complete both small UI trials first')
         if args.suite in ('followup', 'scale12', 'recovery'):
             require(args.defer_independent_verification, 'Followup requires explicit deferred independent verification; the fixed small pixel oracle is bounded to 512px/eye and 120 frames')
-            prerequisite_path = ROOT / 'development/vr180/evidence/2026-10-17-b3-small.json'
+            prerequisite_path = ROOT / 'development/vr180/evidence/2026-10-17-b4-small.json'
             if not prerequisite_path.is_file():
-                raise Blocked('This b3 build requires independently verified b3-small evidence; b2 results are not reusable')
+                raise Blocked('This b4 build requires independently verified b4-small evidence; earlier build results are not reusable')
             prerequisite = json.loads(prerequisite_path.read_text())
             require(prerequisite['status'] == 'PASS' and prerequisite['build'] == BUILD, 'Small-suite regression has not passed for this build')
             require(set(PUBLIC_PATHS).issubset(prerequisite['sourceFiles']), 'Incomplete small-suite source provenance')
@@ -915,6 +1163,7 @@ def main():
                     if trial['status'] != completed_status:
                         break
                 result['status'] = completed_status if len(result['browserTrials']) == len(cases) and all(t['status'] == completed_status for t in result['browserTrials']) else result['browserTrials'][-1]['status']
+                result['mediaTrialsStatus'] = result['status']
                 if args.file_output_probe:
                     if result['status'] == completed_status and len(result['browserTrials']) == 2 and all(t['downloadRecovered'] for t in result['browserTrials']):
                         result['fileOutputProbe'] = run_file_output_probe(context, origin, out, result['runId'])
@@ -922,6 +1171,13 @@ def main():
                             result['status'] = 'FAIL'
                     else:
                         result['fileOutputProbe']['reason'] = 'Both same-run small UI trials did not complete output/receipt recovery and hash checks'
+                if args.range_probe:
+                    if result['status'] == completed_status and len(result['browserTrials']) == 2 and all(t['downloadRecovered'] for t in result['browserTrials']):
+                        result['rangeProbe'] = run_range_probe(context, origin, out, result['runId'])
+                        if result['rangeProbe']['status'] != 'PASS':
+                            result['status'] = result['rangeProbe']['status']
+                    else:
+                        result['rangeProbe']['reason'] = 'Required same-run small recovery or preceding requested probe did not complete'
                 result['independentVerificationPassed'] = result['status'] == 'PASS'
                 result['blockedBrowserRequests'] = blocked_requests
             finally:

@@ -30,11 +30,14 @@ const errors = {
   EYE_DIMENSIONS_AND_FOV_CONFLICT: 'この検証版は、各眼が180°なら正方形、360°なら横2：縦1の素材に対応します。',
   COPY_REQUIRES_180_DEGREES: '360°素材は「180°へ切出し・横並びへ変換」を選んでください。',
   CAMERA_MESH_NOT_SUPPORTED_YET: 'このカメラのメッシュ投影は、まだ対応していません。',
+  CONVERSION_INDEX_INFO_INVALID: '変換前に動画の索引を確認できませんでした。処理記録を確認してください。',
+  CONVERSION_SAMPLE_LIMIT_EXCEEDED: 'この動画の映像・音声サンプル数は、現在の変換上限10万件を超えています。大容量・長時間の変換にはまだ対応していません。',
+  CONVERSION_METADATA_LIMIT_EXCEEDED: 'この動画の索引・メタデータ量は、現在の変換上限16MiBを超えています。',
   OPFS_UNAVAILABLE: 'このブラウザでは変換用の一時保存を利用できません。'
 };
 function statusError(e) {
   if (e.diagnostics) { record = e.diagnostics; $('diagnostics').textContent = JSON.stringify(record, null, 2); }
-  $('status').textContent = client.cleanupPending ? '清掃が完了していません。削除を再試行してください。' : e.name === 'AbortError' ? '取り消しました。再実行できます。' : errors[e.message] || `処理できませんでした：${e.message}`;
+  $('status').textContent = client.cleanupPending ? '清掃が完了していません。削除を再試行してください。' : e.name === 'AbortError' ? '取り消しました。再実行できます。' : errors[e.message] || errors[e.message?.split(':')[0]] || `処理できませんでした：${e.message}`;
 }
 function update() {
   const busy = !!operations.current, cleanupPending = client.cleanupPending || !!pendingSaveCleanup;

@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, mkdtemp, open, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join as pathJoin } from 'node:path';
 import { inspectMp4, tagMp4 } from '../docs/shared/vr180/mp4.mjs';
 
 const u32 = (n) => { const b = new Uint8Array(4); new DataView(b.buffer).setUint32(0, n); return b; };
@@ -65,7 +67,7 @@ const videoPath = ['moov', 'trak', 'mdia', 'minf', 'stbl', 'stsd', 'avc1'];
 
 test('inspect obtains one avc1 track and optional AAC without requiring spherical metadata', async () => {
   const x = await inspectMp4(fixture());
-  assert.deepEqual(x, { width: 16, height: 8, videoCodec: 'avc1', audioCodecs: ['mp4a'], stereoMode: null, projection: null, bounds: null, pose: null, transcodeSafe: true, transcodeIssues: [] });
+  assert.deepEqual(x, { width: 16, height: 8, videoCodec: 'avc1', audioCodecs: ['mp4a'], stereoMode: null, projection: null, bounds: null, pose: null, transcodeSafe: true, transcodeIssues: [], sampleCounts: {video: 1, audio: 1, total: 2}, containerMetadataBytes: 1022 });
   assert.deepEqual((await inspectMp4(fixture({ audio: false }))).audioCodecs, []);
 });
 
@@ -211,11 +213,11 @@ test('malformed sizes, unsafe offsets and dimensions are rejected', async () => 
   await assert.rejects(tagMp4(fixture(), { layout: 'bad' }), /layout/i);
 });
 
-test('moov budget and box-count limit stop hostile metadata', async () => {
-  const tooLarge = new Blob([u32(16 * 1024 * 1024 + 9), text('moov'), new Uint8Array(16 * 1024 * 1024 + 1)]);
+test('retained small-metadata budget and box-count limit stop hostile metadata', async () => {
+  const tooLarge = fixture({extraMoov: [box('udta', box('name', new Uint8Array(16 * 1024 * 1024 + 1)))]});
   let largestRead = 0;
   const spy = { size: tooLarge.size, slice(a, b) { largestRead = Math.max(largestRead, b - a); return tooLarge.slice(a, b); } };
-  await assert.rejects(inspectMp4(spy), /budget|16 MiB|limit/i); assert(largestRead <= 16);
+  await assert.rejects(inspectMp4(spy), /budget|16 MiB|limit/i); assert(largestRead <= 1024);
   await assert.rejects(inspectMp4(fixture({ extraMoov: Array.from({ length: 21000 }, () => box('free')) })), /box|count|limit/i);
   let nested = box('free'); for (let i = 0; i < 20; i++) nested = box('udta', nested);
   await assert.rejects(inspectMp4(fixture({ extraMoov: [nested] })), /depth|nesting/i);
@@ -238,4 +240,170 @@ test('metadata scanner never reads mdat payload and observes cancellation', asyn
   const during = new AbortController();
   const cancelOnRead = { size: input.size, slice(a, b) { const part = input.slice(a, b); during.abort(); return part; } };
   await assert.rejects(inspectMp4(cancelOnRead, { signal: during.signal }), e => e.name === 'AbortError');
+});
+
+// These are structural fixtures. Their payloads are not decodable H.264 and
+// they are never presented as a successful 5–10 GB camera-video conversion.
+function blobBox(type, ...parts) {
+  const size = parts.reduce((n, p) => n + (p.size ?? p.byteLength), 0) + 8;
+  return new Blob([u32(size), text(type), ...parts]);
+}
+function replaceTree(bytes, node, replacements) {
+  if (replacements[node.type]) return replacements[node.type];
+  if (!['moov', 'trak', 'mdia', 'minf', 'stbl'].includes(node.type)) return new Blob([bytes.subarray(node.start, node.end)]);
+  return blobBox(node.type, ...children(bytes, node.payload, node.end).map(n => replaceTree(bytes, n, replacements)));
+}
+async function largeTableFixture({samples = 4_194_305, timingRuns = false} = {}) {
+  const base = new Uint8Array(await fixture({audio: false}).arrayBuffer()), movie = find(base, ['moov']), ftyp = find(base, ['ftyp']);
+  const table = new Uint8Array(samples * (timingRuns ? 8 : 4)), d = new DataView(table.buffer);
+  for (let i = 0; i < table.length; i += 4) d.setUint32(i, 1);
+  const stsz = timingRuns ? full('stsz', u32(1), u32(samples)) : blobBox('stsz', u32(0), u32(0), u32(samples), table);
+  const stts = timingRuns ? blobBox('stts', u32(0), u32(samples), table) : full('stts', u32(1), u32(samples), u32(1));
+  const moov = replaceTree(base, movie, {stsz, stts, stsc: full('stsc', u32(1), u32(1), u32(samples), u32(1))});
+  const mdat = blobBox('mdat', new Uint8Array(samples));
+  return {blob: new Blob([base.subarray(ftyp.start, ftyp.end), mdat, moov]), moov, samples, table};
+}
+function readSpy(blob, reads) {
+  return {size: blob.size, slice(a, b) { const part = blob.slice(a, b); return {
+    arrayBuffer() { reads.push({at: a, bytes: b - a}); assert(b - a <= 65536, 'table read must be bounded'); return part.arrayBuffer(); }
+  }; }};
+}
+test('a real stsz table above 16 MiB is scanned and rewritten without a whole-moov read', async () => {
+  const {blob, samples, moov, table} = await largeTableFixture(); const reads = [];
+  assert(moov.size > 16 * 1024 * 1024);
+  const info = await inspectMp4(readSpy(blob, reads));
+  assert.equal(info.sampleCounts.video, samples); assert.equal(info.containerMetadataBytes, moov.size);
+  assert(reads.length < 500, 'page scan must not read once per sample');
+  const result = await tagMp4(blob, {layout: 'sbs'});
+  assert.equal((await inspectMp4(result)).stereoMode, 2);
+  const prefix = new Uint8Array(await result.slice(0, blob.size - moov.size).arrayBuffer());
+  assert.deepEqual(prefix, new Uint8Array(await blob.slice(0, blob.size - moov.size).arrayBuffer()));
+  const appended = new Uint8Array(await result.slice(blob.size).arrayBuffer());
+  const sizeTable = find(appended, ['moov', 'trak', 'mdia', 'minf', 'stbl', 'stsz']);
+  assert.equal(sizeTable.end - sizeTable.payload, 12 + 4 * samples);
+  assert.deepEqual(appended.subarray(sizeTable.payload + 12, sizeTable.end), table);
+});
+
+test('large stsz tail and page-boundary corrupt sizes are checked, not skipped', async () => {
+  const {blob, moov, samples} = await largeTableFixture();
+  const m = new Uint8Array(await moov.arrayBuffer()), stsz = find(m, ['moov', 'trak', 'mdia', 'minf', 'stbl', 'stsz']);
+  for (const sample of [16383, samples - 1]) {
+    const at = blob.size - moov.size + stsz.payload + 12 + sample * 4;
+    const broken = new Blob([blob.slice(0, at), u32(0xffffffff), blob.slice(at + 4)]);
+    await assert.rejects(inspectMp4(broken), /offset\/length|outside mdat/);
+  }
+});
+
+test('long timing tables yield for cancellation and validate their last run', async () => {
+  const {blob, moov, samples} = await largeTableFixture({samples: 2_097_153, timingRuns: true});
+  assert(moov.size > 16 * 1024 * 1024);
+  const info = await inspectMp4(blob); assert.equal(info.sampleCounts.video, samples);
+  const m = new Uint8Array(await moov.arrayBuffer()), stts = find(m, ['moov', 'trak', 'mdia', 'minf', 'stbl', 'stts']);
+  const lastDuration = blob.size - moov.size + stts.payload + 8 + (samples - 1) * 8 + 4;
+  await assert.rejects(inspectMp4(new Blob([blob.slice(0, lastDuration), u32(0), blob.slice(lastDuration + 4)])), /zero-duration/);
+  const controller = new AbortController(); let sawTable = false;
+  const tableAt = blob.size - moov.size + stts.payload;
+  const wrapped = {size: blob.size, slice(a, b) {
+    if (!sawTable && a >= tableAt && b - a > 1024) { sawTable = true; setTimeout(() => controller.abort(), 0); }
+    return blob.slice(a, b);
+  }};
+  await assert.rejects(inspectMp4(wrapped, {signal: controller.signal}), e => e.name === 'AbortError');
+  assert(sawTable);
+});
+
+test('file-range structural adapter crosses 4 GiB with co64 and a 64-bit moov; offsets remain unchanged', async () => {
+  const dir = await mkdtemp(pathJoin(tmpdir(), 'vr180-range-'));
+  try {
+    const base = new Uint8Array(await fixture({audio: false, offset64: true}).arrayBuffer());
+    const ftyp = find(base, ['ftyp']), mdat = find(base, ['mdat']), movie = find(base, ['moov']);
+    const moovBytes = base.slice(movie.start, movie.end), co64 = find(moovBytes, ['moov', 'trak', 'mdia', 'minf', 'stbl', 'co64']);
+    const freeSize = 2 ** 32 + 32, largeMoovSize = movie.end - movie.start + 8 + freeSize;
+    const mdatAt = ftyp.end + largeMoovSize;
+    new DataView(moovBytes.buffer).setBigUint64(co64.payload + 8, BigInt(mdatAt + 8));
+    const header = join(u32(1), text('moov'), u32(1), u32(largeMoovSize - 2 ** 32));
+    const freeHeader = join(u32(1), text('free'), u32(1), u32(32));
+    const path = pathJoin(dir, 'structural-sparse.mp4'), handle = await open(path, 'w');
+    try {
+      await handle.write(base.subarray(0, ftyp.end), 0, ftyp.end, 0);
+      await handle.write(header, 0, header.length, ftyp.end);
+      await handle.write(moovBytes.subarray(8), 0, moovBytes.length - 8, ftyp.end + 16);
+      await handle.write(freeHeader, 0, freeHeader.length, ftyp.end + 16 + moovBytes.length - 8);
+      await handle.write(base.subarray(mdat.start, mdat.end), 0, mdat.end - mdat.start, mdatAt);
+    } finally { await handle.close(); }
+    // This runtime's native Blob slices truncate/assert above uint32. Exercise
+    // production offset/rewrite logic through actual positioned file reads and
+    // a test-only composite adapter. This is not a native-browser Blob test.
+    const file = await open(path, 'r');
+    class FileRange {
+      constructor(start, end) { this.start = start; this.size = end - start; }
+      slice(a = 0, b = this.size) { return new FileRange(this.start + a, this.start + b); }
+      async arrayBuffer() { assert(this.size <= 65536); const data = new Uint8Array(this.size); const {bytesRead} = await file.read(data, 0, data.length, this.start); assert.equal(bytesRead, data.length); return data.buffer; }
+    }
+    class Composite {
+      constructor(parts) {
+        this.parts = parts.map(p => ArrayBuffer.isView(p) ? {
+          size: p.byteLength, slice(a = 0, b = p.byteLength) { return new Composite([p.slice(a, b)]); }, async arrayBuffer() { return p.slice().buffer; }
+        } : p);
+        this.size = this.parts.reduce((n, p) => n + p.size, 0);
+      }
+      slice(start = 0, end = this.size) {
+        const parts = []; let at = 0;
+        for (const p of this.parts) { if (start < at + p.size && end > at) parts.push(p.slice(Math.max(start - at, 0), Math.min(end - at, p.size))); at += p.size; }
+        return new Composite(parts);
+      }
+      async arrayBuffer() { assert(this.size <= 65536); const data = new Uint8Array(this.size); let at = 0; for (const p of this.parts) { data.set(new Uint8Array(await p.arrayBuffer()), at); at += p.size; } return data.buffer; }
+    }
+    const nativeBlob = globalThis.Blob;
+    try {
+      const input = new FileRange(0, (await file.stat()).size), info = await inspectMp4(input); assert.equal(info.sampleCounts.video, 1);
+      globalThis.Blob = Composite;
+      const output = await tagMp4(input, {layout: 'sbs'});
+      const newHeader = new DataView(await output.slice(input.size, input.size + 16).arrayBuffer());
+      assert.equal(newHeader.getUint32(0), 1); assert(newHeader.getBigUint64(8) > 2n ** 32n);
+      assert.deepEqual(new Uint8Array(await output.slice(mdatAt, mdatAt + mdat.end - mdat.start).arrayBuffer()), base.subarray(mdat.start, mdat.end));
+      assert.equal((await inspectMp4(output)).stereoMode, 2);
+    } finally { globalThis.Blob = nativeBlob; await file.close(); }
+  } finally { await rm(dir, {recursive: true, force: true}); }
+});
+
+test('roll/prol maps and sample-dependency lengths retain their validation in paged tables', async () => {
+  for (const version of [0, 1, 2]) {
+    const group = box('sgpd', u32(version * 2 ** 24), text('roll'), ...(version ? [u32(2)] : []), ...(version === 2 ? [u32(0)] : []), u32(1), Uint8Array.of(255, 255));
+    for (const mapVersion of [0, 1]) {
+      const mapping = box('sbgp', u32(mapVersion * 2 ** 24), text('roll'), ...(mapVersion ? [u32(0)] : []), u32(1), u32(1), u32(1));
+      const source = fixture({extraStbl: [group, mapping, full('sdtp', Uint8Array.of(0))]});
+      assert.equal((await inspectMp4(source)).sampleCounts.total, 2);
+      assert.equal((await inspectMp4(await tagMp4(source, {layout: 'sbs'}))).stereoMode, 2);
+    }
+  }
+  await assert.rejects(inspectMp4(fixture({extraStbl: [full('sdtp')]})), /sdtp/);
+});
+
+test('signed composition offsets are merged across page boundaries and invalid final runs are rejected', async () => {
+  const {blob, moov, samples} = await largeTableFixture({samples: 17000});
+  const runs = new Uint8Array(samples * 8), d = new DataView(runs.buffer);
+  for (let i = 0; i < samples; i++) { d.setUint32(i * 8, 1); d.setInt32(i * 8 + 4, i % 2 ? -1 : 1); }
+  const movie = new Uint8Array(await moov.arrayBuffer()), stbl = find(movie, ['moov', 'trak', 'mdia', 'minf', 'stbl']);
+  const mapping = blobBox('ctts', u32(2 ** 24), u32(samples), runs);
+  const replacement = replaceTree(movie, children(movie)[0], {stbl: blobBox('stbl', movie.subarray(stbl.payload, stbl.end), mapping)});
+  const source = new Blob([blob.slice(0, blob.size - moov.size), replacement]);
+  assert.equal((await inspectMp4(source)).sampleCounts.video, samples);
+  d.setUint32((samples - 1) * 8, 0);
+  const brokenReplacement = replaceTree(movie, children(movie)[0], {stbl: blobBox('stbl', movie.subarray(stbl.payload, stbl.end), blobBox('ctts', u32(2 ** 24), u32(samples), runs))});
+  await assert.rejects(inspectMp4(new Blob([blob.slice(0, blob.size - moov.size), brokenReplacement])), /invalid ctts sample run/);
+});
+
+test('long edit lists keep a bounded set of issues and rewriting a broad tree yields to cancellation', async () => {
+  const edits = Array.from({length: 4096}, () => ({duration: 1, time: -1, rate: 0}));
+  const info = await inspectMp4(fixture({audio: false, edits}));
+  assert.equal(info.transcodeSafe, false); assert.equal(info.transcodeIssues.length, 3);
+  const source = fixture({extraMoov: Array.from({length: 1024}, () => box('free'))});
+  const controller = new AbortController(), original = globalThis.Blob; let scheduled = false;
+  try {
+    globalThis.Blob = class extends original {
+      constructor(parts, options) { super(parts, options); if (!scheduled) { scheduled = true; setTimeout(() => controller.abort(), 0); } }
+    };
+    await assert.rejects(tagMp4(source, {layout: 'sbs', signal: controller.signal}), e => e.name === 'AbortError');
+    assert(scheduled);
+  } finally { globalThis.Blob = original; }
 });

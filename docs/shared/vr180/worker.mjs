@@ -1,6 +1,11 @@
 import {inspectMp4, tagMp4} from './mp4.mjs';
 import {sha256Blob} from './sha256.mjs';
-const BUILD = 'vr180-b3-io1';
+const BUILD = 'vr180-b4-range1';
+// The current conversion demuxer/muxer retains sample indices and moov bytes.
+// Admit bounded inputs before hashing or loading it; paged copy does not need
+// these conversion-only limits.
+const MAX_CONVERSION_SAMPLES = 100000;
+const MAX_CONVERSION_METADATA_BYTES = 16 * 1024 * 1024;
 function validate(info, s) {
   if (!s.confirmed) throw Error('CONFIRM_PROJECTION_AND_EYES');
   if (!['sbs', 'tb'].includes(s.layout) || ![180, 360].includes(s.fov)) throw Error('INPUT_SETTINGS_UNSUPPORTED');
@@ -15,7 +20,21 @@ function validate(info, s) {
   const ew = info.width / (s.layout === 'sbs' ? 2 : 1), eh = info.height / (s.layout === 'tb' ? 2 : 1);
   if (!Number.isInteger(ew) || !Number.isInteger(eh) || ew / eh !== s.fov / 180) throw Error('EYE_DIMENSIONS_AND_FOV_CONFLICT');
   if (s.mode === 'copy' && s.fov !== 180) throw Error('COPY_REQUIRES_180_DEGREES');
-  if (s.mode === 'convert' && !info.transcodeSafe) throw Error('TIMELINE_NOT_SUPPORTED: ' + info.transcodeIssues.join(', '));
+  if (s.mode === 'convert') {
+    if (!info.transcodeSafe) throw Error('TIMELINE_NOT_SUPPORTED: ' + info.transcodeIssues.join(', '));
+    const counts = info.sampleCounts, metadataBytes = info.containerMetadataBytes;
+    const safeCount = n => Number.isSafeInteger(n) && n >= 0;
+    if (!counts || ![counts.video, counts.audio, counts.total, metadataBytes].every(safeCount)
+      || !Number.isSafeInteger(counts.video + counts.audio) || counts.total !== counts.video + counts.audio) {
+      throw Error('CONVERSION_INDEX_INFO_INVALID');
+    }
+    if (counts.total > MAX_CONVERSION_SAMPLES) {
+      throw Error(`CONVERSION_SAMPLE_LIMIT_EXCEEDED: ${counts.total} > ${MAX_CONVERSION_SAMPLES}`);
+    }
+    if (metadataBytes > MAX_CONVERSION_METADATA_BYTES) {
+      throw Error(`CONVERSION_METADATA_LIMIT_EXCEEDED: ${metadataBytes} > ${MAX_CONVERSION_METADATA_BYTES}`);
+    }
+  }
 }
 
 // Tests exercise the actual lifecycle with delayed cleanup, without pretending

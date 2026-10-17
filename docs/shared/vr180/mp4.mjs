@@ -1,7 +1,8 @@
-// Experimental b1: bounded, non-fragmented avc1/AAC MP4 inspection and metadata-only tagging.
+// Experimental: range-based, non-fragmented avc1/AAC MP4 inspection and metadata-only tagging.
 // Spherical V2 layout follows google/spatial-media commit 2308497c39bb604a7c3ba56ac17e302f2b1b6a96.
 // This is deliberately a restrictive container parser, not a general MP4 repair tool or decoder.
-const MOOV_LIMIT = 16 * 1024 * 1024;
+const SMALL_METADATA_LIMIT = 16 * 1024 * 1024;
+const TABLE_PAGE_BYTES = 64 * 1024;
 const BOX_LIMIT = 20000;
 const DEPTH_LIMIT = 16;
 const V1_UUID = 'ffcc8263f8554a938814587a02521fdd';
@@ -16,7 +17,7 @@ function fourcc(bytes, at) { return String.fromCharCode(...bytes.subarray(at, at
 function u32(n) { const a = new Uint8Array(4); new DataView(a.buffer).setUint32(0, n); return a; }
 function box(type, ...parts) {
   const length = 8 + parts.reduce((n, p) => n + p.byteLength, 0);
-  check(length <= MOOV_LIMIT, 'rewritten moov exceeds 16 MiB budget');
+  check(length <= SMALL_METADATA_LIMIT, 'new metadata exceeds 16 MiB budget');
   const out = new Uint8Array(length); new DataView(out.buffer).setUint32(0, length); out.set(enc.encode(type), 4); let at = 8;
   for (const p of parts) { out.set(p, at); at += p.byteLength; }
   return out;
@@ -29,7 +30,7 @@ function integer64(view, at, signed = false) {
 }
 async function read(blob, start, length, signal) {
   abort(signal);
-  check(Number.isSafeInteger(start) && length >= 0 && start >= 0 && start + length <= blob.size, 'truncated box read');
+  check(Number.isSafeInteger(start) && Number.isSafeInteger(length) && length >= 0 && start >= 0 && Number.isSafeInteger(start + length) && start + length <= blob.size, 'truncated box read');
   const bytes = new Uint8Array(await blob.slice(start, start + length).arrayBuffer());
   abort(signal); check(bytes.length === length, 'truncated Blob read'); return bytes;
 }
@@ -54,26 +55,38 @@ const allowed = {
   meta: new Set(['hdlr', 'ilst', 'free']),
 };
 const prefixes = { stsd: 8, dref: 8, avc1: 78, mp4a: 28, meta: 4 };
-function parseChildren(bytes, start, end, parent, context, depth = 1) {
-  const nodes = []; const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+const pagedTypes = new Set(['stts', 'ctts', 'stsc', 'stsz', 'stco', 'co64', 'stss', 'sdtp', 'sgpd', 'sbgp', 'elst']);
+const opaqueTypes = new Set(['free', 'skip', 'wide']);
+async function yieldToCancel(signal) {
+  await new Promise(resolve => setTimeout(resolve, 0)); abort(signal);
+}
+async function parseChildren(blob, start, end, parent, context, depth = 1) {
+  const nodes = [];
   while (start < end) {
     countBox(context, depth); check(end - start >= 8, 'truncated child box header');
-    const type = fourcc(bytes, start + 4); let size = view.getUint32(start), header = 8;
+    if (!(context.count % 256)) await yieldToCancel(context.signal);
+    const h = await read(blob, start, 8, context.signal), view = new DataView(h.buffer);
+    const type = fourcc(h, 4); let size = view.getUint32(0), header = 8;
     check(size !== 0, 'zero-size boxes are unsupported');
-    if (size === 1) { check(end - start >= 16, 'truncated extended box size'); size = integer64(view, start + 8); header = 16; }
+    if (size === 1) { check(end - start >= 16, 'truncated extended box size'); const ext = await read(blob, start + 8, 8, context.signal); size = integer64(new DataView(ext.buffer), 0); header = 16; }
     check(size >= header && size <= end - start, `invalid size/bounds for ${type}`);
     check(allowed[parent]?.has(type), `unsupported ${type} box in ${parent}; unknown codecs, fragments or offsets are not preserved`);
-    const node = { type, start, end: start + size, header, payload: start + header, bytes, children: null };
+    const node = { type, start, end: start + size, header, payload: start + header, blob, signal: context.signal, bytes: null, children: null };
     if (allowed[type]) {
       const prefix = prefixes[type] ?? 0;
       check(size - header >= prefix, `truncated ${type} entry`);
-      if (type === 'mp4a') check(view.getUint16(node.payload + 8) === 0, 'unsupported mp4a sample entry version');
+      node.bytes = await read(blob, node.payload, prefix, context.signal);
+      if (type === 'mp4a') check(new DataView(node.bytes.buffer).getUint16(8) === 0, 'unsupported mp4a sample entry version');
       node.childStart = node.payload + prefix;
-      node.children = parseChildren(bytes, node.childStart, node.end, type, context, depth + 1);
+      node.children = await parseChildren(blob, node.childStart, node.end, type, context, depth + 1);
+    } else if (!pagedTypes.has(type) && !opaqueTypes.has(type)) {
+      context.retainedBytes += size - header;
+      check(context.retainedBytes <= SMALL_METADATA_LIMIT, 'small metadata exceeds 16 MiB retained-byte budget');
+      node.bytes = await read(blob, node.payload, size - header, context.signal);
     }
     if (type === 'uuid') {
       check(size - header >= 16, 'truncated uuid');
-      const id = Array.from(bytes.subarray(node.payload, node.payload + 16), x => x.toString(16).padStart(2, '0')).join('');
+      const id = Array.from(node.bytes.subarray(0, 16), x => x.toString(16).padStart(2, '0')).join('');
       check(id === V1_UUID, 'unsupported unknown UUID metadata'); node.legacy = true;
     }
     nodes.push(node); start += size;
@@ -86,17 +99,38 @@ function one(parent, type, required = true) {
   check(!required || a.length === 1, `missing ${type} box`); return a[0] ?? null;
 }
 function body(node, minimum = 0) {
-  check(node && node.end - node.payload >= minimum, `truncated ${node?.type ?? 'required'} payload`);
-  return new DataView(node.bytes.buffer, node.bytes.byteOffset + node.payload, node.end - node.payload);
+  check(node?.bytes && node.bytes.byteLength >= minimum, `truncated ${node?.type ?? 'required'} payload`);
+  return new DataView(node.bytes.buffer, node.bytes.byteOffset, node.bytes.byteLength);
 }
 function full(node, versions = [0], minimum = 4, flagsZero = false) {
   const d = body(node, minimum); check(versions.includes(d.getUint8(0)), `unsupported ${node.type} version`);
   if (flagsZero) check((d.getUint32(0) & 0xffffff) === 0, `unsupported ${node.type} flags`);
   return d;
 }
-function exactTable(node, stride, versions = [0]) {
-  const d = full(node, versions, 8); const count = d.getUint32(4);
-  check(8 + count * stride === d.byteLength, `invalid ${node.type} entry count/size`); return { d, count };
+// Each table caches one 64 KiB page; active row views can briefly retain a prior
+// page. No table-sized buffer or per-sample array is constructed.
+async function paged(node, versions = [0], minimum = 4) {
+  check(node && node.end - node.payload >= minimum, `truncated ${node?.type ?? 'required'} payload`);
+  const length = node.end - node.payload;
+  let page = null, pageAt = -1;
+  async function view(at, size) {
+    abort(node.signal);
+    check(Number.isSafeInteger(at) && Number.isSafeInteger(size) && at >= 0 && size >= 0 && size <= TABLE_PAGE_BYTES && at + size <= length, `truncated ${node.type} table read`);
+    if (!page || at < pageAt || at + size > pageAt + page.byteLength) {
+      page = null;
+      await yieldToCancel(node.signal);
+      page = await read(node.blob, node.payload + at, Math.min(TABLE_PAGE_BYTES, length - at), node.signal); pageAt = at;
+    }
+    return new DataView(page.buffer, page.byteOffset + at - pageAt, size);
+  }
+  const first = await view(0, minimum), head = new DataView(first.buffer.slice(first.byteOffset, first.byteOffset + minimum)), version = head.getUint8(0);
+  check(versions.includes(version), `unsupported ${node.type} version`);
+  return { length, version, view, head };
+}
+async function exactTable(node, stride, versions = [0]) {
+  const p = await paged(node, versions, 8), count = p.head.getUint32(4);
+  check(8 + count * stride === p.length, `invalid ${node.type} entry count/size`);
+  return { ...p, count, row: i => { check(i >= 0 && i < count, `invalid ${node.type} entry index`); return p.view(8 + i * stride, stride); } };
 }
 function visit(node, fn) { fn(node); for (const child of node.children ?? []) visit(child, fn); }
 
@@ -120,7 +154,7 @@ function checkAvc(entry) {
   if (pasp) { const p = body(pasp, 8); check(p.getUint32(0) > 0 && p.getUint32(0) === p.getUint32(4), 'unsupported non-square pixel aspect ratio'); }
   const colr = one(entry, 'colr', false);
   if (colr) {
-    const c = body(colr, 10); const type = fourcc(colr.bytes, colr.payload);
+    const c = body(colr, 10); const type = fourcc(colr.bytes, 0);
     check(['nclx', 'nclc'].includes(type), 'unsupported color profile; SDR cannot be established');
     check(c.byteLength >= (type === 'nclx' ? 11 : 10), 'truncated color metadata');
     check(![9, 10, 11, 12].includes(c.getUint16(4)) && ![16, 18].includes(c.getUint16(6)), 'HDR/wide-gamut color is outside the SDR scope');
@@ -166,7 +200,7 @@ function projection(entry) {
 }
 
 function legacyProjection(node) {
-  const xml = dec.decode(node.bytes.subarray(node.payload + 16, node.end));
+  const xml = dec.decode(node.bytes.subarray(16));
   check(!/<!DOCTYPE|<!ENTITY/i.test(xml), 'unsupported legacy spherical XML entities');
   function value(name) {
     const pattern = new RegExp(`<(?:(?:[\\w.-]+):)?${name}\\b[^>]*>\\s*([^<]*?)\\s*</(?:(?:[\\w.-]+):)?${name}\\s*>`, 'g');
@@ -191,27 +225,36 @@ function sameMetadata(a, b) {
   return a.stereoMode === b.stereoMode && a.projection === b.projection && ['top', 'bottom', 'left', 'right'].every(k => a.bounds?.[k] === b.bounds?.[k]) && a.pose?.every((v, i) => v === b.pose?.[i]);
 }
 
-function checkTables(stbl, mdats, signal) {
-  const sizeBox = one(stbl, 'stsz'); const sizes = full(sizeBox, [0], 12); const constant = sizes.getUint32(4), samples = sizes.getUint32(8);
+async function checkTables(stbl, mdats, signal) {
+  const sizes = await paged(one(stbl, 'stsz'), [0], 12), constant = sizes.head.getUint32(4), samples = sizes.head.getUint32(8);
   check(samples > 0 && samples <= 10000000, 'sample count limit exceeded or empty video/audio track');
-  check(sizes.byteLength === 12 + (constant ? 0 : samples * 4), 'invalid stsz size table');
+  check(sizes.length === 12 + (constant ? 0 : samples * 4), 'invalid stsz size table');
   const co = one(stbl, 'stco', false), co64 = one(stbl, 'co64', false);
   check(Boolean(co) !== Boolean(co64), 'missing or duplicate chunk offset tables');
-  const offsets = exactTable(co ?? co64, co ? 4 : 8); check(offsets.count > 0, 'empty chunk offset table');
-  const chunks = exactTable(one(stbl, 'stsc'), 12); check(chunks.count > 0, 'empty stsc table');
+  const offsets = await exactTable(co ?? co64, co ? 4 : 8);
+  check(offsets.count > 0 && offsets.count <= samples, 'empty/excessive chunk offset table');
+  const chunks = await exactTable(one(stbl, 'stsc'), 12);
+  check(chunks.count > 0 && chunks.count <= offsets.count, 'empty/excessive stsc table');
   let previous = 0;
   for (let i = 0; i < chunks.count; i++) {
-    const first = chunks.d.getUint32(8 + i * 12), per = chunks.d.getUint32(12 + i * 12), description = chunks.d.getUint32(16 + i * 12);
+    if (!(i % 2048)) await yieldToCancel(signal);
+    const d = await chunks.row(i), first = d.getUint32(0), per = d.getUint32(4), description = d.getUint32(8);
     check(first > previous && first <= offsets.count && (i || first === 1) && per > 0 && description === 1, 'unsupported stsc chunk/sample description'); previous = first;
   }
-  let sample = 0, entry = 0;
+  let sample = 0, entry = 0, chunk = await chunks.row(0), next = chunks.count > 1 ? await chunks.row(1) : null;
   for (let i = 0; i < offsets.count; i++) {
-    if (!(i % 1024)) abort(signal);
-    while (entry + 1 < chunks.count && chunks.d.getUint32(8 + (entry + 1) * 12) <= i + 1) entry++;
-    const per = chunks.d.getUint32(12 + entry * 12); check(sample + per <= samples, 'chunk sample count exceeds stsz');
+    if (!(i % 2048)) await yieldToCancel(signal);
+    if (next && next.getUint32(0) <= i + 1) { chunk = next; entry++; next = entry + 1 < chunks.count ? await chunks.row(entry + 1) : null; }
+    const per = chunk.getUint32(4); check(sample + per <= samples, 'chunk sample count exceeds stsz');
     let length = constant * per;
-    if (!constant) for (let j = 0; j < per; j++) length += sizes.getUint32(12 + (sample + j) * 4);
-    const offset = co ? offsets.d.getUint32(8 + i * 4) : integer64(offsets.d, 8 + i * 8);
+    if (!constant) {
+      for (let at = sample; at < sample + per;) {
+        const count = Math.min(TABLE_PAGE_BYTES / 4, sample + per - at), d = await sizes.view(12 + at * 4, count * 4);
+        for (let j = 0; j < count; j++) length += d.getUint32(j * 4);
+        at += count;
+      }
+    }
+    const d = await offsets.row(i), offset = co ? d.getUint32(0) : integer64(d, 0);
     check(Number.isSafeInteger(offset + length) && mdats.some(m => offset >= m.payload && offset + length <= m.end), 'sample chunk offset/length lies outside mdat');
     sample += per;
   }
@@ -219,52 +262,69 @@ function checkTables(stbl, mdats, signal) {
   let decodeRuns, compositionRuns = null;
   for (const type of ['stts', 'ctts']) {
     const node = one(stbl, type, type === 'stts'); if (!node) continue;
-    const table = exactTable(node, 8, type === 'ctts' ? [0, 1] : [0]); let count = 0;
+    const table = await exactTable(node, 8, type === 'ctts' ? [0, 1] : [0]); let count = 0;
+    check(table.count <= samples, `${type} excessive run count`);
     for (let i = 0; i < table.count; i++) {
-      const n = table.d.getUint32(8 + i * 8); check(n > 0, `invalid ${type} sample run`); count += n;
-      if (type === 'stts') check(table.d.getUint32(12 + i * 8) > 0, 'zero-duration samples are unsupported');
+      if (!(i % 2048)) await yieldToCancel(signal);
+      const d = await table.row(i), n = d.getUint32(0); check(n > 0, `invalid ${type} sample run`); count += n;
+      if (type === 'stts') check(d.getUint32(4) > 0, 'zero-duration samples are unsupported');
     }
     check(count === samples, `${type} timing count does not match samples`);
     if (type === 'stts') decodeRuns = table; else compositionRuns = table;
   }
   const sync = one(stbl, 'stss', false);
-  if (sync) { const t = exactTable(sync, 4); let prev = 0; for (let i = 0; i < t.count; i++) { const n = t.d.getUint32(8 + i * 4); check(n > prev && n <= samples, 'invalid stss sync samples'); prev = n; } }
+  if (sync) {
+    const t = await exactTable(sync, 4); check(t.count <= samples, 'excessive stss sync samples'); let prev = 0;
+    for (let i = 0; i < t.count; i++) {
+      if (!(i % 2048)) await yieldToCancel(signal);
+      const n = (await t.row(i)).getUint32(0); check(n > prev && n <= samples, 'invalid stss sync samples'); prev = n;
+    }
+  }
+  const dependency = one(stbl, 'sdtp', false);
+  if (dependency) { const p = await paged(dependency); check(p.length === samples + 4, 'invalid sdtp sample count'); }
   const groups = one(stbl, 'sgpd', false), mapping = one(stbl, 'sbgp', false); let descriptionCount = 0, groupingType = null;
   if (groups) {
-    const d = full(groups, [0, 1, 2], 12); groupingType = fourcc(groups.bytes, groups.payload + 4);
+    const p = await paged(groups, [0, 1, 2], 12); groupingType = fourcc(new Uint8Array(p.head.buffer), 4);
     check(['roll', 'prol'].includes(groupingType), `unsupported ${groupingType} sample group`);
-    const version = d.getUint8(0); let at = version === 2 ? 16 : version === 1 ? 12 : 8;
-    check(at + 4 <= d.byteLength, 'truncated sample group description');
-    const defaultLength = version ? d.getUint32(8) : 2; descriptionCount = d.getUint32(at); at += 4;
+    let at = p.version === 2 ? 16 : p.version === 1 ? 12 : 8;
+    const defaultLength = p.version ? p.head.getUint32(8) : 2; descriptionCount = (await p.view(at, 4)).getUint32(0); at += 4;
+    check(descriptionCount <= 10000000, 'sample group description count limit exceeded');
     for (let i = 0; i < descriptionCount; i++) {
+      if (!(i % 2048)) await yieldToCancel(signal);
       let length = defaultLength;
-      if (!length) { check(at + 4 <= d.byteLength, 'truncated variable sample group description'); length = d.getUint32(at); at += 4; }
-      check(length === 2 && at + length <= d.byteLength, 'unsupported roll sample group description'); at += length;
+      if (!length) { length = (await p.view(at, 4)).getUint32(0); at += 4; }
+      check(length === 2 && at + length <= p.length, 'unsupported roll sample group description'); at += length;
     }
-    check(at === d.byteLength, 'sample group description size mismatch');
+    check(at === p.length, 'sample group description size mismatch');
   }
   if (mapping) {
-    const d = full(mapping, [0, 1], 12); const type = fourcc(mapping.bytes, mapping.payload + 4);
-    check(type === groupingType, 'unknown sample group mapping'); const at = d.getUint8(0) ? 12 : 8;
-    check(at + 4 <= d.byteLength, 'truncated sample group map'); const count = d.getUint32(at);
-    check(at + 4 + count * 8 === d.byteLength, 'sample group map size mismatch'); let mapped = 0;
-    for (let i = 0; i < count; i++) { const offset = at + 4 + i * 8; mapped += d.getUint32(offset); check(d.getUint32(offset + 4) <= descriptionCount, 'unsupported sample group index'); }
+    const p = await paged(mapping, [0, 1], 12), type = fourcc(new Uint8Array(p.head.buffer), 4);
+    check(type === groupingType, 'unknown sample group mapping'); const at = p.version ? 12 : 8;
+    const count = (await p.view(at, 4)).getUint32(0);
+    check(count <= 10000000 && at + 4 + count * 8 === p.length, 'sample group map size/count mismatch'); let mapped = 0;
+    for (let i = 0; i < count; i++) {
+      if (!(i % 2048)) await yieldToCancel(signal);
+      const d = await p.view(at + 4 + i * 8, 8); mapped += d.getUint32(0); check(d.getUint32(4) <= descriptionCount, 'unsupported sample group index');
+    }
     check(mapped === samples, 'sample group count mismatch');
   }
-  // Merge timing runs instead of allocating or iterating over every sample.
-  let di = 0, ci = 0, remainingD = 0, remainingC = 0, consumed = 0, dts = 0, minPts = Infinity, maxEnd = -Infinity;
+  // Merge timing runs without retaining a per-sample timeline.
+  let di = 0, ci = 0, remainingD = 0, remainingC = 0, consumed = 0, dts = 0, minPts = Infinity, maxEnd = -Infinity, loops = 0;
+  let duration = 0, offset = 0;
   while (consumed < samples) {
-    if (!remainingD) remainingD = decodeRuns.d.getUint32(8 + di * 8);
-    if (!remainingC) remainingC = compositionRuns ? compositionRuns.d.getUint32(8 + ci * 8) : samples;
+    if (!(loops++ % 2048)) await yieldToCancel(signal);
+    if (!remainingD) { const d = await decodeRuns.row(di); remainingD = d.getUint32(0); duration = d.getUint32(4); }
+    if (!remainingC) {
+      if (compositionRuns) { const d = await compositionRuns.row(ci); remainingC = d.getUint32(0); offset = compositionRuns.version ? d.getInt32(4) : d.getUint32(4); }
+      else remainingC = samples;
+    }
     const count = Math.min(remainingD, remainingC);
-    const duration = decodeRuns.d.getUint32(12 + di * 8);
-    const offset = compositionRuns ? (compositionRuns.d.getUint8(0) ? compositionRuns.d.getInt32(12 + ci * 8) : compositionRuns.d.getUint32(12 + ci * 8)) : 0;
     minPts = Math.min(minPts, dts + offset); maxEnd = Math.max(maxEnd, dts + count * duration + offset);
     dts += count * duration; consumed += count; remainingD -= count; remainingC -= count;
     if (!remainingD) di++; if (!remainingC) ci++;
   }
   check(Number.isSafeInteger(dts) && Number.isSafeInteger(minPts) && Number.isSafeInteger(maxEnd), 'timing exceeds safe integer range');
-  return { minPts, maxEnd };
+  return { minPts, maxEnd, samples };
 }
 
 function audioMovieEndpointFits(timeline, mediaTime, mediaTimescale) {
@@ -286,34 +346,35 @@ function audioMovieEndpointFits(timeline, mediaTime, mediaTimescale) {
     && BigInt(numericSpan) === span && BigInt(numericOffset) === offset;
 }
 
-function checkEdits(track, issues, timeline, movieTimescale, mediaTimescale, kind) {
+async function checkEdits(track, issues, timeline, movieTimescale, mediaTimescale, kind) {
   const edts = one(track, 'edts', false);
   if (!edts) {
     if (kind === 'soun' && (timeline.minPts !== 0 || !audioMovieEndpointFits(timeline, 0, mediaTimescale))) {
-      issues.push('AAC start/end cannot be preserved exactly on the pinned MP4 movie time grid.');
+      issues.add('AAC start/end cannot be preserved exactly on the pinned MP4 movie time grid.');
     }
     return;
   }
-  const elst = one(edts, 'elst'); const d = full(elst, [0, 1], 8); const version = d.getUint8(0), count = d.getUint32(4), stride = version ? 20 : 12;
-  check(d.byteLength === 8 + count * stride && count > 0, 'invalid elst edit list');
-  if (count !== 1) issues.push('Complex edit list requires an independently verified timeline conversion.');
+  const elst = one(edts, 'elst'), p = await paged(elst, [0, 1], 8); const version = p.version, count = p.head.getUint32(4), stride = version ? 20 : 12;
+  check(p.length === 8 + count * stride && count > 0 && count <= 10000000, 'invalid elst edit list');
+  if (count !== 1) issues.add('Complex edit list requires an independently verified timeline conversion.');
   for (let i = 0; i < count; i++) {
-    const at = 8 + i * stride;
+    if (!(i % 2048)) await yieldToCancel(elst.signal);
+    const d = await p.view(8 + i * stride, stride), at = 0;
     const duration = version ? integer64(d, at) : d.getUint32(at);
     const time = version ? integer64(d, at + 8, true) : d.getInt32(at + 4);
     const rate = d.getInt32(at + (version ? 16 : 8));
-    if (time < 0) issues.push('Empty/dwell edit list is not supported for transcoding.');
-    if (rate !== 65536) issues.push('Non-1.0 edit rate is not supported for transcoding.');
+    if (time < 0) issues.add('Empty/dwell edit list is not supported for transcoding.');
+    if (rate !== 65536) issues.add('Non-1.0 edit rate is not supported for transcoding.');
     if (count === 1 && time >= 0 && rate === 65536) {
       if (BigInt(duration) * BigInt(mediaTimescale) !== BigInt(timeline.maxEnd - time) * BigInt(movieTimescale)) {
-        issues.push('Edit-list end trim/extension is not preserved by the current transcode timeline.');
+        issues.add('Edit-list end trim/extension is not preserved by the current transcode timeline.');
       }
       if (kind === 'soun') {
         if (!audioMovieEndpointFits(timeline, time, mediaTimescale)) {
-          issues.push('AAC edit endpoint or span/offset rounding cannot be preserved exactly on the pinned MP4 movie time grid.');
+          issues.add('AAC edit endpoint or span/offset rounding cannot be preserved exactly on the pinned MP4 movie time grid.');
         }
       } else if (time !== timeline.minPts) {
-        issues.push('Leading video edit trim requires independently verified presentation boundaries.');
+        issues.add('Leading video edit trim requires independently verified presentation boundaries.');
       }
     }
   }
@@ -321,16 +382,17 @@ function checkEdits(track, issues, timeline, movieTimescale, mediaTimescale, kin
 
 async function parse(blob, { signal } = {}) {
   abort(signal); check(blob && Number.isSafeInteger(blob.size) && blob.size > 0 && typeof blob.slice === 'function', 'a non-empty Blob is required');
-  const context = { count: 0, signal }, top = []; let at = 0, budget = 0;
+  const context = { count: 0, signal, retainedBytes: 0 }, top = []; let at = 0, budget = 0;
   const acceptedTop = new Set(['ftyp', 'moov', 'mdat', 'free', 'skip', 'wide', 'uuid']);
   while (at < blob.size) {
     countBox(context, 0); check(blob.size - at >= 8, 'truncated top-level box header');
+    if (!(context.count % 256)) await yieldToCancel(signal);
     const h = await read(blob, at, 8, signal); const d = new DataView(h.buffer); const type = fourcc(h, 4); let size = d.getUint32(0), header = 8;
     check(size !== 0, 'zero-size top-level boxes are unsupported');
     if (size === 1) { check(blob.size - at >= 16, 'truncated extended size'); const ext = await read(blob, at + 8, 8, signal); size = integer64(new DataView(ext.buffer), 0); header = 16; }
     check(size >= header && size <= blob.size - at, `truncated/invalid ${type} box size`);
     check(acceptedTop.has(type), `unsupported ${type} top-level box (fragmented or offset-dependent MP4)`);
-    if (type === 'moov' || type === 'uuid') { budget += size; check(budget <= MOOV_LIMIT, 'metadata/moov exceeds 16 MiB budget'); }
+    if (type === 'moov' || type === 'uuid') { budget += size; check(Number.isSafeInteger(budget), 'metadata size exceeds safe integer range'); }
     top.push({ type, start: at, end: at + size, header, payload: at + header }); at += size;
   }
   check(top.filter(n => n.type === 'ftyp').length === 1, 'expected one MP4 ftyp box');
@@ -341,28 +403,26 @@ async function parse(blob, { signal } = {}) {
   check(brandNames.some(n => ['isom', 'iso2', 'iso3', 'iso4', 'iso5', 'iso6', 'mp41', 'mp42', 'avc1', 'M4V '].includes(n)), 'unsupported non-MP4 file brand');
   const movies = top.filter(n => n.type === 'moov'); check(movies.length === 1, 'expected one active moov box');
   const mdats = top.filter(n => n.type === 'mdat'); check(mdats.length > 0, 'missing mdat');
-  const oldMovie = movies[0], bytes = await read(blob, oldMovie.start, oldMovie.end - oldMovie.start, signal);
-  const movie = { type: 'moov', start: 0, end: bytes.length, payload: oldMovie.header, header: oldMovie.header, bytes, childStart: oldMovie.header };
-  movie.children = parseChildren(bytes, movie.payload, movie.end, 'moov', context);
+  const oldMovie = movies[0], movie = { ...oldMovie, blob, signal, bytes: new Uint8Array(), childStart: oldMovie.payload };
+  movie.children = await parseChildren(blob, movie.payload, movie.end, 'moov', context);
   const mvhd = full(one(movie, 'mvhd'), [0, 1], 100);
   check(mvhd.byteLength >= (mvhd.getUint8(0) ? 112 : 100), 'truncated mvhd');
   const movieTimescale = mvhd.getUint32(mvhd.getUint8(0) ? 20 : 12); check(movieTimescale > 0, 'invalid movie timescale');
   const movieMatrix = mvhd.getUint8(0) ? 48 : 36;
   check(IDENTITY_MATRIX.every((n, i) => mvhd.getInt32(movieMatrix + i * 4) === n), 'movie orientation/matrix transform is unsupported');
   const tracks = nodes(movie, 'trak'); check(tracks.length >= 1 && tracks.length <= 2, 'only one video track and zero/one audio track are supported');
-  let video = null; const audioCodecs = [], issues = [], legacy = [];
-  if (mvhd.getInt32(mvhd.getUint8(0) ? 32 : 20) !== 65536) issues.push('Non-1.0 movie playback rate is not supported for transcoding.');
+  let video = null; const audioCodecs = [], issues = new Set(), legacy = [], sampleCounts = { video: 0, audio: 0, total: 0 };
+  if (mvhd.getInt32(mvhd.getUint8(0) ? 32 : 20) !== 65536) issues.add('Non-1.0 movie playback rate is not supported for transcoding.');
   visit(movie, n => { if (n.legacy) legacy.push(n); });
   for (const t of top.filter(n => n.type === 'uuid')) {
-    const b = await read(blob, t.start, t.end - t.start, signal);
-    const parsed = parseChildren(b, 0, b.length, 'moov', context); check(parsed.length === 1 && parsed[0].legacy, 'unsupported top UUID'); legacy.push(parsed[0]);
+    const parsed = await parseChildren(blob, t.start, t.end, 'moov', context); check(parsed.length === 1 && parsed[0].legacy, 'unsupported top UUID'); legacy.push(parsed[0]);
   }
   for (const track of tracks) {
     const tkhd = full(one(track, 'tkhd'), [0, 1], 84), matrixAt = tkhd.getUint8(0) ? 52 : 40;
     check(tkhd.byteLength >= matrixAt + 44, 'truncated track matrix');
     check(IDENTITY_MATRIX.every((n, i) => tkhd.getInt32(matrixAt + i * 4) === n), 'track rotation/orientation transform is unsupported');
     const mdia = one(track, 'mdia'), hdlr = one(mdia, 'hdlr'); full(hdlr, [0], 12);
-    const kind = fourcc(bytes, hdlr.payload + 8); check(['vide', 'soun'].includes(kind), `unsupported ${kind} handler/data/camm track`);
+    const kind = fourcc(hdlr.bytes, 8); check(['vide', 'soun'].includes(kind), `unsupported ${kind} handler/data/camm track`);
     const mdhd = full(one(mdia, 'mdhd'), [0, 1], 24); check(mdhd.byteLength >= (mdhd.getUint8(0) ? 36 : 24), 'truncated mdhd');
     const mediaTimescale = mdhd.getUint32(mdhd.getUint8(0) ? 20 : 12); check(mediaTimescale > 0, 'invalid media timescale');
     const minf = one(mdia, 'minf'), dinf = one(minf, 'dinf'), dref = one(dinf, 'dref'); const ref = full(dref, [0], 8, true);
@@ -379,7 +439,8 @@ async function parse(blob, { signal } = {}) {
       check(entry.type === 'mp4a' && audioCodecs.length === 0, 'only zero/one mp4a AAC audio track is supported'); checkAac(entry); audioCodecs.push(entry.type);
       let hasLegacy = false; visit(track, n => { hasLegacy ||= Boolean(n.legacy); }); check(!hasLegacy, 'spherical metadata on audio track is unsupported');
     }
-    const timeline = checkTables(stbl, mdats, signal); checkEdits(track, issues, timeline, movieTimescale, mediaTimescale, kind);
+    const timeline = await checkTables(stbl, mdats, signal); await checkEdits(track, issues, timeline, movieTimescale, mediaTimescale, kind);
+    sampleCounts[kind === 'vide' ? 'video' : 'audio'] = timeline.samples; sampleCounts.total += timeline.samples;
   }
   check(video, 'missing avc1 video track'); check(legacy.length <= 1, 'duplicate legacy spherical metadata');
   if (legacy.length) {
@@ -389,13 +450,13 @@ async function parse(blob, { signal } = {}) {
       check(video.stereoMode === null || video.stereoMode === old.stereoMode, 'legacy/V2 stereo conflict'); Object.assign(video, old);
     }
   }
-  if (video.projection === 'mesh') issues.push('Mesh projection is outside the b1 pixel-transform scope.');
-  if (video.pose?.some(n => n !== 0)) issues.push('Non-zero projection pose requires a verified orientation transform.');
+  if (video.projection === 'mesh') issues.add('Mesh projection is outside the b1 pixel-transform scope.');
+  if (video.pose?.some(n => n !== 0)) issues.add('Non-zero projection pose requires a verified orientation transform.');
   abort(signal);
-  return { blob, top, movie, oldMovie, video, signal, info: { width: video.width, height: video.height, videoCodec: 'avc1', audioCodecs, stereoMode: video.stereoMode, projection: video.projection, bounds: video.bounds, pose: video.pose, transcodeSafe: issues.length === 0, transcodeIssues: [...new Set(issues)] } };
+  return { blob, top, movie, oldMovie, video, signal, info: { width: video.width, height: video.height, videoCodec: 'avc1', audioCodecs, stereoMode: video.stereoMode, projection: video.projection, bounds: video.bounds, pose: video.pose, transcodeSafe: issues.size === 0, transcodeIssues: [...issues], sampleCounts, containerMetadataBytes: budget } };
 }
 
-/** Read only bounded structural metadata. Does not decode samples or certify headset compatibility. */
+/** Scan all structural tables with bounded reads. Does not decode samples or certify headset compatibility. */
 export async function inspectMp4(blob, options = {}) { return (await parse(blob, options)).info; }
 
 /** Tag an already cropped 180x180-per-eye stereo sample stream, retaining every sample and timestamp. */
@@ -410,16 +471,25 @@ export async function tagMp4(blob, { layout, signal } = {}) {
   const stereo = fullBox('st3d', Uint8Array.of(mode));
   const spherical = box('sv3d', fullBox('svhd', enc.encode('Kushyameln Works VR180 b1\0')),
     box('proj', fullBox('prhd', u32(0), u32(0), u32(0)), fullBox('equi', ...Object.values(HALF_SPHERE).map(u32))));
-  function rewrite(node) {
+  let rewrittenNodes = 0;
+  async function rewrite(node) {
+    if (!(rewrittenNodes++ % 256)) await yieldToCancel(signal);
+    abort(signal);
     if (node.legacy) return null;
-    if (!node.children) return node.bytes.subarray(node.start, node.end);
+    if (!node.children) return blob.slice(node.start, node.end);
     let children = node.children;
     if (node === video.entry) children = children.filter(n => n.type !== 'st3d' && n.type !== 'sv3d');
-    const parts = [node.bytes.subarray(node.payload, node.childStart)];
-    for (const child of children) { const value = rewrite(child); if (value) parts.push(value); if (node === video.entry && child.type === 'avcC') parts.push(stereo, spherical); }
-    return box(node.type, ...parts);
+    const parts = [blob.slice(node.payload, node.childStart)];
+    for (const child of children) { const value = await rewrite(child); if (value) parts.push(value); if (node === video.entry && child.type === 'avcC') parts.push(stereo, spherical); }
+    const contentBytes = parts.reduce((n, p) => n + (p.size ?? p.byteLength), 0);
+    const header = contentBytes + 8 > 0xffffffff ? 16 : 8, size = contentBytes + header;
+    check(Number.isSafeInteger(size), 'rewritten box size exceeds safe integer range');
+    const h = new Uint8Array(header), d = new DataView(h.buffer);
+    d.setUint32(0, header === 16 ? 1 : size); h.set(enc.encode(node.type), 4);
+    if (header === 16) d.setBigUint64(8, BigInt(size));
+    return new Blob([h, ...parts]);
   }
-  const replacement = rewrite(movie); abort(signal);
+  const replacement = await rewrite(movie); abort(signal);
   // Changing only the fourcc preserves the old box's exact size/header and all mdat positions.
   const pieces = []; let cursor = 0;
   for (const node of top.filter(n => n.type === 'moov' || n.type === 'uuid')) {

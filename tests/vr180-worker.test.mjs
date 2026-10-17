@@ -9,7 +9,8 @@ const deferred = () => { let resolve; const promise = new Promise(yes => { resol
 const abortError = () => new DOMException('Conversion was canceled.', 'AbortError');
 const input = new Blob(['synthetic input']);
 const settings = {mode: 'convert', layout: 'sbs', fov: 180, eyeSize: 256, bitrate: 2000000, confirmed: true};
-const info = {width: 512, height: 256, transcodeSafe: true, transcodeIssues: []};
+const info = {width: 512, height: 256, transcodeSafe: true, transcodeIssues: [],
+  sampleCounts: {video: 60, audio: 95, total: 155}, containerMetadataBytes: 2048};
 function harness(convertStereo) {
   const messages = [];
   const receive = createWorkerController({postMessage: message => messages.push(message), inspect: async () => info,
@@ -35,7 +36,7 @@ test('cooperative cancellation waits for conversion unwind and cleanup before ma
   const [failure, ack] = h.messages;
   assert.equal(failure.diagnostics.status, 'canceled'); assert.equal(failure.cleanupComplete, true);
   assert.equal(ack.requestId, 'cleanup-1'); assert.equal(ack.operationId, 'this-job'); assert.equal(ack.inputRevision, 7);
-  assert.equal(ack.diagnostics, failure.diagnostics); assert.equal(ack.diagnostics.build, 'vr180-b3-io1');
+  assert.equal(ack.diagnostics, failure.diagnostics); assert.equal(ack.diagnostics.build, 'vr180-b4-range1');
 });
 
 test('failed deletion remains retryable without replacing the original canceled receipt', async () => {
@@ -117,6 +118,96 @@ test('uncertain codec shutdown is exposed in both raw diagnostics and cleanup ac
   assert.equal(h.messages.at(-1).type, 'cleanup-error');
 });
 
+// Stub only the work behind validation. These tests establish admission order,
+// not that the browser can convert 100000 samples or a 16 MiB moov.
+async function runWithIndexInfo(indexInfo, mode = 'convert') {
+  const messages = [], calls = {hash: 0, loadTransform: 0, convert: 0, tag: 0};
+  const receive = createWorkerController({
+    postMessage: message => messages.push(message),
+    inspect: async () => ({...info, ...indexInfo}),
+    hash: async () => { calls.hash++; return 'test-hash'; },
+    tag: async file => { calls.tag++; return file; },
+    loadTransform: async () => {
+      calls.loadTransform++;
+      return {convertStereo: async file => {
+        calls.convert++; return {file, metrics: {}, cleanup: async () => {}};
+      }};
+    },
+  });
+  await receive({data: {type: 'run', operationId: 'index-job', inputRevision: 13,
+    file: input, settings: {...settings, mode}}});
+  return {messages, calls};
+}
+function assertIndexRejected({messages, calls}, expectedError) {
+  assert.deepEqual(calls, {hash: 0, loadTransform: 0, convert: 0, tag: 0});
+  assert.deepEqual(messages.map(message => message.type), ['error']);
+  const failure = messages[0];
+  assert.equal(failure.error, expectedError);
+  assert.equal(failure.operationId, 'index-job');
+  assert.equal(failure.inputRevision, 13);
+  assert.equal(failure.diagnostics.build, 'vr180-b4-range1');
+  assert.equal(failure.diagnostics.status, 'failed');
+  assert.equal(failure.diagnostics.input.sha256, null);
+  assert.equal(failure.diagnostics.output, null);
+  assert.equal(failure.cleanupComplete, true);
+  assert.equal('inputHash' in failure.diagnostics.timings, false);
+  assert.equal('transformLoad' in failure.diagnostics.timings, false);
+}
+
+test('conversion admits exactly 100000 combined samples and 16 MiB metadata before hashing', async () => {
+  const {messages, calls} = await runWithIndexInfo({
+    sampleCounts: {video: 40000, audio: 60000, total: 100000}, containerMetadataBytes: 16 * 1024 * 1024,
+  });
+  assert.deepEqual(calls, {hash: 2, loadTransform: 1, convert: 1, tag: 1});
+  assert.deepEqual(messages.map(message => message.type), ['result']);
+  assert.equal(messages[0].result.receipt.status, 'prepared');
+});
+
+test('conversion rejects one sample or metadata byte above its budget before hashing or loading the transform', async () => {
+  assertIndexRejected(await runWithIndexInfo({sampleCounts: {video: 40000, audio: 60001, total: 100001}}),
+    'CONVERSION_SAMPLE_LIMIT_EXCEEDED: 100001 > 100000');
+  assertIndexRejected(await runWithIndexInfo({containerMetadataBytes: 16 * 1024 * 1024 + 1}),
+    'CONVERSION_METADATA_LIMIT_EXCEEDED: 16777217 > 16777216');
+});
+
+test('conversion requires safe nonnegative integer counts and metadata bytes before downstream work', async t => {
+  const invalidValues = [undefined, null, '1', -1, 0.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1];
+  for (const field of ['video', 'audio', 'total', 'containerMetadataBytes']) {
+    for (const value of invalidValues) {
+      await t.test(`${field}: ${String(value)}`, async () => {
+        const indexInfo = field === 'containerMetadataBytes' ? {[field]: value}
+          : {sampleCounts: {...info.sampleCounts, [field]: value}};
+        assertIndexRejected(await runWithIndexInfo(indexInfo), 'CONVERSION_INDEX_INFO_INVALID');
+      });
+    }
+  }
+  for (const [name, sampleCounts] of [
+    ['missing counts', undefined], ['null counts', null],
+    ['inconsistent total', {video: 60, audio: 95, total: 154}],
+    ['unsafe sum', {video: Number.MAX_SAFE_INTEGER, audio: 1, total: Number.MAX_SAFE_INTEGER}],
+  ]) {
+    await t.test(name, async () => {
+      assertIndexRejected(await runWithIndexInfo({sampleCounts}), 'CONVERSION_INDEX_INFO_INVALID');
+    });
+  }
+  // This admission guard accepts zero; the real parser is responsible for
+  // rejecting missing video samples and structurally invalid containers.
+  const {messages} = await runWithIndexInfo({sampleCounts: {video: 0, audio: 0, total: 0}, containerMetadataBytes: 0});
+  assert.equal(messages[0].type, 'result');
+});
+
+test('copy does not apply conversion sample or metadata limits', async () => {
+  for (const indexInfo of [
+    {sampleCounts: {video: 40000, audio: 60001, total: 100001}, containerMetadataBytes: 16 * 1024 * 1024 + 1},
+    {sampleCounts: undefined, containerMetadataBytes: undefined},
+  ]) {
+    const {messages, calls} = await runWithIndexInfo(indexInfo, 'copy');
+    assert.deepEqual(calls, {hash: 2, loadTransform: 0, convert: 0, tag: 1});
+    assert.deepEqual(messages.map(message => message.type), ['result']);
+    assert.equal(messages[0].result.receipt.status, 'prepared');
+  }
+});
+
 // Valid synthetic MP4 plus an inert top-level free box. This exercises actual
 // inspection/tagging/hashing; extra bytes are not representative camera media.
 class NoWholeReadBlob extends Blob {
@@ -150,7 +241,7 @@ test('actual worker controller hashes all input/output bytes above the former 16
   assert.equal(messages.some(message => message.type === 'error'), false);
   const result = messages.find(message => message.type === 'result').result;
   const receipt = result.receipt;
-  assert.equal(receipt.build, 'vr180-b3-io1');
+  assert.equal(receipt.build, 'vr180-b4-range1');
   assert.equal(receipt.input.sha256, sha256);
   assert.equal(receipt.output.sha256, await nodeBlobHash(result.blob));
   assert.match(receipt.output.sha256, /^[0-9a-f]{64}$/);
@@ -257,6 +348,6 @@ test('inspection/settings rejection occurs before hashing and leaves diagnostics
   const receive = createWorkerController({postMessage: value => messages.push(value), hash: async () => { throw Error('HASH_MUST_NOT_RUN'); }});
   await receive(copyRun(file, {mode: 'inspect'}));
   assert.deepEqual(messages.map(m => m.type), ['result']);
-  assert.equal(messages[0].result.build, 'vr180-b3-io1');
+  assert.equal(messages[0].result.build, 'vr180-b4-range1');
   assert.equal(messages[0].result.receipt, undefined);
 });
