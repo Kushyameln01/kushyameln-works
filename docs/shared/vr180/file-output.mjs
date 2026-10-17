@@ -16,18 +16,42 @@ const sizeCheck = n => {
   if (!Number.isSafeInteger(n) || n < 0) throw new RangeError('INVALID_FILE_POSITION');
 };
 
+// Fixed phase names, aggregate-only storage. Callback failures never affect I/O.
+// Durations use this execution context's clock; overlapping phases must not be summed.
+// requestedBytes is the requested extent, never partial progress on failure/cancel.
+function phaseMeasurements(onMeasurement = () => {}) {
+  const phases = {};
+  const snapshot = () => Object.fromEntries(Object.entries(phases).map(([key, value]) => [key, {...value}]));
+  async function measure(phase, bytes, fn) {
+    const start = performance.now();
+    let status = 'completed';
+    try { return await fn(); }
+    catch (error) { status = error?.name === 'AbortError' ? 'canceled' : 'failed'; throw error; }
+    finally {
+      const item = {phase, durationMs: performance.now() - start, requestedBytes: bytes, status};
+      const previous = phases[phase];
+      phases[phase] = {durationMs: (previous?.durationMs ?? 0) + item.durationMs,
+        count: (previous?.count ?? 0) + 1, requestedBytes: (previous?.requestedBytes ?? 0) + bytes,
+        status: previous && previous.status !== 'completed' ? previous.status : status};
+      try { Promise.resolve(onMeasurement({...item})).catch(() => {}); } catch {}
+    }
+  }
+  return {measure, snapshot};
+}
+
 /** A position-aware file transaction. A muxer's stream close does NOT commit the file. */
-export async function createFileOutput(handle, { signal, sourceHandle, allowExisting = false, onProgress = () => {}, onCreated } = {}) {
+export async function createFileOutput(handle, { signal, sourceHandle, allowExisting = false, onProgress = () => {}, onCreated, onMeasurement } = {}) {
+  const timing = phaseMeasurements(onMeasurement);
   let writer;
   try {
     if (signal?.aborted) throw abortError();
     if (sourceHandle && await handle.isSameEntry(sourceHandle)) throw Error('OUTPUT_IS_INPUT');
-    const before = await handle.getFile();
+    const before = await timing.measure('getFileBefore', 0, () => handle.getFile());
     // With a File-only input we cannot prove identity. Protect all existing nonempty targets.
     if (before.size && (!sourceHandle || !allowExisting)) throw Error('OUTPUT_MUST_BE_NEW_FILE');
     if (signal?.aborted) throw abortError();
-    writer = await handle.createWritable();
-  } catch (error) { throw withOutputState(error, notStarted); }
+    writer = await timing.measure('createWritable', 0, () => handle.createWritable());
+  } catch (error) { error.fileTimings = timing.snapshot(); throw withOutputState(error, notStarted); }
   const verificationController = new AbortController();
   let state = 'open', extent = 0, pending = null, abortPromise = null, committed = false, cleanupError = null;
   let cancelRequested = signal?.aborted ?? false, muxerClosed = false;
@@ -54,7 +78,7 @@ export async function createFileOutput(handle, { signal, sourceHandle, allowExis
       if (pending) await pending;
       if (committed) return snapshot(); // close may already have committed: never claim rollback.
       try {
-        await writer.abort(reason);
+        await timing.measure('abort', 0, () => writer.abort(reason));
         state = 'aborted'; cleanupError = null; removeListener();
         return snapshot();
       } catch (error) {
@@ -69,14 +93,14 @@ export async function createFileOutput(handle, { signal, sourceHandle, allowExis
     if (!(data instanceof Uint8Array)) throw TypeError('OUTPUT_BYTES_REQUIRED');
     sizeCheck(position + data.byteLength);
     return run(async () => {
-      await writer.write({ type: 'write', position, data });
+      await timing.measure('write', data.byteLength, () => writer.write({ type: 'write', position, data }));
       extent = Math.max(extent, position + data.byteLength);
       check(); onProgress({ phase: 'write', bytes: extent });
     });
   }
   async function truncate(size) {
     check(); sizeCheck(size);
-    return run(async () => { await writer.truncate(size); extent = size; check(); });
+    return run(async () => { await timing.measure('truncate', 0, () => writer.truncate(size)); extent = size; check(); });
   }
   async function commit({ expectedBytes, expectedSha256 = null } = {}) {
     check(); sizeCheck(expectedBytes);
@@ -84,27 +108,29 @@ export async function createFileOutput(handle, { signal, sourceHandle, allowExis
     if (extent !== expectedBytes) throw Error('OUTPUT_SIZE_MISMATCH');
     try {
       return await run(async () => {
-        await writer.truncate(expectedBytes); check();
+        await timing.measure('truncate', 0, () => writer.truncate(expectedBytes)); check();
         state = 'finalizing';
-        await writer.close(); committed = true; state = 'committed';
+        await timing.measure('close', 0, () => writer.close()); committed = true; state = 'committed';
         if (cancelRequested || signal?.aborted) throw abortError();
-        const file = await handle.getFile();
+        const file = await timing.measure('getFile', 0, () => handle.getFile());
         if (cancelRequested || signal?.aborted) throw abortError();
         if (file.size !== expectedBytes) throw Error('SAVED_SIZE_MISMATCH');
-        const sha256 = await sha256Blob(file, { signal: verificationController.signal, onProgress: progress => onProgress({ phase: 'verify', ...progress }) });
+        const sha256 = await timing.measure('savedFileHash', file.size, () => sha256Blob(file, { signal: verificationController.signal, onProgress: progress => onProgress({ phase: 'verify', ...progress }) }));
         if (cancelRequested || signal?.aborted) throw abortError();
         if (expectedSha256 !== null && sha256 !== expectedSha256) throw Error('SAVED_HASH_MISMATCH');
         state = 'verified'; removeListener();
-        return { file, bytes: file.size, sha256, committed: true, hashMatched: expectedSha256 !== null };
+        return { file, bytes: file.size, sha256, committed: true, hashMatched: expectedSha256 !== null, timings: timing.snapshot() };
       });
     } catch (error) {
       if (committed) { state = 'verification-failed'; removeListener(); }
+      error.fileTimings = timing.snapshot();
       throw withOutputState(error, snapshot);
     }
   }
   const output = {
     writeAt, truncate, commit, abort,
     get status() { return snapshot(); },
+    get timings() { return timing.snapshot(); },
     // Mediabunny finalization/cancel closes this wrapper. Only commit() closes the real writer.
     stream: new WritableStream({
       write({ type, position, data }) {
@@ -125,6 +151,7 @@ export async function createFileOutput(handle, { signal, sourceHandle, allowExis
   } catch (error) {
     try { await abort(error); }
     catch (cleanup) { error.cleanupError = cleanup.message; error.retryCleanup = () => abort(error); }
+    error.fileTimings = timing.snapshot();
     throw withOutputState(error, snapshot);
   }
 }
@@ -152,6 +179,7 @@ export async function saveBlobToFile(blob, handle, { signal, expectedSha256, onP
       // another operation until this cleanup succeeds.
       error.retryCleanup = () => output.abort(error);
     }
+    error.fileTimings = output.timings;
     throw withOutputState(error, () => output.status);
   }
 }
@@ -160,30 +188,34 @@ export async function saveBlobToFile(blob, handle, { signal, expectedSha256, onP
  * The complete file hash is observed after close; only the replacement metadata
  * has a pre-write expected digest. This does not certify decoded pixel content.
  */
-export async function finalizeDirectOutput({output, source}, {signal, onProgress = () => {}} = {}) {
+export async function finalizeDirectOutput({output, source}, {signal, onProgress = () => {}, onMeasurement} = {}) {
+  const timing = phaseMeasurements(onMeasurement);
+  const timings = () => ({...output.timings, ...timing.snapshot()});
   const check = () => { if (signal?.aborted) throw abortError(); };
   try {
     check();
     if (!output.status.muxerClosed || output.status.committed) throw Error('DIRECT_MUX_NOT_CLOSED');
-    const plan = await planMp4Tag(source, {layout: 'sbs', signal});
+    const plan = await timing.measure('tagPlan', 0, () => planMp4Tag(source, {layout: 'sbs', signal}));
     if (plan.outputBytes > 1024 ** 3) throw Error('DIRECT_OUTPUT_LIMIT_EXCEEDED');
-    const expectedMetadataHash = await sha256Blob(plan.append, {signal});
+    const expectedMetadataHash = await timing.measure('metadataExpectedHash', plan.append.size, () => sha256Blob(plan.append, {signal}));
     check();
-    for (const patch of plan.patches) { check(); await output.writeAt(patch.position, patch.data); }
-    for (let at = 0; at < plan.append.size; at += COPY_CHUNK_BYTES) {
-      check();
-      const bytes = new Uint8Array(await plan.append.slice(at, Math.min(at + COPY_CHUNK_BYTES, plan.append.size)).arrayBuffer());
-      await output.writeAt(plan.appendAt + at, bytes);
-    }
+    await timing.measure('metadataWrite', plan.append.size + plan.patches.reduce((sum, patch) => sum + patch.data.byteLength, 0), async () => {
+      for (const patch of plan.patches) { check(); await output.writeAt(patch.position, patch.data); }
+      for (let at = 0; at < plan.append.size; at += COPY_CHUNK_BYTES) {
+        check();
+        const bytes = new Uint8Array(await plan.append.slice(at, Math.min(at + COPY_CHUNK_BYTES, plan.append.size)).arrayBuffer());
+        await output.writeAt(plan.appendAt + at, bytes);
+      }
+    });
     check(); onProgress({phase: 'saveCommit'});
     const saved = await output.commit({expectedBytes: plan.outputBytes});
     check();
-    const actualMetadataHash = await sha256Blob(saved.file.slice(plan.appendAt), {signal});
+    const actualMetadataHash = await timing.measure('metadataReadback', plan.append.size, () => sha256Blob(saved.file.slice(plan.appendAt), {signal}));
     if (actualMetadataHash !== expectedMetadataHash) throw Error('DIRECT_METADATA_HASH_MISMATCH');
-    const info = await inspectMp4(saved.file, {signal}); check();
-    return {saved, info, verification: {status: 'verified', saveWriteCommitted: true, saveCompleted: true,
+    const info = await timing.measure('savedInspect', 0, () => inspectMp4(saved.file, {signal})); check();
+    return {saved, info, timings: timings(), verification: {status: 'verified', saveWriteCommitted: true, saveCompleted: true,
       wholeFileHashCompared: false, metadataHashMatched: true, metadataSHA256: actualMetadataHash,
       metadataOffset: plan.appendAt, metadataBytes: plan.append.size,
       hashNote: 'Whole saved-file SHA-256 observed after commit; final metadata compared with its pre-write SHA-256'}};
-  } catch (error) { throw withOutputState(error, () => output.status); }
+  } catch (error) { error.fileTimings = timings(); throw withOutputState(error, () => output.status); }
 }

@@ -1,6 +1,10 @@
 # VR180 shared module
 
-現行候補：`vr180-b6-save1`。公開前の変更は候補branchで検証し、公開版との一致は別記します。
+現行候補：`vr180-b7-phases1`。公開前の変更は候補branchで検証し、公開版との一致は別記します。
+
+保存の区間記録は `receipt.timings.filePhases`（direct）と各 `saveAttempts[].timings.filePhases` に残します。計画、metadata hash/write、truncate、close、getFile、全体hash、metadata読戻し、再解析を区別し、失敗時も終了statusと経過時間を保持します。`requestedBytes` はAPIに要求した量で、失敗したwriteの成功量ではありません。重なる区間を足して総時間にはしません。
+
+高頻度metricsの記録は最新8件と `eventLog.dropped` に制限します。保存試行の事実履歴は打ち切りません。記録は端末内JSONで書出し、遠隔へ自動送信しないため、提供されない利用ログは集計できません。SDKの観測値とブラウザ全体・GPUメモリを区別し、未計測はnullとします。
 
 目的は、VR180撮影素材・左右2眼動画をブラウザで簡単に加工することです。現在の対応範囲と実際に検証した範囲を以下に分けます。5〜10 GBの実動画を加工・保存・全回収する目標は未達です。
 

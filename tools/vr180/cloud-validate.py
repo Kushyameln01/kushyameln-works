@@ -46,7 +46,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / 'docs'
 CHROME = Path('/usr/bin/google-chrome')
 PAGES = 'https://kushyameln01.github.io/kushyameln-works/'
-BUILD = 'vr180-b6-save1'
+BUILD = 'vr180-b7-phases1'
 RECOVERED = 'RECOVERED_PENDING_VERIFICATION'
 INITIAL_IMPLEMENTATION_COMMIT = 'e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60'
 LIMIT = 8 * 1024 * 1024
@@ -1215,7 +1215,7 @@ def validate_direct_cancellation(observed, cancel_after_write=False):
 
 def run_direct_output_probe(context, origin, out, run_id, defer_verification=False, cancel_first=False,
                             name='stereo360-tb', settings=None, scenario=None, cancel_after_write=False,
-                            max_output_bytes=2 * 1024 * 1024):
+                            max_output_bytes=2 * 1024 * 1024, borrowed_page=None, navigate=True):
     scenario = scenario or ('direct-cancel-retry' if cancel_first else 'direct-output-probe')
     trial = out / scenario
     trial.mkdir()
@@ -1237,11 +1237,13 @@ def run_direct_output_probe(context, origin, out, run_id, defer_verification=Fal
               'cleanupProbeSHA256': hashlib.sha256(DIRECT_OUTPUT_CLEANUP.encode()).hexdigest(),
               'notVerified': ['OS save dialog', 'external save destination', 'application save UI',
                               '5-10GB real video/full-file recovery', 'VR playback', 'real footage quality']}
-    page = context.new_page()
+    page = borrowed_page if borrowed_page is not None else context.new_page()
     page.set_default_timeout(15000)
     errors, workers = [], []
-    page.on('pageerror', lambda error: errors.append(str(error)))
-    page.on('worker', lambda worker: workers.append({'url': worker.url, 'observedAt': now()}))
+    on_error = lambda error: errors.append(str(error))
+    on_worker = lambda worker: workers.append({'url': worker.url, 'observedAt': now()})
+    page.on('pageerror', on_error)
+    page.on('worker', on_worker)
     observed = {}
     recovered_receipts = set()
     start = time.monotonic()
@@ -1252,7 +1254,10 @@ def run_direct_output_probe(context, origin, out, run_id, defer_verification=Fal
         require(record['inputBytes'] <= 2 * 1024 * 1024, 'Direct fixture exceeds this probe input limit')
         shutil.copyfile(fixture, trial / 'input.mp4')
         check_recovery_budget(out, trial, record['inputBytes'])
-        page.goto(origin + '/vr180-studio/', wait_until='networkidle')
+        if navigate:
+            page.goto(origin + '/vr180-studio/', wait_until='networkidle')
+        else:
+            require(page.url == origin + '/vr180-studio/', 'Borrowed page origin changed')
         api = page.evaluate(API_PROBE)
         write(trial / 'browser-capabilities.json', api)
         record['browserUserAgent'] = api['userAgent']
@@ -1338,7 +1343,10 @@ def run_direct_output_probe(context, origin, out, run_id, defer_verification=Fal
                       recoveredReceipts=sorted(recovered_receipts), pageErrors=errors, workers=workers,
                       wallSeconds=time.monotonic() - start, finishedAt=now())
         try:
-            page.close()
+            page.remove_listener('pageerror', on_error)
+            page.remove_listener('worker', on_worker)
+            if borrowed_page is None:
+                page.close()
         except Exception as error:
             record['pageCloseError'] = str(error)
         write(trial / 'trial.json', record)

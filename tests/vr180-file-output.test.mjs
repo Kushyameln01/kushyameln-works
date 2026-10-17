@@ -181,3 +181,29 @@ test('copy reads only bounded slices and saved content matches an independent ha
   const h = memoryFile(), result = await saveBlobToFile(bounded, h, { expectedSha256: hash(bytes) });
   assert(maxRead <= 1024 ** 2); assert.equal(result.sha256, hash(bytes)); assert.equal(result.bytes, bytes.length);
 });
+
+test('phase observations separate close, getFile and hashing and observer failures cannot break saving', async () => {
+  const observations = [], h = memoryFile();
+  const sink = await createFileOutput(h, {onMeasurement: item => { observations.push(item); throw Error('telemetry failed'); }});
+  await sink.writeAt(0, Uint8Array.of(3));
+  const saved = await sink.commit({expectedBytes: 1});
+  for (const phase of ['truncate', 'close', 'getFile', 'savedFileHash']) {
+    assert.equal(saved.timings[phase].status, 'completed');
+    assert(saved.timings[phase].durationMs >= 0);
+    assert(observations.some(x => x.phase === phase));
+  }
+  assert.equal(saved.timings.savedFileHash.requestedBytes, 1);
+  assert.equal(saved.sha256, hash(Uint8Array.of(3)));
+});
+
+test('failed close keeps its timing and never records unexecuted readback', async () => {
+  const sink = await createFileOutput(memoryFile(undefined, {close: () => { throw Error('CLOSE_DENIED'); }}));
+  await sink.writeAt(0, Uint8Array.of(3));
+  await assert.rejects(sink.commit({expectedBytes: 1}), error => {
+    assert.equal(error.fileTimings.close.status, 'failed');
+    assert.equal(error.fileTimings.getFile, undefined);
+    assert.equal(error.saveWriteCommitted, false);
+    return error.message === 'CLOSE_DENIED';
+  });
+  await sink.abort();
+});

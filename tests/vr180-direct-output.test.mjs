@@ -58,6 +58,11 @@ test('direct finalization patches VR metadata before physical close, then checks
   assert.throws(() => direct.source.slice(4096, 4100), /DIRECT_UNCAPTURED_RANGE/);
   const before = await inspectMp4(direct.source);
   const result = await finalizeDirectOutput(direct);
+  for (const phase of ['tagPlan', 'metadataExpectedHash', 'metadataWrite', 'truncate', 'close', 'getFile', 'savedFileHash', 'metadataReadback', 'savedInspect']) {
+    assert.equal(result.timings[phase].status, 'completed');
+    assert(result.timings[phase].durationMs >= 0);
+  }
+  assert.equal(result.timings.savedFileHash.requestedBytes, result.saved.bytes);
   const expected = await tagMp4(new Blob([fixture.bytes]), {layout:'sbs'});
   assert.deepEqual(new Uint8Array(await result.saved.file.arrayBuffer()), new Uint8Array(await expected.arrayBuffer()));
   assert.equal(result.saved.sha256, createHash('sha256').update(new Uint8Array(await expected.arrayBuffer())).digest('hex'));

@@ -64,6 +64,7 @@ test('S02 actual save event: saved success survives an additional picker cancel 
   assert.equal(h.receipt.saveCompleted, true);
   assert.equal(h.receipt.saveWriteCommitted, true);
   assert.equal(h.receipt.savedSha256, digest);
+  assert(h.receipt.saveAttempts.at(-1).timings.permissionWaitMs >= 0);
   assert.equal(JSON.stringify(h.receipt.saveAttempts[0]), original);
 });
 
@@ -111,6 +112,8 @@ test('S03 actual save event: additional write failure retains the original direc
   const h = await appHarness({generated: fixture(true), pick: async () => handle, save: actualSaveBlobToFile});
   const direct = JSON.stringify(h.receipt.directSave), original = JSON.stringify(h.receipt.saveAttempts[0]);
   await h.element('save').onclick();
+  assert.equal(h.receipt.saveAttempts.at(-1).timings.filePhases.write.status, 'failed');
+  assert.equal(h.receipt.saveAttempts.at(-1).timings.filePhases.abort.status, 'completed');
   assert.equal(h.receipt.saveCompleted, true);
   assert.equal(h.receipt.savedSha256, digest);
   assert.equal(h.receipt.lastVerifiedSaveAttemptId, 'original-direct');

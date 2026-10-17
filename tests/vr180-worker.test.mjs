@@ -32,6 +32,7 @@ test('direct Worker path finalizes the supplied transaction once and preserves o
     }}), finalizeDirect: async value => {
       assert.equal(value, direct); finalizes++; output.status.committed = true;
       return {saved: {file: savedFile, sha256: 'saved-hash'}, info: receiptInfo,
+        timings: {close: {durationMs: 1, count: 1, requestedBytes: 5, status: 'completed'}},
         verification: {status: 'verified', wholeFileHashCompared: false, metadataHashMatched: true}};
     }});
   await receive({data: {type: 'run', operationId: 'direct-job', inputRevision: 3, file: input, settings, outputHandle: destination}});
@@ -46,6 +47,8 @@ test('direct Worker path finalizes the supplied transaction once and preserves o
   assert.equal(r.receipt.saveAttempts[0].kind, 'direct');
   assert.equal(r.receipt.saveAttempts[0].hashBasis, 'post-commit-observed');
   assert.equal(r.receipt.output.hashBasis, 'post-commit-observed');
+  assert.equal(r.receipt.saveAttempts[0].timings.filePhases.close.status, 'completed');
+  assert.deepEqual(r.receipt.timings.filePhases, r.receipt.saveAttempts[0].timings.filePhases);
   await receive({data: {type: 'cancel', operationId: 'direct-job', inputRevision: 3, requestId: 'late'}});
   const late = messages.at(-1).diagnostics;
   assert.equal(late.saveCompleted, true); assert.equal(late.saveWriteCommitted, true);
@@ -66,6 +69,19 @@ test('direct Worker failure after physical commit reports retained bytes and fai
   assert.equal(messages[0].diagnostics.saveAttempts[0].commitState, 'committed');
   assert.equal(messages[0].diagnostics.saveAttempts[0].verificationState, 'failed');
   assert.equal(messages[0].diagnostics.saveAttempts[0].sha256, null);
+});
+
+test('metric event history is bounded while the latest diagnostic is retained', async () => {
+  const h = harness(async (_file, _settings, options) => {
+    const mutable = {step: 0};
+    for (let step = 0; step < 100; step++) { mutable.step = step; options.onMetrics(mutable); }
+    mutable.step = 999;
+    return {file: input, metrics: {final: true}, cleanup: async () => {}};
+  });
+  await h.run();
+  const receipt = h.messages.at(-1).result.receipt;
+  assert.deepEqual(receipt.eventLog, {limit: 8, retained: 8, dropped: 92});
+  assert.deepEqual(receipt.events.map(x => x.step), [92, 93, 94, 95, 96, 97, 98, 99]);
 });
 
 test('direct codec rejection before acquiring a writer is not an aborted save', async () => {
@@ -109,14 +125,16 @@ for (const stage of ['getFile', 'nonempty', 'createWritable', 'write', 'abort'])
 });
 
 test('direct verification completed before a queued cancel keeps its successful observation in diagnostics', async () => {
-  const messages = [], output = {status: {committed: false}}, saved = new Blob(['saved']);
+  const closePhase = {durationMs: 1, count: 1, requestedBytes: 5, status: 'completed'};
+  const finalizerPhases = {tagPlan: {...closePhase, requestedBytes: 0}, metadataWrite: {...closePhase}};
+  const messages = [], output = {status: {committed: false}, timings: {close: closePhase}}, saved = new Blob(['saved']);
   let stopping;
   const receive = createWorkerController({postMessage: m => messages.push(m), inspect: async () => info,
     hash: async () => 'input-hash', loadTransform: async () => ({convertStereo: async () => ({direct: {output}, cleanup: async () => {}})}),
     finalizeDirect: async () => {
       output.status.committed = true;
       stopping = receive({data: {type: 'cancel', operationId: 'cancel-after-verified', inputRevision: 8, requestId: 'stop-1'}});
-      return {saved: {file: saved, sha256: 'saved-hash'}, info,
+      return {saved: {file: saved, sha256: 'saved-hash'}, info, timings: {...finalizerPhases, ...output.timings},
         verification: {status: 'verified', wholeFileHashCompared: false, metadataHashMatched: true}};
     }});
   await receive({data: {type: 'run', operationId: 'cancel-after-verified', inputRevision: 8,
@@ -128,6 +146,10 @@ test('direct verification completed before a queued cancel keeps its successful 
   assert.equal(diagnostics.savedSha256, 'saved-hash'); assert.equal(diagnostics.directSave.status, 'verified');
   assert.equal(diagnostics.saveAttempts[0].id, 'chosen-direct-attempt');
   assert.equal(diagnostics.saveAttempts[0].verificationState, 'passed');
+  for (const receipt of [diagnostics, diagnostics.preparedBeforeCancel]) {
+    assert.deepEqual(receipt.timings.filePhases, {...finalizerPhases, ...output.timings});
+    assert.deepEqual(receipt.saveAttempts[0].timings.filePhases, receipt.timings.filePhases);
+  }
 });
 
 test('cooperative cancellation waits for conversion unwind and cleanup before matching acknowledgement', async () => {
@@ -146,7 +168,7 @@ test('cooperative cancellation waits for conversion unwind and cleanup before ma
   const [failure, ack] = h.messages;
   assert.equal(failure.diagnostics.status, 'canceled'); assert.equal(failure.cleanupComplete, true);
   assert.equal(ack.requestId, 'cleanup-1'); assert.equal(ack.operationId, 'this-job'); assert.equal(ack.inputRevision, 7);
-  assert.equal(ack.diagnostics, failure.diagnostics); assert.equal(ack.diagnostics.build, 'vr180-b6-save1');
+  assert.equal(ack.diagnostics, failure.diagnostics); assert.equal(ack.diagnostics.build, 'vr180-b7-phases1');
 });
 
 test('failed deletion remains retryable without replacing the original canceled receipt', async () => {
@@ -255,7 +277,7 @@ function assertIndexRejected({messages, calls}, expectedError) {
   assert.equal(failure.error, expectedError);
   assert.equal(failure.operationId, 'index-job');
   assert.equal(failure.inputRevision, 13);
-  assert.equal(failure.diagnostics.build, 'vr180-b6-save1');
+  assert.equal(failure.diagnostics.build, 'vr180-b7-phases1');
   assert.equal(failure.diagnostics.status, 'failed');
   assert.equal(failure.diagnostics.input.sha256, null);
   assert.equal(failure.diagnostics.output, null);
@@ -351,7 +373,7 @@ test('actual worker controller hashes all input/output bytes above the former 16
   assert.equal(messages.some(message => message.type === 'error'), false);
   const result = messages.find(message => message.type === 'result').result;
   const receipt = result.receipt;
-  assert.equal(receipt.build, 'vr180-b6-save1');
+  assert.equal(receipt.build, 'vr180-b7-phases1');
   assert.equal(receipt.input.sha256, sha256);
   assert.equal(receipt.output.sha256, await nodeBlobHash(result.blob));
   assert.match(receipt.output.sha256, /^[0-9a-f]{64}$/);
@@ -458,6 +480,6 @@ test('inspection/settings rejection occurs before hashing and leaves diagnostics
   const receive = createWorkerController({postMessage: value => messages.push(value), hash: async () => { throw Error('HASH_MUST_NOT_RUN'); }});
   await receive(copyRun(file, {mode: 'inspect'}));
   assert.deepEqual(messages.map(m => m.type), ['result']);
-  assert.equal(messages[0].result.build, 'vr180-b6-save1');
+  assert.equal(messages[0].result.build, 'vr180-b7-phases1');
   assert.equal(messages[0].result.receipt, undefined);
 });

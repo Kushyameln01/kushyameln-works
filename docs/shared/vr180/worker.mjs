@@ -2,7 +2,7 @@ import {inspectMp4, tagMp4} from './mp4.mjs';
 import {sha256Blob} from './sha256.mjs';
 import {finalizeDirectOutput} from './file-output.mjs';
 import {bindSaveSummary, createSaveAttempt} from './save-record.mjs';
-const BUILD = 'vr180-b6-save1';
+const BUILD = 'vr180-b7-phases1';
 // The current conversion demuxer/muxer retains sample indices and moov bytes.
 // Admit bounded inputs before hashing or loading it; paged copy does not need
 // these conversion-only limits.
@@ -57,6 +57,16 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
   }
   async function execute(message) {
     const {file, outputHandle} = message, settings = structuredClone(message.settings), clock = performance.now(), timings = {}, events = [];
+    const eventLimit = 8;
+    let eventsDropped = 0;
+    const collectMetrics = value => {
+      try {
+        const snapshot = structuredClone(value);
+        if (events.length === eventLimit) { events.shift(); eventsDropped++; }
+        events.push(snapshot);
+      } catch { eventsDropped++; }
+    };
+    const eventLog = () => ({limit: eventLimit, retained: events.length, dropped: eventsDropped});
     const identity = {schemaVersion: 2, operationId: job.operationId, inputRevision: job.inputRevision, saveAttempts: []};
     const directAttempt = outputHandle ? createSaveAttempt(identity, 'direct', {id: message.saveAttemptId ?? crypto.randomUUID()}) : null;
     if (directAttempt) identity.saveAttempts.push(directAttempt);
@@ -82,7 +92,7 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
           signal: job.controller.signal, jobId: job.operationId, outputHandle,
           onCleanup: cleanup => { job.cleanup = cleanup; },
           onOutputCreated: output => { job.directOutput = output; directAttempt.commitState = 'pending'; },
-          onProgress: progress => send('progress', {progress}), onMetrics: value => events.push(value),
+          onProgress: progress => send('progress', {progress}), onMetrics: collectMetrics,
         }));
         media = result.file; job.cleanup = result.cleanup; metrics = result.metrics;
         direct = result.direct ?? null; job.directOutput = direct?.output ?? job.directOutput ?? null; check();
@@ -95,6 +105,8 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
         }));
         blob = finalized.saved.file; outputInfo = finalized.info; outputHash = finalized.saved.sha256;
         directSave = {...finalized.verification, capture: direct.metrics};
+        timings.filePhases = finalized.timings ?? null;
+        directAttempt.timings.filePhases = timings.filePhases;
         job.directSave = structuredClone(directSave);
         Object.assign(directAttempt, {status: 'verified', commitState: 'committed', verificationState: 'passed',
           bytes: blob.size, sha256: outputHash, hashBasis: 'post-commit-observed', wholeFileHashCompared: false,
@@ -112,7 +124,7 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
         status: direct ? 'saved' : 'prepared', settings, input: {bytes: file.size, sha256: inputHash, info, hashBasis: 'whole-input'},
         output: {bytes: blob.size, sha256: outputHash, info: outputInfo, hashBasis: direct ? 'post-commit-observed' : 'prepared-output'},
         hashNote: direct ? 'Input SHA-256 calculated incrementally; whole output SHA-256 observed from the committed file, not compared with a pre-write whole-file hash' : 'SHA-256 calculated incrementally for the complete input and prepared output', timings, metrics, events,
-        clock: 'performance.now, worker', nativePeakBytes: null,
+        clock: 'performance.now, worker', nativePeakBytes: null, eventLog: eventLog(),
         audioMetadataCoverage: settings.mode === 'copy' ? 'original audio track boxes preserved' : 'AAC payload, decoder configuration and supported timeline retained; seek-preroll sample groups are not reproduced by the muxer; seek quality unverified',
         directSave, downloadRecovered: false, targetVRPlayerVerified: false});
       job.prepared = receipt; check();
@@ -120,10 +132,12 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
     } catch (error) {
       const cleanupComplete = await clean();
       timings.failedAfter = performance.now() - clock;
+      if (outputHandle) timings.filePhases = {...timings.filePhases, ...error.fileTimings, ...job.directOutput?.timings};
       const metrics = events.at(-1) ?? null;
       const outputState = job.directOutput?.status ?? error.saveOutputState ?? {state: 'not-started', writerAcquired: false, committed: false};
       const committed = outputState.committed === true || error.saveWriteCommitted === true;
       if (directAttempt && directAttempt.verificationState !== 'passed') {
+        directAttempt.timings.filePhases = timings.filePhases;
         Object.assign(directAttempt, {status: job.controller.signal.aborted ? 'canceled' : 'failed',
           commitState: committed ? 'committed' : outputState.state === 'not-started' ? 'not-started' : outputState.state === 'aborted' ? 'aborted' : 'unknown',
           verificationState: committed ? job.controller.signal.aborted ? 'canceled' : 'failed' : 'not-run',
@@ -135,7 +149,7 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
         error: {name: error?.name ?? 'Error', message: error?.message || String(error)}, settings,
         input: {bytes: file.size, sha256: inputHash, info, hashBasis: inputHash ? 'whole-input' : null}, output: null, timings, metrics,
         ...(job.prepared ? {preparedBeforeCancel: job.prepared} : {}),
-        capabilities: metrics?.capabilities ?? null, events, clock: 'performance.now, worker',
+        capabilities: metrics?.capabilities ?? null, events, eventLog: eventLog(), clock: 'performance.now, worker',
         cleanup: {status: cleanupComplete ? 'complete' : 'failed', error: job.cleanupError,
           requiresWorkerTermination: !!job.requiresWorkerTermination},
         directSave: job.directSave ?? (outputHandle ? {status: 'failed', outputState,

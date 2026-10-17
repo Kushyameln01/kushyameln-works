@@ -7,6 +7,7 @@ const operations = new OperationScope();
 let record = null;
 let source = null, result = null, inputURL = null, outputURL = null, selectionClock = null, selectionAt = null;
 let chosenSaveHandle = null, pendingSaveCleanup = null;
+let pageReadyMs = null, selectionToInspectedMs = null;
 const client = new StereoClient({onEvent: m => {
   if (m.type === 'progress') {
     const p = m.progress;
@@ -87,6 +88,7 @@ async function prepare(file, preset, op) {
   inputURL = URL.createObjectURL(file); $('input-video').src = inputURL; $('input-video').hidden = false;
   $('status').textContent = '動画の形式を確認しています…';
   const probe = await client.run(file, {mode: 'inspect'}); operations.check(op);
+  selectionToInspectedMs = performance.now() - selectionClock;
   const i = probe.info;
   $('input-info').textContent = `${file.name} · ${i.width} × ${i.height} · ${(file.size / 1024 / 1024).toFixed(2)} MiB`;
   if (preset) {
@@ -139,7 +141,7 @@ $('run').onclick = async () => {
     catch (error) { error.diagnostics = {...r.receipt, status: 'canceled'}; throw error; }
     bindSaveSummary(r.receipt);
     result = r; record = r.receipt;
-    r.receipt.page = {selectedAt: selectionAt, runClickToPreparedMs: performance.now() - started, selectionToPreparedMs: performance.now() - selectionClock, selectionToSavedFileMs: null, fileRecoveryMs: null, playbackVerificationMs: null, timingNote: 'selection starts when a File is accepted after prior-result cleanup; includes user settings time; save completion is separate from independent file recovery', cacheState: 'unknown', userAgent: navigator.userAgent};
+    r.receipt.page = {navigationToReadyMs: pageReadyMs, clock: 'performance.now, page', selectedAt: selectionAt, selectionToInspectedMs, runClickToPreparedMs: performance.now() - started, selectionToPreparedMs: performance.now() - selectionClock, selectionToSavedFileMs: null, fileRecoveryMs: null, playbackVerificationMs: null, timingNote: 'selection starts when a File is accepted after prior-result cleanup; includes user settings time; save completion is separate from independent file recovery', cacheState: 'unknown', userAgent: navigator.userAgent};
     outputURL = URL.createObjectURL(r.blob); $('output-video').src = outputURL; $('download').href = outputURL;
     $('download').download = input.name.replace(/\.[^.]*$/, '') + '-vr180.mp4';
     $('output-info').textContent = `${r.info.width} × ${r.info.height} · ${(r.blob.size / 1024 / 1024).toFixed(2)} MiB`;
@@ -240,6 +242,7 @@ $('save').onclick = async () => {
     // before this continuation. Never turn an acknowledged commit into rollback.
     Object.assign(attempt, {commitState: 'committed', bytes: saved.bytes, sha256: saved.sha256,
       hashBasis: 'prepared-output-compared', wholeFileHashCompared: saved.hashMatched === true});
+    attempt.timings.filePhases = saved.timings ?? null;
     if (saved.bytes !== captured.receipt.output.bytes || saved.sha256 !== captured.receipt.output.sha256 || !saved.hashMatched) {
       throw Error('SAVED_RESULT_VERIFICATION_MISMATCH');
     }
@@ -251,6 +254,7 @@ $('save').onclick = async () => {
     $('save-status').textContent = '保存したファイルのサイズと全体ハッシュが一致しました。';
     $('status').textContent = '保存と内容の照合が完了しました。';
   } catch (e) {
+    if (e.fileTimings) attempt.timings.filePhases = e.fileTimings;
     const outputState = e.saveOutputState;
     if (e.saveWriteCommitted || outputState?.committed) attempt.commitState = 'committed';
     else if (attempt.commitState === 'pending') attempt.commitState = outputState?.state === 'not-started' ? 'not-started'
@@ -279,6 +283,7 @@ $('save').onclick = async () => {
     }
   } finally {
     attempt.finishedAt = new Date().toISOString(); attempt.timings.requestToFinishedMs = performance.now() - saveRequestStarted;
+    if (saveStarted === null) attempt.timings.permissionWaitMs = attempt.timings.requestToFinishedMs;
     if (saveStarted !== null) attempt.timings.saveApiMs ??= performance.now() - saveStarted;
     if (captured === result) $('diagnostics').textContent = JSON.stringify(captured.receipt, null, 2);
     finish(op);
@@ -291,3 +296,4 @@ $('receipt').onclick = () => {
 };
 addEventListener('pagehide', () => { operations.cancel(); client.dispose().catch(() => {}); if (inputURL) URL.revokeObjectURL(inputURL); if (outputURL) URL.revokeObjectURL(outputURL); });
 update();
+pageReadyMs = performance.now();
