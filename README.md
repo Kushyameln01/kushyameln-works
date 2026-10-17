@@ -38,3 +38,9 @@ GitHub Pagesへの反映とクラウドでの8試行を完了しました。今�
 ## 画像・動画の基本処理（2026-10-17 運用基準の収集）
 
 現在の公開入口は[画像・動画のブラウザ処理](https://kushyameln01.github.io/kushyameln-works/media-runner/)です。共有APIは[media-basic](docs/shared/media-basic/README.md)。全フレームをPNGへ読み出し、時刻・入力版・ハッシュ・区間時間を保存します。前処理機能は[Pages配信対象外の復旧用ソース](development/media-preprocessing/README.md)へ退避し、公開Workerの登録から除外しました。GitHubソース・履歴の非公開化ではありません。前回の速度不合格記録は保持します。今回の変更は運用基準を収集する準備であり、長期性能や高速化の成功を示しません。
+
+## VR180 Studio（検証版）
+
+[VR180 Studio](https://kushyameln01.github.io/kushyameln-works/vr180-studio/)の候補実装を追加しました。対象は左右映像が1ファイルに格納されたSBS/TBの正距円筒MP4（H.264 SDR、音声なしまたはAAC 1トラック）です。再圧縮なしのVR情報付与、正面180度への切出し、横並び変換を実装しています。魚眼・左右別ファイルは未対応です。
+
+**加工・保存の実ブラウザ検証、VRプレイヤー互換性、実写品質、実用規模性能は未完了です。** 公開・配信の成立と各検証を分けます。[対象版と反映記録](development/vr180/RELEASE-2026-10-17.md)を参照してください。
