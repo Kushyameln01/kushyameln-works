@@ -1,0 +1,187 @@
+{
+  "schema": "vr180-indexed-ui-public-acceptance-v1",
+  "status": "PASS_COMPLETE_MEDIA",
+  "sourceCommit": "1743438583122f7b446e04bc3fcfef0b728f72f1",
+  "build": "vr180-b8-indexed-candidate",
+  "runId": 39105653824,
+  "jobId": 117610806248,
+  "runURL": "https://github.com/Kushyameln01/kushyameln-works/actions/runs/39105653824",
+  "scope": "One small synthetic TB360 AAC file through actual candidate UI, client, Worker, codecs, writer and cleanup; 1 GiB contract unchanged",
+  "browserVersion": "155.0.8059.39",
+  "sandboxEnabled": true,
+  "pickerSubstitution": "showSaveFilePicker only; returns one new native OPFS output handle; OS picker is not tested",
+  "sourceInventoryFiles": 130,
+  "servedSourceFiles": 28,
+  "harnessSHA256": "f46dadd35ecb63aa2381d8bf79da0199441fe8adc66adbb75b2f841019872c01",
+  "sharedHarnessSHA256": "c2df85efacbbb4543f4cc75eabfc3f66a3b0f25a49b1c9c037f0319197ec870b",
+  "input": {
+    "bytes": 27952,
+    "sha256": "72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9",
+    "fixture": "stereo360-tb.mp4"
+  },
+  "output": {
+    "bytes": 50934,
+    "sha256": "2429e440118b196c6d0e5018d1517071d06bcf779e97434bd7664a44038e5b9e",
+    "completeNativeDownloadRecoveredLocally": true
+  },
+  "downloadedReceipt": {
+    "bytes": 105936,
+    "sha256": "6a7b9ef38235b37ff54a2f6d4210e3d5f430852291c9c6cfbb668e9a2f55dd98",
+    "schemaVersion": 2,
+    "inputRevision": 2,
+    "saveAttempts": 2,
+    "firstAttempt": "direct, committed, verified; metadata hash compared and whole-file hash observed after commit",
+    "secondAttempt": "download-request only; not a verified filesystem save",
+    "nativeDownloadRecoveredLocally": true
+  },
+  "uiObservations": {
+    "default": "copy mode and legacy route",
+    "beforeExecution": "switch legacy/indexed without loading codec fork; legacy starts without preselected destination; indexed does not",
+    "explicitDestination": "one picker call supplies an initially empty native OPFS file; native isSameEntry verified",
+    "saveAndCleanup": "separate successful save and internal cleanup text; result remains available until clear",
+    "clearResult": "real UI clear after complete downloads; saved file size/hash unchanged",
+    "registry": "explicit empty listing before/after; no automatic cleanup; no unknown-record deletion",
+    "workerInstances": 2,
+    "vendor": "dedicated combined indexed fork only during conversion; legacy fork absent",
+    "internalRegistryNamespace": "absent before and after UI clear",
+    "internalHeldAndPendingLocks": 0,
+    "harnessOutputCleanup": "only proven harness-owned output and empty directory removed after successful recovery",
+    "pageErrors": 0,
+    "networkGuardViolations": 0,
+    "logOverflow": 0
+  },
+  "independent": {
+    "status": "PASS",
+    "frames": 60,
+    "decodedFramesCompared": 60,
+    "eyePSNRdB": [
+      38.4501205091097,
+      34.66050224007317
+    ],
+    "maxPtsErrorSeconds": 0.0,
+    "decodedAudioIdentical": true,
+    "vrMetadata": {
+      "path": "moov/trak(vide)/mdia/minf/stbl/stsd/avc1",
+      "width": 512,
+      "height": 256,
+      "stereo_mode": 2,
+      "projection": "equi",
+      "pose_degrees": [
+        0,
+        0,
+        0
+      ],
+      "bounds_u0_32": {
+        "top": 0,
+        "bottom": 0,
+        "left": 1073741824,
+        "right": 1073741824
+      },
+      "metadata_source": "Kushyameln Works VR180 b1",
+      "active_st3d_count": 1,
+      "active_sv3d_count": 1,
+      "entry_children": [
+        "avcC",
+        "colr",
+        "btrt",
+        "st3d",
+        "sv3d"
+      ]
+    },
+    "qualityProfile": {
+      "schema": "vr180-quality-profile-v1",
+      "id": "aggregate-30",
+      "aggregateMinimumPSNRdB": 30,
+      "frameDiagnosticThresholdPSNRdB": 30,
+      "frameFloorRequired": false,
+      "thresholdRule": "strictly below threshold fails; equality passes",
+      "scope": "RGB per decoded eye; frame indices are zero-based decoded pair positions, not embedded frame IDs or eye-marker recognition",
+      "sha256": "6a6c45e07f049509d5e95f59e6ba1e1e5f29631d5b995aac917d0bedf5e5505a"
+    },
+    "frameQuality": {
+      "schema": "vr180-frame-quality-v1",
+      "qualityProfileSHA256": "6a6c45e07f049509d5e95f59e6ba1e1e5f29631d5b995aac917d0bedf5e5505a",
+      "thresholdPSNRdB": 30,
+      "floorRequired": false,
+      "completeScan": true,
+      "verdict": "DIAGNOSTIC_ONLY",
+      "framesByEye": [
+        60,
+        60
+      ],
+      "zeroErrorFramesByEye": [
+        0,
+        0
+      ],
+      "minimumPSNRdBByEye": [
+        37.494110299831554,
+        34.238393594639966
+      ],
+      "minimumAtFrameByEye": [
+        15,
+        14
+      ],
+      "belowThresholdFramesByEye": [
+        0,
+        0
+      ],
+      "intervalCountByEye": [
+        0,
+        0
+      ],
+      "intervalsByEye": [
+        [],
+        []
+      ],
+      "intervalsDroppedByEye": [
+        0,
+        0
+      ],
+      "intervalDetailLimitPerEye": 32,
+      "openIntervalsByEye": [
+        null,
+        null
+      ],
+      "allFrameSequenceSHA256ByEye": [
+        "e4f238d994aa9aab93a01dfb2b91a64fb09b65b53cb8701b9d428c628dae2b3a",
+        "8f2f205e3ff5bff72cacc8053e4c0c2123cbaefe5c2c41b6986e9b68c52a9b1b"
+      ],
+      "sequenceEncoding": "ASCII decimal frameIndex:squaredErrorSum:channelSampleCount followed by LF; one record per compared frame, independently hashed for each eye",
+      "zeroErrorPSNR": "positive infinity; null minimum means no finite minimum; consult framesByEye",
+      "frameIdentity": "Decoded pair order only. No embedded frame ID or eye-ID schema is assumed."
+    },
+    "environment": {
+      "python": "3.12.14",
+      "numpy": "2.3.5",
+      "ffmpeg": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers"
+    },
+    "verifierSHA256": "757b03ca778db3249211c528fb462b778d98813f7bd68a8ca3a7429d53a89883"
+  },
+  "rawTransport": {
+    "bytes": 103985,
+    "sha256": "f65b983bd5bcfdc2a039abf8fef6017a9a978ce3a12ef9a394e789ede278a008",
+    "manifestSHA256": "6ad93a7c6a9553c37ba283ce5fead7176690e4ea9df928a4744dcccf3ec956f3",
+    "chunks": 34
+  },
+  "rawRecordFilesExcludingManifest": 11,
+  "localValidation": {
+    "uiRecoveryHandlerTests": 6,
+    "harnessEvidenceTests": 4,
+    "generatedFilesMatched": 25,
+    "isolatedExportFiles": 130,
+    "review": "PROCEED before native run"
+  },
+  "independentAudit": {
+    "status": "PASS",
+    "originalCheckGroups": 14,
+    "originalSummarySHA256": "7758ec6f15b4ffe16bd167bab27670887aeaf5b6c7ded9f4f25e8d7f6e1aa14e",
+    "duplicateDecodeByAuditor": false
+  },
+  "limitations": [
+    "OS picker and permission dialogue are not exercised; only showSaveFilePicker is substituted with a native OPFS handle.",
+    "Failure/recovery UI state is covered by six local event-handler tests with doubles, not by this successful native media trial.",
+    "No 5/10 GB trial through this UI; separate private runtime qualification does not expand the 1 GiB candidate contract.",
+    "No real camera, 60 fps, long AAC, target VR player, novice usability, speedup or public deployment acceptance."
+  ],
+  "publication": "Allowlisted summary; original ownership identities, tickets and runtime paths retained locally."
+}

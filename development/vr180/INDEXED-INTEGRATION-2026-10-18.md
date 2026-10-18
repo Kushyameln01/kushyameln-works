@@ -55,10 +55,9 @@ Acceptance requires the fixed checkout and served-byte inventory, codec module
 isolation, operation/input-generation agreement, schema-2 save facts, bounded physical
 ownership-record bytes and hashes, native `isSameEntry` on retry, index/lease cleanup,
 complete browser downloads and recovered input/output hashes. Early cancellation
-does not establish cancellation after output writes. Media acceptance remains pending
-until the recovered MP4s pass the separate FFmpeg/metadata verifiers.
+does not establish cancellation after output writes. Media acceptance requires the separate FFmpeg/metadata verifiers; the recovered small outputs now pass them.
 
-The native adapter trial and candidate UI connection are pending in this snapshot.
+The native adapter and actual candidate UI trials have now passed; fixed results are below.
 No OS picker, target VR-player, real-camera quality, novice-usability or public
 deployment acceptance follows from local tests. ChatGPT Sites changes are delegated
 to Works; this environment prepares reviewable source and evidence only.
@@ -69,8 +68,7 @@ The accepted 5 GB trial is run `39093517116` at
 `8fd5ef15f012c54774aa4d7b7984026a1527de0c`; its sanitized acceptance record is
 [`evidence/2026-10-18-p5-5gb.json`](evidence/2026-10-18-p5-5gb.json).
 The single 10 GB run `39096296302` uses fixed commit
-`a0e5cc8178b29d5f263636f7790b309db1d97cdf`. It was still running when this
-integration snapshot was prepared. It does not contain the adapter changes here.
+`a0e5cc8178b29d5f263636f7790b309db1d97cdf`. It completed successfully and does not contain the adapter changes here.
 
 ## Recovered results after the initial snapshot
 
@@ -84,8 +82,8 @@ Initial adapter run `39104394239` at `984b0b790e10e869c918b227f42411c826e55a60`
 failed while downloading the legacy prepared output. The harness disposed its Worker
 and deleted its temporary OPFS file before the browser download. Inspection, metadata
 copy and generation of the legacy prepared output had passed; one copy MP4 was fully
-recovered and independently verified. The harness must keep that owner alive until
-download completion and full hash verification, then acknowledge cleanup. No product
+recovered and independently verified. The corrected harness keeps that owner alive until
+download completion and full hash verification, then acknowledges cleanup. No product
 codec change or relaxation of acceptance criteria is warranted by this failure.
 
 ## Small native adapter accepted
@@ -103,5 +101,15 @@ hashes and verification scope without publishing private ownership tickets.
 The corrected harness retains the prepared-output owner through download and full
 hash verification, then awaits matching cleanup. Cancellation occurred before output
 writes; retry used the same native OPFS handle. OS picker use remains unverified.
-Candidate UI connection is now prepared; its separate small native UI trial is pending.
-The earlier pending statements above describe the preserved snapshot, not this result.
+The actual candidate UI passed run `39105653824` at fixed source
+`1743438583122f7b446e04bc3fcfef0b728f72f1`. It converted one TB360 AAC fixture,
+downloaded the complete MP4 and JSON receipt, preserved the saved file through UI
+clear, and confirmed empty internal registry/locks. All 60 decoded frames, PTS, AAC
+PCM and VR metadata passed independent verification. Only the OS picker was replaced
+with a new native OPFS handle. See the [UI acceptance](evidence/2026-10-18-indexed-ui.json).
+
+The UI keeps legacy as default, requires a destination for explicitly chosen indexed
+conversion, and separates saved facts from cleanup. Explicit recovery retains unknown
+records and bounded per-identity retry closures. Six local handler tests cover recovery
+state using doubles; failure/recovery UI paths are not native-qualified by this successful
+media trial. No OS picker or public deployment acceptance is implied.

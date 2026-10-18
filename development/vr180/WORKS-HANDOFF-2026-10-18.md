@@ -3,7 +3,8 @@
 この資料は候補差分と検証根拠の引継ぎであり、公開・Sites操作の実施記録ではない。
 本担当はChatGPT Sitesの編集、ビルド、保存、公開、設定変更を行わない。
 公開mainの照合値は `d239aa057b6080bd824a89653ec7dedcc5febc75`。
-候補ブランチは `codex/vr180-plan-1-2`。固定したUI試験commitと結果は完了時に追記する。
+候補ブランチは `codex/vr180-plan-1-2`。製品コードの固定版は `1743438583122f7b446e04bc3fcfef0b728f72f1`。
+その後の受入資料のみのcommitは製品コードを変更しない。
 
 ## 取り込む範囲
 
@@ -29,6 +30,10 @@
 大容量2件は元のrunを回収した結果であり、再実行していない。小素材9MP4はこの
 環境へ全回収した。大容量の全媒体回収・decodeは別Actions receiverで行い、
 この環境ではhash付きの原記録を回収・監査した。
+
+実UIはrun `39105653824` で1本を完了し、[MP4/JSON回収と独立検査](evidence/2026-10-18-indexed-ui.json)がPASS。
+TB360 AAC・2秒・60frame、256px/眼・2Mbps。保存先pickerだけをnative OPFS handleに置換しており、
+OSダイアログ・実際の公開URL・回復失敗系の実UIは未検証である。
 
 ## 反映時の照合
 
