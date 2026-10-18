@@ -968,6 +968,7 @@ jobs:
           node docs/shared/vr180/vendor/rebuild-indexed.mjs --esbuild-dir "$vr180_ui_prefix/node_modules/esbuild" --output-dir "$vr180_ui_build/result"
           python3 tools/vr180/prepare-indexed-runtime.py --check
           python3 tools/vr180/probe-indexed-ui.py --output "$RUNNER_TEMP/vr180-indexed-ui-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          python3 tools/vr180/probe-indexed-ui.py --cleanup-retry --output "$RUNNER_TEMP/vr180-indexed-ui-retry-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
 
   index-owner-native:
     if: >-

@@ -47,6 +47,52 @@ PICKER = r"""(() => {
  };
 })();"""
 
+# This wrapper changes one storage operation in the conversion Worker only.
+# Product module bytes and imports remain unchanged. The matching run message
+# supplies the sole namespace eligible for failure; inspect is never affected.
+CLEANUP_FAULT = r"""(() => {
+ const NativeWorker = globalThis.Worker;
+ const state = globalThis.__indexedUIProbe;
+ state.cleanupFault = {blocked: 0, released: false, namespace: null};
+ const code = `
+ const fault = {namespace:null, enabled:true};
+ let productReady=false;const queued=[];
+ const remove = FileSystemDirectoryHandle.prototype.removeEntry;
+ FileSystemDirectoryHandle.prototype.removeEntry = function(name,...args) {
+   if(fault.enabled && fault.namespace && this.name==='vr180-indexed-jobs' && name===fault.namespace) {
+     self.postMessage({type:'probe-cleanup-blocked',namespace:name});
+     return Promise.reject(new DOMException('PROBE_REGISTRY_REMOVE_FAILED','UnknownError'));
+   }
+   return remove.call(this,name,...args);
+ };
+ self.addEventListener('message',event=>{
+   const m=event.data;
+   if(m.type==='run' && m.settings?.executionRoute==='indexed') fault.namespace=m.operationId+'-r'+m.inputRevision;
+   if(m.type==='probe-release-cleanup' && m.namespace===fault.namespace) {
+     fault.enabled=false;self.postMessage({type:'probe-cleanup-released',namespace:fault.namespace});
+   }
+   if(!productReady && ['run','cancel','release'].includes(m.type)) {queued.push(m);event.stopImmediatePropagation();}
+ });`;
+ globalThis.Worker = class extends NativeWorker {
+   constructor(url, options) {
+     const target = new URL(url,location.href);
+     if(target.pathname==='/docs/shared/vr180/worker.mjs') {
+       const wrapped = URL.createObjectURL(new Blob([code+'\nawait import('+JSON.stringify(target.href)+');productReady=true;for(const data of queued)self.dispatchEvent(new MessageEvent("message",{data}));'],{type:'text/javascript'}));
+       super(wrapped,options);
+       this.addEventListener('message',({data:m})=>{
+         if(m.type==='probe-cleanup-blocked') {
+           state.cleanupFault.blocked++;state.cleanupFault.namespace=m.namespace;state.faultWorker=this;
+         }
+         if(m.type==='probe-cleanup-released')state.cleanupFault.released=true;
+       });
+       // The constructor has captured the script URL; keep it until page teardown
+       // to avoid changing browser scheduling in this fault-injection test.
+       (state.wrapperURLs??=[]).push(wrapped);
+     } else super(url,options);
+   }
+ };
+})();"""
+
 SNAPSHOT = r"""() => {
  const text = id => document.getElementById(id)?.textContent?.slice(0,4096) ?? null;
  const disabled = id => document.getElementById(id)?.disabled ?? null;
@@ -94,13 +140,13 @@ REMOVE_OWN_OUTPUT = r"""async () => {
 }"""
 
 
-def verify_receipt(receipt, build, input_bytes, input_hash, *, after_download=False, previous=None):
+def verify_receipt(receipt, build, input_bytes, input_hash, *, after_download=False, previous=None, cleanup_failure=False):
     """Check identity/save facts; independent pixel/audio/media acceptance is separate."""
     r = receipt
     cloud.require(type(r.get('schemaVersion')) is int and r['schemaVersion'] == 2 and r.get('build') == build, 'UI receipt schema/build')
     cloud.require(isinstance(r.get('operationId'), str) and re.fullmatch('[a-zA-Z0-9_-]{1,60}', r['operationId'])
                   and type(r.get('inputRevision')) is int and r['inputRevision'] == 2, 'UI receipt generation')
-    cloud.require(r.get('status') == 'saved' and r.get('executionRoute') == 'indexed'
+    cloud.require(r.get('status') == ('failed' if cleanup_failure else 'saved') and r.get('executionRoute') == 'indexed'
                   and r.get('saveWriteCommitted') is True and r.get('saveCompleted') is True, 'UI saved fact missing')
     expected_settings = {'mode': 'convert', 'layout': 'tb', 'fov': 360, 'eyeSize': 256, 'bitrate': 2000000,
                          'confirmed': True, 'executionRoute': 'indexed'}
@@ -127,7 +173,7 @@ def verify_receipt(receipt, build, input_bytes, input_hash, *, after_download=Fa
                   and observed.get('jobId') == r['operationId'] and observed.get('outputProfileId') == 'default'
                   and observed.get('committed') is True and observed.get('bytes') == output['bytes'] and observed.get('sha256') == output['sha256'], 'UI indexed observation differs')
     registry = r.get('indexedOwnership', {}); identity = registry.get('identity', {})
-    cloud.require(registry.get('status') == 'complete' and identity.get('operationId') == r['operationId']
+    cloud.require(registry.get('status') == ('retained' if cleanup_failure else 'complete') and identity.get('operationId') == r['operationId']
                   and identity.get('inputRevision') == r['inputRevision']
                   and identity.get('namespace') == f"{r['operationId']}-r{r['inputRevision']}", 'UI registry generation/cleanup differs')
     if after_download:
@@ -166,7 +212,73 @@ def read_dom_receipt(page):
     return json.loads(raw)
 
 
-def run_ui(page, report, out, requests):
+def verify_cleanup_recovery(before, after):
+    cloud.require(before.get('saveCompleted') is True and before.get('saveWriteCommitted') is True
+                  and before.get('internalIndexCleanup') == 'pending', 'Saved failure evidence missing')
+    cloud.require(before.get('directSave', {}).get('status') == 'verified'
+                  and before.get('output', {}).get('bytes', 0) > 0, 'Verified saved output missing')
+    recovery = after.get('internalCleanupRecovery', {})
+    cloud.require(recovery.get('status') == 'complete'
+                  and recovery.get('identity') == before.get('indexedOwnership', {}).get('identity')
+                  and recovery.get('externalSaveState') == 'NOT_APPLICABLE', 'Recovery identity or scope differs')
+    cloud.require({k:v for k,v in after.items() if k != 'internalCleanupRecovery'} == before,
+                  'Recovery rewrote original failure or save facts')
+    return {'status':'PASS','scope':'same-job cleanup observation; original failure and saved facts retained'}
+
+
+def run_cleanup_retry(page, report, out):
+    page.wait_for_function("""() => {try {const r=JSON.parse(document.getElementById('diagnostics').textContent);
+      return r.saveCompleted===true && r.internalIndexCleanup==='pending' &&
+       document.getElementById('cleanup-warning').textContent.includes('PROBE_REGISTRY_REMOVE_FAILED');
+      } catch{return false;}}""",timeout=90000)
+    before=read_dom_receipt(page); cloud.write(out/'receipt-before-retry.json',before)
+    fixture=cloud.ROOT/FIXTURE
+    report['receiptVerification']=verify_receipt(before,report['build'],fixture.stat().st_size,cloud.digest(fixture),cleanup_failure=True)
+    report['beforeRetryUI']=page.evaluate(SNAPSHOT)
+    report['faultBeforeRelease']=page.evaluate('() => structuredClone(__indexedUIProbe.cleanupFault)')
+    identity={key:before[key] for key in ('operationId','inputRevision')}
+    cloud.require(report['faultBeforeRelease']['blocked'] > 0
+                  and report['faultBeforeRelease']['namespace'] == before['indexedOwnership']['identity']['namespace'], 'Fault target differs')
+    report['nativeSavedFile']=page.evaluate(READ_SAVED)
+    output=before['output']
+    cloud.require(report['nativeSavedFile']['bytes']==output['bytes']
+                  and report['nativeSavedFile']['sha256']==output['sha256'], 'Saved file differs before retry')
+    page.evaluate("() => __indexedUIProbe.faultWorker.postMessage({type:'probe-release-cleanup',namespace:__indexedUIProbe.cleanupFault.namespace})")
+    page.wait_for_function('() => __indexedUIProbe.cleanupFault.released',timeout=5000)
+    page.locator('#cancel').click(timeout=5000); idle(page)
+    after=read_dom_receipt(page); report['afterRetryUI']=page.evaluate(SNAPSHOT)
+    report['recoveryVerification']=verify_cleanup_recovery(before,after)
+    cloud.require(report['afterRetryUI']['indexCleanupStatus']=='ブラウザ内の一時データの清掃は完了しています。保存状態とは別の確認です。'
+                  and report['afterRetryUI']['cleanupWarning']=='', 'Cleanup display regressed after delayed rejection')
+    report['internalBeforeClear']=page.evaluate(CHECK_INTERNAL,identity)
+    cloud.require(report['internalBeforeClear']['registryAbsent'] and report['internalBeforeClear']['heldJobLocks']==0
+                  and report['internalBeforeClear']['pendingJobLocks']==0, 'Native cleanup incomplete')
+    observed=page.evaluate(READ_SAVED)
+    cloud.require(observed==report['nativeSavedFile'],'Retry changed saved output')
+    report['faultAfterRetry']=page.evaluate('() => structuredClone(__indexedUIProbe.cleanupFault)')
+    # The failed conversion intentionally exposes no prepared result. Recover its
+    # already committed file through the harness's original native output handle.
+    report['outputRecoveryPath']='harness native saved handle; product result remains failed'
+    with page.expect_download(timeout=15000) as event:
+        page.evaluate("""async () => {const s=__indexedUIProbe,url=URL.createObjectURL(await s.handle.getFile());
+          const a=document.createElement('a');a.href=url;a.download='saved-before-cleanup-failure.mp4';a.click();s.recoveryURL=url;}""")
+    event.value.save_as(str(out/'output.mp4'))
+    cloud.require((out/'output.mp4').stat().st_size==output['bytes'] and cloud.digest(out/'output.mp4')==output['sha256'],'Recovered saved file differs')
+    report['fullOutputRecovered']=True
+    open_details(page,'#receipt')
+    with page.expect_download(timeout=10000) as event: page.locator('#receipt').click(timeout=5000)
+    event.value.save_as(str(out/'receipt.json'))
+    cloud.require(0 < (out/'receipt.json').stat().st_size <= RECORD_LIMIT,'Recovery receipt size')
+    cloud.require(json.loads((out/'receipt.json').read_text())==after,'Downloaded recovery receipt differs')
+    report['fullReceiptRecovered']=True
+    (out/'input.mp4').write_bytes((cloud.ROOT/FIXTURE).read_bytes())
+    cloud.write(out/'trial.json',{'name':'ui-cleanup-retry','source':FIXTURE,'settings':before['settings'],**identity,
+        'inputBytes':(cloud.ROOT/FIXTURE).stat().st_size,'inputSHA256':cloud.digest(cloud.ROOT/FIXTURE),
+        'bytes':output['bytes'],'sha256':output['sha256'],'receipt':after})
+    return identity
+
+
+def run_ui(page, report, out, requests, *, cleanup_retry=False):
     report['initial'] = page.evaluate(SNAPSHOT)
     cloud.require(report['initial']['route'] == 'legacy' and report['initial']['mode'] == 'copy'
                   and report['initial']['runDisabled'] is True and report['initial']['pickerCalls'] == 0, 'Initial UI route differs')
@@ -193,6 +305,7 @@ def run_ui(page, report, out, requests):
     report['destinationChosen'] = page.evaluate(SNAPSHOT)
     cloud.require(report['destinationChosen']['pickerCalls'] == 1 and not report['destinationChosen']['runDisabled'], 'Native OPFS destination not accepted')
     page.locator('#run').click(timeout=5000)
+    if cleanup_retry: return run_cleanup_retry(page,report,out)
     page.wait_for_function("""() => {try {const r=JSON.parse(document.getElementById('diagnostics').textContent);
       return !document.getElementById('file').disabled && r.schemaVersion===2;} catch{return false;}}""", timeout=90000)
     receipt = read_dom_receipt(page); report['preparedUI'] = page.evaluate(SNAPSHOT)
@@ -234,7 +347,9 @@ def run_ui(page, report, out, requests):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__); parser.add_argument('--output', type=Path, required=True)
-    out=parser.parse_args().output.resolve(); cloud.require(not out.exists() and not out.is_relative_to(cloud.ROOT), 'Use new output directory outside checkout')
+    parser.add_argument('--cleanup-retry',action='store_true',help='Inject and recover one same-job registry removal failure after save')
+    args=parser.parse_args()
+    out=args.output.resolve(); cloud.require(not out.exists() and not out.is_relative_to(cloud.ROOT), 'Use new output directory outside checkout')
     out.mkdir(parents=True); server=None; started=time.monotonic()
     report={'schema':'vr180-indexed-ui-probe-v1', 'runId':os.environ.get('GITHUB_RUN_ID','local')+'-indexed-ui-'+os.environ.get('GITHUB_RUN_ATTEMPT','1'),
         'status':'BLOCKED', 'scope':'unpublished real-page UI; one small synthetic TB360 AAC input; 1 GiB contract unchanged',
@@ -242,6 +357,10 @@ def main():
         'fullOutputRecovered':False, 'fullReceiptRecovered':False, 'independentMediaAcceptance':'PENDING',
         'pageErrors':[], 'workers':[], 'requests':[], 'deniedRequests':[], 'logOverflow':[], 'cleanup':{'status':'NOT_RUN'},
         'notVerified':['OS save picker/permissions', '5/10 GB through this UI', 'target VR player', 'real camera quality', 'novice usability', 'Sites or Pages deployment']}
+    if args.cleanup_retry:
+        report['runId']+='-cleanup-retry'
+        report['faultInjection']={'scope':'conversion Worker registry namespace removal only; explicit release before UI retry',
+                                 'sha256':hashlib.sha256(CLEANUP_FAULT.encode()).hexdigest(),'source':CLEANUP_FAULT}
     def deadline(*_): raise cloud.Deadline('Indexed UI deadline')
     signal.signal(signal.SIGALRM,deadline); signal.signal(signal.SIGTERM,deadline); signal.alarm(300)
     try:
@@ -271,7 +390,8 @@ def main():
             browser=p.chromium.launch(executable_path=str(cloud.CHROME),headless=True,chromium_sandbox=True,timeout=30000)
             report['browserVersion']=browser.version
             try:
-                context=browser.new_context(accept_downloads=True,service_workers='block'); context.add_init_script(PICKER)
+                context=browser.new_context(accept_downloads=True,service_workers='block')
+                context.add_init_script(PICKER + ('\n'+CLEANUP_FAULT if args.cleanup_retry else ''))
                 def append(key,value,limit):
                     if len(report[key])<limit and len(value)<=4096: report[key].append(value)
                     elif key not in report['logOverflow']: report['logOverflow'].append(key)
@@ -285,9 +405,9 @@ def main():
                 identity=None
                 try:
                     page.goto(origin+PAGE,wait_until='networkidle'); page.wait_for_function("() => document.getElementById('execution-route') && !document.getElementById('file').disabled",timeout=10000)
-                    identity=run_ui(page,report,out,report['requests'])
+                    identity=run_ui(page,report,out,report['requests'],cleanup_retry=args.cleanup_retry)
                     cloud.require([path for path in report['requests'] if path in (entry.FORK,entry.LEGACY)]==[entry.FORK], 'UI codec isolation differs')
-                    cloud.require(report['workers']==['/docs/shared/vr180/worker.mjs']*2, 'UI should run only inspect and one indexed conversion')
+                    cloud.require(len(report['workers'])==2 and (args.cleanup_retry or report['workers']==['/docs/shared/vr180/worker.mjs']*2), 'UI should run only inspect and one indexed conversion')
                     report['status']='PASS'
                 finally:
                     try:

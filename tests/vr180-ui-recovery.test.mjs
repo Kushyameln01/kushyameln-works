@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import {OperationScope} from '../docs/shared/vr180/operations.mjs';
+import {StereoClient as ActualStereoClient} from '../docs/shared/vr180/client.mjs';
 
 const app = (await readFile(new URL('../docs/vr180-studio/app.mjs', import.meta.url), 'utf8')).replace(/^import .*;\n/gm, '');
 const identity = (operationId = 'ui-job', inputRevision = 1, ownerToken = 'a'.repeat(32)) => ({
@@ -14,7 +15,7 @@ const freeze = value => { if (value && typeof value === 'object') { Object.value
 
 // Run the actual page event handlers with a small DOM/API double. This tests UI state,
 // not browser storage, media processing, picker permissions, or registry implementation.
-function page() {
+function page({ClientClass} = {}) {
   const elements = new Map();
   class Element {
     constructor(id = '') { this.id = id; this.value = ''; this.textContent = ''; this.checked = false; this.disabled = false; this.children = []; this.handlers = {}; }
@@ -25,6 +26,8 @@ function page() {
     replaceChildren(...children) { this.children = children; }
     setAttribute(name, value) { this[name] = value; }
     removeAttribute(name) { delete this[name]; }
+    pause() {}
+    load() {}
   }
   const $ = id => { if (!elements.has(id)) elements.set(id, new Element(id)); return elements.get(id); };
   $('mode').value = 'copy'; $('execution-route').value = 'legacy';
@@ -37,14 +40,15 @@ function page() {
       return this.diagnostics;
     }
   }
-  const context = vm.createContext({OperationScope, StereoClient, console, structuredClone, Blob,
-    performance: {now: () => 1}, navigator: {storage: {}, locks: {}},
+  const context = vm.createContext({OperationScope, StereoClient: ClientClass ?? StereoClient, console, structuredClone, Blob,
+    performance: {now: () => 1}, navigator: {storage: {getDirectory() {}}, locks: {request() {}}},
     document: {getElementById: $, createElement: () => new Element(), querySelectorAll: () => []},
     URL: {createObjectURL: () => 'blob:test', revokeObjectURL: () => {}}, setTimeout: () => 1, addEventListener() {},
     listIndexedJobs: async options => { assert.equal(options.limit, 20); deps.listCalls++; return deps.listed; },
     recoverIndexedJob: async id => { deps.calls.push(structuredClone(id)); return deps.recover(id); },
+    showSaveFilePicker: async () => ({name: 'saved.mp4', getFile: async () => new Blob()}),
   });
-  const state = vm.runInContext(app + '\n;({client, get record(){return record;}})', context);
+  const state = vm.runInContext(app + '\n;({client, select, get record(){return record;}})', context);
   async function list(jobs) { deps.listed = {jobs, truncated: false}; await $('registry-list').click(); }
   async function select(index, confirm = true) { $('registry-job').value = String(index); await $('registry-job').change(); $('registry-confirm').checked = confirm; await $('registry-confirm').change(); }
   async function detach(receipt) {
@@ -135,4 +139,55 @@ test('selection and confirmation are both required; unknown records never start 
   await p.select(1, false); assert.equal(p.$('registry-recover').disabled, true); await p.$('registry-recover').click();
   assert.equal(p.deps.calls.length, 0); await p.select(1, true); await p.$('registry-recover').click();
   assert.equal(p.deps.calls.length, 1);
+});
+
+for (const verified of [true, false]) test(`active indexed cleanup retry retains completion after the pending ${verified ? 'verified' : 'committed but unverified'} run rejects`, async () => {
+  const workers = [], tick = () => new Promise(resolve => setImmediate(resolve));
+  class Worker {
+    constructor() { this.messages = []; workers.push(this); }
+    postMessage(message) {
+      this.messages.push(message);
+      if (this.messages[0].settings.mode !== 'inspect') return;
+      queueMicrotask(() => this.emit(message.type === 'run' ? {type: 'result', result: {info: {width: 512, height: 256}}}
+        : {type: 'cleanup-complete', requestId: message.requestId}));
+    }
+    emit(message) { this.onmessage?.({data: {operationId: this.messages[0].operationId, inputRevision: this.messages[0].inputRevision, ...message}}); }
+    terminate() {}
+  }
+  class Client extends ActualStereoClient { constructor(options) { super({...options, WorkerClass: Worker}); } }
+  const p = page({ClientClass: Client});
+  await p.state.select(Object.assign(new Blob(['input']), {name: 'input.mp4'}));
+  p.$('mode').value = 'convert'; p.$('execution-route').value = 'indexed'; p.$('confirmed').checked = true;
+  await p.$('choose-save').click();
+  const running = p.$('run').click(); await tick();
+  const worker = workers.at(-1), {operationId, inputRevision, saveAttemptId} = worker.messages[0];
+  const id = identity(operationId, inputRevision);
+  const original = {schemaVersion: 2, operationId, inputRevision, executionRoute: 'indexed', status: 'failed',
+    output: {bytes: 5, sha256: 'saved-hash'}, indexedOwnership: {identity: id, status: 'retained'}, internalIndexCleanup: 'pending',
+    directSave: {status: verified ? 'verified' : 'failed'}, saveAttempts: [{id: saveAttemptId, resultOperationId: operationId, inputRevision,
+      kind: 'direct', status: verified ? 'verified' : 'failed', commitState: 'committed', verificationState: verified ? 'passed' : 'failed',
+      bytes: 5, sha256: 'saved-hash', wholeFileHashCompared: false, metadataHashMatched: verified}]};
+  worker.emit({type: 'error', error: 'INDEX_CLOSE_FAILED', cleanupComplete: false, cleanupError: 'INDEX_CLOSE_FAILED', diagnostics: original});
+  await tick();
+  const before = JSON.stringify(original);
+  assert.equal(p.state.client.cleanupPending, true); assert.match(p.$('index-cleanup-status').textContent, /未完了/);
+  const canceling = p.$('cancel').click();
+  worker.emit({type: 'cleanup-complete', requestId: worker.messages.at(-1).requestId, inputRevision: inputRevision + 1,
+    diagnostics: original, internalIndexCleanup: 'complete'});
+  assert.equal(p.state.record.internalCleanupRecovery, undefined); assert.equal(p.state.client.cleanupPending, false);
+  assert(p.state.client.current); assert.match(p.$('index-cleanup-status').textContent, /未完了/);
+  worker.emit({type: 'cleanup-complete', requestId: worker.messages.at(-1).requestId,
+    diagnostics: original, internalIndexCleanup: 'complete'});
+  await canceling; await running;
+  assert.equal(p.state.client.current, null); assert.equal(JSON.stringify(original), before);
+  assert.equal(p.state.record.saveCompleted, verified); assert.equal(p.state.record.saveWriteCommitted, true);
+  assert.equal(p.state.record.internalIndexCleanup, 'pending');
+  assert.equal(p.state.record.internalCleanupRecovery?.status, 'complete');
+  assert.deepEqual(JSON.parse(JSON.stringify(p.state.record.internalCleanupRecovery.identity)), id);
+  assert.equal(p.state.record.internalCleanupRecovery.externalSaveState, 'NOT_APPLICABLE');
+  assert.equal(p.state.record.internalCleanupRecovery.source, 'client-cleanup-complete');
+  assert(Object.isFrozen(p.state.record.internalCleanupRecovery)); assert(Object.isFrozen(p.state.record.internalCleanupRecovery.identity));
+  assert.match(p.$('save-fact').textContent, verified ? /保存と内容の照合は完了/ : /書き込みは完了.*確認は未完了/);
+  assert.match(p.$('index-cleanup-status').textContent, /清掃は完了/);
+  assert.equal(JSON.parse(p.$('diagnostics').textContent).internalCleanupRecovery.status, 'complete');
 });

@@ -32,7 +32,16 @@ const client = new StereoClient({onEvent: m => {
   }
   if (m.type === 'cleanup-complete') {
     $('cleanup-warning').textContent = '';
-    showSaveAndCleanup(m.diagnostics ?? record, m.internalIndexCleanup);
+    let receipt = m.diagnostics ?? record;
+    const identity = receipt?.indexedOwnership?.identity;
+    if (m.internalIndexCleanup === 'complete' && sameRegistryIdentity(identity, identity)
+      && m.operationId === receipt.operationId && m.inputRevision === receipt.inputRevision
+      && identity.operationId === receipt.operationId && identity.inputRevision === receipt.inputRevision) {
+      receipt = record = {...receipt, internalCleanupRecovery: Object.freeze({status: 'complete', identity: Object.freeze({...identity}),
+        observedAt: new Date().toISOString(), source: 'client-cleanup-complete', externalSaveState: 'NOT_APPLICABLE'})};
+      $('diagnostics').textContent = JSON.stringify(record, null, 2);
+    }
+    showSaveAndCleanup(receipt, m.internalIndexCleanup);
     update();
   }
   if (m.type === 'output-unconfirmed-detached') showSaveAndCleanup(m.diagnostics, m.internalIndexCleanup);
@@ -80,14 +89,23 @@ function showSaveAndCleanup(receipt, cleanupState) {
     : 'ブラウザ内の一時データの清掃は未完了です。保存済みの動画は清掃しません。';
 }
 function statusError(e) {
-  if (e.diagnostics) { record = e.diagnostics; $('diagnostics').textContent = JSON.stringify(record, null, 2); }
+  if (e.diagnostics) {
+    const recovery = record?.internalCleanupRecovery, receipt = e.diagnostics;
+    // Cleanup may settle before the original run rejects with its earlier receipt.
+    // Carry the matching recovery observation without rewriting that receipt.
+    record = recovery?.status === 'complete' && recovery.identity?.operationId === receipt.operationId
+      && recovery.identity.inputRevision === receipt.inputRevision
+      && sameRegistryIdentity(recovery.identity, receipt.indexedOwnership?.identity)
+      ? {...receipt, internalCleanupRecovery: recovery} : receipt;
+    $('diagnostics').textContent = JSON.stringify(record, null, 2);
+  }
   $('status').textContent = client.cleanupPending ? '清掃が完了していません。削除を再試行してください。' : e.name === 'AbortError' ? '取り消しました。再実行できます。' : errors[e.message] || errors[e.message?.split(':')[0]] || `処理できませんでした：${e.message}`;
   if (e.diagnostics?.saveWriteCommitted) {
     chosenSaveHandle = null;
     $('status').textContent = e.diagnostics.saveCompleted ? '保存と内容の照合は完了しています。その後の処理は完了できませんでした。保存先のファイルを確認してください。' : '保存先への書き込みは完了しましたが、その後の確認を完了できませんでした。保存先のファイルと処理記録を確認してください。';
   }
   if (e.diagnostics?.directSave?.status === 'unknown') $('status').textContent = '保存状態が不明な処理を終了しました。保存先のファイルを確認し、次の処理には新しい保存先を選んでください。';
-  showSaveAndCleanup(e.diagnostics ?? record, e.diagnostics?.internalIndexCleanup);
+  showSaveAndCleanup(record, e.diagnostics?.internalIndexCleanup);
 }
 function update() {
   const busy = !!operations.current || registryBusy, cleanupPending = client.cleanupPending || !!pendingSaveCleanup;

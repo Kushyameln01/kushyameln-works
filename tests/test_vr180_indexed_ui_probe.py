@@ -68,10 +68,25 @@ class UIEvidenceChecks(unittest.TestCase):
             with self.subTest(kind=kind), self.assertRaises(Exception): self.verify(after, after_download=True, previous=before)
 
     def test_browser_expressions_parse_without_rewriting_product_code(self):
-        sources = [probe.PICKER, probe.SNAPSHOT, probe.READ_SAVED, probe.CHECK_INTERNAL, probe.REMOVE_OWN_OUTPUT]
+        sources = [probe.PICKER, probe.CLEANUP_FAULT, probe.SNAPSHOT, probe.READ_SAVED, probe.CHECK_INTERNAL, probe.REMOVE_OWN_OUTPUT]
         script = 'for(const source of '+json.dumps(sources)+')new Function("return ("+source.trim().replace(/;$/, "")+");");'
         result = subprocess.run(['node', '--input-type=module'], input=script, text=True, capture_output=True, timeout=10)
         self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_cleanup_recovery_keeps_original_failure_and_save_facts(self):
+        before=receipt(); before.update(status='failed',internalIndexCleanup='pending')
+        before['indexedOwnership']['status']='retained'
+        self.assertEqual(self.verify(before,cleanup_failure=True)['status'],'PASS')
+        after=copy.deepcopy(before)
+        after['internalCleanupRecovery']={'status':'complete','identity':before['indexedOwnership']['identity'],
+                                         'externalSaveState':'NOT_APPLICABLE'}
+        self.assertEqual(probe.verify_cleanup_recovery(before,after)['status'],'PASS')
+        for mutate in [lambda r:r.update(status='saved'),lambda r:r.update(saveCompleted=False),
+                       lambda r:r['internalCleanupRecovery'].update(identity={'operationId':'other'}),
+                       lambda r:r['internalCleanupRecovery'].update(externalSaveState='verified'),
+                       lambda r:r.update(internalIndexCleanup='complete')]:
+            bad=copy.deepcopy(after); mutate(bad)
+            with self.assertRaises(Exception):probe.verify_cleanup_recovery(before,bad)
 
 
 if __name__ == '__main__': unittest.main()
