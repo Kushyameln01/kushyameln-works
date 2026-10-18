@@ -10,6 +10,11 @@ metadata contract, all timing tables and every compressed packet record/hash.
 and AAC payload, decoder configuration, rational timestamp, and decoded RGB/PCM.
 It permits changed container offsets and time-base units, not changed content.
 
+The default --quality-profile aggregate-30 preserves that aggregate verdict.
+Both profiles additionally record bounded per-frame quality diagnostics. Only
+an explicit aggregate-30-frame-30 selection makes the 30 dB frame floor a
+condition of a new trial. Historical reports are never reclassified.
+
 Python retains one RGB frame pair, fixed PCM blocks and bounded probe records
 and diagnostics, not a movie-wide JSON document/timestamp/event array. The
 installed FFmpeg/ffprobe may retain their own demux/codec indexes; this script
@@ -42,6 +47,7 @@ MAX_EYE_SIZE = 2048
 MAX_FRAME_PIXELS = 4096 * 2048
 STREAM_JSON_BYTES = 256 * 1024
 STDERR_BYTES = 64 * 1024
+QUALITY_PROFILES = ('aggregate-30', 'aggregate-30-frame-30')
 
 # Reuse only the existing independent Python box reader, never producer JS.
 _spec = importlib.util.spec_from_file_location('vr180_independent_metadata',
@@ -53,6 +59,105 @@ _spec.loader.exec_module(metadata)
 def require(condition, message):
     if not condition:
         raise ValueError(message)
+
+
+def select_quality_profile(name):
+    require(name in QUALITY_PROFILES, 'unknown quality profile')
+    profile = {'schema': 'vr180-quality-profile-v1', 'id': name,
+               'aggregateMinimumPSNRdB': 30,
+               'frameDiagnosticThresholdPSNRdB': 30,
+               'frameFloorRequired': name == 'aggregate-30-frame-30',
+               'thresholdRule': 'strictly below threshold fails; equality passes',
+               'scope': 'RGB per decoded eye; frame indices are zero-based decoded pair positions, '
+                        'not embedded frame IDs or eye-marker recognition'}
+    canonical = json.dumps(profile, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
+    return {**profile, 'sha256': hashlib.sha256(canonical).hexdigest()}
+
+
+class FrameQuality:
+    """Constant-size running state plus at most limit completed intervals per eye."""
+    def __init__(self, profile, limit):
+        self.profile = profile
+        self.limit = limit
+        self.hashes = [hashlib.sha256(), hashlib.sha256()]
+        self.previous = [None, None]
+        self.open_intervals = [None, None]
+        self.report = {
+            'schema': 'vr180-frame-quality-v1', 'qualityProfileSHA256': profile['sha256'],
+            'thresholdPSNRdB': profile['frameDiagnosticThresholdPSNRdB'],
+            'floorRequired': profile['frameFloorRequired'],
+            'completeScan': False, 'verdict': 'NOT_EVALUATED',
+            'framesByEye': [0, 0], 'zeroErrorFramesByEye': [0, 0],
+            'minimumPSNRdBByEye': [None, None], 'minimumAtFrameByEye': [None, None],
+            'belowThresholdFramesByEye': [0, 0],
+            'intervalCountByEye': [0, 0], 'intervalsByEye': [[], []],
+            'intervalsDroppedByEye': [0, 0], 'intervalDetailLimitPerEye': limit,
+            'openIntervalsByEye': self.open_intervals,
+            'allFrameSequenceSHA256ByEye': [h.hexdigest() for h in self.hashes],
+            'sequenceEncoding': 'ASCII decimal frameIndex:squaredErrorSum:channelSampleCount followed by LF; '
+                                'one record per compared frame, independently hashed for each eye',
+            'zeroErrorPSNR': 'positive infinity; null minimum means no finite minimum; consult framesByEye',
+            'frameIdentity': 'Decoded pair order only. No embedded frame ID or eye-ID schema is assumed.',
+        }
+
+    def close_interval(self, eye):
+        interval = self.open_intervals[eye]
+        if interval is None:
+            return
+        r = self.report
+        r['intervalCountByEye'][eye] += 1
+        if len(r['intervalsByEye'][eye]) < self.limit:
+            r['intervalsByEye'][eye].append(interval)
+        else:
+            r['intervalsDroppedByEye'][eye] += 1
+        self.open_intervals[eye] = None
+
+    def add(self, index, eye, squared_error, samples):
+        require(type(index) is int and index >= 0 and eye in (0, 1)
+                and type(squared_error) is int and type(samples) is int and samples > 0
+                and 0 <= squared_error <= samples * 255 * 255,
+                'invalid frame quality sample')
+        previous = self.previous[eye]
+        require(previous is None or index > previous, 'frame quality order must increase')
+        if previous is not None and index != previous + 1:
+            self.close_interval(eye)
+        self.previous[eye] = index
+        r = self.report
+        self.hashes[eye].update(f'{index}:{squared_error}:{samples}\n'.encode('ascii'))
+        r['allFrameSequenceSHA256ByEye'][eye] = self.hashes[eye].hexdigest()
+        r['framesByEye'][eye] += 1
+        value = None if squared_error == 0 else 10 * math.log10(255 * 255 * samples / squared_error)
+        if value is None:
+            r['zeroErrorFramesByEye'][eye] += 1
+        else:
+            minimum = r['minimumPSNRdBByEye'][eye]
+            if minimum is None or value < minimum:
+                r['minimumPSNRdBByEye'][eye] = value
+                r['minimumAtFrameByEye'][eye] = index
+        if value is None or value >= r['thresholdPSNRdB']:
+            self.close_interval(eye)
+            return
+        r['belowThresholdFramesByEye'][eye] += 1
+        interval = self.open_intervals[eye]
+        if interval is None:
+            self.open_intervals[eye] = {'firstFrame': index, 'lastFrame': index, 'frames': 1,
+                                        'minimumPSNRdB': value, 'minimumAtFrame': index}
+        else:
+            interval['lastFrame'] = index
+            interval['frames'] += 1
+            if value < interval['minimumPSNRdB']:
+                interval['minimumPSNRdB'] = value
+                interval['minimumAtFrame'] = index
+
+    def finish(self, complete):
+        for eye in (0, 1):
+            self.close_interval(eye)
+        r = self.report
+        r['completeScan'] = bool(complete and r['framesByEye'][0] > 0
+                                 and r['framesByEye'][0] == r['framesByEye'][1])
+        r['verdict'] = ('INCOMPLETE' if not r['completeScan'] else
+                        'DIAGNOSTIC_ONLY' if not r['floorRequired'] else
+                        'FAIL' if any(r['belowThresholdFramesByEye']) else 'PASS')
 
 
 class Errors:
@@ -495,6 +600,8 @@ def compare_pixels(source, output, info, layout, fov, n, mode, limit, runtime, r
     result = report['pixels'] = {'inputFrames': 0, 'outputFrames': 0, 'comparedFrames': 0,
                                  'missingOutputFrames': 0, 'extraOutputFrames': 0,
                                  'maxChannelError': 0, 'maxChannelErrorLocation': None}
+    frame_quality = FrameQuality(report['qualityProfile'], limit)
+    report['frameQuality'] = frame_quality.report
     events = report['events'] = {'inputCountByEye': [0, 0], 'outputCountByEye': [0, 0],
                                 'outputIndicesDroppedByEye': [0, 0], 'allFrameFlagsEqual': True}
     kept_events = [[], []]
@@ -538,7 +645,9 @@ def compare_pixels(source, output, info, layout, fov, n, mode, limit, runtime, r
             result['comparedFrames'] += 1
             for eye in (0, 1):
                 diff = np.subtract(frames[0][eye], frames[1][eye], dtype=np.int16)
-                sums[eye] += int(np.einsum('ijk,ijk->', diff, diff, dtype=np.int64, optimize=False))
+                squared_error = int(np.einsum('ijk,ijk->', diff, diff, dtype=np.int64, optimize=False))
+                sums[eye] += squared_error
+                frame_quality.add(index, eye, squared_error, n * n * 3)
                 absolute = np.abs(diff)
                 maximum = int(absolute.max())
                 if maximum > result['maxChannelError']:
@@ -553,6 +662,12 @@ def compare_pixels(source, output, info, layout, fov, n, mode, limit, runtime, r
     for proc, label in zip(processes, ('expected-rgb', 'actual-rgb')):
         runtime.finish(proc, label)
         report['scans'][label]['endReached'] = True
+    frame_quality.finish(not result['missingOutputFrames'] and not result['extraOutputFrames'])
+    if frame_quality.report['verdict'] == 'FAIL':
+        for eye, count in enumerate(frame_quality.report['belowThresholdFramesByEye']):
+            if count:
+                errors.add('framePSNR', 'explicit quality profile frame floor not met', eye=eye,
+                           frames=count, minimumPSNRdB=frame_quality.report['minimumPSNRdBByEye'][eye])
     require(result['comparedFrames'] > 0, 'no pixel frame pairs')
     psnr = []
     for eye, total in enumerate(sums):
@@ -676,7 +791,7 @@ def file_hash(path, label, runtime, report):
 
 
 def verify_files(source, output, *, layout, fov, eye_size, mode='convert', timeout=1800,
-                 detail_limit=32, log_dir=None):
+                 detail_limit=32, log_dir=None, quality_profile='aggregate-30'):
     source, output = Path(source), Path(output)
     require(layout in ('sbs', 'tb') and fov in (180, 360) and mode in ('copy', 'convert', 'remux'), 'invalid mode/settings')
     require(mode != 'copy' or fov == 180, 'copy requires 180 degree input')
@@ -684,6 +799,7 @@ def verify_files(source, output, *, layout, fov, eye_size, mode='convert', timeo
     require(16 <= eye_size <= MAX_EYE_SIZE, 'eye size must be 16..2048')
     require(math.isfinite(timeout) and 0 < timeout <= 7 * 86400, 'invalid wall-clock budget')
     require(0 <= detail_limit <= 1000, 'detail limit must be 0..1000')
+    selected_quality_profile = select_quality_profile(quality_profile)
     temporary = tempfile.TemporaryDirectory(prefix='vr180-large-oracle-') if log_dir is None else None
     directory = Path(temporary.name if temporary else log_dir)
     runtime = Runtime(directory, timeout)
@@ -691,6 +807,7 @@ def verify_files(source, output, *, layout, fov, eye_size, mode='convert', timeo
     report = {'schema': 'vr180-independent-large-verifier-v1', 'status': 'FAIL',
               'input': str(source), 'output': str(output), 'mode': mode,
               'settings': {'layout': layout, 'fov': fov, 'eyeSize': eye_size},
+              'qualityProfile': selected_quality_profile,
               'oracle': Path(__file__).name, 'scans': {}, 'errors': errors.report,
               'completeScan': False, 'copyTablesIdentical': None,
               'bounds': {'eyePixels': MAX_EYE_SIZE, 'framePixels': MAX_FRAME_PIXELS,
@@ -777,12 +894,14 @@ def main():
     parser.add_argument('--mode', choices=['convert', 'copy', 'remux'], default='convert')
     parser.add_argument('--timeout', type=float, default=1800)
     parser.add_argument('--detail-limit', type=int, default=32)
+    parser.add_argument('--quality-profile', choices=QUALITY_PROFILES, default='aggregate-30',
+                        help='aggregate-30 keeps the original verdict; aggregate-30-frame-30 also requires every frame >=30 dB')
     parser.add_argument('--report', type=Path)
     args = parser.parse_args()
     log_dir = args.report.parent / (args.report.stem + '-stderr') if args.report else None
     report = verify_files(args.input, args.output, layout=args.layout, fov=args.fov,
                           eye_size=args.eye_size, mode=args.mode, timeout=args.timeout,
-                          detail_limit=args.detail_limit, log_dir=log_dir)
+                          detail_limit=args.detail_limit, log_dir=log_dir, quality_profile=args.quality_profile)
     encoded = json.dumps(report, indent=2, allow_nan=False) + '\n'
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)

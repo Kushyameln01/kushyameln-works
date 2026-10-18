@@ -474,8 +474,9 @@ jobs:
           assert v['status']=='PASS_COMPLETE_MEDIA' and v['recoveredBytes']==117814299
           assert v['receiverMediaVerification']['decodedFramesCompared']==300
           if os.environ['VR180_LONG_PROFILE']=='p5-10gb':
-              a=json.loads(Path('development/vr180/evidence/2026-10-17-p5-5gb.json').read_text())
+              a=json.loads(Path('development/vr180/evidence/2026-10-18-p5-5gb.json').read_text())
               assert a['status']=='PASS_COMPLETE_MEDIA' and a['profile']=='p5-5gb'
+              assert a['runId']==39093517116 and a['sourceCommit']=='8fd5ef15f012c54774aa4d7b7984026a1527de0c'
               assert a['independentReview']['status']=='PASS'
               w=a['receiverRecords']['run.json']
               assert w['status']=='PASS_COMPLETE_MEDIA' and w['receiverMediaVerification']['actualInputPayloadBytes']>=5000000000

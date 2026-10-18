@@ -78,14 +78,19 @@ this is not a recovery UI or crash-resumption implementation.
 ## Complete media transfer and independent oracle
 
 `probe-long.py` serves only the fixed source closure and one fork bundle on
-loopback. Media uses sequential, nonce-bound same-origin POSTs of at most
-1 MiB. The Page reads only `File.slice(...).arrayBuffer()`, awaits each exact
-next-offset acknowledgment, and never reads a whole media file into an
-ArrayBuffer. The receiver uses new owned `xb` files, scalar hashes, exact
-ordered offsets, caps and a single request mutex. It flushes, fsyncs, closes
-and rereads the full file before acknowledging completion. Active requests
-stop before incomplete owned files are removed. A replacement inode is left
-untouched. No browser download or base64 media transport is used.
+loopback. The current media path uses one native browser download at a time,
+then copies the completed file through the bounded runner receiver in 1 MiB
+chunks. It uses new owned `xb` files, scalar hashes, ordered offsets and caps,
+then flushes, fsyncs, closes and rereads every byte. The source download identity
+is checked before and after copying. Download cancellation/completion and
+listener cleanup finish before the browser closes; only recorded owned files
+and the empty owned directory are removed. Object URLs are revoked. Native
+download memory is not measured by the Python buffer bound.
+
+The earlier same-origin HTTP POST path failed the long-media deadline and was
+not adopted. Its guard and diagnostic history are retained in
+`../LOOPBACK-TRANSFER-DIAGNOSTIC-2026-10-18.md`; it is not the current successful
+media transport. Base64 is used only for bounded evidence records, not MP4s.
 
 The fixed FFmpeg/FFprobe and NumPy versions are checked before generation.
 The existing full-media verifier scans every frame/packet/PTS, compares all

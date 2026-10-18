@@ -1,0 +1,211 @@
+{
+  "schema": "vr180-p5-complete-media-acceptance-v1",
+  "status": "PASS_COMPLETE_MEDIA",
+  "profile": "p5-5gb",
+  "runId": 39093517116,
+  "sourceCommit": "8fd5ef15f012c54774aa4d7b7984026a1527de0c",
+  "url": "https://github.com/Kushyameln01/kushyameln-works/actions/runs/39093517116",
+  "checkedAtUTC": "2026-10-18T04:09:07.461860+00:00",
+  "hostKind": "Separate fresh GitHub Actions job, not the Codex local filesystem",
+  "localScope": "Locally recovered and verified bounded original evidence only; complete media recovered and scanned in the separate Actions receiver.",
+  "checks": {
+    "identity": "PASS",
+    "receiver_complete": "PASS",
+    "all_scans_eof": "PASS",
+    "frame_counts": "PASS",
+    "capacity": "PASS",
+    "media_hashes": "PASS",
+    "transfer_readback": "PASS",
+    "quality": "PASS",
+    "producer_receiver_originals": "PASS",
+    "source_fixed": "PASS",
+    "source_unchanged_during_oracle": "PASS",
+    "index_cleanup": "PASS",
+    "browser_cleanup": "PASS",
+    "sender_stage_cleanup": "PASS"
+  },
+  "transports": {
+    "39093517116-p5-5gb-1": {
+      "bytes": 42855,
+      "sha256": "a6cb4c7452d9dda2710008117704c99dce26cd0c161eca6532583bc96249c98e",
+      "manifestSHA256": "372df20035d08f50e6358a25929feb8e2f3eda1a768e1f3ba07ef93c28472231",
+      "recordCount": 28,
+      "status": "BYTES_VERIFIED"
+    },
+    "39093517116-segmented-1": {
+      "bytes": 12574,
+      "sha256": "c80ccbc168b2436826b0b1777da7caea84d721c07d3fd1796ae0f80a403c613b",
+      "manifestSHA256": "cdf0032fbc6df435bb64c22d2fdb280f49d7042e96b613e1705185c85993f802",
+      "recordCount": 5,
+      "status": "BYTES_VERIFIED"
+    },
+    "39093517116-receiver-1": {
+      "bytes": 84463,
+      "sha256": "c7dbca9943c0fdcd4cbe801ebe57110c113950a197ed77927379be48d31d4f02",
+      "manifestSHA256": "9dd0a647e7e539063ea1fcfd20c619ea9d419590345ade613eea28a49ba54dae",
+      "recordCount": 53,
+      "status": "BYTES_VERIFIED"
+    }
+  },
+  "media": [
+    {
+      "id": "input",
+      "name": "input.mp4",
+      "bytes": 5002061681,
+      "sha256": "85af55a613d2b616b9798103e0d712ffb414679e1dc644d4e5667b0c2c3f7da4"
+    },
+    {
+      "id": "output",
+      "name": "output.mp4",
+      "bytes": 4998824384,
+      "sha256": "160cf6dfe353951c461eb6236079882165d94620b31182a82d93c6c330d674c9"
+    }
+  ],
+  "receiverRecords": {
+    "run.json": {
+      "runId": "39093517116-receiver-1",
+      "status": "PASS_COMPLETE_MEDIA",
+      "profile": "p5-5gb",
+      "checkoutCommit": "8fd5ef15f012c54774aa4d7b7984026a1527de0c",
+      "receiverJob": "p5-long-receiver",
+      "fullMediaValidation": "PASS",
+      "recoveredBytes": 10000886065,
+      "dataArtifacts": 76,
+      "downloadArtifacts": 78,
+      "receiverMediaVerification": {
+        "status": "PASS",
+        "completeScan": true,
+        "qualityVerdict": "PASS",
+        "capacityVerdict": "PASS",
+        "frames": 25203,
+        "decodedFramesCompared": 25203,
+        "packetCounts": {
+          "input": 25203,
+          "output": 25203
+        },
+        "actualInputPayloadBytes": 5001939848,
+        "targetInputPayloadBytes": 5000000000,
+        "actualOutputBytes": 4998824384,
+        "outputExceeds4GiB": true,
+        "eyePSNRdB": [
+          39.66802892332973,
+          39.71285555953016
+        ],
+        "maxPtsErrorSeconds": 0.0,
+        "expectedEvents": {
+          "countPerEye": 252,
+          "sequenceSHA256": "1cb0dd4fa8c246d64d34d1f7a2321629c3d8f56dea1641aafa27445954d55ffd",
+          "periodFrames": 300,
+          "offsets": [
+            29,
+            30,
+            31
+          ]
+        },
+        "vrMetadata": {
+          "path": "moov/trak(vide)/mdia/minf/stbl/stsd/avc1",
+          "width": 1024,
+          "height": 512,
+          "stereo_mode": 2,
+          "projection": "equi",
+          "pose_degrees": [
+            0,
+            0,
+            0
+          ],
+          "bounds_u0_32": {
+            "top": 0,
+            "bottom": 0,
+            "left": 1073741824,
+            "right": 1073741824
+          },
+          "metadata_source": "Kushyameln Works VR180 b1",
+          "active_st3d_count": 1,
+          "active_sv3d_count": 1,
+          "entry_children": [
+            "avcC",
+            "colr",
+            "btrt",
+            "st3d",
+            "sv3d"
+          ]
+        },
+        "recoveredMediaBytesAndHashesMatched": true,
+        "allStreamsScannedToEnd": true,
+        "scope": "Full recovered silent 30fps synthetic media; not AAC/60fps, real-camera or VR-player acceptance."
+      }
+    }
+  },
+  "comparisonSupplement": {
+    "schema": "vr180-comparison-status-v1",
+    "sourceRecordsUnmodified": true,
+    "generation": {
+      "status": "MATCH",
+      "basis": "generated payload/packets and committed input full readback"
+    },
+    "save": {
+      "status": "MATCH",
+      "basis": "explicit postcommit whole-file reread and metadata expected hash; generic absent expectedSha is NOT_COMPARED"
+    },
+    "transfer": {
+      "status": "MATCH",
+      "basis": "producer native download fsync/close/full reread and exact whole hashes"
+    },
+    "receive": {
+      "status": "MATCH",
+      "basis": "all 76 parts and complete input/output SHA"
+    },
+    "media": {
+      "status": "MATCH",
+      "basis": "all 25203 decoded frames/packets, aggregate PSNR>=30, PTS, events, VR"
+    },
+    "audio": {
+      "status": "NOT_APPLICABLE",
+      "basis": "silent fixture"
+    },
+    "targetPlayback": {
+      "status": "NOT_COMPARED",
+      "basis": "no target VR player test"
+    }
+  },
+  "independentReview": {
+    "status": "PASS",
+    "reviewerRole": "Separate read-only audit agent",
+    "reviewedDraftSHA256": "5e5ac6aeaa1a2367607304728cf7a2f1be3ae2cb812768f3c83a9e196b59aab3",
+    "scope": "Original evidence bytes/hashes (28+5+53 records), 76 part ordered offsets and ZIP digest/CRC receipts, cross-stage media descriptors, embedded original records and fixed source hashes. Media itself was fully decoded in the separate Actions receiver; this reviewer did not redecode locally.",
+    "nextProfileDecision": "PROCEED to existing 10 GB preflight and capacity trial; maintain fresh runner/receiver free-space gates, deadlines and safe failure.",
+    "limitations": "One synthetic silent 30fps SBS180 same-size reencode; no real camera, long AAC, 60fps, VR player or OS picker acceptance."
+  },
+  "notVerified": [
+    "10 GB",
+    "long AAC",
+    "60 fps",
+    "real camera media",
+    "OS save picker",
+    "target VR playback",
+    "usability",
+    "large-volume cancellation/recovery",
+    "public adapter integration",
+    "true total memory peak",
+    "repeatability/performance distribution",
+    "actual 360 crop / TB-to-SBS geometry in this long trial",
+    "per-frame quality criteria / embedded frame-ID scan for this original run"
+  ],
+  "browser": {
+    "version": "155.0.8059.39",
+    "sampledSummedRssBytes": 2332946432,
+    "truePeakMeasured": false,
+    "sharedPagesMayBeCountedMultipleTimes": true,
+    "namespaceCleanup": "REMOVED",
+    "profileCleanup": "REMOVED",
+    "downloadDirectoryCleanup": "REMOVED",
+    "closed": true
+  },
+  "timingSeconds": {
+    "generation": 327.4852,
+    "conversion": 324.3645,
+    "nativeDownloadAndReadback": 67.27214073700009,
+    "receiverFullOracle": 326.271057
+  },
+  "recordPolicy": "Allowlisted public acceptance summary. Original records remain in the authorized local workspace and original Actions run. Owner tickets, owner tokens, temporary paths, download locations and source runtime inventories are excluded."
+}

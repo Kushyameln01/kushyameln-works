@@ -1,5 +1,6 @@
 """Independent oracle regression tests; only the existing two-second media is used."""
 import importlib.util
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -110,6 +111,35 @@ class LargeOracle(unittest.TestCase):
         self.assertEqual(report['frameMetadata']['inputVideoFrames'], 60)
         self.assertGreater(report['packets']['input']['count'], 60)
         self.assertGreater(report['frameMetadata']['inputAudioFrames'], 0)
+        self.assertEqual(report['qualityProfile']['id'], 'aggregate-30')
+        self.assertFalse(report['qualityProfile']['frameFloorRequired'])
+        self.assertTrue(report['frameQuality']['completeScan'])
+        self.assertEqual(report['frameQuality']['framesByEye'], [60, 60])
+        self.assertEqual(report['frameQuality']['zeroErrorFramesByEye'], [60, 60])
+        self.assertEqual(report['frameQuality']['verdict'], 'DIAGNOSTIC_ONLY')
+
+    def test_local_frame_damage_preserves_default_but_fails_explicit_frame_floor(self):
+        damaged = self.transcode('one-frame-quality-dip', [
+            '-vf', "drawbox=x=64:y=64:w=48:h=48:color=black:t=fill:enable='eq(n,5)'"
+        ])
+        default = self.verify(damaged)
+        self.assertEqual(default['status'], 'PASS', default)
+        quality = default['frameQuality']
+        self.assertTrue(quality['completeScan'])
+        self.assertGreater(quality['belowThresholdFramesByEye'][0], 0)
+        self.assertEqual(quality['minimumAtFrameByEye'][0], 5)
+        self.assertTrue(any(row['firstFrame'] <= 5 <= row['lastFrame'] for row in quality['intervalsByEye'][0]))
+        self.assertEqual(quality['verdict'], 'DIAGNOSTIC_ONLY')
+        strict = self.verify(damaged, quality_profile='aggregate-30-frame-30')
+        self.assertEqual(strict['status'], 'FAIL', strict)
+        self.assertTrue(strict['completeScan'])
+        self.assertEqual(strict['eyePSNRdB'], default['eyePSNRdB'])
+        self.assertNotIn('psnr', strict['errors']['byKind'])
+        self.assertIn('framePSNR', strict['errors']['byKind'])
+        self.assertEqual(strict['frameQuality']['verdict'], 'FAIL')
+        self.assertEqual(strict['frameQuality']['allFrameSequenceSHA256ByEye'],
+                         quality['allFrameSequenceSHA256ByEye'])
+        self.assertNotEqual(strict['qualityProfile']['sha256'], default['qualityProfile']['sha256'])
 
     def test_copy_compares_all_packet_fields_and_timing_tables(self):
         report = self.verify(mode='copy')
@@ -205,6 +235,101 @@ class LargeOracle(unittest.TestCase):
         self.assertEqual(report['events']['outputCountByEye'], [6, 6])
         self.assertEqual(report['events']['outputIndicesDroppedByEye'], [5, 5])
         self.assertTrue(report['events']['allFrameFlagsEqual'])
+
+
+class FrameQualityDiagnostics(unittest.TestCase):
+    def accumulator(self, limit=2, profile='aggregate-30'):
+        return oracle.FrameQuality(oracle.select_quality_profile(profile), limit)
+
+    def test_profile_is_recorded_and_canonical_hash_is_not_self_referential(self):
+        selected = oracle.select_quality_profile('aggregate-30')
+        digest = selected.pop('sha256')
+        expected = hashlib.sha256(json.dumps(selected, sort_keys=True, separators=(',', ':'),
+                                            allow_nan=False).encode()).hexdigest()
+        self.assertEqual(digest, expected)
+        self.assertFalse(selected['frameFloorRequired'])
+        self.assertEqual(selected['aggregateMinimumPSNRdB'], 30)
+        with self.assertRaisesRegex(ValueError, 'unknown quality profile'):
+            oracle.select_quality_profile('silently-adjusted-threshold')
+
+    def test_exact_threshold_and_zero_error_do_not_fail_the_floor(self):
+        quality = self.accumulator(profile='aggregate-30-frame-30')
+        # 65025 / 1000 yields exactly 30 dB; zero error is positive infinity.
+        for eye in (0, 1):
+            quality.add(0, eye, 0, 1000)
+            quality.add(1, eye, 65025, 1000)
+            quality.add(2, eye, 65024, 1000)
+        quality.finish(True)
+        self.assertEqual(quality.report['verdict'], 'PASS')
+        self.assertEqual(quality.report['minimumPSNRdBByEye'], [30, 30])
+        self.assertEqual(quality.report['minimumAtFrameByEye'], [1, 1])
+        self.assertEqual(quality.report['belowThresholdFramesByEye'], [0, 0])
+        self.assertEqual(quality.report['zeroErrorFramesByEye'], [1, 1])
+        # Immediately below the fixed floor, rather than a rounded display value.
+        other = self.accumulator(profile='aggregate-30-frame-30')
+        for eye in (0, 1):
+            other.add(0, eye, 65026, 1000)
+        other.finish(True)
+        self.assertEqual(other.report['verdict'], 'FAIL')
+
+    def test_intervals_merge_close_at_eof_and_do_not_bridge_missing_frames(self):
+        quality = self.accumulator(limit=2)
+        for index, squared in ((0, 65026), (1, 130050), (2, 0), (3, 65026), (5, 65026)):
+            for eye in (0, 1):
+                quality.add(index, eye, squared, 1000)
+        quality.finish(False)
+        report = quality.report
+        self.assertEqual(report['verdict'], 'INCOMPLETE')
+        self.assertEqual(report['belowThresholdFramesByEye'], [4, 4])
+        self.assertEqual(report['intervalCountByEye'], [3, 3])
+        self.assertEqual(report['intervalsDroppedByEye'], [1, 1])
+        self.assertEqual(report['openIntervalsByEye'], [None, None])
+        self.assertEqual([(r['firstFrame'], r['lastFrame'], r['frames'])
+                          for r in report['intervalsByEye'][0]], [(0, 1, 2), (3, 3, 1)])
+        self.assertEqual(report['intervalsByEye'][0][0]['minimumAtFrame'], 1)
+        self.assertEqual(report['minimumAtFrameByEye'], [1, 1])
+
+    def test_all_frame_hashes_cover_dropped_intervals_and_zero_error_frames(self):
+        quality = self.accumulator(limit=0)
+        expected = [hashlib.sha256(), hashlib.sha256()]
+        for index in range(20):
+            for eye in (0, 1):
+                squared = 65026 + eye if index % 2 == 0 else 0
+                quality.add(index, eye, squared, 1000)
+                expected[eye].update(f'{index}:{squared}:1000\n'.encode('ascii'))
+        quality.finish(True)
+        self.assertEqual(quality.report['allFrameSequenceSHA256ByEye'], [h.hexdigest() for h in expected])
+        self.assertEqual(quality.report['intervalsByEye'], [[], []])
+        self.assertEqual(quality.report['intervalCountByEye'], [10, 10])
+        self.assertEqual(quality.report['intervalsDroppedByEye'], [10, 10])
+        self.assertNotEqual(*quality.report['allFrameSequenceSHA256ByEye'])
+
+    def test_large_frame_count_does_not_accumulate_frame_or_interval_arrays(self):
+        quality = self.accumulator(limit=2)
+        tracemalloc.start()
+        try:
+            for index in range(30000):
+                for eye in (0, 1):
+                    quality.add(index, eye, 65026 if index % 2 == 0 else 0, 1000)
+            quality.finish(True)
+            peak = tracemalloc.get_traced_memory()[1]
+        finally:
+            tracemalloc.stop()
+        self.assertLess(peak, 128 * 1024)
+        self.assertEqual(quality.report['framesByEye'], [30000, 30000])
+        self.assertEqual(quality.report['intervalCountByEye'], [15000, 15000])
+        self.assertEqual(quality.report['intervalsDroppedByEye'], [14998, 14998])
+        self.assertEqual([len(rows) for rows in quality.report['intervalsByEye']], [2, 2])
+
+    def test_incomplete_or_unpaired_scan_never_claims_frame_acceptance(self):
+        quality = self.accumulator(profile='aggregate-30-frame-30')
+        quality.add(0, 0, 0, 1000)
+        quality.finish(True)
+        self.assertFalse(quality.report['completeScan'])
+        self.assertEqual(quality.report['verdict'], 'INCOMPLETE')
+        self.assertEqual(quality.report['minimumPSNRdBByEye'], [None, None])
+        with self.assertRaisesRegex(ValueError, 'order must increase'):
+            quality.add(0, 0, 1, 1000)
 
 
 class StreamingMechanics(unittest.TestCase):
