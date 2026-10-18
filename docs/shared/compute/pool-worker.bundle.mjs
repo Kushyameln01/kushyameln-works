@@ -2379,7 +2379,7 @@ function inspectTaskRequest3(r) {
   const payload = r.taskType === "unity-parse-batch" ? { files: batchFiles(r.payload?.files) } : { path: safePath2(r.payload?.path), bytes: byteArray(r.payload?.bytes) };
   return { protocolVersion: 1, taskType: r.taskType, taskVersion: 1, jobId: r.jobId, inputRevision: r.inputRevision, wasmVariant: "javascript", kernelHash: null, payload, limits: { timeoutMs } };
 }
-var snapshotTaskRequest3 = (r) => ({ ...r, payload: r.taskType === "unity-parse-batch" ? { files: r.payload.files.map((f) => ({ path: f.path, bytes: f.bytes.slice() })) } : { path: r.payload.path, bytes: r.payload.bytes.slice() } });
+var snapshotTaskRequest3 = (r) => ({ ...r, payload: r.taskType === "unity-parse-batch" ? { files: r.payload.files.map((f) => ({ path: f.path, bytes: new Uint8Array(f.bytes) })) } : { path: r.payload.path, bytes: new Uint8Array(r.payload.bytes) } });
 var inputBytes3 = (r) => r.taskType === "unity-parse-batch" ? r.payload.files.reduce((n, f) => n + f.bytes.byteLength, 0) : r.payload.bytes.byteLength;
 var kernelInfo3 = () => ({ key: PARSER_VERSION, requiresWasm: false, retainResult: false, sha256: null, variant: "javascript", abi: PARSER_VERSION });
 var resultShape3 = (r) => r.taskType === "unity-parse-batch" ? { kind: "unity-parsed-batch", count: r.payload.files.length, paths: r.payload.files.map((f) => f.path), byteLengths: r.payload.files.map((f) => f.bytes.byteLength) } : { kind: r.taskType === "unity-expand" ? "unity-expanded" : "unity-parsed", path: r.payload.path, byteLength: r.payload.bytes.byteLength };

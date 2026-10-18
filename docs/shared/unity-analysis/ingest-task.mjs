@@ -23,7 +23,7 @@ export function inspectTaskRequest(r){
  const payload=r.taskType==='unity-parse-batch'?{files:batchFiles(r.payload?.files)}:{path:safePath(r.payload?.path),bytes:byteArray(r.payload?.bytes)};
  return {protocolVersion:1,taskType:r.taskType,taskVersion:1,jobId:r.jobId,inputRevision:r.inputRevision,wasmVariant:'javascript',kernelHash:null,payload,limits:{timeoutMs}};
 }
-export const snapshotTaskRequest=r=>({...r,payload:r.taskType==='unity-parse-batch'?{files:r.payload.files.map(f=>({path:f.path,bytes:f.bytes.slice()}))}:{path:r.payload.path,bytes:r.payload.bytes.slice()}});
+export const snapshotTaskRequest=r=>({...r,payload:r.taskType==='unity-parse-batch'?{files:r.payload.files.map(f=>({path:f.path,bytes:new Uint8Array(f.bytes)}))}:{path:r.payload.path,bytes:new Uint8Array(r.payload.bytes)}});
 export const inputBytes=r=>r.taskType==='unity-parse-batch'?r.payload.files.reduce((n,f)=>n+f.bytes.byteLength,0):r.payload.bytes.byteLength;
 export const kernelInfo=()=>({key:PARSER_VERSION,requiresWasm:false,retainResult:false,sha256:null,variant:'javascript',abi:PARSER_VERSION});
 export const resultShape=r=>r.taskType==='unity-parse-batch'?{kind:'unity-parsed-batch',count:r.payload.files.length,paths:r.payload.files.map(f=>f.path),byteLengths:r.payload.files.map(f=>f.bytes.byteLength)}:{kind:r.taskType==='unity-expand'?'unity-expanded':'unity-parsed',path:r.payload.path,byteLength:r.payload.bytes.byteLength};

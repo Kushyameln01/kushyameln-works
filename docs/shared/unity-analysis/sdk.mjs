@@ -14,7 +14,7 @@ export function createUnityAnalyzer({pool,concurrency=2,moduleReuse=false,worker
   // Own immutable snapshot: caller edits cannot change a queued or compared input.
   before=structuredClone(before);after=after?structuredClone(after):null;
   const s={jobs:[],responses:[],cancelled:false,done:false,report:null};sessions.set(sessionId,s);const started=performance.now();
-  const timer=setTimeout(()=>{s.deadline=true;cancel(sessionId);},sessionTimeoutMs);
+  const timer=setTimeout(()=>{if(s.cancelled||s.done||sessions.get(sessionId)!==s)return;s.deadline=true;cancel(sessionId);},sessionTimeoutMs);
   async function submit(taskType,payload){
    if(s.cancelled)throw Error(s.deadline?'SESSION_TIMEOUT':'CANCELLED');const jobId=`${sessionId}.${++sequence}`;
    const h=pool.submit({protocolVersion:1,taskType,taskVersion:1,jobId,inputRevision,payload,limits:{timeoutMs}});s.jobs.push(h.jobId);
