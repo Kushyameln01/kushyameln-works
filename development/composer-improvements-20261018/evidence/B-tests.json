@@ -1,0 +1,28 @@
+{
+  "diagnostics": {
+    "status": "fulfilled",
+    "value": {
+      "chunk_id": "fcfc0a",
+      "wall_time_seconds": 0.186563716,
+      "exit_code": 0,
+      "original_token_count": 32,
+      "output": "{\"status\":\"PASS\",\"cases\":30,\"note\":\"Mocked boundary regressions; does not certify browser Worker, WASM, Unity, MA or VRChat.\"}\n"
+    }
+  },
+  "packageSelection": {
+    "status": "PASS",
+    "groups": 12,
+    "scope": "Published Pages code, VM Worker harness with --experimental-vm-modules; not browser layout or Unity runtime",
+    "priorHarnessLaunchFailed": true
+  },
+  "sdkLimits": {
+    "status": "fulfilled",
+    "value": {
+      "chunk_id": "c918f6",
+      "wall_time_seconds": 0.000046049,
+      "exit_code": 0,
+      "original_token_count": 594,
+      "output": "{\n  \"status\": \"PASS\",\n  \"commit\": \"20edc32b13981320686d5418852cacf589d24a63\",\n  \"scope\": \"Deployed code in Node Worker threads with real shared File SDK and WASM; not browser timing\",\n  \"settings\": {\n    \"concurrency\": 2,\n    \"moduleReuse\": false\n  },\n  \"samples\": [\n    {\n      \"kind\": \"snapshot\",\n      \"expectedStatus\": \"failed\",\n      \"status\": \"failed\",\n      \"reason\": {\n        \"code\": \"DIAGNOSTIC_FAILED\",\n        \"message\": \"SNAPSHOT_IR_LIMIT\"\n      },\n      \"operationId\": \"sd-549aa664-f2f9-4ff4-aa64-548608e68d46\",\n      \"context\": {\n        \"inputRevision\": 1,\n        \"selectionRevision\": 1,\n        \"planRevision\": 1,\n        \"target\": \"input\"\n      },\n      \"timings\": {\n        \"callerElapsedMs\": 321.87224000000003,\n        \"prepareMs\": 0.16935699999999088,\n        \"sdkCallMs\": 317.990108\n      },\n      \"inventory\": [\n        {\n          \"path\": \"Assets/one.asset\",\n          \"bytes\": 2500076,\n          \"sha256\": \"a7a3b62f5da01bf954817a747633b1cd77a537531b2922d16005c4e338ce9ea2\"\n        },\n        {\n          \"path\": \"Assets/two.asset\",\n          \"bytes\": 2500076,\n          \"sha256\": \"1bbc3670370a8898744166b7d81023c5b3ff42b95747c4e31b7f12534e4bbf4f\"\n        }\n      ],\n      \"after\": null,\n      \"recovery\": {\n        \"status\": \"succeeded\",\n        \"objects\": 1\n      }\n    },\n    {\n      \"kind\": \"report\",\n      \"expectedStatus\": \"failed\",\n      \"status\": \"failed\",\n      \"reason\": {\n        \"code\": \"DIAGNOSTIC_FAILED\",\n        \"message\": \"Report budget exceeded; no truncated export produced\"\n      },\n      \"operationId\": \"sd-231ba719-1c53-473b-a235-cec6eeb7df00\",\n      \"context\": {\n        \"inputRevision\": 1,\n        \"selectionRevision\": 1,\n        \"planRevision\": 1,\n        \"target\": \"compare\"\n      },\n      \"timings\": {\n        \"callerElapsedMs\": 1519.629479,\n        \"prepareMs\": 0.04080999999996493,\n        \"sdkCallMs\": 1518.890727\n      },\n      \"inventory\": [\n        {\n          \"path\": \"Assets/one.asset\",\n          \"bytes\": 2500076,\n          \"sha256\": \"a7a3b62f5da01bf954817a747633b1cd77a537531b2922d16005c4e338ce9ea2\"\n        }\n      ],\n      \"after\": [\n        {\n          \"path\": \"Assets/one.asset\",\n          \"bytes\": 2500076,\n          \"sha256\": \"1bbc3670370a8898744166b7d81023c5b3ff42b95747c4e31b7f12534e4bbf4f\"\n        }\n      ],\n      \"recovery\": {\n        \"status\": \"succeeded\",\n        \"objects\": 1\n      }\n    }\n  ]\n}\n"
+    }
+  }
+}

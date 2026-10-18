@@ -1,0 +1,263 @@
+[
+  {
+    "case": "generated-output",
+    "status": "入力側 25ファイル / 指摘 8件。全件JSONと診断した素材範囲は別に記録しています。",
+    "reportPath": "regressions/0-generated-output.json",
+    "reportPathSHA256": "e67a663572161899731305f64a518613324fdfd08867c0a8d46f214d417b4237",
+    "reportPathBytes": 277037,
+    "observedReportStatus": "succeeded",
+    "sdkReportNull": false,
+    "diff": null,
+    "allSupplied": null
+  },
+  {
+    "case": "same-output-compare",
+    "status": "入力側 25ファイル / 指摘 8件、比較側 25ファイル / 指摘 8件。全件JSONと診断した素材範囲は別に記録しています。",
+    "reportPath": "regressions/1-same-output-compare.json",
+    "reportPathSHA256": "bf142b334d422cb3188fdac007d599aae1fc744632da9906d2ae1bd7d1d34822",
+    "reportPathBytes": 554928,
+    "observedReportStatus": "succeeded",
+    "sdkReportNull": false,
+    "diff": {
+      "kind": "unity-diff",
+      "changes": [],
+      "ambiguous": [],
+      "fileChanges": [],
+      "completeness": {
+        "totalCount": 0,
+        "returnedCount": 0,
+        "truncated": false
+      },
+      "identityPolicy": "GUID/fileID exact; missing GUID uses explicit provisional input path; no heuristic remapping"
+    },
+    "allSupplied": null
+  },
+  {
+    "case": "cancel",
+    "status": "取消：共有診断を取り消しました。",
+    "metrics": {
+      "schemaVersion": "composer-diagnostics-measurements/1",
+      "operationId": "sd-c6c03cf2-a818-49d8-94c7-272d6e3ebde4",
+      "status": "cancelled",
+      "unit": "ms",
+      "service": {
+        "schemaVersion": "composer-diagnostics-service-metrics/1",
+        "operationId": "sd-c6c03cf2-a818-49d8-94c7-272d6e3ebde4",
+        "context": {
+          "inputRevision": 26,
+          "selectionRevision": 26,
+          "planRevision": 52,
+          "target": "input"
+        },
+        "status": "cancelled",
+        "unit": "ms",
+        "stages": {
+          "prepare": {
+            "calls": 1,
+            "totalMs": 65.90000000223517,
+            "lastMs": 65.90000000223517
+          },
+          "sdkSettlement": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          },
+          "envelopeSize": {
+            "calls": 1,
+            "totalMs": 0.8999999985098839,
+            "lastMs": 0.8999999985098839
+          },
+          "freeze": {
+            "calls": 314,
+            "totalMs": 1.4999999962747097,
+            "lastMs": 0
+          },
+          "fullJSON": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          }
+        }
+      },
+      "ui": {
+        "operationId": "sd-c6c03cf2-a818-49d8-94c7-272d6e3ebde4",
+        "operationToResultDomMs": 1016.1999999992549,
+        "stages": {
+          "domUpdate": {
+            "calls": 313,
+            "totalMs": 14.500000011175871,
+            "lastMs": 0.5
+          },
+          "rowsDomUpdate": {
+            "calls": 313,
+            "totalMs": 5.899999998509884,
+            "lastMs": 0
+          },
+          "rowJSON": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          },
+          "coverageJSON": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          },
+          "fullJSONDomUpdate": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          },
+          "rowDetailDomUpdate": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          },
+          "coverageDetailDomUpdate": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          }
+        }
+      },
+      "timingNotes": "Nested intervals must not be added. DOM intervals end after synchronous updates, not browser paint. prepare and sdkSettlement include waiting until resolve/reject; no terminal observation is fabricated while pending. Receipt serialization is excluded from DOM intervals."
+    },
+    "generateEnabled": true,
+    "reportPath": "regressions/2-cancel.json",
+    "reportPathSHA256": "1f677b71949130affcf0c48d98fdd3520d71bb00bf996a15c68bb6d937799007",
+    "reportPathBytes": 93260,
+    "observedReportStatus": "cancelled",
+    "sdkReportNull": true
+  },
+  {
+    "case": "cancel-retry",
+    "status": "succeeded",
+    "reportPath": "regressions/3-cancel-retry.json",
+    "operationId": "sd-9f86ea9d-745a-411a-814e-2ae9a85567eb",
+    "reportPathSHA256": "3ca5e2c37923d1e491c3cef27f86255688d3512fc46fdff4aa532852983b422f",
+    "reportPathBytes": 8706378,
+    "observedReportStatus": "succeeded",
+    "sdkReportNull": false,
+    "diff": null,
+    "allSupplied": null
+  },
+  {
+    "case": "diagnostic-text-limit",
+    "reportPath": "regressions/4-diagnostic-text-limit.json",
+    "generateEnabled": true,
+    "metrics": {
+      "schemaVersion": "composer-diagnostics-measurements/1",
+      "operationId": "sd-faaaf87d-4433-44f0-935e-75e737b024f7",
+      "status": "failed",
+      "unit": "ms",
+      "service": {
+        "schemaVersion": "composer-diagnostics-service-metrics/1",
+        "operationId": "sd-faaaf87d-4433-44f0-935e-75e737b024f7",
+        "context": {
+          "inputRevision": 27,
+          "selectionRevision": 27,
+          "planRevision": 54,
+          "target": "input"
+        },
+        "status": "failed",
+        "unit": "ms",
+        "stages": {
+          "prepare": {
+            "calls": 1,
+            "totalMs": 17.100000001490116,
+            "lastMs": 17.100000001490116
+          },
+          "sdkSettlement": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          },
+          "envelopeSize": {
+            "calls": 1,
+            "totalMs": 0,
+            "lastMs": 0
+          },
+          "freeze": {
+            "calls": 3,
+            "totalMs": 0.09999999776482582,
+            "lastMs": 0
+          },
+          "fullJSON": {
+            "calls": 1,
+            "totalMs": 0.09999999776482582,
+            "lastMs": 0.09999999776482582
+          }
+        }
+      },
+      "ui": {
+        "operationId": "sd-faaaf87d-4433-44f0-935e-75e737b024f7",
+        "operationToResultDomMs": 18.900000002235174,
+        "stages": {
+          "domUpdate": {
+            "calls": 2,
+            "totalMs": 0.8000000044703484,
+            "lastMs": 0.7000000029802322
+          },
+          "rowsDomUpdate": {
+            "calls": 2,
+            "totalMs": 0.10000000149011612,
+            "lastMs": 0.10000000149011612
+          },
+          "rowJSON": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          },
+          "coverageJSON": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          },
+          "fullJSONDomUpdate": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          },
+          "rowDetailDomUpdate": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          },
+          "coverageDetailDomUpdate": {
+            "calls": 0,
+            "totalMs": 0,
+            "lastMs": null
+          }
+        }
+      },
+      "timingNotes": "Nested intervals must not be added. DOM intervals end after synchronous updates, not browser paint. prepare and sdkSettlement include waiting until resolve/reject; no terminal observation is fabricated while pending. Receipt serialization is excluded from DOM intervals."
+    },
+    "outputPath": "regressions/4-diagnostic-text-limit.unitypackage",
+    "result": "16 Asset / 6.4 KiB / 同期 8 bit\n\nUnitypackageを保存\n検査結果を保存\n構成を保存\n\n生成した構造と登録設定を静的検査済み。Unity Import・MAビルド・VRChatの実動作は未確認です。\n\nVRChat SDKとModular AvatarのあるUnityプロジェクトへImportします。\nAssets/ComposerFixture/Installer.prefabを対象アバターへ配置します。\nMAビルド後の登録・同期量・既存構成との競合と、実際の動作を確認します。\n出力したAssetの対応と検査記録",
+    "outputRecovery": "First download path had no file; retrieved existing generated link without regenerating.",
+    "recoveredOutputBytes": 6518,
+    "reportPathSHA256": "1a343452cb02c1302a81fc07760fb28ef64127a72c3edb1cb3f693e4c8fdffdc",
+    "reportPathBytes": 1118,
+    "observedReportStatus": "failed",
+    "sdkReportNull": true,
+    "outputPathSHA256": "fa7d7830444c9eb24d3c95c9e0b6d422ebff8dc96ef550f021b5a91ce67a3700",
+    "outputPathBytes": 6518
+  },
+  {
+    "case": "normal-recovery-after-text-limit",
+    "reportPath": "regressions/5-normal-recovery-after-text-limit.json",
+    "status": "succeeded",
+    "operationId": "sd-9d7d41c0-8580-4bde-a35e-4a8f8f3da9ee",
+    "generateEnabled": true,
+    "keyboardCheck": {
+      "status": "UNVERIFIED",
+      "reason": "Browser action deadline for summary Enter; DOM remains closed. Existing click/expand regression was verified separately; no keyboard success claimed."
+    },
+    "reportPathSHA256": "515562246cf7671e0e18b8b964e689c11659d11529395d7add6b4cf7d09b1ee3",
+    "reportPathBytes": 208926,
+    "observedReportStatus": "succeeded",
+    "sdkReportNull": false,
+    "diff": null,
+    "allSupplied": null
+  }
+]
