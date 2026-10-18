@@ -1,0 +1,259 @@
+{
+  "schema": "vr180-p5-complete-media-acceptance-v1",
+  "status": "PASS_COMPLETE_MEDIA",
+  "profile": "p5-10gb",
+  "runId": 39096296302,
+  "sourceCommit": "a0e5cc8178b29d5f263636f7790b309db1d97cdf",
+  "url": "https://github.com/Kushyameln01/kushyameln-works/actions/runs/39096296302",
+  "checkedAtUTC": "2026-10-18T06:35:47.469020+00:00",
+  "hostKind": "Separate fresh GitHub Actions job, not the Codex local filesystem",
+  "localScope": "Locally recovered and verified bounded original evidence only; complete media recovered and scanned in the separate Actions receiver.",
+  "checks": {
+    "identity": "PASS",
+    "receiver_complete": "PASS",
+    "all_scans_eof": "PASS",
+    "frame_counts": "PASS",
+    "capacity": "PASS",
+    "media_hashes": "PASS",
+    "transfer_readback": "PASS",
+    "quality": "PASS",
+    "frame_diagnostics": "PASS",
+    "producer_receiver_originals": "PASS",
+    "source_fixed": "PASS",
+    "source_unchanged_during_oracle": "PASS",
+    "index_cleanup": "PASS",
+    "browser_cleanup": "PASS",
+    "sender_stage_cleanup": "PASS",
+    "all_parts_accounted": "PASS"
+  },
+  "transports": {
+    "39096296302-p5-10gb-1": {
+      "bytes": 43723,
+      "sha256": "093399a91061dc29047ec2915319fb7601beb0af11dadace53e6a907a4a84412",
+      "manifestSHA256": "80d24657672a4e768ca651737f40156fff0070890b9fc5f02a1cedf6b7a6b411",
+      "recordCount": 28,
+      "status": "BYTES_VERIFIED"
+    },
+    "39096296302-segmented-1": {
+      "bytes": 21403,
+      "sha256": "fe65cf5f30346c308edc1f7e8b354602ecaaf60ebaf7a7c39aada29cb4081017",
+      "manifestSHA256": "bfa2c09f6373df7b8eb875ba972fc6b5cdc72017301cd954f5acce0c7d93a048",
+      "recordCount": 5,
+      "status": "BYTES_VERIFIED"
+    },
+    "39096296302-receiver-1": {
+      "bytes": 116988,
+      "sha256": "5b57fd510728f6e8c0770b2fe46cf6627133e31cfa6f57083f05a4894bc1b89a",
+      "manifestSHA256": "036db6ccb4044659a641b57c65b77b8f2ecb95b3b5625c0a157a5d5efc3a7dfa",
+      "recordCount": 53,
+      "status": "BYTES_VERIFIED"
+    }
+  },
+  "media": [
+    {
+      "id": "input",
+      "name": "input.mp4",
+      "bytes": 10002254447,
+      "sha256": "0513f783992daacf0d18afef931895efdffe0a87978a25d11794832008a160cd"
+    },
+    {
+      "id": "output",
+      "name": "output.mp4",
+      "bytes": 9995870920,
+      "sha256": "cd28a5c117f676c8f10cf50067d3de2d0ff6440c35a390691679f9ebdcfd15ce"
+    }
+  ],
+  "receiverRecords": {
+    "run.json": {
+      "runId": "39096296302-receiver-1",
+      "status": "PASS_COMPLETE_MEDIA",
+      "profile": "p5-10gb",
+      "checkoutCommit": "a0e5cc8178b29d5f263636f7790b309db1d97cdf",
+      "receiverJob": "p5-long-receiver",
+      "fullMediaValidation": "PASS",
+      "recoveredBytes": 19998125367,
+      "dataArtifacts": 150,
+      "downloadArtifacts": 152,
+      "receiverMediaVerification": {
+        "status": "PASS",
+        "completeScan": true,
+        "qualityVerdict": "PASS",
+        "capacityVerdict": "PASS",
+        "frames": 50397,
+        "decodedFramesCompared": 50397,
+        "packetCounts": {
+          "input": 50397,
+          "output": 50397
+        },
+        "actualInputPayloadBytes": 10002011690,
+        "targetInputPayloadBytes": 10000000000,
+        "actualOutputBytes": 9995870920,
+        "outputExceeds4GiB": true,
+        "eyePSNRdB": [
+          39.68051320053917,
+          39.72584286753475
+        ],
+        "maxPtsErrorSeconds": 0.0,
+        "expectedEvents": {
+          "countPerEye": 504,
+          "sequenceSHA256": "5d2aada812a00e69f98da11636a10d80efb7fe663045cce4550e6c11f206e669",
+          "periodFrames": 300,
+          "offsets": [
+            29,
+            30,
+            31
+          ]
+        },
+        "vrMetadata": {
+          "path": "moov/trak(vide)/mdia/minf/stbl/stsd/avc1",
+          "width": 1024,
+          "height": 512,
+          "stereo_mode": 2,
+          "projection": "equi",
+          "pose_degrees": [
+            0,
+            0,
+            0
+          ],
+          "bounds_u0_32": {
+            "top": 0,
+            "bottom": 0,
+            "left": 1073741824,
+            "right": 1073741824
+          },
+          "metadata_source": "Kushyameln Works VR180 b1",
+          "active_st3d_count": 1,
+          "active_sv3d_count": 1,
+          "entry_children": [
+            "avcC",
+            "colr",
+            "btrt",
+            "st3d",
+            "sv3d"
+          ]
+        },
+        "recoveredMediaBytesAndHashesMatched": true,
+        "allStreamsScannedToEnd": true,
+        "scope": "Full recovered silent 30fps synthetic media; not AAC/60fps, real-camera or VR-player acceptance."
+      }
+    }
+  },
+  "qualityProfile": {
+    "schema": "vr180-quality-profile-v1",
+    "id": "aggregate-30",
+    "aggregateMinimumPSNRdB": 30,
+    "frameDiagnosticThresholdPSNRdB": 30,
+    "frameFloorRequired": false,
+    "thresholdRule": "strictly below threshold fails; equality passes",
+    "scope": "RGB per decoded eye; frame indices are zero-based decoded pair positions, not embedded frame IDs or eye-marker recognition",
+    "sha256": "6a6c45e07f049509d5e95f59e6ba1e1e5f29631d5b995aac917d0bedf5e5505a"
+  },
+  "frameQuality": {
+    "schema": "vr180-frame-quality-v1",
+    "qualityProfileSHA256": "6a6c45e07f049509d5e95f59e6ba1e1e5f29631d5b995aac917d0bedf5e5505a",
+    "thresholdPSNRdB": 30,
+    "floorRequired": false,
+    "completeScan": true,
+    "verdict": "DIAGNOSTIC_ONLY",
+    "framesByEye": [
+      50397,
+      50397
+    ],
+    "zeroErrorFramesByEye": [
+      0,
+      0
+    ],
+    "minimumPSNRdBByEye": [
+      28.414467941662345,
+      28.352644260579662
+    ],
+    "minimumAtFrameByEye": [
+      38,
+      38
+    ],
+    "belowThresholdFramesByEye": [
+      3,
+      3
+    ],
+    "intervalCountByEye": [
+      1,
+      1
+    ],
+    "intervalsByEye": [
+      [
+        {
+          "firstFrame": 36,
+          "lastFrame": 38,
+          "frames": 3,
+          "minimumPSNRdB": 28.414467941662345,
+          "minimumAtFrame": 38
+        }
+      ],
+      [
+        {
+          "firstFrame": 36,
+          "lastFrame": 38,
+          "frames": 3,
+          "minimumPSNRdB": 28.352644260579662,
+          "minimumAtFrame": 38
+        }
+      ]
+    ],
+    "intervalsDroppedByEye": [
+      0,
+      0
+    ],
+    "intervalDetailLimitPerEye": 32,
+    "openIntervalsByEye": [
+      null,
+      null
+    ],
+    "allFrameSequenceSHA256ByEye": [
+      "bc185d96a7834d9c937a0007391f180e815115db9fd89ad6518b75d0cd77df74",
+      "b57fc3b70894b1a199b597d5abe1261ec7dcd6bcb0fcb65a8beaa4af810eb2c7"
+    ],
+    "sequenceEncoding": "ASCII decimal frameIndex:squaredErrorSum:channelSampleCount followed by LF; one record per compared frame, independently hashed for each eye",
+    "zeroErrorPSNR": "positive infinity; null minimum means no finite minimum; consult framesByEye",
+    "frameIdentity": "Decoded pair order only. No embedded frame ID or eye-ID schema is assumed."
+  },
+  "qualityLimit": "Aggregate per-eye PSNR passed the fixed profile. Three decoded positions per eye (36\u201338, zero-based) are below the diagnostic 30 dB floor; no per-frame floor acceptance or embedded frame-ID recognition is claimed.",
+  "independentReview": {
+    "status": "PASS",
+    "reviewerRole": "Separate read-only audit agent",
+    "reviewedDraftSHA256": "8280f8b4dcf6715beadfb271cea94e6f450a094b0035c15f33fefdf62e53b680",
+    "scope": "33 original-evidence checks: 86 record appearances, 150 parts, whole-media descriptors, 27 embedded producer originals, 42 fixed source hashes and source inventories. Eleven additional allowlist-summary checks. The reviewer did not redecode local MP4 media.",
+    "nextDecision": "Proceed with separate small native public-adapter integration tests. Preserve public 1 GiB limit until that adapter and its intended larger inputs are separately qualified."
+  },
+  "notVerified": [
+    "long AAC",
+    "60 fps",
+    "real camera media",
+    "OS save picker",
+    "target VR playback",
+    "usability",
+    "large-volume cancellation/recovery",
+    "5/10 GB via public adapter",
+    "true total memory peak",
+    "repeatability/performance distribution",
+    "actual 360 crop / TB-to-SBS geometry in this long trial",
+    "per-frame floor acceptance / embedded frame-ID recognition"
+  ],
+  "browser": {
+    "version": "155.0.8059.39",
+    "sampledSummedRssBytes": 2786086912,
+    "truePeakMeasured": false,
+    "sharedPagesMayBeCountedMultipleTimes": true,
+    "namespaceCleanup": "REMOVED",
+    "profileCleanup": "REMOVED",
+    "downloadDirectoryCleanup": "REMOVED",
+    "closed": true
+  },
+  "timingSeconds": {
+    "generation": 575.123,
+    "conversion": 547.0476999999998,
+    "nativeDownloadAndReadback": 301.710861068,
+    "receiverFullOracle": 678.471328
+  },
+  "recordPolicy": "Allowlisted public acceptance summary. Original records remain in the authorized local workspace and original Actions run. Owner tickets, owner tokens, temporary paths, download locations and source runtime inventories are excluded.",
+  "capacityScope": "Actual input payload exceeds decimal 10 GB; output is 9,995,870,920 bytes, below decimal 10 GB and above 4 GiB."
+}

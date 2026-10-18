@@ -71,3 +71,19 @@ The accepted 5 GB trial is run `39093517116` at
 The single 10 GB run `39096296302` uses fixed commit
 `a0e5cc8178b29d5f263636f7790b309db1d97cdf`. It was still running when this
 integration snapshot was prepared. It does not contain the adapter changes here.
+
+## Recovered results after the initial snapshot
+
+The same 10 GB run completed successfully in both producer and separate receiver.
+The [sanitized acceptance record](evidence/2026-10-18-p5-10gb.json) records 50,397
+frames, 10,002,254,447 input bytes, 9,995,870,920 output bytes and independent review.
+The aggregate quality profile passed; three decoded positions per eye were below
+the diagnostic 30 dB floor. This result remains separate from adapter qualification.
+
+Initial adapter run `39104394239` at `984b0b790e10e869c918b227f42411c826e55a60`
+failed while downloading the legacy prepared output. The harness disposed its Worker
+and deleted its temporary OPFS file before the browser download. Inspection, metadata
+copy and generation of the legacy prepared output had passed; one copy MP4 was fully
+recovered and independently verified. The harness must keep that owner alive until
+download completion and full hash verification, then acknowledge cleanup. No product
+codec change or relaxation of acceptance criteria is warranted by this failure.

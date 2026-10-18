@@ -53,6 +53,7 @@ INIT = r"""async()=>{
 
 RUN_CASE = r"""async trial=>{
  const state=globalThis.__entryProbe,{client,require,sha256Blob}=state;
+ require(!state.active,'PREVIOUS_CASE_NOT_FINISHED');
  require(!client.current,'PREVIOUS_JOB_NOT_DISPOSED');
  const response=await fetch('/'+trial.source);require(response.ok,'FIXTURE_FETCH');
  const file=new File([await response.blob()],trial.source.split('/').at(-1),{type:'video/mp4'});
@@ -63,7 +64,7 @@ RUN_CASE = r"""async trial=>{
  try{
   if(trial.direct){
    const name=(trial.handleKey??trial.name)+'.mp4';
-   handle=await state.root.getFileHandle(name,{create:true});
+   handle=await state.root.getFileHandle(name,{create:true});state.activeHandle=handle;
    row.reusedHandleIdentityMatched=state.handles.has(name)?await handle.isSameEntry(state.handles.get(name)):null;
    if(state.handles.has(name))require(row.reusedHandleIdentityMatched,'RETRY_HANDLE_IDENTITY');
    state.handles.set(name,handle);
@@ -92,43 +93,57 @@ RUN_CASE = r"""async trial=>{
   }
   row.status='PASS';
  }catch(error){
-  row.error={name:error.name,message:error.message};row.receipt=error.diagnostics??null;row.build=row.receipt?.build??null;
+  row.error={name:error.name,message:error.message};row.receipt=error.diagnostics??row.receipt??null;row.build=row.receipt?.build??row.build??null;
   if(trial.expectedError&&error.message===trial.expectedError)row.status='EXPECTED_REJECTION';
   else if(trial.expectCancel&&row.cancelRequested&&error.name==='AbortError')row.status='EXPECTED_CANCELLATION';
   else row.status='FAIL';
- }finally{
-  clearTimeout(timeout);
-  try{await row.cancelPromise;await client.dispose();}catch(error){row.cleanupError=String(error);row.status='FAIL';}
-  delete row.cancelPromise;
- }
+ }finally{clearTimeout(timeout);}
+ row.executionStatus=row.status;row.finishState='PENDING';
+ row.workerHeldAfterRun=client.current?.operationId===row.operationId&&client.current?.inputRevision===row.inputRevision;
+ // A prepared File may still refer to the Worker's OPFS job. Keep that job and
+ // its URL alive until the host finishes download.save_as and full-file hashing.
+ const {cancelPromise,...snapshot}=row;return snapshot;
+}"""
+
+FINISH_CASE = r"""async ({operationId,inputRevision,name,recovery,hostError})=>{
+ const state=globalThis.__entryProbe,{client,require}=state,row=state.active;
+ require(row&&row.operationId===operationId&&row.inputRevision===inputRevision&&row.name===name,'FINISH_CASE_IDENTITY');
+ require(!client.current||(client.current.operationId===operationId&&client.current.inputRevision===inputRevision),'FINISH_CLIENT_IDENTITY');
+ row.recovery=recovery;if(hostError){row.hostError=hostError;row.status='FAIL';}
+ if(row.urlIndex!==undefined&&recovery?.status!=='PASS')row.status='FAIL';
+ row.finishState='CLEANING';
+ try{await row.cancelPromise;await client.dispose();}catch(error){row.cleanupError=String(error);row.status='FAIL';}
+ finally{delete row.cancelPromise;}
  row.clientReleased=client.current===null&&!client.cleanupPending;
- if(!row.clientReleased||row.cleanupEvent?.type!=='cleanup-complete'||row.registryOverflow)row.status='FAIL';
- if(trial.expectCancel||trial.expectedError){
-  row.savedBytes=(await handle.getFile()).size;
-  const r=row.receipt,expectedStatus=trial.expectCancel?'canceled':'failed';
+ row.cleanupIdentityMatched=row.cleanupEvent?.operationId===operationId&&row.cleanupEvent?.inputRevision===inputRevision;
+ if(!row.clientReleased||row.cleanupEvent?.type!=='cleanup-complete'||!row.cleanupIdentityMatched||row.registryOverflow)row.status='FAIL';
+ if(row.expectCancel||row.expectedError){
+  row.savedBytes=(await state.activeHandle.getFile()).size;
+  const r=row.receipt,expectedStatus=row.expectCancel?'canceled':'failed';
   row.negativeReceiptVerified=!!r&&r.schemaVersion===2&&r.operationId===row.operationId&&r.inputRevision===row.inputRevision
-   &&r.status===expectedStatus&&r.input?.bytes===file.size&&r.output===null&&r.saveWriteCommitted===false&&r.saveCompleted===false
+   &&r.status===expectedStatus&&r.input?.bytes===row.inputBytes&&r.output===null&&r.saveWriteCommitted===false&&r.saveCompleted===false
    &&r.saveAttempts?.length===1&&['aborted','not-started'].includes(r.saveAttempts[0].commitState)
    &&r.cleanup?.status==='complete'&&r.internalIndexCleanup==='complete'
-   &&(trial.expectCancel?r.error?.name==='AbortError'&&r.input.sha256===row.inputSHA256:r.error?.message===trial.expectedError);
-  if(row.savedBytes!==0||(trial.expectCancel&&!row.cancelAcknowledged)||!row.negativeReceiptVerified)row.status='FAIL';
+   &&(row.expectCancel?r.error?.name==='AbortError'&&r.input.sha256===row.inputSHA256:r.error?.message===row.expectedError);
+  if(row.savedBytes!==0||(row.expectCancel&&!row.cancelAcknowledged)||!row.negativeReceiptVerified)row.status='FAIL';
  }
- if(trial.settings.executionRoute==='indexed'){
+ if(row.settings.executionRoute==='indexed'){
   const identities=row.registryEvents.map(e=>e.identity).filter(Boolean);
-  row.registryIdentitiesConsistent=trial.expectedError?identities.length===0:identities.length>=3&&identities.every(i=>i.operationId===row.operationId&&i.inputRevision===row.inputRevision&&i.namespace===identities[0].namespace);
+  row.registryIdentitiesConsistent=row.expectedError?identities.length===0:identities.length>=3&&identities.every(i=>i.operationId===row.operationId&&i.inputRevision===row.inputRevision&&i.namespace===identities[0].namespace);
   row.registryAbsent=false;
   try{const registry=await state.origin.getDirectoryHandle(state.REGISTRY_ROOT);await registry.getDirectoryHandle(`${row.operationId}-r${row.inputRevision}`);}
   catch(error){if(error.name==='NotFoundError')row.registryAbsent=true;else row.registryCheckError=String(error);}
   row.heldJobLocks=(await navigator.locks.query()).held.filter(lock=>lock.name.includes(row.operationId)).length;
   if(!row.registryIdentitiesConsistent||!row.registryAbsent||row.heldJobLocks!==0||row.cleanupEvent?.internalIndexCleanup!=='complete')row.status='FAIL';
  }else if(row.registryEvents.length)row.status='FAIL';
- state.active=null;return row;
+ if(row.urlIndex!==undefined)URL.revokeObjectURL(state.urls[row.urlIndex]);
+ row.finishState='COMPLETE';state.active=null;state.activeHandle=null;return row;
 }"""
 
 CLEANUP = r"""async()=>{
  const state=globalThis.__entryProbe;if(!state)return {status:'NOT_CREATED'};
  for(const url of state.urls)URL.revokeObjectURL(url);
- if(state.client.current||state.rows.some(r=>!['PASS','EXPECTED_CANCELLATION','EXPECTED_REJECTION'].includes(r.status)||!r.clientReleased))return {status:'RETAINED',reason:'CASE_OR_CLEANUP_INCOMPLETE'};
+ if(state.active||state.client.current||state.rows.some(r=>!['PASS','EXPECTED_CANCELLATION','EXPECTED_REJECTION'].includes(r.status)||!r.clientReleased||r.finishState!=='COMPLETE'))return {status:'RETAINED',reason:'CASE_OR_CLEANUP_INCOMPLETE'};
  for await(const [name,entry]of state.root.entries())if(entry.kind!=='file'||!state.names.includes(name))return {status:'RETAINED',reason:'UNKNOWN_OUTPUT_ENTRY'};
  for(const name of state.names)await state.root.removeEntry(name);
  await state.origin.removeEntry(state.namespace);
@@ -189,6 +204,62 @@ def verify_generations(rows):
                   and before['savedBytes'] == 0 and after['targetInitiallyEmpty'] and after['reusedHandleIdentityMatched'] is True, 'Cancel/retry identity or reused handle differs')
     return {'status': 'PASS', 'operationCount': len(rows), 'sameInputAndHandleRetry': True}
 
+def run_trial(page, trial, report, out, requests):
+    """Retain the completed Worker until native recovery and disk hashing finish."""
+    request_start = len(requests)
+    row = page.evaluate(RUN_CASE, trial)
+    row['requestedRoutes'] = requests[request_start:]; report['cases'].append(row)
+    expected = 'EXPECTED_REJECTION' if trial.get('expectedError') else 'EXPECTED_CANCELLATION' if trial.get('expectCancel') else 'PASS'
+    recovery = {'status': 'NOT_STARTED' if 'urlIndex' in row else 'NOT_REQUIRED'}
+    host_error = None; folder = None
+    try:
+        # Preserve the execution snapshot before host assertions or recovery.
+        cloud.write(out/'browser-observations.json', report['cases'])
+        cloud.require(row['build'] == report['build'], 'Actual Worker build differs')
+        mode = trial['settings']['mode']; indexed = trial['settings'].get('executionRoute') == 'indexed'
+        vendors = [path for path in row['requestedRoutes'] if path in (FORK, LEGACY)]
+        cloud.require(vendors == ([] if trial.get('expectedError') else [FORK] if indexed else [LEGACY] if mode == 'convert' else []), 'Codec module isolation differs: '+trial['name'])
+        cloud.require(row['status'] == expected, 'Client/Worker trial failed: '+trial['name'])
+        if expected == 'PASS': cloud.require(row['workerHeldAfterRun'], 'Completed Worker released before recovery')
+        if indexed and not trial.get('expectedError'): row['ownershipVerification'] = verify_ownership(row)
+        if 'urlIndex' in row:
+            recovery.update(status='IN_PROGRESS', stage='input-recovery')
+            folder = out/row['name']; folder.mkdir(); (folder/'input.mp4').write_bytes((cloud.ROOT/row['source']).read_bytes())
+            cloud.require((folder/'input.mp4').stat().st_size == row['inputBytes'] and cloud.digest(folder/'input.mp4') == row['inputSHA256'], 'Recovered input differs')
+            cloud.check_recovery_budget(out, folder, row['bytes'])
+            recovery['stage'] = 'download-start'
+            with page.expect_download(timeout=15000) as download:
+                page.evaluate('([i,name])=>{const a=document.createElement("a");a.href=__entryProbe.urls[i];a.download=name;a.click();}', [row['urlIndex'], row['name']+'.mp4'])
+            recovery['stage'] = 'download-save-as'
+            saved = folder/'output.mp4'; download.value.save_as(str(saved))
+            recovery['stage'] = 'full-file-hash'
+            recovered_bytes, recovered_hash = saved.stat().st_size, cloud.digest(saved)
+            cloud.require(recovered_bytes == row['bytes'] and recovered_hash == row['sha256'], 'Recovered complete MP4 differs')
+            recovery.update(status='PASS', stage='complete', bytes=recovered_bytes, sha256=recovered_hash)
+            report['fullOutputsRecovered'] += 1
+    except Exception as error:
+        host_error = {'name': type(error).__name__, 'message': str(error)}
+        if recovery['status'] == 'IN_PROGRESS': recovery.update(status='FAIL', error=host_error)
+        # Keep the original exception separately: a later cleanup error must not
+        # replace a canceled download or an independent hash mismatch.
+        (out/(trial['name']+'-failure-traceback.txt')).write_text(traceback.format_exc())
+        raise
+    finally:
+        try:
+            identity = {key: row[key] for key in ('operationId', 'inputRevision', 'name') if key in row}
+            final = page.evaluate(FINISH_CASE, {**identity, 'recovery': recovery, 'hostError': host_error})
+            row.update(final)
+        except Exception as error:
+            row.update(status='FAIL', finishError={'name': type(error).__name__, 'message': str(error)}, recovery=recovery)
+            if host_error: row['hostError'] = host_error
+            (out/(trial['name']+'-finish-traceback.txt')).write_text(traceback.format_exc())
+            if host_error is None: raise
+        finally:
+            cloud.write(out/'browser-observations.json', report['cases'])
+            if folder: cloud.write(folder/'trial.json', row)
+    cloud.require(row['finishState'] == 'COMPLETE' and row['status'] == expected, 'Post-recovery cleanup failed: '+trial['name'])
+    return row
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__); parser.add_argument('--output', type=Path, required=True)
     out = parser.parse_args().output.resolve()
@@ -240,24 +311,7 @@ def main():
                 try:
                     page.goto(origin+'/', wait_until='networkidle'); report['environment'] = page.evaluate(INIT)
                     for trial in trials:
-                        request_start = len(requests); row = page.evaluate(RUN_CASE, trial)
-                        row['requestedRoutes'] = requests[request_start:]; report['cases'].append(row)
-                        cloud.require(row['build'] == report['build'], 'Actual Worker build differs')
-                        mode = trial['settings']['mode']; indexed = trial['settings'].get('executionRoute') == 'indexed'
-                        vendors = [path for path in row['requestedRoutes'] if path in (FORK, LEGACY)]
-                        cloud.require(vendors == ([] if trial.get('expectedError') else [FORK] if indexed else [LEGACY] if mode == 'convert' else []), 'Codec module isolation differs: '+trial['name'])
-                        cloud.write(out/'browser-observations.json', report['cases'])
-                        cloud.require(row['status'] == ('EXPECTED_REJECTION' if trial.get('expectedError') else 'EXPECTED_CANCELLATION' if trial.get('expectCancel') else 'PASS'), 'Client/Worker trial failed: '+trial['name'])
-                        if indexed and not trial.get('expectedError'): row['ownershipVerification'] = verify_ownership(row)
-                        if 'urlIndex' in row:
-                            folder = out/row['name']; folder.mkdir(); (folder/'input.mp4').write_bytes((cloud.ROOT/row['source']).read_bytes())
-                            cloud.require((folder/'input.mp4').stat().st_size == row['inputBytes'] and cloud.digest(folder/'input.mp4') == row['inputSHA256'], 'Recovered input differs')
-                            cloud.check_recovery_budget(out, folder, row['bytes'])
-                            with page.expect_download(timeout=15000) as download:
-                                page.evaluate('([i,name])=>{const a=document.createElement("a");a.href=__entryProbe.urls[i];a.download=name;a.click();}', [row['urlIndex'], row['name']+'.mp4'])
-                            saved = folder/'output.mp4'; download.value.save_as(str(saved))
-                            cloud.require(saved.stat().st_size == row['bytes'] and cloud.digest(saved) == row['sha256'], 'Recovered complete MP4 differs')
-                            cloud.write(folder/'trial.json', row); report['fullOutputsRecovered'] += 1
+                        run_trial(page, trial, report, out, requests)
                     report['unhandledErrors'] = page.evaluate('__entryProbe.unhandled')
                     cloud.require(not report['pageErrors'] and not report['unhandledErrors'] and not report['logOverflow'], 'Unexpected browser error or log overflow')
                     cloud.require(report['workers'] == ['/docs/shared/vr180/worker.mjs']*len(trials), 'Worker source differs')
