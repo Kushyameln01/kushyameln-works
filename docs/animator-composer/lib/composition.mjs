@@ -59,10 +59,28 @@ function refField(text,name,indent=2) {
   const refs=extractReferences(s.text);assert(refs.length===1,`Expected one ${name} reference`);return refs[0];
 }
 function refFieldName(text,r) {
-  const prefix=text.slice(0,r.start),direct=/([A-Za-z_][A-Za-z_0-9]*):[ \t]*(?:\r?\n[ \t]*)?$/.exec(prefix)?.[1];
-  if(direct)return direct;
-  const lines=prefix.split('\n'),last=lines.pop()??'',indent=/^ */.exec(last)[0].length;
-  for(let i=lines.length-1;i>=0;i--){const m=/^( *)([A-Za-z_][A-Za-z_0-9]*):/.exec(lines[i]);if(m&&m[1].length<=indent)return m[2];}
+  // Read the adjacent field backwards. Searching the entire prefix with an
+  // unanchored identifier regexp revisits every suffix of long scalar values.
+  let end=r.start;
+  while(end>0&&(text[end-1]===' '||text[end-1]==='\t'))end--;
+  if(end>0&&text[end-1]==='\n'){
+    end--;if(end>0&&text[end-1]==='\r')end--;
+    while(end>0&&(text[end-1]===' '||text[end-1]==='\t'))end--;
+  }
+  if(end>0&&text[end-1]===':'){
+    const nameEnd=end-1;let start=nameEnd;
+    while(start>0&&/[A-Za-z_0-9]/.test(text[start-1]))start--;
+    while(start<nameEnd&&/[0-9]/.test(text[start]))start++;
+    if(start<nameEnd)return text.slice(start,nameEnd);
+  }
+  const lineStart=r.start>0?text.lastIndexOf('\n',r.start-1)+1:0;
+  let indent=0;while(lineStart+indent<r.start&&text[lineStart+indent]===' ')indent++;
+  for(let lineEnd=lineStart-1;lineEnd>=0;){
+    const start=lineEnd>0?text.lastIndexOf('\n',lineEnd-1)+1:0;
+    const m=/^( *)([A-Za-z_][A-Za-z_0-9]*):/.exec(text.slice(start,lineEnd));
+    if(m&&m[1].length<=indent)return m[2];
+    lineEnd=start-1;
+  }
   return '';
 }
 const targetId=(node,r)=>r.fileId==='0'?null:key(r.guid??node.guid,r.fileId);
@@ -96,10 +114,12 @@ function parametersFor(node) {
 export function indexPackages(packages,assetChoices={}) {
   assert(Array.isArray(packages),'Expected package array');
   const catalog={assets:[],controllers:[],motions:[],expressions:[],menus:[],conflicts:[],issues:[]};
-  const groups=new Map(),assets=new Map(),nodes=new Map();
+  const groups=new Map(),assets=new Map(),nodes=new Map(),referenceAssets=new Map();
   for(const pkg of [...packages].sort((a,b)=>String(a.hash).localeCompare(String(b.hash),'en'))) {
     assert(typeof pkg.hash==='string'&&/^[a-f0-9]{64}$/.test(pkg.hash)&&Array.isArray(pkg.assets),'Package hash/assets are invalid');
-    for(const a of pkg.assets) {
+    const loadedGuids=new Set(pkg.assets.map(a=>a.guid.toLowerCase()));
+    const omitted=(pkg.inventory??[]).filter(a=>!loadedGuids.has(a.guid.toLowerCase())).map(a=>({...a,omitted:true,automaticReferences:pkg.preserveResources===true}));
+    for(const a of [...pkg.assets,...omitted]) {
       assert(/^[a-fA-F0-9]{32}$/.test(a.guid)&&typeof a.path==='string','Invalid asset identity');
       const guid=a.guid.toLowerCase(),list=groups.get(guid)??[];
       list.push({...a,guid,packageHash:pkg.hash,packageName:pkg.name});groups.set(guid,list);
@@ -107,12 +127,17 @@ export function indexPackages(packages,assetChoices={}) {
   }
   for(const [guid,list] of groups) {
     const unique=[];
-    for(const a of list)if(!unique.some(b=>equalBytes(a.asset,b.asset)&&a.meta===b.meta))unique.push(a);
+    for(const a of list)if(!unique.some(b=>a.omitted||b.omitted?a.packageHash===b.packageHash&&a.guid===b.guid:equalBytes(a.asset,b.asset)&&a.meta===b.meta))unique.push(a);
     let selected=unique[0];
     if(unique.length>1) {
-      catalog.conflicts.push({guid,alternatives:unique.map(a=>({packageHash:a.packageHash,packageName:a.packageName,path:a.path}))});
+      catalog.conflicts.push({guid,...(unique.some(a=>a.omitted)?{contentCompared:false}:{}),alternatives:unique.map(a=>({packageHash:a.packageHash,packageName:a.packageName,path:a.path}))});
       selected=list.find(a=>a.packageHash===assetChoices[guid]);
       if(!selected){catalog.assets.push({guid,path:list[0].path,kind:'conflict',status:'conflict'});continue;}
+    }
+    if(selected.omitted){
+      referenceAssets.set(guid,selected);
+      catalog.assets.push({guid,path:selected.path,kind:selected.folder?'folder':selected.referenceOnly?'reference':'unselected',status:selected.folder?'folder':selected.referenceOnly?'reference_only':'unselected',size:selected.size});
+      continue;
     }
     const a={...selected,packageHashes:[...new Set(list.map(x=>x.packageHash))],documents:[],status:'opaque',kind:'opaque'};
     assets.set(guid,a);
@@ -142,7 +167,7 @@ export function indexPackages(packages,assetChoices={}) {
     catalog.assets.push({guid,path:a.path,kind:a.kind,status:a.status,...(a.diagnostic?{diagnostic:a.diagnostic}:{})});
   }
   for(const name of ['assets','controllers','motions','expressions','menus'])catalog[name].sort((a,b)=>a.path.localeCompare(b.path,'en')||(a.id??a.guid).localeCompare(b.id??b.guid,'en'));
-  const result={catalog,assets,nodes,inputHashes:[...new Set(packages.map(p=>p.hash))].sort()};
+  const result={catalog,assets,nodes,referenceAssets,inputHashes:[...new Set(packages.map(p=>p.hash))].sort()};
   catalog.materials=buildMaterialCatalog(result,packages);
   return result;
 }
@@ -226,15 +251,15 @@ export function analyzeComposition(index,plan,kernel) {
     const node=index.nodes.get(id);
     if(!node) {
       const guid=String(id).split(':')[0],conflict=index.catalog.conflicts.find(c=>c.guid===guid);
-      throw new Error(conflict&&!index.assets.has(guid)?`Choose a package version for conflicting GUID ${guid}`:`Missing or unsupported object ${id}`);
+      throw new Error(conflict&&!index.assets.has(guid)&&!index.referenceAssets?.has(guid)?`Choose a package version for conflicting GUID ${guid}`:`Missing or unsupported object ${id}`);
     }return node;
   };
   function diagnostic(ctx,node,fieldName,id,reason,expectedClasses,message,layerNames=[]) {
-    const [targetGuid,targetFileId]=String(id).split(':'),targetPath=index.assets.get(targetGuid)?.path;
+    const [targetGuid,targetFileId]=String(id).split(':'),omitted=index.referenceAssets?.get(targetGuid),targetPath=index.assets.get(targetGuid)?.path??omitted?.path;
     const value={code:`dependency_${reason}`,blockId:ctx?.config.id??null,outputId:ctx?.output.id??null,
       controllerId:ctx?.controller?.id??ctx?.config.controllerId??null,controllerPath:ctx?.controller?.path??null,
       sourceId:node.id,sourceName:nameOf(node),sourcePath:node.path,sourceClass:node.classId,field:fieldName,
-      targetId:id,targetGuid,targetFileId,...(targetPath?{targetPath}:{}),reason,...(expectedClasses?{expectedClasses}:{}),layerNames:[...layerNames]};
+      targetId:id,targetGuid,targetFileId,...(targetPath?{targetPath}:{}),...(omitted?{selectionStatus:omitted.referenceOnly?'reference_only':'unselected',availableInPackage:true}:{}),reason,...(expectedClasses?{expectedClasses}:{}),layerNames:[...layerNames]};
     const dkey=JSON.stringify([value.blockId,value.sourceId,fieldName,id,reason,layerNames]);
     if(diagnosticKeys.has(dkey))return;diagnosticKeys.add(dkey);dependencyDiagnostics.push(value);
     const detail=message??`${reason}: ${node.path} / ${nameOf(node)} -> ${id} (${fieldName})`;
@@ -242,7 +267,7 @@ export function analyzeComposition(index,plan,kernel) {
   }
   function unavailableReason(id) {
     const [guid]=String(id).split(':');
-    if(index.catalog.conflicts.some(c=>c.guid===guid)&&!index.assets.has(guid))return 'conflict';
+    if(index.catalog.conflicts.some(c=>c.guid===guid)&&!index.assets.has(guid)&&!index.referenceAssets?.has(guid))return 'conflict';
     return index.assets.has(guid)&&!index.assets.get(guid).documents.length?'unsupported':'missing';
   }
   function addResource(guid,ctx) {
@@ -264,9 +289,10 @@ export function analyzeComposition(index,plan,kernel) {
   }
   function retention(ref,node,fieldName,ctx,scope,referenceIndex,text,layerNames=[]) {
     const id=targetId(node,ref);if(!id||fieldName==='m_Script'||BUILTIN_GUIDS.has(ref.guid))return false;
-    const selected=selectedReferences.has(id);
-    if(!ref.guid&&!selected)return false;
-    const target=index.nodes.get(id),asset=index.assets.get(ref.guid??node.guid),expected=expectedFor(fieldName);
+    const explicit=selectedReferences.has(id);
+    if(!ref.guid&&!explicit)return false;
+    const omitted=index.referenceAssets?.get(ref.guid??node.guid);
+    const target=index.nodes.get(id)??omitted?.objects?.find(o=>String(o.fileId)===ref.fileId),asset=index.assets.get(ref.guid??node.guid),expected=expectedFor(fieldName);
     const motion=fieldName==='m_Motion'&&['1102','206'].includes(node.classId),mask=fieldName==='m_Mask'&&node.classId==='91';
     const within=name=>{const s=section(text,name);return s&&ref.start>=s.start&&ref.end<=s.end;};
     const positiveResource=(node.classId==='74'&&(fieldName==='objectReferenceParameter'&&within('m_Events')||fieldName==='value'&&within('m_PPtrCurves')||fieldName==='pptrCurveMapping'&&within('m_ClipBindingConstant')))||
@@ -280,18 +306,21 @@ export function analyzeComposition(index,plan,kernel) {
     if(!ref.guid||ref.guid===node.guid||ref.guid===ctx?.controller.guid)reason='local_or_owned_reference';
     else if(unavailableReason(id)==='conflict')reason='unresolved_guid_conflict';
     else if(expected&&target&&!expected.includes(target.classId))reason='known_wrong_type';
-    else if(!target&&asset?.documents.length)reason='known_missing_file_id';
+    else if(!target&&(asset?.documents.length||omitted?.objects?.length))reason='known_missing_file_id';
     else if(structural||!motion&&!mask&&!resource||target&&!motion&&!mask&&!RESOURCE_CLASSES.has(target.classId))reason='structural_or_unclassified_reference';
     else if(motion) {
       const refs=extractReferences(text),motionIndex=refs.slice(0,referenceIndex).filter(r=>refFieldName(text,r)==='m_Motion').length;
       if(ctx?.assignments.some(a=>a.targetId===node.id&&(node.classId==='1102'||a.childIndex===motionIndex)))reason='explicit_motion_assignment';
       else if(hasEditedDescendant(ctx,id))reason='edited_motion_descendant';
     }
+    const automatic=!!(omitted?.automaticReferences&&omitted.referenceOnly&&(resource||motion&&omitted.extension==='.fbx')&&!reason);
+    const selected=explicit||automatic;
     const candidate={edgeId:edgeKey(ctx,node,scope,referenceIndex),targetId:id,targetGuid:id.split(':')[0],targetFileId:ref.fileId,referenceType:ref.type??'2',
       kind:motion?'motion':mask?'mask':'resource',blockId:ctx?.config.id??null,outputId:ctx?.output.id??null,
       controllerId:ctx?.controller?.id??null,controllerPath:ctx?.controller?.path??null,sourceId:node.id,sourceName:nameOf(node),sourcePath:node.path,
       sourceClass:node.classId,field:fieldName,scope,referenceIndex,layerNames:[...layerNames],retainedOnly:false,availableInInput:!!asset,
-      ...(asset?{targetPath:asset.path}:{}),eligible:reason===null,eligibilityReason:reason??'unchanged_external_reference',selected};
+      ...(asset?{targetPath:asset.path}:omitted?{targetPath:omitted.path,availableInPackage:true,selectionStatus:omitted.referenceOnly?'reference_only':'unselected',targetObjectVerified:!!target}:{}),
+      ...(automatic?{automatic:true}:{}),eligible:reason===null,eligibilityReason:reason??'unchanged_external_reference',selected};
     referenceCandidates.push(candidate);
     if(!selected)return false;
     if(reason) {

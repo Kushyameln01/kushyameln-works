@@ -14,10 +14,10 @@
   <div class="intro"><p>素材のUnitypackageからControllerやLayerを選び、統合したControllerとModular Avatar用Installerを生成します。</p><p class="small">素材はブラウザ内で処理します。サーバーへ送信しません。生成後はUnityへImportして使います。</p></div>
   <details id="tool-guide" class="tool-guide"><summary>使い方・対応範囲・従来FT生成との違い</summary>
     <h2>このツールの使い方</h2>
-    <ol class="quick-start"><li>使うControllerを含むUnitypackageを読み込みます。</li><li>各出力のベースを選び、必要に応じて別ControllerのLayerを追加します。</li><li>Expressionを指定するか、Parameterごとに外部登録・同期・初期値を確定します。</li><li>導入方法を確認して生成し、UnityでInstallerを対象アバターへ配置します。</li></ol>
+    <ol class="quick-start"><li>使うControllerを含むUnitypackageを指定し、フォルダやAssetをチェックして読込み対象を確定します。</li><li>各出力のベースを選び、必要に応じて別ControllerのLayerを追加します。</li><li>Expressionを指定するか、Parameterごとに外部登録・同期・初期値を確定します。</li><li>導入方法を確認して生成し、UnityでInstallerを対象アバターへ配置します。</li></ol>
     <h3>原本の準備と対応範囲</h3>
-<p>編集・収集するController・Clip・BlendTreeを含むUnitypackageを指定してください。変更しない外部Assetは、構成を解析した後に参照の維持を選べます。同じpackageから複数の構造を選べます。原本を事前に分割する必要はありません。</p><p>登録設定を固定する場合は、対象範囲のExpression Parametersに、登録名・型・初期値・Saved・同期を指定してください。AAPなど外部登録しない項目は記載しません。全体用を指定した場合は、その1ファイルを全体の登録設定として使います。Animatorにも同じ初期値を設定したい項目は、登録表の「Animator初期値にも反映」を選択します。</p><p>Unityテキスト形式の構造を解析します。FBX内のAnimation抽出、Unityスクリプトの実行、Shapeの作成は含みません。編集・収集が必要な構造に不足・未対応の依存があれば、対象を示して生成を止めます。維持する外部Assetは出力packageに含まれず、導入先で必要です。</p><p class="small">同期LayerのMotion／Behaviour上書き、別Playableを対象とするAnimatorLayerControl、未対応の独自Behaviourは診断対象です。対応できない構造が含まれる場合は生成を止めます。</p><p class="small">packageは展開後1ファイル128 MiB、素材合計256 MiBまで。Unity Import・MAビルド・VRChatでの実動作は、このページの静的検査とは別に確認してください。</p>
-    <section><h3>従来のFT生成との比較</h3><div class="table-scroll"><table><thead><tr><th>項目</th><th>従来・FT操作比較版</th><th>Animator Composer</th></tr></thead><tbody><tr><td>入力</td><td>確認済みの4原本</td><td>読み込んだpackage内から選択</td></tr><tr><td>取り込む構造</td><td>固定のFT構成</td><td>Controller・Layer・Motionを指定</td></tr><tr><td>外部登録</td><td>FT専用の確定規則</td><td>Expression指定で固定／未設定を編集</td></tr><tr><td>生成する処理</td><td>Binary・Decode・Smooth等を構築</td><td>指定構造を保持して統合</td></tr><tr><td>Installer</td><td>固定構成のFX・Additive</td><td>選択したPlayableと任意Menu</td></tr></tbody></table></div><p class="small">旧FT生成ページの公開は終了しました。このページでは素材の構造を統合し、FT専用の変換規則は自動適用しません。</p></section>
+<p>編集・収集するController・Clip・BlendTreeを含むUnitypackageを指定してください。変更しない外部Assetは、構成を解析した後に参照の維持を選べます。同じpackageから複数の構造を選べます。原本を事前に分割する必要はありません。</p><p>登録設定を固定する場合は、対象範囲のExpression Parametersに、登録名・型・初期値・Saved・同期を指定してください。AAPなど外部登録しない項目は記載しません。全体用を指定した場合は、その1ファイルを全体の登録設定として使います。Animatorにも同じ初期値を設定したい項目は、登録表の「Animator初期値にも反映」を選択します。</p><p>Unityテキスト形式の構造を解析します。FBX内のAnimation抽出、Unityスクリプトの実行、Shapeの作成は含みません。編集・収集が必要な構造に不足・未対応の依存があれば、対象を示して生成を止めます。維持する外部Assetは出力packageに含まれず、導入先で必要です。</p><p class="small">同期LayerのMotion／Behaviour上書き、別Playableを対象とするAnimatorLayerControl、未対応の独自Behaviourは診断対象です。対応できない構造が含まれる場合は生成を止めます。</p><p class="small">圧縮ファイルは1件128 MiB、展開走査は1件1 GiB、選択した本文とmetaの保持量は合計256 MiBまで。生成packageの展開後上限は128 MiBです。Unity Import・MAビルド・VRChatでの実動作は、このページの静的検査とは別に確認してください。</p>
+    <section><h3>従来のFT生成との比較</h3><div class="table-scroll"><table><thead><tr><th>項目</th><th>従来・FT操作比較版</th><th>Animator Composer</th></tr></thead><tbody><tr><td>入力</td><td>確認済みの4原本</td><td>読み込んだpackage内から選択</td></tr><tr><td>取り込む構造</td><td>固定のFT構成</td><td>Controller・Layer・Motionを指定</td></tr><tr><td>外部登録</td><td>FT専用の確定規則</td><td>Expression指定で固定／未設定を編集</td></tr><tr><td>生成する処理</td><td>Binary・Decode・Smooth等を構築</td><td>指定構造を保持して統合</td></tr><tr><td>Installer</td><td>固定構成のFX・Additive</td><td>選択したPlayableと任意Menu</td></tr></tbody></table></div><p class="small">既存のFT生成ページは継続して利用できます。このページでは素材の構造を統合し、FT専用の変換規則は自動適用しません。</p></section>
   </details>
   <div class="workspace">
     <aside class="task-panel" aria-labelledby="task-title">
@@ -40,10 +40,26 @@
     <main id="workspace-main">
     <div id="error" class="notice error" role="alert" tabindex="-1" hidden></div>
     <section id="inputs" tabindex="-1"><div class="heading"><h2>1. 素材を読み込む</h2><span id="asset-count" class="badge">未読込み</span></div>
-      <p class="section-help">まず、統合のベースと追加する素材を選びます。読み込み後に構成を編集できます。</p>
+      <p class="section-help">まず素材を指定し、一覧から読み込む設定を選んで確定します。原本の事前分割は不要です。</p>
       <div class="drop-area"><label for="files">Unitypackageを追加</label><input id="files" type="file" accept=".unitypackage,.asset" multiple><p class="small">複数選択できます。Expression Parametersは単体の.assetでも追加できます。</p></div>
       <ul id="file-list" class="file-list"></ul><button id="clear" class="quiet">素材をすべて解除</button> <button id="reload" class="quiet" hidden>素材を再読込み</button>
-      <p class="small">商品原本と追加FXをまとめて読み込めます。選択した構造の依存素材も必要です。展開後は1ファイル128 MiB、合計256 MiBまで対応します。</p>
+      <p class="small">商品原本と追加FXをまとめて指定できます。圧縮ファイルは1件128 MiB、展開走査は1件1 GiB、選択した本文とmetaの保持量は合計256 MiBまで。生成packageの展開後上限は128 MiBです。</p>
+      <div class="actions"><label class="button" for="plan-file">保存した構成を読み込む</label><input id="plan-file" type="file" accept=".json" class="visually-hidden"></div>
+      <section id="import-selection" class="import-selection" tabindex="-1" hidden aria-labelledby="import-selection-title">
+        <h3 id="import-selection-title">読み込む設定を選ぶ</h3>
+        <p>チェックは解析・編集に使う入力の指定です。生成物への同梱は、後で選ぶ構造と依存関係に従います。</p>
+        <p class="small">FBX・Material・画像等は参照のみです。本体は読み込まず、対応する参照のGUID・fileID・typeを保持します。導入先に同じAssetが必要です。package内にGUIDがあることは、fileIDや型の確認済みを意味しません。</p>
+        <fieldset id="import-selection-controls" disabled>
+          <label for="import-search">package名・パス・GUIDで検索</label><input id="import-search" type="search" placeholder="フォルダ、Controller名、GUIDなど">
+          <div class="actions"><button id="import-select-all" type="button">読込可能な設定を全選択</button><button id="import-select-none" type="button">設定の選択を全解除</button></div>
+          <p class="small">一括操作は検索結果に関係なく、全packageが対象です。拡張子による分類は、本文の対応を保証するものではありません。</p>
+          <div id="import-tree" class="import-tree"></div>
+        </fieldset>
+        <p id="import-selection-summary" class="import-selection-summary"></p>
+        <p class="small">上記の元データ量は選択した本文の合計です。meta等も保持量の上限に含まれます。走査中は不要な本文も解凍処理を通りますが、保持しません。</p>
+        <p id="import-selection-status" role="status" aria-live="polite"></p>
+        <button id="import-confirm" type="button" class="primary" disabled>読込み対象を確定</button>
+      </section>
       <div id="material-cards" class="material-grid" aria-live="polite"></div>
       <div id="asset-conflicts" hidden></div>
       <details><summary>読込み素材の一覧</summary><label for="asset-search">名前・パスで検索</label><input id="asset-search" type="search" placeholder="Controller、Expression、Clipなど"><p id="asset-list-count" class="small"></p><div id="asset-list" class="asset-list"></div></details>
@@ -82,7 +98,7 @@
         <label class="check"><input id="match-wd" type="checkbox">Write Defaultsを対象アバターに合わせる</label>
         <p id="merge-explanation" class="small">追加するControllerに対象アバターの既存Layerが含まれている場合は、二重導入を避けるため置換を選んでください。</p>
         <div id="install-context" aria-live="polite"></div>
-        <div class="actions"><button id="generate" type="button" class="primary" disabled>Unitypackageを生成</button><button id="save-plan" type="button">構成を保存</button><label class="button" for="plan-file">構成を読み込む</label><input id="plan-file" type="file" accept=".json" class="visually-hidden"></div>
+        <div class="actions"><button id="generate" type="button" class="primary" disabled>Unitypackageを生成</button><button id="save-plan" type="button">構成を保存</button></div>
         <button id="rebind" type="button" hidden>現在の素材で構成を再設定</button>
         <p class="small">登録済みExpressionの手動割当は必須ではありません。MA Parametersを持つInstallerから、今回の外部登録を追加します。</p>
       </section>
@@ -91,6 +107,26 @@
       <div id="result" hidden><p id="result-summary"></p><div class="actions"><a id="download" class="button primary">Unitypackageを保存</a><a id="report-download" class="button">検査結果を保存</a><a id="result-plan" class="button">構成を保存</a></div><p id="result-validation" class="notice">静的検査済み。Unity Import・MAビルド・VRChatの実動作は未確認です。</p><ol><li>VRChat SDKとModular AvatarのあるUnityプロジェクトへImportします。</li><li><code id="installer-path"></code>を対象アバターへ配置します。</li><li>MAビルド後の登録・同期量・既存構成との競合と、実際の動作を確認します。</li></ol><details><summary>出力したAssetの対応と検査記録</summary><pre id="report-view"></pre></details></div>
     </section>
 
+    <section id="shared-diagnostics" tabindex="-1" aria-labelledby="shared-title">
+      <h2 id="shared-title">共有診断（任意）</h2>
+      <p>参照、Parameter型、共有参照を調べ、全件JSONを保存できます。診断の成否は、上の構成確認と生成可否とは別です。</p>
+      <p class="small">選択済み入力または直前に生成したAssetが対象です。未選択・参照のみの素材や未対応データまで確認済みにはなりません。Unity上の動作は別途確認が必要です。</p>
+      <label>診断対象<select id="shared-target"><option value="input">選択済み入力</option><option value="output">生成済みAsset</option></select></label>
+      <div class="actions"><button id="shared-run" type="button">共有診断を実行</button><button id="shared-cancel" type="button" disabled>共有診断を取消</button></div>
+      <p id="shared-status" class="notice" role="status" aria-live="polite"></p><p id="shared-revision" class="small"></p>
+      <details><summary>変更前後の比較</summary>
+        <p>変更前に比較基準を保持し、変更後に同じ種類の対象を選んで比較します。GUID・fileIDで照合するため、異なる素材や生成先を選んだ場合も、その差が表示されます。基準は画面を閉じると失われます。</p>
+        <div class="actions"><button id="shared-keep" type="button">現在の対象を比較基準に保持</button><button id="shared-compare" type="button">保持した基準と比較</button><button id="shared-clear" type="button">比較基準を解除</button></div><p id="shared-baseline" class="small"></p>
+      </details>
+      <p id="shared-summary"></p><p id="shared-timing" class="small"></p><details><summary>診断した範囲と未確認の範囲</summary><pre id="shared-coverage"></pre></details>
+      <label>診断行を絞り込む<input id="shared-search" type="search" placeholder="指摘コード・パス・GUIDなど"></label>
+      <p id="shared-count" class="small"></p><ol id="shared-rows"></ol>
+      <div class="actions"><button id="shared-prev" type="button">前の50件</button><button id="shared-next" type="button">次の50件</button></div>
+      <p class="small">位置はUTF-16コード単位（0起点・終端を含まない）、行と列は1起点です。fileIDは64-bit十進文字列として保存します。</p>
+      <button id="shared-save" type="button">共有診断の全件JSONを保存</button><p id="shared-size" class="small"></p>
+      <details id="shared-json-details"><summary>全件JSONを表示</summary><pre id="shared-json"></pre></details>
+      <p class="small">診断上限は1ファイル16 MiB、metaを含め片側合計32 MiB、対応テキスト4 MiB、2048ファイルです。解析後の内部データ4 MiB・SDKレポート8 MiBの上限もあります。超過してもComposerの元の受付範囲は変わりません。</p>
+    </section>
     <noscript><p class="notice error">このツールにはJavaScriptとWebAssemblyが必要です。</p></noscript>
     </main>
   </div>

@@ -157,7 +157,7 @@ export function buildMaterialCatalog(index,packages){
  for(const pkg of packages)for(const a of pkg.assets){const guid=a.guid.toLowerCase(),list=providers.get(guid)??[];list.push({pkg,asset:a});providers.set(guid,list);}
  // index.packageHashes includes conflicting providers as well; use exact selected content here.
  for(const [guid,a]of index.assets)matching.set(guid,unique((providers.get(guid)??[]).filter(x=>sameBytes(x.asset.asset,a.asset)&&x.asset.meta===a.meta).map(x=>x.pkg.hash)));
- for(const entry of index.catalog.assets.filter(a=>/\.prefab$/i.test(a.path))){
+ for(const entry of index.catalog.assets.filter(a=>/\.prefab$/i.test(a.path)&&!index.referenceAssets?.has(a.guid))){
   const a=index.assets.get(entry.guid);
   if(!a){result.prefabs.push({id:entry.guid,guid:entry.guid,path:entry.path,name:basename(entry.path),packageHashes:unique((providers.get(entry.guid)??[]).map(x=>x.pkg.hash)),hasDescriptor:null,status:'conflict',avatarIds:[],animators:[],diagnostics:[diagnostic('asset_conflict','同じGUIDの異なる原本があります。採用する版を決めてください。')]});continue;}
   const {prefab,avatars}=inspectPrefab(a,index,matching.get(a.guid)??[]);result.prefabs.push(prefab);result.avatars.push(...avatars);
@@ -170,7 +170,7 @@ export function buildMaterialCatalog(index,packages){
    clipIds:unique(index.catalog.motions.filter(x=>selected.has(x.guid)&&x.kind==='clip').map(x=>x.id)),blendTreeIds:unique(index.catalog.motions.filter(x=>selected.has(x.guid)&&x.kind==='blendTree').map(x=>x.id)),
    prefabIds:unique(result.prefabs.filter(x=>x.packageHashes.includes(pkg.hash)).map(x=>x.id)),avatarIds:unique(result.avatars.filter(x=>x.packageHashes.includes(pkg.hash)).map(x=>x.id)),
    folderCount:selectedAssets.filter(a=>a.kind==='folder').length,opaqueAssetCount:selectedAssets.filter(a=>a.status==='opaque').length,sceneCount:selectedAssets.filter(a=>/\.unity$/i.test(a.path)).length,
-   unresolvedConflictGuids:unique([...guids].filter(g=>!index.assets.has(g))),unselectedGuids:unique([...guids].filter(g=>index.assets.has(g)&&!selected.has(g))),roles:[],diagnostics:[]};
+   unresolvedConflictGuids:unique([...guids].filter(g=>!index.assets.has(g)&&!index.referenceAssets?.has(g))),unselectedGuids:unique([...guids].filter(g=>index.assets.has(g)&&!selected.has(g))),roles:[],diagnostics:[]};
   for(const [field,role]of [['avatarIds','avatar'],['controllerIds','controller'],['motionIds','motion'],['expressionIds','expression'],['menuIds','menu'],['prefabIds','prefab']])if(p[field].length)p.roles.push(role);
   if(!p.roles.length)p.roles.push('other');
   if(!p.controllerIds.length)p.diagnostics.push(diagnostic('no_controller','この素材には選択できるAnimator Controllerがありません。'));
