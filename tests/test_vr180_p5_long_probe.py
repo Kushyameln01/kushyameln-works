@@ -121,11 +121,12 @@ class LongProbeTests(unittest.TestCase):
                 receiver=types.SimpleNamespace(prepare=lambda rows:None,receipts=lambda:[])
                 sampler=types.SimpleNamespace(start=lambda:None,stop=lambda:{'status':'MOCK'})
                 with patch.object(probe,'wait_native',return_value={'status':'READY_FOR_RUNNER_TRANSFER','files':[]}), \
+                     patch.object(probe,'download_to_receiver',side_effect=lambda *args:args[-1].update(status='PASS',allStoppedBeforeBrowserClose=True)), \
                      patch.object(probe.persistent,'profile_snapshot',side_effect=snapshot), \
                      patch.object(probe.calibration,'ChromeRssSampler',return_value=sampler), \
                      patch.object(probe.time,'monotonic',side_effect=lambda:now+61 if expired else now):
                     with self.assertRaises((probe.cloud.Deadline,TimeoutError)):
-                        probe.browser_trial(playwright,owned,'http://127.0.0.1:1','p5-5gb',receiver,'a'*32,Path(temp),report,now+60)
+                        probe.browser_trial(playwright,owned,'http://127.0.0.1:1','p5-5gb',receiver,'a'*32,Path(temp),report,now+60,signals=object())
                 self.assertEqual(report['profileCleanup']['status'],'REMOVED');self.assertTrue(owned['browserClosed'])
     def test_manifest_written_at_expiry_is_removed_only_when_owned(self):
         with tempfile.TemporaryDirectory() as temp:

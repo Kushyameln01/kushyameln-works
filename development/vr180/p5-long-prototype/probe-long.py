@@ -159,7 +159,7 @@ DOWNLOAD_REVOKE=r"""()=>{const s=globalThis.__long;if(s?.downloadUrl){URL.revoke
 
 
 def download_to_receiver(page, receiver, owned, entries, deadline, signals, observation):
-    """Private serial Blob downloads. The long native caller still uses HTTP."""
+    """Private serial Blob downloads with the same receiver and absolute deadline."""
     observation.update(status='STARTED',files=[],singleNativeDownloadAtATime=True,
       maxPythonBufferBytes=streaming.CHUNK_BYTES,nativePeakMemoryMeasured=False,
       allStoppedBeforeBrowserClose=False,deadlineResetBetweenFiles=False)
@@ -316,14 +316,19 @@ def wait_native(page,profile,producer_deadline):
         phase=next_phase;deadline=min(producer_deadline,time.monotonic()+profile[phase+'Seconds']+30)
 
 
-def browser_trial(playwright,owned,origin,profile_id,receiver,token,out,report,producer_deadline=None):
-    profile=PROFILES[profile_id];context=None;browser=None;sampler=calibration.ChromeRssSampler();page=None;deadline_error=None
+def browser_trial(playwright,owned,origin,profile_id,receiver,token,out,report,producer_deadline=None,signals=None):
+    profile=PROFILES[profile_id];context=None;browser=None;sampler=calibration.ChromeRssSampler();page=None;deadline_error=None;downloads=None;download_cleanup_error=None
     if producer_deadline is None:producer_deadline=time.monotonic()+profile['producerSeconds']
     remaining(producer_deadline)
+    report['runnerTransferMethod']='browser-download'
+    report['browserDownload']={'status':'NOT_STARTED','files':[],'allStoppedBeforeBrowserClose':True}
     report['profileBeforeLaunch']=persistent.profile_snapshot(owned['path']);owned['browserClosed']=False
     try:
+        downloads=streaming.OwnedDownloads(owned['container'].parent)
+        report['ownedDownloads']={'path':str(downloads.path),'identity':list(downloads.identity)}
         started=time.monotonic();context=playwright.chromium.launch_persistent_context(user_data_dir=str(owned['path']),
-          executable_path=str(cloud.CHROME),headless=True,chromium_sandbox=True,timeout=30000)
+          executable_path=str(cloud.CHROME),headless=True,chromium_sandbox=True,timeout=30000,
+          accept_downloads=True,downloads_path=str(downloads.path))
         report['launchMs']=(time.monotonic()-started)*1000;browser=context.browser;cloud.require(browser is not None,'LONG_BROWSER_HANDLE_MISSING');report['browserVersion']=browser.version;sampler.start()
         context.route('**/*',lambda route:route.continue_() if route.request.url.startswith(origin+'/') else route.abort())
         page=context.new_page();page.set_default_timeout(30000)
@@ -335,31 +340,37 @@ def browser_trial(playwright,owned,origin,profile_id,receiver,token,out,report,p
         if observed.get('status')=='BLOCKED':raise cloud.Blocked('LONG_NATIVE_BLOCKED:'+str(observed.get('error')))
         cloud.require(observed.get('status')=='READY_FOR_RUNNER_TRANSFER','LONG_NATIVE_NOT_READY:'+str(observed.get('error')))
         receiver.deadline=min(producer_deadline,time.monotonic()+profile['transferSeconds']);receiver.prepare(observed['files'])
-        page.evaluate(TRANSFER,token)
-        page.wait_for_function('globalThis.__long.transfer!==null',timeout=remaining(receiver.deadline)*1000)
-        transfer=page.evaluate('globalThis.__long.transfer');cloud.require(transfer['status']=='PASS','LONG_BROWSER_TRANSFER_FAILED')
-        report['runnerTransfer']={'browser':transfer,'files':receiver.receipts()};cloud.write(out/'runner-transfer.json',report['runnerTransfer'])
+        cloud.require(signals is not None,'LONG_DOWNLOAD_SIGNAL_OWNER_REQUIRED')
+        download_to_receiver(page,receiver,downloads,observed['files'],receiver.deadline,signals,report['browserDownload'])
+        transfer=report['browserDownload']
+        cloud.require(transfer['status']=='PASS' and transfer['allStoppedBeforeBrowserClose'],'LONG_BROWSER_TRANSFER_FAILED')
+        report['runnerTransfer']={'method':'browser-download','browser':transfer,'files':receiver.receipts()};cloud.write(out/'runner-transfer.json',report['runnerTransfer'])
         report['completeCloudMedia']=True
         return observed
     finally:
         active_error=sys.exc_info()[1]
         if isinstance(active_error,(ProducerInterrupted,cloud.Deadline)):deadline_error=active_error
+        report['runnerTransferObservation']={'method':'browser-download','download':report['browserDownload'],'browser':None,'server':None}
+        try:
+            report['runnerTransferObservation']['server']=receiver.observation() if hasattr(receiver,'observation') else None
+        except (Exception,ProducerInterrupted) as e:
+            report['runnerTransferServerObservationError']=str(e)[:1000]
+            if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
+        report['downloadsStoppedBeforeBrowserClose']=report['browserDownload']['allStoppedBeforeBrowserClose']
         if page:
-            report['runnerTransferObservation']={'browser':None,'server':None}
-            try:
-                report['runnerTransferObservation']['server']=receiver.observation() if hasattr(receiver,'observation') else None
-            except (Exception,ProducerInterrupted) as e:
-                report['runnerTransferServerObservationError']=str(e)[:1000]
-                if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
             try:
                 report['runnerTransferObservation']['browser']=page.evaluate('({result:globalThis.__long?.transfer??null,progress:globalThis.__long?.transferProgress??null})')
             except (Exception,ProducerInterrupted) as e:
                 report['runnerTransferObservationError']=str(e)[:1000]
                 if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
-            try:report['namespaceCleanup']=page.evaluate(CLEANUP)
-            except (Exception,ProducerInterrupted) as e:
-                report['namespaceCleanup']={'status':'HOLD','error':str(e)[:1000]};owned['unknownContent']=True
-                if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
+            if not report['downloadsStoppedBeforeBrowserClose']:
+                report['namespaceCleanup']={'status':'HOLD','reason':'Native download completion/stop before browser close not fully verified.'}
+                owned['unknownContent']=True
+            else:
+                try:report['namespaceCleanup']=page.evaluate(CLEANUP)
+                except (Exception,ProducerInterrupted) as e:
+                    report['namespaceCleanup']={'status':'HOLD','error':str(e)[:1000]};owned['unknownContent']=True
+                    if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
         else:report['namespaceCleanup']={'status':'NOT_CREATED'}
         if context:
             try:report['profileBeforeClose']=persistent.profile_snapshot(owned['path'])
@@ -378,6 +389,24 @@ def browser_trial(playwright,owned,origin,profile_id,receiver,token,out,report,p
         if not owned['browserClosed']:
             report['profileCleanup']={'status':'HOLD','reason':'Browser closure unverified; owned profile retained.'}
         report['browserClosed']=owned['browserClosed']
+        download_started=any(row.get('downloadRequestTriggered',False) for row in report['browserDownload']['files'])
+        report['downloadLifecycleAfterBrowserClose']={'browserClosed':owned['browserClosed'],'noDownloadStarted':not download_started,
+          'apiStopConfirmedBeforeClose':download_started and report['downloadsStoppedBeforeBrowserClose'],
+          'scope':'Browser closure is recorded separately; it does not retroactively establish a download terminal API result.'}
+        if downloads:
+            try:report['downloadDirectoryAfterClose']={'status':'OBSERVED','remainingNames':downloads.names()}
+            except (Exception,ProducerInterrupted) as e:
+                report['downloadDirectoryAfterClose']={'status':'HOLD','error':str(e)[:1000]};download_cleanup_error=e
+                if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
+            if context is None or owned['browserClosed']:
+                try:report['downloadDirectoryCleanup']=downloads.cleanup()
+                except (Exception,ProducerInterrupted) as e:
+                    report['downloadDirectoryCleanup']={'status':'HOLD','error':str(e)[:1000]}
+                    if download_cleanup_error is None:download_cleanup_error=e
+                    if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
+            else:
+                report['downloadDirectoryCleanup']={'status':'HOLD','reason':'Browser closure unverified; owned download directory retained.'}
+                if download_cleanup_error is None:download_cleanup_error=RuntimeError('LONG_DOWNLOAD_DIRECTORY_CLEANUP_UNVERIFIED')
         if owned['browserClosed']:
             try:report['profileAfterClose']=persistent.profile_snapshot(owned['path'])
             except (Exception,ProducerInterrupted) as e:
@@ -389,11 +418,14 @@ def browser_trial(playwright,owned,origin,profile_id,receiver,token,out,report,p
                 if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
         try:cloud.write(out/'browser-lifecycle.json',{key:report.get(key) for key in ['launchMs','browserVersion','profileBeforeLaunch',
           'profileBeforeClose','profileAfterClose','namespaceCleanup','browserClosed','profileCleanup','browserRss',
+          'runnerTransferMethod','ownedDownloads','browserDownload','downloadsStoppedBeforeBrowserClose',
+          'downloadLifecycleAfterBrowserClose','downloadDirectoryAfterClose','downloadDirectoryCleanup',
           'runnerTransferObservation','runnerTransferObservationError','runnerTransferServerObservationError']})
         except (Exception,ProducerInterrupted) as e:
             if deadline_error is None:raise
             report['browserLifecycleWriteError']=str(e)[:1000]
         if deadline_error:raise deadline_error
+        if download_cleanup_error is not None and active_error is None:raise download_cleanup_error
         remaining(producer_deadline)
 
 
@@ -558,8 +590,9 @@ def main(argv=None):
         cloud.write(meta/'private-source-inventory.json',{'checkoutCommit':identity['commit'],'files':inventory})
         owned=persistent.create_owned_profile(out)
         from playwright.sync_api import sync_playwright
-        with sync_playwright() as playwright:observed=browser_trial(playwright,owned,origin,args.profile,receiver,token,meta,report,producer_deadline)
+        with sync_playwright() as playwright:observed=browser_trial(playwright,owned,origin,args.profile,receiver,token,meta,report,producer_deadline,signals=signals)
         cloud.require(report.get('profileCleanup',{}).get('status')=='REMOVED','LONG_PROFILE_CLEANUP_UNVERIFIED')
+        cloud.require(report.get('downloadDirectoryCleanup',{}).get('status')=='REMOVED','LONG_DOWNLOAD_DIRECTORY_CLEANUP_UNVERIFIED')
         remaining(producer_deadline);verify_started=time.monotonic();verify_deadline=min(producer_deadline,verify_started+profile['verificationSeconds']);frames=observed['generation']['frames']
         verified=oracle.verify_files(media/'input.mp4',media/'output.mp4',layout='sbs',fov=180,eye_size=512,mode='convert',
           timeout=remaining(verify_deadline),log_dir=meta/'oracle-logs');cloud.write(meta/'independent-verification.json',verified)
