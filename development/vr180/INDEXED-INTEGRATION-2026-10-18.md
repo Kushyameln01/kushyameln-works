@@ -87,3 +87,21 @@ copy and generation of the legacy prepared output had passed; one copy MP4 was f
 recovered and independently verified. The harness must keep that owner alive until
 download completion and full hash verification, then acknowledge cleanup. No product
 codec change or relaxation of acceptance criteria is warranted by this failure.
+
+## Small native adapter accepted
+
+Run [39104848323](https://github.com/Kushyameln01/kushyameln-works/actions/runs/39104848323),
+fixed source `6d90f9b1636bbb269838690c50b0225495d1b1af`, passed all twelve operations.
+All nine complete browser MP4 downloads were recovered locally and independently
+verified: one metadata-only copy and eight 60-frame conversions. AAC payload, timing
+and decoded audio matched for six conversions; two conversions were silent.
+All frame scans reached EOF, PTS error was zero, both-eye aggregate PSNR exceeded
+30 dB, and active VR metadata matched. The 23-group independent evidence audit passed.
+The [allowlisted acceptance record](evidence/2026-10-18-indexed-entry.json) retains
+hashes and verification scope without publishing private ownership tickets.
+
+The corrected harness retains the prepared-output owner through download and full
+hash verification, then awaits matching cleanup. Cancellation occurred before output
+writes; retry used the same native OPFS handle. OS picker use remains unverified.
+Candidate UI connection is now prepared; its separate small native UI trial is pending.
+The earlier pending statements above describe the preserved snapshot, not this result.

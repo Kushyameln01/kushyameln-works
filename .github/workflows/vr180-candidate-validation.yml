@@ -14,9 +14,11 @@ on:
       - tools/vr180/probe-output-index.py
       - tools/vr180/probe-indexed-conversion.py
       - tools/vr180/probe-indexed-entry.py
+      - tools/vr180/probe-indexed-ui.py
       - tools/vr180/prepare-indexed-runtime.py
       - tools/vr180/indexed-runtime-support/**
       - docs/shared/vr180/**
+      - docs/vr180-studio/**
       - tools/vr180/probe-public-origin.py
       - tools/vr180/probe-index-owner.py
       - tools/vr180/probe-persistent-storage.py
@@ -919,6 +921,53 @@ jobs:
           node docs/shared/vr180/vendor/rebuild-indexed.mjs --esbuild-dir "$vr180_entry_prefix/node_modules/esbuild" --output-dir "$vr180_entry_build/result"
           python3 tools/vr180/prepare-indexed-runtime.py --check
           python3 tools/vr180/probe-indexed-entry.py --output "$RUNNER_TEMP/vr180-indexed-entry-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+
+  indexed-ui-native:
+    if: >-
+      github.repository == 'Kushyameln01/kushyameln-works' &&
+      github.event.repository.private == false &&
+      startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
+      contains(github.event.head_commit.message, '[vr180-indexed-ui]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      DO_NOT_TRACK: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PIP_NO_CACHE_DIR: '1'
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Check out the exact indexed UI candidate
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Use the pinned Python setup
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install pinned browser driver
+        id: dependencies
+        timeout-minutes: 1
+        run: |
+          test -x /usr/bin/google-chrome
+          python3 -m pip install --no-cache-dir playwright==1.62.0
+      - name: Reproduce distribution and recover one real-page UI output
+        timeout-minutes: 8
+        env:
+          VR180_DEPENDENCIES_READY: ${{ steps.dependencies.outcome == 'success' }}
+        shell: bash
+        run: |
+          vr180_ui_prefix="$(mktemp -d "$RUNNER_TEMP/vr180-ui-esbuild.XXXXXX")"
+          vr180_ui_build="$(mktemp -d "$RUNNER_TEMP/vr180-ui-build.XXXXXX")"
+          trap 'rm -rf "$vr180_ui_prefix" "$vr180_ui_build"' EXIT
+          cp docs/shared/vr180/vendor/toolchain/package.json "$vr180_ui_prefix/"
+          cp docs/shared/vr180/vendor/toolchain/package-lock.json "$vr180_ui_prefix/"
+          npm ci --prefix "$vr180_ui_prefix" --ignore-scripts --include=dev --include=optional --no-audit --no-fund
+          node docs/shared/vr180/vendor/rebuild-indexed.mjs --esbuild-dir "$vr180_ui_prefix/node_modules/esbuild" --output-dir "$vr180_ui_build/result"
+          python3 tools/vr180/prepare-indexed-runtime.py --check
+          python3 tools/vr180/probe-indexed-ui.py --output "$RUNNER_TEMP/vr180-indexed-ui-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
 
   index-owner-native:
     if: >-
