@@ -1,6 +1,15 @@
 import {taskGuide} from './lib/task-guide.mjs';
 import {createDiagnosticsPanel} from './lib/diagnostics-panel.mjs';
 const $=id=>document.getElementById(id);
+// Opt-in, local-only measurement. No input bytes or telemetry leave the page.
+const measurementEnabled=typeof location!=='undefined'&&new URLSearchParams(location.search).get('measure')==='1';
+const measuredJobs=new Map(),measuredStages=[];
+function recordStage(record,response){
+  if(!record)return;
+  measuredStages.push({...record,response,domUpdatedMs:performance.now()-record.startedAt});
+  if(measuredStages.length>40)measuredStages.shift();
+  $('status').dataset.composerStages=JSON.stringify(measuredStages);
+}
 const own=(map,key)=>map&&Object.prototype.hasOwnProperty.call(map,key)?map[key]:undefined;
 const put=(map,key,value)=>Object.defineProperty(map,key,{value,writable:true,enumerable:true,configurable:true});
 const state={files:[],inputs:[],catalog:null,view:null,worker:null,busy:null,job:0,loaded:false,restored:false,urls:[],timer:null,pending:false,
@@ -95,6 +104,7 @@ function getWorker(){
     }
     if(state.worker!==w||data.id!==state.job)return;
     if(data.type==='progress'){setStatus(data.message);return;}
+    const measured=measuredJobs.get(data.id);measuredJobs.delete(data.id);
     const kind=state.busy;setBusy(null);
     if(data.type==='error'){
       if(['load','scan','select'].includes(kind)){state.loaded=false;state.selectionDirty=true;if(kind==='scan')state.scanReady=false;$('configuration').disabled=true;$('reload').hidden=!state.files.length;}
@@ -129,12 +139,13 @@ function getWorker(){
     }
     if(state.pending&&!state.busy){state.pending=false;scheduleAnalysis();}
     renderTaskGuide();
+    recordStage(measured,data.type);
   });
   w.addEventListener('messageerror',()=>{if(diagnosticRequest?.worker===w)diagnosticRequest.finish(new Error('DIAGNOSTIC_MESSAGE_ERROR'));});
-  w.addEventListener('error',()=>{if(state.worker!==w)return;diagnosticRequest?.finish(new Error('COMPOSER_WORKER_FAILED'));w.terminate();state.worker=null;state.loaded=false;state.scanReady=false;state.selectionDirty=true;setBusy(null);invalidate();$('reload').hidden=!state.files.length;showError('処理用Workerを起動・実行できませんでした。素材の再読込みを試してください。');});
+  w.addEventListener('error',()=>{if(state.worker!==w)return;recordStage(measuredJobs.get(state.job),'worker-error');measuredJobs.delete(state.job);diagnosticRequest?.finish(new Error('COMPOSER_WORKER_FAILED'));w.terminate();state.worker=null;state.loaded=false;state.scanReady=false;state.selectionDirty=true;setBusy(null);invalidate();$('reload').hidden=!state.files.length;showError('処理用Workerを起動・実行できませんでした。素材の再読込みを試してください。');});
   return w;
 }
-function post(type,data={}){if(state.busy)return;resetError();setBusy(type);getWorker().postMessage({id:++state.job,type,...data});}
+function post(type,data={}){if(state.busy)return;resetError();setBusy(type);const id=++state.job;if(measurementEnabled)measuredJobs.set(id,{id,type,startedAt:performance.now()});getWorker().postMessage({id,type,...data});}
 function referenceContext(){return JSON.stringify({outputs:plan.outputs,externalReferences:plan.externalReferences??[]});}
 function load(){if(state.busy)return;if(state.view&&!state.viewStale)state.previousAnalysis={diagnostics:state.view.dependencyDiagnostics??[],conflicts:state.catalog?.conflicts??[],configuration:referenceContext()};else state.previousAnalysis=null;cacheImportSelection();invalidate('input');state.view=null;state.loaded=false;state.scanReady=false;state.selectionDirty=true;clearTimeout(state.timer);state.pending=false;post('scan',{files:state.files});}
 function scheduleAnalysis(){
@@ -143,7 +154,7 @@ function scheduleAnalysis(){
   state.timer=setTimeout(()=>{state.timer=null;if(!state.loaded||state.selectionDirty)return;if(state.busy){state.pending=true;return;}post('analyze',{plan:structuredClone(plan)});},180);
 }
 function changed(rerender=false){invalidate();if(rerender)renderConfig();scheduleAnalysis();}
-function stop(){if(state.busy==='diagnostic-export'){diagnosticsPanel?.cancel();return;}diagnosticRequest?.finish(new Error('CANCELLED'));clearTimeout(state.timer);state.timer=null;state.pending=false;cacheImportSelection();state.worker?.terminate();state.worker=null;state.job++;state.loaded=false;state.scanReady=false;state.selectionDirty=!!state.files.length;setBusy(null);invalidate();resetError();$('reload').hidden=!state.files.length;setStatus('処理を取り消しました。選択を保持しています。素材を再読込みして再開できます。');}
+function stop(){if(state.busy==='diagnostic-export'){diagnosticsPanel?.cancel();return;}recordStage(measuredJobs.get(state.job),'cancelled');measuredJobs.delete(state.job);diagnosticRequest?.finish(new Error('CANCELLED'));clearTimeout(state.timer);state.timer=null;state.pending=false;cacheImportSelection();state.worker?.terminate();state.worker=null;state.job++;state.loaded=false;state.scanReady=false;state.selectionDirty=!!state.files.length;setBusy(null);invalidate();resetError();$('reload').hidden=!state.files.length;setStatus('処理を取り消しました。選択を保持しています。素材を再読込みして再開できます。');}
 
 const importBytes=bytes=>bytes>=1024*1024?`${(bytes/1024/1024).toFixed(2)} MiB`:bytes>=1024?`${(bytes/1024).toFixed(1)} KiB`:`${bytes} bytes`;
 function cacheImportSelection(){for(const p of state.importSelection?.packages??[])state.selectionCache.set(p.hash,[...p.guids]);}
@@ -584,3 +595,9 @@ window.addEventListener('beforeunload',()=>{diagnosticRequest?.finish(new Error(
 renderImportSelection();renderConfig();renderAnalysis();renderTaskGuide();
 if(window.matchMedia?.('(max-width: 960px)').matches)$('task-details').open=false;
 if(typeof Worker==='undefined'||typeof WebAssembly==='undefined'){state.unsupported=true;$('files').disabled=true;showError('このツールにはWeb WorkerとWebAssemblyに対応したブラウザが必要です。');}
+if(measurementEnabled){
+  const resources=performance.getEntriesByType('resource').filter(r=>new URL(r.name).origin===location.origin);
+  document.documentElement.dataset.composerInitial=JSON.stringify({domReadyMs:performance.now(),userAgent:navigator.userAgent,
+    resourceCount:resources.length,resourcesTruncated:resources.length>128,resources:resources.slice(0,128).map(r=>({path:new URL(r.name).pathname,transferSize:r.transferSize,encodedBodySize:r.encodedBodySize,duration:r.duration})),
+    note:'Navigation time origin to initial DOM update; not paint completion. Resource timing reflects this browser cache state.'});
+}

@@ -4,12 +4,23 @@ import {createComputePool} from '../../shared/compute/client.mjs';
 // The panel owns its pool and optional comparison bytes; the File SDK borrows it.
 export function createDiagnosticsPanel({getContext,getAvailability,prepare}){
   const $=id=>document.getElementById(id),pageSize=50;
+  const collectMetrics=new URLSearchParams(globalThis.location?.search??'').get('measure')==='1';
   let pool=null,service=null,report=null,active=null,baseline=null,capture=null,page=0,rows=[],lastReport=null,lastCoverage=null,disposed=false,operationStarted=null;
+  const newUiMetrics=operationId=>({operationId,operationToResultDomMs:null,stages:Object.fromEntries(['domUpdate','rowsDomUpdate','rowJSON','coverageJSON','fullJSONDomUpdate'].map(name=>[name,{calls:0,totalMs:0,lastMs:null}]))});
+  let uiMetrics=collectMetrics?newUiMetrics(null):null,updating=false;
+  function recordUiStage(name,started){if(uiMetrics){const stage=uiMetrics.stages[name],elapsed=performance.now()-started;stage.calls++;stage.totalMs+=elapsed;stage.lastMs=elapsed;}}
+  function observeUi(name,fn){if(!uiMetrics)return fn();const started=performance.now();try{return fn();}finally{recordUiStage(name,started);}}
+  function publishMeasurements(){
+    if(!collectMetrics||disposed||updating)return;
+    // A small independent receipt: reading it never formats or sizes the report.
+    try{$('shared-timing').dataset.measurements=JSON.stringify({schemaVersion:'composer-diagnostics-measurements/1',operationId:report?.operationId??null,status:report?.status??'not-run',unit:'ms',service:service?.getMetrics()??null,ui:uiMetrics,
+      timingNotes:'Nested intervals must not be added. DOM intervals end after synchronous updates, not browser paint. prepare and sdkSettlement include waiting until resolve/reject; no terminal observation is fabricated while pending. Receipt serialization is excluded from DOM intervals.'});}catch{}
+  }
   const statusNames={'not-run':'未実施',running:'診断中',succeeded:'診断完了',failed:'診断失敗',cancelled:'取消'};
   function ensure(){
     if(!service){
       pool=createComputePool({concurrency:2,moduleReuse:false});
-      service=createSharedDiagnostics({pool,onUpdate:update});
+      service=createSharedDiagnostics({pool,onUpdate:update,collectMetrics});
       service.invalidate(currentContext());
       report=service.getReport();
     }
@@ -19,6 +30,9 @@ export function createDiagnosticsPanel({getContext,getAvailability,prepare}){
   const currentContext=()=>({...getContext(),target:target()});
   function update(next){
     if(disposed)return;
+    if(uiMetrics&&next.operationId!==uiMetrics.operationId)uiMetrics=newUiMetrics(next.operationId);
+    const domStarted=collectMetrics?performance.now():0;updating=true;
+    try{
     report=next;
     if(next.status!=='running')active=null;
     if(next!==lastReport){
@@ -33,7 +47,8 @@ export function createDiagnosticsPanel({getContext,getAvailability,prepare}){
       $('shared-json').textContent='';$('shared-json-details').open=false;
     }
     refresh();renderRows();
-    if(next.status!=='running'&&operationStarted!==null){$('shared-timing').textContent=`画面操作から結果表示まで ${(performance.now()-operationStarted).toFixed(1)} ms（端末内計測、Worker 2、Module再利用なし）。SDK内部の時間は全件JSONに記録しています。`;operationStarted=null;}
+    if(next.status!=='running'&&operationStarted!==null){const elapsed=performance.now()-operationStarted;if(uiMetrics)uiMetrics.operationToResultDomMs=elapsed;$('shared-timing').textContent=`画面操作から結果のDOM更新直後まで ${elapsed.toFixed(1)} ms（描画完了は含みません。端末内計測、Worker 2、Module再利用なし）。SDK内部の時間は全件JSONに記録しています。`;operationStarted=null;}
+    }finally{recordUiStage('domUpdate',domStarted);updating=false;publishMeasurements();}
   }
   function refresh(){
     const available=getAvailability(),busy=!!active||!!capture,kind=target();
@@ -50,11 +65,13 @@ export function createDiagnosticsPanel({getContext,getAvailability,prepare}){
     $('shared-baseline').textContent=baseline?`保持中：${baseline.source?.target==='output'?'生成物':'選択済み入力'} / 入力 ${baseline.source?.context?.inputRevision??'?'}・選択 ${baseline.source?.context?.selectionRevision??'?'}・構成 ${baseline.source?.context?.planRevision??'?'}（明示的に解除するまで保持）`:'比較基準は未指定です。';
     const sdk=report?.sdkReport;
     $('shared-summary').textContent=sdk?`入力側 ${sdk.before?.counts?.files??0}ファイル / 指摘 ${sdk.before?.counts?.findings??0}件${sdk.after?`、比較側 ${sdk.after.counts?.files??0}ファイル / 指摘 ${sdk.after.counts?.findings??0}件`:''}。全件JSONと診断した素材範囲は別に記録しています。`:'';
-    if(report?.inputCoverage!==lastCoverage){lastCoverage=report?.inputCoverage;$('shared-coverage').textContent=lastCoverage?JSON.stringify(lastCoverage,null,2):'未選択・参照のみの素材や解析不能な項目は、全範囲診断済みとは扱いません。';}
+    if(report?.inputCoverage!==lastCoverage){lastCoverage=report?.inputCoverage;$('shared-coverage').textContent=lastCoverage?observeUi('coverageJSON',()=>JSON.stringify(lastCoverage,null,2)):'未選択・参照のみの素材や解析不能な項目は、全範囲診断済みとは扱いません。';}
     // Compact size is cached by the service; never serialize the complete report while paging.
     $('shared-size').textContent=service&&report?.status!=='running'?`全件JSON（非整形時） ${service.getCompactBytes().toLocaleString()} bytes` : '';
   }
   function renderRows(){
+    const domStarted=collectMetrics?performance.now():0;
+    try{
     const q=$('shared-search').value.trim().toLocaleLowerCase();
     const visible=q?rows.filter(r=>[r.side,r.kind,r.item.code,r.item.message,r.item.path,r.item.source?.path,r.item.assetId,r.item.fileId].some(v=>String(v??'').toLocaleLowerCase().includes(q))):rows;
     page=Math.max(0,Math.min(page,Math.max(0,Math.ceil(visible.length/pageSize)-1)));
@@ -64,8 +81,9 @@ export function createDiagnosticsPanel({getContext,getAvailability,prepare}){
     for(const row of visible.slice(page*pageSize,(page+1)*pageSize)){
       const li=document.createElement('li'),title=document.createElement('strong'),detail=document.createElement('pre');
       title.textContent=`${row.side}・${row.kind} ${row.item.code??''}`;
-      detail.textContent=JSON.stringify(row.item,null,2);li.append(title,detail);list.append(li);
+      detail.textContent=observeUi('rowJSON',()=>JSON.stringify(row.item,null,2));li.append(title,detail);list.append(li);
     }
+    }finally{recordUiStage('rowsDomUpdate',domStarted);publishMeasurements();}
   }
   function run(compare=false){
     if(disposed||active||capture)return;
@@ -101,12 +119,13 @@ export function createDiagnosticsPanel({getContext,getAvailability,prepare}){
   $('shared-cancel').addEventListener('click',cancel);$('shared-target').addEventListener('change',invalidate);
   $('shared-search').addEventListener('input',()=>{page=0;renderRows();});
   $('shared-prev').addEventListener('click',()=>{page--;renderRows();});$('shared-next').addEventListener('click',()=>{page++;renderRows();});
-  $('shared-json-details').addEventListener('toggle',()=>{if($('shared-json-details').open&&!active&&!capture)$('shared-json').textContent=ensure().getJSON();});
+  $('shared-json-details').addEventListener('toggle',()=>{if($('shared-json-details').open&&!active&&!capture){observeUi('fullJSONDomUpdate',()=>{$('shared-json').textContent=ensure().getJSON();});publishMeasurements();}});
   $('shared-save').addEventListener('click',()=>{
     if(active||capture)return;
     const json=ensure().getJSON(),url=URL.createObjectURL(new Blob([json],{type:'application/json'})),a=document.createElement('a');
     a.href=url;a.download='SharedAnalysisReport.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     $('shared-status').textContent='全件JSONのダウンロードを開始しました。保存先の確認はブラウザで行ってください。';
+    publishMeasurements();
   });
   refresh();renderRows();
   return {refresh,invalidate,cancel,dispose(){disposed=true;capture?.control.abort();active?.cancel();service?.dispose();pool?.dispose();baseline=null;rows=[];report=null;}};

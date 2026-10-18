@@ -59,21 +59,30 @@ function noResult(context,operationId=null,why={code:'NOT_REQUESTED',message:'�
   exportCompleteness:{allAvailableReportRecordsIncluded:true,sdkReportIncluded:false,truncated:false},timings:{callerElapsedMs:null,prepareMs:null,sdkCallMs:null},
   timingNotes:'callerElapsedMs includes preparation and SDK settlement (including SDK report validation/freeze), ending before envelope JSON sizing/freeze. UI operation elapsed measures the complete await.',sdkReport:null};
 }
+// Opt-in observations never enter the report, its byte count, or its JSON cache.
+function newMetrics(enabled,operationId=null,context=null){
+ if(!enabled)return null;
+ return {schemaVersion:'composer-diagnostics-service-metrics/1',operationId,context:clone(context),status:'not-run',unit:'ms',
+  stages:Object.fromEntries(['prepare','sdkSettlement','envelopeSize','freeze','fullJSON'].map(name=>[name,{calls:0,totalMs:0,lastMs:null}]))};
+}
+function recordStage(metrics,name,started){if(metrics){const stage=metrics.stages[name],elapsed=now()-started;stage.calls++;stage.totalMs+=elapsed;stage.lastMs=elapsed;}}
+function observe(metrics,name,fn){if(!metrics)return fn();const started=now();try{return fn();}finally{recordStage(metrics,name,started);}}
 /** The caller owns pool. This service only cancels/disposes its own SDK sessions. */
-export function createSharedDiagnostics({pool,onUpdate=()=>{},analyzerFactory=async options=>{const {createUnityFileAnalyzer}=await import('../../shared/unity-analysis/file-sdk.mjs');return createUnityFileAnalyzer(options);}}={}){
+export function createSharedDiagnostics({pool,onUpdate=()=>{},collectMetrics=false,analyzerFactory=async options=>{const {createUnityFileAnalyzer}=await import('../../shared/unity-analysis/file-sdk.mjs');return createUnityFileAnalyzer(options);}}={}){
  let disposed=false,current=null,report=freeze(noResult()),pretty=null,compactBytes=null,analyzer=null,analyzerPromise=null;
+ let metrics=newMetrics(collectMetrics);
  const isCurrent=record=>!disposed&&current===record&&!record.done;
- const publish=(value,knownSize=null)=>{report=freeze(value);pretty=null;compactBytes=knownSize;try{onUpdate(report);}catch{}};
- const measure=()=>{if(compactBytes===null)compactBytes=encoder.encode(JSON.stringify(report)).byteLength;return compactBytes;};
+ const publish=(value,knownSize=null)=>{report=observe(metrics,'freeze',()=>freeze(value));if(metrics)metrics.status=value.status;pretty=null;compactBytes=knownSize;try{onUpdate(report);}catch{}};
+ const measure=()=>{if(compactBytes===null)compactBytes=observe(metrics,'envelopeSize',()=>encoder.encode(JSON.stringify(report)).byteLength);return compactBytes;};
  const finalize=(record,status,why=null,sdkReport=null)=>{
   if(record.done)return record.result;
   let value={...record.envelope,status,reason:why,sdkReport,timings:{...record.envelope.timings,callerElapsedMs:now()-record.started,...(record.sdkStarted?{sdkCallMs:now()-record.sdkStarted}:{})},
    exportCompleteness:{allAvailableReportRecordsIncluded:true,sdkReportIncluded:status==='succeeded',truncated:false}};
   let size;
-  try{size=encoder.encode(JSON.stringify(value)).byteLength;}
-  catch{value={...noResult(record.context,record.operationId),status:'failed',reason:{code:'ENVELOPE_NOT_JSON',message:'診断の付加情報をJSONとして記録できませんでした。'},timings:{callerElapsedMs:now()-record.started,prepareMs:null,sdkCallMs:null}};size=encoder.encode(JSON.stringify(value)).byteLength;}
+  try{size=observe(record.metrics,'envelopeSize',()=>encoder.encode(JSON.stringify(value)).byteLength);}
+  catch{value={...noResult(record.context,record.operationId),status:'failed',reason:{code:'ENVELOPE_NOT_JSON',message:'診断の付加情報をJSONとして記録できませんでした。'},timings:{callerElapsedMs:now()-record.started,prepareMs:null,sdkCallMs:null}};size=observe(record.metrics,'envelopeSize',()=>encoder.encode(JSON.stringify(value)).byteLength);}
   record.done=true;
-  record.result=freeze(value);
+  record.result=observe(record.metrics,'freeze',()=>freeze(value));if(record.metrics)record.metrics.status=value.status;
   if(current===record&&!disposed)publish(record.result,size);
   record.resolve(record.result);return record.result;
  };
@@ -96,14 +105,16 @@ export function createSharedDiagnostics({pool,onUpdate=()=>{},analyzerFactory=as
   context={inputRevision:context?.inputRevision,selectionRevision:context?.selectionRevision,planRevision:context?.planRevision,target:context?.target};
   const operationId='sd-'+crypto.randomUUID(),started=now();
   let resolve;const promise=new Promise(r=>{resolve=r;});
-  const record={operationId,context,started,abort:new AbortController(),resolve,done:false,envelope:{...noResult(context,operationId),status:'running',reason:null,progress:{stage:'preparing'}}};
+  const record={operationId,context,started,abort:new AbortController(),resolve,done:false,metrics:newMetrics(collectMetrics,operationId,context),envelope:{...noResult(context,operationId),status:'running',reason:null,progress:{stage:'preparing'}}};
+  metrics=record.metrics;
   current=record;if(!disposed)publish(record.envelope);
   // The operation ID and handle exist before prepare or any synchronous SDK exception.
   Promise.resolve().then(async()=>{
    let sdk=null;
    try{
     if(disposed)fail('DIAGNOSTICS_DISPOSED');if(!isCurrent(record))return;identity(context);if(typeof prepare!=='function')fail('DIAGNOSTIC_PREPARE_REQUIRED');
-    const prepareStarted=now();const prepared=await prepare({operationId,signal:record.abort.signal});
+    const prepareStarted=now();let prepared;
+    try{prepared=await prepare({operationId,signal:record.abort.signal});}finally{recordStage(record.metrics,'prepare',prepareStarted);}
     if(!isCurrent(record))return;
     const compare=context.target==='compare',before=compare?prepared?.before:prepared,after=compare?prepared?.after:null;
     if(!before||compare&&!after)fail('DIAGNOSTIC_PAYLOAD_REQUIRED');
@@ -119,7 +130,8 @@ export function createSharedDiagnostics({pool,onUpdate=()=>{},analyzerFactory=as
     sdk=await ensureAnalyzer();if(!isCurrent(record))return;
     record.envelope={...record.envelope,progress:{stage:'starting'}};publish(record.envelope);
     const sdkStarted=record.sdkStarted=now(),options={inputRevision:context.inputRevision,sessionId:operationId,parameterLinks};
-    const result=await (after?sdk.compare(before.files,after.files,options):sdk.analyze(before.files,options));
+    let result;
+    try{result=await (after?sdk.compare(before.files,after.files,options):sdk.analyze(before.files,options));}finally{recordStage(record.metrics,'sdkSettlement',sdkStarted);}
     if(!isCurrent(record))return;
     if(result?.status!=='succeeded'||result.sessionId!==operationId||result.inputRevision!==context.inputRevision||result.completeness?.truncated!==false||result.completeness.totalCount!==result.completeness.returnedCount||!matchesFiles(result.before,before.files)||after&&!matchesFiles(result.after,after.files))fail('SDK_REPORT_IDENTITY_OR_COMPLETENESS_MISMATCH');
     record.envelope={...record.envelope,progress:{stage:'complete'},timings:{...record.envelope.timings,sdkCallMs:now()-sdkStarted},
@@ -130,8 +142,8 @@ export function createSharedDiagnostics({pool,onUpdate=()=>{},analyzerFactory=as
   });
   return Object.freeze({operationId,promise,cancel:()=>cancelRecord(record)});
  }
- return Object.freeze({start,getReport:()=>report,getJSON(){return pretty??=JSON.stringify(report,null,2)+'\n';},getCompactBytes:measure,
-  cancel:()=>cancelRecord(current),invalidate(context){cancelRecord(current,{code:'INPUT_CHANGED',message:'入力または設定の変更により旧診断を無効化しました。'});current=null;if(!disposed)publish(noResult(context,null,{code:'INPUT_CHANGED',message:'現在の入力・設定で共有診断を実行してください。'}));},
+ return Object.freeze({start,getReport:()=>report,getMetrics:()=>clone(metrics),getJSON(){return pretty??=observe(metrics,'fullJSON',()=>JSON.stringify(report,null,2)+'\n');},getCompactBytes:measure,
+  cancel:()=>cancelRecord(current),invalidate(context){cancelRecord(current,{code:'INPUT_CHANGED',message:'入力または設定の変更により旧診断を無効化しました。'});current=null;if(!disposed){metrics=newMetrics(collectMetrics,null,context);publish(noResult(context,null,{code:'INPUT_CHANGED',message:'現在の入力・設定で共有診断を実行してください。'}));}},
   dispose(){if(disposed)return;cancelRecord(current);disposed=true;current=null;report=freeze(noResult({},null,{code:'DISPOSED',message:'共有診断を終了しました。'}));pretty=null;compactBytes=null;try{analyzer?.dispose?.();}catch{}analyzer=null;analyzerPromise=null;}
  });
 }

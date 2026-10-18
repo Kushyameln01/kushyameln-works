@@ -91,4 +91,34 @@ for(const kind of ['prepare-sync','prepare-async','sdk-sync','sdk-async']){
  const service=createSharedDiagnostics({pool,analyzerFactory:()=>({analyze:(_,o)=>Promise.resolve({...report(o),inputRevision:o.inputRevision+1}),dispose(){}})});
  const r=await service.start(context,payload).promise;assert.equal(r.status,'failed');assert.match(r.reason.message,/IDENTITY/);assert.equal(r.sdkReport,null);service.dispose();cases++;
 }
+// Stage A observations stay outside the report and never trigger report serialization.
+{
+ const service=createSharedDiagnostics({pool,analyzerFactory:()=>({analyze:(_,o)=>Promise.resolve(report(o)),dispose(){}})});
+ await service.start(context,payload).promise;assert.equal(service.getMetrics(),null,'Observation is disabled by default');service.dispose();cases++;
+}
+{
+ const service=createSharedDiagnostics({pool,collectMetrics:true,analyzerFactory:()=>({analyze:(_,o)=>Promise.resolve(report(o)),dispose(){}})});
+ const h=service.start(context,payload),r=await h.promise,m=service.getMetrics();
+ assert.equal(m.operationId,h.operationId);assert.equal(m.status,'succeeded');assert.equal(m.stages.prepare.calls,1);assert.equal(m.stages.sdkSettlement.calls,1);
+ assert.equal(m.stages.envelopeSize.calls,1);assert(m.stages.freeze.calls>=1);assert.equal(m.stages.fullJSON.calls,0);
+ for(const stage of Object.values(m.stages)){assert(stage.totalMs>=0);assert(stage.lastMs===null||stage.lastMs>=0);}
+ assert.equal(Object.hasOwn(r,'measurements'),false);assert.equal(Object.hasOwn(r,'metrics'),false);
+ const compact=service.getCompactBytes();service.getMetrics();service.getCompactBytes();assert.equal(service.getMetrics().stages.envelopeSize.calls,1);
+ const json=service.getJSON();assert.equal(service.getJSON(),json);assert.equal(service.getMetrics().stages.fullJSON.calls,1);assert.equal(service.getCompactBytes(),compact);
+ m.stages.envelopeSize.calls=999;assert.equal(service.getMetrics().stages.envelopeSize.calls,1,'Retrieved observations cannot change live counters');
+ assert.deepEqual(JSON.parse(json),r);service.dispose();cases++;
+}
+for(const kind of ['prepare-sync','prepare-async','sdk-sync','sdk-async']){
+ const service=createSharedDiagnostics({pool,collectMetrics:true,analyzerFactory:()=>({analyze(){if(kind==='sdk-sync')throw Error('SDK_SYNC');return Promise.reject(Error('SDK_ASYNC'));},dispose(){}})});
+ const r=await service.start(context,()=>{if(kind==='prepare-sync')throw Error('PREPARE_SYNC');if(kind==='prepare-async')return Promise.reject(Error('PREPARE_ASYNC'));return payload();}).promise;
+ const m=service.getMetrics();assert.equal(r.status,'failed');assert.equal(m.status,'failed');assert.equal(m.stages.prepare.calls,1);
+ assert.equal(m.stages.sdkSettlement.calls,kind.startsWith('sdk-')?1:0);assert.equal(m.stages.envelopeSize.calls,1);service.dispose();cases++;
+}
+{
+ let release,entered;const ready=new Promise(resolve=>{entered=resolve;});
+ const service=createSharedDiagnostics({pool,collectMetrics:true,analyzerFactory:()=>({analyze:(_,o)=>Promise.resolve(report(o)),dispose(){}})});
+ const old=service.start(context,()=>{entered();return new Promise(resolve=>{release=resolve;});});await ready;old.cancel();await old.promise;
+ const next=service.start({...context,inputRevision:8},payload);await next.promise;const before=service.getMetrics();
+ release(payload());await Promise.resolve();await Promise.resolve();assert.deepEqual(service.getMetrics(),before,'Late preparation must not alter current observation');service.dispose();cases++;
+}
 console.log(JSON.stringify({status:'PASS',cases,note:'Mocked boundary regressions; does not certify browser Worker, WASM, Unity, MA or VRChat.'}));
