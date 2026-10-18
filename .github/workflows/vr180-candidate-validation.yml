@@ -48,7 +48,8 @@ jobs:
       github.repository == 'Kushyameln01/kushyameln-works' &&
       github.event.repository.private == false &&
       startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
-      contains(github.event.head_commit.message, '[vr180-loopback-transfer]')
+      (contains(github.event.head_commit.message, '[vr180-loopback-transfer]') ||
+      contains(github.event.head_commit.message, '[vr180-loopback-download]'))
     runs-on: ubuntu-24.04
     timeout-minutes: 9
     env:
@@ -80,6 +81,7 @@ jobs:
           VR180_DEPENDENCIES_READY: ${{ steps.dependencies.outcome == 'success' }}
         run: >-
           python3 tools/vr180/probe-loopback-transfer.py
+          --transport "${{ contains(github.event.head_commit.message, '[vr180-loopback-download]') && 'browser-download' || 'http' }}"
           --output "$RUNNER_TEMP/vr180-loopback-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
 
   segmented-artifact-probe:

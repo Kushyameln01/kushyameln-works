@@ -108,15 +108,15 @@ def capture_transfer(page, receiver, row):
             if isinstance(error,probe.ProducerInterrupted):raise
 
 
-def run_trial(playwright, out, number, mode, expected, deadline):
+def run_trial(playwright, out, number, mode, expected, deadline, *, transport='http', signals=None):
     row={'number':number,'mode':mode,'status':'STARTED','route':{'intercepted':0,'continued':0,'aborted':0},
-         'pageErrors':[],'workers':[],'httpProtocol':'HTTP/1.0','native':True}
+         'pageErrors':[],'workers':[],'httpProtocol':'HTTP/1.0','native':True,'transport':transport}
     trial=out/('trial-'+str(number)); trial.mkdir(); media=trial/'media'; media.mkdir()
     receiver=streaming.MediaReceiver(media,{'input':FILE_BYTES,'output':FILE_BYTES},deadline)
     token=uuid.uuid4().hex
     content={'/':(HTML,'text/html'),probe.WORKER_ROUTE:(WORKER.encode(),'text/javascript'),
              '/docs/shared/vr180/sha256.mjs':((ROOT/'docs/shared/vr180/sha256.mjs').read_bytes(),'text/javascript')}
-    server=None; owned=None; context=None; browser=None; page=None; failure=None; started=time.monotonic()
+    server=None; owned=None; downloads=None; context=None; browser=None; page=None; failure=None; started=time.monotonic()
     def cleanup(label, fn):
         nonlocal failure
         try:row[label]=fn()
@@ -135,8 +135,14 @@ def run_trial(playwright, out, number, mode, expected, deadline):
             inventory.append({'route':route,'bytes':len(body),'sha256':hashlib.sha256(body).hexdigest()})
         row['servedSources']=inventory
         owned=persistent.create_owned_profile(trial); row['ownedProfile']=dict(owned['owner']); owned['browserClosed']=False
+        download_options={}
+        if transport=='browser-download':
+            c.require(mode=='baseline' and signals is not None,'DOWNLOAD_REQUIRES_BASELINE_GUARD_AND_TIMER')
+            downloads=streaming.OwnedDownloads(trial)
+            row['ownedDownloads']={'path':str(downloads.path),'identity':list(downloads.identity)}
+            download_options={'accept_downloads':True,'downloads_path':str(downloads.path)}
         context=playwright.chromium.launch_persistent_context(user_data_dir=str(owned['path']),
-            executable_path=str(c.CHROME),headless=True,chromium_sandbox=True,timeout=min(30000,probe.remaining(deadline)*1000))
+            executable_path=str(c.CHROME),headless=True,chromium_sandbox=True,timeout=min(30000,probe.remaining(deadline)*1000),**download_options)
         browser=context.browser; c.require(browser is not None,'BROWSER_HANDLE_MISSING'); row['browserVersion']=browser.version
         install_guard(context,origin,mode,row['route'])
         page=context.new_page(); page.set_default_timeout(30000)
@@ -151,10 +157,16 @@ def run_trial(playwright, out, number, mode, expected, deadline):
         c.require(row['preparation']['status']=='READY_FOR_RUNNER_TRANSFER','WITNESS_PREPARATION_FAILED')
         c.require(row['preparation']['files']==expected,'INDEPENDENT_WITNESS_HASH_DIFFERS')
         c.require(row['workers']==[origin+probe.WORKER_ROUTE] and not row['pageErrors'],'DIAGNOSTIC_WORKER_OR_PAGE_ERROR')
-        receiver.prepare(expected); transfer_started=time.monotonic(); page.evaluate(probe.TRANSFER,token)
-        page.wait_for_function('globalThis.__long.transfer!==null',timeout=probe.remaining(deadline)*1000)
+        receiver.prepare(expected); transfer_started=time.monotonic()
+        if transport=='browser-download':
+            row['browserDownload']={}
+            probe.download_to_receiver(page,receiver,downloads,expected,deadline,signals,row['browserDownload'])
+            c.require(row['browserDownload']['status']=='PASS' and row['browserDownload']['allStoppedBeforeBrowserClose'],'DIAGNOSTIC_DOWNLOAD_FAILED')
+        else:
+            page.evaluate(probe.TRANSFER,token)
+            page.wait_for_function('globalThis.__long.transfer!==null',timeout=probe.remaining(deadline)*1000)
         capture_transfer(page,receiver,row); row['transferElapsedSeconds']=time.monotonic()-transfer_started
-        c.require(row['browserTransfer']['result']['status']=='PASS','DIAGNOSTIC_TRANSFER_FAILED')
+        if transport=='http':c.require(row['browserTransfer']['result']['status']=='PASS','DIAGNOSTIC_TRANSFER_FAILED')
         row['receipts']=receiver.receipts()
         for receipt,entry in zip(row['receipts'],expected):
             c.require(all(receipt.get(key)==value for key,value in entry.items()) and receipt['rereadBytes']==FILE_BYTES
@@ -165,14 +177,24 @@ def run_trial(playwright, out, number, mode, expected, deadline):
         failure=error; row['status']='FAIL'; row['error']=f'{type(error).__name__}: {error}'
     finally:
         cleanup('transferSnapshot',lambda:capture_transfer(page,receiver,row))
+        if downloads:
+            row['downloadsStoppedBeforeBrowserClose']=row.get('browserDownload',{}).get('allStoppedBeforeBrowserClose',False)
         if page:
-            cleanup('namespaceCleanup',lambda:page.evaluate(probe.CLEANUP))
+            if downloads and not row['downloadsStoppedBeforeBrowserClose']:
+                row['namespaceCleanup']={'status':'HOLD','reason':'Native download completion/stop before browser close not fully verified.'}
+            else:cleanup('namespaceCleanup',lambda:page.evaluate(probe.CLEANUP))
             if row['namespaceCleanup'].get('status') not in {'REMOVED','NOT_CREATED'}:owned['unknownContent']=True
         if context:
             def close_browser():
                 context.close(); c.require(browser is not None and not browser.is_connected(),'BROWSER_STILL_CONNECTED'); owned['browserClosed']=True
                 return {'status':'CLOSED'}
             cleanup('browserClose',close_browser)
+        if downloads:
+            row['downloadLifecycleAfterBrowserClose']={
+                'browserClosed':row.get('browserClose',{}).get('status')=='CLOSED',
+                'apiStopConfirmedBeforeClose':row.get('downloadsStoppedBeforeBrowserClose',False),
+                'scope':'Browser closure is recorded separately; it does not retroactively establish a download terminal API result.'}
+            cleanup('downloadDirectoryAfterClose',lambda:{'status':'OBSERVED','remainingNames':downloads.names()})
         if server:
             def close_server():
                 receiver.deadline=0; server.shutdown(); server.server_close(); return {'status':'CLOSED'}
@@ -182,8 +204,10 @@ def run_trial(playwright, out, number, mode, expected, deadline):
         row['serverTransferAfterClose']=receiver.observation()
         if server is None or row.get('serverClose',{}).get('status')=='CLOSED':cleanup('runnerMediaCleanup',receiver.abort)
         else:row['runnerMediaCleanup']={'status':'HOLD','reason':'Server request completion unverified; files retained.'}
+        if downloads:cleanup('downloadDirectoryCleanup',downloads.cleanup)
         if owned:cleanup('profileCleanup',lambda:persistent.cleanup_owned_profile(owned))
         row['elapsedSeconds']=time.monotonic()-started
+        if time.monotonic()>=deadline and failure is None:failure=TimeoutError('DIAGNOSTIC_CLEANUP_DEADLINE')
         if failure is not None:row['status']='FAIL'
         c.write(out/'evidence'/('trial-'+str(number)+'.json'),row)
     if failure is not None:raise failure
@@ -191,16 +215,19 @@ def run_trial(playwright, out, number, mode, expected, deadline):
 
 
 def main(argv=None):
-    parser=argparse.ArgumentParser(description=__doc__); parser.add_argument('--output',type=Path,required=True); args=parser.parse_args(argv)
+    parser=argparse.ArgumentParser(description=__doc__); parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--transport',choices=['http','browser-download'],default='http'); args=parser.parse_args(argv)
     out=args.output.resolve(); c.require(not out.exists() and not out.is_relative_to(ROOT),'Use new output outside checkout')
     out.mkdir(parents=True); meta=out/'evidence'; meta.mkdir()
     started=time.monotonic(); deadline=started+DEADLINE_SECONDS
-    report={'schema':'vr180-loopback-transfer-diagnostic-v1','runId':os.environ.get('GITHUB_RUN_ID','local')+'-loopback-transfer-'+os.environ.get('GITHUB_RUN_ATTEMPT','1'),
+    modes=MODES if args.transport=='http' else ('baseline',)
+    report={'schema':'vr180-loopback-transfer-diagnostic-v1','runId':os.environ.get('GITHUB_RUN_ID','local')+'-loopback-'+args.transport+'-'+os.environ.get('GITHUB_RUN_ATTEMPT','1'),
       'status':'FAIL','mediaArtifactReady':False,'prototypeOnly':True,'publicFilesWritten':False,'httpProtocol':'HTTP/1.0',
-      'chunkBytes':CHUNK_BYTES,'bytesPerFile':FILE_BYTES,'bytesPerTrial':FILE_BYTES*2,'maxCompletedBytes':FILE_BYTES*2*len(MODES),
-      'modes':list(MODES),'deadlineSeconds':DEADLINE_SECONDS,'cleanupGraceSeconds':30,'trials':[],
+      'transport':args.transport,'chunkBytes':CHUNK_BYTES,'bytesPerFile':FILE_BYTES,'bytesPerTrial':FILE_BYTES*2,'maxCompletedBytes':FILE_BYTES*2*len(modes),
+      'modes':list(modes),'deadlineSeconds':DEADLINE_SECONDS,'cleanupGraceSeconds':30,'trials':[],
       'comparison':'Only Playwright route pattern changes. Each trial uses a new owned normal sandboxed Chrome profile; same deterministic bytes and sequential POST protocol.',
       'notVerified':['5/10 GB transfer','media decode/encode/quality','public product performance','HTTP/1.1 effect','performance distribution or cold-cache behavior','true peak memory']}
+    if args.transport=='browser-download':report['comparison']='One browser-download case with the original all-request baseline guard; compare separately with retained HTTP trials. No codec or media acceptance.'
     signals=probe.ProducerSignals(report); signals.install(DEADLINE_SECONDS); transported=False
     try:
         c.require(os.environ.get('GITHUB_REPOSITORY')=='Kushyameln01/kushyameln-works','REPOSITORY_DIFFERS')
@@ -212,8 +239,8 @@ def main(argv=None):
         report['sourceSHA256Before']=before; expected=expected_files(deadline); c.write(meta/'independent-python-oracle.json',expected)
         from playwright.sync_api import sync_playwright
         with sync_playwright() as playwright:
-            for number,mode in enumerate(MODES,1):
-                probe.remaining(deadline); row=run_trial(playwright,out,number,mode,expected,deadline); report['trials'].append(row)
+            for number,mode in enumerate(modes,1):
+                probe.remaining(deadline); row=run_trial(playwright,out,number,mode,expected,deadline,transport=args.transport,signals=signals); report['trials'].append(row)
         after={name:c.digest(ROOT/name) for name in SOURCES}; report['sourceSHA256After']=after
         c.require(after==before,'DIAGNOSTIC_SOURCES_CHANGED'); probe.remaining(deadline); report['status']='PASS'
     except (Exception,probe.ProducerInterrupted) as error:

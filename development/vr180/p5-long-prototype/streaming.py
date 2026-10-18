@@ -4,9 +4,87 @@ import os
 from pathlib import Path
 import re
 import stat
+import shutil
+import tempfile
 import threading
 import time
 CHUNK_BYTES = 1024 ** 2
+
+
+class OwnedDownloads:
+    """A new dedicated native-download directory; never adopts or sweeps entries."""
+    def __init__(self, parent):
+        self.path = Path(tempfile.mkdtemp(prefix='vr180-download-owned-', dir=parent)).absolute()
+        info = self.path.lstat(); self.identity = (info.st_dev, info.st_ino)
+
+    def validate_directory(self):
+        info = self.path.lstat()
+        need(stat.S_ISDIR(info.st_mode) and (info.st_dev, info.st_ino) == self.identity, 'DOWNLOAD_DIRECTORY_CHANGED')
+
+    def names(self):
+        self.validate_directory(); result = []
+        for entry in self.path.iterdir():
+            need(len(result) < 4, 'DOWNLOAD_UNKNOWN_ENTRY_BOUND')
+            result.append(entry.name)
+        return sorted(result)
+
+    def require_empty(self):
+        need(not self.names(), 'DOWNLOAD_UNKNOWN_ENTRY')
+
+    def preflight(self, media, expected_bytes, deadline):
+        need(time.monotonic() < deadline, 'DOWNLOAD_DEADLINE')
+        self.require_empty(); info = Path(media).lstat()
+        need(stat.S_ISDIR(info.st_mode) and info.st_dev == self.identity[0], 'DOWNLOAD_FILESYSTEM_DIFFERS')
+        free = shutil.disk_usage(self.path).free; required = expected_bytes * 2 + CHUNK_BYTES
+        need(free >= required, 'DOWNLOAD_DISK_LOW')
+        return {'freeBytes': free, 'requiredAdditionalBytes': required, 'sameFilesystem': True,
+                'reservationGuaranteed': False, 'singleNativeDownloadAtATime': True}
+
+    @staticmethod
+    def stamp(info):
+        return {'device': info.st_dev, 'inode': info.st_ino, 'bytes': info.st_size,
+                'mtimeNs': info.st_mtime_ns, 'ctimeNs': info.st_ctime_ns}
+
+    def admit(self, path, expected_bytes):
+        self.validate_directory(); path = Path(path)
+        need(path.is_absolute() and path.parent == self.path and path.name not in {'.', '..'}, 'DOWNLOAD_PATH_OUTSIDE_OWNER')
+        info = path.lstat()
+        need(stat.S_ISREG(info.st_mode) and info.st_dev == self.identity[0] and info.st_size == expected_bytes, 'DOWNLOAD_FILE_IDENTITY_OR_SIZE')
+        need(self.names() == [path.name], 'DOWNLOAD_UNKNOWN_ENTRY')
+        return {'name': path.name, **self.stamp(info)}
+
+    def check_file(self, path, identity):
+        current = self.admit(path, identity['bytes'])
+        need(current == identity, 'DOWNLOAD_FILE_CHANGED')
+
+    def copy_to_receiver(self, path, identity, receiver, ident, deadline):
+        self.check_file(path, identity); started = time.monotonic(); total = chunks = 0
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+        with os.fdopen(fd, 'rb') as source:
+            need(self.stamp(os.fstat(source.fileno())) == {k: v for k, v in identity.items() if k != 'name'}, 'DOWNLOAD_OPEN_CHANGED')
+            while total < identity['bytes']:
+                need(time.monotonic() < deadline, 'DOWNLOAD_COPY_DEADLINE')
+                data = source.read(min(CHUNK_BYTES, identity['bytes'] - total))
+                need(data, 'DOWNLOAD_SOURCE_SHORT_READ')
+                receiver.chunk(ident, total, data); total += len(data); chunks += 1
+            need(source.read(1) == b'', 'DOWNLOAD_SOURCE_EXTRA_BYTES')
+            need(self.stamp(os.fstat(source.fileno())) == {k: v for k, v in identity.items() if k != 'name'}, 'DOWNLOAD_OPEN_CHANGED')
+        self.check_file(path, identity); need(time.monotonic() < deadline, 'DOWNLOAD_COPY_DEADLINE')
+        receipt = receiver.complete(ident); self.check_file(path, identity)
+        need(time.monotonic() < deadline, 'DOWNLOAD_COPY_DEADLINE')
+        return {'copiedBytes': total, 'chunks': chunks, 'maxPythonBufferBytes': CHUNK_BYTES,
+                'nativePeakMemoryMeasured': False, 'elapsedSeconds': time.monotonic() - started,
+                'elapsedScope': 'Copy plus receiver complete/flush/fsync/close/full reread and source identity checks', 'receipt': dict(receipt)}
+
+    def require_absent(self, path):
+        self.validate_directory()
+        try: Path(path).lstat()
+        except FileNotFoundError: return
+        raise ValueError('DOWNLOAD_DELETE_NOT_ABSENT')
+
+    def cleanup(self):
+        self.require_empty(); self.path.rmdir()
+        return {'status': 'REMOVED', 'recursiveDeletion': False, 'directoryIdentity': list(self.identity)}
 
 
 def need(value, message):

@@ -2,6 +2,7 @@
 """Private long synthetic P5 producer. No upload, public integration or capacity guarantee."""
 from __future__ import annotations
 import argparse
+import contextlib
 import hashlib
 import importlib.util
 import json
@@ -78,6 +79,26 @@ class ProducerSignals:
         # A first signal here latches FAIL but cannot skip the current owner cleanup.
         self.cleanup_phase=True
 
+    @contextlib.contextmanager
+    def bounded_stage(self, deadline, name):
+        """Bound sync APIs without timeout arguments; never extend parent/grace."""
+        if self.interruption is not None:raise ProducerInterrupted('PRODUCER_ALREADY_INTERRUPTED')
+        cloud.require(signal.getsignal(signal.SIGALRM)==self.handle, 'STAGE_SIGNAL_OWNER_DIFFERS')
+        now=time.monotonic();seconds,interval=signal.getitimer(signal.ITIMER_REAL)
+        cloud.require(seconds>0 and interval==0 and deadline>now,'STAGE_DEADLINE_NOT_ARMED')
+        parent_deadline=now+seconds
+        self.report['boundedStage']={'name':name,'deadlineMonotonic':min(deadline,parent_deadline),
+          'parentDeadlineNotExtended':True,'blockingApiTimeout':'SIGALRM then existing 30-second cleanup grace'}
+        signal.setitimer(signal.ITIMER_REAL,min(deadline,parent_deadline)-now)
+        try:yield
+        finally:
+            # SIGTERM and SIGALRM both set interruption and arm the same grace.
+            # Restoring the old parent timer in that case would extend it.
+            if self.interruption is None:
+                left=parent_deadline-time.monotonic()
+                if left<=0:self.handle(signal.SIGALRM)
+                else:signal.setitimer(signal.ITIMER_REAL,left)
+
     def restore(self):
         signal.alarm(0)
         for number,handler in self.previous.items():signal.signal(number,handler)
@@ -125,6 +146,101 @@ TRANSFER=r"""token=>{
   progress.status='PASS';progress.elapsedMs=performance.now()-started;s.transfer={...progress};
  })().catch(e=>{progress.status='FAIL';progress.error=String(e);progress.elapsedMs=performance.now()-progress.startedMs;s.transfer={...progress};});
 }"""
+DOWNLOAD_URL=r"""entry=>{
+ const s=globalThis.__long;if(s.downloadUrl)throw Error('DOWNLOAD_URL_ALREADY_ACTIVE');
+ const item=s.files.find(value=>value.id===entry.id);
+ if(s.result?.status!=='READY_FOR_RUNNER_TRANSFER'||!item||item.name!==entry.name||item.bytes!==entry.bytes||item.sha256!==entry.sha256||item.file.size!==entry.bytes)
+  throw Error('DOWNLOAD_SOURCE_DIFFERS');
+ s.downloadUrl=URL.createObjectURL(item.file);return {id:item.id,bytes:item.file.size};
+}"""
+DOWNLOAD_CLICK=r"""name=>{const s=globalThis.__long;if(!s.downloadUrl)throw Error('DOWNLOAD_URL_MISSING');
+ const a=document.createElement('a');a.href=s.downloadUrl;a.download=name;a.click();}"""
+DOWNLOAD_REVOKE=r"""()=>{const s=globalThis.__long;if(s?.downloadUrl){URL.revokeObjectURL(s.downloadUrl);s.downloadUrl=null;return {status:'REVOKED'};}return {status:'NOT_CREATED'};}"""
+
+
+def download_to_receiver(page, receiver, owned, entries, deadline, signals, observation):
+    """Private serial Blob downloads. The long native caller still uses HTTP."""
+    observation.update(status='STARTED',files=[],singleNativeDownloadAtATime=True,
+      maxPythonBufferBytes=streaming.CHUNK_BYTES,nativePeakMemoryMeasured=False,
+      allStoppedBeforeBrowserClose=False,deadlineResetBetweenFiles=False)
+    cloud.require(len(entries)==2 and [entry['id'] for entry in entries]==['input','output'],'DOWNLOAD_EXPECTED_PAIR')
+    started=time.monotonic()
+    with signals.bounded_stage(deadline,'browser-download'):
+        for entry in entries:
+            row_started=time.monotonic()
+            remaining(deadline);row={'id':entry['id'],'status':'STARTED','stoppedBeforeBrowserClose':False,'downloadRequestTriggered':False,'cleanup':{}}
+            observation['files'].append(row);download=None;path=None;identity=None;failure=None;events=[]
+            def on_download(value):
+                if len(events)<2:events.append(value)
+                else:row['extraDownloadEvents']=True
+            page.on('download',on_download)
+            def cleanup(label,action):
+                nonlocal failure
+                cleanup_started=time.monotonic()
+                try:row['cleanup'][label]=action()
+                except (Exception,ProducerInterrupted) as error:
+                    row['cleanup'][label]={'status':'HOLD','error':str(error)[:1000]}
+                    if failure is None:failure=error
+                finally:row['cleanup'][label]['elapsedSeconds']=time.monotonic()-cleanup_started
+            try:
+                row['diskPreflight']=owned.preflight(receiver.directory,entry['bytes'],deadline)
+                page.evaluate(DOWNLOAD_URL,entry);remaining(deadline)
+                event_started=time.monotonic()
+                with page.expect_download(timeout=remaining(deadline)*1000) as event:
+                    row['downloadRequestTriggered']=True
+                    page.evaluate(DOWNLOAD_CLICK,entry['name'])
+                download=event.value
+                row['startEventWaitSeconds']=time.monotonic()-event_started
+                cloud.require(len(events)==1 and events[0] is download and not row.get('extraDownloadEvents'),'DOWNLOAD_EVENT_COUNT')
+                cloud.require(download.suggested_filename==entry['name'],'DOWNLOAD_SUGGESTED_NAME_DIFFERS')
+                wait_started=time.monotonic();path=Path(download.path());remaining(deadline)
+                terminal=download.failure();remaining(deadline)
+                row['terminalFailure']=terminal;row['stoppedBeforeBrowserClose']=True
+                cloud.require(terminal is None,'DOWNLOAD_NATIVE_FAILED')
+                row['completionWaitSeconds']=time.monotonic()-wait_started
+                identity=owned.admit(path,entry['bytes']);row['sourceIdentity']=dict(identity)
+                row['copy']=owned.copy_to_receiver(path,identity,receiver,entry['id'],deadline)
+                row['status']='PASS'
+            except (Exception,ProducerInterrupted) as error:
+                failure=error;row['status']='FAIL';row['error']=f'{type(error).__name__}: {error}'
+            finally:
+                if download is None and len(events)==1:download=events[0]
+                if download is not None and not row['stoppedBeforeBrowserClose']:
+                    cleanup('cancel',lambda:(download.cancel(),{'status':'REQUESTED'})[1])
+                    def stop():
+                        nonlocal path,identity
+                        terminal=download.failure();row['terminalFailure']=terminal;row['stoppedBeforeBrowserClose']=True
+                        if terminal is None:
+                            path=Path(download.path());identity=owned.admit(path,entry['bytes']);row['sourceIdentity']=dict(identity)
+                        return {'status':'STOPPED','failure':terminal}
+                    cleanup('stop',stop)
+                if download is not None and row['stoppedBeforeBrowserClose'] and identity is not None:
+                    def delete():
+                        owned.check_file(path,identity);download.delete();owned.require_absent(path)
+                        return {'status':'DELETED','absent':True}
+                    cleanup('delete',delete)
+                elif download is None:
+                    if not row['downloadRequestTriggered'] and not events:
+                        row['stoppedBeforeBrowserClose']=True;row['cleanup']['stop']={'status':'NOT_STARTED'}
+                    else:
+                        row['cleanup']['stop']={'status':'HOLD','reason':'Download event/completion unverified'}
+                        if failure is None:failure=RuntimeError('DOWNLOAD_STOP_UNVERIFIED')
+                # A canceled artifact without a successful path is not adopted.
+                # Only an empty owned directory can establish its removal.
+                cleanup('url',lambda:page.evaluate(DOWNLOAD_REVOKE))
+                cleanup('directoryEmpty',lambda:(owned.require_empty(),{'status':'EMPTY'})[1])
+                cleanup('listener',lambda:(page.remove_listener('download',on_download),{'status':'REMOVED'})[1])
+                row['downloadEventCount']=len(events)
+                if len(events)>1 or row.get('extraDownloadEvents'):row['stoppedBeforeBrowserClose']=False
+                if not row['stoppedBeforeBrowserClose'] and failure is None:failure=RuntimeError('DOWNLOAD_STOP_UNVERIFIED')
+                if time.monotonic()>=deadline and failure is None:failure=TimeoutError('DOWNLOAD_STAGE_DEADLINE')
+                row['elapsedSeconds']=time.monotonic()-row_started
+                if failure is not None:row['status']='FAIL';observation['status']='FAIL'
+                observation['elapsedSeconds']=time.monotonic()-started
+                observation['allStoppedBeforeBrowserClose']=all(item['stoppedBeforeBrowserClose'] for item in observation['files'])
+            if failure is not None:raise failure
+        remaining(deadline);observation['allStoppedBeforeBrowserClose']=all(row['stoppedBeforeBrowserClose'] for row in observation['files'])
+        observation['status']='PASS'
 CLEANUP=r"""async()=>{
  const s=globalThis.__long;if(!s)return {status:'NOT_CREATED'};
  s.transferAbort?.abort();s.worker?.terminate();

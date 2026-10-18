@@ -34,3 +34,30 @@
 | `test_vr180_p5_long_cancel.py` | 5 |
 
 この記録時点ではnative診断未実行。転送高速化や大容量受入の成功は未判定である。
+
+## 次の限定比較：ブラウザdownload
+
+HTTP診断の後、`--transport browser-download` を追加する。これは同じ128 MiB×2の素材を、全リクエスト捕捉を行う既存baseline guardのまま、1試行だけ回収する診断である。従来の `--transport http` は3試行のまま保持する。実5GB producerの呼出しは引き続きHTTPであり、診断結果を根拠にするまでは切り替えない。
+
+短尺校正で使ったOPFS File→Blob URL→ブラウザdownloadの経路を再利用する。新規専用downloadディレクトリを作成し、同一filesystemと直前空き容量を確認する。`accept_downloads=True` とその専用 `downloads_path` を設定し、1ファイルずつ開始イベント、`download.path()`と`failure()`による完了を確認する。完了ファイルは専用ディレクトリ直下のregular fileに限り、device・inode・size・mtime・ctimeを照合する。
+
+Python側はそのファイルをO_NOFOLLOWで開き、open FDのfstatとpathの情報を前後で照合する。1 MiB以下の逐次読取りを既存 `MediaReceiver.chunk/complete` に渡し、予定bytes後のEOF、expected SHA-256、fsync/close後の全量再読取りを確認する。確認後に `download.delete()`、不在確認、Blob URL revoke、専用dirが空であることの確認を行い、次のファイルへ進む。追加のnative downloadファイルを2本同時に保持しない。1 MiBはPython側の読取りbuffer上限であり、ブラウザやdriverのピークメモリ保証ではない。
+
+計測はファイル別の開始イベント待ち `startEventWaitSeconds`、開始後の完了待ち `completionWaitSeconds`、コピーとcomplete/fsync/全量再読取りを含む `copy.elapsedSeconds`、delete・URL revoke等の清掃時間に分ける。ファイル別elapsedと全helper elapsedも別に保持する。開始イベントの観測だけで保存完了とは判定しない。
+
+`path/failure/delete` にはAPIのtimeout引数がないため、`expect_download` のtimeoutだけに依存しない。既存 `ProducerSignals.bounded_stage` がstageの絶対期限と親期限の早い方へSIGALRMを設定し、終了時は親期限の未経過分だけを復元する。SIGALRM/SIGTERMが発生した場合は既存の30秒清掃猶予を保持し、猶予を延長・再開始しない。診断は準備を含め全300秒、将来の5GB接続時は同じhelperに転送600秒の絶対期限を渡す。2ファイル間で期限をリセットしない。
+
+失敗時もcancel、terminal状態確認、delete、URL revokeを独立して試み、最初の失敗を維持する。download停止を確認できない場合はOPFS名前空間の清掃をHOLDとし、browser closeの観測と専用dir残存を別に記録する。browser closeができても、未確認だったdownload API終端状態を遡って成功扱いしない。未知entryや差し替わったpathは削除せず、空と同一性を確認できた専用dirだけを非再帰で削除する。期限後に猶予内で清掃できても、その試行は成功にしない。
+
+実装時の専用8件と既存29件、計37件が成功した（2026-10-18）。専用試験は実一時ファイル・実hash/fsync/再読取りと実SIGALRM/SIGTERMを使う。blocking path中断後のcancel/stop、猶予非延長、2ファイル逐次処理、hash不一致とdelete失敗の併発、FD/path差替え、予定終端後の追加bytes、未知entry保持を確認した。Playwright downloadは注入したテスト実装であり、native download診断は後続の独立した受入である。
+
+
+## native比較結果
+
+候補541f1a9bf8d9b856bb6b105cd5d9f3290121152b、Actions39091870918。各128MiB×2の全hash・fsync・保存再読取り・清掃は3試行ともPASS。runnerで測った転送区間はbaseline25.249秒、filtered23.933秒、baseline25.233秒。filteredのPython callbackは外部abort1回だけだったが、fetch256回の合計は21.819秒残った。slice読取り0.642秒、受信本文読取り＋write/hash0.297秒、完了時fsync/再読取り1.324秒とは区別する。
+
+この1観測の約5.2%差を、600秒内に5GB経路が完了する根拠としない。filteredを採用せず、5GB再試行は保留した。固定Playwright1.62.0 sourceでは、route有効時のCDP Fetch.enableが全URLに適用される。regex非一致でもChromium→Nodeの介在とPOSTデータ処理がなくなった比較ではない。85～90ms/chunkの主因をソースだけで確定した意味ではない。
+
+別のローカルPython HTTP比較では32×1MiBのchunk合計がbaseline57.94ms、server TCP_NODELAY53.82ms、baseline53.84msで、85ms/requestは再現しなかった。client NODELAYは全条件で有効、ブラウザではない。ローカルdriver読取りは1.62.1であり、pinned1.62.0の根拠には使わない。
+
+原5chunk/archive13,373B、8原記録、source11件・公開inventory102件を独立照合。原記録と比較判断を `evidence/2026-10-18-loopback-transfer.json` に固定する。次経路の設計・受入は別途判断する。
