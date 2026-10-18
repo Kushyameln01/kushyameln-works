@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import {webcrypto} from 'node:crypto';
 import {OperationScope} from '../docs/shared/vr180/operations.mjs';
+import {requiresIndexedConversion, STREAMING_INPUT_THRESHOLD_BYTES} from '../docs/shared/vr180/route-profile.mjs';
 import * as saveRecord from '../docs/shared/vr180/save-record.mjs';
 import {saveBlobToFile as actualSaveBlobToFile} from '../docs/shared/vr180/file-output.mjs';
 
@@ -29,7 +30,8 @@ async function appHarness({generated = fixture(), pick = async () => ({getFile: 
   const elements = new Map(), listeners = new Map();
   const element = id => {
     if (!elements.has(id)) elements.set(id, {value: ({mode: 'copy', layout: 'sbs', fov: '180', size: '256'})[id] ?? '', checked: true,
-      hidden: false, disabled: false, files: [], textContent: '', setAttribute() {}, removeAttribute() {}, pause() {}, load() {},
+      hidden: false, disabled: false, files: [], textContent: '', dataset: {},
+      setAttribute(name, value) { this[name] = value; }, removeAttribute(name) { delete this[name]; }, pause() {}, load() {},
       addEventListener(type, callback) { listeners.set(`${id}:${type}`, callback); }, click(event = {preventDefault() {}}) { return this.onclick?.(event); }});
     return elements.get(id);
   };
@@ -39,7 +41,8 @@ async function appHarness({generated = fixture(), pick = async () => ({getFile: 
     async dispose() {}
     async run(file, settings) { calls.run++; return settings.mode === 'inspect' ? {info: generated.info} : generated; }
   }
-  const context = vm.createContext({StereoClient: Client, OperationScope, Blob, DOMException, performance, crypto: webcrypto,
+  const context = vm.createContext({StereoClient: Client, OperationScope, requiresIndexedConversion,
+    STREAMING_INPUT_THRESHOLD_BYTES, Blob, DOMException, performance, crypto: webcrypto,
     navigator: {userAgent: 'Node mock DOM'}, URL: {createObjectURL: () => 'blob:test', revokeObjectURL() {}},
     document: {getElementById: element, querySelectorAll: () => [], createElement: () => element('temporary-anchor')},
     showSaveFilePicker: (...args) => pick(...args), addEventListener() {}, setTimeout() {},

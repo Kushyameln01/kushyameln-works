@@ -523,6 +523,7 @@ export async function convertStereo(file, settings, {
       || offset + metadataBytes !== metrics.outputBytes) throw Error('INDEXED_METADATA_EXTENT_INVALID');
     const expectedMetadataHash = await sha256Blob(outputIndex.metadataSource.slice(offset, metrics.outputBytes), {signal});
     checkAbort();
+    progress('saveCommit', null, true);
     const saved = await direct.output.commit({expectedBytes: metrics.outputBytes});
     checkAbort();
     const actualMetadataHash = await sha256Blob(saved.file.slice(offset), {signal});

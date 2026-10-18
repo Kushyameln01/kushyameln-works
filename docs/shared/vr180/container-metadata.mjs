@@ -1,4 +1,5 @@
-// Descriptive container metadata only. No timed, geometry, track-reference,
+// Descriptive container metadata only (meta and udta/cprt or udta/name).
+// No timed, geometry, track-reference,
 // offset-bearing or unknown metadata is admitted to a new pixel route here.
 export const CONTAINER_METADATA_LIMIT = 16 * 1024 * 1024;
 // Container headers are emitted as Blob pieces, outside the retained payload budget.
@@ -124,6 +125,19 @@ export async function collectContainerMetadata(source, {signal} = {}) {
           if (parent.type !== 'udta' || verdict.prefix !== 4 || verdict.keyed || verdict.handler === 'mdta') fail('non-descriptive metadata cannot be transferred');
           report.omittedContainers++; if (!report.omissionReasons.includes(verdict.reason)) report.omissionReasons.push(verdict.reason);
         }
+      } else if (parent.type === 'udta' && ['cprt', 'name'].includes(node.type)) {
+        // These admitted descriptive atoms do not contain media offsets or
+        // geometry. Preserve their complete representation, including language
+        // codes and duplicate values, without decoding or copying the payload.
+        const size = node.end - node.start;
+        if (checkedBytes + size > CONTAINER_METADATA_LIMIT) {
+          report.omittedContainers++;
+          if (!report.omissionReasons.includes('metadata transfer budget')) report.omissionReasons.push('metadata transfer budget');
+          continue;
+        }
+        checkedBytes += size;
+        result.push(source.slice(node.start, node.end));
+        report.retainedContainers++; report.retainedBytes += size; report.scopeCounts[scope]++;
       } else if (node.type === 'udta') {
         const children = await collect(node, depth + 1, scope); if (children.length) result.push(makeBox('udta', children));
       }

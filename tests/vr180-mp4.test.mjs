@@ -67,7 +67,11 @@ const videoPath = ['moov', 'trak', 'mdia', 'minf', 'stbl', 'stsd', 'avc1'];
 
 test('inspect obtains one avc1 track and optional AAC without requiring spherical metadata', async () => {
   const x = await inspectMp4(fixture());
-  assert.deepEqual(x, { width: 16, height: 8, videoCodec: 'avc1', audioCodecs: ['mp4a'], stereoMode: null, projection: null, bounds: null, pose: null, transcodeSafe: true, transcodeIssues: [], sampleCounts: {video: 1, audio: 1, total: 2}, containerMetadataBytes: 1022 });
+  assert.deepEqual(x, { width: 16, height: 8, videoCodec: 'avc1', audioCodecs: ['mp4a'], auxiliaryTracks: [],
+    stereoMode: null, projection: null, bounds: null, pose: null, transcodeSafe: true, transcodeIssues: [],
+    sampleCounts: {video: 1, audio: 1, total: 2}, hasTrackReferences: false, trackReferenceCount: 0,
+    hasChapterList: false, hasKeyedMetadata: false, metadataCopyOnly: false, hasOpenEndedMdat: false,
+    containerMetadataBytes: 1022 });
   assert.deepEqual((await inspectMp4(fixture({ audio: false }))).audioCodecs, []);
 });
 
@@ -204,13 +208,36 @@ test('HDR color metadata is explicitly refused', async () => {
 });
 
 test('malformed sizes, unsafe offsets and dimensions are rejected', async () => {
-  await assert.rejects(inspectMp4(new Blob([u32(0), text('mdat')])), /zero|size/i);
+  // A top-level EOF-sized mdat is supported, but cannot replace required boxes.
+  await assert.rejects(inspectMp4(new Blob([u32(0), text('mdat')])), /expected one MP4 ftyp box/);
+  await assert.rejects(inspectMp4(new Blob([u32(0), text('moov')])), /only the last top-level mdat may use size=0/);
+  await assert.rejects(inspectMp4(fixture({extraMoov: [join(u32(0), text('free'))]})), /zero-size boxes are unsupported/);
   await assert.rejects(inspectMp4(new Blob([u32(20), text('moov'), u32(0)])), /truncat|size|bounds/i);
   const bytes = new Uint8Array(await fixture().arrayBuffer()); const offset = find(bytes, ['moov', 'trak', 'mdia', 'minf', 'stbl', 'stco']);
   new DataView(bytes.buffer).setUint32(offset.payload + 8, 1);
   await assert.rejects(inspectMp4(new Blob([bytes])), /offset|mdat/i);
   await assert.rejects(tagMp4(fixture({ width: 17 }), { layout: 'sbs' }), /dimension|square|180/i);
   await assert.rejects(tagMp4(fixture(), { layout: 'bad' }), /layout/i);
+});
+
+test('a complete MP4 with an EOF-sized mdat is admitted and tagging closes its size without moving samples', async () => {
+  // This real fixture already has moov before its final mdat. Zeroing an mdat
+  // before moov would swallow that required box and would not be a valid case.
+  const bytes = new Uint8Array(await readFile(new URL('../docs/vr180-studio/fixtures/stereo180-sbs.mp4', import.meta.url)));
+  const mdat = find(bytes, ['mdat']), before = await inspectMp4(new Blob([bytes]));
+  assert.equal(mdat.end, bytes.length);
+  assert(find(bytes, ['moov']).end <= mdat.start);
+  new DataView(bytes.buffer).setUint32(mdat.start, 0);
+  const input = new Blob([bytes]), inspected = await inspectMp4(input);
+  assert.deepEqual(inspected, {...before, hasOpenEndedMdat: true});
+  const output = await tagMp4(input, {layout: 'sbs'});
+  const tagged = new Uint8Array(await output.arrayBuffer()), savedMdat = find(tagged, ['mdat']);
+  assert.equal(savedMdat.start, mdat.start);
+  assert.equal(savedMdat.end, mdat.end);
+  assert.deepEqual(tagged.subarray(savedMdat.payload, savedMdat.end), bytes.subarray(mdat.payload, mdat.end));
+  const savedInfo = await inspectMp4(output);
+  assert.equal(savedInfo.hasOpenEndedMdat, false);
+  assert.deepEqual(savedInfo.sampleCounts, inspected.sampleCounts);
 });
 
 test('retained small-metadata budget and box-count limit stop hostile metadata', async () => {
