@@ -1,15 +1,16 @@
+import {transferAudioDependenciesToTaggedBlob} from './audio-dependency.mjs';
+import {inspectMp4 as inspectOutputMp4, tagMp4 as tagOutputMp4} from './indexed/mp4-output-inspect.mjs';
+import {transferMetadataToTaggedBlob} from './container-metadata.mjs';
 import {inspectMp4, tagMp4} from './mp4.mjs';
+import {diagnoseMp4} from './diagnostics.mjs';
 import {sha256Blob} from './sha256.mjs';
 import {finalizeDirectOutput} from './file-output.mjs';
 import {bindSaveSummary, createSaveAttempt} from './save-record.mjs';
-import {selectExecutionRoute} from './route-profile.mjs';
-const BUILD = 'vr180-b8-indexed-candidate';
-// The current conversion demuxer/muxer retains sample indices and moov bytes.
-// Admit bounded inputs before hashing or loading it; paged copy does not need
-// these conversion-only limits.
-const MAX_CONVERSION_SAMPLES = 100000;
-const MAX_CONVERSION_METADATA_BYTES = 16 * 1024 * 1024;
-function validate(info, s) {
+import {selectExecutionRoute, LEGACY_PROFILE, INDEXED_PROFILE} from './route-profile.mjs';
+const BUILD = 'vr180-b14-mp4-compatibility-r6';
+// Legacy indices stay bounded by admission. Indexed tables use disk pages;
+// retained small metadata, sorting and ownership budgets are enforced separately.
+function validate(info, s, route) {
   if (!s.confirmed) throw Error('CONFIRM_PROJECTION_AND_EYES');
   if (!['sbs', 'tb'].includes(s.layout) || ![180, 360].includes(s.fov)) throw Error('INPUT_SETTINGS_UNSUPPORTED');
   if (info.projection === 'mesh') throw Error('CAMERA_MESH_NOT_SUPPORTED_YET');
@@ -24,6 +25,8 @@ function validate(info, s) {
   if (!Number.isInteger(ew) || !Number.isInteger(eh) || ew / eh !== s.fov / 180) throw Error('EYE_DIMENSIONS_AND_FOV_CONFLICT');
   if (s.mode === 'copy' && s.fov !== 180) throw Error('COPY_REQUIRES_180_DEGREES');
   if (s.mode === 'convert') {
+    const profile = route.id === 'indexed' ? INDEXED_PROFILE : LEGACY_PROFILE;
+    if (info.hasTrackReferences || info.hasChapterList) throw Error('TRACK_REFERENCES_COPY_ONLY');
     if (!info.transcodeSafe) throw Error('TIMELINE_NOT_SUPPORTED: ' + info.transcodeIssues.join(', '));
     const counts = info.sampleCounts, metadataBytes = info.containerMetadataBytes;
     const safeCount = n => Number.isSafeInteger(n) && n >= 0;
@@ -31,18 +34,18 @@ function validate(info, s) {
       || !Number.isSafeInteger(counts.video + counts.audio) || counts.total !== counts.video + counts.audio) {
       throw Error('CONVERSION_INDEX_INFO_INVALID');
     }
-    if (counts.total > MAX_CONVERSION_SAMPLES) {
-      throw Error(`CONVERSION_SAMPLE_LIMIT_EXCEEDED: ${counts.total} > ${MAX_CONVERSION_SAMPLES}`);
+    if (counts.total > profile.maxSamples) {
+      throw Error(`CONVERSION_SAMPLE_LIMIT_EXCEEDED: ${counts.total} > ${profile.maxSamples}`);
     }
-    if (metadataBytes > MAX_CONVERSION_METADATA_BYTES) {
-      throw Error(`CONVERSION_METADATA_LIMIT_EXCEEDED: ${metadataBytes} > ${MAX_CONVERSION_METADATA_BYTES}`);
+    if (profile.maxMetadataBytes !== null && metadataBytes > profile.maxMetadataBytes) {
+      throw Error(`CONVERSION_METADATA_LIMIT_EXCEEDED: ${metadataBytes} > ${profile.maxMetadataBytes}`);
     }
   }
 }
 
 // Tests exercise the actual lifecycle with delayed cleanup, without pretending
 // that substituted codec work verifies real browser encoding or OPFS behavior.
-export function createWorkerController({postMessage, inspect = inspectMp4, tag = tagMp4,
+export function createWorkerController({postMessage, inspect = inspectMp4, tag = tagMp4, inspectOutput = inspectOutputMp4, tagOutput = tagOutputMp4, diagnose = diagnoseMp4,
   loadTransform = () => import('./transform.mjs'), loadIndexed = () => import('./indexed/entry.mjs'),
   hash = sha256Blob, finalizeDirect = finalizeDirectOutput} = {}) {
   let job = null;
@@ -72,18 +75,19 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
     const identity = {schemaVersion: 2, operationId: job.operationId, inputRevision: job.inputRevision, saveAttempts: []};
     const directAttempt = outputHandle ? createSaveAttempt(identity, 'direct', {id: message.saveAttemptId ?? crypto.randomUUID()}) : null;
     if (directAttempt) identity.saveAttempts.push(directAttempt);
-    let info = null, inputHash = null, route = {id: settings.executionRoute === 'indexed' && settings.mode === 'convert' ? 'indexed' : 'legacy'};
+    let info = null, inputHash = null, inspectionFailed = false, route = {id: settings.executionRoute === 'indexed' && settings.mode === 'convert' ? 'indexed' : 'legacy'};
     job.executionRoute = route.id;
     const applySavedObservation = observation => {
       const v = observation?.verification, sha = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
       if (route.id !== 'indexed' || !directAttempt || observation?.jobId !== job.operationId
         || observation.outputProfileId !== 'default' || observation.committed !== true
-        || !Number.isSafeInteger(observation.bytes) || observation.bytes <= 0 || observation.bytes > 1024 ** 3
+        || !Number.isSafeInteger(observation.bytes) || observation.bytes <= 0
         || !sha(observation.sha256) || v?.wholeFileHashCompared !== false || v?.metadataHashMatched !== true
         || v.savedWriteCommitted !== true || v.savedFileSHA256 !== observation.sha256
         || !sha(v.expectedMetadataHash) || v.expectedMetadataHash !== v.actualMetadataHash
         || !Number.isSafeInteger(v.metadataOffset) || v.metadataOffset < 0
-        || !Number.isSafeInteger(v.metadataBytes) || v.metadataBytes <= 0 || v.metadataBytes > 16 * 1024 ** 2
+        || !Number.isSafeInteger(v.metadataBytes) || v.metadataBytes <= 0
+        || !Number.isSafeInteger(v.metadataOffset + v.metadataBytes)
         || v.metadataOffset + v.metadataBytes !== observation.bytes || observation.savedInfo?.stereoMode !== 2
         || observation.savedInfo?.projection !== 'equi' || observation.savedInfo.width !== settings.eyeSize * 2
         || observation.savedInfo.height !== settings.eyeSize || observation.savedInfo.sampleCounts?.total !== info?.sampleCounts?.total
@@ -114,12 +118,14 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
     });
     try {
       route = selectExecutionRoute(settings, {outputHandle, inputBytes: file.size}); job.executionRoute = route.id;
-      info = await mark('inspect', () => inspect(file, {signal: job.controller.signal})); check();
+      try { info = await mark('inspect', () => inspect(file, {signal: job.controller.signal})); }
+      catch (error) { inspectionFailed = true; throw error; }
+      check();
       if (settings.mode === 'inspect') { send('result', {result: {info, build: BUILD}}); return; }
-      validate(info, settings);
+      validate(info, settings, route);
       inputHash = await mark('inputHash', () => digest(file, 'inputHash')); check();
       if (outputHandle && settings.mode !== 'convert') throw Error('DIRECT_OUTPUT_MODE_UNSUPPORTED');
-      let media = file, metrics = null, direct = null, indexedResult = null;
+      let media = file, metrics = null, direct = null, indexedResult = null, containerMetadata = null, audioDependencies = null;
       if (settings.mode === 'convert') {
         const module = await mark('transformLoad', route.id === 'indexed' ? loadIndexed : loadTransform); check();
         const convertStereo = route.id === 'indexed' ? module.convertIndexed : module.convertStereo;
@@ -130,7 +136,7 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
           onOutputCreated: output => { job.directOutput = output; directAttempt.commitState = 'pending'; },
           onProgress: progress => send('progress', {progress}), onMetrics: collectMetrics,
         }));
-        media = result.file; job.cleanup = result.cleanup; metrics = result.metrics;
+        media = result.file; containerMetadata = result.containerMetadata ?? null; audioDependencies = result.audioDependencies ?? null; job.cleanup = result.cleanup; metrics = result.metrics;
         if (route.id === 'indexed') {
           if (result.kind !== 'indexed-direct-saved' || result.direct || !outputHandle) throw Error('INDEXED_OUTPUT_RESULT_MISMATCH');
           applySavedObservation(result.savedObservation);
@@ -159,11 +165,12 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
           bytes: blob.size, sha256: outputHash, hashBasis: 'post-commit-observed', wholeFileHashCompared: false,
           metadataHashMatched: directSave.metadataHashMatched === true, finishedAt: new Date().toISOString()});
       } else {
-        blob = await mark('metadata', () => tag(media, {layout: settings.mode === 'copy' ? settings.layout : 'sbs', signal: job.controller.signal})); check();
-        // The conversion limit applies to the final tagged MP4, not only mux bytes.
-        // Copy has separate parser budgets and must not inherit this limit.
-        if (settings.mode === 'convert' && blob.size > 1024 ** 3) throw Error('CONVERSION_OUTPUT_LIMIT_EXCEEDED');
-        outputInfo = await mark('outputInspect', () => inspect(blob, {signal: job.controller.signal})); check();
+        blob = await mark('metadata', async () => transferAudioDependenciesToTaggedBlob(
+          await transferMetadataToTaggedBlob(
+            await (settings.mode === 'convert' ? tagOutput : tag)(media, {layout: settings.mode === 'copy' ? settings.layout : 'sbs', signal: job.controller.signal}),
+            containerMetadata, {signal: job.controller.signal}), audioDependencies, {signal: job.controller.signal})); check();
+        if (!Number.isSafeInteger(blob.size) || blob.size <= 0) throw Error('OUTPUT_SIZE_INVALID');
+        outputInfo = await mark('outputInspect', () => (settings.mode === 'convert' ? inspectOutput : inspect)(blob, {signal: job.controller.signal})); check();
         outputHash = await mark('outputHash', () => digest(blob, 'outputHash')); check();
       }
       timings.outputPrepared = performance.now() - clock;
@@ -173,7 +180,9 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
         hashNote: direct || indexedResult ? 'Input SHA-256 calculated incrementally; whole output SHA-256 observed from the committed file, not compared with a pre-write whole-file hash' : 'SHA-256 calculated incrementally for the complete input and prepared output', timings, metrics, events,
         executionRoute: route.id, ...(route.id === 'indexed' ? {indexedOwnership: job.registry} : {}),
         clock: 'performance.now, worker', nativePeakBytes: null, eventLog: eventLog(),
-        audioMetadataCoverage: settings.mode === 'copy' ? 'original audio track boxes preserved' : 'AAC payload, decoder configuration and supported timeline retained; seek-preroll sample groups are not reproduced by the muxer; seek quality unverified',
+        containerMetadataTransfer: settings.mode === 'convert' ? (metrics?.containerMetadataTransfer ?? null) : null,
+        audioDependencyTransfer: settings.mode === 'convert' ? (metrics?.audioDependencyTransfer ?? null) : null,
+        audioMetadataCoverage: settings.mode === 'copy' ? 'original audio track boxes preserved' : 'AAC payload, decoder configuration and supported timeline retained; source roll/prol/sdtp are retained only when audioDependencyTransfer confirms sample metadata verification; seek quality unverified',
         directSave, downloadRecovered: false, targetVRPlayerVerified: false});
       job.prepared = receipt; check();
       send('result', {result: {blob, receipt, info: outputInfo}});
@@ -197,13 +206,25 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
           errorCode: error?.message || String(error), finishedAt: new Date().toISOString(),
           cleanup: {status: cleanupComplete ? 'complete' : 'failed', errorCode: job.cleanupError}});
       }
+      let structureDiagnostics = null;
+      if (inspectionFailed && !job.controller.signal.aborted) {
+        try {
+          structureDiagnostics = await mark('structureDiagnosis', () => diagnose(file, {signal: job.controller.signal,
+            build: BUILD, operation: settings.mode, operationId: job.operationId, inputRevision: job.inputRevision}));
+        } catch (diagnosisError) {
+          // Preserve the original parser failure even when diagnosis is canceled or limited.
+          structureDiagnostics = {status: diagnosisError?.name === 'AbortError' ? 'canceled' : 'unavailable',
+            processingAllowed: false, errorCode: diagnosisError?.message ?? String(diagnosisError)};
+        }
+      }
+      timings.failedAfter = performance.now() - clock;
       job.diagnostics = bindSaveSummary({...identity, build: BUILD,
         status: job.controller.signal.aborted ? 'canceled' : 'failed',
         error: {name: error?.name ?? 'Error', message: error?.message || String(error)}, settings,
         input: {bytes: file.size, sha256: inputHash, info, hashBasis: inputHash ? 'whole-input' : null}, output: job.indexedOutput ?? null, timings, metrics,
         executionRoute: route.id, ...(route.id === 'indexed' ? {indexedOwnership: job.registry, internalIndexCleanup: cleanupComplete ? 'complete' : 'pending'} : {}),
         ...(job.prepared ? {preparedBeforeCancel: job.prepared} : {}),
-        capabilities: metrics?.capabilities ?? null, events, eventLog: eventLog(), clock: 'performance.now, worker',
+        capabilities: metrics?.capabilities ?? null, structureDiagnostics, events, eventLog: eventLog(), clock: 'performance.now, worker',
         cleanup: {status: cleanupComplete ? 'complete' : 'failed', error: job.cleanupError,
           requiresWorkerTermination: !!job.requiresWorkerTermination},
         directSave: job.directSave ?? (outputHandle ? {status: 'failed', outputState,

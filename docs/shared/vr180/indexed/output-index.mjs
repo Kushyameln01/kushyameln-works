@@ -1,3 +1,4 @@
+import {AUDIO_DEPENDENCY_MAX_BOX_BYTES, transferAudioDependenciesToTree, verifyAudioDependencyOutput} from '../audio-dependency.mjs';
 /*!
  * Derived in part from Mediabunny 1.61.5 (Vanilagy and contributors).
  * Source Code Form is subject to Mozilla Public License, v. 2.0.
@@ -8,8 +9,11 @@
 import {createIndexBudget, createIndexStore, INDEX_PAGE_BYTES as PAGE} from './index-store.mjs';
 import {createOwnedIndexJob} from './job-owner.mjs';
 import {inspectMp4} from './mp4-output-inspect.mjs';
+import {INDEXED_PROFILE} from '../route-profile.mjs';
+import {CONTAINER_METADATA_MAX_CONTAINER_BYTES, transferMetadataToTree} from '../container-metadata.mjs';
 
-export const PROFILE = Object.freeze({maxSamples: 100000, maxTracks: 2, maxChunkSamples: 4096,
+// Total records are disk-backed. Only one bounded reorder group is sorted in RAM.
+export const PROFILE = Object.freeze({maxSamples: INDEXED_PROFILE.maxSamples, maxTimestampSamples: 100000, maxTracks: 2, maxChunkSamples: 4096,
   maxChunkBytes: 4 * 1024 ** 2, sortReservedBytes: 2 * 100000 * 8, maxLeafBytes: PAGE});
 const fail = message => { throw Error(message); };
 const safe = n => Number.isSafeInteger(n) && n >= 0;
@@ -32,7 +36,7 @@ function writeSample(bytes, sample) { bytes.fill(0); const d = view(bytes);
 }
 /** Creates a job-owned private controller. Bind it to only one fork Output. */
 export async function createOutputIndex({root, jobId = crypto.randomUUID(), signal, lockManager = globalThis.navigator?.locks,
-  budget = createIndexBudget(), layout = null, yieldTask = tick, ownerToken} = {}) {
+  budget = createIndexBudget(), layout = null, containerMetadata = null, audioDependencies = null, yieldTask = tick, ownerToken} = {}) {
   if (!/^[A-Za-z0-9_-]{1,64}$/.test(jobId)) fail('INVALID_OUTPUT_INDEX_JOB');
   if (!root?.getDirectoryHandle || !root?.removeEntry) fail('OUTPUT_INDEX_ROOT_UNAVAILABLE');
   if (layout !== null && !['sbs', 'tb'].includes(layout)) fail('INVALID_OUTPUT_INDEX_LAYOUT');
@@ -76,7 +80,7 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
     catch (error) { pendingCleanup = error.retryCleanup; throw error; }
     directory = owner.directory; check();
     releaseBuffers = budget.reserve(PROFILE.sortReservedBytes + PAGE + 4096);
-    sort = new Float64Array(PROFILE.maxSamples); page = buffer(PAGE); peak();
+    sort = new Float64Array(PROFILE.maxTimestampSamples); page = buffer(PAGE); peak();
     const file = await directory.getFileHandle('metadata.bin', {create: true});
     if (!file.createSyncAccessHandle) fail('OUTPUT_INDEX_SYNC_HANDLE_UNAVAILABLE');
     spool = await file.createSyncAccessHandle(); if (spool.getSize() !== 0) fail('OUTPUT_INDEX_SPOOL_NOT_EMPTY');
@@ -107,11 +111,12 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
   async function putSample(state, id, sample, dest = buffer(64)) { await state.tables.samples.patchRecord(id, writeSample(dest, sample)); }
   async function processTimestamps(state) {
     const count = state.count - state.gopStart; if (!count) return;
+    if (count > PROFILE.maxTimestampSamples) fail('OUTPUT_INDEX_REORDER_LIMIT');
     check(); stats.peakTimestampSamples = Math.max(stats.peakTimestampSamples, count);
     stats.peakSortBytes = Math.max(stats.peakSortBytes, count * 8);
     const bytes = buffer(64);
     for (let i = 0; i < count; i++) { check(); sort[i] = (await getSample(state, state.gopStart + i, bytes)).timestamp; }
-    // Fixed capacity under the private 100k-sample profile. No full sample-object array.
+    // Fixed reorder-group capacity independent of total file duration/sample count.
     sort.subarray(0, count).sort(); await yieldTask(); check();
     const track = state.track; track.startTimestampOffset ??= sort[0];
     for (let i = 0; i < count; i++) {
@@ -149,6 +154,7 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
     const state = await trackState(track); check();
     if (sampleCount >= PROFILE.maxSamples) fail('OUTPUT_INDEX_SAMPLE_LIMIT');
     if (original.type === 'key') await processTimestamps(state);
+    if (state.count - state.gopStart >= PROFILE.maxTimestampSamples) fail('OUTPUT_INDEX_REORDER_LIMIT');
     const sample = {timestamp: original.timestamp, decodeTimestamp: original.timestamp, duration: original.duration,
       size: original.size, key: original.type === 'key', delta: Math.round(original.duration * track.timescale), composition: 0, offset: 0};
     if (state.chunk) {
@@ -232,6 +238,11 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
     for (const child of box.children ?? []) if (child) tagTree(child);
   }
   function measure(box) {
+    if (box.vr180Raw) {
+      const limit = box.vr180AudioDependency ? AUDIO_DEPENDENCY_MAX_BOX_BYTES : CONTAINER_METADATA_MAX_CONTAINER_BYTES;
+      if (box.vr180Raw.size > limit) fail('OUTPUT_METADATA_TRANSFER_LIMIT');
+      return box.vr180Size = box.vr180Raw.size;
+    }
     let content = box.vr180ContentBytes ?? (box.contents?.byteLength ?? 0);
     if (!box.vr180Table && content > PROFILE.maxLeafBytes) fail('OUTPUT_INDEX_LEAF_LIMIT');
     for (const child of box.children ?? []) if (child) content = checked(content + measure(child));
@@ -250,7 +261,15 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
     }
   }
   async function writeBox(writer, box) {
-    check(); const header = buffer(box.vr180Size >= 2 ** 32 ? 16 : 8), d = view(header);
+    check();
+    if (box.vr180Raw) {
+      for (let at = 0; at < box.vr180Raw.size; at += PAGE) {
+        check(); const bytes = new Uint8Array(await box.vr180Raw.slice(at, at + PAGE).arrayBuffer());
+        await emit(writer, bytes);
+      }
+      return;
+    }
+    const header = buffer(box.vr180Size >= 2 ** 32 ? 16 : 8), d = view(header);
     d.setUint32(0, header.length === 16 ? 1 : u32(box.vr180Size)); for (let i = 0; i < 4; i++) header[4 + i] = box.type.charCodeAt(i);
     if (header.length === 16) d.setBigUint64(8, BigInt(box.vr180Size)); await emit(writer, header);
     if (box.contents) await emit(writer, box.contents);
@@ -308,12 +327,17 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
       check(); muxer.ensureOneEnabledTrack();
       const mdatPosition = muxer.boxWriter.offsets.get(muxer.mdat), mdatBytes = checked(muxer.writer.getPos() - mdatPosition);
       muxer.mdat.size = mdatBytes; muxer.mdat.largeSize = mdatBytes >= 2 ** 32; muxer.boxWriter.patchBox(muxer.mdat); await muxer.writer.flush();
-      const tree = makeMoov(muxer); tagTree(tree); const size = measure(tree); moovPosition = muxer.writer.getPos();
+      const tree = makeMoov(muxer); tagTree(tree);
+      const trackKinds = muxer.trackDatas.map(track => track.type === 'video' ? 'vide' : 'soun');
+      transferMetadataToTree(tree, trackKinds, containerMetadata);
+      transferAudioDependenciesToTree(tree, trackKinds, audioDependencies, {audioCount: tracks.find(state => state.track.type === 'audio')?.count ?? 0});
+      const size = measure(tree); moovPosition = muxer.writer.getPos();
       await writeBox(muxer.writer, tree); if (spoolBytes !== size || spool.getSize() !== size) fail('OUTPUT_INDEX_SPOOL_EXTENT_MISMATCH');
       check(); spool.flush(); stats.metadataFlushes++; spool.close(); spoolClosed = true; stats.metadataClosed = true;
       const file = await spoolFile.getFile(); if (file.size !== size) fail('OUTPUT_INDEX_SPOOL_FILE_MISMATCH');
       const extent = checked(moovPosition + size); metadataSource = sourceFor(file, mdatPosition, mdatBytes, extent);
-      verification = await inspectMp4(metadataSource, {signal: workSignal}); check();
+      verification = await inspectMp4(metadataSource, {signal: workSignal});
+      await verifyAudioDependencyOutput(metadataSource, audioDependencies, {signal: workSignal}); check();
       if (layout && !verification.projection) fail('OUTPUT_INDEX_VR_METADATA_MISSING');
       return {size, extent, source: metadataSource};
     }); },

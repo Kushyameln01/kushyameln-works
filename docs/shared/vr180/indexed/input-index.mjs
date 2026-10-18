@@ -8,8 +8,9 @@ import {createIndexBudget, createIndexStore, INDEX_PAGE_BYTES as PAGE} from './i
 import {createOwnedIndexJob} from './job-owner.mjs';
 import {inspectMp4 as inspectPublicMp4} from '../mp4.mjs';
 import {buildPresentationIndex} from './presentation-index.mjs';
+import {INDEXED_PROFILE} from '../route-profile.mjs';
 
-export const INPUT_PROFILE = Object.freeze({maxSamples: 100000, maxTracks: 2, metadataBytes: 16 * 1024 ** 2,
+export const INPUT_PROFILE = Object.freeze({maxSamples: INDEXED_PROFILE.maxSamples, maxTracks: 2, metadataBytes: INDEXED_PROFILE.retainedMetadataBytes,
   pageBytes: PAGE, sortBytes: 4 * 1024 ** 2, mergeFanIn: 8, maxBoxes: 20000, maxDepth: 16});
 const safe = n => Number.isSafeInteger(n) && n >= 0;
 const fail = message => { throw Error(message); };
@@ -18,7 +19,7 @@ const dv = bytes => new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLengt
 const tick = () => new Promise(resolve => setTimeout(resolve, 0));
 const word = (bytes, at = 4) => String.fromCharCode(...bytes.subarray(at, at + 4));
 const containers = new Set(['moov', 'trak', 'mdia', 'minf', 'stbl', 'edts']);
-const tables = new Set(['stts', 'ctts', 'stsz', 'stsc', 'stco', 'co64', 'stss']);
+const tables = new Set(['stts', 'ctts', 'stsz', 'stz2', 'stsc', 'stco', 'co64', 'stss']);
 const ignored = new Set(['free', 'skip', 'wide', 'sdtp', 'sgpd', 'sbgp']);
 function sample(bytes) { const d = dv(bytes); return {sampleOffset: d.getFloat64(0, true), sampleSize: d.getUint32(8, true),
   isKeyFrame: !!d.getUint32(12, true), decodeTimestamp: d.getFloat64(16, true), presentationTimestamp: d.getFloat64(24, true),
@@ -149,15 +150,16 @@ export async function createInputIndex({source, root, jobId = crypto.randomUUID(
     }
     return position;
   }
-  async function table(node, stride, prefix = 8) {
+  async function table(node, stride, prefix = 8, packedBits = null) {
     if (!node) fail('INPUT_TABLE_MISSING');
     const head = await read(node.payload, prefix, 'table'), h = dv(head);
     const count = h.getUint32(prefix - 4), length = node.end - node.payload;
-    if (!safe(count * stride + prefix) || count * stride + prefix !== length) fail('INPUT_TABLE_EXTENT');
+    const dataBytes = packedBits === null ? count * stride : Math.ceil(count * packedBits / 8);
+    if (!safe(dataBytes + prefix) || dataBytes + prefix !== length) fail('INPUT_TABLE_EXTENT');
     const release = budget.reserve(PAGE + 64); let page = null, pageIndex = -1;
     return {count, version: head[0], head: h, async row(index) {
       check(); if (!safe(index) || index >= count) fail('INPUT_TABLE_ROW_RANGE');
-      const position = index * stride, indexPage = Math.floor(position / PAGE), offset = position % PAGE;
+      const position = packedBits === null ? index * stride : Math.floor(index * packedBits / 8);
       // 12-byte stsc rows can cross a 64 KiB page. Copy just that row.
       const bytes = new Uint8Array(stride);
       for (let done = 0; done < stride;) {
@@ -176,11 +178,16 @@ export async function createInputIndex({source, root, jobId = crypto.randomUUID(
   async function buildTrack(state) {
     const opened = [], open = async (...args) => { const t = await table(...args); opened.push(t); return t; };
     try {
-      const nodes = state.tables, sizesHeader = dv(await read(nodes.stsz.payload, 12, 'table'));
-      const constant = sizesHeader.getUint32(4), count = sizesHeader.getUint32(8);
+      const nodes = state.tables;
+      if (Boolean(nodes.stsz) === Boolean(nodes.stz2)) fail('INPUT_SAMPLE_SIZE_TABLE_CONFLICT');
+      const sizesHeader = dv(await read((nodes.stsz ?? nodes.stz2).payload, 12, 'table'));
+      const constant = nodes.stsz ? sizesHeader.getUint32(4) : 0, count = sizesHeader.getUint32(8);
+      const fieldBits = nodes.stz2 ? sizesHeader.getUint8(7) : 32;
+      if (nodes.stz2 && (sizesHeader.getUint32(0) !== 0 || (sizesHeader.getUint32(4) >>> 8) !== 0
+        || ![4, 8, 16].includes(fieldBits))) fail('INPUT_COMPACT_SAMPLE_SIZE_FORMAT');
       stats.sampleCount += count; state.count = count;
       if (stats.sampleCount > INPUT_PROFILE.maxSamples) fail('INPUT_SAMPLE_LIMIT');
-      const sizes = constant ? null : await open(nodes.stsz, 4, 12);
+      const sizes = constant ? null : await open(nodes.stsz ?? nodes.stz2, Math.ceil(fieldBits / 8), 12, nodes.stz2 ? fieldBits : null);
       const offsets = await open(nodes.co64 ?? nodes.stco, nodes.co64 ? 8 : 4);
       const chunks = await open(nodes.stsc, 12), times = await open(nodes.stts, 8);
       const compositions = nodes.ctts ? await open(nodes.ctts, 8) : null, keys = nodes.stss ? await open(nodes.stss, 4) : null;
@@ -202,7 +209,13 @@ export async function createInputIndex({source, root, jobId = crypto.randomUUID(
             while (!timingLeft) { timing = await times.row(++timingAt); timingLeft = timing.getUint32(0); }
             if (compositions) while (!compLeft) { comp = await compositions.row(++compAt); compLeft = comp.getUint32(0); }
             while (keys && key < id && keyAt + 1 < keys.count) key = (await keys.row(++keyAt)).getUint32(0) - 1;
-            const size = constant || (await sizes.row(id)).getUint32(0), delta = timing.getUint32(4);
+            let size = constant;
+            if (!constant) {
+              const row = await sizes.row(id);
+              size = fieldBits === 4 ? (row.getUint8(0) >>> (id % 2 === 0 ? 4 : 0)) & 15
+                : fieldBits === 8 ? row.getUint8(0) : fieldBits === 16 ? row.getUint16(0) : row.getUint32(0);
+            }
+            const delta = timing.getUint32(4);
             const pts = dts + (comp ? (compositions.version ? comp.getInt32(4) : comp.getUint32(4)) : 0);
             await state.samples.appendRecord(sampleBytes(record, {sampleOffset: offset, sampleSize: size,
               isKeyFrame: !keys || id === 0 || key === id, decodeTimestamp: dts, presentationTimestamp: pts,
@@ -232,7 +245,8 @@ export async function createInputIndex({source, root, jobId = crypto.randomUUID(
           stats.inspectorReadBytes += end - start; stats.inspectorMaxReadBytes = Math.max(stats.inspectorMaxReadBytes, end - start);
           const bytes = await slice.arrayBuffer(); check(); return bytes; }};
       }};
-      // Input admission always uses the unchanged strict parser, including cslg rejection.
+      // Input admission uses the public parser, including complete timing-table
+      // validation of the narrowly admitted signed-ctts/cslg summary profile.
       inspection = await inspectPublicMp4(inspectedSource, {signal});
       if (!inspection.transcodeSafe) fail('INPUT_TIMELINE_NOT_SUPPORTED: ' + inspection.transcodeIssues.join(', '));
       let moov = null;
@@ -267,7 +281,7 @@ export async function createInputIndex({source, root, jobId = crypto.randomUUID(
       bytes = null; backing = null; seen.clear();
       if (demuxer.isFragmented || demuxer.tracks.length !== tracks.size) fail('INPUT_PRIVATE_PROFILE_UNSUPPORTED');
       for (const track of demuxer.tracks) {
-        const state = tracks.get(track.id); if (!state || track.encryptionInfo || !['avc', 'aac'].includes(track.info?.codec)) fail('INPUT_TRACK_PROFILE_UNSUPPORTED');
+        const state = tracks.get(track.id); if (!state || track.encryptionInfo || !['avc', 'hevc', 'aac'].includes(track.info?.codec)) fail('INPUT_TRACK_PROFILE_UNSUPPORTED');
         const seconds = track.editListPreviousSegmentDurations / demuxer.movieTimescale;
         track.editListOffset -= Math.round(seconds * track.timescale);
         track.sampleTableByteOffset = null;

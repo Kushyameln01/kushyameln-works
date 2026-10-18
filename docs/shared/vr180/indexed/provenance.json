@@ -1,15 +1,16 @@
 {
   "schemaVersion": 1,
-  "generator": "tools/vr180/prepare-indexed-runtime.py",
   "outputProfiles": {
-    "default": 1073741824
+    "default": null
   },
-  "inputAdmission": "unchanged strict ../mp4.mjs; no fixture opt-in",
+  "inputAdmission": "strict ../mp4.mjs with AVC/HEVC configuration validation; no fixture opt-in",
   "changes": [
     "relative imports",
-    "remove private input parser opt-in",
-    "default output cap only",
-    "distribution descriptions"
+    "strict input parser; no fixture opt-in",
+    "Sites: remove fixed input/output file caps; use safe integer offsets",
+    "Sites: disk-backed sample count 10000000; fixed 100000-sample output reorder workspace",
+    "Sites: page whole metadata; retain fixed small-metadata and index-buffer budgets",
+    "Sites: accept HEVC SDR input through the existing decoder capability checks; keep H.264 output"
   ],
   "runtime": {
     "index-store.mjs": {
@@ -25,7 +26,7 @@
     "input-index.mjs": {
       "source": "development/vr180/input-index-prototype/input-index.mjs",
       "sourceSha256": "ff6f826e7b16b61283d736c4996e6feb8297a35eece311802aee4e8ef57e2e1b",
-      "sha256": "b6a63698616ef1bb89782feee8e55689826be732383b9ad437734fdfa10b60aa"
+      "sha256": "291c97e110c8086d705c255e06e70781bd375c4d460d65bfa4b0c7ada0478e5d"
     },
     "presentation-index.mjs": {
       "source": "development/vr180/input-index-prototype/presentation-index.mjs",
@@ -35,17 +36,29 @@
     "output-index.mjs": {
       "source": "development/vr180/output-index-prototype/output-index.mjs",
       "sourceSha256": "baac33b77abebf388f030dd351c96669f7eb69ea100fde6503c04c16178b919f",
-      "sha256": "aca55ce74b6de510ba9817e67aa701fe6b8ad69330e3a152eb776031db29156d"
+      "sha256": "39a7963d3de2e87dbc1418a69bb93cf39edbd81f70ce4f32dd38b4582f9091f7"
     },
     "mp4-output-inspect.mjs": {
       "source": "development/vr180/output-index-prototype/mp4-output-inspect.mjs",
       "sourceSha256": "d841bab27d299316a890f8b16c628ed486ea803982269293f3faf10fe66ef229",
-      "sha256": "0bedb56ba1d2957512f464f5ff8efdc2790e32553ea4f2d118281aa4ede8a00e"
+      "sha256": "0ffbe80fd1a280ed4aa7f7abfbcdeb596acfa4e964ed192bd539e557be45c0db"
     },
     "transform.mjs": {
       "source": "development/vr180/indexed-transform-prototype/transform.mjs",
       "sourceSha256": "d53c648a4fdebe45b33d5d6890d3684bec8a89de1757e0bb477f202753071d0c",
-      "sha256": "0c03c79ff78f345c45a04ce01a8e44a7a705c6fbcb7c04d41c6d4a0a14d24443"
+      "sha256": "2b770edacea46fbaa5e07c11ea00604e79a973380b678d73976764b4282390de"
     }
+  },
+  "historicalGenerator": "tools/vr180/prepare-indexed-runtime.py",
+  "sitesRevision": {
+    "build": "vr180-b11-hevc",
+    "largeMediaValidation": "NOT_RUN_PER_USER_REQUEST",
+    "inputOutputByteCap": null,
+    "totalIndexedSampleLimit": 10000000,
+    "outputReorderSampleLimit": 100000,
+    "indexBudgetBytes": 8388608,
+    "aggregateSortReservedBytes": 4194304,
+    "retainedMetadataBytes": 16777216,
+    "originNote": "source/sourceSha256 identify historical prototypes; sha256 identifies the shipped Sites runtime after the listed edits"
   }
 }

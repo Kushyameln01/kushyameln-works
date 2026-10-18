@@ -1,5 +1,8 @@
+import {transferAudioDependenciesToPlan} from './audio-dependency.mjs';
 import { sha256Blob } from './sha256.mjs';
-import { inspectMp4, planMp4Tag } from './mp4.mjs';
+// Conversion output uses the existing output-only cslg verifier; input admission stays strict.
+import { inspectMp4, planMp4Tag } from './indexed/mp4-output-inspect.mjs';
+import {transferMetadataToPlan} from './container-metadata.mjs';
 
 const COPY_CHUNK_BYTES = 1024 * 1024;
 const abortError = () => new DOMException('保存を取り消しました', 'AbortError');
@@ -188,15 +191,17 @@ export async function saveBlobToFile(blob, handle, { signal, expectedSha256, onP
  * The complete file hash is observed after close; only the replacement metadata
  * has a pre-write expected digest. This does not certify decoded pixel content.
  */
-export async function finalizeDirectOutput({output, source}, {signal, onProgress = () => {}, onMeasurement} = {}) {
+export async function finalizeDirectOutput({output, source, containerMetadata, audioDependencies}, {signal, onProgress = () => {}, onMeasurement} = {}) {
   const timing = phaseMeasurements(onMeasurement);
   const timings = () => ({...output.timings, ...timing.snapshot()});
   const check = () => { if (signal?.aborted) throw abortError(); };
   try {
     check();
     if (!output.status.muxerClosed || output.status.committed) throw Error('DIRECT_MUX_NOT_CLOSED');
-    const plan = await timing.measure('tagPlan', 0, () => planMp4Tag(source, {layout: 'sbs', signal}));
-    if (plan.outputBytes > 1024 ** 3) throw Error('DIRECT_OUTPUT_LIMIT_EXCEEDED');
+    const plan = await timing.measure('tagPlan', 0, async () => transferAudioDependenciesToPlan(
+      await transferMetadataToPlan(await planMp4Tag(source, {layout: 'sbs', signal}), containerMetadata, {signal}),
+      audioDependencies, {signal}));
+    if (!Number.isSafeInteger(plan.outputBytes) || plan.outputBytes <= 0) throw Error('OUTPUT_SIZE_INVALID');
     const expectedMetadataHash = await timing.measure('metadataExpectedHash', plan.append.size, () => sha256Blob(plan.append, {signal}));
     check();
     await timing.measure('metadataWrite', plan.append.size + plan.patches.reduce((sum, patch) => sum + patch.data.byteLength, 0), async () => {

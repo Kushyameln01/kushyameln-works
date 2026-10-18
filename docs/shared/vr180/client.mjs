@@ -1,5 +1,6 @@
 import {bindSaveSummary, createSaveAttempt} from './save-record.mjs';
 import {listIndexedJobs, recoverIndexedJob} from './ownership-registry.mjs';
+import {selectExecutionRoute} from './route-profile.mjs';
 export async function cleanupTemporaryJob(id) {
   if (!/^[a-zA-Z0-9_-]{1,96}$/.test(id)) throw Error('INVALID_JOB_ID');
   if (!globalThis.navigator?.storage?.getDirectory) return;
@@ -24,7 +25,16 @@ export class StereoClient {
   run(file, settings, {outputHandle} = {}) {
     if (this.current) throw Error('PREVIOUS_JOB_NOT_DISPOSED');
     const settingsSnapshot = structuredClone(settings);
-    const worker = new this.WorkerClass(new URL('./worker.mjs', import.meta.url), {type: 'module'});
+    if (settingsSnapshot.mode === 'convert') {
+      settingsSnapshot.executionRoute = selectExecutionRoute(settingsSnapshot, {outputHandle, inputBytes: file.size}).id;
+    }
+    const workerURL = new URL('./worker.mjs', import.meta.url);
+    let worker;
+    try { worker = new this.WorkerClass(workerURL, {type: 'module'}); }
+    catch (error) {
+      error.workerFailure = {phase: 'worker-construction', url: workerURL.href};
+      throw error;
+    }
     const operationId = crypto.randomUUID(), inputRevision = ++this.revision;
     const saveAttemptId = outputHandle ? crypto.randomUUID() : undefined;
     return new Promise((resolve, reject) => {
@@ -34,6 +44,7 @@ export class StereoClient {
       this.current = job;
       worker.onmessage = ({data: message}) => {
         if (this.current !== job || message.operationId !== operationId || message.inputRevision !== inputRevision) return;
+        job.receivedMessage = true;
         if (message.type === 'indexed-ownership') {
           const identity = message.registry?.identity;
           if (!job.indexed || identity?.operationId !== operationId || identity?.inputRevision !== inputRevision
@@ -80,7 +91,11 @@ export class StereoClient {
           else this.emit(message);
         }
       };
-      worker.onerror = event => this.workerFailed(job, Error(event.message || 'WORKER_FAILED'));
+      worker.onerror = event => this.workerFailed(job, Object.assign(Error(event.message || 'WORKER_FAILED'), {
+        workerFailure: {phase: job.receivedMessage ? 'worker-after-message' : 'worker-before-first-message', url: workerURL.href,
+          filename: event.filename ?? null, line: event.lineno ?? null, column: event.colno ?? null}}));
+      worker.onmessageerror = () => this.workerFailed(job, Object.assign(Error('WORKER_MESSAGE_UNREADABLE'), {
+        workerFailure: {phase: 'worker-message', url: workerURL.href}}));
       try { worker.postMessage({type: 'run', file, settings: settingsSnapshot, operationId, inputRevision, outputHandle, saveAttemptId}); job.dispatched = true; }
       catch (error) { this.workerFailed(job, error); }
     });

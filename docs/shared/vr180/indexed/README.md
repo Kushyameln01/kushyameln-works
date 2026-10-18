@@ -1,9 +1,11 @@
 # Indexed direct-file conversion runtime
 
-This distribution candidate ports the reviewed disk-index implementation to relative
-runtime imports. Preparing these files does not enable a route or establish browser,
-large-media or public deployment acceptance. The sole output profile is `default`
-(1 GiB); private large-output profiles and fixture input admission are absent.
+This Sites runtime extends the reviewed disk-index implementation with streaming
+capacity routing. The sole output profile is `default`, with no fixed input/output
+file-size cap (`maxBytes: null`). Safe-integer offsets, MP4 structure and available
+storage still constrain processing. No large-media runtime trial was performed for
+this change; earlier private trial results do not qualify this revision. Private
+large-output profiles and fixture input admission remain absent.
 
 `transform.mjs` exports `convertStereo`, `createDirectMuxDestination`,
 `cleanupConversionResources`, `createAacPacketCopier`, `validateIndexedAdmission`,
@@ -15,12 +17,18 @@ instance from `../vendor/mediabunny-indexed.mjs`; never mix its media classes wi
 the original shared vendor in a job. Importing this module does not load a codec
 vendor. Routing and recovery UI are separate modules owned by the integration caller.
 
-The input inspector is the unchanged strict `../mp4.mjs`. `cslg` handling in
+The input inspector is the strict `../mp4.mjs`, including AVC/HEVC sample-entry and configuration validation. `cslg` handling in
 `mp4-output-inspect.mjs` is limited to saved-output verification. There is no relaxed
-input parser or fixture option. H.264 SDR, one video and no audio or one AAC track,
-geometry, timing/AAC preservation, 100,000 samples, 16 MiB metadata, 8 MiB explicit
-index budget and 4 MiB aggregate sorting limits remain unchanged. That index budget
-is not a browser, codec or total process memory limit.
+input parser or fixture option. H.264 and H.265/HEVC SDR inputs require the browser's decoder support; output remains H.264. One video and no audio or one AAC track,
+geometry and timing/AAC preservation remain unchanged. Total indexed samples may
+reach 10,000,000, aligned with the existing parser's per-track admission ceiling.
+The total count is independent of the fixed output reorder workspace (100,000
+samples); an oversized reorder group is rejected before writing another record.
+Input presentation sorting keeps its bounded external merge. Explicit index
+reservations remain 0.008388608 GB and aggregate sorting reservations remain
+0.004194304 GB. The whole moov box is paged without a total metadata-size cap;
+retained small metadata and the input skeleton remain bounded to 0.016777216 GB.
+GB means 1,000,000,000 bytes. These budgets do not bound browser or codec memory.
 
 The transform commits once, compares saved metadata to its precommit hash, reparses
 the saved output and fixes immutable `savedObservation` before later cancellation,
@@ -39,9 +47,9 @@ cleanup, and retain records on unknown ownership, contention or cleanup failure.
 Only explicit job ownership authorizes recovery; no TTL scan or global deletion is
 provided. A committed external MP4 is never an index cleanup target.
 
-`provenance.json` records reviewed source and distributed hashes. From the repository,
-`python3 tools/vr180/prepare-indexed-runtime.py --check` reproduces and compares all
-explicit files without changing routing or existing shared modules. The dedicated
-vendor includes original source, supplements, patches, MPL-2.0 and an offline rebuild
+`provenance.json` retains historical source hashes and records the shipped runtime
+hashes plus the Sites capacity changes. The historical prototype generator alone
+does not reproduce these later Sites edits. The dedicated vendor is unchanged and
+includes original source, supplements, patches, MPL-2.0 and an offline rebuild
 script. Input/output controller files derived from Mediabunny retain MPL notices;
 the license is available at `../vendor/mediabunny-LICENSE`.

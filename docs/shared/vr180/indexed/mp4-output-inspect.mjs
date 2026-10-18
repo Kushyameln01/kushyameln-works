@@ -1,3 +1,4 @@
+import {classifyMetadata} from '../container-metadata.mjs';
 // OUTPUT-ONLY PARSER VARIANT. Input admission uses the unchanged strict ../mp4.mjs.
 // Experimental: range-based, non-fragmented avc1/AAC MP4 inspection and metadata-only tagging.
 // Spherical V2 layout follows google/spatial-media commit 2308497c39bb604a7c3ba56ac17e302f2b1b6a96.
@@ -18,7 +19,7 @@ function fourcc(bytes, at) { return String.fromCharCode(...bytes.subarray(at, at
 function u32(n) { const a = new Uint8Array(4); new DataView(a.buffer).setUint32(0, n); return a; }
 function box(type, ...parts) {
   const length = 8 + parts.reduce((n, p) => n + p.byteLength, 0);
-  check(length <= SMALL_METADATA_LIMIT, 'new metadata exceeds 16 MiB budget');
+  check(length <= SMALL_METADATA_LIMIT, 'new metadata exceeds 0.016777216 GB budget');
   const out = new Uint8Array(length); new DataView(out.buffer).setUint32(0, length); out.set(enc.encode(type), 4); let at = 8;
   for (const p of parts) { out.set(p, at); at += p.byteLength; }
   return out;
@@ -42,8 +43,8 @@ function countBox(context, depth) {
 }
 
 const allowed = {
-  moov: new Set(['mvhd', 'trak', 'udta', 'free', 'skip', 'uuid']),
-  trak: new Set(['tkhd', 'mdia', 'edts', 'udta', 'free', 'skip', 'uuid']),
+  moov: new Set(['mvhd', 'trak', 'udta', 'meta', 'free', 'skip', 'uuid']),
+  trak: new Set(['tkhd', 'mdia', 'edts', 'udta', 'meta', 'free', 'skip', 'uuid']),
   mdia: new Set(['mdhd', 'hdlr', 'minf', 'elng', 'free']),
   minf: new Set(['vmhd', 'smhd', 'dinf', 'stbl', 'free']),
   dinf: new Set(['dref']), dref: new Set(['url ']), edts: new Set(['elst']),
@@ -53,9 +54,9 @@ const allowed = {
   mp4a: new Set(['esds', 'btrt', 'free']),
   sv3d: new Set(['svhd', 'proj']), proj: new Set(['prhd', 'equi', 'mshp']),
   udta: new Set(['meta', 'udta', 'uuid', 'cprt', 'name', 'free', 'skip']),
-  meta: new Set(['hdlr', 'ilst', 'free']),
+  meta: new Set(['hdlr', 'keys', 'ilst', 'free']),
 };
-const prefixes = { stsd: 8, dref: 8, avc1: 78, mp4a: 28, meta: 4 };
+const prefixes = { stsd: 8, dref: 8, avc1: 78, mp4a: 28 };
 const pagedTypes = new Set(['stts', 'ctts', 'stsc', 'stsz', 'stco', 'co64', 'stss', 'sdtp', 'sgpd', 'sbgp', 'elst']);
 const opaqueTypes = new Set(['free', 'skip', 'wide']);
 async function yieldToCancel(signal) {
@@ -74,15 +75,27 @@ async function parseChildren(blob, start, end, parent, context, depth = 1) {
     check(allowed[parent]?.has(type), `unsupported ${type} box in ${parent}; unknown codecs, fragments or offsets are not preserved`);
     const node = { type, start, end: start + size, header, payload: start + header, blob, signal: context.signal, bytes: null, children: null };
     if (allowed[type]) {
-      const prefix = prefixes[type] ?? 0;
+      let prefix = prefixes[type] ?? 0;
+      if (type === 'meta') {
+        check(node.end - node.payload >= 8, 'truncated meta');
+        const head = await read(blob, node.payload, 8, context.signal);
+        prefix = new DataView(head.buffer).getUint32(0) === 0 ? 4 : 0;
+        check(prefix === 4 || allowed.meta.has(fourcc(head, 4)), 'unsupported meta layout');
+      }
       check(size - header >= prefix, `truncated ${type} entry`);
       node.bytes = await read(blob, node.payload, prefix, context.signal);
       if (type === 'mp4a') check(new DataView(node.bytes.buffer).getUint16(8) === 0, 'unsupported mp4a sample entry version');
       node.childStart = node.payload + prefix;
       node.children = await parseChildren(blob, node.childStart, node.end, type, context, depth + 1);
+      if (type === 'meta') {
+        const h = one(node, 'hdlr'), k = one(node, 'keys', false), i = one(node, 'ilst', false);
+        full(h, [0], 12, true);
+        check(classifyMetadata({handler: fourcc(h.bytes, 8), keys: k?.bytes ?? null, items: i?.bytes ?? null}).safe, 'output metadata is outside descriptive transfer profile');
+        node.preserveWhole = true;
+      }
     } else if (!pagedTypes.has(type) && !opaqueTypes.has(type)) {
       context.retainedBytes += size - header;
-      check(context.retainedBytes <= SMALL_METADATA_LIMIT, 'small metadata exceeds 16 MiB retained-byte budget');
+      check(context.retainedBytes <= SMALL_METADATA_LIMIT, 'small metadata exceeds 0.016777216 GB retained-byte budget');
       node.bytes = await read(blob, node.payload, size - header, context.signal);
     }
     if (type === 'uuid') {

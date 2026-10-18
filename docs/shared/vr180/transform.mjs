@@ -1,3 +1,5 @@
+import {collectAudioDependencies, createAudioDependencyPassthrough} from './audio-dependency.mjs';
+import {normalizeMp4ForDemuxer} from './open-ended-mdat.mjs';
 import {
   Input, BlobSource, MP4, VideoSampleSink, EncodedPacketSink,
   CanvasSource, EncodedAudioPacketSource, Output, Mp4OutputFormat,
@@ -6,9 +8,9 @@ import {
 import { buildStereoGeometry } from './geometry.mjs';
 import { createFileOutput } from './file-output.mjs';
 import { createMuxCapture } from './mux-capture.mjs';
+import { collectContainerMetadata } from './container-metadata.mjs';
 
 const MAX_SAMPLES = 100_000;
-const MAX_OUTPUT_BYTES = 1024 ** 3;
 const CACHE_BYTES = 1024 ** 2;
 const WRITE_CHUNK_BYTES = 1024 ** 2;
 const OPFS_ROOT = 'vr180-jobs';
@@ -27,9 +29,8 @@ export async function createDirectMuxDestination(handle, { signal, onWrite = () 
       if (signal?.aborted) throw abortError();
       if (type !== 'write' || !(data instanceof Uint8Array)
           || !Number.isSafeInteger(position) || position < 0
-          || !Number.isSafeInteger(position + data.byteLength)
-          || position + data.byteLength > MAX_OUTPUT_BYTES) {
-        throw new RangeError('Experimental output limit: 1 GiB; invalid or oversized write.');
+          || !Number.isSafeInteger(position + data.byteLength)) {
+        throw new RangeError('OUTPUT_POSITION_INVALID');
       }
       await output.writeAt(position, data);
       capture.write({position, data}); // Capture only acknowledged writes, including header rewrites.
@@ -160,6 +161,7 @@ export async function convertStereo(file, settings, {
   if (!settings || !Number.isSafeInteger(settings.bitrate) || settings.bitrate <= 0) {
     throw new TypeError('bitrate must be a positive integer in bits per second.');
   }
+  const containerMetadata = await collectContainerMetadata(file, {signal});
   const chosenSettings = {
     layout: settings.layout, fov: settings.fov,
     eyeSize: settings.eyeSize, bitrate: settings.bitrate,
@@ -178,7 +180,7 @@ export async function convertStereo(file, settings, {
     jobId: id, settings: chosenSettings, startedAt: new Date().toISOString(),
     inputBytes: file.size, outputBytes: 0, videoFrames: 0, encodedVideoPackets: 0, audioPackets: 0,
     totalSamples: 0, sourceCacheBudgetBytes: CACHE_BYTES,
-    outputLimitBytes: MAX_OUTPUT_BYTES, sampleLimit: MAX_SAMPLES,
+    outputLimitBytes: null, sampleLimit: MAX_SAMPLES,
     writeChunkBytes: WRITE_CHUNK_BYTES, sourceAnalysisMs: null,
     capabilityCheckMs: null, capabilities: null, temporarySetupMs: null, conversionLoopMs: null,
     videoIteratorWaitMs: 0, canvasDrawMs: 0, videoAddWaitMs: 0,
@@ -188,12 +190,13 @@ export async function convertStereo(file, settings, {
     storageQuotaBytes: null, storageUsageBytes: null, storageAvailableBytes: null,
     cpuPeakBytes: null, gpuPeakBytes: null, nativePeakBytes: null,
     containerMetadataGrowth: 'O(total samples); media buffers are streamed',
+    containerMetadataTransfer: containerMetadata.report, audioDependencyTransfer: null,
     metadataPatched: false, status: 'preparing', cleanupError: null,
     outputBackend: outputHandle ? 'direct-file' : 'opfs',
     opfsDirectory: outputHandle ? null : `${OPFS_ROOT}/${id}`,
   };
   let input, output, canvas, storageWriter, root, temporaryDirectory, opfsHandle, directDestination, directOutput;
-  let videoIterator, heldSample, audioPacket, audioSink, audioSource, audioCopier, videoSource;
+  let videoIterator, heldSample, audioPacket, audioSink, audioSource, audioCopier, audioPassthrough, audioDependencies, videoSource;
   let temporaryCreated = false;
   let storageClosed = false;
   let succeeded = false;
@@ -237,7 +240,7 @@ export async function convertStereo(file, settings, {
       temporaryCreated = false;
     }
   };
-  const cleanupResources = () => cleanupConversionResources({
+  const cleanupResources = async () => { try { await cleanupConversionResources({
     // output.cancel() closes its target; it does not abort the OPFS writer.
     // Wait for that close, and abort an unclosed writer before deleting files.
     cancelOutput,
@@ -246,7 +249,7 @@ export async function convertStereo(file, settings, {
       if (storageWriter && !storageClosed) { await storageWriter.abort(); storageClosed = true; }
     },
     removeTemporary,
-  });
+  }); } finally { audioDependencies?.dispose(); } };
   // Register before acquiring resources, so the Worker can retry a failed
   // deletion after convertStereo has rejected and its finally has completed.
   onCleanup?.(cleanupResources);
@@ -258,9 +261,11 @@ export async function convertStereo(file, settings, {
   signal?.addEventListener('abort', onAbort, { once: true });
 
   try {
+    audioDependencies = await collectAudioDependencies(file, {signal});
     progress('inspect', null, true);
     const analysisStart = performance.now();
-    input = new Input({ source: new BlobSource(file, { maxCacheSize: CACHE_BYTES }), formats: [MP4] });
+    const demuxFile = await normalizeMp4ForDemuxer(file, {signal});
+    input = new Input({ source: new BlobSource(demuxFile, { maxCacheSize: CACHE_BYTES }), formats: [MP4] });
     const tracks = await input.getTracks();
     const videos = tracks.filter(track => track.type === 'video');
     const audios = tracks.filter(track => track.type === 'audio');
@@ -274,7 +279,7 @@ export async function convertStereo(file, settings, {
       video.getPixelAspectRatio(), video.getDisplayWidth(), video.getDisplayHeight(),
     ]);
     checkAbort();
-    if (codec !== 'avc') throw new Error('b1 pixel conversion accepts H.264 video only.');
+    if (!['avc', 'hevc'].includes(codec)) throw new Error('Pixel conversion requires H.264 or H.265/HEVC video.');
     if (hdr) throw new Error('HDR conversion is not supported in b1.');
     if (rotation !== 0 || flip || !par || par.num !== par.den || par.num <= 0) {
       throw new Error('b1 requires unrotated, unflipped video with square pixels.');
@@ -324,7 +329,8 @@ export async function convertStereo(file, settings, {
     });
     if (audio) {
       audioSource = new EncodedAudioPacketSource('aac');
-      audioCopier = createAacPacketCopier(audioSource, audioConfig);
+      audioPassthrough = createAudioDependencyPassthrough(audioDependencies, audioSource, audioConfig);
+      audioCopier = createAacPacketCopier(audioPassthrough, audioConfig);
     }
 
     const setupStart = performance.now();
@@ -363,9 +369,8 @@ export async function convertStereo(file, settings, {
         async write({ type, position, data }) {
           checkAbort();
           if (type !== 'write' || !Number.isSafeInteger(position) || position < 0
-              || !Number.isSafeInteger(position + data.byteLength)
-              || position + data.byteLength > MAX_OUTPUT_BYTES) {
-            throw new RangeError('Experimental output limit: 1 GiB; invalid or oversized write.');
+              || !Number.isSafeInteger(position + data.byteLength)) {
+            throw new RangeError('OUTPUT_POSITION_INVALID');
           }
           await storageWriter.write({ type: 'write', position, data });
           metrics.outputBytes = Math.max(metrics.outputBytes, position + data.byteLength);
@@ -450,7 +455,10 @@ export async function convertStereo(file, settings, {
     if (metrics.videoFrames === 0) throw new Error('The video track produced no frames.');
     videoSource.close();
     while (audioPacket) await addAudioPacket();
-    if (audioCopier) metrics.audioTimeline = audioCopier.finish();
+    if (audioCopier) {
+      metrics.audioTimeline = audioCopier.finish(); audioPassthrough.finish(metrics.audioTimeline);
+      metrics.audioDependencyTransfer = audioDependencies?.report ?? null;
+    }
     audioSource?.close();
     metrics.conversionLoopMs = performance.now() - loopStart;
     checkAbort();
@@ -472,7 +480,7 @@ export async function convertStereo(file, settings, {
       resultFile = await opfsHandle.getFile();
       metrics.outputBytes = resultFile.size;
     }
-    if (!metrics.outputBytes || metrics.outputBytes > MAX_OUTPUT_BYTES) throw new Error('The finalized output size is invalid.');
+    if (!Number.isSafeInteger(metrics.outputBytes) || metrics.outputBytes <= 0) throw new Error('The finalized output size is invalid.');
     metrics.outputPreparationMs = performance.now() - prepareStarted;
     metrics.totalMs = performance.now() - started;
     metrics.status = 'converted-awaiting-metadata';
@@ -486,7 +494,7 @@ export async function convertStereo(file, settings, {
       requiresMetadataPatch: true, opfsDirectory: metrics.opfsDirectory,
     };
     succeeded = true;
-    return { ...(direct ? {direct} : {file: resultFile}), cleanup: cleanupResources, metrics: { ...metrics }, info };
+    return { ...(direct ? {direct: {...direct, containerMetadata, audioDependencies}} : {file: resultFile}), containerMetadata, audioDependencies, cleanup: cleanupResources, metrics: { ...metrics }, info };
   } catch (error) {
     metrics.status = signal?.aborted ? 'canceled' : 'failed';
     metrics.error = signal?.aborted ? 'Conversion was canceled.' : String(error?.message ?? error);

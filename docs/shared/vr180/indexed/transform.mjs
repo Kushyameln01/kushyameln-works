@@ -1,5 +1,8 @@
-// Indexed direct-file conversion candidate; generated from reviewed prototype sources.
-// Only the existing default 1 GiB output profile is accepted.
+import {collectAudioDependencies, createAudioDependencyPassthrough} from '../audio-dependency.mjs';
+import {normalizeMp4ForDemuxer} from '../open-ended-mdat.mjs';
+import {collectContainerMetadata} from '../container-metadata.mjs';
+// Indexed direct-file conversion. File sizes use safe integers and storage limits;
+// sample records remain on disk and live index/sort buffers remain bounded.
 import { buildStereoGeometry } from '../geometry.mjs';
 import { createFileOutput } from '../file-output.mjs';
 import { inspectMp4 } from '../mp4.mjs';
@@ -8,10 +11,11 @@ import { sha256Blob } from '../sha256.mjs';
 import { createIndexBudget } from './index-store.mjs';
 import { createInputIndex } from './input-index.mjs';
 import { createOutputIndex, PROFILE } from './output-index.mjs';
+import { INDEXED_PROFILE } from '../route-profile.mjs';
 
-const MAX_SAMPLES = 100_000;
+const MAX_SAMPLES = INDEXED_PROFILE.maxSamples;
 export const OUTPUT_PROFILES = Object.freeze({
-  default: Object.freeze({id: 'default', maxBytes: 1024 ** 3}),
+  default: Object.freeze({id: 'default', maxBytes: null}),
 });
 export function resolveOutputProfile(id = 'default') {
   if (typeof id !== 'string' || !Object.hasOwn(OUTPUT_PROFILES, id)) throw Error('OUTPUT_PROFILE_UNSUPPORTED');
@@ -19,7 +23,6 @@ export function resolveOutputProfile(id = 'default') {
 }
 const CACHE_BYTES = 1024 ** 2;
 const WRITE_CHUNK_BYTES = 1024 ** 2;
-const MAX_METADATA_BYTES = 16 * 1024 ** 2;
 
 function abortError() {
   return new DOMException('Conversion was canceled.', 'AbortError');
@@ -36,9 +39,8 @@ export async function createDirectMuxDestination(handle, { signal, onWrite = () 
       if (signal?.aborted) throw abortError();
       if (type !== 'write' || !(data instanceof Uint8Array)
           || !Number.isSafeInteger(position) || position < 0
-          || !Number.isSafeInteger(position + data.byteLength)
-          || position + data.byteLength > outputProfile.maxBytes) {
-        throw new RangeError('Experimental output limit: 1 GiB; invalid or oversized write.');
+          || !Number.isSafeInteger(position + data.byteLength)) {
+        throw new RangeError('OUTPUT_POSITION_INVALID');
       }
       await output.writeAt(position, data);
       onWrite(output.status.extent);
@@ -175,9 +177,6 @@ export function validateIndexedAdmission(info, s) {
     if (counts.total > MAX_SAMPLES) {
       throw Error(`CONVERSION_SAMPLE_LIMIT_EXCEEDED: ${counts.total} > ${MAX_SAMPLES}`);
     }
-    if (metadataBytes > MAX_METADATA_BYTES) {
-      throw Error(`CONVERSION_METADATA_LIMIT_EXCEEDED: ${metadataBytes} > ${MAX_METADATA_BYTES}`);
-    }
   }
 }
 
@@ -236,6 +235,7 @@ export async function convertStereo(file, settings, {
   }
   const admission = await inspectMp4(file, {signal});
   validateIndexedAdmission(admission, settings);
+  const containerMetadata = await collectContainerMetadata(file, {signal});
   checkAbort();
   const budget = createIndexBudget();
 
@@ -253,7 +253,8 @@ export async function convertStereo(file, settings, {
     firstAudioTimestamp: null, lastAudioEndTimestamp: null, audioTimeline: null,
     storageQuotaBytes: null, storageUsageBytes: null, storageAvailableBytes: null,
     cpuPeakBytes: null, gpuPeakBytes: null, nativePeakBytes: null,
-    containerMetadataGrowth: 'bounded disk input/output indices; unchanged default sample/metadata/output limits',
+    containerMetadataGrowth: 'disk input/output indices; bounded page/sort/skeleton memory; safe-integer file offsets',
+    containerMetadataTransfer: containerMetadata.report, audioDependencyTransfer: null,
     metadataPatched: false, status: 'preparing', cleanupError: null,
     outputBackend: 'indexed-direct-file', opfsDirectory: null, admission,
     indexSortBytes: {input: 4 * 1024 ** 2 - PROFILE.sortReservedBytes, output: PROFILE.sortReservedBytes},
@@ -261,7 +262,7 @@ export async function convertStereo(file, settings, {
   };
   let input, output, canvas, directDestination, directOutput, inputIndex, outputIndex, result, failure, savedObservation;
   const pendingCleanup = [];
-  let videoIterator, heldSample, audioPacket, audioSink, audioSource, audioCopier, videoSource;
+  let videoIterator, heldSample, audioPacket, audioSink, audioSource, audioCopier, audioPassthrough, audioDependencies, videoSource;
   let cancellationPromise;
   let estimatedDuration = null;
   let lastProgressAt = -Infinity;
@@ -307,7 +308,7 @@ export async function convertStereo(file, settings, {
     for (const cleanup of [...pendingCleanup]) {
       try { await cleanup(); pendingCleanup.splice(pendingCleanup.indexOf(cleanup), 1); } catch (error) { errors.push(error); }
     }
-    for (const controller of [outputIndex, inputIndex]) {
+    for (const controller of [outputIndex, inputIndex, audioDependencies]) {
       try { await controller?.dispose(); } catch (error) { errors.push(error); }
     }
     metrics.inputIndex = inputIndex?.metrics ?? null; metrics.outputIndex = outputIndex?.metrics ?? null;
@@ -336,17 +337,19 @@ export async function convertStereo(file, settings, {
   onCleanup?.(cleanupResources);
   const countSample = () => {
     checkAbort();
-    if (metrics.totalSamples >= MAX_SAMPLES) throw new RangeError('Experimental limit: 100000 total samples.');
+    if (metrics.totalSamples >= MAX_SAMPLES) throw new RangeError(`CONVERSION_SAMPLE_LIMIT_EXCEEDED: ${MAX_SAMPLES}`);
     metrics.totalSamples++;
   };
   signal?.addEventListener('abort', onAbort, { once: true });
 
   try {
+    audioDependencies = await collectAudioDependencies(file, {signal, budget});
     progress('inspect', null, true);
     const analysisStart = performance.now();
     const inputOwnership = await prepareIndexOwnership('input');
-    input = new Input({ source: new BlobSource(file, { maxCacheSize: CACHE_BYTES, useStreamReader: false }), formats: [MP4] });
-    inputIndex = await acquire(() => createInputIndex({source: file, root: indexRoot, jobId: inputOwnership.jobId, ownerToken: inputOwnership.ownerToken,
+    const demuxFile = await normalizeMp4ForDemuxer(file, {signal});
+    input = new Input({ source: new BlobSource(demuxFile, { maxCacheSize: CACHE_BYTES, useStreamReader: false }), formats: [MP4] });
+    inputIndex = await acquire(() => createInputIndex({source: demuxFile, root: indexRoot, jobId: inputOwnership.jobId, ownerToken: inputOwnership.ownerToken,
       budget, signal, sortBytes: 4 * 1024 ** 2 - PROFILE.sortReservedBytes}));
     input._vr180InputIndex = inputIndex; // Must precede the first getTracks/readMetadata.
     const tracks = await input.getTracks();
@@ -362,7 +365,7 @@ export async function convertStereo(file, settings, {
       video.getPixelAspectRatio(), video.getDisplayWidth(), video.getDisplayHeight(),
     ]);
     checkAbort();
-    if (codec !== 'avc') throw new Error('b1 pixel conversion accepts H.264 video only.');
+    if (!['avc', 'hevc'].includes(codec)) throw new Error('Pixel conversion requires H.264 or H.265/HEVC video.');
     if (hdr) throw new Error('HDR conversion is not supported in b1.');
     if (rotation !== 0 || flip || !par || par.num !== par.den || par.num <= 0) {
       throw new Error('b1 requires unrotated, unflipped video with square pixels.');
@@ -413,12 +416,13 @@ export async function convertStereo(file, settings, {
     });
     if (audio) {
       audioSource = new EncodedAudioPacketSource('aac');
-      audioCopier = createAacPacketCopier(audioSource, audioConfig);
+      audioPassthrough = createAudioDependencyPassthrough(audioDependencies, audioSource, audioConfig);
+      audioCopier = createAacPacketCopier(audioPassthrough, audioConfig);
     }
 
     const setupStart = performance.now();
     outputIndex = await acquire(() => createOutputIndex({root: indexRoot, jobId: outputOwnership.jobId,
-      ownerToken: outputOwnership.ownerToken, budget, signal, layout: 'sbs'}));
+      ownerToken: outputOwnership.ownerToken, budget, signal, layout: 'sbs', containerMetadata, audioDependencies}));
     directDestination = await createDirectMuxDestination(outputHandle, {
       signal, outputProfileId: outputProfile.id, onWrite: extent => { metrics.outputBytes = extent; },
       onOutputCreated: acquired => { directOutput = acquired; onOutputCreated?.(acquired); },
@@ -491,7 +495,10 @@ export async function convertStereo(file, settings, {
     if (metrics.videoFrames === 0) throw new Error('The video track produced no frames.');
     videoSource.close();
     while (audioPacket) await addAudioPacket();
-    if (audioCopier) metrics.audioTimeline = audioCopier.finish();
+    if (audioCopier) {
+      metrics.audioTimeline = audioCopier.finish(); audioPassthrough.finish(metrics.audioTimeline);
+      metrics.audioDependencyTransfer = audioDependencies?.report ?? null;
+    }
     audioSource?.close();
     metrics.conversionLoopMs = performance.now() - loopStart;
     checkAbort();
@@ -506,14 +513,14 @@ export async function convertStereo(file, settings, {
     const prepareStarted = performance.now();
     const direct = directDestination.finish();
     metrics.outputBytes = direct.extent;
-    if (!metrics.outputBytes || metrics.outputBytes > outputProfile.maxBytes) throw Error('The finalized output size is invalid.');
+    if (!Number.isSafeInteger(metrics.outputBytes) || metrics.outputBytes <= 0) throw Error('The finalized output size is invalid.');
     const indexed = outputIndex.metrics;
     if (!indexed.metadataClosed || !indexed.verification || indexed.sampleCount !== metrics.totalSamples
       || indexed.verification.sampleCounts.total !== metrics.totalSamples) throw Error('INDEXED_METADATA_NOT_VERIFIED');
     const offset = indexed.moovPosition, metadataBytes = indexed.moovBytes;
     if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(metadataBytes) || metadataBytes <= 0
-      || offset + metadataBytes !== metrics.outputBytes
-      || metadataBytes > MAX_METADATA_BYTES) throw Error('INDEXED_METADATA_EXTENT_INVALID');
+      || !Number.isSafeInteger(offset + metadataBytes)
+      || offset + metadataBytes !== metrics.outputBytes) throw Error('INDEXED_METADATA_EXTENT_INVALID');
     const expectedMetadataHash = await sha256Blob(outputIndex.metadataSource.slice(offset, metrics.outputBytes), {signal});
     checkAbort();
     const saved = await direct.output.commit({expectedBytes: metrics.outputBytes});
