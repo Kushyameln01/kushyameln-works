@@ -71,3 +71,12 @@ P2 の既存 filePhases を保ち、indexed metadata の期待 hash、保存後 
 7. private 5/10 GB の根拠と公開 adapter の根拠を分ける。接続差分は小素材と境界から検証し、媒体処理・上限に影響する差分があれば該当する大容量条件を再試験する。反復分布、実写品質、VR プレイヤーや初見操作は別の判定として残す。
 
 本メモの保存による製品コード・上限・配信の変更はない。
+
+
+## 2026-10-18の接続契約の確認（未実装）
+
+保存観測はmetadata hash一致と保存後構造検査の直後に確定し、その後の取消確認、metrics/progress callback、finally清掃より前に置く。plain dataだけを複製・再帰freezeし、jobId、outputProfileId、bytes、sha256、committed、hashBasis、savedInfo、verification（期待/実測metadata hash・offset・bytes）、observedAt、当該時点のtimingsを持つ。生きたwriter・File・後から変化するmetricsは含めず、Fileは通常結果の別項目に置く。
+
+Workerは通常結果と例外のどちらからも同じ保存観測を受け、job/profileを検査してoutput根拠を作り、同じdirectAttempt IDをcommitted/passedへ更新してから取消確認と通知へ進む。catchでもerror.savedObservationを先に適用する。全体statusがfailed/canceledでも、この保存試行のpassedを消さない。保存後検査が未完なら観測を発行せず、既知commitだけを保持する。
+
+Worker内で確定しても、ページが結果・診断を受信する前にWorkerが消失した場合はページ側でunknownを維持する。registryは索引所有権だけを表し、保存成功を推測する台帳へ拡張しない。通常の清掃例外・取消への対応に新しい永続保存台帳は不要である。`save-record.checkAttempt`がpassedの根拠として受理するのは同世代のoutput、又は同世代schema 2のpreparedBeforeCancel.outputであり、passedとoutput:nullだけの診断を作らない。
