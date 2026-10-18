@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "package": "mediabunny",
+  "version": "1.61.5",
+  "upstreamRepository": "https://github.com/Vanilagy/mediabunny",
+  "upstreamCommit": "0664a57bf2f40e5c4efa176c75ebf1d60df69eb8",
+  "license": "MPL-2.0",
+  "licensePath": "mediabunny-LICENSE",
+  "modifications": "Output and input disk-index hooks; apply listed patches in order. Runtime controller source is in ../indexed/.",
+  "sourceArchive": {
+    "path": "mediabunny-1.61.5-source.tgz",
+    "url": "https://registry.npmjs.org/mediabunny/-/mediabunny-1.61.5.tgz",
+    "sha256": "95c03a00ca69a7d5ed9805e424349ffeb0cdecbe8cabd0e17749a39e8117802f"
+  },
+  "unmodifiedBundleSha256": "5c3514965f106dd165cc6474979ba302ef85d8c84935a0ad3ea5202ccedfe51b",
+  "bundle": {
+    "path": "mediabunny-indexed.mjs",
+    "sha256": "65a96894f5442fe92d3672e09b80e6841b7a30a745b002b071636352f5b790cd",
+    "bytes": 693849
+  },
+  "patches": [
+    {
+      "path": "mediabunny-output-index.patch",
+      "upstreamCommit": "0664a57bf2f40e5c4efa176c75ebf1d60df69eb8",
+      "version": "1.61.5",
+      "license": "MPL-2.0",
+      "files": {
+        "src/isobmff/isobmff-muxer.ts": {
+          "originalSha256": "8a1d5cf1a9f689ed75be84397485c071c7c2f18180be8d8ccfc0f56f648eb362",
+          "patchedSha256": "33de70395fca5f76188322df1c78848077208a914a306c3ce9495ff94a960068"
+        },
+        "src/isobmff/isobmff-boxes.ts": {
+          "originalSha256": "eadc70c46fe39c37544f2561501ccf531d1ba60bfe1938015c158b880c02f1cd",
+          "patchedSha256": "b4fbf17fc42f3df02ac4818b5c40f7a7e53b2286a88bdb93ecb265e26d9ee8cb"
+        },
+        "src/media-source.ts": {
+          "originalSha256": "a7b80dc7f1cf41e25bfe5d1b3b8d00b8d71b4ed4869e4a9de776aebeeca6d6a3",
+          "patchedSha256": "4533c45f669daebf24e466ec3317f5d5c91413c9d12e6ea94baa8877007f19fe"
+        }
+      },
+      "patchSha256": "b46f0e1a97b0bb5b3527f59ec1db13b0274a40882e204e694f3f98a7552bd35d"
+    },
+    {
+      "path": "mediabunny-input-index.patch",
+      "upstreamCommit": "0664a57bf2f40e5c4efa176c75ebf1d60df69eb8",
+      "version": "1.61.5",
+      "license": "MPL-2.0",
+      "files": {
+        "src/isobmff/isobmff-demuxer.ts": {
+          "originalSha256": "452f1faa94435afcdbf9ddb500b51753b127920fa3e4f5d565f8cb84bc31495b",
+          "patchedSha256": "a9bce08968717f383811ad60e2960b931e9964c9e9ab87f55f39087899a693ca"
+        }
+      },
+      "patchSha256": "78d58817a74896e7f1840096c20df67c82d038d5c724c2136f905e6dc9e02feb"
+    }
+  ],
+  "sourceSupplement": [
+    {
+      "path": "tsconfig.json",
+      "bytes": 403,
+      "gitBlobSha": "128e38ff54dc18936ba52e39454d35003d7b5357",
+      "sha256": "c4d6a8188a01e0ce5448aa6b431e43353894e8f66f77094eb8ba9b768c9fe146"
+    },
+    {
+      "path": "shared/aac-misc.ts",
+      "bytes": 7099,
+      "gitBlobSha": "e1ecaf7c33126ff60cf94e92ccc375c3c2893f5e",
+      "sha256": "5d5cb7fd115281e20571048339d5c50acb074432514d71e7ab67f3a5b7669044"
+    },
+    {
+      "path": "shared/ac3-misc.ts",
+      "bytes": 506,
+      "gitBlobSha": "fa3145fee2c3a75509443a73a8d4ea1172610a23",
+      "sha256": "843dfe3a94d751c292226b2f7775cf728fbf83e87c5ea092aaec2406634225c8"
+    },
+    {
+      "path": "shared/bitstream.ts",
+      "bytes": 1949,
+      "gitBlobSha": "7baa2b276645325c7527ced643f225f94aa9ed50",
+      "sha256": "6b380f4b02631abb36eecb3b8837c9dcf722a32702169817acd91fefa93a69d1"
+    },
+    {
+      "path": "shared/mp3-misc.ts",
+      "bytes": 5843,
+      "gitBlobSha": "6ff3a8c8b3dc403571d984a9e2c126a0f58bfb26",
+      "sha256": "51f7b4178cf2de9c2a21ec5028f7bdae95f1758e262a4f7f282a10a19cd8ec72"
+    },
+    {
+      "path": "shared/tsconfig.json",
+      "bytes": 127,
+      "gitBlobSha": "8e005134c0e7cbe5dd80a6ee1d2c90c6bb2b266d",
+      "sha256": "ffeae49f31caf0078587c17fc6c0d91d5829a5531c11988a93f2eb4de161ba63"
+    }
+  ],
+  "toolchain": {
+    "esbuildVersion": "0.25.1",
+    "package": "toolchain/package.json",
+    "lock": "toolchain/package-lock.json",
+    "installationPolicy": "npm ci in an isolated temporary prefix, --ignore-scripts --include=dev --include=optional; never silently use a different installed version."
+  },
+  "buildOptionsSource": {
+    "path": "scripts/bundle.ts",
+    "url": "https://github.com/Vanilagy/mediabunny/blob/0664a57bf2f40e5c4efa176c75ebf1d60df69eb8/scripts/bundle.ts",
+    "gitBlobSha": "43633fd517cfd5391ef4fd78de8e6952453cfbd7",
+    "sha256": "26e5c5fa70e1f50788a0dfb0fb23061a772b3bfdb4cc6ef7913e90086af38ad1",
+    "selectedLines": [
+      "16-34",
+      "46-49",
+      "70-75",
+      "92-100"
+    ],
+    "execution": "Create only the official minified browser ESM esbuild context, rebuild, then dispose; no optional codec bundles, node/UMD variants or plugins."
+  },
+  "files": {
+    "mediabunny-indexed.mjs": {
+      "sha256": "65a96894f5442fe92d3672e09b80e6841b7a30a745b002b071636352f5b790cd",
+      "bytes": 693849
+    },
+    "mediabunny-1.61.5-source.tgz": {
+      "sha256": "95c03a00ca69a7d5ed9805e424349ffeb0cdecbe8cabd0e17749a39e8117802f",
+      "bytes": 2188923
+    },
+    "mediabunny-LICENSE": {
+      "sha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04",
+      "bytes": 16726
+    },
+    "mediabunny-output-index.patch": {
+      "sha256": "b46f0e1a97b0bb5b3527f59ec1db13b0274a40882e204e694f3f98a7552bd35d",
+      "bytes": 6672
+    },
+    "mediabunny-input-index.patch": {
+      "sha256": "78d58817a74896e7f1840096c20df67c82d038d5c724c2136f905e6dc9e02feb",
+      "bytes": 3114
+    },
+    "source-supplement/tsconfig.json": {
+      "sha256": "c4d6a8188a01e0ce5448aa6b431e43353894e8f66f77094eb8ba9b768c9fe146",
+      "bytes": 403
+    },
+    "source-supplement/shared/aac-misc.ts": {
+      "sha256": "5d5cb7fd115281e20571048339d5c50acb074432514d71e7ab67f3a5b7669044",
+      "bytes": 7099
+    },
+    "source-supplement/shared/ac3-misc.ts": {
+      "sha256": "843dfe3a94d751c292226b2f7775cf728fbf83e87c5ea092aaec2406634225c8",
+      "bytes": 506
+    },
+    "source-supplement/shared/bitstream.ts": {
+      "sha256": "6b380f4b02631abb36eecb3b8837c9dcf722a32702169817acd91fefa93a69d1",
+      "bytes": 1949
+    },
+    "source-supplement/shared/mp3-misc.ts": {
+      "sha256": "51f7b4178cf2de9c2a21ec5028f7bdae95f1758e262a4f7f282a10a19cd8ec72",
+      "bytes": 5843
+    },
+    "source-supplement/shared/tsconfig.json": {
+      "sha256": "ffeae49f31caf0078587c17fc6c0d91d5829a5531c11988a93f2eb4de161ba63",
+      "bytes": 127
+    },
+    "toolchain/package.json": {
+      "sha256": "95c93eb2359eb1692c982d78d25fde1f8d72ccca2f2157f2ed3cb582c877e6e0",
+      "bytes": 139
+    },
+    "toolchain/package-lock.json": {
+      "sha256": "0fd5affe1f6c2e2561423e55c9323edba434a30fdc9d047860890121a1a6677d",
+      "bytes": 13946
+    },
+    "rebuild-indexed.mjs": {
+      "sha256": "222922e8eec98720810047a9d29a588b27161c2aafb616cd32f40401d75b5368",
+      "bytes": 6074
+    },
+    "README.md": {
+      "sha256": "8bc8aca779ee5cf9740e464605b53bef29bd47bb55ef8639613a34b1f30d4092",
+      "bytes": 1777
+    }
+  }
+}
