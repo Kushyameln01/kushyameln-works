@@ -10,7 +10,9 @@
     "Sites: remove fixed input/output file caps; use safe integer offsets",
     "Sites: disk-backed sample count 10000000; fixed 100000-sample output reorder workspace",
     "Sites: page whole metadata; retain fixed small-metadata and index-buffer budgets",
-    "Sites: accept HEVC SDR input through the existing decoder capability checks; keep H.264 output"
+    "Sites: accept HEVC SDR input through the existing decoder capability checks; keep H.264 output",
+    "MP4 compatibility r5/r6: validate supported metadata, chapter/timecode references and stz2 sample sizes; accept the limited signed-ctts/cslg input profile",
+    "MP4 compatibility r6: normalize trailing size=0 mdat and transfer supported descriptive container metadata and unchanged AAC dependency tables through the indexed path"
   ],
   "runtime": {
     "index-store.mjs": {
@@ -26,7 +28,7 @@
     "input-index.mjs": {
       "source": "development/vr180/input-index-prototype/input-index.mjs",
       "sourceSha256": "ff6f826e7b16b61283d736c4996e6feb8297a35eece311802aee4e8ef57e2e1b",
-      "sha256": "291c97e110c8086d705c255e06e70781bd375c4d460d65bfa4b0c7ada0478e5d"
+      "sha256": "bca13a8d344f536172c8d78c14c95e06791062650191df5f2ad9efafd6ceb9d1"
     },
     "presentation-index.mjs": {
       "source": "development/vr180/input-index-prototype/presentation-index.mjs",
@@ -36,22 +38,22 @@
     "output-index.mjs": {
       "source": "development/vr180/output-index-prototype/output-index.mjs",
       "sourceSha256": "baac33b77abebf388f030dd351c96669f7eb69ea100fde6503c04c16178b919f",
-      "sha256": "39a7963d3de2e87dbc1418a69bb93cf39edbd81f70ce4f32dd38b4582f9091f7"
+      "sha256": "b06499398857c54a7525d1e331acc7d528b3a197efe0b4900e73f88811196960"
     },
     "mp4-output-inspect.mjs": {
       "source": "development/vr180/output-index-prototype/mp4-output-inspect.mjs",
       "sourceSha256": "d841bab27d299316a890f8b16c628ed486ea803982269293f3faf10fe66ef229",
-      "sha256": "0ffbe80fd1a280ed4aa7f7abfbcdeb596acfa4e964ed192bd539e557be45c0db"
+      "sha256": "3535ba386b753d54f43b4f420824366fec3a3fcd7e88f34075e82b0762c955d8"
     },
     "transform.mjs": {
       "source": "development/vr180/indexed-transform-prototype/transform.mjs",
       "sourceSha256": "d53c648a4fdebe45b33d5d6890d3684bec8a89de1757e0bb477f202753071d0c",
-      "sha256": "2b770edacea46fbaa5e07c11ea00604e79a973380b678d73976764b4282390de"
+      "sha256": "ea5d54b3ca72cfae38282f1539bd9dfccfc5d34ab21ae2b3aa63b327ff9aa860"
     }
   },
   "historicalGenerator": "tools/vr180/prepare-indexed-runtime.py",
   "sitesRevision": {
-    "build": "vr180-b11-hevc",
+    "build": "vr180-b14-mp4-compatibility-r6",
     "largeMediaValidation": "NOT_RUN_PER_USER_REQUEST",
     "inputOutputByteCap": null,
     "totalIndexedSampleLimit": 10000000,
@@ -59,6 +61,6 @@
     "indexBudgetBytes": 8388608,
     "aggregateSortReservedBytes": 4194304,
     "retainedMetadataBytes": 16777216,
-    "originNote": "source/sourceSha256 identify historical prototypes; sha256 identifies the shipped Sites runtime after the listed edits"
+    "originNote": "source/sourceSha256 identify historical prototypes; sha256 identifies the current runtime shipped on ChatGPT Sites and GitHub Pages after the listed edits"
   }
 }

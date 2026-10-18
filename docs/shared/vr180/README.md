@@ -1,6 +1,6 @@
 # VR180 shared module
 
-候補実装：`vr180-b14-mp4-compatibility-r6`。ユーザー提供のSites v75（宣言source `d398bd62aad40ca6764b0c9e8ced4075f4b95f35`）をVR180改良の基準にした未配備候補です。Site全体の最新版を示すものではありません。適用時はVR180の必要差分だけを統合してください。
+現行実装：`vr180-b14-mp4-compatibility-r6`。ユーザー提供のSites v75（宣言source `d398bd62aad40ca6764b0c9e8ced4075f4b95f35`）を基準としたr6パッチを、既存の保存UIと統合し、ChatGPT SitesおよびGitHub Pagesへ反映しています。この識別子はVR180モジュールの版を示し、サイト全体の版番号ではありません。
 
 `keys`を含むmdtaメタデータと、`tmcd`／`tc64`時間コードtrackを範囲検査し、再圧縮なしのVR情報付与で原バイトを保持します。ISO FullBox／QuickTime形式、キーと値の1始まり参照、参照あり／なしの時間コードを区別します。画素変換の出力には、寸法・時刻・トラックIDに依存しないと分類した記述メタデータを元scope・型・locale・多値のまま移します。未知の新規metaと時間コード・章の画素変換は未対応です。従来ISO udta/mdirの受付は維持し、保持できないcontainerは処理記録と画面に省略を示します。
 
