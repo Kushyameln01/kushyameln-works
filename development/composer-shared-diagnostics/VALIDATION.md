@@ -20,4 +20,30 @@
 
 必須項目にUNVERIFIED/HOLDがあれば初期実装完了とはしない。Unity Editor/MA/VRChatの動作、全種類のUnity情報のlossless編集、新DSL、恒常的な性能改善認定は初期範囲外。
 
-初期状況: C01〜C13 未実施。静的確認、SDK mock、実ブラウザ、公開HTTPS、回収検査を別欄で追記する。
+初期状況: C01〜C13 未実施。以下は公開後に追加した実施結果。期待条件は変更していない。
+
+## 実施結果（2026-10-18）
+
+製品コードcommit `691e0a34df232b6f2c52509f23139779e7696e07`。Sites v71 / source `724388539aaa4b3e92752f8da2a6cd7ed7ec644c`。試験開始前にPagesのbuild/deployment成功を確認した。後続 `85e64d5c…` はVR180の更新であり、Composer・Unity SDK・共有compute・FTに差分がないことをGitHub比較で確認した。
+
+「PASS」は下表の実施範囲に限る。Node Worker試験、mock試験、実ブラウザ試験を相互に代替しない。全体判定は **未完了（C01、C12）**。
+
+| ID | 判定 | 実施範囲・証拠・残件 |
+| --- | --- | --- |
+| C01 | HOLD | 既存生成試験、選択読込12群、Plan復元、実ブラウザで生成・再読込みを確認。現行版の診断前後packageは6510 bytesで完全一致。ただし旧版の保存済み出力を確保できず、旧新版Asset/meta比較は未実施。現行版同士の一致を代替合格としない |
+| C02 | PASS | 17境界回帰のprepare/SDK同期throw・非同期reject、実ブラウザの未実施・成功・取消・TEXT_BYTE_LIMIT失敗JSON。非成功はsdkReport:null、operationId/revision/reasonを回収 |
+| C03 | PASS | 17境界回帰で旧通知と取消を検査。実ブラウザで取消後再実行、選択変更で旧結果無効化、診断失敗後も生成可能を確認 |
+| C04 | PASS | preflightのファイル・合計・件数・テキスト・path制約とコピー前全件確認。実ブラウザの4 MiB超テキスト失敗後も生成成功。実SDK/Worker/WASMでSNAPSHOT_IR_LIMITとレポート8 MiB制約による失敗、両者の再開成功を追加確認。全ての上限組合せを網羅した主張ではない |
+| C05 | PASS | 原本不変/複製bufferの回帰、実SDK境界試験の入力hash不変、借用poolをdisposeしないmock、同一版診断前後package一致。実機ピークmemory・全Worker共有状況の保証ではない |
+| C06 | PASS | 14→12ファイル比較で未選択1件、many-inputsのpartial101/opaque1をJSONで保持。選択読込試験と静的確認でreferenceOnly経路を確認。全素材を診断済みとは表示しない |
+| C07 | PASS | 214ファイルの報告は512表示項目を全件保持。実ブラウザで50件ずつ1→2ページ、missing絞込み1件、その状態から保存したJSONには512項目。遅延整形/キャッシュ/サイズ値の再利用は境界回帰とソース照合 |
+| C08 | PASS | signed64上限/下限を文字列のまま保持、日本語・絵文字原文のUTF-16 offset/end排他を回帰検査。UIとJSONに単位を明記 |
+| C09 | PASS | 実ブラウザ同一入力比較はchanges/fileChanges/ambiguous各0。選択差分2ファイル、target不一致では比較不可。公開コードのGUID/JSON回帰8件PASS |
+| C10 | PASS（照合範囲限定） | 公開主要5ファイル＋SDK等18ファイルの実配信hash一致。クラウドChromeで入力→Worker/WASM診断→JSON/package回収。全配信資産をHTTPで照合した主張ではない |
+| C11 | PASS（範囲限定） | mockで旧進捗/旧失敗抑制、実ブラウザで取消・容量失敗からの再実行、比較基準の明示解除。試験poolはfinallyでdispose、検証タブを終了。URL解放経路はソース確認。メモリリーク不存在の認定ではない |
+| C12 | PARTIAL | 実画面条件Worker2/moduleReuse=false、UI全体・caller・prepare・SDK内区間を回収。容量計算だけの独立時間、診断なし/あり同条件反復、初回表示・ピークmemoryは未計測。高速化・性能非劣化の認定はしない |
+| C13 | PASS（静的） | 既存5モデルmoduleと共有SDKを保持。Sites並行更新v70のVR180を取り込んだ上で公開。Worker/D1/migrationを保持し公開投影検査成功。全他プロダクトの動的回帰を実施した意味ではない |
+
+詳細は [RESULT.md](RESULT.md)。生JSON・package・入力・Plan・ログは [evidence/evidence.zip](evidence/evidence.zip)、各hashと操作対応は [evidence/manifest.json](evidence/manifest.json) と [evidence/browser-actions.json](evidence/browser-actions.json)。
+
+必須残件C01/C12があるため、計画全体の完了・保全受入合格とは認定しない。Unity Editor/MA/VRChat動作検証は今回の初期範囲外であり、残件と区別する。

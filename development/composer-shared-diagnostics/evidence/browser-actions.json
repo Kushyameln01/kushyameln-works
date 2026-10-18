@@ -1,0 +1,225 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-18",
+  "source": "Operator observations recorded from Codex cloud-browser tool outputs; this file is a written action log, not an exported browser trace",
+  "url": "https://kushyameln01.github.io/kushyameln-works/animator-composer/",
+  "productCodeCommit": "691e0a34df232b6f2c52509f23139779e7696e07",
+  "browser": {
+    "name": "Chrome",
+    "environment": "Codex cloud cdp",
+    "exactVersion": null
+  },
+  "settings": {
+    "concurrency": 2,
+    "moduleReuse": false,
+    "parseBatchSize": 8
+  },
+  "actions": [
+    {
+      "id": "B01",
+      "action": "Before input, save full JSON",
+      "observed": {
+        "status": "not-run",
+        "sdkReport": null,
+        "context": {
+          "inputRevision": 0,
+          "selectionRevision": 0,
+          "planRevision": 0,
+          "target": "input"
+        }
+      },
+      "evidence": [
+        "not-run.json"
+      ]
+    },
+    {
+      "id": "B02",
+      "action": "Load input-0.unitypackage, confirm all 7 Assets, restore CompositionPlan.json, diagnose selected input",
+      "input": [
+        {
+          "path": "fixtures/input-0.unitypackage",
+          "sha256": "d213aad8be5e2f2abd5a8453b37e0f42d428075f8863aa9bf3ab9a853d11e7f9"
+        },
+        {
+          "path": "fixtures/CompositionPlan.json",
+          "sha256": "3b982297146c3653bd717287af6e7c1c0c4858e8dfade49465c89bc42eade7db"
+        }
+      ],
+      "observed": {
+        "status": "succeeded",
+        "files": 14,
+        "objects": 14,
+        "references": 36,
+        "uiElapsedMs": 1130.8,
+        "generateEnabled": true
+      },
+      "evidence": [
+        "input-report.json"
+      ]
+    },
+    {
+      "id": "B03",
+      "action": "Hold input baseline; compare same input",
+      "observed": {
+        "changes": 0,
+        "fileChanges": 0,
+        "ambiguous": 0
+      },
+      "evidence": [
+        "same-input-comparison.json"
+      ]
+    },
+    {
+      "id": "B04",
+      "action": "Generate package, switch diagnostic target to output, diagnose, generate again",
+      "observed": {
+        "outputDiagnosticFiles": 25,
+        "inputBaselineCompareDisabledForOutput": true,
+        "bothPackageBytes": 6510,
+        "packageBytesEqual": true
+      },
+      "evidence": [
+        "generated-before-diagnosis.unitypackage",
+        "output-report.json",
+        "generated-after-diagnosis.unitypackage"
+      ]
+    },
+    {
+      "id": "B05",
+      "action": "Switch to input; deselect Assets/NotSelected.asset; confirm; compare held input baseline",
+      "observed": {
+        "priorResultInvalidatedTo": "not-run",
+        "beforeFiles": 14,
+        "afterFiles": 12,
+        "unselected": 1,
+        "fileChanges": 2
+      },
+      "evidence": [
+        "selection-comparison.json"
+      ]
+    },
+    {
+      "id": "B06",
+      "action": "Load 107-Asset synthetic fixture and Plan; start diagnostic then cancel",
+      "input": [
+        {
+          "path": "fixtures/many-inputs.unitypackage",
+          "sha256": "98245cec21b9a9a9462278e1e7f67c4ab422f9e925c109eb3604a9429591edd8"
+        },
+        {
+          "path": "fixtures/ManyPlan.json",
+          "sha256": "adf87f626381a8fd1dd130dfb5d41de376a561ccce719f0915d85aa214769a99"
+        }
+      ],
+      "observed": {
+        "status": "cancelled",
+        "sdkReport": null,
+        "generateEnabled": true
+      },
+      "evidence": [
+        "cancelled.json"
+      ],
+      "note": "Earlier attempt to cancel the tiny 7-Asset input completed before cancel; that attempt is not counted as cancellation evidence."
+    },
+    {
+      "id": "B07",
+      "action": "Retry without reload; move first to second result page; filter missing; save full JSON while filtered",
+      "observed": {
+        "status": "succeeded",
+        "files": 214,
+        "displayItems": 512,
+        "page1Rows": 50,
+        "page2Rows": 50,
+        "compactBytesBeforeAndAfterPaging": 4412146,
+        "filter": "missing",
+        "filteredRows": 1,
+        "savedDisplayItems": 512,
+        "savedPrettyBytes": 8706224,
+        "uiElapsedMs": 5131.0
+      },
+      "evidence": [
+        "many-inputs-report.json"
+      ]
+    },
+    {
+      "id": "B08",
+      "action": "Clear, load 8-Asset fixture containing >4 MiB text and restore Plan; run diagnosis; save failed JSON; generate package",
+      "input": [
+        {
+          "path": "fixtures/oversize-input.unitypackage",
+          "sha256": "aa6a3fcd54e35b49c3b552b606979f9ba613a0c53101a61281566a17a52d7f54"
+        },
+        {
+          "path": "fixtures/OversizePlan.json",
+          "sha256": "c49bc62f4ad26f0f68c25d9702beb2a474e865182afc14a649ba1b3bec6480d2"
+        }
+      ],
+      "observed": {
+        "composerSelectedAssets": 8,
+        "status": "failed",
+        "reason": "TEXT_BYTE_LIMIT",
+        "sdkReport": null,
+        "generateEnabledAfterFailure": true,
+        "generationStatus": "生成とpackageの再読込み検査が完了しました。",
+        "generatedPackageBytes": 6518
+      },
+      "evidence": [
+        "text-limit-failed.json",
+        "generated-after-text-limit.unitypackage"
+      ]
+    },
+    {
+      "id": "B09",
+      "action": "Clear; restore original fixture and Plan; run diagnosis again",
+      "input": [
+        {
+          "path": "fixtures/input-0.unitypackage",
+          "sha256": "d213aad8be5e2f2abd5a8453b37e0f42d428075f8863aa9bf3ab9a853d11e7f9"
+        },
+        {
+          "path": "fixtures/CompositionPlan.json",
+          "sha256": "3b982297146c3653bd717287af6e7c1c0c4858e8dfade49465c89bc42eade7db"
+        }
+      ],
+      "observed": {
+        "status": "succeeded",
+        "files": 14,
+        "generateEnabled": true,
+        "uiElapsedMs": 1324.3
+      },
+      "evidence": [
+        "recovery-after-failure.json"
+      ]
+    },
+    {
+      "id": "B10",
+      "action": "Additional run on restored input; explicitly clear held comparison baseline; capture screenshot; save matching report",
+      "observed": {
+        "status": "succeeded",
+        "uiElapsedMs": 294.8,
+        "baseline": "比較基準は未指定です。",
+        "operationId": "sd-6a50b95b-b29e-4265-bf91-50e7739908b2"
+      },
+      "evidence": [
+        "published-proof.jpg",
+        "screenshot-report.json"
+      ]
+    },
+    {
+      "id": "B11",
+      "action": "Close verification tab",
+      "observed": {
+        "tabClosed": true,
+        "temporaryHttpServerStarted": false
+      },
+      "evidence": []
+    }
+  ],
+  "limitations": [
+    "Synthetic inputs only",
+    "No old-version output baseline",
+    "No initial-load or peak-memory measurement",
+    "Not a repeated performance comparison",
+    "UI screenshots document final state only; pagination observations are recorded from tool outputs"
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "status": "PASS",
+  "commit": "691e0a34df232b6f2c52509f23139779e7696e07",
+  "scope": "Deployed code in Node Worker threads with real shared File SDK and WASM; not browser timing",
+  "settings": {
+    "concurrency": 2,
+    "moduleReuse": false
+  },
+  "samples": [
+    {
+      "kind": "snapshot",
+      "expectedStatus": "failed",
+      "status": "failed",
+      "reason": {
+        "code": "DIAGNOSTIC_FAILED",
+        "message": "SNAPSHOT_IR_LIMIT"
+      },
+      "operationId": "sd-3cd98442-b9c5-4ce5-b22b-7b488f220ac5",
+      "context": {
+        "inputRevision": 1,
+        "selectionRevision": 1,
+        "planRevision": 1,
+        "target": "input"
+      },
+      "timings": {
+        "callerElapsedMs": 198.908863,
+        "prepareMs": 0.10533399999999915,
+        "sdkCallMs": 195.923811
+      },
+      "inventory": [
+        {
+          "path": "Assets/one.asset",
+          "bytes": 2500076,
+          "sha256": "a7a3b62f5da01bf954817a747633b1cd77a537531b2922d16005c4e338ce9ea2"
+        },
+        {
+          "path": "Assets/two.asset",
+          "bytes": 2500076,
+          "sha256": "1bbc3670370a8898744166b7d81023c5b3ff42b95747c4e31b7f12534e4bbf4f"
+        }
+      ],
+      "after": null,
+      "recovery": {
+        "status": "succeeded",
+        "objects": 1
+      }
+    },
+    {
+      "kind": "report",
+      "expectedStatus": "failed",
+      "status": "failed",
+      "reason": {
+        "code": "DIAGNOSTIC_FAILED",
+        "message": "Report budget exceeded; no truncated export produced"
+      },
+      "operationId": "sd-f7663770-c6ec-4fd6-9a90-db249f17a84c",
+      "context": {
+        "inputRevision": 1,
+        "selectionRevision": 1,
+        "planRevision": 1,
+        "target": "compare"
+      },
+      "timings": {
+        "callerElapsedMs": 1773.5024600000002,
+        "prepareMs": 0.04741999999998825,
+        "sdkCallMs": 1772.745701
+      },
+      "inventory": [
+        {
+          "path": "Assets/one.asset",
+          "bytes": 2500076,
+          "sha256": "a7a3b62f5da01bf954817a747633b1cd77a537531b2922d16005c4e338ce9ea2"
+        }
+      ],
+      "after": [
+        {
+          "path": "Assets/one.asset",
+          "bytes": 2500076,
+          "sha256": "1bbc3670370a8898744166b7d81023c5b3ff42b95747c4e31b7f12534e4bbf4f"
+        }
+      ],
+      "recovery": {
+        "status": "succeeded",
+        "objects": 1
+      }
+    }
+  ]
+}
