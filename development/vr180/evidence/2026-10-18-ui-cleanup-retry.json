@@ -1,0 +1,251 @@
+{
+  "schema": "vr180-ui-cleanup-retry-acceptance-v1",
+  "status": "PASS_WITH_LIMITS",
+  "sourceCommit": "3a1476e0b0ea2abfb5091886385da0014ca704be",
+  "runId": 39106942074,
+  "jobId": 117614751769,
+  "runURL": "https://github.com/Kushyameln01/kushyameln-works/actions/runs/39106942074",
+  "scope": "Small synthetic TB360 AAC normal UI and saved-output cleanup retry; 1 GiB contract unchanged",
+  "validation": {
+    "nodeTests": 306,
+    "pythonEvidenceTests": 5,
+    "generatedDistributionFilesMatched": 25,
+    "isolatedStaticExport": "PASS",
+    "review": "PASS before native run and after full recovery; independent reviewer and purpose auditor checked manifests, source hashes, receipts and saved bytes",
+    "sourceInventoryFilesPerCase": 130,
+    "servedSourceRoutesPerCase": 28,
+    "recoveredManifestFiles": 21,
+    "repeatDecodeByReviewers": false
+  },
+  "independentVerifiers": {
+    "verify-conversion-streaming.py": "469ac8b2aa3cd330484869484c82ba81f944a57c2131f30ed261e8b946328b9f",
+    "verify-metadata.py": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96",
+    "recover-log-evidence.py": "b46b949f0e17cb1f68b383bd32dd65491cf96b1b67aa1698ff4d2651ab42a56b"
+  },
+  "environment": {
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+  },
+  "cases": [
+    {
+      "name": "normal",
+      "runId": "39106942074-indexed-ui-1",
+      "status": "PASS",
+      "sourceCommit": "3a1476e0b0ea2abfb5091886385da0014ca704be",
+      "browserVersion": "155.0.8059.39",
+      "build": "vr180-b8-indexed-candidate",
+      "input": {
+        "bytes": 27952,
+        "sha256": "72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9"
+      },
+      "output": {
+        "bytes": 50934,
+        "sha256": "f9ffa798997c30e89423a816ae8cfd194b67d901c025cdf986615f413f58f926",
+        "completeRecovery": true
+      },
+      "receipt": {
+        "bytes": 105878,
+        "sha256": "eecadfff9ae603099b60af5328e115c7ce4c944255f0f902e3b89cfbf328014f",
+        "completeRecovery": true,
+        "status": "saved",
+        "saveWriteCommitted": true,
+        "saveCompleted": true,
+        "attempts": 2
+      },
+      "internalBeforeClear": {
+        "operationId": "e14cfbe8-240a-43d7-8330-a3d570493968",
+        "inputRevision": 2,
+        "registryAbsent": true,
+        "heldJobLocks": 0,
+        "pendingJobLocks": 0
+      },
+      "internalAfterClear": {
+        "operationId": "e14cfbe8-240a-43d7-8330-a3d570493968",
+        "inputRevision": 2,
+        "registryAbsent": true,
+        "heldJobLocks": 0,
+        "pendingJobLocks": 0
+      },
+      "savedFileRetainedThroughClear": true,
+      "harnessCleanup": {
+        "status": "REMOVED",
+        "scope": "only the proven harness-owned output and empty harness namespace; no product index or external file deletion"
+      },
+      "pageErrors": 0,
+      "deniedRequests": 0,
+      "independent": {
+        "status": "PASS",
+        "frames": 60,
+        "decodedFramesCompared": 60,
+        "maxPtsErrorSeconds": 0.0,
+        "eyePSNRdB": [
+          38.4501205091097,
+          34.66050224007317
+        ],
+        "decodedAudioIdentical": true,
+        "outputSHA256": "f9ffa798997c30e89423a816ae8cfd194b67d901c025cdf986615f413f58f926",
+        "vrMetadata": {
+          "path": "moov/trak(vide)/mdia/minf/stbl/stsd/avc1",
+          "width": 512,
+          "height": 256,
+          "stereo_mode": 2,
+          "projection": "equi",
+          "pose_degrees": [
+            0,
+            0,
+            0
+          ],
+          "bounds_u0_32": {
+            "top": 0,
+            "bottom": 0,
+            "left": 1073741824,
+            "right": 1073741824
+          },
+          "metadata_source": "Kushyameln Works VR180 b1",
+          "active_st3d_count": 1,
+          "active_sv3d_count": 1,
+          "entry_children": [
+            "avcC",
+            "colr",
+            "btrt",
+            "st3d",
+            "sv3d"
+          ]
+        }
+      },
+      "harnessSHA256": "13b16b7172d2b06aedd28457aaf98df708a33565a06b04632c806f43bac5035f",
+      "transport": {
+        "schema": "vr180-log-transport-v1",
+        "runId": "39106942074-indexed-ui-1",
+        "status": "PASS",
+        "archiveFormat": "tar+gzip",
+        "bytes": 103791,
+        "sha256": "8f3f94ac2eb2f0b07812f80f40c09a6c9327d50bd547e7ce2daebec227ba6ac5",
+        "base64Bytes": 138388,
+        "chunkChars": 4096,
+        "chunks": 34,
+        "manifestSHA256": "25836218420b4e92d0405a48b6515018315546d1919722fc5cb615d23e292c9f",
+        "complete": true
+      }
+    },
+    {
+      "name": "retry",
+      "runId": "39106942074-indexed-ui-1-cleanup-retry",
+      "status": "PASS",
+      "sourceCommit": "3a1476e0b0ea2abfb5091886385da0014ca704be",
+      "browserVersion": "155.0.8059.39",
+      "build": "vr180-b8-indexed-candidate",
+      "input": {
+        "bytes": 27952,
+        "sha256": "72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9"
+      },
+      "output": {
+        "bytes": 50934,
+        "sha256": "71dce05e21a67d6a8b5caefcdb676862ee96bd619b662a566a2810d6d743ae5b",
+        "completeRecovery": true
+      },
+      "receipt": {
+        "bytes": 104768,
+        "sha256": "949b58f8f80b333d02394753cd084531efb935e225c33efaf92334557ef1ec23",
+        "completeRecovery": true,
+        "status": "failed",
+        "saveWriteCommitted": true,
+        "saveCompleted": true,
+        "attempts": 1
+      },
+      "internalBeforeClear": {
+        "operationId": "f8b3be1b-9a5e-4d8d-8b53-28f36263d4bd",
+        "inputRevision": 2,
+        "registryAbsent": true,
+        "heldJobLocks": 0,
+        "pendingJobLocks": 0
+      },
+      "internalAfterClear": {
+        "operationId": "f8b3be1b-9a5e-4d8d-8b53-28f36263d4bd",
+        "inputRevision": 2,
+        "registryAbsent": true,
+        "heldJobLocks": 0,
+        "pendingJobLocks": 0
+      },
+      "savedFileRetainedThroughClear": true,
+      "harnessCleanup": {
+        "status": "REMOVED",
+        "scope": "only the proven harness-owned output and empty harness namespace; no product index or external file deletion"
+      },
+      "pageErrors": 0,
+      "deniedRequests": 0,
+      "independent": {
+        "status": "PASS",
+        "frames": 60,
+        "decodedFramesCompared": 60,
+        "maxPtsErrorSeconds": 0.0,
+        "eyePSNRdB": [
+          38.4501205091097,
+          34.66050224007317
+        ],
+        "decodedAudioIdentical": true,
+        "outputSHA256": "71dce05e21a67d6a8b5caefcdb676862ee96bd619b662a566a2810d6d743ae5b",
+        "vrMetadata": {
+          "path": "moov/trak(vide)/mdia/minf/stbl/stsd/avc1",
+          "width": 512,
+          "height": 256,
+          "stereo_mode": 2,
+          "projection": "equi",
+          "pose_degrees": [
+            0,
+            0,
+            0
+          ],
+          "bounds_u0_32": {
+            "top": 0,
+            "bottom": 0,
+            "left": 1073741824,
+            "right": 1073741824
+          },
+          "metadata_source": "Kushyameln Works VR180 b1",
+          "active_st3d_count": 1,
+          "active_sv3d_count": 1,
+          "entry_children": [
+            "avcC",
+            "colr",
+            "btrt",
+            "st3d",
+            "sv3d"
+          ]
+        }
+      },
+      "harnessSHA256": "13b16b7172d2b06aedd28457aaf98df708a33565a06b04632c806f43bac5035f",
+      "transport": {
+        "schema": "vr180-log-transport-v1",
+        "runId": "39106942074-indexed-ui-1-cleanup-retry",
+        "status": "PASS",
+        "archiveFormat": "tar+gzip",
+        "bytes": 103995,
+        "sha256": "4dec3437b950c3d14e8432f659006a46524d947491f111105a2a417f7315e035",
+        "base64Bytes": 138660,
+        "chunkChars": 4096,
+        "chunks": 34,
+        "manifestSHA256": "80d1e4ca54aebcab16275b2509efc35d5d917383e9508e0a5b0d4cb7a4cb2130",
+        "complete": true
+      },
+      "recovery": {
+        "injectedRemovalFailures": 2,
+        "releasedBeforeRetry": true,
+        "faultSourceSHA256": "1485a39282b074999363faf046cfc514906248b42311f65cccb7dd4097db16c7",
+        "sameIdentity": true,
+        "originalReceiptUnchanged": true,
+        "recoveryStatus": "complete",
+        "source": "client-cleanup-complete",
+        "externalSaveState": "NOT_APPLICABLE",
+        "cleanupDisplay": "ブラウザ内の一時データの清掃は完了しています。保存状態とは別の確認です。",
+        "saveDisplay": "保存と内容の照合は完了しています。保存先の動画を保持しています。",
+        "outputRecoveryPath": "harness native saved handle; product result remains failed"
+      }
+    }
+  ],
+  "limitations": [
+    "OS picker replaced with native OPFS handle; no actual OS save interaction",
+    "Cleanup removal failure deliberately injected into Worker storage API; no real crash/power loss acceptance",
+    "No 5/10GB through UI, real camera, 60fps, long AAC, target VR player, novice usability or speedup acceptance",
+    "No main, GitHub Pages or ChatGPT Sites deployment change"
+  ]
+}

@@ -37,4 +37,34 @@ Works引継ぎの残件「書込み後取消・異常終了後回復」に関連
 参照確認記録 `/workspace/space-reference-check-20261018/RESULT.json` はこの
 workspaceには存在せず未取得。添付とGitHub固定資料から判断可能な範囲を進める。
 
-実装と局所試験: 作業中。実ブラウザ受入: 未実施。公開main/Pages/Sitesの変更: なし。
+## 実装結果と受入
+
+実装commitは `3a1476e0b0ea2abfb5091886385da0014ca704be`、候補ブランチは
+`codex/vr180-plan-ui-recovery-20261018`。製品変更はapp.mjsの清掃完了追補と、
+遅れて届く元のエラーへの追補保持だけである。Hike/WASMの既存計算処理、
+codec、索引実装、容量契約は変更していない。
+
+Node回帰306件、証拠照合のPython試験5件がPASS。配布生成25ファイルの一致と
+明示公開inventoryによる隔離書出しもPASS。独立レビューで指摘された、回復試験の
+build・入力hash・保存試行の検査不足は、通常試験と共通の照合を適用して修正した。
+
+[Actions run 39106942074](https://github.com/Kushyameln01/kushyameln-works/actions/runs/39106942074)
+のsandboxed Chrome 155.0.8059.39で、通常実UIと保存後清掃失敗→再試行の両方がPASS。
+再試行側は当該namespaceの削除を2回拒否し、注入を解除してから画面の取消ボタンを
+操作した。遅延reject後も保存完了と清掃完了が別々に表示され、元の失敗診断に
+`internalCleanupRecovery` だけが追加された。清掃後のregistry不在とheld/pending
+lock各0を確認し、保存済みファイルのbytes/hashも変わっていない。
+
+両試験のMP4各50,934 bytesと画面から保存した処理記録を、この作業環境へ全回収した。
+通常試験は製品のダウンロード操作、回復試験の動画はテストが保持していたnative
+保存handleから回収した。後者の製品上の処理結果は失敗のままで、成功表示に変えていない。
+回収manifestの計21ファイルと、配信28ファイルの固定commit一致を別担当が監査した。
+
+既存の独立FFmpeg検証器で各60フレームを全照合し、PTS誤差0、AAC全PCM一致、
+両眼PSNR 38.45/34.66 dBを確認した。別のMP4読取器でSBS・equirectangular・
+正面180°のVR情報も一致した。素材は30fps・2秒であり、60fps試験ではない。
+詳細は[受入記録](evidence/2026-10-18-ui-cleanup-retry.json)に保存した。
+
+この不具合の実装・限定受入は完了。公開main/Pages/Sitesは本作業では変更していない。
+実OS保存、自然発生の異常終了・電源断、5/10GB実UI、実写・60fps・長いAAC、
+VRプレイヤー、初見操作性、速度改善は未確認として引き継ぐ。
