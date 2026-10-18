@@ -1,6 +1,20 @@
 // Browser/Node glue only: all magnitude/sign/anchor calculations stay in Hike.
 export async function instantiateFtKernel(bytes) {
-  const module = await WebAssembly.compile(bytes);
+  // Pin the same reviewed artifact as shared/compute/protocol.mjs. A matching
+  // export-name list alone does not identify its ABI or implementation.
+  const expectedSha256 = 'b260ac37862014a9ebb3ebb25739283fe2778e638969e757b2fd34769cd989ad';
+  const isBuffer = bytes instanceof ArrayBuffer ||
+    (typeof SharedArrayBuffer !== 'undefined' && bytes instanceof SharedArrayBuffer);
+  if (!isBuffer && !ArrayBuffer.isView(bytes)) throw new TypeError('Expected FT WASM bytes');
+  // Own the exact bytes before the first await: caller mutations must not make
+  // the digest describe a different image from the one passed to compile.
+  const source = ArrayBuffer.isView(bytes)
+    ? new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength) : new Uint8Array(bytes);
+  const owned = Uint8Array.from(source);
+  const digest = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', owned)),
+    value => value.toString(16).padStart(2, '0')).join('');
+  if (digest !== expectedSha256) throw new Error('FT WASM digest does not match the reviewed kernel');
+  const module = await WebAssembly.compile(owned);
   if (WebAssembly.Module.imports(module).length) throw new Error('Unexpected FT kernel imports');
   const expected = ['FtAnchorComponent', 'FtCrc32Step', 'FtMagnitude', 'FtSignedMagnitude', 'FtValidate'];
   const actual = WebAssembly.Module.exports(module).filter(x => x.kind === 'function').map(x => x.name).sort();
