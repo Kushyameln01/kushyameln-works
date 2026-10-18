@@ -32,6 +32,24 @@ class MediaReceiver:
         self.directory = Path(directory)
         need(self.directory.is_dir() and not self.directory.is_symlink(), 'RECEIVER_DIRECTORY')
         self.caps = caps; self.deadline = deadline; self.files = {}; self.lock = threading.Lock()
+        self.timing_lock = threading.Lock()
+        self.timings = {name: {'count': 0, 'failed': 0, 'totalSeconds': 0.0, 'maxSeconds': 0.0}
+                        for name in ['bodyRead', 'writeAndHash', 'completeAndReread']}
+
+    def observe(self, phase, started, succeeded):
+        elapsed = max(0.0, time.monotonic() - started)
+        with self.timing_lock:
+            row = self.timings[phase]; row['count'] += 1; row['failed'] += int(not succeeded)
+            row['totalSeconds'] += elapsed; row['maxSeconds'] = max(row['maxSeconds'], elapsed)
+
+    def observation(self):
+        """Bounded partial observations; not an atomic transfer/commit snapshot."""
+        with self.timing_lock:
+            timings = {name: dict(row) for name, row in self.timings.items()}
+        return {'phases': timings, 'files': [{'id': ident, 'receivedBytes': row['count'], 'chunks': row['chunks'],
+                'complete': row['complete'], 'streamClosed': row['stream'] is None,
+                'receipt': dict(row['receipt']) if 'receipt' in row else None} for ident, row in self.files.items()],
+                'clock': 'Python monotonic; distinct from browser performance.now', 'atomicSnapshot': False}
 
     def check(self):
         if time.monotonic() >= self.deadline:
@@ -55,6 +73,7 @@ class MediaReceiver:
 
     def chunk(self, ident, offset, data):
         need(self.lock.acquire(blocking=False), 'CONCURRENT_TRANSFER_REFUSED')
+        started = time.monotonic(); succeeded = False
         try:
             self.check(); need(ident in self.files, 'TRANSFER_ID'); row = self.files[ident]
             need(not row['complete'] and row['stream'] is not None, 'TRANSFER_ALREADY_CLOSED')
@@ -64,12 +83,15 @@ class MediaReceiver:
             if row['started'] is None:row['started'] = time.monotonic()
             need(row['stream'].write(data) == len(data), 'TRANSFER_SHORT_WRITE')
             row['sha'].update(data); row['count'] += len(data); row['chunks'] += 1
+            succeeded = True
             return {'id': ident, 'acceptedBytes': row['count'], 'chunks': row['chunks']}
         finally:
+            self.observe('writeAndHash', started, succeeded)
             self.lock.release()
 
     def complete(self, ident):
         need(self.lock.acquire(blocking=False), 'CONCURRENT_TRANSFER_REFUSED')
+        started = time.monotonic(); succeeded = False
         try:
             self.check(); need(ident in self.files, 'TRANSFER_ID'); row = self.files[ident]
             need(not row['complete'] and row['stream'] is not None, 'TRANSFER_ALREADY_CLOSED')
@@ -81,8 +103,10 @@ class MediaReceiver:
             row['receipt'] = {**row['entry'], 'chunks': row['chunks'], 'fsynced': True, 'closed': True,
                 'rereadBytes': size, 'rereadSHA256': digest, 'elapsedSeconds': time.monotonic() - row['started'],
                 'queuedBeforeFirstChunkSeconds': row['started'] - row['prepared']}
+            succeeded = True
             return row['receipt']
         finally:
+            self.observe('completeAndReread', started, succeeded)
             self.lock.release()
 
     def receipts(self):
@@ -148,7 +172,11 @@ def start_server(content, receiver, token):
                 else:
                     need(length > 0, 'TRANSFER_EMPTY_CHUNK'); raw_offset = self.headers.get('X-Byte-Offset', '')
                     need(re.fullmatch('[0-9]{1,16}', raw_offset) is not None, 'TRANSFER_OFFSET_FORMAT')
-                    payload = self.rfile.read(length); need(len(payload) == length, 'TRANSFER_SHORT_BODY')
+                    started = time.monotonic(); succeeded = False
+                    try:
+                        payload = self.rfile.read(length); need(len(payload) == length, 'TRANSFER_SHORT_BODY'); succeeded = True
+                    finally:
+                        receiver.observe('bodyRead', started, succeeded)
                     value = receiver.chunk(ident, int(raw_offset), payload)
                 self.send_json(200, value)
             except Exception as error:

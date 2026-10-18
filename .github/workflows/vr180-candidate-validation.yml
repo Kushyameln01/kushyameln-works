@@ -16,6 +16,7 @@ on:
       - tools/vr180/probe-public-origin.py
       - tools/vr180/probe-index-owner.py
       - tools/vr180/probe-persistent-storage.py
+      - tools/vr180/probe-loopback-transfer.py
       - tools/vr180/probe-segmented-transfer.py
       - tools/vr180/emit-segmented-transfer-evidence.py
       - development/vr180/artifact-transfer-action/**
@@ -42,6 +43,45 @@ permissions:
   contents: read
 
 jobs:
+  loopback-transfer-diagnostic:
+    if: >-
+      github.repository == 'Kushyameln01/kushyameln-works' &&
+      github.event.repository.private == false &&
+      startsWith(github.ref, 'refs/heads/codex/vr180-plan-') &&
+      contains(github.event.head_commit.message, '[vr180-loopback-transfer]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    env:
+      DO_NOT_TRACK: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PIP_NO_CACHE_DIR: '1'
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Check out the exact transfer diagnostic candidate
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Use the pinned Python setup
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install pinned browser driver
+        id: dependencies
+        timeout-minutes: 1
+        run: |
+          test -x /usr/bin/google-chrome
+          python3 -m pip install --no-cache-dir playwright==1.62.0
+      - name: Compare bounded loopback transfer with the external guard retained
+        timeout-minutes: 6
+        env:
+          VR180_DEPENDENCIES_READY: ${{ steps.dependencies.outcome == 'success' }}
+        run: >-
+          python3 tools/vr180/probe-loopback-transfer.py
+          --output "$RUNNER_TEMP/vr180-loopback-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+
   segmented-artifact-probe:
     if: >-
       github.repository == 'Kushyameln01/kushyameln-works' &&

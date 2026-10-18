@@ -99,25 +99,31 @@ PAGE=r"""profileId=>{
 }"""
 TRANSFER=r"""token=>{
  const s=globalThis.__long;s.transfer=null;s.transferAbort=new AbortController();
- (async()=>{const started=performance.now(),rows=[];
+ const progress=s.transferProgress={status:'STARTED',startedMs:performance.now(),elapsedMs:0,files:[],
+  phases:Object.fromEntries(['slice','fetch','ack','completeFetch','completeAck'].map(name=>[name,{count:0,failed:0,totalMs:0,maxMs:0}])),
+  clock:'Browser performance.now; distinct from Python monotonic',wholeFileArrayBuffer:false,maxChunkBytes:1048576};
+ const timed=async(phase,fn)=>{const start=performance.now();let ok=false;try{const value=await fn();ok=true;return value;}
+  finally{const elapsed=performance.now()-start,row=progress.phases[phase];row.count++;row.failed+=Number(!ok);row.totalMs+=elapsed;row.maxMs=Math.max(row.maxMs,elapsed);progress.elapsedMs=performance.now()-progress.startedMs;}};
+ (async()=>{const started=progress.startedMs,rows=progress.files;
   if(s.result?.status!=='READY_FOR_RUNNER_TRANSFER'||s.files.length!==2)throw Error('TRANSFER_NOT_READY');
-  for(const item of s.files){const start=performance.now();let chunks=0;
+  for(const item of s.files){const start=performance.now(),row={id:item.id,chunks:0,readBytes:0,acknowledgedBytes:0,complete:false,elapsedMs:0};rows.push(row);
    for(let offset=0;offset<item.bytes;offset+=1048576){
-    const end=Math.min(item.bytes,offset+1048576),buffer=await item.file.slice(offset,end).arrayBuffer();
+    const end=Math.min(item.bytes,offset+1048576),buffer=await timed('slice',()=>item.file.slice(offset,end).arrayBuffer());
     if(buffer.byteLength!==end-offset)throw Error('BROWSER_TRANSFER_SHORT_READ');
-    const response=await fetch('/transfer/'+token+'/'+item.id+'/chunk',{method:'POST',body:buffer,
-     headers:{'X-Byte-Offset':String(offset),'Content-Type':'application/octet-stream'},signal:s.transferAbort.signal});
-    if(!response.ok)throw Error('RUNNER_CHUNK_REJECTED');const ack=await response.json();
-    if(ack.id!==item.id||ack.acceptedBytes!==end)throw Error('RUNNER_CHUNK_ACK_DIFFERS');chunks++;
+    row.readBytes=end;
+    const response=await timed('fetch',()=>fetch('/transfer/'+token+'/'+item.id+'/chunk',{method:'POST',body:buffer,
+     headers:{'X-Byte-Offset':String(offset),'Content-Type':'application/octet-stream'},signal:s.transferAbort.signal}));
+    if(!response.ok)throw Error('RUNNER_CHUNK_REJECTED');const ack=await timed('ack',()=>response.json());
+    if(ack.id!==item.id||ack.acceptedBytes!==end)throw Error('RUNNER_CHUNK_ACK_DIFFERS');row.chunks++;row.acknowledgedBytes=end;row.elapsedMs=performance.now()-start;
    }
-   const response=await fetch('/transfer/'+token+'/'+item.id+'/complete',{method:'POST',body:new Uint8Array(),signal:s.transferAbort.signal});
-   if(!response.ok)throw Error('RUNNER_COMPLETE_REJECTED');const receipt=await response.json();
+   const response=await timed('completeFetch',()=>fetch('/transfer/'+token+'/'+item.id+'/complete',{method:'POST',body:new Uint8Array(),signal:s.transferAbort.signal}));
+   if(!response.ok)throw Error('RUNNER_COMPLETE_REJECTED');const receipt=await timed('completeAck',()=>response.json());
    if(receipt.bytes!==item.bytes||receipt.sha256!==item.sha256||receipt.rereadSHA256!==item.sha256||!receipt.closed||!receipt.fsynced)
     throw Error('RUNNER_COMPLETE_ACK_DIFFERS');
-   rows.push({id:item.id,chunks,elapsedMs:performance.now()-start});
+   row.complete=true;row.elapsedMs=performance.now()-start;
   }
-  s.transfer={status:'PASS',files:rows,elapsedMs:performance.now()-started,wholeFileArrayBuffer:false,maxChunkBytes:1048576};
- })().catch(e=>{s.transfer={status:'FAIL',error:String(e)};});
+  progress.status='PASS';progress.elapsedMs=performance.now()-started;s.transfer={...progress};
+ })().catch(e=>{progress.status='FAIL';progress.error=String(e);progress.elapsedMs=performance.now()-progress.startedMs;s.transfer={...progress};});
 }"""
 CLEANUP=r"""async()=>{
  const s=globalThis.__long;if(!s)return {status:'NOT_CREATED'};
@@ -223,6 +229,17 @@ def browser_trial(playwright,owned,origin,profile_id,receiver,token,out,report,p
         active_error=sys.exc_info()[1]
         if isinstance(active_error,(ProducerInterrupted,cloud.Deadline)):deadline_error=active_error
         if page:
+            report['runnerTransferObservation']={'browser':None,'server':None}
+            try:
+                report['runnerTransferObservation']['server']=receiver.observation() if hasattr(receiver,'observation') else None
+            except (Exception,ProducerInterrupted) as e:
+                report['runnerTransferServerObservationError']=str(e)[:1000]
+                if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
+            try:
+                report['runnerTransferObservation']['browser']=page.evaluate('({result:globalThis.__long?.transfer??null,progress:globalThis.__long?.transferProgress??null})')
+            except (Exception,ProducerInterrupted) as e:
+                report['runnerTransferObservationError']=str(e)[:1000]
+                if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
             try:report['namespaceCleanup']=page.evaluate(CLEANUP)
             except (Exception,ProducerInterrupted) as e:
                 report['namespaceCleanup']={'status':'HOLD','error':str(e)[:1000]};owned['unknownContent']=True
@@ -255,7 +272,8 @@ def browser_trial(playwright,owned,origin,profile_id,receiver,token,out,report,p
                 report['profileCleanup']={'status':'HOLD','error':str(e)[:1000]}
                 if isinstance(e,(ProducerInterrupted,cloud.Deadline)) and deadline_error is None:deadline_error=e
         try:cloud.write(out/'browser-lifecycle.json',{key:report.get(key) for key in ['launchMs','browserVersion','profileBeforeLaunch',
-          'profileBeforeClose','profileAfterClose','namespaceCleanup','browserClosed','profileCleanup','browserRss']})
+          'profileBeforeClose','profileAfterClose','namespaceCleanup','browserClosed','profileCleanup','browserRss',
+          'runnerTransferObservation','runnerTransferObservationError','runnerTransferServerObservationError']})
         except (Exception,ProducerInterrupted) as e:
             if deadline_error is None:raise
             report['browserLifecycleWriteError']=str(e)[:1000]
