@@ -61,3 +61,11 @@ Python側はそのファイルをO_NOFOLLOWで開き、open FDのfstatとpathの
 別のローカルPython HTTP比較では32×1MiBのchunk合計がbaseline57.94ms、server TCP_NODELAY53.82ms、baseline53.84msで、85ms/requestは再現しなかった。client NODELAYは全条件で有効、ブラウザではない。ローカルdriver読取りは1.62.1であり、pinned1.62.0の根拠には使わない。
 
 原5chunk/archive13,373B、8原記録、source11件・公開inventory102件を独立照合。原記録と比較判断を `evidence/2026-10-18-loopback-transfer.json` に固定する。次経路の設計・受入は別途判断する。
+
+## browser-download のnative受入
+
+候補4a820dba46a24ada9b41f6887e5dadfc291ce5cd、Actions39092947039、job117573353022。元の全request guardを維持し、128MiBのinput/outputを1本ずつdownloadして回収した。各134,217,728Bの予定hash、逐次copy時hash、fsync/close後の全量再読取りhashが独立Python生成式と一致。download APIの終端をbrowser close前に確認し、各download削除・不在・空dir・URL revoke後に次へ進んだ。既知namespace、runner media、専用download dir、正常終了後の所有profileはいずれも撤去できた。
+
+転送区間は3.084秒、準備を含む診断全体は9.483秒。従来HTTPの約25秒とは別runの単発観測であり、一般性能・5GB完了・実動画の品質を示さない。入力開始待ち0.006秒/完了待ち0.275秒/copyと全量再読取り0.650秒、出力は0.029秒/1.059秒/1.038秒。Python buffer上限1MiBはnative peak memoryの測定ではない。
+
+原5chunk、archive12,931B、SHA-256 `8c67e647470d816d805c44fa072286cce5b8112079a75df7266616e917d7ceab`、原5record＋manifestを回収し、`evidence/2026-10-18-loopback-download.json`へ保存した。独立レビュー後、同じhelperを実5GB callerへ接続して既定600秒内の全回収を別に試験する。10GBと公開上限拡張は実5GBの媒体全回収・独立品質検査・別receiver受入まで保留する。

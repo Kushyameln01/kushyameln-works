@@ -1,0 +1,1676 @@
+{
+  "schema": "vr180-loopback-download-review-v1",
+  "status": "PASS_DIAGNOSTIC_ONLY",
+  "runId": 39092947039,
+  "jobId": 117573353022,
+  "sourceCommit": "4a820dba46a24ada9b41f6887e5dadfc291ce5cd",
+  "sourceTree": "4270494993e78cb15e8f252da707b0d2035a4030",
+  "observed": {
+    "bytesPerFile": 134217728,
+    "fileCount": 2,
+    "transferElapsedSeconds": 3.083621694999998,
+    "diagnosticElapsedSeconds": 9.482537029,
+    "allStoppedBeforeBrowserClose": true,
+    "wholeHashes": [
+      {
+        "id": "input",
+        "bytes": 134217728,
+        "sha256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+        "rereadBytes": 134217728,
+        "rereadSHA256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc"
+      },
+      {
+        "id": "output",
+        "bytes": 134217728,
+        "sha256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+        "rereadBytes": 134217728,
+        "rereadSHA256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0"
+      }
+    ]
+  },
+  "decision": {
+    "scope": "Accept only bounded 128MiB x 2 synthetic byte recovery under the original all-request guard. Actual long caller connection and 5GB full-media acceptance remain separate.",
+    "fiveGBRetryStarted": false,
+    "notClaimed": [
+      "5/10GB full media recovery",
+      "Native OS save picker acceptance",
+      "Media quality or codec acceptance from this synthetic fixture",
+      "General performance distribution",
+      "True browser/driver peak memory"
+    ]
+  },
+  "records": {
+    "environment.json": {
+      "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+      "uid": 1001,
+      "sandboxRequired": true,
+      "chromePath": "/usr/bin/google-chrome",
+      "chromeExecutable": true,
+      "ffmpegPath": null,
+      "ffprobePath": null,
+      "dependencySetupSucceeded": true,
+      "independentVerificationDeferred": true,
+      "numpyVersion": null,
+      "playwrightVersion": "1.62.0",
+      "chromeVersion": "Google Chrome 155.0.8059.39",
+      "ffmpegVersion": null,
+      "ffprobeVersion": null,
+      "status": "READY"
+    },
+    "independent-python-oracle.json": [
+      {
+        "id": "input",
+        "name": "input.mp4",
+        "bytes": 134217728,
+        "sha256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc"
+      },
+      {
+        "id": "output",
+        "name": "output.mp4",
+        "bytes": 134217728,
+        "sha256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0"
+      }
+    ],
+    "manifest.json": {
+      "schema": "vr180-evidence-manifest-v1",
+      "runId": "39092947039-loopback-browser-download-1",
+      "manifestExcludesItself": true,
+      "files": [
+        {
+          "name": "environment.json",
+          "bytes": 484,
+          "sha256": "53250e06eebb7a4844db880e396c9f8bbefa6ee851eef878927db48a1b6c34ee"
+        },
+        {
+          "name": "independent-python-oracle.json",
+          "bytes": 321,
+          "sha256": "ddd0d75a02348a3e7a23e8876d5b98d653cb1b58190b8622c26ec188863cf66f"
+        },
+        {
+          "name": "run.json",
+          "bytes": 19237,
+          "sha256": "685767ca72fd626c3482c48d494df7874f155e0e50efa8a01c1a90aee5c22f60"
+        },
+        {
+          "name": "source-inventory.json",
+          "bytes": 18262,
+          "sha256": "af58041882104f58e2531e87eb726ae83dc504e3cbb3c2209682ae78f5d4123d"
+        },
+        {
+          "name": "trial-1.json",
+          "bytes": 13571,
+          "sha256": "b45ef2bcc54cbd89c0f0e8f6d2daac9eeef6da0433be228288bd2e3269fd4593"
+        }
+      ]
+    },
+    "run.json": {
+      "schema": "vr180-loopback-transfer-diagnostic-v1",
+      "runId": "39092947039-loopback-browser-download-1",
+      "status": "PASS",
+      "mediaArtifactReady": false,
+      "prototypeOnly": true,
+      "publicFilesWritten": false,
+      "httpProtocol": "HTTP/1.0",
+      "transport": "browser-download",
+      "chunkBytes": 1048576,
+      "bytesPerFile": 134217728,
+      "bytesPerTrial": 268435456,
+      "maxCompletedBytes": 268435456,
+      "modes": [
+        "baseline"
+      ],
+      "deadlineSeconds": 300,
+      "cleanupGraceSeconds": 30,
+      "trials": [
+        {
+          "number": 1,
+          "mode": "baseline",
+          "status": "PASS",
+          "route": {
+            "intercepted": 4,
+            "continued": 3,
+            "aborted": 1
+          },
+          "pageErrors": [],
+          "workers": [
+            "http://127.0.0.1:38983/development/vr180/p5-long-prototype/worker.mjs"
+          ],
+          "httpProtocol": "HTTP/1.0",
+          "native": true,
+          "transport": "browser-download",
+          "origin": "http://127.0.0.1:38983",
+          "servedSources": [
+            {
+              "route": "/",
+              "bytes": 95,
+              "sha256": "dbef6ec58955c99473420fb7d8e96d03dc36d74d365b4a1ad96f14f641d8db85"
+            },
+            {
+              "route": "/development/vr180/p5-long-prototype/worker.mjs",
+              "bytes": 2037,
+              "sha256": "93223525a701ed3137a3f9a3c1a19994a06fc3b22787e8ed4ee00e3e71f96cd4"
+            },
+            {
+              "route": "/docs/shared/vr180/sha256.mjs",
+              "bytes": 6970,
+              "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+            }
+          ],
+          "ownedProfile": {
+            "schema": 1,
+            "token": "37532c84a6514d6488a5bfb8a033f775",
+            "profile": "/home/runner/work/_temp/vr180-loopback-39092947039-1/trial-1/vr180-persistent-owned-gvmpn8no/profile",
+            "device": 2049,
+            "inode": 8937006
+          },
+          "ownedDownloads": {
+            "path": "/home/runner/work/_temp/vr180-loopback-39092947039-1/trial-1/vr180-download-owned-3kc7imgu",
+            "identity": [
+              2049,
+              8937008
+            ]
+          },
+          "browserVersion": "155.0.8059.39",
+          "externalRequestRejected": true,
+          "preparation": {
+            "status": "READY_FOR_RUNNER_TRANSFER",
+            "namespace": "v-c1d8ed41-90bc-4fdf-948e-4d314865dfa3",
+            "namespaceOwned": true,
+            "files": [
+              {
+                "id": "input",
+                "name": "input.mp4",
+                "bytes": 134217728,
+                "sha256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc"
+              },
+              {
+                "id": "output",
+                "name": "output.mp4",
+                "bytes": 134217728,
+                "sha256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0"
+              }
+            ],
+            "ownerRecordsRemoved": true,
+            "indexDirectoriesRemoved": true,
+            "heldLocks": 0,
+            "indexReservedAfterCleanup": 0,
+            "syntheticNonMedia": true,
+            "preparationMs": 3288.600000000006,
+            "unhandledErrors": []
+          },
+          "browserDownload": {
+            "status": "PASS",
+            "files": [
+              {
+                "id": "input",
+                "status": "PASS",
+                "stoppedBeforeBrowserClose": true,
+                "downloadRequestTriggered": true,
+                "cleanup": {
+                  "delete": {
+                    "status": "DELETED",
+                    "absent": true,
+                    "elapsedSeconds": 0.008225250000002404
+                  },
+                  "url": {
+                    "status": "REVOKED",
+                    "elapsedSeconds": 0.003373693000000344
+                  },
+                  "directoryEmpty": {
+                    "status": "EMPTY",
+                    "elapsedSeconds": 3.897300000232917e-05
+                  },
+                  "listener": {
+                    "status": "REMOVED",
+                    "elapsedSeconds": 2.0327999997959978e-05
+                  }
+                },
+                "diskPreflight": {
+                  "freeBytes": 91666997248,
+                  "requiredAdditionalBytes": 269484032,
+                  "sameFilesystem": true,
+                  "reservationGuaranteed": false,
+                  "singleNativeDownloadAtATime": true
+                },
+                "startEventWaitSeconds": 0.005524988999994207,
+                "terminalFailure": null,
+                "completionWaitSeconds": 0.27468537600000076,
+                "sourceIdentity": {
+                  "name": "334a14dd-deab-4711-bfe3-d2837ae0c98a",
+                  "device": 2049,
+                  "inode": 94556,
+                  "bytes": 134217728,
+                  "mtimeNs": 1792293315817591674,
+                  "ctimeNs": 1792293315946847860
+                },
+                "copy": {
+                  "copiedBytes": 134217728,
+                  "chunks": 128,
+                  "maxPythonBufferBytes": 1048576,
+                  "nativePeakMemoryMeasured": false,
+                  "elapsedSeconds": 0.6496589210000039,
+                  "elapsedScope": "Copy plus receiver complete/flush/fsync/close/full reread and source identity checks",
+                  "receipt": {
+                    "id": "input",
+                    "name": "input.mp4",
+                    "bytes": 134217728,
+                    "sha256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+                    "chunks": 128,
+                    "fsynced": true,
+                    "closed": true,
+                    "rereadBytes": 134217728,
+                    "rereadSHA256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+                    "elapsedSeconds": 0.6490586079999972,
+                    "queuedBeforeFirstChunkSeconds": 0.28334293700000046
+                  }
+                },
+                "downloadEventCount": 1,
+                "elapsedSeconds": 0.9443405150000004
+              },
+              {
+                "id": "output",
+                "status": "PASS",
+                "stoppedBeforeBrowserClose": true,
+                "downloadRequestTriggered": true,
+                "cleanup": {
+                  "delete": {
+                    "status": "DELETED",
+                    "absent": true,
+                    "elapsedSeconds": 0.00796441399999992
+                  },
+                  "url": {
+                    "status": "REVOKED",
+                    "elapsedSeconds": 0.0020080170000014164
+                  },
+                  "directoryEmpty": {
+                    "status": "EMPTY",
+                    "elapsedSeconds": 4.3289000004165246e-05
+                  },
+                  "listener": {
+                    "status": "REMOVED",
+                    "elapsedSeconds": 1.762200000143821e-05
+                  }
+                },
+                "diskPreflight": {
+                  "freeBytes": 91532759040,
+                  "requiredAdditionalBytes": 269484032,
+                  "sameFilesystem": true,
+                  "reservationGuaranteed": false,
+                  "singleNativeDownloadAtATime": true
+                },
+                "startEventWaitSeconds": 0.029393919999996854,
+                "terminalFailure": null,
+                "completionWaitSeconds": 1.0585677409999974,
+                "sourceIdentity": {
+                  "name": "a1423bce-ea0a-4749-a2d9-d8921cd9986f",
+                  "device": 2049,
+                  "inode": 94556,
+                  "bytes": 134217728,
+                  "mtimeNs": 1792293316786596340,
+                  "ctimeNs": 1792293317698654549
+                },
+                "copy": {
+                  "copiedBytes": 134217728,
+                  "chunks": 128,
+                  "maxPythonBufferBytes": 1048576,
+                  "nativePeakMemoryMeasured": false,
+                  "elapsedSeconds": 1.037770082999998,
+                  "elapsedScope": "Copy plus receiver complete/flush/fsync/close/full reread and source identity checks",
+                  "receipt": {
+                    "id": "output",
+                    "name": "output.mp4",
+                    "bytes": 134217728,
+                    "sha256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+                    "chunks": 128,
+                    "fsynced": true,
+                    "closed": true,
+                    "rereadBytes": 134217728,
+                    "rereadSHA256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+                    "elapsedSeconds": 1.0370101179999978,
+                    "queuedBeforeFirstChunkSeconds": 2.0347957820000033
+                  }
+                },
+                "downloadEventCount": 1,
+                "elapsedSeconds": 2.137897498000001
+              }
+            ],
+            "singleNativeDownloadAtATime": true,
+            "maxPythonBufferBytes": 1048576,
+            "nativePeakMemoryMeasured": false,
+            "allStoppedBeforeBrowserClose": true,
+            "deadlineResetBetweenFiles": false,
+            "elapsedSeconds": 3.082277597000001
+          },
+          "serverTransfer": {
+            "phases": {
+              "bodyRead": {
+                "count": 0,
+                "failed": 0,
+                "totalSeconds": 0.0,
+                "maxSeconds": 0.0
+              },
+              "writeAndHash": {
+                "count": 256,
+                "failed": 0,
+                "totalSeconds": 0.23934471399996937,
+                "maxSeconds": 0.0010796910000010485
+              },
+              "completeAndReread": {
+                "count": 2,
+                "failed": 0,
+                "totalSeconds": 1.424949527999999,
+                "maxSeconds": 0.9074019549999974
+              }
+            },
+            "files": [
+              {
+                "id": "input",
+                "receivedBytes": 134217728,
+                "chunks": 128,
+                "complete": true,
+                "streamClosed": true,
+                "receipt": {
+                  "id": "input",
+                  "name": "input.mp4",
+                  "bytes": 134217728,
+                  "sha256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+                  "chunks": 128,
+                  "fsynced": true,
+                  "closed": true,
+                  "rereadBytes": 134217728,
+                  "rereadSHA256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+                  "elapsedSeconds": 0.6490586079999972,
+                  "queuedBeforeFirstChunkSeconds": 0.28334293700000046
+                }
+              },
+              {
+                "id": "output",
+                "receivedBytes": 134217728,
+                "chunks": 128,
+                "complete": true,
+                "streamClosed": true,
+                "receipt": {
+                  "id": "output",
+                  "name": "output.mp4",
+                  "bytes": 134217728,
+                  "sha256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+                  "chunks": 128,
+                  "fsynced": true,
+                  "closed": true,
+                  "rereadBytes": 134217728,
+                  "rereadSHA256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+                  "elapsedSeconds": 1.0370101179999978,
+                  "queuedBeforeFirstChunkSeconds": 2.0347957820000033
+                }
+              }
+            ],
+            "clock": "Python monotonic; distinct from browser performance.now",
+            "atomicSnapshot": false
+          },
+          "browserTransfer": {
+            "result": null,
+            "progress": null
+          },
+          "transferElapsedSeconds": 3.083621694999998,
+          "receipts": [
+            {
+              "id": "input",
+              "name": "input.mp4",
+              "bytes": 134217728,
+              "sha256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+              "chunks": 128,
+              "fsynced": true,
+              "closed": true,
+              "rereadBytes": 134217728,
+              "rereadSHA256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+              "elapsedSeconds": 0.6490586079999972,
+              "queuedBeforeFirstChunkSeconds": 0.28334293700000046
+            },
+            {
+              "id": "output",
+              "name": "output.mp4",
+              "bytes": 134217728,
+              "sha256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+              "chunks": 128,
+              "fsynced": true,
+              "closed": true,
+              "rereadBytes": 134217728,
+              "rereadSHA256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+              "elapsedSeconds": 1.0370101179999978,
+              "queuedBeforeFirstChunkSeconds": 2.0347957820000033
+            }
+          ],
+          "transferSnapshot": null,
+          "downloadsStoppedBeforeBrowserClose": true,
+          "namespaceCleanup": {
+            "status": "REMOVED",
+            "heldLocks": 0,
+            "recursiveDeletion": false,
+            "knownMediaFiles": [
+              "input.mp4",
+              "output.mp4"
+            ]
+          },
+          "browserClose": {
+            "status": "CLOSED"
+          },
+          "downloadLifecycleAfterBrowserClose": {
+            "browserClosed": true,
+            "apiStopConfirmedBeforeClose": true,
+            "scope": "Browser closure is recorded separately; it does not retroactively establish a download terminal API result."
+          },
+          "downloadDirectoryAfterClose": {
+            "status": "OBSERVED",
+            "remainingNames": []
+          },
+          "serverClose": {
+            "status": "CLOSED"
+          },
+          "serverTransferAfterClose": {
+            "phases": {
+              "bodyRead": {
+                "count": 0,
+                "failed": 0,
+                "totalSeconds": 0.0,
+                "maxSeconds": 0.0
+              },
+              "writeAndHash": {
+                "count": 256,
+                "failed": 0,
+                "totalSeconds": 0.23934471399996937,
+                "maxSeconds": 0.0010796910000010485
+              },
+              "completeAndReread": {
+                "count": 2,
+                "failed": 0,
+                "totalSeconds": 1.424949527999999,
+                "maxSeconds": 0.9074019549999974
+              }
+            },
+            "files": [
+              {
+                "id": "input",
+                "receivedBytes": 134217728,
+                "chunks": 128,
+                "complete": true,
+                "streamClosed": true,
+                "receipt": {
+                  "id": "input",
+                  "name": "input.mp4",
+                  "bytes": 134217728,
+                  "sha256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+                  "chunks": 128,
+                  "fsynced": true,
+                  "closed": true,
+                  "rereadBytes": 134217728,
+                  "rereadSHA256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+                  "elapsedSeconds": 0.6490586079999972,
+                  "queuedBeforeFirstChunkSeconds": 0.28334293700000046
+                }
+              },
+              {
+                "id": "output",
+                "receivedBytes": 134217728,
+                "chunks": 128,
+                "complete": true,
+                "streamClosed": true,
+                "receipt": {
+                  "id": "output",
+                  "name": "output.mp4",
+                  "bytes": 134217728,
+                  "sha256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+                  "chunks": 128,
+                  "fsynced": true,
+                  "closed": true,
+                  "rereadBytes": 134217728,
+                  "rereadSHA256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+                  "elapsedSeconds": 1.0370101179999978,
+                  "queuedBeforeFirstChunkSeconds": 2.0347957820000033
+                }
+              }
+            ],
+            "clock": "Python monotonic; distinct from browser performance.now",
+            "atomicSnapshot": false
+          },
+          "runnerMediaCleanup": {
+            "status": "REMOVED",
+            "files": [
+              {
+                "id": "input",
+                "receivedBytes": 134217728,
+                "wasComplete": true
+              },
+              {
+                "id": "output",
+                "receivedBytes": 134217728,
+                "wasComplete": true
+              }
+            ]
+          },
+          "downloadDirectoryCleanup": {
+            "status": "REMOVED",
+            "recursiveDeletion": false,
+            "directoryIdentity": [
+              2049,
+              8937008
+            ]
+          },
+          "profileCleanup": {
+            "status": "REMOVED",
+            "path": "/home/runner/work/_temp/vr180-loopback-39092947039-1/trial-1/vr180-persistent-owned-gvmpn8no/profile",
+            "browserClosedBeforeRemoval": true,
+            "scope": "Only the freshly created, identity-checked disposable profile and owner marker."
+          },
+          "elapsedSeconds": 7.998707142999997
+        }
+      ],
+      "comparison": "One browser-download case with the original all-request baseline guard; compare separately with retained HTTP trials. No codec or media acceptance.",
+      "notVerified": [
+        "5/10 GB transfer",
+        "media decode/encode/quality",
+        "public product performance",
+        "HTTP/1.1 effect",
+        "performance distribution or cold-cache behavior",
+        "true peak memory"
+      ],
+      "checkoutCommit": "4a820dba46a24ada9b41f6887e5dadfc291ce5cd",
+      "sourceSHA256Before": {
+        "development/vr180/p5-calibration-prototype/probe-calibration.py": "8619fe1769e8bb62de9a886b6378a3b17917713ba9866921ad3c74c439a61a2d",
+        "development/vr180/p5-long-prototype/evidence-bundle.py": "8416dbad1749cc563f97ae70243ea1075629a8838f6181abd2ea216a8149009c",
+        "development/vr180/p5-long-prototype/oracle.py": "526e5ee18091b37130dd2489bf6bdec2f1a12d1132c80b5838c73fba3cab02e3",
+        "development/vr180/p5-long-prototype/probe-long.py": "be0ebe053467ae97857477ab9cc2e5aa4db606e2684de37d24e7b3efc0ef575b",
+        "development/vr180/p5-long-prototype/streaming.py": "f68f60ed8cf4c63761ca43a87951869731db3485600acb68c99f38f4d90eb18f",
+        "docs/shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+        "tools/vr180/cloud-validate.py": "c2df85efacbbb4543f4cc75eabfc3f66a3b0f25a49b1c9c037f0319197ec870b",
+        "tools/vr180/probe-indexed-conversion.py": "745045498f86bc6b7f1b02e37770e4c6b785cf935a789335af93cf124f759724",
+        "tools/vr180/probe-loopback-transfer.py": "6216d2e65376a7945669ae93e7ce95e8628090102e1571dc2c6ceeec141a81b6",
+        "tools/vr180/probe-output-index.py": "a1522e1efe3a3a7669703b93fdacc28ca81a0365927960b60630cb3d6a006fbe",
+        "tools/vr180/probe-persistent-storage.py": "5acc05d89d79d442021736148a947736eaccb5bec33cfb94686326dc24c04705"
+      },
+      "boundedStage": {
+        "name": "browser-download",
+        "deadlineMonotonic": 335.6013441,
+        "parentDeadlineNotExtended": true,
+        "blockingApiTimeout": "SIGALRM then existing 30-second cleanup grace"
+      },
+      "sourceSHA256After": {
+        "development/vr180/p5-calibration-prototype/probe-calibration.py": "8619fe1769e8bb62de9a886b6378a3b17917713ba9866921ad3c74c439a61a2d",
+        "development/vr180/p5-long-prototype/evidence-bundle.py": "8416dbad1749cc563f97ae70243ea1075629a8838f6181abd2ea216a8149009c",
+        "development/vr180/p5-long-prototype/oracle.py": "526e5ee18091b37130dd2489bf6bdec2f1a12d1132c80b5838c73fba3cab02e3",
+        "development/vr180/p5-long-prototype/probe-long.py": "be0ebe053467ae97857477ab9cc2e5aa4db606e2684de37d24e7b3efc0ef575b",
+        "development/vr180/p5-long-prototype/streaming.py": "f68f60ed8cf4c63761ca43a87951869731db3485600acb68c99f38f4d90eb18f",
+        "docs/shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+        "tools/vr180/cloud-validate.py": "c2df85efacbbb4543f4cc75eabfc3f66a3b0f25a49b1c9c037f0319197ec870b",
+        "tools/vr180/probe-indexed-conversion.py": "745045498f86bc6b7f1b02e37770e4c6b785cf935a789335af93cf124f759724",
+        "tools/vr180/probe-loopback-transfer.py": "6216d2e65376a7945669ae93e7ce95e8628090102e1571dc2c6ceeec141a81b6",
+        "tools/vr180/probe-output-index.py": "a1522e1efe3a3a7669703b93fdacc28ca81a0365927960b60630cb3d6a006fbe",
+        "tools/vr180/probe-persistent-storage.py": "5acc05d89d79d442021736148a947736eaccb5bec33cfb94686326dc24c04705"
+      },
+      "elapsedSeconds": 9.482537029,
+      "trialRecords": [
+        "trial-1.json"
+      ]
+    },
+    "source-inventory.json": {
+      "checkoutCommit": "4a820dba46a24ada9b41f6887e5dadfc291ce5cd",
+      "historicalInitialImplementationCommit": "e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60",
+      "build": "vr180-b7-phases1",
+      "fixtures": {
+        "stereo180-sbs": {
+          "bytes": 26615,
+          "sha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83",
+          "source": "public synthetic; not user media"
+        },
+        "stereo360-tb": {
+          "bytes": 27952,
+          "sha256": "72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9",
+          "source": "public synthetic; not user media"
+        },
+        "stereo180-4k-2s-sbs": {
+          "bytes": 167765,
+          "sha256": "50624d8850a380ad759a712a7cae9f5f767a966271ca8a671b433c6146895db0",
+          "source": "public synthetic; not user media"
+        },
+        "stereo180-4k-12s-sbs": {
+          "bytes": 944087,
+          "sha256": "97bb3a4335514436374b35c202275dde2cfca27f8f7cec3a224fd77c8ede6582",
+          "source": "public synthetic; not user media"
+        }
+      },
+      "fixedVerifierSHA256": {
+        "verify-metadata.py": "c80f0c59c6df30720481c7da6a46676d3bbc4757d079485c2598d3e0814a6d96",
+        "verify-conversion.py": "8e13537f5c74f8207f670eb898b082a1962ae35e0db10a6ffeddb7be4c695f64"
+      },
+      "cloudCopySource": "this exact checkout docs/; HTTP loopback only",
+      "sourceScope": "unpublished-candidate",
+      "files": [
+        {
+          "name": ".nojekyll",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "animator-composer/app.mjs",
+          "bytes": 58466,
+          "sha256": "58e2ed9c212ea5ae7e93918e3ed2ec486c8a3ae3144a131caf6963b32e39c64c"
+        },
+        {
+          "name": "animator-composer/composer.css",
+          "bytes": 10761,
+          "sha256": "3b47855ee49d3e26865dcd82e655d2de2e17e0a079ec46ebbee5c560c581b794"
+        },
+        {
+          "name": "animator-composer/index.html",
+          "bytes": 17333,
+          "sha256": "d530cbef89a2bbeb10ffc70d0ee4674dbf51e34bfdc2a37a496c592e19f3c754"
+        },
+        {
+          "name": "animator-composer/lib/composition.mjs",
+          "bytes": 58088,
+          "sha256": "451e5d5fd5909df895a34442717820cacc59d75ec94c6bb8e4308034fec3e1f0"
+        },
+        {
+          "name": "animator-composer/lib/generate.mjs",
+          "bytes": 19595,
+          "sha256": "65ce560b2e127a7ba336a71fa7ee0b54d3175ea24e299d0df5bc9683b7ee57ae"
+        },
+        {
+          "name": "animator-composer/lib/materials.mjs",
+          "bytes": 15884,
+          "sha256": "24260affa47182fb1c185e1a6655bd55bf363cb3d8453e7984f58ce0af4dcb25"
+        },
+        {
+          "name": "animator-composer/lib/registration.mjs",
+          "bytes": 26733,
+          "sha256": "a59831ff69d38c22f8c57753a918d4258b621dc27e1aa0af91972df067170f4e"
+        },
+        {
+          "name": "animator-composer/lib/task-guide.mjs",
+          "bytes": 5089,
+          "sha256": "cbd60cbe027f6cc6a3871cca94fd119de5c4048d0ac16778cc0afde9bad8e157"
+        },
+        {
+          "name": "animator-composer/worker.mjs",
+          "bytes": 4296,
+          "sha256": "9dc8edde92cea95e8f537065ac0f88bc799f27d46eb731a02ec0cc9dec0c4ace"
+        },
+        {
+          "name": "assets/index.html",
+          "bytes": 42620,
+          "sha256": "91206b5393897ba097d51f2670ce21c2314b2672cbe3a8b660f43dd288c44af6"
+        },
+        {
+          "name": "catalog.css",
+          "bytes": 1047,
+          "sha256": "6a68a6a69585e93e9b780321ba25a171d98871c598ff24072e88b87158ec5615"
+        },
+        {
+          "name": "catalog.mjs",
+          "bytes": 2868,
+          "sha256": "e95661efa5bb7ddbd02d61b0182526c25dae40848a033b69133ed19390321395"
+        },
+        {
+          "name": "favicon.svg",
+          "bytes": 264,
+          "sha256": "c895ca12978b2089033c46a395379037965741ea48eb083d432b41965be40f8e"
+        },
+        {
+          "name": "github/index.html",
+          "bytes": 4419,
+          "sha256": "9258f09202159b173cab6b7b469fcb2936d961c41b038904fadef5c75cb01627"
+        },
+        {
+          "name": "index.html",
+          "bytes": 2147,
+          "sha256": "f4708945eca73921586ab6423f8b8771e7d1df971df6acbab3f45aded013c60e"
+        },
+        {
+          "name": "media-runner/app.mjs",
+          "bytes": 7196,
+          "sha256": "4df701af40f73d6c6283ed613ce2b8dc6503e31cbf22eacc8172797331f1a391"
+        },
+        {
+          "name": "media-runner/index.html",
+          "bytes": 3692,
+          "sha256": "987a556cc9bb3fcb749bac73a83cb07d39bd34dbf534cdf9c964fb793ee65909"
+        },
+        {
+          "name": "media-runner/style.css",
+          "bytes": 1933,
+          "sha256": "e7edf4c03135f2094d9652369250e350e6d88b369c2d44f49289d11440a7febb"
+        },
+        {
+          "name": "notes/index.html",
+          "bytes": 20522,
+          "sha256": "2a46bdbba24c0593f202f5a18f392bf5f509c701c57dcef1812f3abc83b775b6"
+        },
+        {
+          "name": "shared/compute/README.md",
+          "bytes": 13876,
+          "sha256": "388c4ed90778b79cf01828e5b0141bca126d36d32b4f1b94514a38888f39d396"
+        },
+        {
+          "name": "shared/compute/client.mjs",
+          "bytes": 3328,
+          "sha256": "10aa2f556665b1e3c499f18b0a9b7719e951efd73d13d2096f75e3dc3d69782e"
+        },
+        {
+          "name": "shared/compute/compute-worker.mjs",
+          "bytes": 1617,
+          "sha256": "16e4ed91f93e276b4ccb8e1fafb5479e537e8b4ce34cac6193babc9dc7e16877"
+        },
+        {
+          "name": "shared/compute/kernel.mjs",
+          "bytes": 2530,
+          "sha256": "28cbe6f875b34ccec3a6ced1b946d3eb55bde821638ca184a3dff6f39c44a9e2"
+        },
+        {
+          "name": "shared/compute/pool-worker.bundle.mjs",
+          "bytes": 124962,
+          "sha256": "8dc414942eef13bde44b8d65e3374582930f71aeca8b4814fbc4c04e36051923"
+        },
+        {
+          "name": "shared/compute/pool-worker.mjs",
+          "bytes": 3872,
+          "sha256": "d9d5cb0f47e69cc9683e7af62a789574c3030cb509adab7649de950c9b8639f8"
+        },
+        {
+          "name": "shared/compute/pool.mjs",
+          "bytes": 18143,
+          "sha256": "29b236bf1f1804defb6d648a0d0ad034d4a33ed1b01d4f59377247408e1bf6c7"
+        },
+        {
+          "name": "shared/compute/protocol.mjs",
+          "bytes": 1818,
+          "sha256": "e61a71801ec5fe570062d8e073ba27e0d783b592091b9418a35fc52b10367e21"
+        },
+        {
+          "name": "shared/compute/registered-tasks.mjs",
+          "bytes": 1256,
+          "sha256": "f9fdc8bc53442432816773e3b7ad5a09c26eecfc928c786d50e179a68689b153"
+        },
+        {
+          "name": "shared/compute/tasks.mjs",
+          "bytes": 1611,
+          "sha256": "3b96db9e178ca8c067e5d46f6358f0f92a83ef754d2f12271753c41ffdede53b"
+        },
+        {
+          "name": "shared/ft/kernel/ft-kernel.wasm",
+          "bytes": 6184,
+          "sha256": "b260ac37862014a9ebb3ebb25739283fe2778e638969e757b2fd34769cd989ad"
+        },
+        {
+          "name": "shared/ft/kernel/load-kernel.mjs",
+          "bytes": 2472,
+          "sha256": "11bd7384cf7018ed36440436c1376c745f32bacd5ec96c94cdaf991be90b3853"
+        },
+        {
+          "name": "shared/ft/unity-package.mjs",
+          "bytes": 12004,
+          "sha256": "e7a2ff0e2a4843db6f897d9967274f205dd07aa57d4f8a648a05542d7b2f9be8"
+        },
+        {
+          "name": "shared/ft/unity-text.mjs",
+          "bytes": 22688,
+          "sha256": "ac3250dcc1bdf8b91e2f0f5e97904e22fcfc43183b4f2ad62b0314febfcedb4a"
+        },
+        {
+          "name": "shared/ft/vendor/fflate-LICENSE",
+          "bytes": 1069,
+          "sha256": "805f6cb28bb8b6d3a0badd83c93bccd9671fa01a3b4b92b7042b0743325ac243"
+        },
+        {
+          "name": "shared/ft/vendor/fflate-source.json",
+          "bytes": 250,
+          "sha256": "821527a446173911635e6bd6141a8113cdab12d45ffa7dc7a66482ce56f0a043"
+        },
+        {
+          "name": "shared/ft/vendor/fflate.mjs",
+          "bytes": 89198,
+          "sha256": "8cc1f687e0159e977addb6b85e274dbd11e622cf151f4fcb7b85d49622ea43e7"
+        },
+        {
+          "name": "shared/media-basic/README.md",
+          "bytes": 4815,
+          "sha256": "4afbf0682632a84d480722fe709051b7c19c9fb5c7fb123520f8a6dfaf8dfeff"
+        },
+        {
+          "name": "shared/media-basic/browser.mjs",
+          "bytes": 9664,
+          "sha256": "a982a24460a597cf28299756d0aa0e4e4ac9be544dfe7ddb85a69afa961ff207"
+        },
+        {
+          "name": "shared/media-basic/core.mjs",
+          "bytes": 1338,
+          "sha256": "c331c91fec1f9058f2ce6a7ef3bd73f3523246d05b403756e5da236cb99e67be"
+        },
+        {
+          "name": "shared/media-basic/formats.mjs",
+          "bytes": 12494,
+          "sha256": "46cf4367bbd16729fdcbb3434802bad3b7c74f06f2e15551ed7a1c6084b1b4d6"
+        },
+        {
+          "name": "shared/media-basic/history.mjs",
+          "bytes": 1834,
+          "sha256": "95f269bf7cbb5faccf16cf4f1e8ed31060842411acab039e4d5f2583e968ef43"
+        },
+        {
+          "name": "shared/media-basic/sdk.mjs",
+          "bytes": 8193,
+          "sha256": "5822b1a942df16203f48185cb8d6e9e2427ea0d3927ced9ff7db0d333e53e00b"
+        },
+        {
+          "name": "shared/media-basic/telemetry.mjs",
+          "bytes": 12849,
+          "sha256": "b878a40d113ee391ab9c92bb53b11384ddf33254dd77326a108f9a050e594d1d"
+        },
+        {
+          "name": "shared/media-basic/vendor/mediabunny-1.61.5-source.tgz",
+          "bytes": 2188923,
+          "sha256": "95c03a00ca69a7d5ed9805e424349ffeb0cdecbe8cabd0e17749a39e8117802f"
+        },
+        {
+          "name": "shared/media-basic/vendor/mediabunny-LICENSE",
+          "bytes": 16726,
+          "sha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04"
+        },
+        {
+          "name": "shared/media-basic/vendor/mediabunny-source.json",
+          "bytes": 695,
+          "sha256": "d48ea3ed4591f8ec214269bb4d1cec43e3943495f4581e510461ecc7dbc10c4e"
+        },
+        {
+          "name": "shared/media-basic/vendor/mediabunny.mjs",
+          "bytes": 692359,
+          "sha256": "5c3514965f106dd165cc6474979ba302ef85d8c84935a0ad3ea5202ccedfe51b"
+        },
+        {
+          "name": "shared/unity-analysis/README.md",
+          "bytes": 6497,
+          "sha256": "a4d3fefd45c2e03296561b3613a36909e408415f5233a0dc3d0fcb38ddd25977"
+        },
+        {
+          "name": "shared/unity-analysis/analysis.mjs",
+          "bytes": 14018,
+          "sha256": "eed466094f5837a1a246ac58194bcd62c5b84c43a752d4d40b9a800725786ac5"
+        },
+        {
+          "name": "shared/unity-analysis/archive.mjs",
+          "bytes": 6024,
+          "sha256": "895425b42a00bc91193a75eec4aff0c07713db51590ae001af7ff122f8aefcd4"
+        },
+        {
+          "name": "shared/unity-analysis/example.json",
+          "bytes": 3875,
+          "sha256": "a9c73ebeeaf9adc0f4b49c284c2fd90dc7c0c939728ce9fa69af9d11d8d79317"
+        },
+        {
+          "name": "shared/unity-analysis/file-sdk.mjs",
+          "bytes": 10599,
+          "sha256": "91ce11e8c32dcd57084e2bf370f2903b4998a5e665e52a486569559cb8fd3b05"
+        },
+        {
+          "name": "shared/unity-analysis/ingest-task.mjs",
+          "bytes": 6678,
+          "sha256": "c2163d516c8fba210f018a5b857ef0234786d79e6bd678ec9da47c0c14c418b2"
+        },
+        {
+          "name": "shared/unity-analysis/kernel/LICENSE-Hike.txt",
+          "bytes": 1068,
+          "sha256": "6b3497e1e711780741457cdcb345be01421b8a7ef6c35d4f084cac7993a0b4ef"
+        },
+        {
+          "name": "shared/unity-analysis/kernel/kernel.mjs",
+          "bytes": 6273,
+          "sha256": "1544643957020057dde37ec43e6047d0e753ccd47b7a2642a77d8b65c639ccda"
+        },
+        {
+          "name": "shared/unity-analysis/kernel/registry.mjs",
+          "bytes": 367,
+          "sha256": "f0cf8028b3f46c3e39af221b4816160f9add1875556caba94f50e5e139582679"
+        },
+        {
+          "name": "shared/unity-analysis/kernel/unity-analysis.wasm",
+          "bytes": 1124,
+          "sha256": "e7c1049626826d3dabe2f53a7935efa69cd6f2cfa85fa11375b7bdd877088520"
+        },
+        {
+          "name": "shared/unity-analysis/model.mjs",
+          "bytes": 7668,
+          "sha256": "60b4e1d04c451c2e6c34c2d45a957ac7c1bd39222d66b6eff13c52181e40c4c7"
+        },
+        {
+          "name": "shared/unity-analysis/package-reader.mjs",
+          "bytes": 9966,
+          "sha256": "ea1610b88d166ec5ef8ca3f2256e8ee47e2aa299a59e5920d78d66378710d242"
+        },
+        {
+          "name": "shared/unity-analysis/pool-task.mjs",
+          "bytes": 2896,
+          "sha256": "95cb65ad82d21feb06ba864dabb7747ed61d4ea972c0057f064b8b5df114ff87"
+        },
+        {
+          "name": "shared/unity-analysis/raw-example.json",
+          "bytes": 5628,
+          "sha256": "7128701abf857c55d9c8a08e064e4923902a4d3fa08f0943853ad1e4bd3b72cf"
+        },
+        {
+          "name": "shared/unity-analysis/rules.mjs",
+          "bytes": 7587,
+          "sha256": "e659b39fae7b7b6dce66a712d146998ae01b016175fccd54b912e77487e7e2b0"
+        },
+        {
+          "name": "shared/unity-analysis/sdk.mjs",
+          "bytes": 4757,
+          "sha256": "b58d080dcf7272830e5e8f8c983c242ee470c6cb889d4af1997f8ff0ad79b74f"
+        },
+        {
+          "name": "shared/unity-analysis/text.mjs",
+          "bytes": 21024,
+          "sha256": "70ecea2941bd513405433b7a9691df953537b3199dac4b46c0b31c53d706229e"
+        },
+        {
+          "name": "shared/vr180/README.md",
+          "bytes": 12414,
+          "sha256": "6330c4b5147bc40a3d04466460f3b49b9a4c03af27bc139304561ebffb3fdc13"
+        },
+        {
+          "name": "shared/vr180/client.mjs",
+          "bytes": 9944,
+          "sha256": "5b7afeb38d5b202760f8821c01b5499bfdc41bc83ac7888b22958c4840f8c8b1"
+        },
+        {
+          "name": "shared/vr180/file-output.mjs",
+          "bytes": 12276,
+          "sha256": "2cd7bcbdc0cf616e9c32aa3afa0543a56e5a2715bf00c6e2223014ad68757050"
+        },
+        {
+          "name": "shared/vr180/geometry.mjs",
+          "bytes": 1499,
+          "sha256": "3c83e493ac29d37f37139cbad20019ae809796462c6774046b0d4f9ad6c76ff4"
+        },
+        {
+          "name": "shared/vr180/mp4.mjs",
+          "bytes": 35569,
+          "sha256": "1e7189d7b4d9e55b7502fb4d3b985bf8344a1b905bfa1942a926c388345bb892"
+        },
+        {
+          "name": "shared/vr180/mux-capture.mjs",
+          "bytes": 3065,
+          "sha256": "c168c5f8bafd299ddb1c3ca5dce78f1046592149d8410dd5625c33c61b79fe32"
+        },
+        {
+          "name": "shared/vr180/operations.mjs",
+          "bytes": 698,
+          "sha256": "d739b0182aa82691261d23bd617f8d0b864d08e7eafba13a3c0d4ef57df98be6"
+        },
+        {
+          "name": "shared/vr180/save-record.mjs",
+          "bytes": 4351,
+          "sha256": "faabff3f1b5f4080f2fbb7d4491edbcf0dc51f2cb62675a852454d51b4d8297f"
+        },
+        {
+          "name": "shared/vr180/sha256.mjs",
+          "bytes": 6970,
+          "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+        },
+        {
+          "name": "shared/vr180/transform.mjs",
+          "bytes": 25892,
+          "sha256": "7bd8ade1cc5983d173760266f65062a20468d7dc9acaa7b8a8117aa97b8dc6c3"
+        },
+        {
+          "name": "shared/vr180/worker.mjs",
+          "bytes": 13940,
+          "sha256": "54104a2eb521461a02576988b646f6d6c7ac4b5cfd712e0a57902bdda428604c"
+        },
+        {
+          "name": "stories/index.html",
+          "bytes": 12746,
+          "sha256": "e1ca94089c0ab0d9be686ae43c38da6d390c6f4cb3caea7b639e6b641abcd0d4"
+        },
+        {
+          "name": "style.css",
+          "bytes": 1403,
+          "sha256": "d7ffe7733fc126d0a34e52ba7e55f00e50ffe71c3f46197322dba0aa82447fdd"
+        },
+        {
+          "name": "technical-memos/avatar-dynamics-physbone-bone-roll/index.html",
+          "bytes": 10163,
+          "sha256": "e6a0da122196d9db44e345b3df1abe58c998baebdfe7fc04b47e214b678216d2"
+        },
+        {
+          "name": "technical-memos/avatar-dynamics-physbone-bone-roll/source.md",
+          "bytes": 8460,
+          "sha256": "fab6749b2298195483304c4d54823bcf179cf809521204a0a961a5d8852fe303"
+        },
+        {
+          "name": "technical-memos/eye-structure-facetracking-shapekey-bone/attachment.md",
+          "bytes": 6227,
+          "sha256": "7dacb3eb996916746538a1d89fa839bd7ce8d00a46519ed47f31d88029704e3d"
+        },
+        {
+          "name": "technical-memos/eye-structure-facetracking-shapekey-bone/index.html",
+          "bytes": 10073,
+          "sha256": "a498cef08e9c1026ad6dfcaed64526a5164a05c8b4ab5f5b7b2533d0debc0a92"
+        },
+        {
+          "name": "technical-memos/eye-structure-facetracking-shapekey-bone/source.md",
+          "bytes": 8032,
+          "sha256": "a7dbc5713d1edde8959f982e301cfe95574353fa1759d92e77e296f7d8aedd39"
+        },
+        {
+          "name": "technical-memos/index.html",
+          "bytes": 1539,
+          "sha256": "a62affff283a8300083542fde868953a81ba46b9e1dc84c51711362c64f1a3bf"
+        },
+        {
+          "name": "unity-analyzer/app.mjs",
+          "bytes": 9113,
+          "sha256": "963dd05699d61c393d1336e53e83a2fc4e9301cfb7241c4e4d62a529a7546423"
+        },
+        {
+          "name": "unity-analyzer/index.html",
+          "bytes": 4520,
+          "sha256": "63b5658853b077c31415e68169ec1cc8458f2da55b1eaddf7c0ba8fd92da007b"
+        },
+        {
+          "name": "unity-analyzer/report-cache.mjs",
+          "bytes": 2091,
+          "sha256": "c65596336eef13a1278250c6b12c823139c9b403f46afc6e2bc396fcfd1dc7ec"
+        },
+        {
+          "name": "unity-analyzer/style.css",
+          "bytes": 3922,
+          "sha256": "cdaccf53a5f91965db7e6db27061b167b200b318674c7aeedc06475f47009554"
+        },
+        {
+          "name": "vr180-studio/app.mjs",
+          "bytes": 23567,
+          "sha256": "4740340ccf435cf28b75f8ff9c694825ee47127a61c065804fabbd594b383ab2"
+        },
+        {
+          "name": "vr180-studio/fixtures/manifest.json",
+          "bytes": 1246,
+          "sha256": "bc80b7f6a818900debce9846f14814b29a8c0ed55049e01ad1a218a44e2834ea"
+        },
+        {
+          "name": "vr180-studio/fixtures/scale-manifest.json",
+          "bytes": 555,
+          "sha256": "002d4ac82d816b7af30c79c05eab4b09d1fdd1349230e19ce667a07c2f65b3d8"
+        },
+        {
+          "name": "vr180-studio/fixtures/stereo180-4k-12s-sbs.mp4",
+          "bytes": 944087,
+          "sha256": "97bb3a4335514436374b35c202275dde2cfca27f8f7cec3a224fd77c8ede6582"
+        },
+        {
+          "name": "vr180-studio/fixtures/stereo180-4k-2s-sbs.mp4",
+          "bytes": 167765,
+          "sha256": "50624d8850a380ad759a712a7cae9f5f767a966271ca8a671b433c6146895db0"
+        },
+        {
+          "name": "vr180-studio/fixtures/stereo180-sbs.mp4",
+          "bytes": 26615,
+          "sha256": "4c5b2725f625ea6f30f3f69afaa28644b8f954d60d5964bff712778ebdc86e83"
+        },
+        {
+          "name": "vr180-studio/fixtures/stereo180-tb.mp4",
+          "bytes": 26830,
+          "sha256": "4a00229ce015530ceb1ea7da529d6f7e50ea4f6fb33e161c17b5b9efd5f9c675"
+        },
+        {
+          "name": "vr180-studio/fixtures/stereo360-tb.mp4",
+          "bytes": 27952,
+          "sha256": "72179961c99648647bb3d50940941e9694de41102f5f59d5e77807e1ad207bb9"
+        },
+        {
+          "name": "vr180-studio/index.html",
+          "bytes": 5075,
+          "sha256": "ce191a05890ae6b507fd6ef35fb96ba4b3a2fe2d97c69b12353d9d320c80c6ca"
+        },
+        {
+          "name": "vr180-studio/style.css",
+          "bytes": 2411,
+          "sha256": "6211b8a35a75de84875b232b69af92bfe3c624025cc33dbd24f8eb02a7ec94ad"
+        },
+        {
+          "name": "worker-runner/app.mjs",
+          "bytes": 4786,
+          "sha256": "726af444f864d83a8e5aa63ea72644ebaf08f2e2d0bdd5642c9c5eb27db6f73b"
+        },
+        {
+          "name": "worker-runner/benchmark.mjs",
+          "bytes": 17468,
+          "sha256": "fe080bef7056b3fd114638435ee46adbe7b8d70e10bbdca1891c44145cbb7c7a"
+        },
+        {
+          "name": "worker-runner/index.html",
+          "bytes": 4987,
+          "sha256": "10cda2a20dce482f5116dbbdedf02f802df3e6313c84e9eab4e63688dd700ad2"
+        },
+        {
+          "name": "worker-runner/style.css",
+          "bytes": 938,
+          "sha256": "e7fc29476129d4b744c61e36d2cc9158f013786d5ee2ff8fbd8e8fd58ccd6fbb"
+        }
+      ]
+    },
+    "trial-1.json": {
+      "number": 1,
+      "mode": "baseline",
+      "status": "PASS",
+      "route": {
+        "intercepted": 4,
+        "continued": 3,
+        "aborted": 1
+      },
+      "pageErrors": [],
+      "workers": [
+        "http://127.0.0.1:38983/development/vr180/p5-long-prototype/worker.mjs"
+      ],
+      "httpProtocol": "HTTP/1.0",
+      "native": true,
+      "transport": "browser-download",
+      "origin": "http://127.0.0.1:38983",
+      "servedSources": [
+        {
+          "route": "/",
+          "bytes": 95,
+          "sha256": "dbef6ec58955c99473420fb7d8e96d03dc36d74d365b4a1ad96f14f641d8db85"
+        },
+        {
+          "route": "/development/vr180/p5-long-prototype/worker.mjs",
+          "bytes": 2037,
+          "sha256": "93223525a701ed3137a3f9a3c1a19994a06fc3b22787e8ed4ee00e3e71f96cd4"
+        },
+        {
+          "route": "/docs/shared/vr180/sha256.mjs",
+          "bytes": 6970,
+          "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+        }
+      ],
+      "ownedProfile": {
+        "schema": 1,
+        "token": "37532c84a6514d6488a5bfb8a033f775",
+        "profile": "/home/runner/work/_temp/vr180-loopback-39092947039-1/trial-1/vr180-persistent-owned-gvmpn8no/profile",
+        "device": 2049,
+        "inode": 8937006
+      },
+      "ownedDownloads": {
+        "path": "/home/runner/work/_temp/vr180-loopback-39092947039-1/trial-1/vr180-download-owned-3kc7imgu",
+        "identity": [
+          2049,
+          8937008
+        ]
+      },
+      "browserVersion": "155.0.8059.39",
+      "externalRequestRejected": true,
+      "preparation": {
+        "status": "READY_FOR_RUNNER_TRANSFER",
+        "namespace": "v-c1d8ed41-90bc-4fdf-948e-4d314865dfa3",
+        "namespaceOwned": true,
+        "files": [
+          {
+            "id": "input",
+            "name": "input.mp4",
+            "bytes": 134217728,
+            "sha256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc"
+          },
+          {
+            "id": "output",
+            "name": "output.mp4",
+            "bytes": 134217728,
+            "sha256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0"
+          }
+        ],
+        "ownerRecordsRemoved": true,
+        "indexDirectoriesRemoved": true,
+        "heldLocks": 0,
+        "indexReservedAfterCleanup": 0,
+        "syntheticNonMedia": true,
+        "preparationMs": 3288.600000000006,
+        "unhandledErrors": []
+      },
+      "browserDownload": {
+        "status": "PASS",
+        "files": [
+          {
+            "id": "input",
+            "status": "PASS",
+            "stoppedBeforeBrowserClose": true,
+            "downloadRequestTriggered": true,
+            "cleanup": {
+              "delete": {
+                "status": "DELETED",
+                "absent": true,
+                "elapsedSeconds": 0.008225250000002404
+              },
+              "url": {
+                "status": "REVOKED",
+                "elapsedSeconds": 0.003373693000000344
+              },
+              "directoryEmpty": {
+                "status": "EMPTY",
+                "elapsedSeconds": 3.897300000232917e-05
+              },
+              "listener": {
+                "status": "REMOVED",
+                "elapsedSeconds": 2.0327999997959978e-05
+              }
+            },
+            "diskPreflight": {
+              "freeBytes": 91666997248,
+              "requiredAdditionalBytes": 269484032,
+              "sameFilesystem": true,
+              "reservationGuaranteed": false,
+              "singleNativeDownloadAtATime": true
+            },
+            "startEventWaitSeconds": 0.005524988999994207,
+            "terminalFailure": null,
+            "completionWaitSeconds": 0.27468537600000076,
+            "sourceIdentity": {
+              "name": "334a14dd-deab-4711-bfe3-d2837ae0c98a",
+              "device": 2049,
+              "inode": 94556,
+              "bytes": 134217728,
+              "mtimeNs": 1792293315817591674,
+              "ctimeNs": 1792293315946847860
+            },
+            "copy": {
+              "copiedBytes": 134217728,
+              "chunks": 128,
+              "maxPythonBufferBytes": 1048576,
+              "nativePeakMemoryMeasured": false,
+              "elapsedSeconds": 0.6496589210000039,
+              "elapsedScope": "Copy plus receiver complete/flush/fsync/close/full reread and source identity checks",
+              "receipt": {
+                "id": "input",
+                "name": "input.mp4",
+                "bytes": 134217728,
+                "sha256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+                "chunks": 128,
+                "fsynced": true,
+                "closed": true,
+                "rereadBytes": 134217728,
+                "rereadSHA256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+                "elapsedSeconds": 0.6490586079999972,
+                "queuedBeforeFirstChunkSeconds": 0.28334293700000046
+              }
+            },
+            "downloadEventCount": 1,
+            "elapsedSeconds": 0.9443405150000004
+          },
+          {
+            "id": "output",
+            "status": "PASS",
+            "stoppedBeforeBrowserClose": true,
+            "downloadRequestTriggered": true,
+            "cleanup": {
+              "delete": {
+                "status": "DELETED",
+                "absent": true,
+                "elapsedSeconds": 0.00796441399999992
+              },
+              "url": {
+                "status": "REVOKED",
+                "elapsedSeconds": 0.0020080170000014164
+              },
+              "directoryEmpty": {
+                "status": "EMPTY",
+                "elapsedSeconds": 4.3289000004165246e-05
+              },
+              "listener": {
+                "status": "REMOVED",
+                "elapsedSeconds": 1.762200000143821e-05
+              }
+            },
+            "diskPreflight": {
+              "freeBytes": 91532759040,
+              "requiredAdditionalBytes": 269484032,
+              "sameFilesystem": true,
+              "reservationGuaranteed": false,
+              "singleNativeDownloadAtATime": true
+            },
+            "startEventWaitSeconds": 0.029393919999996854,
+            "terminalFailure": null,
+            "completionWaitSeconds": 1.0585677409999974,
+            "sourceIdentity": {
+              "name": "a1423bce-ea0a-4749-a2d9-d8921cd9986f",
+              "device": 2049,
+              "inode": 94556,
+              "bytes": 134217728,
+              "mtimeNs": 1792293316786596340,
+              "ctimeNs": 1792293317698654549
+            },
+            "copy": {
+              "copiedBytes": 134217728,
+              "chunks": 128,
+              "maxPythonBufferBytes": 1048576,
+              "nativePeakMemoryMeasured": false,
+              "elapsedSeconds": 1.037770082999998,
+              "elapsedScope": "Copy plus receiver complete/flush/fsync/close/full reread and source identity checks",
+              "receipt": {
+                "id": "output",
+                "name": "output.mp4",
+                "bytes": 134217728,
+                "sha256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+                "chunks": 128,
+                "fsynced": true,
+                "closed": true,
+                "rereadBytes": 134217728,
+                "rereadSHA256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+                "elapsedSeconds": 1.0370101179999978,
+                "queuedBeforeFirstChunkSeconds": 2.0347957820000033
+              }
+            },
+            "downloadEventCount": 1,
+            "elapsedSeconds": 2.137897498000001
+          }
+        ],
+        "singleNativeDownloadAtATime": true,
+        "maxPythonBufferBytes": 1048576,
+        "nativePeakMemoryMeasured": false,
+        "allStoppedBeforeBrowserClose": true,
+        "deadlineResetBetweenFiles": false,
+        "elapsedSeconds": 3.082277597000001
+      },
+      "serverTransfer": {
+        "phases": {
+          "bodyRead": {
+            "count": 0,
+            "failed": 0,
+            "totalSeconds": 0.0,
+            "maxSeconds": 0.0
+          },
+          "writeAndHash": {
+            "count": 256,
+            "failed": 0,
+            "totalSeconds": 0.23934471399996937,
+            "maxSeconds": 0.0010796910000010485
+          },
+          "completeAndReread": {
+            "count": 2,
+            "failed": 0,
+            "totalSeconds": 1.424949527999999,
+            "maxSeconds": 0.9074019549999974
+          }
+        },
+        "files": [
+          {
+            "id": "input",
+            "receivedBytes": 134217728,
+            "chunks": 128,
+            "complete": true,
+            "streamClosed": true,
+            "receipt": {
+              "id": "input",
+              "name": "input.mp4",
+              "bytes": 134217728,
+              "sha256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+              "chunks": 128,
+              "fsynced": true,
+              "closed": true,
+              "rereadBytes": 134217728,
+              "rereadSHA256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+              "elapsedSeconds": 0.6490586079999972,
+              "queuedBeforeFirstChunkSeconds": 0.28334293700000046
+            }
+          },
+          {
+            "id": "output",
+            "receivedBytes": 134217728,
+            "chunks": 128,
+            "complete": true,
+            "streamClosed": true,
+            "receipt": {
+              "id": "output",
+              "name": "output.mp4",
+              "bytes": 134217728,
+              "sha256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+              "chunks": 128,
+              "fsynced": true,
+              "closed": true,
+              "rereadBytes": 134217728,
+              "rereadSHA256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+              "elapsedSeconds": 1.0370101179999978,
+              "queuedBeforeFirstChunkSeconds": 2.0347957820000033
+            }
+          }
+        ],
+        "clock": "Python monotonic; distinct from browser performance.now",
+        "atomicSnapshot": false
+      },
+      "browserTransfer": {
+        "result": null,
+        "progress": null
+      },
+      "transferElapsedSeconds": 3.083621694999998,
+      "receipts": [
+        {
+          "id": "input",
+          "name": "input.mp4",
+          "bytes": 134217728,
+          "sha256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+          "chunks": 128,
+          "fsynced": true,
+          "closed": true,
+          "rereadBytes": 134217728,
+          "rereadSHA256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+          "elapsedSeconds": 0.6490586079999972,
+          "queuedBeforeFirstChunkSeconds": 0.28334293700000046
+        },
+        {
+          "id": "output",
+          "name": "output.mp4",
+          "bytes": 134217728,
+          "sha256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+          "chunks": 128,
+          "fsynced": true,
+          "closed": true,
+          "rereadBytes": 134217728,
+          "rereadSHA256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+          "elapsedSeconds": 1.0370101179999978,
+          "queuedBeforeFirstChunkSeconds": 2.0347957820000033
+        }
+      ],
+      "transferSnapshot": null,
+      "downloadsStoppedBeforeBrowserClose": true,
+      "namespaceCleanup": {
+        "status": "REMOVED",
+        "heldLocks": 0,
+        "recursiveDeletion": false,
+        "knownMediaFiles": [
+          "input.mp4",
+          "output.mp4"
+        ]
+      },
+      "browserClose": {
+        "status": "CLOSED"
+      },
+      "downloadLifecycleAfterBrowserClose": {
+        "browserClosed": true,
+        "apiStopConfirmedBeforeClose": true,
+        "scope": "Browser closure is recorded separately; it does not retroactively establish a download terminal API result."
+      },
+      "downloadDirectoryAfterClose": {
+        "status": "OBSERVED",
+        "remainingNames": []
+      },
+      "serverClose": {
+        "status": "CLOSED"
+      },
+      "serverTransferAfterClose": {
+        "phases": {
+          "bodyRead": {
+            "count": 0,
+            "failed": 0,
+            "totalSeconds": 0.0,
+            "maxSeconds": 0.0
+          },
+          "writeAndHash": {
+            "count": 256,
+            "failed": 0,
+            "totalSeconds": 0.23934471399996937,
+            "maxSeconds": 0.0010796910000010485
+          },
+          "completeAndReread": {
+            "count": 2,
+            "failed": 0,
+            "totalSeconds": 1.424949527999999,
+            "maxSeconds": 0.9074019549999974
+          }
+        },
+        "files": [
+          {
+            "id": "input",
+            "receivedBytes": 134217728,
+            "chunks": 128,
+            "complete": true,
+            "streamClosed": true,
+            "receipt": {
+              "id": "input",
+              "name": "input.mp4",
+              "bytes": 134217728,
+              "sha256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+              "chunks": 128,
+              "fsynced": true,
+              "closed": true,
+              "rereadBytes": 134217728,
+              "rereadSHA256": "d45a4e796e5ec289b2b743d22bb7b9f153b87e47661fc839beac19ff897b67bc",
+              "elapsedSeconds": 0.6490586079999972,
+              "queuedBeforeFirstChunkSeconds": 0.28334293700000046
+            }
+          },
+          {
+            "id": "output",
+            "receivedBytes": 134217728,
+            "chunks": 128,
+            "complete": true,
+            "streamClosed": true,
+            "receipt": {
+              "id": "output",
+              "name": "output.mp4",
+              "bytes": 134217728,
+              "sha256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+              "chunks": 128,
+              "fsynced": true,
+              "closed": true,
+              "rereadBytes": 134217728,
+              "rereadSHA256": "3276be35e2a5479aff7c235dfb6ea6d6dad9567ede27836780181da137fa98f0",
+              "elapsedSeconds": 1.0370101179999978,
+              "queuedBeforeFirstChunkSeconds": 2.0347957820000033
+            }
+          }
+        ],
+        "clock": "Python monotonic; distinct from browser performance.now",
+        "atomicSnapshot": false
+      },
+      "runnerMediaCleanup": {
+        "status": "REMOVED",
+        "files": [
+          {
+            "id": "input",
+            "receivedBytes": 134217728,
+            "wasComplete": true
+          },
+          {
+            "id": "output",
+            "receivedBytes": 134217728,
+            "wasComplete": true
+          }
+        ]
+      },
+      "downloadDirectoryCleanup": {
+        "status": "REMOVED",
+        "recursiveDeletion": false,
+        "directoryIdentity": [
+          2049,
+          8937008
+        ]
+      },
+      "profileCleanup": {
+        "status": "REMOVED",
+        "path": "/home/runner/work/_temp/vr180-loopback-39092947039-1/trial-1/vr180-persistent-owned-gvmpn8no/profile",
+        "browserClosedBeforeRemoval": true,
+        "scope": "Only the freshly created, identity-checked disposable profile and owner marker."
+      },
+      "elapsedSeconds": 7.998707142999997
+    }
+  },
+  "rawEvidenceTransport": {
+    "begin": {
+      "schema": "vr180-log-transport-v1",
+      "runId": "39092947039-loopback-browser-download-1",
+      "status": "PASS",
+      "archiveFormat": "tar+gzip",
+      "bytes": 12931,
+      "sha256": "8c67e647470d816d805c44fa072286cce5b8112079a75df7266616e917d7ceab",
+      "base64Bytes": 17244,
+      "chunkChars": 4096,
+      "chunks": 5,
+      "manifestSHA256": "ef42b362460ce39818d8f06640cc07231545aae751a382ef9b01b0a3d89eeedd",
+      "complete": true
+    },
+    "end": {
+      "runId": "39092947039-loopback-browser-download-1",
+      "sha256": "8c67e647470d816d805c44fa072286cce5b8112079a75df7266616e917d7ceab",
+      "chunks": 5
+    },
+    "chunks": [
+      {
+        "index": 1,
+        "total": 5,
+        "data": "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"
+      },
+      {
+        "index": 2,
+        "total": 5,
+        "data": "9t/lxTY0++5dfKvm9jbnxc+v3qI1t3676sCfR7WkqzQu7W6n5zufuPmung1V4XJEI/FiOqmj2cVqPHZw9flqZm75ugGZwWJWBqN2im46yyUP5t32qTK++n4wagZ5WuYDxEfc0MymIdE0wvhqUOZ0BnA0Px+EwapJg9Wk8+DZ658GXVQ73t0Dq/1iV8v9Xns689Xzt6dvtpRjVuhM5Ghy9pIUrH/rVjd78KBxujnxsEvEpymIpymIpymIpymIpymIpymIpymIpymI3/EURHdGpkXEhyPxrxO8PoT5i5vG+hU9yP6X72EDt/Ds4d17H0Kz3kH002MdRloe1Tpc3Ec8fHXQQbIbXKizzvakSXuudxfXoVPKg+a8wJ7K/Bx/T/A4TcnfrrcWDNutBaA+ML3L6ZxymwyWb293IrRHYAYXoT30eJsp3HIw9th7Z5nlqtspYb9ZqVB3YJgCUpiN5t0BsFeTMtg+hDpIoBWDD6PmvJW8O4kKXhXG4+Gs27U3WB0GHpwtwix/P+ieWjb4W/cA8DbwJLSOjscOulPHx4OXU/wgl4RnD9rz3oOQ6HBw62C649bwSF3qldbLL48/6xPOBn9+PljNE6wSPHTPwAPx0JMyaf/4n0UYk54ub+mOh1PP5gXc24ZHW92xPMDLB6WCHK/TSmzc2XrH2SguyEhI9jQd52EKGMFBLOfh/Wi6FokUAm8J79BAWvK+PrHdjje8Bez9YtSeAlYBnjzHoEwQKuTgo+LVOIAsjYhTk/A8FZ2WB9G7rSld0OrUcG08R73nZxM6InZnkjaO0bYpYza/O273Cx05AyxXaJdRcTEakYsPzplopHVBRoQt+C8uIwKeMV7wkGWyKinpg+FBrI4wH93nKG95T1aQyjAu6CDUSgLFDXojc6t8StrI6m0olgklSwBr00aQSNJVg/AbYhYlCG6C48CUzKdDJFimt+lerAVB3oI7PY+UdYblLBQAcDURyiUqD1xkzunYK4saEiQrawwyhchEkYe8uOt+urh8eSys4H9aKoPWAhdoq6wNEV0gig5B5WiYKZQeIBdpIVixUZaaWKna6njIyzvYOVq/G8pWDSvZpaoSBtrwFJQMDiCDO+Ot5DlKMGTDWEjRuOR9Rfer7CEzd3X97n1nnh/jGPPKuKbT8Xz5BoCZRR7CC48y/M6yQUnk6nSpkDZGpZVEu5LVJcSaZDUGisyqAM3xkSefAMkqk9xzb0uC84x9L+pGrD0riEgBd/u+O0e7fKVVmrKXAAbCWJKJtvJWKWjXWlF0welUvdTBIjjiD/w9VS5UpQ0oQu1+5a0EHMs30hoLdN/QwZlgvdKwR2iOLDYVr4szAooMqCkK15bnJJJJpZTEFYetRLP7jR2W6dq6fBmGSuBBpRYZZAD384io0cua4bqFS3hiYNJoL0AcGamqZCnKbAJjpsay+2UbQXgOhBHO1uaIJzOdnc/WZ6UEA3KShisXEM7xN9DOFHUsCTpSI52RMVIYtFMlhniv10mDjuIU/gVBssHDr53liiHtSMKw3lz0ywoe0+KW1MeGAcUpvooP0PZJ88Py3pfT5vRjQym0bpKTo0iYGxb37HJEm6nQw/Tqtz/9+dnPb36hODsZlI8t+D4bSDact/F8sNz+PjijJB7X7dkMAe3k4FMEeIoATxHgKQI8RYAdEeAWTfLHygn0GxP+OiHSMtPANeFY0sU2KVqL4O9IoPgH/3RxBaNOu4xBWr5EMrg78r9JuOCt/I9CMP2U/+2r5X/7XH56PiIjHgFX/DQZNbCfn2hei6JRCzKuH1tMQkTXJVoRsrEmCQHvK7KONgYEAXiS4otZpmiLi9E4X2eli3bYLX8uU8nV0cdmMdtYDT2CQ5mVKd07j5uLpNeJoozh+nrJdT3TrZKOwgpdjUC8MFWyiojhQw1BOKhudNVrlQ3L2hsVa7VcWOtKzMmZciM1V2tP9Mzl9MM6g8j37ar2giZX28mLbmLn07ebokvDhk3slRxhWfRIbgXNKiN24/8URLUR/lczr/BfXrzxAA6KIx5UXbXPukBsZgsQnGC41z+W5NTp6t1QzHd1PTfWmr6+R8wXKjsHVCAdkAEiY0D3BpsQ1yC1BTTyxggLfOKCsTwq+H6EBOO8zpE9cgv47iZ4pZizPU3w1OsAT1JrrpQEmFJR6oTgJazOuYhUUxC2uooonWQQAADZ2uRKRiR34jOasA53sIaSl/Nns/X6xtIw3tP1q+FFaWDLTVgBJscqg80lk6HxVjDleLI5GJg9jDPLGJOy2mYGoAEgI7R3WRYGzB1M9msssXz6LXTkCpeIt1WDK1T4E1sNYFF03kXmRODeiEBLL3A0nMHqaskZjoCAk4cpqutY3uI9Ot71dt0/DZwO+FNIzWDlvgYtFP2+m3hcAajBlLJGbnKo1UTtYtL28fyckF2Y5BZLrlzL5vLDP7/ZWmA7nkz/Ud5djcfXA7fSEdajHgXAMwHLACYmDiQGvxKBTR1MFhBGKAHsD2NVBsjUSwUYTulNOIFHEZ3WN7T1ljBhMroIcL9DmpCdQj9OwuXljZRza+G0w8D2maADCM8+CQ5WpUG7Cp31dEUWQM0Et5LAAjFUUO7AJewQvtHIKIF0oTwqHSrg6i/Had4jJdie4T1SyqjQI+BqykMLwYmMzik7AsM6g7ICqdrCApQVMpsSI3gFmCQ0HMAXGnyolB0SPm8ueoYZoFTKHhmzJgRcqvNBQADoda3JsswgtbGgc1XzIhFBgFiDtBhp0wY90G9wHn2wjCDyy95szx3vGnbmXF/Ugyw664qgxjy4k9dBKuip5bTOmIC0ETFAoJInKhNdUZI5JlWFDyt8lczrMGHP6BQ4cbZeSTkUvy9GGA20AYaBjoKxACtICfbDa7ClgJRTmjgieqDHwvvMctUxeeNkxPca1vUQSXGpdIsX/aJq51SPqDBnw0KtYLzciQqqyUFKeTDQ0pjxv4r4QCTJKQ3W5p2q2iXoLZh1ikI/RNRZOaNlirBbBYSxvfoa4NIlr7DnLB3QWHVJW6tlgPlnJbSLIJzQVUIMoO6V2DJoNkMYtqyqB3VsE+bvhmeLUd6hBJo53yNqisBfsC2GQGpSAp13gAQJvLBmzn2GsStEsMxCIqzhwCNDzcXHkB2R4UNF7Uk6uhYRvrzPj/pMIR3vFKkEYuOV6KYBp2XVuZiA1KqwmZyTlaDOcK4sJYiOP9Ryum+PiPN5aeZ73RJ0T/RFIM8FM1FLL2nHTmDeZs0rlIKlIngS8OwR/xLoXhkw5gZjK3MWziFuwdvvFywBUoynZ7u8ueqDTCYYgLmAQA/r8BLDBFwqBY+4IXDLs3c0vFDPWoUCOCnoQFxBqIJP5/p+EvXbgjN93rB4DXZQatAxWgCRzEQ2PDJYMQgqwE9GlGZOtdlOo/FcIjxyBEoSW/o7JKrh/QgA6Xj+/qzPOvs8CQCCToGDIbkoYBN4LeJawKukxT+sN9oCNgQFHsKczEoKsDRcBYKCvt2hTWej5nwR92sTntanTHALlXmamtE+IhKmEA1wmzK+woN5SdiQJ4W+g7oxVUMuhAF1QmcCx++Xa59AgvfqUlUW3QNamYKVHlI5A4mUkJVUxvJiM8/VQ6mqCSmGKKvSECozDiLB7uioFm0Pl5sOdkIry3s9gsrVMg7fzqqV2SQjHLTG4L0F0C4no5kErkqxCkFTW45bMD34al45RpofINq+jpPG95FH72zQGs7Ug79g7CwAaEgWLgARitksfcyyBS1ApehBxFRVAaVkAeYCZjhAunlzNS47PITvDU1AoRkomUmQiCpAZ6FVWlBLNANrYMWANEb8O4msVFVeOI9AAI4WbAX62y8cyFTZ70sF06Kv0wTYUcwRjgrCaS8hG8h14K5C9yLRbOYB+eC7bE6lcsdFlSEmQiNWxzt86XIinaLQoiknlEz3l9Pji9zTbYh/fSonyWkDzTPEQIxVquTBXNGRMgdFcihgdvgvnEXlEWYDNoffOJIfI36YfGk8ospRvSYhpejzs6B6AR0GZwtPBTCcFKIiByUMiAEwI/hheOEMc+EyY9xNBbSjlOPZwBOKcph83Z/DfcGcG97nVbgp1I28Qt1pk6BK"
+      },
+      {
+        "index": 3,
+        "total": 5,
+        "data": "CRAYmLNG2ilY4IWLw9VCjC0ZaDE8C4J5AlYycDsHyQnhJmW8I15p2RfThUO0NtVBpyBBO69gEiISTYqDH0WCm8UJbgDsoJ0Y5Aych0GmkO6LOEi+y+l0vOrE5bpdf18KMJo+q4GvU2C+ShSYhIRkNKmWDUZWWqUdogY8JA9w4ehTx+FmEs3oF2mY5l7IB0vbr5rO9gmZfaYghXhS4FZaBlEs4I+g5RsE2yQZ0TsYeMghWvB1YD3N4D6dkb66g4Xc0Ylof59HFD7C/8WK2OCYQlCNhpKwB9DLkMHLMsaYMAksPYNVeGmtUBaYpfAIyHyYRl4uCx3sFLEXQxkOWuYYB0irYF6MGQH0zSxsAxyCZQsvCL5La61ecRckTfoK0GRpLJDoQRJ2rIcSyQ2JUuziaRsnTDYxgwcFByRHZFMCyMkRZ0AojjZkDYCchCkl1YSokqwzGfGGWw/Qahwwjz5MH/eJZ3j/XIc3OXq8k1bZEvgWmLoy1UjCXtULhOgCx6iyqFwQY9dwpCByQDXwTPFe4tVm6Xfwt+HSA30I84vbUhrey3UjUd0k0T8CwQVOBTAC/xOaYJiTtbST5HBA3vhitY2iAk9Y2BbgPWzoQCnbpPl7PaXqNWvOI8KJU4mwGAiaNAAJSprEpYVZKF0RDEPKNNNhaLIjg+hCQ4tnUbp7jjXEXExoc+dlSO9oPXOHNjKmesEOYmJlBeDCgXlFQ0crsvfgZFYBYeicmQ0BkEJV8CYyeq2VyNSlPhZ3mIhN+bgjZgtheqeKMMqAXTkldCVQtedFQA3B3MBEVBGiwlSU5LBuSBuyEcD+cOIlVoSkqMJ95XtfJnk6O6l1HBC1f/7pxenLt6d9pNL0MRPHNPxcFC5GkNgsAwP5zwCziM0JOmdoyghwHFJGYDXLFOS0CkAFFB1e4GFSdtPK3YJxT/Dui90Iy1rYoBSgB1A+YrQuAJWmW6UHO0B44YC1utYAFGmDwZALmgOrLLAHCto/4s5z3zfiDmNdgWMKA8vDOMMvQi0j2LqgeUwg7WKESJVrXhVxB3yVKfiDxyiEzXuJ2FGEGOajtA/qAhD0rtrRPDozThgJf4jw55iFKhbLPEBDtImDsQCtJVvRm1ILRraTgeBcrqXWg0Vcbhvr70hvell88E6AKih4Su1tqoLS2VltELMDA8JUAfChaAWmWGjawenQLjyCQlcY/uH9mKazXc5Hyr6RTmCbCTi3YMDphFaFoplgS5XkNiv6TQpASqajYhKS0xIwcEiK3hdjYzlYwnZzdTPfjSD7+lGZVOGzbYTqwStS+Ea0URKDDuedEbhplYmZSjtfNChEtoGD3TsVeVTZHCxlt6h9tQv/yD4hPZiq8bFayKYr+HzlJHblVFpIwmtBHKE4D7R5TPqiMn6gEcoBNUu9p11vCjnP73aYNfhI70qPANoKwOEZogkmK2zLAfQCixeQAgWUBjyJ8G3huH2tNkf8E7BSy8JYPFjAptBGgGZnPwqn+jx5dNYFxWjfXSnwkLQlDh47AtrgEmw9V/La+BOoTZjAmaseMZEV7VXm+WA5l56yvQSCM7ka8mPDj/XKuzdn/9s3H+UcuEmvIiSG8MMSGbMFsgDgYboQ1FTo1RJZygX8DeguZoKWVvkAhYDzt1Do+gjy7w6eMJ/eiYMqsy9U8iKCcYFFGJtBvqtzuSCEt5PvFkyoADQZMLPKs6XaWdb66DNTjyDz3lBqepeG4PVLAOtRGi7MlSS4IhOEyXNwYkQi6anPdQXL5EVzhphbUoJeJ86SKp8vdb9mGyiG7lNtnaTmlOe+wh9kODOd0J0Yf3RjkEyUikDqEuxCgojAs5WAyCXA8BEhENbuJXCH88IkjK/mo/m+2AoS2zf7EVQGfq/o1iQKkwLyGh6l4TJI45lvp8K5rggO0HOanWEAAdLlnAXinH2IlKu/7HAVivVzToy9MczTOpqEz0ewNYHWfL2KCUg06ehoq3KwGogqKxZ9cAxIQYO34MYHSTpL56P3O8KsgQX1ASoPwI4YKuAWIuItHDREAskEjKksMdpgnaMG2mIBVsgDTI+4HTBLqetKdIfJWT4G2om1w6Cks7oXsSQw4VgKWFDIiVUVFfgwOhH0zWOsbWJA1N6CGhdfW7hCM6/ZZeslf9DQ04aL4c5gxpn2vSsRMHHgUAdykkHfLFSyiFilZVV4BpTvvQtA1kYXTcwKOuy19oh24KGRPWjoR5OzMm/aGYcdw29sL8qimbisgQdcjUFwRvOyAbqpgbSYkFTsA/3X0gD42ORzUNTRHLrLXRQPkXXJm5eRYPiX0TsEso9NL5/qk9kAYHlbeLFtWLKKK20TgJdUOoIYKEQJR0jRwKeBmaL/U6BVTmJeqtTPkHkfzTfC9sVcDhBtlPTQA7BsUGXaMt+GAMOURZSlORIYko0g2wZ2aG0GTdTJSI/r4TOkXS7A7wgFQK19M1AsVYR6R6tR6D/EqVAFOhSAzHDDyPYyh4XSAk2ItMxN6KbQUiMYj/WfIe7NqzvmfDgX/TMViJvE84h3ZQmiWkTVcGUIV4WcAXwuGEQNDgAYWM3S3k6QcAvrdAhkDxGb6tHu0AVr+jWX9I8DlCSlOSIYOljROpEOUA+oKM1jAOQKkY2JBlwQnFsDznHEtaTSg3zYcuJnSAkGdpJE37sBqwSMOYtAWtxQ4VVggBQk1AFsy5WibBEhgDeCQhaaPs0WeJ0O51jOMkD7g8SlSfLdbky4/i0O4ApGh+xEFpxwrInBGQU1AA6EnNnwrEpAcEhkgyBkKrqowTa4qtU9qGNn4cNwfyTTpnepyYJe0PJrBKSySevskwvMFQhVFPCZZ6LFObhWASBori9kqEAkOgkdfpCwi3HZgWCs7t09SmupUSKQFnimaDLYN21uEpkrQwEMjpYWzrnVFW5Kq+i5KOhsZwv0Ij7IonaGWtrv2cfHtMvMIfZXKxD3JXkiByX1TiZBizrKsmQQWJ3PwDPce9rtWmk7r4/g5Q+Rcc8sJe+HWJaVVGAnCtatOdXEUZJm9CnpU65e027UKCFcDgmgxiSGfyUts2VGCH8/LtAdY9m3MAuG3yedkRK+BQgPESgpFgCZEbCMgq8nqAJYSqvdCAL4Gl5eMgXIXWKtiBAZVw6Qbt+yrPeqTzq46QB7BoLXEXTDGtqyJHiC8lHOKdqxSMvHTsJ7OgdAIhCHEtU2gRq4yA+QrgV7qyQ1/bMCondpW6SMvonApKkiRhYP4BcCuizQSAeamgrCch0rmLcpcO+S1iWyQRi1TLMDZDwr033TFqoXj0p0DxwLukj4LG2l44RAm7TXnnEfimOeigmBk7S1TpSJDKgJgd4ka2pVB8h3cal2gA3ghT7ZCMTRqSoQY8QQjLZmouIfMnqHDnOS9vZGz/D3AOokghcIms4R1IvOi0NkW3wcpnBJhzN2yMh6TwIkblzS1cVQM+3jzJEnmYKGR7SuEnNH7EPXZzBPljOcvk7tUYBofS3yEBGnl6XbLjnfxd774km20rcbwkIA+IEbRrATkubt4e0y4jcCIcKLBXOKgZhywvjSSU04HxeLOUDAeXhPSIIOp+1w1FL3LRzWgGhXZYXVVlB0EKFK29mU8rzkmCpcOO38QxAHhtQAaUJpBWcJTXACTvsQEW8XN+8tbP7oRc3vJV13bnI6u9i1qcL1bokCVnWAb5z2PjuZuaUSlcKYauicShBQQtDcnHxIIViwH5qxC8A77W6udIiT3rsnRXrV14Eamq+CKBF9pgxtIdVUHAg0hhaHyY9QZNOpZgCIwoK2wDiA30EJBxZ0Vwd21ZT373ynyp19KIbTVlzmfGIBbs1D3Z0JRUk4kRzAFDxcclXgjikU9BxIF7iuUUBnKbM7pzf2bB9TrHcnvq0VKEnKmmjHE8KtKlpEsFWtER6KZvQ9HAzYF/dWggpEKCQMWylb8x0zyE1J5xM68DakXC/zk/A+NGE2zFe4YZTmw8vzq3mcTsqw/b/ZdDze36nAd7174ExgOSAccm+yz1GpQv5YAk6Dd2k6kw1vWSKtHdXEgGloF4WKxrr2nPCjN2I5QdsHexyATK9DgjRAN8ALjtJXOqAgsDLgWEeFuiqnLWoIjFBo"
+      },
+      {
+        "index": 4,
+        "total": 5,
+        "data": "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"
+      },
+      {
+        "index": 5,
+        "total": 5,
+        "data": "iGKOrwYFrWrrzg3CYNWMwWryb/Ds9U+DLiIc327tav/H1XIfx47OevX87embjYGdlYswmoAwvySluLkto2OV9+73myS0T4wnOvpER5/o6BMdfaKjT3T0iY7+bulot8e6RW73R4hfJgB8CPMXN43oC1nw7hdtodFbeOv+XXQXYF7vCPjpIRvRl1vv7y/OI26sv/eBgBt4u7OMdrdyGO/A1K8mgMXNeYFel/k5/p5g4U3J366XIoftUiQgNkzgcjoHfi6D5Vvblct2+/SAjkyW2QZuvmXM9th7Z5nlqltNtX+ow3pf4HMjtcC/5Pwf1YTk2+f/lDJP5/++2vm/9dGj5QHu8p7sLl0nnhi+50erqPFT64A3HcXae2wfiBsuf7V6zOnHNF7kMv+pmZdx3ZytuKPgepm8H82mkzZdU38ODNVboEpT1aLCTClArVRaSeXoHCuS6jxVFyNlLC7FaV5KddZ5Oq6tXOCREgaXcnep0ssyIRc1vGyD9XA6C2l3vnXRd+g958yy1YFygLtABeeELM5Zk3X0VCJPpsgj5bOnBINCUGWyxJ1zRqZqzB3pgTBgu7KceNF7JM/QsrhNwYqaDeWApMpDymUQyVytswrYXxdKoIbOc4HxxAMlEyia6kebu5JstltMhqMJbQeg8io7hHOit4xgqJQChlNmUkYJ/4vQkhcQkUjn84uTOWnKtEW1YSAO88aJQNkjdVZc3JmAa+MwdN9UqbZ9AxiVLlXElLRKMVMCvMqKqyaLHELyBaoFDMooFW0RwgnnYhZFCuOpvIKXf9Sj40+fp8/T5+nz9Hn6PH2ePk+fp8/T5+nz9Hn6PH2ePk+fP8Dn/wHWRAwFAPAAAA=="
+      }
+    ]
+  },
+  "independentReview": {
+    "status": "PASS",
+    "scope": "Bounded synthetic browser-download transfer only; not 5GB media acceptance",
+    "reviewer": "capacity_review",
+    "verified": [
+      "GitHub run/job success at exact source/tree; remaining jobs skipped",
+      "5 raw chunks, archive SHA, manifest SHA, 6 records, all manifest record hashes, identical embedded/standalone trial",
+      "11 source closure files, 102 public inventory files, 3 served routes at exact tree",
+      "Independently recomputed 2x134217728-byte fixture hashes",
+      "256 chunks, complete byte counts, expected/stream/reread SHA, fsync/close/full reread",
+      "Owned dev/inode/size and both download delete/absence/empty/revoke before next file",
+      "API terminal before browser close; OPFS/runner/download-dir/profile cleanup",
+      "Original all-request guard: 3 same-origin continue, 1 external abort; page errors 0"
+    ],
+    "decision": "Accept limited actual 5GB caller integration and one trial after code review/checkpoint; keep 600-second deadline, 33416582400-byte free gate, full-media hashes, independent oracle and fresh receiver acceptance. Download directory cleanup is an acceptance gate."
+  },
+  "purposeAudit": {
+    "status": "PROCEED",
+    "reviewer": "purpose_audit",
+    "scope": "Minimal actual caller connection and one 5GB retry after diff review and evidence checkpoint",
+    "reason": "A successful native alternate recovery path provides new evidence after rejection of the HTTP route-filter remedy. No general extra calibration needed.",
+    "preserve": [
+      "600/900-second transfer deadlines",
+      "Capacity and quality thresholds",
+      "Whole-byte recovery and independent inspection",
+      "10GB and public integration wait for actual 5GB full acceptance"
+    ]
+  }
+}
