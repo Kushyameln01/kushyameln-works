@@ -48,9 +48,9 @@ function withSdkCoverage(scope,side,expectedFiles){
   allSuppliedFilesAccountedFor:Array.isArray(side?.files)&&side.files.length===expectedFiles,fileCoverageCounts,
   coverageSummary:side?.coverage??null},fullOriginalMaterialsDiagnosis:'not-claimed'};
 }
-function matchesFiles(side,files){
- if(!Array.isArray(side?.files)||side.files.length!==files.length)return false;
- const expected=new Set(files.map(f=>f.path)),actual=new Set(side.files.map(f=>f.path));
+function matchesFiles(side,paths){
+ if(!Array.isArray(side?.files)||side.files.length!==paths.length)return false;
+ const expected=new Set(paths),actual=new Set(side.files.map(f=>f.path));
  return actual.size===expected.size&&[...actual].every(path=>expected.has(path));
 }
 function noResult(context,operationId=null,why={code:'NOT_REQUESTED',message:'共有診断は未実施です。'}){
@@ -67,9 +67,9 @@ function newMetrics(enabled,operationId=null,context=null){
 }
 function recordStage(metrics,name,started){if(metrics){const stage=metrics.stages[name],elapsed=now()-started;stage.calls++;stage.totalMs+=elapsed;stage.lastMs=elapsed;}}
 function observe(metrics,name,fn){if(!metrics)return fn();const started=now();try{return fn();}finally{recordStage(metrics,name,started);}}
-/** The caller owns pool. This service only cancels/disposes its own SDK sessions. */
-export function createSharedDiagnostics({pool,onUpdate=()=>{},collectMetrics=false,analyzerFactory=async options=>{const {createUnityFileAnalyzer}=await import('../../shared/unity-analysis/file-sdk.mjs');return createUnityFileAnalyzer(options);}}={}){
- let disposed=false,current=null,report=freeze(noResult()),pretty=null,compactBytes=null,analyzer=null,analyzerPromise=null;
+/** The caller owns pool (including lazy poolFactory results). SDK calls snapshot byte inputs synchronously. */
+export function createSharedDiagnostics({pool,poolFactory,onUpdate=()=>{},collectMetrics=false,analyzerFactory=async(options,{signal})=>{const {createUnityFileAnalyzer}=await import('../../shared/unity-analysis/file-sdk.mjs');if(signal.aborted)fail('CANCELLED');return createUnityFileAnalyzer(options);}}={}){
+ let disposed=false,current=null,report=freeze(noResult()),pretty=null,compactBytes=null,analyzer=null;
  let metrics=newMetrics(collectMetrics);
  const isCurrent=record=>!disposed&&current===record&&!record.done;
  const publish=(value,knownSize=null)=>{report=observe(metrics,'freeze',()=>freeze(value));if(metrics)metrics.status=value.status;pretty=null;compactBytes=knownSize;try{onUpdate(report);}catch{}};
@@ -90,15 +90,20 @@ export function createSharedDiagnostics({pool,onUpdate=()=>{},collectMetrics=fal
   if(!record||record.done)return false;record.abort.abort();try{analyzer?.cancel(record.operationId);}catch{}
   finalize(record,'cancelled',why);return true;
  };
- const ensureAnalyzer=()=>{
-  if(!analyzerPromise)analyzerPromise=Promise.resolve().then(()=>{
-   if(!pool)fail('PAGE_OWNED_POOL_REQUIRED');
-   return analyzerFactory({pool,onProgress:event=>{
+ const ensureAnalyzer=async record=>{
+  if(analyzer)return analyzer;
+  const lifecycle={operationId:record.operationId,signal:record.abort.signal};
+  const borrowedPool=pool??(typeof poolFactory==='function'?await poolFactory(lifecycle):null);
+  if(!isCurrent(record))return null;
+  if(!borrowedPool)fail('PAGE_OWNED_POOL_REQUIRED');pool=borrowedPool;
+  // Pending construction belongs to one operation. A cancelled loader cannot
+  // reject a later operation's loader or install its stale analyzer instance.
+  const value=await analyzerFactory({pool,onProgress:event=>{
     const record=current;if(!record||!isCurrent(record)||event?.sessionId!==record.operationId||event.inputRevision!==record.context.inputRevision)return;
     record.envelope={...record.envelope,progress:clone(event)};publish(record.envelope);
-   }});
-  }).then(value=>{if(disposed){value.dispose?.();fail('DIAGNOSTICS_DISPOSED');}analyzer=value;return value;}).catch(error=>{analyzerPromise=null;throw error;});
-  return analyzerPromise;
+  }},lifecycle);
+  if(!isCurrent(record)){try{value?.dispose?.();}catch{}return null;}
+  analyzer=value;return value;
  };
  function start(context,prepare){
   cancelRecord(current,{code:'SUPERSEDED',message:'新しい共有診断に置き換えました。'});
@@ -116,7 +121,7 @@ export function createSharedDiagnostics({pool,onUpdate=()=>{},collectMetrics=fal
     const prepareStarted=now();let prepared;
     try{prepared=await prepare({operationId,signal:record.abort.signal});}finally{recordStage(record.metrics,'prepare',prepareStarted);}
     if(!isCurrent(record))return;
-    const compare=context.target==='compare',before=compare?prepared?.before:prepared,after=compare?prepared?.after:null;
+    const compare=context.target==='compare';let before=compare?prepared?.before:prepared,after=compare?prepared?.after:null;
     if(!before||compare&&!after)fail('DIAGNOSTIC_PAYLOAD_REQUIRED');
     record.envelope={...record.envelope,source:clone(compare?{before:before.source,after:after.source}:before.source??null),
      inputCoverage:clone(compare?{before:before.coverage,after:after.coverage}:before.coverage??null),mapping:clone(compare?{before:before.mapping??null,after:after.mapping??null}:before.mapping??null),
@@ -127,15 +132,21 @@ export function createSharedDiagnostics({pool,onUpdate=()=>{},collectMetrics=fal
     preflightDiagnosticFiles(before.files);if(after)preflightDiagnosticFiles(after.files);
     if(before.files.some(f=>!(f.bytes instanceof Uint8Array))||after?.files.some(f=>!(f.bytes instanceof Uint8Array)))fail('INPUT_BYTES_REQUIRED');
     const parameterLinks={before:checkedLinks(before.parameterLinks??[]),...(after?{after:checkedLinks(after.parameterLinks??[])}:{})};
-    sdk=await ensureAnalyzer();if(!isCurrent(record))return;
+    const manifest={before:before.files.map(f=>f.path),after:after?.files.map(f=>f.path)??null};
+    sdk=await ensureAnalyzer(record);if(!isCurrent(record))return;
     record.envelope={...record.envelope,progress:{stage:'starting'}};publish(record.envelope);
     const sdkStarted=record.sdkStarted=now(),options={inputRevision:context.inputRevision,sessionId:operationId,parameterLinks};
     let result;
-    try{result=await (after?sdk.compare(before.files,after.files,options):sdk.analyze(before.files,options));}finally{recordStage(record.metrics,'sdkSettlement',sdkStarted);}
+    try{
+     let pending;
+     try{pending=after?sdk.compare(before.files,after.files,options):sdk.analyze(before.files,options);}
+     finally{prepared=null;before=null;after=null;} // Release local references only; never mutate a retained comparison baseline.
+     result=await pending;
+    }finally{recordStage(record.metrics,'sdkSettlement',sdkStarted);}
     if(!isCurrent(record))return;
-    if(result?.status!=='succeeded'||result.sessionId!==operationId||result.inputRevision!==context.inputRevision||result.completeness?.truncated!==false||result.completeness.totalCount!==result.completeness.returnedCount||!matchesFiles(result.before,before.files)||after&&!matchesFiles(result.after,after.files))fail('SDK_REPORT_IDENTITY_OR_COMPLETENESS_MISMATCH');
+    if(result?.status!=='succeeded'||result.sessionId!==operationId||result.inputRevision!==context.inputRevision||result.completeness?.truncated!==false||result.completeness.totalCount!==result.completeness.returnedCount||!matchesFiles(result.before,manifest.before)||compare&&!matchesFiles(result.after,manifest.after))fail('SDK_REPORT_IDENTITY_OR_COMPLETENESS_MISMATCH');
     record.envelope={...record.envelope,progress:{stage:'complete'},timings:{...record.envelope.timings,sdkCallMs:now()-sdkStarted},
-     inputCoverage:compare?{before:withSdkCoverage(record.envelope.inputCoverage.before,result.before,before.files.length),after:withSdkCoverage(record.envelope.inputCoverage.after,result.after,after.files.length)}:withSdkCoverage(record.envelope.inputCoverage,result.before,before.files.length)};
+     inputCoverage:compare?{before:withSdkCoverage(record.envelope.inputCoverage.before,result.before,manifest.before.length),after:withSdkCoverage(record.envelope.inputCoverage.after,result.after,manifest.after.length)}:withSdkCoverage(record.envelope.inputCoverage,result.before,manifest.before.length)};
     finalize(record,'succeeded',null,result);
    }catch(error){if(isCurrent(record)||disposed&&!record.done)finalize(record,record.abort.signal.aborted?'cancelled':'failed',reason(error));}
    finally{try{sdk?.dispose?.(operationId);}catch{}}
@@ -144,6 +155,6 @@ export function createSharedDiagnostics({pool,onUpdate=()=>{},collectMetrics=fal
  }
  return Object.freeze({start,getReport:()=>report,getMetrics:()=>clone(metrics),getJSON(){return pretty??=observe(metrics,'fullJSON',()=>JSON.stringify(report,null,2)+'\n');},getCompactBytes:measure,
   cancel:()=>cancelRecord(current),invalidate(context){cancelRecord(current,{code:'INPUT_CHANGED',message:'入力または設定の変更により旧診断を無効化しました。'});current=null;if(!disposed){metrics=newMetrics(collectMetrics,null,context);publish(noResult(context,null,{code:'INPUT_CHANGED',message:'現在の入力・設定で共有診断を実行してください。'}));}},
-  dispose(){if(disposed)return;cancelRecord(current);disposed=true;current=null;report=freeze(noResult({},null,{code:'DISPOSED',message:'共有診断を終了しました。'}));pretty=null;compactBytes=null;try{analyzer?.dispose?.();}catch{}analyzer=null;analyzerPromise=null;}
+  dispose(){if(disposed)return;cancelRecord(current);disposed=true;current=null;report=freeze(noResult({},null,{code:'DISPOSED',message:'共有診断を終了しました。'}));pretty=null;compactBytes=null;try{analyzer?.dispose?.();}catch{}analyzer=null;}
  });
 }

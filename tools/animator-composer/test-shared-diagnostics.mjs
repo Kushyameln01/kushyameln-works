@@ -121,4 +121,42 @@ for(const kind of ['prepare-sync','prepare-async','sdk-sync','sdk-async']){
  const next=service.start({...context,inputRevision:8},payload);await next.promise;const before=service.getMetrics();
  release(payload());await Promise.resolve();await Promise.resolve();assert.deepEqual(service.getMetrics(),before,'Late preparation must not alter current observation');service.dispose();cases++;
 }
+// Stage B expectations: lazy dependencies, current-operation admission and immutable caller inputs.
+{
+ let pools=0,analyzers=0;const service=createSharedDiagnostics({poolFactory:()=>{pools++;return pool;},analyzerFactory:()=>{analyzers++;return {analyze:(_,o)=>Promise.resolve(report(o)),dispose(){}};}});
+ service.getJSON();service.getCompactBytes();service.invalidate(context);service.getJSON();assert.equal(pools,0);assert.equal(analyzers,0);
+ await service.start(context,()=>({notRunReason:'NO_DIAGNOSTIC_INPUT'})).promise;assert.equal(pools,0);
+ assert.equal((await service.start(context,payload).promise).status,'succeeded');assert.equal(pools,1);assert.equal(analyzers,1);
+ await service.start(context,payload).promise;assert.equal(pools,1);assert.equal(analyzers,1);service.dispose();cases++;
+}
+{
+ let attempts=0;const service=createSharedDiagnostics({poolFactory:()=>{if(++attempts===1)return Promise.reject(Error('IMPORT_FAILED'));return pool;},analyzerFactory:()=>({analyze:(_,o)=>Promise.resolve(report(o)),dispose(){}})});
+ const failed=await service.start(context,payload).promise;assert.equal(failed.status,'failed');assert.match(failed.reason.message,/IMPORT_FAILED/);
+ assert.equal((await service.start(context,payload).promise).status,'succeeded');assert.equal(attempts,2);service.dispose();cases++;
+}
+{
+ let release,pools=0,analyzers=0;const service=createSharedDiagnostics({poolFactory:()=>++pools===1?new Promise(resolve=>{release=resolve;}):pool,analyzerFactory:()=>{analyzers++;return {analyze:(_,o)=>Promise.resolve(report(o)),dispose(){}};}});
+ const old=service.start(context,payload);while(!release)await Promise.resolve();old.cancel();assert.equal((await old.promise).status,'cancelled');
+ const next=service.start({...context,inputRevision:8},payload);assert.equal((await next.promise).status,'succeeded');
+ release(pool);await Promise.resolve();await Promise.resolve();assert.equal(analyzers,1);assert.equal(service.getReport().operationId,next.operationId);service.dispose();cases++;
+}
+{
+ let release,analyzers=0;const service=createSharedDiagnostics({poolFactory:()=>new Promise(resolve=>{release=resolve;}),analyzerFactory:()=>{analyzers++;return {};}});
+ const h=service.start(context,payload);while(!release)await Promise.resolve();service.dispose();release(pool);await h.promise;await Promise.resolve();await Promise.resolve();
+ assert.equal(analyzers,0,'Disposal during dependency loading must not construct an analyzer');cases++;
+}
+{
+ let release,factories=0,oldDisposed=0;const service=createSharedDiagnostics({pool,analyzerFactory:()=>++factories===1?new Promise(resolve=>{release=resolve;}):{analyze:(_,o)=>Promise.resolve(report(o)),dispose(){}}});
+ const old=service.start(context,payload);while(!release)await Promise.resolve();old.cancel();await old.promise;
+ const next=service.start({...context,inputRevision:8},payload);assert.equal((await next.promise).status,'succeeded');
+ release({analyze(){throw Error('Stale analyzer must not run');},dispose(){oldDisposed++;}});await Promise.resolve();await Promise.resolve();
+ assert.equal(oldDisposed,1);assert.equal(service.getReport().operationId,next.operationId);service.dispose();cases++;
+}
+{
+ let failFirst=true;const before=payload(),after=payload(),original=Array.from(before.files[0].bytes);Object.freeze(before.files);Object.freeze(after.files);Object.freeze(before);Object.freeze(after);
+ const service=createSharedDiagnostics({pool,analyzerFactory:()=>({compare:(b,a,o)=>{assert.equal(b,before.files);assert.equal(a,after.files);if(failFirst){failFirst=false;throw Error('SNAPSHOT_FAILED');}return Promise.resolve({...report(o),after:{files:[{path:'Assets/日本語😀.asset'}]},diff:{changes:[]}});},dispose(){}})});
+ assert.equal((await service.start({...context,target:'compare'},()=>({before,after})).promise).status,'failed');
+ const r=await service.start({...context,target:'compare'},()=>({before,after})).promise;assert.equal(r.status,'succeeded');assert(r.inputCoverage.after.sdk.allSuppliedFilesAccountedFor);
+ assert.deepEqual(Array.from(before.files[0].bytes),original);assert.equal(before.files.length,1);assert.equal(after.files.length,1);service.dispose();cases++;
+}
 console.log(JSON.stringify({status:'PASS',cases,note:'Mocked boundary regressions; does not certify browser Worker, WASM, Unity, MA or VRChat.'}));
