@@ -97,7 +97,7 @@ async function run({namespace,profileId}){
    writer.releaseLock();writer=null;check();const indexed=index.metrics;
    need(indexed.metadataClosed&&indexed.verification?.sampleCounts.total===stats.frames,'GENERATED_METADATA_NOT_VERIFIED');
    need(destination.status.extent<=profile.inputFileBytes,'LONG_INPUT_FINAL_LIMIT');
-   const expectedMetadata=await sha256Blob(index.metadataSource.slice(indexed.moovPosition),{signal:aborter.signal});
+   const expectedMetadata=await sha256Blob(index.metadataSource.slice(indexed.moovPosition,index.metadataSource.size),{signal:aborter.signal});
    const saved=await destination.commit({expectedBytes:destination.status.extent});check();const file=await handle.getFile();
    need(saved.committed&&file.size===saved.bytes&&await sha256Blob(file,{signal:aborter.signal})===saved.sha256,'INPUT_FULL_REREAD_DIFFERS');
    need(await sha256Blob(file.slice(indexed.moovPosition),{signal:aborter.signal})===expectedMetadata,'INPUT_METADATA_READBACK_DIFFERS');

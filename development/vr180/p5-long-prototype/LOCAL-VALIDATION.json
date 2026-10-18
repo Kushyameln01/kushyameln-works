@@ -55,6 +55,73 @@
     "tests/vr180-p5-long-worker.test.mjs": "f7945e2d7615b8b088f71dc124a84f5ebb532428b9c1500467d79e189ca03946",
     "tests/vr180-p5-long.test.mjs": "62db2696c50c46b391ca3502d4c3ed0ab8d817702f00cc5ac732cb0e1e6751fa"
   },
+  "generationMetadataRangeCorrection": {
+    "cause": "Worker passed only start to the bounded metadata source. Unlike Blob.slice, sourceFor requires both checked integer endpoints. This raised UNSAFE_INDEX_POSITION after muxer finalization and before commit.",
+    "correction": "Pass index.metadataSource.size as the explicit end. No range guard, public/private capacity, quality threshold, or oracle was changed.",
+    "green": {
+      "command": [
+        "node",
+        "--test",
+        "tests/vr180-p5-long-finalize.test.mjs",
+        "tests/vr180-p5-long-worker.test.mjs"
+      ],
+      "exitCode": 0,
+      "stderr": "",
+      "stdout": "✔ actual long Worker hashes the strict metadata range, commits and rereads the complete generated file (110.145243ms)\n✔ actual long Worker rejects a changed full-file reread after commit and still cleans its index (40.666653ms)\n✔ Worker owner registry fully writes/flushes/reads/closes before index; primary failure survives independent cleanup (16.285347ms)\n✔ ownership persistence rejection or cancellation cannot create index and keeps unverified record (3.37781ms)\n✔ codec cancel failure still aborts the writer and releases index but never claims complete cleanup (5.250654ms)\n✔ active cleanup lease forbids registry deletion even after controller returned (4.057519ms)\n✔ unsupported encoder is a refusal, not payload or storage success (1.436083ms)\nℹ tests 7\nℹ suites 0\nℹ pass 7\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 235.720409\n"
+    },
+    "nativeFailureReference": "development/vr180/evidence/2026-10-17-p5-5gb-attempt1.json",
+    "nativeFailureRunId": 39047610861,
+    "nativeRetry": "NOT_RUN",
+    "node": "v24.19.0",
+    "observed": [
+      "The unmodified Worker body executes its generate/finalize/hash/commit/full-file reread/metadata reread sequence with one synthetic 12-byte packet.",
+      "Real createOutputIndex/start/register/finalize/sourceFor, real index tables, real MP4 metadata inspectors, real file transaction, real SHA-256 and temporary-file backend execute; codec and Canvas adapters plus profile size are test injections.",
+      "Actual sourceFor still refuses omitted end, oversized end, reversed range and a media payload hole.",
+      "Fixed Worker commits once, performs two postcommit complete-file reads, verifies metadata and reaches conversion admission; the test deliberately stops conversion with TEST_STOP_AFTER_VERIFIED_GENERATION.",
+      "A changed complete-file read after commit is rejected as INPUT_FULL_REREAD_DIFFERS. Commit fact remains true; cleanup closes all index handles, releases all leases/reservations and removes verified owner records.",
+      "New regression tests 2 plus existing Worker ownership/cancellation tests 5 pass."
+    ],
+    "red": {
+      "command": [
+        "node",
+        "--test",
+        "tests/vr180-p5-long-finalize.test.mjs"
+      ],
+      "exitCode": 1,
+      "sourceOverride": {
+        "bytes": 15583,
+        "environmentVariable": "VR180_LONG_WORKER_TEST_SOURCE",
+        "gitSource": "HEAD:development/vr180/p5-long-prototype/worker.mjs",
+        "sha256": "308e7ecb42783af9049f2a5a8e60cfbc668eb553ff2d6e37bb7e49bd35d27d20"
+      },
+      "stderr": "",
+      "stdout": "✖ actual long Worker hashes the strict metadata range, commits and rereads the complete generated file (59.458074ms)\n✖ actual long Worker rejects a changed full-file reread after commit and still cleans its index (37.88619ms)\nℹ tests 2\nℹ suites 0\nℹ pass 0\nℹ fail 2\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 178.000988\n\n✖ failing tests:\n\ntest at tests/vr180-p5-long-finalize.test.mjs:139:1\n✖ actual long Worker hashes the strict metadata range, commits and rereads the complete generated file (59.458074ms)\n  AssertionError [ERR_ASSERTION]: UNSAFE_INDEX_POSITION\n  \n  'FAIL' !== 'PASS'\n  \n      at TestContext.<anonymous> (file:///workspace/vr180-recovery/repo/tests/vr180-p5-long-finalize.test.mjs:141:9)\n      at async Test.run (node:internal/test_runner/test:1389:7)\n      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: 'FAIL',\n    expected: 'PASS',\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n\ntest at tests/vr180-p5-long-finalize.test.mjs:153:1\n✖ actual long Worker rejects a changed full-file reread after commit and still cleans its index (37.88619ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'UNSAFE_INDEX_POSITION'\n  - 'INPUT_FULL_REREAD_DIFFERS'\n  \n      at TestContext.<anonymous> (file:///workspace/vr180-recovery/repo/tests/vr180-p5-long-finalize.test.mjs:155:63)\n      at async Test.run (node:internal/test_runner/test:1389:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 'UNSAFE_INDEX_POSITION',\n    expected: 'INPUT_FULL_REREAD_DIFFERS',\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n"
+    },
+    "scope": "Small Node fixture only; synthetic packet is not decoded. This does not establish native WebCodecs, OPFS, long-media capacity, conversion, receiver recovery, or visual quality acceptance.",
+    "sourceIndexSHA256": "baac33b77abebf388f030dd351c96669f7eb69ea100fde6503c04c16178b919f",
+    "status": "PASS_RED_GREEN",
+    "testSHA256": "56bc9235434079107ec98f6333b9700db65066d7157c4c4d9a0fb1b39037a127",
+    "workerAfterSHA256": "dc4db3380bb0de3a6ffe75e8eeac1cd48609f9b44df77c991f5c1682ddca28cd",
+    "workerBeforeSHA256": "308e7ecb42783af9049f2a5a8e60cfbc668eb553ff2d6e37bb7e49bd35d27d20",
+    "coordinatorReview": {
+      "status": "PASS",
+      "reviewDateJST": "2026-10-18",
+      "command": "node --test tests/vr180-p5-long-finalize.test.mjs tests/vr180-p5-long-worker.test.mjs tests/vr180-output-index.test.mjs",
+      "tests": 13,
+      "passed": 13,
+      "failed": 0,
+      "realComponents": [
+        "Worker run body",
+        "output index and strict sourceFor range",
+        "file transaction",
+        "full-file and metadata SHA readback"
+      ],
+      "limits": [
+        "Small synthetic packet and mock codec adapter, not native WebCodecs or large media.",
+        "First native 5GB FAIL retained; new native trial must be evaluated separately."
+      ]
+    }
+  },
   "nativeLongMedia": "NOT_RUN",
   "nodeTests": 24,
   "publicAndCalibrationDiffFromBase": "",

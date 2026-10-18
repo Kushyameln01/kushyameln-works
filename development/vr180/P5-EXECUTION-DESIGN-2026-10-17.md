@@ -71,7 +71,7 @@ private profileで最終出力上限だけを分離する。30fps・無音、10�
 
 所有する新規persistent profileを通常のsandbox付きChromeで使う。先に16MiBの実書込み→close→全読戻し→正常終了→同profile再起動→全読戻し→清掃を試す。この合格は大容量や障害耐久性を保証しない。`storage.estimate()`の表示は容量予約やenforced quotaの証明に使わず、実書込み・close・QuotaExceeded時の失敗清掃で確認する。quota変更flagは使わない。
 
-固定公式`@actions/artifact 2.3.2`をlocal actionから通常のruntime認証で呼ぶ。source全hashを保持し、128MiBの実partファイルを1個だけ作り、圧縮0・保持1日・同時upload1で送る。全part成功・原本全再読一致後だけcompletion manifestを最後に送る。5GBは最大78、10GBは最大153 artifacts（completion含む）。上限200 partsとし、先に8MiB part×16件＋completionと、新経路の128MiB単独を実サービス上で全回収する。
+固定公式`@actions/artifact 2.3.2`をlocal actionから通常のruntime認証で呼ぶ。source全hashを保持し、128MiBの実partファイルを1個だけ作り、圧縮0・保持1日・同時upload1で送る。全part成功・原本全再読一致後だけcompletion manifestを最後に送る。証拠bundleを含む現行構成では5GBは最大79、10GBは最大154 artifacts（媒体part・証拠bundle・completionを含む）。上限200 partsとし、先に8MiB part×16件＋completionと、新経路の128MiB単独を実サービス上で全回収する。
 
 受信側は独立に回収したcompletion receiptとGitHub metadataを照合し、各ZIP digest・CRC・raw part hash・連続offsetを検査して逐次再構成する。全体を再読してwhole hashを確認し、全frame/packetを独立検査する。受信待ちを成功へ読み替えない。署名URLやruntime tokenは証拠・ログへ保存しない。artifact保持1日は即時削除の約束ではない。
 
@@ -122,3 +122,12 @@ producer内部は既存60分／85分、upload内部20分／30分を維持する�
 
 
 実行前にproducer取消の受入を追加した。SIGTERM/SIGALRMを専用中断でoracle外へ伝播し、早期取消を完全品質FAILへ読み替えない。mainはFAIL・readiness撤去を維持し、最初の中断から30秒だけ清掃・証拠記録の終了猶予を持つ。猶予超過はexit124で、清掃・原記録の完全回収は未確認扱い。取消5＋既存probe9の独立試験が合格し、source閉包欠落の是正と合わせて長尺実行前HOLDを解除した。公開接続は `PUBLIC-INTEGRATION-NEXT-2026-10-17.md` の未実装メモへ分離し、実5GB受入後に着手する。
+
+
+## 2026-10-18の再開時確認
+
+初回5GB（39047610861）は実payload生成後、入力commit前のmetadata範囲指定で失敗した。容量不足の証拠ではなく、原FAILを保持して呼出しの修正・小fixtureの再現試験へ戻す。新しい試行の全保存・全回収・独立品質合格まで、5GBゲートと公開上限は変えない。
+
+通常Chromeの`estimate().quota`表示がusage＋10GiBになることは、先に参照したChromiumの一次説明と整合する。enforced quotaは別であるため、表示上の10GiBを実上限にも利用可能量の保証にも使わない。10GBは5GBの全受入後、新しいrunnerで既定の空き63,416,582,400B、receiverで22,749,473,536B、回収経路・実行期限・清掃状態を確認してから、容量を含む実試験として開始する。約20.3GBのOPFS同時保持が未測定であることを記録し、実際の容量超過は失敗として扱う。
+
+容量不足が実際に観測された場合の回復案は、生成入力を先にrunnerへ全転送し、fsync・close・全hash一致後にブラウザの読取りとFile参照を終了し、所有OPFS入力を削除する。その同一runnerファイルをnative file inputで再投入すれば、OPFS同時保持を入力と出力の大きい方へ減らせる。ただし段階分割・転送状態の変更と短尺の全経路再検証が必要になる。現在は導入せず、必要条件が不足した場合の再設計先として保持する。quota変更flagや保存APIの安全条件緩和は行わない。
