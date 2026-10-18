@@ -15,6 +15,72 @@ const message = (worker, type, extra = {}) => ({type, operationId: worker.messag
 const ack = (worker, extra = {}) => worker.emit(message(worker, 'cleanup-complete', {requestId: worker.messages.at(-1).requestId, ...extra}));
 const dispose = async (client, worker) => { const pending = client.dispose(); ack(worker); await pending; };
 
+test('indexed known commit remains pending until explicit registry recovery; no legacy cleanup shortcut',async()=>{
+  const events=[];let recoveries=0;
+  const client=new StereoClient({WorkerClass:MockWorker,onEvent:e=>events.push(e),cleanup:async()=>{throw Error('LEGACY_CLEANUP');},
+    cleanupIndexed:async()=>{recoveries++;return {status:'complete'};}});
+  const run=client.run(new Blob(['input']),{mode:'convert',executionRoute:'indexed'},{outputHandle:{}}),worker=MockWorker.instances.at(-1);
+  const {operationId,inputRevision}=worker.messages[0],identity={operationId,inputRevision,namespace:`${operationId}-r${inputRevision}`};
+  worker.emit(message(worker,'indexed-ownership',{registry:{identity,status:'persisted'}}));
+  const receipt={status:'saved',saveWriteCommitted:true,saveCompleted:true};
+  worker.emit(message(worker,'result',{result:{receipt}}));await run;
+  worker.onerror({message:'CRASH'});await tick();
+  assert.equal(recoveries,0);assert.equal(client.cleanupPending,true);assert.equal(client.outputStateUnknown,false);assert(client.current);
+  await client.cancel();assert.equal(recoveries,1);assert.equal(client.current,null);
+  assert.equal(events.at(-1).internalIndexCleanup,'complete');assert.equal(receipt.saveCompleted,true);
+});
+test('indexed unknown external save stays unknown after internal recovery and explicit detach preserves diagnostics',async()=>{
+  const client=new StereoClient({WorkerClass:MockWorker,listIndexed:async()=>({jobs:[],truncated:false})});
+  const run=client.run(new Blob(['input']),{mode:'convert',executionRoute:'indexed'},{outputHandle:{}}),worker=MockWorker.instances.at(-1);
+  worker.onerror({message:'CRASH'});await tick();assert.equal(client.outputStateUnknown,true);
+  const record=client.current.diagnostics,before=JSON.stringify(record);
+  await assert.rejects(client.cancel(),/DIRECT_SAVE_STATE_UNKNOWN/);assert.equal(client.current.internalIndexCleanup,'complete');
+  assert.equal(record.saveWriteCommitted,null);assert.equal(JSON.stringify(record),before);
+  const rejected=assert.rejects(run,/DIRECT_SAVE_STATE_UNKNOWN/);client.acknowledgeUnknownOutput();await rejected;
+  assert.equal(record.saveWriteCommitted,null);assert.equal(client.current,null);
+});
+test('indexed ignores stale ownership response and requires an explicit internal cleanup acknowledgement',async()=>{
+  const client=new StereoClient({WorkerClass:MockWorker}),run=client.run(new Blob(['a']),{mode:'convert',executionRoute:'indexed'},{outputHandle:{}});
+  const worker=MockWorker.instances.at(-1),rejected=assert.rejects(run,{name:'AbortError'});
+  worker.emit({...message(worker,'indexed-ownership',{registry:{identity:{operationId:'old'}}}),inputRevision:999});
+  assert.equal(client.current.registry,undefined);
+  const stopped=client.cancel(),stopRejected=assert.rejects(stopped,/INDEXED_CLEANUP_UNCONFIRMED/);ack(worker);await stopRejected;
+  assert.equal(client.cleanupPending,true);const again=client.cancel();ack(worker,{internalIndexCleanup:'complete'});await again;await rejected;
+  assert.equal(client.current,null);
+});
+test('cancelled indexed UI result still preserves its received verified save when the Worker dies before cleanup ack',async()=>{
+  const events=[];let recoveries=0;
+  const client=new StereoClient({WorkerClass:MockWorker,onEvent:e=>events.push(e),listIndexed:async()=>({jobs:[],truncated:false}),
+    cleanupIndexed:async()=>{recoveries++;return {status:'complete'};}});
+  const run=client.run(new Blob(['input']),{mode:'convert',executionRoute:'indexed'},{outputHandle:{}}),worker=MockWorker.instances.at(-1);
+  const {operationId,inputRevision,saveAttemptId}=worker.messages[0];
+  const receipt={schemaVersion:2,operationId,inputRevision,status:'saved',output:{bytes:5,sha256:'saved-hash'},saveAttempts:[{
+    id:saveAttemptId,resultOperationId:operationId,inputRevision,kind:'direct',commitState:'committed',verificationState:'passed',
+    bytes:5,sha256:'saved-hash',wholeFileHashCompared:false,metadataHashMatched:true}]};
+  worker.emit(message(worker,'indexed-ownership',{registry:{identity:{operationId,inputRevision,namespace:`${operationId}-r${inputRevision}`}}}));
+  const stop=client.cancel(),stopRejected=assert.rejects(stop,/INDEXED_CLEANUP_REQUIRES_EXPLICIT_RECOVERY/);
+  worker.emit(message(worker,'result',{result:{receipt,blob:new Blob(['saved'])}}));
+  assert.equal(client.current.settled,false);assert.equal(events.some(e=>e.type==='result'),false);
+  worker.onerror({message:'CRASH_AFTER_RESULT'});await stopRejected;await tick();
+  assert.equal(client.outputStateUnknown,false);assert.equal(client.current.diagnostics.saveCompleted,true);
+  assert.equal(client.current.diagnostics.saveWriteCommitted,true);assert.equal(recoveries,0);
+  const rejected=assert.rejects(run,/CRASH_AFTER_RESULT/);await client.cancel();await rejected;
+  assert.equal(recoveries,1);assert.equal(client.current,null);assert.equal(receipt.saveCompleted,true);
+});
+test('a duplicate valid terminal receipt cannot replace the first indexed save observation',async()=>{
+  const client=new StereoClient({WorkerClass:MockWorker,listIndexed:async()=>({jobs:[],truncated:false})});
+  const run=client.run(new Blob(['input']),{mode:'convert',executionRoute:'indexed'},{outputHandle:{}}),worker=MockWorker.instances.at(-1);
+  const {operationId,inputRevision,saveAttemptId}=worker.messages[0];
+  const makeReceipt=(bytes,sha256)=>({schemaVersion:2,operationId,inputRevision,status:'saved',output:{bytes,sha256},saveAttempts:[{
+    id:saveAttemptId,resultOperationId:operationId,inputRevision,kind:'direct',commitState:'committed',verificationState:'passed',
+    bytes,sha256,wholeFileHashCompared:false,metadataHashMatched:true}]});
+  const first=makeReceipt(5,'first-hash'),duplicate=makeReceipt(8,'different-hash');
+  worker.emit(message(worker,'result',{result:{receipt:first}}));await run;
+  worker.emit(message(worker,'result',{result:{receipt:duplicate}}));worker.onerror({message:'AFTER_DUPLICATE'});await tick();
+  assert.equal(client.current.diagnostics,first);assert.equal(client.current.diagnostics.savedSha256,'first-hash');
+  await client.cancel();assert.equal(client.current,null);
+});
+
 test('direct worker death keeps its original receipt, requires explicit detachment, and permits a new job afterwards', async () => {
   const events = [], removed = [], client = new StereoClient({WorkerClass: MockWorker,
     onEvent: e => events.push(e), cleanup: async id => removed.push(id)});

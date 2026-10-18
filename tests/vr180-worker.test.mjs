@@ -12,6 +12,84 @@ const input = new Blob(['synthetic input']);
 const settings = {mode: 'convert', layout: 'sbs', fov: 180, eyeSize: 256, bitrate: 2000000, confirmed: true};
 const info = {width: 512, height: 256, transcodeSafe: true, transcodeIssues: [],
   sampleCounts: {video: 60, audio: 95, total: 155}, containerMetadataBytes: 2048};
+function indexedObservation(jobId) {
+  return {jobId,outputProfileId:'default',bytes:5,sha256:'a'.repeat(64),committed:true,
+    savedInfo:{...info,stereoMode:2,projection:'equi'},observedAt:new Date().toISOString(),timings:{filePhases:{}},
+    verification:{wholeFileHashCompared:false,metadataHashMatched:true,savedWriteCommitted:true,
+      savedFileSHA256:'a'.repeat(64),expectedMetadataHash:'b'.repeat(64),actualMetadataHash:'b'.repeat(64),metadataOffset:1,metadataBytes:4}};
+}
+test('indexed result uses the same verified save attempt without duplicate tags or commit',async()=>{
+  const messages=[];let loads=0,cleaned=0;
+  const receive=createWorkerController({postMessage:m=>messages.push(m),inspect:async()=>info,hash:async()=> 'input-hash',
+    tag:async()=>{throw Error('SECOND_TAG');},finalizeDirect:async()=>{throw Error('SECOND_COMMIT');},
+    loadTransform:async()=>{throw Error('ORIGINAL_VENDOR_IMPORTED');},loadIndexed:async()=>{loads++;return {convertIndexed:async(file,settings,options)=>{
+      assert.equal(options.inputRevision,9);assert.equal(options.operationId,'indexed-job');
+      return {kind:'indexed-direct-saved',file:new Blob(['saved']),savedObservation:indexedObservation(options.operationId),
+        cleanup:async()=>{cleaned++;},registry:{status:'complete'},metrics:{}};
+    }};}});
+  await receive({data:{type:'run',operationId:'indexed-job',inputRevision:9,file:input,settings:{...settings,executionRoute:'indexed'},outputHandle:{},saveAttemptId:'same-attempt'}});
+  const receipt=messages.at(-1).result.receipt;
+  assert.equal(loads,1);assert.equal(receipt.status,'saved');assert.equal(receipt.executionRoute,'indexed');
+  assert.equal(receipt.saveCompleted,true);assert.equal(receipt.saveAttempts[0].id,'same-attempt');assert.equal(receipt.output.sha256,'a'.repeat(64));
+  await receive({data:{type:'cancel',operationId:'indexed-job',inputRevision:9,requestId:'cancel-late'}});
+  const ack=messages.at(-1);assert.equal(ack.internalIndexCleanup,'complete');assert.equal(ack.diagnostics.saveCompleted,true);
+  assert.equal(ack.diagnostics.preparedBeforeCancel,receipt);assert.equal(cleaned,1);
+});
+test('indexed cleanup failure after verified save preserves output evidence and retries separately',async()=>{
+  const messages=[];let fail=true;
+  const receive=createWorkerController({postMessage:m=>messages.push(m),inspect:async()=>info,hash:async()=> 'input-hash',
+    loadIndexed:async()=>({convertIndexed:async(_file,_settings,options)=>{
+      options.onCleanup(async()=>{if(fail)throw Error('REGISTRY_REMOVE_FAILED');});
+      throw Object.assign(Error('REGISTRY_REMOVE_FAILED'),{savedObservation:indexedObservation('indexed-failed')});
+    }})});
+  await receive({data:{type:'run',operationId:'indexed-failed',inputRevision:2,file:input,settings:{...settings,executionRoute:'indexed'},outputHandle:{},saveAttemptId:'retained-attempt'}});
+  const original=messages[0].diagnostics,before=JSON.stringify(original);
+  assert.equal(original.status,'failed');assert.equal(original.saveCompleted,true);assert.equal(original.output.bytes,5);
+  assert.equal(original.saveAttempts[0].id,'retained-attempt');assert.equal(original.internalIndexCleanup,'pending');
+  fail=false;await receive({data:{type:'release',operationId:'indexed-failed',inputRevision:2,requestId:'retry-clean'}});
+  assert.equal(messages.at(-1).type,'cleanup-complete');assert.equal(messages.at(-1).internalIndexCleanup,'complete');
+  assert.equal(JSON.stringify(original),before);
+});
+test('indexed verified observation precedes a simultaneous cancel and rejects a foreign job observation',async()=>{
+  for(const foreign of [false,true]){
+    const messages=[];let stop;
+    const receive=createWorkerController({postMessage:m=>messages.push(m),inspect:async()=>info,hash:async()=> 'input-hash',
+      loadIndexed:async()=>({convertIndexed:async()=>{
+        if(!foreign)stop=receive({data:{type:'cancel',operationId:'indexed-cancel',inputRevision:2,requestId:'stop'}});
+        return {kind:'indexed-direct-saved',file:new Blob(['saved']),savedObservation:indexedObservation(foreign?'old-job':'indexed-cancel'),cleanup:async()=>{}};
+      }})});
+    await receive({data:{type:'run',operationId:'indexed-cancel',inputRevision:2,file:input,settings:{...settings,executionRoute:'indexed'},outputHandle:{}}});if(stop)await stop;
+    const record=messages.find(m=>m.type==='error').diagnostics;
+    assert.equal(record.saveCompleted,!foreign);assert.equal(record.output?.bytes??null,foreign?null:5);
+  }
+});
+test('copy and inspect with an indexed preference import neither codec route',async()=>{
+  for(const mode of ['copy','inspect']){
+    const messages=[],receive=createWorkerController({postMessage:m=>messages.push(m),inspect:async()=>info,hash:async()=> 'hash',tag:async b=>b,
+      loadTransform:async()=>{throw Error('LEGACY_IMPORTED');},loadIndexed:async()=>{throw Error('INDEXED_IMPORTED');}});
+    await receive({data:{type:'run',operationId:'no-codec',inputRevision:1,file:input,settings:{...settings,mode,executionRoute:'indexed'}}});
+    assert.equal(messages.at(-1).type,'result');
+  }
+});
+test('indexed preflight refusals release the actual client with no imports or registry acquisition',async()=>{
+  const {StereoClient}=await import('../docs/shared/vr180/client.mjs');
+  for(const failure of ['profile','input-limit','handle']){
+    let imports=0;const events=[];
+    class LocalWorker {
+      constructor(){this.receive=createWorkerController({postMessage:data=>queueMicrotask(()=>this.onmessage?.({data})),
+        inspect:async()=>info,hash:async()=> 'hash',
+        loadTransform:async()=>{imports++;throw Error('UNEXPECTED_IMPORT');},loadIndexed:async()=>{imports++;throw Error('UNEXPECTED_IMPORT');}});}
+      postMessage(data){this.receive({data});}terminate(){}
+    }
+    const client=new StereoClient({WorkerClass:LocalWorker,onEvent:event=>events.push(event)});
+    const config={...settings,executionRoute:'indexed',...(failure==='profile'?{outputProfileId:'p5-10gb'}:{})};
+    await assert.rejects(client.run(failure==='input-limit'?{size:2**30+1}:input,config,
+      {outputHandle:failure==='handle'?undefined:{}}),/OUTPUT_PROFILE_UNSUPPORTED|INDEXED_INPUT_LIMIT_EXCEEDED|INDEXED_OUTPUT_HANDLE_REQUIRED/);
+    assert.equal(imports,0);assert.equal(client.current,null);assert.equal(client.cleanupPending,false);
+    assert.equal(events.some(e=>e.type==='indexed-ownership'),false);
+    assert.equal(events.at(-1).type,'cleanup-complete');assert.equal(events.at(-1).internalIndexCleanup,'complete');
+  }
+});
 function harness(convertStereo) {
   const messages = [];
   const receive = createWorkerController({postMessage: message => messages.push(message), inspect: async () => info,
@@ -168,7 +246,7 @@ test('cooperative cancellation waits for conversion unwind and cleanup before ma
   const [failure, ack] = h.messages;
   assert.equal(failure.diagnostics.status, 'canceled'); assert.equal(failure.cleanupComplete, true);
   assert.equal(ack.requestId, 'cleanup-1'); assert.equal(ack.operationId, 'this-job'); assert.equal(ack.inputRevision, 7);
-  assert.equal(ack.diagnostics, failure.diagnostics); assert.equal(ack.diagnostics.build, 'vr180-b7-phases1');
+  assert.equal(ack.diagnostics, failure.diagnostics); assert.equal(ack.diagnostics.build, 'vr180-b8-indexed-candidate');
 });
 
 test('failed deletion remains retryable without replacing the original canceled receipt', async () => {
@@ -277,7 +355,7 @@ function assertIndexRejected({messages, calls}, expectedError) {
   assert.equal(failure.error, expectedError);
   assert.equal(failure.operationId, 'index-job');
   assert.equal(failure.inputRevision, 13);
-  assert.equal(failure.diagnostics.build, 'vr180-b7-phases1');
+  assert.equal(failure.diagnostics.build, 'vr180-b8-indexed-candidate');
   assert.equal(failure.diagnostics.status, 'failed');
   assert.equal(failure.diagnostics.input.sha256, null);
   assert.equal(failure.diagnostics.output, null);
@@ -373,7 +451,7 @@ test('actual worker controller hashes all input/output bytes above the former 16
   assert.equal(messages.some(message => message.type === 'error'), false);
   const result = messages.find(message => message.type === 'result').result;
   const receipt = result.receipt;
-  assert.equal(receipt.build, 'vr180-b7-phases1');
+  assert.equal(receipt.build, 'vr180-b8-indexed-candidate');
   assert.equal(receipt.input.sha256, sha256);
   assert.equal(receipt.output.sha256, await nodeBlobHash(result.blob));
   assert.match(receipt.output.sha256, /^[0-9a-f]{64}$/);
@@ -480,6 +558,6 @@ test('inspection/settings rejection occurs before hashing and leaves diagnostics
   const receive = createWorkerController({postMessage: value => messages.push(value), hash: async () => { throw Error('HASH_MUST_NOT_RUN'); }});
   await receive(copyRun(file, {mode: 'inspect'}));
   assert.deepEqual(messages.map(m => m.type), ['result']);
-  assert.equal(messages[0].result.build, 'vr180-b7-phases1');
+  assert.equal(messages[0].result.build, 'vr180-b8-indexed-candidate');
   assert.equal(messages[0].result.receipt, undefined);
 });

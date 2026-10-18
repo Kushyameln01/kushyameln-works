@@ -1,4 +1,5 @@
 import {bindSaveSummary, createSaveAttempt} from './save-record.mjs';
+import {listIndexedJobs, recoverIndexedJob} from './ownership-registry.mjs';
 export async function cleanupTemporaryJob(id) {
   if (!/^[a-zA-Z0-9_-]{1,96}$/.test(id)) throw Error('INVALID_JOB_ID');
   if (!globalThis.navigator?.storage?.getDirectory) return;
@@ -11,9 +12,11 @@ export async function cleanupTemporaryJob(id) {
 
 const abortError = () => new DOMException('処理を取り消しました', 'AbortError');
 export class StereoClient {
-  constructor({WorkerClass = globalThis.Worker, onEvent = () => {}, cleanup = cleanupTemporaryJob, cleanupTimeoutMs = 30000} = {}) {
+  constructor({WorkerClass = globalThis.Worker, onEvent = () => {}, cleanup = cleanupTemporaryJob, cleanupTimeoutMs = 30000,
+    cleanupIndexed = recoverIndexedJob, listIndexed = listIndexedJobs} = {}) {
     this.WorkerClass = WorkerClass; this.onEvent = onEvent; this.cleanup = cleanup;
     this.cleanupTimeoutMs = cleanupTimeoutMs; this.revision = 0; this.current = null;
+    this.cleanupIndexed = cleanupIndexed; this.listIndexed = listIndexed;
   }
   get cleanupPending() { return !!this.current?.cleanupPending; }
   get outputStateUnknown() { return !!this.current?.unknownOutput; }
@@ -27,9 +30,18 @@ export class StereoClient {
     return new Promise((resolve, reject) => {
       const job = {worker, operationId, inputRevision, resolve, reject, settled: false,
         stopping: false, cleanupPending: false, stop: null, attempt: 0, dead: false, error: null, diagnostics: null, directOutput: !!outputHandle, saveAttemptId, settings: settingsSnapshot, inputBytes: file.size, startedAt: new Date().toISOString()};
+      job.indexed = settingsSnapshot.executionRoute === 'indexed' && settingsSnapshot.mode === 'convert';
       this.current = job;
       worker.onmessage = ({data: message}) => {
         if (this.current !== job || message.operationId !== operationId || message.inputRevision !== inputRevision) return;
+        if (message.type === 'indexed-ownership') {
+          const identity = message.registry?.identity;
+          if (!job.indexed || identity?.operationId !== operationId || identity?.inputRevision !== inputRevision
+            || identity.namespace !== `${operationId}-r${inputRevision}`) {
+            this.workerFailed(job, Error('INDEXED_REGISTRY_IDENTITY_MISMATCH')); return;
+          }
+          job.registry = structuredClone(message.registry); this.emit(message); return;
+        }
         // Structured cloning materializes derived getters; restore schema 2
         // derivation locally without upgrading historical records.
         for (const receipt of [message.diagnostics, message.result?.receipt]) {
@@ -38,11 +50,16 @@ export class StereoClient {
           try { bindSaveSummary(receipt); }
           catch (cause) { this.workerFailed(job, new Error('INVALID_SAVE_RECEIPT', {cause})); return; }
         }
+        // A pending cancel declines the result as a UI success, but cannot erase
+        // a same-generation save observation that actually reached this page.
+        if (message.type === 'result' && message.result?.receipt?.schemaVersion === 2
+          && message.result.receipt.saveWriteCommitted === true) job.observedSaveReceipt ??= message.result.receipt;
         if (message.type === 'cleanup-complete' || message.type === 'cleanup-error') {
           if (!job.stop || message.requestId !== job.stop.requestId) return;
           if (message.diagnostics) job.diagnostics ??= message.diagnostics;
           job.requiresWorkerTermination ||= !!message.requiresWorkerTermination;
-          if (message.type === 'cleanup-complete') this.completeCleanup(job, message);
+          if (message.type === 'cleanup-complete' && (!job.indexed || message.internalIndexCleanup === 'complete')) this.completeCleanup(job, message);
+          else if (message.type === 'cleanup-complete') this.cleanupFailed(job, Error('INDEXED_CLEANUP_UNCONFIRMED'), message);
           else this.cleanupFailed(job, Error(message.error), message);
           return;
         }
@@ -56,7 +73,7 @@ export class StereoClient {
           // cannot settle the operation before that matching cleanup response.
           job.stopping = true;
           if (wasStopping) return;
-          if (message.cleanupComplete) this.completeCleanup(job, message);
+          if (message.cleanupComplete && (!job.indexed || message.diagnostics?.internalIndexCleanup === 'complete')) this.completeCleanup(job, message);
           else this.cleanupFailed(job, Error(message.cleanupError || 'WORKER_CLEANUP_INCOMPLETE'), message);
         } else if (!job.stopping && !job.settled) {
           if (message.type === 'result') { job.settled = true; job.preparedReceipt = message.result?.receipt ?? null; this.emit(message); resolve(message.result); }
@@ -100,9 +117,10 @@ export class StereoClient {
     // fallback still blocks reuse until its matching job deletion succeeds.
     this.cleanupDeadWorker(job).catch(() => {});
   }
-  cleanupDeadWorker(job) {
+  cleanupDeadWorker(job, {recover = false} = {}) {
+    if (job.indexed && job.dispatched) return this.cleanupDeadIndexedWorker(job, recover);
     if (job.directOutput && job.dispatched) {
-      const known = job.diagnostics ?? job.preparedReceipt;
+      const known = job.observedSaveReceipt ?? job.diagnostics ?? job.preparedReceipt;
       if (known?.saveWriteCommitted === true) {
         // An acknowledged commit already closed the writer. Keep the saved
         // file and the original receipt; no rollback or new verification.
@@ -134,6 +152,60 @@ export class StereoClient {
     job.fallback.catch(() => {});
     return job.fallback;
   }
+  cleanupDeadIndexedWorker(job, recover) {
+    if (job.fallback) return job.fallback;
+    const known = job.observedSaveReceipt ?? job.diagnostics ?? job.preparedReceipt;
+    if (known?.saveWriteCommitted === true && job.diagnostics && job.diagnostics !== known
+      && job.diagnostics.saveWriteCommitted !== true) {
+      job.diagnostics = bindSaveSummary({...known, status: 'failed', workerReceipt: job.diagnostics,
+        error: {name: job.error?.name ?? 'Error', message: job.error?.message ?? 'WORKER_FAILED'}});
+    } else if (!job.diagnostics && known) job.diagnostics = known;
+    if (known?.saveWriteCommitted !== true && !job.unknownOutput) {
+      const error = 'DIRECT_SAVE_STATE_UNKNOWN';
+      const receipt = {schemaVersion: 2, operationId: job.operationId, inputRevision: job.inputRevision,
+        status: 'failed', settings: job.settings, executionRoute: 'indexed', error: {name: 'Error', message: error},
+        input: known?.input ?? {bytes: job.inputBytes, sha256: null, info: null}, output: null,
+        workerReceipt: known ?? null, saveAttempts: [], indexedOwnership: job.registry ?? null,
+        internalIndexCleanup: 'pending', cleanup: {status: 'unconfirmed', error},
+        directSave: {status: 'unknown', reason: 'Worker disappeared before the external save outcome was acknowledged'}};
+      receipt.saveAttempts.push(createSaveAttempt(receipt, 'direct', {id: job.saveAttemptId,
+        status: 'unknown', commitState: 'unknown', finishedAt: new Date().toISOString(), errorCode: error}));
+      job.diagnostics = bindSaveSummary(receipt); job.unknownOutput = true;
+    }
+    if (!recover) {
+      const error = Error('INDEXED_CLEANUP_REQUIRES_EXPLICIT_RECOVERY');
+      this.cleanupFailed(job, error, {internalIndexCleanup: 'pending', registry: job.registry});
+      return Promise.reject(error);
+    }
+    job.fallback = Promise.resolve().then(async () => {
+      let identity = job.registry?.identity;
+      if (!identity) {
+        const listed = await this.listIndexed();
+        const namespace = `${job.operationId}-r${job.inputRevision}`;
+        const own = listed.jobs.find(row => row.identity?.namespace === namespace || row.namespace === namespace);
+        if (own) { if (!own.identity) throw Error('INDEXED_REGISTRY_PARTIAL_RETAINED'); identity = own.identity; }
+        else if (listed.truncated) throw Error('INDEXED_REGISTRY_LIST_INCOMPLETE');
+      }
+      if (identity) {
+        if (identity.operationId !== job.operationId || identity.inputRevision !== job.inputRevision) throw Error('INDEXED_REGISTRY_IDENTITY_MISMATCH');
+        const result = await (job.retryIndexedCleanup ? job.retryIndexedCleanup() : this.cleanupIndexed(identity));
+        if (result?.status !== 'complete') throw Error('INDEXED_CLEANUP_UNCONFIRMED');
+        job.retryIndexedCleanup = null;
+      }
+      job.internalIndexCleanup = 'complete';
+      if (job.unknownOutput) {
+        // Recovering internal files cannot establish an external writer's outcome.
+        const error = Error('DIRECT_SAVE_STATE_UNKNOWN');
+        throw error;
+      }
+      this.completeCleanup(job, {diagnostics: job.diagnostics, internalIndexCleanup: 'complete',
+        cleanup: {status: 'complete', scope: 'explicit matching indexed registry recovery; external file retained'}});
+    }).catch(error => {
+      if (error.retryCleanup) job.retryIndexedCleanup = error.retryCleanup;
+      this.cleanupFailed(job, error, {internalIndexCleanup: job.internalIndexCleanup ?? 'pending'}); throw error;
+    }).finally(() => { job.fallback = null; });
+    job.fallback.catch(() => {}); return job.fallback;
+  }
   cancel() {
     const job = this.current;
     if (!job) return Promise.resolve();
@@ -141,7 +213,7 @@ export class StereoClient {
     if (job.requiresWorkerTermination && !job.dead) {
       job.dead = true; job.worker.terminate();
     }
-    if (job.dead) return this.cleanupDeadWorker(job);
+    if (job.dead) return this.cleanupDeadWorker(job, {recover: true});
     job.stopping = true; job.cleanupPending = false;
     let resolve, reject;
     const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
@@ -165,7 +237,8 @@ export class StereoClient {
     // Explicitly detach an unconfirmed outcome; never emit cleanup-complete.
     this.current = null;
     this.emit({type: 'output-unconfirmed-detached', diagnostics: job.diagnostics,
-      operationId: job.operationId, inputRevision: job.inputRevision});
+      operationId: job.operationId, inputRevision: job.inputRevision,
+      ...(job.indexed ? {internalIndexCleanup: job.internalIndexCleanup ?? 'pending', retainedOwnership: job.registry ?? null} : {})});
     return job.diagnostics;
   }
   dispose() { return this.cancel(); }

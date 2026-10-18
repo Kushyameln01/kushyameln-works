@@ -79,7 +79,7 @@
      },
    };
  }
-@@ -142,18 +151,59 @@
+@@ -142,18 +151,74 @@
    };
  }
  
@@ -126,6 +126,21 @@
 +
 +export const inspectSavedOutput = (file, options) => inspectOutputMp4(file, options);
 +
++// Copy only plain data: never retain a File, writer, controller or live metrics.
++// Plain objects from another realm are accepted; class instances are not.
++function immutablePlainSnapshot(value) {
++  if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
++  if (typeof value === 'number' && Number.isFinite(value)) return value;
++  if (Array.isArray(value)) return Object.freeze(value.map(immutablePlainSnapshot));
++  if (typeof value !== 'object') throw TypeError('SAVED_OBSERVATION_REQUIRES_PLAIN_DATA');
++  const prototype = Object.getPrototypeOf(value);
++  if (prototype !== null && Object.getPrototypeOf(prototype) !== null) {
++    throw TypeError('SAVED_OBSERVATION_REQUIRES_PLAIN_DATA');
++  }
++  return Object.freeze(Object.fromEntries(Object.entries(value)
++    .map(([key, item]) => [key, immutablePlainSnapshot(item)])));
++}
++
 +/** Private direct-file pixel route. One supplied combined-fork module owns every media class. */
  export async function convertStereo(file, settings, {
 -  signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated,
@@ -148,7 +163,7 @@
    const checkAbort = () => { if (signal?.aborted) throw abortError(); };
    checkAbort();
    if (!(file instanceof Blob)) throw new TypeError('Input must be a File or Blob.');
-@@ -165,20 +215,23 @@
+@@ -165,20 +230,23 @@
      eyeSize: settings.eyeSize, bitrate: settings.bitrate,
    };
    const id = jobId ?? globalThis.crypto?.randomUUID();
@@ -181,7 +196,7 @@
      writeChunkBytes: WRITE_CHUNK_BYTES, sourceAnalysisMs: null,
      capabilityCheckMs: null, capabilities: null, temporarySetupMs: null, conversionLoopMs: null,
      videoIteratorWaitMs: 0, canvasDrawMs: 0, videoAddWaitMs: 0,
-@@ -187,16 +240,15 @@
+@@ -187,16 +255,15 @@
      firstAudioTimestamp: null, lastAudioEndTimestamp: null, audioTimeline: null,
      storageQuotaBytes: null, storageUsageBytes: null, storageAvailableBytes: null,
      cpuPeakBytes: null, gpuPeakBytes: null, nativePeakBytes: null,
@@ -196,7 +211,7 @@
 +    indexSortBytes: {input: 4 * 1024 ** 2 - PROFILE.sortReservedBytes, output: PROFILE.sortReservedBytes},
 +    indexBudgetBytes: 8 * 1024 ** 2, inputIndex: null, outputIndex: null,
 +  };
-+  let input, output, canvas, directDestination, directOutput, inputIndex, outputIndex, result, failure;
++  let input, output, canvas, directDestination, directOutput, inputIndex, outputIndex, result, failure, savedObservation;
 +  const pendingCleanup = [];
    let videoIterator, heldSample, audioPacket, audioSink, audioSource, audioCopier, videoSource;
 -  let temporaryCreated = false;
@@ -205,7 +220,7 @@
    let cancellationPromise;
    let estimatedDuration = null;
    let lastProgressAt = -Infinity;
-@@ -227,26 +279,45 @@
+@@ -227,26 +294,45 @@
      // The awaited cleanup path below observes cancellation errors.
      void cancelOutput().catch(() => {});
    };
@@ -271,7 +286,7 @@
    // Register before acquiring resources, so the Worker can retry a failed
    // deletion after convertStereo has rejected and its finally has completed.
    onCleanup?.(cleanupResources);
-@@ -260,7 +331,11 @@
+@@ -260,7 +346,11 @@
    try {
      progress('inspect', null, true);
      const analysisStart = performance.now();
@@ -284,7 +299,7 @@
      const tracks = await input.getTracks();
      const videos = tracks.filter(track => track.type === 'video');
      const audios = tracks.filter(track => track.type === 'audio');
-@@ -313,6 +388,7 @@
+@@ -313,6 +403,7 @@
      if (!decodable) throw new Error('INPUT_DECODE_UNSUPPORTED');
      if (!encodable) throw new Error('OUTPUT_ENCODE_UNSUPPORTED');
  
@@ -292,7 +307,7 @@
      canvas = new OffscreenCanvas(geometry.width, geometry.height);
      const context = canvas.getContext('2d', { alpha: false, colorSpace: 'srgb' });
      if (!context) throw new Error('A 2D OffscreenCanvas could not be created.');
-@@ -328,63 +404,15 @@
+@@ -328,63 +419,15 @@
      }
  
      const setupStart = performance.now();
@@ -365,7 +380,7 @@
      });
      output.addVideoTrack(videoSource);
      if (audioSource) output.addAudioTrack(audioSource);
-@@ -463,19 +491,32 @@
+@@ -463,19 +506,43 @@
        throw new Error('The encoder did not emit one video packet per submitted frame.');
      }
      const prepareStarted = performance.now();
@@ -406,10 +421,21 @@
      metrics.totalMs = performance.now() - started;
 -    metrics.status = 'converted-awaiting-metadata';
 +    metrics.status = 'saved-and-verified';
++    savedObservation = immutablePlainSnapshot({
++      jobId: id, outputProfileId: outputProfile.id, bytes: saved.bytes, sha256: saved.sha256,
++      committed: saved.committed, hashBasis: 'saved-file-observation', savedInfo,
++      verification: {wholeFileHashCompared: false, wholeFileHashStatus: 'NOT_COMPARED',
++        savedFileSHA256: saved.sha256, metadataHashMatched: true, metadataHashStatus: 'MATCH',
++        expectedMetadataHash, actualMetadataHash, metadataOffset: offset, metadataBytes,
++        savedWriteCommitted: true},
++      observedAt: new Date().toISOString(),
++      timings: {filePhases: saved.timings,
++        ...Object.fromEntries(Object.entries(metrics).filter(([key]) => key.endsWith('Ms')))},
++    });
      checkAbort();
      publishMetrics();
      progress('complete', metrics.lastVideoEndTimestamp, true);
-@@ -483,14 +524,16 @@
+@@ -483,40 +550,49 @@
        layout: 'sbs', fov: 180, eyeSize: chosenSettings.eyeSize,
        width: geometry.width, height: geometry.height,
        videoCodec: 'avc', audioCodec: audio ? 'aac' : null,
@@ -419,18 +445,31 @@
 -    succeeded = true;
 -    return { ...(direct ? {direct} : {file: resultFile}), cleanup: cleanupResources, metrics: { ...metrics }, info };
 +    result = {file: saved.file, saved, cleanup: cleanupResources, metrics, info, savedInfo,
-+      verification: {wholeFileHashCompared: false, savedFileSHA256: saved.sha256, metadataHashMatched: true,
-+        expectedMetadataHash, metadataOffset: offset, metadataBytes, savedWriteCommitted: true}};
++      verification: savedObservation.verification, savedObservation};
 +    return result;
    } catch (error) {
      metrics.status = signal?.aborted ? 'canceled' : 'failed';
      metrics.error = signal?.aborted ? 'Conversion was canceled.' : String(error?.message ?? error);
 -    const failure = signal?.aborted && error.name !== 'AbortError' ? Object.assign(abortError(), {cause: error}) : error;
-+    failure = signal?.aborted && error.name !== 'AbortError' ? Object.assign(abortError(), {cause: error}) : error;
++    // Caller exceptions may have readonly/nonconfigurable diagnostic properties.
++    // Always attach our known facts to an owned error, retaining the original cause.
++    const canceled = signal?.aborted && error?.name !== 'AbortError';
++    failure = new Error(canceled ? 'Conversion was canceled.' : String(error?.message ?? error), {cause: error});
++    failure.name = canceled ? 'AbortError' : (typeof error?.name === 'string' ? error.name : 'Error');
++    if (error?.fileTimings) failure.fileTimings = error.fileTimings;
++    if (error?.requiresWorkerTermination) failure.requiresWorkerTermination = true;
++    if (savedObservation) failure.savedObservation = savedObservation;
      if (outputHandle) {
-       const priorState = error.saveOutputState;
+-      const priorState = error.saveOutputState;
++      const priorState = error?.saveOutputState;
        Object.defineProperty(failure, 'saveOutputState', {enumerable: true, configurable: true,
-@@ -502,21 +545,21 @@
+         get: () => directOutput?.status ?? priorState ?? {state: 'not-started', writerAcquired: false, committed: false}});
+       failure.saveWriteCommitted = failure.saveOutputState.committed === true;
+-      if (error.retryCleanup) failure.retryCleanup = error.retryCleanup;
+-      if (error.cleanupError) failure.cleanupError = error.cleanupError;
++      if (error?.retryCleanup) failure.retryCleanup = error.retryCleanup;
++      if (error?.cleanupError) failure.cleanupError = error.cleanupError;
+     }
      throw failure;
    } finally {
      signal?.removeEventListener('abort', onAbort);
@@ -464,6 +503,7 @@
 +      if (!failure) Object.defineProperty(cleanupFailure, 'saveOutputState', {enumerable: true,
 +        get: () => directOutput?.status ?? {state: 'not-started', writerAcquired: false, committed: false}});
 +      cleanupFailure.saveWriteCommitted = directOutput?.status.committed === true;
++      if (savedObservation) cleanupFailure.savedObservation = savedObservation;
 +      if (!failure) throw cleanupFailure;
 +    }
 +    try { publishMetrics(); } catch (error) { metrics.metricsCallbackError = String(error?.message ?? error); }

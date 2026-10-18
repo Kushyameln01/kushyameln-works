@@ -186,6 +186,21 @@ export function validateIndexedAdmission(info, s) {
 
 export const inspectSavedOutput = (file, options) => inspectOutputMp4(file, options);
 
+// Copy only plain data: never retain a File, writer, controller or live metrics.
+// Plain objects from another realm are accepted; class instances are not.
+function immutablePlainSnapshot(value) {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (Array.isArray(value)) return Object.freeze(value.map(immutablePlainSnapshot));
+  if (typeof value !== 'object') throw TypeError('SAVED_OBSERVATION_REQUIRES_PLAIN_DATA');
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== null && Object.getPrototypeOf(prototype) !== null) {
+    throw TypeError('SAVED_OBSERVATION_REQUIRES_PLAIN_DATA');
+  }
+  return Object.freeze(Object.fromEntries(Object.entries(value)
+    .map(([key, item]) => [key, immutablePlainSnapshot(item)])));
+}
+
 /** Private direct-file pixel route. One supplied combined-fork module owns every media class. */
 export async function convertStereo(file, settings, {
   signal, onProgress, onMetrics, jobId, onCleanup, outputHandle, onOutputCreated, fork, indexRoot, onIndexOwnership, outputProfileId = 'default',
@@ -246,7 +261,7 @@ export async function convertStereo(file, settings, {
     indexSortBytes: {input: 4 * 1024 ** 2 - PROFILE.sortReservedBytes, output: PROFILE.sortReservedBytes},
     indexBudgetBytes: 8 * 1024 ** 2, inputIndex: null, outputIndex: null,
   };
-  let input, output, canvas, directDestination, directOutput, inputIndex, outputIndex, result, failure;
+  let input, output, canvas, directDestination, directOutput, inputIndex, outputIndex, result, failure, savedObservation;
   const pendingCleanup = [];
   let videoIterator, heldSample, audioPacket, audioSink, audioSource, audioCopier, videoSource;
   let cancellationPromise;
@@ -517,6 +532,17 @@ export async function convertStereo(file, settings, {
     metrics.outputPreparationMs = performance.now() - prepareStarted;
     metrics.totalMs = performance.now() - started;
     metrics.status = 'saved-and-verified';
+    savedObservation = immutablePlainSnapshot({
+      jobId: id, outputProfileId: outputProfile.id, bytes: saved.bytes, sha256: saved.sha256,
+      committed: saved.committed, hashBasis: 'saved-file-observation', savedInfo,
+      verification: {wholeFileHashCompared: false, wholeFileHashStatus: 'NOT_COMPARED',
+        savedFileSHA256: saved.sha256, metadataHashMatched: true, metadataHashStatus: 'MATCH',
+        expectedMetadataHash, actualMetadataHash, metadataOffset: offset, metadataBytes,
+        savedWriteCommitted: true},
+      observedAt: new Date().toISOString(),
+      timings: {filePhases: saved.timings,
+        ...Object.fromEntries(Object.entries(metrics).filter(([key]) => key.endsWith('Ms')))},
+    });
     checkAbort();
     publishMetrics();
     progress('complete', metrics.lastVideoEndTimestamp, true);
@@ -527,20 +553,26 @@ export async function convertStereo(file, settings, {
       requiresMetadataPatch: false, opfsDirectory: null,
     };
     result = {file: saved.file, saved, cleanup: cleanupResources, metrics, info, savedInfo,
-      verification: {wholeFileHashCompared: false, savedFileSHA256: saved.sha256, metadataHashMatched: true,
-        expectedMetadataHash, metadataOffset: offset, metadataBytes, savedWriteCommitted: true}};
+      verification: savedObservation.verification, savedObservation};
     return result;
   } catch (error) {
     metrics.status = signal?.aborted ? 'canceled' : 'failed';
     metrics.error = signal?.aborted ? 'Conversion was canceled.' : String(error?.message ?? error);
-    failure = signal?.aborted && error.name !== 'AbortError' ? Object.assign(abortError(), {cause: error}) : error;
+    // Caller exceptions may have readonly/nonconfigurable diagnostic properties.
+    // Always attach our known facts to an owned error, retaining the original cause.
+    const canceled = signal?.aborted && error?.name !== 'AbortError';
+    failure = new Error(canceled ? 'Conversion was canceled.' : String(error?.message ?? error), {cause: error});
+    failure.name = canceled ? 'AbortError' : (typeof error?.name === 'string' ? error.name : 'Error');
+    if (error?.fileTimings) failure.fileTimings = error.fileTimings;
+    if (error?.requiresWorkerTermination) failure.requiresWorkerTermination = true;
+    if (savedObservation) failure.savedObservation = savedObservation;
     if (outputHandle) {
-      const priorState = error.saveOutputState;
+      const priorState = error?.saveOutputState;
       Object.defineProperty(failure, 'saveOutputState', {enumerable: true, configurable: true,
         get: () => directOutput?.status ?? priorState ?? {state: 'not-started', writerAcquired: false, committed: false}});
       failure.saveWriteCommitted = failure.saveOutputState.committed === true;
-      if (error.retryCleanup) failure.retryCleanup = error.retryCleanup;
-      if (error.cleanupError) failure.cleanupError = error.cleanupError;
+      if (error?.retryCleanup) failure.retryCleanup = error.retryCleanup;
+      if (error?.cleanupError) failure.cleanupError = error.cleanupError;
     }
     throw failure;
   } finally {
@@ -558,6 +590,7 @@ export async function convertStereo(file, settings, {
       if (!failure) Object.defineProperty(cleanupFailure, 'saveOutputState', {enumerable: true,
         get: () => directOutput?.status ?? {state: 'not-started', writerAcquired: false, committed: false}});
       cleanupFailure.saveWriteCommitted = directOutput?.status.committed === true;
+      if (savedObservation) cleanupFailure.savedObservation = savedObservation;
       if (!failure) throw cleanupFailure;
     }
     try { publishMetrics(); } catch (error) { metrics.metricsCallbackError = String(error?.message ?? error); }

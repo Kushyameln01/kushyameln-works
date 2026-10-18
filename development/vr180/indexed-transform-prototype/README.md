@@ -73,6 +73,13 @@ Return value:
 - `metrics`: public loop/phase counters plus `inputIndexBeforeCleanup`, `outputIndexBeforeCleanup`, disposed index snapshots, and `indexReservedAfterCleanup`.
 - `info`, `savedInfo`: normalized SBS/180 conversion output and actual saved-output inspection result.
 - `verification`: saved SHA, metadata expected SHA/range/match and committed fact.
+- `savedObservation`: detached, recursively frozen plain data fixed immediately after
+  saved metadata hash comparison and saved-output inspection, before a subsequent
+  cancellation check, metrics/progress notification or cleanup. It contains job/profile,
+  bytes, saved SHA, committed fact, actual saved inspection, expected/observed metadata
+  SHA and range, observation time and the timing snapshot at that point. It contains no
+  File, writer, callback, controller or live metrics. The whole-file SHA is an observation
+  (`wholeFileHashStatus:'NOT_COMPARED'`); metadata is compared (`metadataHashStatus:'MATCH'`).
 - `cleanup`: retryable owner cleanup callback; the normal return has already awaited cleanup.
 
 ## Resource and failure boundary
@@ -81,9 +88,21 @@ The owner cleanup independently attempts Input disposal, upstream Output cancell
 
 Held samples and the canvas are released on all exits. Final failure preserves a live `saveOutputState` getter: a committed file remains committed even when readback or cleanup fails. Such a trial rejects and is not a successful conversion. Cleaned successful trials return only after both index controllers dispose and the shared explicit reservation returns to zero.
 
+When cancellation, notification or cleanup fails after all saved-output checks passed,
+the rejection also carries the same immutable `savedObservation`. Conversion failures
+use an owned Error with the original name/message (or the cancellation name/message)
+and original exception as `cause`; readonly fields on a callback exception cannot
+replace or prevent attachment of the known save facts. A cleanup retry
+cannot change that observation, and cleanup never deletes or aborts the committed
+external file. A commit failure, committed-but-unverified save, metadata mismatch or
+failed saved-output inspection carries no successful observation. This distinguishes
+the observed save from the overall conversion/cleanup result. The snapshot alone does
+not establish receiver recovery, decoded media quality, VR playback, or page receipt
+after a Worker disappears; public Worker/schema integration remains separate work.
+
 ## Local verification
 
-`node --test tests/vr180-indexed-transform.test.mjs` passes thirteen contract/owner tests. They exercise the actual generated function with substituted codecs/index backends, while using the real file transaction and SHA implementation. Tests cover strict admission and limits, index attachment order/shared budget, the pixel loop, commit/readback, acquisition cancellation, codec-cancel failure, postcommit cleanup retry, postcommit metadata mismatch, and the retained AAC rejection rules. Three additional cases pause each ownership callback to prove awaiting/token correspondence, reject each callback to prove acquisition is stopped and existing cleanup still runs, and cancel during persistence to prove no late index creation. A real fixed-original `cslg` MP4 also passes saved-output inspection and fails the actual public input preflight before resource acquisition. They do not claim real browser decoding, encoding, OPFS, registry durability, VR playback, or performance. The separate native harness must recover and independently inspect complete output files before qualification.
+`node --test tests/vr180-indexed-transform.test.mjs` passes 20 contract/owner tests. They exercise the actual generated function with substituted codecs/index backends, while using the real file transaction and SHA implementation. Tests cover strict admission and limits, index attachment order/shared budget, the pixel loop, commit/readback, acquisition cancellation, codec-cancel failure, postcommit cleanup retry, postcommit metadata mismatch, and the retained AAC rejection rules. Three cases pause each ownership callback to prove awaiting/token correspondence, reject each callback to prove acquisition is stopped and existing cleanup still runs, and cancel during persistence to prove no late index creation. Saved-observation cases check detached recursive immutability, cancellation immediately after inspection, notification errors including non-Error throws and extensible errors with readonly reserved fields, cleanup retry and preservation of the external bytes; incomplete save/verification cases assert that no observation is issued. A real fixed-original `cslg` MP4 also passes saved-output inspection and fails the actual public input preflight before resource acquisition. They do not claim real browser decoding, encoding, OPFS, registry durability, VR playback, or performance. The separate native harness must recover and independently inspect complete output files before qualification.
 
 ## Named P5 trial output caps (private only)
 

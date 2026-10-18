@@ -18,7 +18,7 @@ async function fixture(options={}) {
   const inputFile=new Blob(['input']);
   const handle={async getFile(){const copy=buffer.slice();if(committed&&options.corruptSavedMetadata)copy[4]^=1;return new Blob([copy]);},async createWritable(){return {
     async write({position,data}){calls.write++;if(buffer.length<position+data.length){const next=new Uint8Array(position+data.length);next.set(buffer);buffer=next;}buffer.set(data,position);},
-    async truncate(size){buffer=buffer.slice(0,size);},async close(){committed=true;},async abort(){calls.abort++;if(abortFails)throw Error('WRITER_ABORT_FAILED');buffer=new Uint8Array();},
+    async truncate(size){buffer=buffer.slice(0,size);},async close(){if(options.commitFails)throw Error('COMMIT_FAILED');committed=true;options.afterCommit?.();},async abort(){calls.abort++;if(abortFails)throw Error('WRITER_ABORT_FAILED');buffer=new Uint8Array();},
   };}};
   const indexRoot={getDirectoryHandle(){throw Error('Injected controller must own backend');}};
   const video={type:'video',getCodec:async()=> 'avc',hasHighDynamicRange:async()=>false,getRotation:async()=>0,getFlip:async()=>false,
@@ -42,7 +42,7 @@ async function fixture(options={}) {
   const source=(await readFile(privateURL,'utf8')).replace(/^import[\s\S]*?from [^\n]*;\n/gm,'').replace(/^export /gm,'');
   const context=vm.createContext({Uint8Array,Blob,DOMException,AbortController,WritableStream,performance,crypto:globalThis.crypto,createFileOutput,sha256Blob,buildStereoGeometry,createIndexBudget,
     inspectMp4:async file=>{calls.inspect.push(file);if(file===inputFile){if(options.admissionFails)throw Error('PUBLIC_PARSER_REFUSED');return info;}return {...info,width:256,height:128,stereoMode:2,projection:'equi'};},
-    inspectOutputMp4:async()=>({...info,width:256,height:128,stereoMode:2,projection:'equi'}),
+    inspectOutputMp4:async()=>{if(options.savedInspectFails)throw Error('SAVED_INSPECT_FAILED');options.afterSavedInspect?.();return {...info,width:256,height:128,stereoMode:2,projection:'equi',...options.savedInfo};},
     createInputIndex:async opts=>createController('input',opts),createOutputIndex:async opts=>createController('output',opts),PROFILE:{sortReservedBytes:1600000},
     VideoEncoder:class {},VideoDecoder:class {},OffscreenCanvas:class {constructor(w,h){this.width=w;this.height=h;calls.canvas=this;}getContext(){return {};}}});
   new vm.Script(source,{filename:'private-indexed-transform.mjs'}).runInContext(context);
@@ -136,14 +136,97 @@ test('cleanup failure after verified commit preserves saved fact and retains fai
   const f=await fixture({disposeFails:true});let failure;
   await assert.rejects(f.run(),e=>{failure=e;return /INDEXED_CLEANUP_FAILED/.test(e.message);});
   assert.equal(failure.saveWriteCommitted,true);assert.equal(failure.saveOutputState.committed,true);assert(f.committed());
+  const observation=failure.savedObservation;assert.equal(observation.committed,true);assert.equal(observation.verification.metadataHashStatus,'MATCH');
+  const original=JSON.stringify(observation);assert(Object.isFrozen(observation.timings.filePhases.close));
   assert.equal(f.calls.controllers[0].metrics.disposed,false);assert.equal(f.calls.controllers[1].metrics.disposed,true);
   f.recover();await failure.retryCleanup();assert.equal(f.calls.controllers[0].metrics.disposed,true);assert.equal(f.calls.controllers[0].options.budget.usedBytes,0);
+  assert.equal(failure.savedObservation,observation);assert.equal(JSON.stringify(observation),original);assert.equal(f.calls.abort,0);
+  assert.equal((await f.handle.getFile()).size,observation.bytes);
 });
 
 test('saved metadata mismatch after commit cannot become a successful result or claim rollback',async()=>{
   const f=await fixture({corruptSavedMetadata:true});let failure;
   await assert.rejects(f.run(),e=>{failure=e;return /METADATA_HASH_MISMATCH/.test(e.message);});
   assert.equal(failure.saveOutputState.committed,true);assert.equal(failure.saveWriteCommitted,true);assert(f.calls.controllers.every(c=>c.metrics.disposed));
+  assert.equal(failure.savedObservation,undefined);
+});
+
+test('saved observation is a detached recursively frozen record of verified save, without live resources',async()=>{
+  const f=await fixture(),result=await f.run({outputProfileId:'p5-5gb'}),observation=result.savedObservation;
+  const immutableData=value=>{
+    if(value===null||typeof value!=='object')return;
+    assert(Object.isFrozen(value));assert(!(value instanceof Blob));
+    assert(Array.isArray(value)||Object.getPrototypeOf(Object.getPrototypeOf(value))===null);
+    for(const child of Object.values(value)){assert.notEqual(typeof child,'function');immutableData(child);}
+  };
+  immutableData(observation);assert.equal(observation.jobId,'trial');assert.equal(observation.outputProfileId,'p5-5gb');
+  assert.equal(observation.bytes,8);assert.equal(observation.sha256,sha(Uint8Array.of(1,2,3,4,5,6,7,8)));
+  assert.equal(observation.committed,true);assert.equal(observation.hashBasis,'saved-file-observation');
+  assert.equal(observation.verification.wholeFileHashCompared,false);assert.equal(observation.verification.wholeFileHashStatus,'NOT_COMPARED');
+  assert.equal(observation.verification.metadataHashStatus,'MATCH');assert.equal(observation.verification.expectedMetadataHash,observation.verification.actualMetadataHash);
+  assert.equal(observation.verification.actualMetadataHash,sha(Uint8Array.of(5,6,7,8)));
+  assert.equal(observation.verification.metadataOffset,4);assert.equal(observation.verification.metadataBytes,4);
+  assert.equal(result.verification,observation.verification);assert.equal(typeof observation.observedAt,'string');
+  assert(Number.isFinite(Date.parse(observation.observedAt)));assert(observation.timings.totalMs>=0);
+  assert(!('file' in observation));assert(!('metrics' in observation));assert(!('cleanup' in observation));
+  const before=JSON.stringify(observation);
+  assert.throws(()=>{observation.savedInfo.sampleCounts.total=999;},TypeError);
+  result.savedInfo.sampleCounts={total:999};result.savedInfo.audioCodecs=['changed'];result.saved.timings.close.durationMs=-1;
+  result.metrics.totalMs=-1;result.metrics.inputIndex.sampleCount=999;
+  assert.equal(JSON.stringify(observation),before);assert.equal(f.calls.abort,0);assert.equal((await f.handle.getFile()).size,8);
+});
+
+test('cancellation immediately after saved inspection retains verified observation before cancellation check',async()=>{
+  const aborter=new AbortController(),f=await fixture({afterSavedInspect:()=>aborter.abort()});let failure;
+  await assert.rejects(f.run({signal:aborter.signal}),e=>{failure=e;return e.name==='AbortError';});
+  assert.equal(failure.savedObservation.verification.metadataHashStatus,'MATCH');assert.equal(failure.savedObservation.bytes,8);
+  assert.equal(failure.saveWriteCommitted,true);assert.equal(failure.saveOutputState.committed,true);
+  assert(f.calls.controllers.every(c=>c.metrics.disposed));assert.equal(f.calls.abort,0);assert.equal((await f.handle.getFile()).size,8);
+});
+
+test('post-verification metrics and progress exceptions retain the save observation',async()=>{
+  for(const callback of ['metrics','progress'])for(const thrown of [Error('NOTIFY_FAILED'),'NOTIFY_FAILED',null,Object.freeze(Error('FROZEN_NOTIFY_FAILED'))]){
+    const f=await fixture();let failure;
+    const options=callback==='metrics'?{onMetrics(metrics){if(metrics.status==='saved-and-verified')throw thrown;}}
+      :{onProgress(progress){if(progress.phase==='complete')throw thrown;}};
+    await assert.rejects(f.run(options),e=>{failure=e;return true;});
+    assert.equal(failure.savedObservation.jobId,'trial');assert.equal(failure.savedObservation.verification.metadataHashMatched,true);
+    assert.equal(failure.saveWriteCommitted,true);assert.equal(f.calls.abort,0);assert.equal((await f.handle.getFile()).size,8);
+  }
+});
+
+test('extensible callback errors with readonly reserved fields cannot overwrite or hide saved facts',async()=>{
+  const reserved={savedObservation:{jobId:'foreign-job'},saveOutputState:{committed:false},saveWriteCommitted:false};
+  for(const callback of ['metrics','progress'])for(const name of ['Error','AbortError'])
+    for(const keys of [...Object.keys(reserved).map(key=>[key]),Object.keys(reserved)]){
+      const thrown=Object.assign(Error('READONLY_CALLBACK_FAILED'),{name});
+      for(const key of keys)Object.defineProperty(thrown,key,{value:reserved[key],writable:false,configurable:false});
+      assert(Object.isExtensible(thrown));
+      const disposeFails=keys.length===3,f=await fixture({disposeFails});let failure;
+      const options=callback==='metrics'?{onMetrics(metrics){if(metrics.status==='saved-and-verified')throw thrown;}}
+        :{onProgress(progress){if(progress.phase==='complete')throw thrown;}};
+      await assert.rejects(f.run(options),e=>{failure=e;return true;});
+      assert.notEqual(failure,thrown);assert.equal(failure.cause,thrown);
+      assert.equal(failure.name,name);assert.equal(failure.message,'READONLY_CALLBACK_FAILED');
+      assert.equal(failure.savedObservation.jobId,'trial');assert.equal(failure.savedObservation.verification.metadataHashMatched,true);
+      assert.equal(failure.saveWriteCommitted,true);assert.equal(failure.saveOutputState.committed,true);
+      for(const key of keys)assert.equal(thrown[key],reserved[key]);
+      const observation=failure.savedObservation;
+      if(disposeFails){assert.match(failure.cleanupError,/INDEX_CLOSE_FAILED/);f.recover();await failure.retryCleanup();}
+      assert.equal(failure.savedObservation,observation);assert(f.calls.controllers.every(c=>c.metrics.disposed));
+      assert.equal(f.calls.abort,0);assert.equal((await f.handle.getFile()).size,8);
+    }
+});
+
+test('uncommitted or unverified saves never emit a successful saved observation',async()=>{
+  const aborter=new AbortController();
+  for(const options of [{commitFails:true},{savedInspectFails:true},{savedInfo:{width:128}},{afterCommit:()=>aborter.abort(),signal:aborter.signal}]){
+    const f=await fixture(options);let failure;
+    await assert.rejects(f.run({signal:options.signal}),e=>{failure=e;return true;});
+    assert.equal(failure.savedObservation,undefined);assert.equal(failure.saveWriteCommitted,!options.commitFails);
+    assert(f.calls.controllers.every(c=>c.metrics.disposed));
+    if(!options.commitFails){assert.equal(f.calls.abort,0);assert.equal((await f.handle.getFile()).size,8);}
+  }
 });
 
 test('private destination refuses a write beyond one GiB before passing it to real transaction writer',async()=>{

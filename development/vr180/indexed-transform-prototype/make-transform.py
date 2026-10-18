@@ -204,6 +204,51 @@ change('outputLimitBytes: MAX_OUTPUT_BYTES,', 'outputLimitBytes: outputProfile.m
 change('      signal, onWrite: extent =>', '      signal, outputProfileId: outputProfile.id, onWrite: extent =>')
 change('metrics.outputBytes > MAX_OUTPUT_BYTES', 'metrics.outputBytes > outputProfile.maxBytes')
 change('private bounded disk input/output indices; unchanged public sample/metadata/output limits', 'private bounded disk input/output indices; unchanged sample/metadata limits; explicit private output profile')
+# Preserve completed save evidence before any later cancellation, notification or cleanup.
+change('export const inspectSavedOutput = (file, options) => inspectOutputMp4(file, options);', '''export const inspectSavedOutput = (file, options) => inspectOutputMp4(file, options);
+
+// Copy only plain data: never retain a File, writer, controller or live metrics.
+// Plain objects from another realm are accepted; class instances are not.
+function immutablePlainSnapshot(value) {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (Array.isArray(value)) return Object.freeze(value.map(immutablePlainSnapshot));
+  if (typeof value !== 'object') throw TypeError('SAVED_OBSERVATION_REQUIRES_PLAIN_DATA');
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== null && Object.getPrototypeOf(prototype) !== null) {
+    throw TypeError('SAVED_OBSERVATION_REQUIRES_PLAIN_DATA');
+  }
+  return Object.freeze(Object.fromEntries(Object.entries(value)
+    .map(([key, item]) => [key, immutablePlainSnapshot(item)])));
+}''')
+change('inputIndex, outputIndex, result, failure;', 'inputIndex, outputIndex, result, failure, savedObservation;')
+change("    metrics.status = 'saved-and-verified';", '''    metrics.status = 'saved-and-verified';
+    savedObservation = immutablePlainSnapshot({
+      jobId: id, outputProfileId: outputProfile.id, bytes: saved.bytes, sha256: saved.sha256,
+      committed: saved.committed, hashBasis: 'saved-file-observation', savedInfo,
+      verification: {wholeFileHashCompared: false, wholeFileHashStatus: 'NOT_COMPARED',
+        savedFileSHA256: saved.sha256, metadataHashMatched: true, metadataHashStatus: 'MATCH',
+        expectedMetadataHash, actualMetadataHash, metadataOffset: offset, metadataBytes,
+        savedWriteCommitted: true},
+      observedAt: new Date().toISOString(),
+      timings: {filePhases: saved.timings,
+        ...Object.fromEntries(Object.entries(metrics).filter(([key]) => key.endsWith('Ms')))},
+    });''')
+change('    result = {file: saved.file, saved, cleanup: cleanupResources, metrics, info, savedInfo,\n      verification: {wholeFileHashCompared: false, savedFileSHA256: saved.sha256, metadataHashMatched: true,\n        expectedMetadataHash, metadataOffset: offset, metadataBytes, savedWriteCommitted: true}};', '''    result = {file: saved.file, saved, cleanup: cleanupResources, metrics, info, savedInfo,
+      verification: savedObservation.verification, savedObservation};''')
+change("    failure = signal?.aborted && error.name !== 'AbortError' ? Object.assign(abortError(), {cause: error}) : error;", '''    // Caller exceptions may have readonly/nonconfigurable diagnostic properties.
+    // Always attach our known facts to an owned error, retaining the original cause.
+    const canceled = signal?.aborted && error?.name !== 'AbortError';
+    failure = new Error(canceled ? 'Conversion was canceled.' : String(error?.message ?? error), {cause: error});
+    failure.name = canceled ? 'AbortError' : (typeof error?.name === 'string' ? error.name : 'Error');
+    if (error?.fileTimings) failure.fileTimings = error.fileTimings;
+    if (error?.requiresWorkerTermination) failure.requiresWorkerTermination = true;
+    if (savedObservation) failure.savedObservation = savedObservation;''')
+change('const priorState = error.saveOutputState;', 'const priorState = error?.saveOutputState;')
+change('if (error.retryCleanup) failure.retryCleanup = error.retryCleanup;', 'if (error?.retryCleanup) failure.retryCleanup = error.retryCleanup;')
+change('if (error.cleanupError) failure.cleanupError = error.cleanupError;', 'if (error?.cleanupError) failure.cleanupError = error.cleanupError;')
+change('      cleanupFailure.saveWriteCommitted = directOutput?.status.committed === true;', '''      cleanupFailure.saveWriteCommitted = directOutput?.status.committed === true;
+      if (savedObservation) cleanupFailure.savedObservation = savedObservation;''')
 # Pin unchanged substantive calculation sections independently of the integration patch.
 def section(text,start,end):return text[text.index(start):text.index(end,text.index(start))]
 aac_start='export function createAacPacketCopier';aac_end='\n}\n'
