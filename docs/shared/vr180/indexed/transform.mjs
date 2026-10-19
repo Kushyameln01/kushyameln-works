@@ -164,7 +164,9 @@ export function validateIndexedAdmission(info, s) {
     if (b.top !== 0 || b.bottom !== 0 || b.left !== want || b.right !== want) throw Error('FOV_METADATA_CONFLICT');
   }
   const ew = info.width / (s.layout === 'sbs' ? 2 : 1), eh = info.height / (s.layout === 'tb' ? 2 : 1);
-  if (!Number.isInteger(ew) || !Number.isInteger(eh) || ew / eh !== s.fov / 180) throw Error('EYE_DIMENSIONS_AND_FOV_CONFLICT');
+  const sampling = s.sampling ?? 'equal';
+  if (!['equal', 'independent'].includes(sampling)) throw Error('INPUT_SAMPLING_UNSUPPORTED');
+  if (![ew, eh].every(n => Number.isSafeInteger(n) && n > 0) || (sampling === 'equal' && ew / eh !== s.fov / 180)) throw Error('EYE_DIMENSIONS_AND_FOV_CONFLICT');
   if (s.mode === 'copy' && s.fov !== 180) throw Error('COPY_REQUIRES_180_DEGREES');
   if (s.mode === 'convert') {
     if (!info.transcodeSafe) throw Error('TIMELINE_NOT_SUPPORTED: ' + info.transcodeIssues.join(', '));
@@ -225,6 +227,8 @@ export async function convertStereo(file, settings, {
   const chosenSettings = {
     layout: settings.layout, fov: settings.fov,
     eyeSize: settings.eyeSize, bitrate: settings.bitrate,
+    outputEyeWidth: settings.outputEyeWidth, outputEyeHeight: settings.outputEyeHeight,
+    outputShape: settings.outputShape, outputScale: settings.outputScale,
   };
   const id = jobId ?? globalThis.crypto?.randomUUID();
   if (typeof id !== 'string' || !/^[A-Za-z0-9_-]{1,60}$/.test(id)) {
@@ -422,7 +426,7 @@ export async function convertStereo(file, settings, {
 
     const setupStart = performance.now();
     outputIndex = await acquire(() => createOutputIndex({root: indexRoot, jobId: outputOwnership.jobId,
-      ownerToken: outputOwnership.ownerToken, budget, signal, layout: 'sbs', containerMetadata, audioDependencies}));
+      ownerToken: outputOwnership.ownerToken, budget, signal, layout: 'sbs', sampling: geometry.width === geometry.height * 2 ? 'equal' : 'independent', containerMetadata, audioDependencies}));
     directDestination = await createDirectMuxDestination(outputHandle, {
       signal, outputProfileId: outputProfile.id, onWrite: extent => { metrics.outputBytes = extent; },
       onOutputCreated: acquired => { directOutput = acquired; onOutputCreated?.(acquired); },

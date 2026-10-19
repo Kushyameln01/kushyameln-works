@@ -36,7 +36,7 @@ function writeSample(bytes, sample) { bytes.fill(0); const d = view(bytes);
 }
 /** Creates a job-owned private controller. Bind it to only one fork Output. */
 export async function createOutputIndex({root, jobId = crypto.randomUUID(), signal, lockManager = globalThis.navigator?.locks,
-  budget = createIndexBudget(), layout = null, containerMetadata = null, audioDependencies = null, yieldTask = tick, ownerToken} = {}) {
+  budget = createIndexBudget(), layout = null, sampling = 'equal', containerMetadata = null, audioDependencies = null, yieldTask = tick, ownerToken} = {}) {
   if (!/^[A-Za-z0-9_-]{1,64}$/.test(jobId)) fail('INVALID_OUTPUT_INDEX_JOB');
   if (!root?.getDirectoryHandle || !root?.removeEntry) fail('OUTPUT_INDEX_ROOT_UNAVAILABLE');
   if (layout !== null && !['sbs', 'tb'].includes(layout)) fail('INVALID_OUTPUT_INDEX_LAYOUT');
@@ -229,7 +229,8 @@ export async function createOutputIndex({root, jobId = crypto.randomUUID(), sign
   function tagTree(box) {
     if (layout && box.type === 'avc1') {
       const state = tracks.find(s => s.track.type === 'video'), {width, height} = state.track.info;
-      if (layout === 'sbs' ? width !== height * 2 : height !== width * 2) fail('VR180_GEOMETRY_MISMATCH');
+      if (!['equal', 'independent'].includes(sampling) || (layout === 'sbs' ? width : height) % 2 !== 0
+        || (sampling === 'equal' && (layout === 'sbs' ? width !== height * 2 : height !== width * 2))) fail('VR180_GEOMETRY_MISMATCH');
       box.children = [...box.children.filter(b => b && !['st3d', 'sv3d'].includes(b.type)),
         full('st3d', Uint8Array.of(0, 0, 0, 0, layout === 'sbs' ? 2 : 1)),
         {type: 'sv3d', children: [full('svhd', new Uint8Array([0, 0, 0, 0, ...new TextEncoder().encode('Kushyameln Works VR180 b1\0')])),

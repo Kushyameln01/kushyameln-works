@@ -1,3 +1,4 @@
+import {buildStereoGeometry} from '../shared/vr180/geometry.mjs';
 import {StereoClient} from '../shared/vr180/client.mjs';
 import {requiresIndexedConversion, STREAMING_INPUT_THRESHOLD_BYTES} from '../shared/vr180/route-profile.mjs';
 import {listIndexedJobs, recoverIndexedJob} from '../shared/vr180/ownership-registry.mjs';
@@ -5,7 +6,7 @@ import {OperationScope} from '../shared/vr180/operations.mjs';
 import {saveBlobToFile} from '../shared/vr180/file-output.mjs';
 import {bindSaveSummary, createSaveAttempt, summarizeSaves} from '../shared/vr180/save-record.mjs';
 const $ = id => document.getElementById(id);
-const PAGE_BUILD = 'vr180-b14-mp4-compatibility-r6';
+const PAGE_BUILD = 'vr180-b15-flexible-scale-candidate-1';
 const operations = new OperationScope();
 let record = null, sourceInfo = null;
 let inputFailure = null, selectionPhase = null;
@@ -64,7 +65,8 @@ const errors = {
   CONFIRM_PROJECTION_AND_EYES: '元映像の投影・左右配置を確認してください。',
   STEREO_METADATA_CONFLICT: '選んだ左右配置と、動画に記録された情報が一致しません。',
   FOV_METADATA_CONFLICT: '選んだ視野角と、動画に記録された情報が一致しません。',
-  EYE_DIMENSIONS_AND_FOV_CONFLICT: '各眼が180°なら正方形、360°なら横2：縦1の素材に対応します。',
+  EYE_DIMENSIONS_AND_FOV_CONFLICT: '各眼の寸法と角度の設定を確認してください。矩形の各眼は、投影を別途確認したうえで「横・縦で異なる」を選びます。',
+  INPUT_SAMPLING_UNSUPPORTED: '画素と角度の対応設定が不正です。',
   COPY_REQUIRES_180_DEGREES: '360°素材は「180°へ切出し・横並びへ変換」を選んでください。',
   CAMERA_MESH_NOT_SUPPORTED_YET: 'このカメラのメッシュ投影は、まだ対応していません。',
   CONVERSION_INDEX_INFO_INVALID: '変換前に動画の索引を確認できませんでした。処理記録を確認してください。',
@@ -143,6 +145,13 @@ function statusError(e) {
   if (e.diagnostics?.directSave?.status === 'unknown') $('status').textContent = '保存状態が不明な処理を終了しました。保存先のファイルを確認し、次の処理には新しい保存先を選んでください。';
   showSaveAndCleanup(record, e.diagnostics?.internalIndexCleanup);
 }
+function outputSettings() {
+  return {outputShape: $('output-shape').value, outputScale: $('output-shape').value === 'preserve' ? Number($('output-scale').value) : 1};
+}
+function outputGeometry() {
+  return buildStereoGeometry({...outputSettings(), width: sourceInfo.width, height: sourceInfo.height,
+    layout: $('layout').value, fov: Number($('fov').value), eyeSize: Number($('size').value)});
+}
 function update() {
   const busy = !!operations.current || registryBusy, cleanupPending = client.cleanupPending || !!pendingSaveCleanup;
   const copyOnly = $('mode').value === 'convert' && (sourceInfo?.hasTrackReferences || sourceInfo?.hasChapterList || sourceInfo?.transcodeSafe === false);
@@ -150,17 +159,37 @@ function update() {
   $('execution-route-label').hidden = $('mode').value !== 'convert';
   $('execution-route-note').hidden = !indexed;
   $('execution-route-note').textContent = unavailable || (indexedRequired() ? '大容量・長時間の動画には、一時保存を使う変換を自動で選びます。先に保存先を選んでください。' : '先に保存先を選んでください。一時データはブラウザ内に保存し、動画は保存先へ順次書き込みます。');
-  $('size-label').hidden = $('mode').value === 'copy';
-  $('mode-note').textContent = $('mode').value === 'copy' ? '180°の映像と音声をそのまま保ち、VR情報を整えます。' : '各眼の正面180°を横並びにして再圧縮します。360°素材の背面は出力されません。';
+  const guideSize = sourceInfo && [[3840,2160,'4K'],[5760,3240,'6K'],[7680,4320,'8K']]
+    .find(([w,h]) => sourceInfo.width === w && sourceInfo.height === h);
+  $('capture-match').textContent = guideSize
+    ? `入力寸法はガイドの${guideSize[2]}（${sourceInfo.width} × ${sourceInfo.height}）と一致します。寸法だけでは投影・眼順序を判定できません。`
+    : 'ガイドの録画フレームは16:9です。寸法やファイル名から投影・眼順序を自動認定しません。';
+  const converting = $('mode').value === 'convert', preserve = $('output-shape').value === 'preserve';
+  $('size-label').hidden = !converting || preserve;
+  $('output-shape-label').hidden = !converting;
+  $('output-scale-label').hidden = !converting || !preserve;
+  $('output-geometry-note').hidden = !converting;
+  let sizingError = false;
+  $('output-geometry-note').textContent = '';
+  if (converting && sourceInfo) {
+    try {
+      const g = outputGeometry();
+      $('output-geometry-note').textContent = `出力 ${g.width} × ${g.height}（各眼 ${g.width / 2} × ${g.height}）。` + (preserve ? '左右両眼に同じ倍率を使い、縦横比を保ちます。' : '各眼を正方形へ再サンプルします。平面上の形状は変わる場合があります。');
+    } catch {
+      sizingError = true;
+      $('output-geometry-note').textContent = 'この縮尺・サイズでは出力できません。縦横とも正の偶数画素となり、元画像を拡大しない設定を選んでください。比率を変える丸めは行いません。';
+    }
+  }
+  $('mode-note').textContent = $('mode').value === 'copy' ? '180°の映像と音声をそのまま保ち、VR情報を整えます。' : '各眼の正面180°を横並びにして再圧縮します。360°素材の背面は出力されません。矩形の各眼は選んだ正方形へ再サンプルするため、録画解像度は保持されません。';
   if (copyOnly) $('mode-note').textContent = sourceInfo?.hasTrackReferences || sourceInfo?.hasChapterList
     ? errors.TRACK_REFERENCES_COPY_ONLY : sourceInfo?.metadataCopyOnly || sourceInfo?.auxiliaryTracks?.some(t => t.kind === 'timecode')
       ? errors.METADATA_COPY_ONLY : errors.TIMELINE_NOT_SUPPORTED;
-  $('run').disabled = busy || cleanupPending || copyOnly || !source || !$('confirmed').checked || (saveRequired() && (!chosenSaveHandle || !!unavailable));
+  $('run').disabled = busy || cleanupPending || copyOnly || sizingError || !source || !$('confirmed').checked || (saveRequired() && (!chosenSaveHandle || !!unavailable));
   $('run').textContent = chosenSaveHandle && $('mode').value === 'convert' ? '動画を作成して保存' : 'VR180動画を作成';
   $('cancel').disabled = registryBusy || (!busy && !cleanupPending) || operations.current?.kind === 'saveCleanup';
   $('cancel').textContent = pendingSaveCleanup ? '保存処理の清掃を再試行' : cleanupPending ? '一時ファイル削除を再試行' : '取り消す';
   if (client.outputStateUnknown) $('cancel').textContent = '記録を保存して処理を終了';
-  for (const id of ['layout', 'fov', 'mode', 'size', 'execution-route', 'confirmed', 'file', 'clear', 'receipt']) $(id).disabled = busy || cleanupPending;
+  for (const id of ['layout', 'fov', 'sampling', 'mode', 'size', 'output-shape', 'output-scale', 'execution-route', 'confirmed', 'file', 'clear', 'receipt']) $(id).disabled = busy || cleanupPending;
   const outputUnavailable = busy || cleanupPending || !result;
   const saved = !!result && summarizeSaves(result.receipt).saveCompleted;
   $('save').disabled = outputUnavailable;
@@ -214,7 +243,7 @@ async function prepare(file, preset, op) {
   selectionPhase = 'previous-result-cleanup';
   await clearResult(); operations.check(op);
   inputFailure = null;
-  source = file; sourceInfo = null; chosenSaveHandle = null; selectionClock = performance.now(); selectionAt = new Date().toISOString(); $('confirmed').checked = false;
+  source = file; sourceInfo = null; chosenSaveHandle = null; selectionClock = performance.now(); selectionAt = new Date().toISOString(); $('confirmed').checked = false; $('sampling').value = 'equal'; $('output-shape').value = 'square'; $('output-scale').value = '0.5';
   $('input-info').textContent = `${file.name} · ${formatGB(file.size)} · 読み込み中`;
   selectionPhase = 'input-preview';
   if (inputURL) URL.revokeObjectURL(inputURL);
@@ -236,7 +265,7 @@ async function prepare(file, preset, op) {
   selectionPhase = 'inspect-worker-release';
   await client.dispose(); operations.check(op);
   selectionPhase = null;
-  $('status').textContent = '左右配置と視野角を確認して、動画を作成してください。';
+  $('status').textContent = '左右配置と映像範囲を確認して、動画を作成してください。';
 }
 function failPreparation(error, file, preset) {
   source = null; sourceInfo = null; chosenSaveHandle = null;
@@ -292,8 +321,9 @@ for (const button of document.querySelectorAll('[data-demo]')) button.onclick = 
   } catch (e) { if (operations.owns(op)) failPreparation(e, file, preset); }
   finally { finish(op); }
 };
-for (const id of ['layout', 'fov', 'mode', 'size', 'execution-route', 'confirmed']) $(id).addEventListener('change', async () => {
+for (const id of ['layout', 'fov', 'sampling', 'mode', 'size', 'output-shape', 'output-scale', 'execution-route', 'confirmed']) $(id).addEventListener('change', async () => {
   if (operations.current || registryBusy) return;
+  if (['layout', 'fov', 'sampling'].includes(id)) $('confirmed').checked = false;
   // Settings cannot repair a rejected input or replace its failure record.
   if (!source) { update(); return; }
   const op = begin('settings');
@@ -307,10 +337,14 @@ $('run').onclick = async () => {
     $('status').textContent = indexedUnavailable() || '先に保存先を選んでください。'; update(); return;
   }
   const op = begin('convert'), started = performance.now(), input = source;
-  const settings = {mode: $('mode').value, layout: $('layout').value, fov: Number($('fov').value), eyeSize: Number($('size').value), bitrate: Math.min(40000000, Math.max(2000000, Number($('size').value) ** 2 * 6)), confirmed: $('confirmed').checked, executionRoute: indexedSelected() ? 'indexed' : 'legacy'};
+  const settings = {...outputSettings(), mode: $('mode').value, layout: $('layout').value, fov: Number($('fov').value), sampling: $('sampling').value, eyeSize: Number($('size').value), bitrate: Math.min(40000000, Math.max(2000000, Number($('size').value) ** 2 * 6)), confirmed: $('confirmed').checked, executionRoute: indexedSelected() ? 'indexed' : 'legacy'};
   $('progress').removeAttribute('value'); $('status').textContent = '動画を作成しています…';
   try {
     await clearResult(); operations.check(op);
+    if (settings.mode === 'convert') {
+      const g = outputGeometry();
+      settings.bitrate = Math.min(40000000, Math.max(2000000, g.width / 2 * g.height * 6));
+    }
     const r = await client.run(input, settings, {outputHandle: settings.mode === 'convert' ? chosenSaveHandle : undefined});
     try { operations.check(op); }
     catch (error) { error.diagnostics = {...r.receipt, status: 'canceled'}; throw error; }

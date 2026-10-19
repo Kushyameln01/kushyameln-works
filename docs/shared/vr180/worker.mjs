@@ -7,7 +7,8 @@ import {sha256Blob} from './sha256.mjs';
 import {finalizeDirectOutput} from './file-output.mjs';
 import {bindSaveSummary, createSaveAttempt} from './save-record.mjs';
 import {selectExecutionRoute, LEGACY_PROFILE, INDEXED_PROFILE} from './route-profile.mjs';
-const BUILD = 'vr180-b14-mp4-compatibility-r6';
+import {buildStereoGeometry} from './geometry.mjs';
+const BUILD = 'vr180-b15-flexible-scale-candidate-1';
 // Legacy indices stay bounded by admission. Indexed tables use disk pages;
 // retained small metadata, sorting and ownership budgets are enforced separately.
 function validate(info, s, route) {
@@ -22,7 +23,12 @@ function validate(info, s, route) {
     if (b.top !== 0 || b.bottom !== 0 || b.left !== want || b.right !== want) throw Error('FOV_METADATA_CONFLICT');
   }
   const ew = info.width / (s.layout === 'sbs' ? 2 : 1), eh = info.height / (s.layout === 'tb' ? 2 : 1);
-  if (!Number.isInteger(ew) || !Number.isInteger(eh) || ew / eh !== s.fov / 180) throw Error('EYE_DIMENSIONS_AND_FOV_CONFLICT');
+  // Pixel aspect ratio is validated by the MP4 inspector. Angular sampling
+  // density is a separate contract: rectangular eye images are opt-in only.
+  const sampling = s.sampling ?? 'equal';
+  if (!['equal', 'independent'].includes(sampling)) throw Error('INPUT_SAMPLING_UNSUPPORTED');
+  if (![ew, eh].every(n => Number.isSafeInteger(n) && n > 0)) throw Error('EYE_DIMENSIONS_AND_FOV_CONFLICT');
+  if (sampling === 'equal' && ew / eh !== s.fov / 180) throw Error('EYE_DIMENSIONS_AND_FOV_CONFLICT');
   if (s.mode === 'copy' && s.fov !== 180) throw Error('COPY_REQUIRES_180_DEGREES');
   if (s.mode === 'convert') {
     const profile = route.id === 'indexed' ? INDEXED_PROFILE : LEGACY_PROFILE;
@@ -75,6 +81,7 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
     const identity = {schemaVersion: 2, operationId: job.operationId, inputRevision: job.inputRevision, saveAttempts: []};
     const directAttempt = outputHandle ? createSaveAttempt(identity, 'direct', {id: message.saveAttemptId ?? crypto.randomUUID()}) : null;
     if (directAttempt) identity.saveAttempts.push(directAttempt);
+    let expectedGeometry = null;
     let info = null, inputHash = null, inspectionFailed = false, route = {id: settings.executionRoute === 'indexed' && settings.mode === 'convert' ? 'indexed' : 'legacy'};
     job.executionRoute = route.id;
     const applySavedObservation = observation => {
@@ -89,8 +96,8 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
         || !Number.isSafeInteger(v.metadataBytes) || v.metadataBytes <= 0
         || !Number.isSafeInteger(v.metadataOffset + v.metadataBytes)
         || v.metadataOffset + v.metadataBytes !== observation.bytes || observation.savedInfo?.stereoMode !== 2
-        || observation.savedInfo?.projection !== 'equi' || observation.savedInfo.width !== settings.eyeSize * 2
-        || observation.savedInfo.height !== settings.eyeSize || observation.savedInfo.sampleCounts?.total !== info?.sampleCounts?.total
+        || observation.savedInfo?.projection !== 'equi' || observation.savedInfo.width !== expectedGeometry?.width
+        || observation.savedInfo.height !== expectedGeometry?.height || observation.savedInfo.sampleCounts?.total !== info?.sampleCounts?.total
         || !Number.isFinite(Date.parse(observation.observedAt))) {
         throw Error('INDEXED_SAVED_OBSERVATION_INVALID');
       }
@@ -123,6 +130,7 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
       check();
       if (settings.mode === 'inspect') { send('result', {result: {info, build: BUILD}}); return; }
       validate(info, settings, route);
+      if (settings.mode === 'convert') expectedGeometry = buildStereoGeometry({...settings, width: info.width, height: info.height});
       inputHash = await mark('inputHash', () => digest(file, 'inputHash')); check();
       if (outputHandle && settings.mode !== 'convert') throw Error('DIRECT_OUTPUT_MODE_UNSUPPORTED');
       let media = file, metrics = null, direct = null, indexedResult = null, containerMetadata = null, audioDependencies = null;
@@ -167,12 +175,13 @@ export function createWorkerController({postMessage, inspect = inspectMp4, tag =
       } else {
         blob = await mark('metadata', async () => transferAudioDependenciesToTaggedBlob(
           await transferMetadataToTaggedBlob(
-            await (settings.mode === 'convert' ? tagOutput : tag)(media, {layout: settings.mode === 'copy' ? settings.layout : 'sbs', signal: job.controller.signal}),
+            await (settings.mode === 'convert' ? tagOutput : tag)(media, {layout: settings.mode === 'copy' ? settings.layout : 'sbs', sampling: settings.mode === 'copy' ? settings.sampling : expectedGeometry.width === expectedGeometry.height * 2 ? 'equal' : 'independent', signal: job.controller.signal}),
             containerMetadata, {signal: job.controller.signal}), audioDependencies, {signal: job.controller.signal})); check();
         if (!Number.isSafeInteger(blob.size) || blob.size <= 0) throw Error('OUTPUT_SIZE_INVALID');
         outputInfo = await mark('outputInspect', () => (settings.mode === 'convert' ? inspectOutput : inspect)(blob, {signal: job.controller.signal})); check();
         outputHash = await mark('outputHash', () => digest(blob, 'outputHash')); check();
       }
+      if (expectedGeometry && (outputInfo.width !== expectedGeometry.width || outputInfo.height !== expectedGeometry.height)) throw Error('OUTPUT_DIMENSIONS_MISMATCH');
       timings.outputPrepared = performance.now() - clock;
       const receipt = bindSaveSummary({...identity, build: BUILD,
         status: direct || indexedResult ? 'saved' : 'prepared', settings, input: {bytes: file.size, sha256: inputHash, info, hashBasis: 'whole-input'},

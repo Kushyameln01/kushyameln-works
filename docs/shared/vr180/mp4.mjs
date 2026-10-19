@@ -774,14 +774,16 @@ async function parse(blob, { signal } = {}) {
 export async function inspectMp4(blob, options = {}) { return (await parse(blob, options)).info; }
 
 /** Plan metadata-only writes. The source needs readable container ranges, not sample payloads. */
-export async function planMp4Tag(blob, { layout, signal } = {}) {
+export async function planMp4Tag(blob, { layout, signal, sampling = 'equal' } = {}) {
   check(layout === 'sbs' || layout === 'tb', 'layout must be sbs or tb');
   const parsed = await parse(blob, { signal }); const { video, movie, top } = parsed; const mode = layout === 'sbs' ? 2 : 1;
   check(video.projection !== 'mesh', 'mesh projection cannot be relabeled equirectangular');
   check(!video.pose?.some(n => n !== 0), 'non-zero projection pose/orientation cannot be overwritten');
   check(video.stereoMode === null || video.stereoMode === mode, 'existing stereo layout conflicts with requested layout');
   check(!video.bounds || Object.keys(HALF_SPHERE).every(k => video.bounds[k] === HALF_SPHERE[k]), 'existing crop bounds are not 180x180; pixel transformation is required');
-  check(layout === 'sbs' ? video.width === video.height * 2 : video.height === video.width * 2, '180-degree stereo dimensions require square per-eye images');
+  check(['equal', 'independent'].includes(sampling), 'unsupported angular sampling');
+  check((layout === 'sbs' ? video.width : video.height) % 2 === 0, 'packed dimension must divide into complete eye images');
+  check(sampling === 'independent' || (layout === 'sbs' ? video.width === video.height * 2 : video.height === video.width * 2), '180-degree stereo dimensions require square per-eye images unless independent angular sampling is explicitly confirmed');
   const stereo = fullBox('st3d', Uint8Array.of(mode));
   const spherical = box('sv3d', fullBox('svhd', enc.encode('Kushyameln Works VR180 b1\0')),
     box('proj', fullBox('prhd', u32(0), u32(0), u32(0)), fullBox('equi', ...Object.values(HALF_SPHERE).map(u32))));

@@ -13,7 +13,8 @@
     "Sites: accept HEVC SDR input through the existing decoder capability checks; keep H.264 output",
     "MP4 compatibility r5/r6: validate supported metadata, chapter/timecode references and stz2 sample sizes; accept the limited signed-ctts/cslg input profile",
     "MP4 compatibility r6: normalize trailing size=0 mdat and transfer supported descriptive container metadata and unchanged AAC dependency tables through the indexed path",
-    "VR180 fixes 2026-10-18 v1: notify saveCommit before indexed commit and readback"
+    "VR180 fixes 2026-10-18 v1: notify saveCommit before indexed commit and readback",
+    "Flexible-scale integration: common output geometry, explicit independent angular sampling, non-square indexed tagging and saved-dimension validation"
   ],
   "runtime": {
     "index-store.mjs": {
@@ -39,22 +40,22 @@
     "output-index.mjs": {
       "source": "development/vr180/output-index-prototype/output-index.mjs",
       "sourceSha256": "baac33b77abebf388f030dd351c96669f7eb69ea100fde6503c04c16178b919f",
-      "sha256": "b06499398857c54a7525d1e331acc7d528b3a197efe0b4900e73f88811196960"
+      "sha256": "1b5cc22764204cebe5911c78b59e8a3ea931059bf339c1d1a7728f7accaacf53"
     },
     "mp4-output-inspect.mjs": {
       "source": "development/vr180/output-index-prototype/mp4-output-inspect.mjs",
       "sourceSha256": "d841bab27d299316a890f8b16c628ed486ea803982269293f3faf10fe66ef229",
-      "sha256": "3535ba386b753d54f43b4f420824366fec3a3fcd7e88f34075e82b0762c955d8"
+      "sha256": "681f747bdbd5491ddf877a45e922d6f9a55c775970cf0d30f47dbd1f05cf15bb"
     },
     "transform.mjs": {
       "source": "development/vr180/indexed-transform-prototype/transform.mjs",
       "sourceSha256": "d53c648a4fdebe45b33d5d6890d3684bec8a89de1757e0bb477f202753071d0c",
-      "sha256": "311b533a33afd0b6ebe6561fa47082939284ff6a53eba27bb7e447f6cd983247"
+      "sha256": "b91593951649b53b54f09a86263b3be31972a806e33dae7a90322e0eb8fce139"
     }
   },
   "historicalGenerator": "tools/vr180/prepare-indexed-runtime.py",
   "sitesRevision": {
-    "build": "vr180-b14-mp4-compatibility-r6",
+    "build": "vr180-b15-flexible-scale-candidate-1",
     "largeMediaValidation": "NOT_RUN_PER_USER_REQUEST",
     "inputOutputByteCap": null,
     "totalIndexedSampleLimit": 10000000,
@@ -62,6 +63,6 @@
     "indexBudgetBytes": 8388608,
     "aggregateSortReservedBytes": 4194304,
     "retainedMetadataBytes": 16777216,
-    "originNote": "source/sourceSha256 identify historical prototypes; sha256 identifies the current runtime shipped on ChatGPT Sites and GitHub Pages after the listed edits"
+    "originNote": "source/sourceSha256 identify historical prototypes; sha256 identifies this isolated candidate runtime, not a published release"
   }
 }

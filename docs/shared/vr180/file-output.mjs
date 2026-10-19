@@ -191,7 +191,7 @@ export async function saveBlobToFile(blob, handle, { signal, expectedSha256, onP
  * The complete file hash is observed after close; only the replacement metadata
  * has a pre-write expected digest. This does not certify decoded pixel content.
  */
-export async function finalizeDirectOutput({output, source, containerMetadata, audioDependencies}, {signal, onProgress = () => {}, onMeasurement} = {}) {
+export async function finalizeDirectOutput({output, source, containerMetadata, audioDependencies, outputSampling = 'equal', expectedDimensions}, {signal, onProgress = () => {}, onMeasurement} = {}) {
   const timing = phaseMeasurements(onMeasurement);
   const timings = () => ({...output.timings, ...timing.snapshot()});
   const check = () => { if (signal?.aborted) throw abortError(); };
@@ -199,7 +199,7 @@ export async function finalizeDirectOutput({output, source, containerMetadata, a
     check();
     if (!output.status.muxerClosed || output.status.committed) throw Error('DIRECT_MUX_NOT_CLOSED');
     const plan = await timing.measure('tagPlan', 0, async () => transferAudioDependenciesToPlan(
-      await transferMetadataToPlan(await planMp4Tag(source, {layout: 'sbs', signal}), containerMetadata, {signal}),
+      await transferMetadataToPlan(await planMp4Tag(source, {layout: 'sbs', sampling: outputSampling, signal}), containerMetadata, {signal}),
       audioDependencies, {signal}));
     if (!Number.isSafeInteger(plan.outputBytes) || plan.outputBytes <= 0) throw Error('OUTPUT_SIZE_INVALID');
     const expectedMetadataHash = await timing.measure('metadataExpectedHash', plan.append.size, () => sha256Blob(plan.append, {signal}));
@@ -218,6 +218,7 @@ export async function finalizeDirectOutput({output, source, containerMetadata, a
     const actualMetadataHash = await timing.measure('metadataReadback', plan.append.size, () => sha256Blob(saved.file.slice(plan.appendAt), {signal}));
     if (actualMetadataHash !== expectedMetadataHash) throw Error('DIRECT_METADATA_HASH_MISMATCH');
     const info = await timing.measure('savedInspect', 0, () => inspectMp4(saved.file, {signal})); check();
+    if (expectedDimensions && (info.width !== expectedDimensions.width || info.height !== expectedDimensions.height)) throw Error('DIRECT_OUTPUT_DIMENSIONS_MISMATCH');
     return {saved, info, timings: timings(), verification: {status: 'verified', saveWriteCommitted: true, saveCompleted: true,
       wholeFileHashCompared: false, metadataHashMatched: true, metadataSHA256: actualMetadataHash,
       metadataOffset: plan.appendAt, metadataBytes: plan.append.size,

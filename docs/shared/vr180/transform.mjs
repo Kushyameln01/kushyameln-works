@@ -165,6 +165,7 @@ export async function convertStereo(file, settings, {
   const chosenSettings = {
     layout: settings.layout, fov: settings.fov,
     eyeSize: settings.eyeSize, bitrate: settings.bitrate,
+    outputShape: settings.outputShape, outputScale: settings.outputScale,
     outputEyeWidth: settings.outputEyeWidth, outputEyeHeight: settings.outputEyeHeight,
   };
   const id = jobId ?? globalThis.crypto?.randomUUID();
@@ -495,7 +496,7 @@ export async function convertStereo(file, settings, {
       requiresMetadataPatch: true, opfsDirectory: metrics.opfsDirectory,
     };
     succeeded = true;
-    return { ...(direct ? {direct: {...direct, containerMetadata, audioDependencies}} : {file: resultFile}), containerMetadata, audioDependencies, cleanup: cleanupResources, metrics: { ...metrics }, info };
+    return { ...(direct ? {direct: {...direct, containerMetadata, audioDependencies, outputSampling: geometry.width === geometry.height * 2 ? 'equal' : 'independent', expectedDimensions: {width: geometry.width, height: geometry.height}}} : {file: resultFile}), containerMetadata, audioDependencies, cleanup: cleanupResources, metrics: { ...metrics }, info };
   } catch (error) {
     metrics.status = signal?.aborted ? 'canceled' : 'failed';
     metrics.error = signal?.aborted ? 'Conversion was canceled.' : String(error?.message ?? error);
