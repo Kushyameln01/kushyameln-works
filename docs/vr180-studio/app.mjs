@@ -159,11 +159,6 @@ function update() {
   $('execution-route-label').hidden = $('mode').value !== 'convert';
   $('execution-route-note').hidden = !indexed;
   $('execution-route-note').textContent = unavailable || (indexedRequired() ? '大容量・長時間の動画には、一時保存を使う変換を自動で選びます。先に保存先を選んでください。' : '先に保存先を選んでください。一時データはブラウザ内に保存し、動画は保存先へ順次書き込みます。');
-  const guideSize = sourceInfo && [[3840,2160,'4K'],[5760,3240,'6K'],[7680,4320,'8K']]
-    .find(([w,h]) => sourceInfo.width === w && sourceInfo.height === h);
-  $('capture-match').textContent = guideSize
-    ? `入力寸法はガイドの${guideSize[2]}（${sourceInfo.width} × ${sourceInfo.height}）と一致します。寸法だけでは投影・眼順序を判定できません。`
-    : 'ガイドの録画フレームは16:9です。寸法やファイル名から投影・眼順序を自動認定しません。';
   const converting = $('mode').value === 'convert', preserve = $('output-shape').value === 'preserve';
   $('size-label').hidden = !converting || preserve;
   $('output-shape-label').hidden = !converting;
