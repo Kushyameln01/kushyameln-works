@@ -165,6 +165,7 @@ export async function convertStereo(file, settings, {
   const chosenSettings = {
     layout: settings.layout, fov: settings.fov,
     eyeSize: settings.eyeSize, bitrate: settings.bitrate,
+    outputEyeWidth: settings.outputEyeWidth, outputEyeHeight: settings.outputEyeHeight,
   };
   const id = jobId ?? globalThis.crypto?.randomUUID();
   if (typeof id !== 'string' || !/^[A-Za-z0-9_-]{1,96}$/.test(id)) {
