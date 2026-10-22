@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "idb-upgrade",
+    "entryVersion": 1,
+    "title": "IndexedDB：schemaの更新",
+    "aliases": [
+      "versionchange",
+      "upgradeneeded"
+    ],
+    "summary": "object storeやindexの追加・削除はupgrade transactionで扱う。計算途中状態の互換性確認とは分ける。",
+    "tags": [
+      "スキーマ",
+      "更新"
+    ],
+    "folderIds": [
+      "storage"
+    ],
+    "technology": "Web",
+    "appliesTo": "IndexedDB 3.0 Working Draft 2025-08-13",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "旧版のデータを無条件に新しい計算状態として読まない。"
+    ],
+    "claims": [
+      {
+        "text": "object storeやindexの追加・削除はupgrade transactionで扱う。計算途中状態の互換性確認とは分ける。",
+        "sourceIds": [
+          "idb-upgrade"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "idb-upgrade"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "object storeやindexの追加・削除はupgrade transactionで扱う。計算途中状態の互換性確認とは分ける。\n\n旧版のデータを無条件に新しい計算状態として読まない。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "f83706e8a2ddfd1095113d181f8c00fe439e84cd08fd35a4ef07eb3f20de799a"
+  },
+  "sources": [
+    {
+      "sourceId": "idb-upgrade",
+      "title": "Indexed Database API 3.0",
+      "url": "https://www.w3.org/TR/2025/WD-IndexedDB-3-20250813/#upgrade-transaction",
+      "publisher": "W3C",
+      "section": "2.7.3 Upgrade transactions",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "Working Draft 2025-08-13"
+    }
+  ]
+}

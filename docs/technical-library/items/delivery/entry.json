@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "delivery",
+    "entryVersion": 1,
+    "title": "delivery-only：Promiseから回収",
+    "aliases": [
+      "delivery-only",
+      "getResult"
+    ],
+    "summary": "delivery-onlyの終端結果は保持されず、Promiseから回収する。getResultのnullだけでは失敗と判定しない。",
+    "tags": [
+      "結果回収",
+      "保持しない"
+    ],
+    "folderIds": [
+      "compute"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "タスクごとの保持方式を先に確認する。"
+    ],
+    "claims": [
+      {
+        "text": "delivery-onlyの終端結果は保持されず、Promiseから回収する。getResultのnullだけでは失敗と判定しない。",
+        "sourceIds": [
+          "compute-tasks"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-tasks"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "delivery-onlyの終端結果は保持されず、Promiseから回収する。getResultのnullだけでは失敗と判定しない。\n\nタスクごとの保持方式を先に確認する。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "0dfee779a8dc0b81db4314920e1d6128822e64383edf089fbad05018341ba3c8"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-tasks",
+      "title": "Worksタスクと搬送",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "タスク別のWASM・搬送・保持",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

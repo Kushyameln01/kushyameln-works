@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "cancel",
+    "entryVersion": 1,
+    "title": "cancel：実行中Workerを終了",
+    "aliases": [
+      "cancel"
+    ],
+    "summary": "待機ジョブを除去し、実行中なら対象Workerを終了する。途中状態の保存を伴うpauseとは別の操作。",
+    "tags": [
+      "取消",
+      "中断",
+      "Worker終了"
+    ],
+    "folderIds": [
+      "lifecycle"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "保存済みの途中状態が必要なら別のcheckpoint契約が必要。"
+    ],
+    "claims": [
+      {
+        "text": "待機ジョブを除去し、実行中なら対象Workerを終了する。途中状態の保存を伴うpauseとは別の操作。",
+        "sourceIds": [
+          "compute-api"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-api"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "待機ジョブを除去し、実行中なら対象Workerを終了する。途中状態の保存を伴うpauseとは別の操作。\n\n保存済みの途中状態が必要なら別のcheckpoint契約が必要。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "0e0a9a223769bcc8a3a8a0b4ae8b9c9bb3aac743fd6cee9294dcf25f160e765d"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-api",
+      "title": "Works共有計算の共通契約",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "全タスクに共通する契約",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

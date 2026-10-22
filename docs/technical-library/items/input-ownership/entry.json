@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "input-ownership",
+    "entryVersion": 1,
+    "title": "入力バッファの所有権",
+    "aliases": [
+      "ArrayBuffer",
+      "transfer",
+      "structured clone"
+    ],
+    "summary": "プールが入力をコピーし、所有するbufferだけをtransferするため、呼出し側の元入力はdetachしない。",
+    "tags": [
+      "バッファ",
+      "コピー",
+      "detach"
+    ],
+    "folderIds": [
+      "lifecycle"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "cloneとtransfer、入力と結果の搬送方式を分けて確認する。"
+    ],
+    "claims": [
+      {
+        "text": "プールが入力をコピーし、所有するbufferだけをtransferするため、呼出し側の元入力はdetachしない。",
+        "sourceIds": [
+          "compute-tasks"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-tasks"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "プールが入力をコピーし、所有するbufferだけをtransferするため、呼出し側の元入力はdetachしない。\n\ncloneとtransfer、入力と結果の搬送方式を分けて確認する。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "6a23ccbc583c0fc2b7906554ebfea9019f34ce50a515c534e201505856b39207"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-tasks",
+      "title": "Worksタスクと搬送",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "タスク別のWASM・搬送・保持",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

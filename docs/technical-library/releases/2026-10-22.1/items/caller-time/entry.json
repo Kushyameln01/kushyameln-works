@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "caller-time",
+    "entryVersion": 1,
+    "title": "callerElapsedMs：呼出しから回収まで",
+    "aliases": [
+      "callerElapsedMs"
+    ],
+    "summary": "投入呼出し直前から結果Promise回収直後までの経過時間。要求生成や表示・終了は別に測る。",
+    "tags": [
+      "計測",
+      "総時間"
+    ],
+    "folderIds": [
+      "measurement"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "利用者の全操作待ち時間を知るには保存と表示等も加える。"
+    ],
+    "claims": [
+      {
+        "text": "投入呼出し直前から結果Promise回収直後までの経過時間。要求生成や表示・終了は別に測る。",
+        "sourceIds": [
+          "compute-performance"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-performance"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "投入呼出し直前から結果Promise回収直後までの経過時間。要求生成や表示・終了は別に測る。\n\n利用者の全操作待ち時間を知るには保存と表示等も加える。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "ea95333c55a75601645e2cca305d463a89eff2b1a3558708a0e0c2429d985dee"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-performance",
+      "title": "Works計測契約",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "準備後開始と時間の読み方",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

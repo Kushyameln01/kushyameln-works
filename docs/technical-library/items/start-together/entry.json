@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "start-together",
+    "entryVersion": 1,
+    "title": "startTogether：準備後に計算開始",
+    "aliases": [
+      "startTogether",
+      "readyWaitMs"
+    ],
+    "summary": "batchの生存Workerが準備を終えてから計算を開始する任意設定。",
+    "tags": [
+      "準備後開始",
+      "同期開始"
+    ],
+    "folderIds": [
+      "compute"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "未完了0件、batch件数が同時Worker数以下の場合に使う。"
+    ],
+    "claims": [
+      {
+        "text": "batchの生存Workerが準備を終えてから計算を開始する任意設定。",
+        "sourceIds": [
+          "compute-performance"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-performance"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "batchの生存Workerが準備を終えてから計算を開始する任意設定。\n\n未完了0件、batch件数が同時Worker数以下の場合に使う。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "65ff77a7722a89311ee5c5e1f6e76777028cb3b7e8d01b6b870bf0ab4153f3f8"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-performance",
+      "title": "Works計測契約",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "準備後開始と時間の読み方",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

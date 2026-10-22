@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "preparation",
+    "entryVersion": 1,
+    "title": "PREPARATION_TIMEOUT：準備失敗から復帰",
+    "aliases": [
+      "PREPARATION_TIMEOUT",
+      "PREPARATION_FAILED"
+    ],
+    "summary": "準備にはkeyごとの期限があり、失敗時はその時点の依存ジョブが終端化する。次の明示投入は新しい準備を開始できる。",
+    "tags": [
+      "準備失敗",
+      "復帰"
+    ],
+    "folderIds": [
+      "lifecycle"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "自動再試行ではない。旧準備の遅延返信は採用しない。"
+    ],
+    "claims": [
+      {
+        "text": "準備にはkeyごとの期限があり、失敗時はその時点の依存ジョブが終端化する。次の明示投入は新しい準備を開始できる。",
+        "sourceIds": [
+          "compute-module"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-module"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "準備にはkeyごとの期限があり、失敗時はその時点の依存ジョブが終端化する。次の明示投入は新しい準備を開始できる。\n\n自動再試行ではない。旧準備の遅延返信は採用しない。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "08c2608465928e0aaf42f988946b63cf2c864bef25d064e96600d18c265efe7d"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-module",
+      "title": "Works Module準備",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "Moduleの準備・再利用・復帰",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

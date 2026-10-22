@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "pool-limits",
+    "entryVersion": 1,
+    "title": "プールの同時実行数と容量",
+    "aliases": [
+      "concurrency",
+      "MAX_INPUT_BYTES"
+    ],
+    "summary": "Workerは1〜4、既定2。未完了12件、プール全体の論理入力16MiBを上限に投入する。",
+    "tags": [
+      "上限",
+      "並行数",
+      "容量"
+    ],
+    "folderIds": [
+      "compute"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "論理byte数はブラウザ全体の実メモリ量ではない。"
+    ],
+    "claims": [
+      {
+        "text": "Workerは1〜4、既定2。未完了12件、プール全体の論理入力16MiBを上限に投入する。",
+        "sourceIds": [
+          "compute-api"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-api"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "Workerは1〜4、既定2。未完了12件、プール全体の論理入力16MiBを上限に投入する。\n\n論理byte数はブラウザ全体の実メモリ量ではない。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "9370259371eca70034a4dcbab262995531d9134da8b9d03997f3bb2ffa4772a7"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-api",
+      "title": "Works共有計算の共通契約",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "全タスクに共通する契約",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

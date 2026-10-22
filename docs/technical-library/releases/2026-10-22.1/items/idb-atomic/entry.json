@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "idb-atomic",
+    "entryVersion": 1,
+    "title": "IndexedDB：中間結果と状態の原子的保存",
+    "aliases": [
+      "readwrite",
+      "abort",
+      "atomic"
+    ],
+    "summary": "同じtransactionのscopeに中間結果とcheckpointを含め、失敗時に片方だけが確定しないようにする。",
+    "tags": [
+      "原子的",
+      "途中状態",
+      "チェックポイント"
+    ],
+    "folderIds": [
+      "storage"
+    ],
+    "technology": "Web",
+    "appliesTo": "IndexedDB 3.0 Working Draft 2025-08-13",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "外部の非同期処理はtransactionを開始する前に終える設計を検討する。"
+    ],
+    "claims": [
+      {
+        "text": "同じtransactionのscopeに中間結果とcheckpointを含め、失敗時に片方だけが確定しないようにする。",
+        "sourceIds": [
+          "idb-transaction"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "idb-transaction"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "同じtransactionのscopeに中間結果とcheckpointを含め、失敗時に片方だけが確定しないようにする。\n\n外部の非同期処理はtransactionを開始する前に終える設計を検討する。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "02f981265221c4a103e15b594d95b48519cb514a1258ed313ad7c381d65007f8"
+  },
+  "sources": [
+    {
+      "sourceId": "idb-transaction",
+      "title": "Indexed Database API 3.0",
+      "url": "https://www.w3.org/TR/2025/WD-IndexedDB-3-20250813/#transaction-lifecycle",
+      "publisher": "W3C",
+      "section": "2.7.1 Transaction lifecycle",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "Working Draft 2025-08-13"
+    }
+  ]
+}

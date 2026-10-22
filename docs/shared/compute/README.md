@@ -117,3 +117,12 @@ worker-runnerの比較JSONは `schemaVersion:2` です。APIの `protocolVersion
 6. 公開差分・許可範囲・生成bundleを確認してGitHub Pages本実装へ反映し、配信commit/hash・HTTP/MIME・相対パスと実際の投入・回収を確認します。両環境の状態と証拠は別々に記録します。
 
 FTは既存 `../ft/kernel/ft-kernel.wasm`（SHA256 `b260ac37862014a9ebb3ebb25739283fe2778e638969e757b2fd34769cd989ad`）のi32/f64 ABI、FtValidate・FtMagnitudeを使います。参照元は [Hike](https://github.com/kanryu/hike-lang) と [Kanryu氏の記事](https://qiita.com/kanryu/items/a031d4928ddb7caa0784) です。記事の共有ヒープruntimeを完成したWorkerプールとして流用したものではありません。
+
+## 未公開の技術情報ライブラリ候補
+
+候補checkoutの `compute-knowledge-b2` は既存6タスクに
+`knowledge-index-step` v1を追加する。公開Pagesへの配信は未実施。
+詳細は [候補契約](../technical-library/README.md) を参照。
+WASMが検索postingと継続stateを生成し、hostがIndexedDBへ保存する。
+この追加でもcancelはWorker終了であり、保存付きpauseではない。
+既存の上限・Module再利用既定値・FT/Unityの意味を変更しない。

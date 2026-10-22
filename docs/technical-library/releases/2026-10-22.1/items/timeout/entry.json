@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "timeout",
+    "entryVersion": 1,
+    "title": "timeoutMs：待機と準備も含む期限",
+    "aliases": [
+      "timeoutMs",
+      "TIMEOUT"
+    ],
+    "summary": "受付後のキュー・準備・読込み・計算を含む期限。1〜30000msの範囲で指定する。",
+    "tags": [
+      "タイムアウト",
+      "期限"
+    ],
+    "folderIds": [
+      "lifecycle"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "入力検査やコピー前からの全操作時間とは異なる。"
+    ],
+    "claims": [
+      {
+        "text": "受付後のキュー・準備・読込み・計算を含む期限。1〜30000msの範囲で指定する。",
+        "sourceIds": [
+          "compute-api"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-api"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "受付後のキュー・準備・読込み・計算を含む期限。1〜30000msの範囲で指定する。\n\n入力検査やコピー前からの全操作時間とは異なる。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "d29cc204bddccb7ef6d46a4815fcee9a934300d0a4546dad3ae1190a9af9ea1a"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-api",
+      "title": "Works共有計算の共通契約",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "全タスクに共通する契約",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "ft",
+    "entryVersion": 1,
+    "title": "ft-magnitude-batch：重み付き合計",
+    "aliases": [
+      "ft-magnitude-batch",
+      "FtMagnitude"
+    ],
+    "summary": "maskの各ビットに対応するweightsを足すFT数値タスク。weightsは正の有限値で合計も有限。",
+    "tags": [
+      "FT",
+      "数値"
+    ],
+    "folderIds": [
+      "compute"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "maskの範囲とweights個数はFT固有。他タスクへ一律適用しない。"
+    ],
+    "claims": [
+      {
+        "text": "maskの各ビットに対応するweightsを足すFT数値タスク。weightsは正の有限値で合計も有限。",
+        "sourceIds": [
+          "compute-tasks"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-tasks"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "maskの各ビットに対応するweightsを足すFT数値タスク。weightsは正の有限値で合計も有限。\n\nmaskの範囲とweights個数はFT固有。他タスクへ一律適用しない。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "e5ee1c7e52cb037e2df996e2eb5c4bae7327afb14cca84c1daa955b6cb499fa0"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-tasks",
+      "title": "Worksタスクと搬送",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "タスク別のWASM・搬送・保持",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

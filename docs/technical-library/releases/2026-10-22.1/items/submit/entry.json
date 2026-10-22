@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "submit",
+    "entryVersion": 1,
+    "title": "submit：単独ジョブを投入",
+    "aliases": [
+      "submit",
+      "createComputePool"
+    ],
+    "summary": "ジョブIDとPromiseを受け取り、終端応答のstatusを確認して結果を使う。",
+    "tags": [
+      "単独投入",
+      "Promise"
+    ],
+    "folderIds": [
+      "compute"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "入力は登録済みtaskの契約に合わせる。"
+    ],
+    "claims": [
+      {
+        "text": "ジョブIDとPromiseを受け取り、終端応答のstatusを確認して結果を使う。",
+        "sourceIds": [
+          "compute-api"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-api"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "ジョブIDとPromiseを受け取り、終端応答のstatusを確認して結果を使う。\n\n入力は登録済みtaskの契約に合わせる。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "b8438acf3aeef29da453b8283374af131f6ede64afc1a95a809f7344fad10ccd"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-api",
+      "title": "Works共有計算の共通契約",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "全タスクに共通する契約",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

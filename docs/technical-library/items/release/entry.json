@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "release",
+    "entryVersion": 1,
+    "title": "releaseResult：保持参照を外す",
+    "aliases": [
+      "releaseResult"
+    ],
+    "summary": "保持済み結果へのプール参照を外す。呼出し側が保持した応答やPromiseの参照は別に解放する。",
+    "tags": [
+      "結果解放",
+      "参照"
+    ],
+    "folderIds": [
+      "lifecycle"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "OSやGCによる即時のメモリ減少は保証しない。"
+    ],
+    "claims": [
+      {
+        "text": "保持済み結果へのプール参照を外す。呼出し側が保持した応答やPromiseの参照は別に解放する。",
+        "sourceIds": [
+          "compute-api"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-api"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "保持済み結果へのプール参照を外す。呼出し側が保持した応答やPromiseの参照は別に解放する。\n\nOSやGCによる即時のメモリ減少は保証しない。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "45558fafbd087f7cc9abd5211f7512341bb288e12e3770f9a38d9e218167ae3b"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-api",
+      "title": "Works共有計算の共通契約",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "全タスクに共通する契約",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

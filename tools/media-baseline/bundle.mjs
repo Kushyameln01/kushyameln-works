@@ -10,7 +10,7 @@ const record=resolve(process.argv[3]??repo+'/tools/media-baseline/bundle-record.
 if(!process.env.ESBUILD_MODULE_PATH)throw Error('Set ESBUILD_MODULE_PATH to the reviewed esbuild 0.28.0 module');
 const {build,version}=await import(pathToFileURL(resolve(process.env.ESBUILD_MODULE_PATH)).href);
 if(version!=='0.28.0')throw Error('Expected esbuild 0.28.0');
-const allowedURLs=new Set(['shared/compute/kernel.mjs','shared/unity-analysis/kernel/registry.mjs']);
+const allowedURLs=new Set(['shared/compute/kernel.mjs','shared/unity-analysis/kernel/registry.mjs','shared/technical-library/kernel/registry.mjs']);
 const result=await build({
  entryPoints:[resolve(base,'shared/compute/pool-worker.mjs')],outfile:resolve(base,'shared/compute/pool-worker.bundle.mjs'),
  bundle:true,format:'esm',platform:'browser',target:'es2022',minify:false,sourcemap:false,metafile:true,write:false,
@@ -22,7 +22,7 @@ const result=await build({
    if(source.replace(re,'').includes('import.meta.url'))throw Error('Nonliteral module URL '+name);
    source=source.replace(re,(_,q,value)=>{
     const asset=posix.normalize(posix.join(posix.dirname(name),value));
-    if(!['shared/ft/kernel/ft-kernel.wasm','shared/unity-analysis/kernel/unity-analysis.wasm'].includes(asset))throw Error('Unreviewed WASM asset '+asset);
+    if(!['shared/ft/kernel/ft-kernel.wasm','shared/unity-analysis/kernel/unity-analysis.wasm','shared/technical-library/kernel/index-step.wasm'].includes(asset))throw Error('Unreviewed WASM asset '+asset);
     let target=posix.relative('shared/compute',asset);if(!target.startsWith('.'))target='./'+target;
     return `new URL(${JSON.stringify(target)},import.meta.url)`;
    });

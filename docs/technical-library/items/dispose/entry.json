@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "dispose",
+    "entryVersion": 1,
+    "title": "dispose：所有プールを終了",
+    "aliases": [
+      "dispose",
+      "close"
+    ],
+    "summary": "プール内の未完了ジョブを終端化し、Workerと保持参照を終了する。",
+    "tags": [
+      "終了",
+      "資源所有"
+    ],
+    "folderIds": [
+      "lifecycle"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "自分が作ったプールだけを終了する。"
+    ],
+    "claims": [
+      {
+        "text": "プール内の未完了ジョブを終端化し、Workerと保持参照を終了する。",
+        "sourceIds": [
+          "compute-api"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-api"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "プール内の未完了ジョブを終端化し、Workerと保持参照を終了する。\n\n自分が作ったプールだけを終了する。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "475be1458edc61f3643706a1c2e0ecac48a15ebd27c52655fefecca18aea49e5"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-api",
+      "title": "Works共有計算の共通契約",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "全タスクに共通する契約",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

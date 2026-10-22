@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "compute-time",
+    "entryVersion": 1,
+    "title": "computeMs：WASM単独時間ではない",
+    "aliases": [
+      "computeMs",
+      "transferResidualMs"
+    ],
+    "summary": "computeMsはadapterのJS検査・整形とWASM呼出しを含む。転送残差には起動やイベント待ちも含まれる。",
+    "tags": [
+      "時間内訳",
+      "転送"
+    ],
+    "folderIds": [
+      "measurement"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "残差を純転送時間として解釈しない。"
+    ],
+    "claims": [
+      {
+        "text": "computeMsはadapterのJS検査・整形とWASM呼出しを含む。転送残差には起動やイベント待ちも含まれる。",
+        "sourceIds": [
+          "compute-performance"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-performance"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "computeMsはadapterのJS検査・整形とWASM呼出しを含む。転送残差には起動やイベント待ちも含まれる。\n\n残差を純転送時間として解釈しない。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "7da0b2056307dc8907d4b575f6589774618f21c7f0250b5393f95ba977cec50c"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-performance",
+      "title": "Works計測契約",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "準備後開始と時間の読み方",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

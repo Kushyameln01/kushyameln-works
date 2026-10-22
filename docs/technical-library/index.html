@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>技術情報ライブラリ | Kushyameln Works</title><meta name="description" content="ブラウザ開発の技術、適用条件、根拠資料を探す。"><link rel="stylesheet" href="./style.css"></head>
+<body><main>
+<p class="candidate">技術情報ライブラリ · 機能版 v6</p>
+<header><a href="../">Kushyameln Works</a><h1>技術情報ライブラリ</h1><p>使う技術と、判断の根拠を見つける。</p></header>
+<form id="search-form" role="search"><label for="query">技術名・API名・知りたいこと</label><div class="search-row"><input id="query" name="query" type="search" maxlength="512" placeholder="例: 保存完了、cancel、C#" autocomplete="off"><button type="submit">検索</button></div></form>
+<nav id="folders" aria-label="技術の分類"></nav>
+<p id="coverage" class="muted"></p><p id="search-status" role="status" aria-live="polite">目録を読んでいます。</p>
+<section id="results" aria-label="技術項目"></section>
+<div class="paging"><button id="previous" type="button" disabled>前の項目</button><button id="next" type="button" disabled>次の項目</button></div>
+<section id="detail" hidden aria-labelledby="detail-title"><div class="detail-heading"><h2 id="detail-title"></h2><button id="detail-close" type="button">閉じる</button></div><div id="detail-content"></div><div class="actions"><button id="share-copy" type="button">根拠付き紹介文をコピー</button><button id="share-json" type="button">JSONを保存</button></div><label for="share-text">紹介文</label><textarea id="share-text" readonly rows="7"></textarea><p id="share-status" role="status"></p></section>
+<details id="index-tools"><summary>保存した索引と中断・再開</summary><p>同じブラウザの保存領域で索引を作成します。完了した索引は検索に使います。サイトデータを消すと保存状態も失われます。</p><label for="saved-runs">保存済みの処理（最大8件）</label><select id="saved-runs"><option value="">保存状態を選択</option></select><button id="index-delete" type="button" disabled>選んだ保存状態を削除</button><div class="actions"><button id="index-start" type="button" disabled>索引を作成</button><button id="index-pause" type="button" disabled>保存して中断</button><button id="index-resume" type="button" disabled>保存状態から再開</button><button id="index-close" type="button" disabled>処理を終了</button></div><p id="index-status" role="status">処理機能を準備しています。</p></details>
+<section aria-label="私有資料"><button id="private-open" type="button">このブラウザの私有資料を開く</button>
+<div id="private-panel" hidden><h2>私有資料</h2><p>このブラウザ内の保存領域です。公開目録・共有文には入りません。登録用の対応付け JSON と、そこに記載された原本ファイルを端末から選択します。訂正追補を含む形式では6原本すべてが必要です。送信は行わず、保存前に schema と原本 hash、項目読取り時に引用の対応関係を検査します。別の配信元（origin）では保存領域が異なります。サイトデータを削除すると失われます。</p><button id="private-close" type="button">私有資料を閉じる</button>
+<label for="private-dataset-file">登録用データ JSON</label><input id="private-dataset-file" type="file" accept="application/json,.json">
+<label for="private-artifact-files">対応する原本ファイル（すべて選択）</label><input id="private-artifact-files" type="file" multiple>
+<button id="private-import" type="button">新規登録</button><button id="private-replace" type="button">選択したデータを更新</button>
+<label for="private-datasets">保存済み私有データ</label><select id="private-datasets"></select><button id="private-delete" type="button">選択したデータを削除</button>
+<form id="private-search-form"><label for="private-query">私有資料の検索語</label><input id="private-query" type="search" maxlength="512" autocomplete="off"><button type="submit">私有資料を検索</button></form>
+<p id="private-status" role="status"></p><div id="private-results"></div><button id="private-previous" type="button" disabled>前の私有項目</button><button id="private-next" type="button" disabled>次の私有項目</button><div id="private-detail"></div></div></section>
+<footer><p id="dataset-version"></p><a href="catalog.json">AI向け目録JSON</a> · <a href="manifest.json">版とファイルhash</a><p>要点は独自要約です。適用前に原典の対象版と条件を確認してください。</p></footer>
+</main><script type="module" src="./app.mjs"></script><script type="module" src="./session-ui.mjs"></script><script type="module" src="./private-ui.mjs"></script></body></html>

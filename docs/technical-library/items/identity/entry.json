@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-10-22.1",
+  "entry": {
+    "entryId": "identity",
+    "entryVersion": 1,
+    "title": "応答識別：jobIdとinputRevision",
+    "aliases": [
+      "jobId",
+      "inputRevision",
+      "protocolVersion"
+    ],
+    "summary": "版、task、ジョブID、入力revisionとgenerationを対応付け、別入力の結果を混ぜない。",
+    "tags": [
+      "識別子",
+      "旧返信"
+    ],
+    "folderIds": [
+      "compute"
+    ],
+    "technology": "Web",
+    "appliesTo": "compute-unity-b5 / protocol 1",
+    "conditions": [
+      "対象版と利用するhostの契約を確認する。"
+    ],
+    "limitations": [
+      "正常statusに加え件数と内容を確認する。"
+    ],
+    "claims": [
+      {
+        "text": "版、task、ジョブID、入力revisionとgenerationを対応付け、別入力の結果を混ぜない。",
+        "sourceIds": [
+          "compute-api"
+        ],
+        "kind": "specification"
+      }
+    ],
+    "sourceIds": [
+      "compute-api"
+    ],
+    "visibility": "public",
+    "publicationDecision": "candidate",
+    "body": "版、task、ジョブID、入力revisionとgenerationを対応付け、別入力の結果を混ぜない。\n\n正常statusに加え件数と内容を確認する。\n\n実装への適用時は、下記の一次資料の該当節と現行版を確認してください。",
+    "bodyHash": "70d03b464a818bda1391230974e0aea765def4f952ccb0546d975c0e59d345d7"
+  },
+  "sources": [
+    {
+      "sourceId": "compute-api",
+      "title": "Works共有計算の共通契約",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/544885af56e93b7e2a26032d104a2d68f59933b8/docs/shared/compute/README.md",
+      "publisher": "Kushyameln Works",
+      "section": "全タスクに共通する契約",
+      "contentCheckedAt": "2026-10-22",
+      "access": "public",
+      "revision": "544885af56e93b7e2a26032d104a2d68f59933b8",
+      "checkedVia": "local checkout; live deployment not verified"
+    }
+  ]
+}

@@ -4,8 +4,8 @@ var __export = (target, all) => {
     __defProp(target, name, { get: all[name], enumerable: true });
 };
 
-// ../pages-adjustment/docs/shared/compute/protocol.mjs
-var BUILD_ID = "compute-unity-b5";
+// docs/shared/compute/protocol.mjs
+var BUILD_ID = "compute-knowledge-b2";
 var WASM_SHA256 = "b260ac37862014a9ebb3ebb25739283fe2778e638969e757b2fd34769cd989ad";
 var MAX_MASKS = 262144;
 function validateRequest(input, { copy = true } = {}) {
@@ -21,7 +21,7 @@ function validateRequest(input, { copy = true } = {}) {
   return { protocolVersion: 1, jobId: input.jobId, inputRevision: input.inputRevision, taskType: input.taskType, taskVersion: 1, payload: { masks: copy ? masks.slice() : masks, weights: copy ? weights.slice() : weights }, limits: { timeoutMs } };
 }
 
-// ../pages-adjustment/docs/shared/compute/registered-tasks.mjs
+// docs/shared/compute/registered-tasks.mjs
 var registered_tasks_exports = {};
 __export(registered_tasks_exports, {
   executeTask: () => executeTask,
@@ -40,7 +40,7 @@ __export(registered_tasks_exports, {
   validTaskResult: () => validTaskResult
 });
 
-// ../pages-adjustment/docs/shared/compute/kernel.mjs
+// docs/shared/compute/kernel.mjs
 async function prepareKernelModule({ signal, fetchImpl = fetch, onCompile = () => {
 }, onResponse = () => {
 } } = {}) {
@@ -80,7 +80,7 @@ function instantiateKernel(module) {
   });
 }
 
-// ../pages-adjustment/docs/shared/compute/registered-tasks.mjs
+// docs/shared/compute/registered-tasks.mjs
 var inspectTaskRequest = (r) => validateRequest(r, { copy: false });
 var snapshotTaskRequest = (r) => ({ ...r, payload: { masks: r.payload.masks.slice(), weights: r.payload.weights.slice() } });
 var inputBytes = (r) => (r.payload.masks.length + r.payload.weights.length) * 8;
@@ -96,7 +96,7 @@ var instantiateTask = (r, m) => instantiateKernel(m);
 var executeTask = (r, k) => r.payload.masks.map((mask) => k.magnitude(mask, r.payload.weights));
 var taskInputCount = (r, v) => v.length;
 
-// ../pages-adjustment/docs/shared/unity-analysis/pool-task.mjs
+// docs/shared/technical-library/pool-task.mjs
 var pool_task_exports = {};
 __export(pool_task_exports, {
   executeTask: () => executeTask2,
@@ -104,7 +104,7 @@ __export(pool_task_exports, {
   inputBytes: () => inputBytes2,
   inspectTaskRequest: () => inspectTaskRequest2,
   instantiateTask: () => instantiateTask2,
-  isUnity: () => isUnity,
+  isKnowledge: () => isKnowledge,
   kernelInfo: () => kernelInfo2,
   prepareTaskModule: () => prepareTaskModule2,
   resultBytes: () => resultBytes2,
@@ -116,7 +116,168 @@ __export(pool_task_exports, {
   validTaskResult: () => validTaskResult2
 });
 
-// ../pages-adjustment/docs/shared/unity-analysis/model.mjs
+// docs/shared/technical-library/kernel/registry.mjs
+var KNOWLEDGE_KERNEL = Object.freeze({ key: "knowledge-i32-v1:f6cddd06131b30c2e73abc42da3606377608dcfb0b1c960b8b0d2f4c55676b10:scalar", variant: "scalar", abi: "knowledge-i32-v1", sha256: "f6cddd06131b30c2e73abc42da3606377608dcfb0b1c960b8b0d2f4c55676b10", url: new URL("../technical-library/kernel/index-step.wasm", import.meta.url).href });
+
+// docs/shared/technical-library/kernel/kernel.mjs
+var MAX_RECORDS = 65536;
+var MAX_INPUT_BYTES = 1048576;
+var MAX_OUTPUT_BYTES = 2097152;
+var I32 = 2147483647;
+var integer = (v, max2 = I32) => Number.isInteger(v) && v >= 0 && v <= max2;
+var compareRecord = (a, b) => a[1] - b[1] || a[0] - b[0] || a[2] - b[2];
+function validateStep(p) {
+  if (!p || !Array.isArray(p.records) || p.records.length > MAX_RECORDS || !Number.isSafeInteger(p.cursor) || p.cursor < 0 || typeof p.final !== "boolean") throw TypeError("Invalid step shape");
+  if (!Number.isSafeInteger(p.cursor + p.records.length)) throw RangeError("Cursor overflow");
+  const cap = p.outputCapacity ?? MAX_RECORDS;
+  if (!Number.isInteger(cap) || cap < 1 || cap > MAX_RECORDS) throw RangeError("Output capacity");
+  let previous = null, count = 0;
+  if (p.state !== null && p.state !== void 0) {
+    const s = p.state;
+    if (![s.termId, s.docId, s.fieldId].every((v) => integer(v)) || !integer(s.count) || s.count === 0 || s.count > p.cursor) throw TypeError("Invalid continuation state");
+    previous = [s.termId, s.docId, s.fieldId];
+    count = s.count;
+  }
+  for (const record of p.records) {
+    if (!Array.isArray(record) || record.length !== 3 || !record.every((v) => integer(v))) throw TypeError("Invalid token record");
+    const order = previous ? compareRecord(previous, record) : -1;
+    if (order > 0) throw RangeError("Unsorted token records");
+    count = order === 0 ? count + 1 : 1;
+    if (count > I32) throw RangeError("Posting count overflow");
+    previous = record;
+  }
+  return { ...p, state: p.state ?? null, outputCapacity: cap };
+}
+async function prepareKnowledgeKernel({ signal, fetchImpl = fetch, onCompile = () => {
+}, onResponse = () => {
+} } = {}) {
+  const response = await fetchImpl(KNOWLEDGE_KERNEL.url, { signal });
+  if (!response.ok) throw Error("Knowledge WASM HTTP " + response.status);
+  onResponse(response.headers.get("content-type"));
+  const bytes2 = await response.arrayBuffer();
+  const hash2 = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes2)), (b) => b.toString(16).padStart(2, "0")).join("");
+  if (hash2 !== KNOWLEDGE_KERNEL.sha256) throw Error("Knowledge WASM hash mismatch");
+  if (signal?.aborted) throw Error("Knowledge WASM preparation aborted");
+  onCompile();
+  return WebAssembly.compile(bytes2);
+}
+function instantiateKnowledgeKernel(module) {
+  if (!(module instanceof WebAssembly.Module)) throw TypeError("Expected compiled WASM");
+  if (WebAssembly.Module.imports(module).length) throw Error("Unexpected WASM imports");
+  let instance = new WebAssembly.Instance(module, {}), memory = instance.exports.memory;
+  if (!(memory instanceof WebAssembly.Memory) || typeof instance.exports.KiStep !== "function") throw Error("Invalid knowledge ABI");
+  const start = memory.buffer.byteLength, arenaBytes = (MAX_RECORDS * 3 + 5 + MAX_RECORDS * 4 + 4) * 4;
+  memory.grow(Math.ceil(arenaBytes / 65536));
+  let disposed = false;
+  const statePtr = start + MAX_RECORDS * 12, outputPtr = statePtr + 20, metaPtr = outputPtr + MAX_RECORDS * 16;
+  return { instanceId: crypto.randomUUID(), memory, resourceStats: () => ({ arenaBytes, disposed }), step(payload) {
+    if (disposed) throw Error("Kernel disposed");
+    const p = validateStep(payload), view = new Int32Array(memory.buffer);
+    try {
+      for (let i = 0; i < p.records.length; i++) view.set(p.records[i], start / 4 + i * 3);
+      view.set(p.state ? [1, p.state.termId, p.state.docId, p.state.fieldId, p.state.count] : [0, 0, 0, 0, 0], statePtr / 4);
+      const status = instance.exports.KiStep(start, p.records.length, statePtr, p.final ? 1 : 0, outputPtr, p.outputCapacity, metaPtr);
+      if (status !== 0) throw Error("Knowledge WASM rejected input: " + status);
+      const [consumed, emitted, done, outputFull] = view.slice(metaPtr / 4, metaPtr / 4 + 4);
+      if (consumed < 0 || consumed > p.records.length || emitted < 0 || emitted > p.outputCapacity || ![0, 1].includes(done) || ![0, 1].includes(outputFull)) throw Error("Invalid WASM metadata");
+      const s = view.slice(statePtr / 4, statePtr / 4 + 5);
+      const state = s[0] === 1 ? { termId: s[1], docId: s[2], fieldId: s[3], count: s[4] } : null;
+      const postings = [];
+      for (let i = 0; i < emitted; i++) {
+        const at = outputPtr / 4 + i * 4;
+        postings.push([view[at], view[at + 1], view[at + 2], view[at + 3]]);
+      }
+      return { consumed, nextCursor: p.cursor + consumed, state, postings, done: done === 1, outputFull: outputFull === 1 };
+    } finally {
+      view.fill(0, start / 4, (start + arenaBytes) / 4);
+    }
+  }, dispose() {
+    disposed = true;
+    instance = null;
+    memory = null;
+    this.memory = null;
+  } };
+}
+
+// docs/shared/technical-library/pool-task.mjs
+var isKnowledge = (t) => t === "knowledge-index-step";
+var hash = (v) => typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
+var id = (v) => typeof v === "string" && /^[A-Za-z0-9_.:-]{1,128}$/.test(v);
+var identityKeys = ["datasetVersion", "algorithmVersion", "inputHash", "configHash", "tokenTableHash", "shardId", "segmentId"];
+var metaBytes = (p) => new TextEncoder().encode(JSON.stringify(Object.fromEntries(identityKeys.map((k) => [k, p[k]])))).length + 80;
+var inputBytes2 = (r) => r.payload.records.length * 12 + metaBytes(r.payload);
+function inspectTaskRequest2(r) {
+  if (!r || r.protocolVersion !== 1 || !isKnowledge(r.taskType) || r.taskVersion !== 1 || typeof r.jobId !== "string" || !/^[A-Za-z0-9_.:-]{1,64}$/.test(r.jobId) || !Number.isSafeInteger(r.inputRevision) || r.inputRevision < 0) throw TypeError("Invalid knowledge task identity");
+  const timeoutMs = r.limits?.timeoutMs ?? 3e4;
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 3e4) throw RangeError("Invalid knowledge timeout");
+  const p = validateStep(r.payload);
+  if (!id(p.datasetVersion) || p.algorithmVersion !== 1 || !["inputHash", "configHash", "tokenTableHash"].every((k) => hash(p[k])) || !id(p.shardId) || !(id(p.segmentId) || Number.isSafeInteger(p.segmentId) && p.segmentId >= 0)) throw TypeError("Invalid knowledge dataset identity");
+  const request = { protocolVersion: 1, taskType: r.taskType, taskVersion: 1, jobId: r.jobId, inputRevision: r.inputRevision, wasmVariant: "scalar", kernelHash: KNOWLEDGE_KERNEL.sha256, payload: { ...Object.fromEntries(identityKeys.map((k) => [k, p[k]])), records: p.records, cursor: p.cursor, state: p.state ? { termId: p.state.termId, docId: p.state.docId, fieldId: p.state.fieldId, count: p.state.count } : null, final: p.final, outputCapacity: p.outputCapacity }, limits: { timeoutMs } };
+  if (inputBytes2(request) > MAX_INPUT_BYTES) throw RangeError("Knowledge input budget");
+  return request;
+}
+var snapshotTaskRequest2 = (r) => ({ ...r, payload: { ...r.payload, records: r.payload.records.map((x) => x.slice()), state: r.payload.state ? { ...r.payload.state } : null } });
+var kernelInfo2 = () => ({ ...KNOWLEDGE_KERNEL, requiresWasm: true, retainResult: false });
+var resultShape2 = (r) => ({ ...Object.fromEntries(identityKeys.map((k) => [k, r.payload[k]])), cursor: r.payload.cursor, length: r.payload.records.length, final: r.payload.final, capacity: r.payload.outputCapacity, previousCount: r.payload.state?.count ?? 0 });
+function validTaskResult2(t, s, r) {
+  if (!isKnowledge(t) || !r || r.kind !== "knowledge-index-step" || !identityKeys.every((k) => r[k] === s[k]) || !Number.isInteger(r.consumed) || r.consumed < 0 || r.consumed > s.length || r.nextCursor !== s.cursor + r.consumed || typeof r.done !== "boolean" || typeof r.outputFull !== "boolean" || !Array.isArray(r.postings) || r.postings.length > s.capacity || resultBytes2(r) > MAX_OUTPUT_BYTES) return false;
+  try {
+    validateStep({ records: [], cursor: r.nextCursor, state: r.state, final: r.done, outputCapacity: s.capacity });
+  } catch {
+    return false;
+  }
+  if (r.state === void 0 || r.consumed < s.length && !r.outputFull || r.outputFull && (r.postings.length !== s.capacity || r.state === null)) return false;
+  if (r.postings.reduce((n, p) => n + (Array.isArray(p) ? p[3] : NaN), 0) + (r.state?.count ?? 0) !== s.previousCount + r.consumed) return false;
+  if (r.done && (!s.final || r.consumed !== s.length || r.state !== null || r.outputFull)) return false;
+  if (!r.done && s.final && r.consumed === s.length && r.state === null) return false;
+  let previous = null;
+  for (const p of r.postings) {
+    if (!Array.isArray(p) || p.length !== 4 || !p.every((v) => Number.isInteger(v) && v >= 0 && v <= 2147483647) || p[3] === 0 || previous && compareRecord(previous, p) >= 0) return false;
+    previous = p;
+  }
+  if (previous && r.state && compareRecord(previous, [r.state.termId, r.state.docId, r.state.fieldId]) >= 0) return false;
+  return true;
+}
+var resultBytes2 = (r) => r ? (r.postings?.length ?? 0) * 16 + metaBytes(r) : 0;
+function freezeTaskResult2(r) {
+  if (!r) return r;
+  for (const p of r.postings ?? []) Object.freeze(p);
+  if (r.postings) Object.freeze(r.postings);
+  if (r.state) Object.freeze(r.state);
+  return Object.freeze(r);
+}
+var transferTaskInput2 = () => [];
+var transferTaskResult2 = () => [];
+var prepareTaskModule2 = prepareKnowledgeKernel;
+var instantiateTask2 = (r, m) => instantiateKnowledgeKernel(m);
+function executeTask2(r, kernel) {
+  const result = { kind: "knowledge-index-step", ...Object.fromEntries(identityKeys.map((k) => [k, r.payload[k]])), ...kernel.step(r.payload) };
+  if (!validTaskResult2(r.taskType, resultShape2(r), result)) throw Error("Invalid knowledge result");
+  return result;
+}
+var taskInputCount2 = (r) => r.payload.records.length;
+
+// docs/shared/unity-analysis/pool-task.mjs
+var pool_task_exports2 = {};
+__export(pool_task_exports2, {
+  executeTask: () => executeTask3,
+  freezeTaskResult: () => freezeTaskResult3,
+  inputBytes: () => inputBytes3,
+  inspectTaskRequest: () => inspectTaskRequest3,
+  instantiateTask: () => instantiateTask3,
+  isUnity: () => isUnity,
+  kernelInfo: () => kernelInfo3,
+  prepareTaskModule: () => prepareTaskModule3,
+  resultBytes: () => resultBytes3,
+  resultShape: () => resultShape3,
+  snapshotTaskRequest: () => snapshotTaskRequest3,
+  taskInputCount: () => taskInputCount3,
+  transferTaskInput: () => transferTaskInput3,
+  transferTaskResult: () => transferTaskResult3,
+  validTaskResult: () => validTaskResult3
+});
+
+// docs/shared/unity-analysis/model.mjs
 var SCHEMA = "unity-analysis-snapshot/1";
 var ANALYZER_VERSION = "unity-analysis-0.3.1";
 var RULES_VERSION = "unity-static-3";
@@ -284,11 +445,11 @@ function buildIndex(input) {
     }
   }
   for (const [assetId, entries] of assetMap) if (entries.length > 1) findings.push({ code: "DUPLICATE_ASSET_ID", category: "reference", severity: "warning", confidence: "confirmed", assetId, paths: entries.map((e) => e.path) });
-  for (const entries of assetMap.values()) for (const e of entries) for (const [id, ns] of e.nodes) if (ns.length > 1) findings.push({ code: "DUPLICATE_FILE_ID", category: "reference", severity: "error", confidence: "confirmed", path: e.path, fileId: id });
+  for (const entries of assetMap.values()) for (const e of entries) for (const [id2, ns] of e.nodes) if (ns.length > 1) findings.push({ code: "DUPLICATE_FILE_ID", category: "reference", severity: "error", confidence: "confirmed", path: e.path, fileId: id2 });
   return { nodes, assetMap, guidMap, findings };
 }
 
-// ../pages-adjustment/docs/shared/unity-analysis/analysis.mjs
+// docs/shared/unity-analysis/analysis.mjs
 var builtin = (g) => /^0{16}[def]0{15}$/i.test(g ?? "");
 var withoutSources = (value2) => Array.isArray(value2) ? value2.map(withoutSources) : value2 && typeof value2 === "object" ? Object.fromEntries(Object.entries(value2).filter(([k]) => k !== "source").map(([k, v]) => [k, withoutSources(v)])) : value2;
 var pointer = (k) => String(k).replaceAll("~", "~0").replaceAll("/", "~1");
@@ -384,12 +545,12 @@ function analyzeSnapshot(input, kernel) {
     const stack = [controller.index], seen = /* @__PURE__ */ new Set();
     while (stack.length) {
       if (++steps > LIMITS.maxGraphSteps) throw RangeError("GRAPH_STEP_LIMIT");
-      const id = stack.pop();
-      if (seen.has(id)) continue;
-      seen.add(id);
+      const id2 = stack.pop();
+      if (seen.has(id2)) continue;
+      seen.add(id2);
       if (++ownerCount > LIMITS.maxOwnerContexts) throw RangeError("OWNER_CONTEXT_LIMIT");
-      owners[id].add(controller.key);
-      for (const target of ownerEdges[id]) stack.push(target);
+      owners[id2].add(controller.key);
+      for (const target of ownerEdges[id2]) stack.push(target);
     }
   }
   const declarations = [], declarationMap = /* @__PURE__ */ new Map(), checks = [], actual = [], allowed = [];
@@ -459,7 +620,7 @@ function compareSnapshots(before, after, kernel) {
   };
   const bm = byKey(b), am = byKey(a), pairs = [], bv = [], av = [], intern = /* @__PURE__ */ new Map();
   let next = 1;
-  const id = (v) => {
+  const id2 = (v) => {
     const s = canonical(v);
     if (!intern.has(s)) intern.set(s, next++);
     return intern.get(s);
@@ -480,8 +641,8 @@ function compareSnapshots(before, after, kernel) {
       if (pairs.length >= LIMITS.maxDiffPairs) throw RangeError("DIFF_PAIR_LIMIT");
       const presentB = bp.has(property), presentA = ap.has(property);
       pairs.push({ domain, kind: !presentB ? "property-added" : !presentA ? "property-removed" : "property-changed", identity: key, property, before: presentB ? bp.get(property) : null, after: presentA ? ap.get(property) : null, beforePresent: presentB, afterPresent: presentA, beforeSource: { ...bn.source, ...bn.propertySources?.[property] ?? {} }, source: { ...an.source, ...an.propertySources?.[property] ?? {} }, matching: an.file.guid ? "exact-guid-fileID" : "provisional-input-path-fileID" });
-      bv.push(presentB ? id(bp.get(property)) : 0);
-      av.push(presentA ? id(ap.get(property)) : 0);
+      bv.push(presentB ? id2(bp.get(property)) : 0);
+      av.push(presentA ? id2(ap.get(property)) : 0);
     }
   }
   const diffs = kernel.diff(Int32Array.from(bv), Int32Array.from(av));
@@ -511,17 +672,17 @@ function compareSnapshots(before, after, kernel) {
   return { kind: "unity-diff", changes, ambiguous, fileChanges, completeness: { totalCount: changes.length, returnedCount: changes.length, truncated: false }, identityPolicy: "GUID/fileID exact; missing GUID uses explicit provisional input path; no heuristic remapping" };
 }
 
-// ../pages-adjustment/docs/shared/unity-analysis/kernel/registry.mjs
+// docs/shared/unity-analysis/kernel/registry.mjs
 var UNITY_KERNEL = Object.freeze({ key: "hike-unity-i32-v1:e7c1049626826d3dabe2f53a7935efa69cd6f2cfa85fa11375b7bdd877088520:scalar", variant: "scalar", abi: "hike-unity-i32-v1", sha256: "e7c1049626826d3dabe2f53a7935efa69cd6f2cfa85fa11375b7bdd877088520", url: new URL("../unity-analysis/kernel/unity-analysis.wasm", import.meta.url).href });
 
-// ../pages-adjustment/docs/shared/unity-analysis/kernel/kernel.mjs
+// docs/shared/unity-analysis/kernel/kernel.mjs
 var MAX_VECTOR = 262144;
 var MAX_MEMORY = 16777216;
 var PAGE_BYTES = 65536;
 var typedPrototype = Object.getPrototypeOf(Int32Array.prototype);
 var typedGet = Object.fromEntries(["length", "buffer", "byteOffset", "byteLength"].map((key) => [key, Object.getOwnPropertyDescriptor(typedPrototype, key).get]));
 var typed = (value2, key) => Reflect.apply(typedGet[key], value2, []);
-var integer = (value2, min, max2) => Number.isSafeInteger(value2) && value2 >= min && value2 <= max2;
+var integer2 = (value2, min, max2) => Number.isSafeInteger(value2) && value2 >= min && value2 <= max2;
 var errors = { [-1]: "UA_INVALID_COUNT", [-2]: "UA_INVALID_VALUE" };
 function aborted(signal) {
   if (signal?.aborted) throw new DOMException("Unity kernel preparation aborted", "AbortError");
@@ -536,9 +697,9 @@ async function prepareUnityKernel({ signal, fetchImpl = fetch, onCompile = () =>
   onResponse(response.headers?.get("content-type") ?? null);
   const bytes2 = await response.arrayBuffer();
   aborted(signal);
-  const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes2)), (x) => x.toString(16).padStart(2, "0")).join("");
+  const hash2 = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes2)), (x) => x.toString(16).padStart(2, "0")).join("");
   aborted(signal);
-  if (hash !== UNITY_KERNEL.sha256) throw Error("UA_KERNEL_HASH");
+  if (hash2 !== UNITY_KERNEL.sha256) throw Error("UA_KERNEL_HASH");
   onCompile();
   aborted(signal);
   const module = await WebAssembly.compile(bytes2);
@@ -562,18 +723,18 @@ function instantiateUnityKernel(module) {
     if (!(buffer instanceof ArrayBuffer) || buffer.resizable) throw TypeError("UA_BUFFER");
     if (buffer === memory.buffer) throw TypeError("UA_MEMORY_ALIAS");
     new Int32Array(buffer, offset, length);
-    if (!integer(length, 0, MAX_VECTOR) || bytes2 !== length * 4) throw RangeError("UA_VECTOR_LIMIT");
+    if (!integer2(length, 0, MAX_VECTOR) || bytes2 !== length * 4) throw RangeError("UA_VECTOR_LIMIT");
     return { data, length };
   }
   function values(v, min, max2, code) {
-    for (let i = 0; i < v.length; i++) if (!integer(v.data[i], min, max2)) throw RangeError(code);
+    for (let i = 0; i < v.length; i++) if (!integer2(v.data[i], min, max2)) throw RangeError(code);
   }
   function execute(name, inputs, outputCount, argumentsFor, validResult) {
     check();
     const lengths = [...inputs.map((x) => x.length), outputCount];
     let end = arenaBase;
     const pointers = lengths.map((length) => {
-      if (!integer(length, 0, MAX_VECTOR)) throw RangeError("UA_VECTOR_LIMIT");
+      if (!integer2(length, 0, MAX_VECTOR)) throw RangeError("UA_VECTOR_LIMIT");
       const bytes2 = length * 4, start = end;
       end = Math.ceil((end + bytes2) / 8) * 8;
       if (!Number.isSafeInteger(end) || start % 8 || end < start || end > MAX_MEMORY || end > 2147483647) throw RangeError("UA_ARENA_LIMIT");
@@ -607,12 +768,12 @@ function instantiateUnityKernel(module) {
   function incoming(targets, nodeCount) {
     check();
     const edges = vector(targets);
-    if (!integer(nodeCount, 0, MAX_VECTOR)) throw RangeError("UA_NODE_COUNT");
+    if (!integer2(nodeCount, 0, MAX_VECTOR)) throw RangeError("UA_NODE_COUNT");
     values(edges, 0, nodeCount - 1, "UA_TARGET");
     return execute("UaIncoming", [edges], nodeCount, ([input, out]) => [input, edges.length, nodeCount, out, nodeCount], (result) => {
       let total = 0;
       for (const count of result) {
-        if (!integer(count, 0, edges.length)) return false;
+        if (!integer2(count, 0, edges.length)) return false;
         total += count;
       }
       return total === edges.length;
@@ -656,9 +817,9 @@ function instantiateUnityKernel(module) {
   });
 }
 
-// ../pages-adjustment/docs/shared/unity-analysis/pool-task.mjs
+// docs/shared/unity-analysis/pool-task.mjs
 var isUnity = (t) => t === "unity-analyze" || t === "unity-diff";
-function inspectTaskRequest2(r) {
+function inspectTaskRequest3(r) {
   if (!r || r.protocolVersion !== 1 || !isUnity(r.taskType) || r.taskVersion !== 1 || typeof r.jobId !== "string" || !/^[A-Za-z0-9_.:-]{1,64}$/.test(r.jobId) || !Number.isSafeInteger(r.inputRevision) || r.inputRevision < 0) throw TypeError("Invalid Unity task identity");
   const timeoutMs = r.limits?.timeoutMs ?? 3e4;
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 3e4) throw RangeError("Invalid Unity task timeout");
@@ -670,49 +831,49 @@ function inspectTaskRequest2(r) {
   if (bytes(r.payload) > LIMITS.maxInputBytes * (r.taskType === "unity-diff" ? 2 : 1)) throw RangeError("Unity task input budget");
   return { protocolVersion: 1, taskType: r.taskType, taskVersion: 1, jobId: r.jobId, inputRevision: r.inputRevision, wasmVariant: "scalar", kernelHash: UNITY_KERNEL.sha256, payload: r.payload, limits: { timeoutMs } };
 }
-var snapshotTaskRequest2 = (r) => ({ ...r, payload: structuredClone(r.payload) });
-var inputBytes2 = (r) => bytes(r.payload);
-var kernelInfo2 = () => ({ ...UNITY_KERNEL, requiresWasm: true });
-var resultShape2 = (r) => ({ kind: r.taskType === "unity-diff" ? "unity-diff" : "unity-analysis", snapshotId: r.payload.snapshotId ?? "snapshot" });
-function validTaskResult2(taskType, shape, result) {
+var snapshotTaskRequest3 = (r) => ({ ...r, payload: structuredClone(r.payload) });
+var inputBytes3 = (r) => bytes(r.payload);
+var kernelInfo3 = () => ({ ...UNITY_KERNEL, requiresWasm: true });
+var resultShape3 = (r) => ({ kind: r.taskType === "unity-diff" ? "unity-diff" : "unity-analysis", snapshotId: r.payload.snapshotId ?? "snapshot" });
+function validTaskResult3(taskType, shape, result) {
   return !!(result && result.kind === shape.kind && result.completeness?.truncated === false && Number.isSafeInteger(result.completeness.totalCount) && result.completeness.totalCount === result.completeness.returnedCount && bytes(result) <= LIMITS.maxReportBytes && (taskType === "unity-analyze" ? result.snapshotId === shape.snapshotId && Array.isArray(result.findings) && Array.isArray(result.references) && Array.isArray(result.shared) && result.findings.length === result.completeness.totalCount : Array.isArray(result.changes) && result.changes.length === result.completeness.totalCount));
 }
-var resultBytes2 = (r) => r ? bytes(r) : 0;
-var freezeTaskResult2 = freezeDeep;
-var transferTaskInput2 = () => [];
-var transferTaskResult2 = () => [];
-var prepareTaskModule2 = prepareUnityKernel;
-var instantiateTask2 = (r, module) => instantiateUnityKernel(module);
-function executeTask2(r, kernel) {
+var resultBytes3 = (r) => r ? bytes(r) : 0;
+var freezeTaskResult3 = freezeDeep;
+var transferTaskInput3 = () => [];
+var transferTaskResult3 = () => [];
+var prepareTaskModule3 = prepareUnityKernel;
+var instantiateTask3 = (r, module) => instantiateUnityKernel(module);
+function executeTask3(r, kernel) {
   const result = r.taskType === "unity-analyze" ? analyzeSnapshot(r.payload, kernel) : compareSnapshots(r.payload.before, r.payload.after, kernel);
   if (bytes(result) > LIMITS.maxReportBytes) throw RangeError("Unity report output budget");
   return result;
 }
-var taskInputCount2 = (r) => r.taskType === "unity-analyze" ? r.payload.files.reduce((n, f) => n + f.objects.length, 0) : r.payload.before.files.length + r.payload.after.files.length;
+var taskInputCount3 = (r) => r.taskType === "unity-analyze" ? r.payload.files.reduce((n, f) => n + f.objects.length, 0) : r.payload.before.files.length + r.payload.after.files.length;
 
-// ../pages-adjustment/docs/shared/unity-analysis/ingest-task.mjs
+// docs/shared/unity-analysis/ingest-task.mjs
 var ingest_task_exports = {};
 __export(ingest_task_exports, {
   PARSER_VERSION: () => PARSER_VERSION,
   PARSE_BATCH_LIMITS: () => PARSE_BATCH_LIMITS,
-  executeTask: () => executeTask3,
-  freezeTaskResult: () => freezeTaskResult3,
-  inputBytes: () => inputBytes3,
-  inspectTaskRequest: () => inspectTaskRequest3,
-  instantiateTask: () => instantiateTask3,
+  executeTask: () => executeTask4,
+  freezeTaskResult: () => freezeTaskResult4,
+  inputBytes: () => inputBytes4,
+  inspectTaskRequest: () => inspectTaskRequest4,
+  instantiateTask: () => instantiateTask4,
   isIngest: () => isIngest,
-  kernelInfo: () => kernelInfo3,
-  prepareTaskModule: () => prepareTaskModule3,
-  resultBytes: () => resultBytes3,
-  resultShape: () => resultShape3,
-  snapshotTaskRequest: () => snapshotTaskRequest3,
-  taskInputCount: () => taskInputCount3,
-  transferTaskInput: () => transferTaskInput3,
-  transferTaskResult: () => transferTaskResult3,
-  validTaskResult: () => validTaskResult3
+  kernelInfo: () => kernelInfo4,
+  prepareTaskModule: () => prepareTaskModule4,
+  resultBytes: () => resultBytes4,
+  resultShape: () => resultShape4,
+  snapshotTaskRequest: () => snapshotTaskRequest4,
+  taskInputCount: () => taskInputCount4,
+  transferTaskInput: () => transferTaskInput4,
+  transferTaskResult: () => transferTaskResult4,
+  validTaskResult: () => validTaskResult4
 });
 
-// ../pages-adjustment/docs/shared/ft/vendor/fflate.mjs
+// docs/shared/ft/vendor/fflate.mjs
 var u8 = Uint8Array;
 var u16 = Uint16Array;
 var i32 = Int32Array;
@@ -1356,7 +1517,7 @@ var Unzip = /* @__PURE__ */ (function() {
   return Unzip2;
 })();
 
-// ../pages-adjustment/docs/shared/unity-analysis/package-reader.mjs
+// docs/shared/unity-analysis/package-reader.mjs
 var MAX_UNITY_PACKAGE_BYTES = 64 * 1024 * 1024;
 var BLOCK = 512;
 var POSIX_MAGIC = "ustar\x0000";
@@ -1574,7 +1735,7 @@ function readUnityPackage(bytes2) {
   return new Map(entries.map((entry) => [entry.guid, entry]));
 }
 
-// ../pages-adjustment/docs/shared/unity-analysis/archive.mjs
+// docs/shared/unity-analysis/archive.mjs
 var MAX_IN = 32 * 1024 * 1024;
 var MAX_OUT = 64 * 1024 * 1024;
 var MAX_FILES = 2048;
@@ -1628,7 +1789,7 @@ function crc322(bytes2) {
 }
 function readFiles(inputs) {
   if (!Array.isArray(inputs) || inputs.length > MAX_FILES) throw new Error("\u5165\u529B\u4EF6\u6570\u8D85\u904E");
-  let inputBytes4 = 0, expanded = 0, entryCount = 0;
+  let inputBytes5 = 0, expanded = 0, entryCount = 0;
   const result = [], seen = /* @__PURE__ */ new Map();
   function accept(path, bytes2, directory = false) {
     safePath2(directory ? path.slice(0, -1) : path);
@@ -1647,8 +1808,8 @@ function readFiles(inputs) {
   for (const input of inputs) {
     safePath2(input.path);
     if (!(input.bytes instanceof Uint8Array)) throw new Error("\u5165\u529B\u30D0\u30A4\u30C8\u4E0D\u6B63");
-    inputBytes4 += input.bytes.length;
-    if (inputBytes4 > MAX_IN) throw new Error("\u5165\u529B32MiB\u8D85\u904E");
+    inputBytes5 += input.bytes.length;
+    if (inputBytes5 > MAX_IN) throw new Error("\u5165\u529B32MiB\u8D85\u904E");
     if (/\.unitypackage$/i.test(input.path)) {
       for (const e of readUnityPackage(input.bytes).values()) {
         if (e.asset) accept(e.path, e.asset);
@@ -1702,7 +1863,7 @@ function expandInput(input) {
   return readFiles([input]);
 }
 
-// ../pages-adjustment/docs/shared/ft/unity-text.mjs
+// docs/shared/ft/unity-text.mjs
 var own2 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 function parseUnityScalar(value2) {
   if (typeof value2 !== "string") throw new TypeError("Expected Unity scalar text");
@@ -1763,7 +1924,7 @@ function parseUnityScalar(value2) {
   return value2.replace(/\s+#.*$/, "").trimEnd();
 }
 
-// ../pages-adjustment/docs/shared/unity-analysis/rules.mjs
+// docs/shared/unity-analysis/rules.mjs
 var TEXT_RULES_VERSION = "unity-text-rules/1";
 var EXPRESSION_SCHEMA = Object.freeze({ kind: "vrchat-expression", scriptGuid: "67cc4cb7839cd3741b63733d5adf0442", scriptFileId: "-1506855854", profile: "known-five-field-parameters/1" });
 var animatorTypes = Object.freeze({ "1": "Float", "3": "Int", "4": "Bool", "9": "Trigger" });
@@ -1877,7 +2038,7 @@ function deriveParameterRules(object) {
 }
 var jsonPointerPart = pointerPart;
 
-// ../pages-adjustment/docs/shared/unity-analysis/text.mjs
+// docs/shared/unity-analysis/text.mjs
 var TEXT_PARSER_VERSION = "unity-text-subset/1";
 var TEXT_LIMITS = Object.freeze({ maxTextBytes: 4 * 1024 * 1024, maxCodeUnits: 4 * 1024 * 1024, maxLines: 262144, maxNodes: 262144, maxDocuments: 65536, maxDepth: 64, maxPath: 1024 });
 var own4 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
@@ -2203,12 +2364,12 @@ function referencesFrom(ast, context, classId, issues) {
         return;
       }
       try {
-        const id = fileId(values.get("fileID").value), g = values.get("guid")?.value, type = values.get("type")?.value;
+        const id2 = fileId(values.get("fileID").value), g = values.get("guid")?.value, type = values.get("type")?.value;
         if (g !== void 0) {
           guid(g);
           if (type === void 0 || !/^(?:0|[1-9][0-9]*)$/.test(type)) throw Error("External reference requires a numeric type");
         } else if (type !== void 0) throw Error("Reference type without GUID");
-        result.push({ property: path, fileId: id, ...g !== void 0 ? { guid: g.toLowerCase(), type } : {}, source, role: referenceRole(classId, path) });
+        result.push({ property: path, fileId: id2, ...g !== void 0 ? { guid: g.toLowerCase(), type } : {}, source, role: referenceRole(classId, path) });
       } catch (e) {
         bad(e.message);
       }
@@ -2282,19 +2443,19 @@ function parseUnityFile({ path, text: text2 } = {}) {
     }
     const classId = match[1];
     if (classId.length > 32) limit("UNITY_CLASS_ID_LIMIT");
-    let id;
+    let id2;
     try {
-      id = fileId(match[2], { zero: false });
+      id2 = fileId(match[2], { zero: false });
     } catch (e) {
       issues.push({ code: "UNITY_FILE_ID_INVALID", message: e.message, source: context.source(header.start, header.end) });
       unparsedDocuments.push({ source, rawText: text2.slice(header.start, end), reason: e.message });
       continue;
     }
-    const object = { fileId: id, classId, rootType: null, properties: /* @__PURE__ */ Object.create(null), propertySources: /* @__PURE__ */ Object.create(null), references: [], parameters: [], parameterUses: [], source, coverage: "partial" };
+    const object = { fileId: id2, classId, rootType: null, properties: /* @__PURE__ */ Object.create(null), propertySources: /* @__PURE__ */ Object.create(null), references: [], parameters: [], parameterUses: [], source, coverage: "partial" };
     objects.push(object);
-    const same = ids.get(id) ?? [];
+    const same = ids.get(id2) ?? [];
     same.push(object);
-    ids.set(id, same);
+    ids.set(id2, same);
     const localIssues = [];
     let parsed;
     try {
@@ -2347,7 +2508,7 @@ function parseUnityFile({ path, text: text2 } = {}) {
   return { path, objects, coverage, ...coverage === "partial" ? { reason: "Some document syntax, identity or rule semantics are unresolved" } : {}, issues, unparsedDocuments, parserVersion: TEXT_PARSER_VERSION };
 }
 
-// ../pages-adjustment/docs/shared/unity-analysis/ingest-task.mjs
+// docs/shared/unity-analysis/ingest-task.mjs
 var PARSER_VERSION = "unity-text-1";
 var isIngest = (t) => t === "unity-expand" || t === "unity-parse" || t === "unity-parse-batch";
 var MAX_IN2 = 16 * 1024 * 1024;
@@ -2372,19 +2533,19 @@ function batchFiles(files) {
     return { path, bytes: data };
   });
 }
-function inspectTaskRequest3(r) {
+function inspectTaskRequest4(r) {
   if (!r || r.protocolVersion !== 1 || !isIngest(r.taskType) || r.taskVersion !== 1 || typeof r.jobId !== "string" || !/^[A-Za-z0-9_.:-]{1,64}$/.test(r.jobId) || !Number.isSafeInteger(r.inputRevision) || r.inputRevision < 0) throw TypeError("Invalid ingestion identity");
   const timeoutMs = r.limits?.timeoutMs ?? 3e4;
   if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 3e4) throw RangeError("Invalid ingestion timeout");
   const payload = r.taskType === "unity-parse-batch" ? { files: batchFiles(r.payload?.files) } : { path: safePath2(r.payload?.path), bytes: byteArray(r.payload?.bytes) };
   return { protocolVersion: 1, taskType: r.taskType, taskVersion: 1, jobId: r.jobId, inputRevision: r.inputRevision, wasmVariant: "javascript", kernelHash: null, payload, limits: { timeoutMs } };
 }
-var snapshotTaskRequest3 = (r) => ({ ...r, payload: r.taskType === "unity-parse-batch" ? { files: r.payload.files.map((f) => ({ path: f.path, bytes: new Uint8Array(f.bytes) })) } : { path: r.payload.path, bytes: new Uint8Array(r.payload.bytes) } });
-var inputBytes3 = (r) => r.taskType === "unity-parse-batch" ? r.payload.files.reduce((n, f) => n + f.bytes.byteLength, 0) : r.payload.bytes.byteLength;
-var kernelInfo3 = () => ({ key: PARSER_VERSION, requiresWasm: false, retainResult: false, sha256: null, variant: "javascript", abi: PARSER_VERSION });
-var resultShape3 = (r) => r.taskType === "unity-parse-batch" ? { kind: "unity-parsed-batch", count: r.payload.files.length, paths: r.payload.files.map((f) => f.path), byteLengths: r.payload.files.map((f) => f.bytes.byteLength) } : { kind: r.taskType === "unity-expand" ? "unity-expanded" : "unity-parsed", path: r.payload.path, byteLength: r.payload.bytes.byteLength };
+var snapshotTaskRequest4 = (r) => ({ ...r, payload: r.taskType === "unity-parse-batch" ? { files: r.payload.files.map((f) => ({ path: f.path, bytes: new Uint8Array(f.bytes) })) } : { path: r.payload.path, bytes: new Uint8Array(r.payload.bytes) } });
+var inputBytes4 = (r) => r.taskType === "unity-parse-batch" ? r.payload.files.reduce((n, f) => n + f.bytes.byteLength, 0) : r.payload.bytes.byteLength;
+var kernelInfo4 = () => ({ key: PARSER_VERSION, requiresWasm: false, retainResult: false, sha256: null, variant: "javascript", abi: PARSER_VERSION });
+var resultShape4 = (r) => r.taskType === "unity-parse-batch" ? { kind: "unity-parsed-batch", count: r.payload.files.length, paths: r.payload.files.map((f) => f.path), byteLengths: r.payload.files.map((f) => f.bytes.byteLength) } : { kind: r.taskType === "unity-expand" ? "unity-expanded" : "unity-parsed", path: r.payload.path, byteLength: r.payload.bytes.byteLength };
 var validFile = (f, path, length) => plain(f) && f.path === path && f.byteLength === length && /^[0-9a-f]{64}$/.test(f.contentHash) && Array.isArray(f.objects) && Array.isArray(f.issues) && ["serialized", "partial", "opaque", "meta-only"].includes(f.coverage);
-function validTaskResult3(t, s, r) {
+function validTaskResult4(t, s, r) {
   if (!r || r.kind !== s.kind || r.parserVersion !== PARSER_VERSION) return false;
   if (t === "unity-parse-batch") {
     if (!Array.isArray(r.files) || r.files.length !== s.count || s.count < 1 || s.count > PARSE_BATCH_LIMITS.maxFiles) return false;
@@ -2408,16 +2569,16 @@ function validTaskResult3(t, s, r) {
   }
   return total <= MAX_OUT2;
 }
-var resultBytes3 = (r) => r?.kind === "unity-expanded" ? r.files.reduce((n, f) => n + f.bytes.byteLength, 0) : r ? bytes(r) : 0;
-var freezeTaskResult3 = freezeDeep;
-var transferTaskInput3 = (r) => r.taskType === "unity-parse-batch" ? [...new Set(r.payload.files.map((f) => f.bytes.buffer))] : [r.payload.bytes.buffer];
-var transferTaskResult3 = (r) => r.kind === "unity-expanded" ? [...new Set(r.files.map((f) => f.bytes.buffer))] : [];
-var prepareTaskModule3 = () => {
+var resultBytes4 = (r) => r?.kind === "unity-expanded" ? r.files.reduce((n, f) => n + f.bytes.byteLength, 0) : r ? bytes(r) : 0;
+var freezeTaskResult4 = freezeDeep;
+var transferTaskInput4 = (r) => r.taskType === "unity-parse-batch" ? [...new Set(r.payload.files.map((f) => f.bytes.buffer))] : [r.payload.bytes.buffer];
+var transferTaskResult4 = (r) => r.kind === "unity-expanded" ? [...new Set(r.files.map((f) => f.bytes.buffer))] : [];
+var prepareTaskModule4 = () => {
   throw Error("Ingestion has no WASM");
 };
-var instantiateTask3 = () => null;
+var instantiateTask4 = () => null;
 async function parseFile({ path, bytes: raw }) {
-  const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", raw)), (b) => b.toString(16).padStart(2, "0")).join("");
+  const hash2 = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", raw)), (b) => b.toString(16).padStart(2, "0")).join("");
   let file;
   const supported = /\.(controller|anim|prefab|unity|asset|mat|overrideController|meta)$/i.test(path);
   if (!supported) file = { path, objects: [], coverage: "opaque", reason: "Unsupported extension; bytes inventoried", issues: [] };
@@ -2434,13 +2595,13 @@ async function parseFile({ path, bytes: raw }) {
       else file = parseUnityFile({ path, text: text2 });
     }
   }
-  file.contentHash = hash;
+  file.contentHash = hash2;
   file.byteLength = raw.byteLength;
   const result = { kind: "unity-parsed", path, parserVersion: PARSER_VERSION, file };
   if (bytes(result) > MAX_TEXT) throw RangeError("FILE_IR_LIMIT");
   return result;
 }
-async function executeTask3(r) {
+async function executeTask4(r) {
   if (r.taskType === "unity-expand") return { kind: "unity-expanded", path: r.payload.path, parserVersion: PARSER_VERSION, files: expandInput(r.payload) };
   if (r.taskType !== "unity-parse-batch") return parseFile(r.payload);
   const files = [];
@@ -2455,21 +2616,21 @@ async function executeTask3(r) {
   if (bytes(result) > PARSE_BATCH_LIMITS.maxResultBytes) throw RangeError("PARSE_BATCH_RESULT_LIMIT");
   return result;
 }
-var taskInputCount3 = inputBytes3;
+var taskInputCount4 = inputBytes4;
 
-// ../pages-adjustment/docs/shared/compute/tasks.mjs
+// docs/shared/compute/tasks.mjs
 var MAX_MEDIA_INPUT_BYTES = Reflect.get(registered_tasks_exports, "MAX_MEDIA_INPUT_BYTES");
-var adapter = (r) => isIngest(typeof r === "string" ? r : r?.taskType) ? ingest_task_exports : isUnity(typeof r === "string" ? r : r?.taskType) ? pool_task_exports : registered_tasks_exports;
-var resultAdapter = (r) => ["unity-expanded", "unity-parsed", "unity-parsed-batch"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports : registered_tasks_exports;
-var inspectTaskRequest4 = (r) => adapter(r).inspectTaskRequest(r);
-var kernelInfo4 = (r) => adapter(r).kernelInfo(r);
-var transferTaskResult4 = (r) => resultAdapter(r).transferTaskResult(r);
-var prepareTaskModule4 = (o) => adapter(o).prepareTaskModule(o);
-var instantiateTask4 = (r, m) => adapter(r).instantiateTask(r, m);
-var executeTask4 = (r, k) => adapter(r).executeTask(r, k);
-var taskInputCount4 = (r, v) => adapter(r).taskInputCount(r, v);
+var adapter = (r) => isKnowledge(typeof r === "string" ? r : r?.taskType) ? pool_task_exports : isIngest(typeof r === "string" ? r : r?.taskType) ? ingest_task_exports : isUnity(typeof r === "string" ? r : r?.taskType) ? pool_task_exports2 : registered_tasks_exports;
+var resultAdapter = (r) => r?.kind === "knowledge-index-step" ? pool_task_exports : ["unity-expanded", "unity-parsed", "unity-parsed-batch"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports2 : registered_tasks_exports;
+var inspectTaskRequest5 = (r) => adapter(r).inspectTaskRequest(r);
+var kernelInfo5 = (r) => adapter(r).kernelInfo(r);
+var transferTaskResult5 = (r) => resultAdapter(r).transferTaskResult(r);
+var prepareTaskModule5 = (o) => adapter(o).prepareTaskModule(o);
+var instantiateTask5 = (r, m) => adapter(r).instantiateTask(r, m);
+var executeTask5 = (r, k) => adapter(r).executeTask(r, k);
+var taskInputCount5 = (r, v) => adapter(r).taskInputCount(r, v);
 
-// ../pages-adjustment/docs/shared/compute/pool-worker.mjs
+// docs/shared/compute/pool-worker.mjs
 var workerId = crypto.randomUUID();
 var bootEpochMs = performance.timeOrigin + performance.now();
 var received = false;
@@ -2502,27 +2663,27 @@ self.onmessage = async ({ data }) => {
   };
   try {
     if (data?.buildId !== BUILD_ID || !Number.isSafeInteger(data?.generation) || data.generation < 1 || data.startTogether !== void 0 && typeof data.startTogether !== "boolean") throw Error("Invalid worker identity/options");
-    request = inspectTaskRequest4(data);
-    const info = kernelInfo4(request);
+    request = inspectTaskRequest5(data);
+    const info = kernelInfo5(request);
     if (request.taskType !== "ft-magnitude-batch" && data.kernelHash !== info.sha256) throw Error("Kernel identity mismatch");
     self.postMessage({ ...identity, type: "phase", phase: "loading", bootEpochMs });
     let compileCalls = 0, wasmContentType = null;
     const startTogether = data.startTogether === true, needsWasm = info.requiresWasm !== false;
     const moduleStarted = performance.now();
-    const module = needsWasm ? data.module ?? await prepareTaskModule4({ taskType: request.taskType, wasmVariant: request.wasmVariant, onCompile: () => compileCalls++, onResponse: (value2) => {
+    const module = needsWasm ? data.module ?? await prepareTaskModule5({ taskType: request.taskType, wasmVariant: request.wasmVariant, onCompile: () => compileCalls++, onResponse: (value2) => {
       wasmContentType = value2;
     } }) : null;
     const modulePrepareMs = performance.now() - moduleStarted, instantiateStarted = performance.now();
-    kernel = needsWasm ? instantiateTask4(request, module) : null;
+    kernel = needsWasm ? instantiateTask5(request, module) : null;
     const instantiateMs = needsWasm ? performance.now() - instantiateStarted : null;
     const preparedAt = performance.now();
     const compute = async () => {
       try {
         const computeStart = performance.now();
         self.postMessage({ ...identity, type: "phase", phase: "computing", instanceId: kernel?.instanceId ?? null, bootEpochMs });
-        const result = await executeTask4(request, kernel), transfer = transferTaskResult4(result);
+        const result = await executeTask5(request, kernel), transfer = transferTaskResult5(result);
         const computeEnd = performance.now();
-        self.postMessage({ ...identity, type: "result", instanceId: kernel?.instanceId ?? null, result, metrics: { buildId: BUILD_ID, wasmSha256: info.sha256, wasmVariant: info.variant, kernelAbi: info.abi, wasmContentType, bootEpochMs, modulePrepareMs: needsWasm ? modulePrepareMs : null, instantiateMs, loadMs: preparedAt - started, readyWaitMs: startTogether ? computeStart - preparedAt : 0, startTogether, computeMs: computeEnd - computeStart, computeStartEpochMs: performance.timeOrigin + computeStart, computeEndEpochMs: performance.timeOrigin + computeEnd, memoryBytes: kernel?.memory.buffer.byteLength ?? null, wasmNotApplicable: needsWasm ? null : "JavaScript parsing task", inputCount: taskInputCount4(request, result), compileCalls, moduleReuse: needsWasm && data.module instanceof WebAssembly.Module, arena: kernel?.resourceStats?.() ?? null, memoryMeasurement: null } }, transfer);
+        self.postMessage({ ...identity, type: "result", instanceId: kernel?.instanceId ?? null, result, metrics: { buildId: BUILD_ID, wasmSha256: info.sha256, wasmVariant: info.variant, kernelAbi: info.abi, wasmContentType, bootEpochMs, modulePrepareMs: needsWasm ? modulePrepareMs : null, instantiateMs, loadMs: preparedAt - started, readyWaitMs: startTogether ? computeStart - preparedAt : 0, startTogether, computeMs: computeEnd - computeStart, computeStartEpochMs: performance.timeOrigin + computeStart, computeEndEpochMs: performance.timeOrigin + computeEnd, memoryBytes: kernel?.memory.buffer.byteLength ?? null, wasmNotApplicable: needsWasm ? null : "JavaScript parsing task", inputCount: taskInputCount5(request, result), compileCalls, moduleReuse: needsWasm && data.module instanceof WebAssembly.Module, arena: kernel?.resourceStats?.() ?? null, memoryMeasurement: null } }, transfer);
         cleanup();
       } catch (error) {
         fail2(error);
