@@ -85,7 +85,7 @@ def verify(path,n,range_sync=True):
     assert field(transition['text'],'m_DstState')=='{fileID: 0}'
     params=text.split('  m_AnimatorParameters:\n',1)[1].split('  m_AnimatorLayers:',1)[0]
     rows=re.findall(r'^  - m_Name: ([^\n]+)\n(.*?)(?=^  - m_Name:|\Z)',params,re.M|re.S)
-    animator={scalar(name):body for name,body in rows};assert len(animator)==len(rows)==12*n+2
+    animator={scalar(name):body for name,body in rows};assert animator and len(animator)==len(rows)
     assert field(animator['AlwaysOne'],'m_Type')=='1' and float(field(animator['AlwaysOne'],'m_DefaultFloat'))==1
     for layer,expected in zip(layers[-2:],['Root_BinaryParameter','Root_Smooth_Parameter']):
         assert scalar(field(layer,'m_Name'))==expected and field(layer,'m_BlendingMode')=='0'
@@ -109,7 +109,7 @@ def verify(path,n,range_sync=True):
             assert float(field(body,'defaultValue'))==.75 and float(field(animator[name],'m_DefaultFloat'))==.75
     counts={}
     for doc in all_objects.values():counts[doc['classId']]=counts.get(doc['classId'],0)+1
-    assert counts['206']>=2 and counts.get('74',0)>0
+    assert counts['206']>=2
     synced=sum(field(body,'networkSynced')=='1' for body in expr.values())
     assert synced*8<=256
     return {'status':'PASS','file':path.name,'targetCount':n,'layers':len(layers),'animatorParameters':len(animator),'expressionParameters':len(expr),'syncedExpressions':synced,'syncBitCost':synced*8,'vrcft5RangeSyncEnabled':range_sync,'trees':counts['206'],'clips':counts.get('74',0),'assets':len(assets),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'externalSdkRefs':sorted(external)}
@@ -142,9 +142,21 @@ def verify_mapping(path,report_path,source_dir):
             if reverse is not None:target=reverse.get(target,target)
             return '{REF:'+':'.join(target)+'}'
         return FLOW.sub(replace,text)
+    def parameter_names(text):
+        content=text.split('  m_AnimatorParameters:',1)[1].split('  m_AnimatorLayers:',1)[0]
+        names=[scalar(value) for value in re.findall(r'^  - m_Name: ([^\n]+)$',content,re.M)]
+        assert len(set(names))==len(names)
+        return set(names)
+    expected_parameters={'AlwaysOne'}
+    for identity in report['request']['controllerIds']:
+        ref=tuple(identity.split(':'));assert ref in sources and sources[ref]['classId']=='91'
+        expected_parameters.update(parameter_names(sources[ref]['text']))
+    controller=report['controllers'][0]
+    final_controller=output[(controller['guid'],controller['fileId'])]
+    assert parameter_names(final_controller['text'])==expected_parameters,'Input Animator declaration set differs from output'
     motion_sources={ref:doc for ref,doc in sources.items() if doc['classId'] in ('206','74')}
-    roots=[ref for ref,doc in motion_sources.items() if doc['classId']=='206' and scalar(field(doc['text'],'m_Name')) in ('Root_BinaryParameter','Root_Smooth_Parameter')]
-    assert len(roots)==2
+    roots=[tuple(report['request'][key].split(':')) for key in ('binaryTreeId','smoothTreeId')]
+    assert len(set(roots))==2 and all(ref in motion_sources and motion_sources[ref]['classId']=='206' for ref in roots)
     reachable=set();queue=list(roots)
     while queue:
         ref=queue.pop()

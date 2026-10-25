@@ -1,6 +1,6 @@
 import {readUnityPackage,writeUnityPackage} from '../shared/ft/unity-package.mjs';
 import {splitUnityDocuments} from '../shared/ft/unity-text.mjs';
-import {validateTarget} from '../parameter-template/core.mjs';
+import {validateTarget} from '../parameter-template/api.mjs';
 
 const encoder=new TextEncoder();
 const decoder=new TextDecoder('utf-8',{fatal:true});
@@ -9,27 +9,17 @@ const PREAMBLE='%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n';
 const objectFields='  m_ObjectHideFlags: 0\n  m_CorrespondingSourceObject: {fileID: 0}\n  m_PrefabInstance: {fileID: 0}\n  m_PrefabAsset: {fileID: 0}\n';
 
 function fail(message){throw new Error('DecodeSmooth assembly: '+message);}
-function documentName(document){
-  const matches=[...document.text.matchAll(/^  m_Name: ([^\r\n]*)\r?$/gm)];
-  if(matches.length!==1)return null;
-  const value=matches[0][1];
-  if(value.startsWith('"')){
-    try{return JSON.parse(value);}catch{fail('invalid quoted Unity object name');}
+function exactRoot(objects,reference,kind,target){
+  if(!reference||typeof reference.guid!=='string'||!/^[a-fA-F0-9]{32}$/.test(reference.guid)||/^0+$/.test(reference.guid)||typeof reference.fileId!=='string'||!/^-?[1-9][0-9]*$/.test(reference.fileId)){
+    fail(`${target}: ${kind} root requires an exact GUID/fileID`);
   }
-  if(value.startsWith("'")){
-    if(!value.endsWith("'"))fail('invalid quoted Unity object name');
-    return value.slice(1,-1).replaceAll("''", "'");
-  }
-  return value;
-}
-
-function exactRoot(objects,name,target){
-  const matches=objects.filter(document=>documentName(document)===name);
-  if(!matches.length)fail(`${target}: missing ${name} root`);
-  if(matches.length!==1)fail(`${target}: ambiguous ${name} root`);
+  const id=BigInt(reference.fileId);
+  if(id<-(1n<<63n)||id>=(1n<<63n))fail(`${target}: ${kind} root fileID exceeds signed 64-bit range`);
+  const guid=reference.guid.toLowerCase(),matches=objects.filter(document=>document.guid===guid&&document.fileId===reference.fileId);
+  if(matches.length!==1)fail(`${target}: missing or ambiguous ${kind} root GUID/fileID`);
   const root=matches[0];
   if(root.classId!=='206'||!/^BlendTree:\r?\n/.test(root.body)||root.header.includes(' stripped')){
-    fail(`${target}: ${name} must be a complete class 206 BlendTree`);
+    fail(`${target}: ${kind} root must be a complete class 206 BlendTree`);
   }
   return {guid:root.guid,fileId:root.fileId};
 }
@@ -92,13 +82,15 @@ export async function buildIntermediateAssets(generatedPackages){
   const targets=new Set(),usedGuids=new Set(),paths=new Set(),inputs=[],relocated=[];
   for(const input of generatedPackages){
     if(!input||typeof input!=='object')fail('invalid generated package');
-    const leaf=validateTarget(input.target);
+    validateTarget(input.target);
     if(targets.has(input.target))fail(`duplicate target ${input.target}`);
     targets.add(input.target);
     const entries=[...readUnityPackage(input.bytes).values()];
-    const topFolders=entries.filter(e=>e.asset===null&&e.path.split('/').length===2);
-    if(topFolders.length!==1)fail(`${input.target}: exactly one top folder is required`);
-    const top=topFolders[0].path;
+    const rootFolder=input.rootFolder;
+    if(!rootFolder||typeof rootFolder.guid!=='string'||!/^[a-fA-F0-9]{32}$/.test(rootFolder.guid)||typeof rootFolder.path!=='string')fail(`${input.target}: rootFolder metadata is required`);
+    const folder=entries.find(entry=>entry.guid===rootFolder.guid.toLowerCase());
+    if(!folder||folder.asset!==null||folder.path!==rootFolder.path)fail(`${input.target}: rootFolder GUID/path does not resolve to the declared folder`);
+    const top=folder.path;
     for(const entry of entries){
       if(entry.path!==top&&!entry.path.startsWith(top+'/'))fail(`${input.target}: asset outside its top folder: ${entry.path}`);
       if(usedGuids.has(entry.guid))fail(`duplicate GUID ${entry.guid}`);
@@ -108,11 +100,11 @@ export async function buildIntermediateAssets(generatedPackages){
       paths.add(key);
       relocated.push({...entry,path});
     }
-    inputs.push({target:input.target,leaf,entries});
+    inputs.push({target:input.target,roots:input.roots,entries});
   }
   let treeCount=2,clipCount=0;
   const binary=[],smooth=[];
-  for(const {target,leaf,entries}of inputs){
+  for(const {target,roots,entries}of inputs){
     const objects=[];
     for(const entry of entries){
       if(entry.asset===null)continue;
@@ -125,8 +117,10 @@ export async function buildIntermediateAssets(generatedPackages){
         if(document.classId==='74')clipCount++;
       }
     }
-    binary.push(exactRoot(objects,leaf+'_Binary_Root',target));
-    smooth.push(exactRoot(objects,leaf+'_Smooth_Root',target));
+    const binaryRoot=exactRoot(objects,roots?.binary,'binary',target),smoothRoot=exactRoot(objects,roots?.smooth,'smooth',target);
+    if(binaryRoot.guid===smoothRoot.guid&&binaryRoot.fileId===smoothRoot.fileId)fail(`${target}: binary and smooth roots must have distinct GUID/fileIDs`);
+    binary.push(binaryRoot);
+    smooth.push(smoothRoot);
   }
   const refs={
     baseController:{guid:uniqueGuid(usedGuids),fileId:'9100000'},

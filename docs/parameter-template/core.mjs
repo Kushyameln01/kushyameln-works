@@ -1,10 +1,28 @@
 import {writeUnityPackage} from '../shared/ft/unity-package.mjs';
+import {splitUnityDocuments,extractReferences} from '../shared/ft/unity-text.mjs';
 
-export const BUILD_ID='parameter-template-1.2.0';
+export const BUILD_ID='parameter-template-1.3.0';
 const encoder=new TextEncoder();
+const decoder=new TextDecoder('utf-8',{fatal:true});
 const rootNames=new Set(['Binary_Root','Smooth_Root']);
-const motion=/^(    m_Motion: )\{fileID: (-?\d+), guid: ([0-9a-f]{32}), type: 2\}$/gm;
+// Inspect every Motion field. A reference outside the supported source format
+// must be rejected, never copied through merely because it misses a narrow regex.
+const motion=/^([ \t]+(?:-[ \t]+)?)(m_Motion|"m_Motion"|'m_Motion')([ \t]*:[ \t]*)([^\r\n]*)$/gm;
 const guidPattern=/^[0-9a-f]{32}$/;
+
+function sourceMotion(value){
+  const match=/^\{[ \t]*fileID:[ \t]*(-?\d+)[ \t]*(?:,[ \t]*guid:[ \t]*([0-9a-fA-F]{32})[ \t]*,[ \t]*type:[ \t]*(\d+)[ \t]*)?\}([ \t]*(?:#[^\r\n]*)?)$/.exec(value);
+  if(!match)throw new Error('TemplateのMotion参照形式に対応していません。');
+  const id=BigInt(match[1]);
+  if(id<-(1n<<63n)||id>=(1n<<63n))throw new Error('TemplateのMotion fileIDが範囲外です。');
+  const guid=match[2]?.toLowerCase();
+  if(id===0n){
+    if(guid&&!/^0+$/.test(guid))throw new Error('Templateの空Motion参照が不正です。');
+    return {fileId:'0',suffix:match[4]};
+  }
+  if(!guid||match[3]!=='2')throw new Error('TemplateのMotionには解決可能な外部参照が必要です。');
+  return {fileId:String(id),guid,suffix:match[4]};
+}
 
 export function validateTarget(target){
   if(typeof target!=='string'||!/^v2\/[\p{L}\p{N}_-]{1,120}$/u.test(target)){
@@ -43,7 +61,7 @@ function replaceParameters(text,leaf){
 
 function clipDocument(clip,id,leaf){
   let text=clip.text;
-  // Only the fixed template's Animator AAP attributes are renamed. Numeric
+  // Only the source template's Animator AAP attributes are renamed. Numeric
   // bindings are updated in their own section, never by global string replace.
   const oldNames=[...text.matchAll(/^    attribute: (.*Parameter.*)$/gm)].map(m=>m[1]);
   const hashes=new Map();
@@ -57,11 +75,11 @@ function clipDocument(clip,id,leaf){
 }
 
 function templateIndex(template){
-  if(template?.schemaVersion!==1||template.templateRevision!==2||template.trees?.length!==16||template.clips?.length!==20)throw new Error('Templateの版または構成が一致しません。');
+  if(template?.schemaVersion!==1||template.templateRevision!==2||!Array.isArray(template.trees)||!Array.isArray(template.clips))throw new Error('Templateの版または構成が一致しません。');
   const index=new Map();
   for(const [kind,items] of [['206',template.trees],['74',template.clips]]){
     for(const item of items){
-      if(!guidPattern.test(item.guid)||index.has(item.guid)||typeof item.text!=='string'||
+      if(!item||!guidPattern.test(item.guid)||index.has(item.guid)||typeof item.text!=='string'||
         [...item.text.matchAll(/^--- !u!/gm)].length!==1||!item.text.includes(`--- !u!${kind} &${kind==='206'?'20600000':'7400000'}\n`)){
         throw new Error('Templateのアセット構造が一致しません。');
       }
@@ -87,7 +105,8 @@ export function generatePackage(target,{template}={}){
     const guid=newGuid();
     return {guid,path,asset:null,meta:`fileFormatVersion: 2\nguid: ${guid}\nfolderAsset: yes\nDefaultImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n`};
   });
-  let clipCount=0,clipReferences=0,treeReferences=0;
+  let clipCount=0;
+  const roots={};
   const paths=new Set(),foundRoots=new Set();
   for(const tree of template.trees){
     const localClips=new Map();
@@ -95,16 +114,18 @@ export function generatePackage(target,{template}={}){
     const isRoot=rootNames.has(sourceName);
     if(isRoot)foundRoots.add(sourceName);
     let text=replaceParameters(tree.text,leaf);
-    text=text.replace(motion,(_line,prefix,id,guid)=>{
+    text=text.replace(motion,(_line,indent,key,_separator,value)=>{
+      if(key!=='m_Motion')throw new Error('TemplateのMotionフィールド形式に対応していません。');
+      const prefix=indent+key+': ';
+      const {fileId,guid,suffix}=sourceMotion(value);
+      if(fileId==='0')return prefix+'{fileID: 0}'+suffix;
       const ref=index.get(guid);
-      if(!ref||id!==(ref.kind==='74'?'7400000':'20600000'))throw new Error('TemplateのMotion参照が解決できません。');
+      if(!ref||fileId!==(ref.kind==='74'?'7400000':'20600000'))throw new Error('TemplateのMotion参照が解決できません。');
       if(ref.kind==='206'){
-        treeReferences++;
-        return prefix+`{fileID: 20600000, guid: ${treeGuids.get(guid)}, type: 2}`;
+        return prefix+`{fileID: 20600000, guid: ${treeGuids.get(guid)}, type: 2}`+suffix;
       }
       if(!localClips.has(guid))localClips.set(guid,String(7400001+localClips.size));
-      clipReferences++;
-      return prefix+`{fileID: ${localClips.get(guid)}}`;
+      return prefix+`{fileID: ${localClips.get(guid)}}`+suffix;
     });
     const renamed=named(text,leaf);text=renamed.text;
     const path=(isRoot?folderPath:childPath)+'/'+renamed.name+'.asset';
@@ -114,8 +135,20 @@ export function generatePackage(target,{template}={}){
       clipCount++;
     }
     const guid=treeGuids.get(tree.guid);
+    if(isRoot)roots[sourceName==='Binary_Root'?'binary':'smooth']={guid,fileId:'20600000'};
     assets.push({guid,path,asset:encoder.encode(text),meta:`fileFormatVersion: 2\nguid: ${guid}\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: 20600000\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n`});
   }
-  if(foundRoots.size!==2||clipCount!==30||clipReferences!==34||treeReferences!==13)throw new Error('TemplateのRootまたは参照件数が一致しません。');
-  return {bytes:writeUnityPackage(assets),fileName:leaf+'.unitypackage',folderName:leaf,treeCount:16,clipCount,buildId:BUILD_ID};
+  if(foundRoots.size!==2)throw new Error('TemplateのBinary・Smooth Rootが揃っていません。');
+  // Reject any surviving source GUID, missing local Clip, or unsupported
+  // external dependency independently of the number of matched Motion fields.
+  const output=new Map(assets.filter(asset=>asset.asset!==null).map(asset=>{
+    const text=decoder.decode(asset.asset),ids=new Set(splitUnityDocuments(text).documents.map(doc=>doc.fileId));
+    return [asset.guid,{text,ids}];
+  }));
+  for(const [guid,asset]of output)for(const reference of extractReferences(asset.text)){
+    if(reference.fileId==='0')continue;
+    if(!output.get(reference.guid??guid)?.ids.has(reference.fileId))throw new Error('Templateの出力Motion・Clip参照が解決できません。');
+  }
+  return {bytes:writeUnityPackage(assets),fileName:leaf+'.unitypackage',folderName:leaf,treeCount:template.trees.length,clipCount,buildId:BUILD_ID,
+    roots,rootFolder:{guid:assets[0].guid,path:folderPath}};
 }

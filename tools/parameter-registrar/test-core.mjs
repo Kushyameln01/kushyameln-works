@@ -3,12 +3,12 @@ import {readFile} from 'node:fs/promises';
 import {webcrypto} from 'node:crypto';
 import {writeUnityPackage,readUnityPackage} from '../../docs/shared/ft/unity-package.mjs';
 import {scanUnityPackage,selectUnityPackage} from '../../docs/animator-composer/lib/package-selection.mjs';
-import {splitUnityDocuments,extractAnimatorParameters,extractReferences} from '../../docs/shared/ft/unity-text.mjs';
+import {splitUnityDocuments,extractAnimatorParameters,extractReferences,parseUnityScalar} from '../../docs/shared/ft/unity-text.mjs';
 import {parseExpression} from '../../docs/animator-composer/lib/registration.mjs';
 import {indexPackages,analyzeComposition} from '../../docs/animator-composer/lib/composition.mjs';
 import {instantiateFtKernel} from '../../docs/shared/ft/kernel/load-kernel.mjs';
 import {gzipSync,gunzipSync} from '../../docs/shared/ft/vendor/fflate.mjs';
-import {generatePackage} from '../../docs/parameter-template/core.mjs';
+import {generateTemplate} from '../../docs/parameter-template/api.mjs';
 import {PREAMBLE,tree,curve,binding,clip,declaration,asset} from './fixture-core.mjs';
 if(!globalThis.crypto)globalThis.crypto=webcrypto;
 let core;try{core=await import('../../docs/shared/parameter-registrar/core.mjs');}catch{}
@@ -156,12 +156,24 @@ await test('defaults are generated settings and invalid types, defaults, built-i
  assert.deepEqual(parseExpression(new TextDecoder().decode(expr.asset)),[{name:'A',type:'Float',defaultValue:0,saved:false,networkSynced:false}]);
  for(const [p,s,re] of [[[ {name:'A',type:'Bool'}],{},/Float|type|型/],[params(['A']),{defaultValue:2},/Float|範囲/],[params(['A']),{saved:1},/saved|true/],[params(['VelocityX']),{},/組込み|built/],[params(Array.from({length:33},(_,i)=>'P'+i)),{networkSynced:true},/256|同期/],[params(['A']),{name:'../bad'},/name|名前|path/],[params(['A']),{name:'日本語'},/name|名前|path/]])await assert.rejects(()=>generateParameterAssets(p,s),re);
 });
-await test('Template -> collection -> new package -> independent readback',async()=>{
- const template=JSON.parse(await readFile(new URL('../../docs/parameter-template/template.json',import.meta.url),'utf8'));
- const generated=generatePackage('v2/Test',{template});const collected=await collectParameters(generated.bytes,{kernel});
- const expected=['AlwaysOne','Function/Test','Proxy/Smooth/Parts','Proxy/Test/Cartesian','Proxy/Test/Output','Smooth/Test','Smooth/Test_Function','v2/Test','v2/Test0','v2/Test1','v2/Test2','v2/Test4','v2/Test8','v2/TestNegative'];
- assert.equal(collected.clipCount,30);assert.equal(collected.blendTreeCount,16);assert.deepEqual(collected.parameters,params(expected));
+await test('Template public API -> collection -> new package -> independent source-set readback',async()=>{
+ const previousFetch=globalThis.fetch;let generated;
+ try{globalThis.fetch=async url=>new Response(await readFile(url));generated=await generateTemplate('v2/Test');}finally{globalThis.fetch=previousFetch;}
+ const collected=await collectParameters(generated.bytes,{kernel}),expected=new Set();let sourceTrees=0,sourceClips=0;
+ const value=(text,name,indent=2)=>parseUnityScalar(new RegExp(`^${' '.repeat(indent)}${name}:([^\r\n]*)`,'m').exec(text)?.[1]??'');
+ for(const entry of readUnityPackage(generated.bytes).values())if(entry.asset)for(const document of splitUnityDocuments(new TextDecoder().decode(entry.asset)).documents){
+  if(document.classId==='206'){
+   sourceTrees++;const type=Number(value(document.text,'m_BlendType'));
+   if(type===4)for(const match of document.text.matchAll(/^    m_DirectBlendParameter:([^\r\n]*)/gm)){const name=parseUnityScalar(match[1]);if(name)expected.add(name);}
+   else{const x=value(document.text,'m_BlendParameter'),y=value(document.text,'m_BlendParameterY');if(x)expected.add(x);if(type!==0&&y)expected.add(y);}
+  }else if(document.classId==='74'){
+   sourceClips++;const bindings=document.text.match(/^  m_ClipBindingConstant:[\s\S]*?(?=^  [A-Za-z_]|$(?![\s\S]))/m)?.[0]??'',activeHashes=new Set((bindings.match(/^    - [\s\S]*?(?=^    - |^    [A-Za-z_]|$(?![\s\S]))/gm)??[]).filter(b=>value(b,'typeID',6)==='95'&&value(b,'path',6)==='0'&&value(b,'customType',6)==='0').map(b=>Number(value(b,'attribute',6))>>>0));
+   const curves=document.text.match(/^  m_FloatCurves:[\s\S]*?(?=^  [A-Za-z_]|$(?![\s\S]))/m)?.[0]??'';
+   for(const curve of curves.match(/^  - [\s\S]*?(?=^  - |$(?![\s\S]))/gm)??[]){const name=value(curve,'attribute',4);if(value(curve,'classID',4)==='95'&&value(curve,'path',4)===''&&activeHashes.has(hash(name)>>>0))expected.add(name);}
+  }
+ }
+ assert.equal(collected.clipCount,sourceClips);assert.equal(collected.blendTreeCount,sourceTrees);assert.equal(generated.treeCount,sourceTrees);assert.equal(generated.clipCount,sourceClips);assert.deepEqual(collected.parameters,params([...expected]));
  const out=await generateParameterAssets(collected.parameters),expr=[...readUnityPackage(out.archive).values()].find(a=>a.path.endsWith('.asset'));
- assert.deepEqual(parseExpression(new TextDecoder().decode(expr.asset)).map(p=>p.name),expected.sort());
+ assert.deepEqual(parseExpression(new TextDecoder().decode(expr.asset)).map(p=>p.name),[...expected].sort());
 });
 console.log(`PASS ${passed} core groups; Unity Editor import/runtime not exercised.`);

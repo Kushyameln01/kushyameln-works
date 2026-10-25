@@ -1,4 +1,4 @@
-import {validateTarget} from '../parameter-template/core.mjs';
+import {validateTarget,isTemplateResult} from '../parameter-template/api.mjs';
 import {createComputePool} from '../shared/compute/client.mjs';
 import {BUILD_ID as COMPUTE_BUILD_ID} from '../shared/compute/protocol.mjs';
 import {createParameterRegistrar} from '../shared/parameter-registrar/client.mjs';
@@ -7,8 +7,8 @@ import {splitUnityDocuments,extractAnimatorLayers,extractAnimatorParameters} fro
 import {createAnimatorIntegrator} from '../shared/animator-integrator/client.mjs';
 import {createIntegratorRequest} from './integrator-request.mjs';
 
-export const BUILD_ID='decode-smooth-integrator-1';
-export const SOURCE_REF='03775456be70f68f711662f0b08cf29c09519426';
+export const BUILD_ID='decode-smooth-integrator-2';
+export const SOURCE_REF='922e9616d87debcddb1e602a194ad0c16071ad8f';
 const decoder=new TextDecoder('utf-8',{fatal:true});
 const aborted=()=>new DOMException('処理を取り消しました。','AbortError');
 
@@ -79,7 +79,7 @@ export function createDecodeSmoothBuilder({concurrency=2,onProgress=()=>{}}={}){
     current(run);
     if(response.protocolVersion!==1||response.buildId!==COMPUTE_BUILD_ID||response.jobId!==jobId||response.inputRevision!==inputRevision||response.taskType!=='parameter-template-generate')throw new Error('Templateの入力と結果が一致しません。');
     if(response.status!=='succeeded')throw response.status==='cancelled'?aborted():new Error(`${target}: ${response.message??response.errorCode??'Template生成に失敗しました。'}`);
-    if(response.result?.target!==target||!(response.result.bytes instanceof Uint8Array))throw new Error(`${target}: Template出力を確認できません。`);
+    if(!isTemplateResult(response.result,{target}))throw new Error(`${target}: Template出力を確認できません。`);
     run.jobs.push({jobId,inputRevision,generation:response.generation,taskType:response.taskType,workerId:response.workerId,status:response.status,metrics:response.metrics});
     return response.result;
   }
@@ -103,7 +103,7 @@ export function createDecodeSmoothBuilder({concurrency=2,onProgress=()=>{}}={}){
         if(!['motionPackage','basePackage','maskPackage'].every(k=>data.result?.[k] instanceof Uint8Array&&data.result[k].byteLength))return finish(new Error('中間packageを回収できません。'));
         finish(null,data.result);
       };
-      const copies=generatedPackages.map(p=>({target:p.target,fileName:p.fileName,bytes:Uint8Array.from(p.bytes)}));
+      const copies=generatedPackages.map(p=>({...p,bytes:Uint8Array.from(p.bytes)}));
       try{worker.postMessage({type:'assemble',id,inputRevision,generatedPackages:copies},copies.map(p=>p.bytes.buffer));}catch(error){finish(error);}
     });
   }
@@ -124,7 +124,7 @@ export function createDecodeSmoothBuilder({concurrency=2,onProgress=()=>{}}={}){
             const index=next++,target=names[index];current(run);
             notify(run,'template',`${target} の素材を生成しています。`);
             const generated=await template(run,target,index,inputRevision);
-            templates[index]={target,bytes:generated.bytes,fileName:generated.fileName};
+            templates[index]={...generated,target};
             notify(run,'template',`${target} の素材を生成しました。`,true);
             const registrar=createParameterRegistrar({pool:run.pool});run.registrars.add(registrar);
             try{

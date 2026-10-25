@@ -52,7 +52,7 @@ GitHub Pagesで登録されるタスクのうち、FT・Unity解析・Template�
 | `unity-parse-batch` | JSのみ | 所有する各bytes.bufferをtransfer | 構造化した解析結果群をclone | delivery-only。Promise |
 | `parameter-template-generate` | 既存Template生成（JSのみ） | `payload: {target}` をclone | unitypackageのbytesをtransfer | delivery-only。Promise |
 
-`parameter-template-generate`は既存Templateと同じ名称検査を使い、同一オリジンの`parameter-template/template.json`を固定SHA256で照合してから生成します。正常時の`result`は`{kind:'parameter-template-package', target, bytes:Uint8Array, fileName, folderName, treeCount, clipCount, buildId}`です。`getResult`には保持しないためPromiseから回収してください。Module版とbundle版のWorkerに登録しています。[Decode / Smooth 一括生成](../../decode-smooth-builder/)がこのタスクとRegistrarを利用します。
+`parameter-template-generate`は[Template公開API](../../parameter-template/README.md)へ`target`だけを渡します。データのURL・ハッシュ・件数・生成器本体を共有計算側に固定しません。正常時の`result`は`kind:'parameter-template-package'`と、公開APIの`apiVersion, target, bytes, fileName, folderName, treeCount, clipCount, buildId, roots, rootFolder`です。API形式・入力との対応・bytesの上限・参照を確認し、`buildId`は版の記録に使います。`getResult`には保持しないためPromiseから回収してください。Module版とbundle版とも公開APIをそのまま参照し、Template生成器はbundleへ埋め込みません。[Decode / Smooth 一括生成](../../decode-smooth-builder/)がこのタスクとRegistrarを利用します。
 
 FTは最大262144 masks、weightsは1〜5個の**正の有限数**で合計も有限。maskは0以上 `2 ** weights.length` 未満の整数です。論理入力は数値1要素8byteで数えます。Unityのsnapshot・ファイル・アーカイブ上限、対応形式、結果の読取りは [Unity解析README](../unity-analysis/README.md) を参照してください。
 

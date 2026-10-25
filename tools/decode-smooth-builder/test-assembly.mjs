@@ -1,20 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {generatePackage} from '../../docs/parameter-template/core.mjs';
+import {generateTemplate} from '../../docs/parameter-template/api.mjs';
 import {readUnityPackage,writeUnityPackage} from '../../docs/shared/ft/unity-package.mjs';
 import {splitUnityDocuments,extractReferences,extractAnimatorLayers,extractAnimatorParameters} from '../../docs/shared/ft/unity-text.mjs';
 import {buildIntermediateAssets} from '../../docs/decode-smooth-builder/assembly.mjs';
 
-const template=JSON.parse(await readFile(new URL('../../docs/parameter-template/template.json',import.meta.url),'utf8'));
 const decoder=new TextDecoder(),encoder=new TextEncoder();
-const generated=['v2/EyeLidLeft','v2/EyeLidRight'].map(target=>({target,...generatePackage(target,{template})}));
+const previousFetch=globalThis.fetch;let generated;
+try{globalThis.fetch=async url=>new Response(await readFile(url));generated=await Promise.all(['v2/EyeLidLeft','v2/EyeLidRight'].map(target=>generateTemplate(target)));}
+finally{globalThis.fetch=previousFetch;}
 const source=generated.map(p=>readUnityPackage(p.bytes));
 const docs=entry=>splitUnityDocuments(decoder.decode(entry.asset)).documents;
 const allDocs=entries=>[...entries.values()].filter(e=>e.asset!==null).flatMap(e=>docs(e).map(d=>({...d,guid:e.guid,path:e.path})));
-const byName=(entries,name)=>allDocs(entries).filter(d=>new RegExp(`^  m_Name: ${name}$`,'m').test(d.text));
 const replaceEntry=(input,predicate,change)=>({...input,bytes:writeUnityPackage([...readUnityPackage(input.bytes).values()].map(e=>predicate(e)?change(e):e))});
-const root=(entries,leaf,kind)=>byName(entries,leaf+'_'+kind+'_Root').find(d=>d.classId==='206');
+const root=(entries,reference)=>docs(entries.get(reference.guid)).find(d=>d.fileId===reference.fileId);
 
 test('real two-name Template packages produce three real intermediate packages with independent readback totals',async()=>{
   const result=await buildIntermediateAssets(generated);
@@ -23,11 +23,12 @@ test('real two-name Template packages produce three real intermediate packages w
     assert.ok(result[key].length>100);
   }
   const motion=readUnityPackage(result.motionPackage),objects=allDocs(motion);
-  assert.equal(motion.size,39);
-  assert.equal([...motion.values()].filter(e=>e.asset===null).length,5);
-  assert.equal(objects.filter(d=>d.classId==='206').length,34);
-  assert.equal(objects.filter(d=>d.classId==='74').length,60);
-  assert.deepEqual(result.summary,{targetCount:2,treeCount:34,clipCount:60});
+  const originals=source.flatMap(p=>[...p.values()]),originalObjects=source.flatMap(allDocs),treeCount=originalObjects.filter(d=>d.classId==='206').length+2,clipCount=originalObjects.filter(d=>d.classId==='74').length;
+  assert.equal(motion.size,originals.length+3);
+  assert.equal([...motion.values()].filter(e=>e.asset===null).length,originals.filter(e=>e.asset===null).length+1);
+  assert.equal(objects.filter(d=>d.classId==='206').length,treeCount);
+  assert.equal(objects.filter(d=>d.classId==='74').length,clipCount);
+  assert.deepEqual(result.summary,{targetCount:generated.length,treeCount,clipCount});
   const packs={baseController:readUnityPackage(result.basePackage),mask:readUnityPackage(result.maskPackage),binaryTree:motion,smoothTree:motion};
   const classes={baseController:'91',mask:'319',binaryTree:'206',smoothTree:'206'};
   const inputGuids=new Set(source.flatMap(p=>[...p.keys()])),newGuids=new Set();
@@ -67,16 +68,16 @@ test('relocation preserves all original GUIDs, metadata, asset bytes and embedde
 
 test('both new DirectTrees use each exact root GUID/fileID in input order with AlwaysOne and normalization off',async()=>{
   const result=await buildIntermediateAssets(generated),motion=readUnityPackage(result.motionPackage);
-  for(const [key,kind,name]of [['binaryTree','Binary','Root_BinaryParameter'],['smoothTree','Smooth','Root_Smooth_Parameter']]){
+  for(const [key,kind,name]of [['binaryTree','binary','Root_BinaryParameter'],['smoothTree','smooth','Root_Smooth_Parameter']]){
     const tree=docs(motion.get(result.refs[key].guid)).find(d=>d.fileId===result.refs[key].fileId);
     assert.equal(tree.classId,'206');assert.match(tree.text,new RegExp(`^  m_Name: ${name}$`,'m'));
     assert.match(tree.text,/^  m_BlendType: 4$/m);
     assert.match(tree.text,/^  m_NormalizedBlendValues: 0$/m);
-    assert.equal([...tree.text.matchAll(/^    m_DirectBlendParameter: AlwaysOne$/gm)].length,2);
-    assert.equal([...tree.text.matchAll(/^  - serializedVersion: 2$/gm)].length,2);
+    assert.equal([...tree.text.matchAll(/^    m_DirectBlendParameter: AlwaysOne$/gm)].length,generated.length);
+    assert.equal([...tree.text.matchAll(/^  - serializedVersion: 2$/gm)].length,generated.length);
     const motions=extractReferences(tree.text).filter(r=>r.kind==='external');
     assert.deepEqual(motions.map(r=>({guid:r.guid,fileId:r.fileId,type:r.type})),source.map((entries,i)=>{
-      const original=root(entries,generated[i].target.slice(3),kind);
+      const original=root(entries,generated[i].roots[kind]);
       return {guid:original.guid,fileId:original.fileId,type:'2'};
     }));
   }
@@ -126,21 +127,43 @@ test('Safety masks all 13 Humanoid parts and has no imported rig or transform en
 test('empty inputs, duplicate targets/GUIDs and case-colliding relocated paths fail explicitly',async()=>{
   await assert.rejects(buildIntermediateAssets([]),/package.*required/i);
   await assert.rejects(buildIntermediateAssets([generated[0],generated[0]]),/duplicate target/i);
-  const firstRoot=root(source[0],'EyeLidLeft','Binary');
-  const collision=replaceEntry(generated[1],e=>e.guid===root(source[1],'EyeLidRight','Binary').guid,e=>({
+  const firstRoot=generated[0].roots.binary;
+  const collision=replaceEntry(generated[1],e=>e.guid===generated[1].roots.binary.guid,e=>({
     ...e,guid:firstRoot.guid,meta:e.meta.replace(/^guid: .+$/m,'guid: '+firstRoot.guid)
   }));
   await assert.rejects(buildIntermediateAssets([generated[0],collision]),/duplicate GUID/i);
-  const pathCollision=replaceEntry(generated[1],()=>true,e=>({...e,path:e.path.replace(/^Assets\/EyeLidRight(?=\/|$)/,'Assets/eyelidleft')}));
+  const originalPath=generated[1].rootFolder.path,collidingPath=generated[0].rootFolder.path.toLowerCase();
+  const pathCollision={...replaceEntry(generated[1],()=>true,e=>({...e,path:collidingPath+e.path.slice(originalPath.length)})),rootFolder:{...generated[1].rootFolder,path:collidingPath}};
   await assert.rejects(buildIntermediateAssets([generated[0],pathCollision]),/duplicate.*path/i);
 });
 
-test('missing, ambiguous and wrong-type exact root identities fail instead of guessing a root by substring',async()=>{
-  const original=generated[0],binary=root(source[0],'EyeLidLeft','Binary');
-  const renamed=replaceEntry(original,e=>e.guid===binary.guid,e=>({...e,asset:encoder.encode(decoder.decode(e.asset).replace('m_Name: EyeLidLeft_Binary_Root','m_Name: prefix_EyeLidLeft_Binary_Root_suffix'))}));
-  await assert.rejects(buildIntermediateAssets([renamed]),/Binary_Root.*missing|missing.*Binary_Root/i);
-  const ambiguous=replaceEntry(original,e=>e.guid===root(source[0],'EyeLidLeft','Smooth').guid,e=>({...e,asset:encoder.encode(decoder.decode(e.asset).replace('m_Name: EyeLidLeft_Smooth_Root','m_Name: EyeLidLeft_Binary_Root'))}));
-  await assert.rejects(buildIntermediateAssets([ambiguous]),/Binary_Root.*ambiguous|ambiguous.*Binary_Root/i);
-  const wrongType=replaceEntry(original,e=>e.guid===binary.guid,e=>({...e,asset:encoder.encode(decoder.decode(e.asset).replace('--- !u!206 &20600000\nBlendTree:','--- !u!74 &20600000\nAnimationClip:'))}));
-  await assert.rejects(buildIntermediateAssets([wrongType]),/Binary_Root.*class 206|Binary_Root.*BlendTree/i);
+test('root display names and folder placement may change while exact API metadata still resolves',async()=>{
+  const original=generated[0],rootGuids=new Set(Object.values(original.roots).map(r=>r.guid)),newPath='Assets/Changed/Container';
+  const renamed={...replaceEntry(original,()=>true,e=>({...e,path:newPath+e.path.slice(original.rootFolder.path.length),...(e.asset&&rootGuids.has(e.guid)?{asset:encoder.encode(decoder.decode(e.asset).replace(/^  m_Name:.*$/m,'  m_Name: Edited display name'))}:{})})),rootFolder:{...original.rootFolder,path:newPath}};
+  const result=await buildIntermediateAssets([renamed]),motion=readUnityPackage(result.motionPackage);
+  for(const [key,kind]of [['binaryTree','binary'],['smoothTree','smooth']]){
+    const tree=root(motion,result.refs[key]),refs=extractReferences(tree.text).filter(r=>r.guid);
+    assert.deepEqual(refs.map(r=>({guid:r.guid,fileId:r.fileId})),[original.roots[kind]]);
+    assert.ok(motion.has(original.roots[kind].guid));
+  }
+});
+
+test('wrong root/folder metadata and wrong root object classes are rejected without display-name guessing',async()=>{
+  const original=generated[0],binary=original.roots.binary,occupied=new Set(docs(source[0].get(binary.guid)).map(d=>d.fileId));let missingId=1n;while(occupied.has(String(missingId)))missingId++;
+  await assert.rejects(buildIntermediateAssets([{...original,roots:undefined}]),/root.*GUID\/fileID/i);
+  await assert.rejects(buildIntermediateAssets([{...original,roots:{...original.roots,binary:{...binary,fileId:String(missingId)}}}]),/root.*GUID\/fileID/i);
+  await assert.rejects(buildIntermediateAssets([{...original,roots:{...original.roots,binary:original.roots.smooth}}]),/distinct GUID\/fileID/i);
+  await assert.rejects(buildIntermediateAssets([{...original,rootFolder:{...original.rootFolder,path:original.rootFolder.path+'/Unrelated'}}]),/rootFolder.*GUID\/path/i);
+  await assert.rejects(buildIntermediateAssets([{...original,rootFolder:{...original.rootFolder,guid:binary.guid}}]),/rootFolder.*GUID\/path/i);
+  const wrongType=replaceEntry(original,e=>e.guid===binary.guid,e=>({...e,asset:encoder.encode(decoder.decode(e.asset).replace(`--- !u!206 &${binary.fileId}\nBlendTree:`,`--- !u!74 &${binary.fileId}\nAnimationClip:`))}));
+  await assert.rejects(buildIntermediateAssets([wrongType]),/root.*class 206|root.*BlendTree/i);
+});
+
+test('assembly counts variable source contents instead of a fixed Template size',async()=>{
+  const original=generated[0],entries=[...readUnityPackage(original.bytes).values()];let candidate=1;
+  while(entries.some(e=>e.guid===candidate.toString(16).padStart(32,'0')))candidate++;
+  const guid=candidate.toString(16).padStart(32,'0'),entry={guid,path:original.rootFolder.path+'/Variable_'+guid+'.asset',asset:encoder.encode('%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n--- !u!206 &20600000\nBlendTree:\n  m_Name: Additional tree\n  m_Childs: []\n--- !u!74 &7400000\nAnimationClip:\n  m_Name: Additional clip\n'),meta:`fileFormatVersion: 2\nguid: ${guid}\nNativeFormatImporter:\n  mainObjectFileID: 20600000\n`};
+  const changed={...original,bytes:writeUnityPackage([...entries,entry]),treeCount:original.treeCount+1,clipCount:original.clipCount+1},result=await buildIntermediateAssets([changed]),sourceObjects=allDocs(readUnityPackage(changed.bytes)),motion=readUnityPackage(result.motionPackage);
+  assert.deepEqual(result.summary,{targetCount:1,treeCount:sourceObjects.filter(d=>d.classId==='206').length+2,clipCount:sourceObjects.filter(d=>d.classId==='74').length});
+  assert.deepEqual(motion.get(guid).asset,entry.asset);
 });

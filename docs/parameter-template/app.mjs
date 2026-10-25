@@ -1,4 +1,4 @@
-import {validateTarget} from './core.mjs';
+import {validateTarget,isTemplateResult} from './api.mjs';
 
 const form=document.querySelector('#generator');
 const input=document.querySelector('#parameter');
@@ -37,10 +37,10 @@ form.addEventListener('submit',event=>{
       if(id!==job||data.id!==id)return;
       if(!data.ok){fail(data.error);return;}
       try{
-        if(!(data.bytes instanceof Uint8Array)||data.treeCount!==16||data.clipCount!==30)throw new Error('生成結果の構成が一致しません。');
+        if(!isTemplateResult(data,{target}))throw new Error('生成結果の構成が一致しません。');
         stop();url=URL.createObjectURL(new Blob([data.bytes],{type:'application/octet-stream'}));
         download.href=url;download.download=data.fileName;
-        summary.textContent=`Assets/${data.folderName} ／ BlendTree ${data.treeCount}個・内包Clip ${data.clipCount}個`;
+        summary.textContent=`${data.rootFolder.path} ／ BlendTree ${data.treeCount}個・内包Clip ${data.clipCount}個`;
         result.hidden=false;message(`${target} の生成が完了しました。`);
       }catch(error){stop();clearDownload();message(error.message,true);}
     };

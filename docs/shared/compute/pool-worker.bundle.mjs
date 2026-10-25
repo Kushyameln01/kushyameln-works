@@ -3497,126 +3497,10 @@ __export(parameter_template_task_exports, {
   transferTaskResult: () => transferTaskResult6,
   validTaskResult: () => validTaskResult6
 });
-
-// docs/parameter-template/core.mjs
-var BUILD_ID2 = "parameter-template-1.2.0";
-var encoder4 = new TextEncoder();
-var rootNames = /* @__PURE__ */ new Set(["Binary_Root", "Smooth_Root"]);
-var motion = /^(    m_Motion: )\{fileID: (-?\d+), guid: ([0-9a-f]{32}), type: 2\}$/gm;
-var guidPattern = /^[0-9a-f]{32}$/;
-function validateTarget(target) {
-  if (typeof target !== "string" || !/^v2\/[\p{L}\p{N}_-]{1,120}$/u.test(target)) {
-    throw new Error("v2/ \u306B\u7D9A\u3051\u3066\u3001\u6587\u5B57\u30FB\u6570\u5B57\u30FB_\u30FB- \u306E\u540D\u524D\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\uFF08120\u6587\u5B57\u307E\u3067\uFF09\u3002");
-  }
-  const name = target.slice(3);
-  if (name === "Parameter") throw new Error("Parameter\u3092\u3001\u751F\u6210\u3059\u308B\u30D1\u30E9\u30E1\u30FC\u30BF\u540D\u3078\u5909\u66F4\u3057\u3066\u304F\u3060\u3055\u3044\u3002");
-  if (/^(?:CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])$/i.test(name)) throw new Error("\u3053\u306E\u540D\u524D\u306F\u51FA\u529B\u30D5\u30A9\u30EB\u30C0\u306B\u4F7F\u7528\u3067\u304D\u307E\u305B\u3093\u3002");
-  return name;
-}
-function crc323(value2) {
-  let crc2 = 4294967295;
-  for (const byte of encoder4.encode(value2)) {
-    crc2 ^= byte;
-    for (let n = 0; n < 8; n++) crc2 = crc2 >>> 1 ^ (crc2 & 1 ? 3988292384 : 0);
-  }
-  return (crc2 ^ 4294967295) >>> 0;
-}
-function named(text2, leaf) {
-  const old = /^  m_Name: (.+)$/m.exec(text2)?.[1];
-  if (!old || /[<>:"/\\|?*\x00-\x1f]/.test(old)) throw new Error("Template\u306E\u8868\u793A\u540D\u3092\u78BA\u8A8D\u3067\u304D\u307E\u305B\u3093\u3002");
-  const name = old.includes("Parameter") ? old.replaceAll("Parameter", leaf) : leaf + "_" + old;
-  if (encoder4.encode(name + ".asset").length > 255) throw new Error("\u51FA\u529B\u30D5\u30A1\u30A4\u30EB\u540D\u304C\u9577\u3059\u304E\u307E\u3059\u3002\u30D1\u30E9\u30E1\u30FC\u30BF\u540D\u3092\u77ED\u304F\u3057\u3066\u304F\u3060\u3055\u3044\u3002");
-  return { name, text: text2.replace(/^  m_Name: .+$/m, "  m_Name: " + name) };
-}
-function replaceParameters(text2, leaf) {
-  return text2.replace(/^(\s+([A-Za-z_][A-Za-z0-9_]*): )([^\r\n]*)$/gm, (line, prefix, key, value2) => {
-    return key === "m_Name" ? line : prefix + value2.replaceAll("Parameter", leaf);
-  });
-}
-function clipDocument(clip, id2, leaf) {
-  let text2 = clip.text;
-  const oldNames = [...text2.matchAll(/^    attribute: (.*Parameter.*)$/gm)].map((m) => m[1]);
-  const hashes = /* @__PURE__ */ new Map();
-  for (const old of oldNames) hashes.set(String(crc323(old)), String(crc323(old.replaceAll("Parameter", leaf))));
-  text2 = replaceParameters(text2, leaf);
-  const section2 = /^  m_ClipBindingConstant:\n[\s\S]*?(?=^  [A-Za-z_])/m;
-  if (!section2.test(text2)) throw new Error("Template\u306EClip binding\u3092\u78BA\u8A8D\u3067\u304D\u307E\u305B\u3093\u3002");
-  text2 = text2.replace(section2, (part) => part.replace(/^(      attribute: )(\d+)$/gm, (line, prefix, hash2) => hashes.has(hash2) ? prefix + hashes.get(hash2) : line));
-  text2 = named(text2, leaf).text;
-  return text2.replace(/^%YAML 1\.1\n%TAG !u! tag:unity3d.com,2011:\n/, "").replace(/^--- !u!74 &7400000$/m, "--- !u!74 &" + id2);
-}
-function templateIndex(template) {
-  if (template?.schemaVersion !== 1 || template.templateRevision !== 2 || template.trees?.length !== 16 || template.clips?.length !== 20) throw new Error("Template\u306E\u7248\u307E\u305F\u306F\u69CB\u6210\u304C\u4E00\u81F4\u3057\u307E\u305B\u3093\u3002");
-  const index = /* @__PURE__ */ new Map();
-  for (const [kind, items2] of [["206", template.trees], ["74", template.clips]]) {
-    for (const item of items2) {
-      if (!guidPattern.test(item.guid) || index.has(item.guid) || typeof item.text !== "string" || [...item.text.matchAll(/^--- !u!/gm)].length !== 1 || !item.text.includes("--- !u!".concat(kind, " &").concat(kind === "206" ? "20600000" : "7400000", "\n"))) {
-        throw new Error("Template\u306E\u30A2\u30BB\u30C3\u30C8\u69CB\u9020\u304C\u4E00\u81F4\u3057\u307E\u305B\u3093\u3002");
-      }
-      index.set(item.guid, { ...item, kind });
-    }
-  }
-  return index;
-}
-function generatePackage(target, { template } = {}) {
-  const leaf = validateTarget(target), index = templateIndex(template), used = new Set(index.keys());
-  function newGuid() {
-    if (typeof globalThis.crypto?.getRandomValues !== "function") throw new Error("\u3053\u306E\u74B0\u5883\u3067\u306F\u65B0\u898FGUID\u3092\u751F\u6210\u3067\u304D\u307E\u305B\u3093\u3002");
-    for (let attempt = 0; attempt < 16; attempt++) {
-      const guid2 = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
-      if (!/^0+$/.test(guid2) && !used.has(guid2)) {
-        used.add(guid2);
-        return guid2;
-      }
-    }
-    throw new Error("\u65B0\u898FGUID\u304C\u91CD\u8907\u3057\u307E\u3057\u305F\u3002\u3082\u3046\u4E00\u5EA6\u751F\u6210\u3057\u3066\u304F\u3060\u3055\u3044\u3002");
-  }
-  const treeGuids = new Map(template.trees.map((t) => [t.guid, newGuid()]));
-  const folderPath = "Assets/" + leaf, childPath = folderPath + "/" + leaf + "_Child";
-  const assets = [folderPath, childPath].map((path) => {
-    const guid2 = newGuid();
-    return { guid: guid2, path, asset: null, meta: "fileFormatVersion: 2\nguid: ".concat(guid2, "\nfolderAsset: yes\nDefaultImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n") };
-  });
-  let clipCount = 0, clipReferences = 0, treeReferences = 0;
-  const paths = /* @__PURE__ */ new Set(), foundRoots = /* @__PURE__ */ new Set();
-  for (const tree of template.trees) {
-    const localClips = /* @__PURE__ */ new Map();
-    const sourceName = /^  m_Name: (.+)$/m.exec(tree.text)?.[1];
-    const isRoot = rootNames.has(sourceName);
-    if (isRoot) foundRoots.add(sourceName);
-    let text2 = replaceParameters(tree.text, leaf);
-    text2 = text2.replace(motion, (_line, prefix, id2, guid3) => {
-      const ref = index.get(guid3);
-      if (!ref || id2 !== (ref.kind === "74" ? "7400000" : "20600000")) throw new Error("Template\u306EMotion\u53C2\u7167\u304C\u89E3\u6C7A\u3067\u304D\u307E\u305B\u3093\u3002");
-      if (ref.kind === "206") {
-        treeReferences++;
-        return prefix + "{fileID: 20600000, guid: ".concat(treeGuids.get(guid3), ", type: 2}");
-      }
-      if (!localClips.has(guid3)) localClips.set(guid3, String(7400001 + localClips.size));
-      clipReferences++;
-      return prefix + "{fileID: ".concat(localClips.get(guid3), "}");
-    });
-    const renamed = named(text2, leaf);
-    text2 = renamed.text;
-    const path = (isRoot ? folderPath : childPath) + "/" + renamed.name + ".asset";
-    if (paths.has(path.toLowerCase())) throw new Error("\u51FA\u529B\u3059\u308BBlendTree\u540D\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059\u3002");
-    paths.add(path.toLowerCase());
-    for (const [guid3, id2] of localClips) {
-      text2 = text2.trimEnd() + "\n" + clipDocument(index.get(guid3), id2, leaf);
-      clipCount++;
-    }
-    const guid2 = treeGuids.get(tree.guid);
-    assets.push({ guid: guid2, path, asset: encoder4.encode(text2), meta: "fileFormatVersion: 2\nguid: ".concat(guid2, "\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: 20600000\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n") });
-  }
-  if (foundRoots.size !== 2 || clipCount !== 30 || clipReferences !== 34 || treeReferences !== 13) throw new Error("Template\u306ERoot\u307E\u305F\u306F\u53C2\u7167\u4EF6\u6570\u304C\u4E00\u81F4\u3057\u307E\u305B\u3093\u3002");
-  return { bytes: writeUnityPackage(assets), fileName: leaf + ".unitypackage", folderName: leaf, treeCount: 16, clipCount, buildId: BUILD_ID2 };
-}
-
-// docs/shared/compute/parameter-template-task.mjs
+import { generateTemplate, validateTarget, isTemplateResult, API_VERSION } from "../../parameter-template/api.mjs";
 var isTemplateTask = (type) => type === "parameter-template-generate";
-var encoder5 = new TextEncoder();
-var TEMPLATE_SHA256 = "d11aa908b86a75021a7be4ad0367a45cb3206346d1a370202a4d25aaab3be3f1";
-var size2 = (value2) => encoder5.encode(JSON.stringify(value2)).byteLength;
+var encoder4 = new TextEncoder();
+var size2 = (value2) => encoder4.encode(JSON.stringify(value2)).byteLength;
 function inspectTaskRequest6(r) {
   if (!r || r.protocolVersion !== 1 || r.taskVersion !== 1 || !isTemplateTask(r.taskType) || typeof r.jobId !== "string" || !/^[A-Za-z0-9_.:-]{1,64}$/.test(r.jobId) || !Number.isSafeInteger(r.inputRevision) || r.inputRevision < 0) throw new TypeError("Invalid Template task identity");
   validateTarget(r.payload?.target);
@@ -3636,9 +3520,9 @@ function inspectTaskRequest6(r) {
 }
 var snapshotTaskRequest6 = (r) => ({ ...r, payload: { target: r.payload.target } });
 var inputBytes6 = (r) => size2(r.payload);
-var kernelInfo6 = () => ({ requiresWasm: false, retainResult: false, sha256: null, variant: "javascript", abi: BUILD_ID2, key: BUILD_ID2 });
+var kernelInfo6 = () => ({ requiresWasm: false, retainResult: false, sha256: null, variant: "javascript", abi: "parameter-template-api-".concat(API_VERSION), key: "parameter-template-api-".concat(API_VERSION) });
 var resultShape6 = (r) => ({ kind: "parameter-template-package", target: r.payload.target });
-var validTaskResult6 = (taskType, shape, r) => isTemplateTask(taskType) && r?.kind === shape.kind && r.target === shape.target && r.buildId === BUILD_ID2 && r.bytes instanceof Uint8Array && r.bytes.byteLength > 0 && r.bytes.byteLength <= 128 * 1024 * 1024 && r.treeCount === 16 && r.clipCount === 30 && typeof r.fileName === "string" && r.fileName.endsWith(".unitypackage");
+var validTaskResult6 = (taskType, shape, r) => isTemplateTask(taskType) && r?.kind === shape.kind && isTemplateResult(r, { target: shape.target });
 var resultBytes6 = (r) => r?.bytes instanceof Uint8Array ? r.bytes.byteLength + 512 : 0;
 var freezeTaskResult6 = (r) => Object.freeze(r);
 var transferTaskInput6 = () => [];
@@ -3646,13 +3530,7 @@ var transferTaskResult6 = (r) => r?.bytes instanceof Uint8Array ? [r.bytes.buffe
 var prepareTaskModule6 = async () => null;
 var instantiateTask6 = () => null;
 async function executeTask6(request) {
-  const response = await fetch(new URL("../../parameter-template/template.json", import.meta.url));
-  if (!response.ok) throw new Error("Template HTTP ".concat(response.status));
-  const bytes2 = new Uint8Array(await response.arrayBuffer());
-  const hash2 = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes2)), (n) => n.toString(16).padStart(2, "0")).join("");
-  if (hash2 !== TEMPLATE_SHA256) throw new Error("Template\u306E\u7248\u3092\u78BA\u8A8D\u3067\u304D\u307E\u305B\u3093\u3002");
-  const template = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes2));
-  return { kind: "parameter-template-package", target: request.payload.target, ...generatePackage(request.payload.target, { template }) };
+  return { kind: "parameter-template-package", ...await generateTemplate(request.payload.target) };
 }
 var taskInputCount6 = () => 1;
 
