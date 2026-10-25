@@ -381,8 +381,8 @@ export function analyzeComposition(index,plan,kernel) {
             }
           }
           let retainedSubassets=false;
-          while(queue.length||(bi===0&&!retainedSubassets)) {
-            if(!queue.length&&bi===0&&!retainedSubassets) {
+          while(queue.length||((bi===0||output.retainWholeControllers===true)&&!retainedSubassets)) {
+            if(!queue.length&&(bi===0||output.retainWholeControllers===true)&&!retainedSubassets) {
               ctx.reachableIds=new Set(ctx.nodeIds);retainedSubassets=true;
               for(const d of index.assets.get(controller.guid).documents)if(d.fileId!==controller.fileId)queue.push(key(controller.guid,d.fileId));
               if(!queue.length)break;
@@ -422,7 +422,7 @@ export function analyzeComposition(index,plan,kernel) {
           }
           for(const id of ctx.reachableIds)ctx.usages.push(...usages(index.nodes.get(id),ctx.texts.get(id),kernel,knownNames));
           ctx.usageComplete=!preservedReferences.some(r=>r.blockId===config.id&&r.kind==='motion'&&ctx.reachableIds.has(r.sourceId));
-          ctx.parameterRetention=bi===0||!ctx.usageComplete?'all_declared':'used';
+          ctx.parameterRetention=bi===0||output.retainWholeControllers===true||!ctx.usageComplete?'all_declared':'used';
           const needed=new Set(ctx.usages.map(u=>u.name)),parameters=[];
           for(const p of declared)if(ctx.parameterRetention==='all_declared'||needed.has(p.name))parameters.push({...p,usage:ctx.usages.filter(u=>u.name===p.name)});
           for(const name of needed)if(!declarations.has(name)) {
@@ -652,7 +652,7 @@ export async function generateComposition(index,plan,analysis,animatorParameters
   for(const entry of motionVariants.values()) {
     const {node,asset,fileId,ctx}=entry;
     let text=replaceDocumentFileId(ctx.texts.get(node.id),fileId);
-    if(field(text,'m_ObjectHideFlags')!==null)text=setField(text,'m_ObjectHideFlags','0');
+    if(ctx.output.preserveObjectHideFlags!==true&&field(text,'m_ObjectHideFlags')!==null)text=setField(text,'m_ObjectHideFlags','0');
     asset.asset=enc.encode(PREAMBLE+rewrite(text,node,asset,ctx));
     // One copied Motion can serve several blocks; retain every source context
     // in the report even though its serialized bytes are written only once.

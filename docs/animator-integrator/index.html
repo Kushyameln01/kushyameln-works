@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Animator Integrator｜Kushyameln Works</title>
+  <meta name="description" content="ControllerとExpressionParametersを統合し、2つのBlendTreeと共通AvatarMaskを配置します。">
+  <link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="./integrator.css">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header><h1>Animator Integrator <small>試作</small></h1><span>Kushyameln Works</span></header>
+  <nav class="site-nav" aria-label="サイト内ナビゲーション"><a href="../">トップページ</a><a href="../animator-composer/">Animator Composer</a></nav>
+  <main>
+    <p class="intro">ControllerとExpressionParametersをまとめ、Binary・Smoothの専用Layerと共通Maskを配置します。素材はブラウザ内で処理します。</p>
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">1. 素材を読み込む</h2>
+      <label for="source-files">Unitypackage・Unityテキストアセットと.meta</label>
+      <input id="source-files" type="file" multiple accept=".unitypackage,.controller,.asset,.mask,.anim,.meta">
+      <p id="file-summary" class="small">Controller・ExpressionParameters・Mask・2つのBlendTreeと、その参照素材を用意してください。</p>
+      <button id="load" type="button" disabled>素材を読み込む</button>
+    </section>
+    <form id="integrator" novalidate hidden>
+      <fieldset id="selection" class="panel">
+        <legend>2. 統合する参照を指定</legend>
+        <div class="column-grid">
+          <section aria-labelledby="controllers-heading"><h3 id="controllers-heading">AnimatorController</h3><p class="small">上から順に統合します。先頭がベースです。</p><ol id="controller-list" class="asset-list"></ol></section>
+          <section aria-labelledby="expressions-heading"><h3 id="expressions-heading">ExpressionParameters</h3><ul id="expression-list" class="asset-list"></ul></section>
+        </div>
+        <section id="layer-conflicts" hidden><h3>重複するLayer名</h3><p class="small">既存Layerの重複名だけを調整してください。</p><div id="layer-name-fields"></div></section>
+        <label for="mask">全Layerに適用するAvatarMask</label><select id="mask" required></select>
+        <div class="column-grid tree-grid">
+          <div><label for="binary-tree">Root_BinaryParameter</label><select id="binary-tree" required></select></div>
+          <div><label for="smooth-tree">Root_Smooth_Parameter</label><select id="smooth-tree" required></select></div>
+        </div>
+        <label for="output-name">出力名</label><input id="output-name" value="IntegratedParameters" maxlength="64" pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,63}" autocomplete="off" spellcheck="false">
+        <details class="settings"><summary>固定設定と対象Playable</summary>
+          <label for="playable">対象Playable</label><select id="playable"><option>FX</option><option>Base</option><option>Additive</option><option>Gesture</option><option>Action</option><option>Sitting</option><option>TPose</option><option>IKPose</option></select>
+          <ul><li>全LayerのWeight：1</li><li>新設StateのWrite Defaults：ON</li><li>AlwaysOne：1（未登録ならFloatで追加）</li><li>EyeLidLeft・EyeLidRight・EyeLid：0.75（完全一致する登録に適用）</li></ul>
+        </details>
+        <button id="generate" type="submit">統合してunitypackageを生成</button>
+      </fieldset>
+    </form>
+    <div class="status-row"><p id="status" role="status" aria-live="polite" aria-atomic="true">素材を選択してください。</p><button id="cancel" type="button" class="secondary" hidden>取消</button></div>
+    <section id="issues" class="issues" aria-label="解決が必要な項目" hidden><h2>入力と設定を確認してください</h2><ul id="issue-list"></ul></section>
+    <section id="result" class="panel result" aria-labelledby="result-heading" hidden>
+      <h2 id="result-heading">生成結果</h2><p id="result-summary"></p>
+      <div class="actions"><a id="download" class="download">Unitypackageを保存</a><a id="report-download">検証記録JSONを保存</a></div>
+      <details><summary>生成記録</summary><pre id="report-view"></pre></details>
+      <p class="small">生成物の静的検査結果です。UnityへのImportと実動作は別途確認が必要です。</p>
+    </section>
+    <details class="scope"><summary>入力・出力と連携API</summary><p>参照素材を含むUnitypackage、または対応するUnityテキストアセットと.metaを読み込みます。元ファイルは変更しません。同名Parameterの定義が競合した場合は、該当する入力を確認してください。</p><p>出力は統合Controller、ExpressionParameters、指定Maskと必要な参照素材です。Installerは生成しません。</p><p>統括ツールからは <code>shared/animator-integrator/client.mjs</code> の <code>createAnimatorIntegrator()</code> を利用できます。画面と同じWorker・統合処理を呼び出します。</p></details>
+    <noscript><p>JavaScriptを有効にしてください。</p></noscript>
+  </main><script type="module" src="./app.mjs"></script>
+</body></html>
