@@ -1,8 +1,8 @@
 import {writeUnityPackage} from '../shared/ft/unity-package.mjs';
 
-export const BUILD_ID='parameter-template-1.0.0';
+export const BUILD_ID='parameter-template-1.1.0';
 const encoder=new TextEncoder();
-const sourceParameter=/^v2\/Parameter(0|1|2|4|8|Negative)?$/;
+const rootNames=new Set(['Binary_Root','Smooth_Root']);
 const motion=/^(    m_Motion: )\{fileID: (-?\d+), guid: ([0-9a-f]{32}), type: 2\}$/gm;
 const guidPattern=/^[0-9a-f]{32}$/;
 
@@ -33,21 +33,22 @@ function named(text,leaf){
   return {name,text:text.replace(/^  m_Name: .+$/m,'  m_Name: '+name)};
 }
 
-function replaceParameters(text,target){
-  return text.replace(/^(\s+(?:m_BlendParameterY?|m_DirectBlendParameter|attribute): )([^\r\n]*)$/gm,(line,prefix,value)=>{
-    const match=sourceParameter.exec(value);
-    return match?prefix+target+(match[1]??''):line;
+function replaceParameters(text,leaf){
+  // Replace scalar values, never Unity's field names. Display names are
+  // handled separately so a target containing "Parameter" is applied once.
+  return text.replace(/^(\s+([A-Za-z_][A-Za-z0-9_]*): )([^\r\n]*)$/gm,(line,prefix,key,value)=>{
+    return key==='m_Name'?line:prefix+value.replaceAll('Parameter',leaf);
   });
 }
 
-function clipDocument(clip,id,target,leaf){
+function clipDocument(clip,id,leaf){
   let text=clip.text;
   // Only the fixed template's Animator AAP attributes are renamed. Numeric
   // bindings are updated in their own section, never by global string replace.
-  const oldNames=[...text.matchAll(/^    attribute: (v2\/Parameter(?:0|1|2|4|8|Negative)?)$/gm)].map(m=>m[1]);
+  const oldNames=[...text.matchAll(/^    attribute: (.*Parameter.*)$/gm)].map(m=>m[1]);
   const hashes=new Map();
-  for(const old of oldNames)hashes.set(String(crc32(old)),String(crc32(target+(sourceParameter.exec(old)[1]??''))));
-  text=replaceParameters(text,target);
+  for(const old of oldNames)hashes.set(String(crc32(old)),String(crc32(old.replaceAll('Parameter',leaf))));
+  text=replaceParameters(text,leaf);
   const section=/^  m_ClipBindingConstant:\n[\s\S]*?(?=^  [A-Za-z_])/m;
   if(!section.test(text))throw new Error('TemplateのClip bindingを確認できません。');
   text=text.replace(section,part=>part.replace(/^(      attribute: )(\d+)$/gm,(line,prefix,hash)=>hashes.has(hash)?prefix+hashes.get(hash):line));
@@ -81,13 +82,19 @@ export function generatePackage(target,{template}={}){
     throw new Error('新規GUIDが重複しました。もう一度生成してください。');
   }
   const treeGuids=new Map(template.trees.map(t=>[t.guid,newGuid()]));
-  const folderGuid=newGuid();
-  const assets=[{guid:folderGuid,path:'Assets/'+leaf,asset:null,meta:`fileFormatVersion: 2\nguid: ${folderGuid}\nfolderAsset: yes\nDefaultImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n`}];
+  const folderPath='Assets/'+leaf,childPath=folderPath+'/'+leaf+'_Child';
+  const assets=[folderPath,childPath].map(path=>{
+    const guid=newGuid();
+    return {guid,path,asset:null,meta:`fileFormatVersion: 2\nguid: ${guid}\nfolderAsset: yes\nDefaultImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n`};
+  });
   let clipCount=0,clipReferences=0,treeReferences=0;
-  const paths=new Set();
+  const paths=new Set(),foundRoots=new Set();
   for(const tree of template.trees){
     const localClips=new Map();
-    let text=replaceParameters(tree.text,target);
+    const sourceName=/^  m_Name: (.+)$/m.exec(tree.text)?.[1];
+    const isRoot=rootNames.has(sourceName);
+    if(isRoot)foundRoots.add(sourceName);
+    let text=replaceParameters(tree.text,leaf);
     text=text.replace(motion,(_line,prefix,id,guid)=>{
       const ref=index.get(guid);
       if(!ref||id!==(ref.kind==='74'?'7400000':'20600000'))throw new Error('TemplateのMotion参照が解決できません。');
@@ -100,15 +107,15 @@ export function generatePackage(target,{template}={}){
       return prefix+`{fileID: ${localClips.get(guid)}}`;
     });
     const renamed=named(text,leaf);text=renamed.text;
-    const path='Assets/'+leaf+'/'+renamed.name+'.asset';
+    const path=(isRoot?folderPath:childPath)+'/'+renamed.name+'.asset';
     if(paths.has(path.toLowerCase()))throw new Error('出力するBlendTree名が重複しています。');paths.add(path.toLowerCase());
     for(const [guid,id] of localClips){
-      text=text.trimEnd()+'\n'+clipDocument(index.get(guid),id,target,leaf);
+      text=text.trimEnd()+'\n'+clipDocument(index.get(guid),id,leaf);
       clipCount++;
     }
     const guid=treeGuids.get(tree.guid);
     assets.push({guid,path,asset:encoder.encode(text),meta:`fileFormatVersion: 2\nguid: ${guid}\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: 20600000\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n`});
   }
-  if(clipCount!==30||clipReferences!==34||treeReferences!==13)throw new Error('Templateの参照件数が一致しません。');
+  if(foundRoots.size!==2||clipCount!==30||clipReferences!==34||treeReferences!==13)throw new Error('TemplateのRootまたは参照件数が一致しません。');
   return {bytes:writeUnityPackage(assets),fileName:leaf+'.unitypackage',folderName:leaf,treeCount:16,clipCount,buildId:BUILD_ID};
 }

@@ -29,10 +29,10 @@
     <details>
       <summary>変換内容と出力範囲</summary>
       <ul>
-        <li>v2/Parameter と、末尾が 0・1・2・4・8・Negative のパラメータ名を置換します。ClipのキーとBlendTreeの参照、表示名にも反映します。</li>
+        <li>Clip・BlendTree内の名前に含まれる Parameter を、入力した v2/ 以降の名前へ置換します。Smooth・Function・Proxy系、Clipのキー、表示名も対象です。</li>
         <li>BlendTreeは16個の独立したアセットとして保存し、直接参照するClipを各BlendTree内に格納します。BlendTree同士は外部参照を維持します。</li>
-        <li>出力先は Assets/パラメータ名 です。毎回新しいGUIDを発行し、表示名には付加しません。</li>
-        <li>Templateの計算値・接続と、Proxy・Function・Smooth系のパラメータ名は保持します。</li>
+        <li>出力先は Assets/パラメータ名 です。Binary_Root・Smooth_Rootの2つを直下に置き、他の14個は「パラメータ名_Child」フォルダに格納します。</li>
+        <li>毎回新しいGUIDを発行し、表示名には付加しません。Templateの計算値・接続は保持します。</li>
         <li>Controller・Expression・Prefabと、BlendTreeから参照されていないClipは含みません。UnityへのImportとVRChatでの実動作は未確認です。</li>
       </ul>
     </details>

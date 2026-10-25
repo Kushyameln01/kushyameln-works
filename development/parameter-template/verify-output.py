@@ -8,7 +8,12 @@ import gzip, hashlib, io, re, sys, tarfile, zlib
 from pathlib import Path
 
 original, generated, target = sys.argv[1:]
+assert target.startswith('v2/') and target[3:], 'Expected v2/<name>'
 leaf = target[3:]
+# Only these two source names remain directly under Assets/<leaf>. The source
+# also contains Decode_Root and Simple_Root; those belong in <leaf>_Child.
+root_names = {'Binary_Root', 'Smooth_Root'}
+folder_paths = {f'Assets/{leaf}', f'Assets/{leaf}/{leaf}_Child'}
 def read_package(path):
     raw=Path(path).read_bytes()
     with tarfile.open(fileobj=io.BytesIO(raw),mode='r:gz') as t:
@@ -30,25 +35,53 @@ def name(doc):return re.search(r'^  m_Name: (.+)$',doc,re.M)[1]
 def display(old):return old.replace('Parameter',leaf) if 'Parameter' in old else leaf+'_'+old
 def edges(doc):return list(re.finditer(r'^    m_Motion: \{fileID: (-?\d+)(?:, guid: ([0-9a-f]{32}), type: 2)?\}$',doc,re.M))
 def canonical(doc):return re.sub(r'^  m_Name: .+$','  m_Name: NAME',doc,flags=re.M).strip()
+def clip_attributes(doc):
+    attrs=re.findall(r'^    attribute: (.+)$',doc,re.M)
+    hashes=re.findall(r'^      attribute: (\d+)$',doc,re.M)
+    assert hashes and len(attrs)==2*len(hashes), 'Missing Clip curves or bindings'
+    assert attrs[:len(hashes)]==attrs[len(hashes):], 'Float/Editor curve attributes differ'
+    assert [str(zlib.crc32(v.encode())) for v in attrs[:len(hashes)]]==hashes, 'Stale Clip binding hash'
+    return attrs[:len(hashes)]
+
 def convert_fields(doc):
-    doc=re.sub(r'^(\s+(?:m_BlendParameterY?|m_DirectBlendParameter|attribute): )v2/Parameter(0|1|2|4|8|Negative)?$',lambda m:m[1]+target+(m[2] or ''),doc,flags=re.M)
-    old_hash=zlib.crc32(b'v2/Parameter')
-    doc=re.sub(r'^(      attribute: )'+str(old_hash)+r'$',lambda m:m[1]+str(zlib.crc32(target.encode())),doc,flags=re.M)
+    # Derive every hash update from the original Clip's actual attributes.
+    # This oracle reads the unitypackage, never the generator or template JSON.
+    hashes={}
+    if re.search(r'^--- !u!74 &',doc,re.M):
+        for old in clip_attributes(doc):
+            new=old.replace('Parameter',leaf)
+            old_hash=str(zlib.crc32(old.encode()))
+            new_hash=str(zlib.crc32(new.encode()))
+            assert old_hash not in hashes or hashes[old_hash]==new_hash
+            hashes[old_hash]=new_hash
+    converted=[]
+    for line in doc.splitlines(keepends=True):
+        # The fixed source uses scalar mapping values. Split at the first colon
+        # so keys such as m_BlendParameter and objectReferenceParameter survive.
+        key,colon,value=line.partition(':')
+        converted.append(key+colon+value.replace('Parameter',leaf) if colon else line)
+    doc=''.join(converted)
+    doc=re.sub(r'^(      attribute: )(\d+)$',lambda m:m[1]+hashes.get(m[2],m[2]),doc,flags=re.M)
+    if hashes:clip_attributes(doc)
     return doc
 
 _,_,_,src=read_package(original)
 raw,members,files,out=read_package(generated)
-assert len(out)==17 and not (set(src)&set(out))
-assert len({a['path'].lower() for a in out.values()})==17
+assert len(out)==18 and not (set(src)&set(out))
+assert len({a['path'].lower() for a in out.values()})==18
 tree_by_name={name(d[2]):(guid,a,d[2]) for guid,a in out.items() for d in docs(a['text']) if d[0]=='206'}
 assert len(tree_by_name)==16
+source_tree_names={name(d[2]) for a in src.values() for d in docs(a['text']) if d[0]=='206'}
+assert root_names<=source_tree_names
+assert set(tree_by_name)=={display(n) for n in source_tree_names}
 clip_edges=tree_edges=embedded=0
 for source_guid,source_asset in src.items():
     source_docs=docs(source_asset['text'])
     if not source_docs or source_docs[0][0]!='206':continue
     source=source_docs[0][2]
     out_guid,out_asset,tree=tree_by_name[display(name(source))]
-    assert out_asset['path']==f'Assets/{leaf}/{name(tree)}.asset'
+    directory=f'Assets/{leaf}' if name(source) in root_names else f'Assets/{leaf}/{leaf}_Child'
+    assert out_asset['path']==f'{directory}/{name(tree)}.asset', f'Wrong Tree directory: {name(source)}'
     assert 'mainObjectFileID: 20600000' in out_asset['meta']
     dest_docs=docs(out_asset['text'])
     assert sum(d[0]=='206' for d in dest_docs)==1
@@ -82,14 +115,16 @@ for source_guid,source_asset in src.items():
     for _,_,doc in dest_docs:
         assert not re.search(r'[0-9a-f]{32}',name(doc))
         if doc.startswith('--- !u!74'):
-            attrs=re.findall(r'^    attribute: (.+)$',doc,re.M)
-            hashes=re.findall(r'^      attribute: (\d+)$',doc,re.M)
-            assert attrs[:len(hashes)]==attrs[len(hashes):]
-            assert [str(zlib.crc32(v.encode())) for v in attrs[:len(hashes)]]==hashes
+            clip_attributes(doc)
 assert (embedded,clip_edges,tree_edges)==(30,34,13)
+actual_folder_paths=set()
 for guid,a in out.items():
     if 'folderAsset: yes' in a['meta']:
-        assert guid+'/asset' not in files and a['path']==f'Assets/{leaf}'
+        assert guid+'/asset' not in files
+        actual_folder_paths.add(a['path'])
+    else:
+        assert docs(a['text']) and docs(a['text'])[0][0]=='206'
+assert actual_folder_paths==folder_paths
 for m in members:
     assert m.mode==0o777 and m.uid==m.gid==m.mtime==0 and not m.uname and not m.gname
     if m.isfile():
@@ -98,5 +133,5 @@ assert [m.name for m in members]==sorted(m.name for m in members)
 assert raw[3]&8 and raw[10:23]==b'archtemp.tar\0' and raw[4:8]==b'\0'*4
 assert gzip.decompress(raw)[257:265]==b'ustar  \0'
 assert all(not b.endswith(b'\n') for n,b in files.items() if n.endswith('/pathname'))
-print(f'PASS independent Python: {leaf}; 16 Trees, 30 Clips, 47 references; exact allowed deltas, CRC32, fresh GUIDs and confirmed GNU/gzip recipe')
+print(f'PASS independent Python: {leaf}; 2 folders, 16 Trees (2 root/14 child), 30 Clips, 47 references; all Parameter value replacements, exact allowed deltas, CRC32, fresh GUIDs and confirmed GNU/gzip recipe')
 print('sha256='+hashlib.sha256(raw).hexdigest())

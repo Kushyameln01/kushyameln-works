@@ -23,15 +23,17 @@ for(const target of ['v2/EyeLidLeft','v2/JawOpen','v2/EyeLidLeft','v2/ParameterT
   const leaf=target.slice(3), entries=[...readUnityPackage(result.bytes).values()];
   assert.equal(result.folderName,leaf);assert.equal(result.fileName,leaf+'.unitypackage');
   assert.equal(result.treeCount,16);assert.equal(result.clipCount,30);
-  assert.equal(entries.length,17); // one folder plus sixteen Tree assets
-  const guids=new Set(entries.map(e=>e.guid));assert.equal(guids.size,17);
+  assert.equal(entries.length,18); // two folders plus sixteen Tree assets
+  const guids=new Set(entries.map(e=>e.guid));assert.equal(guids.size,18);
   for(const e of [...template.trees,...template.clips])assert(!guids.has(e.guid),'new assets need new GUIDs');
   if(firstGuids)for(const g of guids)assert(!firstGuids.has(g),'regeneration must allocate fresh GUIDs');
   firstGuids=guids;
-  let local=0,external=0,clipCount=0;
+  let local=0,external=0,clipCount=0,rootCount=0,childCount=0;
+  const folders=new Set(),fieldValues=new Set();
+  const expectedFields=new Set([...template.trees,...template.clips].flatMap(item=>[...item.text.matchAll(/^\s+(?:m_BlendParameterY?|m_DirectBlendParameter|attribute): ([^\r\n]+)$/gm)].map(m=>m[1].replaceAll('Parameter',leaf))));
   for(const e of entries){
     assert(e.path.startsWith('Assets/'+leaf));
-    if(e.asset===null){assert.equal(e.path,'Assets/'+leaf);continue;}
+    if(e.asset===null){folders.add(e.path);assert.match(e.meta,/folderAsset: yes/);continue;}
     const text=new TextDecoder().decode(e.asset);
     assert(!/^\s+(?:m_BlendParameterY?|m_DirectBlendParameter|attribute): v2\/Parameter(?:0|1|2|4|8|Negative)?$/m.test(text));
     assert.equal([...text.matchAll(/^--- !u!206 /gm)].length,1,'each file has only one Tree');
@@ -39,7 +41,12 @@ for(const target of ['v2/EyeLidLeft','v2/JawOpen','v2/EyeLidLeft','v2/ParameterT
     const ids=new Map(docs.map(d=>[d[2],d[1]]));assert.equal(ids.size,docs.length);
     clipCount+=docs.filter(d=>d[1]==='74').length;
     const name=/^  m_Name: (.+)$/m.exec(text)[1];
-    assert.equal(e.path,'Assets/'+leaf+'/'+name+'.asset');assert(name.includes(leaf));
+    const isRoot=name===leaf+'_Binary_Root'||name===leaf+'_Smooth_Root';
+    assert.equal(e.path,'Assets/'+leaf+'/'+(isRoot?'':leaf+'_Child/')+name+'.asset');assert(name.includes(leaf));
+    if(isRoot)rootCount++;else childCount++;
+    for(const m of text.matchAll(/^\s+(?:m_BlendParameterY?|m_DirectBlendParameter|attribute): ([^\r\n]+)$/gm)){
+      if(!/^\d+$/.test(m[1]))fieldValues.add(m[1]);
+    }
     for(const d of docs){
       const display=/^  m_Name: (.+)$/m.exec(d[3])[1];
       assert(display.includes(leaf));assert(!/[0-9a-f]{32}/.test(display));
@@ -53,6 +60,10 @@ for(const target of ['v2/EyeLidLeft','v2/JawOpen','v2/EyeLidLeft','v2/ParameterT
     if(name.endsWith('Binary_Root'))assert.equal([...text.matchAll(/m_Motion:/g)].length,5);
   }
   assert.equal(local,34);assert.equal(external,13);assert.equal(clipCount,30);
+  assert.equal(rootCount,2);assert.equal(childCount,14);
+  assert.deepEqual(folders,new Set(['Assets/'+leaf,'Assets/'+leaf+'/'+leaf+'_Child']));
+  assert.deepEqual(fieldValues,new Set([...expectedFields].filter(v=>!/^\d+$/.test(v))));
+  for(const value of ['Smooth/'+leaf+'_Function','Smooth/'+leaf,'Function/'+leaf,'Proxy/'+leaf+'/Output','Proxy/'+leaf+'/Cartesian'])assert(fieldValues.has(value),value);
   assert.equal(JSON.stringify(template),frozen,'generation may not mutate the template');
   if(process.env.DECODE_TEST_OUTPUT){
     await mkdir(process.env.DECODE_TEST_OUTPUT,{recursive:true});
