@@ -4,7 +4,7 @@ import {digest,validateAssets} from '../../animator-composer/lib/generate.mjs';
 import {readUnityPackage,writeUnityPackage,MAX_UNITY_PACKAGE_BYTES} from '../ft/unity-package.mjs';
 import {splitUnityDocuments,extractReferences,extractAnimatorLayers,canonicalizeObjectReferences,parseUnityScalar} from '../ft/unity-text.mjs';
 import {rootController,parameterText} from './root-layers.mjs';
-import {DEFAULT_VALUE_RULES,applyDefaultValueRules,EXPRESSION_SYNC_RULES,applyExpressionSyncRules} from './default-value-rules.mjs';
+import {DEFAULT_VALUE_RULES,applyDefaultValueRules,EXPRESSION_SYNC_RULES,applyExpressionSyncRules,EXPRESSION_BOOL_RULES,applyExpressionBoolRules} from './default-value-rules.mjs';
 import {VRCFT5_RANGE_SOURCE,VRCFT5_RANGE_SYNC_POLICY,applyVrcft5RangeSync} from './vrcft5-ranges.mjs';
 const enc=new TextEncoder(),dec=new TextDecoder('utf-8',{fatal:true});
 const issue=(code,message,detail={})=>({severity:'error',code,message,...detail});
@@ -48,10 +48,11 @@ function validateRequest(index,r){
  return issues;
 }
 function mergeExpressions(index,ids,{vrcft5RangeSync=true}={}){
- const rows=new Map(),issues=[],sources=[],changes=[],syncChanges=[],rangeMatches=[],rangeUnmatched=[],rangeChanges=[];let added=true;
+ const rows=new Map(),issues=[],sources=[],changes=[],syncChanges=[],boolChanges=[],rangeMatches=[],rangeUnmatched=[],rangeChanges=[];let added=true;
  for(const id of ids){let list;try{list=parseExpression(index.nodes.get(id).text);}catch(e){issues.push(issue('expression_unsupported',`${id}: ${e.message}`,{id}));continue;}
   const normalized=applyDefaultValueRules(list,{domain:'expression',sourceId:id});changes.push(...normalized.changes);
-  const synced=applyExpressionSyncRules(normalized.rows,{sourceId:id});syncChanges.push(...synced.changes);
+  const typed=applyExpressionBoolRules(normalized.rows,{sourceId:id});boolChanges.push(...typed.changes);issues.push(...typed.issues);
+  const synced=applyExpressionSyncRules(typed.rows,{sourceId:id});syncChanges.push(...synced.changes);
   const ranged=applyVrcft5RangeSync(synced.rows,{enabled:vrcft5RangeSync,sourceId:id});rangeMatches.push(...ranged.matches);rangeUnmatched.push(...ranged.unmatched);rangeChanges.push(...ranged.changes);
   for(const [i,original] of list.entries()){const row=ranged.rows[i];if(row.name==='AlwaysOne')added=false;
    const previous=rows.get(row.name);if(previous&&JSON.stringify(previous.row)!==JSON.stringify(row))issues.push(issue('expression_conflict',`${row.name}: Expression settings differ.`,{name:row.name,options:[previous,{sourceId:id,row}]}));else if(!previous)rows.set(row.name,{row,sourceId:id});
@@ -60,7 +61,7 @@ function mergeExpressions(index,ids,{vrcft5RangeSync=true}={}){
  }
  const ensured=applyDefaultValueRules([...rows.values()].map(x=>x.row),{domain:'expression',sourceId:'integrator',ensure:true});changes.push(...ensured.changes);
  const result=ensured.rows;try{serializeExpression(result);}catch(e){issues.push(issue('expression_invalid',e.message));}
- return {rows:result,issues,sources,changes,syncChanges,rangeMatches,rangeUnmatched,rangeChanges,added,bitCost:result.reduce((n,r)=>n+(r.networkSynced?(r.type==='Bool'?1:8):0),0)};
+ return {rows:result,issues,sources,changes,syncChanges,boolChanges,rangeMatches,rangeUnmatched,rangeChanges,added,bitCost:result.reduce((n,r)=>n+(r.networkSynced?(r.type==='Bool'?1:8):0),0)};
 }
 export async function integratePackages(packages,request,kernel){
  let index=indexPackages(packages),issues=validateRequest(index,request);if(issues.length)fail(issues);
@@ -96,7 +97,7 @@ export async function integratePackages(packages,request,kernel){
  const verified=validateAssets(assets),archive=writeUnityPackage(assets),reopened=[...readUnityPackage(archive).values()];
  if(reopened.length!==assets.length)throw Error('Roundtrip asset count mismatch.');
  for(const a of assets){const b=reopened.find(b=>b.guid===a.guid);if(!b||a.path!==b.path||a.meta!==b.meta||await digest(a.asset)!==await digest(b.asset))throw Error(`Roundtrip bytes mismatch: ${a.path}`);}
- const report={format:'animator-integrator-report-1',status:'PASS',inputHashes:index.inputHashes,request,controllers:built.controllers,parameters:expressions.rows,animatorParameters:[...merged.values()],bitCost:expressions.bitCost,expressionSources:expressions.sources,defaultValueRules:{rules:DEFAULT_VALUE_RULES,changes:ruleChanges},expressionSyncRules:{rules:EXPRESSION_SYNC_RULES,changes:expressions.syncChanges},vrcft5RangeSync:{enabled:request.vrcft5RangeSync??true,source:VRCFT5_RANGE_SOURCE,policy:VRCFT5_RANGE_SYNC_POLICY,matches:expressions.rangeMatches,unmatched:expressions.rangeUnmatched,changes:expressions.rangeChanges},alwaysOne:{type:'Float',defaultValue:1,animatorAdded:alwaysSources.length===0,animatorSources:alwaysSources,expressionAdded:expressions.added,newExpressionFlags:expressions.added?{saved:false,networkSynced:false}:null},composition:built.report,staticValidation:{status:'PASS',...verified,roundtripAssets:reopened.length,roundtripBytes:'PASS'},verification:{unityImport:'UNVERIFIED',runtime:'UNVERIFIED'},warnings:issues.filter(i=>i.severity!=='error')};
+ const report={format:'animator-integrator-report-1',status:'PASS',inputHashes:index.inputHashes,request,controllers:built.controllers,parameters:expressions.rows,animatorParameters:[...merged.values()],bitCost:expressions.bitCost,expressionSources:expressions.sources,defaultValueRules:{rules:DEFAULT_VALUE_RULES,changes:ruleChanges},expressionSyncRules:{rules:EXPRESSION_SYNC_RULES,changes:expressions.syncChanges},expressionBoolRules:{rules:EXPRESSION_BOOL_RULES,changes:expressions.boolChanges},vrcft5RangeSync:{enabled:request.vrcft5RangeSync??true,source:VRCFT5_RANGE_SOURCE,policy:VRCFT5_RANGE_SYNC_POLICY,matches:expressions.rangeMatches,unmatched:expressions.rangeUnmatched,changes:expressions.rangeChanges},alwaysOne:{type:'Float',defaultValue:1,animatorAdded:alwaysSources.length===0,animatorSources:alwaysSources,expressionAdded:expressions.added,newExpressionFlags:expressions.added?{saved:false,networkSynced:false}:null},composition:built.report,staticValidation:{status:'PASS',...verified,roundtripAssets:reopened.length,roundtripBytes:'PASS'},verification:{unityImport:'UNVERIFIED',runtime:'UNVERIFIED'},warnings:issues.filter(i=>i.severity!=='error')};
  return {archive,report,assetCount:assets.length,diagnosticAssets:assets};
 }
 

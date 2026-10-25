@@ -23,8 +23,8 @@ try {
 - 中間素材を`Root_DecodeSmooth`配下にまとめます。`Root_BinaryParameter`と`Root_Smooth_Parameter`のDirectTreeは正規化を無効にし、各childのWeightを`AlwaysOne`とします。
 - 全入力ControllerのLayerを保持し、その後ろへ2個のTree用Layerを追加します。Registrarが1名称につき1Layerの現行構成では、最終Layer数は名称数N＋3です。生成されたRegistrarの空Layerだけに、APIの`layerNames`で`Parameters 1`等の名前を明示指定します。
 - 新設2StateはWrite Defaults On、全LayerはWeight 1とSafetyを使用します。SafetyはHumanoid全13項目を不許可とし、Transform・ImportRigを追加しません。
-- 初期値はIntegratorの中央規則を使用します。`AlwaysOne`はAnimator・Expression両方でFloat・1、完全一致の`EyeLidLeft`・`EyeLidRight`・`EyeLid`はFloat・0.75です。ExpressionからAnimatorへ値を推測して反映する処理はありません。
-- 今回のRegistrar入力設定は`defaultValue:0, saved:false, networkSynced:false`です。IntegratorのBinary用規定により、末尾がASCII数字（0〜9）または大文字小文字を区別する`Negative`の名称はExpressionの同期Onになります。続いて、既定ONの独立したVRCFT5値域規定を適用し、`Negative`末尾について元Parameterの公式値域が0〜正の数なら同期Off、負の数〜正の数ならOn、値域不明なら追加変更なしとします。例えば`v2/EyeLidLeftNegative`はOff、`v2/JawXNegative`はOnです。Saved・型・初期値規定と数字末尾の同期Onは維持します。一括生成側に別の同期判定は追加しません。正規化後の同期量がVRChatの256bit上限を超える場合は生成を止め、エラーを表示します。
+- 初期値はIntegratorの中央規則を使用します。`AlwaysOne`はAnimator・Expression両方でFloat・1、完全一致の`v2/EyeLidLeft`・`v2/EyeLidRight`・`v2/EyeLid`はFloat・0.75です。ExpressionからAnimatorへ値を推測して反映する処理はありません。
+- 今回のRegistrar入力設定は`defaultValue:0, saved:false, networkSynced:false`です。IntegratorのBinary用規定により、末尾がASCII数字（0〜9）または大文字小文字を区別する`Negative`の名称はExpressionをBoolで登録し、同期Onになります。Animator側の型は保持します。Bool化では初期値の数値を保持し、0・1以外の初期値は丸めずエラーにします。続いて、既定ONの独立したVRCFT5値域規定を適用し、`Negative`末尾について元Parameterの公式値域が0〜正の数なら同期Off、負の数〜正の数ならOn、値域不明なら追加変更なしとします。例えば`v2/EyeLidLeftNegative`はOff、`v2/JawXNegative`はOnです。Saved・Binary対象外の型・初期値規定と数字末尾の同期Onは維持します。一括生成側に別の同期判定は追加しません。正規化後の同期量がVRChatの256bit上限を超える場合は生成を止め、エラーを表示します。
 
 保存名は`DecodeSmooth.unitypackage`です。統合Controllerは`Assets/DecodeSmooth/Controllers/DecodeSmooth_fx.controller`、ExpressionParametersは`Assets/DecodeSmooth/Parameters/ExpressionParameters.asset`にあります。ExpressionParametersには対応するVRChat SDKが必要です。
 
@@ -38,4 +38,4 @@ Layer0はEntryから空の子StateMachineへ進む構造です。AnimatorState�
 
 新規検証は`tools/decode-smooth-builder/test-*.mjs`です。`check-browser.py`は実ChromiumとPlaywrightで生成・保存・取消・両Worker方式を確認し、`verify-output.py`は生成コードをimportせずにgzip/tarとUnityテキストを独立に読み戻します。Unity実動作の試験とは別です。
 
-VRCFT5値域規定の追加について、Codex内では構文・公式規定データ・適用順・参照の静的確認のみ実施します。動的検証はCodex外部で行う前提です。外部実行用の`tools/decode-smooth-builder/test-integration.mjs`と`verify-output.py`も新規定に合わせています。旧Binary用規定だけで作られた出力を照合するときは、後者に`--binary-only`を指定してください。
+VRCFT5値域規定の追加について、Codex内では構文・公式規定データ・適用順・参照の静的確認のみ実施します。動的検証はCodex外部で行う前提です。外部実行用の`tools/decode-smooth-builder/test-integration.mjs`と`verify-output.py`も新規定に合わせています。VRCFT5値域規定をOFFにした出力を照合するときは、後者に`--binary-only`を指定してください。Binary対象のBool登録はOFF時も適用します。

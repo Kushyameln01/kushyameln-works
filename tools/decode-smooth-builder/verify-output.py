@@ -104,15 +104,19 @@ def verify(path,n,range_sync=True):
     assert set(expr)==set(animator)
     for name,body in expr.items():
         expected=expected_sync(name,range_sync)
-        assert field(body,'valueType')=='1' and field(body,'saved')=='0' and field(body,'networkSynced')==expected
-        if name in ('EyeLidLeft','EyeLidRight','EyeLid'):
+        binary=bool(re.search(r'(?:[0-9]|Negative)\Z',name))
+        assert field(body,'valueType')==('2' if binary else '1') and field(body,'saved')=='0' and field(body,'networkSynced')==expected
+        if binary:assert float(field(body,'defaultValue')) in (0,1)
+        assert float(field(body,'defaultValue'))==float(field(animator[name],'m_DefaultFloat'))
+        if name in ('v2/EyeLidLeft','v2/EyeLidRight','v2/EyeLid'):
             assert float(field(body,'defaultValue'))==.75 and float(field(animator[name],'m_DefaultFloat'))==.75
     counts={}
     for doc in all_objects.values():counts[doc['classId']]=counts.get(doc['classId'],0)+1
     assert counts['206']>=2
     synced=sum(field(body,'networkSynced')=='1' for body in expr.values())
-    assert synced*8<=256
-    return {'status':'PASS','file':path.name,'targetCount':n,'layers':len(layers),'animatorParameters':len(animator),'expressionParameters':len(expr),'syncedExpressions':synced,'syncBitCost':synced*8,'vrcft5RangeSyncEnabled':range_sync,'trees':counts['206'],'clips':counts.get('74',0),'assets':len(assets),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'externalSdkRefs':sorted(external)}
+    bits=sum(1 if field(body,'valueType')=='2' else 8 for body in expr.values() if field(body,'networkSynced')=='1')
+    assert bits<=256
+    return {'status':'PASS','file':path.name,'targetCount':n,'layers':len(layers),'animatorParameters':len(animator),'expressionParameters':len(expr),'syncedExpressions':synced,'syncBitCost':bits,'vrcft5RangeSyncEnabled':range_sync,'trees':counts['206'],'clips':counts.get('74',0),'assets':len(assets),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'externalSdkRefs':sorted(external)}
 
 def verify_mapping(path,report_path,source_dir):
     report=json.loads(report_path.read_text());output=objects(read_package(path));sources={}
@@ -178,7 +182,7 @@ def verify_mapping(path,report_path,source_dir):
     return {'mappedMotionAndMaskDocuments':compared,'mappingStatus':'PASS','sourceSettingsAndCurves':'PASS','sourceReachableMotionDocuments':len(reachable),'unreferencedSourceMotionDocumentsOmitted':len(motion_sources)-len(reachable)}
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('package',type=Path);parser.add_argument('--targets',type=int,required=True);parser.add_argument('--report',type=Path);parser.add_argument('--sources-dir',type=Path);parser.add_argument('--output',type=Path);parser.add_argument('--binary-only',action='store_true',help='Expect pre-range-rule Binary-only synchronization')
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('package',type=Path);parser.add_argument('--targets',type=int,required=True);parser.add_argument('--report',type=Path);parser.add_argument('--sources-dir',type=Path);parser.add_argument('--output',type=Path);parser.add_argument('--binary-only',action='store_true',help='Expect range sync OFF; Binary suffix types remain Bool')
     args=parser.parse_args();result=verify(args.package,args.targets,range_sync=not args.binary_only)
     if args.report:
         assert args.sources_dir,'--sources-dir is required with --report'

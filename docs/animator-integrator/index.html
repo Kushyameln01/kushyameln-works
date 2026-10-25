@@ -34,15 +34,15 @@
         </div>
         <label for="output-name">出力名</label><input id="output-name" value="IntegratedParameters" maxlength="64" pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,63}" autocomplete="off" spellcheck="false">
         <section class="sync-settings" aria-labelledby="sync-rules-heading">
-          <h3 id="sync-rules-heading">ExpressionParametersの同期規定</h3>
-          <p class="small">BinaryParameters用：末尾が数字（0〜9）またはNegativeのParameterを同期ONにします。</p>
+          <h3 id="sync-rules-heading">ExpressionParametersの型・同期規定</h3>
+          <p class="small">BinaryParameters用：末尾が数字（0〜9）またはNegativeのParameterをBoolで登録し、同期ONにします。Animator側の型は保持します。</p>
           <label class="check-option" for="vrcft5-range-sync"><input id="vrcft5-range-sync" type="checkbox" checked aria-describedby="range-sync-help"><span>VRCFT5のParameter範囲に基づく規定を追加適用</span></label>
           <p id="range-sync-help" class="small">Negative末尾のParameterは、元のParameterの公式値域が0〜正の数なら同期OFF、負の数〜正の数ならONにします。値域が不明なら、この規定では変更しません。Binary用規定の後に適用します。チェックを外すとBinary用規定のみになります。</p>
           <p class="small">参照：<a href="https://docs.vrcft.io/docs/tutorial-avatars/tutorial-avatars-extras/parameters" target="_blank" rel="noopener noreferrer">VRCFT5 Parameter範囲</a> · <a href="https://docs.vrcft.io/docs/tutorial-avatars/tutorial-avatars-extras/parameters/types/binary" target="_blank" rel="noopener noreferrer">Binary Parameters</a></p>
         </section>
         <details class="settings"><summary>固定設定と対象Playable</summary>
           <label for="playable">対象Playable</label><select id="playable"><option>FX</option><option>Base</option><option>Additive</option><option>Gesture</option><option>Action</option><option>Sitting</option><option>TPose</option><option>IKPose</option></select>
-          <ul><li>全LayerのWeight：1</li><li>新設StateのWrite Defaults：ON</li><li>AlwaysOne：1（未登録ならFloatで追加）</li><li>EyeLidLeft・EyeLidRight・EyeLid：0.75（完全一致する登録に適用）</li><li>Savedと、上記の同期規定の対象外にある同期設定は保持します。</li></ul>
+          <ul><li>全LayerのWeight：1</li><li>新設StateのWrite Defaults：ON</li><li>AlwaysOne：1（未登録ならFloatで追加）</li><li>v2/EyeLidLeft・v2/EyeLidRight・v2/EyeLid：0.75（完全一致する登録に適用）</li><li>Savedと、上記の同期規定の対象外にある同期設定は保持します。</li></ul>
         </details>
         <button id="generate" type="submit">統合してunitypackageを生成</button>
       </fieldset>
