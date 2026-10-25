@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="複数のParameter名からDecode / Smoothのunitypackageをまとめて生成する試作ツール。">
+  <title>Decode / Smooth 一括生成｜Kushyameln Works</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <a class="brand" href="../">Kushyameln <span>Works</span></a>
+      <nav class="site-nav" aria-label="サイト内ナビゲーション">
+        <a href="../">トップ</a>
+        <a href="../github/">ツール一覧</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="heading">
+        <h1>Decode / Smooth 一括生成</h1>
+        <span class="badge">試作</span>
+      </div>
+      <p class="intro">パラメータ名を入力して、unitypackageをまとめて生成します。</p>
+
+      <form id="generator" novalidate>
+        <label for="names">パラメータ名</label>
+        <p id="input-help" class="input-help">1行に1つ入力してください。</p>
+        <textarea id="names" name="names" rows="7" placeholder="v2/EyeLidLeft&#10;v2/EyeLidRight" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="input-help status" required></textarea>
+        <div class="actions">
+          <button id="generate" type="submit">生成する <span aria-hidden="true">→</span></button>
+          <button id="cancel" class="secondary" type="button" hidden>取消</button>
+        </div>
+      </form>
+
+      <div class="status-area">
+        <p id="status" role="status" aria-live="polite" aria-atomic="true">パラメータ名を入力してください。</p>
+        <progress id="progress" aria-label="生成の進み具合" hidden></progress>
+      </div>
+
+      <details id="conflicts" hidden>
+        <summary>確認が必要な内容</summary>
+        <pre id="conflict-details"></pre>
+      </details>
+
+      <section id="result" aria-labelledby="result-title" hidden>
+        <div class="result-copy">
+          <h2 id="result-title">保存できます</h2>
+          <p id="summary"></p>
+        </div>
+        <a id="download" class="download">unitypackageを保存 <span aria-hidden="true">↓</span></a>
+        <p class="prototype-note">試作版のため、Unityでの動作は未確認です。</p>
+      </section>
+
+      <noscript><p class="noscript">このツールを使うにはJavaScriptを有効にしてください。</p></noscript>
+    </main>
+  </div>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

@@ -15,5 +15,8 @@ for(const [before,after]of [
   if(source.split(before).length!==2)throw Error('Unexpected kernel URL in generated bundle: '+before);
   source=source.replace(before,after);
 }
+// The Template adapter already lives in shared/compute, the bundle directory.
+// Assert that its literal resource URL survives bundling without relocation.
+if(source.split('new URL("../../parameter-template/template.json", import.meta.url)').length!==2)throw Error('Unexpected Template URL in generated bundle');
 await writeFile(output,source);
 console.log('Preserved knowledge/Unity registry resource locations.');

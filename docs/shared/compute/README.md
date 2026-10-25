@@ -40,7 +40,7 @@ try {
 
 ## タスク別のWASM・搬送・保持
 
-GitHub Pages本実装で登録される6タスクです。structured cloneはWorker境界のコピー、transferはプール所有のArrayBufferの所有権移動です。入力時にコピーするため、呼出し側の元バッファはdetachしません。
+GitHub Pagesで登録されるタスクのうち、FT・Unity解析・Template生成の搬送契約です。[Parameter Registrar](../parameter-registrar/README.md)と[技術情報ライブラリ](../technical-library/README.md)の追加タスクは各仕様を参照してください。structured cloneはWorker境界のコピー、transferはプール所有のArrayBufferの所有権移動です。入力時にコピーするため、呼出し側の元バッファはdetachしません。
 
 | taskType（taskVersionは全て1） | 実処理 | 入力の搬送 | 結果の搬送 | 終端結果の保持・回収 |
 | --- | --- | --- | --- | --- |
@@ -50,6 +50,9 @@ GitHub Pages本実装で登録される6タスクです。structured cloneはWor
 | `unity-expand` | JSのみ | 所有するbytes.bufferをtransfer | 展開した各ArrayBufferをtransfer | delivery-only。Promise |
 | `unity-parse` | JSのみ | 所有するbytes.bufferをtransfer | 構造化した解析結果をclone | delivery-only。Promise |
 | `unity-parse-batch` | JSのみ | 所有する各bytes.bufferをtransfer | 構造化した解析結果群をclone | delivery-only。Promise |
+| `parameter-template-generate` | 既存Template生成（JSのみ） | `payload: {target}` をclone | unitypackageのbytesをtransfer | delivery-only。Promise |
+
+`parameter-template-generate`は既存Templateと同じ名称検査を使い、同一オリジンの`parameter-template/template.json`を固定SHA256で照合してから生成します。正常時の`result`は`{kind:'parameter-template-package', target, bytes:Uint8Array, fileName, folderName, treeCount, clipCount, buildId}`です。`getResult`には保持しないためPromiseから回収してください。Module版とbundle版のWorkerに登録しています。[Decode / Smooth 一括生成](../../decode-smooth-builder/)がこのタスクとRegistrarを利用します。
 
 FTは最大262144 masks、weightsは1〜5個の**正の有限数**で合計も有限。maskは0以上 `2 ** weights.length` 未満の整数です。論理入力は数値1要素8byteで数えます。Unityのsnapshot・ファイル・アーカイブ上限、対応形式、結果の読取りは [Unity解析README](../unity-analysis/README.md) を参照してください。
 

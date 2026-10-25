@@ -2031,14 +2031,14 @@ function gunzipBounded(bytes2) {
   }
   return output;
 }
-function headerString(header2, start, size2) {
-  const field2 = header2.subarray(start, start + size2);
+function headerString(header2, start, size3) {
+  const field2 = header2.subarray(start, start + size3);
   const nul = field2.indexOf(0);
   if (nul >= 0 && !isZero(field2.subarray(nul))) fail("malformed tar string padding");
   return text(nul < 0 ? field2 : field2.subarray(0, nul), "tar header");
 }
-function octal(header2, start, size2, label) {
-  const raw = text(header2.subarray(start, start + size2), "tar ".concat(label));
+function octal(header2, start, size3, label) {
+  const raw = text(header2.subarray(start, start + size3), "tar ".concat(label));
   if (!/^[\x00 ]*[0-7]*[\x00 ]*$/.test(raw)) fail("invalid tar ".concat(label));
   const value2 = Number.parseInt(raw.replace(/[\x00 ]/g, "") || "0", 8);
   if (!Number.isSafeInteger(value2)) fail("tar ".concat(label, " is too large"));
@@ -2065,10 +2065,10 @@ function readUnityPackage(bytes2) {
     const magic = text(header2.subarray(257, 265), "tar magic");
     if (magic !== "ustar  \0" && magic !== POSIX_MAGIC) fail("unsupported tar format");
     if (magic === POSIX_MAGIC && !isZero(header2.subarray(345, 500))) fail("tar prefixes are not supported");
-    for (const [start2, size3, label] of [[100, 8, "mode"], [108, 8, "uid"], [116, 8, "gid"], [136, 12, "mtime"]]) {
-      octal(header2, start2, size3, label);
+    for (const [start2, size4, label] of [[100, 8, "mode"], [108, 8, "uid"], [116, 8, "gid"], [136, 12, "mtime"]]) {
+      octal(header2, start2, size4, label);
     }
-    const size2 = octal(header2, 124, 12, "size");
+    const size3 = octal(header2, 124, 12, "size");
     const name = headerString(header2, 0, 100);
     if (!isZero(header2.subarray(157, 257))) fail("tar links are not supported");
     const type = header2[156];
@@ -2082,16 +2082,16 @@ function readUnityPackage(bytes2) {
     if (memberNames.has(memberKey)) fail("duplicate tar member");
     memberNames.add(memberKey);
     if (memberNames.size > 10240 || groups.size > 2048) fail("PACKAGE_ENTRY_LIMIT");
-    if (directory && size2 !== 0) fail("tar directory has data");
-    if (size2 > MAX_UNITY_PACKAGE_BYTES) fail("tar member exceeds 64 MiB");
+    if (directory && size3 !== 0) fail("tar directory has data");
+    if (size3 > MAX_UNITY_PACKAGE_BYTES) fail("tar member exceeds 64 MiB");
     const start = offset + BLOCK;
-    const padded = Math.ceil(size2 / BLOCK) * BLOCK;
+    const padded = Math.ceil(size3 / BLOCK) * BLOCK;
     if (start + padded > tar.length) fail("truncated tar member");
-    if (!isZero(tar.subarray(start + size2, start + padded))) fail("nonzero tar member padding");
+    if (!isZero(tar.subarray(start + size3, start + padded))) fail("nonzero tar member padding");
     let group = groups.get(guid2);
     if (!group) groups.set(guid2, group = { directory: false, files: /* @__PURE__ */ new Map() });
     if (directory) group.directory = true;
-    else group.files.set(match[2], tar.subarray(start, start + size2));
+    else group.files.set(match[2], tar.subarray(start, start + size3));
     offset = start + padded;
   }
   if (!ended) fail("tar end marker is missing");
@@ -2125,8 +2125,8 @@ function zipHeaders(bytes2) {
     break;
   }
   if (end < 0) throw new Error("ZIP\u7D42\u7AEF\u304C\u4E0D\u6B63");
-  const count = v.getUint16(end + 10, true), size2 = v.getUint32(end + 12, true), offset = v.getUint32(end + 16, true);
-  if (v.getUint16(end + 4, true) || v.getUint16(end + 6, true) || count !== v.getUint16(end + 8, true) || count > MAX_FILES || count === 65535 || offset + size2 !== end) throw new Error("\u8907\u6570disk/ZIP64/\u4EF6\u6570\u8D85\u904EZIP\u306F\u672A\u5BFE\u5FDC");
+  const count = v.getUint16(end + 10, true), size3 = v.getUint32(end + 12, true), offset = v.getUint32(end + 16, true);
+  if (v.getUint16(end + 4, true) || v.getUint16(end + 6, true) || count !== v.getUint16(end + 8, true) || count > MAX_FILES || count === 65535 || offset + size3 !== end) throw new Error("\u8907\u6570disk/ZIP64/\u4EF6\u6570\u8D85\u904EZIP\u306F\u672A\u5BFE\u5FDC");
   let pos = offset, total = 0;
   const entries = [];
   for (let i = 0; i < count; i++) {
@@ -2161,7 +2161,7 @@ function crc322(bytes2) {
 }
 function readFiles(inputs) {
   if (!Array.isArray(inputs) || inputs.length > MAX_FILES) throw new Error("\u5165\u529B\u4EF6\u6570\u8D85\u904E");
-  let inputBytes6 = 0, expanded = 0, entryCount = 0;
+  let inputBytes7 = 0, expanded = 0, entryCount = 0;
   const result = [], seen = /* @__PURE__ */ new Map();
   function accept(path, bytes2, directory = false) {
     safePath2(directory ? path.slice(0, -1) : path);
@@ -2180,8 +2180,8 @@ function readFiles(inputs) {
   for (const input of inputs) {
     safePath2(input.path);
     if (!(input.bytes instanceof Uint8Array)) throw new Error("\u5165\u529B\u30D0\u30A4\u30C8\u4E0D\u6B63");
-    inputBytes6 += input.bytes.length;
-    if (inputBytes6 > MAX_IN) throw new Error("\u5165\u529B32MiB\u8D85\u904E");
+    inputBytes7 += input.bytes.length;
+    if (inputBytes7 > MAX_IN) throw new Error("\u5165\u529B32MiB\u8D85\u904E");
     if (/\.unitypackage$/i.test(input.path)) {
       for (const e of readUnityPackage(input.bytes).values()) {
         if (e.asset) accept(e.path, e.asset);
@@ -3124,10 +3124,10 @@ function checkCollection2(entries) {
 function putAscii(target, start, string) {
   for (let i = 0; i < string.length; i++) target[start + i] = string.charCodeAt(i);
 }
-function putOctal(target, start, size2, value2) {
+function putOctal(target, start, size3, value2) {
   const valueText = value2.toString(8);
-  if (valueText.length > size2 - 1) fail2("tar number overflow");
-  putAscii(target, start, valueText.padStart(size2 - 1, "0") + "\0");
+  if (valueText.length > size3 - 1) fail2("tar number overflow");
+  putAscii(target, start, valueText.padStart(size3 - 1, "0") + "\0");
 }
 function tarHeader(name, length, directory) {
   const header2 = new Uint8Array(BLOCK2);
@@ -3478,17 +3478,195 @@ async function executeTask5(r, kernel) {
 }
 var taskInputCount5 = (r) => r.taskType === "parameter-collect" ? r.payload.documents.length : r.payload.parameters.length;
 
+// docs/shared/compute/parameter-template-task.mjs
+var parameter_template_task_exports = {};
+__export(parameter_template_task_exports, {
+  executeTask: () => executeTask6,
+  freezeTaskResult: () => freezeTaskResult6,
+  inputBytes: () => inputBytes6,
+  inspectTaskRequest: () => inspectTaskRequest6,
+  instantiateTask: () => instantiateTask6,
+  isTemplateTask: () => isTemplateTask,
+  kernelInfo: () => kernelInfo6,
+  prepareTaskModule: () => prepareTaskModule6,
+  resultBytes: () => resultBytes6,
+  resultShape: () => resultShape6,
+  snapshotTaskRequest: () => snapshotTaskRequest6,
+  taskInputCount: () => taskInputCount6,
+  transferTaskInput: () => transferTaskInput6,
+  transferTaskResult: () => transferTaskResult6,
+  validTaskResult: () => validTaskResult6
+});
+
+// docs/parameter-template/core.mjs
+var BUILD_ID2 = "parameter-template-1.1.0";
+var encoder4 = new TextEncoder();
+var rootNames = /* @__PURE__ */ new Set(["Binary_Root", "Smooth_Root"]);
+var motion = /^(    m_Motion: )\{fileID: (-?\d+), guid: ([0-9a-f]{32}), type: 2\}$/gm;
+var guidPattern = /^[0-9a-f]{32}$/;
+function validateTarget(target) {
+  if (typeof target !== "string" || !/^v2\/[\p{L}\p{N}_-]{1,120}$/u.test(target)) {
+    throw new Error("v2/ \u306B\u7D9A\u3051\u3066\u3001\u6587\u5B57\u30FB\u6570\u5B57\u30FB_\u30FB- \u306E\u540D\u524D\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\uFF08120\u6587\u5B57\u307E\u3067\uFF09\u3002");
+  }
+  const name = target.slice(3);
+  if (name === "Parameter") throw new Error("Parameter\u3092\u3001\u751F\u6210\u3059\u308B\u30D1\u30E9\u30E1\u30FC\u30BF\u540D\u3078\u5909\u66F4\u3057\u3066\u304F\u3060\u3055\u3044\u3002");
+  if (/^(?:CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])$/i.test(name)) throw new Error("\u3053\u306E\u540D\u524D\u306F\u51FA\u529B\u30D5\u30A9\u30EB\u30C0\u306B\u4F7F\u7528\u3067\u304D\u307E\u305B\u3093\u3002");
+  return name;
+}
+function crc323(value2) {
+  let crc2 = 4294967295;
+  for (const byte of encoder4.encode(value2)) {
+    crc2 ^= byte;
+    for (let n = 0; n < 8; n++) crc2 = crc2 >>> 1 ^ (crc2 & 1 ? 3988292384 : 0);
+  }
+  return (crc2 ^ 4294967295) >>> 0;
+}
+function named(text2, leaf) {
+  const old = /^  m_Name: (.+)$/m.exec(text2)?.[1];
+  if (!old || /[<>:"/\\|?*\x00-\x1f]/.test(old)) throw new Error("Template\u306E\u8868\u793A\u540D\u3092\u78BA\u8A8D\u3067\u304D\u307E\u305B\u3093\u3002");
+  const name = old.includes("Parameter") ? old.replaceAll("Parameter", leaf) : leaf + "_" + old;
+  if (encoder4.encode(name + ".asset").length > 255) throw new Error("\u51FA\u529B\u30D5\u30A1\u30A4\u30EB\u540D\u304C\u9577\u3059\u304E\u307E\u3059\u3002\u30D1\u30E9\u30E1\u30FC\u30BF\u540D\u3092\u77ED\u304F\u3057\u3066\u304F\u3060\u3055\u3044\u3002");
+  return { name, text: text2.replace(/^  m_Name: .+$/m, "  m_Name: " + name) };
+}
+function replaceParameters(text2, leaf) {
+  return text2.replace(/^(\s+([A-Za-z_][A-Za-z0-9_]*): )([^\r\n]*)$/gm, (line, prefix, key, value2) => {
+    return key === "m_Name" ? line : prefix + value2.replaceAll("Parameter", leaf);
+  });
+}
+function clipDocument(clip, id2, leaf) {
+  let text2 = clip.text;
+  const oldNames = [...text2.matchAll(/^    attribute: (.*Parameter.*)$/gm)].map((m) => m[1]);
+  const hashes = /* @__PURE__ */ new Map();
+  for (const old of oldNames) hashes.set(String(crc323(old)), String(crc323(old.replaceAll("Parameter", leaf))));
+  text2 = replaceParameters(text2, leaf);
+  const section2 = /^  m_ClipBindingConstant:\n[\s\S]*?(?=^  [A-Za-z_])/m;
+  if (!section2.test(text2)) throw new Error("Template\u306EClip binding\u3092\u78BA\u8A8D\u3067\u304D\u307E\u305B\u3093\u3002");
+  text2 = text2.replace(section2, (part) => part.replace(/^(      attribute: )(\d+)$/gm, (line, prefix, hash2) => hashes.has(hash2) ? prefix + hashes.get(hash2) : line));
+  text2 = named(text2, leaf).text;
+  return text2.replace(/^%YAML 1\.1\n%TAG !u! tag:unity3d.com,2011:\n/, "").replace(/^--- !u!74 &7400000$/m, "--- !u!74 &" + id2);
+}
+function templateIndex(template) {
+  if (template?.schemaVersion !== 1 || template.trees?.length !== 16 || template.clips?.length !== 20) throw new Error("Template\u306E\u7248\u307E\u305F\u306F\u69CB\u6210\u304C\u4E00\u81F4\u3057\u307E\u305B\u3093\u3002");
+  const index = /* @__PURE__ */ new Map();
+  for (const [kind, items2] of [["206", template.trees], ["74", template.clips]]) {
+    for (const item of items2) {
+      if (!guidPattern.test(item.guid) || index.has(item.guid) || typeof item.text !== "string" || [...item.text.matchAll(/^--- !u!/gm)].length !== 1 || !item.text.includes("--- !u!".concat(kind, " &").concat(kind === "206" ? "20600000" : "7400000", "\n"))) {
+        throw new Error("Template\u306E\u30A2\u30BB\u30C3\u30C8\u69CB\u9020\u304C\u4E00\u81F4\u3057\u307E\u305B\u3093\u3002");
+      }
+      index.set(item.guid, { ...item, kind });
+    }
+  }
+  return index;
+}
+function generatePackage(target, { template } = {}) {
+  const leaf = validateTarget(target), index = templateIndex(template), used = new Set(index.keys());
+  function newGuid() {
+    if (typeof globalThis.crypto?.getRandomValues !== "function") throw new Error("\u3053\u306E\u74B0\u5883\u3067\u306F\u65B0\u898FGUID\u3092\u751F\u6210\u3067\u304D\u307E\u305B\u3093\u3002");
+    for (let attempt = 0; attempt < 16; attempt++) {
+      const guid2 = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
+      if (!/^0+$/.test(guid2) && !used.has(guid2)) {
+        used.add(guid2);
+        return guid2;
+      }
+    }
+    throw new Error("\u65B0\u898FGUID\u304C\u91CD\u8907\u3057\u307E\u3057\u305F\u3002\u3082\u3046\u4E00\u5EA6\u751F\u6210\u3057\u3066\u304F\u3060\u3055\u3044\u3002");
+  }
+  const treeGuids = new Map(template.trees.map((t) => [t.guid, newGuid()]));
+  const folderPath = "Assets/" + leaf, childPath = folderPath + "/" + leaf + "_Child";
+  const assets = [folderPath, childPath].map((path) => {
+    const guid2 = newGuid();
+    return { guid: guid2, path, asset: null, meta: "fileFormatVersion: 2\nguid: ".concat(guid2, "\nfolderAsset: yes\nDefaultImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n") };
+  });
+  let clipCount = 0, clipReferences = 0, treeReferences = 0;
+  const paths = /* @__PURE__ */ new Set(), foundRoots = /* @__PURE__ */ new Set();
+  for (const tree of template.trees) {
+    const localClips = /* @__PURE__ */ new Map();
+    const sourceName = /^  m_Name: (.+)$/m.exec(tree.text)?.[1];
+    const isRoot = rootNames.has(sourceName);
+    if (isRoot) foundRoots.add(sourceName);
+    let text2 = replaceParameters(tree.text, leaf);
+    text2 = text2.replace(motion, (_line, prefix, id2, guid3) => {
+      const ref = index.get(guid3);
+      if (!ref || id2 !== (ref.kind === "74" ? "7400000" : "20600000")) throw new Error("Template\u306EMotion\u53C2\u7167\u304C\u89E3\u6C7A\u3067\u304D\u307E\u305B\u3093\u3002");
+      if (ref.kind === "206") {
+        treeReferences++;
+        return prefix + "{fileID: 20600000, guid: ".concat(treeGuids.get(guid3), ", type: 2}");
+      }
+      if (!localClips.has(guid3)) localClips.set(guid3, String(7400001 + localClips.size));
+      clipReferences++;
+      return prefix + "{fileID: ".concat(localClips.get(guid3), "}");
+    });
+    const renamed = named(text2, leaf);
+    text2 = renamed.text;
+    const path = (isRoot ? folderPath : childPath) + "/" + renamed.name + ".asset";
+    if (paths.has(path.toLowerCase())) throw new Error("\u51FA\u529B\u3059\u308BBlendTree\u540D\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059\u3002");
+    paths.add(path.toLowerCase());
+    for (const [guid3, id2] of localClips) {
+      text2 = text2.trimEnd() + "\n" + clipDocument(index.get(guid3), id2, leaf);
+      clipCount++;
+    }
+    const guid2 = treeGuids.get(tree.guid);
+    assets.push({ guid: guid2, path, asset: encoder4.encode(text2), meta: "fileFormatVersion: 2\nguid: ".concat(guid2, "\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: 20600000\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n") });
+  }
+  if (foundRoots.size !== 2 || clipCount !== 30 || clipReferences !== 34 || treeReferences !== 13) throw new Error("Template\u306ERoot\u307E\u305F\u306F\u53C2\u7167\u4EF6\u6570\u304C\u4E00\u81F4\u3057\u307E\u305B\u3093\u3002");
+  return { bytes: writeUnityPackage(assets), fileName: leaf + ".unitypackage", folderName: leaf, treeCount: 16, clipCount, buildId: BUILD_ID2 };
+}
+
+// docs/shared/compute/parameter-template-task.mjs
+var isTemplateTask = (type) => type === "parameter-template-generate";
+var encoder5 = new TextEncoder();
+var TEMPLATE_SHA256 = "047a4f057b832a73a40017a389d83b6e6fb0a5572e51fa1dc76766c4b3e7e880";
+var size2 = (value2) => encoder5.encode(JSON.stringify(value2)).byteLength;
+function inspectTaskRequest6(r) {
+  if (!r || r.protocolVersion !== 1 || r.taskVersion !== 1 || !isTemplateTask(r.taskType) || typeof r.jobId !== "string" || !/^[A-Za-z0-9_.:-]{1,64}$/.test(r.jobId) || !Number.isSafeInteger(r.inputRevision) || r.inputRevision < 0) throw new TypeError("Invalid Template task identity");
+  validateTarget(r.payload?.target);
+  const timeoutMs = r.limits?.timeoutMs ?? 3e4;
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 3e4) throw new RangeError("Invalid Template task timeout");
+  return {
+    protocolVersion: 1,
+    taskType: r.taskType,
+    taskVersion: 1,
+    jobId: r.jobId,
+    inputRevision: r.inputRevision,
+    wasmVariant: "javascript",
+    kernelHash: null,
+    payload: { target: r.payload.target },
+    limits: { timeoutMs }
+  };
+}
+var snapshotTaskRequest6 = (r) => ({ ...r, payload: { target: r.payload.target } });
+var inputBytes6 = (r) => size2(r.payload);
+var kernelInfo6 = () => ({ requiresWasm: false, retainResult: false, sha256: null, variant: "javascript", abi: BUILD_ID2, key: BUILD_ID2 });
+var resultShape6 = (r) => ({ kind: "parameter-template-package", target: r.payload.target });
+var validTaskResult6 = (taskType, shape, r) => isTemplateTask(taskType) && r?.kind === shape.kind && r.target === shape.target && r.buildId === BUILD_ID2 && r.bytes instanceof Uint8Array && r.bytes.byteLength > 0 && r.bytes.byteLength <= 128 * 1024 * 1024 && r.treeCount === 16 && r.clipCount === 30 && typeof r.fileName === "string" && r.fileName.endsWith(".unitypackage");
+var resultBytes6 = (r) => r?.bytes instanceof Uint8Array ? r.bytes.byteLength + 512 : 0;
+var freezeTaskResult6 = (r) => Object.freeze(r);
+var transferTaskInput6 = () => [];
+var transferTaskResult6 = (r) => r?.bytes instanceof Uint8Array ? [r.bytes.buffer] : [];
+var prepareTaskModule6 = async () => null;
+var instantiateTask6 = () => null;
+async function executeTask6(request) {
+  const response = await fetch(new URL("../../parameter-template/template.json", import.meta.url));
+  if (!response.ok) throw new Error("Template HTTP ".concat(response.status));
+  const bytes2 = new Uint8Array(await response.arrayBuffer());
+  const hash2 = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes2)), (n) => n.toString(16).padStart(2, "0")).join("");
+  if (hash2 !== TEMPLATE_SHA256) throw new Error("Template\u306E\u7248\u3092\u78BA\u8A8D\u3067\u304D\u307E\u305B\u3093\u3002");
+  const template = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes2));
+  return { kind: "parameter-template-package", target: request.payload.target, ...generatePackage(request.payload.target, { template }) };
+}
+var taskInputCount6 = () => 1;
+
 // docs/shared/compute/tasks.mjs
 var MAX_MEDIA_INPUT_BYTES = Reflect.get(registered_tasks_exports, "MAX_MEDIA_INPUT_BYTES");
-var adapter = (r) => isParameterTask(typeof r === "string" ? r : r?.taskType) ? pool_task_exports3 : isKnowledge(typeof r === "string" ? r : r?.taskType) ? pool_task_exports : isIngest(typeof r === "string" ? r : r?.taskType) ? ingest_task_exports : isUnity(typeof r === "string" ? r : r?.taskType) ? pool_task_exports2 : registered_tasks_exports;
-var resultAdapter = (r) => r?.kind?.startsWith("parameter-") ? pool_task_exports3 : r?.kind === "knowledge-index-step" ? pool_task_exports : ["unity-expanded", "unity-parsed", "unity-parsed-batch"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports2 : registered_tasks_exports;
-var inspectTaskRequest6 = (r) => adapter(r).inspectTaskRequest(r);
-var kernelInfo6 = (r) => adapter(r).kernelInfo(r);
-var transferTaskResult6 = (r) => resultAdapter(r).transferTaskResult(r);
-var prepareTaskModule6 = (o) => adapter(o).prepareTaskModule(o);
-var instantiateTask6 = (r, m) => adapter(r).instantiateTask(r, m);
-var executeTask6 = (r, k) => adapter(r).executeTask(r, k);
-var taskInputCount6 = (r, v) => adapter(r).taskInputCount(r, v);
+var adapter = (r) => isTemplateTask(typeof r === "string" ? r : r?.taskType) ? parameter_template_task_exports : isParameterTask(typeof r === "string" ? r : r?.taskType) ? pool_task_exports3 : isKnowledge(typeof r === "string" ? r : r?.taskType) ? pool_task_exports : isIngest(typeof r === "string" ? r : r?.taskType) ? ingest_task_exports : isUnity(typeof r === "string" ? r : r?.taskType) ? pool_task_exports2 : registered_tasks_exports;
+var resultAdapter = (r) => r?.kind === "parameter-template-package" ? parameter_template_task_exports : r?.kind?.startsWith("parameter-") ? pool_task_exports3 : r?.kind === "knowledge-index-step" ? pool_task_exports : ["unity-expanded", "unity-parsed", "unity-parsed-batch"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports2 : registered_tasks_exports;
+var inspectTaskRequest7 = (r) => adapter(r).inspectTaskRequest(r);
+var kernelInfo7 = (r) => adapter(r).kernelInfo(r);
+var transferTaskResult7 = (r) => resultAdapter(r).transferTaskResult(r);
+var prepareTaskModule7 = (o) => adapter(o).prepareTaskModule(o);
+var instantiateTask7 = (r, m) => adapter(r).instantiateTask(r, m);
+var executeTask7 = (r, k) => adapter(r).executeTask(r, k);
+var taskInputCount7 = (r, v) => adapter(r).taskInputCount(r, v);
 
 // docs/shared/compute/pool-worker.mjs
 var workerId = crypto.randomUUID();
@@ -3523,27 +3701,27 @@ self.onmessage = async ({ data }) => {
   };
   try {
     if (data?.buildId !== BUILD_ID || !Number.isSafeInteger(data?.generation) || data.generation < 1 || data.startTogether !== void 0 && typeof data.startTogether !== "boolean") throw Error("Invalid worker identity/options");
-    request = inspectTaskRequest6(data);
-    const info = kernelInfo6(request);
+    request = inspectTaskRequest7(data);
+    const info = kernelInfo7(request);
     if (request.taskType !== "ft-magnitude-batch" && data.kernelHash !== info.sha256) throw Error("Kernel identity mismatch");
     self.postMessage({ ...identity, type: "phase", phase: "loading", bootEpochMs });
     let compileCalls = 0, wasmContentType = null;
     const startTogether = data.startTogether === true, needsWasm = info.requiresWasm !== false;
     const moduleStarted = performance.now();
-    const module = needsWasm ? data.module ?? await prepareTaskModule6({ taskType: request.taskType, wasmVariant: request.wasmVariant, onCompile: () => compileCalls++, onResponse: (value2) => {
+    const module = needsWasm ? data.module ?? await prepareTaskModule7({ taskType: request.taskType, wasmVariant: request.wasmVariant, onCompile: () => compileCalls++, onResponse: (value2) => {
       wasmContentType = value2;
     } }) : null;
     const modulePrepareMs = performance.now() - moduleStarted, instantiateStarted = performance.now();
-    kernel = needsWasm ? instantiateTask6(request, module) : null;
+    kernel = needsWasm ? instantiateTask7(request, module) : null;
     const instantiateMs = needsWasm ? performance.now() - instantiateStarted : null;
     const preparedAt = performance.now();
     const compute = async () => {
       try {
         const computeStart = performance.now();
         self.postMessage({ ...identity, type: "phase", phase: "computing", instanceId: kernel?.instanceId ?? null, bootEpochMs });
-        const result = await executeTask6(request, kernel), transfer = transferTaskResult6(result);
+        const result = await executeTask7(request, kernel), transfer = transferTaskResult7(result);
         const computeEnd = performance.now();
-        self.postMessage({ ...identity, type: "result", instanceId: kernel?.instanceId ?? null, result, metrics: { buildId: BUILD_ID, wasmSha256: info.sha256, wasmVariant: info.variant, kernelAbi: info.abi, wasmContentType, bootEpochMs, modulePrepareMs: needsWasm ? modulePrepareMs : null, instantiateMs, loadMs: preparedAt - started, readyWaitMs: startTogether ? computeStart - preparedAt : 0, startTogether, computeMs: computeEnd - computeStart, computeStartEpochMs: performance.timeOrigin + computeStart, computeEndEpochMs: performance.timeOrigin + computeEnd, memoryBytes: kernel?.memory.buffer.byteLength ?? null, wasmNotApplicable: needsWasm ? null : "JavaScript parsing task", inputCount: taskInputCount6(request, result), compileCalls, moduleReuse: needsWasm && data.module instanceof WebAssembly.Module, arena: kernel?.resourceStats?.() ?? null, memoryMeasurement: null } }, transfer);
+        self.postMessage({ ...identity, type: "result", instanceId: kernel?.instanceId ?? null, result, metrics: { buildId: BUILD_ID, wasmSha256: info.sha256, wasmVariant: info.variant, kernelAbi: info.abi, wasmContentType, bootEpochMs, modulePrepareMs: needsWasm ? modulePrepareMs : null, instantiateMs, loadMs: preparedAt - started, readyWaitMs: startTogether ? computeStart - preparedAt : 0, startTogether, computeMs: computeEnd - computeStart, computeStartEpochMs: performance.timeOrigin + computeStart, computeEndEpochMs: performance.timeOrigin + computeEnd, memoryBytes: kernel?.memory.buffer.byteLength ?? null, wasmNotApplicable: needsWasm ? null : "JavaScript parsing task", inputCount: taskInputCount7(request, result), compileCalls, moduleReuse: needsWasm && data.module instanceof WebAssembly.Module, arena: kernel?.resourceStats?.() ?? null, memoryMeasurement: null } }, transfer);
         cleanup();
       } catch (error) {
         fail3(error);
