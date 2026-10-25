@@ -35,7 +35,7 @@
         <label for="output-name">出力名</label><input id="output-name" value="IntegratedParameters" maxlength="64" pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,63}" autocomplete="off" spellcheck="false">
         <details class="settings"><summary>固定設定と対象Playable</summary>
           <label for="playable">対象Playable</label><select id="playable"><option>FX</option><option>Base</option><option>Additive</option><option>Gesture</option><option>Action</option><option>Sitting</option><option>TPose</option><option>IKPose</option></select>
-          <ul><li>全LayerのWeight：1</li><li>新設StateのWrite Defaults：ON</li><li>AlwaysOne：1（未登録ならFloatで追加）</li><li>EyeLidLeft・EyeLidRight・EyeLid：0.75（完全一致する登録に適用）</li></ul>
+          <ul><li>全LayerのWeight：1</li><li>新設StateのWrite Defaults：ON</li><li>AlwaysOne：1（未登録ならFloatで追加）</li><li>EyeLidLeft・EyeLidRight・EyeLid：0.75（完全一致する登録に適用）</li><li>ExpressionParameters：末尾が数字（0〜9）またはNegativeのParameterは同期ON。それ以外の同期設定とSavedは保持します。</li></ul>
         </details>
         <button id="generate" type="submit">統合してunitypackageを生成</button>
       </fieldset>

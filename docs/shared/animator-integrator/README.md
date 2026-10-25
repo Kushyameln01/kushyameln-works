@@ -32,7 +32,9 @@ Inputs are named `.unitypackage` bytes, or supported Unity text `.controller`, `
 
 The explicit `playable` request selects the output context from Base, Additive, Gesture, Action, FX, Sitting, TPose and IKPose. Supported SDK layer controls must target that same context; cross-Playable mapping remains unsupported. All source Controller layers, declarations and supported subassets are retained. Existing Write Defaults flags remain. Two new Override layers use default states with Write Defaults ON; all final layer weights are 1, and all layers reference the selected unchanged mask. Tree/Clip settings and curves retain their source values; output identities and object references are remapped. The ordered base owns final Controller top-level/importer metadata. Original standalone motion/mask importer fields are retained with remapped identities.
 
-Expressions merge independently of Controller declarations. The central `default-value-rules.mjs` applies exact-name Float/default rules before general conflicts: AlwaysOne=1; EyeLidLeft, EyeLidRight and EyeLid=0.75. Only AlwaysOne is added when absent in either domain. Existing Expression flags remain; a newly added AlwaysOne is unsaved and local (`saved=false`, `networkSynced=false`). No other Controller-only names are added to Expressions. Rule normalization/addition provenance appears in `report.defaultValueRules`.
+Expressions merge independently of Controller declarations. The central `default-value-rules.mjs` applies exact-name Float/default rules before general conflicts: AlwaysOne=1; EyeLidLeft, EyeLidRight and EyeLid=0.75. Only AlwaysOne is added when absent in either domain. Default/type normalization preserves existing Expression flags; a newly added AlwaysOne is unsaved and local (`saved=false`, `networkSynced=false`). No other Controller-only names are added to Expressions. Default/type normalization/addition provenance appears in `report.defaultValueRules`.
+
+Independent Expression synchronization rules in the same module force `networkSynced=true` when a name ends with one ASCII digit (`0`–`9`) or the exact case-sensitive suffix `Negative`. For example, `v2/EyeLidLeft8`, `v2.EyeLidRightNegative`, `Value123` and `Value0` match; `Value8Tail`, `Valuenegative` and `Value８` do not. These rules preserve Saved, type, defaults and all nonmatching synchronization settings, and do not change Animator parameters. They run before Expression conflict comparison: matching entries that differ only in synchronization merge using `true`; other setting conflicts still block generation. The 256-bit synchronization budget applies after normalization. `report.expressionSyncRules={rules,changes}` separately records the rules and actual synchronization changes with source identity; already-synchronized matches require no change record. The module exports `EXPRESSION_SYNC_RULES` and the pure `applyExpressionSyncRules(rows,{sourceId})` function.
 
 Keep generation's `inputRevision` equal to the imported source revision; request/configuration changes alone do not change it. Importing new sources cancels any active operation. `cancel()` terminates the dedicated Worker; a later generation reloads retained private source copies. Caller buffers remain usable. `dispose()` releases the session. An injectable `workerFactory` follows the browser Worker interface and is useful for tests. The client owns and terminates Workers it creates; it does not create or dispose shared compute pools.
 
@@ -41,7 +43,7 @@ Errors include a message. Integration failures additionally expose `name='Integr
 Node checks:
 
 ```sh
-node --test tools/animator-integrator/test-core.mjs tools/animator-integrator/test-client.mjs
+node --test tools/animator-integrator/test-core.mjs tools/animator-integrator/test-client.mjs tools/animator-integrator/test-sync-rules.mjs
 INTEGRATOR_TEMPLATE_PATH=/path/to/recovered/template.json node tools/animator-integrator/test-real-template.mjs
 ```
 
