@@ -3499,7 +3499,7 @@ __export(parameter_template_task_exports, {
 });
 
 // docs/parameter-template/core.mjs
-var BUILD_ID2 = "parameter-template-1.1.0";
+var BUILD_ID2 = "parameter-template-1.2.0";
 var encoder4 = new TextEncoder();
 var rootNames = /* @__PURE__ */ new Set(["Binary_Root", "Smooth_Root"]);
 var motion = /^(    m_Motion: )\{fileID: (-?\d+), guid: ([0-9a-f]{32}), type: 2\}$/gm;
@@ -3546,7 +3546,7 @@ function clipDocument(clip, id2, leaf) {
   return text2.replace(/^%YAML 1\.1\n%TAG !u! tag:unity3d.com,2011:\n/, "").replace(/^--- !u!74 &7400000$/m, "--- !u!74 &" + id2);
 }
 function templateIndex(template) {
-  if (template?.schemaVersion !== 1 || template.trees?.length !== 16 || template.clips?.length !== 20) throw new Error("Template\u306E\u7248\u307E\u305F\u306F\u69CB\u6210\u304C\u4E00\u81F4\u3057\u307E\u305B\u3093\u3002");
+  if (template?.schemaVersion !== 1 || template.templateRevision !== 2 || template.trees?.length !== 16 || template.clips?.length !== 20) throw new Error("Template\u306E\u7248\u307E\u305F\u306F\u69CB\u6210\u304C\u4E00\u81F4\u3057\u307E\u305B\u3093\u3002");
   const index = /* @__PURE__ */ new Map();
   for (const [kind, items2] of [["206", template.trees], ["74", template.clips]]) {
     for (const item of items2) {
@@ -3615,7 +3615,7 @@ function generatePackage(target, { template } = {}) {
 // docs/shared/compute/parameter-template-task.mjs
 var isTemplateTask = (type) => type === "parameter-template-generate";
 var encoder5 = new TextEncoder();
-var TEMPLATE_SHA256 = "047a4f057b832a73a40017a389d83b6e6fb0a5572e51fa1dc76766c4b3e7e880";
+var TEMPLATE_SHA256 = "d11aa908b86a75021a7be4ad0367a45cb3206346d1a370202a4d25aaab3be3f1";
 var size2 = (value2) => encoder5.encode(JSON.stringify(value2)).byteLength;
 function inspectTaskRequest6(r) {
   if (!r || r.protocolVersion !== 1 || r.taskVersion !== 1 || !isTemplateTask(r.taskType) || typeof r.jobId !== "string" || !/^[A-Za-z0-9_.:-]{1,64}$/.test(r.jobId) || !Number.isSafeInteger(r.inputRevision) || r.inputRevision < 0) throw new TypeError("Invalid Template task identity");

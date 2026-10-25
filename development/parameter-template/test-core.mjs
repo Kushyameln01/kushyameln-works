@@ -11,6 +11,39 @@ try { core=await import('../../docs/parameter-template/core.mjs'); } catch(e) {
 }
 assert.equal(typeof core?.generatePackage,'function','Template generation is not implemented');
 const template=JSON.parse(await readFile(new URL('../../docs/parameter-template/template.json',import.meta.url),'utf8'));
+// Pin the requested Template revision independently of the generated output.
+// A prefix replacement would incorrectly alter bit suffixes or _Function;
+// two sequential replacements would also turn the new v2 value into Decode.
+const byName=items=>new Map(items.map(item=>[/^  m_Name: (.+)$/m.exec(item.text)[1],item.text]));
+const sourceTrees=byName(template.trees),sourceClips=byName(template.clips);
+for(const [name,parameter] of [
+  ['Parameter_Smooth','Decode/Parameter'],
+  ['v2Parameter_Smooth','Decode/Parameter'],
+  ['Simple_Root','Decode/Parameter'],
+  ['Self_Parameter_Smooth','v2/Parameter'],
+  ['Self_F_Parameter_Smooth','Smooth/Parameter_Function'],
+  ['F_Parameter_Smooth','Function/Parameter'],
+  ['FunctionParameter_Smooth','Function/Parameter'],
+  ...['0','1','2','4','8','Negative'].map(suffix=>['Binary_Decode'+suffix,'v2/Parameter'+suffix]),
+]){
+  assert.equal(/^  m_BlendParameter: (.+)$/m.exec(sourceTrees.get(name))[1],parameter,`Template parameter: ${name}`);
+}
+for(const [stem,parameter,hash] of [
+  ['Answer','Decode/Parameter','1151114644'],
+  ['Smooth','v2/Parameter','815615974'],
+  ['Another','Smooth/Parameter_Function','996132519'],
+]){
+  for(const value of ['-1','0','+1']){
+    const text=sourceClips.get(stem+'='+value);
+    assert.deepEqual([...text.matchAll(/^    attribute: (.+)$/gm)].map(m=>m[1]),[parameter,parameter],`Template Clip attributes: ${stem}=${value}`);
+    assert.deepEqual([...text.matchAll(/^      attribute: (\d+)$/gm)].map(m=>m[1]),[hash],`Template Clip CRC32: ${stem}=${value}`);
+  }
+}
+assert.equal(core.BUILD_ID,'parameter-template-1.2.0');
+assert.equal(template.templateRevision,2);
+assert.equal(template.sourceSha256,'9b22ae3d088ceef597b9ac98015da917599842ab3f9932859c658ddd34c99c09');
+assert.deepEqual(template.valueRemap,{'v2/Parameter':'Decode/Parameter','Smooth/Parameter':'v2/Parameter'});
+assert.throws(()=>core.generatePackage('v2/EyeLidLeft',{template:{...template,templateRevision:1}}),/Template/);
 const frozen=JSON.stringify(template);
 for(const bad of ['', 'EyeLidLeft','v2/','v2/../X','v2/X/Y','v2/X\\Y','v2/X:Z','v2/<img>','v2/CON','v2/Parameter','v2/'+ 'X'.repeat(121)]){
   assert.throws(()=>core.generatePackage(bad,{template}),undefined,`reject ${bad}`);
@@ -22,7 +55,7 @@ for(const target of ['v2/EyeLidLeft','v2/JawOpen','v2/EyeLidLeft','v2/ParameterT
   const result=core.generatePackage(target,{template});
   const leaf=target.slice(3), entries=[...readUnityPackage(result.bytes).values()];
   assert.equal(result.folderName,leaf);assert.equal(result.fileName,leaf+'.unitypackage');
-  assert.equal(result.treeCount,16);assert.equal(result.clipCount,30);
+  assert.equal(result.treeCount,16);assert.equal(result.clipCount,30);assert.equal(result.buildId,'parameter-template-1.2.0');
   assert.equal(entries.length,18); // two folders plus sixteen Tree assets
   const guids=new Set(entries.map(e=>e.guid));assert.equal(guids.size,18);
   for(const e of [...template.trees,...template.clips])assert(!guids.has(e.guid),'new assets need new GUIDs');
@@ -63,11 +96,12 @@ for(const target of ['v2/EyeLidLeft','v2/JawOpen','v2/EyeLidLeft','v2/ParameterT
   assert.equal(rootCount,2);assert.equal(childCount,14);
   assert.deepEqual(folders,new Set(['Assets/'+leaf,'Assets/'+leaf+'/'+leaf+'_Child']));
   assert.deepEqual(fieldValues,new Set([...expectedFields].filter(v=>!/^\d+$/.test(v))));
-  for(const value of ['Smooth/'+leaf+'_Function','Smooth/'+leaf,'Function/'+leaf,'Proxy/'+leaf+'/Output','Proxy/'+leaf+'/Cartesian'])assert(fieldValues.has(value),value);
+  for(const value of ['Decode/'+leaf,'v2/'+leaf,'Smooth/'+leaf+'_Function','Function/'+leaf,'Proxy/'+leaf+'/Output','Proxy/'+leaf+'/Cartesian',...['0','1','2','4','8','Negative'].map(suffix=>'v2/'+leaf+suffix)])assert(fieldValues.has(value),value);
+  assert(!fieldValues.has('Smooth/'+leaf),'the former Smooth output is now the exact v2 name');
   assert.equal(JSON.stringify(template),frozen,'generation may not mutate the template');
   if(process.env.DECODE_TEST_OUTPUT){
     await mkdir(process.env.DECODE_TEST_OUTPUT,{recursive:true});
     await writeFile(process.env.DECODE_TEST_OUTPUT+'/'+leaf+'.unitypackage',result.bytes);
   }
 }
-console.log('PASS: 7 generations, 16 independent Trees, 30 embedded Clips, 47 resolved Motion references; invalid paths and source preservation');
+console.log('PASS: 7 generations, Template revision 2 exact value remap and CRC32, preserved bit/_Function names, 16 independent Trees, 30 embedded Clips, 47 Motion references; invalid paths and source preservation');

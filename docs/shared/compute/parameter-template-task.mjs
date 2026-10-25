@@ -2,7 +2,7 @@ import {generatePackage,validateTarget,BUILD_ID as TEMPLATE_BUILD_ID} from '../.
 
 export const isTemplateTask=type=>type==='parameter-template-generate';
 const encoder=new TextEncoder();
-const TEMPLATE_SHA256='047a4f057b832a73a40017a389d83b6e6fb0a5572e51fa1dc76766c4b3e7e880';
+const TEMPLATE_SHA256='d11aa908b86a75021a7be4ad0367a45cb3206346d1a370202a4d25aaab3be3f1';
 const size=value=>encoder.encode(JSON.stringify(value)).byteLength;
 
 export function inspectTaskRequest(r){

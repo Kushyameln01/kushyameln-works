@@ -43,13 +43,18 @@ def clip_attributes(doc):
     assert [str(zlib.crc32(v.encode())) for v in attrs[:len(hashes)]]==hashes, 'Stale Clip binding hash'
     return attrs[:len(hashes)]
 
+def revised_value(value):
+    # One lookup on the original value: a newly produced v2/Parameter must not
+    # become Decode/Parameter, and suffixes including _Function are untouched.
+    return {'v2/Parameter':'Decode/Parameter','Smooth/Parameter':'v2/Parameter'}.get(value,value)
+
 def convert_fields(doc):
     # Derive every hash update from the original Clip's actual attributes.
     # This oracle reads the unitypackage, never the generator or template JSON.
     hashes={}
     if re.search(r'^--- !u!74 &',doc,re.M):
         for old in clip_attributes(doc):
-            new=old.replace('Parameter',leaf)
+            new=revised_value(old).replace('Parameter',leaf)
             old_hash=str(zlib.crc32(old.encode()))
             new_hash=str(zlib.crc32(new.encode()))
             assert old_hash not in hashes or hashes[old_hash]==new_hash
@@ -59,7 +64,13 @@ def convert_fields(doc):
         # The fixed source uses scalar mapping values. Split at the first colon
         # so keys such as m_BlendParameter and objectReferenceParameter survive.
         key,colon,value=line.partition(':')
-        converted.append(key+colon+value.replace('Parameter',leaf) if colon else line)
+        if colon:
+            scalar=re.fullmatch(r'([ \t]*)([^\r\n]*)(\r?\n)?',value)
+            assert scalar, 'Unexpected source scalar layout'
+            updated=revised_value(scalar[2]).replace('Parameter',leaf)
+            converted.append(key+colon+scalar[1]+updated+(scalar[3] or ''))
+        else:
+            converted.append(line)
     doc=''.join(converted)
     doc=re.sub(r'^(      attribute: )(\d+)$',lambda m:m[1]+hashes.get(m[2],m[2]),doc,flags=re.M)
     if hashes:clip_attributes(doc)
@@ -133,5 +144,5 @@ assert [m.name for m in members]==sorted(m.name for m in members)
 assert raw[3]&8 and raw[10:23]==b'archtemp.tar\0' and raw[4:8]==b'\0'*4
 assert gzip.decompress(raw)[257:265]==b'ustar  \0'
 assert all(not b.endswith(b'\n') for n,b in files.items() if n.endswith('/pathname'))
-print(f'PASS independent Python: {leaf}; 2 folders, 16 Trees (2 root/14 child), 30 Clips, 47 references; all Parameter value replacements, exact allowed deltas, CRC32, fresh GUIDs and confirmed GNU/gzip recipe')
+print(f'PASS independent Python: {leaf}; Template revision 2 exact remap, preserved bit/_Function names, 2 folders, 16 Trees (2 root/14 child), 30 Clips, 47 references; exact allowed deltas, CRC32, fresh GUIDs and confirmed GNU/gzip recipe')
 print('sha256='+hashlib.sha256(raw).hexdigest())

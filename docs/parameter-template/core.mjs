@@ -1,6 +1,6 @@
 import {writeUnityPackage} from '../shared/ft/unity-package.mjs';
 
-export const BUILD_ID='parameter-template-1.1.0';
+export const BUILD_ID='parameter-template-1.2.0';
 const encoder=new TextEncoder();
 const rootNames=new Set(['Binary_Root','Smooth_Root']);
 const motion=/^(    m_Motion: )\{fileID: (-?\d+), guid: ([0-9a-f]{32}), type: 2\}$/gm;
@@ -57,7 +57,7 @@ function clipDocument(clip,id,leaf){
 }
 
 function templateIndex(template){
-  if(template?.schemaVersion!==1||template.trees?.length!==16||template.clips?.length!==20)throw new Error('Templateの版または構成が一致しません。');
+  if(template?.schemaVersion!==1||template.templateRevision!==2||template.trees?.length!==16||template.clips?.length!==20)throw new Error('Templateの版または構成が一致しません。');
   const index=new Map();
   for(const [kind,items] of [['206',template.trees],['74',template.clips]]){
     for(const item of items){
