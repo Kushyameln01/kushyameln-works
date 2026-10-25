@@ -2,9 +2,13 @@
 from pathlib import Path
 import argparse,tarfile,re,json,hashlib
 
-HEADER=re.compile(r'^--- !u!(\d+) &(-?\d+)(?: stripped)?\n',re.M)
+HEADER=re.compile(r'^--- !u!(\d+) &(-?\d+)(?: stripped)?\r?\n',re.M)
 FLOW=re.compile(r'\{fileID: (-?\d+)(?:, guid: ([0-9a-f]{32}), type: (\d+))?\}')
 SDK='67cc4cb7839cd3741b63733d5adf0442'
+PARENT_PATH='Assets/Merged_DecodeAndSmooth'
+def preserved_path(path):
+    assert path.startswith('Assets/'),('source path must be Assets-relative',path)
+    return path if path==PARENT_PATH or path.startswith(PARENT_PATH+'/') else PARENT_PATH+'/'+path[len('Assets/'):]
 # Read factual JSON data only; never import or execute the product JavaScript.
 RANGE_SOURCE=Path(__file__).resolve().parents[2]/'docs/shared/animator-integrator/vrcft5-ranges.mjs'
 RANGE_LITERAL=re.search(r'VRCFT5_PARAMETER_RANGES=Object\.freeze\((\[[\s\S]*?\])\.map',RANGE_SOURCE.read_text()).group(1)
@@ -35,7 +39,10 @@ def read_package(path):
         assert 'pathname' in entry and 'asset.meta' in entry
         entry['path']=entry['pathname'].decode('utf8')
         assert re.search(r'^guid: '+guid+r'$',entry['asset.meta'].decode(),re.M)
-        text=entry.get('asset',b'').decode('utf8');matches=list(HEADER.finditer(text));entry['docs']={}
+        entry['docs']={}
+        try:text=entry.get('asset',b'').decode('utf8')
+        except UnicodeDecodeError:continue  # Preserve opaque files as bytes; they have no parsed documents.
+        matches=list(HEADER.finditer(text))
         for i,m in enumerate(matches):
             assert m[2] not in entry['docs']
             entry['docs'][m[2]]={'classId':m[1],'text':text[m.start():matches[i+1].start() if i+1<len(matches) else len(text)]}
@@ -61,7 +68,8 @@ def verify(path,n,range_sync=True):
             if m[1]=='0':continue
             target=(m[2] or guid,m[1])
             if target[0]==SDK:external.add(target);continue
-            assert target in all_objects,('missing reference',target)
+            if re.fullmatch(r'0{16}[ef]0{15}',target[0]):continue
+            assert target in all_objects or target[0] in assets and not assets[target[0]]['docs'],('missing reference',target)
     controllers=[(ref,doc) for ref,doc in all_objects.items() if doc['classId']=='91'];assert len(controllers)==1
     (owner,_),controller=controllers[0];text=controller['text']
     layers=re.findall(r'^  - serializedVersion: 5\n.*?(?=^  - serializedVersion: 5\n|\Z)',text.split('  m_AnimatorLayers:\n',1)[1],re.M|re.S)
@@ -119,33 +127,60 @@ def verify(path,n,range_sync=True):
     return {'status':'PASS','file':path.name,'targetCount':n,'layers':len(layers),'animatorParameters':len(animator),'expressionParameters':len(expr),'syncedExpressions':synced,'syncBitCost':bits,'vrcft5RangeSyncEnabled':range_sync,'trees':counts['206'],'clips':counts.get('74',0),'assets':len(assets),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'externalSdkRefs':sorted(external)}
 
 def verify_mapping(path,report_path,source_dir):
-    report=json.loads(report_path.read_text());output=objects(read_package(path));sources={}
-    # Browser evidence can also contain unrelated final outputs from UI runs.
-    # Only the recovered, explicitly named intermediate inputs are originals.
-    inputs=set()
-    for pattern in ('source-*.unitypackage','registration-*.unitypackage','template-*.unitypackage'):
-        inputs.update(source_dir.glob(pattern))
-    assert inputs,'No named intermediate source packages found'
-    for p in sorted(inputs):
-        if p.resolve()==path.resolve():continue
-        for ref,doc in objects(read_package(p)).items():
-            if ref in sources:assert sources[ref]==doc
-            sources[ref]=doc
-    mappings=report['composition']['objectMapping'];inverse={}
-    for m in mappings:
-        if 'sourceId' not in m:continue
-        ref=(m['outputGuid'],m['outputFileId']);assert ref in output
-        original=tuple(m['sourceId'].split(':'));assert original in sources or m.get('blockId')=='roots' or m['sourcePath'].endswith('InternalRoots.controller')
-        if ref in inverse:assert inverse[ref]==original
-        inverse[ref]=original
-    def normalized(doc,owner,reverse=None):
-        text=HEADER.sub(lambda m:'--- !u!'+m[1]+' &<ID>\n',doc['text'],count=1)
-        def replace(m):
-            if m[1]=='0':return '{NULL}'
-            target=(m[2] or owner,m[1])
-            if reverse is not None:target=reverse.get(target,target)
-            return '{REF:'+':'.join(target)+'}'
-        return FLOW.sub(replace,text)
+    report=json.loads(report_path.read_text());final_assets=read_package(path);output=objects(final_assets)
+    # Assembly has already moved Template assets below Root_DecodeSmooth.
+    # Those exact named inputs, not the earlier template-*.unitypackage paths,
+    # are the preservation baseline. Never scan unrelated final UI outputs.
+    required=[source_dir/f'source-{kind}.unitypackage' for kind in ('motion','base','mask')]
+    assert all(p.is_file() for p in required),'source-motion/base/mask.unitypackage are required'
+    inputs=required+sorted(source_dir.glob('registration-*.unitypackage'))
+    assert len(inputs)>len(required),'Named registration source packages are required'
+    source_assets={}
+    for p in inputs:
+        assert p.resolve()!=path.resolve(),'The output cannot be its own source'
+        for guid,entry in read_package(p).items():
+            if guid in source_assets:assert source_assets[guid]==entry,('source GUID conflict',guid)
+            source_assets[guid]=entry
+    sources=objects(source_assets)
+    controller_ids=report['request']['controllerIds'];expression_ids=report['request']['expressionIds']
+    assert controller_ids and expression_ids,'Existing Controller and Expression output hosts are required'
+    controller_host=tuple(controller_ids[0].split(':'));expression_host=tuple(expression_ids[0].split(':'))
+    host_guids={controller_host[0],expression_host[0]}
+    discarded={identity.split(':')[0] for identity in controller_ids[1:]+expression_ids[1:]}
+    assert not host_guids&discarded,'Conflicting selected output hosts'
+    parents=[(guid,entry) for guid,entry in final_assets.items() if entry['path']==PARENT_PATH]
+    assert len(parents)==1,'Exactly one parent folder is required'
+    parent_guid,parent=parents[0]
+    assert 'asset' not in parent and re.search(rb'^folderAsset: yes$',parent['asset.meta'],re.M),'The parent must be a folder'
+    original_parents=[guid for guid,entry in source_assets.items() if entry['path']==PARENT_PATH]
+    assert not original_parents or original_parents==[parent_guid],'Existing parent folder GUID must be reused'
+    assert set(final_assets)==(set(source_assets)-discarded)|{parent_guid},'Only a new parent folder may receive a new file GUID'
+    assert all(entry['path']==PARENT_PATH or entry['path'].startswith(PARENT_PATH+'/') for entry in final_assets.values()),'All output files must belong to the parent folder'
+    compared_files=0;embedded_files=0
+    for guid,original in source_assets.items():
+        if guid in discarded:continue
+        actual=final_assets[guid]
+        assert actual['pathname']==preserved_path(original['path']).encode('utf8'),('source relative pathname changed',guid)
+        assert actual['asset.meta']==original['asset.meta'],('source metadata/GUID changed',guid)
+        if guid in host_guids:
+            identity=controller_host if guid==controller_host[0] else expression_host
+            assert identity in output and identity in sources,('host root fileID changed',identity)
+            assert output[identity]['classId']==sources[identity]['classId']
+            assert field(output[identity]['text'],'m_Name')==field(sources[identity]['text'],'m_Name'),('host name changed',identity)
+            continue
+        assert actual.get('asset')==original.get('asset'),('whole source payload changed or embedded Clip separated',guid)
+        assert list(actual['docs'])==list(original['docs']),('source document order/fileIDs changed',guid)
+        assert actual['docs']==original['docs'],('source documents changed or moved to another file',guid)
+        classes={doc['classId'] for doc in original['docs'].values()}
+        embedded_files+=int('206' in classes and '74' in classes)
+        compared_files+=1
+    assert embedded_files>0,'The source fixture must include Clips embedded in BlendTree files'
+    # Existing base state structure keeps its own IDs and text. No identity
+    # canonicalization is permitted for source Motion or base structure.
+    for ref,original in sources.items():
+        if ref[0]!=controller_host[0] or original['classId']=='91':continue
+        assert ref in output and output[ref]==original,('base structural identity/content changed',ref)
+    mappings=report['composition']['objectMapping']
     def parameter_names(text):
         content=text.split('  m_AnimatorParameters:',1)[1].split('  m_AnimatorLayers:',1)[0]
         names=[scalar(value) for value in re.findall(r'^  - m_Name: ([^\n]+)$',content,re.M)]
@@ -156,6 +191,8 @@ def verify_mapping(path,report_path,source_dir):
         ref=tuple(identity.split(':'));assert ref in sources and sources[ref]['classId']=='91'
         expected_parameters.update(parameter_names(sources[ref]['text']))
     controller=report['controllers'][0]
+    assert (controller['guid'],controller['fileId'])==controller_host,'Final Controller must retain the first selected host identity'
+    assert controller['path']==preserved_path(source_assets[controller_host[0]]['path'])
     final_controller=output[(controller['guid'],controller['fileId'])]
     assert parameter_names(final_controller['text'])==expected_parameters,'Input Animator declaration set differs from output'
     motion_sources={ref:doc for ref,doc in sources.items() if doc['classId'] in ('206','74')}
@@ -171,15 +208,29 @@ def verify_mapping(path,report_path,source_dir):
             child=(m[2] or ref[0],m[1])
             assert child in motion_sources,('unexpected source Motion reference',child)
             queue.append(child)
-    emitted={inverse[ref] for ref,doc in output.items() if doc['classId'] in ('206','74')}
-    assert emitted==reachable,('Motion closure mismatch',len(emitted),len(reachable))
-    compared=0
-    for ref,doc in output.items():
-        if doc['classId'] not in ('206','74','319'):continue
-        source=inverse[ref];original=sources[source];assert original['classId']==doc['classId']
-        assert normalized(original,source[0])==normalized(doc,ref[0],inverse),('source settings changed',source,ref)
-        compared+=1
-    return {'mappedMotionAndMaskDocuments':compared,'mappingStatus':'PASS','sourceSettingsAndCurves':'PASS','sourceReachableMotionDocuments':len(reachable),'unreferencedSourceMotionDocumentsOmitted':len(motion_sources)-len(reachable)}
+    emitted={ref for ref,doc in output.items() if doc['classId'] in ('206','74')}
+    assert emitted==set(motion_sources),('whole-input Motion identities differ',len(emitted),len(motion_sources))
+    motion_mappings=[m for m in mappings if tuple(m.get('sourceId','').split(':')) in motion_sources]
+    assert {tuple(m['sourceId'].split(':')) for m in motion_mappings}==set(motion_sources),'Mapping omitted source Motion documents'
+    for m in motion_mappings:
+        source=tuple(m['sourceId'].split(':'));destination=(m['outputGuid'],m['outputFileId'])
+        assert destination==source,('Motion GUID/fileID remapped',source,destination)
+        assert m['sourcePath']==source_assets[source[0]]['path'] and m['outputPath']==preserved_path(m['sourcePath']),('Motion relative file path changed',source)
+    for ref,original in motion_sources.items():assert output[ref]==original,('Motion name/content changed',ref)
+    preservation=report.get('preservation');assert isinstance(preservation,dict),'The preservation report is missing'
+    parent_record=preservation['parentFolder']
+    assert parent_record['path']==PARENT_PATH and parent_record['guid']==parent_guid
+    assert parent_record['created']==(not original_parents)
+    assert {item['guid'] for item in preservation['sourceAssets']}==set(source_assets)-discarded-host_guids,'Preservation report omitted source files'
+    assert {item['guid'] for item in preservation['modifiedHosts']}==host_guids
+    for item in preservation['sourceAssets']+preservation['modifiedHosts']:
+        assert item['sourcePath']==source_assets[item['guid']]['path']
+        assert item['outputPath']==preserved_path(item['sourcePath'])
+    for change in preservation['structuralFileIdChanges']:
+        identity=tuple(change['sourceId'].split(':'))
+        assert identity in sources and identity not in motion_sources and identity[0]!=controller_host[0]
+        assert change['outputFileId']!=identity[1],('Unnecessary structural ID change report',identity)
+    return {'wholeSourceFilesCompared':compared_files,'embeddedClipFilesPreserved':embedded_files,'mappingStatus':'PASS','sourcePathsGuidsMetadataPayloads':'PASS','sourceMotionDocumentsPreserved':len(motion_sources),'sourceReachableMotionDocuments':len(reachable),'unreferencedSourceMotionDocumentsPreserved':len(motion_sources)-len(reachable),'unreferencedSourceMotionDocumentsOmitted':0}
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('package',type=Path);parser.add_argument('--targets',type=int,required=True);parser.add_argument('--report',type=Path);parser.add_argument('--sources-dir',type=Path);parser.add_argument('--output',type=Path);parser.add_argument('--binary-only',action='store_true',help='Expect range sync OFF; Binary suffix types remain Bool')

@@ -1,11 +1,12 @@
-import {indexPackages,analyzeComposition,generateComposition,makeGeneratedAsset} from '../../animator-composer/lib/composition.mjs';
+import {indexPackages,analyzeComposition} from '../../animator-composer/lib/composition.mjs';
 import {parseExpression,serializeExpression} from '../../animator-composer/lib/registration.mjs';
 import {digest,validateAssets} from '../../animator-composer/lib/generate.mjs';
 import {readUnityPackage,writeUnityPackage,MAX_UNITY_PACKAGE_BYTES} from '../ft/unity-package.mjs';
-import {splitUnityDocuments,extractReferences,extractAnimatorLayers,canonicalizeObjectReferences,parseUnityScalar} from '../ft/unity-text.mjs';
-import {rootController,parameterText} from './root-layers.mjs';
+import {splitUnityDocuments,extractAnimatorLayers,canonicalizeObjectReferences,parseUnityScalar} from '../ft/unity-text.mjs';
+import {parameterText} from './root-layers.mjs';
 import {DEFAULT_VALUE_RULES,applyDefaultValueRules,EXPRESSION_SYNC_RULES,applyExpressionSyncRules,EXPRESSION_BOOL_RULES,applyExpressionBoolRules} from './default-value-rules.mjs';
 import {VRCFT5_RANGE_SOURCE,VRCFT5_RANGE_SYNC_POLICY,applyVrcft5RangeSync} from './vrcft5-ranges.mjs';
+import {preservationInputIssues,preservationHostIssues,patchSection,materializePreservedIntegration,preservationReferenceIssues} from './materialize-preserved.mjs';
 const enc=new TextEncoder(),dec=new TextDecoder('utf-8',{fatal:true});
 const issue=(code,message,detail={})=>({severity:'error',code,message,...detail});
 function fail(issues){const e=new Error(issues.map(i=>i.message).join('\n'));e.name='IntegrationError';e.issues=issues;e.report={status:'BLOCKED',issues};throw e;}
@@ -25,7 +26,8 @@ export async function importSources(sources){
    const meta=owned.find(m=>m.name===s.name+'.meta');if(!meta)throw Error(`Missing companion meta: ${s.name}.meta`);
    const text=dec.decode(s.bytes);splitUnityDocuments(text);const metadata=dec.decode(meta.bytes),guids=[...metadata.matchAll(/^guid:\s*([a-f0-9]{32})\s*$/gm)];if(guids.length!==1)throw Error(`Invalid meta GUID: ${meta.name}`);
    const bytes=new Uint8Array(s.bytes.length+meta.bytes.length+1);bytes.set(s.bytes);bytes.set(meta.bytes,s.bytes.length+1);
-   const path=s.name.startsWith('Assets/')?s.name:`Assets/Imported/${s.name}`;
+   if(!s.name.startsWith('Assets/'))fail([issue('preservation_original_path_required',`Original Assets-relative path is required for ${s.name}; use a unitypackage or provide its original Assets/ path.`)]);
+   const path=s.name;
    packages.push({name:s.name,hash:await digest(bytes),assets:[{guid:guids[0][1],path,asset:s.bytes,meta:metadata}]});used.add(s.name);used.add(meta.name);continue;
   }
   if(s.name.endsWith('.meta')&&owned.some(a=>a.name===s.name.slice(0,-5)))continue;
@@ -64,7 +66,9 @@ function mergeExpressions(index,ids,{vrcft5RangeSync=true}={}){
  return {rows:result,issues,sources,changes,syncChanges,boolChanges,rangeMatches,rangeUnmatched,rangeChanges,added,bitCost:result.reduce((n,r)=>n+(r.networkSynced?(r.type==='Bool'?1:8):0),0)};
 }
 export async function integratePackages(packages,request,kernel){
- let index=indexPackages(packages),issues=validateRequest(index,request);if(issues.length)fail(issues);
+ let issues=preservationInputIssues(packages,request);if(issues.length)fail(issues);
+ const index=indexPackages(packages);issues.push(...validateRequest(index,request));if(issues.length)fail(issues);
+ issues.push(...preservationHostIssues(index,request));if(issues.length)fail(issues);
  const expressions=mergeExpressions(index,request.expressionIds,{vrcft5RangeSync:request.vrcft5RangeSync??true});issues.push(...expressions.issues);if(issues.length)fail(issues);
  // Private index edits happen before dependency traversal: obsolete masks do not enter closure.
  const union=new Map(),alwaysSources=[],sourceLayers=new Map(),ruleChanges=[...expressions.changes];
@@ -72,52 +76,26 @@ export async function integratePackages(packages,request,kernel){
   alwaysSources.push(...declared.filter(p=>p.name==='AlwaysOne').map(p=>({sourceId:id,...p})));
   const applied=applyDefaultValueRules(declared,{domain:'animator',sourceId:id});ruleChanges.push(...applied.changes);const normalized=applied.rows;
   for(const p of normalized)if(!union.has(p.name))union.set(p.name,p);
-  text=text.replace(/^  m_AnimatorParameters:[\s\S]*?(?=^  [A-Za-z_])/m,'  m_AnimatorParameters:\n'+normalized.map(parameterText).join(''));
+  text=text.replace(/^  m_AnimatorParameters:[\s\S]*?(?=^  [A-Za-z_])/m,'  m_AnimatorParameters:\n'+normalized.map(p=>parameterText(p,n.fileId)).join(''));
   const [guid,fileId]=request.maskId.split(':');text=text.replace(/^    m_Mask:.*$/gm,`    m_Mask: {fileID: ${fileId}, guid: ${guid}, type: 2}`).replace(/^    m_DefaultWeight:.*$/gm,'    m_DefaultWeight: 1');
   index.nodes.set(id,{...n,text});index.catalog.controllers.find(c=>c.id===id).parameters=normalized;
  }
  const ensured=applyDefaultValueRules([...union.values()],{domain:'animator',sourceId:'integrator',ensure:true});ruleChanges.push(...ensured.changes);for(const p of ensured.rows)union.set(p.name,p);
- const helper=await makeGeneratedAsset(`Assets/${request.name}`,'InternalRoots.controller',rootController([...union.values()],[request.binaryTreeId,request.smoothTreeId],request.maskId),'9100000');
- if(index.assets.has(helper.guid))fail([issue('helper_collision','Internal helper GUID collides with input.')]);
- const helperIndex=indexPackages([{hash:await digest(helper.asset),name:'internal',assets:[helper]}]);
- for(const [k,v]of helperIndex.assets)index.assets.set(k,v);for(const [k,v]of helperIndex.nodes)index.nodes.set(k,v);index.catalog.controllers.push(...helperIndex.catalog.controllers);
  const configs=request.controllerIds.map((controllerId,i)=>({id:`controller-${i}`,controllerId,layerIndices:index.catalog.controllers.find(c=>c.id===controllerId).layers.map(l=>l.index)}));
- configs.push({id:'roots',controllerId:`${helper.guid}:9100000`,layerIndices:[0,1]});
+ const baseNode=index.nodes.get(request.controllerIds[0]);index.nodes.set(baseNode.id,{...baseNode,text:patchSection(baseNode.text,'m_AnimatorParameters','  m_AnimatorParameters:\n'+[...union.values()].map(p=>parameterText(p,baseNode.fileId)).join(''))});
  const layerNames={};
- for(const [key,value]of Object.entries(request.layerNames??{})){const found=configs.slice(0,-1).find(c=>c.layerIndices.some(i=>`${c.controllerId}:${i}`===key));if(!found)fail([issue('layer_name_selection',`Unknown layer rename identity ${key}`)]);const i=found.layerIndices.find(i=>`${found.controllerId}:${i}`===key);layerNames[`${found.id}:${i}`]=value;}
- const plan={schemaVersion:1,name:request.name,inputHashes:index.inputHashes,outputs:[{id:'fx',name:request.name,playable:request.playable,base:configs[0],additions:configs.slice(1),layerNames,retainWholeControllers:true,preserveObjectHideFlags:true}],animatorChoices:{fx:{AlwaysOne:{type:'Float',defaultValue:1}}}};
+ for(const [key,value]of Object.entries(request.layerNames??{})){const found=configs.find(c=>c.layerIndices.some(i=>`${c.controllerId}:${i}`===key));if(!found)fail([issue('layer_name_selection',`Unknown layer rename identity ${key}`)]);const i=found.layerIndices.find(i=>`${found.controllerId}:${i}`===key);layerNames[`${found.id}:${i}`]=value;}
+ const plan={schemaVersion:1,name:request.name,inputHashes:index.inputHashes,outputs:[{id:'fx',name:request.name,playable:request.playable,base:configs[0],additions:configs.slice(1),layerNames,retainWholeControllers:true,preserveObjectHideFlags:true,additionalMotionRoots:[request.binaryTreeId,request.smoothTreeId]}],animatorChoices:{fx:{AlwaysOne:{type:'Float',defaultValue:1}}}};
  const analysis=analyzeComposition(index,plan,kernel);issues.push(...analysis.issues,...analysis.dependencyDiagnostics.map(d=>issue('dependency_missing',d.message??`Missing reference ${d.targetId}`,d)));
  const merged=new Map();
  for(const block of analysis.blocks)for(const p of block.parameters){const normalized=applyDefaultValueRules([p],{domain:'animator',sourceId:block.id}).rows[0];const previous=merged.get(p.name);if(previous&&(previous.type!==normalized.type||previous.defaultValue!==normalized.defaultValue))issues.push(issue('animator_conflict',`${p.name}: Animator type or default differs.`,{name:p.name,options:[previous,{...normalized,sourceId:block.id}]}));else merged.set(p.name,{name:p.name,type:normalized.type,defaultValue:normalized.defaultValue});}
  if(issues.some(i=>i.severity==='error'))fail(issues);
- const built=await generateComposition(index,plan,analysis,{fx:[...merged.values()]}),assets=[...built.assets];
- assets.push(await makeGeneratedAsset(`Assets/${request.name}`,'Parameters/ExpressionParameters.asset',serializeExpression(expressions.rows),'11400000'));
+ const built=await materializePreservedIntegration(index,request,analysis,[...merged.values()],expressions.rows),assets=built.assets;
  for(const layer of built.report.layerMapping){const original=sourceLayers.get(layer.sourceControllerId)?.[layer.sourceLayer];if(original){layer.sourceSerializedWeight=Number(original.fields.m_DefaultWeight);layer.sourceEffectiveWeight=layer.sourceLayer===0?1:layer.sourceSerializedWeight;}}
- preserveMetadata(assets,index,built,request);
+ const referenceIssues=preservationReferenceIssues(assets,index);if(referenceIssues.length)fail(referenceIssues);
  const verified=validateAssets(assets),archive=writeUnityPackage(assets),reopened=[...readUnityPackage(archive).values()];
  if(reopened.length!==assets.length)throw Error('Roundtrip asset count mismatch.');
- for(const a of assets){const b=reopened.find(b=>b.guid===a.guid);if(!b||a.path!==b.path||a.meta!==b.meta||await digest(a.asset)!==await digest(b.asset))throw Error(`Roundtrip bytes mismatch: ${a.path}`);}
- const report={format:'animator-integrator-report-1',status:'PASS',inputHashes:index.inputHashes,request,controllers:built.controllers,parameters:expressions.rows,animatorParameters:[...merged.values()],bitCost:expressions.bitCost,expressionSources:expressions.sources,defaultValueRules:{rules:DEFAULT_VALUE_RULES,changes:ruleChanges},expressionSyncRules:{rules:EXPRESSION_SYNC_RULES,changes:expressions.syncChanges},expressionBoolRules:{rules:EXPRESSION_BOOL_RULES,changes:expressions.boolChanges},vrcft5RangeSync:{enabled:request.vrcft5RangeSync??true,source:VRCFT5_RANGE_SOURCE,policy:VRCFT5_RANGE_SYNC_POLICY,matches:expressions.rangeMatches,unmatched:expressions.rangeUnmatched,changes:expressions.rangeChanges},alwaysOne:{type:'Float',defaultValue:1,animatorAdded:alwaysSources.length===0,animatorSources:alwaysSources,expressionAdded:expressions.added,newExpressionFlags:expressions.added?{saved:false,networkSynced:false}:null},composition:built.report,staticValidation:{status:'PASS',...verified,roundtripAssets:reopened.length,roundtripBytes:'PASS'},verification:{unityImport:'UNVERIFIED',runtime:'UNVERIFIED'},warnings:issues.filter(i=>i.severity!=='error')};
+ for(const a of assets){const b=reopened.find(b=>b.guid===a.guid);if(!b||a.path!==b.path||a.meta!==b.meta||(a.asset===null?b.asset!==null:b.asset===null||await digest(a.asset)!==await digest(b.asset)))throw Error(`Roundtrip bytes mismatch: ${a.path}`);}
+ const report={format:'animator-integrator-report-1',status:'PASS',inputHashes:index.inputHashes,request,controllers:built.controllers,parameters:expressions.rows,animatorParameters:[...merged.values()],bitCost:expressions.bitCost,expressionSources:expressions.sources,defaultValueRules:{rules:DEFAULT_VALUE_RULES,changes:ruleChanges},expressionSyncRules:{rules:EXPRESSION_SYNC_RULES,changes:expressions.syncChanges},expressionBoolRules:{rules:EXPRESSION_BOOL_RULES,changes:expressions.boolChanges},vrcft5RangeSync:{enabled:request.vrcft5RangeSync??true,source:VRCFT5_RANGE_SOURCE,policy:VRCFT5_RANGE_SYNC_POLICY,matches:expressions.rangeMatches,unmatched:expressions.rangeUnmatched,changes:expressions.rangeChanges},alwaysOne:{type:'Float',defaultValue:1,animatorAdded:alwaysSources.length===0,animatorSources:alwaysSources,expressionAdded:expressions.added,newExpressionFlags:expressions.added?{saved:false,networkSynced:false}:null},composition:built.report,preservation:built.preservation,staticValidation:{status:'PASS',...verified,roundtripAssets:reopened.length,roundtripBytes:'PASS'},verification:{unityImport:'UNVERIFIED',runtime:'UNVERIFIED'},warnings:issues.filter(i=>i.severity!=='error')};
  return {archive,report,assetCount:assets.length,diagnosticAssets:assets};
-}
-
-// Preserve source importer fields; only identities/main-object pointers change.
-// The ordered base owns the single final Controller's importer metadata.
-function preserveMetadata(assets,index,built,request){
- const mappings=built.report.objectMapping,refs=new Map();
- for(const m of mappings)if(m.sourceId){const list=refs.get(m.sourceId)??[];if(!list.some(x=>x.guid===m.outputGuid&&x.fileId===m.outputFileId))list.push({guid:m.outputGuid,fileId:m.outputFileId});refs.set(m.sourceId,list);}
- const controller=built.controllers[0];for(const id of request.controllerIds)refs.set(id,[{guid:controller.guid,fileId:controller.fileId}]);
- for(const a of assets){let original,main;
-  if(a.guid===controller.guid){original=index.assets.get(request.controllerIds[0].split(':')[0]);main=controller.fileId;}
-  else {const m=mappings.find(m=>m.outputGuid===a.guid&&m.sourceId);if(m){const [guid,fileId]=m.sourceId.split(':');const source=index.assets.get(guid);if(new RegExp(`^  mainObjectFileID: ${fileId}\\s*$`,'m').test(source.meta??'')){original=source;main=m.outputFileId;}}}
-  if(!original)continue;
-  let meta=original.meta.replace(/^guid:[^\r\n]*$/m,`guid: ${a.guid}`).replace(/^  mainObjectFileID:[^\r\n]*$/m,`  mainObjectFileID: ${main}`);
-  const edits=[];for(const ref of extractReferences(meta.replace(/^guid:[^\r\n]*$/m,line=>' '.repeat(line.length)))){
-   if(ref.fileId==='0'||/^0{16}[ef]0{15}$/.test(ref.guid??''))continue;
-   const id=`${ref.guid??original.guid}:${ref.fileId}`,to=refs.get(id);
-   if(to?.length>1)fail([issue('metadata_ambiguous',`Importer metadata has ambiguous remap: ${id}`)]);
-   if(to?.length)edits.push({start:ref.start,end:ref.end,text:to[0].guid===a.guid?`{fileID: ${to[0].fileId}}`:`{fileID: ${to[0].fileId}, guid: ${to[0].guid}, type: ${ref.type??2}}`});
-  }
-  for(const edit of edits.reverse())meta=meta.slice(0,edit.start)+edit.text+meta.slice(edit.end);a.meta=meta;
- }
 }

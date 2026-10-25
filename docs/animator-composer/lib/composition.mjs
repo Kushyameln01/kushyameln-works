@@ -380,6 +380,7 @@ export function analyzeComposition(index,plan,kernel) {
               dependency(r,controller,f,ctx,queue,[layer.name],`layer:${layer.index}`,ri,layer.text);
             }
           }
+          if(bi===0)for(const id of output.additionalMotionRoots??[]){const root=getNode(id,config.id);assert(root.classId==='206','Additional Motion root must be a BlendTree');queue.push(id);}
           let retainedSubassets=false;
           while(queue.length||((bi===0||output.retainWholeControllers===true)&&!retainedSubassets)) {
             if(!queue.length&&(bi===0||output.retainWholeControllers===true)&&!retainedSubassets) {

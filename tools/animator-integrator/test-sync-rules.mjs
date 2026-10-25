@@ -29,12 +29,12 @@ test('integration forces only matching Expression synchronization, keeps Animato
  const f=integratorFixture(),rows=[row('v2/EyeLidLeft8',{saved:false}),row('v2.EyeLidRightNegative',{type:'Int',defaultValue:1}),row('LocalOnly',{defaultValue:0.625}),row('AlreadySynced0',{networkSynced:true})];expressions(f,rows);
  const base=f.packages[0].assets.find(a=>a.guid===GUIDS.base);base.asset=enc.encode(dec.decode(base.asset).replace('  m_AnimatorParameters:\n','  m_AnimatorParameters:\n'+parameter('v2/EyeLidLeft8',1,0.125)));
  const before=structuredClone(f.packages),r=await run(f);assert.deepEqual(f.packages,before);
- const serialized=parseExpression(dec.decode(r.diagnosticAssets.find(a=>a.path.endsWith('ExpressionParameters.asset')).asset));
+ const serialized=parseExpression(dec.decode(r.diagnosticAssets.find(a=>a.guid===GUIDS.expr).asset));
  assert.deepEqual(serialized.filter(p=>p.name!=='AlwaysOne'),rows.map(p=>({...p,type:p.name==='LocalOnly'?p.type:'Bool',networkSynced:p.name==='LocalOnly'?false:true})));
  assert.equal(r.report.animatorParameters.find(p=>p.name==='v2/EyeLidLeft8').defaultValue,0.125);
  assert.deepEqual(r.report.expressionSyncRules.rules,rules.EXPRESSION_SYNC_RULES);assert.deepEqual(r.report.expressionSyncRules.changes.map(c=>c.name),['v2/EyeLidLeft8','v2.EyeLidRightNegative']);
  assert(r.report.expressionSyncRules.changes.every(c=>c.sourceId===`${GUIDS.expr}:11400000`));assert(!r.report.defaultValueRules.changes.some(c=>c.name==='v2/EyeLidLeft8'));
- const control=structuredClone(f);control.request.expressionIds=[];const c=await run(control);assert.deepEqual(r.diagnosticAssets.find(a=>a.path.endsWith('.controller')).asset,c.diagnosticAssets.find(a=>a.path.endsWith('.controller')).asset,'Expression sync rules must not alter Animator bytes');
+ const control=structuredClone(f);expressions(control,[]);const c=await run(control);assert.deepEqual(r.diagnosticAssets.find(a=>a.path.endsWith('.controller')).asset,c.diagnosticAssets.find(a=>a.path.endsWith('.controller')).asset,'Expression sync rules must not alter Animator bytes');
 });
 test('matching false/true sync differences normalize before merge conflict comparison',async()=>{
  const f=integratorFixture(),r=row('Value8');expressions(f,[r]);addExpression(f,[{...r,networkSynced:true}]);

@@ -26,9 +26,13 @@ try {
 - 初期値はIntegratorの中央規則を使用します。`AlwaysOne`はAnimator・Expression両方でFloat・1、完全一致の`v2/EyeLidLeft`・`v2/EyeLidRight`・`v2/EyeLid`はFloat・0.75です。ExpressionからAnimatorへ値を推測して反映する処理はありません。
 - 今回のRegistrar入力設定は`defaultValue:0, saved:false, networkSynced:false`です。IntegratorのBinary用規定により、末尾がASCII数字（0〜9）または大文字小文字を区別する`Negative`の名称はExpressionをBoolで登録し、同期Onになります。Animator側の型は保持します。Bool化では初期値の数値を保持し、0・1以外の初期値は丸めずエラーにします。続いて、既定ONの独立したVRCFT5値域規定を適用し、`Negative`末尾について元Parameterの公式値域が0〜正の数なら同期Off、負の数〜正の数ならOn、値域不明なら追加変更なしとします。例えば`v2/EyeLidLeftNegative`はOff、`v2/JawXNegative`はOnです。Saved・Binary対象外の型・初期値規定と数字末尾の同期Onは維持します。一括生成側に別の同期判定は追加しません。正規化後の同期量がVRChatの256bit上限を超える場合は生成を止め、エラーを表示します。
 
-保存名は`DecodeSmooth.unitypackage`です。統合Controllerは`Assets/DecodeSmooth/Controllers/DecodeSmooth_fx.controller`、ExpressionParametersは`Assets/DecodeSmooth/Parameters/ExpressionParameters.asset`にあります。ExpressionParametersには対応するVRChat SDKが必要です。
+保存名は`DecodeSmooth.unitypackage`です。全出力を親フォルダ`Assets/Merged_DecodeAndSmooth`へまとめます。元の`Assets/X/Y`は`Assets/Merged_DecodeAndSmooth/X/Y`へ配置し、すでに同じ親配下にある入力へは重ねてprefixを付けません。既存の同親フォルダがあればそのGUIDを再用し、なければ親フォルダ1個だけに新GUIDを作成します。
 
-Integratorは出力GUID・fileIDを再割当し、参照を変換します。最終構成から到達するMotionとMaskを引き継ぎ、未参照のMotionは省きます。中間packageの全素材数と最終出力数は一致しない場合があります。対応表と実出力に基づき、必要参照・Tree設定・Clip曲線・Mask設定を検証します。汎用Integratorへの任意入力対応をこの一括ツールの検証結果から保証するものではありません。
+統合Controllerは先頭に指定したベースController、ExpressionParametersは先頭に指定したExpressionの元ファイルを使用し、元の相対階層・ファイル名・GUID・m_Name・root fileID・metaを保持します。現在の一括生成では、ベースは`Assets/Merged_DecodeAndSmooth/DecodeSmooth_Base.controller`、Expressionは最初のRegistrarが出力したファイルです。保存名を既存Assetの名前へ転用しません。ExpressionParametersには対応するVRChat SDKが必要です。
+
+Integratorは、assembly後に受け取ったMotion・Mask・参照素材・フォルダを元ファイル単位で保持します。上記の親フォルダ配置だけをpathの変更として認め、元の相対階層・GUID・meta・Asset本文、内包Clipの同居先・fileID・表示名・document順序を維持します。未参照のTree・Clipやopaqueな素材も省略しません。`Source/Clips`等への分離、hash付きファイル名への変更、既存ファイルへの新GUIDの発行は行いません。Controller統合で追加元のState構造IDが衝突する場合だけ、その構造IDの変更を対応表へ記録します。先頭Controllerの既存構造IDとMotionのIDは保持します。追加Controllerの内包Motionなど、統合と元ファイル保全が両立しない入力は、対象を示して停止します。
+
+保全の比較元は`result.intermediates.motionPackage`です。Template生成時のパラメータ名置換・新GUID発行・Clip内包と、その後のassemblyによる`Root_DecodeSmooth`配下への配置はIntegratorより前の工程です。assembly後の全entryを比較し、pathには独立に導出した親フォルダprefixだけを認めます。例えば`Assets/Root_DecodeSmooth/X/Y`の出力は`Assets/Merged_DecodeAndSmooth/Root_DecodeSmooth/X/Y`です。assembly前のTemplate pathを最終出力との比較元にしません。ControllerとExpressionの統合対象ファイルは内容が変わるため、それ以外の全入力ファイルと分けて検査します。汎用Integratorへの任意入力対応をこの一括ツールの検証結果から保証するものではありません。
 
 Layer0はEntryから空の子StateMachineへ進む構造です。AnimatorState・Clip・Motionは新設せず、AnimatorState型の`m_DefaultState`は0です。UnityへのImport、VRChat実動作、Layer0が運用先でEmpty判定されないことは未確認です。
 
@@ -36,6 +40,8 @@ Layer0はEntryから空の子StateMachineへ進む構造です。AnimatorState�
 
 ソースをHTTP配信し、`decode-smooth-builder/`を開きます。通常の利用にnpmや再ビルドは不要です。共有Worker bundleを変更する場合は、既存の固定版ビルド手順`node tools/shared-compute/build-worker-bundle.mjs`を使用します。
 
-新規検証は`tools/decode-smooth-builder/test-*.mjs`です。`check-browser.py`は実ChromiumとPlaywrightで生成・保存・取消・両Worker方式を確認し、`verify-output.py`は生成コードをimportせずにgzip/tarとUnityテキストを独立に読み戻します。Unity実動作の試験とは別です。
+外部実行用の検証は`tools/decode-smooth-builder/test-*.mjs`です。`test-integration.mjs`は、元のGUID/path/meta/Asset本文を直接比較し、未参照Motion・opaque素材・フォルダ・Clipの内包構造も検査します。Motionの識別子や参照を正規化して差を消す比較は使用しません。`check-browser.py`は実ChromiumとPlaywrightで生成・保存・取消・両Worker方式を確認し、`verify-output.py`は生成コードをimportせずにgzip/tarとUnityテキストを独立に読み戻します。Unity実動作の試験とは別です。
 
-VRCFT5値域規定の追加について、Codex内では構文・公式規定データ・適用順・参照の静的確認のみ実施します。動的検証はCodex外部で行う前提です。外部実行用の`tools/decode-smooth-builder/test-integration.mjs`と`verify-output.py`も新規定に合わせています。VRCFT5値域規定をOFFにした出力を照合するときは、後者に`--binary-only`を指定してください。Binary対象のBool登録はOFF時も適用します。
+独立した保全比較では、最終packageに加え、同じ実行で回収した`integrator-report.json`、`source-motion.unitypackage`、`source-base.unitypackage`、`source-mask.unitypackage`、`registration-*.unitypackage`を使用します。`verify-output.py final.unitypackage --targets N --report integrator-report.json --sources-dir <回収先>`で全入力との比較を行います。`template-*.unitypackage`や別の画面操作で保存した最終出力は比較元に混ぜません。
+
+今回の保全修正では、Codex内で構文・参照・差分の静的確認のみを行います。上記の生成・Worker・ブラウザ・回帰テストは実行しておらず、保全比較の実行結果は未確認です。以前の生成物や試験結果を、この修正版の合格証拠には使用しません。VRCFT5値域規定をOFFにした出力を外部で照合するときは、`verify-output.py`に`--binary-only`を指定してください。Binary対象のBool登録はOFF時も適用します。

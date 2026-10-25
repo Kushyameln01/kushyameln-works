@@ -12,8 +12,8 @@ const {catalog, inputHashes} = await session.importSources(
 );
 const result = await session.generate({
   schemaVersion: 1,
-  name: 'Integrated',
-  controllerIds: [catalog.controllers[0].id], // ordered; first owns base metadata
+  name: 'Integrated', // archive/download name only; source asset names/identities stay
+  controllerIds: [catalog.controllers[0].id], // ordered; first is the existing merge destination
   expressionIds: catalog.expressions.map(x => x.id),
   maskId: catalog.masks[0].id,
   binaryTreeId: catalog.blendTrees[0].id,
@@ -29,9 +29,15 @@ session.dispose();
 
 `catalog.controllers`, `.expressions`, `.blendTrees`, `.masks` contain `{id,name,path,guid,fileId,...}`. IDs are exact `GUID:fileID` strings, including 64-bit fileIDs. Controllers also contain `layers: [{index,name,syncedLayerIndex}]` and `parameters: [{name,type,defaultValue}]`.
 
-Inputs are named `.unitypackage` bytes, or supported Unity text `.controller`, `.anim`, `.asset`, `.mask` files together with their `.meta` files. All source dependencies must be supplied, except obsolete mask-only references replaced by the selected mask and recognized external SDK scripts/Unity built-ins. Unsupported sources/structures fail explicitly. GUID-content conflicts, incompatible same-name parameter definitions and duplicate final layer names block generation. Rename imported layers explicitly when they collide with another imported layer or reserved root name. The prototype does not expose conflict-choice overrides.
+Inputs are named `.unitypackage` bytes, or supported Unity text `.controller`, `.anim`, `.asset`, `.mask` files together with their `.meta` files. Standalone names must explicitly supply their original `Assets/...` paths; basenames cannot establish original path provenance and are blocked. Unitypackage input is recommended. All source dependencies must be supplied, except obsolete mask-only references replaced by the selected mask and recognized external SDK scripts/Unity built-ins. Unsupported sources/structures fail explicitly. GUID-content conflicts, incompatible same-name parameter definitions and duplicate final layer names block generation. Rename imported layers explicitly when they collide with another imported layer or reserved root name. The prototype does not expose conflict-choice overrides.
 
-The explicit `playable` request selects the output context from Base, Additive, Gesture, Action, FX, Sitting, TPose and IKPose. Supported SDK layer controls must target that same context; cross-Playable mapping remains unsupported. All source Controller layers, declarations and supported subassets are retained. Existing Write Defaults flags remain. Two new Override layers use default states with Write Defaults ON; all final layer weights are 1, and all layers reference the selected unchanged mask. Tree/Clip settings and curves retain their source values; output identities and object references are remapped. The ordered base owns final Controller top-level/importer metadata. Original standalone motion/mask importer fields are retained with remapped identities.
+The explicit `playable` request selects the output context from Base, Additive, Gesture, Action, FX, Sitting, TPose and IKPose. Supported SDK layer controls must target that same context; cross-Playable mapping remains unsupported. All source Controller layers, declarations and supported subassets are retained. Existing Write Defaults flags remain. Two new Override layers use default states with Write Defaults ON; all final layer weights are 1, and all layers reference the selected unchanged mask. The first selected Controller and first selected Expression are the existing merge hosts: original GUID, name, main document fileID, metadata and other source documents remain. Only authorized Controller/Expression sections change. `request.name` is the archive name, not an asset rename.
+
+Every supplied Motion, Mask, resource and folder file is retained as a whole input file, including unrelated files and unreferenced embedded Clips/Trees. Original asset/meta bytes, embedded document IDs/order/names and references remain. All output paths are within the requested parent folder `Assets/Merged_DecodeAndSmooth`: the only permitted path change is `Assets/X/Y` → `Assets/Merged_DecodeAndSmooth/X/Y`; already-prefixed paths are not prefixed twice. An existing parent folder retains its GUID/meta. When absent, only this newly requested parent folder receives a new GUID. Input assets never receive new GUIDs, generated filenames or extracted standalone Clip files.
+
+Existing base structural IDs and embedded Motions stay. Additional Controller structural objects are merged into the base, preserving their fileIDs unless they collide; only collisions and the two new State/StateMachine pairs receive unused local IDs. Imported structure references are updated only as needed for that merge. Additional selected Controllers with embedded Motion/Mask/other incompatible contents are blocked with host/object IDs, rather than split or used as alternative external hosts. Additional Expression merge sources with other embedded content are similarly blocked. Empty Expression selection is now blocked because there is no existing destination identity. GUID/path ambiguity, parent relocation collisions and unresolved original references are explicit errors; there is no automatic rename or identity fallback.
+
+`report.preservation` records the parent folder identity/creation status, original→prefixed paths, modified existing hosts, unchanged Motion identities and structural collision mappings. Product assertions compare source file bytes/meta/GUID/path and embedded Motion document text/IDs directly, without normalizing away identity changes. Final checks inspect every retained document and metadata reference. `materialize-preserved.mjs` is Integrator-specific; Composer's generic asset-splitting writer is not called. Its pure `preservedOutputPath(path)` export describes the authorized parent projection.
 
 Expressions merge independently of Controller declarations. The central `default-value-rules.mjs` applies exact-name Float/default rules before general conflicts: AlwaysOne=1; `v2/EyeLidLeft`, `v2/EyeLidRight` and `v2/EyeLid`=0.75. Bare `EyeLidLeft`/`EyeLidRight`/`EyeLid`, dot aliases and slash namespaces are not these exact default-rule names; their input types/defaults remain. Only AlwaysOne is added when absent in either domain. Default/type normalization preserves existing Expression flags; a newly added AlwaysOne is unsaved and local (`saved=false`, `networkSynced=false`). No other Controller-only names are added to Expressions. Default/type normalization/addition provenance appears in `report.defaultValueRules`.
 
@@ -49,10 +55,10 @@ Keep generation's `inputRevision` equal to the imported source revision; request
 
 Errors include a message. Integration failures additionally expose `name='IntegrationError'`, `.issues` (`{severity,code,message,...detail}`), and `.report={status:'BLOCKED',issues}`. Cancellation rejects with `AbortError`. Successful reports include input hashes, exact request, final Animator/Expression rows, rule changes, graph/layer mappings, static reference and package roundtrip validation; Unity import/runtime remain `UNVERIFIED`.
 
-External execution commands (current range/Bool-rule tests are authored but not executed in Codex; this update was checked statically only):
+External execution commands (current preservation/range/Bool-rule tests are authored but not executed in Codex; this update was checked statically only):
 
 ```sh
-node --test tools/animator-integrator/test-core.mjs tools/animator-integrator/test-client.mjs tools/animator-integrator/test-sync-rules.mjs tools/animator-integrator/test-vrcft5-ranges.mjs tools/animator-integrator/test-binary-bool.mjs
+node --test tools/animator-integrator/test-core.mjs tools/animator-integrator/test-client.mjs tools/animator-integrator/test-sync-rules.mjs tools/animator-integrator/test-vrcft5-ranges.mjs tools/animator-integrator/test-binary-bool.mjs tools/animator-integrator/test-preservation.mjs
 INTEGRATOR_TEMPLATE_PATH=/path/to/recovered/template.json node tools/animator-integrator/test-real-template.mjs
 ```
 
@@ -62,7 +68,7 @@ The optional recovered-template check uses real motions with explicitly syntheti
 
 This revision was checked statically only in Codex. Its generation behavior, UI operation and Unity runtime have not been verified. Run the commands above or the following browser checks outside Codex.
 
-Load/select the Controller, Expressions, Mask and two roots, then generate with the independent VRCFT5 range checkbox ON. Inspect the downloaded ExpressionParameters asset and `report.parameters`, using the following expectations. The unknown-name row reflects the existing Binary rule; the new range rule itself makes no change to it.
+Load/select the Controller, Expressions, Mask and two roots, then generate with the independent VRCFT5 range checkbox ON. Inspect the first selected Expression asset at its original relative path under the parent folder and `report.parameters`, using the following expectations. The unknown-name row reflects the existing Binary rule; the new range rule itself makes no change to it.
 
 | Expression name | VRCFT5 range ON (default) | Range OFF: Binary only |
 | --- | --- | --- |
@@ -73,3 +79,5 @@ Load/select the Controller, Expressions, Mask and two roots, then generate with 
 | A name outside both rules | Preserve input sync | Preserve input sync |
 
 Toggle the range checkbox OFF: the old output must become unavailable until regeneration. Regenerate and compare with the Binary-only column. Check the same results through the client API with omitted/true `vrcft5RangeSync` versus explicit false. In both modes, Saved, nonBinary types and numeric defaults must remain, and Binary suffix Expression entries must register as Bool (0/1 defaults only). Every layer must still use weight 1 and the selected Mask. New states must retain Write Defaults ON. Review the independent `report.vrcft5RangeSync` matches/unmatched/changes and reject final synchronization costs above 256 bits.
+
+External preservation checks must compare every original retained file to its output GUID, exact asset/meta bytes and independently derived parent-prefixed path, including unreferenced files and embedded Clips. Check Controller/Expression names and custom main fileIDs, base State IDs, collision-only imported structure changes, parent folder reuse/new-folder-only GUID issuance, folder roundtrip, and explicit BLOCK cases for incompatible additional hosts, metadata backreferences, missing Expression destination and ambiguous paths. These authored checks have not been executed in Codex.

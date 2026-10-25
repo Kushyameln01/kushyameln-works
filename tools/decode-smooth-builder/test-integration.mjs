@@ -6,8 +6,8 @@ import {Worker as NodeWorker} from 'node:worker_threads';
 import {generateTemplate,isTemplateResult} from '../../docs/parameter-template/api.mjs';
 import {collectParameters,generateParameterAssets} from '../../docs/shared/parameter-registrar/core.mjs';
 import {instantiateFtKernel} from '../../docs/shared/ft/kernel/load-kernel.mjs';
-import {readUnityPackage} from '../../docs/shared/ft/unity-package.mjs';
-import {splitUnityDocuments,extractReferences,extractAnimatorLayers,extractAnimatorParameters,replaceDocumentFileId,canonicalizeObjectReferences} from '../../docs/shared/ft/unity-text.mjs';
+import {readUnityPackage,writeUnityPackage} from '../../docs/shared/ft/unity-package.mjs';
+import {splitUnityDocuments,extractReferences,extractAnimatorLayers,extractAnimatorParameters} from '../../docs/shared/ft/unity-text.mjs';
 import {parseExpression} from '../../docs/animator-composer/lib/registration.mjs';
 import {createAnimatorIntegrator} from '../../docs/shared/animator-integrator/client.mjs';
 import {buildIntermediateAssets} from '../../docs/decode-smooth-builder/assembly.mjs';
@@ -21,7 +21,12 @@ class BrowserWorker {
  terminate(){this.terminated=true;this.node.terminate();}
 }
 const reference=r=>r.guid+':'+r.fileId;
-const docsOf=assets=>[...assets.values()].filter(a=>a.asset!==null).flatMap(a=>splitUnityDocuments(dec.decode(a.asset)).documents.map(d=>({...d,guid:a.guid,path:a.path})));
+const parentPath='Assets/Merged_DecodeAndSmooth';
+function preservedPath(path){assert.ok(path.startsWith('Assets/'));return path===parentPath||path.startsWith(parentPath+'/')?path:parentPath+'/'+path.slice('Assets/'.length);}
+const docsOf=assets=>[...assets.values()].filter(a=>a.asset!==null).flatMap(a=>{
+ const text=dec.decode(a.asset);if(!/^--- !u!/m.test(text))return [];
+ return splitUnityDocuments(text).documents.map(d=>({...d,guid:a.guid,path:a.path}));
+});
 function one(bytes,cls){const list=docsOf(readUnityPackage(bytes)).filter(d=>d.classId===cls);assert.equal(list.length,1);return {guid:list[0].guid,fileId:list[0].fileId};}
 let fixturePromise;
 async function fixture(){return fixturePromise??=(async()=>{
@@ -30,30 +35,66 @@ async function fixture(){return fixturePromise??=(async()=>{
   const previousFetch=globalThis.fetch;let generated;try{globalThis.fetch=async url=>new Response(await readFile(url));generated=await generateTemplate(target);}finally{globalThis.fetch=previousFetch;}templates.push({...generated,target});
   const collected=collectParameters(generated.bytes,{kernel}),r=await generateParameterAssets(collected.parameters,{name:`Registration_${i+1}`});registrations.push({...r,controller:one(r.archive,'91'),expression:one(r.archive,'114')});
  }
- const built=await buildIntermediateAssets(templates),sources=[{name:'Base.unitypackage',bytes:built.basePackage},...registrations.map(r=>({name:r.fileName,bytes:r.archive})),{name:'Motions.unitypackage',bytes:built.motionPackage},{name:'Safety.unitypackage',bytes:built.maskPackage}];
+ const built=await buildIntermediateAssets(templates);
+ // Retain opaque bytes and reuse an existing parent; the pipeline case below
+ // covers creation of a missing parent. Neither case may double its prefix.
+ const opaqueGuid='abcdef0123456789abcdef0123456789',parentGuid='0123456789abcdef0123456789abcdef';
+ const motionEntries=[...readUnityPackage(built.motionPackage).values(),
+  {guid:parentGuid,path:parentPath,asset:null,meta:`fileFormatVersion: 2\nguid: ${parentGuid}\nfolderAsset: yes\nDefaultImporter:\n  externalObjects: {}\n  userData: existing parent preservation fixture\n  assetBundleName: \n  assetBundleVariant: \n`},
+  {guid:opaqueGuid,path:parentPath+'/PreservedBytes.bin',asset:new Uint8Array([0,255,128,13,10,0,42]),meta:`fileFormatVersion: 2\nguid: ${opaqueGuid}\nDefaultImporter:\n  externalObjects: {}\n  userData: opaque preservation fixture\n  assetBundleName: \n  assetBundleVariant: \n`}];
+ built.motionPackage=writeUnityPackage(motionEntries);
+ const sources=[{name:'Base.unitypackage',bytes:built.basePackage},...registrations.map(r=>({name:r.fileName,bytes:r.archive})),{name:'Motions.unitypackage',bytes:built.motionPackage},{name:'Safety.unitypackage',bytes:built.maskPackage}];
  return {templates,registrations,built,sources};
 })();}
 async function helper(){const m=await import('../../docs/decode-smooth-builder/integrator-request.mjs').catch(()=>null);assert.equal(typeof m?.createIntegratorRequest,'function','the batch must create a request for the existing Integrator API');return m.createIntegratorRequest;}
-function symbolic(text,guid,reverse=null){
- text=canonicalizeObjectReferences(replaceDocumentFileId(text,'1'));
- for(const r of [...extractReferences(text)].reverse()){if(r.fileId==='0')continue;const id=(r.guid??guid)+':'+r.fileId,source=reverse?reverse.get(id):id;assert.ok(source,`Missing provenance ${id}`);text=text.slice(0,r.start)+'{SOURCE: '+source+'}'+text.slice(r.end);}
- return text;
+function assertWholeFiles(originals,assets){
+ for(const [guid,original]of originals){
+  const actual=assets.get(guid);assert.ok(actual,`Missing original file ${original.path} (${guid})`);
+  assert.equal(actual.path,preservedPath(original.path),`Original relative pathname changed: ${guid}`);
+  assert.equal(actual.meta,original.meta,`Original importer/GUID changed: ${guid}`);
+  assert.deepEqual(actual.asset,original.asset,`Original file bytes or embedded-object layout changed: ${guid}`);
+  assert.deepEqual(docsOf(new Map([[guid,actual]])).map(d=>[d.classId,d.fileId,d.text]),docsOf(new Map([[guid,original]])).map(d=>[d.classId,d.fileId,d.text]),`Original document IDs/order/co-location changed: ${guid}`);
+ }
 }
 function validateOutput(output,built){
- const report=output.integratorReport??output.report,assets=readUnityPackage(output.archive),objects=docsOf(assets),byId=new Map(objects.map(d=>[reference(d),d])),mapping=report.composition.objectMapping,reverse=new Map(mapping.filter(m=>m.sourceId).map(m=>[m.outputGuid+':'+m.outputFileId,m.sourceId])),ctrl=assets.get(report.controllers[0].guid),controllerText=dec.decode(ctrl.asset),layers=extractAnimatorLayers(controllerText);
+ const report=output.integratorReport??output.report,assets=readUnityPackage(output.archive),objects=docsOf(assets),byId=new Map(objects.map(d=>[reference(d),d])),mapping=report.composition.objectMapping,ctrl=assets.get(report.controllers[0].guid),controllerText=dec.decode(ctrl.asset),layers=extractAnimatorLayers(controllerText);
+ const sourcePackages=[built.basePackage,built.motionPackage,built.maskPackage,...built.registrations.map(r=>r.archive)],allSources=new Map();
+ for(const bytes of sourcePackages)for(const [guid,entry]of readUnityPackage(bytes)){assert.ok(!allSources.has(guid),`Duplicate fixture GUID ${guid}`);allSources.set(guid,entry);}
+ const discardedHosts=[...report.request.controllerIds.slice(1),...report.request.expressionIds.slice(1)].map(id=>id.split(':')[0]),expectedGuids=new Set(allSources.keys());
+ for(const guid of discardedHosts)expectedGuids.delete(guid);
+ const parents=[...assets.values()].filter(a=>a.path===parentPath);assert.equal(parents.length,1);assert.equal(parents[0].asset,null);assert.match(parents[0].meta,/^folderAsset: yes$/m);expectedGuids.add(parents[0].guid);
+ const originalParent=[...allSources.values()].find(a=>a.path===parentPath);if(originalParent)assert.equal(parents[0].guid,originalParent.guid);
+ assert.deepEqual(new Set(assets.keys()),expectedGuids,'Only the new parent folder may receive a new GUID; all original files/folders must retain their GUIDs');
+ assert.ok([...assets.values()].every(a=>a.path===parentPath||a.path.startsWith(parentPath+'/')));
+ assertWholeFiles(readUnityPackage(built.motionPackage),assets);
+ assertWholeFiles(readUnityPackage(built.maskPackage),assets);
+ for(const [guid,entry]of allSources)if(entry.asset===null)assertWholeFiles(new Map([[guid,entry]]),assets);
+ for(const id of [report.request.controllerIds[0],report.request.expressionIds[0]]){
+  const [guid,fileId]=id.split(':'),source=allSources.get(guid),actual=assets.get(guid),original=docsOf(new Map([[guid,source]])).find(d=>d.fileId===fileId),out=byId.get(id);
+  assert.ok(actual&&original&&out,`Original output host missing: ${id}`);assert.equal(actual.path,preservedPath(source.path));assert.equal(actual.meta,source.meta);assert.equal(out.classId,original.classId);assert.equal(out.text.match(/^  m_Name:.*$/m)?.[0],original.text.match(/^  m_Name:.*$/m)?.[0]);
+ }
+ assert.equal(report.controllers[0].guid,report.request.controllerIds[0].split(':')[0]);assert.equal(report.controllers[0].fileId,report.request.controllerIds[0].split(':')[1]);
  assert.equal(layers.length,5);assert.deepEqual(layers.map(l=>l.name),['Base Layer','Parameters 1','Parameters 2','Root_BinaryParameter','Root_Smooth_Parameter']);for(const layer of layers)assert.equal(layer.fields.m_DefaultWeight,'1');
- const maskMapping=mapping.find(m=>m.sourceId===reference(built.refs.mask));assert.ok(maskMapping);for(const layer of layers){const r=extractReferences(layer.fields.m_Mask)[0];assert.equal((r.guid??ctrl.guid)+':'+r.fileId,maskMapping.outputGuid+':'+maskMapping.outputFileId);}
- const originalMask=docsOf(readUnityPackage(built.maskPackage))[0],outMask=byId.get(maskMapping.outputGuid+':'+maskMapping.outputFileId);assert.equal(symbolic(outMask.text,outMask.guid,reverse),symbolic(originalMask.text,originalMask.guid));assert.match(outMask.text,/m_Mask: 0{104}\n/);assert.match(outMask.text,/m_Elements: \[\]/);
- for(const original of docsOf(readUnityPackage(built.basePackage)).filter(d=>d.classId!=='91')){const m=mapping.find(m=>m.sourceId===reference(original));assert.ok(m);const out=byId.get(m.outputGuid+':'+m.outputFileId);assert.equal(symbolic(out.text,out.guid,reverse),symbolic(original.text,original.guid));assert.notEqual(out.classId,'1102');}
+ const maskMapping=mapping.find(m=>m.sourceId===reference(built.refs.mask));assert.ok(maskMapping);assert.equal(maskMapping.outputGuid+':'+maskMapping.outputFileId,reference(built.refs.mask));for(const layer of layers){const r=extractReferences(layer.fields.m_Mask)[0];assert.equal((r.guid??ctrl.guid)+':'+r.fileId,reference(built.refs.mask));}
+ const outMask=byId.get(reference(built.refs.mask));assert.match(outMask.text,/m_Mask: 0{104}\n/);assert.match(outMask.text,/m_Elements: \[\]/);
+ for(const original of docsOf(readUnityPackage(built.basePackage)).filter(d=>d.classId!=='91')){const out=byId.get(reference(original));assert.ok(out,`Base structure ID changed: ${reference(original)}`);assert.equal(out.text,original.text);assert.notEqual(out.classId,'1102');}
  for(const [i,source]of [built.refs.binaryTree,built.refs.smoothTree].entries()){
-  const m=mapping.find(m=>m.sourceId===reference(source)),tree=byId.get(m.outputGuid+':'+m.outputFileId);assert.equal(tree.classId,'206');assert.match(tree.text,/m_NormalizedBlendValues: 0/);assert.equal((tree.text.match(/m_DirectBlendParameter: AlwaysOne/g)??[]).length,2);
+  const m=mapping.find(m=>m.sourceId===reference(source));assert.ok(m);assert.equal(m.outputGuid+':'+m.outputFileId,reference(source));const tree=byId.get(reference(source));assert.equal(tree.classId,'206');assert.match(tree.text,/m_NormalizedBlendValues: 0/);assert.equal((tree.text.match(/m_DirectBlendParameter: AlwaysOne/g)??[]).length,2);
   const layer=layers.at(i-2),machineRef=extractReferences(layer.fields.m_StateMachine)[0],machine=byId.get(ctrl.guid+':'+machineRef.fileId),stateRef=extractReferences(machine.text.match(/^  m_DefaultState:.*$/m)[0])[0],state=byId.get(ctrl.guid+':'+stateRef.fileId),motion=extractReferences(state.text.match(/^  m_Motion:.*$/m)[0])[0];assert.equal((motion.guid??ctrl.guid)+':'+motion.fileId,reference(tree));assert.match(state.text,/m_WriteDefaultValues: 1/);assert.equal(layer.fields.m_BlendingMode,'0');
  }
  const sourceMotions=new Map(docsOf(readUnityPackage(built.motionPackage)).filter(d=>['74','206'].includes(d.classId)).map(d=>[reference(d),d])),pending=[reference(built.refs.binaryTree),reference(built.refs.smoothTree)],closure=new Set();
  while(pending.length){const id=pending.pop();if(closure.has(id))continue;closure.add(id);const node=sourceMotions.get(id);assert.ok(node,`Missing source Motion ${id}`);for(const r of extractReferences(node.text)){if(r.fileId==='0')continue;const target=(r.guid??node.guid)+':'+r.fileId;if(sourceMotions.has(target))pending.push(target);}}
- assert.deepEqual(new Set(mapping.filter(m=>sourceMotions.has(m.sourceId)).map(m=>m.sourceId)),closure);let checkedMotions=0;
- for(const m of mapping.filter(m=>sourceMotions.has(m.sourceId))){const original=sourceMotions.get(m.sourceId),out=byId.get(m.outputGuid+':'+m.outputFileId);assert.equal(symbolic(out.text,out.guid,reverse),symbolic(original.text,original.guid),`Motion setting/curve changed ${m.sourceId}`);checkedMotions++;}
- assert.equal(checkedMotions,objects.filter(d=>['74','206'].includes(d.classId)).length);assert.equal(checkedMotions,closure.size);
+ assert.ok(sourceMotions.size>closure.size,'Fixture must contain Motion documents outside the selected Root closure');
+ const motionMappings=mapping.filter(m=>sourceMotions.has(m.sourceId));assert.deepEqual(new Set(motionMappings.map(m=>m.sourceId)),new Set(sourceMotions.keys()));
+ for(const m of motionMappings){assert.equal(m.outputGuid+':'+m.outputFileId,m.sourceId,`Motion identity changed: ${m.sourceId}`);assert.equal(m.sourcePath,sourceMotions.get(m.sourceId).path);assert.equal(m.outputPath,preservedPath(sourceMotions.get(m.sourceId).path));}
+ for(const [id,original]of sourceMotions){const out=byId.get(id);assert.ok(out,`Source Motion omitted: ${id}`);assert.equal(out.path,preservedPath(original.path));assert.equal(out.text,original.text,`Motion document changed or moved: ${id}`);}
+ const checkedMotions=sourceMotions.size;assert.equal(checkedMotions,objects.filter(d=>['74','206'].includes(d.classId)).length);
+ const preservation=report.preservation;assert.ok(preservation);assert.equal(preservation.parentFolder.path,parentPath);assert.equal(preservation.parentFolder.guid,parents[0].guid);assert.equal(preservation.parentFolder.created,!originalParent);
+ const hostGuids=new Set([report.request.controllerIds[0],report.request.expressionIds[0]].map(id=>id.split(':')[0]));
+ assert.deepEqual(new Set(preservation.sourceAssets.map(a=>a.guid)),new Set([...allSources.keys()].filter(guid=>!hostGuids.has(guid)&&!discardedHosts.includes(guid))));
+ for(const item of [...preservation.sourceAssets,...preservation.modifiedHosts]){assert.equal(item.sourcePath,allSources.get(item.guid).path);assert.equal(item.outputPath,preservedPath(item.sourcePath));}
+ assert.deepEqual(new Set(preservation.modifiedHosts.map(h=>h.guid)),hostGuids);
+ for(const change of preservation.structuralFileIdChanges){assert.ok(!sourceMotions.has(change.sourceId));assert.notEqual(change.sourceId.split(':')[0],report.controllers[0].guid);assert.notEqual(change.sourceId.split(':')[1],change.outputFileId);}
  const params=extractAnimatorParameters(controllerText),always=params.find(p=>p.name==='AlwaysOne');assert.equal(always.fields.m_Type,'1');assert.equal(always.fields.m_DefaultFloat,'1');const expressions=objects.filter(d=>d.classId==='114').flatMap(d=>parseExpression(d.text));assert.equal(expressions.find(p=>p.name==='AlwaysOne').defaultValue,1);assert.ok(expressions.every(p=>p.saved===false));for(const p of expressions){if(/(?:[0-9]|Negative)$/.test(p.name)){assert.equal(p.type,'Bool');assert.ok(p.defaultValue===0||p.defaultValue===1);}assert.equal(p.defaultValue,Number(params.find(a=>a.name===p.name).fields.m_DefaultFloat));}for(const name of ['v2/EyeLidLeft','v2/EyeLidRight'])assert.equal(expressions.find(p=>p.name===name).defaultValue,0.75);assert.ok(Array.isArray(report.expressionBoolRules.changes));assert.equal(report.vrcft5RangeSync.enabled,true);assert.ok(Array.isArray(report.vrcft5RangeSync.matches));assert.ok(report.vrcft5RangeSync.matches.every(p=>expressions.find(row=>row.name===p.name)?.networkSynced===p.networkSynced));assert.deepEqual(expressions,report.parameters);assert.ok(Array.isArray(report.expressionSyncRules.changes));assert.ok(report.bitCost<=256);assert.equal(report.staticValidation.status,'PASS');assert.equal(report.staticValidation.roundtripBytes,'PASS');
  return {assets:assets.size,objects:objects.length,layerCount:layers.length,parameterCount:params.length,treeCount:objects.filter(d=>d.classId==='206').length,clipCount:objects.filter(d=>d.classId==='74').length,checkedMotions};
 }
@@ -63,9 +104,9 @@ test('exact catalog identities create ordered requests and explicitly name gener
  const wrong=structuredClone(catalog);wrong.controllers[0].id='f'.repeat(32)+':9100000';assert.throws(()=>create({catalog:wrong,refs:f.built.refs,registrations:f.registrations}),/identity|GUID|参照/i);
  }finally{session.dispose();}
 });
-test('real Template and Registrar packages pass the actual Integrator Worker with semantic preservation and cancellation retry',async()=>{
+test('Integrator retains all source files and embedded Clips with original GUIDs, paths and bytes, including unreferenced inputs',async()=>{
  const create=await helper(),f=await fixture(),session=createAnimatorIntegrator({workerFactory:()=>new BrowserWorker(new URL('../../docs/shared/animator-integrator/worker.mjs',import.meta.url))}),originals=f.sources.map(p=>p.bytes.slice());
- try{const imported=await session.importSources(f.sources,{inputRevision:8}),request=create({catalog:imported.catalog,refs:f.built.refs,registrations:f.registrations});const pending=session.generate(request,{inputRevision:8}),rejected=assert.rejects(pending,e=>e.name==='AbortError');assert.equal(session.cancel(),true);await rejected;const progress=[],output=await session.generate(request,{inputRevision:8,onProgress:p=>progress.push(p.phase)}),verified=validateOutput(output,f.built);assert.ok(progress.includes('reading'));f.sources.forEach((s,i)=>assert.deepEqual(s.bytes,originals[i]));await assert.rejects(session.generate(request,{inputRevision:9}),/revision/i);
+ try{const imported=await session.importSources(f.sources,{inputRevision:8}),request=create({catalog:imported.catalog,refs:f.built.refs,registrations:f.registrations});const pending=session.generate(request,{inputRevision:8}),rejected=assert.rejects(pending,e=>e.name==='AbortError');assert.equal(session.cancel(),true);await rejected;const progress=[],output=await session.generate(request,{inputRevision:8,onProgress:p=>progress.push(p.phase)}),verified=validateOutput(output,{...f.built,registrations:f.registrations});assert.ok(progress.includes('reading'));f.sources.forEach((s,i)=>assert.deepEqual(s.bytes,originals[i]));await assert.rejects(session.generate(request,{inputRevision:9}),/revision/i);
  }finally{session.dispose();}
 });
 test('batch pipeline uses shared Template/Registrar jobs and the existing Integrator, returning final counts and source evidence',async()=>{
