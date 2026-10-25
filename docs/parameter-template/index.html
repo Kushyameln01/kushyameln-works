@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>VRCFT Parameter Template｜Kushyameln Works</title>
+  <meta name="description" content="VRCFT5のパラメータ名を指定し、Clipを内包したBlendTreeをunitypackageで生成します。">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header><h1>VRCFT Parameter Template</h1><span>Kushyameln Works</span></header>
+  <nav class="site-nav" aria-label="サイト内ナビゲーション"><a href="../">トップページ</a><a href="../github/">GitHub・ツール</a></nav>
+  <main>
+    <p class="intro">パラメータ名を指定すると、DecodeParameter TemplateからBlendTreeを生成します。処理はブラウザ内で完結します。</p>
+    <form id="generator" novalidate>
+      <label for="parameter">変換先のパラメータ名</label>
+      <input id="parameter" name="parameter" type="text" placeholder="v2/EyeLidLeft" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="123" aria-describedby="input-help">
+      <p id="input-help" class="small">v2/ に続けて文字・数字・_・- を入力してください（120文字まで）。日本語も使用できます。</p>
+      <div class="actions"><button id="generate" type="submit">unitypackageを生成</button><button id="cancel" type="button" hidden>取消</button></div>
+    </form>
+    <p id="status" role="status" aria-live="polite">パラメータ名を入力してください。</p>
+    <section id="result" aria-label="生成結果" hidden>
+      <h2>生成結果</h2>
+      <p id="summary"></p>
+      <a id="download" class="download">unitypackageをダウンロード</a>
+    </section>
+    <details>
+      <summary>変換内容と出力範囲</summary>
+      <ul>
+        <li>v2/Parameter と、末尾が 0・1・2・4・8・Negative のパラメータ名を置換します。ClipのキーとBlendTreeの参照、表示名にも反映します。</li>
+        <li>BlendTreeは16個の独立したアセットとして保存し、直接参照するClipを各BlendTree内に格納します。BlendTree同士は外部参照を維持します。</li>
+        <li>出力先は Assets/パラメータ名 です。毎回新しいGUIDを発行し、表示名には付加しません。</li>
+        <li>Templateの計算値・接続と、Proxy・Function・Smooth系のパラメータ名は保持します。</li>
+        <li>Controller・Expression・Prefabと、BlendTreeから参照されていないClipは含みません。UnityへのImportとVRChatでの実動作は未確認です。</li>
+      </ul>
+    </details>
+    <noscript><p>このツールを使うにはJavaScriptを有効にしてください。</p></noscript>
+  </main>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
