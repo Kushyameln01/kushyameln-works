@@ -1,6 +1,6 @@
 # Parameter Template 1.2.0 検証記録
 
-2026-10-25 JST。公開前の候補検証記録です。公開commit、Sites版、公開HTTPSの回収結果は公開後に追記します。
+2026-10-25 JST。候補検証と、GitHub Pages・Sites公開後の確認を記録します。
 
 ## 変更契約
 
@@ -48,7 +48,7 @@ GUIDは生成ごとに変わるため、この表は今回の実ファイルの�
 
 ## 未確認
 
-公開HTTPSでのファイル回収は公開後に実施します。Unity ImportとAnimator/VRChat実動作は未確認です。Node/独立Pythonの合格をUnity実行の合格とは扱いません。
+Unity ImportとAnimator/VRChat実動作は未確認です。Node/独立Pythonの合格をUnity実行の合格とは扱いません。
 
 ## 配布前の確認
 
@@ -68,3 +68,22 @@ GUIDは生成ごとに変わるため、この表は今回の実ファイルの�
 Sites第94版のsource commitは`2c68f212951cdff7de3acacf5cf3108ddbf4ef1a`、deploymentは`appgdep_6ade07ec76d88191b168908f04167672`。native deploymentの状態は`succeeded`でした。
 
 公開HTTPS画面から`v2/EyeLidLeft`を入力し、生成・ダウンロードした実ファイルを独立Pythonで検証してPASSしました。出力SHA-256は`863d301a915c9bddb1c496b3bb76bc2546aef3d67325093e7e1363f04f68e5cb`です。完全一致変換、bitと`_Function`の保持、18entries、16Tree、30Clip、47参照、CRC32、GUIDと許容差分を検査しました。
+
+公開画面の記録は[生成完了画面](published-1.2.0-sites.jpg)です。画面上の生成完了表示と、上記のファイル内容検証は別の証拠として扱います。
+
+## GitHub Pages公開後の確認
+
+実装commitは`295e4ae7bfef5ac02763daabae4e375874225d15`。`pages build and deployment`（run `40199239086`）は`completed/success`でした。
+
+公開HTTPS画面で`v2/EyeLidLeft`を生成・ダウンロードし、同じ独立Python検証でPASSしました。出力SHA-256は`b171467b6ada7cfbe116515a0fc83011316f9908e4fe5b713d803f3a34f260ad`です。
+
+公開HTTP取得で、変更した4ファイルの応答が200、SHA-256が配布候補と一致することを確認しました。
+
+| ファイル | 公開SHA-256 |
+|---|---|
+| `parameter-template/core.mjs` | `68c5d573803ccb7c5453a31b9597be26e6b5c99f5362e2a48afe056e000b583b` |
+| `parameter-template/template.json` | `d11aa908b86a75021a7be4ad0367a45cb3206346d1a370202a4d25aaab3be3f1` |
+| `shared/compute/parameter-template-task.mjs` | `cb45844ccb6cd4216155f23cb43a7b4b7775fb75cde650d0c05fed4f1c5fb4cf` |
+| `shared/compute/pool-worker.bundle.mjs` | `dc7648b00d4850fd43638c81aafffa1d9c2fd0e37fb8cffbd05ed1b4707cf17f` |
+
+公開先は[GitHub Pages](https://kushyameln01.github.io/kushyameln-works/parameter-template/)と[ChatGPT Sites](https://kushyameln-works.vde6fedxrbh7fbbb740t.chatgpt.site/parameter-template/)です。Sitesの同梱検証記録は保存時点の公開前記録であり、この公開後追記はGitHub側に保存しています。
