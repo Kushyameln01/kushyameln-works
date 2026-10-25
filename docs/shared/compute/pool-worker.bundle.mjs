@@ -5,7 +5,7 @@ var __export = (target, all) => {
 };
 
 // docs/shared/compute/protocol.mjs
-var BUILD_ID = "compute-knowledge-b2";
+var BUILD_ID = "compute-parameter-b1";
 var WASM_SHA256 = "b260ac37862014a9ebb3ebb25739283fe2778e638969e757b2fd34769cd989ad";
 var MAX_MASKS = 262144;
 function validateRequest(input, { copy = true } = {}) {
@@ -46,7 +46,7 @@ async function prepareKernelModule({ signal, fetchImpl = fetch, onCompile = () =
 } } = {}) {
   const response = await fetchImpl(new URL("../ft/kernel/ft-kernel.wasm", import.meta.url), { credentials: "omit", signal });
   onResponse(response.headers?.get("content-type") ?? null);
-  if (!response.ok) throw Error(`WASM fetch failed: ${response.status}`);
+  if (!response.ok) throw Error("WASM fetch failed: ".concat(response.status));
   const bytes2 = await response.arrayBuffer();
   if (signal?.aborted) throw Error("WASM preparation aborted");
   const digest = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes2)), (value2) => value2.toString(16).padStart(2, "0")).join("");
@@ -61,13 +61,19 @@ function instantiateKernel(module) {
   if (!(module instanceof WebAssembly.Module)) throw TypeError("Expected a compiled WASM module");
   if (WebAssembly.Module.imports(module).length) throw Error("Unexpected kernel imports");
   const expected = ["FtAnchorComponent:function", "FtCrc32Step:function", "FtMagnitude:function", "FtSignedMagnitude:function", "FtValidate:function", "memory:memory"];
-  const actual = WebAssembly.Module.exports(module).map((value2) => `${value2.name}:${value2.kind}`).sort();
+  const actual = WebAssembly.Module.exports(module).map((value2) => "".concat(value2.name, ":").concat(value2.kind)).sort();
   if (JSON.stringify(expected) !== JSON.stringify(actual)) throw Error("Unexpected kernel exports");
   const instance = new WebAssembly.Instance(module, {});
   const k = instance.exports;
   return Object.freeze({
     instanceId: crypto.randomUUID(),
     memory: k.memory,
+    animatorHash(text2) {
+      if (typeof text2 !== "string") throw TypeError("Expected parameter string");
+      let state = -1;
+      for (const byte of new TextEncoder().encode(text2)) state = k.FtCrc32Step(state, byte);
+      return k.FtCrc32Step(state, -1) >>> 0;
+    },
     magnitude(mask, weights) {
       if (!Number.isInteger(mask) || mask < 0 || mask > 2147483647) throw RangeError("Expected an i32 mask");
       if (!Array.isArray(weights) || weights.length < 1 || weights.length > 5 || Array.from(weights).some((value3) => typeof value3 !== "number" || !Number.isFinite(value3))) throw RangeError("Invalid weights");
@@ -84,7 +90,7 @@ function instantiateKernel(module) {
 var inspectTaskRequest = (r) => validateRequest(r, { copy: false });
 var snapshotTaskRequest = (r) => ({ ...r, payload: { masks: r.payload.masks.slice(), weights: r.payload.weights.slice() } });
 var inputBytes = (r) => (r.payload.masks.length + r.payload.weights.length) * 8;
-var kernelInfo = () => ({ sha256: WASM_SHA256, variant: "scalar", abi: "ft-v1", key: `ft-v1:${WASM_SHA256}:scalar` });
+var kernelInfo = () => ({ sha256: WASM_SHA256, variant: "scalar", abi: "ft-v1", key: "ft-v1:".concat(WASM_SHA256, ":scalar") });
 var resultShape = (r) => ({ length: r.payload.masks.length });
 var validTaskResult = (t, s, r) => Array.isArray(r) && r.length === s.length && Array.from(r).every((x) => typeof x === "number" && Number.isFinite(x));
 var resultBytes = (r) => r ? r.length * 8 : 0;
@@ -140,9 +146,9 @@ function validateStep(p) {
   }
   for (const record of p.records) {
     if (!Array.isArray(record) || record.length !== 3 || !record.every((v) => integer(v))) throw TypeError("Invalid token record");
-    const order = previous ? compareRecord(previous, record) : -1;
-    if (order > 0) throw RangeError("Unsorted token records");
-    count = order === 0 ? count + 1 : 1;
+    const order2 = previous ? compareRecord(previous, record) : -1;
+    if (order2 > 0) throw RangeError("Unsorted token records");
+    count = order2 === 0 ? count + 1 : 1;
     if (count > I32) throw RangeError("Posting count overflow");
     previous = record;
   }
@@ -303,7 +309,7 @@ function normalizeAssetId(value2) {
   return /^[0-9a-fA-F]{32}$/.test(value2) ? guid(value2) : value2;
 }
 function fileAssetId(file) {
-  return file.guid == null ? `input:${file.path}` : guid(file.guid);
+  return file.guid == null ? "input:".concat(file.path) : guid(file.guid);
 }
 function safePath(path) {
   if (typeof path !== "string" || !path || path.length > 1024 || /[\\\x00-\x1f]/.test(path) || path.startsWith("/") || path.split("/").some((x) => !x || x === "." || x === "..") || path.includes(":")) throw TypeError("Unsafe relative input path");
@@ -437,7 +443,7 @@ function buildIndex(input) {
     assetMap.set(assetId, byAsset);
     if (f.guid) guidMap.set(assetId, byAsset);
     for (const o of f.objects) {
-      const n = { ...o, index: nodes.length, assetId, file: f, fileIndex: fi, key: `${assetId}:${o.fileId}`, source: { ...o.source ?? {}, path: f.path, fileId: o.fileId, classId: o.classId } };
+      const n = { ...o, index: nodes.length, assetId, file: f, fileIndex: fi, key: "".concat(assetId, ":").concat(o.fileId), source: { ...o.source ?? {}, path: f.path, fileId: o.fileId, classId: o.classId } };
       nodes.push(n);
       const matches = entry.nodes.get(o.fileId) ?? [];
       matches.push(n);
@@ -453,7 +459,7 @@ function buildIndex(input) {
 var builtin = (g) => /^0{16}[def]0{15}$/i.test(g ?? "");
 var withoutSources = (value2) => Array.isArray(value2) ? value2.map(withoutSources) : value2 && typeof value2 === "object" ? Object.fromEntries(Object.entries(value2).filter(([k]) => k !== "source").map(([k, v]) => [k, withoutSources(v)])) : value2;
 var pointer = (k) => String(k).replaceAll("~", "~0").replaceAll("/", "~1");
-var keyOf = (assetId, fileId2) => `${normalizeAssetId(assetId)}:${fileId2}`;
+var keyOf = (assetId, fileId3) => "".concat(normalizeAssetId(assetId), ":").concat(fileId3);
 var referenceValues = (references) => references.map(({ source, ...r }) => ({ ...r, ...r.guid != null ? { guid: guid(r.guid) } : {} }));
 var useValues = (uses) => withoutSources(uses.map((u) => u.scope ? { ...u, scope: { ...u.scope, assetId: normalizeAssetId(u.scope.assetId) } } : u));
 function graphComponents(nodes, edges) {
@@ -466,7 +472,7 @@ function graphComponents(nodes, edges) {
   const step = () => {
     if (++steps > LIMITS.maxGraphSteps) throw RangeError("GRAPH_STEP_LIMIT");
   };
-  const seen = /* @__PURE__ */ new Set(), order = [];
+  const seen = /* @__PURE__ */ new Set(), order2 = [];
   for (let start = 0; start < nodes.length; start++) {
     if (seen.has(start)) continue;
     seen.add(start);
@@ -475,7 +481,7 @@ function graphComponents(nodes, edges) {
       step();
       const top = stack[stack.length - 1], next = out[top[0]][top[1]++];
       if (next === void 0) {
-        order.push(top[0]);
+        order2.push(top[0]);
         stack.pop();
       } else if (!seen.has(next)) {
         seen.add(next);
@@ -485,8 +491,8 @@ function graphComponents(nodes, edges) {
   }
   seen.clear();
   const cycles = [];
-  for (let p = order.length - 1; p >= 0; p--) {
-    const start = order[p];
+  for (let p = order2.length - 1; p >= 0; p--) {
+    const start = order2[p];
     if (seen.has(start)) continue;
     const members = [], stack = [start];
     seen.add(start);
@@ -693,7 +699,7 @@ async function prepareUnityKernel({ signal, fetchImpl = fetch, onCompile = () =>
   aborted(signal);
   const response = await fetchImpl(UNITY_KERNEL.url, { credentials: "omit", signal });
   aborted(signal);
-  if (!response.ok) throw Error(`UA_KERNEL_FETCH:${response.status}`);
+  if (!response.ok) throw Error("UA_KERNEL_FETCH:".concat(response.status));
   onResponse(response.headers?.get("content-type") ?? null);
   const bytes2 = await response.arrayBuffer();
   aborted(signal);
@@ -708,10 +714,10 @@ async function prepareUnityKernel({ signal, fetchImpl = fetch, onCompile = () =>
 }
 function instantiateUnityKernel(module) {
   const expected = "UaDiff:function,UaIncoming:function,UaTypeCheck:function,memory:memory";
-  if (!(module instanceof WebAssembly.Module) || WebAssembly.Module.imports(module).length || WebAssembly.Module.exports(module).map((x) => `${x.name}:${x.kind}`).sort().join(",") !== expected) throw TypeError("UA_KERNEL_ABI");
+  if (!(module instanceof WebAssembly.Module) || WebAssembly.Module.imports(module).length || WebAssembly.Module.exports(module).map((x) => "".concat(x.name, ":").concat(x.kind)).sort().join(",") !== expected) throw TypeError("UA_KERNEL_ABI");
   let instance = new WebAssembly.Instance(module), memory = instance.exports.memory;
   if (!(memory instanceof WebAssembly.Memory) || !(memory.buffer instanceof ArrayBuffer) || memory.buffer.byteLength < 65536 || memory.buffer.byteLength > MAX_MEMORY || ["UaIncoming", "UaTypeCheck", "UaDiff"].some((name) => instance.exports[name].length !== 5)) throw TypeError("UA_KERNEL_ABI");
-  const instanceId = `unity-${crypto.randomUUID()}`, arenaBase = memory.buffer.byteLength;
+  const instanceId = "unity-".concat(crypto.randomUUID()), arenaBase = memory.buffer.byteLength;
   let disposed = false, busy = false, liveBytes = 0, peakBytes = 0, runs = 0;
   function check() {
     if (disposed) throw Error("UA_DISPOSED");
@@ -1031,7 +1037,9 @@ var fdt = new u8(32);
 for (i = 0; i < 32; ++i)
   fdt[i] = 5;
 var i;
+var flm = /* @__PURE__ */ hMap(flt, 9, 0);
 var flrm = /* @__PURE__ */ hMap(flt, 9, 1);
+var fdm = /* @__PURE__ */ hMap(fdt, 5, 0);
 var fdrm = /* @__PURE__ */ hMap(fdt, 5, 1);
 var max = function(a) {
   var m = a[0];
@@ -1226,7 +1234,345 @@ var inflt = function(dat, st, buf, dict) {
   } while (!final);
   return bt != buf.length && noBuf ? slc(buf, 0, bt) : buf.subarray(0, bt);
 };
+var wbits = function(d, p, v) {
+  v <<= p & 7;
+  var o = p / 8 | 0;
+  d[o] |= v;
+  d[o + 1] |= v >> 8;
+};
+var wbits16 = function(d, p, v) {
+  v <<= p & 7;
+  var o = p / 8 | 0;
+  d[o] |= v;
+  d[o + 1] |= v >> 8;
+  d[o + 2] |= v >> 16;
+};
+var hTree = function(d, mb) {
+  var t = [];
+  for (var i = 0; i < d.length; ++i) {
+    if (d[i])
+      t.push({ s: i, f: d[i] });
+  }
+  var s = t.length;
+  var t2 = t.slice();
+  if (!s)
+    return { t: et, l: 0 };
+  if (s == 1) {
+    var v = new u8(t[0].s + 1);
+    v[t[0].s] = 1;
+    return { t: v, l: 1 };
+  }
+  t.sort(function(a, b) {
+    return a.f - b.f;
+  });
+  t.push({ s: -1, f: 25001 });
+  var l = t[0], r = t[1], i0 = 0, i1 = 1, i2 = 2;
+  t[0] = { s: -1, f: l.f + r.f, l, r };
+  while (i1 != s - 1) {
+    l = t[t[i0].f < t[i2].f ? i0++ : i2++];
+    r = t[i0 != i1 && t[i0].f < t[i2].f ? i0++ : i2++];
+    t[i1++] = { s: -1, f: l.f + r.f, l, r };
+  }
+  var maxSym = t2[0].s;
+  for (var i = 1; i < s; ++i) {
+    if (t2[i].s > maxSym)
+      maxSym = t2[i].s;
+  }
+  var tr = new u16(maxSym + 1);
+  var mbt = ln(t[i1 - 1], tr, 0);
+  if (mbt > mb) {
+    var i = 0, dt = 0;
+    var lft = mbt - mb, cst = 1 << lft;
+    t2.sort(function(a, b) {
+      return tr[b.s] - tr[a.s] || a.f - b.f;
+    });
+    for (; i < s; ++i) {
+      var i2_1 = t2[i].s;
+      if (tr[i2_1] > mb) {
+        dt += cst - (1 << mbt - tr[i2_1]);
+        tr[i2_1] = mb;
+      } else
+        break;
+    }
+    dt >>= lft;
+    while (dt > 0) {
+      var i2_2 = t2[i].s;
+      if (tr[i2_2] < mb)
+        dt -= 1 << mb - tr[i2_2]++ - 1;
+      else
+        ++i;
+    }
+    for (; i >= 0 && dt; --i) {
+      var i2_3 = t2[i].s;
+      if (tr[i2_3] == mb) {
+        --tr[i2_3];
+        ++dt;
+      }
+    }
+    mbt = mb;
+  }
+  return { t: new u8(tr), l: mbt };
+};
+var ln = function(n, l, d) {
+  return n.s == -1 ? Math.max(ln(n.l, l, d + 1), ln(n.r, l, d + 1)) : l[n.s] = d;
+};
+var lc = function(c) {
+  var s = c.length;
+  while (s && !c[--s])
+    ;
+  var cl = new u16(++s);
+  var cli = 0, cln = c[0], cls = 1;
+  var w = function(v) {
+    cl[cli++] = v;
+  };
+  for (var i = 1; i <= s; ++i) {
+    if (c[i] == cln && i != s)
+      ++cls;
+    else {
+      if (!cln && cls > 2) {
+        for (; cls > 138; cls -= 138)
+          w(32754);
+        if (cls > 2) {
+          w(cls > 10 ? cls - 11 << 5 | 28690 : cls - 3 << 5 | 12305);
+          cls = 0;
+        }
+      } else if (cls > 3) {
+        w(cln), --cls;
+        for (; cls > 6; cls -= 6)
+          w(8304);
+        if (cls > 2)
+          w(cls - 3 << 5 | 8208), cls = 0;
+      }
+      while (cls--)
+        w(cln);
+      cls = 1;
+      cln = c[i];
+    }
+  }
+  return { c: cl.subarray(0, cli), n: s };
+};
+var clen = function(cf, cl) {
+  var l = 0;
+  for (var i = 0; i < cl.length; ++i)
+    l += cf[i] * cl[i];
+  return l;
+};
+var wfblk = function(out, pos, dat) {
+  var s = dat.length;
+  var o = shft(pos + 2);
+  out[o] = s & 255;
+  out[o + 1] = s >> 8;
+  out[o + 2] = out[o] ^ 255;
+  out[o + 3] = out[o + 1] ^ 255;
+  for (var i = 0; i < s; ++i)
+    out[o + i + 4] = dat[i];
+  return (o + 4 + s) * 8;
+};
+var wblk = function(dat, out, final, syms, lf, df, eb, li, bs, bl, p) {
+  wbits(out, p++, final);
+  ++lf[256];
+  var _a2 = hTree(lf, 15), dlt = _a2.t, mlb = _a2.l;
+  var _b2 = hTree(df, 15), ddt = _b2.t, mdb = _b2.l;
+  var _c = lc(dlt), lclt = _c.c, nlc = _c.n;
+  var _d = lc(ddt), lcdt = _d.c, ndc = _d.n;
+  var lcfreq = new u16(19);
+  for (var i = 0; i < lclt.length; ++i)
+    ++lcfreq[lclt[i] & 31];
+  for (var i = 0; i < lcdt.length; ++i)
+    ++lcfreq[lcdt[i] & 31];
+  var _e = hTree(lcfreq, 7), lct = _e.t, mlcb = _e.l;
+  var nlcc = 19;
+  for (; nlcc > 4 && !lct[clim[nlcc - 1]]; --nlcc)
+    ;
+  var flen = bl + 5 << 3;
+  var ftlen = clen(lf, flt) + clen(df, fdt) + eb;
+  var dtlen = clen(lf, dlt) + clen(df, ddt) + eb + 14 + 3 * nlcc + clen(lcfreq, lct) + 2 * lcfreq[16] + 3 * lcfreq[17] + 7 * lcfreq[18];
+  if (bs >= 0 && flen <= ftlen && flen <= dtlen)
+    return wfblk(out, p, dat.subarray(bs, bs + bl));
+  var lm, ll, dm, dl;
+  wbits(out, p, 1 + (dtlen < ftlen)), p += 2;
+  if (dtlen < ftlen) {
+    lm = hMap(dlt, mlb, 0), ll = dlt, dm = hMap(ddt, mdb, 0), dl = ddt;
+    var llm = hMap(lct, mlcb, 0);
+    wbits(out, p, nlc - 257);
+    wbits(out, p + 5, ndc - 1);
+    wbits(out, p + 10, nlcc - 4);
+    p += 14;
+    for (var i = 0; i < nlcc; ++i)
+      wbits(out, p + 3 * i, lct[clim[i]]);
+    p += 3 * nlcc;
+    var lcts = [lclt, lcdt];
+    for (var it = 0; it < 2; ++it) {
+      var clct = lcts[it];
+      for (var i = 0; i < clct.length; ++i) {
+        var len = clct[i] & 31;
+        wbits(out, p, llm[len]), p += lct[len];
+        if (len > 15)
+          wbits(out, p, clct[i] >> 5 & 127), p += clct[i] >> 12;
+      }
+    }
+  } else {
+    lm = flm, ll = flt, dm = fdm, dl = fdt;
+  }
+  for (var i = 0; i < li; ++i) {
+    var sym = syms[i];
+    if (sym > 255) {
+      var len = sym >> 18 & 31;
+      wbits16(out, p, lm[len + 257]), p += ll[len + 257];
+      if (len > 7)
+        wbits(out, p, sym >> 23 & 31), p += fleb[len];
+      var dst = sym & 31;
+      wbits16(out, p, dm[dst]), p += dl[dst];
+      if (dst > 3)
+        wbits16(out, p, sym >> 5 & 8191), p += fdeb[dst];
+    } else {
+      wbits16(out, p, lm[sym]), p += ll[sym];
+    }
+  }
+  wbits16(out, p, lm[256]);
+  return p + ll[256];
+};
+var deo = /* @__PURE__ */ new i32([65540, 131080, 131088, 131104, 262176, 1048704, 1048832, 2114560, 2117632]);
 var et = /* @__PURE__ */ new u8(0);
+var dflt = function(dat, lvl, plvl, pre, post, st) {
+  var s = st.z || dat.length;
+  var o = new u8(pre + s + 5 * (1 + Math.ceil(s / 7e3)) + post);
+  var w = o.subarray(pre, o.length - post);
+  var lst = st.l;
+  var pos = (st.r || 0) & 7;
+  if (lvl) {
+    if (pos)
+      w[0] = st.r >> 3;
+    var opt = deo[lvl - 1];
+    var n = opt >> 13, c = opt & 8191;
+    var msk_1 = (1 << plvl) - 1;
+    var prev = st.p || new u16(32768), head = st.h || new u16(msk_1 + 1);
+    var bs1_1 = Math.ceil(plvl / 3), bs2_1 = 2 * bs1_1;
+    var hsh = function(i2) {
+      return (dat[i2] ^ dat[i2 + 1] << bs1_1 ^ dat[i2 + 2] << bs2_1) & msk_1;
+    };
+    var syms = new i32(25e3);
+    var lf = new u16(288), df = new u16(32);
+    var lc_1 = 0, eb = 0, i = st.i || 0, li = 0, wi = st.w || 0, bs = 0;
+    for (; i + 2 < s; ++i) {
+      var hv = hsh(i);
+      var imod = i & 32767, pimod = head[hv];
+      prev[imod] = pimod;
+      head[hv] = imod;
+      if (wi <= i) {
+        var rem = s - i;
+        if ((lc_1 > 7e3 || li > 24576) && (rem > 423 || !lst)) {
+          pos = wblk(dat, w, 0, syms, lf, df, eb, li, bs, i - bs, pos);
+          li = lc_1 = eb = 0, bs = i;
+          for (var j = 0; j < 286; ++j)
+            lf[j] = 0;
+          for (var j = 0; j < 30; ++j)
+            df[j] = 0;
+        }
+        var l = 2, d = 0, ch_1 = c, dif = imod - pimod & 32767;
+        if (rem > 2 && hv == hsh(i - dif)) {
+          var maxn = Math.min(n, rem) - 1;
+          var maxd = Math.min(32767, i);
+          var ml = Math.min(258, rem);
+          while (dif <= maxd && --ch_1 && imod != pimod) {
+            if (dat[i + l] == dat[i + l - dif]) {
+              var nl = 0;
+              for (; nl < ml && dat[i + nl] == dat[i + nl - dif]; ++nl)
+                ;
+              if (nl > l) {
+                l = nl, d = dif;
+                if (nl > maxn)
+                  break;
+                var mmd = Math.min(dif, nl - 2);
+                var md = 0;
+                for (var j = 0; j < mmd; ++j) {
+                  var ti = i - dif + j & 32767;
+                  var pti = prev[ti];
+                  var cd = ti - pti & 32767;
+                  if (cd > md)
+                    md = cd, pimod = ti;
+                }
+              }
+            }
+            imod = pimod, pimod = prev[imod];
+            dif += imod - pimod & 32767;
+          }
+        }
+        if (d) {
+          syms[li++] = 268435456 | revfl[l] << 18 | revfd[d];
+          var lin = revfl[l] & 31, din = revfd[d] & 31;
+          eb += fleb[lin] + fdeb[din];
+          ++lf[257 + lin];
+          ++df[din];
+          wi = i + l;
+          ++lc_1;
+        } else {
+          syms[li++] = dat[i];
+          ++lf[dat[i]];
+        }
+      }
+    }
+    for (i = Math.max(i, wi); i < s; ++i) {
+      syms[li++] = dat[i];
+      ++lf[dat[i]];
+    }
+    pos = wblk(dat, w, lst, syms, lf, df, eb, li, bs, i - bs, pos);
+    if (!lst) {
+      st.r = pos & 7 | w[pos / 8 | 0] << 3;
+      pos -= 7;
+      st.h = head, st.p = prev, st.i = i, st.w = wi;
+    }
+  } else {
+    for (var i = st.w || 0; i < s + lst; i += 65535) {
+      var e = i + 65535;
+      if (e >= s) {
+        w[pos / 8 | 0] = lst;
+        e = s;
+      }
+      pos = wfblk(w, pos + 1, dat.subarray(i, e));
+    }
+    st.i = s;
+  }
+  return slc(o, 0, pre + shft(pos) + post);
+};
+var crct = /* @__PURE__ */ (function() {
+  var t = new Int32Array(256);
+  for (var i = 0; i < 256; ++i) {
+    var c = i, k = 9;
+    while (--k)
+      c = (c & 1 && -306674912) ^ c >>> 1;
+    t[i] = c;
+  }
+  return t;
+})();
+var crc = function() {
+  var c = -1;
+  return {
+    p: function(d) {
+      var cr = c;
+      for (var i = 0; i < d.length; ++i)
+        cr = crct[cr & 255 ^ d[i]] ^ cr >>> 8;
+      c = cr;
+    },
+    d: function() {
+      return ~c;
+    }
+  };
+};
+var dopt = function(dat, opt, pre, post, st) {
+  if (!st) {
+    st = { l: 1 };
+    if (opt.dictionary) {
+      var dict = opt.dictionary.subarray(-32768);
+      var newDat = new u8(dict.length + dat.length);
+      newDat.set(dict);
+      newDat.set(dat, dict.length);
+      dat = newDat;
+      st.w = dict.length;
+    }
+  }
+  return dflt(dat, opt.level == null ? 6 : opt.level, opt.mem == null ? st.l ? Math.ceil(Math.max(8, Math.min(13, Math.log(dat.length))) * 1.5) : 20 : 12 + opt.mem, pre, post, st);
+};
 var b2 = function(d, b) {
   return d[b] | d[b + 1] << 8;
 };
@@ -1235,6 +1581,21 @@ var b4 = function(d, b) {
 };
 var b8 = function(d, b) {
   return b4(d, b) + b4(d, b + 4) * 4294967296;
+};
+var wbytes = function(d, b, v) {
+  for (; v; ++b)
+    d[b] = v, v >>>= 8;
+};
+var gzh = function(c, o) {
+  var fn = o.filename;
+  c[0] = 31, c[1] = 139, c[2] = 8, c[8] = o.level < 2 ? 4 : o.level == 9 ? 2 : 0, c[9] = 3;
+  if (o.mtime != 0)
+    wbytes(c, 4, Math.floor(new Date(o.mtime || Date.now()) / 1e3));
+  if (fn) {
+    c[3] = 8;
+    for (var i = 0; i <= fn.length; ++i)
+      c[i + 10] = fn.charCodeAt(i);
+  }
 };
 var gzs = function(d) {
   if (d[0] != 31 || d[1] != 139 || d[2] != 8)
@@ -1246,6 +1607,9 @@ var gzs = function(d) {
   for (var zs = (flg >> 3 & 1) + (flg >> 4 & 1); zs > 0; zs -= !d[st++])
     ;
   return st + (flg & 2);
+};
+var gzhl = function(o) {
+  return 10 + (o.filename ? o.filename.length + 1 : 0);
 };
 var Inflate = /* @__PURE__ */ (function() {
   function Inflate2(opts, cb) {
@@ -1284,6 +1648,14 @@ var Inflate = /* @__PURE__ */ (function() {
   };
   return Inflate2;
 })();
+function gzipSync(data, opts) {
+  if (!opts)
+    opts = {};
+  var c = crc(), l = data.length;
+  c.p(data);
+  var d = dopt(data, opts, gzhl(opts), 8), s = d.length;
+  return gzh(d, opts), wbytes(d, s - 8, c.d()), wbytes(d, s - 4, l), d;
+}
 var Gunzip = /* @__PURE__ */ (function() {
   function Gunzip2(opts, cb) {
     this.v = 1;
@@ -1511,8 +1883,8 @@ var Unzip = /* @__PURE__ */ (function() {
       this.p = null;
     }
   };
-  Unzip2.prototype.register = function(decoder3) {
-    this.o[decoder3.compression] = decoder3;
+  Unzip2.prototype.register = function(decoder5) {
+    this.o[decoder5.compression] = decoder5;
   };
   return Unzip2;
 })();
@@ -1530,11 +1902,11 @@ var crcTable = Uint32Array.from({ length: 256 }, (_, value2) => {
   return value2 >>> 0;
 });
 function fail(message) {
-  throw new Error(`Unitypackage: ${message}`);
+  throw new Error("Unitypackage: ".concat(message));
 }
-function crcUpdate(crc, bytes2) {
-  for (const byte of bytes2) crc = crcTable[(crc ^ byte) & 255] ^ crc >>> 8;
-  return crc >>> 0;
+function crcUpdate(crc2, bytes2) {
+  for (const byte of bytes2) crc2 = crcTable[(crc2 ^ byte) & 255] ^ crc2 >>> 8;
+  return crc2 >>> 0;
 }
 function crc32(bytes2) {
   return (crcUpdate(4294967295, bytes2) ^ 4294967295) >>> 0;
@@ -1549,7 +1921,7 @@ function text(bytes2, label) {
   try {
     return decoder.decode(bytes2);
   } catch {
-    fail(`invalid UTF-8 in ${label}`);
+    fail("invalid UTF-8 in ".concat(label));
   }
 }
 function isZero(bytes2) {
@@ -1585,10 +1957,10 @@ function checkCollection(entries) {
   const paths = /* @__PURE__ */ new Map();
   for (const entry of entries) {
     const folder = checkAsset(entry);
-    if (guids.has(entry.guid)) fail(`duplicate GUID ${entry.guid}`);
+    if (guids.has(entry.guid)) fail("duplicate GUID ".concat(entry.guid));
     guids.add(entry.guid);
     const key = entry.path.toLowerCase();
-    if (paths.has(key)) fail(`duplicate asset path ${entry.path}`);
+    if (paths.has(key)) fail("duplicate asset path ".concat(entry.path));
     paths.set(key, folder);
   }
   for (const entry of entries) {
@@ -1633,13 +2005,13 @@ function gunzipBounded(bytes2) {
   const expectedSize = u32(bytes2, bytes2.length - 4);
   if (expectedSize > MAX_UNITY_PACKAGE_BYTES) fail("expanded data exceeds 64 MiB");
   let length = 0;
-  let crc = 4294967295;
+  let crc2 = 4294967295;
   const chunks = [];
   const stream = new Gunzip((chunk) => {
     length += chunk.length;
     if (length > MAX_UNITY_PACKAGE_BYTES) fail("expanded data exceeds 64 MiB");
     if (chunk.length) {
-      crc = crcUpdate(crc, chunk);
+      crc2 = crcUpdate(crc2, chunk);
       chunks.push(chunk);
     }
   });
@@ -1650,7 +2022,7 @@ function gunzipBounded(bytes2) {
   }
   stream.push(new Uint8Array(), true);
   if (length !== expectedSize) fail("gzip size mismatch");
-  if ((crc ^ 4294967295) >>> 0 !== u32(bytes2, bytes2.length - 8)) fail("gzip checksum mismatch");
+  if ((crc2 ^ 4294967295) >>> 0 !== u32(bytes2, bytes2.length - 8)) fail("gzip checksum mismatch");
   const output = new Uint8Array(length);
   let offset = 0;
   for (const chunk of chunks) {
@@ -1659,17 +2031,17 @@ function gunzipBounded(bytes2) {
   }
   return output;
 }
-function headerString(header, start, size) {
-  const field = header.subarray(start, start + size);
-  const nul = field.indexOf(0);
-  if (nul >= 0 && !isZero(field.subarray(nul))) fail("malformed tar string padding");
-  return text(nul < 0 ? field : field.subarray(0, nul), "tar header");
+function headerString(header2, start, size2) {
+  const field2 = header2.subarray(start, start + size2);
+  const nul = field2.indexOf(0);
+  if (nul >= 0 && !isZero(field2.subarray(nul))) fail("malformed tar string padding");
+  return text(nul < 0 ? field2 : field2.subarray(0, nul), "tar header");
 }
-function octal(header, start, size, label) {
-  const raw = text(header.subarray(start, start + size), `tar ${label}`);
-  if (!/^[\x00 ]*[0-7]*[\x00 ]*$/.test(raw)) fail(`invalid tar ${label}`);
+function octal(header2, start, size2, label) {
+  const raw = text(header2.subarray(start, start + size2), "tar ".concat(label));
+  if (!/^[\x00 ]*[0-7]*[\x00 ]*$/.test(raw)) fail("invalid tar ".concat(label));
   const value2 = Number.parseInt(raw.replace(/[\x00 ]/g, "") || "0", 8);
-  if (!Number.isSafeInteger(value2)) fail(`tar ${label} is too large`);
+  if (!Number.isSafeInteger(value2)) fail("tar ".concat(label, " is too large"));
   return value2;
 }
 function readUnityPackage(bytes2) {
@@ -1680,26 +2052,26 @@ function readUnityPackage(bytes2) {
   let offset = 0;
   let ended = false;
   while (offset + BLOCK <= tar.length) {
-    const header = tar.subarray(offset, offset + BLOCK);
-    if (isZero(header)) {
+    const header2 = tar.subarray(offset, offset + BLOCK);
+    if (isZero(header2)) {
       if (offset + 2 * BLOCK > tar.length || !isZero(tar.subarray(offset))) fail("invalid tar end marker");
       ended = true;
       break;
     }
-    const expectedChecksum = octal(header, 148, 8, "checksum");
+    const expectedChecksum = octal(header2, 148, 8, "checksum");
     let checksum = 0;
-    for (let i = 0; i < BLOCK; i++) checksum += i >= 148 && i < 156 ? 32 : header[i];
+    for (let i = 0; i < BLOCK; i++) checksum += i >= 148 && i < 156 ? 32 : header2[i];
     if (checksum !== expectedChecksum) fail("tar checksum mismatch");
-    const magic = text(header.subarray(257, 265), "tar magic");
+    const magic = text(header2.subarray(257, 265), "tar magic");
     if (magic !== "ustar  \0" && magic !== POSIX_MAGIC) fail("unsupported tar format");
-    if (magic === POSIX_MAGIC && !isZero(header.subarray(345, 500))) fail("tar prefixes are not supported");
-    for (const [start2, size2, label] of [[100, 8, "mode"], [108, 8, "uid"], [116, 8, "gid"], [136, 12, "mtime"]]) {
-      octal(header, start2, size2, label);
+    if (magic === POSIX_MAGIC && !isZero(header2.subarray(345, 500))) fail("tar prefixes are not supported");
+    for (const [start2, size3, label] of [[100, 8, "mode"], [108, 8, "uid"], [116, 8, "gid"], [136, 12, "mtime"]]) {
+      octal(header2, start2, size3, label);
     }
-    const size = octal(header, 124, 12, "size");
-    const name = headerString(header, 0, 100);
-    if (!isZero(header.subarray(157, 257))) fail("tar links are not supported");
-    const type = header[156];
+    const size2 = octal(header2, 124, 12, "size");
+    const name = headerString(header2, 0, 100);
+    if (!isZero(header2.subarray(157, 257))) fail("tar links are not supported");
+    const type = header2[156];
     if (![0, 48, 53].includes(type)) fail("tar links and special members are not supported");
     const directory = type === 53;
     const match = directory ? /^([0-9a-f]{32})\/?$/.exec(name) : /^([0-9a-f]{32})\/([^/]+)$/.exec(name);
@@ -1710,16 +2082,16 @@ function readUnityPackage(bytes2) {
     if (memberNames.has(memberKey)) fail("duplicate tar member");
     memberNames.add(memberKey);
     if (memberNames.size > 10240 || groups.size > 2048) fail("PACKAGE_ENTRY_LIMIT");
-    if (directory && size !== 0) fail("tar directory has data");
-    if (size > MAX_UNITY_PACKAGE_BYTES) fail("tar member exceeds 64 MiB");
+    if (directory && size2 !== 0) fail("tar directory has data");
+    if (size2 > MAX_UNITY_PACKAGE_BYTES) fail("tar member exceeds 64 MiB");
     const start = offset + BLOCK;
-    const padded = Math.ceil(size / BLOCK) * BLOCK;
+    const padded = Math.ceil(size2 / BLOCK) * BLOCK;
     if (start + padded > tar.length) fail("truncated tar member");
-    if (!isZero(tar.subarray(start + size, start + padded))) fail("nonzero tar member padding");
+    if (!isZero(tar.subarray(start + size2, start + padded))) fail("nonzero tar member padding");
     let group = groups.get(guid2);
     if (!group) groups.set(guid2, group = { directory: false, files: /* @__PURE__ */ new Map() });
     if (directory) group.directory = true;
-    else group.files.set(match[2], tar.subarray(start, start + size));
+    else group.files.set(match[2], tar.subarray(start, start + size2));
     offset = start + padded;
   }
   if (!ended) fail("tar end marker is missing");
@@ -1753,8 +2125,8 @@ function zipHeaders(bytes2) {
     break;
   }
   if (end < 0) throw new Error("ZIP\u7D42\u7AEF\u304C\u4E0D\u6B63");
-  const count = v.getUint16(end + 10, true), size = v.getUint32(end + 12, true), offset = v.getUint32(end + 16, true);
-  if (v.getUint16(end + 4, true) || v.getUint16(end + 6, true) || count !== v.getUint16(end + 8, true) || count > MAX_FILES || count === 65535 || offset + size !== end) throw new Error("\u8907\u6570disk/ZIP64/\u4EF6\u6570\u8D85\u904EZIP\u306F\u672A\u5BFE\u5FDC");
+  const count = v.getUint16(end + 10, true), size2 = v.getUint32(end + 12, true), offset = v.getUint32(end + 16, true);
+  if (v.getUint16(end + 4, true) || v.getUint16(end + 6, true) || count !== v.getUint16(end + 8, true) || count > MAX_FILES || count === 65535 || offset + size2 !== end) throw new Error("\u8907\u6570disk/ZIP64/\u4EF6\u6570\u8D85\u904EZIP\u306F\u672A\u5BFE\u5FDC");
   let pos = offset, total = 0;
   const entries = [];
   for (let i = 0; i < count; i++) {
@@ -1771,8 +2143,8 @@ function zipHeaders(bytes2) {
     if (total > MAX_OUT) throw new Error("\u5C55\u958B\u5BB9\u91CF\u8D85\u904E");
     if (local + 30 > offset || v.getUint32(local, true) !== 67324752 || v.getUint16(local + 6, true) !== flags || v.getUint16(local + 8, true) !== method) throw new Error("ZIP\u30D8\u30C3\u30C0\u30FC\u4E0D\u4E00\u81F4");
     if (!(flags & 8) && (v.getUint32(local + 14, true) !== v.getUint32(pos + 16, true) || v.getUint32(local + 18, true) !== compressed || v.getUint32(local + 22, true) !== length)) throw new Error("ZIP CRC/\u5BB9\u91CF\u30D8\u30C3\u30C0\u30FC\u4E0D\u4E00\u81F4");
-    const ln = v.getUint16(local + 26, true), le = v.getUint16(local + 28, true);
-    if (local + 30 + ln + le + compressed > offset || decoder2.decode(bytes2.subarray(local + 30, local + 30 + ln)) !== name) throw new Error("ZIP\u53C2\u7167\u7BC4\u56F2/\u540D\u524D\u4E0D\u4E00\u81F4");
+    const ln2 = v.getUint16(local + 26, true), le = v.getUint16(local + 28, true);
+    if (local + 30 + ln2 + le + compressed > offset || decoder2.decode(bytes2.subarray(local + 30, local + 30 + ln2)) !== name) throw new Error("ZIP\u53C2\u7167\u7BC4\u56F2/\u540D\u524D\u4E0D\u4E00\u81F4");
     entries.push({ name, length, directory, crc: v.getUint32(pos + 16, true) });
     pos += 46 + nl + extra + comment;
   }
@@ -1789,7 +2161,7 @@ function crc322(bytes2) {
 }
 function readFiles(inputs) {
   if (!Array.isArray(inputs) || inputs.length > MAX_FILES) throw new Error("\u5165\u529B\u4EF6\u6570\u8D85\u904E");
-  let inputBytes5 = 0, expanded = 0, entryCount = 0;
+  let inputBytes6 = 0, expanded = 0, entryCount = 0;
   const result = [], seen = /* @__PURE__ */ new Map();
   function accept(path, bytes2, directory = false) {
     safePath2(directory ? path.slice(0, -1) : path);
@@ -1808,8 +2180,8 @@ function readFiles(inputs) {
   for (const input of inputs) {
     safePath2(input.path);
     if (!(input.bytes instanceof Uint8Array)) throw new Error("\u5165\u529B\u30D0\u30A4\u30C8\u4E0D\u6B63");
-    inputBytes5 += input.bytes.length;
-    if (inputBytes5 > MAX_IN) throw new Error("\u5165\u529B32MiB\u8D85\u904E");
+    inputBytes6 += input.bytes.length;
+    if (inputBytes6 > MAX_IN) throw new Error("\u5165\u529B32MiB\u8D85\u904E");
     if (/\.unitypackage$/i.test(input.path)) {
       for (const e of readUnityPackage(input.bytes).values()) {
         if (e.asset) accept(e.path, e.asset);
@@ -1864,7 +2236,43 @@ function expandInput(input) {
 }
 
 // docs/shared/ft/unity-text.mjs
+var ID = /^-?(?:0|[1-9][0-9]*)$/;
+var CONTROL = /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/;
 var own2 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+function textInput(text2) {
+  if (typeof text2 !== "string" || CONTROL.test(text2)) throw new TypeError("Expected Unity text without invalid control characters");
+  return text2;
+}
+function fileId2(id2, nonzero = false) {
+  if (typeof id2 !== "string" || !ID.test(id2) || id2 === "-0") throw new TypeError("fileID must be a canonical decimal string");
+  const n = BigInt(id2);
+  if (n < -(1n << 63n) || n > (1n << 63n) - 1n || nonzero && n === 0n) throw new RangeError("fileID out of signed 64-bit range or unexpectedly null");
+  return id2;
+}
+function splitUnityDocuments(text2) {
+  textInput(text2);
+  const headers = [...text2.matchAll(/^---[^\r\n]*(?:\r?\n|$)/gm)];
+  if (!headers.length) throw new Error("Missing Unity document header");
+  const preamble = text2.slice(0, headers[0].index);
+  if (!/^(?:\uFEFF)?(?:(?:%YAML 1\.1|%TAG !u! tag:unity3d\.com,2011:|#[^\r\n]*)?\r?\n)*$/.test(preamble)) throw new Error("Unexpected Unity preamble");
+  const seen = /* @__PURE__ */ new Set();
+  const documents2 = headers.map((match, index) => {
+    const header2 = match[0];
+    const parsed = /^--- !u!([0-9]+) &(-?[0-9]+)(?: stripped)?\r?\n$/.exec(header2);
+    if (!parsed) throw new Error("Malformed Unity document header");
+    const classId = parsed[1];
+    const id2 = fileId2(parsed[2], true);
+    if (seen.has(id2)) throw new Error("Duplicate document fileID: ".concat(id2));
+    seen.add(id2);
+    const start = match.index;
+    const end = headers[index + 1]?.index ?? text2.length;
+    const body = text2.slice(start + header2.length, end);
+    if (!/^[A-Za-z_][A-Za-z_0-9]*:\s*\r?\n/.test(body)) throw new Error("Missing document root for ".concat(id2));
+    if (body.split(/\r?\n/).slice(1).some((line) => line && !/^\s|^#/.test(line))) throw new Error("Unexpected top-level text in document ".concat(id2));
+    return Object.freeze({ classId, fileId: id2, header: header2, body, text: text2.slice(start, end), start, end });
+  });
+  return Object.freeze({ preamble, documents: Object.freeze(documents2) });
+}
 function parseUnityScalar(value2) {
   if (typeof value2 !== "string") throw new TypeError("Expected Unity scalar text");
   value2 = value2.trim();
@@ -1943,10 +2351,10 @@ function referenceRole(classId, property) {
   return "reference";
 }
 function deriveParameterRules(object) {
-  const p = object.properties, parameters = [], parameterUses = [], issues = [];
+  const p = object.properties, parameters2 = [], parameterUses = [], issues = [];
   const source = (path) => object.propertySources[path] ?? object.source;
   const issue = (code, message, path) => issues.push({ code, message, source: source(path), propertyPath: path });
-  const validName = (name, path) => {
+  const validName4 = (name, path) => {
     if (typeof name !== "string" || !name || name.length > 1024 || /[\u0000-\u001f\u007f]/.test(name)) {
       issue("PARAMETER_NAME_UNSUPPORTED", "A parameter name is missing or outside the supported text contract", path);
       return false;
@@ -1954,7 +2362,7 @@ function deriveParameterRules(object) {
     return true;
   };
   const use = (name, path, allowedTypes, rule, ruleBasis) => {
-    if (validName(name, path)) parameterUses.push({ domain: "animator", unowned: true, name, allowedTypes: [...allowedTypes], rule, property: path, source: source(path), ...ruleBasis ? { ruleBasis } : {} });
+    if (validName4(name, path)) parameterUses.push({ domain: "animator", unowned: true, name, allowedTypes: [...allowedTypes], rule, property: path, source: source(path), ...ruleBasis ? { ruleBasis } : {} });
   };
   const records = (value2, path) => {
     if (!Array.isArray(value2)) {
@@ -1966,49 +2374,49 @@ function deriveParameterRules(object) {
   if (object.classId === "91") {
     const rows = records(p.m_AnimatorParameters, "/m_AnimatorParameters");
     for (const [i, row] of (rows ?? []).entries()) {
-      const path = `/m_AnimatorParameters/${i}`;
+      const path = "/m_AnimatorParameters/".concat(i);
       if (!map(row)) {
         issue("PARAMETER_DECLARATION_UNSUPPORTED", "The declaration is not a mapping", path);
         continue;
       }
-      if (!validName(row.m_Name, path + "/m_Name")) continue;
+      if (!validName4(row.m_Name, path + "/m_Name")) continue;
       const type = typeof row.m_Type === "string" && own3(animatorTypes, row.m_Type) ? animatorTypes[row.m_Type] : "Unknown";
       if (type === "Unknown") issue("PARAMETER_TYPE_UNKNOWN", "Unknown serialized Animator parameter type", path + "/m_Type");
-      parameters.push({ domain: "animator", name: row.m_Name, type, property: path + "/m_Name", source: source(path), serializedType: typeof row.m_Type === "string" ? row.m_Type : null });
+      parameters2.push({ domain: "animator", name: row.m_Name, type, property: path + "/m_Name", source: source(path), serializedType: typeof row.m_Type === "string" ? row.m_Type : null });
     }
   } else if (object.classId === "1101" || object.classId === "1109") {
     const rows = records(p.m_Conditions, "/m_Conditions");
     for (const [i, row] of (rows ?? []).entries()) {
-      const path = `/m_Conditions/${i}`;
+      const path = "/m_Conditions/".concat(i);
       if (!map(row)) {
         issue("CONDITION_UNSUPPORTED", "A transition condition is not a mapping", path);
         continue;
       }
       const mode = typeof row.m_ConditionMode === "string" ? row.m_ConditionMode : "unknown", allowed = own3(conditions, mode) ? conditions[mode] : [];
       if (!allowed.length) issue("CONDITION_MODE_UNKNOWN", "Unknown transition condition mode; no type constraint asserted", path + "/m_ConditionMode");
-      use(row.m_ConditionEvent, path + "/m_ConditionEvent", allowed, `unity.transition-condition.${mode}`, conditionBasis);
+      use(row.m_ConditionEvent, path + "/m_ConditionEvent", allowed, "unity.transition-condition.".concat(mode), conditionBasis);
     }
   } else if (object.classId === "206") {
     const mode = p.m_BlendType, known = ["0", "1", "2", "3", "4"].includes(mode);
     if (!known) issue("BLEND_TYPE_UNKNOWN", "Unknown BlendTree mode; no type constraint asserted", "/m_BlendType");
     if (mode === "4") {
       const rows = records(p.m_Childs, "/m_Childs");
-      for (const [i, row] of (rows ?? []).entries()) if (map(row)) use(row.m_DirectBlendParameter, `/m_Childs/${i}/m_DirectBlendParameter`, ["Float"], "unity.blendtree.direct-weight", blendBasis);
-      else issue("BLEND_CHILD_UNSUPPORTED", "A BlendTree child is not a mapping", `/m_Childs/${i}`);
+      for (const [i, row] of (rows ?? []).entries()) if (map(row)) use(row.m_DirectBlendParameter, "/m_Childs/".concat(i, "/m_DirectBlendParameter"), ["Float"], "unity.blendtree.direct-weight", blendBasis);
+      else issue("BLEND_CHILD_UNSUPPORTED", "A BlendTree child is not a mapping", "/m_Childs/".concat(i));
     } else {
       use(p.m_BlendParameter, "/m_BlendParameter", known ? ["Float"] : [], "unity.blendtree.axis-x", blendBasis);
       if (mode !== "0" && (known || own3(p, "m_BlendParameterY"))) use(p.m_BlendParameterY, "/m_BlendParameterY", known ? ["Float"] : [], "unity.blendtree.axis-y", blendBasis);
     }
   } else if (object.classId === "1102") {
     for (const part of ["Speed", "CycleOffset", "Mirror", "Time"]) {
-      const active = p[`m_${part}ParameterActive`], path = `/m_${part}Parameter`;
+      const active = p["m_".concat(part, "ParameterActive")], path = "/m_".concat(part, "Parameter");
       if (active === void 0 || active === "0") continue;
       if (active !== "1") {
         issue("STATE_PARAMETER_ACTIVE_UNKNOWN", "Unknown active flag; no type constraint asserted", path + "Active");
         continue;
       }
-      issue("STATE_PARAMETER_RULE_UNVERIFIED", `${part} usage is recorded; its target-version type rule is not yet verified`, path);
-      use(p[`m_${part}Parameter`], path, [], `unity.state.${part.toLowerCase()}.unverified`);
+      issue("STATE_PARAMETER_RULE_UNVERIFIED", "".concat(part, " usage is recorded; its target-version type rule is not yet verified"), path);
+      use(p["m_".concat(part, "Parameter")], path, [], "unity.state.".concat(part.toLowerCase(), ".unverified"));
     }
   } else if (object.classId === "114" && own3(p, "parameters")) {
     const script = p.m_Script;
@@ -2017,24 +2425,24 @@ function deriveParameterRules(object) {
     } else {
       const rows = records(p.parameters, "/parameters"), allowedFields = /* @__PURE__ */ new Set(["name", "valueType", "saved", "defaultValue", "networkSynced"]);
       for (const [i, row] of (rows ?? []).entries()) {
-        const path = `/parameters/${i}`;
+        const path = "/parameters/".concat(i);
         if (!map(row) || Object.keys(row).length !== allowedFields.size || Object.keys(row).some((k) => !allowedFields.has(k))) {
           issue("EXPRESSION_SCHEMA_UNSUPPORTED", "The row does not match the verified five-field Expression profile", path);
           continue;
         }
-        if (!validName(row.name, path + "/name")) continue;
+        if (!validName4(row.name, path + "/name")) continue;
         if (!["0", "1"].includes(row.saved) || !["0", "1"].includes(row.networkSynced) || typeof row.defaultValue !== "string" || !/^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?$/.test(row.defaultValue) || !Number.isFinite(Number(row.defaultValue))) {
           issue("EXPRESSION_SETTINGS_UNSUPPORTED", "Expression flags/default are not supported serialized values", path);
           continue;
         }
         const type = typeof row.valueType === "string" && own3(expressionTypes, row.valueType) ? expressionTypes[row.valueType] : "Unknown";
         if (type === "Unknown") issue("PARAMETER_TYPE_UNKNOWN", "Unknown serialized Expression parameter type", path + "/valueType");
-        parameters.push({ domain: "vrchat-expression", name: row.name, type, property: path + "/name", source: source(path), schemaIdentity: { ...EXPRESSION_SCHEMA }, serializedType: typeof row.valueType === "string" ? row.valueType : null, defaultValue: row.defaultValue, saved: row.saved === "1", networkSynced: row.networkSynced === "1" });
+        parameters2.push({ domain: "vrchat-expression", name: row.name, type, property: path + "/name", source: source(path), schemaIdentity: { ...EXPRESSION_SCHEMA }, serializedType: typeof row.valueType === "string" ? row.valueType : null, defaultValue: row.defaultValue, saved: row.saved === "1", networkSynced: row.networkSynced === "1" });
       }
     }
   }
   if (object.classId === "1107" && p.m_StateMachineTransitions && Object.keys(p.m_StateMachineTransitions).length) issue("OWNER_LAYOUT_UNSUPPORTED", "Nonempty StateMachineTransitions ownership layout is not yet verified", "/m_StateMachineTransitions");
-  return { parameters, parameterUses, issues };
+  return { parameters: parameters2, parameterUses, issues };
 }
 var jsonPointerPart = pointerPart;
 
@@ -2130,7 +2538,7 @@ function parseSubset(context, start, end, issues) {
     const prior = mapping2.keys.get(key);
     if (prior) {
       duplicate = true;
-      issues.push({ code: "YAML_DUPLICATE_KEY", message: `Duplicate mapping key: ${key}`, source: source(keyStart, keyEnd), relatedSources: [source(prior.start, prior.end)] });
+      issues.push({ code: "YAML_DUPLICATE_KEY", message: "Duplicate mapping key: ".concat(key), source: source(keyStart, keyEnd), relatedSources: [source(prior.start, prior.end)] });
     } else mapping2.keys.set(key, { start: keyStart, end: keyEnd });
     if (++context.nodes > TEXT_LIMITS.maxNodes) limit("YAML_NODE_LIMIT");
     mapping2.value.push({ key, keyStart, keyEnd, node: value2 });
@@ -2138,17 +2546,17 @@ function parseSubset(context, start, end, issues) {
   };
   const mapping = (begin) => ({ ...node("map", [], begin, begin), keys: /* @__PURE__ */ new Map() });
   function quoted(begin) {
-    const quote = text2[begin];
+    const quote2 = text2[begin];
     let cursor = begin + 1;
     while (cursor < end) {
       const c = text2[cursor];
       if (c === "\n" || c === "\r") problem("YAML_MULTILINE_QUOTE_UNSUPPORTED", "Multiline quoted scalars are outside this subset", begin, cursor);
-      if (c === "\\" && quote === '"') {
+      if (c === "\\" && quote2 === '"') {
         cursor += 2;
         continue;
       }
-      if (c === quote) {
-        if (quote === "'" && text2[cursor + 1] === "'") {
+      if (c === quote2) {
+        if (quote2 === "'" && text2[cursor + 1] === "'") {
           cursor += 2;
           continue;
         }
@@ -2236,7 +2644,7 @@ function parseSubset(context, start, end, issues) {
     if (unsupportedPrefix(raw) || /[\[{}]/.test(raw) || /:\s/.test(raw)) problem("YAML_SCALAR_UNSUPPORTED", "Unsupported flow scalar syntax", begin, cursor);
     return scalar(parseUnityScalar(raw), begin, cursor);
   }
-  function field(line, contentStart = line.contentStart) {
+  function field2(line, contentStart = line.contentStart) {
     const raw = text2.slice(contentStart, line.end);
     let colon = -1, cursor = contentStart;
     if (raw.startsWith('"') || raw.startsWith("'")) {
@@ -2300,12 +2708,12 @@ function parseSubset(context, start, end, issues) {
         let begin = line.contentStart + 1;
         while (begin < line.end && /[ \t]/.test(text2[begin])) begin++;
         if (begin === line.end || text2[begin] === "#") result.value.push(child(line, begin, indent, depth + 1));
-        else if (text2[begin] !== "{" && text2[begin] !== "[" && field(line, begin)) {
+        else if (text2[begin] !== "{" && text2[begin] !== "[" && field2(line, begin)) {
           if (begin !== line.contentStart + 2) problem("YAML_SEQUENCE_INDENTATION_UNSUPPORTED", "Inline item mappings need one space after the sequence dash", line.contentStart, begin);
-          const item = mapping(begin), f = field(line, begin);
+          const item = mapping(begin), f = field2(line, begin);
           addField(item, line, f, indent + 2, depth + 1);
           while (at < lines.length && lines[at].indent === indent + 2 && !sequence(lines[at])) {
-            const more = lines[at++], entry = field(more);
+            const more = lines[at++], entry = field2(more);
             if (!entry) problem("YAML_MAPPING_UNSUPPORTED", "Expected an item mapping field", more.contentStart, more.end);
             addField(item, more, entry, indent + 2, depth + 1);
           }
@@ -2315,7 +2723,7 @@ function parseSubset(context, start, end, issues) {
       } else {
         if (sequence(line)) break;
         at++;
-        const f = field(line);
+        const f = field2(line);
         if (!f) problem("YAML_MAPPING_UNSUPPORTED", "Expected a mapping field", line.contentStart, line.end);
         addField(result, line, f, indent, depth);
       }
@@ -2435,10 +2843,10 @@ function parseUnityFile({ path, text: text2 } = {}) {
   if (!preambleValid) unparsedDocuments.push({ source: context.source(0, headers[0].start), rawText: text2.slice(0, headers[0].start), reason: "Unsupported Unity preamble" });
   const ids = /* @__PURE__ */ new Map();
   for (let i = 0; i < headers.length; i++) {
-    const header = headers[i], end = headers[i + 1]?.start ?? text2.length, source = context.source(header.start, end), match = /^--- !u!([0-9]+) &(-?(?:0|[1-9][0-9]*))(?: stripped)?$/.exec(header.content);
+    const header2 = headers[i], end = headers[i + 1]?.start ?? text2.length, source = context.source(header2.start, end), match = /^--- !u!([0-9]+) &(-?(?:0|[1-9][0-9]*))(?: stripped)?$/.exec(header2.content);
     if (!match) {
-      issues.push({ code: "UNITY_HEADER_INVALID", message: "Malformed Unity document header", source: context.source(header.start, header.end) });
-      unparsedDocuments.push({ source, rawText: text2.slice(header.start, end), reason: "Malformed Unity document header" });
+      issues.push({ code: "UNITY_HEADER_INVALID", message: "Malformed Unity document header", source: context.source(header2.start, header2.end) });
+      unparsedDocuments.push({ source, rawText: text2.slice(header2.start, end), reason: "Malformed Unity document header" });
       continue;
     }
     const classId = match[1];
@@ -2447,8 +2855,8 @@ function parseUnityFile({ path, text: text2 } = {}) {
     try {
       id2 = fileId(match[2], { zero: false });
     } catch (e) {
-      issues.push({ code: "UNITY_FILE_ID_INVALID", message: e.message, source: context.source(header.start, header.end) });
-      unparsedDocuments.push({ source, rawText: text2.slice(header.start, end), reason: e.message });
+      issues.push({ code: "UNITY_FILE_ID_INVALID", message: e.message, source: context.source(header2.start, header2.end) });
+      unparsedDocuments.push({ source, rawText: text2.slice(header2.start, end), reason: e.message });
       continue;
     }
     const object = { fileId: id2, classId, rootType: null, properties: /* @__PURE__ */ Object.create(null), propertySources: /* @__PURE__ */ Object.create(null), references: [], parameters: [], parameterUses: [], source, coverage: "partial" };
@@ -2459,7 +2867,7 @@ function parseUnityFile({ path, text: text2 } = {}) {
     const localIssues = [];
     let parsed;
     try {
-      parsed = parseSubset(context, header.next, end, localIssues);
+      parsed = parseSubset(context, header2.next, end, localIssues);
     } catch (e) {
       if (!(e instanceof SyntaxIssue)) throw e;
       localIssues.push(context.issue(e));
@@ -2487,7 +2895,7 @@ function parseUnityFile({ path, text: text2 } = {}) {
       }
     }
     if (!parsed || parsed.duplicate || !preambleValid || localIssues.some((x) => x.code === "UNITY_ROOT_UNSUPPORTED" || x.code === "UNITY_CLASS_ROOT_MISMATCH")) {
-      object.rawText = text2.slice(header.start, end);
+      object.rawText = text2.slice(header2.start, end);
       object.references = [];
       object.parameters = [];
       object.parameterUses = [];
@@ -2502,7 +2910,7 @@ function parseUnityFile({ path, text: text2 } = {}) {
       o.parameters = [];
       o.parameterUses = [];
     }
-    issues.push({ code: "DUPLICATE_DOCUMENT_FILE_ID", message: `Duplicate document fileID: ${first.fileId}`, source: first.source, relatedSources: entries.slice(1).map((o) => o.source) });
+    issues.push({ code: "DUPLICATE_DOCUMENT_FILE_ID", message: "Duplicate document fileID: ".concat(first.fileId), source: first.source, relatedSources: entries.slice(1).map((o) => o.source) });
   }
   const coverage = issues.length || objects.some((o) => o.coverage !== "serialized") ? "partial" : "serialized";
   return { path, objects, coverage, ...coverage === "partial" ? { reason: "Some document syntax, identity or rule semantics are unresolved" } : {}, issues, unparsedDocuments, parserVersion: TEXT_PARSER_VERSION };
@@ -2618,17 +3026,469 @@ async function executeTask4(r) {
 }
 var taskInputCount4 = inputBytes4;
 
+// docs/shared/parameter-registrar/pool-task.mjs
+var pool_task_exports3 = {};
+__export(pool_task_exports3, {
+  MAX_TASK_BYTES: () => MAX_TASK_BYTES,
+  TASK_VERSION: () => TASK_VERSION,
+  executeTask: () => executeTask5,
+  freezeTaskResult: () => freezeTaskResult5,
+  inputBytes: () => inputBytes5,
+  inspectTaskRequest: () => inspectTaskRequest5,
+  instantiateTask: () => instantiateTask5,
+  isParameterTask: () => isParameterTask,
+  kernelInfo: () => kernelInfo5,
+  prepareTaskModule: () => prepareTaskModule5,
+  resultBytes: () => resultBytes5,
+  resultShape: () => resultShape5,
+  snapshotTaskRequest: () => snapshotTaskRequest5,
+  taskInputCount: () => taskInputCount5,
+  transferTaskInput: () => transferTaskInput5,
+  transferTaskResult: () => transferTaskResult5,
+  validTaskResult: () => validTaskResult5
+});
+
+// docs/animator-composer/lib/package-selection.mjs
+var PACKAGE_LIMITS = Object.freeze({
+  compressed: 128 * 1024 * 1024,
+  expanded: 1024 * 1024 * 1024,
+  asset: 128 * 1024 * 1024,
+  metadata: 32 * 1024 * 1024,
+  meta: 4 * 1024 * 1024,
+  pathname: 64 * 1024,
+  members: 5e4,
+  selected: 256 * 1024 * 1024
+});
+var decoder3 = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
+var crcTable2 = Uint32Array.from({ length: 256 }, (_, value2) => {
+  for (let i = 0; i < 8; i++) value2 = value2 >>> 1 ^ (value2 & 1 ? 3988292384 : 0);
+  return value2 >>> 0;
+});
+
+// docs/shared/ft/unity-package.mjs
+var MAX_UNITY_PACKAGE_BYTES2 = 128 * 1024 * 1024;
+var BLOCK2 = 512;
+var encoder3 = new TextEncoder();
+var decoder4 = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
+var GUID2 = /^[0-9a-f]{32}$/;
+var crcTable3 = Uint32Array.from({ length: 256 }, (_, value2) => {
+  for (let i = 0; i < 8; i++) value2 = value2 >>> 1 ^ (value2 & 1 ? 3988292384 : 0);
+  return value2 >>> 0;
+});
+function fail2(message) {
+  throw new Error("Unitypackage: ".concat(message));
+}
+function validGuid2(guid2) {
+  if (typeof guid2 !== "string" || !GUID2.test(guid2) || /^0+$/.test(guid2)) fail2("invalid GUID");
+}
+function validPath2(path) {
+  if (typeof path !== "string" || !path.startsWith("Assets/") || /[\\:\x00-\x1f\x7f]/.test(path)) {
+    fail2("asset path must be a safe path below Assets/");
+  }
+  if (path.split("/").some((part) => part === "" || part === "." || part === "..")) fail2("unsafe asset path segment");
+}
+function folderMeta2(meta, guid2) {
+  if (typeof meta !== "string" || meta.includes("\0")) fail2("invalid asset.meta");
+  const matches = [...meta.matchAll(/^guid:\s*([0-9a-f]{32})\s*$/gm)];
+  if (matches.length !== 1 || matches[0][1] !== guid2) fail2("asset.meta GUID mismatch");
+  return /^folderAsset:\s*yes\s*$/m.test(meta);
+}
+function checkAsset2(entry) {
+  if (!entry || typeof entry !== "object") fail2("invalid asset entry");
+  validGuid2(entry.guid);
+  validPath2(entry.path);
+  const folder = folderMeta2(entry.meta, entry.guid);
+  if (folder ? entry.asset !== null : !(entry.asset instanceof Uint8Array)) {
+    fail2(folder ? "folderAsset must not contain asset data" : "non-folder asset data is missing");
+  }
+  return folder;
+}
+function checkCollection2(entries) {
+  const guids = /* @__PURE__ */ new Set();
+  const paths = /* @__PURE__ */ new Map();
+  for (const entry of entries) {
+    const folder = checkAsset2(entry);
+    if (guids.has(entry.guid)) fail2("duplicate GUID ".concat(entry.guid));
+    guids.add(entry.guid);
+    const key = entry.path.toLowerCase();
+    if (paths.has(key)) fail2("duplicate asset path ".concat(entry.path));
+    paths.set(key, folder);
+  }
+  for (const entry of entries) {
+    const parts = entry.path.toLowerCase().split("/");
+    for (let n = 2; n < parts.length; n++) {
+      if (paths.get(parts.slice(0, n).join("/")) === false) fail2("asset path has a non-folder parent");
+    }
+  }
+}
+function putAscii(target, start, string) {
+  for (let i = 0; i < string.length; i++) target[start + i] = string.charCodeAt(i);
+}
+function putOctal(target, start, size2, value2) {
+  const valueText = value2.toString(8);
+  if (valueText.length > size2 - 1) fail2("tar number overflow");
+  putAscii(target, start, valueText.padStart(size2 - 1, "0") + "\0");
+}
+function tarHeader(name, length, directory) {
+  const header2 = new Uint8Array(BLOCK2);
+  putAscii(header2, 0, name);
+  putOctal(header2, 100, 8, 511);
+  putOctal(header2, 108, 8, 0);
+  putOctal(header2, 116, 8, 0);
+  putOctal(header2, 124, 12, length);
+  putOctal(header2, 136, 12, 0);
+  header2.fill(32, 148, 156);
+  header2[156] = directory ? 53 : 48;
+  putAscii(header2, 257, "ustar  \0");
+  const checksum = header2.reduce((sum, value2) => sum + value2, 0);
+  putAscii(header2, 148, checksum.toString(8).padStart(6, "0") + "\0 ");
+  return header2;
+}
+function writeUnityPackage(assets) {
+  if (!Array.isArray(assets)) fail2("assets must be an array");
+  checkCollection2(assets);
+  const members = [];
+  let total = 2 * BLOCK2;
+  function add(name, data, directory = false) {
+    total += BLOCK2 + Math.ceil(data.length / BLOCK2) * BLOCK2;
+    if (total > MAX_UNITY_PACKAGE_BYTES2) fail2("expanded data exceeds 128 MiB");
+    members.push({ name, data, directory });
+  }
+  const empty = new Uint8Array();
+  for (const entry of [...assets].sort((a, b) => a.guid < b.guid ? -1 : a.guid > b.guid ? 1 : 0)) {
+    add(entry.guid + "/", empty, true);
+    if (entry.asset !== null) add(entry.guid + "/asset", entry.asset);
+    add(entry.guid + "/asset.meta", encoder3.encode(entry.meta));
+    add(entry.guid + "/pathname", encoder3.encode(entry.path));
+  }
+  const tar = new Uint8Array(total);
+  let offset = 0;
+  for (const member of members) {
+    tar.set(tarHeader(member.name, member.data.length, member.directory), offset);
+    offset += BLOCK2;
+    tar.set(member.data, offset);
+    offset += Math.ceil(member.data.length / BLOCK2) * BLOCK2;
+  }
+  return gzipSync(tar, { level: 6, mtime: 0, filename: "archtemp.tar" });
+}
+
+// docs/animator-composer/lib/registration.mjs
+var SDK_GUID = "67cc4cb7839cd3741b63733d5adf0442";
+var EXPRESSION_SCRIPT_ID = "-1506855854";
+var EXTERNAL_TYPES = ["Int", "Float", "Bool"];
+var ANIMATOR_TYPES = [...EXTERNAL_TYPES, "Trigger"];
+var FIXED_FIELDS = ["registered", "type", "defaultValue", "saved", "networkSynced"];
+var EDIT_FIELDS = [...FIXED_FIELDS, "applyAnimatorDefault"];
+var PLAYABLES = Object.freeze({ Base: 0, Additive: 2, Gesture: 3, Action: 4, FX: 5, Sitting: 6, TPose: 7, IKPose: 8 });
+var BUILTINS = /* @__PURE__ */ new Set([
+  "IsLocal",
+  "PreviewMode",
+  "Viseme",
+  "Voice",
+  "GestureLeft",
+  "GestureRight",
+  "GestureLeftWeight",
+  "GestureRightWeight",
+  "AngularY",
+  "VelocityX",
+  "VelocityY",
+  "VelocityZ",
+  "VelocityMagnitude",
+  "Upright",
+  "Grounded",
+  "Seated",
+  "AFK",
+  "TrackingType",
+  "VRMode",
+  "MuteSelf",
+  "InStation",
+  "Earmuffs",
+  "IsOnFriendsList",
+  "AvatarVersion",
+  "IsAnimatorEnabled",
+  "ScaleModified",
+  "ScaleFactor",
+  "ScaleFactorInverse",
+  "EyeHeightAsMeters",
+  "EyeHeightAsPercent"
+]);
+var own5 = (value2, key) => Object.prototype.hasOwnProperty.call(value2, key);
+var isRecord = (value2) => value2 !== null && typeof value2 === "object" && !Array.isArray(value2);
+var quote = (value2) => JSON.stringify(value2);
+var yes = (value2) => value2 ? 1 : 0;
+var number = (value2) => String(Object.is(value2, -0) ? 0 : value2);
+var header = "%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n";
+function validName(name) {
+  if (typeof name !== "string" || !name.trim() || /[\u0000-\u001f\u007f\u0085\u2028\u2029]/u.test(name) || /[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/u.test(name))
+    throw new Error("Parameter\u540D\u304C\u7A7A\u3001\u307E\u305F\u306F\u5BFE\u5FDC\u3057\u3066\u3044\u306A\u3044\u5236\u5FA1\u6587\u5B57\u3092\u542B\u307F\u307E\u3059\u3002");
+}
+function validDefault(type, value2, external = true) {
+  if (typeof value2 !== "number" || !Number.isFinite(value2)) throw new Error("".concat(type, "\u306E\u521D\u671F\u5024\u306B\u306F\u6709\u9650\u306E\u6570\u5024\u304C\u5FC5\u8981\u3067\u3059\u3002"));
+  if (type === "Bool" || type === "Trigger") {
+    if (value2 !== 0 && value2 !== 1) throw new Error("".concat(type, "\u306E\u521D\u671F\u5024\u306F0\u307E\u305F\u306F1\u3067\u3059\u3002"));
+  } else if (type === "Int") {
+    if (!Number.isInteger(value2) || value2 < (external ? 0 : -2147483648) || value2 > (external ? 255 : 2147483647))
+      throw new Error("Int\u306E\u521D\u671F\u5024\u304C".concat(external ? "0\u301C255" : "32bit\u6574\u6570", "\u306E\u7BC4\u56F2\u5916\u3067\u3059\u3002"));
+  } else if (type === "Float") {
+    if (!Number.isFinite(Math.fround(value2)) || external && (value2 < -1 || value2 > 1))
+      throw new Error("Float\u306E\u521D\u671F\u5024\u304C".concat(external ? "-1\u301C1" : "32bit Float", "\u306E\u7BC4\u56F2\u5916\u3067\u3059\u3002"));
+  } else throw new Error("\u5BFE\u5FDC\u3057\u3066\u3044\u306A\u3044Parameter\u578B\u3067\u3059: ".concat(type));
+}
+function validateExternal(row) {
+  if (!isRecord(row)) throw new Error("Expression\u306E\u884C\u306FParameter\u5B9A\u7FA9\u3067\u3042\u308B\u5FC5\u8981\u304C\u3042\u308A\u307E\u3059\u3002");
+  validName(row.name);
+  if (!EXTERNAL_TYPES.includes(row.type)) throw new Error("".concat(row.name, ": Expression\u578B\u306FInt\u3001Float\u3001Bool\u304B\u3089\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044\u3002"));
+  validDefault(row.type, row.defaultValue);
+  for (const key of ["saved", "networkSynced"]) if (typeof row[key] !== "boolean") throw new Error("".concat(row.name, ": ").concat(key, "\u306Ftrue/false\u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044\u3002"));
+  if (own5(row, "applyAnimatorDefault") && typeof row.applyAnimatorDefault !== "boolean") throw new Error("".concat(row.name, ": applyAnimatorDefault\u306Ftrue/false\u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044\u3002"));
+}
+function validateRows(rows, limits = false) {
+  if (!Array.isArray(rows)) throw new Error("Expression\u306EParameter\u914D\u5217\u304C\u3042\u308A\u307E\u305B\u3093\u3002");
+  const names = /* @__PURE__ */ new Set();
+  let bits2 = 0;
+  for (const row of rows) {
+    validateExternal(row);
+    if (names.has(row.name)) throw new Error("Expression\u306EParameter\u540D\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059: ".concat(row.name));
+    names.add(row.name);
+    if (row.networkSynced) bits2 += row.type === "Bool" ? 1 : 8;
+  }
+  if (limits && rows.length > 8192) throw new Error("Expression\u306E\u767B\u9332\u6570".concat(rows.length, "\u304C8192\u4EF6\u306E\u4E0A\u9650\u3092\u8D85\u3048\u307E\u3059\u3002"));
+  if (limits && bits2 > 256) throw new Error("Expression\u306E\u540C\u671F\u91CF".concat(bits2, "bit\u304C256bit\u306E\u4E0A\u9650\u3092\u8D85\u3048\u307E\u3059\u3002"));
+  return bits2;
+}
+var objectFields = "  m_ObjectHideFlags: 0\n  m_CorrespondingSourceObject: {fileID: 0}\n  m_PrefabInstance: {fileID: 0}\n  m_PrefabAsset: {fileID: 0}\n";
+function mono(id2, gameObject, scriptGuid, scriptId, name = "") {
+  return "--- !u!114 &".concat(id2, "\nMonoBehaviour:\n").concat(objectFields, "  m_GameObject: {fileID: ").concat(gameObject, "}\n  m_Enabled: 1\n  m_EditorHideFlags: 0\n  m_Script: {fileID: ").concat(scriptId, ", guid: ").concat(scriptGuid, ", type: 3}\n  m_Name: ").concat(name ? quote(name) : "", "\n  m_EditorClassIdentifier: \n");
+}
+function serializeExpression(registrations, name = "ExpressionParameters") {
+  validateRows(registrations, true);
+  validName(name);
+  if (registrations.some((p) => BUILTINS.has(p.name))) throw new Error("VRChat\u7D44\u8FBC\u307FParameter\u306FExpression\u3078\u767B\u9332\u3067\u304D\u307E\u305B\u3093\u3002");
+  return header + mono("11400000", "0", SDK_GUID, EXPRESSION_SCRIPT_ID, name) + (registrations.length ? "  parameters:\n" + registrations.map((row) => "  - name: ".concat(quote(row.name), "\n    valueType: ").concat(EXTERNAL_TYPES.indexOf(row.type), "\n    saved: ").concat(yes(row.saved), "\n    defaultValue: ").concat(number(row.defaultValue), "\n    networkSynced: ").concat(yes(row.networkSynced), "\n")).join("") : "  parameters: []\n");
+}
+
+// docs/shared/parameter-registrar/core.mjs
+var enc = new TextEncoder();
+var dec = new TextDecoder("utf-8", { fatal: true });
+var PREAMBLE = "%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n";
+var assert = (condition, message) => {
+  if (!condition) throw new Error(message);
+};
+var order = (a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+function field(text2, name, indent = 2, required = true, container = false) {
+  const matches = [...text2.matchAll(new RegExp("^".concat(" ".repeat(indent)).concat(name, ":([^\\r\\n]*)"), "gm"))];
+  assert(matches.length <= 1 && (!required || matches.length === 1), "Missing or ambiguous ".concat(name));
+  if (!matches.length) return null;
+  const match = matches[0], raw = match[1].trim(), quoted = raw.startsWith('"') || raw.startsWith("'"), value2 = raw.startsWith("#") ? "" : parseUnityScalar(match[1]);
+  if (!container) {
+    const following = text2.slice(match.index + match[0].length).split(/\r?\n/).find((line) => line.trim() && !line.trimStart().startsWith("#"));
+    assert(!following || /^ */.exec(following)[0].length <= indent && /^ *(?:- )?[A-Za-z_][A-Za-z_0-9]*:/.test(following), "Unsupported multiline scalar continuation in ".concat(name));
+    if (!quoted && name !== "script") assert(!/^(?:[\[\]{}&*!|>%@`]|[-?:](?:\s|$))/.test(value2) && !/:\s|:$/.test(value2), "Unsupported plain scalar syntax in ".concat(name));
+  }
+  return value2;
+}
+function section(text2, name, indent = 2) {
+  const fields = [...text2.matchAll(new RegExp("^".concat(" ".repeat(indent), "([A-Za-z_][A-Za-z_0-9]*):[^\\r\\n]*(?:\\r?\\n|$)"), "gm"))];
+  const indexes = fields.flatMap((m, i2) => m[1] === name ? [i2] : []);
+  assert(indexes.length === 1, "Missing or ambiguous ".concat(name));
+  const i = indexes[0];
+  return text2.slice(fields[i].index, fields[i + 1]?.index ?? text2.length);
+}
+function items(text2, name, indent = 2) {
+  const part = section(text2, name, indent), value2 = field(part, name, indent, true, true);
+  assert(value2 === "" || value2 === "[]", "Unsupported ".concat(name, " sequence"));
+  const lines = part.split(/\r?\n/), starts = [];
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line.trim() || line.trimStart().startsWith("#")) continue;
+    assert(value2 !== "[]", "Invalid empty ".concat(name, " sequence body"));
+    const spaces = /^ */.exec(line)[0].length, content = line.slice(spaces);
+    assert(!line.includes("	") && spaces >= indent && spaces % 2 === 0, "Malformed ".concat(name, " sequence indentation"));
+    if (spaces === indent) {
+      assert(/^- [A-Za-z_][A-Za-z_0-9]*:/.test(content), "Malformed ".concat(name, " sequence item"));
+      starts.push(i);
+    } else {
+      assert(starts.length > 0 && spaces >= indent + 2 && /^(?:- )?[A-Za-z_][A-Za-z_0-9]*:/.test(content), "Malformed ".concat(name, " sequence body or indentation"));
+    }
+  }
+  assert(value2 === "[]" || starts.length > 0, "Incomplete ".concat(name, " sequence"));
+  return starts.map((start, i) => lines.slice(start, starts[i + 1] ?? lines.length).join("\n").replace(new RegExp("^".concat(" ".repeat(indent), "- ")), " ".repeat(indent + 2)));
+}
+function validName2(name) {
+  assert(typeof name === "string" && name.trim() && !/[\u0000-\u001f\u007f\u0085\u2028\u2029]/u.test(name) && !/[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/u.test(name), "Invalid Parameter name");
+  return name;
+}
+function uint(value2, label) {
+  assert(typeof value2 === "string" && /^(?:0|[1-9][0-9]*)$/.test(value2) && Number(value2) <= 4294967295, "Unsupported binding ".concat(label));
+  return Number(value2);
+}
+function clipParameters(text2, kernel, add) {
+  assert(field(text2, "m_Compressed") === "0", "Compressed AnimationClip is unsupported");
+  const floats = items(text2, "m_FloatCurves"), pointers = items(text2, "m_PPtrCurves");
+  const bindings = items(section(text2, "m_ClipBindingConstant"), "genericBindings", 4);
+  const animatorBindings = bindings.filter((b) => field(b, "typeID", 6) === "95" && field(b, "path", 6) === "0");
+  const candidates = floats.filter((c) => field(c, "classID", 4) === "95" && field(c, "path", 4) === "");
+  assert(!pointers.some((c) => field(c, "classID", 4) === "95" && field(c, "path", 4) === ""), "Animator reference curve is unsupported");
+  const validated = animatorBindings.map((b) => {
+    const attr = uint(field(b, "attribute", 6), "attribute"), custom = uint(field(b, "customType", 6), "customType");
+    for (const f of ["isPPtrCurve", "isIntCurve", "isSerializeReferenceCurve"]) {
+      const flag = field(b, f, 6, false);
+      assert(flag === "0" || f === "isSerializeReferenceCurve" && flag === null, "Unsupported Animator binding ".concat(f));
+    }
+    assert(field(b, "script", 6) === "{fileID: 0}", "Unsupported Animator binding script");
+    return { attr, custom };
+  });
+  assert(typeof kernel?.animatorHash === "function" || !validated.length && !candidates.length, "kernel.animatorHash is required for Clip bindings");
+  const curves = candidates.map((c) => ({ name: validName2(field(c, "attribute", 4)), hash: kernel.animatorHash(field(c, "attribute", 4)) >>> 0 }));
+  const byHash = /* @__PURE__ */ new Map();
+  for (const c of curves) {
+    assert(!byHash.has(c.hash), "Animator binding hash collision or duplicate: ".concat(c.name));
+    byHash.set(c.hash, c);
+  }
+  const matched = /* @__PURE__ */ new Set();
+  for (const { attr, custom } of validated) {
+    const match = byHash.get(attr);
+    assert(match && !matched.has(attr), "Animator binding cannot be matched one-to-one (unsupported special layout or missing curve)");
+    matched.add(attr);
+    if (custom === 0) add(match.name);
+  }
+  assert(matched.size === curves.length, "Animator binding missing for runtime curve");
+}
+function collectMotionParameters(documents2, kernel) {
+  assert(Array.isArray(documents2), "Motion documents must be an array");
+  const names = /* @__PURE__ */ new Set();
+  const add = (name) => names.add(validName2(name));
+  for (const d of documents2) {
+    assert(d && ["74", "206"].includes(String(d.classId)) && typeof d.text === "string", "Expected class74/206 document");
+    try {
+      const parsed = splitUnityDocuments(d.text).documents;
+      assert(parsed.length === 1 && parsed[0].classId === String(d.classId), "Motion document identity mismatch");
+      if (String(d.classId) === "206") {
+        const type = field(d.text, "m_BlendType");
+        assert(["0", "1", "2", "3", "4"].includes(type), "Unsupported BlendTree type");
+        const children2 = items(d.text, "m_Childs");
+        if (type === "4") for (const c of children2) add(field(c, "m_DirectBlendParameter", 4));
+        else {
+          add(field(d.text, "m_BlendParameter"));
+          if (type !== "0") add(field(d.text, "m_BlendParameterY"));
+        }
+      } else clipParameters(d.text, kernel, add);
+    } catch (error) {
+      throw new Error("".concat(d.path ?? "Motion", " (").concat(d.fileId ?? "?", "): ").concat(error.message));
+    }
+  }
+  return [...names].map((name) => ({ name, type: "Float" })).sort(order);
+}
+var objectFields2 = "  m_ObjectHideFlags: 0\n  m_CorrespondingSourceObject: {fileID: 0}\n  m_PrefabInstance: {fileID: 0}\n  m_PrefabAsset: {fileID: 0}\n";
+function controllerText(rows, name) {
+  return PREAMBLE + "--- !u!91 &9100000\nAnimatorController:\n".concat(objectFields2, "  m_Name: ").concat(JSON.stringify(name), "\n  serializedVersion: 5\n  m_AnimatorParameters:").concat(rows.length ? "" : " []", "\n") + rows.map((r) => "  - m_Name: ".concat(JSON.stringify(r.name), "\n    m_Type: 1\n    m_DefaultFloat: ").concat(r.defaultValue, "\n    m_DefaultInt: 0\n    m_DefaultBool: 0\n    m_Controller: {fileID: 9100000}\n")).join("") + "  m_AnimatorLayers:\n  - serializedVersion: 5\n    m_Name: Base Layer\n    m_StateMachine: {fileID: 11070000}\n    m_Mask: {fileID: 0}\n    m_Motions: []\n    m_Behaviours: []\n    m_BlendingMode: 0\n    m_SyncedLayerIndex: -1\n    m_DefaultWeight: 1\n    m_IKPass: 0\n    m_SyncedLayerAffectsTiming: 0\n    m_Controller: {fileID: 9100000}\n" + "--- !u!1107 &11070000\nAnimatorStateMachine:\n".concat(objectFields2, "  serializedVersion: 6\n  m_Name: Base Layer\n  m_ChildStates: []\n  m_ChildStateMachines: []\n  m_AnyStateTransitions: []\n  m_EntryTransitions: []\n  m_StateMachineTransitions: {}\n  m_StateMachineBehaviours: []\n  m_AnyStatePosition: {x: 50, y: 20, z: 0}\n  m_EntryPosition: {x: 50, y: 120, z: 0}\n  m_ExitPosition: {x: 800, y: 120, z: 0}\n  m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}\n  m_DefaultState: {fileID: 0}\n");
+}
+async function generateParameterAssets(parameters2, settings = {}) {
+  assert(Array.isArray(parameters2), "Parameter array is required");
+  assert(settings && typeof settings === "object" && !Array.isArray(settings), "Generation settings must be an object");
+  const config = { name: "Parameters", defaultValue: 0, saved: false, networkSynced: false, ...settings };
+  assert(typeof config.name === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(config.name) && !/^(?:CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])$/i.test(config.name), "Invalid output name");
+  assert(typeof config.defaultValue === "number" && Number.isFinite(config.defaultValue) && config.defaultValue >= -1 && config.defaultValue <= 1, "Float\u306E\u521D\u671F\u5024\u304C-1\u301C1\u306E\u7BC4\u56F2\u5916\u3067\u3059\u3002");
+  for (const flag of ["saved", "networkSynced"]) assert(typeof config[flag] === "boolean", "".concat(flag, " must be true/false"));
+  const rows = parameters2.map((p) => {
+    assert(p && p.type === "Float", "".concat(p?.name ?? "Parameter", ": only Float type is supported"));
+    return { name: p.name, type: "Float", defaultValue: config.defaultValue, saved: config.saved, networkSynced: config.networkSynced };
+  }).sort(order);
+  const expression = serializeExpression(rows, config.name + "_ExpressionParameters");
+  const root = "Assets/" + config.name, used = /* @__PURE__ */ new Set();
+  function guid2() {
+    assert(typeof globalThis.crypto?.getRandomValues === "function", "Secure GUID generation is unavailable");
+    for (let i = 0; i < 16; i++) {
+      const value2 = [...crypto.getRandomValues(new Uint8Array(16))].map((v) => v.toString(16).padStart(2, "0")).join("");
+      if (!/^0+$/.test(value2) && !used.has(value2)) {
+        used.add(value2);
+        return value2;
+      }
+    }
+    throw new Error("New GUID collision");
+  }
+  const folderGuid = guid2(), assets = [{ guid: folderGuid, path: root, asset: null, meta: "fileFormatVersion: 2\nguid: ".concat(folderGuid, "\nfolderAsset: yes\nDefaultImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n") }];
+  for (const [path, text2, id2] of [[config.name + ".controller", controllerText(rows, config.name), "9100000"], [config.name + "_ExpressionParameters.asset", expression, "11400000"]]) {
+    const value2 = guid2();
+    splitUnityDocuments(text2);
+    assets.push({ guid: value2, path: root + "/" + path, asset: enc.encode(text2), meta: "fileFormatVersion: 2\nguid: ".concat(value2, "\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: ").concat(id2, "\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n") });
+  }
+  return { archive: writeUnityPackage(assets), fileName: config.name + ".unitypackage", parameterCount: rows.length, bitCost: rows.filter((r) => r.networkSynced).length * 8 };
+}
+
+// docs/shared/parameter-registrar/pool-task.mjs
+var TASK_VERSION = 1;
+var MAX_TASK_BYTES = 8 * 1024 * 1024;
+var isParameterTask = (type) => type === "parameter-collect" || type === "parameter-generate";
+var size = (value2) => new TextEncoder().encode(JSON.stringify(value2)).byteLength;
+var validName3 = (name) => typeof name === "string" && name.length > 0 && name.trim().length > 0 && !/[\u0000-\u001f\u007f\u0085\u2028\u2029]/u.test(name);
+function parameters(value2) {
+  if (!Array.isArray(value2) || value2.length > 8192) throw RangeError("Parameter\u767B\u9332\u6570\u306E\u4E0A\u9650\u306F8192\u3067\u3059\u3002");
+  const seen = /* @__PURE__ */ new Set();
+  for (const p of value2) {
+    if (!p || !validName3(p.name) || p.type !== "Float" || seen.has(p.name)) throw TypeError("Parameter\u540D\u30FB\u578B\u30FB\u91CD\u8907\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002");
+    seen.add(p.name);
+  }
+  return value2;
+}
+function documents(value2) {
+  if (!Array.isArray(value2) || value2.length < 1) throw TypeError("Clip/BlendTree\u306E\u5165\u529B\u304C\u3042\u308A\u307E\u305B\u3093\u3002");
+  for (const d of value2) if (!d || !["74", "206"].includes(d.classId) || typeof d.text !== "string" || typeof d.fileId !== "string" || !/^-[1-9][0-9]*$|^[1-9][0-9]*$/.test(d.fileId) || typeof d.guid !== "string" || !/^[a-f0-9]{32}$/.test(d.guid) || typeof d.path !== "string") throw TypeError("Clip/BlendTree\u306E\u5165\u529B\u5F62\u5F0F\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002");
+  return value2;
+}
+function inspectTaskRequest5(r) {
+  if (!r || r.protocolVersion !== 1 || r.taskVersion !== 1 || !isParameterTask(r.taskType) || typeof r.jobId !== "string" || !/^[A-Za-z0-9_.:-]{1,64}$/.test(r.jobId) || !Number.isSafeInteger(r.inputRevision) || r.inputRevision < 0) throw TypeError("Invalid Parameter task identity");
+  const timeoutMs = r.limits?.timeoutMs ?? 3e4;
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 3e4) throw RangeError("Invalid Parameter task timeout");
+  const payload = r.taskType === "parameter-collect" ? { documents: documents(r.payload?.documents) } : { parameters: parameters(r.payload?.parameters), settings: r.payload?.settings ?? {} };
+  if (size(payload) > MAX_TASK_BYTES) throw RangeError("Parameter\u51E6\u7406\u30C7\u30FC\u30BF\u304C8 MiB\u306E\u4E0A\u9650\u3092\u8D85\u3048\u307E\u3059\u3002");
+  return { protocolVersion: 1, taskType: r.taskType, taskVersion: 1, jobId: r.jobId, inputRevision: r.inputRevision, wasmVariant: r.taskType === "parameter-collect" ? "scalar" : "javascript", kernelHash: r.taskType === "parameter-collect" ? WASM_SHA256 : null, payload, limits: { timeoutMs } };
+}
+var snapshotTaskRequest5 = (r) => ({ ...r, payload: structuredClone(r.payload) });
+var inputBytes5 = (r) => size(r.payload);
+var kernelInfo5 = (r) => (typeof r === "string" ? r : r.taskType) === "parameter-collect" ? { requiresWasm: true, retainResult: false, sha256: WASM_SHA256, variant: "scalar", abi: "ft-v1", key: "ft-v1:".concat(WASM_SHA256, ":scalar") } : { requiresWasm: false, retainResult: false, sha256: null, variant: "javascript", abi: "parameter-assets-1", key: "parameter-assets-1" };
+var resultShape5 = (r) => r.taskType === "parameter-collect" ? { kind: "parameter-names" } : { kind: "parameter-assets", parameterCount: r.payload.parameters.length, bitCost: r.payload.settings.networkSynced ? r.payload.parameters.length * 8 : 0 };
+function validTaskResult5(taskType, shape, result) {
+  if (!result || result.kind !== shape.kind) return false;
+  if (taskType === "parameter-collect") {
+    try {
+      parameters(result.parameters);
+      return size(result) <= MAX_TASK_BYTES;
+    } catch {
+      return false;
+    }
+  }
+  return result.archive instanceof Uint8Array && result.archive.byteLength > 0 && result.archive.byteLength <= MAX_TASK_BYTES && typeof result.fileName === "string" && /^[A-Za-z0-9_-]{1,64}\.unitypackage$/.test(result.fileName) && result.parameterCount === shape.parameterCount && result.bitCost === shape.bitCost;
+}
+var resultBytes5 = (r) => r?.archive instanceof Uint8Array ? r.archive.byteLength + 512 : r ? size(r) : 0;
+function freezeTaskResult5(r) {
+  if (r?.parameters) {
+    for (const p of r.parameters) Object.freeze(p);
+    Object.freeze(r.parameters);
+  }
+  return r ? Object.freeze(r) : r;
+}
+var transferTaskInput5 = () => [];
+var transferTaskResult5 = (r) => r?.archive instanceof Uint8Array ? [r.archive.buffer] : [];
+var prepareTaskModule5 = prepareKernelModule;
+var instantiateTask5 = (r, module) => instantiateKernel(module);
+async function executeTask5(r, kernel) {
+  if (r.taskType === "parameter-collect") return { kind: "parameter-names", parameters: collectMotionParameters(r.payload.documents, kernel) };
+  return { kind: "parameter-assets", ...await generateParameterAssets(r.payload.parameters, r.payload.settings) };
+}
+var taskInputCount5 = (r) => r.taskType === "parameter-collect" ? r.payload.documents.length : r.payload.parameters.length;
+
 // docs/shared/compute/tasks.mjs
 var MAX_MEDIA_INPUT_BYTES = Reflect.get(registered_tasks_exports, "MAX_MEDIA_INPUT_BYTES");
-var adapter = (r) => isKnowledge(typeof r === "string" ? r : r?.taskType) ? pool_task_exports : isIngest(typeof r === "string" ? r : r?.taskType) ? ingest_task_exports : isUnity(typeof r === "string" ? r : r?.taskType) ? pool_task_exports2 : registered_tasks_exports;
-var resultAdapter = (r) => r?.kind === "knowledge-index-step" ? pool_task_exports : ["unity-expanded", "unity-parsed", "unity-parsed-batch"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports2 : registered_tasks_exports;
-var inspectTaskRequest5 = (r) => adapter(r).inspectTaskRequest(r);
-var kernelInfo5 = (r) => adapter(r).kernelInfo(r);
-var transferTaskResult5 = (r) => resultAdapter(r).transferTaskResult(r);
-var prepareTaskModule5 = (o) => adapter(o).prepareTaskModule(o);
-var instantiateTask5 = (r, m) => adapter(r).instantiateTask(r, m);
-var executeTask5 = (r, k) => adapter(r).executeTask(r, k);
-var taskInputCount5 = (r, v) => adapter(r).taskInputCount(r, v);
+var adapter = (r) => isParameterTask(typeof r === "string" ? r : r?.taskType) ? pool_task_exports3 : isKnowledge(typeof r === "string" ? r : r?.taskType) ? pool_task_exports : isIngest(typeof r === "string" ? r : r?.taskType) ? ingest_task_exports : isUnity(typeof r === "string" ? r : r?.taskType) ? pool_task_exports2 : registered_tasks_exports;
+var resultAdapter = (r) => r?.kind?.startsWith("parameter-") ? pool_task_exports3 : r?.kind === "knowledge-index-step" ? pool_task_exports : ["unity-expanded", "unity-parsed", "unity-parsed-batch"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports2 : registered_tasks_exports;
+var inspectTaskRequest6 = (r) => adapter(r).inspectTaskRequest(r);
+var kernelInfo6 = (r) => adapter(r).kernelInfo(r);
+var transferTaskResult6 = (r) => resultAdapter(r).transferTaskResult(r);
+var prepareTaskModule6 = (o) => adapter(o).prepareTaskModule(o);
+var instantiateTask6 = (r, m) => adapter(r).instantiateTask(r, m);
+var executeTask6 = (r, k) => adapter(r).executeTask(r, k);
+var taskInputCount6 = (r, v) => adapter(r).taskInputCount(r, v);
 
 // docs/shared/compute/pool-worker.mjs
 var workerId = crypto.randomUUID();
@@ -2657,36 +3517,36 @@ self.onmessage = async ({ data }) => {
     request = null;
     self.onmessage = null;
   };
-  const fail2 = (error) => {
+  const fail3 = (error) => {
     self.postMessage({ ...identity, type: "error", message: String(error?.message ?? error).slice(0, 240) });
     cleanup();
   };
   try {
     if (data?.buildId !== BUILD_ID || !Number.isSafeInteger(data?.generation) || data.generation < 1 || data.startTogether !== void 0 && typeof data.startTogether !== "boolean") throw Error("Invalid worker identity/options");
-    request = inspectTaskRequest5(data);
-    const info = kernelInfo5(request);
+    request = inspectTaskRequest6(data);
+    const info = kernelInfo6(request);
     if (request.taskType !== "ft-magnitude-batch" && data.kernelHash !== info.sha256) throw Error("Kernel identity mismatch");
     self.postMessage({ ...identity, type: "phase", phase: "loading", bootEpochMs });
     let compileCalls = 0, wasmContentType = null;
     const startTogether = data.startTogether === true, needsWasm = info.requiresWasm !== false;
     const moduleStarted = performance.now();
-    const module = needsWasm ? data.module ?? await prepareTaskModule5({ taskType: request.taskType, wasmVariant: request.wasmVariant, onCompile: () => compileCalls++, onResponse: (value2) => {
+    const module = needsWasm ? data.module ?? await prepareTaskModule6({ taskType: request.taskType, wasmVariant: request.wasmVariant, onCompile: () => compileCalls++, onResponse: (value2) => {
       wasmContentType = value2;
     } }) : null;
     const modulePrepareMs = performance.now() - moduleStarted, instantiateStarted = performance.now();
-    kernel = needsWasm ? instantiateTask5(request, module) : null;
+    kernel = needsWasm ? instantiateTask6(request, module) : null;
     const instantiateMs = needsWasm ? performance.now() - instantiateStarted : null;
     const preparedAt = performance.now();
     const compute = async () => {
       try {
         const computeStart = performance.now();
         self.postMessage({ ...identity, type: "phase", phase: "computing", instanceId: kernel?.instanceId ?? null, bootEpochMs });
-        const result = await executeTask5(request, kernel), transfer = transferTaskResult5(result);
+        const result = await executeTask6(request, kernel), transfer = transferTaskResult6(result);
         const computeEnd = performance.now();
-        self.postMessage({ ...identity, type: "result", instanceId: kernel?.instanceId ?? null, result, metrics: { buildId: BUILD_ID, wasmSha256: info.sha256, wasmVariant: info.variant, kernelAbi: info.abi, wasmContentType, bootEpochMs, modulePrepareMs: needsWasm ? modulePrepareMs : null, instantiateMs, loadMs: preparedAt - started, readyWaitMs: startTogether ? computeStart - preparedAt : 0, startTogether, computeMs: computeEnd - computeStart, computeStartEpochMs: performance.timeOrigin + computeStart, computeEndEpochMs: performance.timeOrigin + computeEnd, memoryBytes: kernel?.memory.buffer.byteLength ?? null, wasmNotApplicable: needsWasm ? null : "JavaScript parsing task", inputCount: taskInputCount5(request, result), compileCalls, moduleReuse: needsWasm && data.module instanceof WebAssembly.Module, arena: kernel?.resourceStats?.() ?? null, memoryMeasurement: null } }, transfer);
+        self.postMessage({ ...identity, type: "result", instanceId: kernel?.instanceId ?? null, result, metrics: { buildId: BUILD_ID, wasmSha256: info.sha256, wasmVariant: info.variant, kernelAbi: info.abi, wasmContentType, bootEpochMs, modulePrepareMs: needsWasm ? modulePrepareMs : null, instantiateMs, loadMs: preparedAt - started, readyWaitMs: startTogether ? computeStart - preparedAt : 0, startTogether, computeMs: computeEnd - computeStart, computeStartEpochMs: performance.timeOrigin + computeStart, computeEndEpochMs: performance.timeOrigin + computeEnd, memoryBytes: kernel?.memory.buffer.byteLength ?? null, wasmNotApplicable: needsWasm ? null : "JavaScript parsing task", inputCount: taskInputCount6(request, result), compileCalls, moduleReuse: needsWasm && data.module instanceof WebAssembly.Module, arena: kernel?.resourceStats?.() ?? null, memoryMeasurement: null } }, transfer);
         cleanup();
       } catch (error) {
-        fail2(error);
+        fail3(error);
       }
     };
     if (startTogether) {
@@ -2694,6 +3554,6 @@ self.onmessage = async ({ data }) => {
       self.postMessage({ ...identity, type: "phase", phase: "ready", instanceId: kernel?.instanceId ?? null, bootEpochMs });
     } else await compute();
   } catch (error) {
-    fail2(error);
+    fail3(error);
   }
 };

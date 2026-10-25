@@ -28,6 +28,12 @@ export function instantiateKernel(module) {
   return Object.freeze({
     instanceId:crypto.randomUUID(),
     memory:k.memory,
+    animatorHash(text) {
+      if(typeof text!=='string')throw TypeError('Expected parameter string');
+      let state=-1;
+      for(const byte of new TextEncoder().encode(text))state=k.FtCrc32Step(state,byte);
+      return k.FtCrc32Step(state,-1)>>>0;
+    },
     magnitude(mask,weights) {
       if(!Number.isInteger(mask)||mask<0||mask>2147483647)throw RangeError('Expected an i32 mask');
       if(!Array.isArray(weights)||weights.length<1||weights.length>5||Array.from(weights).some(value=>typeof value!=='number'||!Number.isFinite(value)))throw RangeError('Invalid weights');

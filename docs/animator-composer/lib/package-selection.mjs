@@ -71,7 +71,7 @@ function classify(path,folder){
 
 /** Stateful tar reader. Owns at most one header plus retained metadata and selected
  * bodies; discarded bodies/previews never enter a collection of output chunks. */
-function tarReader(selected,maxSelectedBytes,maxMetadataBytes){
+function tarReader(selected,maxSelectedBytes,maxMetadataBytes,allowAnyAsset){
   const groups=new Map(),members=new Set(),header=new Uint8Array(BLOCK);
   let headerUsed=0,member=null,padding=0,ended=false,endBytes=0,total=0,metadataBytes=0,selectedBytes=0;
   function startMember(){
@@ -146,7 +146,7 @@ function tarReader(selected,maxSelectedBytes,maxMetadataBytes){
         if(paths.has(path.toLowerCase()))fail(`duplicate asset path ${path}`);paths.set(path.toLowerCase(),folder);
         const record={guid,path,size:body?.size??0,folder,...classify(path,folder),meta};inventory.push(record);
         if(selected?.has(guid)){
-          if(!record.selectable)fail(`asset is not selectable: ${path}`);
+          if(record.folder||(!allowAnyAsset&&!record.selectable))fail(`asset is not selectable: ${path}`);
           assets.push({guid,path,meta,asset:body.data});
         }
       }
@@ -159,12 +159,12 @@ function tarReader(selected,maxSelectedBytes,maxMetadataBytes){
     }
   };
 }
-function read(bytes,selected,maxSelectedBytes=PACKAGE_LIMITS.selected,maxMetadataBytes=PACKAGE_LIMITS.metadata){
+function read(bytes,selected,maxSelectedBytes=PACKAGE_LIMITS.selected,maxMetadataBytes=PACKAGE_LIMITS.metadata,allowAnyAsset=false){
   if(!(bytes instanceof Uint8Array))fail('expected Uint8Array');
   if(bytes.length>PACKAGE_LIMITS.compressed)fail('compressed data exceeds 128 MiB');
   const headerLength=gzipHeader(bytes),expectedSize=u32(bytes,bytes.length-4);
   if(expectedSize>PACKAGE_LIMITS.expanded)fail('expanded data exceeds 1 GiB');
-  const tar=tarReader(selected,maxSelectedBytes,maxMetadataBytes);let length=0,crc=0xffffffff;
+  const tar=tarReader(selected,maxSelectedBytes,maxMetadataBytes,allowAnyAsset);let length=0,crc=0xffffffff;
   const stream=new Gunzip(chunk=>{length+=chunk.length;tar.push(chunk);crc=crcUpdate(crc,chunk);});
   stream.onmember=()=>fail('multiple gzip members are not supported');
   stream.push(bytes.subarray(0,headerLength),false);
@@ -182,10 +182,13 @@ export function scanUnityPackage(bytes,{maxMetadataBytes=PACKAGE_LIMITS.metadata
   return {assets:inventory,expandedBytes,metadataBytes};
 }
 
-/** Second pass: selected GUIDs are explicit; every member is still validated. */
-export function selectUnityPackage(bytes,guids,{maxSelectedBytes=PACKAGE_LIMITS.selected}={}){
+/** Second pass: selected GUIDs are explicit; every member is still validated.
+ * allowAnyAsset lets motion-only scanners inspect nonfolder bodies by headers;
+ * the default Composer extension restriction and all size limits are retained. */
+export function selectUnityPackage(bytes,guids,{maxSelectedBytes=PACKAGE_LIMITS.selected,allowAnyAsset=false}={}){
+  if(typeof allowAnyAsset!=='boolean')fail('allowAnyAsset must be boolean');
   if(!Array.isArray(guids)||new Set(guids).size!==guids.length)fail('selection must contain unique GUIDs');
   for(const guid of guids)validGuid(guid);
   if(!Number.isSafeInteger(maxSelectedBytes)||maxSelectedBytes<0||maxSelectedBytes>PACKAGE_LIMITS.selected)fail('invalid selected data budget');
-  return read(bytes,new Set(guids),maxSelectedBytes);
+  return read(bytes,new Set(guids),maxSelectedBytes,PACKAGE_LIMITS.metadata,allowAnyAsset);
 }

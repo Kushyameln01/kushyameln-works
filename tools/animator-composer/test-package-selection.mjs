@@ -52,6 +52,15 @@ await test('selection rejects duplicates, absent GUIDs, non-settings and source-
   assert.throws(()=>selectUnityPackage(bytes,[GUIDS.image]),/not selectable/);
   assert.throws(()=>selectUnityPackage(bytes,[GUIDS.base],{maxSelectedBytes:10}),/budget/);
 });
+await test('explicit any-asset selection preserves default setting restriction and rejects folders',()=>{
+  const unknown=source.find(a=>a.path.endsWith('.txt'));
+  assert.throws(()=>selectUnityPackage(bytes,[unknown.guid]),/not selectable/);
+  const selected=selectUnityPackage(bytes,[unknown.guid,GUIDS.image],{allowAnyAsset:true});
+  assert.equal(selected.assets.length,2);
+  for(const entry of selected.assets)assert.deepEqual(entry.asset,source.find(a=>a.guid===entry.guid).asset);
+  assert.throws(()=>selectUnityPackage(bytes,[folderGuid],{allowAnyAsset:true}),/not selectable/);
+  assert.throws(()=>selectUnityPackage(bytes,[unknown.guid],{allowAnyAsset:1}),/boolean/);
+});
 await test('gzip header, CRC, ISIZE, truncated stream and concatenated member are rejected',()=>{
   const header=bytes.slice();header[3]|=128;rejectBoth(header,/gzip header/);
   const crc=bytes.slice();crc[crc.length-8]^=1;rejectBoth(crc,/checksum/);

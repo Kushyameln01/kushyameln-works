@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Parameter Registrar｜Kushyameln Works</title>
+  <meta name="description" content="unitypackage内のClip・BlendTreeから使用パラメータ名を抽出し、新しいControllerとExpressionParametersを生成します。">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header><h1>Parameter Registrar</h1><span>Kushyameln Works</span></header>
+  <nav class="site-nav" aria-label="サイト内ナビゲーション"><a href="../">トップページ</a><a href="../github/">GitHub・ツール</a></nav>
+  <main>
+    <p class="intro">unitypackage内のすべてのClip・BlendTreeから使用パラメータ名を集め、登録用のControllerとExpressionParametersを新しく生成します。ファイルはアップロードせず、ブラウザ内で処理します。</p>
+    <form id="registrar" novalidate>
+      <fieldset>
+        <legend>1. パラメータ名を抽出</legend>
+        <label for="package-file">入力するunitypackage</label>
+        <input id="package-file" type="file" accept=".unitypackage" aria-describedby="package-help">
+        <p id="package-help" class="small">パッケージ内のClip・BlendTreeをすべて対象にします。ControllerやExpressionの宣言値は読み取りません。</p>
+        <div class="actions"><button id="collect" type="button" disabled>パラメータ名を抽出</button><button id="cancel" type="button" hidden>取消</button></div>
+        <div id="collection" hidden>
+          <p id="parameter-count"></p>
+          <details id="names"><summary>抽出したパラメータ名</summary><ul id="parameter-list"></ul></details>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>2. 共通の生成設定</legend>
+        <label for="output-name">出力名</label>
+        <input id="output-name" type="text" value="Parameters" maxlength="64" pattern="[A-Za-z0-9_-]{1,64}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="name-help">
+        <p id="name-help" class="small">半角英数字・_・-で1〜64文字。</p>
+        <label for="default-value" class="value-label">初期値（Float）</label>
+        <input id="default-value" type="number" value="0" min="-1" max="1" step="any" aria-describedby="defaults-help">
+        <div class="checks">
+          <label for="saved"><input id="saved" type="checkbox"> Saved（値を保存）</label>
+          <label for="network-synced"><input id="network-synced" type="checkbox"> Network Synced（ネットワーク同期）</label>
+        </div>
+        <p id="defaults-help" class="small">すべてFloatとして登録します。初期値（-1〜1）・保存・同期は、ここで指定する共通設定です。</p>
+        <div class="actions"><button id="generate" type="submit" disabled>unitypackageを生成</button></div>
+      </fieldset>
+    </form>
+    <p id="status" role="status" aria-live="polite" aria-atomic="true">unitypackageを選択してください。</p>
+    <section id="result" aria-label="生成結果" hidden>
+      <h2>生成結果</h2>
+      <p id="summary"></p>
+      <a id="download" class="download">unitypackageをダウンロード</a>
+    </section>
+    <details class="scope">
+      <summary>入力と出力の範囲</summary>
+      <ul>
+        <li>ClipのAnimator Parameterカーブと、BlendTreeの使用軸・Directの重みから名前を抽出します。外部参照先は取得しません。</li>
+        <li>通常のAnimator Floatカーブに対応します。対象のClip・BlendTreeを読み取れない場合は生成を中止します。バイナリ形式などの非対応データは、Unityでテキスト形式にして書き出してください。FBX等のImport時に生成されるClipを復元する機能ではありません。</li>
+        <li>入力は圧縮128 MiB・展開1 GiBまでです。1オブジェクトの処理データなどにも上限があり、超過時は対象と理由を表示します。</li>
+        <li>生成するアセットは、パラメータ登録用の最小ControllerとExpressionParametersの2つです。再生用StateやMotionは含めません。既存アセットは更新しません。</li>
+        <li>生成したアセットの利用にはVRChat SDKが必要です。UnityへのImportと実動作の確認は、別途Unityで行ってください。</li>
+      </ul>
+    </details>
+    <nav class="related" aria-label="関連ツール"><a href="../animator-composer/">Animator Composer</a><a href="../parameter-template/">Parameter Template</a><a href="../worker-runner/">共有計算</a><a href="../github/">GitHub・ツール一覧</a></nav>
+    <noscript><p>このツールを使うにはJavaScriptを有効にしてください。</p></noscript>
+  </main>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
