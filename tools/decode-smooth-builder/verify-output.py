@@ -5,6 +5,21 @@ import argparse,tarfile,re,json,hashlib
 HEADER=re.compile(r'^--- !u!(\d+) &(-?\d+)(?: stripped)?\n',re.M)
 FLOW=re.compile(r'\{fileID: (-?\d+)(?:, guid: ([0-9a-f]{32}), type: (\d+))?\}')
 SDK='67cc4cb7839cd3741b63733d5adf0442'
+# Read factual JSON data only; never import or execute the product JavaScript.
+RANGE_SOURCE=Path(__file__).resolve().parents[2]/'docs/shared/animator-integrator/vrcft5-ranges.mjs'
+RANGE_LITERAL=re.search(r'VRCFT5_PARAMETER_RANGES=Object\.freeze\((\[[\s\S]*?\])\.map',RANGE_SOURCE.read_text()).group(1)
+VRCFT5_RANGES={row['name']:row for row in json.loads(RANGE_LITERAL)}
+def expected_sync(name,range_sync):
+    synced=bool(re.search(r'(?:[0-9]|Negative)\Z',name))
+    if range_sync and name.endswith('Negative'):
+        base=name[:-len('Negative')]
+        match=re.search(r'(?:^|/)v2[/.]([^/]+)\Z',base)
+        bounds=VRCFT5_RANGES.get('v2/'+match[1]) if match else None
+        if bounds and bounds['max']>0:
+            if bounds['min']==0:synced=False
+            elif bounds['min']<0:synced=True
+    return '1' if synced else '0'
+
 
 def read_package(path):
     assets={}
@@ -39,7 +54,7 @@ def reference(value,owner):
 def node(assets,ref):return assets[ref[0]]['docs'][ref[1]]
 def objects(assets):return {(guid,fileid):doc for guid,entry in assets.items() for fileid,doc in entry['docs'].items()}
 
-def verify(path,n):
+def verify(path,n,range_sync=True):
     assets=read_package(path);all_objects=objects(assets);external=set()
     for (guid,_),doc in all_objects.items():
         for m in FLOW.finditer(doc['text']):
@@ -88,8 +103,8 @@ def verify(path,n):
     assert float(field(expr['AlwaysOne'],'defaultValue'))==1
     assert set(expr)==set(animator)
     for name,body in expr.items():
-        expected_sync='1' if re.search(r'(?:[0-9]|Negative)\Z',name) else '0'
-        assert field(body,'valueType')=='1' and field(body,'saved')=='0' and field(body,'networkSynced')==expected_sync
+        expected=expected_sync(name,range_sync)
+        assert field(body,'valueType')=='1' and field(body,'saved')=='0' and field(body,'networkSynced')==expected
         if name in ('EyeLidLeft','EyeLidRight','EyeLid'):
             assert float(field(body,'defaultValue'))==.75 and float(field(animator[name],'m_DefaultFloat'))==.75
     counts={}
@@ -97,7 +112,7 @@ def verify(path,n):
     assert counts['206']>=2 and counts.get('74',0)>0
     synced=sum(field(body,'networkSynced')=='1' for body in expr.values())
     assert synced*8<=256
-    return {'status':'PASS','file':path.name,'targetCount':n,'layers':len(layers),'animatorParameters':len(animator),'expressionParameters':len(expr),'syncedExpressions':synced,'syncBitCost':synced*8,'trees':counts['206'],'clips':counts.get('74',0),'assets':len(assets),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'externalSdkRefs':sorted(external)}
+    return {'status':'PASS','file':path.name,'targetCount':n,'layers':len(layers),'animatorParameters':len(animator),'expressionParameters':len(expr),'syncedExpressions':synced,'syncBitCost':synced*8,'vrcft5RangeSyncEnabled':range_sync,'trees':counts['206'],'clips':counts.get('74',0),'assets':len(assets),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'externalSdkRefs':sorted(external)}
 
 def verify_mapping(path,report_path,source_dir):
     report=json.loads(report_path.read_text());output=objects(read_package(path));sources={}
@@ -151,8 +166,8 @@ def verify_mapping(path,report_path,source_dir):
     return {'mappedMotionAndMaskDocuments':compared,'mappingStatus':'PASS','sourceSettingsAndCurves':'PASS','sourceReachableMotionDocuments':len(reachable),'unreferencedSourceMotionDocumentsOmitted':len(motion_sources)-len(reachable)}
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('package',type=Path);parser.add_argument('--targets',type=int,required=True);parser.add_argument('--report',type=Path);parser.add_argument('--sources-dir',type=Path);parser.add_argument('--output',type=Path)
-    args=parser.parse_args();result=verify(args.package,args.targets)
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('package',type=Path);parser.add_argument('--targets',type=int,required=True);parser.add_argument('--report',type=Path);parser.add_argument('--sources-dir',type=Path);parser.add_argument('--output',type=Path);parser.add_argument('--binary-only',action='store_true',help='Expect pre-range-rule Binary-only synchronization')
+    args=parser.parse_args();result=verify(args.package,args.targets,range_sync=not args.binary_only)
     if args.report:
         assert args.sources_dir,'--sources-dir is required with --report'
         result.update(verify_mapping(args.package,args.report,args.sources_dir))

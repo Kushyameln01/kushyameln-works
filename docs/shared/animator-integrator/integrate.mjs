@@ -5,6 +5,7 @@ import {readUnityPackage,writeUnityPackage,MAX_UNITY_PACKAGE_BYTES} from '../ft/
 import {splitUnityDocuments,extractReferences,extractAnimatorLayers,canonicalizeObjectReferences,parseUnityScalar} from '../ft/unity-text.mjs';
 import {rootController,parameterText} from './root-layers.mjs';
 import {DEFAULT_VALUE_RULES,applyDefaultValueRules,EXPRESSION_SYNC_RULES,applyExpressionSyncRules} from './default-value-rules.mjs';
+import {VRCFT5_RANGE_SOURCE,VRCFT5_RANGE_SYNC_POLICY,applyVrcft5RangeSync} from './vrcft5-ranges.mjs';
 const enc=new TextEncoder(),dec=new TextDecoder('utf-8',{fatal:true});
 const issue=(code,message,detail={})=>({severity:'error',code,message,...detail});
 function fail(issues){const e=new Error(issues.map(i=>i.message).join('\n'));e.name='IntegrationError';e.issues=issues;e.report={status:'BLOCKED',issues};throw e;}
@@ -35,6 +36,7 @@ export async function importSources(sources){
 function validateRequest(index,r){
  const issues=[];
  if(!r||r.schemaVersion!==1)return [issue('request_version','Expected schemaVersion 1.')];
+ if(r.vrcft5RangeSync!==undefined&&typeof r.vrcft5RangeSync!=='boolean')issues.push(issue('vrcft5_range_sync_option','vrcft5RangeSync must be a boolean.'));
  if(typeof r.name!=='string'||!/^\p{L}[\p{L}\p{N}_.-]{0,63}$|^[0-9][\p{L}\p{N}_.-]{0,63}$/u.test(r.name)||r.name==='..')issues.push(issue('output_name','Output name must contain 1–64 letters, numbers, underscores, hyphens or dots.'));
  if(!['Base','Additive','Gesture','Action','FX','Sitting','TPose','IKPose'].includes(r.playable)||r.writeDefaults!==true)issues.push(issue('options','Choose a supported Playable and new-state Write Defaults ON.'));
  for(const [field,cls]of [['controllerIds','91'],['expressionIds','114']]){
@@ -45,23 +47,24 @@ function validateRequest(index,r){
  if(index.catalog.conflicts.length)issues.push(issue('guid_conflict','Different contents share a GUID; remove or resolve the source conflict.',{conflicts:index.catalog.conflicts}));
  return issues;
 }
-function mergeExpressions(index,ids){
- const rows=new Map(),issues=[],sources=[],changes=[],syncChanges=[];let added=true;
+function mergeExpressions(index,ids,{vrcft5RangeSync=true}={}){
+ const rows=new Map(),issues=[],sources=[],changes=[],syncChanges=[],rangeMatches=[],rangeUnmatched=[],rangeChanges=[];let added=true;
  for(const id of ids){let list;try{list=parseExpression(index.nodes.get(id).text);}catch(e){issues.push(issue('expression_unsupported',`${id}: ${e.message}`,{id}));continue;}
   const normalized=applyDefaultValueRules(list,{domain:'expression',sourceId:id});changes.push(...normalized.changes);
   const synced=applyExpressionSyncRules(normalized.rows,{sourceId:id});syncChanges.push(...synced.changes);
-  for(const [i,original] of list.entries()){const row=synced.rows[i];if(row.name==='AlwaysOne')added=false;
+  const ranged=applyVrcft5RangeSync(synced.rows,{enabled:vrcft5RangeSync,sourceId:id});rangeMatches.push(...ranged.matches);rangeUnmatched.push(...ranged.unmatched);rangeChanges.push(...ranged.changes);
+  for(const [i,original] of list.entries()){const row=ranged.rows[i];if(row.name==='AlwaysOne')added=false;
    const previous=rows.get(row.name);if(previous&&JSON.stringify(previous.row)!==JSON.stringify(row))issues.push(issue('expression_conflict',`${row.name}: Expression settings differ.`,{name:row.name,options:[previous,{sourceId:id,row}]}));else if(!previous)rows.set(row.name,{row,sourceId:id});
    sources.push({sourceId:id,name:row.name,original,normalized:row});
   }
  }
  const ensured=applyDefaultValueRules([...rows.values()].map(x=>x.row),{domain:'expression',sourceId:'integrator',ensure:true});changes.push(...ensured.changes);
  const result=ensured.rows;try{serializeExpression(result);}catch(e){issues.push(issue('expression_invalid',e.message));}
- return {rows:result,issues,sources,changes,syncChanges,added,bitCost:result.reduce((n,r)=>n+(r.networkSynced?(r.type==='Bool'?1:8):0),0)};
+ return {rows:result,issues,sources,changes,syncChanges,rangeMatches,rangeUnmatched,rangeChanges,added,bitCost:result.reduce((n,r)=>n+(r.networkSynced?(r.type==='Bool'?1:8):0),0)};
 }
 export async function integratePackages(packages,request,kernel){
  let index=indexPackages(packages),issues=validateRequest(index,request);if(issues.length)fail(issues);
- const expressions=mergeExpressions(index,request.expressionIds);issues.push(...expressions.issues);if(issues.length)fail(issues);
+ const expressions=mergeExpressions(index,request.expressionIds,{vrcft5RangeSync:request.vrcft5RangeSync??true});issues.push(...expressions.issues);if(issues.length)fail(issues);
  // Private index edits happen before dependency traversal: obsolete masks do not enter closure.
  const union=new Map(),alwaysSources=[],sourceLayers=new Map(),ruleChanges=[...expressions.changes];
  for(const id of request.controllerIds){const n=index.nodes.get(id);sourceLayers.set(id,extractAnimatorLayers(n.text));let text=canonicalizeObjectReferences(n.text);const declared=index.catalog.controllers.find(c=>c.id===id).parameters;
@@ -93,7 +96,7 @@ export async function integratePackages(packages,request,kernel){
  const verified=validateAssets(assets),archive=writeUnityPackage(assets),reopened=[...readUnityPackage(archive).values()];
  if(reopened.length!==assets.length)throw Error('Roundtrip asset count mismatch.');
  for(const a of assets){const b=reopened.find(b=>b.guid===a.guid);if(!b||a.path!==b.path||a.meta!==b.meta||await digest(a.asset)!==await digest(b.asset))throw Error(`Roundtrip bytes mismatch: ${a.path}`);}
- const report={format:'animator-integrator-report-1',status:'PASS',inputHashes:index.inputHashes,request,controllers:built.controllers,parameters:expressions.rows,animatorParameters:[...merged.values()],bitCost:expressions.bitCost,expressionSources:expressions.sources,defaultValueRules:{rules:DEFAULT_VALUE_RULES,changes:ruleChanges},expressionSyncRules:{rules:EXPRESSION_SYNC_RULES,changes:expressions.syncChanges},alwaysOne:{type:'Float',defaultValue:1,animatorAdded:alwaysSources.length===0,animatorSources:alwaysSources,expressionAdded:expressions.added,newExpressionFlags:expressions.added?{saved:false,networkSynced:false}:null},composition:built.report,staticValidation:{status:'PASS',...verified,roundtripAssets:reopened.length,roundtripBytes:'PASS'},verification:{unityImport:'UNVERIFIED',runtime:'UNVERIFIED'},warnings:issues.filter(i=>i.severity!=='error')};
+ const report={format:'animator-integrator-report-1',status:'PASS',inputHashes:index.inputHashes,request,controllers:built.controllers,parameters:expressions.rows,animatorParameters:[...merged.values()],bitCost:expressions.bitCost,expressionSources:expressions.sources,defaultValueRules:{rules:DEFAULT_VALUE_RULES,changes:ruleChanges},expressionSyncRules:{rules:EXPRESSION_SYNC_RULES,changes:expressions.syncChanges},vrcft5RangeSync:{enabled:request.vrcft5RangeSync??true,source:VRCFT5_RANGE_SOURCE,policy:VRCFT5_RANGE_SYNC_POLICY,matches:expressions.rangeMatches,unmatched:expressions.rangeUnmatched,changes:expressions.rangeChanges},alwaysOne:{type:'Float',defaultValue:1,animatorAdded:alwaysSources.length===0,animatorSources:alwaysSources,expressionAdded:expressions.added,newExpressionFlags:expressions.added?{saved:false,networkSynced:false}:null},composition:built.report,staticValidation:{status:'PASS',...verified,roundtripAssets:reopened.length,roundtripBytes:'PASS'},verification:{unityImport:'UNVERIFIED',runtime:'UNVERIFIED'},warnings:issues.filter(i=>i.severity!=='error')};
  return {archive,report,assetCount:assets.length,diagnosticAssets:assets};
 }
 

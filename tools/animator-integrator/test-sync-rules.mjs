@@ -9,7 +9,8 @@ import {integratorFixture,GUIDS,asset,parameter} from './fixture.mjs';
 const kernel=await instantiateFtKernel(fs.readFileSync(new URL('../../docs/shared/ft/kernel/ft-kernel.wasm',import.meta.url)));
 const enc=new TextEncoder(),dec=new TextDecoder();
 const row=(name,extra={})=>({name,type:'Float',defaultValue:0.25,saved:true,networkSynced:false,...extra});
-const run=f=>integratePackages(f.packages,f.request,kernel);
+// BinaryParameters-only regression cases explicitly disable the independent range rule.
+const run=f=>integratePackages(f.packages,{...f.request,vrcft5RangeSync:false},kernel);
 function expressions(f,rows){f.packages[0].assets.find(a=>a.guid===GUIDS.expr).asset=enc.encode(serializeExpression(rows));}
 function addExpression(f,rows){const guid='ab'.repeat(16);f.packages[0].assets.push(asset(guid,'Assets/OtherExpressions.asset',serializeExpression(rows),'11400000'));f.request.expressionIds.push(`${guid}:11400000`);}
 test('pure Expression sync rule matches strict ASCII digit or Negative suffix and preserves every other field',()=>{
