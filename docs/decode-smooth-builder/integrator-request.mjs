@@ -20,7 +20,7 @@ function emptyRegistrarLayers(registration,controller){
  }
  return layers;
 }
-/** Keep Registrar declarations and subassets without emitting their empty layers. */
+/** Keep Registrar declarations; omit their empty layers and unused root machines. */
 export function createIntegratorRequest({catalog,refs,registrations}){
  if(!refs||!Array.isArray(registrations)||!registrations.length)fail('Generated base, mask, trees and Registrar outputs are required.');
  const base=exact(catalog,'controllers',refs.baseController),mask=exact(catalog,'masks',refs.mask),binary=exact(catalog,'blendTrees',refs.binaryTree),smooth=exact(catalog,'blendTrees',refs.smoothTree),controllerIds=[base.id],expressionIds=[],parameterOnlyControllerIds=[];

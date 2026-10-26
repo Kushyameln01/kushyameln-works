@@ -138,6 +138,8 @@ await test('generated package is only new minimal Controller, Expression and fol
  const controller=entries.find(a=>a.path.endsWith('.controller')),expression=entries.find(a=>a.path.endsWith('.asset'));
  const ct=new TextDecoder().decode(controller.asset),et=new TextDecoder().decode(expression.asset);
  const docs=splitUnityDocuments(ct).documents;assert.deepEqual(docs.map(d=>d.classId).sort(),['1107','91']);
+ assert.match(docs.find(d=>d.classId==='1107').text,/^  m_ObjectHideFlags: 1$/m);
+ assert.match(docs.find(d=>d.classId==='91').text,/^  m_ObjectHideFlags: 0$/m);
  assert.match(ct,/m_ChildStates: \[\]/);assert.match(ct,/m_DefaultState: \{fileID: 0\}/);
  assert.deepEqual(extractAnimatorParameters(ct).map(p=>({name:p.name,type:p.fields.m_Type,value:p.fields.m_DefaultFloat})),p.map(p=>({name:p.name,type:'1',value:'0.25'})));
  assert.deepEqual(parseExpression(et),p.map(p=>({...p,defaultValue:0.25,saved:true,networkSynced:true})));

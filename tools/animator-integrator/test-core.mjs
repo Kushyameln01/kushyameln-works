@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {integratorFixture,GUIDS,MOTIONS,PREAMBLE,asset,parameter,tree,doc,MASK} from './fixture.mjs';
+import {integratorFixture,GUIDS,MOTIONS,PREAMBLE,asset,parameter,tree,doc,MASK,controller,layer,state,ref} from './fixture.mjs';
 import {splitUnityDocuments,extractAnimatorLayers,extractAnimatorParameters,extractReferences} from '../../docs/shared/ft/unity-text.mjs';
 import {parseExpression,serializeExpression} from '../../docs/animator-composer/lib/registration.mjs';
 import {readUnityPackage} from '../../docs/shared/ft/unity-package.mjs';
@@ -12,6 +12,35 @@ const kernel=await instantiateFtKernel(fs.readFileSync(new URL('../../docs/share
 const dec=new TextDecoder(),enc=new TextEncoder();
 const run=f=>core.integratePackages(f.packages,f.request,kernel);
 const ctrlIdentity=assets=>assets.find(a=>a.guid===GUIDS.base);
+function emptyRegistrationFixture(){
+ const f=integratorFixture(),add=f.packages[0].assets.find(a=>a.guid===GUIDS.add);
+ const empty=doc(1107,'700','AnimatorStateMachine:\n  m_ObjectHideFlags: 1\n  serializedVersion: 6\n  m_Name: Registration Root\n  m_ChildStates: []\n  m_ChildStateMachines: []\n  m_AnyStateTransitions: []\n  m_EntryTransitions: []\n  m_StateMachineTransitions: {}\n  m_StateMachineBehaviours: []\n  m_DefaultState: {fileID: 0}\n');
+ add.asset=enc.encode(controller('Registration',[parameter('RegistrationOnly'),parameter('Axis'),parameter('Unused')],[layer('Registration Layer','700')],empty+state('999','Unrelated unconnected State',ref('7400000',GUIDS.clip))));
+ f.request.parameterOnlyControllerIds=[`${GUIDS.add}:9100000`];return f;
+}
+test('only explicitly excluded empty layer roots are omitted; source Layer0 and unrelated subassets survive',async()=>{
+ const f=emptyRegistrationFixture(),original=structuredClone(f.packages),r=await run(f),docs=splitUnityDocuments(dec.decode(ctrlIdentity(r.diagnosticAssets).asset)).documents;
+ assert(!docs.some(d=>d.text.includes('m_Name: Registration Root')));
+ assert(docs.some(d=>d.text.includes('m_Name: Unrelated unconnected State')));
+ assert(r.report.animatorParameters.some(p=>p.name==='RegistrationOnly'));
+ assert(!r.report.composition.objectMapping.some(m=>m.sourceId===GUIDS.add+':700'));
+ assert(!r.report.preservation.structuralFileIdChanges.some(m=>m.sourceId===GUIDS.add+':700'));
+ assert.deepEqual(r.report.preservation.omittedEmptyStateMachines.map(m=>m.sourceId),[GUIDS.add+':700']);
+ assert.deepEqual(f.packages,original);
+ delete f.request.parameterOnlyControllerIds;const regular=await run(f);
+ assert(regular.report.composition.objectMapping.some(m=>m.sourceId===GUIDS.add+':700'));
+ assert.equal(regular.report.preservation.omittedEmptyStateMachines.length,0);
+});
+test('references from retained graph objects or metadata prevent empty root removal',async()=>{
+ for(const mode of ['graph','metadata']){
+  const f=emptyRegistrationFixture();
+  if(mode==='graph'){
+   const base=f.packages[0].assets.find(a=>a.guid===GUIDS.base);
+   base.asset=enc.encode(dec.decode(base.asset).replace('  m_ChildStateMachines: []','  m_ChildStateMachines:\n  - serializedVersion: 1\n    m_StateMachine: '+ref('700',GUIDS.add)+'\n    m_Position: {x: 0, y: 0, z: 0}'));
+  }else f.packages[0].assets.find(a=>a.guid===GUIDS.clip).meta+='  retainedReference: '+ref('700',GUIDS.add)+'\n';
+  await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='parameter_only_root_referenced'&&i.targetId===GUIDS.add+':700'));
+ }
+});
 test('parameter-only additions omit their layers while preserving declarations and embedded objects',async()=>{
  const f=integratorFixture(),original=structuredClone(f.packages);f.request.parameterOnlyControllerIds=[`${GUIDS.add}:9100000`];
  const r=await run(f),text=dec.decode(ctrlIdentity(r.diagnosticAssets).asset);

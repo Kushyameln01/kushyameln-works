@@ -1,5 +1,13 @@
 # Decode / Smooth: three-layer output
 
+## Follow-up: visibility and omitted registration roots (2026-10-27)
+
+Baseline: `1248947c9a913b99e45a59f4d86f76bfa9189d0f`. User clarification requires two separate changes: enable HideInHierarchy for generated graph objects while preserving Layer0's Entry → No Animation structure; actually omit empty root StateMachines belonging to excluded parameter-only registration layers from the final Controller. Hiding alone does not satisfy omission.
+
+Implementation scope: Builder's two StateMachines and Entry Transition, Registrar's StateMachine; main assets/Masks/Trees keep their visibility. Integrator removes only verified empty, unsynchronized layer roots from explicitly parameter-only additional Controllers, identified by GUID/fileID. Other references to a removal candidate block generation. Nonempty roots, unrelated unconnected objects, parameters, Clips, Trees and Masks retain existing preservation rules. No name-based or general unused-asset pruning. Source packages remain unchanged. Two-target expected output: 3 layers, 4 StateMachines, 1 Entry Transition, no Registrar root mappings. Tests, independent archive inspection and public-browser generation are release gates; Unity Editor import/runtime remain unverified. Status: candidate verified; publication and public download verification pending.
+
+Candidate checks: 110 tests passed, 0 failed; 2 existing Sites-only cache-key tests skipped on Pages. Independent Python readback: 3 layers, 4 StateMachines, 8 Controller objects, zero Registrar roots, graph HideInHierarchy enabled. All 42 unchanged source files and 94 Motion documents preserved, including 22 unreferenced Motions. Reviewer additionally checked unknown-field retention, non-Layer Controller references blocking deletion, and shared empty roots being omitted exactly once. Shared Worker bundle rebuilt with the repository's pinned esbuild 0.25.11 script; bundle diff only contains the Registrar visibility change. Product runtime APIs and packing are unchanged.
+
 Date: 2026-10-27 JST. Baseline: `b7367874e026ae641f7f4a1c075a4597e0ea4f25`.
 Build: `decode-smooth-integrator-3`.
 

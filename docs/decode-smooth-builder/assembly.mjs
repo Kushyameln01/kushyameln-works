@@ -7,6 +7,7 @@ const decoder=new TextDecoder('utf-8',{fatal:true});
 const ROOT='Assets/Root_DecodeSmooth';
 const PREAMBLE='%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n';
 const objectFields='  m_ObjectHideFlags: 0\n  m_CorrespondingSourceObject: {fileID: 0}\n  m_PrefabInstance: {fileID: 0}\n  m_PrefabAsset: {fileID: 0}\n';
+const graphObjectFields=objectFields.replace('m_ObjectHideFlags: 0','m_ObjectHideFlags: 1');
 
 function fail(message){throw new Error('DecodeSmooth assembly: '+message);}
 function exactRoot(objects,reference,kind,target){
@@ -49,7 +50,7 @@ function directTree(name,motions){
 }
 
 function stateMachine(fileId,name,{child=false}={}){
-  return `--- !u!1107 &${fileId}\nAnimatorStateMachine:\n${objectFields}  serializedVersion: 6\n  m_Name: ${name}\n  m_ChildStates: []\n`
+  return `--- !u!1107 &${fileId}\nAnimatorStateMachine:\n${graphObjectFields}  serializedVersion: 6\n  m_Name: ${name}\n  m_ChildStates: []\n`
     +(child?'  m_ChildStateMachines: []\n':'  m_ChildStateMachines:\n  - serializedVersion: 1\n    m_StateMachine: {fileID: 11070001}\n    m_Position: {x: 300, y: 120, z: 0}\n')
     +'  m_AnyStateTransitions: []\n'
     +(child?'  m_EntryTransitions: []\n':'  m_EntryTransitions:\n  - {fileID: 11090000}\n')
@@ -64,7 +65,7 @@ function baseController(){
   // UNVERIFIED. Readback proves this serialized structure, not Editor behavior.
   return PREAMBLE+`--- !u!91 &9100000\nAnimatorController:\n${objectFields}  m_Name: DecodeSmooth_Base\n  serializedVersion: 5\n  m_AnimatorParameters:\n  - m_Name: AlwaysOne\n    m_Type: 1\n    m_DefaultFloat: 1\n    m_DefaultInt: 0\n    m_DefaultBool: 0\n    m_Controller: {fileID: 9100000}\n  m_AnimatorLayers:\n  - serializedVersion: 5\n    m_Name: Base Layer\n    m_StateMachine: {fileID: 11070000}\n    m_Mask: {fileID: 0}\n    m_Motions: []\n    m_Behaviours: []\n    m_BlendingMode: 0\n    m_SyncedLayerIndex: -1\n    m_DefaultWeight: 1\n    m_IKPass: 0\n    m_SyncedLayerAffectsTiming: 0\n    m_Controller: {fileID: 9100000}\n`
     +stateMachine('11070000','Base Layer')+stateMachine('11070001','No Animation',{child:true})
-    +`--- !u!1109 &11090000\nAnimatorTransition:\n${objectFields}  m_Name: \n  m_Conditions: []\n  m_DstStateMachine: {fileID: 11070001}\n  m_DstState: {fileID: 0}\n  m_Solo: 0\n  m_Mute: 0\n  m_IsExit: 0\n  serializedVersion: 1\n`;
+    +`--- !u!1109 &11090000\nAnimatorTransition:\n${graphObjectFields}  m_Name: \n  m_Conditions: []\n  m_DstStateMachine: {fileID: 11070001}\n  m_DstState: {fileID: 0}\n  m_Solo: 0\n  m_Mute: 0\n  m_IsExit: 0\n  serializedVersion: 1\n`;
 }
 
 function safetyMask(){

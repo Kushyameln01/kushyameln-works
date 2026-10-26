@@ -6,7 +6,7 @@ import {splitUnityDocuments,extractAnimatorLayers,canonicalizeObjectReferences,p
 import {parameterText} from './root-layers.mjs';
 import {DEFAULT_VALUE_RULES,applyDefaultValueRules,EXPRESSION_SYNC_RULES,applyExpressionSyncRules,EXPRESSION_BOOL_RULES,applyExpressionBoolRules} from './default-value-rules.mjs';
 import {VRCFT5_RANGE_SOURCE,VRCFT5_RANGE_SYNC_POLICY,applyVrcft5RangeSync} from './vrcft5-ranges.mjs';
-import {preservationInputIssues,preservationHostIssues,patchSection,materializePreservedIntegration,preservationReferenceIssues} from './materialize-preserved.mjs';
+import {preservationInputIssues,preservationHostIssues,patchSection,materializePreservedIntegration,preservationReferenceIssues} from './materialize-preserved.mjs?v=graph-cleanup-1';
 const enc=new TextEncoder(),dec=new TextDecoder('utf-8',{fatal:true});
 const issue=(code,message,detail={})=>({severity:'error',code,message,...detail});
 function fail(issues){const e=new Error(issues.map(i=>i.message).join('\n'));e.name='IntegrationError';e.issues=issues;e.report={status:'BLOCKED',issues};throw e;}

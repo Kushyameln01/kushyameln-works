@@ -147,11 +147,12 @@ export function collectParameters(bytes,{kernel}={}){
 }
 
 const objectFields='  m_ObjectHideFlags: 0\n  m_CorrespondingSourceObject: {fileID: 0}\n  m_PrefabInstance: {fileID: 0}\n  m_PrefabAsset: {fileID: 0}\n';
+const graphObjectFields=objectFields.replace('m_ObjectHideFlags: 0','m_ObjectHideFlags: 1');
 function controllerText(rows,name){
  return PREAMBLE+`--- !u!91 &9100000\nAnimatorController:\n${objectFields}  m_Name: ${JSON.stringify(name)}\n  serializedVersion: 5\n  m_AnimatorParameters:${rows.length?'':' []'}\n`
  +rows.map(r=>`  - m_Name: ${JSON.stringify(r.name)}\n    m_Type: 1\n    m_DefaultFloat: ${r.defaultValue}\n    m_DefaultInt: 0\n    m_DefaultBool: 0\n    m_Controller: {fileID: 9100000}\n`).join('')
  +'  m_AnimatorLayers:\n  - serializedVersion: 5\n    m_Name: Base Layer\n    m_StateMachine: {fileID: 11070000}\n    m_Mask: {fileID: 0}\n    m_Motions: []\n    m_Behaviours: []\n    m_BlendingMode: 0\n    m_SyncedLayerIndex: -1\n    m_DefaultWeight: 1\n    m_IKPass: 0\n    m_SyncedLayerAffectsTiming: 0\n    m_Controller: {fileID: 9100000}\n'
- +`--- !u!1107 &11070000\nAnimatorStateMachine:\n${objectFields}  serializedVersion: 6\n  m_Name: Base Layer\n  m_ChildStates: []\n  m_ChildStateMachines: []\n  m_AnyStateTransitions: []\n  m_EntryTransitions: []\n  m_StateMachineTransitions: {}\n  m_StateMachineBehaviours: []\n  m_AnyStatePosition: {x: 50, y: 20, z: 0}\n  m_EntryPosition: {x: 50, y: 120, z: 0}\n  m_ExitPosition: {x: 800, y: 120, z: 0}\n  m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}\n  m_DefaultState: {fileID: 0}\n`;
+ +`--- !u!1107 &11070000\nAnimatorStateMachine:\n${graphObjectFields}  serializedVersion: 6\n  m_Name: Base Layer\n  m_ChildStates: []\n  m_ChildStateMachines: []\n  m_AnyStateTransitions: []\n  m_EntryTransitions: []\n  m_StateMachineTransitions: {}\n  m_StateMachineBehaviours: []\n  m_AnyStatePosition: {x: 50, y: 20, z: 0}\n  m_EntryPosition: {x: 50, y: 120, z: 0}\n  m_ExitPosition: {x: 800, y: 120, z: 0}\n  m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}\n  m_DefaultState: {fileID: 0}\n`;
 }
 export async function generateParameterAssets(parameters,settings={}){
  assert(Array.isArray(parameters),'Parameter array is required');

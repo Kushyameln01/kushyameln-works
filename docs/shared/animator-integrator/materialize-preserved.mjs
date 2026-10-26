@@ -1,5 +1,5 @@
 // Integrator-only materialization: existing asset identities and complete source files survive.
-import {splitUnityDocuments,extractReferences,extractAnimatorLayers,extractAnimatorParameters,parseUnityScalar} from '../ft/unity-text.mjs';
+import {splitUnityDocuments,extractReferences,extractAnimatorLayers,replaceAnimatorLayers,extractAnimatorParameters,parseUnityScalar} from '../ft/unity-text.mjs';
 import {digest} from '../../animator-composer/lib/generate.mjs';
 import {serializeExpression} from '../../animator-composer/lib/registration.mjs';
 import {parameterText,rootController} from './root-layers.mjs';
@@ -47,6 +47,41 @@ function set(text,name,value,indent=2){const re=new RegExp(`^(${' '.repeat(inden
 const ref=id=>{const [guid,fileId]=id.split(':');return `{fileID: ${fileId}, guid: ${guid}, type: 2}`;};
 function applyEdits(text,edits){for(const e of [...edits].sort((a,b)=>b.start-a.start))text=text.slice(0,e.start)+e.value+text.slice(e.end);return text;}
 function layerControl(node){return node.classId==='114'&&extractReferences(node.text).some(r=>r.guid?.toLowerCase()===SDK&&r.fileId===LAYER_SCRIPT);}
+// Only empty roots of explicitly omitted layers qualify. Unrelated orphan
+// objects and nonempty graphs keep the existing preservation contract.
+function omittedEmptyRoots(index,request){
+ const selected=new Set(request.parameterOnlyControllerIds??[]),removed=new Map();
+ const arrays=['m_ChildStates','m_ChildStateMachines','m_AnyStateTransitions','m_EntryTransitions','m_StateMachineBehaviours'];
+ const fields=new Set([...arrays,'m_ObjectHideFlags','m_CorrespondingSourceObject','m_PrefabInstance','m_PrefabAsset','serializedVersion','m_Name','m_StateMachineTransitions','m_AnyStatePosition','m_EntryPosition','m_ExitPosition','m_ParentStateMachinePosition','m_DefaultState']);
+ for(const id of selected){
+  const controller=index.nodes.get(id);
+  for(const [sourceLayer,layer]of extractAnimatorLayers(controller.text).entries()){
+   if(layer.fields.m_SyncedLayerIndex!=='-1'||layer.fields.m_Motions!=='[]'||layer.fields.m_Behaviours!=='[]')continue;
+   const pointer=extractReferences(layer.fields.m_StateMachine)[0],targetId=`${(pointer.guid??controller.guid).toLowerCase()}:${pointer.fileId}`,node=index.nodes.get(targetId);
+   if(!node||node.guid!==controller.guid||node.classId!=='1107')continue;
+   if(!arrays.every(name=>new RegExp(`^  ${name}: \\[\\]\\r?$`,'m').test(node.text))||!/^  m_StateMachineTransitions: \{\}\r?$/m.test(node.text)||!/^  m_DefaultState: \{fileID: 0\}\r?$/m.test(node.text))continue;
+   if(extractReferences(node.text).some(r=>r.fileId!=='0')||[...node.text.matchAll(/^  ([A-Za-z_][A-Za-z_0-9]*):/gm)].some(m=>!fields.has(m[1])))continue;
+   const entry=removed.get(targetId)??{sourceId:targetId,sourcePath:node.path,sourceLayerIndices:[],reason:'excluded_parameter_only_empty_root'};
+   entry.sourceLayerIndices.push(sourceLayer);removed.set(targetId,entry);
+  }
+ }
+ if(!removed.size)return removed;
+ const inspect=(text,sourceId,guid)=>{
+  for(const r of extractReferences(text))if(r.fileId!=='0'){
+   const targetId=`${(r.guid??guid).toLowerCase()}:${r.fileId}`;
+   if(removed.has(targetId))blocked([issue('parameter_only_root_referenced',`Cannot omit empty registration root ${targetId}: retained reference from ${sourceId}.`,{sourceId,targetId})]);
+  }
+ };
+ for(const node of index.nodes.values()){
+  if(removed.has(node.id))continue;
+  // Ignore only the root pointers of omitted layers, not other fields of the
+  // Controller or any retained StateMachine/Transition/Behaviour.
+  const text=selected.has(node.id)?replaceAnimatorLayers(node.text,extractAnimatorLayers(node.text).map(l=>({text:set(l.text,'m_StateMachine','{fileID: 0}',4)}))):node.text;
+  inspect(text,node.id,node.guid);
+ }
+ for(const asset of index.assets.values())inspect(asset.meta.replace(/^guid:[^\r\n]*$/m,''),asset.guid+':meta',asset.guid);
+ return removed;
+}
 /** Preserve every original file except selected absorbed hosts; only destination sections/structural copies change. */
 export async function materializePreservedIntegration(index,request,analysis,animatorParameters,expressionRows){
  const issues=preservationHostIssues(index,request);if(issues.length)blocked(issues);
@@ -57,15 +92,16 @@ export async function materializePreservedIntegration(index,request,analysis,ani
  const pathOwners=new Map();for(const a of assets){const key=a.path.toLowerCase();if(pathOwners.has(key))blocked([issue('preservation_relocation_conflict',`Parent relocation collides at ${a.path}.`,{path:a.path,guids:[pathOwners.get(key),a.guid]})]);pathOwners.set(key,a.guid);}
  const outputByGuid=new Map(assets.map(a=>[a.guid,a])),used=new Set(baseAsset.documents.map(d=>d.fileId)),maps=new Map(),changes=[],mapping=[];
  let next=1n;const allocate=()=>{while(used.has(String(next)))next++;const id=String(next++);used.add(id);return id;};
- const contexts=oc.contexts;
+ const contexts=oc.contexts,omitted=omittedEmptyRoots(index,request);
+ const documentsFor=ctx=>source.get(ctx.controller.guid).documents.filter(d=>!omitted.has(`${ctx.controller.guid}:${d.fileId}`));
  // Reserve every imported noncolliding ID before allocating collisions/new roots.
  const reservedImports=new Set();
- for(const ctx of contexts.slice(1))for(const d of source.get(ctx.controller.guid).documents)if(d.fileId!==ctx.controller.fileId&&STRUCTURAL.has(d.classId)&&!used.has(d.fileId)&&!reservedImports.has(d.fileId))reservedImports.add(d.fileId);
+ for(const ctx of contexts.slice(1))for(const d of documentsFor(ctx))if(d.fileId!==ctx.controller.fileId&&STRUCTURAL.has(d.classId)&&!used.has(d.fileId)&&!reservedImports.has(d.fileId))reservedImports.add(d.fileId);
  for(const id of reservedImports)used.add(id);
  const claimed=new Set(baseAsset.documents.map(d=>d.fileId));
  for(const [i,ctx]of contexts.entries()){
   const map=new Map();maps.set(ctx,map);map.set(ctx.controller.id,{guid:base.guid,fileId:base.fileId});
-  for(const d of source.get(ctx.controller.guid).documents){if(d.fileId===ctx.controller.fileId)continue;const id=`${ctx.controller.guid}:${d.fileId}`;
+  for(const d of documentsFor(ctx)){if(d.fileId===ctx.controller.fileId)continue;const id=`${ctx.controller.guid}:${d.fileId}`;
    if(i===0){map.set(id,{guid:base.guid,fileId:d.fileId});continue;}
    const fileId=claimed.has(d.fileId)?allocate():d.fileId;claimed.add(fileId);used.add(fileId);map.set(id,{guid:base.guid,fileId});
    if(fileId!==d.fileId)changes.push({sourceId:id,sourcePath:ctx.controller.path,outputFileId:fileId,reason:'structural_fileid_collision'});
@@ -109,7 +145,7 @@ export async function materializePreservedIntegration(index,request,analysis,ani
  const baseEdits=[{start:baseDoc.start,end:baseDoc.end,value:controller}];
  for(const d of baseSourceDocs){const node=index.nodes.get(`${base.guid}:${d.fileId}`);if(d.fileId!==base.fileId&&layerControl(node)){const updated=copyNode(node,contexts[0]);if(updated!==d.text)baseEdits.push({start:d.start,end:d.end,value:updated});}}
  let merged=applyEdits(baseRaw,baseEdits);if(!merged.endsWith('\n'))merged+='\n';
- for(const ctx of contexts.slice(1))for(const d of source.get(ctx.controller.guid).documents){if(d.fileId===ctx.controller.fileId)continue;const node=index.nodes.get(`${ctx.controller.guid}:${d.fileId}`);merged+=copyNode(node,ctx);if(!merged.endsWith('\n'))merged+='\n';}
+ for(const ctx of contexts.slice(1))for(const d of documentsFor(ctx)){if(d.fileId===ctx.controller.fileId)continue;const node=index.nodes.get(`${ctx.controller.guid}:${d.fileId}`);merged+=copyNode(node,ctx);if(!merged.endsWith('\n'))merged+='\n';}
  for(const d of roots.documents.slice(1)){const to=rootIds.get(d.fileId),start=d.header.indexOf('&')+1;merged+=rootText(d.text.slice(0,start)+to+d.text.slice(start+d.fileId.length));}
  outputByGuid.get(base.guid).asset=enc.encode(merged);
  const expressionText=dec.decode(expressionAsset.asset),expressionDoc=splitUnityDocuments(expressionText).documents.find(d=>d.fileId===expression.fileId),serialized=serializeExpression(expressionRows),s=section(splitUnityDocuments(serialized).documents[0].text,'parameters');
@@ -123,6 +159,7 @@ export async function materializePreservedIntegration(index,request,analysis,ani
  if(existingParent){if(existingParent.asset!==null||!/^folderAsset:\s*yes\s*$/m.test(existingParent.meta))blocked([issue('preservation_parent_conflict','The requested parent path is already occupied by a non-folder.',{path:PARENT_FOLDER_PATH,guid:existingParent.guid})]);parentFolder={path:PARENT_FOLDER_PATH,guid:existingParent.guid,created:false,sourcePath:source.get(existingParent.guid).path};}
  else {const guid=(await digest(enc.encode('animator-integrator-parent-folder-v1:'+PARENT_FOLDER_PATH))).slice(0,32);if(source.has(guid))blocked([issue('preservation_parent_guid_conflict',`New parent folder GUID collides with input ${guid}.`,{guid,path:source.get(guid).path})]);const parent={guid,path:PARENT_FOLDER_PATH,asset:null,meta:`fileFormatVersion: 2\nguid: ${guid}\nfolderAsset: yes\nDefaultImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n`};assets.push(parent);parentFolder={path:PARENT_FOLDER_PATH,guid,created:true};}
  const modifiedHosts=[base.guid,expression.guid],preservation={policy:'original-input-files-v1',parentFolder,sourceAssets:assets.filter(a=>source.has(a.guid)&&!modifiedHosts.includes(a.guid)).map(a=>({guid:a.guid,sourcePath:source.get(a.guid).path,outputPath:a.path})),modifiedHosts:[{guid:base.guid,sourcePath:baseAsset.path,outputPath:destination.path,fileId:base.fileId,kind:'controller'},{guid:expression.guid,sourcePath:expressionAsset.path,outputPath:preservedOutputPath(expressionAsset.path),fileId:expression.fileId,kind:'expression'}],preservedMotionDocuments:mapping.filter(m=>m.preserved),structuralFileIdChanges:changes,absorbedHosts:[...absorbed]};
+ preservation.omittedEmptyStateMachines=[...omitted.values()];
  assertPreservedSources(index,assets,preservation);
  return {assets,controllers:[destination],preservation,report:{status:'PASS',runtime:'UNVERIFIED',objectMapping:mapping,layerMapping,externalDependencies:[...analysis._externalDependencies.values()],limitations:['Static validation does not establish Unity import/runtime acceptance.']}};
 }

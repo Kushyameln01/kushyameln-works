@@ -7,7 +7,7 @@ import {splitUnityDocuments,extractAnimatorLayers,extractAnimatorParameters} fro
 import {createAnimatorIntegrator} from '../shared/animator-integrator/client.mjs';
 import {createIntegratorRequest} from './integrator-request.mjs';
 
-export const BUILD_ID='decode-smooth-integrator-3';
+export const BUILD_ID='decode-smooth-integrator-4';
 export const SOURCE_REF='922e9616d87debcddb1e602a194ad0c16071ad8f';
 const decoder=new TextDecoder('utf-8',{fatal:true});
 const aborted=()=>new DOMException('処理を取り消しました。','AbortError');
@@ -86,7 +86,7 @@ export function createDecodeSmoothBuilder({concurrency=2,onProgress=()=>{}}={}){
   function assemble(run,generatedPackages,inputRevision){
     current(run);
     return new Promise((resolve,reject)=>{
-      const worker=new Worker(new URL('./assembly-worker.mjs',import.meta.url),{type:'module'});
+      const worker=new Worker(new URL('./assembly-worker.mjs?v=graph-cleanup-1',import.meta.url),{type:'module'});
       const id=crypto.randomUUID();let settled=false;
       const finish=(error,result)=>{
         if(settled)return;settled=true;clearTimeout(timer);worker.terminate();run.stopAssembly=null;

@@ -92,6 +92,14 @@ def verify(path,n,range_sync=True):
     transition=node(assets,reference(entryrefs[0],owner));assert transition['classId']=='1109'
     assert reference(field(transition['text'],'m_DstStateMachine'),owner)==childref
     assert field(transition['text'],'m_DstState')=='{fileID: 0}'
+    controller_objects=assets[owner]['docs'].values()
+    machines=[d for d in controller_objects if d['classId']=='1107']
+    assert len(machines)==4,'Excluded Registrar roots remain inside the Controller'
+    assert sorted(scalar(field(d['text'],'m_Name',indent=2)) for d in machines)==sorted(['Base Layer','No Animation','Root_BinaryParameter','Root_Smooth_Parameter'])
+    assert len(assets[owner]['docs'])==8
+    for d in assets[owner]['docs'].values():
+        if d['classId'] in ('1107','1102','1109'):assert field(d['text'],'m_ObjectHideFlags')=='1'
+        elif d['classId']=='91':assert field(d['text'],'m_ObjectHideFlags',indent=2)=='0'
     params=text.split('  m_AnimatorParameters:\n',1)[1].split('  m_AnimatorLayers:',1)[0]
     rows=re.findall(r'^  - m_Name: ([^\n]+)\n(.*?)(?=^  - m_Name:|\Z)',params,re.M|re.S)
     animator={scalar(name):body for name,body in rows};assert animator and len(animator)==len(rows)
@@ -125,7 +133,7 @@ def verify(path,n,range_sync=True):
     synced=sum(field(body,'networkSynced')=='1' for body in expr.values())
     bits=sum(1 if field(body,'valueType')=='2' else 8 for body in expr.values() if field(body,'networkSynced')=='1')
     assert bits<=256
-    return {'status':'PASS','file':path.name,'targetCount':n,'layers':len(layers),'animatorParameters':len(animator),'expressionParameters':len(expr),'syncedExpressions':synced,'syncBitCost':bits,'vrcft5RangeSyncEnabled':range_sync,'trees':counts['206'],'clips':counts.get('74',0),'assets':len(assets),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'externalSdkRefs':sorted(external)}
+    return {'status':'PASS','file':path.name,'targetCount':n,'layers':len(layers),'stateMachines':len(machines),'controllerObjects':len(assets[owner]['docs']),'graphHideInHierarchy':'PASS','registrarRootsRemaining':0,'animatorParameters':len(animator),'expressionParameters':len(expr),'syncedExpressions':synced,'syncBitCost':bits,'vrcft5RangeSyncEnabled':range_sync,'trees':counts['206'],'clips':counts.get('74',0),'assets':len(assets),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'externalSdkRefs':sorted(external)}
 
 def verify_mapping(path,report_path,source_dir):
     report=json.loads(report_path.read_text());final_assets=read_package(path);output=objects(final_assets)

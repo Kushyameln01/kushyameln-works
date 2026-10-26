@@ -39,7 +39,7 @@ BlendTreeは種類に応じて実使用の軸またはDirect Weight名を収集�
 
 型は対応する使用箇所のFloat制約によります。カーブ値0/1からBoolへ変換しません。初期値・Saved・NetworkSyncedは元宣言や先頭キーから復元せず、新規生成設定として指定します。既定は `0 / false / false`。Float初期値は-1〜1、同期Floatは1件8bit、合計256bitまで、登録は8192件までです。VRChat組込み名はExpressionへ登録できないためエラーになります。
 
-出力名は半角英数字・`_`・`-`の1〜64文字です。出力は `Assets/<name>/` フォルダと、新しいGUIDを持つController／ExpressionParametersの2アセットだけです。Controllerは空のBase Layerを持ち、再生StateやMotionを複製しません。生成元アセットは変更しません。Expressionの利用先にはVRChat SDKが必要です。
+出力名は半角英数字・`_`・`-`の1〜64文字です。出力は `Assets/<name>/` フォルダと、新しいGUIDを持つController／ExpressionParametersの2アセットだけです。Controllerは空のBase Layerを持ち、その内部StateMachineには`HideInHierarchy`を設定します。Controller本体は非表示にしません。再生StateやMotionを複製しません。生成元アセットは変更しません。Expressionの利用先にはVRChat SDKが必要です。
 
 ## 共有計算と制限
 

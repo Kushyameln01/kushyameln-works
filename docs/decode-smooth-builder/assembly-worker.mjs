@@ -1,4 +1,4 @@
-import {buildIntermediateAssets} from './assembly.mjs';
+import {buildIntermediateAssets} from './assembly.mjs?v=graph-cleanup-1';
 self.onmessage=async({data})=>{
   if(data?.type!=='assemble')return;
   self.onmessage=null;

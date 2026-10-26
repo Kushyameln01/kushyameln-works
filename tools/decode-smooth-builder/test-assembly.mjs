@@ -94,6 +94,8 @@ test('base has one Layer0, Float AlwaysOne=1, and Entry to an empty child machin
   const machines=objects.filter(d=>d.classId==='1107');
   const parent=machines.find(d=>!d.text.includes('m_ChildStateMachines: []'));
   const child=machines.find(d=>d!==parent),transition=objects.find(d=>d.classId==='1109');
+  for(const object of [...machines,transition])assert.match(object.text,/^  m_ObjectHideFlags: 1$/m,'Graph objects must be hidden without removing Layer0');
+  assert.match(objects.find(d=>d.classId==='91').text,/^  m_ObjectHideFlags: 0$/m);
   assert.match(layers[0].fields.m_StateMachine,new RegExp(`fileID: ${parent.fileId}`));
   assert.match(parent.text,new RegExp(`m_StateMachine: \\{fileID: ${child.fileId}\\}`));
   assert.match(parent.text,new RegExp(`m_EntryTransitions:\\n  - \\{fileID: ${transition.fileId}\\}`));

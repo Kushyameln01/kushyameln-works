@@ -1,4 +1,4 @@
-import {importSources,integratePackages} from './integrate.mjs?v=parameter-only-1';
+import {importSources,integratePackages} from './integrate.mjs?v=graph-cleanup-1';
 import {instantiateFtKernel} from '../ft/kernel/load-kernel.mjs';
 let packages=null,revision=null,kernelPromise=null;
 self.onmessage=async({data:m})=>{
