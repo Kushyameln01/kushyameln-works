@@ -1,7 +1,7 @@
 const abort=()=>new DOMException('Operation cancelled.','AbortError');
 const notify=(fn,p)=>{try{fn?.(p);}catch{}};
 /** Dedicated Worker session. Private source copies survive termination and retries. */
-export function createAnimatorIntegrator({workerFactory=()=>new Worker(new URL('./worker.mjs',import.meta.url),{type:'module'})}={}){
+export function createAnimatorIntegrator({workerFactory=()=>new Worker(new URL('./worker.mjs?v=parameter-only-1',import.meta.url),{type:'module'})}={}){
  let worker=null,active=null,disposed=false,sequence=0,sources=null,revision=null,workerLoaded=false;
  function terminate(){worker?.terminate();worker=null;workerLoaded=false;}
  function cancel(){if(!active)return false;const current=active;active=null;terminate();current.reject(abort());return true;}

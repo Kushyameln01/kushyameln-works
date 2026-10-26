@@ -25,3 +25,9 @@ Two pre-existing assembly-test fixture defects were reproduced from an untouched
 Candidate code and source-preservation checks pass. Publication and post-release download verification remain pending at this checkpoint. Unity Editor import, VRChat runtime, and consumer-specific empty-layer classification are not verified. The user's attached package and screenshot were read only and are not included in this repository. The validation uses generated public sample inputs.
 
 Rollback: restore the affected product files from baseline `b7367874` if post-release generation fails; do not alter unrelated changes.
+
+## Post-release cache check
+
+Commit `2164d083d4174615bc6966a586bc8eb589439745` was delivered to main. All three changed product module bytes fetched from Pages matched the candidate. The Cloud browser used for the old five-layer run nevertheless failed after reload with `Duplicate output Layer name Base Layer`, consistent with a new batch request reaching an old cached Worker integration module. Completion was withheld.
+
+The follow-up versions both the Worker entry URL and its changed `integrate.mjs` dependency (`v=parameter-only-1`) so existing browser caches cannot combine this new API request with the old integrator. No asset generation semantics were added. Recheck the same browser session after delivery.
