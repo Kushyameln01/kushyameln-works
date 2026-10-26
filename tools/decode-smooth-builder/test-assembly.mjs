@@ -78,7 +78,7 @@ test('both new DirectTrees use each exact root GUID/fileID in input order with A
     const motions=extractReferences(tree.text).filter(r=>r.kind==='external');
     assert.deepEqual(motions.map(r=>({guid:r.guid,fileId:r.fileId,type:r.type})),source.map((entries,i)=>{
       const original=root(entries,generated[i].roots[kind]);
-      return {guid:original.guid,fileId:original.fileId,type:'2'};
+      return {guid:entries.get(generated[i].roots[kind].guid).guid,fileId:original.fileId,type:'2'};
     }));
   }
 });
@@ -132,7 +132,7 @@ test('empty inputs, duplicate targets/GUIDs and case-colliding relocated paths f
     ...e,guid:firstRoot.guid,meta:e.meta.replace(/^guid: .+$/m,'guid: '+firstRoot.guid)
   }));
   await assert.rejects(buildIntermediateAssets([generated[0],collision]),/duplicate GUID/i);
-  const originalPath=generated[1].rootFolder.path,collidingPath=generated[0].rootFolder.path.toLowerCase();
+  const originalPath=generated[1].rootFolder.path,collidingPath='Assets/'+generated[0].rootFolder.path.slice('Assets/'.length).toLowerCase();
   const pathCollision={...replaceEntry(generated[1],()=>true,e=>({...e,path:collidingPath+e.path.slice(originalPath.length)})),rootFolder:{...generated[1].rootFolder,path:collidingPath}};
   await assert.rejects(buildIntermediateAssets([generated[0],pathCollision]),/duplicate.*path/i);
 });

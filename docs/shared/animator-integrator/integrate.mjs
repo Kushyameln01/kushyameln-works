@@ -45,6 +45,8 @@ function validateRequest(index,r){
   const ids=r[field];if(!Array.isArray(ids)||(field==='controllerIds'&&!ids.length)||new Set(ids).size!==ids.length){issues.push(issue('selection',`Invalid or duplicate ${field}.`));continue;}
   for(const id of ids){const n=index.nodes.get(id);if(!n||n.classId!==cls||field==='expressionIds'&&!index.catalog.expressions.some(e=>e.id===id))issues.push(issue('selection_type',`${field}: missing or wrong-class identity ${id}.`,{id}));}
  }
+ const parameterOnly=r.parameterOnlyControllerIds;
+ if(parameterOnly!==undefined&&(!Array.isArray(parameterOnly)||new Set(parameterOnly).size!==parameterOnly.length||!Array.isArray(r.controllerIds)||parameterOnly.some(id=>typeof id!=='string'||!r.controllerIds.slice(1).includes(id))))issues.push(issue('parameter_only_selection','parameterOnlyControllerIds must contain unique selected additional Controller identities; the base Controller cannot be omitted.'));
  for(const [field,cls]of [['maskId','319'],['binaryTreeId','206'],['smoothTreeId','206']]){const n=index.nodes.get(r[field]);if(!n||n.classId!==cls)issues.push(issue('selection_type',`${field}: missing or wrong-class identity ${r[field]}.`,{id:r[field]}));}
  if(index.catalog.conflicts.length)issues.push(issue('guid_conflict','Different contents share a GUID; remove or resolve the source conflict.',{conflicts:index.catalog.conflicts}));
  return issues;
@@ -81,7 +83,8 @@ export async function integratePackages(packages,request,kernel){
   index.nodes.set(id,{...n,text});index.catalog.controllers.find(c=>c.id===id).parameters=normalized;
  }
  const ensured=applyDefaultValueRules([...union.values()],{domain:'animator',sourceId:'integrator',ensure:true});ruleChanges.push(...ensured.changes);for(const p of ensured.rows)union.set(p.name,p);
- const configs=request.controllerIds.map((controllerId,i)=>({id:`controller-${i}`,controllerId,layerIndices:index.catalog.controllers.find(c=>c.id===controllerId).layers.map(l=>l.index)}));
+ const parameterOnly=new Set(request.parameterOnlyControllerIds??[]);
+ const configs=request.controllerIds.map((controllerId,i)=>({id:`controller-${i}`,controllerId,layerIndices:parameterOnly.has(controllerId)?[]:index.catalog.controllers.find(c=>c.id===controllerId).layers.map(l=>l.index)}));
  const baseNode=index.nodes.get(request.controllerIds[0]);index.nodes.set(baseNode.id,{...baseNode,text:patchSection(baseNode.text,'m_AnimatorParameters','  m_AnimatorParameters:\n'+[...union.values()].map(p=>parameterText(p,baseNode.fileId)).join(''))});
  const layerNames={};
  for(const [key,value]of Object.entries(request.layerNames??{})){const found=configs.find(c=>c.layerIndices.some(i=>`${c.controllerId}:${i}`===key));if(!found)fail([issue('layer_name_selection',`Unknown layer rename identity ${key}`)]);const i=found.layerIndices.find(i=>`${found.controllerId}:${i}`===key);layerNames[`${found.id}:${i}`]=value;}

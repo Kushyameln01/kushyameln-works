@@ -49,8 +49,9 @@ def read_package(path):
     assert len({e['path'] for e in assets.values()})==len(assets)
     return assets
 
-def field(text,name):
-    values=re.findall(r'^\s+'+re.escape(name)+r': ([^\n]*)$',text,re.M)
+def field(text,name,indent=None):
+    prefix=r'\s+' if indent is None else ' '*indent
+    values=re.findall(r'^'+prefix+re.escape(name)+r': ([^\n]*)$',text,re.M)
     assert len(values)==1,(name,values)
     return values[0]
 
@@ -73,9 +74,9 @@ def verify(path,n,range_sync=True):
     controllers=[(ref,doc) for ref,doc in all_objects.items() if doc['classId']=='91'];assert len(controllers)==1
     (owner,_),controller=controllers[0];text=controller['text']
     layers=re.findall(r'^  - serializedVersion: 5\n.*?(?=^  - serializedVersion: 5\n|\Z)',text.split('  m_AnimatorLayers:\n',1)[1],re.M|re.S)
-    assert len(layers)==n+3
+    assert len(layers)==3
     assert len({scalar(field(l,'m_Name')) for l in layers})==len(layers)
-    assert [scalar(field(l,'m_Name')) for l in layers[1:-2]]==[f'Parameters {i+1}' for i in range(n)]
+    assert [scalar(field(l,'m_Name')) for l in layers]==['Base Layer','Root_BinaryParameter','Root_Smooth_Parameter']
     assert all(field(l,'m_DefaultWeight')=='1' for l in layers)
     maskrefs={reference(field(l,'m_Mask'),owner) for l in layers};assert len(maskrefs)==1
     mask=node(assets,next(iter(maskrefs)));assert mask['classId']=='319'
@@ -166,7 +167,7 @@ def verify_mapping(path,report_path,source_dir):
             identity=controller_host if guid==controller_host[0] else expression_host
             assert identity in output and identity in sources,('host root fileID changed',identity)
             assert output[identity]['classId']==sources[identity]['classId']
-            assert field(output[identity]['text'],'m_Name')==field(sources[identity]['text'],'m_Name'),('host name changed',identity)
+            assert field(output[identity]['text'],'m_Name',indent=2)==field(sources[identity]['text'],'m_Name',indent=2),('host name changed',identity)
             continue
         assert actual.get('asset')==original.get('asset'),('whole source payload changed or embedded Clip separated',guid)
         assert list(actual['docs'])==list(original['docs']),('source document order/fileIDs changed',guid)

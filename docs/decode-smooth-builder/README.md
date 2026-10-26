@@ -21,7 +21,7 @@ try {
 ## 出力設定
 
 - 中間素材を`Root_DecodeSmooth`配下にまとめます。`Root_BinaryParameter`と`Root_Smooth_Parameter`のDirectTreeは正規化を無効にし、各childのWeightを`AlwaysOne`とします。
-- 全入力ControllerのLayerを保持し、その後ろへ2個のTree用Layerを追加します。Registrarが1名称につき1Layerの現行構成では、最終Layer数は名称数N＋3です。生成されたRegistrarの空Layerだけに、APIの`layerNames`で`Parameters 1`等の名前を明示指定します。
+- 出力Layerは`Base Layer`・`Root_BinaryParameter`・`Root_Smooth_Parameter`の3層です。名称数によらず、Registrarの登録用Layerは生成時の統合対象から外します。生成した空・非同期Layerであることを元packageで確認し、共通APIの`parameterOnlyControllerIds`へRegistrarのControllerだけを明示指定します。Animator Parameter宣言・内蔵subassetは保持し、LayerをWeight 0などで無効化する処理や、一般の空Layerを自動削除する処理は行いません。
 - 新設2StateはWrite Defaults On、全LayerはWeight 1とSafetyを使用します。SafetyはHumanoid全13項目を不許可とし、Transform・ImportRigを追加しません。
 - 初期値はIntegratorの中央規則を使用します。`AlwaysOne`はAnimator・Expression両方でFloat・1、完全一致の`v2/EyeLidLeft`・`v2/EyeLidRight`・`v2/EyeLid`はFloat・0.75です。ExpressionからAnimatorへ値を推測して反映する処理はありません。
 - 今回のRegistrar入力設定は`defaultValue:0, saved:false, networkSynced:false`です。IntegratorのBinary用規定により、末尾がASCII数字（0〜9）または大文字小文字を区別する`Negative`の名称はExpressionをBoolで登録し、同期Onになります。Animator側の型は保持します。Bool化では初期値の数値を保持し、0・1以外の初期値は丸めずエラーにします。続いて、既定ONの独立したVRCFT5値域規定を適用し、`Negative`末尾について元Parameterの公式値域が0〜正の数なら同期Off、負の数〜正の数ならOn、値域不明なら追加変更なしとします。例えば`v2/EyeLidLeftNegative`はOff、`v2/JawXNegative`はOnです。Saved・Binary対象外の型・初期値規定と数字末尾の同期Onは維持します。一括生成側に別の同期判定は追加しません。正規化後の同期量がVRChatの256bit上限を超える場合は生成を止め、エラーを表示します。
@@ -44,4 +44,4 @@ Layer0はEntryから空の子StateMachineへ進む構造です。AnimatorState�
 
 独立した保全比較では、最終packageに加え、同じ実行で回収した`integrator-report.json`、`source-motion.unitypackage`、`source-base.unitypackage`、`source-mask.unitypackage`、`registration-*.unitypackage`を使用します。`verify-output.py final.unitypackage --targets N --report integrator-report.json --sources-dir <回収先>`で全入力との比較を行います。`template-*.unitypackage`や別の画面操作で保存した最終出力は比較元に混ぜません。
 
-今回の保全修正では、Codex内で構文・参照・差分の静的確認のみを行います。上記の生成・Worker・ブラウザ・回帰テストは実行しておらず、保全比較の実行結果は未確認です。以前の生成物や試験結果を、この修正版の合格証拠には使用しません。VRCFT5値域規定をOFFにした出力を外部で照合するときは、`verify-output.py`に`--binary-only`を指定してください。Binary対象のBool登録はOFF時も適用します。
+以前の保全修正時点の確認は静的照合のみでした。3層出力への変更（`decode-smooth-integrator-3`）の検証範囲は[変更記録](../../development/decode-smooth-layer-output/RESULT.md)に記載します。Unity Import・VRChat実動作の受入とは区別します。VRCFT5値域規定をOFFにした出力を外部で照合するときは、`verify-output.py`に`--binary-only`を指定してください。Binary対象のBool登録はOFF時も適用します。

@@ -7,7 +7,7 @@ import {splitUnityDocuments,extractAnimatorLayers,extractAnimatorParameters} fro
 import {createAnimatorIntegrator} from '../shared/animator-integrator/client.mjs';
 import {createIntegratorRequest} from './integrator-request.mjs';
 
-export const BUILD_ID='decode-smooth-integrator-2';
+export const BUILD_ID='decode-smooth-integrator-3';
 export const SOURCE_REF='922e9616d87debcddb1e602a194ad0c16071ad8f';
 const decoder=new TextDecoder('utf-8',{fatal:true});
 const aborted=()=>new DOMException('処理を取り消しました。','AbortError');
@@ -149,11 +149,10 @@ export function createDecodeSmoothBuilder({concurrency=2,onProgress=()=>{}}={}){
         const onIntegratorProgress=event=>notify(run,'integrator',event.phase==='reading'?'統合する素材を読み込んでいます。':'Animator・ExpressionParametersを統合しています。');
         const imported=await run.integrator.importSources(packages,{inputRevision,onProgress:onIntegratorProgress});current(run);
         const request=createIntegratorRequest({catalog:imported.catalog,refs:built.refs,registrations});
-        const expectedLayers=request.controllerIds.reduce((sum,id)=>sum+imported.catalog.controllers.find(c=>c.id===id).layers.length,0)+2;
         const result=await run.integrator.generate(request,{inputRevision,onProgress:onIntegratorProgress});current(run);
         if(!(result.archive instanceof Uint8Array)||!result.archive.byteLength)throw new Error('統合したpackageを回収できません。');
         const summary=readFinalSummary(result,names.length);
-        if(summary.layerCount!==expectedLayers)throw new Error('統合後のLayer数が入力Layer合計＋2と一致しません。');
+        if(summary.layerCount!==3)throw new Error('統合後のLayerがBase・Binary・Smoothの3層と一致しません。');
         notify(run,'done','保存するファイルを用意しました。',true);
         return {archive:result.archive,fileName:request.name+'.unitypackage',summary,integratorReport:result.report,
           report:{buildId:BUILD_ID,sourceRef:SOURCE_REF,inputRevision,targets:[...names],registrarSettings:{defaultValue:0,saved:false,networkSynced:false},jobs:run.jobs,

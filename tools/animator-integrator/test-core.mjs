@@ -12,6 +12,21 @@ const kernel=await instantiateFtKernel(fs.readFileSync(new URL('../../docs/share
 const dec=new TextDecoder(),enc=new TextEncoder();
 const run=f=>core.integratePackages(f.packages,f.request,kernel);
 const ctrlIdentity=assets=>assets.find(a=>a.guid===GUIDS.base);
+test('parameter-only additions omit their layers while preserving declarations and embedded objects',async()=>{
+ const f=integratorFixture(),original=structuredClone(f.packages);f.request.parameterOnlyControllerIds=[`${GUIDS.add}:9100000`];
+ const r=await run(f),text=dec.decode(ctrlIdentity(r.diagnosticAssets).asset);
+ assert.deepEqual(extractAnimatorLayers(text).map(l=>l.name),['Base Layer','Root_BinaryParameter','Root_Smooth_Parameter']);
+ assert(r.report.animatorParameters.some(p=>p.name==='EntirelyUnused'));
+ assert(splitUnityDocuments(text).documents.some(d=>d.text.includes('m_Name: Unreachable')));
+ assert.deepEqual(f.packages,original);
+ for(const a of original[0].assets.filter(a=>![GUIDS.base,GUIDS.add,GUIDS.expr].includes(a.guid))){const out=r.diagnosticAssets.find(x=>x.guid===a.guid);assert(out);assert.deepEqual(out.asset,a.asset);assert.equal(out.meta,a.meta);}
+});
+test('parameter-only selection rejects invalid, duplicate, unselected and base identities',async()=>{
+ for(const value of [null,'all',{},[`${GUIDS.base}:9100000`],[`${GUIDS.add}:9100000`,`${GUIDS.add}:9100000`],[`${MASK}:31900000`],['missing']]){
+  const f=integratorFixture();f.request.parameterOnlyControllerIds=value;
+  await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='parameter_only_selection'));
+ }
+});
 test('whole controllers, independent Expressions, roots, all masks and weights roundtrip without source mutation',async()=>{
  assert.equal(typeof core.integratePackages,'function','integration core must exist');
  const f=integratorFixture(),before=structuredClone(f.packages),r=await run(f),assets=[...readUnityPackage(r.archive).values()];

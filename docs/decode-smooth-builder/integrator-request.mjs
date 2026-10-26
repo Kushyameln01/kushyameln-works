@@ -14,15 +14,16 @@ function emptyRegistrarLayers(registration,controller){
  const layers=extractAnimatorLayers(root.text);if(layers.length!==controller.layers.length)fail('Registrar layer catalog differs from its generated archive.',controller.id);
  for(const [i,layer]of layers.entries()){
   if(controller.layers[i]?.index!==i||controller.layers[i].name!==layer.name)fail('Registrar layer catalog differs from its generated archive.',controller.id);
+  if(layer.fields.m_SyncedLayerIndex!=='-1'||layer.fields.m_Motions!=='[]'||layer.fields.m_Behaviours!=='[]')fail('Only generated empty, unsynchronized Registrar layers may be omitted.',controller.id);
   const r=extractReferences(layer.fields.m_StateMachine)[0],source=entries.get(r.guid??controller.guid),machine=source?.asset?splitUnityDocuments(decoder.decode(source.asset)).documents.find(d=>d.fileId===r.fileId&&d.classId==='1107'):null;
-  if(!machine||!['m_ChildStates','m_ChildStateMachines','m_AnyStateTransitions','m_EntryTransitions','m_StateMachineBehaviours'].every(name=>new RegExp(`^  ${name}: \\[\\]\\r?$`,'m').test(machine.text))||!/^  m_StateMachineTransitions: \{\}\r?$/m.test(machine.text)||!/^  m_DefaultState: \{fileID: 0\}\r?$/m.test(machine.text))fail('Only generated empty Registrar layers may receive batch layer names.',controller.id);
+  if(!machine||!['m_ChildStates','m_ChildStateMachines','m_AnyStateTransitions','m_EntryTransitions','m_StateMachineBehaviours'].every(name=>new RegExp(`^  ${name}: \\[\\]\\r?$`,'m').test(machine.text))||!/^  m_StateMachineTransitions: \{\}\r?$/m.test(machine.text)||!/^  m_DefaultState: \{fileID: 0\}\r?$/m.test(machine.text))fail('Only generated empty Registrar layers may be omitted.',controller.id);
  }
  return layers;
 }
-/** Exact identities only; rename only this run's verified generated empty layers. */
+/** Keep Registrar declarations and subassets without emitting their empty layers. */
 export function createIntegratorRequest({catalog,refs,registrations}){
  if(!refs||!Array.isArray(registrations)||!registrations.length)fail('Generated base, mask, trees and Registrar outputs are required.');
- const base=exact(catalog,'controllers',refs.baseController),mask=exact(catalog,'masks',refs.mask),binary=exact(catalog,'blendTrees',refs.binaryTree),smooth=exact(catalog,'blendTrees',refs.smoothTree),controllerIds=[base.id],expressionIds=[],layerNames={};let layerNumber=0;
- for(const registration of registrations){const c=exact(catalog,'controllers',registration.controller),e=exact(catalog,'expressions',registration.expression);if(controllerIds.includes(c.id)||expressionIds.includes(e.id))fail('Duplicate generated Registrar identity.',c.id);controllerIds.push(c.id);expressionIds.push(e.id);for(const [i]of emptyRegistrarLayers(registration,c).entries())layerNames[`${c.id}:${i}`]=`Parameters ${++layerNumber}`;}
- return {schemaVersion:1,name:'DecodeSmooth',controllerIds,expressionIds,maskId:mask.id,binaryTreeId:binary.id,smoothTreeId:smooth.id,playable:'FX',writeDefaults:true,layerNames};
+ const base=exact(catalog,'controllers',refs.baseController),mask=exact(catalog,'masks',refs.mask),binary=exact(catalog,'blendTrees',refs.binaryTree),smooth=exact(catalog,'blendTrees',refs.smoothTree),controllerIds=[base.id],expressionIds=[],parameterOnlyControllerIds=[];
+ for(const registration of registrations){const c=exact(catalog,'controllers',registration.controller),e=exact(catalog,'expressions',registration.expression);if(controllerIds.includes(c.id)||expressionIds.includes(e.id))fail('Duplicate generated Registrar identity.',c.id);emptyRegistrarLayers(registration,c);controllerIds.push(c.id);expressionIds.push(e.id);parameterOnlyControllerIds.push(c.id);}
+ return {schemaVersion:1,name:'DecodeSmooth',controllerIds,expressionIds,parameterOnlyControllerIds,maskId:mask.id,binaryTreeId:binary.id,smoothTreeId:smooth.id,playable:'FX',writeDefaults:true};
 }

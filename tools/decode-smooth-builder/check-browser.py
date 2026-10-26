@@ -22,7 +22,7 @@ with sync_playwright() as p:
     page.locator('#names').fill('v2/EyeLidLeft\nv2/EyeLidRight');page.locator('#generate').click()
     page.wait_for_function("!document.querySelector('#result').hidden || document.querySelector('#status').dataset.error==='true'",timeout=60000)
     assert not page.locator('#result').is_hidden(),page.locator('#status').inner_text()
-    assert '5レイヤー' in page.locator('#summary').inner_text()
+    assert '3レイヤー' in page.locator('#summary').inner_text()
     with page.expect_download() as wait:page.locator('#download').click()
     archive=out/'ui-final.unitypackage';wait.value.save_as(str(archive));assert archive.stat().st_size>0
     page.screenshot(path=str(out/'desktop.png'),full_page=True)
@@ -36,7 +36,7 @@ with sync_playwright() as p:
     page.locator('#names').fill('v2/TestParameter');page.locator('#generate').click()
     page.wait_for_function("!document.querySelector('#result').hidden || document.querySelector('#status').dataset.error==='true'",timeout=60000)
     assert not page.locator('#result').is_hidden(),page.locator('#status').inner_text()
-    assert '4レイヤー' in page.locator('#summary').inner_text()
+    assert '3レイヤー' in page.locator('#summary').inner_text()
     payload=page.evaluate("""async()=>{
       const {createDecodeSmoothBuilder,BUILD_ID}=await import('./pipeline.mjs');
       const b=createDecodeSmoothBuilder();
