@@ -17,4 +17,16 @@ Independent Python archive readback found 3 layers, 4 StateMachines, 8 Controlle
 
 A separate old/new Template comparison normalizes only freshly generated GUIDs using equal asset paths. The single allowed content difference is the appended Binary-to-Decode child; all original children, Clip fields and metadata match. Source template JSON is unchanged. See [source readback](source-verification.json) and [Template comparison](template-preservation.json).
 
-Public delivery and browser download verification: pending. Unity import/runtime remain unverified; this does not establish that the reported runtime one-tenth output symptom is resolved. No user attachments or generated packages are included in the repository.
+## Public delivery and downloaded output
+
+Product commit: `58a24ee803c0c13956ebaa6972679bb603949854`. Pages [deployment 40391141663](https://github.com/Kushyameln01/kushyameln-works/actions/runs/40391141663) completed successfully. All 10 changed public files match the reviewed bytes. The exporter regression suite also passed all 46 tests.
+
+The existing Cloud browser session was reloaded normally and generated the two-target Builder archive. Independent readback confirms both same-target Binary-to-Decode links, Decode Clip values -1/0/+1, both terminal-zero Bool entries unsynchronized, 8 synced bits, and the preserved 3-layer/Layer0/Mask/visibility structure. Public archive SHA-256: `46bfd1fb40d86f3773691a048c422be8982da64473b6fa52e5058e0e357c264b`.
+
+The standalone Template screen generated `v2/EyeLidLeft` with 16 Trees and 30 embedded Clips. Its first download event returned a path that was absent in both the shared workspace and browser filesystem; no contents were inferred from that event. Retrieving the same generated Blob through the supported download-link API produced a real archive, which passed the independent old/new full-field comparison. Its only content change after GUID mapping is the additional child reference. SHA-256: `6e5b6153b07918ee010f243bc00e28d7706d11d5eacb8ec9f110d2f95c38db88`.
+
+- [Public Builder readback](public-verification.json)
+- [Public standalone Template comparison](public-template-verification.json)
+- [Public deployment byte comparison](deployment-verification.json)
+
+Unity import/runtime remain unverified; this does not establish that the reported runtime one-tenth output symptom is resolved. No user attachments or generated packages are included in the repository. No separate ChatGPT Sites deployment is included. Rollback: restore only the affected product files from the baseline commit.
