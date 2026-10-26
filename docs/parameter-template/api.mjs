@@ -1,6 +1,6 @@
 // Public producer-owned API for the Template screen and other browser tools.
 // Internal data paths and generator details must stay on this side of the API.
-import {generatePackage,validateTarget} from './core.mjs';
+import {generatePackage,validateTarget} from './core.mjs?v=decode-root-1';
 export {validateTarget};
 export const API_VERSION=1;
 export const MAX_TEMPLATE_PACKAGE_BYTES=128*1024*1024;

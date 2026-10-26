@@ -1,5 +1,4 @@
-// External execution only: authored under a static-verification-only instruction.
-// This file has NOT been run in Codex. node --check only parses it without executing imports/tests.
+// Runtime regression cases for range synchronization and Binary rule precedence.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -32,8 +31,8 @@ test('pure range policy overrides only synchronization and records matches/unkno
  const off=applyVrcft5RangeSync(rows,{enabled:false});assert.deepEqual(off.rows,rows);assert.deepEqual([off.matches,off.unmatched,off.changes],[[],[],[]]);
 });
 test('BinaryParameters remains independent and new rule runs afterwards',()=>{
- const original=[row('v2/EyeLidRightNegative'),row('v2/EyeLeftXNegative'),row('v2/UndocumentedNegative'),row('v2/EyeLidRight8')],binary=applyExpressionSyncRules(original);
- assert(binary.rows.every(r=>r.networkSynced));const r=applyVrcft5RangeSync(binary.rows);assert.deepEqual(r.rows.map(p=>p.networkSynced),[false,true,true,true]);assert.equal(r.changes.length,1);
+ const original=[row('v2/EyeLidRightNegative'),row('v2/EyeLeftXNegative'),row('v2/UndocumentedNegative'),row('v2/EyeLidRight8'),row('v2/EyeLidRight0',{networkSynced:true}),row('v2/EyeLeftX0',{networkSynced:true})],binary=applyExpressionSyncRules(original);
+ assert.deepEqual(binary.rows.map(p=>p.networkSynced),[true,true,true,true,false,false]);const r=applyVrcft5RangeSync(binary.rows);assert.deepEqual(r.rows.map(p=>p.networkSynced),[false,true,true,true,false,false]);assert.equal(r.changes.length,1);
 });
 test('API omitted/true enables ranges; false is legacy, with unchanged defaults/Saved/Animator bytes',async()=>{
  const f=integratorFixture(),rows=[row('v2.EyeLidRightNegative',{type:'Int',defaultValue:1}),row('v2/EyeLeftXNegative',{saved:false}),row('UnknownNegative'),row('v2/EyeLidRight8')];expressions(f,rows);
@@ -51,7 +50,7 @@ test('range normalization happens before conflicts, retaining other settings con
  for(const difference of [{saved:false},{defaultValue:1}]){const g=integratorFixture();expressions(g,[row('v2/EyeLidRightNegative')]);addExpression(g,[row('v2/EyeLidRightNegative',difference)]);await assert.rejects(run(g),e=>e.issues.some(i=>i.code==='expression_conflict'&&i.name==='v2/EyeLidRightNegative'));}
 });
 test('post-policy mixed Float/Bool budget allows256, rejects257 and keeps Binary-only OFF cost',async()=>{
- const f=integratorFixture(),rows=[...Array.from({length:31},(_,i)=>row(`Network${i}Value`,{defaultValue:0.25,networkSynced:true})),...Array.from({length:7},(_,i)=>row(`Unknown${i}`)),row('v2/EyeLeftXNegative'),row('v2/EyeLidRightNegative')];expressions(f,rows);const on=await run(f);assert.equal(on.report.bitCost,256);
+ const f=integratorFixture(),rows=[...Array.from({length:31},(_,i)=>row(`Network${i}Value`,{defaultValue:0.25,networkSynced:true})),...Array.from({length:7},(_,i)=>row(`Unknown${i+1}`)),row('v2/EyeLeftXNegative'),row('v2/EyeLidRightNegative')];expressions(f,rows);const on=await run(f);assert.equal(on.report.bitCost,256);
  f.request.vrcft5RangeSync=false;await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='expression_invalid'&&i.message.includes('257')));
- f.request.vrcft5RangeSync=true;expressions(f,[...rows,row('Unknown7')]);await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='expression_invalid'&&i.message.includes('257')));
+ f.request.vrcft5RangeSync=true;expressions(f,[...rows,row('Unknown8')]);await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='expression_invalid'&&i.message.includes('257')));
 });

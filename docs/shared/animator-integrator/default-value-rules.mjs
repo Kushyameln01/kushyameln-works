@@ -22,7 +22,8 @@ export function applyDefaultValueRules(rows,{domain,sourceId=null,ensure=false}=
 
 // Expression-only synchronization rules are independent of default/type rules.
 export const EXPRESSION_SYNC_RULES=Object.freeze([
- {id:'ascii-digit-suffix',domain:'expression',suffixes:Object.freeze(['0','1','2','3','4','5','6','7','8','9']),networkSynced:true},
+ {id:'ascii-zero-suffix',domain:'expression',suffixes:Object.freeze(['0']),networkSynced:false},
+ {id:'ascii-digit-suffix',domain:'expression',suffixes:Object.freeze(['1','2','3','4','5','6','7','8','9']),networkSynced:true},
  {id:'Negative-suffix',domain:'expression',suffixes:Object.freeze(['Negative']),networkSynced:true},
 ].map(Object.freeze));
 /** One shared condition for Binary synchronization and Expression Bool registration. */

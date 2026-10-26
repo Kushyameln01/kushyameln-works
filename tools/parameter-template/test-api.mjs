@@ -16,6 +16,44 @@ function objectCounts(bytes){
   const objects=[...readUnityPackage(bytes).values()].filter(e=>e.asset).flatMap(e=>splitUnityDocuments(new TextDecoder().decode(e.asset)).documents);
   return {trees:objects.filter(d=>d.classId==='206').length,clips:objects.filter(d=>d.classId==='74').length};
 }
+// Catches an omitted/wrong/duplicated Decode child: saved Clips alone cannot
+// write Decode/<target> unless the Binary root actually references their Tree.
+function decodeConnection(result){
+  const entries=readUnityPackage(result.bytes),binary=entries.get(result.roots.binary.guid);
+  const tree=splitUnityDocuments(new TextDecoder().decode(binary.asset)).documents.find(d=>d.fileId===result.roots.binary.fileId);
+  const children=[...tree.text.matchAll(/^  - serializedVersion: 2\n[\s\S]*?(?=^  - serializedVersion:|^  m_BlendParameter:)/gm)].map(m=>m[0]);
+  const names=children.map(child=>{
+    const guid=/m_Motion: \{fileID: 20600000, guid: ([0-9a-f]{32}), type: 2\}/.exec(child)?.[1];
+    assert(guid&&entries.has(guid),'Every Binary child must resolve to a generated Tree');
+    return /^  m_Name: (.+)$/m.exec(new TextDecoder().decode(entries.get(guid).asset))[1];
+  });
+  const leaf=result.target.slice(3);
+  assert.deepEqual(names,[...['1','2','4','8','Negative'].map(suffix=>leaf+'_Binary_Decode'+suffix),leaf+'_Decode_Root']);
+  assert.match(children.at(-1),/^    m_DirectBlendParameter: AlwaysOne$/m);
+  assert.match(children.at(-1),/^    m_TimeScale: 1$/m);
+  assert.match(tree.text,/^  m_NormalizedBlendValues: 0$/m);
+  return children;
+}
+test('generated Binary root reaches the existing Decode root once and preserves the source',async()=>{
+  const snapshot=JSON.stringify(original);
+  await withSource(original,async()=>{
+    for(const target of ['v2/EyeLidLeft','v2/JawX']){
+      const result=await generateTemplate(target);decodeConnection(result);
+      assert.deepEqual(objectCounts(result.bytes),{trees:16,clips:30});
+    }
+  });
+  assert.equal(JSON.stringify(original),snapshot);
+});
+test('an existing Binary-to-Decode child is preserved without duplication',async()=>{
+  const changed=structuredClone(original),binary=changed.trees.find(t=>/^  m_Name: Binary_Root$/m.test(t.text)),decode=changed.trees.find(t=>/^  m_Name: Decode_Root$/m.test(t.text));
+  const child=`  - serializedVersion: 2\n    m_Motion: {fileID: 20600000, guid: ${decode.guid}, type: 2}\n    m_Threshold: 0\n    m_Position: {x: 0, y: 0}\n    m_TimeScale: 1\n    m_CycleOffset: 0\n    m_DirectBlendParameter: AlwaysOne\n    m_Mirror: 0\n`;
+  binary.text=binary.text.replace(/^  m_BlendParameter:/m,child+'  m_BlendParameter:');
+  await withSource(changed,async()=>decodeConnection(await generateTemplate('v2/AlreadyConnected')));
+});
+test('a missing Decode root fails instead of emitting an unconnected Binary root',async()=>{
+  const changed=structuredClone(original);changed.trees=changed.trees.filter(t=>!/^  m_Name: Decode_Root$/m.test(t.text));
+  await withSource(changed,async()=>assert.rejects(generateTemplate('v2/MissingDecode'),/Decode_Root/));
+});
 test('a changed current Template is loaded without a content digest gate or cached data',async()=>{
   const changed=structuredClone(original);changed.editMarker='supported data edit changes source bytes';
   await withSource(changed,async calls=>{

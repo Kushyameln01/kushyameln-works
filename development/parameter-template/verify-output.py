@@ -99,10 +99,22 @@ for source_guid,source_asset in src.items():
     assert all(d[0] in ('206','74') for d in dest_docs)
     by_id={d[1]:d for d in dest_docs};assert len(by_id)==len(dest_docs)
     expected=convert_fields(source)
+    compared_tree=tree
+    if name(source)=='Binary_Root':
+        # The authorized new child is checked separately; every original
+        # child/field below must still compare exactly to the untouched source.
+        children=re.findall(r'^  - serializedVersion: 2\n.*?(?=^  - serializedVersion:|^  m_BlendParameter:)',tree,re.M|re.S)
+        added=children[-1]
+        decode_guid=tree_by_name[display('Decode_Root')][0]
+        assert added==('  - serializedVersion: 2\n    m_Motion: {fileID: 20600000, guid: '+decode_guid+', type: 2}\n'
+            '    m_Threshold: 0\n    m_Position: {x: 0, y: 0}\n    m_TimeScale: 1\n'
+            '    m_CycleOffset: 0\n    m_DirectBlendParameter: AlwaysOne\n    m_Mirror: 0\n')
+        compared_tree=tree.replace(added,'',1)
+        tree_edges+=1
     # Strip only independently checked Motion references and display names.
     scrub=lambda s:re.sub(r'^    m_Motion: .*$', '    m_Motion: CHECKED',canonical(s),flags=re.M)
-    assert scrub(expected)==scrub(tree), f'Unexpected Tree delta: {name(source)}'
-    source_edges,dest_edges=edges(source),edges(tree)
+    assert scrub(expected)==scrub(compared_tree), f'Unexpected Tree delta: {name(source)}'
+    source_edges,dest_edges=edges(source),edges(compared_tree)
     assert len(source_edges)==len(dest_edges)
     owner_clips={}
     for before,after in zip(source_edges,dest_edges):
@@ -127,7 +139,7 @@ for source_guid,source_asset in src.items():
         assert not re.search(r'[0-9a-f]{32}',name(doc))
         if doc.startswith('--- !u!74'):
             clip_attributes(doc)
-assert (embedded,clip_edges,tree_edges)==(30,34,13)
+assert (embedded,clip_edges,tree_edges)==(30,34,14)
 actual_folder_paths=set()
 for guid,a in out.items():
     if 'folderAsset: yes' in a['meta']:
@@ -144,5 +156,5 @@ assert [m.name for m in members]==sorted(m.name for m in members)
 assert raw[3]&8 and raw[10:23]==b'archtemp.tar\0' and raw[4:8]==b'\0'*4
 assert gzip.decompress(raw)[257:265]==b'ustar  \0'
 assert all(not b.endswith(b'\n') for n,b in files.items() if n.endswith('/pathname'))
-print(f'PASS independent Python: {leaf}; Template revision 2 exact remap, preserved bit/_Function names, 2 folders, 16 Trees (2 root/14 child), 30 Clips, 47 references; exact allowed deltas, CRC32, fresh GUIDs and confirmed GNU/gzip recipe')
+print(f'PASS independent Python: {leaf}; Template revision 2 exact remap, preserved bit/_Function names, 2 folders, 16 Trees (2 root/14 child), 30 Clips, 48 references including Binary-to-Decode; exact allowed deltas, CRC32, fresh GUIDs and confirmed GNU/gzip recipe')
 print('sha256='+hashlib.sha256(raw).hexdigest())

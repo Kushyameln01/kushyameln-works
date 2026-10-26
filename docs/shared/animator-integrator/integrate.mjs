@@ -4,7 +4,7 @@ import {digest,validateAssets} from '../../animator-composer/lib/generate.mjs';
 import {readUnityPackage,writeUnityPackage,MAX_UNITY_PACKAGE_BYTES} from '../ft/unity-package.mjs';
 import {splitUnityDocuments,extractAnimatorLayers,canonicalizeObjectReferences,parseUnityScalar} from '../ft/unity-text.mjs';
 import {parameterText} from './root-layers.mjs';
-import {DEFAULT_VALUE_RULES,applyDefaultValueRules,EXPRESSION_SYNC_RULES,applyExpressionSyncRules,EXPRESSION_BOOL_RULES,applyExpressionBoolRules} from './default-value-rules.mjs';
+import {DEFAULT_VALUE_RULES,applyDefaultValueRules,EXPRESSION_SYNC_RULES,applyExpressionSyncRules,EXPRESSION_BOOL_RULES,applyExpressionBoolRules} from './default-value-rules.mjs?v=zero-sync-1';
 import {VRCFT5_RANGE_SOURCE,VRCFT5_RANGE_SYNC_POLICY,applyVrcft5RangeSync} from './vrcft5-ranges.mjs';
 import {preservationInputIssues,preservationHostIssues,patchSection,materializePreservedIntegration,preservationReferenceIssues} from './materialize-preserved.mjs?v=graph-cleanup-1';
 const enc=new TextEncoder(),dec=new TextDecoder('utf-8',{fatal:true});

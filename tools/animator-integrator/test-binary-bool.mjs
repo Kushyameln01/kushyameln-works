@@ -1,4 +1,4 @@
-// External execution only. No behavior/generation tests have been run in Codex for this revision.
+// Runtime regression cases for Binary Expression types and synchronization.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -13,11 +13,11 @@ const row=(name,extra={})=>({name,type:'Float',defaultValue:0,saved:true,network
 const run=f=>integratePackages(f.packages,f.request,kernel);
 function expressions(f,rows){f.packages[0].assets.find(a=>a.guid===GUIDS.expr).asset=enc.encode(serializeExpression(rows));}
 function addExpression(f,rows){const guid='ab'.repeat(16);f.packages[0].assets.push(asset(guid,'Assets/OtherExpressions.asset',serializeExpression(rows),'11400000'));f.request.expressionIds.push(`${guid}:11400000`);}
-test('Bool and synchronization share strict Binary suffix matching; other fields and inputs remain intact',()=>{
+test('Binary suffix matching keeps zero Bool while its sync exception preserves other fields and inputs',()=>{
  const targets=['v2/EyeLidLeft8','v2.EyeLidRightNegative','Value123','Value0','0','Negative','v2'],others=['v2/EyeLidLeft','Valuenegative','ValueNEGATIVE','Value8Tail','ValueNegativeTail','Value８','Value١','ValueNegative '];
  const rows=[...targets,...others].map((name,i)=>Object.freeze(row(name,{type:i%2?'Int':'Float',defaultValue:targets.includes(name)?i%2:0.375,saved:i%3===0,networkSynced:i%4===0,marker:'preserve'}))),before=structuredClone(rows),r=applyExpressionBoolRules(rows,{sourceId:'expr'}),sync=applyExpressionSyncRules(rows);
  assert.deepEqual(rows,before);assert.deepEqual(r.issues,[]);assert.equal(r.changes.length,targets.length);
- for(const [i,p]of rows.entries()){assert.equal(Boolean(findBinaryParameterSuffixRule(p.name)),targets.includes(p.name));assert.deepEqual(r.rows[i],{...p,type:targets.includes(p.name)?'Bool':p.type});assert.deepEqual(sync.rows[i],{...p,networkSynced:targets.includes(p.name)?true:p.networkSynced});}
+ for(const [i,p]of rows.entries()){assert.equal(Boolean(findBinaryParameterSuffixRule(p.name)),targets.includes(p.name));assert.deepEqual(r.rows[i],{...p,type:targets.includes(p.name)?'Bool':p.type});assert.deepEqual(sync.rows[i],{...p,networkSynced:['Value0','0'].includes(p.name)?false:targets.includes(p.name)?true:p.networkSynced});}
  assert(r.changes.every(c=>c.domain==='expression'&&c.sourceId==='expr'&&c.after.type==='Bool'&&EXPRESSION_BOOL_RULES.some(rule=>rule.id===c.ruleId)));
 });
 test('unrepresentable Binary defaults are never rounded or reset and have an explicit issue',async()=>{
@@ -40,4 +40,15 @@ test('same numeric defaults merge after Float/Int/Bool Binary normalization; Sav
 test('range setting changes synchronization only: Bool applies in both ON and OFF modes',async()=>{
  const f=integratorFixture();expressions(f,[row('v2/EyeLidRightNegative',{defaultValue:1,saved:false})]);const on=await run(f);f.request.vrcft5RangeSync=false;const off=await run(f);
  for(const r of [on,off]){const p=r.report.parameters.find(p=>p.name==='v2/EyeLidRightNegative');assert.equal(p.type,'Bool');assert.equal(p.defaultValue,1);assert.equal(p.saved,false);}assert.equal(on.report.parameters.find(p=>p.name==='v2/EyeLidRightNegative').networkSynced,false);assert.equal(off.report.parameters.find(p=>p.name==='v2/EyeLidRightNegative').networkSynced,true);
+});
+test('terminal zero remains unsynced Bool in both range modes while numeric defaults, Saved and Animator values survive',async()=>{
+ for(const rangeSync of [true,false]){
+  const f=integratorFixture(),rows=[row('Value0',{defaultValue:1,networkSynced:true}),row('v2/EyeLidRight0',{type:'Int',defaultValue:0,saved:false,networkSynced:true})];
+  f.request.vrcft5RangeSync=rangeSync;expressions(f,rows);
+  const base=f.packages[0].assets.find(a=>a.guid===GUIDS.base);base.asset=enc.encode(dec.decode(base.asset).replace('  m_AnimatorParameters:\n','  m_AnimatorParameters:\n'+parameter('Value0',1,0.375)+parameter('v2/EyeLidRight0',3,7)));
+  const before=structuredClone(f.packages),r=await run(f),output=parseExpression(dec.decode(r.diagnosticAssets.find(a=>a.guid===GUIDS.expr).asset));assert.deepEqual(f.packages,before);
+  for(const p of rows)assert.deepEqual(output.find(actual=>actual.name===p.name),{...p,type:'Bool',networkSynced:false});
+  assert.deepEqual(r.report.animatorParameters.filter(p=>['Value0','v2/EyeLidRight0'].includes(p.name)),[{name:'Value0',type:'Float',defaultValue:0.375},{name:'v2/EyeLidRight0',type:'Int',defaultValue:7}]);
+  assert.equal(r.report.bitCost,0);assert.deepEqual(r.report.expressionSyncRules.changes.map(c=>[c.name,c.before.networkSynced,c.after.networkSynced]),[['Value0',true,false],['v2/EyeLidRight0',true,false]]);
+ }
 });

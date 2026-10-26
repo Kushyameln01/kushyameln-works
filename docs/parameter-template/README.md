@@ -20,4 +20,6 @@ Rootの表示名や配置から役割を再推測せず、返されたGUID/fileI
 
 専用画面のWorkerと共有計算アダプターは同じ`generateTemplate`を呼びます。APIは新しいWorkerを内側で作成しません。共有計算へ割り当てる場合は既存の`parameter-template-generate`タスクを利用できます。生成内容のUnity Import・実動作の確認とは別の契約です。
 
-開発用の静的確認は`python tools/parameter-template/check-public-api.py`です。動的確認を外部で行うための回帰ケースは`node --test tools/parameter-template/test-api.mjs`に用意しています。今回のCodex作業では構文・依存・参照・公開対象の静的確認に限定し、生成関数を呼ぶテストやブラウザ試験は実行していません。
+生成器1.4.0から、`Binary_Root`の子Motionに既存の`Decode_Root`を接続します。追加する子のDirect Blend Parameterは`AlwaysOne`、Time Scaleは1です。既存の子MotionとClipの値を保持し、すでに同じ参照があれば重複追加しません。`Decode_Root`は別assetのまま参照し、Clipの再配置・複製はしません。元のTemplate JSONはrevision2のまま変更しません。
+
+開発用の静的確認は`python tools/parameter-template/check-public-api.py`です。生成APIの回帰試験は`node --test tools/parameter-template/test-api.mjs`です。API導入時の確認は静的照合のみでした。1.4.0では生成APIと一括生成後の参照を実行検証しています。Unity Import・実動作の確認とは区別してください。

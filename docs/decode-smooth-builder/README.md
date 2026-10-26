@@ -21,10 +21,11 @@ try {
 ## 出力設定
 
 - 中間素材を`Root_DecodeSmooth`配下にまとめます。`Root_BinaryParameter`と`Root_Smooth_Parameter`のDirectTreeは正規化を無効にし、各childのWeightを`AlwaysOne`とします。
+- 各対象の`Binary_Root`は既存の`Decode_Root`を子Motionとして参照します。追加した子のWeightは`AlwaysOne`、Time Scaleは1です。既存の子Motion・Clip値を保持し、TreeやClipの複製・再配置は行いません。
 - 出力Layerは`Base Layer`・`Root_BinaryParameter`・`Root_Smooth_Parameter`の3層です。名称数によらず、Registrarの登録用Layerは生成時の統合対象から外します。生成した空・非同期Layerであることを元packageで確認し、共通APIの`parameterOnlyControllerIds`へRegistrarのControllerだけを明示指定します。除外Layerの空root StateMachineも最終Controllerへコピーしません。Animator Parameter宣言・Clip・BlendTree・Mask・無関係な内蔵データは保持し、LayerをWeight 0などで無効化する処理や、一般の空Layerを自動削除する処理は行いません。
 - 新設2StateはWrite Defaults On、全LayerはWeight 1とSafetyを使用します。SafetyはHumanoid全13項目を不許可とし、Transform・ImportRigを追加しません。
 - 初期値はIntegratorの中央規則を使用します。`AlwaysOne`はAnimator・Expression両方でFloat・1、完全一致の`v2/EyeLidLeft`・`v2/EyeLidRight`・`v2/EyeLid`はFloat・0.75です。ExpressionからAnimatorへ値を推測して反映する処理はありません。
-- 今回のRegistrar入力設定は`defaultValue:0, saved:false, networkSynced:false`です。IntegratorのBinary用規定により、末尾がASCII数字（0〜9）または大文字小文字を区別する`Negative`の名称はExpressionをBoolで登録し、同期Onになります。Animator側の型は保持します。Bool化では初期値の数値を保持し、0・1以外の初期値は丸めずエラーにします。続いて、既定ONの独立したVRCFT5値域規定を適用し、`Negative`末尾について元Parameterの公式値域が0〜正の数なら同期Off、負の数〜正の数ならOn、値域不明なら追加変更なしとします。例えば`v2/EyeLidLeftNegative`はOff、`v2/JawXNegative`はOnです。Saved・Binary対象外の型・初期値規定と数字末尾の同期Onは維持します。一括生成側に別の同期判定は追加しません。正規化後の同期量がVRChatの256bit上限を超える場合は生成を止め、エラーを表示します。
+- 今回のRegistrar入力設定は`defaultValue:0, saved:false, networkSynced:false`です。IntegratorのBinary用規定により、末尾がASCII数字（0〜9）または大文字小文字を区別する`Negative`の名称はExpressionをBoolで登録します。末尾`0`は例外として同期Off、末尾1〜9と`Negative`は同期Onになります。Animator側の型は保持します。Bool化では初期値の数値を保持し、0・1以外の初期値は丸めずエラーにします。続いて、既定ONの独立したVRCFT5値域規定を適用し、`Negative`末尾について元Parameterの公式値域が0〜正の数なら同期Off、負の数〜正の数ならOn、値域不明なら追加変更なしとします。例えば`v2/EyeLidLeftNegative`はOff、`v2/JawXNegative`はOnです。Saved・Binary対象外の型・初期値規定は維持します。末尾`0`の同期Offは、VRCFT5値域規定のON/OFFによらず適用します。一括生成側に別の同期判定は追加しません。正規化後の同期量がVRChatの256bit上限を超える場合は生成を止め、エラーを表示します。
 
 保存名は`DecodeSmooth.unitypackage`です。全出力を親フォルダ`Assets/Merged_DecodeAndSmooth`へまとめます。元の`Assets/X/Y`は`Assets/Merged_DecodeAndSmooth/X/Y`へ配置し、すでに同じ親配下にある入力へは重ねてprefixを付けません。既存の同親フォルダがあればそのGUIDを再用し、なければ親フォルダ1個だけに新GUIDを作成します。
 

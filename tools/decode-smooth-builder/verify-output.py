@@ -14,7 +14,7 @@ RANGE_SOURCE=Path(__file__).resolve().parents[2]/'docs/shared/animator-integrato
 RANGE_LITERAL=re.search(r'VRCFT5_PARAMETER_RANGES=Object\.freeze\((\[[\s\S]*?\])\.map',RANGE_SOURCE.read_text()).group(1)
 VRCFT5_RANGES={row['name']:row for row in json.loads(RANGE_LITERAL)}
 def expected_sync(name,range_sync):
-    synced=bool(re.search(r'(?:[0-9]|Negative)\Z',name))
+    synced=bool(re.search(r'(?:[1-9]|Negative)\Z',name))
     if range_sync and name.endswith('Negative'):
         base=name[:-len('Negative')]
         match=re.search(r'(?:^|/)v2[/.]([^/]+)\Z',base)
@@ -114,6 +114,27 @@ def verify(path,n,range_sync=True):
         assert field(motion['text'],'m_NormalizedBlendValues')=='0' and field(motion['text'],'m_BlendType')=='4'
         assert len(re.findall(r'^    m_Motion:',motion['text'],re.M))==n
         assert [scalar(x) for x in re.findall(r'^    m_DirectBlendParameter: (.+)$',motion['text'],re.M)]==['AlwaysOne']*n
+        if expected=='Root_BinaryParameter':
+            for value in re.findall(r'^    m_Motion: (.+)$',motion['text'],re.M):
+                binary_ref=reference(value,owner);binary=node(assets,binary_ref)
+                binary_name=scalar(field(binary['text'],'m_Name',indent=2))
+                assert binary_name.endswith('_Binary_Root')
+                leaf=binary_name[:-len('_Binary_Root')]
+                children=re.findall(r'^  - serializedVersion: 2\n.*?(?=^  - serializedVersion:|^  m_BlendParameter:)',binary['text'],re.M|re.S)
+                decode_children=[]
+                for child in children:
+                    child_ref=reference(field(child,'m_Motion'),binary_ref[0]);target=node(assets,child_ref)
+                    if scalar(field(target['text'],'m_Name',indent=2))==leaf+'_Decode_Root':decode_children.append((child,child_ref,target))
+                assert len(decode_children)==1,('Binary must reach its own Decode root once',leaf)
+                child,decode_ref,decode=decode_children[0]
+                assert field(child,'m_DirectBlendParameter')=='AlwaysOne' and field(child,'m_TimeScale')=='1'
+                assert field(binary['text'],'m_NormalizedBlendValues')=='0' and field(binary['text'],'m_BlendType')=='4'
+                values=set()
+                for clip_ref in re.findall(r'^    m_Motion: (.+)$',decode['text'],re.M):
+                    clip=node(assets,reference(clip_ref,decode_ref[0]));assert clip['classId']=='74'
+                    assert set(re.findall(r'^    attribute: (.+)$',clip['text'],re.M))=={'Decode/'+leaf}
+                    values.update(float(v) for v in re.findall(r'^        value: (.+)$',clip['text'],re.M))
+                assert values=={-1,0,1},('Decode output Clip values changed',leaf)
     expressions=[doc for doc in all_objects.values() if doc['classId']=='114'];assert len(expressions)==1
     exrows=re.findall(r'^  - name: ([^\n]+)\n(.*?)(?=^  - name:|\Z)',expressions[0]['text'].split('  parameters:\n',1)[1],re.M|re.S)
     expr={scalar(name):body for name,body in exrows};assert len(expr)==len(exrows)==len(animator)

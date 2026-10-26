@@ -39,7 +39,7 @@ for(const [stem,parameter,hash] of [
     assert.deepEqual([...text.matchAll(/^      attribute: (\d+)$/gm)].map(m=>m[1]),[hash],`Template Clip CRC32: ${stem}=${value}`);
   }
 }
-assert.equal(core.BUILD_ID,'parameter-template-1.2.0');
+assert.equal(core.BUILD_ID,'parameter-template-1.4.0');
 assert.equal(template.templateRevision,2);
 assert.equal(template.sourceSha256,'9b22ae3d088ceef597b9ac98015da917599842ab3f9932859c658ddd34c99c09');
 assert.deepEqual(template.valueRemap,{'v2/Parameter':'Decode/Parameter','Smooth/Parameter':'v2/Parameter'});
@@ -55,7 +55,7 @@ for(const target of ['v2/EyeLidLeft','v2/JawOpen','v2/EyeLidLeft','v2/ParameterT
   const result=core.generatePackage(target,{template});
   const leaf=target.slice(3), entries=[...readUnityPackage(result.bytes).values()];
   assert.equal(result.folderName,leaf);assert.equal(result.fileName,leaf+'.unitypackage');
-  assert.equal(result.treeCount,16);assert.equal(result.clipCount,30);assert.equal(result.buildId,'parameter-template-1.2.0');
+  assert.equal(result.treeCount,16);assert.equal(result.clipCount,30);assert.equal(result.buildId,'parameter-template-1.4.0');
   assert.equal(entries.length,18); // two folders plus sixteen Tree assets
   const guids=new Set(entries.map(e=>e.guid));assert.equal(guids.size,18);
   for(const e of [...template.trees,...template.clips])assert(!guids.has(e.guid),'new assets need new GUIDs');
@@ -90,9 +90,9 @@ for(const target of ['v2/EyeLidLeft','v2/JawOpen','v2/EyeLidLeft','v2/ParameterT
       else{assert.equal(ids.get(m[1]),'74');local++;}
     }
     if(name.endsWith('Binary_Decode0'))assert(text.includes('value: 0.0325'));
-    if(name.endsWith('Binary_Root'))assert.equal([...text.matchAll(/m_Motion:/g)].length,5);
+    if(name.endsWith('Binary_Root'))assert.equal([...text.matchAll(/m_Motion:/g)].length,6);
   }
-  assert.equal(local,34);assert.equal(external,13);assert.equal(clipCount,30);
+  assert.equal(local,34);assert.equal(external,14);assert.equal(clipCount,30);
   assert.equal(rootCount,2);assert.equal(childCount,14);
   assert.deepEqual(folders,new Set(['Assets/'+leaf,'Assets/'+leaf+'/'+leaf+'_Child']));
   assert.deepEqual(fieldValues,new Set([...expectedFields].filter(v=>!/^\d+$/.test(v))));
@@ -104,4 +104,4 @@ for(const target of ['v2/EyeLidLeft','v2/JawOpen','v2/EyeLidLeft','v2/ParameterT
     await writeFile(process.env.DECODE_TEST_OUTPUT+'/'+leaf+'.unitypackage',result.bytes);
   }
 }
-console.log('PASS: 7 generations, Template revision 2 exact value remap and CRC32, preserved bit/_Function names, 16 independent Trees, 30 embedded Clips, 47 Motion references; invalid paths and source preservation');
+console.log('PASS: 7 generations, Template revision 2 exact value remap and CRC32, preserved bit/_Function names, 16 independent Trees, 30 embedded Clips, 48 Motion references including Binary-to-Decode; invalid paths and source preservation');

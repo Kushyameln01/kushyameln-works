@@ -94,6 +94,13 @@ function validateOutput(output,built){
  }
  const sourceMotions=new Map(docsOf(readUnityPackage(built.motionPackage)).filter(d=>['74','206'].includes(d.classId)).map(d=>[reference(d),d])),pending=[reference(built.refs.binaryTree),reference(built.refs.smoothTree)],closure=new Set();
  while(pending.length){const id=pending.pop();if(closure.has(id))continue;closure.add(id);const node=sourceMotions.get(id);assert.ok(node,`Missing source Motion ${id}`);for(const r of extractReferences(node.text)){if(r.fileId==='0')continue;const target=(r.guid??node.guid)+':'+r.fileId;if(sourceMotions.has(target))pending.push(target);}}
+ for(const leaf of ['EyeLidLeft','EyeLidRight']){
+  const named=name=>objects.find(d=>d.classId==='206'&&d.text.includes(`  m_Name: ${name}\n`));
+  const binary=named(leaf+'_Binary_Root'),decode=named(leaf+'_Decode_Root');
+  assert.ok(binary&&decode);
+  assert.equal(extractReferences(binary.text).filter(r=>r.guid===decode.guid&&r.fileId===decode.fileId).length,1,'Binary root must reference its own Decode root exactly once');
+  assert.ok(closure.has(reference(decode)),'Saved Decode Clips must be reachable from the played Binary root');
+ }
  assert.ok(sourceMotions.size>closure.size,'Fixture must contain Motion documents outside the selected Root closure');
  const motionMappings=mapping.filter(m=>sourceMotions.has(m.sourceId));assert.deepEqual(new Set(motionMappings.map(m=>m.sourceId)),new Set(sourceMotions.keys()));
  for(const m of motionMappings){assert.equal(m.outputGuid+':'+m.outputFileId,m.sourceId,`Motion identity changed: ${m.sourceId}`);assert.equal(m.sourcePath,sourceMotions.get(m.sourceId).path);assert.equal(m.outputPath,preservedPath(sourceMotions.get(m.sourceId).path));}
@@ -144,6 +151,15 @@ test('one and three target batches both emit only the base and two root layers',
    assert.deepEqual(layers.map(l=>l.name),['Base Layer','Root_BinaryParameter','Root_Smooth_Parameter']);
    assert.equal(output.summary.layerCount,3);assert.equal(output.summary.targetCount,names.length);
    for(const name of names)assert(output.integratorReport.animatorParameters.some(p=>p.name===name));
+   const objects=docsOf(readUnityPackage(output.archive));
+   for(const name of names){
+    const leaf=name.slice(3),find=suffix=>objects.find(d=>d.classId==='206'&&d.text.includes(`  m_Name: ${leaf}_${suffix}\n`));
+    const binary=find('Binary_Root'),decode=find('Decode_Root');
+    assert.ok(binary&&decode);
+    assert.equal(extractReferences(binary.text).filter(r=>r.guid===decode.guid&&r.fileId===decode.fileId).length,1);
+    const zero=output.integratorReport.parameters.find(p=>p.name===name+'0');
+    assert.equal(zero.type,'Bool');assert.equal(zero.networkSynced,false);
+   }
    assertWholeFiles(readUnityPackage(output.intermediates.motionPackage),readUnityPackage(output.archive));
    assertWholeFiles(readUnityPackage(output.intermediates.maskPackage),readUnityPackage(output.archive));
   }finally{builder.dispose();}

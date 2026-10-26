@@ -1,7 +1,7 @@
 import {writeUnityPackage} from '../shared/ft/unity-package.mjs';
 import {splitUnityDocuments,extractReferences} from '../shared/ft/unity-text.mjs';
 
-export const BUILD_ID='parameter-template-1.3.0';
+export const BUILD_ID='parameter-template-1.4.0';
 const encoder=new TextEncoder();
 const decoder=new TextDecoder('utf-8',{fatal:true});
 const rootNames=new Set(['Binary_Root','Smooth_Root']);
@@ -89,8 +89,24 @@ function templateIndex(template){
   return index;
 }
 
+function connectDecodeRoot(text,decodeGuid){
+  if(!/^  m_BlendType: 4$/m.test(text))throw new Error('Binary_RootにはDirect BlendTreeが必要です。');
+  // Add a source reference before the ordinary GUID rewrite. Keep the stored
+  // template, existing children and embedded Clip data unchanged.
+  const connected=[...text.matchAll(motion)].some(m=>{
+    const ref=sourceMotion(m[4]);return ref.guid===decodeGuid&&ref.fileId==='20600000';
+  });
+  if(connected)return text;
+  const children=/^  m_Childs:\n[\s\S]*?(?=^  [A-Za-z_])/m;
+  if(!children.test(text))throw new Error('Binary_Rootの子Motion一覧を確認できません。');
+  const child=`  - serializedVersion: 2\n    m_Motion: {fileID: 20600000, guid: ${decodeGuid}, type: 2}\n    m_Threshold: 0\n    m_Position: {x: 0, y: 0}\n    m_TimeScale: 1\n    m_CycleOffset: 0\n    m_DirectBlendParameter: AlwaysOne\n    m_Mirror: 0\n`;
+  return text.replace(children,part=>part+child);
+}
+
 export function generatePackage(target,{template}={}){
   const leaf=validateTarget(target),index=templateIndex(template),used=new Set(index.keys());
+  const decodeRoots=template.trees.filter(t=>/^  m_Name: Decode_Root$/m.test(t.text));
+  if(decodeRoots.length!==1)throw new Error('TemplateのDecode_Rootを一意に確認できません。');
   function newGuid(){
     if(typeof globalThis.crypto?.getRandomValues!=='function')throw new Error('この環境では新規GUIDを生成できません。');
     for(let attempt=0;attempt<16;attempt++){
@@ -114,6 +130,7 @@ export function generatePackage(target,{template}={}){
     const isRoot=rootNames.has(sourceName);
     if(isRoot)foundRoots.add(sourceName);
     let text=replaceParameters(tree.text,leaf);
+    if(sourceName==='Binary_Root')text=connectDecodeRoot(text,decodeRoots[0].guid);
     text=text.replace(motion,(_line,indent,key,_separator,value)=>{
       if(key!=='m_Motion')throw new Error('TemplateのMotionフィールド形式に対応していません。');
       const prefix=indent+key+': ';

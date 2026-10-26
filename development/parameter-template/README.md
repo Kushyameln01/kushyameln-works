@@ -1,5 +1,9 @@
 # VRCFT Parameter Template
 
+生成器1.4.0では、下記revision2の原本保持と文字列変換に加え、生成時に`Binary_Root`から既存`Decode_Root`へDirect childを1本追加します。Weightは`AlwaysOne`、Time Scaleは1です。元のJSON・既存の子・Clip値・asset配置を変更せず、Tree間参照だけを追加します。すでに接続済みの場合は追加しません。出力は引き続き16Tree・30内包Clipで、Motion参照は48本です。
+
+旧生成物との独立比較は`python3 development/parameter-template/verify-binary-connection.py BEFORE.unitypackage AFTER.unitypackage`でも実行できます。パスで対応付けて新規GUIDだけを正規化し、追加した1本を除く本文・meta・全Clipフィールドの完全一致を検査します。
+
 ツール1.2.0は、Template revision 2を使用します。変更していない原本から、Clip・BlendTreeの次の文字列値を完全一致で一度だけ置換して同梱しています。
 
 | 原本の値 | 改訂Templateの値 | 入力v2/Xでの生成値 |
