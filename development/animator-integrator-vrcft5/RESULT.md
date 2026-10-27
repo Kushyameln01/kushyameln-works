@@ -28,7 +28,18 @@
 
 ## 公開確認
 
-公開反映・実ブラウザによる規則表/生成/保存の確認は、以下へ追記する。
+実装公開commit: `b7191d791103779facee96562951b889ebc6212d`。ローカル検証済みcommitと公開commitのtreeはともに `594d47cd53ac1265cda16e94bffc6f4fa656dedf` で一致する。
+
+- 公開版 `https://kushyameln01.github.io/kushyameln-works/animator-integrator/` でVRCFT5名称、素材未読込み状態の末尾規則表を確認。
+- `https://kushyameln01.github.io/kushyameln-works/github/` のリンク名も確認。
+- 合成素材を実UIへ投入し、Controller順序・Expression・Mask・2Treeを選択して生成。Unitypackageと検証JSONを保存リンクから取得。
+- 保存物を生成コードとは別のPython gzip/tar/Unity text読戻しで照合。入力19 Expression行から6行を除外しSmooth1行を追加、最終14行・9bit。期待する全行と保存したreportが一致。
+- 既存SmoothのSaved保持と同期OFF、未登録SmoothのAnimator由来Float0.4/Saved OFF/同期OFF、未定義NegativeのFloat0.25/Saved ON/同期OFF保持、signed Negative Bool同期ON、左右EyeLidの1/2=0・4/8=1を確認。
+- 同じ素材の保持対象5全ファイルについてGUID・親配下path・meta・payloadを比較。AnimatorにDecode/TestとSmooth/Added_Functionが残ることも確認。
+- 保存後に出力名を変更し、古い結果とダウンロードが失効することを確認。
+- 詳細は `public-verification.json`。画面は `public-vrcft5.jpg`。
+
+追加の読取コードレビューでは修正必須の欠陥なし。レビュー担当の再実行12/12 PASS。
 
 ## 検証範囲
 
