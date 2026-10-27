@@ -1,4 +1,4 @@
-import { createDecodeSmoothBuilder } from './pipeline.mjs';
+import { createDecodeSmoothBuilder } from './pipeline.mjs?v=vrcft5-rules-1';
 
 const form = document.querySelector('#generator');
 const namesInput = document.querySelector('#names');

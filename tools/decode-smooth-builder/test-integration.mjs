@@ -112,7 +112,34 @@ function validateOutput(output,built){
  for(const item of [...preservation.sourceAssets,...preservation.modifiedHosts]){assert.equal(item.sourcePath,allSources.get(item.guid).path);assert.equal(item.outputPath,preservedPath(item.sourcePath));}
  assert.deepEqual(new Set(preservation.modifiedHosts.map(h=>h.guid)),hostGuids);
  for(const change of preservation.structuralFileIdChanges){assert.ok(!sourceMotions.has(change.sourceId));assert.notEqual(change.sourceId.split(':')[0],report.controllers[0].guid);assert.notEqual(change.sourceId.split(':')[1],change.outputFileId);}
- const params=extractAnimatorParameters(controllerText),always=params.find(p=>p.name==='AlwaysOne');assert.equal(always.fields.m_Type,'1');assert.equal(always.fields.m_DefaultFloat,'1');const expressions=objects.filter(d=>d.classId==='114').flatMap(d=>parseExpression(d.text));assert.equal(expressions.find(p=>p.name==='AlwaysOne').defaultValue,1);assert.ok(expressions.every(p=>p.saved===false));for(const p of expressions){if(/(?:[0-9]|Negative)$/.test(p.name)){assert.equal(p.type,'Bool');assert.ok(p.defaultValue===0||p.defaultValue===1);}assert.equal(p.defaultValue,Number(params.find(a=>a.name===p.name).fields.m_DefaultFloat));}for(const name of ['v2/EyeLidLeft','v2/EyeLidRight'])assert.equal(expressions.find(p=>p.name===name).defaultValue,0.75);assert.ok(Array.isArray(report.expressionBoolRules.changes));assert.equal(report.vrcft5RangeSync.enabled,true);assert.ok(Array.isArray(report.vrcft5RangeSync.matches));assert.ok(report.vrcft5RangeSync.matches.every(p=>expressions.find(row=>row.name===p.name)?.networkSynced===p.networkSynced));assert.deepEqual(expressions,report.parameters);assert.ok(Array.isArray(report.expressionSyncRules.changes));assert.ok(report.bitCost<=256);assert.equal(report.staticValidation.status,'PASS');assert.equal(report.staticValidation.roundtripBytes,'PASS');
+ const params=extractAnimatorParameters(controllerText),always=params.find(p=>p.name==='AlwaysOne');
+ assert.equal(always.fields.m_Type,'1');assert.equal(always.fields.m_DefaultFloat,'1');
+ const expressions=objects.filter(d=>d.classId==='114').flatMap(d=>parseExpression(d.text));
+ assert.equal(expressions.find(p=>p.name==='AlwaysOne').defaultValue,1);assert.ok(expressions.every(p=>p.saved===false));
+ for(const p of expressions){
+  assert.ok(!/^(Decode|Function|Proxy)\//.test(p.name));
+  assert.ok(!p.name.startsWith('Smooth/')||p.name.endsWith('_Function'));
+  assert.ok(!p.name.endsWith('0'));
+  if(/(?:[1-9]|Negative)$/.test(p.name)){assert.equal(p.type,'Bool');assert.ok(p.defaultValue===0||p.defaultValue===1);}
+  const animator=Number(params.find(a=>a.name===p.name).fields.m_DefaultFloat);
+  if(/^v2\/EyeLid(?:Left|Right)[48]$/.test(p.name)){assert.equal(p.defaultValue,1);assert.equal(animator,0,'Expression exception must preserve Animator Binary defaults');}
+  else assert.equal(p.defaultValue,animator);
+ }
+ for(const name of ['v2/EyeLidLeft','v2/EyeLidRight']){
+  assert.equal(expressions.find(p=>p.name===name).defaultValue,0.75);
+  assert.ok(!expressions.some(p=>p.name===name+'Negative'));
+  let decoded=0;
+  for(const [suffix,expected] of [['1',0],['2',0],['4',1],['8',1]]){
+   const parameter=expressions.find(p=>p.name===name+suffix);assert.equal(parameter.defaultValue,expected);assert.equal(parameter.networkSynced,true);
+   const clip=objects.find(d=>d.classId==='74'&&d.text.includes(`  m_Name: ${name.slice(3)}_Decode${suffix}\n`));assert.ok(clip);
+   const values=[...clip.text.matchAll(/^\s+value: ([^\n]+)$/gm)].map(m=>Number(m[1]));assert.ok(values.length);assert.ok(values.every(v=>v===values[0]));
+   decoded+=parameter.defaultValue*values[0];
+  }
+  assert.equal(decoded,0.75,'Saved Binary defaults must reconstruct Float EyeLid 0.75 using the actual Clip values');
+ }
+ assert.ok(Array.isArray(report.expressionBoolRules.changes));assert.equal(report.vrcft5RangeSync.enabled,true);
+ assert.ok(report.vrcft5RangeSync.matches.every(p=>p.registration==='exclude'?!expressions.some(row=>row.name===p.name):expressions.find(row=>row.name===p.name)?.networkSynced===true));
+ assert.deepEqual(expressions,report.parameters);assert.ok(Array.isArray(report.expressionSyncRules.changes));assert.ok(report.bitCost<=256);assert.equal(report.staticValidation.status,'PASS');assert.equal(report.staticValidation.roundtripBytes,'PASS');
  return {assets:assets.size,objects:objects.length,layerCount:layers.length,parameterCount:params.length,treeCount:objects.filter(d=>d.classId==='206').length,clipCount:objects.filter(d=>d.classId==='74').length,checkedMotions};
 }
 test('exact catalog identities create ordered requests and omit generated Registrar layers',async()=>{
@@ -158,7 +185,7 @@ test('one and three target batches both emit only the base and two root layers',
     assert.ok(binary&&decode);
     assert.equal(extractReferences(binary.text).filter(r=>r.guid===decode.guid&&r.fileId===decode.fileId).length,1);
     const zero=output.integratorReport.parameters.find(p=>p.name===name+'0');
-    assert.equal(zero.type,'Bool');assert.equal(zero.networkSynced,false);
+    assert.equal(zero,undefined);assert.ok(output.integratorReport.animatorParameters.some(p=>p.name===name+'0'));
    }
    assertWholeFiles(readUnityPackage(output.intermediates.motionPackage),readUnityPackage(output.archive));
    assertWholeFiles(readUnityPackage(output.intermediates.maskPackage),readUnityPackage(output.archive));

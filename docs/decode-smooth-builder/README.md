@@ -2,7 +2,7 @@
 
 Parameter名を1行に1つ指定し、「生成する」→「unitypackageを保存」で一括生成します。名前は変更せず、空行は無視し、不正な名前や重複は行番号とともに表示します。処理はページを開いている間のブラウザ内で行います。
 
-既存の共有計算poolにTemplate生成とParameter Registrarを割り当て、実際の中間unitypackageを生成します。Tree・ベースController・Safetyの生成後は、専用画面と同じ[Animator Integrator共通API](../shared/animator-integrator/README.md)と専用Workerで統合します。途中の手動アップロードは不要です。
+既存の共有計算poolにTemplate生成とParameter Registrarを割り当て、実際の中間unitypackageを生成します。Tree・ベースController・Safetyの生成後は、専用画面と同じ[Animator Integrator(VRCFT5)共通API](../shared/animator-integrator/README.md)と専用Workerで統合します。途中の手動アップロードは不要です。
 
 ```js
 import {createDecodeSmoothBuilder} from './pipeline.mjs';
@@ -25,7 +25,7 @@ try {
 - 出力Layerは`Base Layer`・`Root_BinaryParameter`・`Root_Smooth_Parameter`の3層です。名称数によらず、Registrarの登録用Layerは生成時の統合対象から外します。生成した空・非同期Layerであることを元packageで確認し、共通APIの`parameterOnlyControllerIds`へRegistrarのControllerだけを明示指定します。除外Layerの空root StateMachineも最終Controllerへコピーしません。Animator Parameter宣言・Clip・BlendTree・Mask・無関係な内蔵データは保持し、LayerをWeight 0などで無効化する処理や、一般の空Layerを自動削除する処理は行いません。
 - 新設2StateはWrite Defaults On、全LayerはWeight 1とSafetyを使用します。SafetyはHumanoid全13項目を不許可とし、Transform・ImportRigを追加しません。
 - 初期値はIntegratorの中央規則を使用します。`AlwaysOne`はAnimator・Expression両方でFloat・1、完全一致の`v2/EyeLidLeft`・`v2/EyeLidRight`・`v2/EyeLid`はFloat・0.75です。ExpressionからAnimatorへ値を推測して反映する処理はありません。
-- 今回のRegistrar入力設定は`defaultValue:0, saved:false, networkSynced:false`です。IntegratorのBinary用規定により、末尾がASCII数字（0〜9）または大文字小文字を区別する`Negative`の名称はExpressionをBoolで登録します。末尾`0`は例外として同期Off、末尾1〜9と`Negative`は同期Onになります。Animator側の型は保持します。Bool化では初期値の数値を保持し、0・1以外の初期値は丸めずエラーにします。続いて、既定ONの独立したVRCFT5値域規定を適用し、`Negative`末尾について元Parameterの公式値域が0〜正の数なら同期Off、負の数〜正の数ならOn、値域不明なら追加変更なしとします。例えば`v2/EyeLidLeftNegative`はOff、`v2/JawXNegative`はOnです。Saved・Binary対象外の型・初期値規定は維持します。末尾`0`の同期Offは、VRCFT5値域規定のON/OFFによらず適用します。一括生成側に別の同期判定は追加しません。正規化後の同期量がVRChatの256bit上限を超える場合は生成を止め、エラーを表示します。
+- Registrar入力設定は`defaultValue:0, saved:false, networkSynced:false`です。統合時はAnimator Integrator(VRCFT5)の固定規則を適用します。Expressionから`Decode/`・`Function/`・`Proxy/`・通常の`Smooth/`、末尾`0`、公式値域が非負の`Negative`を除外します。`Smooth/…_Function`は同期Offで残し、未登録なら選択Animatorの型・初期値でSaved Off・同期Offとして追加します。未定義の`Negative`は入力設定を保持します。左右EyeLidのBinaryは1・2の初期値を0、4・8を1として0.75に対応させます。残るBinaryはBool・同期Onです。AnimatorのBinary型・初期値は変更しません。詳細と名称の判定条件は[共通APIの規則表](../shared/animator-integrator/README.md)に記載します。一括生成側に別の判定は設けません。最終同期量が256bitを超える場合は生成を止めます。
 
 保存名は`DecodeSmooth.unitypackage`です。全出力を親フォルダ`Assets/Merged_DecodeAndSmooth`へまとめます。元の`Assets/X/Y`は`Assets/Merged_DecodeAndSmooth/X/Y`へ配置し、すでに同じ親配下にある入力へは重ねてprefixを付けません。既存の同親フォルダがあればそのGUIDを再用し、なければ親フォルダ1個だけに新GUIDを作成します。
 
@@ -45,6 +45,6 @@ Layer0はEntryから空の子StateMachineへ進む構造です。AnimatorState�
 
 独立した保全比較では、最終packageに加え、同じ実行で回収した`integrator-report.json`、`source-motion.unitypackage`、`source-base.unitypackage`、`source-mask.unitypackage`、`registration-*.unitypackage`を使用します。`verify-output.py final.unitypackage --targets N --report integrator-report.json --sources-dir <回収先>`で全入力との比較を行います。`template-*.unitypackage`や別の画面操作で保存した最終出力は比較元に混ぜません。
 
-以前の保全修正時点の確認は静的照合のみでした。3層出力への変更（`decode-smooth-integrator-3`）の検証範囲は[変更記録](../../development/decode-smooth-layer-output/RESULT.md)に記載します。Unity Import・VRChat実動作の受入とは区別します。VRCFT5値域規定をOFFにした出力を外部で照合するときは、`verify-output.py`に`--binary-only`を指定してください。Binary対象のBool登録はOFF時も適用します。
+以前の保全修正時点の確認は静的照合のみでした。3層出力への変更（`decode-smooth-integrator-3`）の検証範囲は[変更記録](../../development/decode-smooth-layer-output/RESULT.md)に記載します。Unity Import・VRChat実動作の受入とは区別します。現在のVRCFT5版には値域規則をOFFにする設定はありません。
 
 BuilderのBase Layer／No Animation／Entry TransitionとRegistrarのStateMachineは`HideInHierarchy`を有効にして生成します。Layer0のEntry→No Animation構造は保持します。非表示設定と、除外した登録用Layerの空StateMachineを出力しない処理は別です。

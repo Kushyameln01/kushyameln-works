@@ -2,16 +2,16 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Animator Integrator｜Kushyameln Works</title>
-  <meta name="description" content="ControllerとExpressionParametersを統合し、2つのBlendTreeと共通AvatarMaskを配置します。">
-  <link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="./integrator.css">
+  <title>Animator Integrator(VRCFT5)｜Kushyameln Works</title>
+  <meta name="description" content="VRCFT5向けにControllerとExpressionParametersを統合し、Binary・SmoothのBlendTreeと共通AvatarMaskを配置します。">
+  <link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="./integrator.css?v=vrcft5-rules-1">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 </head>
 <body>
-  <header><h1>Animator Integrator <small>試作</small></h1><span>Kushyameln Works</span></header>
+  <header><h1>Animator Integrator(VRCFT5)</h1><span>Kushyameln Works</span></header>
   <nav class="site-nav" aria-label="サイト内ナビゲーション"><a href="../">トップページ</a><a href="../animator-composer/">Animator Composer</a></nav>
   <main>
-    <p class="intro">ControllerとExpressionParametersをまとめ、Binary・Smoothの専用Layerと共通Maskを配置します。元のアセット名・GUID・内包Clipを保持し、Merged_DecodeAndSmoothフォルダーにまとめます。素材はブラウザ内で処理します。</p>
+    <p class="intro">VRCFT5向けにControllerとExpressionParametersをまとめ、Binary・Smoothの専用Layerと共通Maskを配置します。元のアセット名・GUID・内包Clipを保持し、Merged_DecodeAndSmoothフォルダーにまとめます。素材はブラウザ内で処理します。</p>
     <section class="panel" aria-labelledby="input-heading">
       <h2 id="input-heading">1. 素材を読み込む</h2>
       <label for="source-files">元のファイル構造を含むUnitypackage</label>
@@ -33,16 +33,9 @@
           <div><label for="smooth-tree">Root_Smooth_Parameter</label><select id="smooth-tree" required></select></div>
         </div>
         <label for="output-name">保存するUnitypackage名</label><input id="output-name" value="IntegratedParameters" maxlength="64" pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,63}" autocomplete="off" spellcheck="false">
-        <section class="sync-settings" aria-labelledby="sync-rules-heading">
-          <h3 id="sync-rules-heading">ExpressionParametersの型・同期規定</h3>
-          <p class="small">BinaryParameters用：末尾が数字（0〜9）またはNegativeのParameterをBoolで登録します。末尾0は例外として同期OFF、1〜9とNegativeは同期ONにします。Animator側の型は保持します。</p>
-          <label class="check-option" for="vrcft5-range-sync"><input id="vrcft5-range-sync" type="checkbox" checked aria-describedby="range-sync-help"><span>VRCFT5のParameter範囲に基づく規定を追加適用</span></label>
-          <p id="range-sync-help" class="small">Negative末尾のParameterは、元のParameterの公式値域が0〜正の数なら同期OFF、負の数〜正の数ならONにします。値域が不明なら、この規定では変更しません。Binary用規定の後に適用します。チェックを外すとBinary用規定のみになります。</p>
-          <p class="small">参照：<a href="https://docs.vrcft.io/docs/tutorial-avatars/tutorial-avatars-extras/parameters" target="_blank" rel="noopener noreferrer">VRCFT5 Parameter範囲</a> · <a href="https://docs.vrcft.io/docs/tutorial-avatars/tutorial-avatars-extras/parameters/types/binary" target="_blank" rel="noopener noreferrer">Binary Parameters</a></p>
-        </section>
         <details class="settings"><summary>固定設定と対象Playable</summary>
           <label for="playable">対象Playable</label><select id="playable"><option>FX</option><option>Base</option><option>Additive</option><option>Gesture</option><option>Action</option><option>Sitting</option><option>TPose</option><option>IKPose</option></select>
-          <ul><li>親フォルダー：Merged_DecodeAndSmooth</li><li>既存ファイルのGUID・名前・内包構造を保持</li><li>全LayerのWeight：1</li><li>新設StateのWrite Defaults：ON</li><li>AlwaysOne：1（未登録ならFloatで追加）</li><li>v2/EyeLidLeft・v2/EyeLidRight・v2/EyeLid：0.75（完全一致する登録に適用）</li><li>Savedと、上記の同期規定の対象外にある同期設定は保持します。</li></ul>
+          <ul><li>親フォルダー：Merged_DecodeAndSmooth</li><li>既存ファイルのGUID・名前・内包構造を保持</li><li>全LayerのWeight：1</li><li>新設StateのWrite Defaults：ON</li><li>ExpressionParametersは下記の例外規則を適用</li></ul>
         </details>
         <button id="generate" type="submit">統合してunitypackageを生成</button>
       </fieldset>
@@ -56,6 +49,30 @@
       <p class="small">生成物の静的検査結果です。UnityへのImportと実動作は別途確認が必要です。</p>
     </section>
     <details class="scope"><summary>入力・出力と連携API</summary><p>参照素材と元のファイルパスを含むUnitypackageを読み込みます。アップロードしたファイル自体は変更しません。出力では既存GUIDを保持するため、UnityへのImport時は同じGUIDのAssetを更新します。同名Parameterの定義が競合した場合は、該当する入力を確認してください。</p><p>全出力をAssets/Merged_DecodeAndSmooth/配下へ配置します。その下の元の階層・ファイル名と、BlendTree内のClip・GUID・fileID・metaを保持します。統合先ControllerとExpressionの必要項目だけを更新し、Installerは生成しません。</p><p>統括ツールからは <code>shared/animator-integrator/client.mjs</code> の <code>createAnimatorIntegrator()</code> を利用できます。画面と同じWorker・統合処理を呼び出します。</p></details>
+    <section id="exception-rules" class="panel exception-rules" aria-labelledby="exception-rules-heading">
+      <h2 id="exception-rules-heading">ExpressionParametersの例外規則</h2>
+      <p>登録しないParameterも、AnimatorController内の宣言・BlendTree・Clipは保持します。</p>
+      <table>
+        <thead><tr><th scope="col">対象</th><th scope="col">Expressionへの登録</th><th scope="col">設定</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>Decode/</code>・<code>Function/</code>・<code>Proxy/</code>で始まる名前</th><td>登録しない</td><td>内部計算用</td></tr>
+          <tr><th scope="row"><code>Smooth/</code>で始まり、<code>_Function</code>で終わる名前</th><td>登録する</td><td>同期OFF。未登録なら選択したAnimatorの型・初期値を引き継ぎ、Saved OFFで追加</td></tr>
+          <tr><th scope="row">上記以外の<code>Smooth/</code></th><td>登録しない</td><td>内部計算用</td></tr>
+          <tr><th scope="row">Binaryの末尾<code>0</code></th><td>登録しない</td><td>BlendTree側で手動設定する要素</td></tr>
+          <tr><th scope="row">末尾<code>Negative</code>：公式値域に負の範囲がない</th><td>登録しない</td><td>元のParameterの値域で判定</td></tr>
+          <tr><th scope="row">末尾<code>Negative</code>：公式値域に負の範囲がある</th><td>登録する</td><td>Bool・同期ON</td></tr>
+          <tr><th scope="row">末尾<code>Negative</code>：値域が未定義</th><td>入力を保持</td><td>型・初期値・Saved・同期を変更しない</td></tr>
+          <tr><th scope="row">左右EyeLidのBinary：末尾<code>1・2</code>／<code>4・8</code></th><td>登録する</td><td>Bool・同期ON。初期値は1・2が0、4・8が1（0.25＋0.5＝0.75）</td></tr>
+          <tr><th scope="row">その他のBinary：末尾<code>1〜9</code></th><td>登録する</td><td>Bool・同期ON。初期値0／1は保持</td></tr>
+          <tr><th scope="row"><code>AlwaysOne</code></th><td>未登録なら追加</td><td>Float・初期値1。新規追加はSaved OFF・同期OFF</td></tr>
+          <tr><th scope="row"><code>v2/EyeLidLeft</code>・<code>v2/EyeLidRight</code>・<code>v2/EyeLid</code></th><td>登録済みの項目に適用</td><td>Float・初期値0.75（Animator側も適用）</td></tr>
+          <tr><th scope="row">その他のParameter</th><td>入力を保持</td><td>型・初期値・Saved・同期を変更しない</td></tr>
+        </tbody>
+      </table>
+      <p>上から優先して判定します。既存のSavedは保持します。除外対象は入力に登録済みでも出力へ含めません。<code>Smooth/…_Function</code>とAlwaysOne以外の未登録名は追加しません。</p>
+      <p class="small">名前は大文字・小文字を区別します。Binaryの数字は半角末尾で判定します。Negativeの値域判定と左右EyeLidのBinary規則は、<code>v2/Name</code>・<code>v2.Name</code>と、その前に付いたスラッシュ区切りの名前空間に対応します。FloatのEyeLid初期値は表にある名前の完全一致です。</p>
+      <p class="small">参照：<a href="https://docs.vrcft.io/docs/tutorial-avatars/tutorial-avatars-extras/parameters" target="_blank" rel="noopener noreferrer">VRCFT5 Parameter範囲</a> · <a href="https://docs.vrcft.io/docs/tutorial-avatars/tutorial-avatars-extras/parameters/types/binary" target="_blank" rel="noopener noreferrer">Binary Parameters</a></p>
+    </section>
     <noscript><p>JavaScriptを有効にしてください。</p></noscript>
-  </main><script type="module" src="./app.mjs"></script>
+  </main><script type="module" src="./app.mjs?v=vrcft5-rules-1"></script>
 </body></html>

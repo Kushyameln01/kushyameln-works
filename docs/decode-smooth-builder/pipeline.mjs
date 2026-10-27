@@ -4,7 +4,7 @@ import {BUILD_ID as COMPUTE_BUILD_ID} from '../shared/compute/protocol.mjs';
 import {createParameterRegistrar} from '../shared/parameter-registrar/client.mjs';
 import {readUnityPackage} from '../shared/ft/unity-package.mjs';
 import {splitUnityDocuments,extractAnimatorLayers,extractAnimatorParameters} from '../shared/ft/unity-text.mjs';
-import {createAnimatorIntegrator} from '../shared/animator-integrator/client.mjs';
+import {createAnimatorIntegrator} from '../shared/animator-integrator/client.mjs?v=vrcft5-rules-1';
 import {createIntegratorRequest} from './integrator-request.mjs';
 
 export const BUILD_ID='decode-smooth-integrator-4';

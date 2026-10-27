@@ -1,7 +1,7 @@
-import {createAnimatorIntegrator} from '../shared/animator-integrator/client.mjs';
+import {createAnimatorIntegrator} from '../shared/animator-integrator/client.mjs?v=vrcft5-rules-1';
 
 const el=id=>document.getElementById(id);
-const ui=Object.fromEntries(['source-files','file-summary','load','integrator','selection','controller-list','expression-list','mask','binary-tree','smooth-tree','output-name','playable','vrcft5-range-sync','generate','cancel','status','issues','issue-list','result','result-summary','download','report-download','report-view','layer-conflicts','layer-name-fields'].map(id=>[id,el(id)]));
+const ui=Object.fromEntries(['source-files','file-summary','load','integrator','selection','controller-list','expression-list','mask','binary-tree','smooth-tree','output-name','playable','generate','cancel','status','issues','issue-list','result','result-summary','download','report-download','report-view','layer-conflicts','layer-name-fields'].map(id=>[id,el(id)]));
 let client=null,revision=0,sourceRevision=null,busy=false,catalog=null,controllers=[],selectedControllers=new Set(),selectedExpressions=new Set(),layerNames={},urls=[];
 function session(){return client??=createAnimatorIntegrator();}
 function message(value,error=false){ui.status.textContent=value;ui.status.dataset.error=String(error);}
@@ -40,11 +40,11 @@ ui.load.addEventListener('click',async()=>{
   catch(error){if(current===revision)showError(error);}
   finally{if(current===revision){busy=false;controls();}}
 });
-for(const field of [ui.mask,ui['binary-tree'],ui['smooth-tree'],ui['output-name'],ui.playable,ui['vrcft5-range-sync']])field.addEventListener(field===ui['output-name']?'input':'change',inputChanged);
+for(const field of [ui.mask,ui['binary-tree'],ui['smooth-tree'],ui['output-name'],ui.playable])field.addEventListener(field===ui['output-name']?'input':'change',inputChanged);
 ui.cancel.addEventListener('click',()=>{invalidate();message('処理を取り消しました。「素材を読み込む」から再開できます。');});
 ui.integrator.addEventListener('submit',async event=>{
   event.preventDefault();if(busy||!catalog)return;invalidate();const current=revision;
-  const request={schemaVersion:1,name:ui['output-name'].value.trim(),controllerIds:controllers.filter(c=>selectedControllers.has(c.id)).map(c=>c.id),expressionIds:[...selectedExpressions],maskId:ui.mask.value,binaryTreeId:ui['binary-tree'].value,smoothTreeId:ui['smooth-tree'].value,playable:ui.playable.value,writeDefaults:true,vrcft5RangeSync:ui['vrcft5-range-sync'].checked,layerNames:(()=>{const activeKeys=new Set(controllers.filter(c=>selectedControllers.has(c.id)).flatMap(c=>(c.layers??[]).map(l=>c.id+':'+l.index)));return Object.fromEntries(Object.entries(layerNames).filter(([key])=>activeKeys.has(key)));})()};
+  const request={schemaVersion:1,name:ui['output-name'].value.trim(),controllerIds:controllers.filter(c=>selectedControllers.has(c.id)).map(c=>c.id),expressionIds:[...selectedExpressions],maskId:ui.mask.value,binaryTreeId:ui['binary-tree'].value,smoothTreeId:ui['smooth-tree'].value,playable:ui.playable.value,writeDefaults:true,layerNames:(()=>{const activeKeys=new Set(controllers.filter(c=>selectedControllers.has(c.id)).flatMap(c=>(c.layers??[]).map(l=>c.id+':'+l.index)));return Object.fromEntries(Object.entries(layerNames).filter(([key])=>activeKeys.has(key)));})()};
   if(!request.controllerIds.length||!request.expressionIds.length||!request.maskId||!request.binaryTreeId||!request.smoothTreeId){showError(new Error('Controller、ExpressionParameters、AvatarMask、Binary・Smoothの参照をそれぞれ指定してください。'));return;}
   if(!/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(request.name)){showError(new Error('出力名は半角英数字で始まる英数字・_・-の1〜64文字にしてください。'));ui['output-name'].focus();return;}
   busy=true;controls();message('Controller・ExpressionParametersを統合しています…');

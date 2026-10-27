@@ -13,16 +13,25 @@ def preserved_path(path):
 RANGE_SOURCE=Path(__file__).resolve().parents[2]/'docs/shared/animator-integrator/vrcft5-ranges.mjs'
 RANGE_LITERAL=re.search(r'VRCFT5_PARAMETER_RANGES=Object\.freeze\((\[[\s\S]*?\])\.map',RANGE_SOURCE.read_text()).group(1)
 VRCFT5_RANGES={row['name']:row for row in json.loads(RANGE_LITERAL)}
-def expected_sync(name,range_sync):
-    synced=bool(re.search(r'(?:[1-9]|Negative)\Z',name))
-    if range_sync and name.endswith('Negative'):
-        base=name[:-len('Negative')]
-        match=re.search(r'(?:^|/)v2[/.]([^/]+)\Z',base)
-        bounds=VRCFT5_RANGES.get('v2/'+match[1]) if match else None
-        if bounds and bounds['max']>0:
-            if bounds['min']==0:synced=False
-            elif bounds['min']<0:synced=True
-    return '1' if synced else '0'
+def parameter_range(name):
+    match=re.search(r'(?:^|/)v2[/.]([^/]+)\Z',name)
+    return VRCFT5_RANGES.get('v2/'+match[1]) if match else None
+
+def smooth_control(name):
+    return name.startswith('Smooth/') and name.endswith('_Function')
+
+def expected_registration(name):
+    if name.startswith(('Decode/','Function/','Proxy/','Smooth/')) and not smooth_control(name):return False
+    if name.endswith('0'):return False
+    bounds=parameter_range(name[:-len('Negative')]) if name.endswith('Negative') else None
+    return not (bounds and bounds['min']>=0)
+
+def expected_binary(name):
+    if name.endswith('Negative'):
+        bounds=parameter_range(name[:-len('Negative')])
+        return bool(bounds and bounds['min']<0)
+    return bool(re.search(r'[1-9]\Z',name))
+
 
 
 def read_package(path):
@@ -62,7 +71,7 @@ def reference(value,owner):
 def node(assets,ref):return assets[ref[0]]['docs'][ref[1]]
 def objects(assets):return {(guid,fileid):doc for guid,entry in assets.items() for fileid,doc in entry['docs'].items()}
 
-def verify(path,n,range_sync=True):
+def verify(path,n):
     assets=read_package(path);all_objects=objects(assets);external=set()
     for (guid,_),doc in all_objects.items():
         for m in FLOW.finditer(doc['text']):
@@ -137,15 +146,18 @@ def verify(path,n,range_sync=True):
                 assert values=={-1,0,1},('Decode output Clip values changed',leaf)
     expressions=[doc for doc in all_objects.values() if doc['classId']=='114'];assert len(expressions)==1
     exrows=re.findall(r'^  - name: ([^\n]+)\n(.*?)(?=^  - name:|\Z)',expressions[0]['text'].split('  parameters:\n',1)[1],re.M|re.S)
-    expr={scalar(name):body for name,body in exrows};assert len(expr)==len(exrows)==len(animator)
+    expr={scalar(name):body for name,body in exrows};assert len(expr)==len(exrows)
     assert float(field(expr['AlwaysOne'],'defaultValue'))==1
-    assert set(expr)==set(animator)
+    assert set(expr)=={name for name in animator if expected_registration(name)}
     for name,body in expr.items():
-        expected=expected_sync(name,range_sync)
-        binary=bool(re.search(r'(?:[0-9]|Negative)\Z',name))
+        binary=expected_binary(name)
+        expected='1' if binary else '0'
         assert field(body,'valueType')==('2' if binary else '1') and field(body,'saved')=='0' and field(body,'networkSynced')==expected
         if binary:assert float(field(body,'defaultValue')) in (0,1)
-        assert float(field(body,'defaultValue'))==float(field(animator[name],'m_DefaultFloat'))
+        default=float(field(body,'defaultValue'))
+        animator_default=float(field(animator[name],'m_DefaultFloat'))
+        if re.fullmatch(r'v2/EyeLid(?:Left|Right)[48]',name):assert default==1 and animator_default==0
+        else:assert default==animator_default
         if name in ('v2/EyeLidLeft','v2/EyeLidRight','v2/EyeLid'):
             assert float(field(body,'defaultValue'))==.75 and float(field(animator[name],'m_DefaultFloat'))==.75
     counts={}
@@ -154,7 +166,7 @@ def verify(path,n,range_sync=True):
     synced=sum(field(body,'networkSynced')=='1' for body in expr.values())
     bits=sum(1 if field(body,'valueType')=='2' else 8 for body in expr.values() if field(body,'networkSynced')=='1')
     assert bits<=256
-    return {'status':'PASS','file':path.name,'targetCount':n,'layers':len(layers),'stateMachines':len(machines),'controllerObjects':len(assets[owner]['docs']),'graphHideInHierarchy':'PASS','registrarRootsRemaining':0,'animatorParameters':len(animator),'expressionParameters':len(expr),'syncedExpressions':synced,'syncBitCost':bits,'vrcft5RangeSyncEnabled':range_sync,'trees':counts['206'],'clips':counts.get('74',0),'assets':len(assets),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'externalSdkRefs':sorted(external)}
+    return {'status':'PASS','file':path.name,'targetCount':n,'layers':len(layers),'stateMachines':len(machines),'controllerObjects':len(assets[owner]['docs']),'graphHideInHierarchy':'PASS','registrarRootsRemaining':0,'animatorParameters':len(animator),'expressionParameters':len(expr),'syncedExpressions':synced,'syncBitCost':bits,'vrcft5RangeSyncEnabled':True,'trees':counts['206'],'clips':counts.get('74',0),'assets':len(assets),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'externalSdkRefs':sorted(external)}
 
 def verify_mapping(path,report_path,source_dir):
     report=json.loads(report_path.read_text());final_assets=read_package(path);output=objects(final_assets)
@@ -263,8 +275,8 @@ def verify_mapping(path,report_path,source_dir):
     return {'wholeSourceFilesCompared':compared_files,'embeddedClipFilesPreserved':embedded_files,'mappingStatus':'PASS','sourcePathsGuidsMetadataPayloads':'PASS','sourceMotionDocumentsPreserved':len(motion_sources),'sourceReachableMotionDocuments':len(reachable),'unreferencedSourceMotionDocumentsPreserved':len(motion_sources)-len(reachable),'unreferencedSourceMotionDocumentsOmitted':0}
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('package',type=Path);parser.add_argument('--targets',type=int,required=True);parser.add_argument('--report',type=Path);parser.add_argument('--sources-dir',type=Path);parser.add_argument('--output',type=Path);parser.add_argument('--binary-only',action='store_true',help='Expect range sync OFF; Binary suffix types remain Bool')
-    args=parser.parse_args();result=verify(args.package,args.targets,range_sync=not args.binary_only)
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('package',type=Path);parser.add_argument('--targets',type=int,required=True);parser.add_argument('--report',type=Path);parser.add_argument('--sources-dir',type=Path);parser.add_argument('--output',type=Path)
+    args=parser.parse_args();result=verify(args.package,args.targets)
     if args.report:
         assert args.sources_dir,'--sources-dir is required with --report'
         result.update(verify_mapping(args.package,args.report,args.sources_dir))

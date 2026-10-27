@@ -46,3 +46,7 @@ GitHub Pagesへの反映とクラウドでの8試行を完了しました。今�
 2026-10-18にSites v81のVR180部分を移植しました。固定容量上限の撤廃と大容量用の逐次処理、MP4互換性r6、保存へのガイド、保存・照合進捗の3欄への集約、特殊タグの対応表を含みます。対応するタグ・条件・制限は画面の「対応範囲と記録」で確認できます。[今回の反映記録](development/vr180/PAGES-R6-2026-10-18.md)を参照してください。
 
 旧版ではChrome 155で小さな合成素材の加工・ダウンロードと、回収ファイルの独立照合を確認しました。[当時の対象版と検証記録](development/vr180/RELEASE-2026-10-17.md)を参照してください。今回の移植では追加の動画・ブラウザ試験は行っていません。過去の結果を現行版の大容量実動画・OS保存・VRプレイヤー互換性の検証結果には読み替えません。
+
+## Animator Integrator(VRCFT5)
+
+[Animator Integrator(VRCFT5)](https://kushyameln01.github.io/kushyameln-works/animator-integrator/)は、VRCFT5向けのControllerとExpressionParametersを統合します。Expressionの登録除外・Smoothの同期OFF登録・EyeLidの初期値を扱う例外規則をページ末尾で確認できます。生成物の素材保全とUnity実動作は別の検証です。[API仕様](docs/shared/animator-integrator/README.md)。

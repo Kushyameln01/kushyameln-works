@@ -21,34 +21,31 @@ test('Binary suffix matching keeps zero Bool while its sync exception preserves 
  assert(r.changes.every(c=>c.domain==='expression'&&c.sourceId==='expr'&&c.after.type==='Bool'&&EXPRESSION_BOOL_RULES.some(rule=>rule.id===c.ruleId)));
 });
 test('unrepresentable Binary defaults are never rounded or reset and have an explicit issue',async()=>{
- for(const value of [0.25,0.75,-1,19]){const p=row('UnknownNegative',{type:value===19?'Int':'Float',defaultValue:value}),r=applyExpressionBoolRules([p],{sourceId:'expr'});assert.equal(r.rows[0].type,'Bool');assert.equal(r.rows[0].defaultValue,value);assert(r.issues.some(i=>i.code==='binary_bool_default'&&i.name===p.name&&i.defaultValue===value&&i.sourceId==='expr'));
+ for(const value of [0.25,0.75,-1,19]){const p=row('v2/JawXNegative',{type:value===19?'Int':'Float',defaultValue:value}),r=applyExpressionBoolRules([p],{sourceId:'expr'});assert.equal(r.rows[0].type,'Bool');assert.equal(r.rows[0].defaultValue,value);assert(r.issues.some(i=>i.code==='binary_bool_default'&&i.name===p.name&&i.defaultValue===value&&i.sourceId==='expr'));
   const f=integratorFixture();expressions(f,[p]);await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='binary_bool_default'&&i.name===p.name&&i.defaultValue===value));}
 });
 test('Bool registration preserves0/1 and Saved while Animator retains its own types and numerical defaults',async()=>{
  const f=integratorFixture(),rows=[row('Counter8',{defaultValue:1}),row('v2/JawXNegative',{type:'Int',defaultValue:0,saved:false}),row('v2/EyeLidRightNegative',{defaultValue:1}),row('Ordinary',{defaultValue:0.625,networkSynced:true})];expressions(f,rows);
  const base=f.packages[0].assets.find(a=>a.guid===GUIDS.base);base.asset=enc.encode(dec.decode(base.asset).replace('  m_AnimatorParameters:\n','  m_AnimatorParameters:\n'+parameter('Counter8',1,1)+parameter('v2/JawXNegative',3,0)+parameter('v2/EyeLidRightNegative',1,1)));
  const before=structuredClone(f.packages),r=await run(f),output=parseExpression(dec.decode(r.diagnosticAssets.find(a=>a.guid===GUIDS.expr).asset));assert.deepEqual(f.packages,before);
- for(const [i,p]of rows.entries()){const actual=output.find(x=>x.name===p.name);assert.equal(actual.type,i<3?'Bool':p.type);assert.equal(actual.defaultValue,p.defaultValue);assert.equal(actual.saved,p.saved);assert.equal(actual.networkSynced,i===2?false:true);}
+ for(const [i,p]of rows.entries()){const actual=output.find(x=>x.name===p.name);if(i===2){assert.equal(actual,undefined);continue;}assert.equal(actual.type,i<3?'Bool':p.type);assert.equal(actual.defaultValue,p.defaultValue);assert.equal(actual.saved,p.saved);assert.equal(actual.networkSynced,i===2?false:true);}
  assert.deepEqual(r.report.animatorParameters.filter(p=>['Counter8','v2/JawXNegative','v2/EyeLidRightNegative'].includes(p.name)),[{name:'Counter8',type:'Float',defaultValue:1},{name:'v2/JawXNegative',type:'Int',defaultValue:0},{name:'v2/EyeLidRightNegative',type:'Float',defaultValue:1}]);
- assert.deepEqual(r.report.expressionBoolRules.rules,EXPRESSION_BOOL_RULES);assert.equal(r.report.expressionBoolRules.changes.length,3);assert(r.report.expressionBoolRules.changes.every(c=>c.sourceId===`${GUIDS.expr}:11400000`));
+ assert.deepEqual(r.report.expressionBoolRules.rules,EXPRESSION_BOOL_RULES);assert.equal(r.report.expressionBoolRules.changes.length,2);assert(r.report.expressionBoolRules.changes.every(c=>c.sourceId===`${GUIDS.expr}:11400000`));
  const control=structuredClone(f);expressions(control,[]);const c=await run(control);assert.deepEqual(r.diagnosticAssets.find(a=>a.path.endsWith('.controller')).asset,c.diagnosticAssets.find(a=>a.path.endsWith('.controller')).asset);
 });
 test('same numeric defaults merge after Float/Int/Bool Binary normalization; Saved and0/1 differences still conflict',async()=>{
  for(const type of ['Int','Bool']){const f=integratorFixture();expressions(f,[row('Value8',{defaultValue:1})]);addExpression(f,[row('Value8',{type,defaultValue:1})]);const r=await run(f);assert.equal(r.report.parameters.filter(p=>p.name==='Value8').length,1);assert.equal(r.report.parameters.find(p=>p.name==='Value8').type,'Bool');}
  for(const change of [{saved:false},{defaultValue:1}]){const f=integratorFixture();expressions(f,[row('Value8')]);addExpression(f,[row('Value8',change)]);await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='expression_conflict'&&i.name==='Value8'));}
 });
-test('range setting changes synchronization only: Bool applies in both ON and OFF modes',async()=>{
- const f=integratorFixture();expressions(f,[row('v2/EyeLidRightNegative',{defaultValue:1,saved:false})]);const on=await run(f);f.request.vrcft5RangeSync=false;const off=await run(f);
- for(const r of [on,off]){const p=r.report.parameters.find(p=>p.name==='v2/EyeLidRightNegative');assert.equal(p.type,'Bool');assert.equal(p.defaultValue,1);assert.equal(p.saved,false);}assert.equal(on.report.parameters.find(p=>p.name==='v2/EyeLidRightNegative').networkSynced,false);assert.equal(off.report.parameters.find(p=>p.name==='v2/EyeLidRightNegative').networkSynced,true);
+test('VRCFT5 ranges cannot be disabled through the API',async()=>{
+ const f=integratorFixture();expressions(f,[row('v2/EyeLidRightNegative',{defaultValue:1,saved:false})]);const on=await run(f);assert(!on.report.parameters.some(p=>p.name==='v2/EyeLidRightNegative'));
+ f.request.vrcft5RangeSync=false;await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='vrcft5_range_sync_option'));
 });
-test('terminal zero remains unsynced Bool in both range modes while numeric defaults, Saved and Animator values survive',async()=>{
- for(const rangeSync of [true,false]){
-  const f=integratorFixture(),rows=[row('Value0',{defaultValue:1,networkSynced:true}),row('v2/EyeLidRight0',{type:'Int',defaultValue:0,saved:false,networkSynced:true})];
-  f.request.vrcft5RangeSync=rangeSync;expressions(f,rows);
-  const base=f.packages[0].assets.find(a=>a.guid===GUIDS.base);base.asset=enc.encode(dec.decode(base.asset).replace('  m_AnimatorParameters:\n','  m_AnimatorParameters:\n'+parameter('Value0',1,0.375)+parameter('v2/EyeLidRight0',3,7)));
-  const before=structuredClone(f.packages),r=await run(f),output=parseExpression(dec.decode(r.diagnosticAssets.find(a=>a.guid===GUIDS.expr).asset));assert.deepEqual(f.packages,before);
-  for(const p of rows)assert.deepEqual(output.find(actual=>actual.name===p.name),{...p,type:'Bool',networkSynced:false});
-  assert.deepEqual(r.report.animatorParameters.filter(p=>['Value0','v2/EyeLidRight0'].includes(p.name)),[{name:'Value0',type:'Float',defaultValue:0.375},{name:'v2/EyeLidRight0',type:'Int',defaultValue:7}]);
-  assert.equal(r.report.bitCost,0);assert.deepEqual(r.report.expressionSyncRules.changes.map(c=>[c.name,c.before.networkSynced,c.after.networkSynced]),[['Value0',true,false],['v2/EyeLidRight0',true,false]]);
- }
+test('terminal zero is absent from Expression while original Animator values survive',async()=>{
+ const f=integratorFixture(),rows=[row('Value0',{defaultValue:1,networkSynced:true}),row('v2/EyeLidRight0',{type:'Int',defaultValue:0,saved:false,networkSynced:true})];expressions(f,rows);
+ const base=f.packages[0].assets.find(a=>a.guid===GUIDS.base);base.asset=enc.encode(dec.decode(base.asset).replace('  m_AnimatorParameters:\n','  m_AnimatorParameters:\n'+parameter('Value0',1,0.375)+parameter('v2/EyeLidRight0',3,7)));
+ const before=structuredClone(f.packages),r=await run(f),output=parseExpression(dec.decode(r.diagnosticAssets.find(a=>a.guid===GUIDS.expr).asset));assert.deepEqual(f.packages,before);
+ for(const p of rows)assert.equal(output.find(actual=>actual.name===p.name),undefined);
+ assert.deepEqual(r.report.animatorParameters.filter(p=>['Value0','v2/EyeLidRight0'].includes(p.name)),[{name:'Value0',type:'Float',defaultValue:0.375},{name:'v2/EyeLidRight0',type:'Int',defaultValue:7}]);
+ assert.equal(r.report.bitCost,0);assert.equal(r.report.expressionSyncRules.changes.length,0);assert.deepEqual(r.report.expressionRegistrationRules.exclusions.map(c=>c.name),['Value0','v2/EyeLidRight0']);
 });

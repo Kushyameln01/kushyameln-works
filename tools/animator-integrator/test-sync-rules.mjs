@@ -10,8 +10,8 @@ import {integratorFixture,GUIDS,asset,parameter} from './fixture.mjs';
 const kernel=await instantiateFtKernel(fs.readFileSync(new URL('../../docs/shared/ft/kernel/ft-kernel.wasm',import.meta.url)));
 const enc=new TextEncoder(),dec=new TextDecoder();
 const row=(name,extra={})=>({name,type:'Float',defaultValue:0,saved:true,networkSynced:false,...extra});
-// BinaryParameters-only regression cases explicitly disable the independent range rule.
-const run=f=>integratePackages(f.packages,{...f.request,vrcft5RangeSync:false},kernel);
+// Integration uses the VRCFT5 registration policy; pure helpers retain their narrow behavior.
+const run=f=>integratePackages(f.packages,f.request,kernel);
 function expressions(f,rows){f.packages[0].assets.find(a=>a.guid===GUIDS.expr).asset=enc.encode(serializeExpression(rows));}
 function addExpression(f,rows){const guid='ab'.repeat(16);f.packages[0].assets.push(asset(guid,'Assets/OtherExpressions.asset',serializeExpression(rows),'11400000'));f.request.expressionIds.push(`${guid}:11400000`);}
 test('pure Expression sync rules disable terminal ASCII zero and enable other Binary suffixes without changing other fields',()=>{
@@ -27,20 +27,20 @@ test('pure Expression sync rules disable terminal ASCII zero and enable other Bi
  for(const c of result.changes){assert.equal(c.domain,'expression');assert.equal(c.sourceId,'source-expression');assert.deepEqual(c.before,{networkSynced:localTargets.includes(c.name)});assert.deepEqual(c.after,{networkSynced:!localTargets.includes(c.name)});assert(rules.EXPRESSION_SYNC_RULES.some(rule=>rule.id===c.rule.id));}
 });
 test('integration forces only matching Expression synchronization, keeps Animator defaults and separate provenance',async()=>{
- const f=integratorFixture(),rows=[row('v2/EyeLidLeft8',{saved:false}),row('v2.EyeLidRightNegative',{type:'Int',defaultValue:1}),row('LocalOnly',{defaultValue:0.625}),row('AlreadySynced0',{networkSynced:true})];expressions(f,rows);
+ const f=integratorFixture(),rows=[row('Value8',{saved:false}),row('v2.JawXNegative',{type:'Int',defaultValue:1}),row('LocalOnly',{defaultValue:0.625}),row('AlreadySynced0',{networkSynced:true})];expressions(f,rows);
  const base=f.packages[0].assets.find(a=>a.guid===GUIDS.base);base.asset=enc.encode(dec.decode(base.asset).replace('  m_AnimatorParameters:\n','  m_AnimatorParameters:\n'+parameter('v2/EyeLidLeft8',1,0.125)));
  const before=structuredClone(f.packages),r=await run(f);assert.deepEqual(f.packages,before);
  const serialized=parseExpression(dec.decode(r.diagnosticAssets.find(a=>a.guid===GUIDS.expr).asset));
- assert.deepEqual(serialized.filter(p=>p.name!=='AlwaysOne'),rows.map(p=>({...p,type:p.name==='LocalOnly'?p.type:'Bool',networkSynced:!['LocalOnly','AlreadySynced0'].includes(p.name)})));
+ assert.deepEqual(serialized.filter(p=>p.name!=='AlwaysOne'),rows.filter(p=>p.name!=='AlreadySynced0').map(p=>({...p,type:p.name==='LocalOnly'?p.type:'Bool',networkSynced:p.name!=='LocalOnly'})));
  assert.equal(r.report.animatorParameters.find(p=>p.name==='v2/EyeLidLeft8').defaultValue,0.125);
- assert.deepEqual(r.report.expressionSyncRules.rules,rules.EXPRESSION_SYNC_RULES);assert.deepEqual(r.report.expressionSyncRules.changes.map(c=>c.name),['v2/EyeLidLeft8','v2.EyeLidRightNegative','AlreadySynced0']);
+ assert.deepEqual(r.report.expressionSyncRules.rules,rules.EXPRESSION_SYNC_RULES);assert.deepEqual(r.report.expressionSyncRules.changes.map(c=>c.name),['Value8','v2.JawXNegative']);
  assert(r.report.expressionSyncRules.changes.every(c=>c.sourceId===`${GUIDS.expr}:11400000`));assert(!r.report.defaultValueRules.changes.some(c=>c.name==='v2/EyeLidLeft8'));
  const control=structuredClone(f);expressions(control,[]);const c=await run(control);assert.deepEqual(r.diagnosticAssets.find(a=>a.path.endsWith('.controller')).asset,c.diagnosticAssets.find(a=>a.path.endsWith('.controller')).asset,'Expression sync rules must not alter Animator bytes');
 });
 test('matching false/true sync differences normalize before merge conflict comparison',async()=>{
  for(const [name,networkSynced]of [['Value8',true],['Value0',false]]){
   const f=integratorFixture(),r=row(name);expressions(f,[r]);addExpression(f,[{...r,networkSynced:true}]);
-  const result=await run(f);assert.equal(result.report.parameters.filter(p=>p.name===name).length,1);assert.equal(result.report.parameters.find(p=>p.name===name).networkSynced,networkSynced);
+  const result=await run(f);assert.equal(result.report.parameters.filter(p=>p.name===name).length,name==='Value0'?0:1);if(name!=='Value0')assert.equal(result.report.parameters.find(p=>p.name===name).networkSynced,networkSynced);
  }
 });
 test('normalization retains Saved/default conflicts, resolves Binary types, and preserves nonBinary conflicts',async()=>{

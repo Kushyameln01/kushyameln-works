@@ -4,8 +4,9 @@ import {digest,validateAssets} from '../../animator-composer/lib/generate.mjs';
 import {readUnityPackage,writeUnityPackage,MAX_UNITY_PACKAGE_BYTES} from '../ft/unity-package.mjs';
 import {splitUnityDocuments,extractAnimatorLayers,canonicalizeObjectReferences,parseUnityScalar} from '../ft/unity-text.mjs';
 import {parameterText} from './root-layers.mjs';
-import {DEFAULT_VALUE_RULES,applyDefaultValueRules,EXPRESSION_SYNC_RULES,applyExpressionSyncRules,EXPRESSION_BOOL_RULES,applyExpressionBoolRules} from './default-value-rules.mjs?v=zero-sync-1';
-import {VRCFT5_RANGE_SOURCE,VRCFT5_RANGE_SYNC_POLICY,applyVrcft5RangeSync} from './vrcft5-ranges.mjs';
+import {DEFAULT_VALUE_RULES,applyDefaultValueRules,EXPRESSION_SYNC_RULES,EXPRESSION_BOOL_RULES} from './default-value-rules.mjs?v=vrcft5-rules-1';
+import {VRCFT5_RANGE_SOURCE} from './vrcft5-ranges.mjs';
+import {EXPRESSION_REGISTRATION_RULES,VRCFT5_REGISTRATION_RANGE_POLICY,applyVrcft5ExpressionRules,addMissingSmoothExpressionControls} from './expression-rules.mjs?v=vrcft5-rules-1';
 import {preservationInputIssues,preservationHostIssues,patchSection,materializePreservedIntegration,preservationReferenceIssues} from './materialize-preserved.mjs?v=graph-cleanup-1';
 const enc=new TextEncoder(),dec=new TextDecoder('utf-8',{fatal:true});
 const issue=(code,message,detail={})=>({severity:'error',code,message,...detail});
@@ -38,7 +39,7 @@ export async function importSources(sources){
 function validateRequest(index,r){
  const issues=[];
  if(!r||r.schemaVersion!==1)return [issue('request_version','Expected schemaVersion 1.')];
- if(r.vrcft5RangeSync!==undefined&&typeof r.vrcft5RangeSync!=='boolean')issues.push(issue('vrcft5_range_sync_option','vrcft5RangeSync must be a boolean.'));
+ if(r.vrcft5RangeSync!==undefined&&r.vrcft5RangeSync!==true)issues.push(issue('vrcft5_range_sync_option','Animator Integrator(VRCFT5) requires VRCFT5 rules; omit vrcft5RangeSync or set it to true.'));
  if(typeof r.name!=='string'||!/^\p{L}[\p{L}\p{N}_.-]{0,63}$|^[0-9][\p{L}\p{N}_.-]{0,63}$/u.test(r.name)||r.name==='..')issues.push(issue('output_name','Output name must contain 1–64 letters, numbers, underscores, hyphens or dots.'));
  if(!['Base','Additive','Gesture','Action','FX','Sitting','TPose','IKPose'].includes(r.playable)||r.writeDefaults!==true)issues.push(issue('options','Choose a supported Playable and new-state Write Defaults ON.'));
  for(const [field,cls]of [['controllerIds','91'],['expressionIds','114']]){
@@ -51,27 +52,26 @@ function validateRequest(index,r){
  if(index.catalog.conflicts.length)issues.push(issue('guid_conflict','Different contents share a GUID; remove or resolve the source conflict.',{conflicts:index.catalog.conflicts}));
  return issues;
 }
-function mergeExpressions(index,ids,{vrcft5RangeSync=true}={}){
- const rows=new Map(),issues=[],sources=[],changes=[],syncChanges=[],boolChanges=[],rangeMatches=[],rangeUnmatched=[],rangeChanges=[];let added=true;
+function mergeExpressions(index,ids,controllerIds){
+ const rows=new Map(),issues=[],sources=[],changes=[],syncChanges=[],boolChanges=[],rangeMatches=[],rangeUnmatched=[],rangeChanges=[],registrationExclusions=[],registrationChanges=[];let added=true;
  for(const id of ids){let list;try{list=parseExpression(index.nodes.get(id).text);}catch(e){issues.push(issue('expression_unsupported',`${id}: ${e.message}`,{id}));continue;}
-  const normalized=applyDefaultValueRules(list,{domain:'expression',sourceId:id});changes.push(...normalized.changes);
-  const typed=applyExpressionBoolRules(normalized.rows,{sourceId:id});boolChanges.push(...typed.changes);issues.push(...typed.issues);
-  const synced=applyExpressionSyncRules(typed.rows,{sourceId:id});syncChanges.push(...synced.changes);
-  const ranged=applyVrcft5RangeSync(synced.rows,{enabled:vrcft5RangeSync,sourceId:id});rangeMatches.push(...ranged.matches);rangeUnmatched.push(...ranged.unmatched);rangeChanges.push(...ranged.changes);
-  for(const [i,original] of list.entries()){const row=ranged.rows[i];if(row.name==='AlwaysOne')added=false;
+  const normalized=applyVrcft5ExpressionRules(list,{sourceId:id});
+  changes.push(...normalized.defaultChanges);boolChanges.push(...normalized.boolChanges);syncChanges.push(...normalized.syncChanges);issues.push(...normalized.issues);
+  rangeMatches.push(...normalized.rangeMatches);rangeUnmatched.push(...normalized.rangeUnmatched);rangeChanges.push(...normalized.rangeChanges);registrationExclusions.push(...normalized.exclusions);registrationChanges.push(...normalized.changes);sources.push(...normalized.sources);
+  for(const row of normalized.rows){if(row.name==='AlwaysOne')added=false;
    const previous=rows.get(row.name);if(previous&&JSON.stringify(previous.row)!==JSON.stringify(row))issues.push(issue('expression_conflict',`${row.name}: Expression settings differ.`,{name:row.name,options:[previous,{sourceId:id,row}]}));else if(!previous)rows.set(row.name,{row,sourceId:id});
-   sources.push({sourceId:id,name:row.name,original,normalized:row});
   }
  }
- const ensured=applyDefaultValueRules([...rows.values()].map(x=>x.row),{domain:'expression',sourceId:'integrator',ensure:true});changes.push(...ensured.changes);
+ const smooth=addMissingSmoothExpressionControls([...rows.values()].map(x=>x.row),controllerIds.map(id=>index.catalog.controllers.find(c=>c.id===id)));registrationChanges.push(...smooth.changes);sources.push(...smooth.sources);issues.push(...smooth.issues);
+ const ensured=applyDefaultValueRules(smooth.rows,{domain:'expression',sourceId:'integrator',ensure:true});changes.push(...ensured.changes);
  const result=ensured.rows;try{serializeExpression(result);}catch(e){issues.push(issue('expression_invalid',e.message));}
- return {rows:result,issues,sources,changes,syncChanges,boolChanges,rangeMatches,rangeUnmatched,rangeChanges,added,bitCost:result.reduce((n,r)=>n+(r.networkSynced?(r.type==='Bool'?1:8):0),0)};
+ return {rows:result,issues,sources,changes,syncChanges,boolChanges,rangeMatches,rangeUnmatched,rangeChanges,registrationExclusions,registrationChanges,added,bitCost:result.reduce((n,r)=>n+(r.networkSynced?(r.type==='Bool'?1:8):0),0)};
 }
 export async function integratePackages(packages,request,kernel){
  let issues=preservationInputIssues(packages,request);if(issues.length)fail(issues);
  const index=indexPackages(packages);issues.push(...validateRequest(index,request));if(issues.length)fail(issues);
  issues.push(...preservationHostIssues(index,request));if(issues.length)fail(issues);
- const expressions=mergeExpressions(index,request.expressionIds,{vrcft5RangeSync:request.vrcft5RangeSync??true});issues.push(...expressions.issues);if(issues.length)fail(issues);
+ const expressions=mergeExpressions(index,request.expressionIds,request.controllerIds);issues.push(...expressions.issues);if(issues.length)fail(issues);
  // Private index edits happen before dependency traversal: obsolete masks do not enter closure.
  const union=new Map(),alwaysSources=[],sourceLayers=new Map(),ruleChanges=[...expressions.changes];
  for(const id of request.controllerIds){const n=index.nodes.get(id);sourceLayers.set(id,extractAnimatorLayers(n.text));let text=canonicalizeObjectReferences(n.text);const declared=index.catalog.controllers.find(c=>c.id===id).parameters;
@@ -99,6 +99,6 @@ export async function integratePackages(packages,request,kernel){
  const verified=validateAssets(assets),archive=writeUnityPackage(assets),reopened=[...readUnityPackage(archive).values()];
  if(reopened.length!==assets.length)throw Error('Roundtrip asset count mismatch.');
  for(const a of assets){const b=reopened.find(b=>b.guid===a.guid);if(!b||a.path!==b.path||a.meta!==b.meta||(a.asset===null?b.asset!==null:b.asset===null||await digest(a.asset)!==await digest(b.asset)))throw Error(`Roundtrip bytes mismatch: ${a.path}`);}
- const report={format:'animator-integrator-report-1',status:'PASS',inputHashes:index.inputHashes,request,controllers:built.controllers,parameters:expressions.rows,animatorParameters:[...merged.values()],bitCost:expressions.bitCost,expressionSources:expressions.sources,defaultValueRules:{rules:DEFAULT_VALUE_RULES,changes:ruleChanges},expressionSyncRules:{rules:EXPRESSION_SYNC_RULES,changes:expressions.syncChanges},expressionBoolRules:{rules:EXPRESSION_BOOL_RULES,changes:expressions.boolChanges},vrcft5RangeSync:{enabled:request.vrcft5RangeSync??true,source:VRCFT5_RANGE_SOURCE,policy:VRCFT5_RANGE_SYNC_POLICY,matches:expressions.rangeMatches,unmatched:expressions.rangeUnmatched,changes:expressions.rangeChanges},alwaysOne:{type:'Float',defaultValue:1,animatorAdded:alwaysSources.length===0,animatorSources:alwaysSources,expressionAdded:expressions.added,newExpressionFlags:expressions.added?{saved:false,networkSynced:false}:null},composition:built.report,preservation:built.preservation,staticValidation:{status:'PASS',...verified,roundtripAssets:reopened.length,roundtripBytes:'PASS'},verification:{unityImport:'UNVERIFIED',runtime:'UNVERIFIED'},warnings:issues.filter(i=>i.severity!=='error')};
+ const report={format:'animator-integrator-report-1',status:'PASS',inputHashes:index.inputHashes,request,controllers:built.controllers,parameters:expressions.rows,animatorParameters:[...merged.values()],bitCost:expressions.bitCost,expressionSources:expressions.sources,defaultValueRules:{rules:DEFAULT_VALUE_RULES,changes:ruleChanges},expressionSyncRules:{rules:EXPRESSION_SYNC_RULES,changes:expressions.syncChanges},expressionBoolRules:{rules:EXPRESSION_BOOL_RULES,changes:expressions.boolChanges},expressionRegistrationRules:{rules:EXPRESSION_REGISTRATION_RULES,exclusions:expressions.registrationExclusions,changes:expressions.registrationChanges},vrcft5RangeSync:{enabled:true,source:VRCFT5_RANGE_SOURCE,policy:VRCFT5_REGISTRATION_RANGE_POLICY,matches:expressions.rangeMatches,unmatched:expressions.rangeUnmatched,changes:expressions.rangeChanges},alwaysOne:{type:'Float',defaultValue:1,animatorAdded:alwaysSources.length===0,animatorSources:alwaysSources,expressionAdded:expressions.added,newExpressionFlags:expressions.added?{saved:false,networkSynced:false}:null},composition:built.report,preservation:built.preservation,staticValidation:{status:'PASS',...verified,roundtripAssets:reopened.length,roundtripBytes:'PASS'},verification:{unityImport:'UNVERIFIED',runtime:'UNVERIFIED'},warnings:issues.filter(i=>i.severity!=='error')};
  return {archive,report,assetCount:assets.length,diagnosticAssets:assets};
 }

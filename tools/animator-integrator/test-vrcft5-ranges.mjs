@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {VRCFT5_RANGE_SOURCE,VRCFT5_PARAMETER_RANGES,VRCFT5_RANGE_SYNC_POLICY,lookupVrcft5ParameterRange,applyVrcft5RangeSync} from '../../docs/shared/animator-integrator/vrcft5-ranges.mjs';
 import {integratePackages} from '../../docs/shared/animator-integrator/integrate.mjs';
+import {VRCFT5_REGISTRATION_RANGE_POLICY} from '../../docs/shared/animator-integrator/expression-rules.mjs';
 import {applyExpressionSyncRules} from '../../docs/shared/animator-integrator/default-value-rules.mjs';
 import {parseExpression,serializeExpression} from '../../docs/animator-composer/lib/registration.mjs';
 import {instantiateFtKernel} from '../../docs/shared/ft/kernel/load-kernel.mjs';
@@ -34,23 +35,22 @@ test('BinaryParameters remains independent and new rule runs afterwards',()=>{
  const original=[row('v2/EyeLidRightNegative'),row('v2/EyeLeftXNegative'),row('v2/UndocumentedNegative'),row('v2/EyeLidRight8'),row('v2/EyeLidRight0',{networkSynced:true}),row('v2/EyeLeftX0',{networkSynced:true})],binary=applyExpressionSyncRules(original);
  assert.deepEqual(binary.rows.map(p=>p.networkSynced),[true,true,true,true,false,false]);const r=applyVrcft5RangeSync(binary.rows);assert.deepEqual(r.rows.map(p=>p.networkSynced),[false,true,true,true,false,false]);assert.equal(r.changes.length,1);
 });
-test('API omitted/true enables ranges; false is legacy, with unchanged defaults/Saved/Animator bytes',async()=>{
+test('API omitted/true enables VRCFT5 registration; false and malformed values fail explicitly',async()=>{
  const f=integratorFixture(),rows=[row('v2.EyeLidRightNegative',{type:'Int',defaultValue:1}),row('v2/EyeLeftXNegative',{saved:false}),row('UnknownNegative'),row('v2/EyeLidRight8')];expressions(f,rows);
  const base=f.packages[0].assets.find(a=>a.guid===GUIDS.base);base.asset=enc.encode(dec.decode(base.asset).replace('  m_AnimatorParameters:\n','  m_AnimatorParameters:\n'+parameter('v2.EyeLidRightNegative',1,0.125)));
- const before=structuredClone(f.packages),omitted=await run(f);f.request.vrcft5RangeSync=true;const on=await run(f);f.request.vrcft5RangeSync=false;const off=await run(f);assert.deepEqual(f.packages,before);
+ const before=structuredClone(f.packages),omitted=await run(f);f.request.vrcft5RangeSync=true;const on=await run(f);assert.deepEqual(f.packages,before);
  const output=r=>parseExpression(dec.decode(r.diagnosticAssets.find(a=>a.guid===GUIDS.expr).asset)).filter(p=>p.name!=='AlwaysOne');
- assert.deepEqual(output(on),output(omitted));assert.deepEqual(output(on),rows.map((p,i)=>({...p,type:'Bool',networkSynced:i!==0})));assert(output(off).every(p=>p.networkSynced));
- assert.equal(on.report.vrcft5RangeSync.enabled,true);assert.equal(omitted.report.vrcft5RangeSync.enabled,true);assert.equal(off.report.vrcft5RangeSync.enabled,false);assert.equal(on.report.vrcft5RangeSync.matches.length,2);assert.equal(on.report.vrcft5RangeSync.unmatched.length,1);assert.equal(on.report.vrcft5RangeSync.changes.length,1);assert.equal(off.report.vrcft5RangeSync.changes.length,0);
- assert.deepEqual(on.report.vrcft5RangeSync.source,VRCFT5_RANGE_SOURCE);assert.deepEqual(on.report.vrcft5RangeSync.policy,VRCFT5_RANGE_SYNC_POLICY);assert.equal(on.report.expressionSyncRules.changes.length,4);
- const ctrl=r=>r.diagnosticAssets.find(a=>a.path.endsWith('.controller')).asset;assert.deepEqual(ctrl(on),ctrl(off));assert.deepEqual(on.report.animatorParameters,off.report.animatorParameters);assert.equal(on.report.animatorParameters.find(p=>p.name==='v2.EyeLidRightNegative').defaultValue,0.125);
- for(const invalid of [null,'true',1,{}]){f.request.vrcft5RangeSync=invalid;await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='vrcft5_range_sync_option'));}
+ assert.deepEqual(output(on),output(omitted));assert.deepEqual(output(on),[{...rows[1],type:'Bool',networkSynced:true},rows[2],{...rows[3],type:'Bool',defaultValue:1,networkSynced:true}]);
+ assert.equal(on.report.vrcft5RangeSync.enabled,true);assert.equal(omitted.report.vrcft5RangeSync.enabled,true);assert.equal(on.report.vrcft5RangeSync.matches.length,2);assert.equal(on.report.vrcft5RangeSync.unmatched.length,1);assert.equal(on.report.vrcft5RangeSync.changes.length,1);
+ assert.deepEqual(on.report.vrcft5RangeSync.source,VRCFT5_RANGE_SOURCE);assert.deepEqual(on.report.vrcft5RangeSync.policy,VRCFT5_REGISTRATION_RANGE_POLICY);assert.equal(on.report.expressionSyncRules.changes.length,2);
+ assert.equal(on.report.animatorParameters.find(p=>p.name==='v2.EyeLidRightNegative').defaultValue,0.125);
+ for(const invalid of [false,null,'true',1,{}]){f.request.vrcft5RangeSync=invalid;await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='vrcft5_range_sync_option'));}
 });
-test('range normalization happens before conflicts, retaining other settings conflicts',async()=>{
- const f=integratorFixture();expressions(f,[row('v2/EyeLidRightNegative')]);addExpression(f,[row('v2/EyeLidRightNegative',{networkSynced:true})]);const r=await run(f);assert.equal(r.report.parameters.find(p=>p.name==='v2/EyeLidRightNegative').networkSynced,false);
- for(const difference of [{saved:false},{defaultValue:1}]){const g=integratorFixture();expressions(g,[row('v2/EyeLidRightNegative')]);addExpression(g,[row('v2/EyeLidRightNegative',difference)]);await assert.rejects(run(g),e=>e.issues.some(i=>i.code==='expression_conflict'&&i.name==='v2/EyeLidRightNegative'));}
+test('range exclusions happen before conflicts while retained settings still conflict',async()=>{
+ for(const difference of [{networkSynced:true},{saved:false},{defaultValue:1}]){const f=integratorFixture();expressions(f,[row('v2/EyeLidRightNegative')]);addExpression(f,[row('v2/EyeLidRightNegative',difference)]);const r=await run(f);assert(!r.report.parameters.some(p=>p.name==='v2/EyeLidRightNegative'));}
+ for(const difference of [{saved:false},{defaultValue:1}]){const g=integratorFixture();expressions(g,[row('v2/JawXNegative')]);addExpression(g,[row('v2/JawXNegative',difference)]);await assert.rejects(run(g),e=>e.issues.some(i=>i.code==='expression_conflict'&&i.name==='v2/JawXNegative'));}
 });
-test('post-policy mixed Float/Bool budget allows256, rejects257 and keeps Binary-only OFF cost',async()=>{
+test('post-policy mixed Float/Bool budget allows256 and rejects257 after omitted nonnegative sign bits',async()=>{
  const f=integratorFixture(),rows=[...Array.from({length:31},(_,i)=>row(`Network${i}Value`,{defaultValue:0.25,networkSynced:true})),...Array.from({length:7},(_,i)=>row(`Unknown${i+1}`)),row('v2/EyeLeftXNegative'),row('v2/EyeLidRightNegative')];expressions(f,rows);const on=await run(f);assert.equal(on.report.bitCost,256);
- f.request.vrcft5RangeSync=false;await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='expression_invalid'&&i.message.includes('257')));
- f.request.vrcft5RangeSync=true;expressions(f,[...rows,row('Unknown8')]);await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='expression_invalid'&&i.message.includes('257')));
+ expressions(f,[...rows,row('Unknown8')]);await assert.rejects(run(f),e=>e.issues.some(i=>i.code==='expression_invalid'&&i.message.includes('257')));
 });
