@@ -2161,7 +2161,7 @@ function crc322(bytes2) {
 }
 function readFiles(inputs) {
   if (!Array.isArray(inputs) || inputs.length > MAX_FILES) throw new Error("\u5165\u529B\u4EF6\u6570\u8D85\u904E");
-  let inputBytes7 = 0, expanded = 0, entryCount = 0;
+  let inputBytes8 = 0, expanded = 0, entryCount = 0;
   const result = [], seen = /* @__PURE__ */ new Map();
   function accept(path, bytes2, directory = false) {
     safePath2(directory ? path.slice(0, -1) : path);
@@ -2180,8 +2180,8 @@ function readFiles(inputs) {
   for (const input of inputs) {
     safePath2(input.path);
     if (!(input.bytes instanceof Uint8Array)) throw new Error("\u5165\u529B\u30D0\u30A4\u30C8\u4E0D\u6B63");
-    inputBytes7 += input.bytes.length;
-    if (inputBytes7 > MAX_IN) throw new Error("\u5165\u529B32MiB\u8D85\u904E");
+    inputBytes8 += input.bytes.length;
+    if (inputBytes8 > MAX_IN) throw new Error("\u5165\u529B32MiB\u8D85\u904E");
     if (/\.unitypackage$/i.test(input.path)) {
       for (const e of readUnityPackage(input.bytes).values()) {
         if (e.asset) accept(e.path, e.asset);
@@ -3535,17 +3535,70 @@ async function executeTask6(request) {
 }
 var taskInputCount6 = () => 1;
 
+// docs/shared/compute/viseme-template-task.mjs
+var viseme_template_task_exports = {};
+__export(viseme_template_task_exports, {
+  executeTask: () => executeTask7,
+  freezeTaskResult: () => freezeTaskResult7,
+  inputBytes: () => inputBytes7,
+  inspectTaskRequest: () => inspectTaskRequest7,
+  instantiateTask: () => instantiateTask7,
+  isVisemeTask: () => isVisemeTask,
+  kernelInfo: () => kernelInfo7,
+  prepareTaskModule: () => prepareTaskModule7,
+  resultBytes: () => resultBytes7,
+  resultShape: () => resultShape7,
+  snapshotTaskRequest: () => snapshotTaskRequest7,
+  taskInputCount: () => taskInputCount7,
+  transferTaskInput: () => transferTaskInput7,
+  transferTaskResult: () => transferTaskResult7,
+  validTaskResult: () => validTaskResult7
+});
+import { generateVisemeTemplate, validateMeshName, isVisemeResult } from "../../viseme-template/api.mjs";
+var isVisemeTask = (type) => type === "viseme-template-generate";
+function inspectTaskRequest7(r) {
+  if (!r || r.protocolVersion !== 1 || r.taskVersion !== 1 || !isVisemeTask(r.taskType) || typeof r.jobId !== "string" || !/^[A-Za-z0-9_.:-]{1,64}$/.test(r.jobId) || !Number.isSafeInteger(r.inputRevision) || r.inputRevision < 0) throw TypeError("Invalid Viseme task identity");
+  const meshName = r.payload?.meshName ?? "Body";
+  validateMeshName(meshName);
+  const timeoutMs = r.limits?.timeoutMs ?? 3e4;
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 3e4) throw RangeError("Invalid Viseme task timeout");
+  return {
+    protocolVersion: 1,
+    taskType: r.taskType,
+    taskVersion: 1,
+    jobId: r.jobId,
+    inputRevision: r.inputRevision,
+    wasmVariant: "scalar",
+    kernelHash: WASM_SHA256,
+    payload: { meshName },
+    limits: { timeoutMs }
+  };
+}
+var snapshotTaskRequest7 = (r) => ({ ...r, payload: { meshName: r.payload.meshName } });
+var inputBytes7 = (r) => new TextEncoder().encode(r.payload.meshName).length;
+var kernelInfo7 = () => ({ requiresWasm: true, retainResult: false, sha256: WASM_SHA256, variant: "scalar", abi: "ft-v1", key: "ft-v1:".concat(WASM_SHA256, ":scalar") });
+var resultShape7 = (r) => ({ kind: "viseme-template-package", meshName: r.payload.meshName });
+var validTaskResult7 = (type, shape, r) => isVisemeTask(type) && r?.kind === shape.kind && isVisemeResult(r, { meshName: shape.meshName });
+var resultBytes7 = (r) => r?.bytes instanceof Uint8Array ? r.bytes.length + new TextEncoder().encode(JSON.stringify({ ...r, bytes: null })).length : 0;
+var freezeTaskResult7 = (r) => Object.freeze(r);
+var transferTaskInput7 = () => [];
+var transferTaskResult7 = (r) => r?.bytes instanceof Uint8Array ? [r.bytes.buffer] : [];
+var prepareTaskModule7 = prepareKernelModule;
+var instantiateTask7 = (_r, module) => instantiateKernel(module);
+var executeTask7 = async (r, kernel) => ({ kind: "viseme-template-package", ...await generateVisemeTemplate(r.payload.meshName, { kernel }) });
+var taskInputCount7 = () => 1;
+
 // docs/shared/compute/tasks.mjs
 var MAX_MEDIA_INPUT_BYTES = Reflect.get(registered_tasks_exports, "MAX_MEDIA_INPUT_BYTES");
-var adapter = (r) => isTemplateTask(typeof r === "string" ? r : r?.taskType) ? parameter_template_task_exports : isParameterTask(typeof r === "string" ? r : r?.taskType) ? pool_task_exports3 : isKnowledge(typeof r === "string" ? r : r?.taskType) ? pool_task_exports : isIngest(typeof r === "string" ? r : r?.taskType) ? ingest_task_exports : isUnity(typeof r === "string" ? r : r?.taskType) ? pool_task_exports2 : registered_tasks_exports;
-var resultAdapter = (r) => r?.kind === "parameter-template-package" ? parameter_template_task_exports : r?.kind?.startsWith("parameter-") ? pool_task_exports3 : r?.kind === "knowledge-index-step" ? pool_task_exports : ["unity-expanded", "unity-parsed", "unity-parsed-batch"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports2 : registered_tasks_exports;
-var inspectTaskRequest7 = (r) => adapter(r).inspectTaskRequest(r);
-var kernelInfo7 = (r) => adapter(r).kernelInfo(r);
-var transferTaskResult7 = (r) => resultAdapter(r).transferTaskResult(r);
-var prepareTaskModule7 = (o) => adapter(o).prepareTaskModule(o);
-var instantiateTask7 = (r, m) => adapter(r).instantiateTask(r, m);
-var executeTask7 = (r, k) => adapter(r).executeTask(r, k);
-var taskInputCount7 = (r, v) => adapter(r).taskInputCount(r, v);
+var adapter = (r) => isVisemeTask(typeof r === "string" ? r : r?.taskType) ? viseme_template_task_exports : isTemplateTask(typeof r === "string" ? r : r?.taskType) ? parameter_template_task_exports : isParameterTask(typeof r === "string" ? r : r?.taskType) ? pool_task_exports3 : isKnowledge(typeof r === "string" ? r : r?.taskType) ? pool_task_exports : isIngest(typeof r === "string" ? r : r?.taskType) ? ingest_task_exports : isUnity(typeof r === "string" ? r : r?.taskType) ? pool_task_exports2 : registered_tasks_exports;
+var resultAdapter = (r) => r?.kind === "viseme-template-package" ? viseme_template_task_exports : r?.kind === "parameter-template-package" ? parameter_template_task_exports : r?.kind?.startsWith("parameter-") ? pool_task_exports3 : r?.kind === "knowledge-index-step" ? pool_task_exports : ["unity-expanded", "unity-parsed", "unity-parsed-batch"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports2 : registered_tasks_exports;
+var inspectTaskRequest8 = (r) => adapter(r).inspectTaskRequest(r);
+var kernelInfo8 = (r) => adapter(r).kernelInfo(r);
+var transferTaskResult8 = (r) => resultAdapter(r).transferTaskResult(r);
+var prepareTaskModule8 = (o) => adapter(o).prepareTaskModule(o);
+var instantiateTask8 = (r, m) => adapter(r).instantiateTask(r, m);
+var executeTask8 = (r, k) => adapter(r).executeTask(r, k);
+var taskInputCount8 = (r, v) => adapter(r).taskInputCount(r, v);
 
 // docs/shared/compute/pool-worker.mjs
 var workerId = crypto.randomUUID();
@@ -3580,27 +3633,27 @@ self.onmessage = async ({ data }) => {
   };
   try {
     if (data?.buildId !== BUILD_ID || !Number.isSafeInteger(data?.generation) || data.generation < 1 || data.startTogether !== void 0 && typeof data.startTogether !== "boolean") throw Error("Invalid worker identity/options");
-    request = inspectTaskRequest7(data);
-    const info = kernelInfo7(request);
+    request = inspectTaskRequest8(data);
+    const info = kernelInfo8(request);
     if (request.taskType !== "ft-magnitude-batch" && data.kernelHash !== info.sha256) throw Error("Kernel identity mismatch");
     self.postMessage({ ...identity, type: "phase", phase: "loading", bootEpochMs });
     let compileCalls = 0, wasmContentType = null;
     const startTogether = data.startTogether === true, needsWasm = info.requiresWasm !== false;
     const moduleStarted = performance.now();
-    const module = needsWasm ? data.module ?? await prepareTaskModule7({ taskType: request.taskType, wasmVariant: request.wasmVariant, onCompile: () => compileCalls++, onResponse: (value2) => {
+    const module = needsWasm ? data.module ?? await prepareTaskModule8({ taskType: request.taskType, wasmVariant: request.wasmVariant, onCompile: () => compileCalls++, onResponse: (value2) => {
       wasmContentType = value2;
     } }) : null;
     const modulePrepareMs = performance.now() - moduleStarted, instantiateStarted = performance.now();
-    kernel = needsWasm ? instantiateTask7(request, module) : null;
+    kernel = needsWasm ? instantiateTask8(request, module) : null;
     const instantiateMs = needsWasm ? performance.now() - instantiateStarted : null;
     const preparedAt = performance.now();
     const compute = async () => {
       try {
         const computeStart = performance.now();
         self.postMessage({ ...identity, type: "phase", phase: "computing", instanceId: kernel?.instanceId ?? null, bootEpochMs });
-        const result = await executeTask7(request, kernel), transfer = transferTaskResult7(result);
+        const result = await executeTask8(request, kernel), transfer = transferTaskResult8(result);
         const computeEnd = performance.now();
-        self.postMessage({ ...identity, type: "result", instanceId: kernel?.instanceId ?? null, result, metrics: { buildId: BUILD_ID, wasmSha256: info.sha256, wasmVariant: info.variant, kernelAbi: info.abi, wasmContentType, bootEpochMs, modulePrepareMs: needsWasm ? modulePrepareMs : null, instantiateMs, loadMs: preparedAt - started, readyWaitMs: startTogether ? computeStart - preparedAt : 0, startTogether, computeMs: computeEnd - computeStart, computeStartEpochMs: performance.timeOrigin + computeStart, computeEndEpochMs: performance.timeOrigin + computeEnd, memoryBytes: kernel?.memory.buffer.byteLength ?? null, wasmNotApplicable: needsWasm ? null : "JavaScript parsing task", inputCount: taskInputCount7(request, result), compileCalls, moduleReuse: needsWasm && data.module instanceof WebAssembly.Module, arena: kernel?.resourceStats?.() ?? null, memoryMeasurement: null } }, transfer);
+        self.postMessage({ ...identity, type: "result", instanceId: kernel?.instanceId ?? null, result, metrics: { buildId: BUILD_ID, wasmSha256: info.sha256, wasmVariant: info.variant, kernelAbi: info.abi, wasmContentType, bootEpochMs, modulePrepareMs: needsWasm ? modulePrepareMs : null, instantiateMs, loadMs: preparedAt - started, readyWaitMs: startTogether ? computeStart - preparedAt : 0, startTogether, computeMs: computeEnd - computeStart, computeStartEpochMs: performance.timeOrigin + computeStart, computeEndEpochMs: performance.timeOrigin + computeEnd, memoryBytes: kernel?.memory.buffer.byteLength ?? null, wasmNotApplicable: needsWasm ? null : "JavaScript parsing task", inputCount: taskInputCount8(request, result), compileCalls, moduleReuse: needsWasm && data.module instanceof WebAssembly.Module, arena: kernel?.resourceStats?.() ?? null, memoryMeasurement: null } }, transfer);
         cleanup();
       } catch (error) {
         fail3(error);

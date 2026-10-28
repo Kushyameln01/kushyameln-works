@@ -5,10 +5,11 @@ import * as unity from '../unity-analysis/pool-task.mjs';
 import * as ingest from '../unity-analysis/ingest-task.mjs';
 import * as parameters from '../parameter-registrar/pool-task.mjs';
 import * as template from './parameter-template-task.mjs';
+import * as viseme from './viseme-template-task.mjs';
 // Keep the Sites task registry's existing public limit without adding a media dependency on Pages.
 export const MAX_MEDIA_INPUT_BYTES=Reflect.get(base,'MAX_MEDIA_INPUT_BYTES');
-const adapter=r=>template.isTemplateTask(typeof r==='string'?r:r?.taskType)?template:parameters.isParameterTask(typeof r==='string'?r:r?.taskType)?parameters:knowledge.isKnowledge(typeof r==='string'?r:r?.taskType)?knowledge:ingest.isIngest(typeof r==='string'?r:r?.taskType)?ingest:unity.isUnity(typeof r==='string'?r:r?.taskType)?unity:base;
-const resultAdapter=r=>r?.kind==='parameter-template-package'?template:r?.kind?.startsWith('parameter-')?parameters:r?.kind==='knowledge-index-step'?knowledge:['unity-expanded','unity-parsed','unity-parsed-batch'].includes(r?.kind)?ingest:r?.kind?.startsWith('unity-')?unity:base;
+const adapter=r=>viseme.isVisemeTask(typeof r==='string'?r:r?.taskType)?viseme:template.isTemplateTask(typeof r==='string'?r:r?.taskType)?template:parameters.isParameterTask(typeof r==='string'?r:r?.taskType)?parameters:knowledge.isKnowledge(typeof r==='string'?r:r?.taskType)?knowledge:ingest.isIngest(typeof r==='string'?r:r?.taskType)?ingest:unity.isUnity(typeof r==='string'?r:r?.taskType)?unity:base;
+const resultAdapter=r=>r?.kind==='viseme-template-package'?viseme:r?.kind==='parameter-template-package'?template:r?.kind?.startsWith('parameter-')?parameters:r?.kind==='knowledge-index-step'?knowledge:['unity-expanded','unity-parsed','unity-parsed-batch'].includes(r?.kind)?ingest:r?.kind?.startsWith('unity-')?unity:base;
 export const inspectTaskRequest=r=>adapter(r).inspectTaskRequest(r);
 export const snapshotTaskRequest=r=>adapter(r).snapshotTaskRequest(r);
 export const inputBytes=r=>adapter(r).inputBytes(r);
