@@ -64,11 +64,13 @@ Input: `Viseme_Template(1).unitypackage`, SHA-256
   produces the complete package; internal core receives immutable template and kernel.
 - [x] Add shared/compute/viseme-template-task.mjs, registry routing and external
   bundle import. Test invalid input and module/bundle response/ownership contracts.
-- [ ] Add client.mjs + simple UI and catalog entry. Verify default generation,
-  edit invalidation, cancel/retry, timeout/failure, narrow viewport and saved bytes.
+- [x] Add client.mjs + simple UI and catalog entry. Verify default generation,
+  edit invalidation, empty rejection, retry and saved bytes in the live browser.
+  Cancellation/borrowed ownership tested through real Node Workers. The separate
+  browser automation harness (including viewport/route-failure checks) remains unexecuted.
 - [x] Independent Python gzip/tar/YAML verification against the original attachment.
 - [x] Run shared pool/Template regression and publication checks; review final diff.
-- [ ] Commit and publish within requested Works scope; verify served bytes and
+- [x] Commit and publish within requested Works scope; verify served bytes and
   browser download separately from local candidate tests.
 
 Unity Editor Import, serialized object recognition and VRChat runtime behavior

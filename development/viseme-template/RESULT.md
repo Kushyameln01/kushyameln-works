@@ -58,3 +58,38 @@ Worker boundaries. This changes resource identity only; pool ABI and behavior
 remain unchanged. Two additional real Worker tests cover the Viseme client,
 module/bundle generation, cancellation/retry, transferred output and borrowed-pool
 survival. Both passed. Final cloud browser acceptance is recorded below when complete.
+
+## Live Pages acceptance
+
+Publication `8bc2ca779caf8b66bc2ac8ebeb207c367d5d068b`, Pages build
+40664360590 succeeded. The same cloud browser session that previously rejected
+Viseme successfully generated after reload, then saved both Body and
+`顔/メッシュ "A" #1` packages. Input edits removed the old download href; empty
+input was rejected; changing back to Body generated again. The Works catalog
+shows the Viseme Template entry (11 tools). The success screenshot is retained.
+
+Both browser downloads passed the independent original-package comparator:
+19 package entries, 110 nonzero resolved references, 15 embedded Clips, one shared
+external Clip referenced by all 15 Trees, no AvatarMasks, preserved Controller
+and Curve payloads. Exact hashes are in browser-*-verification.json.
+
+The public Unity analyzer compared the original attachment bytes with the saved
+browser Body package. Its full 12,510,180-byte JSON was downloaded, parsed to the
+end, hashed and retained losslessly as browser-unity-analysis.json.gz. The raw
+selected-file hashes matched both files; canonical snapshot hashes are recorded
+separately. All 19 ingestion/analysis jobs succeeded with matching session,
+revision and build. Version: unity-analysis-0.3.1 / unity-static-3 /
+compute-parameter-b1; analyzer WASM identity is in the summary JSON.
+
+Before/after: 81/80 objects, 1153/1150 references (including null references),
+17/17 shared targets, 1/1 existing cycle, 2/2 parameter declarations and 45/45
+parameter checks. Zero unresolved references, opaque files, partial files or
+unknown parameter checks. No findings. All result completeness flags are
+untruncated; diff has 161 object changes, 85 file changes, zero ambiguous matches.
+The diff uses exact GUID/fileID identity, so newly generated GUIDs produce many
+add/remove entries; the independent comparator establishes preserved payloads.
+
+UI cancellation, narrow-viewport layout and injected fetch failure were not
+exercised through the cloud browser. Node covers cancellation/retry and malformed
+Template rejection; these are not represented as browser checks. The retrieved console entries concerned browser-extension metadata errors.
+Unity Editor Import/object recognition and VRChat runtime remain unverified.
