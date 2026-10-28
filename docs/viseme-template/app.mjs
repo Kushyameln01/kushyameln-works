@@ -1,4 +1,4 @@
-import {createVisemeGenerator} from './client.mjs';
+import {createVisemeGenerator} from './client.mjs?registry=viseme-template-1';
 import {validateMeshName} from './api.mjs';
 const form=document.querySelector('#generator'),mesh=document.querySelector('#mesh');
 const start=document.querySelector('#generate'),cancel=document.querySelector('#cancel');

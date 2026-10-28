@@ -1,4 +1,4 @@
-import {createComputePool} from '../shared/compute/client.mjs';
+import {createComputePool} from '../shared/compute/pool.mjs?registry=viseme-template-1';
 import {BUILD_ID as POOL_BUILD} from '../shared/compute/protocol.mjs';
 import {validateMeshName,isVisemeResult} from './api.mjs';
 const abort=()=>new DOMException('生成を取り消しました。','AbortError');

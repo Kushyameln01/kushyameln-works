@@ -3588,7 +3588,7 @@ var instantiateTask7 = (_r, module) => instantiateKernel(module);
 var executeTask7 = async (r, kernel) => ({ kind: "viseme-template-package", ...await generateVisemeTemplate(r.payload.meshName, { kernel }) });
 var taskInputCount7 = () => 1;
 
-// docs/shared/compute/tasks.mjs
+// docs/shared/compute/tasks.mjs?registry=viseme-template-1
 var MAX_MEDIA_INPUT_BYTES = Reflect.get(registered_tasks_exports, "MAX_MEDIA_INPUT_BYTES");
 var adapter = (r) => isVisemeTask(typeof r === "string" ? r : r?.taskType) ? viseme_template_task_exports : isTemplateTask(typeof r === "string" ? r : r?.taskType) ? parameter_template_task_exports : isParameterTask(typeof r === "string" ? r : r?.taskType) ? pool_task_exports3 : isKnowledge(typeof r === "string" ? r : r?.taskType) ? pool_task_exports : isIngest(typeof r === "string" ? r : r?.taskType) ? ingest_task_exports : isUnity(typeof r === "string" ? r : r?.taskType) ? pool_task_exports2 : registered_tasks_exports;
 var resultAdapter = (r) => r?.kind === "viseme-template-package" ? viseme_template_task_exports : r?.kind === "parameter-template-package" ? parameter_template_task_exports : r?.kind?.startsWith("parameter-") ? pool_task_exports3 : r?.kind === "knowledge-index-step" ? pool_task_exports : ["unity-expanded", "unity-parsed", "unity-parsed-batch"].includes(r?.kind) ? ingest_task_exports : r?.kind?.startsWith("unity-") ? pool_task_exports2 : registered_tasks_exports;

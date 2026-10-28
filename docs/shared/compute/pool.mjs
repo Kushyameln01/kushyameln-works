@@ -1,7 +1,7 @@
 import {BUILD_ID} from './protocol.mjs';
-import {inspectTaskRequest,snapshotTaskRequest,inputBytes as countInputBytes,kernelInfo,resultShape,validTaskResult,resultBytes as countResultBytes,freezeTaskResult,transferTaskInput,prepareTaskModule} from './tasks.mjs';
+import {inspectTaskRequest,snapshotTaskRequest,inputBytes as countInputBytes,kernelInfo,resultShape,validTaskResult,resultBytes as countResultBytes,freezeTaskResult,transferTaskInput,prepareTaskModule} from './tasks.mjs?registry=viseme-template-1';
 
-const WORKER_URLS=Object.freeze({module:new URL('./pool-worker.mjs',import.meta.url),bundle:new URL('./pool-worker.bundle.mjs',import.meta.url)});
+const WORKER_URLS=Object.freeze({module:new URL('./pool-worker.mjs?registry=viseme-template-1',import.meta.url),bundle:new URL('./pool-worker.bundle.mjs?registry=viseme-template-1',import.meta.url)});
 const MAX_OUTSTANDING=12,MAX_INPUT_BYTES=16*1024*1024,MAX_RESULTS=16,MAX_RESULT_BYTES=8*1024*1024;
 const MAX_CACHED_MODULES=3,PREPARATION_TIMEOUT_MS=30000;
 const terminal=status=>status==='succeeded'||status==='failed'||status==='cancelled';

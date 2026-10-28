@@ -1,5 +1,5 @@
 import {BUILD_ID} from './protocol.mjs';
-import {inspectTaskRequest,kernelInfo,prepareTaskModule,instantiateTask,executeTask,transferTaskResult,taskInputCount} from './tasks.mjs';
+import {inspectTaskRequest,kernelInfo,prepareTaskModule,instantiateTask,executeTask,transferTaskResult,taskInputCount} from './tasks.mjs?registry=viseme-template-1';
 
 const workerId=crypto.randomUUID();
 const bootEpochMs=performance.timeOrigin+performance.now();
