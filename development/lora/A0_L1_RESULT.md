@@ -7,7 +7,7 @@ Date: 2026-10-31 JST。Common source: `Kushyameln Works AI推論モジュール 
 ## Source and retrievable handoff
 
 - Baseline full commit: `029ce9336a61e53bc6172fa4a7b7189b15f2efa0`。
-- Final implementation full commit: see the complete commit in the external handoff receipt (kept outside its own hash graph).
+- Implementation full commit: `89b489c6f2595ebff8836fe90b18fc94e3ea086b`. A later documentation-only commit fixes this receipt and descriptor; its complete delivery commit is in the external handoff receipt.
 - Obtainable source archive and SHA-256: private handoff Page https://chatgpt.com/space/page_4988393f36e88191bcf7c0823139d1f3 and its external receipt.
 - Native contract: `lora-connection/2.0-draft.1`。
 - Contract path: `development/lora/contracts/connection-contract-v2.json`。
