@@ -129,6 +129,16 @@ python tools/diffusion-models/test-build-info.py
 node tools/inference/test-connection-contract.mjs
 ```
 
-新しい `tools/diffusion-models/build-info.py` は、記録済みの集約方式（source hash辞書のkey順compact JSONのSHA-256）でhost/workerが共有するBUILD_IDを再生成する。元の `api/build-info.py` はこのcheckoutに欠落していたため、元scriptを回収したとは扱わず、新script自身のhashを代わりに記録する。対象sourceはAPI、Euler/scheduler、mean latent-space、tensor interopと共通codec、ORT bridge/runtime、固定参照manifest。対象を変えたら再生成し、`--check` で現在sourceとの一致を確認する。kernelやモデルを再buildする操作ではない。build-info.mjs自体・テスト・READMEはhash対象外。
+新しい `tools/diffusion-models/build-info.py` は、記録済みの集約方式（source hash辞書のkey順compact JSONのSHA-256）でhost/workerが共有するBUILD_IDを再生成する。元の `api/build-info.py` はこのcheckoutに欠落していたため、元scriptを回収したとは扱わず、新script自身のhashを代わりに記録する。対象sourceはAPI、Euler/scheduler、mean latent-space、tensor interopと共通codec、LoRA入出力/sourceとそのSHA実装、ORT bridge/runtime、固定参照manifest。対象を変えたら再生成し、`--check` で現在sourceとの一致を確認する。kernelやモデルを再buildする操作ではない。build-info.mjs自体・テスト・READMEはhash対象外。
+
+LoRA追加後は対向source版 `679a72d7f53e31bccecbee46b4e2fe559a4e0aba` と同じ34 sourceを対象にし、generatorだけは上記のtools側self hashを維持する。対向の元builderは同source版から読取り照合できるが、mainへの統合では既存generatorのatomic更新／`--check`を維持し、二つのgeneratorを混在させない。API版・tensor schema・モデル数値処理はこのbuild識別調整で変更しない。
 
 元作業のRED/GREENブラウザ記録は `development/diffusion-models/` に保存されている（元作業用 `api/test/browser-check.cjs` 自体はこのcheckoutに含まれない）。その実Worker・MessageChannel・Hike/ORT WASMの22ケースは固定schedule、noise/flow、raw meanの16 channel正規化と復元・codec、境界拒否、部分射影、取消・再実行を対象にした。追加の各15.57 GB LOW/HIGHのFile検査もheader/構造照合であり、loadはNOT_READYのままだった。これらを今回の再実行やモデル全体の推論合格として数えない。今回の追加確認は上の小規模fixtureとreceipt整合で、重い全工程推論は実施しない。
+
+## LoRA重みの入力
+
+LoRA用に `inspectLora` / `loadLora` / `listLoras` / `readLora` / `readLoraSource` / `unloadLora` を追加した。同じrequest envelope、Worker、取消・revision・MessagePort契約を使用する。HIGH/LOWごとのFile/Blob、強度、既知base hashを明示し、成功時だけ所有bindingを更新する。loadは1MiB以下の分割読込みで全file hashを計算する。登録は取消によるWorker再生成後も保持され、disposeで解除する。
+
+読出しは1回4MiB以下の所有Uint8Array。F16/BF16/F32の保存bitsと元のshape・tensor名・範囲・hashを返し、LoRAの数値加算を行わない。対応する通常pairと `.diff/.diff_b` のshapeを実Bernini targetと照合する。`loraWeightIO:true` と `loraApplied:false` を区別し、モデル全体のNOT_READYを解除しない。
+
+別担当LoRA SDKのsource契約へは `createLoraSource` で接続できる。SDKの実graph consumer・package/session切替は別の未実装境界である。詳細、対象モデルhash、対応形式、保持・所有権は [LoRA接続仕様](lora/API.md) を参照する。

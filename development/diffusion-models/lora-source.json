@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "scope": "Read-only source and original workflow evidence; no actual LoRA compatibility or application claim",
+  "sourceCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+  "sources": [
+    {
+      "path": "comfy/lora.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/lora.py",
+      "gitBlobSHA1": "b258438143b19a90047b9ca3e0f62af5ed649b91",
+      "sha256": "0934b66bda0f3a56475cb3a57b866948c4d92196dfca2cc8e001fbe96a3adbbc",
+      "lines": [
+        {
+          "start": 41,
+          "end": 60,
+          "topic": "alpha tensor and adapter dispatch"
+        },
+        {
+          "start": 196,
+          "end": 222,
+          "topic": "native module names and generic diffusers mapping"
+        }
+      ]
+    },
+    {
+      "path": "comfy/weight_adapter/lora.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/weight_adapter/lora.py",
+      "gitBlobSHA1": "8e1261a123d56ce578c9f882873fae237c62ae8d",
+      "sha256": "e506062b4eb189be4c36f88270e0fd4dcce038c79a98f7163604ed6b44efe4b5",
+      "lines": [
+        {
+          "start": 160,
+          "end": 213,
+          "topic": "UP/DOWN and B/A key pairs"
+        },
+        {
+          "start": 227,
+          "end": 283,
+          "topic": "FP32 intermediate, alpha/rank default, merged update"
+        }
+      ]
+    },
+    {
+      "path": "comfy/weight_adapter/base.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/weight_adapter/base.py",
+      "gitBlobSHA1": "d352e066ba8ee87be650e53579ac2584ac79da79",
+      "sha256": "484f0d83a96e700f80c793e4bcc6a897d633233e51a59191d91da5e59da345c7",
+      "lines": [
+        {
+          "start": 276,
+          "end": 305,
+          "topic": "distinct DoRA semantics; not ordinary LoRA"
+        }
+      ]
+    },
+    {
+      "path": "comfy/lora_convert.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/lora_convert.py",
+      "gitBlobSHA1": "ec8cca8a01f815650116f4ffce2afd7823c56882",
+      "sha256": "00da79c3bb4a6ecd73e17243735801295699072e32bbcba43d9b7429fdbcaf2e",
+      "lines": [
+        {
+          "start": 15,
+          "end": 16,
+          "topic": "Wan Fun double underscore prefix conversion"
+        },
+        {
+          "start": 48,
+          "end": 57,
+          "topic": "conversion detection sentinel"
+        }
+      ]
+    },
+    {
+      "path": "comfy/utils.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/utils.py",
+      "gitBlobSHA1": "9d428226c6d1e69af4fe9c7cc75ba3798f7798ce",
+      "sha256": "c2df3fbcf76865312d31dffede06de8594a363e2fdf852679312418e91b1d5d4",
+      "lines": [
+        {
+          "start": 407,
+          "end": 409,
+          "topic": "generic UNet diffusers mapping is empty without num_res_blocks"
+        }
+      ]
+    },
+    {
+      "path": "comfy/sd.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/sd.py",
+      "gitBlobSHA1": "d0ccf6fdb8768e90ba2bcb72118cb46b535aad0e",
+      "sha256": "6c87a8a02c7c38c9215ab7b94468245d4e29dc56d6f77a28cffb24e34120de2d",
+      "lines": [
+        {
+          "start": 110,
+          "end": 123,
+          "topic": "workflow strength_model passes as adapter patch strength"
+        }
+      ]
+    },
+    {
+      "path": "comfy/model_patcher.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/model_patcher.py",
+      "gitBlobSHA1": "83b92edb5638235804cb5e9d5fb92b96a6df22f6",
+      "sha256": "88fe06e7dcc53a7a79df7be13044513e556927ecc0fa1fd8300803f75ce5e08b",
+      "lines": [
+        {
+          "start": 847,
+          "end": 879,
+          "topic": "strength_patch and base strength_model are distinct fields"
+        }
+      ]
+    },
+    {
+      "path": "nodes.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/nodes.py",
+      "gitBlobSHA1": "e279ae2fec49c23a97f2079b63b696aa0510de50",
+      "sha256": "4cfd9be3754f9dc25213febdf96b690d6e32007c2e539d37e799d82226d758c5",
+      "lines": [
+        {
+          "start": 761,
+          "end": 775,
+          "topic": "LoraLoaderModelOnly node"
+        }
+      ]
+    }
+  ],
+  "workflow": {
+    "name": "example_workflows/bernini_rv2v_basic.json",
+    "sha256": "543865dfeeb9a94427bea543624e51db5f1dfcf88a7af6a497ddcdbeadc477dd",
+    "nodes": [
+      {
+        "nodeId": 7,
+        "stage": "HIGH",
+        "nodeType": "LoraLoaderModelOnly",
+        "fileName": "lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank64_bf16.safetensors",
+        "strength": 3
+      },
+      {
+        "nodeId": 10,
+        "stage": "LOW",
+        "nodeType": "LoraLoaderModelOnly",
+        "fileName": "Lightx2v-Lighning-latest\\Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors",
+        "strength": 1
+      }
+    ]
+  },
+  "actualLoRAWeights": {
+    "provided": false,
+    "observedScope": "The user attachment set and retained Bernini data used for this work contain neither referenced LoRA file. Other Codex or external stores were not asserted absent.",
+    "dtypeRankAlpha": "Unverified: file names are not tensor inspection evidence",
+    "downloadedByThisResearch": false
+  }
+}

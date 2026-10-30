@@ -14,6 +14,11 @@ HERE = Path(__file__).resolve().parent
 BUILDER = HERE / "build-info.py"
 LEGACY_ID = "ab0c2224128e82229b3261114eac59573b791f56be97599023173d3e5f92b6c9"
 REPLACEMENT = "../../../../tools/diffusion-models/build-info.py"
+# Independent source-list delta from Diffusion source commit 679a72d7.
+LORA_SOURCE_PATHS = {
+    "../../vr180/sha256.mjs", "../lora/source.mjs", "../lora/strict-json.mjs",
+    "../lora/targets.mjs", "../lora/weights.mjs",
+}
 # Historical literal fixture from a33b311. This survives receipt regeneration.
 LEGACY_RECORDS = {'../../../../development/inference/publication-candidate.json': 'c71b00a21cac8099c99b8c6128623ea77d227570499c845eca47de7c9378d95e',
  '../../inference/tensor.mjs': 'a3fdfc1654361713a5e8278e6af5d76a65aafed7f654c06813eebb933f7a0f4c',
@@ -66,7 +71,7 @@ class ReceiptTests(unittest.TestCase):
         root = Path(directory)
         receipt = root / "docs/shared/diffusion-models/api/build-info.mjs"
         receipt.parent.mkdir(parents=True)
-        paths = set(LEGACY_RECORDS) - {"build-info.py"} | {REPLACEMENT}
+        paths = set(LEGACY_RECORDS) - {"build-info.py"} | {REPLACEMENT} | LORA_SOURCE_PATHS
         for name in paths:
             path = receipt.parent / name
             path.parent.mkdir(parents=True, exist_ok=True)

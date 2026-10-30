@@ -1,6 +1,6 @@
-> 現行revision 3。直近の確認・到達点は末尾とREV3_RESULT.md。途中段階のAs-Isは履歴として残す。
+> 現行revision 5。直近のLoRA接続口はLORA_PLAN.md/LORA_RESULT.md、従来の数値部品はREV3_RESULT.md。途中段階のAs-Isは履歴として残す。
 
-# Diffusion Models担当契約 v3
+# Diffusion Models担当契約 v5
 
 更新: 2026-10-31 JST。原要求は会話の最新依頼と添付「Kushyameln Works AI推論3モジュールのWASM実装計画」v1.1。
 
@@ -8,7 +8,7 @@
 
 diffusion_models全体（推論・Hike WASM・外部API）を本担当で確立し、別Codexの包括モジュールからAPI経由で呼べるようにする。複数モジュールをUIから一括操作する全体製品へ組み込めること。Text Encoder/VAEは別担当の独立モジュール・API・Hike使用状況を確認し、内部を代行実装しない。
 
-元モデル・workflow・数値条件を保持する。WebGPU/別モデル/追加量子化/JSによる隠れた代行は採用しない。公開・既存サイト編集は行わない。保存済み原本は変更・削除しない。
+元モデル・workflow・数値条件を保持する。WebGPU/別モデル/追加量子化/JSによる隠れた代行は採用しない。公開は後続の明示指示「GitHub_Pagesに実装してください」に従い、既存Pagesの同じDiffusionモジュールへ反映する。公開対象は厳密な台帳/exportで検査し、保存済み原本は変更・削除しない。
 
 ## As-Is
 
@@ -51,3 +51,14 @@ diffusion_models全体（推論・Hike WASM・外部API）を本担当で確立�
 残件: 全model predict/sample実装、raw/normalized空間の完全なpipeline接続、全shape・元precision・LoRA/元workflow同等性と全工程負荷の検証。今回の小演算成功から達成へ変更しない。
 
 追補: raw posterior meanの空間変換もDiffusionが所有する。normalizeRawMean/restoreRawMeanをHikeで実装・Node/Chromium10項目検証し、バージョン付きmeaningを既存.wktensorへ保存できる。包括UIは順序・待機列・入出力を担当し数値計算を代行しない。
+
+
+## revision 4 — 公開
+
+既存main/docsへ数値APIを公開し、実HTTPSのJS/MessagePort/Hike/ORT部分演算を確認した。全体モデル推論の未実装状態は維持。PUBLICATION.mdとpublic-verification.json参照。
+
+## revision 5 — LoRA重み接続口
+
+最新依頼により、LoRAの検査・HIGH/LOW登録・保存dtypeの部分読出し・原本source読出し・一覧・解除を実装。後から公開された別担当SDK a33b311のsource契約を取得し、JS/MessagePortの実SDK.inspectへ接続した。通常pairとdiff/diff_bのIOを扱い、file/metadata所有、取消、世代、古いbinding拒否を検証する。
+
+これは最終製品の範囲縮小ではない。To-BeにはLoRAのモデルへの数値適用、実graph/baseProvider/sink/session transaction、元workflowと実LoRAの互換性、全体predict/sampleが残る。現在はweightIO=true/applied=falseを保持し、ファイル登録をモデル適用の成功と扱わない。具体的な対応・未確認・検証はLORA_RESULT.md。

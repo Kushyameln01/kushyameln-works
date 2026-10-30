@@ -3,8 +3,9 @@
 
 The original api/build-info.py was absent from the imported checkout. This
 replacement retains its 28 available source paths and records its own source
-under tools/ instead. Historical hashes are documented in the connection note
-and the independent legacy test fixture.
+under tools/ instead. Five later Diffusion LoRA sources are also included.
+Historical hashes are documented in the connection note and the independent
+legacy test fixture.
 """
 import argparse
 import hashlib
@@ -26,6 +27,7 @@ SOURCE_PATHS = (
     "../../inference/vendor/ort-wasm-simd-threaded.mjs",
     "../../inference/vendor/ort-wasm-simd-threaded.wasm",
     "../../inference/vendor/ort.wasm.min.mjs",
+    "../../vr180/sha256.mjs",
     "../euler-kernel.mjs",
     "../kernel-registry.mjs",
     "../kernel/euler.wasm",
@@ -34,6 +36,10 @@ SOURCE_PATHS = (
     "../latent-space/kernel-registry.mjs",
     "../latent-space/latent-space.hike",
     "../latent-space/latent-space.mjs",
+    "../lora/source.mjs",
+    "../lora/strict-json.mjs",
+    "../lora/targets.mjs",
+    "../lora/weights.mjs",
     "../ort-bridge/graph.mjs",
     "../ort-bridge/hike.mjs",
     "../ort-bridge/kernel/bridge.wasm",
