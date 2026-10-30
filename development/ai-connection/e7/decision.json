@@ -1,0 +1,114 @@
+{
+  "candidateId": "q-output-row16-one-token-f32",
+  "candidateDecision": "adopt",
+  "adoptedScope": "actual LOW blocks.0.self_attn.q Linear, input[1,5120]\u2192output[1,5120], selected full5120 rows staged16 at a time; explicit diagnostic activation and declared F32 profile",
+  "productionDecision": "unverified",
+  "E8Decision": "blocked",
+  "productionBlockers": [
+    "original production compute dtype / FP8 scaled_mm and activation quantization are unverified",
+    "QK normalization, K/V, RoPE, softmax attention, output projection, FFN and full core boundaries not implemented by this candidate",
+    "production token/context count and combined residual/KV/staging/copy/session budget are unverified",
+    "single-token weight re-read and320 ORT dispatches have not met an end-user throughput target"
+  ],
+  "testedShape": {
+    "input": [
+      1,
+      5120
+    ],
+    "output": [
+      1,
+      5120
+    ],
+    "originalWeight": [
+      5120,
+      5120
+    ],
+    "tile": [
+      16,
+      5120
+    ]
+  },
+  "tolerance": {
+    "absolute": 0.0001,
+    "relative": 1e-05,
+    "fixedBeforeRuntimeComparison": true
+  },
+  "comparison": {
+    "compared": 5120,
+    "failed": 0,
+    "maxAbsolute": 4.0046870708465576e-07,
+    "maxRelative": 0.003224838758062097,
+    "tolerance": {
+      "absolute": 0.0001,
+      "relative": 1e-05,
+      "fixedBeforeRuntimeComparison": true
+    }
+  },
+  "resources": {
+    "weightFileReads": 26214400,
+    "managedCopies": 242626560,
+    "logicalOrtInputTransfers": 111411200,
+    "logicalOrtOutputTransfers": 20480,
+    "knownNamedNumericLiveBytes": 839936,
+    "hikeMemoryTotal": 3145728,
+    "knownNamedNumericPlusHikeBytes": 3985664,
+    "knownLiveScope": "named numeric array logical live bound only; excludes metadata, WASM bytes/compile/runtime, ORT internals, other caller arrays and GC-unreclaimed allocations",
+    "ortMemoryBytes": null,
+    "OSPeakBytes": null
+  },
+  "runtimeElapsed": {
+    "readMs": 303.80000000074506,
+    "dequantMs": 2053.89999999851,
+    "stageMs": 309.7000000067055,
+    "totalRunMs": 2668.60000000149
+  },
+  "OSMeasurement": {
+    "pssBaselineBytes": 263652352,
+    "pssPeakBytes": 422010880,
+    "rssPeakProcessSumBytes": 698167296,
+    "samples": 100,
+    "intervalTargetMs": 20,
+    "ownedPidsObserved": [
+      32024,
+      32041,
+      32042,
+      32061,
+      32064,
+      32086,
+      32104,
+      32113,
+      32114
+    ],
+    "readErrors": [],
+    "scope": "observed peak of owned Chromium descendants during constructor/all cases, includes renderer/runtime/test harness; RSS process sum double-counts shared pages, use PSS; not ORT allocator-only, not production pipeline peak"
+  },
+  "sessionCreations": 1,
+  "smallRowsScope": "ONE_TOKEN_SELECTED_Q_ROWS",
+  "fullRowsScope": "ONE_TOKEN_FULL_Q_ROWS",
+  "precision": {
+    "storedWeight": "F8_E4M3",
+    "scale": "per-tensor scalar F32",
+    "storedBias": "F16",
+    "weightDecode": "actual Hike E4M3FN decode then F32 scale",
+    "referenceAccumulate": "F64 sum then F32 projection and F32 bias",
+    "runtimeMatMul": "ORT WASM1.24.3 F32 Gemm",
+    "runtimeBias": "actual Hike F32 add",
+    "epsilon": null,
+    "epsilonReason": "Linear projection has no normalization epsilon; downstream QK norm omitted"
+  },
+  "reproducibility": {
+    "runtimeEvidence": "green.json",
+    "runtimeSources": {
+      "docs/shared/diffusion-models/ort-bridge/tiled-q.mjs": "54b6e3e446e15b10f7ee987fe3b49ebf6150046227297b34fcce5136ffb2b9f3",
+      "docs/shared/diffusion-models/ort-bridge/tiled-q-cases.mjs": "0fe235a332cf3811d83442c4f6a22e02115a0337e3b0a855edf4a9c858b15a76",
+      "docs/shared/diffusion-models/ort-bridge/stage.mjs": "9b484163791a89526c7ad7e6fc997ff3cc308090a13fc07489a48fa8af974d67",
+      "docs/shared/diffusion-models/ort-bridge/hike.mjs": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+      "docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+      "tools/diffusion-models/e7-reference.py": "87bb64112261dde643745b5dbae8ad912e30b9c1c4d84ba5c7cf38c3f392017a",
+      "tools/diffusion-models/e7-browser.py": "abf1e72c3e2b738a77912b1117dc89aa2c528177738a7799ea075a7e18da7b2a"
+    },
+    "referenceSHA256": "ecb7e5ee8502a3b03a23c5a6ad1d80e7dbd58ef2612fdc430ee0bc286ebf5b23",
+    "referenceOutputSHA256": "3b02f1a95b512c744e91fdab5e2d8ba269c0815484109cf5b5e13753a4157b0f"
+  },
+  "nextObservation": "choose one separately versioned next boundary only after preserving original compute policy and testing full required outputs; token batching/weight reuse or stream-attention must prove its own exact semantics, global Memory and staging budget"
+}

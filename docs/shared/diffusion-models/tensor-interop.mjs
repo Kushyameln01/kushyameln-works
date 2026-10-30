@@ -4,6 +4,7 @@ import {requireTensor,encodeTensor,decodeTensor} from '../inference/tensor.mjs';
 export const WAN_TEXT_ENCODER_SHA256='c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68';
 export const WAN21_VAE_SHA256='2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b';
 export const WAN21_RAW_PROFILE=Object.freeze({id:'wan21-raw-f32-5x16x16',shape:Object.freeze([1,16,2,2,2]),layout:'NCTHW',meaning:'raw-posterior-mean'});
+export const WAN21_RAW_F1_PROFILE=Object.freeze({id:'wan21-raw-f32-1x16x16',shape:Object.freeze([1,16,1,2,2]),layout:'NCTHW',meaning:'raw-posterior-mean'});
 const SHA256=/^[0-9a-f]{64}$/;
 
 function provenance(tensor,expected,producer){
@@ -28,6 +29,16 @@ export function requireWanConditioning(tensor,{encoderModelSha256=WAN_TEXT_ENCOD
 // diffusion latents. Any numeric normalization belongs to an explicit kernel.
 export function requireWanRawLatent(tensor,{vaeModelSha256=WAN21_VAE_SHA256}={}){
  requireTensor(tensor,{dtype:'float32',layout:WAN21_RAW_PROFILE.layout,meaning:WAN21_RAW_PROFILE.meaning,shape:WAN21_RAW_PROFILE.shape});
+ if(tensor.attentionMask!==undefined)throw TypeError('A raw VAE latent cannot carry a text attention mask');
+ provenance(tensor,vaeModelSha256,'VAE');
+ return tensor;
+}
+
+// Separate F=1 mean profile. The legacy guard above remains shape128-only.
+export function requireWanRawLatentF1(tensor,{vaeModelSha256=WAN21_VAE_SHA256}={}){
+ requireTensor(tensor,{dtype:'float32',layout:WAN21_RAW_F1_PROFILE.layout,meaning:WAN21_RAW_F1_PROFILE.meaning,shape:WAN21_RAW_F1_PROFILE.shape});
+ if(tensor.profileId!==undefined&&tensor.profileId!==WAN21_RAW_F1_PROFILE.id)throw TypeError('F1 raw mean profile identity mismatch');
+ if(tensor.normalization!==undefined||tensor.latentContract!==undefined)throw TypeError('F1 raw posterior mean cannot carry normalized/generated metadata');
  if(tensor.attentionMask!==undefined)throw TypeError('A raw VAE latent cannot carry a text attention mask');
  provenance(tensor,vaeModelSha256,'VAE');
  return tensor;

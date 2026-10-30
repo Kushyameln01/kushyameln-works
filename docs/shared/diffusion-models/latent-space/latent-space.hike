@@ -42,8 +42,8 @@ func Std(channel int) float32 {
     return float32(1.916)
 }
 
-cfunc NormalizeRawMean(input *float32, count int, out *float32, capacity int) int {
-    if count != 128 || capacity < count { return -1 }
+func NormalizeProfile(input *float32, count int, out *float32, capacity int, positions int) int {
+    if count != 16 * positions || capacity < count { return -1 }
     i := 0
     channel := 0
     difference := float32(0)
@@ -52,7 +52,7 @@ cfunc NormalizeRawMean(input *float32, count int, out *float32, capacity int) in
     for i < count { if !Finite(input[i]) { return -2 }; i = i + 1 }
     i = 0
     for i < count {
-        channel = i / 8
+        channel = i / positions
         difference = input[i] - Mean(channel)
         scaled = difference * float32(1)
         result = scaled / Std(channel)
@@ -63,8 +63,8 @@ cfunc NormalizeRawMean(input *float32, count int, out *float32, capacity int) in
     return 0
 }
 
-cfunc RestoreRawMean(input *float32, count int, out *float32, capacity int) int {
-    if count != 128 || capacity < count { return -1 }
+func RestoreProfile(input *float32, count int, out *float32, capacity int, positions int) int {
+    if count != 16 * positions || capacity < count { return -1 }
     i := 0
     channel := 0
     product := float32(0)
@@ -73,7 +73,7 @@ cfunc RestoreRawMean(input *float32, count int, out *float32, capacity int) int 
     for i < count { if !Finite(input[i]) { return -2 }; i = i + 1 }
     i = 0
     for i < count {
-        channel = i / 8
+        channel = i / positions
         product = input[i] * Std(channel)
         divided = product / float32(1)
         result = divided + Mean(channel)
@@ -82,5 +82,17 @@ cfunc RestoreRawMean(input *float32, count int, out *float32, capacity int) int 
         i = i + 1
     }
     return 0
+}
+cfunc NormalizeRawMean(input *float32, count int, out *float32, capacity int) int {
+    return NormalizeProfile(input, count, out, capacity, 8)
+}
+cfunc RestoreRawMean(input *float32, count int, out *float32, capacity int) int {
+    return RestoreProfile(input, count, out, capacity, 8)
+}
+cfunc NormalizeRawMeanF1(input *float32, count int, out *float32, capacity int) int {
+    return NormalizeProfile(input, count, out, capacity, 4)
+}
+cfunc RestoreRawMeanF1(input *float32, count int, out *float32, capacity int) int {
+    return RestoreProfile(input, count, out, capacity, 4)
 }
 func main() int { return 0 }

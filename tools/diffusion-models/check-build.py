@@ -8,5 +8,7 @@ source=info.read_text();hashes=json.loads(re.search(r'Object.freeze\((\{.*\})\);
 for name,h in hashes.items():assert hashlib.sha256((api/name).read_bytes()).hexdigest()==h,name
 k=root/'docs/shared/diffusion-models/ort-bridge/kernel';receipt=json.loads((k/'build-record.json').read_text())
 for field,name in [('sourceSha256','bridge.hike'),('wasmSha256','bridge.wasm'),('watSha256','bridge.wat'),('runtimeSha256','runtime.js')]:assert hashlib.sha256((k/name).read_bytes()).hexdigest()==receipt[field],field
-out={'passed':True,'sourceCount':len(hashes),'buildId':r.stdout.strip(),'kernelWasmSHA256':receipt['wasmSha256'],'kernelReceiptsChecked':4,'ownerBuilder':'docs/shared/diffusion-models/api/build-info.py','scope':'source closure/receipt only, not real-model validation'}
+l=root/'docs/shared/diffusion-models/latent-space';latent=json.loads((l/'build/build-record.json').read_text())
+for field,name in [('builderSha256','build.py'),('hostSha256','latent-space.mjs'),('profileBoundarySha256','../tensor-interop.mjs'),('sourceSha256','latent-space.hike'),('wasmSha256','build/latent-space.wasm'),('watSha256','build/latent-space.wat')]:assert hashlib.sha256((l/name).read_bytes()).hexdigest()==latent[field],field
+out={'passed':True,'sourceCount':len(hashes),'buildId':r.stdout.strip(),'kernelWasmSHA256':receipt['wasmSha256'],'latentWasmSHA256':latent['wasmSha256'],'kernelReceiptsChecked':10,'ownerBuilder':'docs/shared/diffusion-models/api/build-info.py','scope':'source closure/receipt only, not real-model validation'}
 (root/'development/ai-connection/build-verification.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out))

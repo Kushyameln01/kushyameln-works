@@ -143,3 +143,10 @@ F1の判定として、**既存の一括常駐/素朴block方式の具体的阻�
 ## L1実装後の限定追補
 
 上の既存partial記録は過去のABIを指す。今回追加したF16→F32の実Hike経路ではprovider/stage各Memory1,572,864 B、arena491,648 B。実HIGH/LOW Fileと実ORT/Hikeの新しい検証はl1-final-browser.json、細かなcopy/候補保持はDIAGNOSTIC_API.md/DIFFUSION_RESULT.mdへ分離した。F1の本番容量算定やD1未成立を、この限定実行によって合格へ変更しない。
+
+
+## E7追補 — 一候補の実model形状検証
+
+[候補の結果](e7/RESULT.md)と[採否/容量/time](e7/decision.json)を追加した。実LOW Q5120×5120を16出力行ずつ320tileで読み、単一tokenから全5120出力を実Hike→ORT WASM→Hikeで比較した。採用範囲はN=1/full-QのF32診断Linear境界のみ。attention・本番compute precision・N32760/context・組合せstaging/copy予算はUNVERIFIEDで、E8はBLOCKEDを維持する。実測の既知数値liveとowned Chromium PSSは別であり、小さいarena値を総RAM上限にしない。
+
+E6のmean64 profile拡張も本番2,096,640要素の受入を意味しない。既存128と新64の専用ABI/shapeを分け、host上限定数だけを変更していない。

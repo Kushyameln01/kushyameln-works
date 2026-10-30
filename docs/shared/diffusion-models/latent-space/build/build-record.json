@@ -1,9 +1,12 @@
 {
   "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
   "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
-  "sourceSha256": "ceb50086b0ca658c1547058d339980ceb5b8f40797ee365b2af203d996c6ea5d",
-  "wasmSha256": "ffd1c821d9ecf2aba10cd7ac96f231c78380a1d02621dae8838ee8d64495b9ea",
-  "watSha256": "491ac548a48d81dfa0766fa5a349e6593c23668c666d9ded36386251b1737f24",
+  "builderSha256": "ebdd503a7f15ce1373269b84323254c2bcc89e432798e7a7c8510838568aa0d5",
+  "hostSha256": "a4aef2943d51a88f032a1b85ada9ace1b8ffc9a2653de890821a36b9102ed3b1",
+  "profileBoundarySha256": "ae197407f47b036feb83c7b827faa9b7c7ee8ba7f5c54c7139221c186201553d",
+  "sourceSha256": "357b7d72c2f38a9dec028818f9df33383a3c4be751258783c3513f9e2f681fea",
+  "wasmSha256": "6b9cb9f0617da373e63275354ac42f7843fb455019ed3988df7364173bc775b4",
+  "watSha256": "806f2d8f8811d5adc0b51dcc4f7a55465c5aa7b67c8e6b08c8fa610b713eb41c",
   "generatedRuntimeSha256": "0d37c1f5ea89304ce0b0654efb51733e5cfb5e9491fb5ac465ca14db5f935922",
   "runtimeUsed": false,
   "versions": {
@@ -24,5 +27,36 @@
     "/workspace/work/diffusion-models/docs/shared/diffusion-models/latent-space/latent-space.hike"
   ],
   "imports": [],
-  "scope": "Wan21 raw posterior-mean fixedprofile normalization, no model inference"
+  "abi": "wan21-raw-mean-f32-v2",
+  "profiles": [
+    {
+      "id": "wan21-raw-f32-5x16x16",
+      "shape": [
+        1,
+        16,
+        2,
+        2,
+        2
+      ],
+      "elements": 128,
+      "positionsPerChannel": 8,
+      "normalizeExport": "NormalizeRawMean",
+      "restoreExport": "RestoreRawMean"
+    },
+    {
+      "id": "wan21-raw-f32-1x16x16",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "elements": 64,
+      "positionsPerChannel": 4,
+      "normalizeExport": "NormalizeRawMeanF1",
+      "restoreExport": "RestoreRawMeanF1"
+    }
+  ],
+  "scope": "Wan21 raw posterior-mean fixed64/F1 and legacy128 profile normalization, no model inference or generated sample"
 }

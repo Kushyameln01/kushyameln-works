@@ -7,9 +7,9 @@ names=[
  '../lora/weights.mjs','../lora/targets.mjs','../lora/strict-json.mjs','../lora/source.mjs','../lora/diagnostic-identity.mjs','../lora/diagnostic-base.mjs','../lora/diagnostic-consumer.mjs','../../vr180/sha256.mjs',
  '../euler-kernel.mjs','../kernel-registry.mjs','../kernel/euler.wasm',
  '../tensor-interop.mjs','../../inference/tensor.mjs',
- '../latent-space/latent-space.mjs','../latent-space/kernel-registry.mjs','../latent-space/latent-space.hike','../latent-space/build/latent-space.wasm','../latent-space/build/build-record.json',
+ '../latent-space/latent-space.mjs','../latent-space/kernel-registry.mjs','../latent-space/latent-space.hike','../latent-space/build.py','../latent-space/build/latent-space.wasm','../latent-space/build/build-record.json',
  '../scheduler/scheduler-kernel.mjs','../scheduler/scheduler.hike','../scheduler/build/scheduler.wasm','../scheduler/build/build-record.json',
- '../ort-bridge/stage.mjs','../ort-bridge/graph.mjs','../ort-bridge/hike.mjs','../ort-bridge/kernel/registry.mjs','../ort-bridge/kernel/bridge.wasm','../ort-bridge/kernel/build-record.json','../ort-bridge/kernel/bridge.hike','../ort-bridge/kernel/build.py',
+ '../ort-bridge/tiled-q.mjs','../ort-bridge/stage.mjs','../ort-bridge/graph.mjs','../ort-bridge/hike.mjs','../ort-bridge/kernel/registry.mjs','../ort-bridge/kernel/bridge.wasm','../ort-bridge/kernel/build-record.json','../ort-bridge/kernel/bridge.hike','../ort-bridge/kernel/build.py',
  '../../inference/vendor/ort.wasm.min.mjs','../../inference/vendor/ort-wasm-simd-threaded.mjs','../../inference/vendor/ort-wasm-simd-threaded.wasm','../../inference/vendor/license-sources.json',
  '../../../../development/inference/publication-candidate.json'
 ]

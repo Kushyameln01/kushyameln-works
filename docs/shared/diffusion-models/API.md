@@ -118,3 +118,16 @@ LoRA用に `inspectLora` / `loadLora` / `listLoras` / `readLora` / `readLoraSour
 `linearProjectionF32`はcompact・非shared・非detachedの有限配列をdispatch前に検査する。caller入力は保持し、Workerへcloneし、stageはORT async実行前に所有copyを取る。Worker結果はtransfer、port結果はclone。既存`linearProjection`のFP8原本入力を変更・再量子化しない。capabilitiesの同名fieldは部分受口の存在だけを示し、`modelInference:false`、`loraApplied:false`を維持する。
 
 独立ES moduleの実base provider、PARTIAL registry、runtime-feed-set sink/candidateは [DIAGNOSTIC_API.md](lora/DIAGNOSTIC_API.md) を参照。これはSDK v1のinitializer/boolean validate契約ではなく、LoRA担当がbinding別partial adapterで接続する新しい診断契約である。通常のload/predict/sample、pointwise上限1,048,576、mean kernel128要素は変更していない。
+
+
+## E6: 明示64要素posterior-mean profile
+
+`rawMeanProfiles`は旧`wan21-raw-f32-5x16x16` NCTHW `[1,16,2,2,2]` /128要素と、新`wan21-raw-f32-1x16x16` `[1,16,1,2,2]` /64要素を宣言する。validateRawLatent/normalizeRawMean/restoreRawMeanは厳密なshape/model/meaningへ対応し、同じ64要素でも軸shapeが違えば拒否する。paddingや128要素shapeへの偽装は行わない。
+
+64専用Hike exports NormalizeRawMeanF1/RestoreRawMeanF1はchannel=i/4を使用し、旧128のi/8と分離する。係数とFP32順序は同一Wan21規約、固定arena1024bytes。生成sampleは受理しない。raw-profile正規化の成立は実VAE bundle共同実行や大shape対応を意味しない。
+
+旧requireWanRawLatent/codec wrapperは128専用のまま。独立ES境界で64を検査する場合はrequireWanRawLatentF1/WAN21_RAW_F1_PROFILEを明示利用する。G1C contextをmain旧codecへ渡して完全保存と扱わず、外側descriptorを保持する。
+
+## E7: 単一tokenのfull-Q行分割候補
+
+`ort-bridge/tiled-q.mjs` のcreateTiledQProjectionは独立ES moduleであり、native requestにpredict/sampleの代わりとして送らない。実LOW Q `[5120,5120]` を16行ずつread/dequantし、入力 `[1,5120]` から全5120出力を実Hike/ORTで確認した候補である。F32診断、N=1のLinear境界に限定し、元FP8計算、全token/context、attention、組合せMemory/staging/copy予算、E8は未成立。詳細と再現手順はdevelopment/ai-connection/e7/RESULT.md。

@@ -91,7 +91,7 @@ Known bounded buffers (not RSS/ORT peak):
 
 Active+previous/candidate feeds, caller retained arrays, raw read bytes, header/descriptor JS objects, pending package/hash copies and ORT internal Memory add to these quantities. Release unused candidate history/packages rather than accumulating them. `stage.runF32` still copies inputs even if consumer passed copies; both are counted. WASM grow occurs when constructing its arena; views are recreated after grow, and calls reuse fixed workspace. ORT allocator/runtime/RSS peak remains unmeasured. File references are not full weight arrays.
 
-Pointwise1,048,576 and mean-kernel128 constraints are **unchanged and separate**. Text512 tensor size is not governed by pointwise operation limits. No model graph partition/production VAE capability follows from this small diagnostic.
+Pointwise1,048,576 remains unchanged. Mean transforms have separate strict128 and64-element profile ABIs after E6; neither accepts the2,096,640-element production latent. Text512 tensor size is not governed by pointwise operation limits. No model graph partition/production VAE capability follows from this small diagnostic.
 
 ## Evidence and counterpart handoff
 

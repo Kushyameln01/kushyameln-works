@@ -45,8 +45,12 @@ async function execute(op,input){
  if(op==='predict'||op==='sample')fail('NOT_READY','No validated neural model session is available',{reasons:['MODEL_INFERENCE_NOT_IMPLEMENTED']});
 
  if(op==='validateConditioning'||op==='validateRawLatent'){
-  const {requireWanConditioning,requireWanRawLatent,WAN21_RAW_PROFILE}=await import('../tensor-interop.mjs');
-  try{return op==='validateConditioning'?metadata(requireWanConditioning(input.tensor)):metadata(requireWanRawLatent(input.tensor),WAN21_RAW_PROFILE.id);}
+  const {requireWanConditioning,requireWanRawLatent,requireWanRawLatentF1,WAN21_RAW_PROFILE,WAN21_RAW_F1_PROFILE}=await import('../tensor-interop.mjs');
+  try{
+   if(op==='validateConditioning')return metadata(requireWanConditioning(input.tensor));
+   const shape=input.tensor?.shape,f1=Array.isArray(shape)&&shape.length===5&&WAN21_RAW_F1_PROFILE.shape.every((v,i)=>v===shape[i]);
+   return metadata((f1?requireWanRawLatentF1:requireWanRawLatent)(input.tensor),(f1?WAN21_RAW_F1_PROFILE:WAN21_RAW_PROFILE).id);
+  }
   catch(error){fail('INVALID_TENSOR',String(error.message??error));}
  }
  if(op==='normalizeRawMean'||op==='restoreRawMean'){
@@ -58,7 +62,7 @@ async function execute(op,input){
    latentSpace=await createLatentSpace(await response.arrayBuffer());latentKernelInfo=LATENT_SPACE_KERNEL;
   }
   let tensor;try{tensor=latentSpace[op](input.tensor);}catch(error){fail('INVALID_TENSOR',String(error.message??error));}
-  return {tensor,normalizationApplied:true,evidence:{scope:'explicit Wan21 posterior-mean normalization only; no model inference',hikeWasmSHA256:latentKernelInfo.sha256,hike:latentSpace.stats()}};
+  return {tensor,normalizationApplied:true,evidence:{scope:'explicit Wan21 posterior-mean normalization only; no model inference',profileId:tensor.shape[2]===1?'wan21-raw-f32-1x16x16':'wan21-raw-f32-5x16x16',hikeWasmSHA256:latentKernelInfo.sha256,hike:latentSpace.stats()}};
  }
  if(op==='schedule'){
   const {PROFILE}=await import('../scheduler/scheduler-kernel.mjs');

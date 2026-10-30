@@ -1,0 +1,14 @@
+file:///workspace/work/diffusion-models/docs/shared/inference/tensor.mjs:17
+ if(expected.shape&&JSON.stringify(t.shape)!==JSON.stringify(expected.shape))throw RangeError('Tensor shape cannot connect to this profile');
+                                                                                   ^
+
+RangeError: Tensor shape cannot connect to this profile
+    at requireTensor (file:///workspace/work/diffusion-models/docs/shared/inference/tensor.mjs:17:84)
+    at requireWanRawLatent (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/tensor-interop.mjs:30:2)
+    at Object.normalizeRawMean (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/latent-space/latent-space.mjs:34:37)
+    at file:///workspace/work/diffusion-models/docs/shared/diffusion-models/latent-space/test-f1-cases.mjs:23:20
+    at run (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/latent-space/test-f1-cases.mjs:19:24)
+    at runF1Cases (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/latent-space/test-f1-cases.mjs:22:2)
+    at async file:///workspace/work/diffusion-models/docs/shared/diffusion-models/latent-space/test-f1.mjs:3:14
+
+Node.js v24.19.0
