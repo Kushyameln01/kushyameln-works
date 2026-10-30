@@ -8,6 +8,8 @@
 
 GitHubとoriginを取得し、最新main `029ce9336a61e53bc6172fa4a7b7189b15f2efa0`、最新source branch `679a72d7f53e31bccecbee46b4e2fe559a4e0aba` を確認した。作業開始HEAD `d454549df0f9b4f77c6f92ee45b2157f6aa130ff` のtreeは最新source treeと一致する。公開台帳383ファイルは最新mainとすべて同じblobで、指定の3 API文書にも差分はない。commit IDの違いを実装差分とは扱わない。
 
+依頼再提示後の2026-10-31 JSTにもoriginを再取得した。再確認開始HEADは `6f023a1d4340420d907d8ecbb09390f351c24929`。main/sourceの先端は上記のままで、公開383ファイルと指定3契約の同一性を再確認した。sourceとの差は本調整文書と容量記録の2ファイルだけである。Text/VAEとLoRA consumerの担当別読取り照合を行い、現行実装・提案・未合意を分けた記述を維持する。今回は文書の再確認記録のみを更新し、最小結合gateを実行済みへ変更しない。
+
 参照した契約:
 
 - `docs/shared/diffusion-models/API.md`: `diffusion-models/0.1`。
