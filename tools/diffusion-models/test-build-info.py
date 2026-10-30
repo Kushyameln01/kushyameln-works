@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+"""Fast receipt tests; real files/subprocesses, no runtime/model builds."""
+import hashlib
+import json
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
+
+HERE = Path(__file__).resolve().parent
+BUILDER = HERE / "build-info.py"
+LEGACY_ID = "ab0c2224128e82229b3261114eac59573b791f56be97599023173d3e5f92b6c9"
+REPLACEMENT = "../../../../tools/diffusion-models/build-info.py"
+# Historical literal fixture from a33b311. This survives receipt regeneration.
+LEGACY_RECORDS = {'../../../../development/inference/publication-candidate.json': 'c71b00a21cac8099c99b8c6128623ea77d227570499c845eca47de7c9378d95e',
+ '../../inference/tensor.mjs': 'a3fdfc1654361713a5e8278e6af5d76a65aafed7f654c06813eebb933f7a0f4c',
+ '../../inference/vendor/license-sources.json': '0a200083c8a8e805511e5ff417e21b27b1ad836450af364b1b2d51d1b89fd558',
+ '../../inference/vendor/ort-wasm-simd-threaded.mjs': '5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57',
+ '../../inference/vendor/ort-wasm-simd-threaded.wasm': 'be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17',
+ '../../inference/vendor/ort.wasm.min.mjs': 'd5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e',
+ '../euler-kernel.mjs': '77ba1fb46771bf7f3053454a3eca8981f17d3992874497a72eed6d0bf2ddf52c',
+ '../kernel-registry.mjs': '75c0f0cd973f627891f8af130daa637db2d7afbd7da38b6c275891592b4eb8ce',
+ '../kernel/euler.wasm': '17aea5e5d967595dbef52099aa330f61f48ff9815b098fa0bf6a421517459803',
+ '../latent-space/build/build-record.json': '1179ec371e9f4abec0610169724a768961ce35425b584f0d7ed21417c5f85cf0',
+ '../latent-space/build/latent-space.wasm': 'ffd1c821d9ecf2aba10cd7ac96f231c78380a1d02621dae8838ee8d64495b9ea',
+ '../latent-space/kernel-registry.mjs': '6f682f3f77d53aead67e823fa6caf768f64228b4563253068b2bc3b7620edfca',
+ '../latent-space/latent-space.hike': 'ceb50086b0ca658c1547058d339980ceb5b8f40797ee365b2af203d996c6ea5d',
+ '../latent-space/latent-space.mjs': 'e123db620dd4ef1ff133c41122ebe1384f49c6506ee3f5be17a8450dc8b65e14',
+ '../ort-bridge/graph.mjs': '7ffd4b22dc33685e6461eeb057b184d153fd25d897355e14f64ecc3abf1d1dc7',
+ '../ort-bridge/hike.mjs': 'bbd38e2e11f2dc72561ffecc234f70c11e17520fb146628a9275b0d9bc42a9b3',
+ '../ort-bridge/kernel/bridge.wasm': 'feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2',
+ '../ort-bridge/kernel/build-record.json': 'dc1dbbfadf66e87443db9534886adf5d9020e44fcd8caf87d012fb7ccf0482aa',
+ '../ort-bridge/kernel/registry.mjs': 'fb0ee28e4cdd9d97bab7f9fa7c3215a212dea0bc36e981f7091c87dc4544317f',
+ '../ort-bridge/stage.mjs': 'a6c7e6e735e1c90416b03bf7c8571b0c4778eb9e480d4b4589798ad30fced1d7',
+ '../scheduler/build/build-record.json': '830bfbb2f64b8dea7376734e8a64ccd4b32a6ba0386db79e8ae5b2b75cc7d9ba',
+ '../scheduler/build/scheduler.wasm': 'bcd35eb9e0bef45c2f21d99ca77a1edeae57c8ea7fa763086492dc1fa40dd220',
+ '../scheduler/scheduler-kernel.mjs': '352ae0cf9b3357ab41955ca3feab54eda046424451e0b2f810c2d5f167dbc64d',
+ '../scheduler/scheduler.hike': 'e0c099f609c6bd74097f350ffadefa159f65f1b3d3955957466ded46605f5f19',
+ '../tensor-interop.mjs': 'fd92792e2b2cbe93cb5ea0a899ab072f3a256453da821c42ef31c2ed906c4b3f',
+ 'build-info.py': 'e0c793d23515e578c14127bf0fe3b35b35e8427cb7631fc3c1798a33d88cccb3',
+ 'index.mjs': 'd15471993c3fce9ef6b5a10c582c7f029d2037520a9996360265d1f4b8ad3a05',
+ 'safetensors.mjs': 'a7c81cf15e1df8dcf73e19426619260e73d65f5aba686bb045526b3a0049e961',
+ 'worker.mjs': '04cfaa72b7acdb558f3cb12643086ffa2f7a3893c7b69d9f57a5e5c14c925474'}
+
+
+def read_receipt(path):
+    text = path.read_text()
+    records = json.loads(re.search(r"Object.freeze\((\{.*\})\)", text, re.S).group(1))
+    build_id = re.search(r'BUILD_ID=("[^"\n]+")', text).group(1)
+    digest = re.search(r'BUILD_SOURCE_SHA256=("[^"\n]+")', text).group(1)
+    return json.loads(build_id), json.loads(digest), records
+
+
+class ReceiptTests(unittest.TestCase):
+    def test_historical_aggregate_reproduces_known_build_without_original_builder(self):
+        digest = hashlib.sha256(json.dumps(LEGACY_RECORDS, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        self.assertEqual(digest, LEGACY_ID)
+        self.assertEqual(len(LEGACY_RECORDS), 29)
+        self.assertEqual(LEGACY_RECORDS["build-info.py"], "e0c793d23515e578c14127bf0fe3b35b35e8427cb7631fc3c1798a33d88cccb3")
+
+    def make_checkout(self, directory):
+        self.assertTrue(BUILDER.is_file(), "Replacement receipt generator is not implemented")
+        root = Path(directory)
+        receipt = root / "docs/shared/diffusion-models/api/build-info.mjs"
+        receipt.parent.mkdir(parents=True)
+        paths = set(LEGACY_RECORDS) - {"build-info.py"} | {REPLACEMENT}
+        for name in paths:
+            path = receipt.parent / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(("fixture source: " + name + "\n").encode())
+        builder = root / "tools/diffusion-models/build-info.py"
+        shutil.copyfile(BUILDER, builder)
+        return root, receipt, builder, paths
+
+    def run_builder(self, builder, *args, cwd=None):
+        return subprocess.run([sys.executable, str(builder), *args], cwd=cwd, text=True, capture_output=True)
+
+    def test_generated_receipt_hashes_all_sources_and_migrates_only_missing_builder(self):
+        with tempfile.TemporaryDirectory() as directory:
+            _, receipt, builder, paths = self.make_checkout(directory)
+            run = self.run_builder(builder)
+            self.assertEqual(run.returncode, 0, run.stderr)
+            build_id, digest, records = read_receipt(receipt)
+            self.assertEqual(set(records), paths)
+            self.assertNotIn("build-info.py", records)
+            self.assertEqual(records[REPLACEMENT], hashlib.sha256(builder.read_bytes()).hexdigest())
+            for name, value in records.items():
+                self.assertEqual(value, hashlib.sha256((receipt.parent / name).read_bytes()).hexdigest(), name)
+            expected = hashlib.sha256(json.dumps(records, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+            self.assertEqual(digest, expected)
+            self.assertEqual(build_id, "diffusion-models/0.1+" + expected)
+
+    def test_check_detects_changed_source_without_editing_receipt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            _, receipt, builder, _ = self.make_checkout(directory)
+            self.assertEqual(self.run_builder(builder).returncode, 0)
+            before = receipt.read_bytes()
+            clean = self.run_builder(builder, "--check")
+            self.assertEqual(clean.returncode, 0, clean.stderr)
+            (receipt.parent / "../../inference/tensor.mjs").write_bytes(b"changed codec\n")
+            stale = self.run_builder(builder, "--check")
+            self.assertNotEqual(stale.returncode, 0)
+            self.assertIn("stale", stale.stderr.lower())
+            self.assertEqual(receipt.read_bytes(), before)
+
+    def test_missing_source_fails_without_overwriting_existing_receipt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            _, receipt, builder, _ = self.make_checkout(directory)
+            self.assertEqual(self.run_builder(builder).returncode, 0)
+            before = receipt.read_bytes()
+            (receipt.parent / "../latent-space/build/latent-space.wasm").unlink()
+            run = self.run_builder(builder)
+            self.assertNotEqual(run.returncode, 0)
+            self.assertIn("latent-space.wasm", run.stderr)
+            self.assertEqual(receipt.read_bytes(), before)
+
+    def test_generation_is_deterministic_outside_checkout_cwd(self):
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as elsewhere:
+            _, receipt, builder, _ = self.make_checkout(directory)
+            self.assertEqual(self.run_builder(builder).returncode, 0)
+            before = receipt.read_bytes()
+            run = self.run_builder(builder, cwd=elsewhere)
+            self.assertEqual(run.returncode, 0, run.stderr)
+            self.assertEqual(receipt.read_bytes(), before)
+
+    def test_check_rejects_receipt_tampering_without_overwrite(self):
+        with tempfile.TemporaryDirectory() as directory:
+            _, receipt, builder, _ = self.make_checkout(directory)
+            self.assertEqual(self.run_builder(builder).returncode, 0)
+            receipt.write_text(receipt.read_text().replace("diffusion-models/0.1+", "diffusion-models/9.9+", 1))
+            before = receipt.read_bytes()
+            run = self.run_builder(builder, "--check")
+            self.assertNotEqual(run.returncode, 0)
+            self.assertEqual(receipt.read_bytes(), before)
+
+
+if __name__ == "__main__":
+    unittest.main()

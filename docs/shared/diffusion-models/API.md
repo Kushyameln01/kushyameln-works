@@ -58,6 +58,8 @@ noiseMix / inverseNoiseScale / flowDenoisedはFloat32Arrayと正のshapeを要�
 
 normalizeRawMean / restoreRawMeanはこのDiffusionモジュール内の明示的なHike処理である。公開VAE固定profile `[1,16,2,2,2]` とVAE model hashを照合し、ComfyUI固定版の16 channel mean/stdとFP32演算順で変換する。rawのmeaningは `raw-posterior-mean`、正規化後はversionを含む `wan21-normalized-posterior-mean:v1`。結果は `{tensor,normalizationApplied:true,evidence}` で、tensor.dataは所有されたFloat32Arrayとなる。raw0も数値式どおり非0へ変換し、無断のzero特別扱いを加えない。全sampling内のzero判定やHIGH/LOW orchestrationを実装済みとは扱わない。
 
+接続調整 `connection-1` では、この既存mean変換の数値処理を変えずに任意の `tensor.context` を所有コピーで保持する。元入力・slot・元frameの対応を保持し、変換後payloadのhashやcontext列の順序・正負共有は管理側が別に記録する。
+
 normalized meanのmeaningに版を含めるため、公開 `.wktensor` codecの保存・読戻しを通しても復元可能。追加の `normalization:'wan21-comfy-f32-v1'` は保存形式が保持しない説明属性であり、復元時に省略可能だが、値がある場合の不一致は拒否する。意味・shape・producer hashを揃えただけで任意の生成sampleをposterior meanへ再分類しない。復元はこの固定mean契約の入力だけを受け入れる。
 
 linearProjectionの入力は `q:Uint8Array(81920)`（16×5120 E4M3FNコード）、`x:Float32Array(5120)`、`bias:Float32Array(16)`、正の有限scale。出力は `output:Float32Array(16)` とHike/ORT/hash・copy量等のevidence。これは単一の固定Q射影であり、attention全体、1 stepのモデル予測、samplingではない。準備されたモデル値と明示activationを調べるための部分APIである。`load/predict/sample`はこの操作の追加後もNOT_READYのまま。
@@ -65,6 +67,35 @@ linearProjectionの入力は `q:Uint8Array(81920)`（16×5120 E4M3FNコード）
 validateConditioningとvalidateRawLatentはtensor本体を返さず、dtype/shape/layout/meaning/byteLength/modelSha256と必要なmaskを返す。Text Encoderのhash `c3355d...`、VAEのhash `2fc39d...`、Bernini diffusionモデルhashは別の識別子であり混用しない。出所hash未記載を検証済みにはせず拒否する。VAE公開固定profile以外のshape、normalized latentをrawと名付けた入力も拒否する。Conditioningは公開上限512 tokenを保ち、このmetadata検査の範囲をpointwise演算の1M要素予算と混同しない。
 
 バイナリ保存は `./tensor-interop.mjs` のencode/decodeWanConditioning・RawLatentから公開済み `.wktensor` codecを使える。独自形式を追加せず、encode開始時にdata/shape/mask/hash、decode開始時に期待producer bindingを所有snapshotへ固定し、非同期hash中のcaller変更から保存内容を保護する。これらのcodec wrapper自体は数値正規化を行わず、変換は上記Hike操作が担当する。
+
+Text conditioningの任意 `tokenizerSha256` は、値があれば元埋込SentencePieceの `e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458` と照合し、保存wrapperでも保持する。旧tensorでTokenizer識別が無い受入は維持するが、その場合にTokenizerの同一性まで確認済みとは扱わない。通常テキストhidden statesだけでBernini system prompt・negative選択・ComfyUI重み構文全体を再現したとはしない。
+
+## Text/VAE・管理側との接続調整 `connection-1`
+
+調整の基点はmain `a33b311e45a75a6c683242286fef608c7b3770a9`。API protocol `diffusion-models/0.1` とText/VAE `works-ai-1` は維持する。今回の変更はローカル接続契約と小規模fixtureまでで、公開や重い全工程推論を自動実行しない。
+
+VAE側へ、meanとは別の **`wan21-raw-generated-sample:v1`** 受入口を追加した。生成sampleのschemaはfloat32 NCTHW、選択したVAE profileと完全一致するshape、有限値（RGBのscalar範囲へclampしない）に加え、次の宣言を必須にする。
+
+```js
+latentContract:{
+  schemaVersion:1, representation:'generated-sample', space:'raw',
+  vaeModelSha256:actualDecoderVaeHash,
+  producerModelSha256s:actualGeneratorModelHashes,
+  normalization:{id:'wan21-comfy-f32-v1',state:'restored',owner:'diffusion_models'}
+}
+```
+
+`vaeModelSha256` は元Wan2.1 VAE `2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b` とのdecoder binding。生成側model hash列は非空・重複なしとし、HIGH/LOW両者が寄与したなら両者を保持する。任意の既存 `tensor.modelSha256` はそのproducer列に含まれることを要求し、VAE hashへの付替えは拒否する。単一primaryのないmulti-expert sampleではこの旧単数fieldの省略を認める。header hashとモデル全体のSHAを混同しない。
+
+これはVAE consumerの宣言検査であり、現Diffusion APIがgenerated sampleを返すという意味ではない。`predict/sample` は引き続きNOT_READY、生成sample用の数値復元操作も未実装である。`restoreRawMean`・`requireWanRawLatent`・raw mean codec wrapperへsampleを改名して渡さない。現在のmean用128要素Hikeカーネルはそのまま限定し、別shapeや生成sampleに対応したと扱わない。
+
+実生成経路ではDiffusion側がversion付きchannel別の正規化・復元を所有し、元normalized tensorとraw出力の数値・前後hash・buildを照合してから上記 `restored` 宣言を返す。管理側/VAE側はその数値変換を重複実装しない。宣言metadataだけで復元の実施、二重適用の不存在や実model互換性を証明できない。VAEはraw sampleに対して再復元を行わない。
+
+元workflow832×480・81frameのlatentは `[1,16,21,60,104]`、2,096,640要素。VAE受入済みprofileと現在のmean変換shapeから外れ、公開pointwise上限1,048,576要素も超える。静止参照F=1、各ratioの画像/動画、最終decodeは別のprofile export・参照比較・ブラウザ受入が必要。縮小・padding・frame削減を暗黙に追加して固定profileへ収めない。
+
+管理側は原入力hash、slot/frame、contextId、ordered context列、正負への共有、profile/manifest/graph/model/Tokenizer/build識別、工程と待機列、横断直列化、取消/失敗を保持する。Diffusion本番graphのcontext消費形式・結合軸・maskと順序はまだ別に確定する。shapeが異なるcontextを管理側が勝手にstack/concat/resizeしない。
+
+共通のmetadata、VAE configure・profile一覧・Text入力モード・保存schema・所有権は [Text/VAE API](../inference/API.md) を参照する。`.wktensor` は既存WKTSR001/schemaVersion1を維持し、任意のTokenizer/context/latentContractを追加保存する。raw latent上の矛盾したnormalization markerは保存時にも拒否し、保存で消して受入口を迂回させない。今回のfixture合格と既存の実モデル受入記録は別に報告する。
 
 ORT・scheduler・tensor境界ヘルパーは対応操作で初めてWorker内へ読み込む。capabilities・inspectだけでORTを初期化しない。同時に重い処理を並列実行せず、cancel/disposeはこのAPIの専用Workerを終了する。partial演算の取消後も次requestで新Workerを作れる。
 
@@ -92,12 +123,12 @@ api.dispose();
 ## buildと検証
 
 ```sh
-python api/build-info.py
-node api/test/browser-check.cjs
-# 保存済み巨大モデルもFileとして検査する場合:
-node api/test/browser-check.cjs /absolute/path/LOW.safetensors /absolute/path/HIGH.safetensors
+python tools/diffusion-models/build-info.py
+python tools/diffusion-models/build-info.py --check
+python tools/diffusion-models/test-build-info.py
+node tools/inference/test-connection-contract.mjs
 ```
 
-build-info.pyはAPI source、生成スクリプト、Euler、scheduler、Wan21 latent-space、tensor interopと公開codec、ORT bridgeのsource/kernel、ORT1.24.3実runtime・manifestのhashをまとめ、hostとworkerが独立に読み込む固定buildIdを生成する。対象sourceやkernelを変えたら必ず再生成する。build-info.mjs自体・テスト・READMEはhash対象外。
+新しい `tools/diffusion-models/build-info.py` は、記録済みの集約方式（source hash辞書のkey順compact JSONのSHA-256）でhost/workerが共有するBUILD_IDを再生成する。元の `api/build-info.py` はこのcheckoutに欠落していたため、元scriptを回収したとは扱わず、新script自身のhashを代わりに記録する。対象sourceはAPI、Euler/scheduler、mean latent-space、tensor interopと共通codec、ORT bridge/runtime、固定参照manifest。対象を変えたら再生成し、`--check` で現在sourceとの一致を確認する。kernelやモデルを再buildする操作ではない。build-info.mjs自体・テスト・READMEはhash対象外。
 
-REDの記録はtest/red-*.json、最新GREENはtest/browser-results.json。Chromiumの実Worker・MessageChannel・Hike/ORT WASMで22ケースを確認した。固定schedule・noise/flow式、raw meanの16 channel正規化と復元・公開codec保存読戻し、tensor境界拒否、literal部分射影と実重み2タイル32出力、partial取消後の再実行を含む。追加の実File試験では保存済み各15.57 GBのLOW/HIGHを入力し、1815 tensors、181280 bytesのheader hashを独立Python棚卸しと照合した。どちらもloadはNOT_READYで拒否した。これはモデル本体の推論合格ではない。
+元作業のRED/GREENブラウザ記録は `development/diffusion-models/` に保存されている（元作業用 `api/test/browser-check.cjs` 自体はこのcheckoutに含まれない）。その実Worker・MessageChannel・Hike/ORT WASMの22ケースは固定schedule、noise/flow、raw meanの16 channel正規化と復元・codec、境界拒否、部分射影、取消・再実行を対象にした。追加の各15.57 GB LOW/HIGHのFile検査もheader/構造照合であり、loadはNOT_READYのままだった。これらを今回の再実行やモデル全体の推論合格として数えない。今回の追加確認は上の小規模fixtureとreceipt整合で、重い全工程推論は実施しない。

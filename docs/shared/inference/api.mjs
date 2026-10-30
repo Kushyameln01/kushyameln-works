@@ -2,7 +2,7 @@ import {createInferenceClient} from './client.mjs';
 import {createTextEncoderModule} from './text-encoder-api.mjs';
 import {createVaeModule} from './vae-api.mjs';
 export {createTextEncoderModule,createVaeModule};
-export {encodeTensor,decodeTensor,requireTensor} from './tensor.mjs';
+export {encodeTensor,decodeTensor,requireTensor,snapshotTensorMetadata} from './tensor.mjs';
 export const API_VERSION='works-ai-1';
 // One optional shared executor; logical modules remain independent.
 export function createInferenceAPI(options={}){

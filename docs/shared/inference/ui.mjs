@@ -1,5 +1,6 @@
 import {createInferenceClient} from './client.mjs';
 import {encodeTensor,decodeTensor,requireTensor} from './tensor.mjs';
+import {validateVaeRequest} from './vae.mjs';
 const $=s=>document.querySelector(s),mode=document.body.dataset.inference;
 let manifest,files=new Map(),inputTensor,result,outputURL,revision=0,sourceFile;
 const status=$('#status'),run=$('#run'),cancel=$('#cancel'),save=$('#save');
@@ -51,7 +52,7 @@ run.addEventListener('click',async()=>{
   }else{
    if(!inputTensor)throw Error('Works tensorファイルを選んでください');operation=$('#operation').value;
    requireTensor(inputTensor,{dtype:'float32',layout:'NCTHW'});
-   if(operation==='decode'?inputTensor.meaning!=='raw-posterior-mean':!['raw-decoder-rgb','rgb-unit'].includes(inputTensor.meaning))throw Error('この操作に接続できないtensorです');
+   validateVaeRequest({operation,tensor:inputTensor,manifest});
    input=inputTensor;
   }
   const output=await client.run({module:mode,operation,manifest,files,input});if(rev!==revision)return;
