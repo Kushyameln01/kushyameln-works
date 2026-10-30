@@ -1,6 +1,6 @@
 # 接続担当・Diffusion担当への照合用引継ぎ
 
-2026-10-31 JST。完了済み`connection-1`を保持する差分作業。**取得可能なsourceとsource上の整合は確認済み。外部Diffusion担当本人の受領・合意は未確認**である。この文書や内部レビューを、その担当の承認・実生成経路の受入と扱わない。review用専用ブランチから渡し、mainへの統合・Pages更新は実行しない。
+2026-10-31 JST。完了済み`connection-1`を保持する差分作業。**取得可能なsourceとsource上の整合は確認済み。外部Diffusion担当本人の受領・合意は未確認**である。この文書や内部レビューを、その担当の承認・実生成経路の受入と扱わない。[Draft PR #1](https://github.com/Kushyameln01/kushyameln-works/pull/1)を照合依頼の共有先として作成した。review用専用ブランチから渡し、mainへの統合・Pages更新は実行しない。
 
 ## 取得する原本
 
