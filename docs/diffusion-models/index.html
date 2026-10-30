@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DiffusionModels | Kushyameln Works</title>
+<meta name="description" content="Hike/WASMの数値処理と外部API。固定scheduler、Wan2.1 latent変換、部分Q射影を利用できます。">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="../catalog.css">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<header><h1>DiffusionModels</h1><span>Kushyameln Works</span></header>
+<nav class="site-nav" aria-label="サイト内ナビゲーション"><a href="../github/">GitHub・ツール</a><a href="../text-encoder/">Text Encoder</a><a href="../vae/">VAE</a></nav>
+<main>
+<p>Hike/WASMの数値処理を、同じページのJavaScriptや明示したMessagePortから呼び出すモジュールです。モデル全体の推論・画像生成は提供していません（<code>modelInference: false</code>）。</p>
+<section aria-labelledby="operations"><h2 id="operations">利用できる処理</h2>
+<ul class="catalog-list">
+<li><strong>モデル情報とtensorの検査</strong><p>safetensorsのヘッダーと、公開Text Encoder・VAEのshape、意味、モデル識別を確認します。</p></li>
+<li><strong>Euler・固定scheduler・noise/flow計算</strong><p>固定プロファイルの6 stepとHIGH/LOWの区切り、渡された配列の数値更新をHikeで計算します。</p></li>
+<li><strong>Wan2.1 raw meanの正規化と復元</strong><p>公開VAEの固定profile <code>[1,16,2,2,2]</code> を明示的に変換します。生成sampleをposterior meanへ読み替えません。</p></li>
+<li><strong>固定Q射影の部分演算</strong><p>16×5120の重みタイルをHikeで復号し、ORT WASMのGemmとHikeのbias加算へ接続します。モデルの1 step予測ではありません。</p></li>
+</ul></section>
+<section aria-labelledby="api"><h2 id="api">APIと接続</h2>
+<ul class="catalog-list">
+<li><a href="../shared/diffusion-models/API.md">外部API仕様</a><p>操作、tensor契約、所有権、取消と対応範囲。</p></li>
+<li><a href="../shared/diffusion-models/api/index.mjs">JavaScript API入口</a><p><code>createDiffusionModels()</code> と <code>attachDiffusionPort()</code> を提供します。</p></li>
+<li><a href="../shared/diffusion-models/tensor-interop.mjs">Tensorの受渡し・保存</a><p>公開済み <code>.wktensor</code> 形式を使い、shape・意味・出所を照合します。</p></li>
+</ul>
+<p><code>load</code>・<code>predict</code>・<code>sample</code> は現在 <code>NOT_READY</code> を返します。モデル重みはこの公開資材に含めません。包括UIは操作順・待機列・入出力を扱い、数値変換はこのモジュールが担当します。</p>
+</section>
+<section aria-labelledby="source"><h2 id="source">Hikeの出典と生成物</h2>
+<ul class="catalog-list">
+<li><a href="../shared/diffusion-models/kernel/euler.hike">Euler source</a> · <a href="../shared/diffusion-models/kernel/build-record.json">build記録</a></li>
+<li><a href="../shared/diffusion-models/scheduler/scheduler.hike">Scheduler source</a> · <a href="../shared/diffusion-models/scheduler/build/build-record.json">build記録</a></li>
+<li><a href="../shared/diffusion-models/latent-space/latent-space.hike">Latent変換 source</a> · <a href="../shared/diffusion-models/latent-space/build/build-record.json">build記録</a></li>
+<li><a href="../shared/diffusion-models/ort-bridge/kernel/bridge.hike">部分射影 bridge source</a> · <a href="../shared/diffusion-models/ort-bridge/kernel/build-record.json">build記録</a></li>
+</ul>
+<p class="small"><a href="../shared/diffusion-models/LICENSE-Hike.txt">Hike license</a> · <a href="../shared/inference/vendor/ORT-LICENSE.txt">ORT license</a> · <a href="../shared/inference/vendor/ORT-ThirdPartyNotices.txt">ORT third-party notices</a></p>
+<p class="small"><a href="https://github.com/Kushyameln01/kushyameln-works/tree/codex/diffusion-models/docs/shared/diffusion-models" target="_blank" rel="noopener noreferrer">ビルド・検証用source branch</a>（公開ページにはローカル検証用のtests・fixturesを含めません）。</p>
+</section>
+</main>
+</body>
+</html>

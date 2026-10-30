@@ -1,0 +1,86 @@
+package main
+
+// ComfyUI b5a432... Wan21 latent_formats.py755-783, explicit f32operation order.
+// Source scale_factor=1.0 is retained as multiply/divide; no reciprocal rewrite.
+func Finite(v float32) bool { return v == v && v - v == float32(0) }
+
+func Mean(channel int) float32 {
+    if channel == 0 { return float32(-0.7571) }
+    if channel == 1 { return float32(-0.7089) }
+    if channel == 2 { return float32(-0.9113) }
+    if channel == 3 { return float32(0.1075) }
+    if channel == 4 { return float32(-0.1745) }
+    if channel == 5 { return float32(0.9653) }
+    if channel == 6 { return float32(-0.1517) }
+    if channel == 7 { return float32(1.5508) }
+    if channel == 8 { return float32(0.4134) }
+    if channel == 9 { return float32(-0.0715) }
+    if channel == 10 { return float32(0.5517) }
+    if channel == 11 { return float32(-0.3632) }
+    if channel == 12 { return float32(-0.1922) }
+    if channel == 13 { return float32(-0.9497) }
+    if channel == 14 { return float32(0.2503) }
+    return float32(-0.2921)
+}
+
+func Std(channel int) float32 {
+    if channel == 0 { return float32(2.8184) }
+    if channel == 1 { return float32(1.4541) }
+    if channel == 2 { return float32(2.3275) }
+    if channel == 3 { return float32(2.6558) }
+    if channel == 4 { return float32(1.2196) }
+    if channel == 5 { return float32(1.7708) }
+    if channel == 6 { return float32(2.6052) }
+    if channel == 7 { return float32(2.0743) }
+    if channel == 8 { return float32(3.2687) }
+    if channel == 9 { return float32(2.1526) }
+    if channel == 10 { return float32(2.8652) }
+    if channel == 11 { return float32(1.5579) }
+    if channel == 12 { return float32(1.6382) }
+    if channel == 13 { return float32(1.1253) }
+    if channel == 14 { return float32(2.8251) }
+    return float32(1.916)
+}
+
+cfunc NormalizeRawMean(input *float32, count int, out *float32, capacity int) int {
+    if count != 128 || capacity < count { return -1 }
+    i := 0
+    channel := 0
+    difference := float32(0)
+    scaled := float32(0)
+    result := float32(0)
+    for i < count { if !Finite(input[i]) { return -2 }; i = i + 1 }
+    i = 0
+    for i < count {
+        channel = i / 8
+        difference = input[i] - Mean(channel)
+        scaled = difference * float32(1)
+        result = scaled / Std(channel)
+        if !Finite(result) { return -3 }
+        out[i] = result
+        i = i + 1
+    }
+    return 0
+}
+
+cfunc RestoreRawMean(input *float32, count int, out *float32, capacity int) int {
+    if count != 128 || capacity < count { return -1 }
+    i := 0
+    channel := 0
+    product := float32(0)
+    divided := float32(0)
+    result := float32(0)
+    for i < count { if !Finite(input[i]) { return -2 }; i = i + 1 }
+    i = 0
+    for i < count {
+        channel = i / 8
+        product = input[i] * Std(channel)
+        divided = product / float32(1)
+        result = divided + Mean(channel)
+        if !Finite(result) { return -3 }
+        out[i] = result
+        i = i + 1
+    }
+    return 0
+}
+func main() int { return 0 }

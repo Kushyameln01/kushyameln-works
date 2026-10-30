@@ -1,0 +1,20 @@
+package main
+
+// Caller-owned disjoint f32 arenas. Host checks ranges and finite values.
+// Matches ComfyUI sample_euler with s_churn=0, consuming denoised (x0),
+// NOT the raw network output/velocity. No allocation and no host imports.
+cfunc EulerDenoised(x *float32, denoised *float32, out *float32, n int, capacity int, sigma float32, nextSigma float32) int {
+    if n < 0 || capacity < 1 || capacity > 1048576 || n > capacity { return -1 }
+    if sigma <= 0 || nextSigma < 0 || nextSigma > sigma { return -2 }
+    dt := nextSigma - sigma
+    // Fixed scalar storage: declaring inside the loop allocates stack scratch
+    // on every iteration in this pinned compiler and can cross caller arenas.
+    derivative := sigma
+    for i := 0; i < n; i = i + 1 {
+        derivative = (x[i] - denoised[i]) / sigma
+        out[i] = x[i] + derivative * dt
+    }
+    return 0
+}
+
+func main() int { return 0 }
