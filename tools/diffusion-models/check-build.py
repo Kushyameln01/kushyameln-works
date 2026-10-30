@@ -1,0 +1,12 @@
+"""Verify owner builder reproducibility and every source/kernel receipt digest."""
+import hashlib,json,re,subprocess
+from pathlib import Path
+root=Path(__file__).resolve().parents[2];api=root/'docs/shared/diffusion-models/api';info=api/'build-info.mjs';before=info.read_bytes()
+r=subprocess.run(['python',str(api/'build-info.py')],check=True,capture_output=True,text=True)
+assert info.read_bytes()==before,'Build identity not regenerated before verification'
+source=info.read_text();hashes=json.loads(re.search(r'Object.freeze\((\{.*\})\);',source,re.S)[1])
+for name,h in hashes.items():assert hashlib.sha256((api/name).read_bytes()).hexdigest()==h,name
+k=root/'docs/shared/diffusion-models/ort-bridge/kernel';receipt=json.loads((k/'build-record.json').read_text())
+for field,name in [('sourceSha256','bridge.hike'),('wasmSha256','bridge.wasm'),('watSha256','bridge.wat'),('runtimeSha256','runtime.js')]:assert hashlib.sha256((k/name).read_bytes()).hexdigest()==receipt[field],field
+out={'passed':True,'sourceCount':len(hashes),'buildId':r.stdout.strip(),'kernelWasmSHA256':receipt['wasmSha256'],'kernelReceiptsChecked':4,'ownerBuilder':'docs/shared/diffusion-models/api/build-info.py','scope':'source closure/receipt only, not real-model validation'}
+(root/'development/ai-connection/build-verification.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out))

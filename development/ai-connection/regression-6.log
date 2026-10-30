@@ -1,0 +1,18 @@
+✔ frozen source returns independent verified range bytes and server-confirmed hash (8.092804ms)
+✔ logical reads crossing transport boundary split into owned <=4MiB requests (162.120089ms)
+✔ invalid construction, unsafe ranges and logical allocation budget reject before transport (1.19825ms)
+✔ every reply identity mismatch rejects without canceling other operations (2.391492ms)
+✔ range hash, size, offsets and immutable binding mismatch are rejected (1.823169ms)
+✔ source hash checks live binding, and zero-length reads cannot bypass unload (0.371138ms)
+✔ pre-aborted signal does not send requests or cancellation (0.471678ms)
+✔ abort targets only its own outstanding job and does not cross the wire as a signal (0.754974ms)
+✔ abort between chunks returns no partial result and sends no unrelated cancel (161.582241ms)
+✔ logical operations are serialized without automatic revision resets or retries (1.082455ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 345.996824

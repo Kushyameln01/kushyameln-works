@@ -1,0 +1,56 @@
+{
+  "scope": "Hike F16-to-F32 bridge only; no full-model inference or quantized matmul equivalence",
+  "cases": [
+    {
+      "name": "DecodeF16 is an implemented public Hike bridge operation",
+      "status": "PASS"
+    },
+    {
+      "name": "half finite boundaries and signed zero match independent native Float16 decoding",
+      "status": "PASS"
+    },
+    {
+      "name": "all 63488 finite half bit patterns match native reference exactly",
+      "status": "PASS"
+    },
+    {
+      "name": "Inf/NaN and invalid half shapes fail without publishing output and recover",
+      "status": "PASS"
+    },
+    {
+      "name": "full 81920 half inputs retain caller data, own output and reuse fixed workspace",
+      "status": "PASS"
+    },
+    {
+      "name": "adding half decoding preserves FP8 and Hike bias operations",
+      "status": "PASS"
+    },
+    {
+      "name": "all finite FP8 codes at four scales preserve exact dequant regression",
+      "status": "PASS"
+    },
+    {
+      "name": "raw DecodeF16 ABI rejects count/capacity and uses fresh views after Memory grow",
+      "status": "PASS"
+    },
+    {
+      "name": "dispose is idempotent and rejects half decoding",
+      "status": "PASS"
+    }
+  ],
+  "error": null,
+  "resources": {
+    "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+    "memoryBytes": 0,
+    "arenaBytes": 491648,
+    "calls": 40,
+    "inputCopyBytes": 5207114,
+    "outputCopyBytes": 10416156,
+    "workspaceReused": true,
+    "disposed": true
+  },
+  "peakFixedMemoryBytes": 1572864,
+  "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+  "reference": "ECMAScript DataView.getFloat16 independent native reference; 63488 finite bit patterns",
+  "jsNumericalFallback": false
+}

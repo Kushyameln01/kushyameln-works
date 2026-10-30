@@ -1,0 +1,964 @@
+{
+  "schema": "ai-connection-feasibility/1",
+  "assessment_date_utc": "2026-10-30T22:44:59.772093+00:00",
+  "source_head_at_assessment": "9023329b8d803306abcdd9342f24c01ba0df2676",
+  "scope": "F1 metadata/range inspection and exact integer capacity arithmetic; no full NN, graph export, payload conversion or 31GB rehash",
+  "inference_executed_this_assessment": false,
+  "runtime_edits": false,
+  "units": {
+    "GiB": 1073741824,
+    "MiB": 1048576,
+    "GB": 1000000000,
+    "wasm32_memory_theoretical_max_bytes": 4294967296,
+    "note": "limit applies to one 32-bit linear Memory; separate Memories can sum beyond it, limited by browser/process/device budgets not measured here"
+  },
+  "models": [
+    {
+      "stage": "LOW",
+      "name": "Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+      "full_sha256_from_prior_verified_manifest": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+      "full_hash_recomputed": false,
+      "actual_file_bytes": 15574833216,
+      "actual_header_bytes": 181280,
+      "header_sha256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+      "header_matches_previous_inventory": true,
+      "bytes_read_this_assessment": 192448,
+      "metadata": {
+        "format": "pt",
+        "model_type": "bernini_low"
+      },
+      "payload_bytes": 15574651928,
+      "dtype_storage": {
+        "F32": {
+          "tensors": 360,
+          "elements": 360,
+          "bytes": 1440
+        },
+        "F16": {
+          "tensors": 735,
+          "elements": 1286149184,
+          "bytes": 2572298368
+        },
+        "F8_E4M3": {
+          "tensors": 360,
+          "elements": 13002342400,
+          "bytes": 13002342400
+        },
+        "U8": {
+          "tensors": 360,
+          "elements": 9720,
+          "bytes": 9720
+        }
+      },
+      "parameter_elements_excluding_scale_and_metadata": 14288491584,
+      "hypothetical_parameters_f32_bytes": 57153966336,
+      "hypothetical_parameters_f16_bytes": 28576983168,
+      "fp32_scale_auxiliary_bytes": 1440,
+      "quant_configs": {
+        "{\"format\": \"float8_e4m3fn\"}": 360
+      },
+      "scale_count": 360,
+      "scale_min": 7.540839578723535e-05,
+      "scale_max": 0.0017787389224395156,
+      "scale_finite_positive": true,
+      "input_scale_tensor_count": 0,
+      "block_count": 40,
+      "one_block": {
+        "dtype_storage": {
+          "F32": {
+            "tensors": 9,
+            "elements": 9,
+            "bytes": 36
+          },
+          "F16": {
+            "tensors": 18,
+            "elements": 26335744,
+            "bytes": 52671488
+          },
+          "F8_E4M3": {
+            "tensors": 9,
+            "elements": 325058560,
+            "bytes": 325058560
+          },
+          "U8": {
+            "tensors": 9,
+            "elements": 243,
+            "bytes": 243
+          }
+        },
+        "stored_bytes": 377730327,
+        "parameter_elements_excluding_auxiliary": 351394304,
+        "parameter_f32_bytes": 1405577216,
+        "parameter_f16_bytes": 702788608,
+        "scale_auxiliary_bytes": 36,
+        "all_40_blocks_same_storage_summary": true
+      },
+      "nonblock_dtype_storage": {
+        "F16": {
+          "tensors": 15,
+          "elements": 232719424,
+          "bytes": 465438848
+        }
+      },
+      "largest_parameters": [
+        {
+          "name": "time_projection.1.weight",
+          "dtype": "F16",
+          "shape": [
+            30720,
+            5120
+          ],
+          "storage_bytes": 314572800,
+          "f32_bytes": 629145600
+        },
+        {
+          "name": "blocks.0.ffn.0.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            13824,
+            5120
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        },
+        {
+          "name": "blocks.0.ffn.2.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            13824
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        },
+        {
+          "name": "blocks.1.ffn.0.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            13824,
+            5120
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        },
+        {
+          "name": "blocks.1.ffn.2.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            13824
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        },
+        {
+          "name": "blocks.10.ffn.0.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            13824,
+            5120
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        },
+        {
+          "name": "blocks.10.ffn.2.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            13824
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        },
+        {
+          "name": "blocks.11.ffn.0.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            13824,
+            5120
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        }
+      ],
+      "q_slice_provenance": [
+        {
+          "stem": "blocks.0.self_attn.q",
+          "weight": {
+            "dtype": "F8_E4M3",
+            "shape": [
+              5120,
+              5120
+            ],
+            "data_offsets": [
+              2844929568,
+              2871143968
+            ]
+          },
+          "scale_dtype": "F32",
+          "scale_shape": [],
+          "scale": 0.0004149845917709172,
+          "scale_bits_le_hex": "4a92d939",
+          "quant_config": {
+            "format": "float8_e4m3fn"
+          }
+        }
+      ]
+    },
+    {
+      "stage": "HIGH",
+      "name": "Wan22_Bernini_HIGH_fp8_e4m3fn_scaled.safetensors",
+      "full_sha256_from_prior_verified_manifest": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+      "full_hash_recomputed": false,
+      "actual_file_bytes": 15574833216,
+      "actual_header_bytes": 181280,
+      "header_sha256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+      "header_matches_previous_inventory": true,
+      "bytes_read_this_assessment": 192448,
+      "metadata": {
+        "model_type": "bernini_high",
+        "format": "pt"
+      },
+      "payload_bytes": 15574651928,
+      "dtype_storage": {
+        "F32": {
+          "tensors": 360,
+          "elements": 360,
+          "bytes": 1440
+        },
+        "F16": {
+          "tensors": 735,
+          "elements": 1286149184,
+          "bytes": 2572298368
+        },
+        "F8_E4M3": {
+          "tensors": 360,
+          "elements": 13002342400,
+          "bytes": 13002342400
+        },
+        "U8": {
+          "tensors": 360,
+          "elements": 9720,
+          "bytes": 9720
+        }
+      },
+      "parameter_elements_excluding_scale_and_metadata": 14288491584,
+      "hypothetical_parameters_f32_bytes": 57153966336,
+      "hypothetical_parameters_f16_bytes": 28576983168,
+      "fp32_scale_auxiliary_bytes": 1440,
+      "quant_configs": {
+        "{\"format\": \"float8_e4m3fn\"}": 360
+      },
+      "scale_count": 360,
+      "scale_min": 8.671624527778476e-05,
+      "scale_max": 0.0019269671756774187,
+      "scale_finite_positive": true,
+      "input_scale_tensor_count": 0,
+      "block_count": 40,
+      "one_block": {
+        "dtype_storage": {
+          "F32": {
+            "tensors": 9,
+            "elements": 9,
+            "bytes": 36
+          },
+          "F16": {
+            "tensors": 18,
+            "elements": 26335744,
+            "bytes": 52671488
+          },
+          "F8_E4M3": {
+            "tensors": 9,
+            "elements": 325058560,
+            "bytes": 325058560
+          },
+          "U8": {
+            "tensors": 9,
+            "elements": 243,
+            "bytes": 243
+          }
+        },
+        "stored_bytes": 377730327,
+        "parameter_elements_excluding_auxiliary": 351394304,
+        "parameter_f32_bytes": 1405577216,
+        "parameter_f16_bytes": 702788608,
+        "scale_auxiliary_bytes": 36,
+        "all_40_blocks_same_storage_summary": true
+      },
+      "nonblock_dtype_storage": {
+        "F16": {
+          "tensors": 15,
+          "elements": 232719424,
+          "bytes": 465438848
+        }
+      },
+      "largest_parameters": [
+        {
+          "name": "time_projection.1.weight",
+          "dtype": "F16",
+          "shape": [
+            30720,
+            5120
+          ],
+          "storage_bytes": 314572800,
+          "f32_bytes": 629145600
+        },
+        {
+          "name": "blocks.0.ffn.0.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            13824,
+            5120
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        },
+        {
+          "name": "blocks.0.ffn.2.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            13824
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        },
+        {
+          "name": "blocks.1.ffn.0.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            13824,
+            5120
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        },
+        {
+          "name": "blocks.1.ffn.2.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            13824
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        },
+        {
+          "name": "blocks.10.ffn.0.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            13824,
+            5120
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        },
+        {
+          "name": "blocks.10.ffn.2.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            13824
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        },
+        {
+          "name": "blocks.11.ffn.0.weight",
+          "dtype": "F8_E4M3",
+          "shape": [
+            13824,
+            5120
+          ],
+          "storage_bytes": 70778880,
+          "f32_bytes": 283115520
+        }
+      ],
+      "q_slice_provenance": [
+        {
+          "stem": "blocks.0.self_attn.q",
+          "weight": {
+            "dtype": "F8_E4M3",
+            "shape": [
+              5120,
+              5120
+            ],
+            "data_offsets": [
+              2844929568,
+              2871143968
+            ]
+          },
+          "scale_dtype": "F32",
+          "scale_shape": [],
+          "scale": 0.0004648481262847781,
+          "scale_bits_le_hex": "dcb6f339",
+          "quant_config": {
+            "format": "float8_e4m3fn"
+          }
+        }
+      ]
+    }
+  ],
+  "architecture": {
+    "D": 5120,
+    "heads": 40,
+    "head_dim": 128,
+    "ffn_dim": 13824,
+    "blocks": 40,
+    "target_shape": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "target_latent_bytes": 8386560,
+    "target_rgb_shape": [
+      1,
+      3,
+      81,
+      480,
+      832
+    ],
+    "target_rgb_bytes": 388177920,
+    "patch": [
+      1,
+      2,
+      2
+    ],
+    "target_tokens": 32760,
+    "text_tokens": 512,
+    "context_token_formula": "N = 32760 + sum(T_i * ceil(H_i/2) * ceil(W_i/2)) for padded latent contexts in their original order",
+    "actual_all_context_shapes_known": false,
+    "text_input_one_branch_f32_bytes": 8388608,
+    "text_embedded_one_branch_f32_bytes": 10485760
+  },
+  "precision": {
+    "observed_storage": "F8_E4M3 weight + one scalar F32 weight_scale per each of 360 layers; remaining parameters F16; U8 JSON metadata; no MXFP8 block scales",
+    "fp8_format": "E4M3FN, bias7, finite maximum448; both signed exp15/mantissa7 codes are NaN; subnormal mantissa*2^-9",
+    "decode_source_expression": "q.to(output_dtype) * scale.to(output_dtype), comfy-kitchen v0.2.40 eager",
+    "f32_diagnostic_expression": "f32(decodeE4M3FN(q) * f32(weight_scale))",
+    "source_compute_dtype": "runtime dependent, not encoded as an accepted execution profile by these safetensors headers",
+    "source_activation_quantization": "pinned comfy.ops can quantize activations and choose scaled_mm or dequantized fallback; header alone does not select the path",
+    "equivalence_to_fp8_scaled_mm": "UNVERIFIED",
+    "equivalence_of_saved_scaled_models_to_original_workflow_mxfp8_names": "UNVERIFIED",
+    "f16_and_f32_capacity_rows": "arithmetic alternatives, not adopted precision conversions"
+  },
+  "cases": [
+    {
+      "name": "target-only",
+      "scope": "lower bound; no context streams",
+      "tokens": 32760,
+      "fp32_tensor_bytes": {
+        "hidden_or_residual": 670924800,
+        "self_qkv_combined": 2012774400,
+        "self_one_head_q_or_k_or_v": 16773120,
+        "self_cached_kv_all_heads": 1341849600,
+        "self_cached_kv_one_head": 33546240,
+        "self_attention_dense_scores_all_heads": 171714816000,
+        "self_attention_dense_scores_one_head": 4292870400,
+        "cross_attention_q": 670924800,
+        "cross_attention_kv_text512": 20971520,
+        "cross_attention_dense_scores_all_heads": 2683699200,
+        "ffn_expansion_or_gelu_output": 1811496960,
+        "ffn_unfused_expansion_plus_gelu": 3622993920,
+        "ffn_output": 670924800,
+        "rope_full_matrices_f32": [
+          32760,
+          64,
+          2,
+          2
+        ],
+        "rope_full_matrices_bytes": 33546240,
+        "head_projection_all_tokens_64": 8386560,
+        "all_values_f16_hypothetical_only": {
+          "hidden": 335462400,
+          "qkv": 1006387200,
+          "ffn": 905748480,
+          "dense_self_all_heads": 85857408000
+        }
+      },
+      "conditional_live_sets": [
+        {
+          "name": "block-f32-self-attention-without-score-materialization",
+          "buffers": {
+            "block_parameters": 1405577216,
+            "residual_x": 670924800,
+            "qkv": 2012774400,
+            "attention_output": 670924800
+          },
+          "assumption": "all block weights and QKV resident; separate output; excludes score/probabilities/rope/modulation/workspace",
+          "bytes": 4760201216,
+          "exceeds_one_wasm32_memory": true
+        },
+        {
+          "name": "block-f32-ffn-one-expansion",
+          "buffers": {
+            "block_parameters": 1405577216,
+            "residual_x": 670924800,
+            "ffn_expansion": 1811496960,
+            "ffn_output": 670924800
+          },
+          "assumption": "in-place GELU reuse; excludes normalization/modulation/ORT arena and weights source copy",
+          "bytes": 4558923776,
+          "exceeds_one_wasm32_memory": true
+        },
+        {
+          "name": "block-f32-ffn-unfused-gelu",
+          "buffers": {
+            "block_parameters": 1405577216,
+            "residual_x": 670924800,
+            "ffn_pre_gelu": 1811496960,
+            "ffn_post_gelu": 1811496960,
+            "ffn_output": 670924800
+          },
+          "assumption": "pre/post GELU both live; excludes runtime arena",
+          "bytes": 6370420736,
+          "exceeds_one_wasm32_memory": true
+        },
+        {
+          "name": "one-f32-ffn-matmul",
+          "buffers": {
+            "single_ffn_weight": 283115520,
+            "input": 670924800,
+            "output": 1811496960
+          },
+          "assumption": "one full-token projection only; no other weights/residuals/workspace",
+          "bytes": 2765537280,
+          "exceeds_one_wasm32_memory": false
+        }
+      ],
+      "block_boundary": {
+        "host_x_and_ort_input": 1341849600,
+        "ort_output_and_owned_result": 1341849600,
+        "four_hidden_buffers_if_lifetimes_overlap": 2683699200,
+        "one_hidden_one_way_copy_traffic": 670924800,
+        "copy_traffic_min_host_to_ort_plus_result_copy": 1341849600,
+        "forty_blocks_input_and_output_min_traffic": 53673984000,
+        "forty_blocks_six_evaluations_min_traffic": 322043904000,
+        "note": "conditional explicit staging; traffic not resident peak; caller/MessagePort clones add independent buffers; backend copies/lifetimes need measurement"
+      },
+      "linear_weight_examples": {
+        "square_fp8_storage": 26214400,
+        "square_f32_compute": 104857600,
+        "ffn_fp8_storage": 70778880,
+        "ffn_f32_compute": 283115520,
+        "note": "per-matrix numbers; supplied cross_attn.o is F16 while listed quantized square matrices use FP8; full compute profile remains unaccepted"
+      }
+    },
+    {
+      "name": "target-and-same-size-source",
+      "scope": "illustrative rv2v source 81x480x832; no reference",
+      "tokens": 65520,
+      "fp32_tensor_bytes": {
+        "hidden_or_residual": 1341849600,
+        "self_qkv_combined": 4025548800,
+        "self_one_head_q_or_k_or_v": 33546240,
+        "self_cached_kv_all_heads": 2683699200,
+        "self_cached_kv_one_head": 67092480,
+        "self_attention_dense_scores_all_heads": 686859264000,
+        "self_attention_dense_scores_one_head": 17171481600,
+        "cross_attention_q": 1341849600,
+        "cross_attention_kv_text512": 20971520,
+        "cross_attention_dense_scores_all_heads": 5367398400,
+        "ffn_expansion_or_gelu_output": 3622993920,
+        "ffn_unfused_expansion_plus_gelu": 7245987840,
+        "ffn_output": 1341849600,
+        "rope_full_matrices_f32": [
+          65520,
+          64,
+          2,
+          2
+        ],
+        "rope_full_matrices_bytes": 67092480,
+        "head_projection_all_tokens_64": 16773120,
+        "all_values_f16_hypothetical_only": {
+          "hidden": 670924800,
+          "qkv": 2012774400,
+          "ffn": 1811496960,
+          "dense_self_all_heads": 343429632000
+        }
+      },
+      "conditional_live_sets": [
+        {
+          "name": "block-f32-self-attention-without-score-materialization",
+          "buffers": {
+            "block_parameters": 1405577216,
+            "residual_x": 1341849600,
+            "qkv": 4025548800,
+            "attention_output": 1341849600
+          },
+          "assumption": "all block weights and QKV resident; separate output; excludes score/probabilities/rope/modulation/workspace",
+          "bytes": 8114825216,
+          "exceeds_one_wasm32_memory": true
+        },
+        {
+          "name": "block-f32-ffn-one-expansion",
+          "buffers": {
+            "block_parameters": 1405577216,
+            "residual_x": 1341849600,
+            "ffn_expansion": 3622993920,
+            "ffn_output": 1341849600
+          },
+          "assumption": "in-place GELU reuse; excludes normalization/modulation/ORT arena and weights source copy",
+          "bytes": 7712270336,
+          "exceeds_one_wasm32_memory": true
+        },
+        {
+          "name": "block-f32-ffn-unfused-gelu",
+          "buffers": {
+            "block_parameters": 1405577216,
+            "residual_x": 1341849600,
+            "ffn_pre_gelu": 3622993920,
+            "ffn_post_gelu": 3622993920,
+            "ffn_output": 1341849600
+          },
+          "assumption": "pre/post GELU both live; excludes runtime arena",
+          "bytes": 11335264256,
+          "exceeds_one_wasm32_memory": true
+        },
+        {
+          "name": "one-f32-ffn-matmul",
+          "buffers": {
+            "single_ffn_weight": 283115520,
+            "input": 1341849600,
+            "output": 3622993920
+          },
+          "assumption": "one full-token projection only; no other weights/residuals/workspace",
+          "bytes": 5247959040,
+          "exceeds_one_wasm32_memory": true
+        }
+      ],
+      "block_boundary": {
+        "host_x_and_ort_input": 2683699200,
+        "ort_output_and_owned_result": 2683699200,
+        "four_hidden_buffers_if_lifetimes_overlap": 5367398400,
+        "one_hidden_one_way_copy_traffic": 1341849600,
+        "copy_traffic_min_host_to_ort_plus_result_copy": 2683699200,
+        "forty_blocks_input_and_output_min_traffic": 107347968000,
+        "forty_blocks_six_evaluations_min_traffic": 644087808000,
+        "note": "conditional explicit staging; traffic not resident peak; caller/MessagePort clones add independent buffers; backend copies/lifetimes need measurement"
+      },
+      "linear_weight_examples": {
+        "square_fp8_storage": 26214400,
+        "square_f32_compute": 104857600,
+        "ffn_fp8_storage": 70778880,
+        "ffn_f32_compute": 283115520,
+        "note": "per-matrix numbers; supplied cross_attn.o is F16 while listed quantized square matrices use FP8; full compute profile remains unaccepted"
+      }
+    },
+    {
+      "name": "target-source-and-three-same-canvas-images",
+      "scope": "illustrative only; three independent T=1 latent contexts; actual native aspect unknown",
+      "tokens": 70200,
+      "fp32_tensor_bytes": {
+        "hidden_or_residual": 1437696000,
+        "self_qkv_combined": 4313088000,
+        "self_one_head_q_or_k_or_v": 35942400,
+        "self_cached_kv_all_heads": 2875392000,
+        "self_cached_kv_one_head": 71884800,
+        "self_attention_dense_scores_all_heads": 788486400000,
+        "self_attention_dense_scores_one_head": 19712160000,
+        "cross_attention_q": 1437696000,
+        "cross_attention_kv_text512": 20971520,
+        "cross_attention_dense_scores_all_heads": 5750784000,
+        "ffn_expansion_or_gelu_output": 3881779200,
+        "ffn_unfused_expansion_plus_gelu": 7763558400,
+        "ffn_output": 1437696000,
+        "rope_full_matrices_f32": [
+          70200,
+          64,
+          2,
+          2
+        ],
+        "rope_full_matrices_bytes": 71884800,
+        "head_projection_all_tokens_64": 17971200,
+        "all_values_f16_hypothetical_only": {
+          "hidden": 718848000,
+          "qkv": 2156544000,
+          "ffn": 1940889600,
+          "dense_self_all_heads": 394243200000
+        }
+      },
+      "conditional_live_sets": [
+        {
+          "name": "block-f32-self-attention-without-score-materialization",
+          "buffers": {
+            "block_parameters": 1405577216,
+            "residual_x": 1437696000,
+            "qkv": 4313088000,
+            "attention_output": 1437696000
+          },
+          "assumption": "all block weights and QKV resident; separate output; excludes score/probabilities/rope/modulation/workspace",
+          "bytes": 8594057216,
+          "exceeds_one_wasm32_memory": true
+        },
+        {
+          "name": "block-f32-ffn-one-expansion",
+          "buffers": {
+            "block_parameters": 1405577216,
+            "residual_x": 1437696000,
+            "ffn_expansion": 3881779200,
+            "ffn_output": 1437696000
+          },
+          "assumption": "in-place GELU reuse; excludes normalization/modulation/ORT arena and weights source copy",
+          "bytes": 8162748416,
+          "exceeds_one_wasm32_memory": true
+        },
+        {
+          "name": "block-f32-ffn-unfused-gelu",
+          "buffers": {
+            "block_parameters": 1405577216,
+            "residual_x": 1437696000,
+            "ffn_pre_gelu": 3881779200,
+            "ffn_post_gelu": 3881779200,
+            "ffn_output": 1437696000
+          },
+          "assumption": "pre/post GELU both live; excludes runtime arena",
+          "bytes": 12044527616,
+          "exceeds_one_wasm32_memory": true
+        },
+        {
+          "name": "one-f32-ffn-matmul",
+          "buffers": {
+            "single_ffn_weight": 283115520,
+            "input": 1437696000,
+            "output": 3881779200
+          },
+          "assumption": "one full-token projection only; no other weights/residuals/workspace",
+          "bytes": 5602590720,
+          "exceeds_one_wasm32_memory": true
+        }
+      ],
+      "block_boundary": {
+        "host_x_and_ort_input": 2875392000,
+        "ort_output_and_owned_result": 2875392000,
+        "four_hidden_buffers_if_lifetimes_overlap": 5750784000,
+        "one_hidden_one_way_copy_traffic": 1437696000,
+        "copy_traffic_min_host_to_ort_plus_result_copy": 2875392000,
+        "forty_blocks_input_and_output_min_traffic": 115015680000,
+        "forty_blocks_six_evaluations_min_traffic": 690094080000,
+        "note": "conditional explicit staging; traffic not resident peak; caller/MessagePort clones add independent buffers; backend copies/lifetimes need measurement"
+      },
+      "linear_weight_examples": {
+        "square_fp8_storage": 26214400,
+        "square_f32_compute": 104857600,
+        "ffn_fp8_storage": 70778880,
+        "ffn_f32_compute": 283115520,
+        "note": "per-matrix numbers; supplied cross_attn.o is F16 while listed quantized square matrices use FP8; full compute profile remains unaccepted"
+      }
+    }
+  ],
+  "attention_tile_candidate": {
+    "query_rows": 128,
+    "key_rows": 256,
+    "head_dim": 128,
+    "fp32_buffers": {
+      "q": 65536,
+      "k": 131072,
+      "v": 131072,
+      "scores": 131072,
+      "running_output": 65536,
+      "row_max_and_sum": 1024
+    },
+    "known_logical_bytes": 525312,
+    "scope": "algorithm candidate only; not an implemented Hike/ORT attention kernel; excludes double-buffering/normalization/compiled arena; float operation order must be validated"
+  },
+  "transition_resource_scenarios": {
+    "whole_model_two_file_references_resident_weight_bytes": 0,
+    "whole_model_two_file_references_note": "File/Blob references do not prove zero OS cache/RSS; 0 denotes no deliberate full resident weight array",
+    "whole_model_old_new_f32_parameter_lower_bound": 114307932672,
+    "whole_model_old_new_storage_payload_lower_bound": 31149303856,
+    "one_block_old_new_f32_parameter_bytes": 2811154432,
+    "one_block_old_new_with_source_stored_bytes": 3188884759,
+    "one_block_old_new_packages_and_session_weights_if_copied": 5622308864,
+    "one_block_old_new_note": "candidate and previous package plus runtime copies are alternatives, not a guaranteed retention schedule; activations and arena additional",
+    "single_stage_sequential_rule": "HIGH and LOW are mutually staged under same accepted snapshot; A/B packages and previous/candidate state need separate lifetime budgets; no four-model residency promise",
+    "recovery": "release old session first only while generation blocked; retain verified descriptor/assets and reload previous accepted state on failure; restoration timing/memory remains UNVERIFIED"
+  },
+  "existing_partial_evidence": {
+    "reuse_only": true,
+    "path": "docs/shared/diffusion-models/ort-bridge/browser-results.json",
+    "sha256": "5dea99799582ba4da697c71b5b97e64ae1c7e8c8a07ddf153c6f889058824e29",
+    "graph_sha256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+    "ort_version": "1.24.3",
+    "hike_memory": {
+      "wasmSha256": "feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2",
+      "memoryBytes": 1507328,
+      "arenaBytes": 409728,
+      "calls": 4,
+      "inputCopyBytes": 164096,
+      "outputCopyBytes": 655488,
+      "workspaceReused": true,
+      "disposed": false
+    },
+    "scope": "fixed16x5120 Q projection, one explicit activation, real Hike decode->ORT->Hike bias; not full model, block, all FP8 matmul equivalence or total ORT RSS",
+    "known_hike_boundary_bytes": {
+      "fp8_q": 81920,
+      "decoded_f32_weight": 327680,
+      "f32_activation": 20480,
+      "projection": 64,
+      "bias": 64
+    },
+    "ort_memory_bytes": null,
+    "process_peak_rss_bytes": null,
+    "memory_grow_view_rule": "own disjoint fixed arena; create typed views after grow; reuse workspace; returned .slice owns bytes; no raw WASM pointer crosses module APIs"
+  },
+  "source_refs": [
+    {
+      "repo": "Comfy-Org/ComfyUI",
+      "ref": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/ldm/wan/model.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/ldm/wan/model.py",
+      "saved": "comfy_ldm_wan_model.py",
+      "saved_sha256": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699",
+      "actual_sha256_rechecked": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699"
+    },
+    {
+      "repo": "Comfy-Org/ComfyUI",
+      "ref": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/model_detection.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/model_detection.py",
+      "saved": "comfy_model_detection.py",
+      "saved_sha256": "f27614645c541901d72338a7337b01124ad7f40bf90a31428c4f79411805c947",
+      "actual_sha256_rechecked": "f27614645c541901d72338a7337b01124ad7f40bf90a31428c4f79411805c947"
+    },
+    {
+      "repo": "Comfy-Org/ComfyUI",
+      "ref": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/quant_ops.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/quant_ops.py",
+      "saved": "comfy_quant_ops.py",
+      "saved_sha256": "a009c2ef2f729b8c7ebaf8e882ca6871508ffa8fdad73a7a36afd72f1d5b7d3e",
+      "actual_sha256_rechecked": "a009c2ef2f729b8c7ebaf8e882ca6871508ffa8fdad73a7a36afd72f1d5b7d3e"
+    },
+    {
+      "repo": "Comfy-Org/ComfyUI",
+      "ref": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/ops.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/ops.py",
+      "saved": "comfy_ops.py",
+      "saved_sha256": "e0f4cbd79e60def5f8e766fffa9be1cb5b0d059318762028c2a08c28ea2afeaa",
+      "actual_sha256_rechecked": "e0f4cbd79e60def5f8e766fffa9be1cb5b0d059318762028c2a08c28ea2afeaa"
+    },
+    {
+      "repo": "Comfy-Org/comfy-kitchen",
+      "ref": "v0.2.40",
+      "path": "comfy_kitchen/tensor/fp8.py",
+      "saved": "kitchen_fp8.py",
+      "saved_sha256": "d13a2642a3d403a850461a0075c344da54f296e236db4e3fa56e2b5e95c0ce62",
+      "actual_sha256_rechecked": "d13a2642a3d403a850461a0075c344da54f296e236db4e3fa56e2b5e95c0ce62"
+    },
+    {
+      "repo": "Comfy-Org/comfy-kitchen",
+      "ref": "v0.2.40",
+      "path": "comfy_kitchen/backends/eager/quantization.py",
+      "saved": "kitchen_eager_quantization.py",
+      "saved_sha256": "8fbbe554dc705e617f7e940d4e778cb20f1974df032ca58b68e4d6de877b2191",
+      "actual_sha256_rechecked": "8fbbe554dc705e617f7e940d4e778cb20f1974df032ca58b68e4d6de877b2191"
+    }
+  ],
+  "status": [
+    {
+      "unit": "header/quant metadata inspection",
+      "shape": "both original files",
+      "status": "SUPPORTED",
+      "evidence": "current small range reads match previous headers; no full hash recomputed"
+    },
+    {
+      "unit": "whole model resident in one wasm32 Memory",
+      "shape": "either full Bernini stage",
+      "status": "BLOCKED",
+      "reason": "stored payload exceeds4GiB, before activation/session copies; F32 expansion much larger"
+    },
+    {
+      "unit": "dense full-token self attention in one wasm32 Memory",
+      "shape": "N>=32760,40heads,f32",
+      "status": "BLOCKED",
+      "reason": "all-head score171.7GB at minimum target-only; one-head score nearly4GiB alone; source case one-head17.17GB"
+    },
+    {
+      "unit": "one whole F32 block with full-token arrays",
+      "shape": "target/default rv2v",
+      "status": "BLOCKED",
+      "reason": "explicit live sets exceed memory limit, including even single source-case FFN matmul; not a proof that bounded repartition is impossible"
+    },
+    {
+      "unit": "fixed Q tile Hike/ORT partial",
+      "shape": "weight[16,5120],x[1,5120]",
+      "status": "SUPPORTED",
+      "reason": "existing limited real runtime evidence reused; API current numeric limits still apply"
+    },
+    {
+      "unit": "per-linear/FFN token-row tiles and stream attention",
+      "shape": "full target with all ordered contexts",
+      "status": "UNVERIFIED",
+      "reason": "no accepted exported graph/online-softmax Hike implementation, numeric reference, source compute profile, device peak/RSS/time, exact context dimensions, or complete consumer transaction"
+    }
+  ],
+  "independent_owners": {
+    "Diffusion": "base storage/scales/compute profile, graph partitions, internal Hike/ORT memory/copies/session lifetime and numeric validation",
+    "LoRA": "loader/patch arithmetic and full/partial coverage with versioned consumer handshake; provides own workspace/package needs",
+    "Text_VAE": "separate native profile sessions/resources; current small profiles do not certify production shapes",
+    "Manager": "pipeline resource groups/global queue/descriptors; does not implement FP8 decode or attention/normalization; cannot infer memory readiness solely from filenames/hash"
+  },
+  "missing_for_D1_L2": [
+    "actual original context/video/reference dimensions and accepted source compute profile",
+    "actual partition graph assets/hashes/operator and shape contracts",
+    "bounded attention algorithm and exact source-sensitive reduction/softmax/RoPE order acceptance",
+    "all default-shape pointwise/normalization host and ABI coverage",
+    "per-runtime WASM allocator/copy/workspace and total process/device peak measurement",
+    "Hike full numeric and LoRA package/feed transaction lifetime/lease/recovery",
+    "VAE production profile and generated output decode resource receipt"
+  ],
+  "known_fixed_workspaces": {
+    "Euler": {
+      "chunk_elements": 65536,
+      "logical_arena_bytes": 786432,
+      "allocated_memory_bytes": 1835008,
+      "owned_chunk_result_max_bytes": 262144,
+      "production_shape_host_acceptance": "UNVERIFIED; public max1048576 <2096640"
+    },
+    "Scheduler": {
+      "chunk_elements": 4096,
+      "logical_arena_bytes": 49152,
+      "allocated_memory_bytes": 1114112,
+      "production_shape_host_acceptance": "UNVERIFIED; public max1048576 <2096640"
+    },
+    "Mean": {
+      "elements": 128,
+      "logical_arena_bytes": 1024,
+      "allocated_memory_bytes": 1114112,
+      "production_shape_host_acceptance": "BLOCKED by fixed ABI/shape; dynamic channel addressing needed"
+    },
+    "Hike_Q_projection": {
+      "weight_tile_shape": [
+        16,
+        5120
+      ],
+      "logical_arena_bytes": 409728,
+      "allocated_memory_bytes": 1507328,
+      "capacity_scope": "existing bounded diagnostic only"
+    },
+    "scope_note": "known Hike Memory capacities from existing source/evidence; not aggregate ORT/runtime peak; no new kernel execution"
+  },
+  "verification": {
+    "type": "independent Node BigInt/integer cross-check against previous inventory and direct equations",
+    "checks": 62,
+    "passed": 62,
+    "fullModelRuns": 0,
+    "browserOrNewKernelRuns": 0,
+    "modelBytesReadInIndependentCheck": 0
+  },
+  "input_documents": [
+    {
+      "name": "Kushyameln Works AI推論モジュール 実装計画 Draft.md",
+      "sha256": "770d1cdc26c07548cbe12b33cba93d3f22ab3b565ff58b0ba978f3983ff9c64d"
+    },
+    {
+      "name": "Kushyameln Works AI推論モジュール 総合接続仕様書 Draft.md",
+      "sha256": "0744a98219c6ddab4880773029e6318de3e770c8e14e1bb2edbb1bf25c1c3944"
+    }
+  ]
+}

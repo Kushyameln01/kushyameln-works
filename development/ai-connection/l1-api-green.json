@@ -1,0 +1,67 @@
+{
+  "browser": "154.0.8037.57",
+  "scope": "local actual WASM/File validation only; no export or publication",
+  "pageErrors": [],
+  "passed": true,
+  "results": {
+    "api": {
+      "passed": true,
+      "scope": "actual Worker/MessagePort Hike-ORT-Hike F32 partial feed, not LoRA matrix multiplication or Bernini generation",
+      "cases": [
+        {
+          "name": "direct F32 API, caller snapshot and explicit partial capability",
+          "passed": true,
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 1,
+              "inputCopyBytes": 128,
+              "outputCopyBytes": 64,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 225.29999999701977,
+            "elapsed": {
+              "ortMs": 8.399999998509884,
+              "biasMs": 0.30000000074505806,
+              "totalRunMs": 8.699999999254942
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        {
+          "name": "shape/nonfinite rejection",
+          "passed": true
+        },
+        {
+          "name": "MessagePort explicit F32 feed and retained caller input",
+          "passed": true
+        },
+        {
+          "name": "owned Worker cancellation, subsequent rerun, NOT_READY preserved",
+          "passed": true
+        }
+      ]
+    }
+  }
+}

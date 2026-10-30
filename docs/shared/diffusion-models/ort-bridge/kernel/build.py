@@ -15,7 +15,7 @@ p=subprocess.run(command,env=env,capture_output=True,text=True)
 subprocess.run(['node',str(t/'wabt/node_modules/wabt/bin/wasm2wat'),str(r/'bridge.wasm'),'-o',str(r/'bridge.wat')],check=True)
 wat=(r/'bridge.wat').read_text()
 if '(import ' in wat:raise RuntimeError('Unexpected imports')
-signatures={'DequantScale':'i32 i32 f32 i32 i32','AddBias':'i32 i32 i32 i32 i32'}
+signatures={'DequantScale':'i32 i32 f32 i32 i32','AddBias':'i32 i32 i32 i32 i32','DecodeF16':'i32 i32 i32 i32'}
 for name,signature in signatures.items():
     idx=re.search(r'\(export "'+name+r'" \(func (\d+)\)\)',wat).group(1)
     pattern=r'\(func \(;'+idx+r';\) \(type \d+\) \(param '+signature+r'\) \(result i32\)'

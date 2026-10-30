@@ -43,6 +43,7 @@ api.dispose();
 | normalizeRawMean | `{tensor}` | 実Hikeで公開固定profileのraw posterior meanをWan21正規化空間へ変換。所有tensorと証拠を返す |
 | restoreRawMean | `{tensor}` | version付きnormalized posterior meanを実Hikeでraw meanへ復元。生成sampleをmeanへ言い換えない |
 | linearProjection | `{q,scale,bias,x}` | 実Hike FP8復号→ORT WASM Gemm→Hike biasの固定部分演算。output16要素と証拠 |
+| linearProjectionF32 | `{weight:Float32Array(81920),x:Float32Array(5120),bias:Float32Array(16)}` | 明示F32 runtime weightを実ORT Gemmへ渡し実Hike biasを加算。partialOnly。LoRA低rank演算や全モデル適用は行わない |
 | load | `{file: File または Blob}` | 先にヘッダー検査を行い、その後NOT_READY。大容量モデルはdetails.reasonsにSINGLE_WASM32_MEMORY_EXCEEDED |
 | predict / sample | `{}` | NOT_READY。仮のニューラル出力や注入predictorを返さない |
 | cancel | `{jobId: 対象jobId,inputRevision: 対象revision}` | 自分が所有する実行中Workerだけ終了。対象のPromiseはCANCELLEDで終端化 |
@@ -110,3 +111,10 @@ LoRA用に `inspectLora` / `loadLora` / `listLoras` / `readLora` / `readLoraSour
 読出しは1回4MiB以下の所有Uint8Array。F16/BF16/F32の保存bitsと元のshape・tensor名・範囲・hashを返し、LoRAの数値加算を行わない。対応する通常pairと `.diff/.diff_b` のshapeを実Bernini targetと照合する。`loraWeightIO:true` と `loraApplied:false` を区別し、モデル全体のNOT_READYを解除しない。
 
 別担当LoRA SDKのsource契約へは `createLoraSource` で接続できる。SDKの実graph consumer・package/session切替は別の未実装境界である。詳細、対象モデルhash、対応形式、保持・所有権は [LoRA接続仕様](lora/API.md) を参照する。
+
+
+## L1: bounded F32 runtime weightと実base診断
+
+`linearProjectionF32`はcompact・非shared・非detachedの有限配列をdispatch前に検査する。caller入力は保持し、Workerへcloneし、stageはORT async実行前に所有copyを取る。Worker結果はtransfer、port結果はclone。既存`linearProjection`のFP8原本入力を変更・再量子化しない。capabilitiesの同名fieldは部分受口の存在だけを示し、`modelInference:false`、`loraApplied:false`を維持する。
+
+独立ES moduleの実base provider、PARTIAL registry、runtime-feed-set sink/candidateは [DIAGNOSTIC_API.md](lora/DIAGNOSTIC_API.md) を参照。これはSDK v1のinitializer/boolean validate契約ではなく、LoRA担当がbinding別partial adapterで接続する新しい診断契約である。通常のload/predict/sample、pointwise上限1,048,576、mean kernel128要素は変更していない。

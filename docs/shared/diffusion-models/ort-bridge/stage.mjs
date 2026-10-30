@@ -49,6 +49,27 @@ export async function createOrtProjectionStage({hikeBytes}={}){
     result?.projection?.dispose?.();xTensor?.dispose?.();wTensor?.dispose?.();busy=false;
    }
   },
+  async runF32({weight,bias,x}){
+   if(disposed)throw Error('Projection stage disposed');
+   if(busy)throw Error('Projection stage busy');
+   floats(weight,81920);floats(bias,16);floats(x,5120);
+   // Explicit runtime-input binding. This does not label a weight feed as an
+   // initializer, and does not dequantize or reapply any LoRA delta.
+   const weights=new Float32Array(weight),xOwned=new Float32Array(x),biasOwned=new Float32Array(bias);
+   busy=true;let xTensor,wTensor,result;
+   try{
+    const start=performance.now();
+    xTensor=new ort.Tensor('float32',xOwned,[1,5120]);
+    wTensor=new ort.Tensor('float32',weights,[16,5120]);
+    result=await session.run({x:xTensor,weight:wTensor});
+    const afterOrt=performance.now(),projection=result.projection;
+    if(projection.type!=='float32'||projection.dims.length!==2||projection.dims[0]!==1||projection.dims[1]!==16)throw Error('Unexpected ORT partial tensor');
+    const output=hike.addBias(projection.data,biasOwned),end=performance.now();
+    return {output,evidence:{scope:'partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application',inputEncoding:'F32-runtime-weight',executionProviders:['wasm'],ortVersion:ort.env.versions?.web??null,numThreads:ort.env.wasm.numThreads,proxy:ort.env.wasm.proxy,graphSHA256,hikeWasmSHA256:BRIDGE_WASM_SHA256,hikeMemory:hike.stats(),sessionCreateMs,elapsed:{ortMs:afterOrt-start,biasMs:end-afterOrt,totalRunMs:end-start},boundaryBytes:{f32WeightInput:327680,xInput:20480,ortOutputToHike:64,biasInput:64,ownedOutput:64},OSMemoryPeak:null,OSMemoryReason:'not measured for bounded operator validation'}};
+   }finally{
+    result?.projection?.dispose?.();xTensor?.dispose?.();wTensor?.dispose?.();busy=false;
+   }
+  },
   async dispose(){
    if(disposed)return;
    if(busy)throw Error('Cannot dispose an active projection stage; terminate its owned Worker for cancellation');

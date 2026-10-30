@@ -1,0 +1,61 @@
+TAP version 13
+# Subtest: owned Hike F32 block from immutable actual LOW base
+ok 1 - owned Hike F32 block from immutable actual LOW base
+  ---
+  duration_ms: 42.367219
+  type: 'test'
+  ...
+# Subtest: owned Hike F32 block from immutable actual HIGH base
+ok 2 - owned Hike F32 block from immutable actual HIGH base
+  ---
+  duration_ms: 33.852838
+  type: 'test'
+  ...
+# Subtest: header/side, range and registry snapshot checks precede acceptance
+ok 3 - header/side, range and registry snapshot checks precede acceptance
+  ---
+  duration_ms: 9.262458
+  type: 'test'
+  ...
+# Subtest: quantization payload must match the explicit scalar E4M3FN profile
+ok 4 - quantization payload must match the explicit scalar E4M3FN profile
+  ---
+  duration_ms: 10.222182
+  type: 'test'
+  ...
+# Subtest: canonical registry bytes use UTF16 keys, ECMAScript finite numbers and reject malformed Unicode
+ok 5 - canonical registry bytes use UTF16 keys, ECMAScript finite numbers and reject malformed Unicode
+  ---
+  duration_ms: 0.381731
+  type: 'test'
+  ...
+# Subtest: canonical registry rejects sparse arrays instead of hashing non-JSON holes
+not ok 6 - canonical registry rejects sparse arrays instead of hashing non-JSON holes
+  ---
+  duration_ms: 0.64896
+  type: 'test'
+  location: '/workspace/work/diffusion-models/docs/shared/diffusion-models/lora/test-diagnostic-base.mjs:65:1'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected exception.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/lora/test-diagnostic-base.mjs:66:9)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 5
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 118.488147
