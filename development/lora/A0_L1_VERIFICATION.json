@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "status": "A0_L1_NATIVE_FIXTURES_PASS_REAL_DIFFUSION_BLOCKED",
+  "dateJST": "2026-10-31",
+  "commonSpec": {
+    "pageId": "page_65b303c9bc708191a7e48c78b51c35a7",
+    "documentVersion": "1.1-draft.1",
+    "retrieval": "Page full body",
+    "sequence": 1
+  },
+  "baselineCommit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+  "nativeContract": "lora-connection/2.0-draft.1",
+  "tests": {
+    "command": "node --test tools/lora/test-*.mjs",
+    "pass": 74,
+    "fail": 0,
+    "baselineTestsIncluded": 32,
+    "log": "development/lora/a0-l1-tests.log"
+  },
+  "browser": {
+    "command": "node tools/lora/test-panel.cjs",
+    "pass": 12,
+    "fail": 0,
+    "host": "Chromium",
+    "modelHTTPRequests": 0,
+    "log": "development/lora/a0-l1-browser.json"
+  },
+  "inventoryPlan": {
+    "command": "node tools/lora/check-inventory-plan-v2.mjs",
+    "scope": "RECONSTRUCTED_INVENTORY_SCHEMA_FIXTURE_NOT_RAW_HEADER_NOT_REAL_BASE_OR_GRAPH",
+    "numericalCalculation": false,
+    "sourcePayloadRehashed": false
+  },
+  "compute": {
+    "kernel": "Hike WASM",
+    "wasmSha256": "da6d56fca5d9bc91173681c22b91cd9337f53ea067d84455b9d659ee7ee52984",
+    "base": "tiny synthetic immutable nonzero F32 arrays",
+    "adapters": "tiny synthetic original safetensors",
+    "sourceStorageDtypes": "existing decoder BF16/F16/F32 fixtures; new SDK fixtures use F32",
+    "realBaseComparison": "NOT_VERIFIED",
+    "realSessionApplication": "NOT_VERIFIED",
+    "generatedOutputContribution": "NOT_VERIFIED"
+  },
+  "review": {
+    "scope": "independent A0/L1 code/spec review",
+    "verdict": "no remaining blocking findings after five fixes",
+    "focusedRegressions": 6,
+    "report": "development/lora/A0_L1_REVIEW.md"
+  },
+  "lifecycle": {
+    "validated": [
+      "bounded cooperative cancellation",
+      "old plan invalidation",
+      "immutable full-base offsets",
+      "zero and negative strength",
+      "source and partial context capture",
+      "scoped validation and declared staging state",
+      "independent consumer copy survives prepared release",
+      "valid lease blocks release",
+      "failed rollback retains prepared",
+      "failed release retry",
+      "failed sink abort retry",
+      "v2-to-v1 commit failure retains native rollback identity"
+    ],
+    "consumerOwnership": "explicit owner contract; arbitrary session internals cannot be inspected"
+  },
+  "implementationNotPerformed": [
+    "real Diffusion registry/provider/consumer integration",
+    "L2 full-target real-base acceptance",
+    "full-model inference",
+    "simultaneous pair composition",
+    "GitHub push",
+    "public site publication"
+  ]
+}
