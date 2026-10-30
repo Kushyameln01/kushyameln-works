@@ -1,0 +1,47 @@
+package main
+
+// Host supplies disjoint validated arenas; all pointers use byte addresses.
+cfunc LoraMerge(base *float32, down *float32, up *float32, out *float32, rows int32, cols int32, rank int32, scale float32) int32 {
+    if rows < 1 || cols < 1 || rank < 1 { return -1 }
+    for i := int32(0); i < rows; i = i + 1 {
+        for j := int32(0); j < cols; j = j + 1 {
+            var sum float32 = 0
+            for k := int32(0); k < rank; k = k + 1 { sum = sum + up[i * rank + k] * down[k * cols + j] }
+            out[i * cols + j] = base[i * cols + j] + scale * sum
+        }
+    }
+    return 0
+}
+cfunc LoraAdd(base *float32, delta *float32, out *float32, n int32, scale float32) int32 {
+    if n < 0 { return -1 }
+    for i := int32(0); i < n; i = i + 1 { out[i] = base[i] + scale * delta[i] }
+    return 0
+}
+cfunc LoraCopy(input *float32, out *float32, n int32) int32 {
+    if n < 0 { return -1 }
+    for i := int32(0); i < n; i = i + 1 { out[i] = input[i] }
+    return 0
+}
+// mode 1 = BF16, mode 2 = IEEE binary16. Reject infinities and NaNs.
+cfunc LoraDecode(input *int32, out *float32, n int32, mode int32) int32 {
+    if n < 0 || mode < 1 || mode > 2 { return -1 }
+    for i := int32(0); i < n; i = i + 1 {
+        bits := input[i]
+        divisor := int32(128)
+        maxExp := int32(255)
+        bias := int32(127)
+        if mode == 2 { divisor = 1024; maxExp = 31; bias = 15 }
+        exponent := (bits / divisor) % (maxExp + 1)
+        fraction := bits % divisor
+        if exponent == maxExp { return -2 }
+        var value float32 = float32(fraction) / float32(divisor)
+        power := exponent - bias
+        if exponent == 0 { power = 1 - bias } else { value = value + 1 }
+        for power < 0 { value = value * 0.5; power = power + 1 }
+        for power > 0 { value = value * 2; power = power - 1 }
+        if bits >= 32768 { value = -value }
+        out[i] = value
+    }
+    return 0
+}
+func main() int { return 0 }
