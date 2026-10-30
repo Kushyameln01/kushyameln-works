@@ -22,4 +22,16 @@
 
 ## 公開受入
 
-公開後、実URLから新規ファイルのbytes/SHA・MIMEを照合し、実Chromiumで個別UI、公開originのWorker、Hike/ORT WASM、ローカルモデル入力、結果保存・数値比較を確認する。これらの実測を得るまでは、mainへのpushだけを公開実行の成功とは扱わない。実測結果は公開後に本記録へ追記する。
+実装コミット `54c9622e85b4b0c99f3d7d72cdc2c8c0c55d40bf` をmainへpushし、Pages APIが同じcommitのbuildを `built` と返したことを確認した。
+
+公開URLから新規資材と一覧ページの28ファイルを取得し、13,611,277 bytesすべてのSHA・バイト列・MIMEを候補と照合した。実Chromium154.0.8037.57で両UI、JavaScript/MessagePort API、公開originの専用Worker、Hike/ORT WASM、ローカルFile入力、結果ダウンロードを実行した。全試験は169.64秒。ページエラー・遮断対象リクエストは0、HTTPは公開originへのGETだけで、モデルや入力素材のアップロードはなかった。
+
+| 実公開経路 | FP32参照との最大絶対誤差 | 判定 |
+| --- | --- | --- |
+| Text Encoder、実24層＋Hike最終RMSNorm | 2.86102294921875e-6 | 合格、`[1,4,4096]` を回収 |
+| PNG5枚→Hike値域変換→VAE encode | 1.1920928955078125e-6 | 合格、Hike呼出し1回 |
+| 既知raw latent→Hike conv2→VAE decode | 8.046627044677734e-7 | 合格、Hike呼出し17回 |
+
+公開受入の要約は `public-verification.json`。元の実行記録・回収tensorは作業環境の `/workspace/work/inference/publication/live-verified/` に保持する。モデル本体や結果tensorをこのJSONや公開Git履歴へ同梱していない。別Codexの実Diffusion/包括UIとの対向接続や、元GPU算術・利用者端末の負荷低減をこの試験で認定していない。
+
+初回ブラウザ検査は検証環境のNSS DB書込み制限で証明書検証に失敗した。既存CAは登録済みで、ChromiumのDB初期化に必要なtask単位の書込み許可を与えて解消した。TLS検証を無効化せず、新しいCAの登録も不要だった。これは公開コードの不具合ではなく検証環境の設定差であり、失敗記録も保存した。検査後に専用ブラウザを終了した。
