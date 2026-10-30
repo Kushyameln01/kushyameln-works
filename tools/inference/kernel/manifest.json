@@ -1,0 +1,28 @@
+{
+  "compilerCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "compilerSha256": "f41a501783e98f2d1d72dca95099f87ef3b4dff30477d0db486e7b2e44106e75",
+  "sourceSha256": "09625a5a955b843fdf15b22676429c3774600b3dd3aaa53fc77325869fcd0490",
+  "wasmSha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+  "hostSha256": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65",
+  "backend": "wabt normal",
+  "command": [
+    "/workspace/work/inference/hike-kernel/toolchain/hikec",
+    "build",
+    "-target",
+    "wabt",
+    "-wasm-mode",
+    "normal",
+    "-o",
+    "/workspace/kushyameln-works/docs/shared/inference/kernel/tensor.wasm",
+    "/workspace/kushyameln-works/tools/inference/kernel/tensor.hike"
+  ],
+  "imports": [
+    {
+      "module": "env",
+      "name": "sqrt",
+      "signature": "f64->f64",
+      "bridge": "Fixed compiler runtime Math.sqrt"
+    }
+  ],
+  "scope": "Real Hike f32 affine/MatMul/divide/RMSNorm with documented sqrt primitive; numeric tolerance tested separately"
+}

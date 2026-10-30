@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-31 JST",
+  "tests": [
+    {
+      "name": "tensor",
+      "chunk_id": "c0a296",
+      "wall_time_seconds": 0.657560498,
+      "exit_code": 0,
+      "original_token_count": 17,
+      "output": "PASS: tensor binary, dtype/shape/hash, semantic connection checks\n"
+    },
+    {
+      "name": "controller",
+      "chunk_id": "fe54a3",
+      "wall_time_seconds": 0.615352939,
+      "exit_code": 0,
+      "original_token_count": 25,
+      "output": "PASS: owned Worker termination, busy rejection, stale success/failure, restart and error cleanup\n"
+    },
+    {
+      "name": "hike",
+      "chunk_id": "ff21cf",
+      "wall_time_seconds": 0.647178662,
+      "exit_code": 0,
+      "original_token_count": 24,
+      "output": "PASS: actual Hike divide/RMSNorm, oversized affine and column-chunk MatMul, bounded workspace\n"
+    },
+    {
+      "name": "external-api",
+      "chunk_id": "fa7093",
+      "wall_time_seconds": 0.751169323,
+      "exit_code": 0,
+      "original_token_count": 26,
+      "output": "PASS: separate modules, shared executor, real MessagePort RPC version/role/method/duplicate-ID boundary\n"
+    },
+    {
+      "name": "vae-api",
+      "chunk_id": "cedf86",
+      "wall_time_seconds": 0.654016221,
+      "exit_code": 0,
+      "original_token_count": 21,
+      "output": "{\"passed\":true,\"scope\":\"profile/tensor rejection and required local-file contract\"}\n"
+    },
+    {
+      "name": "text-runtime",
+      "chunk_id": "19573e",
+      "wall_time_seconds": 0.920989785,
+      "exit_code": 0,
+      "original_token_count": 137,
+      "output": "\u2714 text runtime exports actual staged loader and manifest inspector (1.94751ms)\n\u2714 incomplete or wrong-model manifests are rejected before any model session (1.08915ms)\n\u2714 24 staged sessions are released and only trailing mask0 rows are compacted (97.051622ms)\n\u2714 abort immediately after session creation still releases that session (56.318765ms)\n\u2714 corrupted requested embedding rows fail before ORT execution (54.874699ms)\n\u2139 tests 5\n\u2139 suites 0\n\u2139 pass 5\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 223.444557\n"
+    },
+    {
+      "name": "text-prepare-contract",
+      "chunk_id": "264c57",
+      "wall_time_seconds": 0.748027029,
+      "exit_code": 0,
+      "original_token_count": 25,
+      "output": ".\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK\n"
+    },
+    {
+      "name": "text-preflight",
+      "command": "python tools/inference/text-encoder/test_preflight.py",
+      "exit_code": 0,
+      "tests": 7,
+      "scope": "Public/symlink output rejection, source/config integrity, limit and resume preflight before heavy imports"
+    }
+  ]
+}
