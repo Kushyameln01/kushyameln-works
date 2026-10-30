@@ -1,0 +1,365 @@
+{
+  "schemaVersion": 1,
+  "status": "BLOCKED_NOT_AN_EXECUTED_TEST",
+  "requiredPeerCommit": "f522d9aeff313558c4ef83022a340af9a4c21391",
+  "executionOrder": "sequential light HIGH, light LOW, detail HIGH, detail LOW; no simultaneous composition",
+  "cases": [
+    {
+      "pairId": "light",
+      "side": "HIGH",
+      "fileName": "Bernini-R_LightX2V_high_noise.safetensors",
+      "originalHashEvidence": {
+        "sha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "status": "RETAINED_PREVIOUS_WHOLE_FILE_EVIDENCE_NOT_FRESHLY_REHASHED",
+        "bytes": 1244141856
+      },
+      "metadataOnlyObservation": {
+        "exists": true,
+        "bytes": 1244141856,
+        "mtimeNs": "1793377657813734192",
+        "contentIdentityProvenByThisStat": false
+      },
+      "target": "diffusion_model.blocks.0.self_attn.q.weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "selectedRows": {
+        "start": 0,
+        "endExclusive": 16
+      },
+      "selectedColumns": {
+        "start": 0,
+        "endExclusive": 5120
+      },
+      "selectedWeightElements": 81920,
+      "selectedWeightBytesF32": 327680,
+      "biasPatchTarget": "diffusion_model.blocks.0.self_attn.q.bias",
+      "selectedPatchedBiasElements": 16,
+      "consumerOutputs": 16,
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "wholeExcludedPatchCount": 1050,
+      "selectedTargetExcludedRows": [
+        16,
+        5120
+      ],
+      "lightWeightDiffsExcluded": 201,
+      "sourceVariant": "linear-down-up",
+      "rank": 128,
+      "alpha": 128,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "strengthCases": {
+        "zero": 0,
+        "usedNonzeroStrength": null,
+        "negativeWithinDeclaredRange": null,
+        "nullMeaning": "await real execution profile; no default adopted"
+      },
+      "activation": {
+        "status": "NOT_RECEIVED",
+        "sha256": null
+      },
+      "precisionAndErrorGate": {
+        "status": "NOT_FIXED_DO_NOT_RUN",
+        "baseDecodeGate": null,
+        "weightsGate": null,
+        "biasGate": null,
+        "projectionGate": null
+      },
+      "expectedBoundedBlocks": {
+        "weightOffsetCountsElements": [
+          [
+            0,
+            30720
+          ],
+          [
+            30720,
+            30720
+          ],
+          [
+            61440,
+            20480
+          ]
+        ],
+        "biasOffsetCountsElements": [
+          [
+            0,
+            16
+          ]
+        ]
+      },
+      "unpatchedDetailBias": null,
+      "comparisonResult": "NOT_RUN",
+      "allOutputValues": null,
+      "nullOutputMeaning": "No consumer execution; zero/empty synthetic values are not substituted"
+    },
+    {
+      "pairId": "light",
+      "side": "LOW",
+      "fileName": "Bernini-R_LightX2V_low_noise.safetensors",
+      "originalHashEvidence": {
+        "sha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+        "status": "RETAINED_PREVIOUS_WHOLE_FILE_EVIDENCE_NOT_FRESHLY_REHASHED",
+        "bytes": 1244141856
+      },
+      "metadataOnlyObservation": {
+        "exists": true,
+        "bytes": 1244141856,
+        "mtimeNs": "1793377657025711256",
+        "contentIdentityProvenByThisStat": false
+      },
+      "target": "diffusion_model.blocks.0.self_attn.q.weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "selectedRows": {
+        "start": 0,
+        "endExclusive": 16
+      },
+      "selectedColumns": {
+        "start": 0,
+        "endExclusive": 5120
+      },
+      "selectedWeightElements": 81920,
+      "selectedWeightBytesF32": 327680,
+      "biasPatchTarget": "diffusion_model.blocks.0.self_attn.q.bias",
+      "selectedPatchedBiasElements": 16,
+      "consumerOutputs": 16,
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "wholeExcludedPatchCount": 1050,
+      "selectedTargetExcludedRows": [
+        16,
+        5120
+      ],
+      "lightWeightDiffsExcluded": 201,
+      "sourceVariant": "linear-down-up",
+      "rank": 128,
+      "alpha": 128,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "strengthCases": {
+        "zero": 0,
+        "usedNonzeroStrength": null,
+        "negativeWithinDeclaredRange": null,
+        "nullMeaning": "await real execution profile; no default adopted"
+      },
+      "activation": {
+        "status": "NOT_RECEIVED",
+        "sha256": null
+      },
+      "precisionAndErrorGate": {
+        "status": "NOT_FIXED_DO_NOT_RUN",
+        "baseDecodeGate": null,
+        "weightsGate": null,
+        "biasGate": null,
+        "projectionGate": null
+      },
+      "expectedBoundedBlocks": {
+        "weightOffsetCountsElements": [
+          [
+            0,
+            30720
+          ],
+          [
+            30720,
+            30720
+          ],
+          [
+            61440,
+            20480
+          ]
+        ],
+        "biasOffsetCountsElements": [
+          [
+            0,
+            16
+          ]
+        ]
+      },
+      "unpatchedDetailBias": null,
+      "comparisonResult": "NOT_RUN",
+      "allOutputValues": null,
+      "nullOutputMeaning": "No consumer execution; zero/empty synthetic values are not substituted"
+    },
+    {
+      "pairId": "detail",
+      "side": "HIGH",
+      "fileName": "NSFW-22-H-e8.safetensors",
+      "originalHashEvidence": {
+        "sha256": "34e2144d3cd65360f97d09ccbe03e1c39a096df6c9234af5fe3899d1b63cda39",
+        "status": "RETAINED_PREVIOUS_WHOLE_FILE_EVIDENCE_NOT_FRESHLY_REHASHED",
+        "bytes": 613516752
+      },
+      "metadataOnlyObservation": {
+        "exists": true,
+        "bytes": 613516752,
+        "mtimeNs": "1793378385736811756",
+        "contentIdentityProvenByThisStat": false
+      },
+      "target": "diffusion_model.blocks.0.self_attn.q.weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "selectedRows": {
+        "start": 0,
+        "endExclusive": 16
+      },
+      "selectedColumns": {
+        "start": 0,
+        "endExclusive": 5120
+      },
+      "selectedWeightElements": 81920,
+      "selectedWeightBytesF32": 327680,
+      "biasPatchTarget": null,
+      "selectedPatchedBiasElements": 0,
+      "consumerOutputs": 16,
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "wholeExcludedPatchCount": 399,
+      "selectedTargetExcludedRows": [
+        16,
+        5120
+      ],
+      "lightWeightDiffsExcluded": 0,
+      "sourceVariant": "linear-a-b",
+      "rank": 64,
+      "alpha": null,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "strengthCases": {
+        "zero": 0,
+        "usedNonzeroStrength": null,
+        "negativeWithinDeclaredRange": null,
+        "nullMeaning": "await real execution profile; no default adopted"
+      },
+      "activation": {
+        "status": "NOT_RECEIVED",
+        "sha256": null
+      },
+      "precisionAndErrorGate": {
+        "status": "NOT_FIXED_DO_NOT_RUN",
+        "baseDecodeGate": null,
+        "weightsGate": null,
+        "biasGate": null,
+        "projectionGate": null
+      },
+      "expectedBoundedBlocks": {
+        "weightOffsetCountsElements": [
+          [
+            0,
+            61440
+          ],
+          [
+            61440,
+            20480
+          ]
+        ],
+        "biasOffsetCountsElements": []
+      },
+      "unpatchedDetailBias": "Preserve actual base bias if consumer profile uses it; do not assume zero/absence",
+      "comparisonResult": "NOT_RUN",
+      "allOutputValues": null,
+      "nullOutputMeaning": "No consumer execution; zero/empty synthetic values are not substituted"
+    },
+    {
+      "pairId": "detail",
+      "side": "LOW",
+      "fileName": "NSFW-22-L-e8.safetensors",
+      "originalHashEvidence": {
+        "sha256": "d6b783742f4d5fd63a0223ae1d5bf64fc995a6b408480ac2a00528ae0d4146db",
+        "status": "RETAINED_PREVIOUS_WHOLE_FILE_EVIDENCE_NOT_FRESHLY_REHASHED",
+        "bytes": 613516752
+      },
+      "metadataOnlyObservation": {
+        "exists": true,
+        "bytes": 613516752,
+        "mtimeNs": "1793378385440803919",
+        "contentIdentityProvenByThisStat": false
+      },
+      "target": "diffusion_model.blocks.0.self_attn.q.weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "selectedRows": {
+        "start": 0,
+        "endExclusive": 16
+      },
+      "selectedColumns": {
+        "start": 0,
+        "endExclusive": 5120
+      },
+      "selectedWeightElements": 81920,
+      "selectedWeightBytesF32": 327680,
+      "biasPatchTarget": null,
+      "selectedPatchedBiasElements": 0,
+      "consumerOutputs": 16,
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "wholeExcludedPatchCount": 399,
+      "selectedTargetExcludedRows": [
+        16,
+        5120
+      ],
+      "lightWeightDiffsExcluded": 0,
+      "sourceVariant": "linear-a-b",
+      "rank": 64,
+      "alpha": null,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "strengthCases": {
+        "zero": 0,
+        "usedNonzeroStrength": null,
+        "negativeWithinDeclaredRange": null,
+        "nullMeaning": "await real execution profile; no default adopted"
+      },
+      "activation": {
+        "status": "NOT_RECEIVED",
+        "sha256": null
+      },
+      "precisionAndErrorGate": {
+        "status": "NOT_FIXED_DO_NOT_RUN",
+        "baseDecodeGate": null,
+        "weightsGate": null,
+        "biasGate": null,
+        "projectionGate": null
+      },
+      "expectedBoundedBlocks": {
+        "weightOffsetCountsElements": [
+          [
+            0,
+            61440
+          ],
+          [
+            61440,
+            20480
+          ]
+        ],
+        "biasOffsetCountsElements": []
+      },
+      "unpatchedDetailBias": "Preserve actual base bias if consumer profile uses it; do not assume zero/absence",
+      "comparisonResult": "NOT_RUN",
+      "allOutputValues": null,
+      "nullOutputMeaning": "No consumer execution; zero/empty synthetic values are not substituted"
+    }
+  ],
+  "totalPerStrengthAcrossFourOriginals": {
+    "weightElements": 327680,
+    "patchedLightBiasElements": 32,
+    "consumerOutputs": 64
+  },
+  "lifecycleCasesRequired": [
+    "zero strength",
+    "declared used nonzero strength",
+    "negative inside declared range",
+    "immutable-base restore/detach and reapply",
+    "no double addition",
+    "wrong binding",
+    "missing duplicate out-of-range or corrupt checksum blocks",
+    "cooperative cancel and terminal cleanup",
+    "failure recovery and stale rollback",
+    "independent-copy or active lease and safe prepared release",
+    "v1 adapter refuses PARTIAL and runtime-input without relabeling"
+  ],
+  "readiness": "Await exact peer public contract, base inputs, independent arithmetic profile, activation, strengths and pre-execution gates"
+}
