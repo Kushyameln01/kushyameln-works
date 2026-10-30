@@ -38,3 +38,6 @@ A test consumer returning hand-checked weights does not satisfy those gates. No 
 Read `IDEAL_STATE.md` then `docs/shared/inference/lora/README.md`. Build using `python tools/lora/kernel/build.py` and the pinned isolated toolchain manifest; run documented Node, Chromium, original-input inventory and Python slice commands. Serve `docs/` via a local HTTP server, open `/lora/`, choose the terminal folder. Apply stays disabled until the real consumer is connected via `mountLoraPanel(...).connect(...)`.
 
 The original four files remain in `/workspace/work/lora/light-safetensors/` and `/workspace/work/lora/detail-safetensors/` unchanged. Final output folder required by this chat's host is not writable/available in this cloud executor; implementation and reviewable reports are kept in the local worktree instead.
+
+## GitHub reflection update — 2026-10-31 JST
+Rebased on upstream bcfe0c2 and read docs/shared/diffusion-models/API.md plus development/diffusion-models/REV3_RESULT.md. This supersedes the earlier observation that Diffusion was absent: partial Diffusion API exists, but load/predict/sample remain NOT_READY and no LoRA target registry/package load transaction is exposed. LoRA32 Node tests pass on the combined tree. No model binaries are included; local folder remains the primary input.

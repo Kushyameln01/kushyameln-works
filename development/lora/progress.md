@@ -12,3 +12,6 @@ Repository test baseline14 failures reproduced unchanged in original checkout; n
 Task4: final Node32 passed, browser panel10 passed, kernel HTTP+real4 slices passed. Independent review findings resolved with observed RED→GREEN. Public upstream latest checked: text/VAE exists, Diffusion/LoRA target consumer absent; record upstream-connection.json. Actual end-to-end inference NOT COMPLETE. No invented substitute. Final purpose audit pending, local branch ready for handoff, no publication.
 
 Final independent purpose audit PROCEED: reviewer independently reran Node32 and Chromium panel10/kernel. No scope-blocking findings, no real-inference completion claim. Upstream acquisition refs are stored in upstream-connection.json; downloaded API source snapshot /workspace/work/lora/upstream/API.md. This checkpoint ends at independent LoRA implementation, not integrated inference.
+
+## GitHub reflection update — 2026-10-31 JST
+Rebased on upstream bcfe0c2 and read docs/shared/diffusion-models/API.md plus development/diffusion-models/REV3_RESULT.md. This supersedes the earlier observation that Diffusion was absent: partial Diffusion API exists, but load/predict/sample remain NOT_READY and no LoRA target registry/package load transaction is exposed. LoRA32 Node tests pass on the combined tree. No model binaries are included; local folder remains the primary input.
