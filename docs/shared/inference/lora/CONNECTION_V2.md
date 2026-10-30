@@ -4,6 +4,8 @@ Native contract: `lora-connection/2.0-draft.1`。既存の [SDK v1](README.md) �
 
 この契約の実装と、Diffusion実graphへの結合合格は別である。実baseのprovider・registry・consumerは取得後に受け入れる。A0/L1ではfixture、Hike重み計算、test consumerまでを検証し、実base適合・実session適用・生成結果への寄与は未検証として残す。
 
+取得・実行依存・検証command・必要生成物と再build手順は [REPRODUCE.md](../../../../development/lora/REPRODUCE.md) にまとめている。作業branchは `feat/lora-hike`。
+
 ## 正本と取得先
 
 | 正本 | repository内のpath | 用途 |
