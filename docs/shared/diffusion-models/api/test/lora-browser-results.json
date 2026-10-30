@@ -1,0 +1,74 @@
+{
+  "browser": "154.0.8037.57",
+  "errors": [],
+  "result": {
+    "passed": true,
+    "scope": "synthetic LoRA file-backed IO/session controls only; no LoRA arithmetic or full inference",
+    "tests": [
+      {
+        "name": "Capabilities distinguish LoRA weight IO from unapplied full inference",
+        "passed": true
+      },
+      {
+        "name": "Header inspection identifies actual paired stored tensors without full hash",
+        "passed": true
+      },
+      {
+        "name": "Two stage bindings preserve explicit zero strength and hash original bytes",
+        "passed": true
+      },
+      {
+        "name": "F16 BF16 F32 reads return exact owned stored bytes with finite range evidence",
+        "passed": true
+      },
+      {
+        "name": "Host metadata is independent of returned load and list mutations",
+        "passed": true
+      },
+      {
+        "name": "Invalid declaration failed replacement and expected-hash failure preserve old binding",
+        "passed": true
+      },
+      {
+        "name": "Raw source reads preserve file identity and enforce range bounds",
+        "passed": true
+      },
+      {
+        "name": "Wrong stage foreign handle and invalid tensor ranges are rejected",
+        "passed": true
+      },
+      {
+        "name": "Cancelled replacement and Worker regeneration keep earlier binding readable",
+        "passed": true
+      },
+      {
+        "name": "Busy control operations do not mutate bindings and a newer revision supersedes pending replacement",
+        "passed": true
+      },
+      {
+        "name": "Successful replacement invalidates the earlier opaque handle",
+        "passed": true
+      },
+      {
+        "name": "Stale terminated Worker success cannot commit even when request identity is reused",
+        "passed": true
+      },
+      {
+        "name": "Explicit MessagePort loads files lists bindings and returns binary source and tensor bytes",
+        "passed": true
+      },
+      {
+        "name": "Numeric payload validation is performed on tensor ranges and not falsely claimed by loading",
+        "passed": true
+      },
+      {
+        "name": "Unload clears only the matching stage while predict and sample remain NOT_READY",
+        "passed": true
+      },
+      {
+        "name": "Dispose settles in-flight work and refuses subsequent LoRA access",
+        "passed": true
+      }
+    ]
+  }
+}
