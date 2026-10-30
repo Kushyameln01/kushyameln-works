@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const here=path.dirname(fileURLToPath(import.meta.url));
+assert.ok(fs.existsSync(path.join(here,'build/linear.wasm')),'Missing Hike FP8 linear WASM implementation');
+const {runCases}=await import('./test-cases.mjs');
+const report=await runCases(async name=>new Uint8Array(fs.readFileSync(path.join(here,name))));
+fs.writeFileSync(path.join(here,'work/node-results.json'),JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify(report));
