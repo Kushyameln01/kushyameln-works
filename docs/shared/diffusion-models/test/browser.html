@@ -1,0 +1,15 @@
+<!doctype html><meta charset="utf-8"><title>Diffusion Hike Euler component verification</title>
+<pre id="result">Running component checks</pre>
+<script type="module">
+import {runCases} from './cases.mjs';
+import {EULER_WASM_SHA256} from '../kernel-registry.mjs';
+try {
+  const r=await fetch('../kernel/euler.wasm');
+  if(!r.ok) throw Error('WASM HTTP '+r.status);
+  const bytes=await r.arrayBuffer();
+  const fetchedSha256=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),n=>n.toString(16).padStart(2,'0')).join('');
+  if(fetchedSha256!==EULER_WASM_SHA256) throw Error('fetched WASM hash mismatch');
+  window.result={httpStatus:r.status,contentType:r.headers.get('content-type'),fetchedSha256,crossOriginIsolated,...await runCases(bytes)};
+  document.querySelector('#result').textContent=JSON.stringify(window.result,null,2);
+} catch(e) {window.failure=String(e);document.querySelector('#result').textContent=String(e);}
+</script>

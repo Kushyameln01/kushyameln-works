@@ -1,0 +1,102 @@
+package main
+
+// Fixed ComfyUI b5a432... profile: DiscreteFlow shift5,1000timepoints,simple6.
+// The caller owns nonoverlapping range-checked arenas. No allocations/imports/RNG.
+func Finite(v float32) bool { return v == v && v - v == float32(0) }
+func SigmaValid(v float32) bool { return Finite(v) && v >= float32(0) && v <= float32(1) }
+
+cfunc FlowSchedule(table *float32, tableCap int, out *float32, outCap int, indices *int, indexCap int) int {
+    if tableCap < 1000 || outCap < 7 || indexCap < 6 { return -1 }
+    i := 0
+    index := 0
+    t := float32(0)
+    numerator := float32(0)
+    denominator := float32(0)
+    for i < 1000 {
+        t = float32(i + 1) / float32(1000)
+        t = t * float32(1000)
+        t = t / float32(1000)
+        numerator = float32(5) * t
+        denominator = float32(1) + float32(4) * t
+        table[i] = numerator / denominator
+        i = i + 1
+    }
+    i = 0
+    for i < 6 {
+        // Exactly the same fixed6 selection as Python int(i*(1000/6)).
+        index = 999 - ((i * 1000) / 6)
+        indices[i] = index
+        out[i] = table[index]
+        i = i + 1
+    }
+    out[6] = float32(0)
+    return 0
+}
+
+cfunc ConstNoiseMix(noise *float32, latent *float32, n int, sigma float32, noiseScale float32, out *float32, cap int) int {
+    if n < 1 || n > 4096 || cap < n { return -1 }
+    if !SigmaValid(sigma) || !Finite(noiseScale) || noiseScale < float32(0) { return -2 }
+    i := 0
+    scaledNoise := float32(0)
+    noisePart := float32(0)
+    latentPart := float32(0)
+    result := float32(0)
+    complement := float32(1) - sigma
+    for i < n { if !Finite(noise[i]) || !Finite(latent[i]) { return -2 }; i = i + 1 }
+    i = 0
+    for i < n {
+        scaledNoise = noiseScale * noise[i]
+        noisePart = sigma * scaledNoise
+        latentPart = complement * latent[i]
+        result = noisePart + latentPart
+        if !Finite(result) { return -3 }
+        out[i] = result
+        i = i + 1
+    }
+    return 0
+}
+
+cfunc ConstInverse(latent *float32, n int, sigma float32, out *float32, cap int) int {
+    if n < 1 || n > 4096 || cap < n { return -1 }
+    if !SigmaValid(sigma) || sigma == float32(1) { return -2 }
+    i := 0
+    complement := float32(1) - sigma
+    result := float32(0)
+    for i < n { if !Finite(latent[i]) { return -2 }; i = i + 1 }
+    i = 0
+    for i < n {
+        result = latent[i] / complement
+        if !Finite(result) { return -3 }
+        out[i] = result
+        i = i + 1
+    }
+    return 0
+}
+
+cfunc FlowDenoised(x *float32, velocity *float32, n int, sigma float32, out *float32, cap int) int {
+    if n < 1 || n > 4096 || cap < n { return -1 }
+    if !SigmaValid(sigma) { return -2 }
+    i := 0
+    product := float32(0)
+    result := float32(0)
+    for i < n { if !Finite(x[i]) || !Finite(velocity[i]) { return -2 }; i = i + 1 }
+    i = 0
+    for i < n {
+        product = velocity[i] * sigma
+        result = x[i] - product
+        if !Finite(result) { return -3 }
+        out[i] = result
+        i = i + 1
+    }
+    return 0
+}
+
+cfunc FlowTimesteps(sigmas *float32, n int, out *float32, cap int) int {
+    if n < 1 || n > 4096 || cap < n { return -1 }
+    i := 0
+    for i < n { if !SigmaValid(sigmas[i]) { return -2 }; i = i + 1 }
+    i = 0
+    for i < n { out[i] = sigmas[i] * float32(1000); i = i + 1 }
+    return 0
+}
+func main() int { return 0 }

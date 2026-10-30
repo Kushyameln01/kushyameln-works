@@ -1,0 +1,1695 @@
+{
+  "scope": "diffusion_models; read-only header/workflow inspection",
+  "inference_executed": false,
+  "models": [
+    {
+      "name": "Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+      "path": "/workspace/work/retained/bernini/Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+      "file_bytes": 15574833216,
+      "header_bytes": 181280,
+      "header_sha256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+      "metadata": {
+        "format": "pt",
+        "model_type": "bernini_low"
+      },
+      "tensor_count": 1815,
+      "tensor_count_by_dtype": {
+        "F32": 360,
+        "F16": 735,
+        "F8_E4M3": 360,
+        "U8": 360
+      },
+      "elements_by_dtype": {
+        "F32": 360,
+        "F16": 1286149184,
+        "F8_E4M3": 13002342400,
+        "U8": 9720
+      },
+      "payload_bytes_by_dtype": {
+        "F32": 1440,
+        "F16": 2572298368,
+        "F8_E4M3": 13002342400,
+        "U8": 9720
+      },
+      "payload_bytes": 15574651928,
+      "payload_GiB": 14.505024932324886,
+      "header_ranges_contiguous": true,
+      "blocks_count": 40,
+      "block_payload_bytes": {
+        "0": 377730327,
+        "1": 377730327,
+        "2": 377730327,
+        "3": 377730327,
+        "4": 377730327,
+        "5": 377730327,
+        "6": 377730327,
+        "7": 377730327,
+        "8": 377730327,
+        "9": 377730327,
+        "10": 377730327,
+        "11": 377730327,
+        "12": 377730327,
+        "13": 377730327,
+        "14": 377730327,
+        "15": 377730327,
+        "16": 377730327,
+        "17": 377730327,
+        "18": 377730327,
+        "19": 377730327,
+        "20": 377730327,
+        "21": 377730327,
+        "22": 377730327,
+        "23": 377730327,
+        "24": 377730327,
+        "25": 377730327,
+        "26": 377730327,
+        "27": 377730327,
+        "28": 377730327,
+        "29": 377730327,
+        "30": 377730327,
+        "31": 377730327,
+        "32": 377730327,
+        "33": 377730327,
+        "34": 377730327,
+        "35": 377730327,
+        "36": 377730327,
+        "37": 377730327,
+        "38": 377730327,
+        "39": 377730327
+      },
+      "numeric_elements_excluding_U8_metadata": 14288491944,
+      "hypothetical_all_numeric_FP16_bytes": 28576983888,
+      "hypothetical_all_numeric_FP32_bytes": 57153967776,
+      "wasm32_max_linear_memory_bytes": 4294967296,
+      "payload_exceeds_single_wasm32_memory": true,
+      "observed_shape_evidence": {
+        "patch_embedding.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            16,
+            1,
+            2,
+            2
+          ],
+          "data_offsets": [
+            2107547168,
+            2108202528
+          ]
+        },
+        "text_embedding.0.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            4096
+          ],
+          "data_offsets": [
+            2108212768,
+            2150155808
+          ]
+        },
+        "text_embedding.2.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            5120
+          ],
+          "data_offsets": [
+            2150166048,
+            2202594848
+          ]
+        },
+        "time_embedding.0.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            256
+          ],
+          "data_offsets": [
+            2202605088,
+            2205226528
+          ]
+        },
+        "time_projection.1.weight": {
+          "dtype": "F16",
+          "shape": [
+            30720,
+            5120
+          ],
+          "data_offsets": [
+            2257727008,
+            2572299808
+          ]
+        },
+        "head.head.weight": {
+          "dtype": "F16",
+          "shape": [
+            64,
+            5120
+          ],
+          "data_offsets": [
+            2106861088,
+            2107516448
+          ]
+        },
+        "blocks.0.ffn.0.weight": {
+          "dtype": "F8_E4M3",
+          "shape": [
+            13824,
+            5120
+          ],
+          "data_offsets": [
+            2650943008,
+            2721721888
+          ]
+        },
+        "blocks.0.self_attn.q.weight": {
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            5120
+          ],
+          "data_offsets": [
+            2844929568,
+            2871143968
+          ]
+        }
+      },
+      "architecture_interpretation": "40-block Wan-family-like video Transformer from keys/shapes and source naming; full architecture/config and execution semantics not proven by header",
+      "missing_in_header": [
+        "attention head count",
+        "normalization epsilons",
+        "prediction semantics",
+        "scheduler implementation",
+        "tokenizer",
+        "complete source architecture/config"
+      ]
+    },
+    {
+      "name": "Wan22_Bernini_HIGH_fp8_e4m3fn_scaled.safetensors",
+      "path": "/workspace/work/retained/bernini/Wan22_Bernini_HIGH_fp8_e4m3fn_scaled.safetensors",
+      "file_bytes": 15574833216,
+      "header_bytes": 181280,
+      "header_sha256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+      "metadata": {
+        "model_type": "bernini_high",
+        "format": "pt"
+      },
+      "tensor_count": 1815,
+      "tensor_count_by_dtype": {
+        "F32": 360,
+        "F16": 735,
+        "F8_E4M3": 360,
+        "U8": 360
+      },
+      "elements_by_dtype": {
+        "F32": 360,
+        "F16": 1286149184,
+        "F8_E4M3": 13002342400,
+        "U8": 9720
+      },
+      "payload_bytes_by_dtype": {
+        "F32": 1440,
+        "F16": 2572298368,
+        "F8_E4M3": 13002342400,
+        "U8": 9720
+      },
+      "payload_bytes": 15574651928,
+      "payload_GiB": 14.505024932324886,
+      "header_ranges_contiguous": true,
+      "blocks_count": 40,
+      "block_payload_bytes": {
+        "0": 377730327,
+        "1": 377730327,
+        "2": 377730327,
+        "3": 377730327,
+        "4": 377730327,
+        "5": 377730327,
+        "6": 377730327,
+        "7": 377730327,
+        "8": 377730327,
+        "9": 377730327,
+        "10": 377730327,
+        "11": 377730327,
+        "12": 377730327,
+        "13": 377730327,
+        "14": 377730327,
+        "15": 377730327,
+        "16": 377730327,
+        "17": 377730327,
+        "18": 377730327,
+        "19": 377730327,
+        "20": 377730327,
+        "21": 377730327,
+        "22": 377730327,
+        "23": 377730327,
+        "24": 377730327,
+        "25": 377730327,
+        "26": 377730327,
+        "27": 377730327,
+        "28": 377730327,
+        "29": 377730327,
+        "30": 377730327,
+        "31": 377730327,
+        "32": 377730327,
+        "33": 377730327,
+        "34": 377730327,
+        "35": 377730327,
+        "36": 377730327,
+        "37": 377730327,
+        "38": 377730327,
+        "39": 377730327
+      },
+      "numeric_elements_excluding_U8_metadata": 14288491944,
+      "hypothetical_all_numeric_FP16_bytes": 28576983888,
+      "hypothetical_all_numeric_FP32_bytes": 57153967776,
+      "wasm32_max_linear_memory_bytes": 4294967296,
+      "payload_exceeds_single_wasm32_memory": true,
+      "observed_shape_evidence": {
+        "patch_embedding.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            16,
+            1,
+            2,
+            2
+          ],
+          "data_offsets": [
+            2107547168,
+            2108202528
+          ]
+        },
+        "text_embedding.0.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            4096
+          ],
+          "data_offsets": [
+            2108212768,
+            2150155808
+          ]
+        },
+        "text_embedding.2.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            5120
+          ],
+          "data_offsets": [
+            2150166048,
+            2202594848
+          ]
+        },
+        "time_embedding.0.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            256
+          ],
+          "data_offsets": [
+            2202605088,
+            2205226528
+          ]
+        },
+        "time_projection.1.weight": {
+          "dtype": "F16",
+          "shape": [
+            30720,
+            5120
+          ],
+          "data_offsets": [
+            2257727008,
+            2572299808
+          ]
+        },
+        "head.head.weight": {
+          "dtype": "F16",
+          "shape": [
+            64,
+            5120
+          ],
+          "data_offsets": [
+            2106861088,
+            2107516448
+          ]
+        },
+        "blocks.0.ffn.0.weight": {
+          "dtype": "F8_E4M3",
+          "shape": [
+            13824,
+            5120
+          ],
+          "data_offsets": [
+            2650943008,
+            2721721888
+          ]
+        },
+        "blocks.0.self_attn.q.weight": {
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            5120
+          ],
+          "data_offsets": [
+            2844929568,
+            2871143968
+          ]
+        }
+      },
+      "architecture_interpretation": "40-block Wan-family-like video Transformer from keys/shapes and source naming; full architecture/config and execution semantics not proven by header",
+      "missing_in_header": [
+        "attention head count",
+        "normalization epsilons",
+        "prediction semantics",
+        "scheduler implementation",
+        "tokenizer",
+        "complete source architecture/config"
+      ]
+    }
+  ],
+  "workflow": {
+    "archive_path": "/workspace/work/retained/bernini/example_workflows.zip",
+    "archive_sha256": "ac64e487f1d42920a0a7978c660651bf82e9f9d04e341b31430f143d02ca539a",
+    "entry": "example_workflows/bernini_rv2v_basic.json",
+    "entry_sha256": "543865dfeeb9a94427bea543624e51db5f1dfcf88a7af6a497ddcdbeadc477dd",
+    "node_count": 20,
+    "links_count": 27,
+    "nodes": [
+      {
+        "id": 8,
+        "type": "ModelSamplingSD3",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [
+          5
+        ],
+        "inputs": [
+          {
+            "name": "model",
+            "type": "MODEL",
+            "link": 6
+          },
+          {
+            "name": "shift",
+            "type": "FLOAT",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              9,
+              11
+            ]
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "type": "ModelSamplingSD3",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [
+          5
+        ],
+        "inputs": [
+          {
+            "name": "model",
+            "type": "MODEL",
+            "link": 8
+          },
+          {
+            "name": "shift",
+            "type": "FLOAT",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              10
+            ]
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "type": "SamplerCustom",
+        "title": "High Sampler",
+        "mode": 0,
+        "widgets_values": [
+          true,
+          0,
+          "fixed",
+          1
+        ],
+        "inputs": [
+          {
+            "name": "model",
+            "type": "MODEL",
+            "link": 9
+          },
+          {
+            "name": "positive",
+            "type": "CONDITIONING",
+            "link": 17
+          },
+          {
+            "name": "negative",
+            "type": "CONDITIONING",
+            "link": 18
+          },
+          {
+            "name": "sampler",
+            "type": "SAMPLER",
+            "link": 12
+          },
+          {
+            "name": "sigmas",
+            "type": "SIGMAS",
+            "link": 15
+          },
+          {
+            "name": "latent_image",
+            "type": "LATENT",
+            "link": 19
+          },
+          {
+            "name": "add_noise",
+            "type": "BOOLEAN",
+            "link": null
+          },
+          {
+            "name": "noise_seed",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "cfg",
+            "type": "FLOAT",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "output",
+            "type": "LATENT",
+            "links": [
+              22
+            ]
+          },
+          {
+            "name": "denoised_output",
+            "type": "LATENT",
+            "links": null
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "type": "SamplerCustom",
+        "title": "Low Sampler",
+        "mode": 0,
+        "widgets_values": [
+          false,
+          0,
+          "fixed",
+          1
+        ],
+        "inputs": [
+          {
+            "name": "model",
+            "type": "MODEL",
+            "link": 10
+          },
+          {
+            "name": "positive",
+            "type": "CONDITIONING",
+            "link": 20
+          },
+          {
+            "name": "negative",
+            "type": "CONDITIONING",
+            "link": 21
+          },
+          {
+            "name": "sampler",
+            "type": "SAMPLER",
+            "link": 13
+          },
+          {
+            "name": "sigmas",
+            "type": "SIGMAS",
+            "link": 16
+          },
+          {
+            "name": "latent_image",
+            "type": "LATENT",
+            "link": 22
+          },
+          {
+            "name": "add_noise",
+            "type": "BOOLEAN",
+            "link": null
+          },
+          {
+            "name": "noise_seed",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "cfg",
+            "type": "FLOAT",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "output",
+            "type": "LATENT",
+            "links": [
+              23
+            ]
+          },
+          {
+            "name": "denoised_output",
+            "type": "LATENT",
+            "links": null
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "type": "UNETLoader",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [
+          "Bernini - Bytedance\\Wan22_Bernini_LOW_mxfp8.safetensors",
+          "default"
+        ],
+        "inputs": [
+          {
+            "name": "unet_name",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "weight_dtype",
+            "type": "COMBO",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              7
+            ]
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "type": "UNETLoader",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [
+          "Bernini - Bytedance\\Wan22_Bernini_HIGH_mxfp8.safetensors",
+          "default"
+        ],
+        "inputs": [
+          {
+            "name": "unet_name",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "weight_dtype",
+            "type": "COMBO",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "type": "VAELoader",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [
+          "wan_2.1_vae.safetensors"
+        ],
+        "inputs": [
+          {
+            "name": "vae_name",
+            "type": "COMBO",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "VAE",
+            "type": "VAE",
+            "links": [
+              2,
+              24
+            ]
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "type": "CLIPLoader",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [
+          "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+          "wan",
+          "default"
+        ],
+        "inputs": [
+          {
+            "name": "clip_name",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "type",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "device",
+            "type": "COMBO",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "CLIP",
+            "type": "CLIP",
+            "links": [
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "type": "BasicScheduler",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [
+          "simple",
+          6,
+          1
+        ],
+        "inputs": [
+          {
+            "name": "model",
+            "type": "MODEL",
+            "link": 11
+          },
+          {
+            "name": "scheduler",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "steps",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "denoise",
+            "type": "FLOAT",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "SIGMAS",
+            "type": "SIGMAS",
+            "links": [
+              14
+            ]
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "type": "VAEDecode",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [],
+        "inputs": [
+          {
+            "name": "samples",
+            "type": "LATENT",
+            "link": 23
+          },
+          {
+            "name": "vae",
+            "type": "VAE",
+            "link": 24
+          }
+        ],
+        "outputs": [
+          {
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "links": [
+              30
+            ]
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "type": "LoraLoaderModelOnly",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [
+          "Lightx2v-Lighning-latest\\Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors",
+          1
+        ],
+        "inputs": [
+          {
+            "name": "model",
+            "type": "MODEL",
+            "link": 7
+          },
+          {
+            "name": "lora_name",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "strength_model",
+            "type": "FLOAT",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              8
+            ]
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "type": "SplitSigmas",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [
+          3
+        ],
+        "inputs": [
+          {
+            "name": "sigmas",
+            "type": "SIGMAS",
+            "link": 14
+          },
+          {
+            "name": "step",
+            "type": "INT",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "high_sigmas",
+            "type": "SIGMAS",
+            "links": [
+              15
+            ]
+          },
+          {
+            "name": "low_sigmas",
+            "type": "SIGMAS",
+            "links": [
+              16
+            ]
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "type": "KSamplerSelect",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [
+          "euler"
+        ],
+        "inputs": [
+          {
+            "name": "sampler_name",
+            "type": "COMBO",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "SAMPLER",
+            "type": "SAMPLER",
+            "links": [
+              12,
+              13
+            ]
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "type": "LoraLoaderModelOnly",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [
+          "lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank64_bf16.safetensors",
+          3
+        ],
+        "inputs": [
+          {
+            "name": "model",
+            "type": "MODEL",
+            "link": 5
+          },
+          {
+            "name": "lora_name",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "strength_model",
+            "type": "FLOAT",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              6
+            ]
+          }
+        ]
+      },
+      {
+        "id": 21,
+        "type": "VHS_LoadVideo",
+        "title": null,
+        "mode": 0,
+        "widgets_values": {
+          "video": "132123.mp4",
+          "force_rate": 16,
+          "custom_width": 0,
+          "custom_height": 0,
+          "frame_load_cap": 81,
+          "skip_first_frames": 0,
+          "select_every_nth": 1,
+          "format": "AnimateDiff",
+          "videopreview": {
+            "hidden": false,
+            "paused": true,
+            "params": {
+              "filename": "132123.mp4",
+              "type": "input",
+              "format": "video/mp4"
+            }
+          }
+        },
+        "inputs": [
+          {
+            "name": "meta_batch",
+            "type": "VHS_BatchManager",
+            "link": null
+          },
+          {
+            "name": "vae",
+            "type": "VAE",
+            "link": null
+          },
+          {
+            "name": "video",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "force_rate",
+            "type": "FLOAT",
+            "link": null
+          },
+          {
+            "name": "custom_width",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "custom_height",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "frame_load_cap",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "skip_first_frames",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "select_every_nth",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "format",
+            "type": "COMBO",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "links": [
+              29
+            ]
+          },
+          {
+            "name": "frame_count",
+            "type": "INT",
+            "links": null
+          },
+          {
+            "name": "audio",
+            "type": "AUDIO",
+            "links": null
+          },
+          {
+            "name": "video_info",
+            "type": "VHS_VIDEOINFO",
+            "links": null
+          }
+        ]
+      },
+      {
+        "id": 22,
+        "type": "VHS_VideoCombine",
+        "title": null,
+        "mode": 0,
+        "widgets_values": {
+          "frame_rate": 16,
+          "loop_count": 0,
+          "filename_prefix": "BerniniStudio",
+          "format": "video/h264-mp4",
+          "pix_fmt": "yuv420p",
+          "crf": 19,
+          "save_metadata": true,
+          "trim_to_audio": false,
+          "pingpong": false,
+          "save_output": true,
+          "videopreview": {
+            "hidden": false,
+            "paused": false,
+            "params": {
+              "filename": "BerniniStudio_00009.mp4",
+              "subfolder": "",
+              "type": "output",
+              "format": "video/h264-mp4",
+              "frame_rate": 16,
+              "workflow": "BerniniStudio_00009.png",
+              "fullpath": "D:\\ComfyUI\\output\\BerniniStudio_00009.mp4"
+            }
+          }
+        },
+        "inputs": [
+          {
+            "name": "images",
+            "type": "IMAGE",
+            "link": 30
+          },
+          {
+            "name": "audio",
+            "type": "AUDIO",
+            "link": null
+          },
+          {
+            "name": "meta_batch",
+            "type": "VHS_BatchManager",
+            "link": null
+          },
+          {
+            "name": "vae",
+            "type": "VAE",
+            "link": null
+          },
+          {
+            "name": "frame_rate",
+            "type": "FLOAT",
+            "link": null
+          },
+          {
+            "name": "loop_count",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "filename_prefix",
+            "type": "STRING",
+            "link": null
+          },
+          {
+            "name": "format",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "pingpong",
+            "type": "BOOLEAN",
+            "link": null
+          },
+          {
+            "name": "save_output",
+            "type": "BOOLEAN",
+            "link": null
+          },
+          {
+            "name": "pix_fmt",
+            "type": [
+              "yuv420p",
+              "yuv420p10le"
+            ],
+            "link": null
+          },
+          {
+            "name": "crf",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "save_metadata",
+            "type": "BOOLEAN",
+            "link": null
+          },
+          {
+            "name": "trim_to_audio",
+            "type": "BOOLEAN",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "Filenames",
+            "type": "VHS_FILENAMES",
+            "links": null
+          }
+        ]
+      },
+      {
+        "id": 24,
+        "type": "LoadImage",
+        "title": null,
+        "mode": 4,
+        "widgets_values": [
+          "0000.png",
+          "image"
+        ],
+        "inputs": [
+          {
+            "name": "image",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "upload",
+            "type": "IMAGEUPLOAD",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "links": [
+              32
+            ]
+          },
+          {
+            "name": "MASK",
+            "type": "MASK",
+            "links": null
+          }
+        ]
+      },
+      {
+        "id": 25,
+        "type": "LoadImage",
+        "title": null,
+        "mode": 4,
+        "widgets_values": [
+          "0000.png",
+          "image"
+        ],
+        "inputs": [
+          {
+            "name": "image",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "upload",
+            "type": "IMAGEUPLOAD",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "links": [
+              33
+            ]
+          },
+          {
+            "name": "MASK",
+            "type": "MASK",
+            "links": null
+          }
+        ]
+      },
+      {
+        "id": 26,
+        "type": "LoadImage",
+        "title": null,
+        "mode": 4,
+        "widgets_values": [
+          "0000.png",
+          "image"
+        ],
+        "inputs": [
+          {
+            "name": "image",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "upload",
+            "type": "IMAGEUPLOAD",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "links": [
+              34
+            ]
+          },
+          {
+            "name": "MASK",
+            "type": "MASK",
+            "links": null
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "type": "BerniniStudio",
+        "title": null,
+        "mode": 0,
+        "widgets_values": [
+          832,
+          480,
+          81,
+          1,
+          "rv2v",
+          "replace the man in the red shirt with the man from image0 and replace the man sitting at the computer with the man from image1",
+          "",
+          true,
+          848,
+          false,
+          false,
+          "http://127.0.0.1:11434",
+          "",
+          "[\"videoframe_80.png\",\"00108-_lora_Ed Sheeran - SDXL - Trigger is Edsheeran person_.8_  Edsheeran person, film footage, a society where people can geneticall.png\",null,null,null,null,null,null]",
+          0,
+          0,
+          0,
+          "Ollama",
+          "",
+          ""
+        ],
+        "inputs": [
+          {
+            "name": "clip",
+            "type": "CLIP",
+            "link": 1
+          },
+          {
+            "name": "vae",
+            "type": "VAE",
+            "link": 2
+          },
+          {
+            "name": "source_video",
+            "type": "IMAGE",
+            "link": 29
+          },
+          {
+            "name": "image0",
+            "type": "IMAGE",
+            "link": 32
+          },
+          {
+            "name": "image1",
+            "type": "IMAGE",
+            "link": 33
+          },
+          {
+            "name": "image2",
+            "type": "IMAGE",
+            "link": 34
+          },
+          {
+            "name": "image3",
+            "type": "IMAGE",
+            "link": null
+          },
+          {
+            "name": "image4",
+            "type": "IMAGE",
+            "link": null
+          },
+          {
+            "name": "image5",
+            "type": "IMAGE",
+            "link": null
+          },
+          {
+            "name": "image6",
+            "type": "IMAGE",
+            "link": null
+          },
+          {
+            "name": "image7",
+            "type": "IMAGE",
+            "link": null
+          },
+          {
+            "name": "reference_video",
+            "type": "IMAGE",
+            "link": null
+          },
+          {
+            "name": "width",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "height",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "length",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "batch_size",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "task_type",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "prompt",
+            "type": "STRING",
+            "link": null
+          },
+          {
+            "name": "negative_prompt",
+            "type": "STRING",
+            "link": null
+          },
+          {
+            "name": "use_default_neg",
+            "type": "BOOLEAN",
+            "link": null
+          },
+          {
+            "name": "ref_max_size",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "auto_enhance",
+            "type": "BOOLEAN",
+            "link": null
+          },
+          {
+            "name": "unload_ollama",
+            "type": "BOOLEAN",
+            "link": null
+          },
+          {
+            "name": "ollama_url",
+            "type": "STRING",
+            "link": null
+          },
+          {
+            "name": "ollama_model",
+            "type": "STRING",
+            "link": null
+          },
+          {
+            "name": "slot_images",
+            "type": "STRING",
+            "link": null
+          },
+          {
+            "name": "augment_strength",
+            "type": "FLOAT",
+            "link": null
+          },
+          {
+            "name": "augment_decay",
+            "type": "FLOAT",
+            "link": null
+          },
+          {
+            "name": "augment_seed",
+            "type": "INT",
+            "link": null
+          },
+          {
+            "name": "api_format",
+            "type": "COMBO",
+            "link": null
+          },
+          {
+            "name": "send_ref_images",
+            "type": "BOOLEAN",
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "name": "positive",
+            "type": "CONDITIONING",
+            "links": [
+              17,
+              20
+            ]
+          },
+          {
+            "name": "negative",
+            "type": "CONDITIONING",
+            "links": [
+              18,
+              21
+            ]
+          },
+          {
+            "name": "latent",
+            "type": "LATENT",
+            "links": [
+              19
+            ]
+          }
+        ]
+      }
+    ],
+    "links": [
+      [
+        1,
+        1,
+        0,
+        5,
+        0,
+        "CLIP"
+      ],
+      [
+        2,
+        2,
+        0,
+        5,
+        1,
+        "VAE"
+      ],
+      [
+        5,
+        6,
+        0,
+        7,
+        0,
+        "MODEL"
+      ],
+      [
+        6,
+        7,
+        0,
+        8,
+        0,
+        "MODEL"
+      ],
+      [
+        7,
+        9,
+        0,
+        10,
+        0,
+        "MODEL"
+      ],
+      [
+        8,
+        10,
+        0,
+        11,
+        0,
+        "MODEL"
+      ],
+      [
+        9,
+        8,
+        0,
+        15,
+        0,
+        "MODEL"
+      ],
+      [
+        10,
+        11,
+        0,
+        16,
+        0,
+        "MODEL"
+      ],
+      [
+        11,
+        8,
+        0,
+        13,
+        0,
+        "MODEL"
+      ],
+      [
+        12,
+        12,
+        0,
+        15,
+        3,
+        "SAMPLER"
+      ],
+      [
+        13,
+        12,
+        0,
+        16,
+        3,
+        "SAMPLER"
+      ],
+      [
+        14,
+        13,
+        0,
+        14,
+        0,
+        "SIGMAS"
+      ],
+      [
+        15,
+        14,
+        0,
+        15,
+        4,
+        "SIGMAS"
+      ],
+      [
+        16,
+        14,
+        1,
+        16,
+        4,
+        "SIGMAS"
+      ],
+      [
+        17,
+        5,
+        0,
+        15,
+        1,
+        "CONDITIONING"
+      ],
+      [
+        18,
+        5,
+        1,
+        15,
+        2,
+        "CONDITIONING"
+      ],
+      [
+        19,
+        5,
+        2,
+        15,
+        5,
+        "LATENT"
+      ],
+      [
+        20,
+        5,
+        0,
+        16,
+        1,
+        "CONDITIONING"
+      ],
+      [
+        21,
+        5,
+        1,
+        16,
+        2,
+        "CONDITIONING"
+      ],
+      [
+        22,
+        15,
+        0,
+        16,
+        5,
+        "LATENT"
+      ],
+      [
+        23,
+        16,
+        0,
+        17,
+        0,
+        "LATENT"
+      ],
+      [
+        24,
+        2,
+        0,
+        17,
+        1,
+        "VAE"
+      ],
+      [
+        29,
+        21,
+        0,
+        5,
+        2,
+        "IMAGE"
+      ],
+      [
+        30,
+        17,
+        0,
+        22,
+        0,
+        "IMAGE"
+      ],
+      [
+        32,
+        24,
+        0,
+        5,
+        3,
+        "IMAGE"
+      ],
+      [
+        33,
+        25,
+        0,
+        5,
+        4,
+        "IMAGE"
+      ],
+      [
+        34,
+        26,
+        0,
+        5,
+        5,
+        "IMAGE"
+      ]
+    ],
+    "groups": [
+      {
+        "id": 1,
+        "title": "Bernini HIGH / LOW models + lightx2v distill LoRAs",
+        "bounding": [
+          300,
+          -370,
+          1180,
+          320
+        ],
+        "color": "#3f789e",
+        "flags": {}
+      },
+      {
+        "id": 2,
+        "title": "Two-stage sampling (steps 0-3 HIGH, 3-6 LOW)",
+        "bounding": [
+          940,
+          120,
+          830,
+          360
+        ],
+        "color": "#a1309b",
+        "flags": {}
+      }
+    ]
+  }
+}

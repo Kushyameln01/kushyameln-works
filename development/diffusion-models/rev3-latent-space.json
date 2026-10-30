@@ -1,0 +1,239 @@
+{
+  "revision": 3,
+  "purpose": "Diffusion-owned numerical bridge between verified Wan21 VAE raw posterior means and explicitly versioned normalized posterior means; no caller-side numerical normalization required",
+  "scope": "Fixed [1,16,2,2,2] raw posterior-mean profile only. No generated diffusion samples are labelled posterior means. This profile is acceptance scope, not permanent product scope reduction.",
+  "factory": "docs/shared/diffusion-models/latent-space/latent-space.mjs:createLatentSpace(wasmBytes)",
+  "api": [
+    "normalizeRawMean(tensor)",
+    "restoreRawMean(tensor)",
+    "stats()",
+    "dispose()"
+  ],
+  "raw": {
+    "dtype": "float32",
+    "shape": [
+      1,
+      16,
+      2,
+      2,
+      2
+    ],
+    "layout": "NCTHW",
+    "meaning": "raw-posterior-mean",
+    "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+  },
+  "normalized": {
+    "meaning": "wan21-normalized-posterior-mean:v1",
+    "normalization": "wan21-comfy-f32-v1",
+    "binding": "The version in meaning persists through existing .wktensor codec. normalization is a derived optional descriptor; restore rejects mismatch if present and accepts its absence after codec. Same strict dtype/shape/layout/VAEhash as raw."
+  },
+  "source": {
+    "repository": "Comfy-Org/ComfyUI",
+    "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+    "path": "comfy/latent_formats.py",
+    "lines": "755-783",
+    "math": "16 channel-specific means and stds, scale_factor=1.0",
+    "normalizeOrder": "difference=f32(x-mean[c]);scaled=f32(difference*1);result=f32(scaled/std[c])",
+    "restoreOrder": "product=f32(x*std[c]);divided=f32(product/1);result=f32(divided+mean[c])",
+    "mapping": "NCTHW fixedprofile: channel=floor(flatIndex/8)",
+    "allZero": "No ComfyUI high-level allzero skip is inserted. Rawzero components undergo the same explicit perchannel normalization."
+  },
+  "ownership": "Raw input validated through existing requireWanRawLatent without editinghelper. Host copies into private disjoint WASM arenas and copies results. Output shape array owned. Original buffers/metadata preserved and nottransferred.",
+  "abi": {
+    "NormalizeRawMean": "(input:i32,count:i32,out:i32,capacity:i32)->i32",
+    "RestoreRawMean": "(input:i32,count:i32,out:i32,capacity:i32)->i32",
+    "count": 128,
+    "numeric": "f32 arrays, fourbytealignment; private nonoverlapping input/output buffers",
+    "statuses": {
+      "0": "success",
+      "-1": "profilecount or outputcapacity invalid",
+      "-2": "nonfinite input before any output writes",
+      "-3": "nonfinite arithmetic result; discardall output"
+    }
+  },
+  "security": "Factory snapshots explicit bytes before await, checks generatedregistry SHA256, rejects imports/missingexports/hashmismatch; no JavaScript numerical fallback. Disposed factory rejects calls.",
+  "resource": {
+    "arenaBytes": 1024,
+    "memoryBytes": 1114112,
+    "repeatCycles": 100,
+    "memoryMeaning": "WASM linear capacity only; no OS peakRAM claim"
+  },
+  "build": {
+    "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+    "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+    "sourceSha256": "ceb50086b0ca658c1547058d339980ceb5b8f40797ee365b2af203d996c6ea5d",
+    "wasmSha256": "ffd1c821d9ecf2aba10cd7ac96f231c78380a1d02621dae8838ee8d64495b9ea",
+    "watSha256": "491ac548a48d81dfa0766fa5a349e6593c23668c666d9ded36386251b1737f24",
+    "generatedRuntimeSha256": "0d37c1f5ea89304ce0b0654efb51733e5cfb5e9491fb5ac465ca14db5f935922",
+    "runtimeUsed": false,
+    "versions": {
+      "go": "go version go1.22.12 linux/amd64",
+      "wabt": "1.0.39",
+      "node": "v24.19.0"
+    },
+    "backend": "wabt normal",
+    "command": [
+      "/workspace/work/diffusion-investigation/toolchain/hikec",
+      "build",
+      "-target",
+      "wabt",
+      "-wasm-mode",
+      "normal",
+      "-o",
+      "/workspace/work/diffusion-models/docs/shared/diffusion-models/latent-space/build/latent-space.wasm",
+      "/workspace/work/diffusion-models/docs/shared/diffusion-models/latent-space/latent-space.hike"
+    ],
+    "imports": [],
+    "scope": "Wan21 raw posterior-mean fixedprofile normalization, no model inference"
+  },
+  "verification": {
+    "node": {
+      "scope": "Wan21 raw posterior-mean normalization only; no generatedsamples or model inference",
+      "cases": [
+        {
+          "name": "all16channels use exact source-ordered f32 normalization",
+          "status": "PASS"
+        },
+        {
+          "name": "restore uses multiply divide add order for all16channels",
+          "status": "PASS"
+        },
+        {
+          "name": "roundtrip stays within predeclared2e-6 tolerance",
+          "status": "PASS"
+        },
+        {
+          "name": "raw zeros are normalized perchannel rather than skipped",
+          "status": "PASS"
+        },
+        {
+          "name": "meaning model shape finite and normalization provenance rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "owned arrays metadata and repeated memory are preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "existing WKTENSOR codec preserves versioned meaning and restoresraw",
+          "status": "PASS"
+        },
+        {
+          "name": "native WASM rejects nonfinite and profile/capacity errors before writes",
+          "status": "PASS"
+        },
+        {
+          "name": "WASM hash mismatch rejects without fallback",
+          "status": "PASS"
+        },
+        {
+          "name": "disposed factory rejects operations",
+          "status": "PASS"
+        }
+      ],
+      "wasmSha256": "ffd1c821d9ecf2aba10cd7ac96f231c78380a1d02621dae8838ee8d64495b9ea",
+      "normalizedSha256": "fcba467e552da26d7857065cb0256e6b9417caf0621793bfc6c845f5038799e9",
+      "restoredSha256": "b6c38aa4030ff02f5b39d8cd6f5f589017609cefc3e187afd2513fa71beef0c2",
+      "maxRoundTripError": 2.384185791015625e-07,
+      "roundTripTolerance": 2e-06,
+      "stats": {
+        "calls": 206,
+        "memoryBytes": 1114112,
+        "arenaBytes": 1024,
+        "inputCopyBytes": 105472,
+        "outputCopyBytes": 105472,
+        "workspaceReused": true,
+        "wasmSha256": "ffd1c821d9ecf2aba10cd7ac96f231c78380a1d02621dae8838ee8d64495b9ea",
+        "sourceSha256": "ceb50086b0ca658c1547058d339980ceb5b8f40797ee365b2af203d996c6ea5d",
+        "imports": 0
+      },
+      "jsNumericalFallback": false,
+      "callerBuffersPreserved": true
+    },
+    "chromium": {
+      "scope": "Wan21 raw posterior-mean normalization only; no generatedsamples or model inference",
+      "cases": [
+        {
+          "name": "all16channels use exact source-ordered f32 normalization",
+          "status": "PASS"
+        },
+        {
+          "name": "restore uses multiply divide add order for all16channels",
+          "status": "PASS"
+        },
+        {
+          "name": "roundtrip stays within predeclared2e-6 tolerance",
+          "status": "PASS"
+        },
+        {
+          "name": "raw zeros are normalized perchannel rather than skipped",
+          "status": "PASS"
+        },
+        {
+          "name": "meaning model shape finite and normalization provenance rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "owned arrays metadata and repeated memory are preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "existing WKTENSOR codec preserves versioned meaning and restoresraw",
+          "status": "PASS"
+        },
+        {
+          "name": "native WASM rejects nonfinite and profile/capacity errors before writes",
+          "status": "PASS"
+        },
+        {
+          "name": "WASM hash mismatch rejects without fallback",
+          "status": "PASS"
+        },
+        {
+          "name": "disposed factory rejects operations",
+          "status": "PASS"
+        }
+      ],
+      "wasmSha256": "ffd1c821d9ecf2aba10cd7ac96f231c78380a1d02621dae8838ee8d64495b9ea",
+      "normalizedSha256": "fcba467e552da26d7857065cb0256e6b9417caf0621793bfc6c845f5038799e9",
+      "restoredSha256": "b6c38aa4030ff02f5b39d8cd6f5f589017609cefc3e187afd2513fa71beef0c2",
+      "maxRoundTripError": 2.384185791015625e-07,
+      "roundTripTolerance": 2e-06,
+      "stats": {
+        "calls": 206,
+        "memoryBytes": 1114112,
+        "arenaBytes": 1024,
+        "inputCopyBytes": 105472,
+        "outputCopyBytes": 105472,
+        "workspaceReused": true,
+        "wasmSha256": "ffd1c821d9ecf2aba10cd7ac96f231c78380a1d02621dae8838ee8d64495b9ea",
+        "sourceSha256": "ceb50086b0ca658c1547058d339980ceb5b8f40797ee365b2af203d996c6ea5d",
+        "imports": 0
+      },
+      "jsNumericalFallback": false,
+      "callerBuffersPreserved": true,
+      "browserVersion": "154.0.8037.57"
+    },
+    "independentOracle": "Separate JS stagedf32 expression and16channelconstants, literal allzero test and complete128element expectations",
+    "toleranceDeclaredBeforeRun": 2e-06,
+    "TDD": "work/red.log recorded missingimplementation before kernel/host; Node/browser green recorded subsequently",
+    "publishedCodec": "encodeTensor(normalized)->decodeTensor->restoreRawMean accepted with exactversionedmeaning, no publishedcodec changes"
+  },
+  "sourceHashes": {
+    "latent-space.hike": "ceb50086b0ca658c1547058d339980ceb5b8f40797ee365b2af203d996c6ea5d",
+    "latent-space.mjs": "e123db620dd4ef1ff133c41122ebe1384f49c6506ee3f5be17a8450dc8b65e14",
+    "kernel-registry.mjs": "6f682f3f77d53aead67e823fa6caf768f64228b4563253068b2bc3b7620edfca",
+    "build.py": "856ed6e1830e72d5966d3c37549543f995ab35f7091f8ed4a96dcdbe42aca86f",
+    "test.mjs": "589e181ce74a46d6447274646ca154a97fbb3c76c03cd60d91d74ed895ded3f5",
+    "test-cases.mjs": "82811c79dba38dd809a5e9d5f3d6c58bdfa17a87f2a928f2aa6303596a2f843b",
+    "test-browser.py": "ea8c5adf1e1e9146ee5e35af1fc0822a43f52ee7f49241cd548181a8d615adf2",
+    "LICENSE-Hike.txt": "6b3497e1e711780741457cdcb345be01421b8a7ef6c35d4f084cac7993a0b4ef",
+    "README.md": "e8ef87af1601fcef3aeae62fe2da6bfdad2ef65e4ad7f12366530cf4ab489dcd",
+    ".gitignore": "07fdf8149dd5a03d56e22cfb3862ef383ae11443d85ee3e8868261a7dd2a33fa"
+  },
+  "remaining": [
+    "No whole-model inference requested or executed",
+    "Other VAE shapes require separately validated profile and explicit extension",
+    "Generated final sample normalization semantics must be distinguished from posterior mean; this bridge does not mislabel them"
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "compilerCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+  "backend": "wabt",
+  "mode": "normal",
+  "flags": [
+    "-target",
+    "wabt",
+    "-wasm-mode",
+    "normal"
+  ],
+  "sourceSha256": "3f53ca090d05749f4c87ad583060df2aeba25a3fb64210eb8f2dbc944283fb13",
+  "wasmSha256": "17aea5e5d967595dbef52099aa330f61f48ff9815b098fa0bf6a421517459803",
+  "watSha256": "345430236920915523b8a32bfd1c3870dac92aee9ae0cd54641b7ecca566426d",
+  "runtimeJsSha256": "0d37c1f5ea89304ce0b0654efb51733e5cfb5e9491fb5ac465ca14db5f935922",
+  "wasmBytes": 1697,
+  "abi": "EulerDenoised(i32,i32,i32,i32,i32,f32,f32)->i32",
+  "imports": [],
+  "toolchainProvenance": {
+    "status": "compiler built; product Hike source build and WASM execution not yet performed",
+    "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+    "source": {
+      "url": "https://codeload.github.com/kanryu/hike-lang/tar.gz/3c51fde6675f317453919bd505d0e2d0f638e7f1",
+      "commit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+      "archive_bytes": 1574149,
+      "archive_sha256": "1c7d302e737b3209fe9a49b0ac51b212fd6c5c6c931def4421910b716d23e24c",
+      "extracted_directory": "hike-lang-3c51fde6675f317453919bd505d0e2d0f638e7f1"
+    },
+    "goArchive": {
+      "metadata_url": "https://go.dev/dl/?mode=json&include=all",
+      "version": "go1.22.12",
+      "file": {
+        "filename": "go1.22.12.linux-amd64.tar.gz",
+        "os": "linux",
+        "arch": "amd64",
+        "version": "go1.22.12",
+        "sha256": "4fa4f869b0f7fc6bb1eb2660e74657fbf04cdd290b5aef905585c86051b34d43",
+        "size": 68995422,
+        "kind": "archive"
+      }
+    },
+    "versions": {
+      "go": "go version go1.22.12 linux/amd64",
+      "wabt": "1.0.39",
+      "node": "v24.19.0"
+    },
+    "paths": {
+      "go": "/workspace/work/diffusion-investigation/toolchain/go/bin/go",
+      "compiler": "/workspace/work/diffusion-investigation/toolchain/hikec",
+      "wat2wasm": "/workspace/work/diffusion-investigation/toolchain/wabt/node_modules/wabt/bin/wat2wasm",
+      "wabt_lock": "/workspace/work/diffusion-investigation/toolchain/wabt/package-lock.json",
+      "hike_go_mod": "/workspace/work/diffusion-investigation/toolchain/hike-lang-3c51fde6675f317453919bd505d0e2d0f638e7f1/go.mod"
+    },
+    "sha256": {
+      "go": "929407e69c08952cd944a7457ae4eb289078a35473dd5dad2179369db7c5a6ec",
+      "compiler": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+      "wat2wasm": "03a9d82d25f372d735eb8c8a27373012d3e7a072a4258f3f5a3a4bd004e4a703",
+      "wabt_lock": "ab52b3489318d6d92b68769982716c68e953ecc263df21f757004c1199494c90",
+      "hike_go_mod": "ecc37e62ded0fcf3365739748fe2b6d0817b7b964da4384ff76a942a44472848"
+    },
+    "build": {
+      "command": [
+        "go",
+        "build",
+        "-buildvcs=false",
+        "-o",
+        "/workspace/work/diffusion-investigation/toolchain/hikec",
+        "./cmd/hikec"
+      ],
+      "cwd": "/workspace/work/diffusion-investigation/toolchain/hike-lang-3c51fde6675f317453919bd505d0e2d0f638e7f1",
+      "env": {
+        "CGO_ENABLED": "0",
+        "GOTOOLCHAIN": "local",
+        "GOCACHE": "/workspace/work/diffusion-investigation/toolchain/go-cache",
+        "GOPATH": "/workspace/work/diffusion-investigation/toolchain/go-path",
+        "GOMODCACHE": "/workspace/work/diffusion-investigation/toolchain/go-modules"
+      }
+    },
+    "wabtInstall": {
+      "package": "wabt@1.0.39",
+      "ignoreScripts": true,
+      "global": false
+    },
+    "backendToUse": "wabt normal; caller must set PATH to toolchain/wabt/node_modules/.bin"
+  },
+  "status": "BUILT_ABI_INSPECTED; runtime results separately recorded"
+}

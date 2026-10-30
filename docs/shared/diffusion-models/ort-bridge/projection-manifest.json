@@ -1,0 +1,33 @@
+{
+  "scope": "partial 16x5120 q projection; weights supplied as runtime inputs; not full model export",
+  "bytes": 220,
+  "sha256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+  "irVersion": 8,
+  "opset": 17,
+  "provider": "wasm",
+  "inputs": {
+    "x": {
+      "dtype": "float32",
+      "shape": [
+        1,
+        5120
+      ]
+    },
+    "weight": {
+      "dtype": "float32",
+      "shape": [
+        16,
+        5120
+      ]
+    }
+  },
+  "output": {
+    "name": "projection",
+    "dtype": "float32",
+    "shape": [
+      1,
+      16
+    ]
+  },
+  "node": "Gemm transB=1, no bias; Hike dequant and bias surround this graph"
+}

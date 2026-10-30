@@ -1,0 +1,110 @@
+{
+  "red": {
+    "runtime": "v24.19.0",
+    "message": "TypeError: Invalid tensor attention mask\n    at requireTensor (file:///workspace/work/diffusion-models/docs/shared/inference/tensor.mjs:15:184)\n    at decodeTensor (file:///workspace/work/diffusion-models/docs/shared/inference/tensor.mjs:41:129)\n    at async file:///workspace/work/diffusion-models/docs/shared/diffusion-models/test/interop-cases.mjs:36:15\n    at async test (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/test/interop-cases.mjs:10:41)\n    at async runInteropCases (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/test/interop-cases.mjs:34:2)\n    at async file:///workspace/work/diffusion-models/docs/shared/diffusion-models/test/interop-node.mjs:8:15"
+  },
+  "node": {
+    "runtime": "v24.19.0",
+    "passed": true,
+    "publishedCommit": "d2e9e3cba6269464bf556acc73c0b97030f75b5f",
+    "modulesConfigured": false,
+    "fullInferenceTested": false,
+    "numericNormalizationImplemented": false,
+    "tests": [
+      {
+        "name": "Strict conditioning boundary accepts published BLC output without changing ownership",
+        "passed": true
+      },
+      {
+        "name": "Conditioning rejects wrong meaning layout shape hash mask and declared byte length",
+        "passed": true
+      },
+      {
+        "name": "Raw VAE boundary requires the published mean profile and VAE provenance",
+        "passed": true
+      },
+      {
+        "name": "Explicit encoder and VAE bindings remain separate from diffusion model identity",
+        "passed": true
+      },
+      {
+        "name": "Published wktensor serialization preserves mask metadata bytes and independent ownership",
+        "passed": true
+      },
+      {
+        "name": "Pending encode owns shape mask provenance and data before asynchronous hashing",
+        "passed": true
+      },
+      {
+        "name": "Pending decode snapshots the expected producer binding",
+        "passed": true
+      },
+      {
+        "name": "Published wktensor hash validation and boundary validation reject altered files",
+        "passed": true
+      },
+      {
+        "name": "Actual published same-page modules advertise independent operations and unconfigured state",
+        "passed": true
+      },
+      {
+        "name": "Actual published explicit MessagePort capabilities work and unconfigured inference fails",
+        "passed": true
+      }
+    ],
+    "fileSaveReadback": true
+  },
+  "browser": {
+    "browser": "154.0.8037.57",
+    "errors": [],
+    "result": {
+      "passed": true,
+      "publishedCommit": "d2e9e3cba6269464bf556acc73c0b97030f75b5f",
+      "modulesConfigured": false,
+      "fullInferenceTested": false,
+      "numericNormalizationImplemented": false,
+      "tests": [
+        {
+          "name": "Strict conditioning boundary accepts published BLC output without changing ownership",
+          "passed": true
+        },
+        {
+          "name": "Conditioning rejects wrong meaning layout shape hash mask and declared byte length",
+          "passed": true
+        },
+        {
+          "name": "Raw VAE boundary requires the published mean profile and VAE provenance",
+          "passed": true
+        },
+        {
+          "name": "Explicit encoder and VAE bindings remain separate from diffusion model identity",
+          "passed": true
+        },
+        {
+          "name": "Published wktensor serialization preserves mask metadata bytes and independent ownership",
+          "passed": true
+        },
+        {
+          "name": "Pending encode owns shape mask provenance and data before asynchronous hashing",
+          "passed": true
+        },
+        {
+          "name": "Pending decode snapshots the expected producer binding",
+          "passed": true
+        },
+        {
+          "name": "Published wktensor hash validation and boundary validation reject altered files",
+          "passed": true
+        },
+        {
+          "name": "Actual published same-page modules advertise independent operations and unconfigured state",
+          "passed": true
+        },
+        {
+          "name": "Actual published explicit MessagePort capabilities work and unconfigured inference fails",
+          "passed": true
+        }
+      ]
+    }
+  }
+}

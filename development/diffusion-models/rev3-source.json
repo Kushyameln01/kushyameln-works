@@ -1,0 +1,99 @@
+{
+  "revision": 3,
+  "observedMainCommit": "d2e9e3cba6269464bf556acc73c0b97030f75b5f",
+  "observedMainMessage": "Record live Pages TextEncoder and VAE verification",
+  "deploymentCommitReported": "54c9622e85b4b0c99f3d7d72cdc2c8c0c55d40bf",
+  "liveBaseUrl": "https://kushyameln01.github.io/kushyameln-works/",
+  "independentModules": {
+    "verifiedFromSource": true,
+    "textFactory": "docs/shared/inference/text-encoder-api.mjs:createTextEncoderModule",
+    "vaeFactory": "docs/shared/inference/vae-api.mjs:createVaeModule",
+    "sharedFactory": "docs/shared/inference/api.mjs:createInferenceAPI"
+  },
+  "externalRoutes": {
+    "verifiedFromSource": true,
+    "apiVersion": "works-ai-1",
+    "javascript": "same-origin ES module",
+    "port": "explicit MessagePort via bindInferencePort; allowed methods only; no implicit window or HTTPserver",
+    "tensor": "wktensor binary, float32 typedarray metadata and modelhash"
+  },
+  "hikeUse": {
+    "verifiedFromSource": true,
+    "text": "FinalRMSNorm calls actual Hike RMSNorm; missing kernel rejects",
+    "vae": "rgbunit->[-1,1] affine and decode actualconv2 MatMul+bias; rawencode does not add meaningless identity Hikecall",
+    "compilerCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+    "wasmSha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+    "explicitImport": "env.sqrt=>Math.sqrt primitive only"
+  },
+  "ownChecks": {
+    "fixedCommitSourceInspection": true,
+    "liveGETandGitBlobByteMatch": [
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/api.mjs",
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "bytes": 2255,
+        "sha256": "0284bf6647e7257d78f14a2ecf29112bb6613a305e4589398135eef567b76c24",
+        "gitBlobSha1": "b257e5619aaecc32f255e1b1b1ee68d119004e66",
+        "expectedGitBlobSha1": "b257e5619aaecc32f255e1b1b1ee68d119004e66",
+        "bytesMatchPinnedCommit": true
+      },
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/text-encoder-api.mjs",
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "bytes": 1445,
+        "sha256": "90946ca0c86736daa5bbc69b2009757dcc8b2bcf05adb2ae0c2676a65f89634f",
+        "gitBlobSha1": "5bbf5dbe912f35cd6f40f87501d41a838e7aa527",
+        "expectedGitBlobSha1": "5bbf5dbe912f35cd6f40f87501d41a838e7aa527",
+        "bytesMatchPinnedCommit": true
+      },
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/vae-api.mjs",
+        "status": 200,
+        "mime": "text/javascript; charset=utf-8",
+        "bytes": 2025,
+        "sha256": "649454a20179e2805c31887e0a062c9116d5b6f7a0e02fb2f2a148278c5cd96d",
+        "gitBlobSha1": "b232a72e89a1fc56e1944b981d24dd02cfb17038",
+        "expectedGitBlobSha1": "b232a72e89a1fc56e1944b981d24dd02cfb17038",
+        "bytesMatchPinnedCommit": true
+      },
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/kernel/tensor.wasm",
+        "status": 200,
+        "mime": "application/wasm",
+        "bytes": 5265,
+        "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+        "gitBlobSha1": "7d6346da4a0cca8fb162b1190f3fa4c264d814b9",
+        "expectedGitBlobSha1": "7d6346da4a0cca8fb162b1190f3fa4c264d814b9",
+        "bytesMatchPinnedCommit": true
+      }
+    ],
+    "realTEVAEInferenceReexecutedByThisAgent": false
+  },
+  "publisherEvidenceRead": {
+    "source": "development/inference/public-verification.json",
+    "passed": true,
+    "browser": "154.0.8037.57",
+    "scope": "Publisher report, not this agent own reexecution",
+    "assetCount": 28,
+    "assetBytes": 13611277,
+    "pageErrors": [],
+    "limits": [
+      "FP32 diagnostic arithmetic, not original GPU FP8/BF16 equivalence",
+      "VAE accepted profile only5frames16x16",
+      "Actual counterpart Diffusion/aggregate UI integration not supplied",
+      "User-machine resource benefit not certified"
+    ]
+  },
+  "integrationLimits": {
+    "textShape": "[1,L,4096] BLC text_hidden_states + mask, max512tokens",
+    "textPrompt": "Plaintext does not automatically prepend Bernini systemprompt or reproduce ComfyUI weighting/custom embeddings",
+    "vaeProfile": "wan21-raw-f32-5x16x16 only; RGB[1,3,5,16,16] <-> latent[1,16,2,2,2]",
+    "vaeSpace": "raw posterior mean / raw decoder RGB, no automatic normalizedlatent conversion",
+    "originalVideoShape": "Not accepted by currentVAEprofile; requires separately exported+validatedprofile",
+    "precision": "FP32 diagnostic expansion, not original GPUFP8/BF16 arithmetic equivalence",
+    "counterpartConnection": "Actual Diffusion/overallcoordinator end-to-end not verified by published source/evidencealone"
+  },
+  "noAdditionalUserRequest": "APIpublication found; no repeat request to user"
+}

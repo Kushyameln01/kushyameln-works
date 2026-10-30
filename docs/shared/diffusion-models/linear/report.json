@@ -1,0 +1,332 @@
+{
+  "scope": "Bounded dominant-operation Hike implementation candidate, NOT full-model prediction/sampling and NOT original FP8 scaled_mm equivalence",
+  "status": {
+    "hikeSourceBuild": "PASS",
+    "nodeLiteralAndNativeValidation": "PASS6cases",
+    "chromiumLiteralAndNativeValidation": "PASS6cases",
+    "actualWeightTileResults": "PASS32values per runtime against stagedFP32 and independentdouble references",
+    "memoryReuse": "PASS101calls/model per runtime; unchanged linear Memory capacity",
+    "adoptionIntoProductionModel": "UNVERIFIED and not adopted"
+  },
+  "modelOperation": "First16output rows, all5120input columns of blocks.0.self_attn.q.weight from each supplied LOW/HIGH; original scalar F32 scale and first16F16bias values",
+  "input": "Synthetic deterministic float32[((i%31)-15)/64] for5120columns; not a recorded real model activation",
+  "candidateMath": "Decode E4M3FN; round FP32(decoded*scale); forcolumns ascending round FP32(acc+roundFP32(weight*x)); then roundFP32(acc+bias)",
+  "correctness": {
+    "stagedF32": "bit-exact",
+    "absolute": 0.0001,
+    "relative": 1e-05
+  },
+  "abi": {
+    "Fp8Decode": "(q:i32,count:i32,out:i32,capacity:i32)->i32; 1..256codes; rejects0x7f,0xff",
+    "Fp8Linear": "(q:i32,rows:i32,cols:i32,scale:f32,bias:i32,x:i32,out:i32,capacity:i32)->i32; rows1..16,cols1..5120",
+    "memory": "Caller-owned nonoverlapping q:u8 row-major,bias:f32,x:f32,out:f32 arenas; little-endianf32,4bytealignment; ptrsareephemeral",
+    "statuses": {
+      "0": "success",
+      "-1": "invalid count/dimensions/capacity",
+      "-2": "nonfinite numeric input,nonpositive scale,FP8NaN",
+      "-3": "nonfinite accumulated result; discardall output"
+    },
+    "failureOwnership": "Input-domain rejection occurs before output writes; arithmetic overflow may leave earlier outputrows; host always discards and clears complete private arena on failure",
+    "host": "Validates Uint8Array/Float32Array shape/finiteness; copies inputs; actualdecode/linear arithmetic only inWASM; copied output never aliases Memory; disposal rejects furthercalls"
+  },
+  "resources": {
+    "privatePayloadReadBytes": 163912,
+    "privateQTilesBytes": 163840,
+    "perCallInputCopyBytes": 102464,
+    "perCallOutputCopyBytes": 64,
+    "arenaBytes": 103488,
+    "linearMemoryBytes": 1179648,
+    "memoryStats": "Result memory counters are cumulative snapshots; WASM capacity is not OS/RSS orJSheap measurement",
+    "OSmemoryPeak": null,
+    "OSmemoryReason": "Not measured for this bounded numerical candidate"
+  },
+  "timingMeaning": "elapsedMs includes validation, fixedarena clearing, inputcopies, HikeDecode+linear, outputcopy and finalarena clearing inone warmed candidate call; excludes model extraction, filefetch, modulecompile and firstinstantiate. Not a speedup comparison.",
+  "build": {
+    "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+    "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+    "backend": "wabt",
+    "mode": "normal",
+    "sourceSha256": "29ce6198c70f06384d30855be70039e2da1812b04720e7aece032501271ed393",
+    "wasmSha256": "017547c5e335a0619978cb2707ae7b039ed892a7cd92d32bcdce6d685d9b333b",
+    "watSha256": "f31ae8232cfae60ccf560357d483ec1696d780773b4d628305ac3971ed62baa9",
+    "runtimeSha256": "0d37c1f5ea89304ce0b0654efb51733e5cfb5e9491fb5ac465ca14db5f935922",
+    "versions": {
+      "go": "go version go1.22.12 linux/amd64",
+      "wabt": "1.0.39",
+      "node": "v24.19.0"
+    },
+    "command": [
+      "/workspace/work/diffusion-investigation/toolchain/hikec",
+      "build",
+      "-target",
+      "wabt",
+      "-wasm-mode",
+      "normal",
+      "-o",
+      "/workspace/work/diffusion-investigation/linear/build/linear.wasm",
+      "/workspace/work/diffusion-investigation/linear/linear.hike"
+    ],
+    "imports": "See inspected WAT and Node/browser result; no imports expected",
+    "status": "built; execution evidence separately recorded"
+  },
+  "node": {
+    "scope": "Actual16x5120 weight rows; synthetic deterministic input; candidate only, no model prediction or original scaled_mm equivalence",
+    "runtime": "Node.js/24",
+    "wasmSha256": "017547c5e335a0619978cb2707ae7b039ed892a7cd92d32bcdce6d685d9b333b",
+    "sourceSha256": "29ce6198c70f06384d30855be70039e2da1812b04720e7aece032501271ed393",
+    "cases": [
+      {
+        "name": "literal E4M3FN zeros/subnormals/normal/max",
+        "status": "PASS"
+      },
+      {
+        "name": "both E4M3FN NaN codes rejected",
+        "status": "PASS"
+      },
+      {
+        "name": "literal linear applies scale before dot and bias last",
+        "status": "PASS"
+      },
+      {
+        "name": "shape scale finite and limits checked",
+        "status": "PASS"
+      },
+      {
+        "name": "native WASM rejects non-finite scale/input and capacity before output",
+        "status": "PASS"
+      },
+      {
+        "name": "sequential f32 accumulation is explicit",
+        "status": "PASS"
+      }
+    ],
+    "results": [
+      {
+        "role": "LOW",
+        "sourceSha256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+        "weightKey": "blocks.0.self_attn.q.weight",
+        "tileSha256": "d0d649ab3cf1e15ccda51055a35cf14b3a65a0f273b194a4b94d1bd2087a7d4e",
+        "scale": 0.0004149845917709172,
+        "output": [
+          0.28941529989242554,
+          0.06771403551101685,
+          -0.03322300687432289,
+          -0.14578349888324738,
+          0.10564061254262924,
+          -0.36752259731292725,
+          0.14924511313438416,
+          0.08012676239013672,
+          -0.18484310805797577,
+          0.37646982073783875,
+          -0.014853425323963165,
+          -0.08524499833583832,
+          0.05044184997677803,
+          -0.22217868268489838,
+          -0.047299280762672424,
+          0.08180651068687439
+        ],
+        "outputSha256": "9f21738438a555f8bcd18cede1691c93867125e2711ab36325c6b54a5a72c6b0",
+        "stagedF32Exact": true,
+        "doubleTolerancePassed": true,
+        "elapsedMs": 8.044012000000002,
+        "memory": {
+          "memoryBytes": 1179648,
+          "arenaBytes": 103488,
+          "calls": 104,
+          "inputCopyBytes": 10348916,
+          "outputCopyBytes": 6512,
+          "workspaceReused": true,
+          "imports": 0
+        },
+        "repeatCalls": 101,
+        "ownership": "Original JS buffers preserved; copy into fixed private WASM arena; copied output"
+      },
+      {
+        "role": "HIGH",
+        "sourceSha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+        "weightKey": "blocks.0.self_attn.q.weight",
+        "tileSha256": "c933e5188ee07fe64154cd15fb27b493f8dc58af3fdf2bd5d7232bc78fa614d6",
+        "scale": 0.0004648481262847781,
+        "output": [
+          0.28080469369888306,
+          -0.055939964950084686,
+          -0.07719472050666809,
+          -0.1441224068403244,
+          0.09079410880804062,
+          -0.3640829622745514,
+          0.1131112277507782,
+          0.012808224186301231,
+          -0.1906718611717224,
+          0.40427976846694946,
+          -0.008739601820707321,
+          -0.03896443918347359,
+          0.13288083672523499,
+          -0.2077970802783966,
+          -0.013590525835752487,
+          0.0318436399102211
+        ],
+        "outputSha256": "30f33c094187e92168d6e13fe816fa59e00626429f5b4ab14bb79eb771a369eb",
+        "stagedF32Exact": true,
+        "doubleTolerancePassed": true,
+        "elapsedMs": 5.432585999999901,
+        "memory": {
+          "memoryBytes": 1179648,
+          "arenaBytes": 103488,
+          "calls": 205,
+          "inputCopyBytes": 20697780,
+          "outputCopyBytes": 12976,
+          "workspaceReused": true,
+          "imports": 0
+        },
+        "repeatCalls": 101,
+        "ownership": "Original JS buffers preserved; copy into fixed private WASM arena; copied output"
+      }
+    ],
+    "disposed": true,
+    "jsNumericalFallback": false
+  },
+  "chromium": {
+    "scope": "Actual16x5120 weight rows; synthetic deterministic input; candidate only, no model prediction or original scaled_mm equivalence",
+    "runtime": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+    "wasmSha256": "017547c5e335a0619978cb2707ae7b039ed892a7cd92d32bcdce6d685d9b333b",
+    "sourceSha256": "29ce6198c70f06384d30855be70039e2da1812b04720e7aece032501271ed393",
+    "cases": [
+      {
+        "name": "literal E4M3FN zeros/subnormals/normal/max",
+        "status": "PASS"
+      },
+      {
+        "name": "both E4M3FN NaN codes rejected",
+        "status": "PASS"
+      },
+      {
+        "name": "literal linear applies scale before dot and bias last",
+        "status": "PASS"
+      },
+      {
+        "name": "shape scale finite and limits checked",
+        "status": "PASS"
+      },
+      {
+        "name": "native WASM rejects non-finite scale/input and capacity before output",
+        "status": "PASS"
+      },
+      {
+        "name": "sequential f32 accumulation is explicit",
+        "status": "PASS"
+      }
+    ],
+    "results": [
+      {
+        "role": "LOW",
+        "sourceSha256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+        "weightKey": "blocks.0.self_attn.q.weight",
+        "tileSha256": "d0d649ab3cf1e15ccda51055a35cf14b3a65a0f273b194a4b94d1bd2087a7d4e",
+        "scale": 0.0004149845917709172,
+        "output": [
+          0.28941529989242554,
+          0.06771403551101685,
+          -0.03322300687432289,
+          -0.14578349888324738,
+          0.10564061254262924,
+          -0.36752259731292725,
+          0.14924511313438416,
+          0.08012676239013672,
+          -0.18484310805797577,
+          0.37646982073783875,
+          -0.014853425323963165,
+          -0.08524499833583832,
+          0.05044184997677803,
+          -0.22217868268489838,
+          -0.047299280762672424,
+          0.08180651068687439
+        ],
+        "outputSha256": "9f21738438a555f8bcd18cede1691c93867125e2711ab36325c6b54a5a72c6b0",
+        "stagedF32Exact": true,
+        "doubleTolerancePassed": true,
+        "elapsedMs": 20.5,
+        "memory": {
+          "memoryBytes": 1179648,
+          "arenaBytes": 103488,
+          "calls": 104,
+          "inputCopyBytes": 10348916,
+          "outputCopyBytes": 6512,
+          "workspaceReused": true,
+          "imports": 0
+        },
+        "repeatCalls": 101,
+        "ownership": "Original JS buffers preserved; copy into fixed private WASM arena; copied output"
+      },
+      {
+        "role": "HIGH",
+        "sourceSha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+        "weightKey": "blocks.0.self_attn.q.weight",
+        "tileSha256": "c933e5188ee07fe64154cd15fb27b493f8dc58af3fdf2bd5d7232bc78fa614d6",
+        "scale": 0.0004648481262847781,
+        "output": [
+          0.28080469369888306,
+          -0.055939964950084686,
+          -0.07719472050666809,
+          -0.1441224068403244,
+          0.09079410880804062,
+          -0.3640829622745514,
+          0.1131112277507782,
+          0.012808224186301231,
+          -0.1906718611717224,
+          0.40427976846694946,
+          -0.008739601820707321,
+          -0.03896443918347359,
+          0.13288083672523499,
+          -0.2077970802783966,
+          -0.013590525835752487,
+          0.0318436399102211
+        ],
+        "outputSha256": "30f33c094187e92168d6e13fe816fa59e00626429f5b4ab14bb79eb771a369eb",
+        "stagedF32Exact": true,
+        "doubleTolerancePassed": true,
+        "elapsedMs": 6.2999999998137355,
+        "memory": {
+          "memoryBytes": 1179648,
+          "arenaBytes": 103488,
+          "calls": 205,
+          "inputCopyBytes": 20697780,
+          "outputCopyBytes": 12976,
+          "workspaceReused": true,
+          "imports": 0
+        },
+        "repeatCalls": 101,
+        "ownership": "Original JS buffers preserved; copy into fixed private WASM arena; copied output"
+      }
+    ],
+    "disposed": true,
+    "jsNumericalFallback": false,
+    "browserVersion": "154.0.8037.57"
+  },
+  "sourceHashes": {
+    "linear.hike": "29ce6198c70f06384d30855be70039e2da1812b04720e7aece032501271ed393",
+    "linear-kernel.mjs": "613a8132e03d798cf4a1b1a1b9cd213407a588dcb2f7060bceee4cffd08b989f",
+    "build.py": "1895cc337545ef38d66ebfd9695a2f90924c8a1c4ef9ef31569527977f791b6e",
+    "extract-fixture.py": "316e99f2fc0d55b3e53224651f189899d480b5fbdf3bcaf03090e28f489eb3b5",
+    "test.mjs": "3cb7c34d34140b1b76b252055f761b484a47075662da0f320e8090411ff22a09",
+    "test-cases.mjs": "1d76e9409c91fd414f03a50f059d00e3cda9b21f541e9b842266c5f289b731d2",
+    "test-browser.py": "08933ccdefc9563db4a433599cf53657ef446f4a30de7d52ddc42c7b0fd2d63e",
+    "LICENSE-Hike.txt": "6b3497e1e711780741457cdcb345be01421b8a7ef6c35d4f084cac7993a0b4ef"
+  },
+  "license": "LICENSE-Hike.txt is the upstream Hike compilerMIT license; compiler source provenance is in siblingtoolchain/provenance.json. Newkernel implements statedcandidateformula; no originalmodelweights are included outside privatework/.",
+  "sourceReferences": [
+    "ComfyUI b5a432157de6b8884f81104cd02926adf4d597e4 comfy/ops.py1284-1306 per-tensorE4M3FNload",
+    "Comfy-kitchenv0.2.40 comfy_kitchen/backends/eager/quantization.py61 dequant=x.to(outdtype)*scale.to(outdtype)"
+  ],
+  "tddEvidence": {
+    "red": "work/red.log; missingimplementationassertion fromtestwrittenbeforekernel/host",
+    "green": "work/node-results.json andwork/browser-results.json",
+    "additionalFinding": "Literalnegativezero testfailed becausepinnedWABTcompiler lowersunaryminus to0-value; Hikesource usesvalue*float32(-1)topreserveIEEEnegativezero. NoWAT/compilerpatch."
+  },
+  "limits": [
+    "Only16rows of one Qprojection; no full5120x5120or40blockmodelwasexecuted",
+    "NoLoRA,conditioning,attention,RoPE,FFNorORTgraphwasexecuted",
+    "Syntheticinput and eagerFP32 math do not establish originalComfyUIprecisionoroutputequivalence",
+    "Need independent realactivation/step/modelreference plusboundedfullshapegraphandmemorymeasurements beforeadoption",
+    "Raw tiles and fixturebias/expecteddata resideonlyinwork/; excludeentireworkdirectoryfromsource/publicpackages"
+  ]
+}

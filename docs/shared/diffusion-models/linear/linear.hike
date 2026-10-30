@@ -1,0 +1,79 @@
+package main
+
+// Caller owns disjoint fixed arenas. No allocation, host imports or JS arithmetic.
+func DecodeE4M3(code int) float32 {
+    exponent := (code >> 3) & 15
+    mantissa := code & 7
+    value := float32(0)
+    power := float32(1)
+    shift := exponent - 7
+    if exponent == 0 {
+        value = float32(mantissa) * float32(0.001953125)
+    } else {
+        for shift > 0 { power = power * float32(2); shift = shift - 1 }
+        for shift < 0 { power = power * float32(0.5); shift = shift + 1 }
+        value = (float32(1) + float32(mantissa) * float32(0.125)) * power
+    }
+    if (code & 128) != 0 { value = value * float32(-1) }
+    return value
+}
+
+func IsFinite(value float32) bool {
+    return value == value && value - value == float32(0)
+}
+
+cfunc Fp8Decode(q *byte, count int, out *float32, capacity int) int {
+    if count < 1 || count > 256 || capacity < count { return -1 }
+    i := 0
+    code := 0
+    for i < count {
+        code = int(q[i])
+        if (code & 127) == 127 { return -2 }
+        i = i + 1
+    }
+    i = 0
+    for i < count {
+        out[i] = DecodeE4M3(int(q[i]))
+        i = i + 1
+    }
+    return 0
+}
+
+cfunc Fp8Linear(q *byte, rows int, cols int, scale float32, bias *float32, x *float32, out *float32, capacity int) int {
+    if rows < 1 || rows > 16 || cols < 1 || cols > 5120 || capacity < rows { return -1 }
+    if !IsFinite(scale) || scale <= float32(0) { return -2 }
+    i := 0
+    row := 0
+    col := 0
+    code := 0
+    weight := float32(0)
+    product := float32(0)
+    acc := float32(0)
+    result := float32(0)
+    for i < rows * cols {
+        code = int(q[i])
+        if (code & 127) == 127 { return -2 }
+        i = i + 1
+    }
+    i = 0
+    for i < cols { if !IsFinite(x[i]) { return -2 }; i = i + 1 }
+    i = 0
+    for i < rows { if !IsFinite(bias[i]) { return -2 }; i = i + 1 }
+    for row < rows {
+        col = 0
+        acc = float32(0)
+        for col < cols {
+            weight = DecodeE4M3(int(q[row * cols + col])) * scale
+            product = weight * x[col]
+            acc = acc + product
+            col = col + 1
+        }
+        result = acc + bias[row]
+        if !IsFinite(result) { return -3 }
+        out[row] = result
+        row = row + 1
+    }
+    return 0
+}
+
+func main() int { return 0 }
