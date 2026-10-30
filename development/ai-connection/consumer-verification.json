@@ -1,0 +1,29 @@
+{
+  "scope": "PARTIAL diagnostic consumer contract tests only; injected explicit test stage, not actual ORT/Hike execution or LoRA arithmetic",
+  "command": "node --test --test-isolation=none docs/shared/diffusion-models/lora/test-consumer.mjs",
+  "result": {
+    "tests": 19,
+    "passed": 19,
+    "failed": 0
+  },
+  "redObserved": [
+    "implementation missing",
+    "dispose did not wait for pending sink hash",
+    "stage retained input could mutate validated feed",
+    "releaseCandidate method absent",
+    "stage output/evidence could mutate across async continuation",
+    "aborted own-current rollback failed to restore previous active",
+    "rollback released in-use candidate during validation",
+    "tampered registry accepted under unchanged digest",
+    "sparse sink shape skipped holes under Array.every"
+  ],
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/lora/diagnostic-consumer.mjs": "fdac31542f87d68b9e01a1ba674ee9b60433cae685d6670222f8d914dd27f943",
+    "docs/shared/diffusion-models/lora/test-consumer.mjs": "66d82fa7a580c20bf763725f77bdfa9c2272735ca1a9bc4e361f4bff70d3fe30",
+    "docs/shared/diffusion-models/lora/diagnostic-identity.mjs": "35ed52cde91236e764acd61ce912a96aea6627c249eeccd3c8039036069de9c9"
+  },
+  "realModelInference": false,
+  "realLoRAApplication": false,
+  "callerStageOwnedByConsumer": false,
+  "rootRealStageIntegrationRequired": true
+}

@@ -74,6 +74,11 @@ async function execute(op,input){
   const data=op==='noiseMix'?k.noiseMix(input.noise,input.latent,input.sigma,input.noiseScale):op==='inverseNoiseScale'?k.inverseNoiseScale(input.latent,input.sigma):k.flowDenoised(input.input,input.velocity,input.sigma);
   return {data,shape,operation:op,normalizationApplied:false,hikeWasmSHA256:BUILD_SOURCES['../scheduler/build/scheduler.wasm'],evidence:{scope:'numeric primitive on caller supplied arrays; no model inference',hike:k.stats()}};
  }
+ if(op==='linearProjectionF32'){
+  for(const [value,count] of [[input.weight,81920],[input.x,5120],[input.bias,16]])if(!(value instanceof Float32Array)||value.length!==count||!value.every(Number.isFinite))fail('INVALID_TENSOR','Expected finite exact-shape F32 weight, x, bias');
+  if(!projectionStage){const {createOrtProjectionStage}=await import('../ort-bridge/stage.mjs');projectionStage=await createOrtProjectionStage();}
+  return {...await projectionStage.runF32(input),modelInference:false,partialOnly:true};
+ }
  if(op==='linearProjection'){
   if(!(input.q instanceof Uint8Array)||input.q.length!==81920||!(input.x instanceof Float32Array)||input.x.length!==5120||!input.x.every(Number.isFinite)||!(input.bias instanceof Float32Array)||input.bias.length!==16||!input.bias.every(Number.isFinite)||typeof input.scale!=='number'||!Number.isFinite(input.scale)||input.scale<=0)fail('INVALID_TENSOR','Expected Q Uint8Array81920, finite x Float32Array5120, bias Float32Array16 and positive scale');
   if(!projectionStage){const {createOrtProjectionStage}=await import('../ort-bridge/stage.mjs');projectionStage=await createOrtProjectionStage();}

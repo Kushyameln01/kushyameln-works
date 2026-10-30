@@ -85,3 +85,8 @@ try {
   api.dispose();
 }
 ```
+
+
+## 別契約: PARTIAL consumer
+
+登録bindingIdは原本FileのI/O識別であり、実行重みのbinding.kindと別である。実base復号・F32 runtime feed-set受口は [DIAGNOSTIC_API.md](DIAGNOSTIC_API.md) の版付きES moduleで提供する。原本I/Oのapplied:falseを変更せず、SDK v1/fullモデル適用済みとは表示しない。

@@ -1,6 +1,6 @@
 import {BRIDGE_WASM_SHA256} from './kernel/registry.mjs';
 
-// Bounded numerical bridge. All dequant/scale/add arithmetic is Hike WASM.
+// Bounded numerical bridge. All half/dequant/scale/add arithmetic is Hike WASM.
 export async function createProjectionBridge(wasmBytes,{expectedSha256=BRIDGE_WASM_SHA256}={}) {
   if(!(wasmBytes instanceof Uint8Array)&&!(wasmBytes instanceof ArrayBuffer))throw TypeError('Expected WASM bytes');
   if(typeof expectedSha256!=='string'||!/^[a-f0-9]{64}$/.test(expectedSha256))throw TypeError('Expected SHA-256');
@@ -10,9 +10,9 @@ export async function createProjectionBridge(wasmBytes,{expectedSha256=BRIDGE_WA
   const module=await WebAssembly.compile(ownedBytes);
   if(WebAssembly.Module.imports(module).length)throw Error('Unexpected bridge WASM imports');
   let instance=await WebAssembly.instantiate(module,{}),memory=instance.exports.memory;
-  if(!(memory instanceof WebAssembly.Memory)||typeof instance.exports.DequantScale!=='function'||typeof instance.exports.AddBias!=='function')throw Error('Projection bridge ABI missing');
+  if(!(memory instanceof WebAssembly.Memory)||typeof instance.exports.DequantScale!=='function'||typeof instance.exports.AddBias!=='function'||typeof instance.exports.DecodeF16!=='function')throw Error('Projection bridge ABI missing');
   const MAX_CODES=81920,MAX_BIAS=16,start=memory.buffer.byteLength;
-  const qPtr=start,aPtr=qPtr+MAX_CODES,bPtr=aPtr+MAX_CODES*4,outPtr=bPtr+MAX_BIAS*4;
+  const qPtr=start,aPtr=qPtr+MAX_CODES*2,bPtr=aPtr+MAX_CODES*4,outPtr=bPtr+MAX_BIAS*4;
   const arenaBytes=outPtr+MAX_BIAS*4-start;
   memory.grow(Math.ceil(arenaBytes/65536));
   let calls=0,inputCopyBytes=0,outputCopyBytes=0;
@@ -31,6 +31,14 @@ export async function createProjectionBridge(wasmBytes,{expectedSha256=BRIDGE_WA
     } finally {new Uint8Array(memory.buffer,start,arenaBytes).fill(0);}
   }
   return {
+    decodeF16(bits) {
+      active();
+      if(!(bits instanceof Uint16Array)||bits.length<1||bits.length>MAX_CODES)throw RangeError('Expected 1..81920 F16 bit patterns');
+      const transport=new DataView(memory.buffer,qPtr,bits.length*2);
+      for(let i=0;i<bits.length;i++)transport.setUint16(i*2,bits[i],true);
+      inputCopyBytes+=bits.byteLength;
+      return invoke(aPtr,bits.length,()=>instance.exports.DecodeF16(qPtr,bits.length,aPtr,MAX_CODES));
+    },
     dequant(q,scale) {
       active();
       if(!(q instanceof Uint8Array)||q.length<1||q.length>MAX_CODES)throw RangeError('Expected 1..81920 FP8 codes');
