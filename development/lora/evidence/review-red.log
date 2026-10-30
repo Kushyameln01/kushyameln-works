@@ -1,0 +1,68 @@
+✔ independent LoRA API exists (6.715891ms)
+✔ all patches affect actual Hike result; base immutable, strength zero and repeat (31.188543ms)
+✔ unknown tensors, target omissions and missing source are rejected before writes (5.742872ms)
+✔ cancel invalidates pending base read and stale plan cannot prepare (7.400684ms)
+✔ consumer load failure rolls back and cannot commit; success and detach snapshot (5.641501ms)
+✔ local folder entry applies chosen High/Low without HTTP or catalog registration (11.374278ms)
+✔ local inputs with same header but different content have distinct application identities (5.540479ms)
+✖ caller cannot relabel HighNoise as LowNoise during asynchronous inspection (5.884925ms)
+✖ consumer transactions serialize; package cannot release until load settles; disposal waits (26.234393ms)
+✖ partially initialized sink is aborted when begin rejects (5.94773ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 7
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 118.489732
+
+✖ failing tests:
+
+test at tools/lora/test-api.mjs:63:1
+✖ caller cannot relabel HighNoise as LowNoise during asynchronous inspection (5.884925ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  'low' !== 'high'
+
+      at TestContext.<anonymous> (file:///workspace/work/lora-implementation/tools/lora/test-api.mjs:64:211)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'low',
+    expected: 'high',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/lora/test-api.mjs:66:1
+✖ consumer transactions serialize; package cannot release until load settles; disposal waits (26.234393ms)
+  AssertionError [ERR_ASSERTION]: Consumer transactions not serialized
+      at TestContext.<anonymous> (file:///workspace/work/lora-implementation/tools/lora/test-api.mjs:69:291)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: undefined,
+    operator: 'fail',
+    diff: 'simple'
+  }
+
+test at tools/lora/test-api.mjs:72:1
+✖ partially initialized sink is aborted when begin rejects (5.94773ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  false !== true
+
+      at TestContext.<anonymous> (file:///workspace/work/lora-implementation/tools/lora/test-api.mjs:73:282)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

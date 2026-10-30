@@ -14,6 +14,7 @@
 | Hike f32 Euler更新 | 実WASM、Node/Chromiumで検証 |
 | 同一ページAPI / 明示MessagePort | 実Worker/MessageChannelで検証 |
 | 取消・新入力による旧応答失効・終了 | 自分のWorkerだけを終了し、Promiseを終端化 |
+| LoRA weight I/O | HIGH/LOW別File登録・保存dtypeの範囲読出し・SDK source接続。モデル適用は未実装 |
 | Bernini load/predict/sample | NOT_READY。全量ORT/単純block分割ではMemory制約を満たさない |
 | Text Encoder/VAE境界 | 公開固定版から独立APIとHike担当を確認。既存.wktensor互換でshape/意味/hash/maskを検査。全体推論の結合ではない |
 

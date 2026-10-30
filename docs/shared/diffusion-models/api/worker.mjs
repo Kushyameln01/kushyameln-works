@@ -30,6 +30,13 @@ function metadata(tensor,profileId){
 }
 
 async function execute(op,input){
+ if(['inspectLora','loadLora','readLora','readLoraSource'].includes(op)){
+  const core=await import('../lora/weights.mjs');
+  if(op==='inspectLora')return core.inspectLoraFile(input.file);
+  if(op==='loadLora')return core.loadLoraFile(input.file,input);
+  const result=op==='readLora'?await core.readLoraTensor(input.file,input.binding,input.range):await core.readLoraBytes(input.file,input.binding,input.range);
+  return {...result,bindingId:input.bindingId};
+ }
  if(op==='inspect'||op==='load'){
   const inspected=await inspectSafetensors(input.file);
   if(op==='load')fail('NOT_READY','Model inference has not been implemented or validated',{reasons:inspected.readiness.reasons,payloadBytes:inspected.payloadBytes});

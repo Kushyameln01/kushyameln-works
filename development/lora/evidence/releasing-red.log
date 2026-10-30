@@ -1,0 +1,39 @@
+✔ independent LoRA API exists (8.92113ms)
+✔ all patches affect actual Hike result; base immutable, strength zero and repeat (20.513921ms)
+✔ unknown tensors, target omissions and missing source are rejected before writes (6.357078ms)
+✔ cancel invalidates pending base read and stale plan cannot prepare (4.697684ms)
+✔ consumer load failure rolls back and cannot commit; success and detach snapshot (5.340396ms)
+✔ local folder entry applies chosen High/Low without HTTP or catalog registration (9.623102ms)
+✔ local inputs with same header but different content have distinct application identities (4.93982ms)
+✔ caller cannot relabel HighNoise as LowNoise during asynchronous inspection (4.980566ms)
+✔ consumer transactions serialize; package cannot release until load settles; disposal waits (5.841042ms)
+✔ partially initialized sink is aborted when begin rejects (5.199312ms)
+✔ failed sink release retains ownership so cleanup can retry (6.570756ms)
+✖ consumer cannot load a package while asynchronous release is in progress (6.470965ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 11
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 95.467815
+
+✖ failing tests:
+
+test at tools/lora/test-api.mjs:78:1
+✖ consumer cannot load a package while asynchronous release is in progress (6.470965ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /releas|stale|use/i. Input:
+
+  'undefined'
+
+      at TestContext.<anonymous> (file:///workspace/work/lora-implementation/tools/lora/test-api.mjs:79:558)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: /releas|stale|use/i,
+    operator: 'match',
+    diff: 'simple'
+  }

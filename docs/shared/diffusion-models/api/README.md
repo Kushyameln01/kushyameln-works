@@ -101,3 +101,12 @@ node api/test/browser-check.cjs /absolute/path/LOW.safetensors /absolute/path/HI
 build-info.pyはAPI source、生成スクリプト、Euler、scheduler、Wan21 latent-space、tensor interopと公開codec、ORT bridgeのsource/kernel、ORT1.24.3実runtime・manifestのhashをまとめ、hostとworkerが独立に読み込む固定buildIdを生成する。対象sourceやkernelを変えたら必ず再生成する。build-info.mjs自体・テスト・READMEはhash対象外。
 
 REDの記録はtest/red-*.json、最新GREENはtest/browser-results.json。Chromiumの実Worker・MessageChannel・Hike/ORT WASMで22ケースを確認した。固定schedule・noise/flow式、raw meanの16 channel正規化と復元・公開codec保存読戻し、tensor境界拒否、literal部分射影と実重み2タイル32出力、partial取消後の再実行を含む。追加の実File試験では保存済み各15.57 GBのLOW/HIGHを入力し、1815 tensors、181280 bytesのheader hashを独立Python棚卸しと照合した。どちらもloadはNOT_READYで拒否した。これはモデル本体の推論合格ではない。
+
+
+## LoRA重みの入力
+
+LoRA用に `inspectLora` / `loadLora` / `listLoras` / `readLora` / `readLoraSource` / `unloadLora` を追加した。同じrequest envelope、Worker、取消・revision・MessagePort契約を使用する。HIGH/LOWごとのFile/Blob、強度、既知base hashを明示し、成功時だけ所有bindingを更新する。loadは1MiB以下の分割読込みで全file hashを計算する。登録は取消によるWorker再生成後も保持され、disposeで解除する。
+
+読出しは1回4MiB以下の所有Uint8Array。F16/BF16/F32の保存bitsと元のshape・tensor名・範囲・hashを返し、LoRAの数値加算を行わない。対応する通常pairと `.diff/.diff_b` のshapeを実Bernini targetと照合する。`loraWeightIO:true` と `loraApplied:false` を区別し、モデル全体のNOT_READYを解除しない。
+
+別担当LoRA SDKのsource契約へは `createLoraSource` で接続できる。SDKの実graph consumer・package/session切替は別の未実装境界である。詳細、対象モデルhash、対応形式、保持・所有権は [LoRA接続仕様](../lora/API.md) を参照する。

@@ -5,7 +5,11 @@
     "/api/test/browser.html",
     "/api/test/cases.mjs",
     "/api/index.mjs",
+    "/lora/weights.mjs",
     "/api/build-info.mjs",
+    "/api/safetensors.mjs",
+    "/vr180/sha256.mjs",
+    "/lora/targets.mjs",
     "/api/worker.mjs",
     "/api/build-info.mjs",
     "/api/safetensors.mjs",
@@ -79,17 +83,7 @@
     "/ort-bridge/graph.mjs",
     "/ort-bridge/kernel/bridge.wasm",
     "/inference/vendor/ort-wasm-simd-threaded.mjs",
-    "/inference/vendor/ort-wasm-simd-threaded.wasm",
-    "/api/worker.mjs",
-    "/api/build-info.mjs",
-    "/api/safetensors.mjs",
-    "/euler-kernel.mjs",
-    "/kernel-registry.mjs",
-    "/api/worker.mjs",
-    "/api/build-info.mjs",
-    "/api/safetensors.mjs",
-    "/euler-kernel.mjs",
-    "/kernel-registry.mjs"
+    "/inference/vendor/ort-wasm-simd-threaded.wasm"
   ],
   "result": {
     "passed": true,
@@ -184,60 +178,5 @@
       }
     ]
   },
-  "actualModels": [
-    {
-      "name": "Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
-      "fileBytes": 15574833216,
-      "headerBytes": 181280,
-      "payloadBytes": 15574651928,
-      "tensorCount": 1815,
-      "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
-      "fullFileSHA256": null,
-      "readiness": {
-        "ready": false,
-        "reasons": [
-          "SINGLE_WASM32_MEMORY_EXCEEDED",
-          "MODEL_INFERENCE_NOT_IMPLEMENTED"
-        ]
-      },
-      "loadError": {
-        "code": "NOT_READY",
-        "message": "Model inference has not been implemented or validated",
-        "details": {
-          "reasons": [
-            "SINGLE_WASM32_MEMORY_EXCEEDED",
-            "MODEL_INFERENCE_NOT_IMPLEMENTED"
-          ],
-          "payloadBytes": 15574651928
-        }
-      }
-    },
-    {
-      "name": "Wan22_Bernini_HIGH_fp8_e4m3fn_scaled.safetensors",
-      "fileBytes": 15574833216,
-      "headerBytes": 181280,
-      "payloadBytes": 15574651928,
-      "tensorCount": 1815,
-      "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
-      "fullFileSHA256": null,
-      "readiness": {
-        "ready": false,
-        "reasons": [
-          "SINGLE_WASM32_MEMORY_EXCEEDED",
-          "MODEL_INFERENCE_NOT_IMPLEMENTED"
-        ]
-      },
-      "loadError": {
-        "code": "NOT_READY",
-        "message": "Model inference has not been implemented or validated",
-        "details": {
-          "reasons": [
-            "SINGLE_WASM32_MEMORY_EXCEEDED",
-            "MODEL_INFERENCE_NOT_IMPLEMENTED"
-          ],
-          "payloadBytes": 15574651928
-        }
-      }
-    }
-  ]
+  "actualModels": []
 }

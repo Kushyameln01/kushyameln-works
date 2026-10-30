@@ -1,0 +1,38 @@
+✔ independent LoRA API exists (16.478727ms)
+✔ all patches affect actual Hike result; base immutable, strength zero and repeat (65.921197ms)
+✔ unknown tensors, target omissions and missing source are rejected before writes (10.342478ms)
+✔ cancel invalidates pending base read and stale plan cannot prepare (7.369283ms)
+✔ consumer load failure rolls back and cannot commit; success and detach snapshot (22.784406ms)
+✔ local folder entry applies chosen High/Low without HTTP or catalog registration (21.228519ms)
+✔ local inputs with same header but different content have distinct application identities (7.171048ms)
+✔ caller cannot relabel HighNoise as LowNoise during asynchronous inspection (12.488895ms)
+✔ consumer transactions serialize; package cannot release until load settles; disposal waits (7.98766ms)
+✔ partially initialized sink is aborted when begin rejects (8.374917ms)
+✖ failed sink release retains ownership so cleanup can retry (16.623924ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 10
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 205.356505
+
+✖ failing tests:
+
+test at tools/lora/test-api.mjs:75:1
+✖ failed sink release retains ownership so cleanup can retry (16.623924ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 2
+
+      at TestContext.<anonymous> (file:///workspace/work/lora-implementation/tools/lora/test-api.mjs:76:379)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
