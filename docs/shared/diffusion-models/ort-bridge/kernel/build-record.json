@@ -1,0 +1,38 @@
+{
+  "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+  "backend": "wabt",
+  "mode": "normal",
+  "flags": [
+    "-target",
+    "wabt",
+    "-wasm-mode",
+    "normal"
+  ],
+  "sourceSha256": "683e39c5347426865cc2f60c3df99c320f13465b5e7ffc7bf746eb60187ec154",
+  "wasmSha256": "feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2",
+  "watSha256": "8f827b7c9f775ec4bbbf7d08351ebf4a4b32e10e08e5c84168bc440c3bd60077",
+  "runtimeSha256": "0d37c1f5ea89304ce0b0654efb51733e5cfb5e9491fb5ac465ca14db5f935922",
+  "versions": {
+    "go": "go version go1.22.12 linux/amd64",
+    "wabt": "1.0.39",
+    "node": "v24.19.0"
+  },
+  "command": [
+    "/workspace/work/diffusion-investigation/toolchain/hikec",
+    "build",
+    "-target",
+    "wabt",
+    "-wasm-mode",
+    "normal",
+    "-o",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/kernel/bridge.hike"
+  ],
+  "imports": [],
+  "abi": {
+    "DequantScale": "i32 i32 f32 i32 i32",
+    "AddBias": "i32 i32 i32 i32 i32"
+  },
+  "status": "BUILT_ABI_INSPECTED; runtime evidence in node-results.json"
+}

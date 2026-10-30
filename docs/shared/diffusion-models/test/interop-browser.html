@@ -1,0 +1,5 @@
+<!doctype html><meta charset="utf-8"><title>Wan published tensor interop checks</title>
+<script type="module">
+import {runInteropCases} from './interop-cases.mjs';
+runInteropCases().then(result=>window.result=result).catch(error=>window.failure=String(error.stack??error));
+</script>

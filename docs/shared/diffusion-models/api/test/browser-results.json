@@ -1,6 +1,96 @@
 {
   "browser": "154.0.8037.57",
   "errors": [],
+  "requests": [
+    "/api/test/browser.html",
+    "/api/test/cases.mjs",
+    "/api/index.mjs",
+    "/api/build-info.mjs",
+    "/api/worker.mjs",
+    "/api/build-info.mjs",
+    "/api/safetensors.mjs",
+    "/euler-kernel.mjs",
+    "/kernel-registry.mjs",
+    "/kernel/euler.wasm",
+    "/api/worker.mjs",
+    "/api/build-info.mjs",
+    "/api/safetensors.mjs",
+    "/euler-kernel.mjs",
+    "/kernel-registry.mjs",
+    "/scheduler/scheduler-kernel.mjs",
+    "/scheduler/build/scheduler.wasm",
+    "/tensor-interop.mjs",
+    "/inference/tensor.mjs",
+    "/latent-space/latent-space.mjs",
+    "/latent-space/kernel-registry.mjs",
+    "/latent-space/build/latent-space.wasm",
+    "/inference/tensor.mjs",
+    "/ort-bridge/stage.mjs",
+    "/inference/vendor/ort.wasm.min.mjs",
+    "/ort-bridge/hike.mjs",
+    "/ort-bridge/kernel/registry.mjs",
+    "/ort-bridge/graph.mjs",
+    "/ort-bridge/kernel/bridge.wasm",
+    "/inference/vendor/ort-wasm-simd-threaded.mjs",
+    "/inference/vendor/ort-wasm-simd-threaded.wasm",
+    "/linear/work/fixture.json",
+    "/linear/work/low.q8",
+    "/linear/work/low.bias.f32",
+    "/linear/work/high.q8",
+    "/linear/work/high.bias.f32",
+    "/api/worker.mjs",
+    "/api/worker.mjs",
+    "/api/build-info.mjs",
+    "/api/safetensors.mjs",
+    "/euler-kernel.mjs",
+    "/kernel-registry.mjs",
+    "/kernel/euler.wasm",
+    "/api/worker.mjs",
+    "/api/build-info.mjs",
+    "/api/safetensors.mjs",
+    "/euler-kernel.mjs",
+    "/kernel-registry.mjs",
+    "/kernel/euler.wasm",
+    "/scheduler/scheduler-kernel.mjs",
+    "/scheduler/build/scheduler.wasm",
+    "/ort-bridge/stage.mjs",
+    "/inference/vendor/ort.wasm.min.mjs",
+    "/ort-bridge/hike.mjs",
+    "/ort-bridge/kernel/registry.mjs",
+    "/ort-bridge/graph.mjs",
+    "/ort-bridge/kernel/bridge.wasm",
+    "/inference/vendor/ort-wasm-simd-threaded.mjs",
+    "/inference/vendor/ort-wasm-simd-threaded.wasm",
+    "/latent-space/latent-space.mjs",
+    "/inference/tensor.mjs",
+    "/tensor-interop.mjs",
+    "/latent-space/kernel-registry.mjs",
+    "/latent-space/build/latent-space.wasm",
+    "/api/worker.mjs",
+    "/api/worker.mjs",
+    "/api/build-info.mjs",
+    "/api/safetensors.mjs",
+    "/euler-kernel.mjs",
+    "/kernel-registry.mjs",
+    "/ort-bridge/stage.mjs",
+    "/inference/vendor/ort.wasm.min.mjs",
+    "/ort-bridge/hike.mjs",
+    "/ort-bridge/kernel/registry.mjs",
+    "/ort-bridge/graph.mjs",
+    "/ort-bridge/kernel/bridge.wasm",
+    "/inference/vendor/ort-wasm-simd-threaded.mjs",
+    "/inference/vendor/ort-wasm-simd-threaded.wasm",
+    "/api/worker.mjs",
+    "/api/build-info.mjs",
+    "/api/safetensors.mjs",
+    "/euler-kernel.mjs",
+    "/kernel-registry.mjs",
+    "/api/worker.mjs",
+    "/api/build-info.mjs",
+    "/api/safetensors.mjs",
+    "/euler-kernel.mjs",
+    "/kernel-registry.mjs"
+  ],
   "result": {
     "passed": true,
     "tests": [
@@ -33,6 +123,38 @@
         "passed": true
       },
       {
+        "name": "Actual Hike schedule exposes exact simple6 and HIGH LOW split with six times",
+        "passed": true
+      },
+      {
+        "name": "Actual Hike noise inverse and flow primitives preserve caller bytes and shape",
+        "passed": true
+      },
+      {
+        "name": "Pointwise primitives reject shape dtype nonfinite singular and overbudget input",
+        "passed": true
+      },
+      {
+        "name": "Published tensor boundary validation returns metadata only and rejects mixed spaces provenance",
+        "passed": true
+      },
+      {
+        "name": "Diffusion Hike explicitly normalizes raw means and restores published binary readback",
+        "passed": true
+      },
+      {
+        "name": "Raw mean normalization rejects wrong meaning model shape and generated sample semantics",
+        "passed": true
+      },
+      {
+        "name": "Real Hike ORT Hike partial projection computes literal without claiming model inference",
+        "passed": true
+      },
+      {
+        "name": "Both actual weight tiles pass independent tolerance through external partial API",
+        "passed": true
+      },
+      {
         "name": "Neural operations fail closed without injection or fake predictions",
         "passed": true
       },
@@ -50,6 +172,10 @@
       },
       {
         "name": "Explicit MessagePort returns binary results with echoed identifiers",
+        "passed": true
+      },
+      {
+        "name": "Cancelling a pending partial pipeline allows a fresh real partial result",
         "passed": true
       },
       {

@@ -1,3 +1,5 @@
+> 旧段階の履歴です。現行のTE/VAE取得・接続確認と実装状況はREV3_RESULT.mdを参照してください。
+
 # Text Encoder / VAE参照先の取得状態
 
 ユーザー指定: ブランチ `codex/textencoder-vae`、コミット `a92e104`。

@@ -1,4 +1,6 @@
-# Diffusion Models担当契約 v2
+> 現行revision 3。直近の確認・到達点は末尾とREV3_RESULT.md。途中段階のAs-Isは履歴として残す。
+
+# Diffusion Models担当契約 v3
 
 更新: 2026-10-31 JST。原要求は会話の最新依頼と添付「Kushyameln Works AI推論3モジュールのWASM実装計画」v1.1。
 
@@ -37,3 +39,15 @@ diffusion_models全体（推論・Hike WASM・外部API）を本担当で確立�
 - 同一ページ/MessagePort API: 実Worker13項目とLOW/HIGH実File検査合格。
 - 実重みFP8 Q射影候補: Node/Chromium6項目と全32出力照合合格。本番採用せず。
 - 実predict/sample、Hike→ORT→Hike、tiling/streaming attention、全工程品質・負荷目標は未達。TE/VAE実物結合は公開反映待ち。
+
+## revision 3 — 明示確認後の部分実装
+
+最新ユーザー原文と範囲はREV3_PLAN.md。全体を推測で完成認定せず、今回は全体モデル推論も実行しない。
+
+公開TE/VAE d2e9e3cを固定して取得し、独立factory・同一ページ/MessagePort・Hike source/WASMを確認した。公開4GETのbytes/hash、既存Hike小演算と実API制御も検査。VAEは固定小profile、raw空間のまま。
+
+実装済み: Hike→ORT1.24.3 WASM→Hikeの実重み部分射影、simple6/shift5/split3とCONSTのHike演算、厳密tensor境界と公開.wktensor保存/読戻し、外部API追加。Node/Chromiumの範囲別試験と独立レビュー合格。詳細はREV3_RESULT.md。
+
+残件: 全model predict/sample実装、raw/normalized空間の完全なpipeline接続、全shape・元precision・LoRA/元workflow同等性と全工程負荷の検証。今回の小演算成功から達成へ変更しない。
+
+追補: raw posterior meanの空間変換もDiffusionが所有する。normalizeRawMean/restoreRawMeanをHikeで実装・Node/Chromium10項目検証し、バージョン付きmeaningを既存.wktensorへ保存できる。包括UIは順序・待機列・入出力を担当し数値計算を代行しない。

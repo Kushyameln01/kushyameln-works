@@ -1,0 +1,155 @@
+{
+  "browser": "154.0.8037.57",
+  "pageErrors": [],
+  "result": {
+    "passed": true,
+    "scope": "partial q projection with synthetic activation only; no full model inference",
+    "tolerance": {
+      "absolute": 0.0001,
+      "relative": 1e-05
+    },
+    "cases": [
+      {
+        "name": "literal nonidentity dequant/ORT Gemm/Hike bias",
+        "passed": true
+      },
+      {
+        "name": "shape mismatch refused before compute",
+        "passed": true
+      },
+      {
+        "name": "all 32 real-weight partial outputs vs independent reference",
+        "passed": true
+      },
+      {
+        "name": "owned ORT session/Hike references disposed",
+        "passed": true
+      },
+      {
+        "name": "Hike failure has no JS/ORT replacement",
+        "passed": true
+      }
+    ],
+    "results": [
+      {
+        "role": "LOW",
+        "output": [
+          0.2894156575202942,
+          0.06771402806043625,
+          -0.03322293609380722,
+          -0.145783469080925,
+          0.10564061999320984,
+          -0.3675228953361511,
+          0.14924535155296326,
+          0.08012670278549194,
+          -0.18484313786029816,
+          0.37647002935409546,
+          -0.014853458851575851,
+          -0.0852450504899025,
+          0.05044189840555191,
+          -0.22217833995819092,
+          -0.04729953408241272,
+          0.08180641382932663
+        ],
+        "maxAbsError": 1.787915593354228e-07,
+        "outputSHA256": "6e8008ee29a75c8394cd56d53ca936c3a671a9d0d7eba5ebfb92084ffea055b6",
+        "scope": "partial Q projection; synthetic/explicit activation; not full-model prediction",
+        "executionProviders": [
+          "wasm"
+        ],
+        "ortVersion": "1.24.3",
+        "numThreads": 1,
+        "proxy": false,
+        "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+        "hikeWasmSHA256": "feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2",
+        "hikeMemory": {
+          "wasmSha256": "feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2",
+          "memoryBytes": 1507328,
+          "arenaBytes": 409728,
+          "calls": 4,
+          "inputCopyBytes": 164096,
+          "outputCopyBytes": 655488,
+          "workspaceReused": true,
+          "disposed": false
+        },
+        "sessionCreateMs": 241.30000000074506,
+        "elapsed": {
+          "dequantMs": 6.5,
+          "ortMs": 0.7000000001862645,
+          "biasMs": 0,
+          "totalRunMs": 7.2000000001862645
+        },
+        "boundaryBytes": {
+          "qInput": 81920,
+          "hikeWeightsToOrt": 327680,
+          "xInput": 20480,
+          "ortOutputToHike": 64,
+          "biasInput": 64,
+          "ownedOutput": 64
+        },
+        "OSMemoryPeak": null,
+        "OSMemoryReason": "not measured for bounded operator validation"
+      },
+      {
+        "role": "HIGH",
+        "output": [
+          0.28080466389656067,
+          -0.05593966692686081,
+          -0.07719512283802032,
+          -0.14412254095077515,
+          0.09079407155513763,
+          -0.3640826344490051,
+          0.11311128735542297,
+          0.012807965278625488,
+          -0.19067181646823883,
+          0.4042796790599823,
+          -0.008739523589611053,
+          -0.038964446634054184,
+          0.13288089632987976,
+          -0.20779690146446228,
+          -0.013590417802333832,
+          0.03184353932738304
+        ],
+        "maxAbsError": 4.870171181892147e-07,
+        "outputSHA256": "5a0d3f6b8acc1b39bb2b9de7bf299c36591e4d9d66c77f122215591616b69906",
+        "scope": "partial Q projection; synthetic/explicit activation; not full-model prediction",
+        "executionProviders": [
+          "wasm"
+        ],
+        "ortVersion": "1.24.3",
+        "numThreads": 1,
+        "proxy": false,
+        "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+        "hikeWasmSHA256": "feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2",
+        "hikeMemory": {
+          "wasmSha256": "feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2",
+          "memoryBytes": 1507328,
+          "arenaBytes": 409728,
+          "calls": 6,
+          "inputCopyBytes": 246144,
+          "outputCopyBytes": 983232,
+          "workspaceReused": true,
+          "disposed": false
+        },
+        "sessionCreateMs": 241.30000000074506,
+        "elapsed": {
+          "dequantMs": 7,
+          "ortMs": 0.7000000001862645,
+          "biasMs": 0.09999999962747097,
+          "totalRunMs": 7.7999999998137355
+        },
+        "boundaryBytes": {
+          "qInput": 81920,
+          "hikeWeightsToOrt": 327680,
+          "xInput": 20480,
+          "ortOutputToHike": 64,
+          "biasInput": 64,
+          "ownedOutput": 64
+        },
+        "OSMemoryPeak": null,
+        "OSMemoryReason": "not measured for bounded operator validation"
+      }
+    ]
+  },
+  "failure": null
+}

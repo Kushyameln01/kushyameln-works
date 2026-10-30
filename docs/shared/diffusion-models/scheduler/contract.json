@@ -1,0 +1,342 @@
+{
+  "scope": "Fixed-source schedule and CONST numerical primitives; no model inference or RNG generation",
+  "sourceCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+  "sources": {
+    "scheduler": "comfy/samplers.py645",
+    "flow": "comfy/model_sampling.py86,289,294",
+    "nodePatch": "comfy_extras/nodes_model_advanced.py120",
+    "split": "comfy_extras/nodes_custom_sampler.py204",
+    "sample": "comfy_extras/nodes_custom_sampler.py733",
+    "samplerStage": "comfy/samplers.py983-1006,1220-1239",
+    "Euler": "comfy/k_diffusion/sampling.py63,190",
+    "latentFormat": "comfy/latent_formats.py729"
+  },
+  "profile": {
+    "name": "bernini-comfy-simple6-shift5-v1",
+    "shift": 5,
+    "tableLength": 1000,
+    "multiplier": 1000,
+    "steps": 6,
+    "denoise": 1,
+    "splitStep": 3,
+    "noiseScale": 1,
+    "sigmaTableIndicesZeroBased": [
+      999,
+      833,
+      666,
+      499,
+      333,
+      166
+    ],
+    "sigmas": [
+      1,
+      0.9617158770561218,
+      0.9092148542404175,
+      0.8333333134651184,
+      0.7148972749710083,
+      0.5005995035171509,
+      0
+    ],
+    "highSigmas": [
+      1,
+      0.9617158770561218,
+      0.9092148542404175,
+      0.8333333134651184
+    ],
+    "lowSigmas": [
+      0.8333333134651184,
+      0.7148972749710083,
+      0.5005995035171509,
+      0
+    ]
+  },
+  "floatOrder": {
+    "rounding": "FP32 at every listed tensor arithmetic operation. Source configuration uses ordinary float32 default tensor dtype. No expression simplification or fused multiply-add.",
+    "table": "t=f32(i/1000); t=f32(t*1000); t=f32(t/1000); num=f32(5*t); den=f32(1+f32(4*t)); sigma=f32(num/den), i1..1000. simple6 picks reversed positions and appendszero.",
+    "noiseMix": "scaled=f32(noiseScale*noise); a=f32(sigma*scaled); b=f32(f32(1-sigma)*latent); out=f32(a+b)",
+    "inverse": "out=f32(latent/f32(1-sigma)); sigma1 is singular and rejected",
+    "flowDenoised": "out=f32(input-f32(velocity*sigma)); velocity is the raw model prediction, denoised is x0space",
+    "timestep": "f32(sigma*1000)",
+    "Euler": "d=f32(f32(x-denoised)/sigma); dt=f32(nextSigma-sigma); xNext=f32(x+f32(d*dt)); existing Euler kernel owns this primitive"
+  },
+  "spacesAndHandoff": {
+    "noiseMixInput": "supplied fixed noise and diffusion-normalized clean/handed-off latent; raw VAE latent must be normalized separately before mixing",
+    "inverseOutput": "inverse-scaled diffusion-normalized latent, not automatically raw VAE latent",
+    "HIGHend": "At sigma3 nonzero, ComfyUI first applies inverse_noise_scaling then Wan21.process_out to expose raw outputslot0. Workflow link22 supplies that output to LOW, not denoised_output.",
+    "LOWstart": "ComfyUI normalizes nonzero raw input using Wan21.process_in then applies CONST noise_scaling with zero noise, multiplying latent by1-sigma3. Both conversion orders must be preserved for source parity.",
+    "allZeroSpecialCase": "ComfyUI inner_sample skips process_latent_in when raw latent count_nonzero==0. This numeric module does not silently implement that high-level data-dependent conversion.",
+    "notImplementedHere": [
+      "Wan21 channel means/std normalization",
+      "ComfyUI RNG reproduction from seed",
+      "conditioning or neural-network predictions",
+      "whole-pipeline stage orchestration"
+    ]
+  },
+  "numericLiteralCases": {
+    "noiseMix": {
+      "sigma": 0.25,
+      "noise": [
+        2,
+        -2,
+        1,
+        0
+      ],
+      "latent": [
+        4,
+        2,
+        -1,
+        3
+      ],
+      "noiseScale": 1,
+      "out": [
+        3.5,
+        1,
+        -0.5,
+        2.25
+      ]
+    },
+    "flowDenoised": {
+      "sigma": 0.5,
+      "input": [
+        2,
+        -1,
+        0
+      ],
+      "velocity": [
+        1,
+        2,
+        -3
+      ],
+      "out": [
+        1.5,
+        -2,
+        1.5
+      ]
+    }
+  },
+  "abi": {
+    "FlowSchedule": "(table:i32,tableCap:i32,out:i32,outCap:i32,indices:i32,indexCap:i32)->i32",
+    "ConstNoiseMix": "(noise:i32,latent:i32,n:i32,sigma:f32,noiseScale:f32,out:i32,capacity:i32)->i32",
+    "ConstInverse": "(latent:i32,n:i32,sigma:f32,out:i32,capacity:i32)->i32",
+    "FlowDenoised": "(input:i32,velocity:i32,n:i32,sigma:f32,out:i32,capacity:i32)->i32",
+    "FlowTimesteps": "(sigmas:i32,n:i32,out:i32,capacity:i32)->i32",
+    "ownership": "Private disjoint caller-owned f32arenas with4bytealignment. Host copies inputs and outputs, clears workspaces, never returns borrowed views.",
+    "status": {
+      "0": "success",
+      "-1": "count or capacity invalid",
+      "-2": "numeric domain invalid",
+      "-3": "overflow/nonfinite result; discard output"
+    },
+    "capacity": "pointwise Hike calls1..4096elements, host chunks up to4194304elements; fixed49152bytearena"
+  },
+  "tests": {
+    "node": {
+      "scope": "Hike scheduler+CONST primitives; fixednoise inputs; no neuralnetwork or model inference",
+      "cases": [
+        {
+          "name": "simple6 selects exact discrete shifted table positions and split overlap",
+          "status": "PASS"
+        },
+        {
+          "name": "CONST noise mix uses supplied noise and latent without new RNG",
+          "status": "PASS"
+        },
+        {
+          "name": "CONST inverse scaling and LOW no-noise handoff preserve source ordering",
+          "status": "PASS"
+        },
+        {
+          "name": "flow velocity is converted to denoised tensor before Euler derivative",
+          "status": "PASS"
+        },
+        {
+          "name": "timestep multiplier stays1000 in f32",
+          "status": "PASS"
+        },
+        {
+          "name": "bounded chunks preserve exact pointwise f32 operation order",
+          "status": "PASS"
+        },
+        {
+          "name": "invalid sigma,nonfinite arrays,shape and disposed calls rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "native kernel validates singularsigma capacities and NaN before writes",
+          "status": "PASS"
+        }
+      ],
+      "sigmas": [
+        1,
+        0.9617158770561218,
+        0.9092148542404175,
+        0.8333333134651184,
+        0.7148972749710083,
+        0.5005995035171509,
+        0
+      ],
+      "tableIndices": [
+        999,
+        833,
+        666,
+        499,
+        333,
+        166
+      ],
+      "highSigmas": [
+        1,
+        0.9617158770561218,
+        0.9092148542404175,
+        0.8333333134651184
+      ],
+      "lowSigmas": [
+        0.8333333134651184,
+        0.7148972749710083,
+        0.5005995035171509,
+        0
+      ],
+      "sigmasSha256": "6ad197b8ac21dc7ff16d7899b8b32b671473b82f0c68a7414b3dbc2c364bbd50",
+      "wasmSha256": "bcd35eb9e0bef45c2f21d99ca77a1edeae57c8ea7fa763086492dc1fa40dd220",
+      "stats": {
+        "memoryBytes": 1114112,
+        "arenaBytes": 49152,
+        "chunkElements": 4096,
+        "calls": 211,
+        "inputCopyBytes": 67328,
+        "outputCopyBytes": 38936,
+        "workspaceReused": true,
+        "imports": 0
+      },
+      "repeatCycles": 100,
+      "disposed": true,
+      "jsNumericalFallback": false
+    },
+    "chromium": {
+      "scope": "Hike scheduler+CONST primitives; fixednoise inputs; no neuralnetwork or model inference",
+      "cases": [
+        {
+          "name": "simple6 selects exact discrete shifted table positions and split overlap",
+          "status": "PASS"
+        },
+        {
+          "name": "CONST noise mix uses supplied noise and latent without new RNG",
+          "status": "PASS"
+        },
+        {
+          "name": "CONST inverse scaling and LOW no-noise handoff preserve source ordering",
+          "status": "PASS"
+        },
+        {
+          "name": "flow velocity is converted to denoised tensor before Euler derivative",
+          "status": "PASS"
+        },
+        {
+          "name": "timestep multiplier stays1000 in f32",
+          "status": "PASS"
+        },
+        {
+          "name": "bounded chunks preserve exact pointwise f32 operation order",
+          "status": "PASS"
+        },
+        {
+          "name": "invalid sigma,nonfinite arrays,shape and disposed calls rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "native kernel validates singularsigma capacities and NaN before writes",
+          "status": "PASS"
+        }
+      ],
+      "sigmas": [
+        1,
+        0.9617158770561218,
+        0.9092148542404175,
+        0.8333333134651184,
+        0.7148972749710083,
+        0.5005995035171509,
+        0
+      ],
+      "tableIndices": [
+        999,
+        833,
+        666,
+        499,
+        333,
+        166
+      ],
+      "highSigmas": [
+        1,
+        0.9617158770561218,
+        0.9092148542404175,
+        0.8333333134651184
+      ],
+      "lowSigmas": [
+        0.8333333134651184,
+        0.7148972749710083,
+        0.5005995035171509,
+        0
+      ],
+      "sigmasSha256": "6ad197b8ac21dc7ff16d7899b8b32b671473b82f0c68a7414b3dbc2c364bbd50",
+      "wasmSha256": "bcd35eb9e0bef45c2f21d99ca77a1edeae57c8ea7fa763086492dc1fa40dd220",
+      "stats": {
+        "memoryBytes": 1114112,
+        "arenaBytes": 49152,
+        "chunkElements": 4096,
+        "calls": 211,
+        "inputCopyBytes": 67328,
+        "outputCopyBytes": 38936,
+        "workspaceReused": true,
+        "imports": 0
+      },
+      "repeatCycles": 100,
+      "disposed": true,
+      "jsNumericalFallback": false,
+      "browserVersion": "154.0.8037.57"
+    }
+  },
+  "build": {
+    "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+    "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+    "sourceSha256": "e0c099f609c6bd74097f350ffadefa159f65f1b3d3955957466ded46605f5f19",
+    "wasmSha256": "bcd35eb9e0bef45c2f21d99ca77a1edeae57c8ea7fa763086492dc1fa40dd220",
+    "watSha256": "4a2e7b9fbd6b463a3d0605536521825da08f3bc48f1a3b77b7dd37f8d76eb4b8",
+    "generatedRuntimeSha256": "0d37c1f5ea89304ce0b0654efb51733e5cfb5e9491fb5ac465ca14db5f935922",
+    "runtimeUsed": false,
+    "command": [
+      "/workspace/work/diffusion-investigation/toolchain/hikec",
+      "build",
+      "-target",
+      "wabt",
+      "-wasm-mode",
+      "normal",
+      "-o",
+      "/workspace/work/diffusion-models/docs/shared/diffusion-models/scheduler/build/scheduler.wasm",
+      "/workspace/work/diffusion-models/docs/shared/diffusion-models/scheduler/scheduler.hike"
+    ],
+    "backend": "wabt normal",
+    "versions": {
+      "go": "go version go1.22.12 linux/amd64",
+      "wabt": "1.0.39",
+      "node": "v24.19.0"
+    },
+    "imports": [],
+    "sourceReference": "ComfyUI b5a432157de6b8884f81104cd02926adf4d597e4",
+    "status": "built; execution separately recorded"
+  },
+  "artifacts": {
+    "scheduler.hike": "e0c099f609c6bd74097f350ffadefa159f65f1b3d3955957466ded46605f5f19",
+    "scheduler-kernel.mjs": "352ae0cf9b3357ab41955ca3feab54eda046424451e0b2f810c2d5f167dbc64d",
+    "build.py": "d6a2c7322ed8bca4d1dc9e99894cb9794ab2afaeef55e99ce9471bcc64bbd9c4",
+    "test.mjs": "bee77ba320ca9a4c7280132574b0a81cc6c994212adaa3ce06d08c623b228f61",
+    "test-cases.mjs": "58f12233b28ab61449b57347776b4596e59d98432d22349484884116df0676e3",
+    "test-browser.py": "1782857b3030021a4a7be15a10a8ed28d689c3528ee87067433d6ce746f9f152",
+    "LICENSE-Hike.txt": "6b3497e1e711780741457cdcb345be01421b8a7ef6c35d4f084cac7993a0b4ef"
+  },
+  "limitations": [
+    "Independent staged FP32 reference and literal tests, not an original ComfyUI execution receipt",
+    "No scheduler choice besides pinned fixedprofile is silently substituted",
+    "CPU/RSS/peakRAM not measured; memoryBytes is WASMcapacity only",
+    "Generated runtime.js retained as provenance but unused; no imports or JS arithmetic fallback"
+  ],
+  "tddEvidence": "work/red.log recorded missingimplementation assertion before writingkernel; work/node-results.json andbrowser-results.json recordgreen"
+}

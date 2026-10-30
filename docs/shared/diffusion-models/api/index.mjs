@@ -2,7 +2,7 @@ import {BUILD_ID} from './build-info.mjs';
 export {BUILD_ID} from './build-info.mjs';
 export const PROTOCOL_VERSION='diffusion-models/0.1';
 export const MAX_TENSOR_ELEMENTS=1048576;
-const OPERATIONS=new Set(['capabilities','inspect','eulerStep','load','predict','sample','cancel','dispose']);
+const OPERATIONS=new Set(['capabilities','inspect','eulerStep','schedule','noiseMix','inverseNoiseScale','flowDenoised','validateConditioning','validateRawLatent','normalizeRawMean','restoreRawMean','linearProjection','load','predict','sample','cancel','dispose']);
 const validId=x=>typeof x==='string'&&x.length>0&&x.length<=128&&/^[A-Za-z0-9_.:-]+$/.test(x);
 const identity=q=>({buildId:BUILD_ID,protocolVersion:q?.protocolVersion,sessionId:q?.sessionId,jobId:q?.jobId,inputRevision:q?.inputRevision,op:q?.op});
 const matches=(a,b)=>['buildId','protocolVersion','sessionId','jobId','inputRevision','op'].every(k=>a[k]===b[k]);
@@ -41,7 +41,7 @@ export function createDiffusionModels({sessionId=crypto.randomUUID()}={}){
    const old=active.request;stopWorker();settle(errorResponse(old,'STALE_INPUT','A newer input revision terminated this job'));
   }
   revision=q.inputRevision;
-  if(q.op==='capabilities')return ok(q,{buildId:BUILD_ID,modelInference:false,eulerStep:true,inspect:true,maxTensorElements:MAX_TENSOR_ELEMENTS,execution:'dedicated-worker',backend:'Hike WASM Euler only',protocolVersion:PROTOCOL_VERSION});
+  if(q.op==='capabilities')return ok(q,{buildId:BUILD_ID,modelInference:false,partialOnly:true,eulerStep:true,schedule:true,noiseMix:true,inverseNoiseScale:true,flowDenoised:true,validateConditioning:true,validateRawLatent:true,normalizeRawMean:true,restoreRawMean:true,linearProjection:true,inspect:true,maxTensorElements:MAX_TENSOR_ELEMENTS,execution:'dedicated-worker',backend:'Hike WASM primitives and bounded ORT WASM partial projection',protocolVersion:PROTOCOL_VERSION});
   return new Promise(resolve=>{
    const ownedRequest={...identity(q),input:q.input};active={request:ownedRequest,resolve};
    try{
