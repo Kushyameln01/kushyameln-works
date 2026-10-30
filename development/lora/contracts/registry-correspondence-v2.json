@@ -1,0 +1,420 @@
+{
+  "contractVersion": "lora-connection/2.0-draft.1",
+  "status": "LOGICAL_NAME_SHAPE_MATCH_ONLY_NOT_REAL_GRAPH_REGISTRY",
+  "cachedCrosscheck": {
+    "schemaVersion": "lora-consumer-crosscheck/1",
+    "consumerCommit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+    "provenance": {
+      "models": [
+        {
+          "name": "Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+          "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+          "fileBytes": 15574833216
+        },
+        {
+          "name": "Wan22_Bernini_HIGH_fp8_e4m3fn_scaled.safetensors",
+          "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+          "fileBytes": 15574833216
+        }
+      ],
+      "pinnedComfyCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "allTensorTargets": 1095,
+      "linearWeightTargets": 406
+    },
+    "reusedInventory": true,
+    "originalFilesRehashed": false,
+    "originalHeadersReinventoried": false,
+    "results": [
+      {
+        "pairId": "light",
+        "side": "high",
+        "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "lowRankPairs": 405,
+        "weightDiffs": 201,
+        "biasDiffs": 446,
+        "logicalPatchCount": 1052,
+        "missing": [],
+        "mismatch": [],
+        "deltaShapesCheckedFromCachedHeader": true,
+        "status": "LOGICAL_NAME_SHAPE_MATCH_ONLY",
+        "graphBinding": "NOT_PROVIDED",
+        "baseCompatibility": "NOT_PROVEN"
+      },
+      {
+        "pairId": "light",
+        "side": "low",
+        "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+        "lowRankPairs": 405,
+        "weightDiffs": 201,
+        "biasDiffs": 446,
+        "logicalPatchCount": 1052,
+        "missing": [],
+        "mismatch": [],
+        "deltaShapesCheckedFromCachedHeader": true,
+        "status": "LOGICAL_NAME_SHAPE_MATCH_ONLY",
+        "graphBinding": "NOT_PROVIDED",
+        "baseCompatibility": "NOT_PROVEN"
+      },
+      {
+        "pairId": "detail",
+        "side": "high",
+        "sourceSha256": "34e2144d3cd65360f97d09ccbe03e1c39a096df6c9234af5fe3899d1b63cda39",
+        "lowRankPairs": 400,
+        "weightDiffs": 0,
+        "biasDiffs": 0,
+        "logicalPatchCount": 400,
+        "missing": [],
+        "mismatch": [],
+        "deltaShapesCheckedFromCachedHeader": false,
+        "status": "LOGICAL_NAME_SHAPE_MATCH_ONLY",
+        "graphBinding": "NOT_PROVIDED",
+        "baseCompatibility": "NOT_PROVEN"
+      },
+      {
+        "pairId": "detail",
+        "side": "low",
+        "sourceSha256": "d6b783742f4d5fd63a0223ae1d5bf64fc995a6b408480ac2a00528ae0d4146db",
+        "lowRankPairs": 400,
+        "weightDiffs": 0,
+        "biasDiffs": 0,
+        "logicalPatchCount": 400,
+        "missing": [],
+        "mismatch": [],
+        "deltaShapesCheckedFromCachedHeader": false,
+        "status": "LOGICAL_NAME_SHAPE_MATCH_ONLY",
+        "graphBinding": "NOT_PROVIDED",
+        "baseCompatibility": "NOT_PROVEN"
+      }
+    ]
+  },
+  "bindingRequirements": {
+    "runtime-input": [
+      "Actual input name and shape",
+      "Original full-weight to runtime tile mapping",
+      "ORT operator transpose/layout attributes",
+      "Owned feed-set lifetime"
+    ],
+    "initializer": [
+      "Actual initializer name",
+      "External-data/package offsets and length if applicable",
+      "Verified generated package/graph identity",
+      "Session rebuild/load semantics"
+    ],
+    "hike-parameter": [
+      "Actual export or argument identity",
+      "Semantic role and operator order",
+      "WASM build/hash",
+      "Copy/lease lifetime"
+    ]
+  },
+  "diagnosticReference": [
+    {
+      "pairId": "light",
+      "side": "high",
+      "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+      "coverage": "PARTIAL",
+      "scope": "single-projection-diagnostic",
+      "includedPatches": [
+        {
+          "target": "diffusion_model.blocks.0.self_attn.q.weight",
+          "patch": "linear-lora",
+          "slices": {
+            "A/down": {
+              "rows": "all rank",
+              "columns": [
+                0,
+                5120
+              ]
+            },
+            "B/up": {
+              "rows": [
+                0,
+                16
+              ],
+              "columns": "all rank"
+            }
+          },
+          "outputTileShape": [
+            16,
+            5120
+          ],
+          "sourceTensorNames": {
+            "down": "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+            "up": "diffusion_model.blocks.0.self_attn.q.lora_up.weight"
+          }
+        },
+        {
+          "target": "diffusion_model.blocks.0.self_attn.q.bias",
+          "patch": "diff_b",
+          "sourceTensor": "diffusion_model.blocks.0.self_attn.q.diff_b",
+          "slice": [
+            0,
+            16
+          ]
+        }
+      ],
+      "fullShape": {
+        "weight": [
+          5120,
+          5120
+        ],
+        "bias": [
+          5120
+        ]
+      },
+      "selectedRows": {
+        "startRow": 0,
+        "rowCount": 16
+      },
+      "completeAdapter": false,
+      "excludedPatchCount": 1050,
+      "excludedPatchInventory": "original-inventory.json; every target except included target keys",
+      "allWeightDiffsExcluded": true,
+      "excludedRegions": [
+        {
+          "target": "diffusion_model.blocks.0.self_attn.q.weight",
+          "rows": [
+            16,
+            5120
+          ],
+          "columns": [
+            0,
+            5120
+          ],
+          "reason": "outside diagnostic output rows; not applied"
+        },
+        {
+          "target": "diffusion_model.blocks.0.self_attn.q.bias",
+          "indices": [
+            16,
+            5120
+          ],
+          "reason": "outside diagnostic bias slice; not applied"
+        }
+      ]
+    },
+    {
+      "pairId": "light",
+      "side": "low",
+      "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+      "coverage": "PARTIAL",
+      "scope": "single-projection-diagnostic",
+      "includedPatches": [
+        {
+          "target": "diffusion_model.blocks.0.self_attn.q.weight",
+          "patch": "linear-lora",
+          "slices": {
+            "A/down": {
+              "rows": "all rank",
+              "columns": [
+                0,
+                5120
+              ]
+            },
+            "B/up": {
+              "rows": [
+                0,
+                16
+              ],
+              "columns": "all rank"
+            }
+          },
+          "outputTileShape": [
+            16,
+            5120
+          ],
+          "sourceTensorNames": {
+            "down": "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+            "up": "diffusion_model.blocks.0.self_attn.q.lora_up.weight"
+          }
+        },
+        {
+          "target": "diffusion_model.blocks.0.self_attn.q.bias",
+          "patch": "diff_b",
+          "sourceTensor": "diffusion_model.blocks.0.self_attn.q.diff_b",
+          "slice": [
+            0,
+            16
+          ]
+        }
+      ],
+      "fullShape": {
+        "weight": [
+          5120,
+          5120
+        ],
+        "bias": [
+          5120
+        ]
+      },
+      "selectedRows": {
+        "startRow": 0,
+        "rowCount": 16
+      },
+      "completeAdapter": false,
+      "excludedPatchCount": 1050,
+      "excludedPatchInventory": "original-inventory.json; every target except included target keys",
+      "allWeightDiffsExcluded": true,
+      "excludedRegions": [
+        {
+          "target": "diffusion_model.blocks.0.self_attn.q.weight",
+          "rows": [
+            16,
+            5120
+          ],
+          "columns": [
+            0,
+            5120
+          ],
+          "reason": "outside diagnostic output rows; not applied"
+        },
+        {
+          "target": "diffusion_model.blocks.0.self_attn.q.bias",
+          "indices": [
+            16,
+            5120
+          ],
+          "reason": "outside diagnostic bias slice; not applied"
+        }
+      ]
+    },
+    {
+      "pairId": "detail",
+      "side": "high",
+      "sourceSha256": "34e2144d3cd65360f97d09ccbe03e1c39a096df6c9234af5fe3899d1b63cda39",
+      "coverage": "PARTIAL",
+      "scope": "single-projection-diagnostic",
+      "includedPatches": [
+        {
+          "target": "diffusion_model.blocks.0.self_attn.q.weight",
+          "patch": "linear-lora",
+          "slices": {
+            "A/down": {
+              "rows": "all rank",
+              "columns": [
+                0,
+                5120
+              ]
+            },
+            "B/up": {
+              "rows": [
+                0,
+                16
+              ],
+              "columns": "all rank"
+            }
+          },
+          "outputTileShape": [
+            16,
+            5120
+          ],
+          "sourceTensorNames": {
+            "down": "diffusion_model.blocks.0.self_attn.q.lora_A.weight",
+            "up": "diffusion_model.blocks.0.self_attn.q.lora_B.weight"
+          }
+        }
+      ],
+      "fullShape": {
+        "weight": [
+          5120,
+          5120
+        ],
+        "bias": null
+      },
+      "selectedRows": {
+        "startRow": 0,
+        "rowCount": 16
+      },
+      "completeAdapter": false,
+      "excludedPatchCount": 399,
+      "excludedPatchInventory": "original-inventory.json; every target except included target keys",
+      "allWeightDiffsExcluded": false,
+      "excludedRegions": [
+        {
+          "target": "diffusion_model.blocks.0.self_attn.q.weight",
+          "rows": [
+            16,
+            5120
+          ],
+          "columns": [
+            0,
+            5120
+          ],
+          "reason": "outside diagnostic output rows; not applied"
+        }
+      ]
+    },
+    {
+      "pairId": "detail",
+      "side": "low",
+      "sourceSha256": "d6b783742f4d5fd63a0223ae1d5bf64fc995a6b408480ac2a00528ae0d4146db",
+      "coverage": "PARTIAL",
+      "scope": "single-projection-diagnostic",
+      "includedPatches": [
+        {
+          "target": "diffusion_model.blocks.0.self_attn.q.weight",
+          "patch": "linear-lora",
+          "slices": {
+            "A/down": {
+              "rows": "all rank",
+              "columns": [
+                0,
+                5120
+              ]
+            },
+            "B/up": {
+              "rows": [
+                0,
+                16
+              ],
+              "columns": "all rank"
+            }
+          },
+          "outputTileShape": [
+            16,
+            5120
+          ],
+          "sourceTensorNames": {
+            "down": "diffusion_model.blocks.0.self_attn.q.lora_A.weight",
+            "up": "diffusion_model.blocks.0.self_attn.q.lora_B.weight"
+          }
+        }
+      ],
+      "fullShape": {
+        "weight": [
+          5120,
+          5120
+        ],
+        "bias": null
+      },
+      "selectedRows": {
+        "startRow": 0,
+        "rowCount": 16
+      },
+      "completeAdapter": false,
+      "excludedPatchCount": 399,
+      "excludedPatchInventory": "original-inventory.json; every target except included target keys",
+      "allWeightDiffsExcluded": false,
+      "excludedRegions": [
+        {
+          "target": "diffusion_model.blocks.0.self_attn.q.weight",
+          "rows": [
+            16,
+            5120
+          ],
+          "columns": [
+            0,
+            5120
+          ],
+          "reason": "outside diagnostic output rows; not applied"
+        }
+      ]
+    }
+  ],
+  "cautions": [
+    "No real graph binding, immutable base provider or consumer has been accepted here",
+    "Declared base constants do not prove runtime original hash or LoRA training compatibility",
+    "A/B file-variant aliases are not assigned to light/detail",
+    "Original tensors and whole-file hashes were not reread to create this file"
+  ]
+}
