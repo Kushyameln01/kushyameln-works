@@ -2,6 +2,8 @@
 
 更新: 2026-10-31 JST。ブランチ `codex/textencoder-vae`。開始点 `a614f772cfcd95ebec0ba094fc5391e4bbdf0676`。
 
+この文書は初期ローカル受入時点の記録。以後のユーザー指示でGitHub Pages公開が対象に加わった。公開レビューと追加修正は `PUBLICATION-REVIEW.md`、公開受入の状態は `PUBLICATION.md` を参照する。
+
 ## 現行要件と実装
 
 ユーザーの最新指示に合わせ、Text EncoderとVAEを独立モジュールとしてWorksへ追加した。別Codexが用意するDiffusionと包括UIはこの変更の担当外。保存済みDiffusion HIGHは明示指示で削除し、15,574,833,216 bytesを解放した。LOWは保存していない。元UMT5とWan2.1 VAEは保持している。

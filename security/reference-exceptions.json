@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "exceptions": [
+    {
+      "file": "shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+      "specifiers": ["module", "worker_threads"],
+      "reason": "Pinned ORT Web1.24.3 Emscripten Node-only branches; the separately tested browser WASM path does not execute these imports."
+    },
+    {
+      "file": "shared/inference/vendor/sentencepiece.mjs",
+      "sha256": "31ce41230f8694c63afa1ffeecb862d0bf3768d858328d335530997a86a1f27d",
+      "specifiers": ["module"],
+      "reason": "Pinned bundled SentencePiece1.3.3 Node-only setup branch; actual browser tokenizer bytes and token IDs are separately tested."
+    },
+    {
+      "file": "shared/vr180/vendor/rebuild-indexed.mjs",
+      "sha256": "222922e8eec98720810047a9d29a588b27161c2aafb616cd32f40401d75b5368",
+      "specifiers": ["node:crypto", "node:child_process", "node:module", "node:fs/promises", "node:path", "node:url"],
+      "reason": "Existing reviewed public Node-only source supplement for rebuilding the VR180 vendor; it is not imported by a browser runtime. Preserve its declared build dependencies without exempting other source files."
+    }
+  ]
+}

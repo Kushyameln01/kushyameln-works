@@ -3,7 +3,7 @@ import {createHike} from './hike.mjs';
 import {runVae} from './vae.mjs';
 import {loadTextEncoder} from './text-encoder.mjs';
 import {tokenizePlainText} from './tokenizer.mjs';
-ort.env.wasm.wasmPaths=new URL('./vendor/',import.meta.url).href;ort.env.wasm.numThreads=1;ort.env.wasm.proxy=false;
+ort.env.wasm.wasmPaths={mjs:new URL('./vendor/ort-wasm-simd-threaded.mjs',import.meta.url).href,wasm:new URL('./vendor/ort-wasm-simd-threaded.wasm',import.meta.url).href};ort.env.wasm.numThreads=1;ort.env.wasm.proxy=false;
 const HIKE_HASH='9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8';
 self.onmessage=async({data:job})=>{
  const identity={buildId:job.buildId,sessionId:job.sessionId,jobId:job.jobId,inputRevision:job.inputRevision};
