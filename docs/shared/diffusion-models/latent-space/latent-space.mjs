@@ -1,4 +1,4 @@
-import {requireTensor} from '../../inference/tensor.mjs';
+import {requireTensor,snapshotTensorMetadata} from '../../inference/tensor.mjs';
 import {requireWanRawLatent,WAN21_VAE_SHA256,WAN21_RAW_PROFILE} from '../tensor-interop.mjs';
 import {LATENT_SPACE_KERNEL} from './kernel-registry.mjs';
 export const NORMALIZED_MEAN='wan21-normalized-posterior-mean:v1';
@@ -24,10 +24,10 @@ export async function createLatentSpace(value){
  let disposed=false,calls=0,inputCopyBytes=0,outputCopyBytes=0;
  const active=()=>{if(disposed)throw Error('Latent-space kernel disposed');};
  function transform(tensor,operation,normalized){
-  active();new Float32Array(memory.buffer,inputPtr,128).set(tensor.data);inputCopyBytes+=512;
+  active();const context=snapshotTensorMetadata(tensor).context;new Float32Array(memory.buffer,inputPtr,128).set(tensor.data);inputCopyBytes+=512;
   try{const rc=instance.exports[operation](inputPtr,128,outputPtr,128);if(rc!==0)throw Error('Hike latent-space rejected input: '+rc);
    const data=new Float32Array(memory.buffer,outputPtr,128).slice();if(!data.every(Number.isFinite))throw Error('Nonfinite Hike latent-space result');calls++;outputCopyBytes+=512;
-   return {dtype:'float32',shape:[...WAN21_RAW_PROFILE.shape],layout:'NCTHW',meaning:normalized?NORMALIZED_MEAN:'raw-posterior-mean',modelSha256:WAN21_VAE_SHA256,...(normalized?{normalization:NORMALIZATION}:{}),data};
+   return {dtype:'float32',shape:[...WAN21_RAW_PROFILE.shape],layout:'NCTHW',meaning:normalized?NORMALIZED_MEAN:'raw-posterior-mean',modelSha256:WAN21_VAE_SHA256,...(normalized?{normalization:NORMALIZATION}:{}),...(context?{context}:{}),data};
   }finally{new Uint8Array(memory.buffer).fill(0,inputPtr,inputPtr+arenaBytes);}
  }
  return {

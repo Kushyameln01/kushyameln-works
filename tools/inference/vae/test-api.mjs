@@ -25,4 +25,46 @@ assert.throws(()=>api.validateVaeRequest({operation:'sample',tensor,manifest}));
 assert.throws(()=>api.validateVaeRequest({operation:'decode',tensor,manifest:{...manifest,profile:{...manifest.profile,latentSpace:'normalized'}}}));
 const bad=structuredClone(manifest);bad.assets.decoderBody.file='../model.onnx';assert.throws(()=>api.validateVaeRequest({operation:'decode',tensor,manifest:bad}));
 const missing=new Map();await assert.rejects(api.runVae({operation:'decode',tensor,manifest,files:missing,ort:{},hike:{}}),/missing|requires/i);
-console.log(JSON.stringify({passed:true,scope:'profile/tensor rejection and required local-file contract'}));
+// connection-1 generated samples are raw decoder inputs with an explicit producer/space contract.
+const producer='1'.repeat(64),otherProducer='2'.repeat(64);
+const context={schemaVersion:1,contextId:'context-A',inputId:'input-source',inputSha256:'3'.repeat(64),slotId:'source_video',sourceFrameIndices:[0,4,8],sourceFrameTimesSeconds:[0,.25,.5]};
+const latentContract={schemaVersion:1,representation:'generated-sample',space:'raw',vaeModelSha256:manifest.model.sha256,producerModelSha256s:[producer,otherProducer],normalization:{id:'wan21-comfy-f32-v1',state:'restored',owner:'diffusion_models'}};
+const generated={...tensor,meaning:'wan21-raw-generated-sample:v1',modelSha256:producer,context,latentContract};
+assert.equal(api.validateVaeRequest({operation:'decode',tensor:generated,manifest}).count,128,'Declared restored generated sample should pass the VAE decoder boundary');
+assert.equal(api.validateVaeRequest({operation:'decode',tensor:{...generated,modelSha256:undefined},manifest}).count,128);
+for(const bad of [
+ {...generated,latentContract:undefined},
+ {...generated,latentContract:{...latentContract,space:'normalized'}},
+ {...generated,latentContract:{...latentContract,vaeModelSha256:producer}},
+ {...generated,latentContract:{...latentContract,producerModelSha256s:[manifest.model.sha256]}},
+ {...generated,latentContract:{...latentContract,producerModelSha256s:[]}},
+ {...generated,latentContract:{...latentContract,producerModelSha256s:[producer,producer]}},
+ {...generated,latentContract:{...latentContract,normalization:{...latentContract.normalization,state:'normalized'}}},
+ {...generated,modelSha256:'4'.repeat(64)},
+ {...generated,modelSha256:manifest.model.sha256},
+ {...tensor,latentContract},
+ {...tensor,normalization:'wan21-comfy-f32-v1'},
+ {...generated,context:{...context,sourceFrameTimesSeconds:[0]}},
+])assert.throws(()=>api.validateVaeRequest({operation:'decode',tensor:bad,manifest}));
+const captured=api.validateVaeRequest({operation:'decode',tensor:generated,manifest});
+assert.notEqual(captured.metadata.context,context);assert.notEqual(captured.metadata.latentContract,latentContract);
+context.sourceFrameIndices[0]=99;latentContract.producerModelSha256s[0]='5'.repeat(64);
+assert.equal(captured.metadata.context.sourceFrameIndices[0],0);assert.equal(captured.metadata.latentContract.producerModelSha256s[0],producer);
+// Encode context maps every input video frame, never one entry per latent slot.
+assert.throws(()=>api.validateVaeRequest({operation:'encode',tensor:{...rgb,context},manifest}),/frame/i);
+const completeContext={...context,sourceFrameIndices:[0,4,8,12,16],sourceFrameTimesSeconds:[0,.25,.5,.75,1]};
+assert.equal(api.validateVaeRequest({operation:'encode',tensor:{...rgb,context:completeContext},manifest}).count,3840);
+const {createVaeModule}=await import('../../../docs/shared/inference/vae-api.mjs');
+let dispatchCount=0,dispatched;
+const client={state:{status:'idle'},run:async request=>{dispatchCount++;dispatched=request;return {accepted:true};},cancel(){},dispose(){}};
+const module=createVaeModule({client,ownsClient:false});module.configure({manifest,files:new Map()});
+const validGenerated={...generated,context:captured.metadata.context,latentContract:captured.metadata.latentContract};
+await module.decode(validGenerated);assert.equal(dispatchCount,1);assert.equal(dispatched.input.modelSha256,producer);
+await assert.rejects(module.decode({...validGenerated,latentContract:{...validGenerated.latentContract,space:'normalized'}}));assert.equal(dispatchCount,1,'Invalid generated contract must be rejected before client dispatch');
+assert.equal(module.capabilities().apiVersion,'works-ai-1');
+assert.ok(module.capabilities().decode.input.meanings.includes('raw-posterior-mean'));
+assert.ok(module.capabilities().decode.input.meanings.includes('wan21-raw-generated-sample:v1'));
+assert.equal(module.capabilities().decode.generatedSampleContract.declaredOnly,true);
+assert.equal(module.capabilities().decode.generatedSampleContract.realGenerationVerified,false);
+module.dispose();
+console.log(JSON.stringify({passed:true,scope:'profile/tensor/producer-space-context validation and pre-dispatch module boundary; no inference performed'}));

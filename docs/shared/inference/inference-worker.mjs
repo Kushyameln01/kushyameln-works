@@ -25,7 +25,7 @@ self.onmessage=async({data:job})=>{
    }
    textModel=await loadTextEncoder({manifest:job.manifest,files,ort,hike,onProgress:progress});
    const output=await textModel.run({tokenIds,attentionMask,onProgress:progress});
-   result={tensor:{dtype:'float32',shape:output.shape,layout:'BLC',meaning:'text_hidden_states',data:output.hiddenStates,modelSha256:job.manifest.modelSha256,attentionMask:output.attentionMask},attentionMask:output.attentionMask,evidence:{...output.provenance,hikeStats:hike.stats(),tokenizer:tokenizerEvidence?{sha256:tokenizerEvidence.tokenizerSha256,effectiveTokens:tokenizerEvidence.effectiveTokens,semantics:tokenizerEvidence.semantics}:null}};
+   result={tensor:{dtype:'float32',shape:output.shape,layout:'BLC',meaning:'text_hidden_states',data:output.hiddenStates,modelSha256:job.manifest.modelSha256,tokenizerSha256:output.provenance.tokenizerSha256,attentionMask:output.attentionMask},attentionMask:output.attentionMask,evidence:{...output.provenance,hikeStats:hike.stats(),inputMode:tokenizerEvidence?'plain-text':'token-ids',tokenizer:tokenizerEvidence?{sha256:tokenizerEvidence.tokenizerSha256,effectiveTokens:tokenizerEvidence.effectiveTokens,semantics:tokenizerEvidence.semantics}:null}};
   }else throw Error('Unsupported inference module');
   if(result?.tensor)result.tensor.modelSha256=job.manifest.modelSha256??job.manifest.model?.sha256;
  }catch(e){error=String(e.message??e);}

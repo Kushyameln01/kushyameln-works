@@ -1,7 +1,8 @@
-import {requireTensor,encodeTensor,decodeTensor} from '../inference/tensor.mjs';
+import {requireTensor,encodeTensor,decodeTensor,snapshotTensorMetadata} from '../inference/tensor.mjs';
 
 // These identify the producing modules, not either Bernini diffusion model.
 export const WAN_TEXT_ENCODER_SHA256='c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68';
+export const WAN_TEXT_TOKENIZER_SHA256='e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458';
 export const WAN21_VAE_SHA256='2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b';
 export const WAN21_RAW_PROFILE=Object.freeze({id:'wan21-raw-f32-5x16x16',shape:Object.freeze([1,16,2,2,2]),layout:'NCTHW',meaning:'raw-posterior-mean'});
 const SHA256=/^[0-9a-f]{64}$/;
@@ -21,6 +22,7 @@ export function requireWanConditioning(tensor,{encoderModelSha256=WAN_TEXT_ENCOD
  if(!(mask instanceof Uint8Array)||mask.length!==tensor.shape[1]||!mask.includes(1))throw TypeError('Wan conditioning requires a nonempty 0/1 Uint8Array attention mask');
  // requireTensor already rejects mask values outside 0/1, including internal masks.
  provenance(tensor,encoderModelSha256,'Text Encoder');
+ if(tensor.tokenizerSha256!==undefined&&tensor.tokenizerSha256!==WAN_TEXT_TOKENIZER_SHA256)throw TypeError('Conditioning tokenizer identity does not match the paired UMT5 tokenizer');
  return tensor;
 }
 
@@ -36,7 +38,7 @@ export function requireWanRawLatent(tensor,{vaeModelSha256=WAN21_VAE_SHA256}={})
 // Snapshot the validated producer identity and every codec input before hashing
 // yields. The published codec itself remains unchanged.
 function ownedTensor(tensor){
- return {dtype:tensor.dtype,shape:[...tensor.shape],layout:tensor.layout,meaning:tensor.meaning,data:new Float32Array(tensor.data),modelSha256:tensor.modelSha256,...(tensor.attentionMask!==undefined?{attentionMask:new Uint8Array(tensor.attentionMask)}:{})};
+ return {dtype:tensor.dtype,shape:[...tensor.shape],layout:tensor.layout,meaning:tensor.meaning,data:new Float32Array(tensor.data),modelSha256:tensor.modelSha256,...(tensor.attentionMask!==undefined?{attentionMask:new Uint8Array(tensor.attentionMask)}:{}),...snapshotTensorMetadata(tensor)};
 }
 const encoderBinding=binding=>({encoderModelSha256:binding===undefined?WAN_TEXT_ENCODER_SHA256:binding.encoderModelSha256??WAN_TEXT_ENCODER_SHA256});
 const vaeBinding=binding=>({vaeModelSha256:binding===undefined?WAN21_VAE_SHA256:binding.vaeModelSha256??WAN21_VAE_SHA256});
