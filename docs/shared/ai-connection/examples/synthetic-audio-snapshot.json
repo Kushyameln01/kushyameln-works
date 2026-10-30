@@ -1,0 +1,30 @@
+{
+  "contractVersion": "works-module-contract/1.0-draft.1",
+  "snapshotId": "example:snapshot-audio",
+  "snapshotHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "managerSessionId": "example:manager",
+  "managerRevision": 7,
+  "pipelineProfileRef": "example:single-audio-stage@1",
+  "stepBindings": [
+    {
+      "stepId": "condition",
+      "moduleId": "example:synthetic-audio",
+      "moduleVersion": "external-description/1",
+      "nativeBindingRefs": [
+        "example:audio-binding"
+      ],
+      "artifactRefs": [
+        "example:audio-input"
+      ],
+      "modelProfileRefs": [
+        "example:stereo-480/1"
+      ],
+      "adapterSelectionRefs": [],
+      "localRevisionBindings": {
+        "native": 3
+      }
+    }
+  ],
+  "artifactManifestRef": "example:artifact-manifest",
+  "evidenceManifestRef": "example:evidence-manifest"
+}

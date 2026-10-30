@@ -1,0 +1,158 @@
+{
+  "contractVersion": "works-module-contract/1.0-draft.1",
+  "artifactId": "example:sample",
+  "kind": "tensor",
+  "native": {
+    "schemaId": "example:g1c-native-metadata",
+    "schemaVersion": "1",
+    "payloadRef": "example:sample-bytes-not-supplied",
+    "metadata": {
+      "meaning": "wan21-raw-generated-sample:v1",
+      "context": {
+        "schemaVersion": 1,
+        "contextId": "example:ctx",
+        "inputId": "example:video",
+        "inputSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "slotId": "example:slot",
+        "sourceFrameIndices": [
+          4,
+          2,
+          2,
+          1,
+          0
+        ],
+        "sourceFrameTimesSeconds": [
+          0.4,
+          0.2,
+          0.2,
+          0.1,
+          0
+        ]
+      },
+      "latentContract": {
+        "schemaVersion": 1,
+        "representation": "generated-sample",
+        "space": "raw",
+        "vaeModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "producerModelSha256s": [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        "normalization": {
+          "id": "wan21-comfy-f32-v1",
+          "state": "restored",
+          "owner": "diffusion_models"
+        }
+      },
+      "dtype": "float32",
+      "shape": [
+        1,
+        16,
+        2,
+        2,
+        2
+      ],
+      "layout": "NCTHW"
+    }
+  },
+  "semantics": {
+    "schemaId": "example:raw-generated-sample",
+    "schemaVersion": "1",
+    "spaceId": "raw",
+    "unit": "unitless",
+    "normalization": "none"
+  },
+  "profileRef": "wan21-raw-f32-5x16x16",
+  "tensor": {
+    "dtype": "float32",
+    "shape": [
+      1,
+      16,
+      2,
+      2,
+      2
+    ],
+    "axes": [
+      "N",
+      "C",
+      "T",
+      "H",
+      "W"
+    ],
+    "nativeMeaning": "wan21-raw-generated-sample:v1",
+    "dataRef": "example:sample-bytes-not-supplied"
+  },
+  "provenance": {
+    "producerRefs": [
+      {
+        "identityKind": "model",
+        "role": "producer",
+        "algorithm": "sha256",
+        "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "scope": "full-file"
+      },
+      {
+        "identityKind": "model",
+        "role": "producer",
+        "algorithm": "sha256",
+        "value": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "scope": "full-file"
+      }
+    ],
+    "consumerBindings": [
+      {
+        "identityKind": "model",
+        "role": "decoder",
+        "algorithm": "sha256",
+        "value": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "scope": "full-file"
+      }
+    ],
+    "transformTraceRefs": []
+  },
+  "lineage": {
+    "inputs": [
+      "example:video"
+    ],
+    "sourceFrames": [
+      {
+        "inputId": "example:video",
+        "slotId": "example:slot",
+        "indices": [
+          4,
+          2,
+          2,
+          1,
+          0
+        ],
+        "timesSeconds": [
+          0.4,
+          0.2,
+          0.2,
+          0.1,
+          0
+        ]
+      }
+    ]
+  },
+  "snapshotId": null,
+  "ownership": {
+    "ownerId": "example-fixture",
+    "mode": "copy"
+  },
+  "extensions": {
+    "future:opaque": {
+      "schemaId": "future:opaque",
+      "schemaVersion": "9",
+      "requiredForUse": false,
+      "data": {
+        "orderedDuplicates": [
+          2,
+          1,
+          2
+        ],
+        "unparsed": true
+      }
+    }
+  }
+}
