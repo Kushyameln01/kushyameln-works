@@ -38,3 +38,10 @@ source adapterは最大16MiBのSDK readを4MiB以下の逐次requestへ分け、
 ## 公開受入の記録先
 
 公開するruntime/specはmain/docs、ビルド・検証用の完全sourceはcodex/diffusion-models。公開後のHTTPS受入結果は同source branchのdevelopment/diffusion-models/lora-public-verification.jsonへ保存し、同じdocsの記録専用再ビルドを発生させない。
+
+
+### 公開後の受入
+
+main `029ce9336a61e53bc6172fa4a7b7189b15f2efa0` のPages buildがbuiltであることを確認した。実HTTPSの公開originで23asset・164,313 bytesが候補と一致し、Chromium154.0.8037.57で16API項目とJS/MessagePortの実SDK.inspect 2経路が合格した。実行7.77秒、TLS検証有効、console/page error・遮断requestはいずれも0。HTTPは公開originのGETだけで、重みupload・prepare/apply・全体推論を実行していない。
+
+機械可読記録: lora-public-verification.json。この追記はsource branchだけに保存し、Pagesのruntimeは受入済みcommitのまま保持する。
