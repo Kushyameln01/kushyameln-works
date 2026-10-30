@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+let api;try{api=await import('../../docs/shared/inference/api.mjs');}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
+assert.equal(typeof api?.createInferenceAPI,'function','Versioned external inference API missing');
+const hub=api.createInferenceAPI();
+assert.equal(hub.textEncoder.capabilities().module,'text_encoder');assert.equal(hub.vae.capabilities().module,'vae');
+assert.notEqual(hub.textEncoder,hub.vae);assert.ok(!('diffusion' in hub));
+await assert.rejects(hub.textEncoder.encode({text:'Hello'}),/configure/i);
+await assert.rejects(hub.vae.decode({}),/configure/i);
+const {port1,port2}=new MessageChannel();const unbind=api.bindInferencePort(port1,hub);
+const receive=()=>new Promise(resolve=>port2.addEventListener('message',e=>resolve(e.data),{once:true}));port2.start();
+let response=receive();port2.postMessage({apiVersion:'works-ai-1',id:'caps',module:'text_encoder',method:'capabilities'});let got=await response;assert.equal(got.id,'caps');assert.ok(got.ok);assert.equal(got.result.module,'text_encoder');
+response=receive();port2.postMessage({apiVersion:'works-ai-1',id:'invalid',module:'diffusion',method:'encode'});got=await response;assert.ok(!got.ok);
+response=receive();port2.postMessage({apiVersion:'bad',id:'wrong-version',module:'vae',method:'capabilities'});got=await response;assert.ok(!got.ok);
+response=receive();port2.postMessage({apiVersion:'works-ai-1',id:'cancel',module:'vae',method:'cancel'});got=await response;assert.ok(got.ok);
+unbind();port2.close();hub.dispose();
+const snapshotHub=api.createInferenceAPI();
+const configured=snapshotHub.vae.configure({manifest:{kind:'wan21-vae-profile-v1',schemaVersion:1,profile:{id:'profile-snapshot',videoShape:[1,3,5,16,16]}},files:new Map()});
+configured.profile.videoShape[0]=99;configured.profile.id='mutated';
+const snapshot=snapshotHub.vae.capabilities();
+assert.equal(snapshot.profile.id,'profile-snapshot','capabilities must not expose mutable internal profile state');
+assert.deepEqual(snapshot.profile.videoShape,[1,3,5,16,16]);
+snapshot.profile.videoShape[1]=99;
+assert.deepEqual(snapshotHub.vae.capabilities().profile.videoShape,[1,3,5,16,16]);
+snapshotHub.dispose();
+const pair=new MessageChannel();let finish;const slow={textEncoder:{encode:()=>new Promise(r=>{finish=r;}),capabilities:()=>({module:'text_encoder'})}};const end=api.bindInferencePort(pair.port1,slow);pair.port2.start();
+const next=()=>new Promise(r=>pair.port2.addEventListener('message',e=>r(e.data),{once:true}));
+pair.port2.postMessage({apiVersion:'works-ai-1',id:'held',module:'text_encoder',method:'encode'});await new Promise(r=>setTimeout(r,10));
+for(let i=0;i<2;i++){const message=next();pair.port2.postMessage({apiVersion:'works-ai-1',id:'held',module:'text_encoder',method:'capabilities'});assert.equal((await message).ok,false,'duplicate must not clear original in-flight ID');}
+const finished=next();finish({done:true});assert.ok((await finished).ok);end();pair.port2.close();
+console.log('PASS: separate modules, shared executor, real MessagePort RPC version/role/method/duplicate-ID boundary');
