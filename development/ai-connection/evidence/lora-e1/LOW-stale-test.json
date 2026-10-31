@@ -1,0 +1,12 @@
+{
+  "status": "FAIL_LIFECYCLE_TEST_SETUP_RETAINED",
+  "sourceCommit": "bbfeaedd5e4307e41210a1e5723e6e63243e64f7",
+  "peerCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+  "numericCasesPassed": 10,
+  "numericalFailures": 0,
+  "error": "Error: Candidate has already committed or another feed became active\n    at fail (http://127.0.0.1:38237/peer/shared/diffusion-models/lora/diagnostic-consumer.mjs:13:49)\n    at Object.commit (http://127.0.0.1:38237/peer/shared/diffusion-models/lora/diagnostic-consumer.mjs:143:58)\n    at runJointCases (http://127.0.0.1:38237/runner/joint-browser-cases.mjs:67:428)\n    at async eval (eval at evaluate (:290:30), <anonymous>:1:100)\n    at async <anonymous>:316:30",
+  "cause": "Test prepared both candidates at the same epoch, then committed the first; native consumer correctly rejected the now-stale second candidate.",
+  "correction": "Prepare and validate the replacement after first commit; keep native stale guards and numerical gates unchanged.",
+  "retrySourceCommit": "e1f03a4f6092c3154d5b47f166b77bbd32897ac9",
+  "retryEvidence": "LOW-fixed separate trial; failed trial not counted among final PASS cases"
+}

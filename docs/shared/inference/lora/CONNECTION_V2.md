@@ -1,8 +1,10 @@
-# LoRA connection v2 — A0/L1
+# LoRA connection v2 — A0/L1とE0/E1
 
 Native contract: `lora-connection/2.0-draft.1`。既存の [SDK v1](README.md) と別の入口を追加する契約である。総合接続仕様書 `1.1-draft.1`（Page `page_65b303c9bc708191a7e48c78b51c35a7`、取得時sequence 1）のLoRA担当範囲を扱う。
 
-この契約の実装と、Diffusion実graphへの結合合格は別である。実baseのprovider・registry・consumerは取得後に受け入れる。A0/L1ではfixture、Hike重み計算、test consumerまでを検証し、実base適合・実session適用・生成結果への寄与は未検証として残す。
+native SDK v2と既存SDK v1の契約は維持している。A0/L1の検証範囲はfixture、Hike重み計算、test consumerであり、その結果を実base共同試験へ読み替えない。E0ではDiffusionの実registry・provider・sink・consumerをGitHubから取得して照合し、E1用の外側adapterを追加した。
+
+HIGH/LOW双方でlight/detailの実base・実LoRA・同じconsumerによるPARTIAL共同試験を確認した。確認範囲は固定Q射影であり、全target・実model全session・生成への寄与を証明しない。LOWを含むside別の進捗、使用版、事前gate、全出力、所有権・取消・復帰の証拠は [JOINT-LORA-RESULT.md](../../../../development/ai-connection/JOINT-LORA-RESULT.md) を参照する。本API追補だけで未完了caseを合格へ変更しない。
 
 取得・実行依存・検証command・必要生成物と再build手順は [REPRODUCE.md](../../../../development/lora/REPRODUCE.md) にまとめている。作業branchは `feat/lora-hike`。
 
@@ -15,8 +17,11 @@ Native contract: `lora-connection/2.0-draft.1`。既存の [SDK v1](README.md) �
 | 原本台帳 | `development/lora/contracts/original-inventory.json` | 4原本の全体hash、rank/alpha/diff/biasの既存棚卸し |
 | 論理対応とbinding要件 | `development/lora/contracts/registry-correspondence-v2.json` | cached header対応と実registryに必要な情報 |
 | binding例 | `development/lora/contracts/registry-binding-examples-v2.json` | `DIAGNOSTIC_FIXTURE_NOT_REAL_GRAPH`と明記した例 |
-| descriptor | `development/lora/contracts/module-descriptor-v2.json` | native APIを変更しない外部記述。最終source identityは引継ぎreceiptで確定 |
+| A0/L1 descriptor | `development/lora/contracts/module-descriptor-v2.json` | native APIを変更しない外部記述。最終source identityは引継ぎreceiptで確定 |
 | 実装と結果 | `development/lora/A0_L1_RESULT.md` | 完全commit／archive receipt、試験scope、未達事項 |
+| E0契約照合 | `development/ai-connection/CONTRACT-MAPPING.md` | 実Diffusionとの型・単位・hash・scope・寿命の対応 |
+| E1外側adapter契約 | `development/ai-connection/lora-diffusion-diagnostic-contract.json` | 実binding・side対応・寿命・管理への状態。native契約とは別版 |
+| E1共同試験 | `development/ai-connection/JOINT-LORA-RESULT.md` | 実行side、固定版、比較条件、全出力、残る範囲 |
 
 完成したsourceの完全commitと、取得可能なarchive/hashは引継ぎreceiptで固定する。作業端末内の絶対pathだけを取得先にはしない。モデル本体をarchiveへ含めない。
 
@@ -105,7 +110,7 @@ const plan = await sdk.plan({
 
 PARTIALは`coverage:'PARTIAL'`、`completeAdapter:false`を持つ。含むpatch、対象外target、選択したtarget内の対象外row、元原本hashを保持する。全原本tensorを先に分類・構造検査するため、選択外の未知tensorも拒否する。FULLを要求する旧planへ部分registryを渡して、欠落を無視する方式にはしない。
 
-Berniniの単一Q射影をrow `[0,16)` で診断する場合の対応は次のとおり。これは選べる診断scopeの説明で、実base計算を済ませたという意味ではない。
+Berniniの単一Q射影をrow `[0,16)` で診断する場合の対応は次のとおり。この表はscopeの定義であり、実行済みsideと数値比較の証拠は共同試験結果で別に記録する。
 
 | 組 | 含むpatch | 除外 |
 | --- | --- | --- |
@@ -136,6 +141,58 @@ FULLのscopeは`full-adapter`。検証結果がpreparedの識別・coverage・sc
 
 既存v1パネルへv2/staging-only adapterをそのまま接続しない。原本登録、検査、PREPARED、STAGED、consumer適用、管理snapshot公開をそれぞれの証拠に対応させる。Hike計算だけで「適用済み」と表示しない。
 
+## Diffusion PARTIAL診断用の外側adapter
+
+`diffusion-diagnostic-adapter.mjs` の版は `lora-diffusion-diagnostic-adapter/0.1`。native SDK v2を書き換えず、Diffusionの公開診断契約 `bernini-diagnostic-registry/0.1` と接続する。対象は `bernini-q16x5120-f32-wasm-v1` の16行Q射影であり、任意のモデル・全graphを受理する汎用consumerではない。peer原本は `f522d9aeff313558c4ef83022a340af9a4c21391`、E0受領版は `438972f30242e0a3bc66edb8591f38eaa0fcd384`。この2版の診断base/provider/consumerコードは同一である。peer公開契約は [DIAGNOSTIC_API.md](https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md) を参照する。
+
+```javascript
+import {createDiffusionDiagnosticAdapter}
+  from './diffusion-diagnostic-adapter.mjs';
+
+const adapter = createDiffusionDiagnosticAdapter({
+  consumer: nativeConsumer,
+  baseProvider: nativeBase.baseProvider,
+  isOwnerCurrent: applicationOwnerIsCurrent
+});
+```
+
+`consumer`と`baseProvider`は呼出し側が取得・所有したDiffusion公開APIの実objectを渡す。adapterは管理内部型、peer private実装、別executorをimportせず、baseのFP8復号やLoRA低rank積を代行しない。呼出し側がnative consumer・ORT/Hike stage・base providerの資源を所有する。
+
+| API | 入出力と責任 |
+| --- | --- |
+| `adapter.registry` | SDK v2用の不変full-shape registry。weightはruntime-input `weight`、biasはhike-parameter `bias` |
+| `adapter.baseProvider.readBlock(id,offset,count,context)` | SDKのfull tensor内element座標を、nativeのselected-slice内element座標へ範囲検査して変換。native identityとsignalを渡す |
+| `adapter.createSink(plan)` | 固定plan・原本・side・scopeに結ぶsink。fullShape／full offsetをnative selected shape／offsetへ明示変換し、manifest・checksum・実write被覆を検査 |
+| `adapter.targetForPlan(plan,{x,expected,tolerance})` | `x[5120]`、独立参照`expected[16]`、明示toleranceを捕捉し、SDK v2のprepareLoad／validate／commit／rollbackへ接続 |
+| `adapter.finalize(plan)` | transaction終端を呼出し側が確認した後、native candidateのrollback履歴を解放。active feedの独立bytesは保持 |
+| `adapter.restoreBase({x,expected,tolerance,signal,isCurrent})` | native公開prepareBase→独立参照validate→commitで選択sliceを不変baseへ戻す。失敗時は同candidateのcleanupを行う |
+| `adapter.run({x,signal})` | 現ownerを確認してnative consumerを実行し、出力・native evidenceを返す。返却前にもownerを確認 |
+| `await adapter.describeBinding()` | native／connectionのdescriptorと別々のregistry hash、座標単位、detail bias pass-throughの記録を返す |
+
+native registryの`shape:[16,5120]`と`fullShape:[5120,5120]`は別々に保持する。SDK registryのshapeは元full shape、選択領域はplanのdiagnosticで指定する。SDK境界のidentity transformは、LoRAへ渡すF32値が元tensorの座標で表されるという意味であり、元FP8 storageに量子化・row-sliceがないという宣言ではない。nativeのFP8 profile・scale・row-slice・source mappingはadapterの対応記録に保持する。転置や入力列の省略は追加しない。
+
+native registryHashとSDK connection registryHashは別descriptorのdigestである。provider/contextへの対応を検査してnative側のhashを渡し、元SDK側のhashも保持する。native packageHash、SDK bundleHash、管理snapshotHashも別の識別であり、同じ値へ付け替えない。native scope `PARTIAL`とSDK scope `diagnostic-projection`は版付きadapterで対応付け、booleanやFULLへ縮約しない。
+
+lightは明示したQ weightとQ bias patchの両方が必要で、欠けたbiasを自動補完しない。detailにはLoRA bias patchがないため、sink.finish時に不変baseのbias16値をpass-throughしてnative feedを完成する。この経路は`immutable-base-pass-through`としてLoRA patchとは別に記録し、ゼロ補完や架空bias適用にしない。
+
+native validateは同じORT/Hike stageを実行し、独立expected全16値と事前toleranceを検査する。adapterはその構造化receiptを`validation.evidence.nativeReceipt`に保持し、SDKのplanId・sourceSha256・registryHash・coverage・scopeへ結ぶ。native feedのcommit成功後だけ、SDKへ`CONSUMER_APPLIED`と独立copyの所有receiptを返す。この状態は実診断feedへの反映を表し、全model session適用・snapshot公開・生成可否の判定ではない。`generationReady:false`とPARTIALを維持する。
+
+### ownerの現在性と取消・cleanup
+
+factoryの`isOwnerCurrent`は必須で、既定値はない。これはアプリケーション／resourceの所有者が現在も有効かを検査するcallbackで、SDKのAbortSignalやローカルgenerationとは別に供給する。管理側は自分のowner・session・revisionの対応に基づいて実装し、SDK local revisionをmanagerRevisionへ流用しない。単独で排他的に所有する診断だけが、所有条件を明示したうえで`() => true`を使える。
+
+prepare・validate・commitは、SDKのsignal／invocation現在性と、owner現在性の両方を検査する。取消でSDK context.isCurrentがfalseになっても、同じownerのcleanup権限まで消したことにはしない。rollbackにはowner現在性を別に渡し、native側のcandidate／epoch照合を維持する。したがってcommit直後・SDK返却前の取消では、同じownerかつ同じactive epochなら旧feedへ復帰できる。ownerが交代した場合や新しいnative epochが既にactiveの場合、古いcleanupはそれを上書きしない。SDK context.isCurrentをfactoryのowner callbackとして兼用しない。
+
+transactionの識別、signalとcallback参照、独立参照の配列はawait前に捕捉する。取消はbounded Hike／ORT呼出し後の協調停止であり、要求の送信だけを停止終端にしない。detailのfinish時bias pass-throughは16要素のbounded処理で、別Invocationのsignalを借用しない。SDKはfinish後にも取消を検査して必要なcleanupを行う。
+
+### copyとcandidate履歴、base復帰
+
+このnative consumerの経路ではprepareLoadが独立feed copyを作り、active feedが必要bytesを保持する。preparedを解放した後もそのcopyで実行できることを検査する。generic SDK v2のlease対応を、このadapterがnative leaseも実装するという意味にしない。
+
+`sdk.stage`の成功・失敗終端と必要なrollback／recoverが完了するまで、`finalize(plan)`でcandidate履歴を捨てない。使用中・復帰未完のpreparedを解放せず、SDK返却直前の取消にもrollback履歴を残す。呼出し側のteardownは、進行処理の終端後にnative consumer、stage、base providerの各ownerが行う。
+
+native SDK v2には引き続きdetach/resetメソッドを追加していない。`restoreBase`は外側adapterからnativeの不変base候補を選択sliceで検証・commitする診断操作であり、両side共通snapshotのbase切替ではない。強度変更と再適用も常に不変baseから再構築し、適用済み重みへ再加算しない。PARTIAL/runtime-inputをv1 initializer・FULL adapterへ渡して解除・適用を通さない。
+
 ## 資源の寿命と取消
 
 - source Fileはcallerが選択した不変参照。原本のbytesを書き換えない。
@@ -155,4 +212,4 @@ consumerはcommitの切替直前にもrevision/abort/currentを検査し、古�
 
 Bernini参照profileではHIGH/LOWに別SDK instanceを使い、light/detailは一組の選択・切替として扱う。共通Module/Artifact規格へHIGH/LOWやlight/detailを全module共通enumとして強制しない。moduleはnative APIで単独利用でき、管理側のdescriptor/queue/snapshotをimportしない。
 
-Diffusionから必要なのは、完全source commit/build、実binding registry、不変F32 providerとFP8復号profile、実package/feed sink、scope付きconsumer検証と許容差、commit/rollbackの権限・現在性検査、copy/leaseと解放条件である。これらを取得後に実base小block比較へ進む。L2ではlight/detailを別々に全target受け入れし、全モデル推論・二組同時合成・公開は別工程とする。
+E0で取得・照合したDiffusionの完全source commit/build、実binding registry、不変F32 providerとFP8復号profile、実runtime-feed sink、scope付きconsumer検証、権限・現在性・copy条件を共同試験の使用版へ固定する。比較条件・実行済みside・全出力・残る不整合は共同試験結果に記録する。E1のPARTIAL成功を、E9の全target・実model全session・生成への寄与へ昇格させない。全target受入ではlight/detailを別々に扱い、二組同時合成や公開は別工程とする。

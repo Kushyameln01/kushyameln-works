@@ -1,0 +1,220 @@
+{
+  "adapterVersion": "lora-diffusion-diagnostic-adapter/0.1",
+  "nativeRegistryHash": "808eae1c5b721954dd0679bb723c739a792fcf2199203a564363d66501144796",
+  "connectionRegistryHash": "c780d26cb02a141ad50fbd316f292b5e90387a5949f67cad6a00aec78e3f4b9e",
+  "nativeRegistry": {
+    "schemaVersion": "bernini-diagnostic-registry/0.1",
+    "scope": "PARTIAL",
+    "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+    "side": "LOW",
+    "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+    "executionProfileId": "bernini-q16x5120-f32-wasm-v1",
+    "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+    "quantizationConfig": {
+      "key": "blocks.0.self_attn.q.comfy_quant",
+      "sha256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+      "format": "float8_e4m3fn"
+    },
+    "baseVerification": {
+      "kind": "header-and-ranges",
+      "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+      "fileBytes": 15574833216,
+      "fullFileSHA256Verified": false,
+      "modelHashRole": "expected-original-full-hash-not-current-file-proof"
+    },
+    "targets": [
+      {
+        "key": "diffusion_model.blocks.0.self_attn.q.weight",
+        "weightId": "q.weight",
+        "originalKey": "blocks.0.self_attn.q.weight",
+        "fullShape": [
+          5120,
+          5120
+        ],
+        "shape": [
+          16,
+          5120
+        ],
+        "dtype": "F32",
+        "storageDtype": "F8_E4M3",
+        "computeDtype": "F32",
+        "layout": "row-major",
+        "binding": {
+          "kind": "runtime-input",
+          "name": "weight"
+        },
+        "transform": {
+          "kind": "row-slice",
+          "rowStart": 0,
+          "rowCount": 16,
+          "columnStart": 0,
+          "columnCount": 5120,
+          "transpose": false
+        },
+        "source": {
+          "payloadByteOffset": 2844929568,
+          "elementOffset": 0,
+          "byteWidth": 1
+        },
+        "fp8": {
+          "profileId": "scaled-e4m3fn-scalar-f32-v1",
+          "scaleKey": "blocks.0.self_attn.q.weight_scale",
+          "scaleShape": [],
+          "scaleDtype": "F32",
+          "scale": 0.0004149845917709172,
+          "scaleSHA256": "2575543940692eed901ec08a566b96b426db16691fdc5b57f51be56c51333925"
+        }
+      },
+      {
+        "key": "diffusion_model.blocks.0.self_attn.q.bias",
+        "weightId": "q.bias",
+        "originalKey": "blocks.0.self_attn.q.bias",
+        "fullShape": [
+          5120
+        ],
+        "shape": [
+          16
+        ],
+        "dtype": "F32",
+        "storageDtype": "F16",
+        "computeDtype": "F32",
+        "layout": "row-major",
+        "binding": {
+          "kind": "hike-parameter",
+          "name": "bias"
+        },
+        "transform": {
+          "kind": "row-slice",
+          "rowStart": 0,
+          "rowCount": 16,
+          "transpose": false
+        },
+        "source": {
+          "payloadByteOffset": 52652448,
+          "elementOffset": 0,
+          "byteWidth": 2
+        },
+        "fp8": null
+      }
+    ],
+    "coverage": {
+      "kind": "PARTIAL",
+      "fullModel": false,
+      "selectedOriginalKeys": [
+        "blocks.0.self_attn.q.weight",
+        "blocks.0.self_attn.q.bias"
+      ],
+      "excluded": "all other parameters and unselected rows",
+      "selectedRowCount": 16
+    },
+    "registryHash": "808eae1c5b721954dd0679bb723c739a792fcf2199203a564363d66501144796"
+  },
+  "connectionRegistry": {
+    "contractVersion": "lora-connection/2.0-draft.1",
+    "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+    "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+    "registryVersion": "lora-diffusion-diagnostic-adapter/0.1",
+    "side": "LOW",
+    "executionProfileId": "bernini-q16x5120-f32-wasm-v1",
+    "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+    "targets": [
+      {
+        "key": "diffusion_model.blocks.0.self_attn.q.weight",
+        "weightId": "q.weight",
+        "module": "diffusion_models",
+        "shape": [
+          5120,
+          5120
+        ],
+        "dtype": "F32",
+        "layout": "row-major",
+        "parameterRole": "weight",
+        "binding": {
+          "kind": "runtime-input",
+          "name": "weight"
+        },
+        "transform": {
+          "kind": "identity"
+        }
+      },
+      {
+        "key": "diffusion_model.blocks.0.self_attn.q.bias",
+        "weightId": "q.bias",
+        "module": "diffusion_models",
+        "shape": [
+          5120
+        ],
+        "dtype": "F32",
+        "layout": "row-major",
+        "parameterRole": "bias",
+        "binding": {
+          "kind": "hike-parameter",
+          "name": "bias"
+        },
+        "transform": {
+          "kind": "identity"
+        }
+      }
+    ]
+  },
+  "offsetUnit": "elements in original full tensor mapped to native selected-slice elements",
+  "passThrough": [
+    {
+      "planId": "b072081a6dcdd9e45b034ba0bf3cc427bad9c7d968034d694db31dd10562711a",
+      "weightId": "q.bias",
+      "offset": 0,
+      "count": 16,
+      "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e",
+      "kind": "immutable-base-pass-through"
+    },
+    {
+      "planId": "347c16a1a945bc002f841c603122eef73889aa92cdc4173a00fff4728d2068ce",
+      "weightId": "q.bias",
+      "offset": 0,
+      "count": 16,
+      "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e",
+      "kind": "immutable-base-pass-through"
+    },
+    {
+      "planId": "b5ebc883e39a796e3523ef0746490ae7c4d69eb23c1d64d4843a63547e2f40b2",
+      "weightId": "q.bias",
+      "offset": 0,
+      "count": 16,
+      "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e",
+      "kind": "immutable-base-pass-through"
+    },
+    {
+      "planId": "f61926fd59eb61319df054a379a7a54433fbac70e8c296de47701103e0faaa03",
+      "weightId": "q.bias",
+      "offset": 0,
+      "count": 16,
+      "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e",
+      "kind": "immutable-base-pass-through"
+    },
+    {
+      "planId": "ec259c663875941071039e21459cc7711ef741acb03ee918964f77a4ee335427",
+      "weightId": "q.bias",
+      "offset": 0,
+      "count": 16,
+      "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e",
+      "kind": "immutable-base-pass-through"
+    },
+    {
+      "planId": "d759200218900c0e40116599c6a72a122ec62a71c63c8e88eb3c4becaad7e746",
+      "weightId": "q.bias",
+      "offset": 0,
+      "count": 16,
+      "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e",
+      "kind": "immutable-base-pass-through"
+    },
+    {
+      "planId": "7002881d227bd96e928d90c2fa0e5bfbd2364fe510330670bb767794cc8248a6",
+      "weightId": "q.bias",
+      "offset": 0,
+      "count": 16,
+      "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e",
+      "kind": "immutable-base-pass-through"
+    }
+  ],
+  "generationReady": false
+}

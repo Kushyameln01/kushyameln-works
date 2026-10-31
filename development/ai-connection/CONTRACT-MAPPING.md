@@ -1,3 +1,68 @@
+# LoRA–Diffusion E0/E1 実契約の対応
+
+2026年10月31日 JST更新。**実public APIを取得し、版付きadapterによる実行可能な接続を確認しました。** 対向はDiffusion `438972f30242e0a3bc66edb8591f38eaa0fcd384`、HIGH試験のLoRA runtimeは `4d5fd7363f40f0d743ead448193ef2bf1915bbdc` です。HIGHの実base×実LoRA light/detail計10caseがPARTIAL診断を通過しました。LOWも同一製品コードで10case成功し、runner固定commit `e1f03a4f6092c3154d5b47f166b77bbd32897ac9` と全結果は[共同試験結果](JOINT-LORA-RESULT.md)で別に記録します。
+
+総合仕様 `1.1-draft.1`（sequence1・198blocks）と実行計画 `0.2-draft.2`（sequence2・134blocks）の取得版、file hashとsource URLは[現在のsource baseline](SOURCE-BASELINE.md)と[current-peer-source-manifest.json](evidence/lora-e0/current-peer-source-manifest.json)に固定しています。
+
+## 固定した実装と識別子
+
+- LoRA native: `lora-connection/2.0-draft.1`。接続実装は[diffusion-diagnostic-adapter.mjs@4d5fd736](https://github.com/Kushyameln01/kushyameln-works/blob/4d5fd7363f40f0d743ead448193ef2bf1915bbdc/docs/shared/inference/lora/diffusion-diagnostic-adapter.mjs)、adapter版 `lora-diffusion-diagnostic-adapter/0.1`、SHA-256 `bcea7b495e819d1e1052543f36cbdad0ed8515e74bd8914cf66dc03b093c6e4f`。
+- Diffusion native: [DIAGNOSTIC_API.md@438972](https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md)、[diagnostic-base.mjs](https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/lora/diagnostic-base.mjs)、[diagnostic-consumer.mjs](https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/lora/diagnostic-consumer.mjs)。
+- Diffusion wire `diffusion-models/0.1`、registry `bernini-diagnostic-registry/0.1`、profile `bernini-q16x5120-f32-wasm-v1`。元f522のbase/provider・consumer・identity実装とbyte同一ですが、build IDは採用438のものを保持します。
+- 元Q weightは `blocks.0.self_attn.q.weight`、full `[5120,5120]`。選択は16行・全5120列、biasは元 `[5120]` から同じ16行。weightは `runtime-input:weight`、biasは `hike-parameter:bias` です。
+
+## 実adapterの署名と責任
+
+```js
+createDiffusionDiagnosticAdapter({
+  consumer, baseProvider: nativeProvider, isOwnerCurrent
+})
+// => {registry, baseProvider, createSink(plan),
+//     targetForPlan(plan, {x,expected,tolerance}), finalize(plan),
+//     restoreBase({x,expected,tolerance,signal,isCurrent}),
+//     run({x,signal}), describeBinding()}
+```
+
+factoryの `isOwnerCurrent` は必須です。consumerはdescribe/createSink/prepareLoad/validate/commit/rollback/prepareBase/releaseCandidate/run、providerはreadBlockを持つ実native objectを渡します。consumer/stage/providerはcaller所有で、このadapterのために他moduleの資源をdisposeしません。
+
+| 境界 | LoRA v2の実契約 | adapterが行う実変換・照合 |
+| --- | --- | --- |
+| registry | full logical `shape`、identity transform、strict既知field | native fullShapeをLoRA shapeへ対応。nativeのselected shape/row-slice/FP8 descriptorを保持し、SDK connection registry hashとnative registry hashを別々に検査 |
+| providerの座標 | `readBlock(weightId,offset,count,context)` のoffset/countは元full tensorのF32要素 | weightでは `fullOffset-rowStart*5120`、biasでは `fullOffset-rowStart` に変換。選択範囲内を検査しnative model/graph/registry三hashを注入 |
+| sink manifest | SDK plan/source/loader/coverage/scope/bundleHashを持つ | SDK identityと実write列を照合し、native `{modelHash,graphHash,registryHash,side,scope:'PARTIAL'}` へ対応。二つのhashを付け替えない |
+| sink block | fullShape、slice、binding、元full内offset、F32 bytes/hash | key/role/binding/fullShapeを照合。offsetをslice内へ変換し、native selected `shape:[16,5120]` または `[16]` を渡す。各入力をawait前にcopy |
+| detailのbias | detailはQ weightだけを計算し、bias patchを持たない | finish時にnative不変baseのbias16値を読み、実bytes/hash付きでpass-through。LoRA加算と別の `immutable-base-pass-through` 証拠として記録 |
+| validation | SDK scope `diagnostic-projection`、plan/registry/source識別を要求 | `targetForPlan` がx5120/独立expected16/toleranceをowned snapshotにし実native validateへ供給。native `PARTIAL` receiptとcandidate/package/graph/model/registry/sideを検査してSDK receiptへ包む |
+| commit | `CONSUMER_APPLIED` と所有receipt、SDKのpost-commit現在性確認 | nativeの実commit/epoch/packageを確認。native prepareLoadの独立feed copyへ結び付く `ownership:{kind:'independent-copy',ownerId}` とnative receiptを返す |
+| 候補解放 | SDKのpost-commit検査後も失敗復帰が必要な間はrollback履歴を保持 | `finalize(plan)` でnative releaseCandidateを呼ぶ。prepared package releaseとcandidate履歴解放を分け、active feedの所有copyを保持 |
+
+LoRA SDKの `createLoraV2({folder,sourceFactory,kernel})`、`plan(input)`、`prepare(plan,{baseProvider,sink,blockRows,signal})`、`stage(prepared,target,{signal,isCurrent})` をそのまま呼びます。v1のinitializer/FULL経路へruntime-input/PARTIALを通しません。HIGH試験の実v1 adapter拒否も結果に記録しています。
+
+## 現在性、取消、復帰、所有権
+
+通常dispatchのnative `isCurrent` は **factoryのowner現在性と、stage invocationの現在性callbackの両方**がtrueのときだけtrueです。adapterはcallbackとidentityをawait前に捕捉し、native descriptorの差替えも検査します。
+
+取消はinvocationを失効させますが、同じownerが自分のcandidateを片付ける権限は残ります。adapterはprepareLoad時にcleanup contextを保持し、rollbackにはowner現在性を使います。native consumerのcandidateId/active epoch照合が、古いrollbackによる新feedの上書きを防ぎます。owner自体が失効したcleanupには復帰権限を与えません。この区別により、実native commit後にSDK側で取消を検出した場合も、当該candidateの旧feedへ戻せます。HIGHのlight/detailでこの経路を確認しています。
+
+解除相当のbase復帰はnative v2に存在しないdetach methodを呼ばず、`adapter.restoreBase({x,expected,tolerance,signal,isCurrent})` で実行します。明示current callbackを要求し、不変baseからnative prepareBase→独立参照によるvalidate→commit→最終current確認を行います。失敗時は保持したcleanup contextでnative rollbackし、成功後にcandidate履歴を解放します。片側のPARTIAL診断であり、管理snapshotの公開や両sideの原子的切替を意味しません。
+
+native sink package→candidate→active feedは実owned copyです。準備済みpackageや成功candidateの解放後もactive feedが有効なことを実試験で確認しています。このconsumerにないlease機能は作らず、lease対応consumer一般へのSDK制約とは区別します。
+
+## 実base検証と数値profile
+
+native providerは元Fileのheader/file size、Q shape、actual config、positive scalar scale、読んだrangeを検査します。F8_E4M3→Hike F32復号×F32 scale、bias F16→Hike F32、実ORT WASM1.24.3 Gemm→Hike biasというprofileです。native `baseVerification.fullFileSHA256Verified:false` は保持し、外側の元File全体hash/coverage/stat binding receiptを別証拠として結び付けます。HIGHは全15,574,833,216 bytesのSHA-256と試験前後の同一性を確認済みです。
+
+HIGH試験は事前にstrength `0,1,-1`、選択weight全81,920値、bias全16値、projection全16値を比較するgateを固定しました。weightは `abs1e-5+rel1e-4`、bias/base decodeは厳密一致、projectionは `abs1e-6+rel1e-5` です。detailの実base bias pass-throughも比較します。全体結果、独立oracle、input/hash、build/kernel、各caseの誤差、取消/復帰の記録は[共同試験結果](JOINT-LORA-RESULT.md)を参照します。旧合成74件やDiffusion単体試験との件数合算は行っていません。
+
+現在の実行可能性はQ16×5120のPARTIAL診断で確認したものです。scope `diagnostic-projection`、`completeAdapter:false`、`snapshotPublished:false`、`generationReady:false` を保持します。全target、実model全session、生成への寄与はE9の別条件として残ります。
+
+## 初回監査の履歴
+
+以下は2026年10月31日 JST、対向source取得前のread-only監査原文です。「未取得」「未実行」「still needed」「blockers」はその当時の状態を表し、現在の接続状態には適用しません。旧file/stat観測も当時のmetadataです。
+
+<details>
+<summary>初回E0/E1 readiness audit（更新前の原文）</summary>
+
 # LoRA–Diffusion E0契約対応の追補
 
 **状態: LoRA側の原文確認済み、指定Diffusion原本未取得。相互適合・合意は未確定。**
@@ -95,3 +160,5 @@ No earlier hash-cache stat witness was found in the reviewed local contract/insp
 6. Native v2 lacks detach/reset; an actual peer/manager base-restore route and receipt must be obtained or explicitly implemented under the agreed contract before detach acceptance can be claimed.
 
 Next executable step: acquire the exact peer artifact and real base/Q-block provision, compare its raw API against the native table, then run the four-row matrix under the agreed real profile. No new mock consumer, synthetic harness result, or repeated synthetic suite can close these blockers.
+
+</details>
