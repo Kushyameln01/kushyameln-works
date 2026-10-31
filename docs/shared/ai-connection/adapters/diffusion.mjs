@@ -1,6 +1,7 @@
 import {createDirectAdapter} from './core.mjs';
-// Existing 0.1 wire operations from the fixed public contract. No f522 diagnostics guessed.
-const operations=['capabilities','inspect','validateConditioning','validateRawLatent','normalizeRawMean','restoreRawMean','schedule','noiseMix','inverseNoiseScale','flowDenoised','eulerStep','linearProjection','inspectLora','loadLora','listLoras','readLora','readLoraSource','unloadLora'];
+// Original 0.1 operations plus acquired f522's exact F32 projection wire op.
+// New provider/consumer registry and transaction schemas are separate contracts.
+const operations=['capabilities','inspect','validateConditioning','validateRawLatent','normalizeRawMean','restoreRawMean','schedule','noiseMix','inverseNoiseScale','flowDenoised','eulerStep','linearProjection','linearProjectionF32','inspectLora','loadLora','listLoras','readLora','readLoraSource','unloadLora'];
 export function createDiffusionAdapter(options){
  const {descriptor,nativeClient,binding}=options;
  if(descriptor.nativeAPI.version!=='diffusion-models/0.1'||!binding.nativeSessionId||!Number.isSafeInteger(binding.inputRevision))throw TypeError('Explicit native wire/session/inputRevision required');

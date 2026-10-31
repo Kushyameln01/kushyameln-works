@@ -48,9 +48,16 @@ mapping remains blocked: weight/consumer mappings must be explicitly designed.
 
 `sourceVerified` defaults false and is a caller's verified receipt assertion,
 not a claim made by the wrapper. LoRA2bba907 and Text54bfead actual native
-boundaries are tested; Diffusion902 original 0.1 schedule/Euler run real Hike in
-Chromium. **f522d9a remains unavailable**, so the new F32/PARTIAL consumer edge
-is UNVERIFIED. Original 0.1 is not substituted for that new consumer.
+boundaries are tested. Exact Diffusion f522d9aeff313558c4ef83022a340af9a4c21391
+was subsequently acquired and pinned separately from core902 and latest83.
+Its actual native F32 projection, conditioning, mean128, schedule and Euler run
+Hike/ORT in Chromium. Synthetic File registration → actual source adapter →
+actual LoRA v2 inspect also passes. No real base/LoRA or full model is implied.
+The LoRA-to-consumer E1 edge is still not directly compatible: full-tensor versus
+slice-relative offsets, registry transforms and validation/commit receipt schemas
+differ. A versioned weight/transaction bridge needs explicit design and owner
+acceptance; the wrapper does not fabricate it. Latest83's separate mean64 support
+is not silently adopted for f522.
 
 `adapter.cancel({requestId,localRevision})` checks the active target before
 calling its owner. An accepted native cancel alone is not release/reuse proof.

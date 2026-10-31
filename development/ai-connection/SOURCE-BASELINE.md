@@ -88,4 +88,4 @@ G2 APIが記す `python api/build-info.py` は公開main treeにbuilder実体が
 
 ## E0〜E4追補（2026-10-31）
 
-この文書のA0時点の履歴を保持し、現在の取得状態は [E0-SOURCE-BASELINE.md](E0-SOURCE-BASELINE.md)、実装と検証は [E-RESULT.md](E-RESULT.md) を参照する。LoRA2bba907とDiffusion902は今回後半に実source取得・照合・branch共有を完了。f522新consumerだけは未取得。旧1.0読了、過去422、当初未回収を最終状態へ流用しない。
+この文書のA0時点の履歴を保持し、現在の取得状態は [E0-SOURCE-BASELINE.md](E0-SOURCE-BASELINE.md)、実装と検証は [E-RESULT.md](E-RESULT.md) を参照する。LoRA2bba907とDiffusion902は今回後半に実source取得・照合・branch共有を完了。f522も後半に原本取得済み。残るE1共同接続はoffset/registry/receipt差の版付きbridgeと実base検証。旧1.0読了、過去422、当初未回収を最終状態へ流用しない。

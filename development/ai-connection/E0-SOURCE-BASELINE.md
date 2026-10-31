@@ -1,6 +1,6 @@
 # E0 source baseline supplement
 
-版: `ai-connection-e0/3`。確認日: 2026-10-31 JST。前回A0の [SOURCE-BASELINE.md](SOURCE-BASELINE.md) と [SOURCE-RECEIPT.json](SOURCE-RECEIPT.json) は履歴として保持する。本追補は実装計画0.2-draft.1に記載された新成果の取得を扱い、前回の読了・fixture数・native sourceを新成果の取得証拠として使わない。
+版: `ai-connection-e0/4`。確認日: 2026-10-31 JST。前回A0の [SOURCE-BASELINE.md](SOURCE-BASELINE.md) と [SOURCE-RECEIPT.json](SOURCE-RECEIPT.json) は履歴として保持する。本追補は実装計画0.2-draft.1に記載された新成果の取得を扱い、前回の読了・fixture数・native sourceを新成果の取得証拠として使わない。
 
 ## 今回の正本
 
@@ -20,10 +20,11 @@ repository: `https://github.com/Kushyameln01/kushyameln-works`。
 | 管理 / M1 M2 | `21e77f292c2540975d1846e7efe320fe89625e23` | local Git object存在。32 filesを`git show`で取得し、全blobを独立再計算。全1015 blobのtree一覧も保存 | remote GitHub GETは422。local正本と公開済みを同一視しない |
 | Text/VAE | `54bfeadbd83f1fea074c503c0e05ec478aba5cfb` | GitHub recursive tree取得1227 entries、truncated=false。公開API/codec/worker/Hike/ORTとG1C-MAPPING/F=1報告を含む68 files取得・blob照合 | 新profileのモデルbundle原本は未取得。受入報告と今回の実推論は別 |
 | LoRA実装 / 配布 | 実装 `89b489c6f2595ebff8836fe90b18fc94e3ea086b` / 配布 `2bba90785292e42a0c7c8756685b0d8b128b2dcf` | Page原source text4件に加え、network追加許可付き直接git fetchで配布commit取得。完全archiveの全1020blobを独立照合、実API/exports取得。今回74/74再現test PASS | 実base共同診断/実model session/全target/全生成は未受入。元Pageの未push記載は過去状態として保持 |
-| Diffusion新PARTIAL consumer | `f522d9aeff313558c4ef83022a340af9a4c21391` | 計画本文に完全commitの報告を取得。GitHub commit/tree GETは422 | DIAGNOSTIC_API/registry/provider/sink/consumer/source/build全文未取得。報告から署名を補作しない |
+| Diffusion初回PARTIAL consumer | `f522d9aeff313558c4ef83022a340af9a4c21391` | 初回取得不能後、PR #6の共有を根拠に直接fetchして取得成功。完全archive1146 blobを独立照合。DIAGNOSTIC_API/provider/sink/consumer実source確認 | LoRA v2との意味/offset/registry/receipt差分は明示adapterが必要。実共同試験は未受入 |
+| Diffusion最新E0/E7 | `83c91e3f08fb57ab84c8e74b721f93e0420b5a2c` | PR #6 / branch codex/diffusion-e0-e7から取得。完全archive1196 blobを独立照合。39→41source build、F=1/64要素専用meanとtiled Qを別版で確認 | latestとf522は別履歴・別build。最新sourceを過去f522原本と同一視しない |
 | Diffusion core | `9023329b8d803306abcdd9342f24c01ba0df2676` | 初回connector GET422の後、network追加許可付きの完全commit直接git fetchに成功。全1085 tracked blobをgit archive展開・独立blob照合。原提案本文と既存0.1実装を取得 | 次期0.2契約は原提案、未実装/未合意を維持。f522の新PARTIAL consumerを取得した意味ではない |
 
-初回のdefault sandboxでのshell `git fetch` は`proxy:8080`接続不可で失敗し、認可済みGitHub connector読取りGETで継続した。後から利用可能と判明したnetwork追加許可付きexecにより、remote branch一覧とDiffusion branch `679a72d7f53e31bccecbee46b4e2fe559a4e0aba` を取得した。このbranchは旧公開LoRA I/Oまでで、f522/902を祖先に持たなかった。続く完全commit直接fetchで902のみ取得成功、f522はremote `not our ref`。remote LoRA branchはこの一覧に存在しなかった。proxy迂回や本番workingtreeのnative変更は行っていない。過去のconnector422は取得不能の最終判定にせず、新しい取得証拠で本追補を更新した。
+初回のdefault sandboxでのshell `git fetch` は`proxy:8080`接続不可で失敗し、認可済みGitHub connector読取りGETで継続した。後から利用可能と判明したnetwork追加許可付きexecにより、remote branch一覧とDiffusion branch `679a72d7f53e31bccecbee46b4e2fe559a4e0aba` を取得した。このbranchは旧公開LoRA I/Oまでで、f522/902を祖先に持たなかった。当初の完全commit直接fetchでは902/LoRAが取得でき、f522はremote `not our ref`だった。その後、新しく共有されたPR #6のbranch取得と、その新証拠に基づく完全commit再取得によりf522も取得成功した。remote LoRA branchは当初の一覧に存在せず、完全commitで取得後にユーザー依頼で新branchへpushした。proxy迂回や本番workingtreeのnative変更は行っていない。過去のconnector422は取得不能の最終判定にせず、新しい取得証拠で本追補を更新した。
 
 ## 取得物の配置とidentity
 
@@ -36,6 +37,8 @@ repository: `https://github.com/Kushyameln01/kushyameln-works`。
 | `2bba907/`（`lora-distribution/` alias） | 最初に取得したPage contract/registry/receipt/RESULT原source text4件の履歴 | `e0-receipts/lora-text-source-receipt.json`、`lora-page.json` |
 | `2bba907-source/` | 後から完全commit直接fetchで回収したgit archiveの全1020blob、LoRA関連68 filesのscope receipt、実API | `e0-receipts/lora2bba-source-receipt.json`、`lora2bba-tree.json` |
 | `9023329/` | 完全git archiveの1085 blob、うちDiffusion関連157 filesをscope receiptへ収録 | `e0-receipts/core902-source-receipt.json`、`core902-tree.json` |
+| `f522d9a/` | 初回PARTIAL consumerの完全archive1146 blob、scope218 files | `e0-receipts/f522d9a-source-receipt.json`、`f522d9a-tree.json` |
+| `83c91e3/` | 最新PR #6の完全archive1196 blob、scope268 files | `e0-receipts/83c91e3-source-receipt.json`、`83c91e3-tree.json` |
 
 Text/VAE68件のうち40件はpinned commitのconnector UTF-8本文を取得、28件は既存local bytesがpinned remote treeのGit blob SHAと一致した場合だけ再利用した。ORT WASMの大容量再取得は行わず、同一性を検証してcopyした。各fileのbytes、Git blob SHA、SHA-256、取得方法は機械可読receiptへ記録。保存した全68fileのGit blobを独立再計算し、remote treeと一致させた。21件の静的import/new URL参照検査で必要fileの欠落0。これは静的閉包確認であり、Worker/ORT/モデル実行の成功ではない。
 
@@ -76,11 +79,11 @@ codecはmagic`WKTSR001`/schemaVersion1。dtypeはfloat32/int32/uint8/int64。全
 | --- | --- | --- |
 | E2 Text/VAE↔管理 | 固定API/codec/native静的境界、所有権/ID/error/metadataのadapter、必要差分のtest | 実model数値推論は別scope。新媒体profileのbundle/参照未取得を隠さない |
 | E2 既存Diffusion部分operation | 前A0で取得済み0.1公開契約とsource/buildを固定した経路 | f522新consumer口へ前0.1 sourceを付替えない |
-| E1 LoRA v2↔Diffusion PARTIAL | LoRA原source/contract/registry/実exportsの取得・74/74再現fixture、管理境界の検査 | f522実API/provider/sink/consumer/buildを取得し双方を接続する。74件の合成baseと共同実baseは別scope |
+| E1 LoRA v2↔Diffusion PARTIAL | 両owner原source/contract/registry/実exportsを取得。LoRA74/74再現fixtureとDiffusion native規格差分を確認 | offset/row-slice/registry/validation/commit receiptを明示adapterで接続し共同実baseを検証。74件の合成baseを代用しない |
 | E3 queue | 明示owner/binding/revision、旧cancel/子readの失敗fixtureと管理実装 | 各nativeの実停止・再利用を別に受け入れる。未取得consumerの協調停止は未確認 |
 | E4 package | 取得済み54b codecと外側descriptor/evidence/trace/snapshotの完全性 | 実generated sample producer/decode受入を保存fixture成功から認定しない |
-| E6 64要素mean | F=1 native profile/schemaを宣言、現128要素境界を明示拒否/保留 | Diffusion所有の新profile/kernel/ABI/hash/数値参照の受入後に拡張 |
-| E7/E8 | 取得した902原提案・core参照・既存0.1実装、容量阻害と未成立条件の整理 | f522新consumer source、元workflow実行版、固定precision/実graph/数値条件と実scope受入が必要 |
+| E6 64要素mean | f522/902の128要素版と83の厳密64/128専用ABI・profileを分離して取得。83のnative source/build/参照記録を確認 | 選んだ完全source/buildとprofileを固定し、Text/VAE54b profileとの共同境界を受け入れる。大shapeへ外挿しない |
+| E7/E8 | 902原提案、f522部分consumer、83のF=1/tiled Q sourceと各buildを分離して取得 | 元workflow実行版、全graph/attention境界、固定precision/資源予算と本番scopeの受入は別途必要 |
 
 取得不足は独立Text/VAE・管理queue/packageの作業を止めない。原本受渡しを依頼する場合は、上記不足sourceと既に判明したarchive/file referenceだけを対象にし、同じ資料の読み直しや課金/設定変更を要求しない。
 
@@ -94,7 +97,7 @@ codecはmagic`WKTSR001`/schemaVersion1。dtypeはfloat32/int32/uint8/int64。全
 - capabilitiesは`modelInference:false,partialOnly:true,loraApplied:false`。schedule/Euler/noise/flow/128要素mean変換/固定Q射影/LoRA原本I/Oが既存scope。`load/predict/sample`はNOT_READY、`linearProjectionF32`とf522の新PARTIAL consumerはこの902にはない。
 - 次期契約原文は`development/diffusion-models/INTEGRATION_ADJUSTMENT.md`、版`bernini-integration/0.2-draft.1`。source_id/concat/RoPE/padding/handoffと次期envelopeの提案を実本文で取得した。第5節は`diffusion-models/0.2-draft.1`を未実装・未合意と明示する。この原提案取得だけで新operationを現0.1へdispatchしない。
 
-全git archive TARは今回取得commitからローカル生成したもので、計画に記載されたZIPのSHA-256と比較しない。原sourceと完全commitの取得によって902の「原文未取得」は解消したが、f522取得、共同LoRA試験、元精度/full graph/全生成の受入は未達のまま。
+全git archive TARは今回取得commitからローカル生成したもので、計画に記載されたZIPのSHA-256と比較しない。原sourceと完全commitの取得によって902の「原文未取得」は解消した。後続でf522原本も取得できたが、共同LoRA試験、元精度/full graph/全生成の受入は未達のまま。
 
 ## 追補: LoRA実source取得、再現検査、branch/PR
 
@@ -116,4 +119,28 @@ network追加許可付きの完全commit直接fetchで`2bba90785292e42a0c7c87566
 | `codex/lora-connection-v2` | `2bba90785292e42a0c7c8756685b0d8b128b2dcf` | [#4](https://github.com/Kushyameln01/kushyameln-works/pull/4) | [CONNECTION_V2.md](https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/CONNECTION_V2.md) |
 | `codex/diffusion-core-902` | `9023329b8d803306abcdd9342f24c01ba0df2676` | [#5](https://github.com/Kushyameln01/kushyameln-works/pull/5) | [API.md](https://github.com/Kushyameln01/kushyameln-works/blob/9023329b8d803306abcdd9342f24c01ba0df2676/docs/shared/diffusion-models/API.md) |
 
-既存remote Diffusion branch679a72dと902は共通祖先a33b311から分かれ、互いにancestorではない。tree差分はINTEGRATION_ADJUSTMENT.mdとapi-adjustment/baseline-and-capacity.jsonの追加2件だけで、native source/kernel差分は0。既存branchをforce更新せず、新branchへ原本を保持した。f522の新consumerは今回も`not our ref`で未取得のため、こちらの新branchをf522の配布成功とは扱わない。
+既存remote Diffusion branch679a72dと902は共通祖先a33b311から分かれ、互いにancestorではない。tree差分はINTEGRATION_ADJUSTMENT.mdとapi-adjustment/baseline-and-capacity.jsonの追加2件だけで、native source/kernel差分は0。既存branchをforce更新せず、新branchへ原本を保持した。この時点ではf522が`not our ref`で未取得だった。その後の取得と原本branch作成は次の追補に記録する。旧902branchをf522の配布成功とは扱わない。
+
+## 追補: f522原本と最新83の取得・契約差分
+
+PR [#6](https://github.com/Kushyameln01/kushyameln-works/pull/6)の新共有を確認し、`codex/diffusion-e0-e7` の完全head`83c91e3f08fb57ab84c8e74b721f93e0420b5a2c`を取得した。head履歴は83→77e7d6d→ed4529e→4a0c77f→679a72dで、元f522は祖先ではない。新しい共有状態を根拠に完全f522直接fetchを再実施すると成功したため、exact f522とlatest83を別root/receiptへ取得した。初回の同じ失敗を根拠なく繰り返したものではない。
+
+| source | native/build | 取得・検証scope |
+| --- | --- | --- |
+| exact `f522d9aeff313558c4ef83022a340af9a4c21391` | `diffusion-models/0.1+17ecb7d0645bc4ac28ef459cfb1a4d594e58398b6db73d5d42ac072bc1b5df70` | 全1146 blob同一性、39source receipt/aggregate独立一致。F32部分consumer、mean128のみ |
+| latest `83c91e3f08fb57ab84c8e74b721f93e0420b5a2c` | `diffusion-models/0.1+f7f23c2291886de637cb06ae001fc748d29232f7c8919683467da5eef6cfb80e` | 全1196 blob同一性、41source receipt/aggregate独立一致。F=1専用mean64/128とtiled Qの追加source/既存記録 |
+
+wire版はどちらも`diffusion-models/0.1`を維持。buildId・kernel ABI/profile/sourceは別であり付け替えない。どちらもmodelInference:false、partialOnly:true、loraApplied:false、load/predict/sample NOT_READYを維持する。
+
+実export/署名:
+
+- `diagnostic-base.mjs`: `async createBerniniDiagnosticBase({file,side,rowStart=0,hikeBytes,signal}={})`。describe()はowned registry、baseProvider.readBlock(weightId,offset,count,{modelHash,graphHash,registryHash,signal})は**selected slice内の要素**を返す。rowStart0..5104、16行、全5120列、元fullShapeは別に保持する。
+- `diagnostic-consumer.mjs`: `createDiagnosticConsumer({registry,stage,baseProvider}={})`。describe/createSink/prepareLoad/prepareBase/validate/commit/rollback/releaseCandidate/run/dispose。stage.runF32と不変baseProviderを明示入力とする。
+- `createSink().writeBlock({weightId,offset,count,shape,dtype:'F32',sha256,data})`はselected shape `[16,5120]`/`[16]`、slice内offset、完全で非重複のweight+bias両targetを要求する。graphInitializerを拒否し、owned runtime-feed-setを作る。
+- `linearProjectionF32`はnative request input`{weight:Float32Array(81920),x:Float32Array(5120),bias:Float32Array(16)}`。compact/nonshared/non-detached/finiteをhostで確認し、Workerへclone、結果transfer、Port返答clone。consumer candidateやLoRA適用を自動採用しない。
+
+LoRA v2との直接適合は未成立。LoRA v2はfullShape内element offsetとidentity transformのregistryを使い、Diffusion診断はrow-slice/selected shapeとslice内offsetを使う。Diffusion validationは`bernini-diagnostic-validation/0.1`/scope PARTIAL、commitは`{committed:true,scope:'PARTIAL',...}`で、LoRA v2 stageのcontractVersion/state/plan/coverage/ownership receiptと一致しない。版付き外側adapterで元fullShape/source mapping、両native hash、scope、現在性、copy/leaseと取消を保持して照合する。値の改名やbinding偽装で通さない。最新83の`development/ai-connection/e1/CONTRACT_DIFF.md`も同差分を原文で記録している。
+
+exact f522を元commitのまま新branch`codex/diffusion-diagnostic-f522`へno-forceでpushし、既存open PRなしを確認後、Draft [#8](https://github.com/Kushyameln01/kushyameln-works/pull/8)を作成した。固定[DIAGNOSTIC_API.md](https://github.com/Kushyameln01/kushyameln-works/blob/f522d9aeff313558c4ef83022a340af9a4c21391/docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md)を参照できる。PR #6/83とPR #5/902のbranchは変更していない。
+
+f522のtracked元モデル/LoRAファイルはない。220-byte ONNXはweightsをruntime入力にする生成Gemm graph（SHA-256 `af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0`）で、元重みを含まない。今回新取得sourceでは取得・hash・exports照合を実施し、E0取得担当は実base/実LoRA/新ブラウザ数値推論を再実行していない。管理E2の取得後の小さい実Hike/ORT・File/source/SDK境界検証はE-RESULT.mdとbrowser-f522-boundaries.jsonに別記録する。E0対象の原本取得不足は解消したが、実共同適合・実生成の未達を維持する。

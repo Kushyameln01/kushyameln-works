@@ -12,11 +12,11 @@ source closure verified. `createTextVaeAdapter` maps the actual public
 `text_encoder`/`vae` module methods. Its source remains the native implementation.
 The acquired G1C mapping documents exact sample/normalized meanings with `:v1`.
 
-LoRA source **2bba90785292e42a0c7c8756685b0d8b128b2dcf** was initially unavailable through the connector, then acquired by direct Git with network permission. Exact sdk-v2 exports/signatures and original Hike were verified. Its actual plan/prepare/stage/release boundary is exercised using the owner's synthetic nonzero-base fixture, distinct from real LoRA/base joint acceptance. Diffusion core **9023329b8d803306abcdd9342f24c01ba0df2676** was also acquired; its original0.1 schedule/Euler execute real Hike in Chromium. Diffusion **f522d9aeff313558c4ef83022a340af9a4c21391** remains unavailable; the new F32/PARTIAL consumer edge is UNVERIFIED. No signature from that new consumer is invented. LoRA's tensor positional connected-payload mapping is still blocked; native weight/consumer arguments remain explicit local arguments.
+LoRA source **2bba90785292e42a0c7c8756685b0d8b128b2dcf** was initially unavailable through the connector, then acquired by direct Git with network permission. Exact sdk-v2 exports/signatures and original Hike were verified. Its actual plan/prepare/stage/release boundary is exercised using the owner's synthetic nonzero-base fixture, distinct from real LoRA/base joint acceptance. Diffusion core **9023329b8d803306abcdd9342f24c01ba0df2676** was also acquired; its original0.1 schedule/Euler execute real Hike in Chromium. Exact Diffusion **f522d9aeff313558c4ef83022a340af9a4c21391** was later acquired and verified separately from latest83. The explicit `linearProjectionF32` wire operation is implemented here and tested with actual ORT/Hike plus synthetic arrays. File registration/source → actual LoRA v2 inspect is tested as a separate non-application scope. Its provider/consumer is not directly compatible with LoRA v2 registry/offset/validation/commit conventions; no implicit transaction adapter is invented. LoRA's tensor positional connected-payload mapping is still blocked; native weight/consumer arguments remain explicit local arguments.
 
 `sourceVerified` defaults false. Setting it is an explicit caller assertion after
 source/export receipt validation, not verification performed by this module.
-Current production claims do not set it for the missing f522 source. A fixture can
+Source acquisition and public contract interpretation are now recorded for the requested originals. A fixture can
 set it for a synthetic client only and must retain that fixture scope.
 
 ## Public calls
