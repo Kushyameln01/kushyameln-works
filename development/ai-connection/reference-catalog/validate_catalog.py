@@ -4,7 +4,17 @@ from pathlib import Path
 
 def main():
  p=Path(__file__).resolve().parent
- def read(n): return json.loads((p/n).read_text())
+ def read(n):
+  local=p/n
+  if not local.exists():
+   for root in [p,*p.parents]:
+    refdir=root/'docs/shared/ai-connection/reference'
+    for candidate in [refdir/n,refdir/'profiles'/n]:
+     if candidate.is_file():
+      local=candidate
+      break
+    if local.exists():break
+  return json.loads(local.read_text())
  cat=read('catalog.v1.json')
  profiles=[]
  for n,category in [('shape.v1.json','shape'),('numeric-execution.v1.json','numeric-execution'),('normalization.v1.json','normalization'),('loader-policy.v1.json','loader-policy')]:
