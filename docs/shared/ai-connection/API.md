@@ -396,3 +396,155 @@ diagnostic transactions and bounded cache with injected owner fixtures; producti
 native owner/resource acceptance remains a separate scope. No-LoRA/base paths
 need only their selected scopes, not LoRA conditions.
 No public deployment or model inference is performed by these new APIs.
+
+## Fixed reference catalog and norm bindings (P0/P1)
+
+`reference-loader.mjs` exports
+`await loadReferenceSet({catalogBytes,files,expectedCatalogSha256})`.
+`catalogBytes` and each `files:Map<registeredPath,Uint8Array>` value are actual
+owned bytes. The caller pins the catalog digest; six required JSON documents are
+checked against its lengths, SHA-256 digests, schemas and document versions.
+The bundled original is document `1.0-draft.1` at source commit
+`6dae9a6fac3e9ad29ea941f22211edbe4aa894ad`, catalog digest
+`14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c`.
+Optional explanatory documents are not runtime dependencies. No URL, weight or
+native module is implicitly loaded. Numerical rule text is retained as evidence,
+never evaluated. The original `runtimeIntegrated:false` is preserved.
+
+The frozen result has `catalog`, `catalogSha256`, `profileRecords`, `normRecords`,
+`ruleRecords`, `numericalRules`, `contractRefs` and `integrityReceipts`.
+Record collections are immutable Map-compatible views with `get/has/size`,
+iteration and safe `forEach`; they are deliberately not mutable native Maps.
+`isVerifiedReferenceSet(value)` accepts only successful loader results.
+
+The existing `evaluateEdge` accepts optional `referenceContext`. Omitting it
+retains the prior API. `norm-bindings.mjs` compiles finite comparison and evidence
+requirements into that same evaluator's checks, scope validation and readiness;
+it does not return a second compatibility decision. Unknown required contracts
+are `UNVERIFIED`; known conflicts are `INCOMPATIBLE`; only existing explicitly
+allowed, available versioned adapters can produce `NEEDS_ADAPTER`.
+
+`referenceContext` is an external sidecar; it does not modify native descriptors:
+
+- `referenceSet`, explicit nonempty `normIds`.
+- `profileBindings:[{recordId,side,representation}]`, with `side` producer or
+  consumer. Representations are `raw-latent`, `rgb-input-unit`, `rgb-decoder-raw`, `text-plain`, `text-ids`,
+  `normalized-mean`, or an explicitly selected execution/loader declaration.
+  Ambiguous `rgb` requires an explicit known native `meaning`; decoded raw RGB
+  is never relabelled as unit input or implicitly transformed. Record IDs stay distinct from native profile IDs and ABI versions.
+- `nativeDeclarations:{producer,consumer}` contains copied native declarations.
+  Shape uses `nativeProfileId`, `modelSha256`, and Text `tokenizerSha256`;
+  token-ID Text additionally declares exact `shape`. Mean normalization uses
+  `normalizationRuleId`, `kernelABI`, optional `normalizationState` and loaded
+  `kernelDigest`. Execution fields are the finite typed fields listed in
+  `norm-bindings.mjs`, not free-form predicates. Unsupported required profile
+  bindings remain `UNVERIFIED` (currently RGB affine, generated-sample and Text
+  RMSNorm reference bindings; standalone native support is a separate fact).
+- `adoptionSetId` selects an unchanged historical catalog entry. Alternatively
+  `candidateSet` has schema `works-candidate-set/0.1-draft.1`, `status:'candidate'`,
+  unique `candidateSetId`, fixed `sourceRef` and `modules:[{module,sourceRef,kernel?}]`.
+  Each `identityBindings` entry declares `side`, `module`, `loadedSourceRef`,
+  loaded `kernelDigest` and `byteLength` where a kernel is required. Actual owner
+  adapters still enforce their own fixed source guards before execution.
+- `numericRequirements:[{scope,recordId,gateRef,referenceRef,ownerSourceRef,kernelDigest}]`
+  selects a numeric-execution or applied normalization record. Gate has
+  `{sourceRef,sha256,gateId}`; reference has `{sourceRef,sha256}`. These are
+  predeclared owner evidence identities, not manager-selected thresholds. Owner
+  source must match the selected port and catalog source; kernel must match the
+  explicit loaded declaration. Evidence needs the usual artifact/profile,
+  both subjects, versions/builds/source commits and exact input shape/dtype plus
+  `normBinding:{catalogSha256,...the exact numeric requirement}`. A shape record
+  alone cannot stand in for a numeric execution profile. Missing only numeric
+  gate/reference/receipt retains contract compatibility, returns `not-verified`
+  for that scope and `blocked` readiness.
+- `mapping` keeps the public owner factory/version, `duplicateMappingAllowed:false`,
+  `regressionOnly:false`, native/connection registry hashes, full shape, selected
+  region and source hash. `ownerBinding` and `planBinding` are explicit public
+  owner receipts carrying those identities. Old management bridge is regression
+  only and must not be stacked on this mapping route.
+- `delegations` maps `N-TRANSACTION`, `N-ARTIFACT`, `N-EVIDENCE` to
+  `{checker,receiptRef,target,receipt?}`. Checkers are existing `queue.mjs`/`snapshot.mjs`,
+  `package.mjs`, and `owner-validation`, respectively. Evidence scope is
+  `norm:<normId>` and carries the exact `delegation` plus catalog `normBinding`.
+  Transaction compares the current explicit `managerState.target` (manager
+  session/revision, resource/native revision bindings, and request or snapshot
+  ID). Artifact compares this edge's artifact/profile; the original package
+  receipt retains native-file/manifest digests. Package delegation additionally
+  supplies the actual E4 `receipt`, equal evidence `packageReceipt`, and an
+  evidence ID equal to `receiptRef`; target labels alone cannot replace it. Evidence compares explicit
+  `evidenceTarget` and observed `inputConditions` coverage/scope/base/reference.
+  These sidecars link results of existing checks; they neither rehash packages
+  nor execute another transaction. An unresolved receipt is not a validation
+  pass merely because its desired target is repeated in JSON.
+- `legacy` requires actual-initializer/FULL/legacy-boolean. `generation` is a
+  separate dynamic admission input: native READY, FULL full-model-session and
+  accepted full-session/resource evidence are all required. No-LoRA/base edges
+  need only their explicitly selected norms. Unknown `requiredFeatures` block
+  the dependent edge; opaque optional metadata is retained.
+
+`EdgeDecision.referenceTrace` records catalog identity, applied norm IDs, profile
+and source references, integrity receipts, delegated checks, evidence references
+and the uppercase classification mapping. Existing `validation` remains
+`pass/fail/not-verified`; readiness remains `ready/blocked/failed`.
+Caller-supplied evidence is a trust boundary, as in the original evaluator:
+structural binding is not authentication of an invented owner result. Use actual
+owner/checker receipts and the source-byte guards in the supplied runners.
+
+See `development/ai-connection/reference-adoption/` for source mappings, candidate
+pins, scoped results, reproducible commands and unaccepted dependent edges.
+
+## Native LoRA diagnostic snapshot candidate (P3)
+
+`adapters/adopted-lora.mjs` retains `createAdoptedLoraAdapter` and its original
+0c/438 source guard. The separate `createCandidateAdoptedLoraAdapter` has version
+`works-candidate-adopted-lora/0.1-draft.1`, pins LoRA
+`fc2789a0f649e33f15eb13750e6a983b5c52d170` and Diffusion
+`5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3`, and requires the same actually verified
+5,051-byte LoRA kernel. Identical file hashes do not erase different commits.
+Both use the public owner factory; no offset mapping or model math is duplicated.
+
+`openStage(prepared,validation,{target,isCurrent,signal?})` exposes a finite
+transaction capability: `checkpoint`, `completion`, `commit()`, `abort(reason?)`,
+`rollback()`. The original public SDK `stage` reaches native validation, then
+waits at its public target's commit callback. `commit()` grants permission and
+awaits the original terminal promise; it does not dispatch a second stage.
+`cancelCurrent(exactManagerTarget)` calls public SDK cancellation only for that
+facade's exact currently active invocation. All SDK/source/consumer lifetimes
+remain owned by their existing owners. Unconfirmed restoration retains recovery.
+
+`adapters/snapshot-native-lora.mjs` exports
+`createSnapshotNativeLoraOwner({adapter,plan,planTarget,validation,resourceBinding,queue,requestPrefix})`.
+It returns the injected snapshot owner's `prepare/validate/commit/rollback/release`
+capabilities, plus `acceptOwnership/published` and explicit queue callbacks
+`cancelInvocation/afterInvocation/releaseInvocation`. Configure the existing
+queue's resource callbacks to call these methods, retaining the exact queue
+target. `invocationTarget(candidate)` and `inspect(candidate)` expose only the
+outer record for that exact opaque candidate. The original native candidates,
+registry pair, validation, stage envelope and ownership IDs remain intact.
+
+Prepare registers an opaque candidate before awaiting the native preparation;
+validate awaits its actual checkpoint. This lets snapshot recovery reach a
+failed native prepare's retained resources. Commit opens that same invocation's
+gate and awaits its queue/native terminal barrier. Manager publication is
+separate from SDK `CONSUMER_APPLIED`. After all commits and publication,
+`published` finalizes native rollback history and releases the prepared package.
+Before publication, failure rolls back the exact original public native target.
+Unknown native restoration is never converted into a successful rollback.
+
+The existing snapshot manager adds optional owner hooks:
+`acceptOwnership(candidate,receipt,context)` verifies a dynamically assigned copy
+owner when it is absent from the static allowed-owner list; exact target,
+state/kind and currentness checks still apply. It does not rename that owner.
+`published(candidate,context)->{published:true}` runs after publication. A failed
+hook blocks reuse with `RECOVERY_REQUIRED`; recovery retries unfinished hooks
+and retirement. Disposal retains a failed publication hook's exact candidate.
+Owners without these hooks retain the previous behavior.
+
+`createManagedDiagnosticPackage` accepts the separate exact candidate envelope
+and optional `snapshot` with its explicit published owner `snapshotTarget`. A provided snapshot must bind the actual manager
+session/revision, scope, operation/step, native local revisions, resource, SDK source and kernel build.
+E4 retains and validates its real sidecar/hash using the existing package reader.
+Native `snapshotPublished:false` stays unchanged; manager snapshot ID/hash are
+separate trace fields. Omitting `snapshot` retains the original null sidecar.
+PARTIAL, STAGED, published diagnostic snapshot and a complete package never
+authorize production generation; `generationReady` remains false.

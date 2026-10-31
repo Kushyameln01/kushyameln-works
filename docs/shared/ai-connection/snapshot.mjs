@@ -29,8 +29,17 @@ export function createSnapshotManager({managerSessionId,registry}={}){
   operationId:s.binding.operationId,localRevisionBindings:freeze(clone(s.binding.localRevisionBindings)),isCurrent:()=>current(r,s)});}
  function forget(r){history.delete(r);for(const s of r.prepared){s.candidate=undefined;s.receipt=undefined;}r.prepared=[];r.steps=[];}
  async function releaseRecord(r){
+  if(r.publicationCommitted)await publishedRecord(r);
   const errors=[];for(const s of r.prepared)if(!s.released){try{const reply=await s.owner.release(s.candidate,context(r,s));if(reply?.released!==true)throw Error('Owner release not confirmed');s.released=true;event('OWNER_RELEASED',s.binding.stepId);}catch(e){errors.push(e);}}
   if(errors.length)throw new AggregateError(errors,'Snapshot owner resources retained');forget(r);
+ }
+ async function publishedRecord(r){
+  for(const s of r.prepared)if(!s.published){if(typeof s.owner.published==='function'){const reply=await s.owner.published(s.candidate,context(r,s));if(reply?.published!==true)throw Error('Owner publication cleanup not confirmed');}s.published=true;event('OWNER_PUBLICATION_CONFIRMED',s.binding.stepId);}
+ }
+ async function finishPublication(r,previous,retrying=false){
+  try{await publishedRecord(r);}catch(error){recovery={record:r,previous,mode:'publish'};state='RECOVERY_REQUIRED';event(state);if(retrying)throw error;return;}
+  if(previous)try{await releaseRecord(previous);}catch(error){recovery={record:previous,mode:'retire'};state='RECOVERY_REQUIRED';event(state);if(retrying)throw error;return;}
+  recovery=null;state='SNAPSHOT_PUBLISHED';
  }
  async function cleanup(r){
   const errors=[];state='ROLLING_BACK';event(state);
@@ -92,19 +101,21 @@ export function createSnapshotManager({managerSessionId,registry}={}){
    state='COMMITTING';event(state);
    for(const s of r.steps){if(!current(r,s))throw fail('STALE_BINDING','Stale owner before native commit');const receipt=await s.owner.commit(s.candidate,context(r,s));
     if(!matches(receipt?.target,receiptTarget(r,s)))throw fail('RECEIPT_TARGET_MISMATCH','Owner commit receipt target differs from this snapshot/revision/resource binding');
-    if(!receipt||!['STAGED','CONSUMER_APPLIED'].includes(receipt.state)||!['independent-copy','lease'].includes(receipt.ownership?.kind)||![s.binding.resourceBinding.ownerId,...s.binding.allowedConsumerOwners??[]].includes(receipt.ownership.ownerId)||receipt.ownership.kind==='lease'&&(typeof receipt.ownership.isValid!=='function'||receipt.ownership.isValid()!==true))throw fail('OWNERSHIP_UNVERIFIED','Native state and explicit owner copy or valid lease required');
+    let ownershipAccepted=[s.binding.resourceBinding.ownerId,...s.binding.allowedConsumerOwners??[]].includes(receipt?.ownership?.ownerId);
+    if(!ownershipAccepted&&typeof s.owner.acceptOwnership==='function'){try{ownershipAccepted=await s.owner.acceptOwnership(s.candidate,receipt,context(r,s))===true;}catch{ownershipAccepted=false;}if(!current(r,s))throw fail('STALE_BINDING','Owner changed while checking native ownership');}
+    if(!receipt||!['STAGED','CONSUMER_APPLIED'].includes(receipt.state)||!['independent-copy','lease'].includes(receipt.ownership?.kind)||!ownershipAccepted||receipt.ownership.kind==='lease'&&(typeof receipt.ownership.isValid!=='function'||receipt.ownership.isValid()!==true))throw fail('OWNERSHIP_UNVERIFIED','Native state and explicit owner copy or valid lease required');
     s.committed=true;s.receipt=receipt;r.nativeStates.push({stepId:s.binding.stepId,state:receipt.state,ownership:{kind:receipt.ownership.kind,ownerId:receipt.ownership.ownerId}});event('NATIVE_COMMITTED',s.binding.stepId);
    }
    if(r.steps.some(s=>!current(r,s)||!leaseValid(s)))throw fail('STALE_BINDING','Owner binding or lease expired during commit');
-   const previousRecord=activeRecord;active=r.snapshot;activeRecord=r;r.closed=true;currentStage=null;state='SNAPSHOT_PUBLISHED';event(state);
-   if(previousRecord)try{await releaseRecord(previousRecord);}catch{recovery={record:previousRecord,mode:'retire'};state='RECOVERY_REQUIRED';event(state);}
+   const previousRecord=activeRecord;active=r.snapshot;activeRecord=r;r.publicationCommitted=true;r.closed=true;currentStage=null;state='SNAPSHOT_PUBLISHED';event(state);
+   await finishPublication(r,previousRecord);
    return {state:'SNAPSHOT_PUBLISHED',snapshot:clone(active),nativeStates:clone(r.nativeStates),cleanupRequired:!!recovery,generationReady:false};
   }catch(e){if(r&&!r.closed)try{await cleanup(r);}catch(recoveryError){throw new AggregateError([e,recoveryError],'Snapshot publication failed; owner recovery required');}throw e;}
   finally{busy=false;}
  }
  async function abortSnapshot(token){enter();try{await cleanup(validStage(token));}finally{busy=false;}}
  async function disposeResources(){const errors=[];for(const r of [...history])try{await releaseRecord(r);}catch(e){errors.push(e);}if(errors.length){recovery={mode:'dispose'};state='RECOVERY_REQUIRED';event(state);throw new AggregateError(errors,'Snapshot resources retained; retry owner release/disposal');}disposed=true;active=null;activeRecord=null;recovery=null;state='DISPOSED';event(state);}
- async function recover(){if(busy)throw fail('BUSY','Snapshot cleanup busy');if(!recovery)return;busy=true;try{const pending=recovery;if(pending.mode==='rollback')await cleanup(pending.record);else if(pending.mode==='retire'){await releaseRecord(pending.record);recovery=null;state='SNAPSHOT_PUBLISHED';event(state);}else await disposeResources();}finally{busy=false;}}
+ async function recover(){if(busy)throw fail('BUSY','Snapshot cleanup busy');if(!recovery)return;busy=true;try{const pending=recovery;if(pending.mode==='rollback')await cleanup(pending.record);else if(pending.mode==='publish'){await finishPublication(pending.record,pending.previous,true);}else if(pending.mode==='retire'){await releaseRecord(pending.record);recovery=null;state='SNAPSHOT_PUBLISHED';event(state);}else await disposeResources();}finally{busy=false;}}
  async function dispose(){enter(true);state='DISPOSING';event(state);try{if(currentStage)await cleanup(currentStage);await disposeResources();}finally{busy=false;}}
  return Object.freeze({stageSnapshot,publishSnapshot,abortSnapshot,recover,dispose,get active(){return active?clone(active):null;},inspect(){return {state,managerRevision:revision,activeSnapshotId:active?.snapshotId??null,selectionCurrent:activeCurrent(),generationReady:false,trace:clone(trace)};}});
 }

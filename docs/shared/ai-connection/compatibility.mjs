@@ -1,5 +1,6 @@
 /** Pure contract decision. No native imports, globals, dispatch or implicit conversion. */
 import { validateArtifactDescriptor, validatePortContract } from './descriptor.mjs';
+import { compileNormBindings } from './norm-bindings.mjs';
 
 const array = v => Array.isArray(v) ? v : [];
 const CONTRACT = 'works-module-contract/1.0-draft.1';
@@ -27,7 +28,7 @@ const finiteInt = n => Number.isSafeInteger(n) && n>=0;
  * Checks use JSON Pointer field paths relative to artifact, or /producerPort etc.
  * See README for evidence binding and the finite adapter-rule descriptor.
  */
-export function evaluateEdge({producerPort,consumerPort,artifact,adapters,registry,implementationState,requiredScopes,evidence,resourceState,activeBindings}={}) {
+export function evaluateEdge({producerPort,consumerPort,artifact,adapters,registry,implementationState,requiredScopes,evidence,resourceState,activeBindings,referenceContext}={}) {
   const p=producerPort??{},c=consumerPort??{},a=artifact??{};
   const refs=[CONTRACT];
   for(const port of [p,c]) {
@@ -36,11 +37,11 @@ export function evaluateEdge({producerPort,consumerPort,artifact,adapters,regist
   }
   const contractRefs=[...new Set(refs)];
   const checks=[];
-  function check(criterion,fieldPath,expected,observed,{unknown=false,code='CONTRACT_MISMATCH',owner=c.owner??'consumer-owner',message,adaptable=false}={}) {
+  function check(criterion,fieldPath,expected,observed,{unknown=false,code='CONTRACT_MISMATCH',owner=c.owner??'consumer-owner',message,adaptable=false,normId}={}) {
     const outcome=unknown?'unknown':equal(expected,observed)?'match':'mismatch';
     checks.push({criterion,fieldPath,expected:expected??null,observed:observed??null,outcome,
       code:outcome==='unknown'&&code==='CONTRACT_MISMATCH'?'MISSING_DECLARATION':code,reason:message??`${criterion}: ${outcome}`,
-      owner,contractRefs:[...contractRefs],evidenceRefs:[],adaptable});
+      owner,contractRefs:[...contractRefs],evidenceRefs:[],adaptable,...(normId?{normId}:{})});
   }
   for(const [side,port] of [['producerPort',p],['consumerPort',c]]) {
     const portResult=validatePortContract(port,registry);
@@ -109,6 +110,11 @@ export function evaluateEdge({producerPort,consumerPort,artifact,adapters,regist
       }
     }
   }
+  const norm=referenceContext===undefined?null:compileNormBindings(referenceContext,{producerPort:p,consumerPort:c,artifact:a});
+  if(norm){
+    if(norm.trace.catalogSha256)contractRefs.push(norm.trace.catalogSha256,`works-reference-catalog/${norm.trace.documentVersion}`);
+    for(const spec of norm.checks)check(spec.criterion,spec.fieldPath,spec.expected,spec.observed,spec);
+  }
   const mismatches=checks.filter(x=>x.outcome==='mismatch');
   const unknowns=checks.filter(x=>x.outcome==='unknown');
   // Only explicitly permitted finite, exact transformations can be proposed.
@@ -118,12 +124,13 @@ export function evaluateEdge({producerPort,consumerPort,artifact,adapters,regist
     mismatches.length>0 && mismatches.every(m=>m.adaptable&&ad.rules.some(rule=>rule?.fieldPath===m.fieldPath && equal(rule.from,pointer(a,m.fieldPath)) && equal(rule.to,pointer(c,m.fieldPath)) && typeof rule.reason==='string')));
   const adapter=candidates[0];
   const compatibility=adapter&&!unknowns.length?'NEEDS_ADAPTER':mismatches.length?'INCOMPATIBLE':unknowns.length?'UNVERIFIED':'COMPATIBLE';
-  const reasons=checks.filter(x=>x.outcome!=='match').map(x=>({code:x.code,fieldPath:x.fieldPath,message:x.reason,owner:x.owner,contractRefs:x.contractRefs}));
+  const reasons=checks.filter(x=>x.outcome!=='match').map(x=>({code:x.code,fieldPath:x.fieldPath,message:x.reason,owner:x.owner,contractRefs:x.contractRefs,...(x.normId?{normId:x.normId}:{})}));
   if(adapter)reasons.push({code:'EXPLICIT_ADAPTER_REQUIRED',fieldPath:'/adapters',message:`Insert and re-evaluate ${adapter.adapterId}@${adapter.version}; no transformation executed`,owner:adapter.owner,contractRefs});
-  const scopes=Array.isArray(requiredScopes)?requiredScopes:[];
+  const scopes=[...new Set([...(Array.isArray(requiredScopes)?requiredScopes:[]),...(norm?.scopes??[]).map(x=>x.scope)])];
   const evidenceList=Array.isArray(evidence)?evidence:[];
   const scopeResults=scopes.map(scope=>{
-    const bound=evidenceList.filter(e=>e?.scope===scope && e.artifactRef===a.artifactId && e.profileRef===a.profileRef &&
+    const requirements=(norm?.scopes??[]).filter(x=>x.scope===scope);
+    const bound=evidenceList.filter(e=>requirements.every(r=>r.available&&r.constraints.every(([path,expected])=>present(expected)&&equal(pointer(e,path),expected)))&&e?.scope===scope && e.artifactRef===a.artifactId && e.profileRef===a.profileRef &&
       [p.bindingRef,c.bindingRef].every(v=>array(e.subjectRefs).includes(v)) &&
       [p.nativeAPI?.version,p.nativeAPI?.build,c.nativeAPI?.version,c.nativeAPI?.build,p.sourceRef?.commit??p.sourceRef?.sha256,c.sourceRef?.commit??c.sourceRef?.sha256].every(v=>typeof v==='string'&&array(e.contractRefs).includes(v)) &&
       equal(e.inputConditions?.shape,a.tensor?.shape)&&e.inputConditions?.dtype===a.tensor?.dtype && e.inputConditions?.coverage && e.inputConditions?.environment);
@@ -133,6 +140,7 @@ export function evaluateEdge({producerPort,consumerPort,artifact,adapters,regist
   if(compatibility!=='COMPATIBLE')blocked.push(`CONTRACT_${compatibility}`);
   if(!Array.isArray(requiredScopes)||!Array.isArray(evidence))blocked.push('EVIDENCE_REQUIREMENTS_NOT_EXPLICIT');
   for(const s of scopeResults)if(s.result!=='pass')blocked.push(`SCOPE_${s.result}:${s.scope}`);
+  for(const s of norm?.readiness??[])if(!equal(s.expected,s.observed))blocked.push(`${s.normId}:${s.fieldPath}`);
   for(const side of ['producer','consumer']) {
     const s=implementationState?.[side];
     if(s?.state!=='implemented')blocked.push(`IMPLEMENTATION_NOT_READY:${side}`);
@@ -155,5 +163,6 @@ export function evaluateEdge({producerPort,consumerPort,artifact,adapters,regist
     adapterSelections:adapter?[{adapterId:adapter.adapterId,version:adapter.version,sourceRef:adapter.sourceRef,owner:adapter.owner,rules:adapter.rules,profiles:adapter.profiles,evidenceRefs:adapter.evidenceRefs??[]}]:[],
     roles:implementationState??null,implementationState:implementationState??null,validation:scopeResults,
     readiness:{state:failed?'failed':blocked.length?'blocked':'ready',reasons:blocked},
-    unresolvedRefs:unknowns.map(x=>`${x.owner}:${x.fieldPath}`)};
+    unresolvedRefs:unknowns.map(x=>`${x.owner}:${x.fieldPath}`),
+    ...(norm?{referenceTrace:{...norm.trace,evidenceRefs:scopeResults.flatMap(x=>x.evidenceRefs),validation:scopeResults.map(x=>({...x,result:norm.trace.classificationMapping.validation[x.result]})),readiness:norm.trace.classificationMapping.readiness[failed?'failed':blocked.length?'blocked':'ready']}}:{})};
 }

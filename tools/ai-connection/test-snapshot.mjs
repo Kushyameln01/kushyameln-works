@@ -16,6 +16,21 @@ function fixture(count=1){
  }}))};return {profile,bindings,log,native};
 }
 const current=b=>Object.fromEntries(b.steps.map(s=>[s.stepId,{localRevisionBindings:s.localRevisionBindings,resourceBinding:s.resourceBinding}]));
+test('explicit candidate-bound dynamic ownership verifier preserves the actual native owner',async()=>{
+ const f=fixture(),m=createSnapshotManager({managerSessionId:'manager'}),s=f.bindings.steps[0],commit=s.owner.commit;let verified=0;
+ s.owner.commit=async(...args)=>({...await commit(...args),ownership:{kind:'independent-copy',ownerId:'native:unpredictable-copy'}});
+ s.owner.acceptOwnership=async(candidate,receipt,c)=>{verified++;assert.equal(candidate.step,'s0');assert.deepEqual(receipt.target,c.target);return receipt.ownership.ownerId==='native:unpredictable-copy';};
+ const r=await m.publishSnapshot(await m.stageSnapshot(f.profile,f.bindings),{currentBindings:current(f.bindings)});
+ assert.equal(verified,1);assert.equal(r.nativeStates[0].ownership.ownerId,'native:unpredictable-copy');await m.dispose();
+});
+test('post-publication owner cleanup failure retains its exact candidate until recovery',async()=>{
+ const f=fixture(),m=createSnapshotManager({managerSessionId:'manager'});let ready=false,calls=0;
+ f.bindings.steps[0].owner.published=async(candidate,c)=>{calls++;assert.equal(candidate.step,'s0');assert.equal(c.snapshotId,'snapshot:1');if(!ready)throw Error('candidate history retained');return {published:true};};
+ const r=await m.publishSnapshot(await m.stageSnapshot(f.profile,f.bindings),{currentBindings:current(f.bindings)});
+ assert.equal(r.state,'SNAPSHOT_PUBLISHED');assert.equal(r.cleanupRequired,true);assert.equal(m.inspect().selectionCurrent,false);assert.equal(m.inspect().state,'RECOVERY_REQUIRED');
+ await assert.rejects(m.recover(),/candidate history retained/);assert.equal(m.inspect().selectionCurrent,false);
+ ready=true;await m.recover();assert.equal(calls,3);assert.equal(m.inspect().selectionCurrent,true);await m.dispose();
+});
 test('diagnostic stage and manager publication remain distinct from native STAGED and generation',async()=>{
  const f=fixture(),m=createSnapshotManager({managerSessionId:'manager',registry:{schemas:[],roles:[]}});
  const staged=await m.stageSnapshot(f.profile,f.bindings);assert.equal(m.inspect().state,'STAGED');assert.equal(m.active,null);assert.equal(f.native.size,0);
@@ -107,4 +122,11 @@ test('old validation or commit receipts cannot attest a different revision or re
 });
 test('snapshot IDs cannot be reused in a newer manager selection',async()=>{
  const f=fixture(),m=createSnapshotManager({managerSessionId:'manager'});await m.publishSnapshot(await m.stageSnapshot(f.profile,f.bindings),{currentBindings:current(f.bindings)});await assert.rejects(m.stageSnapshot(f.profile,{...f.bindings,managerRevision:2}),/reused/i);assert.equal(m.inspect().selectionCurrent,false);
+});
+test('disposal cannot forget a published candidate while its publication cleanup is retained',async()=>{
+ const f=fixture(),m=createSnapshotManager({managerSessionId:'manager'});let ready=false,calls=0;
+ f.bindings.steps[0].owner.published=async()=>{calls++;if(!ready)throw Error('finalization retained');return {published:true};};
+ await m.publishSnapshot(await m.stageSnapshot(f.profile,f.bindings),{currentBindings:current(f.bindings)});
+ await assert.rejects(m.dispose(),/retained/);assert.equal(f.log.includes('release:s0'),false);assert.equal(m.inspect().state,'RECOVERY_REQUIRED');
+ ready=true;await m.recover();assert.equal(calls,3);assert.equal(m.inspect().state,'DISPOSED');assert.equal(f.log.filter(x=>x==='release:s0').length,1);
 });

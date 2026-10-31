@@ -14,10 +14,12 @@ const here=path.dirname(fileURLToPath(import.meta.url)),managementRoot=path.reso
 const repository='https://github.com/Kushyameln01/kushyameln-works';
 const fixtureScope='synthetic-manager-control-fixture';
 const required=['lora-root','lora-commit','diffusion-root','diffusion-commit','codec-root','codec-commit','inputs','out'];
-const usage='node tools/ai-connection/run-managed-local-files.mjs --lora-root <fixed LoRA archive> --lora-commit <40hex> --diffusion-root <fixed Diffusion archive> --diffusion-commit <40hex> --codec-root <fixed Text/VAE archive> --codec-commit <40hex> --inputs <private local-File selection JSON> --out <new private evidence folder>';
+const usage='node tools/ai-connection/run-managed-local-files.mjs --lora-root <fixed LoRA archive> --lora-commit <40hex> --diffusion-root <fixed Diffusion archive> --diffusion-commit <40hex> --codec-root <fixed Text/VAE archive> --codec-commit <40hex> --inputs <private local-File selection JSON> --out <new private evidence folder> [--scenario legacy|snapshot-candidate]';
 const argv=process.argv.slice(2),args={};
-if(argv.length===1&&argv[0]==='--help'){console.log(usage);process.exit(0);}
-for(let i=0;i<argv.length;i+=2){const k=argv[i]?.slice(2);if(!argv[i]?.startsWith('--')||!required.includes(k))throw Error('Unknown argument: '+argv[i]);if(!argv[i+1]||argv[i+1].startsWith('--')||Object.hasOwn(args,k))throw Error('One explicit value required for --'+k);args[k]=argv[i+1];}
+if(argv.length===1&&argv[0]==='--help'){fs.writeSync(1,usage+'\n');process.exit(0);}
+for(let i=0;i<argv.length;i+=2){const k=argv[i]?.slice(2);if(!argv[i]?.startsWith('--')||![...required,'scenario'].includes(k))throw Error('Unknown argument: '+argv[i]);if(!argv[i+1]||argv[i+1].startsWith('--')||Object.hasOwn(args,k))throw Error('One explicit value required for --'+k);args[k]=argv[i+1];}
+const scenario=args.scenario??'legacy';if(!['legacy','snapshot-candidate'].includes(scenario))throw Error('Unknown scenario: '+scenario);
+const scenarioModule=scenario==='legacy'?'managed-local-file-browser-cases.mjs':'managed-lora-snapshot-browser-cases.mjs',successStatus=scenario==='legacy'?'PASS_MANAGED_LOCAL_FILE_ROUTE':'PASS_MANAGED_SNAPSHOT_CANDIDATE_ROUTE';
 for(const k of required)if(!args[k])throw Error('Missing --'+k+'\n'+usage);
 if(!['lora-commit','diffusion-commit','codec-commit'].every(k=>/^[a-f0-9]{40}$/.test(args[k])))throw Error('Complete lowercase source commits required');
 const sha=b=>createHash('sha256').update(b).digest('hex'),hex=v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v);
@@ -47,7 +49,8 @@ const sourcePins={},pinPaths={
 for(const [name,[owner,repoPath]]of Object.entries(pinPaths)){const {record}=await pinnedSource(owner,repoPath);sourcePins[name]={repository,commit:record.commit,path:record.path,sha256:record.sha256,...(name==='kernel'?{byteLength:record.byteLength}:{})};}
 if(sourcePins.kernel.byteLength!==5051||sourcePins.kernel.sha256!=='3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24')throw Error('Corrected owner LoRA kernel required');
 await pinnedSource('management','tools/ai-connection/run-managed-local-files.mjs');
-await pinnedSource('management','tools/ai-connection/managed-local-file-browser-cases.mjs');
+await pinnedSource('management','tools/ai-connection/'+scenarioModule);
+if(scenario==='snapshot-candidate')for(const repoPath of ['docs/shared/ai-connection/adapters/snapshot-native-lora.mjs','docs/shared/ai-connection/snapshot.mjs','docs/shared/ai-connection/queue.mjs'])await pinnedSource('management',repoPath);
 const controlOracle=await pinnedSource('management','tools/ai-connection/managed-lora-control-reference.py');
 const ownerOracle=await pinnedSource('lora','tools/ai-connection/lora-reference.py');
 const inventory=await pinnedSource('lora','development/lora/contracts/original-inventory.json');
@@ -88,7 +91,7 @@ for(const [name,{bytes}]of sourceCopies)await fsp.writeFile(path.join(verifiedDi
 await fsp.writeFile(path.join(out,'inputs.json'),inputsBytes,{mode:0o600,flag:'wx'});
 
 let browser,server,runError,result={status:'FAIL'},pageErrors=[];
-const provenance={schemaVersion:'management-local-file-result/1',observedUTC:new Date().toISOString(),repository,managementCommit,loraCommit:commits.lora,diffusionCommit:commits.diffusion,codecCommit:commits.codec,sourcePins,fixtureScope,baseSource:'synthetic manager-control fixture; not a real base-model File',sourceInputs:'only explicitly selected real local positive/negative Files; no remote Drive loading',managementRealE1Executed:false,modelInference:false,generationReady:false,snapshotPublished:false,inputSelection:{byteLength:inputsBytes.length,sha256:sha(inputsBytes),before:fileState(inputsStat)},controlOracleSource:controlOracle.record,ownerOracleSource:ownerOracle.record,inventorySource:inventory.record};
+const provenance={schemaVersion:'management-local-file-result/1',observedUTC:new Date().toISOString(),repository,managementCommit,loraCommit:commits.lora,diffusionCommit:commits.diffusion,codecCommit:commits.codec,sourcePins,scenario,fixtureScope,baseSource:'synthetic manager-control fixture; not a real base-model File',sourceInputs:'only explicitly selected real local positive/negative Files; no remote Drive loading',managementRealE1Executed:false,modelInference:false,generationReady:false,snapshotPublished:false,inputSelection:{byteLength:inputsBytes.length,sha256:sha(inputsBytes),before:fileState(inputsStat)},controlOracleSource:controlOracle.record,ownerOracleSource:ownerOracle.record,inventorySource:inventory.record};
 try{
  console.log(JSON.stringify({stage:'synthetic-manager-control-reference',positive:inputs.positive.fileName,negativeCount:negativePaths.length,fixtureScope}));
  const oracleOutput=execFileSync(process.env.LORA_PYTHON??'python',[path.join(verifiedDir,'managed-lora-control-reference.py'),'--owner-reference',path.join(verifiedDir,'lora-reference.py'),'--input',positivePath,'--out',refDir],{cwd:out,env:{...process.env,OPENBLAS_NUM_THREADS:'1',OMP_NUM_THREADS:'1'},maxBuffer:2*1024*1024});
@@ -134,7 +137,7 @@ try{
    else if(pathname.startsWith('/diffusion/')){owner='diffusion';repoPath='docs/'+pathname.slice('/diffusion/'.length);}
    else if(pathname.startsWith('/codec/')){owner='codec';repoPath='docs/'+pathname.slice('/codec/'.length);}
    else if(pathname.startsWith('/lora-tools/')){owner='lora';repoPath='tools/'+pathname.slice('/lora-tools/'.length);}
-   else if(pathname==='/runner/managed-local-file-browser-cases.mjs'){owner='management';repoPath='tools/ai-connection/managed-local-file-browser-cases.mjs';}
+   else if(pathname==='/runner/'+scenarioModule){owner='management';repoPath='tools/ai-connection/'+scenarioModule;}
    else{res.writeHead(404).end();return;}
    const {bytes,record}=await pinnedSource(owner,repoPath);if(!record.httpPaths.includes(pathname))record.httpPaths.push(pathname);
    res.setHeader('Content-Type',repoPath.endsWith('.mjs')||repoPath.endsWith('.js')?'text/javascript':repoPath.endsWith('.wasm')?'application/wasm':repoPath.endsWith('.json')?'application/json':'application/octet-stream');res.end(bytes);
@@ -147,11 +150,11 @@ try{
  page.on('pageerror',e=>pageErrors.push(String(e)));page.on('console',m=>{if(/^(MANAGED(?:-FILE)?|LOCAL) /.test(m.text()))console.log(m.text());});
  await page.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort('blockedbyclient'));
  await page.goto(origin+'/joint');await page.locator('#positive').setInputFiles(positivePath);if(negativePaths.length)await page.locator('#negatives').setInputFiles(negativePaths);
- result=await page.evaluate(async({inputs,reference,sourcePins})=>{
-  try{const {runManagedLocalFileCases}=await import('/runner/managed-local-file-browser-cases.mjs');return await runManagedLocalFileCases({positiveFile:document.querySelector('#positive').files[0],negativeFiles:[...document.querySelector('#negatives').files],inputs,reference,sourcePins});}
+ result=await page.evaluate(async({inputs,reference,sourcePins,scenarioModule})=>{
+  try{const cases=await import('/runner/'+scenarioModule);const run=cases.runManagedLocalFileCases??cases.runManagedLoraSnapshotCases;return await run({positiveFile:document.querySelector('#positive').files[0],negativeFiles:[...document.querySelector('#negatives').files],inputs,reference,sourcePins});}
   catch(error){return {status:'FAIL',error:String(error.stack||error),cause:String(error.cause??'')};}
- },{inputs,reference,sourcePins});
- if(result.status==='PASS_MANAGED_LOCAL_FILE_ROUTE'){
+ },{inputs,reference,sourcePins,scenarioModule});
+ if(result.status===successStatus){
   const observed=result.localInput?.sourceSha256;
   if(observed!==inputs.positive.expectedSha256||result.localInput?.registration?.fullFileSHA256!==observed)throw Error('Successful local route did not retain actual positive native full-hash evidence');
   inputRecords[0].sha256=observed;inputRecords[0].fullHashScope='actual browser native registration/source.hash verified the explicitly selected local File';
@@ -167,9 +170,9 @@ finally{
  if(server)try{await new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve()));}catch(error){runError??=error;}
  let originalsUnchanged=true;for(const rec of inputRecords){try{rec.after=fileState(await fsp.stat(rec.path,{bigint:true}));rec.unchanged=sameState(rec.before,rec.after);}catch(error){rec.unchanged=false;rec.afterError=String(error);}if(!rec.unchanged)originalsUnchanged=false;}
  try{provenance.inputSelection.after=fileState(await fsp.stat(inputsPath,{bigint:true}));provenance.inputSelection.unchanged=sameState(provenance.inputSelection.before,provenance.inputSelection.after)&&sha(await fsp.readFile(inputsPath))===provenance.inputSelection.sha256;}catch(error){provenance.inputSelection.unchanged=false;provenance.inputSelection.afterError=String(error);}
- const final={...result,...provenance,pageErrors,serviceErrors,inputFiles:inputRecords,sourceFiles:[...sourceRecords.values()],referenceFiles:[...referenceRecords.values()].map(({bytes,...record})=>record),artifacts:[...artifactRecords.values()],packageFiles:[...packageRecords.values()],originalsUnchangedAcrossTrial:originalsUnchanged};
+ const final={...result,...provenance,snapshotPublished:scenario==='snapshot-candidate'?result.snapshotPublished===true:provenance.snapshotPublished,pageErrors,serviceErrors,inputFiles:inputRecords,sourceFiles:[...sourceRecords.values()],referenceFiles:[...referenceRecords.values()].map(({bytes,...record})=>record),artifacts:[...artifactRecords.values()],packageFiles:[...packageRecords.values()],originalsUnchangedAcrossTrial:originalsUnchanged};
  if(!originalsUnchanged||!provenance.inputSelection.unchanged||pageErrors.length||serviceErrors.length||runError){final.status='FAIL';final.transportError=String(runError??(!originalsUnchanged?'Selected File changed during trial':!provenance.inputSelection.unchanged?'Input selection changed during trial':pageErrors[0]??serviceErrors[0]));}
- await fsp.writeFile(path.join(out,'source-receipt.json'),JSON.stringify({schemaVersion:'management-local-file-source-receipt/1',fixtureScope,sourcePins,sourceFiles:final.sourceFiles,controlOracle:controlOracle.record,ownerOracle:ownerOracle.record},null,2)+'\n',{mode:0o600,flag:'wx'});
+ await fsp.writeFile(path.join(out,'source-receipt.json'),JSON.stringify({schemaVersion:'management-local-file-source-receipt/1',fixtureScope,scenario,sourcePins,sourceFiles:final.sourceFiles,controlOracle:controlOracle.record,ownerOracle:ownerOracle.record},null,2)+'\n',{mode:0o600,flag:'wx'});
  await fsp.writeFile(path.join(out,'result.json'),JSON.stringify(final,null,2)+'\n',{mode:0o600,flag:'wx'});
- console.log(JSON.stringify({status:final.status,fixtureScope,result:path.join(out,'result.json'),error:final.error??final.transportError}));if(final.status!=='PASS_MANAGED_LOCAL_FILE_ROUTE')process.exitCode=1;
+ console.log(JSON.stringify({status:final.status,fixtureScope,result:path.join(out,'result.json'),error:final.error??final.transportError}));if(final.status!==successStatus)process.exitCode=1;
 }
