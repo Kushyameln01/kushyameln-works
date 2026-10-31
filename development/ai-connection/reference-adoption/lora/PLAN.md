@@ -1,5 +1,7 @@
 # LoRA P0 / P3作業計画と到達点
 
+これは管理285での前回作業記録。P0/P1完了後の継続計画は [P3-PLAN.md](P3-PLAN.md)、現在の受領・検証結果は [P3-RESULT.md](P3-RESULT.md) を参照する。
+
 目的は固定reference catalog `1.0-draft.1` への宣言・証拠対応と、管理からcanonical owner adapterへの変更境界の確認。入力は利用者が選ぶローカルsafetensorsであり、過去4原本の取得を必須条件にしない。
 
 ## 作業前に確認した資料

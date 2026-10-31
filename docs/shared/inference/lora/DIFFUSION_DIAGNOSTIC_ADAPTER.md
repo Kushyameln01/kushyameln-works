@@ -52,6 +52,12 @@ const result = await adapter.run({x});
 
 入力は選択されたユーザーのローカルFile。下記の過去4原本を使う共同runnerは歴史的な実モデル診断の再現手順であり、一般の登録・適用に4原本すべてを要求するAPI制約ではない。今回の管理経路fixtureは1 Fileで実行し、実base合格とは別の証拠にする。次期規範runtimeと実native診断snapshotの受入状況も確認結果で区別する。
 
+### 管理P1と実診断snapshotの後続検証
+
+管理 `edda43f9ea69c5b3ab1af3c6eb82295f2912887c` の候補入口は `createCandidateAdoptedLoraAdapter` と `createSnapshotNativeLoraOwner`。候補fc/5fを固定し、旧 `createAdoptedLoraAdapter` の採用0c/438を上書きしない。native validation checkpointで管理のcommit許可を待ち、公開後にowner finalize・prepared releaseを行う。管理のSDK外側snapshot targetと、native phase request・SDK local revision・consumer epochは別に保持する。
+
+[P3共同結果](../../../../development/ai-connection/reference-adoption/lora/P3-RESULT.md)では、light HIGHのローカル原本1件と実base断片のPARTIAL診断を、既存P1 evaluatorの明示phase hookで検証した。事前の契約、実checkpointの数値、公開後の取引receiptを順に結び、存在しない将来のreceiptをsnapshot edgeへ入力しない。receiverのnorm組立ては試験用sidecarで、native SDKのAPI追加ではない。全target・他pair/sideの新規管理受入・全model session・生成への寄与・leaseをこの結果へ含めない。
+
 ## baseへの復帰
 
 ```javascript

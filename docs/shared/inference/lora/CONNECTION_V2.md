@@ -1,5 +1,7 @@
 # LoRA connection v2 — A0/L1とE0/E1
 
+管理P0/P1完了後の [P3共同結果](../../../../development/ai-connection/reference-adoption/lora/P3-RESULT.md) では、light HIGHのローカル原本1件・実base断片・既存管理規範を、実native診断snapshotへ接続した。native契約・SDK v1の制約は維持する。選択edgeのPARTIAL受入、他pair/side、全target・全model session・生成受付を区別する。
+
 Native contract: `lora-connection/2.0-draft.1`。既存の [SDK v1](README.md) と別の入口を追加する契約である。総合接続仕様書 `1.1-draft.1`（Page `page_65b303c9bc708191a7e48c78b51c35a7`、取得時sequence 1）のLoRA担当範囲を扱う。
 
 native SDK v2と既存SDK v1の契約は維持している。A0/L1の検証範囲はfixture、Hike重み計算、test consumerであり、その結果を実base共同試験へ読み替えない。E0ではDiffusionの実registry・provider・sink・consumerをGitHubから取得して照合し、E1用の外側adapterを追加した。

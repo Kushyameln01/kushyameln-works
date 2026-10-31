@@ -728,43 +728,200 @@
         "lifecycle before/after raw output vectors other than recorded base restore not all serialized",
         "direct quarantine cleanup has no separately serialized native release receipt"
       ]
+    },
+    {
+      "evidenceId": "RECEIVER-P3-LIGHT-HIGH-REAL-BASE-25E5",
+      "origin": "LoRA receiver using actual managementP1/native queue/snapshot",
+      "reuseStatus": "NEW_CHANGED_BOUNDARY_EXECUTION_WITH_REUSED_INDEPENDENT_REFERENCES",
+      "validationAtOriginalScope": "PASS",
+      "receiverSourceCommit": "25e5b56feeb070594110bb292d9de21e4e234f0a",
+      "fixedCommits": {
+        "manager": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+        "lora": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+        "diffusion": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3"
+      },
+      "coverage": "PARTIAL",
+      "scope": "selected lightHIGH Q16 diagnostic snapshot with receiver P1 phase hooks",
+      "selection": {
+        "pairId": "light",
+        "side": "HIGH"
+      },
+      "baseKind": "actual-original-bounded-fragments",
+      "fullBaseFileHashVerifiedNow": false,
+      "localOriginalCount": 1,
+      "historicalFourOriginalsRequired": false,
+      "publishedCases": 6,
+      "publishedWeightValues": 491520,
+      "publishedBiasValues": 96,
+      "publishedOutputValues": 96,
+      "cancelledCandidateNotPublished": {
+        "weightValues": 81920,
+        "biasValues": 16,
+        "rawCandidateOutputValuesCounted": 0
+      },
+      "maxWeightAbsoluteError": 3.72290287486976e-09,
+      "maxBiasAbsoluteError": 0,
+      "maxOutputAbsoluteError": 7.450580596923828e-09,
+      "snapshotNormRuntimeVerifiedForSelectedEdge": true,
+      "allPairSidesNewlyAccepted": false,
+      "completeAdapter": false,
+      "generationReady": false,
+      "ownership": "independent-copy",
+      "leaseNewlyAccepted": false,
+      "sourceBlobsVerified": 49,
+      "selectedArtifactsVerified": 26,
+      "newE4PackageAccepted": false,
+      "evidenceFiles": [
+        {
+          "path": "evidence/p3/receipt.json",
+          "byteLength": 75821,
+          "sha256": "919d1fed96bcee3aa9df3338de235ae51b4003c072003cc9642c3fde033dd935"
+        },
+        {
+          "path": "evidence/p3/run-result.json.gz",
+          "byteLength": 197667,
+          "sha256": "37a229469a21c8d78057d5a6202e59920a4c10e081019bcc401485481758f6bd"
+        },
+        {
+          "path": "evidence/p3/selected-scope.json",
+          "byteLength": 253143,
+          "sha256": "1af75e98c507e25e4e306503c7f851a882e33751ec000dd589d3b75add1414f7"
+        },
+        {
+          "path": "evidence/p3/independent-readback.json",
+          "byteLength": 79751,
+          "sha256": "bd6f137e04ed5ad6d83d6e03776a441a72e368efd2e6ee1411290d17eb46b846"
+        },
+        {
+          "path": "evidence/p3/independent-review.md",
+          "byteLength": 11125,
+          "sha256": "4a64428182e9efdab4387c9d1c8a889b6d5dba5d6b3e29d78e40f24bb7f0549c"
+        },
+        {
+          "path": "evidence/p3/receiver-readback.json",
+          "byteLength": 2432,
+          "sha256": "a4a45adda948e15f3d7c6d971d372b991149ef18e3c667c8bd1865ee2b03fb46"
+        },
+        {
+          "path": "evidence/p3/p1-receiver-receipt.json",
+          "byteLength": 3269,
+          "sha256": "89692d2f73532fa8b7f7aa9e35b491fb9d0f747b6fab72dcee2bff2fe617d61a"
+        },
+        {
+          "path": "evidence/p3/norm-edge-fixtures.log",
+          "byteLength": 613,
+          "sha256": "e33bccbcd24e19e0da21d0d10502f040b4b42ed96e3fdfdbdf14aa9a8a0f76e8"
+        }
+      ],
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "25e5b56feeb070594110bb292d9de21e4e234f0a",
+          "path": "tools/ai-connection/p3-norm-edge.mjs",
+          "url": "https://github.com/Kushyameln01/kushyameln-works/blob/25e5b56feeb070594110bb292d9de21e4e234f0a/tools/ai-connection/p3-norm-edge.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "25e5b56feeb070594110bb292d9de21e4e234f0a",
+          "path": "tools/ai-connection/test-lora-managed-snapshot.mjs",
+          "url": "https://github.com/Kushyameln01/kushyameln-works/blob/25e5b56feeb070594110bb292d9de21e4e234f0a/tools/ai-connection/test-lora-managed-snapshot.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "25e5b56feeb070594110bb292d9de21e4e234f0a",
+          "path": "tools/ai-connection/managed-snapshot-browser-cases.mjs",
+          "url": "https://github.com/Kushyameln01/kushyameln-works/blob/25e5b56feeb070594110bb292d9de21e4e234f0a/tools/ai-connection/managed-snapshot-browser-cases.mjs"
+        }
+      ],
+      "limits": [
+        "one selected lightHIGH edge only",
+        "actual bounded prior-owner fragments; not newly verified whole-base File",
+        "explicit receiver phase hooks, not implicit snapshot steps.edges adoption",
+        "no new E4 selected-weight package, lease, full target/model or generation acceptance",
+        "consumer/SDK fields remain native; source aliases/external selected-consumer revision explicitly outside"
+      ]
+    },
+    {
+      "evidenceId": "MANAGER-EDDA-P1-P3-REUSED-FIXTURES",
+      "origin": "management owner",
+      "reuseStatus": "FIXED_EXISTING_SOURCE_EVIDENCE_NOT_RERUN",
+      "evidenceFile": {
+        "path": "evidence/p3/reused-manager-evidence.json",
+        "byteLength": 2394,
+        "sha256": "76ed85159abc2a58144e7cea21d945418ec49e0395c0ddca4b9d69a248c74cad"
+      },
+      "scope": "existing272Node;8syntheticnative;one realoriginal+syntheticbase browser;4E4packages separately",
+      "promotedToNewRealBaseP3": false
     }
   ],
   "newExecutionByThisIndex": {
-    "historicalOriginalsOpened": false,
-    "historicalWholeHashesRecomputed": false,
-    "newLocalFixtureFilesOpened": 1,
-    "numericalModelRuns": 0,
-    "actualOrtProjectionCases": 7,
-    "newManagementBoundaryControlGroups": 7,
-    "newFullP3Accepted": false,
-    "scope": "changed existing adoption edge with one synthetic local File and synthetic base; catalog metadata acquisition remains static"
+    "indexItselfIsStatic": true,
+    "scopedExecutions": [
+      {
+        "receiverSourceCommit": "d59c917a2d136a29e4f0b083143d63a0d621dcb5",
+        "evidenceId": "RECEIVER-MANAGED-LOCAL-FILE-CONTROL-D59C917",
+        "recordedAtPreviousDistribution": {
+          "historicalOriginalsOpened": false,
+          "historicalWholeHashesRecomputed": false,
+          "newLocalFixtureFilesOpened": 1,
+          "numericalModelRuns": 0,
+          "actualOrtProjectionCases": 7,
+          "newManagementBoundaryControlGroups": 7,
+          "newFullP3Accepted": false,
+          "scope": "changed existing adoption edge with one synthetic local File and synthetic base; catalog metadata acquisition remains static"
+        }
+      },
+      {
+        "receiverSourceCommit": "25e5b56feeb070594110bb292d9de21e4e234f0a",
+        "evidenceId": "RECEIVER-P3-LIGHT-HIGH-REAL-BASE-25E5",
+        "selectedLocalOriginalFilesOpened": 1,
+        "selectedOriginalWholeHashVerifiedOnceForNewLoad": true,
+        "historicalFourOriginalsRequired": false,
+        "historicalInventoryRecomputed": false,
+        "baseFullFileHashRecomputed": false,
+        "publishedSnapshotCases": 6,
+        "cancelledCheckpointCasesNotPublished": 1,
+        "modelInference": false
+      }
+    ],
+    "countsMustNotBeSummedAcrossScopes": true
   },
   "currentP3Acceptance": {
-    "compatibility": "UNVERIFIED",
-    "validation": "NOT_VERIFIED",
+    "compatibility": "COMPATIBLE",
+    "validation": "PASS",
     "readiness": "BLOCKED",
-    "dependsOn": [
-      "target-edge P0 management review",
-      "exact management P1ReferenceSet/norm-bindings source and receipt",
-      "same-context.target actual native diagnostic snapshot joint acceptance"
-    ],
+    "classificationScope": "selected lightHIGH actual bounded-base PARTIAL diagnostic edge at recorded valid phases only",
+    "managementCommit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+    "receiverSourceCommit": "25e5b56feeb070594110bb292d9de21e4e234f0a",
+    "selection": {
+      "pairId": "light",
+      "side": "HIGH"
+    },
+    "selectedP3EdgeAccepted": true,
+    "snapshotNormRuntimeVerifiedForSelectedEdge": true,
+    "phaseIntegration": "preflight declaration checks, actual owner.validate checkpoint numeric/evidence, postpublication actual snapshot/queue transaction; no future receipts in bindings.edges",
+    "snapshotCurrentAfterBaseRestore": false,
+    "allPairSidesNewlyAccepted": false,
+    "fullModelSessionAccepted": false,
+    "generationAdmission": "BLOCKED",
+    "generationReady": false,
+    "currentEvidenceId": "RECEIVER-P3-LIGHT-HIGH-REAL-BASE-25E5",
     "doesNotInvalidateExistingContractEvidence": true,
-    "classificationScope": "new P3 reference-runtime edge only, because exact P1 implementation/source binding is not obtained; prior native contracts/evidence stay unchanged",
-    "changedBoundaryPrecheck": {
-      "status": "PASS",
-      "evidenceId": "RECEIVER-MANAGED-LOCAL-FILE-CONTROL-D59C917",
-      "substitutesForP1OrSnapshot": false
-    }
+    "priorPrecheckEvidenceId": "RECEIVER-MANAGED-LOCAL-FILE-CONTROL-D59C917",
+    "recordedPhaseReadiness": "READY",
+    "currentResourceReason": "The trial ended after immutable-base restoration, snapshot invalidation and disposal; prior phase PASS is historical acceptance evidence."
   },
   "notAccepted": [
-    "Runtime integration of reference catalog by this contribution",
-    "complete P3 through P1 norm runtime and same-target actual native diagnostic snapshot",
+    "unexecuted pair/side fresh norm-bound real-base management transactions",
+    "all reference profiles/required declarations beyond the finite selected-edge binding",
+    "management loader sidecar dtype/layout rejection not implemented by its finite binder",
+    "new selected-weight E4 N-ARTIFACT package acceptance",
     "all-target LoRA application until matching real graph/consumer exists",
-    "full model/native E5 session",
+    "full model/native full-session acceptance",
     "production generated sample/restore/decode",
-    "HIGH/LOW atomic generation snapshot",
+    "new real-base HIGH/LOW atomic generation snapshot",
     "two-pair simultaneous composition",
+    "lease ownership or verified rebind",
     "81-frame workflow and total live memory/device performance",
     "generation admission"
   ],

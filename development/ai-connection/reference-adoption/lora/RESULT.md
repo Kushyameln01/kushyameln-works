@@ -1,5 +1,7 @@
 # LoRA P0宣言と管理採用経路の変更境界試験
 
+この文書は管理285で実施した前回の事前確認の履歴。管理P0/P1完了後の受領・実base・規範付きsnapshotの結果は [P3-RESULT.md](P3-RESULT.md) を参照する。以下の未受領状態を現在の状態へ流用しない。
+
 2026-10-31。P0の管理向け宣言・証拠対応表を提出する。既存の管理採用経路では、ローカルFile 1件による数値比較7件と制御試験7群が合格した。これは **P3の事前確認**であり、新規範runtimeを通すP3全体の受入ではない。`P1:UNVERIFIED`、`snapshotNormRuntimeVerified:false`、`fullP3Accepted:false` を維持する。
 
 ## 確認した正本

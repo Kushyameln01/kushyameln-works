@@ -31,3 +31,7 @@
 ## 受入しない範囲
 
 全targetは対応する実graph/consumer成立後のP6。全model session、生成への寄与、lease方式、二組同時合成、本番公開・mergeは追加しない。現在の管理normが読まないbase/output dtype・layout等は、native SDKの制約と外側sidecarの拒否実証を混同せず、未実装の比較として報告する。
+
+## 実施結果
+
+実行source `25e5b56feeb070594110bb292d9de21e4e234f0a` でlight HIGHの実base PARTIAL共同試験に合格した。6公開case、取消checkpoint、復旧・queue経由のbase復帰、規範8負例を確認。独立読戻しで49 source・26生成物・全数値を照合した。[P3-RESULT.md](P3-RESULT.md) と [再現手順](P3-REPRODUCE.md) に今回の受入と残るscopeを記録する。
