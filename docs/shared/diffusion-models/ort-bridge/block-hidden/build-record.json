@@ -1,0 +1,61 @@
+{
+  "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+  "backend": "wabt",
+  "mode": "normal",
+  "sourceSha256": "17782a1c12542e0755736a92f8115348865f55bfe5b34ebc670afb80b0f54ac8",
+  "hostSha256": "b50c8c8badd58881bba64850ae71ee18fb9ec7755dd52e21658fce929dd47d8e",
+  "builderSha256": "3cc9cd8196336c627d9232be01fc7dd6d736bbb55cf89fde487e285ca16ad543",
+  "wasmSha256": "ec95f1ca2bb76c332d1ff1072d48347e8a79d48f15618fa59b191dabe9117f7c",
+  "watSha256": "5aac278c93ba6517a0332234042c22314aa4c59126daf2307e77e070c754da5d",
+  "runtimeSha256": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+  "imports": [
+    {
+      "module": "env",
+      "name": "cos",
+      "signature": "f64 -> f64",
+      "bridge": "fixed ECMAScript Math.cos"
+    },
+    {
+      "module": "env",
+      "name": "sin",
+      "signature": "f64 -> f64",
+      "bridge": "fixed ECMAScript Math.sin"
+    },
+    {
+      "module": "env",
+      "name": "pow",
+      "signature": "f64 f64 -> f64",
+      "bridge": "fixed ECMAScript Math.pow"
+    },
+    {
+      "module": "env",
+      "name": "sqrt",
+      "signature": "f64 -> f64",
+      "bridge": "fixed ECMAScript Math.sqrt"
+    }
+  ],
+  "abi": {
+    "Sinusoidal": "f32 i32 i32",
+    "LayerNorm": "i32 i32 i32 i32",
+    "Add": "i32 i32 i32 i32 i32",
+    "Modulate": "i32 i32 i32 i32 i32 i32"
+  },
+  "command": [
+    "/workspace/work/diffusion-investigation/toolchain/hikec",
+    "build",
+    "-target",
+    "wabt",
+    "-wasm-mode",
+    "normal",
+    "-o",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/block-hidden/kernel.wasm",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/block-hidden/math.hike"
+  ],
+  "versions": {
+    "go": "go version go1.22.12 linux/amd64",
+    "wabt": "1.0.39",
+    "node": "v24.19.0"
+  },
+  "scope": "natural N2 full5120 nonaffine LayerNorm, sinusoidal256 and modulation F32 diagnostic; not full block/model or production precision parity"
+}

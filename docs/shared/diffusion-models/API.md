@@ -171,3 +171,48 @@ native contextの既知fieldは所有コピーし、frame配列の順序と重�
 native executionProfileIdは `bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1`。本単位のattentionは宣言した選択16keyで、旧attentionのprecomputed K32760試験と別scopeである。入力position/sourceId、gate、独立reference、元precisionとの差、所有権・取消・解放・同時保持資源は [qkv/README.md](ort-bridge/qkv/README.md) と固定candidate planに記載する。Q/K normへ渡すprojection値は、本診断の明示admissionとしてabs≤1e16に制限する。既存generic RMSNormを有限巨大値全般の受入へ拡大しない。
 
 元storage FP8/F16を実HikeでF32へ復号するが、計算は明示したF32診断profileである。実model由来のmodulation後hidden、元production compute精度、全N32760/context65520以上、全query/head/stageと組合せ資源予算は別の未成立条件。`productionQKVVerified:false`、P5=BLOCKED、native `load/predict/sample=NOT_READY` を維持する。本native profileはownerの新しい候補宣言であり、固定catalogへの登録・管理採用は別に行う。
+
+## QKV Profileの登録案と実block由来N2境界
+
+[登録package](profiles/registration-QKV.md) は、上記の既存N16診断を固定source `8cdfd3f5f7db0cd66762e78f09c209fb5b27366b`・旧build・事前gate・数値receiptへ結び付ける。共通catalog `6dae9a6fac3e9ad29ea941f22211edbe4aa894ad` と旧管理候補を保持し、別entry `CANDIDATE-DIFFUSION-QKV-N16-8CDFD3F` を追加するpreviewである。提案文書版は `1.0-draft.2`、正本の登録・管理runtime採用は未実施。新しいN2実験へN16の受入scopeを広げない。
+
+後述のN2単位は [別登録案](../../../development/ai-connection/qkv-next/expansion/profile-proposal.json) `CANDIDATE-DIFFUSION-DERIVED-N2-ALL40-F32-V1` として提示する。新build・source・gate・結果はこの別案へ束縛し、旧N16登録案を更新しない。
+
+次の独立ES入口は、native RPCやMessagePortの新opではない。同一realmで所有する管理コードから利用し、関数・AbortSignal・opaque ownerをwire payloadへ入れない。
+
+```js
+import {createBlockHiddenPrefix} from './ort-bridge/block-hidden/stage.mjs';
+import {createDerivedQkvHeads} from './ort-bridge/attention-heads/stage.mjs';
+
+const prefix = await createBlockHiddenPrefix({file: originalHighFile, side:'HIGH'});
+let produced;
+try {
+  produced = await prefix.run({
+    rawMean: actualRectMean, noise: fixedDiagnosticNoise,
+    noiseScale: 1, scheduleIndex: 1, signal
+  });
+} finally { await prefix.dispose(); } // resource barrier
+// Compare the private artifact with the independently pinned reference first.
+// trustedProducer is that external passing receipt, not a caller success flag.
+const downstream = await createDerivedQkvHeads({
+  file: originalHighFile, side:'HIGH', trustedProducer
+});
+try {
+  const {attention,evidence} = await downstream.run({
+    hidden: produced.hidden, positions: produced.positions,
+    sourceIds: produced.sourceIds, evidence: produced.evidence,
+    artifactSHA256: trustedProducer.artifactSHA256, signal
+  });
+  // attention: owned F32 [2,5120], all2 queries / all40 heads, BEFORE O projection
+} finally { await downstream.dispose(); }
+```
+
+この呼出し例は固定診断条件の例であり、任意のrawMean/noise/timestepを受け入れる生成APIではない。入力はVAE `855f435120f08eb9e818e51281fc26f0e2633829` の実Rect mean `[1,16,1,2,4]`、固定明示noise128、noiseScale1、HIGH index1 / LOW index3である。LOWは独立した試験で、HIGHの出力受渡しではない。元Euler/simple6/shift5/split3を変更しない。
+
+実F16 patch `(1,2,2)`・time embedding・block0 modulation・全5120 LayerNormから、native profile `bernini-rect2-block0-postmod-f32-v1` のhiddenを得る。元core BLC `[1,2,5120]` を暗黙batch1のLC `[2,5120]` に下げ、token座標は `(0,0,0),(0,0,1)`、source0、contextなし。16tokenへのpadding/反復を行わない。F32診断profileとして元production精度との違いを残す。後段は全幅QKV→全5120 QK RMSNorm→各head RoPE→2 query/2 keyのattentionであり、O projection・残差・cross-attention・FFNを含まない。
+
+hidden/positionsはcompact・非sharedの有限F32、sourceIdsはcompactなInt32Array(2)で、runはawait前に所有snapshotを取得する。返却配列はcaller所有で、caller入力を変更・detachしない。BUSYはgetter前に獲得し、取消は協調式のためPromise終端を待ってからdisposeする。native Tensor/sessionの解放失敗ではhandleを保持して再利用を止め、`recover()`で解放を再試行する。全体queue・工程管理は管理、内部演算と資源は各ownerが担当する。
+
+数値規則・shape・sourceとの対応は [prefix契約](ort-bridge/block-hidden/README.md)、[全head境界](ort-bridge/attention-heads/API.md)、[結果・再現・段階別資源](../../../development/ai-connection/qkv-next/RESULT.md) を参照。trusted receiptはartifact・hidden・座標・side/block/timestep・producer sourceのhashを束縛する整合証拠であり、任意callerの出所を暗号学的に認証する機能ではない。
+
+全N32760/65520の数値実行、元81frame入力、ordered context、HIGH→LOW受渡し、production precision、全工程の同時保持・ORT Memory・copy/time予算は未受入。大規模allocation-only試験をモデル実行や全query数値合格と扱わず、`load/predict/sample=NOT_READY` を維持する。

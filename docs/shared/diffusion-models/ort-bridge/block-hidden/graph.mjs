@@ -1,0 +1,7 @@
+const cat=(...xs)=>{const b=new Uint8Array(xs.reduce((n,x)=>n+x.length,0));let p=0;for(const x of xs){b.set(x,p);p+=x.length;}return b;};
+function vint(n){const b=[];do{const x=n%128;n=Math.floor(n/128);b.push(x+(n?128:0));}while(n);return Uint8Array.from(b);}
+const integer=(f,n)=>cat(vint(f*8),vint(n)),message=(f,b)=>cat(vint(f*8+2),vint(b.length),b),text=(f,s)=>message(f,new TextEncoder().encode(s));
+function info(name,shape){const dims=cat(...shape.map(n=>message(1,typeof n==='number'?integer(1,n):text(2,n))));return cat(text(1,name),message(2,message(1,cat(integer(1,1),message(2,dims)))));}
+function model(nodes,inputs,outputs,name){return cat(integer(1,8),text(2,'KushyamelnWorks-bounded-block-hidden'),message(7,cat(...nodes.map(n=>message(1,n)),text(2,name),...inputs.map(x=>message(11,info(...x))),...outputs.map(x=>message(12,info(...x))))),message(8,integer(2,17)));}
+export function createDynamicLinearGraph(){const attr=cat(text(1,'transB'),integer(3,1),integer(20,2)),node=cat(text(1,'x'),text(1,'weight'),text(2,'projection'),text(3,'bounded-runtime-weight-linear'),text(4,'Gemm'),message(5,attr));return model([node],[['x',['M','K']],['weight',['N','K']]],[['projection',['M','N']]],'bounded-symbolic-f32-linear');}
+export function createSiluGraph(){const sigmoid=cat(text(1,'x'),text(2,'s'),text(3,'sigmoid-f32'),text(4,'Sigmoid')),mul=cat(text(1,'x'),text(1,'s'),text(2,'silu'),text(3,'silu-mul-f32'),text(4,'Mul'));return model([sigmoid,mul],[['x',[5120]]],[['silu',[5120]]],'time-silu-sigmoid-mul-f32');}

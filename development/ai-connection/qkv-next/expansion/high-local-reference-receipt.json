@@ -1,0 +1,213 @@
+{
+  "schemaVersion": "bernini-derived-heads-reference/0.1",
+  "mode": "LOCAL_ACTUAL_HIDDEN",
+  "side": "HIGH",
+  "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+  "planSHA256": "54beb91336f271f8d21c3a64b82c6f6503f457451cba649b46fd6137319884d5",
+  "inputArtifactSHA256": "4493d93b56f434b6292da1c9898dd30b474444073796a10e25788d5c71a65a52",
+  "coords": [
+    {
+      "t": 0,
+      "h": 0,
+      "w": 0,
+      "sourceId": 0
+    },
+    {
+      "t": 0,
+      "h": 0,
+      "w": 1,
+      "sourceId": 0
+    }
+  ],
+  "gates": {
+    "decodedWeightBiasNorm": "exact F32 bytes vs independent decoder",
+    "projection": {
+      "abs": 0.0001,
+      "rel": 1e-05
+    },
+    "qkNorm": {
+      "abs": 0.0001,
+      "rel": 0.0001
+    },
+    "ropeMatrix": {
+      "abs": 2e-06,
+      "rel": 2e-06
+    },
+    "ropeApply": {
+      "abs": 0.0001,
+      "rel": 0.0001
+    },
+    "allHeadContext": {
+      "abs": 0.001,
+      "rel": 0.0001
+    },
+    "composedPrefixToContext": {
+      "abs": 0.01,
+      "rel": 0.001
+    }
+  },
+  "arrayIdentities": {
+    "hidden": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "99066357aff4ebc1a13f63aa9486298153b43f8f026f6db8ada2a31a6671c61c"
+    },
+    "matrices": {
+      "shape": [
+        2,
+        64,
+        2,
+        2
+      ],
+      "elements": 512,
+      "bytes": 2048,
+      "sha256": "9aa4db69e0022e9f48fe7f5c3ff9d010f30d46a152ee5dc917752fede8f7dd3f"
+    },
+    "q": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "ed5fa9beef4b094296a8dc635734963fcea485474e1369b45348e860b72b4b33"
+    },
+    "k": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "b458ebb951a1579299e7e12c27a167c0654af6c9f2f625cd8da44b50d6b28b53"
+    },
+    "v": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "86c87ba77ea70bd6f887391292477472701180fc25420b0fa1168b75f9f2a093"
+    },
+    "attention": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "fadf6f17c0e360b74d06eb3fab52d1f1582ca6a4e0a35d3f446619456584dfa6"
+    },
+    "qkv.q": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "5ba33eedba4856397307a1c00c157053689b19e9f136411151762aecbd3e259b"
+    },
+    "qkv.k": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "b2836ecbbf6af9485d61f964da8641fa28e8cdefff6dc239fabd9d2692a8b6be"
+    },
+    "qkv.v": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "86c87ba77ea70bd6f887391292477472701180fc25420b0fa1168b75f9f2a093"
+    },
+    "norm.q": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "5817e56997a993dae0ec66c901eae9a60a7b3928b59c75fdef5a9e335afba18e"
+    },
+    "norm.k": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "28a8f09baf38f82419a821104013a2b39d63658778ce5c62b0b955ae97b7b240"
+    }
+  },
+  "ranges": [
+    {
+      "key": "blocks.0.self_attn.q.weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F8_E4M3",
+      "rawSHA256": "6fa7062be2e71f41bcab3b9911e48c19524243f668453f0455e9b9c3de5ffb7b",
+      "decodedF32SHA256": "b3fdecebae1b7bb5b01b541a336f3c0c22b60c116c7200ce1a7100546d02710b",
+      "scaleSHA256": "e810073dda55130632879cca5c19c5227667018245177cd14f163f5d7ac7559e",
+      "configSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+      "biasF32SHA256": "7c0422572b746f7871f2624327cd7c22f6324bc627399dc5753fa606e3efbc18"
+    },
+    {
+      "key": "blocks.0.self_attn.k.weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F8_E4M3",
+      "rawSHA256": "3603eb9f5524b20a950013cd0557e0e2c368bc35dde358cecd9c61669f432fce",
+      "decodedF32SHA256": "f4f14e91af7cfde812b5bafb0ca15c03638bfe8f5e5b6c012dd7f459880100e5",
+      "scaleSHA256": "5075f0c81537da533d5849701af71a35144e7118de48c7c168ca62e4c0d01c81",
+      "configSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+      "biasF32SHA256": "4d2a377a0fa67c52751e2338d61b33ed9dba7ed348a56e111abb06edfc0c1b1f"
+    },
+    {
+      "key": "blocks.0.self_attn.v.weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F8_E4M3",
+      "rawSHA256": "ff76b4824c4335ef9f37cfe649da37f788f55444cfc234ab0c5e82ef07d4869e",
+      "decodedF32SHA256": "094bb7f47b4e8ddc98d4701e77658420232b04124819dbb849600af91469f52d",
+      "scaleSHA256": "df760c6289cdec1b2ab7b34f5bd329310c55adb1d5ec6e007e2191a22051a890",
+      "configSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+      "biasF32SHA256": "cae882aee5e84e15f25d5ca6d04017cbd5c92bfca1b3a47a6d9d8fd1830cb772"
+    },
+    {
+      "key": "blocks.0.self_attn.norm_q.weight",
+      "decodedF32SHA256": "4536ce67c2860a7fbaf9fce6e533eba303103121e2999b92895fdbcfa4833076"
+    },
+    {
+      "key": "blocks.0.self_attn.norm_k.weight",
+      "decodedF32SHA256": "320594f76eb7aa1fccaca15f8a6d6a8f78c76b5b8ed79e42ee3058c6021c9c14"
+    }
+  ],
+  "originalFileBytesRead": 78875781,
+  "maxSingleReadBytes": 181280,
+  "referenceBackend": "NumPy binary64 Gemm/reduction/attention; independent E4M3FN/F16; ordered F32 bias and RoPE; one BLAS thread",
+  "scope": "N2 all40 before O; original workflow false",
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY",
+  "referenceSHA256": "caa84f006b952b9e38d2936e36ef7c40ca02f2134b4c5a2938b21ccf56cea8d0",
+  "referenceBytes": 2055320,
+  "generatorSHA256": "138a24b550123b905aa480ffaa2b7eeea80bee7affb8475233d9dc06bd0dc63d",
+  "elapsedSeconds": 0.5642572149990883,
+  "privateArrayPayloadPublished": false
+}

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "bernini-derived-heads-plan/0.1",
+  "status": "PRE_EXECUTION_GATE_FIXED",
+  "gateMayNotBeRelaxedAfterComparison": true,
+  "executionProfileId": "bernini-block0-derived-qkv-n2-allheads-f32-v1",
+  "scope": "actual block0 post-modulation hidden derived from Rect raw mean, scalar original scheduler timestep; context absent; all2 queries/all40 heads; before O projection",
+  "shape": {
+    "implicitBatch": 1,
+    "coreHidden": [
+      1,
+      2,
+      5120
+    ],
+    "operatorHidden": [
+      2,
+      5120
+    ],
+    "grid": [
+      1,
+      1,
+      2
+    ],
+    "positions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ],
+    "sourceIds": [
+      0,
+      0
+    ],
+    "fullQkNormAxis": 5120,
+    "heads": 40,
+    "headDim": 128,
+    "output": [
+      2,
+      5120
+    ]
+  },
+  "source": {
+    "coreCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+    "prefixContract": "../hidden-core/SOURCE-CONTRACT.md",
+    "producer": "../hidden-runtime/",
+    "priorProfileScope": "N16 explicit fixture/head0 remains unchanged",
+    "storage": "original FP8 E4M3FN scalar scale; F16 bias/norm",
+    "compute": "Hike dequant/norm/RoPE/recurrence F32, ORT Gemm/score-exp F32",
+    "precisionIsOriginalProduction": false
+  },
+  "admission": {
+    "hidden": "owned compact nonshared F32[2,5120], finite",
+    "normInput": "finite abs<=1e16; full5120 norm before any head extraction",
+    "binding": "trusted producer receipt artifact SHA and hidden/positions/sourceIDs SHA + original model/side/block0/timestep; caller booleans alone never admit",
+    "noPadding": true
+  },
+  "gates": {
+    "decodedWeightBiasNorm": "exact F32 bytes vs independent decoder",
+    "projection": {
+      "abs": 0.0001,
+      "rel": 1e-05
+    },
+    "qkNorm": {
+      "abs": 0.0001,
+      "rel": 0.0001
+    },
+    "ropeMatrix": {
+      "abs": 2e-06,
+      "rel": 2e-06
+    },
+    "ropeApply": {
+      "abs": 0.0001,
+      "rel": 0.0001
+    },
+    "allHeadContext": {
+      "abs": 0.001,
+      "rel": 0.0001
+    },
+    "composedPrefixToContext": {
+      "abs": 0.01,
+      "rel": 0.001
+    }
+  },
+  "gateRationale": "Values selected before new comparison, from prior F32 operator envelopes; prior acceptance does not transfer to this new input/shape/scope. Independent local actual-hidden oracle and independent-prefix composed oracle remain distinct. Elementwise abs(error)<=abs+rel*abs(reference).",
+  "ownership": {
+    "prefixBarrier": "dispose prefix source+Gemm+SiLU before constructing downstream; owned hidden artifact retained",
+    "downstream": "one dynamic Gemm session (SiLU disabled) plus one all-head attention session, four Hike Memories; owned outputs; cancel requires await and release",
+    "queue": "management owns whole pipeline scheduling"
+  },
+  "acceptance": {
+    "allQueriesForThisInput": true,
+    "allHeadsForThisInput": true,
+    "originalWorkflowInputsVerified": false,
+    "fullSequenceVerified": false,
+    "fullSelfAttentionBlockVerified": false,
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY"
+  },
+  "allocationProbe": {
+    "kind": "host allocation-only, nonzero touch, hold then browser close; not model numerical proof",
+    "sequence": [
+      32760,
+      65520
+    ],
+    "buffers": [
+      "hiddenH",
+      "postRopeKcacheH",
+      "VcacheH"
+    ],
+    "guard": "cgroup headroom before each stage; close/reclaim barrier before context stage",
+    "excluded": "ORT full graph/FFN/weights/external reference/GC unknown; no full-score or full-weights Memory allocation"
+  }
+}

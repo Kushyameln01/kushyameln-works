@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "bernini-hidden-prefix-plan/0.1",
+  "profileId": "bernini-rect2-block0-postmod-f32-v1",
+  "status": "PRE_EXECUTION_GATE_FIXED",
+  "gateMayNotBeRelaxedAfterComparison": true,
+  "scope": "ACTUAL_MODEL_OPERATORS_FROM_ACTUAL_RECT_MEAN_WITH_EXPLICIT_DIAGNOSTIC_NOISE",
+  "baseImplementationCommit": "621796a2cb5266a4c8ea7abc2f676322836360c5",
+  "coreCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+  "sourceManifests": ["development/ai-connection/profile-adoption/p4/core-manifest.json", "development/ai-connection/a0/core-source-manifest.json"],
+  "sourceContract": "development/ai-connection/qkv-next/hidden-core/SOURCE-CONTRACT.md",
+  "sourceInput": {
+    "repository": "Kushyameln01/kushyameln-works",
+    "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+    "path": "development/inference/e6/fixtures/png-mean.wktensor",
+    "fileSha256": "6539204ef61dc0f706238b74e2bcabf8bbcce971f5056d0b0d7e288811516b71",
+    "payloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+    "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "dtype": "float32", "layout": "NCTHW", "shape": [1,16,1,2,4], "meaning": "raw-posterior-mean",
+    "rawMeanProfileId": "wan21-raw-f32-1x16x32"
+  },
+  "input": {
+    "noiseRecipe": "float32((((i*29+7)%127)-63)/64), i=0..127; caller-owned explicit array; no PRNG",
+    "noiseScale": 1,
+    "scheduleProfile": "bernini-comfy-simple6-shift5-v1",
+    "scheduler": "simple", "sampler": "Euler", "steps": 6, "shift": 5, "split": 3,
+    "cases": [
+      {"side":"HIGH", "globalSigmaIndex":1, "sigma":0.9617158770561218},
+      {"side":"LOW", "globalSigmaIndex":3, "sigma":0.8333333134651184}
+    ],
+    "modelTimestep": "float32(sigma*float32(1000))",
+    "lowIsActualHighToLowHandoff": false,
+    "conditioning": "target-only; context_latents=[]; text dependency outside prefix cut",
+    "originalWorkflowInputVerified": false,
+    "originalWorkflowNoiseVerified": false,
+    "productionHiddenVerified": false
+  },
+  "target": {
+    "blockIndex":0, "patchShape":[1,2,2], "grid":[1,1,2], "hiddenShape":[2,5120],
+    "coordinates":[{"t":0,"h":0,"w":0,"sourceId":0},{"t":0,"h":0,"w":1,"sourceId":0}],
+    "contextStreams":0, "tokenPadding":false, "tokenRepetition":false,
+    "timeProjectionRows":[0,10240], "blockModulationChunks":[0,1],
+    "omittedTimeProjectionChunks":[2,3,4,5],
+    "omissionReason":"post-norm1-modulation self-attention input depends only on shift chunk0 and scale chunk1; residual/FFN and full block not accepted"
+  },
+  "precision": {
+    "parameterStorage":"F16 for this prefix; no FP8 weight-scale conversion on these keys",
+    "parameterDecode":"IEEE754 binary16 -> owned float32; strict F32 bytes",
+    "normalize":"source constants F32; subtraction, multiply1, divide std rounded after each operation",
+    "noiseMix":"float32(sigma*float32(noiseScale*noise))+float32(float32(1-sigma)*normalizedMean), with final add F32",
+    "patch":"F32 im2col, ORT runtime-input Gemm; no convolution/CUDA/TF32 parity claim",
+    "linear":"F32 ORT Gemm with F32 bias; independent binary64 dot -> F32 then F32 bias add",
+    "timeSin":"F32 exponent/arange division; pow primitive F64->F32; F32 position*frequency; cos/sin primitive F64->F32; cos then sin concat; distinct from RoPE F64 frequency",
+    "silu":"ORT Sigmoid then Mul F32; finite abs(input)<=1e6 and finite output; independent stable binary64 sigmoid*x -> F32; no fused Torch SiLU parity",
+    "layerNorm":"nonaffine full5120 epsilon1e-6; Hike two-pass orderedF32 mean/variance; sqrtF64->F32, inverseF32; independent binary64 mean/variance/sqrt -> F32",
+    "modulate":"F32 scalePlusOne, F32 norm*scalePlusOne then F32 add shift; independent binary64 product+sum -> F32; source addcmul/ck.adaln parity unverified",
+    "shiftScale":"F32 timeProjection plus decodedF32 blocks.0.modulation chunks0/1"
+  },
+  "admission": {
+    "finiteInputs":true, "exactRawProfile":true, "exactGrid":true,
+    "siluInputMaxAbs":1000000, "layerNormInputMaxAbs":10000000000000000,
+    "finiteIntermediateAndOutput":true,
+    "rejectNonFiniteBeforeOutputMutation":true,
+    "weightBinding":"original key/full shape/F16 dtype/exact row range/model+header identity required",
+    "privateArtifact":"all actual numeric hidden/parameter arrays stay outside repository; public receipts contain hashes/metrics only"
+  },
+  "gates": {
+    "normalizedMean":{"comparison":"strict F32 bytes"},
+    "noisedLatent":{"comparison":"strict F32 bytes"},
+    "patches":{"comparison":"strict F32 bytes"},
+    "decodedParameter":{"comparison":"strict F32 bytes"},
+    "timeSin":{"abs":0.000002,"rel":0.000002},
+    "patchHidden":{"abs":0.0001,"rel":0.00001},
+    "timeLinear0":{"abs":0.0001,"rel":0.00001},
+    "timeAct0":{"abs":0.0001,"rel":0.00001},
+    "timeEmbedding":{"abs":0.001,"rel":0.0001},
+    "timeAct1":{"abs":0.001,"rel":0.0001},
+    "timeProjection":{"abs":0.001,"rel":0.0001},
+    "shift":{"abs":0.001,"rel":0.0001},
+    "scale":{"abs":0.001,"rel":0.0001},
+    "layerNorm":{"abs":0.0001,"rel":0.0001},
+    "hidden":{"abs":0.001,"rel":0.0001},
+    "composedAttention":{"abs":0.01,"rel":0.001,"scope":"independent raw-mean prefix hidden -> independent QKV/norm/RoPE/all40head N2 attention; separate from actual-hidden local boundary gates"}
+  },
+  "gatesFormula":"each element abs(actual-reference)<=abs+rel*abs(reference); no tolerance adjustment after observation",
+  "resources": {
+    "selectedParameterPayloadBytesPerSide":160634880,
+    "maxSingleParameterReadBytes":163840,
+    "headerBytes":181280,
+    "maxSingleReadIncludingHeaderBytes":181280,
+    "maxRowsPerWeightBlock":16,
+    "maxF16BlockBytes":163840,
+    "maxDecodedF32BlockBytes":327680,
+    "fullTimeProjectionF16BytesNotMaterialized":314572800,
+    "selectedTimeProjectionF16BytesStreamed":104857600,
+    "persistDecodedFullWeights":false,
+    "fullFileSha256Recomputed":false,
+    "resourceScope":"streamed prefix only; combined downstream ORT/Hike/session/copy budget measured separately; not browser allocation proof for production N32760 or N65520"
+  },
+  "readiness":{"load":"NOT_READY","predict":"NOT_READY","sample":"NOT_READY"},
+  "notAccepted":["original81frame production input/noise/context and production hidden","LOW actual HIGH handoff","full block residual/cross attention/FFN","Torch SiLU/LayerNorm/addcmul/CUDA ck.adaln parity","FP8 activation/scaled_mm or BF16/FP16 original production precision","production all-query/head resource budget","full predict/sample"]
+}
