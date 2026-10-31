@@ -855,6 +855,174 @@
         "fullSessionAccepted": false,
         "generationReady": false
       }
+    },
+    {
+      "receiptId": "OWNER-LORA40AB-DATA-HANDOFF",
+      "owner": "lora",
+      "evidenceSourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+        "path": "development/ai-connection/reference-adoption/lora/management-handoff/HANDOFF.json"
+      },
+      "evidenceFiles": {
+        "HANDOFF.md": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+          "path": "development/ai-connection/reference-adoption/lora/management-handoff/HANDOFF.md"
+        },
+        "CONFORMANCE-CASES.json": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+          "path": "development/ai-connection/reference-adoption/lora/management-handoff/CONFORMANCE-CASES.json"
+        },
+        "OWNER-NUMERIC-WITNESS.json": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+          "path": "development/ai-connection/reference-adoption/lora/management-handoff/OWNER-NUMERIC-WITNESS.json"
+        },
+        "evidence/MANIFEST.json": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+          "path": "development/ai-connection/reference-adoption/lora/management-handoff/evidence/MANIFEST.json"
+        },
+        "evidence/manager-baseline.json": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+          "path": "development/ai-connection/reference-adoption/lora/management-handoff/evidence/manager-baseline.json"
+        },
+        "evidence/replay-inputs.json": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+          "path": "development/ai-connection/reference-adoption/lora/management-handoff/evidence/replay-inputs.json"
+        }
+      },
+      "dataContract": {
+        "status": "NEW_CONTRACT_CANDIDATE_RECEIVED",
+        "implementationCommit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+        "nativePinReplacement": false,
+        "modules": [
+          {
+            "sourceRef": {
+              "repository": "Kushyameln01/kushyameln-works",
+              "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+              "path": "docs/shared/inference/lora/numeric-declarations.mjs"
+            },
+            "sha256": "e7dd99d570c666969d76e93747998f3e1c20ba64d9e3b9d1b5f7a19e05aa6b17",
+            "byteLength": 9909,
+            "version": "lora-numeric-declarations/0.1-draft.1",
+            "exports": [
+              "LORA_NUMERIC_DECLARATIONS_VERSION",
+              "describeLoraNumericDeclarations"
+            ]
+          },
+          {
+            "sourceRef": {
+              "repository": "Kushyameln01/kushyameln-works",
+              "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+              "path": "docs/shared/inference/lora/management-admission-inputs.mjs"
+            },
+            "sha256": "ddf57f4c76333ada1ddf93cf238e5f4ea6219b39afd5dc4d567213667a7d897e",
+            "byteLength": 32961,
+            "version": "lora-management-admission-inputs/0.1-draft.1",
+            "exports": [
+              "LORA_MANAGEMENT_ADMISSION_INPUTS_VERSION",
+              "LORA_MANAGEMENT_ADMISSION_SOURCE_SET",
+              "catalogSourceAlias",
+              "createLoraManagementAdmissionInputs"
+            ]
+          }
+        ],
+        "purpose": "Owner-observed per-patch dtype/layout provenance and raw three-phase management input DATA; no second compatibility judge or numerical engine",
+        "phaseMethods": [
+          "preflightInputs",
+          "checkpointInputs",
+          "postpublicationInputs"
+        ]
+      },
+      "receiptAdmission": {
+        "status": "RECEIVED_SOURCE_BOUND",
+        "sourceDiffFromPreviousEvidenceCommit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+        "changedPaths": 28,
+        "changedPathBytes": 1327744,
+        "nativeRuntimeProductFilesVerifiedUnchanged": 6,
+        "newOwnerReportedMetadataTests": {
+          "passed": 23,
+          "skipped": 0,
+          "rerunHere": false
+        },
+        "oldSixNumericalCasesRerun": false
+      },
+      "nativeSourceUnchanged": {
+        "loraCommit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+        "diffusionCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "kernelSha256": "3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24",
+        "kernelByteLength": 5051,
+        "newDataModulesRelabelledAsNativeFc": false
+      },
+      "declarationMetadataReplay": {
+        "path": "development/ai-connection/norm-receipt-adoption/evidence/owner-data-declaration-probe.json",
+        "byteLength": 17769,
+        "sha256": "47ba8adbda69cd847efe4a7bf5cfeb06d11515fdc49305079ac55526c9b500ea",
+        "managerCommit": "135c4277926d345b4dec95c325671e0847dbbbf1",
+        "status": "PASS_MANAGER_DECLARATION_METADATA_CONFORMANCE",
+        "negativeConforming": 12,
+        "negativeTotal": 12,
+        "positiveConforming": 2,
+        "positiveTotal": 2,
+        "previousManagerCommit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+        "previousNegativeConforming": 0,
+        "previousBaselineOverwritten": false,
+        "formalThreePhaseEntryStatus": "NOT_ASSESSED_BY_THIS_DECLARATION_PROBE",
+        "runtimeAcceptance": false,
+        "numericalExecutions": 0,
+        "originalPayloadFilesRead": 0
+      },
+      "formalDataIntegration": {
+        "status": "NOT_VERIFIED",
+        "ownerReportedManagerEntryReceived": false,
+        "currentManagerEntryImportsNewDataFactory": false,
+        "existingMandatoryNativeControlCoversThisContract": false,
+        "requiredOuterBridgeBindings": [
+          "Use the independently pinned82b factory and actual opaque plan, inspection and facade.describeBinding; consume per-patch declared values, presence and source origins without F32/layout defaults.",
+          "Adapt owner preflight declarations to the mandatory fixed policy before native preparation; do not pass checkpoint receipts back into a constructor.",
+          "Predeclare expected16 output SHA and environment from the original reference before operation; new DATA numeric referenceRef alone does not export expectedOutputSha256.",
+          "At the actual native checkpoint require ownerAdmission.phaseBinding.bound=true and exact snapshot/step/operation/source/manager/resource/SDK-local target and outer owner validation.",
+          "Recheck actual selected binding, resource generation and outside consumer token before commit; use isPublishedCurrent rather than closed stage currentness after publication.",
+          "Audit actual publication, native copy owner, original queue terminal/release and cleanup through the existing manager evaluator; preserve published facts on audit failure."
+        ],
+        "purposeLimitedExpansion": "JOINT-HIGH-SUCCESS-LOW-FAILURE-CONTAINMENT is a future formal-entry acceptance case; no new LOW numerical or full-model scope is accepted here"
+      },
+      "scopePreservation": {
+        "previousLoraReceiptId": "OWNER-LORA40F-SELECTED-LIGHT-HIGH-P3",
+        "previousLoraEvidenceCommit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+        "previousExecutionCommit": "25e5b56feeb070594110bb292d9de21e4e234f0a",
+        "previousSixCasesOverwritten": false,
+        "previousTwentyCasesRetagged": false,
+        "existingMandatoryNativeControlRetaggedAsNewDataIntegration": false
+      },
+      "notAccepted": {
+        "newDataFormalPhaseAdoption": false,
+        "newNativeExecution": false,
+        "newModelInference": false,
+        "newRealBaseTrial": false,
+        "newE4PackageAcceptance": false,
+        "fullModelSessionAccepted": false,
+        "generationReady": false
+      },
+      "finalCheckpointDeclarationReplay": {
+        "path": "development/ai-connection/norm-receipt-adoption/evidence/owner-data-declaration-probe-final.json",
+        "managerCommit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+        "byteLength": 28266,
+        "sha256": "630e35653c92917abe043df2a72a7f495d7879bdb18698f27430e04445934122",
+        "negativeConforming": 12,
+        "negativeTotal": 12,
+        "positiveConforming": 2,
+        "positiveTotal": 2,
+        "runtimeAcceptance": false,
+        "formalPhaseEntry": "NOT_ASSESSED_BY_THIS_DECLARATION_PROBE",
+        "numericalExecutions": 0,
+        "originalPayloadFilesRead": 0
+      }
     }
   ],
   "preservedHistoricalScopes": [
@@ -885,11 +1053,12 @@
     }
   ],
   "overallState": {
-    "receiptsReceived": 2,
+    "receiptsReceived": 3,
     "nativePinsChanged": false,
     "currentManagerNewNormAcceptance": "NOT_VERIFIED",
     "freshManagementModelExecutionPerformed": false,
     "fullModelSessionAccepted": false,
-    "generationReady": false
+    "generationReady": false,
+    "newOwnerDataFormalPhaseIntegration": "NOT_VERIFIED"
   }
 }

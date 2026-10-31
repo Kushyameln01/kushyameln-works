@@ -58,7 +58,7 @@ WORKS_NORM_RECT_INPUT="$EXACT_351_RESTORED_INPUT" \
 node --test --test-isolation=none tools/ai-connection/test-*.mjs
 ```
 
-339 PASS、fail0、skip0を確認した。未設定の原本環境変数によるskipは、この全回帰の合格結果に数えない。テスト名と結果は `evidence/node-tests.tap`。
+344 PASS、fail0、skip0を確認した。未設定の原本環境変数によるskipは、この全回帰の合格結果に数えない。テスト名と結果は `evidence/node-tests.log`。
 
 ## 4. Rectの原本検査と共同実dispatch
 
@@ -85,3 +85,17 @@ decode assetがない空のbundle directoryを指定すれば、CLIの実経路�
 `CHECKPOINT-SOURCE-RECEIPT.json` の各pathについて、固定管理commitから読んだGit bytesと実行時hashの一致を検査する。CLIに渡した任意の40桁文字列だけでは実行sourceが証明されたことにならない。CLIのworking-tree `commit:null` を保持し、別のcheckpoint照合receiptで固定する。
 
 `evidence/lora-native.json.gz` は実native試験の元JSONをそのままgzip化したもの。展開後のSHAと各配布fileのbytes/hashは `RESULT.json`。`OWNER-RECEIPTS.json` は過去owner証拠、今回の実行は `RESULT.json` と本evidenceで区別する。既存20ケース、受領LoRA6取引、VAE元NNの数値を今回の新管理実行回数へ加算しない。
+
+## 6. 追加LoRA DATAの宣言probe
+
+ownerの別checkoutを `40abf43c7c9cf565b115cafc36c7e33f4ae661f1` に固定し、そのdirectoryで次を実行する。管理は `RESULT.json` のcheckpoint、出力先はsource外の新規directory。probe自身がownerとmanagerのGit bytesを検査するため、Git metadataも必要。
+
+```sh
+node tools/ai-connection/probe-manager-lora-declarations.mjs \
+  --manager-root "$MANAGEMENT_CHECKOUT" \
+  --manager-commit "$MANAGEMENT_COMMIT" \
+  --owner-declarations development/ai-connection/reference-adoption/lora/management-handoff/OWNER-NUMERIC-WITNESS.json \
+  --out "$FRESH_PROBE_DIRECTORY"
+```
+
+期待値は `PASS_MANAGER_DECLARATION_METADATA_CONFORMANCE`、負例12/12・正例2/2、exit0。これはmetadata照合のみで数値実行／原本payload読出0、正式phase入口はNOT_ASSESSED。旧eddaの0/12は元receiptへ保持する。DATA実装82bの正式bridgeを接続した受入とは区別する。
