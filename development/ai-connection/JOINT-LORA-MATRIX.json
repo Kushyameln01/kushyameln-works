@@ -1,0 +1,1994 @@
+{
+  "schemaVersion": 2,
+  "status": "PASS_DIAGNOSTIC_PARTIAL",
+  "executionOrder": [
+    "light HIGH",
+    "detail HIGH",
+    "light LOW",
+    "detail LOW"
+  ],
+  "orderReason": "Sequential per-base grouping fits local cache capacity; no simultaneous composition",
+  "peerCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+  "commonSpec": "1.1-draft.1",
+  "executionPlan": "0.2-draft.2",
+  "cases": [
+    {
+      "pairId": "light",
+      "side": "HIGH",
+      "fileName": "Bernini-R_LightX2V_high_noise.safetensors",
+      "originalSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+      "originalBytes": 1244141856,
+      "newLoadWholeHash": "VERIFIED_ON_IMMUTABLE_RUNTIME_FILE; cached only for same File",
+      "baseFullSha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+      "nativeRegistryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+      "connectionRegistryHash": "cc6a329b0cffbdf3c2a50914843da33e7d402a815921e206ddf5f8b0fea4c806",
+      "loraSourceCommit": "4d5fd7363f40f0d743ead448193ef2bf1915bbdc",
+      "peerCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "generationReady": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "selectedWeightElements": 81920,
+      "selectedConsumerBiasElements": 16,
+      "selectedLoRaBiasElements": 16,
+      "sourceVariant": "linear-down-up",
+      "rank": 128,
+      "alpha": 128,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "scopeEvidence": "evidence/lora-e1/light-HIGH-scope.json",
+      "wholeExcludedPatchCount": 1050,
+      "excludedRows": [
+        16,
+        5120
+      ],
+      "excludedLightDiffs": 201,
+      "strengths": [
+        0,
+        1,
+        -1
+      ],
+      "declaredDiagnosticRange": [
+        -1,
+        1
+      ],
+      "activation": {
+        "0": 0.25,
+        "17": -0.5,
+        "5119": 1
+      },
+      "comparisonResult": "PASS_DIAGNOSTIC_PARTIAL",
+      "allOutputsAndComparisons": [
+        {
+          "id": "light-HIGH-s0-initial",
+          "strength": 0,
+          "actualOutput": [
+            -0.09342752397060394,
+            0.0016610268503427505,
+            0.005145616829395294,
+            0.10052218288183212,
+            0.022552626207470894,
+            0.05325041711330414,
+            -0.04579925537109375,
+            -0.013788122683763504,
+            -0.0801541805267334,
+            0.021522250026464462,
+            -0.004330907016992569,
+            0.0035002571530640125,
+            -0.009618861600756645,
+            -0.013021335005760193,
+            -0.012810435146093369,
+            -0.0156392902135849
+          ],
+          "expectedOutput": [
+            -0.09342752397060394,
+            0.001661026617512107,
+            0.0051456172950565815,
+            0.10052218288183212,
+            0.022552626207470894,
+            0.05325041711330414,
+            -0.04579925537109375,
+            -0.013788122683763504,
+            -0.0801541805267334,
+            0.021522250026464462,
+            -0.004330908413976431,
+            0.0035002571530640125,
+            -0.009618861600756645,
+            -0.013021334074437618,
+            -0.012810435146093369,
+            -0.0156392902135849
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 1.3969838619232178e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "light-HIGH-s0-initial-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "716323810c36affed35f130f246daa9984fcecd50a7ecdc262b89d3655387c9d"
+          },
+          "biasArtifact": {
+            "file": "light-HIGH-s0-initial-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+          }
+        },
+        {
+          "id": "light-HIGH-s1-initial",
+          "strength": 1,
+          "actualOutput": [
+            -0.09358997642993927,
+            0.001852191984653473,
+            0.005111459642648697,
+            0.1005745679140091,
+            0.022563999518752098,
+            0.05315256863832474,
+            -0.04570585861802101,
+            -0.01375177875161171,
+            -0.08017013221979141,
+            0.021647445857524872,
+            -0.004308292642235756,
+            0.003505478613078594,
+            -0.009675130248069763,
+            -0.012903423979878426,
+            -0.01279386319220066,
+            -0.015739604830741882
+          ],
+          "expectedOutput": [
+            -0.09358997642993927,
+            0.0018521916354075074,
+            0.005111460108309984,
+            0.1005745604634285,
+            0.022563999518752098,
+            0.05315256491303444,
+            -0.04570585861802101,
+            -0.01375177875161171,
+            -0.08017013221979141,
+            0.021647445857524872,
+            -0.0043082935735583305,
+            0.003505478845909238,
+            -0.009675130248069763,
+            -0.012903423048555851,
+            -0.01279386319220066,
+            -0.01573960669338703
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 3.72290287486976e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 7.450580596923828e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "light-HIGH-s1-initial-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "68595f54c9199032f61fddba60b4e22928fd91528a580b2069fb4aca52680923"
+          },
+          "biasArtifact": {
+            "file": "light-HIGH-s1-initial-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "8c9f42a24af000e6948a3fb8684fe81bf86703c193f713ef096ab46b498ae913"
+          }
+        },
+        {
+          "id": "light-HIGH-s-1-initial",
+          "strength": -1,
+          "actualOutput": [
+            -0.09326507151126862,
+            0.0014698617160320282,
+            0.005179774947464466,
+            0.10046979784965515,
+            0.02254125475883484,
+            0.05334826558828354,
+            -0.04589265212416649,
+            -0.013824466615915298,
+            -0.08013822883367538,
+            0.021397054195404053,
+            -0.004353523254394531,
+            0.003495035693049431,
+            -0.009562592953443527,
+            -0.01313924603164196,
+            -0.012827008031308651,
+            -0.015538973733782768
+          ],
+          "expectedOutput": [
+            -0.09326507896184921,
+            0.0014698615996167064,
+            0.005179774481803179,
+            0.10046979784965515,
+            0.02254125289618969,
+            0.05334826558828354,
+            -0.04589265212416649,
+            -0.013824466615915298,
+            -0.08013822883367538,
+            0.021397054195404053,
+            -0.004353522788733244,
+            0.003495035460218787,
+            -0.009562592953443527,
+            -0.013139245100319386,
+            -0.012827008031308651,
+            -0.015538972802460194
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 3.72290287486976e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 7.450580596923828e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "light-HIGH-s-1-initial-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "950d65e3d51c247a6d76bb49abd7647f83fce8b0ed59636f539d29d8f7849155"
+          },
+          "biasArtifact": {
+            "file": "light-HIGH-s-1-initial-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "508efb2c42ec5378f7da7f208f17bcc67d9c2fe92bf73c7b8c0c1a6fe32e1af4"
+          }
+        },
+        {
+          "id": "light-HIGH-s1-reapply",
+          "strength": 1,
+          "actualOutput": [
+            -0.09358997642993927,
+            0.001852191984653473,
+            0.005111459642648697,
+            0.1005745679140091,
+            0.022563999518752098,
+            0.05315256863832474,
+            -0.04570585861802101,
+            -0.01375177875161171,
+            -0.08017013221979141,
+            0.021647445857524872,
+            -0.004308292642235756,
+            0.003505478613078594,
+            -0.009675130248069763,
+            -0.012903423979878426,
+            -0.01279386319220066,
+            -0.015739604830741882
+          ],
+          "expectedOutput": [
+            -0.09358997642993927,
+            0.0018521916354075074,
+            0.005111460108309984,
+            0.1005745604634285,
+            0.022563999518752098,
+            0.05315256491303444,
+            -0.04570585861802101,
+            -0.01375177875161171,
+            -0.08017013221979141,
+            0.021647445857524872,
+            -0.0043082935735583305,
+            0.003505478845909238,
+            -0.009675130248069763,
+            -0.012903423048555851,
+            -0.01279386319220066,
+            -0.01573960669338703
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 3.72290287486976e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 7.450580596923828e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "light-HIGH-s1-reapply-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "68595f54c9199032f61fddba60b4e22928fd91528a580b2069fb4aca52680923"
+          },
+          "biasArtifact": {
+            "file": "light-HIGH-s1-reapply-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "8c9f42a24af000e6948a3fb8684fe81bf86703c193f713ef096ab46b498ae913"
+          }
+        },
+        {
+          "id": "light-HIGH-s1-cancel-recovery",
+          "strength": 1,
+          "actualOutput": [
+            -0.09358997642993927,
+            0.001852191984653473,
+            0.005111459642648697,
+            0.1005745679140091,
+            0.022563999518752098,
+            0.05315256863832474,
+            -0.04570585861802101,
+            -0.01375177875161171,
+            -0.08017013221979141,
+            0.021647445857524872,
+            -0.004308292642235756,
+            0.003505478613078594,
+            -0.009675130248069763,
+            -0.012903423979878426,
+            -0.01279386319220066,
+            -0.015739604830741882
+          ],
+          "expectedOutput": [
+            -0.09358997642993927,
+            0.0018521916354075074,
+            0.005111460108309984,
+            0.1005745604634285,
+            0.022563999518752098,
+            0.05315256491303444,
+            -0.04570585861802101,
+            -0.01375177875161171,
+            -0.08017013221979141,
+            0.021647445857524872,
+            -0.0043082935735583305,
+            0.003505478845909238,
+            -0.009675130248069763,
+            -0.012903423048555851,
+            -0.01279386319220066,
+            -0.01573960669338703
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 3.72290287486976e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 7.450580596923828e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "light-HIGH-s1-cancel-recovery-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "68595f54c9199032f61fddba60b4e22928fd91528a580b2069fb4aca52680923"
+          },
+          "biasArtifact": {
+            "file": "light-HIGH-s1-cancel-recovery-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "8c9f42a24af000e6948a3fb8684fe81bf86703c193f713ef096ab46b498ae913"
+          }
+        }
+      ]
+    },
+    {
+      "pairId": "detail",
+      "side": "HIGH",
+      "fileName": "NSFW-22-H-e8.safetensors",
+      "originalSha256": "34e2144d3cd65360f97d09ccbe03e1c39a096df6c9234af5fe3899d1b63cda39",
+      "originalBytes": 613516752,
+      "newLoadWholeHash": "VERIFIED_ON_IMMUTABLE_RUNTIME_FILE; cached only for same File",
+      "baseFullSha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+      "nativeRegistryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+      "connectionRegistryHash": "cc6a329b0cffbdf3c2a50914843da33e7d402a815921e206ddf5f8b0fea4c806",
+      "loraSourceCommit": "4d5fd7363f40f0d743ead448193ef2bf1915bbdc",
+      "peerCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "generationReady": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "selectedWeightElements": 81920,
+      "selectedConsumerBiasElements": 16,
+      "selectedLoRaBiasElements": 0,
+      "sourceVariant": "linear-a-b",
+      "rank": 64,
+      "alpha": null,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "scopeEvidence": "evidence/lora-e1/detail-HIGH-scope.json",
+      "wholeExcludedPatchCount": 399,
+      "excludedRows": [
+        16,
+        5120
+      ],
+      "excludedLightDiffs": 0,
+      "strengths": [
+        0,
+        1,
+        -1
+      ],
+      "declaredDiagnosticRange": [
+        -1,
+        1
+      ],
+      "activation": {
+        "0": 0.25,
+        "17": -0.5,
+        "5119": 1
+      },
+      "comparisonResult": "PASS_DIAGNOSTIC_PARTIAL",
+      "allOutputsAndComparisons": [
+        {
+          "id": "detail-HIGH-s0-initial",
+          "strength": 0,
+          "actualOutput": [
+            -0.09342752397060394,
+            0.0016610268503427505,
+            0.005145616829395294,
+            0.10052218288183212,
+            0.022552626207470894,
+            0.05325041711330414,
+            -0.04579925537109375,
+            -0.013788122683763504,
+            -0.0801541805267334,
+            0.021522250026464462,
+            -0.004330907016992569,
+            0.0035002571530640125,
+            -0.009618861600756645,
+            -0.013021335005760193,
+            -0.012810435146093369,
+            -0.0156392902135849
+          ],
+          "expectedOutput": [
+            -0.09342752397060394,
+            0.001661026617512107,
+            0.0051456172950565815,
+            0.10052218288183212,
+            0.022552626207470894,
+            0.05325041711330414,
+            -0.04579925537109375,
+            -0.013788122683763504,
+            -0.0801541805267334,
+            0.021522250026464462,
+            -0.004330908413976431,
+            0.0035002571530640125,
+            -0.009618861600756645,
+            -0.013021334074437618,
+            -0.012810435146093369,
+            -0.0156392902135849
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 1.3969838619232178e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "detail-HIGH-s0-initial-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "716323810c36affed35f130f246daa9984fcecd50a7ecdc262b89d3655387c9d"
+          },
+          "biasArtifact": {
+            "file": "detail-HIGH-s0-initial-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+          }
+        },
+        {
+          "id": "detail-HIGH-s1-initial",
+          "strength": 1,
+          "actualOutput": [
+            -0.09332774579524994,
+            0.0018450990319252014,
+            0.00532187707722187,
+            0.10054536163806915,
+            0.022791964933276176,
+            0.053239770233631134,
+            -0.0458565279841423,
+            -0.013761155307292938,
+            -0.0802060216665268,
+            0.02144049108028412,
+            -0.0044165439903736115,
+            0.0035550715401768684,
+            -0.009547855705022812,
+            -0.012986531481146812,
+            -0.01284873764961958,
+            -0.01568342186510563
+          ],
+          "expectedOutput": [
+            -0.09332774579524994,
+            0.001845099963247776,
+            0.005321877542883158,
+            0.10054536163806915,
+            0.022791963070631027,
+            0.053239770233631134,
+            -0.0458565279841423,
+            -0.013761154375970364,
+            -0.0802060216665268,
+            0.021440492942929268,
+            -0.004416544921696186,
+            0.0035550715401768684,
+            -0.009547856636345387,
+            -0.012986531481146812,
+            -0.012848736718297005,
+            -0.01568342186510563
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 6.122718332335353e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 1.862645149230957e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "detail-HIGH-s1-initial-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "acf3873368bf24d25327750c134387409bb9a8e668476dd20586395a20583c1a"
+          },
+          "biasArtifact": {
+            "file": "detail-HIGH-s1-initial-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+          }
+        },
+        {
+          "id": "detail-HIGH-s-1-initial",
+          "strength": -1,
+          "actualOutput": [
+            -0.09352730214595795,
+            0.0014769546687602997,
+            0.004969356581568718,
+            0.10049900412559509,
+            0.02231328934431076,
+            0.05326106399297714,
+            -0.0457419827580452,
+            -0.01381509006023407,
+            -0.08010233938694,
+            0.021604008972644806,
+            -0.004245271906256676,
+            0.0034454427659511566,
+            -0.009689866565167904,
+            -0.013056136667728424,
+            -0.012772133573889732,
+            -0.015595157630741596
+          ],
+          "expectedOutput": [
+            -0.09352730214595795,
+            0.0014769532717764378,
+            0.004969357047230005,
+            0.10049900412559509,
+            0.02231328934431076,
+            0.053261060267686844,
+            -0.0457419827580452,
+            -0.013815090991556644,
+            -0.08010233938694,
+            0.021604007109999657,
+            -0.004245271440595388,
+            0.0034454427659511566,
+            -0.009689866565167904,
+            -0.013056137599050999,
+            -0.012772134505212307,
+            -0.015595157630741596
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 6.122718332335353e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 3.725290298461914e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "detail-HIGH-s-1-initial-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "04ac1368728abe3e7705e6c05c7cc8f1f88ab6763da0d1a78b4e8ed5467dd894"
+          },
+          "biasArtifact": {
+            "file": "detail-HIGH-s-1-initial-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+          }
+        },
+        {
+          "id": "detail-HIGH-s1-reapply",
+          "strength": 1,
+          "actualOutput": [
+            -0.09332774579524994,
+            0.0018450990319252014,
+            0.00532187707722187,
+            0.10054536163806915,
+            0.022791964933276176,
+            0.053239770233631134,
+            -0.0458565279841423,
+            -0.013761155307292938,
+            -0.0802060216665268,
+            0.02144049108028412,
+            -0.0044165439903736115,
+            0.0035550715401768684,
+            -0.009547855705022812,
+            -0.012986531481146812,
+            -0.01284873764961958,
+            -0.01568342186510563
+          ],
+          "expectedOutput": [
+            -0.09332774579524994,
+            0.001845099963247776,
+            0.005321877542883158,
+            0.10054536163806915,
+            0.022791963070631027,
+            0.053239770233631134,
+            -0.0458565279841423,
+            -0.013761154375970364,
+            -0.0802060216665268,
+            0.021440492942929268,
+            -0.004416544921696186,
+            0.0035550715401768684,
+            -0.009547856636345387,
+            -0.012986531481146812,
+            -0.012848736718297005,
+            -0.01568342186510563
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 6.122718332335353e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 1.862645149230957e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "detail-HIGH-s1-reapply-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "acf3873368bf24d25327750c134387409bb9a8e668476dd20586395a20583c1a"
+          },
+          "biasArtifact": {
+            "file": "detail-HIGH-s1-reapply-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+          }
+        },
+        {
+          "id": "detail-HIGH-s1-cancel-recovery",
+          "strength": 1,
+          "actualOutput": [
+            -0.09332774579524994,
+            0.0018450990319252014,
+            0.00532187707722187,
+            0.10054536163806915,
+            0.022791964933276176,
+            0.053239770233631134,
+            -0.0458565279841423,
+            -0.013761155307292938,
+            -0.0802060216665268,
+            0.02144049108028412,
+            -0.0044165439903736115,
+            0.0035550715401768684,
+            -0.009547855705022812,
+            -0.012986531481146812,
+            -0.01284873764961958,
+            -0.01568342186510563
+          ],
+          "expectedOutput": [
+            -0.09332774579524994,
+            0.001845099963247776,
+            0.005321877542883158,
+            0.10054536163806915,
+            0.022791963070631027,
+            0.053239770233631134,
+            -0.0458565279841423,
+            -0.013761154375970364,
+            -0.0802060216665268,
+            0.021440492942929268,
+            -0.004416544921696186,
+            0.0035550715401768684,
+            -0.009547856636345387,
+            -0.012986531481146812,
+            -0.012848736718297005,
+            -0.01568342186510563
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 6.122718332335353e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 1.862645149230957e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "detail-HIGH-s1-cancel-recovery-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "acf3873368bf24d25327750c134387409bb9a8e668476dd20586395a20583c1a"
+          },
+          "biasArtifact": {
+            "file": "detail-HIGH-s1-cancel-recovery-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+          }
+        }
+      ]
+    },
+    {
+      "pairId": "light",
+      "side": "LOW",
+      "fileName": "Bernini-R_LightX2V_low_noise.safetensors",
+      "originalSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+      "originalBytes": 1244141856,
+      "newLoadWholeHash": "VERIFIED_ON_IMMUTABLE_RUNTIME_FILE; cached only for same File",
+      "baseFullSha256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+      "nativeRegistryHash": "808eae1c5b721954dd0679bb723c739a792fcf2199203a564363d66501144796",
+      "connectionRegistryHash": "c780d26cb02a141ad50fbd316f292b5e90387a5949f67cad6a00aec78e3f4b9e",
+      "loraSourceCommit": "e1f03a4f6092c3154d5b47f166b77bbd32897ac9",
+      "peerCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "generationReady": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "selectedWeightElements": 81920,
+      "selectedConsumerBiasElements": 16,
+      "selectedLoRaBiasElements": 16,
+      "sourceVariant": "linear-down-up",
+      "rank": 128,
+      "alpha": 128,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "scopeEvidence": "evidence/lora-e1/light-LOW-scope.json",
+      "wholeExcludedPatchCount": 1050,
+      "excludedRows": [
+        16,
+        5120
+      ],
+      "excludedLightDiffs": 201,
+      "strengths": [
+        0,
+        1,
+        -1
+      ],
+      "declaredDiagnosticRange": [
+        -1,
+        1
+      ],
+      "activation": {
+        "0": 0.25,
+        "17": -0.5,
+        "5119": 1
+      },
+      "comparisonResult": "PASS_DIAGNOSTIC_PARTIAL",
+      "allOutputsAndComparisons": [
+        {
+          "id": "light-LOW-s0-initial",
+          "strength": 0,
+          "actualOutput": [
+            -0.0822296142578125,
+            -0.01670367456972599,
+            0.005276764743030071,
+            0.07709503173828125,
+            0.02548435889184475,
+            0.052226271480321884,
+            -0.053225792944431305,
+            -0.008055755868554115,
+            -0.06568895280361176,
+            0.010614192113280296,
+            -0.007516998797655106,
+            0.006339890882372856,
+            0.005040032789111137,
+            -0.012978419661521912,
+            -0.015704836696386337,
+            -0.003669602330774069
+          ],
+          "expectedOutput": [
+            -0.0822296142578125,
+            -0.01670367456972599,
+            0.0052767652086913586,
+            0.07709503173828125,
+            0.02548435889184475,
+            0.052226271480321884,
+            -0.053225792944431305,
+            -0.008055755868554115,
+            -0.06568895280361176,
+            0.010614192113280296,
+            -0.007516998797655106,
+            0.0063398899510502815,
+            0.005040032789111137,
+            -0.012978418730199337,
+            -0.015704836696386337,
+            -0.003669602796435356
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 9.313225746154785e-10,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "light-LOW-s0-initial-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "9ccabb6bff52fcc841b4cca9a863dc54b73a1cb032cd739d7b091d097529906b"
+          },
+          "biasArtifact": {
+            "file": "light-LOW-s0-initial-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e"
+          }
+        },
+        {
+          "id": "light-LOW-s1-initial",
+          "strength": 1,
+          "actualOutput": [
+            -0.08232666552066803,
+            -0.01664060913026333,
+            0.005310731008648872,
+            0.07711898535490036,
+            0.025551356375217438,
+            0.05225925147533417,
+            -0.053157344460487366,
+            -0.007894586771726608,
+            -0.06575307250022888,
+            0.010548831894993782,
+            -0.007581502199172974,
+            0.006417190656065941,
+            0.004935442470014095,
+            -0.012904569506645203,
+            -0.015783708542585373,
+            -0.0036938581615686417
+          ],
+          "expectedOutput": [
+            -0.08232666552066803,
+            -0.01664060913026333,
+            0.00531073147431016,
+            0.07711898535490036,
+            0.025551358237862587,
+            0.05225925147533417,
+            -0.053157344460487366,
+            -0.007894587703049183,
+            -0.06575307250022888,
+            0.010548831894993782,
+            -0.007581501733511686,
+            0.006417191121727228,
+            0.004935441538691521,
+            -0.012904568575322628,
+            -0.015783708542585373,
+            -0.003693857928737998
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 3.723471309058368e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 1.862645149230957e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "light-LOW-s1-initial-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "407bbc56f2f2f2a37041593f75195097b43041d4e81dd0fc67630523e28f9bdb"
+          },
+          "biasArtifact": {
+            "file": "light-LOW-s1-initial-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "84229270dbcc5a863baac723b4d93d442683f07c5b9f8855a99de01b3395a887"
+          }
+        },
+        {
+          "id": "light-LOW-s-1-initial",
+          "strength": -1,
+          "actualOutput": [
+            -0.08213257044553757,
+            -0.016766740009188652,
+            0.005242799408733845,
+            0.07707108557224274,
+            0.02541736140847206,
+            0.0521932952105999,
+            -0.053294241428375244,
+            -0.008216924965381622,
+            -0.06562483310699463,
+            0.01067955233156681,
+            -0.0074524953961372375,
+            0.006262589246034622,
+            0.005144624039530754,
+            -0.013052267953753471,
+            -0.0156259648501873,
+            -0.003645347896963358
+          ],
+          "expectedOutput": [
+            -0.08213257044553757,
+            -0.016766740009188652,
+            0.0052427989430725574,
+            0.07707108557224274,
+            0.025417359545826912,
+            0.0521932952105999,
+            -0.053294237703084946,
+            -0.008216924965381622,
+            -0.06562483310699463,
+            0.01067955233156681,
+            -0.007452495861798525,
+            0.006262589246034622,
+            0.005144624505192041,
+            -0.013052267953753471,
+            -0.0156259648501873,
+            -0.003645347896963358
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 3.723471309058368e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 3.725290298461914e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "light-LOW-s-1-initial-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "c5e23c7d757560c21b908a3b27549ca18ba2104b52e989d70c9103f96b9a6a59"
+          },
+          "biasArtifact": {
+            "file": "light-LOW-s-1-initial-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "0feebfe16245e397fa8d23a659fbdcbe59b5ad85a51688dc77cd18a2317bfca3"
+          }
+        },
+        {
+          "id": "light-LOW-s1-reapply",
+          "strength": 1,
+          "actualOutput": [
+            -0.08232666552066803,
+            -0.01664060913026333,
+            0.005310731008648872,
+            0.07711898535490036,
+            0.025551356375217438,
+            0.05225925147533417,
+            -0.053157344460487366,
+            -0.007894586771726608,
+            -0.06575307250022888,
+            0.010548831894993782,
+            -0.007581502199172974,
+            0.006417190656065941,
+            0.004935442470014095,
+            -0.012904569506645203,
+            -0.015783708542585373,
+            -0.0036938581615686417
+          ],
+          "expectedOutput": [
+            -0.08232666552066803,
+            -0.01664060913026333,
+            0.00531073147431016,
+            0.07711898535490036,
+            0.025551358237862587,
+            0.05225925147533417,
+            -0.053157344460487366,
+            -0.007894587703049183,
+            -0.06575307250022888,
+            0.010548831894993782,
+            -0.007581501733511686,
+            0.006417191121727228,
+            0.004935441538691521,
+            -0.012904568575322628,
+            -0.015783708542585373,
+            -0.003693857928737998
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 3.723471309058368e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 1.862645149230957e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "light-LOW-s1-reapply-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "407bbc56f2f2f2a37041593f75195097b43041d4e81dd0fc67630523e28f9bdb"
+          },
+          "biasArtifact": {
+            "file": "light-LOW-s1-reapply-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "84229270dbcc5a863baac723b4d93d442683f07c5b9f8855a99de01b3395a887"
+          }
+        },
+        {
+          "id": "light-LOW-s1-cancel-recovery",
+          "strength": 1,
+          "actualOutput": [
+            -0.08232666552066803,
+            -0.01664060913026333,
+            0.005310731008648872,
+            0.07711898535490036,
+            0.025551356375217438,
+            0.05225925147533417,
+            -0.053157344460487366,
+            -0.007894586771726608,
+            -0.06575307250022888,
+            0.010548831894993782,
+            -0.007581502199172974,
+            0.006417190656065941,
+            0.004935442470014095,
+            -0.012904569506645203,
+            -0.015783708542585373,
+            -0.0036938581615686417
+          ],
+          "expectedOutput": [
+            -0.08232666552066803,
+            -0.01664060913026333,
+            0.00531073147431016,
+            0.07711898535490036,
+            0.025551358237862587,
+            0.05225925147533417,
+            -0.053157344460487366,
+            -0.007894587703049183,
+            -0.06575307250022888,
+            0.010548831894993782,
+            -0.007581501733511686,
+            0.006417191121727228,
+            0.004935441538691521,
+            -0.012904568575322628,
+            -0.015783708542585373,
+            -0.003693857928737998
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 3.723471309058368e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 1.862645149230957e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "light-LOW-s1-cancel-recovery-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "407bbc56f2f2f2a37041593f75195097b43041d4e81dd0fc67630523e28f9bdb"
+          },
+          "biasArtifact": {
+            "file": "light-LOW-s1-cancel-recovery-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "84229270dbcc5a863baac723b4d93d442683f07c5b9f8855a99de01b3395a887"
+          }
+        }
+      ]
+    },
+    {
+      "pairId": "detail",
+      "side": "LOW",
+      "fileName": "NSFW-22-L-e8.safetensors",
+      "originalSha256": "d6b783742f4d5fd63a0223ae1d5bf64fc995a6b408480ac2a00528ae0d4146db",
+      "originalBytes": 613516752,
+      "newLoadWholeHash": "VERIFIED_ON_IMMUTABLE_RUNTIME_FILE; cached only for same File",
+      "baseFullSha256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+      "nativeRegistryHash": "808eae1c5b721954dd0679bb723c739a792fcf2199203a564363d66501144796",
+      "connectionRegistryHash": "c780d26cb02a141ad50fbd316f292b5e90387a5949f67cad6a00aec78e3f4b9e",
+      "loraSourceCommit": "e1f03a4f6092c3154d5b47f166b77bbd32897ac9",
+      "peerCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "generationReady": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "selectedWeightElements": 81920,
+      "selectedConsumerBiasElements": 16,
+      "selectedLoRaBiasElements": 0,
+      "sourceVariant": "linear-a-b",
+      "rank": 64,
+      "alpha": null,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "scopeEvidence": "evidence/lora-e1/detail-LOW-scope.json",
+      "wholeExcludedPatchCount": 399,
+      "excludedRows": [
+        16,
+        5120
+      ],
+      "excludedLightDiffs": 0,
+      "strengths": [
+        0,
+        1,
+        -1
+      ],
+      "declaredDiagnosticRange": [
+        -1,
+        1
+      ],
+      "activation": {
+        "0": 0.25,
+        "17": -0.5,
+        "5119": 1
+      },
+      "comparisonResult": "PASS_DIAGNOSTIC_PARTIAL",
+      "allOutputsAndComparisons": [
+        {
+          "id": "detail-LOW-s0-initial",
+          "strength": 0,
+          "actualOutput": [
+            -0.0822296142578125,
+            -0.01670367456972599,
+            0.005276764743030071,
+            0.07709503173828125,
+            0.02548435889184475,
+            0.052226271480321884,
+            -0.053225792944431305,
+            -0.008055755868554115,
+            -0.06568895280361176,
+            0.010614192113280296,
+            -0.007516998797655106,
+            0.006339890882372856,
+            0.005040032789111137,
+            -0.012978419661521912,
+            -0.015704836696386337,
+            -0.003669602330774069
+          ],
+          "expectedOutput": [
+            -0.0822296142578125,
+            -0.01670367456972599,
+            0.0052767652086913586,
+            0.07709503173828125,
+            0.02548435889184475,
+            0.052226271480321884,
+            -0.053225792944431305,
+            -0.008055755868554115,
+            -0.06568895280361176,
+            0.010614192113280296,
+            -0.007516998797655106,
+            0.0063398899510502815,
+            0.005040032789111137,
+            -0.012978418730199337,
+            -0.015704836696386337,
+            -0.003669602796435356
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 9.313225746154785e-10,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "detail-LOW-s0-initial-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "9ccabb6bff52fcc841b4cca9a863dc54b73a1cb032cd739d7b091d097529906b"
+          },
+          "biasArtifact": {
+            "file": "detail-LOW-s0-initial-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e"
+          }
+        },
+        {
+          "id": "detail-LOW-s1-initial",
+          "strength": 1,
+          "actualOutput": [
+            -0.08215546607971191,
+            -0.016725851222872734,
+            0.005239023827016354,
+            0.07696991413831711,
+            0.025402218103408813,
+            0.05225592106580734,
+            -0.05319035053253174,
+            -0.00815236009657383,
+            -0.0656483918428421,
+            0.010660834610462189,
+            -0.007507789880037308,
+            0.006349360570311546,
+            0.005051376298069954,
+            -0.0129336416721344,
+            -0.01584785059094429,
+            -0.0035797087475657463
+          ],
+          "expectedOutput": [
+            -0.08215545862913132,
+            -0.016725851222872734,
+            0.005239023827016354,
+            0.07696991413831711,
+            0.025402216240763664,
+            0.05225592106580734,
+            -0.05319035053253174,
+            -0.008152359165251255,
+            -0.0656483843922615,
+            0.010660833679139614,
+            -0.007507790345698595,
+            0.006349361035972834,
+            0.005051375832408667,
+            -0.0129336416721344,
+            -0.01584785059094429,
+            -0.0035797087475657463
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 3.7148311093915254e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 7.450580596923828e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "detail-LOW-s1-initial-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "c70818739964edb103b91824cd1472ca8f0b9a6b5aa6d72f726aeae96c2b0a73"
+          },
+          "biasArtifact": {
+            "file": "detail-LOW-s1-initial-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e"
+          }
+        },
+        {
+          "id": "detail-LOW-s-1-initial",
+          "strength": -1,
+          "actualOutput": [
+            -0.08230376988649368,
+            -0.016681497916579247,
+            0.0053145065903663635,
+            0.07722015678882599,
+            0.025566499680280685,
+            0.052196621894836426,
+            -0.05326123163104057,
+            -0.00795915350317955,
+            -0.06572951376438141,
+            0.010567549616098404,
+            -0.007526205852627754,
+            0.006330419331789017,
+            0.0050286902114748955,
+            -0.013023193925619125,
+            -0.015561822801828384,
+            -0.003759496845304966
+          ],
+          "expectedOutput": [
+            -0.08230376988649368,
+            -0.016681497916579247,
+            0.0053145065903663635,
+            0.07722014933824539,
+            0.025566501542925835,
+            0.052196621894836426,
+            -0.05326123163104057,
+            -0.007959152571856976,
+            -0.06572951376438141,
+            0.010567550547420979,
+            -0.007526207249611616,
+            0.006330419331789017,
+            0.0050286902114748955,
+            -0.0130231948569417,
+            -0.015561822801828384,
+            -0.0037594970781356096
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 3.7148311093915254e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 7.450580596923828e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "detail-LOW-s-1-initial-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "da784f3418eb5871cd0d95adcf74313241087012c8ba545ccc28f9cbf9c9a035"
+          },
+          "biasArtifact": {
+            "file": "detail-LOW-s-1-initial-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e"
+          }
+        },
+        {
+          "id": "detail-LOW-s1-reapply",
+          "strength": 1,
+          "actualOutput": [
+            -0.08215546607971191,
+            -0.016725851222872734,
+            0.005239023827016354,
+            0.07696991413831711,
+            0.025402218103408813,
+            0.05225592106580734,
+            -0.05319035053253174,
+            -0.00815236009657383,
+            -0.0656483918428421,
+            0.010660834610462189,
+            -0.007507789880037308,
+            0.006349360570311546,
+            0.005051376298069954,
+            -0.0129336416721344,
+            -0.01584785059094429,
+            -0.0035797087475657463
+          ],
+          "expectedOutput": [
+            -0.08215545862913132,
+            -0.016725851222872734,
+            0.005239023827016354,
+            0.07696991413831711,
+            0.025402216240763664,
+            0.05225592106580734,
+            -0.05319035053253174,
+            -0.008152359165251255,
+            -0.0656483843922615,
+            0.010660833679139614,
+            -0.007507790345698595,
+            0.006349361035972834,
+            0.005051375832408667,
+            -0.0129336416721344,
+            -0.01584785059094429,
+            -0.0035797087475657463
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 3.7148311093915254e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 7.450580596923828e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "detail-LOW-s1-reapply-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "c70818739964edb103b91824cd1472ca8f0b9a6b5aa6d72f726aeae96c2b0a73"
+          },
+          "biasArtifact": {
+            "file": "detail-LOW-s1-reapply-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e"
+          }
+        },
+        {
+          "id": "detail-LOW-s1-cancel-recovery",
+          "strength": 1,
+          "actualOutput": [
+            -0.08215546607971191,
+            -0.016725851222872734,
+            0.005239023827016354,
+            0.07696991413831711,
+            0.025402218103408813,
+            0.05225592106580734,
+            -0.05319035053253174,
+            -0.00815236009657383,
+            -0.0656483918428421,
+            0.010660834610462189,
+            -0.007507789880037308,
+            0.006349360570311546,
+            0.005051376298069954,
+            -0.0129336416721344,
+            -0.01584785059094429,
+            -0.0035797087475657463
+          ],
+          "expectedOutput": [
+            -0.08215545862913132,
+            -0.016725851222872734,
+            0.005239023827016354,
+            0.07696991413831711,
+            0.025402216240763664,
+            0.05225592106580734,
+            -0.05319035053253174,
+            -0.008152359165251255,
+            -0.0656483843922615,
+            0.010660833679139614,
+            -0.007507790345698595,
+            0.006349361035972834,
+            0.005051375832408667,
+            -0.0129336416721344,
+            -0.01584785059094429,
+            -0.0035797087475657463
+          ],
+          "weightComparison": {
+            "passed": true,
+            "compared": 81920,
+            "maxAbsoluteError": 3.7148311093915254e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            }
+          },
+          "biasComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 0,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "outputComparison": {
+            "passed": true,
+            "compared": 16,
+            "maxAbsoluteError": 7.450580596923828e-09,
+            "failedCount": 0,
+            "failedIndices": [],
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            }
+          },
+          "weightArtifact": {
+            "file": "detail-LOW-s1-cancel-recovery-actual-weight.f32",
+            "bytes": 327680,
+            "sha256": "c70818739964edb103b91824cd1472ca8f0b9a6b5aa6d72f726aeae96c2b0a73"
+          },
+          "biasArtifact": {
+            "file": "detail-LOW-s1-cancel-recovery-actual-bias.f32",
+            "bytes": 64,
+            "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e"
+          }
+        }
+      ]
+    }
+  ],
+  "aggregateVerification": [
+    {
+      "side": "HIGH",
+      "resultSHA256": "27e90af150c7e264d8cd661e2cef70819ff9e7620dddb3eb3c5fec50e406fc53",
+      "cases": 10,
+      "weightElementsCompared": 819200,
+      "biasElementsCompared": 160,
+      "outputsCompared": 160,
+      "maxWeightError": 6.122718332335353e-09,
+      "maxBiasError": 0,
+      "maxOutputError": 7.450580596923828e-09,
+      "baseWholeHashVerified": true,
+      "baseUnchangedAcrossTrial": true,
+      "copySurvivesPreparedRelease": true,
+      "lifecycleCount": 19,
+      "lifecycleKinds": [
+        "base-restore",
+        "cancel-prepare-after-real-read",
+        "stale-plan",
+        "validation-failure-rollback",
+        "cooperative-consumer-cancel",
+        "cancel-recovery",
+        "cancel-after-native-commit-rollback",
+        "base-restore",
+        "cancel-prepare-after-real-read",
+        "stale-plan",
+        "validation-failure-rollback",
+        "cooperative-consumer-cancel",
+        "cancel-recovery",
+        "cancel-after-native-commit-rollback",
+        "missing",
+        "duplicate",
+        "checksum",
+        "binding",
+        "old-rollback-new-epoch"
+      ]
+    },
+    {
+      "side": "LOW",
+      "resultSHA256": "236289c32d10c39a4180f95a01c9b417c14abd7443ead4be3363520c92870e6a",
+      "cases": 10,
+      "weightElementsCompared": 819200,
+      "biasElementsCompared": 160,
+      "outputsCompared": 160,
+      "maxWeightError": 3.723471309058368e-09,
+      "maxBiasError": 0,
+      "maxOutputError": 7.450580596923828e-09,
+      "baseWholeHashVerified": true,
+      "baseUnchangedAcrossTrial": true,
+      "copySurvivesPreparedRelease": true,
+      "lifecycleCount": 19,
+      "lifecycleKinds": [
+        "base-restore",
+        "cancel-prepare-after-real-read",
+        "stale-plan",
+        "validation-failure-rollback",
+        "cooperative-consumer-cancel",
+        "cancel-recovery",
+        "cancel-after-native-commit-rollback",
+        "base-restore",
+        "cancel-prepare-after-real-read",
+        "stale-plan",
+        "validation-failure-rollback",
+        "cooperative-consumer-cancel",
+        "cancel-recovery",
+        "cancel-after-native-commit-rollback",
+        "missing",
+        "duplicate",
+        "checksum",
+        "binding",
+        "old-committed-rollback-new-epoch"
+      ]
+    }
+  ],
+  "notExecuted": [
+    "FULL adapter acceptance",
+    "full original-model session",
+    "generation contribution",
+    "management snapshot publication",
+    "two-pair composition"
+  ],
+  "lease": "Native consumer independent-copy only; no lease fabricated; generic SDK lease fixtures separate"
+}

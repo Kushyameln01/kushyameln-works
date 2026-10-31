@@ -1,0 +1,298 @@
+{
+  "rect": {
+    "scope": "Git-received actual diagnostic VAE means + Hike/codec; no VAE NN rerun or generated sample",
+    "cases": [
+      {
+        "name": "Git-received actual F1/rect manifests and mean fixtures match declared profiles",
+        "status": "PASS"
+      },
+      {
+        "name": "actual VAE diagnostic f1 mean -> Hike normalize -> pinned G1C codec -> Hike restore allvalues",
+        "status": "PASS"
+      },
+      {
+        "name": "actual VAE diagnostic rect mean -> Hike normalize -> pinned G1C codec -> Hike restore allvalues",
+        "status": "PASS"
+      },
+      {
+        "name": "same128count does not authorize legacy or arbitrary shape and wrong metadata",
+        "status": "PASS"
+      },
+      {
+        "name": "dedicated rect native ABI uses i/8 and rejects wrongcount/capacity/nonfinite",
+        "status": "PASS"
+      },
+      {
+        "name": "three explicitly supported profiles reuse fixed arena without caller shape reinterpretation",
+        "status": "PASS"
+      },
+      {
+        "name": "rect disposed operations rejected",
+        "status": "PASS"
+      }
+    ],
+    "outputs": [
+      {
+        "profile": "wan21-raw-f32-1x16x16",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          2
+        ],
+        "fixtureFileSHA256": "ab1c7fb141607c8560b9dfa67767b76e282eb25db15921228366e60f5655c9bc",
+        "manifestSHA256": "fa219b8e7e0b6b0be37c598d3dfedadb29505ad1407fe3f8270d8655dd46828c",
+        "normalizedSHA256": "a46b61787b07e1f4be3d49d2f4ed18686c8ae5141f3a11c7117e046f45575020",
+        "restoredSHA256": "27d9cf7f6251c0819c96ebc653b6fdcd8ed0971b34cab6eb14c79fe582dd16a7",
+        "maxRoundTripAbs": 1.1920928955078125e-07
+      },
+      {
+        "profile": "wan21-raw-f32-1x16x32",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "fixtureFileSHA256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8",
+        "manifestSHA256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a",
+        "normalizedSHA256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5",
+        "restoredSHA256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+        "maxRoundTripAbs": 2.384185791015625e-07
+      }
+    ],
+    "stats": {
+      "calls": 254,
+      "memoryBytes": 1114112,
+      "arenaBytes": 1024,
+      "inputCopyBytes": 103936,
+      "outputCopyBytes": 103936,
+      "workspaceReused": true,
+      "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+      "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+      "profiles": [
+        "wan21-raw-f32-5x16x16",
+        "wan21-raw-f32-1x16x16",
+        "wan21-raw-f32-1x16x32"
+      ],
+      "imports": 0
+    },
+    "wasmSHA256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+    "roundTripTolerance": 2e-06,
+    "actualManifestsReceived": true,
+    "actualMeanFixturesReceived": true,
+    "actualGraphBundleReceived": false,
+    "vaeNeuralExecutionByThisTest": false,
+    "jsNumericalFallback": false
+  },
+  "f1": {
+    "scope": "F1 and legacy posterior-mean arithmetic only; no VAE model inference or generated-sample path",
+    "cases": [
+      {
+        "name": "F1 all64 values use perchannel positions4 and staged f32",
+        "status": "PASS"
+      },
+      {
+        "name": "F1 rawzero gets source channel coefficients, no sampler skip",
+        "status": "PASS"
+      },
+      {
+        "name": "F1 inverse all64 values preserves multiply divide add order",
+        "status": "PASS"
+      },
+      {
+        "name": "legacy128 guard stays strict and explicit F1 guard accepts only F1",
+        "status": "PASS"
+      },
+      {
+        "name": "F1 rejects samecountwrongshape model semantics markers and nonfinite",
+        "status": "PASS"
+      },
+      {
+        "name": "F1 metadata context and arrays are owned, repeated mixedprofiles reuse arena",
+        "status": "PASS"
+      },
+      {
+        "name": "F1 versionedmean existing WKTENSOR numeric roundtrip",
+        "status": "PASS"
+      },
+      {
+        "name": "pinned actual G1C codec preserves F1 context/meaning/model and numerical roundtrip",
+        "status": "PASS"
+      },
+      {
+        "name": "dedicated native64 ABI rejects wrongcount capacity and nonfinite",
+        "status": "PASS"
+      },
+      {
+        "name": "F1 disposed operations rejected",
+        "status": "PASS"
+      }
+    ],
+    "roundTripTolerance": 2e-06,
+    "maxRoundTripError": 1.1920928955078125e-07,
+    "stats": {
+      "calls": 159,
+      "memoryBytes": 1114112,
+      "arenaBytes": 1024,
+      "inputCopyBytes": 53504,
+      "outputCopyBytes": 53504,
+      "workspaceReused": true,
+      "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+      "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+      "profiles": [
+        "wan21-raw-f32-5x16x16",
+        "wan21-raw-f32-1x16x16",
+        "wan21-raw-f32-1x16x32"
+      ],
+      "imports": 0
+    },
+    "wasmSHA256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+    "normalizedSHA256": "73a8342eb86d6dbb1495733cb6bb0135dda93fcd0aeb569f26b87f6015c6e4a4",
+    "restoredSHA256": "c8d4592c8a20d0f90940ee64d3103859f66e44a7dbdbb9d28ec4221c951a60ae",
+    "callerPreserved": true,
+    "jsNumericalFallback": false,
+    "actualVaeBundleReceived": false,
+    "metadataCodecScope": "actual pinned54bfead G1C codec, not merged into current runtime"
+  },
+  "legacy": {
+    "scope": "Wan21 raw posterior-mean normalization only; no generatedsamples or model inference",
+    "cases": [
+      {
+        "name": "all16channels use exact source-ordered f32 normalization",
+        "status": "PASS"
+      },
+      {
+        "name": "restore uses multiply divide add order for all16channels",
+        "status": "PASS"
+      },
+      {
+        "name": "roundtrip stays within predeclared2e-6 tolerance",
+        "status": "PASS"
+      },
+      {
+        "name": "raw zeros are normalized perchannel rather than skipped",
+        "status": "PASS"
+      },
+      {
+        "name": "meaning model shape finite and normalization provenance rejected",
+        "status": "PASS"
+      },
+      {
+        "name": "owned arrays metadata and repeated memory are preserved",
+        "status": "PASS"
+      },
+      {
+        "name": "existing WKTENSOR codec preserves versioned meaning and restoresraw",
+        "status": "PASS"
+      },
+      {
+        "name": "native WASM rejects nonfinite and profile/capacity errors before writes",
+        "status": "PASS"
+      },
+      {
+        "name": "WASM hash mismatch rejects without fallback",
+        "status": "PASS"
+      },
+      {
+        "name": "disposed factory rejects operations",
+        "status": "PASS"
+      }
+    ],
+    "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+    "normalizedSha256": "fcba467e552da26d7857065cb0256e6b9417caf0621793bfc6c845f5038799e9",
+    "restoredSha256": "b6c38aa4030ff02f5b39d8cd6f5f589017609cefc3e187afd2513fa71beef0c2",
+    "maxRoundTripError": 2.384185791015625e-07,
+    "roundTripTolerance": 2e-06,
+    "stats": {
+      "calls": 206,
+      "memoryBytes": 1114112,
+      "arenaBytes": 1024,
+      "inputCopyBytes": 105472,
+      "outputCopyBytes": 105472,
+      "workspaceReused": true,
+      "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+      "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+      "profiles": [
+        "wan21-raw-f32-5x16x16",
+        "wan21-raw-f32-1x16x16",
+        "wan21-raw-f32-1x16x32"
+      ],
+      "imports": 0
+    },
+    "jsNumericalFallback": false,
+    "callerBuffersPreserved": true
+  },
+  "browserVersion": "154.0.8037.57",
+  "network": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/test-cases.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/test-f1-cases.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/test-rect-cases.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/e6/g1c-tensor.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/latent-space.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/tensor-interop.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/inference/tensor.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/kernel-registry.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/build/latent-space.wasm"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/fixture/f1-manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/fixture/f1-mean.wktensor"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/fixture/rect-manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/fixture/rect-mean.wktensor"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/build/latent-space.wasm"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:37103/diffusion-models/latent-space/build/latent-space.wasm"
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "blockedRequests": []
+}

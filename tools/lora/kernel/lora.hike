@@ -3,10 +3,16 @@ package main
 // Host supplies disjoint validated arenas; all pointers use byte addresses.
 cfunc LoraMerge(base *float32, down *float32, up *float32, out *float32, rows int32, cols int32, rank int32, scale float32) int32 {
     if rows < 1 || cols < 1 || rank < 1 { return -1 }
-    for i := int32(0); i < rows; i = i + 1 {
-        for j := int32(0); j < cols; j = j + 1 {
-            var sum float32 = 0
-            for k := int32(0); k < rank; k = k + 1 { sum = sum + up[i * rank + k] * down[k * cols + j] }
+    // The fixed compiler bump-allocates declared locals. Reuse these slots;
+    // declarations inside the loops would grow its stack into host buffers.
+    var i int32 = 0
+    var j int32 = 0
+    var k int32 = 0
+    var sum float32 = 0
+    for i = 0; i < rows; i = i + 1 {
+        for j = 0; j < cols; j = j + 1 {
+            sum = 0
+            for k = 0; k < rank; k = k + 1 { sum = sum + up[i * rank + k] * down[k * cols + j] }
             out[i * cols + j] = base[i * cols + j] + scale * sum
         }
     }
@@ -25,17 +31,26 @@ cfunc LoraCopy(input *float32, out *float32, n int32) int32 {
 // mode 1 = BF16, mode 2 = IEEE binary16. Reject infinities and NaNs.
 cfunc LoraDecode(input *int32, out *float32, n int32, mode int32) int32 {
     if n < 0 || mode < 1 || mode > 2 { return -1 }
-    for i := int32(0); i < n; i = i + 1 {
-        bits := input[i]
-        divisor := int32(128)
-        maxExp := int32(255)
-        bias := int32(127)
+    var i int32 = 0
+    var bits int32 = 0
+    var divisor int32 = 128
+    var maxExp int32 = 255
+    var bias int32 = 127
+    var exponent int32 = 0
+    var fraction int32 = 0
+    var value float32 = 0
+    var power int32 = 0
+    for i = 0; i < n; i = i + 1 {
+        bits = input[i]
+        divisor = 128
+        maxExp = 255
+        bias = 127
         if mode == 2 { divisor = 1024; maxExp = 31; bias = 15 }
-        exponent := (bits / divisor) % (maxExp + 1)
-        fraction := bits % divisor
+        exponent = (bits / divisor) % (maxExp + 1)
+        fraction = bits % divisor
         if exponent == maxExp { return -2 }
-        var value float32 = float32(fraction) / float32(divisor)
-        power := exponent - bias
+        value = float32(fraction) / float32(divisor)
+        power = exponent - bias
         if exponent == 0 { power = 1 - bias } else { value = value + 1 }
         for power < 0 { value = value * 0.5; power = power + 1 }
         for power > 0 { value = value * 2; power = power - 1 }

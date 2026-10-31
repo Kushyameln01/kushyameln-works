@@ -1,0 +1,301 @@
+{
+  "contractVersion": "lora-diffusion-diagnostic-adapter/0.1",
+  "nativeContract": "lora-connection/2.0-draft.1",
+  "status": "EXECUTABLE_PARTIAL_DIAGNOSTIC_VERIFIED_MANAGEMENT_ADOPTION_PENDING",
+  "implementation": {
+    "repository": "Kushyameln01/kushyameln-works",
+    "commit": "e1f03a4f6092c3154d5b47f166b77bbd32897ac9",
+    "path": "docs/shared/inference/lora/diffusion-diagnostic-adapter.mjs",
+    "factory": "createDiffusionDiagnosticAdapter",
+    "requiredArguments": [
+      "consumer",
+      "baseProvider",
+      "isOwnerCurrent"
+    ],
+    "sha256": "bcea7b495e819d1e1052543f36cbdad0ed8515e74bd8914cf66dc03b093c6e4f"
+  },
+  "nativeContractSource": {
+    "commit": "e1f03a4f6092c3154d5b47f166b77bbd32897ac9",
+    "path": "development/lora/contracts/connection-contract-v2.json",
+    "sha256": "87e132af1739114f171254888c04f3050df27c47cd02e92fd67bc5babe4ac6d2"
+  },
+  "originalInventory": {
+    "commit": "e1f03a4f6092c3154d5b47f166b77bbd32897ac9",
+    "path": "development/lora/contracts/original-inventory.json",
+    "sha256": "97229d6ea17738dc983fa898a38e771a784aeafff9513734c5af0ba0250c23b3"
+  },
+  "peer": {
+    "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+    "path": "docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md",
+    "registryVersion": "bernini-diagnostic-registry/0.1",
+    "executionProfileId": "bernini-q16x5120-f32-wasm-v1",
+    "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1"
+  },
+  "bindings": [
+    {
+      "weightId": "q.weight",
+      "kind": "runtime-input",
+      "name": "weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "selectedShape": [
+        16,
+        5120
+      ]
+    },
+    {
+      "weightId": "q.bias",
+      "kind": "hike-parameter",
+      "name": "bias",
+      "fullShape": [
+        5120
+      ],
+      "selectedShape": [
+        16
+      ]
+    }
+  ],
+  "coordinates": {
+    "loRa": "elements in original full tensor",
+    "native": "elements in selected slice",
+    "mapping": "nativeOffset=fullOffset-rowStart*cols; no byte reinterpretation",
+    "rowStart": 0,
+    "rowCount": 16,
+    "columns": [
+      0,
+      5120
+    ]
+  },
+  "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+  "variantCoverage": {
+    "selected": [
+      "linear-down-up",
+      "linear-a-b",
+      "additive-diff-b"
+    ],
+    "diagnosticExcluded": [
+      "all light additive-diff patches",
+      "all targets and rows outside declared slice"
+    ],
+    "nativeModuleSupportedBindings": [
+      "runtime-input",
+      "initializer",
+      "hike-parameter"
+    ],
+    "actualPeerBindings": [
+      "runtime-input",
+      "hike-parameter"
+    ],
+    "legacyV1Adapter": "initializer + FULL only; no relabeling"
+  },
+  "coverage": "PARTIAL",
+  "scope": "diagnostic-projection",
+  "completeAdapter": false,
+  "generationReady": false,
+  "snapshotPublished": false,
+  "ownership": {
+    "actualMode": "independent-copy",
+    "preparedRelease": "Only after stage terminal and ownership receipt; active feed copy survives package/candidate-history release",
+    "candidateRelease": "finalize(plan) only after terminal stage/recovery",
+    "nativeLease": "NOT_SUPPORTED; generic SDK fixture is separate",
+    "teardownOwner": "caller owns consumer/stage/base; finish in-flight cooperative work first"
+  },
+  "cancel": {
+    "semantics": "Cooperative stop after bounded Hike/ORT; SDK invocation current and resource owner current are distinct",
+    "cleanup": "Same owner and matching native candidate/epoch may restore; stale owner/epoch cannot overwrite newer feed"
+  },
+  "managerContract": {
+    "pairs": "light or detail selection/switch only",
+    "sideInstances": "HIGH and LOW use distinct SDK instances",
+    "commonRevision": "NO implicit common revision; manager maps sdkInstanceId+local input/application revision to its own immutable snapshot",
+    "publishGate": "Diagnostic CONSUMER_APPLIED does not authorize generation; native SDK never publishes snapshot",
+    "states": [
+      "SOURCE_INSPECTED",
+      "PREPARED",
+      "STAGED",
+      "CONSUMER_APPLIED",
+      "SNAPSHOT_PUBLISHED (manager only; NOT_RUN)"
+    ]
+  },
+  "sideMappings": [
+    {
+      "side": "HIGH",
+      "loraSourceCommit": "4d5fd7363f40f0d743ead448193ef2bf1915bbdc",
+      "nativeRegistryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+      "connectionRegistryHash": "cc6a329b0cffbdf3c2a50914843da33e7d402a815921e206ddf5f8b0fea4c806",
+      "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+      "pairAlternatives": [
+        {
+          "pairId": "light",
+          "sdkInstanceId": "dd979c1e-c61f-4f71-be56-fdff391b8aa1",
+          "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+          "diagnosticLocalRevisions": [
+            {
+              "strength": 0,
+              "input": 1,
+              "application": 1,
+              "planId": "3d7f83a95fda8f8c9b6ecb15bd6022adc7403c981dc727c2db12c6c0973c3713"
+            },
+            {
+              "strength": 1,
+              "input": 2,
+              "application": 2,
+              "planId": "ee79a2faebba3adebe90009a0554f00576a1fb974f89f66a038f8d3c6939284e"
+            },
+            {
+              "strength": -1,
+              "input": 3,
+              "application": 3,
+              "planId": "51cb90ea234ee1316292d47d1c8df4d5ea873d59d28dffe78bc33cd3716955cc"
+            },
+            {
+              "strength": 1,
+              "input": 4,
+              "application": 4,
+              "planId": "cc8a8dac1b8ff1788279b85a38e1dccfe82e1ba696fdcb170a98531f252cef19"
+            },
+            {
+              "strength": 1,
+              "input": 10,
+              "application": 10,
+              "planId": "c48bd9e057282cf37d05cea139086b76ef63b1e34a11527c174f94fed3617557"
+            }
+          ]
+        },
+        {
+          "pairId": "detail",
+          "sdkInstanceId": "9e9b17f3-4042-4321-a6c5-58dfd0a1b18c",
+          "sourceSha256": "34e2144d3cd65360f97d09ccbe03e1c39a096df6c9234af5fe3899d1b63cda39",
+          "diagnosticLocalRevisions": [
+            {
+              "strength": 0,
+              "input": 1,
+              "application": 1,
+              "planId": "f4fdbe77afaf6a3524a786dd1256e0a2ee30811c140a8647b3745df4d3b4c557"
+            },
+            {
+              "strength": 1,
+              "input": 2,
+              "application": 2,
+              "planId": "ed3f1f5b86c2c2c5a6a96f4f5c06031c044ecc88c693a763fea608ce223e01e5"
+            },
+            {
+              "strength": -1,
+              "input": 3,
+              "application": 3,
+              "planId": "e5182300e5a4dde8780fc5489102f510d3f7786a47530ebf5b4d9d108580df9b"
+            },
+            {
+              "strength": 1,
+              "input": 4,
+              "application": 4,
+              "planId": "45ead0c20695c405af5d1411f1460a2829dfa6258689db7a5010a7e3bae18765"
+            },
+            {
+              "strength": 1,
+              "input": 10,
+              "application": 10,
+              "planId": "5ad0e0a766024251c56456979e4ccb184f05f30b904d6632bca87d125aab68d7"
+            }
+          ]
+        }
+      ],
+      "managerSnapshot": "NOT_PUBLISHED"
+    },
+    {
+      "side": "LOW",
+      "loraSourceCommit": "e1f03a4f6092c3154d5b47f166b77bbd32897ac9",
+      "nativeRegistryHash": "808eae1c5b721954dd0679bb723c739a792fcf2199203a564363d66501144796",
+      "connectionRegistryHash": "c780d26cb02a141ad50fbd316f292b5e90387a5949f67cad6a00aec78e3f4b9e",
+      "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+      "pairAlternatives": [
+        {
+          "pairId": "light",
+          "sdkInstanceId": "a7f43581-b8cf-41cd-9107-24eae21a4bc4",
+          "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+          "diagnosticLocalRevisions": [
+            {
+              "strength": 0,
+              "input": 1,
+              "application": 1,
+              "planId": "4690a76000fdc0d7a60da0a688198d8af83ef8877d993b1d7e54b659d8e51860"
+            },
+            {
+              "strength": 1,
+              "input": 2,
+              "application": 2,
+              "planId": "afb1bc7a64a52b33520f0ebba17833f2b95fcbf0fb50f54657a9cf6c6de2c192"
+            },
+            {
+              "strength": -1,
+              "input": 3,
+              "application": 3,
+              "planId": "e28a4eafe5bb829d9146f9ea0ff279b0144d1e087a5615827881360f7e940aeb"
+            },
+            {
+              "strength": 1,
+              "input": 4,
+              "application": 4,
+              "planId": "97f18c64a7030c61e940f6892c33229855b04df9724c54b9866605f8be43ce4f"
+            },
+            {
+              "strength": 1,
+              "input": 10,
+              "application": 10,
+              "planId": "bbff0472cfcf80f587bf44dbc7d57fda65e613af2b36c8fcc38e6c33be541ade"
+            }
+          ]
+        },
+        {
+          "pairId": "detail",
+          "sdkInstanceId": "2765898e-8b72-429f-aa06-f4491440789e",
+          "sourceSha256": "d6b783742f4d5fd63a0223ae1d5bf64fc995a6b408480ac2a00528ae0d4146db",
+          "diagnosticLocalRevisions": [
+            {
+              "strength": 0,
+              "input": 1,
+              "application": 1,
+              "planId": "b072081a6dcdd9e45b034ba0bf3cc427bad9c7d968034d694db31dd10562711a"
+            },
+            {
+              "strength": 1,
+              "input": 2,
+              "application": 2,
+              "planId": "347c16a1a945bc002f841c603122eef73889aa92cdc4173a00fff4728d2068ce"
+            },
+            {
+              "strength": -1,
+              "input": 3,
+              "application": 3,
+              "planId": "b5ebc883e39a796e3523ef0746490ae7c4d69eb23c1d64d4843a63547e2f40b2"
+            },
+            {
+              "strength": 1,
+              "input": 4,
+              "application": 4,
+              "planId": "f61926fd59eb61319df054a379a7a54433fbac70e8c296de47701103e0faaa03"
+            },
+            {
+              "strength": 1,
+              "input": 10,
+              "application": 10,
+              "planId": "d759200218900c0e40116599c6a72a122ec62a71c63c8e88eb3c4becaad7e746"
+            }
+          ]
+        }
+      ],
+      "managerSnapshot": "NOT_PUBLISHED"
+    }
+  ],
+  "results": "JOINT-LORA-RESULT.md",
+  "scopeEvidence": "evidence/lora-e1/*-scope.json",
+  "limitations": [
+    "No full-model session or generation contribution",
+    "No full-target acceptance",
+    "No simultaneous pair composition",
+    "No production publish",
+    "Native provider header/range proof and external full-file acquisition proof remain distinct"
+  ]
+}

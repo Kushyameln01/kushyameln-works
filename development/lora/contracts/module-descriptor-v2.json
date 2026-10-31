@@ -1,0 +1,233 @@
+{
+  "contractVersion": "works-module-contract/1.0-draft.1",
+  "descriptorStatus": "A0_L1_SOURCE_FIXED_FIXTURES_VERIFIED_COMMON_ADOPTION_PENDING",
+  "moduleId": "kushyameln.works/lora",
+  "moduleVersion": "2.0-draft.1",
+  "implementationRef": {
+    "repository": "https://github.com/Kushyameln01/kushyameln-works",
+    "commit": "89b489c6f2595ebff8836fe90b18fc94e3ea086b",
+    "entrypointPath": "docs/shared/inference/lora/sdk-v2.mjs",
+    "retrieval": "GitHub working branch feat/lora-hike and full implementation commit/path; earlier immutable archive and bundle remain available on the private handoff Page",
+    "handoffPage": "https://chatgpt.com/space/page_4988393f36e88191bcf7c0823139d1f3"
+  },
+  "nativeAPI": {
+    "contractVersion": "lora-connection/2.0-draft.1",
+    "transport": "same-origin ES module direct",
+    "entrypoint": "docs/shared/inference/lora/sdk-v2.mjs",
+    "factory": "createLoraV2",
+    "legacy": {
+      "apiVersion": 1,
+      "entrypoint": "docs/shared/inference/lora/sdk.mjs"
+    }
+  },
+  "adapterRef": {
+    "entrypoint": "docs/shared/inference/lora/v1-adapter.mjs",
+    "nativeVersions": [
+      "apiVersion:1",
+      "lora-connection/2.0-draft.1"
+    ],
+    "restriction": "Initializer-only FULL/full-adapter with explicit ownership and legacy-boolean evidence",
+    "commit": "89b489c6f2595ebff8836fe90b18fc94e3ea086b",
+    "sinkFactory": "createV1SinkAdapter(sink,{registry:nativeV1Registry})"
+  },
+  "operations": [
+    {
+      "operationId": "inspect",
+      "roles": [
+        "adapter-source"
+      ],
+      "implementationState": "implemented",
+      "validationScope": "header-and-range",
+      "inputPorts": [
+        "local-source"
+      ],
+      "outputPorts": [
+        "inspection"
+      ],
+      "constraints": [
+        "No model/base compatibility certification",
+        "No upload"
+      ]
+    },
+    {
+      "operationId": "plan",
+      "roles": [
+        "adapter-weight-transform"
+      ],
+      "implementationState": "implemented",
+      "validationScope": "logical-plan-fixture",
+      "inputPorts": [
+        "local-source",
+        "registry",
+        "selection"
+      ],
+      "outputPorts": [
+        "plan"
+      ],
+      "constraints": [
+        "Known fixed loader policy",
+        "FULL or explicit PARTIAL",
+        "Unknown tensors anywhere reject"
+      ]
+    },
+    {
+      "operationId": "prepare",
+      "roles": [
+        "adapter-weight-transform"
+      ],
+      "implementationState": "implemented",
+      "validationScope": "hike-synthetic-base-fixture",
+      "inputPorts": [
+        "plan",
+        "immutable-f32-base",
+        "sink"
+      ],
+      "outputPorts": [
+        "prepared"
+      ],
+      "constraints": [
+        "Owned F32 row-major blocks",
+        "Immutable base",
+        "No real-base proof"
+      ]
+    },
+    {
+      "operationId": "stage",
+      "roles": [
+        "adapter-application"
+      ],
+      "implementationState": "partial",
+      "validationScope": "test-consumer-transaction",
+      "inputPorts": [
+        "prepared",
+        "consumer"
+      ],
+      "outputPorts": [
+        "consumer-receipt"
+      ],
+      "constraints": [
+        "Actual Diffusion consumer not accepted",
+        "PARTIAL never generation-ready",
+        "No management snapshot publication"
+      ]
+    }
+  ],
+  "portContract": {
+    "local-source": {
+      "artifactKind": "local-safetensors-source",
+      "semanticSchemaId": "lora-source/1",
+      "ownership": "Caller-owned immutable File reference or explicit size/read/hash source; local callback is not port-cloneable"
+    },
+    "registry": {
+      "artifactKind": "weight-target-registry",
+      "semanticSchemaId": "lora-connection/2.0-draft.1",
+      "requiredIdentity": [
+        "modelHash",
+        "graphHash",
+        "registryVersion",
+        "side",
+        "executionProfileId",
+        "loaderPolicyId"
+      ],
+      "bindingKinds": [
+        "runtime-input",
+        "initializer",
+        "hike-parameter"
+      ]
+    },
+    "plan": {
+      "artifactKind": "adapter-weight-plan",
+      "semanticSchemaId": "lora-connection/2.0-draft.1",
+      "coverage": [
+        "FULL",
+        "PARTIAL"
+      ],
+      "identity": [
+        "sourceSha256",
+        "registryHash",
+        "planId",
+        "sdkInstanceId",
+        "localInputRevision",
+        "localApplicationRevision"
+      ],
+      "meaning": "Logical patch/slice plan; never a generation-ready result"
+    },
+    "immutable-f32-base": {
+      "artifactKind": "weight-block",
+      "semanticSchemaId": "lora-f32-row-major-block/2.0-draft.1",
+      "dtype": "F32",
+      "layout": "row-major",
+      "rangeUnit": "elements in original full parameter",
+      "ownership": "Owned Float32Array from immutable base provider"
+    },
+    "prepared": {
+      "artifactKind": "prepared-weight-package-handle",
+      "semanticSchemaId": "lora-connection/2.0-draft.1",
+      "ownership": "SDK tracks package; sink owns stored bytes; no cross-Memory pointer sharing"
+    },
+    "consumer-receipt": {
+      "artifactKind": "consumer-stage-receipt",
+      "semanticSchemaId": "lora-connection/2.0-draft.1",
+      "states": [
+        "STAGED",
+        "CONSUMER_APPLIED"
+      ],
+      "ownership": "Explicit independent-copy or valid lease",
+      "generationReady": false
+    }
+  },
+  "resourceContract": {
+    "owner": "SDK instance owns its kernel and prepared ledger unless injected kernel is caller-owned",
+    "resourceBinding": "Caller-assigned instance; HIGH/LOW mapping belongs to Bernini management profile",
+    "concurrency": "One local prepare/stage transaction per instance; no automatic cross-module executor sharing",
+    "memory": "Pinned Hike host fixed 32MiB Memory; bounded blocks, source logical reads up to16MiB; buffers/copies budgeted by caller",
+    "lifetime": "In-use/recovery/valid-lease blocks release; failure preserves ownership for retry"
+  },
+  "cancellation": {
+    "target": "Specific SDK instance/local revision; manager maps native invocation explicitly",
+    "method": "cancel()",
+    "stop": "Cooperative block/async boundary after bounded synchronous Hike return",
+    "termination": "Await operation settlement and resource cleanup; timeout rejection alone is insufficient",
+    "reuse": "Old plans invalidated; source and consumer ownership checks still required"
+  },
+  "evidenceRefs": [
+    {
+      "path": "development/lora/contracts/original-inventory.json",
+      "scope": "retained-original-identity-and-structure",
+      "realBaseCompatibility": false
+    },
+    {
+      "path": "development/lora/contracts/cached-header-planner-evidence.json",
+      "scope": "cached-header-logical-plan-only",
+      "originalPayloadRehashed": false
+    },
+    {
+      "path": "development/lora/A0_L1_RESULT.md",
+      "scope": "A0/L1 74 native fixtures and Chromium12 checks; real Diffusion blocked"
+    }
+  ],
+  "extensions": {
+    "kushyameln.works.bernini": {
+      "schemaVersion": "bernini-lora-selection/1.0-draft.1",
+      "requiredForUse": false,
+      "selectionMode": "single-pair",
+      "pairIds": [
+        "light",
+        "detail"
+      ],
+      "sides": [
+        "HIGH",
+        "LOW"
+      ],
+      "composition": false
+    }
+  },
+  "readiness": {
+    "state": "blocked",
+    "scope": "real-diffusion-weight-consumer",
+    "reasons": [
+      "Real graph registry/provider/consumer acceptance pending"
+    ],
+    "independentNativeFixtureUse": "not blocked by unrelated Text/VAE/full generation unresolved items"
+  }
+}

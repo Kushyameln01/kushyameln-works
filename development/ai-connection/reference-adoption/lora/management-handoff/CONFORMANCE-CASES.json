@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "lora-manager-admission-conformance-cases/0.1-draft.1",
+  "status": "DECLARATION_BASELINE_MEASURED_PHASE_ADOPTION_PENDING",
+  "managerEntryReceived": false,
+  "negativeFirst": true,
+  "declarationCases": {
+    "probeSourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+      "path": "tools/ai-connection/probe-manager-lora-declarations.mjs",
+      "byteLength": 14257,
+      "sha256": "7d3182ab4e7b3f9457b49345b36564fe24f8d5c7c651213d2fd4d26dfb3703c1",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/82b21f09cb63926543181b16f0e97ebc6b9fa6be/tools/ai-connection/probe-manager-lora-declarations.mjs"
+    },
+    "baselineResult": "evidence/manager-baseline.json",
+    "expectedMissing": {
+      "compatibility": "UNVERIFIED",
+      "readiness": "blocked"
+    },
+    "expectedKnownConflict": {
+      "compatibility": "INCOMPATIBLE",
+      "readiness": "blocked"
+    },
+    "targets": [
+      "q.weight",
+      "q.bias"
+    ],
+    "requiredFields": [
+      "baseDtype",
+      "outputDtype",
+      "layout"
+    ],
+    "defaultF32OrRowMajor": false,
+    "negativeCount": 12,
+    "positiveCount": 2
+  },
+  "formalPhaseCases": [
+    {
+      "id": "PREFLIGHT-OWNER-OBSERVATION-CONFLICT",
+      "requires": [
+        "manager formal source",
+        "actual owner declaration DATA"
+      ],
+      "mutate": "Keep declared F32/row-major while observed owner/plan descriptor disagrees",
+      "expect": "known conflict rejected; self-labelled registry hashes alone do not authorize declaration"
+    },
+    {
+      "id": "PREFLIGHT-MISSING-PATH-OR-SOURCE",
+      "mutate": "Remove required actual owner field/source/registry provenance",
+      "expect": "UNVERIFIED/BLOCKED; never infer missing dtype/layout"
+    },
+    {
+      "id": "CHECKPOINT-NO-FUTURE-RECEIPT",
+      "mutate": "Supply no real validation or source/ref/gate binding",
+      "expect": "no commit permission; missing numerical evidence retains contract compatibility only where applicable"
+    },
+    {
+      "id": "CHECKPOINT-MISSING-OR-FOREIGN-TARGET",
+      "mutate": "phaseBinding bound:false or other snapshot/step/resource/SDK tuple",
+      "expect": "reject before commit; later publication cannot fill checkpoint target"
+    },
+    {
+      "id": "PRECOMMIT-SUPERSEDED-BINDING",
+      "mutate": "Change selected revision, resource generation or outside consumer token after checkpoint",
+      "expect": "old checkpoint does not authorize commit; native/local revisions remain separate"
+    },
+    {
+      "id": "POSTPUBLICATION-OWNERSHIP-OR-QUEUE",
+      "mutate": "Foreign queue invocation, missing original terminal/release, wrong copy owner or unsupported lease",
+      "expect": "no final admission/reuse"
+    },
+    {
+      "id": "POSTPUBLICATION-CLEANUP-OR-AUDIT-FAILURE",
+      "mutate": "Core publication happened but cleanup/currentness/admission audit fails",
+      "expect": "retain actual SNAPSHOT_PUBLISHED fact; block admission/reuse; no invented rollback after finalize"
+    },
+    {
+      "id": "SINGLE-JOINT-EXPANSION",
+      "purposeId": "JOINT-HIGH-SUCCESS-LOW-FAILURE-CONTAINMENT",
+      "setup": "distinct HIGH/LOW SDK/owner instances, shared explicit manager snapshot, source-bound fixtures",
+      "trigger": "HIGH actual native commit succeeds then LOW native commit fails",
+      "expect": [
+        "no new joint snapshot published",
+        "previous HIGH feed restored with exact native owner/epoch confirmation",
+        "both original tasks terminal and resources released, or RECOVERY_REQUIRED blocks reuse",
+        "both source/plan/registry/step/local-revision namespaces preserved"
+      ],
+      "reuse": "existing manager low-failure native evidence; new run needed only through official phase entry"
+    }
+  ],
+  "existingSixNumericalCasesRerun": false,
+  "newModelInference": false,
+  "generationReady": false
+}
