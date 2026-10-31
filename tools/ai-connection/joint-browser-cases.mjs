@@ -64,7 +64,21 @@ export async function runJointCases({baseFile,loraFiles,reference}){
   }
   // Actual public native transaction failures, with actual decoded base values.
   for(const fault of ['missing','duplicate','checksum','binding']){const sink=consumer.createSink();try{await sink.begin(nativeIdentity);const b={weightId:'q.weight',offset:0,count:81920,shape:[16,5120],dtype:'F32',sha256:await SHA(actualBaseWeight),data:actualBaseWeight};if(fault==='checksum')b.sha256='0'.repeat(64);if(fault==='binding')b.weightId='foreign.weight';if(fault==='missing'){await sink.writeBlock(b);report.lifecycle.push({kind:fault,...await rejects(()=>sink.finish(nativeIdentity),'missing native bias block')});}else if(fault==='duplicate'){await sink.writeBlock(b);report.lifecycle.push({kind:fault,...await rejects(()=>sink.writeBlock(b),'overlapping native block')});}else report.lifecycle.push({kind:fault,...await rejects(()=>sink.writeBlock(b),fault)});}finally{await sink.abort();}}
-  const nc={...nativeIdentity,isCurrent:()=>true},one=await consumer.prepareBase(nc),two=await consumer.prepareBase(nc);try{const v={...nc,x,expected:new Float32Array(reference.baseExpectedOutput),tolerance:reference.gates.projection};assert((await consumer.validate(one,v)).valid&&(await consumer.validate(two,v)).valid,'Real base candidates failed');const firstCommit=await consumer.commit(one,nc),newerCommit=await consumer.commit(two,nc);assert(firstCommit.committed&&newerCommit.committed&&newerCommit.epoch>firstCommit.epoch,'Real candidate commits did not advance epochs');const rollback=await consumer.rollback(one,nc),r=await consumer.run({x});const c=compareAll(r.output,new Float32Array(reference.baseExpectedOutput),reference.gates.projection);assert(!rollback.restored&&c.passed,'Old committed rollback changed newer active feed');report.lifecycle.push({kind:'old-committed-rollback-new-epoch',passed:true,firstCommit,newerCommit,rollback,comparison:c,actualOutput:[...r.output]});}finally{await consumer.releaseCandidate(one);await consumer.releaseCandidate(two);}
+  const nc={...nativeIdentity,isCurrent:()=>true},one=await consumer.prepareBase(nc);let two;
+  try{
+   const v={...nc,x,expected:new Float32Array(reference.baseExpectedOutput),tolerance:reference.gates.projection};
+   assert((await consumer.validate(one,v)).valid,'First real base candidate failed');
+   const firstCommit=await consumer.commit(one,nc);
+   // Native candidates capture the active epoch at preparation. Prepare the
+   // replacement only after the first switch; never bypass its stale guard.
+   two=await consumer.prepareBase(nc);assert((await consumer.validate(two,v)).valid,'Replacement real base candidate failed');
+   const newerCommit=await consumer.commit(two,nc);
+   assert(firstCommit.committed&&newerCommit.committed&&newerCommit.epoch>firstCommit.epoch,'Real candidate commits did not advance epochs');
+   const rollback=await consumer.rollback(one,nc),r=await consumer.run({x});
+   const c=compareAll(r.output,new Float32Array(reference.baseExpectedOutput),reference.gates.projection);
+   assert(!rollback.restored&&c.passed,'Old committed rollback changed newer active feed');
+   report.lifecycle.push({kind:'old-committed-rollback-new-epoch',passed:true,firstCommit,newerCommit,rollback,comparison:c,actualOutput:[...r.output]});
+  }finally{await consumer.releaseCandidate(one);if(two)await consumer.releaseCandidate(two);}
   report.baseProviderStats=base.stats();report.binding=await adapter.describeBinding();report.lease={mode:'independent-copy',activeLease:'N/A: actual native consumer offers independent owned copy; no lease support fabricated',copySurvivesPreparedAndCandidateRelease:true};report.status='PASS_DIAGNOSTIC_PARTIAL';emit(native.side+' PASS actual real-base/LoRA joint diagnostic');return report;
  }catch(error){report.status='FAIL';report.error=String(error.stack||error);return report;}
  finally{ownerCurrent=false;await consumer?.dispose();await stage?.dispose();base?.dispose();}
