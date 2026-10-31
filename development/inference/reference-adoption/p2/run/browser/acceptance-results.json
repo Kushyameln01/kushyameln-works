@@ -1,0 +1,403 @@
+{
+  "passed": true,
+  "scope": "One real raw-mean decode of wan21-raw-f32-1x16x32 via product UI",
+  "comparisonGate": {
+    "atol": 2e-05,
+    "rtol": 2e-05,
+    "maxAbs": 2e-05
+  },
+  "generatedSampleInference": false,
+  "textInference": false,
+  "encodeInference": false,
+  "referenceRecomputed": false,
+  "pageErrors": [],
+  "consoleErrors": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:42161/vae/",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/inference.css",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/ui.mjs",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/client.mjs",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/inference-worker.mjs",
+      "method": "GET",
+      "phase": "one-restored-raw-decode"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/vendor/ort.wasm.min.mjs",
+      "method": "GET",
+      "phase": "one-restored-raw-decode"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/hike.mjs",
+      "method": "GET",
+      "phase": "one-restored-raw-decode"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "one-restored-raw-decode"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/text-encoder.mjs",
+      "method": "GET",
+      "phase": "one-restored-raw-decode"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/tokenizer.mjs",
+      "method": "GET",
+      "phase": "one-restored-raw-decode"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "one-restored-raw-decode"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/vendor/sentencepiece.mjs",
+      "method": "GET",
+      "phase": "one-restored-raw-decode"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/kernel/tensor.wasm",
+      "method": "GET",
+      "phase": "one-restored-raw-decode"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET",
+      "phase": "one-restored-raw-decode"
+    },
+    {
+      "url": "http://127.0.0.1:42161/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET",
+      "phase": "one-restored-raw-decode"
+    }
+  ],
+  "requestFailures": [],
+  "httpErrors": [],
+  "closeErrors": [],
+  "input": {
+    "bytes": 1084,
+    "fileSha256": "dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612",
+    "payloadSha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+    "header": {
+      "schemaVersion": 1,
+      "dtype": "float32",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "layout": "NCTHW",
+      "meaning": "raw-posterior-mean",
+      "byteOrder": "little",
+      "byteLength": 512,
+      "dataSha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "context": {
+        "schemaVersion": 1,
+        "contextId": "v1-still-0",
+        "inputId": "existing-diagnostic-png",
+        "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+        "slotId": "diagnostic-still",
+        "sourceFrameIndices": [
+          0
+        ],
+        "sourceFrameTimesSeconds": [
+          0
+        ]
+      }
+    },
+    "contextScope": "Diagnostic declaration copied as supplied; not original-asset authentication"
+  },
+  "profileId": "wan21-raw-f32-1x16x32",
+  "manifestSha256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a",
+  "reference": {
+    "file": "png-roundtrip.f32",
+    "bytes": 6144,
+    "sha256": "44cf55e9ea5896f985a0ccf26f61cbb52650fd1a53d3fe80fc3e03aaae545c29",
+    "elements": 1536
+  },
+  "browserVersion": "154.0.8037.57",
+  "inferenceWallSeconds": 3.485577798999657,
+  "evidence": {
+    "operation": "decode",
+    "profileId": "wan21-raw-f32-1x16x32",
+    "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "assetHashes": {
+      "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+      "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+      "decoderBody": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+    },
+    "provider": "wasm",
+    "threads": 1,
+    "executionDtype": "float32",
+    "storedDtype": "bfloat16",
+    "hikeContributed": true,
+    "inputMeaning": "raw-posterior-mean",
+    "inputModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "normalizationApplied": false,
+    "hikeCalls": 17,
+    "timings": {
+      "hikeMs": 2.100000001490116,
+      "loadMs": 1393.800000000745,
+      "inferenceMs": 628.3000000007451,
+      "totalMs": 3175.699999999255
+    }
+  },
+  "numeric": {
+    "file": "restore128-rect-rgb.wktensor",
+    "bytes": 6715,
+    "fileSha256": "4de752c8a7d6df05fed012065bfd222b2f41d4c1c93c2cf8be58edfa24a46d72",
+    "payloadSha256": "aacf932664139862197c2dab5c087ce76305b2622bf02b3f5bde44eb73392d85",
+    "header": {
+      "schemaVersion": 1,
+      "dtype": "float32",
+      "shape": [
+        1,
+        3,
+        1,
+        16,
+        32
+      ],
+      "layout": "NCTHW",
+      "meaning": "raw-decoder-rgb",
+      "byteOrder": "little",
+      "byteLength": 6144,
+      "dataSha256": "aacf932664139862197c2dab5c087ce76305b2622bf02b3f5bde44eb73392d85",
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "context": {
+        "schemaVersion": 1,
+        "contextId": "v1-still-0",
+        "inputId": "existing-diagnostic-png",
+        "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+        "slotId": "diagnostic-still",
+        "sourceFrameIndices": [
+          0
+        ],
+        "sourceFrameTimesSeconds": [
+          0
+        ]
+      }
+    },
+    "referenceFile": "png-roundtrip.f32",
+    "referenceSha256": "44cf55e9ea5896f985a0ccf26f61cbb52650fd1a53d3fe80fc3e03aaae545c29",
+    "count": 1536,
+    "allFinite": true,
+    "maxAbs": 4.328787326812744e-06,
+    "rmse": 6.104514800995174e-07,
+    "gate": {
+      "atol": 2e-05,
+      "rtol": 2e-05,
+      "maxAbs": 2e-05
+    },
+    "passed": true
+  },
+  "contextReadback": {
+    "preserved": true,
+    "input": {
+      "schemaVersion": 1,
+      "contextId": "v1-still-0",
+      "inputId": "existing-diagnostic-png",
+      "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+      "slotId": "diagnostic-still",
+      "sourceFrameIndices": [
+        0
+      ],
+      "sourceFrameTimesSeconds": [
+        0
+      ]
+    },
+    "output": {
+      "schemaVersion": 1,
+      "contextId": "v1-still-0",
+      "inputId": "existing-diagnostic-png",
+      "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+      "slotId": "diagnostic-still",
+      "sourceFrameIndices": [
+        0
+      ],
+      "sourceFrameTimesSeconds": [
+        0
+      ]
+    },
+    "scope": "Equal owned declarations recovered from separate input/output files"
+  },
+  "savedFileReadback": true,
+  "workerTracking": {
+    "created": 1,
+    "terminated": 1,
+    "live": 0
+  },
+  "networkScope": "Local GET only; existing model bundle and tensors selected via actual File inputs",
+  "processOwnership": {
+    "harnessPid": 2020,
+    "harnessCtime": 1793452062.73,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 2027,
+        "ctime": 1793452063.0,
+        "ppid": 2020,
+        "name": "MainThread",
+        "status": "sleeping",
+        "firstPpid": 2020
+      },
+      {
+        "pid": 2039,
+        "ctime": 1793452063.6,
+        "ppid": 2027,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 2027
+      },
+      {
+        "pid": 2054,
+        "ctime": 1793452064.17,
+        "ppid": 2020,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 2020
+      },
+      {
+        "pid": 2056,
+        "ctime": 1793452064.18,
+        "ppid": 2020,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 2039
+      },
+      {
+        "pid": 2057,
+        "ctime": 1793452064.18,
+        "ppid": 2020,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 2039
+      },
+      {
+        "pid": 2077,
+        "ctime": 1793452064.37,
+        "ppid": 2056,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 2056
+      },
+      {
+        "pid": 2080,
+        "ctime": 1793452064.39,
+        "ppid": 2039,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 2039
+      },
+      {
+        "pid": 2101,
+        "ctime": 1793452064.54,
+        "ppid": 2057,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 2057
+      },
+      {
+        "pid": 2122,
+        "ctime": 1793452064.79,
+        "ppid": 2057,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 2057
+      },
+      {
+        "pid": 2129,
+        "ctime": 1793452064.86,
+        "ppid": 2057,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 2057
+      },
+      {
+        "pid": 2130,
+        "ctime": 1793452064.86,
+        "ppid": 2057,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 2057
+      }
+    ],
+    "reapedChildren": [
+      {
+        "pid": 2054,
+        "ctime": 1793452064.17,
+        "ppid": 2020,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 2020,
+        "waitStatus": 256
+      },
+      {
+        "pid": 2056,
+        "ctime": 1793452064.18,
+        "ppid": 2020,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 2039,
+        "waitStatus": 0
+      },
+      {
+        "pid": 2057,
+        "ctime": 1793452064.18,
+        "ppid": 2020,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 2039,
+        "waitStatus": 0
+      }
+    ],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "resources": {
+    "file": "resource-measurements.json",
+    "sha256": "1e631970b1bb74ceed0d95c691bfbafc7145c0eccdad9c01fac496a197955644",
+    "liveProcessesAfterClose": [],
+    "zombieProcessesAfterClose": []
+  },
+  "wallSeconds": 6.45825723499911
+}

@@ -1,0 +1,1008 @@
+{
+  "passed": true,
+  "scope": "New non-square diagnostic fixture only; actual workflow media unavailable",
+  "originalGpuEquivalence": false,
+  "generatedSampleInference": false,
+  "phases": {
+    "ui-png-encode": {
+      "wallSeconds": 2.1336414000033983,
+      "workerTracking": {
+        "created": 1,
+        "terminated": 1,
+        "live": 0
+      },
+      "download": {
+        "file": "png-mean.wktensor",
+        "bytes": 829,
+        "fileSha256": "6539204ef61dc0f706238b74e2bcabf8bbcce971f5056d0b0d7e288811516b71",
+        "payloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+        "header": {
+          "schemaVersion": 1,
+          "dtype": "float32",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-posterior-mean",
+          "byteOrder": "little",
+          "byteLength": 512,
+          "dataSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "referenceFile": "png-mean.f32",
+        "referenceSha256": "708236f54db779900c00915d1738336210b420531efc873bb9f634c1fc819bcb",
+        "count": 128,
+        "allFinite": true,
+        "maxAbs": 8.642673492431641e-07,
+        "rmse": 2.8540611647251395e-07,
+        "gate": {
+          "atol": 2e-05,
+          "rtol": 2e-05,
+          "maxAbs": 2e-05,
+          "scope": "all output values, fixed before accepted export/reference/WASM"
+        },
+        "passed": true
+      },
+      "evidence": {
+        "operation": "encode",
+        "profileId": "wan21-raw-f32-1x16x32",
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "assetHashes": {
+          "encoder": "0105bc12f13d3aceb35d1765681c427643bf04cc4ce5978c7339e04beff09e0d"
+        },
+        "provider": "wasm",
+        "threads": 1,
+        "executionDtype": "float32",
+        "storedDtype": "bfloat16",
+        "hikeContributed": true,
+        "inputMeaning": "rgb-unit",
+        "inputModelSha256": null,
+        "normalizationApplied": false,
+        "hikeCalls": 1,
+        "timings": {
+          "hikeMs": 0.8999999985098839,
+          "loadMs": 779.3999999985099,
+          "inferenceMs": 345.5,
+          "totalMs": 1670.4000000059605
+        }
+      },
+      "status": "\u5b8c\u4e86",
+      "inputInfo": "\u753b\u50cf1\u679a / [1, 3, 1, 16, 32]",
+      "outputInfo": "raw-posterior-mean\nshape [1, 16, 1, 2, 4]\n512 bytes"
+    },
+    "ui-png-mean-roundtrip-decode": {
+      "wallSeconds": 2.356371031004528,
+      "workerTracking": {
+        "created": 2,
+        "terminated": 2,
+        "live": 0
+      },
+      "download": {
+        "file": "png-roundtrip.wktensor",
+        "bytes": 6460,
+        "fileSha256": "0d0a28c963445ab88cb4553296489d965a73d3a56b0f1bbff7daa54f6d60834a",
+        "payloadSha256": "e13806a2db0893872a9efb3a1b2ddc49fc58d1fac811fecb2cfc14c76ac2d799",
+        "header": {
+          "schemaVersion": 1,
+          "dtype": "float32",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            32
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-decoder-rgb",
+          "byteOrder": "little",
+          "byteLength": 6144,
+          "dataSha256": "e13806a2db0893872a9efb3a1b2ddc49fc58d1fac811fecb2cfc14c76ac2d799",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "referenceFile": "png-roundtrip.f32",
+        "referenceSha256": "44cf55e9ea5896f985a0ccf26f61cbb52650fd1a53d3fe80fc3e03aaae545c29",
+        "count": 1536,
+        "allFinite": true,
+        "maxAbs": 3.334134817123413e-06,
+        "rmse": 6.158878606912979e-07,
+        "gate": {
+          "atol": 2e-05,
+          "rtol": 2e-05,
+          "maxAbs": 2e-05,
+          "scope": "all output values, fixed before accepted export/reference/WASM"
+        },
+        "passed": true
+      },
+      "evidence": {
+        "operation": "decode",
+        "profileId": "wan21-raw-f32-1x16x32",
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "assetHashes": {
+          "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+          "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+          "decoderBody": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+        },
+        "provider": "wasm",
+        "threads": 1,
+        "executionDtype": "float32",
+        "storedDtype": "bfloat16",
+        "hikeContributed": true,
+        "inputMeaning": "raw-posterior-mean",
+        "inputModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "normalizationApplied": false,
+        "hikeCalls": 17,
+        "timings": {
+          "hikeMs": 1.8999999985098839,
+          "loadMs": 933.9000000059605,
+          "inferenceMs": 405.6000000014901,
+          "totalMs": 2078.39999999851
+        }
+      },
+      "status": "\u5b8c\u4e86",
+      "inputInfo": "raw-posterior-mean / [1, 16, 1, 2, 4]",
+      "outputInfo": "raw-decoder-rgb\nshape [1, 3, 1, 16, 32]\n6,144 bytes"
+    },
+    "api-busy-cancel-recovery-dispose": {
+      "wallSeconds": 3.135141033999389,
+      "workerTracking": {
+        "created": 4,
+        "terminated": 4,
+        "live": 0
+      },
+      "probe": {
+        "passed": true,
+        "busyRejected": true,
+        "cancelled": true,
+        "cancelAtActualRunProgress": true,
+        "cancelReturned": true,
+        "inputPreserved": true,
+        "readbackExact": true,
+        "disposedRejected": true,
+        "numeric": {
+          "passed": true,
+          "count": 128,
+          "maxAbs": 8.642673492431641e-07,
+          "rmse": 2.8540611647251395e-07
+        },
+        "evidence": {
+          "operation": "encode",
+          "profileId": "wan21-raw-f32-1x16x32",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "assetHashes": {
+            "encoder": "0105bc12f13d3aceb35d1765681c427643bf04cc4ce5978c7339e04beff09e0d"
+          },
+          "provider": "wasm",
+          "threads": 1,
+          "executionDtype": "float32",
+          "storedDtype": "bfloat16",
+          "hikeContributed": true,
+          "inputMeaning": "rgb-unit",
+          "inputModelSha256": null,
+          "normalizationApplied": false,
+          "hikeCalls": 1,
+          "timings": {
+            "hikeMs": 1.5,
+            "loadMs": 697.1999999955297,
+            "inferenceMs": 270.40000000596046,
+            "totalMs": 1598.5
+          }
+        },
+        "context": {
+          "schemaVersion": 1,
+          "contextId": "v1-still-0",
+          "inputId": "existing-diagnostic-png",
+          "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+          "slotId": "diagnostic-still",
+          "sourceFrameIndices": [
+            0
+          ],
+          "sourceFrameTimesSeconds": [
+            0
+          ]
+        },
+        "states": [
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": null,
+            "inputRevision": 1
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "loading",
+            "inputRevision": 1
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "hike-rgb-range",
+            "inputRevision": 1
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "creating-session",
+            "inputRevision": 1
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "running",
+            "inputRevision": 1
+          },
+          {
+            "status": "cancelled",
+            "operation": "encode",
+            "phase": null,
+            "inputRevision": 1
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": null,
+            "inputRevision": 2
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "loading",
+            "inputRevision": 2
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "hike-rgb-range",
+            "inputRevision": 2
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "creating-session",
+            "inputRevision": 2
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "running",
+            "inputRevision": 2
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "complete",
+            "inputRevision": 2
+          },
+          {
+            "status": "success",
+            "operation": "encode",
+            "phase": null,
+            "inputRevision": 2
+          },
+          {
+            "status": "disposed",
+            "operation": "encode",
+            "phase": null,
+            "inputRevision": 2
+          },
+          {
+            "status": "disposed",
+            "operation": "encode",
+            "phase": null,
+            "inputRevision": 2
+          }
+        ]
+      },
+      "download": {
+        "file": "api-recovery.wktensor",
+        "bytes": 1084,
+        "fileSha256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8",
+        "payloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+        "header": {
+          "schemaVersion": 1,
+          "dtype": "float32",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-posterior-mean",
+          "byteOrder": "little",
+          "byteLength": 512,
+          "dataSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "context": {
+            "schemaVersion": 1,
+            "contextId": "v1-still-0",
+            "inputId": "existing-diagnostic-png",
+            "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+            "slotId": "diagnostic-still",
+            "sourceFrameIndices": [
+              0
+            ],
+            "sourceFrameTimesSeconds": [
+              0
+            ]
+          }
+        },
+        "referenceFile": "png-mean.f32",
+        "referenceSha256": "708236f54db779900c00915d1738336210b420531efc873bb9f634c1fc819bcb",
+        "count": 128,
+        "allFinite": true,
+        "maxAbs": 8.642673492431641e-07,
+        "rmse": 2.8540611647251395e-07,
+        "gate": {
+          "atol": 2e-05,
+          "rtol": 2e-05,
+          "maxAbs": 2e-05,
+          "scope": "all output values, fixed before accepted export/reference/WASM"
+        },
+        "passed": true
+      }
+    },
+    "f1-real-session-release-and-abort": {
+      "wallSeconds": 4.002055929995549,
+      "workerTracking": {
+        "created": 5,
+        "terminated": 5,
+        "live": 0
+      },
+      "probe": {
+        "passed": true,
+        "profileId": "wan21-raw-f32-1x16x32",
+        "cases": [
+          {
+            "operation": "encode",
+            "numeric": {
+              "passed": true,
+              "maxAbs": 9.5367431640625e-07,
+              "rmse": 3.127971707092116e-07,
+              "count": 128
+            },
+            "inputPreserved": true,
+            "evidence": {
+              "operation": "encode",
+              "profileId": "wan21-raw-f32-1x16x32",
+              "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "assetHashes": {
+                "encoder": "0105bc12f13d3aceb35d1765681c427643bf04cc4ce5978c7339e04beff09e0d"
+              },
+              "provider": "wasm",
+              "threads": 1,
+              "executionDtype": "float32",
+              "storedDtype": "bfloat16",
+              "hikeContributed": false,
+              "inputMeaning": "raw-decoder-rgb",
+              "inputModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "normalizationApplied": false,
+              "hikeCalls": 0,
+              "timings": {
+                "loadMs": 673,
+                "inferenceMs": 337,
+                "totalMs": 1482.8999999985099
+              }
+            },
+            "shape": [
+              1,
+              16,
+              1,
+              2,
+              4
+            ]
+          },
+          {
+            "operation": "decode",
+            "numeric": {
+              "passed": true,
+              "maxAbs": 4.470348358154297e-07,
+              "rmse": 1.3628461888763033e-07,
+              "count": 1536
+            },
+            "inputPreserved": true,
+            "evidence": {
+              "operation": "decode",
+              "profileId": "wan21-raw-f32-1x16x32",
+              "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "assetHashes": {
+                "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+                "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+                "decoderBody": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+              },
+              "provider": "wasm",
+              "threads": 1,
+              "executionDtype": "float32",
+              "storedDtype": "bfloat16",
+              "hikeContributed": true,
+              "inputMeaning": "raw-posterior-mean",
+              "inputModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "normalizationApplied": false,
+              "hikeCalls": 17,
+              "timings": {
+                "hikeMs": 1.5,
+                "loadMs": 337.29999999701977,
+                "inferenceMs": 253.39999999850988,
+                "totalMs": 1281.8999999985099
+              }
+            },
+            "shape": [
+              1,
+              3,
+              1,
+              16,
+              32
+            ]
+          }
+        ],
+        "sessions": {
+          "created": 3,
+          "released": 3,
+          "active": 0,
+          "runCalls": 3
+        },
+        "abortReleased": true,
+        "hikeDisposedRejected": true,
+        "existingBrowserCases": {
+          "missingHikeRejected": true,
+          "corruptedWeightRejected": true
+        },
+        "kernelHash": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+        "ortVersion": "1.24.3",
+        "scope": "Actual ORT WASM sessions and actual Hike; release instrumentation delegates to real session.run/release"
+      }
+    }
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:36335/vae/",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/inference.css",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/ui.mjs",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/client.mjs",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/inference-worker.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort.wasm.min.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/hike.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/text-encoder.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/tokenizer.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/sentencepiece.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/kernel/tensor.wasm",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/inference-worker.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort.wasm.min.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/hike.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/text-encoder.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/tokenizer.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/sentencepiece.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/kernel/tensor.wasm",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:36335/harness/profile-acceptance.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/api.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/text-encoder-api.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vae-api.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/text-encoder.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/plan.json",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/references/png-unit.f32",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/inference-worker.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort.wasm.min.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/hike.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/text-encoder.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/tokenizer.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/sentencepiece.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/kernel/tensor.wasm",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/inference-worker.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort.wasm.min.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/hike.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/text-encoder.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/tokenizer.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/sentencepiece.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/kernel/tensor.wasm",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/references/png-mean.f32",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:36335/plan.json",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:36335/harness/profile-probe.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort.wasm.min.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/hike.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:36335/harness/browser-cases.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:36335/docs/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:36335/docs/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/kernel/tensor.wasm",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:36335/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    }
+  ],
+  "httpErrors": [],
+  "requestFailures": [],
+  "planSha256": "8b2eefef3fa532e9fd57115d73a037176ab43760a1bacb95e8d776e21251b347",
+  "profileId": "wan21-raw-f32-1x16x32",
+  "manifestSha256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a",
+  "baselineProfileId": "wan21-raw-f32-5x16x16",
+  "baselineManifestSha256": "c9c0fd3ceb53b029f627dba9c214b5d5fb8d2c39f572fbdff5907a7da02f1acb",
+  "comparisonGate": {
+    "atol": 2e-05,
+    "rtol": 2e-05,
+    "maxAbs": 2e-05,
+    "scope": "all output values, fixed before accepted export/reference/WASM"
+  },
+  "input": {
+    "path": "/workspace/work/inference/e6-rect/input/rect-32x16.png",
+    "bytes": 174,
+    "sha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+    "format": "opaque RGB8 PNG, generated at native32x16; no EXIF/ICC",
+    "role": "F=1 non-square diagnostic still; NOT actual slot/reference",
+    "originalFHW": [
+      1,
+      16,
+      32
+    ],
+    "existingPreprocessing": {
+      "dimensionRule": "Bernini _resize_long_edge ref_max_size848: scale1 -> H16,W32",
+      "resultHW": [
+        16,
+        32
+      ],
+      "pixelResizePerformed": false,
+      "padding": false,
+      "frameReduction": false
+    },
+    "generatorSha256": "035c73f9658f38836ba0a71a8a0aa8c8d7d8b2e5a6401e5027afa93bc67ec98e"
+  },
+  "browserVersion": "154.0.8037.57",
+  "baselineReuse": {
+    "modelRerun": false,
+    "priorEvidenceCommit": "54bfeadbd83f1fea074c503c0e05ec478aba5cfb",
+    "reason": "E6 reuses accepted baseline evidence; native API/model/kernel source is unchanged."
+  },
+  "finalWorkerTracking": {
+    "created": 5,
+    "terminated": 5,
+    "live": 0
+  },
+  "networkScope": "Only local GET requests; model files selected through actual local File inputs",
+  "processOwnership": {
+    "harnessPid": 35374,
+    "harnessCtime": 1793404411.4,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 35381,
+        "ctime": 1793404411.63,
+        "ppid": 35374,
+        "name": "MainThread",
+        "status": "running",
+        "firstPpid": 35374
+      },
+      {
+        "pid": 35393,
+        "ctime": 1793404412.05,
+        "ppid": 35381,
+        "name": "chromium",
+        "status": "running",
+        "firstPpid": 35381
+      },
+      {
+        "pid": 35408,
+        "ctime": 1793404412.18,
+        "ppid": 35374,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 35374
+      },
+      {
+        "pid": 35410,
+        "ctime": 1793404412.19,
+        "ppid": 35374,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 35393
+      },
+      {
+        "pid": 35411,
+        "ctime": 1793404412.19,
+        "ppid": 35374,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 35393
+      },
+      {
+        "pid": 35433,
+        "ctime": 1793404412.26,
+        "ppid": 35393,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 35393
+      },
+      {
+        "pid": 35430,
+        "ctime": 1793404412.25,
+        "ppid": 35410,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 35410
+      },
+      {
+        "pid": 35455,
+        "ctime": 1793404412.34,
+        "ppid": 35411,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 35411
+      },
+      {
+        "pid": 35477,
+        "ctime": 1793404412.46,
+        "ppid": 35411,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 35411
+      },
+      {
+        "pid": 35486,
+        "ctime": 1793404412.49,
+        "ppid": 35411,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 35411
+      },
+      {
+        "pid": 35488,
+        "ctime": 1793404412.49,
+        "ppid": 35411,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 35411
+      }
+    ],
+    "reapedChildren": [
+      {
+        "pid": 35408,
+        "ctime": 1793404412.18,
+        "ppid": 35374,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 35374,
+        "waitStatus": 256
+      },
+      {
+        "pid": 35410,
+        "ctime": 1793404412.19,
+        "ppid": 35374,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 35393,
+        "waitStatus": 0
+      },
+      {
+        "pid": 35411,
+        "ctime": 1793404412.19,
+        "ppid": 35374,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 35393,
+        "waitStatus": 0
+      }
+    ],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "resources": {
+    "file": "resource-measurements.json",
+    "sha256": "6367b25015c75a66948fb4eb888b40fd083f199f0fa628094e086f548f1fd72f",
+    "browserPid": 35393,
+    "allObservedProcessesTerminated": true,
+    "allObservedPidsGone": true,
+    "liveProcessesAfterClose": [],
+    "zombieProcessesAfterClose": []
+  },
+  "wallSeconds": 13.349746503998176
+}

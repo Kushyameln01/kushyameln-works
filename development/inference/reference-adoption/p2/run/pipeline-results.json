@@ -1,0 +1,204 @@
+{
+  "passed": true,
+  "scope": "Candidate mean diagnostic, management P1 adoption BLOCKED",
+  "newExportCalls": 0,
+  "newEncodeCalls": 0,
+  "referenceRecomputed": false,
+  "generatedSampleAccepted": false,
+  "stages": [
+    {
+      "index": 0,
+      "command": [
+        "node",
+        "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/vae/p2_rect_trace.mjs",
+        "--phase",
+        "prepare",
+        "--manager-root",
+        "/workspace/work/inference/p0-p2-20261031/manager",
+        "--diffusion-root",
+        "/workspace/work/inference/p0-p2-20261031/diffusion/source",
+        "--output",
+        "/workspace/work/inference/p0-p2-20261031/candidate-wasm"
+      ],
+      "exitCode": 0,
+      "wallSeconds": 0.19167047100017953,
+      "stdout": "{\"phase\":\"prepare\",\"passed\":true,\"steps\":5,\"hikeCalls\":2,\"candidateDiagnosticPassed\":false,\"fullP2AdoptionAccepted\":false}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/vae/check_restored_mean.py",
+        "--profile",
+        "wan21-raw-f32-1x16x32",
+        "--bundle",
+        "/workspace/work/inference/e6-rect/accepted-bundle",
+        "--input",
+        "/workspace/work/inference/p0-p2-20261031/candidate-wasm/restored.wktensor",
+        "--reference",
+        "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/e6/fixtures/png-roundtrip.f32",
+        "--output",
+        "/workspace/work/inference/p0-p2-20261031/candidate-wasm/browser"
+      ],
+      "exitCode": 0,
+      "wallSeconds": 6.785466273999191,
+      "stdout": "{\n  \"passed\": true,\n  \"output\": \"/workspace/work/inference/p0-p2-20261031/candidate-wasm/browser\",\n  \"failure\": null,\n  \"wallSeconds\": 6.45825723499911\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "command": [
+        "node",
+        "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/vae/p2_rect_trace.mjs",
+        "--phase",
+        "finish",
+        "--manager-root",
+        "/workspace/work/inference/p0-p2-20261031/manager",
+        "--diffusion-root",
+        "/workspace/work/inference/p0-p2-20261031/diffusion/source",
+        "--output",
+        "/workspace/work/inference/p0-p2-20261031/candidate-wasm"
+      ],
+      "exitCode": 0,
+      "wallSeconds": 0.12365827299981902,
+      "stdout": "{\"phase\":\"finish\",\"passed\":true,\"steps\":7,\"hikeCalls\":2,\"candidateDiagnosticPassed\":true,\"fullP2AdoptionAccepted\":false}\n",
+      "stderr": ""
+    }
+  ],
+  "traceSha256": "18f0a5181a24eb52b64172098e77246c8d2d41db6026e5563fe23be3127650c0",
+  "fullP2AdoptionAccepted": false,
+  "newVaeDecodeCalls": 1,
+  "processOwnership": {
+    "harnessPid": 2005,
+    "harnessCtime": 1793452062.45,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 2009,
+        "ctime": 1793452062.54,
+        "ppid": 2005,
+        "name": "MainThread",
+        "status": "running",
+        "firstPpid": 2005
+      },
+      {
+        "pid": 2020,
+        "ctime": 1793452062.73,
+        "ppid": 2005,
+        "name": "python",
+        "status": "running",
+        "firstPpid": 2005
+      },
+      {
+        "pid": 2027,
+        "ctime": 1793452063.0,
+        "ppid": 2020,
+        "name": "MainThread",
+        "status": "zombie",
+        "firstPpid": 2020
+      },
+      {
+        "pid": 2039,
+        "ctime": 1793452063.6,
+        "ppid": 2027,
+        "name": "chromium",
+        "status": "running",
+        "firstPpid": 2027
+      },
+      {
+        "pid": 2054,
+        "ctime": 1793452064.17,
+        "ppid": 2020,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 2020
+      },
+      {
+        "pid": 2056,
+        "ctime": 1793452064.18,
+        "ppid": 2020,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 2039
+      },
+      {
+        "pid": 2057,
+        "ctime": 1793452064.18,
+        "ppid": 2020,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 2039
+      },
+      {
+        "pid": 2077,
+        "ctime": 1793452064.37,
+        "ppid": 2056,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 2056
+      },
+      {
+        "pid": 2080,
+        "ctime": 1793452064.39,
+        "ppid": 2039,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 2039
+      },
+      {
+        "pid": 2101,
+        "ctime": 1793452064.54,
+        "ppid": 2057,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 2057
+      },
+      {
+        "pid": 2122,
+        "ctime": 1793452064.79,
+        "ppid": 2057,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 2057
+      },
+      {
+        "pid": 2129,
+        "ctime": 1793452064.86,
+        "ppid": 2057,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 2057
+      },
+      {
+        "pid": 2130,
+        "ctime": 1793452064.86,
+        "ppid": 2057,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 2057
+      },
+      {
+        "pid": 2177,
+        "ctime": 1793452069.52,
+        "ppid": 2005,
+        "name": "MainThread",
+        "status": "sleeping",
+        "firstPpid": 2005
+      }
+    ],
+    "reapedChildren": [],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "wallSeconds": 7.102707903999544
+}

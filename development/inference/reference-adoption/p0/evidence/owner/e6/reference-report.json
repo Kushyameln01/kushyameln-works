@@ -1,0 +1,155 @@
+{
+  "scope": "V1 F=1 unchanged-size diagnostic still, native FP32 encode-mean and raw decode",
+  "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+  "source": {
+    "repo": "Wan-Video/Wan2.1",
+    "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+    "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+    "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498"
+  },
+  "strictLoad": {
+    "keys": 194,
+    "missing": [],
+    "unexpected": []
+  },
+  "precision": "unchanged BF16 weight values expanded to FP32; not original GPU/BF16 equivalence",
+  "comparisonGate": {
+    "atol": 2e-05,
+    "rtol": 2e-05,
+    "maxAbs": 2e-05,
+    "scope": "all output values, fixed before accepted export/reference/WASM"
+  },
+  "references": {
+    "png-unit": {
+      "file": "png-unit.f32",
+      "shape": [
+        1,
+        3,
+        1,
+        16,
+        32
+      ],
+      "bytes": 6144,
+      "sha256": "38a55378d909bad14f3c4f16e2db9a288ea60b14e3a2a253409fdee54c5fce34",
+      "elements": 1536
+    },
+    "png-raw": {
+      "file": "png-raw.f32",
+      "shape": [
+        1,
+        3,
+        1,
+        16,
+        32
+      ],
+      "bytes": 6144,
+      "sha256": "7f78f3e77ec2ade033de98240c79b79c4fd19183135f91f1d846e9e56a83a62e",
+      "elements": 1536
+    },
+    "png-mean": {
+      "file": "png-mean.f32",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "bytes": 512,
+      "sha256": "708236f54db779900c00915d1738336210b420531efc873bb9f634c1fc819bcb",
+      "elements": 128
+    },
+    "png-roundtrip": {
+      "file": "png-roundtrip.f32",
+      "shape": [
+        1,
+        3,
+        1,
+        16,
+        32
+      ],
+      "bytes": 6144,
+      "sha256": "44cf55e9ea5896f985a0ccf26f61cbb52650fd1a53d3fe80fc3e03aaae545c29",
+      "elements": 1536
+    }
+  },
+  "graphs": {
+    "encoder": {
+      "file": "encode.onnx",
+      "sha256": "0105bc12f13d3aceb35d1765681c427643bf04cc4ce5978c7339e04beff09e0d",
+      "bytes": 212362391,
+      "input": [
+        1,
+        3,
+        1,
+        16,
+        32
+      ],
+      "expectedRuntimeOutput": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "onnxOutputDeclaration": [
+        "Muloutput_dim_0",
+        "Muloutput_dim_1",
+        "Muloutput_dim_0",
+        "Muloutput_dim_3",
+        "Muloutput_dim_4"
+      ],
+      "outputShapeAcceptance": "Native reference exact shape; real SDK must also check all runtime dimensions. Symbolic ONNX metadata is not arbitrary-shape support.",
+      "opsets": [
+        {
+          "domain": "",
+          "version": 17
+        }
+      ],
+      "externalWeightFiles": [],
+      "weightStorage": "embedded initializer bytes"
+    },
+    "decoderBody": {
+      "file": "decoder-body.onnx",
+      "sha256": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e",
+      "bytes": 286313363,
+      "input": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "expectedRuntimeOutput": [
+        1,
+        3,
+        1,
+        16,
+        32
+      ],
+      "onnxOutputDeclaration": [
+        "Convoutput_dim_0",
+        3,
+        "Convoutput_dim_0",
+        "Convoutput_dim_3",
+        "Convoutput_dim_4"
+      ],
+      "outputShapeAcceptance": "Native reference exact shape; real SDK must also check all runtime dimensions. Symbolic ONNX metadata is not arbitrary-shape support.",
+      "opsets": [
+        {
+          "domain": "",
+          "version": 17
+        }
+      ],
+      "externalWeightFiles": [],
+      "weightStorage": "embedded initializer bytes"
+    }
+  },
+  "torchVersion": "2.6.0+cpu",
+  "threads": 1,
+  "nativeInferenceSeconds": 0.6201640110011795,
+  "processPeakRssBytes": 2456014848,
+  "inputPixelResize": false,
+  "padding": false,
+  "frameReduction": false
+}

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "candidateEntryId": "CANDIDATE-P2-RECT-285967-5f880-855f435",
+  "previousManagementAdoptionUnchanged": "ADOPT-MANAGER-285967",
+  "referenceCommit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+  "candidate": {
+    "managerCommit": "28596717182e48aeb23c719c51b6e593edf4e496",
+    "diffusionCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+    "vaeCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+    "codecCommit": "2c171a09ccda65c54899f322ae490f1bfcaac6fb"
+  },
+  "loadedIdentities": {
+    "sourcePinsPath": "source-pins.json",
+    "diffusionAbi": "wan21-raw-mean-f32-v3",
+    "diffusionBuildId": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+    "diffusionBuildScope": "Declared fixed owner source build; actual direct ES host and kernel identities checked, not full API instantiated",
+    "diffusionHikeSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+    "vaeManifestSha256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a",
+    "vaeModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "vaeRuntime": "actual product UI / works-ai-1 Worker / ORT WASM1thread FP32",
+    "vaeAssetHashes": {
+      "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+      "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+      "decoderBody": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+    }
+  },
+  "profileId": "wan21-raw-f32-1x16x32",
+  "latentShape": [
+    1,
+    16,
+    1,
+    2,
+    4
+  ],
+  "rgbShape": [
+    1,
+    3,
+    1,
+    16,
+    32
+  ],
+  "meaningPath": [
+    "raw-posterior-mean",
+    "wan21-normalized-posterior-mean:v1",
+    "raw-posterior-mean",
+    "raw-decoder-rgb"
+  ],
+  "normRefs": [
+    "N-IDENTITY",
+    "N-SHAPE",
+    "N-NUMERIC",
+    "N-NORMALIZATION",
+    "N-EVIDENCE",
+    "N-TRANSACTION",
+    "N-ARTIFACT",
+    "N-GENERATION",
+    "N-EXTENSION"
+  ],
+  "contractAssessment": {
+    "classification": "COMPATIBLE",
+    "scope": "Owner static exact-profile/schema contract check, not management P1 evaluator result"
+  },
+  "validation": {
+    "classification": "PASS",
+    "scope": "Candidate trace: reused real encode evidence, actual owner Rect Hike transforms, one real VAE decode, actual manager package readback"
+  },
+  "adoptionReadiness": {
+    "classification": "BLOCKED",
+    "reason": "Management P1 reference-loader/norm-bindings runtime absent in acquired285967 source"
+  },
+  "generationReady": false,
+  "fullP2AdoptionAccepted": false,
+  "traceId": "P2-RECT-6dae-285967-5f880-855f435",
+  "tracePath": "run/trace.json",
+  "traceSha256": "18f0a5181a24eb52b64172098e77246c8d2d41db6026e5563fe23be3127650c0",
+  "nativeApiOrNumericRulesChanged": false,
+  "normalizedIntermediateWktensorAccepted": false,
+  "normalizedMarkerInTrace": true
+}

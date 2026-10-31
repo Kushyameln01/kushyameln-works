@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "scope": "P0 static bytes and source subset inspection only; no runtime/model/kernel execution",
+  "referenceSource": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+  "allSevenReferenceFilesMatchAcquisition": true,
+  "observations": [
+    {
+      "id": "native-api",
+      "selectedCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sourcePath": "docs/shared/inference/api.mjs",
+      "sha256": "01f56a19c58286f4c582cb41015ebd7773f2d7ae76545ab0ca7be052909c0f1f",
+      "byteLength": 2278,
+      "matchesPinnedGitBytes": true
+    },
+    {
+      "id": "native-vae",
+      "selectedCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sourcePath": "docs/shared/inference/vae.mjs",
+      "sha256": "3b5f5d2cbe116f9477966da0a63d8f35141f14d9544efafde51e40db337b90d7",
+      "byteLength": 11145,
+      "matchesPinnedGitBytes": true
+    },
+    {
+      "id": "native-text-encoder",
+      "selectedCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sourcePath": "docs/shared/inference/text-encoder.mjs",
+      "sha256": "9d4f528a926dc40bdbf721c5072518d0e027019a5a0912deeac0dc0f449fd8a2",
+      "byteLength": 8564,
+      "matchesPinnedGitBytes": true
+    },
+    {
+      "id": "native-tensor",
+      "selectedCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sourcePath": "docs/shared/inference/tensor.mjs",
+      "sha256": "4c6992a7b6f44722e84a7184ed5c878312a203071054335827f7f0adcd01c07b",
+      "byteLength": 8106,
+      "matchesPinnedGitBytes": true
+    },
+    {
+      "id": "native-client",
+      "selectedCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sourcePath": "docs/shared/inference/client.mjs",
+      "sha256": "53751cde923b7128da29266a29810942afd6e6ae32fad1fc87605e952cecd55e",
+      "byteLength": 2393,
+      "matchesPinnedGitBytes": true
+    },
+    {
+      "id": "native-inference-worker",
+      "selectedCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sourcePath": "docs/shared/inference/inference-worker.mjs",
+      "sha256": "2883899154abd747e8358b953c47977af3c0df064e8a32a32d719aeaaec07f35",
+      "byteLength": 3419,
+      "matchesPinnedGitBytes": true
+    },
+    {
+      "id": "native-hike",
+      "selectedCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sourcePath": "docs/shared/inference/hike.mjs",
+      "sha256": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65",
+      "byteLength": 4126,
+      "matchesPinnedGitBytes": true
+    },
+    {
+      "id": "native-hike-build",
+      "selectedCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sourcePath": "tools/inference/kernel/manifest.json",
+      "sha256": "120a20ec1aac6dc78f7791925b9cbc393db9f48e95c6bf0ad66d7d44a5f3924d",
+      "byteLength": 1028,
+      "matchesPinnedGitBytes": true
+    },
+    {
+      "id": "text-source-provenance",
+      "selectedCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sourcePath": "tools/inference/text-encoder/source-provenance.json",
+      "sha256": "b307910c4101454c714ac760886b8ffc2f825454b2b8da04790e031fcb9d4e36",
+      "byteLength": 2850,
+      "matchesPinnedGitBytes": true
+    },
+    {
+      "id": "vae-text-hike-loaded-asset",
+      "sourcePath": "docs/shared/inference/kernel/tensor.wasm",
+      "selectedCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+      "byteLength": 5265,
+      "matchesBuildRecord": true,
+      "copied": false,
+      "reason": "Kernel bytes already part of fixed source; no binary asset duplicated by P0"
+    },
+    {
+      "id": "diffusion-build-subset-../latent-space/build/build-record.json",
+      "selectedCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "sourcePath": "docs/shared/diffusion-models/api/../latent-space/build/build-record.json",
+      "sha256": "679df4f5cffd41fb5639b32146eea9b102a354bf17c8b3a4be5ad44ba978cf99",
+      "byteLength": 2323,
+      "matchesBuildReceipt": true,
+      "copied": true
+    },
+    {
+      "id": "diffusion-build-subset-../latent-space/build/latent-space.wasm",
+      "selectedCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "sourcePath": "docs/shared/diffusion-models/api/../latent-space/build/latent-space.wasm",
+      "sha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+      "byteLength": 8210,
+      "matchesBuildReceipt": true,
+      "copied": false
+    },
+    {
+      "id": "diffusion-build-subset-../latent-space/kernel-registry.mjs",
+      "selectedCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "sourcePath": "docs/shared/diffusion-models/api/../latent-space/kernel-registry.mjs",
+      "sha256": "191f85b0bedc8ad439a486b077f0891c7846a7535b0d71d26350b8581f8d11b8",
+      "byteLength": 343,
+      "matchesBuildReceipt": true,
+      "copied": true
+    },
+    {
+      "id": "diffusion-build-subset-../latent-space/latent-space.hike",
+      "selectedCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "sourcePath": "docs/shared/diffusion-models/api/../latent-space/latent-space.hike",
+      "sha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+      "byteLength": 3960,
+      "matchesBuildReceipt": true,
+      "copied": true
+    },
+    {
+      "id": "diffusion-build-subset-../latent-space/latent-space.mjs",
+      "selectedCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "sourcePath": "docs/shared/diffusion-models/api/../latent-space/latent-space.mjs",
+      "sha256": "3d28445a5c36eeb4f31b7bfe89163e43091438f571488a665888833e1d860104",
+      "byteLength": 6387,
+      "matchesBuildReceipt": true,
+      "copied": true
+    },
+    {
+      "id": "diffusion-build-subset-../tensor-interop.mjs",
+      "selectedCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "sourcePath": "docs/shared/diffusion-models/api/../tensor-interop.mjs",
+      "sha256": "13c3595f0786a45a62d0a8739b6acd58d3025c80f7eaff4baf7314559665c1c1",
+      "byteLength": 5844,
+      "matchesBuildReceipt": true,
+      "copied": true
+    }
+  ],
+  "diffusionBuildId": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+  "diffusionBuildVerificationScope": "received subset only; full imported source/build regeneration not claimed"
+}

@@ -1,0 +1,549 @@
+{
+  "traceId": "P2-RECT-6dae-285967-5f880-855f435",
+  "plan": {
+    "schemaVersion": 1,
+    "scope": "P2 candidate mean diagnostic trace; management P1 adoption remains BLOCKED",
+    "referenceCommit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+    "planCommit": "0fb553fd081d3bcbbad4ead7accd165679f77d34",
+    "managerCommit": "28596717182e48aeb23c719c51b6e593edf4e496",
+    "diffusionCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+    "vaeSourceCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+    "codecSourceCommit": "2c171a09ccda65c54899f322ae490f1bfcaac6fb",
+    "codecSha256": "4c6992a7b6f44722e84a7184ed5c878312a203071054335827f7f0adcd01c07b",
+    "profileId": "wan21-raw-f32-1x16x32",
+    "latentShape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "rgbShape": [
+      1,
+      3,
+      1,
+      16,
+      32
+    ],
+    "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "manifestSha256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a",
+    "sourceMeanFileSha256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8",
+    "sourceMeanPayloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+    "meanRoundtripGate": {
+      "maxAbs": 0.000002,
+      "source": "owner5f e6/RECT-RESULT.md; exact Rect profile"
+    },
+    "rgbGate": {
+      "atol": 0.00002,
+      "rtol": 0.00002,
+      "maxAbs": 0.00002,
+      "source": "c0fcbb E6 pre-export acceptance-plan; stricter than manifest0.002"
+    },
+    "rgbReferenceSha256": "44cf55e9ea5896f985a0ccf26f61cbb52650fd1a53d3fe80fc3e03aaae545c29",
+    "cancelScope": "one real VAE Worker job may be cancelled, terminated and recovered if exercised; record new inference counts separately",
+    "exportRepeated": false,
+    "referenceRecomputed": false,
+    "p1Available": false,
+    "fullP2AdoptionAccepted": false,
+    "generatedSampleAccepted": false
+  },
+  "scope": "Candidate mean diagnostic chain; not management P1 adoption or generated sample",
+  "candidate": {
+    "managerCommit": "28596717182e48aeb23c719c51b6e593edf4e496",
+    "diffusionCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+    "vaeCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+    "codecCommit": "2c171a09ccda65c54899f322ae490f1bfcaac6fb"
+  },
+  "p1Integrated": false,
+  "fullP2AdoptionAccepted": false,
+  "generationReady": false,
+  "steps": [
+    {
+      "operation": "encode",
+      "execution": "reused historical real VAE WASM evidence; not rerun",
+      "sourceCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "report": "development/inference/e6/browser-results.json",
+      "reportSha256": "3c8127f14a138d6fdb3fedeb0050cd42f8abe9fd5ec08f03c0b0f1a26b69a58f",
+      "outputFileSha256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8",
+      "outputPayloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+      "profileId": "wan21-raw-f32-1x16x32"
+    },
+    {
+      "operation": "management-capture-package-read",
+      "stage": "input-raw",
+      "managerCommit": "28596717182e48aeb23c719c51b6e593edf4e496",
+      "packageVersion": "works-artifact-package/1.0-draft.1",
+      "wholeFileSha256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8",
+      "payloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+      "meaning": "raw-posterior-mean",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "context": {
+        "schemaVersion": 1,
+        "contextId": "v1-still-0",
+        "inputId": "existing-diagnostic-png",
+        "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+        "slotId": "diagnostic-still",
+        "sourceFrameIndices": [
+          0
+        ],
+        "sourceFrameTimesSeconds": [
+          0
+        ]
+      },
+      "manifestSha256": "9da9edf4b85438899ce3dd3446d58ea9ac0ab4d513a95d391f9002af1ef5fe3c",
+      "receiptPath": "input-raw/receipt.json",
+      "packageStatus": "complete"
+    },
+    {
+      "operation": "normalizeRawMean",
+      "owner": "diffusion_models",
+      "sourceCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "export": "NormalizeRawMeanRect",
+      "inputPayloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+      "outputPayloadSha256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5",
+      "profileId": "wan21-raw-f32-1x16x32",
+      "normalization": "wan21-comfy-f32-v1",
+      "ownerOraclePayloadMatch": true,
+      "ownerReceipt": "owner-rect-node-results.json",
+      "stats": {
+        "calls": 1,
+        "memoryBytes": 1114112,
+        "arenaBytes": 1024,
+        "inputCopyBytes": 512,
+        "outputCopyBytes": 512,
+        "workspaceReused": true,
+        "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+        "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+        "profiles": [
+          "wan21-raw-f32-5x16x16",
+          "wan21-raw-f32-1x16x16",
+          "wan21-raw-f32-1x16x32"
+        ],
+        "imports": 0
+      }
+    },
+    {
+      "operation": "restoreRawMean",
+      "owner": "diffusion_models",
+      "sourceCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "export": "RestoreRawMeanRect",
+      "inputPayloadSha256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5",
+      "outputPayloadSha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+      "count": 128,
+      "maxAbs": 2.384185791015625e-7,
+      "gate": {
+        "maxAbs": 0.000002,
+        "source": "owner5f e6/RECT-RESULT.md; exact Rect profile"
+      },
+      "ownerOraclePayloadMatch": true,
+      "stats": {
+        "calls": 2,
+        "memoryBytes": 1114112,
+        "arenaBytes": 1024,
+        "inputCopyBytes": 1024,
+        "outputCopyBytes": 1024,
+        "workspaceReused": true,
+        "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+        "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+        "profiles": [
+          "wan21-raw-f32-5x16x16",
+          "wan21-raw-f32-1x16x16",
+          "wan21-raw-f32-1x16x32"
+        ],
+        "imports": 0
+      }
+    },
+    {
+      "operation": "management-capture-package-read",
+      "stage": "restored",
+      "managerCommit": "28596717182e48aeb23c719c51b6e593edf4e496",
+      "packageVersion": "works-artifact-package/1.0-draft.1",
+      "wholeFileSha256": "dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612",
+      "payloadSha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+      "meaning": "raw-posterior-mean",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "context": {
+        "schemaVersion": 1,
+        "contextId": "v1-still-0",
+        "inputId": "existing-diagnostic-png",
+        "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+        "slotId": "diagnostic-still",
+        "sourceFrameIndices": [
+          0
+        ],
+        "sourceFrameTimesSeconds": [
+          0
+        ]
+      },
+      "manifestSha256": "5960811343d7f90c961cb825c6af1bd85eeb05e1415fa7dbe15d805da98a7b41",
+      "receiptPath": "restored/receipt.json",
+      "packageStatus": "complete"
+    },
+    {
+      "operation": "vae.decode",
+      "owner": "vae",
+      "profileId": "wan21-raw-f32-1x16x32",
+      "sourceCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "inputFileSha256": "dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612",
+      "inputPayloadSha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+      "outputFileSha256": "4de752c8a7d6df05fed012065bfd222b2f41d4c1c93c2cf8be58edfa24a46d72",
+      "outputPayloadSha256": "aacf932664139862197c2dab5c087ce76305b2622bf02b3f5bde44eb73392d85",
+      "numeric": {
+        "file": "restore128-rect-rgb.wktensor",
+        "bytes": 6715,
+        "fileSha256": "4de752c8a7d6df05fed012065bfd222b2f41d4c1c93c2cf8be58edfa24a46d72",
+        "payloadSha256": "aacf932664139862197c2dab5c087ce76305b2622bf02b3f5bde44eb73392d85",
+        "header": {
+          "schemaVersion": 1,
+          "dtype": "float32",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            32
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-decoder-rgb",
+          "byteOrder": "little",
+          "byteLength": 6144,
+          "dataSha256": "aacf932664139862197c2dab5c087ce76305b2622bf02b3f5bde44eb73392d85",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "context": {
+            "schemaVersion": 1,
+            "contextId": "v1-still-0",
+            "inputId": "existing-diagnostic-png",
+            "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+            "slotId": "diagnostic-still",
+            "sourceFrameIndices": [
+              0
+            ],
+            "sourceFrameTimesSeconds": [
+              0
+            ]
+          }
+        },
+        "referenceFile": "png-roundtrip.f32",
+        "referenceSha256": "44cf55e9ea5896f985a0ccf26f61cbb52650fd1a53d3fe80fc3e03aaae545c29",
+        "count": 1536,
+        "allFinite": true,
+        "maxAbs": 0.000004328787326812744,
+        "rmse": 6.104514800995174e-7,
+        "gate": {
+          "atol": 0.00002,
+          "rtol": 0.00002,
+          "maxAbs": 0.00002
+        },
+        "passed": true
+      },
+      "evidence": {
+        "operation": "decode",
+        "profileId": "wan21-raw-f32-1x16x32",
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "assetHashes": {
+          "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+          "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+          "decoderBody": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+        },
+        "provider": "wasm",
+        "threads": 1,
+        "executionDtype": "float32",
+        "storedDtype": "bfloat16",
+        "hikeContributed": true,
+        "inputMeaning": "raw-posterior-mean",
+        "inputModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "normalizationApplied": false,
+        "hikeCalls": 17,
+        "timings": {
+          "hikeMs": 2.100000001490116,
+          "loadMs": 1393.800000000745,
+          "inferenceMs": 628.3000000007451,
+          "totalMs": 3175.699999999255
+        }
+      },
+      "workerTracking": {
+        "created": 1,
+        "terminated": 1,
+        "live": 0
+      },
+      "normalizationApplied": false
+    },
+    {
+      "operation": "management-capture-package-read",
+      "stage": "rgb",
+      "managerCommit": "28596717182e48aeb23c719c51b6e593edf4e496",
+      "packageVersion": "works-artifact-package/1.0-draft.1",
+      "wholeFileSha256": "4de752c8a7d6df05fed012065bfd222b2f41d4c1c93c2cf8be58edfa24a46d72",
+      "payloadSha256": "aacf932664139862197c2dab5c087ce76305b2622bf02b3f5bde44eb73392d85",
+      "meaning": "raw-decoder-rgb",
+      "shape": [
+        1,
+        3,
+        1,
+        16,
+        32
+      ],
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "context": {
+        "schemaVersion": 1,
+        "contextId": "v1-still-0",
+        "inputId": "existing-diagnostic-png",
+        "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+        "slotId": "diagnostic-still",
+        "sourceFrameIndices": [
+          0
+        ],
+        "sourceFrameTimesSeconds": [
+          0
+        ]
+      },
+      "manifestSha256": "ab04ab3e0904b00adb8becf7191ffd5862fc782dece4bbd796710a5308cd4900",
+      "receiptPath": "rgb/receipt.json",
+      "packageStatus": "complete"
+    }
+  ],
+  "ownership": [
+    {
+      "phase": "prepare",
+      "storeReferences": 0,
+      "queueState": {
+        "disposed": false,
+        "groups": [
+          {
+            "groupId": "candidate-node",
+            "activeInvocationId": null,
+            "queued": [],
+            "quarantined": false
+          }
+        ],
+        "invocations": [
+          {
+            "resultAccepted": true,
+            "originalTerminal": true,
+            "stopAcknowledged": false,
+            "calculationStopped": true,
+            "resourceReleased": true,
+            "reusable": true,
+            "id": "prepare-cancel-barrier",
+            "requestId": "prepare-cancel-barrier",
+            "ownerId": "candidate-orchestrator",
+            "resourceBinding": "candidate-node",
+            "resourceGeneration": "prepare",
+            "revision": 1,
+            "activeToken": "prepare-1",
+            "parentId": null,
+            "state": "completed",
+            "nativeOutcome": "fulfilled",
+            "errorCode": null
+          },
+          {
+            "resultAccepted": false,
+            "originalTerminal": false,
+            "stopAcknowledged": false,
+            "calculationStopped": false,
+            "resourceReleased": false,
+            "reusable": false,
+            "id": "cancel-before-owner",
+            "requestId": "cancel-before-owner",
+            "ownerId": "candidate-orchestrator",
+            "resourceBinding": "candidate-node",
+            "resourceGeneration": "prepare",
+            "revision": 1,
+            "activeToken": "cancel-never-runs",
+            "parentId": null,
+            "state": "cancelled",
+            "errorCode": "INVOCATION_CANCELLED"
+          },
+          {
+            "resultAccepted": true,
+            "originalTerminal": true,
+            "stopAcknowledged": false,
+            "calculationStopped": true,
+            "resourceReleased": true,
+            "reusable": true,
+            "id": "prepare-capture-raw",
+            "requestId": "prepare-capture-raw",
+            "ownerId": "candidate-orchestrator",
+            "resourceBinding": "candidate-node",
+            "resourceGeneration": "prepare",
+            "revision": 1,
+            "activeToken": "prepare-2",
+            "parentId": null,
+            "state": "completed",
+            "nativeOutcome": "fulfilled",
+            "errorCode": null
+          },
+          {
+            "resultAccepted": true,
+            "originalTerminal": true,
+            "stopAcknowledged": false,
+            "calculationStopped": true,
+            "resourceReleased": true,
+            "reusable": true,
+            "id": "prepare-normalize",
+            "requestId": "prepare-normalize",
+            "ownerId": "candidate-orchestrator",
+            "resourceBinding": "candidate-node",
+            "resourceGeneration": "prepare",
+            "revision": 1,
+            "activeToken": "prepare-3",
+            "parentId": null,
+            "state": "completed",
+            "nativeOutcome": "fulfilled",
+            "errorCode": null
+          },
+          {
+            "resultAccepted": true,
+            "originalTerminal": true,
+            "stopAcknowledged": false,
+            "calculationStopped": true,
+            "resourceReleased": true,
+            "reusable": true,
+            "id": "prepare-restore",
+            "requestId": "prepare-restore",
+            "ownerId": "candidate-orchestrator",
+            "resourceBinding": "candidate-node",
+            "resourceGeneration": "prepare",
+            "revision": 1,
+            "activeToken": "prepare-4",
+            "parentId": null,
+            "state": "completed",
+            "nativeOutcome": "fulfilled",
+            "errorCode": null
+          },
+          {
+            "resultAccepted": true,
+            "originalTerminal": true,
+            "stopAcknowledged": false,
+            "calculationStopped": true,
+            "resourceReleased": true,
+            "reusable": true,
+            "id": "prepare-capture-restored",
+            "requestId": "prepare-capture-restored",
+            "ownerId": "candidate-orchestrator",
+            "resourceBinding": "candidate-node",
+            "resourceGeneration": "prepare",
+            "revision": 1,
+            "activeToken": "prepare-5",
+            "parentId": null,
+            "state": "completed",
+            "nativeOutcome": "fulfilled",
+            "errorCode": null
+          }
+        ]
+      },
+      "queueDisposed": true
+    },
+    {
+      "phase": "finish",
+      "storeReferences": 0,
+      "queueState": {
+        "disposed": false,
+        "groups": [
+          {
+            "groupId": "candidate-node",
+            "activeInvocationId": null,
+            "queued": [],
+            "quarantined": false
+          }
+        ],
+        "invocations": [
+          {
+            "resultAccepted": true,
+            "originalTerminal": true,
+            "stopAcknowledged": false,
+            "calculationStopped": true,
+            "resourceReleased": true,
+            "reusable": true,
+            "id": "finish-capture-rgb",
+            "requestId": "finish-capture-rgb",
+            "ownerId": "candidate-orchestrator",
+            "resourceBinding": "candidate-node",
+            "resourceGeneration": "finish",
+            "revision": 1,
+            "activeToken": "finish-1",
+            "parentId": null,
+            "state": "completed",
+            "nativeOutcome": "fulfilled",
+            "errorCode": null
+          }
+        ]
+      },
+      "queueDisposed": true
+    }
+  ],
+  "negativeChecks": [
+    {
+      "queuedCancelBeforeOwnerDispatch": true,
+      "receipt": {
+        "notStarted": true,
+        "stopConfirmed": false,
+        "originalTerminal": false,
+        "resourceReleased": false,
+        "reusable": true,
+        "quarantined": false
+      },
+      "scope": "No native operation or Hike call dispatched"
+    },
+    {
+      "stage": "input-raw",
+      "missingEvidenceRejected": true
+    },
+    {
+      "same128LegacyF5GuardRejected": true
+    },
+    {
+      "normalizedMeaningRejectedByRawDecoder": true,
+      "same128F5ShapeRejectedByRectDecoder": true
+    },
+    {
+      "stage": "restored",
+      "missingEvidenceRejected": true
+    },
+    {
+      "stage": "rgb",
+      "missingEvidenceRejected": true
+    }
+  ],
+  "normalizedIntermediate": {
+    "storage": "owner-owned memory; payload hash and rule recorded in this trace",
+    "meaning": "wan21-normalized-posterior-mean:v1",
+    "normalization": "wan21-comfy-f32-v1",
+    "payloadSha256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5",
+    "wktensorNormalizationMarkerPreserved": false,
+    "codecSha256": "4c6992a7b6f44722e84a7184ed5c878312a203071054335827f7f0adcd01c07b"
+  },
+  "hikeStats": {
+    "calls": 2,
+    "memoryBytes": 1114112,
+    "arenaBytes": 1024,
+    "inputCopyBytes": 1024,
+    "outputCopyBytes": 1024,
+    "workspaceReused": true,
+    "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+    "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+    "profiles": [
+      "wan21-raw-f32-5x16x16",
+      "wan21-raw-f32-1x16x16",
+      "wan21-raw-f32-1x16x32"
+    ],
+    "imports": 0
+  },
+  "diffusionKernelDisposed": true,
+  "candidateDiagnosticPassed": true,
+  "p1Blocker": "Manager285 has no acquired reference-loader/norm-bindings runtime; full P2 adoption remains BLOCKED"
+}
