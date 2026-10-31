@@ -28,11 +28,11 @@
 3. [x] 固定LoRA0cの既存20ケースの公開証拠を実取得・照合。320 actual/expected出力を
    固定gateで再計算し、source/Git objects・plan/package/registry hash・scope・所有権を照合。
    privateの全weight配列は未再取得であり、公開比較件数/hash整合と全配列の再計算を分離。
-4. [ ] 管理browser runnerから利用者が選ぶ実File→native登録/source→最新版SDK/Hike→
+4. [x] 管理browser runnerから利用者が選ぶ実File→native登録/source→最新版SDK/Hike→
    owner adapter/consumer/実ORTへ接続する。管理制御用baseは明示したsynthetic fixtureであり、
    実baseの再試験ではない。独立Python oracleと事前gate、保存packageの実ファイル読戻し、
    source解放後のcopy、取消と旧cohortを確認する。未知のlocal Fileを暗黙に適用しない。
-5. [ ] 管理回帰と独立review、結果・再現手順・raw配列のprivate保存を整え、既存作業branchへ
+5. [x] 管理回帰と独立review、結果・再現手順・raw配列のprivate保存を整え、既存作業branchへ
    pushしてDraft PR #7を更新する。固定commitのAPI/codeをGitHubから読み戻す。
 
 native ownerの数値実装・出力条件・scope・誤差gateを変更しない。Genuine original E1、

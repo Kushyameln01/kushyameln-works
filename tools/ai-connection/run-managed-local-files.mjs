@@ -14,7 +14,7 @@ const here=path.dirname(fileURLToPath(import.meta.url)),managementRoot=path.reso
 const repository='https://github.com/Kushyameln01/kushyameln-works';
 const fixtureScope='synthetic-manager-control-fixture';
 const required=['lora-root','lora-commit','diffusion-root','diffusion-commit','codec-root','codec-commit','inputs','out'];
-const usage='node tools/ai-connection/run-managed-local-files.mjs --lora-root <fixed LoRA archive> --lora-commit <40hex> --diffusion-root <fixed Diffusion archive> --diffusion-commit <40hex> --codec-root <fixed Text/VAE archive> --codec-commit <40hex> --inputs <private local-File selection JSON> --out <new private evidence folder>'; 
+const usage='node tools/ai-connection/run-managed-local-files.mjs --lora-root <fixed LoRA archive> --lora-commit <40hex> --diffusion-root <fixed Diffusion archive> --diffusion-commit <40hex> --codec-root <fixed Text/VAE archive> --codec-commit <40hex> --inputs <private local-File selection JSON> --out <new private evidence folder>';
 const argv=process.argv.slice(2),args={};
 if(argv.length===1&&argv[0]==='--help'){console.log(usage);process.exit(0);}
 for(let i=0;i<argv.length;i+=2){const k=argv[i]?.slice(2);if(!argv[i]?.startsWith('--')||!required.includes(k))throw Error('Unknown argument: '+argv[i]);if(!argv[i+1]||argv[i+1].startsWith('--')||Object.hasOwn(args,k))throw Error('One explicit value required for --'+k);args[k]=argv[i+1];}

@@ -29,3 +29,9 @@ Wan Depth workflowは `wan2.1_t2v_1.3B_fp16.safetensors`、Wan Tile workflowは 
 これらは開発用の資料として登録した。製品のローカルFile受付に四原本の同時入力や全baseの再取得を追加しない。今回の受入scopeはZIP/CRC、Safetensors header・payload layout、入力分類までであり、実モデル数値比較、全target適用、生成受付の合格ではない。
 
 管理経路の正例には、実Fileの取得・header読取り・所有copy・E4保存読戻しを使える。負例にはWanの5D/reshapeをLinearとして受理しないこと、別family/shape/namespaceを名前だけで適合扱いしないこと、metadata不足を未確認として返すことを使う。
+
+管理candidate `a8771513320117a8d20310af84480978665c6252` の実Chromium試験では、上記4個の
+safetensorsを実Fileとして渡し、native入力経路の `UNSUPPORTED_LORA` を各々確認した。
+通信失敗やBUSYを未対応判定へ数えていない。既に登録した適合Fileのbindingは維持された。
+結果は [管理経路の独立照合](evidence/managed-local-file-verification.json) と
+[E1採用結果](E1-ADOPT-RESULT.md)。これらの資料を数値適用・生成したという意味ではない。

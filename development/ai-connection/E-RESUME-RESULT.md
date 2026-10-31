@@ -1,5 +1,9 @@
 # 更新後の担当成果に基づく接続実装の継続
 
+この2977e7f時点の記録に続く、最新版LoRA owner adapterの採用・既存20ケース照合・
+管理local File経路と追加3資料の検証は [E1-ADOPT-RESULT.md](E1-ADOPT-RESULT.md) を参照。
+以下の旧bridge／source状態を最新採用版へ読み替えない。
+
 確認日: 2026-10-31 JST。継続元は管理
 `a26879057d169cb2eecff30503d64adba5057c52`、作業branchは
 `codex/ai-connection-e0-e4`、[Draft PR #7](https://github.com/Kushyameln01/kushyameln-works/pull/7)。
