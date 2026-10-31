@@ -46,7 +46,7 @@ The invocation acquires BUSY **before** argument destructuring, getters, source.
 
 `run` returns `{output,denominators,rowMax,evidence}`. Output shape is `[16,128]`, denominators/rowMax have16 elements. Evidence retains source metadata, exact keys/tiles/tail, graph/kernel hashes, scale, actual calls, timing and bounded-resource counters. Resource fields are scoped logical quantities, not a claim of full pipeline peak.
 
-Signal cancellation is cooperative around each source/ORT/Hike tile: a current bounded synchronous call may finish, then its result is refused and no subsequent key tile is read. A later invocation resets the accumulator and can reuse the instance. Direct active dispose is rejected; cancel/await first. dispose releases only this module's session/Hike references. A caller needing immediate termination may own this module inside its own Worker. Port detach alone is not cancellation.
+Signal cancellation is cooperative around each source/ORT/Hike tile: a current bounded synchronous call may finish, then its result is refused and no subsequent key tile is read. A later invocation resets the accumulator and can reuse the instance. Direct active dispose is rejected; cancel/await first. A failed ORT release retains its actual session/Hike references and blocks new runs with RECOVERY_REQUIRED; another dispose retries unfinished cleanup. References are cleared only after successful release. A caller needing immediate termination may own this module inside its own Worker. Port detach alone is not cancellation.
 
 ## Online recurrence and ABI
 

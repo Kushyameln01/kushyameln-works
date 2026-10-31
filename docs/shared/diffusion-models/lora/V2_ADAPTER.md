@@ -1,5 +1,7 @@
 # LoRA v2 → Diffusion PARTIAL adapter
 
+This is the **fixed2bba regression path**, retained with its historical tests. Under Profile catalog `1.0-draft.1` at `6dae9a6fac3e9ad29ea941f22211edbe4aa894ad`, the canonical full-shape/slice, dual-registry and sink/consumer mapping belongs to the LoRA owner's `createDiffusionDiagnosticAdapter` (`lora-diffusion-diagnostic-adapter/0.1`). See the [fixed owner source](https://github.com/Kushyameln01/kushyameln-works/blob/fc2789a0f649e33f15eb13750e6a983b5c52d170/docs/shared/inference/lora/diffusion-diagnostic-adapter.mjs). Inject that owner adapter for the current adoption path; do not stack this regression adapter with it. The native Diffusion provider/consumer contract is unchanged.
+
 `v2-adapter.mjs` connects the actual LoRA SDK contract `lora-connection/2.0-draft.1` at commit `2bba90785292e42a0c7c8756685b0d8b128b2dcf` to the bounded Diffusion Q consumer. It implements no low-rank or delta arithmetic. Those operations run in the LoRA owner's SDK/Hike. Coverage remains **PARTIAL**, completeAdapter/modelInference/generationReady remain false, and no management snapshot is published.
 
 The selected target is original Q `[5120,5120]`, sixteen contiguous rows and all5120 columns. The corresponding original bias `[5120]` is selected at the same rows. This is a runtime weight feed plus a Hike bias parameter, with no initializer substitution. The independent validation reference belongs to one application; create a new adapter when that reference changes.

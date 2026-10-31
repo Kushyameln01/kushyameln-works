@@ -1,0 +1,263 @@
+{
+  "schemaVersion": "bernini-p4-reference-receipt/0.1",
+  "scope": "ACTUAL_WEIGHT_EXPLICIT_HIDDEN16_DIAGNOSTIC_ONLY",
+  "side": "LOW",
+  "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+  "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+  "fullFileHashRecomputed": false,
+  "planSHA256": "01edee68925c960ae4931d0521ca67b6f46a3dd05feb2aff90d9e73596b3afe6",
+  "generatorSHA256": "10f1a8d15cb463de5f20e300ea6790a3aa021daab1a9a1ed8b63d2565d5f87b4",
+  "referenceBytes": 12395453,
+  "referenceSHA256": "4e0d8265b5b1afb4cbe51a27d6fce69c0f8e2167efa522687f88fa1f8554ea53",
+  "privateReferencePayloadPublished": false,
+  "inputRecipe": "float32((((row*17+column*13)%101)-50)/64), rows16/columns5120",
+  "gates": {
+    "decodedWeightBias": {
+      "comparison": "strict F32 bytes"
+    },
+    "projection": {
+      "absolute": 0.0001,
+      "relative": 1e-05,
+      "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+    },
+    "norm": {
+      "absolute": 0.0001,
+      "relative": 0.0001,
+      "origin": "new predeclared F32 sequential5120 reduction/reciprocal diagnostic tolerance versus independent binary64 oracle; not Torch fused rsqrt parity"
+    },
+    "ropeMatrix": {
+      "absolute": 2e-06,
+      "relative": 2e-06,
+      "origin": "new predeclared F64 primitive/F32 matrix construction and composition diagnostic tolerance"
+    },
+    "ropeApply": {
+      "absolute": 0.0001,
+      "relative": 0.0001,
+      "origin": "new predeclared fullwidth norm to selectedhead matrix-apply diagnostic"
+    },
+    "connectedAttention": {
+      "absolute": 0.001,
+      "relative": 0.0001,
+      "origin": "new predeclared composed-stage F32 diagnostic error budget; not production acceptance"
+    }
+  },
+  "arrayIdentities": {
+    "input": {
+      "shape": [
+        16,
+        5120
+      ],
+      "elements": 81920,
+      "bytes": 327680,
+      "sha256": "4476d38e7da298b83d953c862768198f7a13a2a8ce9ce24c8a8ef81f847d0fff"
+    },
+    "matrices": {
+      "shape": [
+        16,
+        64,
+        2,
+        2
+      ],
+      "elements": 4096,
+      "bytes": 16384,
+      "sha256": "7ca771b5589093ff92d74c302364b72e5ac5ba6e76bf453c3a344e16798dd171"
+    },
+    "q": {
+      "shape": [
+        16,
+        128
+      ],
+      "elements": 2048,
+      "bytes": 8192,
+      "sha256": "0a5997d2ea0efe46e9f24c38bf166bd7aca557a4c5134d364fd426c0941b64f4"
+    },
+    "k": {
+      "shape": [
+        16,
+        128
+      ],
+      "elements": 2048,
+      "bytes": 8192,
+      "sha256": "b2afb68c9680d5a61b6d7e3bdd86ab3dd2427a52ff9da7314812900d126e7c37"
+    },
+    "v": {
+      "shape": [
+        16,
+        128
+      ],
+      "elements": 2048,
+      "bytes": 8192,
+      "sha256": "697c29d553bb3a9f74c7cfe908c873bcec716a7de87e3756646677fdf1457926"
+    },
+    "attention": {
+      "shape": [
+        16,
+        128
+      ],
+      "elements": 2048,
+      "bytes": 8192,
+      "sha256": "60ebca2758c87c7aef2f3410f30f825222ad1ba64150ecce2eddf0713ae3afc0"
+    },
+    "qkv.q": {
+      "shape": [
+        16,
+        5120
+      ],
+      "elements": 81920,
+      "bytes": 327680,
+      "sha256": "dd9a8cba3db7e00e546609cb4e0b97737aecf03aba8c28d23969c87cb905e2b9"
+    },
+    "qkv.k": {
+      "shape": [
+        16,
+        5120
+      ],
+      "elements": 81920,
+      "bytes": 327680,
+      "sha256": "d25433bfef22078e45c05cc8ce1b91cd54ba34f76db7a765ba47d44bb0aaebc3"
+    },
+    "qkv.v": {
+      "shape": [
+        16,
+        5120
+      ],
+      "elements": 81920,
+      "bytes": 327680,
+      "sha256": "4ea6370238adaf357a4dc2980627938a69de8c45a3d1d19284c989966c7cf654"
+    },
+    "norm.q": {
+      "shape": [
+        16,
+        5120
+      ],
+      "elements": 81920,
+      "bytes": 327680,
+      "sha256": "08b45fc55646d6cd549a0dedf38f41d0c454c6a4a4085fd408e0493aaa1bbdf2"
+    },
+    "norm.k": {
+      "shape": [
+        16,
+        5120
+      ],
+      "elements": 81920,
+      "bytes": 327680,
+      "sha256": "b249ee7af7d761a14678341cded94d2ef51425d4ef6585d85fd427b6526a19aa"
+    },
+    "normOrdered.q": {
+      "shape": [
+        16,
+        5120
+      ],
+      "elements": 81920,
+      "bytes": 327680,
+      "sha256": "69afdc5fcb1e90825881b1489edec858141671b14ab1e721260cb3ffc62682b6"
+    },
+    "normOrdered.k": {
+      "shape": [
+        16,
+        5120
+      ],
+      "elements": 81920,
+      "bytes": 327680,
+      "sha256": "6292be8bb4ea2e38a2cd4b6cc1c4655337e8be6ed75574327046c1021e4f70dc"
+    },
+    "normWeights.q": {
+      "shape": [
+        5120
+      ],
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "8a5bf60cae4ff1f6bffca5913a46d6aeb91dc2baf6c8b5f9e99e118a5741b870"
+    },
+    "normWeights.k": {
+      "shape": [
+        5120
+      ],
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "b664e7587376749cd174ea799c466ae9daef36258df651643d4e580b2bcd825d"
+    }
+  },
+  "ranges": [
+    {
+      "key": "blocks.0.self_attn.q.weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F8_E4M3",
+      "payloadOffset": 2844929568,
+      "sourceBytes": 26214400,
+      "rawSHA256": "1a76f8ee3cb9d93ba290b10c261d21d73d996a87904c31ab246e3ae6a04e2e5d",
+      "decodedF32SHA256": "cd6bce902b8db91ae482c13e4bdee49dbf47e73f031a296dc26377e5c8460f86",
+      "scaleSHA256": "2575543940692eed901ec08a566b96b426db16691fdc5b57f51be56c51333925",
+      "configSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+      "biasF32SHA256": "d4b7241d7fe54047ab4bcd791078c994e1feb2675a59f18ac112747aceaadf83"
+    },
+    {
+      "key": "blocks.0.self_attn.k.weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F8_E4M3",
+      "payloadOffset": 2792500768,
+      "sourceBytes": 26214400,
+      "rawSHA256": "96f75777a3b9f2879d547cf5998f999f3242f5d60dff9bf330651161936b01c7",
+      "decodedF32SHA256": "06310fbf025b8d59e165b8550888b0b1666112e836bb778f2d9c31a4cf54d9e1",
+      "scaleSHA256": "8dacf86ba1a3ca395a994a7408a93b48ab9aab3f77041d3332f4650b36588e92",
+      "configSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+      "biasF32SHA256": "611f4bc70991efe2d71293f53bdcbdd2a5031ca236a1b9eabdd38fef23aebb90"
+    },
+    {
+      "key": "blocks.0.self_attn.v.weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F8_E4M3",
+      "payloadOffset": 2871143968,
+      "sourceBytes": 26214400,
+      "rawSHA256": "f648fa133692843a52056eab17c10f38cd04b02fcf1ad412aee8afddee604bbf",
+      "decodedF32SHA256": "86e6d80cf0d4c54a38bdea05ec79816b14cd6d63c7c87578923750ee785d039a",
+      "scaleSHA256": "0dc6f0dd00e7149434b9477415c9f60e45129113b0c08fe266c2ae5f558e6898",
+      "configSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+      "biasF32SHA256": "784f6a06a3cf4c6b7cf374087f9917ae2526f71b3d38e436ff3e51a2ca889ec0"
+    },
+    {
+      "key": "blocks.0.self_attn.norm_q.weight",
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "payloadOffset": 52631968,
+      "sourceBytes": 10240,
+      "rawSHA256": "aa92ee417b5fff532ea190c6a88dbd0ba04cbf21009dd270a5cf29530906c09e",
+      "decodedF32SHA256": "8a5bf60cae4ff1f6bffca5913a46d6aeb91dc2baf6c8b5f9e99e118a5741b870"
+    },
+    {
+      "key": "blocks.0.self_attn.norm_k.weight",
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "payloadOffset": 52621728,
+      "sourceBytes": 10240,
+      "rawSHA256": "405e614b01aa30741fac96d662cf0cc6c6c51671295942cd34207c74d9a253ca",
+      "decodedF32SHA256": "b664e7587376749cd174ea799c466ae9daef36258df651643d4e580b2bcd825d"
+    }
+  ],
+  "originalFileBytesRead": 78875781,
+  "maxSingleReadBytes": 181280,
+  "elapsedSeconds": 1.0600058309992164,
+  "referenceBackend": {
+    "numpy": "2.3.5",
+    "blasThreads": 1,
+    "projectionAccumulation": "binary64",
+    "normOracle": "binary64 reduction/sqrt then F32",
+    "ropeTrigonometry": "binary64 numpy then F32",
+    "attention": "binary64 stable softmax then F32"
+  },
+  "productionQKVVerified": false,
+  "P5": "BLOCKED"
+}

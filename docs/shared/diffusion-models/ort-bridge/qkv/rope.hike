@@ -1,0 +1,93 @@
+package main
+
+// Fixed f64 mathematical primitives. Model indexing, f32 matrix composition
+// and application remain in this Hike module, without a JS numeric fallback.
+func cos(x float64) float64
+func sin(x float64) float64
+func pow(x float64, y float64) float64
+
+func Finite(x float32) bool { return x == x && x - x == float32(0) }
+func FiniteValues(x *float32, count int) bool {
+    i := 0
+    for i < count {
+        if !Finite(x[i]) { return false }
+        i = i + 1
+    }
+    return true
+}
+
+func BuildPair(positions *float32, sourceIds *int, row int, pair int, out *float32) {
+    axis := 0
+    local := pair
+    dim := 44
+    if pair >= 22 { axis = 1; local = pair - 22; dim = 42 }
+    if pair >= 43 { axis = 2; local = pair - 43; dim = 42 }
+    exponent := float64(2 * local) / float64(dim)
+    omega := float64(1) / pow(float64(10000), exponent)
+    angle := float64(positions[row * 3 + axis]) * omega
+    c := float32(cos(angle))
+    s := float32(sin(angle))
+    index := (row * 64 + pair) * 4
+    out[index] = c
+    out[index + 1] = -s
+    out[index + 2] = s
+    out[index + 3] = c
+    if sourceIds[row] != 0 {
+        sourceExponent := float64(2 * pair) / float64(128)
+        sourceOmega := float64(1) / pow(float64(10000), sourceExponent)
+        sourceAngle := float64(float32(sourceIds[row])) * sourceOmega
+        sc := float32(cos(sourceAngle))
+        ss := float32(sin(sourceAngle))
+        // The source rotation is a separate f32 matrix product. Combining the
+        // two angles would change the original core's rounding boundary.
+        out[index] = c * sc + (-s) * ss
+        out[index + 1] = c * (-ss) + (-s) * sc
+        out[index + 2] = s * sc + c * ss
+        out[index + 3] = s * (-ss) + c * sc
+    }
+}
+
+cfunc Build(positions *float32, sourceIds *int, rows int, out *float32, capacity int) int {
+    if rows < 1 || rows > 16 || capacity < rows * 256 || capacity > 4096 { return -1 }
+    if !FiniteValues(positions, rows * 3) { return -2 }
+    row := 0
+    pair := 0
+    for row < rows {
+        if sourceIds[row] < 0 || sourceIds[row] > 16777216 { return -2 }
+        row = row + 1
+    }
+    row = 0
+    for row < rows {
+        pair = 0
+        for pair < 64 {
+            BuildPair(positions, sourceIds, row, pair, out)
+            pair = pair + 1
+        }
+        row = row + 1
+    }
+    if !FiniteValues(out, rows * 256) { return -3 }
+    return 0
+}
+
+cfunc Apply(values *float32, matrices *float32, rows int, out *float32, capacity int) int {
+    if rows < 1 || rows > 16 || capacity < rows * 128 || capacity > 2048 { return -1 }
+    if !FiniteValues(values, rows * 128) || !FiniteValues(matrices, rows * 256) { return -2 }
+    pair := 0
+    x := float32(0)
+    y := float32(0)
+    a := float32(0)
+    b := float32(0)
+    for pair < rows * 64 {
+        x = values[pair * 2]
+        y = values[pair * 2 + 1]
+        a = matrices[pair * 4] * x + matrices[pair * 4 + 1] * y
+        b = matrices[pair * 4 + 2] * x + matrices[pair * 4 + 3] * y
+        if !Finite(a) || !Finite(b) { return -3 }
+        out[pair * 2] = a
+        out[pair * 2 + 1] = b
+        pair = pair + 1
+    }
+    return 0
+}
+
+func main() int { return 0 }

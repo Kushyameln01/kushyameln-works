@@ -1,0 +1,35 @@
+✔ pinned catalog and actual owner bytes verify without loading a numeric runtime (48.778419ms)
+✔ changed sidecar bytes cannot pass a fixed external digest (3.146143ms)
+✔ same API with altered loaded kernel bytes is refused (27.721457ms)
+✖ build identity and full source closure must match verified build-info bytes (25.42074ms)
+✔ equal128 counts cannot exchange F5 and Rect shape or exports (47.902677ms)
+✔ record IDs do not become native profile IDs and attention keeps null (51.065326ms)
+✔ PARTIAL and reused receipts cannot be promoted to full or fresh acceptance (51.565935ms)
+✔ missing numeric gate alone preserves declared contract and blocks numeric acceptance (24.340988ms)
+✔ canonical catalog bytes and source namespaces are not silently replaced (6.566819ms)
+✔ verification snapshots all caller buffers before the first hash await (33.760439ms)
+✔ F5 gate provenance is its original F5 source and not the F1/Rect record (0.48083ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 10
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 352.295275
+
+✖ failing tests:
+
+test at tools/diffusion-models/test-p0-bindings.mjs:30:1
+✖ build identity and full source closure must match verified build-info bytes (25.42074ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (file:///workspace/work/diffusion-models/tools/diffusion-models/test-p0-bindings.mjs:32:2)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /build identity/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }

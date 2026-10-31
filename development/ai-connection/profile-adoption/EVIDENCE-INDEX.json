@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "diffusion-profile-adoption-evidence/0.1",
+  "recordedDateJST": "2026-10-31",
+  "profileReferenceCommit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+  "executionPlanCommit": "0fb553fd081d3bcbbad4ead7accd165679f77d34",
+  "runtimeCodeCommit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+  "runtimeBuild": {
+    "passed": true,
+    "sourceCount": 72,
+    "buildId": "diffusion-models/0.1+7a14a46b5119c1e8f7f8ef0a16a5ac0881ea4f177d063f957a489f193e4f090a",
+    "kernelWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+    "latentWasmSHA256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+    "streamAttentionWasmSHA256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+    "qkvRopeWasmSHA256": "46cd2ac1859e809d9bcb722b55822c606185e67b3639392fa00d21b698825997",
+    "reusedTensorWasmSHA256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+    "reusedTensorHistoricalCompilerSHA256": "f41a501783e98f2d1d72dca95099f87ef3b4dff30477d0db486e7b2e44106e75",
+    "reusedTensorRebuilt": false,
+    "kernelReceiptsChecked": 23,
+    "ownerBuilder": "docs/shared/diffusion-models/api/build-info.py",
+    "scope": "source closure/receipt only, not real-model validation"
+  },
+  "sourceBaselineCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+  "branch": "codex/diffusion-profile-p0-p4",
+  "p0": {
+    "passed": true,
+    "cases": 12,
+    "ownerAssetCount": 144,
+    "declarationSha256": "c889a3fbd18fa7b8a0e022729197dcc30428d1a3b2a4724493e6824e054ea55f",
+    "candidateSourceCommit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+    "numericAcceptanceOfCandidateIntegrityOnly": "NOT_VERIFIED",
+    "changedBoundaryNumericalEvidenceIsSeparate": true
+  },
+  "p2": {
+    "passed": true,
+    "cases": 5,
+    "sourceCommit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+    "buildId": "diffusion-models/0.1+7a14a46b5119c1e8f7f8ef0a16a5ac0881ea4f177d063f957a489f193e4f090a",
+    "profileId": "wan21-raw-f32-1x16x32",
+    "roundTripMaxAbs": 2.384185791015625e-07,
+    "receipt": "p2/green/result.json",
+    "sha256": "5df81e522a005ac0d904eccf9ac8d90f35fcd5d939df82510593667b031543b6",
+    "managerUIAccepted": false,
+    "vaeFreshDecodeExecuted": false
+  },
+  "p4": {
+    "LOW": {
+      "receipt": "p4/runtime-LOW.json",
+      "sha256": "dd6e8f8d91486bceeeb1851e91ffdac04718167366d2a552714bb07dac3b2751",
+      "browserCases": 6,
+      "sourceDigestsAlignedWithCodeCommit": 48,
+      "numericGateFailures": 0,
+      "scope": "actual immutable base weights, explicit hidden fixture, N16/full-width QKV and one-head selected16 attention; not production activation or full sequence",
+      "actualModelHiddenVerified": false,
+      "productionQKVVerified": false,
+      "P5": "BLOCKED"
+    },
+    "HIGH": {
+      "receipt": "p4/runtime-HIGH.json",
+      "sha256": "bec41812815ab597bc7af150c1c2559a9ce5a2637e862ee737e0b05d5927b957",
+      "browserCases": 6,
+      "sourceDigestsAlignedWithCodeCommit": 48,
+      "numericGateFailures": 0,
+      "scope": "actual immutable base weights, explicit hidden fixture, N16/full-width QKV and one-head selected16 attention; not production activation or full sequence",
+      "actualModelHiddenVerified": false,
+      "productionQKVVerified": false,
+      "P5": "BLOCKED"
+    }
+  },
+  "changedBoundaryRegressions": {
+    "nativeAPICases": 22,
+    "streamAttentionCases": 8,
+    "qkvNodeCases": 6,
+    "actualORTReleaseRecoveryCases": 3
+  },
+  "remaining": {
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY",
+    "P5": "BLOCKED",
+    "productionHidden": "NOT_RECEIVED",
+    "originalComputePrecision": "UNVERIFIED",
+    "fullSequenceAndAllHeads": "UNVERIFIED",
+    "combinedPipelineResourceBudget": "UNVERIFIED",
+    "managerCandidateAdoption": "NOT_ACCEPTED",
+    "otherOwnerReceiptOfThisCandidate": "PENDING"
+  },
+  "scope": "owner declaration integrity, Rect mean connection and actual-weight explicit-input operator diagnostics; no full-model generation acceptance"
+}

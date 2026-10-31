@@ -1,0 +1,62 @@
+{
+  "passed": true,
+  "scope": "Hike RoPE matrix/application versus independent Python NumPy oracle; apply inputs are oracle full-width norm arrays, not actual runtime QKV",
+  "referenceSHA256": "4e0d8265b5b1afb4cbe51a27d6fce69c0f8e2167efa522687f88fa1f8554ea53",
+  "matrix": {
+    "elements": 4096,
+    "failed": 0,
+    "maxAbsolute": 0,
+    "gate": {
+      "absolute": 0.000002,
+      "relative": 0.000002,
+      "origin": "new predeclared F64 primitive/F32 matrix construction and composition diagnostic tolerance"
+    },
+    "outputSHA256": "a871e430e07643c9ac4b600d4e2a84a30ca0677a4fe61cf6ae2d35ebf23f2da4",
+    "expectedSHA256": "7ca771b5589093ff92d74c302364b72e5ac5ba6e76bf453c3a344e16798dd171"
+  },
+  "apply": {
+    "q": {
+      "elements": 2048,
+      "failed": 0,
+      "maxAbsolute": 0,
+      "gate": {
+        "absolute": 0.0001,
+        "relative": 0.0001,
+        "origin": "new predeclared fullwidth norm to selectedhead matrix-apply diagnostic"
+      },
+      "outputSHA256": "0a5997d2ea0efe46e9f24c38bf166bd7aca557a4c5134d364fd426c0941b64f4",
+      "expectedSHA256": "0a5997d2ea0efe46e9f24c38bf166bd7aca557a4c5134d364fd426c0941b64f4"
+    },
+    "k": {
+      "elements": 2048,
+      "failed": 0,
+      "maxAbsolute": 0,
+      "gate": {
+        "absolute": 0.0001,
+        "relative": 0.0001,
+        "origin": "new predeclared fullwidth norm to selectedhead matrix-apply diagnostic"
+      },
+      "outputSHA256": "b2afb68c9680d5a61b6d7e3bdd86ab3dd2427a52ff9da7314812900d126e7c37",
+      "expectedSHA256": "b2afb68c9680d5a61b6d7e3bdd86ab3dd2427a52ff9da7314812900d126e7c37"
+    }
+  },
+  "stats": {
+    "wasmSha256": "46cd2ac1859e809d9bcb722b55822c606185e67b3639392fa00d21b698825997",
+    "memoryBytes": 1114112,
+    "arenaBytes": 33024,
+    "calls": 3,
+    "inputCopyBytes": 49408,
+    "outputCopyBytes": 32768,
+    "snapshotCopyBytes": 49408,
+    "primitiveCalls": {
+      "cos": 1664,
+      "sin": 1664,
+      "pow": 1664
+    },
+    "workspaceReused": true,
+    "busy": false,
+    "disposed": false
+  },
+  "productionQKVVerified": false,
+  "P5": "BLOCKED"
+}

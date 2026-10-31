@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "diffusion-p4-runtime-admission/0.1",
+  "candidateId": "bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1",
+  "originalPreExecutionPlanSHA256": "01edee68925c960ae4931d0521ca67b6f46a3dd05feb2aff90d9e73596b3afe6",
+  "admissionAddedFor": "finite-intermediate overflow refusal before reused generic Hike RMSNorm; numerical gates are unchanged",
+  "normalization": {
+    "axis": 5120,
+    "epsilon": 1e-06,
+    "inputMaxAbs": 1e+16,
+    "proof": "5120*(1e16)^2=5.12e35, below finite F32 maximum by over two orders of magnitude including sequential-rounding margin",
+    "owner": "Diffusion P4 diagnostic only",
+    "reusedKernelChanged": false,
+    "sharedTextProfileChanged": false
+  },
+  "selectedHead": 0,
+  "nonzeroHeadIndexRejected": true,
+  "scope": "ACTUAL_WEIGHTS_EXPLICIT_HIDDEN_N16_FULL_WIDTH_HEAD0",
+  "productionQKVVerified": false,
+  "P5": "BLOCKED"
+}

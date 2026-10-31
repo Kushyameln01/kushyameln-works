@@ -1,0 +1,53 @@
+{
+  "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+  "backend": "wabt",
+  "mode": "normal",
+  "sourceSha256": "1be9901cdb8632903237c221cc7de06f3e82391b5342dc78abbabd8666b0905e",
+  "hostSha256": "94be2fd2b0e1369bb0be522c64c8b875ec8f320a4d6cfd54fbf6104dbae7603e",
+  "builderSha256": "6ee07dd770017d847ae7cba4e4cf4d225569faaf1943b459c499b70f042af5b4",
+  "wasmSha256": "46cd2ac1859e809d9bcb722b55822c606185e67b3639392fa00d21b698825997",
+  "watSha256": "187cd770cf9f2f254bec003628fc58dec3650f94ffffd5e528d5f5e9d37d2b84",
+  "runtimeSha256": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+  "imports": [
+    {
+      "module": "env",
+      "name": "cos",
+      "signature": "f64 -> f64",
+      "bridge": "fixed ECMAScript Math.cos"
+    },
+    {
+      "module": "env",
+      "name": "sin",
+      "signature": "f64 -> f64",
+      "bridge": "fixed ECMAScript Math.sin"
+    },
+    {
+      "module": "env",
+      "name": "pow",
+      "signature": "f64 f64 -> f64",
+      "bridge": "fixed ECMAScript Math.pow"
+    }
+  ],
+  "abi": {
+    "Build": "i32 i32 i32 i32 i32",
+    "Apply": "i32 i32 i32 i32 i32"
+  },
+  "command": [
+    "/workspace/work/diffusion-investigation/toolchain/hikec",
+    "build",
+    "-target",
+    "wabt",
+    "-wasm-mode",
+    "normal",
+    "-o",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/qkv/kernel.wasm",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/qkv/rope.hike"
+  ],
+  "versions": {
+    "go": "go version go1.22.12 linux/amd64",
+    "wabt": "1.0.39",
+    "node": "v24.19.0"
+  },
+  "scope": "explicit16 positions/source IDs, onehead128 RoPE matrix/application; not full model or production precision parity"
+}
