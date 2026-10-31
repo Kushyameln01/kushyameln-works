@@ -8,7 +8,8 @@ export function compareAll(actual,expected,gate){
 }
 function assert(value,message){if(!value)throw Error(message);}
 async function rejects(action,label){let error;try{await action();}catch(e){error=e;}assert(error,'Expected rejection: '+label);return {passed:true,error:String(error),code:error.code??null};}
-export async function runJointCases({baseFile,loraFiles,reference}){
+export async function runJointCases({baseFile,baseFactory,loraFiles,reference}){
+ if(baseFactory!==undefined&&(typeof baseFactory!=='function'||baseFile!==undefined))throw Error('Explicit test provider factory and original File are mutually exclusive');
  const ours='/our/shared/inference/lora/',peer='/peer/shared/diffusion-models/';
  const [{createLoraV2},{createBerniniDiagnosticBase},{createDiagnosticConsumer},{createOrtProjectionStage},{createDiffusionDiagnosticAdapter},{sha256Blob},{adaptV1Registry,createV1SinkAdapter}]=await Promise.all([
   import(ours+'sdk-v2.mjs'),import(peer+'lora/diagnostic-base.mjs'),import(peer+'lora/diagnostic-consumer.mjs'),import(peer+'ort-bridge/stage.mjs'),import(ours+'diffusion-diagnostic-adapter.mjs'),import('/our/shared/vr180/sha256.mjs'),import(ours+'v1-adapter.mjs')]);
@@ -19,7 +20,8 @@ export async function runJointCases({baseFile,loraFiles,reference}){
  const report={side:reference.side,status:'RUNNING',coverage:'PARTIAL',completeAdapter:false,generationReady:false,modelInference:false,cases:[],weightAttempts:[],lifecycle:[],fullOriginalShape:[5120,5120],selectedRows:[0,16],allColumns:[0,5120],precision:'FP8 scalar→Hike F32; LoRA Hike F32; ORT WASM Gemm→Hike bias; not original GPU precision equivalence'};
  let base,stage,consumer,ownerCurrent=true;
  try{
-  emit(reference.side+' creating actual base/ORT/Hike');base=await createBerniniDiagnosticBase({file:baseFile,side:reference.side,rowStart:0});const native=base.describe();
+  emit(reference.side+' creating actual base/ORT/Hike');base=baseFactory?await baseFactory({side:reference.side}):await createBerniniDiagnosticBase({file:baseFile,side:reference.side,rowStart:0});const native=base.describe();
+  report.baseTransport=baseFactory?'explicit-injected-provider':'original-file';
   const nativeIdentity={modelHash:native.modelHash,graphHash:native.graphHash,registryHash:native.registryHash,side:native.side,scope:'PARTIAL'};
   const actualBaseWeight=await base.baseProvider.readBlock('q.weight',0,81920,nativeIdentity),actualBaseBias=await base.baseProvider.readBlock('q.bias',0,16,nativeIdentity);
   report.baseDecode={weight:compareAll(actualBaseWeight,baseExpectedWeight,reference.gates.baseDecode),bias:compareAll(actualBaseBias,baseExpectedBias,reference.gates.baseDecode),weightBytesEqual:await SHA(actualBaseWeight)===reference.baseWeight.sha256,biasBytesEqual:await SHA(actualBaseBias)===reference.baseBias.sha256,weightArtifact:await save(reference.side+'-decoded-base-weight.f32',actualBaseWeight),biasArtifact:await save(reference.side+'-decoded-base-bias.f32',actualBaseBias)};
