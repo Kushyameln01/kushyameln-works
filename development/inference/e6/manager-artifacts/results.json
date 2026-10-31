@@ -1,0 +1,272 @@
+{
+  "passed": true,
+  "scope": "Recorded real64 mean and RGB through actual manager capture/queue/package on Node",
+  "managerCommit": "a26879057d169cb2eecff30503d64adba5057c52",
+  "nativeCodecSource": {
+    "repository": "https://github.com/Kushyameln01/kushyameln-works",
+    "commit": "54bfeadbd83f1fea074c503c0e05ec478aba5cfb",
+    "path": "docs/shared/inference/tensor.mjs"
+  },
+  "nativeCodecSha256": "4c6992a7b6f44722e84a7184ed5c878312a203071054335827f7f0adcd01c07b",
+  "sourceFileChecks": 32,
+  "artifacts": [
+    {
+      "artifactId": "mean64",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "meaning": "raw-posterior-mean",
+      "fileSha256": "133ec18d70bbdb1d8cf999328a04865b79e6aa9dbcb03e47f7b8164184ccc0cb",
+      "payloadSha256": "27d9cf7f6251c0819c96ebc653b6fdcd8ed0971b34cab6eb14c79fe582dd16a7",
+      "context": {
+        "schemaVersion": 1,
+        "contextId": "actual-f1-diagnostic-still",
+        "inputId": "existing-frame-000-png",
+        "inputSha256": "0dcfaf393c24895f31d6e689157725b07cf86e2fea34396ccfaeb1caef0f21f5",
+        "slotId": "diagnostic-still",
+        "sourceFrameIndices": [
+          0
+        ],
+        "sourceFrameTimesSeconds": [
+          0
+        ]
+      }
+    },
+    {
+      "artifactId": "rgb768",
+      "shape": [
+        1,
+        3,
+        1,
+        16,
+        16
+      ],
+      "meaning": "raw-decoder-rgb",
+      "fileSha256": "c8e521a29dabec3fb5f3bf41d755e98d39791ca423764d9d77a8448a9400d966",
+      "payloadSha256": "0c97ff6d3dfa3993c00a50342431982bb20f772a3b914520313f81f8ca947c39",
+      "context": {
+        "schemaVersion": 1,
+        "contextId": "actual-f1-diagnostic-still",
+        "inputId": "existing-frame-000-png",
+        "inputSha256": "0dcfaf393c24895f31d6e689157725b07cf86e2fea34396ccfaeb1caef0f21f5",
+        "slotId": "diagnostic-still",
+        "sourceFrameIndices": [
+          0
+        ],
+        "sourceFrameTimesSeconds": [
+          0
+        ]
+      }
+    }
+  ],
+  "packageStatus": "complete",
+  "receipt": {
+    "packageVersion": "works-artifact-package/1.0-draft.1",
+    "packageId": "diagnostic:recorded-joint64",
+    "manifestPath": "manifest.json",
+    "manifestByteLength": 4095,
+    "manifestSha256": "4e19b2b96dc055be44da8e91f51b7b6f2f0d71420c05979b96f3ba468c6298f5"
+  },
+  "rejected": [
+    {
+      "name": "missing-rgb-evidence",
+      "code": "REQUIRED_ASSET_MISSING",
+      "scope": "fault injection at read boundary; original stored files unchanged"
+    },
+    {
+      "name": "native-header-modified",
+      "code": "ASSET_HASH_MISMATCH",
+      "scope": "fault injection at read boundary; original stored files unchanged"
+    },
+    {
+      "name": "native-payload-modified",
+      "code": "ASSET_HASH_MISMATCH",
+      "scope": "fault injection at read boundary; original stored files unchanged"
+    }
+  ],
+  "files": [
+    {
+      "path": "source/joint64-acceptance-results.json",
+      "bytes": 11335,
+      "sha256": "844f702dcacc3faa3c5bbbdb6c065a4d43b8729364b0c67c1a8448f943a22a26"
+    },
+    {
+      "path": "source/diffusion-438-f1-results.json",
+      "bytes": 4514,
+      "sha256": "3bc208bef8771c8928c885f1b99384e200b7896f25f90ac02db13550ce0afd06"
+    },
+    {
+      "path": "source/f1-manifest.json",
+      "bytes": 4821,
+      "sha256": "fa219b8e7e0b6b0be37c598d3dfedadb29505ad1407fe3f8270d8655dd46828c"
+    },
+    {
+      "path": "artifacts/mean64/native.wktensor",
+      "bytes": 843,
+      "sha256": "133ec18d70bbdb1d8cf999328a04865b79e6aa9dbcb03e47f7b8164184ccc0cb"
+    },
+    {
+      "path": "artifacts/mean64/descriptor.json",
+      "bytes": 1525,
+      "sha256": "b503e234b5e3f03853e861685c23983c65a43174800538ba51486d5f01e50773"
+    },
+    {
+      "path": "artifacts/mean64/evidence.json",
+      "bytes": 694,
+      "sha256": "712304c169e351726cceff01817b27708b693c7069abbcae11039d94b523ea59"
+    },
+    {
+      "path": "artifacts/mean64/trace.json",
+      "bytes": 712,
+      "sha256": "4be9a721d25cbb1bac280002f785bd8d7910b105251957ca54b4b535cbad416b"
+    },
+    {
+      "path": "artifacts/mean64/snapshot.json",
+      "bytes": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+    },
+    {
+      "path": "artifacts/mean64/extensions.json",
+      "bytes": 2,
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "path": "artifacts/rgb768/native.wktensor",
+      "bytes": 3658,
+      "sha256": "c8e521a29dabec3fb5f3bf41d755e98d39791ca423764d9d77a8448a9400d966"
+    },
+    {
+      "path": "artifacts/rgb768/descriptor.json",
+      "bytes": 1521,
+      "sha256": "b5d8c66966bd75efbde6e60a7a1986b6ef83ba11197787861bdc7dc577aad92c"
+    },
+    {
+      "path": "artifacts/rgb768/evidence.json",
+      "bytes": 1411,
+      "sha256": "a22587fc70e240bfbb10b243b602bfbfa397443debf09db0df04a3fbdb8b2ddf"
+    },
+    {
+      "path": "artifacts/rgb768/trace.json",
+      "bytes": 712,
+      "sha256": "51b8ffdd085e49123e09f6dfcd8189b763f585d7d5d8580f42a930b26476bd2a"
+    },
+    {
+      "path": "artifacts/rgb768/snapshot.json",
+      "bytes": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+    },
+    {
+      "path": "artifacts/rgb768/extensions.json",
+      "bytes": 2,
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 4095,
+      "sha256": "4e19b2b96dc055be44da8e91f51b7b6f2f0d71420c05979b96f3ba468c6298f5"
+    },
+    {
+      "path": "receipt.json",
+      "bytes": 238,
+      "sha256": "7561023b8a290a390b6e29b31f7401e0da7223d94f612cb467fdb2fd51312e5c"
+    }
+  ],
+  "resourceScope": {
+    "wallSeconds": 0.06737865500000001,
+    "sampledProcessRssMaxBytes": 36126720,
+    "measurement": "Node RSS at capture boundaries, not whole-device or inference peak",
+    "nodePid": 40284,
+    "workersCreated": 0,
+    "sessionsCreated": 0,
+    "storeReferencesAfterRelease": 0,
+    "maxConcurrentFileOperations": 1,
+    "queueDisposed": true,
+    "queueState": {
+      "disposed": false,
+      "groups": [
+        {
+          "groupId": "recorded-artifact-files",
+          "activeInvocationId": null,
+          "queued": [],
+          "quarantined": false
+        }
+      ],
+      "invocations": [
+        {
+          "resultAccepted": true,
+          "originalTerminal": true,
+          "stopAcknowledged": false,
+          "calculationStopped": true,
+          "resourceReleased": true,
+          "reusable": true,
+          "id": "capture-mean64",
+          "requestId": "file-mean64",
+          "ownerId": "diagnostic:file-owner",
+          "resourceBinding": "recorded-artifact-files",
+          "resourceGeneration": "files-1",
+          "revision": 1,
+          "activeToken": "capture-token-0",
+          "parentId": null,
+          "state": "completed",
+          "nativeOutcome": "fulfilled",
+          "errorCode": null
+        },
+        {
+          "resultAccepted": true,
+          "originalTerminal": true,
+          "stopAcknowledged": false,
+          "calculationStopped": true,
+          "resourceReleased": true,
+          "reusable": true,
+          "id": "capture-rgb768",
+          "requestId": "file-rgb768",
+          "ownerId": "diagnostic:file-owner",
+          "resourceBinding": "recorded-artifact-files",
+          "resourceGeneration": "files-1",
+          "revision": 1,
+          "activeToken": "capture-token-1",
+          "parentId": null,
+          "state": "completed",
+          "nativeOutcome": "fulfilled",
+          "errorCode": null
+        }
+      ]
+    },
+    "eventLog": [
+      {
+        "event": "capture-start",
+        "artifactId": "mean64"
+      },
+      {
+        "event": "capture-end",
+        "artifactId": "mean64"
+      },
+      {
+        "event": "file-operation-released",
+        "requestId": "file-mean64"
+      },
+      {
+        "event": "capture-start",
+        "artifactId": "rgb768"
+      },
+      {
+        "event": "capture-end",
+        "artifactId": "rgb768"
+      },
+      {
+        "event": "file-operation-released",
+        "requestId": "file-rgb768"
+      }
+    ]
+  },
+  "newInference": false,
+  "nativeOperationInvoked": false,
+  "liveManagedBrowserPipelineAccepted": false,
+  "generatedSampleAccepted": false,
+  "snapshotPublished": false,
+  "productionRegistryAdoption": false
+}

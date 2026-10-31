@@ -1,0 +1,44 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "tools/inference/vae/reference_still.py",
+    "--plan",
+    "/workspace/work/inference/e6-rect/acceptance-plan.json",
+    "--bundle",
+    "/workspace/work/inference/e6-rect/accepted-bundle",
+    "--output",
+    "/workspace/work/inference/e6-rect/references",
+    "--deps",
+    "/workspace/work/inference/vae-proof/deps"
+  ],
+  "exitCode": 0,
+  "wallSeconds": 6.501858250005171,
+  "childPeakRssBytes": 2456014848,
+  "ownership": {
+    "harnessPid": 35300,
+    "harnessCtime": 1793404365.08,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 35302,
+        "ctime": 1793404365.14,
+        "ppid": 35300,
+        "name": "python",
+        "status": "running",
+        "firstPpid": 35300
+      }
+    ],
+    "reapedChildren": [],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  }
+}

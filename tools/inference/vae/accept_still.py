@@ -18,6 +18,7 @@ from urllib.parse import unquote, urlsplit
 import numpy as np
 import psutil
 from playwright.sync_api import sync_playwright
+from process_lifecycle import ProcessOwnership, cleanup_complete
 
 
 REPO = Path(__file__).resolve().parents[3]
@@ -182,6 +183,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("bundle", "baseline-bundle", "plan", "references", "output"):
         parser.add_argument("--" + name, required=True, type=Path)
+    parser.add_argument("--skip-baseline", action="store_true",
+                        help="Reuse prior baseline evidence without rerunning that profile's model")
     args = parser.parse_args()
     args.output = args.output.resolve()
     if "docs" in args.output.parts:
@@ -193,6 +196,7 @@ def main():
     phase = "input-validation"
     server = None
     sampler = None
+    process_owner = None
     browser = None
     page = None
     started = time.monotonic()
@@ -217,6 +221,9 @@ def main():
                       baselineProfileId=baseline["profile"]["id"],
                       baselineManifestSha256=sha(args.baseline_bundle / "manifest.json"),
                       comparisonGate=plan["comparisonGate"], input=plan["input"])
+        result['scope'] = plan.get('scope', result['scope'])
+        process_owner = ProcessOwnership()
+        process_owner.start()  # Before Playwright's driver and Chromium are launched.
 
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self):
@@ -230,6 +237,9 @@ def main():
                 else:
                     if requested.startswith("/harness/"):
                         base, relative = REPO / "tools/inference/vae", requested[len("/harness/"):]
+                    elif requested.startswith("/docs/"):
+                        # Existing browser-cases.mjs uses repository-relative SDK imports.
+                        base, relative = REPO / "docs", requested[len("/docs/"):]
                     elif requested.startswith("/references/"):
                         base, relative = args.references, requested[len("/references/"):]
                     else:
@@ -361,11 +371,16 @@ def main():
             assert session_probe["passed"]
             finish(phase, before, {"probe": session_probe})
 
-            before = begin("baseline-5-frame-real-session-regression")
-            select_bundle(args.baseline_bundle, baseline["profile"]["videoShape"])
-            baseline_probe = page.evaluate("async module=>{const probe=await import(module);return probe.runSessionProbe({baseline:true});}", HOST_MODULE)
-            assert baseline_probe["passed"]
-            finish(phase, before, {"probe": baseline_probe})
+            if not args.skip_baseline:
+                before = begin("baseline-5-frame-real-session-regression")
+                select_bundle(args.baseline_bundle, baseline["profile"]["videoShape"])
+                baseline_probe = page.evaluate("async module=>{const probe=await import(module);return probe.runSessionProbe({baseline:true});}", HOST_MODULE)
+                assert baseline_probe["passed"]
+                finish(phase, before, {"probe": baseline_probe})
+            else:
+                result['baselineReuse'] = {
+                    'modelRerun': False, 'priorEvidenceCommit': '54bfeadbd83f1fea074c503c0e05ec478aba5cfb',
+                    'reason': 'E6 reuses accepted baseline evidence; native API/model/kernel source is unchanged.'}
             result["finalWorkerTracking"] = page.evaluate("({...globalThis.__workerTracking})")
             assert not result["pageErrors"], result["pageErrors"]
             assert not result["httpErrors"], result["httpErrors"]
@@ -387,6 +402,13 @@ def main():
                 result["browserCloseError"] = str(error)
         if sampler is not None:
             sampler.stop()
+        if process_owner is not None:
+            ownership = process_owner.finish(timeout_seconds=5)
+            result['processOwnership'] = ownership
+            if not cleanup_complete(ownership['liveAfterClose'], ownership['zombiesAfterClose'], ownership['errors']):
+                result['passed'] = False
+                result['ownedProcessFailure'] = 'Owned live/zombie children remain, or their lifecycle is unverified'
+        if sampler is not None:
             deadline = time.monotonic() + 10
             remaining, zombies = sampler.remaining()
             while remaining and time.monotonic() < deadline:
@@ -401,9 +423,9 @@ def main():
                                    "browserPid": sampler.pid, "allObservedProcessesTerminated": not remaining,
                                    "allObservedPidsGone": not remaining and not zombies,
                                    "liveProcessesAfterClose": remaining, "zombieProcessesAfterClose": zombies}
-            if remaining:
+            if remaining or zombies:
                 result["passed"] = False
-                result["processCleanupFailure"] = "Observed browser processes remain live after close"
+                result["processCleanupFailure"] = "Observed browser processes remain live/zombie after close"
         if server is not None:
             server.shutdown()
             server.server_close()

@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "tools/inference/vae/export_profile.py",
+    "--model",
+    "/workspace/work/models/vae/wan_2.1_vae.safetensors",
+    "--output",
+    "/workspace/work/inference/e6-rect/bundle",
+    "--frames",
+    "1",
+    "--height",
+    "16",
+    "--width",
+    "32",
+    "--deps",
+    "/workspace/work/inference/vae-proof/deps"
+  ],
+  "exitCode": 0,
+  "wallSeconds": 11.268535051996878,
+  "childPeakRssBytes": 1689231360,
+  "userSeconds": 7.449635,
+  "systemSeconds": 5.437426,
+  "exportChild": {
+    "pid": 35110,
+    "created": 1793404079.45,
+    "parentPid": 35109,
+    "name": "python"
+  },
+  "sampledDescendants": [],
+  "exitWaited": true,
+  "exportPidStillExists": false,
+  "measurement": "wait4 maximum export child RSS, not bundle size; observed subprocesses sampled50ms"
+}

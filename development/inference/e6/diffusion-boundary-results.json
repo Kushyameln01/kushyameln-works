@@ -1,0 +1,219 @@
+{
+  "sourceCommit": "679a72d7f53e31bccecbee46b4e2fe559a4e0aba",
+  "buildId": "diffusion-models/0.1+33d7c5c3f3865fb6cf68b85358e04d1d0f558ca362531cc14902667fcc0c850b",
+  "numericExtension": false,
+  "neuralInference": false,
+  "scope": "Actual retrieved Diffusion module validators and existing real Hike128-element mean kernel only",
+  "counterpartAcknowledged": false,
+  "results": [
+    {
+      "name": "read actual accepted F1 mean without reclassification or reshape",
+      "passed": true,
+      "elements": 64
+    },
+    {
+      "name": "actual F1 mean64 fails existing raw-latent boundary",
+      "passed": true,
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    },
+    {
+      "name": "actual F1 mean64 fails existing raw-latent writer wrapper",
+      "passed": true,
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    },
+    {
+      "name": "actual F1 mean64 fails existing normalizeRawMean",
+      "passed": true,
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    },
+    {
+      "name": "normalized F1 shape64 fails existing restoreRawMean",
+      "passed": true,
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    },
+    {
+      "name": "same-count rectangle128 shape rejects existing raw-latent boundary",
+      "passed": true,
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    },
+    {
+      "name": "same-count rectangle128 shape rejects existing normalizeRawMean",
+      "passed": true,
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    },
+    {
+      "name": "same-count normalized rectangle128 rejects existing restoreRawMean",
+      "passed": true,
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    },
+    {
+      "name": "unsupported shapes rejected before any Hike transform",
+      "passed": true,
+      "hikeCalls": 0
+    },
+    {
+      "name": "old128 exact-profile real Hike normalize/save/read/restore preserved",
+      "passed": true,
+      "shape": [
+        1,
+        16,
+        2,
+        2,
+        2
+      ],
+      "count": 128,
+      "maxAbs": 3.5762786865234375e-7,
+      "gate": 0.000002,
+      "hikeCalls": 2,
+      "savedFile": "old128-normalized.wktensor",
+      "savedFileSha256": "6aac7666ed5501c56ba004df967f9a876390f28567a136cfca22ccb7ac705c77"
+    },
+    {
+      "name": "generated-sample meaning cannot enter old mean normalization",
+      "passed": true,
+      "rejected": true,
+      "error": {
+        "name": "TypeError",
+        "message": "Tensor meaning cannot connect to this operation"
+      }
+    },
+    {
+      "name": "wrong producer model hash rejected for old shape",
+      "passed": true,
+      "rejected": true,
+      "error": {
+        "name": "TypeError",
+        "message": "Tensor provenance does not match the VAE model"
+      }
+    }
+  ],
+  "actualStillInput": {
+    "path": "/workspace/work/inference/vae-v1-f1/browser-acceptance-2/png-mean.wktensor",
+    "fileSha256": "3641234c5f5a722d1d7eb2b4558412ba2c425d089324986bcdf209e66f9f8e98",
+    "payloadSha256": "8f245b119bfd7ad42ea78e6f0ed68a9ee5d852f6fe85c528cdc0f87166c7d26e",
+    "meaning": "raw-posterior-mean",
+    "shape": [
+      1,
+      16,
+      1,
+      2,
+      2
+    ],
+    "elements": 64,
+    "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+  },
+  "kernel": {
+    "fileSha256": "ffd1c821d9ecf2aba10cd7ac96f231c78380a1d02621dae8838ee8d64495b9ea",
+    "exports": [
+      {
+        "name": "memory",
+        "kind": "memory"
+      },
+      {
+        "name": "__hike_sp",
+        "kind": "global"
+      },
+      {
+        "name": "__hike_heap",
+        "kind": "global"
+      },
+      {
+        "name": "Finite",
+        "kind": "function"
+      },
+      {
+        "name": "Mean",
+        "kind": "function"
+      },
+      {
+        "name": "Std",
+        "kind": "function"
+      },
+      {
+        "name": "__hike_impl_NormalizeRawMean",
+        "kind": "function"
+      },
+      {
+        "name": "NormalizeRawMean",
+        "kind": "function"
+      },
+      {
+        "name": "__hike_impl_RestoreRawMean",
+        "kind": "function"
+      },
+      {
+        "name": "RestoreRawMean",
+        "kind": "function"
+      },
+      {
+        "name": "main",
+        "kind": "function"
+      }
+    ],
+    "imports": []
+  },
+  "moduleExports": {
+    "tensorInterop": [
+      "WAN21_RAW_PROFILE",
+      "WAN21_VAE_SHA256",
+      "WAN_TEXT_ENCODER_SHA256",
+      "decodeWanConditioning",
+      "decodeWanRawLatent",
+      "encodeWanConditioning",
+      "encodeWanRawLatent",
+      "requireWanConditioning",
+      "requireWanRawLatent"
+    ]
+  },
+  "rectangleInput": {
+    "shape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "elements": 128,
+    "role": "Synthetic shape-boundary fixture only, not the new rectangle model output"
+  },
+  "stats": {
+    "calls": 2,
+    "memoryBytes": 1114112,
+    "arenaBytes": 1024,
+    "inputCopyBytes": 1024,
+    "outputCopyBytes": 1024,
+    "workspaceReused": true,
+    "wasmSha256": "ffd1c821d9ecf2aba10cd7ac96f231c78380a1d02621dae8838ee8d64495b9ea",
+    "sourceSha256": "ceb50086b0ca658c1547058d339980ceb5b8f40797ee365b2af203d996c6ea5d",
+    "imports": 0
+  },
+  "passed": true
+}

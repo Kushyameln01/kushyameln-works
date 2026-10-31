@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "kind": "E6-non-square-profile-acceptance-plan",
+  "profileId": "wan21-raw-f32-1x16x32",
+  "task": "E6",
+  "scope": "New non-square diagnostic fixture only; actual workflow media unavailable",
+  "baselineCommit": "54bfeadbd83f1fea074c503c0e05ec478aba5cfb",
+  "documents": [
+    {
+      "title": "総合接続仕様書",
+      "version": "1.1-draft.1",
+      "sha256": "0744a98219c6ddab4880773029e6318de3e770c8e14e1bb2edbb1bf25c1c3944"
+    },
+    {
+      "title": "接続検証と本番実装の実行計画",
+      "version": "0.2-draft.1",
+      "sha256": "9ceb3f2538f5145edfc697be5ea9b7cb8db28db2d250f01912c8d6b67f2e8897"
+    }
+  ],
+  "input": {
+    "path": "/workspace/work/inference/e6-rect/input/rect-32x16.png",
+    "bytes": 174,
+    "sha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+    "format": "opaque RGB8 PNG, generated at native32x16; no EXIF/ICC",
+    "role": "F=1 non-square diagnostic still; NOT actual slot/reference",
+    "originalFHW": [
+      1,
+      16,
+      32
+    ],
+    "existingPreprocessing": {
+      "dimensionRule": "Bernini _resize_long_edge ref_max_size848: scale1 -> H16,W32",
+      "resultHW": [
+        16,
+        32
+      ],
+      "pixelResizePerformed": false,
+      "padding": false,
+      "frameReduction": false
+    },
+    "generatorSha256": "035c73f9658f38836ba0a71a8a0aa8c8d7d8b2e5a6401e5027afa93bc67ec98e"
+  },
+  "videoShape": [
+    1,
+    3,
+    1,
+    16,
+    32
+  ],
+  "latentShape": [
+    1,
+    16,
+    1,
+    2,
+    4
+  ],
+  "model": {
+    "path": "/workspace/work/models/vae/wan_2.1_vae.safetensors",
+    "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+  },
+  "source": {
+    "repo": "Wan-Video/Wan2.1",
+    "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+    "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+    "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498"
+  },
+  "precision": "unchanged BF16 weight values expanded to FP32; not original GPU/BF16 equivalence",
+  "comparisonGate": {
+    "atol": 2e-05,
+    "rtol": 2e-05,
+    "maxAbs": 2e-05,
+    "scope": "all output values, fixed before accepted export/reference/WASM"
+  },
+  "privateOutput": "/workspace/work/inference/e6-rect/accepted-bundle",
+  "existingF1": {
+    "manifestSha256": "fa219b8e7e0b6b0be37c598d3dfedadb29505ad1407fe3f8270d8655dd46828c",
+    "acceptedReceiptCommit": "54bfeadbd83f1fea074c503c0e05ec478aba5cfb",
+    "reexport": false,
+    "inventoryRepeated": false
+  },
+  "baselinePolicy": "Reuse accepted proofs; no old profile model/export repetition without a required delta",
+  "notSameProfileDespite128Elements": "[1,16,1,2,4] != [1,16,2,2,2]",
+  "excluded": [
+    "E9 real generated sample",
+    "actual slot/reference unknown dimensions",
+    "81frame",
+    "manager implementation",
+    "VAE normalization duplication",
+    "main/Pages/model publication"
+  ]
+}

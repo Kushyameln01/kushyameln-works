@@ -2,7 +2,7 @@
 
 API版: `works-ai-1`。Text EncoderとVAEは独立モジュール。包括処理と一括UI、別CodexのDiffusionモジュールはこの実装に含めない。
 
-文書revision: `G1C-V1`（2026-10-31 JST）。`works-ai-1`とG1Cのnative契約を維持し、F=1診断profileの受入を追記する。source branchの文書であり、main/Pagesの配信更新を意味しない。新規generated sample受入口と以下のmetadata追加は、実生成sampleの推論・復元・decodeを受入済みとするものではない。
+文書revision: `E6`（2026-10-31 JST）。`works-ai-1`とG1Cのnative契約を維持し、F=1正方形と非正方形の診断profile受入を記載する。source branchの文書であり、main/Pagesの配信更新を意味しない。新規generated sample受入口と以下のmetadata追加は、実生成sampleの推論・復元・decodeを受入済みとするものではない。
 
 受入済みの実行条件は、UMT5の24層FP32診断経路と、Wan2.1 VAEの固定プロファイル `wan21-raw-f32-5x16x16`。VAEはRGB `[1,3,5,16,16]` とraw latent `[1,16,2,2,2]` の相互変換を検証した。大きな動画shapeをそのまま受け入れるものではない。別shapeは `tools/inference/vae/export_profile.py` で別bundleを作成し、その参照tensorとブラウザ結果を照合してから利用する。
 
@@ -83,6 +83,7 @@ Bernini system promptの構築、negativeの選択と実際の文字列・line b
 | --- | --- | --- | --- |
 | 既存公開bundle | `[1,3,5,16,16]` | `[1,16,2,2,2]` | `wan21-raw-f32-5x16x16`。既存FP32参照・ブラウザ受入を保持 |
 | F=1正方形診断bundle（非公開） | `[1,3,1,16,16]` | `[1,16,1,2,2]`（64要素） | `wan21-raw-f32-1x16x16`。元VAE FP32全出力・実Hike/ORT WASM受入済み。実workflow参照媒体ではない |
+| F=1非正方形診断bundle（非公開） | `[1,3,1,16,32]` | `[1,16,1,2,4]`（128要素） | `wan21-raw-f32-1x16x32`。元FP32全出力と実Hike/ORT WASM受入済み。既存128要素profileとshape/時間軸が異なる |
 | 元workflowのsource/video grid | `[1,3,81,480,832]` | `[1,16,21,60,104]` | 必要shape。未export・未ブラウザ受入 |
 | 最終decode | `[1,3,81,480,832]`へ復元 | `[1,16,21,60,104]`からdecode | 同じgridでも生成sampleとmeanは別契約。実生成経路未実装 |
 | 静止参照画像、workflow gridを使う場合 | `[1,3,1,480,832]` | `[1,16,1,60,104]` | F=1用の別graphが必要。全slotをこの寸法へ変える意味ではない |
@@ -93,7 +94,7 @@ workflowの81×480×832はRGB単体388,177,920 B、latent単体8,386,560 B（2,0
 
 Bernini例の `ref_max_size=848` は長辺上限であり、実参照画像が848×848という情報ではない。元nodeのresize/crop式と実媒体の寸法・EXIF・frame数は別に照合する。今回、縮小、padding、末尾切断、frame削減、縦横の入替えを追加・実行しない。受入済み5-frame graphをF=1や81へ流用せず、manifestだけの書換えも行わない。
 
-別profileの受入は、(1)実入力とrole/slot/F/H/Wを確定、(2)固定原VAE194 keys・FP32参照の全出力を保存、(3)新しい非公開bundleへopset17の固定exportとSHA/shape記録、(4)比較前に数値gateを固定、(5)実ブラウザで入力→Hike/ORT→全結果回収・照合・取消/解放・copy/cache/OS側RAM計測、(6)同じshape・意味の対向tensor接続、をprofileごとに行う。F=1・16×16診断一件は個別export・実WASMで受け入れた。他のshapeへ合格を流用しない。小profileの0.002 gateや合格を大動画の画質・負荷へ自動転用しない。
+別profileの受入は、(1)実入力とrole/slot/F/H/Wを確定、(2)固定原VAE194 keys・FP32参照の全出力を保存、(3)新しい非公開bundleへopset17の固定exportとSHA/shape記録、(4)比較前に数値gateを固定、(5)実ブラウザで入力→Hike/ORT→全結果回収・照合・取消/解放・copy/cache/OS側RAM計測、(6)同じshape・意味の対向tensor接続、をprofileごとに行う。F=1・16×16と16×32の診断profileを個別export・実WASMで受け入れた。他のshapeへ合格を流用しない。小profileの0.002 gateや合格を大動画の画質・負荷へ自動転用しない。
 
 ## Diffusionから受け取る生成sample
 
@@ -179,7 +180,7 @@ Text/VAEには内蔵待機列がない。同時実行はPromiseの `Inference cl
 
 旧フィールドだけのgolden fixtureについてバイト一致を確認する。今回の接続fixtureはText `[1,2,4096]` とmask、raw mean/生成sample `[1,16,2,2,2]`、contextとmodel/Tokenizer hash、保存読戻し、変更中metadataのsnapshot、MessagePort転送後の所有権を対象とする。反復 `a/b/c` hashなどのfixture値は合成識別で、実model互換性ではない。SDK dispatchのdoubleやText lifecycleのORT doubleを実モデル推論の成功として数えない。
 
-Text24層・既存VAE5×16×16のFP32診断記録に加え、F=1・16×16を元VAE参照と実WASMで受け入れた。Textの重い再推論は実施していない。実generated sample、実参照媒体の各ratio、832×480・81frame、全sampling/最終動画、元GPU精度と端末負荷改善は未受入。実model/profile検証と小規模codec fixtureを合算しない。
+Text24層・既存VAE5×16×16のFP32診断記録に加え、F=1・16×16と16×32を元VAE参照と実WASMで受け入れた。Textの重い再推論は実施していない。実generated sample、実参照媒体の各ratio、832×480・81frame、全sampling/最終動画、元GPU精度と端末負荷改善は未受入。実model/profile検証と小規模codec fixtureを合算しない。
 
 ## Hikeと実行条件
 
@@ -198,3 +199,19 @@ ORT Web1.24.3のWASM provider、1 thread。元FP8/BF16値をFP32へ展開した�
 受入原本は `54bfeadbd83f1fea074c503c0e05ec478aba5cfb` の `development/inference/vae-v1/RESULT.md`、`receipt.json`、`acceptance-plan.json`。同commitに全出力比較・session/Worker終了・資源記録と `tools/inference/vae/{export_profile.py,reference_still.py,accept_still.py}` を保持する。元VAE/ONNX重みは非公開bundleで供給し、source repoにはmanifest/hashと検証証拠を置く。
 
 64要素meanは `raw-posterior-mean`、float32 NCTHW、model識別はWan2.1 VAEのまま。VAEのraw decode受入はDiffusionの64対応を意味しない。128要素の別profileへreshapeして通さず、正規化・復元はDiffusion所有とする。管理snapshot/owner/graph/build/trace/evidenceは `.wktensor` 外側へ保存する。
+
+## E6のprofile境界と対向差分
+
+非正方形profileの固定manifest/graph hash、入力fixture、全値比較、終了・資源記録と再現CLIは `development/inference/e6/RESULT.md`、`REPRODUCE.md`、`receipt.json` に保持する。受入は元サイズ32×16の診断画像一件。実workflowのslot/reference、81frame、実generated sampleは未受入である。
+
+取得したDiffusion `f522d9aeff313558c4ef83022a340af9a4c21391` はmean変換を既存 `[1,16,2,2,2]` の128要素に限定する。64要素 `[1,16,1,2,2]` と、同じ128要素でも別shapeの `[1,16,1,2,4]` は拒否される。VAEの各raw decode単独受入を、Diffusion正規化/復元との結合受入に読み替えない。変換はDiffusion所有で、VAE/管理へ複製しない。
+
+同f522版のmean変換・旧codec/wrapperはG1C context/Tokenizer情報を全て保持しなかった。これは以下の新しい版を取得する前の固定版観測として保持する。
+
+追補照合したDiffusion `438972f30242e0a3bc66edb8591f38eaa0fcd384` は、実Hikeの64要素profile専用経路と直接mean変換のcontext所有コピーを追加している。実64 mean→owner正規化→明示G1C codec保存読戻し→owner復元→既存F1 VAE raw decodeを限定scopeで確認した。正規化/復元の数値処理はownerの実装を呼び、VAEへ複製していない。新非正方形 `[1,16,1,2,4]` は依然未対応で、legacy guard/writerは128要素旧profile限定のままである。
+
+このVAE作業branch内の既存Diffusion runtimeを438へ置き換えたものではない。64要素のこの結合には、[owner438の固定API](https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/API.md)と対応する実module/kernel/receiptを別に取得して明示選択する。相対URLの既存Diffusion実装やmain版まで64対応済みとは扱わない。
+
+438版も旧storage codec/wrapperのG1C metadata完全保存は未成立なので、原native artifact/metadata/evidenceを外側で保持し、G1C codecを明示選択する。取得した管理 `a26879057d169cb2eecff30503d64adba5057c52` のadapter/packageは、実G1C codecを指定したNode検査で情報保全を確認した。これは全管理ブラウザ工程、Diffusion RPC全経路、実generated sampleや全生成の受入を意味しない。初期21e77f取得待ちの記録は歴史として保持する。
+
+モデル/ONNXは従来の非公開bundle入力を維持する。source branchへはmanifest/hash・診断fixture・全出力参照・計測証拠・再生成/検証手順を含め、約499MBの神経graphとモデル原本は同梱しない。

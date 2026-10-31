@@ -1,0 +1,141 @@
+{
+  "sourceCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+  "reviewUrl": "https://github.com/Kushyameln01/kushyameln-works/pull/6",
+  "buildId": "diffusion-models/0.1+f7f23c2291886de637cb06ae001fc748d29232f7c8919683467da5eef6cfb80e",
+  "cases": [
+    {
+      "name": "New actualF1 normalize uses all16correctchannels andownedmetadata",
+      "passed": true,
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "count": 64,
+      "contextPreserved": true,
+      "contextOwned": true,
+      "inputPreserved": true,
+      "bitExactAgainstOldVerified128ChannelReference": true,
+      "referenceMaxAbs": 0
+    },
+    {
+      "name": "ActualF1 normalize-G1Csave/read-ownerrestore keepscontextandrawmean",
+      "passed": true,
+      "count": 64,
+      "maxAbs": 1.1920928955078125e-7,
+      "gate": 0.000002,
+      "codec": "Explicit our currentG1C WKTSR001 schema1 codec; not ownerlegacycodec",
+      "restoredFile": "owner438-restored-still64.wktensor",
+      "restoredFileSha256": "133ec18d70bbdb1d8cf999328a04865b79e6aa9dbcb03e47f7b8164184ccc0cb",
+      "restoredPayloadSha256": "27d9cf7f6251c0819c96ebc653b6fdcd8ed0971b34cab6eb14c79fe582dd16a7"
+    },
+    {
+      "name": "Old128profilemathpreservedandnewownedcontextworks",
+      "passed": true,
+      "shape": [
+        1,
+        16,
+        2,
+        2,
+        2
+      ],
+      "count": 128,
+      "maxAbs": 1.1920928955078125e-7,
+      "contextPreserved": true
+    },
+    {
+      "name": "Explicitprofilesremainstrictandgeneratedmeaningrejected",
+      "passed": true,
+      "errors": {
+        "legacyGuard64": {
+          "name": "RangeError",
+          "message": "Tensor shape cannot connect to this profile"
+        },
+        "rectangleF1Guard": {
+          "name": "RangeError",
+          "message": "Tensor shape cannot connect to this profile"
+        },
+        "rectangleNormalize": {
+          "name": "RangeError",
+          "message": "Unsupported Wan21 posterior-mean shape profile"
+        },
+        "rectangleRestore": {
+          "name": "RangeError",
+          "message": "Unsupported Wan21 posterior-mean shape profile"
+        },
+        "wrongProfile": {
+          "name": "TypeError",
+          "message": "Posterior-mean profile identity mismatch"
+        },
+        "generatedMeaning": {
+          "name": "TypeError",
+          "message": "Tensor meaning cannot connect to this operation"
+        }
+      },
+      "hikeCallsAdded": 0
+    },
+    {
+      "name": "Ownerlegacycodeccontextlossand128onlywriterarestillseparatelimits",
+      "passed": true,
+      "ownerLegacyCodecContextPresent": false,
+      "legacyWriter64Rejected": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      },
+      "requirement": "Preserveoutside descriptor/evidence anduseexplicitG1Ccodec fornewmetadata; nofullownerstoragecompatibilityclaim"
+    }
+  ],
+  "scope": "Actual acceptedF1 mean through newly acquired owner64 Hike operations; explicitG1Ccodec save/read; noNN model inference",
+  "neuralInference": false,
+  "numericExtensionByThisReviewer": false,
+  "ownerSourceEdited": false,
+  "legacyOwnerCodecFullyPreservesMetadata": false,
+  "rectangleSupported": false,
+  "newOwnerAckForThisReview": false,
+  "actualInput": {
+    "file": "accepted-still64.wktensor",
+    "fileSha256": "3641234c5f5a722d1d7eb2b4558412ba2c425d089324986bcdf209e66f9f8e98",
+    "payloadSha256": "8f245b119bfd7ad42ea78e6f0ed68a9ee5d852f6fe85c528cdc0f87166c7d26e",
+    "shape": [
+      1,
+      16,
+      1,
+      2,
+      2
+    ],
+    "elements": 64
+  },
+  "stats": {
+    "calls": 4,
+    "memoryBytes": 1114112,
+    "arenaBytes": 1024,
+    "inputCopyBytes": 1536,
+    "outputCopyBytes": 1536,
+    "workspaceReused": true,
+    "wasmSha256": "6b9cb9f0617da373e63275354ac42f7843fb455019ed3988df7364173bc775b4",
+    "sourceSha256": "357b7d72c2f38a9dec028818f9df33383a3c4be751258783c3513f9e2f681fea",
+    "profiles": [
+      "wan21-raw-f32-5x16x16",
+      "wan21-raw-f32-1x16x16"
+    ],
+    "imports": 0
+  },
+  "oldReferenceStats": {
+    "calls": 1,
+    "memoryBytes": 1114112,
+    "arenaBytes": 1024,
+    "inputCopyBytes": 512,
+    "outputCopyBytes": 512,
+    "workspaceReused": true,
+    "wasmSha256": "ffd1c821d9ecf2aba10cd7ac96f231c78380a1d02621dae8838ee8d64495b9ea",
+    "sourceSha256": "ceb50086b0ca658c1547058d339980ceb5b8f40797ee365b2af203d996c6ea5d",
+    "imports": 0
+  },
+  "acceptedProfiles": [
+    "wan21-raw-f32-5x16x16",
+    "wan21-raw-f32-1x16x16"
+  ],
+  "passed": true
+}

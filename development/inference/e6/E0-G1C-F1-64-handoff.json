@@ -1,0 +1,318 @@
+{
+  "schemaVersion": 1,
+  "task": "E0/E2/E6 source handoff, not owner ACK",
+  "completeCommit": "54bfeadbd83f1fea074c503c0e05ec478aba5cfb",
+  "repo": "Kushyameln01/kushyameln-works",
+  "apiVersion": "works-ai-1",
+  "references": {
+    "G1C_MAPPING": {
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/54bfeadbd83f1fea074c503c0e05ec478aba5cfb/development/inference/connection/G1C-MAPPING.md",
+      "sha256": "b3196e92926871ef70158e84cdae7b261b276bde8b924ad8819c8275c79df433",
+      "utf8Body": "# G1C native APIから共通記述子への無損失mapping\n\n文書revision: `g1c-mapping-1`。2026-10-31 JST。対象sourceは [G1C `6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095`](https://github.com/Kushyameln01/kushyameln-works/tree/6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095)。そのText/VAE native契約・codecは原 `502b243d092b84979b10b1624df60612047d640a` から変更していない。native API版は `works-ai-1`、native保存は `WKTSR001` / schemaVersion `1` を維持する。\n\n本書は、取得した次の原文に対するText/VAE所有者の公開mappingである。参照文書内の「文書作成のみ」という当時の状態は、今回ユーザーが指定したmapping作成とV1個別profile工程の許可を変更しない。\n\n| 参照原文 | 版・原本SHA-256 | 適用箇所 |\n| --- | --- | --- |\n| 添付「Kushyameln Works AI推論モジュール 総合接続仕様書 Draft.md」 | `1.1-draft.1` / `0744a98219c6ddab4880773029e6318de3e770c8e14e1bb2edbb1bf25c1c3944` | 第4・6・10・13・15・18・19・20節。共通規格 `works-module-contract/1.0-draft.1` とnative版を分離 |\n| 添付「Kushyameln Works AI推論モジュール 実装計画 Draft.md」 | `0.1-draft.1` / `770d1cdc26c07548cbe12b33cba93d3f22ab3b565ff58b0ba978f3983ff9c64d` | A0の正本対応、M1/M3向けmapping提供、M5のcodec境界、V1/V2の受入範囲 |\n\n共通記述子の厳密schema・semantic registry・adapter・queue・保存package実装は管理担当のM1〜M5である。本書はそれらを実装せず、共通規格の採用・native→共通→native往復の実行合格とも報告しない。既存12接続fixtureと旧mean経路を作り直さない。V1の新profile export/実WASM結果は別のprofile成果であり、本書のmappingを根拠に受入済みprofileを増やさない。\n\n## 1. mappingの単位と独立性\n\n1回のnative要求・結果を一つのinvocation記録に結び、native tensorの各payloadと、元応答全体のmetadata/evidenceを所有コピーまたは寿命を保証した参照で保持する。native記録を正本とし、共通descriptorはその上への投影とする。projectionからnativeを再構成するときも、元のdtype/shape/meaning/配列/識別/任意fieldの有無を戻す。管理用に選んだ表示名・role・space分類からnativeの意味を推測しない。\n\nText/VAEは従来のfactory、`createInferenceAPI()`、同一origin ES module、明示MessagePortで単独利用できる。管理内部型やDiffusion/LoRAのimport・executorを必須にしない。`works-module-contract/1.0-draft.1` や保存規格をnativeの `apiVersion` へ送らない。ModuleDescriptorを提供する場合も、外部mapping記述で足り、新しいnative `describe()` は必要ない。\n\n以下の共通pathは総合仕様の `ArtifactDescriptorDraft` に対する対応位置である。`artifactId`、`schemaId`、semanticの `spaceId`、role、identityKind、namespace等の登録値は本書で新設しない。M1で採用した規格entryへ結び付くまでは、その必須規格の解釈を `UNVERIFIED` とし、似た名前のnative関数へdispatchしない。\n\n## 2. native要求と返却値\n\n| native経路 | 入力制約 | 返却値と保持する情報 |\n| --- | --- | --- |\n| `textEncoder.encode({text})` | string、空文可。textとID/maskの混在を拒否。元SentencePiece、BOSなし、EOS1、PAD0、EOS込み512以内。超過を無断切詰めしない | `{tensor, attentionMask, evidence}`。tensorはfloat32 BLC **`[1,512,4096]`** / `text_hidden_states`、mask `[512]`、元model/Tokenizer hash。`evidence.inputMode='plain-text'` |\n| `textEncoder.encode({tokenIds,attentionMask})` | `1<=L<=512`、IDは整数0..256383、同長0/1maskで少なくとも1つ有効。EOS/PADの自動追加なし | float32 BLC **`[1,L,4096]`**。内部mask位置・返却L・無効行の0を保持。top-levelとtensor内のmaskは同じ内容。`evidence.inputMode='token-ids'` |\n| `vae.encode(rgbTensor)` | float32 NCTHW、configureしたprofileと厳密一致。`rgb-unit` は[0,1]、`raw-decoder-rgb` は[-1,1] | `{tensor,evidence}`、`raw-posterior-mean`、VAE model hash、任意contextの所有コピー。乱数posterior sampleは生成しない |\n| `vae.decode(mean)` | `raw-posterior-mean`、profile一致。明示model hashは対象VAEと一致。旧契約のhash省略は維持 | `raw-decoder-rgb`、VAE model hash、任意context、evidence。clamp・画像色変換なし。hash省略を互換性の確認済みへ昇格させない |\n| `vae.decode(sample)` | `wan21-raw-generated-sample:v1` と下記latentContract、有限float32 NCTHW、profile一致 | raw RGB tensorには実際に出力したVAE hash。元sampleのproducer/latentContractは応答evidenceと入力artifactの対応で保持。実生成結合はV2未受入 |\n\n元UMT5 SHA-256は `c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68`、Tokenizerは `e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458`。直接IDに返すTokenizer識別はモデルに対応する期待値であり、任意ID列の出所証明ではない。\n\nBerniniの実system prompt・negative選択・正負区分は管理側が保持し、Text側は渡された文字列を処理する。ComfyUI prompt重み、custom/textual embedding、clip-skip、pooled output等は未対応。通常textの出力を元conditioning全体の再現と扱わない。\n\n## 3. tensor・provenanceの対応表\n\n| nativeの正本field | 共通descriptorでの投影 | 無損失条件 |\n| --- | --- | --- |\n| `dtype` / `shape` / `layout` | `tensor.dtype/shape/axes` と `native.metadata` | shape配列とlayout文字列を原順のまま保存。BLCはbatch/token/hidden、NCTHWはbatch/channel/時間/height/width。RGBの時間Fとlatentの時間Tを混同しない。layout変更・transposeはこのmappingに含めない |\n| `meaning` | `tensor.nativeMeaning`、登録済みsemanticに対する `semantics` | 元文字列を完全一致で保持。`wan21-raw-generated-sample:v1` や `wan21-normalized-posterior-mean:v1` の `:v1` を落とさない。管理分類 `normalized-generated` 等をnativeへ送らない |\n| `data:TypedArray` | `native.payloadRef` / `tensor.dataRef` | 実bytes、dtype、byte範囲を保ち、巨大JSON数値配列へ変換しない。view外のbacking buffer bytesをpayloadへ加えない。copy/transfer後も対応元を追跡する |\n| `attentionMask` | `native.metadata` と当該text portのmask参照 | `[L]`全位置・0/1値・任意fieldの有無を保持。内部0を詰めず、mask合計を返却Lにしない。top-level maskも元応答記録に残す |\n| `modelSha256` | 役割・種類・scope付きの `provenance.producerRefs` と `native.metadata` | Text/VAE encode/RGBでは実producer識別。generated sampleの任意model hashは既存値を保つ。decoder hashで上書きせず、存在しなかったhashを補わない |\n| `tokenizerSha256` | Tokenizer識別として独立したidentity参照と `native.metadata` | model/graph/build hashと混ぜない。旧tensorで未記載なら未記載を保持し、検証済みTokenizerへ補完しない |\n| `latentContract.producerModelSha256s` | 全件を役割付き `provenance.producerRefs` へ、原配列を `native.metadata.latentContract` へ | 非空・重複なしの原列をそのまま保持。先頭一件へ縮約せず、sortしない。この配列順序だけからHIGH/LOWの実行順を推測しない |\n| `latentContract.vaeModelSha256` | 復号先として `provenance.consumerBindings`、原値を `native.metadata.latentContract` へ | producerへ混ぜない。実configureしたVAE model hashと照合する。復号後RGBのproducerとしてのVAE識別とは別の役割 |\n| `latentContract.normalization` | 登録済みsemanticの正規化状態と原 `native.metadata`、数値証拠はtrace参照 | `id/state/owner`を一つも落とさない。`restored`の宣言を数値復元証明に置き換えない |\n| `context` | 原 `native.metadata.context`、下記 `lineage` | contextId・inputId・inputSha256・slotId・frame配列・任意時刻を保持。slot名を連番へ書き換えない |\n| 応答 `evidence` / 応答envelope | 元応答全体の参照と外側evidenceファイル、必要な `transformTraceRefs` 等 | evidence全fieldを保持し、当該native要求・入力artifact・出力artifactと対応付ける。evidenceをtensor内の未知fieldへ埋めてcodec保存済みと扱わない |\n\nidentity参照に使うalgorithmは実値の方式を保持する。元modelのSHA-256、graph実bytesのSHA-256、build ID、Tokenizer hash、payload hash、nativeファイル全体hash、metadata canonical hashは異なるidentityである。`modelSha256` にgraph/build/header hashを付け替えない。単一producer fieldだけではgenerated sampleを表現できない。\n\n## 4. contextと複数producerの復元条件\n\ncontextが存在するtensor一件から、`lineage.inputs` へ元inputを参照し、`lineage.sourceFrames` へ `{inputId,slotId,indices,timesSeconds?}` を対応付ける。`contextId` と `inputSha256` はnative metadataに必ず残し、共通側で追加のidentity参照を作る場合もそのscopeを区別する。元の `context` が無い場合はframe対応を推測して生成しない。管理側が別に持つ原本証拠とnative宣言値を区別する。\n\n- `sourceFrameIndices` と任意 `sourceFrameTimesSeconds` は順序・重複・同数性を維持する。時刻は有限・非負の秒。未記載の時刻を0で埋めない。\n- encodeにcontextがある場合はRGB入力Fとframe配列長が同じである。F=5→latent T=2でも元frame配列5件を保持し、T=2へ削減しない。decodeのlatent Tや出力Fとの同数条件を追加しない。\n- 複数contextは複数artifactと、管理側のordered contextId列で保持する。欠番slotを含む実供給元、順序、正負conditioningへの同一context共有は管理側が所有する。本mappingではconcat/stack/RoPE/source_idを生成しない。\n- `producerModelSha256s` の各model identityと、別の実行traceにあるHIGH/LOW順・LoRA・sigma・precisionを対応付ける。native列の保持は実行traceの代替ではない。\n\nnativeに戻す場合、共通の単一frameIndexや単一producerを使って再構成せず、保持した原native metadataの配列・field有無を復元する。共通投影とnative metadataが矛盾したら片方を便宜的に上書きせず、当該adapterの整合違反としてそのedgeを止める。\n\n## 5. generated sampleからRGBへの来歴\n\nVAE consumerが受理するnative sampleは、次を全て満たす。\n\n```javascript\nmeaning: 'wan21-raw-generated-sample:v1'\nlatentContract: {\n  schemaVersion: 1,\n  representation: 'generated-sample',\n  space: 'raw',\n  vaeModelSha256: /* 実decoderと一致するVAE SHA-256 */,\n  producerModelSha256s: /* 実際に生成へ寄与した全model SHA-256の非空・重複なし列 */,\n  normalization: {\n    id: 'wan21-comfy-f32-v1', state: 'restored', owner: 'diffusion_models'\n  }\n}\n```\n\n任意 `modelSha256` がある場合はproducer列の一員で、decoder VAE hashをproducer列へ入れない。現在のVAE原本hashは `2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b`。raw meanへsampleを改名したり、normalized tensorをrawへrelabelして通したりしない。\n\n復元の実計算はDiffusionが所有する。VAE decodeはraw sampleへ既存Hike conv2とORT decoderを適用し、追加のlatent正規化・復元をせず `evidence.normalizationApplied=false` を返す。このfalseはRGB `[0,1]`→`[-1,1]` のencode変換を否定する指標ではなく、latentのmean/std正規化を適用していないという契約である。\n\nRGB tensorの `modelSha256` はVAEであり、sample側producerを書き換えたものではない。完全な生成結果を保存するには、少なくとも次の対応を外側packageへ保持する。\n\n1. 入力sampleのnative tensor、全producer・decoder binding・normalization宣言・payload/nativeファイルhash。\n2. Diffusion所有の復元前後tensor/hash・normalization ID・Hike/build・数値比較・一度だけの適用を追うtransform trace。\n3. 当該VAE decode invocationの入力sample参照と、返却RGB tensor参照。\n4. 応答evidence全体。現実装には `inputMeaning/inputModelSha256/latentContract/normalizationApplied/profileId/modelSha256/assetHashes`、実行条件・Hike寄与・計測が含まれる。任意 `inputModelSha256` がnullでも、latentContractの複数producerを失わない。\n5. 元input/slot/frame対応、選択profile・manifest/graph識別、管理snapshotと各owner/trace参照。\n\n**RGBの `.wktensor` だけではこの来歴は保存されない。** RGB tensorにはgenerated-sample用latentContractを混ぜず、入力sampleと応答evidenceを別のhash付き参照で結ぶ。`restored` metadataとfixtureだけでは実producer・数値復元・実decodeは未検証のままであり、U1/V2や生成受付を解除しない。\n\n## 6. native保存のallowlistと外側package\n\nG1C `encodeTensor()` が書き出すheaderは次の集合である。ここでいうallowlistはwriterが保存するfieldの集合であり、共通manager型をnativeへ追加する拡張口ではない。\n\n| 保存位置 | 実際に保持するもの | 境界 |\n| --- | --- | --- |\n| `.wktensor`固定header | schemaVersion、dtype、shape、layout、meaning、byteOrder、byteLength、dataSha256 | native `WKTSR001`、little-endian binary payload。header上限65,536 B。通常JSON headerを共通JCS規格の実装とみなさない |\n| `.wktensor`任意header | modelSha256、attentionMask、tokenizerSha256、context、latentContract | 各native検査を通した値と配列。raw/normalizedの意味を維持。top-levelの任意未知fieldをwriterが自動保存する保証はない |\n| 元native応答・evidence側 | top-level attentionMask、evidence全体、error/envelopeと要求対応 | `.wktensor`外へ別記録。tensorに入れ直しただけでは保存されない |\n| 管理descriptor/manifest/sidecar | artifact/module/profile/semantic/adapter版、graph/build、ownerとtransfer/lease、snapshot、ordered contexts、全trace、unknown optional extensions | M1/M3/M5が規格化・実装する領域。本mappingではJSON schema・JCS実装・package APIを新設しない |\n\n`context` の許可keyは `schemaVersion/contextId/inputId/inputSha256/slotId/sourceFrameIndices/sourceFrameTimesSeconds`。`latentContract` は `schemaVersion/representation/space/vaeModelSha256/producerModelSha256s/normalization`、そのnormalizationは `id/state/owner` だけである。`snapshotId`、`ownerId`、`graphHash`、`buildId`、管理role、任意extensionをこれらのstrict objectへ入れるとnative検査で拒否される。外側extensionsを使い、名前空間・schema版・requiredForUseは管理側で宣言する。\n\n未知optional metadata/extensionは元native応答の所有snapshotまたは元bytesと外側記録に不透明のまま残す。nativeへdispatchする値はそのnative版の正しいfield集合で作り、未知fieldを勝手に意味付けしない。必須の意味解釈が不明なら `UNVERIFIED` として依存edgeのみ止める。strictなnative内部objectに未知keyを入れた場合の拒否を、optional拡張の保存方法として緩めない。\n\nM5ではpayloadの `dataSha256` に加え、**nativeファイル全体hash** とdescriptor/evidence/trace/snapshot/extensionsの各bytes/hashを結ぶ必要がある。payload hashだけではheader改変を検知できず、`.wktensor`一件で全情報の保存完了とはしない。共通JCS/SHA-256と `works-artifact-package/1.0-draft.1` の実装・読戻しはU7/U8の別受入である。legacyで未記載の情報は不足として保持し、架空hash・推定frame・生成済みevidenceを補わない。\n\n## 7. 所有権・要求・取消のmapping境界\n\n同一originのdirect結果はcaller所有、Text/VAEのMessagePort結果tensor/maskはtransfer後receiver所有で、送信元viewは失効する。Worker入力はclone、Worker結果はtransferであり、異なるWASM Memoryのpointer共有を保証しない。正負fan-outや保存のため結果を再利用する場合は、移譲前の所有copyまたは明示した不変artifact参照を外側で保持する。\n\nnative MessagePortは `apiVersion:'works-ai-1', id, module, method, args`、応答は `apiVersion,id,ok,result` または `error`。管理invocation、module/native要求ID、executor/ownerの対応は外側に保持する。native error文字列をそのまま残し、管理上のreason codeと混ぜない。\n\nnative moduleの `cancel()` はjob IDを引数に持たない。管理側は遅い旧cancelを新jobへ送らない対象照合・取消終端barrierをM4で実装する。Text/VAEの共有executorとDiffusionのexecutorの横断queue、profileごとの資源readinessは管理側である。本書はnative cancelを新wireへ改変せず、M4を実装済みとも扱わない。`unbind()`、計算取消、`dispose()` は別の操作である。\n\n## 8. 成立済み範囲と次の受入\n\n| 範囲 | 本書の状態 |\n| --- | --- |\n| G1C native契約と共通案の対応 | sourceと添付原文を照合し、本mappingを提示。native code・kernel・codec・既存fixtureは変更しない |\n| 既存接続12fixture、Tokenizer6件、過去実Text24層/VAE小profile | それぞれ既存のscopeを維持。本mapping作成で再実行・合算・別profileへの流用をしていない |\n| 全体Python | 502の52/53と6432de5側の53/53は既存別履歴として維持。本mapping工程では再実行していない |\n| native→共通→native実往復、未知拡張、完全保存 | M1/M3/M5の実装とfixture/実ブラウザ受入待ち。本書のみでC11〜C13やU8/U9を完了にしない |\n| V1の新profile | 既存PROFILESの順序を引き継ぐ。個別export・FP32比較・実WASMの別成果を参照し、ここでは受入を宣言しない |\n| 実generated sample復元→decode | Diffusion実producerとtrace、V1の対象decode、M5の保存に依存するV2。U1未解消 |\n\n管理側へ渡す確認事項は、(1)登録済みsemantic/identity規格への正確な対応、(2)元native応答と投影の不一致拒否、(3)配列・field有無・evidenceの往復、(4)RGBと入力sampleのpackage参照、(5)旧cancel対象と所有権、である。profile・実モデル・全生成・負荷改善の受入は各担当の別工程として残す。\n\n## source参照\n\n- [G1C API](https://github.com/Kushyameln01/kushyameln-works/blob/6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095/docs/shared/inference/API.md)、[Text API](https://github.com/Kushyameln01/kushyameln-works/blob/6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095/docs/shared/inference/text-encoder-api.mjs)、[Tokenizer](https://github.com/Kushyameln01/kushyameln-works/blob/6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095/docs/shared/inference/tokenizer.mjs)。\n- [native codec](https://github.com/Kushyameln01/kushyameln-works/blob/6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095/docs/shared/inference/tensor.mjs)、[VAE validator/runtime](https://github.com/Kushyameln01/kushyameln-works/blob/6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095/docs/shared/inference/vae.mjs)、[Worker応答](https://github.com/Kushyameln01/kushyameln-works/blob/6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095/docs/shared/inference/inference-worker.mjs)。\n- 既存の必要profileは[PROFILES.md](PROFILES.md)、原成果は[RESULT.md](RESULT.md)、取得可能な原本と履歴の対応は[RECONCILIATION.md](RECONCILIATION.md)を参照する。\n"
+    },
+    "F1_RESULT": {
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/54bfeadbd83f1fea074c503c0e05ec478aba5cfb/development/inference/vae-v1/RESULT.md",
+      "sha256": "cfce4e1424090cab86c8a1b334d28ae922da781cd51985b2cab49dc103cdd87b",
+      "utf8Body": "# G1C mappingとV1 F=1 profile一件の受入\n\n2026-10-31 JST。総合仕様 **1.1-draft.1**（SHA `0744a98219c6ddab4880773029e6318de3e770c8e14e1bb2edbb1bf25c1c3944`）、実装計画 **0.1-draft.1**（SHA `770d1cdc26c07548cbe12b33cba93d3f22ab3b565ff58b0ba978f3983ff9c64d`）の添付本文を取得した。本結果の範囲はG1Cの無損失対応表と、VAE単体のF=1診断profile一件。管理M1/M3/M5やDiffusion本体、V2の完成ではない。\n\n**選択した `wan21-raw-f32-1x16x16` は、fresh export・元VAE FP32参照・実ChromiumのHike/ORT WASM・保存回収・取消/終了を受入済み。** 元workflowの実slot/reference、非正方形、81frameは未受入のまま保持する。\n\n## 対象、正本、寸法\n\n| 項目 | 確定した値 |\n| --- | --- |\n| native API | `works-ai-1`。自担当の実行sourceは [`6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095`](https://github.com/Kushyameln01/kushyameln-works/tree/6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095)。native API/codec/kernel/vendor/exporter本体は今回変更していない |\n| G1C基点 | [`502b243d092b84979b10b1624df60612047d640a`](https://github.com/Kushyameln01/kushyameln-works/commit/502b243d092b84979b10b1624df60612047d640a)。既存12fixtureを維持。着手時のremote mainは`029ce9336a61e53bc6172fa4a7b7189b15f2efa0` |\n| 元VAE | Wan2.1、SHA-256 `2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b`、194 keys strict load、missing/unexpectedなし |\n| 元source | [Wan-Video/Wan2.1 `9737cba9c1c3c4d04b33fcad41c111989865d315`](https://github.com/Wan-Video/Wan2.1/blob/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py)、source SHA `4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498` |\n| 実際に選択した媒体 | 既存`png-fixtures/frame-000.png`、opaque RGB8、16×16、623 B、SHA `0dcfaf393c24895f31d6e689157725b07cf86e2fea34396ccfaeb1caef0f21f5`。元からある**合成診断画像**で、workflowの実slot画像ではない |\n| 入力の役割・寸法 | F=1の最初の時間分岐を検証する単一静止画。元画像H/W=16/16。既存Bernini長辺式はscale=1、丸め後も16/16。画像自体のresize・crop・padding・frame削減を実行していない |\n| 固定shape | RGB float32 NCTHW **`[1,3,1,16,16]`**（768値、3,072 B）⇔ latent **`[1,16,1,2,2]`**（64値、256 B）。N=1、F=4n+1、H/W≥16の16倍数を維持 |\n| precision/runtime | 保存BF16値を維持してFP32展開。opset17、ORT Web1.24.3 WASM・1 thread・graph optimization disabled。元BF16/GPU演算との同等性は未判定 |\n| Hike | kernel SHA `9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8`。PNG encodeの値域変換1呼出し、decodeの実conv2 MatMul＋bias17呼出し。値は実出力へ寄与する |\n\n入力選択の根拠は既存PROFILESと添付計画V1の「診断用小profileを追加しても元動画を置換しない」という区別。`132123.mp4`、実slot画像などはこの環境で寸法を取得できず、それらに依存するprofileだけを保留した。前処理式の根拠は既存PROFILESに固定されたBerniniStudio `ca69274a2d2135052489bc0c67a2d79a64225e86`を再利用した。\n\n## exportと資材の識別\n\n新しい非公開出力先は `/workspace/work/inference/vae-v1-f1/bundle/`。元5-frame bundleは上書きしていない。以下のONNX二つを実際にexportし、checker・input shape・元モデル参照・実SDK出力shapeで照合した。\n\n| 資材 | bytes | SHA-256 |\n| --- | ---: | --- |\n| `encode.onnx` | 212,362,391 | `193cebca40fa62412e672e64a126898a42ba0450154dd5bbb87d29fcd8aaafae` |\n| `decoder-body.onnx` | 286,313,363 | `c6c4457e538c6f613d2b3a73d97d90525bdc872b4d310dda125712e1f42b55cf` |\n| `conv2-weight.f32` | 1,024 | `9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f` |\n| `conv2-bias.f32` | 64 | `1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd` |\n| `manifest.json` | receiptに記録 | `fa219b8e7e0b6b0be37c598d3dfedadb29505ad1407fe3f8270d8655dd46828c` |\n\nONNXの重みはinitializerへ埋め込みで、ONNX external-dataファイルは0件。別資材のconv2 F32重み/biasも上表で識別する。graphと必要資材の合計は498,676,842 B。model/source/manifest/全asset hashは[receipt.json](receipt.json)と[reference-report.json](reference-report.json)に保持する。\n\nlegacy exporterのONNX **入力**は固定値、output型metadataは一部symbolicのまま残る。ONNX shape inferenceでも解消しなかったため、graph bytesやoutput宣言を手直しせず、元PyTorch出力と実SDKの**全runtime出力寸法**を固定shapeと照合した。このsymbolic metadataを任意shape対応と扱わない。manifestだけのshape変更は行っていない。\n\nexport前の[acceptance-plan.json](acceptance-plan.json)で、全値に対する`atol=2e-5, rtol=2e-5, maxAbs=2e-5`を固定した。immutableなexport時manifestには旧診断既定0.002が残るが、今回の判定には外側planの厳しいgateを使った。manifestのexport時「browser確認待ち」を事後書換えず、今回の受入結果を独立receiptとして結び付ける。\n\n## 受取・返却・保存の境界\n\n[G1C-MAPPING.md](../connection/G1C-MAPPING.md)がnativeから総合仕様への対応表である。Textのplain `[1,512,4096]`とID `[1,L,4096]`、mask、model/Tokenizer、producer配列、decoder binding、contextのframe/時刻配列と順序・重複、evidenceを保持する。管理独自fieldをstrictなnative context/latentContractへ追加しない。\n\nV1では`configure({manifest,files})`後に、不透明PNGを実UIから入力し、`rgb-unit`→Hike→raw mean、保存meanの再入力→Hike conv2/ORT→raw RGBを確認した。API試験では同じPNGのNCTHW単精度値とcontext `[0]`/時刻`[0]`を渡し、返却・codec読戻しで保持した。latent Tと元frame列の1対1対応は新設していない。\n\n`.wktensor`はdtype/shape/layout/meaning/model/mask/payload hashとG1C追加のTokenizer/context/latentContractを保存する。**evidence・snapshot・owner・graph/build・traceは外側保存**とする。今回の[artifact-index.json](artifact-index.json)は保存したnativeファイル全体SHAとpayload SHA、入力PNGまたは入力meanの全体SHA、返却evidenceとbundle識別を対応付ける診断記録であり、M5の共通package実装ではない。生成decodeでは入力sampleのファイル・producer/latentContract・evidenceをRGBと一緒に外側へ保持する必要があるが、実sampleによるその受入はV2へ残す。\n\n## 数値比較・回収・終了\n\nChromium **154.0.8037.57**で全5 phaseが合格。actual model filesをlocal File入力し、source/runtime配信はlocalhostへのGET76件だけ、page/console/HTTP error・request failureは0件だった。[acceptance-results.json](acceptance-results.json)に全件記録する。\n\n| 検査 | 全比較値数 | 最大絶対誤差 | 結果 |\n| --- | ---: | ---: | --- |\n| PNG→mean、実UI保存回収 | 64 | 8.344650268554688e-7 | 2e-5 gate合格 |\n| 保存mean→decode、実UI保存回収 | 768 | 7.152557373046875e-7 | 2e-5 gate合格 |\n| 取消後API再実行、context付き保存読戻し | 64 | 8.344650268554688e-7 | 入力保持・全data/context読戻し一致 |\n| F=1 synthetic encode参照 | 64 | 7.748603820800781e-7 | 全runtime shape・全出力合格 |\n| F=1 synthetic raw decode参照 | 768 | 4.470348358154297e-7 | 全runtime shape・全出力合格 |\n| 既存5-frame encode回帰 | 128 | 1.6689300537109375e-6 | 元gate・元bundleで合格 |\n| 既存5-frame decode回帰 | 3,840 | 8.046627044677734e-7 | 元gate・元bundleで合格 |\n\nUIのmean/RGBとAPI recoveryを実バイナリdownloadして回収し、header・全file SHA・payload SHA・全要素を照合した。meanは実UIで読戻してdecodeへ投入した。busy拒否、実run進捗時のWorker取消、旧job失効、次の実推論成功、dispose後拒否を確認した。\n\n実ORTへ委譲する計測wrapperでは、F=1で3 session作成/3 release、元5-frameも3/3でactive=0。各々、正常encode/decodeと、実session.run後のAbortErrorを含む。模擬ORTの数値ではない。計6 Workerを作成/終了しlive=0、Hike dispose後の再利用も拒否した。\n\n## 資源と時間\n\n| 工程 | 実測時間 | メモリ実測 |\n| --- | ---: | --- |\n| fresh export | 全process 18.350 s、export内11.942 s | child最大RSS 1,687,416,832 B |\n| 元FP32 PNG encode＋mean decode | 推論0.546 s | 参照/graph確認process最大RSS 2,454,687,744 B |\n| 実UI PNG encode | load721.2 ms、推論260.1 ms、SDK全体1532.7 ms、操作/回収1.936 s | browser tree sampled PSS最大1,112,174,592 B（1060.65 MiB） |\n| 実UI mean decode | load884.6 ms、推論280.0 ms、SDK全体1897.8 ms、操作/回収2.186 s | sampled PSS最大1,323,973,632 B（1262.64 MiB） |\n| F=1 session計測・abort | 4.190 s | sampled PSS最大1,953,390,592 B |\n| 元5-frame回帰・abort | 8.293 s | sampled PSS最大1,988,632,576 B |\n| browser受入全体 | 21.045 s | 順次工程であり各phaseのpeakを合算しない |\n\n[resource-measurements.json](resource-measurements.json)はbrowser processと観測子processの約100ms間隔のPSS/RSSを保持する。PSSは比例配分、RSS合計は共有ページを二重計上する。どちらも厳密な瞬間peakや端末全RAMではなく、Python/export/参照processを含めない。単一tensor容量とも区別する。\n\nbrowser close後、生存する観測processは0。**zombie PIDが2件残り、全PID消失は確認していない**。OSの即時回収やGCを保証しない。利用端末の負荷低減・高速化は本結果から主張しない。\n\n## 残るprofileと担当間の確認\n\n- F=1 **16×16診断一件だけ**を新たに受入。非正方形、実slot/reference、元動画81×480×832、生成sample最終decodeは未受入。寸法不明媒体を推測しない。既存PROFILESを再棚卸し・書換えしていない。\n- Diffusionへ：このF=1 latentは64要素。現mean変換の固定128要素profileとは別であり、そのまま接続済みとしない。実generated sampleのproducer/復元・正規化状態・対象VAE/profile・前後payloadと変換buildの照合はV2で行う。復元の数値処理はDiffusion所有で、VAEに追加していない。\n- 管理へ：native情報を外側ArtifactDescriptorへ非破壊に対応付け、evidence・snapshot・owner・profile/graph/build・traceをnativeファイル全体hashへ結ぶ。共通semantic登録、package canonical/required規則、対象取消のcompare-current、横断queueは管理側の工程。nativeの版やstrict keyを変えない。\n- 接続12fixtureは変更せず12/12合格、全体Python53/53合格、syntaxとDiffusion receipt整合も合格。旧52/53の基点由来LoRA台帳不整合は元記録のまま保持する。件数を実モデル受入や全生成へ合算しない。\n\n独立レビューは重要な未解決指摘なし。product code・モデル原本・既存bundleを変更せず、試験harnessと文書/計測証拠を追加した。モデルbundleの公開、mainへの統合、Pages配信更新、Diffusionモデル推論は実行していない。\n"
+    },
+    "API": {
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/54bfeadbd83f1fea074c503c0e05ec478aba5cfb/docs/shared/inference/API.md",
+      "sha256": "6bcb1ffe71a878d27d29f2131f2e24dd060a1c6de80bc6a67cc95fc8322a2b84",
+      "utf8Body": "# Text Encoder / VAE 外部API契約 v1\n\nAPI版: `works-ai-1`。Text EncoderとVAEは独立モジュール。包括処理と一括UI、別CodexのDiffusionモジュールはこの実装に含めない。\n\n文書revision: `connection-1`（2026-10-31 JST）。基点は最新main `a33b311e45a75a6c683242286fef608c7b3770a9`。今回の調整はローカル作業ブランチ上の契約・小規模fixture検査であり、公開版へ自動反映しない。新規generated sample受入口と以下のmetadata追加は、実生成sampleの推論・復元・decodeを受入済みとするものではない。\n\n受入済みの実行条件は、UMT5の24層FP32診断経路と、Wan2.1 VAEの固定プロファイル `wan21-raw-f32-5x16x16`。VAEはRGB `[1,3,5,16,16]` とraw latent `[1,16,2,2,2]` の相互変換を検証した。大きな動画shapeをそのまま受け入れるものではない。別shapeは `tools/inference/vae/export_profile.py` で別bundleを作成し、その参照tensorとブラウザ結果を照合してから利用する。\n\n## 呼出し口\n\n基本経路は包括モジュールと同じWorks originでES moduleをimportする。import先を変更しただけでは、cross-origin Worker起動が許可されるとは限らない。別originの場合は、同originに置いたmodule host/iframeでWorkerを起動して、明示的MessagePortを受け渡す等のadapterを対向仕様と合わせて実装・検証する。このライブラリだけでcross-origin接続済みとは扱わない。\n\n```js\nimport {createInferenceAPI, bindInferencePort, encodeTensor, decodeTensor}\n  from './shared/inference/api.mjs';\n\nconst api = createInferenceAPI({onState: state => renderProgress(state)});\napi.textEncoder.configure({manifest: textManifest, files: textFiles});\napi.vae.configure({manifest: vaeManifest, files: vaeFiles});\n\nconst conditioning = await api.textEncoder.encode({text: 'Hello world'});\n// conditioning.tensor: BLC float32 hidden states + attentionMask\n// diffusion側のAPI契約に合わせてconditioningを渡すのは包括モジュールの責任。\n\nconst latent = await api.vae.encode(rgbTensor);\nconst decoded = await api.vae.decode(latent.tensor);\nconst persisted = await encodeTensor(conditioning.tensor);\nconst restored = await decodeTensor(persisted);\napi.dispose();\n```\n\n`createTextEncoderModule()` と `createVaeModule()` を各APIファイルから直接生成することもできる。複数モジュールを同じUIで扱う場合は上の共有executorを使い、重い実行は1件に制限する。同時呼出しはbusyエラーとなり、暗黙に並列実行しない。包括モジュール側で必要な順序・待機列を管理する。\n\n`files` は `Map(relativeFileName -> File/Blob または Uint8Array)`。File/Blobなら必要部分だけを読む。URLをモデルファイルの代わりに渡すAPIではなく、入力素材を外部サービスへ送信しない。元UMT5はそのbasenameでMapに含める。prepared bundleのmanifestとgraph/hashは読み取り時に照合する。\n\n`configure({manifest,files})` はparsed manifestとこのMapを受け、同期的にcapabilitiesを返す。JSONテキストやモデルURLを直接渡さない。設定変更では同じmoduleの実行を取り消す。`capabilities().configured` は設定を保持したことを表し、全assetの読込み・推論成功を保証しない。\n\n| 設定 | manifestと必要files |\n| --- | --- |\n| Text | `wan-umt5-staged-fp32` / schemaVersion1 / complete true、24 blocks、opset17 / ORT1.24.3。`blocks[].path`、`finalNorm.path`、`embedding.rowHashes.path`、`embedding.sourceFile` をMapに含める。通常テキストでは `tokenizer.path` の元埋込 `spiece.model` も必要 |\n| VAE | `wan21-vae-profile-v1` / schemaVersion1、Wan2.1 model binding、raw / NCTHW / opset17の固定profile。`posterior:'mean'` はencodeの平均値選択を表す。encodeには `assets.encoder.file`、decodeには `decoderBody.file/conv2Weight.file/conv2Bias.file` が必要。両操作を使う場合は全4assetを入れる。元safetensorsは準備時だけ使用し、runtimeのMapには不要 |\n\nmanifestのshapeだけを書き換えて別profileにしない。assetのbytes/SHAと実graphが一組である。`createInferenceAPI({onState})`、または各factoryでconfigureし、実行時のasset検査・失敗を必ず受け取る。\n\nモデル準備はPythonで行い、実行時はブラウザ内のWASMを使う。元の `.safetensors` だけを選べばONNXへ自動変換されるAPIではない。今回のText実行用24 graphは合計18,523,750,008 bytesあり、元6,735,906,897-byteモデルも別に保持する。段階ロードは同時常駐量を抑えるが、保存容量を小さくする方式ではない。VAE bundleは約0.51GB。モデルの準備手順は各 `tools/inference/*/README.md` に記載する。\n\n## モジュールとtensor境界\n\n| モジュール | 操作 | 入力 | 出力 |\n| --- | --- | --- | --- |\n| Text Encoder | `encode({text})` | string。元UMT5埋込SentencePiece、EOS1/PAD0、EOSを含め最大512token。空文も可、無断切詰めなし | `[1,512,4096]` float32、BLC、`text_hidden_states`、mask、model/Tokenizer hash |\n| Text Encoder | `encode({tokenIds,attentionMask})` | 整数配列または数値TypedArray、`1≤L≤512`、IDは0..256383。同長の0/1maskで少なくとも1つ有効 | `[1,L,4096]`。EOS/paddingを自動追加しない。内部mask位置・返却Lを保持 |\n| VAE | `encode(tensor)` | float32、NCTHW、meaning `raw-decoder-rgb`、値域−1〜1、profileと一致するshape | float32、NCTHW、meaning `raw-posterior-mean`。乱数sample・latent正規化なし |\n| VAE | `encode(tensor)` | meaning `rgb-unit`、値域0〜1のRGB | 同上。値域変換`x*2-1`はHikeで行う |\n| VAE | `decode(tensor)` | float32、NCTHW、meaning `raw-posterior-mean`、profileと一致するshape/model | float32、NCTHW、meaning `raw-decoder-rgb`。clamp・色変換なし |\n| VAE | `decode(tensor)` | float32、NCTHW、`wan21-raw-generated-sample:v1`、一致するprofileと下記latentContract | 同上。追加のlatent正規化・復元を行わない。契約fixtureだけを今回受入、実生成経路は未検証 |\n\ntensorの共通表現は `{dtype,shape,layout,meaning,data:TypedArray,modelSha256?,attentionMask?,tokenizerSha256?,context?,latentContract?}`。保存形式 `.wktensor` はバイナリpayloadとschema/shape/意味/model hash/mask/SHA-256を持ち、今回の任意metadataも検査して保存する。巨大なembeddingをJSON数値配列へ展開しない。`decodeTensor` はArrayBufferまたはUint8Array（NodeのBufferを含む）を受け、payloadを所有する新しい配列を返す。\n\nText embeddingはVAE latentではない。DiffusionからVAEへ接続するとき、latentの意味・shape・モデル・正規化空間を照合する。normalized latentの名前だけを変えて渡さない。モデル固有の正規化・復元はDiffusion側Hikeが担当し、管理側やVAE側へ重複実装しない。\n\n旧 `raw-posterior-mean` の `modelSha256` はWan2.1 VAEのhashと照合し、不一致を拒否する。旧mean経路はhashの省略も維持するが、未記載ならモデル互換性が確認できたとは扱わない。生成sampleの `modelSha256` は後述する生成側producer列と照合し、decoder VAEは別フィールドで結び付ける。\n\n## Text Encoderの出力契約\n\n出力は `{tensor,attentionMask,evidence}`。`tensor.attentionMask` はUint8Array `[L]` で、同じmaskをtop-levelにも返す。無効行のhidden statesは0、内部mask位置は保持する。末尾のmask0だけを計算時に省略しても、返却shapeと0行を元のLに戻す。\n\n| 識別 | 固定値 |\n| --- | --- |\n| `tensor.modelSha256` | `c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68`（元UMT5） |\n| `tensor.tokenizerSha256` | `e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458`（元埋込SentencePiece） |\n| `evidence.inputMode` | `plain-text` または `token-ids`（Worker API経路） |\n\n通常テキストはBOSなし・EOS1を追加・PAD0で512まで埋める。lowercase/cleanText、暗黙のtask prefixは適用しない。直接ID経路はIDの範囲・maskを検査するが、呼出し元が本当に同じTokenizerでIDを作ったことを数列から証明できない。Tokenizer hashはモデルに対応する期待識別であり、任意のID列の出所認証ではない。textとID/maskを同時指定する曖昧な入力は拒否する。512はAPIの上限であり、全512位置が有効な入力の性能・全promptでの数値受入まで検証したという意味ではない。\n\nBernini system promptの構築、negativeの選択と実際の文字列・line breakは管理側が保持する。ComfyUI固有の括弧によるprompt重み、custom/textual embedding、clip-skip、別encoder、pooled outputは未対応。通常テキストのhidden statesだけで元conditioning全体を再現したとは扱わない。Diffusionの `requireWanConditioning` と保存wrapperは、Tokenizer hashがあれば一致を検査して保持する。旧ファイルでhashが無い場合の既存受入は維持するが、Tokenizer識別まで確認済みとは扱わない。\n\n## VAE profileの棚卸しと受入条件\n\nすべてNCTHW、N=1。`F=4n+1`、latent時間長 `T=(F-1)/4+1`、空間 `H/8,W/8`、decode出力Fは `4*(T-1)+1`。モデル構造の空間条件は8アラインだが、現exporterは **H/Wが16以上の16倍数** に限定する。この違いを無断で緩めない。\n\n| 用途 | RGB shape | latent shape | 状態 |\n| --- | --- | --- | --- |\n| 既存公開bundle | `[1,3,5,16,16]` | `[1,16,2,2,2]` | `wan21-raw-f32-5x16x16`だけが実モデルFP32参照・ブラウザ受入済み |\n| 元workflowのsource/video grid | `[1,3,81,480,832]` | `[1,16,21,60,104]` | 必要shape。未export・未ブラウザ受入 |\n| 最終decode | `[1,3,81,480,832]`へ復元 | `[1,16,21,60,104]`からdecode | 同じgridでも生成sampleとmeanは別契約。実生成経路未実装 |\n| 静止参照画像、workflow gridを使う場合 | `[1,3,1,480,832]` | `[1,16,1,60,104]` | F=1用の別graphが必要。全slotをこの寸法へ変える意味ではない |\n| 異なるratioの参照画像 | `[1,3,1,H_ref,W_ref]` | `[1,16,1,H_ref/8,W_ref/8]` | 画像・slotごとの実寸法を取得して固定profile化する |\n| 別ratio／長さの参照動画 | `[1,3,F_ref,H_ref,W_ref]` | `[1,16,(F_ref-1)/4+1,H_ref/8,W_ref/8]` | F/H/W確定後に別profileを検証。reference_videoは例workflowで未接続 |\n\nworkflowの81×480×832はRGB単体388,177,920 B、latent単体8,386,560 B（2,096,640要素）。重み、activation、時間cache、copyを含むピークRAMではない。Diffusionの公開pointwise予算1,048,576要素を超え、mean正規化の固定128要素profileからも外れる。VAEのshapeを揃えるだけでは接続できない。\n\nBernini例の `ref_max_size=848` は長辺上限であり、実参照画像が848×848という情報ではない。元nodeのresize/crop式と実媒体の寸法・EXIF・frame数は別に照合する。今回、縮小、padding、末尾切断、frame削減、縦横の入替えを追加・実行しない。受入済み5-frame graphをF=1や81へ流用せず、manifestだけの書換えも行わない。\n\n別profileの受入は、(1)実入力とrole/slot/F/H/Wを確定、(2)固定原VAE194 keys・FP32参照の全出力を保存、(3)新しい非公開bundleへopset17の固定exportとSHA/shape記録、(4)比較前に数値gateを固定、(5)実ブラウザで入力→Hike/ORT→全結果回収・照合・取消/解放・copy/cache/OS側RAM計測、(6)同じshape・意味の対向tensor接続、をprofileごとに行う。新profileのexport・推論は今回実行しない。小profileの0.002 gateや合格を大動画の画質・負荷へ自動転用しない。\n\n## Diffusionから受け取る生成sample\n\n旧 `raw-posterior-mean` はVAE encodeの平均。Diffusionの `normalizeRawMean` → `wan21-normalized-posterior-mean:v1` → `restoreRawMean` → raw mean、という現行128要素経路を保持する。`restoreRawMean`へ生成sampleを渡したり、meanへ改名したりしない。\n\n生成sample用のVAE受入口は次の追加schemaを使う。これはVAE側の宣言検査契約であり、現Diffusion APIにはまだ実sample出力や生成sample用復元操作がない。\n\n```js\nconst sample = {\n  dtype:'float32', layout:'NCTHW', shape:[1,16,2,2,2],\n  meaning:'wan21-raw-generated-sample:v1', data:rawSampleValues,\n  // modelSha256が既にあれば生成側の値を保持する。VAE hashへ替えない。\n  latentContract:{\n    schemaVersion:1, representation:'generated-sample', space:'raw',\n    vaeModelSha256:'2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b',\n    producerModelSha256s:actualGeneratorModelHashes,\n    normalization:{id:'wan21-comfy-f32-v1', state:'restored', owner:'diffusion_models'}\n  }\n};\n// 実際の生成とDiffusion所有の復元が完了した場合だけ、api.vae.decode(sample)。\n```\n\nproducerModelSha256sは非空・重複なしの小文字64桁SHA配列。HIGH/LOW両モデルが使われたなら両者を保持し、順序やLoRA設定は別の実行traceに保存する。任意の `modelSha256` がある場合はproducer列の一員とし、decoder VAE hashはproducerへ入れない。`vaeModelSha256` は対象decoderとのbindingとして照合する。hash未取得を仮のhashで埋めて実互換性を認定しない。\n\nlatentは有限float32であり、RGBのような単一の `[-1,1]` / `[0,1]` 範囲を課さない。raw値のclampや推測したscalar scale/shiftは行わない。channel別mean/std、FP32順序、`wan21-comfy-f32-v1` による復元はDiffusionが所有する。VAEは復元済みraw値へ実conv2とdecoder bodyを適用し、正規化・復元は追加せず `evidence.normalizationApplied=false` を返す。RGB出力のmodelSha256は実際に出力したVAEの識別であり、入力producer hashの付替えではない。入力hashとlatentContractはevidenceへ残す。\n\n`restored` はproducerによる宣言で、metadataだけから変換の実行・二重適用の不存在・モデル互換性を証明できない。元normalized tensor、復元操作/build、前後payload hashを対向側で対応付けて数値比較する。未復元・normalized meaning・違うdecoder bindingは拒否する。現在の `predict/sample=NOT_READY` とmean専用の復元を、fixtureが通っただけで解除しない。\n\n## contextと管理側が保持する情報\n\nVAEに任意の `tensor.context` を渡すと、出力tensorへ所有コピーを返し `.wktensor` でも保持する。shapeや値の変換をこのmetadataが指示することはない。\n\n```js\ncontext:{\n  schemaVersion:1, contextId:'ref-slot-2-frame-80',\n  inputId:'original-asset-7', inputSha256:originalAssetSha256,\n  slotId:'reference-image-2', sourceFrameIndices:[80],\n  sourceFrameTimesSeconds:[5.0] // 任意。同数の有限・非負の秒列。\n}\n```\n\nsourceFrameIndicesは元入力での0始まりframe番号で、順序・重複をそのまま保存する。encodeにcontextを付ける場合は入力RGBのFと同数を要求し、選択された全元frameを記録する。時間圧縮後の各latent位置へ単純な1対1対応を発明せず、decodeのlatent Tとの同数も要求しない。source hashや各frame番号・時刻の実内容は管理側が原本から照合する宣言値であり、VAEが原媒体を再検証したとは扱わない。context名から実画像寸法・内容を推定しない。\n\n既存のDiffusion mean用Hike正規化・復元もcontextを所有コピーで保持する。payloadの数値・hashは変換で変わるが、元入力とslot/frameの対応は変えない。管理側は引き続きjob manifestを正本として保持し、context列の順序・正負共有・失敗時の失効を管理する。\n\n管理job manifestには、job/session/inputRevision、原本とasset hash、選択frame/時刻、各slotとcontextId、profile id＋manifest hash＋graph hash、model/Tokenizer/build識別、実promptと正負区分、context順序とpositive/negative間の共有参照、前後tensor hash、各工程の状態・error・取消対象を保持する。HIGH/LOW実行順、LoRA識別・strength、scheduler/noise入力と変換履歴も該当工程の記録に含める。contextに任意の順序属性を混ぜず、このjob manifestのordered contextId列で順序を管理する。\n\n管理側は同一contextを正負conditioningで共有するかを決める。Diffusion本番graphが各contextをどう消費するか、結合軸・長さ・mask・slot roleはDiffusion担当と確定する。今のAPIからcontextをstack/concat/resizeしてよいと推測しない。Text/VAE共有executorとDiffusionの別executorの横断直列化、待機列、依存工程のskip/取消は管理側が担当する。今回管理UIや重複したモデル数値処理を追加しない。\n\n## MessagePort経由\n\n別iframe/Worker等との接続には、呼出し元が明示的に所有・提供したMessagePortを渡す。\n\n```js\nconst {port1, port2} = new MessageChannel();\nconst unbind = bindInferencePort(port1, api);\n// port2を渡す相手のorigin/Windowを包括モジュール側で確認する。\nport2.postMessage({\n  apiVersion: 'works-ai-1', id: 'request-1',\n  module: 'text_encoder', method: 'encode', args: {text: 'Hello world'}\n});\n```\n\nMessagePort自体にはorigin属性がない。初回のport受渡しは対向側の明示originを用い、`postMessage('*')`や全origin受付を既定にしない。このライブラリは勝手にwindow message listenerやHTTP推論serverを公開しない。\n\n許可メソッド: Textは`capabilities/configure/encode/cancel`、VAEは`capabilities/configure/encode/decode/cancel`。返却は `{apiVersion,id,ok:true,result}` または `{apiVersion,id,ok:false,error}`。request IDは同時実行中に重複させない。関数名やコードを任意実行するRPCではない。\n\n返却tensorとmaskのArrayBufferはportへtransferされ、host側の返却bufferは失効する。受信側が結果を所有し、別の処理へtransferした後は元viewを再利用しない。direct JavaScript APIの結果は呼出し元が所有する。\n\nText/VAEのhost→Workerは入力をstructured cloneし、入力bufferをtransferしない。Worker→hostは結果bufferをtransferし、その後Workerを終了する。Diffusion APIも入力所有権を保ち、Worker結果はhostへtransferするが、現在のDiffusion MessagePort adapterは返答をstructured cloneする。両adapterが同じ転送方式だと仮定しない。管理側が明示的transferを追加した場合はその送信元viewを失効させ、再利用・正負fan-outが必要なら移譲前に所有copyや保存物を作る。WASM Memoryのpointer共有やzero-copyは保証しない。\n\n取消は専用Worker終了で実計算を止め、Promiseを失敗終端にする。次の実行でWorkerを再生成。build/session/job/inputRevisionの不一致返信は採用しない。moduleの`cancel()`はそのmoduleの実行だけを取り消し、共有APIの`cancel()`は現在の実行を取り消す。\n\n`unbind()` はlistenerとportだけを閉じ、すでに開始した推論を取り消さない。共有APIの無関係なジョブを切断側が止めないための契約である。実行中に接続を閉じる呼出し元は、対象moduleの`cancel()`が返るまで待ってから `unbind()` する。hostごと終了する場合は `api.dispose(); unbind();` とする。応答待ちのrequest管理は呼出し元が終端化する。\n\nText/VAEには内蔵待機列がない。同時実行はPromiseの `Inference client busy`、取消は `Inference cancelled`、推論失敗はmessage文字列のError/RPC `ok:false` で終端化する。dispose後のconfigure/encode/decodeは拒否する。DiffusionのBUSY/CANCELLED/STALE_INPUT/DISPOSED等は `{status:'error',error:{code,...}}` なので、管理側adapterは各protocolを区別して状態へ写す。新revisionが旧Diffusionジョブを終了する挙動と、Text/VAEのbusy拒否を混同しない。失敗した依存工程の結果で後工程を起動せず、取消/失敗後に再利用できるAPIは新ジョブへ進め、disposeしたAPIは再生成する。\n\n直接factoryへ自前の共有clientを渡す場合は `ownsClient:false` を指定して寿命を管理する。通常は `createInferenceAPI()` がText/VAE共有clientの所有を処理する。Diffusion側の専用executorはその共有clientに自動参加しない。\n\n## 保存形式と今回の確認範囲\n\n`.wktensor` はmagic `WKTSR001`、uint32 LE header長、UTF-8 JSON header、little-endian binary payload。schemaVersion1、dtype/shape/layout/meaning/byteLength/dataSha256、任意model/mask/Tokenizer/context/latentContractを保持する。header上限65,536 B、無効shape・非有限float32・不正mask・破損payload・不整合な新metadataは拒否する。非同期hash前にpayloadだけでなくshape・識別・mask・contextもsnapshotする。SHA-256はpayload整合であり、header署名や原媒体の真正性を保証しない。\n\n旧フィールドだけのgolden fixtureについてバイト一致を確認する。今回の接続fixtureはText `[1,2,4096]` とmask、raw mean/生成sample `[1,16,2,2,2]`、contextとmodel/Tokenizer hash、保存読戻し、変更中metadataのsnapshot、MessagePort転送後の所有権を対象とする。反復 `a/b/c` hashなどのfixture値は合成識別で、実model互換性ではない。SDK dispatchのdoubleやText lifecycleのORT doubleを実モデル推論の成功として数えない。\n\n既存の実モデル検証は公開受入済みText24層・VAE5×16×16のFP32診断記録であり、今回再実行していない。新規生成sample、F=1、832×480・81frame、実参照媒体の各ratio、生成sample復元、全sampling/最終動画、元GPU精度、利用端末の負荷低減は未受入。今回export・重い全工程推論・公開・pushは行わない。\n\n## Hikeと実行条件\n\nText最終RMSNormはHikeがreduction・正規化・weight乗算を行う。固定Hike WABT runtimeのsqrt primitiveだけは明示した`env.sqrt -> Math.sqrt` bridgeを使う。VAE decodeは実conv2をHike MatMul+biasに置換し、その結果をORTへ渡す。VAE encodeはrgb-unit入力の値域変換をHikeで行う。既に−1〜1の入力へ無意味な恒等計算を追加せず、raw入力経路はそのままORTを使う。kernel欠落やhash不一致をJS/ORT代替で隠さない。\n\nORT Web1.24.3のWASM provider、1 thread。元FP8/BF16値をFP32へ展開した検証経路であり、元GPU precisionや性能との同等性は別判定。Textは24層を1件ずつload/releaseする。元2.1GB embedding表は全量展開せず行を検証して読む。モデルファイルと実行用graphは公開資材に同梱しない。\n\n## 接続確認の状態\n\n同一originの外部callerから明示MessagePortを通し、実UMT5のtokenize→24層→Hike最終norm、VAEのencode→decode、取消後の再実行、異種tensor拒否を実Chromiumで検証済み。個別UIのファイル選択→処理→保存・読戻しと、不透明PNG入力→Hike値域変換→VAE encodeも検証した。透過画像は背景を勝手に決めず拒否する。\n\n最新Diffusion APIを取得し、旧mean境界・model binding・所有権・build依存を照合した。VAE側のgenerated sample受入口とmetadataの保存契約は小規模fixtureで調整したが、対向の生成sample producer/復元と本番graphは未実装で、包括UIとの実生成接続は未確認である。API入口やfixtureの存在だけで対向の全工程を接続済みとは報告しない。\n"
+    }
+  },
+  "f1Manifest": {
+    "schemaVersion": 1,
+    "kind": "wan21-vae-profile-v1",
+    "model": {
+      "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "storedDtype": "bfloat16",
+      "executionDtype": "float32",
+      "precisionNote": "Stored BF16 values are unchanged; arithmetic uses FP32 and is not asserted equivalent to original BF16 execution."
+    },
+    "source": {
+      "repo": "Wan-Video/Wan2.1",
+      "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+      "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+      "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498"
+    },
+    "profile": {
+      "id": "wan21-raw-f32-1x16x16",
+      "videoShape": [
+        1,
+        3,
+        1,
+        16,
+        16
+      ],
+      "latentShape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "layout": "NCTHW",
+      "latentSpace": "raw",
+      "posterior": "mean",
+      "opset": 17
+    },
+    "inference": {
+      "inputName": "input",
+      "outputName": "output",
+      "executionProvider": "wasm",
+      "threads": 1,
+      "graphOptimizationLevel": "disabled"
+    },
+    "assets": {
+      "encoder": {
+        "file": "encode.onnx",
+        "bytes": 212362391,
+        "sha256": "193cebca40fa62412e672e64a126898a42ba0450154dd5bbb87d29fcd8aaafae"
+      },
+      "decoderBody": {
+        "file": "decoder-body.onnx",
+        "bytes": 286313363,
+        "sha256": "c6c4457e538c6f613d2b3a73d97d90525bdc872b4d310dda125712e1f42b55cf"
+      },
+      "conv2Weight": {
+        "file": "conv2-weight.f32",
+        "bytes": 1024,
+        "sha256": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+        "shape": [
+          16,
+          16
+        ]
+      },
+      "conv2Bias": {
+        "file": "conv2-bias.f32",
+        "bytes": 64,
+        "sha256": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+        "shape": [
+          16
+        ]
+      }
+    },
+    "semantics": {
+      "encode": "Input RGB values in [-1,1]; output raw posterior mean, without stochastic sampling or latent normalization.",
+      "decode": "Input raw latent; output raw RGB values, without latent denormalization or output clipping.",
+      "temporal": "A fixed exported profile, not arbitrary frame counts."
+    },
+    "comparisonGate": {
+      "atol": 0.002,
+      "rtol": 0.002,
+      "maxAbs": 0.002,
+      "scope": "FP32 reference, synthetic fixed-profile checks only"
+    },
+    "validation": {
+      "status": "exported; browser validation still required for this bundle/profile",
+      "strictModelState": true,
+      "keys": 194,
+      "missingKeys": [],
+      "unexpectedKeys": [],
+      "numericGate": {
+        "atol": 0.002,
+        "rtol": 0.002,
+        "maxAbs": 0.002,
+        "scope": "Explicit FP32 reference threshold; run browser checks before declaring profile accepted"
+      }
+    },
+    "references": {
+      "encode": {
+        "input": {
+          "file": "encode-input.f32",
+          "bytes": 3072,
+          "sha256": "4105d4e10e9fdcfbf97b6f81f1b47480914dbe205aba90be28a7aae36d0de145",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            16
+          ]
+        },
+        "output": {
+          "file": "encode-reference.f32",
+          "bytes": 256,
+          "sha256": "8d71901affafd5f71455a5b3bd05401dd9c22efc22dad3a1284a6ad524d888e6",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            2
+          ]
+        }
+      },
+      "decode": {
+        "input": {
+          "file": "decode-input.f32",
+          "bytes": 256,
+          "sha256": "fb71f53692bae0b9396c830ba16a363330cf6710ae7e4d561613bf7590fe1a5c",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            2
+          ]
+        },
+        "output": {
+          "file": "decode-reference.f32",
+          "bytes": 3072,
+          "sha256": "e5af399e4f2b62001c1571e1ffe006111c54c2d6ce62d847b68d71a8f5f73426",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            16
+          ]
+        }
+      },
+      "conv2": {
+        "input": {
+          "file": "conv2-input.f32",
+          "bytes": 256,
+          "sha256": "fb71f53692bae0b9396c830ba16a363330cf6710ae7e4d561613bf7590fe1a5c",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            2
+          ]
+        },
+        "output": {
+          "file": "conv2-reference.f32",
+          "bytes": 256,
+          "sha256": "c705022ff46c61067d854000fec113638a247ec87ded996af23132a2a3449d95",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    "versions": {
+      "torch": "2.6.0+cpu",
+      "onnx": "1.17.0",
+      "numpy": "2.3.5"
+    },
+    "lowering": {
+      "operation": "nearest-exact 2x upsample -> ONNX Resize nearest half_pixel round_prefer_floor",
+      "sourceSha256": "7f5505f972a686f5de327322d66da3c35c4b732bf8b2aa16a7f0959254ab2d99",
+      "opset": 17
+    },
+    "exportSeconds": 11.942386587001238
+  },
+  "f1ManifestSha256": "fa219b8e7e0b6b0be37c598d3dfedadb29505ad1407fe3f8270d8655dd46828c",
+  "contract64": {
+    "dtype": "float32",
+    "layout": "NCTHW",
+    "shape": [
+      1,
+      16,
+      1,
+      2,
+      2
+    ],
+    "elements": 64,
+    "bytes": 256,
+    "meaning": "raw-posterior-mean",
+    "producerModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "normalization": "none; raw posterior mean",
+    "profileId": "wan21-raw-f32-1x16x16",
+    "decodeOutput": {
+      "shape": [
+        1,
+        3,
+        1,
+        16,
+        16
+      ],
+      "meaning": "raw-decoder-rgb",
+      "clamp": false
+    },
+    "numericTransformOwner": "diffusion_models",
+    "currentDiffusion679Support": "explicitly rejected; not a verified64extension",
+    "generatedSampleScope": "E9 pending actual producer/restoration/profile; never relabel mean/sample"
+  },
+  "existingActualDiagnosticTensor": {
+    "fileName": "png-mean.wktensor",
+    "fileSha256": "3641234c5f5a722d1d7eb2b4558412ba2c425d089324986bcdf209e66f9f8e98",
+    "header": {
+      "schemaVersion": 1,
+      "dtype": "float32",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "layout": "NCTHW",
+      "meaning": "raw-posterior-mean",
+      "byteOrder": "little",
+      "byteLength": 256,
+      "dataSha256": "8f245b119bfd7ad42ea78e6f0ed68a9ee5d852f6fe85c528cdc0f87166c7d26e",
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+    },
+    "fileBase64": "V0tUU1IwMDExAQAAeyJzY2hlbWFWZXJzaW9uIjoxLCJkdHlwZSI6ImZsb2F0MzIiLCJzaGFwZSI6WzEsMTYsMSwyLDJdLCJsYXlvdXQiOiJOQ1RIVyIsIm1lYW5pbmciOiJyYXctcG9zdGVyaW9yLW1lYW4iLCJieXRlT3JkZXIiOiJsaXR0bGUiLCJieXRlTGVuZ3RoIjoyNTYsImRhdGFTaGEyNTYiOiI4ZjI0NWIxMTliZmQ3YWQ0MmVhNzhlNmYwZWQ2OGE5ZWU1ZDg1MmY2ZmU4NWM1MjhjZGMwZjg3MTY2YzdkMjZlIiwibW9kZWxTaGEyNTYiOiIyZmMzOWQzMTM1OWE0YjBhNjRmNTU4NzZkOGZmN2ZhOGQ3ODA5NTZhZTJjYjEzNDYzYjAyMjNlMTUxNDg5NzZiIn26/a0+EeUkPyLp376ezFI9+/Y0vff8uT/f6JO/Mry0PrQWor9tlyQ/KQc2v4O+HT/czXy/KE+mvig52j++ZeI/EB0lPtccvz+fuSu/6h/yvqhk17yZCTM/1nOYv2aGq742NQ49kU68vfIaFr/GHfy+KH4zPgxPtr/9VMg/kORWv8hjAzs75rq/pWk1vyKi+r4gUCO/thPrv3GF4z+Mu8C+kqxtvuBeoL/yG9o/2McuvD9+DT4zeTM+ofApPp0ABD+al/m+spO+vjOCZz8zyLY/uiObv5xnIT60FzHAnFpEv9xv8z7xh/k/OtgSvnAmIUAOJQM/JvZjP6CzET9gXwtA",
+    "note": "Small binary tensor losslessly encoded for text transfer; actual F1 diagnostic mean, no model weights"
+  },
+  "mapping": {
+    "plainText": [
+      1,
+      512,
+      4096
+    ],
+    "explicitIds": [
+      1,
+      "L",
+      4096
+    ],
+    "retain": [
+      "mask/internal positions",
+      "modelSha256",
+      "tokenizerSha256",
+      "all producerModelSha256s in order",
+      "separate decoder binding",
+      "context frame/time arrays with order and duplicates",
+      "evidence",
+      "unknown optional outer extensions"
+    ],
+    "nativeCodec": [
+      "dtype",
+      "shape",
+      "layout",
+      "meaning",
+      "dataSha256",
+      "modelSha256",
+      "attentionMask",
+      "tokenizerSha256",
+      "context",
+      "latentContract"
+    ],
+    "outerOwner": "manager",
+    "outerPackage": [
+      "native whole-file hash",
+      "evidence",
+      "snapshot",
+      "owner",
+      "graph/build",
+      "trace",
+      "common descriptor/extensions"
+    ],
+    "strictNativeManagerFields": false
+  },
+  "confirmationRequests": [
+    "Manager: provide actual21e77f schema/adapter bytes and native/common/native evidence. Package stays manager-owned.",
+    "Diffusion: confirm64 unsupported or provide an owner-verified profile-specific ABI/host/kernel/receipt.",
+    "Both: rectangle[1,16,1,2,4] and old[1,16,2,2,2] are different profiles despite equal128elements."
+  ],
+  "recipientAcknowledged": false
+}
