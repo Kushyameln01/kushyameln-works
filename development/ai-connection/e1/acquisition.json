@@ -55,13 +55,15 @@
       "sha": "89b489c6f2595ebff8836fe90b18fc94e3ea086b",
       "repository": "Kushyameln01/kushyameln-works",
       "observed_status": 422,
-      "message": "No commit found for SHA; not a global nonexistence assertion"
+      "message": "No commit found for SHA; not a global nonexistence assertion",
+      "historicalBeforeBranchPush": true
     },
     {
       "sha": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
       "repository": "Kushyameln01/kushyameln-works",
       "observed_status": 422,
-      "message": "No commit found for SHA; not a global nonexistence assertion"
+      "message": "No commit found for SHA; not a global nonexistence assertion",
+      "historicalBeforeBranchPush": true
     }
   ],
   "originals": [
@@ -132,29 +134,173 @@
       "external_route": null
     }
   ],
-  "nativeSdkSignaturesReadFromActualSource": false,
+  "nativeSdkSignaturesReadFromActualSource": true,
   "nativeContractRead": true,
   "jointExecution": {
     "status": "BLOCKED",
     "reasons": [
-      "actual sdk-v2.mjs/planner-v2.mjs source/archive not received",
       "four original LoRA payloads not received; detail download route absent"
     ],
     "runtimeCalls": 0,
     "lowRankCalls": 0,
-    "fullModelRuns": 0
+    "fullModelRuns": 0,
+    "sourceDependencyResolved": true
   },
   "independentContinuations": [
-    "consumer interface and contract differences documented",
-    "light current external route verified by HEAD only; fixed repository commit identified",
-    "source/archive reception can continue via authenticated readable base64 textpack with matching ZIP/bundle hashes"
+    "consumer adapter conditions confirmed from actual LoRA SDK and Diffusion sources",
+    "light external route verified earlier by HEAD only; no payload download in this update",
+    "joint runner can use the obtained SDK once required real original payloads and fixed comparison inputs are received"
   ],
   "notClaimed": [
     "archive SHA verified",
     "original files received or locally hashed",
-    "native SDK source signatures verified",
     "real LoRA plus real base joint comparison passed",
     "model generation readiness",
     "new contract mutually adopted"
-  ]
+  ],
+  "gitSourceReception": {
+    "receivedAt": "2026-10-31T00:04:42.630345+00:00",
+    "method": "git fetch origin refs/heads/codex/lora-connection-v2:refs/remotes/origin/codex/lora-connection-v2",
+    "remoteBranch": "refs/heads/codex/lora-connection-v2",
+    "deliveryCommit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+    "implementationCommit": "89b489c6f2595ebff8836fe90b18fc94e3ea086b",
+    "implementationIsAncestor": true,
+    "sourceCodeReceived": true,
+    "sourceFilesReadWithoutRuntimeExecution": [
+      {
+        "path": "docs/shared/inference/lora/sdk-v2.mjs",
+        "bytes": 14306,
+        "gitBlob": "e115e3dd5b1b561358717634c73bf3b8cf867024",
+        "sha256": "c425519eb282f798f4296bc97fd1506664afd850dee9addb17af77dd41e39fa0",
+        "sourceUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/sdk-v2.mjs",
+        "exportsFromActualSource": [
+          "createLoraV2"
+        ]
+      },
+      {
+        "path": "docs/shared/inference/lora/planner-v2.mjs",
+        "bytes": 8565,
+        "gitBlob": "675fed134bbbfac9ca58dae4d4d2cf123c7a61ca",
+        "sha256": "303340db3a6a58b288fbfbf38cb2b53605a6c7cc3f6d00903f881aa825ef92c5",
+        "sourceUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/planner-v2.mjs",
+        "exportsFromActualSource": [
+          "CONTRACT_VERSION",
+          "validateRegistryV2",
+          "buildPlanV2"
+        ]
+      },
+      {
+        "path": "docs/shared/inference/lora/state.mjs",
+        "bytes": 1937,
+        "gitBlob": "ed61eac3c09a711a87997f4738d5e068fc132abb",
+        "sha256": "80669668226e105c4b83517245af628c496063bf48971e9e00ee64a02b7fe964",
+        "sourceUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/state.mjs",
+        "exportsFromActualSource": [
+          "describeLoraState",
+          "assertV1PanelConnection"
+        ]
+      },
+      {
+        "path": "docs/shared/inference/lora/v1-adapter.mjs",
+        "bytes": 9970,
+        "gitBlob": "1dd6a95fa2ac84afae8c0e85f708c94f7543fab6",
+        "sha256": "1f4df0d73d4cbb51b02df3f281c1f9566b6d8e43b181e18ccaff28224c1bb9f9",
+        "sourceUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/v1-adapter.mjs",
+        "exportsFromActualSource": [
+          "adaptV1Registry",
+          "createV1SinkAdapter",
+          "adaptV1Consumer"
+        ]
+      },
+      {
+        "path": "docs/shared/inference/lora/loader-policy.mjs",
+        "bytes": 1696,
+        "gitBlob": "d0715ae5f9f646e04763446f080858597f56b1c5",
+        "sha256": "f18f9c8dd4168e26f25cd1c77124b1f14a2ffca99424bfa9d4a9a294cbb2dedd",
+        "sourceUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/loader-policy.mjs",
+        "exportsFromActualSource": [
+          "LOADER_POLICY_ID",
+          "LOADER_VARIANTS",
+          "LOADER_POLICY",
+          "effectiveScale"
+        ]
+      },
+      {
+        "path": "docs/shared/inference/lora/CONNECTION_V2.md",
+        "bytes": 14279,
+        "gitBlob": "db6d3be4ab9f884d585a8a02c9a8aebfac410825",
+        "sha256": "09792323b3c66487b5b33081ae9fec6af08b8d4b357d7261c1a7425b9466d57d",
+        "sourceUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/CONNECTION_V2.md"
+      },
+      {
+        "path": "docs/shared/inference/lora/kernel/host.mjs",
+        "bytes": 3656,
+        "gitBlob": "d80d131726dad3cb48f3a2eb15b49e0d37ef1775",
+        "sha256": "ee8c3c5abc6fcbf082d3557d792536024d0109f56a9aac4c959e98315a933d54",
+        "sourceUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/kernel/host.mjs",
+        "exportsFromActualSource": [
+          "createKernel"
+        ]
+      },
+      {
+        "path": "docs/shared/inference/lora/kernel/registry.mjs",
+        "bytes": 240,
+        "gitBlob": "b926785804d23b276b7e5b47c36616f8b56cfe21",
+        "sha256": "c739e9b19b1b66dcaa5b47d9d7d35528c1b8a2f6d6f1e7fd13a5dfe1837e3c64",
+        "sourceUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/kernel/registry.mjs",
+        "exportsFromActualSource": [
+          "KERNEL"
+        ]
+      },
+      {
+        "path": "docs/shared/inference/lora/kernel/lora.wasm",
+        "bytes": 4919,
+        "gitBlob": "f2f4159fc840e73d6bfb6c97352ec4d7fe726ea0",
+        "sha256": "da6d56fca5d9bc91173681c22b91cd9337f53ea067d84455b9d659ee7ee52984",
+        "sourceUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/kernel/lora.wasm"
+      }
+    ],
+    "comparedContracts": [
+      {
+        "path": "development/lora/contracts/connection-contract-v2.json",
+        "sha256": "87e132af1739114f171254888c04f3050df27c47cd02e92fd67bc5babe4ac6d2",
+        "byteEqualToPreviouslyReceived": true
+      },
+      {
+        "path": "development/lora/contracts/registry-correspondence-v2.json",
+        "sha256": "a3a0a6fd7c5d71cbf8c2e4b73f83d4581df47c1a5b8ab09a9cb48778ce81b3ab",
+        "byteEqualToPreviouslyReceived": true
+      },
+      {
+        "path": "development/lora/contracts/original-inventory.json",
+        "sha256": "97229d6ea17738dc983fa898a38e771a784aeafff9513734c5af0ba0250c23b3",
+        "byteEqualToPreviouslyReceived": true
+      }
+    ],
+    "bulkSourceCopyOrVendorAdoption": false,
+    "archiveByteDigestVerified": false,
+    "note": "SDK source dependency is resolved by Git; prior ZIP metadata/read-format error remains historical artifact evidence, not a current SDK source blocker"
+  },
+  "actualNativeSignatures": {
+    "factory": "createLoraV2({folder,sourceFactory,kernel:providedKernel}={})",
+    "sourceFactory": "sourceFactory(selection) returns source synchronously; source must provide size/read/hash for planning",
+    "inspect": "inspect(selection,{signal}={})",
+    "plan": "plan(input): selection, registry, strength, loaderPolicyId, diagnostic",
+    "prepare": "prepare(plan,{baseProvider,sink,blockRows=16,signal}={})",
+    "stage": "stage(prepared,target,{signal,isCurrent=()=>true}={})",
+    "recover": "recover(prepared), also recover() for pending sink abort retries",
+    "release": "release(prepared)",
+    "cancel": "cancel()",
+    "dispose": "dispose()",
+    "noDetachMethod": true,
+    "planner": "buildPlanV2({inspection,registry,diagnostic,sourceSha256,strength,loaderPolicyId,alphaValues={}}={})"
+  },
+  "latestUpdateRestrictions": {
+    "noPayloadDownload": true,
+    "noSdkRuntimeExecution": true,
+    "noLowRankImplementation": true,
+    "noRuntimeEdits": true,
+    "noSourceVendorCopy": true,
+    "onlyExistingE1RecordsUpdated": true
+  }
 }

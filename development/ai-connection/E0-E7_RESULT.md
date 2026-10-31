@@ -15,6 +15,8 @@
 
 LoRA側Pageとv2契約/registry対応/receipt/inventoryの4JSONを実受領しSHA一致。SDK実89b489…/配布2bba907…のGitHub取得は422 No commit found、PageのZIPはツール形式制約で本文未取得。4原本は当環境で未受領、lightの固定HF URL/size/サーバー宣言hashは確認、detailのURLは未提示。原本・SDK sourceを取得済みとして低rank代替実装を作らなかった。共同実行件数0。
 
+GitHub push後の追補: `codex/lora-connection-v2` / `2bba90785292e42a0c7c8756685b0d8b128b2dcf` を実取得し、SDK/planner/state/v1-adapter等9ファイルのbytes・Git blob・SHAを照合した。SDK sourceの取得阻害は解消済み。4原本は依然未受領で、共同runtime0件は変わらない。下記の旧422/ZIP制約はその時点の履歴として保持する。
+
 必要なadapter差分はe1/CONTRACT_DIFF.mdに固定した。full/selected shape、SDK/native別registry hash、full→slice offset、scope、validation/commit receiptを対応付ける。detailにはQ bias patchがないため、不変base biasをpass-throughしsink両targetを満たす必要がある（ゼロ補完不可）。再開条件は実SDK sourceと4原本の取得経路。同じ数値試験でない既存単体件数を合算しない。
 
 ## E6 — 明示64要素mean profile拡張

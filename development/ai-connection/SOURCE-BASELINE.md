@@ -29,3 +29,5 @@ model原本の以前の全file検証は保持manifestから再利用。今回pro
 Diffusion取得用Page: https://chatgpt.com/space/page_2b15f0bb13288191837ee215949aa89d 。f522/902のarchiveをUTF-8 base64 JSONpartsでも提供し、提供者localを参照しない独立Page回収・復元がPASS。受領証拠e0/independent-retrieval.json。LoRA担当本人の取得・合意とは分離する。LoRAv2の可読契約等4JSONは受領、SDK ZIPの読出し形式制約とdetail原本経路不足はe1/acquisition.jsonに記録。SDK実装を報告から再構築せず、実共同試験はBLOCKED。
 
 E6は64専用profileとABI/host/kernel/receipt、E7は独立tiled-q実行候補を追加。builderに全新runtime sourceを登録する。2026-10-31の追加指示で作業branch pushとDraft PR作成を許可された。GitHubへのsource提供と、merge/Pages deployment、実model推論成立は別状態である。
+
+GitHub push後、LoRA source `2bba90785292e42a0c7c8756685b0d8b128b2dcf` をGitから受領し9fileのGit blob/bytes/SHAを照合した。可読契約3点も同一bytes。SDK source未取得の阻害は解消し、4原本の受領・実共同試験は引き続き保留。実署名とstrict registry/closureによる期待値供給の差分はe1追補に記録した。

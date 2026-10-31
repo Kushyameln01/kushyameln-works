@@ -2,6 +2,26 @@
 
 対象は接続実行計画 `0.2-draft.1` E0/E1、総合仕様 `1.1-draft.1`、Diffusion `f522d9aeff313558c4ef83022a340af9a4c21391`。取得記録は [acquisition.json](acquisition.json)。**実LoRA＋実baseの共同試験はBLOCKEDで、まだ実行していない。**
 
+## 更新：LoRA v2実ソースをGitから受領
+
+`origin/codex/lora-connection-v2` をfetchし、実HEAD **`2bba90785292e42a0c7c8756685b0d8b128b2dcf`** を受領した。実装commit `89b489c6f2595ebff8836fe90b18fc94e3ea086b` がその祖先であることも確認した。これにより **SDK source取得の阻害は解消**。以下の「未push」「SDK未取得」「署名未読」はbranch公開前の取得履歴として保持し、最新状態は本節とacquisition.jsonの `gitSourceReception` を正本とする。ZIP bytes自体の受領・digest検証とは別である。
+
+SDK、planner、state、v1 adapter、loader policy、API文書とHike host/registry/WASMの9ファイルをGit objectから読み、各git blob・bytes・SHA-256を記録した。[実SDK](https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/sdk-v2.mjs) はSHA-256 `c425519eb282f798f4296bc97fd1506664afd850dee9addb17af77dd41e39fa0`、[実planner](https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/planner-v2.mjs) は `303340db3a6a58b288fbfbf38cb2b53605a6c7cc3f6d00903f881aa825ef92c5`。既にFilesで受領したv2契約・registry対応・原本台帳は、このcommitの各ファイルとbyte同一だった。
+
+実sourceから確定した呼出しと接続条件は次の通り。下の既存adapter条件に大きな矛盾はなく、具体的な変換点が確定した。
+
+- factoryは `createLoraV2({folder,sourceFactory,kernel:providedKernel}={})`。`sourceFactory(selection)` は同期でsourceを返す。planにはsourceの `hash()` が必須で、inspectのheader確認だけではplanにならない。
+- `plan(input)` はselection/registry/strength/loaderPolicyId/diagnosticを捕捉する。plannerはregistry/targetの未知fieldを拒否するため、Diffusionのdescriptorを拡張field付きで丸ごと渡せない。full shape/identity transformのSDK registryと、native row-slice/FP8 descriptorの対応を別に保持する。
+- `prepare(plan,{baseProvider,sink,blockRows=16,signal}={})` はfull tensor offsetでproviderを読み、sinkには `fullShape` と `slice` を返す。selected `shape` は送らない。dual registry hash、offset/shape変換、detail biasのbase pass-throughは引き続き必要。
+- `stage(prepared,target,{signal,isCurrent=()=>true}={})` はtargetのcontractVersion、describeしたSDK registry hash、構造化validationとcommit receiptを厳密に検査する。実SDKのPARTIAL scopeは **`diagnostic-projection`**。対応資料の `single-projection-diagnostic` は説明ラベルで、wire scopeとして流用しない。
+- stageのoptions/contextには独立expected・activation・許容差を追加して渡す口がない。adapterがそれらを所有snapshotとして保持し、native `target.validate` へ明示供給する必要がある。native `scope:PARTIAL` の実receiptとSDK scope/plan/source識別を対応付ける。
+- commitは `STAGED` または `CONSUMER_APPLIED` と実copy/leaseのownershipを返す必要がある。SDKのpost-commit current検査が終わる前にnative candidateのrollback履歴を捨てない。`release(prepared)` はlease/in-use/recovery中に拒否し、`recover(prepared)` / `recover()` は復帰・sink abortを再試行する。
+- v2に `detach` methodはない。解除はDiffusionの不変base候補を独立検証・commitする経路と合意して接続する。旧SDKのdetach呼出しを推測で流用しない。
+- state helperはPARTIALのsnapshot公開を拒否し、常にgenerationReady=falseを維持する。v1 adapterはFULL/full-adapter・真のinitializerに限定され、今回のruntime-input/PARTIALを通す経路ではない。
+- Hike kernel hostは構築時に32MiB Memoryへgrowし、1MiB以降をworkspaceとして再利用する実装だった。WASM SHAは `da6d56fca5d9bc91173681c22b91cd9337f53ea067d84455b9d659ee7ee52984` と一致した。今回はbyte digestとsourceの確認のみで、kernelを実行した証拠ではない。
+
+4原本payloadは引き続き当環境にない。今回payloadの新download、SDK/kernel実行、vendorコピー、adapter/runtime編集は行っていない。**joint実行0件を維持し、現在の阻害は実4原本の受領（detailの取得経路未提示を含む）である。**
+
 ## 受領済みと未受領を分ける
 
 [引継ぎPage](https://chatgpt.com/space/page_4988393f36e88191bcf7c0823139d1f3) を `read_page(view:full)` で取得した（61blocks、保存本文 [handoff-page.md](handoff-page.md)）。次の4点はFiles参照から本文を実取得し、UTF-8 bytesのSHA-256を再計算して返却値・Page値と一致した。原本safetensorsやSDK sourceを受領したという意味ではない。
