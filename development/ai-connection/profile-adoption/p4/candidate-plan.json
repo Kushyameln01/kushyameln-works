@@ -1,0 +1,244 @@
+{
+  "schemaVersion": "diffusion-p4-candidate/0.1",
+  "candidateId": "bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1",
+  "recordedDateJST": "2026-10-31",
+  "status": "PRE_EXECUTION_GATE_FIXED",
+  "parentApproval": "Root approved numerical gates before reference/runtime comparison",
+  "core": {
+    "repository": "Comfy-Org/ComfyUI",
+    "commit": "b5a432157de6b8884f81104cd02926adf4d597e4"
+  },
+  "target": {
+    "fullProductionTargetLatent": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "fullProductionTargetGrid": [
+      21,
+      30,
+      52
+    ],
+    "fullProductionTargetTokens": 32760,
+    "contextAddsTokens": true,
+    "diagnosticHidden": [
+      16,
+      5120
+    ],
+    "diagnosticHiddenProvenance": "explicit deterministic post-modulation hidden fixture; not an actual model activation",
+    "projectionOutput": [
+      16,
+      5120
+    ],
+    "normalizationAxis": 5120,
+    "headCount": 40,
+    "selectedHead": 0,
+    "selectedHeadShape": [
+      16,
+      128
+    ],
+    "attentionKeyCount": 16,
+    "selectionIsNotProductionSequence": true,
+    "coordinates": [
+      {
+        "sourceId": 0,
+        "flatIndex": 0,
+        "t": 0,
+        "h": 0,
+        "w": 0
+      },
+      {
+        "sourceId": 0,
+        "flatIndex": 1,
+        "t": 0,
+        "h": 0,
+        "w": 1
+      },
+      {
+        "sourceId": 0,
+        "flatIndex": 51,
+        "t": 0,
+        "h": 0,
+        "w": 51
+      },
+      {
+        "sourceId": 0,
+        "flatIndex": 52,
+        "t": 0,
+        "h": 1,
+        "w": 0
+      },
+      {
+        "sourceId": 0,
+        "flatIndex": 1559,
+        "t": 0,
+        "h": 29,
+        "w": 51
+      },
+      {
+        "sourceId": 0,
+        "flatIndex": 1560,
+        "t": 1,
+        "h": 0,
+        "w": 0
+      },
+      {
+        "sourceId": 1,
+        "flatIndex": 0,
+        "t": 0,
+        "h": 0,
+        "w": 0
+      },
+      {
+        "sourceId": 1,
+        "flatIndex": 52,
+        "t": 0,
+        "h": 1,
+        "w": 0
+      },
+      {
+        "sourceId": 1,
+        "flatIndex": 1560,
+        "t": 1,
+        "h": 0,
+        "w": 0
+      },
+      {
+        "sourceId": 1,
+        "flatIndex": 16379,
+        "t": 10,
+        "h": 14,
+        "w": 51
+      },
+      {
+        "sourceId": 1,
+        "flatIndex": 32759,
+        "t": 20,
+        "h": 29,
+        "w": 51
+      },
+      {
+        "sourceId": 2,
+        "flatIndex": 1,
+        "t": 0,
+        "h": 0,
+        "w": 1
+      },
+      {
+        "sourceId": 2,
+        "flatIndex": 51,
+        "t": 0,
+        "h": 0,
+        "w": 51
+      },
+      {
+        "sourceId": 2,
+        "flatIndex": 1559,
+        "t": 0,
+        "h": 29,
+        "w": 51
+      },
+      {
+        "sourceId": 2,
+        "flatIndex": 31200,
+        "t": 20,
+        "h": 0,
+        "w": 0
+      },
+      {
+        "sourceId": 2,
+        "flatIndex": 32758,
+        "t": 20,
+        "h": 29,
+        "w": 50
+      }
+    ]
+  },
+  "storage": {
+    "projection": "F8_E4M3",
+    "scale": "per-tensor scalar F32",
+    "bias": "F16",
+    "normWeight": "F16",
+    "decodeProfile": "scaled-e4m3fn-scalar-f32-v1",
+    "computeProfile": "F32 diagnostic; original GPU/scaled_mm/activation quantization parity UNVERIFIED"
+  },
+  "reference": {
+    "projection": "independent E4M3FN decode and F32 scalar product; binary64 dot accumulation -> F32; F32 bias addition",
+    "norm": "independent binary64 mean-square/sqrt reference from all5120 dimensions, eps is source1e-6; also record ordered F32 loop/sqrtF64->F32 reciprocal reference",
+    "rope": "NumPy binary64 linspace/power/cos/sin -> F32 2x2 matrices; T/H/W axis dims44/42/42; separate sourceId full128 matrices composed with F32 two-term products/sums; no angle collapse",
+    "attention": "independent binary64 softmax over all16 declared selected keys, no mask/dropout"
+  },
+  "gates": {
+    "decodedWeightBias": {
+      "comparison": "strict F32 bytes"
+    },
+    "projection": {
+      "absolute": 0.0001,
+      "relative": 0.00001,
+      "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+    },
+    "norm": {
+      "absolute": 0.0001,
+      "relative": 0.0001,
+      "origin": "new predeclared F32 sequential5120 reduction/reciprocal diagnostic tolerance versus independent binary64 oracle; not Torch fused rsqrt parity"
+    },
+    "ropeMatrix": {
+      "absolute": 0.000002,
+      "relative": 0.000002,
+      "origin": "new predeclared F64 primitive/F32 matrix construction and composition diagnostic tolerance"
+    },
+    "ropeApply": {
+      "absolute": 0.0001,
+      "relative": 0.0001,
+      "origin": "new predeclared fullwidth norm to selectedhead matrix-apply diagnostic"
+    },
+    "connectedAttention": {
+      "absolute": 0.001,
+      "relative": 0.0001,
+      "origin": "new predeclared composed-stage F32 diagnostic error budget; not production acceptance"
+    }
+  },
+  "gateFormula": "abs(actual-ref) <= absolute + relative*abs(ref)",
+  "gateMayNotBeRelaxedAfterComparison": true,
+  "resourcePlan": {
+    "weightRowTile": 16,
+    "rawWeightTileBytes": 81920,
+    "decodedWeightTileBytes": 327680,
+    "projectionTileOutputBytes": 1024,
+    "hiddenF32Bytes": 327680,
+    "allQKVOutputBytes": 983040,
+    "allQKNormOutputBytes": 655360,
+    "affineNormWeightsBytes": 40960,
+    "selectedHeadQKVBytes": 24576,
+    "ropeMatricesBytes": 16384,
+    "allQKVWeightsSavedBytes": 78643200,
+    "allQKVWeightsWouldBeF32Bytes": 314572800,
+    "allQKVNumericParameterSavedBytes": 78694400,
+    "allQKVNumericParameterF32Bytes": 314675200,
+    "projectionMultiplyAdds": 1258291200,
+    "projectionMultiplyAddsFullTarget32760": 2576351232000,
+    "fullTargetHiddenF32Bytes": 670924800,
+    "fullTargetOneHeadKVF32Bytes": 33546240,
+    "ORTMemoryBytes": null,
+    "producerResidentBytes": null,
+    "measuredCombinedPeakBytes": null,
+    "unknownReason": "actual runtime old/new session, Hike instances, owned snapshots and ORT allocator measured by owner after implementation; symbolic sizes are not RSS/peak proof"
+  },
+  "acceptance": {
+    "productionQKVVerified": false,
+    "actualModelHiddenVerified": false,
+    "originalProductionPrecisionVerified": false,
+    "fullQueryHeadCountVerified": false,
+    "fullTargetContextBudgetVerified": false,
+    "predict": "NOT_READY",
+    "sample": "NOT_READY",
+    "P5": "BLOCKED"
+  },
+  "missingProductionInputs": [
+    "actual selected timestep/block post-LayerNorm/modulated hidden input with full model/media/prompt/noise/context binding and payload hash",
+    "fixed original compute dtype/backend and independent Q/K/V, RMSNorm, RoPE/full attention intermediate references",
+    "all target/context keys and all-head/query combined weight/staging/copy/session budget"
+  ]
+}

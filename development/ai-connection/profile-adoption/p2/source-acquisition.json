@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "planVersion": "1.0-draft.1",
+  "planCommit": "0fb553fd081d3bcbbad4ead7accd165679f77d34",
+  "referenceCatalogCommit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+  "candidateOnly": true,
+  "sourceDifferences": [
+    {
+      "path": "docs/shared/inference/tensor.mjs",
+      "previousCommit": "7e091192232fae36367b550ca5fada88915a0703",
+      "currentCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sameBytes": true,
+      "sha256": "4c6992a7b6f44722e84a7184ed5c878312a203071054335827f7f0adcd01c07b",
+      "bytes": 8106
+    },
+    {
+      "path": "docs/shared/inference/vae.mjs",
+      "previousCommit": "7e091192232fae36367b550ca5fada88915a0703",
+      "currentCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sameBytes": true,
+      "sha256": "3b5f5d2cbe116f9477966da0a63d8f35141f14d9544efafde51e40db337b90d7",
+      "bytes": 11145
+    },
+    {
+      "path": "docs/shared/inference/vae-api.mjs",
+      "previousCommit": "7e091192232fae36367b550ca5fada88915a0703",
+      "currentCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "sameBytes": true,
+      "sha256": "75f791130cbb27961ea530376d4715ddd9555e80ee3e2b8453824af42be0511e",
+      "bytes": 2369
+    }
+  ],
+  "referenceReuse": {
+    "oldReceipt": "development/ai-connection/e6/RECT-RESULT.md",
+    "oldIndependentReference": "development/ai-connection/e6/reference-received.json",
+    "rawPayloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+    "currentWholeFileSha256": "6539204ef61dc0f706238b74e2bcabf8bbcce971f5056d0b0d7e288811516b71",
+    "oldWholeFileSha256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8",
+    "difference": "Old received file carries declared diagnostic context; current855 raw fixture has no context. Payload bytes identical.",
+    "perValueGate": "exact independent struct-f32",
+    "roundTripGate": {
+      "absolute": 2e-06,
+      "scope": "Rect128 posterior-mean roundtrip only"
+    }
+  },
+  "reuseAndBlockers": {
+    "vaeFreshDecode": "New restored-mean payload has a different hash from the original raw mean. Recorded RGB cannot be relabelled as its fresh decode. VAE owner must execute the matching profile/decode boundary.",
+    "management": "Explicit-input manager adapter/queue/capture/package only. Norms runtime/connected-edge generic packing/UI adoption not certified.",
+    "generatedSample": "Mean result is not a generated sample; predict/sample remain NOT_READY."
+  },
+  "scope": "fixed peer code and recorded real mean acquisition/reuse only; fresh runtime outcome is green/receipt.json"
+}

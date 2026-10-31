@@ -1,0 +1,211 @@
+{
+  "schemaVersion": "diffusion-owner-evidence-index/0.1",
+  "evidenceSourceCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+  "reusedNumericalEvidence": true,
+  "freshInferencePerformed": false,
+  "declarationPath": "docs/shared/diffusion-models/profiles/p0-bindings.json",
+  "declarationBytes": 72094,
+  "declarationSha256": "f2e7780d2e98bd7e29a7ab32c3a26756547375af9fcb0ea6a07d69b8342a8655",
+  "records": [
+    {
+      "recordId": "EXEC-BERNINI-Q16-F32",
+      "validation": {
+        "contractStatus": "COMPATIBLE",
+        "numericStatus": "PASS",
+        "readiness": "READY",
+        "scope": "selected Q16 output, explicit activation, real retained base; consumer fixtures, not real LoRA original acceptance",
+        "coverage": "PARTIAL",
+        "baseKind": "actual-retained-Bernini-selected-base",
+        "freshRun": false,
+        "receiptRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/l1-final-browser.json"
+        ],
+        "referenceRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/l1-reference.json"
+        ],
+        "gate": {
+          "metric": "absolute-plus-relative",
+          "absolute": 1e-06,
+          "relative": 1e-05,
+          "scope": "all16 consumer outputs for explicit activation only",
+          "sourceCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3"
+        }
+      }
+    },
+    {
+      "recordId": "EXEC-FP8-SCALAR-F32",
+      "validation": {
+        "contractStatus": "COMPATIBLE",
+        "numericStatus": "PASS",
+        "readiness": "READY",
+        "scope": "selected actual base FP8 weight/F16 bias decode and real ORT/Hike; range integrity is not whole-file authentication",
+        "coverage": "PARTIAL",
+        "baseKind": "actual-retained-Bernini-bounded-fragments",
+        "freshRun": false,
+        "receiptRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/e1-block/browser.json"
+        ],
+        "referenceRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/l1-reference.json"
+        ],
+        "gate": {
+          "metric": "exact-F32-bytes",
+          "scope": "provided Q16 weight and bias ranges only",
+          "sourceCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3"
+        }
+      }
+    },
+    {
+      "recordId": "EXEC-BERNINI-SIMPLE6-SHIFT5",
+      "validation": {
+        "contractStatus": "COMPATIBLE",
+        "numericStatus": "PASS",
+        "readiness": "READY",
+        "scope": "fixed simple6/shift5/split3 schedule and explicit-array primitives; no model prediction",
+        "coverage": "PARTIAL",
+        "baseKind": "explicit-numeric-fixture",
+        "freshRun": false,
+        "receiptRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/regression-1.log"
+        ],
+        "referenceRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:docs/shared/diffusion-models/scheduler/test-cases.mjs"
+        ],
+        "gate": {
+          "metric": "source-ordered-F32-exact",
+          "scope": "fixed schedule and caller-array primitive fixtures",
+          "sourceCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3"
+        }
+      }
+    },
+    {
+      "recordId": "EXEC-ATTENTION-Q16-ONEHEAD",
+      "validation": {
+        "contractStatus": "COMPATIBLE",
+        "numericStatus": "PASS",
+        "readiness": "READY",
+        "scope": "EXPLICIT_Q16_ONE_HEAD_ALL_KEYS; postnorm/RoPE F32 fixture, all declared32760 keys; productionQKVVerified=false",
+        "coverage": "PARTIAL",
+        "baseKind": "deterministic-postnorm-rope-QKV-fixture",
+        "freshRun": false,
+        "receiptRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/e7-attention/browser-green.json"
+        ],
+        "referenceRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/e7-attention/reference.json",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:tools/diffusion-models/e7-attention-reference.py"
+        ],
+        "gate": {
+          "metric": "absolute-plus-relative",
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "scope": "selected16 queries, one head, all declared keys; not production QKV",
+          "sourceCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3"
+        }
+      }
+    },
+    {
+      "recordId": "NORM-WAN21-MEAN-F5",
+      "validation": {
+        "contractStatus": "COMPATIBLE",
+        "numericStatus": "PASS",
+        "readiness": "READY",
+        "scope": "synthetic F5 posterior-mean fixture only",
+        "coverage": "PARTIAL",
+        "baseKind": "synthetic-F5-mean-fixture",
+        "freshRun": false,
+        "receiptRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/e6/rect-legacy-regression.json"
+        ],
+        "referenceRefs": [
+          "1317758bbba2b13603752d8c910ae2c6e77f78c5:docs/shared/diffusion-models/latent-space/test-cases.mjs",
+          "1317758bbba2b13603752d8c910ae2c6e77f78c5:docs/shared/diffusion-models/latent-space/README.md",
+          "1317758bbba2b13603752d8c910ae2c6e77f78c5:development/diffusion-models/rev3-latent-space.json"
+        ],
+        "gate": {
+          "metric": "maximum-absolute-roundtrip",
+          "maximumAbsoluteError": 2e-06,
+          "perDirectionComparison": "exact staged-F32 all values",
+          "sourceCommit": "1317758bbba2b13603752d8c910ae2c6e77f78c5",
+          "scope": "synthetic F5 posterior-mean fixture only",
+          "appliesToActualVaeEncodeDecode": false
+        },
+        "referenceCatalogGateStatus": "NOT_VERIFIED_FOR_F5_IN_THIS_CATALOG",
+        "ownerSupplement": "F5 original test/README and original receipt independently obtained; not inferred from F1/Rect",
+        "chronologyLimit": "Original source/receipt explicitly label the gate predeclared; no independent timestamp attestation before first run"
+      }
+    },
+    {
+      "recordId": "NORM-WAN21-MEAN-F1",
+      "validation": {
+        "contractStatus": "COMPATIBLE",
+        "numericStatus": "PASS",
+        "readiness": "READY",
+        "scope": "received actual VAE mean for this exact F1/Rect profile only",
+        "coverage": "PARTIAL",
+        "baseKind": "Git-received-actual-VAE-mean",
+        "freshRun": false,
+        "receiptRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/e6/rect-browser-results.json"
+        ],
+        "referenceRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/e6/reference-received.py",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/e6/reference-received.json",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/e6/RECT-RESULT.md"
+        ],
+        "gate": {
+          "metric": "maximum-absolute-roundtrip",
+          "maximumAbsoluteError": 2e-06,
+          "perDirectionComparison": "exact staged-F32 all values",
+          "sourceCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "scope": "received actual VAE mean for this exact F1/Rect profile only",
+          "appliesToActualVaeEncodeDecode": false
+        }
+      }
+    },
+    {
+      "recordId": "NORM-WAN21-MEAN-RECT",
+      "validation": {
+        "contractStatus": "COMPATIBLE",
+        "numericStatus": "PASS",
+        "readiness": "READY",
+        "scope": "received actual VAE mean for this exact F1/Rect profile only",
+        "coverage": "PARTIAL",
+        "baseKind": "Git-received-actual-VAE-mean",
+        "freshRun": false,
+        "receiptRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/e6/rect-browser-results.json"
+        ],
+        "referenceRefs": [
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/e6/reference-received.py",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/e6/reference-received.json",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3:development/ai-connection/e6/RECT-RESULT.md"
+        ],
+        "gate": {
+          "metric": "maximum-absolute-roundtrip",
+          "maximumAbsoluteError": 2e-06,
+          "perDirectionComparison": "exact staged-F32 all values",
+          "sourceCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "scope": "received actual VAE mean for this exact F1/Rect profile only",
+          "appliesToActualVaeEncodeDecode": false
+        }
+      }
+    },
+    {
+      "recordId": "NORM-RAW-GENERATED-DECLARATION",
+      "validation": {
+        "contractStatus": "UNVERIFIED",
+        "numericStatus": "NOT_VERIFIED",
+        "readiness": "BLOCKED",
+        "scope": "No actual generated producer or restoration; VAE consumer declaration is not a numerical receipt",
+        "coverage": "UNIMPLEMENTED",
+        "baseKind": null,
+        "freshRun": false,
+        "receiptRefs": [],
+        "referenceRefs": [],
+        "gate": null,
+        "missingReason": "Real generated producer/restore/independent reference and decode acceptance are not implemented"
+      }
+    }
+  ]
+}

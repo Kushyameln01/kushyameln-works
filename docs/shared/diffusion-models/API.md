@@ -119,7 +119,9 @@ LoRA用に `inspectLora` / `loadLora` / `listLoras` / `readLora` / `readLoraSour
 
 独立ES moduleの実base provider、PARTIAL registry、runtime-feed-set sink/candidateは [DIAGNOSTIC_API.md](lora/DIAGNOSTIC_API.md) を参照。私的に渡した実base小blockだけを読むproviderも提供する。SDK v1のinitializer/boolean validate契約とは互換にしない。通常のload/predict/sampleとpointwise上限1,048,576は変更していない。
 
-LoRA固定source `2bba90785292e42a0c7c8756685b0d8b128b2dcf` 用の [V2_ADAPTER.md](lora/V2_ADAPTER.md) は、SDKのfull-shape registryとnative selected registry、要素offset、manifest、PARTIAL validation/commitと所有権を明示対応する。低rank積は実LoRA SDK/Hikeが行い、Diffusion側は重複実装しない。実SDK/Hike＋実ORT/Hikeの合成source試験と、実base断片の復号/consumer試験は別の証拠である。4実LoRA原本との共同数値試験は未実施。HIGH/LOW各2組の同一base同時合成を保証しない。
+LoRAのfull-shape/selected-slice、両registry、sink/consumer取引mappingの現行正本は、LoRA ownerの `createDiffusionDiagnosticAdapter` / `lora-diffusion-diagnostic-adapter/0.1`。[固定fc278の実装](https://github.com/Kushyameln01/kushyameln-works/blob/fc2789a0f649e33f15eb13750e6a983b5c52d170/docs/shared/inference/lora/diffusion-diagnostic-adapter.mjs)を参照し、管理はowner adapterを注入する。同じ実行経路に別mappingを重ねない。Diffusionはnative registry/provider/sink/consumerと実feed、LoRAは低rank積とmappingを所有する。
+
+同梱の [V2_ADAPTER.md](lora/V2_ADAPTER.md) / `v2-adapter.mjs` は旧SDK `2bba90785292e42a0c7c8756685b0d8b128b2dcf` に固定した回帰経路として保持する。この旧経路の合成source試験と、実base断片の復号/consumer試験は別の証拠である。LoRA ownerが後続版で報告した実原本PARTIAL20caseの証拠は、[固定JOINT-LORA-RESULT](https://github.com/Kushyameln01/kushyameln-works/blob/fc2789a0f649e33f15eb13750e6a983b5c52d170/development/ai-connection/JOINT-LORA-RESULT.md)として区別する。HIGH/LOW各2組の同一base同時合成を保証しない。
 
 
 ## E6: shapeを固定したposterior-mean profile
@@ -149,3 +151,23 @@ LoRA固定source `2bba90785292e42a0c7c8756685b0d8b128b2dcf` 用の [V2_ADAPTER.m
 共通snapshot版とnative `diffusion-models/0.1`・BUILD_IDを分ける。Text/VAEのconnected tensorをnativeへ渡す際は、上記4操作とも **`input:{tensor: connectedTensor}`** と包装する。tensor単体をwire.inputへ渡すgeneric mappingは互換ではない。独立LoRA provider/consumerとattentionの関数・AbortSignal・opaque handleはMessagePort payloadにせず、所有する同一realmで呼ぶ。
 
 全体待機列・工程順・snapshot採用は管理、Diffusion内部の数値計算・所有資源・Worker世代は本担当が扱う。取消ACKと元Promise終端/解放を別に観測してからresourceを再利用する。相互取得の固定source、相手受領の証拠、残る合意は [E0_PEERS.md](../../../development/ai-connection/resume/E0_PEERS.md) に整理した。
+
+## P0: Profileと実sourceの対応
+
+[profiles/P0.md](profiles/P0.md) と `profiles/p0-bindings.json` は、Profile/規範/数値規則 `1.0-draft.1`、固定commit `6dae9a6fac3e9ad29ea941f22211edbe4aa894ad` に対応する外側sidecarである。recordId/normIdをnative requestへ追加せず、native profileId未定義はnullのまま扱う。実source/build/kernel bytes・長さ、全軸shape、meaning、事前gate/reference、再利用元のscopeへ結ぶ。
+
+`verifyDiffusionOwnerBindings({declarationBytes,expectedSha256,referenceFiles,ownerFiles})` はbytesと宣言の整合を検査する独立ES入口で、管理の互換性判定器やモデル演算を実装しない。旧5fの受入証拠と新候補buildの欄を分離する。整合検査成功を新buildの数値受入や生成READYへ昇格させない。gate/receiptだけ不足するedgeは、契約のCOMPATIBLEと数値NOT_VERIFIED/BLOCKEDを別に保持する。
+
+## P2: 実Rect meanの接続
+
+VAE `855f435120f08eb9e818e51281fc26f0e2633829` の実raw meanを、管理 `28596717182e48aeb23c719c51b6e593edf4e496` の実capture/package/queue・明示native `{tensor}` 入力と、Diffusion Worker/MessagePortのRect専用処理へ接続する。[P2結果と再現](../../../development/ai-connection/profile-adoption/p2/RESULT.md) は全128値と変換edgeの入出力hash・operation/job/buildを追跡する。
+
+native contextの既知fieldは所有コピーし、frame配列の順序と重複を保持する。未知context keyは現在拒否し、任意metadataは管理側のouter extensionへ保存する。G1C codecがoptional normalization markerを省略しても、版付きnormalized meaningと元のowner metadataを外側traceへ保持する。旧F5 guard/codec wrapper、padding、reshape、rawへの改名を正常経路として使わない。新restored payloadのVAE decode・管理UI/候補採用・全sessionは対向担当の別受入である。
+
+## P4: 実重みを使うQKV norm RoPEの単位
+
+独立ES入口 [qkv/stage.mjs](ort-bridge/qkv/stage.mjs) の `createActualQkvDiagnostic({file,side,bridgeBytes,tensorBytes,ropeBytes})` は、元block0のQ/K/V `[5120,5120]` をbounded row tileで読み、明示hidden `[16,5120]` から全幅Q/K/Vを計算する。Q/Kは全5120次元のRMSNormを経てhead0/128次元を選び、実coreの3軸RoPEと別のsource_id回転を、全128次元を覆う64組の2×2 F32行列の積として合成し、既存attentionへ渡す。
+
+native executionProfileIdは `bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1`。本単位のattentionは宣言した選択16keyで、旧attentionのprecomputed K32760試験と別scopeである。入力position/sourceId、gate、独立reference、元precisionとの差、所有権・取消・解放・同時保持資源は [qkv/README.md](ort-bridge/qkv/README.md) と固定candidate planに記載する。Q/K normへ渡すprojection値は、本診断の明示admissionとしてabs≤1e16に制限する。既存generic RMSNormを有限巨大値全般の受入へ拡大しない。
+
+元storage FP8/F16を実HikeでF32へ復号するが、計算は明示したF32診断profileである。実model由来のmodulation後hidden、元production compute精度、全N32760/context65520以上、全query/head/stageと組合せ資源予算は別の未成立条件。`productionQKVVerified:false`、P5=BLOCKED、native `load/predict/sample=NOT_READY` を維持する。本native profileはownerの新しい候補宣言であり、固定catalogへの登録・管理採用は別に行う。

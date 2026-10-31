@@ -1,0 +1,56 @@
+✖ actual Hike RoPE matrix/apply retains separate axis and source rotations (1.405427ms)
+✖ RoPE shape/finite/ownership/BUSY contracts reject before writes (0.420393ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14.106954
+
+✖ failing tests:
+
+test at docs/shared/diffusion-models/ort-bridge/qkv/test-rope.mjs:17:1
+✖ actual Hike RoPE matrix/apply retains separate axis and source rotations (1.405427ms)
+  AssertionError [ERR_ASSERTION]: Missing QKV RoPE Hike module
+  + actual - expected
+
+  + 'undefined'
+  - 'function'
+
+      at TestContext.<anonymous> (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/qkv/test-rope.mjs:18:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/ort-bridge/qkv/test-rope.mjs:30:1
+✖ RoPE shape/finite/ownership/BUSY contracts reject before writes (0.420393ms)
+  AssertionError [ERR_ASSERTION]: Missing QKV RoPE Hike module
+  + actual - expected
+
+  + 'undefined'
+  - 'function'
+
+      at TestContext.<anonymous> (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/qkv/test-rope.mjs:31:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

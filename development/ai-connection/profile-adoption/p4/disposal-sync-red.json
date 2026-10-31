@@ -1,0 +1,12 @@
+{
+  "browser": "154.0.8037.57",
+  "pageErrors": [],
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/ort-bridge/qkv/stage.mjs": "61064063cad222d29d7e70eaadd0221514be58907b1a6c2c2626809ef26f2b3a",
+    "docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+    "docs/shared/diffusion-models/ort-bridge/qkv/disposal-cases.mjs": "44c595db1fe923f55309b347eb180596932a65b0e2317eb608f5c2bba8cc64e4",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs": "1e5e9d2f90396737f73496c60c18cc5b25b47fab2cb7b3e05f165cdc089d3a22"
+  },
+  "passed": false,
+  "error": "AggregateError: Owned QKV resource cleanup failed; retry before reuse\n    at releaseOwnedResources (http://127.0.0.1:36855/shared/diffusion-models/ort-bridge/qkv/ownership.mjs:7:27)\n    at async http://127.0.0.1:36855/shared/diffusion-models/ort-bridge/qkv/stage.mjs:31:230\n    at async runDisposalCases (http://127.0.0.1:36855/shared/diffusion-models/ort-bridge/qkv/disposal-cases.mjs:24:87)\n    at async eval (eval at evaluate (:311:30), <anonymous>:1:122)\n    at async <anonymous>:337:30"
+}

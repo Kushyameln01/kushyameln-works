@@ -12,11 +12,12 @@ function floats(a,n){if(!(a instanceof Float32Array)||a.length!==n||!(a.buffer i
 function binding(d){if(d?.schemaVersion!=='works-postnorm-rope-qkv/0.1'||!validId(d.bindingId)||d.rows!==16||d.headDim!==128||!Number.isSafeInteger(d.keyCount)||d.keyCount<1||d.keyCount>32760||d.dtype!=='float32'||d.querySpace!=='post-qk-norm-rope'||d.keySpace!=='post-qk-norm-rope'||d.valueSpace!=='projected-value'||d.mask!=='none'||d.dropout!==0||!['explicit-fixture','precomputed-tensors'].includes(d.provenance?.kind))throw TypeError('Explicit postnorm/RoPE one-head source contract required');return d;}
 export async function createStreamAttention({hikeBytes}={}){
  if(hikeBytes===undefined){const r=await fetch(new URL('./kernel.wasm',import.meta.url));if(!r.ok)throw Error('Stream Hike unavailable');hikeBytes=await r.arrayBuffer();}
- let hike=await createStreamAccumulator(hikeBytes),session=null,disposed=false,busy=false,last=null;
+ let hike=await createStreamAccumulator(hikeBytes),session=null,disposed=false,closing=false,pendingRelease=null,busy=false,last=null;
  const graph=createStreamAttentionGraph(),graphSHA256=await digest(graph),begin=performance.now();
  try{session=await ort.InferenceSession.create(graph,{executionProviders:['wasm'],graphOptimizationLevel:'all'});}catch(e){hike.dispose();throw e;}
  const sessionCreateMs=performance.now()-begin;
- const live=()=>{if(disposed)throw Error('Stream attention disposed');};
+ const live=()=>{if(disposed)throw Error('Stream attention disposed');if(closing)throw Object.assign(Error('Stream attention cleanup must finish before reuse'),{code:'RECOVERY_REQUIRED'});};
+ const disposeOwned=()=>{if(disposed)return Promise.resolve();if(busy)return Promise.reject(Error('Cancel and await active stream before disposal'));if(pendingRelease)return pendingRelease;closing=true;pendingRelease=Promise.resolve().then(async()=>{try{await session?.release();session=null;hike?.dispose();hike=null;disposed=true;closing=false;}finally{pendingRelease=null;}});return pendingRelease;};
  return Object.freeze({
   describe(){live();return {schemaVersion:'works-stream-attention/0.1',scope:'EXPLICIT_Q16_ONE_HEAD_ALL_KEYS',input:{query:[16,128],keyCount:[1,32760],logicalTileMax:64,tail:'exact-shape'},precisionProfile:'f32-ort-score-exp-hike-recurrence-v1',scale:ATTENTION_SCALE,graphSHA256,hikeWasmSHA256:STREAM_WASM_SHA256,requiredSourceSchema:'works-postnorm-rope-qkv/0.1',productionQKVVerified:false,modelInference:false};},
   async run(input={}){
@@ -51,7 +52,7 @@ export async function createStreamAttention({hikeBytes}={}){
     return {output,denominators,rowMax:prevMax.slice(),evidence:{schemaVersion:'works-stream-attention-evidence/0.1',scope:'EXPLICIT_Q16_ONE_HEAD_ALL_KEYS',sourceBinding:clone(sourceBinding),precisionProfile:'f32-ort-score-exp-hike-recurrence-v1',queryShape:[16,128],outputShape:[16,128],keysConsumed,tiles,finalKeyCount,phantomKeys:0,scale:ATTENTION_SCALE,maxUpdates,graphSHA256,hikeWasmSHA256:STREAM_WASM_SHA256,ortVersion:ort.env.versions?.web??null,ortSessionCreations:1,sessionCreateMs,hikeMemoryStart:memoryBefore,hikeMemoryEnd:hike.stats(),elapsed:{readMs,ortMs,hikeMs,totalRunMs:ended-started},productionQKVVerified:false,resources:{sourceQKVInputBytes:8192+sourceBinding.keyCount*1024,hostSnapshotCopyBytes:8192+sourceBinding.keyCount*1088+tiles*128+128,hikeInputCopyBytes:hike.stats().inputCopyBytes-memoryBefore.inputCopyBytes,hikeOutputCopyBytes:hike.stats().outputCopyBytes-memoryBefore.outputCopyBytes,hikeArenaResetBytes:hike.stats().arenaBytes,hikeTransientClearBytes:36928*tiles,logicalOrtInputBytes:tiles*(8192+64)+sourceBinding.keyCount*512,logicalOrtOutputBytes:sourceBinding.keyCount*64+tiles*128,logicalMaxScoreTileElements:1024,selectedDenseScoreBytes:16*sourceBinding.keyCount*4,knownNamedNumericLiveBytes:164288,knownNamedNumericPlusHikeBytes:164288+hike.stats().memoryBytes,knownLiveScope:'conservative named numeric array spans only; excludes producer full KV backing, metadata, compiler/ORT Memory, GC-unreclaimed arrays, harness/reference and other caller buffers',producerResidentBytes:null,producerResidentReason:'source provenance kind is not a resident-byte proof; on-demand fixture audited separately',ortMemoryBytes:null},fullHeadCountVerified:false,originalProductionPrecisionVerified:false,E8:'BLOCKED'}};
    }finally{qTensor?.dispose?.();busy=false;}
   },
-  stats(){return {disposed,busy,ortSessionCreations:1,hike:hike?.stats()??null,last:clone(last)};},
-  async dispose(){if(disposed)return;if(busy)throw Error('Cancel and await active stream before disposal');disposed=true;try{await session.release();}finally{session=null;hike.dispose();hike=null;}}
+  stats(){return {disposed,cleanupPending:closing,busy,ortSessionCreations:1,hike:hike?.stats()??null,last:clone(last)};},
+  dispose:disposeOwned
  });
 }

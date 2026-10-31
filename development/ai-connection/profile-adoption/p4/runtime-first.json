@@ -1,0 +1,648 @@
+{
+  "browser": "154.0.8037.57",
+  "pageErrors": [],
+  "originalModelHTTPRequests": [],
+  "wallSeconds": 12.101565400000254,
+  "OSMeasurement": {
+    "pssBaselineBytes": 260927488,
+    "pssPeakBytes": 537756672,
+    "rssPeakProcessSumBytes": 813473792,
+    "samples": 376,
+    "scope": "owned Chromium descendants, constructor/all tests/private reference harness included; not allocator-only or production peak"
+  },
+  "referenceSHA256": "4e0d8265b5b1afb4cbe51a27d6fce69c0f8e2167efa522687f88fa1f8554ea53",
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/ort-bridge/qkv/test-rope-reference.mjs": "5aa448278a86bfc441ad0528b2900fa67e6cbe56bf7c3fb094a1eb09dc26d236",
+    "docs/shared/diffusion-models/ort-bridge/qkv/build-record.json": "b5c44fe9374a653a99e81e7a32f62071fc6c1d5eb19010743997c1933d5c46ae",
+    "docs/shared/diffusion-models/ort-bridge/qkv/cases.mjs": "8394862ad9d37159a71b9fca2dd398cc793c6f0b861242d34b35d2f0ef834245",
+    "docs/shared/diffusion-models/ort-bridge/qkv/kernel.wasm": "46cd2ac1859e809d9bcb722b55822c606185e67b3639392fa00d21b698825997",
+    "docs/shared/diffusion-models/ort-bridge/qkv/base.mjs": "040a33665e1f7ccd2a5c9989d0e731e8b4d161ab3bc71d70403359f66bdedcd1",
+    "docs/shared/diffusion-models/ort-bridge/qkv/rope.hike": "1be9901cdb8632903237c221cc7de06f3e82391b5342dc78abbabd8666b0905e",
+    "docs/shared/diffusion-models/ort-bridge/qkv/build.py": "6ee07dd770017d847ae7cba4e4cf4d225569faaf1943b459c499b70f042af5b4",
+    "docs/shared/diffusion-models/ort-bridge/qkv/kernel.wat": "187cd770cf9f2f254bec003628fc58dec3650f94ffffd5e528d5f5e9d37d2b84",
+    "docs/shared/diffusion-models/ort-bridge/qkv/ABI.md": "d7da54ab431cde97b39f80b53eaecbf9828a51c50d45554d991b12f0db9c49f9",
+    "docs/shared/diffusion-models/ort-bridge/qkv/build.log": "d59ee4ceca540ab8a85232dd2bee879b79eba19173c29645ff7d80f52c9eaeaa",
+    "docs/shared/diffusion-models/ort-bridge/qkv/runtime.js": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+    "docs/shared/diffusion-models/ort-bridge/qkv/rope.mjs": "94be2fd2b0e1369bb0be522c64c8b875ec8f320a4d6cfd54fbf6104dbae7603e",
+    "docs/shared/diffusion-models/ort-bridge/qkv/registry.mjs": "e5cec64144f2474342dbd34aa4c94ec777c29100a99ecb158684da6bef4d8eb9",
+    "docs/shared/diffusion-models/ort-bridge/qkv/graph.mjs": "23402a28df0ab90da6869523f855e0f78e1c7c727236290eb5217387c9a4a895",
+    "docs/shared/diffusion-models/ort-bridge/qkv/stage.mjs": "add90bcde445d744ced1581a3a4b0ca175e5ce7950514a1e18bab2f595174f59",
+    "docs/shared/diffusion-models/ort-bridge/qkv/test-rope.mjs": "e80f1878ad9a7a79676c851eee8058aa6378e06168d70ad2b659774acf3b0d05"
+  },
+  "passed": true,
+  "scope": "actual immutable base weights, explicit hidden fixture, N16/full-width QKV and one-head selected16 attention; not production activation or full sequence",
+  "cases": [
+    {
+      "name": "invalid original file rejects before execution",
+      "passed": true
+    },
+    {
+      "name": "exact full-width shapes and preabort reject",
+      "passed": true
+    },
+    {
+      "name": "reentrant getter refuses before shared resource mutation",
+      "passed": true
+    },
+    {
+      "name": "cancel after bounded row stage and reuse",
+      "passed": true
+    },
+    {
+      "name": "actual QKV all5120 -> QK norm -> source rotations -> selected-head attention all-values",
+      "passed": true
+    },
+    {
+      "name": "disposal rejects reuse and owns only its resources",
+      "passed": true
+    }
+  ],
+  "comparisons": {
+    "qkv.q": {
+      "values": 81920,
+      "failed": 0,
+      "maxAbsolute": 1.7285346984863281e-06,
+      "gate": {
+        "absolute": 0.0001,
+        "relative": 1e-05,
+        "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+      }
+    },
+    "qkv.k": {
+      "values": 81920,
+      "failed": 0,
+      "maxAbsolute": 1.6689300537109375e-06,
+      "gate": {
+        "absolute": 0.0001,
+        "relative": 1e-05,
+        "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+      }
+    },
+    "qkv.v": {
+      "values": 81920,
+      "failed": 0,
+      "maxAbsolute": 1.5497207641601562e-06,
+      "gate": {
+        "absolute": 0.0001,
+        "relative": 1e-05,
+        "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+      }
+    },
+    "norm.q": {
+      "values": 81920,
+      "failed": 0,
+      "maxAbsolute": 8.106231689453125e-06,
+      "gate": {
+        "absolute": 0.0001,
+        "relative": 0.0001,
+        "origin": "new predeclared F32 sequential5120 reduction/reciprocal diagnostic tolerance versus independent binary64 oracle; not Torch fused rsqrt parity"
+      }
+    },
+    "norm.k": {
+      "values": 81920,
+      "failed": 0,
+      "maxAbsolute": 6.67572021484375e-06,
+      "gate": {
+        "absolute": 0.0001,
+        "relative": 0.0001,
+        "origin": "new predeclared F32 sequential5120 reduction/reciprocal diagnostic tolerance versus independent binary64 oracle; not Torch fused rsqrt parity"
+      }
+    },
+    "matrices": {
+      "values": 4096,
+      "failed": 0,
+      "maxAbsolute": 0,
+      "gate": {
+        "absolute": 2e-06,
+        "relative": 2e-06,
+        "origin": "new predeclared F64 primitive/F32 matrix construction and composition diagnostic tolerance"
+      }
+    },
+    "q": {
+      "values": 2048,
+      "failed": 0,
+      "maxAbsolute": 3.5762786865234375e-06,
+      "gate": {
+        "absolute": 0.0001,
+        "relative": 0.0001,
+        "origin": "new predeclared fullwidth norm to selectedhead matrix-apply diagnostic"
+      }
+    },
+    "k": {
+      "values": 2048,
+      "failed": 0,
+      "maxAbsolute": 4.0531158447265625e-06,
+      "gate": {
+        "absolute": 0.0001,
+        "relative": 0.0001,
+        "origin": "new predeclared fullwidth norm to selectedhead matrix-apply diagnostic"
+      }
+    },
+    "v": {
+      "values": 2048,
+      "failed": 0,
+      "maxAbsolute": 1.2516975402832031e-06,
+      "gate": {
+        "absolute": 0.0001,
+        "relative": 1e-05
+      }
+    },
+    "attention": {
+      "values": 2048,
+      "failed": 0,
+      "maxAbsolute": 3.1441450119018555e-06,
+      "gate": {
+        "absolute": 0.001,
+        "relative": 0.0001,
+        "origin": "new predeclared composed-stage F32 diagnostic error budget; not production acceptance"
+      }
+    }
+  },
+  "outputs": {
+    "qkv.q": "33dba09b3199d45ea1256b5f8e4cb74b7051b1aa1920e01709392ccf8948fa25",
+    "qkv.k": "5c340e8072b01e9bcb7a208d13ee956be243923863aa69f29691d34e57ebd004",
+    "qkv.v": "c8ac05769fefd18add4b3a0063690c602a01e7c895c177f01e7ef1d45f632dd9",
+    "norm.q": "88f54a1baf7210572045e89675d279099d2b86a068da15f65652ba496fc07f81",
+    "norm.k": "a94891d038745bddf64a0a2b42d4002992152b6ebcbd1958eaec2a38a6843a06",
+    "matrices": "a871e430e07643c9ac4b600d4e2a84a30ca0677a4fe61cf6ae2d35ebf23f2da4",
+    "q": "912ba443c3655c08240437516cb454e4cd172130b078adafbcf3f5be1d3fc865",
+    "k": "cb6248ea429f25efbaa0ceae7f79fb6578900f20f766dcd2029b4236319e7306",
+    "v": "4bed11333e9d22e1be6e87b6407046b653ce107e7259f8b986133c7090c242a0",
+    "attention": "424cd34ca1fd54cc5b78ea1ffa3a10d85d125b8fb00dd7d55271cb94793a190d"
+  },
+  "evidence": {
+    "schemaVersion": "bernini-qkv-evidence/0.1",
+    "scope": "ACTUAL_WEIGHTS_EXPLICIT_HIDDEN_N16_FULL_WIDTH_HEAD0",
+    "executionProfileId": "bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1",
+    "original": {
+      "side": "LOW",
+      "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+      "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+      "fileBytes": 15574833216,
+      "fullFileSHA256Verified": false,
+      "fullFileHashRecomputed": false,
+      "modelHashRole": "expected-original-full-hash-prior-owner-receipt-not-current-reauthentication",
+      "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+      "computeDtype": "F32",
+      "weights": {
+        "q": {
+          "key": "blocks.0.self_attn.q.weight",
+          "absoluteByteOffset": 2845110856,
+          "byteLength": 26214400,
+          "shape": [
+            5120,
+            5120
+          ],
+          "storageDtype": "F8_E4M3",
+          "scale": 0.0004149845917709172,
+          "scaleSHA256": "2575543940692eed901ec08a566b96b426db16691fdc5b57f51be56c51333925",
+          "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a"
+        },
+        "k": {
+          "key": "blocks.0.self_attn.k.weight",
+          "absoluteByteOffset": 2792682056,
+          "byteLength": 26214400,
+          "shape": [
+            5120,
+            5120
+          ],
+          "storageDtype": "F8_E4M3",
+          "scale": 0.0008653913391754031,
+          "scaleSHA256": "8dacf86ba1a3ca395a994a7408a93b48ab9aab3f77041d3332f4650b36588e92",
+          "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a"
+        },
+        "v": {
+          "key": "blocks.0.self_attn.v.weight",
+          "absoluteByteOffset": 2871325256,
+          "byteLength": 26214400,
+          "shape": [
+            5120,
+            5120
+          ],
+          "storageDtype": "F8_E4M3",
+          "scale": 0.0005623953766189516,
+          "scaleSHA256": "0dc6f0dd00e7149434b9477415c9f60e45129113b0c08fe266c2ae5f558e6898",
+          "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a"
+        }
+      },
+      "parameters": [
+        {
+          "key": "blocks.0.self_attn.q.bias",
+          "storageDtype": "F16",
+          "shape": [
+            5120
+          ],
+          "absoluteByteOffset": 52833736,
+          "byteLength": 10240,
+          "sourceSHA256": "b041148b35666e0d8177ca102defe39cfb24f13789acbbe5dcd75d8ec113bf9b",
+          "decodedSHA256": "d4b7241d7fe54047ab4bcd791078c994e1feb2675a59f18ac112747aceaadf83"
+        },
+        {
+          "key": "blocks.0.self_attn.k.bias",
+          "storageDtype": "F16",
+          "shape": [
+            5120
+          ],
+          "absoluteByteOffset": 52792776,
+          "byteLength": 10240,
+          "sourceSHA256": "376e257d5b405f87ea05f5d766d61208fc7a641a2d1fbc301d3a39b71d737e0e",
+          "decodedSHA256": "611f4bc70991efe2d71293f53bdcbdd2a5031ca236a1b9eabdd38fef23aebb90"
+        },
+        {
+          "key": "blocks.0.self_attn.v.bias",
+          "storageDtype": "F16",
+          "shape": [
+            5120
+          ],
+          "absoluteByteOffset": 52843976,
+          "byteLength": 10240,
+          "sourceSHA256": "feab2372327b6c34457408f7781545a8b3ed182dce1c5b02bd5ef1012fd8069c",
+          "decodedSHA256": "784f6a06a3cf4c6b7cf374087f9917ae2526f71b3d38e436ff3e51a2ca889ec0"
+        },
+        {
+          "key": "blocks.0.self_attn.norm_q.weight",
+          "storageDtype": "F16",
+          "shape": [
+            5120
+          ],
+          "absoluteByteOffset": 52813256,
+          "byteLength": 10240,
+          "sourceSHA256": "aa92ee417b5fff532ea190c6a88dbd0ba04cbf21009dd270a5cf29530906c09e",
+          "decodedSHA256": "8a5bf60cae4ff1f6bffca5913a46d6aeb91dc2baf6c8b5f9e99e118a5741b870"
+        },
+        {
+          "key": "blocks.0.self_attn.norm_k.weight",
+          "storageDtype": "F16",
+          "shape": [
+            5120
+          ],
+          "absoluteByteOffset": 52803016,
+          "byteLength": 10240,
+          "sourceSHA256": "405e614b01aa30741fac96d662cf0cc6c6c51671295942cd34207c74d9a253ca",
+          "decodedSHA256": "b664e7587376749cd174ea799c466ae9daef36258df651643d4e580b2bcd825d"
+        }
+      ]
+    },
+    "sourceWeights": {
+      "q": {
+        "key": "blocks.0.self_attn.q.weight",
+        "absoluteByteOffset": 2845110856,
+        "byteLength": 26214400,
+        "shape": [
+          5120,
+          5120
+        ],
+        "storageDtype": "F8_E4M3",
+        "scale": 0.0004149845917709172,
+        "scaleSHA256": "2575543940692eed901ec08a566b96b426db16691fdc5b57f51be56c51333925",
+        "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+        "rawSHA256": "1a76f8ee3cb9d93ba290b10c261d21d73d996a87904c31ab246e3ae6a04e2e5d",
+        "rawBytes": 26214400
+      },
+      "k": {
+        "key": "blocks.0.self_attn.k.weight",
+        "absoluteByteOffset": 2792682056,
+        "byteLength": 26214400,
+        "shape": [
+          5120,
+          5120
+        ],
+        "storageDtype": "F8_E4M3",
+        "scale": 0.0008653913391754031,
+        "scaleSHA256": "8dacf86ba1a3ca395a994a7408a93b48ab9aab3f77041d3332f4650b36588e92",
+        "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+        "rawSHA256": "96f75777a3b9f2879d547cf5998f999f3242f5d60dff9bf330651161936b01c7",
+        "rawBytes": 26214400
+      },
+      "v": {
+        "key": "blocks.0.self_attn.v.weight",
+        "absoluteByteOffset": 2871325256,
+        "byteLength": 26214400,
+        "shape": [
+          5120,
+          5120
+        ],
+        "storageDtype": "F8_E4M3",
+        "scale": 0.0005623953766189516,
+        "scaleSHA256": "0dc6f0dd00e7149434b9477415c9f60e45129113b0c08fe266c2ae5f558e6898",
+        "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+        "rawSHA256": "f648fa133692843a52056eab17c10f38cd04b02fcf1ad412aee8afddee604bbf",
+        "rawBytes": 26214400
+      }
+    },
+    "shapes": {
+      "input": [
+        16,
+        5120
+      ],
+      "fullProjection": [
+        16,
+        5120
+      ],
+      "selectedHead": [
+        16,
+        128
+      ]
+    },
+    "tiles": 960,
+    "hiddenSHA256": "55b05e7986b978c23bc9d75903e47f79a9c3273e27522bb73b390de2cc20e1ac",
+    "positionsSHA256": "9d6268839257ddcd442521fd1de7602a892103ea80024be2765f5720e49d18c5",
+    "sourceIdsSHA256": "ef2c57e48bf15103e9a880bdcbd5aef24d37e167e3a3cf83e2d671b1e0121596",
+    "projectionGraphSHA256": "ec834903f4a7fc0ff315c134b0efc858ce7cff3464d908f37f0df8c968382a39",
+    "tensorHikeSHA256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+    "ortVersion": "1.24.3",
+    "ortSessionCreations": 2,
+    "sessionCreateMs": 227.90000000037253,
+    "baseBefore": {
+      "disposed": false,
+      "busy": false,
+      "reads": 12,
+      "readBytes": 133213,
+      "maxReadBytes": 81920,
+      "hike": {
+        "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+        "memoryBytes": 1572864,
+        "arenaBytes": 491648,
+        "calls": 22,
+        "inputCopyBytes": 135168,
+        "outputCopyBytes": 431104,
+        "workspaceReused": true,
+        "disposed": false
+      },
+      "fullFileHashRecomputed": false
+    },
+    "baseAfter": {
+      "disposed": false,
+      "busy": false,
+      "reads": 972,
+      "readBytes": 78776413,
+      "maxReadBytes": 81920,
+      "hike": {
+        "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+        "memoryBytes": 1572864,
+        "arenaBytes": 491648,
+        "calls": 16342,
+        "inputCopyBytes": 80744448,
+        "outputCopyBytes": 315986944,
+        "workspaceReused": true,
+        "disposed": false
+      },
+      "fullFileHashRecomputed": false
+    },
+    "normBefore": {
+      "capacity": 5120,
+      "arenaBytes": 61440,
+      "memoryBytes": 1114112,
+      "calls": 0
+    },
+    "normAfter": {
+      "capacity": 5120,
+      "arenaBytes": 61440,
+      "memoryBytes": 1114112,
+      "calls": 2
+    },
+    "ropeBefore": {
+      "wasmSha256": "46cd2ac1859e809d9bcb722b55822c606185e67b3639392fa00d21b698825997",
+      "memoryBytes": 1114112,
+      "arenaBytes": 33024,
+      "calls": 0,
+      "inputCopyBytes": 0,
+      "outputCopyBytes": 0,
+      "snapshotCopyBytes": 0,
+      "primitiveCalls": {
+        "cos": 0,
+        "sin": 0,
+        "pow": 0
+      },
+      "workspaceReused": true,
+      "busy": false,
+      "disposed": false
+    },
+    "ropeAfter": {
+      "wasmSha256": "46cd2ac1859e809d9bcb722b55822c606185e67b3639392fa00d21b698825997",
+      "memoryBytes": 1114112,
+      "arenaBytes": 33024,
+      "calls": 3,
+      "inputCopyBytes": 49408,
+      "outputCopyBytes": 32768,
+      "snapshotCopyBytes": 49408,
+      "primitiveCalls": {
+        "cos": 1664,
+        "sin": 1664,
+        "pow": 1664
+      },
+      "workspaceReused": true,
+      "busy": false,
+      "disposed": false
+    },
+    "attention": {
+      "schemaVersion": "works-stream-attention-evidence/0.1",
+      "scope": "EXPLICIT_Q16_ONE_HEAD_ALL_KEYS",
+      "sourceBinding": {
+        "schemaVersion": "works-postnorm-rope-qkv/0.1",
+        "bindingId": "actual-weight-hidden-fixture-n16-head0",
+        "rows": 16,
+        "headDim": 128,
+        "keyCount": 16,
+        "dtype": "float32",
+        "querySpace": "post-qk-norm-rope",
+        "keySpace": "post-qk-norm-rope",
+        "valueSpace": "projected-value",
+        "mask": "none",
+        "dropout": 0,
+        "provenance": {
+          "kind": "precomputed-tensors",
+          "producer": "actual-original-weights-explicit-hidden-diagnostic",
+          "executionProfileId": "bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1",
+          "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+          "hiddenSHA256": "55b05e7986b978c23bc9d75903e47f79a9c3273e27522bb73b390de2cc20e1ac",
+          "actualModelHiddenVerified": false
+        }
+      },
+      "precisionProfile": "f32-ort-score-exp-hike-recurrence-v1",
+      "queryShape": [
+        16,
+        128
+      ],
+      "outputShape": [
+        16,
+        128
+      ],
+      "keysConsumed": 16,
+      "tiles": 1,
+      "finalKeyCount": 16,
+      "phantomKeys": 0,
+      "scale": 0.0883883461356163,
+      "maxUpdates": 16,
+      "graphSHA256": "148db88ef3ba46be33799f2586760d6aab3f5eb57379ecc821a4cd5b2d3b1f04",
+      "hikeWasmSHA256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+      "ortVersion": "1.24.3",
+      "ortSessionCreations": 1,
+      "sessionCreateMs": 8.400000000372529,
+      "hikeMemoryStart": {
+        "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+        "memoryBytes": 1114112,
+        "arenaBytes": 53376,
+        "calls": 0,
+        "inputCopyBytes": 0,
+        "outputCopyBytes": 0,
+        "rows": 16,
+        "workspaceReused": true,
+        "invalid": false,
+        "disposed": false
+      },
+      "hikeMemoryEnd": {
+        "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+        "memoryBytes": 1114112,
+        "arenaBytes": 53376,
+        "calls": 2,
+        "inputCopyBytes": 9280,
+        "outputCopyBytes": 8192,
+        "rows": 16,
+        "workspaceReused": true,
+        "invalid": false,
+        "disposed": false
+      },
+      "elapsed": {
+        "readMs": 0.09999999962747097,
+        "ortMs": 1.800000000745058,
+        "hikeMs": 1.299999998882413,
+        "totalRunMs": 3.299999998882413
+      },
+      "productionQKVVerified": false,
+      "resources": {
+        "sourceQKVInputBytes": 24576,
+        "hostSnapshotCopyBytes": 25856,
+        "hikeInputCopyBytes": 9280,
+        "hikeOutputCopyBytes": 8192,
+        "hikeArenaResetBytes": 53376,
+        "hikeTransientClearBytes": 36928,
+        "logicalOrtInputBytes": 16448,
+        "logicalOrtOutputBytes": 1152,
+        "logicalMaxScoreTileElements": 1024,
+        "selectedDenseScoreBytes": 1024,
+        "knownNamedNumericLiveBytes": 164288,
+        "knownNamedNumericPlusHikeBytes": 1278400,
+        "knownLiveScope": "conservative named numeric array spans only; excludes producer full KV backing, metadata, compiler/ORT Memory, GC-unreclaimed arrays, harness/reference and other caller buffers",
+        "producerResidentBytes": null,
+        "producerResidentReason": "source provenance kind is not a resident-byte proof; on-demand fixture audited separately",
+        "ortMemoryBytes": null
+      },
+      "fullHeadCountVerified": false,
+      "originalProductionPrecisionVerified": false,
+      "E8": "BLOCKED"
+    },
+    "elapsed": {
+      "readMs": 7351.800000008196,
+      "ortMs": 260.29999999701977,
+      "biasMs": 106.79999999143183,
+      "normMs": 9.799999998882413,
+      "ropeMs": 3.5,
+      "attentionMs": 4.100000001490116,
+      "totalRunMs": 7742.5
+    },
+    "resources": {
+      "fullQKVBytes": 983040,
+      "fullNormQKBytes": 655360,
+      "hiddenCallerAndSnapshotBytes": 655360,
+      "largestRawWeightTileBytes": 81920,
+      "largestDecodedWeightTileBytes": 327680,
+      "baseParametersRetainedBytes": 102400,
+      "currentParameterCopyBytes": 20480,
+      "projectionOutputOriginalAndSnapshotAndBiasBytes": 3072,
+      "selectedQKVBytes": 24576,
+      "ropeMatricesBytes": 16384,
+      "weightFileReadBytes": 78643200,
+      "logicalProjectionInputBytes": 629145600,
+      "logicalProjectionOutputBytes": 983040,
+      "hikeMemoryBytes": 4915200,
+      "hikeMemoryCount": 4,
+      "baseHikeInputCopyBytes": 80609280,
+      "baseHikeOutputCopyBytes": 315555840,
+      "baseHikeArenaClearWriteBytes": 8023695360,
+      "normInputOutputCopyBytes": 1351680,
+      "ORTMemoryBytes": null,
+      "producerResidentBytes": null,
+      "scope": "named retained numeric buffers and traffic; not allocator/GC/harness/reference or full pipeline peak"
+    },
+    "productionQKVVerified": false,
+    "actualModelHiddenVerified": false,
+    "originalProductionPrecisionVerified": false,
+    "fullSequenceVerified": false,
+    "fullHeadCountVerified": false,
+    "modelInference": false,
+    "P5": "BLOCKED"
+  },
+  "stats": {
+    "disposed": false,
+    "busy": false,
+    "completedRuns": 1,
+    "cancelledRuns": 2,
+    "ortSessionCreations": 2,
+    "base": {
+      "disposed": false,
+      "busy": false,
+      "reads": 972,
+      "readBytes": 78776413,
+      "maxReadBytes": 81920,
+      "hike": {
+        "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+        "memoryBytes": 1572864,
+        "arenaBytes": 491648,
+        "calls": 16342,
+        "inputCopyBytes": 80744448,
+        "outputCopyBytes": 315986944,
+        "workspaceReused": true,
+        "disposed": false
+      },
+      "fullFileHashRecomputed": false
+    },
+    "norm": {
+      "capacity": 5120,
+      "arenaBytes": 61440,
+      "memoryBytes": 1114112,
+      "calls": 2
+    },
+    "rope": {
+      "wasmSha256": "46cd2ac1859e809d9bcb722b55822c606185e67b3639392fa00d21b698825997",
+      "memoryBytes": 1114112,
+      "arenaBytes": 33024,
+      "calls": 3,
+      "inputCopyBytes": 49408,
+      "outputCopyBytes": 32768,
+      "snapshotCopyBytes": 49408,
+      "primitiveCalls": {
+        "cos": 1664,
+        "sin": 1664,
+        "pow": 1664
+      },
+      "workspaceReused": true,
+      "busy": false,
+      "disposed": false
+    },
+    "attention": {
+      "disposed": false,
+      "busy": false,
+      "ortSessionCreations": 1,
+      "hike": {
+        "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+        "memoryBytes": 1114112,
+        "arenaBytes": 53376,
+        "calls": 2,
+        "inputCopyBytes": 9280,
+        "outputCopyBytes": 8192,
+        "rows": 16,
+        "workspaceReused": true,
+        "invalid": false,
+        "disposed": false
+      },
+      "last": {
+        "tiles": 1,
+        "keysConsumed": 16
+      }
+    }
+  },
+  "productionQKVVerified": false,
+  "modelInference": false,
+  "P5": "BLOCKED"
+}

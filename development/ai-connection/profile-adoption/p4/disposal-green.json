@@ -1,0 +1,35 @@
+{
+  "browser": "154.0.8037.57",
+  "pageErrors": [],
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/ort-bridge/qkv/stage.mjs": "28ec21b9ce3f22fc5e8c68422ddcf7fafb4b4b2c2a2f4dd5f24f5b2acf5042e7",
+    "docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+    "docs/shared/diffusion-models/ort-bridge/qkv/disposal-cases.mjs": "44c595db1fe923f55309b347eb180596932a65b0e2317eb608f5c2bba8cc64e4",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs": "2e4ef278be34d3c510c45732e63f97ab86035e3f0f8c1b94f467e629145f0870"
+  },
+  "passed": true,
+  "scope": "actual ORT session lifecycle with explicit prototype fail-once fault injection; no numerical/model inference",
+  "cases": [
+    {
+      "name": "actual ORT synchronous-throw retains session and blocks reuse until real retry succeeds",
+      "passed": true,
+      "failedOwnerCalls": 2,
+      "otherOwnerCalls": 1,
+      "realNativeReleases": 2
+    },
+    {
+      "name": "actual ORT rejected-promise retains session and blocks reuse until real retry succeeds",
+      "passed": true,
+      "failedOwnerCalls": 2,
+      "otherOwnerCalls": 1,
+      "realNativeReleases": 2
+    },
+    {
+      "name": "actual session construction failure preserves error and unfinished native cleanup ownership",
+      "passed": true,
+      "sessionCreationsAttempted": 2,
+      "releaseCalls": 2,
+      "nativeReleases": 1
+    }
+  ]
+}

@@ -1,0 +1,407 @@
+{
+  "schemaVersion": "diffusion-p4-runtime-verification/0.1",
+  "passed": true,
+  "scope": "actual retained HIGH/LOW weights and explicit hidden fixture only",
+  "sourceDigestsVerifiedPerSide": 48,
+  "sameRuntimeSourcesBothSides": true,
+  "sides": {
+    "LOW": {
+      "browserCases": 6,
+      "comparisons": {
+        "qkv.q": {
+          "values": 81920,
+          "failed": 0,
+          "maxAbsolute": 1.7285346984863281e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 1e-05,
+            "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+          }
+        },
+        "qkv.k": {
+          "values": 81920,
+          "failed": 0,
+          "maxAbsolute": 1.6689300537109375e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 1e-05,
+            "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+          }
+        },
+        "qkv.v": {
+          "values": 81920,
+          "failed": 0,
+          "maxAbsolute": 1.5497207641601562e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 1e-05,
+            "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+          }
+        },
+        "norm.q": {
+          "values": 81920,
+          "failed": 0,
+          "maxAbsolute": 8.106231689453125e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 0.0001,
+            "origin": "new predeclared F32 sequential5120 reduction/reciprocal diagnostic tolerance versus independent binary64 oracle; not Torch fused rsqrt parity"
+          }
+        },
+        "norm.k": {
+          "values": 81920,
+          "failed": 0,
+          "maxAbsolute": 6.67572021484375e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 0.0001,
+            "origin": "new predeclared F32 sequential5120 reduction/reciprocal diagnostic tolerance versus independent binary64 oracle; not Torch fused rsqrt parity"
+          }
+        },
+        "matrices": {
+          "values": 4096,
+          "failed": 0,
+          "maxAbsolute": 0,
+          "gate": {
+            "absolute": 2e-06,
+            "relative": 2e-06,
+            "origin": "new predeclared F64 primitive/F32 matrix construction and composition diagnostic tolerance"
+          }
+        },
+        "q": {
+          "values": 2048,
+          "failed": 0,
+          "maxAbsolute": 3.5762786865234375e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 0.0001,
+            "origin": "new predeclared fullwidth norm to selectedhead matrix-apply diagnostic"
+          }
+        },
+        "k": {
+          "values": 2048,
+          "failed": 0,
+          "maxAbsolute": 4.0531158447265625e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 0.0001,
+            "origin": "new predeclared fullwidth norm to selectedhead matrix-apply diagnostic"
+          }
+        },
+        "v": {
+          "values": 2048,
+          "failed": 0,
+          "maxAbsolute": 1.2516975402832031e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 1e-05
+          }
+        },
+        "attention": {
+          "values": 2048,
+          "failed": 0,
+          "maxAbsolute": 3.1441450119018555e-06,
+          "gate": {
+            "absolute": 0.001,
+            "relative": 0.0001,
+            "origin": "new predeclared composed-stage F32 diagnostic error budget; not production acceptance"
+          }
+        }
+      },
+      "referenceSHA256": "4e0d8265b5b1afb4cbe51a27d6fce69c0f8e2167efa522687f88fa1f8554ea53",
+      "sourceSHA256": {
+        "docs/shared/diffusion-models/ort-bridge/qkv/test-rope-reference.mjs": "5aa448278a86bfc441ad0528b2900fa67e6cbe56bf7c3fb094a1eb09dc26d236",
+        "docs/shared/diffusion-models/ort-bridge/qkv/build-record.json": "b5c44fe9374a653a99e81e7a32f62071fc6c1d5eb19010743997c1933d5c46ae",
+        "docs/shared/diffusion-models/ort-bridge/qkv/norm-admission.mjs": "59e0b05920ccef858f017988f9b4f40b158deddfade5a5ff4a4475c14cd9daab",
+        "docs/shared/diffusion-models/ort-bridge/qkv/cases.mjs": "940186f8533eeaa5134f260dc5d2e01ba2759efd67370fa19f3ec6c3872d2c7d",
+        "docs/shared/diffusion-models/ort-bridge/qkv/kernel.wasm": "46cd2ac1859e809d9bcb722b55822c606185e67b3639392fa00d21b698825997",
+        "docs/shared/diffusion-models/ort-bridge/qkv/base.mjs": "57efe6090359c1d909fb18471786c6ec6acc7a9b05162b3d3c6e36809d470a9e",
+        "docs/shared/diffusion-models/ort-bridge/qkv/rope.hike": "1be9901cdb8632903237c221cc7de06f3e82391b5342dc78abbabd8666b0905e",
+        "docs/shared/diffusion-models/ort-bridge/qkv/build.py": "6ee07dd770017d847ae7cba4e4cf4d225569faaf1943b459c499b70f042af5b4",
+        "docs/shared/diffusion-models/ort-bridge/qkv/kernel.wat": "187cd770cf9f2f254bec003628fc58dec3650f94ffffd5e528d5f5e9d37d2b84",
+        "docs/shared/diffusion-models/ort-bridge/qkv/test-boundaries.mjs": "cad8f33b9e1c509cfa25561509cb04ce61e4762f4eea92730b4962c23a51f1f6",
+        "docs/shared/diffusion-models/ort-bridge/qkv/README.md": "05004d13838726ff9a31483baf51e7986c80bc45cfbe74d30fb0672cbc25b108",
+        "docs/shared/diffusion-models/ort-bridge/qkv/ABI.md": "b0f6f280a0c49ebe219a35a11b69b41a8917f431dffd69935e76ebf45bb59647",
+        "docs/shared/diffusion-models/ort-bridge/qkv/build.log": "d59ee4ceca540ab8a85232dd2bee879b79eba19173c29645ff7d80f52c9eaeaa",
+        "docs/shared/diffusion-models/ort-bridge/qkv/runtime.js": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+        "docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+        "docs/shared/diffusion-models/ort-bridge/qkv/rope.mjs": "94be2fd2b0e1369bb0be522c64c8b875ec8f320a4d6cfd54fbf6104dbae7603e",
+        "docs/shared/diffusion-models/ort-bridge/qkv/registry.mjs": "e5cec64144f2474342dbd34aa4c94ec777c29100a99ecb158684da6bef4d8eb9",
+        "docs/shared/diffusion-models/ort-bridge/qkv/graph.mjs": "23402a28df0ab90da6869523f855e0f78e1c7c727236290eb5217387c9a4a895",
+        "docs/shared/diffusion-models/ort-bridge/qkv/stage.mjs": "28ec21b9ce3f22fc5e8c68422ddcf7fafb4b4b2c2a2f4dd5f24f5b2acf5042e7",
+        "docs/shared/diffusion-models/ort-bridge/qkv/disposal-cases.mjs": "44c595db1fe923f55309b347eb180596932a65b0e2317eb608f5c2bba8cc64e4",
+        "docs/shared/diffusion-models/ort-bridge/qkv/test-rope.mjs": "e80f1878ad9a7a79676c851eee8058aa6378e06168d70ad2b659774acf3b0d05",
+        "docs/shared/inference/hike.mjs": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65",
+        "docs/shared/inference/kernel/tensor.wasm": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+        "tools/inference/kernel/tensor.hike": "09625a5a955b843fdf15b22676429c3774600b3dd3aaa53fc77325869fcd0490",
+        "tools/inference/kernel/manifest.json": "120a20ec1aac6dc78f7791925b9cbc393db9f48e95c6bf0ad66d7d44a5f3924d",
+        "docs/shared/diffusion-models/api/safetensors.mjs": "ecb7e750a151489c9b37ffec75e0b784d808b0503ff2181c7b73907398422d7f",
+        "docs/shared/diffusion-models/lora/targets.mjs": "772ca63c3b82bafa7b2345cdda3361679112fcf4a97c79b67564da0fa196217d",
+        "docs/shared/diffusion-models/lora/weights.mjs": "b6d60af5924c2cc5cef9398867424288cab36d9788149c954fa8526b3b51fcc5",
+        "docs/shared/diffusion-models/lora/strict-json.mjs": "c68a353f9be2567361b075a6e5480e953a7d8df862f5b154e9cd368ec2571a98",
+        "docs/shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+        "docs/shared/diffusion-models/ort-bridge/hike.mjs": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+        "docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+        "docs/shared/diffusion-models/ort-bridge/kernel/bridge.hike": "1c1301545592e05c414fd8a4ad2ab1b20376810471418e515070a2590cd599ca",
+        "docs/shared/diffusion-models/ort-bridge/kernel/registry.mjs": "c4ea25478d44b70146ba2574d98c761d1bb345b4d6f10ccaedfb660f30489cdd",
+        "docs/shared/diffusion-models/ort-bridge/kernel/build-record.json": "4ba7874d1ce6d319bd570113e0e0f08a952ab957e1f3a8aff8456f5ff06bf429",
+        "docs/shared/inference/vendor/ort.wasm.min.mjs": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+        "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+        "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+        "tools/diffusion-models/p4-browser.py": "f3224e5d195011531b598384c3ab4548cce8c672f199a88238a7bdeba6c05665",
+        "tools/diffusion-models/p4-reference.py": "10f1a8d15cb463de5f20e300ea6790a3aa021daab1a9a1ed8b63d2565d5f87b4",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs": "2e4ef278be34d3c510c45732e63f97ab86035e3f0f8c1b94f467e629145f0870",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/graph.mjs": "07a627a0af4d19f8febbbb3233479f75998dcd6c0b6d6145d45096fc251a39a2",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/hike.mjs": "67d5ada9d4c6c4217c3845c9ddbed5fb246cedeb35d5283840e1057087d4c3cd",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/registry.mjs": "99c1c3c56fe22608c4652d830cd7f03978b036332a0505b9f07ed548bc8b6ecb",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.wasm": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.hike": "766b771e10e00bb3ce24d360567981e2d028762547c820e481dbcdf4deab1e75",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/build-record.json": "7f999cf04429ad270727d1c4cade6e62dc96eab29f72575ac02faa21ae4bfa59",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/build.py": "ce27ca6f0fd8164439fb48bb483a1e264a009759fbde7425ac059e66ad7aa3b5"
+      },
+      "time": {
+        "readMs": 10381.099999999627,
+        "ortMs": 344.79999995045364,
+        "biasMs": 118.70000004395843,
+        "normMs": 15.100000001490116,
+        "ropeMs": 3.899999998509884,
+        "attentionMs": 4.700000001117587,
+        "totalRunMs": 10878.700000001118
+      },
+      "resources": {
+        "fullQKVBytes": 983040,
+        "fullNormQKBytes": 655360,
+        "hiddenCallerAndSnapshotBytes": 655360,
+        "largestRawWeightTileBytes": 81920,
+        "largestDecodedWeightTileBytes": 327680,
+        "baseParametersRetainedBytes": 102400,
+        "currentParameterCopyBytes": 20480,
+        "projectionOutputOriginalAndSnapshotAndBiasBytes": 3072,
+        "selectedQKVBytes": 24576,
+        "ropeMatricesBytes": 16384,
+        "weightFileReadBytes": 78643200,
+        "logicalProjectionInputBytes": 629145600,
+        "logicalProjectionOutputBytes": 983040,
+        "hikeMemoryBytes": 4915200,
+        "hikeMemoryCount": 4,
+        "baseHikeInputCopyBytes": 80609280,
+        "baseHikeOutputCopyBytes": 315555840,
+        "baseHikeArenaClearWriteBytes": 8023695360,
+        "normInputOutputCopyBytes": 1351680,
+        "ORTMemoryBytes": null,
+        "producerResidentBytes": null,
+        "scope": "named retained numeric buffers and traffic; not allocator/GC/harness/reference or full pipeline peak"
+      },
+      "OSMeasurement": {
+        "pssBaselineBytes": 261471232,
+        "pssPeakBytes": 535017472,
+        "rssPeakProcessSumBytes": 810967040,
+        "samples": 462,
+        "scope": "owned Chromium descendants, constructor/all tests/private reference harness included; not allocator-only or production peak"
+      }
+    },
+    "HIGH": {
+      "browserCases": 6,
+      "comparisons": {
+        "qkv.q": {
+          "values": 81920,
+          "failed": 0,
+          "maxAbsolute": 2.86102294921875e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 1e-05,
+            "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+          }
+        },
+        "qkv.k": {
+          "values": 81920,
+          "failed": 0,
+          "maxAbsolute": 2.0265579223632812e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 1e-05,
+            "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+          }
+        },
+        "qkv.v": {
+          "values": 81920,
+          "failed": 0,
+          "maxAbsolute": 5.960464477539062e-07,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 1e-05,
+            "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+          }
+        },
+        "norm.q": {
+          "values": 81920,
+          "failed": 0,
+          "maxAbsolute": 1.239776611328125e-05,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 0.0001,
+            "origin": "new predeclared F32 sequential5120 reduction/reciprocal diagnostic tolerance versus independent binary64 oracle; not Torch fused rsqrt parity"
+          }
+        },
+        "norm.k": {
+          "values": 81920,
+          "failed": 0,
+          "maxAbsolute": 7.62939453125e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 0.0001,
+            "origin": "new predeclared F32 sequential5120 reduction/reciprocal diagnostic tolerance versus independent binary64 oracle; not Torch fused rsqrt parity"
+          }
+        },
+        "matrices": {
+          "values": 4096,
+          "failed": 0,
+          "maxAbsolute": 0,
+          "gate": {
+            "absolute": 2e-06,
+            "relative": 2e-06,
+            "origin": "new predeclared F64 primitive/F32 matrix construction and composition diagnostic tolerance"
+          }
+        },
+        "q": {
+          "values": 2048,
+          "failed": 0,
+          "maxAbsolute": 4.291534423828125e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 0.0001,
+            "origin": "new predeclared fullwidth norm to selectedhead matrix-apply diagnostic"
+          }
+        },
+        "k": {
+          "values": 2048,
+          "failed": 0,
+          "maxAbsolute": 5.7220458984375e-06,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 0.0001,
+            "origin": "new predeclared fullwidth norm to selectedhead matrix-apply diagnostic"
+          }
+        },
+        "v": {
+          "values": 2048,
+          "failed": 0,
+          "maxAbsolute": 3.5762786865234375e-07,
+          "gate": {
+            "absolute": 0.0001,
+            "relative": 1e-05
+          }
+        },
+        "attention": {
+          "values": 2048,
+          "failed": 0,
+          "maxAbsolute": 2.302229404449463e-06,
+          "gate": {
+            "absolute": 0.001,
+            "relative": 0.0001,
+            "origin": "new predeclared composed-stage F32 diagnostic error budget; not production acceptance"
+          }
+        }
+      },
+      "referenceSHA256": "3eeeaf93ce7a6051623128ae5516bc308fc93e7798f10449ac8e3658116ab04d",
+      "sourceSHA256": {
+        "docs/shared/diffusion-models/ort-bridge/qkv/test-rope-reference.mjs": "5aa448278a86bfc441ad0528b2900fa67e6cbe56bf7c3fb094a1eb09dc26d236",
+        "docs/shared/diffusion-models/ort-bridge/qkv/build-record.json": "b5c44fe9374a653a99e81e7a32f62071fc6c1d5eb19010743997c1933d5c46ae",
+        "docs/shared/diffusion-models/ort-bridge/qkv/norm-admission.mjs": "59e0b05920ccef858f017988f9b4f40b158deddfade5a5ff4a4475c14cd9daab",
+        "docs/shared/diffusion-models/ort-bridge/qkv/cases.mjs": "940186f8533eeaa5134f260dc5d2e01ba2759efd67370fa19f3ec6c3872d2c7d",
+        "docs/shared/diffusion-models/ort-bridge/qkv/kernel.wasm": "46cd2ac1859e809d9bcb722b55822c606185e67b3639392fa00d21b698825997",
+        "docs/shared/diffusion-models/ort-bridge/qkv/base.mjs": "57efe6090359c1d909fb18471786c6ec6acc7a9b05162b3d3c6e36809d470a9e",
+        "docs/shared/diffusion-models/ort-bridge/qkv/rope.hike": "1be9901cdb8632903237c221cc7de06f3e82391b5342dc78abbabd8666b0905e",
+        "docs/shared/diffusion-models/ort-bridge/qkv/build.py": "6ee07dd770017d847ae7cba4e4cf4d225569faaf1943b459c499b70f042af5b4",
+        "docs/shared/diffusion-models/ort-bridge/qkv/kernel.wat": "187cd770cf9f2f254bec003628fc58dec3650f94ffffd5e528d5f5e9d37d2b84",
+        "docs/shared/diffusion-models/ort-bridge/qkv/test-boundaries.mjs": "cad8f33b9e1c509cfa25561509cb04ce61e4762f4eea92730b4962c23a51f1f6",
+        "docs/shared/diffusion-models/ort-bridge/qkv/README.md": "05004d13838726ff9a31483baf51e7986c80bc45cfbe74d30fb0672cbc25b108",
+        "docs/shared/diffusion-models/ort-bridge/qkv/ABI.md": "b0f6f280a0c49ebe219a35a11b69b41a8917f431dffd69935e76ebf45bb59647",
+        "docs/shared/diffusion-models/ort-bridge/qkv/build.log": "d59ee4ceca540ab8a85232dd2bee879b79eba19173c29645ff7d80f52c9eaeaa",
+        "docs/shared/diffusion-models/ort-bridge/qkv/runtime.js": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+        "docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+        "docs/shared/diffusion-models/ort-bridge/qkv/rope.mjs": "94be2fd2b0e1369bb0be522c64c8b875ec8f320a4d6cfd54fbf6104dbae7603e",
+        "docs/shared/diffusion-models/ort-bridge/qkv/registry.mjs": "e5cec64144f2474342dbd34aa4c94ec777c29100a99ecb158684da6bef4d8eb9",
+        "docs/shared/diffusion-models/ort-bridge/qkv/graph.mjs": "23402a28df0ab90da6869523f855e0f78e1c7c727236290eb5217387c9a4a895",
+        "docs/shared/diffusion-models/ort-bridge/qkv/stage.mjs": "28ec21b9ce3f22fc5e8c68422ddcf7fafb4b4b2c2a2f4dd5f24f5b2acf5042e7",
+        "docs/shared/diffusion-models/ort-bridge/qkv/disposal-cases.mjs": "44c595db1fe923f55309b347eb180596932a65b0e2317eb608f5c2bba8cc64e4",
+        "docs/shared/diffusion-models/ort-bridge/qkv/test-rope.mjs": "e80f1878ad9a7a79676c851eee8058aa6378e06168d70ad2b659774acf3b0d05",
+        "docs/shared/inference/hike.mjs": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65",
+        "docs/shared/inference/kernel/tensor.wasm": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+        "tools/inference/kernel/tensor.hike": "09625a5a955b843fdf15b22676429c3774600b3dd3aaa53fc77325869fcd0490",
+        "tools/inference/kernel/manifest.json": "120a20ec1aac6dc78f7791925b9cbc393db9f48e95c6bf0ad66d7d44a5f3924d",
+        "docs/shared/diffusion-models/api/safetensors.mjs": "ecb7e750a151489c9b37ffec75e0b784d808b0503ff2181c7b73907398422d7f",
+        "docs/shared/diffusion-models/lora/targets.mjs": "772ca63c3b82bafa7b2345cdda3361679112fcf4a97c79b67564da0fa196217d",
+        "docs/shared/diffusion-models/lora/weights.mjs": "b6d60af5924c2cc5cef9398867424288cab36d9788149c954fa8526b3b51fcc5",
+        "docs/shared/diffusion-models/lora/strict-json.mjs": "c68a353f9be2567361b075a6e5480e953a7d8df862f5b154e9cd368ec2571a98",
+        "docs/shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+        "docs/shared/diffusion-models/ort-bridge/hike.mjs": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+        "docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+        "docs/shared/diffusion-models/ort-bridge/kernel/bridge.hike": "1c1301545592e05c414fd8a4ad2ab1b20376810471418e515070a2590cd599ca",
+        "docs/shared/diffusion-models/ort-bridge/kernel/registry.mjs": "c4ea25478d44b70146ba2574d98c761d1bb345b4d6f10ccaedfb660f30489cdd",
+        "docs/shared/diffusion-models/ort-bridge/kernel/build-record.json": "4ba7874d1ce6d319bd570113e0e0f08a952ab957e1f3a8aff8456f5ff06bf429",
+        "docs/shared/inference/vendor/ort.wasm.min.mjs": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+        "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+        "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+        "tools/diffusion-models/p4-browser.py": "f3224e5d195011531b598384c3ab4548cce8c672f199a88238a7bdeba6c05665",
+        "tools/diffusion-models/p4-reference.py": "10f1a8d15cb463de5f20e300ea6790a3aa021daab1a9a1ed8b63d2565d5f87b4",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs": "2e4ef278be34d3c510c45732e63f97ab86035e3f0f8c1b94f467e629145f0870",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/graph.mjs": "07a627a0af4d19f8febbbb3233479f75998dcd6c0b6d6145d45096fc251a39a2",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/hike.mjs": "67d5ada9d4c6c4217c3845c9ddbed5fb246cedeb35d5283840e1057087d4c3cd",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/registry.mjs": "99c1c3c56fe22608c4652d830cd7f03978b036332a0505b9f07ed548bc8b6ecb",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.wasm": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.hike": "766b771e10e00bb3ce24d360567981e2d028762547c820e481dbcdf4deab1e75",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/build-record.json": "7f999cf04429ad270727d1c4cade6e62dc96eab29f72575ac02faa21ae4bfa59",
+        "docs/shared/diffusion-models/ort-bridge/stream-attention/build.py": "ce27ca6f0fd8164439fb48bb483a1e264a009759fbde7425ac059e66ad7aa3b5"
+      },
+      "time": {
+        "readMs": 10436.199999971315,
+        "ortMs": 330.5000000204891,
+        "biasMs": 117.50000001117587,
+        "normMs": 12.799999998882413,
+        "ropeMs": 3.5,
+        "attentionMs": 6,
+        "totalRunMs": 10914.400000000373
+      },
+      "resources": {
+        "fullQKVBytes": 983040,
+        "fullNormQKBytes": 655360,
+        "hiddenCallerAndSnapshotBytes": 655360,
+        "largestRawWeightTileBytes": 81920,
+        "largestDecodedWeightTileBytes": 327680,
+        "baseParametersRetainedBytes": 102400,
+        "currentParameterCopyBytes": 20480,
+        "projectionOutputOriginalAndSnapshotAndBiasBytes": 3072,
+        "selectedQKVBytes": 24576,
+        "ropeMatricesBytes": 16384,
+        "weightFileReadBytes": 78643200,
+        "logicalProjectionInputBytes": 629145600,
+        "logicalProjectionOutputBytes": 983040,
+        "hikeMemoryBytes": 4915200,
+        "hikeMemoryCount": 4,
+        "baseHikeInputCopyBytes": 80609280,
+        "baseHikeOutputCopyBytes": 315555840,
+        "baseHikeArenaClearWriteBytes": 8023695360,
+        "normInputOutputCopyBytes": 1351680,
+        "ORTMemoryBytes": null,
+        "producerResidentBytes": null,
+        "scope": "named retained numeric buffers and traffic; not allocator/GC/harness/reference or full pipeline peak"
+      },
+      "OSMeasurement": {
+        "pssBaselineBytes": 262419456,
+        "pssPeakBytes": 534784000,
+        "rssPeakProcessSumBytes": 810418176,
+        "samples": 455,
+        "scope": "owned Chromium descendants, constructor/all tests/private reference harness included; not allocator-only or production peak"
+      }
+    }
+  },
+  "privatePayloadScan": {
+    "files": 49,
+    "directNormWeightF32AndBase64SegmentsMatched": []
+  },
+  "productionQKVVerified": false,
+  "actualModelHiddenVerified": false,
+  "fullSequenceVerified": false,
+  "P5": "BLOCKED"
+}
