@@ -39,10 +39,10 @@
 
 **Produces:** Data-only proposal plus candidate catalog preview, numeric/admission/normalization/rule references, a separate candidate adoption entry and structural/integrity validation. Old18profiles/10rules/12norm and manager entry remain byte-equivalent by record.
 
-- [ ] Write negative cases for old-entry replacement, source/build/schema forgery, gate/precision promotion, same-count shape exchange and proposal/adoption confusion.
-- [ ] Implement deterministic apply/generation with actual source anchors; do not copy the baseline validator's hardcoded record counts as acceptance of the new version.
-- [ ] Validate the new candidate structure/hash/ref graph, preserve runtimeIntegrated=false and document outstanding registration/manager adoption.
-- [ ] Review and commit with reproduction commands.
+- [x] Write negative cases for old-entry replacement, source/build/schema forgery, gate/precision promotion, same-count shape exchange and proposal/adoption confusion.
+- [x] Implement deterministic apply/generation with actual source anchors; do not copy the baseline validator's hardcoded record counts as acceptance of the new version.
+- [x] Validate the new candidate structure/hash/ref graph, preserve runtimeIntegrated=false and document outstanding registration/manager adoption.
+- [x] Review and commit with reproduction commands.
 
 ## Task2 — Actual model-operator-derived prefix
 
@@ -52,11 +52,11 @@
 
 **Produces:** Natural hidden `[2,5120]`, coordinates `(0,0,0),(0,0,1)`, sourceId0, block0 and exact scalar timestep evidence; private artifact with owned F32 bytes and an independent prefix acceptance receipt. Shared `source.mjs`/`linear.mjs` provide bounded original reads and symbolic M/K/N Gemm for prefix/downstream, without changing old N16 modules.
 
-- [ ] Freeze source equations/shape/storage/compute/admission/gates before comparisons. Projection of only first2 time chunks is justified because post-modulation self-attention input needs shift/scale; remaining chunks/full block stay unaccepted.
-- [ ] Strict F32 bytes for normalization/noise/patch extraction/decodedF16; time sinusoid abs2e-6＋rel2e-6; patch/time0 linear and timeAct0 abs1e-4＋rel1e-5; time2/timeAct1/timeProjection/shiftScale abs1e-3＋rel1e-4; LayerNorm abs1e-4＋rel1e-4; post-hidden abs1e-3＋rel1e-4. These are new diagnostic gates, not original Torch/GPU acceptance.
-- [ ] Use ORT F32 Sigmoid→Mul SiLU with finite abs≤1e6 input and finite output. Hike handles F32 time encoding, non-affine full5120 two-pass LayerNorm with abs≤1e16 input, shift/scale and modulation. Record F64 math bridges and fused/addcmul/ck differences.
-- [ ] Add RED shape/provenance/coordinate/timestep/finite/overflow/ownership/cancel/reentry/cleanup cases, implement exact small operators and compare every output independently.
-- [ ] Freeze actual post-hidden artifacts outside Git, binding input/model/block/timestep/coordinates/source/precision/hash; publish only recipes/hashes/metrics.
+- [x] Freeze source equations/shape/storage/compute/admission/gates before comparisons. Projection of only first2 time chunks is justified because post-modulation self-attention input needs shift/scale; remaining chunks/full block stay unaccepted.
+- [x] Strict F32 bytes for normalization/noise/patch extraction/decodedF16; time sinusoid abs2e-6＋rel2e-6; patch/time0 linear and timeAct0 abs1e-4＋rel1e-5; time2/timeAct1/timeProjection/shiftScale abs1e-3＋rel1e-4; LayerNorm abs1e-4＋rel1e-4; post-hidden abs1e-3＋rel1e-4. These are new diagnostic gates, not original Torch/GPU acceptance.
+- [x] Use ORT F32 Sigmoid→Mul SiLU with finite abs≤1e6 input and finite output. Hike handles F32 time encoding, non-affine full5120 two-pass LayerNorm with abs≤1e16 input, shift/scale and modulation. Record F64 math bridges and fused/addcmul/ck differences.
+- [x] Add RED shape/provenance/coordinate/timestep/finite/overflow/ownership/cancel/reentry/cleanup cases, implement exact small operators and compare every output independently.
+- [x] Freeze actual post-hidden artifacts outside Git, binding input/model/block/timestep/coordinates/source/precision/hash; publish only recipes/hashes/metrics.
 
 ## Task3 — ExactN2 all-query/all-head boundary
 
@@ -66,11 +66,11 @@
 
 **Produces:** Full QKV `[2,5120]`, full5120 Q/K norm, all40 heads' exact2-query/2-key attention context `[2,5120]`, source-bound acceptance and ownership/resource evidence. This stops before O projection and residual/cross/FFN/full block.
 
-- [ ] Build independent local oracle from the exact runtime-produced hidden bits. Preserve separate composed oracle from the independent prefix hidden reference.
-- [ ] Predeclare local gates: projection1e-4＋rel1e-5; norm/apply1e-4＋rel1e-4; RoPE matrices2e-6＋rel2e-6; all-head attention1e-3＋rel1e-4. New composed end-to-end gate1e-2＋rel1e-3. No thresholds are changed after observing errors.
-- [ ] Implement exactN2 graph/host using existing rows-capable Hike ABI with explicit tests, no padded queries/keys; preserve the old N16 entry.
-- [ ] Verify all outputs, head placement, shared workspace reuse, input retention, provenance failures, cancellation and failed cleanup recovery.
-- [ ] Bind prefix and downstream stages through actual artifact payload hashes; avoid boolean-only provenance claims and classify original production input/precision as unverified.
+- [x] Build independent local oracle from the exact runtime-produced hidden bits. Preserve separate composed oracle from the independent prefix hidden reference.
+- [x] Predeclare local gates: projection1e-4＋rel1e-5; norm/apply1e-4＋rel1e-4; RoPE matrices2e-6＋rel2e-6; all-head attention1e-3＋rel1e-4. New composed end-to-end gate1e-2＋rel1e-3. No thresholds are changed after observing errors.
+- [x] Implement exactN2 graph/host using existing rows-capable Hike ABI with explicit tests, no padded queries/keys; preserve the old N16 entry.
+- [x] Verify all outputs, head placement, shared workspace reuse, input retention, provenance failures, cancellation and failed cleanup recovery.
+- [x] Bind prefix and downstream stages through actual artifact payload hashes; avoid boolean-only provenance claims and classify original production input/precision as unverified.
 
 ## Task4 — Original-shape phase budgets and capacity probes
 
@@ -80,13 +80,15 @@
 
 **Produces:** Phase liveness/staging/copy/session plan and separate allocation-only receipts. FullKV2H＋hiddenH named storage is2,012,774,400 bytes at32760 and4,025,548,800 at65520. Per-head KV saves capacity but causes full5120 K-norm/recomputation tradeoffs; record those dependencies.
 
-- [ ] Test dimension/arithmetic/phase ownership, old-new overlap, unknown ORT/GC/producer quantities and no-generation-promotion cases.
-- [ ] Model cache-build barrier before in-place hidden updates, serial vs overlapping sessions, bounded weight chunks, copy traffic and unimplemented FFN/output stages independently.
-- [ ] Under the16GiB cgroup, probe target3H with nonzero touches and observed held PSS, then close the owned browser and verify release. Only then probe the context case if measured headroom permits. Do not allocate rejected full scores/weights or use disk as an unmeasured escape.
-- [ ] Label these as host capacity probes, not model numerical/all-query acceptance or a complete pipeline RAM bound.
+- [x] Test dimension/arithmetic/phase ownership, old-new overlap, unknown ORT/GC/producer quantities and no-generation-promotion cases.
+- [x] Model cache-build barrier before in-place hidden updates, serial vs overlapping sessions, bounded weight chunks, copy traffic and unimplemented FFN/output stages independently.
+- [x] Under the16GiB cgroup, probe target3H with nonzero touches and observed held PSS, then close the owned browser and verify release. Only then probe the context case if measured headroom permits. Do not allocate rejected full scores/weights or use disk as an unmeasured escape.
+- [x] Label these as host capacity probes, not model numerical/all-query acceptance or a complete pipeline RAM bound.
 
 ## Delivery
 
-- [ ] Close new runtime source/build/kernel identities, preserving old-source receipt scopes; run only changed-boundary checks plus necessary regressions.
-- [ ] Record registration packet, source/precision equations, derived hidden provenance, all-head exact-shape results, budgets, reproductions and missing original-production dependencies.
-- [ ] Push `codex/diffusion-derived-hidden-heads`, create a Draft PR based on `codex/diffusion-profile-p0-p4`, independently fetch the fixed result, and report full commits/API/result URLs.
+- [x] Close new runtime source/build/kernel identities, preserving old-source receipt scopes; run only changed-boundary checks plus necessary regressions.
+- [x] Record registration packet, source/precision equations, derived hidden provenance, all-head exact-shape results, budgets, reproductions and missing original-production dependencies.
+- [x] Push `codex/diffusion-derived-hidden-heads`, create a Draft PR based on `codex/diffusion-profile-p0-p4`, independently fetch the fixed result, and report full commits/API/result URLs.
+
+Execution result: `development/ai-connection/qkv-next/RESULT.md`; runtime code commit `e48021d8da29ef3b3b9e9d6161331c282798b6b3`; Draft PR https://github.com/Kushyameln01/kushyameln-works/pull/14. Check marks cover the staged diagnostic/contract/capacity tasks, not the explicitly unaccepted production graph.
