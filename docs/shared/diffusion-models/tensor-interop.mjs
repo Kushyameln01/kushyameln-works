@@ -5,6 +5,7 @@ export const WAN_TEXT_ENCODER_SHA256='c3355d30191f1f066b26d93fba017ae9809dce6c62
 export const WAN21_VAE_SHA256='2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b';
 export const WAN21_RAW_PROFILE=Object.freeze({id:'wan21-raw-f32-5x16x16',shape:Object.freeze([1,16,2,2,2]),layout:'NCTHW',meaning:'raw-posterior-mean'});
 export const WAN21_RAW_F1_PROFILE=Object.freeze({id:'wan21-raw-f32-1x16x16',shape:Object.freeze([1,16,1,2,2]),layout:'NCTHW',meaning:'raw-posterior-mean'});
+export const WAN21_RAW_RECT_PROFILE=Object.freeze({id:'wan21-raw-f32-1x16x32',shape:Object.freeze([1,16,1,2,4]),layout:'NCTHW',meaning:'raw-posterior-mean'});
 const SHA256=/^[0-9a-f]{64}$/;
 
 function provenance(tensor,expected,producer){
@@ -39,6 +40,16 @@ export function requireWanRawLatentF1(tensor,{vaeModelSha256=WAN21_VAE_SHA256}={
  requireTensor(tensor,{dtype:'float32',layout:WAN21_RAW_F1_PROFILE.layout,meaning:WAN21_RAW_F1_PROFILE.meaning,shape:WAN21_RAW_F1_PROFILE.shape});
  if(tensor.profileId!==undefined&&tensor.profileId!==WAN21_RAW_F1_PROFILE.id)throw TypeError('F1 raw mean profile identity mismatch');
  if(tensor.normalization!==undefined||tensor.latentContract!==undefined)throw TypeError('F1 raw posterior mean cannot carry normalized/generated metadata');
+ if(tensor.attentionMask!==undefined)throw TypeError('A raw VAE latent cannot carry a text attention mask');
+ provenance(tensor,vaeModelSha256,'VAE');
+ return tensor;
+}
+
+// F=1/H16/W32 is not the legacy F=5 profile despite the same128 count.
+export function requireWanRawLatentRect(tensor,{vaeModelSha256=WAN21_VAE_SHA256}={}){
+ requireTensor(tensor,{dtype:'float32',layout:WAN21_RAW_RECT_PROFILE.layout,meaning:WAN21_RAW_RECT_PROFILE.meaning,shape:WAN21_RAW_RECT_PROFILE.shape});
+ if(tensor.profileId!==undefined&&tensor.profileId!==WAN21_RAW_RECT_PROFILE.id)throw TypeError('Rect raw mean profile identity mismatch');
+ if(tensor.normalization!==undefined||tensor.latentContract!==undefined)throw TypeError('Rect raw posterior mean cannot carry normalized/generated metadata');
  if(tensor.attentionMask!==undefined)throw TypeError('A raw VAE latent cannot carry a text attention mask');
  provenance(tensor,vaeModelSha256,'VAE');
  return tensor;

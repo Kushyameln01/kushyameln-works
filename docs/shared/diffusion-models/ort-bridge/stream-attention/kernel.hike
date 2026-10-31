@@ -1,0 +1,82 @@
+package main
+
+func IsFinite(x float32) bool { return x == x && x - x == float32(0) }
+func FiniteVector(values *float32, count int) bool {
+    i := 0
+    for i < count {
+        if !IsFinite(values[i]) { return false }
+        i = i + 1
+    }
+    return true
+}
+func UnitVector(values *float32, count int) bool {
+    i := 0
+    for i < count {
+        if !IsFinite(values[i]) || values[i] < float32(0) || values[i] > float32(1) { return false }
+        i = i + 1
+    }
+    return true
+}
+func UpdateRow(weights *float32, values *float32, numerator *float32, row int, keys int, alpha float32, oldDenominator float32) float32 {
+    d := 0
+    k := 0
+    index := 0
+    p := float32(0)
+    next := oldDenominator * alpha
+    for d < 128 {
+        index = row * 128 + d
+        numerator[index] = numerator[index] * alpha
+        d = d + 1
+    }
+    for k < keys {
+        p = weights[row * keys + k]
+        next = next + p
+        d = 0
+        for d < 128 {
+            index = row * 128 + d
+            numerator[index] = numerator[index] + p * values[k * 128 + d]
+            d = d + 1
+        }
+        k = k + 1
+    }
+    return next
+}
+
+// Persistent state and all logical inputs are disjoint caller arenas.
+// Helper functions preserve the same f32 recurrence and bound compiler CFG depth.
+cfunc Accumulate(weights *float32, values *float32, alpha *float32, rows int, keys int, numerator *float32, denominator *float32) int {
+    if rows < 1 || rows > 16 || keys < 1 || keys > 64 { return -1 }
+    if !UnitVector(alpha, rows) || !UnitVector(weights, rows * keys) || !FiniteVector(values, keys * 128) { return -2 }
+    r := 0
+    next := float32(0)
+    for r < rows {
+        next = UpdateRow(weights, values, numerator, r, keys, alpha[r], denominator[r])
+        if !IsFinite(next) || next <= float32(0) { return -3 }
+        denominator[r] = next
+        r = r + 1
+    }
+    if !FiniteVector(numerator, rows * 128) { return -3 }
+    return 0
+}
+
+cfunc Normalize(numerator *float32, denominator *float32, rows int, output *float32) int {
+    if rows < 1 || rows > 16 { return -1 }
+    r := 0
+    d := 0
+    index := 0
+    value := float32(0)
+    for r < rows {
+        if !IsFinite(denominator[r]) || denominator[r] <= float32(0) { return -2 }
+        d = 0
+        for d < 128 {
+            index = r * 128 + d
+            value = numerator[index] / denominator[r]
+            if !IsFinite(value) { return -3 }
+            output[index] = value
+            d = d + 1
+        }
+        r = r + 1
+    }
+    return 0
+}
+func main() int { return 0 }

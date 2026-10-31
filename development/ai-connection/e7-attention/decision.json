@@ -1,0 +1,135 @@
+{
+  "candidateId": "q16-k32760-d128-head1-key64-stream-f32-v1",
+  "decision": "adopt",
+  "adoptedScope": "explicit postnorm/RoPE F32 fixture/precomputed source interface, Q[16,128], all declared K32760, one head, exact tail56",
+  "productionDecision": "unverified",
+  "E8": "BLOCKED",
+  "notEstablished": [
+    "production QKV, QK-norm and RoPE generation",
+    "all query tiles/all40heads/all40blocks",
+    "original production precision/backend parity",
+    "rv2v source/context K65520+; current keyCount cap32760",
+    "combined weight/KV/residual/FFN/session/staging/copy budget",
+    "end-user throughput/CPU/RAM target"
+  ],
+  "shape": {
+    "q": [
+      16,
+      128
+    ],
+    "k": [
+      32760,
+      128
+    ],
+    "v": [
+      32760,
+      128
+    ],
+    "output": [
+      16,
+      128
+    ],
+    "keyTile": 64,
+    "tail": 56
+  },
+  "precisionProfile": "f32-ort-score-exp-hike-recurrence-v1",
+  "scale": 0.0883883461356163,
+  "comparison": {
+    "values": 2048,
+    "failed": 0,
+    "maxAbsolute": 4.503817763179541e-09,
+    "maxRelative": 0.008246297901268301,
+    "tolerance": {
+      "absolute": 1e-05,
+      "relative": 0.0001,
+      "fixedBeforeRuntimeComparison": true
+    }
+  },
+  "resources": {
+    "sourceQKVInputBytes": 33554432,
+    "hostSnapshotCopyBytes": 35716736,
+    "hikeInputCopyBytes": 18902528,
+    "hikeOutputCopyBytes": 8192,
+    "hikeArenaResetBytes": 53376,
+    "hikeTransientClearBytes": 18907136,
+    "logicalOrtInputBytes": 21000192,
+    "logicalOrtOutputBytes": 2162176,
+    "logicalMaxScoreTileElements": 1024,
+    "selectedDenseScoreBytes": 2096640,
+    "knownNamedNumericLiveBytes": 164288,
+    "knownNamedNumericPlusHikeBytes": 1278400,
+    "knownLiveScope": "conservative named numeric array spans only; excludes producer full KV backing, metadata, compiler/ORT Memory, GC-unreclaimed arrays, harness/reference and other caller buffers",
+    "producerResidentBytes": null,
+    "producerResidentReason": "source provenance kind is not a resident-byte proof; on-demand fixture audited separately",
+    "ortMemoryBytes": null
+  },
+  "HikeMemory": {
+    "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+    "memoryBytes": 1114112,
+    "arenaBytes": 53376,
+    "calls": 518,
+    "inputCopyBytes": 19008704,
+    "outputCopyBytes": 24576,
+    "rows": 16,
+    "workspaceReused": true,
+    "invalid": false,
+    "disposed": false
+  },
+  "elapsed": {
+    "readMs": 348.3000000938773,
+    "ortMs": 76.59999997913837,
+    "hikeMs": 689.5999999567866,
+    "totalRunMs": 1117.1000000014901
+  },
+  "OSMeasurement": {
+    "pssBaselineBytes": 255006720,
+    "pssPeakBytes": 383030272,
+    "rssPeakProcessSumBytes": 659226624,
+    "samples": 47,
+    "intervalTargetMs": 20,
+    "ownedPidsObserved": [
+      42183,
+      42200,
+      42201,
+      42222,
+      42225,
+      42244,
+      42263,
+      42272,
+      42273
+    ],
+    "readErrors": [],
+    "scope": "observed peak of owned Chromium descendants during constructor/all cases, includes renderer/runtime/test harness; RSS process sum double-counts shared pages, use PSS; not ORT allocator-only, not production pipeline peak"
+  },
+  "caseCount": 8,
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs": "fc291294719306dc89ab3f7f2878e1614121db6299c280b3dbf80ca5ac18cbc7",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/graph.mjs": "07a627a0af4d19f8febbbb3233479f75998dcd6c0b6d6145d45096fc251a39a2",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/hike.mjs": "67d5ada9d4c6c4217c3845c9ddbed5fb246cedeb35d5283840e1057087d4c3cd",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/registry.mjs": "99c1c3c56fe22608c4652d830cd7f03978b036332a0505b9f07ed548bc8b6ecb",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.hike": "766b771e10e00bb3ce24d360567981e2d028762547c820e481dbcdf4deab1e75",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.wasm": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.wat": "4e14d0d45a11158a9564d74b9063e075440d1e88df35bfe2402480681e613fd6",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/build.py": "ce27ca6f0fd8164439fb48bb483a1e264a009759fbde7425ac059e66ad7aa3b5",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/build-record.json": "7f999cf04429ad270727d1c4cade6e62dc96eab29f72575ac02faa21ae4bfa59",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/fixture-source.mjs": "275adaff2621921e33ec38a642e1736adb515339a96ebdc808d895b44b6a3057",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/browser-cases.mjs": "e869c01751d4f6a23108850a630491502ca623ca1c6d401af380341d866f45be",
+    "tools/diffusion-models/e7-attention-reference.py": "b10da8955b871469c77652d6e7fefc48e00f6ddf5ea00acce176399a44b4c811",
+    "tools/diffusion-models/e7-attention-browser.py": "1d22d0e6882303c7af0b545c07db143c15acd27a3fb1e9b933631ebdf3544173"
+  },
+  "referenceSHA256": "6ae54f48e244ff9c5f78fe0956cd27bae862341aec8acfb4fed058e65ab4cb6b",
+  "core": {
+    "repository": "Comfy-Org/ComfyUI",
+    "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+    "path": "comfy/ldm/modules/attention.py",
+    "gitBlob": "abed292bf742eb8ea9493e0e6341ca5264efdc8a",
+    "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/ldm/modules/attention.py",
+    "sha256": "2e688c4c96ba10915c7ca847ea692faea3be4b9c2605d74d785b7abb23ee2502",
+    "equationLines": {
+      "scale": 265,
+      "fp32Score": 281,
+      "softmax": 302,
+      "weightedValue": 304
+    }
+  }
+}

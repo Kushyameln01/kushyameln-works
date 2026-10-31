@@ -1,0 +1,568 @@
+{
+  "schemaVersion": 1,
+  "recordedDateJST": "2026-10-31",
+  "task": "E0 GitHub peer acquisition and source/API comparison",
+  "plan": {
+    "pageId": "page_cfdb3e2026608191964eb24af5c64e61",
+    "observedVersion": "0.2-draft.2",
+    "E0RequiresGitHubCodeAcquisition": true,
+    "readScope": "Page version and relevant E0/GitHub blocks, not a new whole-document read"
+  },
+  "repository": "https://github.com/Kushyameln01/kushyameln-works",
+  "acquisition": {
+    "method": "GitHub connector fixed-commit README fetch plus authorized git fetch and git show fixed objects",
+    "fetchCommand": [
+      "git",
+      "fetch",
+      "--no-tags",
+      "origin",
+      "codex/ai-connection-e0-e4",
+      "codex/lora-connection-v2",
+      "codex/e6-vae-rect"
+    ],
+    "gitFetchSucceeded": true,
+    "githubConnectorREADME": {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "docs/shared/ai-connection/README.md",
+      "reportedGitBlobSHA1": "76ab4e742d3d673214c8efec38ff0201de0dfda8",
+      "fixedGitObjectMatches": true
+    },
+    "fileBytesGitBlobsAndSHA256Verified": 36,
+    "modelOrLoRAOriginalPayloadDownloaded": false,
+    "runtimeTestsExecutedThisReview": false
+  },
+  "sources": {
+    "manager": {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "branch": "codex/ai-connection-e0-e4",
+      "draftPR": 7
+    },
+    "lora": {
+      "commit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "branch": "codex/lora-connection-v2",
+      "draftPR": 4
+    },
+    "vae": {
+      "commit": "7e091192232fae36367b550ca5fada88915a0703",
+      "branch": "codex/e6-vae-rect"
+    },
+    "ourComparisonBaseline": {
+      "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "branch": "codex/diffusion-e0-e7",
+      "draftPR": 6
+    }
+  },
+  "files": [
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "docs/shared/ai-connection/README.md",
+      "bytes": 7254,
+      "sha256": "186ae1868ae944b0ce2fd1bcdc25827eb5839925a579b592648a7c79008d4e8d",
+      "gitBlobSHA1": "76ab4e742d3d673214c8efec38ff0201de0dfda8",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/docs/shared/ai-connection/README.md",
+      "exports": []
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "docs/shared/ai-connection/API.md",
+      "bytes": 10673,
+      "sha256": "ef7bb53b06cf1c3c6225a9dd3de54a9c3087e3feb50409805db44b230fabffa1",
+      "gitBlobSHA1": "a3ace2016d037928251526b80f415d08e71b3e0b",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/docs/shared/ai-connection/API.md",
+      "exports": []
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "docs/shared/ai-connection/adapters/README.md",
+      "bytes": 6559,
+      "sha256": "d3296bf59142ffdaa29d66aede469cdd9350383dd9ae1cf301527a97746cdec7",
+      "gitBlobSHA1": "1be84bcf3041e7a37078f919354c883b92de72f9",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/docs/shared/ai-connection/adapters/README.md",
+      "exports": []
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "docs/shared/ai-connection/adapters/diffusion.mjs",
+      "bytes": 1802,
+      "sha256": "3313ce4bb3fcc3f5013276ba374b36a0e2863d08658d0471ce1cc3c0a21df258",
+      "gitBlobSHA1": "9bde106fbcd03a42a0d432d484a1d71c01bdfd8d",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/docs/shared/ai-connection/adapters/diffusion.mjs",
+      "exports": [
+        "export function createDiffusionAdapter(options){"
+      ]
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "docs/shared/ai-connection/adapters/core.mjs",
+      "bytes": 4511,
+      "sha256": "8c854f77f19174aa0ea72cbc78eafd342a9c75d3d2b9048465905d06c4c07455",
+      "gitBlobSHA1": "56a5d5ff641ee757a0b2f85e39ce1d0e15f9034f",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/docs/shared/ai-connection/adapters/core.mjs",
+      "exports": [
+        "export function createDirectAdapter({descriptor,nativeClient,binding,artifactStore,sourceVerified=false,invokeNative,cancelNative,nativeEnvelope,allowedMethods,requiresRevisionBinding=false,supportsConnected=true}){"
+      ]
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "docs/shared/ai-connection/adapters/lora.mjs",
+      "bytes": 1347,
+      "sha256": "d9d943e3ff352c688de719713d25aa954ce311292b96f6233cfbb5849f0f74e5",
+      "gitBlobSHA1": "ee12710627b24247952c3c016d3f3d5ae87b9011",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/docs/shared/ai-connection/adapters/lora.mjs",
+      "exports": [
+        "export function createLoraAdapter(options){"
+      ]
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "docs/shared/ai-connection/queue.mjs",
+      "bytes": 18094,
+      "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484",
+      "gitBlobSHA1": "cdc1c9515176b317026681c19ed91e164e1a759e",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/docs/shared/ai-connection/queue.mjs",
+      "exports": [
+        "export function createInvocationQueue({resourceBindings}={}) {"
+      ]
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "docs/shared/ai-connection/examples/diffusion.json",
+      "bytes": 14461,
+      "sha256": "79a365eb829b26b6c1859dcbd9d15f5cc7f25991261fe9b47f60026911746c39",
+      "gitBlobSHA1": "908b23c6ee10ae8c20a9c9855f60b07b32b34e2e",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/docs/shared/ai-connection/examples/diffusion.json",
+      "exports": []
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "development/ai-connection/E0-SOURCE-BASELINE.md",
+      "bytes": 23406,
+      "sha256": "8b458c8212860c7cfb9363bd59238df708a59cdb1c55129af2292500022d16f3",
+      "gitBlobSHA1": "2106d1a0d4af562b5a80d44f86dcd1c4577c39de",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/development/ai-connection/E0-SOURCE-BASELINE.md",
+      "exports": []
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "development/ai-connection/E0-SOURCE-RECEIPT.json",
+      "bytes": 373548,
+      "sha256": "6be4532703b223c1003bd890d5ba103d1274bdcc027279da0c1fdf1abf41b16e",
+      "gitBlobSHA1": "f4b07171d69fa371da664987e508f8a88e43bcf2",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/development/ai-connection/E0-SOURCE-RECEIPT.json",
+      "exports": []
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "development/ai-connection/E-RESULT.md",
+      "bytes": 10892,
+      "sha256": "32859482be922a3c27939e45f4a3e038dcf0efb2309a9ededefcc51b803e54a8",
+      "gitBlobSHA1": "8f77eab5c3fcdaaf0197835731630c8306d7bf5b",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/development/ai-connection/E-RESULT.md",
+      "exports": []
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "development/ai-connection/evidence/browser-f522-boundaries.json",
+      "bytes": 1744,
+      "sha256": "7f84421e963dca4cfb64a89f3722fd155f684d3adcdf191ff16ba9879d2dc3a6",
+      "gitBlobSHA1": "919b584901d60a54afd113d36331a6174491dacb",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/development/ai-connection/evidence/browser-f522-boundaries.json",
+      "exports": []
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "tools/ai-connection/test-browser.py",
+      "bytes": 13160,
+      "sha256": "d486d570414096c931b502f9ea8539a2058bfe26a62732b365c0f3c11d86da20",
+      "gitBlobSHA1": "e2f0a082cf66e7cf4f9c7ba9caf01a8c9018c0d7",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/tools/ai-connection/test-browser.py",
+      "exports": []
+    },
+    {
+      "commit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "path": "docs/shared/inference/lora/README.md",
+      "bytes": 9499,
+      "sha256": "32749ab1138a078c6ad3f5963d90989b5eb8d37db3e728874ddec4401c812d9c",
+      "gitBlobSHA1": "4c1187a1e24165a526fe032e11547817123b38db",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/README.md",
+      "exports": []
+    },
+    {
+      "commit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "path": "docs/shared/inference/lora/CONNECTION_V2.md",
+      "bytes": 14279,
+      "sha256": "09792323b3c66487b5b33081ae9fec6af08b8d4b357d7261c1a7425b9466d57d",
+      "gitBlobSHA1": "db6d3be4ab9f884d585a8a02c9a8aebfac410825",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/CONNECTION_V2.md",
+      "exports": []
+    },
+    {
+      "commit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "path": "docs/shared/inference/lora/sdk-v2.mjs",
+      "bytes": 14306,
+      "sha256": "c425519eb282f798f4296bc97fd1506664afd850dee9addb17af77dd41e39fa0",
+      "gitBlobSHA1": "e115e3dd5b1b561358717634c73bf3b8cf867024",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/sdk-v2.mjs",
+      "exports": [
+        "export {CONTRACT_VERSION};",
+        "export async function createLoraV2({folder,sourceFactory,kernel:providedKernel}={}) {"
+      ]
+    },
+    {
+      "commit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "path": "docs/shared/inference/lora/planner-v2.mjs",
+      "bytes": 8565,
+      "sha256": "303340db3a6a58b288fbfbf38cb2b53605a6c7cc3f6d00903f881aa825ef92c5",
+      "gitBlobSHA1": "675fed134bbbfac9ca58dae4d4d2cf123c7a61ca",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/planner-v2.mjs",
+      "exports": [
+        "export {LOADER_POLICY_ID} from './loader-policy.mjs';",
+        "export const CONTRACT_VERSION='lora-connection/2.0-draft.1';",
+        "export function validateRegistryV2(registry){",
+        "export function buildPlanV2({inspection,registry,diagnostic,sourceSha256,strength,loaderPolicyId,alphaValues={}}={}){"
+      ]
+    },
+    {
+      "commit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "path": "docs/shared/inference/lora/v1-adapter.mjs",
+      "bytes": 9970,
+      "sha256": "1f4df0d73d4cbb51b02df3f281c1f9566b6d8e43b181e18ccaff28224c1bb9f9",
+      "gitBlobSHA1": "1dd6a95fa2ac84afae8c0e85f708c94f7543fab6",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/v1-adapter.mjs",
+      "exports": [
+        "export function adaptV1Registry(registry,options={}){",
+        "export function createV1SinkAdapter(sink,{registry}={}){",
+        "export function adaptV1Consumer(target,options={}){"
+      ]
+    },
+    {
+      "commit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "path": "docs/shared/inference/lora/loader-policy.mjs",
+      "bytes": 1696,
+      "sha256": "f18f9c8dd4168e26f25cd1c77124b1f14a2ffca99424bfa9d4a9a294cbb2dedd",
+      "gitBlobSHA1": "d0715ae5f9f646e04763446f080858597f56b1c5",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/docs/shared/inference/lora/loader-policy.mjs",
+      "exports": [
+        "export const LOADER_POLICY_ID='comfy-lora-b5a4321-linear-diff-v1';",
+        "export const LOADER_VARIANTS=Object.freeze(['linear-down-up','linear-a-b','additive-diff','additive-diff-b']);",
+        "export const LOADER_POLICY=Object.freeze({",
+        "export function effectiveScale({loaderPolicyId,variant,rank,alpha,strength}={}){"
+      ]
+    },
+    {
+      "commit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "path": "development/lora/A0_L1_RESULT.md",
+      "bytes": 7981,
+      "sha256": "a1a133cf36daa78bc952b553deec4d54b298ec430d7456933101ab8aed3a8148",
+      "gitBlobSHA1": "3b2968156f696c7ff68ab76d2e0e286b3637c4d6",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/development/lora/A0_L1_RESULT.md",
+      "exports": []
+    },
+    {
+      "commit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "path": "development/lora/contracts/registry-correspondence-v2.json",
+      "bytes": 11895,
+      "sha256": "a3a0a6fd7c5d71cbf8c2e4b73f83d4581df47c1a5b8ab09a9cb48778ce81b3ab",
+      "gitBlobSHA1": "999ee0c6172331ffb0051c82323802fbbf119b64",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/2bba90785292e42a0c7c8756685b0d8b128b2dcf/development/lora/contracts/registry-correspondence-v2.json",
+      "exports": []
+    },
+    {
+      "commit": "7e091192232fae36367b550ca5fada88915a0703",
+      "path": "docs/shared/inference/API.md",
+      "bytes": 28136,
+      "sha256": "2b51aa7292494b3a16ca15a284866e18557386940f73f2ad3040151efb25953b",
+      "gitBlobSHA1": "1e5843f008e5cb1795f00d550ee1a33fe78fad4f",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/7e091192232fae36367b550ca5fada88915a0703/docs/shared/inference/API.md",
+      "exports": []
+    },
+    {
+      "commit": "7e091192232fae36367b550ca5fada88915a0703",
+      "path": "docs/shared/inference/api.mjs",
+      "bytes": 2278,
+      "sha256": "01f56a19c58286f4c582cb41015ebd7773f2d7ae76545ab0ca7be052909c0f1f",
+      "gitBlobSHA1": "004c8e4bffac0c79e4c2715313c0c9031accfef5",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/7e091192232fae36367b550ca5fada88915a0703/docs/shared/inference/api.mjs",
+      "exports": [
+        "export {createTextEncoderModule,createVaeModule};",
+        "export {encodeTensor,decodeTensor,requireTensor,snapshotTensorMetadata} from './tensor.mjs';",
+        "export const API_VERSION='works-ai-1';",
+        "export function createInferenceAPI(options={}){",
+        "export function bindInferencePort(port,api){"
+      ]
+    },
+    {
+      "commit": "7e091192232fae36367b550ca5fada88915a0703",
+      "path": "docs/shared/inference/tensor.mjs",
+      "bytes": 8106,
+      "sha256": "4c6992a7b6f44722e84a7184ed5c878312a203071054335827f7f0adcd01c07b",
+      "gitBlobSHA1": "3e92c3cb350774a86534be42a9b68f8459fe58c7",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/7e091192232fae36367b550ca5fada88915a0703/docs/shared/inference/tensor.mjs",
+      "exports": [
+        "export function snapshotTensorMetadata(t){",
+        "export function requireTensor(t,expected={}){",
+        "export async function encodeTensor(t){",
+        "export async function decodeTensor(value){"
+      ]
+    },
+    {
+      "commit": "7e091192232fae36367b550ca5fada88915a0703",
+      "path": "development/inference/e6/CURRENT-PEERS.md",
+      "bytes": 4966,
+      "sha256": "51e9036b649378d84e261b69f45a3f35a855578e088162c98e5797b3750367d1",
+      "gitBlobSHA1": "84c9810d5e311e911e76627a7262b2cdf3de9376",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/7e091192232fae36367b550ca5fada88915a0703/development/inference/e6/CURRENT-PEERS.md",
+      "exports": []
+    },
+    {
+      "commit": "7e091192232fae36367b550ca5fada88915a0703",
+      "path": "development/inference/e6/RESULT.md",
+      "bytes": 9989,
+      "sha256": "526bb8856ffa1dfe6087105bb72fba4aedd32b78feb2e4bfa6c0077e8307a406",
+      "gitBlobSHA1": "7209cd42302926801168af5d0ec122de040e164d",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/7e091192232fae36367b550ca5fada88915a0703/development/inference/e6/RESULT.md",
+      "exports": []
+    },
+    {
+      "commit": "7e091192232fae36367b550ca5fada88915a0703",
+      "path": "development/inference/e6/current-peers/receipt.json",
+      "bytes": 3780,
+      "sha256": "3ac40c1c6df4908a9ca8e35733435be4bb9220b40ac07721698e4c99b21ad3a0",
+      "gitBlobSHA1": "f7a322dc1708d595d79ee9dfc526356ea800a7c5",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/7e091192232fae36367b550ca5fada88915a0703/development/inference/e6/current-peers/receipt.json",
+      "exports": []
+    },
+    {
+      "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "path": "docs/shared/diffusion-models/api/index.mjs",
+      "bytes": 9377,
+      "sha256": "46171d95e464853d41d1d963e4e5c90caf6a18391b7b63d730defbd19143ced3",
+      "gitBlobSHA1": "62163fa39b2578c4cb7689c40bb1aa4db17e089a",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/api/index.mjs",
+      "exports": [
+        "export {BUILD_ID} from './build-info.mjs';",
+        "export const PROTOCOL_VERSION='diffusion-models/0.1';",
+        "export const MAX_TENSOR_ELEMENTS=1048576;",
+        "export function createDiffusionModels({sessionId=crypto.randomUUID()}={}){",
+        "export function attachDiffusionPort(port,api){"
+      ]
+    },
+    {
+      "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "path": "docs/shared/diffusion-models/api/worker.mjs",
+      "bytes": 9124,
+      "sha256": "6a47fd643bade0abada3998d309cf736468cbe90da04298d89b6a1c862825ae3",
+      "gitBlobSHA1": "b1ecef24294431c2b184526d74ed7c1ca25654f2",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/api/worker.mjs",
+      "exports": []
+    },
+    {
+      "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "path": "docs/shared/diffusion-models/api/build-info.mjs",
+      "bytes": 4539,
+      "sha256": "443c9dfb36d0998042ad9705748874625327cf113bd6deee508ebe3110a16476",
+      "gitBlobSHA1": "ec7b5920ace669df5a170c3ddb6446acc154fccf",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/api/build-info.mjs",
+      "exports": [
+        "export const BUILD_ID=\"diffusion-models/0.1+f7f23c2291886de637cb06ae001fc748d29232f7c8919683467da5eef6cfb80e\";",
+        "export const BUILD_SOURCE_SHA256=\"f7f23c2291886de637cb06ae001fc748d29232f7c8919683467da5eef6cfb80e\";",
+        "export const BUILD_SOURCES=Object.freeze({"
+      ]
+    },
+    {
+      "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "path": "docs/shared/diffusion-models/tensor-interop.mjs",
+      "bytes": 4906,
+      "sha256": "ae197407f47b036feb83c7b827faa9b7c7ee8ba7f5c54c7139221c186201553d",
+      "gitBlobSHA1": "00923e5aafb29adf391c700b7c5b4f71b9715890",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/tensor-interop.mjs",
+      "exports": [
+        "export const WAN_TEXT_ENCODER_SHA256='c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68';",
+        "export const WAN21_VAE_SHA256='2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b';",
+        "export const WAN21_RAW_PROFILE=Object.freeze({id:'wan21-raw-f32-5x16x16',shape:Object.freeze([1,16,2,2,2]),layout:'NCTHW',meaning:'raw-posterior-mean'});",
+        "export const WAN21_RAW_F1_PROFILE=Object.freeze({id:'wan21-raw-f32-1x16x16',shape:Object.freeze([1,16,1,2,2]),layout:'NCTHW',meaning:'raw-posterior-mean'});",
+        "export function requireWanConditioning(tensor,{encoderModelSha256=WAN_TEXT_ENCODER_SHA256}={}){",
+        "export function requireWanRawLatent(tensor,{vaeModelSha256=WAN21_VAE_SHA256}={}){",
+        "export function requireWanRawLatentF1(tensor,{vaeModelSha256=WAN21_VAE_SHA256}={}){",
+        "export async function encodeWanConditioning(tensor,binding){",
+        "export async function decodeWanConditioning(bytes,binding){",
+        "export async function encodeWanRawLatent(tensor,binding){",
+        "export async function decodeWanRawLatent(bytes,binding){"
+      ]
+    },
+    {
+      "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "path": "docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md",
+      "bytes": 11491,
+      "sha256": "b4cbd7b040e9a0d7ae1a368bef733fc1de316ab2f91bccc9f802a18bdb17918d",
+      "gitBlobSHA1": "05953876a4722fbf92a79f2ba8d45f7bc2c0e767",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md",
+      "exports": []
+    },
+    {
+      "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "path": "docs/shared/diffusion-models/lora/diagnostic-base.mjs",
+      "bytes": 7321,
+      "sha256": "a252458a300fa6b305ed976b412b9924cf61e3795c8cace625f91742eab179a8",
+      "gitBlobSHA1": "eac3ef89b032c59dd1d39a5e12358f20c25e7234",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/lora/diagnostic-base.mjs",
+      "exports": [
+        "export {canonicalRegistryJSON} from './diagnostic-identity.mjs';",
+        "export async function createBerniniDiagnosticBase({file,side,rowStart=0,hikeBytes,signal}={}){"
+      ]
+    },
+    {
+      "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "path": "docs/shared/diffusion-models/lora/diagnostic-consumer.mjs",
+      "bytes": 16475,
+      "sha256": "fdac31542f87d68b9e01a1ba674ee9b60433cae685d6670222f8d914dd27f943",
+      "gitBlobSHA1": "6f87d6e14b0d2243983741130b673c4f9f20df3e",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/lora/diagnostic-consumer.mjs",
+      "exports": [
+        "export function createDiagnosticConsumer({registry,stage,baseProvider}={}){"
+      ]
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "docs/shared/ai-connection/adapters/artifacts.mjs",
+      "bytes": 5879,
+      "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290",
+      "gitBlobSHA1": "734466ba9ea077c7db26f3a56c8a66afce2d21bd",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/docs/shared/ai-connection/adapters/artifacts.mjs",
+      "exports": [
+        "export function createOwnedArtifactStore(){",
+        "export function captureNativeTensor(options){",
+        "export function restoreNativeTensor(handle,store){",
+        "export function releaseArtifactHandle(handle,store){",
+        "export function exportBinaryAssets(value,store){"
+      ]
+    },
+    {
+      "commit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "path": "tools/ai-connection/test-adapters.mjs",
+      "bytes": 11100,
+      "sha256": "bb674ae4f364c8eeaaf8af5a2cc4e999eda6ac1ed641040ecf3f67bff15cb870",
+      "gitBlobSHA1": "50161bb231601e3d66bbc5595c00b27ae55d08dd",
+      "gitBlobIndependentlyVerified": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/a26879057d169cb2eecff30503d64adba5057c52/tools/ai-connection/test-adapters.mjs",
+      "exports": []
+    }
+  ],
+  "reciprocalReceiptEvidence": [
+    {
+      "peer": "manager",
+      "peerCommit": "a26879057d169cb2eecff30503d64adba5057c52",
+      "evidencePaths": [
+        "development/ai-connection/E0-SOURCE-BASELINE.md",
+        "development/ai-connection/E0-SOURCE-RECEIPT.json",
+        "development/ai-connection/E-RESULT.md",
+        "development/ai-connection/evidence/browser-f522-boundaries.json"
+      ],
+      "reportedAcquiredDiffusionCommits": [
+        "9023329b8d803306abcdd9342f24c01ba0df2676",
+        "f522d9aeff313558c4ef83022a340af9a4c21391",
+        "83c91e3f08fb57ab84c8e74b721f93e0420b5a2c"
+      ],
+      "exact438AcquisitionDocumented": false,
+      "reportedRuntime": "actual f522 F32 wire/Hike-ORT and synthetic-source inspect; no real-base LoRA joint acceptance",
+      "ownerAgreementInferred": false
+    },
+    {
+      "peer": "vae",
+      "peerCommit": "7e091192232fae36367b550ca5fada88915a0703",
+      "evidencePaths": [
+        "development/inference/e6/CURRENT-PEERS.md",
+        "development/inference/e6/current-peers/receipt.json"
+      ],
+      "reportedAcquiredDiffusionCommits": [
+        "438972f30242e0a3bc66edb8591f38eaa0fcd384"
+      ],
+      "reportedRuntime": "actual64 mean -> owner direct Hike normalize -> explicit G1C codec/file -> owner restore -> real VAE decode once",
+      "reportedDiffusionRpcAccepted": false,
+      "reportedRectangle128SupportedBy438": false,
+      "reportedGeneratedSampleAccepted": false,
+      "ownerAgreementInferred": false
+    },
+    {
+      "peer": "lora",
+      "peerCommit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "evidencePaths": [
+        "docs/shared/inference/lora/CONNECTION_V2.md",
+        "development/lora/A0_L1_RESULT.md"
+      ],
+      "reportedAcquiredDiffusionCommits": [],
+      "explicitAcquisitionEvidenceForOurF522Or438Found": false,
+      "currentSourceAnd74SyntheticTestsAreNotJointReceipt": true,
+      "ownerAgreementInferred": false
+    }
+  ],
+  "runtimeEquivalenceObservation": {
+    "managerAcquiredCommit": "83c91e3f08fb57ab84c8e74b721f93e0420b5a2c",
+    "ourBaseline": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+    "diffusionSourcePathDifferences": [],
+    "sourceBuildId": "diffusion-models/0.1+f7f23c2291886de637cb06ae001fc748d29232f7c8919683467da5eef6cfb80e",
+    "sameRuntimeBytesDoNotProveExactCommitReceipt": true
+  },
+  "currentStatus": {
+    "allThreePeerGitSourcesAcquiredByUs": true,
+    "managerOld422StillCurrent": false,
+    "loraOld422StillCurrent": false,
+    "allPeersAcknowledged438": false,
+    "jointRealBaseLoRANumericsAccepted": false,
+    "generationReady": false,
+    "existingHistoricReceiptsPreserved": true
+  },
+  "staticInterfaceDifferences": [
+    {
+      "edge": "manager connected tensor -> Diffusion tensor operation",
+      "observation": "generic q.edge reifies raw Tensor while native operation requires input:{tensor}",
+      "owner": "management operation-specific outer packing",
+      "runtimeFailureReproducedHere": false
+    },
+    {
+      "edge": "manager examples -> current DM",
+      "observation": "static example remains source029/build33d7/shape128; not current438 adoption",
+      "owner": "management exact descriptor selection"
+    },
+    {
+      "edge": "LoRA v2 -> native DM consumer",
+      "observation": "full vs selected shape/offset; dual registry hashes; manifest/validation/commit/copy-receipt schemas differ",
+      "owner": "LoRA + Diffusion versioned outer bridge"
+    }
+  ]
+}

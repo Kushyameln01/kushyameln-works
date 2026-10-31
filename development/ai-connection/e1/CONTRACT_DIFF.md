@@ -22,6 +22,16 @@ SDK、planner、state、v1 adapter、loader policy、API文書とHike host/regis
 
 4原本payloadは引き続き当環境にない。今回payloadの新download、SDK/kernel実行、vendorコピー、adapter/runtime編集は行っていない。**joint実行0件を維持し、現在の阻害は実4原本の受領（detailの取得経路未提示を含む）である。**
 
+## 実装追補：native adapterと限定した実結合
+
+新規 `lora/v2-adapter.mjs` と [V2_ADAPTER.md](../../../docs/shared/diffusion-models/lora/V2_ADAPTER.md) に、実署名に基づくregistry/provider/sink/validation/commit/rollback/cleanup-recover対応を実装した。LoRA private SDK本体は編集・vendor採用せず、低rank/diff計算は固定peerの実SDK/Hikeだけを呼ぶ。以下の旧表の「未実装」「署名未読」は過去の取得時点の記録である。
+
+- Node20件: actual peer SDK/Hike＋実native consumer、合成source/baseと明示したcontract stage。誤scope/binding/checksum/範囲/重複/欠落、0/負数、所有snapshot、取消後復帰、旧rollback、SDK recover、非同期確保後cleanup失敗と再試行を確認した。
+- Browser4件: 合成source/base＋actual SDK/Hike→native sink/consumer→actual ORT1.24.3/Hike。全selected weight/bias・16出力・base復帰を比較した。
+- 別Browser4件: 私有artifactからのactual HIGH/LOW base Hike復号＋合成rank1 light/detail-shaped LoRA＋同じactual SDK/ORT/Hike。Python独立base復号は既存L1のSHAと一致、合成低rankの期待値は一列/onehotの閉形式と分離して比較した。private payloadは結果や公開codeに含めていない。
+
+結果は `node-adapter.txt`、`browser-contract.json`、`browser-real-base-synthetic-lora.json`、source digestは `adapter-verification.json`。これらは異なるscopeで、成功件数を合算して全model/実LoRA共同成功としない。**4実LoRA原本は未受領、realOriginalJoint:false / 実原本共同0件のまま。** codeは取得可能だが、私有base artifactの相手への共有・受領は承認待ちである。承認後にartifactを受領できれば、counterpartは自環境の原本で同じrunnerを実行できる。
+
 ## 受領済みと未受領を分ける
 
 [引継ぎPage](https://chatgpt.com/space/page_4988393f36e88191bcf7c0823139d1f3) を `read_page(view:full)` で取得した（61blocks、保存本文 [handoff-page.md](handoff-page.md)）。次の4点はFiles参照から本文を実取得し、UTF-8 bytesのSHA-256を再計算して返却値・Page値と一致した。原本safetensorsやSDK sourceを受領したという意味ではない。

@@ -95,4 +95,10 @@ cfunc NormalizeRawMeanF1(input *float32, count int, out *float32, capacity int) 
 cfunc RestoreRawMeanF1(input *float32, count int, out *float32, capacity int) int {
     return RestoreProfile(input, count, out, capacity, 4)
 }
+cfunc NormalizeRawMeanRect(input *float32, count int, out *float32, capacity int) int {
+    return NormalizeProfile(input, count, out, capacity, 8)
+}
+cfunc RestoreRawMeanRect(input *float32, count int, out *float32, capacity int) int {
+    return RestoreProfile(input, count, out, capacity, 8)
+}
 func main() int { return 0 }

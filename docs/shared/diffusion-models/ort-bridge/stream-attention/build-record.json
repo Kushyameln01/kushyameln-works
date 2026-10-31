@@ -1,0 +1,31 @@
+{
+  "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+  "backend": "wabt",
+  "mode": "normal",
+  "sourceSha256": "766b771e10e00bb3ce24d360567981e2d028762547c820e481dbcdf4deab1e75",
+  "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+  "watSha256": "4e14d0d45a11158a9564d74b9063e075440d1e88df35bfe2402480681e613fd6",
+  "runtimeSha256": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+  "imports": [],
+  "abi": {
+    "Accumulate": "i32 i32 i32 i32 i32 i32 i32",
+    "Normalize": "i32 i32 i32 i32"
+  },
+  "command": [
+    "/workspace/work/diffusion-investigation/toolchain/hikec",
+    "build",
+    "-target",
+    "wabt",
+    "-wasm-mode",
+    "normal",
+    "-o",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.wasm",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.hike"
+  ],
+  "versions": {
+    "go": "go version go1.22.12 linux/amd64",
+    "wabt": "1.0.39",
+    "node": "v24.19.0"
+  }
+}

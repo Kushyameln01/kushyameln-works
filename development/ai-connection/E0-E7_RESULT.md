@@ -1,5 +1,7 @@
 # Diffusion E0・E1接続支援、E6・E7結果
 
+最新追補: [resume/RESULT.md](resume/RESULT.md)。本書以下は前回工程の履歴であり、source取得・実mean fixture・新adapter・次のattention候補の現在地は追補を参照する。共通実行計画は現在0.2-draft.2。
+
 2026-10-31 JST。総合仕様1.1-draft.1と接続実行計画0.2-draft.1をPage閲覧toolで本文取得。旧A0/F1/L1を再利用し、各scopeを分離して進めた。追加のユーザー指示により、作業branchをGitHubへpushしDraft PRを用意する。merge/Pages deploymentは含まない。
 
 ## E0 — 原本の取得可能性

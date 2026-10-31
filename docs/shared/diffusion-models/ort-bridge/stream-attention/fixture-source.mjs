@@ -1,0 +1,8 @@
+// Public deterministic test producer; no production QKV/normalization/RoPE claim.
+export function createAttentionFixture({keyCount,mode='pattern'}={}){
+ if(!Number.isInteger(keyCount)||keyCount<1||keyCount>32760||!['pattern','uniform','increasing-max','moderate-extreme'].includes(mode))throw RangeError('Fixture shape/mode');
+ const bindingId='fixture-'+mode+'-K'+keyCount+'-q16d128-f32-v1',q=new Float32Array(2048);
+ for(let r=0;r<16;r++)for(let d=0;d<128;d++)q[r*128+d]=mode==='uniform'?0:mode==='increasing-max'||mode==='moderate-extreme'?(d===0?mode==='increasing-max'?8:32:0):Math.fround((((r*19+d*7)%97)-48)/64);
+ const descriptor={schemaVersion:'works-postnorm-rope-qkv/0.1',bindingId,rows:16,headDim:128,keyCount,dtype:'float32',querySpace:'post-qk-norm-rope',keySpace:'post-qk-norm-rope',valueSpace:'projected-value',mask:'none',dropout:0,provenance:{kind:'explicit-fixture',generator:'integer-pattern-f32-v1',mode,productionQKVVerified:false}};
+ return {q,source:{describe:()=>structuredClone(descriptor),async readKV(offset,count,{signal}={}){signal?.throwIfAborted();if(!Number.isInteger(offset)||!Number.isInteger(count)||offset<0||count<1||count>64||count>keyCount-offset)throw RangeError('Logical source range');const k=new Float32Array(count*128),v=new Float32Array(count*128);for(let i=0;i<count;i++)for(let d=0;d<128;d++){const n=offset+i;k[i*128+d]=mode==='increasing-max'?(d===0?n/4:0):mode==='moderate-extreme'?(d===0?((n*13)%193-96)/4:0):Math.fround((((n*13+d*11)%101)-50)/64);v[i*128+d]=Math.fround((((n*17+d*5)%103)-51)/64);}return {bindingId,offset,count,k,v,kShape:[count,128],vShape:[count,128]};}}};
+}

@@ -3313,7 +3313,281 @@
       end
     end
     unreachable)
-  (func (;13;) (type 4) (param i32 i32) (result i32)
+  (func (;13;) (type 3) (param i32 i32 i32 i32) (result i32)
+    (local i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32)
+    global.get 0
+    local.set 14
+    block  ;; label = @1
+      loop  ;; label = @2
+        block  ;; label = @3
+          block  ;; label = @4
+            block  ;; label = @5
+              block  ;; label = @6
+                block  ;; label = @7
+                  local.get 13
+                  br_table 0 (;@7;) 1 (;@6;) 2 (;@5;) 3 (;@4;) 4 (;@3;) 6 (;@1;)
+                end
+                global.get 0
+                local.set 4
+                global.get 0
+                i32.const 4
+                i32.add
+                global.set 0
+                local.get 4
+                local.get 0
+                i32.store
+                global.get 0
+                local.set 5
+                global.get 0
+                i32.const 4
+                i32.add
+                global.set 0
+                local.get 5
+                local.get 1
+                i32.store
+                global.get 0
+                local.set 6
+                global.get 0
+                i32.const 4
+                i32.add
+                global.set 0
+                local.get 6
+                local.get 2
+                i32.store
+                global.get 0
+                local.set 7
+                global.get 0
+                i32.const 4
+                i32.add
+                global.set 0
+                local.get 7
+                local.get 3
+                i32.store
+                local.get 4
+                i32.load
+                local.set 8
+                local.get 5
+                i32.load
+                local.set 9
+                local.get 6
+                i32.load
+                local.set 10
+                local.get 7
+                i32.load
+                local.set 11
+                local.get 8
+                local.get 9
+                local.get 10
+                local.get 11
+                i32.const 8
+                call 3
+                local.set 12
+                local.get 14
+                global.set 0
+                local.get 12
+                return
+              end
+              local.get 14
+              global.set 0
+              i32.const 0
+              return
+            end
+            i32.const 4
+            local.set 13
+            br 2 (;@2;)
+          end
+          i32.const 2
+          local.set 13
+          br 1 (;@2;)
+        end
+        i32.const 1
+        local.set 13
+        br 0 (;@2;)
+      end
+    end
+    unreachable)
+  (func (;14;) (type 3) (param i32 i32 i32 i32) (result i32)
+    (local i32 i32 i32)
+    global.get 0
+    local.set 6
+    block  ;; label = @1
+      loop  ;; label = @2
+        block  ;; label = @3
+          block  ;; label = @4
+            block  ;; label = @5
+              block  ;; label = @6
+                block  ;; label = @7
+                  local.get 5
+                  br_table 0 (;@7;) 1 (;@6;) 2 (;@5;) 3 (;@4;) 4 (;@3;) 6 (;@1;)
+                end
+                local.get 0
+                local.get 1
+                local.get 2
+                local.get 3
+                call 13
+                local.set 4
+                local.get 6
+                global.set 0
+                local.get 4
+                return
+              end
+              local.get 6
+              global.set 0
+              i32.const 0
+              return
+            end
+            i32.const 4
+            local.set 5
+            br 2 (;@2;)
+          end
+          i32.const 2
+          local.set 5
+          br 1 (;@2;)
+        end
+        i32.const 1
+        local.set 5
+        br 0 (;@2;)
+      end
+    end
+    unreachable)
+  (func (;15;) (type 3) (param i32 i32 i32 i32) (result i32)
+    (local i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32)
+    global.get 0
+    local.set 14
+    block  ;; label = @1
+      loop  ;; label = @2
+        block  ;; label = @3
+          block  ;; label = @4
+            block  ;; label = @5
+              block  ;; label = @6
+                block  ;; label = @7
+                  local.get 13
+                  br_table 0 (;@7;) 1 (;@6;) 2 (;@5;) 3 (;@4;) 4 (;@3;) 6 (;@1;)
+                end
+                global.get 0
+                local.set 4
+                global.get 0
+                i32.const 4
+                i32.add
+                global.set 0
+                local.get 4
+                local.get 0
+                i32.store
+                global.get 0
+                local.set 5
+                global.get 0
+                i32.const 4
+                i32.add
+                global.set 0
+                local.get 5
+                local.get 1
+                i32.store
+                global.get 0
+                local.set 6
+                global.get 0
+                i32.const 4
+                i32.add
+                global.set 0
+                local.get 6
+                local.get 2
+                i32.store
+                global.get 0
+                local.set 7
+                global.get 0
+                i32.const 4
+                i32.add
+                global.set 0
+                local.get 7
+                local.get 3
+                i32.store
+                local.get 4
+                i32.load
+                local.set 8
+                local.get 5
+                i32.load
+                local.set 9
+                local.get 6
+                i32.load
+                local.set 10
+                local.get 7
+                i32.load
+                local.set 11
+                local.get 8
+                local.get 9
+                local.get 10
+                local.get 11
+                i32.const 8
+                call 4
+                local.set 12
+                local.get 14
+                global.set 0
+                local.get 12
+                return
+              end
+              local.get 14
+              global.set 0
+              i32.const 0
+              return
+            end
+            i32.const 4
+            local.set 13
+            br 2 (;@2;)
+          end
+          i32.const 2
+          local.set 13
+          br 1 (;@2;)
+        end
+        i32.const 1
+        local.set 13
+        br 0 (;@2;)
+      end
+    end
+    unreachable)
+  (func (;16;) (type 3) (param i32 i32 i32 i32) (result i32)
+    (local i32 i32 i32)
+    global.get 0
+    local.set 6
+    block  ;; label = @1
+      loop  ;; label = @2
+        block  ;; label = @3
+          block  ;; label = @4
+            block  ;; label = @5
+              block  ;; label = @6
+                block  ;; label = @7
+                  local.get 5
+                  br_table 0 (;@7;) 1 (;@6;) 2 (;@5;) 3 (;@4;) 4 (;@3;) 6 (;@1;)
+                end
+                local.get 0
+                local.get 1
+                local.get 2
+                local.get 3
+                call 15
+                local.set 4
+                local.get 6
+                global.set 0
+                local.get 4
+                return
+              end
+              local.get 6
+              global.set 0
+              i32.const 0
+              return
+            end
+            i32.const 4
+            local.set 5
+            br 2 (;@2;)
+          end
+          i32.const 2
+          local.set 5
+          br 1 (;@2;)
+        end
+        i32.const 1
+        local.set 5
+        br 0 (;@2;)
+      end
+    end
+    unreachable)
+  (func (;17;) (type 4) (param i32 i32) (result i32)
     (local i32 i32 i32)
     global.get 0
     local.set 4
@@ -3353,7 +3627,7 @@
       end
     end
     unreachable)
-  (table (;0;) 14 14 funcref)
+  (table (;0;) 18 18 funcref)
   (memory (;0;) 16)
   (global (;0;) (mut i32) (i32.const 65536))
   (global (;1;) (mut i32) (i32.const 196608))
@@ -3382,5 +3656,9 @@
   (export "NormalizeRawMeanF1" (func 10))
   (export "__hike_impl_RestoreRawMeanF1" (func 11))
   (export "RestoreRawMeanF1" (func 12))
-  (export "main" (func 13))
-  (elem (;0;) (i32.const 0) func 0 1 2 3 4 5 6 7 8 9 10 11 12 13))
+  (export "__hike_impl_NormalizeRawMeanRect" (func 13))
+  (export "NormalizeRawMeanRect" (func 14))
+  (export "__hike_impl_RestoreRawMeanRect" (func 15))
+  (export "RestoreRawMeanRect" (func 16))
+  (export "main" (func 17))
+  (elem (;0;) (i32.const 0) func 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17))

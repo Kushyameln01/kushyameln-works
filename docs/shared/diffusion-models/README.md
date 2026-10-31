@@ -17,6 +17,9 @@
 | LoRA weight I/O | HIGH/LOW別File登録・保存dtypeの範囲読出し・SDK source接続。モデル適用は未実装 |
 | Bernini load/predict/sample | NOT_READY。全量ORT/単純block分割ではMemory制約を満たさない |
 | Text Encoder/VAE境界 | 公開固定版から独立APIとHike担当を確認。既存.wktensor互換でshape/意味/hash/maskを検査。全体推論の結合ではない |
+| VAE posterior-mean | 旧F5 128値、F1 64値、非正方形F1 128値を別profile/専用Hike ABIで扱う。生成sampleとは別契約 |
+| LoRA v2 consumer | PARTIAL Q16行に限定したadapter。不変実baseの私的断片provider、runtime weight/bias sink、検証/切替/復帰。実4原本との共同試験は未実施 |
+| E7分割候補 | 実LOWのN=1/full-Q行tileと、明示F32 postnorm/RoPE入力の1head選択query/all-key attentionを別scopeで検証。本番predict/E8は保留 |
 
 ヘッダー検査はdescriptorの型・長さ・範囲検査で、完全な形式/重み検証ではありません。特にJSON重複キーの厳密拒否は未対応。原本hashとheader hashは区別します。
 
@@ -45,3 +48,5 @@ browser-checkはPlaywrightと`/usr/bin/chromium`を使い、自前のloopback限
 現在の数値部品を、モデル全体の変換合格・推論合格・元ComfyUIとの数値同等・負荷低減と解釈しないでください。詳細な根拠、未達、再開条件は `development/diffusion-models/RESULT.md` を参照してください。
 
 最新の明示確認と追加実装はdevelopment/diffusion-models/REV3_RESULT.md。包括UIは3モジュール横断の直列化を担当し、別executorが自動共有されるとは扱わない。
+
+各担当のGitHub反映後の再開結果は [resume/RESULT.md](../../../development/ai-connection/resume/RESULT.md)。現API、私的実base受渡し、VAEのshape別profile、E7 attentionの数値・資源条件と未成立scopeをまとめている。固定sourceはDraft PR #6の作業branchで提供し、Pagesへのdeployやmainへのmergeは別工程である。

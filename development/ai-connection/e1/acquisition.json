@@ -144,12 +144,14 @@
     "runtimeCalls": 0,
     "lowRankCalls": 0,
     "fullModelRuns": 0,
-    "sourceDependencyResolved": true
+    "sourceDependencyResolved": true,
+    "realOriginalJointCalls": 0,
+    "note": "runtimeCalls0 below refers only to actual-original joint executions; contract executions are independently recorded under adapterImplementation"
   },
   "independentContinuations": [
-    "consumer adapter conditions confirmed from actual LoRA SDK and Diffusion sources",
-    "light external route verified earlier by HEAD only; no payload download in this update",
-    "joint runner can use the obtained SDK once required real original payloads and fixed comparison inputs are received"
+    "implemented native-v2 adapter and bounded real-SDK/ORT runner are ready for LoRA owner original inputs",
+    "private base-block artifact is prepared locally and tested, but recipient sharing/delivery awaits approval; no raw reference is in public source",
+    "peer actual originals and independent weight/bias/output reference can run real-original-joint mode without replacing low-rank arithmetic"
   ],
   "notClaimed": [
     "archive SHA verified",
@@ -295,12 +297,62 @@
     "noDetachMethod": true,
     "planner": "buildPlanV2({inspection,registry,diagnostic,sourceSha256,strength,loaderPolicyId,alphaValues={}}={})"
   },
-  "latestUpdateRestrictions": {
+  "readOnlyGitReceptionRestrictions": {
     "noPayloadDownload": true,
     "noSdkRuntimeExecution": true,
     "noLowRankImplementation": true,
     "noRuntimeEdits": true,
     "noSourceVendorCopy": true,
     "onlyExistingE1RecordsUpdated": true
+  },
+  "adapterImplementation": {
+    "date": "2026-10-31T01:05:07.402553+00:00",
+    "status": "IMPLEMENTED_PARTIAL_CONTRACT_REAL_ORIGINAL_JOINT_NOT_RUN",
+    "files": [
+      "docs/shared/diffusion-models/lora/v2-adapter.mjs",
+      "docs/shared/diffusion-models/lora/test-v2-adapter.mjs",
+      "docs/shared/diffusion-models/lora/V2_ADAPTER.md",
+      "tools/ai-connection/test-lora-diffusion.mjs",
+      "tools/ai-connection/test-lora-diffusion-browser.py"
+    ],
+    "lowRankArithmeticOwner": "actual fixed peer SDK/Hike at2bba907; no duplicate implementation",
+    "node": {
+      "passed": 20,
+      "scope": "actualSDK/Hike plus synthetic source/base and explicitly contract-only stage",
+      "result": "node-adapter.txt"
+    },
+    "browser": {
+      "passed": 4,
+      "scope": "actualSDK/Hike, native adapter/consumer, actual ORT1.24.3/Hike; synthetic source/base",
+      "result": "browser-contract.json",
+      "realOriginalJoint": false
+    },
+    "redRecords": [
+      "red-absent-adapter.txt",
+      "red-budget-current.txt",
+      "red-cleanup-retention.txt",
+      "red-restore-retention.txt"
+    ],
+    "noOriginalPayloadDownload": true,
+    "originalPayloadRehashes": 0,
+    "sdkPrivateEdits": false,
+    "sdkVendorAdoption": false,
+    "fullModelRuns": 0,
+    "realOriginalJointRuns": 0,
+    "cleanup": "pending allocations retained on cleanup failure, AggregateError preserves original+cleanup errors; adapter.recover gates reuse; native SDK recovery remains separate; restoreBase candidate is retained if validation and rollback both fail; failed work blocks reuse until recover",
+    "browserRealBaseSyntheticLoRA": {
+      "passed": 4,
+      "scope": "actual immutable HIGH/LOW base Hike decode + synthetic rank1 source + actualSDK/Hike/native consumer/ORT1.24.3/Hike",
+      "result": "browser-real-base-synthetic-lora.json",
+      "realOriginalJoint": false,
+      "reference": "independent Python FP8/F16 base decode matches priorL1 SHA; rank1 one-column/onehot closed-form fixture oracle; all selected weight/bias/output and restoration compared"
+    },
+    "privateBaseArtifact": {
+      "preparedLocally": true,
+      "rawPayloadPublishedOrCommitted": false,
+      "recipientDelivery": "PENDING_SHARING_APPROVAL"
+    },
+    "filesFrozenAt": "2026-10-31T01:11:27.200449+00:00",
+    "serializationPrecondition": "one owning SDK instance per adapter; serialize prepare/stage/restore/run and direct sink transactions; four-entry check covers completed packages/candidate history only, not concurrent unfinished transactions or global memory peak"
   }
 }

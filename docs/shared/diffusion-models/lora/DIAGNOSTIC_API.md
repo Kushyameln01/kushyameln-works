@@ -32,6 +32,82 @@ Registry schema `bernini-diagnostic-registry/0.1` includes modelHash/side, actua
 
 Read offsets/counts are **elements inside the selected slice**, not full original tensor offsets. Original mapping stays in registry.source/transform. Count1..81920 for weight and1..16 for bias, within selected bounds; no zero reads. All3 identity hashes are required. Returns an independent finite `Float32Array`; no WASM pointer escapes and no patched value is used as base. Reads serialize and honor abort before/after asynchronous boundaries; a bounded synchronous Hike call finishes first. `base.stats()` reports read hashes and fixed Hike counters, not full-model proof. `dispose()` invalidates future reads and drops owned references; it does not close another module or guarantee immediate OS return.
 
+## Private bounded original-base fragments
+
+`base-block.mjs` adds `createBerniniBlockProvider({artifact,side,hikeBytes?,signal?})` for a receiver that has the selected raw ranges but **does not have the original full model File**. It returns the same `describe()/baseProvider.readBlock()/stats()/dispose()` boundary used above. `diagnostic-base.mjs` and its whole-File contract are unchanged. This transport is fixed to original rows0..15 (exclusive end16), all5120 columns; it does not expose the other rows or manufacture an original-sized Blob.
+
+The private JSON format is `bernini-diagnostic-base-block/0.1`:
+
+```typescript
+type BaseBlockArtifact = {
+  schemaVersion:'bernini-diagnostic-base-block/0.1';
+  scope:'PARTIAL'; fullFileHashRecomputed:false;
+  sides: Partial<Record<'HIGH'|'LOW', {
+    registry: DiagnosticRegistry; // exact native describe(), digest included
+    source:{name:string; fileBytes:number; modelSha256:string;
+      priorOwnerReceipt:{kind:'retained-download-manifest';
+        manifestSha256:string; sha256:string; verified:true;
+        verification:'PRIOR_OWNER_RECEIPT_NOT_REHASHED';
+        authenticity:'not-independently-certified'}};
+    ranges:{id:'header'|'q.weight'|'q.bias'|'weight_scale'|'comfy_quant';
+      absoluteByteOffset:number; byteLength:number; sha256:string;
+      encoding:'base64'; data:string}[];
+  }>>;
+};
+```
+
+Each side contains exactly those five ranges, in that order: original header181,280 bytes at file offset8, selected FP8 Q81,920 bytes, F16 bias32 bytes, F32 scalar scale4 bytes and quantization config27 bytes. Every payload range has its **absolute original file offset**, actual byte length and SHA-256. The range hashes are hashes of raw bytes, not registry/canonical metadata hashes. `registry` keeps original full shapes and the same original model/graph/registry identity as the whole-File provider. Missing, additional, reordered or out-of-source ranges are refused.
+
+Initialization snapshots caller metadata, base64 strings and supplied kernel bytes before its first await. It enforces a JSON byte budget below1MiB, canonical base64, every provided range digest, pinned original header/side, strict selected tensor descriptors/full shapes/offsets, scalar scale and27-byte config, the native registry digest, and a complete reconstructed-registry comparison. Re-signing an incorrect row/scale/source mapping with a new digest does not make it valid. Only real Hike FP8/F16→F32 conversion is used; no JavaScript numerical fallback or low-rank multiplication is added.
+
+```js
+import {createBerniniBlockProvider} from './base-block.mjs';
+const bytes = await privateArtifactFile.arrayBuffer();
+// expectedArtifactSHA256 comes from the original owner's private delivery receipt.
+const actual = [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))]
+  .map(v=>v.toString(16).padStart(2,'0')).join('');
+if (actual !== expectedArtifactSHA256) throw Error('Private artifact identity mismatch');
+const artifact = JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));
+const base = await createBerniniBlockProvider({artifact,side:'HIGH'});
+const registry = base.describe();
+const identity = {modelHash:registry.modelHash,graphHash:registry.graphHash,
+                  registryHash:registry.registryHash};
+const weight = await base.baseProvider.readBlock('q.weight',0,81920,{...identity,signal});
+// Pass base.baseProvider and registry to the unchanged consumer below.
+// Receiver teardown after consumer/stage cleanup:
+base.dispose();
+```
+
+Reads require the same3 hashes, selected-slice element bounds, nonzero counts and AbortSignal behavior as the original provider. They return independent F32 copies, serialize access, reject after disposal and reuse fixed Hike workspace. Abort is cooperative around the bounded synchronous Hike call and asynchronous digest boundaries. `stats()` explicitly reports `source:'bounded-fragment-artifact'`, `fullFileHashRecomputed:false`, `fullFileSHA256Verified:false` and `unprovidedRangesAvailable:false`. The source whole-file size/hash in metadata is provenance, not a capability to access15.57GB or a fresh proof of that entire file.
+
+An original owner creates a **new private output outside any Git repository**:
+
+```sh
+node tools/diffusion-models/export-e1-base-block.mjs \
+  --models /absolute/original-model-directory \
+  --output /absolute/private/new-base-blocks.json
+```
+
+The source directory must contain the original HIGH/LOW files and matching retained `manifest.json` prior-owner full-hash receipts. The exporter reuses the existing whole-File factory to produce the native registry, reads only actual bounded ranges, and checks opened inode/device/size/mtime/ctime around each read. Its Node-only fs-backed Blob adapter avoids Node24 `openAsBlob`'s >4GiB size truncation; it never materializes the whole model and does not change the browser File API. Relative paths, repository/symlink-to-repository outputs and existing-file overwrite are rejected. The artifact file is written with mode0600 and is never added to the public asset list.
+
+The first actual two-side artifact is709,364 bytes, SHA-256 `25a845e0c87a1bcab04740b011d0aa7cd969f46745412810cfd73269b69e8cff`. Export read889,164 actual source bytes total, at most181,280 per read; no original full-file rehash occurred. Obtain raw payload only through the original owner's authorized **private artifact delivery**, verify that delivery's file hash, and keep it separate from this public code/recipe/receipt. A prior-owner receipt is not independently authenticated by this module. Header/range verification, prior full-file receipt, delivery provenance, real LoRA joint application and full model acceptance remain different evidence scopes.
+
+Current handoff status: the raw artifact is prepared privately; disclosure to the LoRA recipient through a shared Page is pending explicit sharing approval. Private owner-side storage/retrieval checks, if recorded separately, do not prove that recipient handoff is complete. This public contract contains only schema/recipe/hash/bytes and scoped results; it contains no private Library reference or raw payload.
+
+Selected side initialization decodes263,263 bytes of provided raw ranges; after validation it retains only81,952 raw Q/bias bytes plus metadata and Hike Memory. The private JSON, base64 strings, parsing/snapshot objects, transient header, hash buffers and F32 copies add to this amount; the1MiB format budget is not an RSS peak guarantee or a change to tensor-operation limits.
+
+Reproduce the independent fragment checks and unchanged consumer's real WASM path:
+
+```sh
+BERNINI_E1_BLOCK_ARTIFACT=/absolute/private/base-blocks.json \
+  node --test --test-isolation=none docs/shared/diffusion-models/lora/test-base-block.mjs
+node --test --test-isolation=none tools/diffusion-models/test-export-e1-base-block.mjs
+python tools/diffusion-models/test-base-block-browser.py \
+  --artifact /absolute/private/base-blocks.json --output /absolute/private/block-browser.json
+```
+
+Node fragment tests compare both sides' decoded weight/bias hashes against the existing independent original-base reference. The browser receives only the small artifact File, then runs real Hike→owned F32→unchanged consumer `prepareBase/validate/commit`→ORT WASM→Hike, with all16 outputs compared to independent references. It also checks cancellation/re-execution, binding/range refusal and workspace reuse; no original model File or `.safetensors` request is supplied. Evidence: `development/ai-connection/e1-block/`. No real LoRA product or low-rank arithmetic is used in this fragment-provider test; the LoRA owner's joint E1 test remains separate.
+
 ## Owned sink and candidate consumer
 
 ```js
@@ -91,10 +167,10 @@ Known bounded buffers (not RSS/ORT peak):
 
 Active+previous/candidate feeds, caller retained arrays, raw read bytes, header/descriptor JS objects, pending package/hash copies and ORT internal Memory add to these quantities. Release unused candidate history/packages rather than accumulating them. `stage.runF32` still copies inputs even if consumer passed copies; both are counted. WASM grow occurs when constructing its arena; views are recreated after grow, and calls reuse fixed workspace. ORT allocator/runtime/RSS peak remains unmeasured. File references are not full weight arrays.
 
-Pointwise1,048,576 remains unchanged. Mean transforms have separate strict128 and64-element profile ABIs after E6; neither accepts the2,096,640-element production latent. Text512 tensor size is not governed by pointwise operation limits. No model graph partition/production VAE capability follows from this small diagnostic.
+Pointwise1,048,576 remains unchanged. Mean transforms have separate strict F5/128, F1/64 and rectangular F1/128 profile ABIs after E6; none accepts the2,096,640-element production latent. Equal element counts do not make the two128 shapes interchangeable. Text512 tensor size is not governed by pointwise operation limits. No model graph partition/production VAE capability follows from this small diagnostic.
 
 ## Evidence and counterpart handoff
 
 `development/ai-connection/l1-final-browser.json` records actual HIGH/LOW File decode → realORT/Hike validation, explicit F32 test changes, base restore, abort and API Worker/Port. All decoded selected F32 bytes match independent Python reference. The explicit changed weights are **consumer fixtures**, not a real LoRA product. `consumer-verification.json` separately records contract-only stage tests. `half-green.json` and base TAP are scoped independently.
 
-Real LoRA original→LoRA-owned low-rank/diff/bias→this sink comparison, binding-aware partial planner, common adapter, all-target registry, production FP8 precision, full D1 graph and large VAE profiles remain pending. Public contract delivery does not mean GitHub Pages publication; asset allowlist/deployment is a separate action.
+The fixed peer v2 SDK is connected through the explicit [V2_ADAPTER.md](V2_ADAPTER.md) boundary, with separately scoped synthetic-source and actual-base-fragment tests. Real4 LoRA original→LoRA-owned low-rank/diff/bias→this sink comparison remains pending, as do an all-target registry, production FP8 precision, full D1 graph and large VAE profiles. Public contract delivery does not mean GitHub Pages publication; asset allowlist/deployment is a separate action.
