@@ -1,4 +1,4 @@
-# AI connection API — E0 / E2 / E3 / E4 / E5
+# AI connection API — E0 / E1 / E2 / E3 / E4 / E5
 
 Common contract: `works-module-contract/1.0-draft.1` (existing M1/M2 reused).
 Package contract: `works-artifact-package/1.0-draft.1`.
@@ -8,8 +8,15 @@ and earlier source receipts remain historical inputs. See
 `development/ai-connection/E-RESUME-SOURCE-BASELINE.md` for current owner pins
 and `E-RESUME-RESULT.md` for the resumed verification scope.
 
-No native API, numerical kernel, codec, model, precision or output condition is
-changed. These ES modules import no inference runtime. Clients, resource owners,
+The subsequent E1 adoption uses LoRA distribution
+`0c27874908638afc748ea2455a2779a16736730b` and the exact accepted Diffusion peer
+`438972f30242e0a3bc66edb8591f38eaa0fcd384`. See
+`development/ai-connection/E1-ADOPT-SOURCE-BASELINE.md` for the new owner diff,
+original source evidence and the distinct latest Diffusion candidate.
+
+Management does not modify the native API, kernel, codec, model, precision or
+output conditions. Owner kernel changes are adopted by exact version below.
+These ES modules import no inference runtime. Clients, resource owners,
 revisions, source interpretation, binary data and codecs are explicit inputs.
 
 ## External adapters
@@ -62,6 +69,10 @@ f522, and its non-square128 profile remains unsupported.
 
 ### Explicit diagnostic LoRA bridge
 
+This is the earlier management implementation, retained for its pinned regression
+scope. The owner-adopted original route below does not stack this bridge on top
+of the owner adapter.
+
 Import `createDiagnosticLoraBridge` from `adapters/diagnostic-lora.mjs`.
 The version is `works-lora-diagnostic-bridge/0.1-draft.1`. Its inputs are explicit
 `nativeTarget`, `nativeBaseProvider`, `loaderPolicyId`, `registryVersion`,
@@ -85,6 +96,87 @@ requires the matching SDK instance/revisions and exact native candidate validati
 A package returned after abort is released by its sink; uncertain cleanup retains
 the handle and blocks reuse until `sink.recover()` succeeds (`recoveryState()`
 exposes pending cleanup). A late old stage receipt cannot finalize a new candidate.
+
+### Adopted owner LoRA adapter
+
+```js
+import {createAdoptedLoraAdapter} from './adapters/adopted-lora.mjs';
+const adapter = createAdoptedLoraAdapter({
+  ownerExports, sdk, consumer, baseProvider, sourcePins, resourceBinding,
+  isOwnerCurrent: target => ownsThisManagerRevisionAndResource(target),
+});
+const plan = await adapter.plan(input,{target: planTarget});
+const prepared = await adapter.prepare(plan,{target: prepareTarget,onBlock});
+const applied = await adapter.stage(prepared,{x,expected,tolerance},{
+  target: stageTarget,isCurrent: target => selectionIsCurrent(target),
+});
+await adapter.finalize(prepared,applied,{target: finalizeTarget});
+await adapter.release(prepared,{target: releaseTarget});
+const output = await adapter.run({x},{target: runTarget});
+```
+
+Management version is `works-adopted-lora/0.1-draft.1`; injected owner factory
+`createDiffusionDiagnosticAdapter` is `lora-diffusion-diagnostic-adapter/0.1`.
+Source pins separately identify `sdk`, `adapter`, `kernel` and `diffusion`, each
+with repository/full commit/path/SHA-256; kernel also has byteLength. All must
+match this adoption set. The corrected LoRA Hike WASM is **5051 bytes** /
+`3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24`.
+Native API version alone cannot replace the actual kernel/build identity. The
+caller verifies bytes/Git objects and injects public exports; pin strings alone
+do not prove loaded code. No runtime is imported implicitly.
+
+Each `target` supplies `managerSessionId`, `managerRevision`, unique `requestId`
+and `resourceBinding:{ownerId,bindingId,resourceGeneration}`. The same plan/
+prepared cohort retains all fields except the per-call request ID. Calls serialize
+per SDK/facade and opaque plans/prepared handles cannot be cloned. `input` retains
+native selection, strength, loader and diagnostic target fields. The owner adapter
+supplies the registry and all numerical mapping. `onBlock` receives an owned copy
+for comparison before native sink write; observer failure aborts preparation.
+
+Stage returns `{receipt,management}`. `receipt` preserves SDK local revisions,
+native receipt namespaces, original source/plan/bundle identity and the actual
+consumer's dynamic copy owner ID. `management` binds the exact request/resource
+generation, source pins, kernel and local revisions. It does not rename ownership
+or publish an E5 snapshot. Only the exact terminal stage envelope can finalize
+its candidate history. Failed stages use `recover(prepared,{target})` before
+release; failed prepare cleanup can use `recover(undefined,{target})`. The caller
+owns SDK/consumer/stage/base disposal.
+
+`restoreBase(reference,{target,isCurrent})` delegates the owner's immutable-base
+transaction. Reads after a failed new selection name the prior applied cohort
+explicitly; they do not certify the failed selection as current.
+`describeBinding()` retains native/connection registry identities and the owner's
+excluded target/region and detail bias pass-through evidence.
+
+The genuine File trial is `tools/ai-connection/run-managed-lora-real.mjs --help`.
+It checks current full-file base hash/stat evidence and browser runtime LoRA
+source hashes, runs the owner's independent Python oracle with predeclared gates,
+and compares all 81920 selected weights, 16 bias values and 16 ORT/Hike outputs.
+Raw originals and arrays stay outside Git. The E1 adoption result records the
+actual executed scope; fixtures alone are not original acceptance or E5/full-model
+session acceptance.
+
+The revised product input is a user-selected local `.safetensors` File. The four
+historical originals and a whole base-model download are **not** prerequisites.
+Drive/ZIP references in `development/ai-connection/REFERENCE-INPUTS.json` are
+development evidence, not runtime product sources. The primary control test is
+`run-managed-local-files.mjs`: one explicitly selected valid File plus the chosen
+unsupported-reference Files, with a labeled synthetic immutable base and actual
+native SDK/consumer/ORT/Hike. Existing real20 evidence is independently checked
+by `verify-owner-e1.mjs`. The whole-base CLI above remains an optional additional
+diagnostic, not the acceptance gate.
+
+`createManagedDiagnosticPackage` in `diagnostic-package.mjs` reuses E4 for the
+actual output. Supply `{output,applicationEnvelope,inputIdentity,baseEvidence,
+codec}`. A save copy adds `management.outputBinding:{sha256,byteLength:64,
+meaning:'works:diagnostic-q-projection:v1',packageHash,epoch}` from the actual
+returned run; packageHash must match the native validation feed. The exact original
+stage envelope remains the finalization capability. The helper returns
+`{manifest,assets,registry}` for E4 write/read with an explicit pinned codec.
+It preserves input hash/name/size, application/native evidence, manager/local
+revisions, ownership, output bytes and explicit base kind. The original File is
+not embedded; `reselectRequired:true` remains recorded. Snapshot is explicitly
+null and package completeness does not certify real-base compatibility or E5.
 
 `adapter.cancel({requestId,localRevision})` checks the active target before
 calling its owner. An accepted native cancel alone is not release/reuse proof.

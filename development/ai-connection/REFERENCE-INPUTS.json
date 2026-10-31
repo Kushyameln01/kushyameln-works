@@ -1,0 +1,566 @@
+{
+  "schemaVersion": "works-development-reference-inputs/0.1",
+  "observedUTC": "2026-10-31T10:44:04.501727+00:00",
+  "scope": "Exact acquired Drive archive bytes, safe ZIP extraction and static Safetensors/header/workflow classification only. No archive code executed; no raw weights are included in this Git record.",
+  "inputs": [
+    {
+      "referenceId": "devref:wan-depth",
+      "sourceNo": 1,
+      "purpose": "DEVELOPMENT_REFERENCE_NOT_FORCED_PRODUCT_INPUT",
+      "sources": [
+        {
+          "sourceNo": 1,
+          "type": "google-drive",
+          "fileId": "1DXgn7JI8bc0yeuOjpPJkOQbhJUEpHSFU",
+          "url": "https://drive.google.com/file/d/1DXgn7JI8bc0yeuOjpPJkOQbhJUEpHSFU/view",
+          "status": "ACQUIRED_EXACT_BYTES_LOCALLY_HASHED",
+          "bytes": 351546514,
+          "sha256": "d030a255f1876551baf6c48a4f2dba12c8c10daa3a0d491045f6c874f38b41d2",
+          "metadata": {
+            "name": "Wan_Depth.zip",
+            "mimeType": "application/x-zip-compressed",
+            "modifiedTime": "2026-10-31T10:27:27.932Z",
+            "providerMD5": null,
+            "providerSHA256": null
+          },
+          "acquisition": "Public share standard observed Download anyway form after Drive plugin413 raw-file capability limit"
+        },
+        {
+          "sourceNo": "attachment:1",
+          "type": "conversation-attachment",
+          "pointer": "sediment://file_00000000f29c8206892fef52e5d60180",
+          "reportedFileName": "Wan_Depth.zip",
+          "status": "UNREAD_BYTE_IDENTITY_NOT_COMPARED",
+          "independentBytesRead": false,
+          "sameNameDoesNotEstablishSameBytes": true
+        }
+      ],
+      "archive": {
+        "fileName": "Wan_Depth.zip",
+        "bytes": 351546514,
+        "sha256": "d030a255f1876551baf6c48a4f2dba12c8c10daa3a0d491045f6c874f38b41d2",
+        "memberCount": 3,
+        "totalUncompressedBytes": 378424315,
+        "safePathAndFileTypeChecks": "PASS",
+        "streamingCRCAndExactByteChecks": "PASS",
+        "members": [
+          {
+            "path": "Wan_Depth/",
+            "bytes": 0,
+            "compressedBytes": 0,
+            "crc32": "00000000",
+            "directory": true
+          },
+          {
+            "path": "Wan_Depth/wan2.1-1.3b-control-lora-depth-v0.1_comfy.safetensors",
+            "bytes": 378400000,
+            "compressedBytes": 351542100,
+            "crc32": "a6cc7ff5",
+            "directory": false,
+            "sha256": "c1d81502a7a869a99ab9c0c2cca4d2d9b1e9e5a0d9b072e7fb24009fa02cedeb"
+          },
+          {
+            "path": "Wan_Depth/Wan2.1_1.3b_depth_control_lora.json",
+            "bytes": 24315,
+            "compressedBytes": 3728,
+            "crc32": "8775beac",
+            "directory": false,
+            "sha256": "f979db5901b92c499ee2d5cda60a070ec85d6fe6523bdd940e7e2df5da15e0f1"
+          }
+        ]
+      },
+      "safetensors": [
+        {
+          "fileName": "wan2.1-1.3b-control-lora-depth-v0.1_comfy.safetensors",
+          "bytes": 378400000,
+          "sha256": "c1d81502a7a869a99ab9c0c2cca4d2d9b1e9e5a0d9b072e7fb24009fa02cedeb",
+          "headerBytes": 60624,
+          "headerSHA256": "f29e41b6b6361fcc6e922761a0aeffe1d9c4be52d0e0102df92e011049360900",
+          "tensorCount": 483,
+          "dtypes": {
+            "I64": 1,
+            "F32": 482
+          },
+          "metadataKeys": [],
+          "metadataArchitectureOrBaseHashEvidence": null,
+          "sourceMetadataFormat": null,
+          "adapterPairs": 241,
+          "linearPairs": 240,
+          "conv5dPairs": 1,
+          "ranks": {
+            "128": 241
+          },
+          "structuralTargetShapes": {
+            "[1536,1536]": 240,
+            "[1536,32,1,2,2]": 1
+          },
+          "targetPatterns": {
+            "diffusion_model.blocks.*.cross_attn.k": 30,
+            "diffusion_model.blocks.*.cross_attn.o": 30,
+            "diffusion_model.blocks.*.cross_attn.q": 30,
+            "diffusion_model.blocks.*.cross_attn.v": 30,
+            "diffusion_model.blocks.*.self_attn.k": 30,
+            "diffusion_model.blocks.*.self_attn.o": 30,
+            "diffusion_model.blocks.*.self_attn.q": 30,
+            "diffusion_model.blocks.*.self_attn.v": 30,
+            "diffusion_model.patch_embedding": 1
+          },
+          "alphaTensorCount": 0,
+          "otherTensors": [
+            {
+              "name": "diffusion_model.patch_embedding.reshape_weight",
+              "dtype": "I64",
+              "shape": [
+                5
+              ]
+            }
+          ],
+          "reshapeMarkers": {
+            "diffusion_model.patch_embedding.reshape_weight": [
+              1536,
+              32,
+              1,
+              2,
+              2
+            ]
+          },
+          "unknownPairShapes": [],
+          "loaderPolicy": "No loader policy or alpha-default inferred from file names. A/B2D is structurally recognized; 5D Conv/reshape needs an explicit supported handler.",
+          "baseHash": null,
+          "graphHash": null,
+          "registryHash": null,
+          "numericApplicationVerified": false,
+          "currentBernini5120DiagnosticCompatible": false,
+          "scope": "SAFETENSORS_STATIC_HEADER_AND_PAYLOAD_LAYOUT"
+        }
+      ],
+      "workflows": [
+        {
+          "fileName": "Wan2.1_1.3b_depth_control_lora.json",
+          "sha256": "f979db5901b92c499ee2d5cda60a070ec85d6fe6523bdd940e7e2df5da15e0f1",
+          "nodeTypes": {
+            "CLIPLoader": 1,
+            "VAELoader": 1,
+            "UNETLoader": 1,
+            "ModelSamplingSD3": 1,
+            "DepthAnythingV2Preprocessor": 1,
+            "InstructPixToPixConditioning": 1,
+            "BasicScheduler": 1,
+            "KSamplerSelect": 1,
+            "EmptyHunyuanLatentVideo": 1,
+            "SamplerCustom": 2,
+            "CLIPTextEncode": 2,
+            "PrimitiveNode": 3,
+            "VHS_LoadVideo": 1,
+            "ImageScale": 1,
+            "SplitSigmas": 1,
+            "VHS_VideoCombine": 1,
+            "Reroute": 1,
+            "VAEDecode": 1,
+            "LoraLoaderModelOnly": 1
+          },
+          "modelNameReferences": [
+            {
+              "nodeType": "CLIPLoader",
+              "declaredFileName": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+              "identityHashVerified": false
+            },
+            {
+              "nodeType": "VAELoader",
+              "declaredFileName": "Wan2.1_VAE.pth",
+              "identityHashVerified": false
+            },
+            {
+              "nodeType": "UNETLoader",
+              "declaredFileName": "wan2.1_t2v_1.3B_fp16.safetensors",
+              "identityHashVerified": false
+            },
+            {
+              "nodeType": "LoraLoaderModelOnly",
+              "declaredFileName": "wan\\wan2.1-1.3b-control-lora-depth-v0.1_comfy.safetensors",
+              "identityHashVerified": false
+            }
+          ],
+          "executed": false
+        }
+      ],
+      "warnings": [],
+      "adoption": {
+        "nativeAPIChanged": false,
+        "loaderRuleChanged": false,
+        "baseOrGraphBindingVerified": false,
+        "realNumericConsumerTested": false,
+        "generationReady": false,
+        "productLocalFileRequirement": "Independent; these development references do not require four Bernini original inputs or whole base reacquisition."
+      }
+    },
+    {
+      "referenceId": "devref:ltx-depth",
+      "sourceNo": 2,
+      "purpose": "DEVELOPMENT_REFERENCE_NOT_FORCED_PRODUCT_INPUT",
+      "sources": [
+        {
+          "sourceNo": 2,
+          "type": "google-drive",
+          "fileId": "1xkFOZ-xrNZ6mejSfrrtOCJUG6ZL6RbnM",
+          "url": "https://drive.google.com/file/d/1xkFOZ-xrNZ6mejSfrrtOCJUG6ZL6RbnM/view",
+          "status": "ACQUIRED_EXACT_BYTES_LOCALLY_HASHED",
+          "bytes": 128258760,
+          "sha256": "cf7932c87599f8991e0b4e4303fe755ea798897d646f222d75966302889a10b6",
+          "metadata": {
+            "name": "LTX_depth.zip",
+            "mimeType": "application/x-zip-compressed",
+            "modifiedTime": "2026-10-31T10:24:57.469Z",
+            "providerMD5": null,
+            "providerSHA256": null
+          },
+          "acquisition": "GoogleDrive plugin raw fetch materialized from authorized file_uri"
+        }
+      ],
+      "archive": {
+        "fileName": "LTX_depth.zip",
+        "bytes": 128258760,
+        "sha256": "cf7932c87599f8991e0b4e4303fe755ea798897d646f222d75966302889a10b6",
+        "memberCount": 3,
+        "totalUncompressedBytes": 163832320,
+        "safePathAndFileTypeChecks": "PASS",
+        "streamingCRCAndExactByteChecks": "PASS",
+        "members": [
+          {
+            "path": "LTX_depth/",
+            "bytes": 0,
+            "compressedBytes": 0,
+            "crc32": "00000000",
+            "directory": true
+          },
+          {
+            "path": "LTX_depth/ltxv-097-ic-lora-depth-control-comfyui.safetensors",
+            "bytes": 81918064,
+            "compressedBytes": 64129043,
+            "crc32": "be237c48",
+            "directory": false,
+            "sha256": "5240eedddc2173d517d6d374f8612ea1baf6c4a758654d524ce22521798fb71e"
+          },
+          {
+            "path": "LTX_depth/ltxv-097-ic-lora-depth-control-diffusers.safetensors",
+            "bytes": 81914256,
+            "compressedBytes": 64129003,
+            "crc32": "f6e14b95",
+            "directory": false,
+            "sha256": "ba5346cc99cde3ab730f34952c77d1765ee8315e189546b1a559a3efc8bd20b3"
+          }
+        ]
+      },
+      "safetensors": [
+        {
+          "fileName": "ltxv-097-ic-lora-depth-control-comfyui.safetensors",
+          "bytes": 81918064,
+          "sha256": "5240eedddc2173d517d6d374f8612ea1baf6c4a758654d524ce22521798fb71e",
+          "headerBytes": 129128,
+          "headerSHA256": "9b836688e7982c7dff0701d92f8ee81e573f23143302084a8c4a0a4b2ace0d1d",
+          "tensorCount": 960,
+          "dtypes": {
+            "BF16": 960
+          },
+          "metadataKeys": [],
+          "metadataArchitectureOrBaseHashEvidence": null,
+          "sourceMetadataFormat": null,
+          "adapterPairs": 480,
+          "linearPairs": 480,
+          "conv5dPairs": 0,
+          "ranks": {
+            "8": 480
+          },
+          "structuralTargetShapes": {
+            "[4096,4096]": 384,
+            "[16384,4096]": 48,
+            "[4096,16384]": 48
+          },
+          "targetPatterns": {
+            "diffusion_model.transformer_blocks.*.attn1.to_k": 48,
+            "diffusion_model.transformer_blocks.*.attn1.to_out.0": 48,
+            "diffusion_model.transformer_blocks.*.attn1.to_q": 48,
+            "diffusion_model.transformer_blocks.*.attn1.to_v": 48,
+            "diffusion_model.transformer_blocks.*.attn2.to_k": 48,
+            "diffusion_model.transformer_blocks.*.attn2.to_out.0": 48,
+            "diffusion_model.transformer_blocks.*.attn2.to_q": 48,
+            "diffusion_model.transformer_blocks.*.attn2.to_v": 48,
+            "diffusion_model.transformer_blocks.*.ff.net.0.proj": 48,
+            "diffusion_model.transformer_blocks.*.ff.net.2": 48
+          },
+          "alphaTensorCount": 0,
+          "otherTensors": [],
+          "reshapeMarkers": {},
+          "unknownPairShapes": [],
+          "loaderPolicy": "No loader policy or alpha-default inferred from file names. A/B2D is structurally recognized; 5D Conv/reshape needs an explicit supported handler.",
+          "baseHash": null,
+          "graphHash": null,
+          "registryHash": null,
+          "numericApplicationVerified": false,
+          "currentBernini5120DiagnosticCompatible": false,
+          "scope": "SAFETENSORS_STATIC_HEADER_AND_PAYLOAD_LAYOUT"
+        },
+        {
+          "fileName": "ltxv-097-ic-lora-depth-control-diffusers.safetensors",
+          "bytes": 81914256,
+          "sha256": "ba5346cc99cde3ab730f34952c77d1765ee8315e189546b1a559a3efc8bd20b3",
+          "headerBytes": 125320,
+          "headerSHA256": "213804ba9268f762665698bd54e75d35f6a9f34a0b38165444320ae023cbc933",
+          "tensorCount": 960,
+          "dtypes": {
+            "BF16": 960
+          },
+          "metadataKeys": [
+            "format"
+          ],
+          "metadataArchitectureOrBaseHashEvidence": null,
+          "sourceMetadataFormat": "pt",
+          "adapterPairs": 480,
+          "linearPairs": 480,
+          "conv5dPairs": 0,
+          "ranks": {
+            "8": 480
+          },
+          "structuralTargetShapes": {
+            "[4096,4096]": 384,
+            "[16384,4096]": 48,
+            "[4096,16384]": 48
+          },
+          "targetPatterns": {
+            "transformer.transformer_blocks.*.attn1.to_k": 48,
+            "transformer.transformer_blocks.*.attn1.to_out.0": 48,
+            "transformer.transformer_blocks.*.attn1.to_q": 48,
+            "transformer.transformer_blocks.*.attn1.to_v": 48,
+            "transformer.transformer_blocks.*.attn2.to_k": 48,
+            "transformer.transformer_blocks.*.attn2.to_out.0": 48,
+            "transformer.transformer_blocks.*.attn2.to_q": 48,
+            "transformer.transformer_blocks.*.attn2.to_v": 48,
+            "transformer.transformer_blocks.*.ff.net.0.proj": 48,
+            "transformer.transformer_blocks.*.ff.net.2": 48
+          },
+          "alphaTensorCount": 0,
+          "otherTensors": [],
+          "reshapeMarkers": {},
+          "unknownPairShapes": [],
+          "loaderPolicy": "No loader policy or alpha-default inferred from file names. A/B2D is structurally recognized; 5D Conv/reshape needs an explicit supported handler.",
+          "baseHash": null,
+          "graphHash": null,
+          "registryHash": null,
+          "numericApplicationVerified": false,
+          "currentBernini5120DiagnosticCompatible": false,
+          "scope": "SAFETENSORS_STATIC_HEADER_AND_PAYLOAD_LAYOUT"
+        }
+      ],
+      "workflows": [],
+      "warnings": [],
+      "adoption": {
+        "nativeAPIChanged": false,
+        "loaderRuleChanged": false,
+        "baseOrGraphBindingVerified": false,
+        "realNumericConsumerTested": false,
+        "generationReady": false,
+        "productLocalFileRequirement": "Independent; these development references do not require four Bernini original inputs or whole base reacquisition."
+      }
+    },
+    {
+      "referenceId": "devref:wan-tile",
+      "sourceNo": 3,
+      "purpose": "DEVELOPMENT_REFERENCE_NOT_FORCED_PRODUCT_INPUT",
+      "sources": [
+        {
+          "sourceNo": 3,
+          "type": "google-drive",
+          "fileId": "1GzAEMunWS9WUGwLvqVfTZIzVRQzGcLGR",
+          "url": "https://drive.google.com/file/d/1GzAEMunWS9WUGwLvqVfTZIzVRQzGcLGR/view",
+          "status": "ACQUIRED_EXACT_BYTES_LOCALLY_HASHED",
+          "bytes": 351227060,
+          "sha256": "2babb12849be8161c5081f7ca46382d9e3face3618fda16aff91ddff8f04cd48",
+          "metadata": {
+            "name": "Wan_Tile.zip",
+            "mimeType": "application/x-zip-compressed",
+            "modifiedTime": "2026-10-31T10:28:01.507Z",
+            "providerMD5": null,
+            "providerSHA256": null
+          },
+          "acquisition": "Public share standard observed Download anyway form after Drive plugin413 raw-file capability limit"
+        },
+        {
+          "sourceNo": "attachment:3",
+          "type": "conversation-attachment",
+          "pointer": "sediment://file_00000000164c8206ab667c5c455391a4",
+          "reportedFileName": "Wan_Tile.zip",
+          "status": "UNREAD_BYTE_IDENTITY_NOT_COMPARED",
+          "independentBytesRead": false,
+          "sameNameDoesNotEstablishSameBytes": true
+        }
+      ],
+      "archive": {
+        "fileName": "Wan_Tile.zip",
+        "bytes": 351227060,
+        "sha256": "2babb12849be8161c5081f7ca46382d9e3face3618fda16aff91ddff8f04cd48",
+        "memberCount": 3,
+        "totalUncompressedBytes": 378424475,
+        "safePathAndFileTypeChecks": "PASS",
+        "streamingCRCAndExactByteChecks": "PASS",
+        "members": [
+          {
+            "path": "Wan_Tile/",
+            "bytes": 0,
+            "compressedBytes": 0,
+            "crc32": "00000000",
+            "directory": true
+          },
+          {
+            "path": "Wan_Tile/wan2.1-1.3b-control-lora-tile-v1.1_comfy.safetensors",
+            "bytes": 378400000,
+            "compressedBytes": 351222496,
+            "crc32": "a5b51bbc",
+            "directory": false,
+            "sha256": "5a3b82f3e4a2f6bebade1c0e61da56af558ffbb292afb04b5446db8ef1e2d988"
+          },
+          {
+            "path": "Wan_Tile/Wan2.1_1.3b_tile_control_lora.json",
+            "bytes": 24475,
+            "compressedBytes": 3888,
+            "crc32": "4852a2bf",
+            "directory": false,
+            "sha256": "d43d6d82a45d1fc63586e5bba6cdebefa2156f1eca9bb2dc8b3411573269dbae"
+          }
+        ]
+      },
+      "safetensors": [
+        {
+          "fileName": "wan2.1-1.3b-control-lora-tile-v1.1_comfy.safetensors",
+          "bytes": 378400000,
+          "sha256": "5a3b82f3e4a2f6bebade1c0e61da56af558ffbb292afb04b5446db8ef1e2d988",
+          "headerBytes": 60624,
+          "headerSHA256": "f29e41b6b6361fcc6e922761a0aeffe1d9c4be52d0e0102df92e011049360900",
+          "tensorCount": 483,
+          "dtypes": {
+            "I64": 1,
+            "F32": 482
+          },
+          "metadataKeys": [],
+          "metadataArchitectureOrBaseHashEvidence": null,
+          "sourceMetadataFormat": null,
+          "adapterPairs": 241,
+          "linearPairs": 240,
+          "conv5dPairs": 1,
+          "ranks": {
+            "128": 241
+          },
+          "structuralTargetShapes": {
+            "[1536,1536]": 240,
+            "[1536,32,1,2,2]": 1
+          },
+          "targetPatterns": {
+            "diffusion_model.blocks.*.cross_attn.k": 30,
+            "diffusion_model.blocks.*.cross_attn.o": 30,
+            "diffusion_model.blocks.*.cross_attn.q": 30,
+            "diffusion_model.blocks.*.cross_attn.v": 30,
+            "diffusion_model.blocks.*.self_attn.k": 30,
+            "diffusion_model.blocks.*.self_attn.o": 30,
+            "diffusion_model.blocks.*.self_attn.q": 30,
+            "diffusion_model.blocks.*.self_attn.v": 30,
+            "diffusion_model.patch_embedding": 1
+          },
+          "alphaTensorCount": 0,
+          "otherTensors": [
+            {
+              "name": "diffusion_model.patch_embedding.reshape_weight",
+              "dtype": "I64",
+              "shape": [
+                5
+              ]
+            }
+          ],
+          "reshapeMarkers": {
+            "diffusion_model.patch_embedding.reshape_weight": [
+              1536,
+              32,
+              1,
+              2,
+              2
+            ]
+          },
+          "unknownPairShapes": [],
+          "loaderPolicy": "No loader policy or alpha-default inferred from file names. A/B2D is structurally recognized; 5D Conv/reshape needs an explicit supported handler.",
+          "baseHash": null,
+          "graphHash": null,
+          "registryHash": null,
+          "numericApplicationVerified": false,
+          "currentBernini5120DiagnosticCompatible": false,
+          "scope": "SAFETENSORS_STATIC_HEADER_AND_PAYLOAD_LAYOUT"
+        }
+      ],
+      "workflows": [
+        {
+          "fileName": "Wan2.1_1.3b_tile_control_lora.json",
+          "sha256": "d43d6d82a45d1fc63586e5bba6cdebefa2156f1eca9bb2dc8b3411573269dbae",
+          "nodeTypes": {
+            "CLIPLoader": 1,
+            "UNETLoader": 1,
+            "CLIPTextEncode": 2,
+            "VAELoader": 1,
+            "InstructPixToPixConditioning": 1,
+            "PrimitiveNode": 3,
+            "ImageScale": 1,
+            "Note": 3,
+            "ModelSamplingSD3": 1,
+            "ImageBlur": 1,
+            "KSampler": 1,
+            "VHS_LoadVideo": 1,
+            "VAEDecode": 1,
+            "ImageCompositeMasked": 1,
+            "EmptyHunyuanLatentVideo": 1,
+            "Reroute": 1,
+            "VAEEncode": 1,
+            "LoraLoaderModelOnly": 2,
+            "ImagePadForOutpaint": 1,
+            "VHS_VideoCombine": 1
+          },
+          "modelNameReferences": [
+            {
+              "nodeType": "CLIPLoader",
+              "declaredFileName": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+              "identityHashVerified": false
+            },
+            {
+              "nodeType": "UNETLoader",
+              "declaredFileName": "wan2.1_t2v_1.3B_bf16.safetensors",
+              "identityHashVerified": false
+            },
+            {
+              "nodeType": "VAELoader",
+              "declaredFileName": "Wan2.1_VAE.pth",
+              "identityHashVerified": false
+            },
+            {
+              "nodeType": "LoraLoaderModelOnly",
+              "declaredFileName": "wan\\wan2.1-1.3b-control-lora-tile-v1.0_comfy.safetensors",
+              "identityHashVerified": false
+            },
+            {
+              "nodeType": "LoraLoaderModelOnly",
+              "declaredFileName": "wan\\wan-1.3b-cfgdistill-video-4.0-00001000_comfy.safetensors",
+              "identityHashVerified": false
+            }
+          ],
+          "executed": false
+        }
+      ],
+      "warnings": [
+        "ZIP contains tile-v1.1 adapter, but supplied workflow names tile-v1.0.",
+        "Workflow additionally names wan-1.3b-cfgdistill-video-4.0-00001000_comfy.safetensors, which is not supplied by this ZIP."
+      ],
+      "adoption": {
+        "nativeAPIChanged": false,
+        "loaderRuleChanged": false,
+        "baseOrGraphBindingVerified": false,
+        "realNumericConsumerTested": false,
+        "generationReady": false,
+        "productLocalFileRequirement": "Independent; these development references do not require four Bernini original inputs or whole base reacquisition."
+      }
+    }
+  ]
+}
