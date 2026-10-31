@@ -1,0 +1,1267 @@
+{
+  "schemaVersion": "lora-manager-numeric-witness/0.1-draft.1",
+  "witnessKind": "retained-owner-binding-declaration-witness",
+  "fixtureOnly": true,
+  "currentLiveAdmission": false,
+  "originalExecutionSourceCommit": "25e5b56feeb070594110bb292d9de21e4e234f0a",
+  "originalDistributionCommit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+  "selection": {
+    "pairId": "light",
+    "noise": "high"
+  },
+  "recordedCase": "initial-one",
+  "recordedSnapshotTarget": {
+    "snapshotId": "p3:actual:initial-one:a182d65f-253f-48e9-84fd-9001f5afc394",
+    "snapshotHash": "04138b802d0826522990244824536cde214429efd9b6f6e3c1ee59f6616e0827",
+    "managerSessionId": "p3:actual:2dbaacc4-a516-4dd3-9530-f8ff1fbff70e",
+    "managerRevision": 1002,
+    "stepId": "HIGH",
+    "operationId": "diagnose",
+    "resourceBinding": {
+      "ownerId": "p3:actual-owner:1e0f8e79-77dc-469d-8655-2e6bdb5018ea",
+      "bindingId": "p3:actual-high-q16",
+      "resourceGeneration": "af723a10-483a-4ffd-ab51-324e0d827ebb"
+    },
+    "localRevisionBindings": {
+      "sdkInstanceId": "4828b34b-f762-4101-ab8c-8f5630a76940",
+      "localInputRevision": 2,
+      "localApplicationRevision": 2
+    }
+  },
+  "recordedPhaseTarget": {
+    "managerSessionId": "p3:actual:2dbaacc4-a516-4dd3-9530-f8ff1fbff70e",
+    "managerRevision": 1002,
+    "requestId": "p3:actual:initial-one:1:stage:3",
+    "resourceBinding": {
+      "ownerId": "p3:actual-owner:1e0f8e79-77dc-469d-8655-2e6bdb5018ea",
+      "bindingId": "p3:actual-high-q16",
+      "resourceGeneration": "af723a10-483a-4ffd-ab51-324e0d827ebb"
+    }
+  },
+  "sourceRefs": [
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+      "path": "development/ai-connection/reference-adoption/lora/evidence/p3/run-result.json.gz",
+      "byteLength": 197667,
+      "sha256": "37a229469a21c8d78057d5a6202e59920a4c10e081019bcc401485481758f6bd"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+      "path": "development/ai-connection/reference-adoption/lora/evidence/p3/selected-scope.json",
+      "byteLength": 253143,
+      "sha256": "1af75e98c507e25e4e306503c7f851a882e33751ec000dd589d3b75add1414f7"
+    }
+  ],
+  "nativeSourcePins": {
+    "sdk": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+      "path": "docs/shared/inference/lora/sdk-v2.mjs",
+      "sha256": "c425519eb282f798f4296bc97fd1506664afd850dee9addb17af77dd41e39fa0"
+    },
+    "adapter": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+      "path": "docs/shared/inference/lora/diffusion-diagnostic-adapter.mjs",
+      "sha256": "bcea7b495e819d1e1052543f36cbdad0ed8515e74bd8914cf66dc03b093c6e4f"
+    },
+    "kernel": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+      "path": "docs/shared/inference/lora/kernel/lora.wasm",
+      "sha256": "3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24",
+      "byteLength": 5051
+    },
+    "diffusion": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "path": "docs/shared/diffusion-models/lora/diagnostic-consumer.mjs",
+      "sha256": "fdac31542f87d68b9e01a1ba674ee9b60433cae685d6670222f8d914dd27f943"
+    }
+  },
+  "planDataKind": "projection of captured public owner binding, selected plan scope and captured loaderDetails; not an opaque SDK plan handle",
+  "dataExport": {
+    "schemaVersion": "lora-numeric-declarations/0.1-draft.1",
+    "declarationScope": "prepared-weight-bias",
+    "presencePolicy": "own non-undefined property; explicit null is retained as declared, not defaulted",
+    "bindingInput": "canonical-owner",
+    "patches": [
+      {
+        "key": "diffusion_model.blocks.0.self_attn.q.weight",
+        "weightId": "q.weight",
+        "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+        "strength": 1,
+        "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "planId": "d31940d154612172c9f12fb4ed23e205ec5301d749fe50db1afee8aab2dd1a42",
+        "selection": {
+          "pairId": "light",
+          "noise": "high"
+        },
+        "variant": "linear-down-up",
+        "rank": 128,
+        "alpha": 128,
+        "alphaName": "diffusion_model.blocks.0.self_attn.q.alpha",
+        "scale": 1,
+        "fullShape": [
+          5120,
+          5120
+        ],
+        "slice": {
+          "startRow": 0,
+          "rowCount": 16
+        },
+        "names": [
+          "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+          "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+          "diffusion_model.blocks.0.self_attn.q.alpha"
+        ],
+        "nativeRegistryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+        "connectionRegistryHash": "cc6a329b0cffbdf3c2a50914843da33e7d402a815921e206ddf5f8b0fea4c806",
+        "baseDtype": "F32",
+        "outputDtype": "F32",
+        "layout": "row-major",
+        "baseLayout": "row-major",
+        "sourceStorageDtype": "F8_E4M3",
+        "observed": {
+          "native": {
+            "dtype": "F32",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "storageDtype": "F8_E4M3"
+          },
+          "connection": {
+            "dtype": "F32",
+            "layout": "row-major"
+          },
+          "target": {
+            "dtype": "F32",
+            "layout": "row-major"
+          }
+        },
+        "presence": {
+          "loaderPolicyId": true,
+          "strength": true,
+          "sourceSha256": true,
+          "planId": true,
+          "selection": true,
+          "variant": true,
+          "rank": true,
+          "alpha": true,
+          "alphaName": true,
+          "scale": true,
+          "fullShape": true,
+          "slice": true,
+          "names": true,
+          "nativeRegistryHash": true,
+          "connectionRegistryHash": true,
+          "baseDtype": true,
+          "outputDtype": true,
+          "layout": true,
+          "baseLayout": true,
+          "sourceStorageDtype": true,
+          "observed": {
+            "native": {
+              "dtype": true,
+              "computeDtype": true,
+              "layout": true,
+              "storageDtype": true
+            },
+            "connection": {
+              "dtype": true,
+              "layout": true
+            },
+            "target": {
+              "dtype": true,
+              "layout": true
+            }
+          }
+        },
+        "origins": {
+          "loaderPolicyId": {
+            "container": "plan",
+            "path": "/loaderPolicyId",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "strength": {
+            "container": "plan",
+            "path": "/strength",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "sourceSha256": {
+            "container": "plan",
+            "path": "/sourceSha256",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "planId": {
+            "container": "plan",
+            "path": "/planId",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "selection": {
+            "container": "plan",
+            "path": "/selection",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "variant": {
+            "container": "plan",
+            "path": "/operations/0/variant",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "rank": {
+            "container": "plan",
+            "path": "/operations/0/rank",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "alpha": {
+            "container": "plan",
+            "path": "/operations/0/alpha",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "alphaName": {
+            "container": "plan",
+            "path": "/operations/0/alphaName",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "scale": {
+            "container": "plan",
+            "path": "/operations/0/scale",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "fullShape": {
+            "container": "plan",
+            "path": "/operations/0/fullShape",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "slice": {
+            "container": "plan",
+            "path": "/operations/0/slice",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "names": {
+            "container": "plan",
+            "path": "/operations/0/names",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "nativeRegistryHash": {
+            "container": "ownerBinding",
+            "path": "/nativeRegistryHash",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "connectionRegistryHash": {
+            "container": "ownerBinding",
+            "path": "/connectionRegistryHash",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "baseDtype": {
+            "container": "ownerBinding",
+            "path": "/nativeRegistry/targets/0/computeDtype",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "outputDtype": {
+            "container": "ownerBinding",
+            "path": "/connectionRegistry/targets/0/dtype",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "layout": {
+            "container": "ownerBinding",
+            "path": "/connectionRegistry/targets/0/layout",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "baseLayout": {
+            "container": "ownerBinding",
+            "path": "/nativeRegistry/targets/0/layout",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "sourceStorageDtype": {
+            "container": "ownerBinding",
+            "path": "/nativeRegistry/targets/0/storageDtype",
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight"
+          },
+          "observed": {
+            "native": {
+              "dtype": {
+                "container": "ownerBinding",
+                "path": "/nativeRegistry/targets/0/dtype",
+                "key": "diffusion_model.blocks.0.self_attn.q.weight",
+                "weightId": "q.weight"
+              },
+              "computeDtype": {
+                "container": "ownerBinding",
+                "path": "/nativeRegistry/targets/0/computeDtype",
+                "key": "diffusion_model.blocks.0.self_attn.q.weight",
+                "weightId": "q.weight"
+              },
+              "layout": {
+                "container": "ownerBinding",
+                "path": "/nativeRegistry/targets/0/layout",
+                "key": "diffusion_model.blocks.0.self_attn.q.weight",
+                "weightId": "q.weight"
+              },
+              "storageDtype": {
+                "container": "ownerBinding",
+                "path": "/nativeRegistry/targets/0/storageDtype",
+                "key": "diffusion_model.blocks.0.self_attn.q.weight",
+                "weightId": "q.weight"
+              }
+            },
+            "connection": {
+              "dtype": {
+                "container": "ownerBinding",
+                "path": "/connectionRegistry/targets/0/dtype",
+                "key": "diffusion_model.blocks.0.self_attn.q.weight",
+                "weightId": "q.weight"
+              },
+              "layout": {
+                "container": "ownerBinding",
+                "path": "/connectionRegistry/targets/0/layout",
+                "key": "diffusion_model.blocks.0.self_attn.q.weight",
+                "weightId": "q.weight"
+              }
+            },
+            "target": {
+              "dtype": {
+                "container": "plan",
+                "path": "/operations/0/target/dtype",
+                "key": "diffusion_model.blocks.0.self_attn.q.weight",
+                "weightId": "q.weight"
+              },
+              "layout": {
+                "container": "plan",
+                "path": "/operations/0/target/layout",
+                "key": "diffusion_model.blocks.0.self_attn.q.weight",
+                "weightId": "q.weight"
+              }
+            }
+          }
+        },
+        "missingPaths": []
+      },
+      {
+        "key": "diffusion_model.blocks.0.self_attn.q.bias",
+        "weightId": "q.bias",
+        "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+        "strength": 1,
+        "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "planId": "d31940d154612172c9f12fb4ed23e205ec5301d749fe50db1afee8aab2dd1a42",
+        "selection": {
+          "pairId": "light",
+          "noise": "high"
+        },
+        "variant": "additive-diff-b",
+        "rank": null,
+        "alpha": null,
+        "alphaName": null,
+        "scale": 1,
+        "fullShape": [
+          5120
+        ],
+        "slice": {
+          "startRow": 0,
+          "rowCount": 16
+        },
+        "names": [
+          "diffusion_model.blocks.0.self_attn.q.diff_b"
+        ],
+        "nativeRegistryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+        "connectionRegistryHash": "cc6a329b0cffbdf3c2a50914843da33e7d402a815921e206ddf5f8b0fea4c806",
+        "baseDtype": "F32",
+        "outputDtype": "F32",
+        "layout": "row-major",
+        "baseLayout": "row-major",
+        "sourceStorageDtype": "F16",
+        "observed": {
+          "native": {
+            "dtype": "F32",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "storageDtype": "F16"
+          },
+          "connection": {
+            "dtype": "F32",
+            "layout": "row-major"
+          },
+          "target": {
+            "dtype": "F32",
+            "layout": "row-major"
+          }
+        },
+        "presence": {
+          "loaderPolicyId": true,
+          "strength": true,
+          "sourceSha256": true,
+          "planId": true,
+          "selection": true,
+          "variant": true,
+          "rank": false,
+          "alpha": false,
+          "alphaName": false,
+          "scale": true,
+          "fullShape": true,
+          "slice": true,
+          "names": true,
+          "nativeRegistryHash": true,
+          "connectionRegistryHash": true,
+          "baseDtype": true,
+          "outputDtype": true,
+          "layout": true,
+          "baseLayout": true,
+          "sourceStorageDtype": true,
+          "observed": {
+            "native": {
+              "dtype": true,
+              "computeDtype": true,
+              "layout": true,
+              "storageDtype": true
+            },
+            "connection": {
+              "dtype": true,
+              "layout": true
+            },
+            "target": {
+              "dtype": true,
+              "layout": true
+            }
+          }
+        },
+        "origins": {
+          "loaderPolicyId": {
+            "container": "plan",
+            "path": "/loaderPolicyId",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "strength": {
+            "container": "plan",
+            "path": "/strength",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "sourceSha256": {
+            "container": "plan",
+            "path": "/sourceSha256",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "planId": {
+            "container": "plan",
+            "path": "/planId",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "selection": {
+            "container": "plan",
+            "path": "/selection",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "variant": {
+            "container": "plan",
+            "path": "/operations/1/variant",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "rank": {
+            "container": "plan",
+            "path": "/operations/1/rank",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "alpha": {
+            "container": "plan",
+            "path": "/operations/1/alpha",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "alphaName": {
+            "container": "plan",
+            "path": "/operations/1/alphaName",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "scale": {
+            "container": "plan",
+            "path": "/operations/1/scale",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "fullShape": {
+            "container": "plan",
+            "path": "/operations/1/fullShape",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "slice": {
+            "container": "plan",
+            "path": "/operations/1/slice",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "names": {
+            "container": "plan",
+            "path": "/operations/1/names",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "nativeRegistryHash": {
+            "container": "ownerBinding",
+            "path": "/nativeRegistryHash",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "connectionRegistryHash": {
+            "container": "ownerBinding",
+            "path": "/connectionRegistryHash",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "baseDtype": {
+            "container": "ownerBinding",
+            "path": "/nativeRegistry/targets/1/computeDtype",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "outputDtype": {
+            "container": "ownerBinding",
+            "path": "/connectionRegistry/targets/1/dtype",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "layout": {
+            "container": "ownerBinding",
+            "path": "/connectionRegistry/targets/1/layout",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "baseLayout": {
+            "container": "ownerBinding",
+            "path": "/nativeRegistry/targets/1/layout",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "sourceStorageDtype": {
+            "container": "ownerBinding",
+            "path": "/nativeRegistry/targets/1/storageDtype",
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias"
+          },
+          "observed": {
+            "native": {
+              "dtype": {
+                "container": "ownerBinding",
+                "path": "/nativeRegistry/targets/1/dtype",
+                "key": "diffusion_model.blocks.0.self_attn.q.bias",
+                "weightId": "q.bias"
+              },
+              "computeDtype": {
+                "container": "ownerBinding",
+                "path": "/nativeRegistry/targets/1/computeDtype",
+                "key": "diffusion_model.blocks.0.self_attn.q.bias",
+                "weightId": "q.bias"
+              },
+              "layout": {
+                "container": "ownerBinding",
+                "path": "/nativeRegistry/targets/1/layout",
+                "key": "diffusion_model.blocks.0.self_attn.q.bias",
+                "weightId": "q.bias"
+              },
+              "storageDtype": {
+                "container": "ownerBinding",
+                "path": "/nativeRegistry/targets/1/storageDtype",
+                "key": "diffusion_model.blocks.0.self_attn.q.bias",
+                "weightId": "q.bias"
+              }
+            },
+            "connection": {
+              "dtype": {
+                "container": "ownerBinding",
+                "path": "/connectionRegistry/targets/1/dtype",
+                "key": "diffusion_model.blocks.0.self_attn.q.bias",
+                "weightId": "q.bias"
+              },
+              "layout": {
+                "container": "ownerBinding",
+                "path": "/connectionRegistry/targets/1/layout",
+                "key": "diffusion_model.blocks.0.self_attn.q.bias",
+                "weightId": "q.bias"
+              }
+            },
+            "target": {
+              "dtype": {
+                "container": "plan",
+                "path": "/operations/1/target/dtype",
+                "key": "diffusion_model.blocks.0.self_attn.q.bias",
+                "weightId": "q.bias"
+              },
+              "layout": {
+                "container": "plan",
+                "path": "/operations/1/target/layout",
+                "key": "diffusion_model.blocks.0.self_attn.q.bias",
+                "weightId": "q.bias"
+              }
+            }
+          }
+        },
+        "missingPaths": [
+          "/operations/1/rank",
+          "/operations/1/alpha",
+          "/operations/1/alphaName"
+        ]
+      }
+    ],
+    "presence": {
+      "sourceSha256": true,
+      "planId": true,
+      "sdkInstanceId": true,
+      "localInputRevision": true,
+      "localApplicationRevision": true,
+      "buildId": true,
+      "selection": true,
+      "coverage": true,
+      "scope": true,
+      "adapterVersion": true,
+      "nativeRegistryHash": true,
+      "connectionRegistryHash": true
+    },
+    "origins": {
+      "sourceSha256": {
+        "container": "plan",
+        "path": "/sourceSha256"
+      },
+      "planId": {
+        "container": "plan",
+        "path": "/planId"
+      },
+      "sdkInstanceId": {
+        "container": "plan",
+        "path": "/sdkInstanceId"
+      },
+      "localInputRevision": {
+        "container": "plan",
+        "path": "/localInputRevision"
+      },
+      "localApplicationRevision": {
+        "container": "plan",
+        "path": "/localApplicationRevision"
+      },
+      "buildId": {
+        "container": "plan",
+        "path": "/buildId"
+      },
+      "selection": {
+        "container": "plan",
+        "path": "/selection"
+      },
+      "coverage": {
+        "container": "plan",
+        "path": "/coverage"
+      },
+      "scope": {
+        "container": "plan",
+        "path": "/scope"
+      },
+      "adapterVersion": {
+        "container": "ownerBinding",
+        "path": "/adapterVersion"
+      },
+      "nativeRegistryHash": {
+        "container": "ownerBinding",
+        "path": "/nativeRegistryHash"
+      },
+      "connectionRegistryHash": {
+        "container": "ownerBinding",
+        "path": "/connectionRegistryHash"
+      }
+    },
+    "missingPaths": [],
+    "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+    "planId": "d31940d154612172c9f12fb4ed23e205ec5301d749fe50db1afee8aab2dd1a42",
+    "sdkInstanceId": "4828b34b-f762-4101-ab8c-8f5630a76940",
+    "localInputRevision": 2,
+    "localApplicationRevision": 2,
+    "buildId": "3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24",
+    "selection": {
+      "pairId": "light",
+      "noise": "high"
+    },
+    "coverage": "PARTIAL",
+    "scope": "diagnostic-projection",
+    "adapterVersion": "lora-diffusion-diagnostic-adapter/0.1",
+    "nativeRegistryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+    "connectionRegistryHash": "cc6a329b0cffbdf3c2a50914843da33e7d402a815921e206ddf5f8b0fea4c806"
+  },
+  "patches": [
+    {
+      "key": "diffusion_model.blocks.0.self_attn.q.weight",
+      "weightId": "q.weight",
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "strength": 1,
+      "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+      "planId": "d31940d154612172c9f12fb4ed23e205ec5301d749fe50db1afee8aab2dd1a42",
+      "selection": {
+        "pairId": "light",
+        "noise": "high"
+      },
+      "variant": "linear-down-up",
+      "rank": 128,
+      "alpha": 128,
+      "alphaName": "diffusion_model.blocks.0.self_attn.q.alpha",
+      "scale": 1,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "slice": {
+        "startRow": 0,
+        "rowCount": 16
+      },
+      "names": [
+        "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+        "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+        "diffusion_model.blocks.0.self_attn.q.alpha"
+      ],
+      "nativeRegistryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+      "connectionRegistryHash": "cc6a329b0cffbdf3c2a50914843da33e7d402a815921e206ddf5f8b0fea4c806",
+      "baseDtype": "F32",
+      "outputDtype": "F32",
+      "layout": "row-major",
+      "baseLayout": "row-major",
+      "sourceStorageDtype": "F8_E4M3",
+      "observed": {
+        "native": {
+          "dtype": "F32",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "storageDtype": "F8_E4M3"
+        },
+        "connection": {
+          "dtype": "F32",
+          "layout": "row-major"
+        },
+        "target": {
+          "dtype": "F32",
+          "layout": "row-major"
+        }
+      },
+      "presence": {
+        "loaderPolicyId": true,
+        "strength": true,
+        "sourceSha256": true,
+        "planId": true,
+        "selection": true,
+        "variant": true,
+        "rank": true,
+        "alpha": true,
+        "alphaName": true,
+        "scale": true,
+        "fullShape": true,
+        "slice": true,
+        "names": true,
+        "nativeRegistryHash": true,
+        "connectionRegistryHash": true,
+        "baseDtype": true,
+        "outputDtype": true,
+        "layout": true,
+        "baseLayout": true,
+        "sourceStorageDtype": true,
+        "observed": {
+          "native": {
+            "dtype": true,
+            "computeDtype": true,
+            "layout": true,
+            "storageDtype": true
+          },
+          "connection": {
+            "dtype": true,
+            "layout": true
+          },
+          "target": {
+            "dtype": true,
+            "layout": true
+          }
+        }
+      },
+      "origins": {
+        "loaderPolicyId": {
+          "container": "plan",
+          "path": "/loaderPolicyId",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "strength": {
+          "container": "plan",
+          "path": "/strength",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "sourceSha256": {
+          "container": "plan",
+          "path": "/sourceSha256",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "planId": {
+          "container": "plan",
+          "path": "/planId",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "selection": {
+          "container": "plan",
+          "path": "/selection",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "variant": {
+          "container": "plan",
+          "path": "/operations/0/variant",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "rank": {
+          "container": "plan",
+          "path": "/operations/0/rank",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "alpha": {
+          "container": "plan",
+          "path": "/operations/0/alpha",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "alphaName": {
+          "container": "plan",
+          "path": "/operations/0/alphaName",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "scale": {
+          "container": "plan",
+          "path": "/operations/0/scale",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "fullShape": {
+          "container": "plan",
+          "path": "/operations/0/fullShape",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "slice": {
+          "container": "plan",
+          "path": "/operations/0/slice",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "names": {
+          "container": "plan",
+          "path": "/operations/0/names",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "nativeRegistryHash": {
+          "container": "ownerBinding",
+          "path": "/nativeRegistryHash",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "connectionRegistryHash": {
+          "container": "ownerBinding",
+          "path": "/connectionRegistryHash",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "baseDtype": {
+          "container": "ownerBinding",
+          "path": "/nativeRegistry/targets/0/computeDtype",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "outputDtype": {
+          "container": "ownerBinding",
+          "path": "/connectionRegistry/targets/0/dtype",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "layout": {
+          "container": "ownerBinding",
+          "path": "/connectionRegistry/targets/0/layout",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "baseLayout": {
+          "container": "ownerBinding",
+          "path": "/nativeRegistry/targets/0/layout",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "sourceStorageDtype": {
+          "container": "ownerBinding",
+          "path": "/nativeRegistry/targets/0/storageDtype",
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight"
+        },
+        "observed": {
+          "native": {
+            "dtype": {
+              "container": "ownerBinding",
+              "path": "/nativeRegistry/targets/0/dtype",
+              "key": "diffusion_model.blocks.0.self_attn.q.weight",
+              "weightId": "q.weight"
+            },
+            "computeDtype": {
+              "container": "ownerBinding",
+              "path": "/nativeRegistry/targets/0/computeDtype",
+              "key": "diffusion_model.blocks.0.self_attn.q.weight",
+              "weightId": "q.weight"
+            },
+            "layout": {
+              "container": "ownerBinding",
+              "path": "/nativeRegistry/targets/0/layout",
+              "key": "diffusion_model.blocks.0.self_attn.q.weight",
+              "weightId": "q.weight"
+            },
+            "storageDtype": {
+              "container": "ownerBinding",
+              "path": "/nativeRegistry/targets/0/storageDtype",
+              "key": "diffusion_model.blocks.0.self_attn.q.weight",
+              "weightId": "q.weight"
+            }
+          },
+          "connection": {
+            "dtype": {
+              "container": "ownerBinding",
+              "path": "/connectionRegistry/targets/0/dtype",
+              "key": "diffusion_model.blocks.0.self_attn.q.weight",
+              "weightId": "q.weight"
+            },
+            "layout": {
+              "container": "ownerBinding",
+              "path": "/connectionRegistry/targets/0/layout",
+              "key": "diffusion_model.blocks.0.self_attn.q.weight",
+              "weightId": "q.weight"
+            }
+          },
+          "target": {
+            "dtype": {
+              "container": "plan",
+              "path": "/operations/0/target/dtype",
+              "key": "diffusion_model.blocks.0.self_attn.q.weight",
+              "weightId": "q.weight"
+            },
+            "layout": {
+              "container": "plan",
+              "path": "/operations/0/target/layout",
+              "key": "diffusion_model.blocks.0.self_attn.q.weight",
+              "weightId": "q.weight"
+            }
+          }
+        }
+      },
+      "missingPaths": [],
+      "sourceDtypes": [
+        "BF16"
+      ],
+      "targetRank": 2
+    },
+    {
+      "key": "diffusion_model.blocks.0.self_attn.q.bias",
+      "weightId": "q.bias",
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "strength": 1,
+      "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+      "planId": "d31940d154612172c9f12fb4ed23e205ec5301d749fe50db1afee8aab2dd1a42",
+      "selection": {
+        "pairId": "light",
+        "noise": "high"
+      },
+      "variant": "additive-diff-b",
+      "rank": null,
+      "alpha": null,
+      "alphaName": null,
+      "scale": 1,
+      "fullShape": [
+        5120
+      ],
+      "slice": {
+        "startRow": 0,
+        "rowCount": 16
+      },
+      "names": [
+        "diffusion_model.blocks.0.self_attn.q.diff_b"
+      ],
+      "nativeRegistryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+      "connectionRegistryHash": "cc6a329b0cffbdf3c2a50914843da33e7d402a815921e206ddf5f8b0fea4c806",
+      "baseDtype": "F32",
+      "outputDtype": "F32",
+      "layout": "row-major",
+      "baseLayout": "row-major",
+      "sourceStorageDtype": "F16",
+      "observed": {
+        "native": {
+          "dtype": "F32",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "storageDtype": "F16"
+        },
+        "connection": {
+          "dtype": "F32",
+          "layout": "row-major"
+        },
+        "target": {
+          "dtype": "F32",
+          "layout": "row-major"
+        }
+      },
+      "presence": {
+        "loaderPolicyId": true,
+        "strength": true,
+        "sourceSha256": true,
+        "planId": true,
+        "selection": true,
+        "variant": true,
+        "rank": false,
+        "alpha": false,
+        "alphaName": false,
+        "scale": true,
+        "fullShape": true,
+        "slice": true,
+        "names": true,
+        "nativeRegistryHash": true,
+        "connectionRegistryHash": true,
+        "baseDtype": true,
+        "outputDtype": true,
+        "layout": true,
+        "baseLayout": true,
+        "sourceStorageDtype": true,
+        "observed": {
+          "native": {
+            "dtype": true,
+            "computeDtype": true,
+            "layout": true,
+            "storageDtype": true
+          },
+          "connection": {
+            "dtype": true,
+            "layout": true
+          },
+          "target": {
+            "dtype": true,
+            "layout": true
+          }
+        }
+      },
+      "origins": {
+        "loaderPolicyId": {
+          "container": "plan",
+          "path": "/loaderPolicyId",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "strength": {
+          "container": "plan",
+          "path": "/strength",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "sourceSha256": {
+          "container": "plan",
+          "path": "/sourceSha256",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "planId": {
+          "container": "plan",
+          "path": "/planId",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "selection": {
+          "container": "plan",
+          "path": "/selection",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "variant": {
+          "container": "plan",
+          "path": "/operations/1/variant",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "rank": {
+          "container": "plan",
+          "path": "/operations/1/rank",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "alpha": {
+          "container": "plan",
+          "path": "/operations/1/alpha",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "alphaName": {
+          "container": "plan",
+          "path": "/operations/1/alphaName",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "scale": {
+          "container": "plan",
+          "path": "/operations/1/scale",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "fullShape": {
+          "container": "plan",
+          "path": "/operations/1/fullShape",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "slice": {
+          "container": "plan",
+          "path": "/operations/1/slice",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "names": {
+          "container": "plan",
+          "path": "/operations/1/names",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "nativeRegistryHash": {
+          "container": "ownerBinding",
+          "path": "/nativeRegistryHash",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "connectionRegistryHash": {
+          "container": "ownerBinding",
+          "path": "/connectionRegistryHash",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "baseDtype": {
+          "container": "ownerBinding",
+          "path": "/nativeRegistry/targets/1/computeDtype",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "outputDtype": {
+          "container": "ownerBinding",
+          "path": "/connectionRegistry/targets/1/dtype",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "layout": {
+          "container": "ownerBinding",
+          "path": "/connectionRegistry/targets/1/layout",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "baseLayout": {
+          "container": "ownerBinding",
+          "path": "/nativeRegistry/targets/1/layout",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "sourceStorageDtype": {
+          "container": "ownerBinding",
+          "path": "/nativeRegistry/targets/1/storageDtype",
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias"
+        },
+        "observed": {
+          "native": {
+            "dtype": {
+              "container": "ownerBinding",
+              "path": "/nativeRegistry/targets/1/dtype",
+              "key": "diffusion_model.blocks.0.self_attn.q.bias",
+              "weightId": "q.bias"
+            },
+            "computeDtype": {
+              "container": "ownerBinding",
+              "path": "/nativeRegistry/targets/1/computeDtype",
+              "key": "diffusion_model.blocks.0.self_attn.q.bias",
+              "weightId": "q.bias"
+            },
+            "layout": {
+              "container": "ownerBinding",
+              "path": "/nativeRegistry/targets/1/layout",
+              "key": "diffusion_model.blocks.0.self_attn.q.bias",
+              "weightId": "q.bias"
+            },
+            "storageDtype": {
+              "container": "ownerBinding",
+              "path": "/nativeRegistry/targets/1/storageDtype",
+              "key": "diffusion_model.blocks.0.self_attn.q.bias",
+              "weightId": "q.bias"
+            }
+          },
+          "connection": {
+            "dtype": {
+              "container": "ownerBinding",
+              "path": "/connectionRegistry/targets/1/dtype",
+              "key": "diffusion_model.blocks.0.self_attn.q.bias",
+              "weightId": "q.bias"
+            },
+            "layout": {
+              "container": "ownerBinding",
+              "path": "/connectionRegistry/targets/1/layout",
+              "key": "diffusion_model.blocks.0.self_attn.q.bias",
+              "weightId": "q.bias"
+            }
+          },
+          "target": {
+            "dtype": {
+              "container": "plan",
+              "path": "/operations/1/target/dtype",
+              "key": "diffusion_model.blocks.0.self_attn.q.bias",
+              "weightId": "q.bias"
+            },
+            "layout": {
+              "container": "plan",
+              "path": "/operations/1/target/layout",
+              "key": "diffusion_model.blocks.0.self_attn.q.bias",
+              "weightId": "q.bias"
+            }
+          }
+        }
+      },
+      "missingPaths": [
+        "/operations/1/rank",
+        "/operations/1/alpha",
+        "/operations/1/alphaName"
+      ],
+      "sourceDtypes": [
+        "BF16"
+      ],
+      "targetRank": 1
+    }
+  ],
+  "scope": "declaration provenance and manager metadata conformance only; no new native/model execution",
+  "generationReady": false
+}

@@ -60,7 +60,7 @@ const referenceFiles=new Map();for(const r of [reference.activation,reference.ba
 const referenceInputs={referenceIdentity:{sourceRef:{repository:REPOSITORY,commit:PRIOR,path:referencePath},sha256:sha(referenceBytes),referenceId:'p3:accepted-high-reference'},gateIdentity:{sourceRef:{repository:REPOSITORY,commit:PRIOR,path:gatePath},sha256:sha(gateBytes),gateId:'p3:accepted-high-gates'}};
 const referenceProof={priorAcceptedReceiptCommit:PRIOR,referenceJSONSHA256:sha(referenceBytes),gateJSONSHA256:sha(gateBytes),priorTrialSourceCommit:old.loraSourceCommit,priorModelFullFileVerified:old.baseAcquisitionReceipt.fullFileVerified,priorModelReceiptIsHistorical:true,fullFileHashRecomputed:false,nativeRegistryHash:provided.registry.registryHash,modelSha256:provided.source.modelSha256,ranges:rawRanges,reusedIndependentReference:true,selectedArrayCount:referenceFiles.size};
 const serverErrors=[],requests=[],artifacts=[];
-const receiverFiles=new Set(['tools/ai-connection/managed-snapshot-browser-cases.mjs','tools/ai-connection/p3-norm-edge.mjs']);
+const receiverFiles=new Set(['tools/ai-connection/managed-snapshot-browser-cases.mjs','tools/ai-connection/p3-norm-edge.mjs','docs/shared/inference/lora/management-admission-inputs.mjs','docs/shared/inference/lora/numeric-declarations.mjs']);
 const allowedManagerDevelopment=new Set(['ai-connection/reference-adoption/CANDIDATES.json']);
 const serve=async(req,res)=>{try{
  const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);requests.push({method:req.method,path:pathname});

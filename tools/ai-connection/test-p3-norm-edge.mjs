@@ -26,16 +26,17 @@ async function fixture() {
   const key = 'diffusion_model.blocks.0.self_attn.q';
   const native = {schemaVersion: 'bernini-diagnostic-registry/0.1', executionProfileId: 'bernini-q16x5120-f32-wasm-v1',
     registryHash: '1'.repeat(64), modelHash: '2'.repeat(64), graphHash: record.graphSHA256, side: 'HIGH', targets: [
-      {key: key+'.weight', originalKey: record.originalTarget, weightId: 'q.weight', shape: [16,5120], fullShape: [5120,5120], binding: {kind: 'runtime-input', name: 'weight'}},
-      {key: key+'.bias', weightId: 'q.bias', shape: [16], fullShape: [5120], binding: {kind: 'hike-parameter', name: 'bias'}}]};
-  const registry = {modelHash: native.modelHash, graphHash: native.graphHash, targets: native.targets.map(t => ({key:t.key, shape:t.fullShape}))};
+      {key: key+'.weight', originalKey: record.originalTarget, weightId: 'q.weight', dtype:'F32', computeDtype:'F32', storageDtype:'F8_E4M3', layout:'row-major', shape: [16,5120], fullShape: [5120,5120], binding: {kind: 'runtime-input', name: 'weight'}},
+      {key: key+'.bias', weightId: 'q.bias', dtype:'F32', computeDtype:'F32', storageDtype:'F16', layout:'row-major', shape: [16], fullShape: [5120], binding: {kind: 'hike-parameter', name: 'bias'}}]};
+  const registry = {modelHash: native.modelHash, graphHash: native.graphHash, side:'HIGH', targets: native.targets.map(t => ({key:t.key, weightId:t.weightId, dtype:'F32', layout:'row-major', shape:t.fullShape}))};
   const down = key+'.lora_down.weight', up = key+'.lora_up.weight', biasName = key+'.diff_b';
   const plan = {contractVersion: 'lora-connection/2.0-draft.1', sdkInstanceId: 'fixture-sdk', localInputRevision: 1, localApplicationRevision: 1,
     planId: '3'.repeat(64), sourceSha256: '4'.repeat(64), registryHash: '5'.repeat(64), registry,
     loaderPolicyId: 'comfy-lora-b5a4321-linear-diff-v1', buildId: pins.kernel.sha256, coverage: 'PARTIAL', scope: 'diagnostic-projection',
-    completeAdapter: false, generationReady: false, strength: 1, operations: [
+    completeAdapter: false, generationReady: false, strength: 1, selection:{pairId:'light',noise:'high'}, operations: [
       {key:key+'.weight', variant:'linear-down-up', names:[down,up], rank:1, alpha:null, alphaName:null, scale:1, fullShape:[5120,5120], slice:{startRow:0,rowCount:16}},
       {key:key+'.bias', variant:'additive-diff-b', names:[biasName], scale:1, fullShape:[5120], slice:{startRow:0,rowCount:16}}]};
+  for(const op of plan.operations)op.target=registry.targets.find(t=>t.key===op.key);
   const ownerBinding = {adapterVersion:'lora-diffusion-diagnostic-adapter/0.1', nativeRegistryHash:native.registryHash, connectionRegistryHash:plan.registryHash,
     nativeRegistry:native, connectionRegistry:registry};
   const sourcePins = Object.fromEntries(Object.entries(pins).map(([k,v])=>[k,{repository,...v}]));
@@ -64,7 +65,10 @@ async function fixture() {
   const nativePhaseTarget={managerSessionId:target.managerSessionId,managerRevision:1,resourceBinding,requestId:'fixture-stage'};
   const queueTarget={invocationId:'fixture-invocation',bindingId:resourceBinding.bindingId,ownerId:resourceBinding.ownerId,resourceGeneration:resourceBinding.resourceGeneration,requestId:'fixture-queue',revision:1,activeToken:'fixture-token'};
   const ownerState={target,published:true,originalTerminal:true,queueReleased:true,preparedReleased:true,nativePhaseTarget,queueTarget,
-    stageEnvelope:{management:{target:nativePhaseTarget,localRevisionBindings},receipt:{planId:plan.planId,sourceSha256:plan.sourceSha256,registryHash:plan.registryHash,validation,
+    stageEnvelope:{management:{target:nativePhaseTarget,localRevisionBindings,sourcePins:structuredClone(sourcePins),kernelSha256:sourcePins.kernel.sha256,
+      adoptionVersion:'works-candidate-adopted-lora/0.1-draft.1',ownerAdapterVersion:ownerBinding.adapterVersion},
+      receipt:{contractVersion:plan.contractVersion,sdkInstanceId:plan.sdkInstanceId,localInputRevision:plan.localInputRevision,localApplicationRevision:plan.localApplicationRevision,
+      planId:plan.planId,sourceSha256:plan.sourceSha256,registryHash:plan.registryHash,validation,
       state:'CONSUMER_APPLIED',coverage:'PARTIAL',scope:plan.scope,snapshotPublished:false,generationReady:false,ownership}}};
   const queueReport={id:queueTarget.invocationId,resourceBinding:queueTarget.bindingId,ownerId:queueTarget.ownerId,resourceGeneration:queueTarget.resourceGeneration,
     requestId:queueTarget.requestId,revision:1,activeToken:queueTarget.activeToken,originalTerminal:true,resourceReleased:true,reusable:true,resultAccepted:true};
