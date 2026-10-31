@@ -14,12 +14,15 @@ export function compileNormBindings(context,input){
  const checks=[],scopes=[],readiness=[],trace={schemaVersion:'works-norm-trace/0.1-draft.1',appliedNormIds:[],profileRefs:[],sourceRefs:[],evidenceRefs:[],delegations:[],classificationMapping:{validation:{pass:'PASS',fail:'FAIL','not-verified':'NOT_VERIFIED'},readiness:{ready:'READY',blocked:'BLOCKED',failed:'FAILED'}}};
  const add=(normId,fieldPath,expected,observed,extra={})=>checks.push({criterion:'manager-norm',normId,fieldPath,expected,observed,unknown:!present(observed),code:`${normId}_MISMATCH`,...extra});
  const missing=(normId,path,reason)=>add(normId,path,true,undefined,{message:reason});
- const requireScope=(normId,scope,constraints=[],available=true)=>scopes.push({normId,scope,constraints,available});
+ const requireScope=(normId,scope,constraints=[],available=true)=>scopes.push({normId,scope,constraints,available,
+  duePhase:['N-TRANSACTION','N-ARTIFACT'].includes(normId)?'published':'validated',
+  declarationReady:['N-NUMERIC','N-NORMALIZATION'].includes(normId)?available:true});
  if(!isVerifiedReferenceSet(context?.referenceSet)){
   missing('N-IDENTITY','/referenceContext/referenceSet','A successfully byte-verified ReferenceSet is required');return {checks,scopes,readiness,trace};
  }
  const set=context.referenceSet,cat=set.catalog;
  Object.assign(trace,{catalogSha256:set.catalogSha256,documentVersion:cat.documentVersion,sourceRuntimeIntegrated:cat.runtimeIntegrated,integrityReceipts:set.integrityReceipts});
+ if(context.phase!==undefined&&!['declaration','validated','published'].includes(context.phase))missing('N-EXTENSION','/referenceContext/phase','Unknown required execution phase');
  if(!Array.isArray(context.normIds)||context.normIds.length===0)missing('N-EXTENSION','/referenceContext/normIds','Applicable norms must be explicit');
  const ids=[...new Set(list(context.normIds))];
  for(const id of ids){if(!SUPPORTED.has(id)||!set.normRecords.has(id))missing(id,'/referenceContext/normIds',`Required norm ${String(id)} has no finite implementation/reference`);else trace.appliedNormIds.push(id);}
@@ -78,6 +81,7 @@ export function compileNormBindings(context,input){
   }
   if(applies('N-LOADER')&&r.recordId==='LOAD-COMFY-LINEAR-DIFF'){
    add('N-LOADER',`${base}/loaderPolicyId`,v.loaderPolicyId,d.loaderPolicyId);
+   for(const field of ['baseDtype','outputDtype','layout'])add('N-LOADER',`${base}/${field}`,v[field],d[field]);
    for(const [field,allowed] of [['variant',v.variants],['sourceDtype',v.sourceDtypes],['targetRank',v.supportedTargetRanks]])add('N-LOADER',`${base}/${field}`,true,list(allowed).includes(d[field]),{unknown:!present(d[field])});
    add('N-LOADER',`${base}/strength`,true,typeof d.strength==='number'&&Number.isFinite(d.strength),{unknown:!present(d.strength)});
   }
@@ -111,7 +115,8 @@ export function compileNormBindings(context,input){
  }
  if(applies('N-NUMERIC')||applies('N-NORMALIZATION')){
   if(!list(context.numericRequirements).length)requireScope(applies('N-NUMERIC')?'N-NUMERIC':'N-NORMALIZATION',applies('N-NUMERIC')?'norm:N-NUMERIC':'norm:N-NORMALIZATION',[],false);
-  for(const r of list(context.numericRequirements)){
+  for(const [index,r] of list(context.numericRequirements).entries()){
+   if(typeof r?.scope==='string'&&r.scope.startsWith('norm:'))add('N-NUMERIC',`/referenceContext/numericRequirements/${index}/scope`,false,true,{unknown:false,code:'RESERVED_NUMERICAL_SCOPE',message:'Owner numerical evidence cannot occupy a reserved norm scope or defer validation until publication'});
    const gate=r?.gateRef,ref=r?.referenceRef;
    const known=(applies('N-NUMERIC')&&list(set.normRecords.get('N-NUMERIC')?.profileRefs).includes(r?.recordId)||applies('N-NORMALIZATION')&&list(set.normRecords.get('N-NORMALIZATION')?.profileRefs).includes(r?.recordId))&&set.profileRecords.has(r?.recordId);
    if(!known)missing('N-NUMERIC','/referenceContext/numericRequirements/recordId','Unknown required numeric profile');

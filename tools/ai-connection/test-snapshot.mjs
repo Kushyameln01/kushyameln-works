@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createSnapshotManager} from '../../docs/shared/ai-connection/snapshot.mjs';
+import * as snapshotAPI from '../../docs/shared/ai-connection/snapshot.mjs';
 import {hashCanonical} from '../../docs/shared/ai-connection/canonical.mjs';
 const sourceRef={repository:'fixture:snapshot',commit:'a'.repeat(40),path:'owner.mjs'};
 function fixture(count=1){
@@ -129,4 +130,30 @@ test('disposal cannot forget a published candidate while its publication cleanup
  await m.publishSnapshot(await m.stageSnapshot(f.profile,f.bindings),{currentBindings:current(f.bindings)});
  await assert.rejects(m.dispose(),/retained/);assert.equal(f.log.includes('release:s0'),false);assert.equal(m.inspect().state,'RECOVERY_REQUIRED');
  ready=true;await m.recover();assert.equal(calls,3);assert.equal(m.inspect().state,'DISPOSED');assert.equal(f.log.filter(x=>x==='release:s0').length,1);
+});
+test('global publication audit follows every owner cleanup and retries without native recommit or rollback',async()=>{
+ const f=fixture(2);let pass=false,calls=0,firstContext;
+ for(const s of f.bindings.steps)s.owner.published=async()=>{f.log.push('published:'+s.stepId);return {published:true};};
+ const m=createSnapshotManager({managerSessionId:'manager',afterPublication:async c=>{calls++;firstContext??=c;assert.equal(c,firstContext);assert.equal(c.publicationReceipt.state,'SNAPSHOT_PUBLISHED');assert.equal(c.steps.length,2);assert.equal(c.isCurrent(),true);assert.deepEqual(f.log.slice(-2),['published:s0','published:s1']);if(!pass)throw Error('norm audit blocked');return {verified:true};}});
+ const result=await m.publishSnapshot(await m.stageSnapshot(f.profile,f.bindings),{currentBindings:current(f.bindings)});
+ assert.equal(result.cleanupRequired,true);assert.equal(m.active.snapshotId,'snapshot:1');assert.equal(m.inspect().selectionCurrent,false);assert.equal(m.inspect().state,'RECOVERY_REQUIRED');
+ await assert.rejects(m.recover(),/norm audit blocked/);pass=true;await m.recover();assert.equal(calls,3);assert.equal(f.log.filter(x=>x.startsWith('commit:')).length,2);assert.equal(f.log.some(x=>x.startsWith('rollback:')),false);assert.equal(m.inspect().selectionCurrent,true);await m.dispose();
+});
+test('owner publication audit cannot be skipped by omitting the optional manager hook',async()=>{
+ const f=fixture();let calls=0;
+ f.bindings.steps[0].owner.afterPublication=async(candidate,c,global)=>{calls++;assert.equal(candidate.step,'s0');assert.deepEqual(global.steps[0].context.target,c.target);return {verified:true};};
+ const m=createSnapshotManager({managerSessionId:'manager'});await m.publishSnapshot(await m.stageSnapshot(f.profile,f.bindings),{currentBindings:current(f.bindings)});assert.equal(calls,1);await m.dispose();
+});
+test('disposing a stale publication releases owned resources without granting its failed audit',async()=>{
+ const f=fixture();let selected=true,releaseCalls=0;f.bindings.steps[0].isCurrent=()=>selected;
+ const release=f.bindings.steps[0].owner.release;f.bindings.steps[0].owner.release=async(...args)=>{releaseCalls++;return release(...args);};
+ const m=createSnapshotManager({managerSessionId:'manager',afterPublication:async()=>{selected=false;throw Error('audit now permanently stale');}});
+ const r=await m.publishSnapshot(await m.stageSnapshot(f.profile,f.bindings),{currentBindings:current(f.bindings)});assert.equal(r.cleanupRequired,true);assert.equal(m.inspect().selectionCurrent,false);
+ await m.dispose();assert.equal(releaseCalls,1);assert.equal(m.inspect().state,'DISPOSED');assert.equal(m.inspect().selectionCurrent,false);
+});
+
+test('only an actual coordinator publication can mint the opaque audit context',async()=>{
+ assert.equal(typeof snapshotAPI.isSnapshotPublicationContext,'function');assert.equal(snapshotAPI.isSnapshotPublicationContext({publicationReceipt:{state:'SNAPSHOT_PUBLISHED'}}),false);
+ const f=fixture(),m=createSnapshotManager({managerSessionId:'manager',afterPublication:async c=>{assert.equal(snapshotAPI.isSnapshotPublicationContext(c),true);assert.equal(snapshotAPI.isSnapshotPublicationContext({...c}),false);return {verified:true};}});
+ const r=await m.publishSnapshot(await m.stageSnapshot(f.profile,f.bindings),{currentBindings:current(f.bindings)});assert.equal(r.cleanupRequired,false);await m.dispose();
 });

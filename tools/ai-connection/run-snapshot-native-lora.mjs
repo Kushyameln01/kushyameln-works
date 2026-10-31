@@ -25,7 +25,7 @@ const includesError=(error,text)=>String(error?.message).includes(text)||(error 
 
 // This is a control source, not a model implementation or a numerical fallback.
 // Its three nonzero BF16 constants make the independent expected outputs exact.
-function controlSource(){
+export function controlSource(){
  const rank=128,down=new Uint16Array(rank*5120),up=new Uint16Array(5120*rank),bias=new Uint16Array(5120);
  down[0]=0x3f00;for(let row=0;row<5120;row++)up[row*rank]=0x3f80;bias.fill(0x3e00);
  const parts=[[KEY+'.lora_down.weight',[rank,5120],down],[KEY+'.lora_up.weight',[5120,rank],up],[KEY+'.diff_b',[5120],bias]];
@@ -52,7 +52,7 @@ async function nativeSourceProof(root,commit,entries){
  for(const path of entries)await visit(path);return proof;
 }
 
-async function nativeFixture({loraRoot,diffusionRoot}){
+export async function nativeFixture({loraRoot,diffusionRoot}){
  assert.ok(loraRoot&&diffusionRoot,'Explicit WORKS_SNAPSHOT_LORA_ROOT and WORKS_SNAPSHOT_DIFFUSION_ROOT are required');
  const cacheKey=resolve(loraRoot)+'\n'+resolve(diffusionRoot);if(fixtureCache.has(cacheKey))return fixtureCache.get(cacheKey);
  const promise=(async()=>{

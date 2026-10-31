@@ -28,7 +28,7 @@ const finiteInt = n => Number.isSafeInteger(n) && n>=0;
  * Checks use JSON Pointer field paths relative to artifact, or /producerPort etc.
  * See README for evidence binding and the finite adapter-rule descriptor.
  */
-export function evaluateEdge({producerPort,consumerPort,artifact,adapters,registry,implementationState,requiredScopes,evidence,resourceState,activeBindings,referenceContext}={}) {
+export function evaluateEdge({producerPort,consumerPort,artifact,adapters,registry,implementationState,requiredScopes,evidence,resourceState,activeBindings,referenceContext,requiredNormPolicy}={}) {
   const p=producerPort??{},c=consumerPort??{},a=artifact??{};
   const refs=[CONTRACT];
   for(const port of [p,c]) {
@@ -110,8 +110,14 @@ export function evaluateEdge({producerPort,consumerPort,artifact,adapters,regist
       }
     }
   }
-  const norm=referenceContext===undefined?null:compileNormBindings(referenceContext,{producerPort:p,consumerPort:c,artifact:a});
+  const norm=referenceContext===undefined&&requiredNormPolicy===undefined?null:compileNormBindings(referenceContext,{producerPort:p,consumerPort:c,artifact:a});
+  if(requiredNormPolicy!==undefined){
+    check('required-norm-policy','/requiredNormPolicy',true,typeof requiredNormPolicy?.policyId==='string'&&requiredNormPolicy.policyId.length>0&&Array.isArray(requiredNormPolicy?.requiredNormIds)&&requiredNormPolicy.requiredNormIds.length>0&&requiredNormPolicy.requiredNormIds.every(id=>typeof id==='string'&&id.length>0),{unknown:!requiredNormPolicy?.policyId||!Array.isArray(requiredNormPolicy?.requiredNormIds)||!requiredNormPolicy.requiredNormIds.length,code:'REQUIRED_NORM_POLICY_MISSING'});
+    check('required-norm-phase','/referenceContext/phase',true,['declaration','validated','published'].includes(referenceContext?.phase),{unknown:!['declaration','validated','published'].includes(referenceContext?.phase),code:'UNKNOWN_EXECUTION_PHASE'});
+    for(const id of array(requiredNormPolicy?.requiredNormIds))check('required-norm','/referenceContext/normIds',true,array(referenceContext?.normIds).includes(id),{unknown:!array(referenceContext?.normIds).includes(id),code:'REQUIRED_NORM_MISSING',normId:id});
+  }
   if(norm){
+    if(requiredNormPolicy!==undefined)norm.trace.requiredNormPolicy={policyId:requiredNormPolicy?.policyId??null,requiredNormIds:[...array(requiredNormPolicy?.requiredNormIds)]};
     if(norm.trace.catalogSha256)contractRefs.push(norm.trace.catalogSha256,`works-reference-catalog/${norm.trace.documentVersion}`);
     for(const spec of norm.checks)check(spec.criterion,spec.fieldPath,spec.expected,spec.observed,spec);
   }
@@ -128,8 +134,11 @@ export function evaluateEdge({producerPort,consumerPort,artifact,adapters,regist
   if(adapter)reasons.push({code:'EXPLICIT_ADAPTER_REQUIRED',fieldPath:'/adapters',message:`Insert and re-evaluate ${adapter.adapterId}@${adapter.version}; no transformation executed`,owner:adapter.owner,contractRefs});
   const scopes=[...new Set([...(Array.isArray(requiredScopes)?requiredScopes:[]),...(norm?.scopes??[]).map(x=>x.scope)])];
   const evidenceList=Array.isArray(evidence)?evidence:[];
+  const phaseOrder={declaration:0,validated:1,published:2},phase=referenceContext?.phase;
   const scopeResults=scopes.map(scope=>{
     const requirements=(norm?.scopes??[]).filter(x=>x.scope===scope);
+    const duePhase=requirements.reduce((due,r)=>phaseOrder[r.duePhase]>phaseOrder[due]?r.duePhase:due,'declaration');
+    if(Object.hasOwn(phaseOrder,phase)&&phaseOrder[phase]<phaseOrder[duePhase])return {scope,result:'not-verified',evidenceRefs:[],pending:true,duePhase};
     const bound=evidenceList.filter(e=>requirements.every(r=>r.available&&r.constraints.every(([path,expected])=>present(expected)&&equal(pointer(e,path),expected)))&&e?.scope===scope && e.artifactRef===a.artifactId && e.profileRef===a.profileRef &&
       [p.bindingRef,c.bindingRef].every(v=>array(e.subjectRefs).includes(v)) &&
       [p.nativeAPI?.version,p.nativeAPI?.build,c.nativeAPI?.version,c.nativeAPI?.build,p.sourceRef?.commit??p.sourceRef?.sha256,c.sourceRef?.commit??c.sourceRef?.sha256].every(v=>typeof v==='string'&&array(e.contractRefs).includes(v)) &&
@@ -139,7 +148,8 @@ export function evaluateEdge({producerPort,consumerPort,artifact,adapters,regist
   const blocked=[];
   if(compatibility!=='COMPATIBLE')blocked.push(`CONTRACT_${compatibility}`);
   if(!Array.isArray(requiredScopes)||!Array.isArray(evidence))blocked.push('EVIDENCE_REQUIREMENTS_NOT_EXPLICIT');
-  for(const s of scopeResults)if(s.result!=='pass')blocked.push(`SCOPE_${s.result}:${s.scope}`);
+  for(const s of scopeResults)if(!s.pending&&s.result!=='pass')blocked.push(`SCOPE_${s.result}:${s.scope}`);
+  if(phase==='declaration')for(const s of norm?.scopes??[])if(s.declarationReady===false)blocked.push(`NUMERICAL_DECLARATION_MISSING:${s.scope}`);
   for(const s of norm?.readiness??[])if(!equal(s.expected,s.observed))blocked.push(`${s.normId}:${s.fieldPath}`);
   for(const side of ['producer','consumer']) {
     const s=implementationState?.[side];
@@ -164,5 +174,5 @@ export function evaluateEdge({producerPort,consumerPort,artifact,adapters,regist
     roles:implementationState??null,implementationState:implementationState??null,validation:scopeResults,
     readiness:{state:failed?'failed':blocked.length?'blocked':'ready',reasons:blocked},
     unresolvedRefs:unknowns.map(x=>`${x.owner}:${x.fieldPath}`),
-    ...(norm?{referenceTrace:{...norm.trace,evidenceRefs:scopeResults.flatMap(x=>x.evidenceRefs),validation:scopeResults.map(x=>({...x,result:norm.trace.classificationMapping.validation[x.result]})),readiness:norm.trace.classificationMapping.readiness[failed?'failed':blocked.length?'blocked':'ready']}}:{})};
+    ...(norm?{referenceTrace:{...norm.trace,...(phase!==undefined?{phase,pendingScopeRefs:scopeResults.filter(x=>x.pending).map(x=>x.scope),generationReady:false}:{}),evidenceRefs:scopeResults.flatMap(x=>x.evidenceRefs),validation:scopeResults.map(x=>({...x,result:norm.trace.classificationMapping.validation[x.result]})),readiness:norm.trace.classificationMapping.readiness[failed?'failed':blocked.length?'blocked':'ready']}}:{})};
 }

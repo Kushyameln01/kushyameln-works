@@ -2,6 +2,13 @@
 
 Common contract: `works-module-contract/1.0-draft.1` (existing M1/M2 reused).
 Package contract: `works-artifact-package/1.0-draft.1`.
+Current norm-required entries below use the execution-plan checkpoint
+`0fb553fd081d3bcbbad4ead7accd165679f77d34` and the profile/norm/numerical
+catalog `1.0-draft.1`, fixed at
+`6dae9a6fac3e9ad29ea941f22211edbe4aa894ad`. Their scoped acceptance and new
+owner receipt sources are in
+`development/ai-connection/norm-receipt-adoption/RESULT.md`.
+The E-series sources and adoption notes below retain their historical scopes.
 Sources: integration specification **1.1-draft.1**, execution plan **0.2-draft.2**,
 whose current Page bodies were reacquired on 2026-10-31 JST. Uploaded originals
 and earlier source receipts remain historical inputs. See
@@ -440,6 +447,10 @@ allowed, available versioned adapters can produce `NEEDS_ADAPTER`.
   `norm-bindings.mjs`, not free-form predicates. Unsupported required profile
   bindings remain `UNVERIFIED` (currently RGB affine, generated-sample and Text
   RMSNorm reference bindings; standalone native support is a separate fact).
+  The selected `LOAD-COMFY-LINEAR-DIFF` also compares explicit `baseDtype:F32`,
+  `outputDtype:F32` and `layout:'row-major'`. Missing declarations are
+  `UNVERIFIED`; known conflicts are `INCOMPATIBLE`. No dtype conversion is
+  performed by these comparisons.
 - `adoptionSetId` selects an unchanged historical catalog entry. Alternatively
   `candidateSet` has schema `works-candidate-set/0.1-draft.1`, `status:'candidate'`,
   unique `candidateSetId`, fixed `sourceRef` and `modules:[{module,sourceRef,kernel?}]`.
@@ -548,3 +559,96 @@ Native `snapshotPublished:false` stays unchanged; manager snapshot ID/hash are
 separate trace fields. Omitting `snapshot` retains the original null sidecar.
 PARTIAL, STAGED, published diagnostic snapshot and a complete package never
 authorize production generation; `generationReady` remains false.
+
+## Required norm inputs and evidence phases
+
+`evaluateEdge` additionally accepts `requiredNormPolicy:{policyId,requiredNormIds}`.
+When supplied, omitted/unverified `referenceContext`, a missing required norm or
+an unknown/missing `referenceContext.phase` produces `UNVERIFIED` and blocks
+admission. The unchanged standalone form remains available; it is not proof that
+a norm-required native entry executed its checks.
+
+Phases are `declaration`, `validated`, `published`. Contract checks run in every
+phase. Numeric/normalization/evidence receipts become due at `validated`;
+transaction/package receipts become due at `published`. Earlier phases return
+`result:'not-verified', pending:true, duePhase` with empty evidence references
+for a future scope, even if plausible success/failure JSON is already present.
+`referenceTrace.pendingScopeRefs` records these scopes. A missing predeclared
+numeric gate/reference/owner/kernel still blocks declaration admission while
+retaining the contract-based compatibility result.
+
+Readiness in a phased decision applies only to the requested phase. A ready
+declaration allows the declared operation to begin; it is neither numerical
+acceptance nor generation readiness. The trace always preserves
+`generationReady:false`. Without an explicit phase, legacy evaluation still
+checks all required scopes as before.
+
+`norm-execution.mjs` composes the same evaluator inputs under known fixed
+policies, captures declarations before asynchronous owner work and controls
+phase order. Mandatory entry wrappers own that helper and obtain observations
+from their actual public native callbacks. They reject caller-supplied future
+receipts and do not expose a public unguarded dispatch method. Model arithmetic,
+native transaction execution, package hashing and queue cancellation remain in
+their existing owners and implementations.
+
+`createNormExecution({policyId,referenceSet,edgeInput})` uses a known fixed policy
+(`lora-q16`, `rect-decode`, or the separate mean policy). `edgeInput.evidence`
+must initially be empty; phase/policy fields and future receipt references are
+owned by the entry. Declaration values, gates, reference identities, selected
+binding IDs/namespaces/expected revisions and evidence scope stay immutable.
+Only current observations refresh. A failed validation poisons that execution;
+a later PASS cannot rescue its cohort. Publication recovery rechecks the same
+retained receipt, without repeating native commit/rollback. Reserved `norm:`
+scopes cannot be used as numeric scope names to postpone a numeric failure.
+
+`adapters/norm-required-lora.mjs` exports
+`createNormRequiredLoraExecution({adapter,referenceSet,edgeInput,readCurrent,readOwnerEvidence})`.
+Construction and `plan(input,{target})` check declaration admission before the
+original candidate facade's plan. The original opaque plan is returned.
+`createSnapshotOwner({plan,validation,resourceBinding,queue,requestPrefix})`
+wraps the existing owner and checks the actual validate checkpoint before the
+commit gate. `validation` contains finite owned F32 `x[5120]`, `expected[16]`
+and the predeclared tolerance; its expected payload hash is checked before
+native prepare. The single Q16 requirement's `referenceRef` includes
+`expectedOutputSha256`; `gateRef` includes the original `tolerance`.
+`referenceContext.environment` and `evidenceTarget` declare the PARTIAL
+diagnostic scope/base/reference before the call. `readCurrent` supplies explicit
+live `activeBindings` and `resourceState`. `readOwnerEvidence` is mandatory and
+runs only after actual native validation; it supplies the independent selected
+weight/bias comparison receipt. The manager checks its binding, count, scope
+and reference, and does not perform those numerical comparisons itself.
+
+The returned owner has an automatic `afterPublication` audit. The snapshot
+coordinator invokes this only after all native commits, publication finalizers
+and previous retirement succeed. Its private-branded global context carries
+the actual publication, step receipts and a published-selection predicate;
+lookalike JSON cannot act as that capability. Audit failure retains the published
+fact and enters `RECOVERY_REQUIRED`. Normal recovery only rechecks the retained
+audit. Disposal can still finish owner finalizers/releases when the selection
+is permanently stale; disposal does not grant norm acceptance.
+
+`adapters/norm-required-rect.mjs` exports
+`createNormRequiredRectAdapter({nativeFactory,descriptor,binding,sourceVerified,artifactStore,ownerLifecycle,executionScope})`.
+Its required `run` inputs are a verified reference set, predeclared RGB-output
+`edgeInput`, raw Rect mean `inputHandle`, prior encode/mean evidence,
+`manifest`, explicit three-file `files:Map`, exact `target`, `readCurrent`,
+predeclared `validationSpec`, owner `validateOutput` and E4 `publishOutput`.
+`priorInputEvidence` binds an exact `sourceRef`, `modelSha256`, `profileId`,
+`context`, `inputPayloadSha256` and `restoredPayloadSha256` to the owned mean.
+The separate `encodePayloadSha256` retains the original encode evidence;
+restoration is not relabeled as a fresh encode. The owner reference has a
+fixed SHA-256 and `atol`, `rtol`, `maxAbs` gates of `2e-5` for all 1536 RGB values.
+`target.managerRevision` and `target.localRevisionBindings.localRevision` are
+independent; native invoke/cancel uses the latter. `cancel(target)` matches the
+exact request/resource/token. The current selection is checked around each
+await, validation, publication and storage capability; cancellation or disposal
+after native completion still prevents stale adoption. Failed save output
+handles are released; partial file/progress receipts stay available as
+unadopted evidence. Successful output handles remain caller-owned.
+
+Rect requires only `decoder-body.onnx`, `conv2-weight.f32`, `conv2-bias.f32`
+(286,314,451 bytes). Existing encode evidence is reused. No encoder re-export or
+encode invocation is required. Native worker stop/terminal/release proof belongs
+to the injected owner lifecycle; a cancel boolean alone is insufficient.
+Native source/file hashing and actual private assets are required for a real
+dispatch claim. Controlled native callbacks test this boundary only.

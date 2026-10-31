@@ -46,14 +46,63 @@
     "scope": "received-real-Rect-mean-owner-WASM-and-E4",
     "resultRef": "RECT-RESULT.json",
     "freshEncodeDecodeAccepted": false,
-    "normalizedIntermediatePackageAccepted": false
+    "normalizedIntermediatePackageAccepted": false,
+    "ownerReceiptScope": {
+      "receiptId": "OWNER-VAE-E86-RECT-P1-RECEPTION",
+      "recordRef": "../norm-receipt-adoption/OWNER-RECEIPTS.json",
+      "scope": "completed original Rect NN trace351 re-received on manager edda; 2 P1 boundaries and 9 negatives, no new inference",
+      "newManagerNormBoundAcceptance": "NOT_VERIFIED",
+      "newNativeDispatchAccepted": false
+    }
   },
   "p3": {
     "scope": "diagnostic-native-transaction-and-local-File-with-explicit-fixture-base",
     "oldBridge": "regression-only; never stacked",
     "realBaseAccepted": false,
-    "original20EvidenceRetagged": false
+    "original20EvidenceRetagged": false,
+    "ownerReceiptScope": {
+      "receiptId": "OWNER-LORA40F-SELECTED-LIGHT-HIGH-P3",
+      "recordRef": "../norm-receipt-adoption/OWNER-RECEIPTS.json",
+      "scope": "owner receiver25e, manager edda, one actual light/HIGH original and genuine bounded base; 6 published selected Q16 diagnostic cases",
+      "ownerSelectedRealBasePartialAccepted": true,
+      "newManagerNormBoundAcceptance": "NOT_VERIFIED",
+      "currentSnapshot": false,
+      "currentReadiness": "BLOCKED",
+      "wholeBaseHashRecomputed": false,
+      "allPairSidesNewlyAccepted": false,
+      "newE4PackageAccepted": false
+    }
   },
   "e5FullModelSessionAccepted": false,
-  "generationReady": false
+  "generationReady": false,
+  "ownerReceiptRefs": [
+    {
+      "receiptId": "OWNER-LORA40F-SELECTED-LIGHT-HIGH-P3",
+      "recordRef": "../norm-receipt-adoption/OWNER-RECEIPTS.json",
+      "evidenceSourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+        "path": "development/ai-connection/reference-adoption/lora/evidence/p3/receipt.json"
+      },
+      "status": "RECEIVED_SOURCE_BOUND",
+      "newManagerNormBoundAcceptance": "NOT_VERIFIED"
+    },
+    {
+      "receiptId": "OWNER-VAE-E86-RECT-P1-RECEPTION",
+      "recordRef": "../norm-receipt-adoption/OWNER-RECEIPTS.json",
+      "evidenceSourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "e86d17f8fe3310875d3578ce838e1fc2c32271dc",
+        "path": "development/inference/reference-adoption/p1-adoption/RECEIPT.json"
+      },
+      "status": "RECEIVED_SOURCE_BOUND",
+      "newManagerNormBoundAcceptance": "NOT_VERIFIED"
+    }
+  ],
+  "receiptPinPolicy": {
+    "nativeModulesUnchanged": true,
+    "evidenceCommitDoesNotReplaceNativePin": true,
+    "receiptScopeDoesNotPromoteExistingFixtureOrHistoricalAdoption": true,
+    "executedCodecMayBeExplicitlyPinnedOutsideCandidateDeclaration": true
+  }
 }

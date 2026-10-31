@@ -1,6 +1,8 @@
 import {validatePipelineProfile,validateExecutionSnapshot} from './descriptor.mjs';
 import {canonicalize,hashCanonical} from './canonical.mjs';
 import {evaluateEdge} from './compatibility.mjs';
+const publicationContexts=new WeakSet();
+export const isSnapshotPublicationContext=value=>publicationContexts.has(value);
 const clone=x=>structuredClone(x);
 const same=(a,b)=>canonicalize(a)===canonicalize(b);
 const matches=(a,b)=>{try{return same(a,b);}catch{return false;}};
@@ -12,8 +14,8 @@ const freeze=v=>{if(v&&typeof v==='object'){Object.values(v).forEach(freeze);Obj
 /** Diagnostic-scope finite transaction coordinator. Public owner facades are
  * injected; no native runtime/global state is read. No generation admission is
  * implemented: diagnostics never become full-model proof through publication. */
-export function createSnapshotManager({managerSessionId,registry}={}){
- if(!text(managerSessionId))throw TypeError('Explicit managerSessionId required');
+export function createSnapshotManager({managerSessionId,registry,afterPublication}={}){
+ if(!text(managerSessionId))throw TypeError('Explicit managerSessionId required');if(afterPublication!==undefined&&typeof afterPublication!=='function')throw TypeError('Explicit afterPublication audit callback required');
  const stages=new WeakMap(),history=new Set(),snapshotIds=new Set();let revision=0,busy=false,disposed=false,active=null,activeRecord=null,currentStage=null,recovery=null,state='UNCONFIGURED';
  const trace=[];
  const event=(phase,stepId=null)=>trace.push({managerRevision:revision,phase,stepId});
@@ -28,17 +30,27 @@ export function createSnapshotManager({managerSessionId,registry}={}){
   sourceRef:freeze(clone(s.binding.sourceRef)),nativeBuild:s.binding.nativeBuild,resourceBinding:freeze(clone(s.binding.resourceBinding)),
   operationId:s.binding.operationId,localRevisionBindings:freeze(clone(s.binding.localRevisionBindings)),isCurrent:()=>current(r,s)});}
  function forget(r){history.delete(r);for(const s of r.prepared){s.candidate=undefined;s.receipt=undefined;}r.prepared=[];r.steps=[];}
- async function releaseRecord(r){
-  if(r.publicationCommitted)await publishedRecord(r);
+ async function releaseRecord(r,{disposing=false}={}){
+  if(r.publicationCommitted){await publishedRecord(r);if(r===activeRecord&&!disposing)await auditPublication(r);}
   const errors=[];for(const s of r.prepared)if(!s.released){try{const reply=await s.owner.release(s.candidate,context(r,s));if(reply?.released!==true)throw Error('Owner release not confirmed');s.released=true;event('OWNER_RELEASED',s.binding.stepId);}catch(e){errors.push(e);}}
   if(errors.length)throw new AggregateError(errors,'Snapshot owner resources retained');forget(r);
  }
  async function publishedRecord(r){
   for(const s of r.prepared)if(!s.published){if(typeof s.owner.published==='function'){const reply=await s.owner.published(s.candidate,context(r,s));if(reply?.published!==true)throw Error('Owner publication cleanup not confirmed');}s.published=true;event('OWNER_PUBLICATION_CONFIRMED',s.binding.stepId);}
  }
+ function publicationCurrent(r){return !disposed&&activeRecord===r&&r.revision===revision&&r.steps.length>0&&r.steps.every(s=>!s.released&&selected(s)&&leaseValid(s));}
+ async function auditPublication(r){
+  if(r.audited)return;if(!afterPublication&&!r.prepared.some(s=>typeof s.owner.afterPublication==='function')){r.audited=true;return;}
+  if(!r.auditContext){const publicationReceipt=freeze({state:'SNAPSHOT_PUBLISHED',snapshot:clone(r.snapshot),nativeStates:clone(r.nativeStates),cleanupRequired:false,generationReady:false});r.auditContext=Object.freeze({publicationReceipt,steps:Object.freeze(r.prepared.map(s=>Object.freeze({stepId:s.binding.stepId,candidate:s.candidate,receipt:s.receipt,validation:s.validation,context:context(r,s)}))),isCurrent:()=>publicationCurrent(r)});publicationContexts.add(r.auditContext);}
+  if(!publicationCurrent(r))throw fail('STALE_PUBLICATION','Published selection or ownership is no longer current');
+  for(const s of r.prepared)if(typeof s.owner.afterPublication==='function'){const reply=await s.owner.afterPublication(s.candidate,context(r,s),r.auditContext);if(reply?.verified!==true)throw fail('PUBLICATION_AUDIT_UNCONFIRMED','Owner publication audit was not confirmed');}
+  if(afterPublication){const reply=await afterPublication(r.auditContext);if(reply?.verified!==true)throw fail('PUBLICATION_AUDIT_UNCONFIRMED','Global publication audit was not confirmed');}
+  if(!publicationCurrent(r))throw fail('STALE_PUBLICATION','Published selection changed during its audit');r.audited=true;event('PUBLICATION_AUDITED');
+ }
  async function finishPublication(r,previous,retrying=false){
   try{await publishedRecord(r);}catch(error){recovery={record:r,previous,mode:'publish'};state='RECOVERY_REQUIRED';event(state);if(retrying)throw error;return;}
-  if(previous)try{await releaseRecord(previous);}catch(error){recovery={record:previous,mode:'retire'};state='RECOVERY_REQUIRED';event(state);if(retrying)throw error;return;}
+  if(previous)try{await releaseRecord(previous);}catch(error){recovery={record:r,previous,mode:'publish'};state='RECOVERY_REQUIRED';event(state);if(retrying)throw error;return;}
+  try{await auditPublication(r);}catch(error){recovery={record:r,mode:'audit'};state='RECOVERY_REQUIRED';event(state);if(retrying)throw error;return;}
   recovery=null;state='SNAPSHOT_PUBLISHED';
  }
  async function cleanup(r){
@@ -114,8 +126,8 @@ export function createSnapshotManager({managerSessionId,registry}={}){
   finally{busy=false;}
  }
  async function abortSnapshot(token){enter();try{await cleanup(validStage(token));}finally{busy=false;}}
- async function disposeResources(){const errors=[];for(const r of [...history])try{await releaseRecord(r);}catch(e){errors.push(e);}if(errors.length){recovery={mode:'dispose'};state='RECOVERY_REQUIRED';event(state);throw new AggregateError(errors,'Snapshot resources retained; retry owner release/disposal');}disposed=true;active=null;activeRecord=null;recovery=null;state='DISPOSED';event(state);}
- async function recover(){if(busy)throw fail('BUSY','Snapshot cleanup busy');if(!recovery)return;busy=true;try{const pending=recovery;if(pending.mode==='rollback')await cleanup(pending.record);else if(pending.mode==='publish'){await finishPublication(pending.record,pending.previous,true);}else if(pending.mode==='retire'){await releaseRecord(pending.record);recovery=null;state='SNAPSHOT_PUBLISHED';event(state);}else await disposeResources();}finally{busy=false;}}
+ async function disposeResources(){const errors=[];for(const r of [...history])try{await releaseRecord(r,{disposing:true});}catch(e){errors.push(e);}if(errors.length){recovery={mode:'dispose'};state='RECOVERY_REQUIRED';event(state);throw new AggregateError(errors,'Snapshot resources retained; retry owner release/disposal');}disposed=true;active=null;activeRecord=null;recovery=null;state='DISPOSED';event(state);}
+ async function recover(){if(busy)throw fail('BUSY','Snapshot cleanup busy');if(!recovery)return;busy=true;try{const pending=recovery;if(pending.mode==='rollback')await cleanup(pending.record);else if(pending.mode==='publish'){await finishPublication(pending.record,pending.previous,true);}else if(pending.mode==='audit'){await auditPublication(pending.record);recovery=null;state='SNAPSHOT_PUBLISHED';event(state);}else if(pending.mode==='retire'){await releaseRecord(pending.record);recovery=null;state='SNAPSHOT_PUBLISHED';event(state);}else await disposeResources();}finally{busy=false;}}
  async function dispose(){enter(true);state='DISPOSING';event(state);try{if(currentStage)await cleanup(currentStage);await disposeResources();}finally{busy=false;}}
  return Object.freeze({stageSnapshot,publishSnapshot,abortSnapshot,recover,dispose,get active(){return active?clone(active):null;},inspect(){return {state,managerRevision:revision,activeSnapshotId:active?.snapshotId??null,selectionCurrent:activeCurrent(),generationReady:false,trace:clone(trace)};}});
 }
