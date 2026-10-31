@@ -70,7 +70,7 @@ baseは明示fixture。生成したoracle5条件のうち今回実行したの�
 
 全体Node回帰は **272/272 PASS、skip 0**（[node-tests.log](node-tests.log)）。既存209件のscopeを保ち、変更境界63件を追加した。別途、実Fileブラウザ1条件、native取引8ケース、実Rect 2操作、公開package4/4 readbackが成功した。独立レビューで見つかったprofile宣言欠落、片側identity省略、RGB意味の誤固定、復元拒否の成功扱い、採用label混入、snapshot scope/operation不一致を修正し、負例へ追加した。
 
-再現手順は [README.md](README.md#reproduce)。ブラウザ／Rectの実行source完全commitは`74b4b4b0b6cff5b98e5410f9b604f88f587915c7`。追加の第8試験はruntimeを変更せずrunner/testだけを拡張し、その実行bytesと固定commitをP3-NATIVE-RESULTへ記録した。最終配布はこの実行証拠・小さいpackage・readerと文書を追加するもので、native／管理runtimeの再変更はない。
+再現手順は [README.md](README.md#reproduce)。ブラウザ／Rectの実行source完全commitは`74b4b4b0b6cff5b98e5410f9b604f88f587915c7`。追加の第8試験はruntimeを変更せずrunner/testだけを拡張し、その実行bytesは`7744c8f3a7afd6c7d107f8e012ca30a30659a3ba`へ固定し、P3-NATIVE-RESULTへ記録した。最終配布はこの実行証拠・小さいpackage・readerと文書を追加するもので、native／管理runtimeの再変更はない。
 
 ## 未受入事項と各ownerへの確認
 
