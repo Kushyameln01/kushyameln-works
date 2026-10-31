@@ -88,3 +88,7 @@ HIGH/LOW↔high/lowはBernini用M3 adapterの明示対応表で扱う。pair lig
 3. 複数producer、decoder binding、context frame番号/時刻の順序・重複、正負共有、profile/build/native版を保存読戻しで照合する。producer列をhash都合で並べ替えない。
 4. unknown optional拡張は保持、unknown required規格は拒否/未対応分類。legacy来歴不足を完全生成packageへ昇格しない。
 5. package `works-artifact-package/1.0-draft.1` の厳密schema、JCS適合fixture、manifest自己digest除外、snapshotと実行traceの分離を先に固定する。実ファイルを保存・回収・読戻ししてから合格とする。
+
+## E0〜E4追補（2026-10-31）
+
+この文書のA0時点の履歴を保持し、現在の取得状態は [E0-SOURCE-BASELINE.md](E0-SOURCE-BASELINE.md)、実装と検証は [E-RESULT.md](E-RESULT.md) を参照する。LoRA2bba907とDiffusion902は今回後半に実source取得・照合・branch共有を完了。f522新consumerだけは未取得。旧1.0読了、過去422、当初未回収を最終状態へ流用しない。

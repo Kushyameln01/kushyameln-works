@@ -85,3 +85,7 @@ G2 APIが記す `python api/build-info.py` は公開main treeにbuilder実体が
 - 接続fixture12件、LoRA source7件・SDK32件、Python53件は対象scopeが違い、全生成の合格件数へ合算しない。LoRA7/32は今回添付仕様のR2引用であり、元の独立報告/配布JSONは未取得。
 - 今回の本文取得・静的照合は管理側による確認。各所有者の1.1読了、新schema採用、G1C受領、共同検証への合意は未確認。外部メッセージ送信は行わない。
 - N1 ComfyUI-BerniniStudio、P1 Hike計画1.3、R1/R2/R3原報告は今回2添付には同梱されていない。引用された範囲を越える判断に使わない。
+
+## E0〜E4追補（2026-10-31）
+
+この文書のA0時点の履歴を保持し、現在の取得状態は [E0-SOURCE-BASELINE.md](E0-SOURCE-BASELINE.md)、実装と検証は [E-RESULT.md](E-RESULT.md) を参照する。LoRA2bba907とDiffusion902は今回後半に実source取得・照合・branch共有を完了。f522新consumerだけは未取得。旧1.0読了、過去422、当初未回収を最終状態へ流用しない。

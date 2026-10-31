@@ -1,3 +1,5 @@
+Current E0/E2/E3/E4 API and reproducible validation: [API.md](API.md). The sections below retain the original M1/M2 implementation scope.
+
 # Common AI connection contracts — A0 / M1 / M2
 
 Implementation adoption: `works-module-contract/1.0-draft.1`, based on the current
