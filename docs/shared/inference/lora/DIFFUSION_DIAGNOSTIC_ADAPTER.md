@@ -58,6 +58,8 @@ const result = await adapter.run({x});
 
 [P3共同結果](../../../../development/ai-connection/reference-adoption/lora/P3-RESULT.md)では、light HIGHのローカル原本1件と実base断片のPARTIAL診断を、既存P1 evaluatorの明示phase hookで検証した。事前の契約、実checkpointの数値、公開後の取引receiptを順に結び、存在しない将来のreceiptをsnapshot edgeへ入力しない。receiverのnorm組立ては試験用sidecarで、native SDKのAPI追加ではない。全target・他pair/sideの新規管理受入・全model session・生成への寄与・leaseをこの結果へ含めない。
 
+その後の [管理向けDATA契約](MANAGEMENT_ADMISSION.md) では、ownerの実dtype/layout観測と三段階raw inputを版付きexportへ移した。旧receiverは互換shimとして維持する。管理の宣言比較・正式入口はまだ採用未確認なので、DATA exportの合格を正式管理受入へ変更しない。
+
 ## baseへの復帰
 
 ```javascript

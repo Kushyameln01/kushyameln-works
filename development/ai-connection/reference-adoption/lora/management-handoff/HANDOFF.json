@@ -1,0 +1,258 @@
+{
+  "schemaVersion": "lora-management-handoff/0.1-draft.1",
+  "documentDateJST": "2026-11-01",
+  "status": "OWNER_DATA_READY_MANAGER_ADOPTION_PENDING",
+  "ownerCodeCommit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+  "ownerDistributionBaseline": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+  "reference": {
+    "documentVersion": "1.0-draft.1",
+    "commit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+    "catalogSha256": "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+    "executionPlanCommit": "0fb553fd081d3bcbbad4ead7accd165679f77d34"
+  },
+  "exports": [
+    {
+      "export": "describeLoraNumericDeclarations",
+      "contractVersion": "lora-numeric-declarations/0.1-draft.1",
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+        "path": "docs/shared/inference/lora/numeric-declarations.mjs",
+        "byteLength": 9909,
+        "sha256": "e7dd99d570c666969d76e93747998f3e1c20ba64d9e3b9d1b5f7a19e05aa6b17",
+        "url": "https://github.com/Kushyameln01/kushyameln-works/blob/82b21f09cb63926543181b16f0e97ebc6b9fa6be/docs/shared/inference/lora/numeric-declarations.mjs"
+      }
+    },
+    {
+      "export": "createLoraManagementAdmissionInputs",
+      "contractVersion": "lora-management-admission-inputs/0.1-draft.1",
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+        "path": "docs/shared/inference/lora/management-admission-inputs.mjs",
+        "byteLength": 32961,
+        "sha256": "ddf57f4c76333ada1ddf93cf238e5f4ea6219b39afd5dc4d567213667a7d897e",
+        "url": "https://github.com/Kushyameln01/kushyameln-works/blob/82b21f09cb63926543181b16f0e97ebc6b9fa6be/docs/shared/inference/lora/management-admission-inputs.mjs"
+      }
+    }
+  ],
+  "testShim": {
+    "export": "createP3NormEdge",
+    "scope": "legacy receiver test shim, never an official manager admission entry",
+    "sourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+      "path": "tools/ai-connection/p3-norm-edge.mjs",
+      "byteLength": 4226,
+      "sha256": "e99d2a0d0100e20d5d7c6d75799fb72903f21250e62e77952426bfda681c8dde",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/82b21f09cb63926543181b16f0e97ebc6b9fa6be/tools/ai-connection/p3-norm-edge.mjs"
+    }
+  },
+  "rawDataMethods": {
+    "preflightInputs": {
+      "returns": "frozen perpatch records with raw input for existing manager evaluateEdge",
+      "futureNumericOrTransactionEvidence": "forbidden"
+    },
+    "checkpointInputs": {
+      "requires": [
+        "actual nativeValidation",
+        "all-selected weightBiasEvidence",
+        "actual snapshotTarget",
+        "outer actual ownerValidation for official admission"
+      ],
+      "returns": "frozen raw edge input with explicit ownerAdmission.phaseBinding",
+      "missingTargetBehavior": "null/bound:false; official manager must reject before commit, not infer from later publication"
+    },
+    "postpublicationInputs": {
+      "requires": [
+        "actual snapshotTarget and publication",
+        "exact ownerState/native envelope",
+        "terminal queueReports",
+        "original ownerValidationRef"
+      ],
+      "returns": "frozen raw edge input; not an admission decision",
+      "currentness": "isPublishedCurrent, distinct from closed staging context.isCurrent"
+    }
+  },
+  "noOwnerJudge": true,
+  "requiresManagerOwnedEvaluateEdge": true,
+  "preserveBrandedReferenceSet": true,
+  "nativeCoreMappingAuthority": "createDiffusionDiagnosticAdapter",
+  "numericFieldBinding": {
+    "baseDtype": {
+      "primary": "owner.nativeRegistry.targets[key,weightId].computeDtype",
+      "corroborate": [
+        "native.dtype",
+        "connection.dtype",
+        "plan operation.target.dtype"
+      ],
+      "managerDeclarationPointer": "/referenceContext/nativeDeclarations/producer/baseDtype",
+      "ownerDataPointer": "/referenceContext/ownerAdmission/numericDeclaration/baseDtype",
+      "presencePointer": "/referenceContext/ownerAdmission/numericDeclaration/presence/baseDtype",
+      "originPointer": "/referenceContext/ownerAdmission/numericDeclaration/origins/baseDtype"
+    },
+    "outputDtype": {
+      "meaning": "prepared weight/bias output, not projection16 output",
+      "primary": "owner.connectionRegistry.targets[key,weightId].dtype",
+      "corroborate": [
+        "native.dtype",
+        "native.computeDtype",
+        "plan operation.target.dtype"
+      ],
+      "managerDeclarationPointer": "/referenceContext/nativeDeclarations/producer/outputDtype",
+      "ownerDataPointer": "/referenceContext/ownerAdmission/numericDeclaration/outputDtype",
+      "presencePointer": "/referenceContext/ownerAdmission/numericDeclaration/presence/outputDtype",
+      "originPointer": "/referenceContext/ownerAdmission/numericDeclaration/origins/outputDtype"
+    },
+    "layout": {
+      "primary": "owner.connectionRegistry.targets[key,weightId].layout",
+      "corroborate": [
+        "native.layout",
+        "plan operation.target.layout"
+      ],
+      "managerDeclarationPointer": "/referenceContext/nativeDeclarations/producer/layout",
+      "ownerDataPointer": "/referenceContext/ownerAdmission/numericDeclaration/layout",
+      "presencePointer": "/referenceContext/ownerAdmission/numericDeclaration/presence/layout",
+      "originPointer": "/referenceContext/ownerAdmission/numericDeclaration/origins/layout"
+    },
+    "rawStorage": "native.storageDtype provenance only; F8_E4M3 weight/F16 bias are not baseDtype",
+    "defaultsAllowed": false,
+    "sourceDtype": "actual inspection of selected LoRA source, never inferred from base storage",
+    "observedOwnerPlanPointers": {
+      "dtype": [
+        "/referenceContext/ownerAdmission/numericDeclaration/observed/native/dtype",
+        "/referenceContext/ownerAdmission/numericDeclaration/observed/native/computeDtype",
+        "/referenceContext/ownerAdmission/numericDeclaration/observed/connection/dtype",
+        "/referenceContext/ownerAdmission/numericDeclaration/observed/target/dtype"
+      ],
+      "layout": [
+        "/referenceContext/ownerAdmission/numericDeclaration/observed/native/layout",
+        "/referenceContext/ownerAdmission/numericDeclaration/observed/connection/layout",
+        "/referenceContext/ownerAdmission/numericDeclaration/observed/target/layout"
+      ]
+    }
+  },
+  "managerBaseline": {
+    "sourceCommit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+    "pr": "https://github.com/Kushyameln01/kushyameln-works/pull/7",
+    "loaderDeclarationConformance": "BLOCKED_MANAGER_DECLARATION_COMPARISONS_UNIMPLEMENTED",
+    "unmetNegativeCases": 12,
+    "supportedPositives": 2,
+    "formalThreePhaseEntry": "NOT_RECEIVED",
+    "officialAdoptionAccepted": false,
+    "newFormalEntryApiName": null,
+    "newFormalEntrySourceRef": null
+  },
+  "officialManagerRequirements": [
+    "capture actual public owner binding from source-verified canonical/candidate facade, not arbitrary witness JSON",
+    "use the management loader verified ReferenceSet brand; DATA constructors do not authenticate arbitrary caller JSON",
+    "compare existing catalog baseDtype/outputDtype/layout and observed owner/plan fields without defaults",
+    "require exact checkpoint snapshotTarget and outer ownerValidation; bound:false cannot enter commit",
+    "run existing evaluator at each appropriate phase; do not fabricate future evidence to satisfy preflight",
+    "recheck selected manager/resource/outside-token/native revisions immediately before native commit",
+    "run postpublication audit after real publish/terminal/cleanup using active published currentness",
+    "keep actual publication fact if later audit fails; block admission/reuse and do not invent finalized rollback history",
+    "keep native snapshotPublished:false, diagnostic publication and final manager admission distinct",
+    "do not add LoRA conditions to no-LoRA/base paths"
+  ],
+  "nativeSourcePins": {
+    "sdk": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+      "path": "docs/shared/inference/lora/sdk-v2.mjs",
+      "sha256": "c425519eb282f798f4296bc97fd1506664afd850dee9addb17af77dd41e39fa0"
+    },
+    "adapter": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+      "path": "docs/shared/inference/lora/diffusion-diagnostic-adapter.mjs",
+      "sha256": "bcea7b495e819d1e1052543f36cbdad0ed8515e74bd8914cf66dc03b093c6e4f"
+    },
+    "kernel": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+      "path": "docs/shared/inference/lora/kernel/lora.wasm",
+      "sha256": "3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24",
+      "byteLength": 5051
+    },
+    "diffusion": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "path": "docs/shared/diffusion-models/lora/diagnostic-consumer.mjs",
+      "sha256": "fdac31542f87d68b9e01a1ba674ee9b60433cae685d6670222f8d914dd27f943"
+    }
+  },
+  "newDataModuleMustNotBeRetaggedAsNativeFc": true,
+  "existingNumericalEvidence": {
+    "sourceCommit": "25e5b56feeb070594110bb292d9de21e4e234f0a",
+    "distributionCommit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+    "receiptSourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+      "path": "development/ai-connection/reference-adoption/lora/evidence/p3/run-result.json.gz",
+      "byteLength": 197667,
+      "sha256": "37a229469a21c8d78057d5a6202e59920a4c10e081019bcc401485481758f6bd",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68/development/ai-connection/reference-adoption/lora/evidence/p3/run-result.json.gz"
+    },
+    "selection": {
+      "pairId": "light",
+      "side": "HIGH"
+    },
+    "coverage": "PARTIAL",
+    "publishedCases": 6,
+    "publishedWeightValues": 491520,
+    "publishedBiasValues": 96,
+    "publishedOutputValues": 96,
+    "reuseFor": [
+      "existing numerical/native transaction acceptance at recorded source and scope"
+    ],
+    "notProofOf": [
+      "new manager dtype/layout rejection",
+      "new official phase admission entry",
+      "new joint HIGH/LOW real-model acceptance"
+    ],
+    "rerunForThisHandoff": false
+  },
+  "singleExpansionPurpose": {
+    "purposeId": "JOINT-HIGH-SUCCESS-LOW-FAILURE-CONTAINMENT",
+    "purpose": "HIGH native success then LOW failure prevents new joint snapshot publication and confirms HIGH rollback + both native terminal/release barriers",
+    "newOfficialBoundaryRun": "PENDING_MANAGER_ENTRY",
+    "existingNativeFixture": {
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+        "path": "development/ai-connection/reference-adoption/P3-NATIVE-RESULT.json",
+        "byteLength": 111942,
+        "sha256": "4740eb08b161a9c4a6bbd21cc6a7b13804a7a695dff242a6931e54b7b55d9fdc",
+        "url": "https://github.com/Kushyameln01/kushyameln-works/blob/edda43f9ea69c5b3ab1af3c6eb82295f2912887c/development/ai-connection/reference-adoption/P3-NATIVE-RESULT.json"
+      },
+      "scenario": "low-failure",
+      "scope": "synthetic LoRA/base; actual native SDK/Hike/ORT pair transaction",
+      "rerun": false
+    },
+    "otherPairSideNumericalAcceptanceAdded": false
+  },
+  "inputPolicy": {
+    "productInput": "selected user-local safetensors",
+    "historicalFourOriginalsRequired": false,
+    "historicalInventoryOrWholeHashesRecomputed": false,
+    "newOriginalOrModelPayloadOpenedByHandoff": false
+  },
+  "scopeBarriers": [
+    "full target after corresponding real graph/consumer",
+    "full model/session",
+    "two-pair composition",
+    "generation",
+    "production deploy or merge"
+  ],
+  "generationReady": false,
+  "retainedCaseMetadataProjection": {
+    "evidencePath": "evidence/replay-inputs.json",
+    "scriptPath": "evidence/replay-inputs.mjs",
+    "retainedCases": 6,
+    "newNumericalExecutions": 0,
+    "newManagerAdoptionAccepted": false,
+    "currentLiveAdmission": false,
+    "unretainedFields": "resource capacities and original full header shapes stay explicitly unobserved; no live plan or resource permission is created"
+  }
+}

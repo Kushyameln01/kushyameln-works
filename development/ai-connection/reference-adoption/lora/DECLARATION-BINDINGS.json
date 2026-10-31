@@ -2102,6 +2102,13 @@
       "status": "SELECTED_EDGE_PASS_OTHER_SCOPE_NOT_VERIFIED",
       "reason": "Six selected lightHIGH real bounded-base diagnostic snapshots pass P1 phases and real transactions. Other pair/side fresh management runs, full target/model and generation are not newly accepted.",
       "resolutionEvidence": "evidence/p3/receipt.json"
+    },
+    {
+      "id": "FORMAL-MANAGER-PHASE-ADOPTION",
+      "requiredFor": "official manager LoRA admission, after dtype/layout declaration checks",
+      "status": "MANAGER_SOURCE_NOT_RECEIVED",
+      "reason": "Public management edda43 ignores three required loader declaration fields and has no formal three-phase entry; 12 metadata negative cases document the gap. Owner DATA export is ready; existing six numerical/native cases remain at original scope.",
+      "ownerHandoff": "management-handoff/HANDOFF.json"
     }
   ],
   "newRuntimeOrNumericalExecutionByThisDeclaration": false,
@@ -2143,5 +2150,51 @@
       "Management loader sidecar baseDtype/outputDtype/layout rejection is not implemented or certified by this run; actual native F32 row-major guards remain.",
       "N-ARTIFACT new selected-weight package not exercised; prior management packages retain original scope."
     ]
+  },
+  "managementHandoff": {
+    "dateJST": "2026-11-01",
+    "contract": "management-handoff/HANDOFF.json",
+    "codeCommit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+    "exports": [
+      {
+        "export": "describeLoraNumericDeclarations",
+        "contractVersion": "lora-numeric-declarations/0.1-draft.1",
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+          "path": "docs/shared/inference/lora/numeric-declarations.mjs",
+          "byteLength": 9909,
+          "sha256": "e7dd99d570c666969d76e93747998f3e1c20ba64d9e3b9d1b5f7a19e05aa6b17",
+          "url": "https://github.com/Kushyameln01/kushyameln-works/blob/82b21f09cb63926543181b16f0e97ebc6b9fa6be/docs/shared/inference/lora/numeric-declarations.mjs"
+        }
+      },
+      {
+        "export": "createLoraManagementAdmissionInputs",
+        "contractVersion": "lora-management-admission-inputs/0.1-draft.1",
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+          "path": "docs/shared/inference/lora/management-admission-inputs.mjs",
+          "byteLength": 32961,
+          "sha256": "ddf57f4c76333ada1ddf93cf238e5f4ea6219b39afd5dc4d567213667a7d897e",
+          "url": "https://github.com/Kushyameln01/kushyameln-works/blob/82b21f09cb63926543181b16f0e97ebc6b9fa6be/docs/shared/inference/lora/management-admission-inputs.mjs"
+        }
+      }
+    ],
+    "managerBaseline": {
+      "sourceCommit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "pr": "https://github.com/Kushyameln01/kushyameln-works/pull/7",
+      "loaderDeclarationConformance": "BLOCKED_MANAGER_DECLARATION_COMPARISONS_UNIMPLEMENTED",
+      "unmetNegativeCases": 12,
+      "supportedPositives": 2,
+      "formalThreePhaseEntry": "NOT_RECEIVED",
+      "officialAdoptionAccepted": false,
+      "newFormalEntryApiName": null,
+      "newFormalEntrySourceRef": null
+    },
+    "previousNumericalAcceptanceUnchanged": true,
+    "formalManagerAdoptionAccepted": false,
+    "newOriginalPayloadRead": false,
+    "singleExpansionPurpose": "JOINT-HIGH-SUCCESS-LOW-FAILURE-CONTAINMENT"
   }
 }
