@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "type": "wan-umt5-staged-fp32",
+  "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+  "modelBytes": 6735906897,
+  "sourceSha256": "797f11b69256dffa8d9a6d236fe1e05d0c250c84d231a5993accde0ff44238bc",
+  "config": {
+    "d_ff": 10240,
+    "d_kv": 64,
+    "d_model": 4096,
+    "decoder_start_token_id": 0,
+    "dropout_rate": 0.1,
+    "eos_token_id": 1,
+    "dense_act_fn": "gelu_pytorch_tanh",
+    "initializer_factor": 1.0,
+    "is_encoder_decoder": true,
+    "is_gated_act": true,
+    "layer_norm_epsilon": 1e-06,
+    "model_type": "umt5",
+    "num_decoder_layers": 24,
+    "num_heads": 64,
+    "num_layers": 24,
+    "output_past": true,
+    "pad_token_id": 0,
+    "relative_attention_num_buckets": 32,
+    "tie_word_embeddings": false,
+    "vocab_size": 256384
+  },
+  "arithmetic": "FP32 diagnostic expansion of original scaled FP8 values; not original GPU FP8 execution equivalence",
+  "embedding": {
+    "sourceFile": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+    "sourceBytes": 6735906897,
+    "offset": 549240,
+    "vocabSize": 256384,
+    "hiddenSize": 4096,
+    "dtype": "float16-le"
+  },
+  "numLayers": 24,
+  "hiddenSize": 4096,
+  "maxTokens": 512,
+  "minimumValidatedTokens": 4,
+  "dynamicTokens": true,
+  "blocks": [
+    {
+      "index": 0,
+      "path": "block-00.onnx",
+      "bytes": 771822917,
+      "sha256": "7fe493343e5a3d9c196284b1a64525c1296ac4f4a56a5d6239e6047cd3fb8807",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-00.f32",
+        "bytes": 65536,
+        "sha256": "9a874571a131437829943aecd08f6729e37626f8f6a9e8fa29c269882f23e70b"
+      },
+      "nativeMaxAbsError": 0.08984375,
+      "nativePass": false,
+      "prepareSeconds": 18.88406019499962
+    }
+  ],
+  "finalNorm": {
+    "epsilon": 1e-06,
+    "path": "final-norm.f32",
+    "bytes": 16384,
+    "sha256": "31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02"
+  },
+  "fixture": {
+    "tokenIds": [
+      42,
+      1234,
+      1,
+      0
+    ],
+    "attentionMask": [
+      1.0,
+      1.0,
+      1.0,
+      0.0
+    ],
+    "input": {
+      "path": "embedding-reference.f32",
+      "bytes": 65536,
+      "sha256": "9fd52aa9a4994de30c7109386ed5fb0aeb88f8fce753f595958fd6a58c4af5ad"
+    }
+  },
+  "numericGate": {
+    "maxAbsError": 0.001,
+    "rtol": 0.001,
+    "registeredBeforeComparison": true,
+    "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee"
+  },
+  "ortVersion": "1.24.3",
+  "onnxOpset": 17,
+  "complete": false
+}

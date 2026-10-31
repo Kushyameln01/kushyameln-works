@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Decode one owner-restored F1 mean through the actual VAE UI, once."""
+"""Decode one owner-restored mean through the actual VAE UI, once."""
 import argparse
 import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -21,13 +21,26 @@ LATENT_SHAPE = [1, 16, 1, 2, 2]
 RGB_SHAPE = [1, 3, 1, 16, 16]
 GATE = {'atol': 2e-5, 'rtol': 2e-5, 'maxAbs': 2e-5}
 REFERENCE_SHA = 'cf5ff2bf37ac4c27ec892d143bc1be1bb1a86462e4116ab03510bd6c05095849'
+DEFAULT_PROFILE = 'wan21-raw-f32-1x16x16'
+PROFILES = {
+    DEFAULT_PROFILE: {'latentShape': LATENT_SHAPE, 'rgbShape': RGB_SHAPE,
+                      'referenceSha256': REFERENCE_SHA, 'output': 'restore64-rgb.wktensor'},
+    'wan21-raw-f32-1x16x32': {
+        'latentShape': [1, 16, 1, 2, 4], 'rgbShape': [1, 3, 1, 16, 32],
+        'referenceSha256': '44cf55e9ea5896f985a0ccf26f61cbb52650fd1a53d3fe80fc3e03aaae545c29',
+        'manifestSha256': '450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a',
+        'output': 'restore128-rect-rgb.wktensor'},
+}
 
 
 def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def validate_input(path):
+def validate_input(path, profile_id=DEFAULT_PROFILE):
+    profile = PROFILES[profile_id]
+    latent_shape = profile['latentShape']
+    payload_bytes = int(np.prod(latent_shape)) * 4
     raw = path.read_bytes()
     if len(raw) < 12 or raw[:8] != b'WKTSR001':
         raise ValueError('Input must be a Works tensor')
@@ -37,11 +50,11 @@ def validate_input(path):
     header = json.loads(raw[12:12 + length].decode('utf-8'))
     payload = raw[12 + length:]
     expected = {'schemaVersion': 1, 'dtype': 'float32', 'layout': 'NCTHW',
-                'shape': LATENT_SHAPE, 'meaning': 'raw-posterior-mean',
-                'modelSha256': MODEL, 'byteOrder': 'little', 'byteLength': 256}
+                'shape': latent_shape, 'meaning': 'raw-posterior-mean',
+                'modelSha256': MODEL, 'byteOrder': 'little', 'byteLength': payload_bytes}
     if any(header.get(key) != value for key, value in expected.items()):
-        raise ValueError('Input must retain the exact F1 raw-mean profile/model')
-    if len(payload) != 256 or hashlib.sha256(payload).hexdigest() != header.get('dataSha256'):
+        raise ValueError(f'Input must retain the exact {profile_id} raw-mean profile/model')
+    if len(payload) != payload_bytes or hashlib.sha256(payload).hexdigest() != header.get('dataSha256'):
         raise ValueError('Input payload identity mismatch')
     if not np.isfinite(np.frombuffer(payload, dtype='<f4')).all():
         raise ValueError('Nonfinite input mean')
@@ -56,13 +69,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('bundle', 'input', 'reference', 'output'):
         parser.add_argument('--' + name, required=True, type=Path)
+    parser.add_argument('--profile', choices=PROFILES, default=DEFAULT_PROFILE)
     args = parser.parse_args()
+    profile = PROFILES[args.profile]
+    rgb_shape = profile['rgbShape']
+    elements = int(np.prod(rgb_shape))
     for name in ('bundle', 'input', 'reference', 'output'):
         setattr(args, name, getattr(args, name).resolve())
     if 'docs' in args.output.parts:
         raise ValueError('Private evidence must remain outside docs/')
     args.output.mkdir(parents=True, exist_ok=False)
-    result = {'passed': False, 'scope': 'One real F1 raw-mean decode of owner-restored64 via product UI',
+    result = {'passed': False, 'scope': f'One real raw-mean decode of {args.profile} via product UI',
               'comparisonGate': GATE, 'generatedSampleInference': False,
               'textInference': False, 'encodeInference': False, 'referenceRecomputed': False,
               'pageErrors': [], 'consoleErrors': [], 'requests': [], 'requestFailures': [],
@@ -71,18 +88,21 @@ def main():
     server = browser = context = page = playwright = sampler = owner = None
     started = time.monotonic()
     try:
-        result['input'] = validate_input(args.input)
+        result['input'] = validate_input(args.input, args.profile)
         manifest_path = args.bundle / 'manifest.json'
         manifest = json.loads(manifest_path.read_text())
         if (manifest.get('model', {}).get('sha256') != MODEL
-                or manifest.get('profile', {}).get('latentShape') != LATENT_SHAPE
-                or manifest['profile']['videoShape'] != RGB_SHAPE):
-            raise ValueError('Only the original private F1 bundle may be used')
-        if args.reference.stat().st_size != 768 * 4 or digest(args.reference) != REFERENCE_SHA:
+                or manifest.get('profile', {}).get('id') != args.profile
+                or manifest.get('profile', {}).get('latentShape') != profile['latentShape']
+                or manifest['profile']['videoShape'] != rgb_shape):
+            raise ValueError('Only the selected original private bundle may be used')
+        if profile.get('manifestSha256') and digest(manifest_path) != profile['manifestSha256']:
+            raise ValueError('Rect manifest differs from the fixed accepted bundle')
+        if args.reference.stat().st_size != elements * 4 or digest(args.reference) != profile['referenceSha256']:
             raise ValueError('Reference differs from the fixed original PNG mean roundtrip golden')
         result.update(profileId=manifest['profile']['id'], manifestSha256=digest(manifest_path),
-                      reference={'file': args.reference.name, 'bytes': 3072,
-                                 'sha256': REFERENCE_SHA, 'elements': 768})
+                      reference={'file': args.reference.name, 'bytes': elements * 4,
+                                 'sha256': profile['referenceSha256'], 'elements': elements})
         owner = ProcessOwnership().start()  # Before the Playwright driver and Chromium.
 
         class Handler(BaseHTTPRequestHandler):
@@ -143,13 +163,13 @@ def main():
                    if route.request.method == 'GET' and route.request.url.startswith(origin + '/')
                    else route.abort())
         page.goto(origin + '/vae/')
-        phase = sampler.phase = 'select-existing-f1-bundle-and-restored-mean'
+        phase = sampler.phase = 'select-existing-bundle-and-restored-mean'
         page.locator('#bundle').set_input_files(str(args.bundle))
-        page.wait_for_function("document.querySelector('#model-info').textContent.includes('1フレーム / 16×16')")
+        page.wait_for_function("document.querySelector('#model-info').textContent.includes('1フレーム')")
         page.locator('#operation').select_option('decode')
         page.locator('#tensor-input').set_input_files(str(args.input))
         page.wait_for_function("document.querySelector('#input-info').textContent.includes('raw-posterior-mean')")
-        phase = sampler.phase = 'one-restored64-raw-decode'
+        phase = sampler.phase = 'one-restored-raw-decode'
         inference_started = time.monotonic()
         page.locator('#run').click()
         page.wait_for_function("!document.querySelector('#save').disabled || !document.querySelector('#run').disabled")
@@ -163,12 +183,12 @@ def main():
                 or evidence.get('inputMeaning') != 'raw-posterior-mean'
                 or evidence.get('inputModelSha256') != MODEL):
             raise AssertionError('Decode evidence differs from the unchanged raw/Hike contract')
-        phase = sampler.phase = 'download-and-full768-comparison'
+        phase = sampler.phase = f'download-and-full{elements}-comparison'
         with page.expect_download() as download:
             page.locator('#save').click()
-        output = args.output / 'restore64-rgb.wktensor'
+        output = args.output / profile['output']
         download.value.save_as(str(output))
-        result['numeric'] = compare_download(output, args.reference, RGB_SHAPE,
+        result['numeric'] = compare_download(output, args.reference, rgb_shape,
                                              'raw-decoder-rgb', MODEL, GATE)
         if result['numeric']['header'].get('context') != result['input']['header'].get('context'):
             raise AssertionError('Output context differs from the supplied diagnostic declaration')

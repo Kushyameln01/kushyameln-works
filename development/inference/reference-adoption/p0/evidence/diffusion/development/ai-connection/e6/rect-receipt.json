@@ -1,0 +1,118 @@
+{
+  "task": "E6 rectangle extension and GitHub receipt",
+  "passed": true,
+  "startSourceCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+  "vaeReceivedCommit": "7e091192232fae36367b550ca5fada88915a0703",
+  "receivedFiles": 12,
+  "actualManifestsReceived": true,
+  "actualVaeOutputFixturesReceived": true,
+  "actualGraphBundleReceived": false,
+  "newExportOrVaeNeuralExecution": false,
+  "nodeRectCases": 7,
+  "chromeRectCases": 7,
+  "nodeAndChromeF1Cases": 10,
+  "nodeAndChromeLegacyCases": 10,
+  "interopCases": 10,
+  "nodePythonChromeActualFixturePayloadHashesMatch": true,
+  "old64And128SyntheticOutputHashesUnchanged": true,
+  "abi": "wan21-raw-mean-f32-v3",
+  "profiles": [
+    {
+      "id": "wan21-raw-f32-5x16x16",
+      "shape": [
+        1,
+        16,
+        2,
+        2,
+        2
+      ],
+      "elements": 128,
+      "positionsPerChannel": 8,
+      "normalizeExport": "NormalizeRawMean",
+      "restoreExport": "RestoreRawMean"
+    },
+    {
+      "id": "wan21-raw-f32-1x16x16",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "elements": 64,
+      "positionsPerChannel": 4,
+      "normalizeExport": "NormalizeRawMeanF1",
+      "restoreExport": "RestoreRawMeanF1"
+    },
+    {
+      "id": "wan21-raw-f32-1x16x32",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "elements": 128,
+      "positionsPerChannel": 8,
+      "normalizeExport": "NormalizeRawMeanRect",
+      "restoreExport": "RestoreRawMeanRect"
+    }
+  ],
+  "kernelSHA256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+  "hikeSourceSHA256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+  "memoryBytes": 1114112,
+  "arenaBytes": 1024,
+  "roundTripTolerance": 2e-06,
+  "actualFixtureResults": [
+    {
+      "profile": "wan21-raw-f32-1x16x16",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "fixtureFileSHA256": "ab1c7fb141607c8560b9dfa67767b76e282eb25db15921228366e60f5655c9bc",
+      "manifestSHA256": "fa219b8e7e0b6b0be37c598d3dfedadb29505ad1407fe3f8270d8655dd46828c",
+      "normalizedSHA256": "a46b61787b07e1f4be3d49d2f4ed18686c8ae5141f3a11c7117e046f45575020",
+      "restoredSHA256": "27d9cf7f6251c0819c96ebc653b6fdcd8ed0971b34cab6eb14c79fe582dd16a7",
+      "maxRoundTripAbs": 1.1920928955078125e-07
+    },
+    {
+      "profile": "wan21-raw-f32-1x16x32",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "fixtureFileSHA256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8",
+      "manifestSHA256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a",
+      "normalizedSHA256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5",
+      "restoredSHA256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+      "maxRoundTripAbs": 2.384185791015625e-07
+    }
+  ],
+  "peer64LimitedJointVaeReport": {
+    "sourceCommit": "7e091192232fae36367b550ca5fada88915a0703",
+    "ownerSourceCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+    "realVaeDecodeCalls": 1,
+    "executedByThisTask": false,
+    "scope": "direct owner Hike + explicitG1C file + VAE UI; not Diffusion RPC or generated sample"
+  },
+  "currentCodecMergedByThisTask": false,
+  "generatedSampleSupported": false,
+  "apiAdoptionOwner": "root",
+  "publishedOrPushedByThisTask": false,
+  "newSourceEvidence": {
+    "resultSHA256": "3a641d0fed345c9515ea20be0e516c6491cc6e3e2e1fa386cbe76c22157290f1",
+    "acquisitionSHA256": "89ec4d7ee9d4f8e20c01351fd6be394b74bfd61a392f605e681db6546950faa7",
+    "browserSHA256": "53a8ced5a1c3f8c9ccd4cbd84d5a3459c3fdb1a007874ef0f3b9d26a2296cc9d",
+    "buildRecordSHA256": "679df4f5cffd41fb5639b32146eea9b102a354bf17c8b3a4be5ad44ba978cf99"
+  },
+  "review": "independent read-only reviewer verified source/fixtures, production route and fresh7/10/10 Node cases; no blocking issue after updating obsolete invalid-shape expectation"
+}

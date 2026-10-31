@@ -1,0 +1,2532 @@
+{
+  "schemaVersion": "works-inference-p0-sidecar/1.0-draft.1",
+  "status": "P0_STATIC_BINDINGS_RECORDED",
+  "nativeFieldsChanged": false,
+  "nativeApiChanged": false,
+  "numericImplementationAdded": false,
+  "newNeuralInference": false,
+  "plan": {
+    "pageId": "page_78c30bebe16481918944e621b8c2a02a",
+    "version": "1.0-draft.1",
+    "fixedPlanCommit": "0fb553fd081d3bcbbad4ead7accd165679f77d34",
+    "evidenceId": "document-new-plan"
+  },
+  "reference": {
+    "commit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+    "version": "1.0-draft.1",
+    "catalogEvidenceId": "reference-catalog.v1",
+    "catalogSha256": "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+    "runtimeIntegrated": false,
+    "nativeIdPolicy": "Catalog recordIds are sidecar references only; never inserted into native profileId/protocolVersion"
+  },
+  "sourcePins": {
+    "vaeText": "855f435120f08eb9e818e51281fc26f0e2633829",
+    "diffusionCandidate": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+    "managerSelected": "28596717182e48aeb23c719c51b6e593edf4e496",
+    "managerAdoptedDiffusion": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+    "managerAdoptedCodec": "2c171a09ccda65c54899f322ae490f1bfcaac6fb",
+    "managerAdoptedLora": "0c27874908638afc748ea2455a2779a16736730b"
+  },
+  "missingPolicy": {
+    "missingRequiredContractOrIdentity": {
+      "compatibility": "UNVERIFIED",
+      "validation": "NOT_VERIFIED",
+      "readiness": "BLOCKED"
+    },
+    "knownConflict": {
+      "compatibility": "INCOMPATIBLE",
+      "readiness": "BLOCKED"
+    },
+    "identifiedRequiredAdapterNotExecuted": {
+      "compatibility": "NEEDS_ADAPTER",
+      "readiness": "BLOCKED"
+    },
+    "requiredTransformNotIdentified": {
+      "compatibility": "UNVERIFIED",
+      "readiness": "BLOCKED"
+    },
+    "missingNumericalGateOrReceiptOnly": {
+      "compatibility": "retain contract-based result",
+      "validation": "NOT_VERIFIED",
+      "readiness": "BLOCKED"
+    },
+    "missingCurrentResourceState": {
+      "compatibility": "retain contract-based result",
+      "readiness": "BLOCKED",
+      "scope": "only dependent operation/resource"
+    },
+    "notApplicable": "Do not force LoRA requirements onto a no-LoRA Text/VAE edge; retain explicit reason, do not invent PASS evidence"
+  },
+  "gateCatalog": {
+    "vae-f5-export": {
+      "owner": "vae",
+      "kind": "exporter-default",
+      "evidenceId": "manifest-vae-f5",
+      "fieldPath": "/comparisonGate",
+      "value": {
+        "atol": 0.002,
+        "rtol": 0.002,
+        "maxAbs": 0.002,
+        "scope": "FP32 reference, synthetic fixed-profile checks only"
+      },
+      "registeredBeforeComparison": true,
+      "scope": "Unmodified exporter diagnostic default; not the later strict acceptance plan",
+      "notSameAs": [
+        "mean-f5-roundtrip"
+      ]
+    },
+    "vae-f1-export": {
+      "owner": "vae",
+      "kind": "exporter-default",
+      "evidenceId": "manifest-vae-f1",
+      "fieldPath": "/comparisonGate",
+      "value": {
+        "atol": 0.002,
+        "rtol": 0.002,
+        "maxAbs": 0.002,
+        "scope": "FP32 reference, synthetic fixed-profile checks only"
+      },
+      "registeredBeforeComparison": true,
+      "scope": "Unmodified exporter diagnostic default; not the later strict acceptance plan",
+      "notSameAs": [
+        "vae-f1-acceptance"
+      ]
+    },
+    "vae-rect-export": {
+      "owner": "vae",
+      "kind": "exporter-default",
+      "evidenceId": "manifest-vae-rect",
+      "fieldPath": "/comparisonGate",
+      "value": {
+        "atol": 0.002,
+        "rtol": 0.002,
+        "maxAbs": 0.002,
+        "scope": "FP32 reference, synthetic fixed-profile checks only"
+      },
+      "registeredBeforeComparison": true,
+      "scope": "Unmodified exporter diagnostic default; not the later strict acceptance plan",
+      "notSameAs": [
+        "vae-rect-acceptance"
+      ]
+    },
+    "vae-f1-acceptance": {
+      "owner": "vae",
+      "kind": "pre-export-native-reference-acceptance",
+      "evidenceId": "vae-f1-preplan",
+      "fieldPath": "/comparisonGate",
+      "value": {
+        "atol": 2e-05,
+        "rtol": 2e-05,
+        "maxAbs": 2e-05,
+        "scope": "all FP32 output elements, predetermined before export/browser; no visual-quality or large-profile extrapolation"
+      },
+      "receiptEvidenceId": "vae-f1-receipt",
+      "receiptFieldPath": "/acceptanceGate",
+      "registeredBeforeComparison": true,
+      "scope": "All outputs for this fixed native diagnostic profile only; distinct from Diffusion mean restoration",
+      "notSameAs": [
+        "vae-f1-export",
+        "mean-f1-roundtrip"
+      ]
+    },
+    "vae-rect-acceptance": {
+      "owner": "vae",
+      "kind": "pre-export-native-reference-acceptance",
+      "evidenceId": "vae-rect-preplan",
+      "fieldPath": "/comparisonGate",
+      "value": {
+        "atol": 2e-05,
+        "rtol": 2e-05,
+        "maxAbs": 2e-05,
+        "scope": "all output values, fixed before accepted export/reference/WASM"
+      },
+      "receiptEvidenceId": "vae-rect-receipt",
+      "receiptFieldPath": "/acceptanceGate",
+      "registeredBeforeComparison": true,
+      "scope": "All outputs for this fixed native diagnostic profile only; distinct from Diffusion mean restoration",
+      "notSameAs": [
+        "vae-rect-export",
+        "mean-rect-roundtrip"
+      ]
+    },
+    "vae-f5-acceptance": {
+      "owner": "vae",
+      "kind": "historical-browser-fixed-profile",
+      "evidenceId": "historical-live",
+      "fieldPath": "/vae/*/checks/tolerance",
+      "value": {
+        "maxAbs": 0.002
+      },
+      "scope": "Existing F5 PNG encode and raw decode fixed diagnostic outputs; not mean normalization or arbitrary video",
+      "registeredBeforeComparison": true,
+      "receiptDeclaredFrom": "manifest-vae-f5:/comparisonGate"
+    },
+    "mean-f5-roundtrip": {
+      "owner": "diffusion_models",
+      "kind": "mean-only-roundtrip",
+      "value": {
+        "maximumAbsoluteError": 2e-06
+      },
+      "evidenceId": "diffusion-f5-gate-source",
+      "fieldPath": "lines28-29, runCases raw shape [1,16,2,2,2]",
+      "receiptEvidenceId": "mean-f5-current-wasm",
+      "receiptFieldPath": "/roundTripTolerance",
+      "registeredBeforeComparison": true,
+      "independentReference": "Separate staged-f32 source-order oracle for normalize/restore; all channel values; roundtrip maximum is a separate check",
+      "scope": "Synthetic F5/128 + binary readback and current bd42 WASM legacy regression",
+      "doesNotApplyTo": [
+        "raw VAE decoder output",
+        "generated sample",
+        "other shapes",
+        "original GPU precision"
+      ]
+    },
+    "mean-f1-roundtrip": {
+      "owner": "diffusion_models",
+      "kind": "mean-only-roundtrip",
+      "value": {
+        "maximumAbsoluteError": 2e-06
+      },
+      "evidenceId": "mean-rect-result",
+      "fieldPath": "predeclared roundTripTolerance for received f1 mean",
+      "receiptEvidenceId": "mean-three-profile-receipt",
+      "receiptFieldPath": "/roundTripTolerance",
+      "registeredBeforeComparison": true,
+      "independentReference": "Separate staged-f32 source-order oracle for normalize/restore; all channel values; roundtrip maximum is a separate check",
+      "scope": "Received actual diagnostic VAE f1 raw mean, Hike normalize/G1C codec/restore; no new VAE NN run",
+      "doesNotApplyTo": [
+        "raw VAE decoder output",
+        "generated sample",
+        "other shapes",
+        "original GPU precision"
+      ]
+    },
+    "mean-rect-roundtrip": {
+      "owner": "diffusion_models",
+      "kind": "mean-only-roundtrip",
+      "value": {
+        "maximumAbsoluteError": 2e-06
+      },
+      "evidenceId": "mean-rect-result",
+      "fieldPath": "predeclared roundTripTolerance for received rect mean",
+      "receiptEvidenceId": "mean-three-profile-receipt",
+      "receiptFieldPath": "/roundTripTolerance",
+      "registeredBeforeComparison": true,
+      "independentReference": "Separate staged-f32 source-order oracle for normalize/restore; all channel values; roundtrip maximum is a separate check",
+      "scope": "Received actual diagnostic VAE rect raw mean, Hike normalize/G1C codec/restore; no new VAE NN run",
+      "doesNotApplyTo": [
+        "raw VAE decoder output",
+        "generated sample",
+        "other shapes",
+        "original GPU precision"
+      ]
+    },
+    "text-final": {
+      "owner": "text_encoder",
+      "kind": "selected-manifest-final-normalized-output",
+      "evidenceId": "manifest-text",
+      "fieldPath": "/numericGate",
+      "value": {
+        "maxAbsError": 0.001,
+        "rtol": 0.001,
+        "registeredBeforeComparison": true,
+        "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee"
+      },
+      "reference": {
+        "path": "final-reference.f32",
+        "bytes": 65536,
+        "sha256": "1c511d512ddea17ef59e583f294b22dfd8a9837fc45b8a55526b5ac5eb4803c3"
+      },
+      "scope": "Fixed FP32 source-reference diagnostic output; reported actual ID fixture acceptance only; not a measured arbitrary-prompt error"
+    },
+    "text-intermediate": {
+      "owner": "text_encoder",
+      "kind": "explicitly-revised-intermediate",
+      "evidenceId": "manifest-text",
+      "fieldPath": "/intermediateGate",
+      "value": {
+        "normalizedPeakError": 0.0001,
+        "relativeRmsError": 0.0001,
+        "revisionReason": "Original unscaled absolute-only stage gate failed0.08984375 on hiddenpeak20464.387 while allclose passed; failed trial retained; final normalizedembedding maxabs.001 unchanged",
+        "registeredBeforeRemainingStages": true
+      },
+      "scope": "Unnormalized block hidden states, revised before remaining stages; not final output maxAbs gate"
+    },
+    "text-initial-failed": {
+      "owner": "text_encoder",
+      "kind": "historical-failed-intermediate-trial",
+      "evidenceId": "text-initial-failure",
+      "value": {
+        "absoluteOnly": 0.001
+      },
+      "status": "FAIL",
+      "scope": "Initial block0 unnormalized hidden-state criterion; failure0.08984375 retained unchanged",
+      "historyEvidenceId": "text-report"
+    }
+  },
+  "declarations": [
+    {
+      "declarationId": "vae-f5",
+      "owner": "vae",
+      "nativeContractVersion": "works-ai-1",
+      "sourcePin": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "nativeEntry": {
+        "module": "docs/shared/inference/api.mjs",
+        "factory": "createVaeModule",
+        "configure": "configure({manifest,files})",
+        "operations": [
+          "encode(tensor)",
+          "decode(tensor)"
+        ],
+        "rpc": "bindInferencePort, module=vae, method=encode|decode, args=tensor"
+      },
+      "nativeProfileId": "wan21-raw-f32-5x16x16",
+      "nativeProfileField": "manifest.profile.id",
+      "catalogRefs": [
+        "SHAPE-VAE-WAN21-F5-16X16",
+        "NORM-WAN21-MEAN-F5",
+        "NORM-RGB-UNIT-TO-RAW"
+      ],
+      "identity": {
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "decoderBindingField": "manifest.model.sha256 / mean tensor.modelSha256 when supplied",
+        "decoderBody": {
+          "file": "decoder-body.onnx",
+          "bytes": 293796478,
+          "sha256": "5dab72df50785b63bdeae7f0005704cc884af9a6234c08d98b705996f5432e14"
+        },
+        "tokenizerSha256": {
+          "value": null,
+          "reason": "Not a text tensor; no tokenizer binding is applicable"
+        },
+        "manifestEvidenceId": "manifest-vae-f5"
+      },
+      "ports": {
+        "encodeInput": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            5,
+            16,
+            16
+          ],
+          "meaning": [
+            "rgb-unit",
+            "raw-decoder-rgb"
+          ],
+          "ranges": {
+            "rgb-unit": [
+              0,
+              1
+            ],
+            "raw-decoder-rgb": [
+              -1,
+              1
+            ]
+          }
+        },
+        "mean": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            2,
+            2,
+            2
+          ],
+          "meaning": "raw-posterior-mean",
+          "elements": 128,
+          "byteLength": 512,
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "normalization": "absent",
+          "attentionMask": "absent"
+        },
+        "decodeOutput": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            5,
+            16,
+            16
+          ],
+          "meaning": "raw-decoder-rgb",
+          "clipped": false
+        }
+      },
+      "execution": {
+        "nativeExecutionProfileId": {
+          "value": null,
+          "reason": "No distinct executionProfileId in native VAE manifest; use profile.id plus explicit model/inference/source/asset records"
+        },
+        "model": {
+          "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "storedDtype": "bfloat16",
+          "executionDtype": "float32",
+          "precisionNote": "Stored BF16 values are unchanged; arithmetic uses FP32 and is not asserted equivalent to original BF16 execution."
+        },
+        "source": {
+          "repo": "Wan-Video/Wan2.1",
+          "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+          "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+          "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498"
+        },
+        "inference": {
+          "inputName": "input",
+          "outputName": "output",
+          "executionProvider": "wasm",
+          "threads": 1,
+          "graphOptimizationLevel": "disabled"
+        },
+        "hike": {
+          "sourceCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "buildEvidenceId": "native-hike-build",
+          "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+          "byteLength": 5265,
+          "requiredOperations": [
+            "Affine",
+            "MatMul"
+          ],
+          "sqrtBridge": "fixed env.sqrt -> Math.sqrt, f64->f64 primitive only",
+          "loadedBytesEvidenceId": "p0-static-identities",
+          "requiredWhen": "VAE decode: MatMul+Affine; VAE rgb-unit encode: Affine; raw RGB encode adds no identity Hike call"
+        },
+        "sourceEvidenceIds": [
+          "native-vae",
+          "native-vae-api",
+          "native-inference-worker"
+        ],
+        "assetRecordsField": "manifest.assets; every file/bytes/sha256 must match configured profile"
+      },
+      "normalization": {
+        "latentOwner": "diffusion_models",
+        "rawMeanNotGeneratedSample": true,
+        "meanRuleId": "wan21-comfy-f32-v1",
+        "counterpartNativeContract": "diffusion-models/0.1",
+        "counterpartNativeProfileId": "wan21-raw-f32-5x16x16",
+        "counterpartBuildId": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+        "counterpartSourcePin": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "kernelAbi": "wan21-raw-mean-f32-v3",
+        "kernelSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+        "exports": {
+          "normalize": "NormalizeRawMean",
+          "restore": "RestoreRawMean"
+        },
+        "gateRef": "mean-f5-roundtrip",
+        "ownerNumericEvidenceIds": [
+          "mean-f5-current-wasm"
+        ],
+        "rgbConversionOwner": "vae.encode only for rgb-unit; Hike affine scale2/shift-1; raw RGB bypasses conversion"
+      },
+      "numericAcceptance": {
+        "exportGateRef": "vae-f5-export",
+        "acceptanceGateRef": "vae-f5-acceptance",
+        "referenceFields": [
+          "manifest.references.encode",
+          "manifest.references.decode",
+          "manifest.references.conv2"
+        ],
+        "ownerEvidenceIds": [
+          "historical-live",
+          "historical-local"
+        ],
+        "status": "PASS_WITHIN_RECORDED_SCOPE",
+        "freshP0NeuralRun": false,
+        "currentness": "Original receipt native source/runtime pins remain original; selected source inspected separately; no blanket fresh execution claim"
+      },
+      "metadata": {
+        "nativeContextField": "tensor.context",
+        "copyPolicy": "owned native snapshot; preserve sourceFrameIndices and sourceFrameTimesSeconds order/duplicates",
+        "encodeFrameRule": "context.sourceFrameIndices.length == configured video F, if context supplied",
+        "latentFrameRule": "source RGB F is not latent T; no fabricated one-to-one temporal index change",
+        "provenancePolicy": "Mean modelSha256 is VAE producer; generated producer hashes remain distinct from decoder VAE",
+        "optionalNativeModelHash": "Native mean decoder accepts omitted model hash; manager-required identity missing means UNVERIFIED, not certified compatible"
+      },
+      "scope": "One fixed VAE FP32 diagnostic profile; no original BF16/GPU equivalence, arbitrary media,81frame or real generated sample acceptance",
+      "requiresLora": false,
+      "normBindingRefs": [
+        "N-IDENTITY",
+        "N-SHAPE",
+        "N-NUMERIC",
+        "N-NORMALIZATION",
+        "N-LOADER",
+        "N-MAPPING",
+        "N-EVIDENCE",
+        "N-TRANSACTION",
+        "N-ARTIFACT",
+        "N-LEGACY",
+        "N-GENERATION",
+        "N-EXTENSION"
+      ],
+      "management": {
+        "selectedManagerSource": "28596717182e48aeb23c719c51b6e593edf4e496",
+        "selectedDiffusionSource": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+        "candidateDiffusionSource": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "p1ReferenceRuntimeIntegrated": false,
+        "p2FinalAdoption": "BLOCKED",
+        "p2Reason": "P1 is not installed in selected manager285; candidate-only numeric traces are a separate scope; Rect is not in currently adopted Diffusion438"
+      }
+    },
+    {
+      "declarationId": "vae-f1",
+      "owner": "vae",
+      "nativeContractVersion": "works-ai-1",
+      "sourcePin": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "nativeEntry": {
+        "module": "docs/shared/inference/api.mjs",
+        "factory": "createVaeModule",
+        "configure": "configure({manifest,files})",
+        "operations": [
+          "encode(tensor)",
+          "decode(tensor)"
+        ],
+        "rpc": "bindInferencePort, module=vae, method=encode|decode, args=tensor"
+      },
+      "nativeProfileId": "wan21-raw-f32-1x16x16",
+      "nativeProfileField": "manifest.profile.id",
+      "catalogRefs": [
+        "SHAPE-VAE-WAN21-F1-16X16",
+        "NORM-WAN21-MEAN-F1",
+        "NORM-RGB-UNIT-TO-RAW"
+      ],
+      "identity": {
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "decoderBindingField": "manifest.model.sha256 / mean tensor.modelSha256 when supplied",
+        "decoderBody": {
+          "file": "decoder-body.onnx",
+          "bytes": 286313363,
+          "sha256": "c6c4457e538c6f613d2b3a73d97d90525bdc872b4d310dda125712e1f42b55cf"
+        },
+        "tokenizerSha256": {
+          "value": null,
+          "reason": "Not a text tensor; no tokenizer binding is applicable"
+        },
+        "manifestEvidenceId": "manifest-vae-f1"
+      },
+      "ports": {
+        "encodeInput": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            16
+          ],
+          "meaning": [
+            "rgb-unit",
+            "raw-decoder-rgb"
+          ],
+          "ranges": {
+            "rgb-unit": [
+              0,
+              1
+            ],
+            "raw-decoder-rgb": [
+              -1,
+              1
+            ]
+          }
+        },
+        "mean": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            2
+          ],
+          "meaning": "raw-posterior-mean",
+          "elements": 64,
+          "byteLength": 256,
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "normalization": "absent",
+          "attentionMask": "absent"
+        },
+        "decodeOutput": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            16
+          ],
+          "meaning": "raw-decoder-rgb",
+          "clipped": false
+        }
+      },
+      "execution": {
+        "nativeExecutionProfileId": {
+          "value": null,
+          "reason": "No distinct executionProfileId in native VAE manifest; use profile.id plus explicit model/inference/source/asset records"
+        },
+        "model": {
+          "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "storedDtype": "bfloat16",
+          "executionDtype": "float32",
+          "precisionNote": "Stored BF16 values are unchanged; arithmetic uses FP32 and is not asserted equivalent to original BF16 execution."
+        },
+        "source": {
+          "repo": "Wan-Video/Wan2.1",
+          "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+          "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+          "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498"
+        },
+        "inference": {
+          "inputName": "input",
+          "outputName": "output",
+          "executionProvider": "wasm",
+          "threads": 1,
+          "graphOptimizationLevel": "disabled"
+        },
+        "hike": {
+          "sourceCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "buildEvidenceId": "native-hike-build",
+          "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+          "byteLength": 5265,
+          "requiredOperations": [
+            "Affine",
+            "MatMul"
+          ],
+          "sqrtBridge": "fixed env.sqrt -> Math.sqrt, f64->f64 primitive only",
+          "loadedBytesEvidenceId": "p0-static-identities",
+          "requiredWhen": "VAE decode: MatMul+Affine; VAE rgb-unit encode: Affine; raw RGB encode adds no identity Hike call"
+        },
+        "sourceEvidenceIds": [
+          "native-vae",
+          "native-vae-api",
+          "native-inference-worker"
+        ],
+        "assetRecordsField": "manifest.assets; every file/bytes/sha256 must match configured profile"
+      },
+      "normalization": {
+        "latentOwner": "diffusion_models",
+        "rawMeanNotGeneratedSample": true,
+        "meanRuleId": "wan21-comfy-f32-v1",
+        "counterpartNativeContract": "diffusion-models/0.1",
+        "counterpartNativeProfileId": "wan21-raw-f32-1x16x16",
+        "counterpartBuildId": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+        "counterpartSourcePin": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "kernelAbi": "wan21-raw-mean-f32-v3",
+        "kernelSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+        "exports": {
+          "normalize": "NormalizeRawMeanF1",
+          "restore": "RestoreRawMeanF1"
+        },
+        "gateRef": "mean-f1-roundtrip",
+        "ownerNumericEvidenceIds": [
+          "mean-three-profile-receipt",
+          "mean-rect-node",
+          "mean-rect-browser"
+        ],
+        "rgbConversionOwner": "vae.encode only for rgb-unit; Hike affine scale2/shift-1; raw RGB bypasses conversion"
+      },
+      "numericAcceptance": {
+        "exportGateRef": "vae-f1-export",
+        "acceptanceGateRef": "vae-f1-acceptance",
+        "referenceFields": [
+          "manifest.references.encode",
+          "manifest.references.decode",
+          "manifest.references.conv2"
+        ],
+        "ownerEvidenceIds": [
+          "vae-f1-preplan",
+          "vae-f1-receipt",
+          "vae-f1-reference",
+          "vae-f1-results"
+        ],
+        "status": "PASS_WITHIN_RECORDED_SCOPE",
+        "freshP0NeuralRun": false,
+        "currentness": "Original receipt native source/runtime pins remain original; selected source inspected separately; no blanket fresh execution claim"
+      },
+      "metadata": {
+        "nativeContextField": "tensor.context",
+        "copyPolicy": "owned native snapshot; preserve sourceFrameIndices and sourceFrameTimesSeconds order/duplicates",
+        "encodeFrameRule": "context.sourceFrameIndices.length == configured video F, if context supplied",
+        "latentFrameRule": "source RGB F is not latent T; no fabricated one-to-one temporal index change",
+        "provenancePolicy": "Mean modelSha256 is VAE producer; generated producer hashes remain distinct from decoder VAE",
+        "optionalNativeModelHash": "Native mean decoder accepts omitted model hash; manager-required identity missing means UNVERIFIED, not certified compatible"
+      },
+      "scope": "One fixed VAE FP32 diagnostic profile; no original BF16/GPU equivalence, arbitrary media,81frame or real generated sample acceptance",
+      "requiresLora": false,
+      "normBindingRefs": [
+        "N-IDENTITY",
+        "N-SHAPE",
+        "N-NUMERIC",
+        "N-NORMALIZATION",
+        "N-LOADER",
+        "N-MAPPING",
+        "N-EVIDENCE",
+        "N-TRANSACTION",
+        "N-ARTIFACT",
+        "N-LEGACY",
+        "N-GENERATION",
+        "N-EXTENSION"
+      ],
+      "management": {
+        "selectedManagerSource": "28596717182e48aeb23c719c51b6e593edf4e496",
+        "selectedDiffusionSource": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+        "candidateDiffusionSource": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "p1ReferenceRuntimeIntegrated": false,
+        "p2FinalAdoption": "BLOCKED",
+        "p2Reason": "P1 is not installed in selected manager285; candidate-only numeric traces are a separate scope; Rect is not in currently adopted Diffusion438"
+      }
+    },
+    {
+      "declarationId": "vae-rect",
+      "owner": "vae",
+      "nativeContractVersion": "works-ai-1",
+      "sourcePin": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "nativeEntry": {
+        "module": "docs/shared/inference/api.mjs",
+        "factory": "createVaeModule",
+        "configure": "configure({manifest,files})",
+        "operations": [
+          "encode(tensor)",
+          "decode(tensor)"
+        ],
+        "rpc": "bindInferencePort, module=vae, method=encode|decode, args=tensor"
+      },
+      "nativeProfileId": "wan21-raw-f32-1x16x32",
+      "nativeProfileField": "manifest.profile.id",
+      "catalogRefs": [
+        "SHAPE-VAE-WAN21-F1-16X32",
+        "NORM-WAN21-MEAN-RECT",
+        "NORM-RGB-UNIT-TO-RAW"
+      ],
+      "identity": {
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "decoderBindingField": "manifest.model.sha256 / mean tensor.modelSha256 when supplied",
+        "decoderBody": {
+          "file": "decoder-body.onnx",
+          "bytes": 286313363,
+          "sha256": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+        },
+        "tokenizerSha256": {
+          "value": null,
+          "reason": "Not a text tensor; no tokenizer binding is applicable"
+        },
+        "manifestEvidenceId": "manifest-vae-rect"
+      },
+      "ports": {
+        "encodeInput": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            32
+          ],
+          "meaning": [
+            "rgb-unit",
+            "raw-decoder-rgb"
+          ],
+          "ranges": {
+            "rgb-unit": [
+              0,
+              1
+            ],
+            "raw-decoder-rgb": [
+              -1,
+              1
+            ]
+          }
+        },
+        "mean": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "meaning": "raw-posterior-mean",
+          "elements": 128,
+          "byteLength": 512,
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "normalization": "absent",
+          "attentionMask": "absent"
+        },
+        "decodeOutput": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            32
+          ],
+          "meaning": "raw-decoder-rgb",
+          "clipped": false
+        }
+      },
+      "execution": {
+        "nativeExecutionProfileId": {
+          "value": null,
+          "reason": "No distinct executionProfileId in native VAE manifest; use profile.id plus explicit model/inference/source/asset records"
+        },
+        "model": {
+          "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "storedDtype": "bfloat16",
+          "executionDtype": "float32",
+          "precisionNote": "Stored BF16 values are unchanged; arithmetic uses FP32 and is not asserted equivalent to original BF16 execution."
+        },
+        "source": {
+          "repo": "Wan-Video/Wan2.1",
+          "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+          "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+          "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498"
+        },
+        "inference": {
+          "inputName": "input",
+          "outputName": "output",
+          "executionProvider": "wasm",
+          "threads": 1,
+          "graphOptimizationLevel": "disabled"
+        },
+        "hike": {
+          "sourceCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "buildEvidenceId": "native-hike-build",
+          "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+          "byteLength": 5265,
+          "requiredOperations": [
+            "Affine",
+            "MatMul"
+          ],
+          "sqrtBridge": "fixed env.sqrt -> Math.sqrt, f64->f64 primitive only",
+          "loadedBytesEvidenceId": "p0-static-identities",
+          "requiredWhen": "VAE decode: MatMul+Affine; VAE rgb-unit encode: Affine; raw RGB encode adds no identity Hike call"
+        },
+        "sourceEvidenceIds": [
+          "native-vae",
+          "native-vae-api",
+          "native-inference-worker"
+        ],
+        "assetRecordsField": "manifest.assets; every file/bytes/sha256 must match configured profile"
+      },
+      "normalization": {
+        "latentOwner": "diffusion_models",
+        "rawMeanNotGeneratedSample": true,
+        "meanRuleId": "wan21-comfy-f32-v1",
+        "counterpartNativeContract": "diffusion-models/0.1",
+        "counterpartNativeProfileId": "wan21-raw-f32-1x16x32",
+        "counterpartBuildId": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+        "counterpartSourcePin": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "kernelAbi": "wan21-raw-mean-f32-v3",
+        "kernelSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+        "exports": {
+          "normalize": "NormalizeRawMeanRect",
+          "restore": "RestoreRawMeanRect"
+        },
+        "gateRef": "mean-rect-roundtrip",
+        "ownerNumericEvidenceIds": [
+          "mean-three-profile-receipt",
+          "mean-rect-node",
+          "mean-rect-browser"
+        ],
+        "rgbConversionOwner": "vae.encode only for rgb-unit; Hike affine scale2/shift-1; raw RGB bypasses conversion"
+      },
+      "numericAcceptance": {
+        "exportGateRef": "vae-rect-export",
+        "acceptanceGateRef": "vae-rect-acceptance",
+        "referenceFields": [
+          "manifest.references.encode",
+          "manifest.references.decode",
+          "manifest.references.conv2"
+        ],
+        "ownerEvidenceIds": [
+          "vae-rect-preplan",
+          "vae-rect-receipt",
+          "vae-rect-reference",
+          "vae-rect-results"
+        ],
+        "status": "PASS_WITHIN_RECORDED_SCOPE",
+        "freshP0NeuralRun": false,
+        "currentness": "Original receipt native source/runtime pins remain original; selected source inspected separately; no blanket fresh execution claim"
+      },
+      "metadata": {
+        "nativeContextField": "tensor.context",
+        "copyPolicy": "owned native snapshot; preserve sourceFrameIndices and sourceFrameTimesSeconds order/duplicates",
+        "encodeFrameRule": "context.sourceFrameIndices.length == configured video F, if context supplied",
+        "latentFrameRule": "source RGB F is not latent T; no fabricated one-to-one temporal index change",
+        "provenancePolicy": "Mean modelSha256 is VAE producer; generated producer hashes remain distinct from decoder VAE",
+        "optionalNativeModelHash": "Native mean decoder accepts omitted model hash; manager-required identity missing means UNVERIFIED, not certified compatible"
+      },
+      "scope": "One fixed VAE FP32 diagnostic profile; no original BF16/GPU equivalence, arbitrary media,81frame or real generated sample acceptance",
+      "requiresLora": false,
+      "normBindingRefs": [
+        "N-IDENTITY",
+        "N-SHAPE",
+        "N-NUMERIC",
+        "N-NORMALIZATION",
+        "N-LOADER",
+        "N-MAPPING",
+        "N-EVIDENCE",
+        "N-TRANSACTION",
+        "N-ARTIFACT",
+        "N-LEGACY",
+        "N-GENERATION",
+        "N-EXTENSION"
+      ],
+      "management": {
+        "selectedManagerSource": "28596717182e48aeb23c719c51b6e593edf4e496",
+        "selectedDiffusionSource": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+        "candidateDiffusionSource": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "p1ReferenceRuntimeIntegrated": false,
+        "p2FinalAdoption": "BLOCKED",
+        "p2Reason": "P1 is not installed in selected manager285; candidate-only numeric traces are a separate scope; Rect is not in currently adopted Diffusion438"
+      }
+    },
+    {
+      "declarationId": "text-plain",
+      "owner": "text_encoder",
+      "nativeContractVersion": "works-ai-1",
+      "sourcePin": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "nativeEntry": {
+        "module": "docs/shared/inference/api.mjs",
+        "factory": "createTextEncoderModule",
+        "operation": "encode({text})",
+        "rpc": "bindInferencePort, module=text_encoder, method=encode, args=validated input object"
+      },
+      "nativeProfileId": null,
+      "nativeProfileIdReason": "No native shape/execution profileId declared. wan-umt5-staged-fp32 is manifest.type, not a fabricated native profile ID",
+      "catalogRefs": [
+        "SHAPE-TEXT-UMT5-BLC",
+        "NORM-UMT5-RMSNORM"
+      ],
+      "identity": {
+        "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+        "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+        "tokenizerMeaning": "Expected original embedded SentencePiece identity; does not authenticate the origin of arbitrary supplied token IDs",
+        "manifestEvidenceId": "manifest-text"
+      },
+      "input": {
+        "text": "string; SentencePiece unchanged case; no Comfy weighted prompt or Bernini prefix",
+        "bos": false,
+        "eosId": 1,
+        "padId": 0,
+        "minimumLength": 512,
+        "maximumLength": 512,
+        "truncation": "reject",
+        "outputLength": 512
+      },
+      "ports": {
+        "output": {
+          "dtype": "float32",
+          "layout": "BLC",
+          "shape": [
+            1,
+            512,
+            4096
+          ],
+          "meaning": "text_hidden_states",
+          "attentionMask": "Uint8Array[L], original order/length; mask0 output rows zero",
+          "maximumElements": 2097152,
+          "maximumByteLength": 8388608,
+          "pointwiseBudgetDoesNotApply": true
+        }
+      },
+      "execution": {
+        "nativeExecutionProfileId": {
+          "value": null,
+          "reason": "No separate native executionProfileId; preserve manifest.type and native inference settings independently"
+        },
+        "manifestType": "wan-umt5-staged-fp32",
+        "arithmetic": "FP32 diagnostic expansion of original scaled FP8 values; not original GPU FP8 execution equivalence",
+        "ortVersion": "1.24.3",
+        "onnxOpset": 17,
+        "layers": 24,
+        "provider": "wasm",
+        "threads": 1,
+        "hike": {
+          "sourceCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "buildEvidenceId": "native-hike-build",
+          "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+          "byteLength": 5265,
+          "requiredOperations": [
+            "RMSNorm"
+          ],
+          "sqrtBridge": "fixed env.sqrt -> Math.sqrt, f64->f64 primitive only",
+          "loadedBytesEvidenceId": "p0-static-identities",
+          "requiredWhen": "Actual encoder.final_layer_norm on final block output"
+        },
+        "sourceEvidenceIds": [
+          "native-text-encoder",
+          "native-text-encoder-api",
+          "native-tokenizer",
+          "native-inference-worker",
+          "text-source-provenance"
+        ],
+        "sourceSha256": "797f11b69256dffa8d9a6d236fe1e05d0c250c84d231a5993accde0ff44238bc",
+        "blockRecordsField": "manifest.blocks[*].path/bytes/sha256; no graph copied into P0"
+      },
+      "normalization": {
+        "owner": "text_encoder",
+        "operation": "actual encoder.final_layer_norm",
+        "epsilon": 1e-06,
+        "weightBinding": {
+          "epsilon": 1e-06,
+          "path": "final-norm.f32",
+          "bytes": 16384,
+          "sha256": "31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02"
+        },
+        "gateRef": "text-final",
+        "intermediateGateRef": "text-intermediate",
+        "initialFailedGateRef": "text-initial-failed",
+        "noManagerNumericRecompute": true,
+        "trailingMaskCompaction": "only trailing0; preserve internal positions and restore requested outputL zeros"
+      },
+      "numericAcceptance": {
+        "gateRef": "text-final",
+        "gateSource": "manifest-text:/numericGate",
+        "reference": null,
+        "referenceReason": "Existing Hello world full24-layer receipt records shape/mask/finite/control, not independent all-value FP32 comparison; ID fixture errors are not reassigned to plain input",
+        "status": "NOT_VERIFIED_FOR_INDEPENDENT_PLAIN_FULL_OUTPUT_COMPARISON",
+        "ownerEvidenceIds": [
+          "historical-local",
+          "text-tokenizer-results",
+          "historical-result"
+        ],
+        "observedFixture": {
+          "text": "Hello world",
+          "effectiveTokens": 3,
+          "outputShape": [
+            1,
+            512,
+            4096
+          ],
+          "independentAllValueMaxAbsError": null,
+          "reason": "No plain-specific independent full-output numeric receipt in received evidence"
+        },
+        "freshP0NeuralRun": false
+      },
+      "metadata": {
+        "nativeMaskField": "tensor.attentionMask",
+        "nativeTokenizerField": "tensor.tokenizerSha256",
+        "nativeModelField": "tensor.modelSha256",
+        "maskPolicy": "Preserve length/order/internal0 and native Uint8Array; no deletion/reordering",
+        "optionalMetadataPolicy": "Known native metadata stays native; additional manager metadata stays in outer extensions, not strict native fields"
+      },
+      "scope": "FP32 expanded original scaled-FP8/F16 UMT524-layer diagnostic; not original GPU FP8 arithmetic, Comfy emphasis, custom embeddings, automatic Bernini prompt or512-effective-token performance acceptance",
+      "requiresLora": false,
+      "normBindingRefs": [
+        "N-IDENTITY",
+        "N-SHAPE",
+        "N-NUMERIC",
+        "N-NORMALIZATION",
+        "N-LOADER",
+        "N-MAPPING",
+        "N-EVIDENCE",
+        "N-TRANSACTION",
+        "N-ARTIFACT",
+        "N-LEGACY",
+        "N-GENERATION",
+        "N-EXTENSION"
+      ],
+      "management": {
+        "selectedManagerSource": "28596717182e48aeb23c719c51b6e593edf4e496",
+        "p1ReferenceRuntimeIntegrated": false,
+        "p2FinalAdoption": "BLOCKED",
+        "p2Reason": "No P1 runtime integration; Text diagnostic evidence is not full generation admission"
+      }
+    },
+    {
+      "declarationId": "text-ids",
+      "owner": "text_encoder",
+      "nativeContractVersion": "works-ai-1",
+      "sourcePin": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "nativeEntry": {
+        "module": "docs/shared/inference/api.mjs",
+        "factory": "createTextEncoderModule",
+        "operation": "encode({tokenIds,attentionMask})",
+        "rpc": "bindInferencePort, module=text_encoder, method=encode, args=validated input object"
+      },
+      "nativeProfileId": null,
+      "nativeProfileIdReason": "No native shape/execution profileId declared. wan-umt5-staged-fp32 is manifest.type, not a fabricated native profile ID",
+      "catalogRefs": [
+        "SHAPE-TEXT-UMT5-BLC",
+        "NORM-UMT5-RMSNORM"
+      ],
+      "identity": {
+        "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+        "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+        "tokenizerMeaning": "Expected original embedded SentencePiece identity; does not authenticate the origin of arbitrary supplied token IDs",
+        "manifestEvidenceId": "manifest-text"
+      },
+      "input": {
+        "tokenIds": "Int32Array/array IDs0..256383",
+        "attentionMask": "same length 0/1 Uint8Array/array, at least one1",
+        "lengthRange": [
+          1,
+          512
+        ],
+        "autoEosOrPadding": false,
+        "internalMaskedPositions": "preserved",
+        "outputLength": "original L"
+      },
+      "ports": {
+        "output": {
+          "dtype": "float32",
+          "layout": "BLC",
+          "shape": [
+            1,
+            "L",
+            4096
+          ],
+          "meaning": "text_hidden_states",
+          "attentionMask": "Uint8Array[L], original order/length; mask0 output rows zero",
+          "maximumElements": 2097152,
+          "maximumByteLength": 8388608,
+          "pointwiseBudgetDoesNotApply": true
+        }
+      },
+      "execution": {
+        "nativeExecutionProfileId": {
+          "value": null,
+          "reason": "No separate native executionProfileId; preserve manifest.type and native inference settings independently"
+        },
+        "manifestType": "wan-umt5-staged-fp32",
+        "arithmetic": "FP32 diagnostic expansion of original scaled FP8 values; not original GPU FP8 execution equivalence",
+        "ortVersion": "1.24.3",
+        "onnxOpset": 17,
+        "layers": 24,
+        "provider": "wasm",
+        "threads": 1,
+        "hike": {
+          "sourceCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "buildEvidenceId": "native-hike-build",
+          "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+          "byteLength": 5265,
+          "requiredOperations": [
+            "RMSNorm"
+          ],
+          "sqrtBridge": "fixed env.sqrt -> Math.sqrt, f64->f64 primitive only",
+          "loadedBytesEvidenceId": "p0-static-identities",
+          "requiredWhen": "Actual encoder.final_layer_norm on final block output"
+        },
+        "sourceEvidenceIds": [
+          "native-text-encoder",
+          "native-text-encoder-api",
+          "native-tokenizer",
+          "native-inference-worker",
+          "text-source-provenance"
+        ],
+        "sourceSha256": "797f11b69256dffa8d9a6d236fe1e05d0c250c84d231a5993accde0ff44238bc",
+        "blockRecordsField": "manifest.blocks[*].path/bytes/sha256; no graph copied into P0"
+      },
+      "normalization": {
+        "owner": "text_encoder",
+        "operation": "actual encoder.final_layer_norm",
+        "epsilon": 1e-06,
+        "weightBinding": {
+          "epsilon": 1e-06,
+          "path": "final-norm.f32",
+          "bytes": 16384,
+          "sha256": "31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02"
+        },
+        "gateRef": "text-final",
+        "intermediateGateRef": "text-intermediate",
+        "initialFailedGateRef": "text-initial-failed",
+        "noManagerNumericRecompute": true,
+        "trailingMaskCompaction": "only trailing0; preserve internal positions and restore requested outputL zeros"
+      },
+      "numericAcceptance": {
+        "gateRef": "text-final",
+        "gateSource": "manifest-text:/numericGate",
+        "reference": {
+          "path": "final-reference.f32",
+          "bytes": 65536,
+          "sha256": "1c511d512ddea17ef59e583f294b22dfd8a9837fc45b8a55526b5ac5eb4803c3"
+        },
+        "referenceReason": null,
+        "status": "PASS_WITHIN_FIXED_ID_FIXTURE",
+        "ownerEvidenceIds": [
+          "historical-live",
+          "historical-local",
+          "text-report",
+          "text-initial-failure"
+        ],
+        "observedFixture": {
+          "tokenIds": [
+            42,
+            1234,
+            1,
+            0
+          ],
+          "attentionMask": [
+            1.0,
+            1.0,
+            1.0,
+            0.0
+          ],
+          "nativeMaxAbsError": 2.142973244190216e-06
+        },
+        "freshP0NeuralRun": false
+      },
+      "metadata": {
+        "nativeMaskField": "tensor.attentionMask",
+        "nativeTokenizerField": "tensor.tokenizerSha256",
+        "nativeModelField": "tensor.modelSha256",
+        "maskPolicy": "Preserve length/order/internal0 and native Uint8Array; no deletion/reordering",
+        "optionalMetadataPolicy": "Known native metadata stays native; additional manager metadata stays in outer extensions, not strict native fields"
+      },
+      "scope": "FP32 expanded original scaled-FP8/F16 UMT524-layer diagnostic; not original GPU FP8 arithmetic, Comfy emphasis, custom embeddings, automatic Bernini prompt or512-effective-token performance acceptance",
+      "requiresLora": false,
+      "normBindingRefs": [
+        "N-IDENTITY",
+        "N-SHAPE",
+        "N-NUMERIC",
+        "N-NORMALIZATION",
+        "N-LOADER",
+        "N-MAPPING",
+        "N-EVIDENCE",
+        "N-TRANSACTION",
+        "N-ARTIFACT",
+        "N-LEGACY",
+        "N-GENERATION",
+        "N-EXTENSION"
+      ],
+      "management": {
+        "selectedManagerSource": "28596717182e48aeb23c719c51b6e593edf4e496",
+        "p1ReferenceRuntimeIntegrated": false,
+        "p2FinalAdoption": "BLOCKED",
+        "p2Reason": "No P1 runtime integration; Text diagnostic evidence is not full generation admission"
+      }
+    }
+  ],
+  "normBindings": [
+    {
+      "normId": "N-IDENTITY",
+      "declarationIds": [
+        "vae-f5",
+        "vae-f1",
+        "vae-rect",
+        "text-plain",
+        "text-ids"
+      ],
+      "category": "contract",
+      "decisionOwner": "管理",
+      "nativeRead": "native API/capabilities apiVersion; manifest model/source/assets; Worker buildId works-inference-v1; Hike manifest + actualbytes",
+      "sidecarPaths": [
+        "declarations[*].sourcePin",
+        "declarations[*].nativeContractVersion",
+        "declarations[*].identity.manifestEvidenceId",
+        "declarations[*].execution.hike",
+        "declarations[*].management"
+      ],
+      "managerFields": [
+        "sourcePins",
+        "nativeContractVersion",
+        "kernelDigest",
+        "byteLength",
+        "adoptionSetId"
+      ],
+      "comparison": "Exact source/manifest/loaded kernel bytes/hash/length and chosen adoption set; static build label is not a content digest",
+      "missingDecisionPolicyRef": "missingPolicy",
+      "requiredWhen": "When the corresponding contract, numerical acceptance, artifact or active resource is required on the selected edge",
+      "notAvailable": null,
+      "catalogProfileRefs": [],
+      "numericalRuleRefs": [],
+      "normSourceEvidenceId": "reference-norms.v1",
+      "fieldPath": "/rules/0",
+      "readBindings": [
+        {
+          "managerField": "sourcePins",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": "/sourcePins",
+          "evidenceIds": [
+            "p0-static-identities"
+          ],
+          "requiredWhen": true,
+          "unknownReason": "Native API source pin is external fixed Git identity, not inferred from API version"
+        },
+        {
+          "managerField": "nativeContractVersion",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "capabilities().apiVersion",
+          "sidecarFieldPath": "declarations[*].nativeContractVersion",
+          "evidenceIds": [
+            "native-vae-api",
+            "native-text-encoder-api"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "kernelDigest",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "Worker HIKE_HASH; tools/inference/kernel/manifest.json.wasmSha256",
+          "sidecarFieldPath": "declarations[*].execution.hike.sha256",
+          "evidenceIds": [
+            "native-inference-worker",
+            "native-hike-build",
+            "p0-static-identities"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "byteLength",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "File.size / Uint8Array.byteLength; manifest.assets[*].bytes / blocks[*].bytes",
+          "sidecarFieldPath": "EVIDENCE-INDEX.entries[*].byteLength",
+          "evidenceIds": [
+            "manifest-vae-f5",
+            "manifest-vae-f1",
+            "manifest-vae-rect",
+            "manifest-text",
+            "p0-static-identities"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "adoptionSetId",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": "/selectedAdoptionSet/adoptionSetId",
+          "evidenceIds": [
+            "reference-catalog.v1"
+          ],
+          "requiredWhen": true,
+          "unknownReason": "ADOPT-MANAGER-285967 is catalog-side identity; never sent as native profileId"
+        }
+      ]
+    },
+    {
+      "normId": "N-SHAPE",
+      "declarationIds": [
+        "vae-f5",
+        "vae-f1",
+        "vae-rect",
+        "text-plain",
+        "text-ids"
+      ],
+      "category": "contract",
+      "decisionOwner": "producer / consumer宣言、管理照合",
+      "nativeRead": "tensor.dtype/shape/layout/meaning/data.byteLength; manifest.profile; tensor.modelSha256/tokenizerSha256/attentionMask",
+      "sidecarPaths": [
+        "declarations[*].nativeProfileId",
+        "declarations[*].ports",
+        "declarations[*].identity"
+      ],
+      "managerFields": [
+        "shape",
+        "dtype",
+        "layout",
+        "semantic",
+        "byteLength",
+        "nativeProfileId"
+      ],
+      "comparison": "Exact axes+dtype/meaning; product(shape)*4 matches actual payload; F5 and Rect remain different despite128values; no resize/reshape",
+      "missingDecisionPolicyRef": "missingPolicy",
+      "requiredWhen": "When the corresponding contract, numerical acceptance, artifact or active resource is required on the selected edge",
+      "notAvailable": null,
+      "catalogProfileRefs": [
+        "SHAPE-VAE-WAN21-F5-16X16",
+        "SHAPE-VAE-WAN21-F1-16X16",
+        "SHAPE-VAE-WAN21-F1-16X32",
+        "SHAPE-TEXT-UMT5-BLC"
+      ],
+      "numericalRuleRefs": [],
+      "normSourceEvidenceId": "reference-norms.v1",
+      "fieldPath": "/rules/1",
+      "readBindings": [
+        {
+          "managerField": "shape",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "tensor.shape",
+          "sidecarFieldPath": "declarations[*].ports",
+          "evidenceIds": [
+            "native-vae",
+            "native-text-encoder",
+            "native-tensor"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "dtype",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "tensor.dtype",
+          "sidecarFieldPath": "declarations[*].ports",
+          "evidenceIds": [
+            "native-vae",
+            "native-text-encoder",
+            "native-tensor"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "layout",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "tensor.layout",
+          "sidecarFieldPath": "declarations[*].ports",
+          "evidenceIds": [
+            "native-vae",
+            "native-text-encoder",
+            "native-tensor"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "semantic",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "tensor.meaning",
+          "sidecarFieldPath": "declarations[*].ports",
+          "evidenceIds": [
+            "native-vae",
+            "native-text-encoder",
+            "native-tensor"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "byteLength",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "tensor.data.byteLength",
+          "sidecarFieldPath": "declarations[*].ports",
+          "evidenceIds": [
+            "native-vae",
+            "native-text-encoder",
+            "native-tensor"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "nativeProfileId",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "VAE manifest.profile.id; Text has no native profileId",
+          "sidecarFieldPath": "declarations[*].nativeProfileId",
+          "evidenceIds": [
+            "manifest-vae-f5",
+            "manifest-vae-f1",
+            "manifest-vae-rect",
+            "manifest-text"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        }
+      ]
+    },
+    {
+      "normId": "N-NUMERIC",
+      "declarationIds": [
+        "vae-f5",
+        "vae-f1",
+        "vae-rect",
+        "text-plain",
+        "text-ids"
+      ],
+      "category": "numeric",
+      "decisionOwner": "数値owner、管理照合",
+      "nativeRead": "manifest model.executionDtype/inference/source, or Text arithmetic/ortVersion/numericGate; owner receipt acceptanceGate/references",
+      "sidecarPaths": [
+        "declarations[*].execution",
+        "declarations[*].numericAcceptance",
+        "declarations[*].normalization.gateRef"
+      ],
+      "managerFields": [
+        "executionProfileId",
+        "precisionProfile",
+        "sourceVersion",
+        "ownerValidationReceipt",
+        "gateRef",
+        "scope"
+      ],
+      "comparison": "Exact selected execution and predeclared gate/reference/profile/scope; export0.002, VAE native2e-5, mean2e-6 and Text0.001 are separate",
+      "missingDecisionPolicyRef": "missingPolicy",
+      "requiredWhen": "When the corresponding contract, numerical acceptance, artifact or active resource is required on the selected edge",
+      "notAvailable": null,
+      "catalogProfileRefs": [
+        "EXEC-BERNINI-Q16-F32",
+        "EXEC-FP8-SCALAR-F32",
+        "EXEC-BERNINI-SIMPLE6-SHIFT5",
+        "EXEC-ATTENTION-Q16-ONEHEAD"
+      ],
+      "numericalRuleRefs": [
+        "NR-SCOPED-GATES",
+        "NR-FLOW-SCHEDULE-F32",
+        "NR-FLOW-NOISE-F32",
+        "NR-EULER-DENOISED-F32"
+      ],
+      "normSourceEvidenceId": "reference-norms.v1",
+      "fieldPath": "/rules/2",
+      "readBindings": [
+        {
+          "managerField": "executionProfileId",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": "declarations[*].execution.nativeExecutionProfileId",
+          "evidenceIds": [
+            "manifest-vae-f5",
+            "manifest-text"
+          ],
+          "requiredWhen": false,
+          "unknownReason": "Separate native executionProfileId absent; declared profile/type/precision and source are preserved independently"
+        },
+        {
+          "managerField": "precisionProfile",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "VAE manifest.model.storedDtype/executionDtype; Text manifest.arithmetic",
+          "sidecarFieldPath": "declarations[*].execution",
+          "evidenceIds": [
+            "manifest-vae-f5",
+            "manifest-vae-f1",
+            "manifest-vae-rect",
+            "manifest-text"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "sourceVersion",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "manifest.source.commit or text source-provenance.json.commit",
+          "sidecarFieldPath": "/sourcePins",
+          "evidenceIds": [
+            "manifest-vae-f5",
+            "text-source-provenance"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "ownerValidationReceipt",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": "declarations[*].numericAcceptance.ownerEvidenceIds",
+          "evidenceIds": [
+            "vae-f1-receipt",
+            "vae-rect-receipt",
+            "historical-live",
+            "historical-local"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "gateRef",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "VAE manifest.comparisonGate; acceptance-plan.comparisonGate; Text manifest.numericGate",
+          "sidecarFieldPath": "/gateCatalog",
+          "evidenceIds": [
+            "manifest-vae-f5",
+            "vae-f1-preplan",
+            "vae-rect-preplan",
+            "manifest-text"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "scope",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "owner receipt.scope; manifest.numericGate.scope; comparisonGate.scope",
+          "sidecarFieldPath": "declarations[*].scope",
+          "evidenceIds": [
+            "historical-live",
+            "vae-f1-receipt",
+            "vae-rect-receipt",
+            "manifest-text"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        }
+      ]
+    },
+    {
+      "normId": "N-NORMALIZATION",
+      "declarationIds": [
+        "vae-f5",
+        "vae-f1",
+        "vae-rect",
+        "text-plain",
+        "text-ids"
+      ],
+      "category": "numeric",
+      "decisionOwner": "VAE / TextEncoder / Diffusion",
+      "nativeRead": "VAE rgb-unit/raw meaning and normalizationApplied=false; Diffusion mean input:{tensor}, profileId/meaning/normalization; Text manifest.finalNorm and evidence.hikeOperation",
+      "sidecarPaths": [
+        "declarations[*].normalization",
+        "declarations[*].ports"
+      ],
+      "managerFields": [
+        "normalizationProfile",
+        "semantic",
+        "transformTraceRef",
+        "ownerValidationReceipt"
+      ],
+      "comparison": "Same space or explicit versioned owner transform with trace/receipt; no manager recomputation/double restoration, no mean/generated relabel",
+      "missingDecisionPolicyRef": "missingPolicy",
+      "requiredWhen": "When the corresponding contract, numerical acceptance, artifact or active resource is required on the selected edge",
+      "notAvailable": null,
+      "catalogProfileRefs": [
+        "NORM-WAN21-MEAN-F5",
+        "NORM-WAN21-MEAN-F1",
+        "NORM-WAN21-MEAN-RECT",
+        "NORM-RGB-UNIT-TO-RAW",
+        "NORM-RAW-GENERATED-DECLARATION",
+        "NORM-UMT5-RMSNORM"
+      ],
+      "numericalRuleRefs": [
+        "NR-WAN21-MEAN-F32",
+        "NR-RGB-AFFINE-F32",
+        "NR-UMT5-RMSNORM-F32",
+        "NR-GENERATED-MEAN-SEPARATION"
+      ],
+      "normSourceEvidenceId": "reference-norms.v1",
+      "fieldPath": "/rules/3",
+      "readBindings": [
+        {
+          "managerField": "normalizationProfile",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "mean tensor.meaning/normalization/profileId; Text finalNorm.epsilon/path/bytes/sha256",
+          "sidecarFieldPath": "declarations[*].normalization",
+          "evidenceIds": [
+            "diffusion-latent-host",
+            "diffusion-kernel-registry",
+            "manifest-text",
+            "native-vae"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "semantic",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "tensor.meaning; tensor.latentContract when generated-sample declared",
+          "sidecarFieldPath": "declarations[*].ports",
+          "evidenceIds": [
+            "native-tensor",
+            "native-vae",
+            "diffusion-interop"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "transformTraceRef",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": "declarations[*].normalization.ownerNumericEvidenceIds",
+          "evidenceIds": [
+            "mean-f5-current-wasm",
+            "mean-three-profile-receipt"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "ownerValidationReceipt",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": "declarations[*].numericAcceptance.ownerEvidenceIds; /gateCatalog",
+          "evidenceIds": [
+            "historical-live",
+            "mean-three-profile-receipt",
+            "mean-f5-current-wasm"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        }
+      ],
+      "serializationLimitRef": "/nativeSerializationLimits/0"
+    },
+    {
+      "normId": "N-LOADER",
+      "declarationIds": [
+        "vae-f5",
+        "vae-f1",
+        "vae-rect",
+        "text-plain",
+        "text-ids"
+      ],
+      "category": "contract",
+      "decisionOwner": "LoRA / weight-source owner",
+      "nativeRead": "configure({manifest,files:Map}); manifest.assets or Text embedding/blocks/finalNorm/tokenizer path/bytes/hash",
+      "sidecarPaths": [
+        "declarations[*].identity",
+        "declarations[*].execution"
+      ],
+      "managerFields": [
+        "inputKind",
+        "loaderPolicyId",
+        "variant",
+        "sourceDtype",
+        "registryBinding",
+        "strength",
+        "sourceHash"
+      ],
+      "comparison": "Use original local File/Blob/Uint8Array prepared-bundle path and exact expected model/assets; LoRA loaderPolicy/strength/variant are not required on these no-LoRA edges",
+      "missingDecisionPolicyRef": "missingPolicy",
+      "requiredWhen": "When the corresponding contract, numerical acceptance, artifact or active resource is required on the selected edge",
+      "notAvailable": null,
+      "catalogProfileRefs": [
+        "LOAD-COMFY-LINEAR-DIFF",
+        "LOAD-LOCAL-SAFETENSORS",
+        "LOAD-FP8-BASE"
+      ],
+      "numericalRuleRefs": [
+        "NR-LORA-LINEAR-F32",
+        "NR-LORA-DELTA-F32"
+      ],
+      "normSourceEvidenceId": "reference-norms.v1",
+      "fieldPath": "/rules/4",
+      "readBindings": [
+        {
+          "managerField": "inputKind",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "configure({manifest,files:Map}); files values File/Blob/Uint8Array",
+          "sidecarFieldPath": "declarations[*].nativeEntry",
+          "evidenceIds": [
+            "native-vae-api",
+            "native-text-encoder-api"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "loaderPolicyId",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "LoRA loader policy is not a requirement of no-LoRA Text/VAE bundle paths"
+        },
+        {
+          "managerField": "variant",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "No LoRA patch variant consumed on these edges"
+        },
+        {
+          "managerField": "sourceDtype",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "VAE manifest.model.storedDtype; Text manifest.arithmetic/embedding.dtype",
+          "sidecarFieldPath": "declarations[*].execution",
+          "evidenceIds": [
+            "manifest-vae-f5",
+            "manifest-text"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "registryBinding",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "No LoRA source/base registry transaction in this P0 tensor edge"
+        },
+        {
+          "managerField": "strength",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "No LoRA strength input; no default strength introduced"
+        },
+        {
+          "managerField": "sourceHash",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "manifest.model.sha256 / modelSha256; asset sha256; tokenizer.sha256",
+          "sidecarFieldPath": "declarations[*].identity",
+          "evidenceIds": [
+            "manifest-vae-f5",
+            "manifest-vae-f1",
+            "manifest-vae-rect",
+            "manifest-text"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        }
+      ]
+    },
+    {
+      "normId": "N-MAPPING",
+      "declarationIds": [
+        "vae-f5",
+        "vae-f1",
+        "vae-rect",
+        "text-plain",
+        "text-ids"
+      ],
+      "category": "contract",
+      "decisionOwner": "LoRA owner adapter / 管理binding",
+      "nativeRead": "No LoRA weight/selected-slice mapping operation in Text/VAE edge; native tensor context copied as declared",
+      "sidecarPaths": [
+        "declarations[*].metadata",
+        "declarations[*].requiresLora"
+      ],
+      "managerFields": [
+        "mappingOwner",
+        "adapterVersion",
+        "executionPath",
+        "registryIdentityPair",
+        "selectionRegion"
+      ],
+      "comparison": "NOT_APPLICABLE for LoRA numeric mapping here; future LoRA edge must use owner createDiffusionDiagnosticAdapter once, never add duplicate mapping",
+      "missingDecisionPolicyRef": "missingPolicy",
+      "requiredWhen": "LoRA-specific fields only when a LoRA transaction is requested",
+      "notAvailable": null,
+      "catalogProfileRefs": [],
+      "numericalRuleRefs": [],
+      "normSourceEvidenceId": "reference-norms.v1",
+      "fieldPath": "/rules/5",
+      "readBindings": [
+        {
+          "managerField": "mappingOwner",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "LoRA numeric mapping is outside these no-LoRA tensor edges; future LoRA mapping uses createDiffusionDiagnosticAdapter exactly once"
+        },
+        {
+          "managerField": "adapterVersion",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "LoRA numeric mapping is outside these no-LoRA tensor edges; future LoRA mapping uses createDiffusionDiagnosticAdapter exactly once"
+        },
+        {
+          "managerField": "executionPath",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "LoRA numeric mapping is outside these no-LoRA tensor edges; future LoRA mapping uses createDiffusionDiagnosticAdapter exactly once"
+        },
+        {
+          "managerField": "registryIdentityPair",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "LoRA numeric mapping is outside these no-LoRA tensor edges; future LoRA mapping uses createDiffusionDiagnosticAdapter exactly once"
+        },
+        {
+          "managerField": "selectionRegion",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "LoRA numeric mapping is outside these no-LoRA tensor edges; future LoRA mapping uses createDiffusionDiagnosticAdapter exactly once"
+        }
+      ]
+    },
+    {
+      "normId": "N-EVIDENCE",
+      "declarationIds": [
+        "vae-f5",
+        "vae-f1",
+        "vae-rect",
+        "text-plain",
+        "text-ids"
+      ],
+      "category": "numeric",
+      "decisionOwner": "各実行owner、管理照合",
+      "nativeRead": "owner historical receipts scope/reference/hash/gate; EVIDENCE-INDEX original source pins and byte lengths",
+      "sidecarPaths": [
+        "declarations[*].scope",
+        "declarations[*].numericAcceptance",
+        "declarations[*].normalization.ownerNumericEvidenceIds"
+      ],
+      "managerFields": [
+        "coverage",
+        "scope",
+        "baseKind",
+        "referenceId",
+        "evidenceRefs",
+        "validationResult",
+        "currentness"
+      ],
+      "comparison": "Match evidence to operation/profile/reference/baseKind and original recorded source; no synthetic-to-real, partial-to-full, old evidence-as-fresh-run promotion",
+      "missingDecisionPolicyRef": "missingPolicy",
+      "requiredWhen": "When the corresponding contract, numerical acceptance, artifact or active resource is required on the selected edge",
+      "notAvailable": null,
+      "catalogProfileRefs": [],
+      "numericalRuleRefs": [
+        "NR-SCOPED-GATES"
+      ],
+      "normSourceEvidenceId": "reference-norms.v1",
+      "fieldPath": "/rules/6",
+      "readBindings": [
+        {
+          "managerField": "coverage",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": "declarations[*].scope",
+          "evidenceIds": [
+            "historical-live",
+            "vae-f1-receipt",
+            "vae-rect-receipt"
+          ],
+          "requiredWhen": true,
+          "unknownReason": "No invented native FULL classification; preserve original fixed diagnostic scope"
+        },
+        {
+          "managerField": "scope",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "receipt.scope; result.evidence / checks.scope",
+          "sidecarFieldPath": "declarations[*].scope",
+          "evidenceIds": [
+            "historical-live",
+            "vae-f1-receipt",
+            "vae-rect-receipt",
+            "mean-three-profile-receipt"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "baseKind",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": "declarations[*].execution.model/arithmetic; numericAcceptance scope",
+          "evidenceIds": [
+            "manifest-vae-f5",
+            "manifest-text",
+            "vae-f1-preplan",
+            "vae-rect-preplan"
+          ],
+          "requiredWhen": true,
+          "unknownReason": "Actual saved model weights with fixed diagnostic inputs; not synthetic miniature model, production media, or LoRA real-base trace"
+        },
+        {
+          "managerField": "referenceId",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "manifest.references.*.{file,shape,bytes,sha256}; Text fixture.finalReference",
+          "sidecarFieldPath": "/gateCatalog",
+          "evidenceIds": [
+            "manifest-vae-f5",
+            "manifest-vae-f1",
+            "manifest-vae-rect",
+            "manifest-text"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "evidenceRefs",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": "EVIDENCE-INDEX.entries[*].id",
+          "evidenceIds": [
+            "reference-norms.v1"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "validationResult",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "receipt.acceptance/status; checks.passed; cases[].status",
+          "sidecarFieldPath": "declarations[*].numericAcceptance.status",
+          "evidenceIds": [
+            "historical-live",
+            "vae-f1-receipt",
+            "vae-rect-receipt",
+            "mean-f5-current-wasm"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "currentness",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "original receipt nativeRuntimeSourceCommit/sourceSnapshotCommit/source pins",
+          "sidecarFieldPath": "EVIDENCE-INDEX.entries[*].source + scope",
+          "evidenceIds": [
+            "vae-f1-receipt",
+            "vae-rect-receipt",
+            "p0-static-identities"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        }
+      ]
+    },
+    {
+      "normId": "N-TRANSACTION",
+      "declarationIds": [
+        "vae-f5",
+        "vae-f1",
+        "vae-rect",
+        "text-plain",
+        "text-ids"
+      ],
+      "category": "dynamic-resource",
+      "decisionOwner": "各resource owner / 管理",
+      "nativeRead": "client envelope buildId/sessionId/jobId/inputRevision; MessagePort id; client.state/status/current job; per-operation finally/dispose",
+      "sidecarPaths": [
+        "declarations[*].nativeEntry",
+        "declarations[*].management"
+      ],
+      "managerFields": [
+        "managerSessionId",
+        "managerRevision",
+        "requestId",
+        "resourceBinding",
+        "nativeRevisions",
+        "ownership",
+        "recoveryState"
+      ],
+      "comparison": "Manager request/revision/resource generation maps externally to native fields; reject stale replies; cancel owned Worker; terminal cleanup before reuse; no current state inferred from historical cleanup counts",
+      "missingDecisionPolicyRef": "missingPolicy",
+      "requiredWhen": "When the corresponding contract, numerical acceptance, artifact or active resource is required on the selected edge",
+      "notAvailable": {
+        "currentDynamicResourceState": {
+          "value": null,
+          "reason": "P0 is static; P1 manager request/resource binding has not been introduced"
+        }
+      },
+      "catalogProfileRefs": [],
+      "numericalRuleRefs": [],
+      "normSourceEvidenceId": "reference-norms.v1",
+      "fieldPath": "/rules/7",
+      "readBindings": [
+        {
+          "managerField": "managerSessionId",
+          "kind": "dynamic-state",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": true,
+          "unknownReason": "No active manager285 request in P0; native sessionId is a separate namespace"
+        },
+        {
+          "managerField": "managerRevision",
+          "kind": "dynamic-state",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": true,
+          "unknownReason": "No active manager revision; do not rename native inputRevision"
+        },
+        {
+          "managerField": "requestId",
+          "kind": "dynamic-state",
+          "nativeFieldPathOrSymbol": "MessagePort request.id; client jobId are distinct native request namespaces",
+          "sidecarFieldPath": null,
+          "evidenceIds": [
+            "native-api",
+            "native-client"
+          ],
+          "requiredWhen": true,
+          "unknownReason": "No request executing in P0; bind explicitly in P1/P2 trace"
+        },
+        {
+          "managerField": "resourceBinding",
+          "kind": "dynamic-state",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": true,
+          "unknownReason": "Manager resource owner/bindingId/resourceGeneration must be supplied by actual management trace"
+        },
+        {
+          "managerField": "nativeRevisions",
+          "kind": "dynamic-state",
+          "nativeFieldPathOrSymbol": "client envelope sessionId/jobId/inputRevision/buildId",
+          "sidecarFieldPath": null,
+          "evidenceIds": [
+            "native-client",
+            "native-inference-worker"
+          ],
+          "requiredWhen": true,
+          "unknownReason": "Native current job absent during static P0"
+        },
+        {
+          "managerField": "ownership",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "Worker structured clone input; owned output Float32Array; native Tensor/session disposal",
+          "sidecarFieldPath": "declarations[*].metadata",
+          "evidenceIds": [
+            "native-client",
+            "native-vae",
+            "native-text-encoder"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "recoveryState",
+          "kind": "dynamic-state",
+          "nativeFieldPathOrSymbol": "client.state.status; cancel/dispose termination; owner finally cleanup",
+          "sidecarFieldPath": null,
+          "evidenceIds": [
+            "native-client",
+            "vae-f1-receipt",
+            "vae-rect-receipt"
+          ],
+          "requiredWhen": true,
+          "unknownReason": "Historical cleanup receipts do not prove a current resource is reusable"
+        }
+      ]
+    },
+    {
+      "normId": "N-ARTIFACT",
+      "declarationIds": [
+        "vae-f5",
+        "vae-f1",
+        "vae-rect",
+        "text-plain",
+        "text-ids"
+      ],
+      "category": "contract",
+      "decisionOwner": "管理package owner / codec owner",
+      "nativeRead": "native WKTSR001 header schemaVersion/dataSha256/byteLength; G1C outer descriptor/package/snapshot fields; tensor context/latentContract/attentionMask/tokenizerSha256",
+      "sidecarPaths": [
+        "declarations[*].metadata",
+        "declarations[*].identity"
+      ],
+      "managerFields": [
+        "packageSchemaVersion",
+        "headerHash",
+        "payloadHash",
+        "evidenceRefs",
+        "context",
+        "provenance",
+        "sourceHashNamespaces"
+      ],
+      "comparison": "Native and outer hashes remain separate; exact declared serialization and payload readback; preserve producer order/native uniqueness, frame order/duplicates and optional metadata in correct namespace",
+      "missingDecisionPolicyRef": "missingPolicy",
+      "requiredWhen": "When the corresponding contract, numerical acceptance, artifact or active resource is required on the selected edge",
+      "notAvailable": null,
+      "catalogProfileRefs": [],
+      "numericalRuleRefs": [],
+      "normSourceEvidenceId": "reference-norms.v1",
+      "fieldPath": "/rules/8",
+      "readBindings": [
+        {
+          "managerField": "packageSchemaVersion",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "WKTSR001 header.schemaVersion=1; G1C package contract remains manager owned",
+          "sidecarFieldPath": null,
+          "evidenceIds": [
+            "native-tensor",
+            "historical-package-receipt"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "headerHash",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [
+            "native-tensor"
+          ],
+          "requiredWhen": false,
+          "unknownReason": "Native WKTSR001 does not expose a dedicated headerHash; do not rename payload or whole-file hash into one"
+        },
+        {
+          "managerField": "payloadHash",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "WKTSR001 header.dataSha256; actual serialized payload bytes",
+          "sidecarFieldPath": null,
+          "evidenceIds": [
+            "native-tensor"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "evidenceRefs",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": "EVIDENCE-INDEX.entries[*].id",
+          "evidenceIds": [
+            "historical-package-receipt"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "context",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "tensor.context.{contextId,inputId,inputSha256,slotId,sourceFrameIndices,sourceFrameTimesSeconds}",
+          "sidecarFieldPath": "declarations[*].metadata",
+          "evidenceIds": [
+            "native-tensor",
+            "native-vae",
+            "diffusion-latent-host"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "provenance",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "tensor.modelSha256/tokenizerSha256/latentContract; manifest model/decoder bindings",
+          "sidecarFieldPath": "declarations[*].identity",
+          "evidenceIds": [
+            "native-tensor",
+            "native-vae",
+            "native-inference-worker"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "sourceHashNamespaces",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "modelSha256; tokenizerSha256; latentContract.vaeModelSha256; producerModelSha256s; dataSha256",
+          "sidecarFieldPath": null,
+          "evidenceIds": [
+            "native-tensor"
+          ],
+          "requiredWhen": true,
+          "unknownReason": "Keep graph/manifest/payload/native binary/G1C descriptor/package hashes in their own original fields; never collapse identities"
+        }
+      ],
+      "serializationLimitRef": "/nativeSerializationLimits/0"
+    },
+    {
+      "normId": "N-LEGACY",
+      "declarationIds": [
+        "vae-f5",
+        "vae-f1",
+        "vae-rect",
+        "text-plain",
+        "text-ids"
+      ],
+      "category": "contract",
+      "decisionOwner": "LoRA",
+      "nativeRead": "No v1 LoRA registry/sink/consumer used by these native Text/VAE tensor paths",
+      "sidecarPaths": [
+        "declarations[*].requiresLora"
+      ],
+      "managerFields": [
+        "bindingKind",
+        "coverage",
+        "evidenceLevel",
+        "adapterVersion"
+      ],
+      "comparison": "NOT_APPLICABLE here; if v1 LoRA is introduced its FULL/actual-initializer/legacy-boolean constraints must be checked separately",
+      "missingDecisionPolicyRef": "missingPolicy",
+      "requiredWhen": "LoRA-specific fields only when a LoRA transaction is requested",
+      "notAvailable": null,
+      "catalogProfileRefs": [
+        "LOAD-V1-FULL-ONLY"
+      ],
+      "numericalRuleRefs": [],
+      "normSourceEvidenceId": "reference-norms.v1",
+      "fieldPath": "/rules/9",
+      "readBindings": [
+        {
+          "managerField": "bindingKind",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "LoRA v1 adapter not used in Text/VAE tensor edge; no legacy-boolean evidence invented"
+        },
+        {
+          "managerField": "coverage",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "LoRA v1 adapter not used in Text/VAE tensor edge; no legacy-boolean evidence invented"
+        },
+        {
+          "managerField": "evidenceLevel",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "LoRA v1 adapter not used in Text/VAE tensor edge; no legacy-boolean evidence invented"
+        },
+        {
+          "managerField": "adapterVersion",
+          "kind": "not-applicable",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": false,
+          "unknownReason": "LoRA v1 adapter not used in Text/VAE tensor edge; no legacy-boolean evidence invented"
+        }
+      ]
+    },
+    {
+      "normId": "N-GENERATION",
+      "declarationIds": [
+        "vae-f5",
+        "vae-f1",
+        "vae-rect",
+        "text-plain",
+        "text-ids"
+      ],
+      "category": "contract-and-resource",
+      "decisionOwner": "Diffusion生成owner / 管理admission",
+      "nativeRead": "Diffusion capabilities.modelInference=false/partialOnly, load/predict/sample NOT_READY; VAE generatedSampleContract.declaredOnly/realGenerationVerified=false",
+      "sidecarPaths": [
+        "declarations[*].scope",
+        "declarations[*].management"
+      ],
+      "managerFields": [
+        "requestedOperation",
+        "nativeReadiness",
+        "coverage",
+        "scope",
+        "fullSessionEvidence",
+        "resourceBudgetEvidence"
+      ],
+      "comparison": "All fixed mean/Text diagnostics remain distinct from real generated-sample route and full native session/budget; generationReady=false",
+      "missingDecisionPolicyRef": "missingPolicy",
+      "requiredWhen": "When the corresponding contract, numerical acceptance, artifact or active resource is required on the selected edge",
+      "notAvailable": null,
+      "catalogProfileRefs": [],
+      "numericalRuleRefs": [],
+      "normSourceEvidenceId": "reference-norms.v1",
+      "fieldPath": "/rules/10",
+      "readBindings": [
+        {
+          "managerField": "requestedOperation",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "vae.encode/decode; text_encoder.encode; diffusion load/predict/sample",
+          "sidecarFieldPath": "declarations[*].nativeEntry",
+          "evidenceIds": [
+            "native-api",
+            "diffusion-api"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "nativeReadiness",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "Diffusion load/predict/sample NOT_READY; VAE generatedSampleContract.declaredOnly/realGenerationVerified",
+          "sidecarFieldPath": "/p2/newGeneratedSampleReadiness",
+          "evidenceIds": [
+            "native-vae-api",
+            "diffusion-api"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "coverage",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": "declarations[*].scope",
+          "evidenceIds": [
+            "reference-catalog.v1"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "scope",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "owner receipt.scope",
+          "sidecarFieldPath": "declarations[*].scope",
+          "evidenceIds": [
+            "historical-live",
+            "vae-f1-receipt",
+            "vae-rect-receipt"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "fullSessionEvidence",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": true,
+          "unknownReason": "No accepted full native/model session for real generation"
+        },
+        {
+          "managerField": "resourceBudgetEvidence",
+          "kind": "dynamic-state",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": true,
+          "unknownReason": "No full-generation combined resource budget; local historical operation measurements are narrower"
+        }
+      ]
+    },
+    {
+      "normId": "N-EXTENSION",
+      "declarationIds": [
+        "vae-f5",
+        "vae-f1",
+        "vae-rect",
+        "text-plain",
+        "text-ids"
+      ],
+      "category": "contract",
+      "decisionOwner": "宣言owner / 管理",
+      "nativeRead": "native strict snapshotTensorMetadata; manager descriptor/extensions/requiredFeatures (external, P1 pending)",
+      "sidecarPaths": [
+        "declarations[*].metadata",
+        "declarations[*].management"
+      ],
+      "managerFields": [
+        "requiredFeatures",
+        "optionalMetadata",
+        "moduleDescriptor",
+        "edgeId"
+      ],
+      "comparison": "Unknown mandatory semantics => UNVERIFIED on dependent edge; known conflict => INCOMPATIBLE; preserve optional outer metadata without silently injecting into strict native structs",
+      "missingDecisionPolicyRef": "missingPolicy",
+      "requiredWhen": "When the corresponding contract, numerical acceptance, artifact or active resource is required on the selected edge",
+      "notAvailable": null,
+      "catalogProfileRefs": [],
+      "numericalRuleRefs": [],
+      "normSourceEvidenceId": "reference-norms.v1",
+      "fieldPath": "/rules/11",
+      "readBindings": [
+        {
+          "managerField": "requiredFeatures",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": true,
+          "unknownReason": "Resolve from actual manager edge/module descriptor in P1; unknown required features stay UNVERIFIED only on dependent edge"
+        },
+        {
+          "managerField": "optionalMetadata",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "native snapshotTensorMetadata explicitly supported fields; other metadata in outer manager extensions",
+          "sidecarFieldPath": "declarations[*].metadata",
+          "evidenceIds": [
+            "native-tensor",
+            "historical-package-receipt"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "moduleDescriptor",
+          "kind": "native-and-sidecar",
+          "nativeFieldPathOrSymbol": "capabilities() native outputs; external manager descriptor not forced into native structures",
+          "sidecarFieldPath": "declarations[*].nativeEntry",
+          "evidenceIds": [
+            "native-vae-api",
+            "native-text-encoder-api"
+          ],
+          "requiredWhen": true,
+          "unknownReason": null
+        },
+        {
+          "managerField": "edgeId",
+          "kind": "sidecar",
+          "nativeFieldPathOrSymbol": null,
+          "sidecarFieldPath": null,
+          "evidenceIds": [],
+          "requiredWhen": true,
+          "unknownReason": "Assigned by actual manager edge; no fictitious native edgeId inserted in P0"
+        }
+      ]
+    }
+  ],
+  "p2": {
+    "finalAdoption": "BLOCKED",
+    "reason": "Selected manager285 has no P1 reference runtime integration. Candidate direct/same-browser numeric diagnostics are separate evidence scope, never final management adoption.",
+    "candidateDiagnosticTrace": "P2 owner-controlled rawmean/codec/restore/decode trace may be inspected independently; no manager adoption declared by this P0 artifact",
+    "newGeneratedSampleReadiness": false
+  },
+  "unknowns": [
+    {
+      "value": null,
+      "reason": "No actual source81frame480x832/latent21x60x104 VAE profile acceptance or original-workflow generated sample receipt"
+    },
+    {
+      "value": null,
+      "reason": "No plain-specific independent full-output reference comparison in received Text evidence"
+    },
+    {
+      "value": null,
+      "reason": "No current dynamic manager resource/session binding or full native session budget for generation"
+    },
+    {
+      "value": null,
+      "reason": "Separate native Text executionProfileId and normalization profileId are not declared; manifest.type is preserved instead"
+    }
+  ],
+  "selectedAdoptionSet": {
+    "adoptionSetId": "ADOPT-MANAGER-285967",
+    "status": "reported-adopted-limited-scope",
+    "managerCommit": "28596717182e48aeb23c719c51b6e593edf4e496",
+    "loraCommit": "0c27874908638afc748ea2455a2779a16736730b",
+    "diffusionCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+    "codecCommit": "2c171a09ccda65c54899f322ae490f1bfcaac6fb",
+    "loraKernel": {
+      "byteLength": 5051,
+      "sha256": "3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24"
+    },
+    "evidenceScopes": [
+      "owner 20 real-LoRA/real-base PARTIAL cases and 320 outputs: existing evidence cross-checked, not freshly rerun through manager",
+      "management 209 Node checks and actual Chromium local-File control: synthetic-manager-control-fixture base"
+    ],
+    "supportedMeanShapeRecordRefs": [
+      "SHAPE-VAE-WAN21-F5-16X16",
+      "SHAPE-VAE-WAN21-F1-16X16"
+    ],
+    "e5FullSessionAccepted": false,
+    "generationReady": false,
+    "sourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+      "path": "development/ai-connection/E1-ADOPT-RESULT.md"
+    }
+  },
+  "nativeSerializationLimits": [
+    {
+      "codecEvidenceId": "native-tensor",
+      "codecSha256": "4c6992a7b6f44722e84a7184ed5c878312a203071054335827f7f0adcd01c07b",
+      "format": "WKTSR001/schemaVersion1",
+      "field": "normalization",
+      "behavior": "snapshotTensorMetadata validates a normalized mean marker if supplied, but does not return it; encodeTensor does not serialize this marker",
+      "preservedIdentity": "meaning=wan21-normalized-posterior-mean:v1 remains serialized; Diffusion restoreRawMean accepts absence of the optional matching normalization marker",
+      "managerCaptureLimit": "A manager capture that expects normalization metadata and compares it with the readback header can reject NATIVE_METADATA_MISMATCH at /normalization; do not claim byte-preservation of this unsupported marker",
+      "p2RequiredArtifacts": "raw mean and raw RGB capture/package/readback; normalized intermediate package is not required",
+      "ownerTransformPath": "Keep normalized tensor meaning/marker in owner memory, record hash/rule/operation in outer trace, pass to explicit restoreRawMean; never relabel it raw or change codec/native contracts",
+      "scope": "Known pinned-code serialization limit; no new P0 execution or P2 trial reproduction"
+    }
+  ]
+}

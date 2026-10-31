@@ -1,0 +1,1009 @@
+{
+  "passed": true,
+  "scope": "V1 actual F=1 diagnostic profile, unchanged PNG dimensions, actual Hike/ORT WASM",
+  "originalGpuEquivalence": false,
+  "generatedSampleInference": false,
+  "phases": {
+    "ui-png-encode": {
+      "wallSeconds": 1.9362985100015067,
+      "workerTracking": {
+        "created": 1,
+        "terminated": 1,
+        "live": 0
+      },
+      "download": {
+        "file": "png-mean.wktensor",
+        "bytes": 573,
+        "fileSha256": "3641234c5f5a722d1d7eb2b4558412ba2c425d089324986bcdf209e66f9f8e98",
+        "payloadSha256": "8f245b119bfd7ad42ea78e6f0ed68a9ee5d852f6fe85c528cdc0f87166c7d26e",
+        "header": {
+          "schemaVersion": 1,
+          "dtype": "float32",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            2
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-posterior-mean",
+          "byteOrder": "little",
+          "byteLength": 256,
+          "dataSha256": "8f245b119bfd7ad42ea78e6f0ed68a9ee5d852f6fe85c528cdc0f87166c7d26e",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "referenceFile": "png-mean.f32",
+        "referenceSha256": "74c9ff5dbd97970634fb5cd818206fa7ebfaf928dbeee6738c95d65fda828620",
+        "count": 64,
+        "allFinite": true,
+        "maxAbs": 8.344650268554688e-07,
+        "rmse": 2.784549371912264e-07,
+        "gate": {
+          "atol": 2e-05,
+          "rtol": 2e-05,
+          "maxAbs": 2e-05,
+          "scope": "all FP32 output elements, predetermined before export/browser; no visual-quality or large-profile extrapolation"
+        },
+        "passed": true
+      },
+      "evidence": {
+        "operation": "encode",
+        "profileId": "wan21-raw-f32-1x16x16",
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "assetHashes": {
+          "encoder": "193cebca40fa62412e672e64a126898a42ba0450154dd5bbb87d29fcd8aaafae"
+        },
+        "provider": "wasm",
+        "threads": 1,
+        "executionDtype": "float32",
+        "storedDtype": "bfloat16",
+        "hikeContributed": true,
+        "inputMeaning": "rgb-unit",
+        "inputModelSha256": null,
+        "normalizationApplied": false,
+        "hikeCalls": 1,
+        "timings": {
+          "hikeMs": 2.900000002235174,
+          "loadMs": 721.1999999992549,
+          "inferenceMs": 260.0999999977648,
+          "totalMs": 1532.699999999255
+        }
+      },
+      "status": "\u5b8c\u4e86",
+      "inputInfo": "\u753b\u50cf1\u679a / [1, 3, 1, 16, 16]",
+      "outputInfo": "raw-posterior-mean\nshape [1, 16, 1, 2, 2]\n256 bytes"
+    },
+    "ui-png-mean-roundtrip-decode": {
+      "wallSeconds": 2.185980771002505,
+      "workerTracking": {
+        "created": 2,
+        "terminated": 2,
+        "live": 0
+      },
+      "download": {
+        "file": "png-roundtrip.wktensor",
+        "bytes": 3388,
+        "fileSha256": "03432203679d1dfd24862f80b38880b00e9dd490ff8a4c761e54c8d44c6b245c",
+        "payloadSha256": "2e1e09f3326c8a9819fd173636713fe6885ba8cd41de69c0a9f2693eb2c5213e",
+        "header": {
+          "schemaVersion": 1,
+          "dtype": "float32",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            16
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-decoder-rgb",
+          "byteOrder": "little",
+          "byteLength": 3072,
+          "dataSha256": "2e1e09f3326c8a9819fd173636713fe6885ba8cd41de69c0a9f2693eb2c5213e",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "referenceFile": "png-roundtrip.f32",
+        "referenceSha256": "cf5ff2bf37ac4c27ec892d143bc1be1bb1a86462e4116ab03510bd6c05095849",
+        "count": 768,
+        "allFinite": true,
+        "maxAbs": 7.152557373046875e-07,
+        "rmse": 2.1376657740160507e-07,
+        "gate": {
+          "atol": 2e-05,
+          "rtol": 2e-05,
+          "maxAbs": 2e-05,
+          "scope": "all FP32 output elements, predetermined before export/browser; no visual-quality or large-profile extrapolation"
+        },
+        "passed": true
+      },
+      "evidence": {
+        "operation": "decode",
+        "profileId": "wan21-raw-f32-1x16x16",
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "assetHashes": {
+          "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+          "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+          "decoderBody": "c6c4457e538c6f613d2b3a73d97d90525bdc872b4d310dda125712e1f42b55cf"
+        },
+        "provider": "wasm",
+        "threads": 1,
+        "executionDtype": "float32",
+        "storedDtype": "bfloat16",
+        "hikeContributed": true,
+        "inputMeaning": "raw-posterior-mean",
+        "inputModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "normalizationApplied": false,
+        "hikeCalls": 17,
+        "timings": {
+          "hikeMs": 1,
+          "loadMs": 884.6000000014901,
+          "inferenceMs": 280,
+          "totalMs": 1897.800000000745
+        }
+      },
+      "status": "\u5b8c\u4e86",
+      "inputInfo": "raw-posterior-mean / [1, 16, 1, 2, 2]",
+      "outputInfo": "raw-decoder-rgb\nshape [1, 3, 1, 16, 16]\n3,072 bytes"
+    },
+    "api-busy-cancel-recovery-dispose": {
+      "wallSeconds": 3.153865403000964,
+      "workerTracking": {
+        "created": 4,
+        "terminated": 4,
+        "live": 0
+      },
+      "probe": {
+        "passed": true,
+        "busyRejected": true,
+        "cancelled": true,
+        "cancelAtActualRunProgress": true,
+        "cancelReturned": true,
+        "inputPreserved": true,
+        "readbackExact": true,
+        "disposedRejected": true,
+        "numeric": {
+          "passed": true,
+          "count": 64,
+          "maxAbs": 8.344650268554688e-07,
+          "rmse": 2.784549371912264e-07
+        },
+        "evidence": {
+          "operation": "encode",
+          "profileId": "wan21-raw-f32-1x16x16",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "assetHashes": {
+            "encoder": "193cebca40fa62412e672e64a126898a42ba0450154dd5bbb87d29fcd8aaafae"
+          },
+          "provider": "wasm",
+          "threads": 1,
+          "executionDtype": "float32",
+          "storedDtype": "bfloat16",
+          "hikeContributed": true,
+          "inputMeaning": "rgb-unit",
+          "inputModelSha256": null,
+          "normalizationApplied": false,
+          "hikeCalls": 1,
+          "timings": {
+            "hikeMs": 0.5,
+            "loadMs": 708.8000000007451,
+            "inferenceMs": 215.40000000223517,
+            "totalMs": 1557.8999999985099
+          }
+        },
+        "context": {
+          "schemaVersion": 1,
+          "contextId": "v1-still-0",
+          "inputId": "existing-diagnostic-png",
+          "inputSha256": "0dcfaf393c24895f31d6e689157725b07cf86e2fea34396ccfaeb1caef0f21f5",
+          "slotId": "diagnostic-still",
+          "sourceFrameIndices": [
+            0
+          ],
+          "sourceFrameTimesSeconds": [
+            0
+          ]
+        },
+        "states": [
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": null,
+            "inputRevision": 1
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "loading",
+            "inputRevision": 1
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "hike-rgb-range",
+            "inputRevision": 1
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "creating-session",
+            "inputRevision": 1
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "running",
+            "inputRevision": 1
+          },
+          {
+            "status": "cancelled",
+            "operation": "encode",
+            "phase": null,
+            "inputRevision": 1
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": null,
+            "inputRevision": 2
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "loading",
+            "inputRevision": 2
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "hike-rgb-range",
+            "inputRevision": 2
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "creating-session",
+            "inputRevision": 2
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "running",
+            "inputRevision": 2
+          },
+          {
+            "status": "running",
+            "operation": "encode",
+            "phase": "complete",
+            "inputRevision": 2
+          },
+          {
+            "status": "success",
+            "operation": "encode",
+            "phase": null,
+            "inputRevision": 2
+          },
+          {
+            "status": "disposed",
+            "operation": "encode",
+            "phase": null,
+            "inputRevision": 2
+          },
+          {
+            "status": "disposed",
+            "operation": "encode",
+            "phase": null,
+            "inputRevision": 2
+          }
+        ]
+      },
+      "download": {
+        "file": "api-recovery.wktensor",
+        "bytes": 828,
+        "fileSha256": "ab1c7fb141607c8560b9dfa67767b76e282eb25db15921228366e60f5655c9bc",
+        "payloadSha256": "8f245b119bfd7ad42ea78e6f0ed68a9ee5d852f6fe85c528cdc0f87166c7d26e",
+        "header": {
+          "schemaVersion": 1,
+          "dtype": "float32",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            2
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-posterior-mean",
+          "byteOrder": "little",
+          "byteLength": 256,
+          "dataSha256": "8f245b119bfd7ad42ea78e6f0ed68a9ee5d852f6fe85c528cdc0f87166c7d26e",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "context": {
+            "schemaVersion": 1,
+            "contextId": "v1-still-0",
+            "inputId": "existing-diagnostic-png",
+            "inputSha256": "0dcfaf393c24895f31d6e689157725b07cf86e2fea34396ccfaeb1caef0f21f5",
+            "slotId": "diagnostic-still",
+            "sourceFrameIndices": [
+              0
+            ],
+            "sourceFrameTimesSeconds": [
+              0
+            ]
+          }
+        },
+        "referenceFile": "png-mean.f32",
+        "referenceSha256": "74c9ff5dbd97970634fb5cd818206fa7ebfaf928dbeee6738c95d65fda828620",
+        "count": 64,
+        "allFinite": true,
+        "maxAbs": 8.344650268554688e-07,
+        "rmse": 2.784549371912264e-07,
+        "gate": {
+          "atol": 2e-05,
+          "rtol": 2e-05,
+          "maxAbs": 2e-05,
+          "scope": "all FP32 output elements, predetermined before export/browser; no visual-quality or large-profile extrapolation"
+        },
+        "passed": true
+      }
+    },
+    "f1-real-session-release-and-abort": {
+      "wallSeconds": 4.190449362002255,
+      "workerTracking": {
+        "created": 5,
+        "terminated": 5,
+        "live": 0
+      },
+      "probe": {
+        "passed": true,
+        "profileId": "wan21-raw-f32-1x16x16",
+        "cases": [
+          {
+            "operation": "encode",
+            "numeric": {
+              "passed": true,
+              "count": 64,
+              "maxAbs": 7.748603820800781e-07,
+              "rmse": 3.2189154362666427e-07
+            },
+            "inputPreserved": true,
+            "evidence": {
+              "operation": "encode",
+              "profileId": "wan21-raw-f32-1x16x16",
+              "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "assetHashes": {
+                "encoder": "193cebca40fa62412e672e64a126898a42ba0450154dd5bbb87d29fcd8aaafae"
+              },
+              "provider": "wasm",
+              "threads": 1,
+              "executionDtype": "float32",
+              "storedDtype": "bfloat16",
+              "hikeContributed": false,
+              "inputMeaning": "raw-decoder-rgb",
+              "inputModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "normalizationApplied": false,
+              "hikeCalls": 0,
+              "timings": {
+                "loadMs": 706.1999999992549,
+                "inferenceMs": 196,
+                "totalMs": 1464.5
+              }
+            },
+            "sessionsAfter": {
+              "created": 1,
+              "released": 1,
+              "active": 0,
+              "runCalls": 1
+            }
+          },
+          {
+            "operation": "decode",
+            "numeric": {
+              "passed": true,
+              "count": 768,
+              "maxAbs": 4.470348358154297e-07,
+              "rmse": 1.2712983119561286e-07
+            },
+            "inputPreserved": true,
+            "evidence": {
+              "operation": "decode",
+              "profileId": "wan21-raw-f32-1x16x16",
+              "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "assetHashes": {
+                "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+                "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+                "decoderBody": "c6c4457e538c6f613d2b3a73d97d90525bdc872b4d310dda125712e1f42b55cf"
+              },
+              "provider": "wasm",
+              "threads": 1,
+              "executionDtype": "float32",
+              "storedDtype": "bfloat16",
+              "hikeContributed": true,
+              "inputMeaning": "raw-posterior-mean",
+              "inputModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "normalizationApplied": false,
+              "hikeCalls": 17,
+              "timings": {
+                "hikeMs": 1.699999999254942,
+                "loadMs": 387.30000000074506,
+                "inferenceMs": 212.10000000149012,
+                "totalMs": 1366.1000000014901
+              }
+            },
+            "sessionsAfter": {
+              "created": 2,
+              "released": 2,
+              "active": 0,
+              "runCalls": 2
+            }
+          }
+        ],
+        "sessions": {
+          "created": 3,
+          "released": 3,
+          "active": 0,
+          "runCalls": 3
+        },
+        "abortReleased": true,
+        "hikeDisposedRejected": true,
+        "kernelHash": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+        "ortVersion": "1.24.3",
+        "scope": "Actual ORT WASM sessions and actual Hike; release instrumentation delegates to real session.run/release"
+      }
+    },
+    "baseline-5-frame-real-session-regression": {
+      "wallSeconds": 8.293060304000392,
+      "workerTracking": {
+        "created": 6,
+        "terminated": 6,
+        "live": 0
+      },
+      "probe": {
+        "passed": true,
+        "profileId": "wan21-raw-f32-5x16x16",
+        "cases": [
+          {
+            "operation": "encode",
+            "numeric": {
+              "passed": true,
+              "count": 128,
+              "maxAbs": 1.6689300537109375e-06,
+              "rmse": 4.480707021558515e-07
+            },
+            "inputPreserved": true,
+            "evidence": {
+              "operation": "encode",
+              "profileId": "wan21-raw-f32-5x16x16",
+              "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "assetHashes": {
+                "encoder": "08e6a5808f24a7af4070be62ffb5f635871fda5a5386579d09222a8a2d168582"
+              },
+              "provider": "wasm",
+              "threads": 1,
+              "executionDtype": "float32",
+              "storedDtype": "bfloat16",
+              "hikeContributed": false,
+              "inputMeaning": "raw-decoder-rgb",
+              "inputModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "normalizationApplied": false,
+              "hikeCalls": 0,
+              "timings": {
+                "loadMs": 1599.5,
+                "inferenceMs": 743.1999999992549,
+                "totalMs": 3220.10000000149
+              }
+            },
+            "sessionsAfter": {
+              "created": 1,
+              "released": 1,
+              "active": 0,
+              "runCalls": 1
+            }
+          },
+          {
+            "operation": "decode",
+            "numeric": {
+              "passed": true,
+              "count": 3840,
+              "maxAbs": 8.046627044677734e-07,
+              "rmse": 2.087279436241836e-07
+            },
+            "inputPreserved": true,
+            "evidence": {
+              "operation": "decode",
+              "profileId": "wan21-raw-f32-5x16x16",
+              "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "assetHashes": {
+                "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+                "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+                "decoderBody": "5dab72df50785b63bdeae7f0005704cc884af9a6234c08d98b705996f5432e14"
+              },
+              "provider": "wasm",
+              "threads": 1,
+              "executionDtype": "float32",
+              "storedDtype": "bfloat16",
+              "hikeContributed": true,
+              "inputMeaning": "raw-posterior-mean",
+              "inputModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "normalizationApplied": false,
+              "hikeCalls": 17,
+              "timings": {
+                "hikeMs": 0.8000000007450581,
+                "loadMs": 862.6999999992549,
+                "inferenceMs": 597.6000000014901,
+                "totalMs": 2673.89999999851
+              }
+            },
+            "sessionsAfter": {
+              "created": 2,
+              "released": 2,
+              "active": 0,
+              "runCalls": 2
+            }
+          }
+        ],
+        "sessions": {
+          "created": 3,
+          "released": 3,
+          "active": 0,
+          "runCalls": 3
+        },
+        "abortReleased": true,
+        "hikeDisposedRejected": true,
+        "kernelHash": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+        "ortVersion": "1.24.3",
+        "scope": "Actual ORT WASM sessions and actual Hike; release instrumentation delegates to real session.run/release"
+      }
+    }
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:33419/vae/",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/inference.css",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/ui.mjs",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/client.mjs",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "browser-ready"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/inference-worker.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort.wasm.min.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/hike.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/text-encoder.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/tokenizer.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/sentencepiece.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/kernel/tensor.wasm",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET",
+      "phase": "ui-png-encode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/inference-worker.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort.wasm.min.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/hike.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/text-encoder.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/tokenizer.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/sentencepiece.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/kernel/tensor.wasm",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET",
+      "phase": "ui-png-mean-roundtrip-decode"
+    },
+    {
+      "url": "http://127.0.0.1:33419/harness/profile-acceptance.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/api.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/text-encoder-api.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vae-api.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/text-encoder.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/plan.json",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/references/png-unit.f32",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/inference-worker.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort.wasm.min.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/hike.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/text-encoder.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/tokenizer.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/sentencepiece.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/kernel/tensor.wasm",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/inference-worker.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort.wasm.min.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/hike.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/text-encoder.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/tokenizer.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/sentencepiece.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/kernel/tensor.wasm",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/references/png-mean.f32",
+      "method": "GET",
+      "phase": "api-busy-cancel-recovery-dispose"
+    },
+    {
+      "url": "http://127.0.0.1:33419/plan.json",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:33419/harness/profile-probe.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort.wasm.min.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/hike.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/kernel/tensor.wasm",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET",
+      "phase": "f1-real-session-release-and-abort"
+    },
+    {
+      "url": "http://127.0.0.1:33419/plan.json",
+      "method": "GET",
+      "phase": "baseline-5-frame-real-session-regression"
+    },
+    {
+      "url": "http://127.0.0.1:33419/harness/profile-probe.mjs",
+      "method": "GET",
+      "phase": "baseline-5-frame-real-session-regression"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort.wasm.min.mjs",
+      "method": "GET",
+      "phase": "baseline-5-frame-real-session-regression"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/hike.mjs",
+      "method": "GET",
+      "phase": "baseline-5-frame-real-session-regression"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vae.mjs",
+      "method": "GET",
+      "phase": "baseline-5-frame-real-session-regression"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/tensor.mjs",
+      "method": "GET",
+      "phase": "baseline-5-frame-real-session-regression"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/kernel/tensor.wasm",
+      "method": "GET",
+      "phase": "baseline-5-frame-real-session-regression"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "method": "GET",
+      "phase": "baseline-5-frame-real-session-regression"
+    },
+    {
+      "url": "http://127.0.0.1:33419/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "method": "GET",
+      "phase": "baseline-5-frame-real-session-regression"
+    }
+  ],
+  "httpErrors": [],
+  "requestFailures": [],
+  "planSha256": "f46e70bdaede279988ac9130b694502f56cf7625f928e8cc8871a816d22ef8cd",
+  "profileId": "wan21-raw-f32-1x16x16",
+  "manifestSha256": "fa219b8e7e0b6b0be37c598d3dfedadb29505ad1407fe3f8270d8655dd46828c",
+  "baselineProfileId": "wan21-raw-f32-5x16x16",
+  "baselineManifestSha256": "c9c0fd3ceb53b029f627dba9c214b5d5fb8d2c39f572fbdff5907a7da02f1acb",
+  "comparisonGate": {
+    "atol": 2e-05,
+    "rtol": 2e-05,
+    "maxAbs": 2e-05,
+    "scope": "all FP32 output elements, predetermined before export/browser; no visual-quality or large-profile extrapolation"
+  },
+  "input": {
+    "path": "/workspace/work/inference/vae-implementation/png-fixtures/frame-000.png",
+    "sha256": "0dcfaf393c24895f31d6e689157725b07cf86e2fea34396ccfaeb1caef0f21f5",
+    "bytes": 623,
+    "format": "opaque RGB8 PNG",
+    "role": "existing diagnostic still image, F=1 temporal-first-branch acceptance; not workflow reference image",
+    "originalFHW": [
+      1,
+      16,
+      16
+    ],
+    "existingPreprocessing": {
+      "operation": "Bernini _resize_long_edge dimension rule",
+      "refMaxSize": 848,
+      "scale": 1,
+      "resultHW": [
+        16,
+        16
+      ],
+      "pixelResizePerformed": false,
+      "padding": false,
+      "frameReduction": false,
+      "EXIF": "none"
+    }
+  },
+  "browserVersion": "154.0.8037.57",
+  "finalWorkerTracking": {
+    "created": 6,
+    "terminated": 6,
+    "live": 0
+  },
+  "networkScope": "Only local GET requests; model files selected through actual local File inputs",
+  "resources": {
+    "file": "resource-measurements.json",
+    "sha256": "46e4ef811f805f04cc1cb3c5cf0e0bc07f7851f077882f4d96949204e4f8245b",
+    "browserPid": 33226,
+    "allObservedProcessesTerminated": true,
+    "allObservedPidsGone": false,
+    "liveProcessesAfterClose": [],
+    "zombieProcessesAfterClose": [
+      {
+        "pid": 33243,
+        "created": 1793400629.39,
+        "name": "chromium"
+      },
+      {
+        "pid": 33244,
+        "created": 1793400629.39,
+        "name": "chromium"
+      }
+    ]
+  },
+  "wallSeconds": 21.045209101997898
+}

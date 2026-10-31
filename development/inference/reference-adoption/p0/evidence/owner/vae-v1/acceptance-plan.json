@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "kind": "V1-profile-acceptance-plan",
+  "profileId": "wan21-raw-f32-1x16x16",
+  "baselineCommit": "6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095",
+  "mainCommit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+  "documents": [
+    {
+      "name": "Kushyameln Works AI推論モジュール 総合接続仕様書 Draft.md",
+      "sha256": "0744a98219c6ddab4880773029e6318de3e770c8e14e1bb2edbb1bf25c1c3944",
+      "version": "版1.1-draft.1／2026年10月31日 JST。読者は管理ツール、DiffusionModels、VAE & TextEncoder、LoRAと、将来接続する独立モジュールの各担当。"
+    },
+    {
+      "name": "Kushyameln Works AI推論モジュール 実装計画 Draft.md",
+      "sha256": "770d1cdc26c07548cbe12b33cba93d3f22ab3b565ff58b0ba978f3983ff9c64d",
+      "version": "版0.1-draft.1／2026年10月31日 JST。対象は管理ツール、DiffusionModels、VAE & TextEncoder、LoRAの各実装担当。"
+    }
+  ],
+  "input": {
+    "path": "/workspace/work/inference/vae-implementation/png-fixtures/frame-000.png",
+    "sha256": "0dcfaf393c24895f31d6e689157725b07cf86e2fea34396ccfaeb1caef0f21f5",
+    "bytes": 623,
+    "format": "opaque RGB8 PNG",
+    "role": "existing diagnostic still image, F=1 temporal-first-branch acceptance; not workflow reference image",
+    "originalFHW": [
+      1,
+      16,
+      16
+    ],
+    "existingPreprocessing": {
+      "operation": "Bernini _resize_long_edge dimension rule",
+      "refMaxSize": 848,
+      "scale": 1,
+      "resultHW": [
+        16,
+        16
+      ],
+      "pixelResizePerformed": false,
+      "padding": false,
+      "frameReduction": false,
+      "EXIF": "none"
+    }
+  },
+  "videoShape": [
+    1,
+    3,
+    1,
+    16,
+    16
+  ],
+  "latentShape": [
+    1,
+    16,
+    1,
+    2,
+    2
+  ],
+  "model": {
+    "path": "/workspace/work/models/vae/wan_2.1_vae.safetensors",
+    "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+  },
+  "source": {
+    "repo": "Wan-Video/Wan2.1",
+    "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+    "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+    "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498"
+  },
+  "precision": "unchanged stored BF16 values expanded to FP32 arithmetic; not original BF16/GPU equivalence",
+  "comparisonGate": {
+    "atol": 2e-05,
+    "rtol": 2e-05,
+    "maxAbs": 2e-05,
+    "scope": "all FP32 output elements, predetermined before export/browser; no visual-quality or large-profile extrapolation"
+  },
+  "privateOutput": "/workspace/work/inference/vae-v1-f1/bundle",
+  "requiredChecks": [
+    "new fixed graphs export+checker",
+    "all original194keys",
+    "encode/decode synthetic reference",
+    "actual existingPNG encode and mean roundtrip native reference",
+    "all-output comparison and binary downloads/readback",
+    "real Hike/ORT WASM call contribution",
+    "session release, API Worker cancel/recovery/dispose",
+    "OS process resource peaks and operation timings",
+    "existing5x16x16 regression"
+  ],
+  "excluded": [
+    "V2 generated-sample restoration/decode integration",
+    "workflow media without known dimensions",
+    "non-square/81frame acceptance",
+    "publication/push/main merge"
+  ]
+}
