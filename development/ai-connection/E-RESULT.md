@@ -1,5 +1,10 @@
 # E0 / E2 / E3 / E4 implementation and handoff
 
+Historical E0–E4 receipt. The current owner heads, plan0.2-draft.2, explicit
+diagnostic bridge and E5 snapshot/cache continuation are recorded in
+[E-RESUME-RESULT.md](E-RESUME-RESULT.md). Statements below that E5/bridge are
+not implemented describe the earlier a268790 handoff, not the resumed state.
+
 Date: 2026-10-31 JST. Authority: current integration specification1.1-draft.1
 and execution plan0.2-draft.1 Page bodies plus both uploaded originals. See
 E-INPUT-RECEIPT.json. Historical document-only requests and model prompt data
