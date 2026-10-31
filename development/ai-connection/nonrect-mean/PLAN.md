@@ -15,9 +15,11 @@ Authorization: user clarified 「既存profileとの接続・共同検証」. Ea
 
 - [x] Receive private artifact with Page tool; verify whole artifact bytes/hash, both5rawrange digests and current provider reconstruction. Store raw file mode0600 outsideGit. Record receiver provenance.
 - [x] Run existing owner Rect/F1/F5 Node/browser tests and actual nativeWorker/Port boundary. Run actual fragment provider/browser tests, our19adapter fixtures and compare every supplied raw/decoded range with prior independently accepted real-base evidence. Keep fixture/real-base/real-LoRA claims separate.
-- [ ] Add receiver-only reproducible joint harness tools/ai-connection/test-lora-nonrect.mjs. Reuse runJointCases via optional test-owned baseFactory callback in joint-browser-cases.mjs; its existing whole-File default stays unchanged. Run owner realmean/G1C Rect checks before and after actual four-LoRA sequential selections in the same browser. Use delivered block provider, old independently hashed reference arrays (after exact range+decoded equality) and existing gates. No product source changes.
-- [ ] Inspect/helper tests then commit harness before executing it, so every served source/WASM is Git-blob pinned. New load of actual LoRA File keeps mandatory whole-source hash. Save every output and selected artifact privately, publish metadata/receipts only.
-- [ ] Review counts/source hashes, mean metadata before/after, ownership/cancel/rollback results and unchanged native APIs. Update receiver contract/result/repro, push feat/lora-hike and update Draft PR2; record receipt on own handoff Page. No merge/deploy.
+- [x] Add receiver-only reproducible joint harness tools/ai-connection/test-lora-nonrect.mjs. Reuse runJointCases via optional test-owned baseFactory callback in joint-browser-cases.mjs; its existing whole-File default stays unchanged. Run owner realmean/G1C Rect checks before and after actual four-LoRA sequential selections in the same browser. Use delivered block provider, old independently hashed reference arrays (after exact range+decoded equality) and existing gates. No product source changes.
+- [x] Inspect/helper tests then commit harness before executing it, so every served source/WASM is Git-blob pinned. New load of actual LoRA File keeps mandatory whole-source hash. Save every output and selected artifact privately, publish metadata/receipts only.
+- [x] Review counts/source hashes, mean metadata before/after, ownership/cancel/rollback results and unchanged native APIs. Prepare receiver contract/result/repro.
+
+Final delivery: push feat/lora-hike, update Draft PR2 and record receipt on the own handoff Page. GitHub/Page receipts establish that delivery separately from this immutable verification plan. No merge/deploy.
 
 ## Decision record
 
@@ -28,3 +30,5 @@ Authorization: user clarified 「既存profileとの接続・共同検証」. Ea
 | R3 | Whole-base-only test CLI → explicit injected fragment provider in receiver test | unchanged public provider boundary; all10rawrange+decoded equality | test harness only, no native SDK extension |
 
 After execution, RESULT.md and evidence will distinguish newly executed actual fragment/mean/LoRA checks, reused original proof, and unexecuted full-model/snapshot steps.
+
+Execution: verification tasks completed; delivery receipts are recorded separately. Fixed harness source e66733a74a24405091e25805e7985d11a77683cd; actual20LoRAcases/mean7before+7after/nativeAPI4 PASS, independent readback all1,638,400weights+320bias+320outputs/46sources. ProductSDK/runtimeunchanged. Artifactreceipt fullfalse, noNN/snapshot/generation. Finaldelivery identity is recorded by GitHubPRhead separately.

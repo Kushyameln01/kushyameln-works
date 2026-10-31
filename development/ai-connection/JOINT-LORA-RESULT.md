@@ -103,3 +103,7 @@ LOW初回は10数値case一致後、追加した旧commit試験の手順が二�
 Diffusionへは採用版の公開factory群、同じbase identity・profile、外側adapterとowner-current callbackを渡します。実base/full shape/binding/変換hashの再照合を次の全target consumerにも要求します。汎用量子化base入力、Conv/派生LoRA、転置・融合・未知variant、不明倍率は今回追加していません。
 
 管理へ渡す状態はsdkInstanceId、pairId/side、原本hash、強度、planId、native/connection registry hash、bundle/package hash、local input/application revision、coverage/scope、PREPARED/STAGED/CONSUMER_APPLIED、ownership、取消／復帰終端です。HIGH/LOWのSDK local revisionを共通manager revisionへ流用しません。今回のreceiptは全てPARTIAL、completeAdapter=false、generationReady=false、snapshotPublished=false。二組は選択・切替だけで、同時合成・公開・生成を追加していません。
+
+## 後続の非正方形mean共同受入
+
+Diffusion5f880のprivate fragmentを本人受領し、既存のRect mean profileと実4 LoRAを同一browserで検証した新しい記録は [nonrect-mean/RESULT.md](nonrect-mean/RESULT.md)。この本文の旧実行版・旧全量base取得・HIGH rollback範囲はそのまま歴史的証拠として保持する。新試験では明示fragment providerを使い、両sideでcommit済み旧candidate rollbackを確認した。

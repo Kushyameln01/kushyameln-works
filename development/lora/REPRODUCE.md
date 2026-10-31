@@ -108,3 +108,7 @@ python -m http.server 8000 --directory docs
 ```
 
 パネルは `http://127.0.0.1:8000/lora/`。実consumerがない場合は適用できず、旧v1パネルへPARTIAL/staging adapterを直接接続しない。Hike計算・PREPARED・STAGED・診断CONSUMER_APPLIED・管理snapshot公開の状態を別に扱う。
+
+## 非正方形meanと受領fragmentを使う共同試験
+
+新しい受領側CLIとprivate artifact／固定独立参照の配置は [nonrect-mean/REPRODUCE.md](../ai-connection/nonrect-mean/REPRODUCE.md) を参照。元モデル全量の再取得やLoRA native API変更を必要とせず、既存mean profileとPARTIAL診断を別境界のまま検証する。

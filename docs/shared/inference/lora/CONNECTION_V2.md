@@ -213,3 +213,9 @@ consumerはcommitの切替直前にもrevision/abort/currentを検査し、古�
 Bernini参照profileではHIGH/LOWに別SDK instanceを使い、light/detailは一組の選択・切替として扱う。共通Module/Artifact規格へHIGH/LOWやlight/detailを全module共通enumとして強制しない。moduleはnative APIで単独利用でき、管理側のdescriptor/queue/snapshotをimportしない。
 
 E0で取得・照合したDiffusionの完全source commit/build、実binding registry、不変F32 providerとFP8復号profile、実runtime-feed sink、scope付きconsumer検証、権限・現在性・copy条件を共同試験の使用版へ固定する。比較条件・実行済みside・全出力・残る不整合は共同試験結果に記録する。E1のPARTIAL成功を、E9の全target・実model全session・生成への寄与へ昇格させない。全target受入ではlight/detailを別々に扱い、二組同時合成や公開は別工程とする。
+
+## 既存の非正方形meanとの共同受入
+
+Diffusion/VAEの `wan21-raw-f32-1x16x32` はfloat32 NCTHW `[1,16,1,2,4]`、128値のraw-posterior-meanである。LoRAの重み入出力とは別の既存APIで、native requestsは `input:{tensor}` を維持する。旧 `[1,16,2,2,2]` 128値やF1 64値とshapeを交換しない。mean変換をLoRAのloader/patch演算へ追加する変更はない。
+
+新Diffusion `5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3` の明示 `createBerniniBlockProvider` を既存の外側adapterへ注入し、実4原本のPARTIAL診断とmean/G1C確認を同じbrowserで順次検証した。raw断片の本人受領、厳密profile、全出力、所有権・取消、再現手順は [受領側共同検証](../../../../development/ai-connection/nonrect-mean/RESULT.md) と [機械可読契約](../../../../development/ai-connection/nonrect-mean/CONNECTION.json) を参照する。これは全モデルsessionや管理snapshotの受入ではなく、native v2/v1のAPI・coverageは維持する。
