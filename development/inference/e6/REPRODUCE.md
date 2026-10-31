@@ -44,3 +44,49 @@ python tools/diffusion-models/build-info.py --check
 peer検査の成功は、**64/rectangleが拒否され、metadata欠落を再現できた**という既知状態の確認である。共同情報保全・新profileのDiffusion対応が合格した意味ではない。新owner版が対応する場合は、その新source/ABI/receiptと期待結果を別に確定する。実generated sampleをmeanへ改名して通さない。
 
 browser/helperは自分の子孫だけを観測し、Linuxのprocess-local subreaperで引き取ったowned zombieのみをwaitする。既存/他owner processはkill/reapしない。source変更後は実行したsource hashと判定gateを記録する。本文のPSS/RSSは観測scope付きで読み、全端末peakや負荷改善としない。
+
+## 後から取得した438版の64 meanとraw decode
+
+上記f522コマンドは旧固定版の拒否/欠落観測を再現するもの。現在の438版の64対応は別に確認する。記録済みの復元meanと元F1 bundleを使う場合は、追加exportなしで次のdecode一回を再現できる。
+
+```sh
+export WKW_F1_BUNDLE=/absolute/private/existing-accepted-f1-bundle
+python tools/inference/vae/check_restored_mean.py --bundle "$WKW_F1_BUNDLE" --input development/inference/e6/current-peers/restored-still64.wktensor --reference development/inference/vae-v1/fixtures/png-roundtrip.f32 --output "$WKW_E6_ROOT/joint64-browser"
+```
+
+復元mean自体を再生成する場合は、ownerが追加した実Hikeを呼ぶ。VAE側にmean/stdの数値変換を実装しない。
+
+```sh
+git fetch origin refs/heads/codex/diffusion-e0-e7
+mkdir -p "$WKW_E6_ROOT/peer438"
+git archive 438972f30242e0a3bc66edb8591f38eaa0fcd384 docs/shared/diffusion-models docs/shared/inference/tensor.mjs | tar -x -C "$WKW_E6_ROOT/peer438"
+node --input-type=module <<'JS'
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {pathToFileURL} from 'node:url';
+import {decodeTensor,encodeTensor} from './docs/shared/inference/tensor.mjs';
+const root=process.env.WKW_E6_ROOT;
+const peer=path.join(root,'peer438/docs/shared/diffusion-models/latent-space');
+const wasm=fs.readFileSync(path.join(peer,'build/latent-space.wasm'));
+assert.equal(createHash('sha256').update(wasm).digest('hex'),'6b9cb9f0617da373e63275354ac42f7843fb455019ed3988df7364173bc775b4');
+const {createLatentSpace}=await import(pathToFileURL(path.join(peer,'latent-space.mjs')).href);
+const kernel=await createLatentSpace(wasm);
+try{
+ const input=await decodeTensor(fs.readFileSync('development/inference/vae-v1/fixtures/api-recovery.wktensor'));
+ const normalized=kernel.normalizeRawMean(input);
+ const saved=await encodeTensor(normalized),read=await decodeTensor(saved);
+ const restored=kernel.restoreRawMean(read);
+ assert.deepEqual(restored.shape,[1,16,1,2,2]);
+ assert.equal(restored.meaning,'raw-posterior-mean');
+ assert.deepEqual(restored.context,input.context);
+ let error=0;for(let i=0;i<64;i++)error=Math.max(error,Math.abs(restored.data[i]-input.data[i]));
+ assert.ok(error<=2e-6);
+ fs.writeFileSync(path.join(root,'regenerated-restored64.wktensor'),await encodeTensor(restored));
+}finally{kernel.dispose();}
+JS
+python tools/inference/vae/check_restored_mean.py --bundle "$WKW_F1_BUNDLE" --input "$WKW_E6_ROOT/regenerated-restored64.wktensor" --reference development/inference/vae-v1/fixtures/png-roundtrip.f32 --output "$WKW_E6_ROOT/joint64-regenerated-browser"
+```
+
+管理a268の実Node検査は、owner sourceに対しG1C codecを明示指定する。archiveの展開先で`node tools/ai-connection/test-descriptor.mjs`、`test-adapters.mjs`、`test-package.mjs`、`test-native-owner.mjs`を実行する。`WORKS_NATIVE_CODEC_PATH`にはこのbranchの`docs/shared/inference/tensor.mjs`の絶対path、**`WORKS_NATIVE_ROOT`にはこのbranchのrepo rootの絶対path**を渡す。後者がないとnative-owner検査がskipされるため、2/2・skip0の再現には両方必要である。取得方法・hash・実commandとcase数は`current-peers/manager-direct-node-results.json`等に保持する。これは実モデル推論や管理ブラウザ全工程の再現ではない。

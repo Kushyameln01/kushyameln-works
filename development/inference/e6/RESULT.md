@@ -2,7 +2,7 @@
 
 2026-10-31 JST。総合仕様Page本文 **1.1-draft.1**、実行計画Page本文 **0.2-draft.1**を取得した。添付本文も取得し、SHAはそれぞれ`0744a98219c6ddab4880773029e6318de3e770c8e14e1bb2edbb1bf25c1c3944`と`9ceb3f2538f5145edfc697be5ea9b7cb8db28db2d250f01912c8d6b67f2e8897`。既存F=1・16×16のexport/棚卸しは再実行していない。
 
-**E6の非正方形診断profile一件は、fresh export・元VAE FP32参照・実Hike/ORT WASM・保存/取消/終了を受入済み。管理の実adapter共同確認、Diffusionの新shape変換とmetadata保全、E9の実generated sampleは未受入。** 取得・提供・source照合・共同受入を同じ完了状態にしない。
+**E6の非正方形診断profile一件は、fresh export・元VAE FP32参照・実Hike/ORT WASM・保存/取消/終了を受入済み。** 公開が進んだ後の管理a268のNode情報保全確認とDiffusion438の64要素mean→VAE raw decodeは[最新追補](CURRENT-PEERS.md)に記載する。非正方形のDiffusion変換、管理全ブラウザ工程、E9の実generated sampleは未受入。以下の初期取得失敗やf522観測は固定版の履歴であり、後続版へ読み替えない。
 
 ## 対象profileと識別
 

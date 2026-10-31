@@ -206,6 +206,12 @@ ORT Web1.24.3のWASM provider、1 thread。元FP8/BF16値をFP32へ展開した�
 
 取得したDiffusion `f522d9aeff313558c4ef83022a340af9a4c21391` はmean変換を既存 `[1,16,2,2,2]` の128要素に限定する。64要素 `[1,16,1,2,2]` と、同じ128要素でも別shapeの `[1,16,1,2,4]` は拒否される。VAEの各raw decode単独受入を、Diffusion正規化/復元との結合受入に読み替えない。変換はDiffusion所有で、VAE/管理へ複製しない。
 
-同Diffusion版のmean変換・旧codec/wrapperはG1C context/Tokenizer情報を全て保持しない。当方G1C codecの保存契約と混同せず、原native artifact/metadata/evidenceを外側で保持する。情報保全が必須のedgeは対向の版付き修正・receiptと往復確認まで未受入。管理schema/adapter正本 `21e77f292c2540975d1846e7efe320fe89625e23` は取得待ちであり、その実adapterの準拠を確認済みとは扱わない。
+同f522版のmean変換・旧codec/wrapperはG1C context/Tokenizer情報を全て保持しなかった。これは以下の新しい版を取得する前の固定版観測として保持する。
+
+追補照合したDiffusion `438972f30242e0a3bc66edb8591f38eaa0fcd384` は、実Hikeの64要素profile専用経路と直接mean変換のcontext所有コピーを追加している。実64 mean→owner正規化→明示G1C codec保存読戻し→owner復元→既存F1 VAE raw decodeを限定scopeで確認した。正規化/復元の数値処理はownerの実装を呼び、VAEへ複製していない。新非正方形 `[1,16,1,2,4]` は依然未対応で、legacy guard/writerは128要素旧profile限定のままである。
+
+このVAE作業branch内の既存Diffusion runtimeを438へ置き換えたものではない。64要素のこの結合には、[owner438の固定API](https://github.com/Kushyameln01/kushyameln-works/blob/438972f30242e0a3bc66edb8591f38eaa0fcd384/docs/shared/diffusion-models/API.md)と対応する実module/kernel/receiptを別に取得して明示選択する。相対URLの既存Diffusion実装やmain版まで64対応済みとは扱わない。
+
+438版も旧storage codec/wrapperのG1C metadata完全保存は未成立なので、原native artifact/metadata/evidenceを外側で保持し、G1C codecを明示選択する。取得した管理 `a26879057d169cb2eecff30503d64adba5057c52` のadapter/packageは、実G1C codecを指定したNode検査で情報保全を確認した。これは全管理ブラウザ工程、Diffusion RPC全経路、実generated sampleや全生成の受入を意味しない。初期21e77f取得待ちの記録は歴史として保持する。
 
 モデル/ONNXは従来の非公開bundle入力を維持する。source branchへはmanifest/hash・診断fixture・全出力参照・計測証拠・再生成/検証手順を含め、約499MBの神経graphとモデル原本は同梱しない。
