@@ -228,3 +228,22 @@ test('finite reference bytes with the wrong expected-output SHA are rejected bef
   assert.equal(count(f.native.calls,'prepare'),0);assert.equal(count(f.native.calls,'nativeValidate'),0);assert.equal(count(f.native.calls,'nativeCommit'),0);assert.equal(f.ownerEvidenceCalls.length,0);assert.ok(rejected);
  }finally{await manager.recover().catch(()=>{});await manager.dispose();await queue.drain();}
 });
+test('fresh normative bindings and resources are required immediately before opening the native commit gate',{timeout:5000},async()=>{
+ for(const mutate of [
+  f=>f.current.activeBindings.producer.valid=false,
+  f=>f.current.activeBindings.producer.currentRevision++,
+  f=>f.current.resourceState.status='unavailable',
+  f=>f.current.resourceState.occupiedBytes=f.current.resourceState.budgetBytes
+ ]){
+  const f=await executionFixture();
+  try{
+   const token=await f.manager.stageSnapshot(f.profile,f.bindings);assert.equal(count(f.native.calls,'nativeValidate'),1);assert.equal(f.ownerEvidenceCalls.length,1);
+   mutate(f);let blocked;try{await f.manager.publishSnapshot(token,{currentBindings:f.currentBindings});}catch(error){blocked=error;}
+   assert.equal(count(f.native.calls,'nativeCommit'),0,'A stale norm binding or resource must not open the actual SDK commit gate');
+   assert.equal(blocked?.code,'NORM_VALIDATED_BLOCKED');assert.equal(f.manager.active,null);assert.equal(f.manager.inspect().state,'FAILED');
+   assert.equal(count(f.native.calls,'nativeValidate'),1);assert.equal(f.ownerEvidenceCalls.length,1,'Commit rechecks the retained actual evidence without rerunning validation or comparison');
+   assert.equal(f.queue.inspect().invocations.every(r=>r.originalTerminal&&r.resourceReleased),true);
+   assert.ok(f.execution.inspect().failure);assert.equal(f.execution.inspect().publicationObserved,false);
+  }finally{await f.dispose();}
+ }
+});

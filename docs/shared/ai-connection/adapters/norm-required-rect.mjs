@@ -82,10 +82,10 @@ export function createNormRequiredRectAdapter({nativeFactory,descriptor,binding,
    signal?.addEventListener('abort',listener,{once:true});
    const output=await queue.enqueue(invocation,async nativeContext=>{
     active=r;r.queueTarget=nativeContext.target;aborted(nativeContext.signal);norm.declaration(await ensureCurrent('dispatch'));
-    r.native=await nativeFactory({target:nativeContext.target});aborted(nativeContext.signal);await ensureCurrent('factory');
+    r.native=await nativeFactory({target:nativeContext.target});aborted(nativeContext.signal);norm.declaration(await ensureCurrent('factory'));
     if(!r.native||!['configure','decode','cancel','dispose'].every(k=>typeof r.native[k]==='function'))throw fail('RECT_NATIVE_UNAVAILABLE','Acquired owned works-ai-1 VAE module required');
     r.adapter=createTextVaeAdapter({module:'vae',nativeClient:r.native,descriptor:declared,binding:identity,artifactStore,sourceVerified});
-    r.native.configure({manifest,files});aborted(nativeContext.signal);await ensureCurrent('configure');r.started=true;
+    r.native.configure({manifest,files});aborted(nativeContext.signal);norm.declaration(await ensureCurrent('configure'));r.started=true;
     const reply=await r.adapter.invoke({requestId:target.requestId,localRevision,operationId:'decode',input});
     if(reply.status==='cancelled')throw fail('INVOCATION_CANCELLED','Native Rect invocation cancelled');
     if(reply.status!=='ok')throw fail('RECT_NATIVE_FAILED',reply.error?.rawMessage??'Native Rect decode failed');

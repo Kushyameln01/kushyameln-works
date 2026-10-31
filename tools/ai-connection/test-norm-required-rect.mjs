@@ -82,3 +82,13 @@ test('prior proof requires full source/model/profile/context identities before d
 test('reference hash and exact predeclared Rect gate cannot be weakened',async()=>{
  for(const mutate of [q=>q.validationSpec.referenceSha256='not-a-sha',q=>q.validationSpec.referenceSha256='A'.repeat(64),q=>q.validationSpec.gate.maxAbs=.002]){const f=await fixture();mutate(f.run);const a=module.createNormRequiredRectAdapter(f.options);await assert.rejects(()=>a.run(f.run),e=>e.code==='RECT_VALIDATION_SPEC_REQUIRED');assert.deepEqual(f.calls,[]);await a.dispose();f.store.clear();}
 });
+for(const phase of ['factory','configure'])for(const condition of ['invalid-binding','unavailable-RAM'])test(`${condition} after ${phase} is re-evaluated before the next native call`,async()=>{
+ const f=await fixture(),current={target:structuredClone(f.run.target),activeBindings:structuredClone(f.run.edgeInput.activeBindings),resourceState:structuredClone(f.run.edgeInput.resourceState)};
+ f.run.readCurrent=()=>structuredClone(current);
+ const change=()=>{if(condition==='invalid-binding')current.activeBindings.producer.valid=false;else current.resourceState.occupiedBytes=current.resourceState.budgetBytes;};
+ if(phase==='factory'){const original=f.options.nativeFactory;f.options.nativeFactory=async q=>{const native=await original(q);change();return native;};}
+ else{const configure=f.native.configure;f.native.configure=q=>{configure(q);change();};}
+ const a=module.createNormRequiredRectAdapter(f.options);
+ try{await assert.rejects(()=>a.run(f.run),e=>e.code==='NORM_DECLARATION_BLOCKED');assert.equal(f.calls.includes('decode'),false);assert.equal(f.calls.includes('configure'),phase==='configure');assert.equal(f.calls.includes('native-dispose'),true);assert.equal(f.calls.includes('owner-release'),true);}
+ finally{await a.dispose();f.store.clear();}
+});

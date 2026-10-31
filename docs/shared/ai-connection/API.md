@@ -617,6 +617,9 @@ live `activeBindings` and `resourceState`. `readOwnerEvidence` is mandatory and
 runs only after actual native validation; it supplies the independent selected
 weight/bias comparison receipt. The manager checks its binding, count, scope
 and reference, and does not perform those numerical comparisons itself.
+Immediately before opening the native commit gate, the same retained validation
+receipt is rechecked with explicit live bindings and resource readiness. This
+does not repeat owner validation or numerical comparison.
 
 The returned owner has an automatic `afterPublication` audit. The snapshot
 coordinator invokes this only after all native commits, publication finalizers
@@ -645,6 +648,8 @@ await, validation, publication and storage capability; cancellation or disposal
 after native completion still prevents stale adoption. Failed save output
 handles are released; partial file/progress receipts stay available as
 unadopted evidence. Successful output handles remain caller-owned.
+Factory completion and configuration each recheck live bindings and RAM through
+the same declaration evaluator before native decode can begin.
 
 Rect requires only `decoder-body.onnx`, `conv2-weight.f32`, `conv2-bias.f32`
 (286,314,451 bytes). Existing encode evidence is reused. No encoder re-export or
