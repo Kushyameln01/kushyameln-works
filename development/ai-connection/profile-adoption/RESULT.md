@@ -2,7 +2,7 @@
 
 2026年10月31日 JST。Profile台帳・数値実行/正規化Profile・管理照合規範・数値規則の本文をPage閲覧toolで取得し、参照データ `1.0-draft.1` / `6dae9a6fac3e9ad29ea941f22211edbe4aa894ad` と照合した。新実行計画 `1.0-draft.1` の固定sourceは `0fb553fd081d3bcbbad4ead7accd165679f77d34`。取得した全blockの記録は `SPEC-ACQUISITION.json`。
 
-作業の開始sourceは `5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3`。今回のbranchは `codex/diffusion-profile-p0-p4`、PR baseは既存 `codex/diffusion-e0-e7`。最終runtime code commitとhandoffの各receipt/hashは `EVIDENCE-INDEX.json` に固定する。候補の受領・管理採用は、旧採用LoRA0c278/Diffusion438とは別に記録する。
+作業の開始sourceは `5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3`。今回のbranchは `codex/diffusion-profile-p0-p4`、PR baseは既存 `codex/diffusion-e0-e7`。runtime codeは `8cdfd3f5f7db0cd66762e78f09c209fb5b27366b` に固定した。handoffの各receipt/hashと、同じ実bytesを指す候補source/buildは `EVIDENCE-INDEX.json` に記録する。候補の受領・管理採用は、旧採用LoRA0c278/Diffusion438とは別に記録する。
 
 ## 成立した担当境界
 

@@ -8,7 +8,7 @@
   "diffusionBaselineCommit": null,
   "diffusionSource": {
     "mode": "captured-worktree-bytes",
-    "baseCommit": "5aac72a025860db253cd575d4bace7ac8821ebb1",
+    "baseCommit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
     "servedOwnerPathsDifferingFromBase": []
   },
   "harnessSourceSha256": {
@@ -16,6 +16,13 @@
     "cases": "26e8d8605f4e3102d49b58c7b95116bc0ead9c94b7e8a5a9cfc80aa413d6264e"
   },
   "sourceRecords": [
+    {
+      "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+      "path": "docs/shared/ai-connection/adapters/artifacts.mjs",
+      "bytes": 5879,
+      "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290",
+      "gitBlob": "734466ba9ea077c7db26f3a56c8a66afce2d21bd"
+    },
     {
       "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
       "path": "docs/shared/inference/tensor.mjs",
@@ -25,10 +32,17 @@
     },
     {
       "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
-      "path": "docs/shared/ai-connection/adapters/artifacts.mjs",
-      "bytes": 5879,
-      "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290",
-      "gitBlob": "734466ba9ea077c7db26f3a56c8a66afce2d21bd"
+      "path": "docs/shared/ai-connection/queue.mjs",
+      "bytes": 18094,
+      "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484",
+      "gitBlob": "cdc1c9515176b317026681c19ed91e164e1a759e"
+    },
+    {
+      "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+      "path": "docs/shared/ai-connection/canonical.mjs",
+      "bytes": 3212,
+      "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782",
+      "gitBlob": "d1e8790566d601e505d9c98451ced956c23a4d80"
     },
     {
       "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
@@ -46,20 +60,6 @@
     },
     {
       "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
-      "path": "docs/shared/ai-connection/canonical.mjs",
-      "bytes": 3212,
-      "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782",
-      "gitBlob": "d1e8790566d601e505d9c98451ced956c23a4d80"
-    },
-    {
-      "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
-      "path": "docs/shared/ai-connection/queue.mjs",
-      "bytes": 18094,
-      "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484",
-      "gitBlob": "cdc1c9515176b317026681c19ed91e164e1a759e"
-    },
-    {
-      "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
       "path": "docs/shared/ai-connection/descriptor.mjs",
       "bytes": 14882,
       "sha256": "1395ee9879c14b42d3e05a5ea674680f75c404210ca112d44d370114a7756d2e",
@@ -74,17 +74,17 @@
     },
     {
       "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
-      "path": "docs/shared/ai-connection/contracts/schemas.mjs",
-      "bytes": 89275,
-      "sha256": "46b22950d8b5047a3fb7788969660836fb37452fdc6f294d0b8575ac7485c573",
-      "gitBlob": "0fa37dc7c4219482bc9856cdd04ac7b72947de23"
-    },
-    {
-      "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
       "path": "docs/shared/ai-connection/compatibility.mjs",
       "bytes": 14623,
       "sha256": "6e33cddaa86369245663dcc4d20a22176483cde2a0d9696bfb5b01251af85005",
       "gitBlob": "a1e0d4016f56b32cdb060baaed87d17792e5ddd8"
+    },
+    {
+      "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+      "path": "docs/shared/ai-connection/contracts/schemas.mjs",
+      "bytes": 89275,
+      "sha256": "46b22950d8b5047a3fb7788969660836fb37452fdc6f294d0b8575ac7485c573",
+      "gitBlob": "0fa37dc7c4219482bc9856cdd04ac7b72947de23"
     }
   ],
   "actualServedBytes": {
@@ -104,13 +104,21 @@
       "bytes": 5844,
       "sha256": "13c3595f0786a45a62d0a8739b6acd58d3025c80f7eaff4baf7314559665c1c1"
     },
+    "/peer-manager/adapters/artifacts.mjs": {
+      "bytes": 5879,
+      "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290"
+    },
     "/peer-vae/tensor.mjs": {
       "bytes": 8106,
       "sha256": "4c6992a7b6f44722e84a7184ed5c878312a203071054335827f7f0adcd01c07b"
     },
-    "/peer-manager/adapters/artifacts.mjs": {
-      "bytes": 5879,
-      "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290"
+    "/peer-manager/queue.mjs": {
+      "bytes": 18094,
+      "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484"
+    },
+    "/peer-manager/canonical.mjs": {
+      "bytes": 3212,
+      "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782"
     },
     "/peer-manager/adapters/diffusion.mjs": {
       "bytes": 1802,
@@ -120,13 +128,9 @@
       "bytes": 23639,
       "sha256": "5df0ee782bcb479fdd28b87f61a777797a9274328aaf4acd79efb7fb6c7f7192"
     },
-    "/peer-manager/canonical.mjs": {
-      "bytes": 3212,
-      "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782"
-    },
-    "/peer-manager/queue.mjs": {
-      "bytes": 18094,
-      "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484"
+    "/owner/shared/diffusion-models/api/build-info.mjs": {
+      "bytes": 7900,
+      "sha256": "f29fc0f15a3cfd09d9804afc6c6c6128d4fec36ad72f02090ac44a5e98ef7a1a"
     },
     "/owner/shared/diffusion-models/lora/weights.mjs": {
       "bytes": 11233,
@@ -136,9 +140,13 @@
       "bytes": 4164,
       "sha256": "a3fdfc1654361713a5e8278e6af5d76a65aafed7f654c06813eebb933f7a0f4c"
     },
-    "/owner/shared/diffusion-models/api/build-info.mjs": {
-      "bytes": 5771,
-      "sha256": "e988e290d61e7c88cd8e78082caf15035ef54ada3d95b0ef19fbb7aef0951970"
+    "/peer-manager/descriptor.mjs": {
+      "bytes": 14882,
+      "sha256": "1395ee9879c14b42d3e05a5ea674680f75c404210ca112d44d370114a7756d2e"
+    },
+    "/peer-manager/adapters/core.mjs": {
+      "bytes": 4511,
+      "sha256": "8c854f77f19174aa0ea72cbc78eafd342a9c75d3d2b9048465905d06c4c07455"
     },
     "/owner/shared/vr180/sha256.mjs": {
       "bytes": 6970,
@@ -152,21 +160,13 @@
       "bytes": 47893,
       "sha256": "772ca63c3b82bafa7b2345cdda3361679112fcf4a97c79b67564da0fa196217d"
     },
-    "/peer-manager/descriptor.mjs": {
-      "bytes": 14882,
-      "sha256": "1395ee9879c14b42d3e05a5ea674680f75c404210ca112d44d370114a7756d2e"
-    },
-    "/peer-manager/adapters/core.mjs": {
-      "bytes": 4511,
-      "sha256": "8c854f77f19174aa0ea72cbc78eafd342a9c75d3d2b9048465905d06c4c07455"
+    "/peer-manager/compatibility.mjs": {
+      "bytes": 14623,
+      "sha256": "6e33cddaa86369245663dcc4d20a22176483cde2a0d9696bfb5b01251af85005"
     },
     "/peer-manager/contracts/schemas.mjs": {
       "bytes": 89275,
       "sha256": "46b22950d8b5047a3fb7788969660836fb37452fdc6f294d0b8575ac7485c573"
-    },
-    "/peer-manager/compatibility.mjs": {
-      "bytes": 14623,
-      "sha256": "6e33cddaa86369245663dcc4d20a22176483cde2a0d9696bfb5b01251af85005"
     },
     "/fixture/mean.wktensor": {
       "bytes": 829,
@@ -176,13 +176,13 @@
       "bytes": 9547,
       "sha256": "5fbc06083392c8038d6919b0e556fefbba61866927d7e2f813f92a00e64bced5"
     },
-    "/owner/shared/diffusion-models/euler-kernel.mjs": {
-      "bytes": 2724,
-      "sha256": "77ba1fb46771bf7f3053454a3eca8981f17d3992874497a72eed6d0bf2ddf52c"
-    },
     "/owner/shared/diffusion-models/kernel-registry.mjs": {
       "bytes": 101,
       "sha256": "75c0f0cd973f627891f8af130daa637db2d7afbd7da38b6c275891592b4eb8ce"
+    },
+    "/owner/shared/diffusion-models/euler-kernel.mjs": {
+      "bytes": 2724,
+      "sha256": "77ba1fb46771bf7f3053454a3eca8981f17d3992874497a72eed6d0bf2ddf52c"
     },
     "/owner/shared/diffusion-models/latent-space/latent-space.mjs": {
       "bytes": 6387,
@@ -198,7 +198,7 @@
     }
   },
   "passed": true,
-  "nativeBuildId": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+  "nativeBuildId": "diffusion-models/0.1+7a14a46b5119c1e8f7f8ef0a16a5ac0881ea4f177d063f957a489f193e4f090a",
   "cases": [
     {
       "name": "actual VAE855 Rect mean -> manager capture/package -> live direct owner normalize -> package -> live restore -> package",
@@ -685,8 +685,8 @@
       "inputPayloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
       "operation": {
         "protocolVersion": "diffusion-models/0.1",
-        "buildId": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
-        "sessionId": "438f4b4b-44a2-4166-8bcb-228bfdd61473",
+        "buildId": "diffusion-models/0.1+7a14a46b5119c1e8f7f8ef0a16a5ac0881ea4f177d063f957a489f193e4f090a",
+        "sessionId": "78757f5b-fe7f-488f-8b74-155a61103d38",
         "jobId": "p2-1",
         "inputRevision": 1,
         "op": "normalizeRawMean"
@@ -721,8 +721,8 @@
       "inputPayloadSha256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5",
       "operation": {
         "protocolVersion": "diffusion-models/0.1",
-        "buildId": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
-        "sessionId": "438f4b4b-44a2-4166-8bcb-228bfdd61473",
+        "buildId": "diffusion-models/0.1+7a14a46b5119c1e8f7f8ef0a16a5ac0881ea4f177d063f957a489f193e4f090a",
+        "sessionId": "78757f5b-fe7f-488f-8b74-155a61103d38",
         "jobId": "p2-2",
         "inputRevision": 1,
         "op": "restoreRawMean"
