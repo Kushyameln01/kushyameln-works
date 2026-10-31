@@ -1,0 +1,43 @@
+✔ consumer declares PARTIAL runtime binding and owns registry snapshots (5.547171ms)
+✔ invalid original shape, binding kind, identity and full scope reject at construction (3.013174ms)
+✔ sink rejects unknown binding, ranges, checksum, duplicate blocks and missing coverage (9.081273ms)
+✔ sink snapshots input before hash await, rejects shared backing, and abort invalidates pending writes (8.03454ms)
+✔ candidate copies package before release and validates actual supplied stage output (5.928883ms)
+✔ validation cannot use wrong expected output, missing independent reference or noncurrent binding (5.527742ms)
+✔ current check immediately before commit and stale rollback cannot overwrite a newer active feed (10.260677ms)
+✔ aborted stage validation settles without a usable receipt or active candidate (4.67615ms)
+✔ base restore rereads immutable provider with binding and releases only consumer resources (3.388435ms)
+✔ wrong executed graph and foreign package cannot establish a validation receipt (4.673005ms)
+✔ dispose waits for bounded stage completion, rejects its result and never disposes caller stage (4.316993ms)
+✔ dispose terminates pending sink hashes before its completion barrier (2.668689ms)
+✔ caller-owned stage cannot mutate validated feed bytes retained after its run (4.901286ms)
+✔ releaseCandidate drops rollback history without releasing active independent feed (8.845432ms)
+✔ stage output and evidence are snapshotted before the validation continuation (4.201961ms)
+✔ cancelled committed candidate can roll back its own active feed without reviving a stale application (10.142421ms)
+✔ rollback does not release candidate buffers while validation is still using them (4.466987ms)
+✔ registry digest binds original slice, FP8 profile and complete metadata before consumer acceptance (1.557067ms)
+✖ sink rejects sparse shape dimensions while preserving valid dense shapes (3.827491ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 18
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 126.996902
+
+✖ failing tests:
+
+test at docs/shared/diffusion-models/lora/test-consumer.mjs:131:1
+✖ sink rejects sparse shape dimensions while preserving valid dense shapes (3.827491ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/lora/test-consumer.mjs:133:2)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /shape|binding/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }

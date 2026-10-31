@@ -1,0 +1,827 @@
+{
+  "browser": "154.0.8037.57",
+  "pageErrors": [],
+  "wallSeconds": 1.6260855270011234,
+  "scope": "postnorm/postRoPE explicit-fixture one-head selected attention, all keys, no full NN/production dtype claim",
+  "OSMeasurement": {
+    "pssBaselineBytes": 255006720,
+    "pssPeakBytes": 383030272,
+    "rssPeakProcessSumBytes": 659226624,
+    "samples": 47,
+    "intervalTargetMs": 20,
+    "ownedPidsObserved": [
+      42183,
+      42200,
+      42201,
+      42222,
+      42225,
+      42244,
+      42263,
+      42272,
+      42273
+    ],
+    "readErrors": [],
+    "scope": "observed peak of owned Chromium descendants during constructor/all cases, includes renderer/runtime/test harness; RSS process sum double-counts shared pages, use PSS; not ORT allocator-only, not production pipeline peak"
+  },
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs": "fc291294719306dc89ab3f7f2878e1614121db6299c280b3dbf80ca5ac18cbc7",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/graph.mjs": "07a627a0af4d19f8febbbb3233479f75998dcd6c0b6d6145d45096fc251a39a2",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/hike.mjs": "67d5ada9d4c6c4217c3845c9ddbed5fb246cedeb35d5283840e1057087d4c3cd",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/registry.mjs": "99c1c3c56fe22608c4652d830cd7f03978b036332a0505b9f07ed548bc8b6ecb",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.hike": "766b771e10e00bb3ce24d360567981e2d028762547c820e481dbcdf4deab1e75",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.wasm": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.wat": "4e14d0d45a11158a9564d74b9063e075440d1e88df35bfe2402480681e613fd6",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/build.py": "ce27ca6f0fd8164439fb48bb483a1e264a009759fbde7425ac059e66ad7aa3b5",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/build-record.json": "7f999cf04429ad270727d1c4cade6e62dc96eab29f72575ac02faa21ae4bfa59",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/fixture-source.mjs": "275adaff2621921e33ec38a642e1736adb515339a96ebdc808d895b44b6a3057",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/browser-cases.mjs": "e869c01751d4f6a23108850a630491502ca623ca1c6d401af380341d866f45be",
+    "tools/diffusion-models/e7-attention-reference.py": "b10da8955b871469c77652d6e7fefc48e00f6ddf5ea00acce176399a44b4c811",
+    "tools/diffusion-models/e7-attention-browser.py": "1d22d0e6882303c7af0b545c07db143c15acd27a3fb1e9b933631ebdf3544173"
+  },
+  "referenceSHA256": "6ae54f48e244ff9c5f78fe0956cd27bae862341aec8acfb4fed058e65ab4cb6b",
+  "passed": true,
+  "cases": [
+    {
+      "name": "pattern K64",
+      "passed": true,
+      "comparison": {
+        "values": 2048,
+        "failed": 0,
+        "maxAbsolute": 3.3527612686157227e-08,
+        "maxRelative": 7.344571226793301e-05,
+        "tolerance": {
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "fixedBeforeRuntimeComparison": true
+        }
+      },
+      "inputHashes": {
+        "q": "2b4eb284a6ad65ce6b835421e5380d1306d143c3325ef453cfc606227bcc92c6",
+        "k": "81e6d0fe1f0fbf150cf0f401a1ac22649645866d6368e5095b3eacadca790a95",
+        "v": "95cf67e2ed6a46c9b556a3439e09c5637a0a6e2e631d2fa521aadf6dff294438"
+      },
+      "evidence": {
+        "schemaVersion": "works-stream-attention-evidence/0.1",
+        "scope": "EXPLICIT_Q16_ONE_HEAD_ALL_KEYS",
+        "sourceBinding": {
+          "schemaVersion": "works-postnorm-rope-qkv/0.1",
+          "bindingId": "fixture-pattern-K64-q16d128-f32-v1",
+          "rows": 16,
+          "headDim": 128,
+          "keyCount": 64,
+          "dtype": "float32",
+          "querySpace": "post-qk-norm-rope",
+          "keySpace": "post-qk-norm-rope",
+          "valueSpace": "projected-value",
+          "mask": "none",
+          "dropout": 0,
+          "provenance": {
+            "kind": "explicit-fixture",
+            "generator": "integer-pattern-f32-v1",
+            "mode": "pattern",
+            "productionQKVVerified": false
+          }
+        },
+        "precisionProfile": "f32-ort-score-exp-hike-recurrence-v1",
+        "queryShape": [
+          16,
+          128
+        ],
+        "outputShape": [
+          16,
+          128
+        ],
+        "keysConsumed": 64,
+        "tiles": 1,
+        "finalKeyCount": 64,
+        "phantomKeys": 0,
+        "scale": 0.0883883461356163,
+        "maxUpdates": 16,
+        "graphSHA256": "148db88ef3ba46be33799f2586760d6aab3f5eb57379ecc821a4cd5b2d3b1f04",
+        "hikeWasmSHA256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+        "ortVersion": "1.24.3",
+        "ortSessionCreations": 1,
+        "sessionCreateMs": 235.89999999850988,
+        "hikeMemoryStart": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "rows": 16,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        },
+        "hikeMemoryEnd": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 2,
+          "inputCopyBytes": 36928,
+          "outputCopyBytes": 8192,
+          "rows": 16,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        },
+        "elapsed": {
+          "readMs": 3,
+          "ortMs": 10.399999998509884,
+          "hikeMs": 3.2999999970197678,
+          "totalRunMs": 17.299999997019768
+        },
+        "productionQKVVerified": false,
+        "resources": {
+          "sourceQKVInputBytes": 73728,
+          "hostSnapshotCopyBytes": 78080,
+          "hikeInputCopyBytes": 36928,
+          "hikeOutputCopyBytes": 8192,
+          "hikeArenaResetBytes": 53376,
+          "hikeTransientClearBytes": 36928,
+          "logicalOrtInputBytes": 41024,
+          "logicalOrtOutputBytes": 4224,
+          "logicalMaxScoreTileElements": 1024,
+          "selectedDenseScoreBytes": 4096,
+          "knownNamedNumericLiveBytes": 164288,
+          "knownNamedNumericPlusHikeBytes": 1278400,
+          "knownLiveScope": "conservative named numeric array spans only; excludes producer full KV backing, metadata, compiler/ORT Memory, GC-unreclaimed arrays, harness/reference and other caller buffers",
+          "producerResidentBytes": null,
+          "producerResidentReason": "source provenance kind is not a resident-byte proof; on-demand fixture audited separately",
+          "ortMemoryBytes": null
+        },
+        "fullHeadCountVerified": false,
+        "originalProductionPrecisionVerified": false,
+        "E8": "BLOCKED"
+      }
+    },
+    {
+      "name": "pattern K120",
+      "passed": true,
+      "comparison": {
+        "values": 2048,
+        "failed": 0,
+        "maxAbsolute": 2.0489096641540527e-08,
+        "maxRelative": 0.0001731900429992054,
+        "tolerance": {
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "fixedBeforeRuntimeComparison": true
+        }
+      },
+      "inputHashes": {
+        "q": "2b4eb284a6ad65ce6b835421e5380d1306d143c3325ef453cfc606227bcc92c6",
+        "k": "e97839c079f4aa958085d911386947934405a86126da469d356c8e83592c3ec3",
+        "v": "67d6091c1b7205d178308625d4c8ff01fa96e900dac2a18e5a900a8a82d627c0"
+      },
+      "evidence": {
+        "schemaVersion": "works-stream-attention-evidence/0.1",
+        "scope": "EXPLICIT_Q16_ONE_HEAD_ALL_KEYS",
+        "sourceBinding": {
+          "schemaVersion": "works-postnorm-rope-qkv/0.1",
+          "bindingId": "fixture-pattern-K120-q16d128-f32-v1",
+          "rows": 16,
+          "headDim": 128,
+          "keyCount": 120,
+          "dtype": "float32",
+          "querySpace": "post-qk-norm-rope",
+          "keySpace": "post-qk-norm-rope",
+          "valueSpace": "projected-value",
+          "mask": "none",
+          "dropout": 0,
+          "provenance": {
+            "kind": "explicit-fixture",
+            "generator": "integer-pattern-f32-v1",
+            "mode": "pattern",
+            "productionQKVVerified": false
+          }
+        },
+        "precisionProfile": "f32-ort-score-exp-hike-recurrence-v1",
+        "queryShape": [
+          16,
+          128
+        ],
+        "outputShape": [
+          16,
+          128
+        ],
+        "keysConsumed": 120,
+        "tiles": 2,
+        "finalKeyCount": 56,
+        "phantomKeys": 0,
+        "scale": 0.0883883461356163,
+        "maxUpdates": 19,
+        "graphSHA256": "148db88ef3ba46be33799f2586760d6aab3f5eb57379ecc821a4cd5b2d3b1f04",
+        "hikeWasmSHA256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+        "ortVersion": "1.24.3",
+        "ortSessionCreations": 1,
+        "sessionCreateMs": 235.89999999850988,
+        "hikeMemoryStart": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 2,
+          "inputCopyBytes": 36928,
+          "outputCopyBytes": 8192,
+          "rows": 16,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        },
+        "hikeMemoryEnd": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 5,
+          "inputCopyBytes": 106176,
+          "outputCopyBytes": 16384,
+          "rows": 16,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        },
+        "elapsed": {
+          "readMs": 1.4000000059604645,
+          "ortMs": 0.6000000014901161,
+          "hikeMs": 2.6999999955296516,
+          "totalRunMs": 4.700000002980232
+        },
+        "productionQKVVerified": false,
+        "resources": {
+          "sourceQKVInputBytes": 131072,
+          "hostSnapshotCopyBytes": 139136,
+          "hikeInputCopyBytes": 69248,
+          "hikeOutputCopyBytes": 8192,
+          "hikeArenaResetBytes": 53376,
+          "hikeTransientClearBytes": 73856,
+          "logicalOrtInputBytes": 77952,
+          "logicalOrtOutputBytes": 7936,
+          "logicalMaxScoreTileElements": 1024,
+          "selectedDenseScoreBytes": 7680,
+          "knownNamedNumericLiveBytes": 164288,
+          "knownNamedNumericPlusHikeBytes": 1278400,
+          "knownLiveScope": "conservative named numeric array spans only; excludes producer full KV backing, metadata, compiler/ORT Memory, GC-unreclaimed arrays, harness/reference and other caller buffers",
+          "producerResidentBytes": null,
+          "producerResidentReason": "source provenance kind is not a resident-byte proof; on-demand fixture audited separately",
+          "ortMemoryBytes": null
+        },
+        "fullHeadCountVerified": false,
+        "originalProductionPrecisionVerified": false,
+        "E8": "BLOCKED"
+      }
+    },
+    {
+      "name": "pattern K32760",
+      "passed": true,
+      "comparison": {
+        "values": 2048,
+        "failed": 0,
+        "maxAbsolute": 4.503817763179541e-09,
+        "maxRelative": 0.008246297901268301,
+        "tolerance": {
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "fixedBeforeRuntimeComparison": true
+        }
+      },
+      "inputHashes": {
+        "q": "2b4eb284a6ad65ce6b835421e5380d1306d143c3325ef453cfc606227bcc92c6",
+        "k": "195a270644eb36f350b0e795b1d8e98b32de8375ec805bd584842d8033ecd9dd",
+        "v": "3df143f3c8de673560fc032b5ff04d4ed2cbc93c17c2f2a110193036c15121a9"
+      },
+      "evidence": {
+        "schemaVersion": "works-stream-attention-evidence/0.1",
+        "scope": "EXPLICIT_Q16_ONE_HEAD_ALL_KEYS",
+        "sourceBinding": {
+          "schemaVersion": "works-postnorm-rope-qkv/0.1",
+          "bindingId": "fixture-pattern-K32760-q16d128-f32-v1",
+          "rows": 16,
+          "headDim": 128,
+          "keyCount": 32760,
+          "dtype": "float32",
+          "querySpace": "post-qk-norm-rope",
+          "keySpace": "post-qk-norm-rope",
+          "valueSpace": "projected-value",
+          "mask": "none",
+          "dropout": 0,
+          "provenance": {
+            "kind": "explicit-fixture",
+            "generator": "integer-pattern-f32-v1",
+            "mode": "pattern",
+            "productionQKVVerified": false
+          }
+        },
+        "precisionProfile": "f32-ort-score-exp-hike-recurrence-v1",
+        "queryShape": [
+          16,
+          128
+        ],
+        "outputShape": [
+          16,
+          128
+        ],
+        "keysConsumed": 32760,
+        "tiles": 512,
+        "finalKeyCount": 56,
+        "phantomKeys": 0,
+        "scale": 0.0883883461356163,
+        "maxUpdates": 19,
+        "graphSHA256": "148db88ef3ba46be33799f2586760d6aab3f5eb57379ecc821a4cd5b2d3b1f04",
+        "hikeWasmSHA256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+        "ortVersion": "1.24.3",
+        "ortSessionCreations": 1,
+        "sessionCreateMs": 235.89999999850988,
+        "hikeMemoryStart": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 5,
+          "inputCopyBytes": 106176,
+          "outputCopyBytes": 16384,
+          "rows": 16,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        },
+        "hikeMemoryEnd": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 518,
+          "inputCopyBytes": 19008704,
+          "outputCopyBytes": 24576,
+          "rows": 16,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        },
+        "elapsed": {
+          "readMs": 348.3000000938773,
+          "ortMs": 76.59999997913837,
+          "hikeMs": 689.5999999567866,
+          "totalRunMs": 1117.1000000014901
+        },
+        "productionQKVVerified": false,
+        "resources": {
+          "sourceQKVInputBytes": 33554432,
+          "hostSnapshotCopyBytes": 35716736,
+          "hikeInputCopyBytes": 18902528,
+          "hikeOutputCopyBytes": 8192,
+          "hikeArenaResetBytes": 53376,
+          "hikeTransientClearBytes": 18907136,
+          "logicalOrtInputBytes": 21000192,
+          "logicalOrtOutputBytes": 2162176,
+          "logicalMaxScoreTileElements": 1024,
+          "selectedDenseScoreBytes": 2096640,
+          "knownNamedNumericLiveBytes": 164288,
+          "knownNamedNumericPlusHikeBytes": 1278400,
+          "knownLiveScope": "conservative named numeric array spans only; excludes producer full KV backing, metadata, compiler/ORT Memory, GC-unreclaimed arrays, harness/reference and other caller buffers",
+          "producerResidentBytes": null,
+          "producerResidentReason": "source provenance kind is not a resident-byte proof; on-demand fixture audited separately",
+          "ortMemoryBytes": null
+        },
+        "fullHeadCountVerified": false,
+        "originalProductionPrecisionVerified": false,
+        "E8": "BLOCKED"
+      }
+    },
+    {
+      "name": "uniform K120 exacttail56",
+      "passed": true,
+      "comparison": {
+        "values": 2048,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "maxRelative": 0,
+        "tolerance": {
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "fixedBeforeRuntimeComparison": true
+        }
+      },
+      "denominator": {
+        "values": 16,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "maxRelative": 0,
+        "tolerance": {
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "fixedBeforeRuntimeComparison": true
+        }
+      },
+      "rowMax": {
+        "values": 16,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "maxRelative": 0,
+        "tolerance": {
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "fixedBeforeRuntimeComparison": true
+        }
+      },
+      "closedFormChecks": {
+        "zeroValues": true,
+        "normalizedUnitValues": false
+      },
+      "evidence": {
+        "schemaVersion": "works-stream-attention-evidence/0.1",
+        "scope": "EXPLICIT_Q16_ONE_HEAD_ALL_KEYS",
+        "sourceBinding": {
+          "schemaVersion": "works-postnorm-rope-qkv/0.1",
+          "bindingId": "fixture-uniform-K120-q16d128-f32-v1",
+          "rows": 16,
+          "headDim": 128,
+          "keyCount": 120,
+          "dtype": "float32",
+          "querySpace": "post-qk-norm-rope",
+          "keySpace": "post-qk-norm-rope",
+          "valueSpace": "projected-value",
+          "mask": "none",
+          "dropout": 0,
+          "provenance": {
+            "kind": "explicit-fixture",
+            "generator": "integer-pattern-f32-v1",
+            "mode": "uniform",
+            "productionQKVVerified": false
+          }
+        },
+        "precisionProfile": "f32-ort-score-exp-hike-recurrence-v1",
+        "queryShape": [
+          16,
+          128
+        ],
+        "outputShape": [
+          16,
+          128
+        ],
+        "keysConsumed": 120,
+        "tiles": 2,
+        "finalKeyCount": 56,
+        "phantomKeys": 0,
+        "scale": 0.0883883461356163,
+        "maxUpdates": 16,
+        "graphSHA256": "148db88ef3ba46be33799f2586760d6aab3f5eb57379ecc821a4cd5b2d3b1f04",
+        "hikeWasmSHA256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+        "ortVersion": "1.24.3",
+        "ortSessionCreations": 1,
+        "sessionCreateMs": 235.89999999850988,
+        "hikeMemoryStart": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 518,
+          "inputCopyBytes": 19008704,
+          "outputCopyBytes": 24576,
+          "rows": 16,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        },
+        "hikeMemoryEnd": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 521,
+          "inputCopyBytes": 19077952,
+          "outputCopyBytes": 32768,
+          "rows": 16,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        },
+        "elapsed": {
+          "readMs": 0.29999998956918716,
+          "ortMs": 0.10000000149011612,
+          "hikeMs": 2.2000000029802322,
+          "totalRunMs": 2.6999999955296516
+        },
+        "productionQKVVerified": false,
+        "resources": {
+          "sourceQKVInputBytes": 131072,
+          "hostSnapshotCopyBytes": 139136,
+          "hikeInputCopyBytes": 69248,
+          "hikeOutputCopyBytes": 8192,
+          "hikeArenaResetBytes": 53376,
+          "hikeTransientClearBytes": 73856,
+          "logicalOrtInputBytes": 77952,
+          "logicalOrtOutputBytes": 7936,
+          "logicalMaxScoreTileElements": 1024,
+          "selectedDenseScoreBytes": 7680,
+          "knownNamedNumericLiveBytes": 164288,
+          "knownNamedNumericPlusHikeBytes": 1278400,
+          "knownLiveScope": "conservative named numeric array spans only; excludes producer full KV backing, metadata, compiler/ORT Memory, GC-unreclaimed arrays, harness/reference and other caller buffers",
+          "producerResidentBytes": null,
+          "producerResidentReason": "source provenance kind is not a resident-byte proof; on-demand fixture audited separately",
+          "ortMemoryBytes": null
+        },
+        "fullHeadCountVerified": false,
+        "originalProductionPrecisionVerified": false,
+        "E8": "BLOCKED"
+      }
+    },
+    {
+      "name": "increasing-max K120 exacttail56",
+      "passed": true,
+      "comparison": {
+        "values": 2048,
+        "failed": 0,
+        "maxAbsolute": 1.341104507446289e-07,
+        "maxRelative": 1.8287209858316068e-05,
+        "tolerance": {
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "fixedBeforeRuntimeComparison": true
+        }
+      },
+      "denominator": {
+        "values": 16,
+        "failed": 0,
+        "maxAbsolute": 1.0898757842880968e-06,
+        "maxRelative": 1.7659596500564993e-07,
+        "tolerance": {
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "fixedBeforeRuntimeComparison": true
+        }
+      },
+      "rowMax": {
+        "values": 16,
+        "failed": 0,
+        "maxAbsolute": 1.6391277313232422e-07,
+        "maxRelative": 7.791854479903747e-09,
+        "tolerance": {
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "fixedBeforeRuntimeComparison": true
+        }
+      },
+      "closedFormChecks": {
+        "zeroValues": false,
+        "normalizedUnitValues": true
+      },
+      "evidence": {
+        "schemaVersion": "works-stream-attention-evidence/0.1",
+        "scope": "EXPLICIT_Q16_ONE_HEAD_ALL_KEYS",
+        "sourceBinding": {
+          "schemaVersion": "works-postnorm-rope-qkv/0.1",
+          "bindingId": "fixture-increasing-max-K120-q16d128-f32-v1",
+          "rows": 16,
+          "headDim": 128,
+          "keyCount": 120,
+          "dtype": "float32",
+          "querySpace": "post-qk-norm-rope",
+          "keySpace": "post-qk-norm-rope",
+          "valueSpace": "projected-value",
+          "mask": "none",
+          "dropout": 0,
+          "provenance": {
+            "kind": "explicit-fixture",
+            "generator": "integer-pattern-f32-v1",
+            "mode": "increasing-max",
+            "productionQKVVerified": false
+          }
+        },
+        "precisionProfile": "f32-ort-score-exp-hike-recurrence-v1",
+        "queryShape": [
+          16,
+          128
+        ],
+        "outputShape": [
+          16,
+          128
+        ],
+        "keysConsumed": 120,
+        "tiles": 2,
+        "finalKeyCount": 56,
+        "phantomKeys": 0,
+        "scale": 0.0883883461356163,
+        "maxUpdates": 32,
+        "graphSHA256": "148db88ef3ba46be33799f2586760d6aab3f5eb57379ecc821a4cd5b2d3b1f04",
+        "hikeWasmSHA256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+        "ortVersion": "1.24.3",
+        "ortSessionCreations": 1,
+        "sessionCreateMs": 235.89999999850988,
+        "hikeMemoryStart": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 524,
+          "inputCopyBytes": 19147200,
+          "outputCopyBytes": 40960,
+          "rows": 16,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        },
+        "hikeMemoryEnd": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 527,
+          "inputCopyBytes": 19216448,
+          "outputCopyBytes": 49152,
+          "rows": 16,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        },
+        "elapsed": {
+          "readMs": 1,
+          "ortMs": 0.20000000298023224,
+          "hikeMs": 2.3999999910593033,
+          "totalRunMs": 3.5999999940395355
+        },
+        "productionQKVVerified": false,
+        "resources": {
+          "sourceQKVInputBytes": 131072,
+          "hostSnapshotCopyBytes": 139136,
+          "hikeInputCopyBytes": 69248,
+          "hikeOutputCopyBytes": 8192,
+          "hikeArenaResetBytes": 53376,
+          "hikeTransientClearBytes": 73856,
+          "logicalOrtInputBytes": 77952,
+          "logicalOrtOutputBytes": 7936,
+          "logicalMaxScoreTileElements": 1024,
+          "selectedDenseScoreBytes": 7680,
+          "knownNamedNumericLiveBytes": 164288,
+          "knownNamedNumericPlusHikeBytes": 1278400,
+          "knownLiveScope": "conservative named numeric array spans only; excludes producer full KV backing, metadata, compiler/ORT Memory, GC-unreclaimed arrays, harness/reference and other caller buffers",
+          "producerResidentBytes": null,
+          "producerResidentReason": "source provenance kind is not a resident-byte proof; on-demand fixture audited separately",
+          "ortMemoryBytes": null
+        },
+        "fullHeadCountVerified": false,
+        "originalProductionPrecisionVerified": false,
+        "E8": "BLOCKED"
+      }
+    },
+    {
+      "name": "moderate-extreme K120 exacttail56",
+      "passed": true,
+      "comparison": {
+        "values": 2048,
+        "failed": 0,
+        "maxAbsolute": 2.682209014892578e-07,
+        "maxRelative": 5.089878721604751e-05,
+        "tolerance": {
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "fixedBeforeRuntimeComparison": true
+        }
+      },
+      "denominator": {
+        "values": 16,
+        "failed": 0,
+        "maxAbsolute": 9.12052944279651e-08,
+        "maxRelative": 6.89272530858209e-08,
+        "tolerance": {
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "fixedBeforeRuntimeComparison": true
+        }
+      },
+      "rowMax": {
+        "values": 16,
+        "failed": 0,
+        "maxAbsolute": 1.9073486328125e-06,
+        "maxRelative": 2.8097899488137754e-08,
+        "tolerance": {
+          "absolute": 1e-05,
+          "relative": 0.0001,
+          "fixedBeforeRuntimeComparison": true
+        }
+      },
+      "closedFormChecks": {
+        "zeroValues": false,
+        "normalizedUnitValues": false
+      },
+      "evidence": {
+        "schemaVersion": "works-stream-attention-evidence/0.1",
+        "scope": "EXPLICIT_Q16_ONE_HEAD_ALL_KEYS",
+        "sourceBinding": {
+          "schemaVersion": "works-postnorm-rope-qkv/0.1",
+          "bindingId": "fixture-moderate-extreme-K120-q16d128-f32-v1",
+          "rows": 16,
+          "headDim": 128,
+          "keyCount": 120,
+          "dtype": "float32",
+          "querySpace": "post-qk-norm-rope",
+          "keySpace": "post-qk-norm-rope",
+          "valueSpace": "projected-value",
+          "mask": "none",
+          "dropout": 0,
+          "provenance": {
+            "kind": "explicit-fixture",
+            "generator": "integer-pattern-f32-v1",
+            "mode": "moderate-extreme",
+            "productionQKVVerified": false
+          }
+        },
+        "precisionProfile": "f32-ort-score-exp-hike-recurrence-v1",
+        "queryShape": [
+          16,
+          128
+        ],
+        "outputShape": [
+          16,
+          128
+        ],
+        "keysConsumed": 120,
+        "tiles": 2,
+        "finalKeyCount": 56,
+        "phantomKeys": 0,
+        "scale": 0.0883883461356163,
+        "maxUpdates": 32,
+        "graphSHA256": "148db88ef3ba46be33799f2586760d6aab3f5eb57379ecc821a4cd5b2d3b1f04",
+        "hikeWasmSHA256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+        "ortVersion": "1.24.3",
+        "ortSessionCreations": 1,
+        "sessionCreateMs": 235.89999999850988,
+        "hikeMemoryStart": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 530,
+          "inputCopyBytes": 19285696,
+          "outputCopyBytes": 57344,
+          "rows": 16,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        },
+        "hikeMemoryEnd": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 533,
+          "inputCopyBytes": 19354944,
+          "outputCopyBytes": 65536,
+          "rows": 16,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        },
+        "elapsed": {
+          "readMs": 0.9000000059604645,
+          "ortMs": 0.20000000298023224,
+          "hikeMs": 3.0999999940395355,
+          "totalRunMs": 4.200000002980232
+        },
+        "productionQKVVerified": false,
+        "resources": {
+          "sourceQKVInputBytes": 131072,
+          "hostSnapshotCopyBytes": 139136,
+          "hikeInputCopyBytes": 69248,
+          "hikeOutputCopyBytes": 8192,
+          "hikeArenaResetBytes": 53376,
+          "hikeTransientClearBytes": 73856,
+          "logicalOrtInputBytes": 77952,
+          "logicalOrtOutputBytes": 7936,
+          "logicalMaxScoreTileElements": 1024,
+          "selectedDenseScoreBytes": 7680,
+          "knownNamedNumericLiveBytes": 164288,
+          "knownNamedNumericPlusHikeBytes": 1278400,
+          "knownLiveScope": "conservative named numeric array spans only; excludes producer full KV backing, metadata, compiler/ORT Memory, GC-unreclaimed arrays, harness/reference and other caller buffers",
+          "producerResidentBytes": null,
+          "producerResidentReason": "source provenance kind is not a resident-byte proof; on-demand fixture audited separately",
+          "ortMemoryBytes": null
+        },
+        "fullHeadCountVerified": false,
+        "originalProductionPrecisionVerified": false,
+        "E8": "BLOCKED"
+      }
+    },
+    {
+      "name": "reentrant source.describe and argument getter rejected before shared state mutation",
+      "passed": true
+    },
+    {
+      "name": "cancel/reuse/shape/finite/source count/BUSY ownership guards",
+      "passed": true
+    }
+  ],
+  "resources": {
+    "disposed": false,
+    "busy": false,
+    "ortSessionCreations": 1,
+    "hike": {
+      "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+      "memoryBytes": 1114112,
+      "arenaBytes": 53376,
+      "calls": 547,
+      "inputCopyBytes": 19705792,
+      "outputCopyBytes": 98304,
+      "rows": 16,
+      "workspaceReused": true,
+      "invalid": false,
+      "disposed": false
+    },
+    "last": {
+      "tiles": 2,
+      "keysConsumed": 120
+    }
+  }
+}

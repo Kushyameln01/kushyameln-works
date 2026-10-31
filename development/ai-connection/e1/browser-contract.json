@@ -1,0 +1,2216 @@
+{
+  "browser": "154.0.8037.57",
+  "evidenceScope": "SYNTHETIC_CONTRACT_REAL_SDK_HIKE_ORT_ONLY",
+  "privateArtifactSha256": null,
+  "realOriginalJoint": false,
+  "pageErrors": [],
+  "passed": true,
+  "results": [
+    {
+      "schemaVersion": "diffusion-e1-joint-result/1",
+      "passed": true,
+      "scope": "PARTIAL",
+      "completeAdapter": false,
+      "modelInference": false,
+      "generationReady": false,
+      "realOriginalJoint": false,
+      "evidenceScope": "synthetic-contract",
+      "peerCommit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "peerSourceHashes": {
+        "sdk-v2.mjs": "c425519eb282f798f4296bc97fd1506664afd850dee9addb17af77dd41e39fa0",
+        "planner-v2.mjs": "303340db3a6a58b288fbfbf38cb2b53605a6c7cc3f6d00903f881aa825ef92c5",
+        "loader-policy.mjs": "f18f9c8dd4168e26f25cd1c77124b1f14a2ffca99424bfa9d4a9a294cbb2dedd",
+        "planner.mjs": "a4b2be0d8b90cd339bb0a17d072db4fd572ac122e3cc51a2c97b20ac06af1d02",
+        "safetensors.mjs": "4ee3713b356ab4a85a2911d3547350146953bc250465f8ef2c88fe9f36c4e45c",
+        "kernel/host.mjs": "ee8c3c5abc6fcbf082d3557d792536024d0109f56a9aac4c959e98315a933d54",
+        "kernel/registry.mjs": "c739e9b19b1b66dcaa5b47d9d7d35528c1b8a2f6d6f1e7fd13a5dfe1837e3c64",
+        "kernel/lora.wasm": "da6d56fca5d9bc91173681c22b91cd9337f53ea067d84455b9d659ee7ee52984"
+      },
+      "selection": {
+        "pairId": "detail",
+        "noise": "low"
+      },
+      "strength": 1,
+      "sourceSha256": "e29c92a6620529e1431a305053dede9ce03ced060eb6754b7f7aef965a773a0d",
+      "base": {
+        "schemaVersion": "bernini-diagnostic-registry/0.1",
+        "scope": "PARTIAL",
+        "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+        "side": "LOW",
+        "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+        "executionProfileId": "bernini-q16x5120-f32-wasm-v1",
+        "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+        "quantizationConfig": {
+          "key": "blocks.0.self_attn.q.comfy_quant",
+          "sha256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+          "format": "float8_e4m3fn"
+        },
+        "baseVerification": {
+          "kind": "SYNTHETIC_CONTRACT_FIXTURE",
+          "fullFileSHA256Verified": false
+        },
+        "targets": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight",
+            "originalKey": "blocks.0.self_attn.q.weight",
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "shape": [
+              16,
+              5120
+            ],
+            "dtype": "F32",
+            "storageDtype": "F8_E4M3",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "binding": {
+              "kind": "runtime-input",
+              "name": "weight"
+            },
+            "transform": {
+              "kind": "row-slice",
+              "rowStart": 0,
+              "rowCount": 16,
+              "columnStart": 0,
+              "columnCount": 5120,
+              "transpose": false
+            },
+            "source": {
+              "payloadByteOffset": 2844929568,
+              "elementOffset": 0,
+              "byteWidth": 1
+            },
+            "fp8": {
+              "profileId": "scaled-e4m3fn-scalar-f32-v1",
+              "scaleKey": "blocks.0.self_attn.q.weight_scale",
+              "scaleShape": [],
+              "scaleDtype": "F32",
+              "scale": 0.0004149845917709172,
+              "scaleSHA256": "2575543940692eed901ec08a566b96b426db16691fdc5b57f51be56c51333925"
+            }
+          },
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias",
+            "originalKey": "blocks.0.self_attn.q.bias",
+            "fullShape": [
+              5120
+            ],
+            "shape": [
+              16
+            ],
+            "dtype": "F32",
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "bias"
+            },
+            "transform": {
+              "kind": "row-slice",
+              "rowStart": 0,
+              "rowCount": 16,
+              "transpose": false
+            },
+            "source": {
+              "payloadByteOffset": 52652448,
+              "elementOffset": 0,
+              "byteWidth": 2
+            },
+            "fp8": null
+          }
+        ],
+        "coverage": {
+          "kind": "PARTIAL",
+          "fullModel": false,
+          "selectedOriginalKeys": [
+            "blocks.0.self_attn.q.weight",
+            "blocks.0.self_attn.q.bias"
+          ],
+          "excluded": "all other parameters and unselected rows",
+          "selectedRowCount": 16
+        },
+        "registryHash": "1982e1013da6bee078e7ffe3489ae2d890b875977ec3dab5ff62d9b2ea95b84e"
+      },
+      "sdkPlan": {
+        "planId": "af3538e326ce0b4852bc98f1c0123ba529a7044ace23c965514ad55ea7e3c591",
+        "registryHash": "8b6081a18b3cd8c516bc4929063db3856f83ee240e63a53e8e25237bbd841010",
+        "scope": "diagnostic-projection",
+        "coverage": "PARTIAL",
+        "includedPatches": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "variant": "linear-a-b",
+            "names": [
+              "diffusion_model.blocks.0.self_attn.q.lora_A.weight",
+              "diffusion_model.blocks.0.self_attn.q.lora_B.weight"
+            ],
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "slice": {
+              "startRow": 0,
+              "rowCount": 16
+            }
+          }
+        ],
+        "excludedTargets": [],
+        "excludedRegions": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "variant": "linear-a-b",
+            "names": [
+              "diffusion_model.blocks.0.self_attn.q.lora_A.weight",
+              "diffusion_model.blocks.0.self_attn.q.lora_B.weight"
+            ],
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "slice": {
+              "startRow": 16,
+              "rowCount": 5104
+            },
+            "reason": "outside-selected-slice"
+          }
+        ]
+      },
+      "nativeRegistryHash": "1982e1013da6bee078e7ffe3489ae2d890b875977ec3dab5ff62d9b2ea95b84e",
+      "applied": {
+        "contractVersion": "lora-connection/2.0-draft.1",
+        "state": "CONSUMER_APPLIED",
+        "sdkInstanceId": "f03f1c2c-5f45-4d7f-9a6d-cdaa2b1c06e6",
+        "localInputRevision": 1,
+        "localApplicationRevision": 1,
+        "selection": {
+          "pairId": "detail",
+          "noise": "low"
+        },
+        "sourceSha256": "e29c92a6620529e1431a305053dede9ce03ced060eb6754b7f7aef965a773a0d",
+        "planId": "af3538e326ce0b4852bc98f1c0123ba529a7044ace23c965514ad55ea7e3c591",
+        "registryHash": "8b6081a18b3cd8c516bc4929063db3856f83ee240e63a53e8e25237bbd841010",
+        "bundleHash": "976169ed1750cfecf7c921fef167d50ced433067557ea4090cba6704f09f90c1",
+        "coverage": "PARTIAL",
+        "scope": "diagnostic-projection",
+        "validation": {
+          "contractVersion": "lora-connection/2.0-draft.1",
+          "valid": true,
+          "coverage": "PARTIAL",
+          "scope": "diagnostic-projection",
+          "planId": "af3538e326ce0b4852bc98f1c0123ba529a7044ace23c965514ad55ea7e3c591",
+          "registryHash": "8b6081a18b3cd8c516bc4929063db3856f83ee240e63a53e8e25237bbd841010",
+          "sourceSha256": "e29c92a6620529e1431a305053dede9ce03ced060eb6754b7f7aef965a773a0d",
+          "evidence": {
+            "nativeRegistryHash": "1982e1013da6bee078e7ffe3489ae2d890b875977ec3dab5ff62d9b2ea95b84e",
+            "validation": {
+              "schemaVersion": "bernini-diagnostic-validation/0.1",
+              "valid": true,
+              "scope": "PARTIAL",
+              "modelInference": false,
+              "candidateId": "70ef7ec6-5414-4ee9-9062-455ab14a4978",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+              "registryHash": "1982e1013da6bee078e7ffe3489ae2d890b875977ec3dab5ff62d9b2ea95b84e",
+              "side": "LOW",
+              "packageHash": "01358ba24e57e5db0a570f19a9efa96cec776e4df82c9c8510433d00183f5de8",
+              "expectedSHA256": "ca482a0fe403ffb8c3e240e2389c96076e66c3156946410a0a52ccb58886846c",
+              "tolerance": {
+                "absolute": 0,
+                "relative": 0
+              },
+              "maxAbsoluteError": 0,
+              "failedIndices": [],
+              "evidence": {
+                "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+                "inputEncoding": "F32-runtime-weight",
+                "executionProviders": [
+                  "wasm"
+                ],
+                "ortVersion": "1.24.3",
+                "numThreads": 1,
+                "proxy": false,
+                "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+                "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                "hikeMemory": {
+                  "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                  "memoryBytes": 1572864,
+                  "arenaBytes": 491648,
+                  "calls": 1,
+                  "inputCopyBytes": 128,
+                  "outputCopyBytes": 64,
+                  "workspaceReused": true,
+                  "disposed": false
+                },
+                "sessionCreateMs": 221.80000000447035,
+                "elapsed": {
+                  "ortMs": 7.199999995529652,
+                  "biasMs": 0.5,
+                  "totalRunMs": 7.699999995529652
+                },
+                "boundaryBytes": {
+                  "f32WeightInput": 327680,
+                  "xInput": 20480,
+                  "ortOutputToHike": 64,
+                  "biasInput": 64,
+                  "ownedOutput": 64
+                },
+                "OSMemoryPeak": null,
+                "OSMemoryReason": "not measured for bounded operator validation"
+              }
+            }
+          }
+        },
+        "ownership": {
+          "kind": "independent-copy",
+          "ownerId": "diffusion-partial-7513b628-4085-4a22-ba23-210b93ac1de0"
+        },
+        "snapshotPublished": false,
+        "generationReady": false
+      },
+      "activeOutput": {
+        "passed": true,
+        "elements": 16,
+        "failed": 0,
+        "maxAbsoluteError": 0,
+        "tolerance": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "observations": [
+        {
+          "phase": "patched",
+          "weight": {
+            "passed": true,
+            "elements": 81920,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "bias": {
+            "passed": true,
+            "elements": 16,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "weightSHA256": "c4eb1e82c66236d17f5993047757a57c0d3c9a2ce8597e874991e506e1a40343",
+          "biasSHA256": "9d8afae4673b043e3b55173bcce4cb2af8ec495dbc1f33d967fe6c803ac95a20",
+          "outputSHA256": "ca482a0fe403ffb8c3e240e2389c96076e66c3156946410a0a52ccb58886846c",
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 1,
+              "inputCopyBytes": 128,
+              "outputCopyBytes": 64,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 221.80000000447035,
+            "elapsed": {
+              "ortMs": 7.199999995529652,
+              "biasMs": 0.5,
+              "totalRunMs": 7.699999995529652
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        {
+          "phase": "patched",
+          "weight": {
+            "passed": true,
+            "elements": 81920,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "bias": {
+            "passed": true,
+            "elements": 16,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "weightSHA256": "c4eb1e82c66236d17f5993047757a57c0d3c9a2ce8597e874991e506e1a40343",
+          "biasSHA256": "9d8afae4673b043e3b55173bcce4cb2af8ec495dbc1f33d967fe6c803ac95a20",
+          "outputSHA256": "ca482a0fe403ffb8c3e240e2389c96076e66c3156946410a0a52ccb58886846c",
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 2,
+              "inputCopyBytes": 256,
+              "outputCopyBytes": 128,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 221.80000000447035,
+            "elapsed": {
+              "ortMs": 0.3999999985098839,
+              "biasMs": 0,
+              "totalRunMs": 0.3999999985098839
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        {
+          "phase": "base",
+          "weight": {
+            "passed": true,
+            "elements": 81920,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "bias": {
+            "passed": true,
+            "elements": 16,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "weightSHA256": "d44a5ccee18e4b9ead4d523560802dd7d2390ccc0a13f7d324c0f6eff3329ef1",
+          "biasSHA256": "9d8afae4673b043e3b55173bcce4cb2af8ec495dbc1f33d967fe6c803ac95a20",
+          "outputSHA256": "c201ca70694f1538a416b9d41609c3a4b07dc22fad758e93338aa050f1db4f49",
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 3,
+              "inputCopyBytes": 384,
+              "outputCopyBytes": 192,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 221.80000000447035,
+            "elapsed": {
+              "ortMs": 0.6000000014901161,
+              "biasMs": 0,
+              "totalRunMs": 0.6000000014901161
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        }
+      ],
+      "restoration": {
+        "scope": "PARTIAL",
+        "modelInference": false,
+        "restoredBase": true,
+        "validation": {
+          "schemaVersion": "bernini-diagnostic-validation/0.1",
+          "valid": true,
+          "scope": "PARTIAL",
+          "modelInference": false,
+          "candidateId": "7eed8264-a897-4d8a-94a8-1ec71c08abe2",
+          "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+          "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+          "registryHash": "1982e1013da6bee078e7ffe3489ae2d890b875977ec3dab5ff62d9b2ea95b84e",
+          "side": "LOW",
+          "packageHash": "2c6f562b885ac2c5c0e87a4abcf520681dd99cfd7de718fe23e722fd20b02fb9",
+          "expectedSHA256": "c201ca70694f1538a416b9d41609c3a4b07dc22fad758e93338aa050f1db4f49",
+          "tolerance": {
+            "absolute": 0,
+            "relative": 0
+          },
+          "maxAbsoluteError": 0,
+          "failedIndices": [],
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 3,
+              "inputCopyBytes": 384,
+              "outputCopyBytes": 192,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 221.80000000447035,
+            "elapsed": {
+              "ortMs": 0.6000000014901161,
+              "biasMs": 0,
+              "totalRunMs": 0.6000000014901161
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        "commit": {
+          "committed": true,
+          "scope": "PARTIAL",
+          "modelInference": false,
+          "epoch": 2,
+          "packageHash": "2c6f562b885ac2c5c0e87a4abcf520681dd99cfd7de718fe23e722fd20b02fb9"
+        }
+      }
+    },
+    {
+      "schemaVersion": "diffusion-e1-joint-result/1",
+      "passed": true,
+      "scope": "PARTIAL",
+      "completeAdapter": false,
+      "modelInference": false,
+      "generationReady": false,
+      "realOriginalJoint": false,
+      "evidenceScope": "synthetic-contract",
+      "peerCommit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "peerSourceHashes": {
+        "sdk-v2.mjs": "c425519eb282f798f4296bc97fd1506664afd850dee9addb17af77dd41e39fa0",
+        "planner-v2.mjs": "303340db3a6a58b288fbfbf38cb2b53605a6c7cc3f6d00903f881aa825ef92c5",
+        "loader-policy.mjs": "f18f9c8dd4168e26f25cd1c77124b1f14a2ffca99424bfa9d4a9a294cbb2dedd",
+        "planner.mjs": "a4b2be0d8b90cd339bb0a17d072db4fd572ac122e3cc51a2c97b20ac06af1d02",
+        "safetensors.mjs": "4ee3713b356ab4a85a2911d3547350146953bc250465f8ef2c88fe9f36c4e45c",
+        "kernel/host.mjs": "ee8c3c5abc6fcbf082d3557d792536024d0109f56a9aac4c959e98315a933d54",
+        "kernel/registry.mjs": "c739e9b19b1b66dcaa5b47d9d7d35528c1b8a2f6d6f1e7fd13a5dfe1837e3c64",
+        "kernel/lora.wasm": "da6d56fca5d9bc91173681c22b91cd9337f53ea067d84455b9d659ee7ee52984"
+      },
+      "selection": {
+        "pairId": "detail",
+        "noise": "high"
+      },
+      "strength": 1,
+      "sourceSha256": "e29c92a6620529e1431a305053dede9ce03ced060eb6754b7f7aef965a773a0d",
+      "base": {
+        "schemaVersion": "bernini-diagnostic-registry/0.1",
+        "scope": "PARTIAL",
+        "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+        "side": "HIGH",
+        "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+        "executionProfileId": "bernini-q16x5120-f32-wasm-v1",
+        "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+        "quantizationConfig": {
+          "key": "blocks.0.self_attn.q.comfy_quant",
+          "sha256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+          "format": "float8_e4m3fn"
+        },
+        "baseVerification": {
+          "kind": "SYNTHETIC_CONTRACT_FIXTURE",
+          "fullFileSHA256Verified": false
+        },
+        "targets": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight",
+            "originalKey": "blocks.0.self_attn.q.weight",
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "shape": [
+              16,
+              5120
+            ],
+            "dtype": "F32",
+            "storageDtype": "F8_E4M3",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "binding": {
+              "kind": "runtime-input",
+              "name": "weight"
+            },
+            "transform": {
+              "kind": "row-slice",
+              "rowStart": 0,
+              "rowCount": 16,
+              "columnStart": 0,
+              "columnCount": 5120,
+              "transpose": false
+            },
+            "source": {
+              "payloadByteOffset": 2844929568,
+              "elementOffset": 0,
+              "byteWidth": 1
+            },
+            "fp8": {
+              "profileId": "scaled-e4m3fn-scalar-f32-v1",
+              "scaleKey": "blocks.0.self_attn.q.weight_scale",
+              "scaleShape": [],
+              "scaleDtype": "F32",
+              "scale": 0.0004648481262847781,
+              "scaleSHA256": "e810073dda55130632879cca5c19c5227667018245177cd14f163f5d7ac7559e"
+            }
+          },
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias",
+            "originalKey": "blocks.0.self_attn.q.bias",
+            "fullShape": [
+              5120
+            ],
+            "shape": [
+              16
+            ],
+            "dtype": "F32",
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "bias"
+            },
+            "transform": {
+              "kind": "row-slice",
+              "rowStart": 0,
+              "rowCount": 16,
+              "transpose": false
+            },
+            "source": {
+              "payloadByteOffset": 52652448,
+              "elementOffset": 0,
+              "byteWidth": 2
+            },
+            "fp8": null
+          }
+        ],
+        "coverage": {
+          "kind": "PARTIAL",
+          "fullModel": false,
+          "selectedOriginalKeys": [
+            "blocks.0.self_attn.q.weight",
+            "blocks.0.self_attn.q.bias"
+          ],
+          "excluded": "all other parameters and unselected rows",
+          "selectedRowCount": 16
+        },
+        "registryHash": "2c61d0b42ab03b142574c9b54ff935a30ac80d9acecc15b0d400b2b7c548ed68"
+      },
+      "sdkPlan": {
+        "planId": "3150d9c58ee6288f5a73539c15085b6a851dba062a784ceac69abe00908b1346",
+        "registryHash": "07265a44c886fe3c6fb2d38c861c86c1bc79785e6bda543ae1c3f1e7531be096",
+        "scope": "diagnostic-projection",
+        "coverage": "PARTIAL",
+        "includedPatches": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "variant": "linear-a-b",
+            "names": [
+              "diffusion_model.blocks.0.self_attn.q.lora_A.weight",
+              "diffusion_model.blocks.0.self_attn.q.lora_B.weight"
+            ],
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "slice": {
+              "startRow": 0,
+              "rowCount": 16
+            }
+          }
+        ],
+        "excludedTargets": [],
+        "excludedRegions": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "variant": "linear-a-b",
+            "names": [
+              "diffusion_model.blocks.0.self_attn.q.lora_A.weight",
+              "diffusion_model.blocks.0.self_attn.q.lora_B.weight"
+            ],
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "slice": {
+              "startRow": 16,
+              "rowCount": 5104
+            },
+            "reason": "outside-selected-slice"
+          }
+        ]
+      },
+      "nativeRegistryHash": "2c61d0b42ab03b142574c9b54ff935a30ac80d9acecc15b0d400b2b7c548ed68",
+      "applied": {
+        "contractVersion": "lora-connection/2.0-draft.1",
+        "state": "CONSUMER_APPLIED",
+        "sdkInstanceId": "a33fea7f-3672-4b48-9854-ddb1bd9d56a8",
+        "localInputRevision": 1,
+        "localApplicationRevision": 1,
+        "selection": {
+          "pairId": "detail",
+          "noise": "high"
+        },
+        "sourceSha256": "e29c92a6620529e1431a305053dede9ce03ced060eb6754b7f7aef965a773a0d",
+        "planId": "3150d9c58ee6288f5a73539c15085b6a851dba062a784ceac69abe00908b1346",
+        "registryHash": "07265a44c886fe3c6fb2d38c861c86c1bc79785e6bda543ae1c3f1e7531be096",
+        "bundleHash": "8d372c7fc7f275422da020c28ea339f5cfc5be09aca3817274d2912f7dfc3bdd",
+        "coverage": "PARTIAL",
+        "scope": "diagnostic-projection",
+        "validation": {
+          "contractVersion": "lora-connection/2.0-draft.1",
+          "valid": true,
+          "coverage": "PARTIAL",
+          "scope": "diagnostic-projection",
+          "planId": "3150d9c58ee6288f5a73539c15085b6a851dba062a784ceac69abe00908b1346",
+          "registryHash": "07265a44c886fe3c6fb2d38c861c86c1bc79785e6bda543ae1c3f1e7531be096",
+          "sourceSha256": "e29c92a6620529e1431a305053dede9ce03ced060eb6754b7f7aef965a773a0d",
+          "evidence": {
+            "nativeRegistryHash": "2c61d0b42ab03b142574c9b54ff935a30ac80d9acecc15b0d400b2b7c548ed68",
+            "validation": {
+              "schemaVersion": "bernini-diagnostic-validation/0.1",
+              "valid": true,
+              "scope": "PARTIAL",
+              "modelInference": false,
+              "candidateId": "42c4ad3a-e0ca-42f7-8b6c-4eda9f726a69",
+              "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+              "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+              "registryHash": "2c61d0b42ab03b142574c9b54ff935a30ac80d9acecc15b0d400b2b7c548ed68",
+              "side": "HIGH",
+              "packageHash": "ceea07510eb0906528331234f0150a95bb95416b872c623eeb5f358aafbd301a",
+              "expectedSHA256": "ca482a0fe403ffb8c3e240e2389c96076e66c3156946410a0a52ccb58886846c",
+              "tolerance": {
+                "absolute": 0,
+                "relative": 0
+              },
+              "maxAbsoluteError": 0,
+              "failedIndices": [],
+              "evidence": {
+                "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+                "inputEncoding": "F32-runtime-weight",
+                "executionProviders": [
+                  "wasm"
+                ],
+                "ortVersion": "1.24.3",
+                "numThreads": 1,
+                "proxy": false,
+                "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+                "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                "hikeMemory": {
+                  "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                  "memoryBytes": 1572864,
+                  "arenaBytes": 491648,
+                  "calls": 1,
+                  "inputCopyBytes": 128,
+                  "outputCopyBytes": 64,
+                  "workspaceReused": true,
+                  "disposed": false
+                },
+                "sessionCreateMs": 0.8000000044703484,
+                "elapsed": {
+                  "ortMs": 0.6000000014901161,
+                  "biasMs": 0.19999999552965164,
+                  "totalRunMs": 0.7999999970197678
+                },
+                "boundaryBytes": {
+                  "f32WeightInput": 327680,
+                  "xInput": 20480,
+                  "ortOutputToHike": 64,
+                  "biasInput": 64,
+                  "ownedOutput": 64
+                },
+                "OSMemoryPeak": null,
+                "OSMemoryReason": "not measured for bounded operator validation"
+              }
+            }
+          }
+        },
+        "ownership": {
+          "kind": "independent-copy",
+          "ownerId": "diffusion-partial-8889fb7d-a968-4f46-bd0c-1646a351942b"
+        },
+        "snapshotPublished": false,
+        "generationReady": false
+      },
+      "activeOutput": {
+        "passed": true,
+        "elements": 16,
+        "failed": 0,
+        "maxAbsoluteError": 0,
+        "tolerance": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "observations": [
+        {
+          "phase": "patched",
+          "weight": {
+            "passed": true,
+            "elements": 81920,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "bias": {
+            "passed": true,
+            "elements": 16,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "weightSHA256": "c4eb1e82c66236d17f5993047757a57c0d3c9a2ce8597e874991e506e1a40343",
+          "biasSHA256": "9d8afae4673b043e3b55173bcce4cb2af8ec495dbc1f33d967fe6c803ac95a20",
+          "outputSHA256": "ca482a0fe403ffb8c3e240e2389c96076e66c3156946410a0a52ccb58886846c",
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 1,
+              "inputCopyBytes": 128,
+              "outputCopyBytes": 64,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 0.8000000044703484,
+            "elapsed": {
+              "ortMs": 0.6000000014901161,
+              "biasMs": 0.19999999552965164,
+              "totalRunMs": 0.7999999970197678
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        {
+          "phase": "patched",
+          "weight": {
+            "passed": true,
+            "elements": 81920,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "bias": {
+            "passed": true,
+            "elements": 16,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "weightSHA256": "c4eb1e82c66236d17f5993047757a57c0d3c9a2ce8597e874991e506e1a40343",
+          "biasSHA256": "9d8afae4673b043e3b55173bcce4cb2af8ec495dbc1f33d967fe6c803ac95a20",
+          "outputSHA256": "ca482a0fe403ffb8c3e240e2389c96076e66c3156946410a0a52ccb58886846c",
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 2,
+              "inputCopyBytes": 256,
+              "outputCopyBytes": 128,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 0.8000000044703484,
+            "elapsed": {
+              "ortMs": 0.19999999552965164,
+              "biasMs": 0.10000000149011612,
+              "totalRunMs": 0.29999999701976776
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        {
+          "phase": "base",
+          "weight": {
+            "passed": true,
+            "elements": 81920,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "bias": {
+            "passed": true,
+            "elements": 16,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "weightSHA256": "d44a5ccee18e4b9ead4d523560802dd7d2390ccc0a13f7d324c0f6eff3329ef1",
+          "biasSHA256": "9d8afae4673b043e3b55173bcce4cb2af8ec495dbc1f33d967fe6c803ac95a20",
+          "outputSHA256": "c201ca70694f1538a416b9d41609c3a4b07dc22fad758e93338aa050f1db4f49",
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 3,
+              "inputCopyBytes": 384,
+              "outputCopyBytes": 192,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 0.8000000044703484,
+            "elapsed": {
+              "ortMs": 0.6000000014901161,
+              "biasMs": 0.20000000298023224,
+              "totalRunMs": 0.8000000044703484
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        }
+      ],
+      "restoration": {
+        "scope": "PARTIAL",
+        "modelInference": false,
+        "restoredBase": true,
+        "validation": {
+          "schemaVersion": "bernini-diagnostic-validation/0.1",
+          "valid": true,
+          "scope": "PARTIAL",
+          "modelInference": false,
+          "candidateId": "4a8a3ab9-9b7e-4a35-9c42-4232916e8387",
+          "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+          "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+          "registryHash": "2c61d0b42ab03b142574c9b54ff935a30ac80d9acecc15b0d400b2b7c548ed68",
+          "side": "HIGH",
+          "packageHash": "40d201bc95ddfae7c99fe732fce2d986a59f36685e0d9f75154dba596d46ee9b",
+          "expectedSHA256": "c201ca70694f1538a416b9d41609c3a4b07dc22fad758e93338aa050f1db4f49",
+          "tolerance": {
+            "absolute": 0,
+            "relative": 0
+          },
+          "maxAbsoluteError": 0,
+          "failedIndices": [],
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 3,
+              "inputCopyBytes": 384,
+              "outputCopyBytes": 192,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 0.8000000044703484,
+            "elapsed": {
+              "ortMs": 0.6000000014901161,
+              "biasMs": 0.20000000298023224,
+              "totalRunMs": 0.8000000044703484
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        "commit": {
+          "committed": true,
+          "scope": "PARTIAL",
+          "modelInference": false,
+          "epoch": 2,
+          "packageHash": "40d201bc95ddfae7c99fe732fce2d986a59f36685e0d9f75154dba596d46ee9b"
+        }
+      }
+    },
+    {
+      "schemaVersion": "diffusion-e1-joint-result/1",
+      "passed": true,
+      "scope": "PARTIAL",
+      "completeAdapter": false,
+      "modelInference": false,
+      "generationReady": false,
+      "realOriginalJoint": false,
+      "evidenceScope": "synthetic-contract",
+      "peerCommit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "peerSourceHashes": {
+        "sdk-v2.mjs": "c425519eb282f798f4296bc97fd1506664afd850dee9addb17af77dd41e39fa0",
+        "planner-v2.mjs": "303340db3a6a58b288fbfbf38cb2b53605a6c7cc3f6d00903f881aa825ef92c5",
+        "loader-policy.mjs": "f18f9c8dd4168e26f25cd1c77124b1f14a2ffca99424bfa9d4a9a294cbb2dedd",
+        "planner.mjs": "a4b2be0d8b90cd339bb0a17d072db4fd572ac122e3cc51a2c97b20ac06af1d02",
+        "safetensors.mjs": "4ee3713b356ab4a85a2911d3547350146953bc250465f8ef2c88fe9f36c4e45c",
+        "kernel/host.mjs": "ee8c3c5abc6fcbf082d3557d792536024d0109f56a9aac4c959e98315a933d54",
+        "kernel/registry.mjs": "c739e9b19b1b66dcaa5b47d9d7d35528c1b8a2f6d6f1e7fd13a5dfe1837e3c64",
+        "kernel/lora.wasm": "da6d56fca5d9bc91173681c22b91cd9337f53ea067d84455b9d659ee7ee52984"
+      },
+      "selection": {
+        "pairId": "light",
+        "noise": "low"
+      },
+      "strength": 1,
+      "sourceSha256": "9f6c6fbbefbf05c0fcbb49bead4c90a8b00ec1333a0ee65d67fc7f9743ec5ab9",
+      "base": {
+        "schemaVersion": "bernini-diagnostic-registry/0.1",
+        "scope": "PARTIAL",
+        "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+        "side": "LOW",
+        "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+        "executionProfileId": "bernini-q16x5120-f32-wasm-v1",
+        "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+        "quantizationConfig": {
+          "key": "blocks.0.self_attn.q.comfy_quant",
+          "sha256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+          "format": "float8_e4m3fn"
+        },
+        "baseVerification": {
+          "kind": "SYNTHETIC_CONTRACT_FIXTURE",
+          "fullFileSHA256Verified": false
+        },
+        "targets": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight",
+            "originalKey": "blocks.0.self_attn.q.weight",
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "shape": [
+              16,
+              5120
+            ],
+            "dtype": "F32",
+            "storageDtype": "F8_E4M3",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "binding": {
+              "kind": "runtime-input",
+              "name": "weight"
+            },
+            "transform": {
+              "kind": "row-slice",
+              "rowStart": 0,
+              "rowCount": 16,
+              "columnStart": 0,
+              "columnCount": 5120,
+              "transpose": false
+            },
+            "source": {
+              "payloadByteOffset": 2844929568,
+              "elementOffset": 0,
+              "byteWidth": 1
+            },
+            "fp8": {
+              "profileId": "scaled-e4m3fn-scalar-f32-v1",
+              "scaleKey": "blocks.0.self_attn.q.weight_scale",
+              "scaleShape": [],
+              "scaleDtype": "F32",
+              "scale": 0.0004149845917709172,
+              "scaleSHA256": "2575543940692eed901ec08a566b96b426db16691fdc5b57f51be56c51333925"
+            }
+          },
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias",
+            "originalKey": "blocks.0.self_attn.q.bias",
+            "fullShape": [
+              5120
+            ],
+            "shape": [
+              16
+            ],
+            "dtype": "F32",
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "bias"
+            },
+            "transform": {
+              "kind": "row-slice",
+              "rowStart": 0,
+              "rowCount": 16,
+              "transpose": false
+            },
+            "source": {
+              "payloadByteOffset": 52652448,
+              "elementOffset": 0,
+              "byteWidth": 2
+            },
+            "fp8": null
+          }
+        ],
+        "coverage": {
+          "kind": "PARTIAL",
+          "fullModel": false,
+          "selectedOriginalKeys": [
+            "blocks.0.self_attn.q.weight",
+            "blocks.0.self_attn.q.bias"
+          ],
+          "excluded": "all other parameters and unselected rows",
+          "selectedRowCount": 16
+        },
+        "registryHash": "1982e1013da6bee078e7ffe3489ae2d890b875977ec3dab5ff62d9b2ea95b84e"
+      },
+      "sdkPlan": {
+        "planId": "87422766deef7d9a015593ed43264bf0129faa56cefedfe9e0f8aee5e40a34c6",
+        "registryHash": "8b6081a18b3cd8c516bc4929063db3856f83ee240e63a53e8e25237bbd841010",
+        "scope": "diagnostic-projection",
+        "coverage": "PARTIAL",
+        "includedPatches": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "variant": "linear-down-up",
+            "names": [
+              "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+              "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+              "diffusion_model.blocks.0.self_attn.q.alpha"
+            ],
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "slice": {
+              "startRow": 0,
+              "rowCount": 16
+            }
+          },
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "variant": "additive-diff-b",
+            "names": [
+              "diffusion_model.blocks.0.self_attn.q.diff_b"
+            ],
+            "fullShape": [
+              5120
+            ],
+            "slice": {
+              "startRow": 0,
+              "rowCount": 16
+            }
+          }
+        ],
+        "excludedTargets": [],
+        "excludedRegions": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "variant": "linear-down-up",
+            "names": [
+              "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+              "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+              "diffusion_model.blocks.0.self_attn.q.alpha"
+            ],
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "slice": {
+              "startRow": 16,
+              "rowCount": 5104
+            },
+            "reason": "outside-selected-slice"
+          },
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "variant": "additive-diff-b",
+            "names": [
+              "diffusion_model.blocks.0.self_attn.q.diff_b"
+            ],
+            "fullShape": [
+              5120
+            ],
+            "slice": {
+              "startRow": 16,
+              "rowCount": 5104
+            },
+            "reason": "outside-selected-slice"
+          }
+        ]
+      },
+      "nativeRegistryHash": "1982e1013da6bee078e7ffe3489ae2d890b875977ec3dab5ff62d9b2ea95b84e",
+      "applied": {
+        "contractVersion": "lora-connection/2.0-draft.1",
+        "state": "CONSUMER_APPLIED",
+        "sdkInstanceId": "1e361219-35ab-404b-9ca2-be24a0ed72b4",
+        "localInputRevision": 1,
+        "localApplicationRevision": 1,
+        "selection": {
+          "pairId": "light",
+          "noise": "low"
+        },
+        "sourceSha256": "9f6c6fbbefbf05c0fcbb49bead4c90a8b00ec1333a0ee65d67fc7f9743ec5ab9",
+        "planId": "87422766deef7d9a015593ed43264bf0129faa56cefedfe9e0f8aee5e40a34c6",
+        "registryHash": "8b6081a18b3cd8c516bc4929063db3856f83ee240e63a53e8e25237bbd841010",
+        "bundleHash": "8e67b712d6cf239779e7419aefb68d51db4a7349bd4aaa17700fb36dc30fee0a",
+        "coverage": "PARTIAL",
+        "scope": "diagnostic-projection",
+        "validation": {
+          "contractVersion": "lora-connection/2.0-draft.1",
+          "valid": true,
+          "coverage": "PARTIAL",
+          "scope": "diagnostic-projection",
+          "planId": "87422766deef7d9a015593ed43264bf0129faa56cefedfe9e0f8aee5e40a34c6",
+          "registryHash": "8b6081a18b3cd8c516bc4929063db3856f83ee240e63a53e8e25237bbd841010",
+          "sourceSha256": "9f6c6fbbefbf05c0fcbb49bead4c90a8b00ec1333a0ee65d67fc7f9743ec5ab9",
+          "evidence": {
+            "nativeRegistryHash": "1982e1013da6bee078e7ffe3489ae2d890b875977ec3dab5ff62d9b2ea95b84e",
+            "validation": {
+              "schemaVersion": "bernini-diagnostic-validation/0.1",
+              "valid": true,
+              "scope": "PARTIAL",
+              "modelInference": false,
+              "candidateId": "702c4cfe-2f38-4680-87f3-fea07ec0d1c3",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+              "registryHash": "1982e1013da6bee078e7ffe3489ae2d890b875977ec3dab5ff62d9b2ea95b84e",
+              "side": "LOW",
+              "packageHash": "3cf329035f0a3d380aa78172019fd37ff90d57e2363c8b4b686152fc8e3c032c",
+              "expectedSHA256": "b23bbd20d3f670de6294f190be139a3997e35ee3d5206a68781a870ecc5d6762",
+              "tolerance": {
+                "absolute": 0,
+                "relative": 0
+              },
+              "maxAbsoluteError": 0,
+              "failedIndices": [],
+              "evidence": {
+                "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+                "inputEncoding": "F32-runtime-weight",
+                "executionProviders": [
+                  "wasm"
+                ],
+                "ortVersion": "1.24.3",
+                "numThreads": 1,
+                "proxy": false,
+                "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+                "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                "hikeMemory": {
+                  "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                  "memoryBytes": 1572864,
+                  "arenaBytes": 491648,
+                  "calls": 1,
+                  "inputCopyBytes": 128,
+                  "outputCopyBytes": 64,
+                  "workspaceReused": true,
+                  "disposed": false
+                },
+                "sessionCreateMs": 1.1999999955296516,
+                "elapsed": {
+                  "ortMs": 0.19999999552965164,
+                  "biasMs": 0.3999999985098839,
+                  "totalRunMs": 0.5999999940395355
+                },
+                "boundaryBytes": {
+                  "f32WeightInput": 327680,
+                  "xInput": 20480,
+                  "ortOutputToHike": 64,
+                  "biasInput": 64,
+                  "ownedOutput": 64
+                },
+                "OSMemoryPeak": null,
+                "OSMemoryReason": "not measured for bounded operator validation"
+              }
+            }
+          }
+        },
+        "ownership": {
+          "kind": "independent-copy",
+          "ownerId": "diffusion-partial-981ab77d-f052-4351-82ca-98f5d77ae956"
+        },
+        "snapshotPublished": false,
+        "generationReady": false
+      },
+      "activeOutput": {
+        "passed": true,
+        "elements": 16,
+        "failed": 0,
+        "maxAbsoluteError": 0,
+        "tolerance": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "observations": [
+        {
+          "phase": "patched",
+          "weight": {
+            "passed": true,
+            "elements": 81920,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "bias": {
+            "passed": true,
+            "elements": 16,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "weightSHA256": "c4eb1e82c66236d17f5993047757a57c0d3c9a2ce8597e874991e506e1a40343",
+          "biasSHA256": "0833d44b16654224252864e2a97b77d8df044ff5e35c3c1e11c140a8d22cd3ce",
+          "outputSHA256": "b23bbd20d3f670de6294f190be139a3997e35ee3d5206a68781a870ecc5d6762",
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 1,
+              "inputCopyBytes": 128,
+              "outputCopyBytes": 64,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 1.1999999955296516,
+            "elapsed": {
+              "ortMs": 0.19999999552965164,
+              "biasMs": 0.3999999985098839,
+              "totalRunMs": 0.5999999940395355
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        {
+          "phase": "patched",
+          "weight": {
+            "passed": true,
+            "elements": 81920,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "bias": {
+            "passed": true,
+            "elements": 16,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "weightSHA256": "c4eb1e82c66236d17f5993047757a57c0d3c9a2ce8597e874991e506e1a40343",
+          "biasSHA256": "0833d44b16654224252864e2a97b77d8df044ff5e35c3c1e11c140a8d22cd3ce",
+          "outputSHA256": "b23bbd20d3f670de6294f190be139a3997e35ee3d5206a68781a870ecc5d6762",
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 2,
+              "inputCopyBytes": 256,
+              "outputCopyBytes": 128,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 1.1999999955296516,
+            "elapsed": {
+              "ortMs": 0.09999999403953552,
+              "biasMs": 0.10000000149011612,
+              "totalRunMs": 0.19999999552965164
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        {
+          "phase": "base",
+          "weight": {
+            "passed": true,
+            "elements": 81920,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "bias": {
+            "passed": true,
+            "elements": 16,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "weightSHA256": "d44a5ccee18e4b9ead4d523560802dd7d2390ccc0a13f7d324c0f6eff3329ef1",
+          "biasSHA256": "9d8afae4673b043e3b55173bcce4cb2af8ec495dbc1f33d967fe6c803ac95a20",
+          "outputSHA256": "c201ca70694f1538a416b9d41609c3a4b07dc22fad758e93338aa050f1db4f49",
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 3,
+              "inputCopyBytes": 384,
+              "outputCopyBytes": 192,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 1.1999999955296516,
+            "elapsed": {
+              "ortMs": 0.3999999985098839,
+              "biasMs": 0,
+              "totalRunMs": 0.3999999985098839
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        }
+      ],
+      "restoration": {
+        "scope": "PARTIAL",
+        "modelInference": false,
+        "restoredBase": true,
+        "validation": {
+          "schemaVersion": "bernini-diagnostic-validation/0.1",
+          "valid": true,
+          "scope": "PARTIAL",
+          "modelInference": false,
+          "candidateId": "ae22029b-1aee-4d0c-95fb-dbd839829cc9",
+          "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+          "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+          "registryHash": "1982e1013da6bee078e7ffe3489ae2d890b875977ec3dab5ff62d9b2ea95b84e",
+          "side": "LOW",
+          "packageHash": "2c6f562b885ac2c5c0e87a4abcf520681dd99cfd7de718fe23e722fd20b02fb9",
+          "expectedSHA256": "c201ca70694f1538a416b9d41609c3a4b07dc22fad758e93338aa050f1db4f49",
+          "tolerance": {
+            "absolute": 0,
+            "relative": 0
+          },
+          "maxAbsoluteError": 0,
+          "failedIndices": [],
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 3,
+              "inputCopyBytes": 384,
+              "outputCopyBytes": 192,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 1.1999999955296516,
+            "elapsed": {
+              "ortMs": 0.3999999985098839,
+              "biasMs": 0,
+              "totalRunMs": 0.3999999985098839
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        "commit": {
+          "committed": true,
+          "scope": "PARTIAL",
+          "modelInference": false,
+          "epoch": 2,
+          "packageHash": "2c6f562b885ac2c5c0e87a4abcf520681dd99cfd7de718fe23e722fd20b02fb9"
+        }
+      }
+    },
+    {
+      "schemaVersion": "diffusion-e1-joint-result/1",
+      "passed": true,
+      "scope": "PARTIAL",
+      "completeAdapter": false,
+      "modelInference": false,
+      "generationReady": false,
+      "realOriginalJoint": false,
+      "evidenceScope": "synthetic-contract",
+      "peerCommit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+      "peerSourceHashes": {
+        "sdk-v2.mjs": "c425519eb282f798f4296bc97fd1506664afd850dee9addb17af77dd41e39fa0",
+        "planner-v2.mjs": "303340db3a6a58b288fbfbf38cb2b53605a6c7cc3f6d00903f881aa825ef92c5",
+        "loader-policy.mjs": "f18f9c8dd4168e26f25cd1c77124b1f14a2ffca99424bfa9d4a9a294cbb2dedd",
+        "planner.mjs": "a4b2be0d8b90cd339bb0a17d072db4fd572ac122e3cc51a2c97b20ac06af1d02",
+        "safetensors.mjs": "4ee3713b356ab4a85a2911d3547350146953bc250465f8ef2c88fe9f36c4e45c",
+        "kernel/host.mjs": "ee8c3c5abc6fcbf082d3557d792536024d0109f56a9aac4c959e98315a933d54",
+        "kernel/registry.mjs": "c739e9b19b1b66dcaa5b47d9d7d35528c1b8a2f6d6f1e7fd13a5dfe1837e3c64",
+        "kernel/lora.wasm": "da6d56fca5d9bc91173681c22b91cd9337f53ea067d84455b9d659ee7ee52984"
+      },
+      "selection": {
+        "pairId": "light",
+        "noise": "high"
+      },
+      "strength": 1,
+      "sourceSha256": "9f6c6fbbefbf05c0fcbb49bead4c90a8b00ec1333a0ee65d67fc7f9743ec5ab9",
+      "base": {
+        "schemaVersion": "bernini-diagnostic-registry/0.1",
+        "scope": "PARTIAL",
+        "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+        "side": "HIGH",
+        "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+        "executionProfileId": "bernini-q16x5120-f32-wasm-v1",
+        "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+        "quantizationConfig": {
+          "key": "blocks.0.self_attn.q.comfy_quant",
+          "sha256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+          "format": "float8_e4m3fn"
+        },
+        "baseVerification": {
+          "kind": "SYNTHETIC_CONTRACT_FIXTURE",
+          "fullFileSHA256Verified": false
+        },
+        "targets": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "q.weight",
+            "originalKey": "blocks.0.self_attn.q.weight",
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "shape": [
+              16,
+              5120
+            ],
+            "dtype": "F32",
+            "storageDtype": "F8_E4M3",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "binding": {
+              "kind": "runtime-input",
+              "name": "weight"
+            },
+            "transform": {
+              "kind": "row-slice",
+              "rowStart": 0,
+              "rowCount": 16,
+              "columnStart": 0,
+              "columnCount": 5120,
+              "transpose": false
+            },
+            "source": {
+              "payloadByteOffset": 2844929568,
+              "elementOffset": 0,
+              "byteWidth": 1
+            },
+            "fp8": {
+              "profileId": "scaled-e4m3fn-scalar-f32-v1",
+              "scaleKey": "blocks.0.self_attn.q.weight_scale",
+              "scaleShape": [],
+              "scaleDtype": "F32",
+              "scale": 0.0004648481262847781,
+              "scaleSHA256": "e810073dda55130632879cca5c19c5227667018245177cd14f163f5d7ac7559e"
+            }
+          },
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "q.bias",
+            "originalKey": "blocks.0.self_attn.q.bias",
+            "fullShape": [
+              5120
+            ],
+            "shape": [
+              16
+            ],
+            "dtype": "F32",
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "bias"
+            },
+            "transform": {
+              "kind": "row-slice",
+              "rowStart": 0,
+              "rowCount": 16,
+              "transpose": false
+            },
+            "source": {
+              "payloadByteOffset": 52652448,
+              "elementOffset": 0,
+              "byteWidth": 2
+            },
+            "fp8": null
+          }
+        ],
+        "coverage": {
+          "kind": "PARTIAL",
+          "fullModel": false,
+          "selectedOriginalKeys": [
+            "blocks.0.self_attn.q.weight",
+            "blocks.0.self_attn.q.bias"
+          ],
+          "excluded": "all other parameters and unselected rows",
+          "selectedRowCount": 16
+        },
+        "registryHash": "2c61d0b42ab03b142574c9b54ff935a30ac80d9acecc15b0d400b2b7c548ed68"
+      },
+      "sdkPlan": {
+        "planId": "2ace26a5f6d9cf6574e0238ea86dba1e4b1f4e02271c3c0659545b363c177efc",
+        "registryHash": "07265a44c886fe3c6fb2d38c861c86c1bc79785e6bda543ae1c3f1e7531be096",
+        "scope": "diagnostic-projection",
+        "coverage": "PARTIAL",
+        "includedPatches": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "variant": "linear-down-up",
+            "names": [
+              "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+              "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+              "diffusion_model.blocks.0.self_attn.q.alpha"
+            ],
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "slice": {
+              "startRow": 0,
+              "rowCount": 16
+            }
+          },
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "variant": "additive-diff-b",
+            "names": [
+              "diffusion_model.blocks.0.self_attn.q.diff_b"
+            ],
+            "fullShape": [
+              5120
+            ],
+            "slice": {
+              "startRow": 0,
+              "rowCount": 16
+            }
+          }
+        ],
+        "excludedTargets": [],
+        "excludedRegions": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "variant": "linear-down-up",
+            "names": [
+              "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+              "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+              "diffusion_model.blocks.0.self_attn.q.alpha"
+            ],
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "slice": {
+              "startRow": 16,
+              "rowCount": 5104
+            },
+            "reason": "outside-selected-slice"
+          },
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "variant": "additive-diff-b",
+            "names": [
+              "diffusion_model.blocks.0.self_attn.q.diff_b"
+            ],
+            "fullShape": [
+              5120
+            ],
+            "slice": {
+              "startRow": 16,
+              "rowCount": 5104
+            },
+            "reason": "outside-selected-slice"
+          }
+        ]
+      },
+      "nativeRegistryHash": "2c61d0b42ab03b142574c9b54ff935a30ac80d9acecc15b0d400b2b7c548ed68",
+      "applied": {
+        "contractVersion": "lora-connection/2.0-draft.1",
+        "state": "CONSUMER_APPLIED",
+        "sdkInstanceId": "516106a2-8082-447a-85da-f9b8d40529a2",
+        "localInputRevision": 1,
+        "localApplicationRevision": 1,
+        "selection": {
+          "pairId": "light",
+          "noise": "high"
+        },
+        "sourceSha256": "9f6c6fbbefbf05c0fcbb49bead4c90a8b00ec1333a0ee65d67fc7f9743ec5ab9",
+        "planId": "2ace26a5f6d9cf6574e0238ea86dba1e4b1f4e02271c3c0659545b363c177efc",
+        "registryHash": "07265a44c886fe3c6fb2d38c861c86c1bc79785e6bda543ae1c3f1e7531be096",
+        "bundleHash": "34bcb74d7a9ff8b842fc14eca8bf5b6b7a771320fc39f4f724666db25df1aa8d",
+        "coverage": "PARTIAL",
+        "scope": "diagnostic-projection",
+        "validation": {
+          "contractVersion": "lora-connection/2.0-draft.1",
+          "valid": true,
+          "coverage": "PARTIAL",
+          "scope": "diagnostic-projection",
+          "planId": "2ace26a5f6d9cf6574e0238ea86dba1e4b1f4e02271c3c0659545b363c177efc",
+          "registryHash": "07265a44c886fe3c6fb2d38c861c86c1bc79785e6bda543ae1c3f1e7531be096",
+          "sourceSha256": "9f6c6fbbefbf05c0fcbb49bead4c90a8b00ec1333a0ee65d67fc7f9743ec5ab9",
+          "evidence": {
+            "nativeRegistryHash": "2c61d0b42ab03b142574c9b54ff935a30ac80d9acecc15b0d400b2b7c548ed68",
+            "validation": {
+              "schemaVersion": "bernini-diagnostic-validation/0.1",
+              "valid": true,
+              "scope": "PARTIAL",
+              "modelInference": false,
+              "candidateId": "97bb93d6-9fca-41de-911f-a159f1f796fa",
+              "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+              "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+              "registryHash": "2c61d0b42ab03b142574c9b54ff935a30ac80d9acecc15b0d400b2b7c548ed68",
+              "side": "HIGH",
+              "packageHash": "1d7bc8dcda9f916fc617574e40e92a1d954aa4122ffd6703cc4fb218c59b23ae",
+              "expectedSHA256": "b23bbd20d3f670de6294f190be139a3997e35ee3d5206a68781a870ecc5d6762",
+              "tolerance": {
+                "absolute": 0,
+                "relative": 0
+              },
+              "maxAbsoluteError": 0,
+              "failedIndices": [],
+              "evidence": {
+                "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+                "inputEncoding": "F32-runtime-weight",
+                "executionProviders": [
+                  "wasm"
+                ],
+                "ortVersion": "1.24.3",
+                "numThreads": 1,
+                "proxy": false,
+                "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+                "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                "hikeMemory": {
+                  "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                  "memoryBytes": 1572864,
+                  "arenaBytes": 491648,
+                  "calls": 1,
+                  "inputCopyBytes": 128,
+                  "outputCopyBytes": 64,
+                  "workspaceReused": true,
+                  "disposed": false
+                },
+                "sessionCreateMs": 1.1999999955296516,
+                "elapsed": {
+                  "ortMs": 0.5,
+                  "biasMs": 0.29999999701976776,
+                  "totalRunMs": 0.7999999970197678
+                },
+                "boundaryBytes": {
+                  "f32WeightInput": 327680,
+                  "xInput": 20480,
+                  "ortOutputToHike": 64,
+                  "biasInput": 64,
+                  "ownedOutput": 64
+                },
+                "OSMemoryPeak": null,
+                "OSMemoryReason": "not measured for bounded operator validation"
+              }
+            }
+          }
+        },
+        "ownership": {
+          "kind": "independent-copy",
+          "ownerId": "diffusion-partial-a9c54cf8-d915-46b9-a379-96365755c84e"
+        },
+        "snapshotPublished": false,
+        "generationReady": false
+      },
+      "activeOutput": {
+        "passed": true,
+        "elements": 16,
+        "failed": 0,
+        "maxAbsoluteError": 0,
+        "tolerance": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "observations": [
+        {
+          "phase": "patched",
+          "weight": {
+            "passed": true,
+            "elements": 81920,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "bias": {
+            "passed": true,
+            "elements": 16,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "weightSHA256": "c4eb1e82c66236d17f5993047757a57c0d3c9a2ce8597e874991e506e1a40343",
+          "biasSHA256": "0833d44b16654224252864e2a97b77d8df044ff5e35c3c1e11c140a8d22cd3ce",
+          "outputSHA256": "b23bbd20d3f670de6294f190be139a3997e35ee3d5206a68781a870ecc5d6762",
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 1,
+              "inputCopyBytes": 128,
+              "outputCopyBytes": 64,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 1.1999999955296516,
+            "elapsed": {
+              "ortMs": 0.5,
+              "biasMs": 0.29999999701976776,
+              "totalRunMs": 0.7999999970197678
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        {
+          "phase": "patched",
+          "weight": {
+            "passed": true,
+            "elements": 81920,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "bias": {
+            "passed": true,
+            "elements": 16,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "weightSHA256": "c4eb1e82c66236d17f5993047757a57c0d3c9a2ce8597e874991e506e1a40343",
+          "biasSHA256": "0833d44b16654224252864e2a97b77d8df044ff5e35c3c1e11c140a8d22cd3ce",
+          "outputSHA256": "b23bbd20d3f670de6294f190be139a3997e35ee3d5206a68781a870ecc5d6762",
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 2,
+              "inputCopyBytes": 256,
+              "outputCopyBytes": 128,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 1.1999999955296516,
+            "elapsed": {
+              "ortMs": 0.19999999552965164,
+              "biasMs": 0.10000000149011612,
+              "totalRunMs": 0.29999999701976776
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        {
+          "phase": "base",
+          "weight": {
+            "passed": true,
+            "elements": 81920,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "bias": {
+            "passed": true,
+            "elements": 16,
+            "failed": 0,
+            "maxAbsoluteError": 0,
+            "tolerance": {
+              "absolute": 0,
+              "relative": 0
+            }
+          },
+          "weightSHA256": "d44a5ccee18e4b9ead4d523560802dd7d2390ccc0a13f7d324c0f6eff3329ef1",
+          "biasSHA256": "9d8afae4673b043e3b55173bcce4cb2af8ec495dbc1f33d967fe6c803ac95a20",
+          "outputSHA256": "c201ca70694f1538a416b9d41609c3a4b07dc22fad758e93338aa050f1db4f49",
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 3,
+              "inputCopyBytes": 384,
+              "outputCopyBytes": 192,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 1.1999999955296516,
+            "elapsed": {
+              "ortMs": 0.20000000298023224,
+              "biasMs": 0,
+              "totalRunMs": 0.20000000298023224
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        }
+      ],
+      "restoration": {
+        "scope": "PARTIAL",
+        "modelInference": false,
+        "restoredBase": true,
+        "validation": {
+          "schemaVersion": "bernini-diagnostic-validation/0.1",
+          "valid": true,
+          "scope": "PARTIAL",
+          "modelInference": false,
+          "candidateId": "d679af98-0641-4236-93b1-cd9cf29d9f4d",
+          "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+          "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+          "registryHash": "2c61d0b42ab03b142574c9b54ff935a30ac80d9acecc15b0d400b2b7c548ed68",
+          "side": "HIGH",
+          "packageHash": "40d201bc95ddfae7c99fe732fce2d986a59f36685e0d9f75154dba596d46ee9b",
+          "expectedSHA256": "c201ca70694f1538a416b9d41609c3a4b07dc22fad758e93338aa050f1db4f49",
+          "tolerance": {
+            "absolute": 0,
+            "relative": 0
+          },
+          "maxAbsoluteError": 0,
+          "failedIndices": [],
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 3,
+              "inputCopyBytes": 384,
+              "outputCopyBytes": 192,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 1.1999999955296516,
+            "elapsed": {
+              "ortMs": 0.20000000298023224,
+              "biasMs": 0,
+              "totalRunMs": 0.20000000298023224
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        "commit": {
+          "committed": true,
+          "scope": "PARTIAL",
+          "modelInference": false,
+          "epoch": 2,
+          "packageHash": "40d201bc95ddfae7c99fe732fce2d986a59f36685e0d9f75154dba596d46ee9b"
+        }
+      }
+    }
+  ]
+}

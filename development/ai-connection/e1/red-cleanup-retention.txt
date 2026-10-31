@@ -1,0 +1,47 @@
+✔ actual SDK/Hike detail connects dual registry/full offset and native bias pass-through (34.943526ms)
+✔ actual SDK/Hike light applies explicit bias patch without pass-through replacement (23.325007ms)
+✔ actual SDK/Hike explicit detail strength 0 (14.180938ms)
+✔ actual SDK/Hike explicit detail strength -1 (16.45242ms)
+✔ wrong independent output rejects, rollback frees candidate, no active feed (14.014418ms)
+✔ reference metadata/bytes are captured before async constructor hashing (16.588224ms)
+✔ sink rejects wrong binding/checksum/duplicates/missing coverage and clears abort (21.018211ms)
+✔ full/outside-range/foreign source identities are refused before native work (16.346547ms)
+✔ cancel during bounded stage settles and permits explicit immutable base restore (19.419891ms)
+✔ base restore and repeated prepare rebuild from original, never accumulate (29.183335ms)
+✔ v1 initializer bridge rejects actual runtime input registry (6.545257ms)
+✔ cancel after native commit restores own previous feed despite SDK abort currentness (18.203494ms)
+✔ old candidate rollback cannot overwrite a later committed feed (27.193974ms)
+✔ actual SDK recover retains rollback ownership until retry succeeds (15.343404ms)
+✔ actual SDK recover() retries failed sink abort before allowing next plan (18.786838ms)
+✔ unreleased rollback histories have a bounded budget (54.62918ms)
+✔ standalone consumer run rejects results after external application changes (11.860711ms)
+✖ allocation-race rollback failure retains original error and retries cleanup before reuse (18.260559ms)
+✔ current flip after native package hashing releases owned package and permits a fresh transaction (32.548632ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 18
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 430.339192
+
+✖ failing tests:
+
+test at docs/shared/diffusion-models/lora/test-v2-adapter.mjs:55:1
+✖ allocation-race rollback failure retains original error and retries cleanup before reuse (18.260559ms)
+  AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+
+  Caught error:
+
+  Error: Cannot roll back while diagnostic projection is running
+      at async TestContext.<anonymous> (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/lora/test-v2-adapter.mjs:55:744)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Error],
+    expected: [Function (anonymous)],
+    operator: 'rejects',
+    diff: 'simple'
+  }

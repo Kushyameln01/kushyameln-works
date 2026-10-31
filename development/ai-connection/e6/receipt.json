@@ -1,0 +1,64 @@
+{
+  "task": "E6",
+  "scope": "strict F1/legacy mean math and pinned G1C codec; not wholeNN or joint VAE model",
+  "passed": true,
+  "nodeF1Cases": 10,
+  "chromeF1Cases": 10,
+  "legacyCasesPerRuntime": 10,
+  "interopCases": 10,
+  "hikeCompilerCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "wasmSHA256": "6b9cb9f0617da373e63275354ac42f7843fb455019ed3988df7364173bc775b4",
+  "profiles": [
+    {
+      "id": "wan21-raw-f32-5x16x16",
+      "shape": [
+        1,
+        16,
+        2,
+        2,
+        2
+      ],
+      "elements": 128,
+      "positionsPerChannel": 8,
+      "normalizeExport": "NormalizeRawMean",
+      "restoreExport": "RestoreRawMean"
+    },
+    {
+      "id": "wan21-raw-f32-1x16x16",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "elements": 64,
+      "positionsPerChannel": 4,
+      "normalizeExport": "NormalizeRawMeanF1",
+      "restoreExport": "RestoreRawMeanF1"
+    }
+  ],
+  "roundtripMaxAbs": 1.1920928955078125e-07,
+  "presetRoundtripMaxAbs": 2e-06,
+  "memoryBytes": 1114112,
+  "arenaBytes": 1024,
+  "callerPreserved": true,
+  "nodePythonChromePayloadHashesMatch": true,
+  "legacyOutputHashesUnchanged": true,
+  "actualVaeManifestReceived": false,
+  "actualVaeBundleReceived": false,
+  "actualVaeMeanFixtureReceived": false,
+  "jointVaeModelRun": false,
+  "generatedSampleSupported": false,
+  "published": false,
+  "sourceSHA256": {
+    "latent-space.mjs": "a4aef2943d51a88f032a1b85ada9ace1b8ffc9a2653de890821a36b9102ed3b1",
+    "latent-space.hike": "357b7d72c2f38a9dec028818f9df33383a3c4be751258783c3513f9e2f681fea",
+    "build.py": "ebdd503a7f15ce1373269b84323254c2bcc89e432798e7a7c8510838568aa0d5",
+    "kernel-registry.mjs": "16f7dcb426c6972082f9f554fc21267028ab8447c9a6b4a7a1edd2b7cdcc8927",
+    "build/latent-space.wasm": "6b9cb9f0617da373e63275354ac42f7843fb455019ed3988df7364173bc775b4",
+    "build/build-record.json": "43644ff129a226016c1be4ea5ae711d488e4ce2f7397b615e4c1eff67850e1e2"
+  },
+  "boundarySHA256": "ae197407f47b036feb83c7b827faa9b7c7ee8ba7f5c54c7139221c186201553d",
+  "resultSHA256": "8f65be7463ac3eb6441add9dc9b6b7a6b275d4f08e31dddb4afafb48bdcc4c6b"
+}

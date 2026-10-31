@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "scope": "V1 accepted one F=1 native-size diagnostic profile, not V2 or full workflow",
+  "profile": {
+    "id": "wan21-raw-f32-1x16x16",
+    "videoShape": [
+      1,
+      3,
+      1,
+      16,
+      16
+    ],
+    "latentShape": [
+      1,
+      16,
+      1,
+      2,
+      2
+    ],
+    "layout": "NCTHW",
+    "latentSpace": "raw",
+    "posterior": "mean",
+    "opset": 17
+  },
+  "acceptance": "PASS",
+  "nativeApiVersion": "works-ai-1",
+  "nativeRuntimeSourceCommit": "6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095",
+  "g1cSourceCommit": "502b243d092b84979b10b1624df60612047d640a",
+  "model": {
+    "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "storedDtype": "bfloat16",
+    "executionDtype": "float32",
+    "precisionNote": "Stored BF16 values are unchanged; arithmetic uses FP32 and is not asserted equivalent to original BF16 execution."
+  },
+  "source": {
+    "repo": "Wan-Video/Wan2.1",
+    "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+    "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+    "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498"
+  },
+  "assets": {
+    "encoder": {
+      "file": "encode.onnx",
+      "bytes": 212362391,
+      "sha256": "193cebca40fa62412e672e64a126898a42ba0450154dd5bbb87d29fcd8aaafae"
+    },
+    "decoderBody": {
+      "file": "decoder-body.onnx",
+      "bytes": 286313363,
+      "sha256": "c6c4457e538c6f613d2b3a73d97d90525bdc872b4d310dda125712e1f42b55cf"
+    },
+    "conv2Weight": {
+      "file": "conv2-weight.f32",
+      "bytes": 1024,
+      "sha256": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+      "shape": [
+        16,
+        16
+      ]
+    },
+    "conv2Bias": {
+      "file": "conv2-bias.f32",
+      "bytes": 64,
+      "sha256": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+      "shape": [
+        16
+      ]
+    }
+  },
+  "bundleManifest": {
+    "sha256": "fa219b8e7e0b6b0be37c598d3dfedadb29505ad1407fe3f8270d8655dd46828c",
+    "bytes": 4821,
+    "path": "/workspace/work/inference/vae-v1-f1/bundle/manifest.json",
+    "exportTimeValidationStatusUnmodified": true
+  },
+  "acceptanceGate": {
+    "atol": 2e-05,
+    "rtol": 2e-05,
+    "maxAbs": 2e-05,
+    "scope": "all FP32 output elements, predetermined before export/browser; no visual-quality or large-profile extrapolation"
+  },
+  "exporterDefaultGate": {
+    "atol": 0.002,
+    "rtol": 0.002,
+    "maxAbs": 0.002,
+    "scope": "FP32 reference, synthetic fixed-profile checks only"
+  },
+  "gateNote": "Both strict FP32 gates use predetermined values. Acceptance uses external pre-export plan2e-5; original immutable exporter manifest retains its earlier.002 diagnostic default. Receipt supersedes export-time pending status without altering graph/manifest bytes.",
+  "browser": "154.0.8037.57",
+  "runtime": {
+    "ort": "1.24.3",
+    "provider": "wasm",
+    "threads": 1,
+    "hikeSha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8"
+  },
+  "evidenceFiles": {
+    "acceptance-results.json": {
+      "sha256": "f0c5d845ce99fd399f514fc2ebd3eb68b64e52f31fca0c01276c3764f0098362",
+      "bytes": 32937
+    },
+    "resource-measurements.json": {
+      "sha256": "46e4ef811f805f04cc1cb3c5cf0e0bc07f7851f077882f4d96949204e4f8245b",
+      "bytes": 65158
+    },
+    "reference-report.json": {
+      "sha256": "b6321111c2d78bbeb3684e9e464946792e9a396f3dbfcd8175a64d4282782f5f",
+      "bytes": 3938
+    },
+    "export-resource.json": {
+      "sha256": "21fe92e8feb321fa94c6722127d198012ba4e6f3f905dab5600090712d2eef9a",
+      "bytes": 669
+    },
+    "acceptance-plan.json": {
+      "sha256": "f46e70bdaede279988ac9130b694502f56cf7625f928e8cc8871a816d22ef8cd",
+      "bytes": 3307
+    }
+  },
+  "sourceFiles": {
+    "tools/inference/vae/accept_still.py": {
+      "sha256": "0f3c7cdab077206222afaed1509fe9742aa4561aa8f22edbc73fdba21c38c8a1",
+      "bytes": 22310
+    },
+    "tools/inference/vae/reference_still.py": {
+      "sha256": "5bbe461c9aef14b453ae17654a5b58c6c5d0b4864769faba43f1909bbc7c6d5d",
+      "bytes": 6186
+    },
+    "tools/inference/vae/profile-acceptance.mjs": {
+      "sha256": "91dabd7f05b1e8ed1b92fbe9171cf5bc5f796fc1d518e8717ae55edcc4ba7852",
+      "bytes": 3963
+    },
+    "tools/inference/vae/profile-probe.mjs": {
+      "sha256": "6a9afad1866e951ace31aace2e651d5b4a8480b07f45c8e22992ed1a5de28766",
+      "bytes": 4340
+    },
+    "development/inference/connection/G1C-MAPPING.md": {
+      "sha256": "b3196e92926871ef70158e84cdae7b261b276bde8b924ad8819c8275c79df433",
+      "bytes": 19852
+    }
+  },
+  "checks": {
+    "connectionFixtures": {
+      "passed": 12,
+      "tests": 12,
+      "changed": false
+    },
+    "python": {
+      "passed": 53,
+      "tests": 53
+    },
+    "f1AllOutputs": true,
+    "legacy5FrameRealRegression": true,
+    "cancelRecoveryDispose": true,
+    "nativeApiCodecKernelsUnchanged": true,
+    "graphManifestNotRetagged": true,
+    "externalOnnxWeights": "none; embedded initializers, plus separate conv2 f32 assets"
+  },
+  "resourceEnd": {
+    "actualSessionsReleasedF1": 3,
+    "actualSessionsReleasedLegacy": 3,
+    "workersCreated": 6,
+    "workersTerminated": 6,
+    "liveWorkers": 0,
+    "liveObservedProcessesAfterBrowserClose": 0,
+    "zombiePids": 2,
+    "allPidsGone": false
+  },
+  "unaccepted": [
+    "non-square",
+    "actual workflow slot/reference media of unknown dimensions",
+    "81frame480x832",
+    "real Diffusion generated-sample V2"
+  ],
+  "publication": {
+    "modelWeightsPublished": false,
+    "pagesChanged": false
+  },
+  "testLogSha256": {
+    "connection-checks.log": "bddacd847e84a83c0afdab893dbb62a92bf6abfdeec053ee431c3c59a0f671a3",
+    "python-checks.log": "355ff55dc2f9922607bea47ab8823e2a7d75ca38f4ab606c43163dc95706ee37",
+    "syntax-checks.log": "0cc5ac1b01c325d7fafac29111da0f5d5d30528d250193fc1225b28c3dccb466"
+  }
+}

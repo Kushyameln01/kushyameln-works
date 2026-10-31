@@ -32,7 +32,8 @@ export async function runCases(read){
   const y=space.normalizeRawMean(raw(new Float32Array(128)));y.data.forEach((v,i)=>check(Object.is(v,norm(0,Math.floor(i/8))),'Allzero specialcase was incorrectly applied'));
  });
  run('meaning model shape finite and normalization provenance rejected',()=>{
-  for(const fixture of [{...input,meaning:'generated-samples'},{...input,modelSha256:'0'.repeat(64)},{...input,shape:[1,16,1,2,4]},{...input,data:new Float32Array(128).fill(NaN)},{...input,normalization:'wan21-comfy-f32-v1'}])expectThrow(()=>space.normalizeRawMean(fixture));
+  // The formerly rejected [1,16,1,2,4] now has its own approved Rect profile.
+  for(const fixture of [{...input,meaning:'generated-samples'},{...input,modelSha256:'0'.repeat(64)},{...input,shape:[1,16,2,1,4]},{...input,data:new Float32Array(128).fill(NaN)},{...input,normalization:'wan21-comfy-f32-v1'}])expectThrow(()=>space.normalizeRawMean(fixture));
   for(const fixture of [{...normalized,meaning:'generated-samples'},{...normalized,normalization:'other'},{...normalized,modelSha256:undefined},{...normalized,attentionMask:new Uint8Array([1])}])expectThrow(()=>space.restoreRawMean(fixture));
  });
  run('owned arrays metadata and repeated memory are preserved',()=>{

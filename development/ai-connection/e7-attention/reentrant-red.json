@@ -1,0 +1,40 @@
+{
+  "browser": "154.0.8037.57",
+  "pageErrors": [],
+  "wallSeconds": 1.6117647319988464,
+  "scope": "explicit postnorm-rope QKV, actual ORT score/Exp plus Hike online recurrence; not production inference",
+  "OSMeasurement": {
+    "pssBaselineBytes": 255264768,
+    "pssPeakBytes": 382603264,
+    "rssPeakProcessSumBytes": 658755584,
+    "samples": 49,
+    "intervalTargetMs": 20,
+    "ownedPidsObserved": [
+      39045,
+      39062,
+      39063,
+      39105,
+      39114,
+      39141,
+      39157,
+      39166,
+      39167
+    ],
+    "readErrors": [],
+    "scope": "observed peak of owned Chromium descendants during constructor/all cases, includes renderer/runtime/test harness; RSS process sum double-counts shared pages, use PSS; not ORT allocator-only, not production pipeline peak"
+  },
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs": "cf368747402b114ce44370b0810bc61a2cb55f869df13f67952b7898821f0ea5",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/graph.mjs": "07a627a0af4d19f8febbbb3233479f75998dcd6c0b6d6145d45096fc251a39a2",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/hike.mjs": "67d5ada9d4c6c4217c3845c9ddbed5fb246cedeb35d5283840e1057087d4c3cd",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.hike": "766b771e10e00bb3ce24d360567981e2d028762547c820e481dbcdf4deab1e75",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.wasm": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/fixture-source.mjs": "275adaff2621921e33ec38a642e1736adb515339a96ebdc808d895b44b6a3057",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/browser-cases.mjs": "5bc5e8334f4f934c174bd37e5b91189c43414d9da5d12e70bfbee85bad401ac2",
+    "tools/diffusion-models/e7-attention-reference.py": "b10da8955b871469c77652d6e7fefc48e00f6ddf5ea00acce176399a44b4c811",
+    "tools/diffusion-models/e7-attention-browser.py": "1b309bd7078c4ca109bfe8faa51b656102ff75c05754ec8fe2b324f445fae89d"
+  },
+  "referenceSHA256": "6ae54f48e244ff9c5f78fe0956cd27bae862341aec8acfb4fed058e65ab4cb6b",
+  "passed": false,
+  "error": "Error: Reentrant describe bypassed BUSY\n    at assert (http://127.0.0.1:44787/shared/diffusion-models/ort-bridge/stream-attention/browser-cases.mjs:3:34)\n    at Module.runAttentionCases (http://127.0.0.1:44787/shared/diffusion-models/ort-bridge/stream-attention/browser-cases.mjs:22:4)\n    at async eval (eval at evaluate (:311:30), <anonymous>:1:125)\n    at async <anonymous>:337:30"
+}

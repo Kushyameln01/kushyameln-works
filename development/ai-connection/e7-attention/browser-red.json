@@ -1,0 +1,39 @@
+{
+  "browser": "154.0.8037.57",
+  "pageErrors": [],
+  "wallSeconds": 0.099111878000258,
+  "scope": "explicit postnorm-rope QKV, actual ORT score/Exp plus Hike online recurrence; not production inference",
+  "OSMeasurement": {
+    "pssBaselineBytes": 254658560,
+    "pssPeakBytes": 265463808,
+    "rssPeakProcessSumBytes": 533790720,
+    "samples": 4,
+    "intervalTargetMs": 20,
+    "ownedPidsObserved": [
+      35733,
+      35750,
+      35751,
+      35770,
+      35785,
+      35795,
+      35813,
+      35820,
+      35821
+    ],
+    "readErrors": [],
+    "scope": "observed peak of owned Chromium descendants during constructor/all cases, includes renderer/runtime/test harness; RSS process sum double-counts shared pages, use PSS; not ORT allocator-only, not production pipeline peak"
+  },
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/graph.mjs": "07a627a0af4d19f8febbbb3233479f75998dcd6c0b6d6145d45096fc251a39a2",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/hike.mjs": "67d5ada9d4c6c4217c3845c9ddbed5fb246cedeb35d5283840e1057087d4c3cd",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.hike": "766b771e10e00bb3ce24d360567981e2d028762547c820e481dbcdf4deab1e75",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.wasm": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/fixture-source.mjs": "275adaff2621921e33ec38a642e1736adb515339a96ebdc808d895b44b6a3057",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/browser-cases.mjs": "765ac809d7a8588056ef85162534869fd6deb7f91ab7606a9ff0c63ab9df8d0c",
+    "tools/diffusion-models/e7-attention-reference.py": "4b5ab3ff1192e49d41acd09faa61968f5d481f98753f662f8829b8132f1c71c4",
+    "tools/diffusion-models/e7-attention-browser.py": "58d411ba6388d6f6b168616ee928f8b2ca26b6db3ea966eb692e25c633fb700c"
+  },
+  "referenceSHA256": "d6a265a406734403ca68b42c3e5a09e1d6e90f576b2566e3bbb3c65781f5c4a0",
+  "passed": false,
+  "error": "Error: Missing streamed attention selected-boundary candidate\n    at assert (http://127.0.0.1:36483/shared/diffusion-models/ort-bridge/stream-attention/browser-cases.mjs:2:34)\n    at Module.runAttentionCases (http://127.0.0.1:36483/shared/diffusion-models/ort-bridge/stream-attention/browser-cases.mjs:6:54)\n    at async eval (eval at evaluate (:311:30), <anonymous>:1:125)\n    at async <anonymous>:337:30"
+}

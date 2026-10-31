@@ -39,10 +39,11 @@ api.dispose();
 | inverseNoiseScale | `{latent,shape,sigma}` | Hike CONST inverse。sigma=1は特異点として拒否 |
 | flowDenoised | `{input,velocity,shape,sigma}` | Hikeによるvelocity→denoised変換 |
 | validateConditioning | `{tensor}` | 公開UMT5由来のBLC float32 `[1,L,4096]`・mask・producer hashを検査しmetadataだけ返す |
-| validateRawLatent | `{tensor}` | 公開Wan2.1 VAEのraw mean NCTHW `[1,16,2,2,2]`・producer hashを検査しmetadataだけ返す |
+| validateRawLatent | `{tensor}` | 公開Wan2.1 VAEのraw mean NCTHW・明示profile（下記3種）・producer hashを検査しmetadataだけ返す |
 | normalizeRawMean | `{tensor}` | 実Hikeで公開固定profileのraw posterior meanをWan21正規化空間へ変換。所有tensorと証拠を返す |
 | restoreRawMean | `{tensor}` | version付きnormalized posterior meanを実Hikeでraw meanへ復元。生成sampleをmeanへ言い換えない |
 | linearProjection | `{q,scale,bias,x}` | 実Hike FP8復号→ORT WASM Gemm→Hike biasの固定部分演算。output16要素と証拠 |
+| linearProjectionF32 | `{weight:Float32Array(81920),x:Float32Array(5120),bias:Float32Array(16)}` | 明示F32 runtime weightを実ORT Gemmへ渡し実Hike biasを加算。partialOnly。LoRA低rank演算や全モデル適用は行わない |
 | load | `{file: File または Blob}` | 先にヘッダー検査を行い、その後NOT_READY。大容量モデルはdetails.reasonsにSINGLE_WASM32_MEMORY_EXCEEDED |
 | predict / sample | `{}` | NOT_READY。仮のニューラル出力や注入predictorを返さない |
 | cancel | `{jobId: 対象jobId,inputRevision: 対象revision}` | 自分が所有する実行中Workerだけ終了。対象のPromiseはCANCELLEDで終端化 |
@@ -56,7 +57,7 @@ Eulerの上限1,048,576要素は、このAPIの作業予算。モデル全体の
 
 noiseMix / inverseNoiseScale / flowDenoisedはFloat32Arrayと正のshapeを要求する。shape積と配列長を一致させ、1 tensorあたり1,048,576要素まで、NaN/Infinityを拒否する。結果は `{data: Float32Array,shape,operation,normalizationApplied:false,evidence}`。これら3つの低水準primitiveは入力空間を変換せず、出力をraw latentへ自動でラベル付けしない。raw meanとの接続に必要な数値変換は、本DiffusionモジュールのnormalizeRawMean / restoreRawMeanが担当する。包括UIは呼出し順・待機列・入力出力の受渡しを担当する。schedulerは固定ComfyUI版のsimple6・shift5・split3だけを提供し、別profileへ黙って切り替えない。noise配列は呼出し側から渡し、seedからの乱数再現は実装しない。
 
-normalizeRawMean / restoreRawMeanはこのDiffusionモジュール内の明示的なHike処理である。公開VAE固定profile `[1,16,2,2,2]` とVAE model hashを照合し、ComfyUI固定版の16 channel mean/stdとFP32演算順で変換する。rawのmeaningは `raw-posterior-mean`、正規化後はversionを含む `wan21-normalized-posterior-mean:v1`。結果は `{tensor,normalizationApplied:true,evidence}` で、tensor.dataは所有されたFloat32Arrayとなる。raw0も数値式どおり非0へ変換し、無断のzero特別扱いを加えない。全sampling内のzero判定やHIGH/LOW orchestrationを実装済みとは扱わない。
+normalizeRawMean / restoreRawMeanはこのDiffusionモジュール内の明示的なHike処理である。下記3種の公開VAE固定profileとVAE model hashを照合し、ComfyUI固定版の16 channel mean/stdとFP32演算順で変換する。rawのmeaningは `raw-posterior-mean`、正規化後はversionを含む `wan21-normalized-posterior-mean:v1`。結果は `{tensor,normalizationApplied:true,evidence}` で、tensor.dataは所有されたFloat32Arrayとなる。raw0も数値式どおり非0へ変換し、無断のzero特別扱いを加えない。全sampling内のzero判定やHIGH/LOW orchestrationを実装済みとは扱わない。
 
 normalized meanのmeaningに版を含めるため、公開 `.wktensor` codecの保存・読戻しを通しても復元可能。追加の `normalization:'wan21-comfy-f32-v1'` は保存形式が保持しない説明属性であり、復元時に省略可能だが、値がある場合の不一致は拒否する。意味・shape・producer hashを揃えただけで任意の生成sampleをposterior meanへ再分類しない。復元はこの固定mean契約の入力だけを受け入れる。
 
@@ -109,4 +110,42 @@ LoRA用に `inspectLora` / `loadLora` / `listLoras` / `readLora` / `readLoraSour
 
 読出しは1回4MiB以下の所有Uint8Array。F16/BF16/F32の保存bitsと元のshape・tensor名・範囲・hashを返し、LoRAの数値加算を行わない。対応する通常pairと `.diff/.diff_b` のshapeを実Bernini targetと照合する。`loraWeightIO:true` と `loraApplied:false` を区別し、モデル全体のNOT_READYを解除しない。
 
-別担当LoRA SDKのsource契約へは `createLoraSource` で接続できる。SDKの実graph consumer・package/session切替は別の未実装境界である。詳細、対象モデルhash、対応形式、保持・所有権は [LoRA接続仕様](lora/API.md) を参照する。
+別担当LoRA SDKのsource契約へは `createLoraSource` で接続できる。後述のv2 adapterは限定Q射影のruntime feed-setへ接続する。全モデルのgraph/package/session切替は未実装である。元のweight I/O、対象モデルhash、対応形式、保持・所有権は [LoRA接続仕様](lora/API.md) を参照する。
+
+
+## L1: bounded F32 runtime weightと実base診断
+
+`linearProjectionF32`はcompact・非shared・非detachedの有限配列をdispatch前に検査する。caller入力は保持し、Workerへcloneし、stageはORT async実行前に所有copyを取る。Worker結果はtransfer、port結果はclone。既存`linearProjection`のFP8原本入力を変更・再量子化しない。capabilitiesの同名fieldは部分受口の存在だけを示し、`modelInference:false`、`loraApplied:false`を維持する。
+
+独立ES moduleの実base provider、PARTIAL registry、runtime-feed-set sink/candidateは [DIAGNOSTIC_API.md](lora/DIAGNOSTIC_API.md) を参照。私的に渡した実base小blockだけを読むproviderも提供する。SDK v1のinitializer/boolean validate契約とは互換にしない。通常のload/predict/sampleとpointwise上限1,048,576は変更していない。
+
+LoRA固定source `2bba90785292e42a0c7c8756685b0d8b128b2dcf` 用の [V2_ADAPTER.md](lora/V2_ADAPTER.md) は、SDKのfull-shape registryとnative selected registry、要素offset、manifest、PARTIAL validation/commitと所有権を明示対応する。低rank積は実LoRA SDK/Hikeが行い、Diffusion側は重複実装しない。実SDK/Hike＋実ORT/Hikeの合成source試験と、実base断片の復号/consumer試験は別の証拠である。4実LoRA原本との共同数値試験は未実施。HIGH/LOW各2組の同一base同時合成を保証しない。
+
+
+## E6: shapeを固定したposterior-mean profile
+
+`rawMeanProfiles`は次の3profileを宣言する。validateRawLatent/normalizeRawMean/restoreRawMeanは厳密なshape/model/meaningへ対応し、入力のprofileIdがあればshapeから選んだidとの一致も検査する。同じ要素数でも軸shapeが違えば拒否し、paddingやshape偽装は行わない。
+
+| profileId | NCTHW | 要素数 / channel index |
+| --- | --- | --- |
+| `wan21-raw-f32-5x16x16` | `[1,16,2,2,2]` | 128 / i÷8 |
+| `wan21-raw-f32-1x16x16` | `[1,16,1,2,2]` | 64 / i÷4 |
+| `wan21-raw-f32-1x16x32` | `[1,16,1,2,4]` | 128 / i÷8 |
+
+64専用Hike exports NormalizeRawMeanF1/RestoreRawMeanF1と、非正方形128専用NormalizeRawMeanRect/RestoreRawMeanRectを旧128のexportから分離する。ABI `wan21-raw-mean-f32-v3`、係数とFP32順序は同一Wan21規約、固定arena1024bytes。生成sampleは受理しない。実VAE受領meanとの全値比較と、相手本人の64限定decode記録は [RECT-RESULT.md](../../../development/ai-connection/e6/RECT-RESULT.md) を参照。大shapeや生成sampleのdecode成立を意味しない。
+
+旧requireWanRawLatent/codec wrapperは旧F5の128専用のまま。独立ES境界ではrequireWanRawLatentF1/WAN21_RAW_F1_PROFILE、またはrequireWanRawLatentRect/WAN21_RAW_RECT_PROFILEを明示利用する。G1C contextをmain旧codecへ渡して完全保存と扱わず、外側descriptorを保持する。
+
+## E7: 単一tokenのfull-Q行分割候補
+
+`ort-bridge/tiled-q.mjs` のcreateTiledQProjectionは独立ES moduleであり、native requestにpredict/sampleの代わりとして送らない。実LOW Q `[5120,5120]` を16行ずつread/dequantし、入力 `[1,5120]` から全5120出力を実Hike/ORTで確認した候補である。F32診断、N=1のLinear境界に限定し、元FP8計算、全token/context、attention、組合せMemory/staging/copy予算、E8は未成立。詳細と再現手順はdevelopment/ai-connection/e7/RESULT.md。
+
+## E7: 全keyを参照する選択queryのstream attention候補
+
+独立ES module `ort-bridge/stream-attention/stage.mjs` は、明示したpost-QK-norm/RoPEのF32 Q `[16,128]` と、1headのK/Vを最大64keyずつ受ける。全32,760 keyの末尾56を正しいshapeで処理し、ORT WASMのscore/expとHikeのonline max/sum/value更新を組み合わせる候補である。入力source版は `works-postnorm-rope-qkv/0.1`。本番のQ/K/V生成、norm/RoPE、全query/head、元production precision、他stageと同時保持したMemory・staging・copy予算は別の未成立境界である。試験・採否と再現は [E7 attention RESULT](../../../development/ai-connection/e7-attention/RESULT.md) を参照。native RPCへ追加せず、load/predict/sampleとE8は保留する。
+
+## 管理ツールへ渡す接続条件
+
+共通snapshot版とnative `diffusion-models/0.1`・BUILD_IDを分ける。Text/VAEのconnected tensorをnativeへ渡す際は、上記4操作とも **`input:{tensor: connectedTensor}`** と包装する。tensor単体をwire.inputへ渡すgeneric mappingは互換ではない。独立LoRA provider/consumerとattentionの関数・AbortSignal・opaque handleはMessagePort payloadにせず、所有する同一realmで呼ぶ。
+
+全体待機列・工程順・snapshot採用は管理、Diffusion内部の数値計算・所有資源・Worker世代は本担当が扱う。取消ACKと元Promise終端/解放を別に観測してからresourceを再利用する。相互取得の固定source、相手受領の証拠、残る合意は [E0_PEERS.md](../../../development/ai-connection/resume/E0_PEERS.md) に整理した。

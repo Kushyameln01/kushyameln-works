@@ -45,8 +45,15 @@ async function execute(op,input){
  if(op==='predict'||op==='sample')fail('NOT_READY','No validated neural model session is available',{reasons:['MODEL_INFERENCE_NOT_IMPLEMENTED']});
 
  if(op==='validateConditioning'||op==='validateRawLatent'){
-  const {requireWanConditioning,requireWanRawLatent,WAN21_RAW_PROFILE}=await import('../tensor-interop.mjs');
-  try{return op==='validateConditioning'?metadata(requireWanConditioning(input.tensor)):metadata(requireWanRawLatent(input.tensor),WAN21_RAW_PROFILE.id);}
+  const {requireWanConditioning,requireWanRawLatent,requireWanRawLatentF1,requireWanRawLatentRect,WAN21_RAW_PROFILE,WAN21_RAW_F1_PROFILE,WAN21_RAW_RECT_PROFILE}=await import('../tensor-interop.mjs');
+  try{
+   if(op==='validateConditioning')return metadata(requireWanConditioning(input.tensor));
+   const shape=input.tensor?.shape,profiles=[[WAN21_RAW_PROFILE,requireWanRawLatent],[WAN21_RAW_F1_PROFILE,requireWanRawLatentF1],[WAN21_RAW_RECT_PROFILE,requireWanRawLatentRect]];
+   const selected=profiles.find(([profile])=>Array.isArray(shape)&&shape.length===5&&profile.shape.every((v,i)=>v===shape[i]));
+   if(!selected)throw RangeError('Unsupported raw posterior-mean profile');
+   if(input.tensor.profileId!==undefined&&input.tensor.profileId!==selected[0].id)throw TypeError('Raw posterior-mean profile identity mismatch');
+   return metadata(selected[1](input.tensor),selected[0].id);
+  }
   catch(error){fail('INVALID_TENSOR',String(error.message??error));}
  }
  if(op==='normalizeRawMean'||op==='restoreRawMean'){
@@ -58,7 +65,7 @@ async function execute(op,input){
    latentSpace=await createLatentSpace(await response.arrayBuffer());latentKernelInfo=LATENT_SPACE_KERNEL;
   }
   let tensor;try{tensor=latentSpace[op](input.tensor);}catch(error){fail('INVALID_TENSOR',String(error.message??error));}
-  return {tensor,normalizationApplied:true,evidence:{scope:'explicit Wan21 posterior-mean normalization only; no model inference',hikeWasmSHA256:latentKernelInfo.sha256,hike:latentSpace.stats()}};
+  return {tensor,normalizationApplied:true,evidence:{scope:'explicit Wan21 posterior-mean normalization only; no model inference',profileId:tensor.shape[2]===2?'wan21-raw-f32-5x16x16':tensor.shape[4]===4?'wan21-raw-f32-1x16x32':'wan21-raw-f32-1x16x16',hikeWasmSHA256:latentKernelInfo.sha256,hike:latentSpace.stats()}};
  }
  if(op==='schedule'){
   const {PROFILE}=await import('../scheduler/scheduler-kernel.mjs');
@@ -73,6 +80,11 @@ async function execute(op,input){
   const k=await getScheduler();
   const data=op==='noiseMix'?k.noiseMix(input.noise,input.latent,input.sigma,input.noiseScale):op==='inverseNoiseScale'?k.inverseNoiseScale(input.latent,input.sigma):k.flowDenoised(input.input,input.velocity,input.sigma);
   return {data,shape,operation:op,normalizationApplied:false,hikeWasmSHA256:BUILD_SOURCES['../scheduler/build/scheduler.wasm'],evidence:{scope:'numeric primitive on caller supplied arrays; no model inference',hike:k.stats()}};
+ }
+ if(op==='linearProjectionF32'){
+  for(const [value,count] of [[input.weight,81920],[input.x,5120],[input.bias,16]])if(!(value instanceof Float32Array)||value.length!==count||!value.every(Number.isFinite))fail('INVALID_TENSOR','Expected finite exact-shape F32 weight, x, bias');
+  if(!projectionStage){const {createOrtProjectionStage}=await import('../ort-bridge/stage.mjs');projectionStage=await createOrtProjectionStage();}
+  return {...await projectionStage.runF32(input),modelInference:false,partialOnly:true};
  }
  if(op==='linearProjection'){
   if(!(input.q instanceof Uint8Array)||input.q.length!==81920||!(input.x instanceof Float32Array)||input.x.length!==5120||!input.x.every(Number.isFinite)||!(input.bias instanceof Float32Array)||input.bias.length!==16||!input.bias.every(Number.isFinite)||typeof input.scale!=='number'||!Number.isFinite(input.scale)||input.scale<=0)fail('INVALID_TENSOR','Expected Q Uint8Array81920, finite x Float32Array5120, bias Float32Array16 and positive scale');

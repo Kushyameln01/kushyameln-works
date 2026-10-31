@@ -1,0 +1,38 @@
+{
+  "browser": "154.0.8037.57",
+  "pageErrors": [],
+  "wallSeconds": 3.336072450998472,
+  "scope": "actual immutable File, Hike and ORT row-tiled full-Q boundary; not production inference",
+  "OSMeasurement": {
+    "pssBaselineBytes": 260640768,
+    "pssPeakBytes": 420187136,
+    "rssPeakProcessSumBytes": 696160256,
+    "samples": 105,
+    "intervalTargetMs": 20,
+    "ownedPidsObserved": [
+      31857,
+      31874,
+      31875,
+      31894,
+      31897,
+      31919,
+      31936,
+      31945,
+      31946
+    ],
+    "readErrors": [],
+    "scope": "observed peak of owned Chromium descendants during constructor/all cases, includes renderer/runtime/test harness; RSS process sum double-counts shared pages, use PSS; not ORT allocator-only, not production pipeline peak"
+  },
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/ort-bridge/tiled-q.mjs": "c906103941f55fb63892586ee5cb8a672d0ab309540a8ff3f3d10118f08fcbea",
+    "docs/shared/diffusion-models/ort-bridge/tiled-q-cases.mjs": "0fe235a332cf3811d83442c4f6a22e02115a0337e3b0a855edf4a9c858b15a76",
+    "docs/shared/diffusion-models/ort-bridge/stage.mjs": "9b484163791a89526c7ad7e6fc997ff3cc308090a13fc07489a48fa8af974d67",
+    "docs/shared/diffusion-models/ort-bridge/hike.mjs": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+    "docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+    "tools/diffusion-models/e7-reference.py": "87bb64112261dde643745b5dbae8ad912e30b9c1c4d84ba5c7cf38c3f392017a",
+    "tools/diffusion-models/e7-browser.py": "abf1e72c3e2b738a77912b1117dc89aa2c528177738a7799ea075a7e18da7b2a"
+  },
+  "referenceSHA256": "ecb7e5ee8502a3b03a23c5a6ad1d80e7dbd58ef2612fdc430ee0bc286ebf5b23",
+  "passed": false,
+  "error": "Error: Stats exposed mutable private stage metadata\n    at ensure (http://127.0.0.1:35405/shared/diffusion-models/ort-bridge/tiled-q-cases.mjs:1:34)\n    at Module.runTiledQCases (http://127.0.0.1:35405/shared/diffusion-models/ort-bridge/tiled-q-cases.mjs:32:68)\n    at async eval (eval at evaluate (:311:30), <anonymous>:1:108)\n    at async <anonymous>:337:30"
+}

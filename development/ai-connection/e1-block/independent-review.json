@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "recordedDateUTC": "2026-10-31",
+  "reviewerRole": "independent receiver, read-only runtime review",
+  "reviewedWorktreeBaseCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+  "reviewedRuntimeFilesUncommittedAtReview": true,
+  "fileSHA256": {
+    "docs/shared/diffusion-models/lora/v2-adapter.mjs": "21aad3041e73ce06882cc2b35b1437a596fb566e5519c52dad6b7f726daec4e6",
+    "docs/shared/diffusion-models/lora/test-v2-adapter.mjs": "475467013f63b6b165f23dd38b6ef7dc5b8a74a47c4ca0913924d36e999e6c34",
+    "docs/shared/diffusion-models/lora/base-block.mjs": "4b153ebd1a261449addc99168a4c56a7e4b470d31cdb646f7868e61764b08c2f",
+    "docs/shared/diffusion-models/lora/test-base-block.mjs": "59a7034706cc7a6861dd09c43b4a82c631bdf35e01a425579e975f10b663d4a5",
+    "docs/shared/diffusion-models/lora/diagnostic-consumer.mjs": "fdac31542f87d68b9e01a1ba674ee9b60433cae685d6670222f8d914dd27f943",
+    "docs/shared/diffusion-models/lora/diagnostic-identity.mjs": "35ed52cde91236e764acd61ce912a96aea6627c249eeccd3c8039036069de9c9",
+    "docs/shared/diffusion-models/lora/base-block-browser-cases.mjs": "59a08a010a7f8595c9489d7a0e3ac14aabe5377c1327a795070cd08df6c501ea",
+    "tools/diffusion-models/test-base-block-browser.py": "3ea7cd389fe98b2c4d2726e4f7adfdf885b018767138e0feda9cb98dd11f37e1"
+  },
+  "fixedLoRASDKCommit": "2bba90785292e42a0c7c8756685b0d8b128b2dcf",
+  "fixedLoRASDKSourceHashesVerifiedByTest": true,
+  "artifact": {
+    "bytes": 709364,
+    "sha256": "25a845e0c87a1bcab04740b011d0aa7cd969f46745412810cfd73269b69e8cff",
+    "receivedFromPrivatePageFileTool": true,
+    "providerLocalOriginalNotUsed": true,
+    "privateSourceLocatorPublished": false
+  },
+  "results": {
+    "adapterNode": {
+      "command": "node --test --test-isolation=none docs/shared/diffusion-models/lora/test-v2-adapter.mjs",
+      "nodeVersion": "24.19.0",
+      "pass": 20,
+      "fail": 0,
+      "skip": 0,
+      "scope": "Fixed actual peer SDK and Hike, synthetic source/base, CONTRACT_TEST_ONLY stage"
+    },
+    "baseProviderNode": {
+      "command": "BERNINI_E1_BLOCK_ARTIFACT=<independently received private artifact> node --test --test-isolation=none docs/shared/diffusion-models/lora/test-base-block.mjs",
+      "pass": 8,
+      "fail": 0,
+      "skip": 0,
+      "scope": "Actual HIGH/LOW private fragments and real Hike decode; no original model File"
+    },
+    "baseProviderBrowser": {
+      "command": "python tools/diffusion-models/test-base-block-browser.py --artifact <independently received private artifact> --output <private result>",
+      "browser": "154.0.8037.57",
+      "passed": true,
+      "pageErrorCount": 0,
+      "originalModelRequestCount": 0,
+      "realORTVersion": "1.24.3",
+      "executionProviders": [
+        "wasm"
+      ],
+      "independentReportSHA256": "148303b04713cd6fbb1617d00337b3455185f7097372ffca5c1e450032489cca",
+      "cases": [
+        {
+          "side": "LOW",
+          "passed": true,
+          "registryHash": "808eae1c5b721954dd0679bb723c739a792fcf2199203a564363d66501144796",
+          "maxAbsoluteError": 0,
+          "tolerance": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "providerHikeMemoryBytes": 1572864,
+          "workspaceReused": true,
+          "boundaryBytes": {
+            "f32WeightInput": 327680,
+            "xInput": 20480,
+            "ortOutputToHike": 64,
+            "biasInput": 64,
+            "ownedOutput": 64
+          },
+          "scope": "PARTIAL q.weight [16,5120] and q.bias [16]"
+        },
+        {
+          "side": "HIGH",
+          "passed": true,
+          "registryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+          "maxAbsoluteError": 0,
+          "tolerance": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "providerHikeMemoryBytes": 1572864,
+          "workspaceReused": true,
+          "boundaryBytes": {
+            "f32WeightInput": 327680,
+            "xInput": 20480,
+            "ortOutputToHike": 64,
+            "biasInput": 64,
+            "ownedOutput": 64
+          },
+          "scope": "PARTIAL q.weight [16,5120] and q.bias [16]"
+        }
+      ],
+      "osMemoryPeakMeasured": false
+    },
+    "restoreBusyIndependentRegression": {
+      "previousAdapterSHA256": "e26769ee16ff7d722ebe102e45cc9fbd9c327677809c599b0e6d666be54011e3",
+      "before": "RED: plain BUSY error, candidate cleanup reference not retained, reuse not blocked",
+      "currentAdapterSHA256": "21aad3041e73ce06882cc2b35b1437a596fb566e5519c52dad6b7f726daec4e6",
+      "after": "GREEN: AggregateError preserves validation BUSY and cleanup BUSY; RECOVERY_REQUIRED blocks reuse; recover releases retained candidate and active base output remains valid",
+      "syntheticPrivateReproducerSHA256": "ee28b3983b27ce11377335969b8f68a2c660fece5444a496364a2c9889cd24ed"
+    }
+  },
+  "review": {
+    "fixedIssues": [
+      "Native package allocated before post-hash stale check is released or retained for recover",
+      "Native candidate allocated before post-await stale check is rolled back or retained for recover",
+      "restoreBase candidate survives BUSY validation plus BUSY rollback for explicit recover"
+    ],
+    "checkedBoundaries": [
+      "native versus SDK registry digest kept separate",
+      "full original offsets mapped to selected native slice offsets",
+      "runtime-input q.weight and hike-parameter q.bias distinguished",
+      "immutable detail bias pass-through; explicit light bias patch",
+      "manifest model/graph/registry/side/profile/plan/source identity",
+      "reference and F32 block ownership captured before awaits",
+      "PARTIAL diagnostic scope and incomplete-adapter marking",
+      "rollback current/epoch guards, release, abort, budget and stale output rejection"
+    ],
+    "remainingBlockingFindingsInReviewedScope": []
+  },
+  "limits": {
+    "actualLoRAOriginalsReceived": false,
+    "jointRealLoRATest": false,
+    "fullModelInference": false,
+    "loadPredictSampleReadinessChangedByThisReview": false,
+    "fullFileSHA256Recomputed": false,
+    "priorOwnerFullModelReceiptIndependentlyCertified": false,
+    "managementSnapshotAcceptance": false,
+    "pageLinkPublicationPendingAuthorization": true,
+    "rawModelBytesOrBase64Included": false
+  }
+}

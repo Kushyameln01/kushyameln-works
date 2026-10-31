@@ -1,9 +1,12 @@
 {
   "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
   "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
-  "sourceSha256": "ceb50086b0ca658c1547058d339980ceb5b8f40797ee365b2af203d996c6ea5d",
-  "wasmSha256": "ffd1c821d9ecf2aba10cd7ac96f231c78380a1d02621dae8838ee8d64495b9ea",
-  "watSha256": "491ac548a48d81dfa0766fa5a349e6593c23668c666d9ded36386251b1737f24",
+  "builderSha256": "f5ef11ecfda792b05d572942a164d7a9775636557f1f1b04b7b9bac43e7215b1",
+  "hostSha256": "3d28445a5c36eeb4f31b7bfe89163e43091438f571488a665888833e1d860104",
+  "profileBoundarySha256": "13c3595f0786a45a62d0a8739b6acd58d3025c80f7eaff4baf7314559665c1c1",
+  "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+  "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+  "watSha256": "fa21292363e0f57ea6f52c979cfd28e4ab76a721e0efa654c37389f60847e28f",
   "generatedRuntimeSha256": "0d37c1f5ea89304ce0b0654efb51733e5cfb5e9491fb5ac465ca14db5f935922",
   "runtimeUsed": false,
   "versions": {
@@ -24,5 +27,50 @@
     "/workspace/work/diffusion-models/docs/shared/diffusion-models/latent-space/latent-space.hike"
   ],
   "imports": [],
-  "scope": "Wan21 raw posterior-mean fixedprofile normalization, no model inference"
+  "abi": "wan21-raw-mean-f32-v3",
+  "profiles": [
+    {
+      "id": "wan21-raw-f32-5x16x16",
+      "shape": [
+        1,
+        16,
+        2,
+        2,
+        2
+      ],
+      "elements": 128,
+      "positionsPerChannel": 8,
+      "normalizeExport": "NormalizeRawMean",
+      "restoreExport": "RestoreRawMean"
+    },
+    {
+      "id": "wan21-raw-f32-1x16x16",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "elements": 64,
+      "positionsPerChannel": 4,
+      "normalizeExport": "NormalizeRawMeanF1",
+      "restoreExport": "RestoreRawMeanF1"
+    },
+    {
+      "id": "wan21-raw-f32-1x16x32",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "elements": 128,
+      "positionsPerChannel": 8,
+      "normalizeExport": "NormalizeRawMeanRect",
+      "restoreExport": "RestoreRawMeanRect"
+    }
+  ],
+  "scope": "Wan21 raw posterior-mean fixed64/F1, legacy128/F5 and rect128/F1 profiles, no model inference or generated sample"
 }

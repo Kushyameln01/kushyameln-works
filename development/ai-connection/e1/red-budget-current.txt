@@ -1,0 +1,55 @@
+✔ actual SDK/Hike detail connects dual registry/full offset and native bias pass-through (38.387373ms)
+✔ actual SDK/Hike light applies explicit bias patch without pass-through replacement (23.448874ms)
+✔ actual SDK/Hike explicit detail strength 0 (19.990591ms)
+✔ actual SDK/Hike explicit detail strength -1 (24.504656ms)
+✔ wrong independent output rejects, rollback frees candidate, no active feed (18.274229ms)
+✔ reference metadata/bytes are captured before async constructor hashing (16.779107ms)
+✔ sink rejects wrong binding/checksum/duplicates/missing coverage and clears abort (20.672182ms)
+✔ full/outside-range/foreign source identities are refused before native work (18.67577ms)
+✔ cancel during bounded stage settles and permits explicit immutable base restore (21.042117ms)
+✔ base restore and repeated prepare rebuild from original, never accumulate (29.147614ms)
+✔ v1 initializer bridge rejects actual runtime input registry (6.039271ms)
+✔ cancel after native commit restores own previous feed despite SDK abort currentness (18.846827ms)
+✔ old candidate rollback cannot overwrite a later committed feed (28.475888ms)
+✔ actual SDK recover retains rollback ownership until retry succeeds (15.6196ms)
+✔ actual SDK recover() retries failed sink abort before allowing next plan (19.841108ms)
+✖ unreleased rollback histories have a bounded budget (59.778422ms)
+✖ standalone consumer run rejects results after external application changes (12.72387ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 15
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 415.649174
+
+✖ failing tests:
+
+test at docs/shared/diffusion-models/lora/test-v2-adapter.mjs:53:1
+✖ unreleased rollback histories have a bounded budget (59.778422ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/lora/test-v2-adapter.mjs:53:182)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /budget|release/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/lora/test-v2-adapter.mjs:54:1
+✖ standalone consumer run rejects results after external application changes (12.72387ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/lora/test-v2-adapter.mjs:54:446)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: [Function (anonymous)],
+    operator: 'rejects',
+    diff: 'simple'
+  }

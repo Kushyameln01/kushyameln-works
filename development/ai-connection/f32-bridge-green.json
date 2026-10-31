@@ -1,0 +1,140 @@
+{
+  "browser": "154.0.8037.57",
+  "pageErrors": [],
+  "result": {
+    "passed": true,
+    "scope": "bounded runtime F32 Q-projection weight/bias consumer; explicit activation; not full model or full LoRA acceptance",
+    "cases": [
+      {
+        "name": "real ORT F32 weight feed and Hike bias contribute to output; caller inputs retained",
+        "passed": true
+      },
+      {
+        "name": "changed consumer weights are used and fixed Hike workspace is reused",
+        "passed": true
+      },
+      {
+        "name": "F32 inputs are snapshotted before async ORT; active BUSY and dispose guards hold",
+        "passed": true
+      },
+      {
+        "name": "wrong shapes and nonfinite values are refused without poisoning later work",
+        "passed": true
+      }
+    ],
+    "evidence": {
+      "first": {
+        "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+        "inputEncoding": "F32-runtime-weight",
+        "executionProviders": [
+          "wasm"
+        ],
+        "ortVersion": "1.24.3",
+        "numThreads": 1,
+        "proxy": false,
+        "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+        "hikeWasmSHA256": "feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2",
+        "hikeMemory": {
+          "wasmSha256": "feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2",
+          "memoryBytes": 1507328,
+          "arenaBytes": 409728,
+          "calls": 1,
+          "inputCopyBytes": 128,
+          "outputCopyBytes": 64,
+          "workspaceReused": true,
+          "disposed": false
+        },
+        "sessionCreateMs": 224.69999999925494,
+        "elapsed": {
+          "ortMs": 5.900000002235174,
+          "biasMs": 0.30000000074505806,
+          "totalRunMs": 6.200000002980232
+        },
+        "boundaryBytes": {
+          "f32WeightInput": 327680,
+          "xInput": 20480,
+          "ortOutputToHike": 64,
+          "biasInput": 64,
+          "ownedOutput": 64
+        },
+        "OSMemoryPeak": null,
+        "OSMemoryReason": "not measured for bounded operator validation"
+      },
+      "reused": {
+        "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+        "inputEncoding": "F32-runtime-weight",
+        "executionProviders": [
+          "wasm"
+        ],
+        "ortVersion": "1.24.3",
+        "numThreads": 1,
+        "proxy": false,
+        "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+        "hikeWasmSHA256": "feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2",
+        "hikeMemory": {
+          "wasmSha256": "feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2",
+          "memoryBytes": 1507328,
+          "arenaBytes": 409728,
+          "calls": 2,
+          "inputCopyBytes": 256,
+          "outputCopyBytes": 128,
+          "workspaceReused": true,
+          "disposed": false
+        },
+        "sessionCreateMs": 224.69999999925494,
+        "elapsed": {
+          "ortMs": 0.3999999985098839,
+          "biasMs": 0,
+          "totalRunMs": 0.3999999985098839
+        },
+        "boundaryBytes": {
+          "f32WeightInput": 327680,
+          "xInput": 20480,
+          "ortOutputToHike": 64,
+          "biasInput": 64,
+          "ownedOutput": 64
+        },
+        "OSMemoryPeak": null,
+        "OSMemoryReason": "not measured for bounded operator validation"
+      },
+      "last": {
+        "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+        "inputEncoding": "F32-runtime-weight",
+        "executionProviders": [
+          "wasm"
+        ],
+        "ortVersion": "1.24.3",
+        "numThreads": 1,
+        "proxy": false,
+        "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+        "hikeWasmSHA256": "feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2",
+        "hikeMemory": {
+          "wasmSha256": "feb705035f35f3abe71f91838e31f867f8a07b2fe6306782aca6bb0783dd6fe2",
+          "memoryBytes": 1507328,
+          "arenaBytes": 409728,
+          "calls": 4,
+          "inputCopyBytes": 512,
+          "outputCopyBytes": 256,
+          "workspaceReused": true,
+          "disposed": false
+        },
+        "sessionCreateMs": 224.69999999925494,
+        "elapsed": {
+          "ortMs": 0.4000000022351742,
+          "biasMs": 0,
+          "totalRunMs": 0.4000000022351742
+        },
+        "boundaryBytes": {
+          "f32WeightInput": 327680,
+          "xInput": 20480,
+          "ortOutputToHike": 64,
+          "biasInput": 64,
+          "ownedOutput": 64
+        },
+        "OSMemoryPeak": null,
+        "OSMemoryReason": "not measured for bounded operator validation"
+      }
+    }
+  },
+  "failure": null
+}

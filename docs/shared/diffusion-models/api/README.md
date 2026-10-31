@@ -43,6 +43,7 @@ api.dispose();
 | normalizeRawMean | `{tensor}` | 実Hikeで公開固定profileのraw posterior meanをWan21正規化空間へ変換。所有tensorと証拠を返す |
 | restoreRawMean | `{tensor}` | version付きnormalized posterior meanを実Hikeでraw meanへ復元。生成sampleをmeanへ言い換えない |
 | linearProjection | `{q,scale,bias,x}` | 実Hike FP8復号→ORT WASM Gemm→Hike biasの固定部分演算。output16要素と証拠 |
+| linearProjectionF32 | `{weight:Float32Array(81920),x:Float32Array(5120),bias:Float32Array(16)}` | 明示F32 runtime weightを実ORT Gemmへ渡し実Hike biasを加算。partialOnly。LoRA低rank演算や全モデル適用は行わない |
 | load | `{file: File または Blob}` | 先にヘッダー検査を行い、その後NOT_READY。大容量モデルはdetails.reasonsにSINGLE_WASM32_MEMORY_EXCEEDED |
 | predict / sample | `{}` | NOT_READY。仮のニューラル出力や注入predictorを返さない |
 | cancel | `{jobId: 対象jobId,inputRevision: 対象revision}` | 自分が所有する実行中Workerだけ終了。対象のPromiseはCANCELLEDで終端化 |
@@ -110,3 +111,23 @@ LoRA用に `inspectLora` / `loadLora` / `listLoras` / `readLora` / `readLoraSour
 読出しは1回4MiB以下の所有Uint8Array。F16/BF16/F32の保存bitsと元のshape・tensor名・範囲・hashを返し、LoRAの数値加算を行わない。対応する通常pairと `.diff/.diff_b` のshapeを実Bernini targetと照合する。`loraWeightIO:true` と `loraApplied:false` を区別し、モデル全体のNOT_READYを解除しない。
 
 別担当LoRA SDKのsource契約へは `createLoraSource` で接続できる。SDKの実graph consumer・package/session切替は別の未実装境界である。詳細、対象モデルhash、対応形式、保持・所有権は [LoRA接続仕様](../lora/API.md) を参照する。
+
+
+## L1: bounded F32 runtime weightと実base診断
+
+`linearProjectionF32`はcompact・非shared・非detachedの有限配列をdispatch前に検査する。caller入力は保持し、Workerへcloneし、stageはORT async実行前に所有copyを取る。Worker結果はtransfer、port結果はclone。既存`linearProjection`のFP8原本入力を変更・再量子化しない。capabilitiesの同名fieldは部分受口の存在だけを示し、`modelInference:false`、`loraApplied:false`を維持する。
+
+独立ES moduleの実base provider、PARTIAL registry、runtime-feed-set sink/candidateは [DIAGNOSTIC_API.md](../lora/DIAGNOSTIC_API.md) を参照。これはSDK v1のinitializer/boolean validate契約ではなく、LoRA担当がbinding別partial adapterで接続する新しい診断契約である。通常のload/predict/sample、pointwise上限1,048,576、mean kernel128要素は変更していない。
+
+
+## E6: 明示64要素posterior-mean profile
+
+`rawMeanProfiles`は旧`wan21-raw-f32-5x16x16` NCTHW `[1,16,2,2,2]` /128要素と、新`wan21-raw-f32-1x16x16` `[1,16,1,2,2]` /64要素を宣言する。validateRawLatent/normalizeRawMean/restoreRawMeanは厳密なshape/model/meaningへ対応し、同じ64要素でも軸shapeが違えば拒否する。paddingや128要素shapeへの偽装は行わない。
+
+64専用Hike exports NormalizeRawMeanF1/RestoreRawMeanF1はchannel=i/4を使用し、旧128のi/8と分離する。係数とFP32順序は同一Wan21規約、固定arena1024bytes。生成sampleは受理しない。raw-profile正規化の成立は実VAE bundle共同実行や大shape対応を意味しない。
+
+旧requireWanRawLatent/codec wrapperは128専用のまま。独立ES境界で64を検査する場合はrequireWanRawLatentF1/WAN21_RAW_F1_PROFILEを明示利用する。G1C contextをmain旧codecへ渡して完全保存と扱わず、外側descriptorを保持する。
+
+## E7: 単一tokenのfull-Q行分割候補
+
+`ort-bridge/tiled-q.mjs` のcreateTiledQProjectionは独立ES moduleであり、native requestにpredict/sampleの代わりとして送らない。実LOW Q `[5120,5120]` を16行ずつread/dequantし、入力 `[1,5120]` から全5120出力を実Hike/ORTで確認した候補である。F32診断、N=1のLinear境界に限定し、元FP8計算、全token/context、attention、組合せMemory/staging/copy予算、E8は未成立。詳細と再現手順はdevelopment/ai-connection/e7/RESULT.md。
