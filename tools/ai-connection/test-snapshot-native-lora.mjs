@@ -60,3 +60,15 @@ test('P3 native restored:false after an actual HIGH commit cannot confirm manage
  assert.equal(r.selectionCurrentWhileBlocked,false);assert.equal(r.highCandidateRetained,true);assert.equal(r.nativeCandidateReleaseCount,0);
  assert.deepEqual(r.unrestoredFeed,{HIGH:3.625,LOW:3});
 });
+
+test('P3 strength zero, noncumulative reapplication and explicit native base restoration remain separate',options,async()=>{
+ const r=await runSnapshotNativeLoraCase({...options,scenario:'zero-reapply-restore'});
+ assert.equal(r.state,'PASS');assert.deepEqual(r.afterZero,{HIGH:3,LOW:3});
+ assert.deepEqual(r.afterReapply,{HIGH:3.625,LOW:3.625});assert.deepEqual(r.afterReapplyAgain,{HIGH:3.625,LOW:3.625});assert.deepEqual(r.afterRestore,{HIGH:3,LOW:3});
+ assert.equal(r.wholeSelectedNativeMergeValuesCompared,491616);assert.equal(r.reapplicationAccumulated,false);
+ assert.equal(r.restoreReceipts.every(r=>r.native.application==='IMMUTABLE_BASE'&&r.native.snapshotPublished===false),true);
+ assert.equal(r.restoreReceipts.every(r=>r.management.localRevisionBindings.localInputRevision===3&&r.management.localRevisionBindings.localApplicationRevision===3),true);
+ assert.equal(r.restoreReceipts.every(r=>r.queue.originalTerminal&&r.queue.resourceReleased&&r.queue.reusable&&r.queue.resultAccepted),true);
+ assert.equal(r.activeSnapshotId,'snapshot:p3:3');assert.equal(r.restorePublishedSnapshot,false);
+ assert.equal(r.selectionCurrent,false);assert.equal(r.generationReady,false);
+});

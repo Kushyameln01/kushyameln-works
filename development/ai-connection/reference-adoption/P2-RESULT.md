@@ -2,7 +2,7 @@
 
 実Rect meanを管理の保存・読戻し、owned cache、ownerのRect WASM normalize/restore、復元meanの保存・読戻しへ通した。全128値は既存の独立owner参照と一致した。**P2全体の受入はPARTIAL**。同じ復元meanからのfresh VAE decodeは未実行であり、候補版を既採用版へ昇格していない。
 
-機械可読記録は [RECT-RESULT.json](RECT-RESULT.json)。private実行記録は `work/ai-connection/profile-adopt/rect-management-2/` にあり、原本重み・ONNX・実行packageはGitへ追加していない。
+機械可読記録は [RECT-RESULT.json](RECT-RESULT.json)。private実行記録は `work/ai-connection/profile-adopt/rect-management-checkpoint/` にあり、原本重み・ONNX・実行packageはGitへ追加していない。
 
 | 正本 | 完全commit・版 |
 | --- | --- |
@@ -10,7 +10,7 @@
 | 固定catalog | `6dae9a6fac3e9ad29ea941f22211edbe4aa894ad` / 1.0-draft.1 |
 | Diffusion候補 | `5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3` / `diffusion-models/0.1` |
 | VAE・codec候補 | `855f435120f08eb9e818e51281fc26f0e2633829` / `works-ai-1` / `works-inference-v1` |
-| 管理source | commit未確定。管理baseは `28596717182e48aeb23c719c51b6e593edf4e496`。実行した11ファイルのSHA-256・長さをJSONに記録 |
+| 管理source | 実行source `74b4b4b0b6cff5b98e5410f9b604f88f587915c7`。実行した11ファイルのSHA-256・長さをGit objectと事後照合（元private receiptは変更せず保持） |
 
 Diffusion候補buildは `diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20`、Rect kernel ABIは `wan21-raw-mean-f32-v3`。読み込んだnative source 16ファイルのbytesを固定hashで検査してから実行した。
 

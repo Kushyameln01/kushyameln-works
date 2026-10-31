@@ -107,8 +107,10 @@ dependencies. Use the existing selection schema with
 `path`, `expectedSha256`, `selection:{pairId,noise}`, and `negatives:[]`.
 It exposes loopback-only source-verified HTTP and injects the File through the
 browser file picker. Drive is development reference only; product input stays a
-user-selected local `.safetensors`. Original model/LoRA files and private trial
-packages are not committed to Git.
+user-selected local `.safetensors`. Original model/LoRA files and selected weight blocks are not committed to Git.
+Four small diagnostic packages are distributed under `fixtures/`; they contain
+raw mean/RGB or 16 projection values and their complete sidecars. Read them with
+`node tools/ai-connection/read-reference-packages.mjs --codec <855f435-root>/docs/shared/inference/tensor.mjs`.
 
 ## Unaccepted dependent edges
 

@@ -17,6 +17,7 @@ const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 const KEY='diffusion_model.blocks.0.self_attn.q';
 const SCOPE='diagnostic-projection';
 const SOURCE_SCOPE='synthetic-rank128-BF16-safetensors; synthetic-immutable-base; actual-native-SDK-LoRAHike-ORTProjectionHike-consumer';
+const CONTROL_EXPECTATIONS=new Map([[-1,{weightFirst:.5,bias:1.875,output:2.375}],[0,{weightFirst:1,bias:2,output:3}],[1,{weightFirst:1.5,bias:2.125,output:3.625}]]);
 const fixtureCache=new Map();
 const activeCount=q=>q.inspect().groups.reduce((n,g)=>n+(g.activeInvocationId===null?0:1)+g.queued.length,0);
 const currentBindings=b=>Object.fromEntries(b.steps.map(s=>[s.stepId,{localRevisionBindings:s.localRevisionBindings,resourceBinding:s.resourceBinding}]));
@@ -100,15 +101,23 @@ async function setupPair(f){
    return Object.freeze({...original,targetForPlan(...args){const target=original.targetForPlan(...args);return Object.freeze({...target,async commit(...input){const receipt=await target.commit(...input);events.push({side,phase:'NATIVE_OWNER_RECEIPT',state:receipt.state,ownership:structuredClone(receipt.ownership)});return receipt;}});}});
   }};
   const adapter=f.createCandidateAdoptedLoraAdapter({ownerExports:observedOwnerExports,sdk,consumer:wrapped,baseProvider,sourcePins,resourceBinding,isOwnerCurrent:()=>true});
-  const entry={side,native,fault,consumer,stage,kernel,sdk,resourceBinding,adapter,x,owner:null,captured:[],preparedElements:0};
-  entry.observedAdapter=Object.freeze({...adapter,async prepare(plan,options){return adapter.prepare(plan,{...options,onBlock:async block=>{
+  const entry={side,native,fault,consumer,stage,kernel,sdk,resourceBinding,adapter,x,owner:null,captured:[],preparedElements:0,preparedControls:[],snapshotCurrent:true,lastPlan:null,lastPlanTarget:null,restoreInvocation:null};
+  entry.observedAdapter=Object.freeze({...adapter,async prepare(plan,options){
+   const expected=CONTROL_EXPECTATIONS.get(plan.strength);assert.ok(expected,'Only explicit independent control strengths are supported by this test fixture');
+   const observed={side,strength:plan.strength,planId:plan.planId,localRevisionBindings:{sdkInstanceId:plan.sdkInstanceId,localInputRevision:plan.localInputRevision,localApplicationRevision:plan.localApplicationRevision},firstWeight:null,bias:null,comparedValues:0};entry.preparedControls.push(observed);
+   return adapter.prepare(plan,{...options,onBlock:async block=>{
    if(fault.prepare)throw Object.assign(Error('controlled prepare observer failure'),{code:'CONTROLLED_PREPARE_OBSERVER'});
-   const weightFirst=plan.strength===1?1.5:.5,biasValue=plan.strength===1?2.125:1.875;
    assert.ok(['q.weight','q.bias'].includes(block.weightId));
-   for(let i=0;i<block.data.length;i++)assert.equal(block.data[i],block.weightId==='q.bias'?biasValue:(block.offset+i)%5120===0?weightFirst:0,'Whole selected native BF16 merge block matches the independent control constants');
+   for(let i=0;i<block.data.length;i++)assert.equal(block.data[i],block.weightId==='q.bias'?expected.bias:(block.offset+i)%5120===0?expected.weightFirst:0,'Whole selected native BF16 merge block matches the independent control constants');
+   if(block.offset===0){if(block.weightId==='q.bias')observed.bias=block.data[0];else observed.firstWeight=block.data[0];}observed.comparedValues+=block.count;
    entry.preparedElements+=block.count;if(options.onBlock)await options.onBlock(block);
   }});}});
-  entry.queue=createInvocationQueue({resourceBindings:[{...resourceBinding,cancel:t=>entry.owner.cancelInvocation(t),afterTerminal:(t,o)=>entry.owner.afterInvocation(t,o),release:(t,o)=>entry.owner.releaseInvocation(t,o)}]});
+  function restoreRecord(target){const record=entry.restoreInvocation;if(!record||target.invocationId!==record.queueTarget.invocationId)return null;assert.deepEqual(target,record.queueTarget,'Restore callback belongs to the exact owned queue invocation');return record;}
+  entry.queue=createInvocationQueue({resourceBindings:[{...resourceBinding,
+   async cancel(t){const r=restoreRecord(t);if(!r)return entry.owner.cancelInvocation(t);if(!r.terminal)await adapter.cancelCurrent(r.phaseTarget);await r.rawTask?.catch(()=>{});return {stopped:r.terminal};},
+   async afterTerminal(t,o){const r=restoreRecord(t);if(!r)return entry.owner.afterInvocation(t,o);r.afterTerminal=true;events.push({side,phase:'RESTORE_AFTER_TERMINAL'});return {reusable:o.notStarted===true||r.terminal&&!(r.error instanceof AggregateError)};},
+   async release(t,o){const r=restoreRecord(t);if(!r)return entry.owner.releaseInvocation(t,o);assert.ok(o.notStarted===true||r.terminal,'Restore resource release follows the actual native terminal');r.released=true;events.push({side,phase:'RESTORE_RESOURCE_RELEASED'});}
+  }]});
   sides[side]=entry;
  }
  manager=createSnapshotManager({managerSessionId:'manager:p3:native'});events.length=0;
@@ -117,10 +126,12 @@ async function setupPair(f){
   for(const side of ['HIGH','LOW']){
    const s=sides[side],target={managerSessionId:'manager:p3:native',managerRevision:revision,requestId:`request:p3:${revision}:${side}:plan`,resourceBinding:s.resourceBinding};
    const plan=await s.adapter.plan({selection:{pairId:'light',noise:side.toLowerCase()},strength,diagnostic:{targets:[{key:KEY+'.weight',slice:{startRow:0,rowCount:16}},{key:KEY+'.bias',slice:{startRow:0,rowCount:16}}]}},{target});
-   const validation={x:s.x,expected:new Float32Array(16).fill(strength===1?3.625:2.375),tolerance:{absolute:0,relative:0}};
+   s.lastPlan=plan;s.lastPlanTarget=target;s.snapshotCurrent=true;
+   const expected=CONTROL_EXPECTATIONS.get(strength);assert.ok(expected,'Independent control reference for the explicit strength is required');
+   const validation={x:s.x,expected:new Float32Array(16).fill(expected.output),tolerance:{absolute:0,relative:0}};
    const owner=f.createSnapshotNativeLoraOwner({adapter:s.observedAdapter,plan,planTarget:target,validation,resourceBinding:s.resourceBinding,queue:s.queue,requestPrefix:`p3:${revision}:${side}`});s.owner=owner;
    const wrapped={...owner,async prepare(context){const prepared=await owner.prepare(context);s.captured.push({candidate:prepared.candidate,context,owner});return prepared;}};
-   steps.push({stepId:side,moduleId:'native-lora:'+side,operationId:'diagnose',moduleVersion:'native-lora-candidate/fc2789a+5f880fd',nativeBindingRefs:[plan.registryHash],artifactRefs:['source:'+side],modelProfileRefs:[s.native.executionProfileId],adapterSelectionRefs:[],localRevisionBindings:{sdkInstanceId:plan.sdkInstanceId,localInputRevision:plan.localInputRevision,localApplicationRevision:plan.localApplicationRevision},sourceRef:{repository:REPOSITORY,commit:LORA_COMMIT,path:f.pins.sdk.path},nativeBuild:f.pins.kernel.sha256,implementationState:'implemented',resourceBinding:s.resourceBinding,isCurrent:()=>true,owner:wrapped});
+   steps.push({stepId:side,moduleId:'native-lora:'+side,operationId:'diagnose',moduleVersion:'native-lora-candidate/fc2789a+5f880fd',nativeBindingRefs:[plan.registryHash],artifactRefs:['source:'+side],modelProfileRefs:[s.native.executionProfileId],adapterSelectionRefs:[],localRevisionBindings:{sdkInstanceId:plan.sdkInstanceId,localInputRevision:plan.localInputRevision,localApplicationRevision:plan.localApplicationRevision},sourceRef:{repository:REPOSITORY,commit:LORA_COMMIT,path:f.pins.sdk.path},nativeBuild:f.pins.kernel.sha256,implementationState:'implemented',resourceBinding:s.resourceBinding,isCurrent:()=>s.snapshotCurrent&&s.lastPlan===plan,owner:wrapped});
   }
   return {snapshotId:`snapshot:p3:${revision}`,managerRevision:revision,artifactManifestRef:`artifacts:p3:${revision}`,evidenceManifestRef:`evidence:p3:${revision}`,requestedScope:{kind:'diagnostic',scopeId:SCOPE},steps};
  }
@@ -139,7 +150,7 @@ export async function runSnapshotNativeLoraCase({loraRoot,diffusionRoot,scenario
  const f=await nativeFixture({loraRoot,diffusionRoot}),p=await setupPair(f),{manager,sides,events}=p;
  const result={scenario,state:'PASS',scope:SOURCE_SCOPE,coverage:'PARTIAL',modelInference:false,generationReady:false,realBaseVerified:false,sourceProof:f.sourceProof};
  try{
-  const first=await p.selection(1);
+  const first=await p.selection(1,scenario==='zero-reapply-restore'?0:1);
   if(scenario==='prepare-cleanup-recovery'){
    sides.HIGH.fault.prepare=true;sides.HIGH.fault.abort=true;
    let failure;try{await manager.stageSnapshot(profile(),first);}catch(error){failure=error;}
@@ -160,7 +171,34 @@ export async function runSnapshotNativeLoraCase({loraRoot,diffusionRoot,scenario
   assert.equal(sides.HIGH.preparedElements,81936);assert.equal(sides.LOW.preparedElements,81936);
   result.wholeSelectedNativeMergeValuesCompared=163872;
   result.pendingQueueSlotsAtCheckpoint=Object.values(sides).reduce((n,s)=>n+activeCount(s.queue),0);assert.equal(result.pendingQueueSlotsAtCheckpoint,2);
-  if(scenario==='pair-publication'||scenario==='stale-rollback'){
+  if(scenario==='zero-reapply-restore'){
+   const zeroPublished=await manager.publishSnapshot(token,{currentBindings:currentBindings(first)});assert.equal(zeroPublished.state,'SNAPSHOT_PUBLISHED');result.afterZero=await p.outputs();assert.deepEqual(result.afterZero,{HIGH:3,LOW:3});
+   const second=await p.selection(2,1),secondToken=await manager.stageSnapshot(profile(),second);await manager.publishSnapshot(secondToken,{currentBindings:currentBindings(second)});
+   result.afterReapply=await p.outputs();assert.deepEqual(result.afterReapply,{HIGH:3.625,LOW:3.625});
+   const third=await p.selection(3,1),thirdToken=await manager.stageSnapshot(profile(),third);await manager.publishSnapshot(thirdToken,{currentBindings:currentBindings(third)});
+   result.afterReapplyAgain=await p.outputs();assert.deepEqual(result.afterReapplyAgain,{HIGH:3.625,LOW:3.625},'Repeated strength one starts from the immutable base, not the previous applied feed');
+   result.preparedControls=Object.values(sides).flatMap(s=>s.preparedControls.map(c=>structuredClone(c)));assert.equal(result.preparedControls.length,6);
+   for(const c of result.preparedControls){const expected=CONTROL_EXPECTATIONS.get(c.strength);assert.equal(c.firstWeight,expected.weightFirst);assert.equal(c.bias,expected.bias);assert.equal(c.comparedValues,81936);}
+   result.wholeSelectedNativeMergeValuesCompared=Object.values(sides).reduce((n,s)=>n+s.preparedElements,0);assert.equal(result.wholeSelectedNativeMergeValuesCompared,491616);
+   result.reapplicationAccumulated=result.preparedControls.some(c=>c.strength===1&&(c.firstWeight!==1.5||c.bias!==2.125));assert.equal(result.reapplicationAccumulated,false);
+   for(const s of Object.values(sides))s.snapshotCurrent=false;
+   result.snapshotCurrentBeforeRestore=manager.inspect().selectionCurrent;assert.equal(result.snapshotCurrentBeforeRestore,false);
+   result.restoreReceipts=[];
+   for(const [side,s] of Object.entries(sides)){
+    const selected=third.steps.find(step=>step.stepId===side),selectedPlan=s.lastPlan,localRevisionBindings=structuredClone(selected.localRevisionBindings),phaseTarget={...structuredClone(s.lastPlanTarget),requestId:`request:p3:3:${side}:restore-base`};
+    const id=`p3:3:${side}:restore-base`,queueRequest=`request:p3:queue:3:${side}:restore-base`,activeToken=`token:p3:3:${side}:restore-base`,queueTarget={invocationId:id,bindingId:s.resourceBinding.bindingId,ownerId:s.resourceBinding.ownerId,resourceGeneration:s.resourceBinding.resourceGeneration,requestId:queueRequest,revision:3,activeToken};
+    const r={queueTarget,phaseTarget,localRevisionBindings,terminal:false,afterTerminal:false,released:false,error:null,rawTask:null};s.restoreInvocation=r;
+    const isCurrent=observed=>s.lastPlan===selectedPlan&&manager.active?.snapshotId===third.snapshotId&&manager.inspect().managerRevision===3&&observed.managerSessionId===s.lastPlanTarget.managerSessionId&&observed.managerRevision===s.lastPlanTarget.managerRevision&&['ownerId','bindingId','resourceGeneration'].every(k=>observed.resourceBinding[k]===s.resourceBinding[k])&&localRevisionBindings.sdkInstanceId===s.sdk.sdkInstanceId&&['sdkInstanceId','localInputRevision','localApplicationRevision'].every(k=>localRevisionBindings[k]===selectedPlan[k]&&localRevisionBindings[k]===selected.localRevisionBindings[k]);
+    assert.equal(isCurrent(phaseTarget),true);
+    const native=await s.queue.enqueue({id,requestId:queueRequest,ownerId:queueTarget.ownerId,resourceBinding:queueTarget.bindingId,resourceGeneration:queueTarget.resourceGeneration,revision:3,activeToken},({signal,target})=>{
+     assert.deepEqual(target,queueTarget);r.rawTask=s.adapter.restoreBase({x:s.x,expected:new Float32Array(16).fill(3),tolerance:{absolute:0,relative:0},signal},{target:phaseTarget,isCurrent}).then(receipt=>{r.receipt=receipt;return receipt;},error=>{r.error=error;throw error;}).finally(()=>{r.terminal=true;events.push({side,phase:'RESTORE_NATIVE_TERMINAL'});});return r.rawTask;
+    });
+    const queueReceipt=s.queue.inspect().invocations.find(i=>i.id===id);assert.ok(queueReceipt?.originalTerminal&&queueReceipt.resourceReleased&&queueReceipt.reusable&&queueReceipt.resultAccepted);assert.equal(r.afterTerminal,true);assert.equal(r.released,true);
+    assert.equal(native.application,'IMMUTABLE_BASE');assert.equal(native.snapshotPublished,false);assert.equal(native.generationReady,false);assert.equal(native.scope,'diagnostic-projection');
+    result.restoreReceipts.push({side,native,management:{target:phaseTarget,localRevisionBindings,queueTarget,snapshotRef:third.snapshotId,snapshotPublished:false,generationReady:false},queue:queueReceipt});
+   }
+   result.afterRestore=await p.outputs();assert.deepEqual(result.afterRestore,{HIGH:3,LOW:3});result.restorePublishedSnapshot=false;assert.equal(manager.active.snapshotId,third.snapshotId);
+  }else if(scenario==='pair-publication'||scenario==='stale-rollback'){
    result.beforePublish=await p.outputs();const published=await manager.publishSnapshot(token,{currentBindings:currentBindings(first)});
    result.afterPublish=await p.outputs();assert.deepEqual(result.afterPublish,{HIGH:3.625,LOW:3.625});assert.equal(published.generationReady,false);
    result.dynamicNativeOwnershipPreserved=published.nativeStates.every(s=>{const native=events.find(e=>e.side===s.stepId&&e.phase==='NATIVE_OWNER_RECEIPT');return native?.state===s.state&&native.ownership.kind===s.ownership.kind&&native.ownership.ownerId===s.ownership.ownerId&&s.ownership.kind==='independent-copy'&&s.ownership.ownerId!==sides[s.stepId].resourceBinding.ownerId;});
@@ -261,7 +299,7 @@ export async function runOriginalSnapshotNativeLoraCase({loraRoot,diffusionRoot,
 async function main(){
  const args=process.argv.slice(2),value=flag=>{const at=args.indexOf(flag);return at<0?undefined:args[at+1];};
  const loraRoot=value('--lora-root')??process.env.WORKS_SNAPSHOT_LORA_ROOT,diffusionRoot=value('--diffusion-root')??process.env.WORKS_SNAPSHOT_DIFFUSION_ROOT;
- const originalPath=value('--original'),scenarios=value('--scenario')?[value('--scenario')]:originalPath?['original-file']:['pair-publication','low-failure','stale-rollback','cleanup-recovery','cancel-at-checkpoint','prepare-cleanup-recovery','rollback-unconfirmed'],results=[];
+ const originalPath=value('--original'),scenarios=value('--scenario')?[value('--scenario')]:originalPath?['original-file']:['pair-publication','low-failure','stale-rollback','cleanup-recovery','cancel-at-checkpoint','prepare-cleanup-recovery','rollback-unconfirmed','zero-reapply-restore'],results=[];
  for(const scenario of scenarios)results.push(scenario==='original-file'?await runOriginalSnapshotNativeLoraCase({loraRoot,diffusionRoot,originalPath,referencePath:value('--reference'),expectedSha256:value('--expected-sha256')}):await runSnapshotNativeLoraCase({loraRoot,diffusionRoot,scenario}));
  const json=JSON.stringify({schemaVersion:'works-snapshot-native-lora-run/0.1',state:'PASS',scopes:[...new Set(results.map(r=>r.scope))],generationReady:false,realBaseVerified:false,results},null,2)+'\n',output=value('--output');
  if(output)await writeFile(output,json);process.stdout.write(output?`P3 ${results.length} native transaction cases PASS; ${output}\n`:json);
