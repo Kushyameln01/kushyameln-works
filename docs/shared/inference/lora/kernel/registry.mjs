@@ -1,1 +1,1 @@
-export const KERNEL = Object.freeze({"abiVersion": "lora-block-f32-v1", "wasmSha256": "da6d56fca5d9bc91173681c22b91cd9337f53ea067d84455b9d659ee7ee52984", "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1", "backend": "wabt-normal"});
+export const KERNEL = Object.freeze({"abiVersion": "lora-block-f32-v1", "wasmSha256": "3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24", "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1", "backend": "wabt-normal"});
