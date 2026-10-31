@@ -1,0 +1,488 @@
+{
+  "contractVersion": "works-module-contract/1.0-draft.1",
+  "moduleId": "example:works-diffusion",
+  "moduleVersion": "external-description/1",
+  "implementationRef": {
+    "repository": "https://github.com/Kushyameln01/kushyameln-works",
+    "commit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+    "path": "docs/shared/diffusion-models/api/index.mjs"
+  },
+  "nativeAPI": {
+    "version": "diffusion-models/0.1",
+    "build": "diffusion-models/0.1+33d7c5c3f3865fb6cf68b85358e04d1d0f558ca362531cc14902667fcc0c850b",
+    "transport": "direct",
+    "entrypoint": "createDiffusionModels().request"
+  },
+  "adapterRef": null,
+  "operations": [
+    {
+      "operationId": "validateConditioning",
+      "roles": [
+        "tensor-transform"
+      ],
+      "inputPorts": [
+        {
+          "portId": "conditioning",
+          "bindingRef": "example:works-diffusion:conditioning",
+          "owner": "diffusion",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+            "path": "docs/shared/diffusion-models/api/index.mjs"
+          },
+          "nativeAPI": {
+            "version": "diffusion-models/0.1",
+            "build": "diffusion-models/0.1+33d7c5c3f3865fb6cf68b85358e04d1d0f558ca362531cc14902667fcc0c850b",
+            "transport": "direct",
+            "entrypoint": "createDiffusionModels().request"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:text-hidden-states",
+            "schemaVersion": "1",
+            "spaceId": "raw",
+            "unit": "unitless",
+            "normalization": "none"
+          },
+          "profileRef": "wan-umt5-staged-fp32/1:text512",
+          "requiredMetadata": [
+            "/attentionMask",
+            "/modelSha256",
+            "/tokenizerSha256"
+          ],
+          "requiredIdentities": [
+            {
+              "identityKind": "model",
+              "role": "producer",
+              "algorithm": "sha256",
+              "value": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+              "scope": "full-file"
+            },
+            {
+              "identityKind": "tokenizer",
+              "role": "tokenizer",
+              "algorithm": "sha256",
+              "value": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+              "scope": "full-file"
+            }
+          ],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              1,
+              512,
+              4096
+            ],
+            "axes": [
+              "B",
+              "L",
+              "C"
+            ]
+          }
+        }
+      ],
+      "outputPorts": [],
+      "implementationState": "implemented",
+      "constraints": {
+        "metadataOnly": true,
+        "pointwiseBudgetApplies": false
+      },
+      "profileRefs": [
+        "wan-umt5-staged-fp32/1:text512"
+      ],
+      "semanticSchemaRefs": [
+        {
+          "schemaId": "example:text-hidden-states",
+          "schemaVersion": "1"
+        }
+      ]
+    },
+    {
+      "operationId": "restoreRawMean",
+      "roles": [
+        "tensor-transform"
+      ],
+      "inputPorts": [
+        {
+          "portId": "normalizedMean",
+          "bindingRef": "example:works-diffusion:normalizedMean",
+          "owner": "diffusion",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+            "path": "docs/shared/diffusion-models/api/index.mjs"
+          },
+          "nativeAPI": {
+            "version": "diffusion-models/0.1",
+            "build": "diffusion-models/0.1+33d7c5c3f3865fb6cf68b85358e04d1d0f558ca362531cc14902667fcc0c850b",
+            "transport": "direct",
+            "entrypoint": "createDiffusionModels().request"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:normalized-posterior-mean",
+            "schemaVersion": "1",
+            "spaceId": "wan21-normalized",
+            "unit": "unitless",
+            "normalization": "wan21-comfy-f32-v1"
+          },
+          "profileRef": "wan21-raw-f32-5x16x16",
+          "requiredMetadata": [
+            "/modelSha256"
+          ],
+          "requiredIdentities": [
+            {
+              "identityKind": "model",
+              "role": "decoder",
+              "algorithm": "sha256",
+              "value": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "scope": "full-file"
+            }
+          ],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              1,
+              16,
+              2,
+              2,
+              2
+            ],
+            "axes": [
+              "N",
+              "C",
+              "T",
+              "H",
+              "W"
+            ]
+          }
+        }
+      ],
+      "outputPorts": [
+        {
+          "portId": "rawMean",
+          "bindingRef": "example:works-diffusion:rawMean",
+          "owner": "diffusion",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+            "path": "docs/shared/diffusion-models/api/index.mjs"
+          },
+          "nativeAPI": {
+            "version": "diffusion-models/0.1",
+            "build": "diffusion-models/0.1+33d7c5c3f3865fb6cf68b85358e04d1d0f558ca362531cc14902667fcc0c850b",
+            "transport": "direct",
+            "entrypoint": "createDiffusionModels().request"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:raw-posterior-mean",
+            "schemaVersion": "1",
+            "spaceId": "raw",
+            "unit": "unitless",
+            "normalization": "none"
+          },
+          "profileRef": "wan21-raw-f32-5x16x16",
+          "requiredMetadata": [
+            "/modelSha256"
+          ],
+          "requiredIdentities": [
+            {
+              "identityKind": "model",
+              "role": "decoder",
+              "algorithm": "sha256",
+              "value": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "scope": "full-file"
+            }
+          ],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              1,
+              16,
+              2,
+              2,
+              2
+            ],
+            "axes": [
+              "N",
+              "C",
+              "T",
+              "H",
+              "W"
+            ]
+          }
+        }
+      ],
+      "implementationState": "implemented",
+      "constraints": {
+        "exactElements": 128,
+        "notGeneratedSample": true
+      },
+      "profileRefs": [
+        "wan21-raw-f32-5x16x16"
+      ],
+      "semanticSchemaRefs": [
+        {
+          "schemaId": "example:normalized-posterior-mean",
+          "schemaVersion": "1"
+        },
+        {
+          "schemaId": "example:raw-posterior-mean",
+          "schemaVersion": "1"
+        }
+      ]
+    },
+    {
+      "operationId": "eulerStep",
+      "roles": [
+        "tensor-transform"
+      ],
+      "inputPorts": [
+        {
+          "portId": "pointwise",
+          "bindingRef": "example:works-diffusion:pointwise",
+          "owner": "diffusion",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+            "path": "docs/shared/diffusion-models/api/index.mjs"
+          },
+          "nativeAPI": {
+            "version": "diffusion-models/0.1",
+            "build": "diffusion-models/0.1+33d7c5c3f3865fb6cf68b85358e04d1d0f558ca362531cc14902667fcc0c850b",
+            "transport": "direct",
+            "entrypoint": "createDiffusionModels().request"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:explicit-f32-pointwise",
+            "schemaVersion": "1",
+            "spaceId": "raw",
+            "unit": "unitless",
+            "normalization": "none"
+          },
+          "profileRef": "example:pointwise/1",
+          "requiredMetadata": [],
+          "requiredIdentities": [],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              null
+            ],
+            "axes": [
+              "element"
+            ],
+            "maxElements": 1048576
+          }
+        }
+      ],
+      "outputPorts": [
+        {
+          "portId": "pointwise",
+          "bindingRef": "example:works-diffusion:pointwise",
+          "owner": "diffusion",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+            "path": "docs/shared/diffusion-models/api/index.mjs"
+          },
+          "nativeAPI": {
+            "version": "diffusion-models/0.1",
+            "build": "diffusion-models/0.1+33d7c5c3f3865fb6cf68b85358e04d1d0f558ca362531cc14902667fcc0c850b",
+            "transport": "direct",
+            "entrypoint": "createDiffusionModels().request"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:explicit-f32-pointwise",
+            "schemaVersion": "1",
+            "spaceId": "raw",
+            "unit": "unitless",
+            "normalization": "none"
+          },
+          "profileRef": "example:pointwise/1",
+          "requiredMetadata": [],
+          "requiredIdentities": [],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              null
+            ],
+            "axes": [
+              "element"
+            ],
+            "maxElements": 1048576
+          }
+        }
+      ],
+      "implementationState": "implemented",
+      "constraints": {
+        "maxElements": 1048576
+      },
+      "profileRefs": [
+        "example:pointwise/1"
+      ],
+      "semanticSchemaRefs": [
+        {
+          "schemaId": "example:explicit-f32-pointwise",
+          "schemaVersion": "1"
+        }
+      ]
+    },
+    {
+      "operationId": "readLoraSource",
+      "roles": [
+        "adapter-source"
+      ],
+      "inputPorts": [],
+      "outputPorts": [
+        {
+          "portId": "registeredSource",
+          "bindingRef": "example:works-diffusion:registeredSource",
+          "owner": "diffusion",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+            "path": "docs/shared/diffusion-models/api/index.mjs"
+          },
+          "nativeAPI": {
+            "version": "diffusion-models/0.1",
+            "build": "diffusion-models/0.1+33d7c5c3f3865fb6cf68b85358e04d1d0f558ca362531cc14902667fcc0c850b",
+            "transport": "direct",
+            "entrypoint": "createDiffusionModels().request"
+          },
+          "artifactKind": "artifact-source",
+          "semantics": {
+            "schemaId": "example:lora-source",
+            "schemaVersion": "1",
+            "spaceId": "stored-bits",
+            "unit": "byte",
+            "normalization": "none"
+          },
+          "profileRef": "example:registered-lora-source/1",
+          "requiredMetadata": [
+            "/bindingId",
+            "/stage",
+            "/fullFileSHA256"
+          ],
+          "requiredIdentities": [],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": []
+        }
+      ],
+      "implementationState": "implemented",
+      "constraints": {
+        "loraApplied": false,
+        "maxTransportReadBytes": 4194304
+      },
+      "profileRefs": [
+        "example:registered-lora-source/1"
+      ],
+      "semanticSchemaRefs": [
+        {
+          "schemaId": "example:lora-source",
+          "schemaVersion": "1"
+        }
+      ]
+    },
+    {
+      "operationId": "sample",
+      "roles": [
+        "sampling"
+      ],
+      "inputPorts": [],
+      "outputPorts": [],
+      "implementationState": "not-implemented",
+      "constraints": {
+        "nativeStatus": "NOT_READY",
+        "unresolvedRefs": [
+          "U1",
+          "U2",
+          "U3"
+        ]
+      },
+      "profileRefs": [],
+      "semanticSchemaRefs": []
+    }
+  ],
+  "resourceContract": {
+    "owner": "diffusion",
+    "activeBindings": [],
+    "currentBudget": null,
+    "readiness": "not-bound"
+  },
+  "cancellation": {
+    "nativeContractRef": "docs/shared/diffusion-models/api/index.mjs",
+    "mappingState": "M4-not-implemented"
+  },
+  "evidenceRefs": [],
+  "extensions": {
+    "example:status": {
+      "schemaId": "example:descriptor-status",
+      "schemaVersion": "1",
+      "requiredForUse": false,
+      "data": {
+        "scope": "external-description-static",
+        "ownerAdoption": "not-confirmed",
+        "notes": "Public main G2 only. Local 9023329 source and next native contract were not obtained; no next-field reconstruction. Model load/predict/sample NOT_READY; LoRA I/O is loraApplied:false."
+      }
+    }
+  }
+}

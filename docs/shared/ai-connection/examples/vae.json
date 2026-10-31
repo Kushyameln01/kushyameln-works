@@ -1,0 +1,362 @@
+{
+  "contractVersion": "works-module-contract/1.0-draft.1",
+  "moduleId": "example:works-vae",
+  "moduleVersion": "external-description/1",
+  "implementationRef": {
+    "repository": "https://github.com/Kushyameln01/kushyameln-works",
+    "commit": "6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095",
+    "path": "docs/shared/inference/vae-api.mjs"
+  },
+  "nativeAPI": {
+    "version": "works-ai-1",
+    "build": "works-inference-v1",
+    "transport": "direct",
+    "entrypoint": "vae.encode / vae.decode"
+  },
+  "adapterRef": null,
+  "operations": [
+    {
+      "operationId": "encode",
+      "roles": [
+        "latent-encoding"
+      ],
+      "inputPorts": [
+        {
+          "portId": "rgb-input",
+          "bindingRef": "example:works-vae:rgb-input",
+          "owner": "vae",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095",
+            "path": "docs/shared/inference/vae-api.mjs"
+          },
+          "nativeAPI": {
+            "version": "works-ai-1",
+            "build": "works-inference-v1",
+            "transport": "direct",
+            "entrypoint": "vae.encode / vae.decode"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:rgb-unit",
+            "schemaVersion": "1",
+            "spaceId": "raw",
+            "unit": "unitless",
+            "normalization": "none"
+          },
+          "profileRef": "wan21-raw-f32-5x16x16",
+          "requiredMetadata": [],
+          "requiredIdentities": [],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              1,
+              3,
+              5,
+              16,
+              16
+            ],
+            "axes": [
+              "N",
+              "C",
+              "T",
+              "H",
+              "W"
+            ]
+          }
+        }
+      ],
+      "outputPorts": [
+        {
+          "portId": "mean",
+          "bindingRef": "example:works-vae:mean",
+          "owner": "vae",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095",
+            "path": "docs/shared/inference/vae-api.mjs"
+          },
+          "nativeAPI": {
+            "version": "works-ai-1",
+            "build": "works-inference-v1",
+            "transport": "direct",
+            "entrypoint": "vae.encode / vae.decode"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:raw-posterior-mean",
+            "schemaVersion": "1",
+            "spaceId": "raw",
+            "unit": "unitless",
+            "normalization": "none"
+          },
+          "profileRef": "wan21-raw-f32-5x16x16",
+          "requiredMetadata": [
+            "/modelSha256"
+          ],
+          "requiredIdentities": [
+            {
+              "identityKind": "model",
+              "role": "decoder",
+              "algorithm": "sha256",
+              "value": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "scope": "full-file"
+            }
+          ],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              1,
+              16,
+              2,
+              2,
+              2
+            ],
+            "axes": [
+              "N",
+              "C",
+              "T",
+              "H",
+              "W"
+            ]
+          }
+        }
+      ],
+      "implementationState": "implemented",
+      "constraints": {
+        "nativeMethod": "vae.encode",
+        "samplePosterior": false
+      },
+      "profileRefs": [
+        "wan21-raw-f32-5x16x16"
+      ],
+      "semanticSchemaRefs": [
+        {
+          "schemaId": "example:rgb-unit",
+          "schemaVersion": "1"
+        },
+        {
+          "schemaId": "example:raw-posterior-mean",
+          "schemaVersion": "1"
+        }
+      ]
+    },
+    {
+      "operationId": "decode-mean",
+      "roles": [
+        "latent-decoding"
+      ],
+      "inputPorts": [
+        {
+          "portId": "mean",
+          "bindingRef": "example:works-vae:mean",
+          "owner": "vae",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095",
+            "path": "docs/shared/inference/vae-api.mjs"
+          },
+          "nativeAPI": {
+            "version": "works-ai-1",
+            "build": "works-inference-v1",
+            "transport": "direct",
+            "entrypoint": "vae.encode / vae.decode"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:raw-posterior-mean",
+            "schemaVersion": "1",
+            "spaceId": "raw",
+            "unit": "unitless",
+            "normalization": "none"
+          },
+          "profileRef": "wan21-raw-f32-5x16x16",
+          "requiredMetadata": [
+            "/modelSha256"
+          ],
+          "requiredIdentities": [
+            {
+              "identityKind": "model",
+              "role": "decoder",
+              "algorithm": "sha256",
+              "value": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "scope": "full-file"
+            }
+          ],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              1,
+              16,
+              2,
+              2,
+              2
+            ],
+            "axes": [
+              "N",
+              "C",
+              "T",
+              "H",
+              "W"
+            ]
+          }
+        }
+      ],
+      "outputPorts": [],
+      "implementationState": "implemented",
+      "constraints": {
+        "nativeMethod": "vae.decode"
+      },
+      "profileRefs": [
+        "wan21-raw-f32-5x16x16"
+      ],
+      "semanticSchemaRefs": [
+        {
+          "schemaId": "example:raw-posterior-mean",
+          "schemaVersion": "1"
+        }
+      ]
+    },
+    {
+      "operationId": "decode-generated-sample",
+      "roles": [
+        "latent-decoding"
+      ],
+      "inputPorts": [
+        {
+          "portId": "sample",
+          "bindingRef": "example:works-vae:sample",
+          "owner": "vae",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095",
+            "path": "docs/shared/inference/vae-api.mjs"
+          },
+          "nativeAPI": {
+            "version": "works-ai-1",
+            "build": "works-inference-v1",
+            "transport": "direct",
+            "entrypoint": "vae.encode / vae.decode"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:raw-generated-sample",
+            "schemaVersion": "1",
+            "spaceId": "raw",
+            "unit": "unitless",
+            "normalization": "none"
+          },
+          "profileRef": "wan21-raw-f32-5x16x16",
+          "requiredMetadata": [
+            "/latentContract"
+          ],
+          "requiredIdentities": [
+            {
+              "identityKind": "model",
+              "role": "decoder",
+              "algorithm": "sha256",
+              "value": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+              "scope": "full-file"
+            }
+          ],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              1,
+              16,
+              2,
+              2,
+              2
+            ],
+            "axes": [
+              "N",
+              "C",
+              "T",
+              "H",
+              "W"
+            ]
+          }
+        }
+      ],
+      "outputPorts": [],
+      "implementationState": "partial",
+      "constraints": {
+        "nativeMethod": "vae.decode",
+        "acceptedScope": "G1C schema/fixture",
+        "realProducerRestorationDecode": "not-verified"
+      },
+      "profileRefs": [
+        "wan21-raw-f32-5x16x16"
+      ],
+      "semanticSchemaRefs": [
+        {
+          "schemaId": "example:raw-generated-sample",
+          "schemaVersion": "1"
+        }
+      ]
+    }
+  ],
+  "resourceContract": {
+    "owner": "vae",
+    "activeBindings": [],
+    "currentBudget": null,
+    "readiness": "not-bound"
+  },
+  "cancellation": {
+    "nativeContractRef": "docs/shared/inference/vae-api.mjs",
+    "mappingState": "M4-not-implemented"
+  },
+  "evidenceRefs": [],
+  "extensions": {
+    "example:status": {
+      "schemaId": "example:descriptor-status",
+      "schemaVersion": "1",
+      "requiredForUse": false,
+      "data": {
+        "scope": "external-description-static",
+        "ownerAdoption": "not-confirmed",
+        "notes": "G1C branch supports mean and generated sample metadata. Diagnostic profile acceptance does not certify generated producer/restoration/decode integration."
+      }
+    }
+  }
+}

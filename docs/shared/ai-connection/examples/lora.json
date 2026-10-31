@@ -1,0 +1,187 @@
+{
+  "contractVersion": "works-module-contract/1.0-draft.1",
+  "moduleId": "example:works-lora",
+  "moduleVersion": "external-description/1",
+  "implementationRef": {
+    "repository": "https://github.com/Kushyameln01/kushyameln-works",
+    "commit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+    "path": "docs/shared/inference/lora/sdk.mjs"
+  },
+  "nativeAPI": {
+    "version": "1",
+    "build": "da6d56fca5d9bc91173681c22b91cd9337f53ea067d84455b9d659ee7ee52984",
+    "transport": "direct",
+    "entrypoint": "createLora"
+  },
+  "adapterRef": null,
+  "operations": [
+    {
+      "operationId": "inspect",
+      "roles": [
+        "adapter-source"
+      ],
+      "inputPorts": [
+        {
+          "portId": "source",
+          "bindingRef": "example:works-lora:source",
+          "owner": "lora",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+            "path": "docs/shared/inference/lora/sdk.mjs"
+          },
+          "nativeAPI": {
+            "version": "1",
+            "build": "da6d56fca5d9bc91173681c22b91cd9337f53ea067d84455b9d659ee7ee52984",
+            "transport": "direct",
+            "entrypoint": "createLora"
+          },
+          "artifactKind": "artifact-source",
+          "semantics": {
+            "schemaId": "example:lora-source",
+            "schemaVersion": "1",
+            "spaceId": "stored-bits",
+            "unit": "byte",
+            "normalization": "none"
+          },
+          "profileRef": "example:registered-lora-source/1",
+          "requiredMetadata": [
+            "/bindingId",
+            "/stage",
+            "/fullFileSHA256"
+          ],
+          "requiredIdentities": [],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": []
+        }
+      ],
+      "outputPorts": [],
+      "implementationState": "implemented",
+      "constraints": {
+        "headerOnly": true,
+        "fullHashComputed": false
+      },
+      "profileRefs": [
+        "example:registered-lora-source/1"
+      ],
+      "semanticSchemaRefs": [
+        {
+          "schemaId": "example:lora-source",
+          "schemaVersion": "1"
+        }
+      ]
+    },
+    {
+      "operationId": "prepare",
+      "roles": [
+        "adapter-weight-transform"
+      ],
+      "inputPorts": [],
+      "outputPorts": [
+        {
+          "portId": "weightBlock",
+          "bindingRef": "example:works-lora:weightBlock",
+          "owner": "lora",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+            "path": "docs/shared/inference/lora/sdk.mjs"
+          },
+          "nativeAPI": {
+            "version": "1",
+            "build": "da6d56fca5d9bc91173681c22b91cd9337f53ea067d84455b9d659ee7ee52984",
+            "transport": "direct",
+            "entrypoint": "createLora"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:f32-weight-block",
+            "schemaVersion": "1",
+            "spaceId": "row-major",
+            "unit": "weight",
+            "normalization": "none"
+          },
+          "profileRef": "lora-block-f32-v1",
+          "requiredMetadata": [
+            "/weightId",
+            "/modelHash",
+            "/graphHash"
+          ],
+          "requiredIdentities": [],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              null,
+              null
+            ],
+            "axes": [
+              "row",
+              "column"
+            ]
+          }
+        }
+      ],
+      "implementationState": "implemented",
+      "constraints": {
+        "nativeMethod": "prepare",
+        "requiresExplicitBaseProviderAndSink": true,
+        "realConsumer": "not-provided",
+        "storageDtypes": [
+          "BF16",
+          "F16",
+          "F32"
+        ],
+        "computeDtype": "F32",
+        "loaderPolicySourceCommit": "b5a432157de6b8884f81104cd02926adf4d597e4"
+      },
+      "profileRefs": [
+        "lora-block-f32-v1"
+      ],
+      "semanticSchemaRefs": [
+        {
+          "schemaId": "example:f32-weight-block",
+          "schemaVersion": "1"
+        }
+      ]
+    }
+  ],
+  "resourceContract": {
+    "owner": "lora",
+    "activeBindings": [],
+    "currentBudget": null,
+    "readiness": "not-bound"
+  },
+  "cancellation": {
+    "nativeContractRef": "docs/shared/inference/lora/sdk.mjs",
+    "mappingState": "M4-not-implemented"
+  },
+  "evidenceRefs": [],
+  "extensions": {
+    "example:status": {
+      "schemaId": "example:descriptor-status",
+      "schemaVersion": "1",
+      "requiredForUse": false,
+      "data": {
+        "scope": "external-description-static",
+        "ownerAdoption": "not-confirmed",
+        "notes": "build is the SDK context kernel SHA-256, not a generic JS/native wire build. F32 row-major Linear/additive only. No real external consumer/full graph acceptance asserted."
+      }
+    }
+  }
+}

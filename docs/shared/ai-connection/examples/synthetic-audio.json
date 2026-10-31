@@ -1,0 +1,164 @@
+{
+  "contractVersion": "works-module-contract/1.0-draft.1",
+  "moduleId": "example:synthetic-audio",
+  "moduleVersion": "external-description/1",
+  "implementationRef": {
+    "archiveRef": "examples/synthetic-audio-source.txt",
+    "sha256": "4c79d115248ea99f727355f6c00b70c636cdacd03b7baeae0a601d30ca2c7d11"
+  },
+  "nativeAPI": {
+    "version": "example-audio/1",
+    "build": "synthetic-fixture",
+    "transport": "direct",
+    "entrypoint": "synthetic-only:not-executable"
+  },
+  "adapterRef": null,
+  "operations": [
+    {
+      "operationId": "condition-audio",
+      "roles": [
+        "tensor-transform"
+      ],
+      "inputPorts": [
+        {
+          "portId": "pcm",
+          "bindingRef": "example:synthetic-audio:pcm",
+          "owner": "synthetic-audio",
+          "sourceRef": {
+            "archiveRef": "examples/synthetic-audio-source.txt",
+            "sha256": "4c79d115248ea99f727355f6c00b70c636cdacd03b7baeae0a601d30ca2c7d11"
+          },
+          "nativeAPI": {
+            "version": "example-audio/1",
+            "build": "synthetic-fixture",
+            "transport": "direct",
+            "entrypoint": "synthetic-only:not-executable"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:pcm",
+            "schemaVersion": "1",
+            "spaceId": "waveform",
+            "unit": "relative-amplitude",
+            "normalization": "none"
+          },
+          "profileRef": "example:stereo-480/1",
+          "requiredMetadata": [],
+          "requiredIdentities": [],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              1,
+              2,
+              480
+            ],
+            "axes": [
+              "batch",
+              "channel",
+              "sample"
+            ]
+          }
+        }
+      ],
+      "outputPorts": [
+        {
+          "portId": "conditioned-pcm",
+          "bindingRef": "example:synthetic-audio:conditioned-pcm",
+          "owner": "synthetic-audio",
+          "sourceRef": {
+            "archiveRef": "examples/synthetic-audio-source.txt",
+            "sha256": "4c79d115248ea99f727355f6c00b70c636cdacd03b7baeae0a601d30ca2c7d11"
+          },
+          "nativeAPI": {
+            "version": "example-audio/1",
+            "build": "synthetic-fixture",
+            "transport": "direct",
+            "entrypoint": "synthetic-only:not-executable"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:pcm",
+            "schemaVersion": "1",
+            "spaceId": "waveform",
+            "unit": "relative-amplitude",
+            "normalization": "none"
+          },
+          "profileRef": "example:stereo-480/1",
+          "requiredMetadata": [],
+          "requiredIdentities": [],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              1,
+              2,
+              480
+            ],
+            "axes": [
+              "batch",
+              "channel",
+              "sample"
+            ]
+          }
+        }
+      ],
+      "implementationState": "not-implemented",
+      "constraints": {
+        "fixtureOnly": true,
+        "sampleRateHz": 48000,
+        "nativeExecutionAvailable": false
+      },
+      "profileRefs": [
+        "example:stereo-480/1"
+      ],
+      "semanticSchemaRefs": [
+        {
+          "schemaId": "example:pcm",
+          "schemaVersion": "1"
+        }
+      ]
+    }
+  ],
+  "resourceContract": {
+    "owner": "synthetic-audio",
+    "activeBindings": [],
+    "currentBudget": null,
+    "readiness": "not-bound"
+  },
+  "cancellation": {
+    "nativeContractRef": "docs/shared/inference/API.md",
+    "mappingState": "M4-not-implemented"
+  },
+  "evidenceRefs": [],
+  "extensions": {
+    "example:status": {
+      "schemaId": "example:descriptor-status",
+      "schemaVersion": "1",
+      "requiredForUse": false,
+      "data": {
+        "scope": "external-description-static",
+        "ownerAdoption": "not-confirmed",
+        "notes": "Descriptor-only synthetic module. Source reference identifies the included fixture contract text, not a runnable audio model. No native executable supplied."
+      }
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "schemas": [
+    {
+      "schemaId": "example:text-hidden-states",
+      "schemaVersion": "1",
+      "interpretationScope": "descriptor-fixture-only",
+      "nativeMeanings": [
+        "text_hidden_states"
+      ]
+    },
+    {
+      "schemaId": "example:rgb-unit",
+      "schemaVersion": "1",
+      "interpretationScope": "descriptor-fixture-only",
+      "nativeMeanings": [
+        "rgb-unit"
+      ]
+    },
+    {
+      "schemaId": "example:raw-posterior-mean",
+      "schemaVersion": "1",
+      "interpretationScope": "descriptor-fixture-only",
+      "nativeMeanings": [
+        "raw-posterior-mean"
+      ]
+    },
+    {
+      "schemaId": "example:raw-generated-sample",
+      "schemaVersion": "1",
+      "interpretationScope": "descriptor-fixture-only",
+      "nativeMeanings": [
+        "wan21-raw-generated-sample:v1"
+      ]
+    },
+    {
+      "schemaId": "example:explicit-f32-pointwise",
+      "schemaVersion": "1",
+      "interpretationScope": "descriptor-fixture-only"
+    },
+    {
+      "schemaId": "example:lora-source",
+      "schemaVersion": "1",
+      "interpretationScope": "descriptor-fixture-only"
+    },
+    {
+      "schemaId": "example:f32-weight-block",
+      "schemaVersion": "1",
+      "interpretationScope": "descriptor-fixture-only"
+    },
+    {
+      "schemaId": "example:pcm",
+      "schemaVersion": "1",
+      "interpretationScope": "descriptor-fixture-only",
+      "nativeMeanings": [
+        "synthetic:pcm"
+      ]
+    },
+    {
+      "schemaId": "example:g1c-native-metadata",
+      "schemaVersion": "1",
+      "g1cMetadata": true,
+      "interpretationScope": "connection-1 metadata fixture; not a native wire schema declaration"
+    },
+    {
+      "schemaId": "example:normalized-posterior-mean",
+      "schemaVersion": "1",
+      "interpretationScope": "G2 fixed mean128 metadata fixture only",
+      "nativeMeanings": [
+        "wan21-normalized-posterior-mean:v1"
+      ]
+    },
+    {
+      "schemaId": "example:synthetic-audio-native",
+      "schemaVersion": "1",
+      "interpretationScope": "synthetic metadata-only PCM fixture, no executable model"
+    }
+  ],
+  "roles": [
+    "text-encoding",
+    "latent-encoding",
+    "latent-decoding",
+    "sampling",
+    "adapter-source",
+    "adapter-weight-transform",
+    "tensor-transform"
+  ]
+}
