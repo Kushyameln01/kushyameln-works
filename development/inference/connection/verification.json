@@ -1,0 +1,235 @@
+{
+  "revision": "connection-1",
+  "baseline": "a33b311e45a75a6c683242286fef608c7b3770a9",
+  "apiVersions": {
+    "textVae": "works-ai-1",
+    "diffusion": "diffusion-models/0.1"
+  },
+  "buildId": "diffusion-models/0.1+164b7cb4b575e60388e7ce66db27cfbaea7057cf3cc46a5362e6f47ed601b3ae",
+  "connectionFixtures": {
+    "passed": 12,
+    "total": 12,
+    "includesReal128ElementHikeMeanRoundtrip": true,
+    "realModelInference": false,
+    "usesModuleOrOrtDoublesForDispatchAndLifecycle": true
+  },
+  "tokenizerBrowser": {
+    "passed": true,
+    "cases": [
+      {
+        "text": "Hello world",
+        "ids": [
+          23231,
+          3914,
+          1
+        ],
+        "expected": [
+          23231,
+          3914,
+          1
+        ],
+        "pass": true,
+        "length": 512,
+        "padCount": 509
+      },
+      {
+        "text": "こんにちは、世界。",
+        "ids": [
+          79848,
+          302,
+          4503,
+          310,
+          1
+        ],
+        "expected": [
+          79848,
+          302,
+          4503,
+          310,
+          1
+        ],
+        "pass": true,
+        "length": 512,
+        "padCount": 507
+      },
+      {
+        "text": "A CAT and a cat",
+        "ids": [
+          320,
+          44189,
+          333,
+          289,
+          6283,
+          1
+        ],
+        "expected": [
+          320,
+          44189,
+          333,
+          289,
+          6283,
+          1
+        ],
+        "pass": true,
+        "length": 512,
+        "padCount": 506
+      },
+      {
+        "text": "  spaced\ntext  ",
+        "ids": [
+          273,
+          273,
+          10828,
+          355,
+          27,
+          5012,
+          273,
+          273,
+          1
+        ],
+        "expected": [
+          273,
+          273,
+          10828,
+          355,
+          27,
+          5012,
+          273,
+          273,
+          1
+        ],
+        "pass": true,
+        "length": 512,
+        "padCount": 503
+      },
+      {
+        "text": "café 🐈",
+        "ids": [
+          12831,
+          273,
+          247816,
+          1
+        ],
+        "expected": [
+          12831,
+          273,
+          247816,
+          1
+        ],
+        "pass": true,
+        "length": 512,
+        "padCount": 508
+      },
+      {
+        "text": "",
+        "ids": [
+          1
+        ],
+        "expected": [
+          1
+        ],
+        "pass": true,
+        "length": 512,
+        "padCount": 511
+      }
+    ],
+    "browser": "154.0.8037.57"
+  },
+  "replacementBuilderTests": {
+    "passed": 6,
+    "total": 6
+  },
+  "repositoryChecks": {
+    "baseline": "a33b311e45a75a6c683242286fef608c7b3770a9",
+    "unknownPublicFiles": [
+      "lora/index.html",
+      "shared/inference/lora/README.md",
+      "shared/inference/lora/catalog.mjs",
+      "shared/inference/lora/folder.mjs",
+      "shared/inference/lora/kernel/LICENSE-Hike.txt",
+      "shared/inference/lora/kernel/README.md",
+      "shared/inference/lora/kernel/host.mjs",
+      "shared/inference/lora/kernel/lora.wasm",
+      "shared/inference/lora/kernel/registry.mjs",
+      "shared/inference/lora/panel.mjs",
+      "shared/inference/lora/planner.mjs",
+      "shared/inference/lora/safetensors.mjs",
+      "shared/inference/lora/sdk.mjs",
+      "shared/inference/lora/sources.mjs",
+      "superpowers/plans/2026-10-31-lora-hike.md"
+    ],
+    "baselineUnknownPublicFiles": [
+      "lora/index.html",
+      "shared/inference/lora/README.md",
+      "shared/inference/lora/catalog.mjs",
+      "shared/inference/lora/folder.mjs",
+      "shared/inference/lora/kernel/LICENSE-Hike.txt",
+      "shared/inference/lora/kernel/README.md",
+      "shared/inference/lora/kernel/host.mjs",
+      "shared/inference/lora/kernel/lora.wasm",
+      "shared/inference/lora/kernel/registry.mjs",
+      "shared/inference/lora/panel.mjs",
+      "shared/inference/lora/planner.mjs",
+      "shared/inference/lora/safetensors.mjs",
+      "shared/inference/lora/sdk.mjs",
+      "shared/inference/lora/sources.mjs",
+      "superpowers/plans/2026-10-31-lora-hike.md"
+    ],
+    "sameUnknownsAsBaseline": true,
+    "changedPublicPathsAllAlreadyRegistered": true,
+    "registryUnchanged": true,
+    "fullPython": {
+      "tests": 53,
+      "passed": 52,
+      "error": "test_publication.PublicationTests.test_valid_export",
+      "reason": "15 existing LoRA/plan files are outside the publication registry; unchanged in this task"
+    },
+    "fullDocsLiteralReferenceClosure": true
+  },
+  "operationsNotRun": [
+    "model export",
+    "heavy full-pipeline inference",
+    "real generated-sample inference",
+    "model downloads",
+    "publication",
+    "push"
+  ],
+  "evidence": {
+    "contract-red.log": {
+      "bytes": 5961,
+      "sha256": "eafb25e85f5cff5ee73250cf67e47f7c7d6075d128db2ce57daa068a0325dd64"
+    },
+    "text-identity-red.log": {
+      "bytes": 1388,
+      "sha256": "fa734c4dbbfab6f63ae88de399cdc784315f933ffe8aed68f9476cab5ca93b45"
+    },
+    "diffusion-wrapper-red.log": {
+      "bytes": 1767,
+      "sha256": "399b6c9b4b1960986c0c6e84b5025e5f7f67c264ff8655548afdd2fa941eba7b"
+    },
+    "review-red.log": {
+      "bytes": 3798,
+      "sha256": "90633423e19397ca4f72d4192cb5becce8c5b8fc66264a436515dbf6fa9d3f7b"
+    },
+    "encode-frame-mapping-red.log": {
+      "bytes": 368,
+      "sha256": "c50bbe34fef894d106700c94070b8af545b5125ca1064e499e455736714304f7"
+    },
+    "contract-green.log": {
+      "bytes": 1385,
+      "sha256": "f4a2f7789f36887ac1d8eb2d597c20af527a782b97bc9d33edc3508d1a6b4550"
+    },
+    "final-contract.log": {
+      "bytes": 1382,
+      "sha256": "b363629ccc5d331d3a7c6f6c2ca25f02fd8108d35c37e6285863705d523c4715"
+    },
+    "python-tests.log": {
+      "bytes": 8177,
+      "sha256": "da47993fa9010a1d4446777b40e97d268caffb0bfecb05a7158a39bc085b27f3"
+    },
+    "tokenizer-browser-results.json": {
+      "bytes": 1752,
+      "sha256": "315f6fb6d5f046a41a818a3210cd3b425c985e7835fcad595e0dc925d31f1031"
+    }
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "scope": "V1 F=1 unchanged-size diagnostic still, native FP32 encode-mean and raw decode",
+  "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+  "source": {
+    "repo": "Wan-Video/Wan2.1",
+    "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+    "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+    "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498"
+  },
+  "strictLoad": {
+    "keys": 194,
+    "missing": [],
+    "unexpected": []
+  },
+  "precision": "unchanged stored BF16 values expanded to FP32 arithmetic; not original BF16/GPU equivalence",
+  "comparisonGate": {
+    "atol": 2e-05,
+    "rtol": 2e-05,
+    "maxAbs": 2e-05,
+    "scope": "all FP32 output elements, predetermined before export/browser; no visual-quality or large-profile extrapolation"
+  },
+  "references": {
+    "png-unit": {
+      "file": "png-unit.f32",
+      "shape": [
+        1,
+        3,
+        1,
+        16,
+        16
+      ],
+      "bytes": 3072,
+      "sha256": "4587fe89552335980ec20217890c9087706d191bfc094c2973cceaa2b908c433",
+      "elements": 768
+    },
+    "png-raw": {
+      "file": "png-raw.f32",
+      "shape": [
+        1,
+        3,
+        1,
+        16,
+        16
+      ],
+      "bytes": 3072,
+      "sha256": "372aa01bee536871a1f81306cd9130783aebd93bbe4b3515231f7ccec70b5275",
+      "elements": 768
+    },
+    "png-mean": {
+      "file": "png-mean.f32",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "bytes": 256,
+      "sha256": "74c9ff5dbd97970634fb5cd818206fa7ebfaf928dbeee6738c95d65fda828620",
+      "elements": 64
+    },
+    "png-roundtrip": {
+      "file": "png-roundtrip.f32",
+      "shape": [
+        1,
+        3,
+        1,
+        16,
+        16
+      ],
+      "bytes": 3072,
+      "sha256": "cf5ff2bf37ac4c27ec892d143bc1be1bb1a86462e4116ab03510bd6c05095849",
+      "elements": 768
+    }
+  },
+  "graphs": {
+    "encoder": {
+      "file": "encode.onnx",
+      "sha256": "193cebca40fa62412e672e64a126898a42ba0450154dd5bbb87d29fcd8aaafae",
+      "bytes": 212362391,
+      "input": [
+        1,
+        3,
+        1,
+        16,
+        16
+      ],
+      "expectedRuntimeOutput": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "onnxOutputDeclaration": [
+        "Muloutput_dim_0",
+        "Muloutput_dim_1",
+        "Muloutput_dim_0",
+        "Muloutput_dim_3",
+        "Muloutput_dim_4"
+      ],
+      "outputShapeAcceptance": "Native reference exact shape; real SDK must also check all runtime dimensions. Symbolic ONNX metadata is not arbitrary-shape support.",
+      "opsets": [
+        {
+          "domain": "",
+          "version": 17
+        }
+      ],
+      "externalWeightFiles": [],
+      "weightStorage": "embedded initializer bytes"
+    },
+    "decoderBody": {
+      "file": "decoder-body.onnx",
+      "sha256": "c6c4457e538c6f613d2b3a73d97d90525bdc872b4d310dda125712e1f42b55cf",
+      "bytes": 286313363,
+      "input": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "expectedRuntimeOutput": [
+        1,
+        3,
+        1,
+        16,
+        16
+      ],
+      "onnxOutputDeclaration": [
+        "Convoutput_dim_0",
+        3,
+        "Convoutput_dim_0",
+        "Convoutput_dim_3",
+        "Convoutput_dim_4"
+      ],
+      "outputShapeAcceptance": "Native reference exact shape; real SDK must also check all runtime dimensions. Symbolic ONNX metadata is not arbitrary-shape support.",
+      "opsets": [
+        {
+          "domain": "",
+          "version": 17
+        }
+      ],
+      "externalWeightFiles": [],
+      "weightStorage": "embedded initializer bytes"
+    }
+  },
+  "torchVersion": "2.6.0+cpu",
+  "threads": 1,
+  "nativeInferenceSeconds": 0.5461388160001661,
+  "processPeakRssBytes": 2454687744,
+  "inputPixelResize": false,
+  "padding": false,
+  "frameReduction": false
+}

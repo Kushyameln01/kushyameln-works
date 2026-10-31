@@ -1,6 +1,8 @@
 /** Actual staged Wan UMT5 encoder. CPU WASM only; FP32 prepared diagnostics. */
 const TYPE='wan-umt5-staged-fp32';
 const MODEL='c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68';
+export const TEXT_ENCODER_MODEL_SHA256=MODEL;
+export const UMT5_TOKENIZER_SHA256='e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458';
 const DIM=4096;
 const HEX=/^[0-9a-f]{64}$/;
 const failure=(message)=>{throw new Error(message);};
@@ -17,7 +19,8 @@ export function inspectTextEncoderManifest(manifest){
  manifest.blocks.forEach((r,i)=>{record(r,'block');if(r.index!==i||!r.nativePass)failure('Unverified text block manifest');});
  record(manifest.finalNorm,'final norm');if(manifest.finalNorm.bytes!==DIM*4||manifest.finalNorm.epsilon!==1e-6)failure('Invalid final norm manifest');
  record(e.rowHashes,'embedding row hashes');if(e.rowHashes.bytes!==e.vocabSize*32)failure('Invalid embedding row hash table');
- return {type:TYPE,hiddenSize:DIM,numLayers:24,maxTokens:512,arithmetic:manifest.arithmetic,modelSha256:MODEL};
+ if(manifest.tokenizer!==undefined&&manifest.tokenizer.sha256!==UMT5_TOKENIZER_SHA256)failure('Unsupported embedded tokenizer identity');
+ return {type:TYPE,hiddenSize:DIM,numLayers:24,maxTokens:512,arithmetic:manifest.arithmetic,modelSha256:MODEL,tokenizerSha256:UMT5_TOKENIZER_SHA256};
 }
 export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress}={}){
  const info=inspectTextEncoderManifest(manifest);checkSignal(signal);
