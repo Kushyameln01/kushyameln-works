@@ -44,6 +44,14 @@ const result = await adapter.run({x});
 
 `describeBinding()`は両descriptor/hashとpass-throughの来歴を返す。nativeは自身のheader/range検査を記録し、外部の有効な全file hash receiptは別証拠として結ぶ。native registryを改変してfullFileSHA256Verified=trueへ変更しない。
 
+## 管理採用とP0の宣言
+
+管理の `createAdoptedLoraAdapter` はこのowner factoryを注入して使う。mappingの実装を管理へ複製せず、旧 `createDiagnosticLoraBridge` を同じ経路へ重ねない。固定採用source、loader・variant・dtype・明示strength・原本識別・full/selected shape・両registry・gate/scopeの対応は [P0宣言](../../../../development/ai-connection/reference-adoption/lora/DECLARATION-BINDINGS.json) と [管理経路の確認結果](../../../../development/ai-connection/reference-adoption/lora/RESULT.md) を参照する。
+
+管理request/revision/resource generationと、SDK instance/local revision・native consumer epochは別の識別子。取消やbase復帰後には値が一致しない。原本登録、prepared、STAGED、診断consumerへの `CONSUMER_APPLIED`、管理snapshot公開を別状態として扱う。このadapterの成功だけでは生成可能snapshotを公開しない。
+
+入力は選択されたユーザーのローカルFile。下記の過去4原本を使う共同runnerは歴史的な実モデル診断の再現手順であり、一般の登録・適用に4原本すべてを要求するAPI制約ではない。今回の管理経路fixtureは1 Fileで実行し、実base合格とは別の証拠にする。次期規範runtimeと実native診断snapshotの受入状況も確認結果で区別する。
+
 ## baseへの復帰
 
 ```javascript

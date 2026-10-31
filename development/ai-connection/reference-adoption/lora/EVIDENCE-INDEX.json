@@ -1,7 +1,7 @@
 {
   "schemaVersion": "lora-p0-evidence-index/1.0-draft.1",
   "documentVersion": "1.0-draft.1",
-  "status": "FIXED_EXISTING_EVIDENCE_INDEX_NOT_NEW_EXECUTION",
+  "status": "SCOPED_EXISTING_AND_RECEIVER_PRECHECK_EVIDENCE_INDEX",
   "catalogSource": {
     "repository": "Kushyameln01/kushyameln-works",
     "commit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
@@ -603,31 +603,163 @@
       ],
       "realModelAll201DiffAcceptance": false,
       "noFullTargetOrModelAcceptance": true
+    },
+    {
+      "evidenceId": "RECEIVER-MANAGED-LOCAL-FILE-CONTROL-D59C917",
+      "origin": "LoRA receiver through actual fixed management adoption",
+      "reuseStatus": "NEW_EXECUTION_CHANGED_BOUNDARY_ONLY",
+      "validationAtOriginalScope": "PASS",
+      "receiverSourceCommit": "d59c917a2d136a29e4f0b083143d63a0d621dcb5",
+      "adoptedCommits": {
+        "manager": "28596717182e48aeb23c719c51b6e593edf4e496",
+        "lora": "0c27874908638afc748ea2455a2779a16736730b",
+        "diffusion": "438972f30242e0a3bc66edb8591f38eaa0fcd384"
+      },
+      "coverage": "PARTIAL",
+      "scope": "P3-changed-boundary-precheck",
+      "baseKind": "synthetic-manager-control-fixture",
+      "realBase": false,
+      "realTrainedOriginalLoRa": false,
+      "localFileCount": 1,
+      "historicalFourOriginalsRequired": false,
+      "fixture": {
+        "kind": "new-local-File-numerical-control-fixture",
+        "fileName": "user-chosen-local-fixture.safetensors",
+        "bytes": 61890,
+        "sha256": "ab3e2bee32a725c68d42e923e80951409cea16526e2271a8c17d07baf88fb57f",
+        "rank": 1,
+        "dtype": "F32",
+        "alpha": 1,
+        "baseKind": "synthetic-manager-control-fixture",
+        "realOriginalLoRa": false,
+        "historicalFourOriginalsRequired": false,
+        "closedForm": "W selected firstcolumn=1+.5*s; othercolumns=0; bias=2+.125*s; x0=1; output=3+.625*s",
+        "strengths": [
+          0,
+          1,
+          -1
+        ],
+        "gates": {
+          "weight": {
+            "absolute": 0,
+            "relative": 0
+          },
+          "bias": {
+            "absolute": 0,
+            "relative": 0
+          },
+          "output": {
+            "absolute": 0,
+            "relative": 0
+          }
+        },
+        "preExecution": true
+      },
+      "cases": 7,
+      "controlGroups": 7,
+      "weightElements": 573440,
+      "biasElements": 112,
+      "caseOutputElements": 112,
+      "baseRestoreOutputElements": 16,
+      "maxAbsoluteError": 0,
+      "ownership": "independent-copy",
+      "leaseNewlyAccepted": false,
+      "managerRequestTraceEvents": 325,
+      "terminalQueueRecords": 78,
+      "nativeMappingAuthority": "createDiffusionDiagnosticAdapter",
+      "legacyBridgeLayered": false,
+      "P1": "UNVERIFIED",
+      "snapshotNormRuntimeVerified": false,
+      "fullP3Accepted": false,
+      "generationReady": false,
+      "snapshotPublished": false,
+      "modelInference": false,
+      "evidenceFiles": [
+        {
+          "path": "evidence/managed-boundary-result.json",
+          "byteLength": 485628,
+          "sha256": "535d8cb902f715f049601d944dfdd9a1e94614209232c1dac547b9e02cd8b34f"
+        },
+        {
+          "path": "evidence/pre-execution.json",
+          "byteLength": 756,
+          "sha256": "4447e5969486cf52958bf674cbe6266d278c14d0a3d4ec044e22c01d73edc6b9"
+        },
+        {
+          "path": "evidence/receiver-readback.json",
+          "byteLength": 2766,
+          "sha256": "fe6bd8fd14afa9b601102b85ef133ec8c4d9556a32c50e793f0eb7881b00b833"
+        },
+        {
+          "path": "evidence/independent-readback.json",
+          "byteLength": 8701,
+          "sha256": "36daa932a390ede9db0658be104317a55e5c77638e4e28dc80bc7ba51c05690c"
+        },
+        {
+          "path": "evidence/independent-review.md",
+          "byteLength": 15129,
+          "sha256": "64d44ddeb4b3c142235b444514c2feb636ef45ba9d903af9b6ef405718a7e6f3"
+        },
+        {
+          "path": "evidence/adopted-contract-tests.log",
+          "byteLength": 1287,
+          "sha256": "6e8b2f0fac56d410d6d23fa1edbb374d6b8cd67c3b915c5521283a82e0d1f4bc"
+        }
+      ],
+      "sourceFiles": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "d59c917a2d136a29e4f0b083143d63a0d621dcb5",
+          "path": "tools/ai-connection/test-managed-lora-boundary.mjs",
+          "url": "https://github.com/Kushyameln01/kushyameln-works/blob/d59c917a2d136a29e4f0b083143d63a0d621dcb5/tools/ai-connection/test-managed-lora-boundary.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "d59c917a2d136a29e4f0b083143d63a0d621dcb5",
+          "path": "tools/ai-connection/managed-lora-boundary-cases.mjs",
+          "url": "https://github.com/Kushyameln01/kushyameln-works/blob/d59c917a2d136a29e4f0b083143d63a0d621dcb5/tools/ai-connection/managed-lora-boundary-cases.mjs"
+        }
+      ],
+      "limits": [
+        "synthetic rank1 local File and nonzero synthetic base; not new real-original/base compatibility",
+        "same-target actual native diagnostic snapshot not exercised",
+        "no new P1 reference runtime or whole-model execution",
+        "queue remains quarantined after injected cleanup failure; verified rebind untested",
+        "lifecycle before/after raw output vectors other than recorded base restore not all serialized",
+        "direct quarantine cleanup has no separately serialized native release receipt"
+      ]
     }
   ],
   "newExecutionByThisIndex": {
-    "originalsOpened": false,
-    "originalWholeHashesRecomputed": false,
+    "historicalOriginalsOpened": false,
+    "historicalWholeHashesRecomputed": false,
+    "newLocalFixtureFilesOpened": 1,
     "numericalModelRuns": 0,
-    "newManagementP3Cases": 0,
-    "scope": "only Git-source/document/receipt metadata acquisition and static P0 contribution"
+    "actualOrtProjectionCases": 7,
+    "newManagementBoundaryControlGroups": 7,
+    "newFullP3Accepted": false,
+    "scope": "changed existing adoption edge with one synthetic local File and synthetic base; catalog metadata acquisition remains static"
   },
   "currentP3Acceptance": {
     "compatibility": "UNVERIFIED",
     "validation": "NOT_VERIFIED",
     "readiness": "BLOCKED",
     "dependsOn": [
-      "target-edgeP0 review",
-      "exact managementP1ReferenceSet/norm-bindings source and receipt",
-      "explicit source combination",
-      "new management request/native transaction/snapshot scoped tests"
+      "target-edge P0 management review",
+      "exact management P1ReferenceSet/norm-bindings source and receipt",
+      "same-context.target actual native diagnostic snapshot joint acceptance"
     ],
     "doesNotInvalidateExistingContractEvidence": true,
-    "classificationScope": "new P3 reference-runtime edge only, because exact P1 implementation/source binding is not obtained; prior native contracts/evidence stay unchanged"
+    "classificationScope": "new P3 reference-runtime edge only, because exact P1 implementation/source binding is not obtained; prior native contracts/evidence stay unchanged",
+    "changedBoundaryPrecheck": {
+      "status": "PASS",
+      "evidenceId": "RECEIVER-MANAGED-LOCAL-FILE-CONTROL-D59C917",
+      "substitutesForP1OrSnapshot": false
+    }
   },
   "notAccepted": [
     "Runtime integration of reference catalog by this contribution",
-    "management P3 actual new requests/snapshot acceptance",
+    "complete P3 through P1 norm runtime and same-target actual native diagnostic snapshot",
     "all-target LoRA application until matching real graph/consumer exists",
     "full model/native E5 session",
     "production generated sample/restore/decode",
