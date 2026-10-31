@@ -1,0 +1,1021 @@
+{
+  "schemaVersion": "works-owner-local-input-handoff/1.0-draft.1",
+  "scope": "Existing Rect bundle and selected Text manifest/gate handoff; metadata + local-file instructions only",
+  "nativeApiVersion": "works-ai-1",
+  "sourcePins": {
+    "vaeText": "855f435120f08eb9e818e51281fc26f0e2633829",
+    "managerRequested": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+    "referenceCatalog": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+    "nativeConfigureSource": "2bdca59ea78580d4fe7a9d31a8de33209b64d029"
+  },
+  "p0References": {
+    "bindings": "../reference-adoption/p0/DECLARATION-BINDINGS.json",
+    "evidenceIndex": "../reference-adoption/p0/EVIDENCE-INDEX.json",
+    "statePolicy": "Original fixed-source P0 null/reasons remain unmodified; this handoff does not fill source-dependent P0Table values"
+  },
+  "rect": {
+    "manifest": {
+      "manifestPath": "manifests/vae-rect/manifest.json",
+      "byteLength": 4820,
+      "sha256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a",
+      "copiedByteExactFrom": "reference-adoption/p0/evidence/manifests/vae-rect.json",
+      "currentPrivateOriginal": "/workspace/work/inference/e6-rect/accepted-bundle/manifest.json",
+      "currentOriginalManifestBytesMatch": true
+    },
+    "profile": {
+      "id": "wan21-raw-f32-1x16x32",
+      "videoShape": [
+        1,
+        3,
+        1,
+        16,
+        32
+      ],
+      "latentShape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "layout": "NCTHW",
+      "latentSpace": "raw",
+      "posterior": "mean",
+      "opset": 17
+    },
+    "model": {
+      "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "storedDtype": "bfloat16",
+      "executionDtype": "float32",
+      "precisionNote": "Stored BF16 values are unchanged; arithmetic uses FP32 and is not asserted equivalent to original BF16 execution."
+    },
+    "nativeConfigure": "api.vae.configure({manifest,files})",
+    "filesKind": "Map<string,File|Blob|Uint8Array>; preserve exact manifest.assets[role].file keys",
+    "manifestMapKey": {
+      "value": "manifest.json",
+      "requiredByNativeConfigure": false,
+      "requiredByExistingDirectoryUi": true,
+      "reason": "Native configure takes parsed manifest separately. Existing UI finds exactly one file named manifest.json and also puts selected files into the Map."
+    },
+    "assets": [
+      {
+        "role": "encoder",
+        "mapKey": "encode.onnx",
+        "localPath": "/workspace/work/inference/e6-rect/accepted-bundle/encode.onnx",
+        "expectedBytes": 212362391,
+        "expectedSha256": "0105bc12f13d3aceb35d1765681c427643bf04cc4ce5978c7339e04beff09e0d",
+        "requiredFor": [
+          "encode"
+        ],
+        "fileExists": true,
+        "observedBytes": 212362391,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "decoderBody",
+        "mapKey": "decoder-body.onnx",
+        "localPath": "/workspace/work/inference/e6-rect/accepted-bundle/decoder-body.onnx",
+        "expectedBytes": 286313363,
+        "expectedSha256": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e",
+        "requiredFor": [
+          "decode"
+        ],
+        "fileExists": true,
+        "observedBytes": 286313363,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "conv2Weight",
+        "mapKey": "conv2-weight.f32",
+        "localPath": "/workspace/work/inference/e6-rect/accepted-bundle/conv2-weight.f32",
+        "expectedBytes": 1024,
+        "expectedSha256": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+        "requiredFor": [
+          "decode"
+        ],
+        "fileExists": true,
+        "observedBytes": 1024,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "conv2Bias",
+        "mapKey": "conv2-bias.f32",
+        "localPath": "/workspace/work/inference/e6-rect/accepted-bundle/conv2-bias.f32",
+        "expectedBytes": 64,
+        "expectedSha256": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+        "requiredFor": [
+          "decode"
+        ],
+        "fileExists": true,
+        "observedBytes": 64,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      }
+    ],
+    "totalFourAssetBytes": 498676842,
+    "manifestPlusFourAssetBytes": 498681662,
+    "gateRefs": {
+      "exporterDefault": {
+        "path": "manifests/vae-rect/manifest.json",
+        "pointer": "/comparisonGate"
+      },
+      "acceptedNativeAllOutputGate": {
+        "path": "../reference-adoption/p0/evidence/owner/e6/acceptance-plan.json",
+        "pointer": "/comparisonGate",
+        "maximumAbsoluteError": 2e-05
+      },
+      "acceptedReceipt": {
+        "path": "../reference-adoption/p0/evidence/owner/e6/receipt.json",
+        "pointer": "/acceptanceGate"
+      },
+      "diffusionMeanRoundtrip": {
+        "path": "../reference-adoption/p0/DECLARATION-BINDINGS.json",
+        "pointer": "/gateCatalog/mean-rect-roundtrip",
+        "maximumAbsoluteError": 2e-06
+      }
+    },
+    "noSubstitution": [
+      "No F5 same128values or F1 square profile swap",
+      "No manifest-only shape edits",
+      "No reexport or new NN",
+      "No generated-sample or81frame acceptance"
+    ]
+  },
+  "text": {
+    "manifest": {
+      "manifestPath": "manifests/text/manifest.json",
+      "byteLength": 19908,
+      "sha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f",
+      "copiedByteExactFrom": "reference-adoption/p0/evidence/manifests/text.json",
+      "currentPrivateOriginal": "/workspace/work/inference/text-implementation/bundle/manifest.json",
+      "currentOriginalManifestBytesMatch": true
+    },
+    "manifestType": "wan-umt5-staged-fp32",
+    "nativeProfileId": null,
+    "nativeProfileIdReason": "Native source declares manifest.type but no independent shape/execution profile ID",
+    "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+    "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+    "nativeConfigure": "api.textEncoder.configure({manifest,files})",
+    "filesKind": "Map<string,File|Blob|Uint8Array>; exact manifest paths; original source File added separately under manifest.embedding.sourceFile",
+    "sourceFileKey": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+    "assets": [
+      {
+        "role": "block",
+        "index": 0,
+        "mapKey": "block-00.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-00.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "7fe493343e5a3d9c196284b1a64525c1296ac4f4a56a5d6239e6047cd3fb8807",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 1,
+        "mapKey": "block-01.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-01.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "00eda8f5f4b85050ec275da13dd8bd3cfe3ec120362ced66cdcaa90c94c69b80",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 2,
+        "mapKey": "block-02.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-02.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "1c25b78cdae445f1655cfee39d3560cfc39acbf4c94b3318e1adaa85a2873f58",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 3,
+        "mapKey": "block-03.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-03.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "90cfb936edd4d6805a82f43b4037966813079d4aedd158549c66582bc3984779",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 4,
+        "mapKey": "block-04.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-04.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "0f2e67515143617f9c0b77d8059932d79390a1394b990d00f5f928fc5cbd572a",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 5,
+        "mapKey": "block-05.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-05.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "d7bc22cb6040e0b704000d0091bfe260b41b928e590016ff76330b04fb520003",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 6,
+        "mapKey": "block-06.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-06.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "975428ef81f75d8a6247d77fa178efb3f6f6aa7762936236864f36eb3893506c",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 7,
+        "mapKey": "block-07.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-07.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "d6ae6199015f6cf273f6be4e6b8fee62936e62ad0300c2d17d6ae70b4062257d",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 8,
+        "mapKey": "block-08.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-08.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "1f8589ba197450330cff9cce373e1171469172157254d7176407419f5d6bbfb7",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 9,
+        "mapKey": "block-09.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-09.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "4b75f4fc30a603e0d7fbe65f8fc929e23c78892eff1be81ccee1230001f6bfae",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 10,
+        "mapKey": "block-10.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-10.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "62c442a553fa409dfe90b66c83e4a84a15bb4bf53290a86916101ef1789b36ce",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 11,
+        "mapKey": "block-11.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-11.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "07ce7f167f8e2e751cbcfc1f4e70ffe1511c4720c6b461fa623892acfdf1be3f",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 12,
+        "mapKey": "block-12.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-12.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "448bc243e1feec0d194740bbe2ba7a91a91d81d5df9cb5371345e12b50715528",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 13,
+        "mapKey": "block-13.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-13.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "9bbd7fcfcde448b638e3f52398f5334f2bb1e80d96e9876fe920443507f21284",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 14,
+        "mapKey": "block-14.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-14.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "1e96e89fe58446b93a054db33394f59f43bd2d3cf1ae2a104561f274e7742494",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 15,
+        "mapKey": "block-15.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-15.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "9e23e5d5bd2267659b2a86f0bbf7a404bece617a8e72cb15fe60c37a18de376b",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 16,
+        "mapKey": "block-16.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-16.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "837c4703e6f58004dac3eaa964b758397107f8b3ab47bdec1adc091345a104b7",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 17,
+        "mapKey": "block-17.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-17.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "018cc4113a73c884be38764a1568b940c097fab63296a29df507171d1974b49a",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 18,
+        "mapKey": "block-18.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-18.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "874cdf2f56b562fc7a78d116c1a944766f3fef6105bdb9c0766b608542e6b979",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 19,
+        "mapKey": "block-19.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-19.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "7ffb27b53e9006b99c330dfecc209f3f8d06aeaaffb70ceed5df5089fea4e447",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 20,
+        "mapKey": "block-20.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-20.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "fb02a98472528e58aebab28fe55dec970ca9a03ab62316c1fcc293c6ed22cee1",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 21,
+        "mapKey": "block-21.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-21.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "40313bd1ef3e90341e3a88ae423e422100eff35aabdb1a6719b82857da767fdd",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 22,
+        "mapKey": "block-22.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-22.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "e0ab8b928319b15713e7d74e766529600d6678e153e1acb3272f03e6cc120162",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "block",
+        "index": 23,
+        "mapKey": "block-23.onnx",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/block-23.onnx",
+        "expectedBytes": 771822917,
+        "expectedSha256": "1e68f2e96c3753ccdaf2c3bb07f54879fe541b94925662d7d1ac655554a1cd74",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 771822917,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "embedding-row-hashes",
+        "mapKey": "embedding-row-sha256.bin",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/embedding-row-sha256.bin",
+        "expectedBytes": 8204288,
+        "expectedSha256": "b827dfa98cd61ad45b380b1a68c779c6e685f35128ac76d1b588e3c06ed30928",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 8204288,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "final-norm",
+        "mapKey": "final-norm.f32",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/final-norm.f32",
+        "expectedBytes": 16384,
+        "expectedSha256": "31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 16384,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "tokenizer",
+        "mapKey": "spiece.model",
+        "localPath": "/workspace/work/inference/text-implementation/bundle/spiece.model",
+        "expectedBytes": 4548313,
+        "expectedSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+        "requiredFor": [
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 4548313,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      },
+      {
+        "role": "original-embedding-source",
+        "mapKey": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "localPath": "/workspace/work/models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "expectedBytes": 6735906897,
+        "expectedSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+        "requiredFor": [
+          "token-ids",
+          "plain-text"
+        ],
+        "fileExists": true,
+        "observedBytes": 6735906897,
+        "sizeMatchesExpected": true,
+        "currentPayloadSha256": null,
+        "currentPayloadShaReason": "This handoff copies metadata and checks presence/length only; full weight/graph hashing or original source re-inventory was not performed. Owner asset-validation probe is separate."
+      }
+    ],
+    "stageGraphBytes": 18523750008,
+    "originalModelBytes": 6735906897,
+    "minimumRuntimeFiles": {
+      "tokenIds": 27,
+      "plainText": 28,
+      "manifestPassedSeparately": true,
+      "optionalMapManifestKey": "manifest.json"
+    },
+    "runtimeAssetBytesIncludingTokenizerAndOriginalModel": 25272425890,
+    "selectedNormRef": {
+      "path": "manifests/text/manifest.json",
+      "pointer": "/finalNorm",
+      "epsilon": 1e-06
+    },
+    "selectedGateRef": {
+      "path": "manifests/text/manifest.json",
+      "pointer": "/numericGate",
+      "maxAbsError": 0.001,
+      "rtol": 0.001,
+      "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee"
+    },
+    "intermediateGateRef": {
+      "path": "manifests/text/manifest.json",
+      "pointer": "/intermediateGate",
+      "failureHistory": "../reference-adoption/p0/evidence/owner/text/REPORT.md",
+      "initialFailure": "../reference-adoption/p0/evidence/owner/text/first-block-initial-gate-failed.json",
+      "notSameAsFinalGate": true
+    },
+    "tokenizerRef": {
+      "path": "manifests/text/manifest.json",
+      "pointer": "/tokenizer"
+    },
+    "inputContract": {
+      "plainText": "encode({text}); unchanged SentencePiece text, no BOS, EOS1/PAD0, max512 inclEOS, no silent truncation, output[1,512,4096]",
+      "tokenIds": "encode({tokenIds,attentionMask}); explicit IDs0..256383, L1..512, nonempty0/1 mask, output[1,L,4096]; no automatic EOS/padding",
+      "thisHandoffRunsEncode": false
+    },
+    "independentPlainAllValueComparison": {
+      "status": "NOT_VERIFIED",
+      "receipt": null,
+      "reason": "Existing Hello world route/shape/mask/finite proof is separate from fixed ID fixture numerical comparison. This handoff does not run any24-layer comparison or promote ID error to plain output."
+    },
+    "scopeLimits": [
+      "FP32 diagnostic expansion of original scaled FP8 values; not original GPU FP8 execution equivalence",
+      "One block session resident limits runtime residency; source6.7GB + staged graphs18.5GB still consume disk",
+      "No weighted prompt/custom embedding/Bernini automatic prefix claims"
+    ]
+  },
+  "environmentSeparation": {
+    "vaeOwnerEnvironment": {
+      "manifestBytesVerifiedNow": true,
+      "localAssetPresenceAndLengthVerifiedNow": true,
+      "localAssetPayloadHashesVerifiedByThisHandoff": false,
+      "acceptedHistoricalEvidence": "../reference-adoption/p0/EVIDENCE-INDEX.json",
+      "assetProbeReceipt": "evidence/rect-assets.json",
+      "assetProbeReceiptReason": "Root-owned streaming hash of exactly4 existing Rect assets; distinct from this metadata/presence-only inspection and manager environment use",
+      "ownerAssetProbeVerified": true,
+      "ownerAssetBytes": 498676842
+    },
+    "managerCloneOnSharedFilesystem": {
+      "path": "/workspace/work/inference/p1-resume-20261031/manager",
+      "sourceCommit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "sourceInspected": true,
+      "localUseExecutedByThisHandoff": true,
+      "isSeparateCodexEnvironmentAcceptance": false,
+      "localUseScope": "Actual Chromium File/Map -> acquired manager adapter invoke configure -> native module configure only; no NN or graph hash verification",
+      "configureReceipt": "evidence/manager-input-check.json",
+      "nativeConfigureSourcePin": "2bdca59ea78580d4fe7a9d31a8de33209b64d029"
+    },
+    "separateManagerCodexEnvironment": {
+      "ackReceived": false,
+      "ackReceipt": null,
+      "reason": "No actual recipient-environment ACK or local-File/asset availability/use receipt has been acquired"
+    }
+  },
+  "verificationEntry": {
+    "path": "development/inference/codec-marker-handoff/check-manager-inputs.mjs",
+    "helpers": [
+      "browser-configure-probe.mjs",
+      "browser-inputs.py"
+    ],
+    "commandArguments": [
+      "node",
+      "development/inference/codec-marker-handoff/check-manager-inputs.mjs",
+      "--manager-root",
+      "/workspace/work/inference/p1-resume-20261031/manager",
+      "--native-root",
+      "/workspace/work/inference/p0-p2-20261031/worktree",
+      "--rect-bundle",
+      "/workspace/work/inference/e6-rect/accepted-bundle",
+      "--text-bundle",
+      "/workspace/work/inference/text-implementation/bundle",
+      "--text-source",
+      "/workspace/work/models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "--output",
+      "/workspace/work/inference/codec-marker-20261101/manager-input-check-final.json"
+    ],
+    "runReceipt": "evidence/manager-input-check.json",
+    "privateReceipt": "/workspace/work/inference/codec-marker-20261101/manager-input-check-final.json",
+    "receiptSha256": "5a347bb27bf1dd390094948d13140b1284b14f4236b73977ed61ae4a4a4c7f0e",
+    "receiptBytes": 43658,
+    "status": "PASS_CONFIGURE_ONLY_SAME_HOST",
+    "scope": "Actual acquired manager adapter + native module configure with real Chromium local File/Map; same host, no separate Codex environment acceptance",
+    "descriptorScope": "Local configure-only direct adapter dispatch declaration; not production M1/evaluateEdge/adoption acceptance",
+    "sourcePinPolicy": "Imported manageredda/native2bd source SHA checked before use; unchanged855 source is not confused with new2bd tensor",
+    "actualImportedModuleCount": 16,
+    "textGatePreserved": {
+      "maxAbsError": 0.001,
+      "rtol": 0.001,
+      "registeredBeforeComparison": true,
+      "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee"
+    },
+    "epsilonPreserved": 1e-06,
+    "guards": {
+      "nativeRunCalls": 0,
+      "workerFactoryCalls": 0,
+      "globalWorkerCalls": 0,
+      "fetchCalls": 0
+    },
+    "resources": {
+      "pythonChild": {
+        "pid": 7393,
+        "exitCode": 0,
+        "exitSignal": null,
+        "exitObserved": true,
+        "reportedHarnessPid": 7393,
+        "reportedHarnessCtime": 1793460218.21,
+        "pidMatchesReportedHarness": true
+      },
+      "sampledOwnedDescendants": 11,
+      "reapedOwnedDescendants": 3,
+      "liveAfterClose": 0,
+      "zombiesAfterClose": 0,
+      "errors": [],
+      "scope": {
+        "method": "sampled descendant identities",
+        "sampleIntervalSeconds": 0.05,
+        "signalsSent": 0,
+        "initialDescendantsExcluded": true,
+        "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+      },
+      "timeoutRecoveryDynamicallyTested": false
+    },
+    "cleanup": {
+      "adaptersActive": [
+        null,
+        null
+      ],
+      "vaeConfigured": false,
+      "textConfigured": false,
+      "nativeClientState": {
+        "status": "disposed",
+        "inputRevision": 0
+      }
+    },
+    "mustNotRun": [
+      "NN encode/decode",
+      "Text24-layer inference",
+      "export",
+      "whole-original model re-inventory"
+    ],
+    "evidenceCopyOwner": "root; private receipt is authoritative before evidence copy"
+  },
+  "sourceInspection": [
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "docs/shared/inference/api.mjs",
+      "sha256": "01f56a19c58286f4c582cb41015ebd7773f2d7ae76545ab0ca7be052909c0f1f",
+      "byteLength": 2278,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "docs/shared/inference/client.mjs",
+      "sha256": "53751cde923b7128da29266a29810942afd6e6ae32fad1fc87605e952cecd55e",
+      "byteLength": 2393,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "docs/shared/inference/tensor.mjs",
+      "sha256": "d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5",
+      "byteLength": 8256,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "docs/shared/inference/text-encoder-api.mjs",
+      "sha256": "b20fc73262c12558e2c54fb7ac8bfd20775c39dd2dbe4a47efd0a73632ec9a99",
+      "byteLength": 2623,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "docs/shared/inference/text-encoder.mjs",
+      "sha256": "9d4f528a926dc40bdbf721c5072518d0e027019a5a0912deeac0dc0f449fd8a2",
+      "byteLength": 8564,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "docs/shared/inference/vae-api.mjs",
+      "sha256": "75f791130cbb27961ea530376d4715ddd9555e80ee3e2b8453824af42be0511e",
+      "byteLength": 2369,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "docs/shared/inference/vae.mjs",
+      "sha256": "3b5f5d2cbe116f9477966da0a63d8f35141f14d9544efafde51e40db337b90d7",
+      "byteLength": 11145,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "path": "docs/shared/inference/inference-worker.mjs",
+      "sha256": "2883899154abd747e8358b953c47977af3c0df064e8a32a32d719aeaaec07f35",
+      "byteLength": 3419,
+      "scope": "Read-only native/manager File/Map signature inspection; no management environment execution or NN"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "path": "docs/shared/inference/ui.mjs",
+      "sha256": "cfff669e321358f2d7b2f21114d2af045b95a032393cd69fef4eeefcaf83b183",
+      "byteLength": 6571,
+      "scope": "Read-only native/manager File/Map signature inspection; no management environment execution or NN"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/API.md",
+      "sha256": "e735d4430fdb4ebba9d5f0cedbb582cd7ec4101eff42f6f0e5b27ad93511ecaf",
+      "byteLength": 34465,
+      "scope": "Read-only native/manager File/Map signature inspection; no management environment execution or NN"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/adapters/artifacts.mjs",
+      "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290",
+      "byteLength": 5879,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/adapters/core.mjs",
+      "sha256": "8c854f77f19174aa0ea72cbc78eafd342a9c75d3d2b9048465905d06c4c07455",
+      "byteLength": 4511,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/adapters/text-vae.mjs",
+      "sha256": "d03276078726fe8c843ea628d427b15934ec936fba0fa475ffd6afa930dbc443",
+      "byteLength": 895,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/canonical.mjs",
+      "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782",
+      "byteLength": 3212,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/compatibility.mjs",
+      "sha256": "8c38333856eaa9a3c1666e99426972ada2bdc92a95ebc51101b09b982ffd8095",
+      "byteLength": 15828,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/contracts/schemas.mjs",
+      "sha256": "46b22950d8b5047a3fb7788969660836fb37452fdc6f294d0b8575ac7485c573",
+      "byteLength": 89275,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/descriptor.mjs",
+      "sha256": "1395ee9879c14b42d3e05a5ea674680f75c404210ca112d44d370114a7756d2e",
+      "byteLength": 14882,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/norm-bindings.mjs",
+      "sha256": "0d2e9707aff78d2e0ed82f70f60880a1a417e77e1499a27715f5fc761eea367d",
+      "byteLength": 17696,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/reference-loader.mjs",
+      "sha256": "cb99828265fc24600b360dd47b75c61665db086d2dd21b8281da85c414b37312",
+      "byteLength": 13692,
+      "scope": "Exact source bytes for same-host configure probe; no NN or separate environment acceptance"
+    }
+  ],
+  "operationsPerformed": {
+    "manifestByteCopies": 2,
+    "localPresenceAndStatChecks": true,
+    "graphOrOriginalPayloadRead": false,
+    "neuralRuns": 0,
+    "reexports": 0,
+    "modelsOrWeightsCopiedOrPublished": false,
+    "commitOrPush": false,
+    "handoffChangesNativeApiOrNumericImplementation": false,
+    "codecChangeDocumentedSeparately": "RESULT.md",
+    "actualManagerNativeConfigureInvocations": 2,
+    "sameHostChromiumUsed": true,
+    "separateCodexEnvironmentAckReceived": false
+  },
+  "nodeFileLimit": {
+    "receipt": "INPUTS.node-file-limit.json",
+    "statBytes": 6735906897,
+    "node24BlobFileBytes": 2440939601,
+    "newNeuralRuns": 0,
+    "resolution": "Actual Chromium local File input, metadata and Map only; no source replacement or size spoofing"
+  },
+  "runtimeHelperInspection": [
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "tools/inference/vae/process_lifecycle.py",
+      "sha256": "a927fe8f38382563ec8d512745446f32bc7740bff3c1b86b650f4490f178299c",
+      "byteLength": 6299,
+      "scope": "Reused process-local disposable helper PID+ctime/live/zombie tracking; not model code"
+    }
+  ],
+  "assetVerificationEntry": {
+    "path": "development/inference/codec-marker-handoff/check-rect-assets.py",
+    "commandArguments": [
+      "python",
+      "development/inference/codec-marker-handoff/check-rect-assets.py",
+      "--bundle",
+      "/workspace/work/inference/e6-rect/accepted-bundle",
+      "--output",
+      "<fresh-json>"
+    ],
+    "receipt": "evidence/rect-assets.json",
+    "privateReceipt": "/workspace/work/inference/codec-marker-20261101/rect-assets.json",
+    "sha256": "c37bda01cc599cc3c2a827833c8a039c99960f44ac2a6d217a006e421bde701b",
+    "status": "PASS_VAE_OWNER_ASSET_BYTES_ONLY",
+    "assetBytes": 498676842,
+    "elapsedSeconds": 0.7126011449981888,
+    "scope": "Local asset bytes only; no inference or recipient-environment acceptance",
+    "separateManagerEnvironmentVerified": false,
+    "evidenceCopyOwner": "root"
+  },
+  "failedProbeTrials": [
+    {
+      "path": "INPUTS.node-file-limit.json",
+      "scope": "Node24 openAsBlob returns4GiB-short File for actual6.7GB source; rejected by size assertion; NN0",
+      "preservedByteExact": true
+    },
+    {
+      "path": "INPUTS.browser-observer-failure.json",
+      "scope": "Observation Proxy rejected by frozen native API invariant; replaced by direct actual native module injection; NN0",
+      "preservedByteExact": true
+    }
+  ]
+}

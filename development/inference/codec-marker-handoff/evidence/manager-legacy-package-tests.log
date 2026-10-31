@@ -1,0 +1,42 @@
+✔ JCS follows RFC8785 primitive serialization and UTF16 key sorting, preserves arrays (4.446294ms)
+✔ strict canonical profile rejects invalid JSON, unsafe integers, unpaired surrogates and sparse arrays (0.680074ms)
+✔ SHA256 hashes actual bytes with independent known vector (6.856684ms)
+✔ writer creates strict manifest, hashes native whole bytes and puts self digest only in receipt (11.832617ms)
+✔ complete readback preserves mask, unknown optional extension, binary values and original descriptors (15.203463ms)
+✔ writer validates missing required assets before producing any output (1.94596ms)
+✔ reader rejects required descriptor/evidence/trace/snapshot/extensions loss separately (28.321996ms)
+✔ native header and payload modifications are both detected by whole-file hash (24.534024ms)
+✔ manifest/receipt mismatch, self hash file and malformed schema are rejected (5.686407ms)
+✔ native/common model or frame metadata contradiction is rejected even with fresh outer hashes (6.023318ms)
+✔ unknown required extension is preserved but prevents complete classification (4.697734ms)
+✔ missing registered codec or wrong source prevents complete readback without dynamic imports (8.167583ms)
+✔ native file without outer manifest is explicitly legacy-incomplete (0.458115ms)
+✔ actual filesystem save, recover bytes and readback (13.457947ms)
+✔ canonical JSON rejects array symbol/nonindex properties and accessors without invoking them (0.329781ms)
+✔ writer with explicit codec validation refuses native inconsistency before any writes (2.419973ms)
+✔ snapshot self digest excludes itself, is independent of execution trace, and invalid digest rejects without codec (13.864836ms)
+✔ real pinned public54b wktensor codec preserves context/producers/decoder and detects outer metadata mismatch (29.483401ms)
+✔ strict package manifest rejects invalid namespace, unsafe path, missing references and digest skeleton outside writer (1.309806ms)
+✔ persisted package schema declares the selected strict version and mandatory sidecars (0.73405ms)
+✔ payload refs must resolve explicitly to this native artifact, unknown opaque refs cannot complete (3.741853ms)
+✔ required evidence/trace reject null and trace refs must resolve to explicit trace IDs (6.507263ms)
+✔ explicit no-evidence declaration preserves reason and blocks complete classification (6.967112ms)
+✔ canonical arrays reject negative, NaN and infinite-looking extra keys instead of losing them (0.282842ms)
+✔ E2 capture references hydrate mask and unknown optional Uint16 metadata with explicit attachment bindings (8.544514ms)
+✔ all binary refs require required attachment binding, correct byte length/type and intact bytes (9.41272ms)
+✔ binary refs in extensions/evidence/trace and manifest optional data all restore without dropping bytes (7.29813ms)
+✔ known binary mask alteration with updated outer hashes still contradicts decoded native (8.073621ms)
+✔ real54b codec plus E2 capture saves and restores mask and optional Uint16 owned bytes (6.890646ms)
+✔ optional domain objects named binaryRef remain uninterpreted rather than treated as binary handles (7.520849ms)
+✔ unsupported nativeResponseRef cannot claim sidecar response completeness (7.64485ms)
+✔ manifest-level reserved binary markers require bindings and expose hydrated manifest extensions (9.019305ms)
+✔ binary closure includes self-hashed snapshot extras and every retained descriptor position (9.560692ms)
+✔ snapshot hash is checked on original JSON before optional binary hydration (2.012859ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 287.687055

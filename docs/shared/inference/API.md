@@ -182,6 +182,8 @@ Text/VAEには内蔵待機列がない。同時実行はPromiseの `Inference cl
 
 magic/schemaVersionは変更しない。旧markerなしファイルは読取り可能で、省略されたmarkerを補わず再保存する。markerなしの旧mean/conditioning等の直列化bytesは維持する。旧G1C reader `2c171a09ccda65c54899f322ae490f1bfcaac6fb` は新しい任意headerも読めるが、同じ旧writerで再保存するとmarkerを失うため、保存用途では新しいcodec source/hashを明示選択する。管理E4の旧pinを同名で差し替えず、新candidate sourceRefと実module SHAを登録する。
 
+新codecの固定sourceは`2bdca59ea78580d4fe7a9d31a8de33209b64d029`、module SHA-256は`d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5`。[管理E4・既存Rect/Text入力の限定検証手順](../../../development/inference/codec-marker-handoff/REPRODUCE.md)と[manifest・Mapキー・gate](../../../development/inference/codec-marker-handoff/INPUTS.md)を参照する。別管理環境の受取ACKは同hostのconfigure結果と区別する。
+
 旧フィールドだけのgolden fixtureについてバイト一致を確認する。今回の接続fixtureはText `[1,2,4096]` とmask、raw mean/生成sample `[1,16,2,2,2]`、contextとmodel/Tokenizer hash、保存読戻し、変更中metadataのsnapshot、MessagePort転送後の所有権を対象とする。反復 `a/b/c` hashなどのfixture値は合成識別で、実model互換性ではない。SDK dispatchのdoubleやText lifecycleのORT doubleを実モデル推論の成功として数えない。
 
 Text24層・既存VAE5×16×16のFP32診断記録に加え、F=1・16×16と16×32を元VAE参照と実WASMで受け入れた。Textの重い再推論は実施していない。実generated sample、実参照媒体の各ratio、832×480・81frame、全sampling/最終動画、元GPU精度と端末負荷改善は未受入。実model/profile検証と小規模codec fixtureを合算しない。
