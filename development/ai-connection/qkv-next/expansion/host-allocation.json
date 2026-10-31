@@ -1,0 +1,331 @@
+{
+  "schemaVersion": "bernini-head-host-allocation/0.1",
+  "passed": true,
+  "sequence": "target then browserclose barrier then two-source context scenario",
+  "cgroupMaxBytes": 17179869184,
+  "cgroupInitialBytes": 775999488,
+  "cgroupEventsBefore": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "cgroupEventsAfter": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "stages": [
+    {
+      "tokens": 32760,
+      "hiddenHBytes": 670924800,
+      "named3HBytes": 2012774400,
+      "cgroupBeforeBrowserBytes": 866816000,
+      "headroomBytes": 16313053184,
+      "headroomReserveBytes": 2147483648,
+      "baseline": {
+        "pss": 377334784,
+        "rssProcessSum": 656846848,
+        "cgroup": 1128542208,
+        "pidCount": 9
+      },
+      "allocatedHold": {
+        "pss": 2370412544,
+        "rssProcessSum": 2650173440,
+        "cgroup": 3123273728,
+        "pidCount": 9
+      },
+      "heldSamples": [
+        {
+          "pss": 2368176128,
+          "rssProcessSum": 2647896064,
+          "cgroup": 3123130368,
+          "pidCount": 9
+        },
+        {
+          "pss": 2368176128,
+          "rssProcessSum": 2647896064,
+          "cgroup": 3122864128,
+          "pidCount": 9
+        },
+        {
+          "pss": 2368176128,
+          "rssProcessSum": 2647896064,
+          "cgroup": 3122864128,
+          "pidCount": 9
+        }
+      ],
+      "peak": {
+        "pss": 2391382016,
+        "rssProcessSum": 2660798464,
+        "cgroup": 3123273728
+      },
+      "runtimeBefore": {
+        "stats": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "runs": 0,
+          "pendingTensors": 0,
+          "ortSessionCreations": 1,
+          "hike": {
+            "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+            "memoryBytes": 1114112,
+            "arenaBytes": 53376,
+            "calls": 0,
+            "inputCopyBytes": 0,
+            "outputCopyBytes": 0,
+            "rows": 16,
+            "workspaceReused": true,
+            "invalid": false,
+            "disposed": false
+          }
+        },
+        "description": {
+          "schemaVersion": "bernini-all-head-context/0.1",
+          "queryShape": [
+            2,
+            5120
+          ],
+          "outputShape": [
+            2,
+            5120
+          ],
+          "queryCount": 2,
+          "keyCount": 2,
+          "heads": 40,
+          "headDim": 128,
+          "graphSHA256": "7657a709e66a3b0fad6300a31dea7a8d977f4337aadcbdb9159bdcf1a32bfa1c",
+          "hikeWasmSHA256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "ortSessionCreations": 1,
+          "scope": "ALL2_QUERIES_ALL40_HEADS_BEFORE_O",
+          "modelInference": false
+        }
+      },
+      "allocation": {
+        "arrays": [
+          {
+            "bytes": 670924800,
+            "first": 0.25,
+            "last": 0.25
+          },
+          {
+            "bytes": 670924800,
+            "first": 1.25,
+            "last": 1.25
+          },
+          {
+            "bytes": 670924800,
+            "first": 2.25,
+            "last": 2.25
+          }
+        ],
+        "elapsedMs": 572.1000000014901
+      },
+      "check": {
+        "checksum": 614253.75,
+        "runtime": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "runs": 0,
+          "pendingTensors": 0,
+          "ortSessionCreations": 1,
+          "hike": {
+            "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+            "memoryBytes": 1114112,
+            "arenaBytes": 53376,
+            "calls": 0,
+            "inputCopyBytes": 0,
+            "outputCopyBytes": 0,
+            "rows": 16,
+            "workspaceReused": true,
+            "invalid": false,
+            "disposed": false
+          }
+        },
+        "buffersStillRetained": true
+      },
+      "closedPIDs": [
+        17676,
+        17693,
+        17694,
+        17716,
+        17737,
+        17756,
+        17765,
+        17766,
+        17713
+      ],
+      "afterBrowserClose": {
+        "pss": 0,
+        "rssProcessSum": 0,
+        "cgroup": 883384320,
+        "pidCount": 0
+      },
+      "browserCloseBarrierPassed": true,
+      "wallSeconds": 1.2392690179985948,
+      "scope": "host3H nonzero fill/hold with one actualORTattentionSession+oneHikeMemory; no Gemm/prefix or numerical attention run",
+      "modelGraphExecution": false,
+      "nativePointwiseExecuted": false,
+      "fullQueryNumericalAcceptance": false
+    },
+    {
+      "tokens": 65520,
+      "hiddenHBytes": 1341849600,
+      "named3HBytes": 4025548800,
+      "cgroupBeforeBrowserBytes": 883384320,
+      "headroomBytes": 16296484864,
+      "headroomReserveBytes": 2147483648,
+      "baseline": {
+        "pss": 378285056,
+        "rssProcessSum": 658812928,
+        "cgroup": 1139404800,
+        "pidCount": 9
+      },
+      "allocatedHold": {
+        "pss": 4383682560,
+        "rssProcessSum": 4664467456,
+        "cgroup": 5149212672,
+        "pidCount": 9
+      },
+      "heldSamples": [
+        {
+          "pss": 4381409280,
+          "rssProcessSum": 4662153216,
+          "cgroup": 5149278208,
+          "pidCount": 9
+        },
+        {
+          "pss": 4381409280,
+          "rssProcessSum": 4662153216,
+          "cgroup": 5149278208,
+          "pidCount": 9
+        },
+        {
+          "pss": 4381409280,
+          "rssProcessSum": 4662153216,
+          "cgroup": 5149278208,
+          "pidCount": 9
+        }
+      ],
+      "peak": {
+        "pss": 4397018112,
+        "rssProcessSum": 4671369216,
+        "cgroup": 5149278208
+      },
+      "runtimeBefore": {
+        "stats": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "runs": 0,
+          "pendingTensors": 0,
+          "ortSessionCreations": 1,
+          "hike": {
+            "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+            "memoryBytes": 1114112,
+            "arenaBytes": 53376,
+            "calls": 0,
+            "inputCopyBytes": 0,
+            "outputCopyBytes": 0,
+            "rows": 16,
+            "workspaceReused": true,
+            "invalid": false,
+            "disposed": false
+          }
+        },
+        "description": {
+          "schemaVersion": "bernini-all-head-context/0.1",
+          "queryShape": [
+            2,
+            5120
+          ],
+          "outputShape": [
+            2,
+            5120
+          ],
+          "queryCount": 2,
+          "keyCount": 2,
+          "heads": 40,
+          "headDim": 128,
+          "graphSHA256": "7657a709e66a3b0fad6300a31dea7a8d977f4337aadcbdb9159bdcf1a32bfa1c",
+          "hikeWasmSHA256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "ortSessionCreations": 1,
+          "scope": "ALL2_QUERIES_ALL40_HEADS_BEFORE_O",
+          "modelInference": false
+        }
+      },
+      "allocation": {
+        "arrays": [
+          {
+            "bytes": 1341849600,
+            "first": 0.25,
+            "last": 0.25
+          },
+          {
+            "bytes": 1341849600,
+            "first": 1.25,
+            "last": 1.25
+          },
+          {
+            "bytes": 1341849600,
+            "first": 2.25,
+            "last": 2.25
+          }
+        ],
+        "elapsedMs": 1067.699999999255
+      },
+      "check": {
+        "checksum": 1228503.75,
+        "runtime": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "runs": 0,
+          "pendingTensors": 0,
+          "ortSessionCreations": 1,
+          "hike": {
+            "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+            "memoryBytes": 1114112,
+            "arenaBytes": 53376,
+            "calls": 0,
+            "inputCopyBytes": 0,
+            "outputCopyBytes": 0,
+            "rows": 16,
+            "workspaceReused": true,
+            "invalid": false,
+            "disposed": false
+          }
+        },
+        "buffersStillRetained": true
+      },
+      "closedPIDs": [
+        17805,
+        17822,
+        17823,
+        17852,
+        17868,
+        17887,
+        17896,
+        17897,
+        17843
+      ],
+      "afterBrowserClose": {
+        "pss": 0,
+        "rssProcessSum": 0,
+        "cgroup": 892084224,
+        "pidCount": 0
+      },
+      "browserCloseBarrierPassed": true,
+      "wallSeconds": 1.8012943110006745,
+      "scope": "host3H nonzero fill/hold with one actualORTattentionSession+oneHikeMemory; no Gemm/prefix or numerical attention run",
+      "modelGraphExecution": false,
+      "nativePointwiseExecuted": false,
+      "fullQueryNumericalAcceptance": false
+    }
+  ],
+  "sourceSHA256": "d5123480939b20b4494b069f871ecc05ac80c0179281bf161b4428dba005bd68",
+  "unknowns": [
+    "combined productionORTMemory, Gemm/SiLU sessions, latent/source/VAE, weights/copy/staging, allocator/GC, full FFN and futurequery work",
+    "N65520 is one scenario, not a supported max"
+  ],
+  "acceptance": {
+    "allocationOnly": true,
+    "fullQueryNumericalVerified": false,
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY"
+  }
+}

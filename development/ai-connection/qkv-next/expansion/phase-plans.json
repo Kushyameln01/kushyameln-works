@@ -1,0 +1,882 @@
+{
+  "schemaVersion": "bernini-head-phase-receipts/0.1",
+  "sourceSHA256": "7e28ad2a230e0d63bafafc0e0d10130a83759dfebc22df5aa70c365c30dd4200",
+  "plans": [
+    {
+      "schemaVersion": "bernini-head-phase-plan/0.1",
+      "tokens": 2,
+      "queryTile": 16,
+      "keyTile": 64,
+      "width": 5120,
+      "heads": 40,
+      "headDim": 128,
+      "scalarTimeSixVectorBytes": 122880,
+      "mandatoryDenseTimeModulation": false,
+      "units": {
+        "hiddenH": 40960,
+        "allHeadKV": 81920,
+        "oneHeadKV": 2048,
+        "queryFullWidth": 327680,
+        "decodedWeightTile": 327680,
+        "rawWeightTile": 81920,
+        "ffnIntermediateTile": 884736
+      },
+      "phases": [
+        {
+          "phase": "prefix-hidden",
+          "retained": {
+            "hidden": 40960,
+            "scalarTime6": 122880
+          },
+          "unknown": [
+            "patch/source/noise/latent buffers and ORT allocator; producer resources must be inventoried"
+          ],
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 163840,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "full-KV-build",
+          "retained": {
+            "originalHidden": 40960,
+            "Kcache": 40960,
+            "Vcache": 40960
+          },
+          "staging": {
+            "inputSnapshot": 327680,
+            "rawK": 327680,
+            "normK": 327680,
+            "V": 327680,
+            "weightRaw": 81920,
+            "weightDecoded": 327680,
+            "ortWeightSnapshot": 327680,
+            "normInputSnapshot": 327680
+          },
+          "namedRetainedBytes": 122880,
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 2498560,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "query-head-attention",
+          "retained": {
+            "originalHidden": 40960,
+            "Kcache": 40960,
+            "Vcache": 40960
+          },
+          "staging": {
+            "queryFull": 327680,
+            "normQ": 327680,
+            "contextBeforeO": 327680,
+            "headQ": 8192,
+            "key": 32768,
+            "value": 32768,
+            "score": 4096,
+            "weightRaw": 81920,
+            "weightDecoded": 327680,
+            "ortWeightSnapshot": 327680,
+            "normInputSnapshot": 327680
+          },
+          "namedRetainedBytes": 122880,
+          "mutationRule": "KV is frozen before query writes; any hidden overwrite/O/residual implementation remains unverified",
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 2248704,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "after-attention",
+          "retained": {
+            "hidden": 40960
+          },
+          "barrier": "Release KV before cross/FFN; in-place hidden row reuse is a hypothesis requiring whole-block proof",
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 40960,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        }
+      ],
+      "algorithms": {
+        "cachedAllHeads": {
+          "retainedBytes": 122880,
+          "scoreOrtRunsPerBlock": 40,
+          "hikeCallsPerBlock": 80,
+          "minimumKVSourceReadBytesPerBlock": 81920,
+          "attentionScoreAndValueMACs": 40960,
+          "queryTiles": 1,
+          "keyTiles": 1,
+          "finalQueryCount": 2,
+          "finalKeyCount": 2
+        },
+        "perHeadRecompute": {
+          "retainedHiddenPlusOneHeadKVBytes": 43008,
+          "fullNormAxis": 5120,
+          "KFullWidthProjectionRepetitions": 40,
+          "warning": "Full5120 norm precedes head extraction; keeping one head cache requires full-width regeneration, not the same work for less memory"
+        },
+        "weightTraversal": {
+          "tokenMajorQKVFP8ReadBytes": 78643200,
+          "weightMajorKVThenTokenMajorQFP8ReadBytes": 78643200,
+          "weightMajorKVHiddenReadBytes": 26214400,
+          "warning": "These alternative loop orders cannot claim both minimum hidden traffic and minimum weight traffic simultaneously"
+        }
+      },
+      "runtime": {
+        "sessionPolicy": "serial-barrier",
+        "ortSessions": 2,
+        "oldNewOverlapIncluded": false,
+        "ORTMemoryBytes": null,
+        "HikeMemoryBytes": null,
+        "hostAllocatorAndGCBytes": null,
+        "harnessReferenceBytes": null,
+        "overlapNumericCases": null,
+        "unknownReason": "Actual production simultaneous session/staging allocations are unmeasured; small operator measurements do not fill these fields"
+      },
+      "unresolved": [
+        "FFN inner13824 exceeds implemented dynamic Linear inner<=5120",
+        "FFN row16/row8 exceed decoded81920-element source block; row4=55296 would fit but is not implemented graph execution",
+        "O projection, cross attention, FFN, residual, whole block and full sequence/time/context not accepted",
+        "Reference inputs may make N>65520; 65520 is one two-source scenario, not a general maximum",
+        "Copy counts are logical lower bounds, not OS/ORT/GC peak or timing estimates"
+      ],
+      "acceptance": {
+        "allocationOnlyProbeDoesNotAcceptNumerics": true,
+        "allQueriesNumericalVerified": false,
+        "modelInference": false,
+        "load": "NOT_READY",
+        "predict": "NOT_READY",
+        "sample": "NOT_READY"
+      }
+    },
+    {
+      "schemaVersion": "bernini-head-phase-plan/0.1",
+      "tokens": 2,
+      "queryTile": 16,
+      "keyTile": 64,
+      "width": 5120,
+      "heads": 40,
+      "headDim": 128,
+      "scalarTimeSixVectorBytes": 122880,
+      "mandatoryDenseTimeModulation": false,
+      "units": {
+        "hiddenH": 40960,
+        "allHeadKV": 81920,
+        "oneHeadKV": 2048,
+        "queryFullWidth": 327680,
+        "decodedWeightTile": 327680,
+        "rawWeightTile": 81920,
+        "ffnIntermediateTile": 884736
+      },
+      "phases": [
+        {
+          "phase": "prefix-hidden",
+          "retained": {
+            "hidden": 40960,
+            "scalarTime6": 122880
+          },
+          "unknown": [
+            "patch/source/noise/latent buffers and ORT allocator; producer resources must be inventoried"
+          ],
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 163840,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "full-KV-build",
+          "retained": {
+            "originalHidden": 40960,
+            "Kcache": 40960,
+            "Vcache": 40960
+          },
+          "staging": {
+            "inputSnapshot": 327680,
+            "rawK": 327680,
+            "normK": 327680,
+            "V": 327680,
+            "weightRaw": 81920,
+            "weightDecoded": 327680,
+            "ortWeightSnapshot": 327680,
+            "normInputSnapshot": 327680
+          },
+          "namedRetainedBytes": 122880,
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 2498560,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "query-head-attention",
+          "retained": {
+            "originalHidden": 40960,
+            "Kcache": 40960,
+            "Vcache": 40960
+          },
+          "staging": {
+            "queryFull": 327680,
+            "normQ": 327680,
+            "contextBeforeO": 327680,
+            "headQ": 8192,
+            "key": 32768,
+            "value": 32768,
+            "score": 4096,
+            "weightRaw": 81920,
+            "weightDecoded": 327680,
+            "ortWeightSnapshot": 327680,
+            "normInputSnapshot": 327680
+          },
+          "namedRetainedBytes": 122880,
+          "mutationRule": "KV is frozen before query writes; any hidden overwrite/O/residual implementation remains unverified",
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 2248704,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "after-attention",
+          "retained": {
+            "hidden": 40960
+          },
+          "barrier": "Release KV before cross/FFN; in-place hidden row reuse is a hypothesis requiring whole-block proof",
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 40960,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        }
+      ],
+      "algorithms": {
+        "cachedAllHeads": {
+          "retainedBytes": 122880,
+          "scoreOrtRunsPerBlock": 40,
+          "hikeCallsPerBlock": 80,
+          "minimumKVSourceReadBytesPerBlock": 81920,
+          "attentionScoreAndValueMACs": 40960,
+          "queryTiles": 1,
+          "keyTiles": 1,
+          "finalQueryCount": 2,
+          "finalKeyCount": 2
+        },
+        "perHeadRecompute": {
+          "retainedHiddenPlusOneHeadKVBytes": 43008,
+          "fullNormAxis": 5120,
+          "KFullWidthProjectionRepetitions": 40,
+          "warning": "Full5120 norm precedes head extraction; keeping one head cache requires full-width regeneration, not the same work for less memory"
+        },
+        "weightTraversal": {
+          "tokenMajorQKVFP8ReadBytes": 78643200,
+          "weightMajorKVThenTokenMajorQFP8ReadBytes": 78643200,
+          "weightMajorKVHiddenReadBytes": 26214400,
+          "warning": "These alternative loop orders cannot claim both minimum hidden traffic and minimum weight traffic simultaneously"
+        }
+      },
+      "runtime": {
+        "sessionPolicy": "old-new-overlap",
+        "ortSessions": 4,
+        "oldNewOverlapIncluded": true,
+        "ORTMemoryBytes": null,
+        "HikeMemoryBytes": null,
+        "hostAllocatorAndGCBytes": null,
+        "harnessReferenceBytes": null,
+        "overlapNumericCases": {
+          "separateHiddenAndKVBytes": 245760,
+          "sharedImmutableOriginalHiddenAndDistinctKVBytes": 204800,
+          "warning": "Alternative cases, not additive; sharing requires an explicit immutable original-hidden proof; candidate changes invalidate K/V. Additional owner staging/parameters remain separate."
+        },
+        "unknownReason": "Actual production simultaneous session/staging allocations are unmeasured; small operator measurements do not fill these fields"
+      },
+      "unresolved": [
+        "FFN inner13824 exceeds implemented dynamic Linear inner<=5120",
+        "FFN row16/row8 exceed decoded81920-element source block; row4=55296 would fit but is not implemented graph execution",
+        "O projection, cross attention, FFN, residual, whole block and full sequence/time/context not accepted",
+        "Reference inputs may make N>65520; 65520 is one two-source scenario, not a general maximum",
+        "Copy counts are logical lower bounds, not OS/ORT/GC peak or timing estimates"
+      ],
+      "acceptance": {
+        "allocationOnlyProbeDoesNotAcceptNumerics": true,
+        "allQueriesNumericalVerified": false,
+        "modelInference": false,
+        "load": "NOT_READY",
+        "predict": "NOT_READY",
+        "sample": "NOT_READY"
+      }
+    },
+    {
+      "schemaVersion": "bernini-head-phase-plan/0.1",
+      "tokens": 32760,
+      "queryTile": 16,
+      "keyTile": 64,
+      "width": 5120,
+      "heads": 40,
+      "headDim": 128,
+      "scalarTimeSixVectorBytes": 122880,
+      "mandatoryDenseTimeModulation": false,
+      "units": {
+        "hiddenH": 670924800,
+        "allHeadKV": 1341849600,
+        "oneHeadKV": 33546240,
+        "queryFullWidth": 327680,
+        "decodedWeightTile": 327680,
+        "rawWeightTile": 81920,
+        "ffnIntermediateTile": 884736
+      },
+      "phases": [
+        {
+          "phase": "prefix-hidden",
+          "retained": {
+            "hidden": 670924800,
+            "scalarTime6": 122880
+          },
+          "unknown": [
+            "patch/source/noise/latent buffers and ORT allocator; producer resources must be inventoried"
+          ],
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 671047680,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "full-KV-build",
+          "retained": {
+            "originalHidden": 670924800,
+            "Kcache": 670924800,
+            "Vcache": 670924800
+          },
+          "staging": {
+            "inputSnapshot": 327680,
+            "rawK": 327680,
+            "normK": 327680,
+            "V": 327680,
+            "weightRaw": 81920,
+            "weightDecoded": 327680,
+            "ortWeightSnapshot": 327680,
+            "normInputSnapshot": 327680
+          },
+          "namedRetainedBytes": 2012774400,
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 2015150080,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "query-head-attention",
+          "retained": {
+            "originalHidden": 670924800,
+            "Kcache": 670924800,
+            "Vcache": 670924800
+          },
+          "staging": {
+            "queryFull": 327680,
+            "normQ": 327680,
+            "contextBeforeO": 327680,
+            "headQ": 8192,
+            "key": 32768,
+            "value": 32768,
+            "score": 4096,
+            "weightRaw": 81920,
+            "weightDecoded": 327680,
+            "ortWeightSnapshot": 327680,
+            "normInputSnapshot": 327680
+          },
+          "namedRetainedBytes": 2012774400,
+          "mutationRule": "KV is frozen before query writes; any hidden overwrite/O/residual implementation remains unverified",
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 2014900224,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "after-attention",
+          "retained": {
+            "hidden": 670924800
+          },
+          "barrier": "Release KV before cross/FFN; in-place hidden row reuse is a hypothesis requiring whole-block proof",
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 670924800,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        }
+      ],
+      "algorithms": {
+        "cachedAllHeads": {
+          "retainedBytes": 2012774400,
+          "scoreOrtRunsPerBlock": 41943040,
+          "hikeCallsPerBlock": 42024960,
+          "minimumKVSourceReadBytesPerBlock": 2748107980800,
+          "attentionScoreAndValueMACs": 10989748224000,
+          "queryTiles": 2048,
+          "keyTiles": 512,
+          "finalQueryCount": 8,
+          "finalKeyCount": 56
+        },
+        "perHeadRecompute": {
+          "retainedHiddenPlusOneHeadKVBytes": 704471040,
+          "fullNormAxis": 5120,
+          "KFullWidthProjectionRepetitions": 40,
+          "warning": "Full5120 norm precedes head extraction; keeping one head cache requires full-width regeneration, not the same work for less memory"
+        },
+        "weightTraversal": {
+          "tokenMajorQKVFP8ReadBytes": 161061273600,
+          "weightMajorKVThenTokenMajorQFP8ReadBytes": 53739520000,
+          "weightMajorKVHiddenReadBytes": 429391872000,
+          "warning": "These alternative loop orders cannot claim both minimum hidden traffic and minimum weight traffic simultaneously"
+        }
+      },
+      "runtime": {
+        "sessionPolicy": "serial-barrier",
+        "ortSessions": 2,
+        "oldNewOverlapIncluded": false,
+        "ORTMemoryBytes": null,
+        "HikeMemoryBytes": null,
+        "hostAllocatorAndGCBytes": null,
+        "harnessReferenceBytes": null,
+        "overlapNumericCases": null,
+        "unknownReason": "Actual production simultaneous session/staging allocations are unmeasured; small operator measurements do not fill these fields"
+      },
+      "unresolved": [
+        "FFN inner13824 exceeds implemented dynamic Linear inner<=5120",
+        "FFN row16/row8 exceed decoded81920-element source block; row4=55296 would fit but is not implemented graph execution",
+        "O projection, cross attention, FFN, residual, whole block and full sequence/time/context not accepted",
+        "Reference inputs may make N>65520; 65520 is one two-source scenario, not a general maximum",
+        "Copy counts are logical lower bounds, not OS/ORT/GC peak or timing estimates"
+      ],
+      "acceptance": {
+        "allocationOnlyProbeDoesNotAcceptNumerics": true,
+        "allQueriesNumericalVerified": false,
+        "modelInference": false,
+        "load": "NOT_READY",
+        "predict": "NOT_READY",
+        "sample": "NOT_READY"
+      }
+    },
+    {
+      "schemaVersion": "bernini-head-phase-plan/0.1",
+      "tokens": 32760,
+      "queryTile": 16,
+      "keyTile": 64,
+      "width": 5120,
+      "heads": 40,
+      "headDim": 128,
+      "scalarTimeSixVectorBytes": 122880,
+      "mandatoryDenseTimeModulation": false,
+      "units": {
+        "hiddenH": 670924800,
+        "allHeadKV": 1341849600,
+        "oneHeadKV": 33546240,
+        "queryFullWidth": 327680,
+        "decodedWeightTile": 327680,
+        "rawWeightTile": 81920,
+        "ffnIntermediateTile": 884736
+      },
+      "phases": [
+        {
+          "phase": "prefix-hidden",
+          "retained": {
+            "hidden": 670924800,
+            "scalarTime6": 122880
+          },
+          "unknown": [
+            "patch/source/noise/latent buffers and ORT allocator; producer resources must be inventoried"
+          ],
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 671047680,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "full-KV-build",
+          "retained": {
+            "originalHidden": 670924800,
+            "Kcache": 670924800,
+            "Vcache": 670924800
+          },
+          "staging": {
+            "inputSnapshot": 327680,
+            "rawK": 327680,
+            "normK": 327680,
+            "V": 327680,
+            "weightRaw": 81920,
+            "weightDecoded": 327680,
+            "ortWeightSnapshot": 327680,
+            "normInputSnapshot": 327680
+          },
+          "namedRetainedBytes": 2012774400,
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 2015150080,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "query-head-attention",
+          "retained": {
+            "originalHidden": 670924800,
+            "Kcache": 670924800,
+            "Vcache": 670924800
+          },
+          "staging": {
+            "queryFull": 327680,
+            "normQ": 327680,
+            "contextBeforeO": 327680,
+            "headQ": 8192,
+            "key": 32768,
+            "value": 32768,
+            "score": 4096,
+            "weightRaw": 81920,
+            "weightDecoded": 327680,
+            "ortWeightSnapshot": 327680,
+            "normInputSnapshot": 327680
+          },
+          "namedRetainedBytes": 2012774400,
+          "mutationRule": "KV is frozen before query writes; any hidden overwrite/O/residual implementation remains unverified",
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 2014900224,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "after-attention",
+          "retained": {
+            "hidden": 670924800
+          },
+          "barrier": "Release KV before cross/FFN; in-place hidden row reuse is a hypothesis requiring whole-block proof",
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 670924800,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        }
+      ],
+      "algorithms": {
+        "cachedAllHeads": {
+          "retainedBytes": 2012774400,
+          "scoreOrtRunsPerBlock": 41943040,
+          "hikeCallsPerBlock": 42024960,
+          "minimumKVSourceReadBytesPerBlock": 2748107980800,
+          "attentionScoreAndValueMACs": 10989748224000,
+          "queryTiles": 2048,
+          "keyTiles": 512,
+          "finalQueryCount": 8,
+          "finalKeyCount": 56
+        },
+        "perHeadRecompute": {
+          "retainedHiddenPlusOneHeadKVBytes": 704471040,
+          "fullNormAxis": 5120,
+          "KFullWidthProjectionRepetitions": 40,
+          "warning": "Full5120 norm precedes head extraction; keeping one head cache requires full-width regeneration, not the same work for less memory"
+        },
+        "weightTraversal": {
+          "tokenMajorQKVFP8ReadBytes": 161061273600,
+          "weightMajorKVThenTokenMajorQFP8ReadBytes": 53739520000,
+          "weightMajorKVHiddenReadBytes": 429391872000,
+          "warning": "These alternative loop orders cannot claim both minimum hidden traffic and minimum weight traffic simultaneously"
+        }
+      },
+      "runtime": {
+        "sessionPolicy": "old-new-overlap",
+        "ortSessions": 4,
+        "oldNewOverlapIncluded": true,
+        "ORTMemoryBytes": null,
+        "HikeMemoryBytes": null,
+        "hostAllocatorAndGCBytes": null,
+        "harnessReferenceBytes": null,
+        "overlapNumericCases": {
+          "separateHiddenAndKVBytes": 4025548800,
+          "sharedImmutableOriginalHiddenAndDistinctKVBytes": 3354624000,
+          "warning": "Alternative cases, not additive; sharing requires an explicit immutable original-hidden proof; candidate changes invalidate K/V. Additional owner staging/parameters remain separate."
+        },
+        "unknownReason": "Actual production simultaneous session/staging allocations are unmeasured; small operator measurements do not fill these fields"
+      },
+      "unresolved": [
+        "FFN inner13824 exceeds implemented dynamic Linear inner<=5120",
+        "FFN row16/row8 exceed decoded81920-element source block; row4=55296 would fit but is not implemented graph execution",
+        "O projection, cross attention, FFN, residual, whole block and full sequence/time/context not accepted",
+        "Reference inputs may make N>65520; 65520 is one two-source scenario, not a general maximum",
+        "Copy counts are logical lower bounds, not OS/ORT/GC peak or timing estimates"
+      ],
+      "acceptance": {
+        "allocationOnlyProbeDoesNotAcceptNumerics": true,
+        "allQueriesNumericalVerified": false,
+        "modelInference": false,
+        "load": "NOT_READY",
+        "predict": "NOT_READY",
+        "sample": "NOT_READY"
+      }
+    },
+    {
+      "schemaVersion": "bernini-head-phase-plan/0.1",
+      "tokens": 65520,
+      "queryTile": 16,
+      "keyTile": 64,
+      "width": 5120,
+      "heads": 40,
+      "headDim": 128,
+      "scalarTimeSixVectorBytes": 122880,
+      "mandatoryDenseTimeModulation": false,
+      "units": {
+        "hiddenH": 1341849600,
+        "allHeadKV": 2683699200,
+        "oneHeadKV": 67092480,
+        "queryFullWidth": 327680,
+        "decodedWeightTile": 327680,
+        "rawWeightTile": 81920,
+        "ffnIntermediateTile": 884736
+      },
+      "phases": [
+        {
+          "phase": "prefix-hidden",
+          "retained": {
+            "hidden": 1341849600,
+            "scalarTime6": 122880
+          },
+          "unknown": [
+            "patch/source/noise/latent buffers and ORT allocator; producer resources must be inventoried"
+          ],
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 1341972480,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "full-KV-build",
+          "retained": {
+            "originalHidden": 1341849600,
+            "Kcache": 1341849600,
+            "Vcache": 1341849600
+          },
+          "staging": {
+            "inputSnapshot": 327680,
+            "rawK": 327680,
+            "normK": 327680,
+            "V": 327680,
+            "weightRaw": 81920,
+            "weightDecoded": 327680,
+            "ortWeightSnapshot": 327680,
+            "normInputSnapshot": 327680
+          },
+          "namedRetainedBytes": 4025548800,
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 4027924480,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "query-head-attention",
+          "retained": {
+            "originalHidden": 1341849600,
+            "Kcache": 1341849600,
+            "Vcache": 1341849600
+          },
+          "staging": {
+            "queryFull": 327680,
+            "normQ": 327680,
+            "contextBeforeO": 327680,
+            "headQ": 8192,
+            "key": 32768,
+            "value": 32768,
+            "score": 4096,
+            "weightRaw": 81920,
+            "weightDecoded": 327680,
+            "ortWeightSnapshot": 327680,
+            "normInputSnapshot": 327680
+          },
+          "namedRetainedBytes": 4025548800,
+          "mutationRule": "KV is frozen before query writes; any hidden overwrite/O/residual implementation remains unverified",
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 4027674624,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "after-attention",
+          "retained": {
+            "hidden": 1341849600
+          },
+          "barrier": "Release KV before cross/FFN; in-place hidden row reuse is a hypothesis requiring whole-block proof",
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 1341849600,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        }
+      ],
+      "algorithms": {
+        "cachedAllHeads": {
+          "retainedBytes": 4025548800,
+          "scoreOrtRunsPerBlock": 167731200,
+          "hikeCallsPerBlock": 167895000,
+          "minimumKVSourceReadBytesPerBlock": 10989748224000,
+          "attentionScoreAndValueMACs": 43958992896000,
+          "queryTiles": 4095,
+          "keyTiles": 1024,
+          "finalQueryCount": 16,
+          "finalKeyCount": 48
+        },
+        "perHeadRecompute": {
+          "retainedHiddenPlusOneHeadKVBytes": 1408942080,
+          "fullNormAxis": 5120,
+          "KFullWidthProjectionRepetitions": 40,
+          "warning": "Full5120 norm precedes head extraction; keeping one head cache requires full-width regeneration, not the same work for less memory"
+        },
+        "weightTraversal": {
+          "tokenMajorQKVFP8ReadBytes": 322043904000,
+          "weightMajorKVThenTokenMajorQFP8ReadBytes": 107400396800,
+          "weightMajorKVHiddenReadBytes": 858783744000,
+          "warning": "These alternative loop orders cannot claim both minimum hidden traffic and minimum weight traffic simultaneously"
+        }
+      },
+      "runtime": {
+        "sessionPolicy": "serial-barrier",
+        "ortSessions": 2,
+        "oldNewOverlapIncluded": false,
+        "ORTMemoryBytes": null,
+        "HikeMemoryBytes": null,
+        "hostAllocatorAndGCBytes": null,
+        "harnessReferenceBytes": null,
+        "overlapNumericCases": null,
+        "unknownReason": "Actual production simultaneous session/staging allocations are unmeasured; small operator measurements do not fill these fields"
+      },
+      "unresolved": [
+        "FFN inner13824 exceeds implemented dynamic Linear inner<=5120",
+        "FFN row16/row8 exceed decoded81920-element source block; row4=55296 would fit but is not implemented graph execution",
+        "O projection, cross attention, FFN, residual, whole block and full sequence/time/context not accepted",
+        "Reference inputs may make N>65520; 65520 is one two-source scenario, not a general maximum",
+        "Copy counts are logical lower bounds, not OS/ORT/GC peak or timing estimates"
+      ],
+      "acceptance": {
+        "allocationOnlyProbeDoesNotAcceptNumerics": true,
+        "allQueriesNumericalVerified": false,
+        "modelInference": false,
+        "load": "NOT_READY",
+        "predict": "NOT_READY",
+        "sample": "NOT_READY"
+      }
+    },
+    {
+      "schemaVersion": "bernini-head-phase-plan/0.1",
+      "tokens": 65520,
+      "queryTile": 16,
+      "keyTile": 64,
+      "width": 5120,
+      "heads": 40,
+      "headDim": 128,
+      "scalarTimeSixVectorBytes": 122880,
+      "mandatoryDenseTimeModulation": false,
+      "units": {
+        "hiddenH": 1341849600,
+        "allHeadKV": 2683699200,
+        "oneHeadKV": 67092480,
+        "queryFullWidth": 327680,
+        "decodedWeightTile": 327680,
+        "rawWeightTile": 81920,
+        "ffnIntermediateTile": 884736
+      },
+      "phases": [
+        {
+          "phase": "prefix-hidden",
+          "retained": {
+            "hidden": 1341849600,
+            "scalarTime6": 122880
+          },
+          "unknown": [
+            "patch/source/noise/latent buffers and ORT allocator; producer resources must be inventoried"
+          ],
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 1341972480,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "full-KV-build",
+          "retained": {
+            "originalHidden": 1341849600,
+            "Kcache": 1341849600,
+            "Vcache": 1341849600
+          },
+          "staging": {
+            "inputSnapshot": 327680,
+            "rawK": 327680,
+            "normK": 327680,
+            "V": 327680,
+            "weightRaw": 81920,
+            "weightDecoded": 327680,
+            "ortWeightSnapshot": 327680,
+            "normInputSnapshot": 327680
+          },
+          "namedRetainedBytes": 4025548800,
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 4027924480,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "query-head-attention",
+          "retained": {
+            "originalHidden": 1341849600,
+            "Kcache": 1341849600,
+            "Vcache": 1341849600
+          },
+          "staging": {
+            "queryFull": 327680,
+            "normQ": 327680,
+            "contextBeforeO": 327680,
+            "headQ": 8192,
+            "key": 32768,
+            "value": 32768,
+            "score": 4096,
+            "weightRaw": 81920,
+            "weightDecoded": 327680,
+            "ortWeightSnapshot": 327680,
+            "normInputSnapshot": 327680
+          },
+          "namedRetainedBytes": 4025548800,
+          "mutationRule": "KV is frozen before query writes; any hidden overwrite/O/residual implementation remains unverified",
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 4027674624,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        },
+        {
+          "phase": "after-attention",
+          "retained": {
+            "hidden": 1341849600
+          },
+          "barrier": "Release KV before cross/FFN; in-place hidden row reuse is a hypothesis requiring whole-block proof",
+          "implementedAtProductionShape": false,
+          "namedSimultaneousArraySpanLowerBoundBytes": 1341849600,
+          "lowerBoundScope": "Named JS numeric arrays only; Hike/ORT allocator/GC/caller/harness and unlisted producer tensors remain separate, never a total peak guarantee"
+        }
+      ],
+      "algorithms": {
+        "cachedAllHeads": {
+          "retainedBytes": 4025548800,
+          "scoreOrtRunsPerBlock": 167731200,
+          "hikeCallsPerBlock": 167895000,
+          "minimumKVSourceReadBytesPerBlock": 10989748224000,
+          "attentionScoreAndValueMACs": 43958992896000,
+          "queryTiles": 4095,
+          "keyTiles": 1024,
+          "finalQueryCount": 16,
+          "finalKeyCount": 48
+        },
+        "perHeadRecompute": {
+          "retainedHiddenPlusOneHeadKVBytes": 1408942080,
+          "fullNormAxis": 5120,
+          "KFullWidthProjectionRepetitions": 40,
+          "warning": "Full5120 norm precedes head extraction; keeping one head cache requires full-width regeneration, not the same work for less memory"
+        },
+        "weightTraversal": {
+          "tokenMajorQKVFP8ReadBytes": 322043904000,
+          "weightMajorKVThenTokenMajorQFP8ReadBytes": 107400396800,
+          "weightMajorKVHiddenReadBytes": 858783744000,
+          "warning": "These alternative loop orders cannot claim both minimum hidden traffic and minimum weight traffic simultaneously"
+        }
+      },
+      "runtime": {
+        "sessionPolicy": "old-new-overlap",
+        "ortSessions": 4,
+        "oldNewOverlapIncluded": true,
+        "ORTMemoryBytes": null,
+        "HikeMemoryBytes": null,
+        "hostAllocatorAndGCBytes": null,
+        "harnessReferenceBytes": null,
+        "overlapNumericCases": {
+          "separateHiddenAndKVBytes": 8051097600,
+          "sharedImmutableOriginalHiddenAndDistinctKVBytes": 6709248000,
+          "warning": "Alternative cases, not additive; sharing requires an explicit immutable original-hidden proof; candidate changes invalidate K/V. Additional owner staging/parameters remain separate."
+        },
+        "unknownReason": "Actual production simultaneous session/staging allocations are unmeasured; small operator measurements do not fill these fields"
+      },
+      "unresolved": [
+        "FFN inner13824 exceeds implemented dynamic Linear inner<=5120",
+        "FFN row16/row8 exceed decoded81920-element source block; row4=55296 would fit but is not implemented graph execution",
+        "O projection, cross attention, FFN, residual, whole block and full sequence/time/context not accepted",
+        "Reference inputs may make N>65520; 65520 is one two-source scenario, not a general maximum",
+        "Copy counts are logical lower bounds, not OS/ORT/GC peak or timing estimates"
+      ],
+      "acceptance": {
+        "allocationOnlyProbeDoesNotAcceptNumerics": true,
+        "allQueriesNumericalVerified": false,
+        "modelInference": false,
+        "load": "NOT_READY",
+        "predict": "NOT_READY",
+        "sample": "NOT_READY"
+      }
+    }
+  ]
+}

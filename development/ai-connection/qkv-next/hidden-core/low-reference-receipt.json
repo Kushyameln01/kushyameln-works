@@ -1,0 +1,398 @@
+{
+  "schemaVersion": "bernini-hidden-prefix-reference-receipt/0.1",
+  "meta": {
+    "profileId": "bernini-rect2-block0-postmod-f32-v1",
+    "scope": "ACTUAL_MODEL_OPERATORS_FROM_ACTUAL_RECT_MEAN_WITH_EXPLICIT_DIAGNOSTIC_NOISE",
+    "side": "LOW",
+    "globalSigmaIndex": 3,
+    "sigma": 0.8333333134651184,
+    "modelTimestep": 833.3333129882812,
+    "modelSha256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+    "headerSha256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+    "coreCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+    "planSHA256": "2d71ba3e541ad8646a9805585b2641ad1fb2888db37c5a8c1a7a185f7a0c5291",
+    "rawMeanSource": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "path": "development/inference/e6/fixtures/png-mean.wktensor",
+      "fileSha256": "6539204ef61dc0f706238b74e2bcabf8bbcce971f5056d0b0d7e288811516b71",
+      "payloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "dtype": "float32",
+      "layout": "NCTHW",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "meaning": "raw-posterior-mean",
+      "rawMeanProfileId": "wan21-raw-f32-1x16x32"
+    },
+    "noiseRecipe": "float32((((i*29+7)%127)-63)/64), i=0..127; caller-owned explicit array; no PRNG",
+    "noiseIdentity": {
+      "shape": [
+        128
+      ],
+      "elements": 128,
+      "bytes": 512,
+      "sha256": "a08dd928bf4fa62486a3f1c89a33e91ee8b3cfc41c560255f1b9555b404f7ac7"
+    },
+    "coordinates": [
+      {
+        "t": 0,
+        "h": 0,
+        "w": 0,
+        "sourceId": 0
+      },
+      {
+        "t": 0,
+        "h": 0,
+        "w": 1,
+        "sourceId": 0
+      }
+    ],
+    "actualModelOperatorsDerived": true,
+    "originalWorkflowInputVerified": false,
+    "originalWorkflowNoiseVerified": false,
+    "productionHiddenVerified": false,
+    "lowIsActualHighToLowHandoff": false,
+    "readiness": {
+      "load": "NOT_READY",
+      "predict": "NOT_READY",
+      "sample": "NOT_READY"
+    }
+  },
+  "referenceBytes": 1504533,
+  "referenceSHA256": "f1195c996268cfa1321850f1d020465ac29a79f5ac097f99bfc624de8536329c",
+  "generatorSHA256": "2e6e72f6b533d4537b527748eb6f6c45d10d99856db7d48cfa5890bb50fcc65a",
+  "arrayIdentities": {
+    "normalizedMean": {
+      "shape": [
+        128
+      ],
+      "elements": 128,
+      "bytes": 512,
+      "sha256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5"
+    },
+    "noisedLatent": {
+      "shape": [
+        128
+      ],
+      "elements": 128,
+      "bytes": 512,
+      "sha256": "5fe1cdcc222bbd4b18029a051f950af2ce1729a1e732eeb06cf1eea59f81d71b"
+    },
+    "patches": {
+      "shape": [
+        2,
+        64
+      ],
+      "elements": 128,
+      "bytes": 512,
+      "sha256": "38af4215484f1f8148866ccfefe89cb36b707c6efe242e03d85a8852bd255160"
+    },
+    "patchHidden": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "b005f74e4e3e285d03253bc887df4f155797678a158b8b3dfd4c146076e12d0e"
+    },
+    "timeSin": {
+      "shape": [
+        256
+      ],
+      "elements": 256,
+      "bytes": 1024,
+      "sha256": "7cf5607a7fb6d8c16c0a787455564f863b782919f3a1518ab526bbab149c0d10"
+    },
+    "timeLinear0": {
+      "shape": [
+        5120
+      ],
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "c0296b6c23f07a7304a9ec3f8a7af799a21c3d67a4e4c1e797171ef2b903e7c8"
+    },
+    "timeAct0": {
+      "shape": [
+        5120
+      ],
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "df5a2c157ca1f3bebdc13cfff2334cac0def9f904e2c0497202d9df7901f9537"
+    },
+    "timeEmbedding": {
+      "shape": [
+        5120
+      ],
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "b171c1d44af38f0aff7c2128248cd43fff505a73b5e53397d07e9e74b921b8ee"
+    },
+    "timeAct1": {
+      "shape": [
+        5120
+      ],
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "64c4f1347511b2098e3be51d160b1f4a14c2d06082e833ecb1055f81cc02b22b"
+    },
+    "timeProjection": {
+      "shape": [
+        10240
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "9e43fd072b8c3863596bc074ab5d661a24068c6cfddd7ae443b64642768619ff"
+    },
+    "shift": {
+      "shape": [
+        5120
+      ],
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "a310b8d09d5efaaeb78b0360b88708b2a82ae37f5c371be85ef607e068fa440a"
+    },
+    "scale": {
+      "shape": [
+        5120
+      ],
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "f0e09a392c4c6074599ca68f9390544ca94435054b6cecb77b97461e04f4bbed"
+    },
+    "layerNorm": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "9de954a42b06293e14f72cc49d5f3e41c4a17ae191c24170d3eb66509ccaeb26"
+    },
+    "hidden": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "5ea5a7208ab5be7636a98aa21be78e14b2138536bbae04dc8ba825e51a4319ad"
+    }
+  },
+  "ranges": [
+    {
+      "key": "patch_embedding.bias",
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": 5120,
+      "absoluteOffset": 2107718216,
+      "sourceBytes": 10240,
+      "rawSHA256": "306f3362e99462be3a01e4dcdc18cda816ad4ce1a6e0e32b9e0cba3ab1520655",
+      "decodedF32SHA256": "863fa8d6cc8b1072e7e40782547eeccf4dcd993ddecff40c71496174cf6c3194"
+    },
+    {
+      "key": "patch_embedding.weight",
+      "fullShape": [
+        5120,
+        16,
+        1,
+        2,
+        2
+      ],
+      "storageDtype": "F16",
+      "selectedRows": [
+        0,
+        5120
+      ],
+      "absoluteOffset": 2107728456,
+      "sourceBytes": 655360,
+      "rawSHA256": "2e1b5f80953021bd9facca8edd42a7ae82f385ab0250ea37e325fc745dfeaed5",
+      "decodedF32SHA256": "a3318664c91a20d88e8c4b3a7f4ee76048cd85d07f7a6b89437578df90ea5f48"
+    },
+    {
+      "key": "time_embedding.0.bias",
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": 5120,
+      "absoluteOffset": 2202776136,
+      "sourceBytes": 10240,
+      "rawSHA256": "952561120d1e650d0354c13311e8e200c2dca36f713ad11ef538d9192db89589",
+      "decodedF32SHA256": "d148f06335c16cc305fab5307f8dc646d9bded40c27a2fde390d582bf85bfb7d"
+    },
+    {
+      "key": "time_embedding.0.weight",
+      "fullShape": [
+        5120,
+        256
+      ],
+      "storageDtype": "F16",
+      "selectedRows": [
+        0,
+        5120
+      ],
+      "absoluteOffset": 2202786376,
+      "sourceBytes": 2621440,
+      "rawSHA256": "477dd1e99623ae6ef34d401bf403d704e380d7054984194168b7ae795b7538c3",
+      "decodedF32SHA256": "0a8b7391b08975008ef0c83bea4d6057bb54df20b89cc6091ffdb0957c664505"
+    },
+    {
+      "key": "time_embedding.2.bias",
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": 5120,
+      "absoluteOffset": 2205407816,
+      "sourceBytes": 10240,
+      "rawSHA256": "365cd43f8191ae7bfcd38bbbc61395f422fb864961ccb882764016b00576d507",
+      "decodedF32SHA256": "71e3917e0ebd690ea84d725e9c57506d9e62b80c1be3d67d95917f326528d3ac"
+    },
+    {
+      "key": "time_embedding.2.weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedRows": [
+        0,
+        5120
+      ],
+      "absoluteOffset": 2205418056,
+      "sourceBytes": 52428800,
+      "rawSHA256": "4ef9aee4ea3709bbd5c1e176d820865d9ca5a0f65f7e0471d2c67a0a0c6b7a8e",
+      "decodedF32SHA256": "c85c09a874400ef3608489ded45d1be2a7d5b4c815684471790fcef99fab42a6"
+    },
+    {
+      "key": "time_projection.1.bias",
+      "fullShape": [
+        30720
+      ],
+      "storageDtype": "F16",
+      "selectedElements": 10240,
+      "absoluteOffset": 2257846856,
+      "sourceBytes": 20480,
+      "rawSHA256": "a5c712ff61dcfd607871b2d727944b31e880d3571e3850894aae31a33c9f9a6d",
+      "decodedF32SHA256": "8bba0729a201c5b7cc09d907309ca370febdd1275d1a26d83378b0bfced93fc6"
+    },
+    {
+      "key": "time_projection.1.weight",
+      "fullShape": [
+        30720,
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedRows": [
+        0,
+        10240
+      ],
+      "absoluteOffset": 2257908296,
+      "sourceBytes": 104857600,
+      "rawSHA256": "ae1c8f80be2605cfbefb4e649a81be2e6beb6f12f85777cfe426067a98d993b4",
+      "decodedF32SHA256": "692a2a36d289db8bf763af1adba9fece43c7634a25512f9d3b8d6e224dcf6969"
+    },
+    {
+      "key": "blocks.0.modulation",
+      "fullShape": [
+        1,
+        6,
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": 10240,
+      "absoluteOffset": 52710856,
+      "sourceBytes": 20480,
+      "rawSHA256": "bb7e2a04c56441f1e56e37c3d8fe6036d616827f73dd69e2244fd922ba4a7176",
+      "decodedF32SHA256": "b8a1516ecc251a3e9ecde86af9f20f817950f96f3e87547027edcd4566fb462f"
+    }
+  ],
+  "originalFileBytesRead": 160816168,
+  "selectedParameterBytesRead": 160634880,
+  "maxSingleReadBytes": 181280,
+  "maxSingleParameterReadBytes": 163840,
+  "fullFileSha256Recomputed": false,
+  "privateReferencePayloadPublished": false,
+  "gates": {
+    "normalizedMean": {
+      "comparison": "strict F32 bytes"
+    },
+    "noisedLatent": {
+      "comparison": "strict F32 bytes"
+    },
+    "patches": {
+      "comparison": "strict F32 bytes"
+    },
+    "decodedParameter": {
+      "comparison": "strict F32 bytes"
+    },
+    "timeSin": {
+      "abs": 2e-06,
+      "rel": 2e-06
+    },
+    "patchHidden": {
+      "abs": 0.0001,
+      "rel": 1e-05
+    },
+    "timeLinear0": {
+      "abs": 0.0001,
+      "rel": 1e-05
+    },
+    "timeAct0": {
+      "abs": 0.0001,
+      "rel": 1e-05
+    },
+    "timeEmbedding": {
+      "abs": 0.001,
+      "rel": 0.0001
+    },
+    "timeAct1": {
+      "abs": 0.001,
+      "rel": 0.0001
+    },
+    "timeProjection": {
+      "abs": 0.001,
+      "rel": 0.0001
+    },
+    "shift": {
+      "abs": 0.001,
+      "rel": 0.0001
+    },
+    "scale": {
+      "abs": 0.001,
+      "rel": 0.0001
+    },
+    "layerNorm": {
+      "abs": 0.0001,
+      "rel": 0.0001
+    },
+    "hidden": {
+      "abs": 0.001,
+      "rel": 0.0001
+    },
+    "composedAttention": {
+      "abs": 0.01,
+      "rel": 0.001,
+      "scope": "independent raw-mean prefix hidden -> independent QKV/norm/RoPE/all40head N2 attention; separate from actual-hidden local boundary gates"
+    }
+  },
+  "referenceBackend": {
+    "numpy": "2.3.5",
+    "blasThreads": 1,
+    "linear": "binary64 dot then F32; F32 bias",
+    "sinusoid": "scalar F64 math primitives at declared F32 intermediate positions",
+    "silu": "stable binary64 sigmoid*x then F32",
+    "layerNorm": "binary64 two-pass mean/variance/sqrt then F32",
+    "modulate": "F32 scale+one; binary64 product+add then F32"
+  },
+  "elapsedSeconds": 0.6234003889985615
+}

@@ -1,0 +1,33 @@
+✖ bounded actual source exposes immutable F16 rows and rejects cross-key/range reads (34.57134ms)
+✔ dynamic graph keeps dimensions symbolic and runtime weight binding (0.609974ms)
+✔ new Hike math uses exact N2 LayerNorm, admission and owned workspace (9.135311ms)
+✔ actual source abort during asynchronous identity hashing never commits a block (24.89271ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 94.597391
+
+✖ failing tests:
+
+test at docs/shared/diffusion-models/ort-bridge/block-hidden/test-boundaries.mjs:9:1
+✖ bounded actual source exposes immutable F16 rows and rejects cross-key/range reads (34.57134ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'runtime-input'
+  - 'hike-parameter'
+
+      at TestContext.<anonymous> (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/block-hidden/test-boundaries.mjs:17:102)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'runtime-input',
+    expected: 'hike-parameter',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
