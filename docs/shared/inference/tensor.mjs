@@ -9,7 +9,9 @@ function digestId(value,name){if(typeof value!=='string'||!SHA256.test(value))th
 // conversion or of the original media's identity; callers verify those separately.
 export function snapshotTensorMetadata(t){
  const result={};
- if(t.normalization!==undefined&&(['raw-posterior-mean','wan21-raw-generated-sample:v1'].includes(t.meaning)||(t.meaning==='wan21-normalized-posterior-mean:v1'&&t.normalization!=='wan21-comfy-f32-v1')))throw TypeError('Latent normalization marker contradicts its declared meaning');
+ const normalization=t.normalization;
+ if(normalization!==undefined&&(['raw-posterior-mean','wan21-raw-generated-sample:v1'].includes(t.meaning)||(t.meaning==='wan21-normalized-posterior-mean:v1'&&normalization!=='wan21-comfy-f32-v1')))throw TypeError('Latent normalization marker contradicts its declared meaning');
+ if(t.meaning==='wan21-normalized-posterior-mean:v1'&&normalization!==undefined)result.normalization=normalization;
  if(t.modelSha256!==undefined)digestId(t.modelSha256,'model');
  if(t.tokenizerSha256!==undefined){
   if(t.layout!=='BLC'||t.meaning!=='text_hidden_states')throw TypeError('Tokenizer binding requires text conditioning');

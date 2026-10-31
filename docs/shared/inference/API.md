@@ -2,7 +2,7 @@
 
 API版: `works-ai-1`。Text EncoderとVAEは独立モジュール。包括処理と一括UI、別CodexのDiffusionモジュールはこの実装に含めない。
 
-文書revision: `E6`（2026-10-31 JST）。`works-ai-1`とG1Cのnative契約を維持し、F=1正方形と非正方形の診断profile受入を記載する。source branchの文書であり、main/Pagesの配信更新を意味しない。新規generated sample受入口と以下のmetadata追加は、実生成sampleの推論・復元・decodeを受入済みとするものではない。
+文書revision: `marker-codec-1`（2026-11-01 JST）。`works-ai-1`と既存G1C契約を維持し、供給されたnormalized markerの任意header保存を追加する。F=1正方形と非正方形の診断profile受入は元scopeで再利用する。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sample受入口とmetadata保存は、実生成sampleの推論・復元・decodeを受入済みとするものではない。
 
 受入済みの実行条件は、UMT5の24層FP32診断経路と、Wan2.1 VAEの固定プロファイル `wan21-raw-f32-5x16x16`。VAEはRGB `[1,3,5,16,16]` とraw latent `[1,16,2,2,2]` の相互変換を検証した。大きな動画shapeをそのまま受け入れるものではない。別shapeは `tools/inference/vae/export_profile.py` で別bundleを作成し、その参照tensorとブラウザ結果を照合してから利用する。
 
@@ -177,6 +177,10 @@ Text/VAEには内蔵待機列がない。同時実行はPromiseの `Inference cl
 ## 保存形式と今回の確認範囲
 
 `.wktensor` はmagic `WKTSR001`、uint32 LE header長、UTF-8 JSON header、little-endian binary payload。schemaVersion1、dtype/shape/layout/meaning/byteLength/dataSha256、任意model/mask/Tokenizer/context/latentContractを保持する。header上限65,536 B、無効shape・非有限float32・不正mask・破損payload・不整合な新metadataは拒否する。非同期hash前にpayloadだけでなくshape・識別・mask・contextもsnapshotする。SHA-256はpayload整合であり、header署名や原媒体の真正性を保証しない。
+
+`meaning='wan21-normalized-posterior-mean:v1'`に有効な`normalization:'wan21-comfy-f32-v1'`が供給された場合、その文字列も非同期hash前にsnapshotしheaderへ保存する。marker省略時は新たに補わない。raw mean/sampleへの矛盾したtop-level markerと不明な規約は従来どおり拒否する。数値の正規化・復元は実行しない。
+
+magic/schemaVersionは変更しない。旧markerなしファイルは読取り可能で、省略されたmarkerを補わず再保存する。markerなしの旧mean/conditioning等の直列化bytesは維持する。旧G1C reader `2c171a09ccda65c54899f322ae490f1bfcaac6fb` は新しい任意headerも読めるが、同じ旧writerで再保存するとmarkerを失うため、保存用途では新しいcodec source/hashを明示選択する。管理E4の旧pinを同名で差し替えず、新candidate sourceRefと実module SHAを登録する。
 
 旧フィールドだけのgolden fixtureについてバイト一致を確認する。今回の接続fixtureはText `[1,2,4096]` とmask、raw mean/生成sample `[1,16,2,2,2]`、contextとmodel/Tokenizer hash、保存読戻し、変更中metadataのsnapshot、MessagePort転送後の所有権を対象とする。反復 `a/b/c` hashなどのfixture値は合成識別で、実model互換性ではない。SDK dispatchのdoubleやText lifecycleのORT doubleを実モデル推論の成功として数えない。
 
