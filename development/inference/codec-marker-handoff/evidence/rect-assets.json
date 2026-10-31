@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "scope": "Local asset bytes only; no inference or recipient-environment acceptance",
+  "manifest": {
+    "bytes": 4820,
+    "sha256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a"
+  },
+  "profile": {
+    "id": "wan21-raw-f32-1x16x32",
+    "videoShape": [
+      1,
+      3,
+      1,
+      16,
+      32
+    ],
+    "latentShape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "layout": "NCTHW",
+    "latentSpace": "raw",
+    "posterior": "mean",
+    "opset": 17
+  },
+  "assets": [
+    {
+      "role": "encoder",
+      "mapKey": "encode.onnx",
+      "bytes": 212362391,
+      "sha256": "0105bc12f13d3aceb35d1765681c427643bf04cc4ce5978c7339e04beff09e0d",
+      "passed": true
+    },
+    {
+      "role": "decoderBody",
+      "mapKey": "decoder-body.onnx",
+      "bytes": 286313363,
+      "sha256": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e",
+      "passed": true
+    },
+    {
+      "role": "conv2Weight",
+      "mapKey": "conv2-weight.f32",
+      "bytes": 1024,
+      "sha256": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+      "passed": true
+    },
+    {
+      "role": "conv2Bias",
+      "mapKey": "conv2-bias.f32",
+      "bytes": 64,
+      "sha256": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+      "passed": true
+    }
+  ],
+  "assetBytes": 498676842,
+  "elapsedSeconds": 0.7126011449981888,
+  "neuralRuns": 0,
+  "exports": 0,
+  "childProcessesStarted": 0,
+  "separateManagerEnvironmentVerified": false
+}
