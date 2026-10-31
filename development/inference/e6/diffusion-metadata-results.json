@@ -1,0 +1,115 @@
+{
+  "sourceCommit": "f522d9aeff313558c4ef83022a340af9a4c21391",
+  "buildId": "diffusion-models/0.1+17ecb7d0645bc4ac28ef459cfb1a4d594e58398b6db73d5d42ac072bc1b5df70",
+  "cases": [
+    {
+      "name": "Actual owner old128 mean Hike keeps numbers/model but drops context in both directions",
+      "observed": true,
+      "inputContext": {
+        "schemaVersion": 1,
+        "contextId": "synthetic-old128-control",
+        "inputId": "synthetic-five-frames",
+        "inputSha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "slotId": "control-slot",
+        "sourceFrameIndices": [
+          0,
+          3,
+          3,
+          8,
+          9
+        ],
+        "sourceFrameTimesSeconds": [
+          0,
+          0.1,
+          0.1,
+          0.4,
+          0.5
+        ]
+      },
+      "normalizeContextPresent": false,
+      "restoreContextPresent": false,
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "shape": [
+        1,
+        16,
+        2,
+        2,
+        2
+      ],
+      "maxAbs": 3.5762786865234375e-7,
+      "hikeCalls": 2
+    },
+    {
+      "name": "Actual owner common codec and raw mean wrapper omit native context",
+      "observed": true,
+      "commonCodecContextPresent": false,
+      "wrapperContextPresent": false,
+      "savedFileSha256": "df947257226e70818485f483e7c6cf87a2adac8d8ae2cd63dbca2bf5b81a1a5c",
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "shape": [
+        1,
+        16,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "name": "Actual owner conditioning wrapper preserves mask/model but drops supplied Tokenizer identity",
+      "observed": true,
+      "tokenizerSha256Present": false,
+      "attentionMask": [
+        1,
+        0
+      ],
+      "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68"
+    },
+    {
+      "name": "Actual accepted rectangular mean128 rejected despite same element count",
+      "observed": true,
+      "path": "/workspace/work/inference/e6-rect/browser-acceptance/png-mean.wktensor",
+      "fileSha256": "6539204ef61dc0f706238b74e2bcabf8bbcce971f5056d0b0d7e288811516b71",
+      "payloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "elements": 128,
+      "errors": {
+        "validate": {
+          "name": "RangeError",
+          "message": "Tensor shape cannot connect to this profile"
+        },
+        "normalize": {
+          "name": "RangeError",
+          "message": "Tensor shape cannot connect to this profile"
+        },
+        "restore": {
+          "name": "RangeError",
+          "message": "Tensor shape cannot connect to this profile"
+        }
+      },
+      "hikeCallsAdded": 0
+    }
+  ],
+  "scope": "Small actual-owner Hike/codec metadata observation and actual new rectangle output boundary only",
+  "normalizationExtension": false,
+  "neuralInference": false,
+  "jointMetadataPreserved": false,
+  "newOwnerAckForThisRequest": false,
+  "stats": {
+    "calls": 2,
+    "memoryBytes": 1114112,
+    "arenaBytes": 1024,
+    "inputCopyBytes": 1024,
+    "outputCopyBytes": 1024,
+    "workspaceReused": true,
+    "wasmSha256": "ffd1c821d9ecf2aba10cd7ac96f231c78380a1d02621dae8838ee8d64495b9ea",
+    "sourceSha256": "ceb50086b0ca658c1547058d339980ceb5b8f40797ee365b2af203d996c6ea5d",
+    "imports": 0
+  },
+  "observationChecksPassed": true
+}

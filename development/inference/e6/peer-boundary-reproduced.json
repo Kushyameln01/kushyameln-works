@@ -1,0 +1,101 @@
+{
+  "sourceCommit": "f522d9aeff313558c4ef83022a340af9a4c21391",
+  "kind": "E6 boundary classification, not joint acceptance",
+  "checks": [
+    {
+      "name": "accepted64 validator",
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    },
+    {
+      "name": "accepted64 normalize",
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    },
+    {
+      "name": "accepted64 restore shape",
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    },
+    {
+      "name": "acceptedRectangle128 validator",
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    },
+    {
+      "name": "acceptedRectangle128 normalize",
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    },
+    {
+      "name": "acceptedRectangle128 restore shape",
+      "rejected": true,
+      "error": {
+        "name": "RangeError",
+        "message": "Tensor shape cannot connect to this profile"
+      }
+    }
+  ],
+  "neuralInference": false,
+  "normalizationExtension": false,
+  "ownerAcknowledged": false,
+  "accepted64": {
+    "fileSha256": "3641234c5f5a722d1d7eb2b4558412ba2c425d089324986bcdf209e66f9f8e98",
+    "payloadSha256": "8f245b119bfd7ad42ea78e6f0ed68a9ee5d852f6fe85c528cdc0f87166c7d26e",
+    "shape": [
+      1,
+      16,
+      1,
+      2,
+      2
+    ],
+    "elements": 64
+  },
+  "acceptedRectangle128": {
+    "fileSha256": "6539204ef61dc0f706238b74e2bcabf8bbcce971f5056d0b0d7e288811516b71",
+    "payloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+    "shape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "elements": 128
+  },
+  "old128Math": {
+    "passed": true,
+    "maxAbs": 3.5762786865234375e-7,
+    "gate": 0.000002,
+    "calls": 2,
+    "fixture": "synthetic original profile; no actual rectangle reshape"
+  },
+  "metadataObservations": {
+    "contextAfterNormalize": null,
+    "contextAfterRestore": null,
+    "contextAfterSaveRead": null,
+    "tokenizerAfterConditioningSaveRead": null,
+    "maskAfterConditioningSaveRead": [
+      1,
+      0
+    ],
+    "jointPreservation": false
+  },
+  "boundaryChecksPassed": true,
+  "readiness": "new profiles unsupported; metadata-preserving joint edge blocked"
+}

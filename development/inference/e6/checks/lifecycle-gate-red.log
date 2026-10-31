@@ -1,0 +1,21 @@
+.FF...
+======================================================================
+FAIL: test_historical_measured_zombies_do_not_mean_complete_cleanup (__main__.ProcessLifecycleTests.test_historical_measured_zombies_do_not_mean_complete_cleanup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/kushyameln-works/tools/inference/vae/test_process_lifecycle.py", line 51, in test_historical_measured_zombies_do_not_mean_complete_cleanup
+    self.assertTrue(callable(getattr(lifecycle, 'cleanup_complete', None)),
+AssertionError: False is not true : Explicit live/zombie/error completion gate is missing
+
+======================================================================
+FAIL: test_real_reaped_child_has_complete_cleanup (__main__.ProcessLifecycleTests.test_real_reaped_child_has_complete_cleanup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/kushyameln-works/tools/inference/vae/test_process_lifecycle.py", line 61, in test_real_reaped_child_has_complete_cleanup
+    self.assertTrue(callable(getattr(lifecycle, 'cleanup_complete', None)),
+AssertionError: False is not true : Explicit live/zombie/error completion gate is missing
+
+----------------------------------------------------------------------
+Ran 6 tests in 1.846s
+
+FAILED (failures=2)
