@@ -56,7 +56,7 @@ def main():
    if raw!=fixed:raise ValueError('Executed source differs from committed source: '+relative)
   served[relative]={'path':relative,'bytes':len(raw),'sha256':sha(raw),'executionSourceSha':a.execution_source_sha}
   return raw
- for path in [Path(__file__),HERE/'plain_checks.py',HERE/'plain_browser.mjs',HERE/'plain_observer_worker.mjs',HERE/'plain_memory.mjs',HERE.parent/'vae/process_lifecycle.py']:source_bytes(path)
+ for path in [Path(__file__),HERE/'plain_checks.py',HERE/'plain_browser.mjs',HERE/'plain_observer_worker.mjs',HERE/'plain_memory.mjs',HERE.parent/'vae/process_lifecycle.py',ROOT/'docs/shared/vr180/sha256.mjs']:source_bytes(path)
  class Handler(BaseHTTPRequestHandler):
   def log_message(self,*args):pass
   def do_GET(self):
@@ -65,6 +65,7 @@ def main():
     if relative=='/':raw=b'<!doctype html><input id="bundle" type="file" multiple><input id="source" type="file"><script type="module" src="/plain-proof/plain_browser.mjs"></script>';kind='text/html'
     elif relative.startswith('/plain-proof/'):
      name=relative.removeprefix('/plain-proof/');assert name in ['plain_browser.mjs','plain_observer_worker.mjs','plain_memory.mjs'];raw=source_bytes(HERE/name);kind='text/javascript'
+    elif relative=='/shared/vr180/sha256.mjs':raw=source_bytes(ROOT/'docs/shared/vr180/sha256.mjs');kind='text/javascript'
     elif relative.startswith('/shared/inference/') and relative.endswith(('.mjs','.wasm')):
      path=(ROOT/'docs'/relative.lstrip('/')).resolve();assert path.is_relative_to(ROOT/'docs/shared/inference');raw=source_bytes(path);kind='application/wasm' if path.suffix=='.wasm' else 'text/javascript'
     else:self.send_error(404);return

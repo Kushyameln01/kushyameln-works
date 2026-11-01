@@ -10,6 +10,24 @@ self.postMessage=(message,transfer)=>{
  if(message.result?.evidence){message.result.evidence.sessionObservation=observation;message.result.evidence.memoryObservation=memory.summary();}
  return send({...message,plainObservation:observation},transfer);
 };
+// The canonical URL is shared with the native runtime. Only scalar per-hash
+// state is retained; update receives the native subarray view synchronously.
+const {Sha256}=await import('/shared/vr180/sha256.mjs');
+const hashObservations=new WeakMap();let hashSerial=0;
+const realHashUpdate=Sha256.prototype.update,realHashDigest=Sha256.prototype.digestHex;
+Sha256.prototype.update=function(bytes){
+ let record=hashObservations.get(this);
+ if(!record){record={hashId:++hashSerial,started:performance.now(),updateMs:0};hashObservations.set(this,record);memory.mark('incremental-digest-start',{hashId:record.hashId});}
+ const details={hashId:record.hashId,inputBytes:bytes.byteLength,bytesHashedBefore:Number(this.bytesHashed)};
+ memory.mark('incremental-digest-update-start',details);const start=performance.now();
+ try{const value=realHashUpdate.call(this,bytes),durationMs=performance.now()-start;record.updateMs+=durationMs;memory.mark('incremental-digest-update-end',{...details,bytesHashedAfter:Number(this.bytesHashed),durationMs});return value;}
+ catch(error){memory.mark('incremental-digest-failure',{...details,error:String(error)});throw error;}
+};
+Sha256.prototype.digestHex=function(...args){
+ const value=realHashDigest.apply(this,args),record=hashObservations.get(this);
+ if(record&&!record.finalized){record.finalized=true;memory.mark('incremental-digest-end',{hashId:record.hashId,inputBytes:Number(this.bytesHashed),durationMs:performance.now()-record.started,updateMs:record.updateMs,scope:'Hash finalization only; manifest equality is checked by the native runtime.'});}
+ return value;
+};
 const ort=await import('/shared/inference/vendor/ort.wasm.min.mjs');
 const realCreate=ort.InferenceSession.create;
 ort.InferenceSession.create=function(...args){
