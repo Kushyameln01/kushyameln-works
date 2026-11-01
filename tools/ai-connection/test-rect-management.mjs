@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {createOwnedArtifactStore,captureNativeTensor,restoreNativeTensor} from '../../docs/shared/ai-connection/adapters/artifacts.mjs';
+import {evaluateEdge} from '../../docs/shared/ai-connection/compatibility.mjs';
 const runner=await import('./rect-management-runner.mjs').catch(e=>e.code==='ERR_MODULE_NOT_FOUND'?{}:Promise.reject(e));
 test('P2 runner exposes an exact Rect boundary, not an element-count boundary',()=>{
  assert.equal(typeof runner.assertRectMean,'function');
@@ -53,4 +54,20 @@ test('P2 metadata-only duplicate frame/time probe survives owner Rect and owned 
   const handle=captureNativeTensor({tensor:output,descriptor,store,registry:{schemas:[{schemaId:'probe:native',schemaVersion:'1',g1cMetadata:true},{schemaId:'probe:raw',schemaVersion:'1',nativeMeanings:['raw-posterior-mean']}],roles:[]}});
   input.context.sourceFrameIndices[0]=999;assert.deepEqual(restoreNativeTensor(handle,store).context,expectedContext);assert.deepEqual(handle.descriptor.lineage.sourceFrames[0].indices,[4,2,2,0]);assert.deepEqual(handle.descriptor.lineage.sourceFrames[0].timesSeconds,[.4,.2,.2,0]);assert.deepEqual(handle.descriptor.extensions['future:optional'].data.order,[2,1,2]);assert.deepEqual(c.native.context,before);
  }finally{kernel.dispose();store.clear();}
+});
+
+test('joint mean prepare keeps known static contracts compatible while future numeric evidence remains blocked',{skip:!haveRoots},async()=>{
+ const c=await load();
+ for(const operation of ['normalizeRawMean','restoreRawMean']){
+  const tensor=operation==='normalizeRawMean'?c.native:{...c.native,meaning:'wan21-normalized-posterior-mean:v1',normalization:'wan21-comfy-f32-v1'};
+  const q=await runner.buildRectMeanPrepareEdge({candidate:c,tensor,operation}),decision=evaluateEdge(q);
+  assert.equal(q.evidence.length,0);assert.equal(decision.compatibility,'COMPATIBLE');assert.equal(decision.readiness.state,'blocked');assert.equal(decision.validation.length,1);assert.equal(decision.validation[0].result,'not-verified');assert.equal(decision.validation[0].scope,'rect:pending-owner-mean-roundtrip');
+  const wrongLayout=await runner.buildRectMeanPrepareEdge({candidate:c,tensor:{...tensor,layout:'NCTWH'},operation});assert.equal(evaluateEdge(wrongLayout).compatibility,'INCOMPATIBLE');
+  if(operation==='normalizeRawMean')assert.equal(Object.hasOwn(q.referenceContext.nativeDeclarations.consumer,'normalizationState'),false);
+  assert.equal(decision.referenceTrace.appliedNormIds.includes('N-NORMALIZATION'),true);
+  for(const mutate of [x=>x.artifact.tensor.shape=[1,16,2,2,2],x=>x.artifact.tensor.dtype='float64',x=>x.artifact.tensor.nativeMeaning='raw-decoder-rgb',x=>x.artifact.native.metadata.normalization='wrong-marker',x=>x.referenceContext.nativeDeclarations.consumer.nativeProfileId='wrong-profile',x=>x.referenceContext.nativeDeclarations.consumer.kernelABI='old-abi']){
+   const bad=await runner.buildRectMeanPrepareEdge({candidate:c,tensor,operation});mutate(bad);assert.equal(evaluateEdge(bad).compatibility,'INCOMPATIBLE');
+  }
+  const missing=await runner.buildRectMeanPrepareEdge({candidate:c,tensor,operation});delete missing.referenceContext.nativeDeclarations.consumer.modelSha256;assert.equal(evaluateEdge(missing).compatibility,'UNVERIFIED');
+ }
 });

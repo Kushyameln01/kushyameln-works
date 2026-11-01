@@ -7,12 +7,14 @@ import {createServer} from 'node:http';
 import {createRequire} from 'node:module';
 import {resolve,dirname,relative,sep,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
 import {ADOPTED_WKTENSOR_DEPLOYMENT_PATH,createAdoptedWktensorCodec,verifyAdoptedWktensorSource} from '../../docs/shared/ai-connection/codecs/wktensor.mjs';
 import {canonicalBytes,sha256Bytes} from '../../docs/shared/ai-connection/canonical.mjs';
 import {loadReferenceSet} from '../../docs/shared/ai-connection/reference-loader.mjs';
 import {createNormRequiredRectAdapter} from '../../docs/shared/ai-connection/adapters/norm-required-rect.mjs';
 import {NORM_EXECUTION_POLICIES} from '../../docs/shared/ai-connection/norm-execution.mjs';
-import {prepareRectNormInputs,RECT_NATIVE_COMMIT,RECT_CATALOG_SHA256,RECT_REFERENCE_SHA256,RECT_PRIOR_EVIDENCE} from './norm-required-rect-browser.mjs';
+import {assertRectCurrentInputLink,prepareRectNormInputs,RECT_NATIVE_COMMIT,RECT_CATALOG_SHA256,RECT_REFERENCE_SHA256,RECT_PRIOR_EVIDENCE} from './norm-required-rect-browser.mjs';
 
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'../..'),REPO='Kushyameln01/kushyameln-works';
 const INPUT_SHA256='dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612';
@@ -65,13 +67,25 @@ export async function preflightNormRequiredRect({nativeRoot,bundleRoot,inputPath
  }
  return {sourceProof,persistenceCodecSource,manifest,tensor,assetReceipts,missingAssets,inputIdentity:{sourceRef:{repository:REPO,commit:'35151d1f447d6bba30931a8c28636b2d5d9c3820',path:'development/inference/reference-adoption/p2/run/restored.wktensor'},sha256:INPUT_SHA256,byteLength:inputBytes.length,payloadSha256:tensor.dataSha256,shape:tensor.shape,meaning:tensor.meaning,modelSha256:tensor.modelSha256,context:tensor.context},referenceIdentity:{sourceRef:{repository:REPO,commit:RECT_NATIVE_COMMIT,path:'development/inference/e6/fixtures/png-roundtrip.f32'},sha256:RECT_REFERENCE_SHA256,byteLength:referenceBytes.length,elements:1536},manifestIdentity:{sourceRef:{repository:REPO,commit:RECT_NATIVE_COMMIT,path:MANIFEST_PATH},sha256:MANIFEST_SHA256,byteLength:manifestBytes.length}};
 }
-async function managementSources(){
+export async function collectRectManagementSourceReceipts(){
  const visited=new Set(),proof=[];
  async function visit(path){path=resolve(ROOT,path);if(visited.has(path))return;if(!path.startsWith(ROOT+sep))throw fail('MANAGER_SOURCE_ESCAPE','Imports must remain in the explicit repository');visited.add(path);const b=new Uint8Array(await readFile(path));proof.push({path:relative(ROOT,path).split(sep).join('/'),sha256:await sha256Bytes(b),byteLength:b.length});if(!path.endsWith('.mjs'))return;for(const m of new TextDecoder().decode(b).matchAll(/(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)['"](\.[^'"]+)['"]/g))await visit(resolve(dirname(path),m[1]));}
- await visit('tools/ai-connection/norm-required-rect-browser.mjs');await visit('tools/ai-connection/run-norm-required-rect.mjs');return proof;
+ await visit('tools/ai-connection/norm-required-rect-browser.mjs');await visit('tools/ai-connection/run-norm-required-rect.mjs');await visit('tools/ai-connection/run-joint-rect-management.mjs');return proof;
+}
+/** Git objects authenticate the supplied full checkpoint. A mismatch retains
+ * commit:null; an arbitrary40-character CLI argument never proves execution. */
+export async function verifyRectManagementCommit({managerCommit,sourceReceipts,repositoryRoot=ROOT}={}){
+ if(!/^[a-f0-9]{40}$/.test(managerCommit??'')||!Array.isArray(sourceReceipts)||!sourceReceipts.length)throw fail('MANAGER_TARGET_REQUIRED','Explicit full checkpoint and nonempty current source closure are required');
+ const git=promisify(execFile),records=[];
+ for(const receipt of sourceReceipts){
+  let objectBytes,error=null;try{if(typeof receipt.path!=='string'||receipt.path.startsWith('/')||receipt.path.split('/').some(x=>!x||x==='.'||x==='..'))throw fail('MANAGER_SOURCE_ESCAPE','Source receipt path is invalid');objectBytes=new Uint8Array((await git('git',['show',`${managerCommit}:${receipt.path}`],{cwd:repositoryRoot,encoding:'buffer',maxBuffer:16*1024*1024})).stdout);}catch(e){error={code:e.code??null,message:'Fixed Git source object is unavailable'};}
+  const gitSha256=objectBytes?await sha256Bytes(objectBytes):null,matched=!!objectBytes&&objectBytes.length===receipt.byteLength&&gitSha256===receipt.sha256;
+  records.push({...receipt,gitByteLength:objectBytes?.length??null,gitSha256,matched,...(error?{error}: {})});
+ }
+ const allMatched=records.every(r=>r.matched);return {schemaVersion:'works-rect-management-git-source/0.1-draft.1',targetCommit:managerCommit,commit:allMatched?managerCommit:null,allMatched,records};
 }
 function safeChild(root,path){if(typeof path!=='string'||!path||path.startsWith('/')||path.includes('\\')||path.split('/').some(p=>!p||p==='.'||p==='..'))throw fail('UNSAFE_OUTPUT_PATH','Only exact package-relative paths are accepted');const file=resolve(root,path);if(!file.startsWith(resolve(root)+sep))throw fail('UNSAFE_OUTPUT_PATH','Package path escaped its fresh task output');return file;}
-async function browserRun({nativeRoot,out,inputPath,referencePath,preflight,managerCommit,resourceState,scenario,managerSource}){
+async function browserRun({nativeRoot,out,inputPath,referencePath,preflight,managerCommit,resourceState,scenario,managerSource,jointTraceId,currentInputLink}){
  const nativePins=new Map(preflight.sourceProof.map(p=>[p.sourceRef.path,p.sha256])),managerPins=new Map(managerSource.sourceReceipts.map(p=>[p.path,p.sha256]));
  const network=[],errors=[],workerEvents=[],workerRecords=new Map(),createdWaiters=new Map();let browser,server,page;
  const serverFaults=[];
@@ -98,24 +112,30 @@ async function browserRun({nativeRoot,out,inputPath,referencePath,preflight,mana
   await page.exposeFunction('__rectWritePackageFile',async(caseName,path,b64)=>{const directory=safeChild(out,caseName),file=safeChild(directory,path);await mkdir(dirname(file),{recursive:true});await writeFile(file,Buffer.from(b64,'base64'),{flag:'wx'});});
   await page.exposeFunction('__rectReadPackageFile',async(caseName,path)=>{try{return (await readFile(safeChild(safeChild(out,caseName),path))).toString('base64');}catch(e){if(e.code==='ENOENT')return null;throw e;}});
   await page.goto(origin+'/');await page.locator('#rect-assets').setInputFiles(preflight.assetReceipts.map(a=>a.path));await page.locator('#rect-input').setInputFiles(resolve(inputPath));await page.locator('#rect-reference').setInputFiles(resolve(referencePath));await page.waitForFunction(()=>typeof globalThis.runRequiredRect==='function');
-  const result=await page.evaluate(plan=>globalThis.runRequiredRect(plan),{manifest:preflight.manifest,managerCommit,resourceState,scenario,managerSource,persistenceCodecSource:preflight.persistenceCodecSource});
+  const result=await page.evaluate(plan=>globalThis.runRequiredRect(plan),{manifest:preflight.manifest,managerCommit,resourceState,scenario,managerSource,persistenceCodecSource:preflight.persistenceCodecSource,jointTraceId,currentInputLink});
   return {...result,status:errors.length||serverFaults.length||[...workerRecords.values()].some(r=>!r.proof)?'FAIL':result.status,browserVersion:browser.version(),workerEvents,workerResources:{created:workerEvents.filter(e=>e.kind==='created').length,closed:workerEvents.filter(e=>e.kind==='closed').length,live:[...workerRecords.values()].filter(r=>!r.proof).map(r=>r.token)},network:{scope:'local GET only; original graph Files selected locally',requests:network},browserErrors:errors,sourceServerFaults:serverFaults};
  }finally{await browser?.close();if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}}
 }
-export async function runNormRequiredRect({nativeRoot,bundleRoot,inputPath,referencePath,out,managerCommit,resourceState,scenario='decode'}={}){
+export async function runNormRequiredRect({nativeRoot,bundleRoot,inputPath,referencePath,out,managerCommit,resourceState,scenario='decode',jointTraceId,currentInputLink,requireFixedManagementSource=false}={}){
  if(!['decode','cancel-recover'].includes(scenario))throw fail('UNKNOWN_SCENARIO','Select decode or cancel-recover');
  if(!out||!/^[a-f0-9]{40}$/.test(managerCommit??''))throw fail('MANAGER_TARGET_REQUIRED','A fresh --out and full --manager-commit are required');
- const preflight=await preflightNormRequiredRect({nativeRoot,bundleRoot,inputPath,referencePath}),referenceSet=await loadReferences(),sourceReceipts=await managementSources();
- const managerSource={commit:null,baseCommit:managerCommit,reason:'Working-tree checkpoint is authenticated by explicit sourceReceipts; no uncommitted native pin is promoted.',sourceReceipts};
- const metadata=prepareRectNormInputs({tensor:preflight.tensor,referenceSet,managerCommit,resourceState});
+ const preflight=await preflightNormRequiredRect({nativeRoot,bundleRoot,inputPath,referencePath}),referenceSet=await loadReferences(),sourceReceipts=await collectRectManagementSourceReceipts();
+ const sourceCheckpoint=requireFixedManagementSource?await verifyRectManagementCommit({managerCommit,sourceReceipts}):null;
+ const managerSource={commit:sourceCheckpoint?.commit??null,baseCommit:managerCommit,reason:sourceCheckpoint?.allMatched?'Every current management source byte matches the fixed Git checkpoint.':'Working-tree checkpoint is authenticated by explicit sourceReceipts; no uncommitted native pin is promoted.',sourceReceipts,...(sourceCheckpoint?{sourceCheckpoint}:{})};
+ if(currentInputLink){
+  await assertRectCurrentInputLink({link:currentInputLink,tensor:preflight.tensor,managerCommit,jointTraceId});
+  const currentSources=new Map(sourceReceipts.map(r=>[r.path,r]));
+  if(currentInputLink.managementSource.sourceReceipts.some(r=>currentSources.get(r.path)?.sha256!==r.sha256||currentSources.get(r.path)?.byteLength!==r.byteLength))throw fail('RECT_CURRENT_INPUT_LINK_MISMATCH','Mean stage management source differs from the current decode closure');
+ }
+ const metadata=prepareRectNormInputs({tensor:preflight.tensor,referenceSet,managerCommit,resourceState,jointTraceId,currentInputLink});
  const blockedAdapter=createNormRequiredRectAdapter({nativeFactory:()=>{throw fail('NATIVE_DISPATCH_FORBIDDEN','Preflight must not create a native client');},descriptor:metadata.descriptor,binding:metadata.binding,sourceVerified:true,artifactStore:metadata.store,ownerLifecycle:{cancelled:()=>{throw fail('NO_NATIVE_JOB','No native job exists');},afterTerminal:()=>{throw fail('NO_NATIVE_JOB','No native job exists');},release:()=>{throw fail('NO_NATIVE_JOB','No native job exists');}},executionScope:'actual-vae-profile-decode'});
  let declaration,declarationFailure;
  try{declaration=await blockedAdapter.run({...metadata,manifest:preflight.manifest,files:new Map(),validationSpec:metadata.validationSpec,readCurrent:metadata.readCurrent,validateOutput:()=>{throw fail('NATIVE_DISPATCH_FORBIDDEN','No validation before actual output');},publishOutput:()=>{throw fail('NATIVE_DISPATCH_FORBIDDEN','No output before native decode');}});}catch(error){if(error.code!=='NORM_DECLARATION_BLOCKED'||!error.decision)throw error;declarationFailure={code:error.code,message:error.message,decision:error.decision};}finally{await blockedAdapter.dispose();metadata.store.clear();}
  await mkdir(dirname(resolve(out)),{recursive:true});await mkdir(out);
- const common={schemaVersion:'works-norm-required-rect-run/0.1-draft.1',scenario,nativeSource:{repository:REPO,commit:RECT_NATIVE_COMMIT,apiVersion:'works-ai-1',build:'works-inference-v1'},priorEvidence:metadata.priorInputEvidence,managementSource:managerSource,sourceProof:preflight.sourceProof,persistenceCodecSource:preflight.persistenceCodecSource,inputIdentity:preflight.inputIdentity,referenceIdentity:preflight.referenceIdentity,manifestIdentity:preflight.manifestIdentity,assetReceipts:preflight.assetReceipts,resourceState:resourceState??null,referenceCatalog:{sourceRef:{repository:REPO,commit:'6dae9a6fac3e9ad29ea941f22211edbe4aa894ad',path:'docs/shared/ai-connection/reference/catalog.v1.json'},sha256:RECT_CATALOG_SHA256},freshEncode:false,generationReady:false,snapshotPublished:false};
+ const common={schemaVersion:'works-norm-required-rect-run/0.1-draft.1',scenario,...(currentInputLink?{jointTraceId,currentInputLink}:{}),nativeSource:{repository:REPO,commit:RECT_NATIVE_COMMIT,apiVersion:'works-ai-1',build:'works-inference-v1'},priorEvidence:metadata.priorInputEvidence,managementSource:managerSource,sourceProof:preflight.sourceProof,persistenceCodecSource:preflight.persistenceCodecSource,inputIdentity:preflight.inputIdentity,referenceIdentity:preflight.referenceIdentity,manifestIdentity:preflight.manifestIdentity,assetReceipts:preflight.assetReceipts,resourceState:resourceState??null,referenceCatalog:{sourceRef:{repository:REPO,commit:'6dae9a6fac3e9ad29ea941f22211edbe4aa894ad',path:'docs/shared/ai-connection/reference/catalog.v1.json'},sha256:RECT_CATALOG_SHA256},freshEncode:false,generationReady:false,snapshotPublished:false};
  let result;
- if(preflight.missingAssets.length||!resourceState||declarationFailure)result={...common,status:'BLOCKED',blockedEdge:preflight.missingAssets.length?'actual-vae-decode':declarationFailure?'norm-declaration':'explicit-model-resource-state',declarationFailure:declarationFailure??null,missingAssets:preflight.missingAssets,nativeCalls:0,browserLaunched:false,modelInference:false,reason:declarationFailure?'The sole norm judge rejected the explicit declaration or live resource state; see declarationFailure.':preflight.missingAssets.length?'Exact existing decode assets are absent; no model download/export/shape substitution.':'Original assets are present, but no explicit current model resource budget was provided.',normExecution:{...(declaration?.normExecution??{policyId:'rect-decode',phase:'declaration',executionCreated:false,decisions:[{phase:'declaration',decision:declarationFailure.decision}]}),requiredNormIds:[...NORM_EXECUTION_POLICIES['rect-decode'].requiredNormIds]}};
- else{try{result={...common,...await browserRun({nativeRoot,out,inputPath,referencePath,preflight,managerCommit,resourceState,scenario,managerSource}),browserLaunched:true};}catch(error){result={...common,status:'FAIL',browserLaunched:true,nativeCalls:null,error:{code:error.code??null,message:String(error.message??error)},modelInference:null};}}
+ if(preflight.missingAssets.length||!resourceState||declarationFailure||requireFixedManagementSource&&!sourceCheckpoint.allMatched)result={...common,status:'BLOCKED',blockedEdge:preflight.missingAssets.length?'actual-vae-decode':declarationFailure?'norm-declaration':requireFixedManagementSource&&!sourceCheckpoint.allMatched?'management-source-checkpoint':'explicit-model-resource-state',declarationFailure:declarationFailure??null,missingAssets:preflight.missingAssets,nativeCalls:0,browserLaunched:false,modelInference:false,reason:declarationFailure?'The sole norm judge rejected the explicit declaration or live resource state; see declarationFailure.':preflight.missingAssets.length?'Exact existing decode assets are absent; no model download/export/shape substitution.':requireFixedManagementSource&&!sourceCheckpoint.allMatched?'Current management closure differs from the required fixed Git source.':'Original assets are present, but no explicit current model resource budget was provided.',normExecution:{...(declaration?.normExecution??{policyId:'rect-decode',phase:'declaration',executionCreated:false,decisions:[{phase:'declaration',decision:declarationFailure.decision}]}),requiredNormIds:[...NORM_EXECUTION_POLICIES['rect-decode'].requiredNormIds]}};
+ else{try{result={...common,...await browserRun({nativeRoot,out,inputPath,referencePath,preflight,managerCommit,resourceState,scenario,managerSource,jointTraceId,currentInputLink}),browserLaunched:true};}catch(error){result={...common,status:'FAIL',browserLaunched:true,nativeCalls:null,error:{code:error.code??null,message:String(error.message??error)},modelInference:null};}}
  await writeFile(join(out,'result.json'),new Uint8Array([...canonicalBytes(result),10]),{flag:'wx'});return result;
 }
 const HELP='Usage: node tools/ai-connection/run-norm-required-rect.mjs --native-root <fixed855-source> --bundle-root <existing3assets> --input <351-restored.wktensor> --reference <existing-png-roundtrip.f32> --out <fresh-directory> --manager-commit <fullSHA> [--resource-state <explicitJSON-file>] [--scenario decode|cancel-recover]\nMissing original assets produce BLOCKED/native0 without launching a browser. Original encode evidence is reused; no re-export.';

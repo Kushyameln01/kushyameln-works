@@ -6,6 +6,10 @@ metadata上の2不備は原resultに残したまま、固定原本との対応�
 [機械可読受入](ADMISSION.json)、[返却原本の保存index](RECEIVED-INDEX.json)、
 [再照合手順](REPRODUCE.md)、[独立監査](evidence/AUDIT.md)。
 
+受入の正本は既存の `ADMISSION.json` に集約する。実行時のcatalog全文と6参照文書の版・digest、
+元gate本文、両sideの3入力・5出力、参照receiptとprivate payloadの識別を同じ記録から追える。
+今回の追記は既存証拠の接続だけで、数値実行や受入範囲の追加はない。
+
 ## SHAと契約
 
 | 役割 | 固定commit |
@@ -24,6 +28,13 @@ Profileは `bernini-block0-n2-self-attention-residual-f32-v1`、native APIは
 管理catalogは独立candidateのSHA `aa492b66fc3775b561bd6535290ebb5eabf7328039c47238e009996bd417943b`。
 旧catalog6dae、LoRA DATA82b/nativefc・consumer5f、codec2bdのpinと受入scopeは維持した。
 新修正版で数値再実行したとは記録しない。実行済み19管理moduleは5c484の原Git bytesに対応する。
+
+受入対象は固定tail producerから同sideのartifact storageへの診断edgeに限る。別moduleや別edgeには、
+そのownerのadapter、版付きProfile／規範、source／buildと独立した受入証拠が必要になる。
+`evaluateEdge` は明示契約と実装済みの有限な規範bindingを比較し、数値検証と保存検査は既存ownerへ委譲する。
+必須契約・規範が不明なら依存edgeを `UNVERIFIED` とし、数値gate／受入証拠だけが欠ける場合は契約上の
+互換性を保って、必要phaseでvalidationを `NOT_VERIFIED`、readinessを `BLOCKED` とする。
+実行前のpending scopeを許すdeclarationと、4 scopeすべてがpassになったpublished受入は区別する。
 
 ## 原本・出典の照合
 

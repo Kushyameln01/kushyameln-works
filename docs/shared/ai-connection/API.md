@@ -931,3 +931,44 @@ omitted. These metadata corrections do not change the historical execution
 source, native pins, numerical gates or accepted scope, and are not a new
 numerical run. ORT/total memory observations and production readiness remain
 unverified with all NOT_READY flags unchanged.
+
+### Joint P2/P3 receiver runners
+
+The fixed N2 admission record is
+`development/ai-connection/n2-tail-management/acceptance/ADMISSION.json`.
+Its execution catalog, gate, all three inputs, five outputs per side and
+reference identities are explicit. This does not expand the historical
+HIGH1/LOW3 diagnostic scope or accept an arbitrary downstream module.
+
+`tools/ai-connection/run-joint-rect-management.mjs` composes the existing
+managed owner mean route with the mandatory Rect decode adapter. A common
+`jointTraceId` and `currentInputLink` bind the newly written/read raw,
+marked-normalized and restored E4 packages to the actual selected decode
+input, source receipts, model, profile, context and queue release receipts.
+Before each mean owner call, the existing `evaluateEdge` compares the static
+input declaration without future receipts. Compatible but numerically pending
+results authorize only this bounded diagnostic preparation; they do not clear
+the blocked numerical acceptance or generation state.
+The receiver rechecks this link before native dispatch. Historical encode
+evidence remains separate; the historical received RGB is not a current
+decode result. `decode` and `cancel-recover` require separate fresh outputs.
+Missing decoder assets or current resource input cannot produce NN acceptance.
+
+`tools/ai-connection/run-managed-lora-data-real.mjs` accepts one selected
+light/HIGH local `.safetensors` File, the genuine bounded base JSON and
+retained independent reference arrays. It uses the adopted formal82b DATA
+bridge and the fixed owner adapter/provider. `managed-lora-data-real-declaration.mjs`
+builds only outer declarations from actual public owner registries and the
+selected source identity; it performs no native planning, mapping or arithmetic.
+Declaration, validated and published phases receive their evidence in order.
+The selected weight N-ARTIFACT scope and the separately saved consumer output16
+package are distinct. Historical all20-case evidence is not a new transaction.
+
+These are development receiver runners. Native APIs, codec and source pins,
+product File input, queue/snapshot/cache/package implementations and existing
+LoRA bridge scope are preserved. A matching contract with missing numerical
+evidence remains COMPATIBLE, validation NOT_VERIFIED and readiness BLOCKED.
+Unknown required contracts remain UNVERIFIED. Receiver source acquisition and
+actual joint execution are separate receipts. Commands and pending edges are
+in `development/ai-connection/p23-joint-acceptance/REPRODUCE.md` and `RESULT.md`.
+`generationReady:false` and `load/predict/sample=NOT_READY` remain unchanged.

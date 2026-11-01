@@ -21,7 +21,117 @@
     "prefixOrAttentionRecomputed": false,
     "independentReferenceRecomputed": false,
     "fullModelRehashed": false,
-    "sameRealmOwnerEntryVerifiedFromFixedSource": true
+    "sameRealmOwnerEntryVerifiedFromFixedSource": true,
+    "normCatalog": {
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "5c484a8783ab129a2ff3543a98b2537af9888199",
+        "path": "docs/shared/ai-connection/reference/candidates/n2-tail/catalog.v1.json"
+      },
+      "sha256": "aa492b66fc3775b561bd6535290ebb5eabf7328039c47238e009996bd417943b",
+      "byteLength": 9589,
+      "schemaVersion": "works-reference-catalog/1.0-draft.1",
+      "documentVersion": "1.0-draft.1",
+      "status": "candidate",
+      "catalogCandidateSetId": "candidate:bernini-block0-n2-self-attention-tail:a49aac4",
+      "files": [
+        {
+          "path": "docs/shared/ai-connection/reference/candidates/n2-tail/shape.v1.json",
+          "sha256": "d6219cdbe1cef3bc868009874b9a18a5f506ffdbf4127b7419c50baf7698278d",
+          "byteLength": 15884,
+          "schemaVersion": "works-profile-reference/1.0-draft.1",
+          "documentVersion": "1.0-draft.1"
+        },
+        {
+          "path": "docs/shared/ai-connection/reference/candidates/n2-tail/numeric-execution.v1.json",
+          "sha256": "0038e431878b8d0991cbdcf90201c9ca2468cd5f5d34339ce6b84f353c5b0b15",
+          "byteLength": 25787,
+          "schemaVersion": "works-profile-reference/1.0-draft.1",
+          "documentVersion": "1.0-draft.1"
+        },
+        {
+          "path": "docs/shared/ai-connection/reference/profiles/normalization.v1.json",
+          "sha256": "6465b50f586f8515b416eac3de93c5333bfe11c5dc6b09d7edb70bf7b545f460",
+          "byteLength": 17730,
+          "schemaVersion": "works-profile-reference/1.0-draft.1",
+          "documentVersion": "1.0-draft.1"
+        },
+        {
+          "path": "docs/shared/ai-connection/reference/profiles/loader-policy.v1.json",
+          "sha256": "2f9eef460cc38e9837a8ee3f6d0e643774847cde535abb7424cff753627eed5a",
+          "byteLength": 6022,
+          "schemaVersion": "works-profile-reference/1.0-draft.1",
+          "documentVersion": "1.0-draft.1"
+        },
+        {
+          "path": "docs/shared/ai-connection/reference/candidates/n2-tail/norms.v1.json",
+          "sha256": "c094f03e217b5daeb39aadda3dba9057d01b77520eaf91a7854df7c9ba56445d",
+          "byteLength": 13490,
+          "schemaVersion": "works-manager-norms/1.0-draft.1",
+          "documentVersion": "1.0-draft.1"
+        },
+        {
+          "path": "docs/shared/ai-connection/reference/numerical-rules.v1.json",
+          "sha256": "50cb2fd27f0b07b550cdb0a0ec602cdf6ebf3c95c8bb35ba3ec821757c52ea6d",
+          "byteLength": 26030,
+          "schemaVersion": "works-numerical-rules/1.0-draft.1",
+          "documentVersion": "1.0-draft.1"
+        }
+      ],
+      "parentCatalogSourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+        "path": "docs/shared/ai-connection/reference/catalog.v1.json"
+      },
+      "parentCatalogSha256": "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c"
+    },
+    "gateRef": {
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+        "path": "development/ai-connection/self-attention-tail/core/candidate-plan.json"
+      },
+      "sha256": "58a7a187d9580cd5af1d12e4d9552f8880a47c8a89e50b7bf1d27fec4ff11549",
+      "byteLength": 5559,
+      "gateId": "bernini-n2-tail-local-composed-eight-v1",
+      "gates": {
+        "localO": {
+          "abs": 0.0001,
+          "rel": 1e-05
+        },
+        "localGateProjection": {
+          "abs": 0.001,
+          "rel": 0.0001
+        },
+        "localGate": {
+          "abs": 0.001,
+          "rel": 0.0001
+        },
+        "localGated": {
+          "abs": 0.001,
+          "rel": 0.0001
+        },
+        "localResidual": {
+          "abs": 0.001,
+          "rel": 0.0001
+        },
+        "composedO": {
+          "abs": 0.01,
+          "rel": 0.001
+        },
+        "composedGated": {
+          "abs": 0.01,
+          "rel": 0.001
+        },
+        "composedResidual": {
+          "abs": 0.01,
+          "rel": 0.001
+        }
+      },
+      "status": "PRE_EXECUTION_GATE_FIXED",
+      "gateMayNotBeRelaxedAfterComparison": true,
+      "formula": "Every finite element: abs(actual-reference) <= absolute + relative * abs(reference); no post-observation gate changes"
+    }
   },
   "currentManagerWriter": {
     "metadataCorrectionCommit": "05c684f793e3f5525f3e2afea5d7d278f1ddc5ed",
@@ -460,7 +570,165 @@
             "n2-tail-validation:2e5fcda72a53f4fb35bd13aaeba2c6159051969e2ee6f7d70b8e210cb47150c7"
           ]
         }
-      ]
+      ],
+      "inputBindings": {
+        "attention": {
+          "sha256": "69838610e717a8d7c65adda4133233f581a5173cf10820a130471b96d75985ee",
+          "byteLength": 40960,
+          "dtype": "float32",
+          "shape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "origin": "attentionBinding.contextSHA256"
+        },
+        "patchHidden": {
+          "sha256": "29002478d22504cb4df1b193c4a75059b7e88568c38460f9ff7a61287dfa8f96",
+          "byteLength": 40960,
+          "dtype": "float32",
+          "shape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "origin": "fullPrefix.patchHiddenSHA256"
+        },
+        "timeAct1": {
+          "sha256": "1b69ffc7e86fbc52ea9ae5bd32950d8e62439417089577f9c5f66243e0b734f7",
+          "byteLength": 20480,
+          "dtype": "float32",
+          "shape": [
+            5120
+          ],
+          "layout": "C",
+          "origin": "fullPrefix.timeAct1SHA256"
+        }
+      },
+      "referenceRef": {
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+          "path": "development/ai-connection/self-attention-tail/core/reference-freeze.json"
+        },
+        "sha256": "e48ada4f8a44d9aced90886e3d67744d3571a4b7cde8bdb5ecdad2d107ffde42",
+        "byteLength": 3712,
+        "referenceId": "bernini-n2-tail:HIGH:local-composed-v1",
+        "side": "HIGH",
+        "blockIndex": 0,
+        "scheduleIndex": 1,
+        "local": {
+          "sourceRef": {
+            "repository": "Kushyameln01/kushyameln-works",
+            "commit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+            "path": "development/ai-connection/self-attention-tail/core/final-reference/high-local-reference-receipt.json"
+          },
+          "sha256": "467bba24bce9066abf00156b534c8df9df999dd2bf314844bf72882b9f33814b",
+          "byteLength": 7665,
+          "payloadSha256": "eabbe3255c99b815615ac06736c52e2f8547403ddb095f0f84be481fab64c9f1",
+          "payloadByteLength": 836832
+        },
+        "composed": {
+          "sourceRef": {
+            "repository": "Kushyameln01/kushyameln-works",
+            "commit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+            "path": "development/ai-connection/self-attention-tail/core/final-reference/high-composed-reference-receipt.json"
+          },
+          "sha256": "4f9a25ea913d59fb0ba4d9f7ea7977c805bf14da54e6058095dc41c901648ae5",
+          "byteLength": 7673,
+          "payloadSha256": "9ca18c2e852dbd981b4bec745eab1ac24e1dde76658478ddc673b7fa2f7b9d8e",
+          "payloadByteLength": 836814
+        }
+      },
+      "normAdmission": {
+        "policyId": "n2-self-attention-tail",
+        "catalogSha256": "aa492b66fc3775b561bd6535290ebb5eabf7328039c47238e009996bd417943b",
+        "managerCandidateSetId": "managed:n2-tail:candidate",
+        "decisionId": "edge:managed:n2-tail:HIGH:output:managed:n2-tail:HIGH:storage:managed:n2-tail:HIGH:outputs#residual",
+        "producerBindingRef": "managed:n2-tail:HIGH:output",
+        "consumerBindingRef": "managed:n2-tail:HIGH:storage",
+        "phase": "published",
+        "compatibility": "COMPATIBLE",
+        "readiness": "READY",
+        "readinessScope": "Historical fixed producer-to-storage edge at published phase; not current owner or generation readiness",
+        "pendingScopeRefs": [],
+        "finalValidationRef": "finalNormValidation",
+        "initialDeclaration": {
+          "compatibility": "COMPATIBLE",
+          "readiness": "ready",
+          "validation": [
+            {
+              "scope": "n2-tail:fixed-eight-owner-comparisons:HIGH",
+              "result": "not-verified",
+              "evidenceRefs": [],
+              "pending": true,
+              "duePhase": "validated"
+            },
+            {
+              "scope": "norm:N-TRANSACTION",
+              "result": "not-verified",
+              "evidenceRefs": [],
+              "pending": true,
+              "duePhase": "published"
+            },
+            {
+              "scope": "norm:N-ARTIFACT",
+              "result": "not-verified",
+              "evidenceRefs": [],
+              "pending": true,
+              "duePhase": "published"
+            },
+            {
+              "scope": "norm:N-EVIDENCE",
+              "result": "not-verified",
+              "evidenceRefs": [],
+              "pending": true,
+              "duePhase": "validated"
+            }
+          ]
+        },
+        "delegations": [
+          {
+            "normId": "N-TRANSACTION",
+            "checker": "queue.mjs",
+            "receiptRef": "n2-tail-queue:26a107588d4fe744c87c292a1cc8a92fda10d0dc219ff87dde3441cf32473bf0",
+            "scope": "norm:N-TRANSACTION",
+            "checkingOwner": "existing manager/owner checker"
+          },
+          {
+            "normId": "N-ARTIFACT",
+            "checker": "package.mjs",
+            "receiptRef": "managed:n2-tail:HIGH:outputs/receipt.json",
+            "scope": "norm:N-ARTIFACT",
+            "checkingOwner": "existing manager/owner checker"
+          },
+          {
+            "normId": "N-EVIDENCE",
+            "checker": "owner-validation",
+            "receiptRef": "n2-tail-validation:2e5fcda72a53f4fb35bd13aaeba2c6159051969e2ee6f7d70b8e210cb47150c7",
+            "scope": "norm:N-EVIDENCE",
+            "checkingOwner": "existing manager/owner checker"
+          }
+        ],
+        "storageProof": {
+          "receiptRef": "managed:n2-tail:HIGH:outputs/receipt.json",
+          "packageReceiptRef": "packageReceipt",
+          "ownerReadbackVerified": true,
+          "additionalReadbackAudit": {
+            "path": "received-508d72c/readback-audit.json",
+            "sha256": "0121251a031ea2f12732ba8675497886d77e175ae94f9d88b46b658476390dcb",
+            "byteLength": 4229,
+            "side": "HIGH",
+            "status": "complete",
+            "issues": [],
+            "diskReads": 32,
+            "outputCount": 5
+          },
+          "proofLocation": "Original holding environment; public result/manifest/readback identities independently reconciled here",
+          "privateOutputPayloadsLocallyRetrieved": false,
+          "localPrivatePackageDecodeOrReadbackPerformed": false
+        }
+      }
     },
     {
       "side": "LOW",
@@ -801,7 +1069,165 @@
             "n2-tail-validation:7d4dbb72e8ea45ea5eb511ac9bae3b3e131e4c56e51f65d63d2d3e0f6f9b8f1d"
           ]
         }
-      ]
+      ],
+      "inputBindings": {
+        "attention": {
+          "sha256": "b688a5ad16637c42fe22f1a069c1e786881f028aa23da421c27170e84f7778fd",
+          "byteLength": 40960,
+          "dtype": "float32",
+          "shape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "origin": "attentionBinding.contextSHA256"
+        },
+        "patchHidden": {
+          "sha256": "1dc2ad17c0f7f7e7c41272efa538d573fc99e355c99dfd7b238cb9aa16e77b8b",
+          "byteLength": 40960,
+          "dtype": "float32",
+          "shape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "origin": "fullPrefix.patchHiddenSHA256"
+        },
+        "timeAct1": {
+          "sha256": "cf07ca0bf0160886acafb9bf42d22f57f56482cd82a8cad5aa3791901e9938c5",
+          "byteLength": 20480,
+          "dtype": "float32",
+          "shape": [
+            5120
+          ],
+          "layout": "C",
+          "origin": "fullPrefix.timeAct1SHA256"
+        }
+      },
+      "referenceRef": {
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+          "path": "development/ai-connection/self-attention-tail/core/reference-freeze.json"
+        },
+        "sha256": "e48ada4f8a44d9aced90886e3d67744d3571a4b7cde8bdb5ecdad2d107ffde42",
+        "byteLength": 3712,
+        "referenceId": "bernini-n2-tail:LOW:local-composed-v1",
+        "side": "LOW",
+        "blockIndex": 0,
+        "scheduleIndex": 3,
+        "local": {
+          "sourceRef": {
+            "repository": "Kushyameln01/kushyameln-works",
+            "commit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+            "path": "development/ai-connection/self-attention-tail/core/final-reference/low-local-reference-receipt.json"
+          },
+          "sha256": "5fe1601c3ef0f4391cb55ccb6bd6340fbc543b8fd77ca83410c15cb91a319774",
+          "byteLength": 7662,
+          "payloadSha256": "ac7596ea3bb2a071d3f3827ce06d14d9df426351fad01ebfd76e3e03df43234e",
+          "payloadByteLength": 845041
+        },
+        "composed": {
+          "sourceRef": {
+            "repository": "Kushyameln01/kushyameln-works",
+            "commit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+            "path": "development/ai-connection/self-attention-tail/core/final-reference/low-composed-reference-receipt.json"
+          },
+          "sha256": "5a4499396cd8fbedfd2b7a45bcd70d5c79557854f7240471b2190dd232bc1582",
+          "byteLength": 7671,
+          "payloadSha256": "2a30505c909fcca78fe1475a97c0cad01f0d2520b052abcefe628123681dd159",
+          "payloadByteLength": 844845
+        }
+      },
+      "normAdmission": {
+        "policyId": "n2-self-attention-tail",
+        "catalogSha256": "aa492b66fc3775b561bd6535290ebb5eabf7328039c47238e009996bd417943b",
+        "managerCandidateSetId": "managed:n2-tail:candidate",
+        "decisionId": "edge:managed:n2-tail:LOW:output:managed:n2-tail:LOW:storage:managed:n2-tail:LOW:outputs#residual",
+        "producerBindingRef": "managed:n2-tail:LOW:output",
+        "consumerBindingRef": "managed:n2-tail:LOW:storage",
+        "phase": "published",
+        "compatibility": "COMPATIBLE",
+        "readiness": "READY",
+        "readinessScope": "Historical fixed producer-to-storage edge at published phase; not current owner or generation readiness",
+        "pendingScopeRefs": [],
+        "finalValidationRef": "finalNormValidation",
+        "initialDeclaration": {
+          "compatibility": "COMPATIBLE",
+          "readiness": "ready",
+          "validation": [
+            {
+              "scope": "n2-tail:fixed-eight-owner-comparisons:LOW",
+              "result": "not-verified",
+              "evidenceRefs": [],
+              "pending": true,
+              "duePhase": "validated"
+            },
+            {
+              "scope": "norm:N-TRANSACTION",
+              "result": "not-verified",
+              "evidenceRefs": [],
+              "pending": true,
+              "duePhase": "published"
+            },
+            {
+              "scope": "norm:N-ARTIFACT",
+              "result": "not-verified",
+              "evidenceRefs": [],
+              "pending": true,
+              "duePhase": "published"
+            },
+            {
+              "scope": "norm:N-EVIDENCE",
+              "result": "not-verified",
+              "evidenceRefs": [],
+              "pending": true,
+              "duePhase": "validated"
+            }
+          ]
+        },
+        "delegations": [
+          {
+            "normId": "N-TRANSACTION",
+            "checker": "queue.mjs",
+            "receiptRef": "n2-tail-queue:e6e7854da31242f1be172dc3a5ca8190d65e2f8b22203ca4af3d3280226a415b",
+            "scope": "norm:N-TRANSACTION",
+            "checkingOwner": "existing manager/owner checker"
+          },
+          {
+            "normId": "N-ARTIFACT",
+            "checker": "package.mjs",
+            "receiptRef": "managed:n2-tail:LOW:outputs/receipt.json",
+            "scope": "norm:N-ARTIFACT",
+            "checkingOwner": "existing manager/owner checker"
+          },
+          {
+            "normId": "N-EVIDENCE",
+            "checker": "owner-validation",
+            "receiptRef": "n2-tail-validation:7d4dbb72e8ea45ea5eb511ac9bae3b3e131e4c56e51f65d63d2d3e0f6f9b8f1d",
+            "scope": "norm:N-EVIDENCE",
+            "checkingOwner": "existing manager/owner checker"
+          }
+        ],
+        "storageProof": {
+          "receiptRef": "managed:n2-tail:LOW:outputs/receipt.json",
+          "packageReceiptRef": "packageReceipt",
+          "ownerReadbackVerified": true,
+          "additionalReadbackAudit": {
+            "path": "received-508d72c/readback-audit.json",
+            "sha256": "0121251a031ea2f12732ba8675497886d77e175ae94f9d88b46b658476390dcb",
+            "byteLength": 4229,
+            "side": "LOW",
+            "status": "complete",
+            "issues": [],
+            "diskReads": 32,
+            "outputCount": 5
+          },
+          "proofLocation": "Original holding environment; public result/manifest/readback identities independently reconciled here",
+          "privateOutputPayloadsLocallyRetrieved": false,
+          "localPrivatePackageDecodeOrReadbackPerformed": false
+        }
+      }
     }
   ],
   "acceptanceDimensions": {
@@ -887,5 +1313,32 @@
   "load": "NOT_READY",
   "predict": "NOT_READY",
   "sample": "NOT_READY",
-  "evidenceManifest": "EVIDENCE-MANIFEST.json"
+  "evidenceManifest": "EVIDENCE-MANIFEST.json",
+  "acceptanceBoundary": {
+    "canonicalRecord": "ADMISSION.json",
+    "acceptedEdge": "Fixed N2 diagnostic tail producer to same-side artifact storage only",
+    "arbitraryModuleAcceptance": false,
+    "genericCrossModuleAcceptance": false,
+    "managerNumericalEngineAdded": false,
+    "additionalModuleOrEdgeRequires": [
+      "Explicit versioned owner declaration and adapter for the requested operation",
+      "Matching source/build, profile, numerical rule/reference/predeclared gate, and applicable norm revision",
+      "Separate scoped numerical, lifecycle, resource, and artifact evidence for the requested edge"
+    ],
+    "evaluateEdge": {
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "5c484a8783ab129a2ff3543a98b2537af9888199",
+        "path": "docs/shared/ai-connection/compatibility.mjs"
+      },
+      "role": "Compare explicit contracts and finite norm bindings; owner numerical validation and package/queue checks remain delegated",
+      "unknownRequiredContractOrNorm": "UNVERIFIED on the dependent edge",
+      "knownConflict": "INCOMPATIBLE",
+      "identifiedRequiredAdapterNotExecuted": "NEEDS_ADAPTER",
+      "missingNumericalGateOrAcceptanceOnly": "Retain contract-based compatibility; validation NOT_VERIFIED and readiness BLOCKED when the required validation/publication phase is reached",
+      "initialPendingScope": "The accepted runner permitted declaration dispatch with pending owner/transaction/artifact scopes; published admission required all four scoped passes"
+    },
+    "snapshotScope": "Five-output E4 publication and delegated N-ARTIFACT pass do not publish a whole execution snapshot; snapshotPublished remains false",
+    "revalidationScope": "This consolidation adds identity links only; no new native/reference numerical execution, full-model rehash, or acceptance scope"
+  }
 }
