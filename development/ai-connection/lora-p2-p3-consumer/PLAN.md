@@ -45,10 +45,10 @@
 
 - [x] Check rejection of stale/wrong source, binding, target and future evidence before enabling the real path. Management41 control fixtures and receiver4 declaration fixtures passed.
 - [x] Implement and source-pin the formal bridge runner; keep private input/output outside repositories.
-- [ ] Commit execution source before the browser run and verify loaded source bytes against that commit.
-- [ ] Run light/HIGH strength0,1,-1, reapply, cancel/recover, validation failure/recover and immutable-base restoration as bounded Q16 diagnostics; record which scenarios actually run.
-- [ ] Observe actual consumer feed, checkpoint target, native revisions, original terminal/release and independent-copy lifetime.
-- [ ] Review fresh results separately from the retained six numerical cases; do not expand their coverage.
+- [x] Commit execution source before the browser run and verify loaded source bytes against that commit.
+- [x] Run light/HIGH strength0,1,-1, reapply, cancel/recover, validation failure/recover and immutable-base restoration as bounded Q16 diagnostics; record which scenarios actually run.
+- [x] Observe actual consumer feed, checkpoint target, native revisions, original terminal/release and independent-copy lifetime.
+- [x] Review fresh results separately from the retained six numerical cases; do not expand their coverage.
 
 ### 3. Pair/side target and consumer matrix
 
@@ -65,7 +65,11 @@
 
 **Files:** API followup, `RESULT.md/.json`, `REPRODUCE.md`, source/evidence manifests in this task directory.
 
-- [ ] Preserve existing evidence source/scope; record only the fresh path's actual calls/results.
+- [x] Preserve existing evidence source/scope; record only the fresh path's actual calls/results.
 - [ ] Run focused checks and independent review; push `feat/lora-hike` and update Draft PR2.
 - [ ] Send fixed commit/path/hash and exact receiving instructions to management and Diffusion PRs; obtain or explicitly distinguish actual recipient-owned source verification from a pending human ACK.
 - [ ] Verify remote blobs, report distribution/source SHAs, API differences, reuse/new validation, dependencies and merge/Pages state separately.
+
+## Execution result
+
+Execution28f44c3a1b71bef59e2d018a0db736de6d84675c passed6 selected real light/HIGH formal snapshots, plus separate cancellation/failure/base restoration. Management41 and receiver4 fixtures passed; matrix2904 rows checked. Independent readback verified55 source blobs/26 artifacts,269 source/artifact/scope checks plus88 phase/ownership checks. New tail ingress and external owner ACK remain separate dependencies. See RESULT.md and evidence/MANIFEST.json.

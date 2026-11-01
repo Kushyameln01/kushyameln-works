@@ -1,5 +1,7 @@
 # 管理向け数値宣言・三段階入力契約
 
+後続の管理60d16では正式DATA bridgeが実装され、選択light/HIGHの実File・真正base Q16取引を新規確認した。[P2/P3受入追補](P2_P3_ACCEPTANCE.md)を参照する。以下の0260時点の未接続記録は変更前の履歴として保持する。
+
 ownerコード正本：`82b21f09cb63926543181b16f0e97ebc6b9fa6be`。引継ぎのsource/path/hashと管理の未対応範囲は [HANDOFF.json](../../../../development/ai-connection/reference-adoption/lora/management-handoff/HANDOFF.json)、[管理向け手順](../../../../development/ai-connection/reference-adoption/lora/management-handoff/HANDOFF.md) を参照する。
 
 ## 数値宣言DATA

@@ -1,0 +1,755 @@
+{
+  "schemaVersion": "lora-formal-data-real-base-acceptance/0.1-draft.1",
+  "dateJST": "2026-11-01",
+  "status": "ACCEPTED_SELECTED_LIGHT_HIGH_FORMAL_DATA_REAL_BASE_PARTIAL",
+  "executionStatus": "PASS_LORA_DATA_REAL_BASE_PARTIAL_SNAPSHOT",
+  "executionSourceCommit": "28f44c3a1b71bef59e2d018a0db736de6d84675c",
+  "distribution": {
+    "branch": "feat/lora-hike",
+    "draftPullRequest": "https://github.com/Kushyameln01/kushyameln-works/pull/2",
+    "sourceCommitMeaning": "Execution source is fixed above; later distribution/PR head is reported separately, not substituted"
+  },
+  "fixedCommits": {
+    "manager": "60d16b64d6020d3d20239f087f8add91268dcaad",
+    "lora": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+    "diffusion": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3"
+  },
+  "ownerDataSource": {
+    "repository": "https://github.com/Kushyameln01/kushyameln-works",
+    "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+    "path": "docs/shared/inference/lora/management-admission-inputs.mjs",
+    "sha256": "ddf57f4c76333ada1ddf93cf238e5f4ea6219b39afd5dc4d567213667a7d897e"
+  },
+  "catalog": {
+    "commit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+    "documentVersion": "1.0-draft.1",
+    "sha256": "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c"
+  },
+  "executionPlan": {
+    "commit": "0fb553fd081d3bcbbad4ead7accd165679f77d34",
+    "documentVersion": "1.0-draft.1"
+  },
+  "api": {
+    "managementVersion": "works-lora-data-phase-bridge/0.1-draft.1",
+    "managementEntry": "createLoraDataPhaseBridge",
+    "managementFixedDocument": "https://github.com/Kushyameln01/kushyameln-works/blob/60d16b64d6020d3d20239f087f8add91268dcaad/docs/shared/ai-connection/API.md#formal-lora-owner-data-phase-bridge",
+    "loraFollowup": "../../../docs/shared/inference/lora/P2_P3_ACCEPTANCE.md",
+    "canonicalMappingFactory": "createDiffusionDiagnosticAdapter",
+    "receiverNormHookLayered": false,
+    "legacyBridgeLayered": false,
+    "nativeCoreChanged": false
+  },
+  "acceptedScope": {
+    "pairId": "light",
+    "side": "HIGH",
+    "coverage": "PARTIAL",
+    "fullWeightShape": [
+      5120,
+      5120
+    ],
+    "fullBiasShape": [
+      5120
+    ],
+    "selectedWeightShape": [
+      16,
+      5120
+    ],
+    "selectedBiasShape": [
+      16
+    ],
+    "rows": {
+      "start": 0,
+      "count": 16
+    },
+    "columns": {
+      "start": 0,
+      "count": 5120
+    },
+    "includedPatchCount": 2,
+    "excludedTargetCount": 1050,
+    "excludedRows": [
+      16,
+      5120
+    ],
+    "weightBinding": {
+      "kind": "runtime-input",
+      "name": "weight"
+    },
+    "biasBinding": {
+      "kind": "hike-parameter",
+      "name": "bias"
+    },
+    "nativeRegistryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+    "connectionRegistryHash": "cc6a329b0cffbdf3c2a50914843da33e7d402a815921e206ddf5f8b0fea4c806",
+    "baseKind": "actual-original-bounded-fragments"
+  },
+  "localInput": {
+    "fileName": "Bernini-R_LightX2V_high_noise.safetensors",
+    "byteLength": 1244141856,
+    "lastModified": 1793377657813,
+    "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+    "fullFileHashVerifiedForThisLoad": true,
+    "hashCacheScope": "same captured immutable browser File only",
+    "historicalFourOriginalsRequired": false,
+    "inspection": {
+      "state": "SOURCE_INSPECTED",
+      "tensorCount": 1857,
+      "integrity": "header-only",
+      "sourceSha256": null
+    }
+  },
+  "inputSelection": {
+    "pairId": "light",
+    "side": "HIGH",
+    "fileName": "Bernini-R_LightX2V_high_noise.safetensors",
+    "bytes": 1244141856,
+    "expectedSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+    "fullHashPerformedByHost": false
+  },
+  "loadIntegrity": {
+    "selectedFileWholeHashVerifiedForThisLoad": true,
+    "selectedOriginalFileCount": 1,
+    "sameImmutableFileDigestCacheOnly": true,
+    "historicalFourOriginalsRequired": false,
+    "hostWholeFileHashPerformed": false,
+    "newGateGenerationCount": 0,
+    "newIndependentExpectedArrayGenerationCount": 0
+  },
+  "loader": {
+    "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+    "weightVariant": "linear-down-up",
+    "sourceDtype": "BF16",
+    "rank": 128,
+    "alpha": 128,
+    "alphaRankMultiplier": 1,
+    "biasVariant": "additive-diff-b",
+    "baseDtype": "F32",
+    "outputDtype": "F32",
+    "layout": "row-major",
+    "strengthsExplicit": [
+      0,
+      1,
+      -1
+    ],
+    "defaultStrengthAsserted": false,
+    "absentAlphaRuleScope": "fixed ComfyUI b5a4321 loader only"
+  },
+  "baseEvidence": {
+    "artifact": {
+      "bytes": 709364,
+      "sha256": "25a845e0c87a1bcab04740b011d0aa7cd969f46745412810cfd73269b69e8cff",
+      "mode": "600",
+      "coverage": "PARTIAL",
+      "fullFileHashRecomputed": false
+    },
+    "decodedBase": {
+      "weight": {
+        "passed": true,
+        "compared": 81920,
+        "maxAbsoluteError": 0,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "bias": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 0,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "weightBytesEqual": true,
+      "biasBytesEqual": true
+    },
+    "providedRangeCount": 5,
+    "fullFileSHA256Verified": false,
+    "fullFileHashRecomputed": false,
+    "priorOwnerFullHashReceipt": {
+      "kind": "retained-download-manifest",
+      "manifestSha256": "bae909390a21f32131126c92a72dd92648a39383395c97f2a96f195c1b2f4357",
+      "sha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+      "verified": true,
+      "verification": "PRIOR_OWNER_RECEIPT_NOT_REHASHED",
+      "authenticity": "not-independently-certified"
+    },
+    "priorReceiptScope": "historical owner evidence only; not current full-base verification"
+  },
+  "independentReferences": {
+    "referenceIdentity": {
+      "sourceRef": {
+        "repository": "https://github.com/Kushyameln01/kushyameln-works",
+        "commit": "0c27874908638afc748ea2455a2779a16736730b",
+        "path": "development/ai-connection/evidence/lora-e1/HIGH-reference.json"
+      },
+      "sha256": "2fe56045248bf75c3c2e63a310a56546288dd0b3a34c19cafc0e5ee9fc2c782d",
+      "referenceId": "p3:accepted-high-reference"
+    },
+    "gateIdentity": {
+      "sourceRef": {
+        "repository": "https://github.com/Kushyameln01/kushyameln-works",
+        "commit": "0c27874908638afc748ea2455a2779a16736730b",
+        "path": "development/ai-connection/evidence/lora-e1/HIGH-gates.json"
+      },
+      "sha256": "e435071fa955d66afee0f5a01d0b2f63e123bcf30d5982fe7bcba01da4513511",
+      "gateId": "p3:accepted-high-gates"
+    }
+  },
+  "publishedComparisons": {
+    "cases": [
+      {
+        "id": "initial-zero",
+        "strength": 0,
+        "planId": "fb7899ba3b22078073cccbbbd327975c66bcb5fbc57b5fd83e88df4e4097d823",
+        "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "managerRevision": 2001,
+        "sdkInstanceId": "f8ea53cd-cb6c-4179-91e5-bdba8b122c4d",
+        "localInputRevision": 1,
+        "localApplicationRevision": 1,
+        "consumerEpoch": 2,
+        "weightComparison": {
+          "passed": true,
+          "compared": 81920,
+          "maxAbsoluteError": 0,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 1e-05,
+            "relative": 0.0001
+          }
+        },
+        "biasComparison": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 0,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 0,
+            "relative": 0
+          }
+        },
+        "outputComparison": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 1.3969838619232178e-09,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          }
+        },
+        "formalPhase": "postpublication",
+        "guardCount": 2,
+        "allGuardsPublished": true,
+        "snapshotId": "lora-data-real:initial-zero:78c9a11e-e929-4a08-8a2c-4e87d4141b53",
+        "nativeCopyOwnerId": "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:025f33f5-608d-444d-b5b0-3e2f43cfb2b4",
+        "nativePackageHash": "7028d87fc998901ddddf6a2b5abbce563b2768c7dfa73b6eeaf1142a1a1e58ae"
+      },
+      {
+        "id": "initial-one",
+        "strength": 1,
+        "planId": "56f076edb81b1b3e8a5acee13ea679ea53ab7c99fe5bc0b052b467a4c8f9122c",
+        "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "managerRevision": 2002,
+        "sdkInstanceId": "f8ea53cd-cb6c-4179-91e5-bdba8b122c4d",
+        "localInputRevision": 2,
+        "localApplicationRevision": 2,
+        "consumerEpoch": 3,
+        "weightComparison": {
+          "passed": true,
+          "compared": 81920,
+          "maxAbsoluteError": 3.72290287486976e-09,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 1e-05,
+            "relative": 0.0001
+          }
+        },
+        "biasComparison": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 0,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 0,
+            "relative": 0
+          }
+        },
+        "outputComparison": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 7.450580596923828e-09,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          }
+        },
+        "formalPhase": "postpublication",
+        "guardCount": 2,
+        "allGuardsPublished": true,
+        "snapshotId": "lora-data-real:initial-one:72be5ed6-9ad5-4008-90cc-4f8bcd2b736a",
+        "nativeCopyOwnerId": "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:355a5a3b-b1f4-437b-aaec-9c43ee3ff5b0",
+        "nativePackageHash": "f06b77404d8e5ccf8fbc2f6d4f6517134d466c2df8cde825d998aa5c845bd7f3"
+      },
+      {
+        "id": "initial-negative",
+        "strength": -1,
+        "planId": "bc25c857631f5324b445cd4b916d7b0080385876eee4b2aa807f9db084c322fb",
+        "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "managerRevision": 2003,
+        "sdkInstanceId": "f8ea53cd-cb6c-4179-91e5-bdba8b122c4d",
+        "localInputRevision": 3,
+        "localApplicationRevision": 3,
+        "consumerEpoch": 4,
+        "weightComparison": {
+          "passed": true,
+          "compared": 81920,
+          "maxAbsoluteError": 3.72290287486976e-09,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 1e-05,
+            "relative": 0.0001
+          }
+        },
+        "biasComparison": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 0,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 0,
+            "relative": 0
+          }
+        },
+        "outputComparison": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 7.450580596923828e-09,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          }
+        },
+        "formalPhase": "postpublication",
+        "guardCount": 2,
+        "allGuardsPublished": true,
+        "snapshotId": "lora-data-real:initial-negative:341d6127-fd6c-4d7b-8fd4-701493daa48b",
+        "nativeCopyOwnerId": "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:1ba4153d-91c7-4310-b6f0-b1fe1b8b98bb",
+        "nativePackageHash": "fa819593ef99eb20b88876e6016bcf2fa9d4e8096dad795a3511f6a1678fe306"
+      },
+      {
+        "id": "reapply-one",
+        "strength": 1,
+        "planId": "a3f93b803a89acc5268678696767758154f2e3c746a93754df3fff4179604193",
+        "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "managerRevision": 2004,
+        "sdkInstanceId": "f8ea53cd-cb6c-4179-91e5-bdba8b122c4d",
+        "localInputRevision": 4,
+        "localApplicationRevision": 4,
+        "consumerEpoch": 5,
+        "weightComparison": {
+          "passed": true,
+          "compared": 81920,
+          "maxAbsoluteError": 3.72290287486976e-09,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 1e-05,
+            "relative": 0.0001
+          }
+        },
+        "biasComparison": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 0,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 0,
+            "relative": 0
+          }
+        },
+        "outputComparison": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 7.450580596923828e-09,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          }
+        },
+        "formalPhase": "postpublication",
+        "guardCount": 2,
+        "allGuardsPublished": true,
+        "snapshotId": "lora-data-real:reapply-one:f3db3323-7d64-4db2-a38f-816d66b012c7",
+        "nativeCopyOwnerId": "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:c599efc7-2476-4931-b3f7-064631e8de0d",
+        "nativePackageHash": "f06b77404d8e5ccf8fbc2f6d4f6517134d466c2df8cde825d998aa5c845bd7f3"
+      },
+      {
+        "id": "validation-recovery",
+        "strength": 1,
+        "planId": "2a308abd01462ea9c281c0f47f48b7d863421b864b0b14fa8bc77ad9c65f22c1",
+        "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "managerRevision": 2006,
+        "sdkInstanceId": "f8ea53cd-cb6c-4179-91e5-bdba8b122c4d",
+        "localInputRevision": 6,
+        "localApplicationRevision": 6,
+        "consumerEpoch": 6,
+        "weightComparison": {
+          "passed": true,
+          "compared": 81920,
+          "maxAbsoluteError": 3.72290287486976e-09,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 1e-05,
+            "relative": 0.0001
+          }
+        },
+        "biasComparison": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 0,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 0,
+            "relative": 0
+          }
+        },
+        "outputComparison": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 7.450580596923828e-09,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          }
+        },
+        "formalPhase": "postpublication",
+        "guardCount": 2,
+        "allGuardsPublished": true,
+        "snapshotId": "lora-data-real:validation-recovery:a980173f-0283-4ce2-a57f-85ba22e32aa4",
+        "nativeCopyOwnerId": "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:76c0945c-0140-4504-aabb-b731aa2bb50a",
+        "nativePackageHash": "f06b77404d8e5ccf8fbc2f6d4f6517134d466c2df8cde825d998aa5c845bd7f3"
+      },
+      {
+        "id": "cancel-recovery",
+        "strength": 1,
+        "planId": "e26fdd52e50495b85cffac6f6b2740c3704d3d98e1529cc1613f636d4dfdc159",
+        "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "managerRevision": 2008,
+        "sdkInstanceId": "f8ea53cd-cb6c-4179-91e5-bdba8b122c4d",
+        "localInputRevision": 9,
+        "localApplicationRevision": 9,
+        "consumerEpoch": 7,
+        "weightComparison": {
+          "passed": true,
+          "compared": 81920,
+          "maxAbsoluteError": 3.72290287486976e-09,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 1e-05,
+            "relative": 0.0001
+          }
+        },
+        "biasComparison": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 0,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 0,
+            "relative": 0
+          }
+        },
+        "outputComparison": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 7.450580596923828e-09,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          }
+        },
+        "formalPhase": "postpublication",
+        "guardCount": 2,
+        "allGuardsPublished": true,
+        "snapshotId": "lora-data-real:cancel-recovery:78d042e8-8f2f-4b57-a52d-64d9b31a4c14",
+        "nativeCopyOwnerId": "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:da3936f5-179d-49df-9497-efe898d78357",
+        "nativePackageHash": "f06b77404d8e5ccf8fbc2f6d4f6517134d466c2df8cde825d998aa5c845bd7f3"
+      }
+    ],
+    "weightValues": 491520,
+    "biasValues": 96,
+    "outputValues": 96,
+    "maxWeightAbsoluteError": 3.72290287486976e-09,
+    "maxBiasAbsoluteError": 0,
+    "maxOutputAbsoluteError": 7.450580596923828e-09,
+    "caseCount": 6,
+    "diagnosticOutputDeltaFromZero": {
+      "maximumAbsoluteDifferenceStrengthOne": 0.00019116513431072235,
+      "maximumAbsoluteDifferenceStrengthNegativeOne": 0.00019116513431072235,
+      "source": "difference of already saved16 output JSON values",
+      "scope": "actual Q16 diagnostic output contribution only; not generation or new-tail contribution",
+      "newNumericalRuntimeExecution": false,
+      "newGateOrExpectationGenerated": false
+    }
+  },
+  "unpublishedCancellation": {
+    "published": false,
+    "counts": {
+      "weights": 81920,
+      "biases": 16,
+      "savedCandidateOutputs": 0
+    },
+    "comparisonEvidenceId": "lora-data-real:all-selected:974b60a08e7169ea16487f6c6780acf087a8a3ce66c4862ee0edc584d8d51a2e",
+    "cancelTarget": {
+      "invocationId": "lora-data-real:cancel-at-checkpoint:invocation:1",
+      "bindingId": "lora-data-real-high-q16",
+      "ownerId": "lora-data-real-owner:d6764609-53dc-467d-9eed-58f80203f58e",
+      "resourceGeneration": "5e037a5c-2cd3-4b09-b40e-d112529291fb",
+      "requestId": "lora-data-real:cancel-at-checkpoint:native:1",
+      "revision": 2007,
+      "activeToken": "lora-data-real:cancel-at-checkpoint:token:1"
+    },
+    "cancelReply": {
+      "notStarted": false,
+      "stopConfirmed": true,
+      "originalTerminal": true,
+      "resourceReleased": true,
+      "reusable": true,
+      "quarantined": false
+    },
+    "priorFeedUnchanged": true,
+    "snapshotUncurrent": true,
+    "notAddedToPublishedCounts": true
+  },
+  "validationFailure": {
+    "kind": "native-validation-failure",
+    "control": "validation activation copy[0] +1024; independent expected/gate unchanged",
+    "code": "NATIVE_VALIDATION_MISMATCH",
+    "independentExpectedAndGateChanged": false,
+    "priorFeedUnchanged": true,
+    "snapshotUncurrent": true,
+    "recoveryCase": "validation-recovery",
+    "notAcceptedAsNumericalCase": true
+  },
+  "baseRestoration": {
+    "nativeEpoch": 8,
+    "application": "IMMUTABLE_BASE",
+    "comparison": {
+      "passed": true,
+      "compared": 16,
+      "maxAbsoluteError": 1.3969838619232178e-09,
+      "failedCount": 0,
+      "failedIndices": [],
+      "gate": {
+        "absolute": 1e-06,
+        "relative": 1e-05
+      }
+    },
+    "originalTerminal": true,
+    "afterTerminal": true,
+    "resourceReleased": true,
+    "snapshotUncurrent": true,
+    "newSnapshotPublished": false
+  },
+  "ownership": {
+    "mode": "independent-copy",
+    "sourceReleased": true,
+    "preparedReleased": true,
+    "nativeLease": "N/A",
+    "nativeOwnerIds": [
+      "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:025f33f5-608d-444d-b5b0-3e2f43cfb2b4",
+      "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:355a5a3b-b1f4-437b-aaec-9c43ee3ff5b0",
+      "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:1ba4153d-91c7-4310-b6f0-b1fe1b8b98bb",
+      "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:c599efc7-2476-4931-b3f7-064631e8de0d",
+      "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:76c0945c-0140-4504-aabb-b731aa2bb50a",
+      "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:da3936f5-179d-49df-9497-efe898d78357"
+    ]
+  },
+  "dataSourceProof": [
+    {
+      "key": "admission",
+      "sourceRef": {
+        "repository": "https://github.com/Kushyameln01/kushyameln-works",
+        "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+        "path": "docs/shared/inference/lora/management-admission-inputs.mjs"
+      },
+      "deploymentSourceRef": {
+        "repository": "https://github.com/Kushyameln01/kushyameln-works",
+        "commit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+        "path": "docs/shared/ai-connection/adapters/lora-data/management-admission-inputs.mjs"
+      },
+      "bytes": 32961,
+      "sha256": "ddf57f4c76333ada1ddf93cf238e5f4ea6219b39afd5dc4d567213667a7d897e",
+      "originalGitBlob": "4971f34eab334a223ab74b53fc0216c4fc642d7a",
+      "deploymentGitBlob": "4971f34eab334a223ab74b53fc0216c4fc642d7a",
+      "byteExact": true,
+      "gitObjectVerified": true
+    },
+    {
+      "key": "numeric",
+      "sourceRef": {
+        "repository": "https://github.com/Kushyameln01/kushyameln-works",
+        "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+        "path": "docs/shared/inference/lora/numeric-declarations.mjs"
+      },
+      "deploymentSourceRef": {
+        "repository": "https://github.com/Kushyameln01/kushyameln-works",
+        "commit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+        "path": "docs/shared/ai-connection/adapters/lora-data/numeric-declarations.mjs"
+      },
+      "bytes": 9909,
+      "sha256": "e7dd99d570c666969d76e93747998f3e1c20ba64d9e3b9d1b5f7a19e05aa6b17",
+      "originalGitBlob": "391f4eb6c535ac86da914a7caee02c8d7ab8a909",
+      "deploymentGitBlob": "391f4eb6c535ac86da914a7caee02c8d7ab8a909",
+      "byteExact": true,
+      "gitObjectVerified": true
+    }
+  ],
+  "receivingStatus": {
+    "managerBundledDataByteExact": true,
+    "actualRuntimeBrandedDataProofConsumed": true,
+    "proofScope": "fixed management60 deployment source and actual local receiver runtime",
+    "managementPersonAckForThisNewReceipt": "NOT_RECEIVED",
+    "diffusionPersonAckForThisNewReceipt": "NOT_RECEIVED",
+    "newTailWeightIngressProvided": false
+  },
+  "verification": {
+    "receiverDeclarationFixtures": {
+      "pass": 4,
+      "fail": 0,
+      "skip": 0,
+      "scope": "metadata declaration assembly only; no native model math",
+      "log": "evidence/receiver-input-fixtures.log"
+    },
+    "managementBoundaryFixtures": {
+      "pass": 41,
+      "fail": 0,
+      "skip": 0,
+      "reexecutedForThisTask": true,
+      "sourceCommit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+      "scope": "existing source/loader/formal-bridge control fixture definitions rerun; not new real numerical cases",
+      "log": "evidence/manager-boundaries.log"
+    },
+    "loadedSources": 55,
+    "selectedArtifacts": 26,
+    "loadedSourceGroups": {
+      "receiver": 3,
+      "management": 24,
+      "nativeLora": 12,
+      "diffusion": 16
+    },
+    "pageErrors": [],
+    "serverErrors": [],
+    "inputFileUnchanged": true,
+    "artifactFileUnchanged": true,
+    "privateInputHTTPRequests": [],
+    "legacyBridgeLoaded": false
+  },
+  "independentReview": {
+    "status": "PASS_SELECTED_FORMAL_DATA_PARTIAL_READBACK",
+    "path": "evidence/independent-readback.json",
+    "byteLength": 128460,
+    "sha256": "9d5347bd08387393f508e9985409657f49b19107ef36e89ff4068b25dfdc7ffc",
+    "sourceArtifactScopeChecks": 269,
+    "phaseConsistencyChecks": 88,
+    "blockers": 0,
+    "scope": "source/Git and saved artifact byte-hash readback, old independently verified artifact/metrics and fixed-reference output correspondence, phase consistency; no new independent F32 arithmetic or expectation generation",
+    "lateBindingFaultNewLiveTrial": false,
+    "reviewDocument": "evidence/review.md"
+  },
+  "evidence": {
+    "receipt": "evidence/receipt.json",
+    "rawReceipt": {
+      "path": "evidence/run-result.json.gz",
+      "encoding": "gzip-json",
+      "byteLength": 1211308,
+      "sha256": "29dca21132f34616f48d88f4b81d884378b508b8dac81a9987049371932e1754",
+      "decodedByteLength": 37764410,
+      "decodedSha256": "50a58d8f8c94bed2883fc294554acd744039ce0aa36e39ed6046135e5984f032"
+    },
+    "independentReadback": "evidence/independent-readback.json",
+    "sourceReview": "evidence/source-review.md",
+    "browserLog": "evidence/browser-run.log",
+    "manifest": "evidence/MANIFEST.json",
+    "independentReview": "evidence/review.md"
+  },
+  "reuse": {
+    "priorReal20Retagged": false,
+    "priorSixExecutionCommit": "25e5b56feeb070594110bb292d9de21e4e234f0a",
+    "priorSixDistributionCommit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+    "priorSixRetagged": false,
+    "oldExpectedAndGatesReused": true,
+    "newFormalBridgeTransactionsExecuted": 6,
+    "priorScopesMaintained": true
+  },
+  "consumerMatrix": {
+    "json": "TARGET-CONSUMER-MATRIX.json",
+    "document": "TARGET-CONSUMER-MATRIX.md",
+    "patchRecords": 2904,
+    "metadataOnly": true,
+    "newTailSourceCommit": "508d72cc9036e7f500827465c644b4aed3c5f711",
+    "newTailLoraState": "DEPENDENCY_WAITING",
+    "dependencies": "CONSUMER-DEPENDENCIES.md"
+  },
+  "finalState": {
+    "snapshot": {
+      "state": "SNAPSHOT_PUBLISHED",
+      "managerRevision": 2008,
+      "activeSnapshotId": "lora-data-real:cancel-recovery:78d042e8-8f2f-4b57-a52d-64d9b31a4c14",
+      "selectionCurrent": false,
+      "generationReady": false
+    },
+    "cleanup": {
+      "managerDisposed": true,
+      "queueTerminal": true,
+      "sdkDisposed": true,
+      "consumerDisposed": true,
+      "stageDisposed": true,
+      "baseDisposed": true
+    },
+    "currentLiveAdmission": false,
+    "generationReady": false,
+    "modelInference": false,
+    "completeAdapter": false
+  },
+  "unaccepted": [
+    "fresh light LOW/detail HIGH/detail LOW formal bridge transactions",
+    "new genuine-base joint HIGH/LOW snapshot",
+    "all targets/full graph consumer/full model or persistent model session",
+    "selected-weight N-ARTIFACT; output16 packages are not substituted",
+    "new lease ownership model",
+    "fresh late-binding-change actual negative trial in this six-case run",
+    "LoRA-modified new-tail activation/profile/reference admission",
+    "combined native/ORT/OS/device/full-model resource budget",
+    "generation contribution/two-pair composition/mean I/O API",
+    "merge or Pages/production publication"
+  ]
+}

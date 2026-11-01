@@ -1,5 +1,7 @@
 # LoRA connection v2 — A0/L1とE0/E1
 
+管理60d16の正式DATA bridgeによる実File・真正base Q16取引は [P2/P3受入追補](P2_P3_ACCEPTANCE.md) と [最新結果](../../../../development/ai-connection/lora-p2-p3-consumer/RESULT.md) を参照する。新tailのLoRA consumerは依存待ちで、旧Q16とは受入範囲を分ける。
+
 管理P0/P1完了後の [P3共同結果](../../../../development/ai-connection/reference-adoption/lora/P3-RESULT.md) では、light HIGHのローカル原本1件・実base断片・既存管理規範を、実native診断snapshotへ接続した。native契約・SDK v1の制約は維持する。選択edgeのPARTIAL受入、他pair/side、全target・全model session・生成受付を区別する。
 
 base/output dtype・layoutのowner対応と管理へ渡す三段階DATAは [管理向け入力契約](MANAGEMENT_ADMISSION.md) に分ける。これはnative SDKの適用APIではなく、管理の正式受入確認は修正版source取得後に行う。
