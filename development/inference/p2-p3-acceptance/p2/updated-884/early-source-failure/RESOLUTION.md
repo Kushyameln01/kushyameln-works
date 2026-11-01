@@ -1,0 +1,1 @@
+Partial old5f source cache lacked reference-received.json. The attempt stopped before NN. Resolved by a complete fixed5f Git worktree; no model/graph/reference was regenerated. Accepted run is in the parent directory.

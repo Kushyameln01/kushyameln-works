@@ -248,7 +248,114 @@
     "tokenizerInteropGap": "Current Diffusion validator does not validate tokenizerSha256; ownedTensor/metadata/old writer omit it. Preserve G1C tensor and outer evidence.",
     "projection4096To5120Owner": "diffusion_models",
     "crossAttentionKVAndNumericalPreparationOwner": "diffusion_models",
-    "consumerImplementationStatus": "NOT_IMPLEMENTED_OR_NOT_ACCEPTED_FOR_THIS_DATA"
+    "consumerImplementationStatus": "NOT_IMPLEMENTED_OR_NOT_ACCEPTED_FOR_THIS_DATA",
+    "observedP4Candidate": {
+      "status": "SOURCE_REVIEWED_THIS_PACKET_NOT_EXECUTED",
+      "sourceScope": "Separate P4 candidate at 829467; preceding fixed-tail/legacy interop fields retain their 508d72 scope and original execution pins.",
+      "profileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+      "nativeCapture": {
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "829467c14ec6fd1ab1858dfc175c84605de1ac98",
+          "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs",
+          "byteLength": 18862,
+          "sha256": "b4518ea35ca35e63e6ba8cdbe67e5d9fea0fa2125dac7dac0f5d4ac6c83ac7c2",
+          "gitBlobSha": "c1eaf632c44f6e1369f1d07c38a97c8a85ef752c"
+        },
+        "entrypoint": "captureP4Conditioning(tensor,{expectedModelSha256,expectedTokenizerSha256,missingTokenizerPolicy})",
+        "shapeRule": "float32 BLC [1,L,4096], integer 1<=L<=512, text_hidden_states",
+        "dataRule": "Exact native compact finite Float32Array of L*4096 elements; owned synchronous copy.",
+        "maskRule": "Exact native compact Uint8Array[L], values0/1, at least one valid position; masked hidden rows already all zero.",
+        "expectedModelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+        "expectedTokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+        "missingTokenizerPolicyDefault": "reject",
+        "explicitRetainUnknownDoesNotInjectIdentity": true,
+        "changesNumericValuesShapeOrMask": false,
+        "nativeTensorMetadataRetained": true,
+        "outerReceiptEvidenceTraceOwner": "Caller retains original outer packet; capture does not authenticate receipt/reference/gate.",
+        "producerAuthenticated": false,
+        "realExecutionVerified": false,
+        "jointlyAccepted": false,
+        "moduleSealRule": "Receiver must capture after reading or transferring native data; private seal belongs to the same module instance."
+      },
+      "genericStage": {
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "829467c14ec6fd1ab1858dfc175c84605de1ac98",
+          "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/stage.mjs",
+          "byteLength": 21978,
+          "sha256": "ff184acbabc589472a95b0bbf0eb2d3949b4478ecc0b19266817e8c313e7826d",
+          "gitBlobSha": "2de13bc2cc5a3cf2c3cec1521909ddd402dcda2f"
+        },
+        "entrypoint": "createPostSelfAttention(...).run({residual,timeAct1,conditioning,...})",
+        "nativeCapturedTextStructurallyAllowed": true,
+        "fixtureOnlyGateInGenericStage": false,
+        "scope": "N2 residual/timeAct1 plus full L context; Diffusion owns4096-to5120 projection, cross-attention and FFN. Mask remains provenance; do not add softmax masking or row compaction.",
+        "actualThisPacketRun": false,
+        "actualL512NumericalAndResourceAcceptance": "NOT_VERIFIED"
+      },
+      "currentDiagnostic": {
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "829467c14ec6fd1ab1858dfc175c84605de1ac98",
+          "path": "docs/shared/diffusion-models/diagnostics/p4-cross-ffn/run.mjs",
+          "byteLength": 21215,
+          "sha256": "ddf216d4be56e7f1a424285718c91d825241f4de4e3a98d46794bf61b164d0b3",
+          "gitBlobSha": "0aaa151fc6443ca1eabe616c161a7d52d6ea5b4e"
+        },
+        "entrypoint": "runP4CrossFfn; verifyP4FixtureBinding before native stage construction",
+        "shape": [
+          1,
+          4,
+          4096
+        ],
+        "conditioningDataSha256": "0cd4fa87e24e6d875207aca52cc214a1b46157a886d4c090fb7c5cfc9a5925ae",
+        "conditioningMaskSha256": "252c0b6b080fa045acfcd1437f693f3be2be2ac8223ea525d492fa19ab028942",
+        "fixtureContractSha256": "17102144ab54236bc0dc28d3e2d083b5a5c850c48f0ada86aa4b06c89bab6338",
+        "browserComparisonAlsoFixedL4": true,
+        "acceptsThisL512PacketUnchanged": false,
+        "fixtureResultsAuthenticateTextEncoder": false
+      },
+      "nativeReferenceInput": {
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "829467c14ec6fd1ab1858dfc175c84605de1ac98",
+          "path": "tools/diffusion-models/p4-cross-ffn-reference.py",
+          "byteLength": 40251,
+          "sha256": "66ded34a4bb74d261b81484bf2abd2d9ee75b0e4cf82ce6a063e02237a7a7ecf",
+          "gitBlobSha": "888e5a4e600514c1919bcd800ee9ecde0e7eeb9b"
+        },
+        "entrypoint": "--text; validate_native_text",
+        "schemaVersion": "bernini-p4-native-text-input/0.1",
+        "format": "Private UTF-8 JSON; not G1C WKT",
+        "requiredInformation": [
+          "dtype/layout/meaning",
+          "shape[1,L,4096]",
+          "flat data",
+          "attentionMask",
+          "producer.module=text_encoder",
+          "producer.sourceCommit full original execution SHA",
+          "modelSha256",
+          "tokenizerSha256 known hash or explicit null"
+        ],
+        "optionalDataSHA256CheckedAgainstF32": true,
+        "nativeTextArtifactSHA256Meaning": "SHA256 of complete UTF-8 JSON bytes; does not replace original WKT whole/payload/mask hashes.",
+        "requiredOuterOriginalBindings": [
+          "artifact.tensor sha256/payloadSha256",
+          "artifact.attentionMask sha256",
+          "sourceIdentity.actualEncodeExecution.commit=5537b8932343aa2476b95191817e8913f99dab02",
+          "identities.selectedManifest and tokenizer",
+          "numericAcceptance original receipt/reference/predeclared gate"
+        ],
+        "jsonConversionPerformed": false,
+        "inputReferenceBindingOwner": "diffusion_models owner harness; management retains receipts without duplicating numerical work.",
+        "p4GateScope": "P4 local/composed candidate gates require separate prior binding; preserve Text numericAcceptance unchanged."
+      },
+      "newReceiverOwnedPacketReceipt": null,
+      "actualThisPacketCrossAttentionConsumption": false,
+      "actualThisPacketNumericalComparison": false,
+      "generationReady": false
+    }
   },
   "outerEvidence": {
     "evidence": {

@@ -50,3 +50,5 @@ source/packetをcommitしてから実行する。未trackedのpacket、Git HEAD�
 送付側rootが実行した結果はlocal self-checkである。正式な受取確認には、実receiverが取得した公開完全SHA・source/dataの検査結果を、自分の返信またはcommitへ対応付ける必要がある。probeのPASSは独立ownerの本人性、過去NNの再認証、管理への正式採用、Text→現固定N2tail消費、production cross-attention／生成READYを意味しない。
 
 現tailの未対応範囲、negative/Bernini prefix/Comfy重みの制限は[CONTRACT.md](CONTRACT.md)を維持する。既存codec/manifest受領ACKをこの新conditioning dataのACKへ付け替えない。
+
+Diffusion `829467c14ec6fd1ab1858dfc175c84605de1ac98` の新P4候補にはnative Text captureとgeneric stage入口があるが、このprobeはそれらをimport／実行しない。現P4診断runner／比較手順は固定L4 fixture専用で、本packetのL512受入には拡張していない。native referenceの別JSONへ変換する場合も、JSON自身のhashに加えて元WKT whole／payload／mask、実行5537、選択manifest／元receipt／事前gateを外側で保持する。今回のprobe PASSからJSON変換、P4数値消費・比較、正式受領ACKを生成しない。source829に限定した詳細は[CONTRACT.md](CONTRACT.md)と[manifest.json](manifest.json)の `consumerBoundary.observedP4Candidate` を参照。

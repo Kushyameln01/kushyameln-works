@@ -30,6 +30,22 @@ resource-stateは現在deviceの`status/ownerId/requiredBytes/budgetBytes/occupi
 
 helperはsource/shape/hash検査、採用codec normalized保存読戻し、owner normalize/restore、正常新decode、取消/復帰新decodeの順に実行する。成功時は`joint-result.json.passed:true`、両scenario `status:PASS`、RGB caseは`status:published`、全1536値`maxAbs<=2e-5`、Worker close1/1と2/2、子process live/zombie/errors0。`published`は管理artifact状態である。外部公開・生成READYではない。
 
+## 管理884の追加変更境界
+
+初回60dの実行記録とは別に、`8849891f19124df31847bd691503c2491278eaa8`を固定取得する。observerの実行sourceは`e150e7ac3c4859739528ff278763c6474968ac08`。Diffusionは同じ5fの完全Git worktreeを使い、`development/ai-connection/e6/reference-received.json`も含むことを確認する。部分sourceだけではNN前に終了する。後続のdocのみのcommitへ再実行ラベルを付け替えない。
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python tools/inference/vae/observe_management_joint.py \
+  --manager-root "$WKW_MANAGER_884_ROOT" \
+  --diffusion-root "$WKW_DIFFUSION_5F_ROOT" \
+  --native-root "$WKW_NATIVE_855_ROOT" \
+  --bundle "$WKW_RECT_BUNDLE" \
+  --resource-state "$WKW_CURRENT_RESOURCE_JSON" \
+  --output "$WKW_FRESH_884_OUTPUT"
+```
+
+このhelperは管理の`run-joint-rect-management.mjs`を変更せず、正常と取消復帰を直列実行する。成功は[保存済み結果](p2/updated-884/observer-result.json)の`passed:true`、両scenario `status:PASS / freshVaeDecode:true / actualNumericalAccepted:true`、Git sourceCheckpoint20件一致、同復元mean payload、全1536 RGB値の元gate内、Worker closeとowned process live/zombie/errors0。各`jointTraceId`でnormalized marker、mean3段階のE4、owner/queue、`currentInputLink`、実decode後のRGB保存読戻しを確認する。実測23.702秒、RSS和peak1,836,781,568 B。参照の再計算・Text NN・export・encodeを加えない。モデル不要の固定source取得確認では、この実モデル再現を要求しない。
+
 ## Text plain
 
 [plain/REPRODUCE.md](plain/REPRODUCE.md)を使う。source oracleと実browser NNは直列化し、P2実NNと同時に走らせない。元manifest・Tokenizer・finalNorm・gateを固定した[事前計画](plain/predeclared-plan.json)を保持する。source callerは実helper checkoutの完全SHAを指定し、別SHAのcodeへ古い実行ラベルを付けない。
