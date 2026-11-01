@@ -42,7 +42,9 @@ LoRA担当の既存完成F32 artifact（SHA-256 `461b643ebcd7a481f6bec905f4b2e5d
 
 package解放後のcandidate所有、旧base leaseの不変、rollback後のpatch lease保持、未宣言rowのbase保持、復帰後のcandidate/package/lease/pending/patch bytes0を確認した。検証済みcandidateの配列をcallerへ渡して再提出させず、native owner内部へ保持する。
 
-LoRA担当へ渡す変更は、registryの`validationGate`（構造検証）と`numericalDiagnostics`（任意独立比較）の分離、通常validateの引数／結果、candidateのnative admission、consumer切替／復帰の契約である。[API契約](../../../docs/shared/diffusion-models/execution/README.md#lora-weight-feedの通常検証)に記載した。旧a80 canonical SDK adapterは診断用registry/gateを期待するため、新通常adapterとの共同受入は未実施。既存の旧sourceでのLoRA A/B受入は、そのscopeを保持して再利用する。
+LoRA担当へ渡す変更は、registryの`validationGate`（構造検証）と`numericalDiagnostics`（任意独立比較）の分離、通常validateの引数／結果、candidateのnative admission、consumer切替／復帰の契約である。[API契約](../../../docs/shared/diffusion-models/execution/README.md#lora-weight-feedの通常検証)に記載した。取得したLoRA側c4860579d01d9f704cb16714e364a22668f9d57eのP4-APIも、独立参照と診断gateをcommit前に要求する契約である。新通常adapterとの共同受入は未実施。既存の旧sourceでのLoRA A/B受入は、そのscopeを保持して再利用する。
+
+[LoRAへの引継ぎ](LORA-HANDOFF.md)を[PR2へ投稿](https://github.com/Kushyameln01/kushyameln-works/pull/2#issuecomment-6564381875)し、本文の一致readbackを確認した。[DELIVERY.json](DELIVERY.json)に相手の固定仕様書の取得bytes・hashと送信結果を記録した。相手のACK・新adapter受入は未確認。
 
 ## 管理の共有shape規則との照合
 
