@@ -46,15 +46,16 @@ function readonlyMap(entries){
 /** Authenticate an explicitly provided fixed catalog and its registered JSON
  * bytes. This performs structural integrity/indexing only, no edge judgment,
  * inference import, file-system access, URL retrieval or runtime-adoption claim. */
-export async function loadReferenceSet({catalogBytes,files,expectedCatalogSha256}={}){
+export async function loadReferenceSet({catalogBytes,files,expectedCatalogSha256,catalogPath=REFERENCE_CATALOG_PATH}={}){
+ if(!safePath(catalogPath))fail('CATALOG_PATH_INVALID','catalogPath','A safe relative catalog path is required.');
  if(!hex(expectedCatalogSha256))fail('CATALOG_PIN_REQUIRED','expectedCatalogSha256','Explicit lowercase SHA-256 catalog pin is required.');
  if(!(files instanceof Map))fail('REFERENCE_FILES_REQUIRED','files','Explicit registered-path Map of bytes is required.');
  // Snapshot before the first digest await; later caller mutation cannot change
  // either the authenticated bytes or the parsed immutable values.
- const catBytes=ownedBytes(catalogBytes,REFERENCE_CATALOG_PATH),inputs=new Map();for(const [path,bytes] of files)inputs.set(path,ownedBytes(bytes,path));
- const catalogSha256=await sha256Bytes(catBytes);if(catalogSha256!==expectedCatalogSha256)fail('CATALOG_HASH_MISMATCH',REFERENCE_CATALOG_PATH,'Catalog bytes do not match their fixed external source pin.');
- const catalog=parse(catBytes,REFERENCE_CATALOG_PATH);
- if(catalog.schemaVersion!==CATALOG||catalog.documentVersion!==VERSION||catalog.runtimeIntegrated!==false)fail('CATALOG_SCHEMA_UNSUPPORTED',REFERENCE_CATALOG_PATH,'Unknown catalog schema/version or rewritten source adoption status.');
+ const catBytes=ownedBytes(catalogBytes,catalogPath),inputs=new Map();for(const [path,bytes] of files)inputs.set(path,ownedBytes(bytes,path));
+ const catalogSha256=await sha256Bytes(catBytes);if(catalogSha256!==expectedCatalogSha256)fail('CATALOG_HASH_MISMATCH',catalogPath,'Catalog bytes do not match their fixed external source pin.');
+ const catalog=parse(catBytes,catalogPath);
+ if(catalog.schemaVersion!==CATALOG||catalog.documentVersion!==VERSION||catalog.runtimeIntegrated!==false)fail('CATALOG_SCHEMA_UNSUPPORTED',catalogPath,'Unknown catalog schema/version or rewritten source adoption status.');
  if(!Array.isArray(catalog.files)||catalog.files.length!==6)fail('REFERENCE_FILE_SET_INVALID','/files','This schema requires four profile documents, norms and numerical rules.');
  const registrations=new Map(),optionalDocs=new Map();
  for(const [i,entry] of catalog.files.entries()){
@@ -64,7 +65,7 @@ export async function loadReferenceSet({catalogBytes,files,expectedCatalogSha256
   if(!plain(entry)||!safePath(entry.path)||optionalDocs.has(entry.path)||registrations.has(entry.path)||!hex(entry.sha256)||entry.byteLength!==undefined&&(!Number.isSafeInteger(entry.byteLength)||entry.byteLength<1))fail('REFERENCE_DOCUMENTS_INVALID',`/documents/${i}`,'Optional document identities require unique paths and byte hashes.');optionalDocs.set(entry.path,entry);
  }}
  for(const path of inputs.keys())if(!registrations.has(path)&&!optionalDocs.has(path))fail('UNREGISTERED_REFERENCE_FILE',path,'Unregistered files cannot join an authenticated reference set.');
- const integrityReceipts=[{path:REFERENCE_CATALOG_PATH,sha256:catalogSha256,byteLength:catBytes.length}],contractRefs=[{path:REFERENCE_CATALOG_PATH,sha256:catalogSha256,byteLength:catBytes.length,schemaVersion:CATALOG,documentVersion:VERSION,kind:'catalog',recordIds:[]}];
+ const integrityReceipts=[{path:catalogPath,sha256:catalogSha256,byteLength:catBytes.length}],contractRefs=[{path:catalogPath,sha256:catalogSha256,byteLength:catBytes.length,schemaVersion:CATALOG,documentVersion:VERSION,kind:'catalog',recordIds:[]}];
  const profiles=new Map(),norms=new Map(),rules=new Map(),profileCategories=new Map(),seenCategories=new Set(),documents=[];let normsDocument,numericalRules;
  for(const [path,entry] of registrations){
   const bytes=inputs.get(path);if(!bytes)fail('REFERENCE_FILE_MISSING',path,'A required registered JSON document is missing.');
@@ -95,7 +96,7 @@ export async function loadReferenceSet({catalogBytes,files,expectedCatalogSha256
    resolve(item,fieldPath);
   }
  }
- resolve(catalog,REFERENCE_CATALOG_PATH);for(const {path,document} of documents)resolve(document,path);
+ resolve(catalog,catalogPath);for(const {path,document} of documents)resolve(document,path);
  for(const [path,entry] of optionalDocs)if(inputs.has(path)){const bytes=inputs.get(path),digest=await sha256Bytes(bytes);if(digest!==entry.sha256||entry.byteLength!==undefined&&bytes.length!==entry.byteLength)fail('REFERENCE_DOCUMENT_HASH_MISMATCH',path,'Provided optional document bytes differ from their metadata.');integrityReceipts.push({path,sha256:digest,byteLength:bytes.length});}
  freeze(catalog);for(const {document} of documents)freeze(document);freeze(integrityReceipts);freeze(contractRefs);
  const result=Object.freeze({catalog,catalogSha256,profileRecords:readonlyMap(profiles),normRecords:readonlyMap(norms),numericalRules,ruleRecords:readonlyMap(rules),contractRefs,integrityReceipts});verifiedSets.add(result);return result;

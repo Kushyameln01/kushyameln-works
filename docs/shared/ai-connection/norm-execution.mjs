@@ -6,6 +6,10 @@ const freeze=v=>{if(v&&typeof v==='object'){Object.values(v).forEach(freeze);Obj
 const same=(a,b)=>{try{return canonicalize(a)===canonicalize(b);}catch{return false;}};
 const fail=(code,message,decision)=>Object.assign(Error(message),{code,...(decision?{decision}:{} )});
 export const NORM_EXECUTION_POLICIES=freeze({
+ 'n2-self-attention-tail':{policyId:'n2-self-attention-tail',requiredNormIds:['N-IDENTITY','N-N2-TAIL-SHAPE','N-N2-TAIL-NUMERIC','N-EVIDENCE','N-TRANSACTION'],requiredProfileBindings:[
+  {recordId:'SHAPE-BERNINI-BLOCK0-N2-SELF-ATTENTION-RESIDUAL-F32',side:'producer',representations:['self-attention-post-token-hidden']},
+  {recordId:'EXEC-BERNINI-BLOCK0-N2-SELF-ATTENTION-RESIDUAL-F32',side:'producer',representations:['self-attention-post-token-hidden']}
+ ]},
  'lora-q16':{policyId:'lora-q16',requiredNormIds:['N-IDENTITY','N-LOADER','N-MAPPING','N-NUMERIC','N-EVIDENCE','N-TRANSACTION'],requiredProfileBindings:[
   {recordId:'LOAD-COMFY-LINEAR-DIFF',side:'producer',representations:['loader'],allowUnspecifiedRepresentation:true},
   {recordId:'LOAD-LOCAL-SAFETENSORS',side:'producer',representations:['loader'],allowUnspecifiedRepresentation:true},

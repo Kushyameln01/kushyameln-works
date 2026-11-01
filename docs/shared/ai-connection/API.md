@@ -773,3 +773,133 @@ The reproducible native joint control is documented in
 `development/ai-connection/lora-data-bridge/REPRODUCE.md`. Its source/base are
 synthetic; actual pinned SDK/Hike/ORT/consumer execution does not extend the
 historical real-file numerical scope or admit a production model session.
+
+## Fixed N2 self-attention tail
+
+This is a separate candidate and direct ES entry, outside both Diffusion RPC
+operations and the LoRA DATA bridge. Native execution source is
+`a49aac492cc68e2dd6037e0deb4a6954731a847a`; distribution/handoff is
+`beffdcb800b629d0b13ff43bbc90e9f74c659152`. The native API version stays
+`diffusion-models/0.1`, the owner descriptor schema is
+`bernini-self-attention-tail/0.1`, and the profile is
+`bernini-block0-n2-self-attention-residual-f32-v1`. HIGH1 and LOW3 are separate
+cases. Residual means self-attention-post token hidden; it is not a latent,
+posterior mean or sample.
+
+| Native array | F32 shape | Stored layout |
+| --- | --- | --- |
+| attention, patchHidden (inputs) | [2,5120] | LC |
+| timeAct1 (input) | [5120] | C |
+| o, gated, residual (outputs) | [2,5120] | LC |
+| gateProjection, gate (outputs) | [5120] | C |
+
+`verifyN2TailSource({files:Map})` verifies all 24 pinned accepted-execution
+module/WASM/driver byte identities and returns a runtime-branded capability.
+`N2_TAIL_FILES` lists exact repository-relative paths, lengths and SHA-256s.
+Capture-source archive aliases and saved-output replay sources are recorded
+separately. This proof authenticates source bytes, not an injected JavaScript
+function's origin or numerical result. The supplied runner imports
+`createSelfAttentionTail` from the same verified source root in the same realm.
+A cloned/self-labelled capability cannot open the adapter.
+
+The original catalog and all six original reference documents remain unchanged.
+The candidate catalog is
+`reference/candidates/n2-tail/catalog.v1.json`, fixed by
+`N2_TAIL_CATALOG_REF` (SHA-256
+`aa492b66fc3775b561bd6535290ebb5eabf7328039c47238e009996bd417943b`,
+9589 bytes). It names parent catalog commit6dae/hash149783 explicitly, preserves
+all old records and appends dedicated `N-N2-TAIL-SHAPE` and
+`N-N2-TAIL-NUMERIC` records. Call `loadReferenceSet` with the explicit
+`catalogPath`, actual catalog/file bytes and this external digest.
+The default loader path and its existing behavior remain unchanged.
+`describeN2TailDeclarations` builds immutable sidecars from explicit native
+source/trusted/reference identities. Existing `evaluateEdge` remains the only
+judge; missing required declarations/norm implementations are UNVERIFIED and
+known conflicts are INCOMPATIBLE. Matching contracts without numerical receipts
+stay COMPATIBLE / NOT_VERIFIED / BLOCKED outside phase-specific declarations.
+
+```js
+const adapter = createNormRequiredN2TailAdapter({
+  nativeFactory: createSelfAttentionTail, verifiedSource,
+  binding, artifactStore, readCurrent, validateOutput, publishOutput,
+  executionScope: 'actual-fixed-n2-tail'
+});
+const result = await adapter.run({
+  referenceSet, edgeInput, target,
+  native: {file, side, trustedInputs, bridgeBytes, mathBytes},
+  inputs: {attention, patchHidden, timeAct1},
+  validationSpec, diagnosticBudget, signal, onProgress
+});
+```
+
+The constructor requires explicit owner/session/binding/resource generation,
+current-state reader, owned artifact store and owner validator. `publishOutput`
+is optional; a selected N-ARTIFACT requirement still requires actual storage.
+`target` has manager session/revision/request/token, independent
+`localRevisionBindings` metadata and the exact resource binding. This native
+owner has no request/revision or commit operation. The adapter never adds
+manager fields to native constructor/run arguments and records
+`snapshotPublished:false`; it does not invent a native/model-session commit.
+
+The adapter snapshots inputs before queueing. It checks the actual descriptor,
+three input hashes, all five output shapes/hashes and native kernel identities.
+`trustedInputs` and `N2_TAIL_REFERENCE_REFS` fix the original prefix/attention
+receipts, artifact/array hashes, side, block0 and HIGH1/LOW3 schedule. The real
+native owner enforces the accepted exact input bits. Arbitrary inputs and LoRA
+modified inputs cannot acquire these prior numerical receipts.
+Control fixtures use an explicit different executionScope and never report
+`actualNumericalAccepted:true`.
+
+`validationSpec` fixes all eight owner comparisons (71680 values per side),
+seven parameter checks, reference and original gates before dispatch.
+`validateOutput` receives actual inputs/output, inputHashes, outputBinding,
+target, full referenceRef/numericRequirement and this validationSpec. Its result
+must bind the exact target, three input hashes, all five output hashes, full
+side-specific referenceRef, unchanged gates/counts/scope, zero failed values
+and `passed:true`. A bare boolean or stale receipt is insufficient. The runner
+uses the fixed owner's `common.mjs:compare`; management adds no numerical engine.
+Prior accepted output-file hashes are checked separately from a fresh run's
+independent local/composed gate comparisons.
+
+`cancel(target)` matches the exact manager target. Cancellation during factory
+construction waits the original factory Promise, skips run and releases the
+returned owner. Cancellation during run waits that original Promise's terminal
+outcome before release. A late old result cannot be adopted. Native release
+failure retains the owner/error recovery capability and quarantines the existing
+queue. `recover(target)` retries release and ends that owner; it never restores
+a reusable native instance. Then `rebind({resourceGeneration})` requires a new,
+never-used generation and the next run must construct a fresh owner. An old
+cancel cannot target the rebound generation.
+
+`createN2TailOutputPublisher({storage,artifactRef,receiptRef,ownerId,...})` uses
+the existing E4 writer/reader and adopted2bd codec. Here artifactRef is the
+package base ID; predeclare the principal edge ID as `artifactRef+'#residual'`.
+All five outputs become distinct artifacts, retaining name, LC/C shape, native
+meaning, source, evidence, validation target and opaque extensions. Native F32
+and storage `float32` are explicit metadata spellings of the same bits.
+`readN2TailOutputPackage(storage)` verifies all five identities and actual
+persisted bits. No automatic cache adoption occurs inside the publisher;
+existing E5 may be used after admission with explicit current dependencies.
+N2 cache numerical acceptance is not claimed by the storage fixture tests.
+
+Require diagnosticBudget
+`{scope:'n2-tail-diagnostic-only',tailHikeCapacityBytes:2883584,ortSharedMemoryCapacityBytes:16777216,maxReturnedOutputBytes:163840,maxElapsedMs}`,
+with explicit positive maxElapsedMs. Deadline expiry aborts the operation and
+still waits original terminal/release barriers. Known observed capacities and
+returned extents must fit these limits. Historical Hike/ORT capacities are
+tail-only observations; native `ORTMemoryBytes:null` stays null. The management
+runner does not install a new independent Memory observer, so current ORT
+Memory capacity/resource acceptance remains separate from numerical acceptance.
+Host/GC/allocator/File backing/total peak and full pipeline budgets remain unknown.
+
+`tools/ai-connection/run-norm-required-n2-tail.mjs` verifies source/public
+receipts and explicit private asset paths before browser/native dispatch. It
+serves only pinned public source over loopback; models enter as local File and
+private arrays through CDP. Missing private payloads produce BLOCKED,
+nativeCalls0, browserLaunchedfalse and numericalState NOT_VERIFIED. They do not
+produce a numerical dry-run success. Retained-asset reproduction and current
+unaccepted edges are in
+`development/ai-connection/n2-tail-management/REPRODUCE.md` and `RESULT.md`.
+Cross-attention, FFN, full blocks, real HIGH-to-LOW, production, arbitrary LoRA
+and combined resource budgets stay outside acceptance. Throughout:
+`generationReady:false`, `load/predict/sample=NOT_READY`.

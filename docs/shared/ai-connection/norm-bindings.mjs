@@ -7,7 +7,7 @@ const list=v=>Array.isArray(v)?v:[],present=v=>v!==undefined&&v!==null;
 const text=v=>typeof v==='string'&&v.length>0;
 const hash=v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v);
 const source=v=>text(v?.repository)&&/^[a-f0-9]{40}$/.test(v?.commit)&&text(v?.path);
-const SUPPORTED=new Set(['N-IDENTITY','N-SHAPE','N-NUMERIC','N-NORMALIZATION','N-LOADER','N-MAPPING','N-EVIDENCE','N-TRANSACTION','N-ARTIFACT','N-LEGACY','N-GENERATION','N-EXTENSION']);
+const SUPPORTED=new Set(['N-IDENTITY','N-SHAPE','N-NUMERIC','N-NORMALIZATION','N-LOADER','N-MAPPING','N-EVIDENCE','N-TRANSACTION','N-ARTIFACT','N-LEGACY','N-GENERATION','N-EXTENSION','N-N2-TAIL-SHAPE','N-N2-TAIL-NUMERIC']);
 const CHECKERS={'N-TRANSACTION':['queue.mjs','snapshot.mjs'],'N-ARTIFACT':['package.mjs'],'N-EVIDENCE':['owner-validation']};
 
 export function compileNormBindings(context,input){
@@ -16,7 +16,7 @@ export function compileNormBindings(context,input){
  const missing=(normId,path,reason)=>add(normId,path,true,undefined,{message:reason});
  const requireScope=(normId,scope,constraints=[],available=true)=>scopes.push({normId,scope,constraints,available,
   duePhase:['N-TRANSACTION','N-ARTIFACT'].includes(normId)?'published':'validated',
-  declarationReady:['N-NUMERIC','N-NORMALIZATION'].includes(normId)?available:true});
+  declarationReady:['N-NUMERIC','N-NORMALIZATION','N-N2-TAIL-NUMERIC'].includes(normId)?available:true});
  if(!isVerifiedReferenceSet(context?.referenceSet)){
   missing('N-IDENTITY','/referenceContext/referenceSet','A successfully byte-verified ReferenceSet is required');return {checks,scopes,readiness,trace};
  }
@@ -34,7 +34,8 @@ export function compileNormBindings(context,input){
   selected.push({record,binding,side,declaration:context.nativeDeclarations?.[side]??{}});
   trace.profileRefs.push(record.recordId);trace.sourceRefs.push(...list(record.sourceRefs));
  }
- if((applies('N-SHAPE')||applies('N-NORMALIZATION')||applies('N-LOADER')||applies('N-NUMERIC'))&&!selected.length)missing('N-EXTENSION','/referenceContext/profileBindings','Applicable native profile bindings are required; gate absence alone is a different condition');
+ if((applies('N-SHAPE')||applies('N-NORMALIZATION')||applies('N-LOADER')||applies('N-NUMERIC')||applies('N-N2-TAIL-SHAPE')||applies('N-N2-TAIL-NUMERIC'))&&!selected.length)missing('N-EXTENSION','/referenceContext/profileBindings','Applicable native profile bindings are required; gate absence alone is a different condition');
+ for(const [id,recordId] of [['N-N2-TAIL-SHAPE','SHAPE-BERNINI-BLOCK0-N2-SELF-ATTENTION-RESIDUAL-F32'],['N-N2-TAIL-NUMERIC','EXEC-BERNINI-BLOCK0-N2-SELF-ATTENTION-RESIDUAL-F32']])if(applies(id)&&selected.filter(s=>s.record.recordId===recordId&&s.side==='producer').length!==1)missing(id,'/referenceContext/profileBindings','Bind the fixed native tail producer exactly once; another profile or sink cannot satisfy this norm');
  if(applies('N-IDENTITY')){
   const adoption=list(cat.managementAdoptionSets).find(x=>x.adoptionSetId===context.adoptionSetId);
   // New candidates are explicitly registered outside the historical catalog.
@@ -60,6 +61,23 @@ export function compileNormBindings(context,input){
  for(const {record:r,binding:b,side,declaration:d} of selected){
   const v=r.requiredDeclarations??{},base=`/referenceContext/nativeDeclarations/${side}`,rep=b.representation;
   const before=checks.length;
+  if(applies('N-N2-TAIL-SHAPE')&&r.recordId==='SHAPE-BERNINI-BLOCK0-N2-SELF-ATTENTION-RESIDUAL-F32'){
+   const id='N-N2-TAIL-SHAPE';
+   add(id,`${base}/representation`,'self-attention-post-token-hidden',rep);
+   add(id,`${base}/nativeProfileId`,r.nativeProfileId,d.nativeProfileId);
+   for(const [field,expected] of [['shape',v.shape],['dtype',v.dtype],['axes',v.layout?.split('')],['nativeMeaning',v.meaning]])add(id,`/tensor/${field}`,expected,input.artifact?.tensor?.[field]);
+   // Five named outputs preserve both LC token hidden and C-only gate vectors.
+   for(const [name,output] of Object.entries(v.outputs??{}))for(const [field,expected] of Object.entries(output))add(id,`${base}/outputs/${name}/${field}`,expected,d.outputs?.[name]?.[field]);
+  }
+  if(applies('N-N2-TAIL-NUMERIC')&&r.recordId==='EXEC-BERNINI-BLOCK0-N2-SELF-ATTENTION-RESIDUAL-F32'){
+   const id='N-N2-TAIL-NUMERIC',constraints=r.admissionConstraints??{},sides=constraints.sideCases??{};
+   add(id,`${base}/nativeProfileId`,r.nativeProfileId,d.nativeProfileId);
+   for(const [field,expected] of Object.entries(v))add(id,`${base}/${field}`,expected,d[field]);
+   add(id,`${base}/side`,true,Object.hasOwn(sides,d.side),{unknown:!present(d.side)});
+   const schedule=sides[d.side];
+   add(id,`${base}/scheduleIndex`,schedule,d.scheduleIndex,{unknown:!present(schedule)||!present(d.scheduleIndex)});
+   add(id,`${base}/trustedInputs`,constraints.trustedInputsBySide?.[d.side],d.trustedInputs,{unknown:!present(constraints.trustedInputsBySide?.[d.side])||!present(d.trustedInputs)});
+  }
   if(applies('N-SHAPE')&&(r.recordId.startsWith('SHAPE-'))){
    const shape=rep==='raw-latent'?v.rawLatentShape:['rgb','rgb-input-unit','rgb-decoder-raw'].includes(rep)?v.rgbShape:rep==='text-plain'?v.plainTextOutputShape:rep==='text-ids'?d.shape:undefined;
    if(!shape){missing('N-SHAPE','/referenceContext/profileBindings','Known representation is required');continue;}
@@ -138,12 +156,13 @@ export function compileNormBindings(context,input){
   // remain dependent-edge UNVERIFIED instead of accepting a familiar ID alone.
   if(checks.length===before&&['N-SHAPE','N-NORMALIZATION','N-LOADER'].some(applies))missing('N-EXTENSION','/referenceContext/profileBindings',`No applicable finite declaration binding for ${r.recordId}`);
  }
- if(applies('N-NUMERIC')||applies('N-NORMALIZATION')){
-  if(!list(context.numericRequirements).length)requireScope(applies('N-NUMERIC')?'N-NUMERIC':'N-NORMALIZATION',applies('N-NUMERIC')?'norm:N-NUMERIC':'norm:N-NORMALIZATION',[],false);
+ if(applies('N-NUMERIC')||applies('N-NORMALIZATION')||applies('N-N2-TAIL-NUMERIC')){
+  const numericNorm=applies('N-N2-TAIL-NUMERIC')?'N-N2-TAIL-NUMERIC':'N-NUMERIC';
+  if(!list(context.numericRequirements).length)requireScope(applies('N-N2-TAIL-NUMERIC')?numericNorm:applies('N-NUMERIC')?'N-NUMERIC':'N-NORMALIZATION',applies('N-N2-TAIL-NUMERIC')?`norm:${numericNorm}`:applies('N-NUMERIC')?'norm:N-NUMERIC':'norm:N-NORMALIZATION',[],false);
   for(const [index,r] of list(context.numericRequirements).entries()){
    if(typeof r?.scope==='string'&&r.scope.startsWith('norm:'))add('N-NUMERIC',`/referenceContext/numericRequirements/${index}/scope`,false,true,{unknown:false,code:'RESERVED_NUMERICAL_SCOPE',message:'Owner numerical evidence cannot occupy a reserved norm scope or defer validation until publication'});
    const gate=r?.gateRef,ref=r?.referenceRef;
-   const known=(applies('N-NUMERIC')&&list(set.normRecords.get('N-NUMERIC')?.profileRefs).includes(r?.recordId)||applies('N-NORMALIZATION')&&list(set.normRecords.get('N-NORMALIZATION')?.profileRefs).includes(r?.recordId))&&set.profileRecords.has(r?.recordId);
+   const known=(applies('N-N2-TAIL-NUMERIC')&&list(set.normRecords.get('N-N2-TAIL-NUMERIC')?.profileRefs).includes(r?.recordId)||applies('N-NUMERIC')&&list(set.normRecords.get('N-NUMERIC')?.profileRefs).includes(r?.recordId)||applies('N-NORMALIZATION')&&list(set.normRecords.get('N-NORMALIZATION')?.profileRefs).includes(r?.recordId))&&set.profileRecords.has(r?.recordId);
    if(!known)missing('N-NUMERIC','/referenceContext/numericRequirements/recordId','Unknown required numeric profile');
    const record=set.profileRecords.get(r?.recordId),nativeBinding=selected.find(s=>s.record.recordId===r?.recordId);
    if(known&&!nativeBinding)missing('N-NUMERIC','/referenceContext/profileBindings','Required native execution declarations are missing, rather than only their numerical receipt');
@@ -151,12 +170,24 @@ export function compileNormBindings(context,input){
    // Catalog record IDs are never treated as native profile IDs.
    const port=nativeBinding?.side==='producer'?input.producerPort:input.consumerPort;
    const sameOwner=source(r?.ownerSourceRef)&&r.ownerSourceRef.repository===port?.sourceRef?.repository&&r.ownerSourceRef.commit===port?.sourceRef?.commit&&list(record?.sourceRefs).some(s=>s.repository===r.ownerSourceRef.repository&&s.commit===r.ownerSourceRef.commit);
-   const available=known&&!!nativeBinding&&text(r?.scope)&&sameOwner&&hash(r?.kernelDigest)&&r.kernelDigest===nativeBinding.declaration.kernelDigest&&source(gate?.sourceRef)&&hash(gate?.sha256)&&text(gate?.gateId)&&source(ref?.sourceRef)&&hash(ref?.sha256)&&
+   const tail=r?.recordId==='EXEC-BERNINI-BLOCK0-N2-SELF-ATTENTION-RESIDUAL-F32'&&applies('N-N2-TAIL-NUMERIC');
+   const fixedGate=record?.admissionConstraints?.gateRef,gateFields=['sourceRef','sha256','byteLength','gateId','gates'];
+   // Missing numerical identities block acceptance without changing compatible
+   // contracts. A supplied conflicting gate is a known contract conflict.
+   if(tail)for(const field of gateFields)if(present(gate?.[field]))add(numericNorm,`/referenceContext/numericRequirements/${index}/gateRef/${field}`,fixedGate?.[field],gate[field]);
+   const tailGateReady=!tail||gateFields.every(field=>present(gate?.[field]));
+   const fixedReference=record?.admissionConstraints?.referenceRefsBySide?.[nativeBinding?.declaration?.side];
+   const referenceFields=['sourceRef','sha256','byteLength','referenceId','side','blockIndex','scheduleIndex',...['local','composed'].flatMap(mode=>['sourceRef','sha256','byteLength','payloadSha256','payloadByteLength'].map(field=>`${mode}/${field}`))];
+   const fieldAt=(object,path)=>path.split('/').reduce((value,key)=>value?.[key],object);
+   if(tail)for(const field of referenceFields)if(present(fieldAt(ref,field)))add(numericNorm,`/referenceContext/numericRequirements/${index}/referenceRef/${field}`,fieldAt(fixedReference,field),fieldAt(ref,field));
+   const tailReferenceReady=!tail||referenceFields.every(field=>present(fieldAt(ref,field)));
+
+   const available=tailGateReady&&tailReferenceReady&&known&&!!nativeBinding&&text(r?.scope)&&sameOwner&&hash(r?.kernelDigest)&&r.kernelDigest===nativeBinding.declaration.kernelDigest&&source(gate?.sourceRef)&&hash(gate?.sha256)&&text(gate?.gateId)&&source(ref?.sourceRef)&&hash(ref?.sha256)&&
     (!record.nativeProfileId||nativeBinding.declaration.nativeProfileId===record.nativeProfileId);
    // The predeclared owner's gate is an identity. Arithmetic/comparison is done
    // by that owner, never by this binding or the manager.
    const constraints=[['/normBinding/catalogSha256',set.catalogSha256],...['scope','recordId','gateRef','referenceRef','ownerSourceRef','kernelDigest'].map(k=>[`/normBinding/${k}`,r?.[k]])];
-   requireScope('N-NUMERIC',text(r?.scope)?r.scope:'norm:N-NUMERIC',constraints,available);
+   requireScope(numericNorm,text(r?.scope)?r.scope:`norm:${numericNorm}`,constraints,available);
   }
  }
  if(applies('N-MAPPING')){
