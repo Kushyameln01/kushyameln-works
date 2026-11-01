@@ -43,4 +43,4 @@ const transaction = data.postpublicationInputs({
 
 commit直前は選択・資源generation・外側consumer token・native revisionを再確認する。公開後の監査はcore publish/cleanup後のactive snapshot/ownerで行う。closedになったstage contextのcurrentnessを流用しない。後段監査失敗でも実publicationの事実は残り、受入と再利用を止める。finalize済みのrollback履歴があるように扱わない。
 
-旧 `createP3NormEdge` は互換試験用shim。mapping正本は `createDiffusionDiagnosticAdapter`、native SDK v1/v2は維持する。管理版edda43では宣言3値と正式三段階入口が未対応で、採用確認は保留している。既存6件の実数値証拠は元pin/scopeで再利用する。全target・他pair/sideの新規数値受入・全model session・生成は追加しない。
+旧 `createP3NormEdge` は互換試験用shim。mapping正本は `createDiffusionDiagnosticAdapter`、native SDK v1/v2は維持する。管理edda43の宣言未対応記録は旧baselineとして残す。新管理 `0260fc0b153c2491cc94aca3d75c7835a03bf0f7` のmandatory native入口を受領し、独立probeで宣言負例12/12・正例2/2、管理制御fixture35/35を確認した。82b DATAからその入口へ渡すphase bridgeは未受入で、API引数を直接差し替えない。[新管理との差分](../../../../development/ai-connection/reference-adoption/lora/management-handoff/MANAGER-0260-READBACK.md)を参照する。既存6件の実数値証拠は元pin/scopeで再利用する。全target・他pair/sideの新規数値受入・全model session・生成は追加しない。

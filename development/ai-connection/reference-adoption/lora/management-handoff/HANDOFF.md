@@ -1,6 +1,6 @@
 # owner数値宣言と三段階DATA契約の管理引継ぎ
 
-2026-11-01 JST。LoRA側のデータexportと引継ぎ契約を用意した。管理の正式な受入入口は未取得であり、現管理edda43の宣言負例は未対応だった。既存6ケースの数値合格は元scopeで維持する。
+2026-11-01。LoRA側のデータexportと引継ぎ契約を用意した。配送後に管理0260のmandatory native入口を受領し、宣言負例12/12・正例2/2と制御fixture35/35を独立確認した。82bのraw DATAをその入口へ接続するbridgeは未受入。既存6ケースの数値合格は元scopeで維持する。[新管理の原文差分と確認範囲](MANAGER-0260-READBACK.md)を参照する。
 
 正本は [HANDOFF.json](HANDOFF.json)。コード正本は `82b21f09cb63926543181b16f0e97ebc6b9fa6be`。新しいDATA moduleを旧native fc commitへ付け替えない。native tupleは引き続きLoRA fc／Diffusion5f、kernel5051 bytesで、SDK・planner・canonical adapter・kernelは変更していない。
 
@@ -53,15 +53,17 @@ checkpointのcontextが省略された場合は `referenceContext.ownerAdmission
 5. 公開後は別の `isPublishedCurrent` callbackで、active snapshot/ownerの寿命を観測する。core snapshotは公開時にstage recordをclosedにするため、stageの `context.isCurrent()` をこの用途へ流用しない。
 6. 後段監査やcleanupに失敗しても、実際の `SNAPSHOT_PUBLISHED` とnative `CONSUMER_APPLIED` の事実を保持する。診断受入と再利用をBLOCKEDにする。finalize済みの履歴を使ったrollbackや「commitしなかった」という復帰を捏造しない。
 
-正式API名と修正版commitは未受領なので、この資料で管理に存在するmethodとして命名していない。採用時に管理の実入口とsource/hash・phase receiptを確定する。
+配送後に管理 `0260fc0b153c2491cc94aca3d75c7835a03bf0f7` の `createNormRequiredLoraExecution` / `createNormExecution` を原文で取得した。これは既存native facadeを包む正式入口であり、82bの三つのraw DATA methodを直接受け取るAPIではない。管理のpredeclared edgeInputとphase所有権へ接続する外側bridge、実checkpoint target・外側owner validation・観測originの照合が残る。正式入口の制御fixture合格と、新DATA契約の正式採用は区別する。
 
 ## 4. 確認した変更境界
 
 [owner fixture log](evidence/owner-tests.log)：数値宣言9、raw DATA9、旧shim互換5の **23/23 PASS、skip0**。新DATAの欠落/矛盾、元storage分離、source/candidate、receipt/target、published currentness、所有権をmetadataで確認した。
 
-[現管理probe](evidence/manager-baseline.json)：管理 `edda43f9ea69c5b3ab1af3c6eb82295f2912887c` の固定sourceと6daeの7 JSONを照合し、**負例12件を先に実行**した。欠落6件・矛盾6件はすべてCOMPATIBLEのままで、必要な拒否結果を満たした負例は0/12。正常なBF16 source＋F32 base/outputの正例2件は一致した。終了code2、`BLOCKED_MANAGER_DECLARATION_COMPARISONS_UNIMPLEMENTED` を未対応として保存した。
+[旧baseline probe](evidence/manager-baseline.json)：管理 `edda43f9ea69c5b3ab1af3c6eb82295f2912887c` の固定sourceと6daeの7 JSONを照合し、**負例12件を先に実行**した。欠落6件・矛盾6件はすべてCOMPATIBLEのままで、必要な拒否結果を満たした負例は0/12。正常なBF16 source＋F32 base/outputの正例2件は一致した。終了code2、`BLOCKED_MANAGER_DECLARATION_COMPARISONS_UNIMPLEMENTED` を未対応として保存した。
 
-このprobeは宣言のみの検査で、管理の正式三段階入口を評価しない。管理修正後は同じ負例から再実行し、次に [CONFORMANCE-CASES.json](CONFORMANCE-CASES.json) のphase/取消/所有権を実入口へ結ぶ。正例や旧6caseの合格だけで正式採用へ進まない。
+これは旧baselineの記録である。管理0260の取得後、同じLoRA原文probeで**12負例を先に再実行し、負例12/12・正例2/2を確認**した。[新probe全文gzip](evidence/manager-0260-probe.json.gz)は宣言metadataだけの検査であり、正式phase bridgeを評価しない。続けて管理のloader・phase境界・mandatory LoRA入口の制御fixtureを35/35、skip0で確認した。[log](evidence/manager-0260-boundary.log)と[実行source照合](evidence/manager-0260-boundary-sources.json)を参照する。これはfake ownerによる制御試験で、新しい実native/原本/base/数値受入ではない。
+
+残る [CONFORMANCE-CASES.json](CONFORMANCE-CASES.json) の実owner phase/取消/所有権を正式bridgeへ結ぶ。正例、制御fixtureや旧6caseの合格だけで新DATAの正式採用へ進まない。
 
 [import-only確認](evidence/import-smoke.json)では、旧ブラウザreceiverの実allowlistを使って新module・shim・receiverを読込み、38 sourceを固定Git blobへ照合した。原本Fileを開かず、SDK/native演算を呼ばず、WASM要求0件で確認した。
 
@@ -86,12 +88,12 @@ node --test tools/ai-connection/test-lora-numeric-declarations.mjs \
   tools/ai-connection/test-p3-norm-edge.mjs
 
 node tools/ai-connection/probe-manager-lora-declarations.mjs \
-  --manager-root /path/to/fixed-manager \
-  --manager-commit edda43f9ea69c5b3ab1af3c6eb82295f2912887c \
+  --manager-root /path/to/manager-0260 \
+  --manager-commit 0260fc0b153c2491cc94aca3d75c7835a03bf0f7 \
   --owner-declarations development/ai-connection/reference-adoption/lora/management-handoff/OWNER-NUMERIC-WITNESS.json \
   --out /absolute/private/new-empty-declaration-probe
 ```
 
-probeは自身とwitnessのHEAD Git blobを検査するため、commit済みの配布sourceを使う。outはsource repo外の新しい空ディレクトリ。修正後はmanager rootと完全commitを置き換え、先に同じ12負例を確認する。負例・正例14件が要求を満たすと宣言metadata検査のみcode0となる。正式phase採用の合格は別に確認する。
+probeは自身とwitnessのHEAD Git blobを検査するため、commit済みの配布sourceを使う。outはsource repo外の新しい空ディレクトリ。manager rootと完全commitを組で固定し、先に同じ12負例を確認する。新管理0260では宣言metadata検査のみcode0となる。正式phase採用の合格は別に確認する。35件の管理制御fixture再現はMANAGER-0260-READBACK.mdを参照する。
 
 完全source/path/hash、証拠のhashと再利用範囲はHANDOFF.jsonとevidence manifestを参照する。管理PR #7への掲載と、管理担当の受領・採用完了は別に記録する。

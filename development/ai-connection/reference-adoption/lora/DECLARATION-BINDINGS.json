@@ -2106,8 +2106,8 @@
     {
       "id": "FORMAL-MANAGER-PHASE-ADOPTION",
       "requiredFor": "official manager LoRA admission, after dtype/layout declaration checks",
-      "status": "MANAGER_SOURCE_NOT_RECEIVED",
-      "reason": "Public management edda43 ignores three required loader declaration fields and has no formal three-phase entry; 12 metadata negative cases document the gap. Owner DATA export is ready; existing six numerical/native cases remain at original scope.",
+      "status": "OWNER_DATA_PHASE_BRIDGE_PENDING",
+      "reason": "Management0260 mandatory native entry and phase controller were received; loader negatives12/12 and positives2/2 plus fake-owner control fixtures35/35 pass independently. The82b raw DATA bridge is not implemented/accepted; existing six real numerical cases remain at original scope.",
       "ownerHandoff": "management-handoff/HANDOFF.json"
     }
   ],
@@ -2195,6 +2195,51 @@
     "previousNumericalAcceptanceUnchanged": true,
     "formalManagerAdoptionAccepted": false,
     "newOriginalPayloadRead": false,
-    "singleExpansionPurpose": "JOINT-HIGH-SUCCESS-LOW-FAILURE-CONTAINMENT"
+    "singleExpansionPurpose": "JOINT-HIGH-SUCCESS-LOW-FAILURE-CONTAINMENT",
+    "currentManager": {
+      "sourceCommit": "0260fc0b153c2491cc94aca3d75c7835a03bf0f7",
+      "implementationCheckpoint": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "pr": "https://github.com/Kushyameln01/kushyameln-works/pull/7",
+      "nativeEntry": {
+        "path": "docs/shared/ai-connection/adapters/norm-required-lora.mjs",
+        "factory": "createNormRequiredLoraExecution",
+        "contractVersion": "works-norm-required-lora/0.1-draft.1",
+        "sourceReceived": true
+      },
+      "phaseController": {
+        "path": "docs/shared/ai-connection/norm-execution.mjs",
+        "factory": "createNormExecution",
+        "phases": [
+          "declaration",
+          "validated",
+          "published"
+        ]
+      },
+      "ownerIndependentDeclarationProbe": {
+        "receiverCommit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+        "negativeConforming": 12,
+        "negativeTotal": 12,
+        "positiveConforming": 2,
+        "positiveTotal": 2,
+        "negativeFirst": true,
+        "exitCode": 0,
+        "resultPath": "evidence/manager-0260-probe.json.gz",
+        "scope": "metadata only; not formal phase adoption"
+      },
+      "independentManagerControlFixtures": {
+        "passed": 35,
+        "failed": 0,
+        "skipped": 0,
+        "logPath": "evidence/manager-0260-boundary.log",
+        "sourceReceiptPath": "evidence/manager-0260-boundary-sources.json",
+        "scope": "fake native owner control; no new actual native numerical comparison"
+      },
+      "owner82bRawDataFormalBridge": "NOT_IMPLEMENTED_OR_ACCEPTED",
+      "newActualNativeOrRealBaseAcceptance": false,
+      "existingSixEvidenceReused": true,
+      "oldSixNumericalCasesRerun": false,
+      "generationReady": false,
+      "details": "MANAGER-0260-READBACK.md"
+    }
   }
 }
