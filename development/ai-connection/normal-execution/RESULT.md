@@ -1,5 +1,7 @@
 # 通常入口・共通workflow shapeの実装結果
 
+この文書は初回mean経路の限定受入記録。VAE／named P4／workflow routingの追加と現在の未受入事項は [ROUTED-RESULT.md](ROUTED-RESULT.md) を参照する。
+
 2026-11-02 JST。通常入口を追加し、既存descriptorとownerの実行能力から接続を判断する。独立参照・誤差gate・事前PASS・数値receipt・全中間E4保存は通常要求の条件に含めない。従来の診断入口と受入済みP2／旧N2のscopeを維持する。
 
 ## 配布・実行source

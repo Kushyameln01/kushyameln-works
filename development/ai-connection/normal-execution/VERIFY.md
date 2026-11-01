@@ -36,3 +36,15 @@ node --test --test-isolation=none tools/ai-connection/test-*.mjs
 ```
 
 最終回帰は576/576 PASS、FAIL／SKIP 0。[全出力](verification/ROOT-SUITE.log)と[実行中162fileのbytes不変記録](verification/SUITE-SOURCE-RECEIPT.json)を保持した。実native normal／取消の達成範囲はこのunit合格から推定せず、別の実行receiptで確認する。
+
+## VAE／P4／独立診断の追加後
+
+上記旧native変数に、以下を追加して同じ `test-*.mjs` 全体を実行する。rootは固定498のproduction16、固定30eのBUILD_SOURCES113＋generated build-infoを各repo相対pathで保持する。
+
+```bash
+export NORMAL_VAE_NATIVE_ROOT=/workspace/work/ai-connection/normal-r13/runner/native-vae-498
+export NORMAL_P4_NATIVE_SOURCE_ROOT=/workspace/work/ai-connection/normal-r13/runner/native-p4-30e
+node --test --test-isolation=none tools/ai-connection/test-*.mjs
+```
+
+最終634/634 PASS、FAIL／SKIP 0、173file bytes不変。[追加後の全出力](verification/FINAL-ROOT-SUITE.log)と[source照合](verification/FINAL-SUITE-SOURCE-RECEIPT.json)を保持する。新実NN共同受入の未取得と、unit／実metadata queryの合格を分ける。

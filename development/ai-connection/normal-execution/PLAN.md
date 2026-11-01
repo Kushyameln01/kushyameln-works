@@ -70,4 +70,6 @@ The accepted mean route is retained; it does not alone close known workflow RGB/
 - [x] p4_candidate: receive Diffusion527/30e source/inventory; add named-input host and normal P4 facade delegated to actual support/run, preserving old scalar path.
 - [x] p4_norm: route shared known RGB/latent requirements to explicit normal owners without role-to-native-meaning inference or copied geometry.
 - [x] p4_runner: prepare holding-environment normal runners with real source/asset preflight and ordinary descriptors; keep existing normal4667/cancelf1 evidence unchanged.
-- [ ] root: verify changed boundaries, publish API/source/results and source acquisition ACKs; distinguish missing private assets and pending joint execution from unsupported shape or numerical failure.
+- [x] root: verify changed boundaries, freeze/push normal sourcea543 and diagnostic source3fed, send acquisition ACKs and concrete holding execution requests; distinguish missing private assets and pending joint execution from unsupported shape or numerical failure.
+
+Actual VAE/P4 holding-environment execution remains an external joint-acceptance dependency. Source implementation, local metadata queries and current small mean execution are complete; no new VAE/P4 NN acceptance is asserted.
