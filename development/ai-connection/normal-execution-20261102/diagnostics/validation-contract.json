@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "normal-p4-browser-validation-contract/0.1",
+  "scope": "Standalone normal P4 factory; actual LOW model, saved N2 block0 hidden/time and native Text L512. No generation.",
+  "sourceBaseline": "9d67561",
+  "sourceAdmission": "Normal execution source and all requested modules must be tracked and unchanged from explicitly provided current committed HEAD before and after execution. Harness source hashes are recorded separately.",
+  "normalFirst": true,
+  "gates": {
+    "composed": {
+      "absolute": 0.01,
+      "relative": 0.001
+    },
+    "local": {
+      "absolute": 0.001,
+      "relative": 0.0001
+    },
+    "rule": "abs(actual-reference) <= absolute + relative*abs(reference); every value"
+  },
+  "required": [
+    "Normal final tensor against old frozen composed blockOutput",
+    "All25 diagnose cuts against old composed and local references",
+    "Normal and diagnose final tensor bit equivalence",
+    "Unsupported N3, N32760 and context rejected before additional model reads",
+    "Changed nonfixture L1 and hidden payload reaches one actual projection tile; overlapping call rejected busy; cancellation releases read leases and pending tensors",
+    "Input buffers and metadata preserved",
+    "Dispose releases ORT sessions and feed read leases; later run rejected",
+    "Model read through File slices; no whole model payload read; one authorized retained-patch loopback route and zero other private file HTTP requests",
+    "Retained Q4+bias4 final-F32 patch structural commit consumed by real ORT selected projection plus Hike bias; independent old LoRA Q gate, old lease persistence, rollback and resource release"
+  ],
+  "referenceMutationAllowed": false,
+  "publicOutputs": "Metrics, descriptors and hashes only; no input, weight, patch or output tensor values",
+  "privateTransport": "Model, saved/native and reference arrays use File inputs. One explicit loopback-only HTTP route serves the retained prepared patch JSON, authorized by parent task; its original SHA256 is frozen before/after."
+}

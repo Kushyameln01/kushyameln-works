@@ -4,6 +4,8 @@ import hashlib,json
 api=Path(__file__).resolve().parent
 names=[
  'index.mjs','worker.mjs','safetensors.mjs','build-info.py',
+ '../execution/capabilities.mjs','../execution/p4.mjs',
+ '../ort-bridge/post-self-attention/stage.mjs','../ort-bridge/post-self-attention/source.mjs','../ort-bridge/post-self-attention/weights.mjs','../ort-bridge/post-self-attention/conditioning.mjs','../ort-bridge/post-self-attention/linear.mjs','../ort-bridge/post-self-attention/math.mjs','../ort-bridge/post-self-attention/registry.mjs','../ort-bridge/post-self-attention/kernel.wasm','../ort-bridge/post-self-attention/build-record.json','../ort-bridge/post-self-attention/math.hike','../ort-bridge/post-self-attention/runtime.js',
  '../lora/weights.mjs','../lora/targets.mjs','../lora/strict-json.mjs','../lora/source.mjs','../lora/diagnostic-identity.mjs','../lora/diagnostic-base.mjs','../lora/base-block.mjs','../lora/diagnostic-consumer.mjs','../lora/v2-adapter.mjs','../../vr180/sha256.mjs',
  '../euler-kernel.mjs','../kernel-registry.mjs','../kernel/euler.wasm',
  '../tensor-interop.mjs','../../inference/tensor.mjs',

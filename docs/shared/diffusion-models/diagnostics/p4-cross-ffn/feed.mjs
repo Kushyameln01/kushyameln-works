@@ -84,7 +84,8 @@ export async function validateP4FinalF32(file,payload){
   const basePackageHash=oldLease.describe().packageHash;sink=feed.createSink();await sink.begin({...id,patches:patches.patches.map(p=>pick(p,['weightId','offset','count']))});
   for(const p of patches.patches)await sink.writeBlock(p);handle=await sink.finish(id);candidate=await feed.prepareLoad(handle,ctx);capture('candidate-prepared',feed.stats());
   const began=performance.now(),seen=new Set();
-  const validation=await feed.validate(candidate,{...ctx,input,expected,expectedSHA256:payload.expectedSHA256,referenceId:'sha256:'+payload.referenceSHA256,gateId:'p4-cross-ffn-composed-f32-v1',tolerance:{absolute:0.01,relative:0.001},run:async(view,ownedInput)=>{
+  await feed.validate(candidate,ctx);
+  const validation=await feed.diagnose(candidate,{...ctx,input,expected,expectedSHA256:payload.expectedSHA256,referenceId:'sha256:'+payload.referenceSHA256,gateId:'p4-cross-ffn-composed-f32-v1',tolerance:{absolute:0.01,relative:0.001},run:async(view,ownedInput)=>{
    demand(view.describe().packageHash===handle.packageHash,'Actual runtime candidate source binding mismatch');stage=await createPostSelfAttention({source:view});await observer.settle();capture('actual-stage-constructed',stage.stats());
    try{result=await stage.run({...ownedInput,onProgress(event){const key=event.operator??event.stage;if(!seen.has(key)){seen.add(key);capture('actual-progress:'+key,stage.stats());}}});return result;}
    finally{await stage.dispose();capture('actual-stage-disposed',feed.stats());stage=null;}

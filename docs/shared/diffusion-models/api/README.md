@@ -4,6 +4,10 @@
 
 現在動く操作は、safetensorsのヘッダー検査、実Hike WASMのEuler・固定scheduler・noise/flow更新・Wan21 posterior-mean正規化と復元、公開Text Encoder/VAEのtensor境界検査、Hike→ORT WASM→Hikeによる固定Q射影の部分演算。API版0.1に操作を追加し、既存envelopeは維持している。`load`・`predict`・`sample`は常に構造化エラーで拒否する。モデル推論の実装・変換・利用経路完成を意味しない。
 
+## 通常実行と診断の分離
+
+通常descriptor／対応判定と、固定診断を分離した。`capabilities.executionDescriptor`、`checkSupport`、`prepareP4/runP4/releaseP4`、単独`createBerniniP4Execution`を追加。P4はN2/block0/Text L1〜512/contextなしの範囲を保ち、通常入口は最終hiddenのみ返す。固定payload hash・過去数値receipt・独立比較は通常の互換性条件にしない。weight feedの通常validateと診断diagnoseも分離した。[通常API契約](../execution/README.md)を参照。全モデルload/predict/sampleは引き続きNOT_READY。
+
 ## 同一ページの呼出し
 
 ```js

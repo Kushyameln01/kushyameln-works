@@ -68,13 +68,13 @@ export async function createP4WeightSource({file,side,bridgeBytes}={}){
   const operation=async(key,start,count,rowMode,options)=>{
    live();if(busy)throw Error('P4 weight source busy');busy=true;
    try{
-    const {signal}=options??{};live(signal);const e=entries[key];if(!e)throw RangeError('Unregistered original key');if(Boolean(e.columns)!==rowMode)throw RangeError('Original key binding kind mismatch');
+    const {signal,diagnostics=true}=options??{};if(typeof diagnostics!=='boolean')throw TypeError('Explicit diagnostics boolean required');live(signal);const e=entries[key];if(!e)throw RangeError('Unregistered original key');if(Boolean(e.columns)!==rowMode)throw RangeError('Original key binding kind mismatch');
     const [lower,upper]=rowMode?e.allowedRows:e.allowedElements;
     if(!Number.isSafeInteger(start)||!Number.isSafeInteger(count)||start<lower||count<1||start>upper-count||(rowMode&&count>e.maxRows))throw RangeError('Original selected key range');
     const n=count*(rowMode?e.columns:1);if(n>81920)throw RangeError('Decode block range');const width=e.storageDtype==='F16'?2:1,offset=e.absoluteByteOffset+start*(rowMode?e.columns:1)*width,raw=await read(offset,n*width,'payload',signal);
     let values;if(e.storageDtype==='F8_E4M3')values=bridge.dequant(raw,scales.get(key));else{const bits=new Uint16Array(n),view=new DataView(raw.buffer,raw.byteOffset,raw.byteLength);for(let i=0;i<n;i++)bits[i]=view.getUint16(i*2,true);values=bridge.decodeF16(bits);}live(signal);
-    const [rawSHA256,decodedF32SHA256]=await Promise.all([sha(raw),sha(values)]);live(signal);
-    return {values,raw,shape:rowMode?[count,e.columns]:[count],source:{...copy(e),rowStart:rowMode?start:null,rowCount:rowMode?count:null,elementOffset:rowMode?null:start,elementCount:n,absoluteByteOffset:offset,selectedByteLength:raw.length,rawSHA256,decodedF32SHA256}};
+    let hashes={};if(diagnostics){const [rawSHA256,decodedF32SHA256]=await Promise.all([sha(raw),sha(values)]);hashes={rawSHA256,decodedF32SHA256};}live(signal);
+    return {values,raw,shape:rowMode?[count,e.columns]:[count],source:{...copy(e),rowStart:rowMode?start:null,rowCount:rowMode?count:null,elementOffset:rowMode?null:start,elementCount:n,absoluteByteOffset:offset,selectedByteLength:raw.length,...hashes}};
    }finally{busy=false;}
   };
   return Object.freeze({

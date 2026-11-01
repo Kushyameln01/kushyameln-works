@@ -35,6 +35,17 @@ test('P4 source rejects side swap, binary mutation and stale reads',async()=>{
   source.dispose();await assert.rejects(source.readVector('blocks.0.cross_attn.q.bias',0,1),/disposed/i);
  }finally{source?.dispose();await f.close();}
 });
+test('P4 source normal reads skip per-range hashes and snapshot the diagnostic policy before awaiting storage',async()=>{
+ const f=await original();let source;const digestOriginal=crypto.subtle.digest;let hashes=0;
+ try{
+  source=await module.createP4WeightSource({file:f.file,side:'LOW',bridgeBytes:await kernel()});
+  crypto.subtle.digest=function(...args){hashes++;return digestOriginal.call(this,...args);};
+  const options={diagnostics:false},pending=source.readRows('blocks.0.cross_attn.q.weight',0,1,options);options.diagnostics=true;const normal=await pending,bias=await source.readVector('blocks.0.cross_attn.q.bias',0,2,{diagnostics:false});
+  assert.equal(hashes,0);for(const value of [normal,bias]){assert.equal(Object.hasOwn(value.source,'rawSHA256'),false);assert.equal(Object.hasOwn(value.source,'decodedF32SHA256'),false);assert.ok(value.values.every(Number.isFinite));assert.ok(value.source.binding.name);assert.ok(value.source.fullShape.length);}
+  const detailed=await source.readRows('blocks.0.cross_attn.q.weight',0,1);assert.equal(hashes,2);assert.deepEqual(normal.values,detailed.values);assert.match(detailed.source.rawSHA256,/^[a-f0-9]{64}$/);assert.match(detailed.source.decodedF32SHA256,/^[a-f0-9]{64}$/);
+  await assert.rejects(source.readRows('blocks.0.cross_attn.q.weight',0,1,{diagnostics:'false'}),/diagnostic|boolean/i);
+ }finally{crypto.subtle.digest=digestOriginal;source?.dispose();await f.close();}
+});
 test('P4 bias and bridge admission use actual typed-array slots despite subclass getters',async()=>{
  assert.equal(typeof module.createP4WeightSource,'function');const f=await original();let source;
  try{

@@ -1,9 +1,12 @@
+import {describeExecutionCapabilities,checkExecutionSupport,POINTWISE_MAX_ELEMENTS} from '../execution/capabilities.mjs';
+export {describeExecutionCapabilities,checkExecutionSupport} from '../execution/capabilities.mjs';
+export async function createBerniniP4Execution(options={}){const owned=structuredClone(options);const owner=await import('../execution/p4.mjs');return owner.createBerniniP4Execution(owned);}
 import {validateLoraBinding,LORA_LIMITS} from '../lora/weights.mjs';
 import {BUILD_ID} from './build-info.mjs';
 export {BUILD_ID} from './build-info.mjs';
 export const PROTOCOL_VERSION='diffusion-models/0.1';
-export const MAX_TENSOR_ELEMENTS=1048576;
-const OPERATIONS=new Set(['capabilities','inspect','eulerStep','schedule','noiseMix','inverseNoiseScale','flowDenoised','validateConditioning','validateRawLatent','normalizeRawMean','restoreRawMean','linearProjection','linearProjectionF32','inspectLora','loadLora','listLoras','readLora','readLoraSource','unloadLora','load','predict','sample','cancel','dispose']);
+export const MAX_TENSOR_ELEMENTS=POINTWISE_MAX_ELEMENTS;
+const OPERATIONS=new Set(['capabilities','checkSupport','prepareP4','runP4','releaseP4','inspect','eulerStep','schedule','noiseMix','inverseNoiseScale','flowDenoised','validateConditioning','validateRawLatent','normalizeRawMean','restoreRawMean','linearProjection','linearProjectionF32','inspectLora','loadLora','listLoras','readLora','readLoraSource','unloadLora','load','predict','sample','cancel','dispose']);
 const validId=x=>typeof x==='string'&&x.length>0&&x.length<=128&&/^[A-Za-z0-9_.:-]+$/.test(x);
 const identity=q=>({buildId:BUILD_ID,protocolVersion:q?.protocolVersion,sessionId:q?.sessionId,jobId:q?.jobId,inputRevision:q?.inputRevision,op:q?.op});
 const matches=(a,b)=>['buildId','protocolVersion','sessionId','jobId','inputRevision','op'].every(k=>a[k]===b[k]);
@@ -68,7 +71,8 @@ export function createDiffusionModels({sessionId=crypto.randomUUID()}={}){
    const old=active.request;stopWorker();settle(errorResponse(old,'STALE_INPUT','A newer input revision terminated this job'));
   }
   revision=q.inputRevision;
-  if(q.op==='capabilities')return ok(q,{buildId:BUILD_ID,modelInference:false,loraWeightIO:true,loraApplied:false,inspectLora:true,loadLora:true,listLoras:true,readLora:true,readLoraSource:true,unloadLora:true,loraLimits:{...LORA_LIMITS},partialOnly:true,eulerStep:true,schedule:true,noiseMix:true,inverseNoiseScale:true,flowDenoised:true,validateConditioning:true,validateRawLatent:true,normalizeRawMean:true,restoreRawMean:true,rawMeanProfiles:[{id:'wan21-raw-f32-5x16x16',shape:[1,16,2,2,2],elements:128},{id:'wan21-raw-f32-1x16x16',shape:[1,16,1,2,2],elements:64},{id:'wan21-raw-f32-1x16x32',shape:[1,16,1,2,4],elements:128}],linearProjection:true,linearProjectionF32:true,inspect:true,maxTensorElements:MAX_TENSOR_ELEMENTS,execution:'dedicated-worker',backend:'Hike WASM primitives and bounded ORT WASM partial projection',protocolVersion:PROTOCOL_VERSION});
+  if(q.op==='checkSupport')return ok(q,checkExecutionSupport(q.input));
+  if(q.op==='capabilities')return ok(q,{executionDescriptor:describeExecutionCapabilities(),prepareP4:true,runP4:true,releaseP4:true,checkSupport:true,buildId:BUILD_ID,modelInference:false,loraWeightIO:true,loraApplied:false,inspectLora:true,loadLora:true,listLoras:true,readLora:true,readLoraSource:true,unloadLora:true,loraLimits:{...LORA_LIMITS},partialOnly:true,eulerStep:true,schedule:true,noiseMix:true,inverseNoiseScale:true,flowDenoised:true,validateConditioning:true,validateRawLatent:true,normalizeRawMean:true,restoreRawMean:true,rawMeanProfiles:[{id:'wan21-raw-f32-5x16x16',shape:[1,16,2,2,2],elements:128},{id:'wan21-raw-f32-1x16x16',shape:[1,16,1,2,2],elements:64},{id:'wan21-raw-f32-1x16x32',shape:[1,16,1,2,4],elements:128}],linearProjection:true,linearProjectionF32:true,inspect:true,maxTensorElements:MAX_TENSOR_ELEMENTS,execution:'dedicated-worker',backend:'Hike WASM primitives and bounded ORT WASM partial projection',protocolVersion:PROTOCOL_VERSION});
   if(q.op==='listLoras')return ok(q,{bindings:[...loras.values()].map(snapshot),applied:false});
   if(q.op==='unloadLora'){
    loras.delete(loraBinding.metadata.stage);return ok(q,{bindingId:loraBinding.bindingId,stage:loraBinding.metadata.stage,unloaded:true,applied:false});

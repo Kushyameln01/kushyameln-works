@@ -153,9 +153,9 @@ function seal(value) {
   return value;
 }
 
-export function captureP4Conditioning(tensor, {
+function nativeConditioning(tensor, {
   expectedModelSha256 = MODEL, expectedTokenizerSha256 = TOKENIZER, missingTokenizerPolicy = 'reject'
-} = {}) {
+} = {}, protectedCapture = true) {
   const owned = payload(tensor);
   if (tensor.dtype !== 'float32' || tensor.layout !== 'BLC' || tensor.meaning !== 'text_hidden_states') fail('Expected native Text float32 BLC text_hidden_states');
   if (!SHA256.test(expectedModelSha256) || !SHA256.test(expectedTokenizerSha256)) fail('Expected model/tokenizer SHA256 binding required');
@@ -167,7 +167,7 @@ export function captureP4Conditioning(tensor, {
   for (let row = 0; row < owned.rows; row++) {
     if (!owned.attentionMask[row] && owned.data.subarray(row * 4096, (row + 1) * 4096).some(value => value !== 0)) fail('Native Text masked hidden rows must be zero');
   }
-  return seal({...owned, dtype: 'float32', layout: 'BLC', meaning: 'text_hidden_states',
+  const captured = {...owned, dtype: 'float32', layout: 'BLC', meaning: 'text_hidden_states',
     modelSha256: tensor.modelSha256,
     ...(Object.hasOwn(tensor, 'tokenizerSha256') ? {tokenizerSha256: tensor.tokenizerSha256} : {}),
     metadata: {
@@ -178,8 +178,14 @@ export function captureP4Conditioning(tensor, {
         fullProvenance: !missing, missingTokenizerPolicy},
       nativeTensorMetadata: metadataExcept(tensor, ['data', 'shape', 'attentionMask'])
     }
-  });
+  };
+  captured.schemaVersion = SCHEMA;
+  return protectedCapture ? seal(captured) : captured;
 }
+
+export const captureP4Conditioning = (tensor, options) => nativeConditioning(tensor, options, true);
+/** Normal ingress validates and owns bytes without a private fixture/capture token. */
+export const snapshotP4NativeConditioning = (tensor, options) => nativeConditioning(tensor, options, false);
 
 export function captureP4FixtureConditioning(input) {
   const owned = payload(input);

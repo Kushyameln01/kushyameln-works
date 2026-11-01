@@ -1,9 +1,10 @@
 import {BUILD_ID,BUILD_SOURCES} from './build-info.mjs';
-const MAX_TENSOR_ELEMENTS=1048576;
+import {POINTWISE_MAX_ELEMENTS} from '../execution/capabilities.mjs';
+const MAX_TENSOR_ELEMENTS=POINTWISE_MAX_ELEMENTS;
 import {inspectSafetensors} from './safetensors.mjs';
 import {createEulerKernel} from '../euler-kernel.mjs';
 import {EULER_WASM_SHA256} from '../kernel-registry.mjs';
-let kernel,scheduler,projectionStage,latentSpace,latentKernelInfo;
+let kernel,scheduler,projectionStage,latentSpace,latentKernelInfo,p4Owner;
 function fail(code,message,details){const error=new Error(message);Object.assign(error,{code,details});throw error;}
 
 async function getScheduler(){
@@ -30,6 +31,19 @@ function metadata(tensor,profileId){
 }
 
 async function execute(op,input){
+ if(op==='prepareP4'){
+  if(p4Owner)fail('P4_ALREADY_PREPARED','Release the current P4 owner before preparing another');
+  const {createBerniniP4Execution}=await import('../execution/p4.mjs');
+  p4Owner=await createBerniniP4Execution(input);return p4Owner.describe();
+ }
+ if(op==='releaseP4'){
+  let activeORTSessions=0,readLeases=0;if(p4Owner){await p4Owner.dispose();const final=p4Owner.stats();activeORTSessions=final.stage.activeORTSessions;readLeases=final.feed.readLeases;p4Owner=null;}return {released:true,activeORTSessions,readLeases};
+ }
+ if(op==='runP4'){
+  if(!p4Owner)fail('P4_NOT_PREPARED','prepareP4 is required, including after worker cancellation');
+  return p4Owner.run(input);
+ }
+
  if(['inspectLora','loadLora','readLora','readLoraSource'].includes(op)){
   const core=await import('../lora/weights.mjs');
   if(op==='inspectLora')return core.inspectLoraFile(input.file);
