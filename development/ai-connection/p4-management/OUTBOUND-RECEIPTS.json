@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "works-management-owner-outbound/1",
+  "dateJST": "2026-11-02",
+  "deliveryReadbackVerified": true,
+  "recipientAckIsSeparate": true,
+  "recipients": [
+    {
+      "owner": "LoRA",
+      "pr": 2,
+      "id": 6560860277,
+      "body": "管理側からa80返却の取得確認・P3追加3条件の限定受入を返します。\n\n管理返却配布: 9e9b3ad4258a7f91542e7c74ab1011b1b13921ed（codex/ai-connection-e0-e4 / Draft PR #7）。P3実行sourceは8849891f19124df31847bd691503c2491278eaa8、LoRA返却配布はa80db72feea60b9bd69e292e4716665c6f0ee77f。a80をP3実行sourceへ付け替えていません。\n\n[RESULT](https://github.com/Kushyameln01/kushyameln-works/blob/9e9b3ad4258a7f91542e7c74ab1011b1b13921ed/development/ai-connection/p4-management/p3-owner-return/RESULT.md) 6135B / SHA-256 e1a28fa91207b86848306e4b9d20228a947e1e0eb541ac862ff2cd3f59901c82。13path/Git bytes、manifest9、source59、6phase/tuple/snapshot/output96、prepare/stage7、wrong-reference queue0、E4 fresh reader/改変/snapshot欠落と独立監査152を、管理verifierで186/186 PASS。[取得path/bytes/hash](https://github.com/Kushyameln01/kushyameln-works/blob/9e9b3ad4258a7f91542e7c74ab1011b1b13921ed/development/ai-connection/p4-management/p3-owner-return/ACQUISITION.json)、[限定受入](https://github.com/Kushyameln01/kushyameln-works/blob/9e9b3ad4258a7f91542e7c74ab1011b1b13921ed/development/ai-connection/p4-management/p3-owner-return/ACCEPTANCE.json)、[再現](https://github.com/Kushyameln01/kushyameln-works/blob/9e9b3ad4258a7f91542e7c74ab1011b1b13921ed/development/ai-connection/p4-management/p3-owner-return/REPRODUCE.md)。\n\noutput16 E4 complete、ASSET_HASH_MISMATCH、REQUIRED_ASSET_MISSING、prepare前NORM_REFERENCE_PAYLOAD_MISMATCHを受け入れました。旧28f/管理60dの6件は元scopeで保持。private artifact26/package8は現管理環境へ未取得で、owner/独立監査の実disk観測を現在の再読戻しとは呼びません。管理側で再推論・再export・実File再hashは0です。\n\na80の新P4 API/adapter/registryも固定bytes/hash取得しましたが、別候補・管理未採用です。selected-weight N-ARTIFACT、P4適用済みfeed、他pair/side、全model/資源/生成は未受入。P2維持、generationReady:false/load-predict-sample=NOT_READY。返却入口の取得path/bytes/SHA-256・確認scopeだけを返してください。取得確認に再推論・再exportは不要です。",
+      "exactBodyReadback": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/pull/2#issuecomment-6560860277",
+      "recipientAcquisitionAckReceived": false
+    },
+    {
+      "owner": "VAE",
+      "pr": 15,
+      "id": 6560861777,
+      "body": "管理から、受入済みP2の維持と元workflowのslot/媒体条件を返します。\n\n固定管理返却配布 9e9b3ad4258a7f91542e7c74ab1011b1b13921ed（Draft PR #7）。P2はf76ebbbc9dcc76e95f17d34338bc6fc1c608ef48 / 管理実行8849891f19124df31847bd691503c2491278eaa8 のupdated-884正常・取消復帰を既存受入scopeで維持しています。今回P2再推論/再exportは0、旧受入/Rect/codec/queueなど74fileが5aaとbyte同一です。\n\n[workflow handoff JSON](https://github.com/Kushyameln01/kushyameln-works/blob/9e9b3ad4258a7f91542e7c74ab1011b1b13921ed/development/ai-connection/p4-management/workflow/VAE-WORKFLOW-HANDOFF.json) 22862B / SHA-256 7f22509565eca66b33fdb23478429a1f6cc41a6bcb648871a3a3da3c90204502。\n[本文](https://github.com/Kushyameln01/kushyameln-works/blob/9e9b3ad4258a7f91542e7c74ab1011b1b13921ed/development/ai-connection/p4-management/workflow/VAE-WORKFLOW-HANDOFF.md)、[元source取得台帳](https://github.com/Kushyameln01/kushyameln-works/blob/9e9b3ad4258a7f91542e7c74ab1011b1b13921ed/development/ai-connection/p4-management/workflow/SOURCE-ACQUISITION.json) 6890B / 3f98400751c145b74f23a4949eacf6a2b9496c4e2922ffb05cb88ba3e8664bb7。\n\n元workflow21501B/SHA543865dfeeb9a94427bea543624e51db5f1dfcf88a7af6a497ddcdbeadc477dd、固定upstream ca69274a2d2135052489bc0c67a2d79a64225e86のPython/editor実bytesへ照合しました。sourceはnode21→5、設定16fps/cap81/grid832x480/L81。reference_videoは未接続。slot0..2はwired候補0000.pngとeditor入力を別記録、slot3..7空。実tensorがあればwired優先、なければeditor、供給順はsource→reference→有効slotをslot順・各frame順。slot番号とcompacted ordinalを混同しません。\n\n実媒体hash/元寸法/実F/選択index・時刻は未取得nullです。source gridは有効tensor入力時の条件付き832x480、81実frameの証明ではありません。editorはEXIF→RGB→F32/255→longedge上限848、Python ties-to-evenで各辺16倍数、area/crop-disabled。848正方形へ置換しません。実slot供給・正確な寸法/frame依存の処理だけ保留し、既存P2を戻しません。生成sample→restore/decode・本番shapeは未受入です。\n\n取得確認の再推論・再exportは不要です。固定handoffの取得path/bytes/SHA-256・確認scopeと、担当側で既知の実媒体情報があれば差分だけ返してください。新P4は管理別候補として作業中で、generationReady:false/NOT_READYを維持します。",
+      "exactBodyReadback": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/pull/15#issuecomment-6560861777",
+      "recipientAcquisitionAckReceived": false
+    },
+    {
+      "owner": "Diffusion",
+      "pr": 14,
+      "id": 6560913977,
+      "body": "管理P4の固定runner・adapter・規範経路をpushしました。実資材保持環境で、この固定管理sourceを使う段階へ進めます。\n\n管理配布／今回のpreflight実行source: a7e16cfdf2d87899e2774662539194094f214f06（codex/ai-connection-e0-e4 / Draft PR #7）。[再現手順](https://github.com/Kushyameln01/kushyameln-works/blob/a7e16cfdf2d87899e2774662539194094f214f06/development/ai-connection/p4-management/REPRODUCE.md) 12153B / SHA-256 453e023270dd02e10193af891e949e90f73f070c22a64256209d448fab8ce12e、[runner](https://github.com/Kushyameln01/kushyameln-works/blob/a7e16cfdf2d87899e2774662539194094f214f06/tools/ai-connection/run-norm-required-p4-cross-ffn.mjs) 53191B / 7d206a9cf4969f1dbbc089f0cc352c7884948e5102132f3d68d50216a4092e4e、[API](https://github.com/Kushyameln01/kushyameln-works/blob/a7e16cfdf2d87899e2774662539194094f214f06/docs/shared/ai-connection/API.md) 75818B / 18f924b81febe363a2987e0a8e7f8504f2a6ad88b6a17322bee2c521ae48cb6b。GitHub再取得の全bytes一致済み。\n\n994ebb9ce01c9e95db9cd18eb877a981152693c5を取得し、delta24file/258272B、旧build50file/13352427Bが7ee・27776・994でbyte同一、参照source pin11、HIGH/LOWのcomposed25cut公開identityを照合しました。[取得結果](https://github.com/Kushyameln01/kushyameln-works/blob/a7e16cfdf2d87899e2774662539194094f214f06/development/ai-connection/p4-management/diffusion-return/REPORT.md)。538の入場拒否/native0と994のsource修正を、実NN合格へ読み替えません。private参照manifest/F32/model/saved-outputは本管理環境へ未取得です。\n\n固定管理runnerは既存evaluateEdge・norm phase・queue・E4を使い、同一realm source→feed→stageを厳密native引数で呼びます。演算はnative、数値判定は固定owner common.compare、29parameter identityは固定owner Python関数へ委ねています。全516回帰PASS/skip0・150source bytes不変。管理環境で固定SHAを実行した結果はCOMPATIBLE/NOT_VERIFIED/BLOCKED、native0/browserfalse/privateInputIOStarted:falseです。\n\n既存994のcomposed参照だけを使えるよう comparisonModes:['composed']（25比較）と ['local','composed']（50比較）を明示対応しました。不要なlocal参照生成は求めません。元のmanifest＋25 sibling little-endian F32を直接読む owner-binary-f32-manifest transportを備え、公開receiptのmanifest hash/bytes、全array hash/shape、入力bindingを照合します。再export不要です。固定f76全512行/mask/Tokenizerとsaved residual/timeAct1を保持し、gate・先行owner P4 PASSは明示receipt/fieldMapで事前照合します。\n\nまず成立したside/scopeの実Text native数値PASSがあれば、その既存manifest/receiptを返してください。参照freezeだけではdispatchを解除しません。次に固定管理checkoutで通常runと対象取消を別出力先で実行し、元Promise終端・stage→feed→source解放・25出力E4 fresh readbackを返してください。prefix/元モデル/既存参照の再計算・再取得は不要です。解放失敗が実際に起きたときだけrecover→新generationを記録し、任意入力/LoRA適用へ既存証拠を付け替えません。\n\n固定source取得確認はpath/bytes/SHA-256・確認scope・未取得/未受入事項を返してください。取得ACKは再推論・再exportなしで返せます。実L512の資源は別receiptで観測し、L4のWASM21,102,592Bや16MiB共有ORTをL512/全工程peakへ転用しません。旧N2/P2/LoRA pinsを維持し、generationReady:false/load-predict-sample=NOT_READY、merge/Pages公開未実施です。",
+      "source": "a7e16cfdf2d87899e2774662539194094f214f06",
+      "exactBodyReadback": true,
+      "url": "https://github.com/Kushyameln01/kushyameln-works/pull/14#issuecomment-6560913977",
+      "recipientAcquisitionAckReceived": false
+    }
+  ]
+}

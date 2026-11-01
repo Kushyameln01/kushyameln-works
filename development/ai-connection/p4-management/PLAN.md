@@ -67,7 +67,7 @@ caseにないreferenceを作らず、source/verifierの実bytesを固定Gitへ�
 正常／対象取消／release/recover／E4保存読戻しのcaseを返せるrunnerを固定する。
 
 - [x] CLI欠落・未知schema・改変source／referenceと、compatible numeric不足のRED→GREEN。
-- [ ] localはactualText数値依存待ちを正しく記録し、固定sourceをownerへ配布する。
+- [x] localはactualText数値依存待ちを正しく記録し、固定sourceをownerへ配布する。
 
 ### Task 4: P3追加3条件（lora_return）
 
@@ -85,8 +85,8 @@ ownerが実施したE4負例はfresh reader内の改変／snapshot nullであり
 
 - [x] workflow担当の元bytes/source比較結果を検証し、handoff JSON/MDを固定してVAEへ渡す。
 - [x] 最終freezeの全AI接続回帰516/516 PASS、150source/API/reference/test bytesを試験中保持。P2受入を維持。
-- [ ] 固定管理runnerをpushし、Diffusionへ実Text数値不足と必要返却を具体的に伝える。
-- [ ] 取得ACK／数値実行／取消／保存／資源実測／未受入を別記録で照合。
+- [x] 固定管理runnerをpushし、Diffusionへ実Text数値不足と必要返却を具体的に伝える。
+- [x] 取得ACK／数値実行／取消／保存／資源実測／未受入を別記録で照合。
 - [ ] 完全SHA・API差分・再利用証拠・新規検証・資源・再現・残件を報告し、Draft PR更新。
 
 ## Review focus
@@ -103,3 +103,12 @@ host修正が並行しsource bytes不変条件を満たさなかったため、�
 含めて全sourceを再固定し、上記516件と不変条件を確認した。
 LoRA/VAE向け文書・受領記録は9e9b3ad4258a7f91542e7c74ab1011b1b13921edへ先行push済み。
 P4 actualText数値はowner事前PASS未受領のため、共同native dispatch受入だけを保留する。
+
+## 実行sourceと返却状態
+
+固定管理source a7e16cfdf2d87899e2774662539194094f214f06をpushし、同SHAでpreflightを実行した。
+18管理import sourceがa7 Git bytesと一致、51native source/f76 actual WKTを照合。
+COMPATIBLE／NOT_VERIFIED／BLOCKED、native0／browserfalse／private入力IO0。
+LoRA PR2 comment6560860277、VAE PR15 comment6560861777、Diffusion PR14 comment6560913977へ返却し、
+本文の一致読戻し済み。受領側本人の新固定source取得ACKと、実Text管理共同実行返却は未着。
+これらの外部返却を実施済みとは記録しない。実装・API・全回帰・再現手順は固定配布する。
