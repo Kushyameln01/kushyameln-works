@@ -10,6 +10,13 @@ const same=(a,b)=>{if(Object.is(a,b))return true;if(!a||!b||typeof a!=='object'|
 const identity=o=>o&&Object.fromEntries(['ownerId','ownerInstanceId','configurationRevision','resourceGeneration','nativeSessionId','sourceRef','nativeAPI'].filter(k=>o[k]!==undefined).map(k=>[k,o[k]]));
 const deferred=()=>{let resolve;const promise=new Promise(r=>resolve=r);return {promise,resolve};};
 const flags={generationReady:false,load:'NOT_READY',predict:'NOT_READY',sample:'NOT_READY'};
+function inputSlots(descriptor){
+ if(!text(descriptor?.operationId)||Boolean(descriptor.artifact)===Boolean(descriptor.artifacts))throw fail('NORMAL_DESCRIPTOR_REQUIRED','Operation and exactly one common artifact or named artifacts required');
+ if(descriptor.artifact)return [{name:'input',artifact:descriptor.artifact}];
+ if(!descriptor.artifacts||typeof descriptor.artifacts!=='object'||Array.isArray(descriptor.artifacts)||!Object.keys(descriptor.artifacts).length)throw fail('NORMAL_DESCRIPTOR_REQUIRED','Nonempty named common artifacts required');
+ const slots=Object.entries(descriptor.artifacts).map(([name,artifact])=>({name,artifact}));
+ if(slots.some(s=>!text(s.name)||!s.artifact?.tensor)||new Set(slots.map(s=>s.artifact.artifactId)).size!==slots.length)throw fail('NORMAL_DESCRIPTOR_REQUIRED','Distinct named common tensor artifacts required');return slots;
+}
 
 export function createNormalOperationAdapter({owner,artifactStore=createOwnedArtifactStore(),managerSessionId='normal-manager:'+crypto.randomUUID()}={}){
  if(!['observe','querySupport','invoke','cancel','afterTerminal','release','recover','configure','dispose'].every(k=>typeof owner?.[k]==='function')||!text(managerSessionId))throw TypeError('Explicit normal owner facade and manager session required');
@@ -26,42 +33,43 @@ export function createNormalOperationAdapter({owner,artifactStore=createOwnedArt
  };}
  function ensureQueue(){const o=observed();if(!queue){queueObservation=o;queue=createInvocationQueue({resourceBindings:[configuration(o)]});}return o;}
  async function querySupport(descriptor){
-  live();const requested=clone(descriptor);if(!text(requested?.operationId)||!requested.artifact)throw fail('NORMAL_DESCRIPTOR_REQUIRED','Operation and common artifact descriptor required');
+  live();const requested=clone(descriptor),slots=inputSlots(requested),named=Boolean(requested.artifacts);
   const selectedEpoch=epoch,reply=await owner.querySupport(clone(requested));
   if(selectedEpoch!==epoch||closed||reconfiguring)throw fail('NORMAL_STALE','Configuration changed during support query');
   const now=observed();
-  if(!reply||!['SUPPORTED','UNSUPPORTED','UNVERIFIED'].includes(reply.status)||!Array.isArray(reply.reasons)||!same(reply.requestDescriptor,requested)||!same(identity(reply.observation),identity(now))||reply.status==='SUPPORTED'&&(!text(reply.capabilityRef)||reply.consumerPort?.owner!==now.ownerId||!same(reply.consumerPort.sourceRef,now.sourceRef)||reply.consumerPort.nativeAPI?.build!==now.nativeAPI.build||!reply.registry))return {status:'UNVERIFIED',capabilityRef:null,reasons:[{code:'NORMAL_SUPPORT_RESPONSE_MISMATCH',fieldPath:'/ownerResponse',reason:'Support response does not bind the actual current owner and requested descriptor'}],requestDescriptor:requested,observation:now,edgeDecision:null,dispatchSupported:false};
-  if(reply.status!=='SUPPORTED')return {...clone(reply),edgeDecision:null,dispatchSupported:false};
-  const edgeDecision=evaluateEdge(metadataEdge(requested,reply,serial));
-  return {...clone(reply),edgeDecision,dispatchSupported:edgeDecision.readiness.state==='ready'};
+  const boundPorts=slots.map(s=>named?reply?.consumerPorts?.[s.name]:reply?.consumerPort),portsValid=(!named||same(Object.keys(reply?.consumerPorts??{}).sort(),slots.map(s=>s.name).sort()))&&boundPorts.every(p=>p?.owner===now.ownerId&&same(p.sourceRef,now.sourceRef)&&p.nativeAPI?.build===now.nativeAPI.build);
+  if(!reply||!['SUPPORTED','UNSUPPORTED','UNVERIFIED'].includes(reply.status)||!Array.isArray(reply.reasons)||!same(reply.requestDescriptor,requested)||!same(identity(reply.observation),identity(now))||reply.status==='SUPPORTED'&&(!text(reply.capabilityRef)||!portsValid||!reply.registry))return {status:'UNVERIFIED',capabilityRef:null,reasons:[{code:'NORMAL_SUPPORT_RESPONSE_MISMATCH',fieldPath:'/ownerResponse',reason:'Support response does not bind the actual current owner and requested descriptor'}],requestDescriptor:requested,observation:now,...(named?{edgeDecisions:null}:{edgeDecision:null}),dispatchSupported:false};
+  if(reply.status!=='SUPPORTED')return {...clone(reply),...(named?{edgeDecisions:null}:{edgeDecision:null}),dispatchSupported:false};
+  const decisions=Object.fromEntries(slots.map((s,i)=>[s.name,evaluateEdge(metadataEdge(s.artifact,boundPorts[i],requested.operationId,reply,serial,named?s.name:null))]));
+  return {...clone(reply),...(named?{edgeDecisions:decisions}:{edgeDecision:decisions.input}),dispatchSupported:Object.values(decisions).every(d=>d.readiness.state==='ready')};
  }
- function metadataEdge(descriptor,support,revision){
-  const artifact=clone(descriptor.artifact);if(artifact.profileRef===undefined)artifact.profileRef=support.consumerPort.profileRef;
+ function metadataEdge(inputArtifact,inputPort,operationId,support,revision,name){
+  const artifact=clone(inputArtifact);if(artifact.profileRef===undefined)artifact.profileRef=inputPort.profileRef;
   const sourceAPI={version:'works-owned-artifact-holder/0.1',build:'owned-artifact-holder:59ae817',transport:'direct',entrypoint:holderSource.path};
-  const producerPort={portId:'owned-input',bindingRef:managerSessionId+':input',owner:managerSessionId+':input-holder',sourceRef:holderSource,nativeAPI:sourceAPI,artifactKind:artifact.kind,semantics:clone(artifact.semantics),profileRef:artifact.profileRef,tensor:{dtypes:[artifact.tensor.dtype],shape:clone(artifact.tensor.shape),axes:clone(artifact.tensor.axes)},requiredMetadata:[],requiredIdentities:[],ownershipModes:['copy'],transports:['direct'],allowedAdapterRefs:[],requiredExtensionSchemas:[]};
-  artifact.ownership={ownerId:producerPort.owner,mode:'copy'};const consumerPort=clone(support.consumerPort);
-  return {producerPort,consumerPort,artifact,registry:clone(support.registry),adapters:[],requiredScopes:[],evidence:[],implementationState:{producer:{bindingRef:producerPort.bindingRef,state:'implemented',roles:['tensor-transform'],operationId:'owned-input'},consumer:{bindingRef:consumerPort.bindingRef,state:'implemented',roles:['tensor-transform'],operationId:descriptor.operationId}},activeBindings:{producer:{bindingRef:producerPort.bindingRef,ownerId:producerPort.owner,valid:true,currentRevision:revision,expectedRevision:revision},consumer:{bindingRef:consumerPort.bindingRef,ownerId:consumerPort.owner,valid:true,currentRevision:revision,expectedRevision:revision}},resourceState:clone(support.observation.resourceState)};
+  const producerPort={portId:'owned-input'+(name?':'+name:''),bindingRef:managerSessionId+':input'+(name?':'+name:''),owner:managerSessionId+':input-holder',sourceRef:holderSource,nativeAPI:sourceAPI,artifactKind:artifact.kind,semantics:clone(artifact.semantics),profileRef:artifact.profileRef,tensor:{dtypes:[artifact.tensor.dtype],shape:clone(artifact.tensor.shape),axes:clone(artifact.tensor.axes)},requiredMetadata:[],requiredIdentities:[],ownershipModes:['copy'],transports:['direct'],allowedAdapterRefs:[],requiredExtensionSchemas:[]};
+  artifact.ownership={ownerId:producerPort.owner,mode:'copy'};const consumerPort=clone(inputPort);
+  return {producerPort,consumerPort,artifact,registry:clone(support.registry),adapters:[],requiredScopes:[],evidence:[],implementationState:{producer:{bindingRef:producerPort.bindingRef,state:'implemented',roles:['tensor-transform'],operationId:'owned-input'},consumer:{bindingRef:consumerPort.bindingRef,state:'implemented',roles:['tensor-transform'],operationId}},activeBindings:{producer:{bindingRef:producerPort.bindingRef,ownerId:producerPort.owner,valid:true,currentRevision:revision,expectedRevision:revision},consumer:{bindingRef:consumerPort.bindingRef,ownerId:consumerPort.owner,valid:true,currentRevision:revision,expectedRevision:revision}},resourceState:clone(support.observation.resourceState)};
  }
- function captureInput(r,support){
-  const a=clone(r.descriptor.artifact),tensor=r.input;
+ function captureInput(r,support,slot){
+  const named=Boolean(r.descriptor.artifacts),a=clone(slot.artifact),tensor=named?r.input?.[slot.name]:r.input,port=named?support.consumerPorts[slot.name]:support.consumerPort;
   if(!tensor||!ArrayBuffer.isView(tensor.data)||!same(tensor.shape,a.tensor?.shape)||tensor.dtype!==a.tensor.dtype||tensor.layout!==a.tensor.axes.join('')||tensor.meaning!==a.tensor.nativeMeaning)throw fail('NORMAL_INPUT_DESCRIPTOR_MISMATCH','Actual input shape/dtype/axes/meaning differs from the ordinary descriptor');
   for(const [key,value] of Object.entries(a.native.metadata))if(Object.hasOwn(tensor,key)&&!same(value,tensor[key]))throw fail('NORMAL_INPUT_DESCRIPTOR_MISMATCH','Explicit native metadata differs from actual input: '+key);
-  if(a.profileRef===undefined)a.profileRef=support.consumerPort.profileRef;
-  const handle=captureNativeTensor({tensor,response:{inputHolder:'management-owned-copy',originalDescriptor:a},descriptor:a,extensions:a.extensions,store:artifactStore});r.inputHandle=handle;
+  if(a.profileRef===undefined)a.profileRef=port.profileRef;
+  const handle=captureNativeTensor({tensor,response:{inputHolder:'management-owned-copy',originalDescriptor:a},descriptor:a,extensions:a.extensions,store:artifactStore});r.inputHandles.set(slot.name,handle);
   const artifact=clone(handle.descriptor);
   // The imported holder owns bytes, not the original producer. Preserve caller
   // lineage/provenance and explicit metadata outside its native derivation.
   artifact.provenance=clone(a.provenance);artifact.lineage=clone(a.lineage);artifact.native.metadata={...clone(a.native.metadata),...artifact.native.metadata};
-  const edge=metadataEdge({...r.descriptor,artifact},support,r.revision);
-  return {edge,descriptor:{...clone(r.descriptor),artifact}};
+  const edge=metadataEdge(artifact,port,r.descriptor.operationId,support,r.revision,named?slot.name:null);
+  return {name:slot.name,edge};
  }
- const releaseInput=r=>{if(r.inputHandle){releaseArtifactHandle(r.inputHandle,artifactStore);r.inputHandle=null;}};
+ const releaseInput=r=>{for(const handle of r.inputHandles?.values()??[])releaseArtifactHandle(handle,artifactStore);r.inputHandles?.clear();};
  const disposeSnapshot=async r=>{if(r?.snapshotManager&&!r.snapshotDisposed){await r.snapshotManager.dispose();r.snapshotDisposed=true;}};
  const current=r=>{try{return !closed&&!reconfiguring&&!r.invalidated&&r.epoch===epoch&&selection===r&&same(identity(r.observation),identity(observed()));}catch{return false;}};
  async function execute({descriptor,input,signal,requestId='normal-request:'+crypto.randomUUID()}={}){
   live();if(!text(requestId)||usedIds.has(requestId))throw fail('NORMAL_REQUEST_ID_REUSED','Unique normal request ID required');if(signal!==undefined&&!(signal instanceof AbortSignal))throw TypeError('AbortSignal required');
   // Own descriptor and payload before the first asynchronous owner query.
-  const r={descriptor:clone(descriptor),input:clone(input),requestId,epoch,revision:++serial,transactionTerminal:deferred(),done:deferred(),nativeStarted:false,cancelRequested:false,invalidated:false,finished:false};usedIds.add(requestId);
+  const r={descriptor:clone(descriptor),input:clone(input),inputHandles:new Map(),requestId,epoch,revision:++serial,transactionTerminal:deferred(),done:deferred(),nativeStarted:false,cancelRequested:false,invalidated:false,finished:false};usedIds.add(requestId);
   const o=ensureQueue();r.queueTarget={...resource(o),requestId,revision:r.revision,activeToken:crypto.randomUUID()};r.target={requestId,managerSessionId,managerRevision:r.revision,resourceBinding:resource(o),activeToken:r.queueTarget.activeToken};records.set(requestId,r);
   const abort=()=>{r.cancelRequested=true;const entry=queue.inspect().invocations.find(e=>e.requestId===requestId);if(entry&&['queued','running','cancelling'].includes(entry.state))void queue.cancelInvocation(requestId,r.queueTarget).catch(()=>{});};signal?.addEventListener('abort',abort,{once:true});
   try{
@@ -70,21 +78,24 @@ export function createNormalOperationAdapter({owner,artifactStore=createOwnedArt
     const check=()=>{if(c.signal.aborted||signal?.aborted||r.cancelRequested)throw fail('INVOCATION_CANCELLED','Normal operation cancelled');if(closed||reconfiguring||r.epoch!==epoch)throw fail('INVOCATION_CANCELLED','Normal operation configuration invalidated');if(r.observation&&!current(r))throw fail('NORMAL_STALE','Owner instance/configuration changed');};
     try{
      check();const support=await querySupport(r.descriptor);check();if(support.status!=='SUPPORTED')return {...support,normalExecution:false,...flags};
-     r.observation=clone(support.observation);r.support=support;const selected=captureInput(r,support);r.selected=selected;const edgeDecision=evaluateEdge(selected.edge);r.edgeDecision=edgeDecision;
-     if(edgeDecision.readiness.state!=='ready')return {status:'BLOCKED',edgeDecision,reasons:edgeDecision.reasons,normalExecution:false,...flags};
+     r.observation=clone(support.observation);r.support=support;const named=Boolean(r.descriptor.artifacts),slots=inputSlots(r.descriptor);
+     if(named&&(!r.input||!same(Object.keys(r.input).sort(),slots.map(s=>s.name).sort())))throw fail('NORMAL_INPUT_DESCRIPTOR_MISMATCH','Native input keys must equal named artifact keys');
+     const selected=slots.map(slot=>captureInput(r,support,slot));r.selected=selected;const decisions=Object.fromEntries(selected.map(s=>[s.name,evaluateEdge(s.edge)])),decisionFields=named?{edgeDecisions:decisions}:{edgeDecision:decisions.input};r.edgeDecisions=decisions;
+     if(Object.values(decisions).some(d=>d.readiness.state!=='ready'))return {status:'BLOCKED',...decisionFields,reasons:Object.values(decisions).flatMap(d=>d.reasons),normalExecution:false,...flags};
      r.snapshotManager=createSnapshotManager({managerSessionId,registry:support.registry});
      const snapshotOwner={ownerId:o.ownerId,
-      async prepare(){check();r.nativeStarted=true;const nativeInput=restoreNativeTensor(r.inputHandle,artifactStore);const value=await owner.invoke({descriptor:clone(r.descriptor),input:nativeInput,target:clone(r.target),signal:c.signal});check();return {candidate:{output:clone(value)}};},
+      async prepare(){check();r.nativeStarted=true;const nativeInputs=Object.fromEntries([...r.inputHandles].map(([name,handle])=>[name,restoreNativeTensor(handle,artifactStore)])),nativeInput=named?nativeInputs:nativeInputs.input;const value=await owner.invoke({descriptor:clone(r.descriptor),input:nativeInput,target:clone(r.target),signal:c.signal});check();return {candidate:{output:clone(value)}};},
       async validate(candidate,context){check();return {valid:true,target:context.target,operationId:context.operationId,snapshotId:context.snapshotId,stepId:context.stepId,scope:context.scopeId,sourceRef:context.sourceRef,nativeBuild:context.nativeBuild,capabilityRef:support.capabilityRef};},
       async commit(candidate,context){check();r.output=clone(candidate.output);return {state:'EXECUTION_COMPLETED',target:context.target,ownership:{kind:'independent-copy',ownerId:o.ownerId}};},
       async rollback(){r.invalidated=true;return {restored:true};},
       async release(){releaseInput(r);return {released:true};}
      };
-     const profile={contractVersion:'works-module-contract/1.0-draft.1',profileId:'works:normal-operation',profileVersion:'1',semanticProfileRefs:[],externalArtifactRefs:[selected.edge.artifact.artifactId],steps:[{stepId:'normal-operation',moduleId:o.ownerId,operationId:r.descriptor.operationId,inputBindings:[{portId:'input',artifactRef:selected.edge.artifact.artifactId}],outputBindings:[{portId:'output',artifactRef:requestId+':output'}],adapterRefs:[],resourceGroupRefs:[]}],requiredEvidenceScopes:[]};
-     const binding={stepId:'normal-operation',moduleId:o.ownerId,operationId:r.descriptor.operationId,moduleVersion:o.nativeAPI.version,nativeBindingRefs:[support.consumerPort.bindingRef],artifactRefs:[selected.edge.artifact.artifactId],modelProfileRefs:[support.consumerPort.profileRef],adapterSelectionRefs:[],localRevisionBindings:{configuration:o.configurationRevision,invocation:r.revision},sourceRef:clone(o.sourceRef),nativeBuild:o.nativeAPI.build,implementationState:'implemented',resourceBinding:clone(r.target.resourceBinding),capabilityRef:support.capabilityRef,owner:snapshotOwner,isCurrent:()=>current(r),edges:[selected.edge]};
+     const artifactRefs=selected.map(s=>s.edge.artifact.artifactId),ports=selected.map(s=>s.edge.consumerPort);
+     const profile={contractVersion:'works-module-contract/1.0-draft.1',profileId:'works:normal-operation',profileVersion:'1',semanticProfileRefs:[],externalArtifactRefs:artifactRefs,steps:[{stepId:'normal-operation',moduleId:o.ownerId,operationId:r.descriptor.operationId,inputBindings:selected.map(s=>({portId:s.name,artifactRef:s.edge.artifact.artifactId})),outputBindings:[{portId:'output',artifactRef:requestId+':output'}],adapterRefs:[],resourceGroupRefs:[]}],requiredEvidenceScopes:[]};
+     const binding={stepId:'normal-operation',moduleId:o.ownerId,operationId:r.descriptor.operationId,moduleVersion:o.nativeAPI.version,nativeBindingRefs:ports.map(p=>p.bindingRef),artifactRefs,modelProfileRefs:[...new Set(ports.map(p=>p.profileRef))],adapterSelectionRefs:[],localRevisionBindings:{configuration:o.configurationRevision,invocation:r.revision},sourceRef:clone(o.sourceRef),nativeBuild:o.nativeAPI.build,implementationState:'implemented',resourceBinding:clone(r.target.resourceBinding),capabilityRef:support.capabilityRef,owner:snapshotOwner,isCurrent:()=>current(r),edges:selected.map(s=>s.edge)};
      const token=await r.snapshotManager.stageSnapshot(profile,{snapshotId:requestId+':snapshot',managerRevision:r.revision,artifactManifestRef:requestId+':in-memory-artifacts',evidenceManifestRef:requestId+':normal-structural-acknowledgement',requestedScope:{kind:'normal',scopeId:r.descriptor.operationId},steps:[binding]});check();
      const published=await r.snapshotManager.publishSnapshot(token,{currentBindings:{'normal-operation':{localRevisionBindings:binding.localRevisionBindings,resourceBinding:binding.resourceBinding}}});check();
-     return {status:'EXECUTION_COMPLETED',output:clone(r.output),snapshot:published.snapshot,edgeDecision,inputDescriptor:clone(selected.edge.artifact),inputProducer:{kind:'management-owned-data-holder',sourceRef:holderSource},operation:r.descriptor.operationId,normalExecution:true,...flags};
+     return {status:'EXECUTION_COMPLETED',output:clone(r.output),snapshot:published.snapshot,...decisionFields,...(named?{inputDescriptors:Object.fromEntries(selected.map(s=>[s.name,clone(s.edge.artifact)])),inputProducers:Object.fromEntries(selected.map(s=>[s.name,{kind:'management-owned-data-holder',sourceRef:holderSource}]))}:{inputDescriptor:clone(selected[0].edge.artifact),inputProducer:{kind:'management-owned-data-holder',sourceRef:holderSource}}),operation:r.descriptor.operationId,normalExecution:true,...flags};
     }finally{r.transactionTerminal.resolve();}
    });
    r.finished=true;const terminal=queue.inspect().invocations.find(e=>e.requestId===requestId);

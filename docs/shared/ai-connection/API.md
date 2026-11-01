@@ -1330,3 +1330,165 @@ distinct. See `development/ai-connection/normal-execution/API-DIFF.md` and
 
 Normal completion does not certify full-model generation or a total resource
 budget. generationReady:false and load/predict/sample=NOT_READY remain explicit.
+
+## Concrete normal VAE, named P4 and workflow owner routes
+
+These additions extend the normal host above. Ordinary requests still carry
+operation, tensor contracts and actual model/target metadata; source acquisition,
+private clients, local asset bindings and resource allowances belong to service
+bootstrap. Numerical references, gates, prior PASS and E4 remain optional
+diagnostic concerns.
+
+### Normal VAE owner
+
+`adapters/normal-vae-owner.mjs` exports:
+
+```js
+await createNormalVaeOwner({
+  nativeModule, configuration, clientFactory, onNativeRequest,
+  inputPayloadBudgetBytes
+});
+createNormalVaeRequestDescriptor(operationId, tensor, {
+  artifactId, extensions, provenance, lineage
+});
+```
+
+The factory is asynchronous. Its optional configuration is
+`{manifest,files,diagnostics?:false}`, with a parsed native manifest and a local
+Map of File/Blob bindings. A configured encode/decode uses the actual native
+`createVaeModule` capabilities for that manifest; management has no fixed shape
+or profile list. clientFactory and onNativeRequest are optional internal
+bootstrap hooks. The registered source is
+`498eb25f027666e3cc661a5851288e4aabf39f0a`,
+`docs/shared/inference/api.mjs`. The reported build names the registered
+client/worker source envelope; the native capabilities do not export BUILD_ID.
+
+operationId is encode or decode. The descriptor helper accepts tensor metadata
+without data and excludes data before cloning metadata. It preserves explicit
+meaning, normalization, profileId, modelSha256, context and latentContract.
+RGB meanings and raw posterior-mean/generated-sample contracts are checked by
+the native owner; a generic latent requirement does not select one of them.
+For a generated sample, its producerModelSha256s remain producer identities and
+latentContract.vaeModelSha256 remains the decoder consumer binding. Decoder
+identity does not replace producer provenance. Normal output preserves the
+native `{tensor,inputDescriptor,binding}`; binding verification and the actual
+runtime observation precede completion, without inserting numerical evidence.
+
+querySupport retains nativeSupport and nativeCapabilities, including native
+requiredChanges and runtime verification state. A configured manifest, available
+local files or successful metadata query does not claim loaded weights or a
+successful graph run. configure replaces the manifest/files binding and
+invalidates prior supports; normal diagnostics are false. The optional
+inputPayloadBudgetBytes is a bootstrap allowance for one logical imported
+payload. If omitted, VAE uses the maximum configured native input-contract
+extent. This excludes management/native copies, ORT allocations and total RAM;
+hostPeakBytes and totalPeakBytes remain unmeasured.
+
+### Named normal P4 owner
+
+The same createNormalOperationAdapter accepts the additive named form:
+
+```js
+const descriptor = {
+  operationId: 'postSelfAttention',
+  artifacts: {residual, timeAct1, conditioning},
+  parameters: {model, blockIndex, contextLatents}
+};
+const support = await host.querySupport(descriptor);
+const result = await host.execute({
+  descriptor,
+  input: {residual: residualTensor, timeAct1: timeTensor,
+          conditioning: conditioningTensor},
+  signal
+});
+```
+
+Each named artifact is a distinct existing common Artifact descriptor. Supply
+exactly one of artifact or artifacts. Named input/consumer-port keys must match
+exactly; each input is independently owned and evaluated by evaluateEdge before
+one queue/snapshot transaction invokes the owner. The host returns
+edgeDecisions keyed by input name, and dispatchSupported requires every edge to
+be ready. Owner status/reasons remain separate from these common decisions.
+A conflicting secondary input blocks the complete invocation. The scalar
+artifact/input API remains available.
+
+`adapters/normal-p4-owner.mjs` exports asynchronous
+`createNormalP4Owner({nativeModule,file,side,sourceRef?,inputPayloadBudgetBytes?,bridgeBytes?,mathBytes?,attentionBytes?,onNativeRequest?,onProgress?})`
+and
+`createNormalP4RequestDescriptor({inputs,model?,blockIndex?,contextLatents?,artifactIds?,extensions?,provenance?,lineage?})`.
+The last four helper maps are keyed by input name. The concrete owner uses
+`30e283bb115741af6b475e9bdc41700a4e564053`,
+`docs/shared/diffusion-models/api/index.mjs`, and delegates metadata support to
+describeExecutionCapabilities/checkExecutionSupport. Its exact native inputs
+are residual, timeAct1 and conditioning; the helper adds no missing native
+meaning, normalization or model identity.
+
+file is the private selected original-model Blob. The native P4 owner is lazy:
+metadata queries do not prepare it or read the selected model header/weights.
+A supported invocation creates the actual native owner, checks its model/feed
+registry and checkSupport, then calls run. configure accepts a replacement
+`{file?,side?,inputPayloadBudgetBytes?,bridgeBytes?,mathBytes?,attentionBytes?}`;
+it stops and disposes the old owner and invalidates its configuration/generation.
+The byte modules and observers are bootstrap dependencies, never tensor-request
+evidence. Selected LoRA target routes currently return
+NORMAL_P4_LORA_ROUTE_NOT_AVAILABLE.
+
+The P4 common profileRef is explicitly a management sidecar for the native
+execution descriptor, with
+profileBindingAuthority:management-sidecar-for-native-execution-descriptor.
+It is not an exported native profile. nativeProfileId stays null until an
+actual prepare observes weightFeed.registry().executionProfileId; the retained
+last-prepared observation has authority
+last-prepared-native-weight-feed-registry and does not mean a native owner is
+still resident after release.
+
+Tensor data and typed masks/binary attachments stay in the actual input bundle.
+The helper records JSON locators/type/byteLength under native.binaryMetadata;
+it does not serialize those bytes into native.metadata. Existing owned holders
+retain and restore the actual attachments. The native conditioning meaning and
+normalization remain exact. In particular, owner Text metadata marked
+`umt5-final-rmsnorm-f32-v1` currently returns the P4 native reason
+UNSUPPORTED_NORMALIZATION; management supplies no alias or substitute marker.
+
+P4 inputPayloadBudgetBytes is an explicit bootstrap allowance for the three
+logical F32 tensor extents plus mask bytes. It excludes copies, opaque metadata,
+workspaces, ORT, host and full-pipeline peak. If the allowance is unknown, owner
+metadata support can remain SUPPORTED while the common resource decision blocks
+dispatch with RESOURCE_NOT_READY. Neither VAE nor P4 payload allowance is a
+measurement of total execution memory.
+
+### Explicit workflow routes and holding transport
+
+`adapters/workflow-normal-router.mjs` exports
+`queryWorkflowOwners({shapePlan,bindings})`. shapePlan comes from the one shared
+deriveWorkflowShapes helper. Each scalar route is either
+`{requirementId,owner,descriptor}` or
+`{requirementId,owner,operationId,supply,createDescriptor}`; the explicit metadata
+factory receives `{requirement,supply,operationId}`. owner may be the configured
+normal host. The existing queryWorkflowRequirements bridge alone fills missing
+geometry and rejects explicit contradictions. Native meaning, model, decoder,
+context and optional metadata come from the binding/owner descriptor factory.
+Unknown/absent requirements call neither the factory nor the owner; independent
+known requirements continue. Results retain the exact per-query ownerResponse,
+status and reasons with generationReady:false, without a combined SUPPORTED.
+This router handles scalar RGB/latent routes; it does not flatten a named P4
+bundle into one artifact.
+
+`tools/ai-connection/run-normal-holding.mjs` exposes runNormalHolding and fixed
+source/asset preflight for locally held VAE graphs or an original P4 model File.
+Its query scenario accepts an ordinary descriptor or explicit workflow bindings
+and does not read tensor input payloads. Execution accepts saved wktensor,
+explicit little-endian F32, or an explicitly pointed owner JSON F32 array;
+original metadata and explicit additional metadata remain distinct. A metadata
+binding cannot overwrite existing header values, data or attentionMask.
+
+Only this new holding transport authenticates and uses the selected498 owner
+tensor codec, including an explicit codecRoot for P4 so Text metadata survives.
+It does not repin the adopted2bd codec used by existing E4/diagnostic paths.
+Source-byte preflight and asset presence are separate from an actual native
+holding execution. At this API delta, the new VAE/P4 combined holding acceptance
+is pending its local assets and run receipts. The established normal/diagnostic
+run at4667f46e5961a34c095a394bf6c75156ab9ab9cb and cancellation at
+f1dceb971bed7e9c9c16ab0a56d897507318a174 keep their original mean-operation
+scope; they are not relabeled as VAE/P4 neural execution. Full workflow/model
+generation and aggregate peak budgets remain unaccepted.

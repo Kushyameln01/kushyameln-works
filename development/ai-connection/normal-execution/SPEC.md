@@ -41,3 +41,15 @@ native namespace/build/protocol/sessionの一致をbootstrap内で確認し、na
 既知Rect raw mean128の通常normalize→restoreを、参照配列/gate/PASS/E4なしで実native Hike実行する。既存P2の数値参照を診断runnerだけで使い出力を確認する。owner非対応shape・意味/model不一致・構成変更・取消・古い結果・元Promise・解放を検証する。通常runと診断比較のreceiptを分ける。
 
 元81frameや任意shapeが式に合うだけで実行可能としない。新owner facadeがないmodule/operationは理由付き未対応とし、既存diagnostic/owner standaloneを変更しない。本番全工程/予算が揃うまではgenerationReady:false、load/predict/sample=NOT_READY。成果は管理branchへpushし、完全SHA/API差分/通常実行/残るshape制限を報告する。
+
+## RGB／latentと複数入力への接続
+
+mean経路の限定受入だけを管理改修全体の完了とはしない。新VAE配布498eb25の通常capabilitiesと新Diffusion配布5278069／実行30e283bの通常実行APIを取得し、採用済み5f meanと別候補として接続する。native pinやcodecを一括置換しない。
+
+VAEは `createNormalVaeOwner` と通常descriptor helperを追加し、実native `capabilities({operation,input})` へ要求を渡す。configureによりmanifest／実asset Mapとowner generationを束縛し、通常encode/decodeの `{tensor,inputDescriptor,binding}` を保持する。診断opt-inを通常の条件にしない。共有RGB／latent要求は `queryWorkflowOwners` の明示bindingでこのownerへ渡す。論理的なlatent roleからraw mean／sampleを推測せず、意味とnormalizationは供給metadataとowner契約で明示する。
+
+P4は通常hostへnamed-input形式を追加する。既存 `{operationId,artifact}`／input:tensor は維持し、新形式は `{operationId,artifacts:{residual,timeAct1,conditioning},parameters?,modelRefs?,targetRefs?}` と同名のnative tensor mapを使う。ownerは各consumerPortsを返し、管理は各artifactへ既存evaluateEdgeを適用する。snapshotは一つの取引で複数inputBindings／edgesを持つ。複数tensorを単一tensorへ見せかけたり、secondary配列をmetadataへ詰めたりしない。
+
+`createNormalP4Owner` はnativeの通常support判定とsame-realmの通常runへ委任する。未対応shapeの照会のためにモデルやweightsを取得しない。nativeがprepare前のprofile IDを公開しない場合は、actual build＋operationに束縛した管理sidecar contract identityと明記し、native Profileや数値PASSと呼ばない。prepare後の実feed registry／header／epochは別の内部観測として記録する。LoRA canonical mappingはLoRA ownerへ残し、旧診断adapterを新しい通常取引へ黙って転用しない。
+
+実assetは各owner保持環境にある。管理環境にない絶対pathを取得済みとせず、固定した管理source／通常runnerを保持環境で実行する既承認の方式を使う。通常実行・構造／資材preflight・独立診断を分け、未返却の共同実行を合格とは記録しない。

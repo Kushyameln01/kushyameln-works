@@ -61,3 +61,13 @@ Create run-normal-operation.mjs and browser companion, focused tests, reproducti
 - [x] Execution sources4667/f1dceb9 frozen and pushed; fixed native verification complete. Normal, numerical diagnostic and cancellation proof are separate; API/limits/reproduction/result are recorded.
 
 Release actions (final evidence distribution and Draft PR metadata) are recorded in the GitHub PR and final delivery reply. Recipient download acknowledgments remain a separate state from the sender's verified GitHub retrieval.
+
+## Task 6 concrete workflow owners after scope audit
+
+The accepted mean route is retained; it does not alone close known workflow RGB/latent requirements. Actual new owner APIs are available and must be bound, not described as absent.
+
+- [x] lora_return: receive VAE498 source/index/production closure; implement normal VAE facade and explicit descriptor helper with actual capabilities, configuration invalidation and lifecycle.
+- [x] p4_candidate: receive Diffusion527/30e source/inventory; add named-input host and normal P4 facade delegated to actual support/run, preserving old scalar path.
+- [x] p4_norm: route shared known RGB/latent requirements to explicit normal owners without role-to-native-meaning inference or copied geometry.
+- [x] p4_runner: prepare holding-environment normal runners with real source/asset preflight and ordinary descriptors; keep existing normal4667/cancelf1 evidence unchanged.
+- [ ] root: verify changed boundaries, publish API/source/results and source acquisition ACKs; distinguish missing private assets and pending joint execution from unsupported shape or numerical failure.
