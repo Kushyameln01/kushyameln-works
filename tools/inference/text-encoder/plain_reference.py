@@ -62,9 +62,12 @@ def main():
   mask_tensor=(1-attention).reshape(1,1,1,512).expand(1,1,512,512);mask_tensor=mask_tensor.masked_fill(mask_tensor.bool(),-torch.finfo(torch.float32).max)
   used={'shared.weight','spiece_model','scaled_fp8','encoder.final_layer_norm.weight'};past_bias=None
   with safe_open(str(a.model),framework='pt',device='cpu') as model:
-   embedded_tokenizer=model.get_tensor('spiece_model').numpy().tobytes();assert sha(embedded_tokenizer)==manifest['tokenizer']['sha256']
-   for index in range(24):
-    begin=time.monotonic();prefix=f'encoder.block.{index}.';state={};scales=[]
+   original_keys=set(model.keys());embedded_tokenizer=model.get_tensor('spiece_model').numpy().tobytes();assert sha(embedded_tokenizer)==manifest['tokenizer']['sha256']
+  # Close each read-only source mapping after copying this block to FP32.
+  # No mapped scalar tensor is retained across iterations.
+  for index in range(24):
+   begin=time.monotonic();prefix=f'encoder.block.{index}.';state={};scales=[]
+   with safe_open(str(a.model),framework='pt',device='cpu') as model:
     for key in model.keys():
      if not key.startswith(prefix):continue
      used.add(key)
@@ -72,18 +75,19 @@ def main():
      value=model.get_tensor(key)
      if value.dtype==torch.float8_e4m3fn:
       scale_key=key[:-7]+'.scale_weight';scale=model.get_tensor(scale_key);assert scale.dtype==torch.float32 and scale.numel()==1 and bool(torch.isfinite(scale).all()) and float(scale)>0
-      value=value.float()*scale;scales.append({'key':scale_key,'value':float(scale),'sha256':sha(scale.numpy().tobytes())})
+      value=value.float()*scale;scales.append({'key':scale_key,'value':float(scale),'sha256':sha(scale.numpy().tobytes())});del scale
      else:value=value.float()
      assert bool(torch.isfinite(value).all());state[key[len(prefix):]]=value
-    with torch.device('meta'):block=mod.T5Block(4096,4096,10240,config['dense_act_fn'],True,64,True,torch.float32,'meta',ops)
-    strict=block.load_state_dict(state,strict=True,assign=True);del state;block.eval()
-    with torch.inference_mode():x,past_bias=block(x,mask_tensor,past_bias,attend)
-    assert bool(torch.isfinite(x).all());report['layers'].append({'index':index,'shape':list(x.shape),'strictMissing':strict.missing_keys,'strictUnexpected':strict.unexpected_keys,'scales':scales,'hiddenSha256':sha(x.numpy().tobytes()),'seconds':time.monotonic()-begin})
-    del block,value;gc.collect();print(json.dumps({'phase':'source-oracle','completed':index+1,'total':24,'seconds':time.monotonic()-started,'rssBytes':process.memory_info().rss}),flush=True)
+   with torch.device('meta'):block=mod.T5Block(4096,4096,10240,config['dense_act_fn'],True,64,True,torch.float32,'meta',ops)
+   strict=block.load_state_dict(state,strict=True,assign=True);del state;block.eval()
+   with torch.inference_mode():x,past_bias=block(x,mask_tensor,past_bias,attend)
+   assert bool(torch.isfinite(x).all());report['layers'].append({'index':index,'shape':list(x.shape),'strictMissing':strict.missing_keys,'strictUnexpected':strict.unexpected_keys,'scales':scales,'hiddenSha256':sha(x.numpy().tobytes()),'seconds':time.monotonic()-begin})
+   del block,value;gc.collect();print(json.dumps({'phase':'source-oracle','completed':index+1,'total':24,'seconds':time.monotonic()-started,'rssBytes':process.memory_info().rss}),flush=True)
+  with safe_open(str(a.model),framework='pt',device='cpu') as model:
    weight=model.get_tensor('encoder.final_layer_norm.weight').float();assert sha(weight.numpy().tobytes())==manifest['finalNorm']['sha256']
-   norm=mod.T5LayerNorm(4096,eps=manifest['finalNorm']['epsilon'],dtype=torch.float32,device='meta',operations=ops);norm.load_state_dict({'weight':weight},strict=True,assign=True)
-   with torch.inference_mode():reference=(norm(x)*attention[...,None]).numpy().astype('<f4')
-   assert not (set(model.keys())-used),set(model.keys())-used
+  norm=mod.T5LayerNorm(4096,eps=manifest['finalNorm']['epsilon'],dtype=torch.float32,device='meta',operations=ops);norm.load_state_dict({'weight':weight},strict=True,assign=True)
+  with torch.inference_mode():reference=(norm(x)*attention[...,None]).numpy().astype('<f4')
+  assert not (original_keys-used),original_keys-used
   assert reference.shape==(1,512,4096) and np.isfinite(reference).all() and np.all(reference[:,np.array(mask)==0,:]==0)
   target=a.output/'plain-reference.f32';reference.tofile(target);report.update(passed=True,reference=file_record(target),shape=list(reference.shape),dtype='float32',layout='BLC',meaning='text_hidden_states',elements=int(reference.size),sourceKeysCovered=len(used),sourceHeaderSha256=sha(headerraw),versions={'torch':torch.__version__,'numpy':np.__version__,'sentencepiece':spm.__version__})
   end=a.model.stat();assert (end.st_size,end.st_mtime_ns)==(initial_model_stat.st_size,initial_model_stat.st_mtime_ns),'Original source changed during oracle'
