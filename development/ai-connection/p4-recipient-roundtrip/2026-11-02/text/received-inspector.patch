@@ -1,0 +1,47 @@
+--- /tmp/text-packet-receipt-20261102/source/tools/inference/text-encoder/inspect_conditioning_handoff.mjs
++++ /tmp/text-packet-receipt-20261102/source/tools/inference/text-encoder/inspect_received_conditioning_handoff.mjs
+@@ -2,7 +2,6 @@
+ // Fixed Hello world packet inspection only. No model, oracle or consumer runs.
+ import assert from 'node:assert/strict';
+ import {createHash} from 'node:crypto';
+-import {execFileSync} from 'node:child_process';
+ import {readFileSync,writeFileSync} from 'node:fs';
+ import {relative,resolve,sep} from 'node:path';
+ import {fileURLToPath,pathToFileURL} from 'node:url';
+@@ -15,21 +14,31 @@
+  ['tools/inference/kernel/tensor.hike','09625a5a955b843fdf15b22676429c3774600b3dd3aaa53fc77325869fcd0490'],
+  ['docs/shared/inference/kernel/tensor.wasm','9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8']];
+ const sha=b=>createHash('sha256').update(b).digest('hex');
+-const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
++const acquisitionRoot=resolve(root,'..');
++const remoteTree=JSON.parse(readFileSync(resolve(acquisitionRoot,'remote-tree.json'),'utf8'));
++const acquisition=JSON.parse(readFileSync(resolve(acquisitionRoot,'acquisition.json'),'utf8'));
++const remoteBlobs=new Map(remoteTree.tree.filter(e=>e.type==='blob').map(e=>[e.path,e]));
++assert.equal(remoteTree.truncated,false);
++assert.equal(acquisition.distributionCommit,'f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48');
++assert.equal(remoteTree.sha,acquisition.remoteTreeSha);
+ const result={schemaVersion:'works-conditioning-local-inspection/1.0',passed:false,localVerificationOnly:true,
+  recipientIdentityAttested:false,newNN:0,crossAttentionConsumed:false,sourceChecks:[],verifiedFiles:[]};
+ function tracked(path,expected={}){
+  const full=resolve(root,path);assert.ok(full.startsWith(resolve(root)+sep),'Repository-relative file required');
+  const b=readFileSync(full),blob=createHash('sha1').update(Buffer.from(`blob ${b.length}\0`)).update(b).digest('hex');
+- assert.equal(blob,git('rev-parse','--verify',`HEAD:${path}`),`Untracked/changed HEAD bytes: ${path}`);
++ assert.equal(blob,remoteBlobs.get(path)?.sha,`Changed immutable remote Git blob: ${path}`);
++ assert.equal(b.length,remoteBlobs.get(path)?.size,`Remote Git size: ${path}`);
+  if(expected.bytes!==undefined)assert.equal(b.length,expected.bytes,path+' bytes');
+  if(expected.sha256!==undefined)assert.equal(sha(b),expected.sha256,path+' SHA-256');
+- result.verifiedFiles.push({path,bytes:b.length,sha256:sha(b),headGitBlob:blob});return b;
++ result.verifiedFiles.push({path,bytes:b.length,sha256:sha(b),remoteGitBlob:blob});return b;
+ }
+ const parsed=path=>JSON.parse(tracked(path));
+ try{
+- result.actualCheckoutSha=git('rev-parse','--verify','HEAD');assert.match(result.actualCheckoutSha,/^[a-f0-9]{40}$/);
+- for(const [path,sha256] of source6){tracked(path,{sha256});result.sourceChecks.push({path,sha256,headGitBlobMatched:true});}
++ result.acquiredDistributionCommit=acquisition.distributionCommit;
++ result.remoteTreeSha=remoteTree.sha;result.gitCheckoutCreated=false;result.actualCheckoutSha=null;
++ result.gitBindingMethod='Immutable GitHub commit/tree plus actual raw bytes; no checkout claimed';
++ result.derivedFrom={path:'tools/inference/text-encoder/inspect_conditioning_handoff.mjs',distributionCommit:acquisition.distributionCommit,sha256:'69af4634a9a18a5689862ba8fe469d2efa8d8de462a4599cac2962df14024017',modification:'Only Git checkout/HEAD reads replaced with pre-acquired immutable remote tree/blob checks; all packet/receipt assertions retained'};
++ for(const [path,sha256] of source6){tracked(path,{sha256});result.sourceChecks.push({path,sha256,remoteGitBlobMatched:true});}
+  const hand=parsed(base+'P3-HANDOFF.json'),receipt=parsed(base+'RECEIPT.json'),index=parsed(base+'EVIDENCE-INDEX.json'),sources=parsed(base+'source-bindings.json');
+  assert.equal(hand.schemaVersion,'works-portable-plain-handoff/1.0');assert.equal(receipt.status,'PASS_FIXED_PLAIN_ALL_VALUES');
+  assert.equal(hand.executionSourceSha,'5537b8932343aa2476b95191817e8913f99dab02','Original execution source must not be retagged');

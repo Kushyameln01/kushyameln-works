@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "diffusion-p4-recipient-roundtrip-verification/0.1",
+  "checkedAtUTC": "2026-11-01T15:33:27.869388+00:00",
+  "status": "PASS_ACQUISITION_AND_CAPTURE_ONLY",
+  "originalDistributionSHA": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+  "originalExecutionSources": {
+    "baseHIGHAndLOW": "829467c14ec6fd1ab1858dfc175c84605de1ac98",
+    "finalF32FeedHIGH": "5744f700e17b23d5c18d32315fb6dfbd7c49089a"
+  },
+  "newNumericalExecutionSource": null,
+  "nativeRuntimeAPIKernelGateChanges": 0,
+  "newNN": 0,
+  "newExports": 0,
+  "newLowRankProducts": 0,
+  "reusedEvidenceScope": {
+    "p4": "Original 7ee fixed N2/K4 base HIGH/LOW and final F32 fixture receipts only",
+    "text": "f76/5537 original fixed plain all-value/reference receipts; no renewed comparison",
+    "lora": "dd95/28f light HIGH Q16 PARTIAL formal DATA receipts only",
+    "management": "884 published ADMISSION of old fixed N2 tail; original 5c/a49 run unchanged"
+  },
+  "newVerification": {
+    "outboundPublicFiles": 23,
+    "outboundBytes": 5060379,
+    "localManifestUnionChecksumOnly": 119,
+    "textAcquiredFiles": 27,
+    "textAcquiredBytes": 17083779,
+    "textSourceChecks": 6,
+    "textManifestAttachments": 8,
+    "textNativeShape": [
+      1,
+      512,
+      4096
+    ],
+    "textCaptureProbe": {
+      "path": "/tmp/text-packet-receipt-20261102/capture-probe.mjs",
+      "sha256": "9bf400a62aa0fc2fbf63c84c2e38d20f6436a362254be2174606b2d64e786622"
+    },
+    "textCaptureVerificationFlags": {
+      "producerAuthenticated": false,
+      "realExecutionVerified": false,
+      "jointlyAccepted": false
+    },
+    "rootReceiptOnlyRecheck": "text/root-capture-receipt.json",
+    "loraAcquiredFiles": 33,
+    "loraManifestPayloads": 9,
+    "loraGzipStreamDecodedSHA256": "50a58d8f8c94bed2883fc294554acd744039ce0aa36e39ed6046135e5984f032",
+    "loraVerifier": "lora/verify-fixed-receipts.py --check-dir /tmp/lora-receipt-20261102",
+    "independentScopeReview": "No material receipt/numerical-scope conflation found; all27 Text,23 outbound,33 final LoRA file byte checks also verified by owner commands; scope review did not rerun any model"
+  },
+  "APIChange": "None. Existing independent P4 contracts delivered with fixed source; no schema or runtime method changed.",
+  "currentDataAvailability": {
+    "realTextPacketReceived": true,
+    "historical7eeRetainedRealPayloadNullSupersededForAcquisitionOnly": true,
+    "actualTextP4Consumption": false,
+    "canonicalLoraForP4ReceivedOrExecuted": false
+  },
+  "notAccepted": [
+    "Actual Text L512 P4 projection/cross-attention/FFN numerical and resource gates",
+    "Canonical LoRA P4 mapping and real prepared weight/bias joint run",
+    "Production contexts/precision/shape and arbitrary producer/prompt",
+    "All blocks/final head, actual HIGH-to-LOW, generated sample and VAE decode",
+    "Common P4 catalog adoption, whole pipeline resources and P2/P3 final joint admission"
+  ],
+  "generationReady": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY",
+  "merge": false,
+  "pagesPublication": false
+}
