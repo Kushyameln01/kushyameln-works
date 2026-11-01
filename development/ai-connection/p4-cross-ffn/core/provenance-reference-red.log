@@ -1,0 +1,23 @@
+.........E.E
+======================================================================
+ERROR: test_runtime_cut_binding_covers_mask_fixture_and_native_file (__main__.ReferenceBoundaries.test_runtime_cut_binding_covers_mask_fixture_and_native_file)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/diffusion-models/tools/diffusion-models/test-p4-cross-ffn-reference.py", line 143, in test_runtime_cut_binding_covers_mask_fixture_and_native_file
+    expected = P4.runtime_binding(base)
+               ^^^^^^^^^^^^^^^^^^
+AttributeError: module 'p4_reference' has no attribute 'runtime_binding'
+
+======================================================================
+ERROR: test_vector_chunk_decoder_receipts_match_runtime_keys (__main__.ReferenceBoundaries.test_vector_chunk_decoder_receipts_match_runtime_keys)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/diffusion-models/tools/diffusion-models/test-p4-cross-ffn-reference.py", line 177, in test_vector_chunk_decoder_receipts_match_runtime_keys
+    entry = source.sources[key + ':' + str(offset)]
+            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'blocks.0.modulation:15360'
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.120s
+
+FAILED (errors=2)

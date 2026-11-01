@@ -248,3 +248,40 @@ Oは元FP8 E4M3FN `[5120,5120]` とO固有のscalar scale/config、F16 biasを�
 BUSYを外部getterより前に獲得し、取消はcooperativeとする。abort後にPromise終端を待ってからdisposeする。native解放失敗時はhandleを保持して再利用を止め、recoverで解放を再試行する。全体queue・工程管理は管理、内部数値計算と資源は本ownerの責任である。
 
 O・gate・gated・residualの独立参照と事前gate、重み範囲/source識別、Memory/copy・再利用/新規検証は [結果と再現手順](../../../development/ai-connection/self-attention-tail/RESULT.md) に記録する。cross-attention・FFN・全block・本番生成は後続とし、`load/predict/sample=NOT_READY`を維持する。
+
+## P4: cross-attention・FFNの別入力候補
+
+独立ES入口 [post-self-attention](ort-bridge/post-self-attention/README.md) を追加する。profileは`bernini-block0-n2-cross-ffn-f32-candidate-v1`、factoryは`createPostSelfAttention`。上記固定tailのhash検査とProfileを変更せず、別のcaller入力・F32 weight feedを検証する候補として扱う。native RPC/MessagePortに新しい生成operationは追加しない。
+
+```javascript
+import {createP4WeightSource} from './ort-bridge/post-self-attention/source.mjs';
+import {captureP4Conditioning} from './ort-bridge/post-self-attention/conditioning.mjs';
+import {createPostSelfAttention} from './ort-bridge/post-self-attention/stage.mjs';
+const source = await createP4WeightSource({file: originalFile, side: 'HIGH'});
+const conditioning = captureP4Conditioning(textTensor); // strict model/tokenizer binding
+const stage = await createPostSelfAttention({source});
+try {
+  const result = await stage.run({residual, timeAct1, conditioning, signal});
+  // result.output aliases result.blockOutput; no new latent/sample meaning.
+} finally {
+  await stage.dispose(); // await a running native call's terminal state
+  source.dispose();      // caller owns source unless disposeSource:true
+}
+```
+
+| 入力 | 境界 |
+| --- | --- |
+| residual | compact owned-copy F32 `[2,5120]`、LC、自己注意残差。固定回帰では既存export/E4のhash・意味・producerを照合してから渡す |
+| timeAct1 | compact F32 `[5120]`、保存済みtime embedding SiLU出力。別producerの数値を元timestepの証明として使わない |
+| native conditioning | `float32 / BLC / text_hidden_states / [1,L,4096]`、`1<=L<=512`、Uint8 mask`[L]`、model/tokenizer識別、全metadataを明示capture |
+| fixture conditioning | 別名`captureP4FixtureConditioning`、独自fixtureId/sourceRef、`p4-fixture-text-hidden-states:v1`。実Text model/tokenizer識別を挿入しない |
+
+Text ownerの最終RMSNormは適用済みのまま受け取る。Diffusionは`text_embedding.0→GELU(tanh)→text_embedding.2`を所有し、全L行を保持する。maskはproducer metadataとして保持し、cross softmaxには適用しない。masked hidden行の削除、暗黙padding、再正規化は行わない。native tokenizer欠落は既定で拒否し、明示`missingTokenizerPolicy:'retain-unknown'`の場合もunknownを保持する。captureの形・識別一致は実producerの数値認証ではない。正負conditioningは別artifactで、管理が対象branchを明示して呼び出す。CFGや正負の自動合成はこの部品に含めない。
+
+演算順はaffine LN(norm3)→cross QKV→full5120 RMSNorm→40head×128 attention→O→ungated残差→nonaffine LN→chunks3/4 modulation→FFN5120/13824/5120（GELU tanh）→chunk5 gate→cross残差。全norm epsilonは1e-6、crossにRoPEはない。FFN downは全13824列を保った4出力行tileを使う。復号上限81920要素を引き上げず、inner次元を分割しない。O/text/timeのF16と、各自scalar scaleを持つQKV/FFNのFP8を区別する。
+
+出力は25の診断中間配列と`blockOutput:F32[2,5120]`、入力/出力hash・source・weight epoch/package・Memory/copy/time evidence。`output`は`blockOutput`と同じbufferを指す。全配列は呼出し側が保持でき、dispose後も値を保持する。conditioning captureはsealを所有し、改変されたcaptureを拒否する。runは最初のawait前に入力をcopyし、weight feedのimmutable leaseを取る。取消はbounded WASM/ORTの終端を待ち、busy中の二重実行を拒否する。`dispose/recover`は終端と解放を待つ。管理は全体queueを所有する。
+
+LoRA用の新入口は`createP4WeightFeed({source})`。immutable `baseProvider.readBlock`、疎patch `createSink`、`prepareLoad→validate→commit/rollback→releaseCandidate`、`captureSource`を公開する。registryはoriginal key/full shape/選択範囲、実program slot→ORT入力`weight`／Hike bias parameter、保存/計算dtype、FP8 profile、base/graph/registry識別を保持する。最終F32 weight/biasは再scaleせず実演算へ渡す。低rank積・loader/full-shape mappingはLoRA ownerのままで、新P4へのcanonical adapter共同受入は別条件である。詳細は[consumer契約](../../../development/ai-connection/p4-cross-ffn/WEIGHT-FEED.md)を参照。
+
+本候補のproducer認証、独立参照・事前gateの数値判定、本番shape、複数stageの組合せ資源予算はそれぞれ別判定とする。[conditioning契約](../../../development/ai-connection/p4-cross-ffn/CONDITIONING.md)・[候補gate](../../../development/ai-connection/p4-cross-ffn/core/candidate-plan.json)・[結果](../../../development/ai-connection/p4-cross-ffn/RESULT.md)にsourceと受入scopeを記録する。N2の部品成功からP5へ昇格せず、`load/predict/sample=NOT_READY`、generationReady=falseを維持する。
