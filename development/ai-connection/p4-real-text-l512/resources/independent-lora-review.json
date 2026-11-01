@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "independent-real-l512-lora-final-review/0.1",
+  "passed": true,
+  "executionCommit": "db5df292b21366ec385d92bb281b5f3ee74183c4",
+  "ownerCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+  "checkCount": 878,
+  "numericByteAudit": {
+    "path": "/tmp/p4-l512-final-review/lora-audit.json",
+    "sha256": "ca1c82214609d039f4c3461055aa0d6a93047d142279de6ebe698c5cad8b1681",
+    "checks": 500
+  },
+  "sourceProcedureAudit": {
+    "path": "/tmp/p4-l512-final-review/lora-source/audit.json",
+    "sha256": "56f3d179b9dcee325a4e6f994aff74fe6d41ffbb63239e7eb67f7de9071d4ace",
+    "checks": 378
+  },
+  "scope": "Frozen genuine L512+saved LOW3/N2/block0 Light q first4 full5120-column rows and bias first4 at strength+1. One native candidate validation then commit epoch1/rollback epoch2 verified by selected byte readback. No active/restored native forward. Base HIGH1/LOW3 remains separate994 scope. PARTIAL,completeAdapter=false,generationReady=false,load/predict/sample=NOT_READY.",
+  "executionRouting": "21 owner overlay files available; actual executed URL count40 =11 owner +29 Diffusion.",
+  "numerics": {
+    "A": {
+      "weight": {
+        "values": 20480,
+        "failed": 0,
+        "maxAbsolute": 2.4756445782259107e-09,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "bias": {
+        "values": 4,
+        "failed": 0,
+        "maxAbsolute": 0.0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      }
+    },
+    "B": {
+      "composed": {
+        "cuts": 25,
+        "values": 15927296,
+        "failed": 0,
+        "maxAbsolute": 5.340576171875e-05,
+        "blockOutput": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 1.52587890625e-05,
+          "worstIndex": 9514,
+          "actualSHA256": "3535da9f232c451b2137240529d58744760e9dbd60c8d1384d1901c0d88f2aa7",
+          "referenceSHA256": "28f5206fe9b27650efc1bf34ed9c7f5c7aa98e1b6595f2b3c9114a4de36b0b9a",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        }
+      },
+      "local": {
+        "cuts": 25,
+        "values": 15927296,
+        "failed": 0,
+        "maxAbsolute": 5.340576171875e-05,
+        "blockOutput": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 0.0,
+          "worstIndex": 0,
+          "actualSHA256": "3535da9f232c451b2137240529d58744760e9dbd60c8d1384d1901c0d88f2aa7",
+          "referenceSHA256": "3535da9f232c451b2137240529d58744760e9dbd60c8d1384d1901c0d88f2aa7",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        }
+      }
+    }
+  },
+  "notAccepted": [
+    "all LoRA targets",
+    "arbitrary strengths/pairs/sides",
+    "reapply/cancel/failure/concurrent revisions in actual LoRA scope",
+    "HIGH-to-LOW handoff",
+    "production precision",
+    "full profile/model/generation",
+    "management adoption or snapshot publication"
+  ],
+  "finalDocumentsReviewed": true,
+  "finalDocumentReview": {
+    "path": "/tmp/p4-l512-final-review/final-docs-review.json",
+    "sha256": "f81c213cc016d3309b09930ab3cab62fc1e9310efce4cdcb3fdc3ebaa485361a",
+    "sourceAndLinkChecks": 38
+  }
+}

@@ -1,0 +1,426 @@
+{
+  "schemaVersion": "p4-l512-lora-actual-resource-review/0.1",
+  "createdUTC": "2026-11-01T17:02:31.215778+00:00",
+  "passed": true,
+  "scope": "Independent read-only actual receipt, private runtime manifest,81,936B actual SDK patch bytes, and small acquired owner-source inspection. No model or LoRA asset read/hash, no NN/reference/WASM/browser run, no binary25 output rehash.",
+  "receiptPath": "development/ai-connection/p4-real-text-l512/lora-integration/s1-browser.json",
+  "receiptSHA256": "3e2913b99f65ba8740472e6a7e672f7b9fb2832f22952fdc768231f44c36842c",
+  "runtimeManifestSHA256": "f3757ab9dbb20a00d30b868f95711d804f18c9efa2dd1e631e2e9f40aea78ff1",
+  "actualSDKPatchArtifactSHA256": "461b643ebcd7a481f6bec905f4b2e5d925593811c391b5f55f141f37817c9961",
+  "independentPatchArtifactSHA256": "affd64f5f07bd6cd89fb9ba8bef485a58208d9052deb18fa04f3236e2808c5d0",
+  "sourceCommit": "db5df292b21366ec385d92bb281b5f3ee74183c4",
+  "ownerCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+  "checks": {
+    "staticCounter:inputSnapshotBytes": true,
+    "staticCounter:conditioningSnapshotBytes": true,
+    "staticCounter:returnedArraysBytes": true,
+    "staticCounter:projectionBatchCopyTrafficBytes": true,
+    "staticCounter:linearInputSnapshotTrafficBytes": true,
+    "staticCounter:linearOutputSnapshotTrafficBytes": true,
+    "staticCounter:linearOutputAssemblyTrafficBytes": true,
+    "staticCounter:attentionHostCopyTrafficBytes": true,
+    "staticCounter:attentionDenominatorsCopyTrafficBytes": true,
+    "staticCounter:attentionContextAssemblyTrafficBytes": true,
+    "staticCounter:geluBatchCopyTrafficBytes": true,
+    "staticCounter:geluOutputAssemblyTrafficBytes": true,
+    "staticCounter:mathSnapshotTrafficBytes": true,
+    "staticCounter:mathInputTrafficBytes": true,
+    "staticCounter:mathOutputTrafficBytes": true,
+    "staticCounter:attentionInputTrafficBytes": true,
+    "staticCounter:attentionOutputTrafficBytes": true,
+    "staticCounter:sourceVectorSnapshotTrafficBytes": true,
+    "staticCounter:mathClearTrafficBytes": true,
+    "staticCounter:bridgeCallCount": true,
+    "staticCounter:bridgeArenaZeroFillTrafficBytes": true,
+    "sourceCommit": true,
+    "manifestHashAndIdentities": true,
+    "separateActualIndependentPatchArtifacts": true,
+    "twoActualSDKBlocksNativeBitsBound": true,
+    "oneNativeCandidateRun": true,
+    "nativeProjectionAndScoreDeltas": true,
+    "completedSourceReadDeltas": true,
+    "sourceHikeCopies": true,
+    "allNativeProgressThreeLeases": true,
+    "numericCapacityFiveMemories": true,
+    "oneORTMemoryTwoSessions": true,
+    "ownerLoRA32MiBCapacity": true,
+    "SDKIndependentOwnership": true,
+    "candidateCommittedAfterValid": true,
+    "preparedReleasedActivePrivateCopyRetained": true,
+    "sharedPatchBuffersDeduplicated": true,
+    "rollbackByteRestoresBase": true,
+    "allPatchOwnersReleased": true,
+    "sessionTensorFeedSourceDisposed": true,
+    "retainedOutputBits": true,
+    "exportBounded": true,
+    "copyPeakScopesPreserved": true,
+    "monitorBoundedNoErrors": true,
+    "observerCompleteRestored": true,
+    "independentAPreCandidateAndValid": true,
+    "owner55AcquisitionProof": true,
+    "actualExecutableSourceOwnerAttribution": true,
+    "privateFilesNotHTTP": true,
+    "noPrivateNumericFieldsPublished": true
+  },
+  "selectedActualSDKBlockIdentities": [
+    {
+      "weightId": "blocks.0.cross_attn.q.weight",
+      "offset": 0,
+      "count": 20480,
+      "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+    },
+    {
+      "weightId": "blocks.0.cross_attn.q.bias",
+      "offset": 0,
+      "count": 4,
+      "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+    }
+  ],
+  "preRuntimeReference": {
+    "manifestSHA256": "5fe895ce6f1673c49b9a60fbd79a6701b7e5dae8c3e26b13d9bf9c91d9b5706b",
+    "mode": "COMPOSED_BEFORE_RUNTIME",
+    "verifiedBeforeNativeConstruction": true,
+    "verifiedOutputCount": 25,
+    "independentPatchArtifactSHA256": "affd64f5f07bd6cd89fb9ba8bef485a58208d9052deb18fa04f3236e2808c5d0",
+    "gates": {
+      "weight": {
+        "absolute": 1e-05,
+        "relative": 0.0001
+      },
+      "bias": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "projection": {
+        "absolute": 0.01,
+        "relative": 0.001
+      },
+      "projectionGateId": "p4-cross-ffn-composed-f32-v1"
+    },
+    "numericGates": {
+      "localCut": {
+        "abs": 0.001,
+        "rel": 0.0001
+      },
+      "composed": {
+        "abs": 0.01,
+        "rel": 0.001
+      },
+      "rule": "abs(actual-reference) <= abs + rel*abs(reference); all values, no percentile pass"
+    },
+    "ownerSDKPatchesUsedAsOracle": false
+  },
+  "nativeRunCount": 1,
+  "numericGateStatus": {
+    "independentA": {
+      "passed": true,
+      "weight": {
+        "passed": true,
+        "compared": 20480,
+        "failedValues": 0,
+        "maxAbsoluteError": 2.4756445782259107e-09,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "bias": {
+        "passed": true,
+        "compared": 4,
+        "failedValues": 0,
+        "maxAbsoluteError": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "baseWeightSHA256": "33cb993f200a8bdcaea6df9f063b78d7308d4abcac4a14e2099660baf1f76753",
+      "baseBiasSHA256": "50e720dd7fdde0ee017ea272950ff01f60e6228b44c582372ad1de241a6e6af7"
+    },
+    "candidateBlockOutput": {
+      "valid": true,
+      "expectedSHA256": "28f5206fe9b27650efc1bf34ed9c7f5c7aa98e1b6595f2b3c9114a4de36b0b9a",
+      "outputSHA256": "3535da9f232c451b2137240529d58744760e9dbd60c8d1384d1901c0d88f2aa7",
+      "maxAbsoluteError": 1.52587890625e-05,
+      "failedValues": 0,
+      "gateId": "p4-cross-ffn-composed-f32-v1",
+      "tolerance": {
+        "absolute": 0.01,
+        "relative": 0.001
+      }
+    },
+    "all25LocalComposedComparisonStatus": "Pending separate reference receipt at time of resource review",
+    "resourceAuditDoesNotGrantNumericalAcceptance": true
+  },
+  "resourceMeasurements": {
+    "numericDistinctCapacityBytes": 54657024,
+    "numericDistinctMemories": 5,
+    "ownerLoRAHikeBytes": 33554432,
+    "P4KnownHikeBytes": 4325376,
+    "ORTMemoryCapacityBytes": 16777216,
+    "ORTSessions": 2,
+    "sharedNativeRetainedPatchBytes": 81936,
+    "sharedNativeRetainedPatchBuffers": 2,
+    "SDKPreparedEvidenceCopyBytes": 81936,
+    "prepareLoadNumericalCopy": false,
+    "stageElapsedMs": 146901.8999999985,
+    "nativeEvidenceElapsed": {
+      "readMs": 46598.70000027865,
+      "linearMs": 75522.60000087321,
+      "biasMs": 4863.899999670684,
+      "mathMs": 479.8000000268221,
+      "attentionMs": 261.19999999552965,
+      "totalMs": 146197.69999999553
+    },
+    "wholeLoRAFileBrowserHashMs": 10159.39999999851,
+    "binaryExport": {
+      "chunkCount": 259,
+      "rawBytes": 63709184,
+      "base64Characters": 84946256,
+      "maxRawChunkBytes": 262144,
+      "elapsedMs": 3741.5999999940395,
+      "rawCopyBytes": null,
+      "base64EncodingInputTrafficBytes": 63709184,
+      "base64DecodedWriteTrafficBytes": 63709184,
+      "scope": "Explicit output export only. Base64 strings and protocol copies are real host allocations; their allocator peak and total copy traffic are unknown."
+    },
+    "browserWallSeconds": 167.32554795299802,
+    "monitor": {
+      "sampleCount": 1519,
+      "firstElapsedMs": 35.908218000258785,
+      "lastElapsedMs": 166914.55648799456,
+      "rssPeakProcessSumBytes": 1198710784,
+      "pssPeakProcessSumBytes": 922116096,
+      "cgroupCurrentObservedPeakBytes": 5290868736,
+      "cgroupHistoricalPeakBytes": 5299683328,
+      "cgroupLimitBytes": 17179869184,
+      "maxSamplingGapMs": 253.37084099737694,
+      "sampleWallMs": 22043.43503779819,
+      "intervalTargetMs": 100.0,
+      "readErrors": {},
+      "onlineAggregation": true,
+      "scope": "Sampled owned Chromium process sums include harness/File/ORT/Hike; RSS counts shared pages repeatedly. PSS apportions shared pages. Cgroup includes the entire environment and memory.peak predates this run. Sampling can miss short peaks; neither is allocator usage or full-pipeline peak."
+    },
+    "monitorPeakPhases": {
+      "rssPeakProcessSumBytes": [
+        "lora-candidate-stage-constructed"
+      ],
+      "pssPeakProcessSumBytes": [
+        "lora-candidate-stage-constructed"
+      ],
+      "cgroupCurrentObservedPeakBytes": [
+        "lora-candidate-stage-constructed"
+      ]
+    }
+  },
+  "ownerSourceProof": {
+    "acquiredFilesVerified": 55,
+    "acquiredSourceBytesVerified": 4052013,
+    "acquisitionReceiptSHA256": "ab3980144681b518cac83af68731adfc814e25fc9f642011e6e20fd70c196d9b",
+    "actualExecutedURLs": 40,
+    "actualOwnerURLs": 11,
+    "actualDiffusionURLs": 29,
+    "remainingAcquiredFilesAreVerifiedSourceNotNecessarilyRequested": true
+  },
+  "lifecyclePhaseOwnership": {
+    "lora-native-base-feed-ready": {
+      "disposed": false,
+      "epoch": 0,
+      "activePackageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+      "activePatchBytes": 0,
+      "retainedPatchBytes": 0,
+      "knownPatchBytes": 0,
+      "retainedPatchBuffers": 0,
+      "pendingPatchBytes": 0,
+      "transactions": 0,
+      "packages": 0,
+      "candidates": 0,
+      "readLeases": 1,
+      "inFlight": 0,
+      "effectiveReadBytes": 0,
+      "patchedReadBytes": 0
+    },
+    "lora-sdk-prepared-independent-A-passed": {
+      "disposed": false,
+      "epoch": 0,
+      "activePackageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+      "activePatchBytes": 0,
+      "retainedPatchBytes": 81936,
+      "knownPatchBytes": 81936,
+      "retainedPatchBuffers": 2,
+      "pendingPatchBytes": 0,
+      "transactions": 0,
+      "packages": 1,
+      "candidates": 0,
+      "readLeases": 1,
+      "inFlight": 0,
+      "effectiveReadBytes": 102416,
+      "patchedReadBytes": 0
+    },
+    "lora-candidate-stage-constructed": {
+      "disposed": false,
+      "epoch": 0,
+      "activePackageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+      "activePatchBytes": 0,
+      "retainedPatchBytes": 81936,
+      "knownPatchBytes": 81936,
+      "retainedPatchBuffers": 2,
+      "pendingPatchBytes": 0,
+      "transactions": 0,
+      "packages": 1,
+      "candidates": 1,
+      "readLeases": 2,
+      "inFlight": 1,
+      "effectiveReadBytes": 102416,
+      "patchedReadBytes": 0
+    },
+    "lora-native-progress:text_embedding.0.weight": {
+      "disposed": false,
+      "epoch": 0,
+      "activePackageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+      "activePatchBytes": 0,
+      "retainedPatchBytes": 81936,
+      "knownPatchBytes": 81936,
+      "retainedPatchBuffers": 2,
+      "pendingPatchBytes": 0,
+      "transactions": 0,
+      "packages": 1,
+      "candidates": 1,
+      "readLeases": 3,
+      "inFlight": 1,
+      "effectiveReadBytes": 385040,
+      "patchedReadBytes": 0
+    },
+    "lora-candidate-native-complete": {
+      "disposed": false,
+      "epoch": 0,
+      "activePackageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+      "activePatchBytes": 0,
+      "retainedPatchBytes": 81936,
+      "knownPatchBytes": 81936,
+      "retainedPatchBuffers": 2,
+      "pendingPatchBytes": 0,
+      "transactions": 0,
+      "packages": 1,
+      "candidates": 1,
+      "readLeases": 2,
+      "inFlight": 1,
+      "effectiveReadBytes": 1489483792,
+      "patchedReadBytes": 81936
+    },
+    "lora-candidate-stage-disposed": {
+      "disposed": false,
+      "epoch": 0,
+      "activePackageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+      "activePatchBytes": 0,
+      "retainedPatchBytes": 81936,
+      "knownPatchBytes": 81936,
+      "retainedPatchBuffers": 2,
+      "pendingPatchBytes": 0,
+      "transactions": 0,
+      "packages": 1,
+      "candidates": 1,
+      "readLeases": 2,
+      "inFlight": 1,
+      "effectiveReadBytes": 1489483792,
+      "patchedReadBytes": 81936
+    },
+    "lora-native-candidate-committed": {
+      "disposed": false,
+      "epoch": 1,
+      "activePackageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+      "activePatchBytes": 81936,
+      "retainedPatchBytes": 81936,
+      "knownPatchBytes": 81936,
+      "retainedPatchBuffers": 2,
+      "pendingPatchBytes": 0,
+      "transactions": 0,
+      "packages": 1,
+      "candidates": 1,
+      "readLeases": 1,
+      "inFlight": 0,
+      "effectiveReadBytes": 1489483792,
+      "patchedReadBytes": 81936
+    },
+    "lora-sdk-source-released-active-copy-retained": {
+      "disposed": false,
+      "epoch": 1,
+      "activePackageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+      "activePatchBytes": 81936,
+      "retainedPatchBytes": 81936,
+      "knownPatchBytes": 81936,
+      "retainedPatchBuffers": 2,
+      "pendingPatchBytes": 0,
+      "transactions": 0,
+      "packages": 0,
+      "candidates": 1,
+      "readLeases": 2,
+      "inFlight": 0,
+      "effectiveReadBytes": 1489565728,
+      "patchedReadBytes": 163872
+    },
+    "lora-rollback-base-patched-lease-retained": {
+      "disposed": false,
+      "epoch": 2,
+      "activePackageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+      "activePatchBytes": 0,
+      "retainedPatchBytes": 81936,
+      "knownPatchBytes": 81936,
+      "retainedPatchBuffers": 2,
+      "pendingPatchBytes": 0,
+      "transactions": 0,
+      "packages": 0,
+      "candidates": 0,
+      "readLeases": 2,
+      "inFlight": 0,
+      "effectiveReadBytes": 1489831984,
+      "patchedReadBytes": 245792
+    },
+    "lora-all-patch-leases-released": {
+      "disposed": false,
+      "epoch": 2,
+      "activePackageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+      "activePatchBytes": 0,
+      "retainedPatchBytes": 0,
+      "knownPatchBytes": 0,
+      "retainedPatchBuffers": 0,
+      "pendingPatchBytes": 0,
+      "transactions": 0,
+      "packages": 0,
+      "candidates": 0,
+      "readLeases": 0,
+      "inFlight": 0,
+      "effectiveReadBytes": 1489831984,
+      "patchedReadBytes": 245792
+    },
+    "lora-all-owners-disposed-outputs-retained": {
+      "disposed": true,
+      "epoch": 3,
+      "activePackageHash": null,
+      "activePatchBytes": 0,
+      "retainedPatchBytes": 0,
+      "knownPatchBytes": 0,
+      "retainedPatchBuffers": 0,
+      "pendingPatchBytes": 0,
+      "transactions": 0,
+      "packages": 0,
+      "candidates": 0,
+      "readLeases": 0,
+      "inFlight": 0,
+      "effectiveReadBytes": 1489831984,
+      "patchedReadBytes": 245792
+    }
+  },
+  "findings": [],
+  "interpretation": [
+    "Actual run has one candidate-validation NN call only. Restored base, old base lease and held patched lease were checked by exact bounded byte/hash rereads; rollback is not a second numerical base verification.",
+    "During candidate validation feed.inFlight=1 is the tracked validation operation; the3readLeases are retained old base, candidate validation view, and nested stage capture. Stage completion drops to2, commit to1, active capture adds1, all releases reach0.",
+    "Native package/candidate/active/old patched lease share2private buffers81936B; retained byte counter remains81936B across multiple owners. prepareLoad does not allocate another numeric patch copy. The diagnostic evidence copy81936B is a separate host allocation.",
+    "Numeric5distinct WASM capacity is54,657,024B, including32MiB ownerLoRAHike; twoORTsessions share16MiBORTMemory. Capacity is not allocator use/RSS. Disposed memories may remain weakly observed until GC.",
+    "All21static native copy/read/zero-fill categories match the frozen L512 unchanged-loop arithmetic exactly. SDK factor decoding, source I/O, wrapper snapshots and metadata/JSON transport are not an exhaustive copy inventory.",
+    "RSS/PSS sampled maxima occur at candidate-stage-constructed, covering input/SDK/admission/staging/native/export/lifecycle. PSS apportions shared mappings; RSS sums repeat shared pages. Cgroup values cover whole environment including file cache/other processes and historical peak. These are not isolated allocator/full-pipeline peaks.",
+    "Peak fields exposed by staging are null and copyCategoriesComplete=false. The LoRA receipt has no separate unknowns container/full simultaneous-live-heap count; those quantities remain unmeasured, not inferred.",
+    "Independent binary64A and its roundedF32B are frozen separately from actualSDKF32 patches. Strict consumed-byte proof may overlay actualSDKbytes without changing independent numerical A/B.",
+    "All25 local/composed numerical gates are a separate pending receipt; resource/lifecycle pass does not substitute for their acceptance."
+  ]
+}

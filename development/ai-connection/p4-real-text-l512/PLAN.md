@@ -35,33 +35,33 @@
 
 **Files:** `development/ai-connection/p4-real-text-l512/reference/`。元oracle `tools/diffusion-models/p4-cross-ffn-reference.py` の数値定義を変更しない。
 
-- [ ] 元WKT/header/data/mask/source/元receiptと保存N2 residual/timeAct1のhashを検査する。
-- [ ] bit-preserving native input artifactと全意味を含むsidecarを作り、F32 roundtripを検査する。
-- [ ] 既存gate・source/build・実行scope・入力identityを固定し、commit/hashを得る。
-- [ ] composed25cut独立参照を先行計算し、runtime前に出力hashを固定する。
+- [x] 元WKT/header/data/mask/source/元receiptと保存N2 residual/timeAct1のhashを検査する。
+- [x] bit-preserving native input artifactと全意味を含むsidecarを作り、F32 roundtripを検査する。
+- [x] 既存gate・source/build・実行scope・入力identityを固定し、commit/hashを得る。
+- [x] composed25cut独立参照を先行計算し、runtime前に出力hashを固定する。
 
 ## Task 2: 実L512専用native runnerと資源測定
 
 **Files:** `docs/shared/diffusion-models/diagnostics/p4-real-text-l512/`、`tools/diffusion-models/p4-real-text-l512-browser.py`。
 
-- [ ] 誤model/Tokenizer、L4、誤mask、payload/metadata改変の事前拒否をnative constructor前に検査する。
-- [ ] 全512行のnative capture→既存createPostSelfAttentionへ接続し、入力/出力identityを保持する。
-- [ ] 実HIGH/LOWを別browserで実行し、25cut・全head・全parameter selectionを参照へ照合する。
-- [ ] 入力保持、workspace再利用、取消/終端、session解放、read lease寿命を測る。
-- [ ] copy/staging/live spans/WASM capacity/RSS/cgroup/timeをsourceと実行環境へ結ぶ。
+- [x] 誤model/Tokenizer、L4、誤mask、payload/metadata改変の事前拒否をnative constructor前に検査する。
+- [x] 全512行のnative capture→既存createPostSelfAttentionへ接続し、入力/出力identityを保持する。
+- [x] 実HIGH/LOWを別browserで実行し、25cut・全head・全parameter selectionを参照へ照合する。
+- [x] 入力保持、workspace再利用、取消/終端、session解放、read lease寿命を測る。
+- [x] copy/staging/live spans/WASM capacity/RSS/cgroup/timeをsourceと実行環境へ結ぶ。
 
 ## Task 3: LoRA正本mapping接続
 
 **Files:** `development/ai-connection/p4-real-text-l512/lora/`、必要な公開接続moduleは取得したowner契約に基づいて決める。
 
-- [ ] 最新LoRA sourceを取得し、新canonical P4 mappingの存在・source/hashを確認する。
-- [ ] 未提供なら具体的なowner接続条件をPR2へ渡し、依存工程だけ保留する。Diffusionが低rank積を実装して埋めない。
-- [ ] 提供されたmappingをimmutable baseProvider/sink/package/実ORT matrix/Hike biasへ接続する。
-- [ ] 適用後独立参照・入力/weight/package identity・gateを固定して実行する。
-- [ ] candidate検証/切替/旧lease/復帰/取消/解放・実copy/資源を別scopeで受け入れる。
+- [x] 最新LoRA sourceを取得し、新canonical P4 mappingの存在・source/hashを確認する。
+- [x] 未提供なら具体的なowner接続条件をPR2へ渡し、依存工程だけ保留する。Diffusionが低rank積を実装して埋めない。
+- [x] 提供されたmappingをimmutable baseProvider/sink/package/実ORT matrix/Hike biasへ接続する。
+- [x] 適用後独立参照・入力/weight/package identity・gateを固定して実行する。
+- [x] candidate検証/切替/旧lease/復帰/解放・実copy/資源を別scopeで受け入れる。実LoRA取消は今回未受入として分離する。
 
 ## Task 4: 結果の返却
 
-- [ ] base実Textと実LoRAを別scopeでRESULT/API差分・source/build・reuse/new・未受入へ整理する。
-- [ ] 固定sourceの取得path/bytes/SHA-256・公開manifest・再現手順を付けてGitHubへpushし、Draft PR14と管理/LoRA/Textへ返す。
-- [ ] merge・Pages公開を別記し、送信/本人ACK/数値受入を分ける。
+- [x] base実Textと実LoRAを別scopeでRESULT/API差分・source/build・reuse/new・未受入へ整理する。
+- [ ] 固定sourceの取得path/bytes/SHA-256・公開manifest・再現手順を付けてGitHubへpushし、Draft PR14と管理/LoRA/Textへ返す（最終返却工程）。
+- [x] merge・Pages公開を別記し、送信/本人ACK/数値受入を分ける。

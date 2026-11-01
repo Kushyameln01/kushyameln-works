@@ -1,5 +1,7 @@
 # 実L512後のLoRA共同受入に必要な入力
 
+この文書はa80取得直後の接続計画を保持する。記載したLOW Q4/bias4 +1の実L512受入はその後完了し、現状は [LORA-RESULT.md](../LORA-RESULT.md) と [STATUS.json](STATUS.json) が正本。以下の将来形は当時の計画であり、他範囲への受入を主張しない。
+
 実Textを消費したbaseのHIGH1/LOW3は、各local25+composed25の全値比較に通過した。
 これはLoRAなしの固定N2/block0受入である。新canonical mappingは下記a80で取得した。実L512のLoRA F32 package・
 適用後の独立参照と実受入は次工程として作成・検証する。旧Q16やsignbit fixtureをこの不足の代わりにしない。

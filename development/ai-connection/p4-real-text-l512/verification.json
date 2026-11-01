@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "bernini-p4-real-l512-verification/0.1",
+  "status": "PASS_SEPARATE_BASE_AND_LIMITED_REAL_LORA_SCOPES",
+  "recordedAtUTC": "2026-11-01T17:13:02.932146+00:00",
+  "base": {
+    "accepted": true,
+    "scope": "real L512 fixed N2 block0 HIGH1/LOW3 independently",
+    "numericalSummary": "BASE-NUMERICAL-SUMMARY.json",
+    "localAndComposedValuesPerSide": 31854592,
+    "failed": 0,
+    "consumedSelectionsPerSide": 29,
+    "runtimeSource": "994ebb9ce01c9e95db9cd18eb877a981152693c5",
+    "independentChecks": 1206
+  },
+  "realLora": {
+    "accepted": true,
+    "scope": "real L512 saved LOW3 N2/block0 lightLOW crossQ4 full5120 and bias4 strength+1 PARTIAL",
+    "numericalSummary": "LORA-NUMERICAL-SUMMARY.json",
+    "independentAWeightValues": 20480,
+    "independentABiasValues": 4,
+    "localAndComposedValues": 31854592,
+    "failed": 0,
+    "consumedSelections": 29,
+    "nativeRuns": 1,
+    "commitEpoch": 1,
+    "rollbackEpoch": 2,
+    "rollbackProof": "exact byte readback, no extra NN",
+    "source": "db5df292b21366ec385d92bb281b5f3ee74183c4",
+    "ownerSource": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+    "independentNumericChecks": 500,
+    "independentSourceChecks": 378,
+    "resourceChecks": 50,
+    "independentAndActualSDKPatchArtifactsSeparate": true
+  },
+  "resourceScope": {
+    "baseNumericalWasmCapacityBytes": 21102592,
+    "loraNumericalWasmCapacityBytes": 54657024,
+    "baseKnownNamedPartialLiveBytes": 88937984,
+    "knownRetainedStageBytesAreNotAddedToOtherSpans": true,
+    "copyCountersAreCumulative": true,
+    "hostAllocatorPeakBytes": null,
+    "wholePipelinePeakBytes": null,
+    "FileBackingBytes": null,
+    "memorySamplesCanMissShortPeaks": true
+  },
+  "preflight": "PREFLIGHT.json",
+  "sourceFailureBeforeNative": "attempts/source-admission-1/RESULT.json",
+  "numericalGatesRelaxed": false,
+  "originalCoreAndOperatorKernelChanged": false,
+  "APIChanges": [
+    "New fixed-real-L512 diagnostic entry and bounded private binary transport",
+    "New actual canonical LoRA L512 diagnostic and pinned owner HTTP overlay; no new RPC/MessagePort generation op"
+  ],
+  "notAccepted": [
+    "Production latent/token shapes and original GPU precision",
+    "Whole model/all blocks/final head, original positive/negative/ordered contexts",
+    "Actual HIGH-to-LOW handoff and whole-pipeline resource budget",
+    "Generated sample/latent restoration/VAE decode",
+    "Other LoRA sides/pairs/strengths/ranges/all targets/two sets composed",
+    "Post-commit or post-rollback model NN execution",
+    "Actual LoRA cancellation/reapply/validation-failure recovery",
+    "Management common catalog adoption/joint snapshot and recipient final acceptance"
+  ],
+  "managementAdopted": false,
+  "jointSnapshotPublished": false,
+  "generationReady": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY",
+  "merge": false,
+  "pagesPublication": false
+}
