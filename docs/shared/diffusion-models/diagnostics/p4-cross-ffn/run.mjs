@@ -4,6 +4,46 @@ import {createResourceObserver} from '../resource-observer/observer.mjs';
 
 const demand=(value,message)=>{if(!value)throw Error(message);};
 const sha=async value=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',value)),x=>x.toString(16).padStart(2,'0')).join('');
+const FIXTURE_DATA_SHA256='0cd4fa87e24e6d875207aca52cc214a1b46157a886d4c090fb7c5cfc9a5925ae';
+const FIXTURE_MASK_SHA256='252c0b6b080fa045acfcd1437f693f3be2be2ac8223ea525d492fa19ab028942';
+const FIXTURE_CONTRACT_SHA256='17102144ab54236bc0dc28d3e2d083b5a5c850c48f0ada86aa4b06c89bab6338';
+
+/** Private JSON transport: preserve -0 for JS and Python JSON readers. */
+export function stringifyP4DiagnosticArtifact(value){
+ const seen=new WeakSet();
+ function encode(item,inArray=false){
+  if(item===null)return 'null';
+  if(item===undefined&&inArray)return 'null';
+  if(typeof item==='number'){demand(Number.isFinite(item),'Diagnostic JSON numbers must be finite');return Object.is(item,-0)?'-0.0':JSON.stringify(item);}
+  if(typeof item==='string'||typeof item==='boolean')return JSON.stringify(item);
+  demand(item&&typeof item==='object','Diagnostic JSON contains an unsupported value');
+  demand(!seen.has(item),'Diagnostic JSON cycle is unsupported');
+  demand(Array.isArray(item)||Object.getPrototypeOf(item)===Object.prototype||Object.getPrototypeOf(item)===null,'Diagnostic JSON object type is unsupported');
+  seen.add(item);let text;
+  if(Array.isArray(item))text='['+Array.from(item,v=>encode(v,true)).join(',')+']';
+  else{
+   demand(Reflect.ownKeys(item).every(key=>typeof key==='string'),'Diagnostic JSON symbol fields are unsupported');
+   const entries=[];for(const key of Object.keys(item)){const descriptor=Object.getOwnPropertyDescriptor(item,key);demand(Object.hasOwn(descriptor,'value'),'Diagnostic JSON accessors are unsupported');if(descriptor.value!==undefined)entries.push(JSON.stringify(key)+':'+encode(descriptor.value));}
+   text='{'+entries.join(',')+'}';
+  }
+  seen.delete(item);return text;
+ }
+ return encode(value);
+}
+
+/** Byte admission precedes observer installation and every native constructor. */
+export async function verifyP4FixtureBinding(payload){
+ const conditioning=payload?.conditioning,bindings=payload?.inputBindings;
+ demand(JSON.stringify(conditioning?.shape)==='[1,4,4096]'&&Array.isArray(conditioning.data)&&conditioning.data.length===16384,'Frozen conditioning shape/count required');
+ demand(Array.isArray(conditioning.attentionMask)&&conditioning.attentionMask.length===4&&conditioning.attentionMask.every(v=>v===0||v===1),'Frozen conditioning mask shape/values required');
+ const data=Float32Array.from(conditioning.data),mask=Uint8Array.from(conditioning.attentionMask);
+ demand(data.every(Number.isFinite),'Finite conditioning data required');
+ const dataHash=await sha(data),maskHash=await sha(mask);
+ demand(dataHash===bindings?.conditioningDataSHA256,'Declared conditioning data hash mismatch before native construction');
+ demand(maskHash===bindings?.conditioningMaskSHA256,'Declared conditioning mask hash mismatch before native construction');
+ demand(dataHash===FIXTURE_DATA_SHA256&&maskHash===FIXTURE_MASK_SHA256&&bindings.fixtureContractSHA256===FIXTURE_CONTRACT_SHA256,'Frozen conditioning fixture/contract hash mismatch before native construction');
+ return {conditioningDataSHA256:dataHash,conditioningMaskSHA256:maskHash,fixtureContractSHA256:FIXTURE_CONTRACT_SHA256};
+}
 const metricContainers=new Set(['source','base','hike','linear','math','attention','resources','elapsed','before','after','operatorSources','inputHashes','outputHashes','weightFeed']);
 const metricFlags=new Set(['busy','disposed','cleanupPending','pendingTensors','workspaceReused','innerSplit','completedRuns','cancelledRuns','runs','scoreRuns','sessionCreations','activeORTSessions','projectionTiles','tiles','attentionTiles','epoch','packageHash','activePackageHash','memoryIdentity','graphSHA256','scoreGraphSHA256','mathWasmSHA256','bridgeWasmSHA256','attentionWasmSHA256','ortVersion','fullFileHashRecomputed']);
 const metricName=key=>metricFlags.has(key)||/(?:Bytes|Count|Calls|Reads|Ms|SHA256|Hash|Epoch|TrafficBytes)$/.test(key);
@@ -66,8 +106,9 @@ export async function createP4DiagnosticOwner(file,side){
 }
 
 export async function runP4CrossFfn(file,payload){
+ const conditioningBitBinding=await verifyP4FixtureBinding(payload);
  const observer=createResourceObserver({modules:payload.modules});observer.install();
- let current=null,oldTail=null,probe=null;const phases=[],boundaries={};let progressCount=0;
+ let current=null,oldTail=null,probe=null;const phases=[],boundaries={conditioningBitBinding:{passed:true,...conditioningBitBinding}};let progressCount=0;
  const capture=(phase,stats={},namedSpans=[],details={})=>{const memory=observer.snapshot(phase),row={phase,memory,stats:publicMetrics(stats),namedSpans,observableDistinctCapacityBytes:memory.memories.every(v=>v.capacityBytes!==null)?memory.memories.reduce((n,v)=>n+v.capacityBytes,0):null,scope:'Observed distinct physical linear-memory capacity; disposed memories can remain alive until GC. Not allocator use or whole-pipeline peak.',...details};phases.push(row);return row;};
  const input=conditioning=>({residual:Float32Array.from(payload.residual),timeAct1:Float32Array.from(payload.timeAct1),conditioning});
  const oldOutputs={};
@@ -121,7 +162,7 @@ export async function runP4CrossFfn(file,payload){
   boundaries.disposeDuringRun.passed=true;await probe.dispose();probe=null;
   await oldTail.dispose();oldTail=null;await observer.settle();
   const artifact={schemaVersion:'bernini-p4-runtime-arrays/0.1',side:payload.side,candidatePlanSHA256:payload.candidatePlanSHA256,inputBindings:payload.inputBindings,arrays:Object.fromEntries(Object.entries(arrays).map(([key,value])=>[key,Array.from(value)])),evidence:result.evidence};
-  const privateArtifactText=JSON.stringify(artifact)+'\n',privateArtifactSHA256=await sha(new TextEncoder().encode(privateArtifactText));
+  const privateArtifactText=stringifyP4DiagnosticArtifact(artifact)+'\n',privateArtifactSHA256=await sha(new TextEncoder().encode(privateArtifactText));
   return {schemaVersion:'bernini-p4-cross-ffn-browser/0.1',passed:true,status:'MEASURED_NUMERICAL_COMPARISON_PENDING',numericalAccepted:false,side:payload.side,candidatePlanSHA256:payload.candidatePlanSHA256,inputBindings:payload.inputBindings,outputIdentities:identities,boundaries,phases,
    topology:{oldTailNumericalRerun:false,retainedOldOutputCount:5,retainedOldOutputBytes:oldOutputBytes,p4AloneActiveORTSessions:constructedStats.activeORTSessions,combinedActiveORTSessions:finalStats.activeORTSessions+oldBefore.activeORTSessions,distinctORTMemoryCount:ort.length,sessionCountIsMemoryCount:false,aloneObservedCapacityBytes:alone.observableDistinctCapacityBytes,combinedObservedCapacityBytes:combined.observableDistinctCapacityBytes,totalPeakBytes:null,scope:'New P4 plus constructed idle fixed tail and five saved old outputs; no old-tail numerical rerun, previous prefix/self-attention owners, generation pipeline or production peak.'},
    stagingAndCopies:{...publicMetrics(result.evidence.resources),elapsedMs,copyCountersAreCumulativeTraffic:true,copyCategoriesComplete:false,unmeasuredHostCopyBytes:null,namedSpanSumsArePeak:false,hostPeakBytes:null,scope:'Named owner counters only; host addBias compact copies, F16 raw-to-bits assembly and attention-to-global-context assembly are not an exhaustive copy inventory.'},evidence:publicEvidence(result.evidence),observer:{...observer.diagnostics(),boundedProgressObservationCount:progressCount},

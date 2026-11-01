@@ -1,7 +1,7 @@
 // Actual immutable-base provider -> caller final-F32 fixture -> sink -> runtime.
 // This diagnostic has no adapter/product/strength arithmetic.
 import {createResourceObserver} from '../resource-observer/observer.mjs';
-import {publicEvidence,publicMetrics,outputIdentities} from './run.mjs';
+import {publicEvidence,publicMetrics,outputIdentities,stringifyP4DiagnosticArtifact} from './run.mjs';
 
 const SCHEMA='bernini-p4-final-f32-patches/0.1',SHA=/^[a-f0-9]{64}$/;
 const KEYS=['modelHash','graphHash','registryHash','side','executionProfileId','scope'];
@@ -21,6 +21,16 @@ export function finalF32Fixture(values){
 
 export function publicPatchMetadata(block){return {...pick(block,['weightId','offset','count','dtype','sha256']),fullShape:[...block.fullShape],binding:pick(block.binding,['kind','name'])};}
 export function publicValidation(value){return {...pick(value,['schemaVersion',...KEYS,'candidateId','packageHash','valid','referenceId','gateId','expectedSHA256','outputSHA256','inputHashes','inputBindingHash','tolerance','maxAbsoluteError','failedValues','modelInference','generationReady','canonicalLoraAdapterExtension']),...(value?.evidence?{evidence:publicEvidence(value.evidence)}:{})};}
+
+/** Pure admission, separately callable before any model File/operator exists. */
+export async function captureP4FeedInputs(payload){
+ const {captureP4FixtureConditioning}=await import('../../ort-bridge/post-self-attention/conditioning.mjs');
+ demand(payload.trustedInputs.side===payload.side&&payload.trustedInputs.tokens===2&&payload.trustedInputs.blockIndex===0,'Saved side/block/N2 input binding required');
+ const input={residual:Float32Array.from(payload.residual),timeAct1:Float32Array.from(payload.timeAct1),conditioning:captureP4FixtureConditioning({...payload.conditioning,data:Float32Array.from(payload.conditioning.data),attentionMask:Uint8Array.from(payload.conditioning.attentionMask)})};
+ demand(await sha(input.residual)===payload.savedArrayIdentities.residual.sha256&&await sha(input.timeAct1)===payload.trustedInputs.fullPrefix.timeAct1SHA256,'Saved residual/time exact binding mismatch');
+ demand(await sha(input.conditioning.data)===payload.inputBindings.conditioningDataSHA256&&await sha(input.conditioning.attentionMask)===payload.inputBindings.conditioningMaskSHA256,'Conditioning data/mask input binding mismatch');
+ return input;
+}
 
 /** Admit only this separately named Q-weight/Q-bias diagnostic fixture. */
 export async function parseFinalF32Patches(text,{side,candidatePlanSHA256}){
@@ -52,7 +62,7 @@ export async function prepareP4FinalF32(file,payload){
    const block={...target,dtype:'F32',sha256:await sha(fixture.data),data:Array.from(fixture.data)};patches.push(block);
    ownership.push({...publicPatchMetadata(block),baseF32SHA256:baseSHA256,independentOwnedF32Copies:true,providerMutationObserved:false,secondOriginalReadUnchanged:true,changedElements:fixture.changedElements,changedElementIndex:fixture.changedElementIndex,fixtureTransform:fixture.transform});
   }
-  const artifact={schemaVersion:SCHEMA,side:payload.side,candidatePlanSHA256:payload.candidatePlanSHA256,patches},privatePatchText=JSON.stringify(artifact)+'\n';
+  const artifact={schemaVersion:SCHEMA,side:payload.side,candidatePlanSHA256:payload.candidatePlanSHA256,patches},privatePatchText=stringifyP4DiagnosticArtifact(artifact)+'\n';
   return {schemaVersion:'bernini-p4-final-f32-prepare/0.1',passed:true,side:payload.side,candidatePlanSHA256:payload.candidatePlanSHA256,inputClass:'caller-final-f32-feed-fixture',registry:publicFeedRegistry(registry),patches:ownership,privatePatchSHA256:await sha(new TextEncoder().encode(privatePatchText)),resources:publicMetrics(feed.stats()),lowRankMathImplemented:false,fullFileHashRecomputed:false,generationReady:false,privatePatchText};
  }finally{await feed?.dispose();await source?.dispose();}
 }
@@ -68,10 +78,7 @@ export async function validateP4FinalF32(file,payload){
  const observer=createResourceObserver({modules:payload.modules});observer.install();let source,feed,sink,handle,candidate,oldLease,result,stage;const phases=[];
  const capture=(phase,stats={})=>{const memory=observer.snapshot(phase);phases.push({phase,memory,stats:publicMetrics(stats),observableDistinctCapacityBytes:memory.memories.every(v=>v.capacityBytes!==null)?memory.memories.reduce((n,v)=>n+v.capacityBytes,0):null});};
  try{
-  const [{captureP4FixtureConditioning},{createPostSelfAttention}]=await Promise.all([import('../../ort-bridge/post-self-attention/conditioning.mjs'),import('../../ort-bridge/post-self-attention/stage.mjs')]);
-  const input={residual:Float32Array.from(payload.residual),timeAct1:Float32Array.from(payload.timeAct1),conditioning:captureP4FixtureConditioning({...payload.conditioning,data:Float32Array.from(payload.conditioning.data),attentionMask:Uint8Array.from(payload.conditioning.attentionMask)})};
-  demand(await sha(input.residual)===payload.savedArrayIdentities.residual.sha256&&await sha(input.timeAct1)===payload.trustedInputs.fullPrefix.timeAct1SHA256,'Saved residual/time exact binding mismatch');
-  demand(await sha(input.conditioning.data)===payload.inputBindings.conditioningDataSHA256&&await sha(input.conditioning.attentionMask)===payload.inputBindings.conditioningMaskSHA256,'Conditioning data/mask input binding mismatch');
+  const input=await captureP4FeedInputs(payload),{createPostSelfAttention}=await import('../../ort-bridge/post-self-attention/stage.mjs');
   capture('before-feed-construction');({source,feed}=await createFeed(file,payload.side));const registry=feed.registry(),id=identity(registry),ctx={...id,isCurrent:()=>true};requireActualFP8Q(registry);
   oldLease=feed.captureSource();const baseHashes=[];for(const p of patches.patches)baseHashes.push(await sha((await blockRead(oldLease,p)).values));
   const basePackageHash=oldLease.describe().packageHash;sink=feed.createSink();await sink.begin({...id,patches:patches.patches.map(p=>pick(p,['weightId','offset','count']))});
@@ -93,7 +100,7 @@ export async function validateP4FinalF32(file,payload){
   for(let i=0;i<patches.patches.length;i++){const p=patches.patches[i],restored=await blockRead(feed,p),provider=await feed.baseProvider.readBlock(p.weightId,p.offset,p.count,{...id,fullShape:p.fullShape});demand(await sha(restored.values)===baseHashes[i]&&await sha(provider)===baseHashes[i],'Rollback/provider immutable-base bits mismatch');}
   const finalStats=feed.stats();oldLease.release();oldLease=null;await observer.settle();capture('feed-restored-base',finalStats);
   demand(observer.diagnostics().unknownModuleCount===0&&observer.diagnostics().hashFailures===0&&observer.diagnostics().observationFailures===0&&observer.diagnostics().memoryImportObservationComplete,'Complete actual-stage memory hash observation required');
-  const artifact={schemaVersion:'bernini-p4-runtime-arrays/0.1',side:payload.side,candidatePlanSHA256:payload.candidatePlanSHA256,inputBindings:payload.inputBindings,arrays:Object.fromEntries(Object.entries(arrays).map(([k,v])=>[k,Array.from(v)])),evidence:result.evidence},privateArtifactText=JSON.stringify(artifact)+'\n';
+  const artifact={schemaVersion:'bernini-p4-runtime-arrays/0.1',side:payload.side,candidatePlanSHA256:payload.candidatePlanSHA256,inputBindings:payload.inputBindings,arrays:Object.fromEntries(Object.entries(arrays).map(([k,v])=>[k,Array.from(v)])),evidence:result.evidence},privateArtifactText=stringifyP4DiagnosticArtifact(artifact)+'\n';
   return {schemaVersion:'bernini-p4-final-f32-browser/0.1',passed:true,numericalAccepted:true,side:payload.side,candidatePlanSHA256:payload.candidatePlanSHA256,inputBindings:payload.inputBindings,registry:publicFeedRegistry(registry),validation:publicValidation(validation),referenceSHA256:payload.referenceSHA256,patchArtifactSHA256:payload.inputBindings.finalF32PatchArtifactSHA256,outputIdentities:identities,patches:active,
    boundaries:{actualCandidateStageRun:true,commitAfterValid:true,committedEpoch:committed.epoch,oldBaseLeaseUnchangedAcrossSwitch:true,activeBytesAfterPackageRelease:true,rollbackRestoredBase:true,rollbackEpoch:rollback.epoch,baseProviderUnchanged:true,baseOutputHashCompared:!!payload.baseOutputSHA256,baseOutputSHA256:payload.baseOutputSHA256??null,restoreVerification:'bounded target reread; stage not rerun'},
    resources:{...publicMetrics(finalStats),feedOwnership:pick(finalStats,['transactions','packages','candidates','readLeases','inFlight','retainedPatchBuffers','retainedPatchBytes','pendingPatchBytes','activePatchBytes','knownPatchBytes']),elapsedMs:performance.now()-began,phases,stageResources:publicMetrics(result.evidence.resources),copyCountersAreCumulativeTraffic:true,copyCategoriesComplete:false,unmeasuredHostCopyBytes:null,fullPipelinePeakBytes:null,hostPeakBytes:null,totalPeakBytes:null,scope:'Separate actual feed candidate stage plus retained private reference/input/output arrays; no old-tail owner and no combined-pipeline peak claim. Copy inventory omits host addBias compact copies, F16 raw-to-bits assembly and attention-to-global-context assembly'},observer:observer.diagnostics(),acceptance:{inputClass:'caller-final-f32-feed-fixture',lowRankMathImplemented:false,canonicalLoraAdapterExtension:'PENDING',fixtureConditioning:true,textEncoderProducerVerified:false,modelInference:false,generationReady:false,load:'NOT_READY',predict:'NOT_READY',sample:'NOT_READY'},privateArtifactText,privateArtifactSHA256:await sha(new TextEncoder().encode(privateArtifactText))};

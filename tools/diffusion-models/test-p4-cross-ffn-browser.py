@@ -6,8 +6,10 @@ import inspect
 import json
 import math
 import os
+import struct
 from pathlib import Path
 import tempfile
+import threading
 import unittest
 
 SCRIPT = Path(__file__).with_name('p4-cross-ffn-browser.py')
@@ -199,6 +201,55 @@ class BrowserAdmission(unittest.TestCase):
             with self.subTest(scope=scope):
                 with self.assertRaisesRegex(ValueError, 'patch scope'):
                     module.verify_parameter_identities(actual, expected, patch_scope=scope)
+
+    def test_json_browser_transport_preserves_both_zero_signs_and_frozen_fixture_bits(self):
+        module = self.harness()
+        self.assertTrue(hasattr(module, 'encode_browser_payload'), 'Bit-preserving browser JSON transport is missing')
+        reference = module.module_at('p4-cross-ffn-reference')
+        data, mask, contract = reference.fixture_conditioning()
+        payload = {'signedZero': [0.0, -0.0, 1.25, -2.5], 'data': data.reshape(-1).tolist(), 'mask': mask.tolist()}
+        encoded = module.encode_browser_payload(payload)
+        self.assertIsInstance(encoded, str)
+        from playwright.sync_api import sync_playwright
+        server = module.http.server.ThreadingHTTPServer(('127.0.0.1', 0), module.handler_for(module.ROOT / 'docs'))
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        try:
+            with sync_playwright() as playwright:
+                browser = playwright.chromium.launch(executable_path='/usr/bin/chromium', headless=True, args=['--disable-dev-shm-usage'])
+                try:
+                    page = browser.new_page()
+                    page.goto(f'http://127.0.0.1:{server.server_port}/')
+                    result = page.evaluate("""async text=>{const p=JSON.parse(text),zero=Float32Array.from(p.signedZero),data=Float32Array.from(p.data),mask=Uint8Array.from(p.mask);const sha=async bytes=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),x=>x.toString(16).padStart(2,'0')).join('');const {stringifyP4DiagnosticArtifact}=await import('/shared/diffusion-models/diagnostics/p4-cross-ffn/run.mjs');return {zeroBytes:Array.from(new Uint8Array(zero.buffer)),fixtureSHA256:await sha(data),maskSHA256:await sha(mask),signedZeroText:stringifyP4DiagnosticArtifact({data:Array.from(zero)}),wasmRequests:performance.getEntriesByType('resource').filter(v=>new URL(v.name).pathname.endsWith('.wasm')).length};}""", encoded)
+                    self.assertEqual(bytes(result['zeroBytes']), struct.pack('<4f', 0., -0., 1.25, -2.5))
+                    self.assertEqual(result['fixtureSHA256'], contract['dataSHA256'])
+                    self.assertEqual(result['maskSHA256'], contract['attentionMaskSHA256'])
+                    self.assertEqual(struct.pack('<4f', *json.loads(result['signedZeroText'])['data']), struct.pack('<4f', 0., -0., 1.25, -2.5))
+                    self.assertEqual(result['wasmRequests'], 0)
+                finally:
+                    browser.close()
+        finally:
+            server.shutdown()
+            server.server_close()
+
+    def test_private_serialization_checks_all_native_output_hashes_before_write(self):
+        module = self.harness()
+        self.assertTrue(hasattr(module, 'verify_private_artifact_text'), 'Private artifact/native output identity guard is missing')
+        reference = module.module_at('p4-cross-ffn-reference')
+        arrays, identities = {}, {}
+        for name, shape in reference.ARRAY_SHAPES.items():
+            shape = [4 if n == 'L' else n for n in shape]
+            arrays[name] = [0.0] * math.prod(shape)
+            if name == 'ffnGelu':
+                arrays[name][0] = -0.0
+            raw = struct.pack('<' + str(len(arrays[name])) + 'f', *arrays[name])
+            identities[name] = {'shape': shape, 'elements': len(arrays[name]), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+        artifact = {'schemaVersion': 'bernini-p4-runtime-arrays/0.1', 'arrays': arrays,
+                    'evidence': {'outputHashes': {name + 'SHA256': value['sha256'] for name, value in identities.items()}}}
+        text = json.dumps(artifact, separators=(',', ':'), allow_nan=False)
+        proof = module.verify_private_artifact_text(text, identities)
+        self.assertEqual(proof['verifiedOutputCount'], 25)
+        with self.assertRaisesRegex(ValueError, 'serialized.*bits'):
+            module.verify_private_artifact_text(text.replace('-0.0', '0.0'), identities)
 
 
 if __name__ == '__main__':

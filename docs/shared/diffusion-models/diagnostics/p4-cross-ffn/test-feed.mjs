@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 const {finalF32Fixture,parseFinalF32Patches,publicPatchMetadata,publicValidation,publicFeedRegistry}=await import('./feed.mjs');
+const {stringifyP4DiagnosticArtifact}=await import('./run.mjs');
 const hash=x=>createHash('sha256').update(new Uint8Array(x.buffer,x.byteOffset,x.byteLength)).digest('hex');
 const base=new Float32Array([0,1,-2,3]);
 const fixture=finalF32Fixture(base);
@@ -18,6 +19,12 @@ const patch={weightId:'blocks.0.cross_attn.q.weight',fullShape:[5120,5120],offse
 const payload={schemaVersion:'bernini-p4-final-f32-patches/0.1',side:'HIGH',candidatePlanSHA256:id,patches:[patch]};
 const parsed=await parseFinalF32Patches(JSON.stringify(payload),{side:'HIGH',candidatePlanSHA256:id});
 assert(parsed.patches[0].data instanceof Float32Array);assert.equal(parsed.patches[0].sha256,patch.sha256);
+const signedData=new Float32Array(data);signedData[1]=-0;
+const signedPatchText=stringifyP4DiagnosticArtifact({...payload,patches:[{...patch,sha256:hash(signedData),data:Array.from(signedData)}]});
+const signedParsed=await parseFinalF32Patches(signedPatchText,{side:'HIGH',candidatePlanSHA256:id});
+assert.equal(hash(signedParsed.patches[0].data),hash(signedData));assert(Object.is(signedParsed.patches[0].data[1],-0));
+const signs=new Float32Array([0,-0]),privateActual=JSON.parse(stringifyP4DiagnosticArtifact({arrays:{probe:Array.from(signs)}}));
+assert.equal(hash(Float32Array.from(privateActual.arrays.probe)),hash(signs));
 for(const changes of [{fullShape:[4,5120]},{binding:{kind:'initializer',name:patch.weightId}},{count:1},{sha256:'b'.repeat(64)},{dtype:'F16'}])await assert.rejects(()=>parseFinalF32Patches(JSON.stringify({...payload,patches:[{...patch,...changes}]}),{side:'HIGH',candidatePlanSHA256:id}));
 await assert.rejects(()=>parseFinalF32Patches(JSON.stringify({...payload,side:'LOW'}),{side:'HIGH',candidatePlanSHA256:id}),/side/);
 await assert.rejects(()=>parseFinalF32Patches(JSON.stringify({...payload,patches:[{...patch,weightId:'blocks.0.cross_attn.o.weight',binding:{kind:'runtime-input',name:'blocks.0.cross_attn.o.weight'}}]}),{side:'HIGH',candidatePlanSHA256:id}),/binding/);

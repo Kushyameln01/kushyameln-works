@@ -34,6 +34,13 @@ def require(condition, message):
         raise ValueError(message)
 
 
+def browser_payload_argument(payload):
+    # This Playwright Python version maps both float(+0) and float(-0) to JS -0.
+    # JSON text crosses that serializer as one string; JSON.parse preserves the
+    # sign of every zero in the original finite numeric payload.
+    return _base.encode_browser_payload(payload)
+
+
 def private_input(path):
     path = Path(path)
     require(path.is_absolute() and path.resolve().is_relative_to(Path('/tmp')), 'Private input must stay under /tmp')
@@ -270,8 +277,12 @@ def main():
                 page.set_content('<input type=file id=model>')
                 page.locator('#model').set_input_files(str(model))
                 payload['phase'] = 'prepare' if args.prepare else 'validate'
-                result = page.evaluate("""async p=>{const names=['compile','compileStreaming','instantiate','instantiateStreaming','Instance'],originals=names.map(k=>WebAssembly[k]);const m=await import('/shared/diffusion-models/diagnostics/p4-cross-ffn/feed.mjs');const fn=p.phase==='prepare'?m.prepareP4FinalF32:m.validateP4FinalF32;const r=await fn(document.querySelector('#model').files[0],p);if(!names.every((k,i)=>WebAssembly[k]===originals[i]))throw Error('Observer not restored');r.observerRestoredAfterRun=true;return r;}""", payload)
+                result = page.evaluate("""async text=>{const p=JSON.parse(text),names=['compile','compileStreaming','instantiate','instantiateStreaming','Instance'],originals=names.map(k=>WebAssembly[k]);const m=await import('/shared/diffusion-models/diagnostics/p4-cross-ffn/feed.mjs');const fn=p.phase==='prepare'?m.prepareP4FinalF32:m.validateP4FinalF32;const r=await fn(document.querySelector('#model').files[0],p);if(!names.every((k,i)=>WebAssembly[k]===originals[i]))throw Error('Observer not restored');r.observerRestoredAfterRun=true;return r;}""", browser_payload_argument(payload))
                 private_text = result.pop('privatePatchText' if args.prepare else 'privateArtifactText')
+                if args.prepare:
+                    ref.validate_patches(json.loads(private_text), args.side, ref.load_plan())
+                else:
+                    _base.verify_private_artifact_text(private_text, result['outputIdentities'])
                 private_raw = private_write(private_path, private_text)
                 require(sha(private_raw) == result['privatePatchSHA256' if args.prepare else 'privateArtifactSHA256'], 'Private artifact serialization changed')
                 if args.prepare:

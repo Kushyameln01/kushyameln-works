@@ -35,10 +35,33 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
+def encode_browser_payload(payload):
+    # Playwright's Python float serializer in the installed version treats
+    # +0.0 as -0. Send one string and let native JSON.parse preserve both signs.
+    return json.dumps(payload, separators=(',', ':'), allow_nan=False)
+
+
 def f32_bytes(values):
     if not isinstance(values, list) or not all(isinstance(v, (int, float)) and math.isfinite(v) for v in values):
         raise ValueError('Finite F32 arrays required')
     return struct.pack('<' + str(len(values)) + 'f', *values)
+
+
+def verify_private_artifact_text(text, output_identities):
+    """Fail before writing if JSON transport changed any native output bits."""
+    reference = module_at('p4-cross-ffn-reference')
+    artifact = json.loads(text)
+    arrays, hashes = artifact.get('arrays', {}), artifact.get('evidence', {}).get('outputHashes', {})
+    if artifact.get('schemaVersion') != 'bernini-p4-runtime-arrays/0.1' or set(arrays) != set(reference.ARRAY_SHAPES) or set(output_identities) != set(reference.ARRAY_SHAPES) or set(hashes) != {key + 'SHA256' for key in reference.ARRAY_SHAPES}:
+        raise ValueError('Private serialized output requires all25 native array identities')
+    for name, shape in reference.ARRAY_SHAPES.items():
+        shape = [4 if n == 'L' else n for n in shape]
+        identity = output_identities[name]
+        raw = f32_bytes(arrays[name])
+        actual_hash = sha(raw)
+        if identity.get('shape') != shape or identity.get('elements') != math.prod(shape) or identity.get('bytes') != len(raw) or len(raw) != math.prod(shape) * 4 or actual_hash != identity.get('sha256') or actual_hash != hashes.get(name + 'SHA256'):
+            raise ValueError('Private serialized output bits differ from native identity: ' + name)
+    return {'verifiedOutputCount': len(arrays), 'strictNativeOutputBits': True}
 
 
 def load_saved_inputs(side, saved_dir=SAVED):
@@ -374,8 +397,9 @@ def main():
                     page.goto(f'http://127.0.0.1:{server.server_port}/')
                     page.set_content('<input type=file id=model>')
                     page.locator('#model').set_input_files(str(model))
-                    result = page.evaluate("""async p=>{const names=['compile','compileStreaming','instantiate','instantiateStreaming','Instance'],originals=names.map(k=>WebAssembly[k]);const m=await import('/shared/diffusion-models/diagnostics/p4-cross-ffn/run.mjs');const result=await m.runP4CrossFfn(document.querySelector('#model').files[0],p);if(!names.every((k,i)=>WebAssembly[k]===originals[i]))throw Error('Observer not restored');result.observerRestoredAfterRun=true;return result;}""", payload)
+                    result = page.evaluate("""async text=>{const p=JSON.parse(text),names=['compile','compileStreaming','instantiate','instantiateStreaming','Instance'],originals=names.map(k=>WebAssembly[k]);const m=await import('/shared/diffusion-models/diagnostics/p4-cross-ffn/run.mjs');const result=await m.runP4CrossFfn(document.querySelector('#model').files[0],p);if(!names.every((k,i)=>WebAssembly[k]===originals[i]))throw Error('Observer not restored');result.observerRestoredAfterRun=true;return result;}""", encode_browser_payload(payload))
                     private_text = result.pop('privateArtifactText')
+                    result['boundaries']['privateArtifactNativeBits'] = verify_private_artifact_text(private_text, result['outputIdentities'])
                     private_raw = private_write(private_path, private_text)
                     if sha(private_raw) != result['privateArtifactSHA256']:
                         raise ValueError('Private artifact serialization changed')

@@ -442,11 +442,21 @@ def runtime_cuts(path, side, rows, bindings):
     require(payload.get('schemaVersion') == 'bernini-p4-runtime-arrays/0.1' and payload.get('side') == side and payload.get('candidatePlanSHA256') == PLAN_SHA256, 'Explicit P4 runtime-cut schema/side/plan binding required')
     expected_binding = runtime_binding(bindings)
     require(payload.get('inputBindings') == expected_binding, 'Runtime-cut input identity mismatch')
+    plan = load_plan()
+    case = plan['cases'][side]
+    evidence = payload.get('evidence')
+    require(isinstance(evidence, dict) and evidence.get('schemaVersion') == 'bernini-post-self-attention-evidence/0.1' and evidence.get('executionProfileId') == plan['profileId'] and evidence.get('side') == side, 'Exact runtime evidence required before reading cuts')
+    input_hashes = evidence.get('inputHashes')
+    expected_input_hashes = {'residualSHA256': case['residualSHA256'], 'timeAct1SHA256': case['timeAct1SHA256'], 'conditioningSHA256': bindings['conditioningDataSHA256'], 'conditioningMaskSHA256': bindings['conditioningMaskSHA256']}
+    require(isinstance(input_hashes, dict) and all(input_hashes.get(key) == value for key, value in expected_input_hashes.items()), 'Runtime input bit hashes mismatch saved inputs or declared conditioning')
     arrays = payload.get('arrays')
     require(isinstance(arrays, dict) and set(arrays) == set(ARRAY_SHAPES), 'All and only25 runtime intermediates required')
+    output_hashes = evidence.get('outputHashes')
+    require(isinstance(output_hashes, dict) and set(output_hashes) == {key + 'SHA256' for key in ARRAY_SHAPES}, 'All and only25 runtime output bit hashes required')
     result = {}
     for key, shape in ARRAY_SHAPES.items():
         result[key] = f32_array(arrays[key], [rows if n == 'L' else n for n in shape], 'runtime cut ' + key)
+        require(identity(result[key])['sha256'] == output_hashes[key + 'SHA256'], 'Runtime output bit hash mismatch: ' + key + '; signed-zero-safe serialization required')
     return result, artifact_hash
 
 

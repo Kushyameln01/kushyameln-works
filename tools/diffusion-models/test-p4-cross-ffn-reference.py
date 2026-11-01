@@ -154,7 +154,9 @@ class ReferenceBoundaries(unittest.TestCase):
         arrays = {key: [0.] * math.prod([4 if n == 'L' else n for n in shape]) for key, shape in P4.ARRAY_SHAPES.items()}
         with tempfile.TemporaryDirectory(dir='/tmp') as tmp:
             path = Path(tmp) / 'runtime.json'
-            payload = {'schemaVersion': 'bernini-p4-runtime-arrays/0.1', 'side': 'HIGH', 'candidatePlanSHA256': P4.PLAN_SHA256, 'inputBindings': expected, 'arrays': arrays}
+            case = P4.load_plan()['cases']['HIGH']
+            evidence = {'schemaVersion': 'bernini-post-self-attention-evidence/0.1', 'executionProfileId': P4.load_plan()['profileId'], 'side': 'HIGH', 'inputHashes': {'residualSHA256': case['residualSHA256'], 'timeAct1SHA256': case['timeAct1SHA256'], 'conditioningSHA256': base['conditioningDataSHA256'], 'conditioningMaskSHA256': base['conditioningMaskSHA256']}, 'outputHashes': {key + 'SHA256': P4.identity(values)['sha256'] for key, values in arrays.items()}}
+            payload = {'schemaVersion': 'bernini-p4-runtime-arrays/0.1', 'side': 'HIGH', 'candidatePlanSHA256': P4.PLAN_SHA256, 'inputBindings': expected, 'arrays': arrays, 'evidence': evidence}
             path.write_text(json.dumps(payload))
             accepted, _ = P4.runtime_cuts(path, 'HIGH', 4, base)
             self.assertEqual(len(accepted), 25)
@@ -163,6 +165,33 @@ class ReferenceBoundaries(unittest.TestCase):
                 path.write_text(json.dumps(dict(payload, inputBindings=wrong)))
                 with self.assertRaises(ValueError):
                     P4.runtime_cuts(path, 'HIGH', 4, base)
+
+    def test_runtime_cut_lost_negative_zero_and_input_mismatch_rejected(self):
+        case = P4.load_plan()['cases']['HIGH']
+        bindings = {'savedArtifactSHA256': case['savedArtifactSHA256'], 'conditioningDataSHA256': 'b' * 64, 'conditioningMaskSHA256': 'c' * 64, 'fixtureContractSHA256': 'd' * 64}
+        arrays = {key: [0.] * math.prod([4 if n == 'L' else n for n in shape]) for key, shape in P4.ARRAY_SHAPES.items()}
+        arrays['ffnGelu'][0] = -0.0
+        input_hashes = {'residualSHA256': case['residualSHA256'], 'timeAct1SHA256': case['timeAct1SHA256'], 'conditioningSHA256': bindings['conditioningDataSHA256'], 'conditioningMaskSHA256': bindings['conditioningMaskSHA256']}
+        evidence = {'schemaVersion': 'bernini-post-self-attention-evidence/0.1', 'executionProfileId': P4.load_plan()['profileId'], 'side': 'HIGH', 'inputHashes': input_hashes, 'outputHashes': {key + 'SHA256': P4.identity(values)['sha256'] for key, values in arrays.items()}}
+        payload = {'schemaVersion': 'bernini-p4-runtime-arrays/0.1', 'side': 'HIGH', 'candidatePlanSHA256': P4.PLAN_SHA256, 'inputBindings': P4.runtime_binding(bindings), 'arrays': arrays, 'evidence': evidence}
+        with tempfile.TemporaryDirectory(dir='/tmp') as tmp:
+            path = Path(tmp) / 'runtime.json'
+            path.write_text(json.dumps(payload))
+            accepted, _ = P4.runtime_cuts(path, 'HIGH', 4, bindings)
+            self.assertTrue(np.signbit(accepted['ffnGelu'][0, 0]))
+            arrays['ffnGelu'][0] = 0.0
+            path.write_text(json.dumps(payload))
+            with self.assertRaisesRegex(ValueError, 'output.*bit|bit.*output'):
+                P4.runtime_cuts(path, 'HIGH', 4, bindings)
+            arrays['ffnGelu'][0] = -0.0
+            for key in input_hashes:
+                wrong = dict(evidence, inputHashes=dict(input_hashes, **{key: 'f' * 64}))
+                path.write_text(json.dumps(dict(payload, evidence=wrong)))
+                with self.assertRaisesRegex(ValueError, 'input.*bit|bit.*input'):
+                    P4.runtime_cuts(path, 'HIGH', 4, bindings)
+            path.write_text(json.dumps({key: value for key, value in payload.items() if key != 'evidence'}))
+            with self.assertRaises(ValueError):
+                P4.runtime_cuts(path, 'HIGH', 4, bindings)
 
     def test_vector_chunk_decoder_receipts_match_runtime_keys(self):
         key = 'blocks.0.modulation'

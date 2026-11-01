@@ -1,9 +1,11 @@
 """Lightweight final-F32 diagnostic admission tests; never opens a model."""
 import importlib.util
 import copy
+import http.server
 import json
 from pathlib import Path
 import tempfile
+import threading
 import unittest
 from unittest import mock
 
@@ -24,6 +26,46 @@ class FeedAdmission(unittest.TestCase):
             path.write_text(json.dumps({'schemaVersion': 'wrong', 'side': 'HIGH'}))
             with self.assertRaisesRegex(ValueError, 'patch schema'):
                 module.load_patches(path, 'HIGH', ref)
+
+    def test_browser_fixture_admission_preserves_positive_zero_bits_and_rejects_changed_bits(self):
+        """Only fixture/saved-input guards run; no File, source, WASM or NN."""
+        module = self.harness()
+        payload, _ = module.build_payload('HIGH', module.SAVED)
+        argument = module.browser_payload_argument(payload)
+        self.assertIsInstance(argument, str, 'Use JSON text across the Python Playwright transport')
+        from playwright.sync_api import sync_playwright
+        server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), module.handler_for(module.ROOT / 'docs'))
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        try:
+            with sync_playwright() as playwright:
+                browser = playwright.chromium.launch(executable_path='/usr/bin/chromium', headless=True, args=['--disable-dev-shm-usage'])
+                try:
+                    page = browser.new_page()
+                    page.goto(f'http://127.0.0.1:{server.server_port}/')
+                    admission_script = """async text=>{const p=JSON.parse(text),m=await import('/shared/diffusion-models/diagnostics/p4-cross-ffn/feed.mjs');const owned=await m.captureP4FeedInputs(p);const digest=async v=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',v)),n=>n.toString(16).padStart(2,'0')).join('');const hashes={data:await digest(owned.conditioning.data),mask:await digest(owned.conditioning.attentionMask)};p.conditioning.data[0]=-p.conditioning.data[0];let rejected=false;try{await m.captureP4FeedInputs(p);}catch(error){rejected=String(error).includes('Conditioning data/mask input binding mismatch');}return {hashes,rejected,positiveZeroRetained:owned.conditioning.data.some(v=>Object.is(v,0)),negativeZeroCount:owned.conditioning.data.filter(v=>Object.is(v,-0)).length};}"""
+                    result = page.evaluate(admission_script, argument)
+                    self.assertEqual(result['hashes']['data'], payload['inputBindings']['conditioningDataSHA256'])
+                    self.assertEqual(result['hashes']['mask'], payload['inputBindings']['conditioningMaskSHA256'])
+                    self.assertTrue(result['positiveZeroRetained'])
+                    self.assertEqual(result['negativeZeroCount'], 0)
+                    self.assertTrue(result['rejected'])
+                    # Separate explicit probe fixture contains both signs of zero;
+                    # the frozen production-candidate fixture remains untouched.
+                    signed = copy.deepcopy(payload)
+                    signed['conditioning'].update(fixtureId='pure-signed-zero-transport-probe', sourceRef={'kind': 'pure-harness-probe'})
+                    signed['conditioning']['data'][8192] = -0.0
+                    signed_hash = module.sha(module._base.f32_bytes(signed['conditioning']['data']))
+                    signed['inputBindings']['conditioningDataSHA256'] = signed_hash
+                    result = page.evaluate(admission_script, module.browser_payload_argument(signed))
+                    self.assertEqual(result['hashes']['data'], signed_hash)
+                    self.assertTrue(result['positiveZeroRetained'])
+                    self.assertEqual(result['negativeZeroCount'], 1)
+                    self.assertTrue(result['rejected'])
+                finally:
+                    browser.close()
+        finally:
+            server.shutdown()
+            server.server_close()
 
     def test_public_projection_drops_private_payload_and_filters_validation(self):
         module = self.harness()

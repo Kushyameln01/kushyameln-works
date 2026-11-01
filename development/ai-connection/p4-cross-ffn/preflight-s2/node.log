@@ -1,0 +1,52 @@
+P4 final-F32 feed privacy, schema, and bit ownership PASS
+P4 diagnostic publication guards PASS
+✔ docs/shared/diffusion-models/diagnostics/p4-cross-ffn/test-feed.mjs (1.515539ms)
+✔ docs/shared/diffusion-models/diagnostics/p4-cross-ffn/test-run.mjs (0.168124ms)
+✔ native capture preserves all BLC rows and owns payload, mask and caller metadata (4.627466ms)
+✔ native capture rejects incompatible tensor semantics, dimensions, mask and identities (23.834494ms)
+✔ missing tokenizer requires an explicit unknown-provenance policy and stays absent or null (9.222485ms)
+✔ capture rejects shared, offset and detached payload and mask storage (7.540444ms)
+✔ capture rejects typed-array subclasses without consulting virtual buffer or finite methods (1.294995ms)
+✔ fixture capture keeps a separate producer and snapshots all rows without a model identity (2.668209ms)
+✔ fixture capture rejects missing source identity and native producer claims (9.255454ms)
+✔ runtime snapshot rejects forged captures and changes to captured data, mask or metadata (22.399108ms)
+✔ runtime snapshot returns independent arrays from a recognized unchanged capture (9.29291ms)
+✔ owned capture clone keeps the runtime brand and isolates later caller changes (14.600072ms)
+✔ metadata binding encodes binary, mask and producer distinctions without JSON loss (1.465333ms)
+✔ metadata binding sorts object keys and preserves deterministic cycles and alias topology (0.395587ms)
+✔ metadata binding explicitly rejects unsupported values and accessors (0.579344ms)
+✔ capture seals reject backing-byte, RegExp state and metadata alias changes (12.012055ms)
+✔ capture preserves RegExp lastIndex through cyclic object, Map and Set metadata copies (4.958226ms)
+✔ capture rejects custom built-in metadata fields before structured cloning can drop them (7.155703ms)
+✔ P4 linear permits intact FFN-down reduction only at four output rows (1.029184ms)
+✔ P4 linear owns finite compact native snapshots and rejects subclass/shared/detached storage (0.608729ms)
+✔ Hike full5120 normalization and affine boundaries preserve all channels and rows (240.700847ms)
+✔ Hike tanh GELU, modulation and gate preserve separate F32 operations (18.24359ms)
+✔ math rejects malformed shape, subclass, shared, detached, nonfinite and overflow inputs (5.672137ms)
+✔ math snapshots wasm bytes before await, pins hash/imports and rejects shared/subclass bytes (3.710567ms)
+✔ P4 source reads actual F16 O and full-column FFN down row4 without scale disclosure (29.256593ms)
+✔ P4 source rejects side swap, binary mutation and stale reads (36.834714ms)
+✔ P4 bias and bridge admission use actual typed-array slots despite subclass getters (9.241571ms)
+✔ run snapshot captures all original context rows and only native owned hidden arrays (7.882631ms)
+✔ run snapshot rejects unknown profile/shape overrides, forged or mutated captures before awaits (6.042846ms)
+✔ projection evidence selects time chunks and intact FP8 FFN rows at their actual byte offsets (0.317379ms)
+✔ P4 sparse sink enforces binding, complete declared coverage and owned write bytes (25.564393ms)
+✔ P4 candidate refuses invented validation and stale commits (36.619991ms)
+✔ P4 captured run source retains one immutable epoch across switches and history release (31.511315ms)
+✔ P4 abort invalidates a package and cancellation never commits or disposes its caller source (20.898224ms)
+✔ P4 sink rejects spoofed slots, shared backing and detached payloads (11.122117ms)
+✔ P4 abort during asynchronous hashing cannot finish a stale transaction (11.405055ms)
+✔ P4 validation preserves capture recognition and binds mask, shape and producer metadata (31.470673ms)
+✔ P4 immutable-base candidates obey the same retained-candidate budget (13.01964ms)
+✔ P4 composed numeric gate is fixed before candidate validation (17.561502ms)
+✔ P4 caps simultaneous read leases and staged transactions (13.905436ms)
+✔ P4 aggregate patch budget counts active immutable blocks after package release (312.866318ms)
+✔ P4 simultaneous package finishes cannot exceed the retained-package budget (14.262866ms)
+ℹ tests 42
+ℹ suites 0
+ℹ pass 42
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1122.238426

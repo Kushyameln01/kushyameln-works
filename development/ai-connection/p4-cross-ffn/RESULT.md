@@ -2,6 +2,8 @@
 
 この実装commitは数値実行前のsource固定用である。実資材の結合結果・実行source SHA・配布SHAは後続の証拠commitで記録する。現時点の状態は`IMPLEMENTED / NUMERICAL_INTEGRATION_PENDING`であり、本番受入を表さない。
 
+S2追補: 初回source `3ae9b934ffcd2cf092171699fd7a5b55110f1197`の再現runnerで符号付きゼロの入出力serialization不整合を検出した。初回の数値比較とweight復号結果は原記録として残すが、fixtureのbyte一致と保存array identityは未受入である。修正はdiagnostic transport/検査だけに限定し、Hike/ORT数値owner・kernel・referenceの数値定義・gateは変更していない。全payloadをJSON文字列で渡し、private JSONは`-0.0`を保持する。実行前の入力hashと、保存前の25出力F32 hashを必須検査にして、S2の実結合を再実行する。
+
 保存済み固定N2自己注意残差のhash・shape・意味とE4 payloadを照合し、再利用する。prefix・自己注意・元tailの数値計算を再実行しない。新入口は固定tailとは別Profileで、cross-attention→FFNの全hidden幅・全40headと、明示したText行数を処理する。
 
 実Text payloadは着手時未取得である。独立したL4 fixtureは`bernini-p4-explicit-text-l4-dyadic-v1`と明記し、UMT5や元workflowの本番入力と呼ばない。source/APIを取得した事実、producer宣言、数値受入、対向ownerの合意を区別する。
