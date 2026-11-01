@@ -1,0 +1,302 @@
+{
+  "schemaVersion": "works-conditioning-handoff/0.1-draft.1",
+  "status": "DRAFT_WAITING_OWNER_ARTIFACTS",
+  "scope": "One positive plain diagnostic conditioning handoff; not current fixed-tail consumption or original Bernini conditioning reproduction",
+  "nativeContract": {
+    "apiVersion": "works-ai-1",
+    "expectedBuild": "works-inference-v1",
+    "tensorMeaning": "text_hidden_states",
+    "layout": "BLC",
+    "dtype": "float32",
+    "space": "native-final-RMSNorm-output-unprojected-4096",
+    "latentNormalizationMarkerApplicable": false,
+    "plainOutputShape": [
+      1,
+      512,
+      4096
+    ],
+    "tokenIdOutputShapeRule": {
+      "batch": 1,
+      "L": {
+        "minimum": 1,
+        "maximum": 512
+      },
+      "channels": 4096
+    },
+    "nativeProfileId": null,
+    "nativeProfileIdReason": "Native encoder declares manifest.type, not an independent shape profile ID."
+  },
+  "dataSelection": {
+    "fixtureRole": "positive-diagnostic-only",
+    "inputMode": "plain-text",
+    "negative": {
+      "status": "NOT_PROVIDED_NOT_VERIFIED"
+    },
+    "berniniTaskPrefixApplied": false,
+    "berniniPrefixAcceptance": "NOT_VERIFIED",
+    "defaultNegativeSelectionAcceptance": "NOT_VERIFIED",
+    "comfyPromptWeights": "UNSUPPORTED",
+    "customEmbeddingClipSkipPooled": "UNSUPPORTED",
+    "originalWorkflowConditioningReproduced": false
+  },
+  "input": {
+    "prompt": {
+      "declarationPath": "../plain/predeclared-plan.json",
+      "declaredText": "Hello world",
+      "declaredUtf8Sha256": "64ec88ca00b268e5ba1a35678a1b5316d212f4f366b2477232534a8aeca37f3c",
+      "encoding": "UTF-8",
+      "bytePolicy": "No added BOM/newline/whitespace normalization. Verify saved file bytes against declared text.",
+      "file": {
+        "path": "../plain/prompt.txt",
+        "pathStatus": "DRAFT_RELATIVE_PATH_ROOT_TO_CONFIRM",
+        "sha256": null,
+        "byteLength": null,
+        "pendingReason": "Plain owner execution/output is pending. Root must bind the actual artifact path, bytes and hash after independent comparison; this draft does not assert receipt or numerical PASS."
+      }
+    },
+    "tokenIds": {
+      "path": "../plain/token-ids.json",
+      "pathStatus": "DRAFT_RELATIVE_PATH_ROOT_TO_CONFIRM",
+      "sha256": null,
+      "byteLength": null,
+      "pendingReason": "Plain owner execution/output is pending. Root must bind the actual artifact path, bytes and hash after independent comparison; this draft does not assert receipt or numerical PASS. Preserve exact emitted IDs and their shape/dtype; do not invent EOS/padding for ID mode."
+    }
+  },
+  "artifact": {
+    "tensor": {
+      "path": "../plain/output.wktensor",
+      "pathStatus": "DRAFT_RELATIVE_PATH_ROOT_TO_CONFIRM",
+      "sha256": null,
+      "byteLength": null,
+      "pendingReason": "Plain owner execution/output is pending. Root must bind the actual artifact path, bytes and hash after independent comparison; this draft does not assert receipt or numerical PASS.",
+      "expectedShape": [
+        1,
+        512,
+        4096
+      ],
+      "expectedPayloadBytes": 8388608,
+      "expectedElements": 2097152,
+      "payloadSha256": null,
+      "payloadHashReason": "Plain owner execution/output is pending. Root must bind the actual artifact path, bytes and hash after independent comparison; this draft does not assert receipt or numerical PASS."
+    },
+    "attentionMask": {
+      "path": "../plain/mask.u8",
+      "pathStatus": "DRAFT_RELATIVE_PATH_ROOT_TO_CONFIRM",
+      "sha256": null,
+      "byteLength": null,
+      "pendingReason": "Plain owner execution/output is pending. Root must bind the actual artifact path, bytes and hash after independent comparison; this draft does not assert receipt or numerical PASS.",
+      "dtype": "uint8",
+      "nativeStorage": "Uint8Array",
+      "expectedLength": 512,
+      "allowedValues": [
+        0,
+        1
+      ],
+      "minimumValidPositions": 1,
+      "alsoPreservedInTensorHeader": true,
+      "maskHeaderFileEquality": "NOT_VERIFIED_PENDING_ARTIFACT_READBACK",
+      "maskedHiddenRowsRequired": "exact zero in native output; no hidden-row dropping"
+    },
+    "saveReadback": {
+      "status": "NOT_VERIFIED",
+      "reason": "Plain owner execution/output is pending. Root must bind the actual artifact path, bytes and hash after independent comparison; this draft does not assert receipt or numerical PASS.",
+      "codec": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+        "path": "docs/shared/inference/tensor.mjs",
+        "sha256": "d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5",
+        "byteLength": 8256
+      }
+    }
+  },
+  "identities": {
+    "encoderModelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+    "tokenizer": {
+      "path": "spiece.model",
+      "bytes": 4548313,
+      "sha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+      "algorithm": "sentencepiece",
+      "addBos": false,
+      "addEos": true,
+      "eosId": 1,
+      "padId": 0,
+      "referenceMinTokens": 512,
+      "plainTextOnly": true,
+      "emphasisCompatibility": "not claimed"
+    },
+    "expectedTokenizerHashAuthenticatesArbitraryTokenIds": false,
+    "selectedManifest": {
+      "path": "../../codec-marker-handoff/manifests/text/manifest.json",
+      "byteLength": 19908,
+      "sha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f",
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "d8a19f684f75fdf2f772d64754cba9d08b8f5c82",
+        "path": "development/inference/codec-marker-handoff/manifests/text/manifest.json"
+      }
+    }
+  },
+  "finalNormalization": {
+    "operation": "actual encoder.final_layer_norm",
+    "dtype": "float32",
+    "hiddenSize": 4096,
+    "weight": {
+      "epsilon": 1e-06,
+      "path": "final-norm.f32",
+      "bytes": 16384,
+      "sha256": "31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02"
+    },
+    "owner": "text_encoder",
+    "kernelSource": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "tools/inference/kernel/tensor.hike",
+      "sha256": "09625a5a955b843fdf15b22676429c3774600b3dd3aaa53fc77325869fcd0490",
+      "byteLength": 2383
+    },
+    "kernelWasm": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "docs/shared/inference/kernel/tensor.wasm",
+      "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+      "byteLength": 5265
+    },
+    "noManagerRmsNormImplementation": true
+  },
+  "numericAcceptance": {
+    "selectedManifestGate": {
+      "maxAbsError": 0.001,
+      "rtol": 0.001,
+      "registeredBeforeComparison": true,
+      "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee"
+    },
+    "comparisonPlan": "../plain/predeclared-plan.json",
+    "independentReference": {
+      "path": "../plain/plain-reference.f32",
+      "pathStatus": "DRAFT_RELATIVE_PATH_ROOT_TO_CONFIRM",
+      "sha256": null,
+      "byteLength": null,
+      "pendingReason": "Plain owner execution/output is pending. Root must bind the actual artifact path, bytes and hash after independent comparison; this draft does not assert receipt or numerical PASS."
+    },
+    "comparisonReport": {
+      "path": "../plain/receipt.json",
+      "pathStatus": "DRAFT_RELATIVE_PATH_ROOT_TO_CONFIRM",
+      "sha256": null,
+      "byteLength": null,
+      "pendingReason": "Plain owner execution/output is pending. Root must bind the actual artifact path, bytes and hash after independent comparison; this draft does not assert receipt or numerical PASS."
+    },
+    "status": "NOT_VERIFIED_PENDING_PLAIN_OWNER_RESULT",
+    "scope": "One selected plain prompt staged FP32 source-reference diagnostic; not original GPU FP8 equivalence or arbitrary/512-effective-token performance"
+  },
+  "sourceIdentity": {
+    "knownNativeImplementation": [
+      {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+        "path": "docs/shared/inference/text-encoder-api.mjs",
+        "sha256": "b20fc73262c12558e2c54fb7ac8bfd20775c39dd2dbe4a47efd0a73632ec9a99",
+        "byteLength": 2623
+      },
+      {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+        "path": "docs/shared/inference/text-encoder.mjs",
+        "sha256": "9d4f528a926dc40bdbf721c5072518d0e027019a5a0912deeac0dc0f449fd8a2",
+        "byteLength": 8564
+      },
+      {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+        "path": "docs/shared/inference/tokenizer.mjs",
+        "sha256": "4a7811d4e36fbcc568e2a2a1e0941fd78261f84b231a96458d919ea0259fb9a5",
+        "byteLength": 1637
+      }
+    ],
+    "actualEncodeExecution": {
+      "commit": null,
+      "reason": "Plain owner execution/output is pending. Root must bind the actual artifact path, bytes and hash after independent comparison; this draft does not assert receipt or numerical PASS.",
+      "receipt": {
+        "path": "../plain/receipt.json",
+        "pathStatus": "DRAFT_RELATIVE_PATH_ROOT_TO_CONFIRM",
+        "sha256": null,
+        "byteLength": null,
+        "pendingReason": "Plain owner execution/output is pending. Root must bind the actual artifact path, bytes and hash after independent comparison; this draft does not assert receipt or numerical PASS."
+      }
+    },
+    "packetDistributionCommit": null,
+    "packetDistributionCommitReason": "Set only after the final artifact/receipt packet is committed and publicly retrievable."
+  },
+  "consumerBoundary": {
+    "diffusionDistributionCommit": "508d72cc9036e7f500827465c644b4aed3c5f711",
+    "tailExecutionCommit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+    "managedTailExecutionCommit": "5c484a8783ab129a2ff3543a98b2537af9888199",
+    "tailProfile": "bernini-block0-n2-self-attention-residual-f32-v1",
+    "currentTailConsumesConditioning": false,
+    "currentTailRestriction": "Fixed block0/HIGH scheduleIndex1/LOW3/tokens2/trusted artifact hashes; run accepts attention,patchHidden,timeAct1 only.",
+    "conditioningRpc": "validateConditioning input:{tensor}; validation metadata only, not cross-attention consumption",
+    "tokenizerInteropGap": "Current Diffusion validator does not validate tokenizerSha256; ownedTensor/metadata/old writer omit it. Preserve G1C tensor and outer evidence.",
+    "projection4096To5120Owner": "diffusion_models",
+    "crossAttentionKVAndNumericalPreparationOwner": "diffusion_models",
+    "consumerImplementationStatus": "NOT_IMPLEMENTED_OR_NOT_ACCEPTED_FOR_THIS_DATA"
+  },
+  "outerEvidence": {
+    "evidence": {
+      "path": "../plain/evidence.json",
+      "pathStatus": "DRAFT_RELATIVE_PATH_ROOT_TO_CONFIRM",
+      "sha256": null,
+      "byteLength": null,
+      "pendingReason": "Plain owner execution/output is pending. Root must bind the actual artifact path, bytes and hash after independent comparison; this draft does not assert receipt or numerical PASS."
+    },
+    "trace": {
+      "path": "../plain/trace.json",
+      "pathStatus": "DRAFT_RELATIVE_PATH_ROOT_TO_CONFIRM",
+      "sha256": null,
+      "byteLength": null,
+      "pendingReason": "Plain owner execution/output is pending. Root must bind the actual artifact path, bytes and hash after independent comparison; this draft does not assert receipt or numerical PASS."
+    },
+    "e4PackageReceipt": {
+      "path": "../plain/package/receipt.json",
+      "pathStatus": "DRAFT_RELATIVE_PATH_ROOT_TO_CONFIRM",
+      "sha256": null,
+      "byteLength": null,
+      "pendingReason": "Outer E4 package is not created by this documentation task. Root may bind actual package after artifact preparation."
+    },
+    "snapshot": null,
+    "snapshotReason": "No generation snapshot established by one conditioning diagnostic.",
+    "orderedVaeContexts": null,
+    "orderedVaeContextsReason": "One plain fixture does not establish Bernini context ordering or positive/negative sharing."
+  },
+  "receiverStatus": {
+    "existingManagerDistribution": "60d16b64d6020d3d20239f087f8add91268dcaad",
+    "codecReceiverAck": {
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+        "path": "development/ai-connection/codec-marker-adoption/RECEIVER-ACK.json"
+      },
+      "receiverExecutionCheckpoint": "0239c8117622bb388af0d7870b672e54a79beec3",
+      "acceptedScope": "Original codec2bd/d82 and recorded Rect E4 marker persistence only"
+    },
+    "manifestReceiverAck": {
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+        "path": "development/ai-connection/codec-marker-adoption/MANIFEST-RECEIVER-ACK.json"
+      },
+      "acceptedScope": "Original selected Rect/Text manifest bytes and declared gate/finalNorm; not new conditioning data"
+    },
+    "storageAdoption": {
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+        "path": "development/ai-connection/codec-marker-adoption/ADOPTED-RESULT.md"
+      },
+      "implementationCheckpoint": "830e58bbe1e9d783910cfc0a9c6bf8cf45071c58"
+    },
+    "newPacketSourceReceipt": null,
+    "newPacketSourceReceiptReason": "Receiver-owned acknowledgement of this future packet source/data is pending; sender fetch or same-host clone cannot satisfy it.",
+    "conditioningDataReceipt": "NOT_VERIFIED",
+    "crossAttentionConsumption": "NOT_ACCEPTED",
+    "generationReady": false
+  }
+}
