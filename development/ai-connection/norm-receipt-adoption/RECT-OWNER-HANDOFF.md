@@ -1,6 +1,6 @@
 # VAE担当との新管理Rect共同受入packet
 
-2026-10-31。新管理source checkpointは `c84bc495562a393a437056cef944fb2e0f95ba08`。実行時の管理closure15ファイルとGit実bytesの一致は `CHECKPOINT-SOURCE-RECEIPT.json`、今回のpreflightは `evidence/rect-preflight.json` に固定した。ファイルが同じという理由でnative pinをe86へ更新しない。
+新管理source checkpointは `0239c8117622bb388af0d7870b672e54a79beec3`。必須binding全体の省略も拒否する追補版。今回の管理closure15ファイルとGit実bytesの一致は `../codec-marker-adoption/CHECKPOINT-SOURCE-RECEIPT.json`、今回のpreflightは `../codec-marker-adoption/evidence/rect-preflight.json` に固定した。ファイルが同じという理由でnative pinをe86へ更新しない。
 
 ## 今回実行する境界
 
@@ -37,7 +37,7 @@ encoder実bytesは要求しない。manifestはVAE855の既存Rect原本 SHA `45
 
 ## 新管理実行CLI
 
-管理checkoutを `c84bc495562a393a437056cef944fb2e0f95ba08` に固定して実行する。native rootは855の固定source closure、bundle rootは既存exportの3decode asset所在。出力先は新しいprivate directoryにする。推論Memoryはファイル検査の64KiB等を流用せず、現在device用の明示resource-state JSONを渡す。
+管理checkoutを `0239c8117622bb388af0d7870b672e54a79beec3` に固定して実行する。native rootは855の固定source closure、bundle rootは既存exportの3decode asset所在。出力先は新しいprivate directoryにする。推論Memoryはファイル検査の64KiB等を流用せず、現在device用の明示resource-state JSONを渡す。
 
 ```sh
 node tools/ai-connection/run-norm-required-rect.mjs \
@@ -46,7 +46,7 @@ node tools/ai-connection/run-norm-required-rect.mjs \
   --input <exact351-restored.wktensor> \
   --reference <existing-png-roundtrip.f32> \
   --resource-state <explicit-current-device-budget.json> \
-  --manager-commit c84bc495562a393a437056cef944fb2e0f95ba08 \
+  --manager-commit 0239c8117622bb388af0d7870b672e54a79beec3 \
   --scenario decode \
   --out <fresh-private-result-directory>
 ```
@@ -59,4 +59,6 @@ mandatory adapter制御19件、CLI原本境界5件は合格。制御試験はfix
 
 現在CLIの実経路は `BLOCKED / actual-vae-decode / nativeCalls:0 / browserLaunched:false`。3原本不足と現在推論resource readinessだけが依存条件であり、旧encodeや大型モデル成立を新たな開始条件へ増やさない。normalized中間codec marker、実generated sample/81frame/全sessionは今回の受入外に保持する。
 
-全Node回帰は344/344 PASS、skip0。実NN受入前にserved管理closureが固定checkoutと一致することを照合する。CLIのcommit:nullはそのまま保持し、別source receiptから対応を証明する。入力はbrowser選択後にも351原本の1084 bytesと全file SHAを再検査する。
+最新の全Node回帰は354/354 PASS、skip0。実NN受入前にserved管理closureが固定checkoutと一致することを照合する。CLIのcommit:nullはそのまま保持し、別source receiptから対応を証明する。入力はbrowser選択後にも351原本の1084 bytesと全file SHAを再検査する。
+
+追加codec2bd/d8は当管理でmarker保存境界の受領ACKを返せる状態だが、今回のraw VAE855実行pinは変更しない。codecのNN0/E4結果やownerのconfigure成功を、上の新管理実decode/取消/実RGB保存receiptへ付け替えない。

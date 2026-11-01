@@ -1,5 +1,7 @@
 # 規範必須入口・LoRA/VAE新receiptの受領結果
 
+以下は配布0260fc0時点の記録。必須binding全体の省略穴の追加修正と、新codec候補の受取側E4確認は [追補結果](../codec-marker-adoption/RESULT.md) を参照する。旧試験・旧sourceのscopeは以下のまま保持する。
+
 管理基点は `edda43f9ea69c5b3ab1af3c6eb82295f2912887c`。実装checkpointと実検証bytesの対応は `RESULT.json` / `CHECKPOINT-SOURCE-RECEIPT.json` に固定する。最終配布commitはDraft PR#7のheadを参照する。
 
 今回の受入は、3宣言の比較、段階別の規範必須入口、新owner receiptの版付き受領、および新管理Rectの実dispatch用経路・制御境界まで。**新管理からの実VAE decode・その実出力の取消復帰／保存は未受入**である。
