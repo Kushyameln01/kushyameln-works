@@ -42,17 +42,19 @@ export async function queryControlledNormalWorkflow({host,input,descriptor}){
 }
 /** Trigger cancellation after the real owner request starts. Reusing A's old
  * manager target while B is running must never address B's native tuple. */
-export async function executeNormalCancellation({host,input,descriptor,setRequestHook}){
- let targetA,cancellationA,oldCancellation;
- setRequestHook(()=>{if(cancellationA)return;targetA=clone(host.inspect().activeTarget);if(!targetA)throw fail('NORMAL_CANCEL_TARGET_UNAVAILABLE','Active manager target required after the native request started');cancellationA=Promise.resolve(host.cancel(targetA));void cancellationA.catch(()=>{});});
+export async function executeNormalCancellation({host,input,descriptor,setRequestHook,awaitNativeWorker=async()=>({observation:'unit-harness'})}){
+ let targetA,cancellationA,oldCancellation,workerAckA,workerAckB,activeBTargetAtAttempt;
+ setRequestHook(tuple=>{if(cancellationA)return;targetA=clone(host.inspect().activeTarget);if(!targetA)throw fail('NORMAL_CANCEL_TARGET_UNAVAILABLE','Active manager target required after the native request started');cancellationA=(async()=>{workerAckA=await awaitNativeWorker(tuple);if(host.inspect().activeTarget?.requestId!==targetA.requestId)throw fail('NORMAL_CANCEL_NOT_OBSERVED','A completed before actual Worker creation was acknowledged');return host.cancel(targetA);})();void cancellationA.catch(()=>{});return cancellationA;});
  let aError=null,aCompleted=false;try{await host.execute({descriptor:descriptor??createNormalRequestDescriptor('normalizeRawMean',input),input,requestId:'normal:cancel:A:'+crypto.randomUUID()});aCompleted=true;}catch(error){aError={code:error.code??null,name:error.name,message:String(error.message)};}
- if(aCompleted)throw fail('NORMAL_CANCEL_NOT_OBSERVED','A completed before its requested cancellation');
- if(!cancellationA)throw fail('NORMAL_CANCEL_NOT_OBSERVED','The actual native request callback did not request cancellation');const cancelled=await cancellationA;
- setRequestHook(()=>{if(oldCancellation)return;try{oldCancellation=Promise.resolve(host.cancel(targetA)).then(value=>({accepted:true,value}),error=>({accepted:false,code:error.code??null,message:String(error.message)}));}catch(error){oldCancellation=Promise.resolve({accepted:false,code:error.code??null,message:String(error.message)});}});
- const b=await host.execute({descriptor:descriptor??createNormalRequestDescriptor('normalizeRawMean',input),input,requestId:'normal:cancel:B:'+crypto.randomUUID()});setRequestHook(()=>{});
- if(!oldCancellation)throw fail('NORMAL_STALE_CANCEL_NOT_EXERCISED','B did not start a native request');const oldTarget=await oldCancellation;
+ if(!cancellationA)throw fail('NORMAL_CANCEL_NOT_OBSERVED','The actual native request callback did not request cancellation');const cancelled=await cancellationA;if(aCompleted)throw fail('NORMAL_CANCEL_NOT_OBSERVED','A completed before its requested cancellation');
+ setRequestHook(tuple=>{if(oldCancellation)return;const targetB=clone(host.inspect().activeTarget);oldCancellation=(async()=>{workerAckB=await awaitNativeWorker(tuple);activeBTargetAtAttempt=clone(host.inspect().activeTarget);if(!targetB||activeBTargetAtAttempt?.requestId!==targetB.requestId||activeBTargetAtAttempt?.activeToken!==targetB.activeToken)throw fail('NORMAL_STALE_CANCEL_NOT_EXERCISED','B completed before the old-target check could run');try{return {accepted:true,value:await host.cancel(targetA)};}catch(error){return {accepted:false,code:error.code??null,message:String(error.message)};}})();void oldCancellation.catch(()=>{});return oldCancellation;});
+ let b,bError,oldTarget,controlError;
+ try{b=await host.execute({descriptor:descriptor??createNormalRequestDescriptor('normalizeRawMean',input),input,requestId:'normal:cancel:B:'+crypto.randomUUID()});}catch(error){bError=error;}
+ finally{setRequestHook(()=>{});if(oldCancellation)try{oldTarget=await oldCancellation;}catch(error){controlError=error;}}
+ if(bError){if(controlError)bError.normalControlError={code:controlError.code??null,message:String(controlError.message)};throw bError;}if(controlError)throw controlError;
+ if(!oldCancellation)throw fail('NORMAL_STALE_CANCEL_NOT_EXERCISED','B did not start a native request');
  if(b.status!=='EXECUTION_COMPLETED'||oldTarget.accepted)throw fail('NORMAL_STALE_CANCEL_INTERFERED','An ended A target must be rejected while B completes');
- return {status:'LIFECYCLE_VERIFIED',normalExecution:true,cancelledA:{target:targetA,cancellation:cancelled,error:aError},oldTargetDuringB:oldTarget,completedB:summarize(b),normalized:b.output.tensor,nativeEvidence:{normalized:b.output.evidence??null},diagnosticState:'NOT_REQUESTED',...flags};
+ return {status:'LIFECYCLE_VERIFIED',normalExecution:true,cancelledA:{target:targetA,workerCreatedAck:workerAckA,cancellation:cancelled,error:aError},oldTargetDuringB:{...oldTarget,attemptedTarget:targetA,activeBTargetAtAttempt,workerCreatedAck:workerAckB},completedB:summarize(b),normalized:b.output.tensor,nativeEvidence:{normalized:b.output.evidence??null},diagnosticState:'NOT_REQUESTED',...flags};
 }
 /** Observation only. Requests, numerical values and termination behavior are
  * delegated unchanged to the original browser Worker implementation. */
@@ -75,7 +77,7 @@ export async function runNormalOperationBrowser(plan){
   owner=await createNormalDiffusionOwner({nativeModule,interop,latentModule,sourceRef:plan.bootstrap.nativeSource,onNativeRequest:tuple=>{nativeRequests.push(clone(tuple));hook(tuple);}});host=createNormalOperationAdapter({owner});
   const inputFile=document.querySelector('#normal-input').files[0],input=inputFile?await codec.decode(new Uint8Array(await inputFile.arrayBuffer())):null;
   if(plan.scenario==='query')result={...await queryNormalSupport({host,descriptor:plan.descriptor}),scenario:'query',normalExecution:false,diagnosticState:'NOT_REQUESTED',...flags};
-  else if(plan.scenario==='cancel-recover')result=await executeNormalCancellation({host,input,descriptor:plan.descriptor,setRequestHook:fn=>hook=fn});
+  else if(plan.scenario==='cancel-recover')result=await executeNormalCancellation({host,input,descriptor:plan.descriptor,setRequestHook:fn=>hook=fn,awaitNativeWorker:async tuple=>{const post=observation.events.findLast(event=>event.kind==='post'&&['sessionId','jobId','inputRevision','op'].every(key=>event.tuple[key]===tuple[key]));if(!post)throw fail('NORMAL_NATIVE_POST_UNOBSERVED','Actual native Worker post must precede control arming');return globalThis.__normalAwaitWorkerCreated(post.workerId);}});
   else{const workflow=await queryControlledNormalWorkflow({host,input,descriptor:plan.descriptor});result={...await executeNormalRoundtrip({host,input,descriptor:plan.descriptor,observeOwner:()=>owner.readDiagnostics()}),workflow};}
   const privateOutputs={},outputs={};for(const name of ['normalized','restored'])if(result[name]){const tensor=result[name],bytes=await codec.encode(tensor);privateOutputs[name]=encode64(bytes);outputs[name]={byteLength:bytes.byteLength,sha256:await sha256Bytes(bytes),payloadSha256:await sha256Bytes(new Uint8Array(tensor.data.buffer,tensor.data.byteOffset,tensor.data.byteLength)),shape:[...tensor.shape],dtype:tensor.dtype,layout:tensor.layout,meaning:tensor.meaning,normalization:tensor.normalization??null,modelSha256:tensor.modelSha256,context:tensor.context??null};delete result[name];}
   result={...result,scenario:plan.scenario,outputs,privateOutputs,ownerObservation:clone(owner.observe()),host:host.inspect()};
