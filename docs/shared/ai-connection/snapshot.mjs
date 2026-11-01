@@ -11,9 +11,10 @@ const text=x=>typeof x==='string'&&x.length>0;
 const source=s=>s&&((text(s.repository)&&/^[a-f0-9]{40}$/.test(s.commit)&&text(s.path))||(text(s.archiveRef)&&/^[a-f0-9]{64}$/.test(s.sha256)));
 const freeze=v=>{if(v&&typeof v==='object'){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 
-/** Diagnostic-scope finite transaction coordinator. Public owner facades are
- * injected; no native runtime/global state is read. No generation admission is
- * implemented: diagnostics never become full-model proof through publication. */
+/** Finite selection/ownership coordinator. Normal operation acknowledgements
+ * and diagnostic validation use separate explicit scopes. Public owner facades
+ * are injected; no native runtime/global state or numerical judgement is read.
+ * Snapshot publication never establishes production generation readiness. */
 export function createSnapshotManager({managerSessionId,registry,afterPublication}={}){
  if(!text(managerSessionId))throw TypeError('Explicit managerSessionId required');if(afterPublication!==undefined&&typeof afterPublication!=='function')throw TypeError('Explicit afterPublication audit callback required');
  const stages=new WeakMap(),history=new Set(),snapshotIds=new Set();let revision=0,busy=false,disposed=false,active=null,activeRecord=null,currentStage=null,recovery=null,state='UNCONFIGURED';
@@ -28,7 +29,7 @@ export function createSnapshotManager({managerSessionId,registry,afterPublicatio
  function receiptTarget(r,s){return freeze({snapshotId:r.snapshot.snapshotId,snapshotHash:r.snapshot.snapshotHash,managerSessionId,managerRevision:r.revision,stepId:s.binding.stepId,operationId:s.binding.operationId,resourceBinding:clone(s.binding.resourceBinding),localRevisionBindings:clone(s.binding.localRevisionBindings)});}
  function context(r,s){return Object.freeze({target:receiptTarget(r,s),snapshotId:r.snapshot.snapshotId,snapshotHash:r.snapshot.snapshotHash,profileRef:r.snapshot.pipelineProfileRef,managerSessionId,managerRevision:r.revision,stepId:s.binding.stepId,scopeId:r.scope.scopeId,
   sourceRef:freeze(clone(s.binding.sourceRef)),nativeBuild:s.binding.nativeBuild,resourceBinding:freeze(clone(s.binding.resourceBinding)),
-  operationId:s.binding.operationId,localRevisionBindings:freeze(clone(s.binding.localRevisionBindings)),isCurrent:()=>current(r,s)});}
+  operationId:s.binding.operationId,localRevisionBindings:freeze(clone(s.binding.localRevisionBindings)),...(r.scope.kind==='normal'?{capabilityRef:s.binding.capabilityRef}:{}),isCurrent:()=>current(r,s)});}
  function forget(r){history.delete(r);for(const s of r.prepared){s.candidate=undefined;s.receipt=undefined;}r.prepared=[];r.steps=[];}
  async function releaseRecord(r,{disposing=false}={}){
   if(r.publicationCommitted){await publishedRecord(r);if(r===activeRecord&&!disposing)await auditPublication(r);}
@@ -73,7 +74,9 @@ export function createSnapshotManager({managerSessionId,registry,afterPublicatio
    if(snapshotIds.has(bindings.snapshotId))throw fail('SNAPSHOT_ID_REUSED','Snapshot IDs cannot be reused for a later selection');snapshotIds.add(bindings.snapshotId);
    const checked=validatePipelineProfile(profile,registry);if(!checked.valid)throw fail('INVALID_PROFILE','Invalid finite pipeline profile');
    const scope=bindings.requestedScope;
-   if(scope?.kind!=='diagnostic'||!text(scope.scopeId)||!profile.requiredEvidenceScopes.includes(scope.scopeId))throw fail('SCOPE_NOT_SUPPORTED','Only explicitly selected diagnostic scopes are implemented; generation remains blocked');
+   const normal=scope?.kind==='normal';
+   if(normal){if(!text(scope.scopeId)||profile.requiredEvidenceScopes.length!==0)throw fail('SCOPE_NOT_SUPPORTED','Normal execution requires an explicit scope and no diagnostic evidence requirements');}
+   else if(scope?.kind!=='diagnostic'||!text(scope.scopeId)||!profile.requiredEvidenceScopes.includes(scope.scopeId))throw fail('SCOPE_NOT_SUPPORTED','Only explicitly selected diagnostic scopes are implemented; generation remains blocked');
    if(!Array.isArray(bindings.steps)||bindings.steps.length!==profile.steps.length||new Set(bindings.steps.map(s=>s.stepId)).size!==bindings.steps.length)throw fail('STEP_BINDINGS_INVALID','Bind every finite profile step exactly once');
    const mapped=profile.steps.map(step=>{
     const b=bindings.steps.find(x=>x.stepId===step.stepId);
@@ -81,13 +84,21 @@ export function createSnapshotManager({managerSessionId,registry,afterPublicatio
     if(!b.resourceBinding||b.owner?.ownerId!==b.resourceBinding.ownerId||!text(b.resourceBinding.bindingId)||!text(b.resourceBinding.resourceGeneration)||typeof b.isCurrent!=='function'||b.isCurrent()!==true)throw fail('BINDING_NOT_CURRENT','Explicit current resource owner/generation is required');
     if(['prepare','validate','commit','rollback','release'].some(k=>typeof b.owner[k]!=='function'))throw fail('OWNER_CONTRACT_INVALID','Owner prepare/validate/commit/rollback/release facade required');
     if(!Array.isArray(b.adapterSelectionRefs)||step.adapterRefs.some(ref=>!b.adapterSelectionRefs.includes(ref)))throw fail('ADAPTER_BINDING_MISSING','Only declared required adapter selections are enforced');
-    for(const edge of b.edges??[]){const decision=evaluateEdge({...edge,requiredScopes:[...new Set([...(edge.requiredScopes??[]),...profile.requiredEvidenceScopes])]});if(decision.readiness.state!=='ready')throw fail('EDGE_NOT_READY','Selected edge contract/scope/resource readiness is not satisfied');}
+    if(normal){
+     if(!text(b.capabilityRef))throw fail('NORMAL_CAPABILITY_REQUIRED','Normal execution requires the selected owner capability response identity');
+     if(!Array.isArray(b.edges)||!b.edges.length)throw fail('NORMAL_EDGE_REQUIRED','Normal execution requires explicit connected edge declarations');
+     for(const edge of b.edges){
+      if(!edge||edge.referenceContext!==undefined||edge.requiredNormPolicy!==undefined||!Array.isArray(edge.requiredScopes)||edge.requiredScopes.length||!Array.isArray(edge.evidence))throw fail('NORMAL_EDGE_DECLARATION_INVALID','Normal edges require explicit empty required scopes without a diagnostic norm policy or reference context');
+      if(edge.consumerPort?.owner!==b.resourceBinding.ownerId||edge.implementationState?.consumer?.operationId!==b.operationId||!matches(edge.consumerPort?.sourceRef,b.sourceRef)||edge.consumerPort?.nativeAPI?.build!==b.nativeBuild)throw fail('NORMAL_EDGE_BINDING_MISMATCH','Normal edge consumer must identify the selected operation, source, build and resource owner');
+      const decision=evaluateEdge(edge);if(decision.readiness.state!=='ready')throw fail('EDGE_NOT_READY','Selected edge contract/scope/resource readiness is not satisfied');
+     }
+    }else for(const edge of b.edges??[]){const decision=evaluateEdge({...edge,requiredScopes:[...new Set([...(edge.requiredScopes??[]),...profile.requiredEvidenceScopes])]});if(decision.readiness.state!=='ready')throw fail('EDGE_NOT_READY','Selected edge contract/scope/resource readiness is not satisfied');}
     if(b.allowedConsumerOwners!==undefined&&(!Array.isArray(b.allowedConsumerOwners)||!b.allowedConsumerOwners.every(text)))throw fail('OWNER_CONTRACT_INVALID','Allowed consumer owners must be explicit owner IDs');
     const binding=clone(Object.fromEntries(Object.entries(b).filter(([key])=>!['owner','isCurrent','edges'].includes(key))));
     return {binding,original:b,owner:Object.freeze({...b.owner}),candidate:undefined,rolledBack:false,released:false,reloaded:false,committed:false};
    });
    const snapshot={contractVersion:profile.contractVersion,snapshotId:bindings.snapshotId,snapshotHash:'pending',managerSessionId,managerRevision:bindings.managerRevision,pipelineProfileRef:`${profile.profileId}@${profile.profileVersion}`,
-    stepBindings:mapped.map(({binding:b})=>({stepId:b.stepId,moduleId:b.moduleId,operationId:b.operationId,moduleVersion:b.moduleVersion,nativeBindingRefs:b.nativeBindingRefs,artifactRefs:b.artifactRefs,modelProfileRefs:b.modelProfileRefs,adapterSelectionRefs:b.adapterSelectionRefs,localRevisionBindings:b.localRevisionBindings,sourceRef:b.sourceRef,nativeBuild:b.nativeBuild,resourceBinding:b.resourceBinding})),
+    stepBindings:mapped.map(({binding:b})=>({stepId:b.stepId,moduleId:b.moduleId,operationId:b.operationId,moduleVersion:b.moduleVersion,nativeBindingRefs:b.nativeBindingRefs,artifactRefs:b.artifactRefs,modelProfileRefs:b.modelProfileRefs,adapterSelectionRefs:b.adapterSelectionRefs,localRevisionBindings:b.localRevisionBindings,sourceRef:b.sourceRef,nativeBuild:b.nativeBuild,resourceBinding:b.resourceBinding,...(normal?{capabilityRef:b.capabilityRef}:{})})),
     artifactManifestRef:bindings.artifactManifestRef,evidenceManifestRef:bindings.evidenceManifestRef,executionScope:clone(scope)};
    const v=validateExecutionSnapshot(snapshot,registry);if(!v.valid)throw fail('INVALID_SNAPSHOT','Snapshot references/revisions fail the common descriptor contract');
    const hashInput={...snapshot};delete hashInput.snapshotHash;snapshot.snapshotHash=await hashCanonical(hashInput);
@@ -97,8 +108,12 @@ export function createSnapshotManager({managerSessionId,registry,afterPublicatio
     const c=context(r,s),prepared=await s.owner.prepare(c);
     if(!prepared||!Object.hasOwn(prepared,'candidate')||prepared.candidate===undefined)throw fail('OWNER_PREPARE_INVALID','Owner must return an explicit candidate');
     s.candidate=prepared.candidate;s.previousReleased=prepared.previousSessionReleased===true;r.prepared.push(s);event('OWNER_PREPARED',s.binding.stepId);
+    if(normal&&!current(r,s))throw fail('STALE_BINDING','Normal owner binding changed during preparation');
     const validation=await s.owner.validate(s.candidate,c);
-    if(!validation||validation.valid!==true||!matches(validation.target,c.target)||validation.operationId!==s.binding.operationId||validation.snapshotId!==snapshot.snapshotId||validation.stepId!==s.binding.stepId||validation.scope!==scope.scopeId||!['PARTIAL','FULL'].includes(validation.coverage)||!matches(validation.sourceRef,s.binding.sourceRef)||validation.nativeBuild!==s.binding.nativeBuild||!Array.isArray(validation.evidenceRefs)||!validation.evidenceRefs.length||!validation.evidenceRefs.every(text))throw fail('OWNER_VALIDATION_INVALID','Target/version/source/operation/step-bound diagnostic validation evidence required');
+    if(normal){
+     if(!current(r,s))throw fail('STALE_BINDING','Normal owner binding changed during structural validation');
+     if(!validation||validation.valid!==true||!matches(validation.target,c.target)||validation.operationId!==s.binding.operationId||validation.snapshotId!==snapshot.snapshotId||validation.stepId!==s.binding.stepId||validation.scope!==scope.scopeId||!matches(validation.sourceRef,s.binding.sourceRef)||validation.nativeBuild!==s.binding.nativeBuild||validation.capabilityRef!==s.binding.capabilityRef)throw fail('OWNER_VALIDATION_INVALID','Normal structural acknowledgement must bind the exact target, operation, source, build and capability response');
+    }else if(!validation||validation.valid!==true||!matches(validation.target,c.target)||validation.operationId!==s.binding.operationId||validation.snapshotId!==snapshot.snapshotId||validation.stepId!==s.binding.stepId||validation.scope!==scope.scopeId||!['PARTIAL','FULL'].includes(validation.coverage)||!matches(validation.sourceRef,s.binding.sourceRef)||validation.nativeBuild!==s.binding.nativeBuild||!Array.isArray(validation.evidenceRefs)||!validation.evidenceRefs.length||!validation.evidenceRefs.every(text))throw fail('OWNER_VALIDATION_INVALID','Target/version/source/operation/step-bound diagnostic validation evidence required');
     s.validation=freeze(clone(validation));event('OWNER_VALIDATED',s.binding.stepId);
    }
    state='STAGED';event(state);const token=Object.freeze({snapshotId:snapshot.snapshotId,managerRevision:revision});stages.set(token,r);return token;
@@ -115,7 +130,7 @@ export function createSnapshotManager({managerSessionId,registry,afterPublicatio
     if(!matches(receipt?.target,receiptTarget(r,s)))throw fail('RECEIPT_TARGET_MISMATCH','Owner commit receipt target differs from this snapshot/revision/resource binding');
     let ownershipAccepted=[s.binding.resourceBinding.ownerId,...s.binding.allowedConsumerOwners??[]].includes(receipt?.ownership?.ownerId);
     if(!ownershipAccepted&&typeof s.owner.acceptOwnership==='function'){try{ownershipAccepted=await s.owner.acceptOwnership(s.candidate,receipt,context(r,s))===true;}catch{ownershipAccepted=false;}if(!current(r,s))throw fail('STALE_BINDING','Owner changed while checking native ownership');}
-    if(!receipt||!['STAGED','CONSUMER_APPLIED'].includes(receipt.state)||!['independent-copy','lease'].includes(receipt.ownership?.kind)||!ownershipAccepted||receipt.ownership.kind==='lease'&&(typeof receipt.ownership.isValid!=='function'||receipt.ownership.isValid()!==true))throw fail('OWNERSHIP_UNVERIFIED','Native state and explicit owner copy or valid lease required');
+    if(!receipt||!(r.scope.kind==='normal'?receipt.state==='EXECUTION_COMPLETED':['STAGED','CONSUMER_APPLIED'].includes(receipt.state))||!['independent-copy','lease'].includes(receipt.ownership?.kind)||!ownershipAccepted||receipt.ownership.kind==='lease'&&(typeof receipt.ownership.isValid!=='function'||receipt.ownership.isValid()!==true))throw fail('OWNERSHIP_UNVERIFIED','Native state and explicit owner copy or valid lease required');
     s.committed=true;s.receipt=receipt;r.nativeStates.push({stepId:s.binding.stepId,state:receipt.state,ownership:{kind:receipt.ownership.kind,ownerId:receipt.ownership.ownerId}});event('NATIVE_COMMITTED',s.binding.stepId);
    }
    if(r.steps.some(s=>!current(r,s)||!leaseValid(s)))throw fail('STALE_BINDING','Owner binding or lease expired during commit');

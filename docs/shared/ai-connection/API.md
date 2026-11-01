@@ -1209,3 +1209,124 @@ brand. Selected-weight N-ARTIFACT, new P4 LoRA mapping/feed integration, other
 pairs/sides, full-model sessions and generation remain outside this acceptance;
 currentLiveAdmission:false, generationReady:false and
 load/predict/sample=NOT_READY remain explicit.
+
+## Normal operation entry and shared workflow shapes
+
+`adapters/normal-operation.mjs` adds the management facade
+`createNormalOperationAdapter({owner,artifactStore?,managerSessionId?})`.
+This is a new management protocol over registered owners; it does not add or
+rename native exports. Existing diagnostic and norm-required entrypoints keep
+their original contracts and acceptance scopes.
+
+```js
+import {createNormalOperationAdapter} from './adapters/normal-operation.mjs';
+import {createNormalRequestDescriptor} from './adapters/normal-diffusion-owner.mjs';
+
+// The service supplies its internally registered actual owner.
+const host = createNormalOperationAdapter({owner});
+const descriptor = createNormalRequestDescriptor('normalizeRawMean', tensor);
+const support = await host.querySupport(descriptor); // optional early query
+const result = await host.execute({descriptor, input: tensor, signal});
+await host.dispose();
+```
+
+The ordinary descriptor is `{operationId,artifact,modelRefs?,targetRefs?}`.
+artifact is the existing common Artifact descriptor: actual shape/dtype/axes,
+meaning, normalization, model/target references and caller provenance remain
+explicit. execute also accepts an optional unique requestId. The helper
+`createNormalRequestDescriptor(operationId,tensor,{artifactId?,extensions?,provenance?,lineage?}?)`
+derives the descriptor from the actual tensor and preserves the supplied
+metadata. An omitted profileRef may be completed internally from the owner
+contract. An explicit caller profile or metadata value is checked, not replaced.
+
+Normal data requests require no source/build/kernel proof, independent
+reference, numerical error gate, prior PASS, numerical receipt or E4 package.
+Source registration and verification belong to service bootstrap. The owner
+observes its actual instance, configuration revision, resource generation,
+native source/API/build and capabilities internally. The generic host has no
+copied list of accepted native profiles and no tensor arithmetic or mapping.
+
+The host exports querySupport, execute, configure, cancel, recover, dispose and
+inspect. An injected owner facade supplies observe, querySupport,
+invoke({descriptor,input,target,signal}), cancel, afterTerminal, release,
+recover, configure and dispose. Its query response binds the exact requested
+descriptor and current observation, with status, capabilityRef, reasons,
+consumerPort and registry. The current concrete owner also exposes optional
+readDiagnostics separately from ordinary output; native diagnostic evidence
+is not a caller input requirement.
+
+Owner support and common contract compatibility are separate observations.
+querySupport keeps the owner status SUPPORTED, UNSUPPORTED or UNVERIFIED;
+its management edgeDecision and dispatchSupported report whether the common
+contract permits dispatch. For SUPPORTED, dispatchSupported is true only when
+edgeDecision.readiness.state is ready. UNSUPPORTED, UNVERIFIED and mismatched
+owner replies have edgeDecision:null and dispatchSupported:false. An owner can
+support an operation while an explicit
+caller profile conflicts with that edge. UNSUPPORTED returns owner-derived
+code/fieldPath/reason. Unknown or contradictory required support observations
+remain UNVERIFIED. A rejected query does not dispatch the requested native
+operation.
+
+SUPPORTED or COMPATIBLE is not independent numerical PASS. A normal edge can
+be ready and an operation can return EXECUTION_COMPLETED without a diagnostic
+comparison. The optional runner records diagnosticState:NOT_REQUESTED;
+existing diagnostic NOT_VERIFIED classifications are not converted into a
+requirement for ordinary execution. Numerical comparison can be requested
+separately after the normal result, using retained owner references/gates.
+
+Normal execution uses the existing evaluateEdge, invocation queue and snapshot
+coordinator with `{kind:'normal',scopeId:operationId}`. This branch requires
+structural support/currentness acknowledgments and copy/lease ownership,
+without numerical coverage/PASS/evidenceRefs. The queue wraps the whole normal
+transaction; native invocation is not re-enqueued onto its own occupied lane.
+EXECUTION_COMPLETED is returned only after the original transaction is terminal
+and the owner's resources are released. configure invalidates support tokens,
+snapshot currentness and old results. cancel takes the exact active target
+reported by inspect; an old target cannot cancel a newer native job. Failed
+release remains quarantined until owner recovery confirms cleanup.
+
+The first concrete facade, createNormalDiffusionOwner, uses the actual native
+`createDiffusionModels` namespace fixed at
+`5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3` for normalizeRawMean and
+restoreRawMean. It obtains supported shapes from actual rawMeanProfiles and
+delegates values and validation to the existing owner Worker/interop/latent
+implementation. The VAE hash on a mean denotes tensor provenance, not loaded
+VAE weights. A native capability such as Euler does not make that operation
+available through this mean facade; another operation needs its own actual
+owner facade. Unsupported shapes are not resized, padded or replaced with a
+small diagnostic fixture.
+
+`workflow-shapes.mjs` is the single metadata derivation source:
+deriveWorkflowShapes(input),
+parseBerniniWorkflowShapeRequest({workflow,media,geometry}) and
+BERNINI_WORKFLOW_RULE_ID. It returns schemaVersion:1, ruleId, geometry,
+requirements, issues, target, slotSelections, orderedContexts, concatenation
+and ownerSupport:NOT_QUERIED. orderedContexts contains complete, entries and
+positiveAndNegativeReferenceSameList:true. Each requirement has a stable
+requirementId, role, state known/unknown/absent, shape, dtype, axes, meaning,
+normalization, provenance and issues. Meaning and normalization stay null unless
+the caller explicitly supplies them.
+Unresolved geometry/order remains null and does not invent subsequent context
+IDs or totals. Supplied frame counts, target settings, source/reference/editor
+branches and explicit model geometry remain distinct. Shape equations do not
+perform resize/encode/patch/concat/RoPE or grant owner support.
+
+`adapters/workflow-normal-requests.mjs` exports
+queryWorkflowRequirements({shapePlan,bindings,queryOwner}). Known geometry is
+bound to explicit ordinary descriptors before owner queries. An absent
+requirement is NOT_REQUIRED; unknown or unbound required geometry is UNVERIFIED.
+An explicit conflicting descriptor is NOT_QUERIED with
+inputAdmission.state:REJECTED and WORKFLOW_BINDING_CONTRACT_MISMATCH. No small
+profile fallback or shape-only execution acceptance is added.
+
+`tools/ai-connection/run-normal-operation.mjs` exposes runNormalOperation and
+the separate diagnoseNormalOperation command. The normal roundtrip needs only
+the service's fixed native source bootstrap and an ordinary mean input, with
+optional descriptor/scenario settings; query accepts an ordinary descriptor.
+References/gates are read only by the separate diagnostic command after a
+completed normal run. The normal result and its diagnostic proof remain
+distinct. See `development/ai-connection/normal-execution/API-DIFF.md` and
+`REPRODUCE.md` for the entry delta and fixed-source run instructions.
+
+Normal completion does not certify full-model generation or a total resource
+budget. generationReady:false and load/predict/sample=NOT_READY remain explicit.
