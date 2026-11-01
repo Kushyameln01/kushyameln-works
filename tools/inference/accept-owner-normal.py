@@ -15,6 +15,7 @@ import sys
 import threading
 import time
 import traceback
+from contextlib import ExitStack
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote, urlsplit
 
@@ -47,6 +48,8 @@ def main():
     parser.add_argument('--execution-source-sha', required=True)
     parser.add_argument('--browser', default=os.environ.get('CHROMIUM_BINARY') or shutil.which('chromium'))
     parser.add_argument('--timeout-seconds', type=int, default=1800)
+    parser.add_argument('--preflight-only', action='store_true',
+                        help='Check actual browser source/file/configuration bindings without inference or Workers')
     args = parser.parse_args()
     for name in ('vae_bundle', 'vae_references', 'text_bundle', 'text_source', 'text_reference', 'output'):
         setattr(args, name, getattr(args, name).resolve())
@@ -58,8 +61,9 @@ def main():
     started = time.monotonic()
     report = {'passed': False, 'scope': 'Default normal Text/VAE owner API, reused diagnostic profiles and references only',
               'executionSourceSha': args.execution_source_sha, 'newExports': 0, 'newOracleRuns': 0,
-              'neuralExecutionOrder': ['Rect cancel at actual run', 'Rect recovery encode', 'Rect mean decode',
-                                       'one full plain Hello world', 'Text cancel during first graph hash'],
+              'preflightOnly': args.preflight_only,
+              'neuralExecutionOrder': [] if args.preflight_only else ['Rect cancel at actual run', 'Rect recovery encode', 'Rect mean decode',
+                                                                     'one full plain Hello world', 'Text cancel during first graph hash'],
               'httpRequests': [], 'blockedRequests': [], 'httpErrors': [], 'requestFailures': [],
               'pageErrors': [], 'consoleErrors': [], 'progress': [], 'serverErrors': []}
     owner = browser = context = server = server_thread = sampler = None
@@ -176,7 +180,7 @@ def main():
         server_thread.start()
         origin = f'http://127.0.0.1:{server.server_port}'
         from playwright.sync_api import sync_playwright
-        with sync_playwright() as playwright:
+        with sync_playwright() as playwright, ExitStack() as monitor_cleanup:
             browser = playwright.chromium.launch(executable_path=args.browser, headless=True,
                                                  args=['--no-sandbox', '--disable-dev-shm-usage'])
             report['browserVersion'] = browser.version
@@ -185,6 +189,7 @@ def main():
             cdp.detach()
             sampler = ProcessSampler(browser_pid)
             sampler.start()
+            monitor_cleanup.callback(sampler.stop)  # Runs before Playwright closes the browser on exceptions.
             context = browser.new_context(accept_downloads=True, service_workers='block')
 
             def route(request_route):
@@ -222,28 +227,68 @@ def main():
             spec = {'plainInput': plain_input, 'rectInputSha256': '46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a',
                     'vaeGate': {'atol': 2e-5, 'rtol': 2e-5, 'maxAbs': 2e-5},
                     'textGate': {'atol': .001, 'rtol': .001, 'maxAbs': .001}}
-            downloads = []
-            page.on('download', lambda download: downloads.append(download))
-            report['native'] = page.evaluate('spec=>runOwnerNormal(spec)', spec)
+            if args.preflight_only:
+                sampler.phase = 'preflight-configure-capabilities'
+                report['native'] = page.evaluate('''async () => {
+                    const {createInferenceAPI}=await import('/shared/inference/api.mjs');
+                    const check=(ok,message)=>{if(!ok)throw Error(message);};
+                    const read=async selector=>{
+                        const files=new Map(Array.from(document.querySelector(selector).files,file=>[file.name,file]));
+                        return {manifest:JSON.parse(await files.get('manifest.json').text()),files};
+                    };
+                    let workersCreated=0;
+                    const api=createInferenceAPI({workerFactory:()=>{workersCreated++;throw Error('Preflight must not dispatch a Worker');}});
+                    const result={passed:false,newNeuralRuns:0};
+                    try {
+                        const vae=await read('#vae-bundle'),text=await read('#text-bundle');
+                        const source=document.querySelector('#text-source').files[0];
+                        check(source instanceof File&&source.size===text.manifest.modelBytes,'Selected original Text File binding');
+                        text.files.set(text.manifest.embedding.sourceFile,source);
+                        result.vaeConfigured=api.vae.configure(vae);
+                        const input={dtype:'float32',layout:'NCTHW',shape:[...vae.manifest.profile.videoShape],meaning:'rgb-unit'};
+                        result.vae=api.vae.capabilities({operation:'encode',input});
+                        check(result.vae.support?.supported===true,'Configured Rect descriptor support');
+                        check(result.vae.runtime?.encode?.verified===false&&result.vae.runtime?.decode?.verified===false,'No graph execution verification during preflight');
+                        result.unsupported81=api.vae.capabilities({operation:'encode',input:{...input,shape:[1,3,81,480,832]}});
+                        check(result.unsupported81.support?.supported===false,'Unsupported81 descriptor rejection');
+                        result.textConfigured=api.textEncoder.configure(text);
+                        result.text=api.textEncoder.capabilities({operation:'encode',input:{text:'Hello world'}});
+                        check(result.text.support?.supported===true,'Configured plain Text support');
+                        check(result.text.output.normalization==='umt5-final-rmsnorm-f32-v1','Text marker declaration');
+                        check(workersCreated===0,'No preflight Worker creation');
+                        result.selectedFiles={vae:vae.files.size,text:text.files.size,textSourceBytes:source.size};
+                        result.passed=true;
+                    } finally {api.dispose();result.workersCreated=workersCreated;result.disposedState=api.state;}
+                    check(result.disposedState.status==='disposed','Preflight owner disposal');
+                    return result;
+                }''')
+                report['newNeuralRuns'] = 0
+            else:
+                downloads = []
+                page.on('download', lambda download: downloads.append(download))
+                report['native'] = page.evaluate('spec=>runOwnerNormal(spec)', spec)
+                if not report['native']['passed']:
+                    raise AssertionError(report['native'].get('error'))
+                deadline = time.monotonic() + 5
+                while not downloads and time.monotonic() < deadline:
+                    page.wait_for_timeout(50)
+                if len(downloads) != 1:
+                    raise AssertionError('Exactly one normal Text conditioning download required')
+                output = args.output / 'normal-conditioning.wktensor'
+                downloads[0].save_as(str(output))
+                meta, values = unpack_tensor(output.read_bytes())
+                import numpy as np
+                reference = np.fromfile(reference_paths['plain-reference.f32'], dtype='<f4').reshape(1, 512, 4096)
+                report['savedTextComparison'] = compare_values(values, reference, np.array(plain_input['attentionMask'], dtype=np.uint8))
+                if (not report['savedTextComparison']['passed'] or meta.get('normalization') != 'umt5-final-rmsnorm-f32-v1'
+                        or meta.get('modelSha256') != text_manifest['modelSha256'] or meta.get('tokenizerSha256') != text_manifest['tokenizer']['sha256']
+                        or meta.get('attentionMask') != plain_input['attentionMask']):
+                    raise AssertionError('Saved Text payload/marker/model/Tokenizer/mask mismatch')
+                report['savedText'] = {'file': output.name, 'bytes': output.stat().st_size, 'sha256': sha(output), 'metadata': meta}
             if not report['native']['passed']:
                 raise AssertionError(report['native'].get('error'))
-            deadline = time.monotonic() + 5
-            while not downloads and time.monotonic() < deadline:
-                page.wait_for_timeout(50)
-            if len(downloads) != 1:
-                raise AssertionError('Exactly one normal Text conditioning download required')
-            output = args.output / 'normal-conditioning.wktensor'
-            downloads[0].save_as(str(output))
-            meta, values = unpack_tensor(output.read_bytes())
-            import numpy as np
-            reference = np.fromfile(reference_paths['plain-reference.f32'], dtype='<f4').reshape(1, 512, 4096)
-            report['savedTextComparison'] = compare_values(values, reference, np.array(plain_input['attentionMask'], dtype=np.uint8))
-            if (not report['savedTextComparison']['passed'] or meta.get('normalization') != 'umt5-final-rmsnorm-f32-v1'
-                    or meta.get('modelSha256') != text_manifest['modelSha256'] or meta.get('tokenizerSha256') != text_manifest['tokenizer']['sha256']
-                    or meta.get('attentionMask') != plain_input['attentionMask']):
-                raise AssertionError('Saved Text payload/marker/model/Tokenizer/mask mismatch')
-            report['savedText'] = {'file': output.name, 'bytes': output.stat().st_size, 'sha256': sha(output), 'metadata': meta}
             report['passed'] = True
+            sampler.stop()
             context.close()
             context = None
             browser.close()
@@ -252,6 +297,8 @@ def main():
         report['failure'] = {'name': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()}
         report['passed'] = False
     finally:
+        if sampler is not None:
+            sampler.stop()
         if context is not None:
             try:
                 context.close()
@@ -267,8 +314,6 @@ def main():
             server.server_close()
             server_thread.join(timeout=5)
             report['localServerClosed'] = not server_thread.is_alive()
-        if sampler is not None:
-            sampler.stop()
         if owner is not None:
             report['processOwnership'] = cleanup = owner.finish(timeout_seconds=5)
             if not cleanup_complete(cleanup['liveAfterClose'], cleanup['zombiesAfterClose'], cleanup['errors']):
@@ -291,7 +336,8 @@ def main():
         report['wallSeconds'] = time.monotonic() - started
         write_json(args.output / 'browser-results.json', report)
     print(json.dumps({'passed': report['passed'], 'failure': report.get('failure'), 'output': str(args.output),
-                      'savedTextComparison': report.get('savedTextComparison'), 'wallSeconds': report['wallSeconds']}, ensure_ascii=False), flush=True)
+                      'savedTextComparison': report.get('savedTextComparison'), 'wallSeconds': report['wallSeconds'],
+                      **({'newNeuralRuns': 0} if args.preflight_only else {})}, ensure_ascii=False), flush=True)
     return 0 if report['passed'] else 1
 
 
