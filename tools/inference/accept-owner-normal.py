@@ -223,7 +223,7 @@ def main():
                     'vaeGate': {'atol': 2e-5, 'rtol': 2e-5, 'maxAbs': 2e-5},
                     'textGate': {'atol': .001, 'rtol': .001, 'maxAbs': .001}}
             downloads = []
-            page.on('download', downloads.append)
+            page.on('download', lambda download: downloads.append(download))
             report['native'] = page.evaluate('spec=>runOwnerNormal(spec)', spec)
             if not report['native']['passed']:
                 raise AssertionError(report['native'].get('error'))
