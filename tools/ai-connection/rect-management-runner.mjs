@@ -3,9 +3,10 @@
 import {readFile,writeFile,mkdir,stat,readdir} from 'node:fs/promises';
 import {join,dirname,resolve} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
+import {ADOPTED_WKTENSOR_DEPLOYMENT_PATH,createAdoptedWktensorCodec,verifyAdoptedWktensorSource} from '../../docs/shared/ai-connection/codecs/wktensor.mjs';
 import {canonicalize,canonicalBytes,sha256Bytes} from '../../docs/shared/ai-connection/canonical.mjs';
 import {CONTRACT_VERSION} from '../../docs/shared/ai-connection/descriptor.mjs';
-import {createOwnedArtifactStore,captureNativeTensor,restoreNativeTensor,exportBinaryAssets} from '../../docs/shared/ai-connection/adapters/artifacts.mjs';
+import {createOwnedArtifactStore,captureNativeTensor,exportBinaryAssets} from '../../docs/shared/ai-connection/adapters/artifacts.mjs';
 import {PACKAGE_VERSION,writeArtifactPackage,readArtifactPackage} from '../../docs/shared/ai-connection/package.mjs';
 import {createInvocationQueue} from '../../docs/shared/ai-connection/queue.mjs';
 import {buildArtifactCacheKey,createArtifactCache} from '../../docs/shared/ai-connection/cache.mjs';
@@ -28,6 +29,7 @@ const loaded=new WeakMap();
 const freezeJSON=v=>{if(v&&typeof v==='object'&&!ArrayBuffer.isView(v)){for(const x of Object.values(v))freezeJSON(x);Object.freeze(v);}return v;};
 const pins={
  diffusion:{commit:DIFFUSION,apiVersion:'diffusion-models/0.1',build:BUILD,entrypoint:'docs/shared/diffusion-models/latent-space/latent-space.mjs',kernelABI:'wan21-raw-mean-f32-v3',kernelSha256:KERNEL},
+ // This codec pin belongs to the unchanged native855/legacy closure only.
  vae:{commit:VAE,apiVersion:'works-ai-1',build:'works-inference-v1',entrypoint:'docs/shared/inference/vae-api.mjs',codec:'docs/shared/inference/tensor.mjs'}
 };
 const SOURCE_HASHES={
@@ -68,12 +70,12 @@ export async function loadRectCandidate({diffusionRoot,vaeRoot}={}){
  const vaeReceipt=parse('vae','development/inference/e6/receipt.json'),diffReceipt=parse('diffusion','development/ai-connection/e6/rect-receipt.json');
  const reference=parse('diffusion','development/ai-connection/e6/reference-received.json').outputs.find(x=>x.profile===PROFILE);
  if(diffReceipt.roundTripTolerance!==2e-6||vaeReceipt.acceptanceGate.maxAbs!==2e-5||!equal(reference?.shape,SHAPE))throw failure('OWNER_GATE_MISMATCH','Pinned owner profile/gate declarations are required.');
- const codec=await import(pathToFileURL(join(roots.vae,pins.vae.codec)).href),owner=await import(pathToFileURL(join(roots.diffusion,pins.diffusion.entrypoint)).href);
- const inputBytes=files.vae.get('development/inference/e6/fixtures/api-recovery.wktensor'),native=assertRectMean(await codec.decodeTensor(inputBytes));
- const rgb=await codec.decodeTensor(files.vae.get('development/inference/e6/fixtures/png-roundtrip.wktensor'));
+ const nativeCodec=await import(pathToFileURL(join(roots.vae,pins.vae.codec)).href),codec=createAdoptedWktensorCodec(),persistenceCodecSource=await verifyAdoptedWktensorSource(new Uint8Array(await readFile(new URL('../../'+ADOPTED_WKTENSOR_DEPLOYMENT_PATH,import.meta.url)))),legacyCodec={codecId:'works:wktensor',codecVersion:'WKTSR001/schemaVersion1',sourceRef:src(VAE,pins.vae.codec),encode:nativeCodec.encodeTensor,decode:nativeCodec.decodeTensor},owner=await import(pathToFileURL(join(roots.diffusion,pins.diffusion.entrypoint)).href);
+ const inputBytes=files.vae.get('development/inference/e6/fixtures/api-recovery.wktensor'),native=assertRectMean(await codec.decode(inputBytes));
+ const rgb=await codec.decode(files.vae.get('development/inference/e6/fixtures/png-roundtrip.wktensor'));
  if(!equal(rgb.shape,[1,3,1,16,32])||rgb.meaning!=='raw-decoder-rgb'||rgb.modelSha256!==MODEL)throw failure('OWNER_RGB_MISMATCH','Received RGB must bind the same Rect VAE model/profile.');
- const value={pins:structuredClone(pins),gates:{meanRoundtrip:diffReceipt.roundTripTolerance,vae:vaeReceipt.acceptanceGate,exporterDefault:vaeReceipt.exporterDefaultGate},inputIdentity:{sourceRef:src(VAE,'development/inference/e6/fixtures/api-recovery.wktensor'),sha256:await sha256Bytes(inputBytes),byteLength:inputBytes.length},native:structuredClone(native),reference:structuredClone(reference),sourceReceipts};
- loaded.set(value,{roots,files,codec,owner,vaeReceipt,diffReceipt,native,rgb});return freezeJSON(value);
+ const value={pins:structuredClone(pins),gates:{meanRoundtrip:diffReceipt.roundTripTolerance,vae:vaeReceipt.acceptanceGate,exporterDefault:vaeReceipt.exporterDefaultGate},inputIdentity:{sourceRef:src(VAE,'development/inference/e6/fixtures/api-recovery.wktensor'),sha256:await sha256Bytes(inputBytes),byteLength:inputBytes.length},persistenceCodecSource,native:structuredClone(native),reference:structuredClone(reference),sourceReceipts};
+ loaded.set(value,{roots,files,codec,legacyCodec,persistenceCodecSource,owner,vaeReceipt,diffReceipt,native,rgb});return freezeJSON(value);
 }
 function comparison(actual,expected,gate){let maxAbs=0;for(let i=0;i<actual.length;i++)maxAbs=Math.max(maxAbs,Math.abs(actual[i]-expected[i]));return {comparedValues:actual.length,maxAbs,gate,passed:actual.length===expected.length&&maxAbs<=gate};}
 async function referenceSet(){
@@ -82,7 +84,7 @@ async function referenceSet(){
  return loadReferenceSet({catalogBytes,files,expectedCatalogSha256:'14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c'});
 }
 async function managerReceipts(){
- const paths=['tools/ai-connection/rect-management-runner.mjs',...['canonical.mjs','descriptor.mjs','contracts/schemas.mjs','compatibility.mjs','norm-bindings.mjs','reference-loader.mjs','adapters/artifacts.mjs','package.mjs','queue.mjs','cache.mjs'].map(p=>`docs/shared/ai-connection/${p}`)];
+ const paths=['tools/ai-connection/rect-management-runner.mjs',...['canonical.mjs','descriptor.mjs','contracts/schemas.mjs','compatibility.mjs','norm-bindings.mjs','reference-loader.mjs','adapters/artifacts.mjs','package.mjs','queue.mjs','cache.mjs','codecs/wktensor.mjs','codecs/tensor-2bdca59.mjs'].map(p=>`docs/shared/ai-connection/${p}`)];
  return Promise.all(paths.map(async path=>{const b=new Uint8Array(await readFile(new URL(`../../${path}`,import.meta.url)));return {path,sha256:await sha256Bytes(b),byteLength:b.length};}));
 }
 function abort(signal){if(signal?.aborted)throw new DOMException('Rect management invocation aborted','AbortError');}
@@ -93,12 +95,12 @@ async function inventory(receipt,explicitRoot){
 }
 async function packageTensor({native,stage,scope,directory,codec,store,trace,evidence,extensions}){
  const artifactId=`works:p2:${stage}`,meaning=native.meaning,semantic={schemaId:`works:p2:${meaning}`,schemaVersion:'1',spaceId:meaning,unit:'native-f32-value',normalization:native.normalization??'none'};
- const registry={schemas:[{schemaId:'works:p2:g1c-metadata',schemaVersion:'1',g1cMetadata:true},{...semantic,nativeMeanings:[meaning]}],roles:['tensor-transform','latent-decoding'],codecs:[{codecId:'works:wktensor',codecVersion:'WKTSR001/schemaVersion1',sourceRef:src(VAE,pins.vae.codec),decode:codec.decodeTensor}]};
+ const registry={schemas:[{schemaId:'works:p2:g1c-metadata',schemaVersion:'1',g1cMetadata:true},{...semantic,nativeMeanings:[meaning]}],roles:['tensor-transform','latent-decoding'],codecs:[{codecId:codec.codecId,codecVersion:codec.codecVersion,sourceRef:codec.sourceRef,decode:codec.decode}]};
  const descriptor={contractVersion:CONTRACT_VERSION,artifactId,kind:'tensor',native:{schemaId:'works:p2:g1c-metadata',schemaVersion:'1',payloadRef:'pending',metadata:{}},semantics:semantic,profileRef:PROFILE,tensor:{dtype:native.dtype,shape:native.shape,axes:AXES,nativeMeaning:meaning,dataRef:'pending'},provenance:{producerRefs:[],consumerBindings:[],transformTraceRefs:['works:p2:mean-route']},lineage:{inputs:[],sourceFrames:[]},snapshotId:null,ownership:{ownerId:OWNER,mode:'copy'},extensions};
  const handle=captureNativeTensor({tensor:native,response:{tensor:native,evidence},descriptor,store,registry});
  const d=handle.descriptor,fileKinds={'native.wktensor':'native','descriptor.json':'descriptor','evidence.json':'evidence','trace.json':'trace','snapshot.json':'snapshot','extensions.json':'extensions'};
- const assets=new Map([['native.wktensor',await codec.encodeTensor(native)],['descriptor.json',canonicalBytes(d)],['evidence.json',canonicalBytes({schemaVersion:1,artifactId,records:[{evidenceId:`works:p2:${stage}:evidence`,data:evidence}]})],['trace.json',canonicalBytes({schemaVersion:1,artifactId,records:[{traceId:'works:p2:mean-route',data:trace}]})],['snapshot.json',canonicalBytes(null)],['extensions.json',canonicalBytes(d.extensions)]]);
- const manifest={packageVersion:PACKAGE_VERSION,packageId:`works:p2:package:${stage}`,artifacts:[{artifactId,nativePath:'native.wktensor',descriptorPath:'descriptor.json',evidencePath:'evidence.json',tracePath:'trace.json',snapshotPath:'snapshot.json',extensionsPath:'extensions.json',codec:{codecId:'works:wktensor',codecVersion:'WKTSR001/schemaVersion1',sourceRef:src(VAE,pins.vae.codec)}}],payloadBindings:[{ref:d.native.payloadRef,artifactId,nativePath:'native.wktensor',kind:'decoded-tensor-data'}],files:Object.entries(fileKinds).map(([path,kind])=>({path,kind,required:true})),extensions:{}};
+ const assets=new Map([['native.wktensor',await codec.encode(native)],['descriptor.json',canonicalBytes(d)],['evidence.json',canonicalBytes({schemaVersion:1,artifactId,records:[{evidenceId:`works:p2:${stage}:evidence`,data:evidence}]})],['trace.json',canonicalBytes({schemaVersion:1,artifactId,records:[{traceId:'works:p2:mean-route',data:trace}]})],['snapshot.json',canonicalBytes(null)],['extensions.json',canonicalBytes(d.extensions)]]);
+ const manifest={packageVersion:PACKAGE_VERSION,packageId:`works:p2:package:${stage}`,artifacts:[{artifactId,nativePath:'native.wktensor',descriptorPath:'descriptor.json',evidencePath:'evidence.json',tracePath:'trace.json',snapshotPath:'snapshot.json',extensionsPath:'extensions.json',codec:{codecId:codec.codecId,codecVersion:codec.codecVersion,sourceRef:codec.sourceRef}}],payloadBindings:[{ref:d.native.payloadRef,artifactId,nativePath:'native.wktensor',kind:'decoded-tensor-data'}],files:Object.entries(fileKinds).map(([path,kind])=>({path,kind,required:true})),extensions:{}};
  const binaries=exportBinaryAssets(d,store);if(binaries.size)manifest.binaryBindings=[];
  for(const [ref,data] of binaries){const path=`binary/${manifest.binaryBindings.length}.bin`;let node;const find=x=>{if(!x||typeof x!=='object')return;if(x.binaryRef===ref&&x.type&&x.byteLength!==undefined)node=x;else for(const v of Object.values(x))find(v);};find(d);manifest.binaryBindings.push({...node,path});manifest.files.push({path,kind:'attachment',required:true});assets.set(path,data);}
  await mkdir(directory,{recursive:true});
@@ -128,23 +130,23 @@ function edge({artifact,registry,set,payloadSha256,referenceSha256,packageReceip
 export async function runRectManagement({candidate,outputDirectory,managerCommit,privateBundleRoot,signal}={}){
  const state=loaded.get(candidate);if(!state)throw failure('UNVERIFIED_CANDIDATE','Use the byte-verified candidate loader.');
  if(!outputDirectory||!/^[a-f0-9]{40}$/.test(managerCommit??''))throw failure('MANAGER_SOURCE_REQUIRED','Explicit output directory and full manager base commit are required.');
- abort(signal);const {files,codec,owner,vaeReceipt,diffReceipt,native,rgb}=state,store=createOwnedArtifactStore(),resources={kernelDisposed:false,cacheReleaseCount:0};
+ abort(signal);const {files,codec,legacyCodec,persistenceCodecSource,owner,vaeReceipt,diffReceipt,native,rgb}=state,store=createOwnedArtifactStore(),resources={kernelDisposed:false,cacheReleaseCount:0};
  const cache=createArtifactCache({maxBytes:65536,ownerId:OWNER,release:async()=>{resources.cacheReleaseCount++;}});
  const kernel=await owner.createLatentSpace(files.diffusion.get('docs/shared/diffusion-models/latent-space/build/latent-space.wasm'));
  let dispatching=false;const lifecycle=[],bindingGeneration=crypto.randomUUID();
  const queue=createInvocationQueue({resourceBindings:[{bindingId:'works:p2:rect-kernel',ownerId:OWNER,resourceGeneration:bindingGeneration,cancel:async target=>{if(target.ownerId!==OWNER)throw failure('FOREIGN_OWNER','Foreign stop forbidden');return {stopped:!dispatching,evidenceRef:'bounded-native-call-terminal'};},afterTerminal:async target=>({reusable:!dispatching,evidenceRef:`terminal:${target.requestId}`}),release:async target=>{lifecycle.push({target,released:true});}}]});
- const trace={schemaVersion:1,scope:'received-real-mean-owner-rect-wasm-management-route',candidateStatus:'candidate',profileId:PROFILE,sourcePins:candidate.pins,manager:{commit:null,baseCommit:managerCommit,reason:'Uncommitted management changes: sourceReceipts bind the exact executed working-tree checkpoint.',runnerSha256:await sha256Bytes(new Uint8Array(await readFile(fileURLToPath(import.meta.url)))),sourceReceipts:await managerReceipts(),sourceState:'working-tree-source-digest-separate-from-base-commit'},referenceCatalog:{sourceRef:src('6dae9a6fac3e9ad29ea941f22211edbe4aa894ad','docs/shared/ai-connection/reference/catalog.v1.json'),sha256:'14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c',documentVersion:'1.0-draft.1'},inputIdentity:candidate.inputIdentity,operations:[],freshVaeEncode:false,freshVaeDecode:false,generationReady:false};
+ const trace={schemaVersion:1,scope:'received-real-mean-owner-rect-wasm-management-route',candidateStatus:'candidate',profileId:PROFILE,sourcePins:candidate.pins,persistenceCodecSource,manager:{commit:null,baseCommit:managerCommit,reason:'Uncommitted management changes: sourceReceipts bind the exact executed working-tree checkpoint.',runnerSha256:await sha256Bytes(new Uint8Array(await readFile(fileURLToPath(import.meta.url)))),sourceReceipts:await managerReceipts(),sourceState:'working-tree-source-digest-separate-from-base-commit'},referenceCatalog:{sourceRef:src('6dae9a6fac3e9ad29ea941f22211edbe4aa894ad','docs/shared/ai-connection/reference/catalog.v1.json'),sha256:'14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c',documentVersion:'1.0-draft.1'},inputIdentity:candidate.inputIdentity,operations:[],freshVaeEncode:false,freshVaeDecode:false,generationReady:false};
  const extensions={'works:p2-scope':{schemaId:'works:p2-scope',schemaVersion:'1',requiredForUse:false,data:{candidate:true,freshVaeEncode:false,freshVaeDecode:false,generationReady:false}}};
- const packages=[];let normalized,restored,kernelStats,transform,normalizedCapture,normalizedPackageGate;
+ const packages=[];let normalized,restored,kernelStats,transform,normalizedCapture,normalizedPackageGate,legacyNormalizedPackageProbe;
  try{
   abort(signal);
   const raw=await packageTensor({native,stage:'received-raw-mean',scope:'received-real-vae-mean-save-read',directory:join(outputDirectory,'raw-mean'),codec,store,trace,evidence:{ownerReceipt:vaeReceipt,received:true,newNeuralExecution:false},extensions});packages.push(raw.summary);
   const rawTensor=assertRectMean(raw.readback.artifacts[0].restoredNative);
-  const key=await buildArtifactCacheKey({modules:[{moduleId:'diffusion_models',moduleVersion:'candidate',nativeVersion:pins.diffusion.apiVersion,buildId:BUILD,sourceRef:src(DIFFUSION,pins.diffusion.entrypoint)}],modelBindings:[identity],tokenizerBindings:[],profileRef:PROFILE,config:{operation:'normalizeRawMean',kernelSha256:KERNEL},inputHashes:[{inputId:native.context.inputId,sha256:await sha256Bytes(bytes(rawTensor.data))}],maskHash:null,context:rawTensor.context,adapterBindings:[],dependencies:[{dependencyId:'rect:input',revision:1}]});
+  const key=await buildArtifactCacheKey({modules:[{moduleId:'diffusion_models',moduleVersion:'candidate',nativeVersion:pins.diffusion.apiVersion,buildId:BUILD,sourceRef:src(DIFFUSION,pins.diffusion.entrypoint)}],modelBindings:[identity],tokenizerBindings:[],profileRef:PROFILE,config:{operation:'normalizeRawMean',kernelSha256:KERNEL,persistenceCodecSource:codec.sourceRef},inputHashes:[{inputId:native.context.inputId,sha256:await sha256Bytes(bytes(rawTensor.data))}],maskHash:null,context:rawTensor.context,adapterBindings:[],dependencies:[{dependencyId:'rect:input',revision:1}]});
   const reader={readerOwnerId:OWNER,revisionBindings:{'rect:input':1},leases:[]};
-  await cache.put({key,metadata:{scope:'received-real-mean',meaning:rawTensor.meaning},payload:await codec.encodeTensor(rawTensor),ownership:{ownerId:OWNER,mode:'copy'}},reader);
+  await cache.put({key,metadata:{scope:'received-real-mean',meaning:rawTensor.meaning},payload:await codec.encode(rawTensor),ownership:{ownerId:OWNER,mode:'copy'}},reader);
   const cached=await cache.get(key,reader);if(cached.status!=='hit')throw failure('CACHE_MISS','Expected explicitly current owned copy.');
-  const input=assertRectMean(await codec.decodeTensor(cached.payload));
+  const input=assertRectMean(await codec.decode(cached.payload));
   const run=async(operation,tensor)=>{
    abort(signal);const id=`works:p2:${operation}`,requestId=crypto.randomUUID(),activeToken=crypto.randomUUID(),target={bindingId:'works:p2:rect-kernel',ownerId:OWNER,resourceGeneration:bindingGeneration,requestId,revision:1,activeToken};
    const cancel=()=>{queue.cancelInvocation(id,target).catch(()=>{});};signal?.addEventListener('abort',cancel,{once:true});
@@ -152,17 +154,16 @@ export async function runRectManagement({candidate,outputDirectory,managerCommit
   };
   normalized=await run('normalizeRawMean',input);
   trace.operations.push({operation:'normalizeRawMean',nativeExport:'NormalizeRawMeanRect',sourceRef:src(DIFFUSION,pins.diffusion.entrypoint),build:BUILD,inputPayloadSha256:await sha256Bytes(bytes(input.data)),outputPayloadSha256:await sha256Bytes(bytes(normalized.data))});
-  // Candidate codec omits this optional owner normalization marker. Existing
-  // E4 coherence correctly refuses its loss; keep this as an observed boundary.
-  const rejectedDirectory=join(outputDirectory,'normalized-package-rejected');
-  try{await packageTensor({native:normalized,stage:'owner-normalized-mean',scope:'codec-marker-loss-negative-probe',directory:rejectedDirectory,codec,store,trace,evidence:{ownerReceipt:diffReceipt,operation:'NormalizeRawMeanRect',newNeuralExecution:false},extensions});throw failure('EXPECTED_CODEC_MARKER_GUARD','Pinned codec unexpectedly accepted marker loss.');}
-  catch(e){if(e.code!=='NATIVE_METADATA_MISMATCH'||e.fieldPath!=='descriptor.json/native/metadata/normalization')throw e;normalizedPackageGate={status:'blocked',code:e.code,fieldPath:e.fieldPath,filesWritten:(await readdir(rejectedDirectory)).length,scope:'exact-candidate-codec-normalization-marker-loss'};}
-  const normalSemantic={schemaId:'works:p2:wan21-normalized-posterior-mean:v1',schemaVersion:'1',spaceId:normalized.meaning,unit:'native-f32-value',normalization:normalized.normalization};
-  const normalRegistry={...raw.registry,schemas:[...raw.registry.schemas,{...normalSemantic,nativeMeanings:[normalized.meaning]}]};
-  const normalDescriptor={...raw.readback.artifacts[0].descriptor,artifactId:'works:p2:owned-normalized-mean',semantics:normalSemantic};
-  const normalHandle=captureNativeTensor({tensor:normalized,response:{tensor:normalized,operation:'NormalizeRawMeanRect'},descriptor:normalDescriptor,store,registry:normalRegistry});
-  const normalOwned=restoreNativeTensor(normalHandle,store);
-  normalizedCapture={mode:'copy',normalization:normalOwned.normalization,meaning:normalOwned.meaning,context:normalOwned.context,payloadSha256:await sha256Bytes(bytes(normalOwned.data)),diskPackageAccepted:false};
+  const normal=await packageTensor({native:normalized,stage:'owner-normalized-mean',scope:'actual-owner-rect-normalize-save-read',directory:join(outputDirectory,'normalized-mean'),codec,store,trace,evidence:{ownerReceipt:diffReceipt,operation:'NormalizeRawMeanRect',newNeuralExecution:false},extensions});packages.push(normal.summary);
+  const normalOwned=normal.readback.artifacts[0].restoredNative;
+  if(normalOwned.normalization!=='wan21-comfy-f32-v1')throw failure('P2_NORMALIZATION_MARKER_LOST','Adopted codec must preserve the supplied marker');
+  normalizedPackageGate={status:'complete',normalization:normalOwned.normalization,meaning:normalOwned.meaning,sourceRef:codec.sourceRef,payloadSha256:normal.summary.payloadSha256};
+  normalizedCapture={mode:'copy',normalization:normalOwned.normalization,meaning:normalOwned.meaning,context:normalOwned.context,payloadSha256:normal.summary.payloadSha256,diskPackageAccepted:true};
+  // Preserve the acquired old writer as a separate legacy-only negative probe.
+  // Its source is not the adopted codec and cannot gate the active save route.
+  const rejectedDirectory=join(outputDirectory,'legacy-normalized-package-rejected');
+  try{await packageTensor({native:normalized,stage:'legacy-normalized-probe',scope:'legacy-only-codec-marker-loss-negative-probe',directory:rejectedDirectory,codec:legacyCodec,store,trace:{...trace,scope:'legacy-only-codec-marker-loss-negative-probe'},evidence:{ownerReceipt:diffReceipt,operation:'NormalizeRawMeanRect',newNeuralExecution:false,legacyOnly:true},extensions});throw failure('EXPECTED_CODEC_MARKER_GUARD','Acquired legacy writer unexpectedly accepted marker loss.');}
+  catch(e){if(e.code!=='NATIVE_METADATA_MISMATCH'||e.fieldPath!=='descriptor.json/native/metadata/normalization')throw e;legacyNormalizedPackageProbe={status:'blocked',code:e.code,fieldPath:e.fieldPath,filesWritten:(await readdir(rejectedDirectory)).length,scope:'legacy-only-codec-normalization-marker-loss',sourceRef:legacyCodec.sourceRef,sha256:SOURCE_HASHES.vae[pins.vae.codec]};}
   restored=assertRectMean(await run('restoreRawMean',normalOwned));
   trace.operations.push({operation:'restoreRawMean',nativeExport:'RestoreRawMeanRect',sourceRef:src(DIFFUSION,pins.diffusion.entrypoint),build:BUILD,inputPayloadSha256:await sha256Bytes(bytes(normalized.data)),outputPayloadSha256:await sha256Bytes(bytes(restored.data))});
   const independent=candidate.reference;
@@ -178,7 +179,7 @@ export async function runRectManagement({candidate,outputDirectory,managerCommit
   const decisions=edge({artifact:restore.readback.artifacts[0].descriptor,registry:restore.registry,set,payloadSha256:independent.restoredSHA256,referenceSha256:SOURCE_HASHES.diffusion['development/ai-connection/e6/reference-received.json'],packageReceipt:restore.readback.receipt});
   await cache.clear();store.clear();kernel.dispose();resources.kernelDisposed=true;
   const queueState=queue.inspect();await queue.dispose();
-  const result={schemaVersion:'works-p2-rect-route/0.1-draft.1',status:'PARTIAL',generationReady:false,freshVaeEncode:false,freshVaeDecode:false,pins:candidate.pins,gates:candidate.gates,sourceReceipts:candidate.sourceReceipts,trace,packages,normalizedCapture,normalizedPackageGate,transform,kernel:kernelStats,cache:{hit:true},queue:queueState,resources:{...resources,cacheRetainedBytes:cache.inspect().retainedBytes,storeEntries:store.size,ownerLifecycle:lifecycle},assetInventory:assets,blockedEdges:[{edge:'normalized-mean-disk-package',...normalizedPackageGate},{edge:'fresh-vae-encode',reason:'No new real VAE neural session was executed; input is the exact received owner mean.'},{edge:'same-profile-fresh-vae-decode',reason:assets.allPresent?'Explicit assets are present but unverified; fresh browser VAE decode is not executed by this runner.':'Exact owner exported graph/conv assets are absent; no export or shape substitution is performed.',missingAssets:assets.assets.filter(a=>a.state==='missing').map(a=>a.path)}],edgeDecision:decisions.decision,gateOmissionDecision:decisions.gateOmissionDecision};
+  const result={schemaVersion:'works-p2-rect-route/0.1-draft.1',status:'PARTIAL',generationReady:false,freshVaeEncode:false,freshVaeDecode:false,pins:candidate.pins,gates:candidate.gates,sourceReceipts:candidate.sourceReceipts,persistenceCodecSource,trace,packages,normalizedCapture,normalizedPackageGate,legacyNormalizedPackageProbe,transform,kernel:kernelStats,cache:{hit:true},queue:queueState,resources:{...resources,cacheRetainedBytes:cache.inspect().retainedBytes,storeEntries:store.size,ownerLifecycle:lifecycle},assetInventory:assets,blockedEdges:[{edge:'fresh-vae-encode',reason:'No new real VAE neural session was executed; input is the exact received owner mean.'},{edge:'same-profile-fresh-vae-decode',reason:assets.allPresent?'Explicit assets are present but unverified; fresh browser VAE decode is not executed by this runner.':'Exact owner exported graph/conv assets are absent; no export or shape substitution is performed.',missingAssets:assets.assets.filter(a=>a.state==='missing').map(a=>a.path)}],edgeDecision:decisions.decision,gateOmissionDecision:decisions.gateOmissionDecision};
   await writeFile(join(outputDirectory,'result.json'),new Uint8Array([...canonicalBytes(result),10]),{flag:'wx'});return result;
  }finally{await queue.dispose();await cache.clear();store.clear();if(!resources.kernelDisposed){kernel.dispose();resources.kernelDisposed=true;}}
 }

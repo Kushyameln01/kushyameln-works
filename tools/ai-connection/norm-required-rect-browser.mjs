@@ -3,6 +3,7 @@
 import {createNormRequiredRectAdapter} from '../../docs/shared/ai-connection/adapters/norm-required-rect.mjs';
 import {createOwnedArtifactStore,captureNativeTensor,exportBinaryAssets} from '../../docs/shared/ai-connection/adapters/artifacts.mjs';
 import {loadReferenceSet} from '../../docs/shared/ai-connection/reference-loader.mjs';
+import {ADOPTED_WKTENSOR_DEPLOYMENT_PATH,createAdoptedWktensorCodec,verifyAdoptedWktensorSource} from '../../docs/shared/ai-connection/codecs/wktensor.mjs';
 import {canonicalBytes,sha256Bytes,hashCanonical} from '../../docs/shared/ai-connection/canonical.mjs';
 import {PACKAGE_VERSION,writeArtifactPackage,readArtifactPackage} from '../../docs/shared/ai-connection/package.mjs';
 
@@ -20,11 +21,11 @@ const fail=(code,message)=>Object.assign(Error(message),{code});
 
 /** Recheck the selected File bytes after preflight, before decoding or deriving
  * prior evidence. A codec-valid replacement mean is still a different input. */
-export async function decodeRectOriginalInput(value,codec){
+export async function decodeRectOriginalInput(value,codec=createAdoptedWktensorCodec()){
  if(!(value instanceof Uint8Array))throw fail('RECT_INPUT_ORIGINAL_MISMATCH','Exact351 original input bytes are required');
  const bytes=new Uint8Array(value);
  if(bytes.byteLength!==1084||await sha256Bytes(bytes)!==RECT_INPUT_FILE_SHA256)throw fail('RECT_INPUT_ORIGINAL_MISMATCH','The selected input differs from the fixed351 original file');
- return codec.decodeTensor(bytes);
+ return codec.decode(bytes);
 }
 
 /** Common declaration preparation is also used by the Node missing-asset
@@ -59,14 +60,15 @@ async function loadBrowserReferences(){
 const base64=b=>{let s='';for(let o=0;o<b.length;o+=32768)s+=String.fromCharCode(...b.subarray(o,o+32768));return btoa(s);};
 const unbase64=s=>Uint8Array.from(atob(s),x=>x.charCodeAt(0));
 function compareAll(actual,reference,spec){let maxAbs=0,passed=actual.length===reference.length;const failedIndices=[];for(let i=0;i<reference.length;i++){const e=Math.abs(actual[i]-reference[i]);maxAbs=Math.max(maxAbs,e);if(!Number.isFinite(actual[i])||e>spec.gate.atol+spec.gate.rtol*Math.abs(reference[i])){passed=false;failedIndices.push(i);}}return {...clone(spec),passed:passed&&maxAbs<=spec.gate.maxAbs,count:reference.length,maxAbs,failedIndices};}
-async function saveReadOutput({q,context,codec,caseName,plan}){
+export async function saveReadOutput({q,context,caseName,plan}){
+ const codec=createAdoptedWktensorCodec();
  const guard=async()=>{q.signal?.throwIfAborted();await q.ensureCurrent?.();q.signal?.throwIfAborted();};
  const progress=async record=>{await q.onProgress?.(record);};
- await guard();const handle=q.outputHandle,d=handle.descriptor,artifactId=d.artifactId,codecSource=source(RECT_NATIVE_COMMIT,'docs/shared/inference/tensor.mjs');
- const nativeBytes=await codec.encodeTensor(q.output.tensor);await guard();
- const nativeCodec={codecId:'works:wktensor',codecVersion:'WKTSR001/schemaVersion1',sourceRef:codecSource};
- const registry={...context.registry,codecs:[{...nativeCodec,decode:codec.decodeTensor}]};
- const trace={schemaVersion:1,artifactId,records:[{traceId:context.traceId,data:{target:q.target,priorInputEvidence:context.priorInputEvidence,nativeSourceCommit:RECT_NATIVE_COMMIT,managerSource:plan.managerSource,validationReceipt:q.validationReceipt,freshEncode:false,generationReady:false}}]};
+ await guard();const handle=q.outputHandle,d=handle.descriptor,artifactId=d.artifactId,codecSource=codec.sourceRef;
+ const nativeBytes=await codec.encode(q.output.tensor);await guard();
+ const nativeCodec={codecId:codec.codecId,codecVersion:codec.codecVersion,sourceRef:codecSource};
+ const registry={...context.registry,codecs:[{...nativeCodec,decode:codec.decode}]};
+ const trace={schemaVersion:1,artifactId,records:[{traceId:context.traceId,data:{target:q.target,priorInputEvidence:context.priorInputEvidence,nativeSourceCommit:RECT_NATIVE_COMMIT,managerSource:plan.managerSource,persistenceCodecSource:plan.persistenceCodecSource,validationReceipt:q.validationReceipt,freshEncode:false,generationReady:false}}]};
  const assets=new Map([['rgb.wktensor',nativeBytes],['descriptor.json',canonicalBytes(d)],['evidence.json',canonicalBytes({schemaVersion:1,artifactId,records:[{evidenceId:`norm:rect-validation:${q.target.requestId}`,data:q.validationReceipt}]})],['trace.json',canonicalBytes(trace)],['snapshot.json',canonicalBytes(null)],['extensions.json',canonicalBytes(d.extensions)]]);
  const files=[['rgb.wktensor','native'],['descriptor.json','descriptor'],['evidence.json','evidence'],['trace.json','trace'],['snapshot.json','snapshot'],['extensions.json','extensions']].map(([path,kind])=>({path,kind,required:true}));
  const manifest={packageVersion:PACKAGE_VERSION,packageId:`norm:rect-package:${q.target.requestId}`,artifacts:[{artifactId,nativePath:'rgb.wktensor',descriptorPath:'descriptor.json',evidencePath:'evidence.json',tracePath:'trace.json',snapshotPath:'snapshot.json',extensionsPath:'extensions.json',codec:nativeCodec}],payloadBindings:[{ref:d.native.payloadRef,artifactId,nativePath:'rgb.wktensor',kind:'decoded-tensor-data'}],files,extensions:{}};
@@ -76,13 +78,15 @@ async function saveReadOutput({q,context,codec,caseName,plan}){
  if(recovered.status!=='complete')throw fail('RECT_READBACK_INCOMPLETE','Actual E4 required assets/native coherence failed');
  const t=recovered.artifacts[0].restoredNative,payloadSha256=await sha256Bytes(bytes(t));await guard();
  if(payloadSha256!==q.outputBinding.sha256)throw fail('RECT_READBACK_PAYLOAD_MISMATCH','Recovered native data differs from the new actual output');
- return {status:'complete',artifactRef:artifactId,profileRef:PROFILE,receiptRef:`norm:rect-readback:${receipt.manifestSha256}`,payloadSha256,packageReceipt:receipt,readback:{status:recovered.status,shape:t.shape,meaning:t.meaning,modelSha256:t.modelSha256,context:t.context??null,nativeFileSha256:await sha256Bytes(nativeBytes)},directoryName:caseName};
+ return {status:'complete',artifactRef:artifactId,profileRef:PROFILE,receiptRef:`norm:rect-readback:${receipt.manifestSha256}`,payloadSha256,packageReceipt:receipt,readback:{status:recovered.status,shape:t.shape,meaning:t.meaning,modelSha256:t.modelSha256,context:t.context??null,nativeFileSha256:await sha256Bytes(nativeBytes),codecSource:codec.sourceRef},persistenceCodecSource:plan.persistenceCodecSource,directoryName:caseName};
 }
 
 /** Called only after Node has authenticated sources, three original assets,
  * exact received input and the pre-existing independent RGB reference. */
 export async function runNormRequiredRectBrowser(plan){
- const codec=await import('/native/shared/inference/tensor.mjs'),{createInferenceClient}=await import('/native/shared/inference/client.mjs'),{createVaeModule}=await import('/native/shared/inference/vae-api.mjs');
+ const response=await fetch('/'+ADOPTED_WKTENSOR_DEPLOYMENT_PATH);if(!response.ok)throw fail('CODEC_SOURCE_MISMATCH','Adopted persistence codec source is unavailable');
+ const persistenceCodecSource=await verifyAdoptedWktensorSource(new Uint8Array(await response.arrayBuffer())),codec=createAdoptedWktensorCodec();
+ const {createInferenceClient}=await import('/native/shared/inference/client.mjs'),{createVaeModule}=await import('/native/shared/inference/vae-api.mjs');
  const inputFile=document.querySelector('#rect-input').files[0],referenceFile=document.querySelector('#rect-reference').files[0];
  const input=await decodeRectOriginalInput(new Uint8Array(await inputFile.arrayBuffer()),codec),refBytes=new Uint8Array(await referenceFile.arrayBuffer());
  if(await sha256Bytes(refBytes)!==RECT_REFERENCE_SHA256)throw fail('RECT_REFERENCE_MISMATCH','The selected original reference bytes differ');
@@ -109,7 +113,7 @@ export async function runNormRequiredRectBrowser(plan){
   for(let i=0;i<scenarios.length;i++){
    const scenario=scenarios[i],context=i===0?initial:prepareRectNormInputs({tensor:input,referenceSet,managerCommit:plan.managerCommit,resourceState:plan.resourceState,binding:initial.binding,managerRevision:i+1,nativeLocalRevision:101+i,artifactStore:store});
    activeCase={...scenario,context,cancelRequested:false,cancellation:null};
-   const q={...context,manifest:plan.manifest,files,readCurrent:context.readCurrent,validationSpec:context.validationSpec,validateOutput:async({output})=>compareAll(output.tensor.data,reference,context.validationSpec),publishOutput:async output=>saveReadOutput({q:output,context,codec,caseName:`${i+1}-${scenario.name}`,plan})};
+   const q={...context,manifest:plan.manifest,files,readCurrent:context.readCurrent,validationSpec:context.validationSpec,validateOutput:async({output})=>compareAll(output.tensor.data,reference,context.validationSpec),publishOutput:async output=>saveReadOutput({q:output,context,caseName:`${i+1}-${scenario.name}`,plan:{...plan,persistenceCodecSource}})};
    try{
     const result=await adapter.run(q);if(scenario.cancelAtRunning)throw fail('RECT_CANCEL_NOT_OBSERVED','Cancellation case completed without the required observed cancel boundary');
     const {outputHandle,...report}=result;cases.push({name:scenario.name,status:'PASS',...report});
@@ -119,7 +123,7 @@ export async function runNormRequiredRectBrowser(plan){
     cases.push({name:scenario.name,status:'PASS',cancelled:true,cancellation,queue:adapter.inspect(),modelInference:false,generationReady:false});
    }
   }
-  return {status:'PASS',scenario:plan.scenario,cases,events,nativeCalls:events.filter(e=>e.kind==='native-worker-created').length,modelInference:true,freshEncode:false,generationReady:false,snapshotPublished:false};
- }catch(error){return {status:'FAIL',error:{code:error.code??null,message:String(error.message??error),publication:error.publication??null},cases,events,nativeCalls:events.filter(e=>e.kind==='native-worker-created').length,modelInference:cases.some(c=>c.modelInference===true),freshEncode:false,generationReady:false,snapshotPublished:false};}
+  return {status:'PASS',scenario:plan.scenario,persistenceCodecSource,cases,events,nativeCalls:events.filter(e=>e.kind==='native-worker-created').length,modelInference:true,freshEncode:false,generationReady:false,snapshotPublished:false};
+ }catch(error){return {status:'FAIL',persistenceCodecSource,error:{code:error.code??null,message:String(error.message??error),publication:error.publication??null},cases,events,nativeCalls:events.filter(e=>e.kind==='native-worker-created').length,modelInference:cases.some(c=>c.modelInference===true),freshEncode:false,generationReady:false,snapshotPublished:false};}
  finally{await adapter.dispose();store.clear();}
 }

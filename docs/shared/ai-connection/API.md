@@ -670,7 +670,7 @@ to the injected owner lifecycle; a cancel boolean alone is insufficient.
 Native source/file hashing and actual private assets are required for a real
 dispatch claim. Controlled native callbacks test this boundary only.
 
-## Explicit normalized-marker codec candidate
+## Adopted WKTENSOR storage codec
 
 The VAE owner supplied codec source
 `2bdca59ea78580d4fe7a9d31a8de33209b64d029:docs/shared/inference/tensor.mjs`
@@ -682,8 +682,34 @@ source in the package registry preserves a supplied valid normalized marker.
 The format stays `WKTSR001/schemaVersion1`; no marker or numerical conversion is
 inferred. Old writers still lose that marker and E4 rejects their mismatch.
 
-The new codec is an independently verified persistence candidate. Existing
-VAE855/raw Rect runtime and historical codec pins stay unchanged. Its E4
-readback does not certify native decode, cancellation or production readiness.
-See `development/ai-connection/codec-marker-adoption/RESULT.md` for source,
-receiver verification, package and the remaining actual-dispatch dependency.
+The byte-exact owner implementation is bundled at
+`codecs/tensor-2bdca59.mjs`. Management storage uses the shared factory:
+
+```js
+import {createAdoptedWktensorCodec} from './codecs/wktensor.mjs';
+const codec = createAdoptedWktensorCodec();
+const registry = {...schemaRegistry, codecs: [codec]};
+const nativeBytes = await codec.encode(tensor);
+// Use the same codecId/codecVersion/sourceRef in manifest.artifacts[].codec.
+```
+
+`verifyAdoptedWktensorSource(bytes)` checks the actual 8256 bytes and fixed SHA;
+the deployment path and original owner sourceRef are distinct. Rect management
+and the required Rect Node/browser routes use this codec for input decoding,
+cache serialization and E4 writes/readback. Normalized intermediate packages
+now preserve their marker and feed the restored owned tensor into the existing
+owner restore operation. The old writer mismatch stays a scoped regression.
+
+Both managed LoRA storage scenarios use this codec by default. Supplying the
+existing `--codec-root` and `--codec-commit` pair explicitly retains external
+codec injection and records that mode/source. The `legacy` LoRA scenario name
+does not select an old storage codec. Generic package/diagnostic APIs still
+require an explicit trusted codec; they do not silently load a replacement.
+
+Native VAE855/Worker dependencies and historical codec pins stay unchanged.
+New persistenceCodecSource/proof records identify the storage implementation
+separately. Old unmarked WKT bytes remain readable, and historical package
+readers retain their exact original codec registry. Storage adoption does not
+certify native model decode, cancellation or production readiness. See
+`development/ai-connection/codec-marker-adoption/ADOPTED-RESULT.md` for active
+routes, evidence, compatibility and reproduction.

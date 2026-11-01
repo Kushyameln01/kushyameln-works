@@ -13,20 +13,22 @@ import {createRequire} from 'node:module';
 const here=path.dirname(fileURLToPath(import.meta.url)),managementRoot=path.resolve(here,'../..');
 const repository='https://github.com/Kushyameln01/kushyameln-works';
 const fixtureScope='synthetic-manager-control-fixture';
-const required=['lora-root','lora-commit','diffusion-root','diffusion-commit','codec-root','codec-commit','inputs','out'];
-const usage='node tools/ai-connection/run-managed-local-files.mjs --lora-root <fixed LoRA archive> --lora-commit <40hex> --diffusion-root <fixed Diffusion archive> --diffusion-commit <40hex> --codec-root <fixed Text/VAE archive> --codec-commit <40hex> --inputs <private local-File selection JSON> --out <new private evidence folder> [--scenario legacy|snapshot-candidate]';
+const required=['lora-root','lora-commit','diffusion-root','diffusion-commit','inputs','out'];
+const usage='node tools/ai-connection/run-managed-local-files.mjs --lora-root <fixed LoRA archive> --lora-commit <40hex> --diffusion-root <fixed Diffusion archive> --diffusion-commit <40hex> --inputs <private local-File selection JSON> --out <new private evidence folder> [--scenario legacy|snapshot-candidate] [--codec-root <explicit external codec archive> --codec-commit <40hex>]; storage default: bundled adopted 2bdca59';
 const argv=process.argv.slice(2),args={};
 if(argv.length===1&&argv[0]==='--help'){fs.writeSync(1,usage+'\n');process.exit(0);}
-for(let i=0;i<argv.length;i+=2){const k=argv[i]?.slice(2);if(!argv[i]?.startsWith('--')||![...required,'scenario'].includes(k))throw Error('Unknown argument: '+argv[i]);if(!argv[i+1]||argv[i+1].startsWith('--')||Object.hasOwn(args,k))throw Error('One explicit value required for --'+k);args[k]=argv[i+1];}
+for(let i=0;i<argv.length;i+=2){const k=argv[i]?.slice(2);if(!argv[i]?.startsWith('--')||![...required,'scenario','codec-root','codec-commit'].includes(k))throw Error('Unknown argument: '+argv[i]);if(!argv[i+1]||argv[i+1].startsWith('--')||Object.hasOwn(args,k))throw Error('One explicit value required for --'+k);args[k]=argv[i+1];}
+const externalCodec=Object.hasOwn(args,'codec-root')||Object.hasOwn(args,'codec-commit');
+if(externalCodec&&(!args['codec-root']||!args['codec-commit']))throw Error('--codec-root and --codec-commit must be supplied together for explicit external storage');
 const scenario=args.scenario??'legacy';if(!['legacy','snapshot-candidate'].includes(scenario))throw Error('Unknown scenario: '+scenario);
 const scenarioModule=scenario==='legacy'?'managed-local-file-browser-cases.mjs':'managed-lora-snapshot-browser-cases.mjs',successStatus=scenario==='legacy'?'PASS_MANAGED_LOCAL_FILE_ROUTE':'PASS_MANAGED_SNAPSHOT_CANDIDATE_ROUTE';
 for(const k of required)if(!args[k])throw Error('Missing --'+k+'\n'+usage);
-if(!['lora-commit','diffusion-commit','codec-commit'].every(k=>/^[a-f0-9]{40}$/.test(args[k])))throw Error('Complete lowercase source commits required');
+if(!['lora-commit','diffusion-commit',...(externalCodec?['codec-commit']:[])].every(k=>/^[a-f0-9]{40}$/.test(args[k])))throw Error('Complete lowercase source commits required');
 const sha=b=>createHash('sha256').update(b).digest('hex'),hex=v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v);
 const within=(file,root)=>file.startsWith(path.resolve(root)+path.sep);
-const roots={management:managementRoot,lora:path.resolve(args['lora-root']),diffusion:path.resolve(args['diffusion-root']),codec:path.resolve(args['codec-root'])};
+const roots={management:managementRoot,lora:path.resolve(args['lora-root']),diffusion:path.resolve(args['diffusion-root']),...(externalCodec?{codec:path.resolve(args['codec-root'])}:{})};
 const managementCommit=execFileSync('git',['rev-parse','HEAD'],{cwd:managementRoot,encoding:'utf8'}).trim();
-const commits={management:managementCommit,lora:args['lora-commit'],diffusion:args['diffusion-commit'],codec:args['codec-commit']};
+const commits={management:managementCommit,lora:args['lora-commit'],diffusion:args['diffusion-commit'],...(externalCodec?{codec:args['codec-commit']}:{})};
 const sourceRecords=new Map(),sourceCache=new Map(),referenceRecords=new Map(),artifactRecords=new Map(),packageRecords=new Map(),serviceErrors=[];
 const fileState=stat=>Object.fromEntries(['size','mtimeNs','ctimeNs','ino','dev'].map(k=>[k,String(stat[k])]));
 const sameState=(a,b)=>Object.keys(a).every(k=>a[k]===b[k]);
@@ -44,9 +46,26 @@ async function pinnedSource(owner,repoPath){
 }
 const sourcePins={},pinPaths={
  sdk:['lora','docs/shared/inference/lora/sdk-v2.mjs'],adapter:['lora','docs/shared/inference/lora/diffusion-diagnostic-adapter.mjs'],kernel:['lora','docs/shared/inference/lora/kernel/lora.wasm'],
- diffusion:['diffusion','docs/shared/diffusion-models/lora/diagnostic-consumer.mjs'],management:['management','docs/shared/ai-connection/adapters/adopted-lora.mjs'],codec:['codec','docs/shared/inference/tensor.mjs']
+ diffusion:['diffusion','docs/shared/diffusion-models/lora/diagnostic-consumer.mjs'],management:['management','docs/shared/ai-connection/adapters/adopted-lora.mjs']
 };
 for(const [name,[owner,repoPath]]of Object.entries(pinPaths)){const {record}=await pinnedSource(owner,repoPath);sourcePins[name]={repository,commit:record.commit,path:record.path,sha256:record.sha256,...(name==='kernel'?{byteLength:record.byteLength}:{})};}
+let storageCodec;
+if(externalCodec){
+ const {record}=await pinnedSource('codec','docs/shared/inference/tensor.mjs');
+ sourcePins.codec={repository:record.repository,commit:record.commit,path:record.path,sha256:record.sha256};
+ storageCodec={mode:'external-explicit',sourceRef:sourcePins.codec,deployment:{...record}};
+}else{
+ // Verify management deployment against its own Git commit, then verify the
+ // standalone owner's origin bytes. These are distinct source namespaces.
+ const helperPath='docs/shared/ai-connection/codecs/wktensor.mjs',deploymentPath='docs/shared/ai-connection/codecs/tensor-2bdca59.mjs';
+ await pinnedSource('management',helperPath);
+ const {bytes,record}=await pinnedSource('management',deploymentPath);
+ const adopted=await import('../../docs/shared/ai-connection/codecs/wktensor.mjs');
+ if(adopted.ADOPTED_WKTENSOR_DEPLOYMENT_PATH!==deploymentPath)throw Error('Adopted storage deployment path differs from the pinned route');
+ const verification=await adopted.verifyAdoptedWktensorSource(bytes);
+ sourcePins.codec={...adopted.ADOPTED_WKTENSOR_SOURCE};
+ storageCodec={mode:'bundled-adopted',sourceRef:sourcePins.codec,deployment:{...record},originVerification:verification};
+}
 if(sourcePins.kernel.byteLength!==5051||sourcePins.kernel.sha256!=='3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24')throw Error('Corrected owner LoRA kernel required');
 await pinnedSource('management','tools/ai-connection/run-managed-local-files.mjs');
 await pinnedSource('management','tools/ai-connection/'+scenarioModule);
@@ -91,7 +110,7 @@ for(const [name,{bytes}]of sourceCopies)await fsp.writeFile(path.join(verifiedDi
 await fsp.writeFile(path.join(out,'inputs.json'),inputsBytes,{mode:0o600,flag:'wx'});
 
 let browser,server,runError,result={status:'FAIL'},pageErrors=[];
-const provenance={schemaVersion:'management-local-file-result/1',observedUTC:new Date().toISOString(),repository,managementCommit,loraCommit:commits.lora,diffusionCommit:commits.diffusion,codecCommit:commits.codec,sourcePins,scenario,fixtureScope,baseSource:'synthetic manager-control fixture; not a real base-model File',sourceInputs:'only explicitly selected real local positive/negative Files; no remote Drive loading',managementRealE1Executed:false,modelInference:false,generationReady:false,snapshotPublished:false,inputSelection:{byteLength:inputsBytes.length,sha256:sha(inputsBytes),before:fileState(inputsStat)},controlOracleSource:controlOracle.record,ownerOracleSource:ownerOracle.record,inventorySource:inventory.record};
+const provenance={schemaVersion:'management-local-file-result/1',observedUTC:new Date().toISOString(),repository,managementCommit,loraCommit:commits.lora,diffusionCommit:commits.diffusion,codecCommit:sourcePins.codec.commit,storageCodec,sourcePins,scenario,fixtureScope,baseSource:'synthetic manager-control fixture; not a real base-model File',sourceInputs:'only explicitly selected real local positive/negative Files; no remote Drive loading',managementRealE1Executed:false,modelInference:false,generationReady:false,snapshotPublished:false,inputSelection:{byteLength:inputsBytes.length,sha256:sha(inputsBytes),before:fileState(inputsStat)},controlOracleSource:controlOracle.record,ownerOracleSource:ownerOracle.record,inventorySource:inventory.record};
 try{
  console.log(JSON.stringify({stage:'synthetic-manager-control-reference',positive:inputs.positive.fileName,negativeCount:negativePaths.length,fixtureScope}));
  const oracleOutput=execFileSync(process.env.LORA_PYTHON??'python',[path.join(verifiedDir,'managed-lora-control-reference.py'),'--owner-reference',path.join(verifiedDir,'lora-reference.py'),'--input',positivePath,'--out',refDir],{cwd:out,env:{...process.env,OPENBLAS_NUM_THREADS:'1',OMP_NUM_THREADS:'1'},maxBuffer:2*1024*1024});
@@ -135,7 +154,7 @@ try{
    if(pathname.startsWith('/management/')){owner='management';repoPath='docs/'+pathname.slice('/management/'.length);}
    else if(pathname.startsWith('/lora/')){owner='lora';repoPath='docs/'+pathname.slice('/lora/'.length);}
    else if(pathname.startsWith('/diffusion/')){owner='diffusion';repoPath='docs/'+pathname.slice('/diffusion/'.length);}
-   else if(pathname.startsWith('/codec/')){owner='codec';repoPath='docs/'+pathname.slice('/codec/'.length);}
+   else if(pathname.startsWith('/codec/')&&externalCodec){owner='codec';repoPath='docs/'+pathname.slice('/codec/'.length);}
    else if(pathname.startsWith('/lora-tools/')){owner='lora';repoPath='tools/'+pathname.slice('/lora-tools/'.length);}
    else if(pathname==='/runner/'+scenarioModule){owner='management';repoPath='tools/ai-connection/'+scenarioModule;}
    else{res.writeHead(404).end();return;}
@@ -150,10 +169,10 @@ try{
  page.on('pageerror',e=>pageErrors.push(String(e)));page.on('console',m=>{if(/^(MANAGED(?:-FILE)?|LOCAL) /.test(m.text()))console.log(m.text());});
  await page.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort('blockedbyclient'));
  await page.goto(origin+'/joint');await page.locator('#positive').setInputFiles(positivePath);if(negativePaths.length)await page.locator('#negatives').setInputFiles(negativePaths);
- result=await page.evaluate(async({inputs,reference,sourcePins,scenarioModule})=>{
-  try{const cases=await import('/runner/'+scenarioModule);const run=cases.runManagedLocalFileCases??cases.runManagedLoraSnapshotCases;return await run({positiveFile:document.querySelector('#positive').files[0],negativeFiles:[...document.querySelector('#negatives').files],inputs,reference,sourcePins});}
+ result=await page.evaluate(async({inputs,reference,sourcePins,scenarioModule,storageCodec})=>{
+  try{const cases=await import('/runner/'+scenarioModule);const run=cases.runManagedLocalFileCases??cases.runManagedLoraSnapshotCases;return await run({positiveFile:document.querySelector('#positive').files[0],negativeFiles:[...document.querySelector('#negatives').files],inputs,reference,sourcePins,storageCodec});}
   catch(error){return {status:'FAIL',error:String(error.stack||error),cause:String(error.cause??'')};}
- },{inputs,reference,sourcePins,scenarioModule});
+ },{inputs,reference,sourcePins,scenarioModule,storageCodec});
  if(result.status===successStatus){
   const observed=result.localInput?.sourceSha256;
   if(observed!==inputs.positive.expectedSha256||result.localInput?.registration?.fullFileSHA256!==observed)throw Error('Successful local route did not retain actual positive native full-hash evidence');
@@ -172,7 +191,7 @@ finally{
  try{provenance.inputSelection.after=fileState(await fsp.stat(inputsPath,{bigint:true}));provenance.inputSelection.unchanged=sameState(provenance.inputSelection.before,provenance.inputSelection.after)&&sha(await fsp.readFile(inputsPath))===provenance.inputSelection.sha256;}catch(error){provenance.inputSelection.unchanged=false;provenance.inputSelection.afterError=String(error);}
  const final={...result,...provenance,snapshotPublished:scenario==='snapshot-candidate'?result.snapshotPublished===true:provenance.snapshotPublished,pageErrors,serviceErrors,inputFiles:inputRecords,sourceFiles:[...sourceRecords.values()],referenceFiles:[...referenceRecords.values()].map(({bytes,...record})=>record),artifacts:[...artifactRecords.values()],packageFiles:[...packageRecords.values()],originalsUnchangedAcrossTrial:originalsUnchanged};
  if(!originalsUnchanged||!provenance.inputSelection.unchanged||pageErrors.length||serviceErrors.length||runError){final.status='FAIL';final.transportError=String(runError??(!originalsUnchanged?'Selected File changed during trial':!provenance.inputSelection.unchanged?'Input selection changed during trial':pageErrors[0]??serviceErrors[0]));}
- await fsp.writeFile(path.join(out,'source-receipt.json'),JSON.stringify({schemaVersion:'management-local-file-source-receipt/1',fixtureScope,scenario,sourcePins,sourceFiles:final.sourceFiles,controlOracle:controlOracle.record,ownerOracle:ownerOracle.record},null,2)+'\n',{mode:0o600,flag:'wx'});
+ await fsp.writeFile(path.join(out,'source-receipt.json'),JSON.stringify({schemaVersion:'management-local-file-source-receipt/1',fixtureScope,scenario,storageCodec,sourcePins,sourceFiles:final.sourceFiles,controlOracle:controlOracle.record,ownerOracle:ownerOracle.record},null,2)+'\n',{mode:0o600,flag:'wx'});
  await fsp.writeFile(path.join(out,'result.json'),JSON.stringify(final,null,2)+'\n',{mode:0o600,flag:'wx'});
  console.log(JSON.stringify({status:final.status,fixtureScope,result:path.join(out,'result.json'),error:final.error??final.transportError}));if(final.status!==successStatus)process.exitCode=1;
 }

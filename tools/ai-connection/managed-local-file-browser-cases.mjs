@@ -9,7 +9,6 @@ import {diagnosticRegistryHash} from '/diffusion/shared/diffusion-models/lora/di
 import {createOrtProjectionStage} from '/diffusion/shared/diffusion-models/ort-bridge/stage.mjs';
 import {createLoraV2} from '/lora/shared/inference/lora/sdk-v2.mjs';
 import * as ownerExports from '/lora/shared/inference/lora/diffusion-diagnostic-adapter.mjs';
-import * as codec from '/codec/shared/inference/tensor.mjs';
 import {compareAll} from '/lora-tools/ai-connection/joint-browser-cases.mjs';
 
 const assert=(ok,message)=>{if(!ok)throw Error(message);};
@@ -19,8 +18,26 @@ async function load(record,Type){const r=await fetch('/reference/'+record.file);
 async function save(name,value){const b=bytes(value),r=await fetch('/artifact/'+name,{method:'POST',body:b});assert(r.ok,'Private evidence write failed');return {file:name,bytes:b.byteLength,sha256:await sha(b)};}
 async function rejected(action,label){let caught;try{await action();}catch(e){caught=e;}assert(caught,'Expected rejection: '+label);return {rejected:true,code:caught.code??null,error:String(caught)};}
 
-export async function runManagedLocalFileCases({positiveFile,negativeFiles,inputs,reference,sourcePins}){
+// Keep storage adoption separate from SDK/consumer source pins. The explicit
+// external route loads its codec only when selected by the CLI/caller.
+export async function selectManagedStorageCodec({sourcePins,storageCodec}={}){
+ const mode=storageCodec?.mode??'bundled-adopted';
+ if(mode==='bundled-adopted'){
+  const {createAdoptedWktensorCodec}=await import('/management/shared/ai-connection/codecs/wktensor.mjs');
+  const selected=createAdoptedWktensorCodec();
+  assert(['repository','commit','path','sha256'].every(k=>sourcePins?.codec?.[k]===selected.sourceRef[k]),'Bundled storage codec source pin differs from the adopted owner source');
+  return selected;
+ }
+ assert(mode==='external-explicit'&&sourcePins?.codec,'Explicit external storage codec mode/source required');
+ if(storageCodec.sourceRef)assert(['repository','commit','path','sha256'].every(k=>storageCodec.sourceRef[k]===sourcePins.codec[k]),'External storage codec source pin differs from selected deployment');
+ const native=await import('/codec/shared/inference/tensor.mjs');
+ assert(typeof native.encodeTensor==='function'&&typeof native.decodeTensor==='function','External storage codec exports are missing');
+ return Object.freeze({codecId:'works:wktensor',codecVersion:'WKTSR001/schemaVersion1',sourceRef:structuredClone(sourcePins.codec),encode:native.encodeTensor,decode:native.decodeTensor});
+}
+
+export async function runManagedLocalFileCases({positiveFile,negativeFiles,inputs,reference,sourcePins,storageCodec}){
  const report={status:'RUNNING',scope:'managed-local-File-control-route',fixtureScope:'synthetic-manager-control-fixture',realBase:false,newRealE1Acceptance:false,modelInference:false,generationReady:false,snapshotPublished:false,cases:[],inputClassifications:[],lifecycle:[],sourcePins};
+ const packageCodec=await selectManagedStorageCodec({sourcePins,storageCodec});report.storageCodec={mode:storageCodec?.mode??'bundled-adopted',sourceRef:structuredClone(packageCodec.sourceRef),...(storageCodec?.deployment?{deployment:structuredClone(storageCodec.deployment)}:{})};
  assert(reference.realBase===false&&reference.scope==='synthetic-manager-control-fixture','Control fixture must never be labeled a real base');
  const selection=structuredClone(inputs.positive.selection),side=selection.noise.toUpperCase();
  const baseWeight=await load(reference.baseWeight,Float32Array),baseBias=await load(reference.baseBias,Float32Array),x=await load(reference.activation,Float32Array);
@@ -68,7 +85,7 @@ export async function runManagedLocalFileCases({positiveFile,negativeFiles,input
   for(const ref of reference.cases)saved=await apply(ref,ref.id);
   const positive=reference.cases.find(ref=>ref.strength===1),again=await apply(positive,'local-reapply');
   assert(again.record.weightArtifact.sha256===report.cases.find(c=>c.strength===1).weightArtifact.sha256,'Reapplication double-added weights');
-  const seed=await createManagedDiagnosticPackage({output:again.result.output,applicationEnvelope:again.savedEnvelope,inputIdentity:{inputId:'selected-local-safetensors',fileName:positiveFile.name,byteLength:positiveFile.size,sha256:report.localInput.sourceSha256},baseEvidence:fixtureEvidence,codec:{codecId:'works:wktensor',codecVersion:'WKTSR001/schemaVersion1',sourceRef:sourcePins.codec,encode:codec.encodeTensor,decode:codec.decodeTensor}});
+  const seed=await createManagedDiagnosticPackage({output:again.result.output,applicationEnvelope:again.savedEnvelope,inputIdentity:{inputId:'selected-local-safetensors',fileName:positiveFile.name,byteLength:positiveFile.size,sha256:report.localInput.sourceSha256},baseEvidence:fixtureEvidence,codec:packageCodec});
   const prefix='/package/local-file-diagnostic/';
   const writer={registry:seed.registry,async write(path,data){const r=await fetch(prefix+path,{method:'POST',body:data});assert(r.ok,'E4 filesystem write failed');}};
   const reader={async read(path){const r=await fetch(prefix+path);return r.status===404?null:r.ok?new Uint8Array(await r.arrayBuffer()):Promise.reject(Error('E4 filesystem read failed'));}};
