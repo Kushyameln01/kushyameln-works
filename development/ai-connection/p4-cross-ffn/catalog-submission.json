@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "bernini-p4-catalog-submission/0.1",
+  "status": "OWNER_CANDIDATE_NOT_COMMON_CATALOG_ADOPTION",
+  "baseCatalogCommit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+  "nativeApiVersion": "diffusion-models/0.1",
+  "nativeExecutionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+  "recordId": "EXEC-BERNINI-BLOCK0-N2-CROSS-FFN-F32-CANDIDATE-V1",
+  "sourceCommit": "5744f700e17b23d5c18d32315fb6dfbd7c49089a",
+  "build": "bernini-p4-cross-ffn/0.1+31cd57300e61ef429de85eefa83f2d5796588b2e94e32a162810b62cdedf408b",
+  "shape": {
+    "residual": [
+      2,
+      5120
+    ],
+    "text": [
+      1,
+      "L",
+      4096
+    ],
+    "admittedTextRows": [
+      1,
+      512
+    ],
+    "numericallyVerifiedTextRows": [
+      4
+    ],
+    "heads": 40,
+    "headDim": 128,
+    "ffn": [
+      5120,
+      13824,
+      5120
+    ],
+    "layout": {
+      "hidden": "LC",
+      "text": "BLC"
+    }
+  },
+  "precision": {
+    "storage": "per-entry F8_E4M3 with own F32 scalar scale, or F16",
+    "compute": "F32 ORT WASM + Hike",
+    "fp8Profile": "scaled-e4m3fn-scalar-f32-v1",
+    "rmsNormAxis": 5120,
+    "epsilon": 1e-06,
+    "crossMaskApplied": false,
+    "crossRopeApplied": false,
+    "ffnGelu": "tanh",
+    "originalProductionPrecisionVerified": false
+  },
+  "gate": {
+    "source": "core/candidate-plan.json",
+    "sha256": "051b6833be54aed9e1e0c3657bd28aa926b46c238a1c3a06fb298f6cc6427600",
+    "local": {
+      "abs": 0.001,
+      "rel": 0.0001
+    },
+    "composed": {
+      "abs": 0.01,
+      "rel": 0.001
+    },
+    "definedBeforeNumericalExecution": true,
+    "relaxedAfterResults": false
+  },
+  "reference": "Independent NumPy binary64 projections/norm/attention with declared F32 boundaries and independent original storage decoder; exact input/output byte bindings",
+  "acceptanceScope": {
+    "fixedSavedN2ResidualAndExplicitDyadicTextK4": true,
+    "highLowIndependent": true,
+    "realText": false,
+    "realLoraCanonicalMapping": false,
+    "fullBlockOrModelOrWorkflow": false,
+    "productionResources": false
+  },
+  "evidence": "verification.json",
+  "normalizationOwner": "Text final encoder RMSNorm by Text owner; cross norm/text embedding/FFN by Diffusion; no latent normalization in this operation",
+  "generationReady": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY"
+}
