@@ -68,3 +68,6 @@ Files: tools/ai-connection/run-norm-required-n2-tail.mjs、必要なbrowser entr
   旧受入bytesを保ち、catalogPathだけをloaderの明示入力として追加する。
 - Ruling: 非公開payloadを本環境で未確認のため、実数値edgeは保留したまま独立な制御・保存接続を進める。
   保持環境実行または実配置先はユーザーへ非同期確認済み。経過時間を資材受領と扱わない。
+- ユーザー確定: 管理runner固定 → Diffusion保持環境で実行返却 → 管理が両SHA/Profile/証拠を照合受入。
+  完成したsourceと検証はRESULT.md/RESULT.json、固定引継ぎはHANDOFF.md/JSONへ記録した。
+  上のchecklistは着手時の計画として保持し、実数値実行・受入を未実施のまま完了へ変えない。
