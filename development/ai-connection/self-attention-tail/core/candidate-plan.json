@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "bernini-self-attention-tail-plan/0.1",
+  "profileId": "bernini-block0-n2-self-attention-residual-f32-v1",
+  "status": "PRE_EXECUTION_GATE_FIXED",
+  "gateMayNotBeRelaxedAfterComparison": true,
+  "baselineCommit": "caa521ca23d1e32b36775d0a913b0731962c5df4",
+  "acceptedNumericalRuntimeCommit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+  "coreCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+  "coreSource": "development/ai-connection/profile-adoption/p4/core-source/comfy/ldm/wan/model.py",
+  "coreSourceSHA256": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699",
+  "scope": "NATURAL_N2_BLOCK0_SELF_ATTENTION_O_CHUNK2_GATE_AND_PATCH_RESIDUAL",
+  "cases": [
+    {"side":"HIGH", "blockIndex":0, "scheduleIndex":1, "sigma":0.9617158770561218, "timestep":961.7158813476562},
+    {"side":"LOW", "blockIndex":0, "scheduleIndex":3, "sigma":0.8333333134651184, "timestep":833.3333129882812}
+  ],
+  "target": {
+    "implicitBatch":1, "tokens":2, "width":5120, "heads":40, "headDim":128,
+    "attentionShape":[2,5120], "patchHiddenShape":[2,5120], "timeAct1Shape":[5120],
+    "grid":[1,1,2], "coordinates":[[0,0,0],[0,0,1]], "sourceIds":[0,0],
+    "contextLatents":[], "gateChunk":2, "gateRows":[10240,15360],
+    "residualBasis":"original pre-norm, pre-modulation patchHidden",
+    "gateBroadcast":"singleton time position, channel-wise over both tokens",
+    "lowIsHighHandoff":false
+  },
+  "parameterSelection": [
+    {"key":"blocks.0.self_attn.o.weight", "fullShape":[5120,5120], "storageDtype":"F8_E4M3", "selectedRows":[0,5120], "absoluteOffset":2818896456, "sourceBytes":26214400},
+    {"key":"blocks.0.self_attn.o.weight_scale", "fullShape":[], "storageDtype":"F32", "absoluteOffset":181312, "sourceBytes":4},
+    {"key":"blocks.0.self_attn.o.comfy_quant", "fullShape":[27], "storageDtype":"U8", "absoluteOffset":15574823658, "sourceBytes":27, "requiredUTF8":"{\"format\": \"float8_e4m3fn\"}"},
+    {"key":"blocks.0.self_attn.o.bias", "fullShape":[5120], "storageDtype":"F16", "elementOffset":0, "selectedElements":5120, "absoluteOffset":52823496, "sourceBytes":10240},
+    {"key":"time_projection.1.weight", "fullShape":[30720,5120], "storageDtype":"F16", "selectedRows":[10240,15360], "absoluteOffset":2362765896, "sourceBytes":52428800},
+    {"key":"time_projection.1.bias", "fullShape":[30720], "storageDtype":"F16", "elementOffset":10240, "selectedElements":5120, "absoluteOffset":2257867336, "sourceBytes":10240},
+    {"key":"blocks.0.modulation", "fullShape":[1,6,5120], "storageDtype":"F16", "elementOffset":10240, "selectedElements":5120, "absoluteOffset":52731336, "sourceBytes":10240}
+  ],
+  "precision": {
+    "decode":"independent E4M3FN table times own scalar scale, rounded F32; IEEE754 F16 to F32",
+    "o":"F32 runtime Gemm then F32 bias; independent binary64 dot then F32 then F32 bias",
+    "gateProjection":"F32 runtime Gemm then F32 bias; independent binary64 dot then F32 then F32 bias",
+    "gate":"F32(modulation_chunk2 + gateProjection), no scale-plus-one",
+    "gated":"F32(o * gate), channel broadcast over N2",
+    "residual":"F32(patchHidden + gated), separate multiply and add",
+    "torchAddcmulFusedGPUParityVerified":false,
+    "originalProductionPrecisionVerified":false
+  },
+  "gates": {
+    "decodedParameter":{"comparison":"strict F32 bytes"},
+    "localO":{"abs":0.0001,"rel":0.00001},
+    "localGateProjection":{"abs":0.001,"rel":0.0001},
+    "localGate":{"abs":0.001,"rel":0.0001},
+    "localGated":{"abs":0.001,"rel":0.0001},
+    "localResidual":{"abs":0.001,"rel":0.0001},
+    "composedO":{"abs":0.01,"rel":0.001},
+    "composedGated":{"abs":0.01,"rel":0.001},
+    "composedResidual":{"abs":0.01,"rel":0.001}
+  },
+  "gatesFormula":"Every finite element: abs(actual-reference) <= absolute + relative * abs(reference); no post-observation gate changes",
+  "admission": {
+    "compactNonsharedFiniteArrays":true,
+    "exactShapeRequired":true,
+    "pointwiseInputMaxAbs":10000000000000000,
+    "basisAuthentication":"known published full-prefix artifact and receipt hashes; verify exact patchHidden and timeAct1 F32 bits independently of hidden/context",
+    "contextAuthentication":"new old-runtime N2 context receipt binds exact context bits and the same full-prefix receipt; independent reference is never a runtime input",
+    "conflictingUnknownSideBlockScheduleBinding":"reject before execution",
+    "privatePayload":"all array/weight values stay outside repository"
+  },
+  "referenceModes": {
+    "LOCAL_ACTUAL_INPUTS":"exact actual runtime attention plus retained actual patchHidden/timeAct1 bits",
+    "COMPOSED_INDEPENDENT_PREFIX":"independent composed head context plus independent prefix patchHidden/timeAct1, each existing private reference hash checked against published receipt"
+  },
+  "resources": {
+    "modelBytesPerSide":15574833216,
+    "headerBytes":181280,
+    "selectedParameterBytesPerSide":78673951,
+    "maxRowsPerWeightBlock":16,
+    "maxSingleParameterReadBytes":163840,
+    "maxSingleReadIncludingHeaderBytes":181280,
+    "maxDecodedF32WeightBlockBytes":327680,
+    "fullFileSha256Recomputed":false,
+    "fullDecodedWeightsRetained":false,
+    "sharedTraversalForLocalAndComposedReferences":true
+  },
+  "readiness":{"load":"NOT_READY","predict":"NOT_READY","sample":"NOT_READY"},
+  "notAccepted":["cross attention","FFN","later blocks and timesteps","original81frame target/context/noise","LOW actual HIGH handoff","original Torch fused/GPU or BF16/FP16/FP8 production precision","production full resource peak","complete block/model inference"]
+}

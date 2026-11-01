@@ -224,3 +224,27 @@ hidden/positionsはcompact・非sharedの有限F32、sourceIdsはcompactなInt32
 新しい資源観測は既存の数値runtimeを変更せず、[追加結果](../../../development/ai-connection/qkv-followup/RESULT.md) に保存する。ORTのsession数とWebAssembly.Memory数を区別し、同一Memoryはidentityで一度だけ数える。観測する線形Memory容量・高水位、名前付きhost staging、累積copy、allocator live/GC/OSの未知量を別に扱う。計測器の追加をnative RPCの新operationや本番の資源保証と扱わない。
 
 [再利用scope](../../../development/ai-connection/qkv-followup/REUSE_SCOPE.md) と [次の本番境界](../../../development/ai-connection/qkv-followup/BOUNDARIES.md) は、N2数値・旧precomputed-K32760・3H allocationの証拠を合成して本番受入へ昇格させない条件を示す。元gridでの新たな数値受入には、その入力の実producer receipt・座標・precision・独立referenceが必要である。`load/predict/sample=NOT_READY`、元Euler/simple6steps/shift5/split3を維持する。
+
+## N2 O projection・chunk2 gate・自己注意残差
+
+独立ES module [self-attention-tail](ort-bridge/self-attention-tail/README.md) の `createSelfAttentionTail` は、受入済みの同一N2 attentionから、実O projection→chunk2 gateのbroadcast乗算→block0入力への残差加算を一単位で実行する。native profileは `bernini-block0-n2-self-attention-residual-f32-v1`。native RPC/MessagePortへ新opを追加するものではない。
+
+```js
+import {createSelfAttentionTail} from './ort-bridge/self-attention-tail/stage.mjs';
+const tail = await createSelfAttentionTail({file: originalFile, side:'HIGH', trustedInputs});
+try {
+  const r = await tail.run({attention, patchHidden, timeAct1, signal});
+  // r.o / r.gated / r.residual: owned F32 LC [2,5120]
+  // r.gateProjection / r.gate: owned F32 [5120], broadcast across2 tokens
+} finally { await tail.dispose(); }
+```
+
+`trustedInputs`は、固定fullprefix receipt/artifact、patchHidden/timeAct1のbits、別途保存した実attention artifact/receipt/context bits、side/block0/HIGH1またはLOW3を束縛する。callerのsuccess booleanだけを出所証明にしない。配列はcompact・非sharedの有限F32、形はattention/patchHidden `[2,5120]`、timeAct1 `[5120]`。所有snapshotをawait前に取得し、callerを変更・detachせず、WASM viewやnative Tensorを返さない。
+
+Oは元FP8 E4M3FN `[5120,5120]` とO固有のscalar scale/config、F16 biasを使う。gateは保存済みtimeAct1に対し、元F16 time projectionのrows `[10240,15360)` とbias、modulation chunk2だけを追加取得して計算する。`gate = modulation_chunk2 + timeGate`、`gated = O*gate`、`residual = patchHidden+gated`。残差元にpost-modulation hiddenを使わず、gateへscale+1も適用しない。
+
+計算は明示F32診断で、Hikeの乗算と加算を分ける。元torch.addcmul/GPU fused precisionとの一致は未受入。返すresidualは自己注意後のtoken hiddenであり、生成latentやVAE posterior meanへ読み替えない。HIGH/LOWは独立ケースで、実HIGH→LOW受渡しではない。
+
+BUSYを外部getterより前に獲得し、取消はcooperativeとする。abort後にPromise終端を待ってからdisposeする。native解放失敗時はhandleを保持して再利用を止め、recoverで解放を再試行する。全体queue・工程管理は管理、内部数値計算と資源は本ownerの責任である。
+
+O・gate・gated・residualの独立参照と事前gate、重み範囲/source識別、Memory/copy・再利用/新規検証は [結果と再現手順](../../../development/ai-connection/self-attention-tail/RESULT.md) に記録する。cross-attention・FFN・全block・本番生成は後続とし、`load/predict/sample=NOT_READY`を維持する。

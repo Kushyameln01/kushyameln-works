@@ -18,6 +18,8 @@ tensor=json.loads((root/'tools/inference/kernel/manifest.json').read_text())
 for field,name in [('sourceSha256','tools/inference/kernel/tensor.hike'),('wasmSha256','docs/shared/inference/kernel/tensor.wasm'),('hostSha256','docs/shared/inference/hike.mjs')]:assert hashlib.sha256((root/name).read_bytes()).hexdigest()==tensor[field],field
 h=root/'docs/shared/diffusion-models/ort-bridge/block-hidden';hidden=json.loads((h/'build-record.json').read_text())
 for field,name in [('builderSha256','build.py'),('sourceSha256','math.hike'),('hostSha256','math.mjs'),('wasmSha256','kernel.wasm'),('watSha256','kernel.wat'),('runtimeSha256','runtime.js')]:assert hashlib.sha256((h/name).read_bytes()).hexdigest()==hidden[field],field
+t=root/'docs/shared/diffusion-models/ort-bridge/self-attention-tail';tail=json.loads((t/'build-record.json').read_text())
+for field,name in [('builderSha256','build.py'),('sourceSha256','math.hike'),('hostSha256','math.mjs'),('wasmSha256','kernel.wasm'),('watSha256','kernel.wat'),('runtimeSha256','runtime.js')]:assert hashlib.sha256((t/name).read_bytes()).hexdigest()==tail[field],field
 # Every relative runtime import in the new cut must be represented in the owner
 # build identity. This includes transitive shared modules; a local receipt's
 # selected file list is not treated as the complete runtime closure.
@@ -30,6 +32,6 @@ def visit(path):
  for target in re.findall(r'(?:from\s*|import\s*\()\s*[\'\"](\.[^\'\"]+)[\'\"]',path.read_text()):
   child=(path.parent/target).resolve()
   if child.suffix in ('.mjs','.js'):visit(child)
-for entry in [h/'stage.mjs',root/'docs/shared/diffusion-models/ort-bridge/attention-heads/stage.mjs']:visit(entry)
-out={'passed':True,'sourceCount':len(hashes),'buildId':r.stdout.strip(),'kernelWasmSHA256':receipt['wasmSha256'],'latentWasmSHA256':latent['wasmSha256'],'streamAttentionWasmSHA256':stream['wasmSha256'],'qkvRopeWasmSHA256':qkv['wasmSha256'],'blockHiddenWasmSHA256':hidden['wasmSha256'],'derivedRuntimeImportCount':len(visited),'reusedTensorWasmSHA256':tensor['wasmSha256'],'reusedTensorHistoricalCompilerSHA256':tensor['compilerSha256'],'reusedTensorRebuilt':False,'kernelReceiptsChecked':29,'ownerBuilder':'docs/shared/diffusion-models/api/build-info.py','scope':'source closure/receipt only, not real-model validation'}
+for entry in [h/'stage.mjs',root/'docs/shared/diffusion-models/ort-bridge/attention-heads/stage.mjs',t/'stage.mjs']:visit(entry)
+out={'passed':True,'sourceCount':len(hashes),'buildId':r.stdout.strip(),'kernelWasmSHA256':receipt['wasmSha256'],'latentWasmSHA256':latent['wasmSha256'],'streamAttentionWasmSHA256':stream['wasmSha256'],'qkvRopeWasmSHA256':qkv['wasmSha256'],'blockHiddenWasmSHA256':hidden['wasmSha256'],'selfAttentionTailWasmSHA256':tail['wasmSha256'],'derivedRuntimeImportCount':len(visited),'reusedTensorWasmSHA256':tensor['wasmSha256'],'reusedTensorHistoricalCompilerSHA256':tensor['compilerSha256'],'reusedTensorRebuilt':False,'kernelReceiptsChecked':35,'ownerBuilder':'docs/shared/diffusion-models/api/build-info.py','scope':'source closure/receipt only, not real-model validation'}
 (root/'development/ai-connection/build-verification.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out))

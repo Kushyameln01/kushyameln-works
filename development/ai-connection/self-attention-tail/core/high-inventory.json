@@ -1,0 +1,226 @@
+{
+  "schemaVersion": "bernini-self-attention-tail-inventory/0.1",
+  "side": "HIGH",
+  "planSHA256": "58a7a187d9580cd5af1d12e4d9552f8880a47c8a89e50b7bf1d27fec4ff11549",
+  "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+  "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+  "bindings": {
+    "fullPrefixReceiptSHA256": "c12885eb71b0b46f91f79b94bba0315f1c9eae635daa3493686bb5882c7703f0",
+    "fullPrefixArtifactSHA256": "4493d93b56f434b6292da1c9898dd30b474444073796a10e25788d5c71a65a52",
+    "prefixReferenceSHA256": "6e0fe54c7d90bd886433f93a810feba61a64402f03f2cabdb43ce2960305f057",
+    "headsReferenceSHA256": "af6ff8cc2909c25802caaafb9336f66c6838775b968cbd621832a55128beda83",
+    "headsReferenceReceiptSHA256": "a13a44b46ddcb4aba7e03fa2856d815adc0bcf2437db586d9a7109a2ed13f31d"
+  },
+  "actualInputIdentities": {
+    "patchHidden": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "29002478d22504cb4df1b193c4a75059b7e88568c38460f9ff7a61287dfa8f96"
+    },
+    "timeAct1": {
+      "shape": [
+        5120
+      ],
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "1b69ffc7e86fbc52ea9ae5bd32950d8e62439417089577f9c5f66243e0b734f7"
+    }
+  },
+  "composedInputIdentities": {
+    "patchHidden": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "4014b9d0fbfc2f7417f6f41f88de852ec24cdbdd30dae215bc9ef8029057a40a"
+    },
+    "timeAct1": {
+      "shape": [
+        5120
+      ],
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "b02a969a34ced603c1c7742b089ab87b7127bffbf6bae4b45f027991c6b6d9ee"
+    },
+    "attention": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "b65044d8a5164275157b3e707f36916dea5159b3a93f66bfbf9ea8ba9322ea76"
+    }
+  },
+  "retainedActualAttentionAvailable": false,
+  "retainedTimeProjectionRows": [
+    0,
+    10240
+  ],
+  "missingGateProjectionRows": [
+    10240,
+    15360
+  ],
+  "parameterSelection": [
+    {
+      "key": "blocks.0.self_attn.o.weight",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F8_E4M3",
+      "selectedRows": [
+        0,
+        5120
+      ],
+      "absoluteOffset": 2818896456,
+      "sourceBytes": 26214400
+    },
+    {
+      "key": "blocks.0.self_attn.o.weight_scale",
+      "fullShape": [],
+      "storageDtype": "F32",
+      "absoluteOffset": 181312,
+      "sourceBytes": 4
+    },
+    {
+      "key": "blocks.0.self_attn.o.comfy_quant",
+      "fullShape": [
+        27
+      ],
+      "storageDtype": "U8",
+      "absoluteOffset": 15574823658,
+      "sourceBytes": 27,
+      "requiredUTF8": "{\"format\": \"float8_e4m3fn\"}"
+    },
+    {
+      "key": "blocks.0.self_attn.o.bias",
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "elementOffset": 0,
+      "selectedElements": 5120,
+      "absoluteOffset": 52823496,
+      "sourceBytes": 10240
+    },
+    {
+      "key": "time_projection.1.weight",
+      "fullShape": [
+        30720,
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedRows": [
+        10240,
+        15360
+      ],
+      "absoluteOffset": 2362765896,
+      "sourceBytes": 52428800
+    },
+    {
+      "key": "time_projection.1.bias",
+      "fullShape": [
+        30720
+      ],
+      "storageDtype": "F16",
+      "elementOffset": 10240,
+      "selectedElements": 5120,
+      "absoluteOffset": 2257867336,
+      "sourceBytes": 10240
+    },
+    {
+      "key": "blocks.0.modulation",
+      "fullShape": [
+        1,
+        6,
+        5120
+      ],
+      "storageDtype": "F16",
+      "elementOffset": 10240,
+      "selectedElements": 5120,
+      "absoluteOffset": 52731336,
+      "sourceBytes": 10240
+    }
+  ],
+  "smallParameterSources": [
+    {
+      "key": "blocks.0.self_attn.o.weight_scale",
+      "fullShape": [],
+      "storageDtype": "F32",
+      "absoluteOffset": 181312,
+      "sourceBytes": 4,
+      "rawSHA256": "907cffae1e6b067d85db8b8115934714966bcb0ae3f207f94448ed909794439d",
+      "decodedF32SHA256": "907cffae1e6b067d85db8b8115934714966bcb0ae3f207f94448ed909794439d"
+    },
+    {
+      "key": "blocks.0.self_attn.o.comfy_quant",
+      "fullShape": [
+        27
+      ],
+      "storageDtype": "U8",
+      "absoluteOffset": 15574823658,
+      "sourceBytes": 27,
+      "requiredUTF8": "{\"format\": \"float8_e4m3fn\"}",
+      "rawSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a"
+    },
+    {
+      "key": "blocks.0.self_attn.o.bias",
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "elementOffset": 0,
+      "selectedElements": 5120,
+      "absoluteOffset": 52823496,
+      "sourceBytes": 10240,
+      "rawSHA256": "0c5c1ebcd149b8213b2faad773a857438814c8e9384cd7075ce50250131cdf7e",
+      "decodedF32SHA256": "e3401ec975f5effcff8b28c1540e68b7cf3a6c4dad6ea79551c7dbd0b533037d"
+    },
+    {
+      "key": "time_projection.1.bias",
+      "fullShape": [
+        30720
+      ],
+      "storageDtype": "F16",
+      "elementOffset": 10240,
+      "selectedElements": 5120,
+      "absoluteOffset": 2257867336,
+      "sourceBytes": 10240,
+      "rawSHA256": "cd4d81a9b420b6a5cc84a42a72e383bc86e2919680768bcf35128be158d036f5",
+      "decodedF32SHA256": "8e93064a031704788fcdca1d0ad993e94f0fc133ac92c304d0e4e6207a612510"
+    },
+    {
+      "key": "blocks.0.modulation",
+      "fullShape": [
+        1,
+        6,
+        5120
+      ],
+      "storageDtype": "F16",
+      "elementOffset": 10240,
+      "selectedElements": 5120,
+      "absoluteOffset": 52731336,
+      "sourceBytes": 10240,
+      "rawSHA256": "8d542588a81746ab5ad571531c946274753791739a3a1b2af11b81e4fffac07d",
+      "decodedF32SHA256": "3e9ac56ba04a0a18e9448562d65561bb2e359216214e5043adc951b044dfe3de"
+    }
+  ],
+  "originalFileBytesRead": 212039,
+  "selectedParameterBytesRead": 30751,
+  "maxSingleReadBytes": 181280,
+  "fullFileSha256Recomputed": false,
+  "sourceGatesFixedBeforeNewTailObservation": true,
+  "privatePayloadPublished": false,
+  "readiness": {
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY"
+  }
+}
