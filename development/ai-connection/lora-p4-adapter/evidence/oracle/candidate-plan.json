@@ -1,0 +1,372 @@
+{
+  "schemaVersion": "bernini-p4-reference-plan/0.1",
+  "status": "PRE_EXECUTION_GATE_FIXED",
+  "profileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+  "gateMayNotBeRelaxedAfterComparison": true,
+  "coreSource": "development/ai-connection/profile-adoption/p4/core-source/comfy/ldm/wan/model.py",
+  "coreSourceSHA256": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699",
+  "upstreamCoreCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+  "fixtureContractPath": "development/ai-connection/p4-cross-ffn/core/fixture-contract.json",
+  "fixtureContractSHA256": "17102144ab54236bc0dc28d3e2d083b5a5c850c48f0ada86aa4b06c89bab6338",
+  "cases": {
+    "HIGH": {
+      "side": "HIGH",
+      "blockIndex": 0,
+      "scheduleIndex": 1,
+      "tokens": 2,
+      "exportReceiptPath": "development/ai-connection/self-attention-tail/output-export/high-export-receipt.json",
+      "exportReceiptSHA256": "21fd376bf498c411fbcaf4cc68c1ee3a3320d77923a3da107c2550f0698a72c4",
+      "savedArtifactSHA256": "5040656cf0bf6bd9f06bbf007b16d22ae026a25a5080d666758e0b52a10e86bd",
+      "savedArtifactBytes": 1375283,
+      "residualSHA256": "72a7de56a7364122197f4126a996f7131ff4fbda94f7f8201bdacbaad04d85b9",
+      "timeAct1SHA256": "1b69ffc7e86fbc52ea9ae5bd32950d8e62439417089577f9c5f66243e0b734f7",
+      "acceptedTailReceiptSHA256": "759380dcbe016b1f1d9a51579c21a1e1d47545d250e1badc9e93842a4537d62e"
+    },
+    "LOW": {
+      "side": "LOW",
+      "blockIndex": 0,
+      "scheduleIndex": 3,
+      "tokens": 2,
+      "exportReceiptPath": "development/ai-connection/self-attention-tail/output-export/low-export-receipt.json",
+      "exportReceiptSHA256": "98edf8cbc42cfe80989f87a6459cb378ef08c73c7f7bb49688cf903aaa81b9d0",
+      "savedArtifactSHA256": "714d96b41cb9e5ba8349b4a9202722f2f94e3fdeeaa984dbc1850b449190d37d",
+      "savedArtifactBytes": 1384348,
+      "residualSHA256": "0024d0b19db9988d218e2a2ded4cc3713aca32d9517966455d17b34cfee801b6",
+      "timeAct1SHA256": "cf07ca0bf0160886acafb9bf42d22f57f56482cd82a8cad5aa3791901e9938c5",
+      "acceptedTailReceiptSHA256": "93f7c2a03e36ec9a2bc1eaefbd794dc14e16a615bfaf0863ecc83236e206ad96"
+    }
+  },
+  "parameters": {
+    "text_embedding.0.weight": {
+      "fullShape": [
+        5120,
+        4096
+      ],
+      "storageDtype": "F16",
+      "selectedRows": [
+        0,
+        5120
+      ],
+      "tileRows": 16
+    },
+    "text_embedding.0.bias": {
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        0,
+        5120
+      ]
+    },
+    "text_embedding.2.weight": {
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedRows": [
+        0,
+        5120
+      ],
+      "tileRows": 16
+    },
+    "text_embedding.2.bias": {
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        0,
+        5120
+      ]
+    },
+    "blocks.0.cross_attn.o.weight": {
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedRows": [
+        0,
+        5120
+      ],
+      "tileRows": 16
+    },
+    "blocks.0.cross_attn.o.bias": {
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        0,
+        5120
+      ]
+    },
+    "blocks.0.ffn.0.weight": {
+      "fullShape": [
+        13824,
+        5120
+      ],
+      "storageDtype": "F8_E4M3",
+      "selectedRows": [
+        0,
+        13824
+      ],
+      "tileRows": 16
+    },
+    "blocks.0.ffn.0.bias": {
+      "fullShape": [
+        13824
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        0,
+        13824
+      ]
+    },
+    "blocks.0.ffn.2.weight": {
+      "fullShape": [
+        5120,
+        13824
+      ],
+      "storageDtype": "F8_E4M3",
+      "selectedRows": [
+        0,
+        5120
+      ],
+      "tileRows": 4
+    },
+    "blocks.0.ffn.2.bias": {
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        0,
+        5120
+      ]
+    },
+    "blocks.0.cross_attn.q.weight": {
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F8_E4M3",
+      "selectedRows": [
+        0,
+        5120
+      ],
+      "tileRows": 16
+    },
+    "blocks.0.cross_attn.q.bias": {
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        0,
+        5120
+      ]
+    },
+    "blocks.0.cross_attn.k.weight": {
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F8_E4M3",
+      "selectedRows": [
+        0,
+        5120
+      ],
+      "tileRows": 16
+    },
+    "blocks.0.cross_attn.k.bias": {
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        0,
+        5120
+      ]
+    },
+    "blocks.0.cross_attn.v.weight": {
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "storageDtype": "F8_E4M3",
+      "selectedRows": [
+        0,
+        5120
+      ],
+      "tileRows": 16
+    },
+    "blocks.0.cross_attn.v.bias": {
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        0,
+        5120
+      ]
+    },
+    "blocks.0.norm3.weight": {
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        0,
+        5120
+      ]
+    },
+    "blocks.0.norm3.bias": {
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        0,
+        5120
+      ]
+    },
+    "blocks.0.cross_attn.norm_q.weight": {
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        0,
+        5120
+      ]
+    },
+    "blocks.0.cross_attn.norm_k.weight": {
+      "fullShape": [
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        0,
+        5120
+      ]
+    },
+    "time_projection.1.weight": {
+      "fullShape": [
+        30720,
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedRows": [
+        15360,
+        30720
+      ],
+      "tileRows": 16
+    },
+    "time_projection.1.bias": {
+      "fullShape": [
+        30720
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        15360,
+        30720
+      ]
+    },
+    "blocks.0.modulation": {
+      "fullShape": [
+        1,
+        6,
+        5120
+      ],
+      "storageDtype": "F16",
+      "selectedElements": [
+        15360,
+        30720
+      ]
+    }
+  },
+  "intermediates": [
+    "textLinear0",
+    "textGelu",
+    "textEmbedded",
+    "crossNorm",
+    "qkvQ",
+    "qkvK",
+    "qkvV",
+    "normQ",
+    "normK",
+    "crossContext",
+    "crossO",
+    "crossResidual",
+    "ffnLayerNorm",
+    "shift",
+    "scale",
+    "gate",
+    "ffnModulated",
+    "ffnUp",
+    "ffnGelu",
+    "ffnDown",
+    "ffnGated",
+    "blockOutput",
+    "timeProjection3",
+    "timeProjection4",
+    "timeProjection5"
+  ],
+  "gates": {
+    "localCut": {
+      "abs": 0.001,
+      "rel": 0.0001
+    },
+    "composed": {
+      "abs": 0.01,
+      "rel": 0.001
+    },
+    "rule": "abs(actual-reference) <= abs + rel*abs(reference); all values, no percentile pass"
+  },
+  "gateRationale": "Preselected diagnostic F32-vs-binary64 tolerance; local cuts isolate each operation, composed allows accumulated rounding across full text/cross/FFN graph. These gates do not certify original FP8 activation/GPU precision or production workflow. Any failure remains a failure; no widening after results.",
+  "precision": {
+    "weights": "independent scalar IEEE binary16 decoder and scalar E4M3FN table, each FP8 own scalar F32 scale, decoded F32 bytes hashed",
+    "linear": "NumPy binary64 matrix multiply; explicit F32 output then separate F32 bias add",
+    "norm": "binary64 population variance/mean or RMS reduction, epsilon1e-6; explicit F32 output",
+    "gelu": "binary64 tanh GELU exact documented formula, explicit F32 output",
+    "attention": "all40 heads, each Q2 x actual L keys, binary64 scaled score/stable softmax/context, explicit F32 context output; no mask/dropout/RoPE",
+    "pointwise": "separate binary32 add/multiply; no fused addcmul"
+  },
+  "semantics": {
+    "textRows": "preserve all supplied L, including zero/mask0 rows, no hidden padding",
+    "crossResidual": "saved actual self-attention residual + cross O, ungated",
+    "ffnModulation": "LN(crossResidual)*(1+e4)+e3",
+    "ffnResidual": "crossResidual + ffnDown*e5; gate has no +1",
+    "timeChunks": [
+      3,
+      4,
+      5
+    ],
+    "patches": "none"
+  },
+  "bounds": {
+    "modelBytes": 15574833216,
+    "headerBytes": 181280,
+    "maxPayloadReadBytes": 163840,
+    "maxDecodedElementsPerTile": 81920,
+    "downRows": 4,
+    "BLASThreads": 1,
+    "defaultTextRows": 4,
+    "maxTextRows": 512
+  },
+  "readiness": {
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY",
+    "generationReady": false,
+    "originalWorkflowInputsVerified": false,
+    "originalProductionPrecisionVerified": false,
+    "modelInference": false,
+    "lowIsHighHandoff": false,
+    "realTextJointAcceptance": false
+  },
+  "privateOutputPolicy": "New reference/runtime arrays only outside repository and /workspace, directory0700/file0600; public receipts whitelist identities/sources/counts/gates/semantic metadata. Do not publish scale values."
+}

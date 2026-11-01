@@ -16,10 +16,10 @@
 
 1. [x] 固定884を実行し、6公開、7prepare/stage、base復帰、E4fresh読戻し、tamper/missing snapshot/expected pre-prepare拒否を確認。旧実行と別のrun2/source884で記録。独立監査152項目PASS。
 2. [x] SDK/plannerのblockLimitsをTDDで実装。FFN down全13824列・1回max4行、81920要素上限、取消、旧Q16/v1互換を合成base＋実Hikeで確認。新9件・LoRA全85件PASS。
-3. [ ] 新P4正本adapterとnative consumerを結ぶ。SDKregistry/native registry、source/plan/manifest/package/epoch、current/abort、入力/reference/gateを保持。新制御fixtureは実P4feed＋合成source/fake forwardのscopeを明示する。
-4. [ ] 独立oracle A/Bをsource固定で作る。選択light/LOW・crossQ先頭4行×全5120列＋bias4。既存LOWbaseの来歴/statは保持するが全体hashを再計算しない。新loadのheader/rangeとselectedFileの必要hashは維持する。
-5. [ ] 4のsource commit後に期待値生成と実File共同試験を実行。強度0/+1/-1、再適用、検証失敗、取消、復帰、immutable-base復帰、package/candidate/active/read-lease寿命を確認。
-6. [ ] 独立source/evidence review、旧境界回帰、source/配布SHAを分けた結果・API・資源測定・未受入・再現を記録し、feat/lora-hikeへpush。管理/Diffusionへ固定commit/path/hashとreceiptを返す。merge/Pages公開は行わない。
+3. [x] 新P4正本adapterとnative consumerを結ぶ。SDKregistry/native registry、source/plan/manifest/package/epoch、current/abort、入力/reference/gateを保持。新制御fixtureは実P4feed＋合成source/fake forwardのscopeを明示する。
+4. [x] 独立oracle A/Bをsource固定で作る。選択light/LOW・crossQ先頭4行×全5120列＋bias4。既存LOWbaseの来歴/statは保持するが全体hashを再計算しない。新loadのheader/rangeとselectedFileの必要hashは維持する。
+5. [x] 4のsource commit後に期待値生成と実File共同試験を実行。強度0/+1/-1、再適用、検証失敗、取消、復帰、immutable-base復帰、package/candidate/active/read-lease寿命を確認。
+6. [x] 独立source/evidence review、旧境界回帰、source/配布SHAを分けた結果・API・資源測定・未受入・再現を記録し、feat/lora-hikeへpush。管理/Diffusionへ固定commit/path/hashとreceiptを返す。merge/Pages公開は行わない。
 
 ## controlled入力の新scope
 
