@@ -2,6 +2,7 @@ import {freeze} from './planner.mjs';
 import {LOADER_POLICY_ID,effectiveScale} from './loader-policy.mjs';
 export {LOADER_POLICY_ID} from './loader-policy.mjs';
 export const CONTRACT_VERSION='lora-connection/2.0-draft.1';
+export const BLOCK_LIMITS_VERSION='lora-block-limits/0.1-draft.1';
 const SHA=/^[a-f0-9]{64}$/i;
 const plain=v=>v!==null&&typeof v==='object'&&!Array.isArray(v)&&(Object.getPrototypeOf(v)===Object.prototype||Object.getPrototypeOf(v)===null);
 const text=v=>typeof v==='string'&&v.length>0&&v.trim()===v;
@@ -10,15 +11,22 @@ function shape(v,label,scalar=false){
  if(!Array.isArray(v)||v.length>(scalar?0:2)||(!scalar&&v.length<1)||v.some(n=>!Number.isSafeInteger(n)||n<1)||!Number.isSafeInteger(v.reduce((a,b)=>a*b,1)))throw Error('Unsupported or invalid '+label+' shape');
  return [...v];
 }
+function blockLimits(value,fullShape){
+ keys(value,['contractVersion','offsetUnit','coordinateSpace','rowAlignment','maxElements','maxRows'],'block limits');
+ const columns=fullShape.length===2?fullShape[1]:1;
+ if(value.contractVersion!==BLOCK_LIMITS_VERSION||value.offsetUnit!=='elements'||value.coordinateSpace!=='original-full-tensor'||value.rowAlignment!=='all-columns')throw Error('Unsupported block limits coordinate or alignment contract');
+ if(!Number.isSafeInteger(value.maxElements)||value.maxElements<columns||!Number.isSafeInteger(value.maxRows)||value.maxRows<1)throw Error('Invalid block limits or fewer elements than one complete row');
+}
 
 export function validateRegistryV2(registry){
  keys(registry,['contractVersion','modelHash','graphHash','registryVersion','side','executionProfileId','loaderPolicyId','targets'],'registry');
  if(registry.contractVersion!==CONTRACT_VERSION||!SHA.test(registry.modelHash)||!SHA.test(registry.graphHash)||!text(registry.registryVersion)||!['HIGH','LOW'].includes(registry.side)||!text(registry.executionProfileId)||registry.loaderPolicyId!==LOADER_POLICY_ID||!Array.isArray(registry.targets)||registry.targets.length<1)throw Error('Invalid registry identity or loader policy');
  const seenKeys=new Set(),seenIds=new Set(),seenBindings=new Set();
  for(const target of registry.targets){
-  keys(target,['key','weightId','module','shape','dtype','layout','parameterRole','binding','transform'],'target');
+  keys(target,['key','weightId','module','shape','dtype','layout','parameterRole','binding','transform','blockLimits'],'target');
   if(!text(target.key)||!text(target.weightId)||!text(target.module)||target.dtype!=='F32'||target.layout!=='row-major'||!['weight','bias'].includes(target.parameterRole)||!target.key.endsWith('.'+target.parameterRole))throw Error('Unsupported target identity, dtype or parameter role');
-  shape(target.shape,'target');keys(target.binding,['kind','name'],'binding');keys(target.transform,['kind'],'transform');
+  shape(target.shape,'target');if(Object.hasOwn(target,'blockLimits'))blockLimits(target.blockLimits,target.shape);
+  keys(target.binding,['kind','name'],'binding');keys(target.transform,['kind'],'transform');
   if(!['runtime-input','initializer','hike-parameter'].includes(target.binding.kind)||!text(target.binding.name)||target.transform.kind!=='identity')throw Error('Unsupported binding or transform');
   const address=target.binding.kind+':'+target.binding.name;
   if(seenKeys.has(target.key)||seenIds.has(target.weightId)||seenBindings.has(address))throw Error('Duplicate target or binding');

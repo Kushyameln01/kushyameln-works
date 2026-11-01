@@ -55,7 +55,11 @@ export async function createLoraV2({folder,sourceFactory,kernel:providedKernel}=
   try{
    check();begun=true;await sink.begin(freeze({...manifest,blocks:[]}));check();
    for(const op of plan.operations){
-    const cols=op.fullShape.length===2?op.fullShape[1]:1,end=op.slice.startRow+op.slice.rowCount,step=Math.min(blockRows,Math.max(1,Math.floor(4_000_000/(cols*(op.rank??1)))));
+    const cols=op.fullShape.length===2?op.fullShape[1]:1,end=op.slice.startRow+op.slice.rowCount,legacyStep=Math.min(blockRows,Math.max(1,Math.floor(4_000_000/(cols*(op.rank??1))))),limits=op.target.blockLimits;
+    // Explicit limits are in original full-tensor elements and complete rows.
+    // No-field plans keep their original block selection and hash structure.
+    const step=limits===undefined?legacyStep:Math.min(legacyStep,limits.maxRows,Math.floor(limits.maxElements/cols));
+    if(!Number.isSafeInteger(step)||step<1)throw RangeError('Block limits cannot accommodate one complete row');
     let down;if(op.kind==='lora'){const raw=await readTensor(state.source,state.inspection,op.downName,{signal:controller.signal});check();down=kernel.decode(raw,state.inspection.tensors[op.downName].dtype);}
     for(let row=op.slice.startRow;row<end;row+=step){
      check();const rows=Math.min(step,end-row),offset=row*cols,count=rows*cols;
