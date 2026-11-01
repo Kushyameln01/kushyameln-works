@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "diffusion-normal-rpc-browser/0.1",
+  "passed": true,
+  "sourceCommitBefore": "30e283bb115741af6b475e9bdc41700a4e564053",
+  "modelFileBytes": 15574833216,
+  "modelFileHashRecomputed": false,
+  "buildId": "diffusion-models/0.1+2fb82c63758d657932ffdf063f438c7ad183501b3f1ae72ed24d0fe2b2cd1ae8",
+  "checks": [
+    {
+      "name": "capabilities.executionDescriptor",
+      "passed": true,
+      "operationCount": 25,
+      "controlCount": 4,
+      "modelInference": false,
+      "generationReady": false
+    },
+    {
+      "name": "checkSupport arbitrary L1 canonical P4",
+      "passed": true,
+      "supported": true,
+      "validation": "metadata-only"
+    },
+    {
+      "name": "checkSupport N32760",
+      "passed": true,
+      "supported": false,
+      "codes": [
+        "UNSUPPORTED_SHAPE"
+      ]
+    },
+    {
+      "name": "checkSupport context",
+      "passed": true,
+      "supported": false,
+      "codes": [
+        "UNSUPPORTED_CONTEXT"
+      ]
+    },
+    {
+      "name": "runP4 before preparation",
+      "passed": true,
+      "status": "error",
+      "code": "P4_NOT_PREPARED"
+    },
+    {
+      "name": "prepare/release real LOW owner",
+      "passed": true,
+      "released": true,
+      "activeORTSessions": 0,
+      "readLeases": 0
+    },
+    {
+      "name": "cancel actual pending runP4 Worker",
+      "passed": true,
+      "originalTerminal": "CANCELLED",
+      "workerTerminated": true,
+      "cancelDelayMs": 20,
+      "terminalElapsedMs": 20.5,
+      "completeP4ResultProduced": false
+    },
+    {
+      "name": "Worker recreation loses prepared P4 owner",
+      "passed": true,
+      "status": "error",
+      "code": "P4_NOT_PREPARED",
+      "newWorkerCreated": true
+    },
+    {
+      "name": "dispose is terminal",
+      "passed": true,
+      "disposed": true
+    }
+  ],
+  "workerLifecycle": {
+    "created": 2,
+    "terminated": 2,
+    "runDispatches": 3
+  },
+  "acceptance": {
+    "scope": "Normal metadata RPC and real LOW prepare/release plus in-flight Worker cancellation only",
+    "fullP4InferenceCompleted": false,
+    "numericalAcceptanceClaimed": false,
+    "wholeModelHashRecomputed": false,
+    "modelInference": false,
+    "generationReady": false,
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY"
+  },
+  "browser": "154.0.8037.57",
+  "pageErrors": [],
+  "buildPreflight": {
+    "buildId": "diffusion-models/0.1+2fb82c63758d657932ffdf063f438c7ad183501b3f1ae72ed24d0fe2b2cd1ae8",
+    "sourceCount": 113,
+    "sourceStatus": "CURRENT"
+  },
+  "buildAfter": {
+    "buildId": "diffusion-models/0.1+2fb82c63758d657932ffdf063f438c7ad183501b3f1ae72ed24d0fe2b2cd1ae8",
+    "sourceCount": 113,
+    "sourceStatus": "CURRENT"
+  },
+  "sourceCommitAfter": "30e283bb115741af6b475e9bdc41700a4e564053",
+  "elapsedSeconds": 1.413397418000386
+}

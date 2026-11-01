@@ -71,6 +71,16 @@ residualはblock0自己注意後のhidden、timeAct1はSiLU後のtime embedding�
 
 `supported:false`は理由と必要拡張を返す。全体資源peakは未確定であり、partial演算が成功しても`load/predict/sample=NOT_READY`、`generationReady:false`を保つ。
 
+| requiredExtension | 必要な対応箇所 |
+| --- | --- |
+| operator-shape-extension | P4 stageのquery loop、linear score graphの固定2query、Hike norm/attention ABI、stagingと同時保持予算。hostのN上限だけを変更しない |
+| context-latents | 上流のordered latent／patch concat／source_id・RoPEとの境界、全queryへの拡張。現在のP4入口へlatentを直接追加しない |
+| posterior-mean-shape-profile | latent-spaceのchannel/軸対応、Hike ABI、host guard、capacity・hash・試験。raw/normalizedの意味を保つ |
+| pointwise-capacity | 対象primitiveのWASM workspace・copy・公開予算の検証。graph分割とは別扱い |
+| model-binding / dtype-conversion-or-operator | 対象base/header/storage profile、Hike復号、compute dtypeと誤差条件の明示。未知のmxfp8等を無断変換しない |
+
+前段prefix／QKV／自己注意tailの固定診断factoryを、この通常P4入口へ統合したとは扱わない。それらの固定診断・既存sourceの受入範囲は保持し、通常descriptorへ未登録の操作はUNSUPPORTED_OPERATIONで返す。今回追加した通常neural操作はpost-self-attentionからcross-attention・FFNまでの境界である。
+
 ## Workerと明示MessagePort
 
 既存`createDiffusionModels().request(envelope)`へ以下を追加した。session/job/revision/buildの照合、stale返信の排除、専用Workerの所有は維持する。

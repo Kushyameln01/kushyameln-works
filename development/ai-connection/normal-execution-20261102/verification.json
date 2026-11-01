@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "bernini-normal-execution-verification/0.1",
+  "recordedAtUTC": "2026-11-01T21:47:28.115817+00:00",
+  "sourceCommit": "30e283bb115741af6b475e9bdc41700a4e564053",
+  "productRuntimeUnchangedSinceExecution": true,
+  "nodeTests": {
+    "passed": 61,
+    "failed": 0
+  },
+  "legacyApiBrowserTests": {
+    "passed": 22,
+    "failed": 0
+  },
+  "rpcBrowserTests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "normalLOWL512": {
+    "passed": true,
+    "elements": 10240,
+    "failedElements": 0,
+    "nonfiniteElements": 0,
+    "maxAbsoluteError": 2.09808349609375e-05,
+    "maxRelativeError": 5,
+    "maxGateRatio": 0.0018066612915755877,
+    "gate": {
+      "absolute": 0.01,
+      "relative": 0.001,
+      "rule": "abs(actual-reference) <= absolute + relative*abs(reference); all values"
+    }
+  },
+  "diagnosticAll25": {
+    "references": 2,
+    "elementsPerReference": 15927296,
+    "failed": 0,
+    "normalFinalEqualsDiagnosticBits": true
+  },
+  "normalWeightConsumerQ4": {
+    "comparedElements": 8,
+    "queryRows": 2,
+    "outputColumns": 4,
+    "inner": 5120,
+    "innerSplit": false,
+    "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+    "crossNormSHA256": "dad3468538c6b1b4a4fd8b781c99a6a60c5cb3652d18821706c6feec329e0127",
+    "independentFullQSHA256": "ada68d494f318ded529a51a89fe90257c339aa5bc5d2a590ce963869cea7f81e",
+    "selectedExpectedSHA256": "64124ea0e886a184ea64313c89a1f2342264c30c31a8697da889eb077429e9e5",
+    "outputSHA256": "757b6913d1bb037d7d24d143b36cd7f17bec576f538de522c0bf0f14a6f01093",
+    "absoluteTolerance": 0.01,
+    "relativeTolerance": 0.001,
+    "maxAbsoluteError": 1.430511474609375e-06,
+    "rootMeanSquareError": 7.116377116783266e-07,
+    "failedElements": 0,
+    "actualORT": true,
+    "actualHikeBias": true
+  },
+  "normalWeightAdmissionRequiredNumerics": false,
+  "lifecyclePassed": true,
+  "nonFixtureL1": "admitted, actual first tile and cancellation only; full completion not executed",
+  "privateTensorPayloadIncluded": false,
+  "remaining": [
+    "normal P4 block0 N2/context[]/Text L1..512/F32 only",
+    "normal HIGH completion not rerun",
+    "prefix/QKV/self-attention tail normal wrappers unimplemented",
+    "new management adapter and catalog binding not adopted",
+    "new canonical LoRA normal SDK adapter joint acceptance pending",
+    "weight transactions not exposed over RPC",
+    "production shape, all blocks/head/HIGH-to-LOW/full budget unaccepted"
+  ],
+  "readiness": {
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY",
+    "generationReady": false
+  },
+  "merged": false,
+  "pagesPublished": false
+}
