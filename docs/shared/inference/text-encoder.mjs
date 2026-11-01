@@ -85,7 +85,8 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
    let hidden=await embeddings(effectiveIds);check(runSignal);emit({stage:'text-embedding',effectiveTokens:length,outputTokens:ids.length});
    for(const b of manifest.blocks){
     check(runSignal);let bytes=await verified(b);check(runSignal);
-    currentSession=await ort.InferenceSession.create(bytes,{executionProviders:['wasm']});bytes=null;
+    // One-use staged sessions avoid an additional prepacked weight buffer.
+    currentSession=await ort.InferenceSession.create(bytes,{executionProviders:['wasm'],extra:{session:{disable_prepacking:'1'}}});bytes=null;
     let hiddenInput,maskInput,result;
     try{
      check(runSignal);
