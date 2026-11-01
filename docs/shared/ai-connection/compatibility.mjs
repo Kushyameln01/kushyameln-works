@@ -115,9 +115,24 @@ export function evaluateEdge({producerPort,consumerPort,artifact,adapters,regist
     check('required-norm-policy','/requiredNormPolicy',true,typeof requiredNormPolicy?.policyId==='string'&&requiredNormPolicy.policyId.length>0&&Array.isArray(requiredNormPolicy?.requiredNormIds)&&requiredNormPolicy.requiredNormIds.length>0&&requiredNormPolicy.requiredNormIds.every(id=>typeof id==='string'&&id.length>0),{unknown:!requiredNormPolicy?.policyId||!Array.isArray(requiredNormPolicy?.requiredNormIds)||!requiredNormPolicy.requiredNormIds.length,code:'REQUIRED_NORM_POLICY_MISSING'});
     check('required-norm-phase','/referenceContext/phase',true,['declaration','validated','published'].includes(referenceContext?.phase),{unknown:!['declaration','validated','published'].includes(referenceContext?.phase),code:'UNKNOWN_EXECUTION_PHASE'});
     for(const id of array(requiredNormPolicy?.requiredNormIds))check('required-norm','/referenceContext/normIds',true,array(referenceContext?.normIds).includes(id),{unknown:!array(referenceContext?.normIds).includes(id),code:'REQUIRED_NORM_MISSING',normId:id});
+    if(requiredNormPolicy?.requiredProfileBindings!==undefined){
+      check('required-profile-policy','/requiredNormPolicy/requiredProfileBindings',true,Array.isArray(requiredNormPolicy.requiredProfileBindings),{unknown:!Array.isArray(requiredNormPolicy.requiredProfileBindings),code:'REQUIRED_PROFILE_POLICY_INVALID'});
+      for(const [i,expected] of array(requiredNormPolicy.requiredProfileBindings).entries()){
+        const valid=typeof expected?.recordId==='string'&&expected.recordId.length>0&&['producer','consumer'].includes(expected.side)&&
+          (expected.representations===undefined||Array.isArray(expected.representations)&&expected.representations.length>0&&expected.representations.every(v=>typeof v==='string'&&v.length>0))&&
+          (expected.allowUnspecifiedRepresentation===undefined||typeof expected.allowUnspecifiedRepresentation==='boolean');
+        check('required-profile-policy',`/requiredNormPolicy/requiredProfileBindings/${i}`,true,valid,{unknown:!valid,code:'REQUIRED_PROFILE_POLICY_INVALID'});if(!valid)continue;
+        const selected=array(referenceContext?.profileBindings).filter(b=>b?.recordId===expected.recordId),path='/referenceContext/profileBindings';
+        check('required-profile-binding',path,1,selected.length,{unknown:selected.length===0,code:selected.length===0?'REQUIRED_PROFILE_BINDING_MISSING':'REQUIRED_PROFILE_BINDING_AMBIGUOUS',message:`Required selected profile ${expected.recordId} must be bound exactly once`});if(selected.length!==1)continue;
+        const actual=selected[0],index=array(referenceContext.profileBindings).indexOf(actual);
+        check('required-profile-side',`${path}/${index}/side`,expected.side,actual.side,{unknown:!present(actual.side),code:'REQUIRED_PROFILE_SIDE_MISMATCH',message:`Required profile ${expected.recordId} belongs to the ${expected.side} side`});
+        if(expected.representations!==undefined){const fits=actual.representation===undefined?expected.allowUnspecifiedRepresentation===true:expected.representations.includes(actual.representation);
+          check('required-profile-representation',`${path}/${index}/representation`,true,fits,{unknown:actual.representation===undefined&&!expected.allowUnspecifiedRepresentation,code:'REQUIRED_PROFILE_REPRESENTATION_MISMATCH',message:`Required profile ${expected.recordId} has a different representation`});}
+      }
+    }
   }
   if(norm){
-    if(requiredNormPolicy!==undefined)norm.trace.requiredNormPolicy={policyId:requiredNormPolicy?.policyId??null,requiredNormIds:[...array(requiredNormPolicy?.requiredNormIds)]};
+    if(requiredNormPolicy!==undefined)norm.trace.requiredNormPolicy={policyId:requiredNormPolicy?.policyId??null,requiredNormIds:[...array(requiredNormPolicy?.requiredNormIds)],...(requiredNormPolicy?.requiredProfileBindings!==undefined?{requiredProfileBindings:array(requiredNormPolicy.requiredProfileBindings).map(b=>({recordId:typeof b?.recordId==='string'?b.recordId:null,side:typeof b?.side==='string'?b.side:null,...(Array.isArray(b?.representations)?{representations:b.representations.filter(v=>typeof v==='string')}:{}),...(typeof b?.allowUnspecifiedRepresentation==='boolean'?{allowUnspecifiedRepresentation:b.allowUnspecifiedRepresentation}:{})}))}:{})};
     if(norm.trace.catalogSha256)contractRefs.push(norm.trace.catalogSha256,`works-reference-catalog/${norm.trace.documentVersion}`);
     for(const spec of norm.checks)check(spec.criterion,spec.fieldPath,spec.expected,spec.observed,spec);
   }

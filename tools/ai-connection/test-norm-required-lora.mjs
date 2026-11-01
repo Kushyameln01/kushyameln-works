@@ -247,3 +247,7 @@ test('fresh normative bindings and resources are required immediately before ope
   }finally{await f.dispose();}
  }
 });
+test('omitting the required loader profile cannot bypass all three loader declarations before native planning',async()=>{
+ const create=await factory(),f=await normEdgeFixture(),{adapter,calls}=probe();f.edgeInput.referenceContext.profileBindings=f.edgeInput.referenceContext.profileBindings.filter(b=>b.recordId!=='LOAD-COMFY-LINEAR-DIFF');for(const field of ['baseDtype','outputDtype','layout'])delete f.edgeInput.referenceContext.nativeDeclarations.producer[field];
+ assert.throws(()=>create({adapter,referenceSet:f.referenceSet,edgeInput:f.edgeInput,readCurrent:()=>({activeBindings:f.edgeInput.activeBindings,resourceState:f.edgeInput.resourceState}),readOwnerEvidence:()=>ownerEvidence(f)}),e=>e.code==='NORM_DECLARATION_BLOCKED'&&e.decision.compatibility==='UNVERIFIED');assert.deepEqual(calls,[]);
+});

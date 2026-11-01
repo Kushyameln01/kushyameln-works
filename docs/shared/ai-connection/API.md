@@ -562,11 +562,22 @@ authorize production generation; `generationReady` remains false.
 
 ## Required norm inputs and evidence phases
 
-`evaluateEdge` additionally accepts `requiredNormPolicy:{policyId,requiredNormIds}`.
+`evaluateEdge` additionally accepts
+`requiredNormPolicy:{policyId,requiredNormIds,requiredProfileBindings?}`.
 When supplied, omitted/unverified `referenceContext`, a missing required norm or
 an unknown/missing `referenceContext.phase` produces `UNVERIFIED` and blocks
 admission. The unchanged standalone form remains available; it is not proof that
 a norm-required native entry executed its checks.
+
+The fixed native-entry policies also select mandatory profile bindings. LoRA
+requires the producer Comfy/local-source loaders and consumer Q16 execution
+record. Rect decode requires the producer Rect RGB-decoder shape record.
+Dropping a binding together with its declarations is `UNVERIFIED`; a selected
+binding on a different side or with a conflicting representation is
+`INCOMPATIBLE`. Duplicate required records are ambiguous and block admission.
+These checks use the same evaluator and appear in `referenceTrace`; legacy
+calls without that policy remain unchanged. The separate `rect-mean` helper
+policy does not certify a native execution entrance.
 
 Phases are `declaration`, `validated`, `published`. Contract checks run in every
 phase. Numeric/normalization/evidence receipts become due at `validated`;
@@ -615,8 +626,9 @@ native prepare. The single Q16 requirement's `referenceRef` includes
 diagnostic scope/base/reference before the call. `readCurrent` supplies explicit
 live `activeBindings` and `resourceState`. `readOwnerEvidence` is mandatory and
 runs only after actual native validation; it supplies the independent selected
-weight/bias comparison receipt. The manager checks its binding, count, scope
-and reference, and does not perform those numerical comparisons itself.
+weight/bias comparison receipt. The manager checks its binding, scope and
+reference. The owner callback checks comparison counts and numerical values;
+the manager does not repeat those comparisons.
 Immediately before opening the native commit gate, the same retained validation
 receipt is rechecked with explicit live bindings and resource readiness. This
 does not repeat owner validation or numerical comparison.
@@ -657,3 +669,21 @@ encode invocation is required. Native worker stop/terminal/release proof belongs
 to the injected owner lifecycle; a cancel boolean alone is insufficient.
 Native source/file hashing and actual private assets are required for a real
 dispatch claim. Controlled native callbacks test this boundary only.
+
+## Explicit normalized-marker codec candidate
+
+The VAE owner supplied codec source
+`2bdca59ea78580d4fe7a9d31a8de33209b64d029:docs/shared/inference/tensor.mjs`
+(8256 bytes, SHA-256
+`d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5`),
+with distribution evidence
+`d8a19f684f75fdf2f772d64754cba9d08b8f5c82`. Explicitly registering that
+source in the package registry preserves a supplied valid normalized marker.
+The format stays `WKTSR001/schemaVersion1`; no marker or numerical conversion is
+inferred. Old writers still lose that marker and E4 rejects their mismatch.
+
+The new codec is an independently verified persistence candidate. Existing
+VAE855/raw Rect runtime and historical codec pins stay unchanged. Its E4
+readback does not certify native decode, cancellation or production readiness.
+See `development/ai-connection/codec-marker-adoption/RESULT.md` for source,
+receiver verification, package and the remaining actual-dispatch dependency.

@@ -6,8 +6,12 @@ const freeze=v=>{if(v&&typeof v==='object'){Object.values(v).forEach(freeze);Obj
 const same=(a,b)=>{try{return canonicalize(a)===canonicalize(b);}catch{return false;}};
 const fail=(code,message,decision)=>Object.assign(Error(message),{code,...(decision?{decision}:{} )});
 export const NORM_EXECUTION_POLICIES=freeze({
- 'lora-q16':{policyId:'lora-q16',requiredNormIds:['N-IDENTITY','N-LOADER','N-MAPPING','N-NUMERIC','N-EVIDENCE','N-TRANSACTION']},
- 'rect-decode':{policyId:'rect-decode',requiredNormIds:['N-IDENTITY','N-SHAPE','N-EVIDENCE','N-TRANSACTION','N-ARTIFACT']},
+ 'lora-q16':{policyId:'lora-q16',requiredNormIds:['N-IDENTITY','N-LOADER','N-MAPPING','N-NUMERIC','N-EVIDENCE','N-TRANSACTION'],requiredProfileBindings:[
+  {recordId:'LOAD-COMFY-LINEAR-DIFF',side:'producer',representations:['loader'],allowUnspecifiedRepresentation:true},
+  {recordId:'LOAD-LOCAL-SAFETENSORS',side:'producer',representations:['loader'],allowUnspecifiedRepresentation:true},
+  {recordId:'EXEC-BERNINI-Q16-F32',side:'consumer',representations:['diagnostic-projection'],allowUnspecifiedRepresentation:true}
+ ]},
+ 'rect-decode':{policyId:'rect-decode',requiredNormIds:['N-IDENTITY','N-SHAPE','N-EVIDENCE','N-TRANSACTION','N-ARTIFACT'],requiredProfileBindings:[{recordId:'SHAPE-VAE-WAN21-F1-16X32',side:'producer',representations:['rgb-decoder-raw']}]},
  'rect-mean':{policyId:'rect-mean',requiredNormIds:['N-IDENTITY','N-SHAPE','N-NORMALIZATION','N-NUMERIC','N-EVIDENCE','N-TRANSACTION','N-ARTIFACT']}
 });
 const publicationScopes=new Set(['norm:N-TRANSACTION','norm:N-ARTIFACT']);
