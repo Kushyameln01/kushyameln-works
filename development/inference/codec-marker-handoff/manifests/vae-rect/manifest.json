@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "kind": "wan21-vae-profile-v1",
+  "model": {
+    "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "storedDtype": "bfloat16",
+    "executionDtype": "float32",
+    "precisionNote": "Stored BF16 values are unchanged; arithmetic uses FP32 and is not asserted equivalent to original BF16 execution."
+  },
+  "source": {
+    "repo": "Wan-Video/Wan2.1",
+    "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+    "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+    "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498"
+  },
+  "profile": {
+    "id": "wan21-raw-f32-1x16x32",
+    "videoShape": [
+      1,
+      3,
+      1,
+      16,
+      32
+    ],
+    "latentShape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "layout": "NCTHW",
+    "latentSpace": "raw",
+    "posterior": "mean",
+    "opset": 17
+  },
+  "inference": {
+    "inputName": "input",
+    "outputName": "output",
+    "executionProvider": "wasm",
+    "threads": 1,
+    "graphOptimizationLevel": "disabled"
+  },
+  "assets": {
+    "encoder": {
+      "file": "encode.onnx",
+      "bytes": 212362391,
+      "sha256": "0105bc12f13d3aceb35d1765681c427643bf04cc4ce5978c7339e04beff09e0d"
+    },
+    "decoderBody": {
+      "file": "decoder-body.onnx",
+      "bytes": 286313363,
+      "sha256": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+    },
+    "conv2Weight": {
+      "file": "conv2-weight.f32",
+      "bytes": 1024,
+      "sha256": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+      "shape": [
+        16,
+        16
+      ]
+    },
+    "conv2Bias": {
+      "file": "conv2-bias.f32",
+      "bytes": 64,
+      "sha256": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+      "shape": [
+        16
+      ]
+    }
+  },
+  "semantics": {
+    "encode": "Input RGB values in [-1,1]; output raw posterior mean, without stochastic sampling or latent normalization.",
+    "decode": "Input raw latent; output raw RGB values, without latent denormalization or output clipping.",
+    "temporal": "A fixed exported profile, not arbitrary frame counts."
+  },
+  "comparisonGate": {
+    "atol": 0.002,
+    "rtol": 0.002,
+    "maxAbs": 0.002,
+    "scope": "FP32 reference, synthetic fixed-profile checks only"
+  },
+  "validation": {
+    "status": "exported; browser validation still required for this bundle/profile",
+    "strictModelState": true,
+    "keys": 194,
+    "missingKeys": [],
+    "unexpectedKeys": [],
+    "numericGate": {
+      "atol": 0.002,
+      "rtol": 0.002,
+      "maxAbs": 0.002,
+      "scope": "Explicit FP32 reference threshold; run browser checks before declaring profile accepted"
+    }
+  },
+  "references": {
+    "encode": {
+      "input": {
+        "file": "encode-input.f32",
+        "bytes": 6144,
+        "sha256": "608e97bc740c616ca0c775c789073f75a02baf775755a94287e790232f8a9de8",
+        "shape": [
+          1,
+          3,
+          1,
+          16,
+          32
+        ]
+      },
+      "output": {
+        "file": "encode-reference.f32",
+        "bytes": 512,
+        "sha256": "2dec9dcbe7e8881f13a2d29021220694ae40b0d511a02c89f68259c6171b95d5",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ]
+      }
+    },
+    "decode": {
+      "input": {
+        "file": "decode-input.f32",
+        "bytes": 512,
+        "sha256": "ff9d82abfe9110b6fa1269dd7b12db94f54c3f9b4ebd8073425f6ea46334ca8a",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ]
+      },
+      "output": {
+        "file": "decode-reference.f32",
+        "bytes": 6144,
+        "sha256": "c01a5f31483ba0e79717ba157c0892d6831c2b2b71194d03b3ceaafc5394c744",
+        "shape": [
+          1,
+          3,
+          1,
+          16,
+          32
+        ]
+      }
+    },
+    "conv2": {
+      "input": {
+        "file": "conv2-input.f32",
+        "bytes": 512,
+        "sha256": "ff9d82abfe9110b6fa1269dd7b12db94f54c3f9b4ebd8073425f6ea46334ca8a",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ]
+      },
+      "output": {
+        "file": "conv2-reference.f32",
+        "bytes": 512,
+        "sha256": "755efd4dfbd684dbe1e5dbe8dfedaa022b70b032f0898980c9c355757124ba7a",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ]
+      }
+    }
+  },
+  "versions": {
+    "torch": "2.6.0+cpu",
+    "onnx": "1.17.0",
+    "numpy": "2.3.5"
+  },
+  "lowering": {
+    "operation": "nearest-exact 2x upsample -> ONNX Resize nearest half_pixel round_prefer_floor",
+    "sourceSha256": "7f5505f972a686f5de327322d66da3c35c4b732bf8b2aa16a7f0959254ab2d99",
+    "opset": 17
+  },
+  "exportSeconds": 6.227350039000157
+}
