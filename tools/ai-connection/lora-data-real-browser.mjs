@@ -84,10 +84,12 @@ export async function runLoraDataRealCases({file,artifact,reference,input,source
   const diagnostic={targets:[{key:'diffusion_model.blocks.0.self_attn.q.weight',slice:{startRow:0,rowCount:16}},{key:'diffusion_model.blocks.0.self_attn.q.bias',slice:{startRow:0,rowCount:16}}]};
   let firstPositiveWeightHash,firstPositivePackageHash,firstPlanTarget;
   async function application(strength,label,{cancel=false,failValidation=false}={}){
-   managerRevision++;console.log('LORA-DATA-REAL light HIGH strength '+strength+' '+label);
+   managerRevision++;if(currentApp)currentApp.selected=false;
+   console.log('LORA-DATA-REAL light HIGH strength '+strength+' '+label);
    const e=expected.get(strength),planTarget=target('plan:'+label),binding=await facade.describeBinding();
    const app={label,strength,planTarget,selected:true,weight:new Float32Array(81920),bias:new Float32Array(16),writes:[],plan:null,ownerCandidate:null,
     ownerValidation:null,weightBiasEvidence:null,applicationEnvelope:null,bridge:null};currentApp=app;
+   if(manager.active)assert(manager.inspect().selectionCurrent===false,'A new explicit selection must immediately invalidate the previous snapshot selection');
    app.consumerBinding={namespace:'manager-selected-native-resource',revision:managerSessionId+':'+managerRevision+':'+resourceBinding.resourceGeneration+':'+label,
     managerSessionId,resourceBinding:clone(resourceBinding)};
    const expectedOutput=new Float32Array(e.ref.expectedOutput),validationX=new Float32Array(x);if(failValidation)validationX[0]+=1024;
@@ -128,7 +130,7 @@ export async function runLoraDataRealCases({file,artifact,reference,input,source
     requestedScope:{kind:'diagnostic',scopeId:'diagnostic-projection'},steps:[{stepId:'HIGH',moduleId:'native-lora:HIGH',operationId:'diagnose',moduleVersion:sdk.contractVersion,
       nativeBindingRefs:[binding.owner.nativeRegistryHash,plan.registryHash],artifactRefs:['source:actual-light-HIGH'],modelProfileRefs:[native.executionProfileId],adapterSelectionRefs:[],
       localRevisionBindings:nativeRevisions(plan),sourceRef:clone(sourcePins.sdk),nativeBuild:sourcePins.kernel.sha256,implementationState:'implemented',resourceBinding,
-      isCurrent:()=>ownerLive&&app.selected,owner}]};
+      isCurrent:()=>ownerLive&&currentApp===app&&app.selected,owner}]};
    const prior=await consumer.run({x}),priorHash=await sha(prior.output),previousSnapshot=manager.active;
    if(failValidation){const failure=await rejected(()=>manager.stageSnapshot(profile,selected),'controlled diagnostic activation mismatch');
     assert(failure.code==='NATIVE_VALIDATION_MISMATCH','Native validation failed at an unintended boundary');await queue.drain();await manager.recover();await sdk.recover();
