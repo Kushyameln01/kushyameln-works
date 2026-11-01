@@ -4,7 +4,7 @@ API版: `works-ai-1`。Text EncoderとVAEは独立モジュール。包括処理
 
 文書revision: `OWNER-CAPABILITIES-1`（2026-11-02 JST）。`works-ai-1`とG1Cを維持する。通常入口に構成済み実装のdescriptor照会を追加し、詳細evidenceを診断側へ分ける。数値演算・モデル・固定shape・既存P2の意味は変えず、Text実最終正規化のmarkerを追加する。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sampleのmetadata検査は、実生成・復元・decodeの受入を意味しない。
 
-受入済みの実行条件は、UMT5の24層FP32診断経路と、Wan2.1 VAEの固定プロファイル `wan21-raw-f32-5x16x16`。VAEはRGB `[1,3,5,16,16]` とraw latent `[1,16,2,2,2]` の相互変換を検証した。大きな動画shapeをそのまま受け入れるものではない。別shapeは `tools/inference/vae/export_profile.py` で別bundleを作成し、その参照tensorとブラウザ結果を照合してから利用する。
+既存の診断受入はUMT5の24層FP32経路と、Wan2.1 VAEの5×16×16・F1正方形16×16・F1 Rect16×32の各固定graphである。今回の新規通常実行はRectと固定plain一件で、既存参照を再利用した。現在の能力は構成したmanifest/graphに限定し、大きな動画や別shapeへ合格を広げない。別shapeには対応bundleを用意して、その参照・gate・実WASMを診断側で個別に受け入れる。
 
 ## 呼出し口
 
@@ -80,7 +80,7 @@ Textの各graphは、従来どおり全体を読み、元manifestの全bytes SHA
 | VAE | `decode(tensor)` | float32、NCTHW、meaning `raw-posterior-mean`、profileと一致するshape/model | float32、NCTHW、meaning `raw-decoder-rgb`。clamp・色変換なし |
 | VAE | `decode(tensor)` | float32、NCTHW、`wan21-raw-generated-sample:v1`、一致するprofileと下記latentContract | 同上。追加のlatent正規化・復元を行わない。契約fixtureだけを今回受入、実生成経路は未検証 |
 
-tensorの共通表現は `{dtype,shape,layout,meaning,data:TypedArray,modelSha256?,attentionMask?,tokenizerSha256?,context?,latentContract?}`。保存形式 `.wktensor` はバイナリpayloadとschema/shape/意味/model hash/mask/SHA-256を持ち、今回の任意metadataも検査して保存する。巨大なembeddingをJSON数値配列へ展開しない。`decodeTensor` はArrayBufferまたはUint8Array（NodeのBufferを含む）を受け、payloadを所有する新しい配列を返す。
+tensorの共通表現は `{dtype,shape,layout,meaning,data:TypedArray,modelSha256?,attentionMask?,tokenizerSha256?,normalization?,context?,latentContract?}`。保存形式 `.wktensor` はバイナリpayloadとschema/shape/意味/model hash/mask/SHA-256を持ち、今回の任意metadataも検査して保存する。巨大なembeddingをJSON数値配列へ展開しない。`decodeTensor` はArrayBufferまたはUint8Array（NodeのBufferを含む）を受け、payloadを所有する新しい配列を返す。
 
 Text embeddingはVAE latentではない。DiffusionからVAEへ接続するとき、latentの意味・shape・モデル・正規化空間を照合する。normalized latentの名前だけを変えて渡さない。モデル固有の正規化・復元はDiffusion側Hikeが担当し、管理側やVAE側へ重複実装しない。
 

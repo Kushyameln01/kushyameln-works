@@ -12,12 +12,12 @@
 
 ## 手順
 
-- [ ] VAE manifest/descriptor検証を一箇所へ抽出し、対応照会と実dispatchで共有する。完全shape、操作別asset、export/runtime制約、非対応理由を返す。
-- [ ] Text最終norm markerとowned descriptorをcodecに追加し、旧codec互換・normalized marker・producer/decoder/context保持を検証する。
-- [ ] 通常Worker結果、診断opt-in、MessagePort照会、graph実shape照合とreconfigure後の検証状態クリアを接続する。
-- [ ] 新規境界テストのRED→GREENと既存接続テストを確認する。
-- [ ] 既存Rect graph/referenceで通常encode/decode・shape拒否・取消復帰・解放を確認する。Textは既存独立Hello world参照を再利用し、新規通常encode一件を全値比較する。再export・参照再生成・全生成は行わない。
-- [ ] API、管理へのfield対応、制限、通常結果と詳細診断、再現手順を分けて記録し、独立レビュー後に作業branchへpush/Draft PRを作成する。merge/Pages公開は対象外。
+- [x] VAE manifest/descriptor検証を一箇所へ抽出し、対応照会と実dispatchで共有する。完全shape、操作別asset、export/runtime制約、非対応理由を返す。
+- [x] Text最終norm markerとowned descriptorをcodecに追加し、旧codec互換・normalized marker・producer/decoder/context保持を検証する。
+- [x] 通常Worker結果、診断opt-in、MessagePort照会、graph実shape照合とreconfigure後の検証状態クリアを接続する。
+- [x] 新規境界テストのRED→GREENと既存接続テストを確認する。
+- [x] 既存Rect graph/referenceで通常encode/decode・shape拒否・取消復帰・解放を確認する。Textは既存独立Hello world参照を再利用し、新規通常encode一件を全値比較する。再export・参照再生成・全生成は行わない。
+- [x] API、管理へのfield対応、制限、通常結果と詳細診断、再現手順を分けて記録し、独立レビュー後に作業branchへpush/Draft PRを作成する（配布receiptを参照）。merge/Pages公開は対象外。
 
 ## 検証で注意する入力
 
@@ -26,3 +26,5 @@
 ## 進捗
 
 基点の外部API・VAE API・normalized marker検査はPASS。実装前のText/codec新規テストREDを別担当が確認。今回の依頼は具体的な実装とpushまでを明示しているため、設計の追加承認を挟まず実行する。
+
+実NNはb2541fd、監視終了修正の推論なし確認は94e1d5f。既存参照を使った全値・通常metadata・取消・解放を確認。source間の差はharness一件だけで、production closure16ファイルは同一。生のmonitor post-closeエラーは未改変で保持し、派生admissionでscopeを区別する。
