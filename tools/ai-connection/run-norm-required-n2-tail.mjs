@@ -52,7 +52,7 @@ export async function preflightNormRequiredN2Tail({nativeRoot,assets={},diagnost
  if(!nativeRoot)throw fail('N2_TAIL_NATIVE_ROOT_REQUIRED','Explicit fixed --native-root required');const limits=budget(diagnosticBudget),files=new Map();
  for(const pin of N2_TAIL_FILES)files.set(pin.path,await checked(child(nativeRoot,pin.path),pin,'N2_TAIL_SOURCE_MISMATCH'));
  const sourceProof=await verifyN2TailSource({files}),publicFiles=new Map(),publicReceiptProof=[];
- for(const pin of N2_TAIL_PUBLIC_FILES){const bytes=await checked(child(nativeRoot,pin.path),pin);publicFiles.set(pin.path,bytes);publicReceiptProof.push({...pin,sourceRef:{...N2_TAIL_SOURCE,path:pin.path}});}
+ for(const pin of N2_TAIL_PUBLIC_FILES){const bytes=await checked(child(nativeRoot,pin.path),pin);publicFiles.set(pin.path,bytes);publicReceiptProof.push({...pin,sourceRef:{...N2_TAIL_SOURCE,path:pin.path,sha256:pin.sha256}});}
  const buildSourceProof=await verifyBuild(nativeRoot,publicFiles),codecProof=await verifyAdoptedWktensorSource(new Uint8Array(await readFile(join(ROOT,ADOPTED_WKTENSOR_DEPLOYMENT_PATH))));
  const parse=path=>JSON.parse(new TextDecoder().decode(publicFiles.get(path))),tailPlan=parse(base+'core/candidate-plan.json');if(!same(Object.fromEntries(Object.keys(N2_TAIL_GATES).map(k=>[k,tailPlan.gates[k]])),N2_TAIL_GATES))throw fail('N2_TAIL_GATES_CHANGED','Frozen eight owner gates required');
  const missingAssets=[],assetReceipts=[],payloads={};let savedCount=0;
@@ -76,13 +76,22 @@ async function managementSources(){
 }
 /** Public receipts keep named output identities and omit activation/model values. */
 export function publicN2TailReceipt(value){
+ return publicReceipt(value);
+}
+const attentionHashKeys=['receiptSHA256','artifactSHA256','contextSHA256','fullPrefixReceiptSHA256','fullPrefixArtifactSHA256'];
+function pinnedAttentionHashes(value,side){
+ const pinned=N2_TAIL_TRUSTED_INPUTS[side]?.attention;
+ return !!pinned&&value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).length===attentionHashKeys.length&&attentionHashKeys.every(key=>Object.hasOwn(value,key)&&typeof value[key]==='string'&&/^[a-f0-9]{64}$/.test(value[key])&&value[key]===pinned[key]);
+}
+function publicReceipt(value,trustedSide){
  if(ArrayBuffer.isView(value)||value instanceof ArrayBuffer)return {privateBinaryPayloadOmitted:true,byteLength:value.byteLength};
- if(Array.isArray(value))return value.map(publicN2TailReceipt);
+ if(Array.isArray(value))return value.map(entry=>publicReceipt(entry));
  if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).filter(([key,entry])=>{
-  if(['scale','privateArtifactText','expected','tensor','input','inputs','attention','patchHidden','timeAct1'].includes(key))return false;
+  if(key==='attention')return pinnedAttentionHashes(entry,trustedSide);
+  if(['scale','privateArtifactText','expected','tensor','input','inputs','patchHidden','timeAct1'].includes(key))return false;
   if(key==='arrays')return entry&&typeof entry==='object'&&!Array.isArray(entry)&&Object.values(entry).every(d=>d&&typeof d==='object'&&!Array.isArray(d)&&/^[a-f0-9]{64}$/.test(d.sha256)&&Array.isArray(d.shape)&&Number.isSafeInteger(d.byteLength));
   return true;
- }).map(([key,entry])=>[key,publicN2TailReceipt(entry)]));
+ }).map(([key,entry])=>[key,publicReceipt(entry,key==='trustedInputs'?entry?.side:undefined)]));
  return value;
 }
 async function browserRun({nativeRoot,out,preflight,managerSource}){

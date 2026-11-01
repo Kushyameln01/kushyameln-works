@@ -903,3 +903,31 @@ unaccepted edges are in
 Cross-attention, FFN, full blocks, real HIGH-to-LOW, production, arbitrary LoRA
 and combined resource budgets stay outside acceptance. Throughout:
 `generationReady:false`, `load/predict/sample=NOT_READY`.
+
+### Reconciled holding-environment return
+
+Management reconciled the return at
+`508d72cc9036e7f500827465c644b4aed3c5f711` against executed management source
+`5c484a8783ab129a2ff3543a98b2537af9888199` and native execution source
+`a49aac492cc68e2dd6037e0deb4a6954731a847a`. The accepted scope is the two
+independent fixed HIGH1/LOW3 numerical runs, five-output E4 persistence/readback
+in the holding environment, and natural-completion terminal/release evidence.
+See `development/ai-connection/n2-tail-management/acceptance/RESULT.md`.
+Private payload retrieval or numerical rerun in the management environment is
+not part of this acceptance. Actual cancellation/recovery faults were not
+exercised in the returned successful runs.
+
+The original result is retained unchanged with two disclosed metadata defects:
+15 nested public receipt source hashes contain the stage digest, and the public
+projection omitted trusted attention hash metadata. Record-level digests were
+checked against fixed Git bytes; the attention supplement was independently
+bound to fixed export/trusted metadata, actual artifact and input F32 hashes.
+This is a documented reconciliation, not an edit of the original result.
+
+The current writer now emits each public receipt's own nested digest and
+preserves only the five exact pinned attention hashes inside a same-side
+trustedInputs object. Activation arrays and unrecognized attention data remain
+omitted. These metadata corrections do not change the historical execution
+source, native pins, numerical gates or accepted scope, and are not a new
+numerical run. ORT/total memory observations and production readiness remain
+unverified with all NOT_READY flags unchanged.
