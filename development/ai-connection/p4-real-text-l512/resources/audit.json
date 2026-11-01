@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "p4-l512-read-only-resource-audit/0.1",
+  "createdUTC": "2026-11-01T16:08:27.662829+00:00",
+  "repository": "/workspace/work/diffusion-models",
+  "commit": "27776abb234fc12733c600b1dabd2fdab70e27ae",
+  "scope": {
+    "sideSequence": [
+      "HIGH",
+      "LOW"
+    ],
+    "block": 0,
+    "N": 2,
+    "L": 512,
+    "scheduleIndices": {
+      "HIGH": 1,
+      "LOW": 3
+    },
+    "runtimeAndModelsExecuted": false,
+    "modelPayloadRead": false,
+    "fullModelHashRecomputed": false,
+    "repoEditsMadeByAudit": false,
+    "acceptanceClaim": false
+  },
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/stage.mjs": "ff184acbabc589472a95b0bbf0eb2d3949b4478ecc0b19266817e8c313e7826d",
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/linear.mjs": "3821cca4b031aae4adf3944f15f8d171ed602f97878307ce495b7dcd8b05118a",
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/math.mjs": "c26d169c90bced0524c73081bd92b13bbb635f57718086b6224826b2464bf9a0",
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/source.mjs": "5bf263b8b6465b395dd6ea3634ef9619626479f95b8a22cc207dd923541c9d63",
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs": "b4518ea35ca35e63e6ba8cdbe67e5d9fea0fa2125dac7dac0f5d4ac6c83ac7c2",
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/weights.mjs": "b80cdcb74584ef3f224c8eb6fcbef9cfb065f8387427a04a708d53d273856c9c",
+    "docs/shared/diffusion-models/ort-bridge/hike.mjs": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/hike.mjs": "67d5ada9d4c6c4217c3845c9ddbed5fb246cedeb35d5283840e1057087d4c3cd",
+    "docs/shared/diffusion-models/diagnostics/resource-observer/observer.mjs": "efd172d318fefff1581367a260ae688b0ba02c5dbdab0302ad9a7a5055c4f13b",
+    "docs/shared/diffusion-models/diagnostics/p4-cross-ffn/run.mjs": "ddf216d4be56e7f1a424285718c91d825241f4de4e3a98d46794bf61b164d0b3",
+    "docs/shared/diffusion-models/diagnostics/p4-cross-ffn/feed.mjs": "a50b3b54c9d5da6188c1d57290560252365579257e9c1a6817b3de077a17d08a",
+    "docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d"
+  },
+  "environmentSnapshot": {
+    "cgroupMemoryCurrentBytes": 2305863680,
+    "cgroupMemoryMaxBytes": 17179869184,
+    "cgroupHistoricalMemoryPeakBytes": 2935369728,
+    "cgroupEvents": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+    "cgroupOwnership": "whole session environment; not exclusively this task",
+    "cgroupPeakReset": false,
+    "filesystems": [
+      {
+        "path": "/tmp",
+        "freeBytesForUser": 9236201472,
+        "totalBytes": 9441329152
+      },
+      {
+        "path": "/workspace",
+        "freeBytesForUser": 165502976,
+        "totalBytes": 33770192896
+      }
+    ],
+    "chromiumExecutablePresent": true,
+    "pythonPackages": {
+      "playwright": true,
+      "psutil": true,
+      "numpy": true,
+      "onnxruntime": false
+    },
+    "browserLaunchedByAudit": false
+  },
+  "staticCountsFile": "/tmp/p4-l512-resource-review/static-estimates.json",
+  "limits": {
+    "ordinaryOutputWeightRows": 16,
+    "ffnDownOutputWeightRows": 4,
+    "maxBatchRows": 16,
+    "maxDecodeElements": 81920,
+    "maxRawWeightReadBytes": 163840,
+    "maxDecodedWeightTileBytes": 327680,
+    "maxL512LinearInputBatchBytes": 327680,
+    "ffnDownReductionIntact": 13824,
+    "conditioningRowsMax": 512,
+    "normalizationWidth": 5120,
+    "normalizationRowsMax": 512,
+    "attentionQueryRows": 2,
+    "attentionHeads": 40,
+    "attentionHeadWidth": 128,
+    "attentionKeyTileMax": 64,
+    "P4SessionCount": 2,
+    "HikeKnownCapacityBytes": 4325376,
+    "nativePrecisionChanged": false
+  },
+  "preflightConclusion": "Unchanged P4 loop supports shapes statically. L512 increases cumulative traffic and call count sharply, with main additional hidden cost bridge arena zero-fill. Actual time/RSS/WASM capacity/copy/session/lease/algorithm gate receipts remain required; arithmetic cannot establish acceptance."
+}

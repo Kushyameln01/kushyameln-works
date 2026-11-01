@@ -1,0 +1,169 @@
+{
+  "schemaVersion": "p4-real-text-l512-lora-dependency-status/0.1",
+  "checkedAtUTC": "2026-11-01T16:05:30.505250+00:00",
+  "diffusionSourceCommit": "27776abb234fc12733c600b1dabd2fdab70e27ae",
+  "latestLoRAHead": "7f48a1407998078ca793238af068ae117e322662",
+  "latestLoRAHeadParent": "f9929445da930277662f13133f58e3bced80696e",
+  "changesSinceParent": [
+    "development/ai-connection/lora-receipt-handoff-20261102/RETURN-STATUS.json",
+    "development/ai-connection/lora-receipt-handoff-20261102/ROUNDTRIP-MANIFEST.json"
+  ],
+  "newRuntimeCodeInLatestCommit": false,
+  "canonicalP4MappingFoundInInspectedLatestPublishedSource": false,
+  "canonicalAdapter": {
+    "path": "docs/shared/inference/lora/diffusion-diagnostic-adapter.mjs",
+    "bytes": 20746,
+    "sha256": "bcea7b495e819d1e1052543f36cbdad0ed8515e74bd8914cf66dc03b093c6e4f",
+    "gitBlobSHA1": "b1a37034122764800703ef1f3e3a264ebd190861",
+    "scope": "Existing self_attn.q Q16 exact registry/shape/profile and expected16; same Git blob as fc2789/dd95. Not a canonical P4 mapping."
+  },
+  "ownerPublishedStatus": {
+    "newP4CanonicalMappingEstablished": false,
+    "newP4RealLoRAWeightsEstablished": false,
+    "newP4JointNumericalTestCompleted": false,
+    "runtimeSourceModified": false
+  },
+  "diffusionFeedSource": [
+    {
+      "path": "development/ai-connection/p4-cross-ffn/WEIGHT-FEED.md",
+      "bytes": 7179,
+      "sha256": "f770c4b979508bc57a990a53e541a8fe53d7a06bf5fd6617f0e857785b3ed241",
+      "sameBytesAs7ee": true
+    },
+    {
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/weights.mjs",
+      "bytes": 22015,
+      "sha256": "b80cdcb74584ef3f224c8eb6fcbef9cfb065f8387427a04a708d53d273856c9c",
+      "sameBytesAs7ee": true
+    },
+    {
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/registry.mjs",
+      "bytes": 158,
+      "sha256": "76c16302cc62d94f278322a895e8fd343f10ec49626fb1ab04ec546842c64a7c",
+      "sameBytesAs7ee": true
+    },
+    {
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/source.mjs",
+      "bytes": 10907,
+      "sha256": "5bf263b8b6465b395dd6ea3634ef9619626479f95b8a22cc207dd923541c9d63",
+      "sameBytesAs7ee": true
+    },
+    {
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/stage.mjs",
+      "bytes": 21978,
+      "sha256": "ff184acbabc589472a95b0bbf0eb2d3949b4478ecc0b19266817e8c313e7826d",
+      "sameBytesAs7ee": true
+    },
+    {
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs",
+      "bytes": 18862,
+      "sha256": "b4518ea35ca35e63e6ba8cdbe67e5d9fea0fa2125dac7dac0f5d4ac6c83ac7c2",
+      "sameBytesAs7ee": true
+    }
+  ],
+  "integrationContract": {
+    "registry": "bernini-p4-f32-feed-registry/0.1",
+    "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+    "scope": "PARTIAL",
+    "identityFields": [
+      "modelHash",
+      "graphHash",
+      "registryHash",
+      "side",
+      "executionProfileId",
+      "scope"
+    ],
+    "defaultTargetCount": 12,
+    "defaultTargetStems": [
+      "blocks.0.cross_attn.q",
+      "blocks.0.cross_attn.k",
+      "blocks.0.cross_attn.v",
+      "blocks.0.cross_attn.o",
+      "blocks.0.ffn.0",
+      "blocks.0.ffn.2"
+    ],
+    "fullShapes": {
+      "cross_qkvo": [
+        5120,
+        5120
+      ],
+      "ffn0": [
+        13824,
+        5120
+      ],
+      "ffn2": [
+        5120,
+        13824
+      ]
+    },
+    "coordinates": "Flat elements in original full tensors, row-major, complete matrix input columns; binding.name and weightId are original keys.",
+    "maxBlockElements": 81920,
+    "maxOrdinaryMatrixBlockRows": 16,
+    "maxFFNDownMatrixBlockRows": 4,
+    "maxPackageBytes": 16777216,
+    "maxRetainedPatchBytes": 67108864,
+    "provider": "baseProvider.readBlock(weightId,offset,count,{...identity,fullShape,signal}) returns immutable owned F32.",
+    "ownerArithmetic": "LoRA owner performs fullShape-to-slice mapping and fixed-loader lowrank/alpha/strength/explicit-bias semantics; Diffusion does not duplicate it.",
+    "sink": "begin({...identity,patches}) -> awaited writeBlock({weightId,offset,count,fullShape,binding,dtype:F32,sha256,data}) -> finish(identity); final F32 copied and never rescaled.",
+    "candidate": "prepareLoad -> validate(actual createPostSelfAttention on candidate source) -> valid receipt -> epoch-checked commit; own-current-epoch rollback and prepareBase.",
+    "L512": {
+      "conditioningShape": [
+        1,
+        512,
+        4096
+      ],
+      "conditioningMaskLength": 512,
+      "residualElements": 10240,
+      "timeAct1Elements": 5120,
+      "expectedBlockOutputElements": 10240,
+      "runtimeAlreadyAcceptsLength": true,
+      "newNumericalAcceptanceClaimed": false
+    },
+    "gate": {
+      "id": "p4-cross-ffn-composed-f32-v1",
+      "absolute": 0.01,
+      "relative": 0.001,
+      "reference": "Independent LoRA-altered P4 blockOutput, bound by SHA-256/input/source/package/profile; old Q16 expected16 and direct-final-F32 fixtures are not substitutes."
+    },
+    "ownership": "Sink owned numeric copy; package/candidate/active/history/run read lease retain native private buffers with distinct release lifetimes; manager revision differs from native epoch.",
+    "excludedByDefault": [
+      "text_embedding.0",
+      "text_embedding.2",
+      "norms",
+      "time projection",
+      "modulation"
+    ],
+    "optionalTextEmbeddingOnlyWhenExplicitlySelected": true
+  },
+  "dependencyRequest": {
+    "url": "https://github.com/Kushyameln01/kushyameln-works/pull/2#issuecomment-6560391921",
+    "commentId": 6560391921,
+    "createdAtUTC": "2026-11-01T16:04:23Z",
+    "exactBodyReadbackVerified": true,
+    "bodyUTF8WithoutFinalNewlineSHA256": "be71c0e1d6c8353db07a33d4c8fcb3266c6b4341e8951f8017e0cd4d738fc93a",
+    "requestedFirstNumericalScope": "Light/HIGH explicit limited ranges acceptable; no requirement to reacquire all four original LoRA files or a full base.",
+    "ownerResponseToThisNewRequest": "NOT_RECEIVED_AT_READBACK"
+  },
+  "privateInputs": {
+    "locallyEnumeratedModelOriginals": [
+      "/workspace/work/retained/bernini/Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+      "/workspace/work/retained/bernini/Wan22_Bernini_HIGH_fp8_e4m3fn_scaled.safetensors"
+    ],
+    "LoRAOriginalsInEnumeratedAccessibleWorkspaceAndTmp": "NOT_FOUND",
+    "P4LoRASpecificIndependentReferenceArrays": "NOT_ACQUIRED",
+    "actualLoRAFinalF32P4Payload": "NOT_ACQUIRED",
+    "limitations": "Enumeration covered accessible /workspace and /tmp; it does not assert absence from other owners, external stores, connectors, or unreadable directories. Existing public original inventory and Q16 receipts are metadata/historical evidence, not private originals."
+  },
+  "workBoundary": {
+    "realTextL512BaseValidation": "CONTINUES_IN_PARENT_TASK",
+    "canonicalP4LoRAJointNumericalStage": "BLOCKED_ON_OWNER_IMPLEMENTATION_AND_REAL_PAYLOAD_REFERENCE",
+    "Q16PinsAndPriorEvidence": "RETAINED",
+    "newLoRANumericalRuns": 0,
+    "newLowrankImplementationInDiffusion": 0,
+    "existingRuntimeSourceEdits": 0,
+    "commitPushOrGitRefChanges": 0
+  },
+  "completeAdapter": false,
+  "generationReady": false,
+  "loadPredictSample": "NOT_READY"
+}

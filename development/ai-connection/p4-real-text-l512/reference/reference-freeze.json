@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "bernini-p4-real-text-l512-reference-freeze/0.1",
+  "status": "BOUNDARY_AND_INPUT_VERIFIED_WAITING_FOR_PARENT_EXECUTION_FREEZE",
+  "baseCommit": "27776abb234fc12733c600b1dabd2fdab70e27ae",
+  "sourceSHA256": {
+    "development/ai-connection/p4-real-text-l512/reference/prepare-input.py": "e59320fbd28f0402e6b5bdb389535bd41afbf245095d801d016476a642c278cb",
+    "development/ai-connection/p4-real-text-l512/reference/test-prepare-input.py": "7ed15b733d3c81d79d21654bf8f6b5cf655238ff1818e8d1091acd97aedc07b2",
+    "development/ai-connection/p4-real-text-l512/reference/run-reference.py": "599dd92de2afc3dab266132eb86180ec6253a31caf1a7455b0454467435a03f8",
+    "development/ai-connection/p4-real-text-l512/reference/test-run-reference.py": "0575ec2c6fac36cd8f9928c3f1f4e1c5c77f4e10d35e9d4000cb3a2cabbfe752",
+    "development/ai-connection/p4-real-text-l512/reference/REFERENCE-PLAN.md": "3c5f61923a16e94763f06a47e39989a56dabe95a257358f2d64584e4f23e73f3",
+    "development/ai-connection/p4-real-text-l512/reference/input-freeze.json": "e6d54d941c440c2a9fed0017ecd12d9df4595fa41df9b927c6e0a77954b61d57",
+    "tools/diffusion-models/p4-cross-ffn-reference.py": "66ded34a4bb74d261b81484bf2abd2d9ee75b0e4cf82ce6a063e02237a7a7ecf",
+    "tools/diffusion-models/test-p4-cross-ffn-reference.py": "d0e7546d33241e2ada0597c883861a9cb05b9568a0f1fd34ad093e09ef786de0",
+    "tools/diffusion-models/p4-cross-ffn-browser.py": "141ab992ec58f3b985e739ec00f79ec98b03d0bbfc4d1581bc4131a3c986707b",
+    "development/ai-connection/p4-cross-ffn/core/candidate-plan.json": "051b6833be54aed9e1e0c3657bd28aa926b46c238a1c3a06fb298f6cc6427600",
+    "development/ai-connection/profile-adoption/p4/core-source/comfy/ldm/wan/model.py": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699"
+  },
+  "privateNativeInputSHA256": "9cbbdace203ea996d9dd6afc1a8ae832f4b68c2bf1fc54306b9f944f818bd6a8",
+  "privateInputFreezeSHA256": "15fc03130ff0254cb0a1edf90a3ffa0e2bf3b617dc4dc3daec0a3bb8defc0ce0",
+  "gates": {
+    "localCut": {
+      "abs": 0.001,
+      "rel": 0.0001
+    },
+    "composed": {
+      "abs": 0.01,
+      "rel": 0.001
+    },
+    "rule": "abs(actual-reference) <= abs + rel*abs(reference); all values, no percentile pass"
+  },
+  "sourceOperationsChanged": false,
+  "originalCoreChanged": false,
+  "oldReferenceSourceChanged": false,
+  "oldRuntimeSourceChangedByReferenceAgent": false,
+  "preRuntimeComposedReferenceRequired": true,
+  "modeOrder": [
+    "COMPOSED_BEFORE_RUNTIME",
+    "NATIVE_RUNTIME",
+    "LOCAL_RUNTIME_CUTS_PLUS_COMPOSED_COMPARISON"
+  ],
+  "transport": "all25 little-endian F32 files plus strict native output identity manifest; no decimal runtime serialization",
+  "boundaryTests": {
+    "newPacket": 3,
+    "newBinaryAndPureL512": 5,
+    "retainedOracle": 13,
+    "passed": true,
+    "retainedStrictParameterProof": 4,
+    "retainedStrictParameterProofPassed": true
+  },
+  "numericalReferenceExecuted": false,
+  "modelWeightsOpened": false,
+  "wholeModelHashRecomputed": false,
+  "privateArraysPublished": false,
+  "patches": false,
+  "scope": {
+    "tokens": 2,
+    "blockIndex": 0,
+    "HIGHscheduleIndex": 1,
+    "LOWscheduleIndex": 3,
+    "TextRows": 512,
+    "fullQKnormWidth": 5120,
+    "heads": 40,
+    "headDim": 128,
+    "ffnWidth": 13824,
+    "mask": "all512 entries retained as metadata; no added attention mask",
+    "crossRoPE": false,
+    "HIGHtoLOWhandoff": false,
+    "fullModel": false
+  },
+  "readiness": {
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY",
+    "generationReady": false,
+    "originalWorkflowInputsVerified": false,
+    "originalProductionPrecisionVerified": false,
+    "modelInference": false,
+    "lowIsHighHandoff": false,
+    "realTextJointAcceptance": false
+  },
+  "additionalRetainedBrowserSuite": {
+    "tests": 13,
+    "errors": 1,
+    "passed": 12,
+    "blockedTest": "test_json_browser_transport_preserves_both_zero_signs_and_frozen_fixture_bits",
+    "reason": "Sandbox PermissionError creating localhost HTTPServer socket; no numerical/model execution attempted",
+    "notSourceRegression": true
+  }
+}
