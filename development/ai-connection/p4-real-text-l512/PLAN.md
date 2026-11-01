@@ -63,5 +63,5 @@
 ## Task 4: 結果の返却
 
 - [x] base実Textと実LoRAを別scopeでRESULT/API差分・source/build・reuse/new・未受入へ整理する。
-- [ ] 固定sourceの取得path/bytes/SHA-256・公開manifest・再現手順を付けてGitHubへpushし、Draft PR14と管理/LoRA/Textへ返す（最終返却工程）。
+- [x] 固定sourceの取得path/bytes/SHA-256・公開manifest・再現手順を付けてGitHubへpushし、Draft PR14と管理/LoRA/Textへ返す。送信3件の一致読戻しをDELIVERYへ保存。
 - [x] merge・Pages公開を別記し、送信/本人ACK/数値受入を分ける。
