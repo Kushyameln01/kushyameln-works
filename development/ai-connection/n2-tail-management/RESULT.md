@@ -1,4 +1,14 @@
-# 固定N2 tail管理経路 — runner固定・返却待ち
+# 固定N2 tail管理経路 — 限定受入済み
+
+**現在はStep3照合を完了し、HIGH1/LOW3の限定管理接続を受け入れた。**
+返却は `508d72cc9036e7f500827465c644b4aed3c5f711`、実行済み管理sourceは5c484のまま。
+[受入範囲・metadata不備の明示照合・未受入事項](acceptance/RESULT.md) と
+[機械可読受入](acceptance/ADMISSION.json) を参照する。
+実cancel/recover、ORT実測、総peak、本番生成は受入へ追加していない。
+
+以下はStep1配布時の記録として保持する。返却前の待機状態を現在の状態とは扱わない。
+
+## Step1の固定・配布記録
 
 **管理adapter・規範照合・保存経路を通るrunnerを固定した。次はDiffusion側の実資材保持環境で実行し、返却後に管理接続の受入を記録する。**
 実装完全SHAは `5c484a8783ab129a2ff3543a98b2537af9888199`、管理基点は

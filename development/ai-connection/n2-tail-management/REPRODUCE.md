@@ -1,5 +1,10 @@
 # 固定N2 tailの保持環境実行
 
+返却のStep3は[受入記録](acceptance/RESULT.md)へ照合済み。
+数値再実行を伴わない返却原本・SHA/Profile/証拠の再照合は
+[acceptance/REPRODUCE.md](acceptance/REPRODUCE.md)を使う。
+以下は実行済み5c484の手順を保持したもの。新metadata修正版は05c684で、過去resultは無変更。
+
 管理の固定commitと実行コマンドは [HANDOFF.md](HANDOFF.md) に記載する。
 順序は、管理runner固定 → Diffusion側保持環境で実行 → 管理が返却証拠を照合して受入。
 本環境にprivate payloadを複製することは前提にしない。

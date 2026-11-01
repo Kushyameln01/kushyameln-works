@@ -71,3 +71,6 @@ Files: tools/ai-connection/run-norm-required-n2-tail.mjs、必要なbrowser entr
 - ユーザー確定: 管理runner固定 → Diffusion保持環境で実行返却 → 管理が両SHA/Profile/証拠を照合受入。
   完成したsourceと検証はRESULT.md/RESULT.json、固定引継ぎはHANDOFF.md/JSONへ記録した。
   上のchecklistは着手時の計画として保持し、実数値実行・受入を未実施のまま完了へ変えない。
+- Step3完了: Diffusion返却508d72と管理5c484/native a49の原bytes・Profile・証拠を照合し、
+  HIGH1/LOW3数値・保持環境5出力E4・自然終端解放を限定受入。2metadata不備は原本を保持し、
+  明示corrigendumをacceptance/へ記録。今後のwriter修正05c684は過去実行sourceと分離した。

@@ -1,0 +1,453 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Post-run receipt/source/disk-readback verification; not management Step3 acceptance",
+  "status": "PASS",
+  "commandExitCode": 0,
+  "fixedSourceRecords": {
+    "management": {
+      "recordsVerified": 19,
+      "fixedCommit": "5c484a8783ab129a2ff3543a98b2537af9888199",
+      "currentBytesMatch": true,
+      "fixedGitBytesMatch": true
+    },
+    "native": {
+      "recordsVerified": 24,
+      "fixedCommit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+      "currentBytesMatch": true,
+      "fixedGitBytesMatch": true
+    },
+    "build": {
+      "recordsVerified": 100,
+      "fixedCommit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+      "currentBytesMatch": true,
+      "fixedGitBytesMatch": true
+    },
+    "publicReceipt": {
+      "recordsVerified": 15,
+      "fixedCommit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+      "currentBytesMatch": true,
+      "fixedGitBytesMatch": true
+    }
+  },
+  "totalVerifiedSourceRecords": 158,
+  "recordCountIsNotDistinctFileCount": true,
+  "codecDeployment": {
+    "deploymentPath": "docs/shared/ai-connection/codecs/tensor-2bdca59.mjs",
+    "sha256": "d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5",
+    "byteLength": 8256,
+    "fixedManagementGitBytesMatch": true,
+    "originalSourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "docs/shared/inference/tensor.mjs",
+      "sha256": "d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5"
+    },
+    "originalSourceGitObjectIndependentlyFetched": false
+  },
+  "sides": [
+    {
+      "side": "HIGH",
+      "blockIndex": 0,
+      "scheduleIndex": 1,
+      "tokens": 2,
+      "actualNumericalAccepted": true,
+      "comparisonCount": 8,
+      "comparedValues": 71680,
+      "strictParameterChecks": 7,
+      "failedValues": 0,
+      "comparisons": {
+        "localO": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 2.288818359375e-05,
+          "worstIndex": 3053,
+          "actualSHA256": "275407a7ef2515af2ef4c04061d3032f41ff80d64f4ed41d912d43b92980330d",
+          "gate": {
+            "abs": 0.0001,
+            "rel": 1e-05
+          }
+        },
+        "localGateProjection": {
+          "values": 5120,
+          "failed": 0,
+          "maxAbsolute": 7.152557373046875e-07,
+          "worstIndex": 4394,
+          "actualSHA256": "36be45ee632f5db4713ac210010086f809150507d674ed60eabff1efc4f3c46f",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "localGate": {
+          "values": 5120,
+          "failed": 0,
+          "maxAbsolute": 7.152557373046875e-07,
+          "worstIndex": 4394,
+          "actualSHA256": "6d3907674b17e9b546d824a93ab25d77580c4bff4759346628f2e947dd41776f",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "localGated": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 5.340576171875e-05,
+          "worstIndex": 4394,
+          "actualSHA256": "c03d8d98beb6b749f480eb448f1e2ed308fb6fc16983d65b800eaa0742ca2811",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "localResidual": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 5.340576171875e-05,
+          "worstIndex": 4394,
+          "actualSHA256": "72a7de56a7364122197f4126a996f7131ff4fbda94f7f8201bdacbaad04d85b9",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "composedO": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 7.534027099609375e-05,
+          "worstIndex": 361,
+          "actualSHA256": "275407a7ef2515af2ef4c04061d3032f41ff80d64f4ed41d912d43b92980330d",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        },
+        "composedGated": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 2.288818359375e-05,
+          "worstIndex": 9514,
+          "actualSHA256": "c03d8d98beb6b749f480eb448f1e2ed308fb6fc16983d65b800eaa0742ca2811",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        },
+        "composedResidual": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 2.288818359375e-05,
+          "worstIndex": 9514,
+          "actualSHA256": "72a7de56a7364122197f4126a996f7131ff4fbda94f7f8201bdacbaad04d85b9",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        }
+      },
+      "residualSHA256": "72a7de56a7364122197f4126a996f7131ff4fbda94f7f8201bdacbaad04d85b9",
+      "packageStatus": "complete",
+      "readbackVerified": true,
+      "queue": {
+        "disposed": false,
+        "groups": [
+          {
+            "groupId": "managed:n2-tail:HIGH:resource",
+            "activeInvocationId": null,
+            "queued": [],
+            "quarantined": false
+          }
+        ],
+        "invocations": [
+          {
+            "resultAccepted": true,
+            "originalTerminal": true,
+            "stopAcknowledged": false,
+            "calculationStopped": true,
+            "resourceReleased": true,
+            "reusable": true,
+            "id": "managed:n2-tail:HIGH:request:1",
+            "requestId": "managed:n2-tail:HIGH:request:1",
+            "ownerId": "managed:n2-tail:HIGH",
+            "resourceBinding": "managed:n2-tail:HIGH:resource",
+            "resourceGeneration": "managed:n2-tail:HIGH:generation:1",
+            "revision": 1,
+            "activeToken": "managed:n2-tail:HIGH:token:1",
+            "parentId": null,
+            "state": "completed",
+            "nativeOutcome": "fulfilled",
+            "errorCode": null
+          }
+        ]
+      },
+      "normPhase": "published",
+      "resourceAcceptance": {
+        "state": "DIAGNOSTIC_LIMITS_ONLY",
+        "nativeORTMemoryBytes": null,
+        "declaredORTSharedMemoryCapacityBytes": 16777216,
+        "observedORTMemoryBytes": null,
+        "totalPeakBytes": null,
+        "scope": "native known capacities and explicit elapsed stop; no independent Memory observer in management run; no full-RAM claim"
+      },
+      "nativeCapacityAndTrafficCounters": {
+        "returnedArraysBytes": 163840,
+        "inputSnapshotBytes": 102400,
+        "maxRawWeightTileBytes": 163840,
+        "maxDecodedWeightTileBytes": 327680,
+        "maxLinearXSnapshotBytes": 40960,
+        "maxLinearWeightSnapshotBytes": 327680,
+        "maxBiasVectorBytes": 20480,
+        "maxF16DecodeBitsBytes": 163840,
+        "maxWeightTileAndDecodeCopiesBytes": 655360,
+        "modulationValuesBytes": 20480,
+        "mathArenaBytes": 225280,
+        "decodeArenaBytes": 491648,
+        "hikeMemoryBytes": 2883584,
+        "hikeMemoryCount": 2,
+        "ORTSessionCount": 1,
+        "ORTMemoryBytes": null,
+        "allocatorPeakBytes": null,
+        "GCPeakBytes": null,
+        "hostPeakBytes": null,
+        "sourceHeaderReadBytes": 181288,
+        "sourceConfigReadBytes": 31,
+        "sourceSelectedReadBytes": 78673920,
+        "sourceSelectedReadCalls": 643,
+        "inputSnapshotTrafficBytes": 102400,
+        "linearInputSnapshotTrafficBytes": 229376000,
+        "linearOutputSnapshotTrafficBytes": 61440,
+        "mathSnapshotTrafficBytes": 122880,
+        "mathInputTrafficBytes": 122880,
+        "mathOutputTrafficBytes": 102400,
+        "decodeInputTrafficBytes": 78796800,
+        "decodeOutputTrafficBytes": 209838080,
+        "hikeDecodeClearTrafficBytes": 788111744,
+        "scope": "tail owner only, fixed Memory capacities plus named host spans and cumulative copies; excludes caller/file/reference/browser allocations and unknown ORT allocator/GC/host peak; not full resource budget proof"
+      },
+      "nativeElapsed": {
+        "readMs": 7428,
+        "linearMs": 788.0000000037253,
+        "biasMs": 14.400000000372529,
+        "totalMs": 8248.300000000745
+      },
+      "snapshotPublished": false
+    },
+    {
+      "side": "LOW",
+      "blockIndex": 0,
+      "scheduleIndex": 3,
+      "tokens": 2,
+      "actualNumericalAccepted": true,
+      "comparisonCount": 8,
+      "comparedValues": 71680,
+      "strictParameterChecks": 7,
+      "failedValues": 0,
+      "comparisons": {
+        "localO": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 1.1444091796875e-05,
+          "worstIndex": 2332,
+          "actualSHA256": "7898781992c33a1910f088506d9b39ce91240c1a24de44509979462f6e195869",
+          "gate": {
+            "abs": 0.0001,
+            "rel": 1e-05
+          }
+        },
+        "localGateProjection": {
+          "values": 5120,
+          "failed": 0,
+          "maxAbsolute": 2.384185791015625e-07,
+          "worstIndex": 54,
+          "actualSHA256": "6248c76f4f2dcdf0ca2b468238a7e85b9048b184011bd0cb62681bbfeab89a80",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "localGate": {
+          "values": 5120,
+          "failed": 0,
+          "maxAbsolute": 2.384185791015625e-07,
+          "worstIndex": 54,
+          "actualSHA256": "f3c2d060da70eb64ba89dd4f87cbf1b3e9509f38e52827e5d50676607e772645",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "localGated": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 1.1444091796875e-05,
+          "worstIndex": 4394,
+          "actualSHA256": "ce1435416ee7eccc0b8448f7f1e1a0fb7e2d5eac27da16f77f8857658a0fc866",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "localResidual": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 1.1444091796875e-05,
+          "worstIndex": 4394,
+          "actualSHA256": "0024d0b19db9988d218e2a2ded4cc3713aca32d9517966455d17b34cfee801b6",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "composedO": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 2.6702880859375e-05,
+          "worstIndex": 2332,
+          "actualSHA256": "7898781992c33a1910f088506d9b39ce91240c1a24de44509979462f6e195869",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        },
+        "composedGated": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 1.71661376953125e-05,
+          "worstIndex": 54,
+          "actualSHA256": "ce1435416ee7eccc0b8448f7f1e1a0fb7e2d5eac27da16f77f8857658a0fc866",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        },
+        "composedResidual": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 1.71661376953125e-05,
+          "worstIndex": 54,
+          "actualSHA256": "0024d0b19db9988d218e2a2ded4cc3713aca32d9517966455d17b34cfee801b6",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        }
+      },
+      "residualSHA256": "0024d0b19db9988d218e2a2ded4cc3713aca32d9517966455d17b34cfee801b6",
+      "packageStatus": "complete",
+      "readbackVerified": true,
+      "queue": {
+        "disposed": false,
+        "groups": [
+          {
+            "groupId": "managed:n2-tail:LOW:resource",
+            "activeInvocationId": null,
+            "queued": [],
+            "quarantined": false
+          }
+        ],
+        "invocations": [
+          {
+            "resultAccepted": true,
+            "originalTerminal": true,
+            "stopAcknowledged": false,
+            "calculationStopped": true,
+            "resourceReleased": true,
+            "reusable": true,
+            "id": "managed:n2-tail:LOW:request:1",
+            "requestId": "managed:n2-tail:LOW:request:1",
+            "ownerId": "managed:n2-tail:LOW",
+            "resourceBinding": "managed:n2-tail:LOW:resource",
+            "resourceGeneration": "managed:n2-tail:LOW:generation:1",
+            "revision": 1,
+            "activeToken": "managed:n2-tail:LOW:token:1",
+            "parentId": null,
+            "state": "completed",
+            "nativeOutcome": "fulfilled",
+            "errorCode": null
+          }
+        ]
+      },
+      "normPhase": "published",
+      "resourceAcceptance": {
+        "state": "DIAGNOSTIC_LIMITS_ONLY",
+        "nativeORTMemoryBytes": null,
+        "declaredORTSharedMemoryCapacityBytes": 16777216,
+        "observedORTMemoryBytes": null,
+        "totalPeakBytes": null,
+        "scope": "native known capacities and explicit elapsed stop; no independent Memory observer in management run; no full-RAM claim"
+      },
+      "nativeCapacityAndTrafficCounters": {
+        "returnedArraysBytes": 163840,
+        "inputSnapshotBytes": 102400,
+        "maxRawWeightTileBytes": 163840,
+        "maxDecodedWeightTileBytes": 327680,
+        "maxLinearXSnapshotBytes": 40960,
+        "maxLinearWeightSnapshotBytes": 327680,
+        "maxBiasVectorBytes": 20480,
+        "maxF16DecodeBitsBytes": 163840,
+        "maxWeightTileAndDecodeCopiesBytes": 655360,
+        "modulationValuesBytes": 20480,
+        "mathArenaBytes": 225280,
+        "decodeArenaBytes": 491648,
+        "hikeMemoryBytes": 2883584,
+        "hikeMemoryCount": 2,
+        "ORTSessionCount": 1,
+        "ORTMemoryBytes": null,
+        "allocatorPeakBytes": null,
+        "GCPeakBytes": null,
+        "hostPeakBytes": null,
+        "sourceHeaderReadBytes": 181288,
+        "sourceConfigReadBytes": 31,
+        "sourceSelectedReadBytes": 78673920,
+        "sourceSelectedReadCalls": 643,
+        "inputSnapshotTrafficBytes": 102400,
+        "linearInputSnapshotTrafficBytes": 229376000,
+        "linearOutputSnapshotTrafficBytes": 61440,
+        "mathSnapshotTrafficBytes": 122880,
+        "mathInputTrafficBytes": 122880,
+        "mathOutputTrafficBytes": 102400,
+        "decodeInputTrafficBytes": 78796800,
+        "decodeOutputTrafficBytes": 209838080,
+        "hikeDecodeClearTrafficBytes": 788111744,
+        "scope": "tail owner only, fixed Memory capacities plus named host spans and cumulative copies; excludes caller/file/reference/browser allocations and unknown ORT allocator/GC/host peak; not full resource budget proof"
+      },
+      "nativeElapsed": {
+        "readMs": 7511.600000010803,
+        "linearMs": 788.4000000022352,
+        "biasMs": 15.799999989569187,
+        "totalMs": 8331.700000001118
+      },
+      "snapshotPublished": false
+    }
+  ],
+  "savedOutputs": {
+    "state": "HASH_VERIFIED",
+    "sidesVerified": 2,
+    "numericalAcceptanceRerun": false,
+    "purpose": "Separate saved output file/array bit acceptance; never a fresh numerical pass"
+  },
+  "newNumericalAcceptanceScope": "Fresh fixed tail only: reused N2 prefix and attention; HIGH1/LOW3 separately; no HIGH-to-LOW handoff",
+  "actualCancellationOrRecoveryExercisedThisRun": false,
+  "totalPeakBytes": null,
+  "generationReady": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY",
+  "formalManagementReconciliation": "PENDING_MANAGEMENT_STEP3",
+  "privatePayloadPublished": false,
+  "formalManagementMetadataNotices": [
+    {
+      "code": "PUBLIC_RECEIPT_NESTED_SOURCE_SHA_STALE",
+      "records": 15,
+      "path": "publicReceiptProof[*].sourceRef.sha256",
+      "bytesVerifiedUsing": "record-level sha256 and byteLength; nested value is the stage.mjs hash",
+      "fixedRunnerUnmodified": true
+    },
+    {
+      "code": "TRUSTED_ATTENTION_PUBLIC_PROJECTION_OMISSION",
+      "path": "results[*].validationReceipt.nativeEvidence.trustedInputs.attention",
+      "supplement": "attention-binding-supplement.json",
+      "originalResultUnmodified": true
+    }
+  ]
+}

@@ -1,14 +1,14 @@
 {
   "schemaVersion": "works-n2-tail-management-result/0.1",
-  "status": "FIXED_RUNNER_READY_PENDING_DIFFUSION_EXECUTION_RETURN",
+  "status": "ACCEPTED_FIXED_N2_MANAGED_CONNECTION_WITH_DISCLOSED_METADATA_EXCEPTIONS",
   "implementationCommit": "5c484a8783ab129a2ff3543a98b2537af9888199",
   "managementBaseCommit": "03e18b6116c3d778197e4d34ba0364a7dbe918f6",
   "branch": "codex/ai-connection-e0-e4",
   "draftPullRequest": "https://github.com/Kushyameln01/kushyameln-works/pull/7",
   "workflow": {
     "managementFixRunner": "COMPLETE",
-    "diffusionHoldingEnvironmentExecution": "PENDING_RETURN",
-    "managementSHAProfileEvidenceAcceptance": "PENDING_RETURN_RECONCILIATION"
+    "diffusionHoldingEnvironmentExecution": "COMPLETE_RETURN_508D72",
+    "managementSHAProfileEvidenceAcceptance": "COMPLETE_SCOPED_ADMISSION"
   },
   "sources": {
     "diffusionDistributionCommit": "beffdcb800b629d0b13ff43bbc90e9f74c659152",
@@ -78,7 +78,19 @@
     "sourceReceipt": "CHECKPOINT-SOURCE-RECEIPT.json",
     "independentReview": "PROCEED_STEP1_READY; actual private evidence held UNVERIFIED",
     "diffCheck": "PASS",
-    "existingLoRABridge": "regressed under original fc/5f/DATA82b pins; accepted scope unchanged"
+    "existingLoRABridge": "regressed under original fc/5f/DATA82b pins; accepted scope unchanged",
+    "metadataReconciliationRegression": {
+      "tests": 459,
+      "pass": 459,
+      "fail": 0,
+      "skip": 0,
+      "previousTests": 456,
+      "newMetadataTests": 3,
+      "frozenSourceTestReferenceFiles": 104,
+      "scope": "manager metadata changes and existing LoRA/queue/package/norm regression; no private N2 numerical rerun",
+      "log": "evidence/node-tests.log",
+      "independentAudit": "PROCEED"
+    }
   },
   "localExecutableResult": {
     "path": "evidence/managed-run-blocked.json",
@@ -108,11 +120,11 @@
   "acceptance": {
     "declarationsAndControlledAdapter": "VERIFIED",
     "controlledFiveOutputE4Readback": "VERIFIED",
-    "actualHigh1Numerical": "NOT_VERIFIED_PENDING_OWNER_RETURN",
-    "actualLow3Numerical": "NOT_VERIFIED_PENDING_OWNER_RETURN",
-    "actualSavedOutputPayloadReceipt": "NOT_VERIFIED_PENDING_OWNER_RETURN",
-    "actualN2FiveOutputPersistence": "NOT_VERIFIED_PENDING_OWNER_RETURN",
-    "actualNativeLifecycleWithPrivateInputs": "NOT_VERIFIED_PENDING_OWNER_RETURN",
+    "actualHigh1Numerical": "PASS_RECONCILED_OWNER_RUN",
+    "actualLow3Numerical": "PASS_RECONCILED_OWNER_RUN",
+    "actualSavedOutputPayloadReceipt": "OWNER_HASH_RECEIPT_VERIFIED; LOCAL_PRIVATE_PAYLOAD_NOT_RECEIVED",
+    "actualN2FiveOutputPersistence": "HOLDING_ENVIRONMENT_E4_READBACK_VERIFIED; LOCAL_PRIVATE_PAYLOAD_NOT_RECEIVED",
+    "actualNativeLifecycleWithPrivateInputs": "NATURAL_COMPLETION_VERIFIED; CANCEL_RECOVER_NOT_EXERCISED",
     "currentIndependentORTMemoryObservation": "NOT_VERIFIED"
   },
   "resources": {
@@ -128,19 +140,9 @@
     "combinedPipelineBudgetVerified": false
   },
   "nextStep": {
-    "owner": "Diffusion asset-holding environment",
-    "handoff": "HANDOFF.md",
-    "machineContract": "HANDOFF.json",
-    "reproduction": "REPRODUCE.md",
-    "managerAcceptanceAfterReturn": [
-      "full management Git SHA and actual module hashes",
-      "fixed native execution/distribution/Profile",
-      "side/block/schedule/trusted inputs and private artifact/reference hashes",
-      "all8 numerical and7 strict parameter checks",
-      "all5 output identities, dtype/layout/meaning and full F32 hashes",
-      "actual E4 packageReceipt/manifest/readback",
-      "original terminal/release and any cancel/recover proof"
-    ]
+    "status": "STEP3_COMPLETE",
+    "acceptanceRecord": "acceptance/ADMISSION.json",
+    "scope": "Only the fixed returned N2 owner-runs; production and listed exclusions remain NOT_READY"
   },
   "evidenceManifest": "EVIDENCE-MANIFEST.json",
   "judgmentExamples": "evidence/judgment-examples.json",
@@ -159,5 +161,22 @@
   "modelInference": false,
   "load": "NOT_READY",
   "predict": "NOT_READY",
-  "sample": "NOT_READY"
+  "sample": "NOT_READY",
+  "admissionRecord": "acceptance/ADMISSION.json",
+  "futureMetadataWriterCommit": "05c684f793e3f5525f3e2afea5d7d278f1ddc5ed",
+  "historicalExecutionSourceRetagged": false,
+  "userEvidenceReturnCommit": "508d72cc9036e7f500827465c644b4aed3c5f711",
+  "returnedManagementImplementationCommit": "5c484a8783ab129a2ff3543a98b2537af9888199",
+  "metadataExceptions": [
+    {
+      "id": "PUBLIC_RECEIPT_NESTED_STAGE_HASH",
+      "count": 15,
+      "acceptanceEffect": "Use record-level sha256/byteLength verified against fixed Git bytes; nested sourceRef.sha256 is not the receipt digest. Broad source reconciliation delegated to source reviewer."
+    },
+    {
+      "id": "PUBLIC_ATTENTION_PROJECTION",
+      "count": 2,
+      "acceptanceEffect": "Unmodified result omits trustedInputs.attention. Bind supplemental metadata to fixed export/trusted source, asset receipt hash, and three actual input F32 hashes. No private values reconstructed."
+    }
+  ]
 }
