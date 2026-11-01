@@ -38,7 +38,7 @@ async function fixture({mutateBinding,mutateEvidence,afterPublication}={}){
  let owner;const queue=createInvocationQueue({resourceBindings:[{...f.resourceBinding,cancel:t=>owner.cancelInvocation(t),afterTerminal:(t,o)=>owner.afterInvocation(t,o),release:(t,o)=>owner.releaseInvocation(t,o)}]});
  const manager=createSnapshotManager({managerSessionId:f.planTarget.managerSessionId,afterPublication});
  async function plan(){return bridge.plan(input,{target:f.planTarget});}
- function snapshot(){owner=bridge.createSnapshotOwner({plan:f.plan,validation:{x:new Float32Array(5120),expected:new Float32Array(16),tolerance:{absolute:0,relative:0}},resourceBinding:f.resourceBinding,queue,requestPrefix:'formal-data'});
+ function snapshot({expected=new Float32Array(16)}={}){owner=bridge.createSnapshotOwner({plan:f.plan,validation:{x:new Float32Array(5120),expected,tolerance:{absolute:0,relative:0}},resourceBinding:f.resourceBinding,queue,requestPrefix:'formal-data'});
   const profile={contractVersion:'works-module-contract/1.0-draft.1',profileId:'formal-data:control',profileVersion:'1',semanticProfileRefs:[],externalArtifactRefs:['source:HIGH'],steps:[{stepId:'HIGH',moduleId:'lora:HIGH',operationId:'diagnose',inputBindings:[{portId:'source',artifactRef:'source:HIGH'}],outputBindings:[{portId:'feed',artifactRef:'feed:HIGH'}],adapterRefs:[],resourceGroupRefs:[]}],requiredEvidenceScopes:['diagnostic-projection']};
   const binding={stepId:'HIGH',moduleId:'lora:HIGH',operationId:'diagnose',moduleVersion:'public-fixture/1',nativeBindingRefs:[f.plan.registryHash],artifactRefs:['source:HIGH'],modelProfileRefs:[f.plan.registry.executionProfileId],adapterSelectionRefs:[],localRevisionBindings:revisions(f.plan),sourceRef:clone(f.pins.sdk),nativeBuild:f.plan.buildId,implementationState:'implemented',resourceBinding:clone(f.resourceBinding),isCurrent:()=>true,owner};
   return {profile,bindings:{snapshotId:'formal-data:snapshot',managerRevision:1,artifactManifestRef:'artifacts:formal',evidenceManifestRef:'evidence:formal',requestedScope:{kind:'diagnostic',scopeId:'diagnostic-projection'},steps:[binding]},currentBindings:{HIGH:{localRevisionBindings:revisions(f.plan),resourceBinding:clone(f.resourceBinding)}}};
@@ -55,6 +55,16 @@ test('formal DATA bridge requires the verified delivered source capability befor
 
 test('formal DATA preflight evaluates every actual patch and retains original observations',async()=>{
  const f=await fixture();try{await f.plan();const audit=f.bridge.inspect();assert.equal(audit.phase,'preflight');assert.equal(audit.preflight.length,2);assert.equal(audit.decisions.length,2);assert.equal(audit.preflight[1].sourceDtype,'F16');assert.equal(audit.preflight[0].numericDeclarations.observed.native.storageDtype,'F8_E4M3');assert.equal(f.calls.includes('prepare'),false);}finally{await f.dispose();}
+});
+
+test('formal DATA owner rejects changed expected bytes with the exact pre-prepare guard and zero queue work',async()=>{
+ const f=await fixture();try{
+  await f.plan();const expected=new Float32Array(16);expected[0]=1;const s=f.snapshot({expected});
+  await assert.rejects(f.manager.stageSnapshot(s.profile,s.bindings),{code:'NORM_REFERENCE_PAYLOAD_MISMATCH'});
+  assert.equal(f.bridge.inspect().failure.code,'NORM_REFERENCE_PAYLOAD_MISMATCH');
+  assert.equal(f.calls.includes('prepare'),false);assert.equal(f.calls.includes('openStage'),false);assert.equal(f.calls.includes('nativeCommit'),false);assert.equal(f.calls.includes('weightBias'),false);
+  assert.deepEqual(f.queue.inspect().invocations,[]);assert.equal(f.manager.active,null);assert.equal(f.manager.inspect().generationReady,false);
+ }finally{await f.dispose();}
 });
 
 test('a contradictory original patch observation blocks before preparation',async()=>{

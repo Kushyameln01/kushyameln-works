@@ -972,3 +972,240 @@ Unknown required contracts remain UNVERIFIED. Receiver source acquisition and
 actual joint execution are separate receipts. Commands and pending edges are
 in `development/ai-connection/p23-joint-acceptance/REPRODUCE.md` and `RESULT.md`.
 `generationReady:false` and `load/predict/sample=NOT_READY` remain unchanged.
+
+### P4 cross-attention/FFN receiver boundary (2026-11-02 JST)
+
+`adapters/norm-required-p4-cross-ffn.mjs` adds
+`createNormRequiredP4CrossFfnAdapter` around the existing independent owner.
+It uses `evaluateEdge`, `createNormExecution`, the invocation queue and E4
+persistence. Model arithmetic, storage decoding, projections, normalization,
+attention, FFN, parameter identity checks and numerical comparison stay with
+owner implementations. This path adds no model formula or LoRA layer mapping.
+
+The fixed native profile is
+`bernini-block0-n2-cross-ffn-f32-candidate-v1`. Execution source is
+`5744f700e17b23d5c18d32315fb6dfbd7c49089a`, distribution is
+`7ee36228030ba3bb544a90b1d4b528702a7bae32`, and
+`27776abb234fc12733c600b1dabd2fdab70e27ae` is a separate metadata supplement.
+`adapters/p4-cross-ffn/source.mjs` exports `P4_FILES`,
+`verifyP4CrossFfnSource({files:Map})` and `isVerifiedP4CrossFfnSource`.
+The verifier snapshots actual bytes before its first digest await and brands
+only a successful proof. Its closure has 50 build sources plus one separately
+pinned owner `common.mjs:compare` source. Build inventory count and additional
+comparison source count remain distinct. A boolean or cloned proof cannot
+open the adapter. Source verification does not authenticate an injected
+function's origin, model payloads or a numerical result; the holding runner
+imports the verified owner's ES functions from the same source root and realm.
+
+The independent catalog is
+`reference/candidates/p4-cross-ffn/catalog.v1.json`, pinned by `P4_CATALOG_REF`
+(SHA-256 `e64e2e338b3a33ab2ea5521df652cb041a9d4033cec5da7e0f18d9c2373e023e`,
+9601 bytes). Load its actual six registered files through `loadReferenceSet`
+with the explicit catalogPath and external digest. It preserves the historical
+parent records and adds `N-P4-SHAPE`, `N-P4-NUMERIC` and their shape/EXEC
+records. The historical parent six files, old N2 candidate and accepted P2
+contracts and pins remain unchanged.
+
+`adapters/p4-cross-ffn/declarations.mjs` exports P4_PROFILE_ID, P4_POLICY_ID,
+P4_SHAPE_RECORD_ID, P4_EXEC_RECORD_ID, P4_PINS, P4_CATALOG_REF, P4_OUTPUTS and
+`p4OutputSpecs(textRows)`. The latter accepts integer L=1..512 and returns the
+25 named dtype/shape/axes/semantic specifications. The raw native outputs have
+no machine nativeMeaning strings. Saved wrappers explicitly use
+`works:p4-output:<name>:f32`,
+`meaningAuthority:'management-sidecar/owner-named-output'` and
+`ownerNativeMeaning:null`. `blockOutput` is block0 hidden. It is not relabeled
+Text hidden, VAE latent or a generated sample. `output` aliases blockOutput
+and never becomes a 26th saved artifact.
+
+```js
+const edgeInput = prepareP4NormInputs({
+  referenceSet, managerSourceRef, binding, target,
+  conditioningMetadata, savedInputBindings,
+  validationSpec, numericRequirement, resourceState, extensions
+});
+const adapter = createNormRequiredP4CrossFfnAdapter({
+  nativeFactory, conditioningClone, conditioningSnapshot,
+  conditioningMetadataBytes, verifiedSource, binding, artifactStore,
+  executionScope: 'actual-native-text-p4'
+});
+const result = await adapter.run({
+  referenceSet, edgeInput, target,
+  inputs: {residual, timeAct1, conditioning}, readCurrent,
+  diagnosticBudget, validationSpec, validateOutput, publishOutput,
+  signal, onProgress
+});
+```
+
+prepareP4NormInputs returns the owned edgeInput itself. Source/build/kernel
+observations in binding are explicit inputs; missing observations remain null.
+conditioningMetadata is a management JSON identity sidecar, separate from the
+owner's recognized capture and raw native metadata. P4_TRUSTED_INPUTS fixes the
+saved HIGH1/LOW3 residual/timeAct1 receipts and hashes. P4_CONDITIONING_CASES
+keeps the L4 explicit fixture separate from the fixed f76 native Text packet,
+including all 512 rows, mask positions, model, tokenizer and packet provenance.
+The shape function's dynamic L range is not numerical or production acceptance.
+
+The native conditioningClone, conditioningSnapshot and
+conditioningMetadataBytes capabilities must come from the same fixed owner
+module. The adapter clones a recognized capture synchronously before its first
+await; structuredClone of a capture cannot preserve the owner's WeakMap brand.
+The fifth input hash uses the owner's exact metadata encoding, not JCS as a
+replacement. Residual and timeAct1 remain owned compact F32 arrays. The adapter
+passes only `{residual,timeAct1,conditioning,signal,onProgress}` to owner.run.
+`nativeFactory({target,signal})` is an outer management factory returning
+`{owner,stats,dispose,recover}`. Its target/signal are not added to the native
+source/feed/stage constructors. The holding bundle constructs original
+source → feed → stage and releases stage → feed → original source.
+
+The P4 policy requires identity, shape, numeric, evidence, transaction and
+artifact norms. Declaration, actual validation and actual publication receive
+evidence in that order. A prior owner PASS is a separate pre-existing input
+cohort declaration; it is never current validated evidence. Unknown required
+contracts are UNVERIFIED; known conflicts are INCOMPATIBLE. Matching contracts
+with missing numerical references/gate/PASS remain
+COMPATIBLE / NOT_VERIFIED / BLOCKED. There is no generated actual Text reference
+or gate default. The known fixture gate and reference URI labels identify
+exact existing owner source bytes as management sidecars. Native Text must
+supply its own pre-execution gate source/hash/bytes and prior owner case, with
+matching gate identity/values, reference, input cohort and parameter scope.
+Native Text also declares management-sidecar comparisonModes in validationSpec
+and the explicitly mapped priorOwnerPass. The supported forms are `['composed']` and
+`['local','composed']`, in that order. They are not inferred from available files or added as
+native API fields. Missing references for a declared mode keep acceptance
+blocked. Undeclared mode metadata is preserved without implying comparison.
+Fixture evidence cannot authorize a selected native Text mode after changing
+labels or L.
+
+`validateOutput` receives the exact target, five input hashes, 25-output binding,
+referenceRef, numericRequirement and predeclared validationSpec. Its receipt
+must bind all of them with the unchanged scope/gate/counts and zero failed
+values. The holding runner calls the fixed owner common.compare for all 25 outputs
+in each declared comparison mode: composed-only requires 25 comparisons,
+local+composed requires 50. comparisonCount and total compared-value count bind
+the 25 full output extents times the declared mode count; a missing local
+reference does not create an extra requirement for a composed-only owner case.
+The owner Python verify_parameter_identities function checks 29 selections. No fixture-only
+runP4CrossFfn/compare_private execution is substituted for native Text.
+`executionScope:'boundary-fixture'` supports controlled boundary validation
+without reporting actual numerical acceptance.
+
+`cancel(target)` requires the exact manager target. If construction is pending,
+it waits the original factory Promise, skips native run and releases the owner
+returned by that original Promise. Run cancellation waits the original run's
+terminal outcome; it does not claim to interrupt an active ORT session.run.
+Old results cannot be adopted after cancellation or revision change. Failed
+release quarantines the retained owner. `recover(target)` retries cleanup and
+retires that owner; `rebind({resourceGeneration})` then requires a fresh,
+never-used generation and the next run must construct a new native owner.
+`inspect()` exposes the retained lifecycle; `dispose()` reports any unresolved
+recovery targets. No native model-session commit or current snapshot publication
+is invented (`snapshotPublished:false`).
+
+`adapters/p4-cross-ffn/package.mjs` exports
+`createP4OutputPublisher({storage,artifactRef,receiptRef,ownerId,textRows,sourceRef,provenance,lineage,extensions})`
+and `readP4OutputPackage(storage)`. artifactRef is the package base; the edge
+principal is `artifactRef+'#blockOutput'`. The publisher uses the existing E4
+writer/reader and adopted2bd codec, writes all 25 artifacts and rereads actual
+storage before publication. It preserves evidence, trace, snapshots supplied
+as sidecars, multiple producer provenance, input metadata and opaque JSON/binary
+extensions. Unsupported non-JSON outer metadata rejects explicitly. Native
+metadata graphs that cannot be represented as JSON retain the exact owner
+encoding plus hash/length and an explicit opaque representation; that dependent
+operational replay remains NOT_VERIFIED. This preservation is not a claim to
+reconstruct native capture brands or replay a live owner.
+
+The required diagnosticBudget has scope `p4-n2-diagnostic-only` and explicit
+textRows, maxElapsedMs, maxReturnedOutputBytes, maxHikeCapacityBytes,
+ortSharedMemoryCapacityBytes, maxRawWeightReadBytes and
+maxDecodedWeightTileBytes. Read/tile ceilings are 163840/327680 bytes. Returned
+extent is statically `4*(30720*L+198656)` bytes, including 63,709,184 bytes at
+L512. Static output size, native capacities, cumulative copy traffic, observed
+host RSS and unknown allocator/full-pipeline peak remain separate. L4 resource
+observations do not authorize an L512 budget; unmeasured peaks stay null.
+
+`tools/ai-connection/run-norm-required-p4-cross-ffn.mjs` exposes
+preflightNormRequiredP4CrossFfn and runNormRequiredP4CrossFfn. Its CLI requires
+`--native-root --assets --text --owner-case --diagnostic-budget --device-state
+--out --manager-commit`, with optional `--source-git` for the local fixed Git
+object checkout. It verifies native/source/codec identities, actual private
+asset hashes, current device resource input and the complete management import
+closure against the requested full manager commit before dispatch. Inputs and
+fresh outputs stay outside repository source roots. It never fetches a model
+or regenerates an oracle.
+
+The CLI accepts the fixed native Text packet. Explicit fixture boundary cases
+use `norm-required-p4-cross-ffn-browser.mjs:runP4HoldingCase` with their own
+owner-provided inputs and references. The `works-p4-owner-case/0.1` document is
+a management sidecar, not a claimed native API schema. It carries inputCohort,
+norm.numericRequirement/validationSpec, actual priorPass source/hash/length
+with explicit receipt JSON-pointer fieldMap, comparisonModes and the selected
+private reference descriptors, gate source/fieldMap and the fixed owner
+parameterProof export. Each selected reference descriptor carries an explicit
+path, SHA-256, byteLength, arraysPointer and parameterIdentitiesPointer. The
+cohort uses inputCohortPointer or an explicit inputBindingMap from owner-case
+JSON pointers to actual owner-manifest fields; missing identities are not
+inferred from filenames. For the actual 994 manifest vocabulary, arraysPointer
+is `/arrays` and parameterIdentitiesPointer is `/parameterSources`. The explicit
+inputBindingMap covers side, saved artifact SHA-256, and Text data/mask hashes,
+shape, model, tokenizer and producer execution. Reference receipt
+source/hash/length and private manifest payload hash/length remain separate
+identities; the private manifest is not claimed as a public Git blob.
+
+`kind:'owner-binary-f32-manifest'` reads the owner's existing manifest and all
+25 sibling `<name>.f32` files without requiring a new export or JSON conversion.
+The manifest's exact hash/length must match the declared reference payload;
+each array entry must name its complete sibling file, `dtype:'float32'`, exact
+L-dependent shape, byte extent and SHA-256. Slices, byteOffset and symlink
+substitution are rejected. Files contain little-endian F32 values, retain their
+actual bits through the private harness transport, and must be finite. The
+fixed owner parameter checker consumes the manifest's parameter identities
+and verifies all 29 selections; management adds no parameter arithmetic.
+`kind:'management-json-f32-arrays'` remains an optional transport for an
+owner-provided JSON payload with the same 25 named extents and bindings.
+Only declared comparison modes are loaded. Transport support does not mean
+that private reference arrays were received or that an actual P4 PASS exists.
+The runner's emitted REPRODUCE.md and
+`development/ai-connection/p4-management/REPRODUCE.md` document the descriptors
+and cohort mapping. Missing prior/numerical context blocks before private
+reference, saved-input or model IO. Null example fields are pending evidence.
+Optional lifecycle fields select real progress/lifecycle
+cancellation and recovery after an actual release failure; no fault is claimed
+when none occurred. Recovery/rebind records whether a new owner run occurred.
+Missing actual Text P4 prior PASS, independent references, gate, private assets
+or explicit limits yields BLOCKED, nativeCalls0 and browserLaunchedfalse. A
+source acquisition ACK or Text encoder/capture receipt cannot replace them.
+Throughout this diagnostic boundary: generationReady:false and
+load/predict/sample=NOT_READY.
+
+### P3 added-boundary owner return
+
+The existing `tools/ai-connection/run-managed-lora-data-real.mjs` receiver at
+`8849891f19124df31847bd691503c2491278eaa8` closes the three added P3 boundaries
+through the owner return distributed at
+`a80db72feea60b9bd69e292e4716665c6f0ee77f`. The acquired source, receipt and
+output16 bindings passed 182 management verification checks; see
+`development/ai-connection/p4-management/p3-owner-return/ACCEPTANCE.json` and
+`VERIFICATION.json`. The accepted scope remains selected light/HIGH Q16 PARTIAL.
+The original dd95/28f/60d six-case evidence remains unchanged and separate from
+this 884 execution. Native LoRA DATA, Diffusion, codec and current native APIs
+are unchanged.
+
+The owner saved the actual initial-one output16 through the existing E4
+writer/reader and adopted2bd codec, then used fresh filesystem reads to verify
+its bytes and actual snapshot. Changing bytes returned by a fresh reader
+rejects with `ASSET_HASH_MISMATCH`; returning null for the snapshot sidecar
+rejects with `REQUIRED_ASSET_MISSING`. These are reader-boundary negative
+controls; physical copied negative directories are not claimed. The returned
+private package payload readbacks are owner/independent-auditor observations,
+while management's receipt acquisition and 186 checks are recorded separately.
+
+The same formal bridge rejects a changed expected payload with
+`NORM_REFERENCE_PAYLOAD_MISMATCH` before native prepare, with no corresponding
+queue invocation. The focused negative regression in
+`tools/ai-connection/test-lora-data-phase-bridge.mjs` is retained. Reproducing
+this already supplied owner evidence does not require another local neural
+execution. Serialized publication records do not recreate a live publication
+brand. Selected-weight N-ARTIFACT, new P4 LoRA mapping/feed integration, other
+pairs/sides, full-model sessions and generation remain outside this acceptance;
+currentLiveAdmission:false, generationReady:false and
+load/predict/sample=NOT_READY remain explicit.

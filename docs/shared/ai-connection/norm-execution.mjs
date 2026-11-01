@@ -6,6 +6,7 @@ const freeze=v=>{if(v&&typeof v==='object'){Object.values(v).forEach(freeze);Obj
 const same=(a,b)=>{try{return canonicalize(a)===canonicalize(b);}catch{return false;}};
 const fail=(code,message,decision)=>Object.assign(Error(message),{code,...(decision?{decision}:{} )});
 export const NORM_EXECUTION_POLICIES=freeze({
+ 'p4-cross-ffn':{policyId:'p4-cross-ffn',requiredNormIds:['N-IDENTITY','N-P4-SHAPE','N-P4-NUMERIC','N-EVIDENCE','N-TRANSACTION','N-ARTIFACT'],requiredProfileBindings:[{recordId:'SHAPE-BERNINI-BLOCK0-N2-CROSS-FFN-F32',side:'producer',representations:['block0-hidden']},{recordId:'EXEC-BERNINI-BLOCK0-N2-CROSS-FFN-F32-CANDIDATE-V1',side:'producer',representations:['block0-hidden']}]},
  'n2-self-attention-tail':{policyId:'n2-self-attention-tail',requiredNormIds:['N-IDENTITY','N-N2-TAIL-SHAPE','N-N2-TAIL-NUMERIC','N-EVIDENCE','N-TRANSACTION'],requiredProfileBindings:[
   {recordId:'SHAPE-BERNINI-BLOCK0-N2-SELF-ATTENTION-RESIDUAL-F32',side:'producer',representations:['self-attention-post-token-hidden']},
   {recordId:'EXEC-BERNINI-BLOCK0-N2-SELF-ATTENTION-RESIDUAL-F32',side:'producer',representations:['self-attention-post-token-hidden']}
