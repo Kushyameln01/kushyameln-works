@@ -14,7 +14,7 @@ self.onmessage=async({data:job})=>{
   const response=await fetch(new URL('./kernel/tensor.wasm',import.meta.url));if(!response.ok)throw Error('Hike runtime could not load');
   const bytes=await response.arrayBuffer();const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');if(hash!==HIKE_HASH)throw Error('Hike runtime hash mismatch');
   hike=await createHike(bytes);const files=job.files instanceof Map?job.files:new Map(job.files);
-  if(job.module==='vae')result=await runVae({operation:job.operation,tensor:job.input,manifest:job.manifest,files,ort,hike,onProgress:progress});
+  if(job.module==='vae')result=await runVae({operation:job.operation,tensor:job.input,manifest:job.manifest,files,ort,hike,onProgress:progress,diagnostics:job.diagnostics===true});
   else if(job.module==='text_encoder'){
    let tokenIds=job.input.tokenIds,attentionMask=job.input.attentionMask,tokenizerEvidence;
    if(job.input.text!==undefined){
@@ -25,9 +25,10 @@ self.onmessage=async({data:job})=>{
    }
    textModel=await loadTextEncoder({manifest:job.manifest,files,ort,hike,onProgress:progress});
    const output=await textModel.run({tokenIds,attentionMask,onProgress:progress});
-   result={tensor:{dtype:'float32',shape:output.shape,layout:'BLC',meaning:'text_hidden_states',data:output.hiddenStates,modelSha256:job.manifest.modelSha256,tokenizerSha256:output.provenance.tokenizerSha256,attentionMask:output.attentionMask},attentionMask:output.attentionMask,evidence:{...output.provenance,hikeStats:hike.stats(),inputMode:tokenizerEvidence?'plain-text':'token-ids',tokenizer:tokenizerEvidence?{sha256:tokenizerEvidence.tokenizerSha256,effectiveTokens:tokenizerEvidence.effectiveTokens,semantics:tokenizerEvidence.semantics}:null}};
+   result={tensor:{dtype:'float32',shape:output.shape,layout:'BLC',meaning:'text_hidden_states',data:output.hiddenStates,modelSha256:job.manifest.modelSha256,tokenizerSha256:output.provenance.tokenizerSha256,normalization:output.normalization,attentionMask:output.attentionMask},attentionMask:output.attentionMask,inputMode:tokenizerEvidence?'plain-text':'token-ids',evidence:{...output.provenance,hikeStats:hike.stats(),inputMode:tokenizerEvidence?'plain-text':'token-ids',tokenizer:tokenizerEvidence?{sha256:tokenizerEvidence.tokenizerSha256,effectiveTokens:tokenizerEvidence.effectiveTokens,semantics:tokenizerEvidence.semantics}:null}};
   }else throw Error('Unsupported inference module');
   if(result?.tensor)result.tensor.modelSha256=job.manifest.modelSha256??job.manifest.model?.sha256;
+  if(job.diagnostics!==true&&result)delete result.evidence;
  }catch(e){error=String(e.message??e);}
  finally{try{await textModel?.dispose();}catch(e){error=String(e.message??e);}hike?.dispose();}
  if(error)self.postMessage({...identity,type:'failure',error});

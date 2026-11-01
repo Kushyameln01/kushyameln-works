@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 let api;try{api=await import('../../docs/shared/inference/api.mjs');}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
 assert.equal(typeof api?.createInferenceAPI,'function','Versioned external inference API missing');
 const hub=api.createInferenceAPI();
@@ -14,7 +15,8 @@ response=receive();port2.postMessage({apiVersion:'bad',id:'wrong-version',module
 response=receive();port2.postMessage({apiVersion:'works-ai-1',id:'cancel',module:'vae',method:'cancel'});got=await response;assert.ok(got.ok);
 unbind();port2.close();hub.dispose();
 const snapshotHub=api.createInferenceAPI();
-const configured=snapshotHub.vae.configure({manifest:{kind:'wan21-vae-profile-v1',schemaVersion:1,profile:{id:'profile-snapshot',videoShape:[1,3,5,16,16]}},files:new Map()});
+const snapshotManifest=JSON.parse(fs.readFileSync(new URL('./vae/profile.json',import.meta.url)));snapshotManifest.profile.id='profile-snapshot';
+const configured=snapshotHub.vae.configure({manifest:snapshotManifest,files:new Map()});
 configured.profile.videoShape[0]=99;configured.profile.id='mutated';
 const snapshot=snapshotHub.vae.capabilities();
 assert.equal(snapshot.profile.id,'profile-snapshot','capabilities must not expose mutable internal profile state');

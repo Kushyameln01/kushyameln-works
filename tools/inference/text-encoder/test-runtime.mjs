@@ -37,7 +37,15 @@ test('24 staged sessions are released and only trailing mask0 rows are compacted
  assert.deepEqual(r.shape,[1,4,4096]);assert.equal(r.provenance.effectiveTokens,3);assert.equal(r.hiddenStates[0],2);assert.equal(r.hiddenStates[4096],0);assert.equal(r.hiddenStates[8192],2);assert.equal(r.hiddenStates[12288],0);
  assert.equal(created,24);assert.equal(released,24);assert.equal(maxLive,1);assert.equal(normCalls,1);assert.equal(disposedTensors,72);assert.equal(r.provenance.hikeContributed,true);
  assert.equal(r.provenance.tokenizerSha256,'e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458');
+ assert.equal(r.normalization,'umt5-final-rmsnorm-f32-v1');assert.equal(r.normalization,module.TEXT_ENCODER_NORMALIZATION);
  await e.dispose();await assert.rejects(e.run({tokenIds:[1],attentionMask:[1]}),/disposed/);
+});
+test('runtime manifests do not require historical native diagnostic receipts',async()=>{
+ const {manifest}=await fixture();for(const block of manifest.blocks)delete block.nativePass;
+ delete manifest.numericGate;delete manifest.nativeFinalMaxAbsError;
+ assert.equal(module.inspectTextEncoderManifest(manifest).numLayers,24);
+ manifest.blocks[0].index=1;assert.throws(()=>module.inspectTextEncoderManifest(manifest),/block manifest/i);
+ manifest.blocks[0].index=0;manifest.blocks[0].sha256='invalid';assert.throws(()=>module.inspectTextEncoderManifest(manifest),/block.*manifest/i);
 });
 test('abort immediately after session creation still releases that session',async()=>{
  const {manifest,files}=await fixture(),controller=new AbortController();let released=0,ran=0;

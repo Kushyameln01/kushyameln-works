@@ -1,0 +1,992 @@
+{
+  "passed": true,
+  "scope": "Default normal Text/VAE owner API, reused diagnostic profiles and references only",
+  "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f",
+  "newExports": 0,
+  "newOracleRuns": 0,
+  "preflightOnly": true,
+  "neuralExecutionOrder": [],
+  "httpRequests": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:36951/"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:36951/owner-normal/owner-normal-browser.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:36951/shared/inference/api.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:36951/shared/inference/client.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:36951/shared/inference/text-encoder-api.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:36951/shared/inference/vae-api.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:36951/shared/inference/tensor.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:36951/shared/inference/vae.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:36951/shared/inference/text-encoder.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:36951/shared/vr180/sha256.mjs"
+    }
+  ],
+  "blockedRequests": [],
+  "httpErrors": [],
+  "requestFailures": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "progress": [],
+  "serverErrors": [],
+  "reusedReferences": {
+    "plain-reference.f32": {
+      "path": "/workspace/work/inference/p2-p3-20261101/plain/oracle/plain-reference.f32",
+      "bytes": 8388608,
+      "sha256": "e59ad16a82799a42fe82eb76b3c7438a70c4766be7d7c7eb9b18222bfb1c83a9"
+    },
+    "png-unit.f32": {
+      "path": "/workspace/work/inference/e6-rect/references/png-unit.f32",
+      "bytes": 6144,
+      "sha256": "38a55378d909bad14f3c4f16e2db9a288ea60b14e3a2a253409fdee54c5fce34"
+    },
+    "png-mean.f32": {
+      "path": "/workspace/work/inference/e6-rect/references/png-mean.f32",
+      "bytes": 512,
+      "sha256": "708236f54db779900c00915d1738336210b420531efc873bb9f634c1fc819bcb"
+    },
+    "png-roundtrip.f32": {
+      "path": "/workspace/work/inference/e6-rect/references/png-roundtrip.f32",
+      "bytes": 6144,
+      "sha256": "44cf55e9ea5896f985a0ccf26f61cbb52650fd1a53d3fe80fc3e03aaae545c29"
+    }
+  },
+  "referenceExecutionSourceSha": "5537b8932343aa2476b95191817e8913f99dab02",
+  "manifests": {
+    "vae": {
+      "path": "/workspace/work/inference/e6-rect/accepted-bundle/manifest.json",
+      "sha256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a"
+    },
+    "text": {
+      "path": "/workspace/work/inference/text-implementation/bundle/manifest.json",
+      "sha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f"
+    }
+  },
+  "browserVersion": "154.0.8037.57",
+  "native": {
+    "passed": true,
+    "newNeuralRuns": 0,
+    "vaeConfigured": {
+      "apiVersion": "works-ai-1",
+      "module": "vae",
+      "operations": [
+        "encode",
+        "decode"
+      ],
+      "inputSpace": "raw",
+      "encode": {
+        "input": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            32
+          ],
+          "meanings": {
+            "raw-decoder-rgb": [
+              -1,
+              1
+            ],
+            "rgb-unit": [
+              0,
+              1
+            ]
+          }
+        },
+        "output": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "meaning": "raw-posterior-mean",
+          "posterior": "mean",
+          "normalization": {
+            "state": "raw",
+            "conversionApplied": false
+          },
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "graph": {
+          "file": "encode.onnx",
+          "bytes": 212362391,
+          "sha256": "0105bc12f13d3aceb35d1765681c427643bf04cc4ce5978c7339e04beff09e0d"
+        }
+      },
+      "decode": {
+        "input": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "meaning": "raw-posterior-mean",
+          "meanings": [
+            "raw-posterior-mean",
+            "wan21-raw-generated-sample:v1"
+          ],
+          "normalization": {
+            "state": "raw",
+            "conversionApplied": false
+          },
+          "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "generatedSampleContract": {
+          "schemaVersion": 1,
+          "representation": "generated-sample",
+          "space": "raw",
+          "normalization": {
+            "id": "wan21-comfy-f32-v1",
+            "state": "restored",
+            "owner": "diffusion_models"
+          },
+          "declaredOnly": true,
+          "realGenerationVerified": false
+        },
+        "output": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            32
+          ],
+          "meaning": "raw-decoder-rgb",
+          "clipped": false
+        },
+        "graph": {
+          "file": "decoder-body.onnx",
+          "bytes": 286313363,
+          "sha256": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+        }
+      },
+      "profile": {
+        "id": "wan21-raw-f32-1x16x32",
+        "videoShape": [
+          1,
+          3,
+          1,
+          16,
+          32
+        ],
+        "latentShape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "layout": "NCTHW",
+        "latentSpace": "raw",
+        "posterior": "mean",
+        "opset": 17
+      },
+      "model": {
+        "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "storedDtype": "bfloat16",
+        "executionDtype": "float32",
+        "precisionNote": "Stored BF16 values are unchanged; arithmetic uses FP32 and is not asserted equivalent to original BF16 execution."
+      },
+      "constraints": {
+        "exactConfiguredShapes": true,
+        "manifest": {
+          "batch": 1,
+          "frames": "F=4n+1",
+          "heightWidth": "multiples of 8"
+        },
+        "exporter": {
+          "batch": 1,
+          "frames": "F=4n+1",
+          "minimumHeightWidth": 16,
+          "heightWidthMultiple": 16
+        },
+        "adaptation": "none"
+      },
+      "runtime": {
+        "encode": {
+          "verified": false
+        },
+        "decode": {
+          "verified": false
+        },
+        "note": "Configured declarations are not proof of graph execution; bytes and actual shapes are checked on each run."
+      },
+      "arithmetic": "BF16 values expanded to FP32",
+      "configured": true,
+      "disposed": false
+    },
+    "vae": {
+      "apiVersion": "works-ai-1",
+      "module": "vae",
+      "operations": [
+        "encode",
+        "decode"
+      ],
+      "inputSpace": "raw",
+      "encode": {
+        "input": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            32
+          ],
+          "meanings": {
+            "raw-decoder-rgb": [
+              -1,
+              1
+            ],
+            "rgb-unit": [
+              0,
+              1
+            ]
+          }
+        },
+        "output": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "meaning": "raw-posterior-mean",
+          "posterior": "mean",
+          "normalization": {
+            "state": "raw",
+            "conversionApplied": false
+          },
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "graph": {
+          "file": "encode.onnx",
+          "bytes": 212362391,
+          "sha256": "0105bc12f13d3aceb35d1765681c427643bf04cc4ce5978c7339e04beff09e0d"
+        }
+      },
+      "decode": {
+        "input": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "meaning": "raw-posterior-mean",
+          "meanings": [
+            "raw-posterior-mean",
+            "wan21-raw-generated-sample:v1"
+          ],
+          "normalization": {
+            "state": "raw",
+            "conversionApplied": false
+          },
+          "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "generatedSampleContract": {
+          "schemaVersion": 1,
+          "representation": "generated-sample",
+          "space": "raw",
+          "normalization": {
+            "id": "wan21-comfy-f32-v1",
+            "state": "restored",
+            "owner": "diffusion_models"
+          },
+          "declaredOnly": true,
+          "realGenerationVerified": false
+        },
+        "output": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            32
+          ],
+          "meaning": "raw-decoder-rgb",
+          "clipped": false
+        },
+        "graph": {
+          "file": "decoder-body.onnx",
+          "bytes": 286313363,
+          "sha256": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+        }
+      },
+      "profile": {
+        "id": "wan21-raw-f32-1x16x32",
+        "videoShape": [
+          1,
+          3,
+          1,
+          16,
+          32
+        ],
+        "latentShape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "layout": "NCTHW",
+        "latentSpace": "raw",
+        "posterior": "mean",
+        "opset": 17
+      },
+      "model": {
+        "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "storedDtype": "bfloat16",
+        "executionDtype": "float32",
+        "precisionNote": "Stored BF16 values are unchanged; arithmetic uses FP32 and is not asserted equivalent to original BF16 execution."
+      },
+      "constraints": {
+        "exactConfiguredShapes": true,
+        "manifest": {
+          "batch": 1,
+          "frames": "F=4n+1",
+          "heightWidth": "multiples of 8"
+        },
+        "exporter": {
+          "batch": 1,
+          "frames": "F=4n+1",
+          "minimumHeightWidth": 16,
+          "heightWidthMultiple": 16
+        },
+        "adaptation": "none"
+      },
+      "runtime": {
+        "encode": {
+          "verified": false
+        },
+        "decode": {
+          "verified": false
+        },
+        "note": "Configured declarations are not proof of graph execution; bytes and actual shapes are checked on each run."
+      },
+      "arithmetic": "BF16 values expanded to FP32",
+      "configured": true,
+      "disposed": false,
+      "support": {
+        "supported": true,
+        "code": "SUPPORTED",
+        "reason": "Descriptor matches the configured exact shape and native semantics",
+        "requiredChanges": [],
+        "scope": "configured-contract; runtime verification is separate"
+      }
+    },
+    "unsupported81": {
+      "apiVersion": "works-ai-1",
+      "module": "vae",
+      "operations": [
+        "encode",
+        "decode"
+      ],
+      "inputSpace": "raw",
+      "encode": {
+        "input": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            32
+          ],
+          "meanings": {
+            "raw-decoder-rgb": [
+              -1,
+              1
+            ],
+            "rgb-unit": [
+              0,
+              1
+            ]
+          }
+        },
+        "output": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "meaning": "raw-posterior-mean",
+          "posterior": "mean",
+          "normalization": {
+            "state": "raw",
+            "conversionApplied": false
+          },
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "graph": {
+          "file": "encode.onnx",
+          "bytes": 212362391,
+          "sha256": "0105bc12f13d3aceb35d1765681c427643bf04cc4ce5978c7339e04beff09e0d"
+        }
+      },
+      "decode": {
+        "input": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "meaning": "raw-posterior-mean",
+          "meanings": [
+            "raw-posterior-mean",
+            "wan21-raw-generated-sample:v1"
+          ],
+          "normalization": {
+            "state": "raw",
+            "conversionApplied": false
+          },
+          "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "generatedSampleContract": {
+          "schemaVersion": 1,
+          "representation": "generated-sample",
+          "space": "raw",
+          "normalization": {
+            "id": "wan21-comfy-f32-v1",
+            "state": "restored",
+            "owner": "diffusion_models"
+          },
+          "declaredOnly": true,
+          "realGenerationVerified": false
+        },
+        "output": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            32
+          ],
+          "meaning": "raw-decoder-rgb",
+          "clipped": false
+        },
+        "graph": {
+          "file": "decoder-body.onnx",
+          "bytes": 286313363,
+          "sha256": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+        }
+      },
+      "profile": {
+        "id": "wan21-raw-f32-1x16x32",
+        "videoShape": [
+          1,
+          3,
+          1,
+          16,
+          32
+        ],
+        "latentShape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "layout": "NCTHW",
+        "latentSpace": "raw",
+        "posterior": "mean",
+        "opset": 17
+      },
+      "model": {
+        "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "storedDtype": "bfloat16",
+        "executionDtype": "float32",
+        "precisionNote": "Stored BF16 values are unchanged; arithmetic uses FP32 and is not asserted equivalent to original BF16 execution."
+      },
+      "constraints": {
+        "exactConfiguredShapes": true,
+        "manifest": {
+          "batch": 1,
+          "frames": "F=4n+1",
+          "heightWidth": "multiples of 8"
+        },
+        "exporter": {
+          "batch": 1,
+          "frames": "F=4n+1",
+          "minimumHeightWidth": 16,
+          "heightWidthMultiple": 16
+        },
+        "adaptation": "none"
+      },
+      "runtime": {
+        "encode": {
+          "verified": false
+        },
+        "decode": {
+          "verified": false
+        },
+        "note": "Configured declarations are not proof of graph execution; bytes and actual shapes are checked on each run."
+      },
+      "arithmetic": "BF16 values expanded to FP32",
+      "configured": true,
+      "disposed": false,
+      "support": {
+        "supported": false,
+        "code": "DESCRIPTOR_UNSUPPORTED",
+        "reason": "Tensor dtype/layout/shape does not match configured graph profile: expected float32 NCTHW [1,3,1,16,32]",
+        "requiredChanges": [
+          "For a different shape export/configure its matching profile and graph; for metadata use the declared dtype/layout/meaning/decoder binding. No automatic resize, padding, frame reduction or normalization conversion."
+        ],
+        "scope": "configured-contract; runtime verification is separate"
+      }
+    },
+    "textConfigured": {
+      "apiVersion": "works-ai-1",
+      "module": "text_encoder",
+      "operations": [
+        "encode"
+      ],
+      "inputs": [
+        "plain-text",
+        "tokenIds+attentionMask"
+      ],
+      "inputModes": {
+        "plain-text": {
+          "outputShape": [
+            1,
+            512,
+            4096
+          ],
+          "overflow": "reject"
+        },
+        "token-ids": {
+          "outputShape": [
+            1,
+            "L",
+            4096
+          ],
+          "minimumLength": 1,
+          "maximumLength": 512
+        }
+      },
+      "output": {
+        "dtype": "float32",
+        "layout": "BLC",
+        "meaning": "text_hidden_states",
+        "shape": [
+          1,
+          "L",
+          4096
+        ],
+        "attentionMask": true,
+        "normalization": "umt5-final-rmsnorm-f32-v1",
+        "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458"
+      },
+      "finalNormalization": {
+        "operation": "encoder.final_layer_norm",
+        "algorithm": "weighted RMSNorm",
+        "epsilon": 1e-06,
+        "maskedRows": "zero",
+        "implementation": "Hike",
+        "weightSha256": "31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02"
+      },
+      "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+      "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+      "maximumTokens": 512,
+      "arithmetic": "FP32 prepared expansion",
+      "configured": true,
+      "disposed": false
+    },
+    "text": {
+      "apiVersion": "works-ai-1",
+      "module": "text_encoder",
+      "operations": [
+        "encode"
+      ],
+      "inputs": [
+        "plain-text",
+        "tokenIds+attentionMask"
+      ],
+      "inputModes": {
+        "plain-text": {
+          "outputShape": [
+            1,
+            512,
+            4096
+          ],
+          "overflow": "reject"
+        },
+        "token-ids": {
+          "outputShape": [
+            1,
+            "L",
+            4096
+          ],
+          "minimumLength": 1,
+          "maximumLength": 512
+        }
+      },
+      "output": {
+        "dtype": "float32",
+        "layout": "BLC",
+        "meaning": "text_hidden_states",
+        "shape": [
+          1,
+          "L",
+          4096
+        ],
+        "attentionMask": true,
+        "normalization": "umt5-final-rmsnorm-f32-v1",
+        "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458"
+      },
+      "finalNormalization": {
+        "operation": "encoder.final_layer_norm",
+        "algorithm": "weighted RMSNorm",
+        "epsilon": 1e-06,
+        "maskedRows": "zero",
+        "implementation": "Hike",
+        "weightSha256": "31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02"
+      },
+      "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+      "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+      "maximumTokens": 512,
+      "arithmetic": "FP32 prepared expansion",
+      "configured": true,
+      "disposed": false,
+      "support": {
+        "supported": true,
+        "code": "SUPPORTED",
+        "reason": "Native input syntax and local file sizes match; plain token count is checked by the tokenizer during encode",
+        "requiredChanges": [],
+        "pendingChecks": [
+          "asset bytes SHA-256",
+          "plain token overflow if applicable"
+        ],
+        "scope": "configured contract, not completed inference"
+      }
+    },
+    "selectedFiles": {
+      "vae": 5,
+      "text": 29,
+      "textSourceBytes": 6735906897
+    },
+    "workersCreated": 0,
+    "disposedState": {
+      "status": "disposed",
+      "inputRevision": 0
+    }
+  },
+  "newNeuralRuns": 0,
+  "localServerClosed": true,
+  "processOwnership": {
+    "harnessPid": 18606,
+    "harnessCtime": 1793569426.2,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 18621,
+        "ctime": 1793569426.59,
+        "ppid": 18606,
+        "name": "MainThread",
+        "status": "running",
+        "firstPpid": 18606
+      },
+      {
+        "pid": 18633,
+        "ctime": 1793569427.21,
+        "ppid": 18621,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 18621
+      },
+      {
+        "pid": 18648,
+        "ctime": 1793569427.45,
+        "ppid": 18606,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 18606
+      },
+      {
+        "pid": 18650,
+        "ctime": 1793569427.45,
+        "ppid": 18606,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 18633
+      },
+      {
+        "pid": 18651,
+        "ctime": 1793569427.45,
+        "ppid": 18606,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 18633
+      },
+      {
+        "pid": 18679,
+        "ctime": 1793569427.56,
+        "ppid": 18633,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 18633
+      },
+      {
+        "pid": 18670,
+        "ctime": 1793569427.54,
+        "ppid": 18650,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 18650
+      },
+      {
+        "pid": 18695,
+        "ctime": 1793569427.65,
+        "ppid": 18651,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 18651
+      },
+      {
+        "pid": 18715,
+        "ctime": 1793569427.81,
+        "ppid": 18651,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 18651
+      },
+      {
+        "pid": 18724,
+        "ctime": 1793569427.86,
+        "ppid": 18651,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 18651
+      },
+      {
+        "pid": 18725,
+        "ctime": 1793569427.87,
+        "ppid": 18651,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 18651
+      },
+      {
+        "pid": 18758,
+        "ctime": 1793569428.13,
+        "ppid": 18606,
+        "name": "git",
+        "status": "running",
+        "firstPpid": 18606
+      },
+      {
+        "pid": 18759,
+        "ctime": 1793569428.13,
+        "ppid": 18606,
+        "name": "git",
+        "status": "zombie",
+        "firstPpid": 18606
+      }
+    ],
+    "reapedChildren": [
+      {
+        "pid": 18648,
+        "ctime": 1793569427.45,
+        "ppid": 18606,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 18606,
+        "waitStatus": 256
+      },
+      {
+        "pid": 18650,
+        "ctime": 1793569427.45,
+        "ppid": 18606,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 18633,
+        "waitStatus": 0
+      },
+      {
+        "pid": 18651,
+        "ctime": 1793569427.45,
+        "ppid": 18606,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 18633,
+        "waitStatus": 0
+      }
+    ],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "resources": {
+    "intervalSeconds": 0.1,
+    "phases": {
+      "browser-ready": {
+        "samples": 10,
+        "sampledPeakSumRssBytes": 561991680,
+        "sampledPeakSumPssBytes": 288945152
+      },
+      "preflight-configure-capabilities": {
+        "samples": 1,
+        "sampledPeakSumRssBytes": 568369152,
+        "sampledPeakSumPssBytes": 292663296
+      }
+    },
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "wallSeconds": 2.670508224000514,
+    "scope": "100ms sampled RSS/PSS of the owned browser tree; RSS sums may count shared pages more than once; not an exact device peak"
+  },
+  "servedSources": [
+    {
+      "path": "tools/inference/accept-owner-normal.py",
+      "bytes": 21713,
+      "sha256": "211ffd6da95ee8509fe75f18e8c8a7298effc8f33dc0810219bdb42bf7afe4f3",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "tools/inference/owner-normal-browser.mjs",
+      "bytes": 13103,
+      "sha256": "652f82cb92c8dd15e8ddd611a8300909ab0115eb7f6eca28a54ea5da2a756e02",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "tools/inference/owner-normal-worker.mjs",
+      "bytes": 2870,
+      "sha256": "250c0cfa70acd5694c3398129ebcd539d00b4fa1210fe28aa129421e9e0bd6e1",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "tools/inference/vae/process_lifecycle.py",
+      "bytes": 6299,
+      "sha256": "a927fe8f38382563ec8d512745446f32bc7740bff3c1b86b650f4490f178299c",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "tools/inference/vae/accept_still.py",
+      "bytes": 23812,
+      "sha256": "91f5e010809d54716be620a01a6af2a364d77ebd3b7834cb7c06571b681fb9f6",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "tools/inference/text-encoder/plain_checks.py",
+      "bytes": 2325,
+      "sha256": "ce952a19adf4d0fd74c8565de83fb121f288a7accf2d9d7daf4eaeecf8568446",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "docs/shared/inference/api.mjs",
+      "bytes": 2293,
+      "sha256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "docs/shared/inference/vae-api.mjs",
+      "bytes": 5151,
+      "sha256": "8de43d144b7a08fe9d0449b8a252ef7133e742a8b70071000a3895a78d6e8a2a",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "docs/shared/inference/client.mjs",
+      "bytes": 2423,
+      "sha256": "806278b5eb09242cec8726d22b13be6237323862d0c42f0c3948d0a63cc9501f",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "docs/shared/inference/tensor.mjs",
+      "bytes": 9104,
+      "sha256": "e200fef69be3909a13bc91a59743681df1072817eadc7c1865717afe0c3c9f8e",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "docs/shared/inference/text-encoder-api.mjs",
+      "bytes": 4952,
+      "sha256": "b33a81b0b92da5668d6eb9a392ce18148c06133cfce431b56e9b8c0fa72152d1",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "docs/shared/inference/text-encoder.mjs",
+      "bytes": 9309,
+      "sha256": "44e9b144d6c1f3e2d60cb33e2d537f8f523fec0c7c10e30830427b417957252d",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "docs/shared/inference/vae.mjs",
+      "bytes": 12619,
+      "sha256": "24808b4594b77e481b878e2109fd3d65555aeace1eccb9298df9f5df0d92c047",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    },
+    {
+      "path": "docs/shared/vr180/sha256.mjs",
+      "bytes": 6970,
+      "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+      "executionSourceSha": "94e1d5f2a28880a514bdec53059342a03e04a83f"
+    }
+  ],
+  "wallSeconds": 2.6712260839994997
+}

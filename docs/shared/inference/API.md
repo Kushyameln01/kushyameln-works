@@ -2,9 +2,9 @@
 
 API版: `works-ai-1`。Text EncoderとVAEは独立モジュール。包括処理と一括UI、別CodexのDiffusionモジュールはこの実装に含めない。
 
-文書revision: `TEXT-MEMORY-1`（2026-11-02 JST）。`works-ai-1`と既存G1C契約を維持する。管理884のP2受入と固定plain独立全値比較を保持し、Text graphの検証時コピーとsession重み保持を調整した。入出力schema・shape・Tokenizer・graph/重み・Hike最終正規化・元比較gateは変更しない。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sample受入口とmetadata保存は、実生成sampleの推論・復元・decodeを受入済みとするものではない。
+文書revision: `OWNER-CAPABILITIES-1`（2026-11-02 JST）。`works-ai-1`とG1Cを維持する。通常入口に構成済み実装のdescriptor照会を追加し、詳細evidenceを診断側へ分ける。数値演算・モデル・固定shape・既存P2の意味は変えず、Text実最終正規化のmarkerを追加する。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sampleのmetadata検査は、実生成・復元・decodeの受入を意味しない。
 
-受入済みの実行条件は、UMT5の24層FP32診断経路と、Wan2.1 VAEの固定プロファイル `wan21-raw-f32-5x16x16`。VAEはRGB `[1,3,5,16,16]` とraw latent `[1,16,2,2,2]` の相互変換を検証した。大きな動画shapeをそのまま受け入れるものではない。別shapeは `tools/inference/vae/export_profile.py` で別bundleを作成し、その参照tensorとブラウザ結果を照合してから利用する。
+既存の診断受入はUMT5の24層FP32経路と、Wan2.1 VAEの5×16×16・F1正方形16×16・F1 Rect16×32の各固定graphである。今回の新規通常実行はRectと固定plain一件で、既存参照を再利用した。現在の能力は構成したmanifest/graphに限定し、大きな動画や別shapeへ合格を広げない。別shapeには対応bundleを用意して、その参照・gate・実WASMを診断側で個別に受け入れる。
 
 ## 呼出し口
 
@@ -33,7 +33,28 @@ api.dispose();
 
 `files` は `Map(relativeFileName -> File/Blob または Uint8Array)`。File/Blobなら必要部分だけを読む。URLをモデルファイルの代わりに渡すAPIではなく、入力素材を外部サービスへ送信しない。元UMT5はそのbasenameでMapに含める。prepared bundleのmanifestとgraph/hashは読み取り時に照合する。
 
-`configure({manifest,files})` はparsed manifestとこのMapを受け、同期的にcapabilitiesを返す。JSONテキストやモデルURLを直接渡さない。設定変更では同じmoduleの実行を取り消す。`capabilities().configured` は設定を保持したことを表し、全assetの読込み・推論成功を保証しない。
+`configure({manifest,files,diagnostics=false})` はparsed manifestとこのMapを受け、同期的にcapabilitiesを返す。manifest構造とモデル契約を検査するが、診断参照・誤差gate・過去receiptは要求しない。JSONテキストやモデルURLを直接渡さない。設定変更では同じmoduleの実行を取り消す。`capabilities().configured` は設定保持であり、全assetの読込み・推論成功ではない。`diagnostics:true`の場合だけ詳細`result.evidence`を返す。既存診断UI/harnessはこの設定を明示する。低層`runVae`も同じoptionを持つ。
+
+## 通常のowner能力照会
+
+既存`capabilities()`は、構成済みの一組のmanifest/graphを返す。VAEの`encode.input/output`と`decode.input/output`に完全5次元shape、dtype/layout/意味/正規化条件を返し、`graph`に操作別file/bytes/SHA、modelにdecoder識別を返す。未構成のshapeはnull。Profile名一覧から実行能力を推測しない。
+
+```js
+const caps = api.vae.capabilities({operation:'decode', input:{
+  dtype:'float32', layout:'NCTHW', shape:[1,16,1,2,4],
+  meaning:'raw-posterior-mean', modelSha256:vaeModelSha256
+}});
+// caps.support = {supported,code,reason,requiredChanges,scope}
+// caps.runtime.encode/decode = {verified:false} or actual successful binding
+```
+
+照会はdata・参照・gateなしで行い、Worker/NNを起動しない。通常descriptorの検証を実dispatchと共有し、操作別local assetの存在/容量も調べる。`supported=true`は構成契約との適合で、実行成功ではない。SHAは実行時に全bytes検査し、実ORT sessionのinput/output metadataにある具体次元と、実出力の全次元を検査する。symbolic outputは任意shape対応を意味しない。成功した操作だけ`runtime[operation]`へ`verified:true`、実input/output shape・assetHashes・graphMetadataCheckedを記録する。再configure/disposeで消去し、過去の成功を変更可能なFile/Uint8Arrayの将来保証へ転用しない。
+
+非対応codeは`NOT_CONFIGURED`、`MODULE_DISPOSED`、`OPERATION_UNSUPPORTED`、`DESCRIPTOR_UNSUPPORTED`、`MISSING_ASSET`、`ASSET_SIZE_MISMATCH`。`reason`は期待shape/不整合内容、`requiredChanges`は対応profile/graphのexport・configureやmetadata修正を示す。無断の縮小/padding/frame削減/reshape/正規化は行わない。数式F=4n+1が成立しても構成graphの完全shapeと異なれば非対応。manifestの空間8アラインと現exporterのH/W≥16かつ16倍数は`constraints`で区別する。
+
+Textの`inputModes`はplain `[1,512,4096]`とID `[1,L,4096]`（1≤L≤512）を区別する。Text照会のinputは既存`{text}`またはID/maskで、構文とlocal filesを確認する。plainの実token数/overflowはencode時に実tokenizerで検査する。通常返却tensorのLとmaskが正本。固定prompt hash・参照・gate・`blocks[].nativePass`は接続条件にしない。
+
+管理の既存`capabilities(q.input)` adapterを使い、別RPC methodは追加しない。管理の`tensor.axes.join('')`→`layout`、`nativeMeaning`→`meaning`と既存native metadataを照会に渡す。snapshot/owner/graph-build/traceは外側packageへ置き、strict native context/latentContractへ混ぜない。workflow形状計算と管理packageは管理側、VAE数値処理と固有shape検査は当ownerに残す。
 
 | 設定 | manifestと必要files |
 | --- | --- |
@@ -59,21 +80,23 @@ Textの各graphは、従来どおり全体を読み、元manifestの全bytes SHA
 | VAE | `decode(tensor)` | float32、NCTHW、meaning `raw-posterior-mean`、profileと一致するshape/model | float32、NCTHW、meaning `raw-decoder-rgb`。clamp・色変換なし |
 | VAE | `decode(tensor)` | float32、NCTHW、`wan21-raw-generated-sample:v1`、一致するprofileと下記latentContract | 同上。追加のlatent正規化・復元を行わない。契約fixtureだけを今回受入、実生成経路は未検証 |
 
-tensorの共通表現は `{dtype,shape,layout,meaning,data:TypedArray,modelSha256?,attentionMask?,tokenizerSha256?,context?,latentContract?}`。保存形式 `.wktensor` はバイナリpayloadとschema/shape/意味/model hash/mask/SHA-256を持ち、今回の任意metadataも検査して保存する。巨大なembeddingをJSON数値配列へ展開しない。`decodeTensor` はArrayBufferまたはUint8Array（NodeのBufferを含む）を受け、payloadを所有する新しい配列を返す。
+tensorの共通表現は `{dtype,shape,layout,meaning,data:TypedArray,modelSha256?,attentionMask?,tokenizerSha256?,normalization?,context?,latentContract?}`。保存形式 `.wktensor` はバイナリpayloadとschema/shape/意味/model hash/mask/SHA-256を持ち、今回の任意metadataも検査して保存する。巨大なembeddingをJSON数値配列へ展開しない。`decodeTensor` はArrayBufferまたはUint8Array（NodeのBufferを含む）を受け、payloadを所有する新しい配列を返す。
 
 Text embeddingはVAE latentではない。DiffusionからVAEへ接続するとき、latentの意味・shape・モデル・正規化空間を照合する。normalized latentの名前だけを変えて渡さない。モデル固有の正規化・復元はDiffusion側Hikeが担当し、管理側やVAE側へ重複実装しない。
 
 旧 `raw-posterior-mean` の `modelSha256` はWan2.1 VAEのhashと照合し、不一致を拒否する。旧mean経路はhashの省略も維持するが、未記載ならモデル互換性が確認できたとは扱わない。生成sampleの `modelSha256` は後述する生成側producer列と照合し、decoder VAEは別フィールドで結び付ける。
 
+VAE通常結果は`{tensor,inputDescriptor,binding}`。`inputDescriptor`はdataを含まない所有された入力metadataで、入力sampleのproducer/decoder/復元契約とcontextをdecode後も保持する。`binding`は成功した操作の実shape・asset hashes・graph検査状態で、参照や誤差receiptではない。管理はRGBの`.wktensor`と外側のinputDescriptorを共に保存する。RGB単体から入力sampleの来歴を復元できるとは扱わない。`describeTensor(tensor)`を公開APIから利用できる。
+
 ## Text Encoderの出力契約
 
-出力は `{tensor,attentionMask,evidence}`。`tensor.attentionMask` はUint8Array `[L]` で、同じmaskをtop-levelにも返す。無効行のhidden statesは0、内部mask位置は保持する。末尾のmask0だけを計算時に省略しても、返却shapeと0行を元のLに戻す。
+通常出力は `{tensor,attentionMask,inputMode}`。`tensor.attentionMask`はUint8Array `[L]`で、同じmaskをtop-levelにも返す。`tensor.normalization='umt5-final-rmsnorm-f32-v1'`は、実Hikeのweighted encoder.final_layer_norm、epsilon1e-6適用済みを表す。weight SHAは構成済みcapabilitiesのfinalNormalizationへ返す。無効行は0、内部maskを保持し、末尾mask0の計算省略後も返却Lを復元する。詳細evidenceは診断opt-in時だけ追加する。
 
 | 識別 | 固定値 |
 | --- | --- |
 | `tensor.modelSha256` | `c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68`（元UMT5） |
 | `tensor.tokenizerSha256` | `e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458`（元埋込SentencePiece） |
-| `evidence.inputMode` | `plain-text` または `token-ids`（Worker API経路） |
+| `inputMode` | `plain-text` または `token-ids`（Worker API経路。診断時はevidenceにも保持） |
 
 通常テキストはBOSなし・EOS1を追加・PAD0で512まで埋める。lowercase/cleanText、暗黙のtask prefixは適用しない。直接ID経路はIDの範囲・maskを検査するが、呼出し元が本当に同じTokenizerでIDを作ったことを数列から証明できない。Tokenizer hashはモデルに対応する期待識別であり、任意のID列の出所認証ではない。textとID/maskを同時指定する曖昧な入力は拒否する。512はAPIの上限であり、全512位置が有効な入力の性能・全promptでの数値受入まで検証したという意味ではない。
 
@@ -123,7 +146,7 @@ const sample = {
 
 producerModelSha256sは非空・重複なしの小文字64桁SHA配列。HIGH/LOW両モデルが使われたなら両者を保持し、順序やLoRA設定は別の実行traceに保存する。任意の `modelSha256` がある場合はproducer列の一員とし、decoder VAE hashはproducerへ入れない。`vaeModelSha256` は対象decoderとのbindingとして照合する。hash未取得を仮のhashで埋めて実互換性を認定しない。
 
-latentは有限float32であり、RGBのような単一の `[-1,1]` / `[0,1]` 範囲を課さない。raw値のclampや推測したscalar scale/shiftは行わない。channel別mean/std、FP32順序、`wan21-comfy-f32-v1` による復元はDiffusionが所有する。VAEは復元済みraw値へ実conv2とdecoder bodyを適用し、正規化・復元は追加せず `evidence.normalizationApplied=false` を返す。RGB出力のmodelSha256は実際に出力したVAEの識別であり、入力producer hashの付替えではない。入力hashとlatentContractはevidenceへ残す。
+latentは有限float32であり、RGBのような単一の `[-1,1]` / `[0,1]` 範囲を課さない。raw値のclampや推測したscalar scale/shiftは行わない。channel別mean/std、FP32順序、`wan21-comfy-f32-v1` による復元はDiffusionが所有する。VAEは復元済みraw値へ実conv2とdecoder bodyを適用し、正規化・復元は追加しない。診断時は`evidence.normalizationApplied=false`も返す。RGB出力のmodelSha256は実際のVAE識別であり、入力producer hashの付替えではない。入力model hashとlatentContractは通常inputDescriptorに保持し、診断時はevidenceにも残す。
 
 `restored` はproducerによる宣言で、metadataだけから変換の実行・二重適用の不存在・モデル互換性を証明できない。元normalized tensor、復元操作/build、前後payload hashを対向側で対応付けて数値比較する。未復元・normalized meaning・違うdecoder bindingは拒否する。現在の `predict/sample=NOT_READY` とmean専用の復元を、fixtureが通っただけで解除しない。
 
@@ -186,7 +209,7 @@ Text/VAEには内蔵待機列がない。同時実行はPromiseの `Inference cl
 
 magic/schemaVersionは変更しない。旧markerなしファイルは読取り可能で、省略されたmarkerを補わず再保存する。markerなしの旧mean/conditioning等の直列化bytesは維持する。旧G1C reader `2c171a09ccda65c54899f322ae490f1bfcaac6fb` は新しい任意headerも読めるが、同じ旧writerで再保存するとmarkerを失うため、保存用途では新しいcodec source/hashを明示選択する。管理E4の旧pinを同名で差し替えず、新candidate sourceRefと実module SHAを登録する。
 
-新codecの固定sourceは`2bdca59ea78580d4fe7a9d31a8de33209b64d029`、module SHA-256は`d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5`。[管理E4・既存Rect/Text入力の限定検証手順](../../../development/inference/codec-marker-handoff/REPRODUCE.md)と[manifest・Mapキー・gate](../../../development/inference/codec-marker-handoff/INPUTS.md)を参照する。別管理環境の受取ACKは同hostのconfigure結果と区別する。
+過去のlatent marker修正sourceは`2bdca59ea78580d4fe7a9d31a8de33209b64d029`、module SHA-256は`d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5`。今回のText marker対応sourceと同一ではない。Textの`normalization:'umt5-final-rmsnorm-f32-v1'`も任意headerとして保持し、float32/BLC/text_hidden_states以外や未知markerは拒否する。markerなし旧Textはそのまま有効で、markerを推測して補わず旧bytesを保つ。旧writerによるmarker消失は自動補完しない。[旧管理E4手順](../../../development/inference/codec-marker-handoff/REPRODUCE.md)と[今回の通常API検証](../../../development/inference/owner-capabilities-20261102/RESULT.md)を分けて参照する。別管理環境の取得ACKと送付側検証は別である。
 
 旧フィールドだけのgolden fixtureについてバイト一致を確認する。今回の接続fixtureはText `[1,2,4096]` とmask、raw mean/生成sample `[1,16,2,2,2]`、contextとmodel/Tokenizer hash、保存読戻し、変更中metadataのsnapshot、MessagePort転送後の所有権を対象とする。反復 `a/b/c` hashなどのfixture値は合成識別で、実model互換性ではない。SDK dispatchのdoubleやText lifecycleのORT doubleを実モデル推論の成功として数えない。
 

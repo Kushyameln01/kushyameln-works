@@ -28,7 +28,7 @@ globalThis.runPlain=async spec=>{
    if(state.progress){const event={phase,inputRevision:state.inputRevision,...state.progress};result.events.push(event);console.log('plain-progress:'+JSON.stringify(event));}
    if(phase==='cancel'&&!cancelTriggered&&state.progress?.stage==='text-block'&&state.progress.completed===1){cancelTriggered=true;result.cancelTarget={inputRevision:state.inputRevision,progress:state.progress};result.nativeCancelAccepted=api.textEncoder.cancel();}
   }});
-  api.textEncoder.configure({manifest,files});
+  api.textEncoder.configure({manifest,files,diagnostics:true});
   memoryPhase='full';pageMemory.mark('full-start');const started=performance.now(),output=await api.textEncoder.encode({text:spec.input.text});
   result.fullWallSeconds=(performance.now()-started)/1000;
   pageMemory.mark('full-end');memoryPhase='between';

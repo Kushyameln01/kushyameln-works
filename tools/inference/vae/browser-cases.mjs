@@ -10,7 +10,7 @@ export async function checkVaeProfile({manifest,files,ort,hike,references}){
  for(const operation of ['encode','decode']){
   const ref=references[operation];const shape=manifest.profile[operation==='encode'?'videoShape':'latentShape'];
   const original=new Float32Array(ref.input);
-  const result=await runVae({operation,manifest,files,ort,hike,tensor:{dtype:'float32',layout:'NCTHW',shape,data:ref.input,meaning:operation==='encode'?'raw-decoder-rgb':'raw-posterior-mean',modelSha256:manifest.model.sha256}});
+  const result=await runVae({operation,manifest,files,ort,hike,diagnostics:true,tensor:{dtype:'float32',layout:'NCTHW',shape,data:ref.input,meaning:operation==='encode'?'raw-decoder-rgb':'raw-posterior-mean',modelSha256:manifest.model.sha256}});
   if(result.tensor.modelSha256!==manifest.model.sha256)throw Error('VAE output model provenance missing');
   const numeric=compare(result.tensor.data,ref.output,gate);
   const inputPreserved=original.every((v,i)=>Object.is(v,ref.input[i]));
@@ -19,7 +19,7 @@ export async function checkVaeProfile({manifest,files,ort,hike,references}){
  }
  if(references.encodeUnit){
   const ref=references.encodeUnit,input={dtype:'float32',layout:'NCTHW',shape:manifest.profile.videoShape,data:ref.input,meaning:'rgb-unit'};
-  const snapshot=new Float32Array(ref.input);const result=await runVae({operation:'encode',tensor:input,manifest,files,ort,hike});
+  const snapshot=new Float32Array(ref.input);const result=await runVae({operation:'encode',tensor:input,manifest,files,ort,hike,diagnostics:true});
   const numeric=compare(result.tensor.data,ref.output,gate);const inputPreserved=snapshot.every((value,index)=>Object.is(value,ref.input[index]));
   if(!numeric.passed||!inputPreserved||!result.evidence.hikeContributed||result.evidence.hikeCalls!==1)throw Error('Unit-RGB Hike encode reference/contribution mismatch');
   let missingUnitHike=false;try{await runVae({operation:'encode',tensor:input,manifest,files,ort,hike:null});}catch(error){missingUnitHike=/Hike/.test(String(error));}

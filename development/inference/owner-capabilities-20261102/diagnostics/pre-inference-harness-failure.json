@@ -1,0 +1,160 @@
+{
+  "executionSourceSha": "2013244a993b24e388771615edea966e81275c95",
+  "failure": {
+    "name": "AttributeError",
+    "message": "'builtin_function_or_method' object has no attribute '_pw_impl_instance_'",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/accept-owner-normal.py\", line 226, in main\n    page.on('download', downloads.append)\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/sync_api/_generated.py\", line 8424, in on\n    return super().on(event=event, f=f)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 126, in on\n    self._impl_obj.on(event, self._wrap_handler(f))\n                             ^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 121, in _wrap_handler\n    return mapping.wrap_handler(handler)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_impl_to_api_mapping.py\", line 157, in wrap_handler\n    setattr(handler, IMPL_ATTR, wrapper)\nAttributeError: 'builtin_function_or_method' object has no attribute '_pw_impl_instance_'\n"
+  },
+  "newNeuralRuns": 0,
+  "reason": "Playwright wraps event callbacks by adding an attribute; list.append is a builtin bound method that rejects that attribute. Use a Python function callback.",
+  "processOwnership": {
+    "harnessPid": 17919,
+    "harnessCtime": 1793568903.91,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 17934,
+        "ctime": 1793568904.22,
+        "ppid": 17919,
+        "name": "MainThread",
+        "status": "sleeping",
+        "firstPpid": 17919
+      },
+      {
+        "pid": 17946,
+        "ctime": 1793568904.72,
+        "ppid": 17934,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 17934
+      },
+      {
+        "pid": 17961,
+        "ctime": 1793568904.96,
+        "ppid": 17919,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 17919
+      },
+      {
+        "pid": 17963,
+        "ctime": 1793568904.97,
+        "ppid": 17919,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 17946
+      },
+      {
+        "pid": 17964,
+        "ctime": 1793568904.97,
+        "ppid": 17919,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 17946
+      },
+      {
+        "pid": 17986,
+        "ctime": 1793568905.1,
+        "ppid": 17946,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 17946
+      },
+      {
+        "pid": 17983,
+        "ctime": 1793568905.08,
+        "ppid": 17963,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 17963
+      },
+      {
+        "pid": 18008,
+        "ctime": 1793568905.22,
+        "ppid": 17964,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 17964
+      },
+      {
+        "pid": 18027,
+        "ctime": 1793568905.46,
+        "ppid": 17964,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 17964
+      },
+      {
+        "pid": 18034,
+        "ctime": 1793568905.53,
+        "ppid": 17964,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 17964
+      },
+      {
+        "pid": 18036,
+        "ctime": 1793568905.53,
+        "ppid": 17964,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 17964
+      }
+    ],
+    "reapedChildren": [
+      {
+        "pid": 17961,
+        "ctime": 1793568904.96,
+        "ppid": 17919,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 17919,
+        "waitStatus": 256
+      },
+      {
+        "pid": 17963,
+        "ctime": 1793568904.97,
+        "ppid": 17919,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 17946,
+        "waitStatus": 0
+      },
+      {
+        "pid": 17964,
+        "ctime": 1793568904.97,
+        "ppid": 17919,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 17946,
+        "waitStatus": 0
+      }
+    ],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "resources": {
+    "intervalSeconds": 0.1,
+    "phases": {
+      "browser-ready": {
+        "samples": 13,
+        "sampledPeakSumRssBytes": 563974144,
+        "sampledPeakSumPssBytes": 290085888
+      }
+    },
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "wallSeconds": 3.4497276300025987,
+    "scope": "100ms sampled RSS/PSS of the owned browser tree; RSS sums may count shared pages more than once; not an exact device peak"
+  },
+  "localServerClosed": true
+}
