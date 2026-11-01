@@ -83,3 +83,54 @@ NORMAL_P4_NATIVE_SOURCE_ROOT="$P4_NATIVE_ROOT" \
 WORKS_RECT_VAE_ROOT="$VAE_855_FIXTURE_ROOT" \
 node --test --test-isolation=none tools/ai-connection/test-run-normal-holding.mjs
 ```
+
+## Optional saved-output diagnosis
+
+`diagnose-normal-holding.mjs` は保存済みnormal outputと既存reference/gateだけを読む別CLI。native `.diagnose` は呼ばず、VAE/P4再実行、graph/model読出し、Worker、全中間出力、oracle生成は0。通常result.jsonは変更しない。DIAGNOSTIC_FAILでもordinary normal completionを無効化しない。sourceGitには固定7ee comparatorと498 standalone tensor codecのGit objectが必要。
+
+次は最初のP2 restored mean→normal VAE decode専用例。referenceは855の独立FP32 `png-roundtrip.f32`（6144B、44cf55...）、gateは同版reference-report.json（3882B、f21861...）に既存のmaxAbs cap。absolute-onlyと明示してその既存capだけを比較し、relativeは0に固定する。manifestの別scopeの0.002 gateやmean roundtripの2e-6を転用しない。inputPayloadSha256とexpectedInputFileSha256の両mapを、このdecodeのactual normal input payload / whole-file SHAへ束縛する。retained decoded RGB→encodeにはこのreferenceを使わない。
+
+```json
+{
+  "kind": "works-normal-holding-diagnostic/v1",
+  "outputKey": "output",
+  "inputPayloadSha256": {
+    "input": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063"
+  },
+  "expectedInputFileSha256": {
+    "input": "dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612"
+  },
+  "reference": {
+    "kind": "f32-le",
+    "path": "/EXISTING/855/development/inference/e6/fixtures/png-roundtrip.f32",
+    "sha256": "44cf55e9ea5896f985a0ccf26f61cbb52650fd1a53d3fe80fc3e03aaae545c29",
+    "byteLength": 6144,
+    "shape": [1, 3, 1, 16, 32],
+    "sourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "path": "development/inference/e6/fixtures/png-roundtrip.f32"
+    }
+  },
+  "gate": {
+    "path": "/EXISTING/855/development/inference/e6/reference-report.json",
+    "sha256": "f2186145f7ea752530696d0828863228320ebca6f7d8d29d0eceed3380fc2e8e",
+    "byteLength": 3882,
+    "mode": "absolute-only",
+    "fieldMap": {"abs": "/comparisonGate/maxAbs"}
+  }
+}
+```
+
+```sh
+node tools/ai-connection/diagnose-normal-holding.mjs \
+  --normal-result "$COMPLETED_NORMAL_DECODE" \
+  --configuration "$EXISTING_REFERENCE_GATE_CONFIG" \
+  --source-git "$FIXED_PUBLIC_SOURCE_GIT" --out "$FRESH_DIAGNOSTIC_OUTPUT"
+```
+
+WKT referenceは `kind:"wktensor"`、既存JSON配列は `kind:"json-f32",pointer:"/actual/existing/array"` を指定する。abs/relの既存gateは `mode:"absolute-relative",fieldMap:{abs:"/actual/abs",rel:"/actual/rel"}` とし、どちらのwhole SHAも必須。P4では既存final blockOutputだけを同様に選択し、inputPayloadSha256とexpectedInputFileSha256にresidual/timeAct1/conditioningの全3件を、normal.inputReceiptsと完全に同じkeyで指定する。旧25cutやowner numerical runnerの再実行は不要。新normal P4/marker受入のpendingを、このoptional比較で置き換えない。
+
+このwhole-file mapはWKTに保存されたmask/model/normalization等のheader差を検出する。raw F32/JSON transportの外で与えたmetadataや、別のmetadataBinding/ordinary descriptorの宣言までは、そのraw file hashで認証されない。それらは呼出元の宣言として残る。この二重hash照合は診断専用であり、通常入口へhash証拠を追加要求しない。
+
+診断はnormal outputの保存whole/payload hashとinput cohortのpayload / whole-file hash両方を先に確認し、reference/gateのactual whole SHAを検査した後、固定7ee `common.compare` へ全値を渡す。結果はDIAGNOSTIC_PASS / DIAGNOSTIC_FAIL / NOT_VERIFIED。receiptにactual output/reference/gate/config bytes、実gate pointer/value、normal management source、診断runner hash、owner comparator/codec version/hashを保存する。入力不足やcohort/hash不一致ではNOT_VERIFIEDとなる。通常入口にはこの設定を渡さない。
