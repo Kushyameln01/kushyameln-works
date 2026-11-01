@@ -101,6 +101,30 @@ class AdmissionAndTransport(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'commit'):
             module.verify_execution_source('0' * 40, {module.SCRIPT: module.sha(SCRIPT.read_bytes())})
 
+    def test_inventory_excludes_ignored_generated_file_but_rejects_required_untracked_entry(self):
+        module = harness()
+        generated = 'docs/shared/diffusion-models/latent-space/build/runtime.js'
+        tracked_source = 'docs/shared/diffusion-models/ort-bridge/post-self-attention/stage.mjs'
+        commit = 'a' * 40
+        tracked = {tracked_source, *module.REQUIRED_EXECUTION_SOURCES} - {module.RUNNER}
+        broad = {tracked_source: 'b' * 64, generated: 'c' * 64, module.RUNNER: 'd' * 64}
+        with patch.object(module.COMMON, 'source_inventory', return_value=broad), \
+                patch.object(module.subprocess, 'check_output', return_value='\n'.join(sorted(tracked)) + '\n'):
+            inventory = module.source_inventory()
+        self.assertNotIn(generated, inventory)
+        self.assertIn(tracked_source, inventory)
+        self.assertIn(module.RUNNER, inventory)
+        self.assertEqual(inventory[module.RUNNER], module.sha((module.ROOT / module.RUNNER).read_bytes()))
+        with patch.object(module.subprocess, 'check_output', side_effect=[commit + '\n', '\n'.join(sorted(tracked)) + '\n']), \
+                patch.object(module.subprocess, 'run') as diff:
+            with self.assertRaisesRegex(ValueError, 'tracked and unchanged'):
+                module.verify_execution_source(commit, inventory)
+            diff.assert_not_called()
+        with patch.object(module.subprocess, 'check_output', side_effect=[commit + '\n', '\n'.join(sorted(inventory)) + '\n']), \
+                patch.object(module.subprocess, 'run') as diff:
+            diff.return_value.returncode = 0
+            self.assertTrue(module.verify_execution_source(commit, inventory)['verifiedBeforeNativeConstruction'])
+
     def test_pre_runtime_composed_freeze_rejects_changed_hash_gate_input_and_missing_output(self):
         module = harness()
         ref = module.COMMON.module_at('p4-cross-ffn-reference')

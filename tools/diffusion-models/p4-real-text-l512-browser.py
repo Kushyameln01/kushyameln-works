@@ -23,6 +23,10 @@ RUNNER = 'docs/shared/diffusion-models/diagnostics/p4-real-text-l512/run.mjs'
 NATIVE_SHA256 = '9cbbdace203ea996d9dd6afc1a8ae832f4b68c2bf1fc54306b9f944f818bd6a8'
 NATIVE_BYTES = 8604657
 PREPARE = 'development/ai-connection/p4-real-text-l512/reference/prepare-input.py'
+REQUIRED_EXECUTION_SOURCES = (SCRIPT, RUNNER, PREPARE,
+                              'development/ai-connection/p4-real-text-l512/reference/run-reference.py',
+                              'tools/diffusion-models/p4-cross-ffn-browser.py',
+                              'tools/diffusion-models/p4-cross-ffn-reference.py')
 DEFAULT_INPUT = Path('/tmp/p4-real-text-l512/inputs/real-text-l512-native.json')
 DEFAULT_PACKET = Path('/tmp/text-packet-receipt-20261102/source/development/inference/p2-p3-acceptance/plain/evidence/plain-conditioning.wktensor')
 
@@ -140,10 +144,18 @@ class PrivateBinarySink:
 
 def source_inventory():
     inventory = COMMON.source_inventory()
-    for name in (SCRIPT, PREPARE, 'development/ai-connection/p4-real-text-l512/reference/run-reference.py'):
+    tracked = set(subprocess.check_output(['git', 'ls-files', '--', *sorted(inventory)],
+                                          cwd=ROOT, text=True).splitlines())
+    # Generated ignored files are not executable-source candidates. A request
+    # for one still fails the browser's exact inventory lookup below.
+    inventory = {name: digest for name, digest in inventory.items() if name in tracked}
+    # Required entries must remain in the admission set even before their first
+    # commit, so verify_execution_source can reject an uncommitted entry.
+    for name in REQUIRED_EXECUTION_SOURCES:
         path = ROOT / name
-        if path.exists():
-            inventory[name] = sha(path.read_bytes())
+        if not path.is_file():
+            raise ValueError('Required execution source missing: ' + name)
+        inventory[name] = sha(path.read_bytes())
     return inventory
 
 
