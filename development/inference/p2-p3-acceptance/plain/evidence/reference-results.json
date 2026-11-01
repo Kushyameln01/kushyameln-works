@@ -1,0 +1,2290 @@
+{
+  "passed": true,
+  "scope": "New full512 pinned-source FP32 reference for explicit plain Hello world; not original GPU FP8 arithmetic",
+  "executionSourceSha": "5537b8932343aa2476b95191817e8913f99dab02",
+  "sourceCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+  "source": {
+    "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/pinned-t5.py",
+    "bytes": 12665,
+    "sha256": "797f11b69256dffa8d9a6d236fe1e05d0c250c84d231a5993accde0ff44238bc"
+  },
+  "config": {
+    "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/pinned-umt5-config.json",
+    "bytes": 512,
+    "sha256": "933a3ca27aa44a02575b47f5de8a92029f3a5b41857ff8e49871f15550b63b7b"
+  },
+  "dependencyAdapter": {
+    "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/prepare.py",
+    "bytes": 10677,
+    "sha256": "5e6bba21e100034743780468857fd9970e1564a0c5e5fbc6b26e70d34a872490"
+  },
+  "manifest": {
+    "path": "/workspace/work/inference/text-implementation/bundle/manifest.json",
+    "bytes": 19908,
+    "sha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f"
+  },
+  "gate": {
+    "maxAbsError": 0.001,
+    "rtol": 0.001,
+    "registeredBeforeComparison": true,
+    "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee"
+  },
+  "input": {
+    "text": "Hello world",
+    "textUtf8Sha256": "64ec88ca00b268e5ba1a35678a1b5316d212f4f366b2477232534a8aeca37f3c",
+    "tokenIds": [
+      23231,
+      3914,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "attentionMask": [
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "effectiveTokens": 3,
+    "shape": [
+      1,
+      512,
+      4096
+    ],
+    "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+    "tokenizerVersion": "0.2.1",
+    "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+    "manifestSha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f",
+    "executionSourceSha": "5537b8932343aa2476b95191817e8913f99dab02",
+    "zeroOutMasked": true,
+    "oracleUsesFull512Positions": true
+  },
+  "layers": [
+    {
+      "index": 0,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.0.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.0015959818847477436,
+          "sha256": "f30593192291a8cca5ffaab0c5a177ed147153ba2a2b3cff0e3f6d530b8e1bfb"
+        },
+        {
+          "key": "encoder.block.0.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.01320372149348259,
+          "sha256": "585c3d111cfb223ddf46fa2321a442ddeb92db6cdbbc81d01dccef84b0932537"
+        },
+        {
+          "key": "encoder.block.0.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0002715107402764261,
+          "sha256": "18c58861ee98ef8ced7a179436dba7707e110621882b998be6fcc87b0db2e3ff"
+        },
+        {
+          "key": "encoder.block.0.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.002735417801886797,
+          "sha256": "f819e8bf1ea3693bcf18862ad2f8c28f3e07dcb371a9ac259e9177b63533ac34"
+        },
+        {
+          "key": "encoder.block.0.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.0036194338463246822,
+          "sha256": "a4d1ac0975c4e06d0db0d0fb8ca939bd87b62064cdd8dc689940f7c8669811a5"
+        },
+        {
+          "key": "encoder.block.0.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.004849002230912447,
+          "sha256": "9b12db05ddc77452097499cb7254a6fa6677b64e252a69eb57014f9f26c580c8"
+        },
+        {
+          "key": "encoder.block.0.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.006338723469525576,
+          "sha256": "a6b53701015aad408df974a3bf21c94b27d847976d1a4134ef62e015ea5b70a9"
+        }
+      ],
+      "hiddenSha256": "e6aa678e45cf2c32c9e34507f30cee0ff3cf5cc4345e875c536ec5c22a68a4de",
+      "seconds": 3.3827637239992328
+    },
+    {
+      "index": 1,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.1.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.0018700865330174565,
+          "sha256": "05adff1590d4f32d9559158d800535db218bc255622870a900488e56cc3eb2e7"
+        },
+        {
+          "key": "encoder.block.1.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.014049237594008446,
+          "sha256": "ba6384447078437d19d7481877a88c1e6c439e82be6a8ee95d58a1cbf54b6fcb"
+        },
+        {
+          "key": "encoder.block.1.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0006277638603933156,
+          "sha256": "64568a298b92fbca1dccc2a9362a42203712a33a2cedcf1a56096a945132dcd0"
+        },
+        {
+          "key": "encoder.block.1.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0018776468932628632,
+          "sha256": "08201af9604997b578a964bb22d1c97fd4fb0f504b94df39f9ea9c4152ce0051"
+        },
+        {
+          "key": "encoder.block.1.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.004466686397790909,
+          "sha256": "8d5762337e9f7e9eaec13578da9aa35af8dedff9f8cd71a45689ee29f0e4af2f"
+        },
+        {
+          "key": "encoder.block.1.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.004189827013760805,
+          "sha256": "3bdf3bf6c09a4e25f1b351362869d92a12d737fd93bff605203266519217258c"
+        },
+        {
+          "key": "encoder.block.1.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.007528860587626696,
+          "sha256": "4a2d978bf846dca0c045f3030adf26ffd772f7ef4b758202e96080e3f0cc9bc4"
+        }
+      ],
+      "hiddenSha256": "0996236418c0e55da59c6a2525d947032f57cfb02cbebfc30dcbb24d22c48ed1",
+      "seconds": 2.8395151579970843
+    },
+    {
+      "index": 2,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.2.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.0025593871250748634,
+          "sha256": "9e3d9ef230ff81afeef4ddcac1e5b5154692e5942c1484a905102273994d9603"
+        },
+        {
+          "key": "encoder.block.2.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.009563111700117588,
+          "sha256": "820081b45e7fdcf6aab1421f4a4cdcc2124246493c43c8bcf85312d7dc2eb9b9"
+        },
+        {
+          "key": "encoder.block.2.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.00038662413135170937,
+          "sha256": "fa00c8bd069a743823823bd2d2d4504b4db8154c3153ace8b31324191abfcf1e"
+        },
+        {
+          "key": "encoder.block.2.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0013727007899433374,
+          "sha256": "19762a73b42563da454d895adee4838947a1de40003d9504b503a254b675d3ee"
+        },
+        {
+          "key": "encoder.block.2.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.003639340167865157,
+          "sha256": "db05e02b97d87e0acf2e89b38dc1f4e6a48c8b7e8b22958593a3edda69f91904"
+        },
+        {
+          "key": "encoder.block.2.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.004848006181418896,
+          "sha256": "1ff720bd9b8eb47f0bac98df80bd1347b34d1d9ed9169e8139fdec5906db44f7"
+        },
+        {
+          "key": "encoder.block.2.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.009687344543635845,
+          "sha256": "d5e10e2200688c691d0bd6d609b1389d074fef8094cc5747d92450b4c51c50c1"
+        }
+      ],
+      "hiddenSha256": "f2dfbc9de976de9a3a2bc5d7e5410cbb34065c264cdd26703c58d961d3b77f2c",
+      "seconds": 2.864745884999138
+    },
+    {
+      "index": 3,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.3.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.0032561395782977343,
+          "sha256": "e019f532651e09c263c99dfe649ab68e75263f1b588086325e22656c8fc37fd2"
+        },
+        {
+          "key": "encoder.block.3.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.00833746138960123,
+          "sha256": "88fecd45ca4d1e1b9ea98a2a93c7dfcc9021af87257c7ee44c9ce280669da30e"
+        },
+        {
+          "key": "encoder.block.3.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.00025752995861694217,
+          "sha256": "8a9471411a1cc88c80c1881616184920730b1cdf380d4ae5ce12c1bbe8c215a8"
+        },
+        {
+          "key": "encoder.block.3.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.001958474051207304,
+          "sha256": "6101c44ec732b3c5336ce9b6efb9d2d6fa8dbb4f2cbe67d381b22a2cb2d9891e"
+        },
+        {
+          "key": "encoder.block.3.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.00297920941375196,
+          "sha256": "08790cef26b8101fa4f3878b54ef25097c5e57955203a774034c2476c5f7e7b2"
+        },
+        {
+          "key": "encoder.block.3.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.0023768292739987373,
+          "sha256": "cff0705d6f5ee919d597628f919683506bc88c730fd3729ef83fe27273e1291e"
+        },
+        {
+          "key": "encoder.block.3.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.007250445429235697,
+          "sha256": "1a012b91e88e0dce4a17fb0dd84829c2412f31c8f40af0e6501a3130b212c703"
+        }
+      ],
+      "hiddenSha256": "15801b089a815ecfd24889cb5df6fcbf1b5be75192c1f45bcdddfcb2679d090a",
+      "seconds": 2.8391082169982838
+    },
+    {
+      "index": 4,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.4.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.006411912385374308,
+          "sha256": "d7fbf3401782ba998a79c882a28eaf6c22d96657cd575902a60ab66c173d3884"
+        },
+        {
+          "key": "encoder.block.4.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.009892500005662441,
+          "sha256": "5e610c383685ba019846b631ce1cf744c1b44fe3d39709595eba24b65b743364"
+        },
+        {
+          "key": "encoder.block.4.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0003993260324932635,
+          "sha256": "d91c46b985270708464006143e751f762bcb8335fe059003dce1f6a0a34893b2"
+        },
+        {
+          "key": "encoder.block.4.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.001433839788660407,
+          "sha256": "6178ff87ecff129febb9b4954f96d389f9903764edcb82e52e736ef46f64c7d0"
+        },
+        {
+          "key": "encoder.block.4.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.0032440221402794123,
+          "sha256": "c14b94ad594a2f363aa0896bf4d41fecfd14bba0cdd2e99a4aaaed6460bfb40e"
+        },
+        {
+          "key": "encoder.block.4.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.0027372536715120077,
+          "sha256": "ca7c92f3199bdcc881bea8f93eecd9c60efdb8717f58b1855bd4af2987843132"
+        },
+        {
+          "key": "encoder.block.4.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.006427964195609093,
+          "sha256": "94deaeebe4ad70c76df693265441f61ec65cb9a94d9f63e10ff4cd7e1e68ceae"
+        }
+      ],
+      "hiddenSha256": "e2f4f7bc73f88f1904bd26ad623e99358fe4868ba6abc9d9c8e304c5ca77e7a0",
+      "seconds": 2.778458524000598
+    },
+    {
+      "index": 5,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.5.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.003967453259974718,
+          "sha256": "7e927bf2ece32f4403f5c14dd2001fe3458f3252d30ed752760829e1e86a6815"
+        },
+        {
+          "key": "encoder.block.5.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.006523897871375084,
+          "sha256": "956e538ace774c47334c359428d55ab699780ecbe20f0b2fb7e91e418a23d49f"
+        },
+        {
+          "key": "encoder.block.5.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0003068068763241172,
+          "sha256": "8af7e890f6a7bf8e5b53d0dd381f9f971acb5174ace746b1f7c8b15da89de82a"
+        },
+        {
+          "key": "encoder.block.5.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0015153283020481467,
+          "sha256": "ec777bc8ce1afc5c55f4f7faab44377ce7ca1931e2d06ab9c0b8bb11816daf34"
+        },
+        {
+          "key": "encoder.block.5.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.0034441249445080757,
+          "sha256": "42b681c667d701d1475f4fbe223d8adcd1a1e7c45f711f129cadc02e30825e83"
+        },
+        {
+          "key": "encoder.block.5.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.005111893638968468,
+          "sha256": "cd61cdb69356e167c4cab431c61f65d54a3e019c99d1fb2425712e68bf3460b9"
+        },
+        {
+          "key": "encoder.block.5.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.00987743865698576,
+          "sha256": "8ce328e409dd33302e329d8d5b03a8291a6607d10668202e5a55f134c360e734"
+        }
+      ],
+      "hiddenSha256": "7a22596049c43a924bf33bf1869556abc91e51e0f963660a2f30262c59053bb6",
+      "seconds": 2.7639297120003903
+    },
+    {
+      "index": 6,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.6.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.004873624071478844,
+          "sha256": "ae38b0d76df840165a50e0f170e64bd2c140505b5fd1a5b9f68ca6f5ed12229d"
+        },
+        {
+          "key": "encoder.block.6.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.0068347519263625145,
+          "sha256": "adcc1e923e342b3131bae963bef72c139afac24aa5a97896dfbf24e0407f7871"
+        },
+        {
+          "key": "encoder.block.6.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0003832002403214574,
+          "sha256": "a24215f012fa4334deb758c2a873afdf332fe0269049545310a41f75557e6746"
+        },
+        {
+          "key": "encoder.block.6.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0013062158832326531,
+          "sha256": "a116b4053550bce008c3dd92ab4aed75fa84e9149a3d86e53d72cf92398ec9ba"
+        },
+        {
+          "key": "encoder.block.6.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.003630975028499961,
+          "sha256": "12f2cae52df5d463ccf37c569a47bb9b8885c9335bc3de4ff87505c9331c16a7"
+        },
+        {
+          "key": "encoder.block.6.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.0056106108240783215,
+          "sha256": "1cba9dd732df60af3df071516ec97293f5a6ba493059e3c34497cebead3c9af0"
+        },
+        {
+          "key": "encoder.block.6.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.007484216708689928,
+          "sha256": "cc26ce2a61402b29004ed6d53c32aed95d0adebecd9b119e3d53a8b2e23b6ff3"
+        }
+      ],
+      "hiddenSha256": "d38df15ae45686d368ac3a22039e17cb4c38709bd657d9bf7728ac21e1144b87",
+      "seconds": 2.7918236539990176
+    },
+    {
+      "index": 7,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.7.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.004926114808768034,
+          "sha256": "500bc8be748177e86ccadcd7c4c4788b5633b5187f3d7d58eec18a8aa29d49ab"
+        },
+        {
+          "key": "encoder.block.7.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.011010720394551754,
+          "sha256": "eb569c5f485c8157a649b7454260329c152333910799818dd44d0fc2541a884d"
+        },
+        {
+          "key": "encoder.block.7.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0003896877751685679,
+          "sha256": "92422226183d59174ce70d9859af9e5fe7b7dd8cb5566b0f5e3c32b7b541b386"
+        },
+        {
+          "key": "encoder.block.7.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0013736237306147814,
+          "sha256": "5034d9a15a8981cc98cdf68ba872e4ee817af7e34ed8f7f4dc0b78e1f371a960"
+        },
+        {
+          "key": "encoder.block.7.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.0036043936852365732,
+          "sha256": "92621e338cf5272921058d8b6797320060d8427ab9cb472ab67e06d2c48f8b49"
+        },
+        {
+          "key": "encoder.block.7.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.00476058479398489,
+          "sha256": "abc21ed008424f688a41641bac780b6cd059e3311dec4fbc9fc69ab25c64df3c"
+        },
+        {
+          "key": "encoder.block.7.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.00798494927585125,
+          "sha256": "d8ac5023994f2810fa93f4979416d432b59a9d1c07837a742747115201a57df3"
+        }
+      ],
+      "hiddenSha256": "d39559f6cf3ad5917cbee678332085665780d4235f08cf2941e3f271b6e12ef8",
+      "seconds": 3.9293136119995324
+    },
+    {
+      "index": 8,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.8.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.0037641695234924555,
+          "sha256": "c2e352fdb30c124277dd22fe19da2a4bc5a3c0c000b72e286820cdf8d47879eb"
+        },
+        {
+          "key": "encoder.block.8.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.012307604774832726,
+          "sha256": "37ac2dae64f7475859a53e89ce5f7a56f2cc42c99c05ccbd647bc9da77e54db2"
+        },
+        {
+          "key": "encoder.block.8.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0004037049366161227,
+          "sha256": "ff489e760983c2112dccbf705cf564be378993ac4d977d1e41206c8f78ee5e47"
+        },
+        {
+          "key": "encoder.block.8.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0014135355595499277,
+          "sha256": "66b4c6dfbedaad1c705e673c14bd8bb2ce965f8500f09e8f72486fbcaf39a13d"
+        },
+        {
+          "key": "encoder.block.8.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.006414386443793774,
+          "sha256": "60324ca26738489c02730463e5827af9458ea61b73fbe65a6088fea4872cd4ca"
+        },
+        {
+          "key": "encoder.block.8.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.005812482908368111,
+          "sha256": "a2d188484cb5ee7afd8130d421d317eac05ff02d778d4bbd62880e71f412e357"
+        },
+        {
+          "key": "encoder.block.8.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.009521933272480965,
+          "sha256": "37552114f14b8c7ef8913c6a70201d36db971ff98f0e8ec95046908daf78be6a"
+        }
+      ],
+      "hiddenSha256": "77d95443aafd403eb872973a81c5b34da3035de4fbd11a6d1ca59c1630193f78",
+      "seconds": 4.737619200001063
+    },
+    {
+      "index": 9,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.9.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.0027445608284324408,
+          "sha256": "11cdcc799f5aa4e8f0d91c27757faefdfb69abfeedce09b99e29c421b15b27ab"
+        },
+        {
+          "key": "encoder.block.9.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.013940353877842426,
+          "sha256": "6c4ccdf5830711e777d78910b7db6d3f8f603a80405965bda7a317c2dbf31531"
+        },
+        {
+          "key": "encoder.block.9.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0005929885082878172,
+          "sha256": "3114870b796521f7677f9e8d75d830ff38094cd2c3d95edfba5afda436d2ad9c"
+        },
+        {
+          "key": "encoder.block.9.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0016429019160568714,
+          "sha256": "7145860b680979794071ac3c21f7dcdf7a0aecc662d071d85f1400a531f93050"
+        },
+        {
+          "key": "encoder.block.9.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.0054755681194365025,
+          "sha256": "1959cb2c284b727d6aa7bf40a0a2d52bb03745cbe11ff3e361883ac79ddd4dde"
+        },
+        {
+          "key": "encoder.block.9.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.005761105101555586,
+          "sha256": "3fe3f948e801372d39e66747a3e11300fa0e03be40ab9fadf8fd68e840242e0c"
+        },
+        {
+          "key": "encoder.block.9.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.012392101809382439,
+          "sha256": "6872c5e2edbe291e11b93a3db1879fae6037a949b21102444b564148da0f1ed3"
+        }
+      ],
+      "hiddenSha256": "95e94d943177bf30b883e32c5f8f6450e1c3778ae050369902704c7620eb1d21",
+      "seconds": 3.3889449989983405
+    },
+    {
+      "index": 10,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.10.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.005322869401425123,
+          "sha256": "4d048465c5aa558f434f4dd315ad8318d46f23411939b51ab2abae682909d1ed"
+        },
+        {
+          "key": "encoder.block.10.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.010554879903793335,
+          "sha256": "3159ef9410146ff77a69782005a0c417f3b77a40d8876481ecaeff01e6cb80cc"
+        },
+        {
+          "key": "encoder.block.10.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.00041649030754342675,
+          "sha256": "b344986576755174e70a8e49a4319272e9da28b4899f71b6741ff01ad33e9d0d"
+        },
+        {
+          "key": "encoder.block.10.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0017178058624267578,
+          "sha256": "4f79233d2b38043816217306b9d9751e904176408d01878bab0b517703444b0d"
+        },
+        {
+          "key": "encoder.block.10.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.005251775961369276,
+          "sha256": "d9711ec463b5de2f8dd06cd78adedb2451e575972f5e3cb781daa856924d95b9"
+        },
+        {
+          "key": "encoder.block.10.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.004950560163706541,
+          "sha256": "1433f633fedc89b871e059c6d59de73584d12cac3ce5b722461aab92087027e2"
+        },
+        {
+          "key": "encoder.block.10.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.013899069279432297,
+          "sha256": "ed39432a1ceddc17bff5218b087010b6f1c1f23c33be20f0b6081ceee33dcce2"
+        }
+      ],
+      "hiddenSha256": "1be6c151b0a44858932ca218cd5653b19c263b35af3a26127a4558a48c6ee0d8",
+      "seconds": 3.1272987330012256
+    },
+    {
+      "index": 11,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.11.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.0035331633407622576,
+          "sha256": "564640daf77cd9b3840b1bc0f42408f577b7f03e2ba9cb5f4cc69587cf1111fe"
+        },
+        {
+          "key": "encoder.block.11.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.014116636477410793,
+          "sha256": "8005cdaebd6a90765086aebd6b051e180d3014ffc1644cc96aa2db6bdc081cc2"
+        },
+        {
+          "key": "encoder.block.11.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0003836640971712768,
+          "sha256": "99373dfbe2bf31613e03970b9c07c4b80b26b133bbe5041d57fcc0149ae862ac"
+        },
+        {
+          "key": "encoder.block.11.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.00196890439838171,
+          "sha256": "bc2257ef321d27df063580c1aeb4f804a4e953ce0ef94adb5aa6e84d2175c761"
+        },
+        {
+          "key": "encoder.block.11.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.005733646918088198,
+          "sha256": "9a8d32b929db27d0d3b68984732aafbd334aad0afc6877be5d35863567af287c"
+        },
+        {
+          "key": "encoder.block.11.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.005990621168166399,
+          "sha256": "82bfc5c8f82134ab9aa71c82c207316d408dcf732439d4ee81a30578eb916c8d"
+        },
+        {
+          "key": "encoder.block.11.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.013543231412768364,
+          "sha256": "94e1eea6d91b0ec4a37cbeedcdb7273ab651b0e1dffc29829a4b7524936dec43"
+        }
+      ],
+      "hiddenSha256": "352234d74c5d26d06e3dac91aa4597ba2f0d91ab9c9e98cd264061781de2c623",
+      "seconds": 2.9872276799978863
+    },
+    {
+      "index": 12,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.12.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.006802976131439209,
+          "sha256": "af73a8e0d6fe7857d797ee4b9797c76ab4643e06c03db8619cd4d6b9bc5fc0d7"
+        },
+        {
+          "key": "encoder.block.12.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.010011986829340458,
+          "sha256": "c79683a7f15437f419687b1aa2fdee496ce3db41ea14bb6670fba804e3aa7805"
+        },
+        {
+          "key": "encoder.block.12.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0003278092772234231,
+          "sha256": "bfa91727b561182bcf8b6b81e5131bd0a7503f56fb9adfdf13bf0708dafe951b"
+        },
+        {
+          "key": "encoder.block.12.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0017452511237934232,
+          "sha256": "ee70e94b6864a178119d9374aeba81073c20ebc08b51fcc4506c96d86a694497"
+        },
+        {
+          "key": "encoder.block.12.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.005490489769726992,
+          "sha256": "b8f6dd11a1b5be6d70dbf044f8b9780798de972ba551e89e40ec8f8e72ea2ebd"
+        },
+        {
+          "key": "encoder.block.12.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.006306075491011143,
+          "sha256": "d030e2c28537882327d91ed49685b18b43335f36f8bb8aabc3e1868112784a2f"
+        },
+        {
+          "key": "encoder.block.12.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.008302592672407627,
+          "sha256": "6c9571ecaaee5350b89e1aa4a247d3cd5d0a070a243050f1f01fd868086bd9cb"
+        }
+      ],
+      "hiddenSha256": "2d2f4c71c4d186ff291c2b004a8da5d03d1f4e365f987cb452226252c8b5c4c7",
+      "seconds": 2.766717880000215
+    },
+    {
+      "index": 13,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.13.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.004534271080046892,
+          "sha256": "00141abe297fb9a9f4a0d3a3b3e1e42bd54e5c27b4fb49fbdba46ce1e357e448"
+        },
+        {
+          "key": "encoder.block.13.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.012359267100691795,
+          "sha256": "6d5061528418858b5e03360688eec7f4c3c467ce4ee9daf24c12adaf6b9aea95"
+        },
+        {
+          "key": "encoder.block.13.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0004082684754393995,
+          "sha256": "92f82ec70000b52c11e6a599200f090239785e254f5bfa1c98f5b19bc7f8f678"
+        },
+        {
+          "key": "encoder.block.13.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0017426019767299294,
+          "sha256": "7382d70aaf0f6c7a16f070f238c08862137cead7ee595631c2b141d3f7fe2d98"
+        },
+        {
+          "key": "encoder.block.13.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.003950988408178091,
+          "sha256": "bf65b5f6f445d7fb9396b7f6fa0bc37deaf4c906e28809e041c7b710b3f11ab4"
+        },
+        {
+          "key": "encoder.block.13.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.005589860025793314,
+          "sha256": "356083216da2fc303ee9d953c99ebb3d3a307a749bf5e89a3c06f3c7ceb33bfd"
+        },
+        {
+          "key": "encoder.block.13.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.009330196306109428,
+          "sha256": "3aea01f5d0f321aeb07f513acb3a29801e318f2b5ba380507afc94e1cb690ad0"
+        }
+      ],
+      "hiddenSha256": "cd6c6fc58b847626767ce5e5d48e91ca5126b27f51082366438e0bb0c1680b29",
+      "seconds": 2.83906437800033
+    },
+    {
+      "index": 14,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.14.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.004466936457902193,
+          "sha256": "acfd404914ea5a9ba5c16ae0732dfbaa7421b220532adf857f61b8ce15d06a1e"
+        },
+        {
+          "key": "encoder.block.14.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.011509047821164131,
+          "sha256": "48cd1099e0a7c50389a25040cb0a9fecdb7acf36cdb48ff10248aa052a74fc43"
+        },
+        {
+          "key": "encoder.block.14.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.00045618819422088563,
+          "sha256": "ff49e33149e3dccbf679dfdbcf4c1772302e35eb7ae0a7abe0edb42a04ceaf47"
+        },
+        {
+          "key": "encoder.block.14.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0030917050316929817,
+          "sha256": "b813b03b249e9d584e843832a9048107444ab0c4d0d1f2d9fdcb552ae648acc4"
+        },
+        {
+          "key": "encoder.block.14.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.00677180290222168,
+          "sha256": "03f6a96b229034aadf4bc9bbd919f374f97b4952f637c9a3e8778fe65f087dd6"
+        },
+        {
+          "key": "encoder.block.14.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.005887872539460659,
+          "sha256": "54ec69b32677714f2c612f6c03ba5e8bddd1a00e3f86b93300dc5cf43b30e5ec"
+        },
+        {
+          "key": "encoder.block.14.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.00902243610471487,
+          "sha256": "a6522d8d02a71dc789d09b53c906002dfa05bfc6ad37bb0fd0f5725d497d0354"
+        }
+      ],
+      "hiddenSha256": "9aff3ff130487ed153c63a94d93b14b70c1324920124f70fc65f3eb66329a570",
+      "seconds": 2.8647028779996617
+    },
+    {
+      "index": 15,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.15.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.0048130047507584095,
+          "sha256": "13ed4f90608f5da418548259afe8dfe7fa225cb79d7c74cbe8260ae6d2de0672"
+        },
+        {
+          "key": "encoder.block.15.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.011583550833165646,
+          "sha256": "b38075aab1b15800686c3805b460656b2c49d82a59f186619b884b165c9bed54"
+        },
+        {
+          "key": "encoder.block.15.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.000409261992899701,
+          "sha256": "af76aceb1ec640e1d73d634e691b1993e17de531011f09e127606999ed5a877f"
+        },
+        {
+          "key": "encoder.block.15.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0018841020064428449,
+          "sha256": "e375a49e29d8774acaf50cbac515e2c347483e433edf02c59f65500e5cc30649"
+        },
+        {
+          "key": "encoder.block.15.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.009426525793969631,
+          "sha256": "9d2635a482940f1cf5200f3775e705c704b15ae80600f0d2c06e8512375c5684"
+        },
+        {
+          "key": "encoder.block.15.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.007559195160865784,
+          "sha256": "7f9e03c144d81043704ce89f962b9eb8a9016c348da3554383962c54a28d7b44"
+        },
+        {
+          "key": "encoder.block.15.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.008986711502075195,
+          "sha256": "caaeadb64730620360dd640d10c6af54b8f79f776874f360a0b7dcc71d778930"
+        }
+      ],
+      "hiddenSha256": "c6b3bbe2678618a8844d3b57b725bfef52cfd0d0a723e2076fa2e6f6fbee8d68",
+      "seconds": 2.740733867001836
+    },
+    {
+      "index": 16,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.16.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.004591124132275581,
+          "sha256": "8a7e8dfd429fc0b6c76d36ccfb848d914dca68185bcec6acd9367e94e7090ffa"
+        },
+        {
+          "key": "encoder.block.16.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.011734292842447758,
+          "sha256": "0d01a9dd417a2e4c3ee7be2294ed7b7e716a4065df0c6151c92920f3a84ef3ce"
+        },
+        {
+          "key": "encoder.block.16.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0005082860589027405,
+          "sha256": "e30becce8fbd7d2352d18ec4463a889d6b93bc10da76f60e274ab3a8727e985e"
+        },
+        {
+          "key": "encoder.block.16.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.00203083548694849,
+          "sha256": "559de5f1b4f25effef3a05b208f169939b584cd39fad646ee695230cf2275ff4"
+        },
+        {
+          "key": "encoder.block.16.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.00812123529613018,
+          "sha256": "8c432aca31c12b6aaf606d5be6e5706d4e533ff2a13012c4bb2df371463e770d"
+        },
+        {
+          "key": "encoder.block.16.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.007832115516066551,
+          "sha256": "0ffeaf52f2dd6557c8126bef09188bf462d06c3f62f040799ec71a3d9a48bc50"
+        },
+        {
+          "key": "encoder.block.16.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.008979632519185543,
+          "sha256": "3744433ae443951458daa9d6b90ee1c9d06661f53b6e91db47df3c3aa3ae0366"
+        }
+      ],
+      "hiddenSha256": "4d9d41246bc34c34db683b1b43dc36d80ccdc62ba7f7b19152dafcca66591546",
+      "seconds": 2.7203535199987527
+    },
+    {
+      "index": 17,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.17.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.0070969779044389725,
+          "sha256": "d26138f74d9b2ed681d4eec860f600c2720258f7ccd16a04b20b3731fb8cd76f"
+        },
+        {
+          "key": "encoder.block.17.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.010982449166476727,
+          "sha256": "a73470b9d777ec74cd4dbd2f957209a92d838e7cd8efb27165064b90536fa932"
+        },
+        {
+          "key": "encoder.block.17.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.00043919889139942825,
+          "sha256": "91c30f63cd0d94b94b6e18edad0a710a613036d1dc078a9ab6403bfe04a14cfc"
+        },
+        {
+          "key": "encoder.block.17.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.002395347226411104,
+          "sha256": "212ee542a7a4d66504d7922409059248a1647bdb278b561da50aa5c0b0a6fbd8"
+        },
+        {
+          "key": "encoder.block.17.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.0055113667622208595,
+          "sha256": "93d60e8fde1d0e685d5b969a1b0ddbf1e956f9269932491c370eb9094a82d1b0"
+        },
+        {
+          "key": "encoder.block.17.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.008664024993777275,
+          "sha256": "09581c95bc43dfd26bc0e3a93209be3e73d5bfd7a3693c5a657f6beaaf0cf1a3"
+        },
+        {
+          "key": "encoder.block.17.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.011791262775659561,
+          "sha256": "80a124bc00963a90faa79921b639fd3b49cb16da8044d7e41bb0a2c30e5c1445"
+        }
+      ],
+      "hiddenSha256": "10f1d593557946338fe05b09b82e14a8df0e79b266d9aec05a08c268961581dd",
+      "seconds": 2.7683043249999173
+    },
+    {
+      "index": 18,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.18.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.005158931016921997,
+          "sha256": "25a68ae87633af39d84f9cf5649c2e065c4b05781cd1b5a036b089f861b617db"
+        },
+        {
+          "key": "encoder.block.18.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.014147501438856125,
+          "sha256": "5e1327116b6cfc0043f3d133aac923dc9526cdf8ef3a134ed3c37bc4027313c5"
+        },
+        {
+          "key": "encoder.block.18.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.00039210516843013465,
+          "sha256": "04c2df125609f2594d2445a565f1bb59f126602a13c4449be15b7467c8b91436"
+        },
+        {
+          "key": "encoder.block.18.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.002779764821752906,
+          "sha256": "42a877c73fd2d5bd2bcab23164a2cb440554bf2416d66f6ffcbcfd6ba01c4626"
+        },
+        {
+          "key": "encoder.block.18.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.008353902958333492,
+          "sha256": "64bbb57693eb3978eac84db47a0524ceacb3aaf5ea5d57994cfc5683a5001d6a"
+        },
+        {
+          "key": "encoder.block.18.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.0077045210637152195,
+          "sha256": "ab111094e4314f27ed81316c7b01ef106581289cb51026da5c85f1af5b106748"
+        },
+        {
+          "key": "encoder.block.18.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.01684839092195034,
+          "sha256": "50918cea536cb0d33d3a4e95a5a0c641e6b0cb877834fe11b913a3bf02887d18"
+        }
+      ],
+      "hiddenSha256": "65a686de609ee9c29821aac00dacd37bcec0de239e6fcc897435af71055b166e",
+      "seconds": 2.757256741002493
+    },
+    {
+      "index": 19,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.19.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.0031285134609788656,
+          "sha256": "5089d55951c1daf3c491e340df5d09b2a4138d8724a696dfa2957742298ca26d"
+        },
+        {
+          "key": "encoder.block.19.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.01764165796339512,
+          "sha256": "362ab79ac56b82dc33a5b8e813eee1328542e51e67e84cfe0f501533e42ad67e"
+        },
+        {
+          "key": "encoder.block.19.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0004894094308838248,
+          "sha256": "8c3c29744bcf0715ef7d45574173fa4fec74f2ccb7bbbe853a708235da2a6e04"
+        },
+        {
+          "key": "encoder.block.19.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.0038025924004614353,
+          "sha256": "7480c13987928c6fc80a18ee34598ec397095daa225b546a24539e0a79421973"
+        },
+        {
+          "key": "encoder.block.19.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.008023680187761784,
+          "sha256": "5a88d75a359e84c945844cfa137fabd71beb28ed080f37fb11e4a1a6fcdcd07b"
+        },
+        {
+          "key": "encoder.block.19.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.008377084508538246,
+          "sha256": "eb189765b6c0b13a85cfb7e5c193b524adc85241f0d9fa776528c02c5ba02ee0"
+        },
+        {
+          "key": "encoder.block.19.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.024865856394171715,
+          "sha256": "bdf5174d7f4efa7c88a4987f7a11e70e924448d72aad99b401b267ba357d7fba"
+        }
+      ],
+      "hiddenSha256": "72730036410171e68b77a65d67f1b385938af2d579df3cd70e83958f88eae0b1",
+      "seconds": 2.8611685399991984
+    },
+    {
+      "index": 20,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.20.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.004178660921752453,
+          "sha256": "e641677b2984228ab14360a7079c969b97063dca31e587a4255c340556a7378f"
+        },
+        {
+          "key": "encoder.block.20.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.014928066171705723,
+          "sha256": "0a841f096c7ccd76c6ec6c1cc553a7c13162f6e267ca0645c2d717b9b983e2c8"
+        },
+        {
+          "key": "encoder.block.20.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.00038680757279507816,
+          "sha256": "7ff735d0631667122fae9dbe934301fdb54c3dc02b4986f1470d00480cc947c4"
+        },
+        {
+          "key": "encoder.block.20.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.004407332744449377,
+          "sha256": "92c94cbe6aa85620bc583cb5de18e6ccc97b17ef6d15a8746449f23b0fac664a"
+        },
+        {
+          "key": "encoder.block.20.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.006928586401045322,
+          "sha256": "a8bf5e9e4e76e2c249b05c35348d9422da0ca99cb7f4070a110f89a15d872598"
+        },
+        {
+          "key": "encoder.block.20.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.008236704394221306,
+          "sha256": "635dd1adbc04014b42d4b7e1d481106018d61a83e8aff951457853b4181549d1"
+        },
+        {
+          "key": "encoder.block.20.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.022571641951799393,
+          "sha256": "0d5bd1ecc57059f0e9053ea364d3d4e3af41f589789d2c80d8c7a3533ffe34a7"
+        }
+      ],
+      "hiddenSha256": "4cce49d379623c2139dae844024e1c36cd4b1a7131dd9e88ee57cefeb6c788fb",
+      "seconds": 2.9648625850022654
+    },
+    {
+      "index": 21,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.21.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.005198042374104261,
+          "sha256": "0c11666754c7cc6399024958224b4ee95a2046815f404b222e4558759b79eddd"
+        },
+        {
+          "key": "encoder.block.21.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.01464031171053648,
+          "sha256": "72b1ea398ba62caca34229401ea6dc6840b08887e42434ed74cd393aa2b23a84"
+        },
+        {
+          "key": "encoder.block.21.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0006555247236974537,
+          "sha256": "19b0cd8f32124dc3f5142c7265206836410e3d5c5927668dddf98fac2fb4c642"
+        },
+        {
+          "key": "encoder.block.21.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.003319671144708991,
+          "sha256": "47511c12b884ff0c5679db60530757c8bd2ef982efe899a5e470eb821f94acf2"
+        },
+        {
+          "key": "encoder.block.21.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.007340747397392988,
+          "sha256": "d9ebd06b57f9d3224f0794e0c0d5ba74f1f3965739a2a1c33a8fea2a23e8c11f"
+        },
+        {
+          "key": "encoder.block.21.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.006852218881249428,
+          "sha256": "c3613f58e966c63a327d532f715a76924c72d22ea464872764ec9667a4637282"
+        },
+        {
+          "key": "encoder.block.21.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.022986339405179024,
+          "sha256": "a10b0a73b247c0144fe852ab6b600ebc6a55aca2fae57887d9cc1d77413f1b1c"
+        }
+      ],
+      "hiddenSha256": "ff6876231f5c1ab5dc42066bb0705f53efa0a5f61c6abb9623c93f3d3b08bfa2",
+      "seconds": 2.7821360180023476
+    },
+    {
+      "index": 22,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.22.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.003501440864056349,
+          "sha256": "464a7e96a09dedc3b475ecdc10f4fa0de8588a1f249302cab70c78442fc6fe5a"
+        },
+        {
+          "key": "encoder.block.22.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.01845122128725052,
+          "sha256": "960292f191ce4862b4cd317da534e65edf0fcabe28eb201349a9719401fe8f3c"
+        },
+        {
+          "key": "encoder.block.22.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0004520307411439717,
+          "sha256": "77802bbcbff3592ec92b4acc6d4aa663acac0a1b76a929582ab7681fa6708151"
+        },
+        {
+          "key": "encoder.block.22.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.004105099011212587,
+          "sha256": "812c86beded2b3d3b59f205e4d0ae8c17f460f0f4ba88f4f484780405e3470e1"
+        },
+        {
+          "key": "encoder.block.22.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.008077398873865604,
+          "sha256": "36841e0522f5a495bf857911b46da47f4ee1ca0e6e9ac77c1743711f83cd8a19"
+        },
+        {
+          "key": "encoder.block.22.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.010820258408784866,
+          "sha256": "539e4e65fc719c08043256b9c810f0baa4ed9493a12f9210415b3ea249b7bc81"
+        },
+        {
+          "key": "encoder.block.22.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.017238928005099297,
+          "sha256": "e663bc80df078300e72c3c40af1275b30aa55ebf81cbfd78b2d4722a08b1f79d"
+        }
+      ],
+      "hiddenSha256": "41e573a2202296f0ad558caf932da4eeaad4fa7e5f87f660aac5c93797c8c5e4",
+      "seconds": 2.7680821219983045
+    },
+    {
+      "index": 23,
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "scales": [
+        {
+          "key": "encoder.block.23.layer.0.SelfAttention.k.scale_weight",
+          "value": 0.0036069268826395273,
+          "sha256": "55ed776cb6ecbb457ebfcc3105549720cbc74bcf8df203835e3e828ec5e38616"
+        },
+        {
+          "key": "encoder.block.23.layer.0.SelfAttention.o.scale_weight",
+          "value": 0.014562206342816353,
+          "sha256": "726de686ff2e8cdde91702fdd1f70b9463f7a6f0a7ada03775ff7d6244fea7a5"
+        },
+        {
+          "key": "encoder.block.23.layer.0.SelfAttention.q.scale_weight",
+          "value": 0.0004246421158313751,
+          "sha256": "3fd713f3c092d393a6364f3b6790655eea579b80410a90da35bcfc44077199e2"
+        },
+        {
+          "key": "encoder.block.23.layer.0.SelfAttention.v.scale_weight",
+          "value": 0.003500620136037469,
+          "sha256": "d8c450f1bdd53a699b648a77034650a38c6f67418e3beca52e8fa7fa20046936"
+        },
+        {
+          "key": "encoder.block.23.layer.1.DenseReluDense.wi_0.scale_weight",
+          "value": 0.003537826705724001,
+          "sha256": "cd753d270dd9a3864698538b8c8c1d6ae8a5dd6d04cc49491f81dde7c3aa3430"
+        },
+        {
+          "key": "encoder.block.23.layer.1.DenseReluDense.wi_1.scale_weight",
+          "value": 0.016798358410596848,
+          "sha256": "34223c2ce1af52e716e2343a6ec0f1594921861cb8394c1055399e96a3abce92"
+        },
+        {
+          "key": "encoder.block.23.layer.1.DenseReluDense.wo.scale_weight",
+          "value": 0.018475782126188278,
+          "sha256": "05af31ba408abd07de157decbbf08c72e4695544c3be1f66aeb757c678264c91"
+        }
+      ],
+      "hiddenSha256": "df72631ec2e9f9b4d82b0d3be085fa3b61eb00e07feb9a9f6845b6e096befb61",
+      "seconds": 2.9040108360022714
+    }
+  ],
+  "newExports": 0,
+  "oracleUsesOnnxOrHike": false,
+  "wholeOriginalModelHashRecomputed": false,
+  "reference": {
+    "path": "/workspace/work/inference/p2-p3-20261101/plain/oracle/plain-reference.f32",
+    "bytes": 8388608,
+    "sha256": "e59ad16a82799a42fe82eb76b3c7438a70c4766be7d7c7eb9b18222bfb1c83a9"
+  },
+  "shape": [
+    1,
+    512,
+    4096
+  ],
+  "dtype": "float32",
+  "layout": "BLC",
+  "meaning": "text_hidden_states",
+  "elements": 2097152,
+  "sourceKeysCovered": 412,
+  "sourceHeaderSha256": "50fe9015ebb8094759e108418e179fff9e88c3a558a27472f3718cd021588dc6",
+  "versions": {
+    "torch": "2.6.0+cpu",
+    "numpy": "2.3.5",
+    "sentencepiece": "0.2.1"
+  },
+  "resource": {
+    "pid": 4053,
+    "ctime": 1793526032.97,
+    "peakRssBytes": 1759371264,
+    "sampleIntervalSeconds": 0.05,
+    "samples": 1453,
+    "wallSeconds": 74.45349059799992,
+    "cpuUserSeconds": 102.33999999999999,
+    "cpuSystemSeconds": 40.73,
+    "scope": "This source process; no browser concurrency; sampled RSS may miss short peaks"
+  }
+}

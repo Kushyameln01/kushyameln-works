@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "works-plain-finalization-failure-controls/1.0",
+  "scope": "Model/browser control doubles exercising actual target finalization try/except/finally and return code; not neural or numerical acceptance evidence",
+  "numericExecutionSourceShaRetained": "5537b8932343aa2476b95191817e8913f99dab02",
+  "red": {
+    "targetSourceSha": "5537b8932343aa2476b95191817e8913f99dab02",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "tools/inference/text-encoder/test_plain_failure_controls.py",
+      "--source-ref",
+      "5537b8932343aa2476b95191817e8913f99dab02"
+    ],
+    "exitCode": 1,
+    "tests": 3,
+    "failures": 3,
+    "observed": [
+      "Late handoff write: exit0 with passed=true",
+      "Late browser close: exit0 with passed=true",
+      "Source-stat change: exception but persisted JSON passed=true"
+    ],
+    "log": "red.log"
+  },
+  "green": {
+    "target": "working tree guard fix; exact source hashes below, root commits separately",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "tools/inference/text-encoder/test_plain_failure_controls.py"
+    ],
+    "exitCode": 0,
+    "tests": 3,
+    "failures": 0,
+    "observed": [
+      "Late handoff write: exit1 and passed=false",
+      "Late browser close: exit1 and passed=false",
+      "Source-stat change: exception and persisted JSON passed=false"
+    ],
+    "log": "green.log"
+  },
+  "fix": "Both except handlers reset report.passed=false before persisting failure; numerical methods/gates/source guard unchanged",
+  "guardFiles": [
+    {
+      "path": "tools/inference/text-encoder/accept_plain.py",
+      "bytes": 11188,
+      "sha256": "2771c6416b90100c6884e5c3d43c088becba4be88aa7db61fb995e387ce70fdc"
+    },
+    {
+      "path": "tools/inference/text-encoder/plain_reference.py",
+      "bytes": 9806,
+      "sha256": "2a88ec0c5ff484d9463ba5b7eaee569dff3050d33f9bef4731eed6acf518928e"
+    },
+    {
+      "path": "tools/inference/text-encoder/test_plain_failure_controls.py",
+      "bytes": 6838,
+      "sha256": "a148d2acf6bc8c1a1710b228b6bfea9d87ca7a93fb14c791de8e344a7962d756"
+    }
+  ],
+  "logs": [
+    {
+      "path": "red.log",
+      "bytes": 3138,
+      "sha256": "67fd2f93532e2f7374c64990059d496fd91ccff595ac8f13fea42b14d3a6bced"
+    },
+    {
+      "path": "green.log",
+      "bytes": 101,
+      "sha256": "022ddc60d39d76f709d7bd0d06f5a37b5c62e5cd131970f7adc2623576a88bc7"
+    }
+  ],
+  "newNeuralRuns": 0,
+  "referenceRecomputed": false,
+  "artifactInputs": "Existing accepted output/reference replayed for control flow only; not a new model substitute or fresh numerical PASS",
+  "real5537Acceptance": "Existing source/reference/output hashes, all-value comparison and normal cleanup receipts remain unchanged; this guard fix does not retag their execution source"
+}

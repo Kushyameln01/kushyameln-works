@@ -91,7 +91,7 @@ def main():
   assert reference.shape==(1,512,4096) and np.isfinite(reference).all() and np.all(reference[:,np.array(mask)==0,:]==0)
   target=a.output/'plain-reference.f32';reference.tofile(target);report.update(passed=True,reference=file_record(target),shape=list(reference.shape),dtype='float32',layout='BLC',meaning='text_hidden_states',elements=int(reference.size),sourceKeysCovered=len(used),sourceHeaderSha256=sha(headerraw),versions={'torch':torch.__version__,'numpy':np.__version__,'sentencepiece':spm.__version__})
   end=a.model.stat();assert (end.st_size,end.st_mtime_ns)==(initial_model_stat.st_size,initial_model_stat.st_mtime_ns),'Original source changed during oracle'
- except Exception as error:report['failure']={'name':type(error).__name__,'message':str(error)};raise
+ except Exception as error:report['passed']=False;report['failure']={'name':type(error).__name__,'message':str(error)};raise
  finally:
   stop.set();thread.join();cpu1=process.cpu_times();report['resource']={'pid':process.pid,'ctime':process.create_time(),'peakRssBytes':peak,'sampleIntervalSeconds':.05,'samples':len(samples),'wallSeconds':time.monotonic()-started,'cpuUserSeconds':cpu1.user-cpu0.user,'cpuSystemSeconds':cpu1.system-cpu0.system,'scope':'This source process; no browser concurrency; sampled RSS may miss short peaks'};write_json(a.output/'reference-results.json',report)
  print(json.dumps({'passed':report['passed'],'reference':report['reference'],'resource':report['resource']}),flush=True)

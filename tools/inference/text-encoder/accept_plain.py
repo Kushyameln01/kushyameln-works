@@ -100,7 +100,7 @@ def main():
      write_json(a.output/'conditioning-handoff.json',handoff)
     context.close()
    finally:browser.close();report['browserClosed']=True
- except Exception as error:report['failure']={'name':type(error).__name__,'message':str(error),'traceback':traceback.format_exc()}
+ except Exception as error:report['passed']=False;report['failure']={'name':type(error).__name__,'message':str(error),'traceback':traceback.format_exc()}
  finally:
   server.shutdown();server.server_close();serverthread.join();memory_stop.set();memorythread.join();report['localServerClosed']=True
   report['processOwnership']=proc=owner.finish(timeout_seconds=5)

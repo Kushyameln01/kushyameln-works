@@ -2,7 +2,7 @@
 
 API版: `works-ai-1`。Text EncoderとVAEは独立モジュール。包括処理と一括UI、別CodexのDiffusionモジュールはこの実装に含めない。
 
-文書revision: `marker-codec-1`（2026-11-01 JST）。`works-ai-1`と既存G1C契約を維持し、供給されたnormalized markerの任意header保存を追加する。F=1正方形と非正方形の診断profile受入は元scopeで再利用する。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sample受入口とmetadata保存は、実生成sampleの推論・復元・decodeを受入済みとするものではない。
+文書revision: `P2-PLAIN-1`（2026-11-01 JST）。`works-ai-1`と既存G1C契約を維持する。供給されたnormalized marker保存に加え、採用管理codecでの実Rect連結と、固定plain入力の独立全値比較を記録する。native API/数値実装に変更はない。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sample受入口とmetadata保存は、実生成sampleの推論・復元・decodeを受入済みとするものではない。
 
 受入済みの実行条件は、UMT5の24層FP32診断経路と、Wan2.1 VAEの固定プロファイル `wan21-raw-f32-5x16x16`。VAEはRGB `[1,3,5,16,16]` とraw latent `[1,16,2,2,2]` の相互変換を検証した。大きな動画shapeをそのまま受け入れるものではない。別shapeは `tools/inference/vae/export_profile.py` で別bundleを作成し、その参照tensorとブラウザ結果を照合してから利用する。
 
@@ -186,7 +186,9 @@ magic/schemaVersionは変更しない。旧markerなしファイルは読取り�
 
 旧フィールドだけのgolden fixtureについてバイト一致を確認する。今回の接続fixtureはText `[1,2,4096]` とmask、raw mean/生成sample `[1,16,2,2,2]`、contextとmodel/Tokenizer hash、保存読戻し、変更中metadataのsnapshot、MessagePort転送後の所有権を対象とする。反復 `a/b/c` hashなどのfixture値は合成識別で、実model互換性ではない。SDK dispatchのdoubleやText lifecycleのORT doubleを実モデル推論の成功として数えない。
 
-Text24層・既存VAE5×16×16のFP32診断記録に加え、F=1・16×16と16×32を元VAE参照と実WASMで受け入れた。Textの重い再推論は実施していない。実generated sample、実参照媒体の各ratio、832×480・81frame、全sampling/最終動画、元GPU精度と端末負荷改善は未受入。実model/profile検証と小規模codec fixtureを合算しない。
+marker修正までの受入は、Text24層・既存VAE5×16×16のFP32診断に加え、F=1・16×16と16×32の元VAE参照・実WASM比較である。その工程ではTextの重い再推論を実施していなかった。実generated sample、実参照媒体の各ratio、832×480・81frame、全sampling/最終動画、元GPU精度と端末負荷改善は引き続き未受入。実model/profile検証と小規模codec fixtureを合算しない。
+
+上記は元のmarker修正時点の履歴である。今回の追加受入では、管理60d16/native855/storage2bdを選択し、実Rect normalized保存→owner restore→同復元meanの新decode→RGB全1536値の実管理保存読戻しを確認した。固定plain `Hello world`は、未短縮512位置の独立PyTorch source referenceに対し実plain WASM/Hike出力 `[1,512,4096]`全2,097,152値を比較し、maxAbs `3.4570693969726562e-6`（元gate.001）とpadding厳密0を確認した。browserの最大単一process RSSは約5.66GBで4GiB目安を超過したため、資源改善は未受入。任意prompt/512有効token性能、ComfyUI conditioning全体、現固定N2 tailでのcross-attention消費へ一般化しない。[新規実行・再利用・source・資源の分離](../../../development/inference/p2-p3-acceptance/RESULT.md)、[conditioning実data契約](../../../development/inference/p2-p3-acceptance/conditioning/manifest.json)、[P6不足shape](../../../development/inference/p2-p3-acceptance/p6/SOURCE-SLOT-SHAPES.md)を参照する。
 
 ## Hikeと実行条件
 
