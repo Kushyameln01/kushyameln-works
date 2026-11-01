@@ -34,3 +34,7 @@ Constraints: Text owns final RMSNorm; Diffusion owns 4096 projection, cross-atte
 
 - [ ] Preserve old acceptance records; distinguish old oracle/P2 evidence, new measurement/control tests and new actual inference.
 - [ ] Independent review; push implementation/API/reproduction and small evidence to the work branch and Draft PR. Report distribution and actual execution SHAs separately, API delta, numerical/resource results, reused evidence and unaccepted scope. Source/data acquisition by ourselves is separate from recipient ACK.
+
+## Recorded outcome
+
+Task1/2 complete in the fixed diagnostic scope: baseline04d, rejected-for-RSS prepack-only44b, final incremental eab. All3 numerical receipts pass the unchanged5537 reference/gate. Final sampled RSS sum falls21.35% and maxrenderer24.48%, but full latency is3.313x baseline and all-process RSS exceeds4GiB; no general/device/latency acceptance. Task3 received managerP2 acceptance and Diffusionf76 capture ACK plus native994 L512 execution plan; owner numerical runtime is in progress. Precise real media/slot/FHW and P5 actual sample/restore receipt remain missing, so dependent profile export and generated decode remain blocked. No new VAE inference/export/oracle calculation, merge or Pages.

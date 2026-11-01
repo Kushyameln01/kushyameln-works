@@ -1,0 +1,256 @@
+{
+  "passed": true,
+  "scope": "Native app ES module/dependency load only; no configure/files/inference/model download",
+  "newNN": 0,
+  "newExport": 0,
+  "api": {
+    "text": {
+      "apiVersion": "works-ai-1",
+      "module": "text_encoder",
+      "operations": [
+        "encode"
+      ],
+      "inputs": [
+        "plain-text",
+        "tokenIds+attentionMask"
+      ],
+      "output": {
+        "dtype": "float32",
+        "layout": "BLC",
+        "meaning": "text_hidden_states",
+        "shape": [
+          1,
+          "L",
+          4096
+        ],
+        "attentionMask": true,
+        "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458"
+      },
+      "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+      "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+      "maximumTokens": 512,
+      "arithmetic": "FP32 diagnostic expansion",
+      "configured": false
+    },
+    "vae": {
+      "apiVersion": "works-ai-1",
+      "module": "vae",
+      "operations": [
+        "encode",
+        "decode"
+      ],
+      "inputSpace": "raw",
+      "encode": {
+        "input": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "meanings": {
+            "raw-decoder-rgb": [
+              -1,
+              1
+            ],
+            "rgb-unit": [
+              0,
+              1
+            ]
+          }
+        },
+        "output": {
+          "meaning": "raw-posterior-mean",
+          "posterior": "mean"
+        }
+      },
+      "decode": {
+        "input": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "meaning": "raw-posterior-mean",
+          "meanings": [
+            "raw-posterior-mean",
+            "wan21-raw-generated-sample:v1"
+          ]
+        },
+        "generatedSampleContract": {
+          "schemaVersion": 1,
+          "representation": "generated-sample",
+          "space": "raw",
+          "normalization": {
+            "id": "wan21-comfy-f32-v1",
+            "state": "restored",
+            "owner": "diffusion_models"
+          },
+          "declaredOnly": true,
+          "realGenerationVerified": false
+        },
+        "output": {
+          "meaning": "raw-decoder-rgb",
+          "clipped": false
+        }
+      },
+      "profile": null,
+      "arithmetic": "BF16 values expanded to FP32",
+      "configured": false
+    },
+    "workers": 0
+  },
+  "browser": "154.0.8037.57",
+  "processOwnership": {
+    "harnessPid": 12298,
+    "harnessCtime": 1793550628.01,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 12301,
+        "ctime": 1793550628.24,
+        "ppid": 12298,
+        "name": "MainThread",
+        "status": "running",
+        "firstPpid": 12298
+      },
+      {
+        "pid": 12313,
+        "ctime": 1793550629.34,
+        "ppid": 12301,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 12301
+      },
+      {
+        "pid": 12319,
+        "ctime": 1793550629.38,
+        "ppid": 12313,
+        "name": "findmnt",
+        "status": "running",
+        "firstPpid": 12313
+      },
+      {
+        "pid": 12328,
+        "ctime": 1793550629.9,
+        "ppid": 12298,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 12298
+      },
+      {
+        "pid": 12330,
+        "ctime": 1793550629.9,
+        "ppid": 12298,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 12313
+      },
+      {
+        "pid": 12331,
+        "ctime": 1793550629.91,
+        "ppid": 12298,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 12313
+      },
+      {
+        "pid": 12350,
+        "ctime": 1793550630.23,
+        "ppid": 12330,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 12330
+      },
+      {
+        "pid": 12353,
+        "ctime": 1793550630.26,
+        "ppid": 12313,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 12313
+      },
+      {
+        "pid": 12365,
+        "ctime": 1793550630.37,
+        "ppid": 12331,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 12331
+      },
+      {
+        "pid": 12384,
+        "ctime": 1793550630.55,
+        "ppid": 12331,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 12331
+      },
+      {
+        "pid": 12391,
+        "ctime": 1793550630.67,
+        "ppid": 12331,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 12331
+      },
+      {
+        "pid": 12392,
+        "ctime": 1793550630.73,
+        "ppid": 12331,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 12331
+      }
+    ],
+    "reapedChildren": [
+      {
+        "pid": 12328,
+        "ctime": 1793550629.9,
+        "ppid": 12298,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 12298,
+        "waitStatus": 256
+      },
+      {
+        "pid": 12330,
+        "ctime": 1793550629.9,
+        "ppid": 12298,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 12313,
+        "waitStatus": 0
+      },
+      {
+        "pid": 12331,
+        "ctime": 1793550629.91,
+        "ppid": 12298,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 12313,
+        "waitStatus": 0
+      }
+    ],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "errors": [],
+  "requests": [
+    "/text-encoder/",
+    "/shared/inference/inference.css",
+    "/shared/inference/ui.mjs",
+    "/shared/inference/client.mjs",
+    "/shared/inference/tensor.mjs",
+    "/shared/inference/vae.mjs",
+    "/favicon.ico",
+    "/shared/inference/api.mjs",
+    "/shared/inference/text-encoder-api.mjs",
+    "/shared/inference/vae-api.mjs",
+    "/shared/inference/text-encoder.mjs",
+    "/shared/vr180/sha256.mjs"
+  ],
+  "wallSeconds": 4.633385330998863
+}

@@ -2,7 +2,7 @@
 
 API版: `works-ai-1`。Text EncoderとVAEは独立モジュール。包括処理と一括UI、別CodexのDiffusionモジュールはこの実装に含めない。
 
-文書revision: `P2-PLAIN-2`（2026-11-01 JST）。`works-ai-1`と既存G1C契約を維持する。供給されたnormalized marker保存、採用管理codecでの実Rect連結、固定plain入力の独立全値比較に加え、管理884のcurrentInputLink境界を実decode/保存で確認した。native API/数値実装に変更はない。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sample受入口とmetadata保存は、実生成sampleの推論・復元・decodeを受入済みとするものではない。
+文書revision: `TEXT-MEMORY-1`（2026-11-02 JST）。`works-ai-1`と既存G1C契約を維持する。管理884のP2受入と固定plain独立全値比較を保持し、Text graphの検証時コピーとsession重み保持を調整した。入出力schema・shape・Tokenizer・graph/重み・Hike最終正規化・元比較gateは変更しない。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sample受入口とmetadata保存は、実生成sampleの推論・復元・decodeを受入済みとするものではない。
 
 受入済みの実行条件は、UMT5の24層FP32診断経路と、Wan2.1 VAEの固定プロファイル `wan21-raw-f32-5x16x16`。VAEはRGB `[1,3,5,16,16]` とraw latent `[1,16,2,2,2]` の相互変換を検証した。大きな動画shapeをそのまま受け入れるものではない。別shapeは `tools/inference/vae/export_profile.py` で別bundleを作成し、その参照tensorとブラウザ結果を照合してから利用する。
 
@@ -43,6 +43,10 @@ api.dispose();
 manifestのshapeだけを書き換えて別profileにしない。assetのbytes/SHAと実graphが一組である。`createInferenceAPI({onState})`、または各factoryでconfigureし、実行時のasset検査・失敗を必ず受け取る。
 
 モデル準備はPythonで行い、実行時はブラウザ内のWASMを使う。元の `.safetensors` だけを選べばONNXへ自動変換されるAPIではない。今回のText実行用24 graphは合計18,523,750,008 bytesあり、元6,735,906,897-byteモデルも別に保持する。段階ロードは同時常駐量を抑えるが、保存容量を小さくする方式ではない。VAE bundleは約0.51GB。モデルの準備手順は各 `tools/inference/*/README.md` に記載する。
+
+Textの各graphは、従来どおり全体を読み、元manifestの全bytes SHA-256を検査してからORTへ渡す。検証には既存 `shared/vr180/sha256.mjs` のincremental SHAを使い、最大8MiBの`subarray` viewごとに更新・task yield・取消/dispose検査を行う。8MiBはhash更新のview上限であり、graph全体の読込みやORTへのコピーが8MiBへ収まる意味ではない。小さいembedding rowのWebCrypto検査は維持する。アプリを複製する場合は、この共有ES moduleも同originで取得できる配置が必要となる。configureのmanifest/files Mapへ追加するモデルassetではない。
+
+一度ずつ使うText staged sessionではORTの `extra.session.disable_prepacking='1'` を指定する。graph optimizationは元の既定all、WASM1threadを維持し、sessionは1件ずつ作成・実行・releaseする。prepacking停止だけの比較はWASM容量と時間が減ってもRSS peakが増えたため、高RSS改善の受入とはしていない。固定Hello worldの新しい全値・資源・終了比較と、旧oracle/実行sourceの区別は[計測・比較結果](../../../development/inference/text-memory-20261102/RESULT.md)を参照する。File-backed実測を、巨大Uint8Array Mapの転送コピー、任意prompt・全512有効token、本番全工程や別端末の資源保証へ一般化しない。
 
 ## モジュールとtensor境界
 
