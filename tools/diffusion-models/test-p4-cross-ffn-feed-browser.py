@@ -76,6 +76,27 @@ class FeedAdmission(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Private field'):
             module.public_projection({'validation': {'evidence': {'data': [7]}}})
 
+    def test_all25_output_identities_accept_scale_identity_only_at_exact_public_path(self):
+        module = self.harness()
+        ref = module.module_at('p4-cross-ffn-reference')
+        identities = {}
+        for key, shape in ref.ARRAY_SHAPES.items():
+            shape = [4 if n == 'L' else n for n in shape]
+            elements = 1
+            for dimension in shape:
+                elements *= dimension
+            identities[key] = {'shape': shape, 'elements': elements, 'bytes': elements * 4, 'sha256': 'a' * 64}
+        public = module.public_projection({'outputIdentities': identities})
+        self.assertEqual(len(public['outputIdentities']), 25)
+        self.assertEqual(public['outputIdentities']['scale'], {'shape': [5120], 'elements': 5120, 'bytes': 20480, 'sha256': 'a' * 64})
+        malformed = [.5, [.5], {**identities['scale'], 'data': [.5]}, {**identities['scale'], 'values': [.5]}, {**identities['scale'], 'elements': .5}, {**identities['scale'], 'sha256': 'invalid'}, {**identities['scale'], 'bytes': 1}]
+        for scale in malformed:
+            with self.assertRaisesRegex(ValueError, 'Private field'):
+                module.public_projection({'outputIdentities': {**identities, 'scale': scale}})
+        for forbidden_path in ({'validation': {'evidence': {'scale': identities['scale']}}}, {'resources': {'scale': identities['scale']}}, {'outputIdentities': {'nested': {'scale': identities['scale']}}}):
+            with self.assertRaisesRegex(ValueError, 'Private field'):
+                module.public_projection(forbidden_path)
+
     def test_reference_admission_requires_hash_mode_bindings_and_block_identity(self):
         module = self.harness()
         ref = module.module_at('p4-cross-ffn-reference')

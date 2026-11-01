@@ -170,7 +170,13 @@ def public_projection(value):
         if isinstance(item, dict):
             for key, nested in item.items():
                 if key in ('arrays', 'data', 'expected', 'attentionMask', 'raw', 'values', 'scale', 'privateArtifactText', 'privatePatchText'):
-                    raise ValueError('Private field in public receipt: ' + '.'.join(path + (key,)))
+                    scale_identity = (key == 'scale' and path == ('outputIdentities',) and isinstance(nested, dict)
+                                      and set(nested) == {'shape', 'elements', 'bytes', 'sha256'} and nested['shape'] == [5120]
+                                      and type(nested['elements']) is int and nested['elements'] == 5120
+                                      and type(nested['bytes']) is int and nested['bytes'] == 20480
+                                      and isinstance(nested['sha256'], str) and re.fullmatch('[0-9a-f]{64}', nested['sha256']))
+                    if not scale_identity:
+                        raise ValueError('Private field in public receipt: ' + '.'.join(path + (key,)))
                 verify(nested, path + (key,))
         elif isinstance(item, list):
             for nested in item:

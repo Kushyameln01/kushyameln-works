@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/workspace/work/diffusion-models/tools/diffusion-models/p4-cross-ffn-feed-browser.py", line 321, in <module>
+    main()
+  File "/workspace/work/diffusion-models/tools/diffusion-models/p4-cross-ffn-feed-browser.py", line 306, in main
+    result = public_projection(result)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/work/diffusion-models/tools/diffusion-models/p4-cross-ffn-feed-browser.py", line 178, in public_projection
+    verify(result)
+  File "/workspace/work/diffusion-models/tools/diffusion-models/p4-cross-ffn-feed-browser.py", line 174, in verify
+    verify(nested, path + (key,))
+  File "/workspace/work/diffusion-models/tools/diffusion-models/p4-cross-ffn-feed-browser.py", line 173, in verify
+    raise ValueError('Private field in public receipt: ' + '.'.join(path + (key,)))
+ValueError: Private field in public receipt: outputIdentities.scale
