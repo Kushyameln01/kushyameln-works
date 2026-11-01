@@ -42,3 +42,7 @@ Root checks new diffs, unchanged89 runtime assets and old evidence reuse scope. 
 - Observer installation must not retain Memory forever, alter operator output, count one shared ORT Memory twice or claim all host memory is observed.
 - Concurrent caller arrays/private reference retention and transient snapshots must remain explicit rather than disappearing from a peak budget.
 - Original-grid production acceptance requires an original-input/producer receipt; N2 success and allocation-only32760/65520 cannot satisfy it.
+
+## Execution record
+
+Task1: complete, common-format N2 package25/19/14 and16negative/contract tests. Task2: complete, observer12 + source/cleanup2 + Python admission3; both sides prefix14/head11 numeric comparisons pass. Task3: source/receipt alignment and independent review complete; additional source commit `4b1ade787fd6bebe22a3f7f04732ee37b1d2c87a`, original numerical runtime `e48021d8da29ef3b3b9e9d6161331c282798b6b3`; Draft PR14 is the delivery target. The metadata commit and remote retrieval verification finalize delivery. All production blockers above remain unaccepted.
