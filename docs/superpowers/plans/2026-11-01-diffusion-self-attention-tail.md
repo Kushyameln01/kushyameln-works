@@ -41,3 +41,7 @@ Tail pointwise input admission requires compact nonshared finite arrays, exact s
 - O has its own FP8 scale/config and output bias; shape5120x5120 is not the old16-row diagnostic target.
 - Local references use exact actual runtime input bits; composed references use independent prefix/attention inputs. No reference values are supplied as actual context.
 - Numeric multiply/add, owner lifecycle, physical Memory capacity and named host spans are separate facts. Source freezing precedes accepted runs; a source change requires rechecking only affected boundaries.
+
+## Execution record
+
+Core/reference, runtime and integration tasks complete. Both side units pass all8local/composed comparisons,71680values/side, zero failures. Newfocused32tests, native22regression cases and9bounded lifecycle cases pass. Independent review has no remaining blocker. Added private保存replay matches all5accepted output bit hashes and changes no accepted source/metric. Execution source commit `a49aac492cc68e2dd6037e0deb4a6954731a847a`; distribution metadata commit follows. Cross/FFN/allblock/generation remain later and NOT_READY.
