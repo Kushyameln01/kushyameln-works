@@ -1,0 +1,462 @@
+{
+  "schemaVersion": "bernini-p4-l512-pre-runtime-reference-freeze/0.1",
+  "status": "BOTH_COMPOSED_REFERENCES_FIXED_BEFORE_ANY_NATIVE_EXECUTION",
+  "sourceCommit": "994ebb9ce01c9e95db9cd18eb877a981152693c5",
+  "referenceExecutionSourceCommit": "741f1abe675eda328c7e65bb4e5903885be9ac22",
+  "candidatePlanSHA256": "051b6833be54aed9e1e0c3657bd28aa926b46c238a1c3a06fb298f6cc6427600",
+  "frozenAtUTC": "2026-11-01T16:18:37.499627+00:00",
+  "cases": {
+    "HIGH": {
+      "manifestPath": "/tmp/p4-real-text-l512/composed/high/manifest.json",
+      "manifestSHA256": "8dd640f0cbf127c149903eec558ea2a5b804a5bc0a4533dab67ae54da86ec97d",
+      "outputIdentities": {
+        "textLinear0": {
+          "shape": [
+            512,
+            5120
+          ],
+          "elements": 2621440,
+          "bytes": 10485760,
+          "sha256": "b6d6adfcb4ef9218b567daf2384fde658a97b547dc3040ff52b9d292d614d0ba"
+        },
+        "textGelu": {
+          "shape": [
+            512,
+            5120
+          ],
+          "elements": 2621440,
+          "bytes": 10485760,
+          "sha256": "8203802d519053e9ae9c1cc3d1b1357a57b28af20a18700020a3899d87222ae7"
+        },
+        "textEmbedded": {
+          "shape": [
+            512,
+            5120
+          ],
+          "elements": 2621440,
+          "bytes": 10485760,
+          "sha256": "81474cb3d15694a56a5b43c5e08e0575aa7580746b6edefd6970743eec045596"
+        },
+        "crossNorm": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "0dafb423dee89a6d010baf5bcd2c1db6e21645e4b4b93105b6441905e80d6877"
+        },
+        "qkvQ": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "07046e5aa894f8ccb2afd6013899b5f6c5b0fe33ebc296e9d8de1f5192880960"
+        },
+        "qkvK": {
+          "shape": [
+            512,
+            5120
+          ],
+          "elements": 2621440,
+          "bytes": 10485760,
+          "sha256": "396c6d3d07b4de33f5094af9ffe4f2512358c6bc3cd605f1c89e1a3509a26531"
+        },
+        "qkvV": {
+          "shape": [
+            512,
+            5120
+          ],
+          "elements": 2621440,
+          "bytes": 10485760,
+          "sha256": "11e88fe760041b673ee664eb505868defdd565f2e96f562c38933274923b55ea"
+        },
+        "normQ": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "e085467b3ee9efde9eafca46292f2f2e4937b8be01c41d45a6649674d44c03e7"
+        },
+        "normK": {
+          "shape": [
+            512,
+            5120
+          ],
+          "elements": 2621440,
+          "bytes": 10485760,
+          "sha256": "23370cc4d9c72cd1d07c50b29a2553b636b414b42c9474780beb3a6c5e26d02e"
+        },
+        "crossContext": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "ebdd793627f35d2e0c00d66d82d16a3497dc7ff27c2f8f32d28cbabc2de32778"
+        },
+        "crossO": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "6fc5d79c1d12d7c7931474148b8015d4dc41ca97a871730f8d87b14477396c06"
+        },
+        "crossResidual": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "1476bc080befa91ede50804e93651cdc03de7aecb696a8f0a7ed57527ccd96a1"
+        },
+        "ffnLayerNorm": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "32605702d16b014a4b646029365a6de8518a2957d97508d835f23ff4c7ad6ffb"
+        },
+        "shift": {
+          "shape": [
+            5120
+          ],
+          "elements": 5120,
+          "bytes": 20480,
+          "sha256": "aec6fcd3e093bc44750a69c81e5798027c73be46ccd31e28bc2bfb899fe86433"
+        },
+        "scale": {
+          "shape": [
+            5120
+          ],
+          "elements": 5120,
+          "bytes": 20480,
+          "sha256": "9e6e2a59a4a4e07a1d01bac6612e5ad018400c88a924d0fdf6981792bf33e9e0"
+        },
+        "gate": {
+          "shape": [
+            5120
+          ],
+          "elements": 5120,
+          "bytes": 20480,
+          "sha256": "e9e43051eaff382befdfb2ee5280e31cb84d722841f3505097d677adf4537c47"
+        },
+        "ffnModulated": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "a831130af8d8d4a16842c5efcb2578744facaae9fac8f1e6c02911e45dc395ab"
+        },
+        "ffnUp": {
+          "shape": [
+            2,
+            13824
+          ],
+          "elements": 27648,
+          "bytes": 110592,
+          "sha256": "b85500d57cf3ecbb41edfba93cbc1f5ba9668abb8f49128444e6b5a381a03926"
+        },
+        "ffnGelu": {
+          "shape": [
+            2,
+            13824
+          ],
+          "elements": 27648,
+          "bytes": 110592,
+          "sha256": "fcd3acac3ba0468535c0ece44b981c93464e3df8a674fde3ffcfe3f66025dfa1"
+        },
+        "ffnDown": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "130f9ef3ca41729b574b87794365200cdaa01f474f841d88e94d32927d4f396f"
+        },
+        "ffnGated": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "2012c35dcded13aba0fbba8d1cea8bd2d9c69679bc8ce5a29c68228775751996"
+        },
+        "blockOutput": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "56de40315aee33aba8e1cb0a8b471745aa118b47ed4217dd9255c8222a6b7e9b"
+        },
+        "timeProjection3": {
+          "shape": [
+            5120
+          ],
+          "elements": 5120,
+          "bytes": 20480,
+          "sha256": "300f15ab7ede6f7f4b64a03d97de3f0743ae25b15b952399261fe279642aa66a"
+        },
+        "timeProjection4": {
+          "shape": [
+            5120
+          ],
+          "elements": 5120,
+          "bytes": 20480,
+          "sha256": "c12517790f82482d0eeb432ae09fc306b027f6cbca6798249f97c2239b9cc0b0"
+        },
+        "timeProjection5": {
+          "shape": [
+            5120
+          ],
+          "elements": 5120,
+          "bytes": 20480,
+          "sha256": "99496c98b572e34843ad048766fd617ad6de9922ced1fccc2bf10c8ae3a25ef8"
+        }
+      }
+    },
+    "LOW": {
+      "manifestPath": "/tmp/p4-real-text-l512/composed/low/manifest.json",
+      "manifestSHA256": "530746b1e2d59d0c9cbe82e1ddad6d743ae32eb8fd7029f56cca694b57672be7",
+      "outputIdentities": {
+        "textLinear0": {
+          "shape": [
+            512,
+            5120
+          ],
+          "elements": 2621440,
+          "bytes": 10485760,
+          "sha256": "38031ab648bc98737952a1d6d118efaf0938be68620de18ad7a1ce5708391bc8"
+        },
+        "textGelu": {
+          "shape": [
+            512,
+            5120
+          ],
+          "elements": 2621440,
+          "bytes": 10485760,
+          "sha256": "74861ce59a19bf9347cc31c7a041c030cb8739c427c0fbfb8a96540c1090d70b"
+        },
+        "textEmbedded": {
+          "shape": [
+            512,
+            5120
+          ],
+          "elements": 2621440,
+          "bytes": 10485760,
+          "sha256": "5087c5be3c4a992362a93d182369b0c2bf4c677d524f7bbe622cfb4fbd7127e6"
+        },
+        "crossNorm": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "c6fb648ebb1701049db5d3dcb950cfa584b0d281eaeacea87bf7cddca6cd0afb"
+        },
+        "qkvQ": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "cc4011cd8dc77c46470f12470e7b3a93fdd04aa0b5c00aeb0ba8cfa8f45ebb58"
+        },
+        "qkvK": {
+          "shape": [
+            512,
+            5120
+          ],
+          "elements": 2621440,
+          "bytes": 10485760,
+          "sha256": "a65290b3c7b9ae51e00dda3d3deb2d6c87720babac89976eaf5bcf9da173f687"
+        },
+        "qkvV": {
+          "shape": [
+            512,
+            5120
+          ],
+          "elements": 2621440,
+          "bytes": 10485760,
+          "sha256": "bda55e8f63ee271edf312bed7a89c49daae04c72f1b5bd31711c43a37977348f"
+        },
+        "normQ": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "779a860b98c7a69a2dd247361850b89ed8b233f0f7af7f15c1367f031e275af8"
+        },
+        "normK": {
+          "shape": [
+            512,
+            5120
+          ],
+          "elements": 2621440,
+          "bytes": 10485760,
+          "sha256": "b6fbe78801d3dcffea57334bb9eb3089b3253e06c96d1e3f9efa309b175add13"
+        },
+        "crossContext": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "dcac52d4f0b1f68253687312c50a1712b1b35c9ab2fe95c005fb1e8164a4af13"
+        },
+        "crossO": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "7d04cca64a5531c89ee38538daca51b5b505c273de177276c39aa6f3b69523a7"
+        },
+        "crossResidual": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "4c37a63e1e9e38ae74f499fef514a980fa1565bcd2010a1aaf8c03e4b3d36cbb"
+        },
+        "ffnLayerNorm": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "edcf5597cecb3926dcf131428203101e8553482cd2a4fbfc5898a6ba6ff2da1d"
+        },
+        "shift": {
+          "shape": [
+            5120
+          ],
+          "elements": 5120,
+          "bytes": 20480,
+          "sha256": "8ec5081ff1d63f6b8a0a0187ac39e9fe7843c5b29b081620114a534e65db226b"
+        },
+        "scale": {
+          "shape": [
+            5120
+          ],
+          "elements": 5120,
+          "bytes": 20480,
+          "sha256": "3c13298a2e8af72ea10167ae45c18f2fc8c5d624139adf86c3ebb14f2046d33b"
+        },
+        "gate": {
+          "shape": [
+            5120
+          ],
+          "elements": 5120,
+          "bytes": 20480,
+          "sha256": "bf90ded3a8ba00aa814da3fc9f03880cc8fb453111d36a57edef3cc579982668"
+        },
+        "ffnModulated": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "d538a96792262cb8a227ffe34f57fb054ad2d5f39eb23d3d0bfe9b134c0a48e8"
+        },
+        "ffnUp": {
+          "shape": [
+            2,
+            13824
+          ],
+          "elements": 27648,
+          "bytes": 110592,
+          "sha256": "40a3ccb355b64ef0514b688a4c5bdeff6f18229524dce544e9b6922b1c635275"
+        },
+        "ffnGelu": {
+          "shape": [
+            2,
+            13824
+          ],
+          "elements": 27648,
+          "bytes": 110592,
+          "sha256": "3b5898d4bb37438d9ed39de5d7440bf4b9aae18e05961a355e18fa7228314dc7"
+        },
+        "ffnDown": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "f66e45d4cd4a5c032d5701364c68e6bb6fa046958f1e7af67d74d9a7c097aaba"
+        },
+        "ffnGated": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "dfb6784f71cd0a4a238bcf2cca08c1be3a7d8c68728240127bdfd322ef302452"
+        },
+        "blockOutput": {
+          "shape": [
+            2,
+            5120
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "4338d53eae05184e109aca97019aa988cabfe7be3463864208b825609bcf039e"
+        },
+        "timeProjection3": {
+          "shape": [
+            5120
+          ],
+          "elements": 5120,
+          "bytes": 20480,
+          "sha256": "2ddef3279d0dd34186a4969f33143a6aebedeb466aa6969f9cfb712c844e51e1"
+        },
+        "timeProjection4": {
+          "shape": [
+            5120
+          ],
+          "elements": 5120,
+          "bytes": 20480,
+          "sha256": "2b81c8dd5bbe1adb571216a1f56d09e1844b8b4ea2a5d82647e1ae119f0bf44b"
+        },
+        "timeProjection5": {
+          "shape": [
+            5120
+          ],
+          "elements": 5120,
+          "bytes": 20480,
+          "sha256": "7a8ea9877a6f434bbc36939d690ac36d916df423240bec62ff0fdd44b13e2e15"
+        }
+      }
+    }
+  },
+  "nativeExecuted": false,
+  "patchCount": 0
+}

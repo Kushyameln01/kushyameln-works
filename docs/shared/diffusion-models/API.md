@@ -285,3 +285,13 @@ Text ownerの最終RMSNormは適用済みのまま受け取る。Diffusionは`te
 LoRA用の新入口は`createP4WeightFeed({source})`。immutable `baseProvider.readBlock`、疎patch `createSink`、`prepareLoad→validate→commit/rollback→releaseCandidate`、`captureSource`を公開する。registryはoriginal key/full shape/選択範囲、実program slot→ORT入力`weight`／Hike bias parameter、保存/計算dtype、FP8 profile、base/graph/registry識別を保持する。最終F32 weight/biasは再scaleせず実演算へ渡す。低rank積・loader/full-shape mappingはLoRA ownerのままで、新P4へのcanonical adapter共同受入は別条件である。詳細は[consumer契約](../../../development/ai-connection/p4-cross-ffn/WEIGHT-FEED.md)を参照。
 
 本候補のproducer認証、独立参照・事前gateの数値判定、本番shape、複数stageの組合せ資源予算はそれぞれ別判定とする。[conditioning契約](../../../development/ai-connection/p4-cross-ffn/CONDITIONING.md)・[候補gate](../../../development/ai-connection/p4-cross-ffn/core/candidate-plan.json)・[結果](../../../development/ai-connection/p4-cross-ffn/RESULT.md)にsourceと受入scopeを記録する。N2の部品成功からP5へ昇格せず、`load/predict/sample=NOT_READY`、generationReady=falseを維持する。
+
+### 実Text L512専用の結合診断
+
+[runP4RealTextL512](diagnostics/p4-real-text-l512/run.mjs) は、固定f76の実Text packetを消費する独立診断入口である。従来のL4 fixture入場検査を変更しない。`runP4RealTextL512(file,payload,{writeOutput,phaseEvent})` を同一ページで呼び、管理のqueueやRPC/MessagePortへ生成operationを追加しない。
+
+`payload.nativeInputText` は実WKTからbit-preservingに作ったnative JSON原文で、whole SHA `9cbbdace203ea996d9dd6afc1a8ae832f4b68c2bf1fc54306b9f944f818bd6a8`。元WKT・header・payload・全512 mask・model/Tokenizer・元Text source5537へのbindingと、保存済みN2 residual/timeAct1・side/block0/HIGH1またはLOW3をnative構築前に照合する。`float32 BLC[1,512,4096]` 全行を4096→5120投影・K/V・cross-attentionへ渡し、そのN2残差をFFNへ渡す。maskのsoftmax適用・行削除・Text最終RMSNormの再適用は行わない。
+
+`writeOutput` は `{name,offset,byteLength,base64}` を受ける非公開sinkであり、復号後最大256KiBのaligned F32 byte chunkを25配列の全bytes/hashと照合して保存する。返す公開receiptは配列値を含まず、`blockOutput` の意味はLC `[2,5120]` のblock0 cross-attention＋FFN後出力（保存済み自己注意残差を起点）のままである。生成latent/sampleやVAE posterior meanには変換しない。`phaseEvent` は数値配列を受け取らず、工程時刻と資源観測だけに用いる。
+
+[Python driver](../../../tools/diffusion-models/p4-real-text-l512-browser.py) は、固定commitの実行source・事前composed reference manifest/hash・入力identity・既存gate・全25参照identityをChromium起動前に検査する。数値core/kernel・gateは従来と同一で、local abs.001/rel.0001、composed abs.01/rel.001の全値比較を行う。数値受入、LoRA適用、source取得ACK、管理採用は別scopeとし、[限定結果](../../../development/ai-connection/p4-real-text-l512/RESULT.md)・[再現手順](../../../development/ai-connection/p4-real-text-l512/REPRODUCE.md)へ記録する。
