@@ -713,3 +713,63 @@ readers retain their exact original codec registry. Storage adoption does not
 certify native model decode, cancellation or production readiness. See
 `development/ai-connection/codec-marker-adoption/ADOPTED-RESULT.md` for active
 routes, evidence, compatibility and reproduction.
+
+## Formal LoRA owner DATA phase bridge
+
+`adapters/lora-data-phase-bridge.mjs` exports `createLoraDataPhaseBridge`.
+This is the formal entry for the owner DATA contract fixed at
+`82b21f09cb63926543181b16f0e97ebc6b9fa6be`. The two unchanged owner modules
+are bundled under `adapters/lora-data/`. Their source-byte receipt and later
+owner handoff evidence commit are separate from native SDK/adapter/kernel
+`fc2789a0f649e33f15eb13750e6a983b5c52d170` and consumer
+`5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3`; those native pins are unchanged.
+
+Before constructing the bridge, call
+`verifyLoraAdmissionDataSources({admissionBytes,numericBytes})` on both delivered
+source files. The returned runtime-branded proof is required as
+`dataSourceVerification`; JSON or a cloned proof cannot substitute for it.
+
+The constructor also requires `adapter`, verified `referenceSet`, immutable
+predeclared `edgeInput`, `inspection`, `readCurrent`, `readWeightBiasEvidence`,
+`consumerBinding`, `readConsumerBinding` and `readNativeRevisions`.
+Use `.plan(input,{target})`, then
+`.createSnapshotOwner({plan,validation,resourceBinding,queue,requestPrefix})`
+with the existing snapshot coordinator. `.inspect()` retains the raw phase
+inputs and management decisions. The inner native execution entry stays private.
+
+`consumerBinding` has its own explicit namespace, revision, managerSessionId
+and resourceBinding. `readNativeRevisions` supplies the observed native
+`sdkInstanceId`, `localInputRevision` and `localApplicationRevision`, separately
+from manager revision and outside-consumer revision. With the fixed native SDK,
+management can retain the tuple returned by its public `plan` call; later plan,
+cancel or disposal must update or invalidate that observation. An unavailable
+observation blocks admission. It is never inferred from manager revision or
+read from a native module's private state.
+
+The phase mapping is ordered:
+
+| Owner DATA | Actual management boundary | Required evidence |
+| --- | --- | --- |
+| `preflightInputs()` | after native plan/public binding, before prepare | Every patch and inspected source dtype; loader declarations plus actual observations, presence and origin paths |
+| `checkpointInputs()` | after native validation, before commit | All 81920 selected weight values and 16 bias values independently compared; actual outer owner validation and exact snapshot target; `phaseBinding.bound:true` |
+| `postpublicationInputs()` | after coordinator publication and owner cleanup | Branded current publication, actual step/receipt, independent-copy ownership, original queue terminal/release, prepared-resource release |
+
+All compatibility decisions use existing `evaluateEdge`/norm guards. Missing
+observations are `UNVERIFIED`; known conflicts are `INCOMPATIBLE`. A matching
+contract with numerical evidence not yet due stays compatible and blocked.
+The bridge retains owner raw DATA and enriches a separate management input with
+predeclared environment/reference identities; it does not change the owner DATA,
+recompute model values or invent a future receipt. Source storage precision
+(FP8/F16) remains separate from prepared F32 dtype/layout.
+
+Commit rechecks the explicit selection, resource generation, consumer binding
+and native revisions. Publication uses a separate active published lifetime,
+not the closed staging context. A publication audit failure retains the actual
+`SNAPSHOT_PUBLISHED` fact and enters existing recovery; it cannot invent a
+rollback after native finalization. No output16 diagnostic package is treated
+as selected-weight `N-ARTIFACT` evidence.
+
+The reproducible native joint control is documented in
+`development/ai-connection/lora-data-bridge/REPRODUCE.md`. Its source/base are
+synthetic; actual pinned SDK/Hike/ORT/consumer execution does not extend the
+historical real-file numerical scope or admit a production model session.

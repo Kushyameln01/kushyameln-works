@@ -84,6 +84,31 @@ export function compileNormBindings(context,input){
    for(const field of ['baseDtype','outputDtype','layout'])add('N-LOADER',`${base}/${field}`,v[field],d[field]);
    for(const [field,allowed] of [['variant',v.variants],['sourceDtype',v.sourceDtypes],['targetRank',v.supportedTargetRanks]])add('N-LOADER',`${base}/${field}`,true,list(allowed).includes(d[field]),{unknown:!present(d[field])});
    add('N-LOADER',`${base}/strength`,true,typeof d.strength==='number'&&Number.isFinite(d.strength),{unknown:!present(d.strength)});
+   if(context.requireLoaderObservations===true){
+    // The DATA bridge carries the owner's observations without replacing them
+    // with the declared literals. Storage precision is deliberately separate
+    // from the prepared F32 values. This only compiles finite comparisons for
+    // evaluateEdge; it neither reads native state nor performs model arithmetic.
+    const n=d.numericDeclarations,path=`${base}/numericDeclarations`;
+    const observe=(suffix,expected,value,presence,origin,container,originPath)=>{
+     const p=`${path}/${suffix}`;
+     add('N-LOADER',p,expected,value,{unknown:presence!==true||!present(value)});
+     add('N-LOADER',`${path}/presence/${suffix}`,true,presence,{unknown:presence!==true});
+     const known=origin&&typeof origin==='object'&&text(origin.container)&&text(origin.path)&&text(origin.key)&&text(origin.weightId);
+     add('N-LOADER',`${path}/origins/${suffix}`,true,known&&origin.container===container&&originPath.test(origin.path)&&origin.key===n?.key&&origin.weightId===n?.weightId,{unknown:!known});
+    };
+    for(const [field,expected,property,registry] of [
+     ['baseDtype',v.baseDtype,'computeDtype','nativeRegistry'],['outputDtype',v.outputDtype,'dtype','connectionRegistry'],
+     ['layout',v.layout,'layout','connectionRegistry'],['baseLayout',v.layout,'layout','nativeRegistry']
+    ])observe(field,expected,n?.[field],n?.presence?.[field],n?.origins?.[field],'ownerBinding',new RegExp(`^(/owner)?/${registry}/targets/[0-9]+/${property}$`));
+    for(const [group,fields] of [['native',['dtype','computeDtype','layout']],['connection',['dtype','layout']],['target',['dtype','layout']]]){
+     for(const field of fields){
+      const expected=field==='layout'?v.layout:group==='native'?v.baseDtype:v.outputDtype;
+      const originPath=group==='target'?new RegExp(`^/operations/[0-9]+/target/${field}$`):new RegExp(`^(/owner)?/${group==='native'?'nativeRegistry':'connectionRegistry'}/targets/[0-9]+/${field}$`);
+      observe(`observed/${group}/${field}`,expected,n?.observed?.[group]?.[field],n?.presence?.observed?.[group]?.[field],n?.origins?.observed?.[group]?.[field],group==='target'?'plan':'ownerBinding',originPath);
+     }
+    }
+   }
   }
   if(applies('N-LOADER')&&r.recordId==='LOAD-LOCAL-SAFETENSORS'){
    add('N-LOADER',`${base}/inputKind`,true,['local-file','local-blob','injected-local-source'].includes(d.inputKind),{unknown:!present(d.inputKind)});
