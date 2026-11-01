@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "lora-contract-roundtrip-status/0.1-draft.1",
+  "dateJST": "2026-11-02",
+  "receiverRole": "LoRA",
+  "receiverCheckoutAtStart": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+  "artifactReturned": {
+    "distributionCommit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+    "executionSourceCommit": "28f44c3a1b71bef59e2d018a0db736de6d84675c",
+    "usedManagementCommit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+    "scope": "light/HIGH original Q16 PARTIAL formal DATA six cases; cancellation separately counted",
+    "manifest": "DELIVERY-MANIFEST.json"
+  },
+  "sourceReceptionByLoRA": {
+    "management": {
+      "sourceCommit": "8849891f19124df31847bd691503c2491278eaa8",
+      "distributionCommit": "f34bf10a67c91f462ab46dec033eaeb2110facf1",
+      "bodyAndGitBytesAcquired": true,
+      "comparison": "MANAGEMENT-884-COMPARISON.json"
+    },
+    "diffusionP4": {
+      "distributionCommit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "counterpartReportedExecutionCommit": "5744f700e17b23d5c18d32315fb6dfbd7c49089a",
+      "counterpartReportedBaseExecutionCommit": "829467c14ec6fd1ab1858dfc175c84605de1ac98",
+      "bodyAndGitBytesAcquired": true,
+      "comparison": "P4-CONTRACT-DIFF.json"
+    }
+  },
+  "thisTaskOperations": {
+    "kind": "existing manifest/receipt and fixed source acquisition, hash readback and contract comparison only",
+    "inferenceCalls": 0,
+    "exports": 0,
+    "originalOrBasePayloadLoads": 0,
+    "originalWholeHashes": 0,
+    "newReferenceGeneration": 0,
+    "nativeTests": 0,
+    "runtimeCodeChanges": 0
+  },
+  "contractAndNumericalStatus": {
+    "existingDd95Q16EvidenceRetained": true,
+    "management884NewRunnerExecuted": false,
+    "newOutput16E4SaveDiskReadbackAccepted": false,
+    "newPreNativeExpectedPayloadNegativeAccepted": false,
+    "canonicalP4MappingEstablished": false,
+    "realLoRAAppliedP4WeightsEstablished": false,
+    "newP4JointNumericalTestCompleted": false,
+    "handoffCompletionDoesNotImplyJointNumericalAcceptance": true
+  },
+  "outboundHandoff": {
+    "status": "READY_FOR_FIXED_COMMIT_COMMENTS",
+    "managementComment": null,
+    "diffusionComment": null,
+    "readbackVerified": false
+  },
+  "reverseAcknowledgmentForDd95": {
+    "management": "NOT_RECEIVED_IN_CURRENT_READBACK",
+    "Diffusion": "NOT_RECEIVED_IN_CURRENT_READBACK",
+    "ownSourceReceptionAckIsNotReverseAck": true
+  },
+  "notAcquiredOrNotAccepted": [
+    "new management884 raw transaction/result/E4 package readback receipts",
+    "new canonical P4 adapter/mapping and real LoRA-applied final F32 weights",
+    "LoRA-specific P4 joint numerical references/receipts",
+    "private P4 original model and private numerical payloads were not acquired for this source handoff",
+    "full target/model/session/generation and overall resource admission"
+  ],
+  "mergePerformed": false,
+  "pagesPublished": false,
+  "generationReady": false
+}

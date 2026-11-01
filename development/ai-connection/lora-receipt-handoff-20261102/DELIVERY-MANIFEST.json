@@ -1,0 +1,816 @@
+{
+  "schemaVersion": "lora-receipt-artifact-delivery/0.1-draft.1",
+  "handoffDate": "2026-11-02",
+  "status": "FIXED_ARTIFACT_RECEIPT_PREPARED_RECIPIENT_ACK_SEPARATE",
+  "repository": "Kushyameln01/kushyameln-works",
+  "artifactSourceCommit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+  "sourceBranch": "feat/lora-hike",
+  "sourceDraftPullRequest": "https://github.com/Kushyameln01/kushyameln-works/pull/2",
+  "executionSourceCommit": "28f44c3a1b71bef59e2d018a0db736de6d84675c",
+  "fixedExecutionCommits": {
+    "manager": "60d16b64d6020d3d20239f087f8add91268dcaad",
+    "lora": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+    "diffusion": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3"
+  },
+  "ownerDataSource": {
+    "repository": "https://github.com/Kushyameln01/kushyameln-works",
+    "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+    "path": "docs/shared/inference/lora/management-admission-inputs.mjs",
+    "sha256": "ddf57f4c76333ada1ddf93cf238e5f4ea6219b39afd5dc4d567213667a7d897e"
+  },
+  "catalog": {
+    "commit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+    "documentVersion": "1.0-draft.1",
+    "sha256": "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c"
+  },
+  "executionPlan": {
+    "commit": "0fb553fd081d3bcbbad4ead7accd165679f77d34",
+    "documentVersion": "1.0-draft.1"
+  },
+  "intendedRecipients": [
+    {
+      "role": "management",
+      "pullRequest": "https://github.com/Kushyameln01/kushyameln-works/pull/7"
+    },
+    {
+      "role": "DiffusionModels",
+      "pullRequest": "https://github.com/Kushyameln01/kushyameln-works/pull/14"
+    }
+  ],
+  "recipientAcknowledgement": {
+    "fixedResultRecordedStatus": {
+      "managerBundledDataByteExact": true,
+      "actualRuntimeBrandedDataProofConsumed": true,
+      "proofScope": "fixed management60 deployment source and actual local receiver runtime",
+      "managementPersonAckForThisNewReceipt": "NOT_RECEIVED",
+      "diffusionPersonAckForThisNewReceipt": "NOT_RECEIVED",
+      "newTailWeightIngressProvided": false
+    },
+    "newHandoffPersonalAck": "NOT_VERIFIED_BY_THIS_RECEIPT",
+    "newHandoffRecipientOwnedHashReadback": "PENDING",
+    "artifactPreparationIsNotRecipientAcceptance": true,
+    "deliveryTransportStatus": "Recorded separately in RETURN-STATUS.json after outbound comments/readback"
+  },
+  "acceptedEvidence": {
+    "status": "ACCEPTED_SELECTED_LIGHT_HIGH_FORMAL_DATA_REAL_BASE_PARTIAL",
+    "managementEntry": "createLoraDataPhaseBridge",
+    "managementContractVersion": "works-lora-data-phase-bridge/0.1-draft.1",
+    "mappingAuthority": "createDiffusionDiagnosticAdapter",
+    "scope": {
+      "pairId": "light",
+      "side": "HIGH",
+      "coverage": "PARTIAL",
+      "fullWeightShape": [
+        5120,
+        5120
+      ],
+      "fullBiasShape": [
+        5120
+      ],
+      "selectedWeightShape": [
+        16,
+        5120
+      ],
+      "selectedBiasShape": [
+        16
+      ],
+      "rows": {
+        "start": 0,
+        "count": 16
+      },
+      "columns": {
+        "start": 0,
+        "count": 5120
+      },
+      "includedPatchCount": 2,
+      "excludedTargetCount": 1050,
+      "excludedRows": [
+        16,
+        5120
+      ],
+      "weightBinding": {
+        "kind": "runtime-input",
+        "name": "weight"
+      },
+      "biasBinding": {
+        "kind": "hike-parameter",
+        "name": "bias"
+      },
+      "nativeRegistryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+      "connectionRegistryHash": "cc6a329b0cffbdf3c2a50914843da33e7d402a815921e206ddf5f8b0fea4c806",
+      "baseKind": "actual-original-bounded-fragments"
+    },
+    "loader": {
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "weightVariant": "linear-down-up",
+      "sourceDtype": "BF16",
+      "rank": 128,
+      "alpha": 128,
+      "alphaRankMultiplier": 1,
+      "biasVariant": "additive-diff-b",
+      "baseDtype": "F32",
+      "outputDtype": "F32",
+      "layout": "row-major",
+      "strengthsExplicit": [
+        0,
+        1,
+        -1
+      ],
+      "defaultStrengthAsserted": false,
+      "absentAlphaRuleScope": "fixed ComfyUI b5a4321 loader only"
+    },
+    "publishedCaseCount": 6,
+    "publishedWeights": 491520,
+    "publishedBiases": 96,
+    "publishedOutputs": 96,
+    "unpublishedCancellation": {
+      "published": false,
+      "counts": {
+        "weights": 81920,
+        "biases": 16,
+        "savedCandidateOutputs": 0
+      },
+      "comparisonEvidenceId": "lora-data-real:all-selected:974b60a08e7169ea16487f6c6780acf087a8a3ce66c4862ee0edc584d8d51a2e",
+      "cancelTarget": {
+        "invocationId": "lora-data-real:cancel-at-checkpoint:invocation:1",
+        "bindingId": "lora-data-real-high-q16",
+        "ownerId": "lora-data-real-owner:d6764609-53dc-467d-9eed-58f80203f58e",
+        "resourceGeneration": "5e037a5c-2cd3-4b09-b40e-d112529291fb",
+        "requestId": "lora-data-real:cancel-at-checkpoint:native:1",
+        "revision": 2007,
+        "activeToken": "lora-data-real:cancel-at-checkpoint:token:1"
+      },
+      "cancelReply": {
+        "notStarted": false,
+        "stopConfirmed": true,
+        "originalTerminal": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "quarantined": false
+      },
+      "priorFeedUnchanged": true,
+      "snapshotUncurrent": true,
+      "notAddedToPublishedCounts": true
+    },
+    "ownership": {
+      "mode": "independent-copy",
+      "sourceReleased": true,
+      "preparedReleased": true,
+      "nativeLease": "N/A",
+      "nativeOwnerIds": [
+        "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:025f33f5-608d-444d-b5b0-3e2f43cfb2b4",
+        "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:355a5a3b-b1f4-437b-aaec-9c43ee3ff5b0",
+        "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:1ba4153d-91c7-4310-b6f0-b1fe1b8b98bb",
+        "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:c599efc7-2476-4931-b3f7-064631e8de0d",
+        "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:76c0945c-0140-4504-aabb-b731aa2bb50a",
+        "7ae26105-88c6-4823-9cf0-0dea52f4fb9f:da3936f5-179d-49df-9497-efe898d78357"
+      ]
+    },
+    "endState": {
+      "snapshot": {
+        "state": "SNAPSHOT_PUBLISHED",
+        "managerRevision": 2008,
+        "activeSnapshotId": "lora-data-real:cancel-recovery:78d042e8-8f2f-4b57-a52d-64d9b31a4c14",
+        "selectionCurrent": false,
+        "generationReady": false
+      },
+      "cleanup": {
+        "managerDisposed": true,
+        "queueTerminal": true,
+        "sdkDisposed": true,
+        "consumerDisposed": true,
+        "stageDisposed": true,
+        "baseDisposed": true
+      },
+      "currentLiveAdmission": false,
+      "generationReady": false,
+      "modelInference": false,
+      "completeAdapter": false
+    },
+    "notCurrentLiveAdmission": true,
+    "notGenerationOrProductionPublication": true
+  },
+  "fullReceipt": {
+    "path": "development/ai-connection/lora-p2-p3-consumer/evidence/run-result.json.gz",
+    "encoding": "gzip-json",
+    "byteLength": 1211308,
+    "sha256": "29dca21132f34616f48d88f4b81d884378b508b8dac81a9987049371932e1754",
+    "decodedByteLength": 37764410,
+    "decodedSha256": "50a58d8f8c94bed2883fc294554acd744039ce0aa36e39ed6046135e5984f032",
+    "completeReceiptNotSummary": true,
+    "existingManifestMatched": true,
+    "resultAndCompactReceiptMatched": true,
+    "decompressedForMetadataHashOnly": true,
+    "newReceiptExported": false,
+    "rawModelOrSelectedWeightPayloadIncluded": false
+  },
+  "baseAndReferenceProvenance": {
+    "baseEvidence": {
+      "artifact": {
+        "bytes": 709364,
+        "sha256": "25a845e0c87a1bcab04740b011d0aa7cd969f46745412810cfd73269b69e8cff",
+        "mode": "600",
+        "coverage": "PARTIAL",
+        "fullFileHashRecomputed": false
+      },
+      "decodedBase": {
+        "weight": {
+          "passed": true,
+          "compared": 81920,
+          "maxAbsoluteError": 0,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 0,
+            "relative": 0
+          }
+        },
+        "bias": {
+          "passed": true,
+          "compared": 16,
+          "maxAbsoluteError": 0,
+          "failedCount": 0,
+          "failedIndices": [],
+          "gate": {
+            "absolute": 0,
+            "relative": 0
+          }
+        },
+        "weightBytesEqual": true,
+        "biasBytesEqual": true
+      },
+      "providedRangeCount": 5,
+      "fullFileSHA256Verified": false,
+      "fullFileHashRecomputed": false,
+      "priorOwnerFullHashReceipt": {
+        "kind": "retained-download-manifest",
+        "manifestSha256": "bae909390a21f32131126c92a72dd92648a39383395c97f2a96f195c1b2f4357",
+        "sha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+        "verified": true,
+        "verification": "PRIOR_OWNER_RECEIPT_NOT_REHASHED",
+        "authenticity": "not-independently-certified"
+      },
+      "priorReceiptScope": "historical owner evidence only; not current full-base verification"
+    },
+    "independentReferences": {
+      "referenceIdentity": {
+        "sourceRef": {
+          "repository": "https://github.com/Kushyameln01/kushyameln-works",
+          "commit": "0c27874908638afc748ea2455a2779a16736730b",
+          "path": "development/ai-connection/evidence/lora-e1/HIGH-reference.json"
+        },
+        "sha256": "2fe56045248bf75c3c2e63a310a56546288dd0b3a34c19cafc0e5ee9fc2c782d",
+        "referenceId": "p3:accepted-high-reference"
+      },
+      "gateIdentity": {
+        "sourceRef": {
+          "repository": "https://github.com/Kushyameln01/kushyameln-works",
+          "commit": "0c27874908638afc748ea2455a2779a16736730b",
+          "path": "development/ai-connection/evidence/lora-e1/HIGH-gates.json"
+        },
+        "sha256": "e435071fa955d66afee0f5a01d0b2f63e123bcf30d5982fe7bcba01da4513511",
+        "gateId": "p3:accepted-high-gates"
+      }
+    },
+    "currentWholeBaseVerification": false,
+    "priorOwnerFullHashIsHistoricalEvidenceOnly": true,
+    "referenceArraysOrExpectationsRegeneratedForHandoff": false
+  },
+  "evidenceReuse": {
+    "priorE1TwentyRetagged": false,
+    "priorReceiverSixRetagged": false,
+    "priorReceiverSixExecutionCommit": "25e5b56feeb070594110bb292d9de21e4e234f0a",
+    "priorReceiverSixDistributionCommit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+    "formalTransactionsAreTheRecorded28fExecution": true,
+    "newTransactionsForThisHandoff": 0,
+    "oldReferencesAndGatesKeptAtTheirFixedSource": true
+  },
+  "newConsumerAndP4": {
+    "statusAtArtifactSourceCommit": "DEPENDENCY_WAITING",
+    "fixedConsumerReceiptPath": "development/ai-connection/lora-p2-p3-consumer/CONSUMER-CONTRACT-RECEIPT.json",
+    "dependencyDocumentPath": "development/ai-connection/lora-p2-p3-consumer/CONSUMER-DEPENDENCIES.md",
+    "targetMatrixPaths": [
+      "development/ai-connection/lora-p2-p3-consumer/TARGET-CONSUMER-MATRIX.json",
+      "development/ai-connection/lora-p2-p3-consumer/TARGET-CONSUMER-MATRIX.md"
+    ],
+    "fixedConsumerCommit": "508d72cc9036e7f500827465c644b4aed3c5f711",
+    "tailProfile": "bernini-block0-n2-self-attention-residual-f32-v1",
+    "preparedWeightIngressOrMappingEstablished": false,
+    "newP4JointNumericalComparisonPerformed": false,
+    "q16AcceptancePromotedToNewTail": false,
+    "newP4StatusMustBeConfirmedByItsOwner": true,
+    "requiredBeforeJointAcceptance": [
+      "actual pair/side target registry with full/selected shape and binding",
+      "immutable base and prepared weight sink/candidate/feed adopted by actual session",
+      "scope-bearing validation, commit/rollback/base restoration and ownership/cancellation",
+      "profile, independent reference and gate for LoRA-altered activations"
+    ],
+    "currentContractComparisonPath": "P4-CONTRACT-DIFF.json",
+    "newCanonicalMappingEstablished": false,
+    "realLoRAAppliedP4WeightsEstablished": false
+  },
+  "inputAndPayloadPolicy": {
+    "productInput": "User-selected local .safetensors",
+    "historicalFourOriginalsRequired": false,
+    "originalOrBaseFileReadsForHandoff": 0,
+    "originalWholeHashesForHandoff": 0,
+    "selectedWeightArrayReadsForHandoff": 0,
+    "newNumericalOrModelExecutions": 0,
+    "newExpectationsGenerated": 0,
+    "newInferenceOrArtifactExports": 0,
+    "productCodeChanges": 0,
+    "commitOrPushByReceiptAuthor": false
+  },
+  "verificationSummary": {
+    "artifactEntries": 23,
+    "fixedGitBlobReadbacks": 23,
+    "sha1ObjectIdentitiesMatched": 23,
+    "priorEvidenceManifestEntries": 9,
+    "priorEvidenceManifestMatches": 9,
+    "otherEntriesVerifiedByFixedGitOnly": 14,
+    "executionReceiverSourceByteMatches": 3,
+    "existingGzipPackedAndDecodedDigestMatches": true,
+    "newNativeAcceptanceFromHandoff": false
+  },
+  "entries": [
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/CONSUMER-CONTRACT-RECEIPT.json",
+      "category": "result-or-contract-document",
+      "byteLength": 6088,
+      "sha256": "6f2a0a27d5272f4af2fa30c6b7c4446feed4901e75845ec48ca3897a35b7a655",
+      "gitBlobSha": "96d171549934bd17e85b80d9422e4bb42115e70e",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/CONSUMER-CONTRACT-RECEIPT.json",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/CONSUMER-CONTRACT-RECEIPT.json",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/CONSUMER-DEPENDENCIES.md",
+      "category": "result-or-contract-document",
+      "byteLength": 3757,
+      "sha256": "c5fb6739a30f414b11ba9a2c37b0040b46c392740fc244d928c5d383d2e6c931",
+      "gitBlobSha": "d725688f5ab2a5aaba47148ffcc8d2d51b23b019",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/CONSUMER-DEPENDENCIES.md",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/CONSUMER-DEPENDENCIES.md",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/PLAN.md",
+      "category": "result-or-contract-document",
+      "byteLength": 6713,
+      "sha256": "7c36daa4b76e5ac7027131bd0ec58d848fe97eb0271874f0c41a764408cffd2d",
+      "gitBlobSha": "5f06ac0ea3ffd486f223066b647ae51d28bdc844",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/PLAN.md",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/PLAN.md",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/REPRODUCE.md",
+      "category": "result-or-contract-document",
+      "byteLength": 7584,
+      "sha256": "dbc4cf55d92d17484ba0c55c11e63c7962f5f753d15bf7a44a1b17ba8ebba4ce",
+      "gitBlobSha": "df62e1e4120050b7b8dd83cb4dafb7d27ac17f5e",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/REPRODUCE.md",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/REPRODUCE.md",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/RESULT.json",
+      "category": "result-or-contract-document",
+      "byteLength": 26714,
+      "sha256": "5616b3c0866c8e7bab6bf098f4cbfdc5ae2288f07dda9871596f0a9f08127361",
+      "gitBlobSha": "445b9736042870b47bb838482ec0959844e7e6ac",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/RESULT.json",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/RESULT.json",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/RESULT.md",
+      "category": "result-or-contract-document",
+      "byteLength": 13086,
+      "sha256": "041e95efd6094dfe4cc028226c3f17b25999e4c8922c85cfd5fe6cf719b15639",
+      "gitBlobSha": "ed4fcb8c3bd81e314d24c61860ea3c1c9ddf85dd",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/RESULT.md",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/RESULT.md",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/TARGET-CONSUMER-MATRIX.json",
+      "category": "result-or-contract-document",
+      "byteLength": 7720882,
+      "sha256": "aca99eacef49cd827d0db1740fb3311eaa7795c300cd92f4419ed08ea13ea7ee",
+      "gitBlobSha": "cebc25b87c825d672c40a7182846476cdfb23283",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/TARGET-CONSUMER-MATRIX.json",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/TARGET-CONSUMER-MATRIX.json",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/TARGET-CONSUMER-MATRIX.md",
+      "category": "result-or-contract-document",
+      "byteLength": 4683,
+      "sha256": "2a0c75265d1e0b50f2357cd476dd1cf6cb9f3521247a283d7050d06502ce7145",
+      "gitBlobSha": "e8f38059e2ca0110828da39fe0429fd9630d6e67",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/TARGET-CONSUMER-MATRIX.md",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/TARGET-CONSUMER-MATRIX.md",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/evidence/MANIFEST.json",
+      "category": "evidence",
+      "byteLength": 2333,
+      "sha256": "d60f99bfa3f91b0240d0885843172e1cbd9fc75bee20c8f5ac29559ab63eb04f",
+      "gitBlobSha": "f5e3082d717dc747f20c9a47574103195da9b3e6",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/MANIFEST.json",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/MANIFEST.json",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/evidence/boundary-sources.json",
+      "category": "evidence",
+      "byteLength": 6138,
+      "sha256": "9cd96d65d85cf224326f7b0d152291a6076d27bd778083a0a61258b45c664cab",
+      "gitBlobSha": "87f8d9e56ad4da76d3a261ccf154fe7e19e72ddc",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/boundary-sources.json",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/boundary-sources.json",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": {
+          "manifestPath": "development/ai-connection/lora-p2-p3-consumer/evidence/MANIFEST.json",
+          "entryPath": "boundary-sources.json",
+          "status": "MATCH",
+          "bytesMatch": true,
+          "sha256Match": true
+        },
+        "priorManifestNotListedMeaning": null
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/evidence/browser-run.log",
+      "category": "evidence",
+      "byteLength": 584,
+      "sha256": "ab97fbe16371162e4e34092e1c8c874daf64ade77db7620188ce00a0aec644a7",
+      "gitBlobSha": "d777bc25f6b3ad8c639a8f0ca3276fd326465bc3",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/browser-run.log",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/browser-run.log",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": {
+          "manifestPath": "development/ai-connection/lora-p2-p3-consumer/evidence/MANIFEST.json",
+          "entryPath": "browser-run.log",
+          "status": "MATCH",
+          "bytesMatch": true,
+          "sha256Match": true
+        },
+        "priorManifestNotListedMeaning": null
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/evidence/independent-readback.json",
+      "category": "evidence",
+      "byteLength": 128460,
+      "sha256": "9d5347bd08387393f508e9985409657f49b19107ef36e89ff4068b25dfdc7ffc",
+      "gitBlobSha": "b94bad9cc431ecb1c0e5f60feda3be68d972a969",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/independent-readback.json",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/independent-readback.json",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": {
+          "manifestPath": "development/ai-connection/lora-p2-p3-consumer/evidence/MANIFEST.json",
+          "entryPath": "independent-readback.json",
+          "status": "MATCH",
+          "bytesMatch": true,
+          "sha256Match": true
+        },
+        "priorManifestNotListedMeaning": null
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/evidence/manager-boundaries.log",
+      "category": "evidence",
+      "byteLength": 3884,
+      "sha256": "e6d4137917f8708594b2df14c82d75c6acf644aa8177517a0b429fb4d5e67591",
+      "gitBlobSha": "55df8613e4c337f9256dd182ff8da5d2911e71e4",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/manager-boundaries.log",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/manager-boundaries.log",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": {
+          "manifestPath": "development/ai-connection/lora-p2-p3-consumer/evidence/MANIFEST.json",
+          "entryPath": "manager-boundaries.log",
+          "status": "MATCH",
+          "bytesMatch": true,
+          "sha256Match": true
+        },
+        "priorManifestNotListedMeaning": null
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/evidence/receipt.json",
+      "category": "evidence",
+      "byteLength": 110148,
+      "sha256": "6e21f7bf9719675cac9fefc237b9eb56fd78533c14493fd0294ae3c55102d7ae",
+      "gitBlobSha": "15be59cfaffdf49a578945dad98e89751d32936b",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/receipt.json",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/receipt.json",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": {
+          "manifestPath": "development/ai-connection/lora-p2-p3-consumer/evidence/MANIFEST.json",
+          "entryPath": "receipt.json",
+          "status": "MATCH",
+          "bytesMatch": true,
+          "sha256Match": true
+        },
+        "priorManifestNotListedMeaning": null
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/evidence/receiver-input-fixtures.log",
+      "category": "evidence",
+      "byteLength": 511,
+      "sha256": "0057d327234eab5f37b95473f2d3877303dc35589588aa629257c4d68c4d6ca4",
+      "gitBlobSha": "a291e3a3d9751741efc2d81d1d3d763275e8ccf6",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/receiver-input-fixtures.log",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/receiver-input-fixtures.log",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": {
+          "manifestPath": "development/ai-connection/lora-p2-p3-consumer/evidence/MANIFEST.json",
+          "entryPath": "receiver-input-fixtures.log",
+          "status": "MATCH",
+          "bytesMatch": true,
+          "sha256Match": true
+        },
+        "priorManifestNotListedMeaning": null
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/evidence/review.md",
+      "category": "evidence",
+      "byteLength": 7124,
+      "sha256": "54e76bf58e648017c17cc3f088566fd7dbeb03f5f23636830344002607f50109",
+      "gitBlobSha": "2f54178516dfccaa42540877662c232cae417a20",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/review.md",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/review.md",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": {
+          "manifestPath": "development/ai-connection/lora-p2-p3-consumer/evidence/MANIFEST.json",
+          "entryPath": "review.md",
+          "status": "MATCH",
+          "bytesMatch": true,
+          "sha256Match": true
+        },
+        "priorManifestNotListedMeaning": null
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/evidence/run-result.json.gz",
+      "category": "full-receipt",
+      "byteLength": 1211308,
+      "sha256": "29dca21132f34616f48d88f4b81d884378b508b8dac81a9987049371932e1754",
+      "gitBlobSha": "cc1e03227c87b8a421d2fac4dcea90551c0fbec0",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/run-result.json.gz",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/run-result.json.gz",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": {
+          "manifestPath": "development/ai-connection/lora-p2-p3-consumer/evidence/MANIFEST.json",
+          "entryPath": "run-result.json.gz",
+          "status": "MATCH",
+          "bytesMatch": true,
+          "sha256Match": true
+        },
+        "priorManifestNotListedMeaning": null
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "development/ai-connection/lora-p2-p3-consumer/evidence/source-review.md",
+      "category": "evidence",
+      "byteLength": 8995,
+      "sha256": "95e025cd707266bf69addebb5b4d202c916727db5d6dce1ff445bb892421ca15",
+      "gitBlobSha": "39ee7a8560d6986c0fb4f5523f04916ed05d2f07",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/source-review.md",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/development/ai-connection/lora-p2-p3-consumer/evidence/source-review.md",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": {
+          "manifestPath": "development/ai-connection/lora-p2-p3-consumer/evidence/MANIFEST.json",
+          "entryPath": "source-review.md",
+          "status": "MATCH",
+          "bytesMatch": true,
+          "sha256Match": true
+        },
+        "priorManifestNotListedMeaning": null
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "docs/shared/inference/lora/P2_P3_ACCEPTANCE.md",
+      "category": "api",
+      "byteLength": 3583,
+      "sha256": "f65685c5e9fa12f65e0522c3f199009912d0eaed02885d19f0275f86f205035f",
+      "gitBlobSha": "75020100bbcc424370241f726fa8f76864d81235",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/docs/shared/inference/lora/P2_P3_ACCEPTANCE.md",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/docs/shared/inference/lora/P2_P3_ACCEPTANCE.md",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "tools/ai-connection/test-lora-data-real.mjs",
+      "category": "execution-source",
+      "byteLength": 19578,
+      "sha256": "2cbe3833d980ebd4941f43a821f7cfc2600cd99a11c4d0bdbfc3df0e18eea8f9",
+      "gitBlobSha": "b8ff6c863c9aea5b196690df82b7033c140e00af",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/tools/ai-connection/test-lora-data-real.mjs",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/tools/ai-connection/test-lora-data-real.mjs",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      },
+      "executionSourceIdentity": {
+        "commit": "28f44c3a1b71bef59e2d018a0db736de6d84675c",
+        "path": "tools/ai-connection/test-lora-data-real.mjs",
+        "sameBytesAtDistribution": true,
+        "loadedReceiptHashMatched": true,
+        "sha256": "2cbe3833d980ebd4941f43a821f7cfc2600cd99a11c4d0bdbfc3df0e18eea8f9"
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "tools/ai-connection/lora-data-real-browser.mjs",
+      "category": "execution-source",
+      "byteLength": 30782,
+      "sha256": "8d950bc009c635a679074536c4d7e35a2dc688a1a5da3d9b0974e0dbed26e9b9",
+      "gitBlobSha": "05c7753fbdb058a03842ca97270bae42c4b6d732",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/tools/ai-connection/lora-data-real-browser.mjs",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/tools/ai-connection/lora-data-real-browser.mjs",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      },
+      "executionSourceIdentity": {
+        "commit": "28f44c3a1b71bef59e2d018a0db736de6d84675c",
+        "path": "tools/ai-connection/lora-data-real-browser.mjs",
+        "sameBytesAtDistribution": true,
+        "loadedReceiptHashMatched": true,
+        "sha256": "8d950bc009c635a679074536c4d7e35a2dc688a1a5da3d9b0974e0dbed26e9b9"
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "tools/ai-connection/lora-data-real-inputs.mjs",
+      "category": "execution-source",
+      "byteLength": 7918,
+      "sha256": "555333b028c7e832d243962567a63c66ee88416b1e14f392d00e126fece47eaa",
+      "gitBlobSha": "8748bbc27246c738ab71acc9d47f81d0ab35b83a",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/tools/ai-connection/lora-data-real-inputs.mjs",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/tools/ai-connection/lora-data-real-inputs.mjs",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      },
+      "executionSourceIdentity": {
+        "commit": "28f44c3a1b71bef59e2d018a0db736de6d84675c",
+        "path": "tools/ai-connection/lora-data-real-inputs.mjs",
+        "sameBytesAtDistribution": true,
+        "loadedReceiptHashMatched": true,
+        "sha256": "555333b028c7e832d243962567a63c66ee88416b1e14f392d00e126fece47eaa"
+      }
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "path": "tools/lora/build-target-consumer-matrix.mjs",
+      "category": "metadata-generator",
+      "byteLength": 28430,
+      "sha256": "112746e901cb373fcbab896099dbe2353ff7098cc54835df9b59d5e9a0dc8d4c",
+      "gitBlobSha": "71d0016a0942352c663401355a98365f047ace4d",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/dd95ed05f058930a391f015c11b9a2b963a42db5/tools/lora/build-target-consumer-matrix.mjs",
+      "rawUrl": "https://raw.githubusercontent.com/Kushyameln01/kushyameln-works/dd95ed05f058930a391f015c11b9a2b963a42db5/tools/lora/build-target-consumer-matrix.mjs",
+      "verification": {
+        "fixedGitBlobReadback": true,
+        "sha1ObjectIdentityMatched": true,
+        "priorEvidenceManifest": null,
+        "priorManifestNotListedMeaning": "This file is outside the evidence manifest; its complete fixed-commit Git identity and observed bytes/hash are recorded here."
+      }
+    }
+  ],
+  "unaccepted": [
+    "fresh light LOW/detail HIGH/detail LOW formal bridge transactions",
+    "new genuine-base joint HIGH/LOW snapshot",
+    "all targets/full graph consumer/full model or persistent model session",
+    "selected-weight N-ARTIFACT; output16 packages are not substituted",
+    "new lease ownership model",
+    "fresh late-binding-change actual negative trial in this six-case run",
+    "LoRA-modified new-tail activation/profile/reference admission",
+    "combined native/ORT/OS/device/full-model resource budget",
+    "generation contribution/two-pair composition/mean I/O API",
+    "merge or Pages/production publication"
+  ],
+  "generationReady": false
+}
