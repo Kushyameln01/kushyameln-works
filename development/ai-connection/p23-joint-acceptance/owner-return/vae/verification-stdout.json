@@ -1,0 +1,68 @@
+{
+  "status": "PASS_SCOPED_RECEIVER_RECONCILIATION",
+  "proposedP2Decision": "ACCEPT_DIAGNOSTIC_PROFILE_SCOPED",
+  "indexEntries": 93,
+  "sourceClosure": 20,
+  "packageReadbacks": 10,
+  "scenarios": [
+    {
+      "scenario": "decode",
+      "jointTraceId": "works:p2:joint:fc24f1eb-a752-45c7-acd6-4a7fd6b07318",
+      "roundTrip": {
+        "comparedValues": 128,
+        "maxAbs": 2.384185791015625e-7,
+        "gate": 0.000002
+      },
+      "actualRGB": {
+        "path": "decode/decode/1-decoded-rgb",
+        "fileSha256": "4de752c8a7d6df05fed012065bfd222b2f41d4c1c93c2cf8be58edfa24a46d72",
+        "payloadSha256": "aacf932664139862197c2dab5c087ce76305b2622bf02b3f5bde44eb73392d85",
+        "comparedValues": 1536,
+        "maxAbs": 0.000004328787326812744,
+        "gate": {
+          "atol": 0.00002,
+          "maxAbs": 0.00002,
+          "rtol": 0.00002
+        },
+        "normalizationApplied": false
+      },
+      "workerResources": {
+        "closed": 1,
+        "created": 1,
+        "live": []
+      },
+      "cancellationVerified": false
+    },
+    {
+      "scenario": "cancel-recover",
+      "jointTraceId": "works:p2:joint:23cdb4ac-bab0-4909-9cf3-23295abc1f3f",
+      "roundTrip": {
+        "comparedValues": 128,
+        "maxAbs": 2.384185791015625e-7,
+        "gate": 0.000002
+      },
+      "actualRGB": {
+        "path": "cancel-recover/decode/2-recovered-decode",
+        "fileSha256": "4de752c8a7d6df05fed012065bfd222b2f41d4c1c93c2cf8be58edfa24a46d72",
+        "payloadSha256": "aacf932664139862197c2dab5c087ce76305b2622bf02b3f5bde44eb73392d85",
+        "comparedValues": 1536,
+        "maxAbs": 0.000004328787326812744,
+        "gate": {
+          "atol": 0.00002,
+          "maxAbs": 0.00002,
+          "rtol": 0.00002
+        },
+        "normalizationApplied": false
+      },
+      "workerResources": {
+        "closed": 2,
+        "created": 2,
+        "live": []
+      },
+      "cancellationVerified": true
+    }
+  ],
+  "reInference": 0,
+  "reExport": 0,
+  "modelDownloads": 0
+}

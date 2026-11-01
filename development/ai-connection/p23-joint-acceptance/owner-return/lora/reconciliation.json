@@ -1,0 +1,186 @@
+{
+  "schemaVersion": "management-lora-return-reconciliation/1",
+  "observedUTC": "2026-11-01T15:11:07.684979+00:00",
+  "reviewDateJST": "2026-11-02",
+  "originalRawDateJST": "2026-11-01",
+  "originalRawTimestampsModified": false,
+  "distributionCommit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+  "executionSourceCommit": "28f44c3a1b71bef59e2d018a0db736de6d84675c",
+  "managementExecutionCommit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+  "updatedRunnerCommit": "8849891f19124df31847bd691503c2491278eaa8",
+  "fixedManagementDistributionCommit": "f34bf10a67c91f462ab46dec033eaeb2110facf1",
+  "unchangedPins": {
+    "DATA": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+    "manager": "60d16b64d6020d3d20239f087f8add91268dcaad",
+    "lora": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+    "diffusion": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+    "codec": "2bdca59ea78580d4fe7a9d31a8de33209b64d029"
+  },
+  "acquisition": {
+    "status": "ACQUIRED_FULL_BYTES_VERIFIED",
+    "pathCount": 21,
+    "ackPrepared": true,
+    "ownerPersonalAckSentByThisAgent": false,
+    "scope": "Distributed public files and original compressed receipt acquired and byte-verified. This acknowledgment does not assert updated884 execution."
+  },
+  "scopedTransactionReconciliation": {
+    "status": "ACCEPTED_SIX_RETAINED_ACTUAL_FORMAL_TRANSACTIONS_AT_60D16",
+    "basis": "Retained native receipts, fixed sources and actual phase/queue/snapshot ownership observations; no fresh execution.",
+    "scope": "light/HIGH, Q first16 rows x5120 plus explicit bias16, genuine bounded-base PARTIAL diagnostic",
+    "publishedCaseCount": 6,
+    "publishedWeightComparisons": 491520,
+    "publishedBiasComparisons": 96,
+    "publishedOutputs": 96,
+    "maximumReportedWeightAbsoluteError": 3.72290287486976e-09,
+    "maximumReportedBiasAbsoluteError": 0,
+    "maximumReportedOutputAbsoluteError": 7.450580596923828e-09,
+    "cases": [
+      {
+        "id": "initial-zero",
+        "strength": 0,
+        "managerRevision": 2001,
+        "localInputRevision": 1,
+        "localApplicationRevision": 1,
+        "consumerEpoch": 2
+      },
+      {
+        "id": "initial-one",
+        "strength": 1,
+        "managerRevision": 2002,
+        "localInputRevision": 2,
+        "localApplicationRevision": 2,
+        "consumerEpoch": 3
+      },
+      {
+        "id": "initial-negative",
+        "strength": -1,
+        "managerRevision": 2003,
+        "localInputRevision": 3,
+        "localApplicationRevision": 3,
+        "consumerEpoch": 4
+      },
+      {
+        "id": "reapply-one",
+        "strength": 1,
+        "managerRevision": 2004,
+        "localInputRevision": 4,
+        "localApplicationRevision": 4,
+        "consumerEpoch": 5
+      },
+      {
+        "id": "validation-recovery",
+        "strength": 1,
+        "managerRevision": 2006,
+        "localInputRevision": 6,
+        "localApplicationRevision": 6,
+        "consumerEpoch": 6
+      },
+      {
+        "id": "cancel-recovery",
+        "strength": 1,
+        "managerRevision": 2008,
+        "localInputRevision": 9,
+        "localApplicationRevision": 9,
+        "consumerEpoch": 7
+      }
+    ],
+    "finalSelectionCurrent": false,
+    "currentLiveAdmission": false,
+    "acceptedWithinRecordedScope": true
+  },
+  "updated884Acceptance": {
+    "compatibility": "COMPATIBLE",
+    "verification": "NOT_VERIFIED",
+    "readiness": "BLOCKED",
+    "accepted": false,
+    "sixCaseRunRelabeledAs884": false,
+    "sharedManagementRuntimeDiff60dTo884": [
+      "docs/shared/ai-connection/API.md only; runtime files unchanged"
+    ],
+    "runnerFilesByteEqual884ToF34": true,
+    "conditionsRemaining": [
+      {
+        "condition": "initial-one actual output16 E4 save and fresh disk readback",
+        "status": "NOT_VERIFIED",
+        "evidenceRequired": "createManagedDiagnosticPackage -> writeArtifactPackage -> fresh readArtifactPackage, complete status, output64bytes SHA-256 and actual snapshot hash/target binding; package path/byte/hash/readback manifest",
+        "dd95Evidence": "No savedPackage or packageFiles; raw output.f32 descriptors and saved JSON16 are not E4 package readback.",
+        "updatedRunnerLines": [
+          118,
+          124
+        ]
+      },
+      {
+        "condition": "E4 tamper and missing snapshot refusal",
+        "status": "NOT_VERIFIED",
+        "evidenceRequired": "Returned actual readback rejects mutated .wktensor with ASSET_HASH_MISMATCH and absent snapshot.json with REQUIRED_ASSET_MISSING.",
+        "dd95Evidence": "No such actual E4 negative receipt in retained run. Other historical codec/fixture tests are outside this transaction.",
+        "updatedRunnerLines": [
+          123,
+          124
+        ]
+      },
+      {
+        "condition": "pre-native reference payload guard",
+        "status": "NOT_VERIFIED",
+        "evidenceRequired": "wrong-reference changes expected copy[0]+1; NORM_REFERENCE_PAYLOAD_MISMATCH before native prepare/stage. Return counts: seven native prepare/stage attempts (six published + one cancelled), plus separate restore; old feed retained.",
+        "dd95Evidence": "Existing negative changed activation copy[0]+1024 with expected/gates unchanged; prepared blocks and queue failure prove native NATIVE_VALIDATION_MISMATCH, not pre-native rejection. Existing run has eight LoRA native invocations (six published + one native failure + one cancelled), plus separate restore.",
+        "updatedRunnerLines": [
+          78,
+          100,
+          130,
+          149
+        ]
+      }
+    ]
+  },
+  "freshVerification": {
+    "script": "verify-lora-return.py",
+    "result": "verification-output.json",
+    "passed": 249,
+    "failed": 0,
+    "acquiredFiles": 21,
+    "manifestEntries": 9,
+    "loadedGitSources": 55,
+    "boundarySourceObjects": 22,
+    "originalDeploymentDATAPairs": 2,
+    "snapshotCanonicalHashes": {
+      "passed": 6,
+      "script": "verify-snapshot-hashes.mjs",
+      "result": "snapshot-hash-verification.json"
+    },
+    "savedOutput16ValuesChecked": 96,
+    "nativeExecutions": 0,
+    "modelExecutions": 0,
+    "modelDownloads": 0,
+    "oracleRegenerations": 0,
+    "newExports": 0,
+    "scriptSha256": "8a5fec88069d9566dbea06495b9b131917ba4f0527b55a00010a29eda3837638",
+    "reproduceCommand": "python verify-lora-return.py --repo <repository-with-pinned-Git-objects> --received <acquired-dd95-tree> --output <verification-directory>",
+    "checks": 249
+  },
+  "evidenceLimits": [
+    "The selected original 1,244,141,856-byte File full hash was verified by the historical browser run; current reviewer did not read or rehash it.",
+    "The 709,364-byte genuine bounded base identity and five ranges are retained run evidence; no full-base hash recomputation. Prior full-base receipt stays historical.",
+    "The 26 private selected artifact byte/hash readbacks were performed by the historical independent reviewer. This distribution carries descriptors, not those private payloads. Current check reconciles descriptors and saved JSON output16 only.",
+    "Serialized phase metadata cannot recreate publication runtime brands; retained automatic trace and exact fixed enforcement source corroborate them.",
+    "Receiver4/4, manager41/41 and independent269+88 are historical recorded test/readback counts, not current test executions."
+  ],
+  "excluded": [
+    "light LOW/detail HIGH/detail LOW new formal transactions",
+    "new HIGH/LOW combined snapshot",
+    "full graph/full model/persistent model session",
+    "selected-weight N-ARTIFACT",
+    "new lease model",
+    "new late-binding-change native negative trial",
+    "new-tail LoRA effect/profile/reference admission",
+    "generation/two-pair composition/mean I/O API",
+    "merge/Pages or production publication"
+  ],
+  "productState": {
+    "generationReady": false,
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY"
+  },
+  "nextOwnerReturnScope": "Only missing updated884 observations listed above; preserve retained File/reference/gate identities, no re-inference/re-export, oracle regeneration or model downloads for this acquisition/reconciliation task."
+}

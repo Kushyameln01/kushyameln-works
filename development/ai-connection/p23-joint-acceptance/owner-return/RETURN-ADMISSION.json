@@ -1,0 +1,247 @@
+{
+  "schemaVersion": "works-owner-return-admission/0.1-draft.1",
+  "dateJST": "2026-11-02",
+  "status": "P2_DIAGNOSTIC_ACCEPTED_P3_60D_ACCEPTED_884_DELTA_PENDING_P4_CANDIDATE_ONLY",
+  "management": {
+    "distributionCommit": "f34bf10a67c91f462ab46dec033eaeb2110facf1",
+    "fixedExecutionSource": "8849891f19124df31847bd691503c2491278eaa8",
+    "sourceHandoffRef": "MANAGEMENT-HANDOFF.json",
+    "runtimeChangedByThisReconciliation": false,
+    "nativePinsReplaced": false
+  },
+  "acquisitionIsNotAdmission": true,
+  "acquisitions": {
+    "vae": {
+      "distributionCommit": "f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48",
+      "receiptRef": "vae/acquisition-receipt.json",
+      "acquiredPublicFiles": 98,
+      "acquiredPublicBytes": 6592142,
+      "indexedFilesVerified": 93,
+      "sourceClosureFilesVerified": 20,
+      "scope": "updated-884 evidence, actual RGB and mean native packages, contracts; not private decoder/model originals or broader plain conditioning payload"
+    },
+    "lora": {
+      "distributionCommit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+      "receiptRef": "lora/acquisition-receipt.json",
+      "acquiredPublicFiles": 21,
+      "scope": "public receipt/gzip, source/Git bytes, published16 JSON outputs; 26 private artifacts are descriptor-only here"
+    },
+    "diffusionP4": {
+      "distributionCommit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "receiptRef": "p4/ACQUISITION-RECEIPT.json",
+      "acquiredUniqueFiles": 123,
+      "acquiredUniqueBytes": 22427434,
+      "runtimeSourceFiles": 50,
+      "runtimeSourceBytes": 13352427,
+      "scope": "public module/WASM/contracts/receipts and declared array hashes; private values and models not received"
+    }
+  },
+  "p2": {
+    "decision": "ACCEPT_DIAGNOSTIC_PROFILE_SCOPED",
+    "proposalRef": "vae/scoped-admission.json",
+    "verificationRef": "vae/verification-output.json",
+    "managementExecutionSource": "8849891f19124df31847bd691503c2491278eaa8",
+    "ownerObserverExecutionSource": "e150e7ac3c4859739528ff278763c6474968ac08",
+    "ownerDistribution": "f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48",
+    "nativeExecutionSource": "855f435120f08eb9e818e51281fc26f0e2633829",
+    "meanOwnerSource": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+    "storageCodecSource": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+    "catalogSource": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+    "documentVersion": "1.0-draft.1",
+    "profile": "wan21-raw-f32-1x16x32",
+    "acceptedScope": "Same-source/profile raw mean -> owner normalize -> marked E4 save/read -> owner restore -> E4 save/read -> actual VAE decode -> RGB E4 save/read; normal and targeted cancel/fresh recovery",
+    "jointTraces": [
+      "works:p2:joint:fc24f1eb-a752-45c7-acd6-4a7fd6b07318",
+      "works:p2:joint:23cdb4ac-bab0-4909-9cf3-23295abc1f3f"
+    ],
+    "nativeDecodeSuccessesReported": 2,
+    "cancelledInvocationReported": 1,
+    "receiverActualPackagesRead": 10,
+    "historicalReceivedRGBPackages": 2,
+    "meanValuesPerStage": 128,
+    "meanRoundTripMaxAbs": 2.384185791015625e-07,
+    "meanGate": 2e-06,
+    "actualRGBValuesPerSuccess": 1536,
+    "actualRGBMaxAbs": 4.328787326812744e-06,
+    "rgbGate": 2e-05,
+    "actualRGBFileSha256": "4de752c8a7d6df05fed012065bfd222b2f41d4c1c93c2cf8be58edfa24a46d72",
+    "actualRGBPayloadSha256": "aacf932664139862197c2dab5c087ce76305b2622bf02b3f5bde44eb73392d85",
+    "originalPromiseTerminalAndOwnerReleaseAccepted": true,
+    "freshWorkerRecoveryAccepted": true,
+    "owner884SourceAcquisitionAckAccepted": true,
+    "historicalPublishedEdgeCompatibility": "COMPATIBLE",
+    "historicalPublishedNumericalValidation": "PASS",
+    "historicalPublishedArtifactReadiness": "READY_SCOPED",
+    "meanPrepareDecisionRetained": "COMPATIBLE/NOT_VERIFIED/BLOCKED; diagnostic preparation only, no future receipt",
+    "currentLiveOwnerAccepted": false,
+    "globalGenerationReadiness": "BLOCKED",
+    "broaderScopeAccepted": false,
+    "ownerModelBytesTransferred": false,
+    "receiverReInference": 0,
+    "receiverReExport": 0
+  },
+  "p3": {
+    "decision": "ACCEPT_SIX_FORMAL_TRANSACTIONS_AT_RECORDED_60D_SCOPE_ONLY",
+    "ownerDistribution": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+    "ownerExecutionSource": "28f44c3a1b71bef59e2d018a0db736de6d84675c",
+    "managementExecutionSource": "60d16b64d6020d3d20239f087f8add91268dcaad",
+    "reconciliationRef": "lora/reconciliation.json",
+    "caseBindingsRef": "lora/case-bindings.json",
+    "scope": {
+      "status": "ACCEPTED_SIX_RETAINED_ACTUAL_FORMAL_TRANSACTIONS_AT_60D16",
+      "basis": "Retained native receipts, fixed sources and actual phase/queue/snapshot ownership observations; no fresh execution.",
+      "scope": "light/HIGH, Q first16 rows x5120 plus explicit bias16, genuine bounded-base PARTIAL diagnostic",
+      "publishedCaseCount": 6,
+      "publishedWeightComparisons": 491520,
+      "publishedBiasComparisons": 96,
+      "publishedOutputs": 96,
+      "maximumReportedWeightAbsoluteError": 3.72290287486976e-09,
+      "maximumReportedBiasAbsoluteError": 0,
+      "maximumReportedOutputAbsoluteError": 7.450580596923828e-09,
+      "cases": [
+        {
+          "id": "initial-zero",
+          "strength": 0,
+          "managerRevision": 2001,
+          "localInputRevision": 1,
+          "localApplicationRevision": 1,
+          "consumerEpoch": 2
+        },
+        {
+          "id": "initial-one",
+          "strength": 1,
+          "managerRevision": 2002,
+          "localInputRevision": 2,
+          "localApplicationRevision": 2,
+          "consumerEpoch": 3
+        },
+        {
+          "id": "initial-negative",
+          "strength": -1,
+          "managerRevision": 2003,
+          "localInputRevision": 3,
+          "localApplicationRevision": 3,
+          "consumerEpoch": 4
+        },
+        {
+          "id": "reapply-one",
+          "strength": 1,
+          "managerRevision": 2004,
+          "localInputRevision": 4,
+          "localApplicationRevision": 4,
+          "consumerEpoch": 5
+        },
+        {
+          "id": "validation-recovery",
+          "strength": 1,
+          "managerRevision": 2006,
+          "localInputRevision": 6,
+          "localApplicationRevision": 6,
+          "consumerEpoch": 6
+        },
+        {
+          "id": "cancel-recovery",
+          "strength": 1,
+          "managerRevision": 2008,
+          "localInputRevision": 9,
+          "localApplicationRevision": 9,
+          "consumerEpoch": 7
+        }
+      ],
+      "finalSelectionCurrent": false,
+      "currentLiveAdmission": false,
+      "acceptedWithinRecordedScope": true
+    },
+    "updated884": {
+      "compatibility": "COMPATIBLE",
+      "verification": "NOT_VERIFIED",
+      "readiness": "BLOCKED",
+      "accepted": false,
+      "sixCaseRunRelabeledAs884": false,
+      "sharedManagementRuntimeDiff60dTo884": [
+        "docs/shared/ai-connection/API.md only; runtime files unchanged"
+      ],
+      "runnerFilesByteEqual884ToF34": true,
+      "conditionsRemaining": [
+        {
+          "condition": "initial-one actual output16 E4 save and fresh disk readback",
+          "status": "NOT_VERIFIED",
+          "evidenceRequired": "createManagedDiagnosticPackage -> writeArtifactPackage -> fresh readArtifactPackage, complete status, output64bytes SHA-256 and actual snapshot hash/target binding; package path/byte/hash/readback manifest",
+          "dd95Evidence": "No savedPackage or packageFiles; raw output.f32 descriptors and saved JSON16 are not E4 package readback.",
+          "updatedRunnerLines": [
+            118,
+            124
+          ]
+        },
+        {
+          "condition": "E4 tamper and missing snapshot refusal",
+          "status": "NOT_VERIFIED",
+          "evidenceRequired": "Returned actual readback rejects mutated .wktensor with ASSET_HASH_MISMATCH and absent snapshot.json with REQUIRED_ASSET_MISSING.",
+          "dd95Evidence": "No such actual E4 negative receipt in retained run. Other historical codec/fixture tests are outside this transaction.",
+          "updatedRunnerLines": [
+            123,
+            124
+          ]
+        },
+        {
+          "condition": "pre-native reference payload guard",
+          "status": "NOT_VERIFIED",
+          "evidenceRequired": "wrong-reference changes expected copy[0]+1; NORM_REFERENCE_PAYLOAD_MISMATCH before native prepare/stage. Return counts: seven native prepare/stage attempts (six published + one cancelled), plus separate restore; old feed retained.",
+          "dd95Evidence": "Existing negative changed activation copy[0]+1024 with expected/gates unchanged; prepared blocks and queue failure prove native NATIVE_VALIDATION_MISMATCH, not pre-native rejection. Existing run has eight LoRA native invocations (six published + one native failure + one cancelled), plus separate restore.",
+          "updatedRunnerLines": [
+            78,
+            100,
+            130,
+            149
+          ]
+        }
+      ]
+    },
+    "currentLiveAdmission": false,
+    "private26ArtifactPayloadsReceived": false,
+    "nativeNumericalTestsRecomputed": false,
+    "scopeNotRelabeledAsUpdated884": true
+  },
+  "p4": {
+    "candidateRef": "p4/CANDIDATE-RECORD.json",
+    "decision": "CANDIDATE_RECEIVED_NOT_ADOPTED",
+    "distributionCommit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+    "executionSources": {
+      "baseHIGHAndLOW": "829467c14ec6fd1ab1858dfc175c84605de1ac98",
+      "finalF32FeedHIGH": "5744f700e17b23d5c18d32315fb6dfbd7c49089a"
+    },
+    "profile": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+    "managedDispatchAccepted": false,
+    "realTextConsumptionAccepted": false,
+    "canonicalLoraMappingAccepted": false,
+    "privateInputReferenceSavedOutputBodiesReceived": false,
+    "wholePipelineResourceBudgetAccepted": false,
+    "basePathIndependentFromLoraMapping": true,
+    "loraConditionsForcedOnBasePath": false
+  },
+  "oldN2": {
+    "canonicalAdmissionRef": "../../n2-tail-management/acceptance/ADMISSION.json",
+    "unchanged": true,
+    "profile": "bernini-block0-n2-self-attention-residual-f32-v1",
+    "managementExecution": "5c484a8783ab129a2ff3543a98b2537af9888199",
+    "nativeExecution": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+    "nativeDistribution": "beffdcb800b629d0b13ff43bbc90e9f74c659152",
+    "returnDistribution": "508d72cc9036e7f500827465c644b4aed3c5f711",
+    "newP4CandidateOverwritesOldAdmission": false
+  },
+  "states": {
+    "numericalEvidenceMissingWithKnownMatchingContract": "COMPATIBLE/NOT_VERIFIED/BLOCKED",
+    "requiredUnknownContractOrMapping": "UNVERIFIED",
+    "knownMismatch": "INCOMPATIBLE",
+    "generationReady": false,
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY",
+    "mergePerformed": false,
+    "pagesDeploymentPerformed": false
+  },
+  "verificationScope": "Existing manifests/receipts and fixed Git bytes; existing package reader/codecs plus persisted-value comparisons; no new owner inference or export",
+  "receiverNativeExecutionCount": 0,
+  "receiverReExportCount": 0,
+  "receiverModelDownloads": 0
+}

@@ -1,8 +1,11 @@
 # 固定N2受入とP2・P3共同接続の配布記録
 
-**N2受入記録の固定と共同runnerの実装・pushを完了した。P2の実VAE decode、
-P3の新正式bridge実取引、受領側の新固定source取得ACKは未完了。**
-該当edgeを保留し、生成受付は解除していない。
+**2026-11-02 JST更新：VAE f76のupdated-884 P2を固定Profile診断の範囲で受領・受入した。
+LoRA dd95の6取引は管理60dの実績として受領・受入し、884追加条件は保留する。
+Diffusionの新P4は旧N2と分けた未採用候補として取得した。**
+[最新の受領・照合・残件](owner-return/RESULT.md) と
+[受入記録](owner-return/RETURN-ADMISSION.json) を参照。
+以下はf34配布時点の実装・不足資材probeの履歴として保持する。生成受付は解除していない。
 
 ## 配布と実行source
 
@@ -81,7 +84,7 @@ P3の早期missing-input probeは契約判定前に停止しており、実行co
 [base-only実証](evidence/base-provider-preflight.json)、[P3停止結果](evidence/p3-private-inputs-blocked.json)。
 P2元JSONは769594B、SHA-256 `f7be6de3299639e6f44e8687285898f6fe82ed33e4ee5d90ff1921e730dda0a2`。
 
-## 共同受入待ちと再現
+## f34配布時点の共同受入待ちと再現
 
 固定source・command・返却条件を [VAE PR #11](https://github.com/Kushyameln01/kushyameln-works/pull/11#issuecomment-6556248492)、
 [LoRA PR #2](https://github.com/Kushyameln01/kushyameln-works/pull/2#issuecomment-6556249765) へ送信し、読戻し確認済み。
