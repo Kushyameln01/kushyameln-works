@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "bernini-n2-resource-observation-plan/0.1",
+  "status": "PRE_EXECUTION_GATE_FIXED",
+  "runtimeCommit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+  "handoffCommit": "78a3268166eca63e5daafb1b21e184224c4d14b1",
+  "sideOrder": ["HIGH", "LOW"],
+  "shape": [2, 5120],
+  "grid": [1, 1, 2],
+  "heads": 40,
+  "prefixPlan": "development/ai-connection/qkv-next/hidden-core/candidate-plan.json",
+  "downstreamPlan": "development/ai-connection/qkv-next/expansion/candidate-plan.json",
+  "numericalGatePolicy": "Reuse the fixed full-value prefix and local/composed downstream gates, without relaxation. Reuse local oracle only if fresh hidden bits exactly match the prior trusted artifact.",
+  "barriers": ["fresh browser for each side", "dispose prefix before constructing downstream", "close HIGH browser before LOW construction"],
+  "requiredAttribution": {"prefixHikeMemories": 4, "downstreamHikeMemories": 4, "sharedORTMemory": 1, "unknownModules": 0, "unattributedMemoryImports": 0},
+  "metrics": ["hash-attributed physical Memory identity", "linear Memory capacity bytes and high-water bytes", "source-derived per-phase named spans", "actual owner copy counters"],
+  "unknownsRemainNull": ["ORT allocator live bytes", "session-specific allocator bytes", "host allocator/GC/File backing", "parsed reference JS heap", "OS PSS/RSS", "total peak"],
+  "artifactPolicy": "New private prefix artifact with exclusive creation; never overwrite prior actual/reference files or old receipts. Models and private arrays never use HTTP.",
+  "scope": "Natural N2 with actual Rect mean, fixed explicit noise, HIGH1/LOW3, real model prefix and all2query/all40head attention before O; no original-grid numerical acceptance.",
+  "readiness": {"modelInference": false, "load": "NOT_READY", "predict": "NOT_READY", "sample": "NOT_READY"}
+}

@@ -1,0 +1,995 @@
+{
+  "schemaVersion": "works-profile-reference/1.0-draft.1",
+  "category": "numeric-execution",
+  "documentVersion": "1.0-draft.3",
+  "status": "documented-draft",
+  "runtimeIntegrated": false,
+  "records": [
+    {
+      "recordId": "EXEC-BERNINI-Q16-F32",
+      "nativeProfileId": "bernini-q16x5120-f32-wasm-v1",
+      "ownerRole": "diffusion_models",
+      "nativeContract": "bernini-diagnostic-registry/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/diagnostic-base.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+          "path": "development/ai-connection/E1-ADOPT-RESULT.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "execution": "ORT Web 1.24.3 WASM F32 Gemm then Hike F32 bias",
+        "weightShape": [
+          16,
+          5120
+        ],
+        "biasShape": [
+          16
+        ],
+        "activationShape": [
+          5120
+        ],
+        "outputShape": [
+          16
+        ],
+        "fullWeightShape": [
+          5120,
+          5120
+        ],
+        "originalTarget": "blocks.0.self_attn.q.weight",
+        "bindings": {
+          "weight": "runtime-input:weight",
+          "bias": "hike-parameter:bias"
+        },
+        "coverage": "PARTIAL",
+        "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+        "lowLevelRpcContract": "diffusion-models/0.1",
+        "lowLevelRpcOperation": "linearProjectionF32",
+        "nativeProviderRows": "16 consecutive rows, rowStart 0..5104; all input columns",
+        "acceptedLoRaDiagnosticRows": [
+          0,
+          16
+        ],
+        "baseIdentity": "native modelHash/graphHash/registryHash; independent whole-file receipt is a separate evidence scope"
+      },
+      "admissionConstraints": {
+        "inputBuffers": "compact ordinary ArrayBuffer-backed finite Float32Array; no shared/detached input",
+        "requiredElements": {
+          "weight": 81920,
+          "bias": 16,
+          "x": 5120,
+          "output": 16
+        },
+        "callerInputRetained": true,
+        "consumerCandidateIsFullModelSession": false,
+        "initializerSubstitutionAllowed": false,
+        "lowRankMultiplicationOwner": "lora",
+        "independentExpected16AndExplicitToleranceRequiredForConsumerValidation": true,
+        "consumerOwnsIndependentCopyBeforePreparedRelease": true,
+        "nativePackageAndRegistryAndManagerSnapshotHashesAreDistinct": true
+      },
+      "evidenceScopes": [
+        "Owner real base slice provider and ORT/Hike consumer evidence",
+        "LoRA owner real four-original PARTIAL joint20 evidence, reused at its fixed pins",
+        "Management real Local File control uses explicitly synthetic immutable base; separate scope"
+      ],
+      "limitations": [
+        "Not attention, one complete model prediction, full-target LoRA application, or generation",
+        "Original FP8 activation/scaled_mm precision equivalence is not established",
+        "Newest owner commit does not silently replace management-adopted Diffusion438 pin",
+        "Runtime-level pointwise limit is not enlarged by this record"
+      ]
+    },
+    {
+      "recordId": "EXEC-FP8-SCALAR-F32",
+      "nativeProfileId": "scaled-e4m3fn-scalar-f32-v1",
+      "ownerRole": "diffusion_models",
+      "nativeContract": "bernini-diagnostic-registry/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/diagnostic-base.mjs"
+        }
+      ],
+      "requiredDeclarations": {
+        "storageDtype": "F8_E4M3",
+        "computeDtype": "F32",
+        "scaleStorageDtype": "F32",
+        "scaleScope": "per-tensor scalar",
+        "quantizationConfigExactUtf8": "{\"format\": \"float8_e4m3fn\"}",
+        "quantizationConfigBytes": 27,
+        "numericRule": "W_F32 = F32Multiply(HikeE4M3FNDecode(storageBits), scale)",
+        "biasRule": "Original F16 bias is converted by separate Hike DecodeF16, not FP8 weight scale",
+        "nativeBindingFields": [
+          "modelHash",
+          "graphHash",
+          "registryHash",
+          "fp8ProfileId",
+          "scale key/shape/dtype/value/hash",
+          "source byte offsets and selected row mapping"
+        ]
+      },
+      "admissionConstraints": {
+        "scaleFiniteAndStrictlyPositive": true,
+        "nanWeightCodeAllowed": false,
+        "quantizationConfigAndOriginalDescriptorsMustMatch": true,
+        "unsupportedQuantizationMayFallbackToJavaScript": false,
+        "loraReceivesOwnedF32BlockOnly": true,
+        "wholeFileHashRecomputedByBoundedProvider": false,
+        "priorReceiptIsFreshWholeFileHashProof": false,
+        "requantizationEnabled": false
+      },
+      "evidenceScopes": [
+        "Actual selected base FP8/F16 raw ranges decoded by Hike and compared to independent F32 reference",
+        "Bounded raw-range integrity and registry identity are distinct from whole-file authentication"
+      ],
+      "limitations": [
+        "Not arbitrary FP8/per-channel/block scale/quantization support",
+        "Does not authorize LoRA SDK to accept quantized base bytes directly",
+        "No original GPU FP8/scaled_mm/activation-quantization equivalence claim",
+        "No whole-model residency or full inference acceptance"
+      ]
+    },
+    {
+      "recordId": "EXEC-BERNINI-SIMPLE6-SHIFT5",
+      "nativeProfileId": "bernini-comfy-simple6-shift5-v1",
+      "ownerRole": "diffusion_models",
+      "nativeContract": "diffusion-models/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/scheduler/scheduler-kernel.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/scheduler/scheduler.hike"
+        }
+      ],
+      "requiredDeclarations": {
+        "sourceComfyCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+        "shift": 5,
+        "timesteps": 1000,
+        "multiplier": 1000,
+        "steps": 6,
+        "splitStep": 3,
+        "sigmaBoundaryCount": 7,
+        "tableIndices": [
+          999,
+          833,
+          666,
+          499,
+          333,
+          166
+        ],
+        "highSigmas": "sigmas[0:4]",
+        "lowSigmas": "sigmas[3:7]",
+        "modelTimesteps": "six selected sigmas multiplied by float32(1000)",
+        "numericPrecision": "float32 operations in source order; final sigma is float32(0)",
+        "tableRule": "For table index j=0..999: t=f32(j+1)/f32(1000); t=t*f32(1000); t=t/f32(1000); sigma=(f32(5)*t)/(f32(1)+f32(4)*t)",
+        "primitiveRules": {
+          "noiseMix": "scaledNoise=noiseScale*noise; noisePart=sigma*scaledNoise; latentPart=(1-sigma)*latent; out=noisePart+latentPart; each intermediate F32",
+          "inverseNoiseScale": "out=latent/(1-sigma), F32; sigma=1 rejected",
+          "flowDenoised": "product=velocity*sigma; out=input-product; each intermediate F32"
+        }
+      },
+      "admissionConstraints": {
+        "scheduleRequiresExactNativeProfileId": true,
+        "sigmaFiniteRange": [
+          0,
+          1
+        ],
+        "noiseScaleFiniteAndNonnegative": true,
+        "inputTensorFiniteAndMatchingShape": true,
+        "seedToNoiseImplemented": false,
+        "nativePublicPointwiseMaxElements": 1048576,
+        "internalSchedulerMaxElements": 4194304,
+        "internalSchedulerChunkElements": 4096,
+        "internalCapacityRaisesPublicLimit": false,
+        "generatesNeuralPrediction": false,
+        "noiseScaleFiniteAfterFloat32Conversion": true
+      },
+      "evidenceScopes": [
+        "Real Hike fixed schedule and numerical primitive checks at their pinned build",
+        "No neural-network model prediction performed by scheduler kernel"
+      ],
+      "limitations": [
+        "Not arbitrary scheduler, step count, shift, or split selection",
+        "Neither HIGH/LOW full orchestration nor original stage-boundary correctness follows from sigma generation",
+        "Production latent2096640 exceeds current public pointwise limit",
+        "No implicit APG/CFG algorithm is added"
+      ]
+    },
+    {
+      "recordId": "EXEC-ATTENTION-Q16-ONEHEAD",
+      "nativeProfileId": null,
+      "ownerRole": "diffusion_models",
+      "nativeContract": null,
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/ort-bridge/stream-attention/graph.mjs"
+        }
+      ],
+      "requiredDeclarations": {
+        "entryKind": "independent ES module; not native RPC predict/sample",
+        "entryPath": "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs",
+        "factoryExport": "createStreamAttention",
+        "descriptorSchemaVersion": "works-stream-attention/0.1",
+        "inputSourceSchema": "works-postnorm-rope-qkv/0.1",
+        "precisionProfile": "f32-ort-score-exp-hike-recurrence-v1",
+        "scope": "EXPLICIT_Q16_ONE_HEAD_ALL_KEYS",
+        "queryShape": [
+          16,
+          128
+        ],
+        "keyValueLogicalShape": "[keyCount,128] per one head",
+        "keyCountRange": [
+          1,
+          32760
+        ],
+        "logicalTileMax": 64,
+        "fullTestKeyCount": 32760,
+        "lastTileAtFullCount": 56,
+        "attentionScaleRule": "Math.fround(1/Math.sqrt(128))",
+        "numericOwnership": "ORT F32 MatMul/scale/row-max/exp; Hike online max-rescaling sum and value accumulation",
+        "sourceSpaces": {
+          "query": "post-qk-norm-rope",
+          "key": "post-qk-norm-rope",
+          "value": "projected-value"
+        }
+      },
+      "admissionConstraints": {
+        "inputBuffers": "compact ordinary ArrayBuffer-backed finite Float32Array",
+        "mask": "none",
+        "dropout": 0,
+        "sourceProvenanceKindAllowed": [
+          "explicit-fixture",
+          "precomputed-tensors"
+        ],
+        "sourceIdentityAndEachOffsetCountShapeChecked": true,
+        "tailPaddedWithPhantomKeys": false,
+        "productionQKVVerified": false,
+        "fullHeadCountVerified": false,
+        "originalProductionPrecisionVerified": false,
+        "nativeRpcOperationAdded": false,
+        "E8": "BLOCKED"
+      },
+      "evidenceScopes": [
+        "Selected16 query rows, one head, explicit postnorm/RoPE source and all32760 keys including exact56-key tail",
+        "Candidate ORT/Hike numerical boundary and bounded-workspace measurements only"
+      ],
+      "limitations": [
+        "No formally declared executionProfileId; recordId is local reference only",
+        "precisionProfile and input schema are not interchangeable with executionProfileId",
+        "Actual production Q/K/V generation and QK norm/RoPE are outside this boundary",
+        "All query/head and combined staging/copy/Memory are not accepted",
+        "Producer residency and ORT Memory are not fully measured",
+        "Not whole attention/model prediction or generation acceptance"
+      ]
+    },
+    {
+      "ownerRole": "diffusion_models",
+      "nativeContract": "bernini-qkv-diagnostic/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "docs/shared/diffusion-models/ort-bridge/qkv/stage.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/candidate-plan.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/runtime-admission.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/RUNTIME-RESULT.md"
+        }
+      ],
+      "evidenceScopes": [
+        "Fixed actual retained HIGH/LOW block0 weights and explicit deterministic hidden16 fixture; reused owner receipt, not fresh inference for this registration"
+      ],
+      "limitations": [
+        "No actual timestep/block post-modulation hidden provenance",
+        "No original production precision/backend parity",
+        "No full32760 or context65520+ sequence, all heads/stages or combined pipeline budget",
+        "load/predict/sample remain NOT_READY; registration is not management adoption"
+      ],
+      "recordId": "EXEC-BERNINI-QKV-N16-F32",
+      "nativeProfileId": "bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1",
+      "requiredDeclarations": {
+        "nativeEntry": "createActualQkvDiagnostic({file,side,bridgeBytes,tensorBytes,ropeBytes}).run({hidden,positions,sourceIds,signal,onProgress,headIndex:0})",
+        "dtype": "float32",
+        "layout": "row-major",
+        "hiddenShape": [
+          16,
+          5120
+        ],
+        "normalizationAxis": 5120,
+        "normalizationEpsilonLiteral": 1e-06,
+        "selectedHead": 0,
+        "headCountInModel": 40,
+        "attentionKeyCount": 16,
+        "hiddenProvenance": "explicit deterministic post-modulation hidden fixture; not an actual model activation",
+        "scope": "ACTUAL_WEIGHTS_EXPLICIT_HIDDEN_N16_FULL_WIDTH_HEAD0",
+        "storage": {
+          "projection": "F8_E4M3",
+          "scale": "per-tensor scalar F32",
+          "bias": "F16",
+          "normWeight": "F16",
+          "decodeProfile": "scaled-e4m3fn-scalar-f32-v1",
+          "computeProfile": "F32 diagnostic; original GPU/scaled_mm/activation quantization parity UNVERIFIED"
+        },
+        "gates": {
+          "decodedWeightBias": {
+            "comparison": "strict F32 bytes"
+          },
+          "projection": {
+            "absolute": 0.0001,
+            "relative": 1e-05,
+            "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+          },
+          "norm": {
+            "absolute": 0.0001,
+            "relative": 0.0001,
+            "origin": "new predeclared F32 sequential5120 reduction/reciprocal diagnostic tolerance versus independent binary64 oracle; not Torch fused rsqrt parity"
+          },
+          "ropeMatrix": {
+            "absolute": 2e-06,
+            "relative": 2e-06,
+            "origin": "new predeclared F64 primitive/F32 matrix construction and composition diagnostic tolerance"
+          },
+          "ropeApply": {
+            "absolute": 0.0001,
+            "relative": 0.0001,
+            "origin": "new predeclared fullwidth norm to selectedhead matrix-apply diagnostic"
+          },
+          "connectedAttention": {
+            "absolute": 0.001,
+            "relative": 0.0001,
+            "origin": "new predeclared composed-stage F32 diagnostic error budget; not production acceptance"
+          }
+        },
+        "gateFormula": "abs(actual-ref) <= absolute + relative*abs(ref)",
+        "reference": {
+          "projection": "independent E4M3FN decode and F32 scalar product; binary64 dot accumulation -> F32; F32 bias addition",
+          "norm": "independent binary64 mean-square/sqrt reference from all5120 dimensions, eps is source1e-6; also record ordered F32 loop/sqrtF64->F32 reciprocal reference",
+          "rope": "NumPy binary64 linspace/power/cos/sin -> F32 2x2 matrices; T/H/W axis dims44/42/42; separate sourceId full128 matrices composed with F32 two-term products/sums; no angle collapse",
+          "attention": "independent binary64 softmax over all16 declared selected keys, no mask/dropout"
+        },
+        "numericalRuleRefs": [
+          "NR-BERNINI-QKV-N16-F32",
+          "NR-BERNINI-QK5120-F32",
+          "NR-BERNINI-ROPE64-F32",
+          "NR-BERNINI-QKV-ATTENTION-N16-F32",
+          "NR-SCOPED-GATES"
+        ],
+        "projectionGraphSHA256": "ec834903f4a7fc0ff315c134b0efc858ce7cff3464d908f37f0df8c968382a39",
+        "buildBinding": "catalog.registrationSourceBuild: external source/build/loaded-byte declaration; native describe has no buildId field"
+      },
+      "admissionConstraints": {
+        "finiteCompactNonsharedOwnedInputs": true,
+        "qkProjectionMaxAbs": 1e+16,
+        "qkNormAxis": 5120,
+        "head0Only": true,
+        "explicitHighOrLowOriginalBlob": true,
+        "fullFileHashRecomputed": false,
+        "noInitializerSubstitutionOrImplicitQuantization": true,
+        "rawReferencePayloadPublished": false,
+        "productionQKVVerified": false,
+        "modelInference": false
+      }
+    },
+    {
+      "ownerRole": "diffusion_models",
+      "nativeContract": "bernini-derived-heads/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+          "path": "docs/shared/diffusion-models/ort-bridge/attention-heads/stage.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+          "path": "development/ai-connection/qkv-next/expansion/candidate-plan.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+          "path": "development/ai-connection/qkv-next/hidden-core/candidate-plan.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+          "path": "development/ai-connection/qkv-next/hidden-core/SOURCE-CONTRACT.md"
+        }
+      ],
+      "evidenceScopes": [
+        "Reused fixed HIGH1/LOW3 actual Rect raw-mean prefix14 stages and N2/all40 downstream11 comparisons per side; not fresh numeric execution for registration"
+      ],
+      "limitations": [
+        "original81frame production input/noise/context and production hidden",
+        "LOW actual HIGH handoff",
+        "full block residual/cross attention/FFN",
+        "Torch SiLU/LayerNorm/addcmul/CUDA ck.adaln parity",
+        "FP8 activation/scaled_mm or BF16/FP16 original production precision",
+        "production all-query/head resource budget",
+        "full predict/sample",
+        "O projection and full self-attention block absent",
+        "N16 explicit-hidden fixture acceptance is separate",
+        "Combined production Memory/staging/copy/time budget remains unaccepted"
+      ],
+      "recordId": "EXEC-BERNINI-DERIVED-N2-ALL40-F32",
+      "nativeProfileId": "bernini-block0-derived-qkv-n2-allheads-f32-v1",
+      "requiredDeclarations": {
+        "factory": "createDerivedQkvHeads({file,side,trustedProducer,bridgeBytes,tensorBytes,ropeBytes})",
+        "entry": "run({hidden,positions,sourceIds,evidence,artifactSHA256,signal,onProgress})",
+        "dtype": "float32",
+        "layout": "LC",
+        "shape": [
+          2,
+          5120
+        ],
+        "precisionProfile": "f32-hike-dequant-fullnorm-rope-ort-gemm-score-hike-context-v1",
+        "source": {
+          "coreCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+          "prefixContract": {
+            "repository": "Kushyameln01/kushyameln-works",
+            "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+            "path": "development/ai-connection/qkv-next/hidden-core/SOURCE-CONTRACT.md",
+            "byteLength": 9352,
+            "sha256": "b2e5980d625755af021276e7e3c640819aeccc01c8b297a17123558de3440e4d"
+          },
+          "producer": [
+            {
+              "repository": "Kushyameln01/kushyameln-works",
+              "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+              "path": "development/ai-connection/qkv-next/hidden-runtime/high-comparison.json",
+              "byteLength": 30200,
+              "sha256": "c12885eb71b0b46f91f79b94bba0315f1c9eae635daa3493686bb5882c7703f0"
+            },
+            {
+              "repository": "Kushyameln01/kushyameln-works",
+              "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+              "path": "development/ai-connection/qkv-next/hidden-runtime/low-comparison.json",
+              "byteLength": 30191,
+              "sha256": "ec161f89a53f8dbd6b8c4a02c59a236ac544224cfe700592e8982900eeb4ade5"
+            }
+          ],
+          "priorProfileScope": "N16 explicit fixture/head0 remains unchanged",
+          "storage": "original FP8 E4M3FN scalar scale; F16 bias/norm",
+          "compute": "Hike dequant/norm/RoPE/recurrence F32, ORT Gemm/score-exp F32",
+          "precisionIsOriginalProduction": false
+        },
+        "gates": {
+          "decodedWeightBiasNorm": "exact F32 bytes vs independent decoder",
+          "projection": {
+            "abs": 0.0001,
+            "rel": 1e-05
+          },
+          "qkNorm": {
+            "abs": 0.0001,
+            "rel": 0.0001
+          },
+          "ropeMatrix": {
+            "abs": 2e-06,
+            "rel": 2e-06
+          },
+          "ropeApply": {
+            "abs": 0.0001,
+            "rel": 0.0001
+          },
+          "allHeadContext": {
+            "abs": 0.001,
+            "rel": 0.0001
+          },
+          "composedPrefixToContext": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        },
+        "gateRationale": "Values selected before new comparison, from prior F32 operator envelopes; prior acceptance does not transfer to this new input/shape/scope. Independent local actual-hidden oracle and independent-prefix composed oracle remain distinct. Elementwise abs(error)<=abs+rel*abs(reference).",
+        "numericalRuleRefs": [
+          "NR-BERNINI-RECT2-PREFIX-F32",
+          "NR-BERNINI-QKV-N2-F32",
+          "NR-BERNINI-QK5120-N2-F32",
+          "NR-BERNINI-ROPE64-N2-F32",
+          "NR-BERNINI-ATTENTION-N2-ALL40-F32",
+          "NR-SCOPED-GATES"
+        ],
+        "dependencyProfileRefs": [
+          "EXEC-BERNINI-RECT2-PREFIX-F32"
+        ],
+        "prefixNativeProfileId": "bernini-rect2-block0-postmod-f32-v1",
+        "sourceBuildBinding": "catalog.registrationN2SourceBuild"
+      },
+      "admissionConstraints": {
+        "trustedProducer": {
+          "nativeValidator": {
+            "repository": "Kushyameln01/kushyameln-works",
+            "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+            "path": "docs/shared/diffusion-models/ort-bridge/attention-heads/stage.mjs"
+          },
+          "nativeValidatorExport": "validateProducerReceipt",
+          "trustedReceiptSchema": "bernini-hidden-prefix-trusted-receipt/0.1",
+          "passed": true,
+          "artifactAndProducerSourceHashesRequired": true,
+          "producerSourceSHA256Nonempty": true,
+          "hashSyntax": "lowercase64hex",
+          "evidenceExact": {
+            "schemaVersion": "bernini-block-hidden-evidence/0.1",
+            "executionProfileId": "bernini-rect2-block0-postmod-f32-v1",
+            "precisionProfile": "bernini-block0-prefix-hike-f32-ort-silu-v1",
+            "blockIndex": 0,
+            "implicitBatch": 1,
+            "originalCoreShape": [
+              1,
+              2,
+              5120
+            ],
+            "operatorShape": [
+              2,
+              5120
+            ],
+            "layout": "LC",
+            "grid": [
+              1,
+              1,
+              2
+            ],
+            "rowToGrid": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                1
+              ]
+            ],
+            "sourceIds": [
+              0,
+              0
+            ],
+            "contextLatents": [],
+            "noiseScale": 1,
+            "postModulationComputedByModelOperators": true,
+            "originalWorkflowInputsVerified": false,
+            "productionHiddenVerified": false,
+            "originalProductionPrecisionVerified": false,
+            "fullBlockVerified": false,
+            "modelInference": false,
+            "load": "NOT_READY",
+            "predict": "NOT_READY",
+            "sample": "NOT_READY"
+          },
+          "sideCases": {
+            "HIGH": {
+              "side": "HIGH",
+              "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+              "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+              "scheduleIndex": 1,
+              "sigma": 0.9617158770561218,
+              "timestep": 961.7158813476562,
+              "rawMeanSHA256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+              "noiseSHA256": "88463c36453f5edf61682e77df267645e68903f17b57f22fc561c4443f3bb28b",
+              "hiddenSHA256": "99066357aff4ebc1a13f63aa9486298153b43f8f026f6db8ada2a31a6671c61c",
+              "positionsSHA256": "9c96abcf679f283862a28bc89f5d9fa1085c5b3f360389f00ac996ca84570fd0",
+              "sourceIdsSHA256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+              "artifactSHA256": "4493d93b56f434b6292da1c9898dd30b474444073796a10e25788d5c71a65a52",
+              "receipt": {
+                "repository": "Kushyameln01/kushyameln-works",
+                "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+                "path": "development/ai-connection/qkv-next/hidden-runtime/high-comparison.json",
+                "byteLength": 30200,
+                "sha256": "c12885eb71b0b46f91f79b94bba0315f1c9eae635daa3493686bb5882c7703f0"
+              }
+            },
+            "LOW": {
+              "side": "LOW",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+              "scheduleIndex": 3,
+              "sigma": 0.8333333134651184,
+              "timestep": 833.3333129882812,
+              "rawMeanSHA256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+              "noiseSHA256": "88463c36453f5edf61682e77df267645e68903f17b57f22fc561c4443f3bb28b",
+              "hiddenSHA256": "7d633f1d07d15fc02fe50030dbbc45800d14d7dc8f140acc309c6339a2467f4f",
+              "positionsSHA256": "9c96abcf679f283862a28bc89f5d9fa1085c5b3f360389f00ac996ca84570fd0",
+              "sourceIdsSHA256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+              "artifactSHA256": "1b2808f5ee1185db85cba4e2c59c030fd45d6e3c83c9fde457e70c7d1545d797",
+              "receipt": {
+                "repository": "Kushyameln01/kushyameln-works",
+                "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+                "path": "development/ai-connection/qkv-next/hidden-runtime/low-comparison.json",
+                "byteLength": 30191,
+                "sha256": "ec161f89a53f8dbd6b8c4a02c59a236ac544224cfe700592e8982900eeb4ade5"
+              }
+            }
+          },
+          "runBinding": [
+            "factory side and original modelHash equal trusted producer",
+            "artifactSHA256 and fixed identity fields equal separately trusted receipt",
+            "snapshot hidden/positions/sourceIds; exact natural coordinates and source0; verify all3 bit hashes",
+            "caller booleans and hashes alone do not establish provenance"
+          ],
+          "trustOwner": "Importing owner independently anchors the public producer receipt/artifact/source identities; the data catalog does not authenticate caller claims by itself."
+        },
+        "finiteCompactOwnedNonsharedF32Hidden": [
+          2,
+          5120
+        ],
+        "finiteCompactOwnedNonsharedF32Positions": [
+          2,
+          3
+        ],
+        "compactNonsharedInt32SourceIds": [
+          2
+        ],
+        "normProjectionMaxAbs": 1e+16,
+        "fullNormAxisBeforeHeads": 5120,
+        "noHeadLocalNormOrPadding": true,
+        "prefixDisposalBarrierRequired": true,
+        "modelInference": false
+      }
+    },
+    {
+      "ownerRole": "diffusion_models",
+      "nativeContract": "bernini-block-hidden/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+          "path": "docs/shared/diffusion-models/ort-bridge/attention-heads/stage.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+          "path": "development/ai-connection/qkv-next/expansion/candidate-plan.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+          "path": "development/ai-connection/qkv-next/hidden-core/candidate-plan.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+          "path": "development/ai-connection/qkv-next/hidden-core/SOURCE-CONTRACT.md"
+        }
+      ],
+      "evidenceScopes": [
+        "Reused fixed HIGH1/LOW3 actual Rect raw-mean prefix14 stages and N2/all40 downstream11 comparisons per side; not fresh numeric execution for registration"
+      ],
+      "limitations": [
+        "original81frame production input/noise/context and production hidden",
+        "LOW actual HIGH handoff",
+        "full block residual/cross attention/FFN",
+        "Torch SiLU/LayerNorm/addcmul/CUDA ck.adaln parity",
+        "FP8 activation/scaled_mm or BF16/FP16 original production precision",
+        "production all-query/head resource budget",
+        "full predict/sample",
+        "O projection and full self-attention block absent",
+        "N16 explicit-hidden fixture acceptance is separate",
+        "Combined production Memory/staging/copy/time budget remains unaccepted"
+      ],
+      "recordId": "EXEC-BERNINI-RECT2-PREFIX-F32",
+      "nativeProfileId": "bernini-rect2-block0-postmod-f32-v1",
+      "requiredDeclarations": {
+        "dependencyOnly": true,
+        "factory": "createBlockHiddenPrefix({file,side,bridgeBytes,mathBytes,latentBytes,schedulerBytes})",
+        "entry": "run({rawMean,noise,noiseScale:1,scheduleIndex,signal,onProgress})",
+        "dtype": "float32",
+        "layout": "LC",
+        "precisionProfile": "bernini-block0-prefix-hike-f32-ort-silu-v1",
+        "sourceInput": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "development/inference/e6/fixtures/png-mean.wktensor",
+          "fileSha256": "6539204ef61dc0f706238b74e2bcabf8bbcce971f5056d0b0d7e288811516b71",
+          "payloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "meaning": "raw-posterior-mean",
+          "rawMeanProfileId": "wan21-raw-f32-1x16x32"
+        },
+        "input": {
+          "noiseRecipe": "float32((((i*29+7)%127)-63)/64), i=0..127; caller-owned explicit array; no PRNG",
+          "noiseScale": 1,
+          "scheduleProfile": "bernini-comfy-simple6-shift5-v1",
+          "scheduler": "simple",
+          "sampler": "Euler",
+          "steps": 6,
+          "shift": 5,
+          "split": 3,
+          "cases": [
+            {
+              "side": "HIGH",
+              "globalSigmaIndex": 1,
+              "sigma": 0.9617158770561218
+            },
+            {
+              "side": "LOW",
+              "globalSigmaIndex": 3,
+              "sigma": 0.8333333134651184
+            }
+          ],
+          "modelTimestep": "float32(sigma*float32(1000))",
+          "lowIsActualHighToLowHandoff": false,
+          "conditioning": "target-only; context_latents=[]; text dependency outside prefix cut",
+          "originalWorkflowInputVerified": false,
+          "originalWorkflowNoiseVerified": false,
+          "productionHiddenVerified": false
+        },
+        "target": {
+          "blockIndex": 0,
+          "patchShape": [
+            1,
+            2,
+            2
+          ],
+          "grid": [
+            1,
+            1,
+            2
+          ],
+          "hiddenShape": [
+            2,
+            5120
+          ],
+          "coordinates": [
+            {
+              "t": 0,
+              "h": 0,
+              "w": 0,
+              "sourceId": 0
+            },
+            {
+              "t": 0,
+              "h": 0,
+              "w": 1,
+              "sourceId": 0
+            }
+          ],
+          "contextStreams": 0,
+          "tokenPadding": false,
+          "tokenRepetition": false,
+          "timeProjectionRows": [
+            0,
+            10240
+          ],
+          "blockModulationChunks": [
+            0,
+            1
+          ],
+          "omittedTimeProjectionChunks": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "omissionReason": "post-norm1-modulation self-attention input depends only on shift chunk0 and scale chunk1; residual/FFN and full block not accepted"
+        },
+        "precision": {
+          "parameterStorage": "F16 for this prefix; no FP8 weight-scale conversion on these keys",
+          "parameterDecode": "IEEE754 binary16 -> owned float32; strict F32 bytes",
+          "normalize": "source constants F32; subtraction, multiply1, divide std rounded after each operation",
+          "noiseMix": "float32(sigma*float32(noiseScale*noise))+float32(float32(1-sigma)*normalizedMean), with final add F32",
+          "patch": "F32 im2col, ORT runtime-input Gemm; no convolution/CUDA/TF32 parity claim",
+          "linear": "F32 ORT Gemm with F32 bias; independent binary64 dot -> F32 then F32 bias add",
+          "timeSin": "F32 exponent/arange division; pow primitive F64->F32; F32 position*frequency; cos/sin primitive F64->F32; cos then sin concat; distinct from RoPE F64 frequency",
+          "silu": "ORT Sigmoid then Mul F32; finite abs(input)<=1e6 and finite output; independent stable binary64 sigmoid*x -> F32; no fused Torch SiLU parity",
+          "layerNorm": "nonaffine full5120 epsilon1e-6; Hike two-pass orderedF32 mean/variance; sqrtF64->F32, inverseF32; independent binary64 mean/variance/sqrt -> F32",
+          "modulate": "F32 scalePlusOne, F32 norm*scalePlusOne then F32 add shift; independent binary64 product+sum -> F32; source addcmul/ck.adaln parity unverified",
+          "shiftScale": "F32 timeProjection plus decodedF32 blocks.0.modulation chunks0/1"
+        },
+        "gates": {
+          "normalizedMean": {
+            "comparison": "strict F32 bytes"
+          },
+          "noisedLatent": {
+            "comparison": "strict F32 bytes"
+          },
+          "patches": {
+            "comparison": "strict F32 bytes"
+          },
+          "decodedParameter": {
+            "comparison": "strict F32 bytes"
+          },
+          "timeSin": {
+            "abs": 2e-06,
+            "rel": 2e-06
+          },
+          "patchHidden": {
+            "abs": 0.0001,
+            "rel": 1e-05
+          },
+          "timeLinear0": {
+            "abs": 0.0001,
+            "rel": 1e-05
+          },
+          "timeAct0": {
+            "abs": 0.0001,
+            "rel": 1e-05
+          },
+          "timeEmbedding": {
+            "abs": 0.001,
+            "rel": 0.0001
+          },
+          "timeAct1": {
+            "abs": 0.001,
+            "rel": 0.0001
+          },
+          "timeProjection": {
+            "abs": 0.001,
+            "rel": 0.0001
+          },
+          "shift": {
+            "abs": 0.001,
+            "rel": 0.0001
+          },
+          "scale": {
+            "abs": 0.001,
+            "rel": 0.0001
+          },
+          "layerNorm": {
+            "abs": 0.0001,
+            "rel": 0.0001
+          },
+          "hidden": {
+            "abs": 0.001,
+            "rel": 0.0001
+          },
+          "composedAttention": {
+            "abs": 0.01,
+            "rel": 0.001,
+            "scope": "independent raw-mean prefix hidden -> independent QKV/norm/RoPE/all40head N2 attention; separate from actual-hidden local boundary gates"
+          }
+        },
+        "numericalRuleRefs": [
+          "NR-BERNINI-RECT2-PREFIX-F32",
+          "NR-WAN21-MEAN-F32",
+          "NR-FLOW-SCHEDULE-F32",
+          "NR-FLOW-NOISE-F32",
+          "NR-SCOPED-GATES"
+        ],
+        "sourceBuildBinding": "catalog.registrationN2SourceBuild"
+      },
+      "admissionConstraints": {
+        "finiteInputs": true,
+        "exactRawProfile": true,
+        "exactGrid": true,
+        "siluInputMaxAbs": 1000000,
+        "layerNormInputMaxAbs": 10000000000000000,
+        "finiteIntermediateAndOutput": true,
+        "rejectNonFiniteBeforeOutputMutation": true,
+        "weightBinding": "original key/full shape/F16 dtype/exact row range/model+header identity required",
+        "privateArtifact": "all actual numeric hidden/parameter arrays stay outside repository; public receipts contain hashes/metrics only",
+        "producerEvidenceExact": {
+          "schemaVersion": "bernini-block-hidden-evidence/0.1",
+          "executionProfileId": "bernini-rect2-block0-postmod-f32-v1",
+          "precisionProfile": "bernini-block0-prefix-hike-f32-ort-silu-v1",
+          "blockIndex": 0,
+          "implicitBatch": 1,
+          "originalCoreShape": [
+            1,
+            2,
+            5120
+          ],
+          "operatorShape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "grid": [
+            1,
+            1,
+            2
+          ],
+          "rowToGrid": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "sourceIds": [
+            0,
+            0
+          ],
+          "contextLatents": [],
+          "noiseScale": 1,
+          "postModulationComputedByModelOperators": true,
+          "originalWorkflowInputsVerified": false,
+          "productionHiddenVerified": false,
+          "originalProductionPrecisionVerified": false,
+          "fullBlockVerified": false,
+          "modelInference": false,
+          "load": "NOT_READY",
+          "predict": "NOT_READY",
+          "sample": "NOT_READY"
+        },
+        "selectedCases": [
+          {
+            "side": "HIGH",
+            "globalSigmaIndex": 1,
+            "sigma": 0.9617158770561218
+          },
+          {
+            "side": "LOW",
+            "globalSigmaIndex": 3,
+            "sigma": 0.8333333134651184
+          }
+        ],
+        "prefixWeights": "F16 for these exact keys; no FP8 scale conversion",
+        "readiness": {
+          "load": "NOT_READY",
+          "predict": "NOT_READY",
+          "sample": "NOT_READY"
+        }
+      }
+    }
+  ],
+  "registrationStatus": "proposal-preview-not-published"
+}

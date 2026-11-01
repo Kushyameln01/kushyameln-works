@@ -216,3 +216,11 @@ hidden/positionsはcompact・非sharedの有限F32、sourceIdsはcompactなInt32
 数値規則・shape・sourceとの対応は [prefix契約](ort-bridge/block-hidden/README.md)、[全head境界](ort-bridge/attention-heads/API.md)、[結果・再現・段階別資源](../../../development/ai-connection/qkv-next/RESULT.md) を参照。trusted receiptはartifact・hidden・座標・side/block/timestep・producer sourceのhashを束縛する整合証拠であり、任意callerの出所を暗号学的に認証する機能ではない。
 
 全N32760/65520の数値実行、元81frame入力、ordered context、HIGH→LOW受渡し、production precision、全工程の同時保持・ORT Memory・copy/time予算は未受入。大規模allocation-only試験をモデル実行や全query数値合格と扱わず、`load/predict/sample=NOT_READY` を維持する。
+
+## N2共通catalog登録packageと追加資源検証
+
+[registration-QKV-N2.md](profiles/registration-QKV-N2.md) と `profiles/registration-qkv-n2.json` は、新N2の共通catalog形式の登録資料である。旧owner独自 `expansion/profile-proposal.json` だけでは不足したrecord/rule/norm/category mapping、依存prefix実行profile、厳密native guard、完全commitと実source/build/evidenceを対応付ける。旧managerとN16候補を保持して別entryへ追加するpreviewであり、外部catalog正本や管理runtimeの採用状態を変更しない。
+
+新しい資源観測は既存の数値runtimeを変更せず、[追加結果](../../../development/ai-connection/qkv-followup/RESULT.md) に保存する。ORTのsession数とWebAssembly.Memory数を区別し、同一Memoryはidentityで一度だけ数える。観測する線形Memory容量・高水位、名前付きhost staging、累積copy、allocator live/GC/OSの未知量を別に扱う。計測器の追加をnative RPCの新operationや本番の資源保証と扱わない。
+
+[再利用scope](../../../development/ai-connection/qkv-followup/REUSE_SCOPE.md) と [次の本番境界](../../../development/ai-connection/qkv-followup/BOUNDARIES.md) は、N2数値・旧precomputed-K32760・3H allocationの証拠を合成して本番受入へ昇格させない条件を示す。元gridでの新たな数値受入には、その入力の実producer receipt・座標・precision・独立referenceが必要である。`load/predict/sample=NOT_READY`、元Euler/simple6steps/shift5/split3を維持する。
