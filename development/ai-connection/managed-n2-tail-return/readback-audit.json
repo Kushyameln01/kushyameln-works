@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent actual-disk E4 readback after fixed runner exit; no new numerical computation",
+  "managementImplementationCommit": "5c484a8783ab129a2ff3543a98b2537af9888199",
+  "readerSource": "docs/shared/ai-connection/adapters/n2-tail/package.mjs",
+  "codecOriginalSourceCommit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+  "codecSHA256": "d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5",
+  "reports": [
+    {
+      "side": "HIGH",
+      "status": "complete",
+      "issues": [],
+      "diskReads": 32,
+      "outputCount": 5,
+      "outputs": [
+        {
+          "name": "o",
+          "sha256": "275407a7ef2515af2ef4c04061d3032f41ff80d64f4ed41d912d43b92980330d",
+          "byteLength": 40960,
+          "shape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "meaning": "self-attention-o-projection-token-hidden",
+          "ownership": "copy"
+        },
+        {
+          "name": "gateProjection",
+          "sha256": "36be45ee632f5db4713ac210010086f809150507d674ed60eabff1efc4f3c46f",
+          "byteLength": 20480,
+          "shape": [
+            5120
+          ],
+          "layout": "C",
+          "meaning": "time-modulation-chunk2-gate-projection",
+          "ownership": "copy"
+        },
+        {
+          "name": "gate",
+          "sha256": "6d3907674b17e9b546d824a93ab25d77580c4bff4759346628f2e947dd41776f",
+          "byteLength": 20480,
+          "shape": [
+            5120
+          ],
+          "layout": "C",
+          "meaning": "time-modulation-chunk2-gate",
+          "ownership": "copy"
+        },
+        {
+          "name": "gated",
+          "sha256": "c03d8d98beb6b749f480eb448f1e2ed308fb6fc16983d65b800eaa0742ca2811",
+          "byteLength": 40960,
+          "shape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "meaning": "self-attention-gated-token-hidden",
+          "ownership": "copy"
+        },
+        {
+          "name": "residual",
+          "sha256": "72a7de56a7364122197f4126a996f7131ff4fbda94f7f8201bdacbaad04d85b9",
+          "byteLength": 40960,
+          "shape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "meaning": "block0-self-attention-residual-token-hidden",
+          "ownership": "copy"
+        }
+      ]
+    },
+    {
+      "side": "LOW",
+      "status": "complete",
+      "issues": [],
+      "diskReads": 32,
+      "outputCount": 5,
+      "outputs": [
+        {
+          "name": "o",
+          "sha256": "7898781992c33a1910f088506d9b39ce91240c1a24de44509979462f6e195869",
+          "byteLength": 40960,
+          "shape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "meaning": "self-attention-o-projection-token-hidden",
+          "ownership": "copy"
+        },
+        {
+          "name": "gateProjection",
+          "sha256": "6248c76f4f2dcdf0ca2b468238a7e85b9048b184011bd0cb62681bbfeab89a80",
+          "byteLength": 20480,
+          "shape": [
+            5120
+          ],
+          "layout": "C",
+          "meaning": "time-modulation-chunk2-gate-projection",
+          "ownership": "copy"
+        },
+        {
+          "name": "gate",
+          "sha256": "f3c2d060da70eb64ba89dd4f87cbf1b3e9509f38e52827e5d50676607e772645",
+          "byteLength": 20480,
+          "shape": [
+            5120
+          ],
+          "layout": "C",
+          "meaning": "time-modulation-chunk2-gate",
+          "ownership": "copy"
+        },
+        {
+          "name": "gated",
+          "sha256": "ce1435416ee7eccc0b8448f7f1e1a0fb7e2d5eac27da16f77f8857658a0fc866",
+          "byteLength": 40960,
+          "shape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "meaning": "self-attention-gated-token-hidden",
+          "ownership": "copy"
+        },
+        {
+          "name": "residual",
+          "sha256": "0024d0b19db9988d218e2a2ded4cc3713aca32d9517966455d17b34cfee801b6",
+          "byteLength": 40960,
+          "shape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "meaning": "block0-self-attention-residual-token-hidden",
+          "ownership": "copy"
+        }
+      ]
+    }
+  ]
+}
