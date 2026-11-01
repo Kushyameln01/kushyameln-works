@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "managerCommit": "0260fc0b153c2491cc94aca3d75c7835a03bf0f7",
+  "executedCheckpoint": "c84bc495562a393a437056cef944fb2e0f95ba08",
+  "interpretation": "Manager-owned public receipt readback only. No runtime executed here. Source/manifest/input reception is distinct from actual graph asset reception.",
+  "preflight": {
+    "status": "BLOCKED",
+    "reason": "Exact existing decode assets are absent; no model download/export/shape substitution.",
+    "blockedEdge": "actual-vae-decode",
+    "assetReceipts": [],
+    "missingAssets": [
+      {
+        "expectedBytes": 286313363,
+        "expectedSha256": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e",
+        "fileName": "decoder-body.onnx",
+        "role": "decoderBody"
+      },
+      {
+        "expectedBytes": 1024,
+        "expectedSha256": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+        "fileName": "conv2-weight.f32",
+        "role": "conv2Weight"
+      },
+      {
+        "expectedBytes": 64,
+        "expectedSha256": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+        "fileName": "conv2-bias.f32",
+        "role": "conv2Bias"
+      }
+    ],
+    "manifestIdentity": {
+      "byteLength": 4820,
+      "sha256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a",
+      "sourceRef": {
+        "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+        "path": "development/inference/e6/fixtures/bundle-manifest.json",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    "inputIdentity": {
+      "byteLength": 1084,
+      "context": {
+        "contextId": "v1-still-0",
+        "inputId": "existing-diagnostic-png",
+        "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+        "schemaVersion": 1,
+        "slotId": "diagnostic-still",
+        "sourceFrameIndices": [
+          0
+        ],
+        "sourceFrameTimesSeconds": [
+          0
+        ]
+      },
+      "meaning": "raw-posterior-mean",
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "payloadSha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+      "sha256": "dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "sourceRef": {
+        "commit": "35151d1f447d6bba30931a8c28636b2d5d9c3820",
+        "path": "development/inference/reference-adoption/p2/run/restored.wktensor",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    "nativeSource": {
+      "apiVersion": "works-ai-1",
+      "build": "works-inference-v1",
+      "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "repository": "Kushyameln01/kushyameln-works"
+    },
+    "nativeCalls": 0,
+    "browserLaunched": false,
+    "modelInference": false,
+    "scenario": "decode",
+    "resourceState": null
+  },
+  "workerSmoke": {
+    "scope": "actual native855 Worker module initialization and observed close; no postMessage/job/configure/decode/encode/session",
+    "status": "PASS",
+    "nativeJobs": 0,
+    "modelInference": false,
+    "encodeCalls": 0,
+    "decodeCalls": 0,
+    "workerEvents": [
+      {
+        "kind": "created",
+        "url": "http://127.0.0.1:42751/native/shared/inference/inference-worker.mjs?rectJobToken=task-local-no-job-smoke"
+      },
+      {
+        "kind": "closed",
+        "url": "http://127.0.0.1:42751/native/shared/inference/inference-worker.mjs?rectJobToken=task-local-no-job-smoke",
+        "observedEvent": "playwright-worker-close"
+      }
+    ],
+    "browserVersion": "154.0.8037.57",
+    "liveOwnedWorkers": 0
+  },
+  "latestResult": {
+    "freshActualVaeDispatch": {
+      "status": "BLOCKED",
+      "blockedEdge": "actual-vae-decode",
+      "nativeCalls": 0,
+      "browserLaunched": false,
+      "missingAssets": [
+        {
+          "expectedBytes": 286313363,
+          "expectedSha256": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e",
+          "fileName": "decoder-body.onnx",
+          "role": "decoderBody"
+        },
+        {
+          "expectedBytes": 1024,
+          "expectedSha256": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+          "fileName": "conv2-weight.f32",
+          "role": "conv2Weight"
+        },
+        {
+          "expectedBytes": 64,
+          "expectedSha256": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+          "fileName": "conv2-bias.f32",
+          "role": "conv2Bias"
+        }
+      ],
+      "missingAssetTotalBytes": 286314451,
+      "explicitDeviceBudgetReceived": false
+    },
+    "evidenceReception": {
+      "recordRef": "OWNER-RECEIPTS.json",
+      "sourceRef": "SOURCE-RECEIPT.json",
+      "loraEvidenceCommit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+      "loraExecutedReceiverCommit": "25e5b56feeb070594110bb292d9de21e4e234f0a",
+      "vaeEvidenceCommit": "e86d17f8fe3310875d3578ce838e1fc2c32271dc",
+      "vaeOriginalActualNNCommit": "35151d1f447d6bba30931a8c28636b2d5d9c3820",
+      "freshManagerAcceptanceInherited": false,
+      "latestLoraDataEvidenceCommit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+      "latestLoraDataImplementationCommit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+      "latestDataFormalIntegrationAccepted": false
+    }
+  },
+  "selectedTextManifestCheck": {
+    "expectedSha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f",
+    "mentionedInOwnerSourceReceipt": false,
+    "receivedVaeRecordPaths": [
+      "development/inference/reference-adoption/p1-adoption/RECEIPT.json",
+      "development/inference/reference-adoption/p1-adoption/REPRODUCE.md",
+      "development/inference/reference-adoption/p1-adoption/RESULT.md",
+      "development/inference/reference-adoption/p1-adoption/diffusion-comparison-0.json",
+      "development/inference/reference-adoption/p1-adoption/diffusion-comparison-1.json",
+      "development/inference/reference-adoption/p1-adoption/diffusion-kernel-comparison.json",
+      "development/inference/reference-adoption/p1-adoption/diffusion-source-review.md",
+      "development/inference/reference-adoption/p1-adoption/manager-retrieval.json",
+      "development/inference/reference-adoption/p1-adoption/manager-source-checks.json",
+      "development/inference/reference-adoption/p1-adoption/norm-binding-tests.log",
+      "development/inference/reference-adoption/p1-adoption/reference-loader-tests.log",
+      "development/inference/reference-adoption/p1-adoption/run/process-resources.json",
+      "development/inference/reference-adoption/p1-adoption/run/restored/descriptor.json",
+      "development/inference/reference-adoption/p1-adoption/run/restored/evidence.json",
+      "development/inference/reference-adoption/p1-adoption/run/restored/extensions.json",
+      "development/inference/reference-adoption/p1-adoption/run/restored/manifest.json",
+      "development/inference/reference-adoption/p1-adoption/run/restored/native.wktensor",
+      "development/inference/reference-adoption/p1-adoption/run/restored/receipt.json",
+      "development/inference/reference-adoption/p1-adoption/run/restored/snapshot.json",
+      "development/inference/reference-adoption/p1-adoption/run/restored/trace.json",
+      "development/inference/reference-adoption/p1-adoption/run/result.json",
+      "development/inference/reference-adoption/p1-adoption/run/rgb/descriptor.json",
+      "development/inference/reference-adoption/p1-adoption/run/rgb/evidence.json",
+      "development/inference/reference-adoption/p1-adoption/run/rgb/extensions.json",
+      "development/inference/reference-adoption/p1-adoption/run/rgb/manifest.json",
+      "development/inference/reference-adoption/p1-adoption/run/rgb/native.wktensor",
+      "development/inference/reference-adoption/p1-adoption/run/rgb/receipt.json",
+      "development/inference/reference-adoption/p1-adoption/run/rgb/snapshot.json",
+      "development/inference/reference-adoption/p1-adoption/run/rgb/trace.json",
+      "development/inference/reference-adoption/p1-adoption/source-pins.json",
+      "development/inference/reference-adoption/p1-adoption/vae-trace-source-comparison-0.json",
+      "development/inference/reference-adoption/p1-adoption/vae-trace-source-comparison-1.json"
+    ]
+  },
+  "sourceReceipts": [
+    {
+      "path": "development/ai-connection/norm-receipt-adoption/evidence/rect-preflight.json",
+      "byteLength": 190823,
+      "sha256": "35dc94a62d98a800b57d1758ed0b616a491418f18c1f3129f816fff97c018173",
+      "gitBlobSha": "7e9505b2340db5ac8d715744a190ccdf59312a4e",
+      "localBytesMatchGitBlob": true
+    },
+    {
+      "path": "development/ai-connection/norm-receipt-adoption/evidence/rect-worker-smoke.json",
+      "byteLength": 2060,
+      "sha256": "1714d15fea686525914ddeab907dd0c965076b4ee896910dea7f414b236707d5",
+      "gitBlobSha": "5f9927bc4d205cf62f664a0e24bbae99dcb65e1f",
+      "localBytesMatchGitBlob": true
+    },
+    {
+      "path": "development/ai-connection/norm-receipt-adoption/OWNER-RECEIPTS.json",
+      "byteLength": 42950,
+      "sha256": "d84573b1ea1909c4c9534574734aacef588f39aa3a65d592bcca428848f00523",
+      "gitBlobSha": "feccbd05760d43adade8dbb5144ef5a0bef2feb0",
+      "localBytesMatchGitBlob": true
+    },
+    {
+      "path": "development/ai-connection/norm-receipt-adoption/SOURCE-RECEIPT.json",
+      "byteLength": 86367,
+      "sha256": "5706966a83eb0ab00abcbee61fa16f1ec2931f1b489998c24f1a259a464af5c4",
+      "gitBlobSha": "a123438a5253601d0d753edfdc859c2c9bf778b3",
+      "localBytesMatchGitBlob": true
+    }
+  ]
+}

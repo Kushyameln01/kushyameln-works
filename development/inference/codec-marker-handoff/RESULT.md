@@ -1,5 +1,7 @@
 # normalized marker修正・既存入力handoff
 
+2026-11-01 JST追補：[最新管理sourceとmainの再照合](RECHECK.md)。以下の受入結果は元のsource・scopeを維持する。
+
 2026-11-01 JST。対象は共有codecの保存修正、実管理sourceでのE2/E4往復、既存Rect/Textのmanifestとローカル入力手順。新しいexport、NN、正規化・復元の実装変更、plain text全値推論比較は行わない。実Rectの正規化・復元も再実行しない。合成F5の既存回帰は後述する。既存の受入結果は元のscopeで再利用する。
 
 ## 実装差分と固定source
