@@ -1,5 +1,7 @@
 # 規範付き入口の追補とcodec marker受領
 
+以下は候補受領時点の記録。ユーザーの新codec採用依頼に基づく、管理の実保存経路への採用は [正式採用結果](ADOPTED-RESULT.md) を参照する。
+
 基点は `0260fc0b153c2491cc94aca3d75c7835a03bf0f7`。今回の実装checkpoint、配布fileのhash、実行結果は `RESULT.json` に固定する。共通schema `works-module-contract/1.0-draft.1`、package `works-artifact-package/1.0-draft.1`、参照catalog `6dae9a6fac3e9ad29ea941f22211edbe4aa894ad` / `1.0-draft.1` は維持した。
 
 実装checkpointは `0239c8117622bb388af0d7870b672e54a79beec3`。Node全354/354 PASS、fail0、skip0。追加のowner宣言probeは負例12/12・正例2/2、実SDK/Hike/ORTの規範必須入口も1/1 PASS（合成source/base、23固定runtime object、81,920 weight＋16 bias＋16 output）。新codecの保存読戻しはNN0で成功し、実Rect dispatchは未受入。
