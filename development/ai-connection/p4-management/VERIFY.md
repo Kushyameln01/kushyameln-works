@@ -55,3 +55,7 @@ rootが実施したpreflightは[FIXED-SOURCE-PREFLIGHT.json](verification/FIXED-
 先行owner native PASSと同scopeの独立参照・gate・入力identityが揃ってから、[固定holding手順](REPRODUCE.md)を用いる。composed25が成立した場合にlocal参照を追加生成しない。元binary manifestと25 F32をそのまま読む。通常と対象取消は別のfresh出力先へ実行し、source/receipt/target/revision/generation/native取引・終端/解放・25 E4読戻し・実資源を返す。未測定の全体peakはnull。
 
 取得確認、owner数値PASS、管理実dispatch、取消/保存、generationREADYはそれぞれ別の受入である。未成立のscopeを合格に含めない。
+
+## 後着したowner候補と新公開P3 package
+
+Textの取得確認は `new-owner-returns/text-5b0d/verify.py --repo "$PWD"`。LoRAの224項目と新公開8fileの実E4 reader確認は[new-owner-returns/lora-c486/REPRODUCE.md](new-owner-returns/lora-c486/REPRODUCE.md)。公開manifestの取得を使い、原本File・modelを開かない。新候補の取得を管理採用や実Text P4合格へ読み替えない。実行sourceと全source hashが同一なので、owner返却metadataの追加に対して516件の回帰を再実行していない。

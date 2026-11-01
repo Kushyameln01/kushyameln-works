@@ -226,3 +226,43 @@ rootの最終全AI接続ログは516/516 PASS・0fail・0skipで、原本ログ�
 このPROCEEDは新P4のcatalog/有限規範/adapter/queue/E4/固定holding runnerというsource実装と、P3 a80の限定返却受入・Diffusion994の未実行状態を正しく共有する範囲。P4実Textのnative数値/取消/保存共同受入が成立したとはしない。native/generation準備は既存ルールどおり、未知必須契約はUNVERIFIED、数値だけ不足はCOMPATIBLE/NOT_VERIFIED/BLOCKED。実資源のcapacity/elapsedと全工程peak nullを保持する。
 
 配布commitと実行source、baseline、当該local blocked runのsource bytes記録を区別する。commit後のsource固定証明・送信comment URL/readback receiptの通常追記は既存許可内であり、追加の再承認を要求しない。意味のあるruntime/source変更が生じた場合だけ対象差分を再通知する。merge/Pages公開は含まれない。
+
+## Post-push新owner返却：metadata追補の監査
+
+- event_id: R11-postpush-owner-returns
+- status: **PROCEED（新owner-return記録・manifest・配布metadataの追補）**。
+- runtime/source150pathの実hash不変を独立再確認した。全516回帰を再実行する必要はない。新NN/再exportは行わない。
+
+### LoRA c486：新P4候補と既存P3実payloadを分離
+
+配布 `c4860579d01d9f704cb16714e364a22668f9d57e`、新P4 owner実行 `a80db72feea60b9bd69e292e4716665c6f0ee77f` の原RESULTと `new-owner-returns/lora-c486/{ACQUISITION,CLASSIFICATION,VERIFICATION,P3-PAYLOAD-READBACK}.json`、既存reader用scriptを読んだ。
+
+新P4はlight/LOW、cross-Q先頭4行×5120＋bias4、controlled-caller-input-n2-k4の7成功case。owner報告の実演算/正本mapping/独立oracleと、管理の共通catalog/norm/snapshot採用は別である。natural P2/N2、f76/nativeTextL512、既存P3fc/5f pinsやruntimea7を置換していない。399＋76等はowner記録の検査数で、receiverの224検査と分ける。sampled RSS和1,472,950,272Bには500ms・不完全sample/取得不能・shared page重複計上の留保があり、全工程peak受入へ広げない。
+
+既存884 P3の元8package/32,171Bが今回は公開され、固定884のpackage readerと元2bd codecでfresh filesystem読戻しを行った記録がある。元output64bytes・snapshotHashはa80実行のまま一致。新builder/writer/nativePrepareは0。負例はreader返却bytesのclone改変とsnapshot読出し欠落の**2拒否**（completeを含む3読出しscenario）であり、物理copyの改変や新prepare入口の実行として扱わない。元fileは不変。a80時点の「payload未受領」という過去scopeは変更せず、c486で実8filesを受領した新状態を別に加える。
+
+ownerの「E4正式再import→native prepare入口は未成立」は追加の未受入scopeとして明示できるが、今回指定の3条件へ第四条件として足さず、既存884限定受入を保つ。管理側に新API/入口をこのmetadata追補のために実装しない。
+
+監査自身で、86配布fileの長さ/hash/Git bytes、42source identities、verifier実SHAと224/224・失敗0記録、8packageの実bytes/32,171Bとreadback対象scopeを照合しPASS。reader scriptは元sourceを固定Gitから一時materializeし、既存readerだけを呼ぶことを確認。新P4 math/nativeを管理で再実行したとはしない。
+
+### Text 5b0d：別source・別output・資源と時間のtradeoff
+
+配布 `5b0da96b71708d56d3226a4bd4cb353aa30fbe3b`、incremental実行 `eab4fabfadd133cc97434eed28ea998dca6795c2` の `text-5b0d/ACQUISITION.json` を読んだ。18公開原本、index14、元gzip3試行、22source closure（shared/vr180/sha256含む）を保持。baseline04d/no-prepack44b/incremental eab、元oracle5537と配布f76の役割を分けている。
+
+新WKT全体SHA `ed9bb076172a9529e99594987a966646e70e48dd363a2584206d5ccc740552d3`、payload `6bb54eb36f06802f6ffa0b59edc2d515f24b5d40993a08a587348d9ee6537386` はf76の90f9/107aと別。shape/model/tokenizer/maskが一致しても旧P4入力へ付け替えない。exact packet/header/maskの取得は確認しているが、ownerの元all-value結果を管理の新規数値比較として数えない。P2 VAE855/codec2bdと既存f76/P4参照は不変。
+
+資源改善は同条件1runずつのsampled RSS和5,708,951,552→4,490,174,464B（約21.35%低下）の限定観測。全harness時間117.2639→388.5214秒、約3.313倍。maximum renderer sampled RSSが4GiB未満であっても全processの4GiB基準は未達。最大sample gap1.101秒、cache/GC非等化、完全PSS sum未取得という条件を保ち、一般性能/利用端末予算・低latency改善としない。新output/loaderの管理採用、実TextP4共同数値、P5/VAE新profileは未受入。
+
+監査自身で18公開fileの長さ/hash/完全commit Git bytes、実行eabの22sourceと配布5b0dのbytes一致、現在の旧f76入力fileの90f9 hash不変を確認しPASS。classificationのmanagerRuntimeAdopted=false/newOutputUsedAsOldF76P4Input=false、4GiB不合格も確認した。
+
+### ACKと配布の範囲
+
+LoRAの9e9四文書取得ACKと、新runtimea7/holding runnerの相手取得ACKは別scopeとして保持する。VAE/Diffusionの未取得ACKをGitHub送信・自己読戻し・LoRA ACKで代用しない。metadata追補後の配布完全SHAと送信/読戻しは通常のauthorized trackingであり、新しい一般approval flowを加えない。runtime/API/pins/f76正本を変更しない限り、この追補だけで516回帰やNNを追加要求しない。
+
+### Post-push packet最終scope確認
+
+c486 `RESULT.md` とText `REPORT.md` の完成版、c486 freezeのscript identities、Text verification-outputを直接確認した。c486224/224、Text index14＋追加3file/source22/peer13/gzip3という記録は、前節の独立Git/hash照合と整合する。TextはF32値を新しく数値判定したとはせず、新whole/payload identityと旧f76不変を明示する。c486の元26 private selected-weight生成物は未受領、今回公開8packageだけ新fresh readbackという区別も維持されている。
+
+**metadata追補の最終判定はPROCEED。** 新candidate/owner報告の取得と、採用済みruntime/pins/正本入力の置換を混同する記述を確認しなかった。P3既存3条件の限定受入は保持し、正式E4再import→prepareの別edgeを今回完了の第四条件へ追加していない。新NNや516回帰の重複実行は不要。
+
+root自身のfresh reader再実行は新NNではなく、同8payloadの既存reader検証である。その実行の成否・時刻・返却hashはrootの読戻しreceiptへ通常追記する。これから記録するroot実行を、この監査が実行済みと先取りしていない。manifest/hashのrefresh後に既存許可どおり配布・scope別返信を進めてよい。

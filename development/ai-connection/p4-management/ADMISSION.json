@@ -124,7 +124,54 @@
       "fullPipelinePeakBytes": null,
       "freshReceiverResourceRun": false
     },
-    "livePublicationBrandRecreated": false
+    "livePublicationBrandRecreated": false,
+    "newPublicPayloadReadback": {
+      "distributionCommit": "c4860579d01d9f704cb16714e364a22668f9d57e",
+      "existingReaderSourceCommit": "8849891f19124df31847bd691503c2491278eaa8",
+      "sourceHelper": {
+        "path": "development/ai-connection/p4-management/new-owner-returns/lora-c486/read-existing-p3-package.mjs",
+        "byteLength": 7176,
+        "sha256": "c96036ef16c8c9efd7976e92e7375190afa4f1db0dec812cb39563317cd56212"
+      },
+      "status": "PASS_FRESH_EXISTING_P3_PACKAGE_READBACK",
+      "actualPackageFiles": 8,
+      "actualPackageBytes": 32171,
+      "readback": {
+        "status": "complete",
+        "artifactCount": 1,
+        "outputByteLength": 64,
+        "outputValues": 16,
+        "outputSha256": "04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575",
+        "meaning": "works:diagnostic-q-projection:v1",
+        "shape": [
+          1,
+          16
+        ],
+        "layout": "NC",
+        "snapshotId": "p3:actual:initial-one:1cede09d-50ad-46ba-8289-ec9e5d7e0669",
+        "snapshotHash": "70052e13634e2218092ed167ac41800bf8a1c9ee77726b53592d9fc9870ae108",
+        "manifestReceipt": {
+          "manifestByteLength": 2124,
+          "manifestPath": "manifest.json",
+          "manifestSha256": "6d12468c1ca1348f01f74e023ed09942ea622f25930c03a6fa0ee04d9bd18979",
+          "packageId": "works:diagnostic-package:9e3dcb7a24cb3264484226b85561e41f8c9236f9c640c48489b68ab469995bd6:04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575",
+          "packageVersion": "works-artifact-package/1.0-draft.1"
+        }
+      },
+      "negativeRefusals": [
+        "ASSET_HASH_MISMATCH",
+        "REQUIRED_ASSET_MISSING"
+      ],
+      "record": {
+        "path": "development/ai-connection/p4-management/new-owner-returns/lora-c486/P3-PAYLOAD-READBACK.json",
+        "byteLength": 8545,
+        "sha256": "ee39032c9116102867d770daefef3f9a28e3249bacacd057fa59fc3f851e1f64"
+      },
+      "privateSelectedWeightArtifacts26Received": false,
+      "livePublicationBrandRecreated": false,
+      "nativePrepareExecuted": false,
+      "doesNotAddFourthConditionToAcceptedP3": true
+    }
   },
   "p2": {
     "status": "PRESERVED_ACCEPTED_FIXED_RECT_DIAGNOSTIC",
@@ -209,5 +256,51 @@
   "predict": "NOT_READY",
   "sample": "NOT_READY",
   "mergePerformed": false,
-  "pagesPublishedByThisWork": false
+  "pagesPublishedByThisWork": false,
+  "newIndependentOwnerCandidates": [
+    {
+      "kind": "LoRA P4 real File PARTIAL K4 LOW crossQ4",
+      "distributionCommit": "c4860579d01d9f704cb16714e364a22668f9d57e",
+      "executionSourceCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "ownerResult": "PASS_LORA_P4_REAL_PARTIAL",
+      "receiverIntegrityChecks": 224,
+      "manifestPaths": 86,
+      "uniqueSources": 42,
+      "scope": "controlled-caller-input-n2-k4; producerAuthenticated:false; light/LOW crossQ first4rows x5120+bias4;7successful cases",
+      "classification": {
+        "path": "development/ai-connection/p4-management/new-owner-returns/lora-c486/CLASSIFICATION.json",
+        "byteLength": 6506,
+        "sha256": "de979ed5524fa0bb6d0949d1e4a0bb048d404968ec511e627cac195d68a07581"
+      },
+      "managementP4Adopted": false,
+      "actualTextL512Acceptance": false
+    },
+    {
+      "kind": "Text fixed plain memory candidate",
+      "distributionCommit": "5b0da96b71708d56d3226a4bd4cb353aa30fbe3b",
+      "executionSourceCommit": "eab4fabfadd133cc97434eed28ea998dca6795c2",
+      "acquisition": {
+        "path": "development/ai-connection/p4-management/new-owner-returns/text-5b0d/ACQUISITION.json",
+        "byteLength": 46598,
+        "sha256": "d64252dbbdd4f6bc1c811ffab1c03c0696054dc33f1d4de31c29ed74279de501"
+      },
+      "receivedNewOutput": {
+        "byteLength": 8390054,
+        "wholeSHA256": "ed9bb076172a9529e99594987a966646e70e48dd363a2584206d5ccc740552d3",
+        "payloadSHA256": "6bb54eb36f06802f6ffa0b59edc2d515f24b5d40993a08a587348d9ee6537386"
+      },
+      "activeF76P4InputChanged": false,
+      "managementNativeAdoption": false,
+      "sharedDependency": {
+        "path": "docs/shared/vr180/sha256.mjs",
+        "byteLength": 6970,
+        "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+      }
+    }
+  ],
+  "recipientAcquisitionAcks": {
+    "LoRAP3Management9e9": "RECEIVED_IN_PR7_COMMENT_6561003362",
+    "VAENewWorkflow9e9": "PENDING",
+    "DiffusionFixedManagementA7": "PENDING"
+  }
 }

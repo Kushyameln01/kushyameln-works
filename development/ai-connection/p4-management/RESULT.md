@@ -41,7 +41,7 @@ P4 Profileは `bernini-block0-n2-cross-ffn-f32-candidate-v1`、buildは `bernini
 | 保存・所有権 | boundary fixtureの25出力実filesystem E4 fresh読戻し、改変拒否、複数producer/typed metadata/frame/trace保持。取消・stale・元Promise・解放失敗/recoverも変更境界で検証 |
 | 既存scope | [74既存fileを5aaとbyte同一確認](ORIGINAL-SCOPE-PRESERVATION.json)。P2/N2受入・旧native pinを維持 |
 
-P3のprivate artifact26/package8は現在の管理環境へ未取得。ownerと独立監査の実disk記録・152項目の検査を公開返却へ照合したのであり、現在の管理側がそのprivate binaryを読み直したとは報告しない。旧28f/管理60dの6件、今回の884実行、管理側の186検査を別記録とする。取得確認のための再推論・再export・実File再hashは行っていない。
+a80/9e9時点のP3受領はmetadata照合だった。後着c486で公開されたpackage8file・32,171Bは今回実受領し、既存884 E4 reader＋codec2bdでfresh filesystem読戻しcomplete、元manifest/output64B/snapshotのhash一致と2種の拒否を独立確認した。builder/writerは呼ばず、元8fileは不変。private selected-weight artifact26は未取得のまま。旧28f/管理60dの6件、今回の884実行、管理側の186検査を別記録とする。取得確認のための再推論・再export・実File再hashは行っていない。
 
 実Textはf76の全512行、mask512位置、model/Tokenizerを固定する。mean・latent・sampleへの読み替え、任意入力やLoRA後入力への証拠付替えを認めない。比較対象・field path・根拠規範は[preflightのdeclarationEvaluation](verification/FIXED-SOURCE-PREFLIGHT.json)とnorm試験に記録した。契約一致で数値証拠だけ不足する場合は互換性を維持し、必須宣言欠落はUNVERIFIED、既知の契約不一致はINCOMPATIBLEになる。
 
@@ -56,7 +56,7 @@ P3のprivate artifact26/package8は現在の管理環境へ未取得。ownerと�
 
 [workflow handoff](workflow/VAE-WORKFLOW-HANDOFF.md)に元21501B workflow、固定Python/editor、source/reference/8slot、供給順と前処理規則を対応付けた。source grid832×480/L81と実供給frame数を区別し、実媒体の寸法・frame index・時刻は未取得null。reference未接続は他入力の一律blockerにしない。editorはlongedge上限848・16倍数・Python ties-to-even・area/crop-disabledであり、848正方形ではない。
 
-LoRAへ[P3受入](https://github.com/Kushyameln01/kushyameln-works/pull/2#issuecomment-6560860277)、VAEへ[workflow/P2維持](https://github.com/Kushyameln01/kushyameln-works/pull/15#issuecomment-6560861777)、Diffusionへ[固定管理a7 runnerと返却条件](https://github.com/Kushyameln01/kushyameln-works/pull/14#issuecomment-6560913977)を送信し、本文を一致読戻しした。[OUTBOUND-RECEIPTS.json](OUTBOUND-RECEIPTS.json)に記録。送信者のGitHub読戻しと受領側本人の取得ACKは別であり、後者は返却待ち。
+LoRAへ[P3受入](https://github.com/Kushyameln01/kushyameln-works/pull/2#issuecomment-6560860277)、VAEへ[workflow/P2維持](https://github.com/Kushyameln01/kushyameln-works/pull/15#issuecomment-6560861777)、Diffusionへ[固定管理a7 runnerと返却条件](https://github.com/Kushyameln01/kushyameln-works/pull/14#issuecomment-6560913977)を送信し、本文を一致読戻しした。[OUTBOUND-RECEIPTS.json](OUTBOUND-RECEIPTS.json)に記録。送信者のGitHub読戻しと受領側本人の取得ACKは別。LoRAから9e9のP3返却4fileのpath/bytes/hash・186項目の受領ACKを[PR7](https://github.com/Kushyameln01/kushyameln-works/pull/7#issuecomment-6561003362)で受領した。VAEの新workflowとDiffusionの固定a7 source ACKは返却待ち。
 
 ## 未受入・次の返却
 
@@ -65,3 +65,14 @@ LoRAへ[P3受入](https://github.com/Kushyameln01/kushyameln-works/pull/2#issuec
 LoRA新P4 canonical mapping/feed、selected-weight N-ARTIFACT、他pair/side、joint HIGH/LOW atomic snapshot、全model/本番hidden/全query-head-stage、実HIGH→LOW、生成sample/restore/VAE decode、全工程資源は未受入。LoRAなしbase経路へLoRA固有条件を強制しない。本番の必要条件が揃っていないため生成READYは更新しない。
 
 [検証・取得照合の再現](VERIFY.md)と[機械可読受入記録](ADMISSION.json)を参照。受領側ACKと新しい数値/lifecycle返却が届いたら、そのscopeだけを追加照合する。
+
+## 後着したowner成果の取得・分類
+
+| 新しい配布／実行source | 実取得と確認 | 管理採用・留保 |
+|---|---|---|
+| LoRA `c4860579d01d9f704cb16714e364a22668f9d57e`／`a80db72feea60b9bd69e292e4716665c6f0ee77f` | [86公開path・42 source・224/224検査PASS](new-owner-returns/lora-c486/RESULT.md)。ownerの7成功case・独立399+76を照合。旧P3元13pathはa80と同一。上記package8は新たに実読戻し | controlled-caller-input N2/K4・light/LOW crossQ先頭4行×5120+bias4のPARTIAL。実Text L512や管理norm/catalog/snapshotの共同採用は未実施。P3の指定3条件は完了を維持し、別のE4再import→prepare未実装を第四条件にしない |
+| Text `5b0da96b71708d56d3226a4bd4cb353aa30fbe3b`／`eab4fabfadd133cc97434eed28ea998dca6795c2` | [INDEX14＋API/source3、source22・peer13・gzip3と新WKT実bytes/hashを照合](new-owner-returns/text-5b0d/REPORT.md)。ownerの固定plain全2,097,152値PASSを元scopeで引用 | 新出力whole `ed9bb076…` / payload `6bb54eb3…` はf76と別identity。旧P2 native855/codec2bd、P4 f76入力・参照を変更しない。追加ES依存shared/vr180/sha256.mjsを確認したが候補runtimeへ未採用 |
+
+LoRA P4のowner測定は約22.03分、sampled owned-process RSS和1,472,950,272Bであり、全工程peakではない。Textのowner測定はsampled RSS和5,708,951,552→4,490,174,464B、最大renderer5,025,157,120→3,795,189,760Bへ低下した一方、117.2639→388.5214秒（3.313倍）。4GiB全process予算・速度改善・本番全工程は未受入。管理の再推論・再export・原本File再hash・oracle生成は0。新規追加は取得・保存読戻し・metadataであり、管理実装150fileは固定a7と同一のまま。
+
+新返却の取得結果はLoRA PR2 [comment6561238902](https://github.com/Kushyameln01/kushyameln-works/pull/2#issuecomment-6561238902)、Text PR16 [comment6561240280](https://github.com/Kushyameln01/kushyameln-works/pull/16#issuecomment-6561240280)へ返し、本文を一致読戻し済み。[NEW-OWNER-OUTBOUND.json](NEW-OWNER-OUTBOUND.json)に記録した。取得ACKへの再ACKや再推論を追加条件にしない。

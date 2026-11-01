@@ -56,6 +56,18 @@ def main():
     assert receipt['nativeCalls'] == 0 and receipt['browserLaunched'] is False
     assert receipt['privateInputIOStarted'] is False
     assert receipt['generationReady'] is False
+    admission = json.loads((folder / 'ADMISSION.json').read_text())
+    candidates = admission['newIndependentOwnerCandidates']
+    assert len(candidates) == 2
+    assert candidates[0]['managementP4Adopted'] is False
+    assert candidates[1]['activeF76P4InputChanged'] is False
+    assert candidates[1]['managementNativeAdoption'] is False
+    actual_readback = admission['p3']['newPublicPayloadReadback']
+    assert actual_readback['actualPackageFiles'] == 8
+    assert actual_readback['actualPackageBytes'] == 32171
+    assert actual_readback['readback']['status'] == 'complete'
+    assert actual_readback['livePublicationBrandRecreated'] is False
+    assert admission['generationReady'] is False
     print(json.dumps({'status': 'PASS', 'managementExecutionSourceCommit': source,
                       'publicDeliveryFiles': len(manifest['files']),
                       'managementSourceFiles': len(handoff['managementFiles']),
@@ -63,6 +75,9 @@ def main():
                       'preservedPriorFiles': len(preserved['files']),
                       'newInferenceOrExport': False,
                       'recordedP3AcquisitionChecks': 186,
+                      'newLoRAOwnerReceiptChecks': 224,
+                      'newActualP3PackageFilesReceived': 8,
+                      'newSeparateOwnerCandidates': 2,
                       'recordedNodeRegressionPass': 516,
                       'actualTextJointNumericAcceptance': 'NOT_VERIFIED'}, indent=2))
 

@@ -1,0 +1,209 @@
+{
+  "schemaVersion": "management-c486-lora-separate-candidate/1",
+  "observedUTC": "2026-11-01T17:07:51.276165+00:00",
+  "distributionCommit": "c4860579d01d9f704cb16714e364a22668f9d57e",
+  "ownerExecutionSourceCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+  "classification": "NEW_SEPARATE_LORA_P4_CANDIDATE",
+  "acquiredAndMetadataVerified": true,
+  "ownerReportedStatus": "PASS_LORA_P4_REAL_PARTIAL",
+  "ownerReportedActualScope": {
+    "selection": {
+      "pairId": "light",
+      "side": "LOW",
+      "noise": "low",
+      "weightId": "blocks.0.cross_attn.q.weight",
+      "biasWeightId": "blocks.0.cross_attn.q.bias",
+      "fullWeightShape": [
+        5120,
+        5120
+      ],
+      "fullBiasShape": [
+        5120
+      ],
+      "rows": [
+        0,
+        4
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "logicalPatchCount": 1052,
+      "excludedPatchCount": 1050,
+      "excludedTargetPolicy": "all original LoRA targets except the selected cross-Q weight and explicit bias",
+      "unselectedRegions": [
+        {
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "rows": [
+            4,
+            5120
+          ],
+          "columns": [
+            0,
+            5120
+          ]
+        },
+        {
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "elements": [
+            4,
+            5120
+          ]
+        }
+      ]
+    },
+    "inputCohort": "controlled-caller-input-n2-k4",
+    "producerAuthenticated": false,
+    "caseCount": 7,
+    "cases": [
+      {
+        "id": "initial-zero",
+        "strength": 0,
+        "managerRevision": 3001,
+        "sdkInputRevision": 1,
+        "sdkApplicationRevision": 1,
+        "nativeEpoch": 1,
+        "actualOutputArtifact": {
+          "file": "initial-zero-output.f32",
+          "bytes": 40960,
+          "sha256": "3e60f8d1fc36d583b661e0170726b68ebff8055c95f01b472ef47fde14201f6b"
+        }
+      },
+      {
+        "id": "initial-one",
+        "strength": 1,
+        "managerRevision": 3002,
+        "sdkInputRevision": 2,
+        "sdkApplicationRevision": 2,
+        "nativeEpoch": 2,
+        "actualOutputArtifact": {
+          "file": "initial-one-output.f32",
+          "bytes": 40960,
+          "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784"
+        }
+      },
+      {
+        "id": "initial-negative",
+        "strength": -1,
+        "managerRevision": 3003,
+        "sdkInputRevision": 3,
+        "sdkApplicationRevision": 3,
+        "nativeEpoch": 3,
+        "actualOutputArtifact": {
+          "file": "initial-negative-output.f32",
+          "bytes": 40960,
+          "sha256": "acd412bab52e1a3e4b7318ce91aa846c5c39582c7204deda6feef50e9c90e968"
+        }
+      },
+      {
+        "id": "reapply-one",
+        "strength": 1,
+        "managerRevision": 3004,
+        "sdkInputRevision": 4,
+        "sdkApplicationRevision": 4,
+        "nativeEpoch": 4,
+        "actualOutputArtifact": {
+          "file": "reapply-one-output.f32",
+          "bytes": 40960,
+          "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784"
+        }
+      },
+      {
+        "id": "validation-recovery",
+        "strength": 1,
+        "managerRevision": 3006,
+        "sdkInputRevision": 6,
+        "sdkApplicationRevision": 6,
+        "nativeEpoch": 5,
+        "actualOutputArtifact": {
+          "file": "validation-recovery-output.f32",
+          "bytes": 40960,
+          "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784"
+        }
+      },
+      {
+        "id": "prepare-cancel-recovery",
+        "strength": 1,
+        "managerRevision": 3008,
+        "sdkInputRevision": 9,
+        "sdkApplicationRevision": 9,
+        "nativeEpoch": 6,
+        "actualOutputArtifact": {
+          "file": "prepare-cancel-recovery-output.f32",
+          "bytes": 40960,
+          "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784"
+        }
+      },
+      {
+        "id": "native-cancel-recovery",
+        "strength": 1,
+        "managerRevision": 3010,
+        "sdkInputRevision": 12,
+        "sdkApplicationRevision": 12,
+        "nativeEpoch": 7,
+        "actualOutputArtifact": {
+          "file": "native-cancel-recovery-output.f32",
+          "bytes": 40960,
+          "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784"
+        }
+      }
+    ],
+    "independentRecordedChecks": {
+      "sourceArtifactOutput": 399,
+      "phaseLifetimeResource": 76
+    }
+  },
+  "managementP4NormCatalogJointAdopted": false,
+  "managerP4SnapshotPublished": false,
+  "actualNaturalP2N2OrTextL512Adopted": false,
+  "currentSourcePinsReplaced": false,
+  "retainedP3Acceptance": {
+    "runtimeSourceCommit": "8849891f19124df31847bd691503c2491278eaa8",
+    "originalA80MetadataPathsUnchanged": 13,
+    "originalAcceptanceUnchanged": true,
+    "newAsOfC486PublicPayloadReadback": "PASS_FRESH_EXISTING_P3_PACKAGE_READBACK",
+    "originalEightPublicPackageFilesRead": 8,
+    "privateSelectedWeightArtifacts26Received": false,
+    "livePublicationBrandRecreated": false
+  },
+  "formalE4ReimportToNativePrepare": {
+    "status": "DEPENDENCY_WAITING",
+    "readerAcceptanceIsNotPrepareEntryAcceptance": true,
+    "sourceAPIOrEntryNotAcquired": true,
+    "nativePrepareExecuted": false
+  },
+  "resourcesOwnerObserved": {
+    "scope": "owner-controlled diagnostic; retained recorded measurements only",
+    "hostElapsedMs": 1321937.758959,
+    "status": "PARTIAL_SAMPLED_OBSERVATION",
+    "sampledOwnedProcessRssSumPeakBytes": 1472950272,
+    "incompleteSamples": 1,
+    "unavailableRssObservations": 2,
+    "nodeHighWaterRssBytes": 648708096,
+    "fullPipelinePeakBytes": null
+  },
+  "receiverActions": {
+    "neuralExecutions": 0,
+    "newModelExports": 0,
+    "actualFileWholeHashes": 0,
+    "oracleGeneration": 0,
+    "P4NumericalAcceptanceRuns": 0,
+    "existingP3FilesystemPackageReadback": 1
+  },
+  "unaccepted": [
+    "management P4 norm/catalog/three-phase hook/snapshot joint adoption",
+    "natural producer authenticated P2/N2 or actualText L512",
+    "formal output16 E4 reimport-to-native-prepare entry",
+    "other pair/side/selection/full model",
+    "SDK active lease ownership",
+    "rich conditioning metadata",
+    "generation and contribution to generated output"
+  ],
+  "generationReady": false,
+  "currentLiveAdmission": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY"
+}
