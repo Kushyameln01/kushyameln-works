@@ -51,11 +51,13 @@ Create run-normal-operation.mjs and browser companion, focused tests, reproducti
 
 - [x] RED missing/corrupt owner source, known supported ordinary descriptor and unsupported shape, cancellation/disposal.
 - [x] GREEN fixed runner with actual resource/lifecycle observation and no full-model claim.
-- [ ] After source commit, run real normal case and separate numerical diagnostic once, preserve receipts.
+- [x] After source4667 commit, real normal roundtrip and separate numerical diagnosis completed once; receipts preserved. Cancel observer fix tested and real cancellation accepted at sourcef1dceb9.
 
 ## Task 5 root integration and review
 
 - [x] Match shared helper to controlled retained P2 metadata and normal owner requests; original workflow media remains unknown.
-- [x] Independent review of changed core/host/shape boundaries. Actual native result review follows execution.
-- [x] Full existing AI regression with explicit native roots: 574/574 PASS, FAIL/SKIP 0; 162 files unchanged during tests.
-- [ ] Freeze/push execution source, run fixed native verification, publish distinct minimal-normal and diagnostic proof, update API/limits/reproduction/Draft PR.
+- [x] Independent review of changed core/host/shape boundaries and actual native normal/diagnostic/cancellation receipts.
+- [x] Full existing AI regression with explicit native roots: final576/576 PASS, FAIL/SKIP 0; 162 files unchanged during tests.
+- [x] Execution sources4667/f1dceb9 frozen and pushed; fixed native verification complete. Normal, numerical diagnostic and cancellation proof are separate; API/limits/reproduction/result are recorded.
+
+Release actions (final evidence distribution and Draft PR metadata) are recorded in the GitHub PR and final delivery reply. Recipient download acknowledgments remain a separate state from the sender's verified GitHub retrieval.

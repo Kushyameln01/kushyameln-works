@@ -4,6 +4,23 @@
 
 サービスのbootstrapだけが固定5fの実sourceをGit bytesと照合する。ブラウザでは固定 `api/index.mjs` のprivate instanceを使い、ownerのWorkerとlazy Hike loaderへ委任する。通常host/facadeは演算やprofile一覧を複製しない。
 
+このCLIで使用した環境はNode24.19、Chromium154.0.8037.57（`/usr/bin/chromium`）、Playwright（`/opt/codex/cua_node/lib/node_modules/playwright`）。runnerのbrowser起動pathはこの環境に固定されている。製品の通常ES APIはこのCLI pathに依存しない。
+
+## 固定資材の準備
+
+モデル重みや元画像を取得せず、既存P2の公開raw meanを通常入力に使える。以下は管理checkout内で実行する例で、各作成先は未使用のpathを選ぶ。
+
+```bash
+git fetch origin 5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3
+git fetch origin f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48
+git fetch origin 7ee36228030ba3bb544a90b1d4b528702a7bae32
+git worktree add --detach /local/native-5f 5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3
+git show f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48:development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/native.wktensor > /local/accepted-p2-raw-mean.wktensor
+sha256sum /local/accepted-p2-raw-mean.wktensor
+```
+
+rawの期待hashは下記の `8134bc943a60…`、1,084B。通常runのサービスbootstrapは固定5fの53sourceを実bytes／hashとGit objectで照合する。任意診断を実施する場合だけ、同5fの既存reference／gateと7eeの比較関数を読む。
+
 ## 通常実行
 
 この変更を含む固定管理commitをcheckoutしてから実行する。`--manager-commit` は省略するとcheckoutのHEADを使う。実行sourceがそのcommitと違う場合はbrowser前にBLOCKEDになる。これは配備sourceの検査であり、通常descriptorへ証拠を要求する仕組みではない。
@@ -47,6 +64,8 @@ node tools/ai-connection/run-normal-operation.mjs \
 ```
 
 取消はownerの実native request開始callbackでAを対象に行い、元Promiseの終端を待つ。Bの実request開始後に古いAのtargetを再送し、Bが取り消されず完了することを確認する。実Workerのpost／terminateとPlaywrightのcloseを別観測し、専用ownerのdispose後に全Workerのcloseを待つ。timeoutを停止証拠にはしない。
+
+取消検証では、native post後に実Playwright Worker-created ACKを待ち、対象が現在もactiveであることを確認してから取消する。Bでも実生成ACKとactive targetを確認して旧Aを送る。数値処理やnative runを遅延させるhookは追加していない。ACK前に対象が完了した場合は、取消未達としてFAILになる。開始済みの非同期controlも終端まで待つ。
 
 ## 任意の数値診断
 
