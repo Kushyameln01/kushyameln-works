@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "works-local-manifest-receiver-ack/0.1-draft.1",
+  "sourceRef": {
+    "repository": "Kushyameln01/kushyameln-works",
+    "commit": "d8a19f684f75fdf2f772d64754cba9d08b8f5c82",
+    "path": "development/inference/codec-marker-handoff/INPUTS.json"
+  },
+  "status": "MANIFEST_BYTES_AND_DECLARED_GATES_RECEIVED",
+  "records": [
+    {
+      "module": "rect",
+      "path": "manifests/vae-rect/manifest.json",
+      "byteLength": 4820,
+      "sha256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a",
+      "numericGate": null,
+      "finalNorm": null,
+      "comparisonGate": {
+        "atol": 0.002,
+        "rtol": 0.002,
+        "maxAbs": 0.002,
+        "scope": "FP32 reference, synthetic fixed-profile checks only"
+      },
+      "nativeModel": {
+        "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "storedDtype": "bfloat16",
+        "executionDtype": "float32",
+        "precisionNote": "Stored BF16 values are unchanged; arithmetic uses FP32 and is not asserted equivalent to original BF16 execution."
+      },
+      "profile": {
+        "id": "wan21-raw-f32-1x16x32",
+        "videoShape": [
+          1,
+          3,
+          1,
+          16,
+          32
+        ],
+        "latentShape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "layout": "NCTHW",
+        "latentSpace": "raw",
+        "posterior": "mean",
+        "opset": 17
+      },
+      "tokenizer": null,
+      "embeddingSourceFile": null,
+      "actualModelFilesReceived": false,
+      "nativeConfigureOrInferenceExecutedHere": false
+    },
+    {
+      "module": "text",
+      "path": "manifests/text/manifest.json",
+      "byteLength": 19908,
+      "sha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f",
+      "numericGate": {
+        "maxAbsError": 0.001,
+        "rtol": 0.001,
+        "registeredBeforeComparison": true,
+        "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee"
+      },
+      "finalNorm": {
+        "epsilon": 1e-06,
+        "path": "final-norm.f32",
+        "bytes": 16384,
+        "sha256": "31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02"
+      },
+      "comparisonGate": null,
+      "nativeModel": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+      "profile": null,
+      "tokenizer": {
+        "path": "spiece.model",
+        "bytes": 4548313,
+        "sha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+        "algorithm": "sentencepiece",
+        "addBos": false,
+        "addEos": true,
+        "eosId": 1,
+        "padId": 0,
+        "referenceMinTokens": 512,
+        "plainTextOnly": true,
+        "emphasisCompatibility": "not claimed"
+      },
+      "embeddingSourceFile": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "actualModelFilesReceived": false,
+      "nativeConfigureOrInferenceExecutedHere": false
+    }
+  ],
+  "payloadAssetReceptionCertified": false,
+  "plainIndependentAllValuesAccepted": false,
+  "newNativeExecution": false,
+  "rectActualDispatchAccepted": false,
+  "generationReady": false,
+  "gateScopeNote": "Rect manifest exporter default0.002 is not the actual Rect decode acceptance gate; manager predeclared all1536 RGB validation stays atol/rtol/maxAbs2e-5. Mean roundtrip2e-6 and Text numericGate0.001 remain separate owner scopes.",
+  "rectManagerDecodeGateRef": {
+    "repository": "Kushyameln01/kushyameln-works",
+    "commit": "0239c8117622bb388af0d7870b672e54a79beec3",
+    "path": "tools/ai-connection/norm-required-rect-browser.mjs",
+    "declaration": "RECT_VALIDATION_SPEC",
+    "referenceSha256": "44cf55e9ea5896f985a0ccf26f61cbb52650fd1a53d3fe80fc3e03aaae545c29",
+    "gate": {
+      "atol": 2e-05,
+      "rtol": 2e-05,
+      "maxAbs": 2e-05
+    }
+  }
+}

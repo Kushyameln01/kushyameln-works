@@ -6,7 +6,7 @@
 
 ## 必須profile bindingの省略穴
 
-個別のbaseDtype/outputDtype/layout比較は前回実装済みだったが、LOAD-COMFY-LINEAR-DIFF bindingと3宣言を同時に削除すると、N-LOADERの名前を残したまま必要比較そのものを省略できた。旧実装でnative describeBinding/planへ進む負例を確認した。
+個別のbaseDtype/outputDtype/layout比較は前回実装済みだったが、LOAD-COMFY-LINEAR-DIFF bindingと3宣言を同時に削除すると、N-LOADERの名前を残したまま必要比較そのものを省略できた。旧実装で明示fixtureのadapter describeBinding/planまで進む負例を確認した。これを実SDKの負例実行とは数えない。
 
 known native-entry policyが必要なrecord・side・representationも固定し、同じevaluateEdgeに渡すよう修正した。
 
@@ -26,12 +26,15 @@ known native-entry policyが必要なrecord・side・representationも固定し�
 | 対象 | 固定版／完全commit |
 | --- | --- |
 | 配布証拠 | `d8a19f684f75fdf2f772d64754cba9d08b8f5c82` |
+| 最新のowner照合追補 | `3571c5fe8a4b2c3a31754607e424e64d24d798e5`、資料・証拠6件のみ。runtime sourceと2bd codecは不変 |
 | codec実装 | `2bdca59ea78580d4fe7a9d31a8de33209b64d029`、8256 bytes、SHA-256 `d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5` |
 | 元codec | `2c171a09ccda65c54899f322ae490f1bfcaac6fb`、SHA-256 `4c6992a7b6f44722e84a7184ed5c878312a203071054335827f7f0adcd01c07b` |
 | ownerの管理/E4/configure証拠 | 管理edda、native configure2bd、Worker/run/fetch/NN0 |
 | 既存Rect実NNとraw経路 | 元証拠351、VAE855、Diffusion5f。今回も実NNのpin／scopeは変更しない |
 
 新codecは有効な供給normalization markerのsnapshot/header保存のみの変更で、数値配列やモデルを変換しない。WKTSR001/schemaVersion1とAPI exportは維持。markerなし旧bytesは維持され、旧writerでの新marker再保存には欠落制限がある。旧pinを同名で差し替えず、package registryへ新source/hashを明示した独立の保存候補として受領した。
+
+最新357追補の原文・Git bytesは `LATEST-OWNER-RECHECK.json`。ownerが指摘した0260時点の未採用と、その後の当管理受領を別欄で記録し、ownerのedda実行を当管理の実行へ付け替えない。
 
 ## 当管理環境での保存読戻し
 
@@ -48,6 +51,8 @@ ownerの固定 `test-manager-e4.mjs` を変更せず、当管理checkoutの実E2
 ## Rect実dispatchの残件
 
 新INPUTSからRect/Textの選択manifest、Mapキー、bytes/hash、gate原本を受領した。Rectは従来と同じdecoder側3点だけでdecodeでき、encoderを追加取得条件にしない。ownerの4asset stream hashと同host File/Map configure成功は、それぞれの元scopeで受領した。
+
+`MANIFEST-RECEIVER-ACK.json` が当管理での実bytes受領を記録する。Textは19,908 bytes / `aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f`、numericGate 0.001/0.001・registeredBeforeComparisonとepsilon1e-6を原文どおり保持した。Rect manifestのexporter既定0.002、実decodeの事前gate2e-5、mean往復2e-6は別規則。manifest受領はモデルpayload受領・Text plain独立全値比較・新NNの合格ではない。
 
 当管理環境へdecoder-body.onnx・conv2-weight.f32・conv2-bias.f32本体は届いていない。新管理の規範必須入口から実decode・実取消復帰・owner解放・その実RGBの保存を行った返却receiptも未受領。**項目4は未受入のまま**である。既送付の `../norm-receipt-adoption/RECT-OWNER-HANDOFF.md` を再利用し、ownerが原本を保持する環境から固定新管理のreceiptを返すか、既存3原本を受け取った場合に再開する。同じasset質問、既存encode、再exportは繰り返さない。
 
