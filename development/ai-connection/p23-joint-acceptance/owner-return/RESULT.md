@@ -101,6 +101,14 @@ LoRAなしbase経路と新LoRA mappingの受入は別scopeであり、LoRA固有
 | 新P4 final5744／base8294 | 別候補・未採用。mapping契約不明はUNVERIFIED、数値のみ不足は互換性と分離 |
 
 各ownerへの返却にはこの記録、全path／bytes／SHA-256の取得receipt、管理固定source・runner・返却条件・source照合記録を結ぶ。
-返却コメントと読戻しは別の送信receiptで追跡する。
+返却記録の固定sourceは `67fb256f3cf47d85a338f8a0af8b30a884796193`。
+VAE／LoRA／Diffusionへ返却し、3件とも本文の読戻し一致を確認した。
+[送信receipt](OUTBOUND-RECEIPT.json) に各URLと作成時刻を保持する。
+
+- [VAE：取得ACKとP2限定受入](https://github.com/Kushyameln01/kushyameln-works/pull/11#issuecomment-6559983673)
+- [LoRA：60d受入と884の未充足3条件](https://github.com/Kushyameln01/kushyameln-works/pull/2#issuecomment-6559984810)
+- [Diffusion：新P4取得ACKと未採用scope、固定N2引渡し](https://github.com/Kushyameln01/kushyameln-works/pull/14#issuecomment-6559985966)
+
+これは管理が受領側として返す取得確認であり、相手の追加ACKを取得確認の条件として要求しない。
 [再現手順](REPRODUCE.md) は既存manifest・receipt・packageを読み、NN／exportを実行しない。
 `generationReady:false`、`load/predict/sample=NOT_READY`。merge・Pages公開は実施しない。
