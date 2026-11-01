@@ -1,0 +1,49 @@
+FFF
+======================================================================
+FAIL: test_changed_source_stat_revokes_reference_receipt (__main__.FailureControls.test_changed_source_stat_revokes_reference_receipt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/test_plain_failure_controls.py", line 96, in test_changed_source_stat_revokes_reference_receipt
+    self.assertFalse(receipt['passed'],'A changed source must not retain passed=true in reference JSON')
+AssertionError: True is not false : A changed source must not retain passed=true in reference JSON
+
+======================================================================
+FAIL: test_late_browser_close_revokes_browser_acceptance (__main__.FailureControls.test_late_browser_close_revokes_browser_acceptance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/test_plain_failure_controls.py", line 84, in test_late_browser_close_revokes_browser_acceptance
+    def test_late_browser_close_revokes_browser_acceptance(self):self.browser_failure('late-close')
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/test_plain_failure_controls.py", line 82, in browser_failure
+    self.assertEqual((code,receipt['passed']),(1,False),'Late failure must exit nonzero and revoke the provisional numeric PASS')
+AssertionError: Tuples differ: (0, True) != (1, False)
+
+First differing element 0:
+0
+1
+
+- (0, True)
++ (1, False) : Late failure must exit nonzero and revoke the provisional numeric PASS
+
+======================================================================
+FAIL: test_late_handoff_write_revokes_browser_acceptance (__main__.FailureControls.test_late_handoff_write_revokes_browser_acceptance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/test_plain_failure_controls.py", line 83, in test_late_handoff_write_revokes_browser_acceptance
+    def test_late_handoff_write_revokes_browser_acceptance(self):self.browser_failure('late-write')
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/test_plain_failure_controls.py", line 82, in browser_failure
+    self.assertEqual((code,receipt['passed']),(1,False),'Late failure must exit nonzero and revoke the provisional numeric PASS')
+AssertionError: Tuples differ: (0, True) != (1, False)
+
+First differing element 0:
+0
+1
+
+- (0, True)
++ (1, False) : Late failure must exit nonzero and revoke the provisional numeric PASS
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.392s
+
+FAILED (failures=3)

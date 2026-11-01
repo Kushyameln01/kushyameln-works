@@ -1,0 +1,263 @@
+{
+  "schemaVersion": "works-plain-independent-acceptance/1.0",
+  "status": "PASS_FIXED_PLAIN_ALL_VALUES",
+  "executionSourceSha": "5537b8932343aa2476b95191817e8913f99dab02",
+  "input": {
+    "text": "Hello world",
+    "utf8Sha256": "64ec88ca00b268e5ba1a35678a1b5316d212f4f366b2477232534a8aeca37f3c",
+    "effectiveTokens": 3,
+    "shape": [
+      1,
+      512,
+      4096
+    ],
+    "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+    "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+    "manifestSha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f"
+  },
+  "predeclaredGate": {
+    "maxAbsError": 0.001,
+    "rtol": 0.001,
+    "registeredBeforeComparison": true,
+    "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee"
+  },
+  "comparison": {
+    "passed": true,
+    "finite": true,
+    "elements": 2097152,
+    "activeElements": 12288,
+    "paddingElements": 2084864,
+    "paddingExactlyZero": true,
+    "maxAbsError": 3.4570693969726562e-06,
+    "activeMaxAbsError": 3.4570693969726562e-06,
+    "allclose": true,
+    "gate": {
+      "maxAbsError": 0.001,
+      "atol": 0.001,
+      "rtol": 0.001
+    },
+    "allValuesCompared": true
+  },
+  "sourceOracle": {
+    "layers": 24,
+    "sourceKeysCovered": 412,
+    "pinnedComfyCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+    "t5SourceSha256": "797f11b69256dffa8d9a6d236fe1e05d0c250c84d231a5993accde0ff44238bc",
+    "configSha256": "933a3ca27aa44a02575b47f5de8a92029f3a5b41857ff8e49871f15550b63b7b",
+    "dependencyAdapterSha256": "5e6bba21e100034743780468857fd9970e1564a0c5e5fbc6b26e70d34a872490",
+    "usesFull512Positions": true,
+    "usesOnnxOrHike": false,
+    "resource": {
+      "pid": 4053,
+      "ctime": 1793526032.97,
+      "peakRssBytes": 1759371264,
+      "sampleIntervalSeconds": 0.05,
+      "samples": 1453,
+      "wallSeconds": 74.45349059799992,
+      "cpuUserSeconds": 102.33999999999999,
+      "cpuSystemSeconds": 40.73,
+      "scope": "This source process; no browser concurrency; sampled RSS may miss short peaks"
+    }
+  },
+  "wasm": {
+    "browserVersion": "154.0.8037.57",
+    "provider": "wasm",
+    "threads": 1,
+    "ortVersion": "1.24.3",
+    "hikeOperation": "actual encoder.final_layer_norm",
+    "hikeContributed": true,
+    "sessionObservation": {
+      "created": 24,
+      "released": 24,
+      "active": 0,
+      "maximumActive": 1,
+      "runCalls": 24,
+      "tensorDisposeCalls": 72,
+      "loadMs": 26745.099999997765,
+      "inferMs": 3313.2000000029802
+    },
+    "fullWallSeconds": 83.29330000000074,
+    "totalBrowserHelperWallSeconds": 93.60503351200168,
+    "resource": {
+      "sampledGroupPeakRssSumBytes": 6333726720,
+      "sampleIntervalSeconds": 0.05,
+      "samples": 1789,
+      "perPidPeakRss": [
+        {
+          "pid": 4116,
+          "ctime": 1793526166.67,
+          "peakRssBytes": 108019712
+        },
+        {
+          "pid": 4130,
+          "ctime": 1793526166.97,
+          "peakRssBytes": 152014848
+        },
+        {
+          "pid": 4142,
+          "ctime": 1793526167.46,
+          "peakRssBytes": 146759680
+        },
+        {
+          "pid": 4148,
+          "ctime": 1793526167.48,
+          "peakRssBytes": 90112
+        },
+        {
+          "pid": 4157,
+          "ctime": 1793526167.67,
+          "peakRssBytes": 0
+        },
+        {
+          "pid": 4159,
+          "ctime": 1793526167.68,
+          "peakRssBytes": 51818496
+        },
+        {
+          "pid": 4160,
+          "ctime": 1793526167.68,
+          "peakRssBytes": 51818496
+        },
+        {
+          "pid": 4179,
+          "ctime": 1793526167.78,
+          "peakRssBytes": 41160704
+        },
+        {
+          "pid": 4182,
+          "ctime": 1793526167.79,
+          "peakRssBytes": 73887744
+        },
+        {
+          "pid": 4204,
+          "ctime": 1793526167.87,
+          "peakRssBytes": 23232512
+        },
+        {
+          "pid": 4221,
+          "ctime": 1793526168.02,
+          "peakRssBytes": 94330880
+        },
+        {
+          "pid": 4230,
+          "ctime": 1793526168.07,
+          "peakRssBytes": 35106816
+        },
+        {
+          "pid": 4232,
+          "ctime": 1793526168.07,
+          "peakRssBytes": 5664215040
+        },
+        {
+          "pid": 4273,
+          "ctime": 1793526168.34,
+          "peakRssBytes": 2650112
+        },
+        {
+          "pid": 4300,
+          "ctime": 1793526173.31,
+          "peakRssBytes": 4370432
+        },
+        {
+          "pid": 4338,
+          "ctime": 1793526256.51,
+          "peakRssBytes": 4304896
+        }
+      ],
+      "wallSeconds": 93.60503351200168,
+      "scope": "Sampled RSS sum, may double-count shared pages and miss short peaks; not unique OS RAM or user-device benefit"
+    },
+    "actualRuntimeSourceFiles": "evidence/browser-results.json#/servedSources"
+  },
+  "cancellation": {
+    "accepted": true,
+    "target": {
+      "inputRevision": 2,
+      "progress": {
+        "stage": "text-block",
+        "completed": 1,
+        "total": 24,
+        "effectiveTokens": 3
+      }
+    },
+    "checkpoint": {
+      "phase": "cancel",
+      "jobId": "2",
+      "inputRevision": 2,
+      "type": "progress",
+      "progress": {
+        "stage": "text-block",
+        "completed": 1,
+        "total": 24,
+        "effectiveTokens": 3
+      },
+      "counts": {
+        "created": 1,
+        "released": 1,
+        "active": 0,
+        "maximumActive": 1,
+        "runCalls": 1,
+        "tensorDisposeCalls": 3,
+        "loadMs": 2836.7000000029802,
+        "inferMs": 176.09999999776483
+      }
+    },
+    "wallSeconds": 6.0595,
+    "workers": {
+      "created": 2,
+      "terminated": 2
+    },
+    "disposedState": {
+      "status": "disposed",
+      "inputRevision": 2,
+      "module": "text_encoder",
+      "operation": "encode",
+      "progress": null,
+      "error": null
+    },
+    "scope": "After actual block1 completion; checkpoint1session/3tensors released, then owned Worker terminated. No release count is invented for unobserved work after checkpoint."
+  },
+  "processOwnership": {
+    "oracle": "evidence/oracle-phase-end.json",
+    "browser": "evidence/browser-phase-end.json",
+    "observedBrowserDescendants": 15,
+    "reapedOwnedChildren": 3,
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "resourcePlanningCheck": {
+    "estimatedProcessRssBytes": 4294967296,
+    "sourceOraclePeakRssBytes": 1759371264,
+    "browserLargestObservedProcessPeakRssBytes": 5664215040,
+    "browserPlanningEstimateExceeded": true,
+    "sampledGroupRssSumBytes": 6333726720,
+    "numericalGateWasNotResourceEstimate": true,
+    "resourceBenefitAccepted": false,
+    "reason": "Browser exceeded4GiB planning estimate. Group RSS sum can double-count shared pages; no OS-unique RAM, original workflow or user-device benefit acceptance."
+  },
+  "p3Handoff": "P3-HANDOFF.json",
+  "selectedManifestRef": "../../reference-adoption/p0/evidence/manifests/text.json",
+  "gateHistoryPreserved": "../../reference-adoption/p0/evidence/owner/text/REPORT.md",
+  "newExports": 0,
+  "newWeightsOrGraphCopies": 0,
+  "newNeuralExecutionScopes": [
+    "One full512 source-reference evaluation",
+    "One actual native plain WASM24-layer evaluation",
+    "One additional plain job cancelled after block1"
+  ],
+  "limits": [
+    "One explicit plain input only; not arbitrary prompt numerical or512effective-token performance acceptance",
+    "FP32 expansion diagnostic, not original GPUFP8 arithmetic equivalence",
+    "Not Comfy prompt weighting/custom embeddings/automatic Bernini prefix",
+    "Not production Diffusion/generatedsample/fullmodel session/adoption or generationReady acceptance",
+    "No old ID fixture error assigned to this new plain result"
+  ]
+}

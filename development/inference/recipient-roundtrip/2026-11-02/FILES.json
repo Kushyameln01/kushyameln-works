@@ -1,0 +1,1323 @@
+{
+  "schemaVersion": "works-fixed-handoff-file-inventory/1.0",
+  "distributionSha": "f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48",
+  "repository": "Kushyameln01/kushyameln-works",
+  "method": "Existing manifest/receipt/index reused; selected full bytes checked against fixed Git blobs; no model execution or export",
+  "executionSources": {
+    "initialPlainAndP2": "5537b8932343aa2476b95191817e8913f99dab02",
+    "initialManager": "60d16b64d6020d3d20239f087f8add91268dcaad",
+    "additionalObserver": "e150e7ac3c4859739528ff278763c6474968ac08",
+    "additionalManager": "8849891f19124df31847bd691503c2491278eaa8",
+    "nativeVae": "855f435120f08eb9e818e51281fc26f0e2633829",
+    "meanOwner": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+    "codec": "2bdca59ea78580d4fe7a9d31a8de33209b64d029"
+  },
+  "p2": {
+    "profileId": "wan21-raw-f32-1x16x32",
+    "meanShape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "rgbShape": [
+      1,
+      3,
+      1,
+      16,
+      32
+    ],
+    "existingIndexVerified": true,
+    "existingIndexFiles": 93,
+    "additionalResultJointTraces": [
+      "works:p2:joint:fc24f1eb-a752-45c7-acd6-4a7fd6b07318",
+      "works:p2:joint:23cdb4ac-bab0-4909-9cf3-23295abc1f3f"
+    ],
+    "receivedRgbHistorical": true,
+    "newInference": 0,
+    "newExport": 0,
+    "newNumericComparison": 0
+  },
+  "conditioning": {
+    "nativeContract": {
+      "apiVersion": "works-ai-1",
+      "expectedBuild": "works-inference-v1",
+      "tensorMeaning": "text_hidden_states",
+      "layout": "BLC",
+      "dtype": "float32",
+      "space": "native-final-RMSNorm-output-unprojected-4096",
+      "latentNormalizationMarkerApplicable": false,
+      "plainOutputShape": [
+        1,
+        512,
+        4096
+      ],
+      "tokenIdOutputShapeRule": {
+        "batch": 1,
+        "L": {
+          "minimum": 1,
+          "maximum": 512
+        },
+        "channels": 4096
+      },
+      "nativeProfileId": null,
+      "nativeProfileIdReason": "Native encoder declares manifest.type, not an independent shape profile ID."
+    },
+    "artifact": {
+      "tensor": {
+        "path": "../plain/evidence/plain-conditioning.wktensor",
+        "sha256": "90f9aed262027c5a273a71e2601a953a49d4e55593b34310565cfcd112fc95c9",
+        "byteLength": 8390054,
+        "pathStatus": "ACTUAL_BYTES_VERIFIED",
+        "payloadSha256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+        "dtype": "float32",
+        "layout": "BLC",
+        "shape": [
+          1,
+          512,
+          4096
+        ],
+        "meaning": "text_hidden_states",
+        "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+        "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+        "nativeMetadataPreserved": true
+      },
+      "attentionMask": {
+        "path": "mask.u8",
+        "sha256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62",
+        "byteLength": 512,
+        "pathStatus": "ACTUAL_BYTES_VERIFIED",
+        "dtype": "uint8",
+        "nativeStorage": "Uint8Array",
+        "expectedLength": 512,
+        "validPositions": 3,
+        "alsoPreservedInTensorHeader": true,
+        "maskHeaderFileEquality": "PASS_ALL512",
+        "maskedHiddenRowsRequired": "exact zero"
+      },
+      "saveReadback": {
+        "status": "PASS",
+        "reason": "Actual .wktensor recovered and all bytes, native metadata and full2,097,152-value comparison verified",
+        "codec": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+          "path": "docs/shared/inference/tensor.mjs",
+          "sha256": "d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5",
+          "byteLength": 8256
+        }
+      }
+    },
+    "identities": {
+      "encoderModelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+      "tokenizer": {
+        "path": "spiece.model",
+        "bytes": 4548313,
+        "sha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+        "algorithm": "sentencepiece",
+        "addBos": false,
+        "addEos": true,
+        "eosId": 1,
+        "padId": 0,
+        "referenceMinTokens": 512,
+        "plainTextOnly": true,
+        "emphasisCompatibility": "not claimed"
+      },
+      "expectedTokenizerHashAuthenticatesArbitraryTokenIds": false,
+      "selectedManifest": {
+        "path": "../../codec-marker-handoff/manifests/text/manifest.json",
+        "byteLength": 19908,
+        "sha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f",
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "d8a19f684f75fdf2f772d64754cba9d08b8f5c82",
+          "path": "development/inference/codec-marker-handoff/manifests/text/manifest.json"
+        }
+      }
+    },
+    "finalNormalization": {
+      "operation": "actual encoder.final_layer_norm",
+      "dtype": "float32",
+      "hiddenSize": 4096,
+      "weight": {
+        "epsilon": 1e-06,
+        "path": "final-norm.f32",
+        "bytes": 16384,
+        "sha256": "31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02"
+      },
+      "owner": "text_encoder",
+      "kernelSource": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+        "path": "tools/inference/kernel/tensor.hike",
+        "sha256": "09625a5a955b843fdf15b22676429c3774600b3dd3aaa53fc77325869fcd0490",
+        "byteLength": 2383
+      },
+      "kernelWasm": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+        "path": "docs/shared/inference/kernel/tensor.wasm",
+        "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+        "byteLength": 5265
+      },
+      "noManagerRmsNormImplementation": true
+    },
+    "numericAcceptance": {
+      "selectedManifestGate": {
+        "maxAbsError": 0.001,
+        "rtol": 0.001,
+        "registeredBeforeComparison": true,
+        "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee"
+      },
+      "comparisonPlan": "../plain/predeclared-plan.json",
+      "independentReference": {
+        "path": "../plain/evidence/plain-reference.f32",
+        "sha256": "e59ad16a82799a42fe82eb76b3c7438a70c4766be7d7c7eb9b18222bfb1c83a9",
+        "byteLength": 8388608,
+        "pathStatus": "ACTUAL_BYTES_VERIFIED",
+        "oracleFull512": true
+      },
+      "comparisonReport": {
+        "path": "../plain/RECEIPT.json",
+        "sha256": "d8ae8e1733342ff868f394af5b2ad17bf9c07b9cb80c9975bac427ab022e9903",
+        "byteLength": 8087,
+        "pathStatus": "ACTUAL_BYTES_VERIFIED"
+      },
+      "status": "PASS_FIXED_PLAIN_HELLO_WORLD_ALL_VALUES",
+      "scope": "One selected plain prompt staged FP32 source-reference diagnostic; not original GPU FP8 equivalence or arbitrary/512-effective-token performance",
+      "comparison": {
+        "passed": true,
+        "finite": true,
+        "elements": 2097152,
+        "activeElements": 12288,
+        "paddingElements": 2084864,
+        "paddingExactlyZero": true,
+        "maxAbsError": 3.4570693969726562e-06,
+        "activeMaxAbsError": 3.4570693969726562e-06,
+        "allclose": true,
+        "gate": {
+          "maxAbsError": 0.001,
+          "atol": 0.001,
+          "rtol": 0.001
+        },
+        "allValuesCompared": true
+      }
+    },
+    "actualExecution": {
+      "commit": "5537b8932343aa2476b95191817e8913f99dab02",
+      "receipt": {
+        "path": "../plain/RECEIPT.json",
+        "sha256": "d8ae8e1733342ff868f394af5b2ad17bf9c07b9cb80c9975bac427ab022e9903",
+        "byteLength": 8087,
+        "pathStatus": "ACTUAL_BYTES_VERIFIED"
+      },
+      "nativeSourceBytesPreserved": true
+    },
+    "scope": "One positive plain diagnostic conditioning handoff; not current fixed-tail consumption or original Bernini conditioning reproduction"
+  },
+  "receiverAcknowledgment": {
+    "thisFileIsSenderInventory": true,
+    "recipientIdentityAttested": false,
+    "managementNewReceipt": null,
+    "diffusionNewReceipt": null,
+    "notReplacedByLocalProbe": true
+  },
+  "unaccepted": [
+    "Recipient-owned acquisition/source/data ACK and management final receipt review",
+    "Actual L512 Text cross-attention numerical consumption",
+    "P5 generated sample restoration/final decode",
+    "Unknown real-media/slot shapes and new large profiles",
+    "Original GPU FP8 equivalence and broad prompt/device resource acceptance"
+  ],
+  "files": [
+    {
+      "path": "development/inference/codec-marker-handoff/manifests/text/manifest.json",
+      "byteLength": 19908,
+      "sha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f",
+      "gitBlobSha": "a96f97201b8d55e5e8cfa40116198c75e21d54f1",
+      "fixedCommitBytesMatched": true,
+      "role": "Selected Text model manifest",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/codec-marker-handoff/manifests/text/manifest.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/P2-SOURCES.json",
+      "byteLength": 6831,
+      "sha256": "6b32ba6fe0d62bda0d6b303259d6e944a45aa4bee451e6ea26742d505a79e9ee",
+      "gitBlobSha": "803a3cac1b227afc35d5db3859fbd12e2d2dd4c2",
+      "fixedCommitBytesMatched": true,
+      "role": "Initial5537/60d source pins, not new884",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/P2-SOURCES.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/REPRODUCE.md",
+      "byteLength": 5834,
+      "sha256": "880db824ec5edbb2d8ff5ff2459b761f26b9ccf0dcb036ba9f2402c63521c35b",
+      "gitBlobSha": "d2c5f205d51cd399fecae181aa50b4d08b582b94",
+      "fixedCommitBytesMatched": true,
+      "role": "Acquisition and optional real-model reproduction",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/REPRODUCE.md"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/RESULT.md",
+      "byteLength": 12229,
+      "sha256": "477537d32ebef2095ef132daaf176cf3393d32d5369bf3d2213aaddb27534a6d",
+      "gitBlobSha": "8fe41de06dd92ded0948980751ec53ceda141f2b",
+      "fixedCommitBytesMatched": true,
+      "role": "All source/scope/results",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/RESULT.md"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/conditioning/CONTRACT.md",
+      "byteLength": 12943,
+      "sha256": "f2fa421bc7cbac686865c7893420bdb9d976954207a93391966e9dafffa094e7",
+      "gitBlobSha": "857c1b5f3013dafbb997dab1d1e2d994cff8da23",
+      "fixedCommitBytesMatched": true,
+      "role": "Original native contract plus consumer829 source-only delta",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/conditioning/CONTRACT.md"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/conditioning/RECEIVER.md",
+      "byteLength": 6078,
+      "sha256": "78c03c72adcb8fc59b8cb5f05e0560bc8b5f0afde59fc3b50baa9a1dee4f2c32",
+      "gitBlobSha": "cb200a0628c2ddfc61ac9ef4c27d9d68e5b5a36e",
+      "fixedCommitBytesMatched": true,
+      "role": "No-model receiver instructions",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/conditioning/RECEIVER.md"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/conditioning/manifest.json",
+      "byteLength": 18626,
+      "sha256": "3a97422cda0c3bf8e731217ce230e92708945987db55498791d8421da8aec25a",
+      "gitBlobSha": "843bc61196a30191aaf05dac3d2492c9bb9590e3",
+      "fixedCommitBytesMatched": true,
+      "role": "Actual conditioning package manifest",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/conditioning/manifest.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/conditioning/mask.u8",
+      "byteLength": 512,
+      "sha256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62",
+      "gitBlobSha": "a8fd8d66af212cbbbcf834c5adccfd69627358f6",
+      "fixedCommitBytesMatched": true,
+      "role": "Actual mask512 sidecar",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/conditioning/mask.u8"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/conditioning/prompt.txt",
+      "byteLength": 11,
+      "sha256": "64ec88ca00b268e5ba1a35678a1b5316d212f4f366b2477232534a8aeca37f3c",
+      "gitBlobSha": "70c379b63ffa0795fdbfbc128e5a2818397b7ef8",
+      "fixedCommitBytesMatched": true,
+      "role": "Actual plain input UTF8",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/conditioning/prompt.txt"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/conditioning/token-ids.json",
+      "byteLength": 3850,
+      "sha256": "1da1e16220f81dde7695af9bc91518240292198ee8f4891321a67a53d06c44ec",
+      "gitBlobSha": "6ca5ecec3a516b2df66669626be0fd118d6ec130",
+      "fixedCommitBytesMatched": true,
+      "role": "Actual512 token IDs",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/conditioning/token-ids.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/run/joint-result.json",
+      "byteLength": 62543,
+      "sha256": "ae92992bba086b78c2015292216ef1b7511dc73de3c19dd58d16c40042621aac",
+      "gitBlobSha": "30fccc0fad8d358868474c380adabde074666657",
+      "fixedCommitBytesMatched": true,
+      "role": "Initial5537/60d actual execution, separate from884",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/run/joint-result.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/EVIDENCE-INDEX.json",
+      "byteLength": 17204,
+      "sha256": "1c6bb7f483649720e6b27e562461161ac0113403d350abec3a004fe9603a82c4",
+      "gitBlobSha": "c23ec37dec024ec38975425a12fdfc990403055e",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 evidence index",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/EVIDENCE-INDEX.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/MANAGER-SOURCE-RECEIVED.json",
+      "byteLength": 7861,
+      "sha256": "ebf5e656117ffb4480232f2a51ecaa64922ea0799925b2c9b46ff0713757653d",
+      "gitBlobSha": "cdec482cf22975b4585417b3632ce74f33d50534",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 source, execution or package evidence",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/MANAGER-SOURCE-RECEIVED.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/NEW-884-SOURCE-CLOSURE.json",
+      "byteLength": 8307,
+      "sha256": "a5575821c430049c0054f0e1de00192d5dc175e0824db3f90c4042a772eb974f",
+      "gitBlobSha": "0de75ca6a9d973e266884e42c4f4a61489e5b6d2",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 source, execution or package evidence",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/NEW-884-SOURCE-CLOSURE.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/SOURCE-COMPARISON-884-60d-f34.json",
+      "byteLength": 22145,
+      "sha256": "ea9f0465ee01b43a9f4d9e6481a18282be833024e3b548319fe38aa2860c0caa",
+      "gitBlobSha": "5a697c2cc560231409fa70d31ed753f4349c35ce",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 source, execution or package evidence",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/SOURCE-COMPARISON-884-60d-f34.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/SOURCE-REPORT.md",
+      "byteLength": 7252,
+      "sha256": "ad1edf79c92be740773ea5f872c57e52cbb4b266e4bd877406e2a9e5d2eef7dc",
+      "gitBlobSha": "9ec8a980c324f8b86a538e89e9d90454b5547b87",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 source, execution or package evidence",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/SOURCE-REPORT.md"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/descriptor.json",
+      "byteLength": 1730,
+      "sha256": "a01193b85456bc242381003058433064c5a4a29c3380a31b1761fbf1dabd67a8",
+      "gitBlobSha": "891e70e0525586e3565da9e84d298b7157558fcd",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/descriptor.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/evidence.json",
+      "byteLength": 132421,
+      "sha256": "cbaef96f1a513feb595d8a1f76f74be926e7585faba6f6e089a42055fe92f7f9",
+      "gitBlobSha": "ebb1f10b6af8f5df83028bdeb471ce4982d01932",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/evidence.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/extensions.json",
+      "byteLength": 175,
+      "sha256": "06dc03e1cfc6ddfbab0d8d2183789d80183aa0c2b062a58c34b81883592ec535",
+      "gitBlobSha": "182b8f2a28619f2b546b52a23ede520cd83bb153",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/extensions.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/manifest.json",
+      "byteLength": 1872,
+      "sha256": "a79da48ce0de91616bea0bd7cef490d3560a36672f427582bd5f97923d191df1",
+      "gitBlobSha": "144f2cf2993dfed081cdac232241cb996dbd9a94",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/manifest.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/receipt.json",
+      "byteLength": 284,
+      "sha256": "3174b2c90675887d46ccf63afcd095f1cc9a5d0b13c3a59b87733391c0077228",
+      "gitBlobSha": "de6a3230c90747b303d9334793516fec5a10ab80",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/receipt.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/rgb.wktensor",
+      "byteLength": 6715,
+      "sha256": "4de752c8a7d6df05fed012065bfd222b2f41d4c1c93c2cf8be58edfa24a46d72",
+      "gitBlobSha": "c2fde07d9789f90fd34b284680b5b390a6db517c",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/rgb.wktensor"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/snapshot.json",
+      "byteLength": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "gitBlobSha": "ec747fa47ddb81e9bf2d282011ed32aa4c59f932",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/snapshot.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/trace.json",
+      "byteLength": 400915,
+      "sha256": "95404ec74910cfb2abe3745401851c5639c6c2dfe27b005bef230c0fdf74e302",
+      "gitBlobSha": "df1aac8b624f985cd7f1a0d9b93b71d40e463586",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/2-recovered-decode/trace.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/result.json",
+      "byteLength": 841065,
+      "sha256": "9efa1debe4d399d7fbf67b7580a51d683e0240da9729d0a252b6679b9576459d",
+      "gitBlobSha": "a3ff392404c4093f31833a535dad0e8ac7e8bf86",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 source, execution or package evidence",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/decode/result.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/descriptor.json",
+      "byteLength": 1845,
+      "sha256": "7e75651cde46fd82ec47148a722dbd4115a9a20f40f60c5a2a8f2aae66f93630",
+      "gitBlobSha": "9fc4c4af678c8bc925beb3292c1595cd1fc37688",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/descriptor.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/evidence.json",
+      "byteLength": 3438,
+      "sha256": "85ccb1b1dd6df0b5969c33cc28e184015e668c116e8ef37a149c22975c98879b",
+      "gitBlobSha": "3c93a732cc58c8e655a0d9d2058a5889d3c282cb",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/evidence.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/extensions.json",
+      "byteLength": 187,
+      "sha256": "98c6db3c4f4b8d384c598d980c7888d610b94a311780ca59b14f6bf7e9664872",
+      "gitBlobSha": "e2d6acabd6055f08b3614f36c7c88ea43eb40b5a",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/extensions.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/manifest.json",
+      "byteLength": 1764,
+      "sha256": "8a21344af9c250940eeb6b9ec71925ce17d35a82517dab1d6ba9441a1664a3c7",
+      "gitBlobSha": "d62e78d2ad850913c971b6bfd5a6d498d6670e53",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/manifest.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/native.wktensor",
+      "byteLength": 1137,
+      "sha256": "f7b2b158096937648a14a224ca4961543eace129a24ae3b88394a810f6c18840",
+      "gitBlobSha": "1e430ea3c8664ad52217710cd997f1a38df2fe1d",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/native.wktensor"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/receipt.json",
+      "byteLength": 249,
+      "sha256": "e2146fa2c77897317f2f5876f70234c70da40705b63eaa76d9464af4e02d705d",
+      "gitBlobSha": "8967d140864190badcdd6ee3bb248e9da0c38553",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/receipt.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/snapshot.json",
+      "byteLength": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "gitBlobSha": "ec747fa47ddb81e9bf2d282011ed32aa4c59f932",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/snapshot.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/trace.json",
+      "byteLength": 69942,
+      "sha256": "8b43b8b5ede828a4a7c82f3105c6a9a96271ec3563a635c1d3b3c8a383550218",
+      "gitBlobSha": "254ded192ddb6d8f320ba5d2fa9e46514d7adb47",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/normalized-mean/trace.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/descriptor.json",
+      "byteLength": 1862,
+      "sha256": "775802f867937c6efaffb4f82507c91d185932f68ff1c9b84dc789029bcb1cc0",
+      "gitBlobSha": "684374663eeea0ffa7d4072161a00ee3886fe967",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/descriptor.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/evidence.json",
+      "byteLength": 10637,
+      "sha256": "869ec79ff6fe74494d1e6b39269fec7552003437593b4d887d43758aebf7ea8b",
+      "gitBlobSha": "8e76bd181d63de8d7365bed297053fb901bc23fe",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/evidence.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/extensions.json",
+      "byteLength": 187,
+      "sha256": "98c6db3c4f4b8d384c598d980c7888d610b94a311780ca59b14f6bf7e9664872",
+      "gitBlobSha": "e2d6acabd6055f08b3614f36c7c88ea43eb40b5a",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/extensions.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/manifest.json",
+      "byteLength": 1752,
+      "sha256": "298adadea29d0a5d241a20921fb3f29b166e226f798febbccf1387eb86df1a48",
+      "gitBlobSha": "086e1492fd3c6522664eb74d5bfbe173d22a4b67",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/manifest.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/native.wktensor",
+      "byteLength": 1084,
+      "sha256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8",
+      "gitBlobSha": "988080119791c13eb17db5d60e9c2018d5d60d16",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/native.wktensor"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/receipt.json",
+      "byteLength": 245,
+      "sha256": "d6caa6bf91447ac10ddc4dd67045b7a12ded66b3f0963d0927c435484d2d3ba3",
+      "gitBlobSha": "7e767466ac13d17872a7a314cd5c3a82784f40cd",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/receipt.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/snapshot.json",
+      "byteLength": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "gitBlobSha": "ec747fa47ddb81e9bf2d282011ed32aa4c59f932",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/snapshot.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/trace.json",
+      "byteLength": 9955,
+      "sha256": "7e075b32c92a705a894c0cf9ec04b1f6c7292b2f0bf2c7fb2d243d293e12444f",
+      "gitBlobSha": "2993a4a61c0ab0e21077a90ff5c42b615266d445",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/raw-mean/trace.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/descriptor.json",
+      "byteLength": 1478,
+      "sha256": "1e593c708b3026866dd1115257c4a472f10f280b93959a501e0edd2e52a1c9ba",
+      "gitBlobSha": "0b13558547975fac17ae45b37bb5660e338a4de1",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/descriptor.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/evidence.json",
+      "byteLength": 10678,
+      "sha256": "738483fd1f46b80b6862a161384cf40d8aa1dd5f9ee4341ae92238ee8754dd67",
+      "gitBlobSha": "658c3dd0daae3344ac790cd816d371e3de253533",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/evidence.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/extensions.json",
+      "byteLength": 187,
+      "sha256": "98c6db3c4f4b8d384c598d980c7888d610b94a311780ca59b14f6bf7e9664872",
+      "gitBlobSha": "e2d6acabd6055f08b3614f36c7c88ea43eb40b5a",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/extensions.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/manifest.json",
+      "byteLength": 1758,
+      "sha256": "333ca2314375b3c1ca10ba76ffb8b529eb1270ac287d73e4db4be65e4b0e67ac",
+      "gitBlobSha": "8588337ef0f32d2f8ecdb6edd67880976f4dec3d",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/manifest.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/native.wktensor",
+      "byteLength": 6460,
+      "sha256": "0d0a28c963445ab88cb4553296489d965a73d3a56b0f1bbff7daa54f6d60834a",
+      "gitBlobSha": "7c1c5189cda09b140d6c2b7203c7efbe5f9294cc",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/native.wktensor"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/receipt.json",
+      "byteLength": 246,
+      "sha256": "29496256b09d4a8fccf56743c67b5d0396175d1f6e649d492064785e260fe25a",
+      "gitBlobSha": "0acbe73c44abf2335c4d9c4c663cc1713952cf49",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/receipt.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/snapshot.json",
+      "byteLength": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "gitBlobSha": "ec747fa47ddb81e9bf2d282011ed32aa4c59f932",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/snapshot.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/trace.json",
+      "byteLength": 119578,
+      "sha256": "628f506df206b99f8b319f34d99decb727d939bc2427d0b967559efadae16042",
+      "gitBlobSha": "2d6b503b984c039291f8bcb4a1ddfad890136413",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/received-rgb/trace.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/descriptor.json",
+      "byteLength": 1730,
+      "sha256": "55b907c2ce213fbb537ebb43ee547a31ffb47a3fd14b5b3f917dff1a32e17eac",
+      "gitBlobSha": "2900f0d73374c05839201f486de564fd6b8d4153",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/descriptor.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/evidence.json",
+      "byteLength": 3758,
+      "sha256": "f776b6e42c93b3a2fe6bd2a316c07b34dd725e0d75faf0a364679b5ff73dc774",
+      "gitBlobSha": "2131fed14d2f45ac629cbc059223312ff374b9ed",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/evidence.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/extensions.json",
+      "byteLength": 187,
+      "sha256": "98c6db3c4f4b8d384c598d980c7888d610b94a311780ca59b14f6bf7e9664872",
+      "gitBlobSha": "e2d6acabd6055f08b3614f36c7c88ea43eb40b5a",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/extensions.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/manifest.json",
+      "byteLength": 1760,
+      "sha256": "159e84a5f51dd2c697ce655a16ba4b6c602d124e6a02c8b32eb61cf897023c62",
+      "gitBlobSha": "748b4358ac34ea2bc32307ebf53d39b867547dbc",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/manifest.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/native.wktensor",
+      "byteLength": 1084,
+      "sha256": "dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612",
+      "gitBlobSha": "02bdbba4d5e2b7008ae66b85d7d53a75b988dc19",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/native.wktensor"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/receipt.json",
+      "byteLength": 247,
+      "sha256": "72ca9ad068d4fa44ce1f9b58bb7edca769db16ab88d49d0287d0a0930284e2db",
+      "gitBlobSha": "27f821acb60f0189b448aec7e81d1f4f762a0e1a",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/receipt.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/snapshot.json",
+      "byteLength": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "gitBlobSha": "ec747fa47ddb81e9bf2d282011ed32aa4c59f932",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/snapshot.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/trace.json",
+      "byteLength": 119568,
+      "sha256": "5916cfb69d04e3d8a0de8a66e0436a1921fe4133605ff35718b65f787fb38fab",
+      "gitBlobSha": "f161d1a83607feb0779136dd930b791d7a357c33",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/restored-mean/trace.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/result.json",
+      "byteLength": 241014,
+      "sha256": "c30be7f4620e60b26bd3836bcd82775a83ed3c8ca1fc49d9ce3f3fcc822c8d80",
+      "gitBlobSha": "e0c2eff05ecabb74ad640ce673922d65facbf89f",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/mean/result.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/result.json",
+      "byteLength": 1216943,
+      "sha256": "a676887cc7d5f5fab1d1bcfb11d9d8eaf2c2ee1eb92469a4ff6ded9894824914",
+      "gitBlobSha": "5af88b261b6c03f5203fde02dd67a7c73b0e48fa",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 source, execution or package evidence",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/cancel-recover/result.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/descriptor.json",
+      "byteLength": 1728,
+      "sha256": "4f19c6977e2452b47d4cf7187e64eda245ace74a4f74efbfd18707b3ac57b102",
+      "gitBlobSha": "7ab3c5e9f043c6fdc42e41a338d44240e391bcdf",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/descriptor.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/evidence.json",
+      "byteLength": 132437,
+      "sha256": "394e6a6088e97dfaeb8c97ab6b8e9e99e9e2ebd6d61c13f17cbcccdaf28130a0",
+      "gitBlobSha": "9ca71c2acdb7072fa5b383462d29268bcd2f84ca",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/evidence.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/extensions.json",
+      "byteLength": 175,
+      "sha256": "06dc03e1cfc6ddfbab0d8d2183789d80183aa0c2b062a58c34b81883592ec535",
+      "gitBlobSha": "182b8f2a28619f2b546b52a23ede520cd83bb153",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/extensions.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/manifest.json",
+      "byteLength": 1871,
+      "sha256": "8f6c7fcbe9c7a97f70838d9434644b22609f35729cadce8a0c34cd5f1cbffddd",
+      "gitBlobSha": "b88e37d25e17860dd1ace404f6156af0d681398c",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/manifest.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/receipt.json",
+      "byteLength": 284,
+      "sha256": "71f88a009a1cc43c47a6872662836439bf3337ca5f4a872f78f17aeb7671bb95",
+      "gitBlobSha": "c8b4c5f45fea706a08c4ae5fe8e4e07f3d4642b1",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/receipt.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/rgb.wktensor",
+      "byteLength": 6715,
+      "sha256": "4de752c8a7d6df05fed012065bfd222b2f41d4c1c93c2cf8be58edfa24a46d72",
+      "gitBlobSha": "c2fde07d9789f90fd34b284680b5b390a6db517c",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/rgb.wktensor"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/snapshot.json",
+      "byteLength": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "gitBlobSha": "ec747fa47ddb81e9bf2d282011ed32aa4c59f932",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/snapshot.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/trace.json",
+      "byteLength": 400931,
+      "sha256": "336a48b137c746c36b350c3c3feca3f2e621228ddb3273218b601d9393a9ed80",
+      "gitBlobSha": "807665b92dcf32ada620ec80c2d55ae373e917f6",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 newly decoded RGB package and receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/1-decoded-rgb/trace.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/result.json",
+      "byteLength": 834458,
+      "sha256": "e7b17b6fff62f94732d858a36bb5beb4bc352c880014ebb79c102f1ecac9feed",
+      "gitBlobSha": "55a6f3a21d61fc675ffd25ac29b43803248eac6a",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 source, execution or package evidence",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/decode/result.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/descriptor.json",
+      "byteLength": 1845,
+      "sha256": "0aebd005bfe813defd1a2967b06638b78cb8a11a9280c18c3d2fdf759ea4d56e",
+      "gitBlobSha": "924a7344d3d97db4b598ab6bafa1e709c3a924b7",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/descriptor.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/evidence.json",
+      "byteLength": 3438,
+      "sha256": "85ccb1b1dd6df0b5969c33cc28e184015e668c116e8ef37a149c22975c98879b",
+      "gitBlobSha": "3c93a732cc58c8e655a0d9d2058a5889d3c282cb",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/evidence.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/extensions.json",
+      "byteLength": 187,
+      "sha256": "98c6db3c4f4b8d384c598d980c7888d610b94a311780ca59b14f6bf7e9664872",
+      "gitBlobSha": "e2d6acabd6055f08b3614f36c7c88ea43eb40b5a",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/extensions.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/manifest.json",
+      "byteLength": 1764,
+      "sha256": "cf46f5ef37fe2576e4d583b8e8957f6cf79843b14ad77fda23f939c6fade49f5",
+      "gitBlobSha": "746887d17bf58a82bba0ffe4852b1ce6e56f3ee1",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/manifest.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/native.wktensor",
+      "byteLength": 1137,
+      "sha256": "f7b2b158096937648a14a224ca4961543eace129a24ae3b88394a810f6c18840",
+      "gitBlobSha": "1e430ea3c8664ad52217710cd997f1a38df2fe1d",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/native.wktensor"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/receipt.json",
+      "byteLength": 249,
+      "sha256": "f7a9bcc7044ae70ba6bd579c10df8b8de081e59dcda6e143277fac249a72c33d",
+      "gitBlobSha": "229f4e75e15a572e59562f5007b8ca82376bf8b5",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/receipt.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/snapshot.json",
+      "byteLength": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "gitBlobSha": "ec747fa47ddb81e9bf2d282011ed32aa4c59f932",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/snapshot.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/trace.json",
+      "byteLength": 69942,
+      "sha256": "70c2d8aa60e506aaab5be792d1b2585de54d341a4e7501374a6e84d1c5044793",
+      "gitBlobSha": "ed5b27835efc211012b9fbf66a1328153cdb3e39",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/normalized-mean/trace.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/descriptor.json",
+      "byteLength": 1862,
+      "sha256": "407e1640fda79b39a03363f9d61a4c92ab3aec2ccdb42e0e7144e70a28fff388",
+      "gitBlobSha": "7042926cefaf6b061d27f34679703778fb595f8d",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/descriptor.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/evidence.json",
+      "byteLength": 10637,
+      "sha256": "869ec79ff6fe74494d1e6b39269fec7552003437593b4d887d43758aebf7ea8b",
+      "gitBlobSha": "8e76bd181d63de8d7365bed297053fb901bc23fe",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/evidence.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/extensions.json",
+      "byteLength": 187,
+      "sha256": "98c6db3c4f4b8d384c598d980c7888d610b94a311780ca59b14f6bf7e9664872",
+      "gitBlobSha": "e2d6acabd6055f08b3614f36c7c88ea43eb40b5a",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/extensions.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/manifest.json",
+      "byteLength": 1752,
+      "sha256": "27e5485e231117655010dd6d6d771a1ff344b2fa01a218ba06c48f22c0f2c086",
+      "gitBlobSha": "252d67d23645af389a5206693f3bcb19c5c45d13",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/manifest.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/native.wktensor",
+      "byteLength": 1084,
+      "sha256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8",
+      "gitBlobSha": "988080119791c13eb17db5d60e9c2018d5d60d16",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/native.wktensor"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/receipt.json",
+      "byteLength": 245,
+      "sha256": "c28499d812bfd7ec25c55ea9ed8463a5a639db7e1efafcac82fd8fac6b878611",
+      "gitBlobSha": "1042b577a916750d82bf06c1775ac692cf95dc3c",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/receipt.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/snapshot.json",
+      "byteLength": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "gitBlobSha": "ec747fa47ddb81e9bf2d282011ed32aa4c59f932",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/snapshot.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/trace.json",
+      "byteLength": 9955,
+      "sha256": "c839016bebe389db4fb10a36299400f5cc68d253f80d829d61ffb08f8f84ef2f",
+      "gitBlobSha": "afb224b637cfdd1526cd9f19b9540317be5d5b3c",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/trace.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/descriptor.json",
+      "byteLength": 1478,
+      "sha256": "33ca9e50f5f21243a6215d092ae3059fb59daf2412f7f5fce20fe0ef9196f751",
+      "gitBlobSha": "2342b352409d4beff18e996cdbde60ee09738845",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/descriptor.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/evidence.json",
+      "byteLength": 10678,
+      "sha256": "738483fd1f46b80b6862a161384cf40d8aa1dd5f9ee4341ae92238ee8754dd67",
+      "gitBlobSha": "658c3dd0daae3344ac790cd816d371e3de253533",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/evidence.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/extensions.json",
+      "byteLength": 187,
+      "sha256": "98c6db3c4f4b8d384c598d980c7888d610b94a311780ca59b14f6bf7e9664872",
+      "gitBlobSha": "e2d6acabd6055f08b3614f36c7c88ea43eb40b5a",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/extensions.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/manifest.json",
+      "byteLength": 1758,
+      "sha256": "6d279e2ec2d50441b8d687888b64bdcf7498e06a0d4ab4b205421e622be8a858",
+      "gitBlobSha": "e702112d31ab5c32719c8fbeb59959f281ff2f4b",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/manifest.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/native.wktensor",
+      "byteLength": 6460,
+      "sha256": "0d0a28c963445ab88cb4553296489d965a73d3a56b0f1bbff7daa54f6d60834a",
+      "gitBlobSha": "7c1c5189cda09b140d6c2b7203c7efbe5f9294cc",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/native.wktensor"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/receipt.json",
+      "byteLength": 246,
+      "sha256": "a7322f3ed6f598027de58b8e2f9d4cbf8b622577363ac20dd5625d4336046e5d",
+      "gitBlobSha": "b36d7ff50348b3f2aad5670dcee109c7088237b8",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/receipt.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/snapshot.json",
+      "byteLength": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "gitBlobSha": "ec747fa47ddb81e9bf2d282011ed32aa4c59f932",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/snapshot.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/trace.json",
+      "byteLength": 119578,
+      "sha256": "79223779b9f1750a49531f219993133f5c196f7a59ca5ce39b62a59e33328a39",
+      "gitBlobSha": "cbaa2e0d3d25e9bb1cf777403336cf3af39d4940",
+      "fixedCommitBytesMatched": true,
+      "role": "Historical received RGB package, not newly decoded RGB",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/received-rgb/trace.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/descriptor.json",
+      "byteLength": 1730,
+      "sha256": "103ac13c6f8604066fe47fdd3d88d978634f78b3cc7c1a3325f1c520daf4e3a7",
+      "gitBlobSha": "d88a604646dbef983998041449514f8ffa4726aa",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/descriptor.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/evidence.json",
+      "byteLength": 3758,
+      "sha256": "f776b6e42c93b3a2fe6bd2a316c07b34dd725e0d75faf0a364679b5ff73dc774",
+      "gitBlobSha": "2131fed14d2f45ac629cbc059223312ff374b9ed",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/evidence.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/extensions.json",
+      "byteLength": 187,
+      "sha256": "98c6db3c4f4b8d384c598d980c7888d610b94a311780ca59b14f6bf7e9664872",
+      "gitBlobSha": "e2d6acabd6055f08b3614f36c7c88ea43eb40b5a",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/extensions.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/manifest.json",
+      "byteLength": 1760,
+      "sha256": "5c58e47d48f8e43bb462e6ee8f3ca1503e68e2490ee21f55664e6e6abf14d4d7",
+      "gitBlobSha": "d87894d0e7ebbc531d6ee38e7ead32f5756e5927",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/manifest.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/native.wktensor",
+      "byteLength": 1084,
+      "sha256": "dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612",
+      "gitBlobSha": "02bdbba4d5e2b7008ae66b85d7d53a75b988dc19",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/native.wktensor"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/receipt.json",
+      "byteLength": 247,
+      "sha256": "6de39f04e84a1e390f645200ba590ad8fec1917a3f2c937c7baa8fe41114dd37",
+      "gitBlobSha": "9d8b99e4c98adb8123ae957f88ec947a0ca6ff29",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/receipt.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/snapshot.json",
+      "byteLength": 4,
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "gitBlobSha": "ec747fa47ddb81e9bf2d282011ed32aa4c59f932",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/snapshot.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/trace.json",
+      "byteLength": 119568,
+      "sha256": "21a8e489735c1baf8155da51d725e872c9107006f44292c5a2f497ad9ebc0613",
+      "gitBlobSha": "4442435b163a5e25a1106437e28c31082d9a76fe",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/trace.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/result.json",
+      "byteLength": 240982,
+      "sha256": "8040b37afe5113bcbf3c974dc6bda009657d85da5014c2e756b93232e0c93254",
+      "gitBlobSha": "95a9a995b2d653739344e0cdb20b8839342dbc6d",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 mean pipeline package or receipt; no VAE encode",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/result.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/result.json",
+      "byteLength": 1210296,
+      "sha256": "1dfd19f07b67a802c1c00000d00ff498f15409fd7633594d386512fc453de09b",
+      "gitBlobSha": "443123870684b193a66a13c0bbf439387504d02b",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 source, execution or package evidence",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/decode/result.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/early-source-failure/RESOLUTION.md",
+      "byteLength": 218,
+      "sha256": "5d2b53cab794383e52bb40e05cdbe7fe4500151ff3c5cd2f3fe5ed294dddfcac",
+      "gitBlobSha": "c2ee85c01cd91a243394d7b59aadf434b973a992",
+      "fixedCommitBytesMatched": true,
+      "role": "NN-before-start source-acquisition failure, resolved using complete same5f checkout",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/early-source-failure/RESOLUTION.md"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/early-source-failure/observer-result.json",
+      "byteLength": 4811,
+      "sha256": "9842b7f839806534bc5c28032ae78698d34fb49c6bfeb4796880b431c07d4b5d",
+      "gitBlobSha": "402148d4c5b4969f1421c06d54608959a7803cf2",
+      "fixedCommitBytesMatched": true,
+      "role": "NN-before-start source-acquisition failure, resolved using complete same5f checkout",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/early-source-failure/observer-result.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/observer-result.json",
+      "byteLength": 85723,
+      "sha256": "6f60b1226424d5df5608cb8c8c34ae8835b7734143e580515ce0d7f0ba0b514a",
+      "gitBlobSha": "f3d83fe2cc10599a69408b12b6a7f25af94f7fdb",
+      "fixedCommitBytesMatched": true,
+      "role": "P2-884 source, execution or package evidence",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/p2/updated-884/observer-result.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/EVIDENCE-INDEX.json",
+      "byteLength": 5727,
+      "sha256": "b0a49315d6f1d0d3bf0c97c6d943fdf3253cec2de8ea9fd96bd8ea6ad7f5724b",
+      "gitBlobSha": "087da53b73723d25ff4715c8abc79f6fec344f04",
+      "fixedCommitBytesMatched": true,
+      "role": "Original plain evidence index",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/EVIDENCE-INDEX.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/P3-HANDOFF.json",
+      "byteLength": 6982,
+      "sha256": "4d478be2b3aabb9a9946d92472ed92f51f4fccf9d876847dd62d03fdf394275c",
+      "gitBlobSha": "8b6512ae308b6e5b20acfdfdef12f497b32ec519",
+      "fixedCommitBytesMatched": true,
+      "role": "Existing plain5537 actual conditioning/reference evidence; no new inference",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/P3-HANDOFF.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/RECEIPT.json",
+      "byteLength": 8087,
+      "sha256": "d8ae8e1733342ff868f394af5b2ad17bf9c07b9cb80c9975bac427ab022e9903",
+      "gitBlobSha": "ade53e2c24ad1f357515abea3051253a3a3e0cff",
+      "fixedCommitBytesMatched": true,
+      "role": "Independent full-value plain numerical receipt",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/RECEIPT.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/evidence/browser-phase-end.json",
+      "byteLength": 7774,
+      "sha256": "2176cf955658af4044e69d18ef524b3a691ccef47d0af9f7aecbce363a6ea015",
+      "gitBlobSha": "29eedcbbc77d63d7629f6e138163e25398b45730",
+      "fixedCommitBytesMatched": true,
+      "role": "Existing plain5537 actual conditioning/reference evidence; no new inference",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/evidence/browser-phase-end.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/evidence/browser-results.json",
+      "byteLength": 95515,
+      "sha256": "6de192f7f1d6b21b0fbee056cc78297c3e28be39b86555637047718ce1633d7c",
+      "gitBlobSha": "3d20fa76657c1c4fef29d787ab52d6c992224dd9",
+      "fixedCommitBytesMatched": true,
+      "role": "Existing plain5537 actual conditioning/reference evidence; no new inference",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/evidence/browser-results.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/evidence/conditioning-handoff.json",
+      "byteLength": 6717,
+      "sha256": "2eb094922e6ba6043167b35871072c8a20ee9598e00e3b4aafd3b34ec9ff1047",
+      "gitBlobSha": "c8589975608530c47a2a0ed9c613c4d8260bb366",
+      "fixedCommitBytesMatched": true,
+      "role": "Existing plain5537 actual conditioning/reference evidence; no new inference",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/evidence/conditioning-handoff.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/evidence/oracle-phase-end.json",
+      "byteLength": 844,
+      "sha256": "042d2479527f75a55677ef50145f9a579689e76f06022044deaa932caca0a326",
+      "gitBlobSha": "7c3d3e70ceb5bae57415aede3284709325d33aa4",
+      "fixedCommitBytesMatched": true,
+      "role": "Existing plain5537 actual conditioning/reference evidence; no new inference",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/evidence/oracle-phase-end.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/evidence/plain-conditioning.wktensor",
+      "byteLength": 8390054,
+      "sha256": "90f9aed262027c5a273a71e2601a953a49d4e55593b34310565cfcd112fc95c9",
+      "gitBlobSha": "79f2e153d32846b6a9ed154aaf63b5d35112abae",
+      "fixedCommitBytesMatched": true,
+      "role": "Existing plain5537 actual conditioning/reference evidence; no new inference",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/evidence/plain-conditioning.wktensor"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/evidence/plain-input.json",
+      "byteLength": 7827,
+      "sha256": "b778df4b951945f401f2e4b02d5a3450a9d488f9641b18d859f5b60c56511ccd",
+      "gitBlobSha": "2964b3be069f303a999c982a2a846ba28b7feb4e",
+      "fixedCommitBytesMatched": true,
+      "role": "Existing plain5537 actual conditioning/reference evidence; no new inference",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/evidence/plain-input.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/evidence/plain-reference.f32",
+      "byteLength": 8388608,
+      "sha256": "e59ad16a82799a42fe82eb76b3c7438a70c4766be7d7c7eb9b18222bfb1c83a9",
+      "gitBlobSha": "15d429206a1713e3dc612b292a8e5ddbbdaf5bee",
+      "fixedCommitBytesMatched": true,
+      "role": "Existing plain5537 actual conditioning/reference evidence; no new inference",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/evidence/plain-reference.f32"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/evidence/reference-results.json",
+      "byteLength": 57300,
+      "sha256": "3c10ad3047c2a27f4098d6631a85ce3baf7cfb3f7273a99dd0697f7fb779ff1a",
+      "gitBlobSha": "c055893d33b6222bbe796d96f8af3d4128ce61c8",
+      "fixedCommitBytesMatched": true,
+      "role": "Existing plain5537 actual conditioning/reference evidence; no new inference",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/evidence/reference-results.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/predeclared-plan.json",
+      "byteLength": 4748,
+      "sha256": "b2dc3aadb38fd60fc0e606bd6c7bb4be33ecb4ddc824c2e846cb9ac40a398442",
+      "gitBlobSha": "1965fb7b405247bc0087c4021119917f96f3afe8",
+      "fixedCommitBytesMatched": true,
+      "role": "Prior comparison gate/source plan",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/predeclared-plan.json"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/plain/source-bindings.json",
+      "byteLength": 1479,
+      "sha256": "f018ec21434d8a59cfac7d528ae6dd910b703ba74e6b4b9fe5041a958a823541",
+      "gitBlobSha": "615e816fcfaae65748cba509709258ab20909375",
+      "fixedCommitBytesMatched": true,
+      "role": "Plain source/model/Tokenizer bindings",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/development/inference/p2-p3-acceptance/plain/source-bindings.json"
+    },
+    {
+      "path": "docs/shared/inference/API.md",
+      "byteLength": 31778,
+      "sha256": "a567ee4d1741ee991dbbbf5775484d65ff6466cabfb065787783a9a3c652a570",
+      "gitBlobSha": "3883d1c75cff44173d2f5991fcc48ec4a245a9d5",
+      "fixedCommitBytesMatched": true,
+      "role": "works-ai-1 native API, doc P2-PLAIN-2",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/docs/shared/inference/API.md"
+    },
+    {
+      "path": "tools/inference/text-encoder/inspect_conditioning_handoff.mjs",
+      "byteLength": 11461,
+      "sha256": "69af4634a9a18a5689862ba8fe469d2efa8d8de462a4599cac2962df14024017",
+      "gitBlobSha": "85d112ad89af87f93540ea974e2175d8ee6ad2d1",
+      "fixedCommitBytesMatched": true,
+      "role": "Acquisition-only sender or receiver local probe",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/tools/inference/text-encoder/inspect_conditioning_handoff.mjs"
+    },
+    {
+      "path": "tools/inference/vae/observe_management_joint.py",
+      "byteLength": 4380,
+      "sha256": "a11e09d18d7c8522b96cb23d15fa8417491a4a2386cb4c494a41c2305fad2fb0",
+      "gitBlobSha": "63d91ba1a5125683c032574d2cce052f480caab8",
+      "fixedCommitBytesMatched": true,
+      "role": "Actual observer source bytes; e150 execution pin retained",
+      "url": "https://github.com/Kushyameln01/kushyameln-works/blob/f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48/tools/inference/vae/observe_management_joint.py"
+    }
+  ]
+}

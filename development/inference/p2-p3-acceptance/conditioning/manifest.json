@@ -1,0 +1,413 @@
+{
+  "schemaVersion": "works-conditioning-handoff/0.1-draft.1",
+  "status": "PRODUCER_FIXED_PLAIN_ACCEPTED_RECIPIENT_ACK_PENDING",
+  "scope": "One positive plain diagnostic conditioning handoff; not current fixed-tail consumption or original Bernini conditioning reproduction",
+  "nativeContract": {
+    "apiVersion": "works-ai-1",
+    "expectedBuild": "works-inference-v1",
+    "tensorMeaning": "text_hidden_states",
+    "layout": "BLC",
+    "dtype": "float32",
+    "space": "native-final-RMSNorm-output-unprojected-4096",
+    "latentNormalizationMarkerApplicable": false,
+    "plainOutputShape": [
+      1,
+      512,
+      4096
+    ],
+    "tokenIdOutputShapeRule": {
+      "batch": 1,
+      "L": {
+        "minimum": 1,
+        "maximum": 512
+      },
+      "channels": 4096
+    },
+    "nativeProfileId": null,
+    "nativeProfileIdReason": "Native encoder declares manifest.type, not an independent shape profile ID."
+  },
+  "dataSelection": {
+    "fixtureRole": "positive-diagnostic-only",
+    "inputMode": "plain-text",
+    "negative": {
+      "status": "NOT_PROVIDED_NOT_VERIFIED"
+    },
+    "berniniTaskPrefixApplied": false,
+    "berniniPrefixAcceptance": "NOT_VERIFIED",
+    "defaultNegativeSelectionAcceptance": "NOT_VERIFIED",
+    "comfyPromptWeights": "UNSUPPORTED",
+    "customEmbeddingClipSkipPooled": "UNSUPPORTED",
+    "originalWorkflowConditioningReproduced": false
+  },
+  "input": {
+    "prompt": {
+      "declarationPath": "../plain/predeclared-plan.json",
+      "declaredText": "Hello world",
+      "declaredUtf8Sha256": "64ec88ca00b268e5ba1a35678a1b5316d212f4f366b2477232534a8aeca37f3c",
+      "encoding": "UTF-8",
+      "bytePolicy": "No added BOM/newline/whitespace normalization. Verify saved file bytes against declared text.",
+      "file": {
+        "path": "prompt.txt",
+        "sha256": "64ec88ca00b268e5ba1a35678a1b5316d212f4f366b2477232534a8aeca37f3c",
+        "byteLength": 11,
+        "pathStatus": "ACTUAL_BYTES_VERIFIED"
+      }
+    },
+    "tokenIds": {
+      "path": "token-ids.json",
+      "sha256": "1da1e16220f81dde7695af9bc91518240292198ee8f4891321a67a53d06c44ec",
+      "byteLength": 3850,
+      "pathStatus": "ACTUAL_BYTES_VERIFIED",
+      "jsonPointer": "/data"
+    }
+  },
+  "artifact": {
+    "tensor": {
+      "path": "../plain/evidence/plain-conditioning.wktensor",
+      "sha256": "90f9aed262027c5a273a71e2601a953a49d4e55593b34310565cfcd112fc95c9",
+      "byteLength": 8390054,
+      "pathStatus": "ACTUAL_BYTES_VERIFIED",
+      "payloadSha256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+      "dtype": "float32",
+      "layout": "BLC",
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "meaning": "text_hidden_states",
+      "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+      "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+      "nativeMetadataPreserved": true
+    },
+    "attentionMask": {
+      "path": "mask.u8",
+      "sha256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62",
+      "byteLength": 512,
+      "pathStatus": "ACTUAL_BYTES_VERIFIED",
+      "dtype": "uint8",
+      "nativeStorage": "Uint8Array",
+      "expectedLength": 512,
+      "validPositions": 3,
+      "alsoPreservedInTensorHeader": true,
+      "maskHeaderFileEquality": "PASS_ALL512",
+      "maskedHiddenRowsRequired": "exact zero"
+    },
+    "saveReadback": {
+      "status": "PASS",
+      "reason": "Actual .wktensor recovered and all bytes, native metadata and full2,097,152-value comparison verified",
+      "codec": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+        "path": "docs/shared/inference/tensor.mjs",
+        "sha256": "d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5",
+        "byteLength": 8256
+      }
+    }
+  },
+  "identities": {
+    "encoderModelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+    "tokenizer": {
+      "path": "spiece.model",
+      "bytes": 4548313,
+      "sha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+      "algorithm": "sentencepiece",
+      "addBos": false,
+      "addEos": true,
+      "eosId": 1,
+      "padId": 0,
+      "referenceMinTokens": 512,
+      "plainTextOnly": true,
+      "emphasisCompatibility": "not claimed"
+    },
+    "expectedTokenizerHashAuthenticatesArbitraryTokenIds": false,
+    "selectedManifest": {
+      "path": "../../codec-marker-handoff/manifests/text/manifest.json",
+      "byteLength": 19908,
+      "sha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f",
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "d8a19f684f75fdf2f772d64754cba9d08b8f5c82",
+        "path": "development/inference/codec-marker-handoff/manifests/text/manifest.json"
+      }
+    }
+  },
+  "finalNormalization": {
+    "operation": "actual encoder.final_layer_norm",
+    "dtype": "float32",
+    "hiddenSize": 4096,
+    "weight": {
+      "epsilon": 1e-06,
+      "path": "final-norm.f32",
+      "bytes": 16384,
+      "sha256": "31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02"
+    },
+    "owner": "text_encoder",
+    "kernelSource": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "tools/inference/kernel/tensor.hike",
+      "sha256": "09625a5a955b843fdf15b22676429c3774600b3dd3aaa53fc77325869fcd0490",
+      "byteLength": 2383
+    },
+    "kernelWasm": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "docs/shared/inference/kernel/tensor.wasm",
+      "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+      "byteLength": 5265
+    },
+    "noManagerRmsNormImplementation": true
+  },
+  "numericAcceptance": {
+    "selectedManifestGate": {
+      "maxAbsError": 0.001,
+      "rtol": 0.001,
+      "registeredBeforeComparison": true,
+      "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee"
+    },
+    "comparisonPlan": "../plain/predeclared-plan.json",
+    "independentReference": {
+      "path": "../plain/evidence/plain-reference.f32",
+      "sha256": "e59ad16a82799a42fe82eb76b3c7438a70c4766be7d7c7eb9b18222bfb1c83a9",
+      "byteLength": 8388608,
+      "pathStatus": "ACTUAL_BYTES_VERIFIED",
+      "oracleFull512": true
+    },
+    "comparisonReport": {
+      "path": "../plain/RECEIPT.json",
+      "sha256": "d8ae8e1733342ff868f394af5b2ad17bf9c07b9cb80c9975bac427ab022e9903",
+      "byteLength": 8087,
+      "pathStatus": "ACTUAL_BYTES_VERIFIED"
+    },
+    "status": "PASS_FIXED_PLAIN_HELLO_WORLD_ALL_VALUES",
+    "scope": "One selected plain prompt staged FP32 source-reference diagnostic; not original GPU FP8 equivalence or arbitrary/512-effective-token performance",
+    "comparison": {
+      "passed": true,
+      "finite": true,
+      "elements": 2097152,
+      "activeElements": 12288,
+      "paddingElements": 2084864,
+      "paddingExactlyZero": true,
+      "maxAbsError": 3.4570693969726562e-06,
+      "activeMaxAbsError": 3.4570693969726562e-06,
+      "allclose": true,
+      "gate": {
+        "maxAbsError": 0.001,
+        "atol": 0.001,
+        "rtol": 0.001
+      },
+      "allValuesCompared": true
+    }
+  },
+  "sourceIdentity": {
+    "knownNativeImplementation": [
+      {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+        "path": "docs/shared/inference/text-encoder-api.mjs",
+        "sha256": "b20fc73262c12558e2c54fb7ac8bfd20775c39dd2dbe4a47efd0a73632ec9a99",
+        "byteLength": 2623
+      },
+      {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+        "path": "docs/shared/inference/text-encoder.mjs",
+        "sha256": "9d4f528a926dc40bdbf721c5072518d0e027019a5a0912deeac0dc0f449fd8a2",
+        "byteLength": 8564
+      },
+      {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+        "path": "docs/shared/inference/tokenizer.mjs",
+        "sha256": "4a7811d4e36fbcc568e2a2a1e0941fd78261f84b231a96458d919ea0259fb9a5",
+        "byteLength": 1637
+      }
+    ],
+    "actualEncodeExecution": {
+      "commit": "5537b8932343aa2476b95191817e8913f99dab02",
+      "receipt": {
+        "path": "../plain/RECEIPT.json",
+        "sha256": "d8ae8e1733342ff868f394af5b2ad17bf9c07b9cb80c9975bac427ab022e9903",
+        "byteLength": 8087,
+        "pathStatus": "ACTUAL_BYTES_VERIFIED"
+      },
+      "nativeSourceBytesPreserved": true
+    },
+    "packetDistributionCommit": null,
+    "packetDistributionCommitReason": "Use immutable Git URL/actual receiver checkoutSHA; the packet does not embed its own commit hash recursively."
+  },
+  "consumerBoundary": {
+    "diffusionDistributionCommit": "508d72cc9036e7f500827465c644b4aed3c5f711",
+    "tailExecutionCommit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+    "managedTailExecutionCommit": "5c484a8783ab129a2ff3543a98b2537af9888199",
+    "tailProfile": "bernini-block0-n2-self-attention-residual-f32-v1",
+    "currentTailConsumesConditioning": false,
+    "currentTailRestriction": "Fixed block0/HIGH scheduleIndex1/LOW3/tokens2/trusted artifact hashes; run accepts attention,patchHidden,timeAct1 only.",
+    "conditioningRpc": "validateConditioning input:{tensor}; validation metadata only, not cross-attention consumption",
+    "tokenizerInteropGap": "Current Diffusion validator does not validate tokenizerSha256; ownedTensor/metadata/old writer omit it. Preserve G1C tensor and outer evidence.",
+    "projection4096To5120Owner": "diffusion_models",
+    "crossAttentionKVAndNumericalPreparationOwner": "diffusion_models",
+    "consumerImplementationStatus": "NOT_IMPLEMENTED_OR_NOT_ACCEPTED_FOR_THIS_DATA",
+    "observedP4Candidate": {
+      "status": "SOURCE_REVIEWED_THIS_PACKET_NOT_EXECUTED",
+      "sourceScope": "Separate P4 candidate at 829467; preceding fixed-tail/legacy interop fields retain their 508d72 scope and original execution pins.",
+      "profileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+      "nativeCapture": {
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "829467c14ec6fd1ab1858dfc175c84605de1ac98",
+          "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs",
+          "byteLength": 18862,
+          "sha256": "b4518ea35ca35e63e6ba8cdbe67e5d9fea0fa2125dac7dac0f5d4ac6c83ac7c2",
+          "gitBlobSha": "c1eaf632c44f6e1369f1d07c38a97c8a85ef752c"
+        },
+        "entrypoint": "captureP4Conditioning(tensor,{expectedModelSha256,expectedTokenizerSha256,missingTokenizerPolicy})",
+        "shapeRule": "float32 BLC [1,L,4096], integer 1<=L<=512, text_hidden_states",
+        "dataRule": "Exact native compact finite Float32Array of L*4096 elements; owned synchronous copy.",
+        "maskRule": "Exact native compact Uint8Array[L], values0/1, at least one valid position; masked hidden rows already all zero.",
+        "expectedModelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+        "expectedTokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+        "missingTokenizerPolicyDefault": "reject",
+        "explicitRetainUnknownDoesNotInjectIdentity": true,
+        "changesNumericValuesShapeOrMask": false,
+        "nativeTensorMetadataRetained": true,
+        "outerReceiptEvidenceTraceOwner": "Caller retains original outer packet; capture does not authenticate receipt/reference/gate.",
+        "producerAuthenticated": false,
+        "realExecutionVerified": false,
+        "jointlyAccepted": false,
+        "moduleSealRule": "Receiver must capture after reading or transferring native data; private seal belongs to the same module instance."
+      },
+      "genericStage": {
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "829467c14ec6fd1ab1858dfc175c84605de1ac98",
+          "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/stage.mjs",
+          "byteLength": 21978,
+          "sha256": "ff184acbabc589472a95b0bbf0eb2d3949b4478ecc0b19266817e8c313e7826d",
+          "gitBlobSha": "2de13bc2cc5a3cf2c3cec1521909ddd402dcda2f"
+        },
+        "entrypoint": "createPostSelfAttention(...).run({residual,timeAct1,conditioning,...})",
+        "nativeCapturedTextStructurallyAllowed": true,
+        "fixtureOnlyGateInGenericStage": false,
+        "scope": "N2 residual/timeAct1 plus full L context; Diffusion owns4096-to5120 projection, cross-attention and FFN. Mask remains provenance; do not add softmax masking or row compaction.",
+        "actualThisPacketRun": false,
+        "actualL512NumericalAndResourceAcceptance": "NOT_VERIFIED"
+      },
+      "currentDiagnostic": {
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "829467c14ec6fd1ab1858dfc175c84605de1ac98",
+          "path": "docs/shared/diffusion-models/diagnostics/p4-cross-ffn/run.mjs",
+          "byteLength": 21215,
+          "sha256": "ddf216d4be56e7f1a424285718c91d825241f4de4e3a98d46794bf61b164d0b3",
+          "gitBlobSha": "0aaa151fc6443ca1eabe616c161a7d52d6ea5b4e"
+        },
+        "entrypoint": "runP4CrossFfn; verifyP4FixtureBinding before native stage construction",
+        "shape": [
+          1,
+          4,
+          4096
+        ],
+        "conditioningDataSha256": "0cd4fa87e24e6d875207aca52cc214a1b46157a886d4c090fb7c5cfc9a5925ae",
+        "conditioningMaskSha256": "252c0b6b080fa045acfcd1437f693f3be2be2ac8223ea525d492fa19ab028942",
+        "fixtureContractSha256": "17102144ab54236bc0dc28d3e2d083b5a5c850c48f0ada86aa4b06c89bab6338",
+        "browserComparisonAlsoFixedL4": true,
+        "acceptsThisL512PacketUnchanged": false,
+        "fixtureResultsAuthenticateTextEncoder": false
+      },
+      "nativeReferenceInput": {
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "829467c14ec6fd1ab1858dfc175c84605de1ac98",
+          "path": "tools/diffusion-models/p4-cross-ffn-reference.py",
+          "byteLength": 40251,
+          "sha256": "66ded34a4bb74d261b81484bf2abd2d9ee75b0e4cf82ce6a063e02237a7a7ecf",
+          "gitBlobSha": "888e5a4e600514c1919bcd800ee9ecde0e7eeb9b"
+        },
+        "entrypoint": "--text; validate_native_text",
+        "schemaVersion": "bernini-p4-native-text-input/0.1",
+        "format": "Private UTF-8 JSON; not G1C WKT",
+        "requiredInformation": [
+          "dtype/layout/meaning",
+          "shape[1,L,4096]",
+          "flat data",
+          "attentionMask",
+          "producer.module=text_encoder",
+          "producer.sourceCommit full original execution SHA",
+          "modelSha256",
+          "tokenizerSha256 known hash or explicit null"
+        ],
+        "optionalDataSHA256CheckedAgainstF32": true,
+        "nativeTextArtifactSHA256Meaning": "SHA256 of complete UTF-8 JSON bytes; does not replace original WKT whole/payload/mask hashes.",
+        "requiredOuterOriginalBindings": [
+          "artifact.tensor sha256/payloadSha256",
+          "artifact.attentionMask sha256",
+          "sourceIdentity.actualEncodeExecution.commit=5537b8932343aa2476b95191817e8913f99dab02",
+          "identities.selectedManifest and tokenizer",
+          "numericAcceptance original receipt/reference/predeclared gate"
+        ],
+        "jsonConversionPerformed": false,
+        "inputReferenceBindingOwner": "diffusion_models owner harness; management retains receipts without duplicating numerical work.",
+        "p4GateScope": "P4 local/composed candidate gates require separate prior binding; preserve Text numericAcceptance unchanged."
+      },
+      "newReceiverOwnedPacketReceipt": null,
+      "actualThisPacketCrossAttentionConsumption": false,
+      "actualThisPacketNumericalComparison": false,
+      "generationReady": false
+    }
+  },
+  "outerEvidence": {
+    "evidence": {
+      "path": "../plain/EVIDENCE-INDEX.json",
+      "sha256": "b0a49315d6f1d0d3bf0c97c6d943fdf3253cec2de8ea9fd96bd8ea6ad7f5724b",
+      "byteLength": 5727,
+      "pathStatus": "ACTUAL_BYTES_VERIFIED"
+    },
+    "trace": {
+      "path": "../plain/evidence/browser-results.json",
+      "sha256": "6de192f7f1d6b21b0fbee056cc78297c3e28be39b86555637047718ce1633d7c",
+      "byteLength": 95515,
+      "pathStatus": "ACTUAL_BYTES_VERIFIED"
+    },
+    "e4PackageReceipt": null,
+    "snapshot": null,
+    "snapshotReason": "No generation snapshot established by one conditioning diagnostic.",
+    "orderedVaeContexts": null,
+    "orderedVaeContextsReason": "One plain fixture does not establish Bernini context ordering or positive/negative sharing.",
+    "e4PackageReceiptReason": "This Text handoff uses native .wktensor plus complete outer receipt/index; no management Text E4 transaction claimed."
+  },
+  "receiverStatus": {
+    "existingManagerDistribution": "60d16b64d6020d3d20239f087f8add91268dcaad",
+    "codecReceiverAck": {
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+        "path": "development/ai-connection/codec-marker-adoption/RECEIVER-ACK.json"
+      },
+      "receiverExecutionCheckpoint": "0239c8117622bb388af0d7870b672e54a79beec3",
+      "acceptedScope": "Original codec2bd/d82 and recorded Rect E4 marker persistence only"
+    },
+    "manifestReceiverAck": {
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+        "path": "development/ai-connection/codec-marker-adoption/MANIFEST-RECEIVER-ACK.json"
+      },
+      "acceptedScope": "Original selected Rect/Text manifest bytes and declared gate/finalNorm; not new conditioning data"
+    },
+    "storageAdoption": {
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+        "path": "development/ai-connection/codec-marker-adoption/ADOPTED-RESULT.md"
+      },
+      "implementationCheckpoint": "830e58bbe1e9d783910cfc0a9c6bf8cf45071c58"
+    },
+    "newPacketSourceReceipt": null,
+    "newPacketSourceReceiptReason": "Receiver-owned acknowledgement of this future packet source/data is pending; sender fetch or same-host clone cannot satisfy it.",
+    "conditioningDataReceipt": "NOT_VERIFIED",
+    "crossAttentionConsumption": "NOT_ACCEPTED",
+    "generationReady": false
+  }
+}

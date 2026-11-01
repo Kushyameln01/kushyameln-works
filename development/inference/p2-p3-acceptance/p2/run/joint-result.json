@@ -1,0 +1,2594 @@
+{
+  "passed": true,
+  "scope": "Fixed management norm-required Rect mean diagnostic joint run",
+  "executionSourceCommit": "5537b8932343aa2476b95191817e8913f99dab02",
+  "harnessSource": [
+    {
+      "path": "tools/inference/vae/accept_joint_rect.py",
+      "commit": "5537b8932343aa2476b95191817e8913f99dab02",
+      "bytes": 8276,
+      "sha256": "3c11a0aeedc959ce73017ffbf761b9ce6bc43f30b07272bcc27beb6128338eae"
+    },
+    {
+      "path": "tools/inference/vae/prepare_joint_rect.mjs",
+      "commit": "5537b8932343aa2476b95191817e8913f99dab02",
+      "bytes": 8242,
+      "sha256": "8b8e12a3995865dc761ffa9a3b2bc26cac2bddf8f19b62ff63e75fa1117402ac"
+    },
+    {
+      "path": "tools/inference/vae/process_lifecycle.py",
+      "commit": "5537b8932343aa2476b95191817e8913f99dab02",
+      "bytes": 6299,
+      "sha256": "a927fe8f38382563ec8d512745446f32bc7740bff3c1b86b650f4490f178299c"
+    },
+    {
+      "path": "tools/inference/vae/accept_still.py",
+      "commit": "5537b8932343aa2476b95191817e8913f99dab02",
+      "bytes": 23812,
+      "sha256": "91f5e010809d54716be620a01a6af2a364d77ebd3b7834cb7c06571b681fb9f6"
+    },
+    {
+      "path": "development/inference/p2-p3-acceptance/P2-SOURCES.json",
+      "commit": "5537b8932343aa2476b95191817e8913f99dab02",
+      "bytes": 6831,
+      "sha256": "6b32ba6fe0d62bda0d6b303259d6e944a45aa4bee451e6ea26742d505a79e9ee"
+    }
+  ],
+  "managerCommit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+  "nativeCommit": "855f435120f08eb9e818e51281fc26f0e2633829",
+  "resourceState": {
+    "status": "available",
+    "ownerId": "p2-joint-vae-owner",
+    "requiredBytes": 2147483648,
+    "budgetBytes": 8589934592,
+    "occupiedBytes": 0,
+    "scope": "Current cgroup16GiB, exclusive P2 NN lease after plain process/Worker cleanup; task-owned inference allocations0; prior Rect RSS1.62GB rounded2GiB estimate; task budget8GiB, not measured peak or numeric gate"
+  },
+  "stages": [
+    {
+      "phase": "prepare",
+      "command": [
+        "node",
+        "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/vae/prepare_joint_rect.mjs",
+        "--manager-root",
+        "/workspace/work/inference/p2-p3-20261101/peer/manager/checkout",
+        "--diffusion-root",
+        "/workspace/work/inference/p0-p2-20261031/diffusion/source",
+        "--output",
+        "/workspace/work/inference/p2-p3-20261101/p2-run-1/prepare"
+      ],
+      "exitCode": 0,
+      "wallSeconds": 0.13807668799927342,
+      "stdout": "{\"passed\":true,\"steps\":[{\"name\":\"normalized\",\"meaning\":\"wan21-normalized-posterior-mean:v1\",\"marker\":\"wan21-comfy-f32-v1\",\"payload\":\"4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5\"},{\"name\":\"restored\",\"meaning\":\"raw-posterior-mean\",\"marker\":null,\"payload\":\"71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063\"}],\"failure\":null}\n",
+      "stderr": ""
+    },
+    {
+      "phase": "decode",
+      "command": [
+        "node",
+        "/workspace/work/inference/p2-p3-20261101/peer/manager/checkout/tools/ai-connection/run-norm-required-rect.mjs",
+        "--native-root",
+        "/workspace/kushyameln-works",
+        "--bundle-root",
+        "/workspace/work/inference/e6-rect/accepted-bundle",
+        "--input",
+        "/workspace/work/inference/p2-p3-20261101/p2-run-1/prepare/restored.wktensor",
+        "--reference",
+        "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/e6/fixtures/png-roundtrip.f32",
+        "--manager-commit",
+        "60d16b64d6020d3d20239f087f8add91268dcaad",
+        "--resource-state",
+        "/workspace/work/inference/p2-p3-20261101/p2-resource-state.json",
+        "--scenario",
+        "decode",
+        "--out",
+        "/workspace/work/inference/p2-p3-20261101/p2-run-1/decode"
+      ],
+      "exitCode": 0,
+      "wallSeconds": 4.696995319998678,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"blockedEdge\": null,\n  \"nativeCalls\": 1,\n  \"missingAssets\": [],\n  \"out\": \"/workspace/work/inference/p2-p3-20261101/p2-run-1/decode\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "phase": "cancel-recover",
+      "command": [
+        "node",
+        "/workspace/work/inference/p2-p3-20261101/peer/manager/checkout/tools/ai-connection/run-norm-required-rect.mjs",
+        "--native-root",
+        "/workspace/kushyameln-works",
+        "--bundle-root",
+        "/workspace/work/inference/e6-rect/accepted-bundle",
+        "--input",
+        "/workspace/work/inference/p2-p3-20261101/p2-run-1/prepare/restored.wktensor",
+        "--reference",
+        "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/e6/fixtures/png-roundtrip.f32",
+        "--manager-commit",
+        "60d16b64d6020d3d20239f087f8add91268dcaad",
+        "--resource-state",
+        "/workspace/work/inference/p2-p3-20261101/p2-resource-state.json",
+        "--scenario",
+        "cancel-recover",
+        "--out",
+        "/workspace/work/inference/p2-p3-20261101/p2-run-1/cancel-recover"
+      ],
+      "exitCode": 0,
+      "wallSeconds": 7.095666311000969,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"blockedEdge\": null,\n  \"nativeCalls\": 2,\n  \"missingAssets\": [],\n  \"out\": \"/workspace/work/inference/p2-p3-20261101/p2-run-1/cancel-recover\"\n}\n",
+      "stderr": ""
+    }
+  ],
+  "generationReady": false,
+  "generatedSampleAccepted": false,
+  "newExportCalls": 0,
+  "newEncodeCalls": 0,
+  "referenceRecomputed": false,
+  "sourceAuthenticityChecks": [
+    {
+      "phase": "decode",
+      "commit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+      "files": [
+        {
+          "path": "tools/ai-connection/norm-required-rect-browser.mjs",
+          "sha256": "4130682e5fe8a47c9c002db680788cd1faf22721c7bbfa0d5b751e5bde78cb7b",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/adapters/norm-required-rect.mjs",
+          "sha256": "07b16efc50389617c541f5c9bf6d98c8b9a8c2d6129434f50c6ef4fb65eb6330",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/norm-execution.mjs",
+          "sha256": "fd59a0c315da4e7a41975a1b7318f1f3db6543cf2c10bd9a43f6ff99ee888425",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/compatibility.mjs",
+          "sha256": "66420e483ed188aa38a1dd18ae4c171eb5420bc4ea44ce770721bffd49280d07",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/descriptor.mjs",
+          "sha256": "1395ee9879c14b42d3e05a5ea674680f75c404210ca112d44d370114a7756d2e",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/contracts/schemas.mjs",
+          "sha256": "46b22950d8b5047a3fb7788969660836fb37452fdc6f294d0b8575ac7485c573",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/norm-bindings.mjs",
+          "sha256": "a3fb70ddc73a25c00c27c5cea070f41de7e80b65b523c41f1d1692c6f18c9950",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/reference-loader.mjs",
+          "sha256": "e603d6314326b3f3ed5defd15cea9821010f50b1395c9abc88e54d5e8527c963",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/canonical.mjs",
+          "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/queue.mjs",
+          "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/adapters/text-vae.mjs",
+          "sha256": "d03276078726fe8c843ea628d427b15934ec936fba0fa475ffd6afa930dbc443",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/adapters/core.mjs",
+          "sha256": "8c854f77f19174aa0ea72cbc78eafd342a9c75d3d2b9048465905d06c4c07455",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/adapters/artifacts.mjs",
+          "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/codecs/wktensor.mjs",
+          "sha256": "2e0637036e91cb7dc5960f9c6a587feeeb04a7fd7b2cd4f6ecdcf744e0ddf800",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/codecs/tensor-2bdca59.mjs",
+          "sha256": "d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/package.mjs",
+          "sha256": "5df0ee782bcb479fdd28b87f61a777797a9274328aaf4acd79efb7fb6c7f7192",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "tools/ai-connection/run-norm-required-rect.mjs",
+          "sha256": "6b4b400ec2df0dd1940b2843a69f861957fd38e9f87bb20db52791e836d29d40",
+          "fixedGitBytesMatched": true
+        }
+      ]
+    },
+    {
+      "phase": "cancel-recover",
+      "commit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+      "files": [
+        {
+          "path": "tools/ai-connection/norm-required-rect-browser.mjs",
+          "sha256": "4130682e5fe8a47c9c002db680788cd1faf22721c7bbfa0d5b751e5bde78cb7b",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/adapters/norm-required-rect.mjs",
+          "sha256": "07b16efc50389617c541f5c9bf6d98c8b9a8c2d6129434f50c6ef4fb65eb6330",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/norm-execution.mjs",
+          "sha256": "fd59a0c315da4e7a41975a1b7318f1f3db6543cf2c10bd9a43f6ff99ee888425",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/compatibility.mjs",
+          "sha256": "66420e483ed188aa38a1dd18ae4c171eb5420bc4ea44ce770721bffd49280d07",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/descriptor.mjs",
+          "sha256": "1395ee9879c14b42d3e05a5ea674680f75c404210ca112d44d370114a7756d2e",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/contracts/schemas.mjs",
+          "sha256": "46b22950d8b5047a3fb7788969660836fb37452fdc6f294d0b8575ac7485c573",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/norm-bindings.mjs",
+          "sha256": "a3fb70ddc73a25c00c27c5cea070f41de7e80b65b523c41f1d1692c6f18c9950",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/reference-loader.mjs",
+          "sha256": "e603d6314326b3f3ed5defd15cea9821010f50b1395c9abc88e54d5e8527c963",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/canonical.mjs",
+          "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/queue.mjs",
+          "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/adapters/text-vae.mjs",
+          "sha256": "d03276078726fe8c843ea628d427b15934ec936fba0fa475ffd6afa930dbc443",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/adapters/core.mjs",
+          "sha256": "8c854f77f19174aa0ea72cbc78eafd342a9c75d3d2b9048465905d06c4c07455",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/adapters/artifacts.mjs",
+          "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/codecs/wktensor.mjs",
+          "sha256": "2e0637036e91cb7dc5960f9c6a587feeeb04a7fd7b2cd4f6ecdcf744e0ddf800",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/codecs/tensor-2bdca59.mjs",
+          "sha256": "d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "docs/shared/ai-connection/package.mjs",
+          "sha256": "5df0ee782bcb479fdd28b87f61a777797a9274328aaf4acd79efb7fb6c7f7192",
+          "fixedGitBytesMatched": true
+        },
+        {
+          "path": "tools/ai-connection/run-norm-required-rect.mjs",
+          "sha256": "6b4b400ec2df0dd1940b2843a69f861957fd38e9f87bb20db52791e836d29d40",
+          "fixedGitBytesMatched": true
+        }
+      ]
+    }
+  ],
+  "markerReadback": {
+    "name": "normalized",
+    "shape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "meaning": "wan21-normalized-posterior-mean:v1",
+    "normalization": "wan21-comfy-f32-v1",
+    "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "context": {
+      "contextId": "v1-still-0",
+      "inputId": "existing-diagnostic-png",
+      "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+      "schemaVersion": 1,
+      "slotId": "diagnostic-still",
+      "sourceFrameIndices": [
+        0
+      ],
+      "sourceFrameTimesSeconds": [
+        0
+      ]
+    },
+    "all128Exact": true,
+    "receipt": {
+      "packageVersion": "works-artifact-package/1.0-draft.1",
+      "packageId": "P2:joint:normalized",
+      "manifestPath": "manifest.json",
+      "manifestByteLength": 1718,
+      "manifestSha256": "7436b74aac91bd29965986bfeecd934455fb012d1efaaf50930d2d09311967ec"
+    },
+    "fileSha256": "f7b2b158096937648a14a224ca4961543eace129a24ae3b88394a810f6c18840",
+    "payloadSha256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5"
+  },
+  "newSuccessfulDecodeCalls": 2,
+  "cancelledNativeJobs": 1,
+  "processOwnership": {
+    "harnessPid": 4360,
+    "harnessCtime": 1793526404.77,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 4373,
+        "ctime": 1793526405.06,
+        "ppid": 4360,
+        "name": "MainThread",
+        "status": "running",
+        "firstPpid": 4360
+      },
+      {
+        "pid": 4384,
+        "ctime": 1793526405.2,
+        "ppid": 4360,
+        "name": "MainThread",
+        "status": "running",
+        "firstPpid": 4360
+      },
+      {
+        "pid": 4396,
+        "ctime": 1793526406.1,
+        "ppid": 4384,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 4384
+      },
+      {
+        "pid": 4411,
+        "ctime": 1793526406.19,
+        "ppid": 4360,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 4360
+      },
+      {
+        "pid": 4413,
+        "ctime": 1793526406.19,
+        "ppid": 4360,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 4396
+      },
+      {
+        "pid": 4414,
+        "ctime": 1793526406.19,
+        "ppid": 4360,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 4396
+      },
+      {
+        "pid": 4436,
+        "ctime": 1793526406.27,
+        "ppid": 4396,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 4396
+      },
+      {
+        "pid": 4433,
+        "ctime": 1793526406.27,
+        "ppid": 4413,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 4413
+      },
+      {
+        "pid": 4458,
+        "ctime": 1793526406.36,
+        "ppid": 4414,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 4414
+      },
+      {
+        "pid": 4479,
+        "ctime": 1793526406.46,
+        "ppid": 4414,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 4414
+      },
+      {
+        "pid": 4488,
+        "ctime": 1793526406.49,
+        "ppid": 4414,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 4414
+      },
+      {
+        "pid": 4489,
+        "ctime": 1793526406.49,
+        "ppid": 4414,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 4414
+      },
+      {
+        "pid": 4533,
+        "ctime": 1793526409.96,
+        "ppid": 4360,
+        "name": "MainThread",
+        "status": "running",
+        "firstPpid": 4360
+      },
+      {
+        "pid": 4545,
+        "ctime": 1793526410.79,
+        "ppid": 4533,
+        "name": "chromium",
+        "status": "running",
+        "firstPpid": 4533
+      },
+      {
+        "pid": 4560,
+        "ctime": 1793526410.86,
+        "ppid": 4360,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 4360
+      },
+      {
+        "pid": 4562,
+        "ctime": 1793526410.87,
+        "ppid": 4360,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 4545
+      },
+      {
+        "pid": 4563,
+        "ctime": 1793526410.87,
+        "ppid": 4360,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 4545
+      },
+      {
+        "pid": 4582,
+        "ctime": 1793526410.93,
+        "ppid": 4562,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 4562
+      },
+      {
+        "pid": 4592,
+        "ctime": 1793526410.94,
+        "ppid": 4545,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 4545
+      },
+      {
+        "pid": 4607,
+        "ctime": 1793526411.01,
+        "ppid": 4563,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 4563
+      },
+      {
+        "pid": 4627,
+        "ctime": 1793526411.13,
+        "ppid": 4563,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 4563
+      },
+      {
+        "pid": 4636,
+        "ctime": 1793526411.16,
+        "ppid": 4563,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 4563
+      },
+      {
+        "pid": 4637,
+        "ctime": 1793526411.17,
+        "ppid": 4563,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 4563
+      }
+    ],
+    "reapedChildren": [
+      {
+        "pid": 4411,
+        "ctime": 1793526406.19,
+        "ppid": 4360,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 4360,
+        "waitStatus": 256
+      },
+      {
+        "pid": 4413,
+        "ctime": 1793526406.19,
+        "ppid": 4360,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 4396,
+        "waitStatus": 0
+      },
+      {
+        "pid": 4414,
+        "ctime": 1793526406.19,
+        "ppid": 4360,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 4396,
+        "waitStatus": 0
+      },
+      {
+        "pid": 4560,
+        "ctime": 1793526410.86,
+        "ppid": 4360,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 4360,
+        "waitStatus": 256
+      },
+      {
+        "pid": 4562,
+        "ctime": 1793526410.87,
+        "ppid": 4360,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 4545,
+        "waitStatus": 0
+      },
+      {
+        "pid": 4563,
+        "ctime": 1793526410.87,
+        "ppid": 4360,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 4545,
+        "waitStatus": 0
+      }
+    ],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "measurements": {
+    "intervalSeconds": 0.1,
+    "browserPid": 4360,
+    "phases": {
+      "browser-ready": {
+        "samples": 1,
+        "sampledPeakSumRssBytes": 34779136,
+        "sampledPeakSumPssBytes": 33896448
+      },
+      "prepare": {
+        "samples": 1,
+        "sampledPeakSumRssBytes": 72654848,
+        "sampledPeakSumPssBytes": 70340608
+      },
+      "decode": {
+        "samples": 41,
+        "sampledPeakSumRssBytes": 1766621184,
+        "sampledPeakSumPssBytes": 1488399360
+      },
+      "cancel-recover": {
+        "samples": 60,
+        "sampledPeakSumRssBytes": 1824894976,
+        "sampledPeakSumPssBytes": 1546179584
+      }
+    },
+    "processesObserved": [
+      {
+        "pid": 4360,
+        "created": 1793526404.77,
+        "name": "python"
+      },
+      {
+        "pid": 4373,
+        "created": 1793526405.06,
+        "name": "MainThread"
+      },
+      {
+        "pid": 4384,
+        "created": 1793526405.2,
+        "name": "MainThread"
+      },
+      {
+        "pid": 4411,
+        "created": 1793526406.19,
+        "name": "chrome_crashpad"
+      },
+      {
+        "pid": 4396,
+        "created": 1793526406.1,
+        "name": "chromium"
+      },
+      {
+        "pid": 4413,
+        "created": 1793526406.19,
+        "name": "chromium"
+      },
+      {
+        "pid": 4414,
+        "created": 1793526406.19,
+        "name": "chromium"
+      },
+      {
+        "pid": 4436,
+        "created": 1793526406.27,
+        "name": "chromium"
+      },
+      {
+        "pid": 4433,
+        "created": 1793526406.27,
+        "name": "chromium"
+      },
+      {
+        "pid": 4458,
+        "created": 1793526406.36,
+        "name": "chromium"
+      },
+      {
+        "pid": 4479,
+        "created": 1793526406.46,
+        "name": "chromium"
+      },
+      {
+        "pid": 4488,
+        "created": 1793526406.49,
+        "name": "chromium"
+      },
+      {
+        "pid": 4489,
+        "created": 1793526406.49,
+        "name": "chromium"
+      },
+      {
+        "pid": 4520,
+        "created": 1793526409.91,
+        "name": "git"
+      },
+      {
+        "pid": 4533,
+        "created": 1793526409.96,
+        "name": "MainThread"
+      },
+      {
+        "pid": 4545,
+        "created": 1793526410.79,
+        "name": "chromium"
+      },
+      {
+        "pid": 4560,
+        "created": 1793526410.86,
+        "name": "chrome_crashpad"
+      },
+      {
+        "pid": 4562,
+        "created": 1793526410.87,
+        "name": "chromium"
+      },
+      {
+        "pid": 4563,
+        "created": 1793526410.87,
+        "name": "chromium"
+      },
+      {
+        "pid": 4592,
+        "created": 1793526410.94,
+        "name": "chromium"
+      },
+      {
+        "pid": 4582,
+        "created": 1793526410.93,
+        "name": "chromium"
+      },
+      {
+        "pid": 4607,
+        "created": 1793526411.01,
+        "name": "chromium"
+      },
+      {
+        "pid": 4627,
+        "created": 1793526411.13,
+        "name": "chromium"
+      },
+      {
+        "pid": 4636,
+        "created": 1793526411.16,
+        "name": "chromium"
+      },
+      {
+        "pid": 4637,
+        "created": 1793526411.17,
+        "name": "chromium"
+      },
+      {
+        "pid": 4684,
+        "created": 1793526417.11,
+        "name": "git"
+      }
+    ],
+    "samples": [
+      {
+        "elapsedSeconds": 0.0024064809986157343,
+        "phase": "browser-ready",
+        "processes": [
+          4360,
+          4373
+        ],
+        "sumRssBytes": 34779136,
+        "sumPssBytes": 33896448,
+        "observedCpuSeconds": 0.7000000000000001
+      },
+      {
+        "elapsedSeconds": 0.10568213499936974,
+        "phase": "prepare",
+        "processes": [
+          4360,
+          4373
+        ],
+        "sumRssBytes": 72654848,
+        "sumPssBytes": 70340608,
+        "observedCpuSeconds": 0.81
+      },
+      {
+        "elapsedSeconds": 0.2083714449981926,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384
+        ],
+        "sumRssBytes": 72331264,
+        "sumPssBytes": 70047744,
+        "observedCpuSeconds": 0.79
+      },
+      {
+        "elapsedSeconds": 0.31236794099822873,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384
+        ],
+        "sumRssBytes": 116244480,
+        "sumPssBytes": 113939456,
+        "observedCpuSeconds": 0.8999999999999999
+      },
+      {
+        "elapsedSeconds": 0.4169897029969434,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384
+        ],
+        "sumRssBytes": 141647872,
+        "sumPssBytes": 139314176,
+        "observedCpuSeconds": 1.0699999999999998
+      },
+      {
+        "elapsedSeconds": 0.5228355819999706,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384
+        ],
+        "sumRssBytes": 164732928,
+        "sumPssBytes": 162399232,
+        "observedCpuSeconds": 1.24
+      },
+      {
+        "elapsedSeconds": 0.6272369819998858,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384
+        ],
+        "sumRssBytes": 150810624,
+        "sumPssBytes": 116687872,
+        "observedCpuSeconds": 1.4
+      },
+      {
+        "elapsedSeconds": 0.7297175929998048,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384
+        ],
+        "sumRssBytes": 127569920,
+        "sumPssBytes": 125246464,
+        "observedCpuSeconds": 1.52
+      },
+      {
+        "elapsedSeconds": 0.8329146500000206,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384
+        ],
+        "sumRssBytes": 135229440,
+        "sumPssBytes": 132893696,
+        "observedCpuSeconds": 1.65
+      },
+      {
+        "elapsedSeconds": 0.9356546719973267,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384
+        ],
+        "sumRssBytes": 140288000,
+        "sumPssBytes": 137956352,
+        "observedCpuSeconds": 1.76
+      },
+      {
+        "elapsedSeconds": 1.039762876000168,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384
+        ],
+        "sumRssBytes": 134316032,
+        "sumPssBytes": 131248128,
+        "observedCpuSeconds": 1.93
+      },
+      {
+        "elapsedSeconds": 1.153191514997161,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414
+        ],
+        "sumRssBytes": 196841472,
+        "sumPssBytes": 184645632,
+        "observedCpuSeconds": 2.0199999999999996
+      },
+      {
+        "elapsedSeconds": 1.2683857129995886,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4433
+        ],
+        "sumRssBytes": 381681664,
+        "sumPssBytes": 256171008,
+        "observedCpuSeconds": 2.25
+      },
+      {
+        "elapsedSeconds": 1.3803029889968457,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4433
+        ],
+        "sumRssBytes": 454979584,
+        "sumPssBytes": 290862080,
+        "observedCpuSeconds": 2.4799999999999995
+      },
+      {
+        "elapsedSeconds": 1.4947243689966854,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 620449792,
+        "sumPssBytes": 359887872,
+        "observedCpuSeconds": 2.81
+      },
+      {
+        "elapsedSeconds": 1.6358825659990543,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 659439616,
+        "sumPssBytes": 388157440,
+        "observedCpuSeconds": 3.309999999999999
+      },
+      {
+        "elapsedSeconds": 1.7646400199992058,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 673869824,
+        "sumPssBytes": 402073600,
+        "observedCpuSeconds": 3.8199999999999994
+      },
+      {
+        "elapsedSeconds": 1.8875643009996566,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 696610816,
+        "sumPssBytes": 421976064,
+        "observedCpuSeconds": 4.21
+      },
+      {
+        "elapsedSeconds": 2.0001899949966173,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 717774848,
+        "sumPssBytes": 438879232,
+        "observedCpuSeconds": 4.569999999999999
+      },
+      {
+        "elapsedSeconds": 2.1235492089981562,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 757108736,
+        "sumPssBytes": 475216896,
+        "observedCpuSeconds": 4.82
+      },
+      {
+        "elapsedSeconds": 2.243325871997513,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 827101184,
+        "sumPssBytes": 546229248,
+        "observedCpuSeconds": 5.02
+      },
+      {
+        "elapsedSeconds": 2.3635380349987827,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 980971520,
+        "sumPssBytes": 699784192,
+        "observedCpuSeconds": 5.28
+      },
+      {
+        "elapsedSeconds": 2.478264010998828,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1135124480,
+        "sumPssBytes": 858831872,
+        "observedCpuSeconds": 5.46
+      },
+      {
+        "elapsedSeconds": 2.5972687559988117,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1300033536,
+        "sumPssBytes": 1023761408,
+        "observedCpuSeconds": 5.64
+      },
+      {
+        "elapsedSeconds": 2.714224863997515,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1303908352,
+        "sumPssBytes": 1023769600,
+        "observedCpuSeconds": 5.779999999999999
+      },
+      {
+        "elapsedSeconds": 2.827666594999755,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1303908352,
+        "sumPssBytes": 1023769600,
+        "observedCpuSeconds": 5.93
+      },
+      {
+        "elapsedSeconds": 2.9477311149967136,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1091596288,
+        "sumPssBytes": 809453568,
+        "observedCpuSeconds": 6.1899999999999995
+      },
+      {
+        "elapsedSeconds": 3.065239178999036,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1120784384,
+        "sumPssBytes": 840181760,
+        "observedCpuSeconds": 6.41
+      },
+      {
+        "elapsedSeconds": 3.1827204389992403,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1283379200,
+        "sumPssBytes": 1007986688,
+        "observedCpuSeconds": 6.59
+      },
+      {
+        "elapsedSeconds": 3.2967338249982276,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1468403712,
+        "sumPssBytes": 1193826304,
+        "observedCpuSeconds": 6.75
+      },
+      {
+        "elapsedSeconds": 3.4116837859983207,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1667956736,
+        "sumPssBytes": 1393039360,
+        "observedCpuSeconds": 6.8999999999999995
+      },
+      {
+        "elapsedSeconds": 3.5328604209971672,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1703768064,
+        "sumPssBytes": 1423525888,
+        "observedCpuSeconds": 7.17
+      },
+      {
+        "elapsedSeconds": 3.661176653997245,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1715232768,
+        "sumPssBytes": 1437444096,
+        "observedCpuSeconds": 7.42
+      },
+      {
+        "elapsedSeconds": 3.78660807399865,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1731883008,
+        "sumPssBytes": 1451571200,
+        "observedCpuSeconds": 7.78
+      },
+      {
+        "elapsedSeconds": 3.9149908919971494,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1751801856,
+        "sumPssBytes": 1471503360,
+        "observedCpuSeconds": 8.09
+      },
+      {
+        "elapsedSeconds": 4.045592045997182,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1766621184,
+        "sumPssBytes": 1488399360,
+        "observedCpuSeconds": 8.430000000000001
+      },
+      {
+        "elapsedSeconds": 4.169431889997213,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1763508224,
+        "sumPssBytes": 1483357184,
+        "observedCpuSeconds": 8.830000000000002
+      },
+      {
+        "elapsedSeconds": 4.2884089819999645,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 1766072320,
+        "sumPssBytes": 1485769728,
+        "observedCpuSeconds": 9.170000000000002
+      },
+      {
+        "elapsedSeconds": 4.415197428999818,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 859574272,
+        "sumPssBytes": 579138560,
+        "observedCpuSeconds": 9.48
+      },
+      {
+        "elapsedSeconds": 4.531739743997605,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 876392448,
+        "sumPssBytes": 594151424,
+        "observedCpuSeconds": 9.780000000000001
+      },
+      {
+        "elapsedSeconds": 4.648802703999536,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384,
+          4396,
+          4413,
+          4414,
+          4436,
+          4458,
+          4479,
+          4488,
+          4489,
+          4433
+        ],
+        "sumRssBytes": 767680512,
+        "sumPssBytes": 487189504,
+        "observedCpuSeconds": 10.060000000000002
+      },
+      {
+        "elapsedSeconds": 4.75270634899789,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4384
+        ],
+        "sumRssBytes": 169848832,
+        "sumPssBytes": 167503872,
+        "observedCpuSeconds": 3.61
+      },
+      {
+        "elapsedSeconds": 4.8539657369983615,
+        "phase": "decode",
+        "processes": [
+          4360,
+          4520
+        ],
+        "sumRssBytes": 39268352,
+        "sumPssBytes": 37871616,
+        "observedCpuSeconds": 1.9
+      },
+      {
+        "elapsedSeconds": 4.958756108997477,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533
+        ],
+        "sumRssBytes": 75042816,
+        "sumPssBytes": 72814592,
+        "observedCpuSeconds": 1.98
+      },
+      {
+        "elapsedSeconds": 5.061382017996948,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533
+        ],
+        "sumRssBytes": 139722752,
+        "sumPssBytes": 137394176,
+        "observedCpuSeconds": 2.1
+      },
+      {
+        "elapsedSeconds": 5.164153444999101,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533
+        ],
+        "sumRssBytes": 170168320,
+        "sumPssBytes": 167834624,
+        "observedCpuSeconds": 2.27
+      },
+      {
+        "elapsedSeconds": 5.26724491099958,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533
+        ],
+        "sumRssBytes": 170909696,
+        "sumPssBytes": 168576000,
+        "observedCpuSeconds": 2.42
+      },
+      {
+        "elapsedSeconds": 5.3697108079977625,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533
+        ],
+        "sumRssBytes": 125100032,
+        "sumPssBytes": 122876928,
+        "observedCpuSeconds": 2.58
+      },
+      {
+        "elapsedSeconds": 5.472155309998925,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533
+        ],
+        "sumRssBytes": 133050368,
+        "sumPssBytes": 130690048,
+        "observedCpuSeconds": 2.69
+      },
+      {
+        "elapsedSeconds": 5.575047602997074,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533
+        ],
+        "sumRssBytes": 140578816,
+        "sumPssBytes": 138218496,
+        "observedCpuSeconds": 2.83
+      },
+      {
+        "elapsedSeconds": 5.677630401998613,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533
+        ],
+        "sumRssBytes": 146849792,
+        "sumPssBytes": 144530432,
+        "observedCpuSeconds": 2.94
+      },
+      {
+        "elapsedSeconds": 5.781927358999383,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545
+        ],
+        "sumRssBytes": 150134784,
+        "sumPssBytes": 146736128,
+        "observedCpuSeconds": 3.08
+      },
+      {
+        "elapsedSeconds": 5.903065750997484,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4582
+        ],
+        "sumRssBytes": 350515200,
+        "sumPssBytes": 247317504,
+        "observedCpuSeconds": 3.2799999999999994
+      },
+      {
+        "elapsedSeconds": 6.014967172999604,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4582
+        ],
+        "sumRssBytes": 449245184,
+        "sumPssBytes": 285450240,
+        "observedCpuSeconds": 3.5199999999999996
+      },
+      {
+        "elapsedSeconds": 6.1512676819984335,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 592363520,
+        "sumPssBytes": 348689408,
+        "observedCpuSeconds": 3.7699999999999996
+      },
+      {
+        "elapsedSeconds": 6.284015831999568,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 656142336,
+        "sumPssBytes": 388323328,
+        "observedCpuSeconds": 4.32
+      },
+      {
+        "elapsedSeconds": 6.4142415529968275,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 667848704,
+        "sumPssBytes": 396092416,
+        "observedCpuSeconds": 4.79
+      },
+      {
+        "elapsedSeconds": 6.52967077699941,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 689483776,
+        "sumPssBytes": 414820352,
+        "observedCpuSeconds": 5.19
+      },
+      {
+        "elapsedSeconds": 6.666658971997094,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 715722752,
+        "sumPssBytes": 438464512,
+        "observedCpuSeconds": 5.550000000000001
+      },
+      {
+        "elapsedSeconds": 6.781153662999714,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 731836416,
+        "sumPssBytes": 451630080,
+        "observedCpuSeconds": 5.809999999999999
+      },
+      {
+        "elapsedSeconds": 6.8947217959976115,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 840982528,
+        "sumPssBytes": 559747072,
+        "observedCpuSeconds": 6.049999999999999
+      },
+      {
+        "elapsedSeconds": 7.00777106699752,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 930627584,
+        "sumPssBytes": 650448896,
+        "observedCpuSeconds": 6.289999999999999
+      },
+      {
+        "elapsedSeconds": 7.127854651000234,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1027518464,
+        "sumPssBytes": 751233024,
+        "observedCpuSeconds": 6.53
+      },
+      {
+        "elapsedSeconds": 7.318951135999669,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1306517504,
+        "sumPssBytes": 1026232320,
+        "observedCpuSeconds": 6.76
+      },
+      {
+        "elapsedSeconds": 7.438637003997428,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1306558464,
+        "sumPssBytes": 1026269184,
+        "observedCpuSeconds": 7.01
+      },
+      {
+        "elapsedSeconds": 7.556007800998486,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1021050880,
+        "sumPssBytes": 740707328,
+        "observedCpuSeconds": 7.169999999999999
+      },
+      {
+        "elapsedSeconds": 7.671060658998613,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1124827136,
+        "sumPssBytes": 845411328,
+        "observedCpuSeconds": 7.419999999999999
+      },
+      {
+        "elapsedSeconds": 7.793279372999677,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1128509440,
+        "sumPssBytes": 852616192,
+        "observedCpuSeconds": 7.659999999999998
+      },
+      {
+        "elapsedSeconds": 7.912214123996819,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1362153472,
+        "sumPssBytes": 1089381376,
+        "observedCpuSeconds": 7.819999999999999
+      },
+      {
+        "elapsedSeconds": 8.036645570999099,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1564004352,
+        "sumPssBytes": 1290937344,
+        "observedCpuSeconds": 7.999999999999999
+      },
+      {
+        "elapsedSeconds": 8.171813480999845,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1711075328,
+        "sumPssBytes": 1430681600,
+        "observedCpuSeconds": 8.25
+      },
+      {
+        "elapsedSeconds": 8.29492475799998,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1716391936,
+        "sumPssBytes": 1435980800,
+        "observedCpuSeconds": 8.46
+      },
+      {
+        "elapsedSeconds": 8.42457581599956,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1727045632,
+        "sumPssBytes": 1444500480,
+        "observedCpuSeconds": 8.84
+      },
+      {
+        "elapsedSeconds": 8.552413560999412,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1756114944,
+        "sumPssBytes": 1475772416,
+        "observedCpuSeconds": 9.180000000000001
+      },
+      {
+        "elapsedSeconds": 8.677349318997585,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1776578560,
+        "sumPssBytes": 1496461312,
+        "observedCpuSeconds": 9.530000000000001
+      },
+      {
+        "elapsedSeconds": 8.799793229998613,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1764175872,
+        "sumPssBytes": 1483669504,
+        "observedCpuSeconds": 9.940000000000001
+      },
+      {
+        "elapsedSeconds": 8.91828554499807,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1785106432,
+        "sumPssBytes": 1504665600,
+        "observedCpuSeconds": 10.260000000000002
+      },
+      {
+        "elapsedSeconds": 9.03786009599935,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 898072576,
+        "sumPssBytes": 588404736,
+        "observedCpuSeconds": 10.57
+      },
+      {
+        "elapsedSeconds": 9.161187064997648,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 900902912,
+        "sumPssBytes": 617920512,
+        "observedCpuSeconds": 10.91
+      },
+      {
+        "elapsedSeconds": 9.279042078000202,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 875196416,
+        "sumPssBytes": 593156096,
+        "observedCpuSeconds": 11.24
+      },
+      {
+        "elapsedSeconds": 9.40817115399841,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 992653312,
+        "sumPssBytes": 713603072,
+        "observedCpuSeconds": 11.5
+      },
+      {
+        "elapsedSeconds": 9.523135282997828,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1172516864,
+        "sumPssBytes": 895879168,
+        "observedCpuSeconds": 11.719999999999999
+      },
+      {
+        "elapsedSeconds": 9.63804640199669,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1356058624,
+        "sumPssBytes": 1075427328,
+        "observedCpuSeconds": 11.880000000000003
+      },
+      {
+        "elapsedSeconds": 9.753736630998901,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1356058624,
+        "sumPssBytes": 1075427328,
+        "observedCpuSeconds": 12.05
+      },
+      {
+        "elapsedSeconds": 9.880681568,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1316417536,
+        "sumPssBytes": 789112832,
+        "observedCpuSeconds": 12.220000000000002
+      },
+      {
+        "elapsedSeconds": 10.001305359997787,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1153753088,
+        "sumPssBytes": 877663232,
+        "observedCpuSeconds": 12.54
+      },
+      {
+        "elapsedSeconds": 10.11789337799928,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1172709376,
+        "sumPssBytes": 892924928,
+        "observedCpuSeconds": 12.74
+      },
+      {
+        "elapsedSeconds": 10.234115513998404,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1299357696,
+        "sumPssBytes": 1024308224,
+        "observedCpuSeconds": 12.94
+      },
+      {
+        "elapsedSeconds": 10.355597865000163,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1499324416,
+        "sumPssBytes": 1223681024,
+        "observedCpuSeconds": 13.120000000000001
+      },
+      {
+        "elapsedSeconds": 10.475469007997162,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1703096320,
+        "sumPssBytes": 1429840896,
+        "observedCpuSeconds": 13.31
+      },
+      {
+        "elapsedSeconds": 10.596099282996875,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1751805952,
+        "sumPssBytes": 1471861760,
+        "observedCpuSeconds": 13.57
+      },
+      {
+        "elapsedSeconds": 10.725261917999887,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1766948864,
+        "sumPssBytes": 1485984768,
+        "observedCpuSeconds": 13.830000000000002
+      },
+      {
+        "elapsedSeconds": 10.849677747999522,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1772830720,
+        "sumPssBytes": 1496118272,
+        "observedCpuSeconds": 14.18
+      },
+      {
+        "elapsedSeconds": 10.972313310998288,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1791320064,
+        "sumPssBytes": 1515271168,
+        "observedCpuSeconds": 14.5
+      },
+      {
+        "elapsedSeconds": 11.095427984997514,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1821356032,
+        "sumPssBytes": 1535550464,
+        "observedCpuSeconds": 14.920000000000002
+      },
+      {
+        "elapsedSeconds": 11.21513096599665,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1802997760,
+        "sumPssBytes": 1527153664,
+        "observedCpuSeconds": 15.26
+      },
+      {
+        "elapsedSeconds": 11.336946799998259,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1824894976,
+        "sumPssBytes": 1546179584,
+        "observedCpuSeconds": 15.540000000000001
+      },
+      {
+        "elapsedSeconds": 11.48687764299757,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 1421983744,
+        "sumPssBytes": 919966720,
+        "observedCpuSeconds": 15.940000000000001
+      },
+      {
+        "elapsedSeconds": 11.601727569999639,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 888209408,
+        "sumPssBytes": 606413824,
+        "observedCpuSeconds": 16.2
+      },
+      {
+        "elapsedSeconds": 11.731149018996803,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4592,
+          4607,
+          4627,
+          4636,
+          4637,
+          4582
+        ],
+        "sumRssBytes": 846630912,
+        "sumPssBytes": 567206912,
+        "observedCpuSeconds": 16.43
+      },
+      {
+        "elapsedSeconds": 11.84464398899945,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533,
+          4545,
+          4562,
+          4563,
+          4607,
+          4582
+        ],
+        "sumRssBytes": 541237248,
+        "sumPssBytes": 410763264,
+        "observedCpuSeconds": 7.579999999999999
+      },
+      {
+        "elapsedSeconds": 11.949088306999329,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4533
+        ],
+        "sumRssBytes": 265719808,
+        "sumPssBytes": 263342080,
+        "observedCpuSeconds": 6.109999999999999
+      },
+      {
+        "elapsedSeconds": 12.050861455998529,
+        "phase": "cancel-recover",
+        "processes": [
+          4360,
+          4684
+        ],
+        "sumRssBytes": 40357888,
+        "sumPssBytes": 38970368,
+        "observedCpuSeconds": 4.29
+      }
+    ],
+    "errors": [],
+    "scope": "Browser process and its observed descendants; Python/export/reference processes excluded",
+    "rssNote": "Sum of process RSS double-counts shared pages; do not add RSS and PSS",
+    "pssNote": "Sum of Linux proportional set sizes sampled around 100 ms; not exact peak or total device RAM",
+    "cpuNote": "Observed cumulative process CPU seconds; exited processes may disappear between samples"
+  },
+  "sampledPeakProcessTreeRssBytes": 1824894976,
+  "resourceBudgetExceeded": false,
+  "wallSeconds": 12.056794138999976
+}

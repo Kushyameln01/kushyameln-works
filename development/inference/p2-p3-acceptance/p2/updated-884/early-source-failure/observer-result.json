@@ -1,0 +1,130 @@
+{
+  "passed": false,
+  "observerSourceCommit": "e150e7ac3c4859739528ff278763c6474968ac08",
+  "observerSha256": "a11e09d18d7c8522b96cb23d15fa8417491a4a2386cb4c494a41c2305fad2fb0",
+  "managementExecutionSource": "8849891f19124df31847bd691503c2491278eaa8",
+  "previousRunScope": "5537/60d retained unchanged",
+  "newBoundary": "currentInputLink/jointTraceId/fixed Git closure through real decode and E4 publication",
+  "newTextInference": false,
+  "newExport": false,
+  "referenceRecomputed": false,
+  "generationReady": false,
+  "stages": [
+    {
+      "scenario": "decode",
+      "command": [
+        "node",
+        "/workspace/work/inference/p2-p3-20261101/peer/manager/worktree884/tools/ai-connection/run-joint-rect-management.mjs",
+        "--diffusion-root",
+        "/workspace/work/inference/p0-p2-20261031/diffusion/source",
+        "--native-root",
+        "/workspace/kushyameln-works",
+        "--bundle-root",
+        "/workspace/work/inference/e6-rect/accepted-bundle",
+        "--reference",
+        "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/e6/fixtures/png-roundtrip.f32",
+        "--manager-commit",
+        "8849891f19124df31847bd691503c2491278eaa8",
+        "--resource-state",
+        "/workspace/work/inference/p2-p3-20261101/p2-resource-state.json",
+        "--scenario",
+        "decode",
+        "--out",
+        "/workspace/work/inference/p2-p3-20261101/p2-884-run/decode"
+      ],
+      "exitCode": 1,
+      "wallSeconds": 0.16245610800251598,
+      "stdout": "",
+      "stderr": "{\"code\":\"ENOENT\",\"message\":\"ENOENT: no such file or directory, open '/workspace/work/inference/p0-p2-20261031/diffusion/source/development/ai-connection/e6/reference-received.json'\"}\n"
+    }
+  ],
+  "failure": {
+    "message": "{\"code\":\"ENOENT\",\"message\":\"ENOENT: no such file or directory, open '/workspace/work/inference/p0-p2-20261031/diffusion/source/development/ai-connection/e6/reference-received.json'\"}\n",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/vae/observe_management_joint.py\", line 49, in main\n    raise RuntimeError(child.stderr[-2000:] + child.stdout[-1000:])\nRuntimeError: {\"code\":\"ENOENT\",\"message\":\"ENOENT: no such file or directory, open '/workspace/work/inference/p0-p2-20261031/diffusion/source/development/ai-connection/e6/reference-received.json'\"}\n\n"
+  },
+  "processOwnership": {
+    "harnessPid": 6823,
+    "harnessCtime": 1793529832.82,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 6833,
+        "ctime": 1793529833.17,
+        "ppid": 6823,
+        "name": "MainThread",
+        "status": "sleeping",
+        "firstPpid": 6823
+      }
+    ],
+    "reapedChildren": [],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "measurements": {
+    "intervalSeconds": 0.1,
+    "browserPid": 6823,
+    "phases": {
+      "browser-ready": {
+        "samples": 1,
+        "sampledPeakSumRssBytes": 40611840,
+        "sampledPeakSumPssBytes": 38482944
+      },
+      "decode": {
+        "samples": 1,
+        "sampledPeakSumRssBytes": 70397952,
+        "sampledPeakSumPssBytes": 68102144
+      }
+    },
+    "processesObserved": [
+      {
+        "pid": 6823,
+        "created": 1793529832.82,
+        "name": "python"
+      },
+      {
+        "pid": 6833,
+        "created": 1793529833.17,
+        "name": "MainThread"
+      }
+    ],
+    "samples": [
+      {
+        "elapsedSeconds": 0.013255603997095022,
+        "phase": "browser-ready",
+        "processes": [
+          6823,
+          6833
+        ],
+        "sumRssBytes": 40611840,
+        "sumPssBytes": 38482944,
+        "observedCpuSeconds": 0.8099999999999999
+      },
+      {
+        "elapsedSeconds": 0.1161071409987926,
+        "phase": "decode",
+        "processes": [
+          6823,
+          6833
+        ],
+        "sumRssBytes": 70397952,
+        "sumPssBytes": 68102144,
+        "observedCpuSeconds": 0.9099999999999999
+      }
+    ],
+    "errors": [],
+    "scope": "Browser process and its observed descendants; Python/export/reference processes excluded",
+    "rssNote": "Sum of process RSS double-counts shared pages; do not add RSS and PSS",
+    "pssNote": "Sum of Linux proportional set sizes sampled around 100 ms; not exact peak or total device RAM",
+    "cpuNote": "Observed cumulative process CPU seconds; exited processes may disappear between samples"
+  },
+  "wallSeconds": 0.16415482599768438
+}

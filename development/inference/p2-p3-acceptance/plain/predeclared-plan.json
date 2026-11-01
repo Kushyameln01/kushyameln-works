@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "works-plain-acceptance-plan/1.0",
+  "status": "AWAIT_ROOT_EXECUTION_CONFIRMATION",
+  "input": {
+    "text": "Hello world",
+    "utf8Sha256": "64ec88ca00b268e5ba1a35678a1b5316d212f4f366b2477232534a8aeca37f3c",
+    "inputMode": "plain-text",
+    "noAutomaticBerniniPrefix": true,
+    "noComfyWeightingClaim": true
+  },
+  "expected": {
+    "dtype": "float32",
+    "layout": "BLC",
+    "shape": [
+      1,
+      512,
+      4096
+    ],
+    "meaning": "text_hidden_states",
+    "elements": 2097152,
+    "bytes": 8388608,
+    "maskLength": 512,
+    "allValuesCompared": true,
+    "paddingOutputMustBeExactlyZero": true
+  },
+  "gate": {
+    "maxAbsError": 0.001,
+    "rtol": 0.001,
+    "registeredBeforeComparison": true,
+    "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee",
+    "allcloseAtolDerivedFromMaxAbsError": 0.001,
+    "requireStrictMaximumAbsoluteError": true,
+    "gateRegisteredBeforeAnyNewNN": true,
+    "initialIntermediateFailedHistoryUnchanged": true
+  },
+  "selectedManifest": {
+    "path": "/workspace/work/inference/text-implementation/bundle/manifest.json",
+    "bytes": 19908,
+    "sha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f"
+  },
+  "model": {
+    "path": "/workspace/work/models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+    "sha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+    "bytes": 6735906897,
+    "wholeSourceRehashRequired": false,
+    "reason": "Reuse immutable source identity; current reference loads actual original layer values, not prepared graph output"
+  },
+  "tokenizer": {
+    "path": "spiece.model",
+    "bytes": 4548313,
+    "sha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+    "algorithm": "sentencepiece",
+    "addBos": false,
+    "addEos": true,
+    "eosId": 1,
+    "padId": 0,
+    "referenceMinTokens": 512,
+    "plainTextOnly": true,
+    "emphasisCompatibility": "not claimed"
+  },
+  "source": {
+    "repository": "Comfy-Org/ComfyUI",
+    "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+    "t5Sha256": "797f11b69256dffa8d9a6d236fe1e05d0c250c84d231a5993accde0ff44238bc",
+    "reference": "unchanged pinned T5Block + T5LayerNorm, ordinary CPU FP32 dependency adapters; full512 tokens through all24 layers without compaction; final Wan zero_out_masked policy",
+    "fp8Expansion": "Original FP8.float()*stored scalar scale; F16 expanded; strict eachblock state, no re-quantization"
+  },
+  "executionOrder": [
+    "lightweight preflight/helper tests/tokenizer parity",
+    "full512 Python SentencePiece+pinned PyTorch source oracle,24 sequential strict layers,release all Torch state",
+    "notify root oracle ended, then actual Chromium plain API tokenize+24 existing ORT WASM graphs+actual Hike final norm",
+    "full512 payload/mask/model/tokenizer/padding/all-value comparison and .wktensor readback",
+    "one native plain cancellation after first block plus terminal cleanup; no concurrent NN jobs",
+    "save source/gate/input/reference/output/resource receipts and P3 artifact handoff"
+  ],
+  "browserInstrumentation": "Private observer worker shim wraps actual ORT session create/run/release and Tensor.dispose and loads unchanged native inference-worker. Only lifecycle observations; same numeric functions/graphs. Actual API textEncoder.encode({text}) is used.",
+  "resourceBudget": {
+    "cpuQuotaCores": 4,
+    "torchThreads": 2,
+    "cgroupRamBytes": 17179869184,
+    "targetProcessRssBytes": 4294967296,
+    "freeDiskBytes": 1711046656,
+    "estimatedAdditionalDiskUpperBytes": 67108864,
+    "minimumHeadroomBytes": 536870912,
+    "originalModelCopied": false,
+    "graphsReexported": false,
+    "estimatedWallMinutes": [
+      8,
+      20
+    ],
+    "estimatesAreNotMeasuredPerformance": true,
+    "nnSerializationOwner": "root; start/end notifications before heavy phases"
+  },
+  "dependencies": {
+    "torchDeps": "/workspace/work/inference/vae-proof/deps",
+    "sentencepieceDeps": "/workspace/work/inference/tokenizer-python",
+    "newInstallsRequired": false
+  },
+  "artifactHandoff": {
+    "conditioning": "private actual plain .wktensor, same WKTSR001 schema; tensor model/tokenizer/mask preserved for P3",
+    "fullReference": "private plain-reference.f32; not new weights or graph",
+    "publicEvidence": "small receipts/source/gates/hashes only by default; owner can choose artifact packaging"
+  },
+  "scopeLimits": [
+    "One explicit plain prompt FP32 diagnostic acceptance, not arbitrary prompt guarantee",
+    "Not original GPU FP8 execution equivalence or512effective-token performance acceptance",
+    "No profile/gate/Tokenizer/source/runtime behavior changes",
+    "No commit/push/post to other services"
+  ]
+}
