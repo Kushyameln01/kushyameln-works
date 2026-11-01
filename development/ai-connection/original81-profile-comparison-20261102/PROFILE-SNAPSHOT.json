@@ -1,0 +1,590 @@
+{
+  "schemaVersion": "bernini-original81-profile-comparison/0.1",
+  "baselineCommit": "32547051af430281a610d8b514ff16abee457288",
+  "diagnostic": {
+    "profileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+    "catalogStatus": "owner candidate / evidence supplement, not manager adoption",
+    "shape": {
+      "id": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+      "nativeAPI": "diffusion-models/0.1",
+      "catalogStatus": "owner candidate / evidence supplement, not manager adoption",
+      "residualShape": [
+        2,
+        5120
+      ],
+      "residualLayout": "LC",
+      "timeAct1Shape": [
+        5120
+      ],
+      "textShape": [
+        1,
+        512,
+        4096
+      ],
+      "textLayout": "BLC",
+      "blockOutputShape": [
+        2,
+        5120
+      ],
+      "blockOutputMeaning": "block0 token hidden, not generated latent/sample",
+      "shapes25": {
+        "textLinear0": [
+          512,
+          5120
+        ],
+        "textGelu": [
+          512,
+          5120
+        ],
+        "textEmbedded": [
+          512,
+          5120
+        ],
+        "crossNorm": [
+          2,
+          5120
+        ],
+        "qkvQ": [
+          2,
+          5120
+        ],
+        "qkvK": [
+          512,
+          5120
+        ],
+        "qkvV": [
+          512,
+          5120
+        ],
+        "normQ": [
+          2,
+          5120
+        ],
+        "normK": [
+          512,
+          5120
+        ],
+        "crossContext": [
+          2,
+          5120
+        ],
+        "crossO": [
+          2,
+          5120
+        ],
+        "crossResidual": [
+          2,
+          5120
+        ],
+        "ffnLayerNorm": [
+          2,
+          5120
+        ],
+        "shift": [
+          5120
+        ],
+        "scale": [
+          5120
+        ],
+        "gate": [
+          5120
+        ],
+        "ffnModulated": [
+          2,
+          5120
+        ],
+        "ffnUp": [
+          2,
+          13824
+        ],
+        "ffnGelu": [
+          2,
+          13824
+        ],
+        "ffnDown": [
+          2,
+          5120
+        ],
+        "ffnGated": [
+          2,
+          5120
+        ],
+        "blockOutput": [
+          2,
+          5120
+        ],
+        "timeProjection3": [
+          5120
+        ],
+        "timeProjection4": [
+          5120
+        ],
+        "timeProjection5": [
+          5120
+        ]
+      },
+      "normalization": "Text final RMSNorm stays upstream; no additional latent normalization at this cut; norm3 affine LayerNorm full5120 epsilon1e-6, cross Q/K full5120 RMSNorm epsilon1e-6, FFN LayerNorm; no cross RoPE or softmax mask"
+    },
+    "upstreamInputs": {
+      "rawMeanSource": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+        "path": "development/inference/e6/fixtures/png-mean.wktensor",
+        "fileSha256": "6539204ef61dc0f706238b74e2bcabf8bbcce971f5056d0b0d7e288811516b71",
+        "payloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "meaning": "raw-posterior-mean",
+        "rawMeanProfileId": "wan21-raw-f32-1x16x32"
+      },
+      "normalizationId": "wan21-comfy-f32-v1",
+      "normalizedMeanMeaning": "wan21-normalized-posterior-mean:v1",
+      "rawMeanProfileId": "wan21-raw-f32-1x16x32",
+      "rawMeanShape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "noiseRecipe": "float32((((i*29+7)%127)-63)/64), i=0..127; caller-owned explicit array; no PRNG",
+      "seed": null,
+      "usesPRNG": false,
+      "schedule": {
+        "scheduleProfile": "bernini-comfy-simple6-shift5-v1",
+        "scheduler": "simple",
+        "sampler": "Euler",
+        "steps": 6,
+        "shift": 5,
+        "split": 3,
+        "modelTimestep": "float32(sigma*float32(1000))"
+      },
+      "chainBySide": {
+        "HIGH": {
+          "prefixReceiptPath": "/workspace/work/diffusion-models/development/ai-connection/qkv-next/hidden-runtime/high-comparison.json",
+          "prefixReceiptSHA256": "c12885eb71b0b46f91f79b94bba0315f1c9eae635daa3493686bb5882c7703f0",
+          "prefixArtifactSHA256": "4493d93b56f434b6292da1c9898dd30b474444073796a10e25788d5c71a65a52",
+          "rawMeanSHA256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+          "runtimeRecordedNoiseSHA256": "88463c36453f5edf61682e77df267645e68903f17b57f22fc561c4443f3bb28b",
+          "independentReferenceNoiseSHA256": "a08dd928bf4fa62486a3f1c89a33e91ee8b3cfc41c560255f1b9555b404f7ac7",
+          "rawNoiseBitsExactlyEqual": false,
+          "directRawRuntimeNoiseTensorRetained": false,
+          "signedZeroExplanation": {
+            "index": 72,
+            "declaredRecipeValue": "+0",
+            "runtimeHashMatchesRecipeWithValue": "-0",
+            "onlyBitDifferenceBetweenReconstructionAndRecipe": true,
+            "evidenceType": "recorded runtime SHA256 reproduced using declared recipe with negative zero at72; not a direct read of retained raw runtime noise"
+          },
+          "normalizedMeanNoisedLatentPatchesActualAndIndependentExactBytes": true,
+          "upstreamExactStageSHA256": {
+            "normalizedMean": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5",
+            "noisedLatent": "e9084c678151538bb890df19f5c6a6a9446df8259324bee5e5cfa45188b24b33",
+            "patches": "f41a50b98f34d7b00d3e3161c90f2b657bce2dc70c316e972f3312942b987e06"
+          },
+          "scheduleIndex": 1,
+          "sigma": 0.9617158770561218,
+          "timestep": 961.7158813476562,
+          "grid": [
+            1,
+            1,
+            2
+          ],
+          "sourceIds": [
+            0,
+            0
+          ],
+          "contextLatents": [],
+          "noiseScale": 1,
+          "savedResidualSHA256": "72a7de56a7364122197f4126a996f7131ff4fbda94f7f8201bdacbaad04d85b9",
+          "savedTimeAct1SHA256": "1b69ffc7e86fbc52ea9ae5bd32950d8e62439417089577f9c5f66243e0b734f7",
+          "savedArtifactSHA256": "5040656cf0bf6bd9f06bbf007b16d22ae026a25a5080d666758e0b52a10e86bd",
+          "originalWorkflowInputsVerified": false,
+          "lowIsHighHandoff": false
+        },
+        "LOW": {
+          "prefixReceiptPath": "/workspace/work/diffusion-models/development/ai-connection/qkv-next/hidden-runtime/low-comparison.json",
+          "prefixReceiptSHA256": "ec161f89a53f8dbd6b8c4a02c59a236ac544224cfe700592e8982900eeb4ade5",
+          "prefixArtifactSHA256": "1b2808f5ee1185db85cba4e2c59c030fd45d6e3c83c9fde457e70c7d1545d797",
+          "rawMeanSHA256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+          "runtimeRecordedNoiseSHA256": "88463c36453f5edf61682e77df267645e68903f17b57f22fc561c4443f3bb28b",
+          "independentReferenceNoiseSHA256": "a08dd928bf4fa62486a3f1c89a33e91ee8b3cfc41c560255f1b9555b404f7ac7",
+          "rawNoiseBitsExactlyEqual": false,
+          "directRawRuntimeNoiseTensorRetained": false,
+          "signedZeroExplanation": {
+            "index": 72,
+            "declaredRecipeValue": "+0",
+            "runtimeHashMatchesRecipeWithValue": "-0",
+            "onlyBitDifferenceBetweenReconstructionAndRecipe": true,
+            "evidenceType": "recorded runtime SHA256 reproduced using declared recipe with negative zero at72; not a direct read of retained raw runtime noise"
+          },
+          "normalizedMeanNoisedLatentPatchesActualAndIndependentExactBytes": true,
+          "upstreamExactStageSHA256": {
+            "normalizedMean": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5",
+            "noisedLatent": "5fe1cdcc222bbd4b18029a051f950af2ce1729a1e732eeb06cf1eea59f81d71b",
+            "patches": "38af4215484f1f8148866ccfefe89cb36b707c6efe242e03d85a8852bd255160"
+          },
+          "scheduleIndex": 3,
+          "sigma": 0.8333333134651184,
+          "timestep": 833.3333129882812,
+          "grid": [
+            1,
+            1,
+            2
+          ],
+          "sourceIds": [
+            0,
+            0
+          ],
+          "contextLatents": [],
+          "noiseScale": 1,
+          "savedResidualSHA256": "0024d0b19db9988d218e2a2ded4cc3713aca32d9517966455d17b34cfee801b6",
+          "savedTimeAct1SHA256": "cf07ca0bf0160886acafb9bf42d22f57f56482cd82a8cad5aa3791901e9938c5",
+          "savedArtifactSHA256": "714d96b41cb9e5ba8349b4a9202722f2f94e3fdeeaa984dbc1850b449190d37d",
+          "originalWorkflowInputsVerified": false,
+          "lowIsHighHandoff": false
+        }
+      },
+      "text": {
+        "prompt": "Hello world",
+        "textUtf8SHA256": "64ec88ca00b268e5ba1a35678a1b5316d212f4f366b2477232534a8aeca37f3c",
+        "sourcePath": "/tmp/text-packet-receipt-20261102/source/development/inference/p2-p3-acceptance/plain/evidence/plain-input.json",
+        "sourceCommit": "5537b8932343aa2476b95191817e8913f99dab02",
+        "textModelSHA256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+        "tokenizerSHA256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+        "shape": [
+          1,
+          512,
+          4096
+        ],
+        "zeroOutMasked": true,
+        "nonzeroMaskEntries": 3,
+        "maskUsedAtDiffusionCrossSoftmax": false,
+        "all512RowsConsumed": true,
+        "conditioningPayloadSHA256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+        "maskSHA256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62",
+        "nativeArtifactSHA256": "9cbbdace203ea996d9dd6afc1a8ae832f4b68c2bf1fc54306b9f944f818bd6a8"
+      }
+    },
+    "caseIds": [
+      "HIGH1-base",
+      "LOW3-base",
+      "LOW3-lightLoRA-Q4-bias4-strength+1"
+    ],
+    "scope": "fixed N2 block0 post-self-attention through cross-attention and FFN; separate HIGH1 / LOW3; partial LOW LoRA only"
+  },
+  "original81Target": {
+    "profileId": null,
+    "recordKind": "document-only target; not runtime catalog registration or acceptance",
+    "workflowSHA256": "543865dfeeb9a94427bea543624e51db5f1dfcf88a7af6a497ddcdbeadc477dd",
+    "target": {
+      "evidenceClass": "configuration+candidate pinned core derived, not runtime observed",
+      "frames": 81,
+      "width": 832,
+      "height": 480,
+      "batch": 1,
+      "latentBCTHW": [
+        1,
+        16,
+        21,
+        60,
+        104
+      ],
+      "patchBCTHW": [
+        1,
+        5120,
+        21,
+        30,
+        52
+      ],
+      "hiddenBND": [
+        1,
+        32760,
+        5120
+      ],
+      "targetTokenCount": 32760,
+      "targetRoPESourceId": 0,
+      "predictedRawVaeDecodeBT_HWC": [
+        81,
+        480,
+        832,
+        3
+      ],
+      "modelHeaderBinding": "retained scaled-FP8 models only; original workflow mxfp8 model equivalence unverified"
+    },
+    "sourceVideo": {
+      "evidenceClass": "conditional source-core formula; actual media absent",
+      "configuredFile": "132123.mp4",
+      "forceRate": 16,
+      "frameLoadCap": 81,
+      "skipFirstFrames": 0,
+      "selectEveryNth": 1,
+      "customWidth": 0,
+      "customHeight": 0,
+      "coreTrim": "source_video[:81]; does not pad or repeat",
+      "postResizeFHWC": [
+        "F<=81",
+        480,
+        832,
+        3
+      ],
+      "vaeInputBCTHW": [
+        1,
+        3,
+        "F",
+        480,
+        832
+      ],
+      "vaeLatentBCTHW": [
+        1,
+        16,
+        "1+(F-1)//4",
+        60,
+        104
+      ],
+      "patchHiddenBND": [
+        1,
+        "1560*(1+(F-1)//4)",
+        5120
+      ],
+      "ifExactly81Frames": {
+        "latentBCTHW": [
+          1,
+          16,
+          21,
+          60,
+          104
+        ],
+        "tokenCount": 32760,
+        "sourceId": 1
+      },
+      "caution": "VHS version, decoder frame selection/count, actual F, media dimensions and pixel content unverified"
+    },
+    "references": {
+      "evidenceClass": "symbolic only; actual references absent; API prompt export unavailable",
+      "refMaxSize": 848,
+      "formulaScale": "s=min(848/max(H_i,W_i),1.0)",
+      "formulaH": "H_i_prime=max(16,round(H_i*s/16)*16)",
+      "formulaW": "W_i_prime=max(16,round(W_i*s/16)*16)",
+      "interpolation": "area",
+      "crop": "disabled",
+      "perImagePixelFHWC": [
+        1,
+        "H_i_prime",
+        "W_i_prime",
+        3
+      ],
+      "perImageLatentBCTHW": [
+        1,
+        16,
+        1,
+        "H_i_prime/8",
+        "W_i_prime/8"
+      ],
+      "perImageHiddenBND": [
+        1,
+        "(H_i_prime/16)*(W_i_prime/16)",
+        5120
+      ],
+      "wiredNodes": {
+        "24": {
+          "file": "0000.png",
+          "mode": 4,
+          "slot": 0
+        },
+        "25": {
+          "file": "0000.png",
+          "mode": 4,
+          "slot": 1
+        },
+        "26": {
+          "file": "0000.png",
+          "mode": 4,
+          "slot": 2
+        }
+      },
+      "slotFiles": [
+        "videoframe_80.png",
+        "00108-_lora_Ed Sheeran - SDXL - Trigger is Edsheeran person_.8_  Edsheeran person, film footage, a society where people can geneticall.png",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "resolutionRule": "A non-None wired jack overrides built-in slot; otherwise slot file is loaded, missing/unloadable slot skipped. Each batch frame in a selected reference becomes its own stream. mode4 execution cannot be established from raw backend source alone.",
+      "possibleSourceOrderIfOnlyTwoBuiltInRefsAndSourceVideo": [
+        "target(source_id=0)",
+        "sourceVideo(source_id=1)",
+        "image0(source_id=2)",
+        "image1(source_id=3)"
+      ],
+      "caution": "Do not infer three actual refs from serialized links or two actual refs merely from slot filenames. Source IDs enumerate actual packed context list; no reserved gap for missing reference_video."
+    },
+    "combinedTransformer": {
+      "symbolicTotalN": "32760 + 1560*(1+(F-1)//4) + sum_i ((H_i_prime/16)*(W_i_prime/16))",
+      "ifSourceExactly81": "65520 + sum_i ((H_i_prime/16)*(W_i_prime/16))",
+      "hiddenBND": [
+        1,
+        "N_total",
+        5120
+      ],
+      "qkvBnHd": [
+        1,
+        "N_total",
+        40,
+        128
+      ],
+      "selfAttentionSemanticScoreDimensions": [
+        1,
+        40,
+        "N_total",
+        "N_total"
+      ],
+      "textInputBLD": [
+        1,
+        "L_original_unverified",
+        4096
+      ],
+      "textProjectedBLD": [
+        1,
+        "L_original_unverified",
+        5120
+      ],
+      "crossAttentionSemanticScoreDimensions": [
+        1,
+        40,
+        "N_total",
+        "L_original_unverified"
+      ],
+      "ffnActivationBNF": [
+        1,
+        "N_total",
+        13824
+      ],
+      "headAllTokensBN64": [
+        1,
+        "N_total",
+        64
+      ],
+      "headRetainedTargetBN64": [
+        1,
+        32760,
+        64
+      ],
+      "unpatchOutputBCTHW": [
+        1,
+        16,
+        21,
+        60,
+        104
+      ],
+      "sourceIdRule": "target 0, then actual ordered contexts i+1; source order source_video if present, reference_video if present, selected reference frame streams",
+      "implementationRule": "patch target and each context independently; concatenate along sequence N (not channels or temporal axis), run all 40 blocks on whole N_total; slice to main target only after head; unpatchify target; final crop original target shape",
+      "paddingRule": "target and source H60 W104 even; refs resize to 16px so latent H/W even; patch(1,2,2) adds no spatial/temporal padding for these shapes"
+    },
+    "prompt": {
+      "configuredUserPrompt": "replace the man in the red shirt with the man from image0 and replace the man sitting at the computer with the man from image1",
+      "candidateFullPositive": "You are a helpful assistant specialized in video editing with reference. replace the man in the red shirt with the man from image0 and replace the man sitting at the computer with the man from image1",
+      "candidateFullPositiveUTF8SHA256": "15fe4ea127ee10fbfdb6259f5a4da731e11639c82b955ca6ba79bce4c7a468f9",
+      "candidateNegative": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走",
+      "candidateNegativeUTF8SHA256": "ce96e0324e4b54ce4b6e867f669ca520952e1a34cc116543516b1897f0d3c47e",
+      "autoEnhance": false,
+      "warning": "candidate plugin version was pinned for audit, not proven original installation; original tokenizer output and actual conditioning tensors not present"
+    },
+    "schedule": {
+      "scheduler": "simple",
+      "steps": 6,
+      "denoise": 1,
+      "shift": 5,
+      "bufferSize": 1000,
+      "sigmaBufferIndices": [
+        999,
+        833,
+        666,
+        499,
+        333,
+        166
+      ],
+      "highSigmas": [
+        1.0,
+        0.9617158770561218,
+        0.9092148542404175,
+        0.8333333134651184
+      ],
+      "lowSigmas": [
+        0.8333333134651184,
+        0.7148972749710083,
+        0.5005995035171509,
+        0.0
+      ],
+      "allSigmas": [
+        1.0,
+        0.9617158770561218,
+        0.9092148542404175,
+        0.8333333134651184,
+        0.7148972749710083,
+        0.5005995035171509,
+        0.0
+      ],
+      "float32LittleEndianHex": [
+        "0000803f",
+        "0333763f",
+        "4ec2683f",
+        "5555553f",
+        "8203373f",
+        "4a27003f",
+        "00000000"
+      ],
+      "precisionStatus": "source-derived elementary f32 arithmetic, not captured PyTorch runtime output; exact formulas/indices are authoritative",
+      "highUpdates": 3,
+      "lowUpdates": 3
+    },
+    "noise": {
+      "highAddNoise": true,
+      "highSeed": 0,
+      "lowAddNoise": false,
+      "lowSeed": 0,
+      "cfgHigh": 1,
+      "cfgLow": 1,
+      "eulerChurnDefault": 0,
+      "sameSeedIsNotNoiseTensorProof": true,
+      "requirementsForExactComparison": [
+        "retain original noise tensor with hash, dtype and layout",
+        "match latent shape",
+        "match generator algorithm and runtime",
+        "match batch_index behavior",
+        "match initial-noise noise_scale",
+        "match the same input latent and conditioning tensors"
+      ]
+    },
+    "identityUnknowns": [
+      "Original ComfyUI/BerniniStudio/VHS/frontend installed versions",
+      "Original model mxfp8 bytes vs retained scaled FP8 equality",
+      "Both original LoRA files and exact key mapping/application behavior",
+      "132123.mp4 pixel content/decoded frames/aspect",
+      "0000.png and two built-in slot reference image contents, sizes and actual dispatch precedence",
+      "Exported API prompt resolving mode4 nodes",
+      "Actual tokenizer outputs L, conditional/negative embeddings",
+      "Original seed0 noise tensor bytes; dtype/device/RNG implementation",
+      "Any complete 81-frame end-to-end inference or original exported intermediate tensors"
+    ],
+    "comparisonStatus": "NOT_EXECUTED_AND_NOT_SAME_CONDITION_PROVEN"
+  },
+  "readiness": {
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY",
+    "generationReady": false
+  },
+  "noDefaultOrWorkflowChanges": true
+}

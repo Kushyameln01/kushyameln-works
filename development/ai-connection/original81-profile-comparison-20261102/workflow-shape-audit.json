@@ -1,0 +1,2454 @@
+{
+  "scope": "Original uploaded workflow and actual pinned core source static shape audit; no NN inference; no full model hashing; temporary report only",
+  "archive": {
+    "retainedPath": "/workspace/work/retained/bernini/example_workflows.zip",
+    "uploadedPath": "/workspace/attachments/3664cc60-afec-4b4d-b87d-0ec2c2b5ec31/example_workflows.zip",
+    "retainedSHA256": "ac64e487f1d42920a0a7978c660651bf82e9f9d04e341b31430f143d02ca539a",
+    "uploadedSHA256": "ac64e487f1d42920a0a7978c660651bf82e9f9d04e341b31430f143d02ca539a",
+    "copiesIdentical": true,
+    "members": [
+      {
+        "path": "example_workflows/",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "example_workflows/bernini_rv2v_basic.json",
+        "bytes": 21501,
+        "sha256": "543865dfeeb9a94427bea543624e51db5f1dfcf88a7af6a497ddcdbeadc477dd"
+      }
+    ]
+  },
+  "workflow": {
+    "member": "example_workflows/bernini_rv2v_basic.json",
+    "memberSHA256": "543865dfeeb9a94427bea543624e51db5f1dfcf88a7af6a497ddcdbeadc477dd",
+    "rawFileLineCount": 1,
+    "id": "8c52d68d-f1bf-407c-90e2-2a13d1ba5178",
+    "revision": 0,
+    "version": 0.4,
+    "nodeIndexById": {
+      "8": 0,
+      "11": 1,
+      "15": 2,
+      "16": 3,
+      "9": 4,
+      "6": 5,
+      "2": 6,
+      "1": 7,
+      "13": 8,
+      "17": 9,
+      "10": 10,
+      "14": 11,
+      "12": 12,
+      "7": 13,
+      "21": 14,
+      "22": 15,
+      "24": 16,
+      "25": 17,
+      "26": 18,
+      "5": 19
+    },
+    "nodes": {
+      "8": {
+        "jsonPointer": "/nodes/0",
+        "type": "ModelSamplingSD3",
+        "mode": 0,
+        "widgets_values": [
+          5
+        ],
+        "inputs": [
+          {
+            "localized_name": "model",
+            "name": "model",
+            "type": "MODEL",
+            "link": 6
+          },
+          {
+            "localized_name": "shift",
+            "name": "shift",
+            "type": "FLOAT",
+            "widget": {
+              "name": "shift"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "MODEL",
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              9,
+              11
+            ]
+          }
+        ]
+      },
+      "11": {
+        "jsonPointer": "/nodes/1",
+        "type": "ModelSamplingSD3",
+        "mode": 0,
+        "widgets_values": [
+          5
+        ],
+        "inputs": [
+          {
+            "localized_name": "model",
+            "name": "model",
+            "type": "MODEL",
+            "link": 8
+          },
+          {
+            "localized_name": "shift",
+            "name": "shift",
+            "type": "FLOAT",
+            "widget": {
+              "name": "shift"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "MODEL",
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              10
+            ]
+          }
+        ]
+      },
+      "15": {
+        "jsonPointer": "/nodes/2",
+        "type": "SamplerCustom",
+        "mode": 0,
+        "widgets_values": [
+          true,
+          0,
+          "fixed",
+          1
+        ],
+        "inputs": [
+          {
+            "localized_name": "model",
+            "name": "model",
+            "type": "MODEL",
+            "link": 9
+          },
+          {
+            "localized_name": "positive",
+            "name": "positive",
+            "type": "CONDITIONING",
+            "link": 17
+          },
+          {
+            "localized_name": "negative",
+            "name": "negative",
+            "type": "CONDITIONING",
+            "link": 18
+          },
+          {
+            "localized_name": "sampler",
+            "name": "sampler",
+            "type": "SAMPLER",
+            "link": 12
+          },
+          {
+            "localized_name": "sigmas",
+            "name": "sigmas",
+            "type": "SIGMAS",
+            "link": 15
+          },
+          {
+            "localized_name": "latent_image",
+            "name": "latent_image",
+            "type": "LATENT",
+            "link": 19
+          },
+          {
+            "localized_name": "add_noise",
+            "name": "add_noise",
+            "type": "BOOLEAN",
+            "widget": {
+              "name": "add_noise"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "noise_seed",
+            "name": "noise_seed",
+            "type": "INT",
+            "widget": {
+              "name": "noise_seed"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "cfg",
+            "name": "cfg",
+            "type": "FLOAT",
+            "widget": {
+              "name": "cfg"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "output",
+            "name": "output",
+            "type": "LATENT",
+            "links": [
+              22
+            ]
+          },
+          {
+            "localized_name": "denoised_output",
+            "name": "denoised_output",
+            "type": "LATENT",
+            "links": null
+          }
+        ]
+      },
+      "16": {
+        "jsonPointer": "/nodes/3",
+        "type": "SamplerCustom",
+        "mode": 0,
+        "widgets_values": [
+          false,
+          0,
+          "fixed",
+          1
+        ],
+        "inputs": [
+          {
+            "localized_name": "model",
+            "name": "model",
+            "type": "MODEL",
+            "link": 10
+          },
+          {
+            "localized_name": "positive",
+            "name": "positive",
+            "type": "CONDITIONING",
+            "link": 20
+          },
+          {
+            "localized_name": "negative",
+            "name": "negative",
+            "type": "CONDITIONING",
+            "link": 21
+          },
+          {
+            "localized_name": "sampler",
+            "name": "sampler",
+            "type": "SAMPLER",
+            "link": 13
+          },
+          {
+            "localized_name": "sigmas",
+            "name": "sigmas",
+            "type": "SIGMAS",
+            "link": 16
+          },
+          {
+            "localized_name": "latent_image",
+            "name": "latent_image",
+            "type": "LATENT",
+            "link": 22
+          },
+          {
+            "localized_name": "add_noise",
+            "name": "add_noise",
+            "type": "BOOLEAN",
+            "widget": {
+              "name": "add_noise"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "noise_seed",
+            "name": "noise_seed",
+            "type": "INT",
+            "widget": {
+              "name": "noise_seed"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "cfg",
+            "name": "cfg",
+            "type": "FLOAT",
+            "widget": {
+              "name": "cfg"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "output",
+            "name": "output",
+            "type": "LATENT",
+            "links": [
+              23
+            ]
+          },
+          {
+            "localized_name": "denoised_output",
+            "name": "denoised_output",
+            "type": "LATENT",
+            "links": null
+          }
+        ]
+      },
+      "9": {
+        "jsonPointer": "/nodes/4",
+        "type": "UNETLoader",
+        "mode": 0,
+        "widgets_values": [
+          "Bernini - Bytedance\\Wan22_Bernini_LOW_mxfp8.safetensors",
+          "default"
+        ],
+        "inputs": [
+          {
+            "localized_name": "unet_name",
+            "name": "unet_name",
+            "type": "COMBO",
+            "widget": {
+              "name": "unet_name"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "weight_dtype",
+            "name": "weight_dtype",
+            "type": "COMBO",
+            "widget": {
+              "name": "weight_dtype"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "MODEL",
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              7
+            ]
+          }
+        ]
+      },
+      "6": {
+        "jsonPointer": "/nodes/5",
+        "type": "UNETLoader",
+        "mode": 0,
+        "widgets_values": [
+          "Bernini - Bytedance\\Wan22_Bernini_HIGH_mxfp8.safetensors",
+          "default"
+        ],
+        "inputs": [
+          {
+            "localized_name": "unet_name",
+            "name": "unet_name",
+            "type": "COMBO",
+            "widget": {
+              "name": "unet_name"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "weight_dtype",
+            "name": "weight_dtype",
+            "type": "COMBO",
+            "widget": {
+              "name": "weight_dtype"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "MODEL",
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              5
+            ]
+          }
+        ]
+      },
+      "2": {
+        "jsonPointer": "/nodes/6",
+        "type": "VAELoader",
+        "mode": 0,
+        "widgets_values": [
+          "wan_2.1_vae.safetensors"
+        ],
+        "inputs": [
+          {
+            "localized_name": "vae_name",
+            "name": "vae_name",
+            "type": "COMBO",
+            "widget": {
+              "name": "vae_name"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "VAE",
+            "name": "VAE",
+            "type": "VAE",
+            "links": [
+              2,
+              24
+            ]
+          }
+        ]
+      },
+      "1": {
+        "jsonPointer": "/nodes/7",
+        "type": "CLIPLoader",
+        "mode": 0,
+        "widgets_values": [
+          "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+          "wan",
+          "default"
+        ],
+        "inputs": [
+          {
+            "localized_name": "clip_name",
+            "name": "clip_name",
+            "type": "COMBO",
+            "widget": {
+              "name": "clip_name"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "type",
+            "name": "type",
+            "type": "COMBO",
+            "widget": {
+              "name": "type"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "device",
+            "name": "device",
+            "shape": 7,
+            "type": "COMBO",
+            "widget": {
+              "name": "device"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "CLIP",
+            "name": "CLIP",
+            "type": "CLIP",
+            "links": [
+              1
+            ]
+          }
+        ]
+      },
+      "13": {
+        "jsonPointer": "/nodes/8",
+        "type": "BasicScheduler",
+        "mode": 0,
+        "widgets_values": [
+          "simple",
+          6,
+          1
+        ],
+        "inputs": [
+          {
+            "localized_name": "model",
+            "name": "model",
+            "type": "MODEL",
+            "link": 11
+          },
+          {
+            "localized_name": "scheduler",
+            "name": "scheduler",
+            "type": "COMBO",
+            "widget": {
+              "name": "scheduler"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "steps",
+            "name": "steps",
+            "type": "INT",
+            "widget": {
+              "name": "steps"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "denoise",
+            "name": "denoise",
+            "type": "FLOAT",
+            "widget": {
+              "name": "denoise"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "SIGMAS",
+            "name": "SIGMAS",
+            "type": "SIGMAS",
+            "links": [
+              14
+            ]
+          }
+        ]
+      },
+      "17": {
+        "jsonPointer": "/nodes/9",
+        "type": "VAEDecode",
+        "mode": 0,
+        "widgets_values": [],
+        "inputs": [
+          {
+            "localized_name": "samples",
+            "name": "samples",
+            "type": "LATENT",
+            "link": 23
+          },
+          {
+            "localized_name": "vae",
+            "name": "vae",
+            "type": "VAE",
+            "link": 24
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "IMAGE",
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "links": [
+              30
+            ]
+          }
+        ]
+      },
+      "10": {
+        "jsonPointer": "/nodes/10",
+        "type": "LoraLoaderModelOnly",
+        "mode": 0,
+        "widgets_values": [
+          "Lightx2v-Lighning-latest\\Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors",
+          1
+        ],
+        "inputs": [
+          {
+            "localized_name": "model",
+            "name": "model",
+            "type": "MODEL",
+            "link": 7
+          },
+          {
+            "localized_name": "lora_name",
+            "name": "lora_name",
+            "type": "COMBO",
+            "widget": {
+              "name": "lora_name"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "strength_model",
+            "name": "strength_model",
+            "type": "FLOAT",
+            "widget": {
+              "name": "strength_model"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "MODEL",
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              8
+            ]
+          }
+        ]
+      },
+      "14": {
+        "jsonPointer": "/nodes/11",
+        "type": "SplitSigmas",
+        "mode": 0,
+        "widgets_values": [
+          3
+        ],
+        "inputs": [
+          {
+            "localized_name": "sigmas",
+            "name": "sigmas",
+            "type": "SIGMAS",
+            "link": 14
+          },
+          {
+            "localized_name": "step",
+            "name": "step",
+            "type": "INT",
+            "widget": {
+              "name": "step"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "high_sigmas",
+            "name": "high_sigmas",
+            "type": "SIGMAS",
+            "links": [
+              15
+            ]
+          },
+          {
+            "localized_name": "low_sigmas",
+            "name": "low_sigmas",
+            "type": "SIGMAS",
+            "links": [
+              16
+            ]
+          }
+        ]
+      },
+      "12": {
+        "jsonPointer": "/nodes/12",
+        "type": "KSamplerSelect",
+        "mode": 0,
+        "widgets_values": [
+          "euler"
+        ],
+        "inputs": [
+          {
+            "localized_name": "sampler_name",
+            "name": "sampler_name",
+            "type": "COMBO",
+            "widget": {
+              "name": "sampler_name"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "SAMPLER",
+            "name": "SAMPLER",
+            "type": "SAMPLER",
+            "links": [
+              12,
+              13
+            ]
+          }
+        ]
+      },
+      "7": {
+        "jsonPointer": "/nodes/13",
+        "type": "LoraLoaderModelOnly",
+        "mode": 0,
+        "widgets_values": [
+          "lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank64_bf16.safetensors",
+          3
+        ],
+        "inputs": [
+          {
+            "localized_name": "model",
+            "name": "model",
+            "type": "MODEL",
+            "link": 5
+          },
+          {
+            "localized_name": "lora_name",
+            "name": "lora_name",
+            "type": "COMBO",
+            "widget": {
+              "name": "lora_name"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "strength_model",
+            "name": "strength_model",
+            "type": "FLOAT",
+            "widget": {
+              "name": "strength_model"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "MODEL",
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              6
+            ]
+          }
+        ]
+      },
+      "21": {
+        "jsonPointer": "/nodes/14",
+        "type": "VHS_LoadVideo",
+        "mode": 0,
+        "widgets_values": {
+          "video": "132123.mp4",
+          "force_rate": 16,
+          "custom_width": 0,
+          "custom_height": 0,
+          "frame_load_cap": 81,
+          "skip_first_frames": 0,
+          "select_every_nth": 1,
+          "format": "AnimateDiff",
+          "videopreview": {
+            "hidden": false,
+            "paused": true,
+            "params": {
+              "filename": "132123.mp4",
+              "type": "input",
+              "format": "video/mp4"
+            }
+          }
+        },
+        "inputs": [
+          {
+            "localized_name": "meta_batch",
+            "name": "meta_batch",
+            "shape": 7,
+            "type": "VHS_BatchManager",
+            "link": null
+          },
+          {
+            "localized_name": "vae",
+            "name": "vae",
+            "shape": 7,
+            "type": "VAE",
+            "link": null
+          },
+          {
+            "localized_name": "video",
+            "name": "video",
+            "type": "COMBO",
+            "widget": {
+              "name": "video"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "force_rate",
+            "name": "force_rate",
+            "type": "FLOAT",
+            "widget": {
+              "name": "force_rate"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "custom_width",
+            "name": "custom_width",
+            "type": "INT",
+            "widget": {
+              "name": "custom_width"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "custom_height",
+            "name": "custom_height",
+            "type": "INT",
+            "widget": {
+              "name": "custom_height"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "frame_load_cap",
+            "name": "frame_load_cap",
+            "type": "INT",
+            "widget": {
+              "name": "frame_load_cap"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "skip_first_frames",
+            "name": "skip_first_frames",
+            "type": "INT",
+            "widget": {
+              "name": "skip_first_frames"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "select_every_nth",
+            "name": "select_every_nth",
+            "type": "INT",
+            "widget": {
+              "name": "select_every_nth"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "format",
+            "name": "format",
+            "shape": 7,
+            "type": "COMBO",
+            "widget": {
+              "name": "format"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "IMAGE",
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "links": [
+              29
+            ]
+          },
+          {
+            "localized_name": "frame_count",
+            "name": "frame_count",
+            "type": "INT",
+            "links": null
+          },
+          {
+            "localized_name": "audio",
+            "name": "audio",
+            "type": "AUDIO",
+            "links": null
+          },
+          {
+            "localized_name": "video_info",
+            "name": "video_info",
+            "type": "VHS_VIDEOINFO",
+            "links": null
+          }
+        ]
+      },
+      "22": {
+        "jsonPointer": "/nodes/15",
+        "type": "VHS_VideoCombine",
+        "mode": 0,
+        "widgets_values": {
+          "frame_rate": 16,
+          "loop_count": 0,
+          "filename_prefix": "BerniniStudio",
+          "format": "video/h264-mp4",
+          "pix_fmt": "yuv420p",
+          "crf": 19,
+          "save_metadata": true,
+          "trim_to_audio": false,
+          "pingpong": false,
+          "save_output": true,
+          "videopreview": {
+            "hidden": false,
+            "paused": false,
+            "params": {
+              "filename": "BerniniStudio_00009.mp4",
+              "subfolder": "",
+              "type": "output",
+              "format": "video/h264-mp4",
+              "frame_rate": 16,
+              "workflow": "BerniniStudio_00009.png",
+              "fullpath": "D:\\ComfyUI\\output\\BerniniStudio_00009.mp4"
+            }
+          }
+        },
+        "inputs": [
+          {
+            "localized_name": "images",
+            "name": "images",
+            "type": "IMAGE",
+            "link": 30
+          },
+          {
+            "localized_name": "audio",
+            "name": "audio",
+            "shape": 7,
+            "type": "AUDIO",
+            "link": null
+          },
+          {
+            "localized_name": "meta_batch",
+            "name": "meta_batch",
+            "shape": 7,
+            "type": "VHS_BatchManager",
+            "link": null
+          },
+          {
+            "localized_name": "vae",
+            "name": "vae",
+            "shape": 7,
+            "type": "VAE",
+            "link": null
+          },
+          {
+            "localized_name": "frame_rate",
+            "name": "frame_rate",
+            "type": "FLOAT",
+            "widget": {
+              "name": "frame_rate"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "loop_count",
+            "name": "loop_count",
+            "type": "INT",
+            "widget": {
+              "name": "loop_count"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "filename_prefix",
+            "name": "filename_prefix",
+            "type": "STRING",
+            "widget": {
+              "name": "filename_prefix"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "format",
+            "name": "format",
+            "type": "COMBO",
+            "widget": {
+              "name": "format"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "pingpong",
+            "name": "pingpong",
+            "type": "BOOLEAN",
+            "widget": {
+              "name": "pingpong"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "save_output",
+            "name": "save_output",
+            "type": "BOOLEAN",
+            "widget": {
+              "name": "save_output"
+            },
+            "link": null
+          },
+          {
+            "name": "pix_fmt",
+            "type": [
+              "yuv420p",
+              "yuv420p10le"
+            ],
+            "widget": {
+              "name": "pix_fmt"
+            },
+            "link": null
+          },
+          {
+            "name": "crf",
+            "type": "INT",
+            "widget": {
+              "name": "crf"
+            },
+            "link": null
+          },
+          {
+            "name": "save_metadata",
+            "type": "BOOLEAN",
+            "widget": {
+              "name": "save_metadata"
+            },
+            "link": null
+          },
+          {
+            "name": "trim_to_audio",
+            "type": "BOOLEAN",
+            "widget": {
+              "name": "trim_to_audio"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "Filenames",
+            "name": "Filenames",
+            "type": "VHS_FILENAMES",
+            "links": null
+          }
+        ]
+      },
+      "24": {
+        "jsonPointer": "/nodes/16",
+        "type": "LoadImage",
+        "mode": 4,
+        "widgets_values": [
+          "0000.png",
+          "image"
+        ],
+        "inputs": [
+          {
+            "localized_name": "image",
+            "name": "image",
+            "type": "COMBO",
+            "widget": {
+              "name": "image"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "choose file to upload",
+            "name": "upload",
+            "type": "IMAGEUPLOAD",
+            "widget": {
+              "name": "upload"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "IMAGE",
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "links": [
+              32
+            ]
+          },
+          {
+            "localized_name": "MASK",
+            "name": "MASK",
+            "type": "MASK",
+            "links": null
+          }
+        ]
+      },
+      "25": {
+        "jsonPointer": "/nodes/17",
+        "type": "LoadImage",
+        "mode": 4,
+        "widgets_values": [
+          "0000.png",
+          "image"
+        ],
+        "inputs": [
+          {
+            "localized_name": "image",
+            "name": "image",
+            "type": "COMBO",
+            "widget": {
+              "name": "image"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "choose file to upload",
+            "name": "upload",
+            "type": "IMAGEUPLOAD",
+            "widget": {
+              "name": "upload"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "IMAGE",
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "links": [
+              33
+            ]
+          },
+          {
+            "localized_name": "MASK",
+            "name": "MASK",
+            "type": "MASK",
+            "links": null
+          }
+        ]
+      },
+      "26": {
+        "jsonPointer": "/nodes/18",
+        "type": "LoadImage",
+        "mode": 4,
+        "widgets_values": [
+          "0000.png",
+          "image"
+        ],
+        "inputs": [
+          {
+            "localized_name": "image",
+            "name": "image",
+            "type": "COMBO",
+            "widget": {
+              "name": "image"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "choose file to upload",
+            "name": "upload",
+            "type": "IMAGEUPLOAD",
+            "widget": {
+              "name": "upload"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "IMAGE",
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "links": [
+              34
+            ]
+          },
+          {
+            "localized_name": "MASK",
+            "name": "MASK",
+            "type": "MASK",
+            "links": null
+          }
+        ]
+      },
+      "5": {
+        "jsonPointer": "/nodes/19",
+        "type": "BerniniStudio",
+        "mode": 0,
+        "widgets_values": [
+          832,
+          480,
+          81,
+          1,
+          "rv2v",
+          "replace the man in the red shirt with the man from image0 and replace the man sitting at the computer with the man from image1",
+          "",
+          true,
+          848,
+          false,
+          false,
+          "http://127.0.0.1:11434",
+          "",
+          "[\"videoframe_80.png\",\"00108-_lora_Ed Sheeran - SDXL - Trigger is Edsheeran person_.8_  Edsheeran person, film footage, a society where people can geneticall.png\",null,null,null,null,null,null]",
+          0,
+          0,
+          0,
+          "Ollama",
+          "",
+          ""
+        ],
+        "inputs": [
+          {
+            "localized_name": "clip",
+            "name": "clip",
+            "type": "CLIP",
+            "link": 1
+          },
+          {
+            "localized_name": "vae",
+            "name": "vae",
+            "type": "VAE",
+            "link": 2
+          },
+          {
+            "localized_name": "source_video",
+            "name": "source_video",
+            "shape": 7,
+            "type": "IMAGE",
+            "link": 29
+          },
+          {
+            "localized_name": "image0",
+            "name": "image0",
+            "shape": 7,
+            "type": "IMAGE",
+            "link": 32
+          },
+          {
+            "localized_name": "image1",
+            "name": "image1",
+            "shape": 7,
+            "type": "IMAGE",
+            "link": 33
+          },
+          {
+            "localized_name": "image2",
+            "name": "image2",
+            "shape": 7,
+            "type": "IMAGE",
+            "link": 34
+          },
+          {
+            "localized_name": "image3",
+            "name": "image3",
+            "shape": 7,
+            "type": "IMAGE",
+            "link": null
+          },
+          {
+            "localized_name": "image4",
+            "name": "image4",
+            "shape": 7,
+            "type": "IMAGE",
+            "link": null
+          },
+          {
+            "localized_name": "image5",
+            "name": "image5",
+            "shape": 7,
+            "type": "IMAGE",
+            "link": null
+          },
+          {
+            "localized_name": "image6",
+            "name": "image6",
+            "shape": 7,
+            "type": "IMAGE",
+            "link": null
+          },
+          {
+            "localized_name": "image7",
+            "name": "image7",
+            "shape": 7,
+            "type": "IMAGE",
+            "link": null
+          },
+          {
+            "localized_name": "reference_video",
+            "name": "reference_video",
+            "shape": 7,
+            "type": "IMAGE",
+            "link": null
+          },
+          {
+            "localized_name": "width",
+            "name": "width",
+            "type": "INT",
+            "widget": {
+              "name": "width"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "height",
+            "name": "height",
+            "type": "INT",
+            "widget": {
+              "name": "height"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "length",
+            "name": "length",
+            "type": "INT",
+            "widget": {
+              "name": "length"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "batch_size",
+            "name": "batch_size",
+            "type": "INT",
+            "widget": {
+              "name": "batch_size"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "task_type",
+            "name": "task_type",
+            "type": "COMBO",
+            "widget": {
+              "name": "task_type"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "prompt",
+            "name": "prompt",
+            "type": "STRING",
+            "widget": {
+              "name": "prompt"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "negative_prompt",
+            "name": "negative_prompt",
+            "type": "STRING",
+            "widget": {
+              "name": "negative_prompt"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "use_default_neg",
+            "name": "use_default_neg",
+            "type": "BOOLEAN",
+            "widget": {
+              "name": "use_default_neg"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "ref_max_size",
+            "name": "ref_max_size",
+            "shape": 7,
+            "type": "INT",
+            "widget": {
+              "name": "ref_max_size"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "auto_enhance",
+            "name": "auto_enhance",
+            "shape": 7,
+            "type": "BOOLEAN",
+            "widget": {
+              "name": "auto_enhance"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "unload_ollama",
+            "name": "unload_ollama",
+            "shape": 7,
+            "type": "BOOLEAN",
+            "widget": {
+              "name": "unload_ollama"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "ollama_url",
+            "name": "ollama_url",
+            "shape": 7,
+            "type": "STRING",
+            "widget": {
+              "name": "ollama_url"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "ollama_model",
+            "name": "ollama_model",
+            "shape": 7,
+            "type": "STRING",
+            "widget": {
+              "name": "ollama_model"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "slot_images",
+            "name": "slot_images",
+            "shape": 7,
+            "type": "STRING",
+            "widget": {
+              "name": "slot_images"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "augment_strength",
+            "name": "augment_strength",
+            "shape": 7,
+            "type": "FLOAT",
+            "widget": {
+              "name": "augment_strength"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "augment_decay",
+            "name": "augment_decay",
+            "shape": 7,
+            "type": "FLOAT",
+            "widget": {
+              "name": "augment_decay"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "augment_seed",
+            "name": "augment_seed",
+            "shape": 7,
+            "type": "INT",
+            "widget": {
+              "name": "augment_seed"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "api_format",
+            "name": "api_format",
+            "shape": 7,
+            "type": "COMBO",
+            "widget": {
+              "name": "api_format"
+            },
+            "link": null
+          },
+          {
+            "localized_name": "send_ref_images",
+            "name": "send_ref_images",
+            "shape": 7,
+            "type": "BOOLEAN",
+            "widget": {
+              "name": "send_ref_images"
+            },
+            "link": null
+          }
+        ],
+        "outputs": [
+          {
+            "localized_name": "positive",
+            "name": "positive",
+            "type": "CONDITIONING",
+            "links": [
+              17,
+              20
+            ]
+          },
+          {
+            "localized_name": "negative",
+            "name": "negative",
+            "type": "CONDITIONING",
+            "links": [
+              18,
+              21
+            ]
+          },
+          {
+            "localized_name": "latent",
+            "name": "latent",
+            "type": "LATENT",
+            "links": [
+              19
+            ]
+          }
+        ]
+      }
+    },
+    "links": [
+      [
+        1,
+        1,
+        0,
+        5,
+        0,
+        "CLIP"
+      ],
+      [
+        2,
+        2,
+        0,
+        5,
+        1,
+        "VAE"
+      ],
+      [
+        5,
+        6,
+        0,
+        7,
+        0,
+        "MODEL"
+      ],
+      [
+        6,
+        7,
+        0,
+        8,
+        0,
+        "MODEL"
+      ],
+      [
+        7,
+        9,
+        0,
+        10,
+        0,
+        "MODEL"
+      ],
+      [
+        8,
+        10,
+        0,
+        11,
+        0,
+        "MODEL"
+      ],
+      [
+        9,
+        8,
+        0,
+        15,
+        0,
+        "MODEL"
+      ],
+      [
+        10,
+        11,
+        0,
+        16,
+        0,
+        "MODEL"
+      ],
+      [
+        11,
+        8,
+        0,
+        13,
+        0,
+        "MODEL"
+      ],
+      [
+        12,
+        12,
+        0,
+        15,
+        3,
+        "SAMPLER"
+      ],
+      [
+        13,
+        12,
+        0,
+        16,
+        3,
+        "SAMPLER"
+      ],
+      [
+        14,
+        13,
+        0,
+        14,
+        0,
+        "SIGMAS"
+      ],
+      [
+        15,
+        14,
+        0,
+        15,
+        4,
+        "SIGMAS"
+      ],
+      [
+        16,
+        14,
+        1,
+        16,
+        4,
+        "SIGMAS"
+      ],
+      [
+        17,
+        5,
+        0,
+        15,
+        1,
+        "CONDITIONING"
+      ],
+      [
+        18,
+        5,
+        1,
+        15,
+        2,
+        "CONDITIONING"
+      ],
+      [
+        19,
+        5,
+        2,
+        15,
+        5,
+        "LATENT"
+      ],
+      [
+        20,
+        5,
+        0,
+        16,
+        1,
+        "CONDITIONING"
+      ],
+      [
+        21,
+        5,
+        1,
+        16,
+        2,
+        "CONDITIONING"
+      ],
+      [
+        22,
+        15,
+        0,
+        16,
+        5,
+        "LATENT"
+      ],
+      [
+        23,
+        16,
+        0,
+        17,
+        0,
+        "LATENT"
+      ],
+      [
+        24,
+        2,
+        0,
+        17,
+        1,
+        "VAE"
+      ],
+      [
+        29,
+        21,
+        0,
+        5,
+        2,
+        "IMAGE"
+      ],
+      [
+        30,
+        17,
+        0,
+        22,
+        0,
+        "IMAGE"
+      ],
+      [
+        32,
+        24,
+        0,
+        5,
+        3,
+        "IMAGE"
+      ],
+      [
+        33,
+        25,
+        0,
+        5,
+        4,
+        "IMAGE"
+      ],
+      [
+        34,
+        26,
+        0,
+        5,
+        5,
+        "IMAGE"
+      ]
+    ],
+    "groups": [
+      {
+        "id": 1,
+        "title": "Bernini HIGH / LOW models + lightx2v distill LoRAs",
+        "bounding": [
+          300,
+          -370,
+          1180,
+          320
+        ],
+        "color": "#3f789e",
+        "flags": {}
+      },
+      {
+        "id": 2,
+        "title": "Two-stage sampling (steps 0-3 HIGH, 3-6 LOW)",
+        "bounding": [
+          940,
+          120,
+          830,
+          360
+        ],
+        "color": "#a1309b",
+        "flags": {}
+      }
+    ]
+  },
+  "sourceRecords": [
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/ldm/wan/model.py",
+      "bytes": 83811,
+      "sha256": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699",
+      "gitBlobSHA1": "4e1a055d827b4fa91c3a384d972b851175999be9",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/ldm/wan/model.py",
+      "rawURL": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/ldm/wan/model.py",
+      "lines": [
+        [
+          62,
+          123
+        ],
+        [
+          514,
+          536
+        ],
+        [
+          579,
+          652
+        ],
+        [
+          654,
+          749
+        ]
+      ],
+      "verifiedLocalSource": "/workspace/work/diffusion-investigation/model-architecture/comfy_ldm_wan_model.py",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/comfy__ldm__wan__model.py",
+      "verifiedSHA256": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699"
+    },
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/model_base.py",
+      "bytes": 156522,
+      "sha256": "ef3d3d515a2b9b60050805a36aea253734424557e2d1a510fcb96e19d7325876",
+      "gitBlobSHA1": "c2280860651758ea854d7d0bca86ea17c48adb25",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/model_base.py",
+      "rawURL": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/model_base.py",
+      "lines": [
+        [
+          128,
+          130
+        ],
+        [
+          219,
+          261
+        ],
+        [
+          1668,
+          1677
+        ],
+        [
+          1720,
+          1755
+        ]
+      ],
+      "verifiedLocalSource": "/workspace/work/diffusion-investigation/model-architecture/comfy_model_base.py",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/comfy__model_base.py",
+      "verifiedSHA256": "ef3d3d515a2b9b60050805a36aea253734424557e2d1a510fcb96e19d7325876"
+    },
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/latent_formats.py",
+      "bytes": 48392,
+      "sha256": "d7b5d624a6b9e201a8962940f5ae8d450c4214854cd13ebeec0338f6bc8f7dab",
+      "gitBlobSHA1": "83e0577b6b1317cb7969c045a3d1d39974601c8e",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/latent_formats.py",
+      "rawURL": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/latent_formats.py",
+      "lines": [
+        [
+          755,
+          777
+        ]
+      ],
+      "verifiedLocalSource": "/workspace/work/diffusion-investigation/model-architecture/comfy_latent_formats.py",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/comfy__latent_formats.py",
+      "verifiedSHA256": "d7b5d624a6b9e201a8962940f5ae8d450c4214854cd13ebeec0338f6bc8f7dab"
+    },
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/ldm/common_dit.py",
+      "bytes": 474,
+      "sha256": "5e2459be4a47073a17e6b806f2b93962b4df1cdcaa2ac1890c9573bf942edf82",
+      "gitBlobSHA1": "f7f56b72ca6fcd3ba2831b8881a7124d84490bee",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/ldm/common_dit.py",
+      "rawURL": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/ldm/common_dit.py",
+      "lines": [
+        [
+          5,
+          13
+        ]
+      ],
+      "verifiedLocalSource": "/workspace/work/diffusion-delivery/core-sources/comfy__ldm__common_dit.py",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/comfy__ldm__common_dit.py",
+      "verifiedSHA256": "5e2459be4a47073a17e6b806f2b93962b4df1cdcaa2ac1890c9573bf942edf82"
+    },
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/text_encoders/wan.py",
+      "bytes": 2232,
+      "sha256": "e9a6ca356790c76f7a36550842fc8a93c8c584cd175d69615eaddb7b4cd276bc",
+      "gitBlobSHA1": "164a57edd7ac36f59d494bb2595afda1b1155877",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/text_encoders/wan.py",
+      "rawURL": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/text_encoders/wan.py",
+      "lines": [
+        [
+          6,
+          14
+        ]
+      ],
+      "verifiedLocalSource": "/workspace/work/diffusion-delivery/core-sources/comfy__text_encoders__wan.py",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/comfy__text_encoders__wan.py",
+      "verifiedSHA256": "e9a6ca356790c76f7a36550842fc8a93c8c584cd175d69615eaddb7b4cd276bc"
+    },
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/sd1_clip.py",
+      "bytes": 31089,
+      "sha256": "9eb20b561ed3746d760087d3407ce5ce527ff772e94ceae36da43264a88d516e",
+      "gitBlobSHA1": "39280bb5e5a9d9ef378193d885b83595220285c2",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/sd1_clip.py",
+      "rawURL": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/sd1_clip.py",
+      "lines": [
+        [
+          266,
+          287
+        ],
+        [
+          668,
+          669
+        ]
+      ],
+      "verifiedLocalSource": "/workspace/work/diffusion-delivery/core-sources/comfy__sd1_clip.py",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/comfy__sd1_clip.py",
+      "verifiedSHA256": "9eb20b561ed3746d760087d3407ce5ce527ff772e94ceae36da43264a88d516e"
+    },
+    {
+      "repository": "CCpt5/ComfyUI-BerniniStudio",
+      "commit": "ca69274a2d2135052489bc0c67a2d79a64225e86",
+      "path": "bernini_studio.py",
+      "bytes": 54313,
+      "sha256": "017221d38a67810d685254675b9fb48d5b6cc77210625b5c7430c6b0ab27c99d",
+      "gitBlobSHA1": "bec2d22a5e81f19057400b1766623cb95350ed36",
+      "url": "https://github.com/CCpt5/ComfyUI-BerniniStudio/blob/ca69274a2d2135052489bc0c67a2d79a64225e86/bernini_studio.py",
+      "rawURL": "https://raw.githubusercontent.com/CCpt5/ComfyUI-BerniniStudio/ca69274a2d2135052489bc0c67a2d79a64225e86/bernini_studio.py",
+      "lines": [
+        [
+          108,
+          146
+        ],
+        [
+          379,
+          387
+        ],
+        [
+          538,
+          604
+        ],
+        [
+          630,
+          688
+        ]
+      ],
+      "verifiedLocalSource": "/workspace/work/diffusion-investigation/model-architecture/bernini_studio.py",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/bernini_studio.py",
+      "verifiedSHA256": "017221d38a67810d685254675b9fb48d5b6cc77210625b5c7430c6b0ab27c99d"
+    },
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/sd.py",
+      "bytes": 151297,
+      "sha256": "6c87a8a02c7c38c9215ab7b94468245d4e29dc56d6f77a28cffb24e34120de2d",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/comfy__sd.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/sd.py",
+      "verification": "freshly fetched fixed-commit raw source; no model download"
+    },
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/model_detection.py",
+      "bytes": 95585,
+      "sha256": "29a46d42b91196fdc54753e358972a7b6a68c2dc3b7b10c2a61eb3a1a0909b2e",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/comfy__model_detection.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/model_detection.py",
+      "verification": "freshly fetched fixed-commit raw source; no model download"
+    },
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/utils.py",
+      "bytes": 65625,
+      "sha256": "c2df3fbcf76865312d31dffede06de8594a363e2fdf852679312418e91b1d5d4",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/comfy__utils.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/utils.py",
+      "verification": "freshly fetched fixed-commit raw source; no model download"
+    },
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/ldm/wan/vae.py",
+      "bytes": 17610,
+      "sha256": "b18fdd6d95d9c7093fbc8f2c831dfb36322aa1951c2dd17d32733dac53d689e4",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/comfy__ldm__wan__vae.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/ldm/wan/vae.py",
+      "verification": "freshly fetched fixed-commit raw source; no model download"
+    },
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "nodes.py",
+      "bytes": 109650,
+      "sha256": "4cfd9be3754f9dc25213febdf96b690d6e32007c2e539d37e799d82226d758c5",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/nodes.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/nodes.py",
+      "verification": "freshly fetched fixed-commit raw source; no model download"
+    },
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "path": "comfy/sample.py",
+      "bytes": 5007,
+      "sha256": "d274ed5b6abf83707b52b87d25d1716f072d5444954cf23ac0ed31a3b803ee1c",
+      "reportCopy": "/tmp/original81-workflow-shape-audit-20261102/core-sources/comfy__sample.py",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/b5a432157de6b8884f81104cd02926adf4d597e4/comfy/sample.py",
+      "verification": "freshly fetched fixed-commit raw source; no model download"
+    }
+  ],
+  "retainedHeaderObservation": [
+    {
+      "file": "/workspace/work/retained/bernini/Wan22_Bernini_HIGH_fp8_e4m3fn_scaled.safetensors",
+      "fileBytes": 15574833216,
+      "headerBytes": 181280,
+      "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+      "hashScope": "raw JSON header bytes only, not full model",
+      "selectedHeaderEntries": {
+        "patch_embedding.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            16,
+            1,
+            2,
+            2
+          ],
+          "data_offsets": [
+            2107547168,
+            2108202528
+          ]
+        },
+        "head.modulation": {
+          "dtype": "F16",
+          "shape": [
+            1,
+            2,
+            5120
+          ],
+          "data_offsets": [
+            2107516448,
+            2107536928
+          ]
+        },
+        "blocks.0.self_attn.q.weight": {
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            5120
+          ],
+          "data_offsets": [
+            2844929568,
+            2871143968
+          ]
+        },
+        "blocks.0.cross_attn.k.weight": {
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            5120
+          ],
+          "data_offsets": [
+            2572299808,
+            2598514208
+          ]
+        },
+        "blocks.0.ffn.0.weight": {
+          "dtype": "F8_E4M3",
+          "shape": [
+            13824,
+            5120
+          ],
+          "data_offsets": [
+            2650943008,
+            2721721888
+          ]
+        },
+        "blocks.0.ffn.2.weight": {
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            13824
+          ],
+          "data_offsets": [
+            2721721888,
+            2792500768
+          ]
+        },
+        "text_embedding.0.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            4096
+          ],
+          "data_offsets": [
+            2108212768,
+            2150155808
+          ]
+        },
+        "text_embedding.2.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            5120
+          ],
+          "data_offsets": [
+            2150166048,
+            2202594848
+          ]
+        },
+        "time_embedding.0.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            256
+          ],
+          "data_offsets": [
+            2202605088,
+            2205226528
+          ]
+        },
+        "time_projection.1.weight": {
+          "dtype": "F16",
+          "shape": [
+            30720,
+            5120
+          ],
+          "data_offsets": [
+            2257727008,
+            2572299808
+          ]
+        },
+        "head.head.weight": {
+          "dtype": "F16",
+          "shape": [
+            64,
+            5120
+          ],
+          "data_offsets": [
+            2106861088,
+            2107516448
+          ]
+        }
+      },
+      "blockCount": 40,
+      "metadata": {
+        "model_type": "bernini_high",
+        "format": "pt"
+      }
+    },
+    {
+      "file": "/workspace/work/retained/bernini/Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+      "fileBytes": 15574833216,
+      "headerBytes": 181280,
+      "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+      "hashScope": "raw JSON header bytes only, not full model",
+      "selectedHeaderEntries": {
+        "patch_embedding.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            16,
+            1,
+            2,
+            2
+          ],
+          "data_offsets": [
+            2107547168,
+            2108202528
+          ]
+        },
+        "head.modulation": {
+          "dtype": "F16",
+          "shape": [
+            1,
+            2,
+            5120
+          ],
+          "data_offsets": [
+            2107516448,
+            2107536928
+          ]
+        },
+        "blocks.0.self_attn.q.weight": {
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            5120
+          ],
+          "data_offsets": [
+            2844929568,
+            2871143968
+          ]
+        },
+        "blocks.0.cross_attn.k.weight": {
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            5120
+          ],
+          "data_offsets": [
+            2572299808,
+            2598514208
+          ]
+        },
+        "blocks.0.ffn.0.weight": {
+          "dtype": "F8_E4M3",
+          "shape": [
+            13824,
+            5120
+          ],
+          "data_offsets": [
+            2650943008,
+            2721721888
+          ]
+        },
+        "blocks.0.ffn.2.weight": {
+          "dtype": "F8_E4M3",
+          "shape": [
+            5120,
+            13824
+          ],
+          "data_offsets": [
+            2721721888,
+            2792500768
+          ]
+        },
+        "text_embedding.0.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            4096
+          ],
+          "data_offsets": [
+            2108212768,
+            2150155808
+          ]
+        },
+        "text_embedding.2.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            5120
+          ],
+          "data_offsets": [
+            2150166048,
+            2202594848
+          ]
+        },
+        "time_embedding.0.weight": {
+          "dtype": "F16",
+          "shape": [
+            5120,
+            256
+          ],
+          "data_offsets": [
+            2202605088,
+            2205226528
+          ]
+        },
+        "time_projection.1.weight": {
+          "dtype": "F16",
+          "shape": [
+            30720,
+            5120
+          ],
+          "data_offsets": [
+            2257727008,
+            2572299808
+          ]
+        },
+        "head.head.weight": {
+          "dtype": "F16",
+          "shape": [
+            64,
+            5120
+          ],
+          "data_offsets": [
+            2106861088,
+            2107516448
+          ]
+        }
+      },
+      "blockCount": 40,
+      "metadata": {
+        "format": "pt",
+        "model_type": "bernini_low"
+      }
+    }
+  ],
+  "prompt": {
+    "configuredUserPrompt": "replace the man in the red shirt with the man from image0 and replace the man sitting at the computer with the man from image1",
+    "candidateFullPositive": "You are a helpful assistant specialized in video editing with reference. replace the man in the red shirt with the man from image0 and replace the man sitting at the computer with the man from image1",
+    "candidateFullPositiveUTF8SHA256": "15fe4ea127ee10fbfdb6259f5a4da731e11639c82b955ca6ba79bce4c7a468f9",
+    "candidateNegative": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走",
+    "candidateNegativeUTF8SHA256": "ce96e0324e4b54ce4b6e867f669ca520952e1a34cc116543516b1897f0d3c47e",
+    "autoEnhance": false,
+    "warning": "candidate plugin version was pinned for audit, not proven original installation; original tokenizer output and actual conditioning tensors not present"
+  },
+  "derivedTarget81": {
+    "evidenceClass": "configuration+candidate pinned core derived, not runtime observed",
+    "frames": 81,
+    "width": 832,
+    "height": 480,
+    "batch": 1,
+    "latentBCTHW": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "patchBCTHW": [
+      1,
+      5120,
+      21,
+      30,
+      52
+    ],
+    "hiddenBND": [
+      1,
+      32760,
+      5120
+    ],
+    "targetTokenCount": 32760,
+    "targetRoPESourceId": 0,
+    "predictedRawVaeDecodeBT_HWC": [
+      81,
+      480,
+      832,
+      3
+    ],
+    "modelHeaderBinding": "retained scaled-FP8 models only; original workflow mxfp8 model equivalence unverified"
+  },
+  "derivedSourceVideo": {
+    "evidenceClass": "conditional source-core formula; actual media absent",
+    "configuredFile": "132123.mp4",
+    "forceRate": 16,
+    "frameLoadCap": 81,
+    "skipFirstFrames": 0,
+    "selectEveryNth": 1,
+    "customWidth": 0,
+    "customHeight": 0,
+    "coreTrim": "source_video[:81]; does not pad or repeat",
+    "postResizeFHWC": [
+      "F<=81",
+      480,
+      832,
+      3
+    ],
+    "vaeInputBCTHW": [
+      1,
+      3,
+      "F",
+      480,
+      832
+    ],
+    "vaeLatentBCTHW": [
+      1,
+      16,
+      "1+(F-1)//4",
+      60,
+      104
+    ],
+    "patchHiddenBND": [
+      1,
+      "1560*(1+(F-1)//4)",
+      5120
+    ],
+    "ifExactly81Frames": {
+      "latentBCTHW": [
+        1,
+        16,
+        21,
+        60,
+        104
+      ],
+      "tokenCount": 32760,
+      "sourceId": 1
+    },
+    "caution": "VHS version, decoder frame selection/count, actual F, media dimensions and pixel content unverified"
+  },
+  "derivedReferences": {
+    "evidenceClass": "symbolic only; actual references absent; API prompt export unavailable",
+    "refMaxSize": 848,
+    "formulaScale": "s=min(848/max(H_i,W_i),1.0)",
+    "formulaH": "H_i_prime=max(16,round(H_i*s/16)*16)",
+    "formulaW": "W_i_prime=max(16,round(W_i*s/16)*16)",
+    "interpolation": "area",
+    "crop": "disabled",
+    "perImagePixelFHWC": [
+      1,
+      "H_i_prime",
+      "W_i_prime",
+      3
+    ],
+    "perImageLatentBCTHW": [
+      1,
+      16,
+      1,
+      "H_i_prime/8",
+      "W_i_prime/8"
+    ],
+    "perImageHiddenBND": [
+      1,
+      "(H_i_prime/16)*(W_i_prime/16)",
+      5120
+    ],
+    "wiredNodes": {
+      "24": {
+        "file": "0000.png",
+        "mode": 4,
+        "slot": 0
+      },
+      "25": {
+        "file": "0000.png",
+        "mode": 4,
+        "slot": 1
+      },
+      "26": {
+        "file": "0000.png",
+        "mode": 4,
+        "slot": 2
+      }
+    },
+    "slotFiles": [
+      "videoframe_80.png",
+      "00108-_lora_Ed Sheeran - SDXL - Trigger is Edsheeran person_.8_  Edsheeran person, film footage, a society where people can geneticall.png",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "resolutionRule": "A non-None wired jack overrides built-in slot; otherwise slot file is loaded, missing/unloadable slot skipped. Each batch frame in a selected reference becomes its own stream. mode4 execution cannot be established from raw backend source alone.",
+    "possibleSourceOrderIfOnlyTwoBuiltInRefsAndSourceVideo": [
+      "target(source_id=0)",
+      "sourceVideo(source_id=1)",
+      "image0(source_id=2)",
+      "image1(source_id=3)"
+    ],
+    "caution": "Do not infer three actual refs from serialized links or two actual refs merely from slot filenames. Source IDs enumerate actual packed context list; no reserved gap for missing reference_video."
+  },
+  "transformerCombinedProfile": {
+    "symbolicTotalN": "32760 + 1560*(1+(F-1)//4) + sum_i ((H_i_prime/16)*(W_i_prime/16))",
+    "ifSourceExactly81": "65520 + sum_i ((H_i_prime/16)*(W_i_prime/16))",
+    "hiddenBND": [
+      1,
+      "N_total",
+      5120
+    ],
+    "qkvBnHd": [
+      1,
+      "N_total",
+      40,
+      128
+    ],
+    "selfAttentionSemanticScoreDimensions": [
+      1,
+      40,
+      "N_total",
+      "N_total"
+    ],
+    "textInputBLD": [
+      1,
+      "L_original_unverified",
+      4096
+    ],
+    "textProjectedBLD": [
+      1,
+      "L_original_unverified",
+      5120
+    ],
+    "crossAttentionSemanticScoreDimensions": [
+      1,
+      40,
+      "N_total",
+      "L_original_unverified"
+    ],
+    "ffnActivationBNF": [
+      1,
+      "N_total",
+      13824
+    ],
+    "headAllTokensBN64": [
+      1,
+      "N_total",
+      64
+    ],
+    "headRetainedTargetBN64": [
+      1,
+      32760,
+      64
+    ],
+    "unpatchOutputBCTHW": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "sourceIdRule": "target 0, then actual ordered contexts i+1; source order source_video if present, reference_video if present, selected reference frame streams",
+    "implementationRule": "patch target and each context independently; concatenate along sequence N (not channels or temporal axis), run all 40 blocks on whole N_total; slice to main target only after head; unpatchify target; final crop original target shape",
+    "paddingRule": "target and source H60 W104 even; refs resize to 16px so latent H/W even; patch(1,2,2) adds no spatial/temporal padding for these shapes"
+  },
+  "unknowns": [
+    "Original ComfyUI/BerniniStudio/VHS/frontend installed versions",
+    "Original model mxfp8 bytes vs retained scaled FP8 equality",
+    "Both original LoRA files and exact key mapping/application behavior",
+    "132123.mp4 pixel content/decoded frames/aspect",
+    "0000.png and two built-in slot reference image contents, sizes and actual dispatch precedence",
+    "Exported API prompt resolving mode4 nodes",
+    "Actual tokenizer outputs L, conditional/negative embeddings",
+    "Original seed0 noise tensor bytes; dtype/device/RNG implementation",
+    "Any complete 81-frame end-to-end inference or original exported intermediate tensors"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "bernini-profile-report-verification/0.1",
+  "recordedAtUTC": "2026-11-01T20:16:58.605376+00:00",
+  "baselineCommit": "32547051af430281a610d8b514ff16abee457288",
+  "freshRootRecheck": "python development/ai-connection/original81-profile-comparison-20261102/holding-environment-recheck.py",
+  "exitCode": 0,
+  "freshNumericResultEqualsSavedAuditExceptRecordedAtUTC": true,
+  "savedAuditSHA256": "133380662e2d716484fdb3505b0bf9a0a2145b128c21b171f7a93f504aeeeae2",
+  "verification": {
+    "knownPublicFilesVerified": 69,
+    "binaryFilesVerified": 225,
+    "comparisonsRecalculated": 150,
+    "failedValues": 0,
+    "summaryReceiptMaximaMatch": true
+  },
+  "shapeArithmeticChecks": {
+    "targetLatentElements": 2096640,
+    "targetLatentF32Bytes": 8386560,
+    "targetTokenCount": 32760,
+    "sourceTokensIfF81": 32760,
+    "fullOriginalSequenceKnown": false,
+    "targetGoalCatalogRegistered": false
+  },
+  "independentReview": {
+    "status": "completed; two precision-of-wording comments applied",
+    "changes": [
+      "reference scale limited to <=1 does not exclude upward 16px rounding",
+      "original LoRA whole mapping is unknown; partial P4 does not reproduce original settings"
+    ]
+  },
+  "checks": {
+    "jsonParse": true,
+    "recheckPythonSyntax": true,
+    "localReportLinksExist": true,
+    "workflowExactBytesAndHash": true,
+    "originalSampleLocalVsFixedSourceDifference": "one trailing LF only; fixed source cited separately",
+    "csvLFExportPreservesAllCells": true
+  },
+  "newModelInferenceRuns": 0,
+  "newTextEncoderRuns": 0,
+  "newModelExports": 0,
+  "fullBerniniHashesRecomputed": 0,
+  "readiness": {
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY",
+    "generationReady": false
+  }
+}
