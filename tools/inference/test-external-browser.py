@@ -26,10 +26,10 @@ def main():
     const {port1,port2}=new MessageChannel();const unbind=bindInferencePort(port1,hub);let serial=0;const pending=new Map();port2.onmessage=({data:m})=>{const job=pending.get(m.id);if(!job)return;pending.delete(m.id);m.ok?job.resolve(m.result):job.reject(Error(m.error));};
     const rpc=(module,method,args)=>new Promise((resolve,reject)=>{const id=String(++serial);pending.set(id,{resolve,reject});port2.postMessage({apiVersion:'works-ai-1',id,module,method,args});});
     try{
-     await rpc('vae','configure',{manifest:vaeManifest,files:vaeFiles});const input=await decodeTensor(await document.querySelector('#vae-data').files[0].arrayBuffer());
+     await rpc('vae','configure',{manifest:vaeManifest,files:vaeFiles,diagnostics:true});const input=await decodeTensor(await document.querySelector('#vae-data').files[0].arrayBuffer());
      const encoded=await rpc('vae','encode',input);const restored=await rpc('vae','decode',encoded.tensor);
      const vaePass=encoded.tensor.meaning==='raw-posterior-mean'&&restored.tensor.shape.join(',')==='1,3,5,16,16';
-     await rpc('text_encoder','configure',{manifest:textManifest,files:textFiles});
+     await rpc('text_encoder','configure',{manifest:textManifest,files:textFiles,diagnostics:true});
      cancelAfterFirst=true;let cancelled=false;try{await rpc('text_encoder','encode',{text:'Hello world'});}catch(e){cancelled=e.message.toLowerCase().includes('cancel');}console.log('API cancelled '+cancelled);
      const result=await rpc('text_encoder','encode',{text:'Hello world'});
      let crossRejected=false;try{await rpc('vae','decode',result.tensor);}catch{crossRejected=true;}

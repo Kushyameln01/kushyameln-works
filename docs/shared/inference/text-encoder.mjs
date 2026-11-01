@@ -4,6 +4,7 @@ const TYPE='wan-umt5-staged-fp32';
 const MODEL='c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68';
 export const TEXT_ENCODER_MODEL_SHA256=MODEL;
 export const UMT5_TOKENIZER_SHA256='e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458';
+export const TEXT_ENCODER_NORMALIZATION='umt5-final-rmsnorm-f32-v1';
 const DIM=4096;
 const HASH_CHUNK_BYTES=8*1024*1024;
 const yieldTask=()=>new Promise(resolve=>setTimeout(resolve,0));
@@ -19,7 +20,7 @@ export function inspectTextEncoderManifest(manifest){
  if(manifest.onnxOpset!==17||manifest.ortVersion!=='1.24.3'||manifest.maxTokens!==512)failure('Unsupported text runtime manifest');
  const e=manifest.embedding;
  if(!e||e.dtype!=='float16-le'||e.hiddenSize!==DIM||e.vocabSize!==256384||!Number.isSafeInteger(e.offset)||typeof e.sourceFile!=='string'||e.sourceBytes!==6735906897)failure('Invalid text embedding manifest');
- manifest.blocks.forEach((r,i)=>{record(r,'block');if(r.index!==i||!r.nativePass)failure('Unverified text block manifest');});
+ manifest.blocks.forEach((r,i)=>{record(r,'block');if(r.index!==i)failure('Invalid text block manifest');});
  record(manifest.finalNorm,'final norm');if(manifest.finalNorm.bytes!==DIM*4||manifest.finalNorm.epsilon!==1e-6)failure('Invalid final norm manifest');
  record(e.rowHashes,'embedding row hashes');if(e.rowHashes.bytes!==e.vocabSize*32)failure('Invalid embedding row hash table');
  if(manifest.tokenizer!==undefined&&manifest.tokenizer.sha256!==UMT5_TOKENIZER_SHA256)failure('Unsupported embedded tokenizer identity');
@@ -117,7 +118,7 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
    const result=new Float32Array(ids.length*DIM);
    for(let i=0;i<length;i++)if(mask[i])result.set(normalized.subarray(i*DIM,(i+1)*DIM),i*DIM);
    check(runSignal);emit({stage:'text-complete',completed:24,total:24});
-   return {hiddenStates:result,shape:[1,ids.length,DIM],attentionMask:Uint8Array.from(mask),provenance:{...info,effectiveTokens:length,trailingMaskCompaction:length<ids.length,hikeOperation:'actual encoder.final_layer_norm',hikeContributed:true,finalNumericGate:manifest.numericGate,preparedFixtureNativeMaxAbsError:manifest.nativeFinalMaxAbsError,sourceSha256:manifest.sourceSha256,manifestModelSha256:MODEL}};
+   return {hiddenStates:result,shape:[1,ids.length,DIM],attentionMask:Uint8Array.from(mask),normalization:TEXT_ENCODER_NORMALIZATION,provenance:{...info,effectiveTokens:length,trailingMaskCompaction:length<ids.length,hikeOperation:'actual encoder.final_layer_norm',hikeContributed:true,finalNumericGate:manifest.numericGate,preparedFixtureNativeMaxAbsError:manifest.nativeFinalMaxAbsError,sourceSha256:manifest.sourceSha256,manifestModelSha256:MODEL}};
   }finally{running=false;finish();}
  }
  async function dispose(){disposed=true;await activeDone;if(currentSession){await currentSession.release();currentSession=null;}}

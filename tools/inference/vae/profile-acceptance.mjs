@@ -24,7 +24,7 @@ export async function runApiProbe(){
   }
  }});
  try{
-  api.vae.configure(config);
+  api.vae.configure({...config,diagnostics:true});
   const running=api.vae.encode(input);
   let busyRejected=false;
   try{await api.vae.encode(input);}catch(error){busyRejected=/busy/.test(String(error));}

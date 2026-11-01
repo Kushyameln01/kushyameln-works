@@ -55,7 +55,7 @@ run.addEventListener('click',async()=>{
    validateVaeRequest({operation,tensor:inputTensor,manifest});
    input=inputTensor;
   }
-  const output=await client.run({module:mode,operation,manifest,files,input});if(rev!==revision)return;
+  const output=await client.run({module:mode,operation,manifest,files,input,diagnostics:true});if(rev!==revision)return;
   result=output;status.textContent='完了';$('#output').textContent=`${output.tensor.meaning}\nshape [${output.tensor.shape.join(', ')}]\n${output.tensor.data.byteLength.toLocaleString()} bytes`;
   $('#evidence').textContent=JSON.stringify(output.evidence,null,2);save.disabled=false;
  }catch(e){if(rev===revision)status.textContent=e.message;}

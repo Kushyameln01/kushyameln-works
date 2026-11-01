@@ -12,6 +12,10 @@ export function snapshotTensorMetadata(t){
  const normalization=t.normalization;
  if(normalization!==undefined&&(['raw-posterior-mean','wan21-raw-generated-sample:v1'].includes(t.meaning)||(t.meaning==='wan21-normalized-posterior-mean:v1'&&normalization!=='wan21-comfy-f32-v1')))throw TypeError('Latent normalization marker contradicts its declared meaning');
  if(t.meaning==='wan21-normalized-posterior-mean:v1'&&normalization!==undefined)result.normalization=normalization;
+ if(normalization!==undefined&&(t.meaning==='text_hidden_states'||normalization==='umt5-final-rmsnorm-f32-v1')){
+  if(t.dtype!=='float32'||t.layout!=='BLC'||t.meaning!=='text_hidden_states'||normalization!=='umt5-final-rmsnorm-f32-v1')throw TypeError('Text normalization marker contradicts its declared tensor');
+  result.normalization=normalization;
+ }
  if(t.modelSha256!==undefined)digestId(t.modelSha256,'model');
  if(t.tokenizerSha256!==undefined){
   if(t.layout!=='BLC'||t.meaning!=='text_hidden_states')throw TypeError('Tokenizer binding requires text conditioning');
@@ -43,17 +47,27 @@ function shapeLength(shape){
  let n=1;for(const dim of shape){if(!Number.isSafeInteger(dim)||dim<1)throw RangeError('tensor dimension');n*=dim;if(!Number.isSafeInteger(n))throw RangeError('tensor size');}return n;
 }
 function text(v,name){if(typeof v!=='string'||!v||v.length>256)throw TypeError(name);return v;}
-export function requireTensor(t,expected={}){
- const Type=TYPES[t?.dtype];if(!Type||!(t.data instanceof Type))throw TypeError('tensor dtype/data mismatch');
- new Uint8Array(t.data.buffer,0,0);
- if(t.data.length!==shapeLength(t.shape))throw RangeError('tensor shape/data mismatch');
+export function requireTensorDescriptor(t,expected={}){
+ if(!TYPES[t?.dtype])throw TypeError('tensor dtype');
+ shapeLength(t.shape);
  text(t.layout,'tensor layout');text(t.meaning,'tensor meaning');
- if(t.dtype==='float32')for(const v of t.data)if(!Number.isFinite(v))throw RangeError('nonfinite tensor');
  if(t.attentionMask!==undefined){if(t.layout!=='BLC'||t.shape.length!==3||t.shape[0]!==1||t.attentionMask.length!==t.shape[1]||Array.from(t.attentionMask).some(v=>v!==0&&v!==1))throw TypeError('Invalid tensor attention mask');}
  snapshotTensorMetadata(t);
  for(const key of ['dtype','layout','meaning'])if(expected[key]!==undefined&&t[key]!==expected[key])throw TypeError('Tensor '+key+' cannot connect to this operation');
  if(expected.shape&&JSON.stringify(t.shape)!==JSON.stringify(expected.shape))throw RangeError('Tensor shape cannot connect to this profile');
  return t;
+}
+export function requireTensor(t,expected={}){
+ const Type=TYPES[t?.dtype];if(!Type||!(t.data instanceof Type))throw TypeError('tensor dtype/data mismatch');
+ new Uint8Array(t.data.buffer,0,0);
+ requireTensorDescriptor(t,expected);
+ if(t.data.length!==shapeLength(t.shape))throw RangeError('tensor shape/data mismatch');
+ if(t.dtype==='float32')for(const v of t.data)if(!Number.isFinite(v))throw RangeError('nonfinite tensor');
+ return t;
+}
+export function describeTensor(t){
+ requireTensor(t);
+ return {dtype:t.dtype,shape:[...t.shape],layout:t.layout,meaning:t.meaning,...(t.modelSha256!==undefined?{modelSha256:t.modelSha256}:{}),...(t.attentionMask!==undefined?{attentionMask:Uint8Array.from(t.attentionMask)}:{}),...snapshotTensorMetadata(t)};
 }
 async function hash(bytes){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');}
 export async function encodeTensor(t){

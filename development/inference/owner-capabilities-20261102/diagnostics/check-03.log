@@ -1,0 +1,20 @@
+✔ legacy fixture from the published baseline retains byte-identical serialization (10.892472ms)
+✔ conditioning retains encoder, tokenizer, mask and owned payload through the existing codec (2.858238ms)
+✔ Diffusion conditioning storage wrapper retains the supplied tokenizer identity and rejects a conflicting one (6.340267ms)
+✔ generated sample keeps its separate VAE binding, producer hashes and original frame mapping on disk (4.659304ms)
+✔ serialization snapshots identity, shape, mask and new metadata before asynchronous hashing (1.531464ms)
+✔ malformed new identity/context metadata is rejected rather than silently discarded (4.26836ms)
+✔ saving cannot erase a contradictory raw or normalized latent marker (0.39227ms)
+✔ sparse frame indices or timestamps are rejected before creating an unreadable file (0.389262ms)
+✔ existing 128-element Diffusion mean Hike round-trip preserves context as an owned copy (5.570007ms)
+✔ Text input modes are explicit and token IDs retain caller-specified internal mask positions (0.765962ms)
+✔ VAE factory dispatches generated sample without relabeling provenance or applying normalization (2.470113ms)
+✔ explicit MessagePort reply transfers ownership while retaining the context mapping (37.009205ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 87.540103

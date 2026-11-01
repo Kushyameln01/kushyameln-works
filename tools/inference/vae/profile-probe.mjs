@@ -18,7 +18,7 @@ self.onmessage=async({data:{manifest,files,gate}})=>{
   hike=await createHike(kernel);
   const realOrt={env:ort.env,Tensor:ort.Tensor,InferenceSession:{create:async(...args)=>{
    const session=await ort.InferenceSession.create(...args);sessions.created++;sessions.active++;
-   return{run:async(...inputs)=>{sessions.runCalls++;return session.run(...inputs);},release:async()=>{await session.release();sessions.released++;sessions.active--;}};
+   return{inputMetadata:session.inputMetadata,outputMetadata:session.outputMetadata,run:async(...inputs)=>{sessions.runCalls++;return session.run(...inputs);},release:async()=>{await session.release();sessions.released++;sessions.active--;}};
   }}};
   const read=async descriptor=>{
    const file=files.get(descriptor.file);if(!file)throw Error('Missing reference '+descriptor.file);
