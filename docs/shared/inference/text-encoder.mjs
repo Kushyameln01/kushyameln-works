@@ -1,9 +1,12 @@
 /** Actual staged Wan UMT5 encoder. CPU WASM only; FP32 prepared diagnostics. */
+import {Sha256} from '../vr180/sha256.mjs';
 const TYPE='wan-umt5-staged-fp32';
 const MODEL='c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68';
 export const TEXT_ENCODER_MODEL_SHA256=MODEL;
 export const UMT5_TOKENIZER_SHA256='e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458';
 const DIM=4096;
+const HASH_CHUNK_BYTES=8*1024*1024;
+const yieldTask=()=>new Promise(resolve=>setTimeout(resolve,0));
 const HEX=/^[0-9a-f]{64}$/;
 const failure=(message)=>{throw new Error(message);};
 const checkSignal=(signal)=>{if(signal?.aborted)throw signal.reason??new DOMException('Aborted','AbortError');};
@@ -32,6 +35,7 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
  if(!ort.env?.wasm)failure('ORT WASM environment required');
  ort.env.wasm.numThreads=1;
  let disposed=false,running=false,currentSession=null,activeDone=Promise.resolve();
+ const check=(s)=>{checkSignal(signal);checkSignal(s);if(disposed)failure('Text encoder disposed');};
  const get=(path)=>files.get(path)??failure(`Missing text model file: ${path}`);
  function size(file){return file instanceof Uint8Array?file.byteLength:file.size;}
  async function read(path,start=0,length){
@@ -39,9 +43,16 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
   if(!Number.isSafeInteger(start)||start<0||end>size(f))failure(`Invalid text file range: ${path}`);
   return f instanceof Uint8Array?f.slice(start,end):new Uint8Array(await f.slice(start,end).arrayBuffer());
  }
- async function verified(r){
+ async function verified(r,runSignal){
+  check(runSignal);
   if(size(get(r.path))!==r.bytes)failure(`Text file size mismatch: ${r.path}`);
-  const bytes=await read(r.path);if(await sha256(bytes)!==r.sha256)failure(`Text file hash mismatch: ${r.path}`);return bytes;
+  const bytes=await read(r.path);check(runSignal);const hash=new Sha256();
+  // Views keep the required full model buffer without a whole-input WebCrypto snapshot.
+  for(let offset=0;offset<bytes.byteLength;offset+=HASH_CHUNK_BYTES){
+   check(runSignal);hash.update(bytes.subarray(offset,Math.min(offset+HASH_CHUNK_BYTES,bytes.byteLength)));
+   await yieldTask();check(runSignal);
+  }
+  if(hash.digestHex()!==r.sha256)failure(`Text file hash mismatch: ${r.path}`);return bytes;
  }
  const source=manifest.embedding;
  if(size(get(source.sourceFile))!==source.sourceBytes)failure('Original UMT5 source size mismatch');
@@ -50,7 +61,6 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
  const rowHashes=await verified(source.rowHashes);
  checkSignal(signal);
  onProgress?.({stage:'text-ready',blocks:24});
- const check=(s)=>{checkSignal(signal);checkSignal(s);if(disposed)failure('Text encoder disposed');};
  function half(u){
   const sign=(u&32768)?-1:1,exponent=(u>>>10)&31,fraction=u&1023;
   return exponent===0?sign*fraction*2**-24:exponent===31?(fraction?NaN:sign*Infinity):sign*(1+fraction/1024)*2**(exponent-15);
@@ -84,8 +94,9 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
   try{
    let hidden=await embeddings(effectiveIds);check(runSignal);emit({stage:'text-embedding',effectiveTokens:length,outputTokens:ids.length});
    for(const b of manifest.blocks){
-    check(runSignal);let bytes=await verified(b);check(runSignal);
-    currentSession=await ort.InferenceSession.create(bytes,{executionProviders:['wasm']});bytes=null;
+    check(runSignal);let bytes=await verified(b,runSignal);check(runSignal);
+    // One-use staged sessions avoid an additional prepacked weight buffer.
+    currentSession=await ort.InferenceSession.create(bytes,{executionProviders:['wasm'],extra:{session:{disable_prepacking:'1'}}});bytes=null;
     let hiddenInput,maskInput,result;
     try{
      check(runSignal);

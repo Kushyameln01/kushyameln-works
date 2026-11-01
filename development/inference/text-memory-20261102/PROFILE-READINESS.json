@@ -1,0 +1,298 @@
+{
+  "schemaVersion": "works-text-memory-profile-readiness/0.1",
+  "updatedAtUTC": "2026-11-01T16:37:05.002406+00:00",
+  "scope": "Delta and exact-input readiness only; references existing profile inventory without rebuilding it.",
+  "documentationBaselineCommit": "a42ad61a7f56667ceefb4f21a9aacde859e00538",
+  "peerReceipts": "PEER-RECEIPTS.json",
+  "sourceBasis": "../p2-p3-acceptance/p6/requirements.json",
+  "existingAcceptedProfiles": {
+    "referencesOnly": [
+      "wan21-raw-f32-5x16x16",
+      "wan21-raw-f32-1x16x16",
+      "wan21-raw-f32-1x16x32"
+    ],
+    "inventory": "../connection/PROFILES.md",
+    "squareAcceptance": "../vae-v1/RESULT.md",
+    "rectangleAcceptance": "../e6/RESULT.md",
+    "policy": "Reuse original accepted diagnostic evidence and bundles; no re-export/re-inventory or general media/sample acceptance."
+  },
+  "workflowGrid": {
+    "existingConfigurationDerivedCandidate": {
+      "batch": 1,
+      "width": 832,
+      "height": 480,
+      "frames": 81,
+      "outputFps": 16,
+      "rgbNCTHW": [
+        1,
+        3,
+        81,
+        480,
+        832
+      ],
+      "latentNCTHW": [
+        1,
+        16,
+        21,
+        60,
+        104
+      ],
+      "status": "CONFIGURATION_DERIVED_REQUIREMENT_NOT_MEDIA_OR_PROFILE_ACCEPTANCE"
+    },
+    "actualMediaOrSlotShapeObserved": null,
+    "automaticExportAuthorization": false
+  },
+  "requiredMediaReceiptFields": [
+    "role and inputId/slotId; wired or editor source, slot mode/order and selected context association",
+    "retrievable original file/reference, complete byteLength and SHA256; filenames alone are insufficient",
+    "decoded frame count and orientation-corrected F/H/W, rotation/EXIF, alpha/color metadata",
+    "sourceFrameIndices in actual order including duplicates, and supplied sourceFrameTimesSeconds with the same length",
+    "preprocessing node/source commit, exact parameters, interpolation/crop/rounding policy",
+    "resulting exact preprocessed RGB F/H/W and payload hash, with original-to-processed frame/context binding"
+  ],
+  "roleReadiness": [
+    {
+      "role": "source_video_context_encode",
+      "status": "BLOCKED_PRECISE_MEDIA_RECEIPT",
+      "actualOriginalFile": null,
+      "originalByteLength": null,
+      "originalSHA256": null,
+      "actualDecodedFHW": null,
+      "actualSlotBindings": null,
+      "preprocessingSourceAndParameters": null,
+      "preprocessedRgbFHW": null,
+      "preprocessedPayloadSHA256": null,
+      "sourceFrameIndices": null,
+      "sourceFrameTimesSeconds": null,
+      "matchingAcceptedProfile": null,
+      "dependentProfileExport": "BLOCKED",
+      "missingInputOwner": "management",
+      "reason": "Latest acquired peer documents/comments contain no actual media/slot/preprocessing receipt for this role. Preserve existing P6 unknowns."
+    },
+    {
+      "role": "reference_video_context_encode",
+      "status": "BLOCKED_PRECISE_MEDIA_RECEIPT",
+      "actualOriginalFile": null,
+      "originalByteLength": null,
+      "originalSHA256": null,
+      "actualDecodedFHW": null,
+      "actualSlotBindings": null,
+      "preprocessingSourceAndParameters": null,
+      "preprocessedRgbFHW": null,
+      "preprocessedPayloadSHA256": null,
+      "sourceFrameIndices": null,
+      "sourceFrameTimesSeconds": null,
+      "matchingAcceptedProfile": null,
+      "dependentProfileExport": "BLOCKED",
+      "missingInputOwner": "management",
+      "reason": "Latest acquired peer documents/comments contain no actual media/slot/preprocessing receipt for this role. Preserve existing P6 unknowns."
+    },
+    {
+      "role": "reference_image_or_editor_slot_context_encode",
+      "status": "BLOCKED_PRECISE_MEDIA_RECEIPT",
+      "actualOriginalFile": null,
+      "originalByteLength": null,
+      "originalSHA256": null,
+      "actualDecodedFHW": null,
+      "actualSlotBindings": null,
+      "preprocessingSourceAndParameters": null,
+      "preprocessedRgbFHW": null,
+      "preprocessedPayloadSHA256": null,
+      "sourceFrameIndices": null,
+      "sourceFrameTimesSeconds": null,
+      "matchingAcceptedProfile": null,
+      "dependentProfileExport": "BLOCKED",
+      "missingInputOwner": "management",
+      "reason": "Latest acquired peer documents/comments contain no actual media/slot/preprocessing receipt for this role. Preserve existing P6 unknowns."
+    }
+  ],
+  "p5GeneratedDecode": {
+    "status": "BLOCKED_P5_ACTUAL_PRODUCER_RESTORE_AND_EXACT_PROFILE",
+    "actualSampleArtifact": null,
+    "actualSampleShape": null,
+    "actualProducerExecutionSource": null,
+    "actualProducerModelSHA256s": null,
+    "diffusionRestorationReceipt": null,
+    "matchingAcceptedDecoderProfile": null,
+    "nativeContractAvailable": true,
+    "realGeneratedProducerAccepted": false,
+    "nativeTensorRequirements": {
+      "dtype": "float32",
+      "layout": "NCTHW",
+      "meaning": "wan21-raw-generated-sample:v1",
+      "data": "Finite Float32Array, exact configured manifest.profile.latentShape and element count. No global RGB value-range constraint.",
+      "shape": "Exact manifest.profile.latentShape; no inferred numeric shape for missing actual sample.",
+      "modelSha256": "Optional native field. If supplied, retain actual generation provenance and require membership in producerModelSha256s. Do not inject or replace with decoder VAE hash.",
+      "normalization": "Top-level field must be absent. Do not set normalized, restored or notnormalized as a top-level marker.",
+      "latentContract": {
+        "schemaVersion": 1,
+        "representation": "generated-sample",
+        "space": "raw",
+        "vaeModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "producerModelSha256s": "Nonempty unique lowercase64-hex list of actual producer models, excluding decoder VAE.",
+        "normalization": {
+          "id": "wan21-comfy-f32-v1",
+          "state": "restored",
+          "owner": "diffusion_models"
+        }
+      },
+      "context": "Optional native context. If supplied, preserve validated source identity, ordered sourceFrameIndices and optional matching finite nonnegative times; do not require count=latent T."
+    },
+    "nativeProfileRequirements": {
+      "definition": "Current fixed raw NCTHW profile with posterior=mean/opset17; generated-sample decode uses its exact latent/video shapes without relabeling the input as posterior mean.",
+      "model": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "assets": "Configured manifest/graph/conv2 files with actual bytes/SHA256; unchanged validated single-thread ORT WASM contract.",
+      "exporterShapeRule": "N=1,F=4n+1,H/W>=16 and multiples16. Native manifest structural spatial alignment is8; neither rule accepts arbitrary exact shapes."
+    },
+    "outerEvidenceRequirements": [
+      "Actual P5 source/build/graph/precision, operation, all used producer hashes and HIGH/LOW/LoRA/scheduler/noise execution trace.",
+      "Original normalized sample artifact and Diffusion-owned restore operation/build/kernel/normalization definition, before/after full-file and payload SHA256, numeric independent reference/predeclared gate/receipt, and single-restoration trace.",
+      "Native raw artifact/latentContract, exact decoder profile/model/manifest/graph/asset hashes, actual decode input/output payload/file hashes, independent all-RGB comparison/gate and lifecycle/resource receipts.",
+      "Management job/session/inputRevision, queue/resource ownership, ordered contexts/slot/source-frame/times and shared positive/negative references, outer snapshot/evidence/trace and E4 save/readback."
+    ],
+    "evidenceImplementationLimit": "runVae returns inputMeaning/inputModelSha256/latentContract/assetHashes and normalizationApplied:false; it does not calculate an input-payload hash. Bind payload hashes in outer receipts/trace instead of claiming a native automatic hash field.",
+    "fixtureBoundary": "vae-api capabilities declares declaredOnly:true and realGenerationVerified:false. test-api generated samples use synthetic zero tensor and repeated-digit producer hashes; boundary fixture acceptance is not actual P5 producer/restoration/decode acceptance.",
+    "restorationOwner": "diffusion_models",
+    "vaeRestorationApplied": false,
+    "managementPersistenceOwner": "management"
+  },
+  "nextPriorities": [
+    {
+      "priority": 1,
+      "task": "Receive actual994ebb native local/composed all25-cut comparisons and resource receipts against the frozen f76 cohort and pre-runtime independent references; then coordinate management dispatch/cancel/save acceptance. Do not replace input with new Text memory result.",
+      "owner": "diffusion_models then management",
+      "status": "CONSUMER_RUNTIME_IN_PROGRESS",
+      "notBlockedByMissingVaeMediaProfile": true
+    },
+    {
+      "priority": 2,
+      "task": "Obtain exact source/reference/slot media receipts and original role-specific preprocessing before deciding which profile is missing.",
+      "owner": "management",
+      "status": "WAITING_PRECISE_INPUTS"
+    },
+    {
+      "priority": 3,
+      "task": "For an actual missing exact shape only, fix original VAE source/model, independent reference, prior numerical gate and resource budget before a separate authorized profile export/validation.",
+      "owner": "VAE/Text with management input",
+      "status": "BLOCKED_ON_MEDIA_AND_SHAPE"
+    },
+    {
+      "priority": 4,
+      "task": "Receive actual P5 generated sample and Diffusion restoration receipt, then bind its exact decoder profile and management storage.",
+      "owner": "Diffusion producer then VAE consumer and management",
+      "status": "BLOCKED_P5_INPUTS"
+    }
+  ],
+  "unblockedExistingWork": "Original P2 evidence remains accepted in its original scope. The separate Text memory run eab4fab has its own SUMMARY/handoff; neither its new bytes nor memory/numeric result updates peer994ebb frozen f76 P4 input or unknown media/P5 profile acceptance.",
+  "implicitChangesForbidden": [
+    "guess exact F/H/W from workflow grid/filename/ref_max_size or aspect-ratio category",
+    "resize/pad/repeat/drop frames to fit accepted diagnostic profiles",
+    "manifest-only shape edits or producer/decoder hash replacement",
+    "mean/sample relabeling or VAE-side second restoration",
+    "reuse old diagnostic gates automatically for new exact profiles"
+  ],
+  "operationsThisDocument": {
+    "newNN": 0,
+    "profileExport": 0,
+    "nativeModuleImport": 0,
+    "newDecode": 0,
+    "mediaProbe": 0,
+    "profileInventoryRepeated": false,
+    "externalSend": 0
+  },
+  "generationReady": false,
+  "l512ConsumerRuntimeReadiness": {
+    "status": "CONSUMER_RUNTIME_IN_PROGRESS",
+    "ownerReplyURL": "https://github.com/Kushyameln01/kushyameln-works/pull/15#issuecomment-6560578159",
+    "runtimeSource": "994ebb9ce01c9e95db9cd18eb877a981152693c5",
+    "runtimeEntrypoint": "docs/shared/diffusion-models/diagnostics/p4-real-text-l512/run.mjs",
+    "driver": "tools/diffusion-models/p4-real-text-l512-browser.py",
+    "profileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+    "scope": "Fixed N2/block0, HIGH schedule1 and LOW3 separately, base with original real f76 L512; not actual HIGH-to-LOW.",
+    "runtimeStartedReportedByOwner": true,
+    "runtimeCompleted": null,
+    "nativeNumericalComparisonReceiptReceived": false,
+    "numericalAcceptance": "NOT_VERIFIED",
+    "resourceAcceptance": "NOT_VERIFIED",
+    "inputFreezeURL": "https://github.com/Kushyameln01/kushyameln-works/blob/994ebb9ce01c9e95db9cd18eb877a981152693c5/development/ai-connection/p4-real-text-l512/reference/input-freeze.json",
+    "originalPacketDistribution": "f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48",
+    "originalProducerExecution": "5537b8932343aa2476b95191817e8913f99dab02",
+    "originalWktSHA256": "90f9aed262027c5a273a71e2601a953a49d4e55593b34310565cfcd112fc95c9",
+    "originalPayloadSHA256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+    "originalMaskSHA256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62",
+    "nativeJSON": {
+      "byteLength": 8604657,
+      "sha256": "9cbbdace203ea996d9dd6afc1a8ae832f4b68c2bf1fc54306b9f944f818bd6a8",
+      "ownerReportsF32PayloadBitPreserved": true,
+      "ownerReportsMaskBitPreserved": true,
+      "ownerReportsNativeMetadataAndHeaderPreserved": true,
+      "privateJSONFetchedThisReview": false
+    },
+    "all512RowsAndMaskPreserved": true,
+    "maskUsedAsMetadataOnly": true,
+    "textFinalRMSNormReapplied": false,
+    "referenceExecutionSourceReportedByOwner": "741f1abe675eda328c7e65bb4e5903885be9ac22",
+    "independentOracleSHA256": "66ded34a4bb74d261b81484bf2abd2d9ee75b0e4cf82ce6a063e02237a7a7ecf",
+    "composedReferenceBeforeRuntime": {
+      "HIGH": {
+        "mode": "COMPOSED_BEFORE_RUNTIME",
+        "cutCount": 25,
+        "elements": 15927296,
+        "arrayBytes": 63709184,
+        "referenceManifestSHA256": "8dd640f0cbf127c149903eec558ea2a5b804a5bc0a4533dab67ae54da86ec97d",
+        "referenceManifestBytes": 33587,
+        "receiptURL": "https://github.com/Kushyameln01/kushyameln-works/blob/994ebb9ce01c9e95db9cd18eb877a981152693c5/development/ai-connection/p4-real-text-l512/reference/high-composed-receipt.json",
+        "receiptFileSHA256": "277dcccab03492d314c2b9fc44329bc79fdf0375a5b9a35b247333c73932b6e9",
+        "referenceManifestAndPrivateArraysFetchedThisReview": false,
+        "realTextJointAcceptance": false
+      },
+      "LOW": {
+        "mode": "COMPOSED_BEFORE_RUNTIME",
+        "cutCount": 25,
+        "elements": 15927296,
+        "arrayBytes": 63709184,
+        "referenceManifestSHA256": "530746b1e2d59d0c9cbe82e1ddad6d743ae32eb8fd7029f56cca694b57672be7",
+        "referenceManifestBytes": 33586,
+        "receiptURL": "https://github.com/Kushyameln01/kushyameln-works/blob/994ebb9ce01c9e95db9cd18eb877a981152693c5/development/ai-connection/p4-real-text-l512/reference/low-composed-receipt.json",
+        "receiptFileSHA256": "a612407315cee202da1217b4e461f9efad13b290d7fd57fe80361fb115751300",
+        "referenceManifestAndPrivateArraysFetchedThisReview": false,
+        "realTextJointAcceptance": false
+      }
+    },
+    "preRuntimeReferenceFreeze": {
+      "sha256ReportedByOwner": "3982b57a4cc2cebedc83d1d90cdaf31e5f6f414a46e5f711a23717337fea935c",
+      "separateFreezeFileFetchedThisReview": false,
+      "driverStaticReview": "verify_composed_freeze requires both sides/source/input identities/manifest proofs before first Chromium native owner."
+    },
+    "candidatePlanSHA256": "051b6833be54aed9e1e0c3657bd28aa926b46c238a1c3a06fb298f6cc6427600",
+    "gates": {
+      "localCut": {
+        "abs": 0.001,
+        "rel": 0.0001
+      },
+      "composed": {
+        "abs": 0.01,
+        "rel": 0.001
+      },
+      "rule": "abs(actual-reference) <= abs + rel*abs(reference); all values, no percentile pass"
+    },
+    "localReferenceAndAllValueComparison": "Pending after runtime; unchanged independent oracle and predeclared gate. Composed identities are before-runtime reference evidence, not native comparison success.",
+    "plannedMeasuredResourceCategories": [
+      "copy/staging/live spans",
+      "WASM capacity",
+      "session/read lease",
+      "RSS/PSS/cgroup/time"
+    ],
+    "completedResourceReceiptReceived": false,
+    "fullPipelinePeak": null,
+    "sourceReviewOnly": true
+  },
+  "separateNewTextMemoryResult": {
+    "executionSource": "eab4fabfadd133cc97434eed28ea998dca6795c2",
+    "handoff": "runs/incremental/conditioning-handoff.json",
+    "wholeWktSHA256": "ed9bb076172a9529e99594987a966646e70e48dd363a2584206d5ccc740552d3",
+    "payloadSHA256": "6bb54eb36f06802f6ffa0b59edc2d515f24b5d40993a08a587348d9ee6537386",
+    "usedAsCurrentPeerP4Input": false,
+    "policy": "Separate Text memory result. Do not replace the frozen f76 input/reference cohort of peer994ebb; new input adoption requires a separate owner binding and gate/reference receipt."
+  }
+}

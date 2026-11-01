@@ -12,7 +12,8 @@ test('incomplete or wrong-model manifests are rejected before any model session'
 });
 
 // Lifecycle tests use a tiny ORT double; numeric model validation is separate.
-import {webcrypto} from 'node:crypto';
+import {createHash,webcrypto} from 'node:crypto';
+import {Sha256} from '../../../docs/shared/vr180/sha256.mjs';
 if(!globalThis.crypto)globalThis.crypto=webcrypto;
 const digest=async b=>Buffer.from(await crypto.subtle.digest('SHA-256',b)).toString('hex');
 async function fixture(){
@@ -51,4 +52,60 @@ test('corrupted requested embedding rows fail before ORT execution',async()=>{
  const ort={env:{wasm:{}},Tensor:class{},InferenceSession:{create:async()=>{runs++;}}};
  const e=await module.loadTextEncoder({manifest,files,ort,hike:{rmsNorm(){}}});
  await assert.rejects(e.run({tokenIds:[1],attentionMask:[1]}),/row hash mismatch/);assert.equal(runs,0);await e.dispose();
+});
+
+// Non-neural hash integration: actual File/Blob reads and actual SHA algorithms;
+// ORT stops at a sentinel before parsing any synthetic graph/model bytes.
+const HASH_CHUNK_BYTES=8*1024*1024;
+async function hashFixture({corrupt=false}={}){
+ const {manifest,files}=await fixture(),block=new Uint8Array(9*1024*1024);
+ for(let i=0;i<block.length;i++)block[i]=(i*13+17)%251;
+ const expected=createHash('sha256').update(block).digest('hex');
+ if(corrupt)block[block.length-1]^=1;
+ const file=new Blob([block]);
+ for(const record of manifest.blocks){record.bytes=block.length;record.sha256=expected;files.set(record.path,file);}
+ return {manifest,files,expected};
+}
+function rejectLargeWebCrypto(){
+ const real=crypto.subtle.digest;
+ crypto.subtle.digest=function(algorithm,bytes){assert.ok(bytes.byteLength<=HASH_CHUNK_BYTES,'whole-file WebCrypto snapshot forbidden');return real.call(this,algorithm,bytes);};
+ return ()=>{crypto.subtle.digest=real;};
+}
+function hashStopOrt(onCreate){return {env:{wasm:{}},Tensor:class{},InferenceSession:{create:async bytes=>onCreate(bytes)}};}
+test('9MiB graph verifies every byte through <=8MiB views without a whole WebCrypto snapshot',async()=>{
+ const {manifest,files,expected}=await hashFixture(),restore=rejectLargeWebCrypto(),realUpdate=Sha256.prototype.update;
+ const chunks=[],bufferIds=new WeakMap();let nextBufferId=0,created=0,e;
+ const id=buffer=>{if(!bufferIds.has(buffer))bufferIds.set(buffer,++nextBufferId);return bufferIds.get(buffer);};
+ Sha256.prototype.update=function(bytes){if(bytes.buffer.byteLength===9*1024*1024)chunks.push({bytes:bytes.byteLength,offset:bytes.byteOffset,bufferId:id(bytes.buffer)});return realUpdate.call(this,bytes);};
+ const stop=new Error('ORT sentinel after hash');
+ try{
+  const ort=hashStopOrt(bytes=>{created++;assert.equal(bytes.byteLength,9*1024*1024);assert.equal(createHash('sha256').update(bytes).digest('hex'),expected);assert.deepEqual(chunks,[{bytes:HASH_CHUNK_BYTES,offset:0,bufferId:id(bytes.buffer)},{bytes:1024*1024,offset:HASH_CHUNK_BYTES,bufferId:id(bytes.buffer)}]);throw stop;});
+  e=await module.loadTextEncoder({manifest,files,ort,hike:{rmsNorm(){}}});
+  await assert.rejects(e.run({tokenIds:[1],attentionMask:[1]}),error=>error===stop);assert.equal(created,1);
+ }finally{Sha256.prototype.update=realUpdate;restore();await e?.dispose();}
+});
+test('a corrupt final graph byte fails manifest SHA before any ORT create',async()=>{
+ const {manifest,files}=await hashFixture({corrupt:true}),restore=rejectLargeWebCrypto();let created=0,e;
+ try{
+  e=await module.loadTextEncoder({manifest,files,ort:hashStopOrt(()=>{created++;throw Error('must not create');}),hike:{rmsNorm(){}}});
+  await assert.rejects(e.run({tokenIds:[1],attentionMask:[1]}),/Text file hash mismatch: block0/);assert.equal(created,0);
+ }finally{restore();await e?.dispose();}
+});
+test('run cancellation delivered at an incremental hash task yield stops before the next chunk and ORT',async()=>{
+ const {manifest,files}=await hashFixture(),controller=new AbortController(),restore=rejectLargeWebCrypto(),realUpdate=Sha256.prototype.update;
+ let created=0,graphUpdates=0,e;
+ Sha256.prototype.update=function(bytes){const value=realUpdate.call(this,bytes);if(bytes.buffer.byteLength===9*1024*1024&&++graphUpdates===1)setTimeout(()=>controller.abort(new Error('cancel during hash')),0);return value;};
+ try{
+  e=await module.loadTextEncoder({manifest,files,ort:hashStopOrt(()=>{created++;throw Error('must not create');}),hike:{rmsNorm(){}}});
+  await assert.rejects(e.run({tokenIds:[1],attentionMask:[1],signal:controller.signal}),/cancel during hash/);assert.equal(graphUpdates,1);assert.equal(created,0);
+ }finally{Sha256.prototype.update=realUpdate;restore();await e?.dispose();}
+});
+test('dispose during the final incremental hash yield prevents ORT creation and resolves activeDone',async()=>{
+ const {manifest,files}=await hashFixture(),restore=rejectLargeWebCrypto(),realUpdate=Sha256.prototype.update;
+ let created=0,graphUpdates=0,e,disposing;
+ Sha256.prototype.update=function(bytes){const value=realUpdate.call(this,bytes);if(bytes.buffer.byteLength===9*1024*1024&&++graphUpdates===2)setTimeout(()=>{disposing=e.dispose();},0);return value;};
+ try{
+  e=await module.loadTextEncoder({manifest,files,ort:hashStopOrt(()=>{created++;throw Error('must not create');}),hike:{rmsNorm(){}}});
+  await assert.rejects(e.run({tokenIds:[1],attentionMask:[1]}),/Text encoder disposed/);await disposing;assert.equal(graphUpdates,2);assert.equal(created,0);
+ }finally{Sha256.prototype.update=realUpdate;restore();await e?.dispose();}
 });
