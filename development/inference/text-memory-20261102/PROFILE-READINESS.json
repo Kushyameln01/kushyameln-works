@@ -1,0 +1,204 @@
+{
+  "schemaVersion": "works-text-memory-profile-readiness/0.1",
+  "updatedAtUTC": "2026-11-01T15:54:38.138847+00:00",
+  "scope": "Delta and exact-input readiness only; references existing profile inventory without rebuilding it.",
+  "documentationBaselineCommit": "a42ad61a7f56667ceefb4f21a9aacde859e00538",
+  "peerReceipts": "PEER-RECEIPTS.json",
+  "sourceBasis": "../p2-p3-acceptance/p6/requirements.json",
+  "existingAcceptedProfiles": {
+    "referencesOnly": [
+      "wan21-raw-f32-5x16x16",
+      "wan21-raw-f32-1x16x16",
+      "wan21-raw-f32-1x16x32"
+    ],
+    "inventory": "../connection/PROFILES.md",
+    "squareAcceptance": "../vae-v1/RESULT.md",
+    "rectangleAcceptance": "../e6/RESULT.md",
+    "policy": "Reuse original accepted diagnostic evidence and bundles; no re-export/re-inventory or general media/sample acceptance."
+  },
+  "workflowGrid": {
+    "existingConfigurationDerivedCandidate": {
+      "batch": 1,
+      "width": 832,
+      "height": 480,
+      "frames": 81,
+      "outputFps": 16,
+      "rgbNCTHW": [
+        1,
+        3,
+        81,
+        480,
+        832
+      ],
+      "latentNCTHW": [
+        1,
+        16,
+        21,
+        60,
+        104
+      ],
+      "status": "CONFIGURATION_DERIVED_REQUIREMENT_NOT_MEDIA_OR_PROFILE_ACCEPTANCE"
+    },
+    "actualMediaOrSlotShapeObserved": null,
+    "automaticExportAuthorization": false
+  },
+  "requiredMediaReceiptFields": [
+    "role and inputId/slotId; wired or editor source, slot mode/order and selected context association",
+    "retrievable original file/reference, complete byteLength and SHA256; filenames alone are insufficient",
+    "decoded frame count and orientation-corrected F/H/W, rotation/EXIF, alpha/color metadata",
+    "sourceFrameIndices in actual order including duplicates, and supplied sourceFrameTimesSeconds with the same length",
+    "preprocessing node/source commit, exact parameters, interpolation/crop/rounding policy",
+    "resulting exact preprocessed RGB F/H/W and payload hash, with original-to-processed frame/context binding"
+  ],
+  "roleReadiness": [
+    {
+      "role": "source_video_context_encode",
+      "status": "BLOCKED_PRECISE_MEDIA_RECEIPT",
+      "actualOriginalFile": null,
+      "originalByteLength": null,
+      "originalSHA256": null,
+      "actualDecodedFHW": null,
+      "actualSlotBindings": null,
+      "preprocessingSourceAndParameters": null,
+      "preprocessedRgbFHW": null,
+      "preprocessedPayloadSHA256": null,
+      "sourceFrameIndices": null,
+      "sourceFrameTimesSeconds": null,
+      "matchingAcceptedProfile": null,
+      "dependentProfileExport": "BLOCKED",
+      "missingInputOwner": "management",
+      "reason": "Latest acquired peer documents/comments contain no actual media/slot/preprocessing receipt for this role. Preserve existing P6 unknowns."
+    },
+    {
+      "role": "reference_video_context_encode",
+      "status": "BLOCKED_PRECISE_MEDIA_RECEIPT",
+      "actualOriginalFile": null,
+      "originalByteLength": null,
+      "originalSHA256": null,
+      "actualDecodedFHW": null,
+      "actualSlotBindings": null,
+      "preprocessingSourceAndParameters": null,
+      "preprocessedRgbFHW": null,
+      "preprocessedPayloadSHA256": null,
+      "sourceFrameIndices": null,
+      "sourceFrameTimesSeconds": null,
+      "matchingAcceptedProfile": null,
+      "dependentProfileExport": "BLOCKED",
+      "missingInputOwner": "management",
+      "reason": "Latest acquired peer documents/comments contain no actual media/slot/preprocessing receipt for this role. Preserve existing P6 unknowns."
+    },
+    {
+      "role": "reference_image_or_editor_slot_context_encode",
+      "status": "BLOCKED_PRECISE_MEDIA_RECEIPT",
+      "actualOriginalFile": null,
+      "originalByteLength": null,
+      "originalSHA256": null,
+      "actualDecodedFHW": null,
+      "actualSlotBindings": null,
+      "preprocessingSourceAndParameters": null,
+      "preprocessedRgbFHW": null,
+      "preprocessedPayloadSHA256": null,
+      "sourceFrameIndices": null,
+      "sourceFrameTimesSeconds": null,
+      "matchingAcceptedProfile": null,
+      "dependentProfileExport": "BLOCKED",
+      "missingInputOwner": "management",
+      "reason": "Latest acquired peer documents/comments contain no actual media/slot/preprocessing receipt for this role. Preserve existing P6 unknowns."
+    }
+  ],
+  "p5GeneratedDecode": {
+    "status": "BLOCKED_P5_ACTUAL_PRODUCER_RESTORE_AND_EXACT_PROFILE",
+    "actualSampleArtifact": null,
+    "actualSampleShape": null,
+    "actualProducerExecutionSource": null,
+    "actualProducerModelSHA256s": null,
+    "diffusionRestorationReceipt": null,
+    "matchingAcceptedDecoderProfile": null,
+    "nativeContractAvailable": true,
+    "realGeneratedProducerAccepted": false,
+    "nativeTensorRequirements": {
+      "dtype": "float32",
+      "layout": "NCTHW",
+      "meaning": "wan21-raw-generated-sample:v1",
+      "data": "Finite Float32Array, exact configured manifest.profile.latentShape and element count. No global RGB value-range constraint.",
+      "shape": "Exact manifest.profile.latentShape; no inferred numeric shape for missing actual sample.",
+      "modelSha256": "Optional native field. If supplied, retain actual generation provenance and require membership in producerModelSha256s. Do not inject or replace with decoder VAE hash.",
+      "normalization": "Top-level field must be absent. Do not set normalized, restored or notnormalized as a top-level marker.",
+      "latentContract": {
+        "schemaVersion": 1,
+        "representation": "generated-sample",
+        "space": "raw",
+        "vaeModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "producerModelSha256s": "Nonempty unique lowercase64-hex list of actual producer models, excluding decoder VAE.",
+        "normalization": {
+          "id": "wan21-comfy-f32-v1",
+          "state": "restored",
+          "owner": "diffusion_models"
+        }
+      },
+      "context": "Optional native context. If supplied, preserve validated source identity, ordered sourceFrameIndices and optional matching finite nonnegative times; do not require count=latent T."
+    },
+    "nativeProfileRequirements": {
+      "definition": "Current fixed raw NCTHW profile with posterior=mean/opset17; generated-sample decode uses its exact latent/video shapes without relabeling the input as posterior mean.",
+      "model": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "assets": "Configured manifest/graph/conv2 files with actual bytes/SHA256; unchanged validated single-thread ORT WASM contract.",
+      "exporterShapeRule": "N=1,F=4n+1,H/W>=16 and multiples16. Native manifest structural spatial alignment is8; neither rule accepts arbitrary exact shapes."
+    },
+    "outerEvidenceRequirements": [
+      "Actual P5 source/build/graph/precision, operation, all used producer hashes and HIGH/LOW/LoRA/scheduler/noise execution trace.",
+      "Original normalized sample artifact and Diffusion-owned restore operation/build/kernel/normalization definition, before/after full-file and payload SHA256, numeric independent reference/predeclared gate/receipt, and single-restoration trace.",
+      "Native raw artifact/latentContract, exact decoder profile/model/manifest/graph/asset hashes, actual decode input/output payload/file hashes, independent all-RGB comparison/gate and lifecycle/resource receipts.",
+      "Management job/session/inputRevision, queue/resource ownership, ordered contexts/slot/source-frame/times and shared positive/negative references, outer snapshot/evidence/trace and E4 save/readback."
+    ],
+    "evidenceImplementationLimit": "runVae returns inputMeaning/inputModelSha256/latentContract/assetHashes and normalizationApplied:false; it does not calculate an input-payload hash. Bind payload hashes in outer receipts/trace instead of claiming a native automatic hash field.",
+    "fixtureBoundary": "vae-api capabilities declares declaredOnly:true and realGenerationVerified:false. test-api generated samples use synthetic zero tensor and repeated-digit producer hashes; boundary fixture acceptance is not actual P5 producer/restoration/decode acceptance.",
+    "restorationOwner": "diffusion_models",
+    "vaeRestorationApplied": false,
+    "managementPersistenceOwner": "management"
+  },
+  "nextPriorities": [
+    {
+      "priority": 1,
+      "task": "Use confirmed Diffusion L512 acquisition/capture receipt to bind owner-side native consumer input/reference/predeclared P4 gate and resource scope.",
+      "owner": "diffusion_models",
+      "status": "NUMERICAL_CONSUMPTION_PENDING",
+      "notBlockedByMissingVaeMediaProfile": true
+    },
+    {
+      "priority": 2,
+      "task": "Obtain exact source/reference/slot media receipts and original role-specific preprocessing before deciding which profile is missing.",
+      "owner": "management",
+      "status": "WAITING_PRECISE_INPUTS"
+    },
+    {
+      "priority": 3,
+      "task": "For an actual missing exact shape only, fix original VAE source/model, independent reference, prior numerical gate and resource budget before a separate authorized profile export/validation.",
+      "owner": "VAE/Text with management input",
+      "status": "BLOCKED_ON_MEDIA_AND_SHAPE"
+    },
+    {
+      "priority": 4,
+      "task": "Receive actual P5 generated sample and Diffusion restoration receipt, then bind its exact decoder profile and management storage.",
+      "owner": "Diffusion producer then VAE consumer and management",
+      "status": "BLOCKED_P5_INPUTS"
+    }
+  ],
+  "unblockedExistingWork": "Task1/2 fixed Hello world memory measurement and original P2 evidence reuse do not depend on unknown media profiles.",
+  "implicitChangesForbidden": [
+    "guess exact F/H/W from workflow grid/filename/ref_max_size or aspect-ratio category",
+    "resize/pad/repeat/drop frames to fit accepted diagnostic profiles",
+    "manifest-only shape edits or producer/decoder hash replacement",
+    "mean/sample relabeling or VAE-side second restoration",
+    "reuse old diagnostic gates automatically for new exact profiles"
+  ],
+  "operationsThisDocument": {
+    "newNN": 0,
+    "profileExport": 0,
+    "nativeModuleImport": 0,
+    "newDecode": 0,
+    "mediaProbe": 0,
+    "profileInventoryRepeated": false,
+    "externalSend": 0
+  },
+  "generationReady": false
+}
