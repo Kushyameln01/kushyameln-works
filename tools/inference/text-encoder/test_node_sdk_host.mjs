@@ -2,7 +2,7 @@
 // No model/runtime job is imported or executed by this test module.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile,mkdtemp,mkdir,writeFile,open,stat,utimes,rename,chmod,rm} from 'node:fs/promises';
+import {readFile,mkdtemp,mkdir,writeFile,open,stat,utimes,rename,chmod,rm,readdir,readlink} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
@@ -135,4 +135,94 @@ test('positional source close is idempotent and invalidates old and future slice
   await source.close();await source.close();await assert.rejects(pending.arrayBuffer(),/closed/i);
   await assert.rejects(async()=>source.slice(SOURCE_TAIL_OFFSET,SOURCE_BYTES).arrayBuffer(),/closed/i);
  }finally{await source?.close();await rm(fixture.root,{recursive:true,force:true});}
+});
+
+async function graphFixture(length=8193){
+ const root=await mkdtemp(join(tmpdir(),'text-sdk-graph-')),path=join(root,'block.onnx'),bytes=Uint8Array.from({length},(_,i)=>(i*13+5)%251);
+ await writeFile(path,bytes);await utimes(path,FIXED_SOURCE_TIME,FIXED_SOURCE_TIME);return{root,path,bytes};
+}
+async function graphFds(path){
+ const result=[];for(const name of await readdir('/proc/self/fd'))try{if(await readlink('/proc/self/fd/'+name)===path)result.push(name);}catch(error){if(error.code!=='ENOENT')throw error;}return result;
+}
+async function readPrototype(path){const handle=await open(path,'r');try{return Object.getPrototypeOf(handle);}finally{await handle.close();}}
+test('prepared graph reads exact independent ranges using bounded single-array positional reads',async()=>{
+ assert.equal(typeof host?.openPreparedGraph,'function','prepared graph reader missing');
+ const fixture=await graphFixture(8*1024*1024+17);let graph;
+ try{
+  graph=await host.openPreparedGraph(fixture.path,fixture.bytes.length);assert.equal((await graphFds(fixture.path)).length,1);
+  assert.equal(graph.size,fixture.bytes.length);assert.equal(graph.storage,'single-array positional prepared graph');assert.equal(graph.chunkBytes,8*1024*1024);
+  assert.ok(Object.values(graph.statIdentity).every(value=>typeof value==='string'));
+  const whole=await graph.slice().arrayBuffer();assert.ok(whole instanceof ArrayBuffer);assert.equal(whole.byteLength,fixture.bytes.length);assert.deepEqual(new Uint8Array(whole),fixture.bytes);
+  const range=await graph.slice(8191,8200).arrayBuffer();assert.deepEqual([...new Uint8Array(range)],[64,77,90,103,116,129,142,155,168]);
+  new Uint8Array(whole)[8191]^=1;assert.equal(new Uint8Array(range)[0],64,'separate reads must own their backing buffers');
+  assert.equal((await graph.slice(graph.size,graph.size).arrayBuffer()).byteLength,0);
+  assert.equal(graph.stats().readCalls,3);assert.equal(graph.stats().readBytes,fixture.bytes.length+9);assert.equal(graph.stats().maximumReadBytes,8*1024*1024);
+ }finally{await graph?.close();assert.equal((await graphFds(fixture.path)).length,0);await rm(fixture.root,{recursive:true,force:true});}
+});
+test('prepared graph rejects unsafe ranges and oversized or mismatched files without leaking descriptors',async()=>{
+ assert.equal(typeof host?.openPreparedGraph,'function','prepared graph reader missing');
+ const fixture=await graphFixture();let graph;
+ try{
+  for(const size of [0,-1,1.5,NaN,Infinity,true,2**30,Number.MAX_SAFE_INTEGER+1])await assert.rejects(host.openPreparedGraph(fixture.path,size),/size|bytes|1GiB/i);
+  await assert.rejects(host.openPreparedGraph(fixture.path,fixture.bytes.length+1),/size|bytes/i);assert.equal((await graphFds(fixture.path)).length,0);
+  graph=await host.openPreparedGraph(fixture.path,fixture.bytes.length);
+  for(const range of [[-1,0],[0,-1],[2,1],[0,fixture.bytes.length+1],[NaN,1],[0,Infinity],[.5,1],[false,1]])assert.throws(()=>graph.slice(...range),/range|slice/i);
+ }finally{await graph?.close();await rm(fixture.root,{recursive:true,force:true});}
+});
+test('prepared graph detects stat changes both before and after actual reads',async t=>{
+ assert.equal(typeof host?.openPreparedGraph,'function','prepared graph reader missing');
+ for(const change of ['mtime','inode','during-read'])await t.test(change,async t=>{
+  const fixture=await graphFixture();let graph;
+  try{
+   graph=await host.openPreparedGraph(fixture.path,fixture.bytes.length);const range=graph.slice(0,16);
+   if(change==='mtime')await utimes(fixture.path,FIXED_SOURCE_TIME+2,FIXED_SOURCE_TIME+2);
+   else if(change==='inode'){
+    await rename(fixture.path,fixture.path+'.old');await writeFile(fixture.path,fixture.bytes);await utimes(fixture.path,FIXED_SOURCE_TIME,FIXED_SOURCE_TIME);
+   }else{
+    const prototype=await readPrototype(fixture.path),real=prototype.read;
+    t.mock.method(prototype,'read',async function(...args){const result=await real.apply(this,args);await utimes(fixture.path,FIXED_SOURCE_TIME+2,FIXED_SOURCE_TIME+2);return result;});
+   }
+   await assert.rejects(range.arrayBuffer(),/changed|identity|stat/i);
+  }finally{t.mock.restoreAll();await graph?.close();await rm(fixture.root,{recursive:true,force:true});}
+ });
+});
+test('prepared graph completes short reads and closes after read errors and pending disposal',async t=>{
+ assert.equal(typeof host?.openPreparedGraph,'function','prepared graph reader missing');
+ for(const behavior of ['short-read','zero-read','read-error','close-pending'])await t.test(behavior,async t=>{
+  const fixture=await graphFixture();let graph,release;
+  try{
+   graph=await host.openPreparedGraph(fixture.path,fixture.bytes.length);
+   const prototype=await readPrototype(fixture.path),real=prototype.read;
+   if(behavior==='short-read'){
+    t.mock.method(prototype,'read',function(buffer,offset,length,position){return real.call(this,buffer,offset,Math.min(length,257),position);});
+    assert.deepEqual(new Uint8Array(await graph.slice().arrayBuffer()),fixture.bytes);assert.equal(graph.stats().readCalls,32);assert.equal(graph.stats().readBytes,8193);
+   }else if(behavior==='zero-read'){
+    t.mock.method(prototype,'read',async buffer=>({bytesRead:0,buffer}));await assert.rejects(graph.slice().arrayBuffer(),/short positional read/i);
+   }else if(behavior==='read-error'){
+    t.mock.method(prototype,'read',async()=>{throw Error('injected positional read failure');});await assert.rejects(graph.slice().arrayBuffer(),/injected positional read failure/);
+   }else{
+    let entered;const started=new Promise(resolve=>{entered=resolve;}),gate=new Promise(resolve=>{release=resolve;});
+    t.mock.method(prototype,'read',async function(...args){entered();await gate;return real.apply(this,args);});
+    const saved=graph.slice(),pending=saved.arrayBuffer();await started;let closed=false;const closing=graph.close().then(()=>{closed=true;});
+    await Promise.resolve();assert.equal(closed,false,'close must wait for its pending read');release();await assert.rejects(pending,/closed/i);await closing;
+    await assert.rejects(saved.arrayBuffer(),/closed/i);assert.throws(()=>graph.slice(),/closed/i);
+   }
+   await graph.close();await graph.close();assert.equal(graph.stats().closed,true);assert.equal((await graphFds(fixture.path)).length,0);
+  }finally{release?.();t.mock.restoreAll();await graph?.close();await rm(fixture.root,{recursive:true,force:true});}
+ });
+});
+test('host closes every opened prepared graph when later asset setup fails before NN',async()=>{
+ const root=new URL('../../../',import.meta.url).pathname,folder=await mkdtemp(join(tmpdir(),'text-sdk-setup-failure-')),bundle=join(folder,'bundle'),output=join(folder,'output');
+ await mkdir(bundle);await mkdir(output);
+ const local=structuredClone(manifest);local.blocks=local.blocks.map(record=>({...record,bytes:5,sha256:'0'.repeat(64)}));
+ const raw=Buffer.from(JSON.stringify(local)),executionSourceSha='a'.repeat(40),sourceRecords=[];
+ for(const path of host.NODE_SOURCE_PATHS){const bytes=await readFile(join(root,path));sourceRecords.push({path,bytes:bytes.byteLength,sha256:createHash('sha256').update(bytes).digest('hex'),executionSourceSha});}
+ const paths=local.blocks.slice(0,2).map(record=>join(bundle,record.path));
+ try{
+  await writeFile(join(bundle,'manifest.json'),raw);for(const path of paths)await writeFile(path,Uint8Array.of(4,3,2,1,0));
+  const report=await host.runNodeSdkHost({root,output,inputs:[input],executionSourceSha,sourceRecords,bundle,source:'unopened-source',manifest:local,manifestSha256:createHash('sha256').update(raw).digest('hex'),preflightOnly:true});
+  assert.equal(report.passed,false);assert.equal(report.cases.length,0);assert.match(report.failure.message,/ENOENT/);assert.equal(report.preparedGraphs.length,2);
+  for(const graph of report.preparedGraphs){assert.equal(graph.storage,'single-array positional prepared graph');assert.equal(graph.readObservation.closed,true);assert.equal(graph.readObservation.readBytes,0);}
+  for(const path of paths)assert.equal((await graphFds(path)).length,0);
+ }finally{await rm(folder,{recursive:true,force:true});}
 });

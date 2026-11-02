@@ -22,6 +22,35 @@ export async function openLocalBlob(path,expectedBytes){
  const blob=await openAsBlob(path);check(blob.size===expectedBytes,'Local file size mismatch: '+path);return blob;
 }
 
+// Native Blob.arrayBuffer() retains file chunks while concatenating another full
+// graph buffer. Prepared graphs instead fill one caller-owned backing allocation.
+export async function openPreparedGraph(path,expectedBytes){
+ check(Number.isSafeInteger(expectedBytes)&&expectedBytes>0&&expectedBytes<2**30,'Expected prepared graph size below1GiB required');
+ const file=await open(path,'r');
+ try{
+  const captured=await file.stat({bigint:true}),identity=info=>info.size===captured.size&&info.mtimeNs===captured.mtimeNs&&info.ino===captured.ino&&info.dev===captured.dev;
+  check(captured.isFile()&&captured.size===BigInt(expectedBytes),'Prepared graph file size mismatch');
+  check(identity(await stat(path,{bigint:true})),'Prepared graph file identity changed');
+  const size=expectedBytes,chunkBytes=8*1024*1024,pending=new Set();let closed=false,closing,readCalls=0,readBytes=0,maximumReadBytes=0;
+  const unchanged=async()=>{check(!closed,'Prepared graph adapter closed');check(identity(await file.stat({bigint:true}))&&identity(await stat(path,{bigint:true})),'Prepared graph file identity/stat changed');check(!closed,'Prepared graph adapter closed');};
+  const readRange=(start,end)=>{
+   const task=(async()=>{
+    await unchanged();const buffer=new ArrayBuffer(end-start),bytes=new Uint8Array(buffer);let offset=0;
+    while(offset<bytes.byteLength){
+     const length=Math.min(chunkBytes,bytes.byteLength-offset);maximumReadBytes=Math.max(maximumReadBytes,length);readCalls++;
+     const result=await file.read(bytes,offset,length,start+offset);check(result.bytesRead>0&&result.bytesRead<=length,'Prepared graph short positional read');offset+=result.bytesRead;readBytes+=result.bytesRead;
+    }
+    await unchanged();return buffer;
+   })();pending.add(task);task.then(()=>pending.delete(task),()=>pending.delete(task));return task;
+  };
+  return Object.freeze({size,storage:'single-array positional prepared graph',chunkBytes,statIdentity:Object.freeze({size:captured.size.toString(),mtimeNs:captured.mtimeNs.toString(),ino:captured.ino.toString(),dev:captured.dev.toString()}),
+   slice(start=0,end=size){check(!closed,'Prepared graph adapter closed');check(Number.isSafeInteger(start)&&Number.isSafeInteger(end)&&start>=0&&end>=start&&end<=size,'Invalid prepared graph slice range');return Object.freeze({size:end-start,arrayBuffer:()=>readRange(start,end)});},
+   stats(){return{readCalls,readBytes,maximumReadBytes,chunkBytes,pendingReads:pending.size,closed};},
+   close(){if(closing)return closing;closed=true;closing=(async()=>{await Promise.allSettled([...pending]);await file.close();})();return closing;}
+  });
+ }catch(error){await file.close();throw error;}
+}
+
 // Node's native Blob size wraps at4GiB in this runtime. The original model is
 // read only through the existing loader's bounded8192-byte embedding row slices.
 export async function openPositionalSource(path,expectedBytes){
@@ -145,8 +174,8 @@ function observeOrt(ort){
 export async function runNodeSdkHost(c){
  const root=resolve(c.root),output=resolve(c.output),receiptPath=join(output,'node-sdk-results.json');
  check((await stat(output)).isDirectory(),'Parent must create the private output directory');check(!inside(join(root,'docs'),output),'Public model output prohibited');await absent(receiptPath);await absent(receiptPath+'.tmp');
- const report={passed:false,scope:'Normal Text factory/shared job/tensor codec in a Node reference host with native Blob prepared graphs and a bounded positional original-source reader; no browser Worker/T3 or independent numeric acceptance claim',host:'Node file-backed reference host',executionSourceSha:c.executionSourceSha,diagnostics:c.diagnostics??false,cases:[],sourceClosure:[],sourceVerification:{method:'Parent Git verification plus Node current-byte verification',commitAuthority:'Supplied parent records; Node does not independently establish Git commit identity',nodeCommitVerification:false,nodeByteVerificationComplete:false},workersUsed:0,browserControlsExercised:false,newExports:0};
- let api,client,hike,observer,originalSource,currentCase=null;
+ const report={passed:false,scope:'Normal Text factory/shared job/tensor codec in a Node reference host with single-array positional prepared graphs, native Blob small assets, and a bounded positional original-source reader; no browser Worker/T3 or independent numeric acceptance claim',host:'Node file-backed reference host',executionSourceSha:c.executionSourceSha,diagnostics:c.diagnostics??false,cases:[],sourceClosure:[],sourceVerification:{method:'Parent Git verification plus Node current-byte verification',commitAuthority:'Supplied parent records; Node does not independently establish Git commit identity',nodeCommitVerification:false,nodeByteVerificationComplete:false},workersUsed:0,browserControlsExercised:false,newExports:0};
+ let api,client,hike,observer,originalSource,currentCase=null;const preparedGraphs=[];
  const persist=async()=>{await writeFile(receiptPath+'.tmp',JSON.stringify(report,null,2)+'\n');await rename(receiptPath+'.tmp',receiptPath);};
  const started=performance.now();
  try{
@@ -165,8 +194,12 @@ export async function runNodeSdkHost(c){
    if(record.modelSha256!==undefined)check(record.modelSha256===manifest.modelSha256,'Case model identity mismatch');
    if(record.tokenizerSha256!==undefined)check(record.tokenizerSha256===manifest.tokenizer.sha256,'Case tokenizer identity mismatch');
   }
-  const files=new Map(),assets=[...manifest.blocks,manifest.finalNorm,manifest.embedding.rowHashes,manifest.tokenizer];
-  for(const asset of assets){const path=asset.path??asset.file;check(typeof path==='string'&&!files.has(path),'Unique local asset paths required');files.set(path,await openLocalBlob(join(c.bundle,path),asset.bytes));}
+  const files=new Map(),graphRecords=new Set(manifest.blocks),assets=[...manifest.blocks,manifest.finalNorm,manifest.embedding.rowHashes,manifest.tokenizer];
+  for(const asset of assets){
+   const path=asset.path??asset.file;check(typeof path==='string'&&!files.has(path),'Unique local asset paths required');
+   if(graphRecords.has(asset)){const file=await openPreparedGraph(join(c.bundle,path),asset.bytes);preparedGraphs.push({path,file});files.set(path,file);}
+   else files.set(path,await openLocalBlob(join(c.bundle,path),asset.bytes));
+  }
   check(!files.has(manifest.embedding.sourceFile),'Original source path collides with a prepared asset');originalSource=await openPositionalSource(c.source,manifest.embedding.sourceBytes);files.set(manifest.embedding.sourceFile,originalSource);
   report.localFiles=[...files].map(([path,file])=>({path,bytes:file.size,storage:file.storage??'native fs.openAsBlob; actual file-backed Blob'}));
   report.originalSource={path:resolve(c.source),bytes:originalSource.size,storage:originalSource.storage,maximumSliceBytes:originalSource.maximumSliceBytes,readOnly:true,statIdentity:originalSource.statIdentity,modelSha256:manifest.modelSha256,wholeOriginalModelRead:false,wholeOriginalModelHashRecomputed:false};
@@ -202,6 +235,10 @@ export async function runNodeSdkHost(c){
  }catch(error){report.passed=false;report.failure={name:error.name,message:error.message,caseId:currentCase,stack:error.stack};
  }finally{
   try{api?.dispose();if(!api)client?.dispose();hike?.dispose();observer?.restore();}catch(error){report.passed=false;report.cleanupFailure={name:error.name,message:error.message};}
+  const graphCloses=await Promise.allSettled(preparedGraphs.map(({file})=>file.close()));
+  report.preparedGraphs=preparedGraphs.map(({path,file})=>({path,bytes:file.size,storage:file.storage,readOnly:true,statIdentity:file.statIdentity,readObservation:file.stats()}));
+  const graphCloseFailures=graphCloses.flatMap((result,index)=>result.status==='rejected'?[{path:preparedGraphs[index].path,name:result.reason.name,message:result.reason.message}]:[]);
+  if(graphCloseFailures.length){report.passed=false;report.preparedGraphCleanupFailures=graphCloseFailures;}
   try{await originalSource?.close();if(originalSource)report.originalSource.readObservation=originalSource.stats();}catch(error){report.passed=false;report.sourceCleanupFailure={name:error.name,message:error.message};}
   report.clientState=client?.state??null;report.wallSeconds=(performance.now()-started)/1000;report.peakRssBytes=process.resourceUsage().maxRSS*1024;await persist();
  }
