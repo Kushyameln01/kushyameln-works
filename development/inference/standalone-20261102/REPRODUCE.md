@@ -1,10 +1,10 @@
 # 単体検証の再現
 
-実行範囲と合否は [RESULT.md](RESULT.md)、通常の接続契約は [API.md](API.md) を参照する。重いNN/reference/exportは原則として直列にする。同時実行する場合は、所有processの停止条件とcgroupの余力を別に確認し、競合を含む実測として記録する。独立参照やgateは開発検証の入力であり、通常APIへ渡さない。
+全体の状態は [RESULT.md](RESULT.md)、各caseの合否は [TEXT-RESULT.md](TEXT-RESULT.md) と [VAE-RESULT.md](VAE-RESULT.md)、通常の接続契約は [API.md](API.md) を参照する。重いNN/reference/exportは原則として直列にする。同時実行する場合は、所有processの停止条件とcgroupの余力を別に確認し、競合を含む実測として記録する。独立参照やgateは開発検証の入力であり、通常APIへ渡さない。
 
 ## sourceと原本の固定
 
-repositoryは `Kushyameln01/kushyameln-works`、branch `codex/text-vae-standalone`、[Draft PR #18](https://github.com/Kushyameln01/kushyameln-works/pull/18)。初回公開commitは `3ea4ca34d50aef0da434985965b0b01105bbb8d8`。最終配布SHAはRESULTへ別記し、各runの実行sourceとは区別する。再現するrunのsourceへcheckoutし、変更のない状態で実行する。各toolは指定commitのsource bytesとの一致を検査する。
+repositoryは `Kushyameln01/kushyameln-works`、branch `codex/text-vae-standalone`、[Draft PR #18](https://github.com/Kushyameln01/kushyameln-works/pull/18)。初回公開commitは `3ea4ca34d50aef0da434985965b0b01105bbb8d8`。最終配布SHAはRESULTへ別記し、各runの実行sourceとは区別する。再現するrunのsourceを別checkoutへ取得し、変更のない状態で実行する。NN実行toolは指定commitのsource bytesとの一致を検査する。Browserの `--preflight-only` はGit照合を省略するため、下記T1の事後照合と区別する。
 
 実行sourceには、そのrunで使うharnessとmoduleの完全SHAを指定する。将来harnessを変更したrunでは変更後のSHAを記録し、古いrunの `executionSourceSha` を最新配布SHAへ付け替えない。`git rev-parse HEAD` は対象checkoutの確認であり、過去runのsourceを最新HEADとみなす操作ではない。独立参照のsourceは `--reference-execution-source-sha` で別に固定する。
 
@@ -55,6 +55,24 @@ git diff --check
 
 Textの通常入口は既存の独立ES module APIのまま。WorkerのText処理を `docs/shared/inference/text-job.mjs` の `runTextEncoderJob()` へまとめ、通常WorkerとNode参照hostが同じ入力validator・Tokenizer・staged loaderを呼ぶ。job関数がencoderをfinallyでdisposeし、Hikeの寿命は呼出側が所有する。通常の `configure({manifest,files})` は `diagnostics:false` で、結果は `{tensor,attentionMask,inputMode}`。`result.evidence` は明示opt-in時だけ返す。参照hostの外側receiptにあるsession/Hike観測や独立比較を、通常tensor fieldへ加えない。
 
+### T1：Tokenizer・入力契約のNN0検査
+
+b3e5のBrowser preflightは、有効9件、不正入力拒否9件、Worker0、NN0、export0で合格した。実行sourceはb3e5、参照識別は5954であるが、このmodeは参照tensorとの数値比較を行わない。以下は新しい出力先で同じ入力境界を調べるコマンドである。
+
+```sh
+python tools/inference/text-encoder/accept_plain.py \
+  --preflight-only \
+  --plan development/inference/standalone-20261102/text/predeclared-plan.json \
+  --bundle /workspace/work/inference/text-implementation/bundle \
+  --source /workspace/work/models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors \
+  --reference /tmp/kw-standalone-text-oracle-20261102 \
+  --execution-source-sha b3e5e34430d58bca3bf69b8938ba87beb196d054 \
+  --reference-execution-source-sha 5954d48e0fb6df1d6977964fd8a7ba2a242b6eff \
+  --output /tmp/kw-text-new-t1-preflight
+```
+
+Browser preflight modeはNN開始前のGit bytes照合を省略する。指定SHAだけをsource取得の証明にせず、終了後にreceiptの `servedSources` 各pathについて `git show <SHA>:<path>` のbyte数・SHA-256と、現在fileの実bytesを照合する。今回の17件の事後照合は [text-t1-b3e5-served-source-verification.json](evidence/text-t1-b3e5-served-source-verification.json)、元receiptは [evidence/index.json](evidence/index.json) に保存した。事後照合をharnessによる事前検査と記載しない。旧T1 receiptのnull sourceを5954などへ補完しない。
+
 ### Node SDK参照host
 
 `--node-sdk --skip-controls` は、通常の `createTextEncoderModule()` に専用clientを渡し、共有job・実ORT CPU WASM1 thread・実Hike・既存WKT writer/readerを通す参照hostである。別のT5実装、precision、export、oracle、gateは導入しない。現在のhostも通常の `diagnostics:false` で実行する。privateなsession/Tensor観測とHike呼出回数は外側receiptに記録する。
@@ -71,7 +89,7 @@ Python親processは `git cat-file` で指定objectがcommitであることを確
 
 実行source `dccb88515775ec8aa86dd16f82e8816c9347ed38` の6case試行は、632秒で資源guardが所有Nodeを停止して終了した。共有cgroup working set約16.405 GBを観測し、当該harness群のsampled RSS peakは約3.983 GBだった。両者は別指標であり、他jobを含むRAMへ単純加算・換算しない。終了後の所有live process・zombie・cleanup errorは空だった。
 
-`plain-empty` は通常出力で24層とsession releaseを完了し、全2,097,152値を元5954参照と比較して最大絶対誤差 `4.172325134e-6`、元gateとnative codec読戻しに合格した。この1caseの確認を6case全体の合格に広げない。`plain-multilingual-newline` はblock8までのpartialで、数値結果は未確定。残る5caseと長文plainは未完了であり、この停止までに数値FAILは観測していない。最新の判定と保存済み証拠は [RESULT.md](RESULT.md) を参照する。
+`plain-empty` は通常出力で24層とsession releaseを完了し、全2,097,152値を元5954参照と比較して最大絶対誤差 `4.172325134e-6`、元gateとnative codec読戻しに合格した。この1caseの確認を6case全体の合格に広げない。`plain-multilingual-newline` はblock8までのpartialで、数値結果は未確定。残る5caseと長文plainは未完了であり、この停止までに数値FAILは観測していない。この記述は初回attemptの終了時点に限定する。その後のb3e5実行で残る6件は完了し、最新の判定と保存済み証拠は [TEXT-RESULT.md](TEXT-RESULT.md) を参照する。
 
 以下は終了済みattemptの元構成であり、現在走っているjobの指定ではない。outputは既存保存先なので、再現が必要な場合だけ別の新規directoryへ置換する。完了済みemptyは次の最小再開Node構成へ含めない。
 
@@ -95,9 +113,9 @@ python tools/inference/text-encoder/accept_plain.py \
 
 同じ構成へ `--preflight-only` を付け、別の新規outputへ実行すると、source・manifest・local asset sizeをNNなしで検査する。ORT/Hikeのinstanceを作らず、元modelのread observationは0 Bで閉じる。これはTokenizer・数値比較・Browser取消の受入ではない。
 
-#### 未完了分の最小再開計画
+#### 完了したNode6件とBrowser T3の再現
 
-次のsourceは `b3e5e34430d58bca3bf69b8938ba87beb196d054`。この固定sourceのNN0 preflightは、親harnessとNode closureの18件照合、24 graph FDのclose、graph/source read0 B、NN0で完了した。これは数値受入ではない。旧153cの待機queueを止め、b3e5を指定する直列controllerを再起動した。所有VAE targetのfinal終了を待っており、この追補時点ではNode再開も後続Browser jobも開始していない。未完了の5caseと長文plainを次の6件にまとめ、5954 oracleを再利用する。完了済みemptyや既知FAILのall-active ID512 canaryは、このNode jobで再実行しない。
+実行sourceは `b3e5e34430d58bca3bf69b8938ba87beb196d054`、独立参照は5954のまま再利用した。Node6件は全24層・全値比較・保存読戻しまで合格し、その終了後にBrowser T3を直列実行して完了した。Nodeの事前検査は親harnessとNode closureの18件照合、24 graph FDのclose、graph/source read0 B、NN0であり、数値受入とは別記録である。以下は完了runの構成で、取得確認のために再実行する必要はない。再現する場合だけ、各 `--output` を新規directoryへ置き換える。完了済みemptyと既知FAILのall-active ID512 canaryは、このNode6件に含まない。
 
 ```sh
 TEXT_RESUME_SOURCE_SHA=b3e5e34430d58bca3bf69b8938ba87beb196d054
@@ -117,7 +135,7 @@ python tools/inference/text-encoder/accept_plain.py \
   --output /tmp/kw-text-node-sdk-remaining-serial-20261102
 ```
 
-Node jobが終了して資源を解放した後、同じb3e5 sourceで次のBrowser jobを直列実行する計画である。`--node-sdk` と `--skip-controls` を付けず、主caseは `plain-empty` と `id-l2` の2件だけを選ぶ。planの全9 controlsと、同じAPIの `id-l1` recoveryを一度実行するため、正常な全24層NNは合計3件となる。cancel途中のjobや保存revision controlを正常NN件数へ加えない。Browser emptyは取消・保存のhost確認用であり、Node emptyの通常出力受入を付け替えるものではない。
+Node jobが終了して資源を解放した後、同じb3e5 sourceで次のBrowser jobを直列実行した。`--node-sdk` と `--skip-controls` を付けず、主caseは `plain-empty` と `id-l2` の2件だけを選ぶ。planの全9 controlsと、同じAPIの `id-l1` recoveryを一度実行するため、正常な全24層NNは合計3件となる。cancel途中のjobや保存revision controlを正常NN件数へ加えない。Browser emptyは取消・保存のhost確認用であり、Node emptyの通常出力受入を付け替えるものではない。
 
 ```sh
 python tools/inference/text-encoder/accept_plain.py \
@@ -133,11 +151,15 @@ python tools/inference/text-encoder/accept_plain.py \
 
 b3e5でも、主caseへ選ばないrecovery入力も含め、全control入力のsource/manifest、固定ID/maskと独立full512参照のbytes/SHA-256をNN前に照合する。`controlReferencePreflight` に保存し、古い参照や破損fileを取消後まで持ち越さない。
 
-正常保存とrecovery保存は `encodeTensor()` の後にnative `decodeTensor()` でdescriptor、normalization、model/Tokenizer、全maskと全float値を読戻し、payload/maskが独立所有のbufferであることも確認する。recoveryは `recovery-cancel-run.wktensor` としてdownload・保存し、Pythonが全file bytes/SHA、native header/payloadと元 `id-l1` 参照の全4,096値を再照合する。これらは診断hostの外側receiptであり、通常APIの必須入力やtensor fieldを追加するものではない。新しいBrowser取消・保存結果も未確定であり、実行前から合格とはしない。
+正常保存とrecovery保存は `encodeTensor()` の後にnative `decodeTensor()` でdescriptor、normalization、model/Tokenizer、全maskと全float値を読戻し、payload/maskが独立所有のbufferであることも確認する。recoveryは `recovery-cancel-run.wktensor` としてdownload・保存し、Pythonが全file bytes/SHA、native header/payloadと元 `id-l1` 参照の全4,096値を再照合する。これらは診断hostの外側receiptであり、通常APIの必須入力やtensor fieldを追加するものではない。このBrowser runでは通常2件・復帰1件の独立全値比較、9 controls、保存読戻しに合格した。詳細receiptと資源測定はTEXT-RESULTを参照する。
 
 `node-sdk-results.json` は通常factory/shared job/codecを通したhostの記録、`node-sdk-acceptance.json` は元参照との全値比較、所有NodeのPID/create timeと資源観測である。各完了caseのWKTとhost receiptを順次保存し、後のprocess停止でも完了分を残す。数値FAILは個別・最終FAILのまま後続caseを集める。不正なnative outputやfile/hash破損は継続せず拒否する。未完了caseを合格に補わない。
 
-このNode経路はBrowser Workerの取得・終了・取消を検証しない。`byteGraph` を持つID2 caseは拒否し、上記の通常Browser host計画へ残す。9件のBrowser controlsと同じAPIでのL1 recoveryも、実完了後に別判定する。Node結果へBrowser/T3の受入を移さない。
+このNode経路はBrowser Workerの取得・終了・取消を検証しない。`byteGraph` を持つID2 caseはNode側で拒否し、上記Browser runで実行した。9 controlsと同じAPIでのL1 recoveryもBrowser側の独立した結果である。Node結果へBrowser/T3の受入を移さない。
+
+### 既存のHello world資源比較
+
+同じ固定 `Hello world`、選択manifest、Tokenizer、5537独立full512参照による3件の実行は、[既存の資源改善報告](../text-memory-20261102/RESULT.md) とそのINDEXを再利用する。baseline `04d1447e3531836adbb013314e716f2403895443`、prepack停止 `44b188633343cc2c93ea6f85aac348059ac42757`、incremental `eab4fabfadd133cc97434eed28ea998dca6795c2` はいずれも全値gateに合格した。baselineからincrementalへのsampled RSS和は5,708,951,552 Bから4,490,174,464 Bへ減ったが、full時間は117.264秒から388.521秒へ増えた。各1runでcache/GCを統制しておらず、完全なfull-phase PSSは記録されていない。過去の入力・source・hostの範囲に限定し、b3e5の全512 caseや現在の端末資源保証へ転用しない。取得確認のための再推論は不要である。
 
 ### 資源policy
 
@@ -217,7 +239,7 @@ manifestだけのshape変更は行わない。manifestの全assetについてfil
 
 ## VAE独立参照と実WASM
 
-固定case一覧は [vae/predeclared-plan.json](vae/predeclared-plan.json)。前処理済みの正確なF/H/Wから一件を選ぶ。既存F1・16×32とF1・480×832参照はそのまま再利用できる。以下は未作成caseを新規に確認するときの例。
+固定case一覧は [vae/predeclared-plan.json](vae/predeclared-plan.json)。前処理済みの正確なF/H/Wから一件を選ぶ。target81は参照source `05198dba7959cc95e0c4d770fd85557ad4010a80`、実WASM source `d578ec006571d82bc50c6c2935d78ae6ea838269` でencode・独立raw decode・取消後再実行・保存読戻しまで合格した。全工程は17,624.837秒だった。既存参照とbundleが揃う場合は保存済み証拠を使い、取得確認のために再生成しない。以下は再現先に参照がなく、新規directoryで同じcaseを確認する例である。参照生成とWASMのsourceを個別に記録し、過去runへ最新SHAを付け替えない。
 
 ```sh
 VAE_RUN_SOURCE_SHA=$(git rev-parse HEAD)
@@ -230,21 +252,21 @@ python tools/inference/vae/stream_reference.py \
   --output /tmp/kw-vae-new-target81-reference
 
 python tools/inference/vae/accept_stream.py \
-  --bundle /tmp/kw-vae-stream-export-20261102 \
+  --bundle /tmp/kw-vae-stream-threads4-20261102 \
   --reference /tmp/kw-vae-new-target81-reference \
   --operation both \
   --execution-source-sha "$VAE_RUN_SOURCE_SHA" \
-  --controls --timeout-seconds 7200 \
+  --controls --timeout-seconds 21600 \
   --output /tmp/kw-vae-new-target81-wasm
 ```
 
-referenceが完了したことを確認してからbrowserを起動する。対象時間が7200秒を超える場合は適切な明示deadlineへ変更して記録する。timeout/resource失敗を小shapeへの置換で合格扱いしない。`--preflight-only` はcapabilitiesとsource/storage確認のみでNNを動かさない。
+referenceが完了したことを確認してからbrowserを起動する。target81の取消・復帰とboth実行には21,600秒を例示し、環境に応じた明示deadlineを記録する。所要時間を保証する値ではない。timeout/resource失敗を小shapeへの置換で合格扱いしない。`--preflight-only` はcapabilitiesとsource/storage確認のみでNNを動かさない。
 
-新規に受け入れた `diagnostic-f5-16x32`、`reference-f1-16x16`、`reference-f1-16x848`、`reference-f1-848x16` の各run sourceは `cc9b37f82ed855b36261d92429a822528bc24a71`。同じtoolを使い、`--reference` に対応する完了済みref directory、`--bundle` に明示threads4 bundleを選ぶ。F5診断のrefは `/tmp/kw-vae-ref-temporal-f5-16x32-20261102`、browser出力は `/tmp/kw-vae-wasm-thread4-temporal-f5-16x32-20261102`。参照境界のrefは `/tmp/kw-vae-ref-reference-f1-16x16-20261102` 等、browser出力は `/tmp/kw-vae-wasm-reference-f1-16x16-20261102` 等である。元81frameや未受入848×848の代わりには数えない。
+新規に受け入れた `diagnostic-f5-16x32`、`reference-f1-16x16`、`reference-f1-16x848`、`reference-f1-848x16` の各run sourceは `cc9b37f82ed855b36261d92429a822528bc24a71`。同じtoolを使い、`--reference` に対応する完了済みref directory、`--bundle` に明示threads4 bundleを選ぶ。F5診断のrefは `/tmp/kw-vae-ref-temporal-f5-16x32-20261102`、browser出力は `/tmp/kw-vae-wasm-thread4-temporal-f5-16x32-20261102`。参照境界のrefは `/tmp/kw-vae-ref-reference-f1-16x16-20261102` 等、browser出力は `/tmp/kw-vae-wasm-reference-f1-16x16-20261102` 等である。target81や848×848の別scopeの代わりには数えない。848×848などの最新受入状態はVAE-RESULTを参照する。
 
 planへのF5診断追加に伴って旧参照を再計算する必要はない。`reference_contract.py` は作成時commitのplan/tool bytes/hashと、現在の選択case・model/source/precision/gate/patternを照合し、意味が同じ場合だけ既存参照を再利用する。現在のplan全体hashを古いreceiptへ書き換えない。
 
-source F4/5/80/81のcausal prefixを派生する場合は `derive_stream_prefix.py` を用い、完了済みtarget81と別実行direct F1双方のreport SHAを明示する。per-channelのNCTHW axis2で抽出し、flat prefixや別空間へのcropを許可しない。派生statusは `DERIVED_CAUSAL_PREFIX_REFERENCE`、新規model load/NN実行0。親とdirect F1のhash・全値bridgeを保持し、派生を新しい元vendor推論と記録しない。実WASM出力の全値照合は派生後も別に必要である。未完了targetのpartial reportを親には使えない。
+source F4/5/80/81の独立参照用causal prefixを派生する場合は `derive_stream_prefix.py` を用い、完了済みtarget81と別実行direct F1双方のreport SHAを明示する。per-channelのNCTHW axis2で抽出し、flat prefixや別空間へのcropを許可しない。派生statusは `DERIVED_CAUSAL_PREFIX_REFERENCE`、新規model load/NN実行0。親とdirect F1のhash・全値bridgeを保持し、派生を新しい元vendor推論と記録しない。F4入力は4frameのうち1frame、F80入力は80frameのうち77frameを元のcausal規則で処理し、未使用末尾3frameと全入力contextをmetadataへ残す。派生参照があるだけではactual F4/F80のowner呼出しを確認したことにはならず、実WASM出力の全値照合は別に必要である。未完了targetのpartial reportを親には使えない。
 
 source oracleは未変更vendorの `WanVAE_.encode/decode`、raw scale `[0,1]` を直接呼ぶ。encode用RGBとdecode用独立raw latentは別の事前固定pattern。encodeのmeanをdecode独立入力として流用しない。RGB patternは `((c*71+t*13+y*5+x*3)%257-128)/128`、raw latentは `((c*17+t*11+y*7+x*5)%257-128)/512`。全値比較はatol/rtol/maxAbs0.002、shape/layout/meaning/hash/保存metadataも照合する。
 

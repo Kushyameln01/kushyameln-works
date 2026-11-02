@@ -1,0 +1,474 @@
+{
+  "schemaVersion": 1,
+  "passed": false,
+  "status": "FAILED",
+  "scope": "One explicit synthetic VAE case, default normal owner API, actual ORT/Hike CPU WASM and independent all-value source comparison",
+  "executionSourceSha": "dccb88515775ec8aa86dd16f82e8816c9347ed38",
+  "diagnostics": false,
+  "productionReady": false,
+  "originalBf16ArithmeticEquivalence": false,
+  "operations": {},
+  "progressEvents": [],
+  "httpRequests": {},
+  "httpErrors": [],
+  "requestFailures": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "case": {
+    "id": "source-f4-480x832",
+    "role": "source",
+    "rgbShape": [
+      1,
+      3,
+      4,
+      480,
+      832
+    ],
+    "latentShape": [
+      1,
+      16,
+      1,
+      60,
+      104
+    ],
+    "decodeRgbShape": [
+      1,
+      3,
+      1,
+      480,
+      832
+    ]
+  },
+  "comparisonGate": {
+    "atol": 0.002,
+    "rtol": 0.002,
+    "maxAbs": 0.002,
+    "registeredBeforeComparison": true,
+    "scope": "New declared FP32 synthetic shape domain; proposed before comparison, not transferred from tiny-model tolerances."
+  },
+  "referenceContractValidation": {
+    "caseId": "source-f4-480x832",
+    "executionSourceSha": "5f7db87d2800e98eeca28484bf1a209eb06bcc39",
+    "historicalPlanSha256": "d8ae3cf436007b0ce7bb7877756bc5663975e65c3c62928bbc48c784d5bd526c",
+    "historicalPlanBytes": 9348,
+    "currentPlanSha256": "d8ae3cf436007b0ce7bb7877756bc5663975e65c3c62928bbc48c784d5bd526c",
+    "currentPlanHashEncoding": "exact current file bytes",
+    "toolPath": "tools/inference/vae/derive_stream_prefix.py",
+    "toolSha256": "b00b10708d3a74e2c09cf91e7d5d5da4b38477e1d76f59e37a92c709540746d2",
+    "selectedCaseSemanticsUnchanged": true,
+    "semanticFieldsChecked": [
+      "schemaVersion",
+      "shapeAuthority",
+      "model",
+      "source",
+      "comparisonGate",
+      "comparisonPolicy",
+      "encodeInput",
+      "encodeOutput",
+      "decodeInput",
+      "decodeOutput",
+      "temporalContract"
+    ],
+    "scope": "Honest derived metadata and included committed native receipt chain; caller must separately hash child files and compare all numerical output values",
+    "status": "DERIVED_CAUSAL_PREFIX_REFERENCE",
+    "nativeExecutionPerformed": false,
+    "operations": [
+      "encode",
+      "decode"
+    ],
+    "parentNativePlan": {
+      "caseId": "target-f81-480x832",
+      "executionSourceSha": "05198dba7959cc95e0c4d770fd85557ad4010a80",
+      "historicalPlanSha256": "8b5d354a299e8e35863269ace9549148d4265b8d097b8877caabd727a4c193ea",
+      "historicalPlanBytes": 6620,
+      "currentPlanSha256": "d8ae3cf436007b0ce7bb7877756bc5663975e65c3c62928bbc48c784d5bd526c",
+      "currentPlanHashEncoding": "exact current file bytes",
+      "toolPath": "tools/inference/vae/stream_reference.py",
+      "toolSha256": "5d5c5c70b01b03841bc85997ad6ec9cf638a1269452a8ce70fb954fb51991543",
+      "selectedCaseSemanticsUnchanged": true,
+      "semanticFieldsChecked": [
+        "schemaVersion",
+        "shapeAuthority",
+        "model",
+        "source",
+        "comparisonGate",
+        "comparisonPolicy",
+        "encodeInput",
+        "encodeOutput",
+        "decodeInput",
+        "decodeOutput",
+        "temporalContract"
+      ],
+      "scope": "Committed historical plan and selected-case/shared numerical semantics; unrelated additional case entries do not invalidate this reference",
+      "status": "REFERENCE_WRITTEN",
+      "nativeExecutionPerformed": true
+    },
+    "directF1NativePlan": {
+      "caseId": "source-f1-480x832",
+      "executionSourceSha": "e0f0dd7cae05aebcfc60214d51fce90df6197ab7",
+      "historicalPlanSha256": "8b5d354a299e8e35863269ace9549148d4265b8d097b8877caabd727a4c193ea",
+      "historicalPlanBytes": 6620,
+      "currentPlanSha256": "d8ae3cf436007b0ce7bb7877756bc5663975e65c3c62928bbc48c784d5bd526c",
+      "currentPlanHashEncoding": "exact current file bytes",
+      "toolPath": "tools/inference/vae/stream_reference.py",
+      "toolSha256": "5d5c5c70b01b03841bc85997ad6ec9cf638a1269452a8ce70fb954fb51991543",
+      "selectedCaseSemanticsUnchanged": true,
+      "semanticFieldsChecked": [
+        "schemaVersion",
+        "shapeAuthority",
+        "model",
+        "source",
+        "comparisonGate",
+        "comparisonPolicy",
+        "encodeInput",
+        "encodeOutput",
+        "decodeInput",
+        "decodeOutput",
+        "temporalContract"
+      ],
+      "scope": "Committed historical plan and selected-case/shared numerical semantics; unrelated additional case entries do not invalidate this reference",
+      "status": "REFERENCE_WRITTEN",
+      "nativeExecutionPerformed": true
+    },
+    "tensorFileBytesVerified": false
+  },
+  "manifestSha256": "532523034a5e5c7590c4fca11d67feec329c6e0e364afd55f472f03ffd8966d2",
+  "referenceReport": {
+    "path": "/tmp/kw-vae-ref-derived-source-f4-20261102/reference-report.json",
+    "sha256": "616b99b7e8df9add49e81c00772bc4fb6c02fe264d1452885acfa5a366fe8ff3",
+    "executionSourceSha": "5f7db87d2800e98eeca28484bf1a209eb06bcc39"
+  },
+  "initialCgroup": {
+    "path": "/sys/fs/cgroup",
+    "limitBytes": 17179869184,
+    "currentBytes": 12172886016,
+    "inactiveFileBytes": 6487265280,
+    "anonBytes": 84328448,
+    "shmemBytes": 3328331776,
+    "workingSetBytes": 5685620736,
+    "workingSetScope": "max(0,memory.current-observed inactive_file); missing inactive_file falls back to raw charge. Shmem/tmpfs is not separately subtracted. Non-atomic observation, not an exact pressure measurement."
+  },
+  "servedSourcePreflight": {
+    "allCheckedBeforeNumericalExecution": true,
+    "files": [
+      {
+        "path": "tools/inference/vae/accept_stream.py",
+        "bytes": 48888,
+        "sha256": "65eff824ba6d89aa68523a5217c2b13a2a5fdce9749240297c469cb3bc265349"
+      },
+      {
+        "path": "tools/inference/vae/stream_browser.mjs",
+        "bytes": 17953,
+        "sha256": "6e97bebccabe030e2d91356b98a347ae15c7e0fb54ed04cf98e6ffd83c383d9d"
+      },
+      {
+        "path": "tools/inference/vae/stream_observer_worker.mjs",
+        "bytes": 5282,
+        "sha256": "909a6169bef3a246a14fb47773f1f3f2a5c9fda24e10b5e79a84399a2f62907d"
+      },
+      {
+        "path": "tools/inference/vae/process_lifecycle.py",
+        "bytes": 6299,
+        "sha256": "a927fe8f38382563ec8d512745446f32bc7740bff3c1b86b650f4490f178299c"
+      },
+      {
+        "path": "tools/inference/vae/accept_still.py",
+        "bytes": 23812,
+        "sha256": "91f5e010809d54716be620a01a6af2a364d77ebd3b7834cb7c06571b681fb9f6"
+      },
+      {
+        "path": "tools/inference/vae/stream_reference.py",
+        "bytes": 23592,
+        "sha256": "5d5c5c70b01b03841bc85997ad6ec9cf638a1269452a8ce70fb954fb51991543"
+      },
+      {
+        "path": "tools/inference/vae/reference_contract.py",
+        "bytes": 18853,
+        "sha256": "4c5e7becf75984cf230d9616c4e4297b6c50a0516cc9b79c173bb2cc7c8391c7"
+      },
+      {
+        "path": "development/inference/standalone-20261102/vae/predeclared-plan.json",
+        "bytes": 9348,
+        "sha256": "d8ae3cf436007b0ce7bb7877756bc5663975e65c3c62928bbc48c784d5bd526c"
+      },
+      {
+        "path": "tools/inference/text-encoder/plain_memory.mjs",
+        "bytes": 5508,
+        "sha256": "dd0dcf5ef26ea1b71b2803db4d521af3bfeb24b0fa8323eb7437507b2d3cbc71"
+      },
+      {
+        "path": "docs/shared/vr180/sha256.mjs",
+        "bytes": 6970,
+        "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+      },
+      {
+        "path": "docs/shared/inference/text-encoder.mjs",
+        "bytes": 9309,
+        "sha256": "44e9b144d6c1f3e2d60cb33e2d537f8f523fec0c7c10e30830427b417957252d"
+      },
+      {
+        "path": "docs/shared/inference/vae-api.mjs",
+        "bytes": 7407,
+        "sha256": "bbdd72f49004f15974e7aa87cdebe4ce86e04827ca75ff8257f7148c0194d21a"
+      },
+      {
+        "path": "docs/shared/inference/ui.mjs",
+        "bytes": 7205,
+        "sha256": "77895caf5535522ab9a96f9b250fff12d56ae5fedc4b7944b8d4e1d457f0a22f"
+      },
+      {
+        "path": "docs/shared/inference/vae.mjs",
+        "bytes": 13223,
+        "sha256": "e2e8b7901edfe8ac94152dba2c9f246d0dd0d2c595b5ac72e0cade4b36d170ae"
+      },
+      {
+        "path": "docs/shared/inference/api.mjs",
+        "bytes": 2293,
+        "sha256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda"
+      },
+      {
+        "path": "docs/shared/inference/vae-stream.mjs",
+        "bytes": 26085,
+        "sha256": "424aaa73963c97c0d3b943ecc18801394c18ab3ff7ffd07b3d111af6ab58d68c"
+      },
+      {
+        "path": "docs/shared/inference/text-encoder-api.mjs",
+        "bytes": 5142,
+        "sha256": "e77a01c0e07446be7b027e3c5bea9f2f49f7a4d7b91ab8747f479fdac657a7b3"
+      },
+      {
+        "path": "docs/shared/inference/client.mjs",
+        "bytes": 2423,
+        "sha256": "806278b5eb09242cec8726d22b13be6237323862d0c42f0c3948d0a63cc9501f"
+      },
+      {
+        "path": "docs/shared/inference/text-job.mjs",
+        "bytes": 1884,
+        "sha256": "b4d3d4e2540fe1b389a37f2d8f56b0c452f7e4edf30340554d361017e7c3a326"
+      },
+      {
+        "path": "docs/shared/inference/tokenizer.mjs",
+        "bytes": 1637,
+        "sha256": "4a7811d4e36fbcc568e2a2a1e0941fd78261f84b231a96458d919ea0259fb9a5"
+      },
+      {
+        "path": "docs/shared/inference/hike.mjs",
+        "bytes": 4126,
+        "sha256": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65"
+      },
+      {
+        "path": "docs/shared/inference/inference-worker.mjs",
+        "bytes": 2527,
+        "sha256": "2b68116682912b2faa2d53e750932015df63ac5fb011777c094f3a33db80669a"
+      },
+      {
+        "path": "docs/shared/inference/tensor.mjs",
+        "bytes": 10894,
+        "sha256": "7a15d721b1bab60cdade8723fd1c4d543a142d236cf2e59b63f1ba33ba14ed78"
+      },
+      {
+        "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "bytes": 24274,
+        "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57"
+      },
+      {
+        "path": "docs/shared/inference/vendor/sentencepiece.mjs",
+        "bytes": 741502,
+        "sha256": "31ce41230f8694c63afa1ffeecb862d0bf3768d858328d335530997a86a1f27d"
+      },
+      {
+        "path": "docs/shared/inference/vendor/ort.wasm.min.mjs",
+        "bytes": 49997,
+        "sha256": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e"
+      },
+      {
+        "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+        "bytes": 12361745,
+        "sha256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+      },
+      {
+        "path": "docs/shared/inference/kernel/tensor.wasm",
+        "bytes": 5265,
+        "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8"
+      }
+    ],
+    "count": 28,
+    "sourceSnapshot": {
+      "executionSourceSha": "dccb88515775ec8aa86dd16f82e8816c9347ed38",
+      "cachedSourceFileCount": 28,
+      "cachedSourceBytes": 13443443,
+      "currentWorktreeIdentityClaim": false,
+      "scope": "Immutable source-only bytes verified against the exact commit when first captured. Subsequent requests reuse those bytes; later worktree edits are not asserted clean or served. A new dependency still requires its own first-read Git comparison. Model files and numerical tensor payloads are not cached."
+    }
+  },
+  "downloadStoragePreflight": {
+    "requiredBytes": 929816,
+    "availableBytes": 6113001472,
+    "scope": "All selected WKT outputs plus one simultaneous browser download staging copy and maximum headers"
+  },
+  "failure": {
+    "phase": "input-preflight",
+    "type": "PermissionError",
+    "message": "[Errno 1] Operation not permitted",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/vae/accept_stream.py\", line 643, in run_acceptance\n    server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py\", line 453, in __init__\n    self.socket = socket.socket(self.address_family,\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py\", line 233, in __init__\n    _socket.socket.__init__(self, family, type, proto, fileno)\nPermissionError: [Errno 1] Operation not permitted\n",
+    "scope": "Observed actual failure; no smaller replacement case was executed"
+  },
+  "servedSources": [
+    {
+      "path": "tools/inference/vae/accept_stream.py",
+      "bytes": 48888,
+      "sha256": "65eff824ba6d89aa68523a5217c2b13a2a5fdce9749240297c469cb3bc265349"
+    },
+    {
+      "path": "tools/inference/vae/stream_browser.mjs",
+      "bytes": 17953,
+      "sha256": "6e97bebccabe030e2d91356b98a347ae15c7e0fb54ed04cf98e6ffd83c383d9d"
+    },
+    {
+      "path": "tools/inference/vae/stream_observer_worker.mjs",
+      "bytes": 5282,
+      "sha256": "909a6169bef3a246a14fb47773f1f3f2a5c9fda24e10b5e79a84399a2f62907d"
+    },
+    {
+      "path": "tools/inference/vae/process_lifecycle.py",
+      "bytes": 6299,
+      "sha256": "a927fe8f38382563ec8d512745446f32bc7740bff3c1b86b650f4490f178299c"
+    },
+    {
+      "path": "tools/inference/vae/accept_still.py",
+      "bytes": 23812,
+      "sha256": "91f5e010809d54716be620a01a6af2a364d77ebd3b7834cb7c06571b681fb9f6"
+    },
+    {
+      "path": "tools/inference/vae/stream_reference.py",
+      "bytes": 23592,
+      "sha256": "5d5c5c70b01b03841bc85997ad6ec9cf638a1269452a8ce70fb954fb51991543"
+    },
+    {
+      "path": "tools/inference/vae/reference_contract.py",
+      "bytes": 18853,
+      "sha256": "4c5e7becf75984cf230d9616c4e4297b6c50a0516cc9b79c173bb2cc7c8391c7"
+    },
+    {
+      "path": "development/inference/standalone-20261102/vae/predeclared-plan.json",
+      "bytes": 9348,
+      "sha256": "d8ae3cf436007b0ce7bb7877756bc5663975e65c3c62928bbc48c784d5bd526c"
+    },
+    {
+      "path": "tools/inference/text-encoder/plain_memory.mjs",
+      "bytes": 5508,
+      "sha256": "dd0dcf5ef26ea1b71b2803db4d521af3bfeb24b0fa8323eb7437507b2d3cbc71"
+    },
+    {
+      "path": "docs/shared/vr180/sha256.mjs",
+      "bytes": 6970,
+      "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+    },
+    {
+      "path": "docs/shared/inference/text-encoder.mjs",
+      "bytes": 9309,
+      "sha256": "44e9b144d6c1f3e2d60cb33e2d537f8f523fec0c7c10e30830427b417957252d"
+    },
+    {
+      "path": "docs/shared/inference/vae-api.mjs",
+      "bytes": 7407,
+      "sha256": "bbdd72f49004f15974e7aa87cdebe4ce86e04827ca75ff8257f7148c0194d21a"
+    },
+    {
+      "path": "docs/shared/inference/ui.mjs",
+      "bytes": 7205,
+      "sha256": "77895caf5535522ab9a96f9b250fff12d56ae5fedc4b7944b8d4e1d457f0a22f"
+    },
+    {
+      "path": "docs/shared/inference/vae.mjs",
+      "bytes": 13223,
+      "sha256": "e2e8b7901edfe8ac94152dba2c9f246d0dd0d2c595b5ac72e0cade4b36d170ae"
+    },
+    {
+      "path": "docs/shared/inference/api.mjs",
+      "bytes": 2293,
+      "sha256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda"
+    },
+    {
+      "path": "docs/shared/inference/vae-stream.mjs",
+      "bytes": 26085,
+      "sha256": "424aaa73963c97c0d3b943ecc18801394c18ab3ff7ffd07b3d111af6ab58d68c"
+    },
+    {
+      "path": "docs/shared/inference/text-encoder-api.mjs",
+      "bytes": 5142,
+      "sha256": "e77a01c0e07446be7b027e3c5bea9f2f49f7a4d7b91ab8747f479fdac657a7b3"
+    },
+    {
+      "path": "docs/shared/inference/client.mjs",
+      "bytes": 2423,
+      "sha256": "806278b5eb09242cec8726d22b13be6237323862d0c42f0c3948d0a63cc9501f"
+    },
+    {
+      "path": "docs/shared/inference/text-job.mjs",
+      "bytes": 1884,
+      "sha256": "b4d3d4e2540fe1b389a37f2d8f56b0c452f7e4edf30340554d361017e7c3a326"
+    },
+    {
+      "path": "docs/shared/inference/tokenizer.mjs",
+      "bytes": 1637,
+      "sha256": "4a7811d4e36fbcc568e2a2a1e0941fd78261f84b231a96458d919ea0259fb9a5"
+    },
+    {
+      "path": "docs/shared/inference/hike.mjs",
+      "bytes": 4126,
+      "sha256": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65"
+    },
+    {
+      "path": "docs/shared/inference/inference-worker.mjs",
+      "bytes": 2527,
+      "sha256": "2b68116682912b2faa2d53e750932015df63ac5fb011777c094f3a33db80669a"
+    },
+    {
+      "path": "docs/shared/inference/tensor.mjs",
+      "bytes": 10894,
+      "sha256": "7a15d721b1bab60cdade8723fd1c4d543a142d236cf2e59b63f1ba33ba14ed78"
+    },
+    {
+      "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "bytes": 24274,
+      "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57"
+    },
+    {
+      "path": "docs/shared/inference/vendor/sentencepiece.mjs",
+      "bytes": 741502,
+      "sha256": "31ce41230f8694c63afa1ffeecb862d0bf3768d858328d335530997a86a1f27d"
+    },
+    {
+      "path": "docs/shared/inference/vendor/ort.wasm.min.mjs",
+      "bytes": 49997,
+      "sha256": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e"
+    },
+    {
+      "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "bytes": 12361745,
+      "sha256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+    },
+    {
+      "path": "docs/shared/inference/kernel/tensor.wasm",
+      "bytes": 5265,
+      "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8"
+    }
+  ],
+  "servedSourceSnapshot": {
+    "executionSourceSha": "dccb88515775ec8aa86dd16f82e8816c9347ed38",
+    "cachedSourceFileCount": 28,
+    "cachedSourceBytes": 13443443,
+    "currentWorktreeIdentityClaim": false,
+    "scope": "Immutable source-only bytes verified against the exact commit when first captured. Subsequent requests reuse those bytes; later worktree edits are not asserted clean or served. A new dependency still requires its own first-read Git comparison. Model files and numerical tensor payloads are not cached."
+  },
+  "serverErrors": [],
+  "wallSeconds": 3.304845603997819,
+  "hostControl": {
+    "stopRequested": false,
+    "reason": null,
+    "signal": null,
+    "path": "/host-control",
+    "scope": "Read-only local diagnostic host control. SIGINT/SIGTERM handlers only assign plain flags, without locks or Playwright calls; browser polling cancels via the existing normal API."
+  }
+}

@@ -74,15 +74,15 @@ Node24.19.0のnative Blob `arrayBuffer()` は読出しchunkを保持し、最後
 
 資源対策はhost側の明示設定として記録する。使い捨てNodeで明示的に `NODE_OPTIONS=--require=.../node_resource_guard.cjs` を有効にした場合だけ、自身の `oom_score_adj=1000` を設定する。これはOOM停止対象の選好であり、利用可能RAMや完走を保証しない。親PythonはNode開始前の24 graphと各block完了後に、readonly fdへ `POSIX_FADV_DONTNEED` を助言する。対象path・回数・累計file bytes・errorを記録するが、助言成功をpage eviction・RSS低下・空きmemoryの証拠へ読み替えない。
 
-このhostの結果はNode参照hostの検証範囲に限る。Browser File/Workerでの実行・強制取消・T3受入は別に残り、receiptも `browserWorkerAcceptance:false / cancellationAcceptance:false` とする。`byteGraph` 指定はNN前に拒否し、計画の `id-l2` bytes経路はBrowser側の後続試験へ残す。ID APIのL2契約は前表どおり維持する。既存FP32 model経路・重み・graph・独立oracle・比較gateは維持し、FP64 model経路への切替や再exportは行わない。
+このhostの結果はNode参照hostの検証範囲に限り、receiptも `browserWorkerAcceptance:false / cancellationAcceptance:false` とする。Browser File/Workerでの実行・強制取消・T3受入は別receiptで完了した。`byteGraph` 指定はNode側ではNN前に拒否し、`id-l2` bytes経路はBrowser側で確認した。詳細は [TEXT-RESULT.md](TEXT-RESULT.md) を参照する。ID APIのL2契約は前表どおり維持する。既存FP32 model経路・重み・graph・独立oracle・比較gateは維持し、FP64 model経路への切替や再exportは行わない。
 
 | 区分 | 完全source SHA | 証拠・状態の扱い |
 | --- | --- | --- |
 | 既存Node参照host attempt | `dccb88515775ec8aa86dd16f82e8816c9347ed38` | 完了case・途中終了・資源記録は [RESULT.md](RESULT.md) を参照 |
-| 次の直列実行に指定するsource | `b3e5e34430d58bca3bf69b8938ba87beb196d054` | 参照と区別した実行source。個別の進捗・受入はRESULTを参照 |
+| Node6件・Browser T3の実行source | `b3e5e34430d58bca3bf69b8938ba87beb196d054` | 参照と区別した実行source。個別の進捗・受入はRESULTを参照 |
 | 比較対象の独立full512 FP32 oracle | `5954d48e0fb6df1d6977964fd8a7ba2a242b6eff` | 保存済みの独立参照を再利用 |
 
-後続の文書・証拠追加による配布commit、実際に実行したsource SHA、未実行の計画sourceを分けて保存する。最新配布SHAで実行SHAを付け替えない。NodeとBrowserを含む次の直列化計画は受入結果と区別し、手順・対象case・host指定は [REPRODUCE.md](REPRODUCE.md)、実行後の判定は [RESULT.md](RESULT.md) を参照する。
+後続の文書・証拠追加による配布commit、実際に実行したsource SHA、未実行の計画sourceを分けて保存する。最新配布SHAで実行SHAを付け替えない。NodeとBrowserの手順・対象case・host指定は [REPRODUCE.md](REPRODUCE.md)、完了した各caseの判定は [TEXT-RESULT.md](TEXT-RESULT.md) を参照する。
 
 ## VAE
 

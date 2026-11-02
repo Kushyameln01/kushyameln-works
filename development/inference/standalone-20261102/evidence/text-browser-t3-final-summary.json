@@ -1,0 +1,794 @@
+{
+  "schemaVersion": 1,
+  "scope": "Actual Browser normal public API plus diagnostic lifecycle observer; fixed input cases and nine controls, not full Text domain or downstream consumer acceptance",
+  "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054",
+  "referenceExecutionSourceSha": "5954d48e0fb6df1d6977964fd8a7ba2a242b6eff",
+  "passed": true,
+  "normalComparisons": [
+    {
+      "id": "plain-empty",
+      "passed": true,
+      "finite": true,
+      "elements": 2097152,
+      "activeElements": 4096,
+      "paddingElements": 2093056,
+      "paddingExactlyZero": true,
+      "maxAbsError": 4.172325134277344e-06,
+      "activeMaxAbsError": 4.172325134277344e-06,
+      "allclose": true,
+      "gate": {
+        "maxAbsError": 0.001,
+        "atol": 0.001,
+        "rtol": 0.001
+      },
+      "allValuesCompared": true,
+      "artifact": {
+        "path": "plain-empty.wktensor",
+        "bytes": 8390098,
+        "sha256": "0fb64b351a4f45c7dfbd0538f23e03d39605df4a05fc62b025520d85484164f2"
+      },
+      "reference": {
+        "path": "/tmp/kw-standalone-text-oracle-20261102/plain-empty-reference.f32",
+        "bytes": 8388608,
+        "sha256": "5cf7779aca64bca4164f62aad4259a4a3f8f43af9131932d528f859b65650f40"
+      }
+    },
+    {
+      "id": "id-l2",
+      "passed": true,
+      "finite": true,
+      "elements": 8192,
+      "activeElements": 8192,
+      "paddingElements": 0,
+      "paddingExactlyZero": true,
+      "maxAbsError": 4.2691826820373535e-06,
+      "activeMaxAbsError": 4.2691826820373535e-06,
+      "allclose": true,
+      "gate": {
+        "maxAbsError": 0.001,
+        "atol": 0.001,
+        "rtol": 0.001
+      },
+      "allValuesCompared": true,
+      "artifact": {
+        "path": "id-l2.wktensor",
+        "bytes": 33234,
+        "sha256": "bf47e15dc56eecaecaa6ea7e8f4505678abadaf66914ee1c5c79424f9cdebd29"
+      },
+      "reference": {
+        "path": "/tmp/kw-standalone-text-oracle-20261102/id-l2-reference.f32",
+        "bytes": 32768,
+        "sha256": "4c0f58ebbb8ddda8106a4cfe60cb67b3a1123a0f40c540194449a4d920a34eed"
+      }
+    }
+  ],
+  "controls": [
+    {
+      "id": "cancel-save",
+      "caseId": "plain-empty",
+      "action": "cancel-save",
+      "triggered": true,
+      "published": false,
+      "passed": true
+    },
+    {
+      "id": "cancel-file-load",
+      "caseId": "id-l1",
+      "action": "cancel",
+      "triggered": true,
+      "published": false,
+      "passed": true
+    },
+    {
+      "id": "cancel-file-bytes",
+      "caseId": "id-l1",
+      "action": "cancel",
+      "triggered": true,
+      "published": false,
+      "passed": true
+    },
+    {
+      "id": "cancel-bytes-map-hash",
+      "caseId": "id-l2",
+      "action": "cancel",
+      "triggered": true,
+      "published": false,
+      "passed": true
+    },
+    {
+      "id": "cancel-hash",
+      "caseId": "id-l1",
+      "action": "cancel",
+      "triggered": true,
+      "published": false,
+      "passed": true
+    },
+    {
+      "id": "cancel-session-create",
+      "caseId": "id-l1",
+      "action": "cancel",
+      "triggered": true,
+      "published": false,
+      "passed": true
+    },
+    {
+      "id": "cancel-run",
+      "caseId": "id-l1",
+      "action": "cancel",
+      "triggered": true,
+      "published": false,
+      "passed": true,
+      "recovery": {
+        "passed": true,
+        "output": {
+          "shape": [
+            1,
+            1,
+            4096
+          ],
+          "dtype": "float32",
+          "layout": "BLC",
+          "meaning": "text_hidden_states",
+          "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+          "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+          "normalization": "umt5-final-rmsnorm-f32-v1",
+          "attentionMask": [
+            1
+          ],
+          "finite": true,
+          "paddingExactlyZero": true,
+          "elements": 4096
+        },
+        "evidence": {
+          "type": "wan-umt5-staged-fp32",
+          "hiddenSize": 4096,
+          "numLayers": 24,
+          "maxTokens": 512,
+          "arithmetic": "FP32 diagnostic expansion of original scaled FP8 values; not original GPU FP8 execution equivalence",
+          "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+          "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+          "effectiveTokens": 1,
+          "trailingMaskCompaction": false,
+          "hikeOperation": "actual encoder.final_layer_norm",
+          "hikeContributed": true,
+          "finalNumericGate": {
+            "maxAbsError": 0.001,
+            "rtol": 0.001,
+            "registeredBeforeComparison": true,
+            "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee"
+          },
+          "preparedFixtureNativeMaxAbsError": 2.142973244190216e-06,
+          "sourceSha256": "797f11b69256dffa8d9a6d236fe1e05d0c250c84d231a5993accde0ff44238bc",
+          "manifestModelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+          "hikeStats": {
+            "capacity": 65536,
+            "arenaBytes": 786432,
+            "memoryBytes": 1835008,
+            "calls": 1
+          },
+          "inputMode": "token-ids",
+          "tokenizer": null,
+          "sessionObservation": {
+            "created": 24,
+            "released": 24,
+            "active": 0,
+            "maximumActive": 1,
+            "runCalls": 24,
+            "tensorDisposeCalls": 72,
+            "loadMs": 76247.89999997616,
+            "inferMs": 3576.200000062585
+          },
+          "memoryObservation": {
+            "readCalls": 27,
+            "readBytes": 18531978872,
+            "digestCalls": 2,
+            "digestInputBytes": 13457,
+            "ortSubmittedModelBytes": 18523750008,
+            "wasmGrowCalls": 11,
+            "wasmMemories": [
+              {
+                "id": 1,
+                "origin": "instantiate",
+                "capacityBytes": 1835008
+              },
+              {
+                "id": 3,
+                "origin": "constructor",
+                "capacityBytes": 2191261696,
+                "initialPages": 256,
+                "maximumPages": 65536,
+                "shared": true
+              }
+            ],
+            "scope": "API-visible cumulative read/digest/submitted bytes and observed WASM capacity; not retained bytes or OS RSS/PSS. WeakRef observations do not establish deallocation."
+          }
+        },
+        "download": {
+          "published": true,
+          "name": "recovery-cancel-run.wktensor",
+          "bytes": 16848,
+          "sha256": "30b38bb5bb0f595a29875dd5f410dabcb17dd639c55cf7e2acb1049db162de6c",
+          "readback": {
+            "passed": true,
+            "reader": "native decodeTensor",
+            "metadataExact": true,
+            "allValuesExact": true,
+            "allValuesCompared": true,
+            "elements": 4096,
+            "normalization": "umt5-final-rmsnorm-f32-v1",
+            "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+            "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+            "ownedPayload": true,
+            "ownedMask": true
+          }
+        },
+        "stateAfter": {
+          "status": "success",
+          "inputRevision": 2,
+          "module": "text_encoder",
+          "operation": "encode",
+          "progress": null,
+          "error": null
+        },
+        "priorRevision": 1,
+        "artifact": {
+          "path": "recovery-cancel-run.wktensor",
+          "bytes": 16848,
+          "sha256": "30b38bb5bb0f595a29875dd5f410dabcb17dd639c55cf7e2acb1049db162de6c"
+        },
+        "reference": {
+          "path": "/tmp/kw-standalone-text-oracle-20261102/id-l1-reference.f32",
+          "bytes": 16384,
+          "sha256": "779ceb940176d50d31004a225d64769c44e4edafcc86301c4caa536ef78fb0e4"
+        },
+        "comparison": {
+          "passed": true,
+          "finite": true,
+          "elements": 4096,
+          "activeElements": 4096,
+          "paddingElements": 0,
+          "paddingExactlyZero": true,
+          "maxAbsError": 3.2901763916015625e-05,
+          "activeMaxAbsError": 3.2901763916015625e-05,
+          "allclose": true,
+          "gate": {
+            "maxAbsError": 0.001,
+            "atol": 0.001,
+            "rtol": 0.001
+          },
+          "allValuesCompared": true
+        }
+      }
+    },
+    {
+      "id": "reconfigure-session",
+      "caseId": "id-l1",
+      "action": "reconfigure",
+      "triggered": true,
+      "published": false,
+      "passed": true
+    },
+    {
+      "id": "dispose-run",
+      "caseId": "id-l1",
+      "action": "dispose",
+      "triggered": true,
+      "published": false,
+      "passed": true
+    }
+  ],
+  "completedFullNeuralRuns": 3,
+  "jobAttempts": 11,
+  "nativeWorkerTerminateCalls": 11,
+  "resource": {
+    "sampledGroupPeakRssSumBytes": 6906658816,
+    "sampleIntervalSeconds": 0.05,
+    "samples": 8842,
+    "perPidPeakRss": [
+      {
+        "pid": 39511,
+        "ctime": 1793631199.28,
+        "peakRssBytes": 284311552
+      },
+      {
+        "pid": 39522,
+        "ctime": 1793631200.53,
+        "peakRssBytes": 138964992
+      },
+      {
+        "pid": 39534,
+        "ctime": 1793631202.01,
+        "peakRssBytes": 150929408
+      },
+      {
+        "pid": 39550,
+        "ctime": 1793631202.31,
+        "peakRssBytes": 1982464
+      },
+      {
+        "pid": 39554,
+        "ctime": 1793631202.31,
+        "peakRssBytes": 1757184
+      },
+      {
+        "pid": 39552,
+        "ctime": 1793631202.31,
+        "peakRssBytes": 51818496
+      },
+      {
+        "pid": 39555,
+        "ctime": 1793631202.31,
+        "peakRssBytes": 51818496
+      },
+      {
+        "pid": 39578,
+        "ctime": 1793631202.55,
+        "peakRssBytes": 75444224
+      },
+      {
+        "pid": 39574,
+        "ctime": 1793631202.52,
+        "peakRssBytes": 41324544
+      },
+      {
+        "pid": 39591,
+        "ctime": 1793631202.71,
+        "peakRssBytes": 23711744
+      },
+      {
+        "pid": 39619,
+        "ctime": 1793631203.04,
+        "peakRssBytes": 93847552
+      },
+      {
+        "pid": 39626,
+        "ctime": 1793631203.11,
+        "peakRssBytes": 35360768
+      },
+      {
+        "pid": 39627,
+        "ctime": 1793631203.11,
+        "peakRssBytes": 6110449664
+      },
+      {
+        "pid": 39673,
+        "ctime": 1793631203.71,
+        "peakRssBytes": 2686976
+      },
+      {
+        "pid": 39682,
+        "ctime": 1793631206.44,
+        "peakRssBytes": 1847296
+      },
+      {
+        "pid": 39721,
+        "ctime": 1793631209.19,
+        "peakRssBytes": 21528576
+      },
+      {
+        "pid": 39731,
+        "ctime": 1793631224.08,
+        "peakRssBytes": 5115904
+      },
+      {
+        "pid": 39818,
+        "ctime": 1793631668.1,
+        "peakRssBytes": 5345280
+      },
+      {
+        "pid": 40063,
+        "ctime": 1793632105.73,
+        "peakRssBytes": 4796416
+      },
+      {
+        "pid": 40076,
+        "ctime": 1793632110.63,
+        "peakRssBytes": 1912832
+      },
+      {
+        "pid": 40100,
+        "ctime": 1793632126.73,
+        "peakRssBytes": 4501504
+      },
+      {
+        "pid": 40154,
+        "ctime": 1793632535.32,
+        "peakRssBytes": 5001216
+      },
+      {
+        "pid": 40191,
+        "ctime": 1793632549.52,
+        "peakRssBytes": 3727360
+      }
+    ],
+    "wallSeconds": 1353.2021264990035,
+    "sampledCompleteGroupPeakPssSumBytes": 6620222464,
+    "phasePeaks": {
+      "startup": {
+        "samples": 50,
+        "peakRssSumBytes": 741253120,
+        "peakCompletePssSumBytes": 459226112
+      },
+      "setup": {
+        "samples": 1,
+        "peakRssSumBytes": 759328768,
+        "peakCompletePssSumBytes": 476622848
+      },
+      "case:plain-empty": {
+        "samples": 3011,
+        "peakRssSumBytes": 5279768576,
+        "peakCompletePssSumBytes": 4993615872
+      },
+      "control:cancel-save": {
+        "samples": 11,
+        "peakRssSumBytes": 895897600,
+        "peakCompletePssSumBytes": 609550336
+      },
+      "case:id-l2": {
+        "samples": 2376,
+        "peakRssSumBytes": 6906658816,
+        "peakCompletePssSumBytes": 6620222464
+      },
+      "control:cancel-file-load": {
+        "samples": 8,
+        "peakRssSumBytes": 1019224064,
+        "peakCompletePssSumBytes": 731596800
+      },
+      "control:cancel-file-bytes": {
+        "samples": 81,
+        "peakRssSumBytes": 1782444032,
+        "peakCompletePssSumBytes": 1495738368
+      },
+      "control:cancel-bytes-map-hash": {
+        "samples": 121,
+        "peakRssSumBytes": 4084547584,
+        "peakCompletePssSumBytes": 3797149696
+      },
+      "control:cancel-hash": {
+        "samples": 18,
+        "peakRssSumBytes": 2539913216,
+        "peakCompletePssSumBytes": 2252527616
+      },
+      "control:cancel-session-create": {
+        "samples": 100,
+        "peakRssSumBytes": 2541617152,
+        "peakCompletePssSumBytes": 2254301184
+      },
+      "control:cancel-run": {
+        "samples": 2803,
+        "peakRssSumBytes": 5483864064,
+        "peakCompletePssSumBytes": 5197331456
+      },
+      "control:reconfigure-session": {
+        "samples": 131,
+        "peakRssSumBytes": 4460883968,
+        "peakCompletePssSumBytes": 4174121984
+      },
+      "control:dispose-run": {
+        "samples": 131,
+        "peakRssSumBytes": 4478742528,
+        "peakCompletePssSumBytes": 4191374336
+      }
+    },
+    "phaseEpochBoundaries": {},
+    "perPidRssPssPeaks": [
+      {
+        "pid": 39511,
+        "ctime": 1793631199.28,
+        "role": "harness",
+        "peakRssBytes": 284311552,
+        "peakPssBytes": 280576000
+      },
+      {
+        "pid": 39522,
+        "ctime": 1793631200.53,
+        "role": "MainThread",
+        "peakRssBytes": 138964992,
+        "peakPssBytes": 137735168
+      },
+      {
+        "pid": 39534,
+        "ctime": 1793631202.01,
+        "role": "chromium",
+        "peakRssBytes": 150929408,
+        "peakPssBytes": 108131328
+      },
+      {
+        "pid": 39550,
+        "ctime": 1793631202.31,
+        "role": "chrome_crashpad_handler",
+        "peakRssBytes": 1982464,
+        "peakPssBytes": 902144
+      },
+      {
+        "pid": 39554,
+        "ctime": 1793631202.31,
+        "role": "chrome_crashpad_handler",
+        "peakRssBytes": 1757184,
+        "peakPssBytes": 764928
+      },
+      {
+        "pid": 39552,
+        "ctime": 1793631202.31,
+        "role": "zygote",
+        "peakRssBytes": 51818496,
+        "peakPssBytes": 22025216
+      },
+      {
+        "pid": 39555,
+        "ctime": 1793631202.31,
+        "role": "zygote",
+        "peakRssBytes": 51818496,
+        "peakPssBytes": 28064768
+      },
+      {
+        "pid": 39578,
+        "ctime": 1793631202.55,
+        "role": "utility",
+        "peakRssBytes": 75444224,
+        "peakPssBytes": 40242176
+      },
+      {
+        "pid": 39574,
+        "ctime": 1793631202.52,
+        "role": "gpu-process",
+        "peakRssBytes": 41324544,
+        "peakPssBytes": 24730624
+      },
+      {
+        "pid": 39591,
+        "ctime": 1793631202.71,
+        "role": "utility",
+        "peakRssBytes": 23711744,
+        "peakPssBytes": 11065344
+      },
+      {
+        "pid": 39619,
+        "ctime": 1793631203.04,
+        "role": "renderer",
+        "peakRssBytes": 93847552,
+        "peakPssBytes": 61018112
+      },
+      {
+        "pid": 39626,
+        "ctime": 1793631203.11,
+        "role": "renderer",
+        "peakRssBytes": 35360768,
+        "peakPssBytes": 12259328
+      },
+      {
+        "pid": 39627,
+        "ctime": 1793631203.11,
+        "role": "renderer",
+        "peakRssBytes": 6110449664,
+        "peakPssBytes": 6073604096
+      },
+      {
+        "pid": 39673,
+        "ctime": 1793631203.71,
+        "role": "git",
+        "peakRssBytes": 2686976,
+        "peakPssBytes": 1893376
+      },
+      {
+        "pid": 39682,
+        "ctime": 1793631206.44,
+        "role": "git",
+        "peakRssBytes": 1847296,
+        "peakPssBytes": 1117184
+      },
+      {
+        "pid": 39721,
+        "ctime": 1793631209.19,
+        "role": "utility",
+        "peakRssBytes": 21528576,
+        "peakPssBytes": 4691968
+      },
+      {
+        "pid": 39731,
+        "ctime": 1793631224.08,
+        "role": "git",
+        "peakRssBytes": 5115904,
+        "peakPssBytes": 4321280
+      },
+      {
+        "pid": 39818,
+        "ctime": 1793631668.1,
+        "role": "git",
+        "peakRssBytes": 5345280,
+        "peakPssBytes": 4550656
+      },
+      {
+        "pid": 40063,
+        "ctime": 1793632105.73,
+        "role": "git",
+        "peakRssBytes": 4796416,
+        "peakPssBytes": 4001792
+      },
+      {
+        "pid": 40076,
+        "ctime": 1793632110.63,
+        "role": "git",
+        "peakRssBytes": 1912832,
+        "peakPssBytes": 1154048
+      },
+      {
+        "pid": 40100,
+        "ctime": 1793632126.73,
+        "role": "git",
+        "peakRssBytes": 4501504,
+        "peakPssBytes": 3706880
+      },
+      {
+        "pid": 40154,
+        "ctime": 1793632535.32,
+        "role": "git",
+        "peakRssBytes": 5001216,
+        "peakPssBytes": 4206592
+      },
+      {
+        "pid": 40191,
+        "ctime": 1793632549.52,
+        "role": "git",
+        "peakRssBytes": 3727360,
+        "peakPssBytes": 2932736
+      }
+    ],
+    "actualMaximumSampleGapSeconds": 3.2571342149894917,
+    "pssScope": "PSS is sampled from memory_full_info when available; only complete process samples enter the complete-PSS peak. RSS sums may double-count shared pages. Phase peaks use sample start epoch versus page start/end epochs; reads span sampleDurationMs. Raw timeline phase is the latest received browser event.",
+    "scope": "Sampled RSS/PSS over harness descendants including startup/full/cancellation; sampling can miss short peaks. API-visible bytes and WASM capacity are separate from retained OS memory and user-device benefit."
+  },
+  "ownedAfterClose": {
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": []
+  },
+  "sourceVerification": [
+    {
+      "path": "tools/inference/text-encoder/accept_plain.py",
+      "bytes": 43072,
+      "sha256": "dd226fbe416c7e4d83b49e64c623f99f71cb3f0ae0c4bccd74ce2ca9f168b355",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "tools/inference/text-encoder/plain_checks.py",
+      "bytes": 6405,
+      "sha256": "6b5115f33f8ef3144bbbe601197edafc9c7d3e072b2c5514ade946fb602d02fe",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "tools/inference/text-encoder/plain_browser.mjs",
+      "bytes": 20892,
+      "sha256": "053ffa3d4bd5a91a9cfd08bf6262454ca6f2644b463d3366f920f9a1982e92cf",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "tools/inference/text-encoder/plain_observer_worker.mjs",
+      "bytes": 5450,
+      "sha256": "a490f65605a8886e32921585461dff6ef91add7c7fa99041f18746a78a7a25d7",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "tools/inference/text-encoder/plain_memory.mjs",
+      "bytes": 5508,
+      "sha256": "dd0dcf5ef26ea1b71b2803db4d521af3bfeb24b0fa8323eb7437507b2d3cbc71",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "tools/inference/vae/process_lifecycle.py",
+      "bytes": 6299,
+      "sha256": "a927fe8f38382563ec8d512745446f32bc7740bff3c1b86b650f4490f178299c",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/vr180/sha256.mjs",
+      "bytes": 6970,
+      "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/api.mjs",
+      "bytes": 2293,
+      "sha256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/tokenizer.mjs",
+      "bytes": 1637,
+      "sha256": "4a7811d4e36fbcc568e2a2a1e0941fd78261f84b231a96458d919ea0259fb9a5",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/text-encoder-api.mjs",
+      "bytes": 5142,
+      "sha256": "e77a01c0e07446be7b027e3c5bea9f2f49f7a4d7b91ab8747f479fdac657a7b3",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/client.mjs",
+      "bytes": 2423,
+      "sha256": "806278b5eb09242cec8726d22b13be6237323862d0c42f0c3948d0a63cc9501f",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/tensor.mjs",
+      "bytes": 10894,
+      "sha256": "7a15d721b1bab60cdade8723fd1c4d543a142d236cf2e59b63f1ba33ba14ed78",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/text-encoder.mjs",
+      "bytes": 9309,
+      "sha256": "44e9b144d6c1f3e2d60cb33e2d537f8f523fec0c7c10e30830427b417957252d",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/vae-api.mjs",
+      "bytes": 7407,
+      "sha256": "bbdd72f49004f15974e7aa87cdebe4ce86e04827ca75ff8257f7148c0194d21a",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/vendor/sentencepiece.mjs",
+      "bytes": 741502,
+      "sha256": "31ce41230f8694c63afa1ffeecb862d0bf3768d858328d335530997a86a1f27d",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/vae.mjs",
+      "bytes": 13223,
+      "sha256": "e2e8b7901edfe8ac94152dba2c9f246d0dd0d2c595b5ac72e0cade4b36d170ae",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/vae-stream.mjs",
+      "bytes": 26085,
+      "sha256": "424aaa73963c97c0d3b943ecc18801394c18ab3ff7ffd07b3d111af6ab58d68c",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/vendor/ort.wasm.min.mjs",
+      "bytes": 49997,
+      "sha256": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/inference-worker.mjs",
+      "bytes": 2527,
+      "sha256": "2b68116682912b2faa2d53e750932015df63ac5fb011777c094f3a33db80669a",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/hike.mjs",
+      "bytes": 4126,
+      "sha256": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/text-job.mjs",
+      "bytes": 1884,
+      "sha256": "b4d3d4e2540fe1b389a37f2d8f56b0c452f7e4edf30340554d361017e7c3a326",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/kernel/tensor.wasm",
+      "bytes": 5265,
+      "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "bytes": 24274,
+      "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    },
+    {
+      "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "bytes": 12361745,
+      "sha256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+      "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054"
+    }
+  ],
+  "knownSeparateFailure": "id-l512-all-active maxAbs0.0016480088233947754 >0.001, maintained separately",
+  "fullTextDomainAccepted": false
+}
