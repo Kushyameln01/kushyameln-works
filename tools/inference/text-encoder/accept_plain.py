@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Actual plain Worker/ORT/Hike acceptance against an independent full512 oracle."""
-import argparse,hashlib,json,mimetypes,os,shutil,subprocess,sys,threading,time,traceback
+import argparse,hashlib,json,mimetypes,os,re,shutil,subprocess,sys,threading,time,traceback
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -32,11 +32,96 @@ def memory_summary(report):
  complete=[s['pssSumBytes'] for s in samples if s['pssComplete']]
  return {'sampledCompleteGroupPeakPssSumBytes':max(complete) if complete else None,'phasePeaks':phases,'phaseEpochBoundaries':boundaries,'perPidRssPssPeaks':list(pid_peaks.values()),'actualMaximumSampleGapSeconds':max((b['elapsedSeconds']-a['elapsedSeconds'] for a,b in zip(samples,samples[1:])),default=None),'pssScope':'PSS is sampled from memory_full_info when available; only complete process samples enter the complete-PSS peak. RSS sums may double-count shared pages. Phase peaks use sample start epoch versus page start/end epochs; reads span sampleDurationMs. Raw timeline phase is the latest received browser event.'}
 
+def validate_node_sdk_mode(skip_controls,suite_mode,inputs):
+ if not skip_controls or not suite_mode:raise ValueError('--node-sdk requires an explicit suite plan and --skip-controls; Browser/T3 controls remain separate')
+ if any('byteGraph' in record for record in inputs):raise ValueError('--node-sdk accepts File-backed cases only; byteGraph cases require the standard Browser host')
+
+def consume_node_sdk_artifacts(a,host,inputs,manifest,oracle_cases,report):
+ """Compare each completed public-SDK artifact once, including after host death."""
+ import numpy as np
+ selected={record['id']:record for record in inputs};completed={item['id'] for item in report['comparisons']};cases=host.get('cases',[])
+ if len({case['id'] for case in cases})!=len(cases):raise ValueError('Duplicate Node host case receipt')
+ for case in cases:
+  case_id=case['id']
+  if case_id not in selected:raise ValueError('Unexpected Node host case: '+case_id)
+  if case_id in completed or case.get('passed') is not True:continue
+  record=selected[case_id];artifact=case['artifact'];path=a.output/(case_id+'.wktensor')
+  if artifact['path']!=path.name:raise ValueError('Unexpected native artifact path')
+  raw=path.read_bytes()
+  if len(raw)!=artifact['bytes'] or sha(raw)!=artifact['sha256']:raise ValueError('Node artifact bytes/hash mismatch: '+case_id)
+  meta,actual=unpack_tensor(raw,shape=record['shape']);reference=np.fromfile(a.reference/(case_id+'-reference.f32'),dtype='<f4').reshape(record['shape']);mask=np.array(record['attentionMask'],dtype=np.uint8)
+  if meta['modelSha256']!=manifest['modelSha256'] or meta['tokenizerSha256']!=manifest['tokenizer']['sha256'] or meta['attentionMask']!=record['attentionMask'] or meta.get('normalization')!='umt5-final-rmsnorm-f32-v1':raise ValueError('Node native tensor identity/mask/normalization mismatch')
+  comparison=compare_values(actual,reference,mask,shape=record['shape'])
+  if not comparison['finite'] or not comparison['paddingExactlyZero']:raise ValueError('Node native/reference finite or exact masked-row contract failed: '+case_id)
+  report['comparisons'].append({'id':case_id,**comparison,'artifact':artifact,'reference':oracle_cases[case_id]['reference']});completed.add(case_id)
+  if not comparison['passed']:report['numericFailures'].append({'id':case_id,'kind':'case-output','comparison':comparison})
+
+def run_node_sdk(a,plan,manifest,inputs,oracle_cases,reference_source_sha):
+ """Conforming reference host; no Browser Worker or cancellation acceptance."""
+ import psutil
+ report={'passed':False,'complete':False,'scope':'Node conforming reference host using the normal public Text factory and shared Text job; no Browser Worker/T3 control acceptance','host':'node-sdk','executionSourceSha':a.execution_source_sha,'referenceExecutionSourceSha':reference_source_sha,'inputs':inputs,'selectedCaseIds':[record['id'] for record in inputs],'comparisons':[],'numericFailures':[],'sourceClosure':[],'preflightOnly':a.preflight_only,'browserWorkerAcceptance':False,'cancellationAcceptance':False,'newExports':0,'gate':manifest['numericGate'],'progress':[],'memoryTimeline':[]}
+ receipt=a.output/'node-sdk-acceptance.json';host_path=a.output/'node-sdk-results.json';owner=ProcessOwnership().start();stop=threading.Event();process=None;peak=0;started=time.monotonic();root=psutil.Process()
+ def update():
+  if host_path.exists():
+   host=json.loads(host_path.read_text());report['native']=host
+   if not a.preflight_only:consume_node_sdk_artifacts(a,host,inputs,manifest,oracle_cases,report)
+  completed={item['id'] for item in report['comparisons']};report['completedCaseIds']=[record['id'] for record in inputs if record['id'] in completed];report['pendingCaseIds']=[record['id'] for record in inputs if record['id'] not in completed]
+  write_json(receipt,{key:value for key,value in report.items() if key!='memoryTimeline'}|{'memorySamples':len(report['memoryTimeline'])})
+ def sample():
+  nonlocal peak
+  try:
+   while not stop.wait(.1):
+    rows=[]
+    for child in [root,*root.children(recursive=True)]:
+     try:rows.append({'pid':child.pid,'ctime':child.create_time(),'rssBytes':child.memory_info().rss})
+     except psutil.NoSuchProcess:pass
+    total=sum(row['rssBytes'] for row in rows);peak=max(peak,total);report['memoryTimeline'].append({'elapsedSeconds':time.monotonic()-started,'rssSumBytes':total,'processes':rows})
+  except Exception as error:report['memorySamplerFailure']=str(error)
+ sampler=threading.Thread(target=sample,daemon=True);sampler.start()
+ try:
+  if not a.execution_source_sha or not re.fullmatch('[0-9a-f]{40}',a.execution_source_sha):raise ValueError('Node SDK host requires a full committed execution source SHA')
+  for path in [Path(__file__),HERE/'plain_checks.py',HERE/'node_sdk_host.mjs',HERE/'node_resource_guard.cjs',HERE.parent/'vae/process_lifecycle.py']:
+   raw=path.read_bytes();relative=str(path.relative_to(ROOT));fixed=subprocess.run(['git','show',a.execution_source_sha+':'+relative],cwd=ROOT,check=True,capture_output=True).stdout
+   if raw!=fixed:raise ValueError('Executed source differs from committed source: '+relative)
+   report['sourceClosure'].append({'path':relative,'bytes':len(raw),'sha256':sha(raw),'executionSourceSha':a.execution_source_sha})
+  config={'root':str(ROOT),'bundle':str(a.bundle.resolve()),'source':str(a.source.resolve()),'inputs':inputs,'manifest':manifest,'manifestSha256':inputs[0]['manifestSha256'],'executionSourceSha':a.execution_source_sha,'output':str(a.output.resolve()),'diagnostics':False,'preflightOnly':a.preflight_only}
+  write_json(receipt,report)
+  with (a.output/'node-sdk-stdout.txt').open('w') as stdout,(a.output/'node-sdk-stderr.txt').open('w') as stderr:
+   process=subprocess.Popen(['node',str(HERE/'node_sdk_host.mjs')],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=stderr,text=True)
+   report['ownedNode']={'pid':process.pid,'ctime':psutil.Process(process.pid).create_time()};write_json(receipt,{key:value for key,value in report.items() if key!='memoryTimeline'})
+   process.stdin.write(json.dumps(config));process.stdin.close()
+   for line in process.stdout:
+    stdout.write(line);stdout.flush()
+    if line.strip():
+     event=json.loads(line);report['progress'].append(event);print(json.dumps(event),flush=True);update()
+   code=process.wait();report['nodeExitCode']=code;update()
+  native=report.get('native',{});report['complete']=a.preflight_only or not report['pendingCaseIds'];report['completedFullNeuralRuns']=0 if a.preflight_only else len(report['completedCaseIds'])
+  report['passed']=code==0 and native.get('passed') is True and report['complete'] and not report['numericFailures']
+  if not report['passed']:report['failure']={'name':'NumericGateFailure' if report['numericFailures'] else 'NodeHostFailure','message':'Node host or selected native case acceptance failed; completed artifacts retained','nodeExitCode':code,'nativeFailure':native.get('failure'),'numericFailureIds':[failure['id'] for failure in report['numericFailures']]}
+  if a.preflight_only:report['newNeuralRuns']=0
+ except Exception as error:
+  report['passed']=False;report['failure']={'name':type(error).__name__,'message':str(error),'traceback':traceback.format_exc()}
+  if process is not None and process.poll() is None:
+   process.terminate()
+   try:process.wait(timeout=10)
+   except subprocess.TimeoutExpired:process.kill();process.wait()
+ finally:
+  stop.set();sampler.join();proc=owner.finish(timeout_seconds=5);report['processOwnership']=proc
+  if report.get('memorySamplerFailure') or not cleanup_complete(proc['liveAfterClose'],proc['zombiesAfterClose'],proc['errors']):report['passed']=False
+  report['resource']={'wallSeconds':time.monotonic()-started,'sampledGroupPeakRssSumBytes':peak,'sampleIntervalSeconds':.1,'scope':'RSS sum of this harness and its owned Node descendants only; excludes concurrent VAE/other jobs, can double-count shared pages and miss short peaks'}
+  if not a.preflight_only and report.get('native') is not None:
+   try:write_json(a.output/'conditioning-handoff.json',{'schemaVersion':'works-text-standalone-handoff/1.0','passed':report['passed'],'scope':report['scope'],'host':'node-sdk','executionSourceSha':a.execution_source_sha,'referenceExecutionSourceSha':reference_source_sha,'inputs':inputs,'completedCaseIds':report.get('completedCaseIds',[]),'pendingCaseIds':report.get('pendingCaseIds',[record['id'] for record in inputs]),'gate':manifest['numericGate'],'comparisons':report['comparisons'],'numericFailures':report['numericFailures'],'browserWorkerAcceptance':False,'cancellationAcceptance':False,'generationReady':False})
+   except Exception as error:report['passed']=False;report['failure']={'name':type(error).__name__,'message':str(error)}
+  write_json(receipt,report)
+ print(json.dumps({'passed':report['passed'],'host':'node-sdk','complete':report['complete'],'comparisons':report['comparisons'],'failure':report.get('failure'),'resource':report['resource']}),flush=True)
+ return 0 if report['passed'] else 1
+
 def main():
  p=argparse.ArgumentParser(description=__doc__)
  for key in ['plan','bundle','source','reference','output']:p.add_argument('--'+key,required=True,type=Path)
- p.add_argument('--execution-source-sha');p.add_argument('--reference-execution-source-sha');p.add_argument('--browser',default=os.environ.get('CHROMIUM_BINARY') or shutil.which('chromium'));p.add_argument('--preflight-only',action='store_true');p.add_argument('--case-id',action='append');p.add_argument('--skip-controls',action='store_true');a=p.parse_args()
- assert a.browser,'Real Chromium required'
+ p.add_argument('--execution-source-sha');p.add_argument('--reference-execution-source-sha');p.add_argument('--browser',default=os.environ.get('CHROMIUM_BINARY') or shutil.which('chromium'));p.add_argument('--preflight-only',action='store_true');p.add_argument('--case-id',action='append');p.add_argument('--skip-controls',action='store_true');p.add_argument('--node-sdk',action='store_true');a=p.parse_args()
+ if a.node_sdk and not a.skip_controls:p.error('--node-sdk requires --skip-controls; Browser/T3 controls are separate')
+ if not a.node_sdk:assert a.browser,'Real Chromium required'
  if a.output.exists():raise FileExistsError('Fresh private output directory required')
  assert not a.output.resolve().is_relative_to(ROOT/'docs')
  assert shutil.disk_usage(a.output.parent).free>=536870912,'At least512MiB disk headroom required'
@@ -47,6 +132,7 @@ def main():
   assert suite_mode and set(a.case_id)<=set(record['id'] for record in inputs),'Unknown selected suite case'
   inputs=[record for record in inputs if record['id'] in a.case_id]
  input_record=inputs[0]
+ if a.node_sdk:validate_node_sdk_mode(a.skip_controls,suite_mode,inputs)
  reference_source_sha=a.reference_execution_source_sha or a.execution_source_sha
  assert sha((a.bundle/'manifest.json').read_bytes())==plan['selectedManifest']['sha256']==input_record['manifestSha256'];validate_gate(manifest['numericGate'])
  assert a.source.stat().st_size==manifest['modelBytes']
@@ -67,6 +153,7 @@ def main():
     case=oracle_cases[record['id']];assert case['input']==record and case['oracleInternalShape']==[1,512,4096]
     assert sha((a.reference/(record['id']+'-reference.f32')).read_bytes())==case['reference']['sha256']
   else:assert sha((a.reference/'plain-reference.f32').read_bytes())==oracle['reference']['sha256']
+ if a.node_sdk:return run_node_sdk(a,plan,manifest,inputs,{} if a.preflight_only else oracle_cases,reference_source_sha)
  served={};server_errors=[]
  def source_bytes(path):
   raw=path.read_bytes();relative=str(path.relative_to(ROOT))
