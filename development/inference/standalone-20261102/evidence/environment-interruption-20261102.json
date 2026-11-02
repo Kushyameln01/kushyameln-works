@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "scope": "Environment and transport observations only. No new model execution or numerical acceptance. Existing accepted receipts are unchanged.",
+  "recordedAtUtc": "2026-11-02 17:45:40 UTC",
+  "distributionBaseSha": "22ba8f3cfcfe1cd2e55a20711cd524437dfbbfdf",
+  "executionSourceSha": "dccb88515775ec8aa86dd16f82e8816c9347ed38",
+  "case": "source-f80-480x832",
+  "requestedOperation": "encode",
+  "expectedInputShape": [
+    1,
+    3,
+    80,
+    480,
+    832
+  ],
+  "expectedOutputShape": [
+    1,
+    16,
+    20,
+    60,
+    104
+  ],
+  "lastSuccessfulObservation": {
+    "observedAtUtc": "2026-11-02T17:37:55.377720+00:00",
+    "phase": "chunk-start",
+    "operation": "encode",
+    "chunkIndex": 15,
+    "chunkCount": 20,
+    "completedChunks": 15,
+    "finalAcceptanceReportObserved": false
+  },
+  "transportErrors": [
+    "exec-server transport disconnected",
+    "exec-server transport disconnected; failed to resume exec-server session: recovery timed out after 25s",
+    "No usable execution environment is available. Wait for an environment to become available before using this tool."
+  ],
+  "environmentContextStatus": "unavailable",
+  "providerStatusObservation": {
+    "desiredPhase": "running",
+    "observedPhase": "running",
+    "connectivity": "connected",
+    "failure": null,
+    "observationsCurrent": true,
+    "interpretation": "Control-plane state did not restore usable command execution; it is not proof of process health or numerical completion."
+  },
+  "retainedDiagnosticMetadata": {
+    "historyStatus": "not_found",
+    "records": 0,
+    "networkLogsRead": false
+  },
+  "numericResult": "UNCONFIRMED",
+  "numericFailureDetermined": false,
+  "currentProcessState": null,
+  "workerExitState": null,
+  "sessionExitState": null,
+  "liveProcessesAfterClose": null,
+  "zombiesAfterClose": null,
+  "savedTensorAfterLoss": null,
+  "rootCause": "UNCONFIRMED",
+  "nextCase": {
+    "case": "reference-f1-848x848",
+    "notStartedAtLastSuccessfulObservation": true,
+    "currentStateAfterLoss": "UNCONFIRMED",
+    "acceptance": "NOT_ACCEPTED"
+  },
+  "preservedAcceptedScopes": [
+    "Text T1:9valid/9reject",
+    "Text T2:8PASS/1knownFAIL",
+    "Text T3:9Browsercontrols and save/readback/recovery",
+    "VAE target81 encode/independent raw decode",
+    "VAE sourceF1/F4/F5",
+    "VAE reference16x16/16x848/848x16",
+    "VAE independent rawT2 decode cancellation and same-API recovery"
+  ],
+  "resumePolicy": "Restore access and inspect existing final reports/artifacts/processes before starting any new inference. Do not rerun accepted scopes or re-export unchanged graphs. No completion, cleanup or numerical failure is inferred from the connection loss."
+}
