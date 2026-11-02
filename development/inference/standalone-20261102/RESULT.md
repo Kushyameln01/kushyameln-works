@@ -1,11 +1,11 @@
 # Text / VAE 単体検証結果
 
-TextとVAEを個別に判定する。TextはT1入力検査とT3終了・保存が完了し、T2は9case中8件が数値合格、全512有効ID一件が固定gate不合格のため単体完成には至っていない。VAEの81×480×832 targetは実WASMのencode・独立raw decode・保存読戻し・取消復帰まで合格した。source F80と参照848×848の残る受入を進めている。
+TextとVAEを個別に判定する。TextはT1入力検査とT3終了・保存が完了し、T2は9case中8件が数値合格、全512有効ID一件が固定gate不合格のため単体完成には至っていない。VAEの81×480×832 targetは実WASMのencode・独立raw decode・保存読戻し・取消復帰まで合格した。source F80と参照848×848の受入は、実行環境 unavailable により中断した。F80の成否・保存・資源終了は未確認。[中断状況と再開条件](STATUS.md) を参照する。
 
 | モジュール | 詳細結果 | 現在の判定 |
 | --- | --- | --- |
 | Text T1–T3 | [TEXT-RESULT.md](TEXT-RESULT.md) | T1/T3完了、T2未完了。全512有効IDのmaxAbs0.0016480088233947754が事前gate0.001を超過 |
-| VAE V1–V4 | [VAE-RESULT.md](VAE-RESULT.md) | target81・source F1/F4/F5・参照16×16/16×848/848×16は合格。F80/848×848は実行中 |
+| VAE V1–V4 | [VAE-RESULT.md](VAE-RESULT.md) | target81・source F1/F4/F5・参照16×16/16×848/848×16は合格。F80は成否未確認、848×848は未受入（環境 unavailable） |
 
 ## 配布・実行source
 
