@@ -17,6 +17,11 @@ const SIDES=['HIGH','LOW'];
 const typed=Object.getPrototypeOf(Float32Array.prototype);
 const slots=Object.fromEntries(['buffer','length','byteOffset','byteLength'].map(key=>[key,Object.getOwnPropertyDescriptor(typed,key).get]));
 const bufferLength=Object.getOwnPropertyDescriptor(ArrayBuffer.prototype,'byteLength').get;
+const nativeSignalAborted=Object.getOwnPropertyDescriptor(AbortSignal.prototype,'aborted').get;
+const nativeSignalReason=Object.getOwnPropertyDescriptor(AbortSignal.prototype,'reason').get;
+const nativeSignalThrow=AbortSignal.prototype.throwIfAborted;
+const nativeAddListener=EventTarget.prototype.addEventListener,nativeRemoveListener=EventTarget.prototype.removeEventListener;
+const NativeAbortController=AbortController,nativeAbort=AbortController.prototype.abort;
 const same=(a,b)=>Array.isArray(a)&&a.length===b.length&&a.every((v,i)=>v===b[i]);
 function known(value,names,label){
  if(!value||typeof value!=='object'||Array.isArray(value)||![Object.prototype,null].includes(Object.getPrototypeOf(value)))throw TypeError(label+' must be a plain object');
@@ -58,7 +63,9 @@ function wasmBytes(value){
  throw TypeError('Native nonshared WASM bytes required');
 }
 function signalCheck(signal){
- if(signal!==undefined){if(typeof signal?.throwIfAborted!=='function'||typeof signal?.addEventListener!=='function'||typeof signal?.removeEventListener!=='function')throw TypeError('Native AbortSignal required');signal.throwIfAborted();}
+ if(signal===undefined)return;
+ let aborted;try{aborted=nativeSignalAborted.call(signal);}catch{throw TypeError('Native AbortSignal required');}
+ if(aborted)nativeSignalThrow.call(signal);
 }
 async function loadBytes(value,url,signal){
  signalCheck(signal);if(value!==undefined)return value;
@@ -97,14 +104,28 @@ export async function createBerniniModelSamplerCandidate(options={}){
  };
  const dispose=()=>{
   if(disposed)return Promise.resolve();if(pendingDispose)return pendingDispose;
-  closing=true;controller?.abort(new DOMException('Model sampler disposed during execution','AbortError'));
+  closing=true;if(controller)nativeAbort.call(controller,new DOMException('Model sampler disposed during execution','AbortError'));
   const active=terminal;pendingDispose=Promise.resolve().then(async()=>{await active;await cleanup();disposed=true;closing=false;}).finally(()=>{pendingDispose=null;});return pendingDispose;
  };
  function start(input,names){
   live();if(busy)throw Error('Model sampler candidate busy');known(input,names,'sampler execution');signalCheck(input.signal);
-  busy=true;controller=new AbortController();let resolve;terminal=new Promise(done=>{resolve=done;});const listeners=[];
-  for(const external of [signal,input.signal])if(external!==undefined){const relay=()=>controller?.abort(external.reason);external.addEventListener('abort',relay,{once:true});listeners.push([external,relay]);}
-  return {signal:controller.signal,finish(){for(const [external,relay]of listeners)external.removeEventListener('abort',relay);busy=false;controller=null;terminal=null;resolve();}};
+  // Attach transactionally before publishing active state. Native slots/methods
+  // ignore caller-owned shadows on a genuine signal and reject duck signals.
+  const nextController=new NativeAbortController(),listeners=[];
+  const detach=()=>{const errors=[];for(const [external,relay]of listeners)try{nativeRemoveListener.call(external,'abort',relay);}catch(error){errors.push(error);}return errors;};
+  try{
+   for(const external of [signal,input.signal])if(external!==undefined){
+    signalCheck(external);const relay=()=>nativeAbort.call(nextController,nativeSignalReason.call(external));
+    nativeAddListener.call(external,'abort',relay,{once:true});listeners.push([external,relay]);signalCheck(external);
+   }
+   signalCheck(nextController.signal);
+  }catch(error){const errors=detach();if(errors.length)throw new AggregateError([error,...errors],'Sampler signal attachment and rollback failed',{cause:error});throw error;}
+  let resolve,finished=false;const nextTerminal=new Promise(done=>{resolve=done;});busy=true;controller=nextController;terminal=nextTerminal;
+  return {signal:nextController.signal,finish(){
+   if(finished)return;finished=true;let errors;
+   try{errors=detach();}finally{busy=false;controller=null;terminal=null;resolve();}
+   if(errors.length)throw new AggregateError(errors,'Sampler signal cleanup failed after terminal state reset');
+  }};
  }
  function progress(callback,event,s){live(s);callback?.({profile:MODEL_SAMPLER_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,...event});live(s);}
  async function predict(input={}){
@@ -173,6 +194,7 @@ export async function createBerniniModelSamplerCandidate(options={}){
     progress(onProgress,{operation:'sample',stage:'prediction-start',step,steps:6,side,sigma,nextSigma,timestep:timesteps[step]},run.signal);
     const prediction=await models[side].predict({shapeRequest,tensors:[{...ownedTensors[0],data:x},...ownedTensors.slice(1)],conditioning:positive,timestep:timesteps[step],signal:run.signal,onProgress:event=>progress(onProgress,{operation:'sample',stage:'model',step,steps:6,side,model:event},run.signal)});
     live(run.signal);retain(prediction.data);metrics[side==='HIGH'?'highPredictions':'lowPredictions']++;
+     if(onTrace)await trace('velocity'+String(step).padStart(2,'0'),prediction.data,{step,side,sigma,meaning:prediction.meaning});
     const denoised=await invoke('flowDenoised',{input:x,velocity:prediction.data,sigma});drop(prediction.data);
     const next=await invoke('eulerStep',{latent:x,denoised,sigma,nextSigma});drop(denoised);drop(x);x=next;
     metrics.stepsCompleted=step+1;stepEvidence.push({step,side,sigma,nextSigma,timestep:timesteps[step],prediction:prediction.evidence});

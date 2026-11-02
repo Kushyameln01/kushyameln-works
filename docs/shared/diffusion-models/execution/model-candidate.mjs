@@ -11,7 +11,13 @@ export const MODEL_CANDIDATE_LIMITS=Object.freeze({blocks:40,rows:128,keys:256,h
 const W=5120,H=40,D=128,R=128,K=256,F=13824,EPS=1e-6,INITIAL_MAX=-3.4028234663852886e38;
 const typed=Object.getPrototypeOf(Float32Array.prototype),slots=Object.fromEntries(['buffer','length','byteOffset','byteLength'].map(key=>[key,Object.getOwnPropertyDescriptor(typed,key).get]));
 const bufferLength=Object.getOwnPropertyDescriptor(ArrayBuffer.prototype,'byteLength').get;
-const abort=signal=>signal?.throwIfAborted();
+// Keep cancellation on native slots. Caller-owned method properties must not
+// strand the owner's busy/terminal state during listener attachment or cleanup.
+const signalThrowIfAborted=AbortSignal.prototype.throwIfAborted;
+const signalReason=Object.getOwnPropertyDescriptor(AbortSignal.prototype,'reason').get;
+const signalAddListener=EventTarget.prototype.addEventListener;
+const signalRemoveListener=EventTarget.prototype.removeEventListener;
+const abort=signal=>{if(signal!==undefined)signalThrowIfAborted.call(signal);};
 function known(value,names,label){if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(key=>!names.includes(key)))throw TypeError('Unknown '+label+' field or invalid object');}
 function sameShape(a,b){
  if(!Array.isArray(a)||a.length!==b.length)return false;
@@ -186,8 +192,7 @@ export async function createBerniniModelCandidate(options={}){
     try{
      known(input,['shapeRequest','tensors','conditioning','timestep','signal','onProgress'],'candidate prediction');
      for(const external of [signal,input.signal])if(external!==undefined){
-      if(typeof external?.addEventListener!=='function'||typeof external?.removeEventListener!=='function'||typeof external?.throwIfAborted!=='function')throw TypeError('Native AbortSignal required');
-      external.throwIfAborted();const relay=()=>activeController?.abort(external.reason);external.addEventListener('abort',relay,{once:true});listeners.push([external,relay]);
+      abort(external);const relay=()=>activeController?.abort(signalReason.call(external));signalAddListener.call(external,'abort',relay,{once:true});listeners.push([external,relay]);
      }
      const s=activeController.signal,timestep=input.timestep,onProgress=input.onProgress;live(s);
      if(typeof timestep!=='number'||!Number.isFinite(timestep)||timestep<0||timestep>1000)throw RangeError('Timestep in 0..1000 required');
@@ -222,7 +227,7 @@ export async function createBerniniModelCandidate(options={}){
      const evidence={profile:MODEL_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,generationReady:false,blockCount:40,blocksCompleted:metrics.blocksCompleted,totalTokens:total,targetTokens:layout.targetTokens,contextTokens:layout.contextTokens,headRows,writtenTargetRows:writtenRows,textRows:conditioning.rows,textMask:'validated provenance; every supplied row participates in cross-attention softmax',rawTimeEmbeddingInHead:true,weightStrategy:'host full stage matrices, loaded once per prediction; compact FFN output chunks; head cache retained; ORT weight inputs still snapshotted on every tile',sourceReads:metrics.sourceReads-before.sourceReads,sourceF32Bytes:metrics.sourceF32Bytes-before.sourceF32Bytes,linearRuns:metrics.linearRuns-before.linearRuns,attentionTiles:metrics.attentionTiles-before.attentionTiles,operatorInputCopyBytes:copyDelta('inputCopyBytes'),operatorOutputCopyBytes:copyDelta('outputCopyBytes'),elapsedMs:performance.now()-started,source:{side:identity.side,modelSha256:identity.modelHash,headerSHA256:identity.headerSHA256,fullFileSHA256Verified:false},originalProductionPrecisionVerified:false};
      metrics.predictions++;metrics.lastRun=structuredClone(evidence);
      return {data:output,dtype:'float32',shape:[...layout.targetShape],layout:'NCTHW',meaning:'bernini-flow-velocity:v1',space:'model',modelSha256:identity.modelHash,evidence};
-    }catch(error){metrics.failedPredictions++;throw error;}finally{hidden=null;sequence?.dispose();for(const weight of [...weights])release(weight);hiddenStores(0,0);for(const [external,relay]of listeners)external.removeEventListener('abort',relay);busy=false;activeController=null;activeTerminal=null;resolveTerminal();}
+    }catch(error){metrics.failedPredictions++;throw error;}finally{hidden=null;sequence?.dispose();for(const weight of [...weights])release(weight);hiddenStores(0,0);try{for(const [external,relay]of listeners)signalRemoveListener.call(external,'abort',relay);}finally{busy=false;activeController=null;activeTerminal=null;resolveTerminal();}}
   }
   return Object.freeze({
    predict(input={}){return execute(input);},

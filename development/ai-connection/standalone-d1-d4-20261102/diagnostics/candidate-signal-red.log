@@ -1,0 +1,37 @@
+✔ candidate releases busy/terminal ownership when signal addEventListener throws (8.775718ms)
+✖ candidate releases busy/terminal ownership when signal removeEventListener throws (203.900377ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 235.197894
+
+✖ failing tests:
+
+test at docs/shared/diffusion-models/execution/test-model-signal-cleanup.mjs:28:2
+✖ candidate releases busy/terminal ownership when signal removeEventListener throws (203.900377ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    {
+  +   busyAfterFailure: true,
+  +   disposalSettled: false,
+  +   retryRejectedForTimestep: false
+  -   busyAfterFailure: false,
+  -   disposalSettled: true,
+  -   retryRejectedForTimestep: true
+    }
+  
+      at TestContext.<anonymous> (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-model-signal-cleanup.mjs:38:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Object],
+    expected: [Object],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

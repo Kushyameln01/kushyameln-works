@@ -11,6 +11,10 @@ export const ORIGINAL81_TARGET_SHAPE=Object.freeze([1,16,21,60,104]);
 export const GENERATED_MAX_ELEMENTS=4194304;
 export const CONTEXT_MAX_ELEMENTS=8388608;
 const CHUNK=4096,EULER_CHUNK=65536,MEAN='wan21-normalized-posterior-mean:v1';
+const typedArrayPrototype=Object.getPrototypeOf(Float32Array.prototype);
+const typedArraySlots=Object.fromEntries(['buffer','length','byteOffset','byteLength'].map(name=>[name,Object.getOwnPropertyDescriptor(typedArrayPrototype,name).get]));
+const typedArrayTag=Object.getOwnPropertyDescriptor(typedArrayPrototype,Symbol.toStringTag).get;
+const arrayBufferByteLength=Object.getOwnPropertyDescriptor(ArrayBuffer.prototype,'byteLength').get;
 const same=(a,b)=>Array.isArray(a)&&a.length===b.length&&a.every((v,i)=>v===b[i]);
 const sha256=async bytes=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),v=>v.toString(16).padStart(2,'0')).join('');
 function shapeInfo(shape){
@@ -19,8 +23,14 @@ function shapeInfo(shape){
  return {shape:[...shape],elements,positions:elements/16};
 }
 function arrayCopy(data,elements){
- if(!(data instanceof Float32Array)||!(data.buffer instanceof ArrayBuffer)||data.length!==elements)throw TypeError('Caller-owned nonshared finite F32 array with matching shape required');
- const owned=new Float32Array(data);if(!owned.every(Number.isFinite)){owned.fill(0);throw RangeError('Nonfinite F32 input');}return owned;
+ const fail=()=>{throw TypeError('Native compact nonshared finite exact-shape F32 required');};
+ if(Object.getPrototypeOf(data??{})!==Float32Array.prototype||!ArrayBuffer.isView(data))fail();
+ let buffer,length,offset,bytes,bufferBytes,tag;
+ try{buffer=typedArraySlots.buffer.call(data);length=typedArraySlots.length.call(data);offset=typedArraySlots.byteOffset.call(data);bytes=typedArraySlots.byteLength.call(data);bufferBytes=arrayBufferByteLength.call(buffer);tag=typedArrayTag.call(data);}catch{fail();}
+ if(tag!=='Float32Array'||Object.getPrototypeOf(buffer)!==ArrayBuffer.prototype||length!==elements||offset!==0||bytes!==elements*4||bytes!==bufferBytes)fail();
+ const owned=new Float32Array(data);
+ for(let i=0;i<elements;i++)if(!Number.isFinite(owned[i])){owned.fill(0);fail();}
+ return owned;
 }
 function noMask(value){for(const key of ['attentionMask','mask','noiseMask','denoiseMask'])if(value[key]!==undefined)throw TypeError('Latent arithmetic does not accept masks');}
 function abort(signal){if(signal?.aborted)throw new DOMException('Generated operation aborted','AbortError');}

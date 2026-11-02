@@ -1,0 +1,199 @@
+✔ generated space accepts compact native finite exact-size F32 (8.125873ms)
+✖ generated restoration rejects a 64-element native view with own length spoofed as 128 (2.407201ms)
+ℹ {"visibleLength":128,"nativeLength":64,"acceptedOutputLength":128,"phantomOutputElements":64}
+✖ normalizeContextRaw rejects a spoofed native F32 length (1.410332ms)
+✖ normalizeContexts rejects a spoofed native F32 length (0.661185ms)
+✖ restoreHighHandoff rejects a spoofed native F32 length (0.993635ms)
+✖ normalizeHighHandoff rejects a spoofed native F32 length (1.031532ms)
+✖ generated space rejects a shared native buffer hidden by an own buffer property (0.808106ms)
+✖ generated space rejects noncompact storage hidden by own offset byteLength and buffer properties (0.576107ms)
+✖ generated space rejects extra backing bytes hidden by an ArrayBuffer byteLength property (1.148207ms)
+✖ generated space rejects typed-array subclasses with forged extent getters (0.960635ms)
+✖ generated space rejects another typed-array brand with a forged Float32Array prototype (0.853384ms)
+✖ generated space ignores throwing own extent accessors when native F32 slots are valid (0.816889ms)
+✔ generated space keeps native nonfinite and detached input rejection (1.100596ms)
+✔ target pointwise rejects spoofed native length before real scheduler arithmetic (2.108211ms)
+✖ target pointwise rejects shared native storage hidden behind a buffer property (2.701519ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 3
+ℹ fail 12
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 32.653172
+
+✖ failing tests:
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:26:1
+✖ generated restoration rejects a 64-element native view with own length spoofed as 128 (2.407201ms)
+  AssertionError [ERR_ASSERTION]: Generated restoration admitted fewer native elements than the target and produced phantom output
+      at file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:30:9
+      at async withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:117)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: undefined,
+    operator: 'fail',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:39:3
+✖ normalizeContextRaw rejects a spoofed native F32 length (1.410332ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection: normalizeContextRaw accepted a spoofed length
+      at async withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:117)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /native|compact|nonshared|finite|F32|shape/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:39:3
+✖ normalizeContexts rejects a spoofed native F32 length (0.661185ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection: normalizeContexts accepted a spoofed length
+      at async withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:117)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /native|compact|nonshared|finite|F32|shape/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:39:3
+✖ restoreHighHandoff rejects a spoofed native F32 length (0.993635ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection: restoreHighHandoff accepted a spoofed length
+      at async withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:117)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /native|compact|nonshared|finite|F32|shape/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:39:3
+✖ normalizeHighHandoff rejects a spoofed native F32 length (1.031532ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection: normalizeHighHandoff accepted a spoofed length
+      at async withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:117)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /native|compact|nonshared|finite|F32|shape/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:41:1
+✖ generated space rejects a shared native buffer hidden by an own buffer property (0.808106ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection: Shared native storage was accepted through a spoofed buffer
+      at async file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:45:3
+      at async withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:117)
+      at async TestContext.<anonymous> (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:43:2)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /native|compact|nonshared|finite|F32|shape/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:49:1
+✖ generated space rejects noncompact storage hidden by own offset byteLength and buffer properties (0.576107ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection: Noncompact storage was accepted through spoofed view fields
+      at async file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:52:2
+      at async withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:117)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /native|compact|nonshared|finite|F32|shape/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:55:1
+✖ generated space rejects extra backing bytes hidden by an ArrayBuffer byteLength property (1.148207ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection: Extra native backing bytes were accepted
+      at async file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:57:2
+      at async withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:117)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /native|compact|nonshared|finite|F32|shape/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:60:1
+✖ generated space rejects typed-array subclasses with forged extent getters (0.960635ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection: Typed-array subclass extent getters were trusted
+      at async file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:62:2
+      at async withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:117)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /native|compact|nonshared|finite|F32|shape/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:65:1
+✖ generated space rejects another typed-array brand with a forged Float32Array prototype (0.853384ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection: An Int32Array native brand was accepted as F32
+      at async file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:67:2
+      at async withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:117)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /native|compact|nonshared|finite|F32|shape/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:70:1
+✖ generated space ignores throwing own extent accessors when native F32 slots are valid (0.816889ms)
+  Error: Caller buffer accessor was invoked
+      at Float32Array.get (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:72:109)
+      at arrayCopy (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/generated-space.mjs:22:45)
+      at snapshot (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/generated-space.mjs:53:119)
+      at Object.restore (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/generated-space.mjs:101:32)
+      at file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:73:27
+      at withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:123)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:89:1
+✖ target pointwise rejects shared native storage hidden behind a buffer property (2.701519ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:93:153)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /native|compact|nonshared|finite|F32|shape/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }

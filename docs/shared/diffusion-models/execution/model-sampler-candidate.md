@@ -90,8 +90,10 @@ contract, requiring already normalized latent tensors. It returns model-space
 flow velocity and performs no sampling or final restoration.
 
 `candidate.diagnose(sampleInput, {onTrace})` is a development-only sample path.
-It emits owned clones named `initialX`, `stepX`, `highPublic`, `lowEntry` and
-`finalRaw`. Callback return values are ignored. Callbacks can inspect or alter
+It emits owned clones named `initialX`, `velocity00`..`velocity05`, `stepX`,
+`highPublic`, `lowEntry` and `finalRaw` (six step-indexed `stepX` events).
+Velocity clones are exposed only on this diagnostic path. Callback return values
+are ignored. Callbacks can inspect or alter
 their clones but cannot inject numerical values into execution. Normal
 `sample` does not accept a trace callback. Progress callbacks report model
 stages and step completion; cancellation is checked before and after callbacks.
@@ -99,7 +101,12 @@ stages and step completion; cancellation is checked before and after callbacks.
 The sampler serializes its own sample/predict calls. `dispose()` cancels active
 work, waits for it to terminate, releases both models, and then releases the
 shared ORT/math owners and both sources. Caller-owned model files and input
-tensors remain unchanged. Stage caches contain host F32 copies; weights are not
+tensors remain unchanged. Native AbortSignal slots and captured EventTarget
+methods provide cancellation; duck signals are rejected and signal-owned method
+overrides do not replace listener attachment/removal or native aborted state.
+Listener attachment is transactional. Finish attempts every removal and resets
+busy/terminal state in a finally block before reporting aggregate cleanup errors.
+Stage caches contain host F32 copies; weights are not
 native-resident and each ORT tile still snapshots its weight inputs. Aggregate
 RSS, GC latency and ORT allocator peaks are unmeasured. Original header/size
 identities are checked; a complete file SHA256 is not recomputed. No LoRA

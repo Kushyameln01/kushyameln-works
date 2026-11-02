@@ -56,7 +56,7 @@ async function execute(op,input){
   if(op==='load')fail('NOT_READY','Model inference has not been implemented or validated',{reasons:inspected.readiness.reasons,payloadBytes:inspected.payloadBytes});
   return inspected;
  }
- if(op==='predict'||op==='sample')fail('NOT_READY','No validated neural model session is available',{reasons:['MODEL_INFERENCE_NOT_IMPLEMENTED']});
+ if(op==='predict'||op==='sample')fail('NOT_READY','Required-shape model execution and composed resources are not accepted for the public runtime',{reasons:['REQUIRED_SHAPE_FULL_PREDICTION_NOT_ACCEPTED','SIX_UPDATE_RESOURCE_BUDGET_NOT_ACCEPTED','PUBLIC_MODEL_RUNTIME_NOT_CONNECTED']});
 
  if(op==='validateConditioning'||op==='validateRawLatent'){
   const {requireWanConditioning,requireWanRawLatent,requireWanRawLatentF1,requireWanRawLatentRect,WAN21_RAW_PROFILE,WAN21_RAW_F1_PROFILE,WAN21_RAW_RECT_PROFILE}=await import('../tensor-interop.mjs');

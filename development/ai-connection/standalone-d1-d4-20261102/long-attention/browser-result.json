@@ -1,0 +1,237 @@
+{
+  "browserVersion": "154.0.8037.57",
+  "comparisons": {
+    "context": {
+      "elements": 655360,
+      "failed": 0,
+      "gate": {
+        "absolute": 0.001,
+        "arrays": [
+          "max",
+          "denominator",
+          "context",
+          "output"
+        ],
+        "relative": 0.0001,
+        "rule": "every value finite and abs(actual-reference) <= absolute + relative*abs(reference)"
+      },
+      "label": "unnormalized context",
+      "maxAbsolute": 0.012775012801284902,
+      "maxRelative": 8.747809341808744e-07,
+      "nonfinite": 0,
+      "passed": true
+    },
+    "denominator": {
+      "elements": 5120,
+      "failed": 0,
+      "gate": {
+        "absolute": 0.001,
+        "arrays": [
+          "max",
+          "denominator",
+          "context",
+          "output"
+        ],
+        "relative": 0.0001,
+        "rule": "every value finite and abs(actual-reference) <= absolute + relative*abs(reference)"
+      },
+      "label": "denominator",
+      "maxAbsolute": 0.03792645850626286,
+      "maxRelative": 5.889590768950778e-07,
+      "nonfinite": 0,
+      "passed": true
+    },
+    "max": {
+      "elements": 5120,
+      "failed": 0,
+      "gate": {
+        "absolute": 0.001,
+        "arrays": [
+          "max",
+          "denominator",
+          "context",
+          "output"
+        ],
+        "relative": 0.0001,
+        "rule": "every value finite and abs(actual-reference) <= absolute + relative*abs(reference)"
+      },
+      "label": "max",
+      "maxAbsolute": 8.585629984736443e-10,
+      "maxRelative": 4.82847398970911e-08,
+      "nonfinite": 0,
+      "passed": true
+    },
+    "output": {
+      "elements": 655360,
+      "failed": 0,
+      "gate": {
+        "absolute": 0.001,
+        "arrays": [
+          "max",
+          "denominator",
+          "context",
+          "output"
+        ],
+        "relative": 0.0001,
+        "rule": "every value finite and abs(actual-reference) <= absolute + relative*abs(reference)"
+      },
+      "label": "Hike normalized output",
+      "maxAbsolute": 2.582608968348943e-07,
+      "maxRelative": 1.1389222332223272e-06,
+      "nonfinite": 0,
+      "passed": true
+    }
+  },
+  "denseSequenceScoreAllocated": false,
+  "elapsed": {
+    "generatorMs": 2271.799999937415,
+    "hashMs": 17850.599999964237,
+    "ortMs": 15089.600000143051,
+    "totalMs": 35469.20000000298
+  },
+  "inputSHA256": {
+    "k": "a71b79337157e0bea9afe162b3a81f7655874775aefba8259371e76df6d53e4b",
+    "q": "caffd9e94f532510daf6c744d0356d32cb06d468cdf13670faf2ab81d99da758",
+    "v": "1c738def01a11fba4b6126032724830ef4b735b6dd4ffbea2f5375c392e9b5fc"
+  },
+  "keysConsumed": 65520,
+  "knownCallerNumericBytes": 15769600,
+  "knownCallerScope": "Named query/state/one K+V tile only; excludes expected arrays, ORT/Hike internals, GC, browser and other harness allocations",
+  "mathAfterDispose": {
+    "arenaBytes": 8108032,
+    "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+    "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128",
+    "busy": false,
+    "calls": 1,
+    "disposed": true,
+    "inputCopyBytes": 2641920,
+    "kernelCalls": 8,
+    "limits": {
+      "chunkElements": 81920,
+      "epsilon": 1e-06,
+      "headWidth": 128,
+      "heads": 40,
+      "maxElements": 1769472,
+      "maxLinearWidth": 13824,
+      "maxRows": 128,
+      "width": 5120
+    },
+    "memoryBytes": 0,
+    "memoryIdentity": "model-math-1",
+    "outputCopyBytes": 2621440,
+    "primitiveCalls": {
+      "cos": 0,
+      "exp": 0,
+      "pow": 0,
+      "sin": 0,
+      "sqrt": 0,
+      "tanh": 0
+    },
+    "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+    "snapshotCopyBytes": 2641920,
+    "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+    "workspaceReused": true
+  },
+  "mathBeforeDispose": {
+    "arenaBytes": 8108032,
+    "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+    "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128",
+    "busy": false,
+    "calls": 1,
+    "disposed": false,
+    "inputCopyBytes": 2641920,
+    "kernelCalls": 8,
+    "limits": {
+      "chunkElements": 81920,
+      "epsilon": 1e-06,
+      "headWidth": 128,
+      "heads": 40,
+      "maxElements": 1769472,
+      "maxLinearWidth": 13824,
+      "maxRows": 128,
+      "width": 5120
+    },
+    "memoryBytes": 9175040,
+    "memoryIdentity": "model-math-1",
+    "outputCopyBytes": 2621440,
+    "primitiveCalls": {
+      "cos": 0,
+      "exp": 0,
+      "pow": 0,
+      "sin": 0,
+      "sqrt": 0,
+      "tanh": 0
+    },
+    "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+    "snapshotCopyBytes": 2641920,
+    "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+    "workspaceReused": true
+  },
+  "maxUpdates": 29830,
+  "maximumLogicalScoreElements": 1310720,
+  "modelInference": false,
+  "opsAfterDispose": {
+    "attentionRuns": 256,
+    "busy": false,
+    "cleanupPending": false,
+    "disposed": true,
+    "inputCopyBytes": 4036362240,
+    "linearRuns": 0,
+    "outputCopyBytes": 681574400,
+    "pendingTensors": 0,
+    "sessionCreations": 2
+  },
+  "opsBeforeDispose": {
+    "attentionRuns": 256,
+    "busy": false,
+    "cleanupPending": false,
+    "disposed": false,
+    "inputCopyBytes": 4036362240,
+    "linearRuns": 0,
+    "outputCopyBytes": 681574400,
+    "pendingTensors": 0,
+    "sessionCreations": 2
+  },
+  "pageErrors": [],
+  "passed": true,
+  "phantomKeys": 0,
+  "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+  "productionQKV": false,
+  "referenceMetadataSHA256": "89875eeeb62ba864d18e8acf69b360aaeacc8279c66b7879c7eeec0f7d486a13",
+  "scope": "SELECTED128QUERIES_ALL40HEADS_ALL65520KEYS_BEFORE_O",
+  "sentinel": {
+    "allElementsExceedPresetGate": true,
+    "globalKey": 65519,
+    "maximumAbsoluteNormalizedEffect": 0.031969191891266874,
+    "minimumAbsoluteNormalizedEffect": 0.030565320928374773,
+    "minimumPresetGateMargin": 0.029542733034038707,
+    "minimumRequiredEffect": 0.01
+  },
+  "shape": {
+    "headDim": 128,
+    "heads": 40,
+    "keys": 65520,
+    "queries": 128
+  },
+  "sourceCommit": "21398cb381ae2a6b3c79e5b04554e172ee3f76cf",
+  "sourceSHA256": {
+    "development/ai-connection/standalone-d1-d4-20261102/long-attention/browser-cases.mjs": "fd75ce0611169e4be0dca2fa03b4038c26d98b7382633f438eba0cab3b17011e",
+    "development/ai-connection/standalone-d1-d4-20261102/long-attention/contract.json": "f99cf72129cafba3aaeb35ceba49298234d5fef5516a0e9a1fbc64dfab7cc301",
+    "development/ai-connection/standalone-d1-d4-20261102/long-attention/run.py": "8a183ee157fba9c089a43adad3ef43fdbd7beb7573816df2b5ddf2e5c8bec6a9",
+    "docs/shared/diffusion-models/execution/batched-attention-graph.mjs": "95bbf39e692f74a9afb9b1e2b7972c4b148e62a8bd39c13af4ebbbb6ca91e098",
+    "docs/shared/diffusion-models/execution/batched-ops.mjs": "338dcc3fb31d522b36f3028c594170b2aead6933a30baed9d76e669f24545215",
+    "docs/shared/diffusion-models/execution/model-math.mjs": "f55d9024b2b17c3333ac312b80ef178c03b1a4d17476ce752c64c04114363f90",
+    "docs/shared/diffusion-models/execution/model-math/kernel.wasm": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+    "docs/shared/diffusion-models/execution/model-math/registry.mjs": "8e9709a8deb18065192f9718b31647b34f04951516e14657fbb0ceb7a5ae73c8",
+    "docs/shared/diffusion-models/ort-bridge/block-hidden/graph.mjs": "7826723d34a934a78e27335dce5973d41af4e2578136db5604c19b13d0954db0",
+    "docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+    "docs/shared/inference/vendor/ort.wasm.min.mjs": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+    "docs/shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+  },
+  "sourcesServedFromVerifiedSnapshot": true,
+  "sourcesVerifiedAfterRun": true,
+  "tailKeys": 240,
+  "tiles": 256
+}
