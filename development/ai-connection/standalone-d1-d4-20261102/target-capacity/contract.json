@@ -1,0 +1,219 @@
+{
+  "schemaVersion": "bernini-target-capacity-contract/0.1",
+  "status": "PRE_EXECUTION_GATE_FIXED",
+  "profileId": "bernini-target65520-four-stores-ffn-down128-capacity-diagnostic-v1",
+  "preparedAgainstExecutionSource": "e6f76c6a36a641be0a3483fd7b6bf6fcdf287ce2",
+  "plan": {
+    "profile": "bernini-target65520-four-stores-ffn-down128-capacity-diagnostic-v1",
+    "targetShape": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "sourceShape": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "targetTokens": 32760,
+    "totalTokens": 65520,
+    "hostStoreShape": [
+      1,
+      65520,
+      5120
+    ],
+    "hostStoreCount": 4,
+    "hostStoreBytes": 1341849600,
+    "components": {
+      "fourHostStores": 5367398400,
+      "ffnStageCache": 566231040,
+      "controlledInput": 7077888,
+      "operatorWeightSnapshot": 283115520,
+      "operatorInputSnapshot": 7077888,
+      "projectionOutput": 2621440,
+      "operatorHostOutputIntermediate": 2621440,
+      "biasedOutput": 2621440,
+      "biasInputSnapshot": 2621440,
+      "biasBroadcastSnapshot": 20480,
+      "biasChunkOwnedOutput": 327680,
+      "independentReference": 2621440,
+      "inputHashSnapshotAllowance": 7077888,
+      "outputHashSnapshotAllowance": 2621440,
+      "sourceRawDecodeBlock": 163840,
+      "sourceOwnedDecodeBlock": 327680,
+      "weightPageSnapshots": 552992,
+      "bias": 20480,
+      "modelMathArenaAndSourceWasm": 12582912,
+      "sourceHostLookupTables": 368640
+    },
+    "namedBytes": 6268071968,
+    "reservations": {
+      "ortAllocator": 1073741824,
+      "otherJsAndAllocator": 1073741824,
+      "safety": 2147483648
+    },
+    "namedPlusRuntimeReservations": 8415555616,
+    "withSafety": 10563039264,
+    "budgetMeaning": "Named spans plus unverified runtime reservations, not a measured peak or hard allocator bound",
+    "semantics": "Capacity-sentinel storage, not real model hidden states; conservative four-store/FFN-cache overlap, not the actual stage schedule",
+    "actualCandidateSchedule": "Self-attention uses four hidden stores; FFN normally uses one remaining hidden store. This diagnostic keeps all four while testing the FFN-down tile."
+  },
+  "input": {
+    "shape": [
+      128,
+      13824
+    ],
+    "dtype": "F32LE",
+    "formula": "(((row*7+column*3)%23)-11)/32",
+    "sha256": "049f4b877a9f63932ad1e708472e14b5681354eff9aaea39ab8babfd15df2943",
+    "meaning": "Controlled FFN-down activation; not real production/post-modulation hidden"
+  },
+  "operation": {
+    "linear": {
+      "M": 128,
+      "N": 5120,
+      "K": 13824,
+      "fullInner": true
+    },
+    "bias": "Separate existing Hike F32 AddBias after ORT projection",
+    "outputShape": [
+      128,
+      5120
+    ],
+    "outputElements": 655360
+  },
+  "weightBindings": [
+    {
+      "originalKey": "blocks.0.ffn.0.weight",
+      "fullShape": [
+        13824,
+        5120
+      ],
+      "rowChunks": [
+        [
+          0,
+          5120
+        ],
+        [
+          5120,
+          5120
+        ],
+        [
+          10240,
+          3584
+        ]
+      ],
+      "binding": "runtime-input",
+      "storageDtype": "F8_E4M3",
+      "computeDtype": "F32",
+      "fp8Profile": "scaled-e4m3fn-scalar-f32-v1"
+    },
+    {
+      "originalKey": "blocks.0.ffn.2.weight",
+      "fullShape": [
+        5120,
+        13824
+      ],
+      "rowChunks": [
+        [
+          0,
+          5120
+        ]
+      ],
+      "binding": "runtime-input",
+      "storageDtype": "F8_E4M3",
+      "computeDtype": "F32",
+      "fp8Profile": "scaled-e4m3fn-scalar-f32-v1"
+    },
+    {
+      "originalKey": "blocks.0.ffn.2.bias",
+      "fullShape": [
+        5120
+      ],
+      "binding": "hike-parameter",
+      "storageDtype": "F16",
+      "computeDtype": "F32"
+    }
+  ],
+  "model": {
+    "side": "LOW",
+    "fileName": "Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+    "bytes": 15574833216,
+    "previouslyVerifiedModelSHA256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+    "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+    "fullFileHashRecomputed": false
+  },
+  "coreSourceSHA256": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699",
+  "reference": "Existing independent NumPy Parameters.linear: original decodeF32; full-innerF64dot ->F32 ->separateF32bias",
+  "gate": {
+    "absolute": 0.001,
+    "relative": 0.0001,
+    "rule": "Every655360 biased projection output finite and abs(actual-reference)<=absolute+relative*abs(reference)"
+  },
+  "scope": {
+    "capacitySentinelsOnly": true,
+    "originalTargetSourceTokens": 65520,
+    "maxNativeTile": [
+      128,
+      5120,
+      13824
+    ],
+    "allQueryExecution": false,
+    "realProductionHidden": false,
+    "full40Prediction": false,
+    "sampling": false,
+    "acceptedProduction": false,
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY",
+    "generationReady": false
+  },
+  "sourcePaths": [
+    "development/ai-connection/profile-adoption/p4/core-source/comfy/ldm/wan/model.py",
+    "development/ai-connection/standalone-d1-d4-20261102/reference/contract.json",
+    "development/ai-connection/standalone-d1-d4-20261102/target-capacity/README.md",
+    "development/ai-connection/standalone-d1-d4-20261102/target-capacity/browser-cases.mjs",
+    "development/ai-connection/standalone-d1-d4-20261102/target-capacity/contract.json",
+    "development/ai-connection/standalone-d1-d4-20261102/target-capacity/plan.mjs",
+    "development/ai-connection/standalone-d1-d4-20261102/target-capacity/run.py",
+    "development/ai-connection/standalone-d1-d4-20261102/target-capacity/test-plan.mjs",
+    "docs/shared/ai-connection/workflow-shapes.mjs",
+    "docs/shared/diffusion-models/api/safetensors.mjs",
+    "docs/shared/diffusion-models/execution/batched-attention-graph.mjs",
+    "docs/shared/diffusion-models/execution/batched-ops.mjs",
+    "docs/shared/diffusion-models/execution/model-candidate-browser.mjs",
+    "docs/shared/diffusion-models/execution/model-candidate-browser.py",
+    "docs/shared/diffusion-models/execution/model-candidate.mjs",
+    "docs/shared/diffusion-models/execution/model-decode.mjs",
+    "docs/shared/diffusion-models/execution/model-decode/model-decode.wasm",
+    "docs/shared/diffusion-models/execution/model-decode/registry.mjs",
+    "docs/shared/diffusion-models/execution/model-head.mjs",
+    "docs/shared/diffusion-models/execution/model-math.mjs",
+    "docs/shared/diffusion-models/execution/model-math/kernel.wasm",
+    "docs/shared/diffusion-models/execution/model-math/registry.mjs",
+    "docs/shared/diffusion-models/execution/model-sequence.mjs",
+    "docs/shared/diffusion-models/execution/model-weights.mjs",
+    "docs/shared/diffusion-models/execution/wasm-memory-observer.mjs",
+    "docs/shared/diffusion-models/lora/strict-json.mjs",
+    "docs/shared/diffusion-models/lora/targets.mjs",
+    "docs/shared/diffusion-models/lora/weights.mjs",
+    "docs/shared/diffusion-models/ort-bridge/block-hidden/graph.mjs",
+    "docs/shared/diffusion-models/ort-bridge/hike.mjs",
+    "docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm",
+    "docs/shared/diffusion-models/ort-bridge/kernel/registry.mjs",
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs",
+    "docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+    "docs/shared/inference/vendor/ort.wasm.min.mjs",
+    "docs/shared/vr180/sha256.mjs",
+    "tools/diffusion-models/standalone-reference.py"
+  ],
+  "preExecutionRevision": 3,
+  "previousPreparedContractSHA256": "04cd5d0de6d73f6fd297ce2260ece81c8195b74171e3a2cc41db7b76dc57adee",
+  "revisionReason": "Recipient-owned --models option and verified public captured core default added; captured core SHA17dd, gate/input/operator/target unchanged; zero heavy executions before this revision"
+}

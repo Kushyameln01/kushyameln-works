@@ -1,0 +1,770 @@
+{
+  "schemaVersion": "bernini-standalone-result-resource/0.1",
+  "createdAtUTC": "2026-11-02T06:06:23.189390+00:00",
+  "baselineCommit": "e6f76c6a36a641be0a3483fd7b6bf6fcdf287ce2",
+  "state": "CONTROLLED_FULL40_HIGH_LOW_AND_SIX_NN_ACCEPTED__PRODUCTION_UNACCEPTED",
+  "scope": "Read existing public receipts and a finite prefix of live numeric-metadata progress only. New RESULT-RESOURCE.md/json written; no runtime/frozen-source edits, model reads/hash/download, private tensor reads, heavy execution or commit. Final controlled6NN evidence added from actual receipts; targetshape remains unaccepted.",
+  "requiredTarget": {
+    "latentBCTHW": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "targetTokens": 32760,
+    "source81Tokens": 32760,
+    "minimumSequenceTokensBeforeReferences": 65520,
+    "withReferences": "N_total=65520+sum(actual reference patch tokens) when sourceF=81; actual ordered source/ref shapes must remain intact.",
+    "sourceFAndRefsResolvedByThisAudit": false,
+    "fullShapeSixPredictionsAccepted": false,
+    "fullShapeActualPeakBytes": null,
+    "fullShapeActualDurationSeconds": null,
+    "readiness": {
+      "load": "NOT_READY",
+      "predict": "NOT_READY",
+      "sample": "NOT_READY",
+      "generationReady": false
+    }
+  },
+  "acceptedControlledCases": {
+    "HIGH": {
+      "status": "ACCEPTED_CONTROLLED_N5_L3_FULL40_CASE_ONLY",
+      "sourceCommit": "efa9b0a753fa9cefc49685189bb5766d40aa5594",
+      "fixtureClass": "controlled-n5-l3-not-original-media-or-81-frame-workflow",
+      "targetLatentShape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "totalSequenceTokens": 5,
+      "textRows": 3,
+      "heads": 40,
+      "blocksCompleted": 40,
+      "allHeadTokenCount": 5,
+      "retainedTargetTokenCount": 2,
+      "comparisonCuts": 47,
+      "comparisonElements": 1106368,
+      "comparisonFailedValues": 0,
+      "comparisonGate": {
+        "abs": 0.01,
+        "rel": 0.001
+      },
+      "predictionMaxAbsoluteError": 3.4570693969726562e-06,
+      "browserCaseElapsedSeconds": 505.9325,
+      "innerModelElapsedSeconds": 505.247799999997,
+      "hostElapsedSeconds": 508.67206406299374,
+      "sourceReads": 182132,
+      "decodedSourceF32Bytes": 57153966336,
+      "operatorInputSpanCopyCounterBytes": 57217101056,
+      "operatorOutputSpanCopyCounterBytes": 53356800,
+      "modelSourceReadBytes": 15574833216,
+      "sourceMaxPayloadRangeBytes": 163840,
+      "peakStageHostF32WeightCacheBytes": 566231040,
+      "peakHiddenStoreNamedBytes": 409600,
+      "activeHiddenStoreBytesAfterDispose": 0,
+      "stageHostWeightCacheBytesAfterDispose": 0,
+      "resourcesDisposed": true,
+      "pendingNativeTensorHandlesAfterDispose": 0,
+      "operatorSessionsCreated": 2,
+      "fullModelFileHashRecomputed": false,
+      "modelStatStableDuringReads": true,
+      "runtimeSourcesUnchanged": true,
+      "processObservation": {
+        "observedRssProcessSumPeakBytes": 2431102976,
+        "RSSIsNotOwnedAllocatorPeak": true,
+        "storedPssPeakBytes": null,
+        "usablePssPeakBytes": null,
+        "pssReadableProcessObservations": 0,
+        "pssExclusionReason": "No process PSS was readable in any sample; stored0/null cannot establish zero memory.",
+        "sampleCount": 484,
+        "samplingIntervalTargetSeconds": 1.0,
+        "observedDurationSeconds": 494.76300835609436,
+        "completeBrowserLifecycleCovered": false,
+        "scope": "Observed interval only; may start after prefix. RSS sums duplicate shared pages. PSS excludes file page cache. Cgroup is shared with other workloads; memory.peak is historical, not this run peak.",
+        "runIsolatedCgroupPeakBytes": null,
+        "cgroupInterpretation": "memory.current covers other work and pagecache; memory.peak is historical. Neither is this model run peak."
+      },
+      "productionAccepted": false,
+      "original81FrameWorkflowAccepted": false
+    },
+    "LOW": {
+      "status": "ACCEPTED_CONTROLLED_N5_L3_FULL40_CASE_ONLY",
+      "sourceCommit": "21398cb381ae2a6b3c79e5b04554e172ee3f76cf",
+      "fixtureClass": "controlled-n5-l3-not-original-media-or-81-frame-workflow",
+      "targetLatentShape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "totalSequenceTokens": 5,
+      "textRows": 3,
+      "heads": 40,
+      "blocksCompleted": 40,
+      "allHeadTokenCount": 5,
+      "retainedTargetTokenCount": 2,
+      "comparisonCuts": 47,
+      "comparisonElements": 1106368,
+      "comparisonFailedValues": 0,
+      "comparisonGate": {
+        "abs": 0.01,
+        "rel": 0.001
+      },
+      "predictionMaxAbsoluteError": 7.62939453125e-06,
+      "browserCaseElapsedSeconds": 525.470600000009,
+      "innerModelElapsedSeconds": 524.7507999999971,
+      "hostElapsedSeconds": 528.4417354739999,
+      "sourceReads": 182132,
+      "decodedSourceF32Bytes": 57153966336,
+      "operatorInputSpanCopyCounterBytes": 57217101056,
+      "operatorOutputSpanCopyCounterBytes": 53356800,
+      "modelSourceReadBytes": 15574833216,
+      "sourceMaxPayloadRangeBytes": 163840,
+      "peakStageHostF32WeightCacheBytes": 566231040,
+      "peakHiddenStoreNamedBytes": 409600,
+      "activeHiddenStoreBytesAfterDispose": 0,
+      "stageHostWeightCacheBytesAfterDispose": 0,
+      "resourcesDisposed": true,
+      "pendingNativeTensorHandlesAfterDispose": 0,
+      "operatorSessionsCreated": 2,
+      "fullModelFileHashRecomputed": false,
+      "modelStatStableDuringReads": true,
+      "runtimeSourcesUnchanged": true,
+      "processObservation": {
+        "observedRssProcessSumPeakBytes": 2388434944,
+        "RSSIsNotOwnedAllocatorPeak": true,
+        "storedPssPeakBytes": 0,
+        "usablePssPeakBytes": null,
+        "pssReadableProcessObservations": 0,
+        "pssExclusionReason": "No process PSS was readable in any sample; stored0/null cannot establish zero memory.",
+        "sampleCount": 378,
+        "samplingIntervalTargetSeconds": 1.0,
+        "observedDurationSeconds": 387.14693450927734,
+        "completeBrowserLifecycleCovered": false,
+        "scope": "Observed interval only; may start after prefix. RSS sums duplicate shared pages. PSS excludes file page cache. Cgroup is shared with other workloads; memory.peak is historical, not this run peak.",
+        "runIsolatedCgroupPeakBytes": null,
+        "cgroupInterpretation": "memory.current covers other work and pagecache; memory.peak is historical. Neither is this model run peak."
+      },
+      "productionAccepted": false,
+      "original81FrameWorkflowAccepted": false
+    }
+  },
+  "counterDefinitions": {
+    "decodedSourceF32Bytes": "Cumulative F32 bytes produced/returned by the model range-source decoder over one complete prediction. About57.154GB passed through the source; it is neither one resident57GB tensor nor native ORT copy traffic.",
+    "operatorInputSpanCopyCounterBytes": "Cumulative byteLength of F32 input spans snapshot/admitted at the batched operator owner boundary (x,weights,Q/K/V,online state). It is not a count of all ORT/native/WASM/IPC/GC copies and not a peak.",
+    "operatorOutputSpanCopyCounterBytes": "Cumulative owned output spans returned by batched operators; no complete native copy accounting claim.",
+    "stageHostF32WeightCache": "Model owner stage cache of decoded/copied F32 matrices. Peak566231040B corresponds to a FFN up/down pair. It does not imply native weight-resident sessions or include source buffers, operator snapshots, ORT allocations, old/new transient overlap or GC delay.",
+    "hiddenStores": "Named host input/output/K/V stores only. AtN5 the4store peak is409600B. Hidden/QKV snapshots and output copies outside these named stores are additional.",
+    "samplerSharedOwners": "Sampler HIGH/LOW candidates share math and batched operators. Nested model stats and top-level operator stats may reference the same owner; do not sum their input counters or memory capacities as independent allocations."
+  },
+  "cancellation": {
+    "prefix": {
+      "status": "ACTUAL_CANCELLED_AND_DISPOSED",
+      "sourceCommit": "efa9b0a753fa9cefc49685189bb5766d40aa5594",
+      "elapsedSeconds": 9.41610000000894,
+      "reason": "requested-prefix-probe",
+      "error": {
+        "name": "AbortError",
+        "message": "Controlled diagnostic probe complete"
+      },
+      "cleanupError": null,
+      "blocksCompleted": 0,
+      "tracesCaptured": 5,
+      "peakStageHostF32WeightCacheBytes": 104857600,
+      "peakHiddenStoreNamedBytes": 102400,
+      "sourceF32Bytes": 929525760,
+      "operatorInputSpanCopyCounterBytes": 929556736,
+      "pendingTensorsAfterDispose": 0,
+      "resourcesDisposed": true,
+      "WasmObserverIncluded": false,
+      "WasmAfterDisposeBytes": null,
+      "scope": "Actual prefix cancellation of controlledN5/L3; no completed block/prediction and no targetshape cancellation acceptance."
+    },
+    "sampler": {
+      "status": "ACTUAL_CANCELLED_AND_DISPOSED",
+      "sourceCommit": "e6f76c6a36a641be0a3483fd7b6bf6fcdf287ce2",
+      "elapsedSeconds": 3.2012000000029803,
+      "reason": "timeout",
+      "error": {
+        "name": "AbortError",
+        "message": "Controlled sampler timeout"
+      },
+      "cleanupError": null,
+      "stepsCompleted": 0,
+      "highPredictionsCompleted": 0,
+      "lowPredictionsCompleted": 0,
+      "pendingTensorsAfterDispose": 0,
+      "resourcesDisposed": true,
+      "wasmMemoryAfterDispose": {
+        "label": "returned-after-dispose",
+        "atMs": 3385.7000000029802,
+        "hookActive": true,
+        "identities": 11,
+        "reachableObjects": 9,
+        "noLongerDereferenceableObjects": 2,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 134807552,
+        "peakObservedReachableBytes": 134807552,
+        "sumPerIdentityPeaks": 135921664,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-6",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "no-longer-dereferenceable",
+            "currentBytes": null,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-7",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 114753536,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 114753536,
+            "peakObservedBytes": 114753536,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-8",
+            "sources": [
+              "Instance.constructor:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1114112,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1114112,
+            "peakObservedBytes": 1114112,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-9",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-10",
+            "sources": [
+              "Instance.constructor:export:memory"
+            ],
+            "state": "no-longer-dereferenceable",
+            "currentBytes": null,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1114112,
+            "peakObservedBytes": 1114112,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-11",
+            "sources": [
+              "Instance.constructor:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1114112,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1114112,
+            "peakObservedBytes": 1114112,
+            "samples": 6
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      },
+      "scope": "Actual controlled sampler timeout during initial prediction, before any of6predictions completed. ByteLength retained afterdispose does not establish live allocator use or failed OS release."
+    }
+  },
+  "longAttention": {
+    "status": "ACTUAL_SELECTED128QUERIES_ALL40HEADS_ALL65520FIXTUREKEYS_ACCEPTED",
+    "shape": {
+      "headDim": 128,
+      "heads": 40,
+      "keys": 65520,
+      "queries": 128
+    },
+    "tiles": 256,
+    "tailKeys": 240,
+    "comparedValues": 1320960,
+    "failedValues": 0,
+    "nonfiniteValues": 0,
+    "normalizedOutputMaxAbs": 2.582608968348943e-07,
+    "actualTimedRegionSeconds": 35.46920000000298,
+    "attentionCallIntervalSeconds": 15.08960000014305,
+    "diagnosticHashSeconds": 17.85059999996424,
+    "productionQKV": false,
+    "allSequenceQueriesExecuted": false,
+    "scope": "All declared fixturekeys for128queries only, before selfO; does not accept fullmodel targetshape. Earlier LONG-ATTENTION-ASSESSMENT contains explicitly hypothetical repetitions, not actualproduction timing."
+  },
+  "controlledSixRun": {
+    "status": "ACCEPTED_CONTROLLED_N5_L3_SIX_FULL40_CASE_ONLY",
+    "sourceCommit": "e6f76c6a36a641be0a3483fd7b6bf6fcdf287ce2",
+    "finalReceipt": "n5-sampler-native.json",
+    "comparisonReceipt": "sampler-reference/comparison.json",
+    "processReceipt": "n5-sampler-process-memory.json",
+    "fixtureClass": "controlled-n5-l3-not-original-media-or-81-frame-workflow",
+    "totalSequenceTokens": 5,
+    "textRows": 3,
+    "targetShape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "stepsCompleted": 6,
+    "highPredictionsCompleted": 3,
+    "lowPredictionsCompleted": 3,
+    "blocksCompletedPerPrediction": [
+      40,
+      40,
+      40,
+      40,
+      40,
+      40
+    ],
+    "totalBlockExecutions": 240,
+    "browserCaseElapsedSeconds": 3206.3815999999943,
+    "hostElapsedSeconds": 3210.859512893003,
+    "predictionRuns": [
+      {
+        "step": 0,
+        "side": "HIGH",
+        "blocksCompleted": 40,
+        "elapsedSeconds": 530.397200000003,
+        "sourceF32Bytes": 57153966336,
+        "operatorInputSpanCopyCounterBytes": 57217101056
+      },
+      {
+        "step": 1,
+        "side": "HIGH",
+        "blocksCompleted": 40,
+        "elapsedSeconds": 534.1340999999941,
+        "sourceF32Bytes": 57152614400,
+        "operatorInputSpanCopyCounterBytes": 57217101056
+      },
+      {
+        "step": 2,
+        "side": "HIGH",
+        "blocksCompleted": 40,
+        "elapsedSeconds": 531.905799999997,
+        "sourceF32Bytes": 57152614400,
+        "operatorInputSpanCopyCounterBytes": 57217101056
+      },
+      {
+        "step": 3,
+        "side": "LOW",
+        "blocksCompleted": 40,
+        "elapsedSeconds": 536.2573000000119,
+        "sourceF32Bytes": 57153966336,
+        "operatorInputSpanCopyCounterBytes": 57217101056
+      },
+      {
+        "step": 4,
+        "side": "LOW",
+        "blocksCompleted": 40,
+        "elapsedSeconds": 531.349299999997,
+        "sourceF32Bytes": 57152614400,
+        "operatorInputSpanCopyCounterBytes": 57217101056
+      },
+      {
+        "step": 5,
+        "side": "LOW",
+        "blocksCompleted": 40,
+        "elapsedSeconds": 541.06,
+        "sourceF32Bytes": 57152614400,
+        "operatorInputSpanCopyCounterBytes": 57217101056
+      }
+    ],
+    "comparisonArrays": 16,
+    "comparisonValues": 2048,
+    "comparisonFailedValues": 0,
+    "comparisonGate": {
+      "abs": 0.01,
+      "rel": 0.001
+    },
+    "finalRawMaxAbsoluteError": 3.2186508178710938e-06,
+    "finalRawMaxNormalizedToGate": 0.0002837616899963442,
+    "finalControlledSixComparisonAccepted": true,
+    "codec": {
+      "encodedBytes": 1179,
+      "encodedSHA256": "c9fb6541b92ff5ea3b81b4decd4b29073aace11b5b9794810d826b34e5be7dd4",
+      "payloadSHA256": "60dbc4c3e2070d8cbdb7e38b8a6b5e336d30fa9af444611ec0cd65bccb9d5beb",
+      "payloadElementsBitCompared": 128,
+      "payloadElementsBitExact": 128,
+      "savedRawSampleReadback": {
+        "encodedSHA256": "c9fb6541b92ff5ea3b81b4decd4b29073aace11b5b9794810d826b34e5be7dd4",
+        "encodedBytes": 1179,
+        "hostReadbackSHA256": "c9fb6541b92ff5ea3b81b4decd4b29073aace11b5b9794810d826b34e5be7dd4"
+      },
+      "diskReadback": {
+        "encodedBytes": 1179,
+        "encodedSHA256": "c9fb6541b92ff5ea3b81b4decd4b29073aace11b5b9794810d826b34e5be7dd4",
+        "payloadSHA256": "60dbc4c3e2070d8cbdb7e38b8a6b5e336d30fa9af444611ec0cd65bccb9d5beb",
+        "payloadElements": 128
+      }
+    },
+    "cleanup": {
+      "disposed": true,
+      "busy": false,
+      "closing": false,
+      "cleanupError": null,
+      "pendingNativeTensorHandles": 0,
+      "operatorSessionsCreatedAndReused": 2,
+      "sharedSessionCreations": 2,
+      "linearRuns": 2952,
+      "attentionRuns": 480,
+      "modelOwnersDisposed": {
+        "HIGH": true,
+        "LOW": true
+      },
+      "rangeSourcesDisposed": {
+        "HIGH": true,
+        "LOW": true
+      },
+      "operatorInputSpanCopyCounterBytes": 343302606336,
+      "operatorOutputSpanCopyCounterBytes": 320140800,
+      "counterScope": "One shared batched operator owner acrossHIGH/LOW and all6predictions; cumulative span counters, not total native copy traffic. Do not sum nested duplicate shared-owner counters."
+    },
+    "observedWasmMemory": {
+      "label": "returned-after-dispose",
+      "identities": 11,
+      "reachableObjects": 9,
+      "noLongerDereferenceableObjects": 2,
+      "currentReachableBytesAfterDispose": 313458688,
+      "peakObservedReachableBytes": 313458688,
+      "sumPerIdentityPeaks": 314572800,
+      "knownSmallHikeMemoryBytesByIdentity": [
+        {
+          "id": "wasm-memory-1",
+          "sources": [
+            "instantiate:export:memory"
+          ],
+          "currentBytes": 1572864,
+          "peakObservedBytes": 1572864
+        },
+        {
+          "id": "wasm-memory-2",
+          "sources": [
+            "instantiate:export:memory"
+          ],
+          "currentBytes": 1835008,
+          "peakObservedBytes": 1835008
+        },
+        {
+          "id": "wasm-memory-3",
+          "sources": [
+            "instantiate:export:memory"
+          ],
+          "currentBytes": 1572864,
+          "peakObservedBytes": 1572864
+        },
+        {
+          "id": "wasm-memory-4",
+          "sources": [
+            "instantiate:export:memory"
+          ],
+          "currentBytes": 1835008,
+          "peakObservedBytes": 1835008
+        },
+        {
+          "id": "wasm-memory-5",
+          "sources": [
+            "instantiate:export:memory"
+          ],
+          "currentBytes": 9175040,
+          "peakObservedBytes": 9175040
+        },
+        {
+          "id": "wasm-memory-8",
+          "sources": [
+            "Instance.constructor:export:memory"
+          ],
+          "currentBytes": 1114112,
+          "peakObservedBytes": 1114112
+        },
+        {
+          "id": "wasm-memory-9",
+          "sources": [
+            "instantiate:export:memory"
+          ],
+          "currentBytes": 1835008,
+          "peakObservedBytes": 1835008
+        },
+        {
+          "id": "wasm-memory-11",
+          "sources": [
+            "Instance.constructor:export:memory"
+          ],
+          "currentBytes": 1114112,
+          "peakObservedBytes": 1114112
+        }
+      ],
+      "knownSmallHikeMemoryBytesSum": 20054016,
+      "largestConstructorMemory": {
+        "id": "wasm-memory-7",
+        "sources": [
+          "Memory.constructor"
+        ],
+        "currentBytes": 293404672,
+        "firstObservedBytes": 16777216,
+        "peakObservedBytes": 293404672
+      },
+      "byteLengthArithmetic": "20,054,016 known small Hike Memory object bytes +293,404,672 largest Memory.constructor object bytes =313,458,688 current observed reachable bytes.",
+      "observationErrors": 0,
+      "byteLengthUnavailableObjects": 0,
+      "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim",
+      "strictORTAllocatorAttribution": false,
+      "ORTAllocatorUsedPeakBytes": null,
+      "physicalAllocationOrRSSPeakBytes": null,
+      "interpretation": "Largest object was observed viaMemory.constructor; no stack/owner tag proves strictORT allocator attribution. Buffer byteLength measures object capacity, not allocatorused bytes. Sum of peridentity peaks314572800B is not a simultaneous peak. Afterdispose reachability does not establish failed cleanup or OS release."
+    },
+    "processObservation": {
+      "observedRssProcessSumPeakBytes": 2907226112,
+      "RSSDuplicatesSharedPages": true,
+      "sampleCount": 3104,
+      "observedDurationSeconds": 3188.186594724655,
+      "completeBrowserLifecycleCovered": false,
+      "usablePssPeakBytes": null,
+      "pssReadableProcessObservations": 0,
+      "scope": "Observed interval only; may start after prefix. RSS sums duplicate shared pages. PSS excludes file page cache. Cgroup is shared with other workloads; memory.peak is historical, not this run peak.",
+      "runIsolatedCgroupPeakBytes": null
+    },
+    "sourceStatStableDuringReads": true,
+    "runtimeSourcesUnchanged": true,
+    "sourceFullFileHashRecomputed": false,
+    "original81FrameWorkflowAccepted": false,
+    "productionSixAccepted": false,
+    "originalProductionPrecisionVerified": false,
+    "readiness": {
+      "sixFull40ControlledCaseOnly": true,
+      "originalWorkflowInputsVerified": false,
+      "producerVerified": false,
+      "required81FrameWorkflowVerified": false,
+      "originalProductionPrecisionVerified": false,
+      "load": "NOT_READY",
+      "predict": "NOT_READY",
+      "sample": "NOT_READY",
+      "generationReady": false
+    },
+    "historicalProgressSnapshot": {
+      "status": "SIX_NN_PENDING",
+      "snapshotAtUTC": "2026-11-02T06:06:23.188934+00:00",
+      "path": "n5-sampler-native.json.progress.jsonl",
+      "completePrefixBytes": 541794,
+      "completePrefixSHA256": "79da59c5b82638cd8bb8763c794641421fce658ab386f42dcf58ab1e890af239",
+      "ignoredIncompleteTailBytes": 0,
+      "completeEvents": 51,
+      "lastEvent": {
+        "stage": "block-complete",
+        "elapsedMs": 334354
+      },
+      "blockCompleteEventsInSnapshot": 25,
+      "completedStepEventsInSnapshot": 0,
+      "finalReceiptPresentAtSnapshot": false,
+      "observedWasmMemory": {
+        "sampledEvents": 50,
+        "identitiesAtLatestSample": 11,
+        "currentReachableBytesAtLatestSample": 313458688,
+        "peakObservedReachableBytesSoFar": 313458688,
+        "largestMemoryAtPeak": {
+          "id": "wasm-memory-7",
+          "sources": [
+            "Memory.constructor"
+          ],
+          "currentBytes": 293404672,
+          "peakObservedBytes": 293404672
+        },
+        "observationErrorsAtLatestSample": 0,
+        "byteLengthUnavailableObjectsAtLatestSample": 0,
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim",
+        "ORTFinalArenaHighWaterBytes": null,
+        "ORTAllocatorUsedPeakBytes": null,
+        "finalWholeRunPeakBytes": null,
+        "interpretation": "Progress snapshot only. Largest constructor-observed Memory is not independently tagged as an ORT allocator. ByteLength is capacity of observed objects, not used bytes/RSS/PSS/OS release. The sampler is still running; no final peak, duration or numerical acceptance follows."
+      },
+      "finalControlledSixComparisonAccepted": false,
+      "finalControlledSixElapsedSeconds": null,
+      "finalSamplerResourceReceipt": null,
+      "productionSixAccepted": false,
+      "readOnlySampling": true,
+      "tensorValuesRead": false
+    },
+    "finalReceiptPresentAtAssessment": true
+  },
+  "productionNamedPlan": {
+    "classification": "ARITHMETIC_ONLY_NOT_MEASURED_CAPACITY_OR_NEW_CONFIG",
+    "NForIllustration": 65520,
+    "hiddenWidth": 5120,
+    "bytesPerF32": 4,
+    "storeCount": 4,
+    "oneHostStoreBytes": 1341849600,
+    "fourHostStoreBytes": 5367398400,
+    "formula": "4*N_total*5120*4 B; references add their realtokens toN_total.",
+    "ORTAllocatorPeakBytes": null,
+    "nativeSnapshotsCopiesAndGCOverlapBytes": null,
+    "hostAllocatorPeakBytes": null,
+    "combinedPeakBytes": null,
+    "productionCompletionClaim": false,
+    "interpretation": "5.367GB named stores exclude stagecache/source/decoder/ORT/Hike/snapshots/Worker/IPC/output/GC and old/newsession overlap. It is not a proven fit in16GiB or a measured peak. ControlledN5 runs cannot fill these unknowns."
+  },
+  "executionPolicy": {
+    "parallelHeavyWorkloadAutomaticReviewRejectionsReported": 2,
+    "rejectionEvidence": "Coordinator report in task instruction; this audit did not independently inspect rejection logs.",
+    "observedFollowupPolicy": "Sequential controlled native execution; no parallel heavy workload started by this audit.",
+    "approvalPending": false,
+    "noPermissionQuestionRequired": true
+  },
+  "sources": [
+    {
+      "path": "n5-high-native.json",
+      "bytes": 544838,
+      "sha256": "dd057bab182f85985a61c71f7e687ccef9620383cd06edda49effed99b93240a"
+    },
+    {
+      "path": "n5-low-native.json",
+      "bytes": 553053,
+      "sha256": "f8e373fe9387a5d400f3460b1a6657aa2b34b7bc46d0ec778b32d46a1262da84"
+    },
+    {
+      "path": "reference/high-comparison.json",
+      "bytes": 20404,
+      "sha256": "5960da206508a73930be7f200a8bdb3ee3458bcc5a57211f6c51079d54b96e12"
+    },
+    {
+      "path": "reference/low-comparison.json",
+      "bytes": 20426,
+      "sha256": "a567f00dcfa0cdc187f84a28fcaf40aca195a9a0ab376d4f94041db9064e298a"
+    },
+    {
+      "path": "n5-high-process-memory.json",
+      "bytes": 165801,
+      "sha256": "fa10d56a071bf5674c48799c91b125d989918801c2d68eddcc05af7a58b9589b"
+    },
+    {
+      "path": "n5-low-process-memory.json",
+      "bytes": 128473,
+      "sha256": "231bb31e2f5116bd78ba189e2254f8709b633c914f7725f76308baee63ac0658"
+    },
+    {
+      "path": "n5-prefix-cancel-native.json",
+      "bytes": 44104,
+      "sha256": "599f5e3cb0b7c065c32d81140dc3e4594b752f55bb171842e44d80705ecde681"
+    },
+    {
+      "path": "n5-sampler-cancel-native.json",
+      "bytes": 136487,
+      "sha256": "ef03181772e0b56bd99ae3a80aa3d15715220e7e3328dbb90f107412869dfc20"
+    },
+    {
+      "path": "long-attention/browser-result.json",
+      "bytes": 8424,
+      "sha256": "d59ee73056f62a1b4330c1960452e34abadad159dc52e333483ffbfa261dd27c"
+    },
+    {
+      "path": "LONG-ATTENTION-ASSESSMENT.json",
+      "bytes": 13828,
+      "sha256": "f7043fde6e5c50b2ba0c88ce6fee5fb8e59c5a449d60ffdae97de6bc7ef32813"
+    },
+    {
+      "path": "n5-sampler-native.json",
+      "bytes": 10257659,
+      "sha256": "da0c6c67a245f4e3b98c4ecc02dbcc3d4a9bf711df9ad0f34eafa4d5a1aa59d0"
+    },
+    {
+      "path": "sampler-reference/comparison.json",
+      "bytes": 7504,
+      "sha256": "412d78d7cad975fb5add736e303752cf3ce2b389e43c892e171f2d0b7e202c7d"
+    },
+    {
+      "path": "n5-sampler-process-memory.json",
+      "bytes": 1060435,
+      "sha256": "bafd97fefe1f6f299843c33f9206226405b251e36e722b33d073df5c15e1ffd9"
+    }
+  ],
+  "verification": {
+    "fixedReceiptHashesRecorded": 13,
+    "controlledComparisonAll47CutsPassedEach": true,
+    "PSSZeroNotTreatedAsMeasurement": true,
+    "heavyExecutionStartedByThisAudit": false,
+    "historicalProgressSnapshotIsNonfinal": true,
+    "finalControlledSixReceiptCompared": true,
+    "finalWasmIdentityByteArithmeticChecked": true
+  },
+  "finalizedAtUTC": "2026-11-02T06:59:21.002568+00:00"
+}
