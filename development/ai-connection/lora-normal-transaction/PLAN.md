@@ -25,8 +25,8 @@
 3. [x] Diffusion owner48ff155988d995fc2569e495c8d8820273bd472cの正本を取得。native validate=構造admission、diagnose=独立比較、commit=private admittedAtEpochという契約を採用。独自native提案は未配布で廃止。source寿命はowner currentへ結ぶ。
 4. [x] 正本P4 adapterのnormal/diagnostic分岐、normal単独factory、capabilities/assessSupportとcompact owner適合recordを実装。未知source/base/range/binding/variant/block等は明示拒否。
 5. [x] 既存small control fixtureで通常適用・strength変更・base復帰・stale/取消・oldrollback・prepared寿命を検証。診断pathの既存gate互換を確認。
-6. [ ] 実lightLOW Fileと保持LOWbaseの既知crossQ4+bias4をnormalmodeで適用し、normalに独立参照を渡していないことを確認。通常出力は診断側の保存済みA/Bへ比較し、新oracle生成せず資源解放まで確認。
-7. [ ] API/通常結果/制限と詳細診断資料を分けて記録し、fixed source・evidenceの差を保ってfeat/lora-hikeへpush。Draft PR2とpeerへ契約/source/結果を返す。
+6. [x] 実lightLOW Fileと保持LOWbaseの既知crossQ4+bias4をnormalmodeで適用し、normalに独立参照を渡していないことを確認。通常出力は診断側の保存済みA/Bへ比較し、新oracle生成せず資源解放まで確認。
+7. [x] API/通常結果/制限と詳細診断資料を分けて記録し、fixed source・evidenceの差を保ってfeat/lora-hikeへpush。Draft PR2とpeerへ契約/source/結果を返す。
 
 ## Review focus
 

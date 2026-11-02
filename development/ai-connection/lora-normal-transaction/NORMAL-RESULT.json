@@ -1,0 +1,1966 @@
+{
+  "dateUTC": "2026-11-02T03:56:30.655Z",
+  "status": "PASS_LORA_NORMAL_REAL_PARTIAL",
+  "scope": "normal-weight-transactions-with-separate-controlled-k4-diagnostics",
+  "receiverCommit": "126614a8cf99b6c80243595309ae0e6e704d780f",
+  "fixedCommits": {
+    "diffusion": "48ff155988d995fc2569e495c8d8820273bd472c",
+    "manager": "8849891f19124df31847bd691503c2491278eaa8",
+    "lora": "126614a8cf99b6c80243595309ae0e6e704d780f"
+  },
+  "validationMode": "normal",
+  "coverage": "PARTIAL",
+  "completeAdapter": false,
+  "modelInference": false,
+  "generationReady": false,
+  "managerSnapshotPublished": false,
+  "managementP4NormAdoption": false,
+  "currentLiveAdmission": false,
+  "sourceOwnerGuard": {
+    "requiresOwnerLive": true,
+    "requiresActualSourceDisposedFalse": true,
+    "requiresInitialDescriptorEquality": true,
+    "initialDescriptorSHA256": "2515619c29fde8fb8058e172ed6601b51b54c5f73a66e083a4a06733b0fe3008",
+    "descriptorHashEncoding": "UTF-8 JSON.stringify of captured source.describe()",
+    "currentBeforeTransactions": true,
+    "nativeAdmissionIsIndependentLifetimeProof": false,
+    "currentAfterUnpatchedBaseDiagnostic": true
+  },
+  "original": {
+    "fileName": "Bernini-R_LightX2V_low_noise.safetensors",
+    "byteLength": 1244141856,
+    "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+    "inspectionState": "SOURCE_INSPECTED",
+    "runtimeWholeHashVerified": true,
+    "historicalFourOriginalsRequired": false
+  },
+  "support": {
+    "supported": true,
+    "reasonCodes": [],
+    "sourceBinding": {
+      "ownerRecordId": "lora-owner:c486057:light:LOW:cross-q4-and-bias4",
+      "scope": "verified-runtime-target-range",
+      "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+      "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+      "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+      "side": "LOW",
+      "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "trainingBaseVerified": false,
+      "evidenceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "c4860579d01d9f704cb16714e364a22668f9d57e",
+        "path": "development/ai-connection/lora-p4-adapter/RESULT.json",
+        "runtimeSourceCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+        "scope": "controlled-caller-input-n2-k4; real light LOW cross-Q first4 complete rows and explicit bias4; PARTIAL"
+      },
+      "targets": [
+        {
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "fullShape": [
+            5120,
+            5120
+          ],
+          "ranges": [
+            {
+              "offset": 0,
+              "count": 20480
+            }
+          ]
+        },
+        {
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "fullShape": [
+            5120
+          ],
+          "ranges": [
+            {
+              "offset": 0,
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    "coverage": "PARTIAL",
+    "generationReady": false
+  },
+  "unsupportedRequests": [
+    {
+      "kind": "unknown-source",
+      "result": {
+        "supported": false,
+        "reasonCodes": [
+          "UNKNOWN_SOURCE_BINDING"
+        ],
+        "sourceBinding": null,
+        "coverage": "PARTIAL",
+        "generationReady": false
+      }
+    },
+    {
+      "kind": "unknown-target",
+      "result": {
+        "supported": false,
+        "reasonCodes": [
+          "TARGET_UNSUPPORTED"
+        ],
+        "sourceBinding": null,
+        "coverage": "PARTIAL",
+        "generationReady": false
+      }
+    },
+    {
+      "kind": "selected-shape-is-not-full-shape",
+      "result": {
+        "supported": false,
+        "reasonCodes": [
+          "FULL_SHAPE_MISMATCH"
+        ],
+        "sourceBinding": null,
+        "coverage": "PARTIAL",
+        "generationReady": false
+      }
+    },
+    {
+      "kind": "outside-owner-verified-range",
+      "result": {
+        "supported": false,
+        "reasonCodes": [
+          "SOURCE_RANGE_UNVERIFIED"
+        ],
+        "sourceBinding": null,
+        "coverage": "PARTIAL",
+        "generationReady": false
+      }
+    },
+    {
+      "kind": "different-model",
+      "result": {
+        "supported": false,
+        "reasonCodes": [
+          "MODEL_IDENTITY_MISMATCH",
+          "SOURCE_BASE_BINDING_MISMATCH"
+        ],
+        "sourceBinding": null,
+        "coverage": "PARTIAL",
+        "generationReady": false
+      }
+    }
+  ],
+  "normalTransactions": [
+    {
+      "id": "initial-one",
+      "strength": 1,
+      "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+      "localInputRevision": 1,
+      "localApplicationRevision": 1,
+      "managerRevision": 4001,
+      "queueTarget": {
+        "invocationId": "normal:initial-one:85b15489-5292-426e-a36e-9d0e63ff1196",
+        "bindingId": "lora-normal-low-cross-q4",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "requestId": "normal:initial-one:request",
+        "revision": 4001,
+        "activeToken": "7d612a24-7739-4cbd-bfb0-874905aed106"
+      },
+      "nativeEpoch": 1,
+      "coverage": "PARTIAL",
+      "validationMode": "normal",
+      "numericalComparison": false,
+      "retainedCandidate": true,
+      "result": {
+        "contractVersion": "lora-connection/2.0-draft.1",
+        "state": "CONSUMER_APPLIED",
+        "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+        "localInputRevision": 1,
+        "localApplicationRevision": 1,
+        "selection": {
+          "pairId": "light",
+          "noise": "low"
+        },
+        "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+        "planId": "281e5e0b0282da529460d45d9dfc6efa72fc30b22ab12c821e2f2c12a1f339b3",
+        "registryHash": "5d0e51a533f1419f4464469ec874cd71e7e1d8584e5cf0529f42772fc0590ea6",
+        "bundleHash": "6ae88979d80f2557756357862c9f3ceffe3a5a0fd03f26bf47cfb72ae15479bc",
+        "coverage": "PARTIAL",
+        "scope": "diagnostic-projection",
+        "validationMode": "normal",
+        "validation": {
+          "contractVersion": "lora-connection/2.0-draft.1",
+          "valid": true,
+          "coverage": "PARTIAL",
+          "scope": "diagnostic-projection",
+          "planId": "281e5e0b0282da529460d45d9dfc6efa72fc30b22ab12c821e2f2c12a1f339b3",
+          "registryHash": "5d0e51a533f1419f4464469ec874cd71e7e1d8584e5cf0529f42772fc0590ea6",
+          "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+          "validationMode": "normal",
+          "numericalComparison": false,
+          "evidence": {
+            "adapterVersion": "lora-diffusion-p4-adapter/0.2-draft.1",
+            "nativeValidationProtocol": "bernini-p4-structural-admission-diagnose/0.1",
+            "nativeRegistryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+            "nativeReceipt": {
+              "schemaVersion": "bernini-p4-f32-feed-admission/0.1",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "registryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+              "side": "LOW",
+              "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+              "scope": "PARTIAL",
+              "candidateId": "d8aedd35-b1a3-480c-81e2-7775429d6c04",
+              "packageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+              "valid": true,
+              "gateId": "p4-sparse-final-f32-admission-v1",
+              "epoch": 0,
+              "patchRangeCount": 2,
+              "blockCount": 2,
+              "patchBytes": 81936,
+              "completeDeclaredRanges": true,
+              "immutableBasePreserved": true,
+              "numericalComparison": false,
+              "modelInference": false,
+              "generationReady": false,
+              "canonicalLoraAdapterExtension": "PENDING"
+            },
+            "sourceBinding": {
+              "ownerRecordId": "lora-owner:c486057:light:LOW:cross-q4-and-bias4",
+              "scope": "verified-runtime-target-range",
+              "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "side": "LOW",
+              "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+              "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+              "trainingBaseVerified": false,
+              "evidenceRef": {
+                "repository": "Kushyameln01/kushyameln-works",
+                "commit": "c4860579d01d9f704cb16714e364a22668f9d57e",
+                "path": "development/ai-connection/lora-p4-adapter/RESULT.json",
+                "runtimeSourceCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+                "scope": "controlled-caller-input-n2-k4; real light LOW cross-Q first4 complete rows and explicit bias4; PARTIAL"
+              },
+              "targets": [
+                {
+                  "weightId": "blocks.0.cross_attn.q.weight",
+                  "fullShape": [
+                    5120,
+                    5120
+                  ],
+                  "ranges": [
+                    {
+                      "offset": 0,
+                      "count": 20480
+                    }
+                  ]
+                },
+                {
+                  "weightId": "blocks.0.cross_attn.q.bias",
+                  "fullShape": [
+                    5120
+                  ],
+                  "ranges": [
+                    {
+                      "offset": 0,
+                      "count": 4
+                    }
+                  ]
+                }
+              ]
+            },
+            "applicationBinding": {
+              "schemaVersion": "lora-normal-queue-binding/0.1",
+              "managerSessionId": "lora-normal-queue:9b7ecb02-c2d1-4dd8-abd7-8635033282fe",
+              "managerRevision": 4001,
+              "queueTarget": {
+                "invocationId": "normal:initial-one:85b15489-5292-426e-a36e-9d0e63ff1196",
+                "bindingId": "lora-normal-low-cross-q4",
+                "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+                "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+                "requestId": "normal:initial-one:request",
+                "revision": 4001,
+                "activeToken": "7d612a24-7739-4cbd-bfb0-874905aed106"
+              },
+              "sdk": {
+                "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+                "localInputRevision": 1,
+                "localApplicationRevision": 1
+              },
+              "resourceBinding": {
+                "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+                "bindingId": "lora-normal-low-cross-q4",
+                "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e"
+              },
+              "managementProfileAccepted": false,
+              "snapshotPublished": false
+            },
+            "unselectedRanges": "immutable-base-pass-through"
+          }
+        },
+        "ownership": {
+          "kind": "independent-copy",
+          "ownerId": "1436b079-19ea-4bbe-8da1-82bb5ab7c13d:d8aedd35-b1a3-480c-81e2-7775429d6c04"
+        },
+        "snapshotPublished": false,
+        "generationReady": false
+      },
+      "nativeStats": {
+        "disposed": false,
+        "epoch": 1,
+        "activePackageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+        "activePatchBytes": 81936,
+        "retainedPatchBytes": 81936,
+        "retainedPatchBuffers": 2,
+        "pendingPatchBytes": 0,
+        "knownPatchBytes": 81936,
+        "transactions": 0,
+        "packages": 0,
+        "candidates": 1,
+        "readLeases": 0,
+        "inFlight": 0,
+        "effectiveReadBytes": 0,
+        "patchedReadBytes": 0,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 14,
+          "readBytes": 201931,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 2,
+          "payloadReadBytes": 20488,
+          "maxPayloadReadBytes": 20480,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 2,
+            "inputCopyBytes": 20488,
+            "outputCopyBytes": 81936,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false
+        },
+        "allocatorPeakBytes": null,
+        "copyScope": "deduplicated private patch buffers retained by packages/candidates/history/active/leases/transactions/pending reads and finishes; pending hash snapshots separately reserved inside aggregate cap; excludes metadata, effective-read scratch, host or ORT peak"
+      }
+    },
+    {
+      "id": "strength-negative",
+      "strength": -1,
+      "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+      "localInputRevision": 2,
+      "localApplicationRevision": 2,
+      "managerRevision": 4002,
+      "queueTarget": {
+        "invocationId": "normal:strength-negative:b08597ed-d1a5-4142-ad38-4a734f7ca9ea",
+        "bindingId": "lora-normal-low-cross-q4",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "requestId": "normal:strength-negative:request",
+        "revision": 4002,
+        "activeToken": "1e255f40-ef43-4da4-9566-214c4d6d40a3"
+      },
+      "nativeEpoch": 2,
+      "coverage": "PARTIAL",
+      "validationMode": "normal",
+      "numericalComparison": false,
+      "retainedCandidate": false,
+      "result": {
+        "contractVersion": "lora-connection/2.0-draft.1",
+        "state": "CONSUMER_APPLIED",
+        "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+        "localInputRevision": 2,
+        "localApplicationRevision": 2,
+        "selection": {
+          "pairId": "light",
+          "noise": "low"
+        },
+        "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+        "planId": "cf34817f3ad9d28238d4f996a8ddc6b6839276588bf7b293e7f85187a58f6541",
+        "registryHash": "5d0e51a533f1419f4464469ec874cd71e7e1d8584e5cf0529f42772fc0590ea6",
+        "bundleHash": "a6927a174fd75cb4421cf33f8097f840761607f8e419b410b20f66a098ef01a0",
+        "coverage": "PARTIAL",
+        "scope": "diagnostic-projection",
+        "validationMode": "normal",
+        "validation": {
+          "contractVersion": "lora-connection/2.0-draft.1",
+          "valid": true,
+          "coverage": "PARTIAL",
+          "scope": "diagnostic-projection",
+          "planId": "cf34817f3ad9d28238d4f996a8ddc6b6839276588bf7b293e7f85187a58f6541",
+          "registryHash": "5d0e51a533f1419f4464469ec874cd71e7e1d8584e5cf0529f42772fc0590ea6",
+          "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+          "validationMode": "normal",
+          "numericalComparison": false,
+          "evidence": {
+            "adapterVersion": "lora-diffusion-p4-adapter/0.2-draft.1",
+            "nativeValidationProtocol": "bernini-p4-structural-admission-diagnose/0.1",
+            "nativeRegistryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+            "nativeReceipt": {
+              "schemaVersion": "bernini-p4-f32-feed-admission/0.1",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "registryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+              "side": "LOW",
+              "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+              "scope": "PARTIAL",
+              "candidateId": "e814d445-b3b2-418c-9050-f941783e02c6",
+              "packageHash": "18bf1c12adcd9305ea6ce0dc62d78cce0650ca889729334294a13c89a24d170c",
+              "valid": true,
+              "gateId": "p4-sparse-final-f32-admission-v1",
+              "epoch": 1,
+              "patchRangeCount": 2,
+              "blockCount": 2,
+              "patchBytes": 81936,
+              "completeDeclaredRanges": true,
+              "immutableBasePreserved": true,
+              "numericalComparison": false,
+              "modelInference": false,
+              "generationReady": false,
+              "canonicalLoraAdapterExtension": "PENDING"
+            },
+            "sourceBinding": {
+              "ownerRecordId": "lora-owner:c486057:light:LOW:cross-q4-and-bias4",
+              "scope": "verified-runtime-target-range",
+              "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "side": "LOW",
+              "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+              "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+              "trainingBaseVerified": false,
+              "evidenceRef": {
+                "repository": "Kushyameln01/kushyameln-works",
+                "commit": "c4860579d01d9f704cb16714e364a22668f9d57e",
+                "path": "development/ai-connection/lora-p4-adapter/RESULT.json",
+                "runtimeSourceCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+                "scope": "controlled-caller-input-n2-k4; real light LOW cross-Q first4 complete rows and explicit bias4; PARTIAL"
+              },
+              "targets": [
+                {
+                  "weightId": "blocks.0.cross_attn.q.weight",
+                  "fullShape": [
+                    5120,
+                    5120
+                  ],
+                  "ranges": [
+                    {
+                      "offset": 0,
+                      "count": 20480
+                    }
+                  ]
+                },
+                {
+                  "weightId": "blocks.0.cross_attn.q.bias",
+                  "fullShape": [
+                    5120
+                  ],
+                  "ranges": [
+                    {
+                      "offset": 0,
+                      "count": 4
+                    }
+                  ]
+                }
+              ]
+            },
+            "applicationBinding": {
+              "schemaVersion": "lora-normal-queue-binding/0.1",
+              "managerSessionId": "lora-normal-queue:9b7ecb02-c2d1-4dd8-abd7-8635033282fe",
+              "managerRevision": 4002,
+              "queueTarget": {
+                "invocationId": "normal:strength-negative:b08597ed-d1a5-4142-ad38-4a734f7ca9ea",
+                "bindingId": "lora-normal-low-cross-q4",
+                "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+                "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+                "requestId": "normal:strength-negative:request",
+                "revision": 4002,
+                "activeToken": "1e255f40-ef43-4da4-9566-214c4d6d40a3"
+              },
+              "sdk": {
+                "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+                "localInputRevision": 2,
+                "localApplicationRevision": 2
+              },
+              "resourceBinding": {
+                "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+                "bindingId": "lora-normal-low-cross-q4",
+                "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e"
+              },
+              "managementProfileAccepted": false,
+              "snapshotPublished": false
+            },
+            "unselectedRanges": "immutable-base-pass-through"
+          }
+        },
+        "ownership": {
+          "kind": "independent-copy",
+          "ownerId": "1436b079-19ea-4bbe-8da1-82bb5ab7c13d:e814d445-b3b2-418c-9050-f941783e02c6"
+        },
+        "snapshotPublished": false,
+        "generationReady": false
+      },
+      "nativeStats": {
+        "disposed": false,
+        "epoch": 2,
+        "activePackageHash": "18bf1c12adcd9305ea6ce0dc62d78cce0650ca889729334294a13c89a24d170c",
+        "activePatchBytes": 81936,
+        "retainedPatchBytes": 163872,
+        "retainedPatchBuffers": 4,
+        "pendingPatchBytes": 0,
+        "knownPatchBytes": 163872,
+        "transactions": 0,
+        "packages": 0,
+        "candidates": 1,
+        "readLeases": 1,
+        "inFlight": 0,
+        "effectiveReadBytes": 0,
+        "patchedReadBytes": 0,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 16,
+          "readBytes": 222419,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 4,
+          "payloadReadBytes": 40976,
+          "maxPayloadReadBytes": 20480,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 4,
+            "inputCopyBytes": 40976,
+            "outputCopyBytes": 163872,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false
+        },
+        "allocatorPeakBytes": null,
+        "copyScope": "deduplicated private patch buffers retained by packages/candidates/history/active/leases/transactions/pending reads and finishes; pending hash snapshots separately reserved inside aggregate cap; excludes metadata, effective-read scratch, host or ORT peak"
+      }
+    },
+    {
+      "id": "reapply-one",
+      "strength": 1,
+      "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+      "localInputRevision": 3,
+      "localApplicationRevision": 3,
+      "managerRevision": 4003,
+      "queueTarget": {
+        "invocationId": "normal:reapply-one:8f7bb2d5-dbc5-4e90-8f11-9b83aa3250c3",
+        "bindingId": "lora-normal-low-cross-q4",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "requestId": "normal:reapply-one:request",
+        "revision": 4003,
+        "activeToken": "e4b73698-4d86-4ccc-b6f8-d79ca49f1bf0"
+      },
+      "nativeEpoch": 3,
+      "coverage": "PARTIAL",
+      "validationMode": "normal",
+      "numericalComparison": false,
+      "retainedCandidate": false,
+      "result": {
+        "contractVersion": "lora-connection/2.0-draft.1",
+        "state": "CONSUMER_APPLIED",
+        "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+        "localInputRevision": 3,
+        "localApplicationRevision": 3,
+        "selection": {
+          "pairId": "light",
+          "noise": "low"
+        },
+        "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+        "planId": "00519a9421e7949f032c421e40c7b3355bd711ecd5ed2bfc7e9d9c763319740d",
+        "registryHash": "5d0e51a533f1419f4464469ec874cd71e7e1d8584e5cf0529f42772fc0590ea6",
+        "bundleHash": "3386602e932297b36884cef8d951d38f55b4eea20373b27f636c9d233976f495",
+        "coverage": "PARTIAL",
+        "scope": "diagnostic-projection",
+        "validationMode": "normal",
+        "validation": {
+          "contractVersion": "lora-connection/2.0-draft.1",
+          "valid": true,
+          "coverage": "PARTIAL",
+          "scope": "diagnostic-projection",
+          "planId": "00519a9421e7949f032c421e40c7b3355bd711ecd5ed2bfc7e9d9c763319740d",
+          "registryHash": "5d0e51a533f1419f4464469ec874cd71e7e1d8584e5cf0529f42772fc0590ea6",
+          "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+          "validationMode": "normal",
+          "numericalComparison": false,
+          "evidence": {
+            "adapterVersion": "lora-diffusion-p4-adapter/0.2-draft.1",
+            "nativeValidationProtocol": "bernini-p4-structural-admission-diagnose/0.1",
+            "nativeRegistryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+            "nativeReceipt": {
+              "schemaVersion": "bernini-p4-f32-feed-admission/0.1",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "registryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+              "side": "LOW",
+              "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+              "scope": "PARTIAL",
+              "candidateId": "94728acc-5b6d-4d9b-976b-994729f7df00",
+              "packageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+              "valid": true,
+              "gateId": "p4-sparse-final-f32-admission-v1",
+              "epoch": 2,
+              "patchRangeCount": 2,
+              "blockCount": 2,
+              "patchBytes": 81936,
+              "completeDeclaredRanges": true,
+              "immutableBasePreserved": true,
+              "numericalComparison": false,
+              "modelInference": false,
+              "generationReady": false,
+              "canonicalLoraAdapterExtension": "PENDING"
+            },
+            "sourceBinding": {
+              "ownerRecordId": "lora-owner:c486057:light:LOW:cross-q4-and-bias4",
+              "scope": "verified-runtime-target-range",
+              "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "side": "LOW",
+              "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+              "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+              "trainingBaseVerified": false,
+              "evidenceRef": {
+                "repository": "Kushyameln01/kushyameln-works",
+                "commit": "c4860579d01d9f704cb16714e364a22668f9d57e",
+                "path": "development/ai-connection/lora-p4-adapter/RESULT.json",
+                "runtimeSourceCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+                "scope": "controlled-caller-input-n2-k4; real light LOW cross-Q first4 complete rows and explicit bias4; PARTIAL"
+              },
+              "targets": [
+                {
+                  "weightId": "blocks.0.cross_attn.q.weight",
+                  "fullShape": [
+                    5120,
+                    5120
+                  ],
+                  "ranges": [
+                    {
+                      "offset": 0,
+                      "count": 20480
+                    }
+                  ]
+                },
+                {
+                  "weightId": "blocks.0.cross_attn.q.bias",
+                  "fullShape": [
+                    5120
+                  ],
+                  "ranges": [
+                    {
+                      "offset": 0,
+                      "count": 4
+                    }
+                  ]
+                }
+              ]
+            },
+            "applicationBinding": {
+              "schemaVersion": "lora-normal-queue-binding/0.1",
+              "managerSessionId": "lora-normal-queue:9b7ecb02-c2d1-4dd8-abd7-8635033282fe",
+              "managerRevision": 4003,
+              "queueTarget": {
+                "invocationId": "normal:reapply-one:8f7bb2d5-dbc5-4e90-8f11-9b83aa3250c3",
+                "bindingId": "lora-normal-low-cross-q4",
+                "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+                "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+                "requestId": "normal:reapply-one:request",
+                "revision": 4003,
+                "activeToken": "e4b73698-4d86-4ccc-b6f8-d79ca49f1bf0"
+              },
+              "sdk": {
+                "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+                "localInputRevision": 3,
+                "localApplicationRevision": 3
+              },
+              "resourceBinding": {
+                "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+                "bindingId": "lora-normal-low-cross-q4",
+                "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e"
+              },
+              "managementProfileAccepted": false,
+              "snapshotPublished": false
+            },
+            "unselectedRanges": "immutable-base-pass-through"
+          }
+        },
+        "ownership": {
+          "kind": "independent-copy",
+          "ownerId": "1436b079-19ea-4bbe-8da1-82bb5ab7c13d:94728acc-5b6d-4d9b-976b-994729f7df00"
+        },
+        "snapshotPublished": false,
+        "generationReady": false
+      },
+      "nativeStats": {
+        "disposed": false,
+        "epoch": 3,
+        "activePackageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+        "activePatchBytes": 81936,
+        "retainedPatchBytes": 81936,
+        "retainedPatchBuffers": 2,
+        "pendingPatchBytes": 0,
+        "knownPatchBytes": 81936,
+        "transactions": 0,
+        "packages": 0,
+        "candidates": 0,
+        "readLeases": 0,
+        "inFlight": 0,
+        "effectiveReadBytes": 81936,
+        "patchedReadBytes": 81936,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 20,
+          "readBytes": 263395,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 8,
+          "payloadReadBytes": 81952,
+          "maxPayloadReadBytes": 20480,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 8,
+            "inputCopyBytes": 81952,
+            "outputCopyBytes": 327744,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false
+        },
+        "allocatorPeakBytes": null,
+        "copyScope": "deduplicated private patch buffers retained by packages/candidates/history/active/leases/transactions/pending reads and finishes; pending hash snapshots separately reserved inside aggregate cap; excludes metadata, effective-read scratch, host or ORT peak"
+      }
+    },
+    {
+      "id": "prepare-cancel-recovery",
+      "strength": 1,
+      "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+      "localInputRevision": 6,
+      "localApplicationRevision": 6,
+      "managerRevision": 4005,
+      "queueTarget": {
+        "invocationId": "normal:prepare-cancel-recovery:f554c086-a437-4d4a-bcbd-b2e77f174604",
+        "bindingId": "lora-normal-low-cross-q4",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "requestId": "normal:prepare-cancel-recovery:request",
+        "revision": 4005,
+        "activeToken": "1c6cb79d-e98d-4779-9cac-106298a573fa"
+      },
+      "nativeEpoch": 4,
+      "coverage": "PARTIAL",
+      "validationMode": "normal",
+      "numericalComparison": false,
+      "retainedCandidate": false,
+      "result": {
+        "contractVersion": "lora-connection/2.0-draft.1",
+        "state": "CONSUMER_APPLIED",
+        "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+        "localInputRevision": 6,
+        "localApplicationRevision": 6,
+        "selection": {
+          "pairId": "light",
+          "noise": "low"
+        },
+        "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+        "planId": "e8863d84574b485009a23dcf95e6c70c58b3bd0b7207210a03b4b6b41f614bdd",
+        "registryHash": "5d0e51a533f1419f4464469ec874cd71e7e1d8584e5cf0529f42772fc0590ea6",
+        "bundleHash": "4071d5eca201a5418eaa5b52cc9876bc7b64e23888f8ec53d38d35c87d04f296",
+        "coverage": "PARTIAL",
+        "scope": "diagnostic-projection",
+        "validationMode": "normal",
+        "validation": {
+          "contractVersion": "lora-connection/2.0-draft.1",
+          "valid": true,
+          "coverage": "PARTIAL",
+          "scope": "diagnostic-projection",
+          "planId": "e8863d84574b485009a23dcf95e6c70c58b3bd0b7207210a03b4b6b41f614bdd",
+          "registryHash": "5d0e51a533f1419f4464469ec874cd71e7e1d8584e5cf0529f42772fc0590ea6",
+          "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+          "validationMode": "normal",
+          "numericalComparison": false,
+          "evidence": {
+            "adapterVersion": "lora-diffusion-p4-adapter/0.2-draft.1",
+            "nativeValidationProtocol": "bernini-p4-structural-admission-diagnose/0.1",
+            "nativeRegistryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+            "nativeReceipt": {
+              "schemaVersion": "bernini-p4-f32-feed-admission/0.1",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "registryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+              "side": "LOW",
+              "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+              "scope": "PARTIAL",
+              "candidateId": "dbd34849-a655-437b-84b5-4ce7f019c4e2",
+              "packageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+              "valid": true,
+              "gateId": "p4-sparse-final-f32-admission-v1",
+              "epoch": 3,
+              "patchRangeCount": 2,
+              "blockCount": 2,
+              "patchBytes": 81936,
+              "completeDeclaredRanges": true,
+              "immutableBasePreserved": true,
+              "numericalComparison": false,
+              "modelInference": false,
+              "generationReady": false,
+              "canonicalLoraAdapterExtension": "PENDING"
+            },
+            "sourceBinding": {
+              "ownerRecordId": "lora-owner:c486057:light:LOW:cross-q4-and-bias4",
+              "scope": "verified-runtime-target-range",
+              "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "side": "LOW",
+              "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+              "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+              "trainingBaseVerified": false,
+              "evidenceRef": {
+                "repository": "Kushyameln01/kushyameln-works",
+                "commit": "c4860579d01d9f704cb16714e364a22668f9d57e",
+                "path": "development/ai-connection/lora-p4-adapter/RESULT.json",
+                "runtimeSourceCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+                "scope": "controlled-caller-input-n2-k4; real light LOW cross-Q first4 complete rows and explicit bias4; PARTIAL"
+              },
+              "targets": [
+                {
+                  "weightId": "blocks.0.cross_attn.q.weight",
+                  "fullShape": [
+                    5120,
+                    5120
+                  ],
+                  "ranges": [
+                    {
+                      "offset": 0,
+                      "count": 20480
+                    }
+                  ]
+                },
+                {
+                  "weightId": "blocks.0.cross_attn.q.bias",
+                  "fullShape": [
+                    5120
+                  ],
+                  "ranges": [
+                    {
+                      "offset": 0,
+                      "count": 4
+                    }
+                  ]
+                }
+              ]
+            },
+            "applicationBinding": {
+              "schemaVersion": "lora-normal-queue-binding/0.1",
+              "managerSessionId": "lora-normal-queue:9b7ecb02-c2d1-4dd8-abd7-8635033282fe",
+              "managerRevision": 4005,
+              "queueTarget": {
+                "invocationId": "normal:prepare-cancel-recovery:f554c086-a437-4d4a-bcbd-b2e77f174604",
+                "bindingId": "lora-normal-low-cross-q4",
+                "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+                "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+                "requestId": "normal:prepare-cancel-recovery:request",
+                "revision": 4005,
+                "activeToken": "1c6cb79d-e98d-4779-9cac-106298a573fa"
+              },
+              "sdk": {
+                "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+                "localInputRevision": 6,
+                "localApplicationRevision": 6
+              },
+              "resourceBinding": {
+                "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+                "bindingId": "lora-normal-low-cross-q4",
+                "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e"
+              },
+              "managementProfileAccepted": false,
+              "snapshotPublished": false
+            },
+            "unselectedRanges": "immutable-base-pass-through"
+          }
+        },
+        "ownership": {
+          "kind": "independent-copy",
+          "ownerId": "1436b079-19ea-4bbe-8da1-82bb5ab7c13d:dbd34849-a655-437b-84b5-4ce7f019c4e2"
+        },
+        "snapshotPublished": false,
+        "generationReady": false
+      },
+      "nativeStats": {
+        "disposed": false,
+        "epoch": 4,
+        "activePackageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+        "activePatchBytes": 81936,
+        "retainedPatchBytes": 81936,
+        "retainedPatchBuffers": 2,
+        "pendingPatchBytes": 0,
+        "knownPatchBytes": 81936,
+        "transactions": 0,
+        "packages": 0,
+        "candidates": 0,
+        "readLeases": 0,
+        "inFlight": 0,
+        "effectiveReadBytes": 81936,
+        "patchedReadBytes": 81936,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 23,
+          "readBytes": 304363,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 11,
+          "payloadReadBytes": 122920,
+          "maxPayloadReadBytes": 20480,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 11,
+            "inputCopyBytes": 122920,
+            "outputCopyBytes": 491600,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false
+        },
+        "allocatorPeakBytes": null,
+        "copyScope": "deduplicated private patch buffers retained by packages/candidates/history/active/leases/transactions/pending reads and finishes; pending hash snapshots separately reserved inside aggregate cap; excludes metadata, effective-read scratch, host or ORT peak"
+      }
+    },
+    {
+      "id": "validation-cancel-recovery",
+      "strength": 1,
+      "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+      "localInputRevision": 9,
+      "localApplicationRevision": 9,
+      "managerRevision": 4007,
+      "queueTarget": {
+        "invocationId": "normal:validation-cancel-recovery:76bed7da-8118-4057-84c5-2c91348e83db",
+        "bindingId": "lora-normal-low-cross-q4",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "requestId": "normal:validation-cancel-recovery:request",
+        "revision": 4007,
+        "activeToken": "dad3a7e8-7890-4d97-9727-9b0dcf036878"
+      },
+      "nativeEpoch": 5,
+      "coverage": "PARTIAL",
+      "validationMode": "normal",
+      "numericalComparison": false,
+      "retainedCandidate": false,
+      "result": {
+        "contractVersion": "lora-connection/2.0-draft.1",
+        "state": "CONSUMER_APPLIED",
+        "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+        "localInputRevision": 9,
+        "localApplicationRevision": 9,
+        "selection": {
+          "pairId": "light",
+          "noise": "low"
+        },
+        "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+        "planId": "387983e1c4acfa3706a533066d5442f0e81b022bd4078abac7ed05bc0f0976a6",
+        "registryHash": "5d0e51a533f1419f4464469ec874cd71e7e1d8584e5cf0529f42772fc0590ea6",
+        "bundleHash": "353daee18defcdbe43a6f4fd6c04c8e69061e2374a5a027717406165602312ba",
+        "coverage": "PARTIAL",
+        "scope": "diagnostic-projection",
+        "validationMode": "normal",
+        "validation": {
+          "contractVersion": "lora-connection/2.0-draft.1",
+          "valid": true,
+          "coverage": "PARTIAL",
+          "scope": "diagnostic-projection",
+          "planId": "387983e1c4acfa3706a533066d5442f0e81b022bd4078abac7ed05bc0f0976a6",
+          "registryHash": "5d0e51a533f1419f4464469ec874cd71e7e1d8584e5cf0529f42772fc0590ea6",
+          "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+          "validationMode": "normal",
+          "numericalComparison": false,
+          "evidence": {
+            "adapterVersion": "lora-diffusion-p4-adapter/0.2-draft.1",
+            "nativeValidationProtocol": "bernini-p4-structural-admission-diagnose/0.1",
+            "nativeRegistryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+            "nativeReceipt": {
+              "schemaVersion": "bernini-p4-f32-feed-admission/0.1",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "registryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+              "side": "LOW",
+              "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+              "scope": "PARTIAL",
+              "candidateId": "bf60e6ef-cd5b-4b62-a305-15777cf6f239",
+              "packageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+              "valid": true,
+              "gateId": "p4-sparse-final-f32-admission-v1",
+              "epoch": 4,
+              "patchRangeCount": 2,
+              "blockCount": 2,
+              "patchBytes": 81936,
+              "completeDeclaredRanges": true,
+              "immutableBasePreserved": true,
+              "numericalComparison": false,
+              "modelInference": false,
+              "generationReady": false,
+              "canonicalLoraAdapterExtension": "PENDING"
+            },
+            "sourceBinding": {
+              "ownerRecordId": "lora-owner:c486057:light:LOW:cross-q4-and-bias4",
+              "scope": "verified-runtime-target-range",
+              "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+              "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+              "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "side": "LOW",
+              "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+              "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+              "trainingBaseVerified": false,
+              "evidenceRef": {
+                "repository": "Kushyameln01/kushyameln-works",
+                "commit": "c4860579d01d9f704cb16714e364a22668f9d57e",
+                "path": "development/ai-connection/lora-p4-adapter/RESULT.json",
+                "runtimeSourceCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+                "scope": "controlled-caller-input-n2-k4; real light LOW cross-Q first4 complete rows and explicit bias4; PARTIAL"
+              },
+              "targets": [
+                {
+                  "weightId": "blocks.0.cross_attn.q.weight",
+                  "fullShape": [
+                    5120,
+                    5120
+                  ],
+                  "ranges": [
+                    {
+                      "offset": 0,
+                      "count": 20480
+                    }
+                  ]
+                },
+                {
+                  "weightId": "blocks.0.cross_attn.q.bias",
+                  "fullShape": [
+                    5120
+                  ],
+                  "ranges": [
+                    {
+                      "offset": 0,
+                      "count": 4
+                    }
+                  ]
+                }
+              ]
+            },
+            "applicationBinding": {
+              "schemaVersion": "lora-normal-queue-binding/0.1",
+              "managerSessionId": "lora-normal-queue:9b7ecb02-c2d1-4dd8-abd7-8635033282fe",
+              "managerRevision": 4007,
+              "queueTarget": {
+                "invocationId": "normal:validation-cancel-recovery:76bed7da-8118-4057-84c5-2c91348e83db",
+                "bindingId": "lora-normal-low-cross-q4",
+                "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+                "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+                "requestId": "normal:validation-cancel-recovery:request",
+                "revision": 4007,
+                "activeToken": "dad3a7e8-7890-4d97-9727-9b0dcf036878"
+              },
+              "sdk": {
+                "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+                "localInputRevision": 9,
+                "localApplicationRevision": 9
+              },
+              "resourceBinding": {
+                "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+                "bindingId": "lora-normal-low-cross-q4",
+                "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e"
+              },
+              "managementProfileAccepted": false,
+              "snapshotPublished": false
+            },
+            "unselectedRanges": "immutable-base-pass-through"
+          }
+        },
+        "ownership": {
+          "kind": "independent-copy",
+          "ownerId": "1436b079-19ea-4bbe-8da1-82bb5ab7c13d:bf60e6ef-cd5b-4b62-a305-15777cf6f239"
+        },
+        "snapshotPublished": false,
+        "generationReady": false
+      },
+      "nativeStats": {
+        "disposed": false,
+        "epoch": 5,
+        "activePackageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+        "activePatchBytes": 81936,
+        "retainedPatchBytes": 81936,
+        "retainedPatchBuffers": 2,
+        "pendingPatchBytes": 0,
+        "knownPatchBytes": 81936,
+        "transactions": 0,
+        "packages": 0,
+        "candidates": 0,
+        "readLeases": 0,
+        "inFlight": 0,
+        "effectiveReadBytes": 81936,
+        "patchedReadBytes": 81936,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 27,
+          "readBytes": 345339,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 15,
+          "payloadReadBytes": 163896,
+          "maxPayloadReadBytes": 20480,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 15,
+            "inputCopyBytes": 163896,
+            "outputCopyBytes": 655472,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false
+        },
+        "allocatorPeakBytes": null,
+        "copyScope": "deduplicated private patch buffers retained by packages/candidates/history/active/leases/transactions/pending reads and finishes; pending hash snapshots separately reserved inside aggregate cap; excludes metadata, effective-read scratch, host or ORT peak"
+      }
+    }
+  ],
+  "normalValidatorArguments": [
+    {
+      "kind": "initial-one",
+      "argumentKeys": [
+        "executionProfileId",
+        "graphHash",
+        "isCurrent",
+        "modelHash",
+        "registryHash",
+        "scope",
+        "side",
+        "signal"
+      ],
+      "hasNativeValidationMode": false,
+      "hasIndependentExpected": false,
+      "hasGate": false,
+      "hasForwardInput": false,
+      "runtimeCallsBefore": 0,
+      "nativeDiagnosesBefore": 0,
+      "completed": true,
+      "runtimeCallsAfter": 0,
+      "nativeDiagnosesAfter": 0,
+      "nativeReceiptSchema": "bernini-p4-f32-feed-admission/0.1",
+      "numericalComparison": false
+    },
+    {
+      "kind": "strength-negative",
+      "argumentKeys": [
+        "executionProfileId",
+        "graphHash",
+        "isCurrent",
+        "modelHash",
+        "registryHash",
+        "scope",
+        "side",
+        "signal"
+      ],
+      "hasNativeValidationMode": false,
+      "hasIndependentExpected": false,
+      "hasGate": false,
+      "hasForwardInput": false,
+      "runtimeCallsBefore": 0,
+      "nativeDiagnosesBefore": 0,
+      "completed": true,
+      "runtimeCallsAfter": 0,
+      "nativeDiagnosesAfter": 0,
+      "nativeReceiptSchema": "bernini-p4-f32-feed-admission/0.1",
+      "numericalComparison": false
+    },
+    {
+      "kind": "reapply-one",
+      "argumentKeys": [
+        "executionProfileId",
+        "graphHash",
+        "isCurrent",
+        "modelHash",
+        "registryHash",
+        "scope",
+        "side",
+        "signal"
+      ],
+      "hasNativeValidationMode": false,
+      "hasIndependentExpected": false,
+      "hasGate": false,
+      "hasForwardInput": false,
+      "runtimeCallsBefore": 0,
+      "nativeDiagnosesBefore": 0,
+      "completed": true,
+      "runtimeCallsAfter": 0,
+      "nativeDiagnosesAfter": 0,
+      "nativeReceiptSchema": "bernini-p4-f32-feed-admission/0.1",
+      "numericalComparison": false
+    },
+    {
+      "kind": "prepare-cancel-recovery",
+      "argumentKeys": [
+        "executionProfileId",
+        "graphHash",
+        "isCurrent",
+        "modelHash",
+        "registryHash",
+        "scope",
+        "side",
+        "signal"
+      ],
+      "hasNativeValidationMode": false,
+      "hasIndependentExpected": false,
+      "hasGate": false,
+      "hasForwardInput": false,
+      "runtimeCallsBefore": 0,
+      "nativeDiagnosesBefore": 0,
+      "completed": true,
+      "runtimeCallsAfter": 0,
+      "nativeDiagnosesAfter": 0,
+      "nativeReceiptSchema": "bernini-p4-f32-feed-admission/0.1",
+      "numericalComparison": false
+    },
+    {
+      "kind": "cancel-validation-call",
+      "argumentKeys": [
+        "executionProfileId",
+        "graphHash",
+        "isCurrent",
+        "modelHash",
+        "registryHash",
+        "scope",
+        "side",
+        "signal"
+      ],
+      "hasNativeValidationMode": false,
+      "hasIndependentExpected": false,
+      "hasGate": false,
+      "hasForwardInput": false,
+      "runtimeCallsBefore": 0,
+      "nativeDiagnosesBefore": 0,
+      "completed": true,
+      "runtimeCallsAfter": 0,
+      "nativeDiagnosesAfter": 0,
+      "nativeReceiptSchema": "bernini-p4-f32-feed-admission/0.1",
+      "numericalComparison": false
+    },
+    {
+      "kind": "validation-cancel-recovery",
+      "argumentKeys": [
+        "executionProfileId",
+        "graphHash",
+        "isCurrent",
+        "modelHash",
+        "registryHash",
+        "scope",
+        "side",
+        "signal"
+      ],
+      "hasNativeValidationMode": false,
+      "hasIndependentExpected": false,
+      "hasGate": false,
+      "hasForwardInput": false,
+      "runtimeCallsBefore": 0,
+      "nativeDiagnosesBefore": 0,
+      "completed": true,
+      "runtimeCallsAfter": 0,
+      "nativeDiagnosesAfter": 0,
+      "nativeReceiptSchema": "bernini-p4-f32-feed-admission/0.1",
+      "numericalComparison": false
+    },
+    {
+      "kind": "restore-base",
+      "argumentKeys": [
+        "executionProfileId",
+        "graphHash",
+        "isCurrent",
+        "modelHash",
+        "registryHash",
+        "scope",
+        "side",
+        "signal"
+      ],
+      "hasNativeValidationMode": false,
+      "hasIndependentExpected": false,
+      "hasGate": false,
+      "hasForwardInput": false,
+      "runtimeCallsBefore": 1,
+      "nativeDiagnosesBefore": 0,
+      "completed": true,
+      "runtimeCallsAfter": 1,
+      "nativeDiagnosesAfter": 0,
+      "nativeReceiptSchema": "bernini-p4-f32-feed-admission/0.1",
+      "numericalComparison": false
+    }
+  ],
+  "controls": [
+    {
+      "kind": "old-positive-patched-feed-read-lease",
+      "heldEpoch": 1,
+      "currentEpoch": 2,
+      "weightBytes": 81920,
+      "biasBytes": 16,
+      "exact": true
+    },
+    {
+      "kind": "old-rollback-after-new-commit",
+      "oldRollback": {
+        "restored": false,
+        "epoch": 2,
+        "scope": "PARTIAL"
+      },
+      "currentFeedUnchanged": true,
+      "nativeStats": {
+        "disposed": false,
+        "epoch": 2,
+        "activePackageHash": "18bf1c12adcd9305ea6ce0dc62d78cce0650ca889729334294a13c89a24d170c",
+        "activePatchBytes": 81936,
+        "retainedPatchBytes": 81936,
+        "retainedPatchBuffers": 2,
+        "pendingPatchBytes": 0,
+        "knownPatchBytes": 81936,
+        "transactions": 0,
+        "packages": 0,
+        "candidates": 0,
+        "readLeases": 0,
+        "inFlight": 0,
+        "effectiveReadBytes": 81936,
+        "patchedReadBytes": 81936,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 18,
+          "readBytes": 242907,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 6,
+          "payloadReadBytes": 61464,
+          "maxPayloadReadBytes": 20480,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 6,
+            "inputCopyBytes": 61464,
+            "outputCopyBytes": 245808,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false
+        },
+        "allocatorPeakBytes": null,
+        "copyScope": "deduplicated private patch buffers retained by packages/candidates/history/active/leases/transactions/pending reads and finishes; pending hash snapshots separately reserved inside aggregate cap; excludes metadata, effective-read scratch, host or ORT peak"
+      }
+    },
+    {
+      "kind": "cancel-prepare",
+      "error": {
+        "name": "InvocationQueueError",
+        "code": "INVOCATION_CANCELLED",
+        "message": "Cancelled invocation result was not accepted"
+      },
+      "cancelReply": {
+        "notStarted": false,
+        "stopConfirmed": true,
+        "originalTerminal": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "quarantined": false
+      },
+      "queueTarget": {
+        "invocationId": "normal:cancel-prepare:45d8c294-0f83-42b9-bf59-dd7b5de30d1c",
+        "bindingId": "lora-normal-low-cross-q4",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "requestId": "normal:cancel-prepare:request",
+        "revision": 4004,
+        "activeToken": "41c759de-3057-433d-8ee9-02e09754cbdf"
+      },
+      "priorFeedUnchanged": true,
+      "nativeStats": {
+        "disposed": false,
+        "epoch": 3,
+        "activePackageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+        "activePatchBytes": 81936,
+        "retainedPatchBytes": 81936,
+        "retainedPatchBuffers": 2,
+        "pendingPatchBytes": 0,
+        "knownPatchBytes": 81936,
+        "transactions": 0,
+        "packages": 0,
+        "candidates": 0,
+        "readLeases": 0,
+        "inFlight": 0,
+        "effectiveReadBytes": 81936,
+        "patchedReadBytes": 81936,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 21,
+          "readBytes": 283875,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 9,
+          "payloadReadBytes": 102432,
+          "maxPayloadReadBytes": 20480,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 9,
+            "inputCopyBytes": 102432,
+            "outputCopyBytes": 409664,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false
+        },
+        "allocatorPeakBytes": null,
+        "copyScope": "deduplicated private patch buffers retained by packages/candidates/history/active/leases/transactions/pending reads and finishes; pending hash snapshots separately reserved inside aggregate cap; excludes metadata, effective-read scratch, host or ORT peak"
+      }
+    },
+    {
+      "kind": "cancel-validation-call",
+      "error": {
+        "name": "InvocationQueueError",
+        "code": "INVOCATION_CANCELLED",
+        "message": "Cancelled invocation result was not accepted"
+      },
+      "cancelReply": {
+        "notStarted": false,
+        "stopConfirmed": true,
+        "originalTerminal": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "quarantined": false
+      },
+      "queueTarget": {
+        "invocationId": "normal:cancel-validation-call:a547fa74-1e5f-4570-8035-8fd1066f3f69",
+        "bindingId": "lora-normal-low-cross-q4",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "requestId": "normal:cancel-validation-call:request",
+        "revision": 4006,
+        "activeToken": "d1155673-e955-4e3d-ae4d-7bef06dbb360"
+      },
+      "priorFeedUnchanged": true,
+      "nativeStats": {
+        "disposed": false,
+        "epoch": 4,
+        "activePackageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+        "activePatchBytes": 81936,
+        "retainedPatchBytes": 81936,
+        "retainedPatchBuffers": 2,
+        "pendingPatchBytes": 0,
+        "knownPatchBytes": 81936,
+        "transactions": 0,
+        "packages": 0,
+        "candidates": 0,
+        "readLeases": 0,
+        "inFlight": 0,
+        "effectiveReadBytes": 81936,
+        "patchedReadBytes": 81936,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 25,
+          "readBytes": 324851,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 13,
+          "payloadReadBytes": 143408,
+          "maxPayloadReadBytes": 20480,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 13,
+            "inputCopyBytes": 143408,
+            "outputCopyBytes": 573536,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false
+        },
+        "allocatorPeakBytes": null,
+        "copyScope": "deduplicated private patch buffers retained by packages/candidates/history/active/leases/transactions/pending reads and finishes; pending hash snapshots separately reserved inside aggregate cap; excludes metadata, effective-read scratch, host or ORT peak"
+      }
+    },
+    {
+      "kind": "local-lora-capability-released",
+      "error": {
+        "name": "Error",
+        "code": null,
+        "message": "Released local LoRA File capability"
+      },
+      "sdkInstanceStillLive": true,
+      "immutableBaseSourceStillLive": true,
+      "sourceOwnerGuardCurrent": true
+    },
+    {
+      "kind": "normal-immutable-base-restore",
+      "receipt": {
+        "adapterVersion": "lora-diffusion-p4-adapter/0.2-draft.1",
+        "state": "CONSUMER_APPLIED",
+        "application": "IMMUTABLE_BASE",
+        "coverage": "PARTIAL",
+        "scope": "diagnostic-projection",
+        "nativeRegistryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+        "validationMode": "normal",
+        "numericalComparison": false,
+        "validation": {
+          "schemaVersion": "bernini-p4-f32-feed-admission/0.1",
+          "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+          "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+          "registryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+          "side": "LOW",
+          "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+          "scope": "PARTIAL",
+          "candidateId": "a9fe0a9e-3743-4fb7-ba59-9e53a08d6692",
+          "packageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+          "valid": true,
+          "gateId": "p4-sparse-final-f32-admission-v1",
+          "epoch": 5,
+          "patchRangeCount": 0,
+          "blockCount": 0,
+          "patchBytes": 0,
+          "completeDeclaredRanges": true,
+          "immutableBasePreserved": true,
+          "numericalComparison": false,
+          "modelInference": false,
+          "generationReady": false,
+          "canonicalLoraAdapterExtension": "PENDING"
+        },
+        "commit": {
+          "committed": true,
+          "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+          "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+          "registryHash": "6df84ed8091cad5f23e9670412aa5dbbccd20b04a803167d0ec71a1cb2acb58b",
+          "side": "LOW",
+          "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+          "scope": "PARTIAL",
+          "epoch": 6,
+          "packageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+          "numericalComparison": false,
+          "modelInference": false,
+          "generationReady": false
+        },
+        "applicationBinding": {
+          "managerSessionId": "lora-normal-queue:9b7ecb02-c2d1-4dd8-abd7-8635033282fe",
+          "managerRevision": 4008,
+          "queueTarget": {
+            "invocationId": "normal:restore-base:93008455-51bd-476b-a816-727de3d6f055",
+            "bindingId": "lora-normal-low-cross-q4",
+            "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+            "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+            "requestId": "normal:restore-base:request",
+            "revision": 4008,
+            "activeToken": "65bff4d0-a612-4723-8b07-a90f1eefa5a6"
+          },
+          "priorSdk": {
+            "sdkInstanceId": "4ad18710-2fbd-4266-967c-f43e7e63dbda",
+            "localInputRevision": 9,
+            "localApplicationRevision": 9
+          },
+          "managementProfileAccepted": false,
+          "snapshotPublished": false
+        },
+        "snapshotPublished": false,
+        "generationReady": false
+      },
+      "managerRevision": 4008,
+      "queueTarget": {
+        "invocationId": "normal:restore-base:93008455-51bd-476b-a816-727de3d6f055",
+        "bindingId": "lora-normal-low-cross-q4",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "requestId": "normal:restore-base:request",
+        "revision": 4008,
+        "activeToken": "65bff4d0-a612-4723-8b07-a90f1eefa5a6"
+      },
+      "nativeStats": {
+        "disposed": false,
+        "epoch": 6,
+        "activePackageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+        "activePatchBytes": 0,
+        "retainedPatchBytes": 0,
+        "retainedPatchBuffers": 0,
+        "pendingPatchBytes": 0,
+        "knownPatchBytes": 0,
+        "transactions": 0,
+        "packages": 0,
+        "candidates": 0,
+        "readLeases": 0,
+        "inFlight": 0,
+        "effectiveReadBytes": 1489463312,
+        "patchedReadBytes": 163872,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 5069,
+          "readBytes": 524835067,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 5057,
+          "payloadReadBytes": 524653624,
+          "maxPayloadReadBytes": 163840,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 16705,
+            "inputCopyBytes": 525898808,
+            "outputCopyBytes": 1490659440,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false
+        },
+        "allocatorPeakBytes": null,
+        "copyScope": "deduplicated private patch buffers retained by packages/candidates/history/active/leases/transactions/pending reads and finishes; pending hash snapshots separately reserved inside aggregate cap; excludes metadata, effective-read scratch, host or ORT peak"
+      },
+      "originalTerminal": true,
+      "afterTerminal": true,
+      "resourceReleased": true
+    }
+  ],
+  "queue": {
+    "disposed": false,
+    "groups": [
+      {
+        "groupId": "lora-normal-low-cross-q4",
+        "activeInvocationId": null,
+        "queued": [],
+        "quarantined": false
+      }
+    ],
+    "invocations": [
+      {
+        "resultAccepted": true,
+        "originalTerminal": true,
+        "stopAcknowledged": false,
+        "calculationStopped": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "id": "normal:initial-one:85b15489-5292-426e-a36e-9d0e63ff1196",
+        "requestId": "normal:initial-one:request",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceBinding": "lora-normal-low-cross-q4",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "revision": 4001,
+        "activeToken": "7d612a24-7739-4cbd-bfb0-874905aed106",
+        "parentId": null,
+        "state": "completed",
+        "nativeOutcome": "fulfilled",
+        "errorCode": null
+      },
+      {
+        "resultAccepted": true,
+        "originalTerminal": true,
+        "stopAcknowledged": false,
+        "calculationStopped": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "id": "normal:strength-negative:b08597ed-d1a5-4142-ad38-4a734f7ca9ea",
+        "requestId": "normal:strength-negative:request",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceBinding": "lora-normal-low-cross-q4",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "revision": 4002,
+        "activeToken": "1e255f40-ef43-4da4-9566-214c4d6d40a3",
+        "parentId": null,
+        "state": "completed",
+        "nativeOutcome": "fulfilled",
+        "errorCode": null
+      },
+      {
+        "resultAccepted": true,
+        "originalTerminal": true,
+        "stopAcknowledged": false,
+        "calculationStopped": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "id": "normal:reapply-one:8f7bb2d5-dbc5-4e90-8f11-9b83aa3250c3",
+        "requestId": "normal:reapply-one:request",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceBinding": "lora-normal-low-cross-q4",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "revision": 4003,
+        "activeToken": "e4b73698-4d86-4ccc-b6f8-d79ca49f1bf0",
+        "parentId": null,
+        "state": "completed",
+        "nativeOutcome": "fulfilled",
+        "errorCode": null
+      },
+      {
+        "resultAccepted": false,
+        "originalTerminal": true,
+        "stopAcknowledged": true,
+        "calculationStopped": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "id": "normal:cancel-prepare:45d8c294-0f83-42b9-bf59-dd7b5de30d1c",
+        "requestId": "normal:cancel-prepare:request",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceBinding": "lora-normal-low-cross-q4",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "revision": 4004,
+        "activeToken": "41c759de-3057-433d-8ee9-02e09754cbdf",
+        "parentId": null,
+        "state": "cancelled",
+        "cancelRequested": true,
+        "nativeOutcome": "rejected",
+        "nativeStopRequired": true,
+        "errorCode": "INVOCATION_CANCELLED"
+      },
+      {
+        "resultAccepted": true,
+        "originalTerminal": true,
+        "stopAcknowledged": false,
+        "calculationStopped": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "id": "normal:prepare-cancel-recovery:f554c086-a437-4d4a-bcbd-b2e77f174604",
+        "requestId": "normal:prepare-cancel-recovery:request",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceBinding": "lora-normal-low-cross-q4",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "revision": 4005,
+        "activeToken": "1c6cb79d-e98d-4779-9cac-106298a573fa",
+        "parentId": null,
+        "state": "completed",
+        "nativeOutcome": "fulfilled",
+        "errorCode": null
+      },
+      {
+        "resultAccepted": false,
+        "originalTerminal": true,
+        "stopAcknowledged": true,
+        "calculationStopped": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "id": "normal:cancel-validation-call:a547fa74-1e5f-4570-8035-8fd1066f3f69",
+        "requestId": "normal:cancel-validation-call:request",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceBinding": "lora-normal-low-cross-q4",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "revision": 4006,
+        "activeToken": "d1155673-e955-4e3d-ae4d-7bef06dbb360",
+        "parentId": null,
+        "state": "cancelled",
+        "cancelRequested": true,
+        "nativeOutcome": "rejected",
+        "nativeStopRequired": true,
+        "errorCode": "INVOCATION_CANCELLED"
+      },
+      {
+        "resultAccepted": true,
+        "originalTerminal": true,
+        "stopAcknowledged": false,
+        "calculationStopped": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "id": "normal:validation-cancel-recovery:76bed7da-8118-4057-84c5-2c91348e83db",
+        "requestId": "normal:validation-cancel-recovery:request",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceBinding": "lora-normal-low-cross-q4",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "revision": 4007,
+        "activeToken": "dad3a7e8-7890-4d97-9727-9b0dcf036878",
+        "parentId": null,
+        "state": "completed",
+        "nativeOutcome": "fulfilled",
+        "errorCode": null
+      },
+      {
+        "resultAccepted": true,
+        "originalTerminal": true,
+        "stopAcknowledged": false,
+        "calculationStopped": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "id": "normal:restore-base:93008455-51bd-476b-a816-727de3d6f055",
+        "requestId": "normal:restore-base:request",
+        "ownerId": "lora-normal-owner:1b61c1da-32f3-41dc-b51c-7b14c1fd8284",
+        "resourceBinding": "lora-normal-low-cross-q4",
+        "resourceGeneration": "04e5548c-2b87-400a-964c-cb950093564e",
+        "revision": 4008,
+        "activeToken": "65bff4d0-a612-4723-8b07-a90f1eefa5a6",
+        "parentId": null,
+        "state": "completed",
+        "nativeOutcome": "fulfilled",
+        "errorCode": null
+      }
+    ]
+  },
+  "finalNativeStats": {
+    "disposed": false,
+    "epoch": 6,
+    "activePackageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+    "activePatchBytes": 0,
+    "retainedPatchBytes": 0,
+    "retainedPatchBuffers": 0,
+    "pendingPatchBytes": 0,
+    "knownPatchBytes": 0,
+    "transactions": 0,
+    "packages": 0,
+    "candidates": 0,
+    "readLeases": 0,
+    "inFlight": 0,
+    "effectiveReadBytes": 2978844688,
+    "patchedReadBytes": 163872,
+    "source": {
+      "disposed": false,
+      "busy": false,
+      "reads": 10111,
+      "readBytes": 1049324795,
+      "headerReads": 2,
+      "headerReadBytes": 181288,
+      "configReads": 10,
+      "configReadBytes": 155,
+      "payloadReads": 10099,
+      "payloadReadBytes": 1049143352,
+      "maxPayloadReadBytes": 163840,
+      "hike": {
+        "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+        "memoryBytes": 1572864,
+        "arenaBytes": 491648,
+        "calls": 33395,
+        "inputCopyBytes": 1051633720,
+        "outputCopyBytes": 2980663408,
+        "workspaceReused": true,
+        "disposed": false
+      },
+      "fullFileHashRecomputed": false
+    },
+    "allocatorPeakBytes": null,
+    "copyScope": "deduplicated private patch buffers retained by packages/candidates/history/active/leases/transactions/pending reads and finishes; pending hash snapshots separately reserved inside aggregate cap; excludes metadata, effective-read scratch, host or ORT peak"
+  },
+  "cleanup": {
+    "queueDrained": true,
+    "queueDisposed": true,
+    "sdkDisposed": true,
+    "feedDisposed": true,
+    "sourceDisposed": true,
+    "afterFeed": {
+      "disposed": true,
+      "epoch": 7,
+      "activePackageHash": null,
+      "activePatchBytes": 0,
+      "retainedPatchBytes": 0,
+      "retainedPatchBuffers": 0,
+      "pendingPatchBytes": 0,
+      "knownPatchBytes": 0,
+      "transactions": 0,
+      "packages": 0,
+      "candidates": 0,
+      "readLeases": 0,
+      "inFlight": 0,
+      "effectiveReadBytes": 2978844688,
+      "patchedReadBytes": 163872,
+      "source": {
+        "disposed": true,
+        "busy": false,
+        "reads": 10111,
+        "readBytes": 1049324795,
+        "headerReads": 2,
+        "headerReadBytes": 181288,
+        "configReads": 10,
+        "configReadBytes": 155,
+        "payloadReads": 10099,
+        "payloadReadBytes": 1049143352,
+        "maxPayloadReadBytes": 163840,
+        "hike": null,
+        "fullFileHashRecomputed": false
+      },
+      "allocatorPeakBytes": null,
+      "copyScope": "deduplicated private patch buffers retained by packages/candidates/history/active/leases/transactions/pending reads and finishes; pending hash snapshots separately reserved inside aggregate cap; excludes metadata, effective-read scratch, host or ORT peak"
+    },
+    "afterSource": {
+      "disposed": true,
+      "busy": false,
+      "reads": 10111,
+      "readBytes": 1049324795,
+      "headerReads": 2,
+      "headerReadBytes": 181288,
+      "configReads": 10,
+      "configReadBytes": 155,
+      "payloadReads": 10099,
+      "payloadReadBytes": 1049143352,
+      "maxPayloadReadBytes": 163840,
+      "hike": null,
+      "fullFileHashRecomputed": false
+    },
+    "sourceOwnerGuardCurrentAfterDispose": false
+  },
+  "normalNativeDiagnoseCount": 0,
+  "nativePrepareLoadCount": 6,
+  "inputFileUnchanged": true,
+  "baseFileUnchanged": true,
+  "oracleManifestUnchanged": true,
+  "oracleFilesUnchanged": true,
+  "pageErrors": [],
+  "serverErrors": [],
+  "cleanupErrors": [],
+  "privateInputHTTPRequests": [],
+  "hostElapsedMs": 147492.987067,
+  "evidenceScope": "Ordinary weight transactions only; independent numerical comparisons in diagnostics/",
+  "diagnosticsExecutedSeparately": 2,
+  "receiptCompactJSONUTF8Bytes": [
+    {
+      "id": "initial-one",
+      "bytes": 4338
+    },
+    {
+      "id": "strength-negative",
+      "bytes": 4350
+    },
+    {
+      "id": "reapply-one",
+      "bytes": 4338
+    },
+    {
+      "id": "prepare-cancel-recovery",
+      "bytes": 4362
+    },
+    {
+      "id": "validation-cancel-recovery",
+      "bytes": 4368
+    }
+  ]
+}

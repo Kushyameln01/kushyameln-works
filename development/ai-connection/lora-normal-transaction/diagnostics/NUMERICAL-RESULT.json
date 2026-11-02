@@ -1,0 +1,918 @@
+{
+  "scope": "reused-controlled-caller-input-n2-k4; independent expectations stay outside normal API",
+  "runtimeCalls": [
+    {
+      "id": "validation-cancel-recovery",
+      "completed": true,
+      "packageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+      "nativeEpoch": 5,
+      "resources": {
+        "inputSnapshotBytes": 126980,
+        "conditioningSnapshotBytes": 65540,
+        "conditioningSealBytes": 65540,
+        "conditioningProtectedSealBytes": 65540,
+        "conditioningEvidenceMetadataCopyBytes": 0,
+        "conditioningMetadataBindingEncodingBytes": 852,
+        "conditioningMetadataBindingEncodingTrafficBytes": 852,
+        "returnedArraysBytes": 1286144,
+        "maxDecodedWeightTileBytes": 327680,
+        "maxRawWeightTileBytes": 163840,
+        "maxLinearInputBytes": 110592,
+        "maxBiasVectorBytes": 55296,
+        "maxDecodeElements": 81920,
+        "ffnDownInner": 13824,
+        "ffnDownOutputTile": 4,
+        "innerSplit": false,
+        "mathMemoryBytes": 1638400,
+        "mathArenaBytes": 552960,
+        "attentionMemoryBytes": 1114112,
+        "attentionArenaBytes": 53376,
+        "sourceMemoryBytes": 1572864,
+        "ORTSessionCount": 2,
+        "ORTMemoryBytes": null,
+        "allocatorPeakBytes": null,
+        "GCPeakBytes": null,
+        "hostPeakBytes": null,
+        "inputSnapshotTrafficBytes": 126980,
+        "projectionBatchCopyTrafficBytes": 322437120,
+        "linearInputSnapshotTrafficBytes": 1811538240,
+        "linearOutputSnapshotTrafficBytes": 624512,
+        "linearOutputAssemblyTrafficBytes": 622592,
+        "attentionHostCopyTrafficBytes": 204800,
+        "attentionDenominatorsCopyTrafficBytes": 320,
+        "attentionContextAssemblyTrafficBytes": 40960,
+        "projectionBiasTileCopyTrafficBytes": 260096,
+        "geluBatchCopyTrafficBytes": 0,
+        "geluOutputAssemblyTrafficBytes": 0,
+        "mathSnapshotTrafficBytes": 868352,
+        "mathInputTrafficBytes": 868352,
+        "mathOutputTrafficBytes": 622592,
+        "attentionInputTrafficBytes": 83520,
+        "attentionOutputTrafficBytes": 40960,
+        "retainedParameterVectorsBytes": 81920,
+        "knownRetainedNumericBytes": 1561436,
+        "sourceVectorSnapshotTrafficBytes": 403456,
+        "mathClearTrafficBytes": 6635520,
+        "scope": "P4 fixed Hike Memory capacities, stage numeric arrays, Task1 protected capture seal, and cumulative copy traffic; protected seal and run snapshot are separate copies; no whole-pipeline peak claim; excludes caller/reference/file/browser/GC and unknown ORT allocator"
+      },
+      "beforeDispose": {
+        "busy": false,
+        "disposed": false,
+        "cleanupPending": false,
+        "completedRuns": 1,
+        "cancelledRuns": 0,
+        "inputSnapshotCopyBytes": 126980,
+        "returnedOutputBytes": 1286144,
+        "projectionTiles": 5024,
+        "activeORTSessions": 2,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 5069,
+          "readBytes": 524835067,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 5057,
+          "payloadReadBytes": 524653624,
+          "maxPayloadReadBytes": 163840,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 16705,
+            "inputCopyBytes": 525898808,
+            "outputCopyBytes": 1490659440,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false,
+          "weightFeed": {
+            "epoch": 5,
+            "packageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+            "patchBytes": 81936,
+            "readLease": true
+          }
+        },
+        "linear": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "runs": 5024,
+          "scoreRuns": 40,
+          "inputCopyBytes": 1811538240,
+          "outputCopyBytes": 624512,
+          "ortMs": 1027.8000003099442,
+          "sessionCreations": 2,
+          "activeORTSessions": 2
+        },
+        "math": {
+          "wasmSHA256": "4d8518e94bd2de3ab9bf50f09b2fd17b69a5c57e7fd45dc65cd062d7fdbdbc4e",
+          "busy": false,
+          "disposed": false,
+          "memoryBytes": 1638400,
+          "memoryIdentity": "post-self-attention-math-1",
+          "arenaBytes": 552960,
+          "maxWorkspaceElements": 27648,
+          "maxNormalizationRows": 512,
+          "wasmSnapshotCopyBytes": 10094,
+          "calls": 12,
+          "snapshotCopyBytes": 868352,
+          "inputCopyBytes": 868352,
+          "outputCopyBytes": 622592,
+          "clearBytes": 6635520,
+          "primitiveCalls": {
+            "sqrt": 10,
+            "tanh": 48128
+          },
+          "workspaceReused": true,
+          "arithmetic": "natural full5120 sequential F32 norm reductions; separate multiply/add; tanh GELU; no fused operation"
+        },
+        "attention": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 80,
+          "inputCopyBytes": 83520,
+          "outputCopyBytes": 40960,
+          "rows": 2,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        }
+      },
+      "afterDispose": {
+        "busy": false,
+        "disposed": true,
+        "cleanupPending": false,
+        "completedRuns": 1,
+        "cancelledRuns": 0,
+        "inputSnapshotCopyBytes": 126980,
+        "returnedOutputBytes": 1286144,
+        "projectionTiles": 5024,
+        "activeORTSessions": 0,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 5069,
+          "readBytes": 524835067,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 5057,
+          "payloadReadBytes": 524653624,
+          "maxPayloadReadBytes": 163840,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 16705,
+            "inputCopyBytes": 525898808,
+            "outputCopyBytes": 1490659440,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false,
+          "weightFeed": {
+            "epoch": 5,
+            "packageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+            "patchBytes": 81936,
+            "readLease": true
+          }
+        },
+        "linear": null,
+        "math": null,
+        "attention": null
+      }
+    },
+    {
+      "id": "restore-base",
+      "completed": true,
+      "packageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+      "nativeEpoch": 6,
+      "resources": {
+        "inputSnapshotBytes": 126980,
+        "conditioningSnapshotBytes": 65540,
+        "conditioningSealBytes": 65540,
+        "conditioningProtectedSealBytes": 65540,
+        "conditioningEvidenceMetadataCopyBytes": 0,
+        "conditioningMetadataBindingEncodingBytes": 852,
+        "conditioningMetadataBindingEncodingTrafficBytes": 852,
+        "returnedArraysBytes": 1286144,
+        "maxDecodedWeightTileBytes": 327680,
+        "maxRawWeightTileBytes": 163840,
+        "maxLinearInputBytes": 110592,
+        "maxBiasVectorBytes": 55296,
+        "maxDecodeElements": 81920,
+        "ffnDownInner": 13824,
+        "ffnDownOutputTile": 4,
+        "innerSplit": false,
+        "mathMemoryBytes": 1638400,
+        "mathArenaBytes": 552960,
+        "attentionMemoryBytes": 1114112,
+        "attentionArenaBytes": 53376,
+        "sourceMemoryBytes": 1572864,
+        "ORTSessionCount": 2,
+        "ORTMemoryBytes": null,
+        "allocatorPeakBytes": null,
+        "GCPeakBytes": null,
+        "hostPeakBytes": null,
+        "inputSnapshotTrafficBytes": 126980,
+        "projectionBatchCopyTrafficBytes": 322437120,
+        "linearInputSnapshotTrafficBytes": 1811538240,
+        "linearOutputSnapshotTrafficBytes": 624512,
+        "linearOutputAssemblyTrafficBytes": 622592,
+        "attentionHostCopyTrafficBytes": 204800,
+        "attentionDenominatorsCopyTrafficBytes": 320,
+        "attentionContextAssemblyTrafficBytes": 40960,
+        "projectionBiasTileCopyTrafficBytes": 260096,
+        "geluBatchCopyTrafficBytes": 0,
+        "geluOutputAssemblyTrafficBytes": 0,
+        "mathSnapshotTrafficBytes": 868352,
+        "mathInputTrafficBytes": 868352,
+        "mathOutputTrafficBytes": 622592,
+        "attentionInputTrafficBytes": 83520,
+        "attentionOutputTrafficBytes": 40960,
+        "retainedParameterVectorsBytes": 81920,
+        "knownRetainedNumericBytes": 1561436,
+        "sourceVectorSnapshotTrafficBytes": 403456,
+        "mathClearTrafficBytes": 6635520,
+        "scope": "P4 fixed Hike Memory capacities, stage numeric arrays, Task1 protected capture seal, and cumulative copy traffic; protected seal and run snapshot are separate copies; no whole-pipeline peak claim; excludes caller/reference/file/browser/GC and unknown ORT allocator"
+      },
+      "beforeDispose": {
+        "busy": false,
+        "disposed": false,
+        "cleanupPending": false,
+        "completedRuns": 1,
+        "cancelledRuns": 0,
+        "inputSnapshotCopyBytes": 126980,
+        "returnedOutputBytes": 1286144,
+        "projectionTiles": 5024,
+        "activeORTSessions": 2,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 10111,
+          "readBytes": 1049324795,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 10099,
+          "payloadReadBytes": 1049143352,
+          "maxPayloadReadBytes": 163840,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 33395,
+            "inputCopyBytes": 1051633720,
+            "outputCopyBytes": 2980663408,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false,
+          "weightFeed": {
+            "epoch": 6,
+            "packageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+            "patchBytes": 0,
+            "readLease": true
+          }
+        },
+        "linear": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "runs": 5024,
+          "scoreRuns": 40,
+          "inputCopyBytes": 1811538240,
+          "outputCopyBytes": 624512,
+          "ortMs": 959.1999992132187,
+          "sessionCreations": 2,
+          "activeORTSessions": 2
+        },
+        "math": {
+          "wasmSHA256": "4d8518e94bd2de3ab9bf50f09b2fd17b69a5c57e7fd45dc65cd062d7fdbdbc4e",
+          "busy": false,
+          "disposed": false,
+          "memoryBytes": 1638400,
+          "memoryIdentity": "post-self-attention-math-2",
+          "arenaBytes": 552960,
+          "maxWorkspaceElements": 27648,
+          "maxNormalizationRows": 512,
+          "wasmSnapshotCopyBytes": 10094,
+          "calls": 12,
+          "snapshotCopyBytes": 868352,
+          "inputCopyBytes": 868352,
+          "outputCopyBytes": 622592,
+          "clearBytes": 6635520,
+          "primitiveCalls": {
+            "sqrt": 10,
+            "tanh": 48128
+          },
+          "workspaceReused": true,
+          "arithmetic": "natural full5120 sequential F32 norm reductions; separate multiply/add; tanh GELU; no fused operation"
+        },
+        "attention": {
+          "wasmSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+          "memoryBytes": 1114112,
+          "arenaBytes": 53376,
+          "calls": 80,
+          "inputCopyBytes": 83520,
+          "outputCopyBytes": 40960,
+          "rows": 2,
+          "workspaceReused": true,
+          "invalid": false,
+          "disposed": false
+        }
+      },
+      "afterDispose": {
+        "busy": false,
+        "disposed": true,
+        "cleanupPending": false,
+        "completedRuns": 1,
+        "cancelledRuns": 0,
+        "inputSnapshotCopyBytes": 126980,
+        "returnedOutputBytes": 1286144,
+        "projectionTiles": 5024,
+        "activeORTSessions": 0,
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 10111,
+          "readBytes": 1049324795,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 10,
+          "configReadBytes": 155,
+          "payloadReads": 10099,
+          "payloadReadBytes": 1049143352,
+          "maxPayloadReadBytes": 163840,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 33395,
+            "inputCopyBytes": 1051633720,
+            "outputCopyBytes": 2980663408,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false,
+          "weightFeed": {
+            "epoch": 6,
+            "packageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a",
+            "patchBytes": 0,
+            "readLease": true
+          }
+        },
+        "linear": null,
+        "math": null,
+        "attention": null
+      }
+    }
+  ],
+  "weightComparisons": [
+    {
+      "id": "initial-one",
+      "strength": 1,
+      "weight": {
+        "passed": true,
+        "compared": 20480,
+        "maxAbsoluteError": 2.4756445782259107e-09,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "bias": {
+        "passed": true,
+        "compared": 4,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "actualWeight": {
+        "file": "initial-one-weight.f32",
+        "bytes": 81920,
+        "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+      },
+      "actualBias": {
+        "file": "initial-one-bias.f32",
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "independentWeight": {
+        "file": "s1-weight.f64",
+        "dtype": "F64",
+        "shape": [
+          4,
+          5120
+        ],
+        "elements": 20480,
+        "bytes": 163840,
+        "sha256": "ef6c56daf0aa4e4fb90e749ea4bada23a851582daa1a5797f1d74b7d06d83626"
+      },
+      "independentBias": {
+        "file": "s1-bias.f32",
+        "dtype": "F32",
+        "shape": [
+          4
+        ],
+        "elements": 4,
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "writes": [
+        {
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+        },
+        {
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+        }
+      ],
+      "performedAfterNormalCommit": true
+    },
+    {
+      "id": "strength-negative",
+      "strength": -1,
+      "weight": {
+        "passed": true,
+        "compared": 20480,
+        "maxAbsoluteError": 2.4756445782259107e-09,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "bias": {
+        "passed": true,
+        "compared": 4,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "actualWeight": {
+        "file": "strength-negative-weight.f32",
+        "bytes": 81920,
+        "sha256": "686cd9077fce64e226b67019bfd2e36375572e49349f12c91f8c2fc51af8590f"
+      },
+      "actualBias": {
+        "file": "strength-negative-bias.f32",
+        "bytes": 16,
+        "sha256": "5a14885357c6d617ad09d81b5c26c81cadf6c80a6e71904a059a9a329b02f2f1"
+      },
+      "independentWeight": {
+        "file": "s-1-weight.f64",
+        "dtype": "F64",
+        "shape": [
+          4,
+          5120
+        ],
+        "elements": 20480,
+        "bytes": 163840,
+        "sha256": "6c0193f90f41828db667f13a08a2cd81bb516f02b5dc156110280c996193559c"
+      },
+      "independentBias": {
+        "file": "s-1-bias.f32",
+        "dtype": "F32",
+        "shape": [
+          4
+        ],
+        "elements": 4,
+        "bytes": 16,
+        "sha256": "5a14885357c6d617ad09d81b5c26c81cadf6c80a6e71904a059a9a329b02f2f1"
+      },
+      "writes": [
+        {
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "sha256": "686cd9077fce64e226b67019bfd2e36375572e49349f12c91f8c2fc51af8590f"
+        },
+        {
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "sha256": "5a14885357c6d617ad09d81b5c26c81cadf6c80a6e71904a059a9a329b02f2f1"
+        }
+      ],
+      "performedAfterNormalCommit": true
+    },
+    {
+      "id": "reapply-one",
+      "strength": 1,
+      "weight": {
+        "passed": true,
+        "compared": 20480,
+        "maxAbsoluteError": 2.4756445782259107e-09,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "bias": {
+        "passed": true,
+        "compared": 4,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "actualWeight": {
+        "file": "reapply-one-weight.f32",
+        "bytes": 81920,
+        "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+      },
+      "actualBias": {
+        "file": "reapply-one-bias.f32",
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "independentWeight": {
+        "file": "s1-weight.f64",
+        "dtype": "F64",
+        "shape": [
+          4,
+          5120
+        ],
+        "elements": 20480,
+        "bytes": 163840,
+        "sha256": "ef6c56daf0aa4e4fb90e749ea4bada23a851582daa1a5797f1d74b7d06d83626"
+      },
+      "independentBias": {
+        "file": "s1-bias.f32",
+        "dtype": "F32",
+        "shape": [
+          4
+        ],
+        "elements": 4,
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "writes": [
+        {
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+        },
+        {
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+        }
+      ],
+      "performedAfterNormalCommit": true
+    },
+    {
+      "id": "prepare-cancel-recovery",
+      "strength": 1,
+      "weight": {
+        "passed": true,
+        "compared": 20480,
+        "maxAbsoluteError": 2.4756445782259107e-09,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "bias": {
+        "passed": true,
+        "compared": 4,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "actualWeight": {
+        "file": "prepare-cancel-recovery-weight.f32",
+        "bytes": 81920,
+        "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+      },
+      "actualBias": {
+        "file": "prepare-cancel-recovery-bias.f32",
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "independentWeight": {
+        "file": "s1-weight.f64",
+        "dtype": "F64",
+        "shape": [
+          4,
+          5120
+        ],
+        "elements": 20480,
+        "bytes": 163840,
+        "sha256": "ef6c56daf0aa4e4fb90e749ea4bada23a851582daa1a5797f1d74b7d06d83626"
+      },
+      "independentBias": {
+        "file": "s1-bias.f32",
+        "dtype": "F32",
+        "shape": [
+          4
+        ],
+        "elements": 4,
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "writes": [
+        {
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+        },
+        {
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+        }
+      ],
+      "performedAfterNormalCommit": true
+    },
+    {
+      "id": "validation-cancel-recovery",
+      "strength": 1,
+      "weight": {
+        "passed": true,
+        "compared": 20480,
+        "maxAbsoluteError": 2.4756445782259107e-09,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "bias": {
+        "passed": true,
+        "compared": 4,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "actualWeight": {
+        "file": "validation-cancel-recovery-weight.f32",
+        "bytes": 81920,
+        "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+      },
+      "actualBias": {
+        "file": "validation-cancel-recovery-bias.f32",
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "independentWeight": {
+        "file": "s1-weight.f64",
+        "dtype": "F64",
+        "shape": [
+          4,
+          5120
+        ],
+        "elements": 20480,
+        "bytes": 163840,
+        "sha256": "ef6c56daf0aa4e4fb90e749ea4bada23a851582daa1a5797f1d74b7d06d83626"
+      },
+      "independentBias": {
+        "file": "s1-bias.f32",
+        "dtype": "F32",
+        "shape": [
+          4
+        ],
+        "elements": 4,
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "writes": [
+        {
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+        },
+        {
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+        }
+      ],
+      "performedAfterNormalCommit": true
+    }
+  ],
+  "outputComparisons": [
+    {
+      "id": "normal-applied-after-release",
+      "strength": 1,
+      "comparison": {
+        "passed": true,
+        "compared": 10240,
+        "maxAbsoluteError": 3.2186508178710938e-06,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0.01,
+          "relative": 0.001
+        }
+      },
+      "actualOutput": {
+        "file": "normal-applied-after-release-output.f32",
+        "bytes": 40960,
+        "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784"
+      },
+      "independentExpectedOutput": {
+        "file": "s1-blockOutput.f32",
+        "dtype": "F32",
+        "shape": [
+          10240
+        ],
+        "elements": 10240,
+        "bytes": 40960,
+        "sha256": "bc40a6975651633c1824d93e509843f6b02a9a08ceb90609592949050adc6d8e"
+      },
+      "operatorConsumption": [
+        {
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+          "packageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+          "nativeEpoch": 5
+        },
+        {
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+          "packageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27",
+          "nativeEpoch": 5
+        }
+      ],
+      "afterPreparedRelease": true,
+      "localLoraCapabilityLive": false,
+      "evidenceRef": {
+        "file": "real-run1.json.gz",
+        "jsonPointer": "/diagnostics/outputComparisons/0/evidence",
+        "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+        "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+        "weightFeedEpoch": 5,
+        "weightFeedPackageHash": "e500a9b4b70c76b80bb1c3adb198dbbfb56dc058f0ccb80c24ac4f96cdf91b27"
+      }
+    },
+    {
+      "id": "normal-restored-base",
+      "strength": 0,
+      "comparison": {
+        "passed": true,
+        "compared": 10240,
+        "maxAbsoluteError": 6.079673767089844e-06,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0.01,
+          "relative": 0.001
+        }
+      },
+      "actualOutput": {
+        "file": "normal-restored-base-output.f32",
+        "bytes": 40960,
+        "sha256": "3e60f8d1fc36d583b661e0170726b68ebff8055c95f01b472ef47fde14201f6b"
+      },
+      "independentExpectedOutput": {
+        "file": "s0-blockOutput.f32",
+        "dtype": "F32",
+        "shape": [
+          10240
+        ],
+        "elements": 10240,
+        "bytes": 40960,
+        "sha256": "a67b42500db4d81e32b6974b672a94fb0091e0409801e7ec2b9384381d75f8a0"
+      },
+      "operatorConsumption": [],
+      "afterPreparedRelease": true,
+      "localLoraCapabilityLive": false,
+      "evidenceRef": {
+        "file": "real-run1.json.gz",
+        "jsonPointer": "/diagnostics/outputComparisons/1/evidence",
+        "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+        "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+        "weightFeedEpoch": 6,
+        "weightFeedPackageHash": "5439af853f6e5e0991bbe6d29f9a0846452af3eb862af3f8e3dc197f1183618a"
+      }
+    }
+  ],
+  "newOracleGenerated": false,
+  "oracleReuse": {
+    "generationSource": {
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "tools/ai-connection/p4-lora-reference.py",
+      "sha256": "6f9ed048c7c1ae1ddbd3fa7b3d4328304c4fbd7dc4ca0bfd031c712e5e17987b",
+      "peerCommit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "corePath": "tools/diffusion-models/p4-cross-ffn-reference.py",
+      "coreSha256": "66ded34a4bb74d261b81484bf2abd2d9ee75b0e4cf82ce6a063e02237a7a7ecf",
+      "planPath": "development/ai-connection/p4-cross-ffn/core/candidate-plan.json",
+      "planSha256": "051b6833be54aed9e1e0c3657bd28aa926b46c238a1c3a06fb298f6cc6427600"
+    },
+    "selection": {
+      "pairId": "light",
+      "side": "LOW",
+      "noise": "low",
+      "weightId": "blocks.0.cross_attn.q.weight",
+      "biasWeightId": "blocks.0.cross_attn.q.bias",
+      "fullWeightShape": [
+        5120,
+        5120
+      ],
+      "fullBiasShape": [
+        5120
+      ],
+      "rows": [
+        0,
+        4
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "logicalPatchCount": 1052,
+      "excludedPatchCount": 1050,
+      "excludedTargetPolicy": "all original LoRA targets except the selected cross-Q weight and explicit bias",
+      "unselectedRegions": [
+        {
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "rows": [
+            4,
+            5120
+          ],
+          "columns": [
+            0,
+            5120
+          ]
+        },
+        {
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "elements": [
+            4,
+            5120
+          ]
+        }
+      ]
+    },
+    "gates": {
+      "weight": {
+        "absolute": 1e-05,
+        "relative": 0.0001
+      },
+      "bias": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "projection": {
+        "absolute": 0.01,
+        "relative": 0.001
+      },
+      "projectionGateId": "p4-cross-ffn-composed-f32-v1"
+    },
+    "sourceWholeHashGeneratedByOracle": false,
+    "newOracleGenerated": false
+  },
+  "executionSourceCommit": "126614a8cf99b6c80243595309ae0e6e704d780f",
+  "nativeSourceCommit": "48ff155988d995fc2569e495c8d8820273bd472c",
+  "coverage": "PARTIAL",
+  "generationReady": false,
+  "fullRawReceiptGzip": "real-run1.json.gz",
+  "fullRawReceiptBytes": 4372691,
+  "fullRawReceiptSHA256": "171ba22e96753df6a90ab76d75c10eee1674c8561b9f1bc3e95c84324097248f",
+  "originalOracleManifest": {
+    "bytes": 21434,
+    "sha256": "04e643dfddf37337c44d210d20c44b9eefe0d2328efbc7833a0903d59c0167ef"
+  }
+}
