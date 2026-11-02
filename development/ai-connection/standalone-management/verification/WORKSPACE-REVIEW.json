@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "role": "independent-persistence-review",
+  "scope": "management workspace declaration capture, binary/provenance/lineage/evidence/trace/snapshot, File grant invalidation, codec marker loss, required schema hold",
+  "files": [
+    {
+      "path": "docs/shared/ai-connection/management-workspace.mjs",
+      "bytes": 12660,
+      "sha256": "6423b987c3b43cbd6c640965ba776983c99a8e2d1fabd91cc00f773ed71fd2f3"
+    },
+    {
+      "path": "docs/shared/ai-connection/package.mjs",
+      "bytes": 23713,
+      "sha256": "4dc4b101cc06358f6ebb5a3cd460c24ad042a69538ae1263ecd10ded9b39acb0"
+    },
+    {
+      "path": "tools/ai-connection/test-management-workspace.mjs",
+      "bytes": 9766,
+      "sha256": "aa12c6368924b4880ab5db710e7d08198abb54ad8b060a110ff45b43d0ed18c3"
+    }
+  ],
+  "productionSourceEditedByReviewer": false,
+  "testEdits": "Added three independent behavioral negative cases and canonical import to test-management-workspace.mjs",
+  "resolvedFindings": [
+    "Original declaration could be silently repaired by captureNativeTensor: now rejected before capture",
+    "Whole hydrated descriptor/snapshot now exposed by package reader and used by management reader",
+    "Explicit evidence and trace now returned with hydrated typed binary metadata",
+    "Managed snapshot now crossbinds descriptor, operation, inner session/revision, actual owner resource, exact retained target and terminal",
+    "Unknown required schemas now rejected at build actual-read and fresh reader boundaries"
+  ],
+  "newNegativeScopes": [
+    "shape/dtype/axes/meaning/native-meaning contradictions",
+    "foreign valid snapshot A/B substitution",
+    "missing management target",
+    "altered requestId/activeToken at build and canonical-rehashed manifest/receipt reader",
+    "unknown required extension blocked despite archive hash consistency"
+  ],
+  "verification": {
+    "command": "node --test --test-isolation=none tools/ai-connection/test-management-workspace.mjs",
+    "passed": 6,
+    "failed": 0,
+    "redLog": "/workspace/work/ai-connection/standalone-r14/reference/workspace-audit-target-red.tap",
+    "greenLog": "/workspace/work/ai-connection/standalone-r14/reference/workspace-audit-final.tap"
+  },
+  "limits": [
+    "No NN inference or numerical proof performed",
+    "SourceRecords input-artifact crossbinding not inferred; future native source declaration scope remains separate",
+    "Fresh package data does not confer owner capabilities, File grants or generation READY"
+  ]
+}
