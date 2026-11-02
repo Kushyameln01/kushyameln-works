@@ -73,13 +73,15 @@ encode初回は1frame、続きは完全な4frame群を消費する。F4は1frame
 
 decoder VAE hashは `2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b`。元BF16格納係数は変更せずFP32へ展開する。元BF16演算との同一性は主張しない。
 
-`manifest.inference` はWASM、graph optimization disabled、明示threads1または4。既存exportのthreads1は維持する。threads4は同じgraphを使えるが、cross-origin isolationとSharedArrayBufferを必須とし、非対応hostやthread数のfallbackを拒否する。`capabilities().inference` と成功bindingに実設定を返す。4 threadでWASM32bitの4GiB heap上限が増えることはない。4 threadの速度・子Worker終了は別に実測する。
+`manifest.inference` はWASM、graph optimization disabled、明示threads1または4。既存exportのthreads1は維持する。threads4は同じgraphを使えるが、cross-origin isolationとSharedArrayBufferを必須とし、非対応hostやthread数のfallbackを拒否する。`capabilities().inference` と成功bindingに実設定を返す。4 threadでWASM32bitの4GiB heap上限が増えることはない。小規模時間継続と細長い参照境界での実行・子Worker終了を受け入れた範囲はRESULTを参照する。大shapeの速度保証へ広げない。
 
 ## 保存・通信・終了
 
 `.wktensor` は `WKTSR001`、schema1、little-endianのtyped binary payloadとdata SHA-256を使用する。dtype/shape/layout/meaning、model hash、mask、Tokenizer、供給済みnormalization marker、strict native context、latentContract、任意 `frameProcessing` を保存する。metadataはhashのawait前にsnapshotする。旧markerなしファイルを読み、従来fieldだけの出力bytesを維持する。欠けている旧markerを後から検証済みとして補わない。
 
 `frameProcessing={schemaVersion:1,policy:'wan21-causal-floor-v1',sourceFrames,latentFrames,consumedFrames,unusedTailFrames,sourceContext?}`。encodeの `.context` は処理済みframeとの対応、`.frameProcessing.sourceContext` は未使用末尾を含む元入力全体の対応を保持する。重複frame番号と時刻配列も保持する。compatibleな固定profile decodeでもこの情報を落とさない。
+
+normalized meanの中間WKTとrestored generated sampleでも同じnative `frameProcessing` を保持する。normalized markerは供給された場合だけ保存し、raw意味への混入や未検証のmarker補完を拒否する。generated sampleの複数producer、decoder binding、Diffusion所有のrestored contract検査は維持する。これらmetadataの保存対応は、VAE側へ数値復元を追加する変更ではない。
 
 管理snapshot・owner・graph/build・trace・詳細receipt/evidenceは外側packageへ保存し、strict native context/latentContractへ挿入しない。VAE decode結果の `inputDescriptor` に入力sampleのproducer/decoder/正規化状態とcontextを保持する。管理はRGBのWKTだけでなく、この外側の入力来歴も保存する。
 

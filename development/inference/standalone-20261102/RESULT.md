@@ -4,7 +4,7 @@
 
 ## 配布と実行source
 
-配布branchは `codex/text-vae-standalone`、基点は `498eb25f027666e3cc661a5851288e4aabf39f0a`。**最終配布SHA・Draft PR・push後の取得照合は未記入**。ここに記載したsource SHAは実際に各runへ渡したものを保持する。
+配布branchは `codex/text-vae-standalone`、基点は `498eb25f027666e3cc661a5851288e4aabf39f0a`。初回push済みSHAは `3ea4ca34d50aef0da434985965b0b01105bbb8d8`、[Draft PR #18](https://github.com/Kushyameln01/kushyameln-works/pull/18)。その後も検証・実装を継続しており、最終配布SHAとpush後の取得照合は終了時に別記する。ここに記載したsource SHAは実際に各runへ渡したものを保持する。
 
 | 作業 | 完全source SHA |
 | --- | --- |
@@ -15,7 +15,9 @@
 | VAE F1・480×832単体受入 | `e0f0dd7cae05aebcfc60214d51fce90df6197ab7` |
 | Text SDPA演算診断 | `05198dba7959cc95e0c4d770fd85557ad4010a80` |
 | Text全24層参照checkpoint照合 | `79d62327b47056fff0e3f8d5ea0ebd2e183048c3` |
+| Text全24層native局所/伝播trace | `79d62327b47056fff0e3f8d5ea0ebd2e183048c3` |
 | VAE threads4小規模実WASM | `e5e954ac8faa304c5e90b469970b6fd7940d8c08` |
+| VAE threads4・F5診断と参照寸法境界 | `cc9b37f82ed855b36261d92429a822528bc24a71` |
 | VAE明示threads1/4実装 | `bcb3274e3ab31d51910c40064cb895ac6ab667f0` |
 
 原本はUMT5 SHA `c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68`、VAE SHA `2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b`。VAE独立参照sourceはWan commit `9737cba9c1c3c4d04b33fcad41c111989865d315`、`wan/modules/vae.py` SHA `4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498`。係数hashを付け替えて別modelと互換扱いしていない。
@@ -31,36 +33,58 @@
 | `id-l512-all-active` 実WASM | 24層・全2,097,152要素がfinite。maxAbs **0.0016480088233947754**、固定maxAbs/atol/rtol0.001を超過、allclose=false。462.204秒 |
 | bucket / 最終norm切り分け | bucket全262,144要素は一致。単一final norm倍率だけで差を説明できない。合格へ読み替えない |
 | block0 / SDPA診断 | default sourceはTorch CPU FLASHと一致。ONNX最適化無効化・unscaled T5演算への置換は誤差改善が小さく、製品変更の根拠として採用しない |
+| 全24層native局所/伝播trace | 診断実行完了。実Node ORT WASMの最終出力は失敗Chrome canaryとbitwise一致、固定gateは引き続き不合格。836.691秒、Node process RSS peak3,215,273,984 B |
 
 失敗canaryのgroup sampled RSS sum peakは4,520,603,648 B、complete PSS sum peakは4,238,017,536 B。RSSの共有page重複を含み、PSSへ加算しない。観測した24 sessionはcreate/run/releaseが各24、Tensor dispose72。browser/local server終了後に観測owned live process・zombieは残らなかった。実行途中に観測したzombieと回収記録は保持する。
 
-canaryは全512位置有効でID0も合法入力である。gateを緩める、ID0を禁止する、入力を差し替える、参照backendを合格に合わせて選び直す処置はしていない。全24層のsource checkpointは既存5954参照と全digest・最終全値が一致した（108.860秒、process RSS peak1,710,813,184 B）。この診断だけVAE独立参照CPU2と並行しており、時間は専有条件の比較ではない。層ごとの局所誤差と伝播誤差のnative traceは進行中。
+canaryは全512位置有効でID0も合法入力である。gateを緩める、ID0を禁止する、入力を差し替える、参照backendを合格に合わせて選び直す処置はしていない。全24層のsource checkpointは既存5954参照と全digest・最終全値が一致した（108.860秒、process RSS peak1,710,813,184 B）。native traceは各層でnative直前出力と同一source直前出力を別々に渡し、局所演算差と伝播差を分離した。18〜23層では局所差に比べ伝播差が大きく、最終8要素がmaxAbs0.001を超過した。単一の修正原因が確定したとはせず、製品の数値実装は変更していない。
+
+native traceは24 sessionをcreate/releaseし、同時active最大1・終了時0、実run47回・Tensor dispose141回。診断を実行できたことを表す `passed:true` と、数値受入の `finalFixedGatePassed:false` を区別する。source checkpoint/native traceはVAE target81独立参照CPU2と並行しており、時間は専有条件の性能比較ではない。追加7短入力caseと9controlsの実WASM検証は進行中で、ここでは合格を先取りしない。
 
 Textの既存Hello world、選択manifest、Tokenizer、独立参照、最終Hike正規化、P2/codec成果は元scopeで維持する。今回の9case合格へ流用しない。graphの再exportと全9case参照の再推論は行っていない。
 
 ## VAE V1–V4
 
-**新stream runtimeの受入は下記2caseまで。81frameと参照寸法境界の単体受入は未完了。** encodeと独立raw latent decodeは別入力で比較しており、encode meanを生成sampleへ改名していない。
+**新stream runtimeは下記caseを受け入れた。81frameと参照848×848の単体受入は未完了。** encodeと独立raw latent decodeは別入力で比較しており、encode meanを生成sampleへ改名していない。
 
 | 実WASM case | encode全値 maxAbs / 要素数 | 独立raw decode全値 maxAbs / 要素数 | 通常処理時間 |
 | --- | --- | --- | --- |
 | F1・16×32 | 7.152557373046875e-7 / 128 | 5.662441253662109e-7 / 1,536 | encode3.212秒、decode2.758秒 |
 | F1・480×832 | 1.6689300537109375e-6 / 99,840 | 2.1904706954956055e-6 / 1,198,080 | encode164.829秒、decode243.850秒 |
+| threads4・F5・16×32診断 | 1.430511474609375e-6 / 256 | 1.519918441772461e-6 / 7,680 | encode4.618秒、decode7.450秒 |
+| threads4・F1・16×16参照境界 | 7.152557373046875e-7 / 64 | 5.066394805908203e-7 / 768 | encode8.000秒、decode8.211秒 |
+| threads4・F1・16×848参照境界 | 1.1920928955078125e-6 / 3,392 | 1.8775463104248047e-6 / 40,704 | encode14.893秒、decode14.509秒 |
+| threads4・F1・848×16参照境界 | 9.5367431640625e-7 / 3,392 | 1.4603137969970703e-6 / 40,704 | encode9.261秒、decode16.694秒 |
 
 新domain用gateは比較前に固定したatol/rtol/maxAbs0.002。いずれも全要素finite・allclose・global maxAbsに合格し、WKT保存/読戻しで全値とmetadataが一致した。小profileの過去gateを後付けで大shapeへ転用していない。参照inputは明示した合成RGB・独立raw latentであり、取得できていない実媒体の代用を実媒体受入とは表記しない。
 
 F1・16×32では最初の実chunk完了後の取消、同一APIの通常再実行、再configure、dispose、保存読戻しを確認。F1・480×832は通常encode/decodeを実行した。各runのencode session39/39 release、decode49/49 release、最大active1、終了時active0。両runともbrowser終了後の観測owned live/zombieは0。強制cancel時のinner finally実行までは主張しない。
 
+threads4・F5・16×32は別scopeの継続cache診断であり、target81の代わりにはしない。正常encode/raw decode、最初のchunkで取消、同じAPIで再実行、保存読戻し・現codec metadataが合格した。正常encodeは80 session、decodeは100 sessionを全releaseし、最大active1・終了時0。CDPで取消親+子3、復帰encode親+子3、decode親+子3の計12 targetを観測し、全destroy eventとbrowserを閉じる前の不在を確認した。終了直後は約2秒のsettlementを待っている。CDP非公開Workerや物理RAM解放までを証明する結果ではない。
+
+F1参照3境界は各encode39/decode49 sessionを全releaseし、実WKT保存読戻しの全値・metadataが一致した。各8 target（encode親+子3、decode親+子3）のdestroyとbrowser閉鎖前の不在を確認。追加4runとも閉鎖後の観測owned live process/zombieは0。初期threads4・16×32 runの最終decodeは直後にbrowserを閉じたという古い記録を変更せず、新しいsettlement付き受入と区別する。
+
+| 追加threads4 run | browser sampled RSS / PSS sum peak（B） |
+| --- | --- |
+| F5・16×32診断 | 929,447,936 / 637,145,088 |
+| F1・16×16参照境界 | 884,838,400 / 609,377,280 |
+| F1・16×848参照境界 | 846,217,216 / 569,409,536 |
+| F1・848×16参照境界 | 844,226,560 / 567,684,096 |
+
+追加threads4 runと参照作成はtarget81の元vendor CPU2実行と並行している。上表の時間はその条件での観測値で、thread1からの専有速度改善を示す比較ではない。cgroup値には他の実行も含まれ、上記browser所有processのRSS/PSSと分けている。
+
 F1・480×832のencode sampled browser RSS/PSS sum peakは4,479,012,864 / 4,208,588,800 B、decodeは4,096,307,200 / 3,831,917,568 B。source独立参照は47.686秒、RSS peak4,082,147,328 B。生のcgroup chargeが16GiB近くてもinactive_fileを含み、これをモデル常駐量と扱わない。guardは観測 `memory.current-inactive_file`、shmem/tmpfsは引かず、操作上のreserve256MiBをモデル必要量と区別して記録する。
 
 69 graph + Hike conv2 weight/biasのexportは507,834,866 B、8.810秒、RSS peak1,011,138,560 B。原194 keysをstrict loadし、192 ONNX initializersと外部2 assetが重複なく対応する。symbolic空間軸・program構造の静的確認は [vae/partition-inventory.json](vae/partition-inventory.json) に保存した。静的検査だけで任意寸法の数値合格とはしていない。
 
-現時点の未受入はtarget81×480×832、source F4/5/80/81の選定大shape、F1参照16×848・848×16・848×848等、targetでの取消/再実行/保存と資源、明示4 threadの大shape実速度・最終解放。threads4・16×32は新規にencode/raw decode・取消復帰・保存読戻しに合格し、計13.861秒。比較は全値で上表と同じmaxAbsだった。cancel親+3子pthreadとencode親+3子pthreadのdestroyを観測したが、最終decodeは直後にbrowserを閉じており、その終了を閉鎖前確認済みとはしない。改修した診断hostは次のrunからCDPの可視Worker消滅を待って記録する。target81独立参照は進行中で、成功結果へ繰り上げていない。
+現時点の未受入はtarget81×480×832、source F4/5/80/81の選定大shape、F1参照848×848、targetでの取消/再実行/保存と資源、明示4 threadの大shape実速度。target81の元vendor独立参照はdecodeを実行中で、target WASMは未実行。部分出力や小診断の合格をtarget成功へ繰り上げていない。
+
+既存11caseのplanにF5・16×32診断を追加した。`reference_contract.py` は参照作成時commitのplan/toolのbytes/hash、選択case、model/source/precision/gate/patternなどの共有数値規則が不変であることを検査し、無関係なcase追加だけで旧参照を作り直さない。causal prefixからの派生参照は `DERIVED_CAUSAL_PREFIX_REFERENCE` / 新規NN0と明記する。未完了targetの部分receiptを親に使わず、派生を別の元vendor推論と数えない。
 
 ## API・保存差分と再利用境界
 
 - 固定VAE manifestとmean経路を保持し、`wan21-vae-stream-v1` と独立raw decode meaning `wan21-raw-latent:v1` を追加した。
-- `.wktensor` に任意 `frameProcessing` を保持し、F80→処理77と元80frame contextを保存後も追跡できる。compatible固定decodeでこのmetadataを落とさない修正を含む。旧markerなし互換とnormalized marker保持は維持する。
+- `.wktensor` に任意 `frameProcessing` を保持し、F80→処理77と元80frame contextを保存後も追跡できる。compatible固定decodeでこのmetadataを落とさない修正を含む。commit `44429cd329736ed0c8d9f81a923f37e7c66a3ce6` ではnormalized meanとrestored generated sampleにもこのfieldを保持し、供給済みmarker・複数producer・decoder binding・復元条件を弱めない。関連27軽量検査を保持し、実Diffusion復元の新規NN受入へ数えない。旧markerなし互換とnormalized marker保持は維持する。
 - 通常入口は従来どおり独立参照・gate・詳細receiptを不要とする。管理packageとstrict native codecの責任境界を変えない。
 - 既存5×16×16、固定F1・16×16、固定Rect16×32の合格は旧graph/sourceのscopeで再利用する。新69-unit graphの合格には新しい全値比較を用いる。
 - metadata/制御のhelper double、小channel source等価性試験、real ORT Add helperは開発検証であり、元VAE weightsの81frame NN受入へ数えない。
@@ -85,3 +109,17 @@ F1・480×832のencode sampled browser RSS/PSS sum peakは4,479,012,864 / 4,208,
 広範囲 `node --test tests/*.test.mjs` の別試行ではtechnical-library/VR180関連に5失敗と2未終了を観測した。今回のText/VAE専用検査へ混ぜず、変更前由来であるとの断定もしない。全repository test合格とは報告しない。
 
 merge・GitHub Pages公開・製品生成READYは今回更新していない。
+
+## 継続記録：参照全量とcopy境界
+
+81frameの独立参照はsource `05198dba7959cc95e0c4d770fd85557ad4010a80` で作成完了した。encode1574.515秒、独立raw decode2993.330秒、全体4571.704秒、source process sampled RSS peak9,432,432,640 B／PSS9,429,231,616 B。worker exit0、reserve停止なし。途中に他の診断が並行しており、専有条件の速度比較ではない。これは参照作成の完了で、実WASM全値比較の合格ではない。
+
+source F4/F5/F80/F81の参照は、完了した81frame参照と独立F1全値bridgeからNCTHWの軸2をchannelごとに取り出した。全ファイルhash・pattern・原model/source・既存gateを検査し、`DERIVED_CAUSAL_PREFIX_REFERENCE`／新規NN0を保持する。F4入力4／処理1、F80入力80／処理77を保存し、短いsourceを別途vendor実行したとは表記しない。実WASM側の各source受入は残る。
+
+中間tensorをCHW frame配列で保持するcopy削減を `d578ec006571d82bc50c6c2935d78ae6ea838269` に実装した。数値graph・194 keys・Hike演算・gateは変更していない。固定ORT1.24.3のowned CPU配列のみをadoptし、不明な所有権・SAB・subviewはcopyする。最終全出力のfinite検査を保持する。F5・16×32の新しい実WASM／取消復帰／保存読戻しは合格し、同じthreads4の旧cc9実行とencode/decodeのWKT全byteが一致した。詳細copy counterは診断evidenceに限定する。
+
+旧5f7 sourceの81frame実行はcopy改修の適用のため途中で中断した。数値不合格や81frame受入として数えない。新しいd578 sourceで全量を再開中。受入hostは開始時に固定commitと照合したsource bytesを保持して配信し、後の作業tree編集で実行sourceが変わらない。起動後の作業treeがそのcommitに一致するとの主張ではない。
+
+Text短文suiteの並行試行は共有cgroup working-set監視14.5GiB超過で送付側が所有browserだけを停止した。controller観測15,719,948,288 B、39.495秒。数値gate FAILと区別し、source参照は維持する。全owned live/zombieは回収済みで、残りcaseとcontrolsを資源が空いた状態で実行する。
+
+Text/VAEの完了callback内で再configure/disposeされた旧結果が返るraceを `5f7db87d2800e98eeca28484bf1a209eb06bcc39` で修正した。実client＋合成Workerの8検査で旧結果をAbortErrorとして拒否し、通常成功のpayload/bindingを保持した。これはNN受入の追加ではない。
