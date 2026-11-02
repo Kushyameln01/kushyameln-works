@@ -90,7 +90,12 @@ def private_path(value, label):
     permitted = path.is_relative_to(private_root) and path != private_root
     permitted = permitted or path.is_relative_to(temp_root) and len(path.relative_to(temp_root).parts) >= 2
     require(permitted, f"{label} must use diffusion-private-hidden or a dedicated temporary subdirectory")
-    require(not any((parent / ".git").exists() for parent in path.parents), f"{label} cannot be inside any Git checkout")
+    # Managed workspace roots may contain an empty, read-only .git sentinel.
+    # A real worktree uses a gitdir file or a directory with repository HEAD.
+    def checkout(parent):
+        marker = parent / ".git"
+        return marker.is_file() or (marker.is_dir() and (marker / "HEAD").exists())
+    require(not any(checkout(parent) for parent in path.parents), f"{label} cannot be inside any Git checkout")
     return path
 
 
