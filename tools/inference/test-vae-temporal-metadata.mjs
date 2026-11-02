@@ -23,6 +23,32 @@ test('F4 and F80 roundtrip retain original frames, processed prefix, timestamps 
  }
 });
 
+test('normalized mean WKT preserves the supplied marker and native temporal mapping together',async()=>{
+ for(const sourceFrames of [4,80]){
+  const input=tensor(sourceFrames,{meaning:'wan21-normalized-posterior-mean:v1'});
+  input.normalization='wan21-comfy-f32-v1';
+  const expected=structuredClone(input),pending=encodeTensor(input);
+  input.normalization='mutated-after-call';input.frameProcessing.sourceContext.sourceFrameIndices[0]=999;input.data[0]=999;
+  const output=await decodeTensor(await pending);
+  assert.equal(output.meaning,expected.meaning);assert.equal(output.normalization,expected.normalization);
+  assert.deepEqual(output.frameProcessing,expected.frameProcessing);assert.deepEqual(output.context,expected.context);assert.deepEqual(output.data,expected.data);
+ }
+ const markerless=tensor(4,{meaning:'wan21-normalized-posterior-mean:v1'});
+ assert.equal((await decodeTensor(await encodeTensor(markerless))).normalization,undefined,'No normalization marker may be invented');
+ const contradictory={...markerless,normalization:'unsupported-rule'};
+ assert.throws(()=>requireTensor(contradictory),/normalization marker/);
+});
+
+test('restored generated sample retains frameProcessing without weakening producer or restoration checks',async()=>{
+ const input=tensor(81,{meaning:'wan21-raw-generated-sample:v1'});
+ input.latentContract={schemaVersion:1,representation:'generated-sample',space:'raw',vaeModelSha256:'c'.repeat(64),producerModelSha256s:[input.modelSha256,'d'.repeat(64)],normalization:{id:'wan21-comfy-f32-v1',state:'restored',owner:'diffusion_models'}};
+ const output=await decodeTensor(await encodeTensor(input));
+ assert.equal(output.meaning,input.meaning);assert.deepEqual(output.frameProcessing,input.frameProcessing);assert.deepEqual(output.context,input.context);assert.deepEqual(output.latentContract,input.latentContract);assert.deepEqual(output.data,input.data);
+ for(const change of [t=>{delete t.latentContract;},t=>{t.latentContract.normalization.state='normalized';},t=>{t.latentContract.normalization.owner='vae';},t=>{t.latentContract.producerModelSha256s=[t.latentContract.vaeModelSha256];},t=>{t.modelSha256='e'.repeat(64);},t=>{t.normalization='wan21-comfy-f32-v1';}]){
+  const candidate=structuredClone(input);change(candidate);assert.throws(()=>requireTensor(candidate),undefined,change.toString());
+ }
+});
+
 test('async codec snapshots owned nested temporal mappings before digest yields',async()=>{
  const input=tensor(80,{meaning:'raw-decoder-rgb',decoded:true}),original=structuredClone(input),pending=encodeTensor(input);
  input.frameProcessing.sourceFrames=1;input.frameProcessing.sourceContext.sourceFrameIndices[0]=999;input.frameProcessing.sourceContext.sourceFrameTimesSeconds[0]=999;input.context.sourceFrameIndices[0]=888;input.context.sourceFrameTimesSeconds[0]=888;input.data[0]=999;

@@ -35,7 +35,7 @@ export function snapshotTensorMetadata(t){
  if(t.frameProcessing!==undefined){
   const f=object(t.frameProcessing,['schemaVersion','policy','sourceFrames','latentFrames','consumedFrames','unusedTailFrames','sourceContext'],'frame processing');
   if(f.schemaVersion!==1||f.policy!=='wan21-causal-floor-v1'||![f.sourceFrames,f.latentFrames,f.consumedFrames,f.unusedTailFrames].every(Number.isSafeInteger)||f.sourceFrames<1||f.sourceFrames>81||f.latentFrames<1||f.latentFrames>21||f.consumedFrames!==1+4*(f.latentFrames-1)||f.unusedTailFrames!==f.sourceFrames-f.consumedFrames||f.unusedTailFrames<0||f.unusedTailFrames>3)throw TypeError('Invalid causal frame processing');
-  const latent=['raw-posterior-mean','wan21-raw-latent:v1'].includes(t.meaning),rgb=['raw-decoder-rgb','rgb-unit'].includes(t.meaning),shape=t.shape;
+  const latent=['raw-posterior-mean','wan21-normalized-posterior-mean:v1','wan21-raw-latent:v1','wan21-raw-generated-sample:v1'].includes(t.meaning),rgb=['raw-decoder-rgb','rgb-unit'].includes(t.meaning),shape=t.shape;
   if(t.dtype!=='float32'||t.layout!=='NCTHW'||!Array.isArray(shape)||shape.length!==5||Array.from(shape).some(n=>!Number.isSafeInteger(n)||n<1)||(!latent&&!rgb)||shape[1]!== (latent?16:3)||(latent?shape[2]!==f.latentFrames:shape[2]!==f.sourceFrames&&shape[2]!==f.consumedFrames))throw TypeError('Frame processing contradicts its declared tensor');
   const frameProcessing={schemaVersion:1,policy:f.policy,sourceFrames:f.sourceFrames,latentFrames:f.latentFrames,consumedFrames:f.consumedFrames,unusedTailFrames:f.unusedTailFrames};
   if(f.sourceContext!==undefined){
