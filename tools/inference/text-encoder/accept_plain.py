@@ -11,6 +11,36 @@ from process_lifecycle import ProcessOwnership,cleanup_complete
 from plain_checks import unpack_tensor,compare_values,validate_gate
 def sha(data):return hashlib.sha256(data).hexdigest()
 def write_json(path,value):Path(path).write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n')
+def validate_suite_control_references(plan,all_inputs,selected_ids,oracle_cases,reference_dir,reference_source_sha,manifest_sha256):
+ """Prehash every control reference, including unselected recovery cases; NN0."""
+ records={record['id']:record for record in all_inputs};planned={case['id']:case for case in plan['cases']};controls=plan.get('controls',[])
+ if len(records)!=len(all_inputs):raise ValueError('Duplicate control input IDs')
+ if len({control['id']for control in controls})!=len(controls):raise ValueError('Duplicate suite control IDs')
+ if sum(bool(control.get('recover'))for control in controls)>1:raise ValueError('Browser suite supports one explicit recovery download per invocation')
+ ids=set();native_ids=set()
+ for control in controls:
+  if not re.fullmatch('[A-Za-z0-9_-]+',control['id']) or control['action'] not in ['cancel','reconfigure','dispose','cancel-save']:raise ValueError('Invalid suite control')
+  case_id=control['caseId'];ids.add(case_id)
+  if control['action']=='cancel-save':
+   if case_id not in selected_ids:raise ValueError('cancel-save case must be selected for a completed numerical output: '+case_id)
+  else:native_ids.add(case_id)
+  if control.get('recover') and control['action']!='cancel':raise ValueError('Recovery requires a cancel control')
+ checks=[]
+ for case_id in sorted(ids):
+  record=records.get(case_id);case=oracle_cases.get(case_id);expected=planned.get(case_id)
+  if not re.fullmatch('[a-z0-9][a-z0-9-]{0,63}',case_id) or record is None or case is None or expected is None:raise ValueError('Missing planned control input/oracle: '+case_id)
+  if record.get('executionSourceSha')!=reference_source_sha or record.get('manifestSha256')!=manifest_sha256:raise ValueError('Control source/manifest mismatch: '+case_id)
+  if record.get('input')!=expected['input'] or record.get('byteGraph')!=expected.get('byteGraph') or case.get('input')!=record:raise ValueError('Control input differs from its frozen oracle: '+case_id)
+  if record.get('oracleUsesFull512Positions') is not True or case.get('oracleInternalShape')!=[1,512,4096]:raise ValueError('Control reference must use the independent full512 source: '+case_id)
+  path=Path(reference_dir)/(case_id+'-reference.f32');raw=path.read_bytes();reference=case['reference'];shape=record['shape'];elements=1
+  for dim in shape:elements*=dim
+  if len(raw)!=reference.get('bytes') or len(raw)!=elements*4 or sha(raw)!=reference.get('sha256'):raise ValueError('Control reference bytes/hash mismatch: '+case_id)
+  checks.append({'id':case_id,'passed':True,'file':path.name,'bytes':len(raw),'sha256':sha(raw),'referenceExecutionSourceSha':reference_source_sha,'oracleInternalShape':[1,512,4096],'newNeuralRuns':0})
+ return [record for record in all_inputs if record['id'] in native_ids],checks
+
+def validate_text_storage_metadata(meta,record,manifest):
+ if meta.get('modelSha256')!=manifest['modelSha256'] or meta.get('tokenizerSha256')!=manifest['tokenizer']['sha256'] or meta.get('attentionMask')!=record['attentionMask'] or meta.get('normalization')!='umt5-final-rmsnorm-f32-v1':raise ValueError('Text storage metadata/mask/normalization mismatch: '+record['id'])
+
 def memory_summary(report):
  samples=report.get('memoryTimeline',[]);phases={};pid_peaks={}
  boundaries={event['event']:event['epochMs'] for event in report.get('memoryEvents',[]) if event.get('source')=='page' and event.get('event') in ['full-start','full-end','cancel-start','cancel-end']}
@@ -278,35 +308,55 @@ def main():
      else:
       import numpy as np
       controls=[] if a.skip_controls else plan.get('controls',[])
+      control_inputs=[]
+      if controls:
+       control_inputs,report['controlReferencePreflight']=validate_suite_control_references(plan,json.loads((a.reference/'text-inputs.json').read_text())['inputs'],[record['id']for record in inputs],oracle_cases,a.reference,reference_source_sha,input_record['manifestSha256'])
       native_cases=[];native_controls=[];comparisons=[];numeric_failures=[]
       report['native']={'passed':False,'cases':native_cases,'controls':native_controls};report['comparisons']=comparisons;report['numericFailures']=numeric_failures
       for record in inputs:
        save_controls=[control for control in controls if control['action']=='cancel-save' and control['caseId']==record['id']]
        spec={**suite_spec,'inputs':[record],'controls':save_controls,'negativeCases':[]}
-       with page.expect_download(timeout=1800000) as download:native=page.evaluate('spec=>runTextSuite(spec)',spec)
+       with page.expect_download(timeout=1800000) as download:
+        native=page.evaluate('spec=>runTextSuite(spec)',spec)
+        assert native['passed'],native.get('error')
        download.value.save_as(str(a.output/(record['id']+'.wktensor')))
-       assert native['passed'],native.get('error');assert len(native['cases'])==1
+       assert len(native['cases'])==1
        native_cases.extend(native['cases']);native_controls.extend(native['controls'])
        meta,actual=unpack_tensor((a.output/(record['id']+'.wktensor')).read_bytes(),shape=record['shape'])
        reference=np.fromfile(a.reference/(record['id']+'-reference.f32'),dtype='<f4').reshape(record['shape']);mask=np.array(record['attentionMask'],dtype=np.uint8)
-       assert meta['modelSha256']==manifest['modelSha256'] and meta['tokenizerSha256']==manifest['tokenizer']['sha256'] and meta['attentionMask']==record['attentionMask']
+       validate_text_storage_metadata(meta,record,manifest)
        comparison=compare_values(actual,reference,mask,shape=record['shape'])
        if not comparison['finite'] or not comparison['paddingExactlyZero']:raise ValueError('Native/reference finite values or exact masked-row contract failed: '+record['id'])
        comparisons.append({'id':record['id'],**comparison,'artifact':{'path':record['id']+'.wktensor','bytes':(a.output/(record['id']+'.wktensor')).stat().st_size,'sha256':sha((a.output/(record['id']+'.wktensor')).read_bytes())},'reference':oracle_cases[record['id']]['reference']})
        if not comparison['passed']:numeric_failures.append({'id':record['id'],'kind':'case-output','comparison':comparison})
       cancel_controls=[control for control in controls if control['action']!='cancel-save']
       if cancel_controls:
-       control_ids={control['caseId'] for control in cancel_controls};control_inputs=[record for record in json.loads((a.reference/'text-inputs.json').read_text())['inputs'] if record['id'] in control_ids]
+       control_ids={control['caseId'] for control in cancel_controls}
        assert {record['id'] for record in control_inputs}==control_ids,'Control case absent from frozen source inputs'
-       native=page.evaluate('spec=>runTextSuite(spec)',{**suite_spec,'inputs':[],'controlInputs':control_inputs,'controls':cancel_controls})
-       assert native['passed'],native.get('error');native_controls.extend(native['controls'])
+       control_spec={**suite_spec,'inputs':[],'controlInputs':control_inputs,'controls':cancel_controls}
+       recover_controls=[control for control in cancel_controls if control.get('recover')]
+       if recover_controls:
+        with page.expect_download(timeout=1800000) as download:
+         native=page.evaluate('spec=>runTextSuite(spec)',control_spec)
+         assert native['passed'],native.get('error')
+        control=recover_controls[0];recovery=next(value for value in native['controls'] if value['id']==control['id'])['recovery'];name='recovery-'+control['id']+'.wktensor'
+        if recovery['download']['name']!=name:raise ValueError('Unexpected recovery download name')
+        download.value.save_as(str(a.output/name))
+       else:
+        native=page.evaluate('spec=>runTextSuite(spec)',control_spec)
+        assert native['passed'],native.get('error')
+       native_controls.extend(native['controls'])
        for control in native['controls']:
         if 'recovery' not in control:continue
         recovery=control['recovery'];record=next(record for record in control_inputs if record['id']==control['caseId'])
+        name='recovery-'+control['id']+'.wktensor';raw=(a.output/name).read_bytes();artifact={'path':name,'bytes':len(raw),'sha256':sha(raw)}
+        if len(raw)!=recovery['download']['bytes'] or sha(raw)!=recovery['download']['sha256']:raise ValueError('Recovery artifact bytes/hash mismatch: '+control['id'])
+        meta,actual=unpack_tensor(raw,shape=record['shape']);validate_text_storage_metadata(meta,record,manifest)
         reference=np.fromfile(a.reference/(record['id']+'-reference.f32'),dtype='<f4').reshape(record['shape'])
-        recovery['comparison']=compare_values(np.array(recovery.pop('values'),dtype=np.float32).reshape(record['shape']),reference,np.array(record['attentionMask'],dtype=np.uint8),shape=record['shape'])
+        recovery['artifact']=artifact;recovery['reference']=oracle_cases[record['id']]['reference'];recovery['comparison']=compare_values(actual,reference,np.array(record['attentionMask'],dtype=np.uint8),shape=record['shape'])
         if not recovery['comparison']['finite'] or not recovery['comparison']['paddingExactlyZero']:raise ValueError('Recovery finite values or exact masked-row contract failed: '+control['id'])
         if not recovery['comparison']['passed']:numeric_failures.append({'id':control['id'],'caseId':record['id'],'kind':'recovery-output','comparison':recovery['comparison']})
+      if len(native_controls)!=len(controls) or {control['id']for control in native_controls}!={control['id']for control in controls}:raise ValueError('Selected suite controls were not all collected')
       report['native']={'passed':True,'cases':native_cases,'controls':native_controls};report['comparisons']=comparisons
       report['nativeJobAttempts']=len(native_cases)+len(cancel_controls)+sum('recovery' in control for control in native_controls);report['completedFullNeuralRuns']=len(native_cases)+sum('recovery' in control for control in native_controls);report['cancelledJobs']=len(cancel_controls)
       assert not report['pageErrors'] and not report['blockedRequests'] and not server_errors

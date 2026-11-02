@@ -1,4 +1,4 @@
-import {createInferenceAPI,encodeTensor} from '/shared/inference/api.mjs';
+import {createInferenceAPI,encodeTensor,decodeTensor,describeTensor} from '/shared/inference/api.mjs';
 import {tokenizePlainText} from '/shared/inference/tokenizer.mjs';
 import {validateTextEncoderInput} from '/shared/inference/text-encoder-api.mjs';
 import {observePlainMemory} from './plain_memory.mjs';
@@ -110,6 +110,7 @@ globalThis.runTextSuite=async spec=>{
    const tensor=output.tensor,evidence=output.evidence,session=evidence?.sessionObservation;
    check(tensor.dtype==='float32'&&tensor.layout==='BLC'&&tensor.meaning==='text_hidden_states'&&JSON.stringify(tensor.shape)===JSON.stringify(record.shape),'Case exact native output contract');
    check(tensor.modelSha256===manifest.modelSha256&&tensor.tokenizerSha256===manifest.tokenizer.sha256,'Case actual output provenance');
+   check(tensor.normalization==='umt5-final-rmsnorm-f32-v1','Case actual final normalization marker');
    check(equal(tensor.attentionMask,record.attentionMask),'Case native output mask');
    check(evidence.inputMode===(record.input.text!==undefined?'plain-text':'token-ids')&&evidence.hikeContributed&&evidence.hikeOperation==='actual encoder.final_layer_norm','Case native input/Hike contribution');
    check(session?.created===24&&session.released===24&&session.active===0&&session.maximumActive===1&&session.runCalls===24&&session.tensorDisposeCalls===72,'Real case24-session/Tensor lifetime');
@@ -117,17 +118,26 @@ globalThis.runTextSuite=async spec=>{
    let paddingExactlyZero=true,finite=true;
    for(let row=0;row<rows;row++)for(let c=0;c<4096;c++){const value=tensor.data[row*4096+c];if(!Number.isFinite(value))finite=false;if(!record.attentionMask[row]&&value!==0)paddingExactlyZero=false;}
    check(finite&&paddingExactlyZero,'Case full output finite and every masked value exactly0');
-   return{shape:tensor.shape,dtype:tensor.dtype,layout:tensor.layout,meaning:tensor.meaning,modelSha256:tensor.modelSha256,tokenizerSha256:tensor.tokenizerSha256,attentionMask:Array.from(tensor.attentionMask),finite,paddingExactlyZero,elements:tensor.data.length};
+   return{shape:tensor.shape,dtype:tensor.dtype,layout:tensor.layout,meaning:tensor.meaning,modelSha256:tensor.modelSha256,tokenizerSha256:tensor.tokenizerSha256,normalization:tensor.normalization,attentionMask:Array.from(tensor.attentionMask),finite,paddingExactlyZero,elements:tensor.data.length};
   }
   // Host ownership is checked after the actual serializer's awaited hash. The
   // module cancel API controls inference and does not abort this codec call.
   async function saveOwned(tensor,name,owner,cancelSave=false){
-   const revision=owner.revision,pending=encodeTensor(tensor);
+   const revision=owner.revision,descriptor=describeTensor(tensor),pending=encodeTensor(tensor);
    if(cancelSave)owner.revision++;
    const bytes=await pending;
    if(owner.revision!==revision)return{published:false,serializedBytes:bytes.byteLength,reason:'Host save revision invalidated; serializer completed without publication'};
+   const restored=await decodeTensor(bytes),readbackDescriptor=describeTensor(restored);
+   check(JSON.stringify(readbackDescriptor)===JSON.stringify(descriptor),'Native tensor readback metadata/mask/normalization must match');
+   check(restored.data.length===tensor.data.length,'Native tensor readback full element count');
+   for(let index=0;index<tensor.data.length;index++)check(Object.is(restored.data[index],tensor.data[index]),'Native tensor readback differs at element '+index);
+   check(restored.data.buffer!==tensor.data.buffer&&restored.data.buffer!==bytes.buffer,'Native tensor readback must own its payload');
+   check(restored.attentionMask.buffer!==tensor.attentionMask.buffer,'Native tensor readback must own its mask');
+   const readback={passed:true,reader:'native decodeTensor',metadataExact:true,allValuesExact:true,allValuesCompared:true,elements:restored.data.length,
+    normalization:restored.normalization,modelSha256:restored.modelSha256,tokenizerSha256:restored.tokenizerSha256,ownedPayload:true,ownedMask:true};
+   if(owner.revision!==revision)return{published:false,serializedBytes:bytes.byteLength,readback,reason:'Host save revision invalidated during native readback; no publication'};
    const url=URL.createObjectURL(new Blob([bytes]));urls.push(url);const anchor=document.createElement('a');anchor.href=url;anchor.download=name;anchor.click();
-   return{published:true,name,bytes:bytes.byteLength,sha256:await hash(bytes)};
+   return{published:true,name,bytes:bytes.byteLength,sha256:await hash(bytes),readback};
   }
   const records=new Map();for(const record of [...(spec.inputs??[]),...(spec.controlInputs??[])]){check(!records.has(record.id),'Unique suite case ID');records.set(record.id,record);}
   for(const negative of spec.negativeCases??[]){
@@ -155,6 +165,7 @@ globalThis.runTextSuite=async spec=>{
    }finally{api.dispose();apis.delete(api);pageMemory.mark('case-end',{caseId:record.id});}
   }
   for(const control of spec.controls??[]){
+   check(typeof control.id==='string'&&/^[A-Za-z0-9_-]+$/.test(control.id),'Safe unique control ID');
    const record=records.get(control.caseId);check(record,'Control must name a selected case');activeCase=record.id;phase='control:'+control.id;memoryPhase=phase;
    const entry={id:control.id,caseId:record.id,action:control.action,event:control.event??null,triggered:false,published:false,passed:false};result.controls.push(entry);
    if(control.action==='cancel-save'){
@@ -182,7 +193,8 @@ globalThis.runTextSuite=async spec=>{
      check(control.action==='cancel','Recovery requires a live configured API after cancel');
      const priorRevision=api.state.inputRevision,output=await api.textEncoder.encode(record.input),metadata=inspectOutput(output,record),stateAfter=api.state;
      check(stateAfter.status==='success'&&stateAfter.inputRevision>priorRevision,'Recovery must advance revision and complete on the same configured API');
-     entry.recovery={passed:true,output:metadata,evidence:output.evidence,values:Array.from(output.tensor.data),stateAfter,priorRevision};
+     const download=await saveOwned(output.tensor,'recovery-'+control.id+'.wktensor',{revision:1});
+     entry.recovery={passed:true,output:metadata,evidence:output.evidence,download,stateAfter,priorRevision};
     }
    }finally{clearTimeout(timer);api.dispose();apis.delete(api);}
   }

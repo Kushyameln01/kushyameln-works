@@ -5,12 +5,12 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import {webcrypto} from 'node:crypto';
-import {createInferenceAPI,encodeTensor} from '../../../docs/shared/inference/api.mjs';
+import {createInferenceAPI,encodeTensor,decodeTensor,describeTensor} from '../../../docs/shared/inference/api.mjs';
 import {validateTextEncoderInput} from '../../../docs/shared/inference/text-encoder-api.mjs';
 const manifest=JSON.parse(await readFile(new URL('../../../development/inference/reference-adoption/p0/evidence/manifests/text.json',import.meta.url),'utf8'));
 const code=(await readFile(new URL('./plain_browser.mjs',import.meta.url),'utf8')).replace(/^import .*;\n/gm,'');
 
-async function harness({controlEvent,lateSuccess=false,controlOnlyFirst=false}={}){
+async function harness({controlEvent,lateSuccess=false,controlOnlyFirst=false,corruptReadback}={}){
  const clicks=[],workers=[];
  class LocalFile extends Blob{constructor(bytes,name,declaredSize){super(bytes);this.name=name;this.declaredSize=declaredSize;}get size(){return this.declaredSize??super.size;}}
  const manifestBytes=new TextEncoder().encode(JSON.stringify(manifest));
@@ -35,7 +35,16 @@ async function harness({controlEvent,lateSuccess=false,controlOnlyFirst=false}={
   }
   terminate(){this.terminated=true;}
  }
- const sandbox={createInferenceAPI,encodeTensor,validateTextEncoderInput,tokenizePlainText:()=>{throw Error('No tokenizer double');},observePlainMemory:()=>({mark(){},summary(){return{};}}),document:{querySelector:id=>({files:id==='#bundle'?files:[source]}),createElement:()=>({click(){clicks.push(this.download);}})},File:LocalFile,Worker:WorkerDouble,Blob,crypto:webcrypto,TextEncoder,TextDecoder,Uint8Array,Int32Array,Float32Array,ArrayBuffer,Map,Set,WeakMap,JSON,structuredClone,performance,console:{log(){}},setTimeout,clearTimeout,URL:{createObjectURL:()=> 'blob:test',revokeObjectURL(){}},DOMException};
+ const readback=async bytes=>{
+  const restored=await decodeTensor(bytes);
+  if(corruptReadback==='last-value')restored.data[restored.data.length-1]=.125;
+  if(corruptReadback==='normalization')delete restored.normalization;
+  if(corruptReadback==='mask')restored.attentionMask[0]=0;
+  if(corruptReadback==='tokenizer')restored.tokenizerSha256='a'.repeat(64);
+  if(corruptReadback==='model')restored.modelSha256='a'.repeat(64);
+  return restored;
+ };
+ const sandbox={createInferenceAPI,encodeTensor,decodeTensor:readback,describeTensor,validateTextEncoderInput,tokenizePlainText:()=>{throw Error('No tokenizer double');},observePlainMemory:()=>({mark(){},summary(){return{};}}),document:{querySelector:id=>({files:id==='#bundle'?files:[source]}),createElement:()=>({click(){clicks.push(this.download);}})},File:LocalFile,Worker:WorkerDouble,Blob,crypto:webcrypto,TextEncoder,TextDecoder,Uint8Array,Int32Array,Float32Array,ArrayBuffer,Map,Set,WeakMap,JSON,structuredClone,performance,console:{log(){}},setTimeout,clearTimeout,URL:{createObjectURL:()=> 'blob:test',revokeObjectURL(){}},DOMException};
  sandbox.globalThis=sandbox;
  vm.runInNewContext(code,sandbox,{filename:'plain_browser.mjs'});
  return{run:sandbox.runTextSuite,clicks,workers,digest};
@@ -60,7 +69,14 @@ test('suite saves every native ID value with native L and one terminated owner',
  const result=await h.run({inputs:[input],manifest,manifestSha256:h.digest});
  assert.equal(result.passed,true,JSON.stringify(result.error));
  assert.deepEqual(h.clicks,['ids-one.wktensor']);assert.equal(result.cases[0].output.elements,4096);
+ assert.equal(result.cases[0].output.normalization,'umt5-final-rmsnorm-f32-v1');
+ assert.equal(result.cases[0].download.readback.allValuesExact,true);assert.equal(result.cases[0].download.readback.metadataExact,true);
  assert.equal(h.workers.length,1);assert.equal(h.workers[0].terminated,true);
+});
+for(const corruptReadback of ['last-value','normalization','mask','tokenizer','model'])test(`native readback rejects ${corruptReadback} corruption before publication`,async()=>{
+ const h=await harness({corruptReadback});
+ const result=await h.run({inputs:[input],manifest,manifestSha256:h.digest});
+ assert.equal(result.passed,false);assert.deepEqual(h.clicks,[]);assert.equal(h.workers.length,1);assert.equal(h.workers[0].terminated,true);
 });
 test('save cancellation guards the real awaited serializer without claiming module abort',async()=>{
  const h=await harness();assert.equal(typeof h.run,'function','generalized suite helper missing');
@@ -69,6 +85,16 @@ test('save cancellation guards the real awaited serializer without claiming modu
  assert.equal(result.controls[0].passed,true);assert.equal(result.controls[0].published,false);
  assert.deepEqual(h.clicks,['ids-one.wktensor'],'only the numerical case may publish');
 });
+test('save ownership invalidated during awaited native readback prevents publication',async()=>{
+ const start=code.indexOf('async function saveOwned('),end=code.indexOf('\n  const records=new Map()',start);
+ assert.ok(start>=0&&end>start,'Extract the actual save helper, not a mirrored implementation');
+ const owner={revision:1},clicks=[],sandbox={encodeTensor,describeTensor,decodeTensor:async bytes=>{const restored=await decodeTensor(bytes);owner.revision++;return restored;},
+  check:(ok,message)=>{if(!ok)throw Error(message);},hash:async bytes=>Buffer.from(await webcrypto.subtle.digest('SHA-256',bytes)).toString('hex'),urls:[],Blob,JSON,Object,URL:{createObjectURL:()=> 'blob:test'},document:{createElement:()=>({click(){clicks.push(this.download);}})}};
+ sandbox.globalThis=sandbox;vm.runInNewContext(code.slice(start,end)+'\nglobalThis.saveOwned=saveOwned;',sandbox);
+ const tensor={dtype:'float32',layout:'BLC',shape:[1,1,4096],meaning:'text_hidden_states',normalization:'umt5-final-rmsnorm-f32-v1',modelSha256:manifest.modelSha256,tokenizerSha256:manifest.tokenizer.sha256,attentionMask:Uint8Array.of(1),data:new Float32Array(4096)};
+ const result=await sandbox.saveOwned(tensor,'must-not-publish.wktensor',owner);
+ assert.equal(result.published,false);assert.deepEqual(clicks,[]);
+});
 for(const action of ['cancel','reconfigure','dispose'])test(`${action} at an observed file boundary rejects and ignores a late native result`,async()=>{
  const h=await harness({controlEvent:'file-read-start',lateSuccess:true});assert.equal(typeof h.run,'function','generalized suite helper missing');
  const result=await h.run({inputs:[],controlInputs:[input],manifest,manifestSha256:h.digest,controls:[{id:action,caseId:input.id,action,event:'file-read-start',fileName:'block-00.onnx'}]});
@@ -76,12 +102,13 @@ for(const action of ['cancel','reconfigure','dispose'])test(`${action} at an obs
  assert.equal(result.controls[0].triggered,true);assert.equal(result.controls[0].published,false);
  assert.deepEqual(h.clicks,[]);assert.equal(h.workers[0].terminated,true);assert.equal(h.workers[0].resultsDelivered,1,'late success was actually delivered to the real client listeners');
 });
-test('cancelled native API recovers on its next Worker and advances revision without publishing',async()=>{
+test('cancelled native API recovers on its next Worker, advances revision and saves the recovered tensor',async()=>{
  const h=await harness({controlEvent:'ort-run-start',lateSuccess:true,controlOnlyFirst:true});
  const result=await h.run({inputs:[],controlInputs:[input],manifest,manifestSha256:h.digest,controls:[{id:'cancel-recover',caseId:input.id,action:'cancel',event:'ort-run-start',recover:true}]});
  assert.equal(result.passed,true,JSON.stringify(result.error));
  const recovery=result.controls[0].recovery;assert.ok(recovery,'same-API recovery evidence missing');
- assert.equal(recovery.passed,true);assert.equal(recovery.output.elements,4096);assert.equal(recovery.values.length,4096);
+ assert.equal(recovery.passed,true);assert.equal(recovery.output.elements,4096);assert.equal('values' in recovery,false);
+ assert.equal(recovery.download.published,true);assert.equal(recovery.download.name,'recovery-cancel-recover.wktensor');assert.equal(recovery.download.readback.allValuesExact,true);assert.equal(recovery.download.readback.metadataExact,true);
  assert.equal(recovery.stateAfter.status,'success');assert.ok(recovery.stateAfter.inputRevision>recovery.priorRevision);
- assert.equal(h.workers.length,2);assert.ok(h.workers.every(worker=>worker.terminated));assert.deepEqual(h.clicks,[]);
+ assert.equal(h.workers.length,2);assert.ok(h.workers.every(worker=>worker.terminated));assert.deepEqual(h.clicks,['recovery-cancel-recover.wktensor']);
 });
