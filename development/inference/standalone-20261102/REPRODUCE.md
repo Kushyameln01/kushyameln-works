@@ -1,10 +1,12 @@
 # 単体検証の再現
 
-実行範囲と合否は [RESULT.md](RESULT.md)、通常の接続契約は [API.md](API.md) を参照する。重いNN/reference/exportは同時に走らせない。独立参照やgateは開発検証の入力であり、通常APIへ渡さない。
+実行範囲と合否は [RESULT.md](RESULT.md)、通常の接続契約は [API.md](API.md) を参照する。重いNN/reference/exportは原則として直列にする。同時実行する場合は、所有processの停止条件とcgroupの余力を別に確認し、競合を含む実測として記録する。独立参照やgateは開発検証の入力であり、通常APIへ渡さない。
 
 ## sourceと原本の固定
 
 repositoryは `Kushyameln01/kushyameln-works`、branch `codex/text-vae-standalone`、[Draft PR #18](https://github.com/Kushyameln01/kushyameln-works/pull/18)。初回公開commitは `3ea4ca34d50aef0da434985965b0b01105bbb8d8`。最終配布SHAはRESULTへ別記し、各runの実行sourceとは区別する。再現するrunのsourceへcheckoutし、変更のない状態で実行する。各toolは指定commitのsource bytesとの一致を検査する。
+
+実行sourceには、そのrunで使うharnessとmoduleの完全SHAを指定する。将来harnessを変更したrunでは変更後のSHAを記録し、古いrunの `executionSourceSha` を最新配布SHAへ付け替えない。`git rev-parse HEAD` は対象checkoutの確認であり、過去runのsourceを最新HEADとみなす操作ではない。独立参照のsourceは `--reference-execution-source-sha` で別に固定する。
 
 ```sh
 git rev-parse HEAD
@@ -39,6 +41,9 @@ python -m unittest discover -s tools/inference/vae -p 'test_derive_stream_prefix
 python -m unittest discover -s tools/inference/text-encoder -p 'test_plain_checks.py'
 python -m unittest discover -s tools/inference/text-encoder -p 'test_plain_failure_controls.py'
 node tools/inference/text-encoder/test_plain_browser_controls.mjs
+node tools/inference/text-encoder/test-text-job.mjs
+node tools/inference/text-encoder/test_node_sdk_host.mjs
+python -m unittest discover -s tools/inference/text-encoder -p 'test_node_sdk_accept.py'
 git diff --check
 ```
 
@@ -47,6 +52,72 @@ git diff --check
 ## Text
 
 固定planは [text/predeclared-plan.json](text/predeclared-plan.json)。case、独立full512参照、比較と取消の詳しい説明は [text/REPRODUCE.md](text/REPRODUCE.md) にある。既存9case独立参照はsource `5954d48e0fb6df1d6977964fd8a7ba2a242b6eff` で作成済み。現在のbrowser sourceと別に `--reference-execution-source-sha` を渡す。
+
+Textの通常入口は既存の独立ES module APIのまま。WorkerのText処理を `docs/shared/inference/text-job.mjs` の `runTextEncoderJob()` へまとめ、通常WorkerとNode参照hostが同じ入力validator・Tokenizer・staged loaderを呼ぶ。job関数がencoderをfinallyでdisposeし、Hikeの寿命は呼出側が所有する。通常の `configure({manifest,files})` は `diagnostics:false` で、結果は `{tensor,attentionMask,inputMode}`。`result.evidence` は明示opt-in時だけ返す。参照hostの外側receiptにあるsession/Hike観測や独立比較を、通常tensor fieldへ加えない。
+
+### Node SDK参照host
+
+`--node-sdk --skip-controls` は、通常の `createTextEncoderModule()` に専用clientを渡し、共有job・実ORT CPU WASM1 thread・実Hike・既存WKT writer/readerを通す参照hostである。別のT5実装、precision、export、oracle、gateは導入しない。現在のhostも通常の `diagnostics:false` で実行する。privateなsession/Tensor観測とHike呼出回数は外側receiptに記録する。
+
+prepared graph・final norm・row hashes・Tokenizerはnative `fs.openAsBlob` を使う。元6,735,906,897 B modelは、使用Node環境でBlobのsizeが4GiBぶん短くなるため、実 `fs.stat` の64-bit sizeを持つreadonly positional source adapterを使う。既存loaderの8192 B以下のembedding row要求だけを `fs.read` し、size・mtimeNs・inode・deviceを読出し前後に照合する。元model全体のArrayBuffer化や新しい重みfileは作らず、Browser File経路の確認とも記録しない。prepared graphは1 Bも変更しない。
+
+Python親processは `git cat-file` で指定objectがcommitであることを確認し、親harnessと全Node import closureのbytesを `git show` と照合する。Nodeへ渡す15件のsource recordsはpath集合・bytes・SHA-256・execution SHAを固定する。Nodeは不足・重複・追加を拒否し、現在のfile bytesを再読して照合する。Node自身がGit commitを独立に検証したという意味ではない。親の検査後にsourceが変わった場合も、Node側の再照合で拒否する。
+
+次は6件のFile-backed caseを選ぶ実行構成。実行sourceは `dccb88515775ec8aa86dd16f82e8816c9347ed38`、独立参照は元5954のまま。0 NN preflightは完了したが、この6caseの数値比較は進行中であり受入済みとはしない。以下のoutputは実runの保存先なので、再実行時には別の新規directoryへ置換する。
+
+```sh
+TEXT_NODE_SOURCE_SHA=dccb88515775ec8aa86dd16f82e8816c9347ed38
+TEXT_REFERENCE_SOURCE_SHA=5954d48e0fb6df1d6977964fd8a7ba2a242b6eff
+
+python tools/inference/text-encoder/accept_plain.py \
+  --node-sdk --skip-controls \
+  --plan development/inference/standalone-20261102/text/predeclared-plan.json \
+  --bundle /workspace/work/inference/text-implementation/bundle \
+  --source /workspace/work/models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors \
+  --reference /tmp/kw-standalone-text-oracle-20261102 \
+  --execution-source-sha "$TEXT_NODE_SOURCE_SHA" \
+  --reference-execution-source-sha "$TEXT_REFERENCE_SOURCE_SHA" \
+  --case-id plain-empty --case-id plain-multilingual-newline \
+  --case-id id-l1 --case-id id-l511 \
+  --case-id id-l512-trailing-mask --case-id id-internal-trailing-mask \
+  --output /tmp/kw-text-node-sdk-six-20261102
+```
+
+同じ構成へ `--preflight-only` を付け、別の新規outputへ実行すると、source・manifest・local asset sizeをNNなしで検査する。ORT/Hikeのinstanceを作らず、元modelのread observationは0 Bで閉じる。これはTokenizer・数値比較・Browser取消の受入ではない。
+
+長文plainは、512有効位置の余力を確認してから別jobで実行する。次は実行用コマンドであり、この文書では結果を未確定とする。既存のall-active ID512 canaryを再実行する指定ではない。
+
+```sh
+python tools/inference/text-encoder/accept_plain.py \
+  --node-sdk --skip-controls \
+  --plan development/inference/standalone-20261102/text/predeclared-plan.json \
+  --bundle /workspace/work/inference/text-implementation/bundle \
+  --source /workspace/work/models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors \
+  --reference /tmp/kw-standalone-text-oracle-20261102 \
+  --execution-source-sha "$TEXT_NODE_SOURCE_SHA" \
+  --reference-execution-source-sha "$TEXT_REFERENCE_SOURCE_SHA" \
+  --case-id plain-long-eos512 \
+  --output /tmp/kw-text-node-sdk-long512-20261102
+```
+
+`node-sdk-results.json` は通常factory/shared job/codecを通したhostの記録、`node-sdk-acceptance.json` は元参照との全値比較、所有NodeのPID/create timeと資源観測である。各完了caseのWKTとhost receiptを順次保存し、後のprocess停止でも完了分を残す。数値FAILは個別・最終FAILのまま後続caseを集める。不正なnative outputやfile/hash破損は継続せず拒否する。未完了caseを合格に補わない。
+
+この経路はBrowser Workerの取得・終了・取消を検証しない。`byteGraph` を持つID2 caseは拒否し、通常Browser hostで別に実行する。9件のBrowser controlsと同じAPIでのL1 recoveryも別の残件である。Node結果へBrowser/T3の受入を移さない。
+
+### 資源policy
+
+参照hostのOOM優先度を明示する場合だけ、上のPythonコマンドの先頭に次を付ける。必要な `/proc/self/oom_score_adj` 書込み権限を持つ実行環境で使う。
+
+```sh
+NODE_OPTIONS="--require=$(pwd)/tools/inference/text-encoder/node_resource_guard.cjs" \
+  python tools/inference/text-encoder/accept_plain.py ...
+```
+
+このopt-in guardは起動したNode自身のOOM scoreを1000に設定して読戻し、他processのpriorityやmodel演算を変更しない。外側controllerによる所有Nodeの停止条件、有効にしたguardと実測資源はrunごとに記録する。OOM優先度はメモリ上限や他jobの完走保証ではない。
+
+Python Node-modeは起動前の24 prepared Text graphと、caseごとの各block完了後にreadonly `POSIX_FADV_DONTNEED` を試みる。重複progressはcase/indexでまとめる。原model・参照・VAE graphを対象にせず、全体のdrop_cachesやfile削除もしない。成功件数・対象path・累積file bytes・errorはadvisoryの記録であり、page解放・RSS低下・空きRAMの証明ではない。source/Node自身のRSS、cgroup、file cache、同時実行VAEの使用量を別に扱う。
+
+### Browser canaryと独立参照
 
 ```sh
 TEXT_RUN_SOURCE_SHA=$(git rev-parse HEAD)
@@ -62,7 +133,7 @@ python tools/inference/text-encoder/accept_plain.py \
   --output /tmp/kw-text-new-canary
 ```
 
-上記は失敗を含むcanaryを再現する診断コマンドで、合格を保証しない。現在の既知結果はmaxAbs0.0016480088233947754でgate0.001に不合格。既存canaryを保持し、原因修正後のfresh出力と別に比較する。全512有効を短いmaskへ変更したりgateを上げたりしない。
+上記は失敗を含むcanaryを再現する診断コマンドで、合格を保証しない。現在の既知結果はmaxAbs0.0016480088233947754でgate0.001に不合格。この値を新しいharness SHAの実測へ付け替えず、新sourceの結果は別receiptに記録する。既存canaryを保持し、原因修正後のfresh出力と別に比較する。全512有効を短いmaskへ変更したりgateを上げたりしない。
 
 9case独立参照がない再現先では、まず次を単独実行する。末尾のoutputは新規directoryとする。
 

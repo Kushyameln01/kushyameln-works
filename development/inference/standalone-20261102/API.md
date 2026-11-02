@@ -1,6 +1,6 @@
 # Text / VAE 単体API差分
 
-対象は「Kushyameln Works モジュール単体完成 実行計画 Draft」1.0 draft 1。API版は既存の `works-ai-1` を維持する。この文書は今回追加したstream VAEと保存metadataの説明であり、数値受入は [RESULT.md](RESULT.md) に記載したcaseへ限定する。
+対象は「Kushyameln Works モジュール単体完成 実行計画 Draft」1.0 draft 1。API版は既存の `works-ai-1` を維持する。この文書は今回追加したstream VAE、保存metadata、Text共有jobとNode参照hostを説明する。数値受入は [RESULT.md](RESULT.md) に記載したcaseへ限定し、収集中のNode結果は受入済みとして扱わない。
 
 ## 通常入口
 
@@ -45,6 +45,33 @@ textとID/maskの混在、全0mask、非整数・範囲外ID、長さ不一致�
 | `normalization` | `umt5-final-rmsnorm-f32-v1`：実Hikeのweighted `encoder.final_layer_norm`、epsilon1e-6適用済み |
 
 使用する24 graph、元model、row hashes、final norm、plain用Tokenizerは構成manifestで固定する。ID列のTokenizer識別は期待bindingを示し、外部で作った任意ID列の出所認証ではない。system prompt・negative選択は管理側、4096次元hiddenの投影・cross-attention・FFNはDiffusion側。ComfyUI prompt重み、custom embedding、clip-skip、pooled outputは未対応。
+
+### 共有Text jobと通常結果
+
+[text-job.mjs](../../../docs/shared/inference/text-job.mjs) の `runTextEncoderJob({input,manifest,files,ort,hike,signal,onProgress,diagnostics=false})` をWorkerとNode参照hostで共有する。既存の `validateTextEncoderInput()`、`tokenizePlainText()`、`loadTextEncoder()` を呼び、入力検査・Tokenizer・24段loaderの正本を共通にする。Textの演算loopやtensor schemaをhost側へ複製しない。
+
+共有jobは `finally` でencoderをdisposeする。ORT実行環境とHikeの寿命はcallerが所有し、Hikeはjob側でdisposeしない。既存の独立ES module APIと `createTextEncoderModule().configure()/encode()` は維持する。通常利用者がこの下位jobへ直接接続する必要はない。
+
+`configure({manifest,files,diagnostics:false})` が既定で、通常結果は `{tensor,attentionMask,inputMode}`。`inputMode` は `plain-text` または `token-ids` となる。`diagnostics:true` を明示した場合だけ、外側の `result.evidence` にHike寄与、実行provenance、Tokenizer情報などを追加する。diagnosticsの指定はmodel演算・返却tensor・数値gateを切り替えない。独立参照や過去receiptは通常APIの必須入力にしない。
+
+### Node参照host
+
+[node_sdk_host.mjs](../../../tools/inference/text-encoder/node_sdk_host.mjs) は、`createTextEncoderModule({client:referenceClient})` をconfigureしてからencodeする参照hostである。custom clientは同じ共有Text jobを直列に実行する。実ORT WASMの1thread、既存loaderのprepacking停止設定、実Hike最終RMSNormを使い、結果を通常の `encodeTensor()` / `decodeTensor()` で保存・読戻しする。shape・全mask・normalization・model/Tokenizer識別・全float値を照合し、caseごとの `.wktensor` とreceiptを残す。独立FP32参照との数値比較は親Pythonの既存比較器で行う。
+
+各prepared graphは1GB未満で、norm・row hashes・Tokenizerとともにnative `fs.openAsBlob` で開く。6,735,906,897bytesの元modelには、readonly fdを保持するbounded positional readerを使う。実ファイルのBigInt `size / mtimeNs / ino / dev` を捕捉し、最大8192bytesの位置指定readの前後でfdとpathnameのidentityを検査する。全modelの `arrayBuffer()` は提供せず、closeは進行中のreadを待ってfdを閉じる。receiptではprepared assetのfile-backed Blobと、元modelの `bounded positional file source` を区別し、実size・読出し量・close状態を記録する。元model全体の再読出し・再hashは実施しない。
+
+source検証はNN開始前に行う。親Pythonが `git cat-file -t` で指定SHAのcommit型を確認し、固定15 pathのNode依存と親helperの実bytesをGit bytesと照合する。Nodeは親から受け取った `sourceRecords` について、固定path集合の欠落・重複・追加、全40桁SHA、bytes、SHA-256を検査し、現在の各実ファイルを再読出しして照合する。Node内でGitや子processを起動せず、commitの同定は親のGit検証に依存する。直接CLIへ渡した表だけで独立したcommit証明が成立するとは扱わない。
+
+資源対策はhost側の明示設定として記録する。使い捨てNodeで明示的に `NODE_OPTIONS=--require=.../node_resource_guard.cjs` を有効にした場合だけ、自身の `oom_score_adj=1000` を設定する。これはOOM停止対象の選好であり、利用可能RAMや完走を保証しない。親PythonはNode開始前の24 graphと各block完了後に、readonly fdへ `POSIX_FADV_DONTNEED` を助言する。対象path・回数・累計file bytes・errorを記録するが、助言成功をpage eviction・RSS低下・空きmemoryの証拠へ読み替えない。
+
+このhostの結果はNode参照hostの検証範囲に限る。Browser File/Workerでの実行・強制取消・T3受入は別に残り、receiptも `browserWorkerAcceptance:false / cancellationAcceptance:false` とする。`byteGraph` 指定はNN前に拒否し、計画の `id-l2` bytes経路はBrowser側の後続試験へ残す。ID APIのL2契約は前表どおり維持する。既存FP32 model経路・重み・graph・独立oracle・比較gateは維持し、FP64 model経路への切替や再exportは行わない。
+
+| 区分 | 完全実行source SHA | この追補時点の状態 |
+| --- | --- | --- |
+| Node参照hostの実行 | `dccb88515775ec8aa86dd16f82e8816c9347ed38` | 6caseを収集中。数値結果は未確定 |
+| 比較対象の独立full512 FP32 oracle | `5954d48e0fb6df1d6977964fd8a7ba2a242b6eff` | 保存済みの独立参照を再利用 |
+
+後続の文書・証拠追加による配布commitと、実際に実行したsource SHAを分けて保存する。最新配布SHAで上表の実行SHAを付け替えない。再現手順とhost指定は [REPRODUCE.md](REPRODUCE.md) を参照する。
 
 ## VAE
 
