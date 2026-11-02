@@ -64,6 +64,16 @@ IDの合法範囲は0〜256383、返却Lは1〜512。空plain、多言語・改�
 
 既知FAILはsource Cのまま保存し、N/Bで無条件に再推論していない。gateの緩和、ID0の禁止、mask・入力の差替え、合格に合わせたsource backendの選び直しは行っていない。bucket一致、block0/SDPA、全24層の局所・伝播traceは原因切分けの診断であり、FAILの解消や数値受入へ読み替えない。
 
+## 全512有効IDの追加診断
+
+[block19限定比較](evidence/text-block19-options-acceptance.json) をsource `5b784339a6caf83728a529522538fd43d5fb68f8` で実行した。保存済みの独立sourceS18、sourceS19、同じgraph19、同じ全512maskを使い、元79d traceのALL local出力SHA `fefbdb6e6f8e9543401dba3c3951a0f232380fcc0b4621b9651b7b3880169aa4` を再現してから、最適化設定だけをDISABLEDへ変えた。graphと入力は各実行の前後で再hashし、変化がないことを確認した。新しいmodel/export/独立参照/full24推論は0。
+
+2,097,152個のraw hidden全値を独立sourceS19と比較した。中間hiddenの尺度は最終conditioningとは異なるため、最終出力用gateをこのraw中間tensorへ適用しない。weighted-normの全値診断は両方へ同じHikeを適用し、別の独立Torch4行参照との照合も保持した。最終conditioningの独立全値比較や最終gateの再評価に読み替えない。
+
+ALL/DISABLEDのrow0 weighted-norm最大誤差は両方 `9.655952453613281e-6`。RMS比は `0.9996249849837958`、方向残差最大値の比は `0.9982180601726074` で、事前の診断停止条件どおり `STOP_MARGINAL_LOCAL_DIFFERENCE` となった。設定探索を終了し、productionの算術・graph・gateは変更していない。既知の全24層FAILは保持する。
+
+実sessionは2作成・2release、run2、Tensor6dispose、最大active1・終了時0、dispose/release errors0。Node自己計測のpeak RSSは3,155,918,848 B、wall104.401581秒で、F80 VAEと並行した診断時間。所有Python/Nodeを実行中に観測し、終了後は両PIDの不在を確認した。[process補足](evidence/text-block19-process-observation.json) にlate observerが終了済みNodeへattachできなかった記録も分けて残す。このjobの全期間RSS/PSS samplingや資源guard合格は主張しない。
+
 ## T3の実Browser結果
 
 Browser Bはnormal case `plain-empty` と `id-l2`、取消後の `id-l1` 復帰の計3件を全24層まで完了した。8件の中断jobを含めnative job attemptは11件、観測した実 `Worker.terminate()` 呼出しも11件。9controlsには正常emptyの保存中に行うhost revision取消が含まれるため、control数・中断job数・正常NN件数を混同しない。

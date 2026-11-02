@@ -220,6 +220,22 @@ python tools/inference/text-encoder/diagnose_block.py trace-native \
 
 実runのsourceは `79d62327b47056fff0e3f8d5ea0ebd2e183048c3`。診断完了の `passed:true` と最終数値gateの `finalFixedGatePassed:false` は別項目である。今回の実native traceは失敗canaryをbitwise再現した。これを製品の数値修正・受入とはしない。
 
+### block19の限定比較（完了済み）
+
+追加診断sourceは `5b784339a6caf83728a529522538fd43d5fb68f8`。同じsourceS18とgraph19でALL出力hashを再現し、一致した場合だけDISABLEDへ進む。通常APIの変更ではない。最大2sessionに限定し、既存full24の最終gateは再評価しない。実結果は差が小さいため探索終了であり、取得確認だけなら再実行しない。
+
+```sh
+python tools/inference/text-encoder/diagnose_block.py block-options \
+  --bundle /workspace/work/inference/text-implementation/bundle \
+  --reference /tmp/kw-text-trace-source-20261102 \
+  --native-trace-report /tmp/kw-text-trace-native-20261102/trace-native-results.json \
+  --layer-index 19 \
+  --execution-source-sha 5b784339a6caf83728a529522538fd43d5fb68f8 \
+  --output /tmp/kw-text-new-block19-options
+```
+
+`--preflight-only` を追加すれば既存graph一件とcheckpointのhash/sourceをNN0で検査する。全24graphや独立参照を再作成しない。停止条件・数値と資源のscopeは [TEXT-RESULT.md](TEXT-RESULT.md) を参照する。
+
 ## VAE exportとgraph照合
 
 既存69-unit bundleを再利用するのが通常手順である。再現先にbundleがない場合だけ、固定原VAE194 keysから新しい非公開directoryへexportする。

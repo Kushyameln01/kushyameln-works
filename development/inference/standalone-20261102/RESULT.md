@@ -15,6 +15,7 @@ repositoryは `Kushyameln01/kushyameln-works`、branchは `codex/text-vae-standa
 | --- | --- |
 | Text9case独立full512参照 | `5954d48e0fb6df1d6977964fd8a7ba2a242b6eff` |
 | Text現Node6件・Browser T3 | `b3e5e34430d58bca3bf69b8938ba87beb196d054` |
+| Text block19限定診断 | `5b784339a6caf83728a529522538fd43d5fb68f8` |
 | Text既知FAILのID512 canary | `5e6ebe212ca3c079f5d4cf65cf3fd24c4bc6f97f` |
 | VAE69-unit export | `a7573012e98b6b94ad2c56788b4c14907f262201` |
 | VAE target81独立参照 | `05198dba7959cc95e0c4d770fd85557ad4010a80` |
@@ -35,6 +36,8 @@ TextのWorkerとNode参照hostは同じ共有jobを呼ぶ。Nodeの4GiB超model�
 ## 証拠の再利用と新規検証
 
 以前のP2 Rect、codec marker、固定Hello worldとresource比較、既存F1・5×16×16の受入は当時のsource・shape・入力・gateのscopeで維持する。新規domainの合格へ転用しない。保存済み9case独立Text参照とtarget81独立VAE参照を再利用し、source境界の参照は検証済みcausal prefixとして派生した。派生を新しいvendor推論とは記録しない。
+
+[source再利用境界](evidence/source-reuse-boundaries.json) で、Textの通常runtime/既存harnessと、現在VAEのruntime/受入harnessに数値変更がないことをGit上で照合した。target81はVAE coreの同一性を確認し、caller全体の同一性とは区別する。Text block19の限定診断は既存ALL出力を再現したが最適化無効化の差は小さく、事前停止条件に従って探索を終了した。最終gateは変更していない。
 
 今回の通常経路では全値比較、native codec保存読戻し、取消後の同一API再実行、session/Tensorの終了を検査した。Worker terminate呼出し、CDP可視pthread targetの消失、OSの生存processとzombieは別の証拠として記録する。sampled RSS/PSS、WASM capacity、共有cgroup、tmpfsを単一の必要RAMへ混ぜない。詳細はモジュール別結果と [evidence/index.json](evidence/index.json)。一部の大きいreceiptは元bytes/SHA付きのlossless gzipで保存した。
 
