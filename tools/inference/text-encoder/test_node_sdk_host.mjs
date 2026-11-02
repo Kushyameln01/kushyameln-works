@@ -2,7 +2,7 @@
 // No model/runtime job is imported or executed by this test module.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile,mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises';
+import {readFile,mkdtemp,mkdir,writeFile,open,stat,utimes,rename,chmod,rm} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
@@ -82,4 +82,57 @@ test('direct host requires parent source records before opening model assets or 
   assert.equal(report.passed,false);assert.equal(report.cases.length,0);assert.match(report.failure.message,/source records|source closure/i);assert.equal(report.sourceVerification.nodeCommitVerification,false);
  }finally{await rm(output,{recursive:true,force:true});}
  const source=await readFile(new URL('./node_sdk_host.mjs',import.meta.url),'utf8');assert.doesNotMatch(source,/node:child_process|execFileSync|spawn\(/);
+});
+
+const SOURCE_TAIL_OFFSET=2**32,SOURCE_BYTES=SOURCE_TAIL_OFFSET+8192,FIXED_SOURCE_TIME=1234567890;
+async function writeSparseSource(path,tail){
+ let handle;
+ try{
+  handle=await open(path,'w+',0o600);await handle.truncate(SOURCE_BYTES);
+  const written=await handle.write(tail,0,tail.length,SOURCE_TAIL_OFFSET);assert.equal(written.bytesWritten,tail.length);
+ }finally{await handle?.close();}
+ await utimes(path,FIXED_SOURCE_TIME,FIXED_SOURCE_TIME);await chmod(path,0o400);
+ const identity=await stat(path,{bigint:true});assert.equal(identity.size,BigInt(SOURCE_BYTES));assert.ok(identity.blocks*512n<1024n*1024n,'source fixture must stay sparse below1MiB physical allocation');return identity;
+}
+async function sparseSourceFixture(){
+ const root=await mkdtemp(join(tmpdir(),'text-sdk-sparse-source-')),path=join(root,'source.safetensors'),tail=Uint8Array.from({length:8192},(_,i)=>(i*37+11)%251);
+ try{return{root,path,tail,identity:await writeSparseSource(path,tail)};}catch(error){await rm(root,{recursive:true,force:true});throw error;}
+}
+test('positional source preserves 64-bit size and reads only a bounded row above4GiB',async()=>{
+ assert.equal(typeof host?.openPositionalSource,'function','64-bit positional source adapter missing');
+ const fixture=await sparseSourceFixture();let source;
+ try{
+  source=await host.openPositionalSource(fixture.path,SOURCE_BYTES);
+  assert.equal(source.size,SOURCE_BYTES);assert.equal(source.storage,'bounded positional file source');assert.equal(source.maximumSliceBytes,8192);
+  assert.equal(typeof source.arrayBuffer,'undefined','whole-model reads must not be exposed');
+  assert.equal(source.statIdentity.size,String(SOURCE_BYTES));assert.ok(Object.values(source.statIdentity).every(value=>typeof value==='string'));
+  const row=source.slice(SOURCE_TAIL_OFFSET,SOURCE_BYTES);assert.equal(row.size,8192);const bytes=await row.arrayBuffer();assert.ok(bytes instanceof ArrayBuffer);assert.equal(bytes.byteLength,8192);assert.deepEqual(new Uint8Array(bytes),fixture.tail);
+  assert.deepEqual(new Uint8Array(await source.slice(0,16).arrayBuffer()),new Uint8Array(16));assert.equal((await source.slice(SOURCE_BYTES,SOURCE_BYTES).arrayBuffer()).byteLength,0);
+  for(const range of [[0,SOURCE_BYTES],[-1,0],[0,-1],[2,1],[0,8193],[SOURCE_BYTES,SOURCE_BYTES+1],[NaN,1],[0,Infinity],[.5,1],[0,Number.MAX_SAFE_INTEGER+1],[false,1],[]])assert.throws(()=>source.slice(...range),undefined,'invalid/unbounded source range '+range);
+  await assert.rejects(host.openPositionalSource(fixture.path,SOURCE_BYTES-1),/size|bytes/i);
+ }finally{await source?.close();await rm(fixture.root,{recursive:true,force:true});}
+});
+test('positional source detects mtime changes and same-size same-mtime inode replacement',async()=>{
+ assert.equal(typeof host?.openPositionalSource,'function','64-bit positional source adapter missing');
+ for(const change of ['mtime','inode']){
+  const fixture=await sparseSourceFixture();let source;
+  try{
+   source=await host.openPositionalSource(fixture.path,SOURCE_BYTES);const pending=source.slice(SOURCE_TAIL_OFFSET,SOURCE_BYTES);
+   if(change==='mtime')await utimes(fixture.path,FIXED_SOURCE_TIME+2,FIXED_SOURCE_TIME+2);
+   else{
+    await rename(fixture.path,fixture.path+'.old');const replacement=await writeSparseSource(fixture.path,fixture.tail);
+    assert.equal(replacement.size,fixture.identity.size);assert.equal(replacement.mtimeNs,fixture.identity.mtimeNs);assert.equal(replacement.dev,fixture.identity.dev);assert.notEqual(replacement.ino,fixture.identity.ino);
+   }
+   await assert.rejects(pending.arrayBuffer(),/changed|identity|modified|stat/i);
+  }finally{await source?.close();await rm(fixture.root,{recursive:true,force:true});}
+ }
+});
+test('positional source close is idempotent and invalidates old and future slices',async()=>{
+ assert.equal(typeof host?.openPositionalSource,'function','64-bit positional source adapter missing');
+ const fixture=await sparseSourceFixture();let source;
+ try{
+  source=await host.openPositionalSource(fixture.path,SOURCE_BYTES);const pending=source.slice(SOURCE_TAIL_OFFSET,SOURCE_BYTES);
+  await source.close();await source.close();await assert.rejects(pending.arrayBuffer(),/closed/i);
+  await assert.rejects(async()=>source.slice(SOURCE_TAIL_OFFSET,SOURCE_BYTES).arrayBuffer(),/closed/i);
+ }finally{await source?.close();await rm(fixture.root,{recursive:true,force:true});}
 });

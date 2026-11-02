@@ -3,7 +3,7 @@
  * separate acceptance work. Importing this module never executes a model job.
  */
 import {openAsBlob,readFileSync} from 'node:fs';
-import {readFile,writeFile,rename,stat} from 'node:fs/promises';
+import {readFile,writeFile,rename,stat,open} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {isDeepStrictEqual} from 'node:util';
 import {join,resolve,relative,isAbsolute,sep} from 'node:path';
@@ -20,6 +20,32 @@ const absent=async path=>{try{await stat(path);}catch(error){if(error.code==='EN
 export async function openLocalBlob(path,expectedBytes){
  check(Number.isSafeInteger(expectedBytes)&&expectedBytes>0,'Expected local asset size required');
  const blob=await openAsBlob(path);check(blob.size===expectedBytes,'Local file size mismatch: '+path);return blob;
+}
+
+// Node's native Blob size wraps at4GiB in this runtime. The original model is
+// read only through the existing loader's bounded8192-byte embedding row slices.
+export async function openPositionalSource(path,expectedBytes){
+ check(Number.isSafeInteger(expectedBytes)&&expectedBytes>0,'Expected original source size required');
+ const file=await open(path,'r');
+ try{
+  const captured=await file.stat({bigint:true}),identity=info=>info.size===captured.size&&info.mtimeNs===captured.mtimeNs&&info.ino===captured.ino&&info.dev===captured.dev;
+  check(captured.isFile()&&captured.size<=BigInt(Number.MAX_SAFE_INTEGER)&&Number(captured.size)===expectedBytes,'Original source file size mismatch');
+  check(identity(await stat(path,{bigint:true})),'Original source file identity changed');
+  const size=Number(captured.size),maximumSliceBytes=8192,pending=new Set();let closed=false,closing,readCalls=0,readBytes=0;
+  const unchanged=async()=>{check(!closed,'Original source adapter closed');check(identity(await file.stat({bigint:true}))&&identity(await stat(path,{bigint:true})),'Original source file identity/stat changed');check(!closed,'Original source adapter closed');};
+  const readRange=(start,end)=>{
+   const task=(async()=>{
+    await unchanged();readCalls++;const bytes=new Uint8Array(end-start);let offset=0;
+    while(offset<bytes.byteLength){const result=await file.read(bytes,offset,bytes.byteLength-offset,start+offset);check(result.bytesRead>0&&result.bytesRead<=bytes.byteLength-offset,'Original source short positional read');offset+=result.bytesRead;readBytes+=result.bytesRead;}
+    await unchanged();return bytes.buffer;
+   })();pending.add(task);task.then(()=>pending.delete(task),()=>pending.delete(task));return task;
+  };
+  return Object.freeze({size,storage:'bounded positional file source',maximumSliceBytes,statIdentity:Object.freeze({size:captured.size.toString(),mtimeNs:captured.mtimeNs.toString(),ino:captured.ino.toString(),dev:captured.dev.toString()}),
+   slice(start=0,end=size){check(!closed,'Original source adapter closed');check(Number.isSafeInteger(start)&&Number.isSafeInteger(end)&&start>=0&&end>=start&&end<=size&&end-start<=maximumSliceBytes,'Invalid or unbounded original source slice');return Object.freeze({size:end-start,arrayBuffer:()=>readRange(start,end)});},
+   stats(){return{readCalls,readBytes,maximumSliceBytes,closed};},
+   close(){if(closing)return closing;closed=true;closing=(async()=>{await Promise.allSettled([...pending]);await file.close();})();return closing;}
+  });
+ }catch(error){await file.close();throw error;}
 }
 
 export function validateCaseRecord(record){
@@ -119,8 +145,8 @@ function observeOrt(ort){
 export async function runNodeSdkHost(c){
  const root=resolve(c.root),output=resolve(c.output),receiptPath=join(output,'node-sdk-results.json');
  check((await stat(output)).isDirectory(),'Parent must create the private output directory');check(!inside(join(root,'docs'),output),'Public model output prohibited');await absent(receiptPath);await absent(receiptPath+'.tmp');
- const report={passed:false,scope:'Normal Text factory/shared job/tensor codec in a File-backed Node reference host; no browser Worker/T3 or independent numeric acceptance claim',host:'Node fs.openAsBlob reference host',executionSourceSha:c.executionSourceSha,diagnostics:c.diagnostics??false,cases:[],sourceClosure:[],sourceVerification:{method:'Parent Git verification plus Node current-byte verification',commitAuthority:'Supplied parent records; Node does not independently establish Git commit identity',nodeCommitVerification:false,nodeByteVerificationComplete:false},workersUsed:0,browserControlsExercised:false,newExports:0};
- let api,client,hike,observer,currentCase=null;
+ const report={passed:false,scope:'Normal Text factory/shared job/tensor codec in a Node reference host with native Blob prepared graphs and a bounded positional original-source reader; no browser Worker/T3 or independent numeric acceptance claim',host:'Node file-backed reference host',executionSourceSha:c.executionSourceSha,diagnostics:c.diagnostics??false,cases:[],sourceClosure:[],sourceVerification:{method:'Parent Git verification plus Node current-byte verification',commitAuthority:'Supplied parent records; Node does not independently establish Git commit identity',nodeCommitVerification:false,nodeByteVerificationComplete:false},workersUsed:0,browserControlsExercised:false,newExports:0};
+ let api,client,hike,observer,originalSource,currentCase=null;
  const persist=async()=>{await writeFile(receiptPath+'.tmp',JSON.stringify(report,null,2)+'\n');await rename(receiptPath+'.tmp',receiptPath);};
  const started=performance.now();
  try{
@@ -141,8 +167,9 @@ export async function runNodeSdkHost(c){
   }
   const files=new Map(),assets=[...manifest.blocks,manifest.finalNorm,manifest.embedding.rowHashes,manifest.tokenizer];
   for(const asset of assets){const path=asset.path??asset.file;check(typeof path==='string'&&!files.has(path),'Unique local asset paths required');files.set(path,await openLocalBlob(join(c.bundle,path),asset.bytes));}
-  check(!files.has(manifest.embedding.sourceFile),'Original source path collides with a prepared asset');files.set(manifest.embedding.sourceFile,await openLocalBlob(c.source,manifest.embedding.sourceBytes));
-  report.localFiles=[...files].map(([path,file])=>({path,bytes:file.size,storage:'native fs.openAsBlob; actual file-backed Blob'}));
+  check(!files.has(manifest.embedding.sourceFile),'Original source path collides with a prepared asset');originalSource=await openPositionalSource(c.source,manifest.embedding.sourceBytes);files.set(manifest.embedding.sourceFile,originalSource);
+  report.localFiles=[...files].map(([path,file])=>({path,bytes:file.size,storage:file.storage??'native fs.openAsBlob; actual file-backed Blob'}));
+  report.originalSource={path:resolve(c.source),bytes:originalSource.size,storage:originalSource.storage,maximumSliceBytes:originalSource.maximumSliceBytes,readOnly:true,statIdentity:originalSource.statIdentity,modelSha256:manifest.modelSha256,wholeOriginalModelRead:false,wholeOriginalModelHashRecomputed:false};
   if(c.preflightOnly){report.passed=true;report.preflightOnly=true;report.newNeuralRuns=0;return report;}
   const runtime=join(root,'docs/shared/inference');
   const [{createTextEncoderModule},{runTextEncoderJob},{encodeTensor,decodeTensor},{createHike},{tokenizePlainText},ort]=await Promise.all(['text-encoder-api.mjs','text-job.mjs','tensor.mjs','hike.mjs','tokenizer.mjs','vendor/ort.wasm.min.mjs'].map(name=>import(pathToFileURL(join(runtime,name)).href)));
@@ -175,6 +202,7 @@ export async function runNodeSdkHost(c){
  }catch(error){report.passed=false;report.failure={name:error.name,message:error.message,caseId:currentCase,stack:error.stack};
  }finally{
   try{api?.dispose();if(!api)client?.dispose();hike?.dispose();observer?.restore();}catch(error){report.passed=false;report.cleanupFailure={name:error.name,message:error.message};}
+  try{await originalSource?.close();if(originalSource)report.originalSource.readObservation=originalSource.stats();}catch(error){report.passed=false;report.sourceCleanupFailure={name:error.name,message:error.message};}
   report.clientState=client?.state??null;report.wallSeconds=(performance.now()-started)/1000;report.peakRssBytes=process.resourceUsage().maxRSS*1024;await persist();
  }
  return report;
