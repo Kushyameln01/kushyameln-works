@@ -45,7 +45,7 @@ class StreamReferenceTests(unittest.TestCase):
 
     def test_predeclared_cases_cover_target_and_reference_boundaries(self):
         plan = self.reference.load_plan()
-        expected = {'target-f81-480x832',
+        expected = {'target-f81-480x832', 'diagnostic-f5-16x32',
                     *(f'source-f{f}-480x832' for f in (1, 4, 5, 80, 81)),
                     *(f'reference-f1-{h}x{w}' for h, w in
                       ((16, 16), (16, 848), (848, 16), (848, 848), (16, 32)))}
@@ -300,6 +300,99 @@ class WorkerTargetObserverTests(unittest.TestCase):
         observer.snapshot('outer-marker')
         self.assertEqual([item['label'] for item in observer.snapshots], ['browser-ready', 'outer-marker'])
         self.assertEqual(observer.dropped['snapshots'], 1)
+
+    def test_post_operation_settlement_pumps_until_known_parent_and_pthreads_exit(self):
+        cdp = self.CDP()
+        observer = self.Observer(cdp).start()
+        cdp.create({'targetId': 'parent', 'type': 'worker', 'url': '/inference-worker.mjs'})
+        for index in range(3):
+            cdp.create({'targetId': 'pthread' + str(index), 'type': 'worker',
+                        'url': '/ort-wasm-simd-threaded.mjs', 'openerId': 'parent'})
+        waits = []
+        def pump(milliseconds):
+            waits.append(milliseconds)
+            for target_id in list(cdp.targets):
+                cdp.destroy(target_id)
+        settlement = observer.settle('encode:after-operation', pump)
+        self.assertEqual(settlement['status'], 'OBSERVED_WORKERS_ABSENT')
+        self.assertEqual(settlement['polls'], 2)
+        self.assertEqual(len(settlement['initialWorkerTargets']), 4)
+        self.assertEqual(settlement['remainingWorkerTargets'], [])
+        self.assertEqual(settlement['remainingWorkerTargetCount'], 0)
+        self.assertEqual(len(settlement['destroyEventTargetIdsObserved']), 4)
+        self.assertEqual(settlement['knownTargetIdsWithoutDestroyEvent'], [])
+        self.assertEqual(waits, [50.])
+        self.assertGreaterEqual(settlement['durationSeconds'], 0)
+        self.assertEqual(observer.snapshots[-1]['label'], 'encode:after-operation:settlement-end')
+        self.assertEqual(observer.report()['settlements'][0], settlement)
+
+    def test_settlement_records_already_gone_known_targets_without_waiting(self):
+        cdp = self.CDP()
+        observer = self.Observer(cdp).start()
+        cdp.create({'targetId': 'parent', 'type': 'worker', 'url': '/inference-worker.mjs'})
+        cdp.destroy('parent')
+        settlement = observer.settle('dispose', lambda _ms: self.fail('No wait needed'))
+        self.assertEqual(settlement['status'], 'OBSERVED_WORKERS_ABSENT')
+        self.assertEqual(settlement['polls'], 1)
+        self.assertEqual(settlement['destroyEventTargetIdsObserved'], ['parent'])
+        self.assertEqual(settlement['initialWorkerTargets'], [])
+
+    def test_settlement_deadline_does_not_claim_known_live_target_exit(self):
+        cdp = self.CDP()
+        observer = self.Observer(cdp).start()
+        cdp.create({'targetId': 'parent', 'type': 'worker', 'url': '/inference-worker.mjs'})
+        settlement = observer.settle('dispose', lambda _ms: self.fail('Zero-budget probe'), timeout_seconds=0)
+        self.assertEqual(settlement['status'], 'KNOWN_WORKERS_STILL_PRESENT_AT_DEADLINE')
+        self.assertEqual(settlement['remainingWorkerTargetCount'], 1)
+        self.assertEqual(settlement['knownTargetIdsWithoutDestroyEvent'], ['parent'])
+        self.assertEqual(settlement['destroyEventTargetIdsObserved'], [])
+
+    def test_settlement_query_failure_is_unobservable_not_empty(self):
+        cdp = self.CDP()
+        observer = self.Observer(cdp).start()
+        def unavailable(*_args):
+            raise RuntimeError('CDP unavailable')
+        cdp.send = unavailable
+        settlement = observer.settle('dispose', lambda _ms: self.fail('No wait after query failure'))
+        self.assertEqual(settlement['status'], 'UNOBSERVABLE_QUERY_OR_EVENT_PUMP')
+        self.assertFalse(settlement['querySucceeded'])
+        self.assertIsNone(settlement['remainingWorkerTargets'])
+        self.assertTrue(observer.report()['errors'])
+
+    def test_settlement_absence_without_any_worker_observed_is_unobservable(self):
+        observer = self.Observer(self.CDP()).start()
+        settlement = observer.settle('preflight', lambda _ms: self.fail('No wait needed'))
+        self.assertEqual(settlement['status'], 'UNOBSERVABLE_OR_NO_WORKERS_CREATED')
+        self.assertEqual(settlement['knownTargetIdsAtStart'], [])
+
+    def test_settlement_worker_churn_does_not_grow_target_identity_retention(self):
+        cdp = self.CDP()
+        observer = self.Observer(cdp).start()
+        observer.MAX_TARGETS = 1
+        cdp.create({'targetId': 'first', 'type': 'worker', 'url': 'blob:first'})
+        pumps = []
+        def pump(_milliseconds):
+            pumps.append(True)
+            for target_id in list(cdp.targets):
+                cdp.destroy(target_id)
+            if len(pumps) == 1:
+                cdp.create({'targetId': 'second', 'type': 'worker', 'url': 'blob:second'})
+        settlement = observer.settle('bounded-churn', pump)
+        self.assertEqual(settlement['status'], 'OBSERVED_WORKERS_ABSENT')
+        self.assertEqual(settlement['observedTargetIdsDuringSettlement'], ['first'])
+        self.assertEqual(settlement['omittedTargetIdObservations'], 1)
+
+    def test_settlement_limits_are_bounded_and_do_not_grow_receipts(self):
+        observer = self.Observer(self.CDP()).start()
+        for timeout, interval in [(-1, .05), (61, .05), (10, 0), (10, 2)]:
+            with self.assertRaises(ValueError):
+                observer.settle('invalid', lambda _ms: None, timeout, interval)
+        observer.MAX_SETTLEMENTS = 1
+        observer.settle('first', lambda _ms: None)
+        result = observer.settle('second', lambda _ms: self.fail('No second poll'))
+        self.assertEqual(result['status'], 'UNOBSERVABLE_RETENTION_LIMIT')
+        self.assertEqual(len(observer.settlements), 1)
+        self.assertEqual(observer.dropped['settlements'], 1)
 
     def test_target_event_and_snapshot_retention_is_bounded(self):
         cdp = self.CDP()

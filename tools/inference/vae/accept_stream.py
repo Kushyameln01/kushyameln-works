@@ -157,6 +157,7 @@ class WorkerTargetObserver:
     MAX_TARGETS = 64
     MAX_EVENTS = 256
     MAX_SNAPSHOTS = 32
+    MAX_SETTLEMENTS = 8
 
     def __init__(self, session):
         self.session = session
@@ -165,8 +166,9 @@ class WorkerTargetObserver:
         self.targets = {}
         self.events = []
         self.snapshots = []
+        self.settlements = []
         self.errors = []
-        self.dropped = {'targets': 0, 'events': 0, 'snapshots': 0}
+        self.dropped = {'targets': 0, 'events': 0, 'snapshots': 0, 'settlements': 0}
         self.discovery_enabled = False
 
     def _stamp(self):
@@ -265,6 +267,78 @@ class WorkerTargetObserver:
             value['querySucceeded'] = False
             self._error('snapshot:' + label, error)
 
+    def settle(self, label, wait, timeout_seconds=10, interval_seconds=.05):
+        """Pump host events until enumerated owned worker targets disappear.
+
+        This is a diagnostic host wait after the normal API returns. It neither
+        changes cancel() into an async API nor inserts a wait before recovery.
+        A missing Target domain or hidden nested Worker remains unobservable.
+        """
+        if not 0 <= timeout_seconds <= 60 or not 0 < interval_seconds <= 1:
+            raise ValueError('Worker settlement requires bounded timeout and polling interval')
+        if len(self.settlements) >= self.MAX_SETTLEMENTS:
+            self.dropped['settlements'] += 1
+            return {'label': label, 'status': 'UNOBSERVABLE_RETENTION_LIMIT'}
+        started = time.monotonic()
+        value = {'label': label, **self._stamp(), 'status': 'PENDING', 'polls': 0,
+                 'timeoutSeconds': timeout_seconds, 'intervalSeconds': interval_seconds,
+                 'initialWorkerTargets': None, 'remainingWorkerTargets': None,
+                 'querySucceeded': False, 'omittedTargetIdObservations': 0,
+                 'scope': 'Bounded post-API host/CDP observation only. Empty queries prove '
+                          'absence of enumerated worker targets at those observations, '
+                          'not deallocation or termination of unexposed nested Workers. '
+                          'The normal cancellation/recovery API is unchanged.'}
+        self.settlements.append(value)
+        observed_ids = set()
+        known_ids = set(self.targets)
+        value['knownTargetIdsAtStart'] = sorted(known_ids)
+        try:
+            while True:
+                current = self.session.send('Target.getTargets')['targetInfos']
+                workers = []
+                total = 0
+                for info in current:
+                    self._observe(info, 'snapshot')
+                    if self._worker(info) and info.get('targetId') not in self.baseline:
+                        total += 1
+                        if len(workers) < self.MAX_TARGETS:
+                            workers.append(self._record(info))
+                            if len(observed_ids) < self.MAX_TARGETS or info['targetId'] in observed_ids:
+                                observed_ids.add(info['targetId'])
+                            else:
+                                value['omittedTargetIdObservations'] += 1
+                value['polls'] += 1
+                value['querySucceeded'] = True
+                if value['initialWorkerTargets'] is None:
+                    value['initialWorkerTargets'] = workers
+                value['remainingWorkerTargets'] = workers
+                value['remainingWorkerTargetCount'] = total
+                value['omittedWorkerTargets'] = max(0, total - len(workers))
+                if total == 0:
+                    value['status'] = ('OBSERVED_WORKERS_ABSENT' if self.targets else
+                                       'UNOBSERVABLE_OR_NO_WORKERS_CREATED')
+                    break
+                elapsed = time.monotonic() - started
+                if elapsed >= timeout_seconds:
+                    value['status'] = 'KNOWN_WORKERS_STILL_PRESENT_AT_DEADLINE'
+                    break
+                # Playwright's wait pumps CDP/events while the browser finishes
+                # asynchronous Worker.terminate(), unlike a blocking host sleep.
+                wait(min(interval_seconds, timeout_seconds - elapsed) * 1000)
+        except Exception as error:
+            value['status'] = 'UNOBSERVABLE_QUERY_OR_EVENT_PUMP'
+            value['querySucceeded'] = False
+            self._error('settlement:' + label, error)
+        value['durationSeconds'] = time.monotonic() - started
+        value['observedTargetIdsDuringSettlement'] = sorted(observed_ids)
+        self.snapshot(label + ':settlement-end')
+        value['destroyEventTargetIdsObserved'] = sorted(
+            target_id for target_id in known_ids | observed_ids
+            if self.targets.get(target_id, {}).get('destroyEventObserved'))
+        value['knownTargetIdsWithoutDestroyEvent'] = sorted(
+            (known_ids | observed_ids) - set(value['destroyEventTargetIdsObserved']))
+        return json.loads(json.dumps(value, allow_nan=False))
+
     def report(self):
         values = list(self.targets.values())
         parents = [item['targetId'] for item in values if item['classification'] == 'inference-parent-url']
@@ -275,7 +349,8 @@ class WorkerTargetObserver:
                 'parentTargetsIdentifiedByUrl': parents, 'pthreadTargetsIdentifiedByUrl': pthreads,
                 'pthreadVisibility': 'URL_IDENTIFIED_TARGETS_OBSERVED' if pthreads else 'UNOBSERVABLE_OR_NOT_CREATED',
                 'baselineWorkerTargetIdsExcluded': sorted(self.baseline), 'targets': values,
-                'events': self.events, 'snapshots': self.snapshots, 'dropped': self.dropped,
+                'events': self.events, 'snapshots': self.snapshots, 'settlements': self.settlements,
+                'dropped': self.dropped,
                 'errors': self.errors,
                 'scope': 'New worker targets in the helper-owned browser, excluding baseline. '
                          'URL classification is observational; openerId is retained when CDP supplies it. '
@@ -530,7 +605,9 @@ def main(argv=None):
                                                    {'operation': operation, 'controls': args.controls and index == 0,
                                                     'timeoutMs': args.timeout_seconds * 1000})
                             worker_observer.snapshot(operation + ':operation-returned')
-                            result['operations'][operation] = {'browser': native}
+                            sampler.phase = operation + ':worker-settlement'
+                            settlement = worker_observer.settle(operation + ':after-operation', page.wait_for_timeout)
+                            result['operations'][operation] = {'browser': native, 'workerSettlement': settlement}
                             if not native['passed']:
                                 raise RuntimeError('Normal streaming execution failed: ' + json.dumps(native))
                         path = args.output / native['codec']['download']
@@ -544,6 +621,8 @@ def main(argv=None):
                         result['operations'][operation]['comparison'] = comparison
                         if not comparison['passed']:
                             raise ValueError('Independent full-value numerical comparison failed: ' + operation)
+                        if settlement['status'] == 'KNOWN_WORKERS_STILL_PRESENT_AT_DEADLINE':
+                            raise RuntimeError('Enumerated owned Worker targets remain after bounded settlement: ' + operation)
                     result['passed'] = True
                     result['status'] = 'ACCEPTED_SELECTED_CASE'
                     result['numericalExecutionPerformed'] = True
@@ -561,6 +640,11 @@ def main(argv=None):
                     except Exception as error:
                         result['browserDisposeError'] = str(error)
                 if worker_observer is not None:
+                    if page is not None:
+                        settlement = worker_observer.settle('post-dispose-before-browser-close', page.wait_for_timeout)
+                        if settlement['status'] == 'KNOWN_WORKERS_STILL_PRESENT_AT_DEADLINE':
+                            result['passed'] = False
+                            result['workerCleanupFailure'] = 'Enumerated owned Worker targets remain before browser close'
                     worker_observer.snapshot('before-browser-close')
                     result['workerTargetObservation'] = worker_observer.report()
                 # Stop the sampler while the browser is still alive, on both paths.
@@ -615,6 +699,8 @@ def main(argv=None):
             result['passed'] = False
         if result.get('processCleanupFailure'):
             result['status'] = 'FAILED_CLEANUP'
+        elif result.get('workerCleanupFailure'):
+            result['status'] = 'FAILED_WORKER_CLEANUP'
         write_json(args.output / 'acceptance-results.json', result)
         print(json.dumps({'passed': result['passed'], 'status': result['status'], 'output': str(args.output),
                           'operations': list(result['operations']), 'failure': result.get('failure'),
