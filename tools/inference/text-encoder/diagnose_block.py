@@ -443,7 +443,7 @@ def main():
    for suffix in ['hidden','normalized']:
     actual=np.fromfile(a.output/('native-'+suffix+'.f32'),dtype='<f4').reshape(1,512,4096);reference=np.fromfile(a.reference/('block0-source-'+suffix+'.f32'),dtype='<f4').reshape(1,512,4096);comparisons[suffix]=metrics(actual,reference,np)
    report.update(passed=all(value['finite'] for value in comparisons.values()),optimization=a.optimization,sourceCheckpointExecutionSha=source_report['executionSourceSha'],native=observation,comparison=comparisons,files={name:record(a.output/name)for name in ['native-hidden.f32','native-normalized.f32']})
- except Exception as error:report['failure']={'name':type(error).__name__,'message':str(error)};raise
+ except Exception as error:report['passed']=False;report['failure']={'name':type(error).__name__,'message':str(error)};raise
  finally:report['wallSeconds']=time.monotonic()-started;write(a.output/(a.stage+'-results.json'),report)
  print(json.dumps(report));return 0
 if __name__=='__main__':raise SystemExit(main())

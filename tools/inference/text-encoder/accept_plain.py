@@ -147,7 +147,8 @@ def main():
      else:
       import numpy as np
       controls=[] if a.skip_controls else plan.get('controls',[])
-      native_cases=[];native_controls=[];comparisons=[]
+      native_cases=[];native_controls=[];comparisons=[];numeric_failures=[]
+      report['native']={'passed':False,'cases':native_cases,'controls':native_controls};report['comparisons']=comparisons;report['numericFailures']=numeric_failures
       for record in inputs:
        save_controls=[control for control in controls if control['action']=='cancel-save' and control['caseId']==record['id']]
        spec={**suite_spec,'inputs':[record],'controls':save_controls,'negativeCases':[]}
@@ -158,8 +159,10 @@ def main():
        meta,actual=unpack_tensor((a.output/(record['id']+'.wktensor')).read_bytes(),shape=record['shape'])
        reference=np.fromfile(a.reference/(record['id']+'-reference.f32'),dtype='<f4').reshape(record['shape']);mask=np.array(record['attentionMask'],dtype=np.uint8)
        assert meta['modelSha256']==manifest['modelSha256'] and meta['tokenizerSha256']==manifest['tokenizer']['sha256'] and meta['attentionMask']==record['attentionMask']
-       comparison=compare_values(actual,reference,mask,shape=record['shape']);assert comparison['passed'],(record['id'],comparison)
+       comparison=compare_values(actual,reference,mask,shape=record['shape'])
+       if not comparison['finite'] or not comparison['paddingExactlyZero']:raise ValueError('Native/reference finite values or exact masked-row contract failed: '+record['id'])
        comparisons.append({'id':record['id'],**comparison,'artifact':{'path':record['id']+'.wktensor','bytes':(a.output/(record['id']+'.wktensor')).stat().st_size,'sha256':sha((a.output/(record['id']+'.wktensor')).read_bytes())},'reference':oracle_cases[record['id']]['reference']})
+       if not comparison['passed']:numeric_failures.append({'id':record['id'],'kind':'case-output','comparison':comparison})
       cancel_controls=[control for control in controls if control['action']!='cancel-save']
       if cancel_controls:
        control_ids={control['caseId'] for control in cancel_controls};control_inputs=[record for record in json.loads((a.reference/'text-inputs.json').read_text())['inputs'] if record['id'] in control_ids]
@@ -170,12 +173,15 @@ def main():
         if 'recovery' not in control:continue
         recovery=control['recovery'];record=next(record for record in control_inputs if record['id']==control['caseId'])
         reference=np.fromfile(a.reference/(record['id']+'-reference.f32'),dtype='<f4').reshape(record['shape'])
-        recovery['comparison']=compare_values(np.array(recovery.pop('values'),dtype=np.float32).reshape(record['shape']),reference,np.array(record['attentionMask'],dtype=np.uint8),shape=record['shape']);assert recovery['comparison']['passed'],recovery['comparison']
+        recovery['comparison']=compare_values(np.array(recovery.pop('values'),dtype=np.float32).reshape(record['shape']),reference,np.array(record['attentionMask'],dtype=np.uint8),shape=record['shape'])
+        if not recovery['comparison']['finite'] or not recovery['comparison']['paddingExactlyZero']:raise ValueError('Recovery finite values or exact masked-row contract failed: '+control['id'])
+        if not recovery['comparison']['passed']:numeric_failures.append({'id':control['id'],'caseId':record['id'],'kind':'recovery-output','comparison':recovery['comparison']})
       report['native']={'passed':True,'cases':native_cases,'controls':native_controls};report['comparisons']=comparisons
       report['nativeJobAttempts']=len(native_cases)+len(cancel_controls)+sum('recovery' in control for control in native_controls);report['completedFullNeuralRuns']=len(native_cases)+sum('recovery' in control for control in native_controls);report['cancelledJobs']=len(cancel_controls)
       assert not report['pageErrors'] and not report['blockedRequests'] and not server_errors
-      report['passed']=True
-      write_json(a.output/'conditioning-handoff.json',{'schemaVersion':'works-text-standalone-handoff/1.0','scope':'Selected explicit Text cases only','executionSourceSha':a.execution_source_sha,'referenceExecutionSourceSha':reference_source_sha,'inputs':inputs,'gate':manifest['numericGate'],'comparisons':comparisons,'controls':native_controls,'independentReference':'Pinned PyTorch source, uncompacted512 positions per case, batch1; final normalized/masked reference sliced to native requested L','generationReady':False})
+      report['passed']=not numeric_failures
+      if numeric_failures:report['failure']={'name':'NumericGateFailure','message':'Selected Text outputs failed the unchanged numeric gate; all selected cases and native controls were collected','ids':[failure['id'] for failure in numeric_failures]}
+      write_json(a.output/'conditioning-handoff.json',{'schemaVersion':'works-text-standalone-handoff/1.0','scope':'Selected explicit Text cases only','passed':report['passed'],'executionSourceSha':a.execution_source_sha,'referenceExecutionSourceSha':reference_source_sha,'inputs':inputs,'gate':manifest['numericGate'],'comparisons':comparisons,'numericFailures':numeric_failures,'controls':native_controls,'independentReference':'Pinned PyTorch source, uncompacted512 positions per case, batch1; final normalized/masked reference sliced to native requested L','generationReady':False})
     elif a.preflight_only:
      report['preflight']=page.evaluate('''async input=>{const {tokenizePlainText}=await import('/shared/inference/tokenizer.mjs');const ort=await import('/shared/inference/vendor/ort.wasm.min.mjs');const files=new Map(Array.from(document.querySelector('#bundle').files,f=>[f.name,f]));const result=await tokenizePlainText(input.text,new Uint8Array(await files.get('spiece.model').arrayBuffer()));return {ids:Array.from(result.tokenIds),mask:Array.from(result.attentionMask),tokenizerSha256:result.tokenizerSha256,sourceFileBytes:document.querySelector('#source').files[0].size,ortCreateWritable:Object.getOwnPropertyDescriptor(ort.InferenceSession,'create')?.writable,tensorDisposeType:typeof ort.Tensor.prototype.dispose};}''',input_record)
      q=report['preflight'];assert q['ids']==input_record['tokenIds'] and q['mask']==input_record['attentionMask'] and q['tokenizerSha256']==input_record['tokenizerSha256'];assert q['ortCreateWritable'] and q['tensorDisposeType']=='function';assert q['sourceFileBytes']==manifest['modelBytes'];report['newNeuralRuns']=0;report['passed']=True
