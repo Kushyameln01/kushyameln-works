@@ -3,6 +3,8 @@ import {Sha256} from '../../vr180/sha256.mjs';
 export const P4_PROFILE='bernini-block0-n2-cross-ffn-f32-candidate-v1';
 export const P4_GRAPH_SHA256='9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e';
 export const P4_SOURCE_COMMIT='7ee36228030ba3bb544a90b1d4b528702a7bae32';
+export const P4_NATIVE_PROTOCOL_LEGACY='bernini-p4-diagnostic-validate/0.1';
+export const P4_NATIVE_PROTOCOL_SPLIT='bernini-p4-structural-admission-diagnose/0.1';
 const HEX=/^[a-f0-9]{64}$/;
 const MODELS={HIGH:['9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52','d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3'],LOW:['ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3','286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b']};
 export const p4Fail=(code,message)=>{throw Object.assign(Error(message),{code});};
@@ -20,6 +22,14 @@ export function canonicalP4JSON(v,seen=new Set()){
 }
 export const p4Equal=(a,b)=>canonicalP4JSON(a)===canonicalP4JSON(b);
 export function p4Hash(value){const h=new Sha256();h.update(new TextEncoder().encode(canonicalP4JSON(value)));return h.digestHex();}
+const diagnosticGate={id:'p4-cross-ffn-composed-f32-v1',absolute:0.01,relative:0.001,scope:'composed-new-stage-only'};
+const admissionGate={id:'p4-sparse-final-f32-admission-v1',scope:'registered-targets-and-declared-ranges',checks:['identity','target','full-shape','declared-range','finite-f32','complete-package','current-transaction'],numericalComparisonRequired:false};
+/** Registry gate semantics identify the native protocol; the registry schema alone is shared. */
+export function p4NativeValidationProtocol(r){
+ if(p4Equal(r.validationGate,diagnosticGate)&&!Object.hasOwn(r,'numericalDiagnostics'))return P4_NATIVE_PROTOCOL_LEGACY;
+ if(p4Equal(r.validationGate,admissionGate)&&p4Equal(r.numericalDiagnostics??null,{...diagnosticGate,requiredForCommit:false}))return P4_NATIVE_PROTOCOL_SPLIT;
+ p4Fail('INVALID_NATIVE_REGISTRY','Explicit supported P4 admission/diagnostic protocol required');
+}
 const baseSpecs={};
 for(const [stem,shape,dtype]of [['text_embedding.0',[5120,4096],'F16'],['text_embedding.2',[5120,5120],'F16'],...['q','k','v','o'].map(k=>['blocks.0.cross_attn.'+k,[5120,5120],k==='o'?'F16':'F8_E4M3']),['blocks.0.ffn.0',[13824,5120],'F8_E4M3'],['blocks.0.ffn.2',[5120,13824],'F8_E4M3']]){
  baseSpecs[stem+'.weight']={shape,dtype,columns:shape[1],allowed:[0,shape[0]],maxRows:stem==='blocks.0.ffn.2'?4:16};baseSpecs[stem+'.bias']={shape:[shape[0]],dtype:'F16',columns:null,allowed:[0,shape[0]]};
@@ -49,6 +59,7 @@ export function validateP4NativeRegistry(input){
  const stems=[...['q','k','v','o'].map(k=>'blocks.0.cross_attn.'+k),'blocks.0.ffn.0','blocks.0.ffn.2'];
  if(r.targets?.length===16)stems.push('text_embedding.0','text_embedding.2');else if(r.targets?.length!==12)p4Fail('INVALID_NATIVE_REGISTRY','Explicit complete native P4 target set required');
  const expected=stems.flatMap(k=>['weight','bias'].map(role=>({...structuredClone(o.entries[k+'.'+role]),parameterRole:role,dtype:'F32',shape:[...o.entries[k+'.'+role].fullShape],transform:{kind:'identity'},patchCoordinates:'full-original-elements',unchangedRanges:'immutable-base-pass-through'})));
- if(!p4Equal(r.targets,expected)||!p4Equal(r.coverage,{fullModel:false,kind:'explicit-sparse-final-f32-ranges',unselectedTargets:'immutable-base-pass-through',unselectedRows:'immutable-base-pass-through',canonicalLoraAdapterExtension:'PENDING'})||!p4Equal(r.validationGate,{id:'p4-cross-ffn-composed-f32-v1',absolute:0.01,relative:0.001,scope:'composed-new-stage-only'})||!p4Equal(r.resourceLimits,{maxBlockElements:81920,maxPatchBytes:16777216,maxRetainedPatchBytes:67108864,maxPackages:4,maxCandidates:4,maxReadLeases:16,maxTransactions:4}))p4Fail('INVALID_NATIVE_REGISTRY','Fixed P4 target/binding/coverage/gate/resource registry required');
+ p4NativeValidationProtocol(r);
+ if(!p4Equal(r.targets,expected)||!p4Equal(r.coverage,{fullModel:false,kind:'explicit-sparse-final-f32-ranges',unselectedTargets:'immutable-base-pass-through',unselectedRows:'immutable-base-pass-through',canonicalLoraAdapterExtension:'PENDING'})||!p4Equal(r.resourceLimits,{maxBlockElements:81920,maxPatchBytes:16777216,maxRetainedPatchBytes:67108864,maxPackages:4,maxCandidates:4,maxReadLeases:16,maxTransactions:4}))p4Fail('INVALID_NATIVE_REGISTRY','Fixed P4 target/binding/coverage/gate/resource registry required');
  const {registryHash,...descriptor}=r;if(p4Hash(descriptor)!==registryHash)p4Fail('REGISTRY_INTEGRITY_ERROR','P4 native registry hash mismatch');return freeze(r);
 }

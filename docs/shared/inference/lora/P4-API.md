@@ -1,5 +1,7 @@
 # P4 canonical LoRA adapter API
 
+This document preserves the adapter `0.1` diagnostic baseline. For adapter `0.2` normal transactions, explicit SDK validation modes and native admission/diagnose separation, see [NORMAL-TRANSACTIONS.md](./NORMAL-TRANSACTIONS.md); execution source pins and acceptance results remain separately recorded.
+
 `diffusion-p4-adapter.mjs` connects SDK v2 final-F32 patches to the separately owned P4 sparse weight feed. It adds the P4 mapping; the Q16 diagnostic adapter, SDK v1 and existing management bridge remain separate. This document specifies the interface. Actual original-base/operator numerical acceptance belongs to a separately pinned execution receipt; the control fixtures below do not establish it.
 
 ## Versions and identities

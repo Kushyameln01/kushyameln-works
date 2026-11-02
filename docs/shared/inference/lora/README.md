@@ -8,6 +8,8 @@ success does not certify a real Diffusion base, session or generated result.
 
 The separately versioned [P4 adapter API](./P4-API.md) maps SDK v2 patches to the P4 sparse feed, with original full coordinates, bounded blocks and explicit ownership/conditioning limits. It preserves the existing Q16 and v1 paths.
 
+[P4 normal transactions](./NORMAL-TRANSACTIONS.md) documents adapter `0.2`: owner support assessment and normal candidate validation without independent expected outputs or a forward executor. Numerical diagnostics, applied coverage and management snapshot readiness remain separate.
+
 The user selects a folder on their own terminal. Original `.safetensors` are read using File.slice; neither model upload nor persistent browser registration is performed. Calculation still runs in Hike WASM in the browser/Worker of the consuming tool. This is not a native filesystem daemon: a browser cannot open an arbitrary terminal path without the user's folder permission.
 
 ## Inputs

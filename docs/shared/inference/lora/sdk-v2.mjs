@@ -77,23 +77,30 @@ export async function createLoraV2({folder,sourceFactory,kernel:providedKernel}=
   }catch(error){const cleanup=[];if(result)try{await release(result);}catch(e){cleanup.push(e);}if(begun)try{await sink.abort(error);}catch(e){cleanup.push(e);const retry=async()=>{await sink.abort(error);pendingAborts.delete(retry);};pendingAborts.add(retry);}if(cleanup.length)throw new AggregateError([error,...cleanup],'Prepare and cleanup failed; retry recover/disposal');throw error;}
   finally{signal?.removeEventListener('abort',abort);if(active===controller)active=null;}
  });}
- async function stage(prepared,target,{signal,isCurrent=()=>true}={}) {return tracked(async()=>{
+ async function stage(prepared,target,{signal,isCurrent=()=>true,validationMode}={}) {return tracked(async()=>{
+  if(validationMode!==undefined&&!['normal','diagnostic'].includes(validationMode))throw failure('UNSUPPORTED_VALIDATION_MODE','Unsupported LoRA validation mode');
   const s=packages.get(prepared);if(!s||s.g!==generation||s.releasing||s.recovery)throw Error('Stale, releasing or recovery-required prepared handle');
   if(s.ownership?.kind==='lease'&&s.ownership.isValid()===true)throw Error('Prepared handle already leased');
   if(target?.contractVersion!==CONTRACT_VERSION||!['describe','prepareLoad','validate','commit','rollback'].every(k=>typeof target[k]==='function'))throw Error('Versioned consumer contract required');
   s.inUse=true;const g=s.g,controller=new AbortController();active=controller;const abort=()=>controller.abort(signal.reason);signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
-  const context=Object.freeze({...prepared.manifest,signal:controller.signal,isCurrent:()=>!disposed&&generation===g&&!controller.signal.aborted&&isCurrent()===true});const check=()=>guard(g,controller.signal,isCurrent);let candidate;
+  // Mode is independent of application coverage. Omission preserves the exact
+  // legacy context/result shape and does not upgrade a legacy consumer claim.
+  const mode=validationMode===undefined?{}:{validationMode};
+  const context=Object.freeze({...prepared.manifest,...mode,signal:controller.signal,isCurrent:()=>!disposed&&generation===g&&!controller.signal.aborted&&isCurrent()===true});const check=()=>guard(g,controller.signal,isCurrent);let candidate;
   try{
    check();const described=validateRegistryV2(await target.describe());check();if(await hashJSON(described)!==prepared.manifest.registryHash)throw Error('Consumer registry identity changed');check();
    candidate=await target.prepareLoad(prepared.handle,context);check();const v=await target.validate(candidate,context);check();
+   if(validationMode!==undefined&&v?.validationMode!==validationMode)throw failure('VALIDATION_MODE_MISMATCH','Consumer validation mode mismatch');
    if(!v||v.contractVersion!==CONTRACT_VERSION||v.valid!==true||['coverage','scope','planId','registryHash','sourceSha256'].some(k=>v[k]!==context[k]))throw Error('Structured consumer validation scope/identity mismatch');
    const validation=freeze(structuredClone(v));
+   if(validationMode!==undefined&&validation.validationMode!==validationMode)throw failure('VALIDATION_MODE_MISMATCH','Stored consumer validation mode mismatch');
    // Consumer must repeat this check at its actual atomic publication boundary.
    check();const receipt=await target.commit(candidate,context);check();
+   if(validationMode!==undefined&&receipt?.validationMode!==validationMode)throw failure('VALIDATION_MODE_MISMATCH','Consumer commit validation mode mismatch');
    if(!receipt||receipt.contractVersion!==CONTRACT_VERSION||!['STAGED','CONSUMER_APPLIED'].includes(receipt.state)||receipt.planId!==context.planId||!validOwnership(receipt.ownership))throw Error('Consumer receipt/state/ownership invalid');
    const {kind,ownerId,isValid}=receipt.ownership;
    s.ownership=Object.freeze(kind==='lease'?{kind,ownerId,isValid:isValid.bind(receipt.ownership)}:{kind,ownerId});
-   return freeze({contractVersion:CONTRACT_VERSION,state:receipt.state,sdkInstanceId,localInputRevision:g,localApplicationRevision:g,selection:context.selection,sourceSha256:context.sourceSha256,planId:context.planId,registryHash:context.registryHash,bundleHash:context.bundleHash,coverage:context.coverage,scope:context.scope,validation,ownership:{kind:receipt.ownership.kind,ownerId:receipt.ownership.ownerId},snapshotPublished:false,generationReady:false});
+   return freeze({contractVersion:CONTRACT_VERSION,state:receipt.state,sdkInstanceId,localInputRevision:g,localApplicationRevision:g,selection:context.selection,sourceSha256:context.sourceSha256,planId:context.planId,registryHash:context.registryHash,bundleHash:context.bundleHash,coverage:context.coverage,scope:context.scope,...mode,validation,ownership:{kind:receipt.ownership.kind,ownerId:receipt.ownership.ownerId},snapshotPublished:false,generationReady:false});
   }catch(error){try{await target.rollback(candidate,context);s.ownership=null;}catch(rollbackError){s.recovery=()=>target.rollback(candidate,context);throw new AggregateError([error,rollbackError],'Consumer rollback failed; recovery required');}throw error;}
   finally{s.inUse=false;signal?.removeEventListener('abort',abort);if(active===controller)active=null;}
  });}
