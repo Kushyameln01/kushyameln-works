@@ -1,0 +1,1172 @@
+{
+  "schemaVersion": "bernini-production-chunk-input/1",
+  "profileId": "bernini-small-n5-real-l512-f32-chunks-v1",
+  "caseClass": "controlled-n5-with-real512-text-not-original-workflow-replay",
+  "producerVerified": false,
+  "shapeRequest": {
+    "ruleId": "bernini-ca69274-b5a4321-wan21-shapes-v1",
+    "target": {
+      "batch": 1,
+      "frames": 1,
+      "height": 16,
+      "width": 32
+    },
+    "refMaxSize": 32,
+    "geometry": {
+      "rgbChannels": 3,
+      "latentChannels": 16,
+      "temporalCompression": 4,
+      "spatialCompression": [
+        8,
+        8
+      ],
+      "temporalRule": "first-then-groups-floor",
+      "patchSize": [
+        1,
+        2,
+        2
+      ],
+      "hiddenSize": 5120,
+      "dtype": "float32",
+      "concatOrder": "target-first",
+      "paddingMode": "none"
+    },
+    "semantics": {
+      "target-latent": {
+        "meaning": "bernini-generated-model-latent:v1",
+        "normalization": "wan21-comfy-f32-v1"
+      },
+      "source-latent": {
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1"
+      },
+      "reference-latent": {
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1"
+      },
+      "context-latent": {
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1"
+      }
+    },
+    "media": {
+      "sourceVideo": {
+        "state": "present",
+        "rgb": {
+          "frames": 1,
+          "height": 16,
+          "width": 32
+        }
+      },
+      "referenceVideo": {
+        "state": "present",
+        "rgb": {
+          "frames": 1,
+          "height": 16,
+          "width": 16
+        }
+      },
+      "slots": []
+    }
+  },
+  "canonicalShape": {
+    "schemaVersion": 1,
+    "ruleId": "bernini-ca69274-b5a4321-wan21-shapes-v1",
+    "ownerSupport": "NOT_QUERIED",
+    "geometry": {
+      "rgbChannels": 3,
+      "latentChannels": 16,
+      "temporalCompression": 4,
+      "spatialCompression": [
+        8,
+        8
+      ],
+      "temporalRule": "first-then-groups-floor",
+      "patchSize": [
+        1,
+        2,
+        2
+      ],
+      "hiddenSize": 5120,
+      "dtype": "float32",
+      "concatOrder": "target-first",
+      "paddingMode": "none"
+    },
+    "requirements": [
+      {
+        "requirementId": "target.rgb",
+        "role": "target-rgb",
+        "state": "known",
+        "shape": [
+          1,
+          3,
+          1,
+          16,
+          32
+        ],
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": []
+      },
+      {
+        "requirementId": "target.latent",
+        "role": "target-latent",
+        "state": "known",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": "bernini-generated-model-latent:v1",
+        "normalization": "wan21-comfy-f32-v1",
+        "provenance": {},
+        "issues": [],
+        "qualification": {
+          "inputRgbFrames": 1,
+          "coveredRgbFrames": 1,
+          "fullFrameRetention": true,
+          "spatialRoundtripExact": true
+        }
+      },
+      {
+        "requirementId": "target.tokens",
+        "role": "target-tokens",
+        "state": "known",
+        "shape": [
+          1,
+          2,
+          5120
+        ],
+        "dtype": "float32",
+        "axes": [
+          "B",
+          "L",
+          "C"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "tokenGrid": [
+          1,
+          1,
+          2
+        ],
+        "tokenCount": 2,
+        "padding": {
+          "tail": [
+            0,
+            0,
+            0
+          ],
+          "mode": "none"
+        }
+      },
+      {
+        "requirementId": "source.rgb",
+        "role": "source-rgb",
+        "state": "known",
+        "shape": [
+          1,
+          3,
+          1,
+          16,
+          32
+        ],
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "preprocessing": {
+          "interpolation": "area",
+          "crop": "center",
+          "canvas": {
+            "height": 16,
+            "width": 32
+          }
+        }
+      },
+      {
+        "requirementId": "source.latent",
+        "role": "source-latent",
+        "state": "known",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1",
+        "provenance": {},
+        "issues": [],
+        "preprocessing": {
+          "interpolation": "area",
+          "crop": "center",
+          "canvas": {
+            "height": 16,
+            "width": 32
+          }
+        },
+        "qualification": {
+          "inputRgbFrames": 1,
+          "coveredRgbFrames": 1,
+          "fullFrameRetention": true,
+          "spatialRoundtripExact": true
+        }
+      },
+      {
+        "requirementId": "source.tokens",
+        "role": "source-tokens",
+        "state": "known",
+        "shape": [
+          1,
+          2,
+          5120
+        ],
+        "dtype": "float32",
+        "axes": [
+          "B",
+          "L",
+          "C"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "tokenGrid": [
+          1,
+          1,
+          2
+        ],
+        "tokenCount": 2,
+        "padding": {
+          "tail": [
+            0,
+            0,
+            0
+          ],
+          "mode": "none"
+        }
+      },
+      {
+        "requirementId": "reference.rgb",
+        "role": "reference-rgb",
+        "state": "known",
+        "shape": [
+          1,
+          3,
+          1,
+          16,
+          16
+        ],
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "preprocessing": {
+          "interpolation": "area",
+          "crop": "disabled",
+          "longEdge": 32,
+          "rounding": "python-ties-to-even",
+          "stride": 16
+        }
+      },
+      {
+        "requirementId": "reference.latent",
+        "role": "reference-latent",
+        "state": "known",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          2
+        ],
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1",
+        "provenance": {},
+        "issues": [],
+        "preprocessing": {
+          "interpolation": "area",
+          "crop": "disabled",
+          "longEdge": 32,
+          "rounding": "python-ties-to-even",
+          "stride": 16
+        },
+        "qualification": {
+          "inputRgbFrames": 1,
+          "coveredRgbFrames": 1,
+          "fullFrameRetention": true,
+          "spatialRoundtripExact": true
+        }
+      },
+      {
+        "requirementId": "reference.tokens",
+        "role": "reference-tokens",
+        "state": "known",
+        "shape": [
+          1,
+          1,
+          5120
+        ],
+        "dtype": "float32",
+        "axes": [
+          "B",
+          "L",
+          "C"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "tokenGrid": [
+          1,
+          1,
+          1
+        ],
+        "tokenCount": 1,
+        "padding": {
+          "tail": [
+            0,
+            0,
+            0
+          ],
+          "mode": "none"
+        }
+      },
+      {
+        "requirementId": "slot:0.rgb",
+        "role": "context-rgb",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 0
+      },
+      {
+        "requirementId": "slot:0.latent",
+        "role": "context-latent",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1",
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 0,
+        "qualification": null
+      },
+      {
+        "requirementId": "slot:0.tokens",
+        "role": "context-tokens",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "B",
+          "L",
+          "C"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "tokenGrid": null,
+        "tokenCount": null,
+        "padding": null
+      },
+      {
+        "requirementId": "slot:1.rgb",
+        "role": "context-rgb",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 1
+      },
+      {
+        "requirementId": "slot:1.latent",
+        "role": "context-latent",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1",
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 1,
+        "qualification": null
+      },
+      {
+        "requirementId": "slot:1.tokens",
+        "role": "context-tokens",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "B",
+          "L",
+          "C"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "tokenGrid": null,
+        "tokenCount": null,
+        "padding": null
+      },
+      {
+        "requirementId": "slot:2.rgb",
+        "role": "context-rgb",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 2
+      },
+      {
+        "requirementId": "slot:2.latent",
+        "role": "context-latent",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1",
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 2,
+        "qualification": null
+      },
+      {
+        "requirementId": "slot:2.tokens",
+        "role": "context-tokens",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "B",
+          "L",
+          "C"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "tokenGrid": null,
+        "tokenCount": null,
+        "padding": null
+      },
+      {
+        "requirementId": "slot:3.rgb",
+        "role": "context-rgb",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 3
+      },
+      {
+        "requirementId": "slot:3.latent",
+        "role": "context-latent",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1",
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 3,
+        "qualification": null
+      },
+      {
+        "requirementId": "slot:3.tokens",
+        "role": "context-tokens",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "B",
+          "L",
+          "C"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "tokenGrid": null,
+        "tokenCount": null,
+        "padding": null
+      },
+      {
+        "requirementId": "slot:4.rgb",
+        "role": "context-rgb",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 4
+      },
+      {
+        "requirementId": "slot:4.latent",
+        "role": "context-latent",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1",
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 4,
+        "qualification": null
+      },
+      {
+        "requirementId": "slot:4.tokens",
+        "role": "context-tokens",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "B",
+          "L",
+          "C"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "tokenGrid": null,
+        "tokenCount": null,
+        "padding": null
+      },
+      {
+        "requirementId": "slot:5.rgb",
+        "role": "context-rgb",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 5
+      },
+      {
+        "requirementId": "slot:5.latent",
+        "role": "context-latent",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1",
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 5,
+        "qualification": null
+      },
+      {
+        "requirementId": "slot:5.tokens",
+        "role": "context-tokens",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "B",
+          "L",
+          "C"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "tokenGrid": null,
+        "tokenCount": null,
+        "padding": null
+      },
+      {
+        "requirementId": "slot:6.rgb",
+        "role": "context-rgb",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 6
+      },
+      {
+        "requirementId": "slot:6.latent",
+        "role": "context-latent",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1",
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 6,
+        "qualification": null
+      },
+      {
+        "requirementId": "slot:6.tokens",
+        "role": "context-tokens",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "B",
+          "L",
+          "C"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "tokenGrid": null,
+        "tokenCount": null,
+        "padding": null
+      },
+      {
+        "requirementId": "slot:7.rgb",
+        "role": "context-rgb",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 7
+      },
+      {
+        "requirementId": "slot:7.latent",
+        "role": "context-latent",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "meaning": "wan21-normalized-posterior-mean:v1",
+        "normalization": "wan21-comfy-f32-v1",
+        "provenance": {},
+        "issues": [],
+        "originalSlotIndex": 7,
+        "qualification": null
+      },
+      {
+        "requirementId": "slot:7.tokens",
+        "role": "context-tokens",
+        "state": "absent",
+        "shape": null,
+        "dtype": "float32",
+        "axes": [
+          "B",
+          "L",
+          "C"
+        ],
+        "meaning": null,
+        "normalization": null,
+        "provenance": {},
+        "issues": [],
+        "tokenGrid": null,
+        "tokenCount": null,
+        "padding": null
+      }
+    ],
+    "issues": [],
+    "target": {
+      "requestedRgbShape": [
+        1,
+        3,
+        1,
+        16,
+        32
+      ],
+      "initialLatentShape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "tokenGrid": [
+        1,
+        1,
+        2
+      ],
+      "tokenCount": 2,
+      "padding": {
+        "tail": [
+          0,
+          0,
+          0
+        ],
+        "mode": "none"
+      }
+    },
+    "slotSelections": [
+      {
+        "originalSlotIndex": 0,
+        "state": "absent",
+        "selectedOrigin": null,
+        "compactedSlotOrdinal": null
+      },
+      {
+        "originalSlotIndex": 1,
+        "state": "absent",
+        "selectedOrigin": null,
+        "compactedSlotOrdinal": null
+      },
+      {
+        "originalSlotIndex": 2,
+        "state": "absent",
+        "selectedOrigin": null,
+        "compactedSlotOrdinal": null
+      },
+      {
+        "originalSlotIndex": 3,
+        "state": "absent",
+        "selectedOrigin": null,
+        "compactedSlotOrdinal": null
+      },
+      {
+        "originalSlotIndex": 4,
+        "state": "absent",
+        "selectedOrigin": null,
+        "compactedSlotOrdinal": null
+      },
+      {
+        "originalSlotIndex": 5,
+        "state": "absent",
+        "selectedOrigin": null,
+        "compactedSlotOrdinal": null
+      },
+      {
+        "originalSlotIndex": 6,
+        "state": "absent",
+        "selectedOrigin": null,
+        "compactedSlotOrdinal": null
+      },
+      {
+        "originalSlotIndex": 7,
+        "state": "absent",
+        "selectedOrigin": null,
+        "compactedSlotOrdinal": null
+      }
+    ],
+    "orderedContexts": {
+      "complete": true,
+      "entries": [
+        {
+          "contextKey": "source",
+          "role": "source",
+          "sourceId": 1,
+          "rgbShape": [
+            1,
+            3,
+            1,
+            16,
+            32
+          ],
+          "latentShape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "tokenGrid": [
+            1,
+            1,
+            2
+          ],
+          "tokenCount": 2,
+          "concatTokenRange": [
+            2,
+            4
+          ],
+          "provenance": {}
+        },
+        {
+          "contextKey": "reference",
+          "role": "reference",
+          "sourceId": 2,
+          "rgbShape": [
+            1,
+            3,
+            1,
+            16,
+            16
+          ],
+          "latentShape": [
+            1,
+            16,
+            1,
+            2,
+            2
+          ],
+          "tokenGrid": [
+            1,
+            1,
+            1
+          ],
+          "tokenCount": 1,
+          "concatTokenRange": [
+            4,
+            5
+          ],
+          "provenance": {}
+        }
+      ],
+      "positiveAndNegativeReferenceSameList": true
+    },
+    "concatenation": {
+      "axis": "token",
+      "order": [
+        "target",
+        "source",
+        "reference"
+      ],
+      "targetSourceId": 0,
+      "hiddenWidth": 5120,
+      "targetTokens": 2,
+      "contextTokens": 3,
+      "totalTokens": 5,
+      "shapePerBatch": [
+        1,
+        5,
+        5120
+      ]
+    }
+  },
+  "tensors": [
+    {
+      "requirementId": "target.latent",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "dtype": "float32",
+      "meaning": "bernini-generated-model-latent:v1",
+      "normalization": "wan21-comfy-f32-v1",
+      "layout": "NCTHW",
+      "path": "/tmp/d1-d4-real-l512-n5-inputs/noise.f32",
+      "bytes": 512,
+      "sha256": "ece94cda18a964b7d445303c31053cd84417d0e909b6056b251061f839c422df",
+      "producerVerified": false
+    },
+    {
+      "requirementId": "source.latent",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "dtype": "float32",
+      "meaning": "wan21-normalized-posterior-mean:v1",
+      "normalization": "wan21-comfy-f32-v1",
+      "layout": "NCTHW",
+      "path": "/tmp/d1-d4-real-l512-n5-inputs/context-1.f32",
+      "bytes": 512,
+      "sha256": "32007fbe7ca0b3eff16b1eff68f48a742cfadaad06685005d21ca9e569e62dfc",
+      "producerVerified": false
+    },
+    {
+      "requirementId": "reference.latent",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "dtype": "float32",
+      "meaning": "wan21-normalized-posterior-mean:v1",
+      "normalization": "wan21-comfy-f32-v1",
+      "layout": "NCTHW",
+      "path": "/tmp/d1-d4-real-l512-n5-inputs/context-2.f32",
+      "bytes": 256,
+      "sha256": "103b065f6c18417d8aa7529507376adf4dff549bcbde62238e487147bc5314f7",
+      "producerVerified": false
+    }
+  ],
+  "initialEmptyTarget": {
+    "path": "/tmp/d1-d4-real-l512-n5-inputs/initial-empty-model-latent.f32",
+    "bytes": 512,
+    "sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560",
+    "formula": "explicit zero model-latent augmentation0",
+    "seededRng": false,
+    "producerVerified": false
+  },
+  "explicitNoise": {
+    "requirementId": "target.latent",
+    "shape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "dtype": "float32",
+    "meaning": "bernini-generated-model-latent:v1",
+    "normalization": "wan21-comfy-f32-v1",
+    "layout": "NCTHW",
+    "path": "/tmp/d1-d4-real-l512-n5-inputs/noise.f32",
+    "bytes": 512,
+    "sha256": "ece94cda18a964b7d445303c31053cd84417d0e909b6056b251061f839c422df",
+    "producerVerified": false
+  },
+  "negative": {
+    "kind": "explicit separate copy of same real packet, CFG1 unused; not original negative"
+  },
+  "side": "HIGH",
+  "timestep": 1000.0,
+  "gate": {
+    "abs": 0.01,
+    "rel": 0.001
+  },
+  "readiness": {
+    "generationReady": false,
+    "originalWorkflowInputsVerified": false,
+    "originalMxfp8Equivalence": "UNCONFIRMED_NOT_COMPLETION_GATE"
+  },
+  "inputConstruction": {
+    "retainedN5FixtureSHA256": "a30177ba13a922f29b8d9664ff1b24bc68d6a1e308c95e3a6faf23f402751d3c",
+    "changesFromOldCase": [
+      "Text is the complete retained real L512 packet, not controlled L3",
+      "First predict input is explicit sigma1 noise; sampler target is separate zero initial latent"
+    ],
+    "oldL3NumericalEvidenceReused": false
+  },
+  "conditioning": {
+    "nativeJSON": "/tmp/p4-real-text-l512/inputs/real-text-l512-native.json",
+    "nativeJSONBytes": 8604657,
+    "nativeJSONSHA256": "9cbbdace203ea996d9dd6afc1a8ae832f4b68c2bf1fc54306b9f944f818bd6a8",
+    "payloadSHA256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+    "maskSHA256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62",
+    "packet": {
+      "artifactCommit": "f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48",
+      "producerCommit": "5537b8932343aa2476b95191817e8913f99dab02",
+      "bytes": 8390054,
+      "sha256": "90f9aed262027c5a273a71e2601a953a49d4e55593b34310565cfcd112fc95c9",
+      "headerBytes": 1434,
+      "headerSHA256": "2e9ac007423d1f7bc894c4ac76e63e55ad3bd92704cecd12ee87cacee0654441",
+      "payloadSHA256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7"
+    },
+    "retainedPacketVerification": {
+      "path": "/tmp/text-packet-receipt-20261102/source/development/inference/p2-p3-acceptance/plain/evidence/plain-conditioning.wktensor",
+      "bytes": 8390054,
+      "sha256": "90f9aed262027c5a273a71e2601a953a49d4e55593b34310565cfcd112fc95c9",
+      "headerBytes": 1434,
+      "headerSHA256": "2e9ac007423d1f7bc894c4ac76e63e55ad3bd92704cecd12ee87cacee0654441",
+      "payloadBitIdentity": true
+    },
+    "producer": {
+      "module": "text_encoder",
+      "sourceCommit": "5537b8932343aa2476b95191817e8913f99dab02"
+    },
+    "actualPrompt": "Hello world",
+    "all512RowsPreserved": true,
+    "activeMaskEntries": 3,
+    "normalizationMetadataConversion": {
+      "kind": "metadata-declaration-only",
+      "from": "legacy packet without top-level normalization tag",
+      "to": "umt5-final-rmsnorm-f32-v1",
+      "numericTransform": false,
+      "payloadAndMaskUnchanged": true,
+      "producerOperation": "actual encoder.final_layer_norm via Hike RMSNorm",
+      "sourcePath": "docs/shared/inference/text-encoder.mjs",
+      "sourceLine": 101
+    }
+  },
+  "privateManifest": {
+    "path": "/tmp/d1-d4-real-l512-n5-inputs/inputs.json",
+    "bytes": 43223,
+    "sha256": "11d345729b9132dd600b3fa73b61fd5e686b3f5a0ed7b72ef12e3a83791307e9"
+  },
+  "numericalModelExecution": false
+}
