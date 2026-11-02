@@ -1,6 +1,6 @@
 # Text / VAE 単体API差分
 
-対象は「Kushyameln Works モジュール単体完成 実行計画 Draft」1.0 draft 1。API版は既存の `works-ai-1` を維持する。この文書は今回追加したstream VAE、保存metadata、Text共有jobとNode参照hostを説明する。数値受入は [RESULT.md](RESULT.md) に記載したcaseへ限定し、収集中のNode結果は受入済みとして扱わない。
+対象は「Kushyameln Works モジュール単体完成 実行計画 Draft」1.0 draft 1。API版は既存の `works-ai-1` を維持する。この文書は今回追加したstream VAE、保存metadata、Text共有jobとNode参照hostを説明する。数値受入は [RESULT.md](RESULT.md) に記載した実行sourceとcaseへ限定する。
 
 ## 通常入口
 
@@ -54,6 +54,10 @@ textとID/maskの混在、全0mask、非整数・範囲外ID、長さ不一致�
 
 `configure({manifest,files,diagnostics:false})` が既定で、通常結果は `{tensor,attentionMask,inputMode}`。`inputMode` は `plain-text` または `token-ids` となる。`diagnostics:true` を明示した場合だけ、外側の `result.evidence` にHike寄与、実行provenance、Tokenizer情報などを追加する。diagnosticsの指定はmodel演算・返却tensor・数値gateを切り替えない。独立参照や過去receiptは通常APIの必須入力にしない。
 
+Browser受入helperは、case出力と取消後の復帰出力を実 `encodeTensor()` / `decodeTensor()` で保存・読戻しする。復帰出力は `recovery-<controlId>.wktensor` として保存し、全値、descriptor、全mask、normalization、model/Tokenizer識別の一致と、読戻しpayload/maskの所有copyを検査する。親Pythonは保存artifactのbytes/SHA-256とnative metadataを照合してから独立参照と比較する。
+
+controlが使う参照は、主caseとして選択していない復帰用caseもNN開始前にprehashする。固定input・manifest・参照source SHA・独立full512の出典・byte数・SHA-256を先行照合する。prehash、codec readback、取消・復帰、artifact照合、数値比較の記録は外側の診断receipt / handoffへ保存する。これらを通常の `{tensor,attentionMask,inputMode}` の必須fieldや入力条件へ加えない。
+
 ### Node参照host
 
 [node_sdk_host.mjs](../../../tools/inference/text-encoder/node_sdk_host.mjs) は、`createTextEncoderModule({client:referenceClient})` をconfigureしてからencodeする参照hostである。custom clientは同じ共有Text jobを直列に実行する。実ORT WASMの1thread、既存loaderのprepacking停止設定、実Hike最終RMSNormを使い、結果を通常の `encodeTensor()` / `decodeTensor()` で保存・読戻しする。shape・全mask・normalization・model/Tokenizer識別・全float値を照合し、caseごとの `.wktensor` とreceiptを残す。独立FP32参照との数値比較は親Pythonの既存比較器で行う。
@@ -66,12 +70,13 @@ source検証はNN開始前に行う。親Pythonが `git cat-file -t` で指定SH
 
 このhostの結果はNode参照hostの検証範囲に限る。Browser File/Workerでの実行・強制取消・T3受入は別に残り、receiptも `browserWorkerAcceptance:false / cancellationAcceptance:false` とする。`byteGraph` 指定はNN前に拒否し、計画の `id-l2` bytes経路はBrowser側の後続試験へ残す。ID APIのL2契約は前表どおり維持する。既存FP32 model経路・重み・graph・独立oracle・比較gateは維持し、FP64 model経路への切替や再exportは行わない。
 
-| 区分 | 完全実行source SHA | この追補時点の状態 |
+| 区分 | 完全source SHA | 証拠・状態の扱い |
 | --- | --- | --- |
-| Node参照hostの実行 | `dccb88515775ec8aa86dd16f82e8816c9347ed38` | 6caseを収集中。数値結果は未確定 |
+| 既存Node参照host attempt | `dccb88515775ec8aa86dd16f82e8816c9347ed38` | 完了case・途中終了・資源記録は [RESULT.md](RESULT.md) を参照 |
+| 次の直列実行に指定するsource | `153c864e22927b24902ad5343f5438b895459bf6` | VAE最終終了待ちの計画。実行未開始・受入未確定 |
 | 比較対象の独立full512 FP32 oracle | `5954d48e0fb6df1d6977964fd8a7ba2a242b6eff` | 保存済みの独立参照を再利用 |
 
-後続の文書・証拠追加による配布commitと、実際に実行したsource SHAを分けて保存する。最新配布SHAで上表の実行SHAを付け替えない。再現手順とhost指定は [REPRODUCE.md](REPRODUCE.md) を参照する。
+後続の文書・証拠追加による配布commit、実際に実行したsource SHA、未実行の計画sourceを分けて保存する。最新配布SHAで実行SHAを付け替えない。NodeとBrowserを含む次の直列化計画は受入結果と区別し、手順・対象case・host指定は [REPRODUCE.md](REPRODUCE.md)、実行後の判定は [RESULT.md](RESULT.md) を参照する。
 
 ## VAE
 

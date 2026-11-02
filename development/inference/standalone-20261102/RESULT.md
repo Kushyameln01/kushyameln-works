@@ -135,3 +135,7 @@ Node参照host source `dccb88515775ec8aa86dd16f82e8816c9347ed38` の `plain-empt
 153cの検証hostは、通常出力に加えて取消復帰WKTも別保存し、native codecで全値・metadataを読戻してから公開する。復帰caseを含む独立参照を最初のNN前にhash検査する。読戻し中に保存ownerのrevisionが変わった場合も公開を拒否する。関連する合成制御・保存試験は合格したが、実Browser T3の新規NN受入とは別である。
 
 受入hostのSIGINT/SIGTERMはmodel演算を変更せず通常API cancelへ委譲する。source `2f5ff3be69e2ff347f3bcb382a0e1be7f864dff8` の実WASM診断で、chunk開始後のSIGINTを受け `INTERRUPTED_HOST_REQUEST` / exit130 /11.324秒で終了した。数値実行はattempted、正常完了operationは空。owned live/zombie/errorsは空だった。旧target中断時のPlaywright停止と子process回収記録は別receiptに残し、通常取消やtarget数値合格へ数えない。
+
+sourceF81の追加NNを行わず、target/source81の4参照tensorについてshape・bytes・記録済みhashと実hardlink identityの一致を確認した。実meanの全2,096,640値はsource81独立参照ともgateに合格し、maxAbs2.86102294921875e-6。source用のsynthetic contextに変えたnative codec fixtureは全値bitwise一致、payload SHA `808db65cbf9b34f1ed1af5db04f2e3948b8207c7bcd52f080463d1355f3ecb46`、81件のframe番号・時刻・重複・sourceContextを保存後も保持した。model hash・meaning・normalizationは変更していない。このNN0証拠はsource-roleの別NN、target raw decode、target最終終了の受入とは区別する。
+
+NN0 fixtureのcodec sourceは `b971adc7930bd42e081ff446a0d6a70b7ff1dc28` のtensor.mjs。実行したad-hoc runnerは当時そのcommitに含まれておらず、script SHA-256 `b9f9bedc9efa3b917f99aa45e2541006b252f944b16e75a2cc4c6bda2298975f` で識別する。実行bytesを [archive](vae/evidence/scripts/source81-alias-codec-fixture.mjs) に変更せず保存し、入力identity・proof・source archiveをevidence indexから取得できるようにした。元の大RGB2組のhashは、親の記録と実hardlink identityを再利用したもので、新しい全file hash計算とは表記しない。

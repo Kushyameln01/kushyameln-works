@@ -63,7 +63,13 @@ prepared graph・final norm・row hashes・Tokenizerはnative `fs.openAsBlob` �
 
 Python親processは `git cat-file` で指定objectがcommitであることを確認し、親harnessと全Node import closureのbytesを `git show` と照合する。Nodeへ渡す15件のsource recordsはpath集合・bytes・SHA-256・execution SHAを固定する。Nodeは不足・重複・追加を拒否し、現在のfile bytesを再読して照合する。Node自身がGit commitを独立に検証したという意味ではない。親の検査後にsourceが変わった場合も、Node側の再照合で拒否する。
 
-次は6件のFile-backed caseを選ぶ実行構成。実行sourceは `dccb88515775ec8aa86dd16f82e8816c9347ed38`、独立参照は元5954のまま。0 NN preflightは完了したが、この6caseの数値比較は進行中であり受入済みとはしない。以下のoutputは実runの保存先なので、再実行時には別の新規directoryへ置換する。
+#### 初回6case試行（終了済み）
+
+実行source `dccb88515775ec8aa86dd16f82e8816c9347ed38` の6case試行は、632秒で資源guardが所有Nodeを停止して終了した。共有cgroup working set約16.405 GBを観測し、当該harness群のsampled RSS peakは約3.983 GBだった。両者は別指標であり、他jobを含むRAMへ単純加算・換算しない。終了後の所有live process・zombie・cleanup errorは空だった。
+
+`plain-empty` は通常出力で24層とsession releaseを完了し、全2,097,152値を元5954参照と比較して最大絶対誤差 `4.172325134e-6`、元gateとnative codec読戻しに合格した。この1caseの確認を6case全体の合格に広げない。`plain-multilingual-newline` はblock8までのpartialで、数値結果は未確定。残る5caseと長文plainは未完了であり、この停止までに数値FAILは観測していない。最新の判定と保存済み証拠は [RESULT.md](RESULT.md) を参照する。
+
+以下は終了済みattemptの元構成であり、現在走っているjobの指定ではない。outputは既存保存先なので、再現が必要な場合だけ別の新規directoryへ置換する。完了済みemptyは次の最小再開Node構成へ含めない。
 
 ```sh
 TEXT_NODE_SOURCE_SHA=dccb88515775ec8aa86dd16f82e8816c9347ed38
@@ -85,32 +91,57 @@ python tools/inference/text-encoder/accept_plain.py \
 
 同じ構成へ `--preflight-only` を付け、別の新規outputへ実行すると、source・manifest・local asset sizeをNNなしで検査する。ORT/Hikeのinstanceを作らず、元modelのread observationは0 Bで閉じる。これはTokenizer・数値比較・Browser取消の受入ではない。
 
-長文plainは、512有効位置の余力を確認してから別jobで実行する。次は実行用コマンドであり、この文書では結果を未確定とする。既存のall-active ID512 canaryを再実行する指定ではない。
+#### 未完了分の最小再開計画
+
+次のsourceは `153c864e22927b24902ad5343f5438b895459bf6`。所有VAE targetのfinal終了を待つ直列controllerが待機しており、この追補時点ではNode再開も後続Browser jobも開始していない。未完了の5caseと長文plainを次の6件にまとめ、5954 oracleを再利用する。完了済みemptyや既知FAILのall-active ID512 canaryは、このNode jobで再実行しない。
 
 ```sh
+TEXT_RESUME_SOURCE_SHA=153c864e22927b24902ad5343f5438b895459bf6
+TEXT_REFERENCE_SOURCE_SHA=5954d48e0fb6df1d6977964fd8a7ba2a242b6eff
+
 python tools/inference/text-encoder/accept_plain.py \
   --node-sdk --skip-controls \
   --plan development/inference/standalone-20261102/text/predeclared-plan.json \
   --bundle /workspace/work/inference/text-implementation/bundle \
   --source /workspace/work/models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors \
   --reference /tmp/kw-standalone-text-oracle-20261102 \
-  --execution-source-sha "$TEXT_NODE_SOURCE_SHA" \
+  --execution-source-sha "$TEXT_RESUME_SOURCE_SHA" \
   --reference-execution-source-sha "$TEXT_REFERENCE_SOURCE_SHA" \
-  --case-id plain-long-eos512 \
-  --output /tmp/kw-text-node-sdk-long512-20261102
+  --case-id plain-multilingual-newline --case-id plain-long-eos512 \
+  --case-id id-l1 --case-id id-l511 \
+  --case-id id-l512-trailing-mask --case-id id-internal-trailing-mask \
+  --output /tmp/kw-text-node-sdk-remaining-serial-20261102
 ```
+
+Node jobが終了して資源を解放した後、同じ153c sourceで次のBrowser jobを直列実行する計画である。`--node-sdk` と `--skip-controls` を付けず、主caseは `plain-empty` と `id-l2` の2件だけを選ぶ。planの全9 controlsと、同じAPIの `id-l1` recoveryを一度実行するため、正常な全24層NNは合計3件となる。cancel途中のjobや保存revision controlを正常NN件数へ加えない。Browser emptyは取消・保存のhost確認用であり、Node emptyの通常出力受入を付け替えるものではない。
+
+```sh
+python tools/inference/text-encoder/accept_plain.py \
+  --plan development/inference/standalone-20261102/text/predeclared-plan.json \
+  --bundle /workspace/work/inference/text-implementation/bundle \
+  --source /workspace/work/models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors \
+  --reference /tmp/kw-standalone-text-oracle-20261102 \
+  --execution-source-sha "$TEXT_RESUME_SOURCE_SHA" \
+  --reference-execution-source-sha "$TEXT_REFERENCE_SOURCE_SHA" \
+  --case-id plain-empty --case-id id-l2 \
+  --output /tmp/kw-text-browser-t3-controls-20261102
+```
+
+153cでは、主caseへ選ばないrecovery入力も含め、全control入力のsource/manifest、固定ID/maskと独立full512参照のbytes/SHA-256をNN前に照合する。`controlReferencePreflight` に保存し、古い参照や破損fileを取消後まで持ち越さない。
+
+正常保存とrecovery保存は `encodeTensor()` の後にnative `decodeTensor()` でdescriptor、normalization、model/Tokenizer、全maskと全float値を読戻し、payload/maskが独立所有のbufferであることも確認する。recoveryは `recovery-cancel-run.wktensor` としてdownload・保存し、Pythonが全file bytes/SHA、native header/payloadと元 `id-l1` 参照の全4,096値を再照合する。これらは診断hostの外側receiptであり、通常APIの必須入力やtensor fieldを追加するものではない。新しいBrowser取消・保存結果も未確定であり、実行前から合格とはしない。
 
 `node-sdk-results.json` は通常factory/shared job/codecを通したhostの記録、`node-sdk-acceptance.json` は元参照との全値比較、所有NodeのPID/create timeと資源観測である。各完了caseのWKTとhost receiptを順次保存し、後のprocess停止でも完了分を残す。数値FAILは個別・最終FAILのまま後続caseを集める。不正なnative outputやfile/hash破損は継続せず拒否する。未完了caseを合格に補わない。
 
-この経路はBrowser Workerの取得・終了・取消を検証しない。`byteGraph` を持つID2 caseは拒否し、通常Browser hostで別に実行する。9件のBrowser controlsと同じAPIでのL1 recoveryも別の残件である。Node結果へBrowser/T3の受入を移さない。
+このNode経路はBrowser Workerの取得・終了・取消を検証しない。`byteGraph` を持つID2 caseは拒否し、上記の通常Browser host計画へ残す。9件のBrowser controlsと同じAPIでのL1 recoveryも、実完了後に別判定する。Node結果へBrowser/T3の受入を移さない。
 
 ### 資源policy
 
-参照hostのOOM優先度を明示する場合だけ、上のPythonコマンドの先頭に次を付ける。必要な `/proc/self/oom_score_adj` 書込み権限を持つ実行環境で使う。
+Node SDK参照hostのOOM優先度を明示する場合だけ、`--node-sdk` を使うPythonコマンドの先頭に次を付ける。必要な `/proc/self/oom_score_adj` 書込み権限を持つ実行環境で使う。Browser jobの停止条件は別の所有process controllerで扱う。
 
 ```sh
 NODE_OPTIONS="--require=$(pwd)/tools/inference/text-encoder/node_resource_guard.cjs" \
-  python tools/inference/text-encoder/accept_plain.py ...
+  python tools/inference/text-encoder/accept_plain.py --node-sdk --skip-controls ...
 ```
 
 このopt-in guardは起動したNode自身のOOM scoreを1000に設定して読戻し、他processのpriorityやmodel演算を変更しない。外側controllerによる所有Nodeの停止条件、有効にしたguardと実測資源はrunごとに記録する。OOM優先度はメモリ上限や他jobの完走保証ではない。
