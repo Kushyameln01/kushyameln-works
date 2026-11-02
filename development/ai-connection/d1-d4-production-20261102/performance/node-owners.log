@@ -1,0 +1,36 @@
+✔ disabled window reads exactly each request and returns independent storage (4.539108ms)
+✔ window hit, miss, tail and tensor-key transitions keep selected copies exact (0.887459ms)
+✔ nonmultiple read-ahead uses whole selected blocks without overlapping sequential storage (4.138685ms)
+✔ invalid original ranges and configuration reject before storage access (1.672223ms)
+✔ aborted pending refill never publishes a cache and reports discarded IO separately (0.780909ms)
+✔ entry primitives are captured before await and retired buffers are cleared (0.581538ms)
+✔ lookup source preserves the numeric profile, target bindings and exact legacy F32 bits (268.18631ms)
+✔ portable sparse fixtures match both independently pinned actual header identities (5.755344ms)
+✔ registry contains all 40 blocks, prefix, head and only actual model parameters (146.271726ms)
+✔ bounded all-block and prefix/head reads decode using Hike to independent owned F32 (122.597288ms)
+✔ ranges, binding kind and selected decode limits reject before storage reads (67.390324ms)
+✔ header/size and own FP8 profile gate identity, without sampling or hashing model payload (138.650351ms)
+✔ normal reads hash no payload; explicit diagnostics snapshot the policy and hash only selected ranges (52.567277ms)
+✔ abort after a pending storage read returns no result and releases busy ownership (46.672733ms)
+✔ completed-F32 port uses full original coordinates and copies every returned buffer (51.218472ms)
+✔ completed-F32 port rejects shared, noncompact, forged and nonfinite buffers (49.465498ms)
+✔ readAheadBytes rejects invalid bounds before any header read (18.472012ms)
+✔ readAheadBytes reuses one tensor window while every selected raw block remains owned (76.622563ms)
+✔ readAheadBytes never crosses a selected tensor boundary and rejects bad ranges before storage (40.087207ms)
+✔ readAheadBytes aborted refill publishes no cache and a later request can retry (49.086685ms)
+✔ readAheadBytes leaves legacy and lookup F32 bits and selected diagnostic hashes unchanged (272.033765ms)
+✔ query captures Q once, retains private state and finishes only after all keys (2.211126ms)
+✔ foreign handles and key overflow reject before K/V capture (0.522298ms)
+✔ aborted run cleans new outputs and K/V while keeping the old state retryable (0.799456ms)
+✔ release failure retains failed owners, attempts every tensor and permits recovery (0.337589ms)
+✔ finish cannot return a partial success when native release fails (0.477951ms)
+✔ partial query preparation retains failed cleanup for disposeAll recovery (0.279522ms)
+✔ wrong native result binding does not leak the other returned Tensor owners (0.461556ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1465.434539

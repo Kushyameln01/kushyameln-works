@@ -1,8 +1,8 @@
 # DiffusionModels 0.1 — 数値計算と接続基盤
 
-**開発途中の部品です。Berniniモデル全体の推論は未実装です。**
+**開発途中です。全40block・6更新の実装と公開Worker接続を備えますが、原寸での単体完成・生成READYは未受入です。**
 
-同一ページのJavaScript APIと、明示したMessagePort経由で、モデルヘッダー検査、HikeのEuler/scheduler/CONST、tensor境界検査、Hike→ORT WASM→Hikeの部分射影を呼べます。ニューラルモデルのload/predict/sampleはNOT_READYを返します。動くUIや画像生成の代わりとなる仮出力はありません。
+同一ページのJavaScript APIと、明示したMessagePort経由で、モデルヘッダー検査、HikeのEuler/scheduler/CONST、tensor境界検査、Hike→ORT WASM→Hikeの部分射影を呼べます。全モデルのload/predict/sampleは実Hike/ORT候補へ接続します。入力域ごとの受入範囲は[API](API.md)と今回結果を参照してください。動くUIや画像生成の代わりとなる仮出力はありません。
 
 入口は [`api/index.mjs`](api/index.mjs)、使用方法・データ契約は [`API.md`](API.md)。Text Encoder/VAEと包括UIは別担当です。DiffusionModelsの推論部・外部API・Hike数値部は本担当が受け持ちます。
 
@@ -15,7 +15,7 @@
 | 同一ページAPI / 明示MessagePort | 実Worker/MessageChannelで検証 |
 | 取消・新入力による旧応答失効・終了 | 自分のWorkerだけを終了し、Promiseを終端化 |
 | LoRA weight I/O | HIGH/LOW別File登録・保存dtypeの範囲読出し・SDK source接続。モデル適用は未実装 |
-| Bernini load/predict/sample | NOT_READY。全量ORT/単純block分割ではMemory制約を満たさない |
+| Bernini load/predict/sample | 両実モデルの準備・全40block・6更新候補へ接続。全量常駐を避け重みstaging・attention tileを使用。原寸の数値・総資源受入は別 |
 | Text Encoder/VAE境界 | 公開固定版から独立APIとHike担当を確認。既存.wktensor互換でshape/意味/hash/maskを検査。全体推論の結合ではない |
 | VAE posterior-mean | 旧F5 128値、F1 64値、非正方形F1 128値を別profile/専用Hike ABIで扱う。生成sampleとは別契約 |
 | LoRA v2 consumer | PARTIAL Q16行のnative registry/provider、runtime weight/bias sink、検証/切替/復帰。現行mappingはLoRA owner adapter、同梱の旧2bba adapterは固定回帰用 |

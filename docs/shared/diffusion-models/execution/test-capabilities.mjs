@@ -41,7 +41,8 @@ test('unsupported production shape, context, block, dtype and model report exten
 test('missing semantics and inputs are refused without native allocation',()=>{
  const q=request();delete q.inputs.timeAct1;delete q.inputs.conditioning.normalization;assert.ok(codes(q).includes('MISSING_INPUT'));assert.ok(codes(q).includes('UNSUPPORTED_NORMALIZATION'));
  assert.deepEqual(codes({operation:'arbitraryModelOperator'}),['UNSUPPORTED_OPERATION']);assert.deepEqual(codes(null),['INVALID_DESCRIPTOR']);
- for(const operation of ['load','predict','sample'])assert.deepEqual(codes({operation}),['NOT_READY']);
+ assert.deepEqual(codes({operation:'load'}),['MODEL_PAIR_REQUIRED']);
+ for(const operation of ['predict','sample']){const result=checkExecutionSupport({operation});assert.equal(result.implemented,true);assert.equal(result.executableRoute,true);assert.equal(result.supported,false);assert.ok(codes({operation}).includes('MISSING_SHAPE_REQUEST'));assert.ok(!codes({operation}).includes('NOT_READY'));}
 });
 test('three exact mean profiles stay separate from generated samples and equal-count reshapes',()=>{
  const capabilities=describeExecutionCapabilities();

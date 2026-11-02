@@ -3,8 +3,9 @@
 `model-sampler-candidate.mjs` binds the actual full-40-block HIGH and LOW model
 candidates to the pinned Euler / simple6 / shift5 / split3 schedule. It is a
 separate experimental entry point. `acceptedProduction`, `generationReady` and
-`publicRuntimeEnabled` remain false. Existing public `load`, `predict` and
-`sample` remain unchanged and `NOT_READY`.
+`publicRuntimeEnabled` remain false inside the numerical owner. The public Worker
+now connects the fixed [adapter](../api/MODEL_RUNTIME.md) to this owner;
+`publicWorkerConnected:true` describes that route, not full-target numerical acceptance.
 
 ```js
 import {createBerniniModelSamplerCandidate} from './model-sampler-candidate.mjs';

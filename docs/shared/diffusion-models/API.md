@@ -2,17 +2,19 @@
 
 このAPIは同じページのES module、または呼出し側が明示して渡した専用MessagePortから利用する。全体UI、Text Encoder、VAEのAPIを実装・推測しない。HTTP・WebSocketサーバーやグローバルなwindow message listenerは設けない。静的HTTP(S)配信とWorker/WASMを利用できるブラウザが必要。
 
-現在動く操作は、safetensorsのヘッダー検査、実Hike WASMのEuler・固定scheduler・noise/flow更新・Wan21 posterior-mean正規化と復元、公開Text Encoder/VAEのtensor境界検査、Hike→ORT WASM→Hikeによる固定Q射影の部分演算。API版0.1に操作を追加し、既存envelopeは維持している。`load`・`predict`・`sample`は常に構造化エラーで拒否する。モデル推論の実装・変換・利用経路完成を意味しない。
+現在動く操作は、safetensorsのヘッダー検査、実Hike WASMのEuler・固定scheduler・noise/flow更新・Wan21 posterior-mean正規化と復元、公開Text Encoder/VAEのtensor境界検査、Hike→ORT WASM→Hikeによる固定Q射影の部分演算。API版0.1に操作を追加し、既存envelopeは維持している。公開`load/predict/sample`は実全モデル候補へ接続した。呼出し経路の実装と、入力域ごとの数値・資源受入は分ける。対応域と試験結果は下記の単体実行資料を参照し、未検証shapeを生成READYとは扱わない。
 
 ## 通常実行と診断の分離
 
-通常descriptor／対応判定と、固定診断を分離した。`capabilities.executionDescriptor`、`checkSupport`、`prepareP4/runP4/releaseP4`、単独`createBerniniP4Execution`を追加。P4はN2/block0/Text L1〜512/contextなしの範囲を保ち、通常入口は最終hiddenのみ返す。固定payload hash・過去数値receipt・独立比較は通常の互換性条件にしない。weight feedの通常validateと診断diagnoseも分離した。[通常API契約](execution/README.md)を参照。全モデルload/predict/sampleは引き続きNOT_READY。
+通常descriptor／対応判定と、固定診断を分離した。`capabilities.executionDescriptor`、`checkSupport`、`prepareP4/runP4/releaseP4`、単独`createBerniniP4Execution`を追加。P4はN2/block0/Text L1〜512/contextなしの範囲を保ち、通常入口は最終hiddenのみ返す。固定payload hash・過去数値receipt・独立比較は通常の互換性条件にしない。weight feedの通常validateと診断diagnoseも分離した。[通常API契約](execution/README.md)を参照。全モデル公開入口は[モデル実行契約](api/MODEL_RUNTIME.md)を参照。
 
 ## D1〜D4の実装候補
 
 全1095重みのregistry／Hike復号、query128・key256・40headのonline attention、全40block・最終headの[単独predict候補](execution/model-candidate.md)、実HIGH／LOWに束縛した[6更新sample候補](execution/model-sampler-candidate.md)を追加した。通常入力へ独立参照・固定payload hash・過去receiptを要求しない。候補の診断入口だけが比較用の中間値を返す。
 
-これらは公開APIとは別の実装候補である。制御N5／Text L3ではHIGH／LOW各全40block、実HIGH3→LOW3の6更新、raw sample保存・読戻しが固定gateに合格した。原寸相当storeと最大FFN tileの容量試験も別に成立した。必要shapeの全query・全40block・6更新と全工程の資源条件は未受入で、全モデルを公開Workerへ接続するadapterも未実装のため、公開`load/predict/sample`は引き続き`NOT_READY`。[結果・残件](../../../development/ai-connection/standalone-d1-d4-20261102/RESULT.md)と[再現手順](../../../development/ai-connection/standalone-d1-d4-20261102/REPRODUCE.md)を参照。
+公開APIの専用Workerから、これらの実装候補を固定adapter経由で呼ぶ。runtime・predictor・数値参照を注入する通常入口はない。制御N5／Text L3ではHIGH／LOW各全40block、実HIGH3→LOW3の6更新、raw sample保存・読戻しが固定gateに合格した。原寸相当storeと最大FFN tileの容量試験も別に成立した。必要shapeの全query・全40block・6更新と全工程の資源条件は、下記の今回結果で個別に記録する。90,000 tokenの実装上の計画上限は、数値検証済みshapeの範囲を意味しない。[結果・残件](../../../development/ai-connection/standalone-d1-d4-20261102/RESULT.md)と[再現手順](../../../development/ai-connection/standalone-d1-d4-20261102/REPRODUCE.md)を参照。
+
+今回の実行source・検証範囲・未受入事項は[公開Worker検証](../../../development/ai-connection/public-worker-20261102/RESULT.md)と[原寸段階検証](../../../development/ai-connection/d1-d4-production-20261102/RESULT.md)へ記録する。元媒体・元mxfp8環境の記録未取得は、明示した別caseの固定scaled-FP8→F32単体試験とは別の未確認事項である。
 
 ## 同一ページの呼出し
 
@@ -54,8 +56,11 @@ api.dispose();
 | restoreRawMean | `{tensor}` | version付きnormalized posterior meanを実Hikeでraw meanへ復元。生成sampleをmeanへ言い換えない |
 | linearProjection | `{q,scale,bias,x}` | 実Hike FP8復号→ORT WASM Gemm→Hike biasの固定部分演算。output16要素と証拠 |
 | linearProjectionF32 | `{weight:Float32Array(81920),x:Float32Array(5120),bias:Float32Array(16)}` | 明示F32 runtime weightを実ORT Gemmへ渡し実Hike biasを加算。partialOnly。LoRA低rank演算や全モデル適用は行わない |
-| load | `{file: File または Blob}` | 先にヘッダー検査を行い、その後NOT_READY。大容量モデルはdetails.reasonsにSINGLE_WASM32_MEMORY_EXCEEDED |
-| predict / sample | `{}` | NOT_READY。仮のニューラル出力や注入predictorを返さない |
+| load | `{files:{HIGH:File,LOW:File},resource?:{wasmThreads:1\|4}}` | 両originalモデルを固定provider・実Hike/ORTへ準備。modelSessionIdを返す。旧`{file}`は検査のみでNOT_READY |
+| predict | `{side,shapeRequest,tensors,conditioning,timestep,modelSessionId?}` | 全40block・head候補のowned model-space flow velocity。モデル未load時MODEL_NOT_LOADED |
+| sample | `{shapeRequest,tensors?,noise,positive,negative,modelSessionId?}` | Euler/simple6/shift5/split3、HIGH3→LOW3候補のowned raw generated sample |
+| unload / modelStatus | `{}` | 実owner解放／状態・資源統計。unload成功後はWorkerを終了 |
+| saveTensor / readTensor | `{tensor}` / `{file}` | canonical WKTSR001保存bytes／実File読戻し。生成sampleのmeaning・latentContractを保持、独立64MiB file予算 |
 | cancel | `{jobId: 対象jobId,inputRevision: 対象revision}` | 自分が所有する実行中Workerだけ終了。対象のPromiseはCANCELLEDで終端化 |
 | dispose | `{}` | Workerを終了し以後の呼出しをDISPOSEDで拒否 |
 
@@ -67,11 +72,11 @@ Eulerの上限1,048,576要素は、このAPIの作業予算。モデル全体の
 
 noiseMix / inverseNoiseScale / flowDenoisedはFloat32Arrayと正のshapeを要求する。shape積と配列長を一致させ、1 tensorあたり1,048,576要素まで、NaN/Infinityを拒否する。結果は `{data: Float32Array,shape,operation,normalizationApplied:false,evidence}`。これら3つの低水準primitiveは入力空間を変換せず、出力をraw latentへ自動でラベル付けしない。raw meanとの接続に必要な数値変換は、本DiffusionモジュールのnormalizeRawMean / restoreRawMeanが担当する。包括UIは呼出し順・待機列・入力出力の受渡しを担当する。schedulerは固定ComfyUI版のsimple6・shift5・split3だけを提供し、別profileへ黙って切り替えない。noise配列は呼出し側から渡し、seedからの乱数再現は実装しない。
 
-normalizeRawMean / restoreRawMeanはこのDiffusionモジュール内の明示的なHike処理である。下記3種の公開VAE固定profileとVAE model hashを照合し、ComfyUI固定版の16 channel mean/stdとFP32演算順で変換する。rawのmeaningは `raw-posterior-mean`、正規化後はversionを含む `wan21-normalized-posterior-mean:v1`。結果は `{tensor,normalizationApplied:true,evidence}` で、tensor.dataは所有されたFloat32Arrayとなる。raw0も数値式どおり非0へ変換し、無断のzero特別扱いを加えない。全sampling内のzero判定やHIGH/LOW orchestrationを実装済みとは扱わない。
+normalizeRawMean / restoreRawMeanはこのDiffusionモジュール内の明示的なHike処理である。下記3種の公開VAE固定profileとVAE model hashを照合し、ComfyUI固定版の16 channel mean/stdとFP32演算順で変換する。rawのmeaningは `raw-posterior-mean`、正規化後はversionを含む `wan21-normalized-posterior-mean:v1`。結果は `{tensor,normalizationApplied:true,evidence}` で、tensor.dataは所有されたFloat32Arrayとなる。raw0も数値式どおり非0へ変換し、無断のzero特別扱いを加えない。生成sample経路では別の専用ownerがHIGH/LOW変換と生成sample復元を行い、このmean専用演算を代用しない。
 
 normalized meanのmeaningに版を含めるため、公開 `.wktensor` codecの保存・読戻しを通しても復元可能。追加の `normalization:'wan21-comfy-f32-v1'` は保存形式が保持しない説明属性であり、復元時に省略可能だが、値がある場合の不一致は拒否する。意味・shape・producer hashを揃えただけで任意の生成sampleをposterior meanへ再分類しない。復元はこの固定mean契約の入力だけを受け入れる。
 
-linearProjectionの入力は `q:Uint8Array(81920)`（16×5120 E4M3FNコード）、`x:Float32Array(5120)`、`bias:Float32Array(16)`、正の有限scale。出力は `output:Float32Array(16)` とHike/ORT/hash・copy量等のevidence。これは単一の固定Q射影であり、attention全体、1 stepのモデル予測、samplingではない。準備されたモデル値と明示activationを調べるための部分APIである。`load/predict/sample`はこの操作の追加後もNOT_READYのまま。
+linearProjectionの入力は `q:Uint8Array(81920)`（16×5120 E4M3FNコード）、`x:Float32Array(5120)`、`bias:Float32Array(16)`、正の有限scale。出力は `output:Float32Array(16)` とHike/ORT/hash・copy量等のevidence。これは単一の固定Q射影であり、attention全体、1 stepのモデル予測、samplingではない。準備されたモデル値と明示activationを調べるための部分APIである。全モデル公開経路と、この固定部分演算の受入scopeは別である。
 
 validateConditioningとvalidateRawLatentはtensor本体を返さず、dtype/shape/layout/meaning/byteLength/modelSha256と必要なmaskを返す。Text Encoderのhash `c3355d...`、VAEのhash `2fc39d...`、Bernini diffusionモデルhashは別の識別子であり混用しない。出所hash未記載を検証済みにはせず拒否する。VAE公開固定profile以外のshape、normalized latentをrawと名付けた入力も拒否する。Conditioningは公開上限512 tokenを保ち、このmetadata検査の範囲をpointwise演算の1M要素予算と混同しない。
 
@@ -81,7 +86,7 @@ ORT・scheduler・tensor境界ヘルパーは対応操作で初めてWorker内�
 
 inspectは最初の8 bytesと最大8 MiBのヘッダーだけを読む。dtype/shapeからの正確なbyte長、offset範囲、隙間・重複、実file終端を確認し、全payloadを読み込まない。headerSHA256はヘッダーのみのhash。`fullFileSHA256=null`、`fullFileHashStatus=NOT_COMPUTED_HEADER_ONLY`で、重みやモデルの完全hash検証を行ったと誤認させない。
 
-検査の制限: JSON.parseが重複キーを後の値で置き換えるため、同じtensor名が重複した不正JSONの厳密拒否は未対応。このinspectはparsed descriptorの構造・範囲検査であり、safetensors形式全体や重み内容の検証を保証しない。厳密なimportが必要なモデル推論経路は現在NOT_READY。
+検査の制限: JSON.parseが重複キーを後の値で置き換えるため、同じtensor名が重複した不正JSONの厳密拒否は未対応。このinspectはparsed descriptorの構造・範囲検査であり、safetensors形式全体や重み内容の検証を保証しない。全モデルproviderは別の固定registry・strict header・profile検査を行う。このinspectの結果でproviderの検査を代替しない。
 
 ## MessagePort
 

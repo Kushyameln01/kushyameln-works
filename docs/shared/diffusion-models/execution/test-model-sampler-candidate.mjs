@@ -57,7 +57,7 @@ test('factory rejects predictor/owner injection and missing immutable sides befo
 test('actual internally constructed models use lookup sources and share exactly two ORT sessions',async()=>{
  const {candidate,HIGH,LOW}=await prepare();
  try{
-  const description=candidate.describe(),stats=candidate.stats();assert.equal(description.experimental,true);assert.equal(description.acceptedProduction,false);assert.equal(description.generationReady,false);assert.equal(description.publicRuntimeEnabled,false);assert.equal(description.steps,6);assert.equal(description.splitStep,3);assert.equal(description.cfg,1);assert.match(description.weightCache,/host.*not native weight-resident/);
+  const description=candidate.describe(),stats=candidate.stats();assert.equal(description.experimental,true);assert.equal(description.acceptedProduction,false);assert.equal(description.generationReady,false);assert.equal(description.publicRuntimeEnabled,false);assert.equal(description.steps,6);assert.equal(description.splitStep,3);assert.equal(description.cfg,1);assert.match(description.weightCache,/owned prepared F32 stage weights/);assert.equal(description.resource.wasmThreads,1);assert.equal(description.resource.readAheadBytes,1048576);
   assert.equal(description.models.HIGH.model.modelSha256,BASE_MODEL_HASHES.HIGH);assert.equal(description.models.LOW.model.modelSha256,BASE_MODEL_HASHES.LOW);
   assert.equal(stats.sources.HIGH.decoderSelection,'lookup');assert.equal(stats.sources.LOW.decoderSelection,'lookup');assert.equal(stats.sharedSessionCreations,2);assert.equal(stats.models.HIGH.math.memoryIdentity,stats.models.LOW.math.memoryIdentity);assert.equal(stats.sources.HIGH.payloadReads,0);assert.equal(stats.sources.LOW.payloadReads,0);
   assert.equal(HIGH.payloadReads+LOW.payloadReads,0);
@@ -101,4 +101,10 @@ test('pointwise boundary preserves actual HIGH public conversion, LOW process_in
   const zero=await space.normalizeHighHandoff({...high,data:new Float32Array(128)});assert.equal(zero.handoffNormalization,'skipped-all-zero-raw');assert.ok(zero.data.every(value=>value===0));assert.equal(space.stats().allZeroHandoffSkips,1);
   const final=await space.restore({...generated(entry.data),producerModelSha256s:[BASE_MODEL_HASHES.HIGH,BASE_MODEL_HASHES.LOW]});assert.equal(final.meaning,'wan21-raw-generated-sample:v1');assert.deepEqual(final.latentContract.producerModelSha256s,[BASE_MODEL_HASHES.HIGH,BASE_MODEL_HASHES.LOW]);assert.equal(final.latentContract.normalization.state,'restored');assert.throws(()=>space.restore(final),/unrestored/);
  }finally{pointwise.dispose();space.dispose();scheduler.dispose();euler.dispose();}
+});
+
+test('sampler resource admission rejects invalid or unisolated profiles before payload access',async()=>{
+ const files={HIGH:new Blob(),LOW:new Blob()};
+ for(const resource of [{wasmThreads:3},{readAheadBytes:-1},{readAheadBytes:1048577},{readAheadBytes:1.5}])await assert.rejects(createBerniniModelSamplerCandidate({files,...resource}),/bounded readAheadBytes/);
+ if(globalThis.crossOriginIsolated!==true)await assert.rejects(createBerniniModelSamplerCandidate({files,wasmThreads:4}),{code:'UNSUPPORTED_RESOURCE_CONFIG'});
 });

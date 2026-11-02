@@ -4,6 +4,7 @@ import {BASE_MODEL_HASHES} from '../lora/weights.mjs';
 import {createProjectionBridge} from '../ort-bridge/hike.mjs';
 import {BRIDGE_WASM_SHA256} from '../ort-bridge/kernel/registry.mjs';
 import {createModelLookupDecoder,MODEL_DECODE_NUMERIC_PROFILE,MODEL_DECODE_IMPLEMENTATION_PROFILE} from './model-decode.mjs';
+import {createModelReadWindow,validateModelReadAheadBytes} from './model-read-window.mjs';
 
 export const MODEL_WEIGHT_SCHEMA='bernini-full-model-original-weights/0.1';
 export const MODEL_WEIGHT_PROFILE='bernini-40-block-prefix-head-f32-v1';
@@ -44,19 +45,23 @@ function selected(entries,key,start,count,rowMode){
 }
 
 /** Header/size identified immutable originals. No payload sample or full-file hash admission. */
-export async function createModelWeightSource({file,side,bridgeBytes,decoder='legacy',lookupBytes,signal}={}){
+export async function createModelWeightSource({file,side,bridgeBytes,decoder='legacy',lookupBytes,readAheadBytes=0,signal}={}){
  if(!(file instanceof Blob)||typeof side!=='string'||!Object.hasOwn(BASE_MODEL_HASHES,side))throw TypeError('Original immutable Blob and explicit HIGH/LOW side required');
  if(!['legacy','lookup'].includes(decoder)||(lookupBytes!==undefined&&decoder!=='lookup'))throw TypeError('Explicit legacy or lookup decoder selection required');
+ validateModelReadAheadBytes(readAheadBytes);
  abort(signal);if(bridgeBytes!==undefined)bridgeBytes=ownedBytes(bridgeBytes);if(lookupBytes!==undefined)lookupBytes=ownedBytes(lookupBytes);
- let original=file,bridge=null,lookup=null,busy=false,disposed=false,headerReads=0,headerReadBytes=0,configReads=0,configReadBytes=0,payloadReads=0,payloadReadBytes=0,maxPayloadReadBytes=0,decodedF32Bytes=0;
+ let original=file,bridge=null,lookup=null,busy=false,disposed=false,headerReads=0,headerReadBytes=0,configReads=0,configReadBytes=0,payloadReads=0,payloadReadBytes=0,maxPayloadReadBytes=0,decodedF32Bytes=0,headerInspectMs=0,configStorageReadMs=0,decodeMs=0;
  const live=s=>{if(disposed)throw Error('Model weight source disposed');abort(signal);abort(s);};
+ const readWindow=createModelReadWindow({file:original,readAheadBytes,maxRequestBytes:MODEL_WEIGHT_LIMITS.maxPayloadReadBytes,assertLive:live});
  const read=async(offset,count,kind,s)=>{
   live(s);if(!Number.isSafeInteger(offset)||!Number.isSafeInteger(count)||offset<0||count<1||count>MODEL_WEIGHT_LIMITS.maxPayloadReadBytes||offset>original.size-count)throw RangeError('Bounded original read range');
-  const raw=new Uint8Array(await original.slice(offset,offset+count).arrayBuffer());live(s);if(raw.length!==count)throw Error('Original range length mismatch');
+  const began=performance.now();let raw;
+  try{raw=new Uint8Array(await original.slice(offset,offset+count).arrayBuffer());}finally{configStorageReadMs+=performance.now()-began;}
+  live(s);if(raw.length!==count)throw Error('Original range length mismatch');
   if(kind==='config'){configReads++;configReadBytes+=count;}else{payloadReads++;payloadReadBytes+=count;maxPayloadReadBytes=Math.max(maxPayloadReadBytes,count);}return raw;
  };
  try{
-  const inspected=await inspectSafetensors(original,{rejectDuplicateKeys:true});live();const pinned=TARGET_PROVENANCE.models.find(model=>model.name.includes(side));
+  const inspectionBegan=performance.now(),inspected=await inspectSafetensors(original,{rejectDuplicateKeys:true});headerInspectMs=performance.now()-inspectionBegan;live();const pinned=TARGET_PROVENANCE.models.find(model=>model.name.includes(side));
   if(inspected.fileBytes!==pinned.fileBytes||inspected.headerSHA256!==pinned.headerSHA256)throw Error('Original base side/header/size mismatch');
   headerReads=2;headerReadBytes=8+inspected.headerBytes;
   const descriptors=new Map(inspected.tensors.map(tensor=>[tensor.name,tensor])),payload=8+inspected.headerBytes,entries=Object.create(null),scales=new Map();
@@ -89,6 +94,7 @@ export async function createModelWeightSource({file,side,bridgeBytes,decoder='le
   const identity={schemaVersion:MODEL_WEIGHT_SCHEMA,executionProfileId:MODEL_WEIGHT_PROFILE,side,modelHash:BASE_MODEL_HASHES[side],headerSHA256:inspected.headerSHA256,fileBytes:inspected.fileBytes,bridgeWasmSHA256:BRIDGE_WASM_SHA256,pinnedCoreCommit:TARGET_PROVENANCE.pinnedComfyCommit,
    decoder:{selection:decoder,numericProfileId:MODEL_DECODE_NUMERIC_PROFILE,implementationProfileId:decoder==='lookup'?MODEL_DECODE_IMPLEMENTATION_PROFILE:'legacy-hike-direct-decoder-v1',...(lookup?lookup.describe():{})},
    targetCount:Object.keys(entries).length,blockCount:40,entries,parameterFreeNormalization,resourceLimits:{...MODEL_WEIGHT_LIMITS},
+   storageReadProfile:{id:'tensor-bounded-raw-read-window-v1',readAheadBytes,maxWindowBytes:1048576,selectedReadMaxBytes:MODEL_WEIGHT_LIMITS.maxPayloadReadBytes,ownedSelectedRaw:true,arithmeticChanged:false},
    coverage:{fullModelTargets:true,blocks:[0,39],prefix:true,head:true,quantizationMetadataIsWeightTarget:false,canonicalLoraAdapterExtension:'PENDING'},
    precisionProfile:'Original F16 or per-target scalar-scaled E4M3FN decoded by Hike to owned F32; production precision parity unverified',
    fullFileSHA256Verified:false,fullFileHashRecomputed:false,modelHashRole:'expected-original-full-hash-not-current-reauthentication',payloadSampleAdmission:false,packageHash:null,generationReady:false};
@@ -96,8 +102,10 @@ export async function createModelWeightSource({file,side,bridgeBytes,decoder='le
    live();if(busy)throw Error('Model weight source busy');busy=true;
    try{
     const {signal:s,diagnostics=false}=options??{};if(typeof diagnostics!=='boolean')throw TypeError('Explicit diagnostics boolean required');live(s);
-    const {entry,elements,elementOffset}=selected(entries,key,start,count,rowMode),width=entry.storageDtype==='F16'?2:1,offset=entry.absoluteByteOffset+elementOffset*width,raw=await read(offset,elements*width,'payload',s);
-    let values;if(lookup)values=entry.storageDtype==='F8_E4M3'?lookup.dequant(raw,key):lookup.decodeF16(raw);else if(entry.storageDtype==='F8_E4M3')values=bridge.dequant(raw,scales.get(key));else{const bits=new Uint16Array(elements),view=new DataView(raw.buffer,raw.byteOffset,raw.byteLength);for(let i=0;i<elements;i++)bits[i]=view.getUint16(i*2,true);values=bridge.decodeF16(bits);}live(s);decodedF32Bytes+=values.byteLength;
+    const {entry,elements,elementOffset}=selected(entries,key,start,count,rowMode),width=entry.storageDtype==='F16'?2:1,offset=entry.absoluteByteOffset+elementOffset*width,raw=await readWindow.read(entry,offset,elements*width,{signal:s});live(s);payloadReads++;payloadReadBytes+=raw.byteLength;maxPayloadReadBytes=Math.max(maxPayloadReadBytes,raw.byteLength);
+    const decodeBegan=performance.now();let values;
+    try{if(lookup)values=entry.storageDtype==='F8_E4M3'?lookup.dequant(raw,key):lookup.decodeF16(raw);else if(entry.storageDtype==='F8_E4M3')values=bridge.dequant(raw,scales.get(key));else{const bits=new Uint16Array(elements),view=new DataView(raw.buffer,raw.byteOffset,raw.byteLength);for(let i=0;i<elements;i++)bits[i]=view.getUint16(i*2,true);values=bridge.decodeF16(bits);}}finally{decodeMs+=performance.now()-decodeBegan;}
+    live(s);decodedF32Bytes+=values.byteLength;
     let hashes={};if(diagnostics){const [rawSHA256,decodedF32SHA256]=await Promise.all([sha(raw),sha(values)]);hashes={rawSHA256,decodedF32SHA256};}live(s);
     return {values,raw,shape:rowMode?[count,entry.columns]:[count],source:{...copy(entry),rowStart:rowMode?start:null,rowCount:rowMode?count:null,elementOffset,selectedElementCount:elements,selectedByteLength:raw.length,absoluteByteOffset:offset,...hashes}};
    }finally{busy=false;}
@@ -108,10 +116,10 @@ export async function createModelWeightSource({file,side,bridgeBytes,decoder='le
     live();if(busy)throw Error('Model weight source busy');busy=true;
     try{if(!Number.isInteger(rows)||rows<1||rows>16||!Number.isInteger(columns)||columns<1||columns>16)throw RangeError('Bounded bias shape');const x=ownedF32(values,rows*columns),b=ownedF32(bias,columns),out=new Float32Array(x.length);for(let row=0;row<rows;row++)out.set(bridge.addBias(x.subarray(row*columns,(row+1)*columns),b),row*columns);return out;}finally{busy=false;}
    },
-   stats(){return {disposed,busy,reads:headerReads+configReads+payloadReads,readBytes:headerReadBytes+configReadBytes+payloadReadBytes,headerReads,headerReadBytes,configReads,configReadBytes,payloadReads,payloadReadBytes,maxPayloadReadBytes,decodedF32Bytes,hike:bridge?.stats()??null,decoder:lookup?.stats()??null,decoderSelection:decoder,fullFileHashRecomputed:false,payloadSampleAdmission:false};},
-   dispose(){if(busy)throw Error('Await model weight source operation before disposal');if(disposed)return;disposed=true;original=null;scales.clear();lookup?.dispose();lookup=null;bridge?.dispose();bridge=null;}
+   stats(){const window=readWindow.stats();return {disposed,busy,reads:headerReads+configReads+payloadReads,readBytes:headerReadBytes+configReadBytes+payloadReadBytes,headerReads,headerReadBytes,configReads,configReadBytes,payloadReads,payloadReadBytes,maxPayloadReadBytes,decodedF32Bytes,readAheadBytes,storageReads:headerReads+configReads+window.storageReads,storageReadBytes:headerReadBytes+configReadBytes+window.storageReadBytes,maxStorageReadBytes:Math.max(headerReads?headerReadBytes-8:0,configReads?27:0,window.maxStorageReadBytes),storageReadAttempts:headerReads+configReads+window.storageReadAttempts,storageReadFailures:window.storageReadFailures,discardedStorageReads:window.discardedStorageReads,discardedStorageBytes:window.discardedStorageBytes,storageReadMs:configStorageReadMs+window.storageReadMs,headerInspectMs,decodeMs,cacheHits:window.cacheHits,cacheMisses:window.cacheMisses,cachedBytes:window.cachedBytes,peakCachedBytes:window.peakCachedBytes,windowCopyBytes:window.windowCopyBytes,windowCopyMs:window.windowCopyMs,storageReadTimingScope:'Payload windows and quantization configs; header inspect (including hash/parse) is timed separately',hike:bridge?.stats()??null,decoder:lookup?.stats()??null,decoderSelection:decoder,fullFileHashRecomputed:false,payloadSampleAdmission:false};},
+   dispose(){if(busy)throw Error('Await model weight source operation before disposal');if(disposed)return;disposed=true;readWindow.dispose();original=null;scales.clear();lookup?.dispose();lookup=null;bridge?.dispose();bridge=null;}
   });
- }catch(error){disposed=true;original=null;lookup?.dispose();bridge?.dispose();throw error;}
+ }catch(error){disposed=true;readWindow.dispose();original=null;lookup?.dispose();bridge?.dispose();throw error;}
 }
 export const createFullModelWeightSource=createModelWeightSource;
 

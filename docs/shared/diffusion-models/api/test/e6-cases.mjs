@@ -21,7 +21,7 @@ export async function runE6API(){
   assert((await ask('validateRawLatent',{tensor:{...rect,shape:[1,16,2,1,4]}})).error?.code==='INVALID_TENSOR','Arbitrary same128shape accepted');
   assert((await ask('validateRawLatent',{tensor:{...rect,profileId:'wan21-raw-f32-5x16x16'}})).error?.code==='INVALID_TENSOR','Rect mismatched explicit profile accepted');
   cases.push({name:'rect128shape has dedicated profile/ABI and samecount does not authorize different axes',passed:true,evidence:rectNorm.result.evidence});
-  for(const op of ['predict','sample'])assert((await ask(op)).error?.code==='NOT_READY','Model inference enabled by mean profile');
+  for(const op of ['predict','sample'])assert((await ask(op)).error?.code==='MODEL_NOT_LOADED','Mean profile incorrectly supplied a loaded model pair');
   return {passed:true,nativeBuildId:cap.result.buildId,scope:'Diffusion strict64/128/rect mean boundary fixtures and actualHike only; no VAE graph or joint producer rerun',cases};
  }finally{api.dispose();}
 }

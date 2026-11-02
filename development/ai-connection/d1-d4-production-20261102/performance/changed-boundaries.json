@@ -1,0 +1,1214 @@
+{
+  "schemaVersion": "batched-model-ops-changed-boundaries/1",
+  "sourceCommit": "3aed2f696adf36385b54cfaa5019d447d64984e0",
+  "sourceSHA256": {
+    "shared/diffusion-models/execution/test-owned-attention-query.mjs": "662cd3f08ac4ee552e4bd348d4892f7b2dba4b9fb22efab475faa4184a7a11d2",
+    "shared/diffusion-models/execution/owned-attention-query.mjs": "9c640a82f3e607b3c4006d8091bd5e30954ace70610a332bb1d109ff9c9f8ecd",
+    "shared/diffusion-models/execution/batched-ops.mjs": "75e07f5b4b2dc244bbd0e362a3eecea3b544b7372921d0b053bf026aa747cbd1",
+    "shared/diffusion-models/execution/test-prepared-batched-ops.mjs": "d14dff101868ab47d229a212acb0d2c3c9ab9e6af30908300c62bdb279cfd039",
+    "shared/diffusion-models/execution/test-thread-resource.mjs": "01a99f499d00eaf00f251925927fd4084a3df2136f7c44c0b1f7d301ac3bf8c8",
+    "shared/diffusion-models/execution/test-batched-ops.mjs": "316e3c6ab98105c0ed2ed32ae3abebfabce709124c21d461544ffc62eefa288c",
+    "shared/diffusion-models/execution/batched-attention-graph.mjs": "95bbf39e692f74a9afb9b1e2b7972c4b148e62a8bd39c13af4ebbbb6ca91e098",
+    "shared/diffusion-models/ort-bridge/block-hidden/graph.mjs": "7826723d34a934a78e27335dce5973d41af4e2578136db5604c19b13d0954db0",
+    "shared/diffusion-models/ort-bridge/qkv/ownership.mjs": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+    "shared/inference/vendor/ort.wasm.min.mjs": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+    "shared/inference/vendor/ort-wasm-simd-threaded.mjs": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+    "shared/inference/vendor/ort-wasm-simd-threaded.wasm": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+  },
+  "driverSHA256": "07ccd9a5950a90e28ef458282514e955f992881f141155bf1c79223275d968da",
+  "sourcesServedFromCapturedBytes": true,
+  "sourceBytesUnchangedDuringRun": true,
+  "passed": true,
+  "scope": "Native ORT primitive/resource changes; no model weights or model inference, no expanded production capabilities",
+  "results": [
+    {
+      "name": "owned-attention1",
+      "result": {
+        "passed": true,
+        "scope": "Small native ORT resource-boundary regression, not production-shape/model acceptance",
+        "gate": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        },
+        "cases": [
+          {
+            "name": "H40 Q3 all-7-key stream; exact tail and owned snapshots",
+            "keys": 7,
+            "phantomKeys": 0,
+            "parity": {
+              "max": {
+                "elements": 120,
+                "bitExact": true
+              },
+              "denominator": {
+                "elements": 120,
+                "bitExact": true
+              },
+              "context": {
+                "elements": 15360,
+                "bitExact": true
+              }
+            },
+            "independent": {
+              "max": {
+                "elements": 120,
+                "failed": 0,
+                "maxAbsolute": 3.7039171729702502e-09,
+                "maxRelative": 5.090199182633651e-08,
+                "gate": {
+                  "absolute": 0.001,
+                  "relative": 0.0001
+                }
+              },
+              "denominator": {
+                "elements": 120,
+                "failed": 0,
+                "maxAbsolute": 6.367822553698943e-07,
+                "maxRelative": 9.484977453236882e-08,
+                "gate": {
+                  "absolute": 0.001,
+                  "relative": 0.0001
+                }
+              },
+              "context": {
+                "elements": 15360,
+                "failed": 0,
+                "maxAbsolute": 3.570142204090132e-07,
+                "maxRelative": 0.0005930567653440431,
+                "gate": {
+                  "absolute": 0.001,
+                  "relative": 0.0001
+                }
+              }
+            },
+            "inputSnapshotBytes": 348160,
+            "finishCopyBytes": 62400,
+            "nativeWasmCopiesMeasured": false
+          },
+          {
+            "name": "H40 Q3 all-263-key stream; exact tail and owned snapshots",
+            "keys": 263,
+            "phantomKeys": 0,
+            "parity": {
+              "max": {
+                "elements": 120,
+                "bitExact": true
+              },
+              "denominator": {
+                "elements": 120,
+                "bitExact": true
+              },
+              "context": {
+                "elements": 15360,
+                "bitExact": true
+              }
+            },
+            "independent": {
+              "max": {
+                "elements": 120,
+                "failed": 0,
+                "maxAbsolute": 3.7039171729702502e-09,
+                "maxRelative": 5.639954116109391e-08,
+                "gate": {
+                  "absolute": 0.001,
+                  "relative": 0.0001
+                }
+              },
+              "denominator": {
+                "elements": 120,
+                "failed": 0,
+                "maxAbsolute": 0.00011288508150641974,
+                "maxRelative": 4.603398756511374e-07,
+                "gate": {
+                  "absolute": 0.001,
+                  "relative": 0.0001
+                }
+              },
+              "context": {
+                "elements": 15360,
+                "failed": 0,
+                "maxAbsolute": 2.087440825304654e-06,
+                "maxRelative": 0.0016501139052682507,
+                "gate": {
+                  "absolute": 0.001,
+                  "relative": 0.0001
+                }
+              }
+            },
+            "inputSnapshotBytes": 10833920,
+            "finishCopyBytes": 62400,
+            "nativeWasmCopiesMeasured": false
+          },
+          {
+            "name": "rising maxima rescale retained native numerator and denominator",
+            "max": {
+              "elements": 120,
+              "failed": 0,
+              "maxAbsolute": 0,
+              "maxRelative": 0,
+              "gate": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "denominator": {
+              "elements": 120,
+              "failed": 0,
+              "maxAbsolute": 7.743650520808387e-08,
+              "maxRelative": 1.1062222878305312e-08,
+              "gate": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "context": {
+              "elements": 15360,
+              "failed": 0,
+              "maxAbsolute": 7.988013059900823e-07,
+              "maxRelative": 2.8528443983809427e-08,
+              "gate": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            }
+          },
+          {
+            "name": "foreign/stale handle, incomplete finish, exact key bounds, abort/retry and active release",
+            "passed": true
+          },
+          {
+            "name": "actual native query release failure retains ownership and recovers",
+            "passed": true
+          }
+        ],
+        "stats": {
+          "busy": false,
+          "disposed": true,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 10,
+          "inputCopyBytes": 24353600,
+          "outputCopyBytes": 436800,
+          "runtimeInputSpanBytes": 24914240,
+          "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+          "preparedWeights": 0,
+          "preparedWeightBytes": 0,
+          "peakPreparedWeightBytes": 0,
+          "preparedWeightCopies": 0,
+          "preparedWeightTransfers": 0,
+          "preparedWeightCopyBytes": 0,
+          "preparedWeightTransferBytes": 0,
+          "preparedWeightCreations": 0,
+          "preparedWeightReleases": 0,
+          "attentionQueries": {
+            "queryCreations": 7,
+            "queryPreparationsCompleted": 7,
+            "queryReleases": 7,
+            "stepAttempts": 8,
+            "stepsCompleted": 7,
+            "failedSteps": 1,
+            "qSnapshotBytes": 430080,
+            "kvSnapshotBytes": 12492800,
+            "finishCopyBytes": 249600,
+            "currentCpuTensorSpanBytes": 0,
+            "peakCpuTensorSpanBytes": 10672000,
+            "ownedTensors": 0,
+            "peakOwnedTensors": 9,
+            "unknownSizedTensors": 0,
+            "cleanupFailures": 1,
+            "ownedQueryCount": 0,
+            "cleanupPending": false,
+            "disposed": true,
+            "queries": [],
+            "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+          },
+          "timings": {
+            "snapshotMs": 24.059999957680702,
+            "weightPrepareMs": 0,
+            "sessionRunMs": 35.185000002384186,
+            "linearSessionRunMs": 0,
+            "attentionSessionRunMs": 35.185000002384186,
+            "outputCopyMs": 1.1700000017881393,
+            "tensorCleanupMs": 0.2849999964237213,
+            "preparedReleaseMs": 0,
+            "ownerDisposeMs": 0.3149999976158142
+          },
+          "resourceProfile": {
+            "numThreads": 1,
+            "firstInitialization": true,
+            "pthreadCreationsObserved": 0,
+            "coiRequired": false,
+            "freshRealmRequiredForProfileChange": true
+          },
+          "nativeWasmCopiesMeasured": false,
+          "sessionCreations": 2
+        }
+      },
+      "chromiumVersion": "154.0.8037.57"
+    },
+    {
+      "name": "owned-attention4",
+      "result": {
+        "passed": true,
+        "scope": "Small native ORT resource-boundary regression, not production-shape/model acceptance",
+        "gate": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        },
+        "cases": [
+          {
+            "name": "H40 Q3 all-7-key stream; exact tail and owned snapshots",
+            "keys": 7,
+            "phantomKeys": 0,
+            "parity": {
+              "max": {
+                "elements": 120,
+                "bitExact": true
+              },
+              "denominator": {
+                "elements": 120,
+                "bitExact": true
+              },
+              "context": {
+                "elements": 15360,
+                "bitExact": true
+              }
+            },
+            "independent": {
+              "max": {
+                "elements": 120,
+                "failed": 0,
+                "maxAbsolute": 3.7039171729702502e-09,
+                "maxRelative": 5.090199182633651e-08,
+                "gate": {
+                  "absolute": 0.001,
+                  "relative": 0.0001
+                }
+              },
+              "denominator": {
+                "elements": 120,
+                "failed": 0,
+                "maxAbsolute": 6.367822553698943e-07,
+                "maxRelative": 9.484977453236882e-08,
+                "gate": {
+                  "absolute": 0.001,
+                  "relative": 0.0001
+                }
+              },
+              "context": {
+                "elements": 15360,
+                "failed": 0,
+                "maxAbsolute": 3.570142204090132e-07,
+                "maxRelative": 0.0005930567653440431,
+                "gate": {
+                  "absolute": 0.001,
+                  "relative": 0.0001
+                }
+              }
+            },
+            "inputSnapshotBytes": 348160,
+            "finishCopyBytes": 62400,
+            "nativeWasmCopiesMeasured": false
+          },
+          {
+            "name": "H40 Q3 all-263-key stream; exact tail and owned snapshots",
+            "keys": 263,
+            "phantomKeys": 0,
+            "parity": {
+              "max": {
+                "elements": 120,
+                "bitExact": true
+              },
+              "denominator": {
+                "elements": 120,
+                "bitExact": true
+              },
+              "context": {
+                "elements": 15360,
+                "bitExact": true
+              }
+            },
+            "independent": {
+              "max": {
+                "elements": 120,
+                "failed": 0,
+                "maxAbsolute": 3.7039171729702502e-09,
+                "maxRelative": 5.639954116109391e-08,
+                "gate": {
+                  "absolute": 0.001,
+                  "relative": 0.0001
+                }
+              },
+              "denominator": {
+                "elements": 120,
+                "failed": 0,
+                "maxAbsolute": 0.00011288508150641974,
+                "maxRelative": 4.603398756511374e-07,
+                "gate": {
+                  "absolute": 0.001,
+                  "relative": 0.0001
+                }
+              },
+              "context": {
+                "elements": 15360,
+                "failed": 0,
+                "maxAbsolute": 2.087440825304654e-06,
+                "maxRelative": 0.0016501139052682507,
+                "gate": {
+                  "absolute": 0.001,
+                  "relative": 0.0001
+                }
+              }
+            },
+            "inputSnapshotBytes": 10833920,
+            "finishCopyBytes": 62400,
+            "nativeWasmCopiesMeasured": false
+          },
+          {
+            "name": "rising maxima rescale retained native numerator and denominator",
+            "max": {
+              "elements": 120,
+              "failed": 0,
+              "maxAbsolute": 0,
+              "maxRelative": 0,
+              "gate": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "denominator": {
+              "elements": 120,
+              "failed": 0,
+              "maxAbsolute": 7.743650520808387e-08,
+              "maxRelative": 1.1062222878305312e-08,
+              "gate": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "context": {
+              "elements": 15360,
+              "failed": 0,
+              "maxAbsolute": 7.988013059900823e-07,
+              "maxRelative": 2.8528443983809427e-08,
+              "gate": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            }
+          },
+          {
+            "name": "foreign/stale handle, incomplete finish, exact key bounds, abort/retry and active release",
+            "passed": true
+          },
+          {
+            "name": "actual native query release failure retains ownership and recovers",
+            "passed": true
+          }
+        ],
+        "stats": {
+          "busy": false,
+          "disposed": true,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 10,
+          "inputCopyBytes": 24353600,
+          "outputCopyBytes": 436800,
+          "runtimeInputSpanBytes": 24914240,
+          "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+          "preparedWeights": 0,
+          "preparedWeightBytes": 0,
+          "peakPreparedWeightBytes": 0,
+          "preparedWeightCopies": 0,
+          "preparedWeightTransfers": 0,
+          "preparedWeightCopyBytes": 0,
+          "preparedWeightTransferBytes": 0,
+          "preparedWeightCreations": 0,
+          "preparedWeightReleases": 0,
+          "attentionQueries": {
+            "queryCreations": 7,
+            "queryPreparationsCompleted": 7,
+            "queryReleases": 7,
+            "stepAttempts": 8,
+            "stepsCompleted": 7,
+            "failedSteps": 1,
+            "qSnapshotBytes": 430080,
+            "kvSnapshotBytes": 12492800,
+            "finishCopyBytes": 249600,
+            "currentCpuTensorSpanBytes": 0,
+            "peakCpuTensorSpanBytes": 10672000,
+            "ownedTensors": 0,
+            "peakOwnedTensors": 9,
+            "unknownSizedTensors": 0,
+            "cleanupFailures": 1,
+            "ownedQueryCount": 0,
+            "cleanupPending": false,
+            "disposed": true,
+            "queries": [],
+            "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+          },
+          "timings": {
+            "snapshotMs": 26.689999982714653,
+            "weightPrepareMs": 0,
+            "sessionRunMs": 35.26500001549721,
+            "linearSessionRunMs": 0,
+            "attentionSessionRunMs": 35.26500001549721,
+            "outputCopyMs": 1.5699999928474426,
+            "tensorCleanupMs": 0.2850000113248825,
+            "preparedReleaseMs": 0,
+            "ownerDisposeMs": 0.26500000059604645
+          },
+          "resourceProfile": {
+            "numThreads": 4,
+            "firstInitialization": true,
+            "pthreadCreationsObserved": 3,
+            "coiRequired": true,
+            "freshRealmRequiredForProfileChange": true
+          },
+          "nativeWasmCopiesMeasured": false,
+          "sessionCreations": 2
+        }
+      },
+      "chromiumVersion": "154.0.8037.57"
+    },
+    {
+      "name": "prepared",
+      "result": {
+        "passed": true,
+        "cases": [
+          {
+            "name": "owned persistent CPU tensor, x snapshot, and copy counters",
+            "passed": true
+          },
+          {
+            "name": "explicit transfer and finite/native shape gates",
+            "passed": true
+          },
+          {
+            "name": "foreign/stale handles, active release, cancellation and reuse",
+            "passed": true
+          },
+          {
+            "name": "full inner 13824, 128 rows, independent F64 and old-path bit parity",
+            "comparison": {
+              "elements": 2048,
+              "failed": 0,
+              "maxAbs": 0,
+              "absolute": 0.001,
+              "relative": 0.0001
+            }
+          },
+          {
+            "name": "bounded 16MiB weight reuse benchmark; host copies only",
+            "shape": {
+              "rows": 8,
+              "columns": 2048,
+              "inner": 2048
+            },
+            "repeats": 5,
+            "regularMs": 100.49500000476837,
+            "preparedMs": 31.464999988675117,
+            "regularSnapshotBytes": 84213760,
+            "preparedSnapshotBytes": 327680,
+            "nativeWasmCopiesMeasured": false
+          },
+          {
+            "name": "prepared native release failure retained for recovery",
+            "passed": true
+          }
+        ],
+        "stats": {
+          "busy": false,
+          "disposed": true,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 19,
+          "attentionRuns": 0,
+          "inputCopyBytes": 116490316,
+          "outputCopyBytes": 802860,
+          "runtimeInputSpanBytes": 218038416,
+          "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+          "preparedWeights": 0,
+          "preparedWeightBytes": 0,
+          "peakPreparedWeightBytes": 16777216,
+          "preparedWeightCopies": 2,
+          "preparedWeightTransfers": 3,
+          "preparedWeightCopyBytes": 20,
+          "preparedWeightTransferBytes": 17661960,
+          "preparedWeightCreations": 5,
+          "preparedWeightReleases": 5,
+          "attentionQueries": {
+            "queryCreations": 0,
+            "queryPreparationsCompleted": 0,
+            "queryReleases": 0,
+            "stepAttempts": 0,
+            "stepsCompleted": 0,
+            "failedSteps": 0,
+            "qSnapshotBytes": 0,
+            "kvSnapshotBytes": 0,
+            "finishCopyBytes": 0,
+            "currentCpuTensorSpanBytes": 0,
+            "peakCpuTensorSpanBytes": 0,
+            "ownedTensors": 0,
+            "peakOwnedTensors": 0,
+            "unknownSizedTensors": 0,
+            "cleanupFailures": 0,
+            "ownedQueryCount": 0,
+            "cleanupPending": false,
+            "disposed": true,
+            "queries": [],
+            "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+          },
+          "timings": {
+            "snapshotMs": 97.21000003814697,
+            "weightPrepareMs": 11.980000004172325,
+            "sessionRunMs": 90.23500002920628,
+            "linearSessionRunMs": 90.23500002920628,
+            "attentionSessionRunMs": 0,
+            "outputCopyMs": 3.7400000244379044,
+            "tensorCleanupMs": 0.5699999630451202,
+            "preparedReleaseMs": 0.14000000059604645,
+            "ownerDisposeMs": 0.3050000071525574
+          },
+          "resourceProfile": {
+            "numThreads": 1,
+            "firstInitialization": true,
+            "pthreadCreationsObserved": 0,
+            "coiRequired": false,
+            "freshRealmRequiredForProfileChange": true
+          },
+          "nativeWasmCopiesMeasured": false,
+          "sessionCreations": 2
+        }
+      },
+      "chromiumVersion": "154.0.8037.57"
+    },
+    {
+      "name": "existing-operator-regression",
+      "result": {
+        "passed": true,
+        "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+        "cases": [
+          {
+            "name": "actual large Gemm 128x16x13824",
+            "shape": {
+              "rows": 128,
+              "columns": 16,
+              "inner": 13824
+            },
+            "comparison": {
+              "elements": 2048,
+              "failed": 0,
+              "maxAbsolute": 0,
+              "maxRelative": 0,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "evidence": {
+              "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+              "computeF32": true,
+              "computeDtype": "F32",
+              "rows": 128,
+              "columns": 16,
+              "inner": 13824,
+              "fullInner": true,
+              "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "weightBinding": "runtime-input",
+              "ortVersion": "1.24.3"
+            }
+          },
+          {
+            "name": "actual large Gemm 128x5120x3",
+            "shape": {
+              "rows": 128,
+              "columns": 5120,
+              "inner": 3
+            },
+            "comparison": {
+              "elements": 655360,
+              "failed": 0,
+              "maxAbsolute": 0,
+              "maxRelative": 0,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "evidence": {
+              "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+              "computeF32": true,
+              "computeDtype": "F32",
+              "rows": 128,
+              "columns": 5120,
+              "inner": 3,
+              "fullInner": true,
+              "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "weightBinding": "runtime-input",
+              "ortVersion": "1.24.3"
+            }
+          },
+          {
+            "name": "actual H40 Q128 K256 D128 attention",
+            "max": {
+              "elements": 5120,
+              "failed": 0,
+              "maxAbsolute": 3.7150584830669686e-09,
+              "maxRelative": 5.8046731439457674e-08,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "denominator": {
+              "elements": 5120,
+              "failed": 0,
+              "maxAbsolute": 0.00012351352754080835,
+              "maxRelative": 5.179062769658356e-07,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "context": {
+              "elements": 655360,
+              "failed": 0,
+              "maxAbsolute": 2.629300068779372e-06,
+              "maxRelative": 10737418241,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "evidence": {
+              "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+              "computeF32": true,
+              "computeDtype": "F32",
+              "heads": 40,
+              "queries": 128,
+              "keys": 256,
+              "headDim": 128,
+              "logicalScoreElements": 1310720,
+              "phantomQueries": 0,
+              "phantomKeys": 0,
+              "scale": 0.0883883461356163,
+              "contextReduction": "ORT F32 batched MatMul; independent profile from Hike scalar recurrence",
+              "graphSHA256": "67ada02d3936f55a7d81e35f92819fe895f29a63a83889f70675624b27df2139",
+              "ortVersion": "1.24.3"
+            }
+          },
+          {
+            "name": "actual H40 Q3 K7 D128 attention",
+            "max": {
+              "elements": 120,
+              "failed": 0,
+              "maxAbsolute": 3.7039171729702502e-09,
+              "maxRelative": 5.090199182633651e-08,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "denominator": {
+              "elements": 120,
+              "failed": 0,
+              "maxAbsolute": 6.367822553698943e-07,
+              "maxRelative": 9.484977453236882e-08,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "context": {
+              "elements": 15360,
+              "failed": 0,
+              "maxAbsolute": 3.570142204090132e-07,
+              "maxRelative": 0.0005930567653440431,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "evidence": {
+              "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+              "computeF32": true,
+              "computeDtype": "F32",
+              "heads": 40,
+              "queries": 3,
+              "keys": 7,
+              "headDim": 128,
+              "logicalScoreElements": 840,
+              "phantomQueries": 0,
+              "phantomKeys": 0,
+              "scale": 0.0883883461356163,
+              "contextReduction": "ORT F32 batched MatMul; independent profile from Hike scalar recurrence",
+              "graphSHA256": "67ada02d3936f55a7d81e35f92819fe895f29a63a83889f70675624b27df2139",
+              "ortVersion": "1.24.3"
+            }
+          },
+          {
+            "name": "exact all-263-key stream with tail7",
+            "max": {
+              "elements": 120,
+              "failed": 0,
+              "maxAbsolute": 3.7039171729702502e-09,
+              "maxRelative": 5.639954116109391e-08,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "denominator": {
+              "elements": 120,
+              "failed": 0,
+              "maxAbsolute": 0.00011288508150641974,
+              "maxRelative": 4.603398756511374e-07,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "context": {
+              "elements": 15360,
+              "failed": 0,
+              "maxAbsolute": 2.087440825304654e-06,
+              "maxRelative": 0.0016501139052682507,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "keysConsumed": 263,
+            "phantomKeys": 0
+          },
+          {
+            "name": "stable rescale of prior numerator and denominator when maxima rise",
+            "max": {
+              "elements": 120,
+              "failed": 0,
+              "maxAbsolute": 0,
+              "maxRelative": 0,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "denominator": {
+              "elements": 120,
+              "failed": 0,
+              "maxAbsolute": 7.743650520808387e-08,
+              "maxRelative": 1.1062222878305312e-08,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "context": {
+              "elements": 15360,
+              "failed": 0,
+              "maxAbsolute": 7.988013059900823e-07,
+              "maxRelative": 2.8528443983809427e-08,
+              "tolerance": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            }
+          },
+          {
+            "name": "snapshot/cancel/reuse/busy/finite/shape/cleanup guards",
+            "passed": true
+          },
+          {
+            "name": "actual ORT tensor release failure retains handle for recovery",
+            "passed": true,
+            "beforeRecovery": {
+              "busy": false,
+              "disposed": false,
+              "cleanupPending": true,
+              "pendingTensors": 1,
+              "linearRuns": 7,
+              "attentionRuns": 8,
+              "inputCopyBytes": 37483592,
+              "outputCopyBytes": 5728864,
+              "runtimeInputSpanBytes": 37278792,
+              "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+              "preparedWeights": 0,
+              "preparedWeightBytes": 0,
+              "peakPreparedWeightBytes": 0,
+              "preparedWeightCopies": 0,
+              "preparedWeightTransfers": 0,
+              "preparedWeightCopyBytes": 0,
+              "preparedWeightTransferBytes": 0,
+              "preparedWeightCreations": 0,
+              "preparedWeightReleases": 0,
+              "attentionQueries": {
+                "queryCreations": 0,
+                "queryPreparationsCompleted": 0,
+                "queryReleases": 0,
+                "stepAttempts": 0,
+                "stepsCompleted": 0,
+                "failedSteps": 0,
+                "qSnapshotBytes": 0,
+                "kvSnapshotBytes": 0,
+                "finishCopyBytes": 0,
+                "currentCpuTensorSpanBytes": 0,
+                "peakCpuTensorSpanBytes": 0,
+                "ownedTensors": 0,
+                "peakOwnedTensors": 0,
+                "unknownSizedTensors": 0,
+                "cleanupFailures": 0,
+                "ownedQueryCount": 0,
+                "cleanupPending": false,
+                "disposed": false,
+                "queries": [],
+                "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+              },
+              "timings": {
+                "snapshotMs": 35.79999999701977,
+                "weightPrepareMs": 0,
+                "sessionRunMs": 82.70000003278255,
+                "linearSessionRunMs": 16.200000032782555,
+                "attentionSessionRunMs": 66.5,
+                "outputCopyMs": 18.530000001192093,
+                "tensorCleanupMs": 0.7800000607967377,
+                "preparedReleaseMs": 0,
+                "ownerDisposeMs": 0
+              },
+              "resourceProfile": {
+                "numThreads": 1,
+                "firstInitialization": true,
+                "pthreadCreationsObserved": 0,
+                "coiRequired": false,
+                "freshRealmRequiredForProfileChange": true
+              },
+              "nativeWasmCopiesMeasured": false,
+              "sessionCreations": 2
+            },
+            "afterRecovery": {
+              "busy": false,
+              "disposed": true,
+              "cleanupPending": false,
+              "pendingTensors": 0,
+              "linearRuns": 7,
+              "attentionRuns": 8,
+              "inputCopyBytes": 37483592,
+              "outputCopyBytes": 5728864,
+              "runtimeInputSpanBytes": 37278792,
+              "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+              "preparedWeights": 0,
+              "preparedWeightBytes": 0,
+              "peakPreparedWeightBytes": 0,
+              "preparedWeightCopies": 0,
+              "preparedWeightTransfers": 0,
+              "preparedWeightCopyBytes": 0,
+              "preparedWeightTransferBytes": 0,
+              "preparedWeightCreations": 0,
+              "preparedWeightReleases": 0,
+              "attentionQueries": {
+                "queryCreations": 0,
+                "queryPreparationsCompleted": 0,
+                "queryReleases": 0,
+                "stepAttempts": 0,
+                "stepsCompleted": 0,
+                "failedSteps": 0,
+                "qSnapshotBytes": 0,
+                "kvSnapshotBytes": 0,
+                "finishCopyBytes": 0,
+                "currentCpuTensorSpanBytes": 0,
+                "peakCpuTensorSpanBytes": 0,
+                "ownedTensors": 0,
+                "peakOwnedTensors": 0,
+                "unknownSizedTensors": 0,
+                "cleanupFailures": 0,
+                "ownedQueryCount": 0,
+                "cleanupPending": false,
+                "disposed": true,
+                "queries": [],
+                "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+              },
+              "timings": {
+                "snapshotMs": 35.79999999701977,
+                "weightPrepareMs": 0,
+                "sessionRunMs": 82.70000003278255,
+                "linearSessionRunMs": 16.200000032782555,
+                "attentionSessionRunMs": 66.5,
+                "outputCopyMs": 18.530000001192093,
+                "tensorCleanupMs": 0.7800000607967377,
+                "preparedReleaseMs": 0,
+                "ownerDisposeMs": 1.655000001192093
+              },
+              "resourceProfile": {
+                "numThreads": 1,
+                "firstInitialization": true,
+                "pthreadCreationsObserved": 0,
+                "coiRequired": false,
+                "freshRealmRequiredForProfileChange": true
+              },
+              "nativeWasmCopiesMeasured": false,
+              "sessionCreations": 2
+            }
+          }
+        ],
+        "stats": {
+          "busy": false,
+          "disposed": true,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 7,
+          "attentionRuns": 8,
+          "inputCopyBytes": 37483592,
+          "outputCopyBytes": 5728864,
+          "runtimeInputSpanBytes": 37278792,
+          "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+          "preparedWeights": 0,
+          "preparedWeightBytes": 0,
+          "peakPreparedWeightBytes": 0,
+          "preparedWeightCopies": 0,
+          "preparedWeightTransfers": 0,
+          "preparedWeightCopyBytes": 0,
+          "preparedWeightTransferBytes": 0,
+          "preparedWeightCreations": 0,
+          "preparedWeightReleases": 0,
+          "attentionQueries": {
+            "queryCreations": 0,
+            "queryPreparationsCompleted": 0,
+            "queryReleases": 0,
+            "stepAttempts": 0,
+            "stepsCompleted": 0,
+            "failedSteps": 0,
+            "qSnapshotBytes": 0,
+            "kvSnapshotBytes": 0,
+            "finishCopyBytes": 0,
+            "currentCpuTensorSpanBytes": 0,
+            "peakCpuTensorSpanBytes": 0,
+            "ownedTensors": 0,
+            "peakOwnedTensors": 0,
+            "unknownSizedTensors": 0,
+            "cleanupFailures": 0,
+            "ownedQueryCount": 0,
+            "cleanupPending": false,
+            "disposed": true,
+            "queries": [],
+            "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+          },
+          "timings": {
+            "snapshotMs": 35.79999999701977,
+            "weightPrepareMs": 0,
+            "sessionRunMs": 82.70000003278255,
+            "linearSessionRunMs": 16.200000032782555,
+            "attentionSessionRunMs": 66.5,
+            "outputCopyMs": 18.530000001192093,
+            "tensorCleanupMs": 0.7800000607967377,
+            "preparedReleaseMs": 0,
+            "ownerDisposeMs": 1.655000001192093
+          },
+          "resourceProfile": {
+            "numThreads": 1,
+            "firstInitialization": true,
+            "pthreadCreationsObserved": 0,
+            "coiRequired": false,
+            "freshRealmRequiredForProfileChange": true
+          },
+          "nativeWasmCopiesMeasured": false,
+          "sessionCreations": 2
+        }
+      },
+      "chromiumVersion": "154.0.8037.57"
+    },
+    {
+      "name": "resource1",
+      "result": {
+        "passed": true,
+        "threads": 1,
+        "cases": [
+          {
+            "name": "different thread profile requires realm recreation",
+            "message": "ORT thread profile cannot change after initialization; recreate the worker/realm"
+          }
+        ],
+        "profile": {
+          "id": "ort-wasm-f32-threads1-v1",
+          "numThreads": 1,
+          "firstInitialization": true,
+          "pthreadCreationsObserved": 0,
+          "coiRequired": false,
+          "freshRealmRequiredForProfileChange": true,
+          "pthreadRealmMemoryIncluded": false
+        },
+        "stats": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 2,
+          "attentionRuns": 0,
+          "inputCopyBytes": 32,
+          "outputCopyBytes": 8,
+          "runtimeInputSpanBytes": 32,
+          "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+          "preparedWeights": 0,
+          "preparedWeightBytes": 0,
+          "peakPreparedWeightBytes": 8,
+          "preparedWeightCopies": 1,
+          "preparedWeightTransfers": 0,
+          "preparedWeightCopyBytes": 8,
+          "preparedWeightTransferBytes": 0,
+          "preparedWeightCreations": 1,
+          "preparedWeightReleases": 1,
+          "attentionQueries": {
+            "queryCreations": 0,
+            "queryPreparationsCompleted": 0,
+            "queryReleases": 0,
+            "stepAttempts": 0,
+            "stepsCompleted": 0,
+            "failedSteps": 0,
+            "qSnapshotBytes": 0,
+            "kvSnapshotBytes": 0,
+            "finishCopyBytes": 0,
+            "currentCpuTensorSpanBytes": 0,
+            "peakCpuTensorSpanBytes": 0,
+            "ownedTensors": 0,
+            "peakOwnedTensors": 0,
+            "unknownSizedTensors": 0,
+            "cleanupFailures": 0,
+            "ownedQueryCount": 0,
+            "cleanupPending": false,
+            "disposed": false,
+            "queries": [],
+            "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+          },
+          "timings": {
+            "snapshotMs": 0.1249999850988388,
+            "weightPrepareMs": 0.20499999821186066,
+            "sessionRunMs": 10.21000000834465,
+            "linearSessionRunMs": 10.21000000834465,
+            "attentionSessionRunMs": 0,
+            "outputCopyMs": 0.08500000834465027,
+            "tensorCleanupMs": 0.8049999922513962,
+            "preparedReleaseMs": 0.015000000596046448,
+            "ownerDisposeMs": 0
+          },
+          "resourceProfile": {
+            "numThreads": 1,
+            "firstInitialization": true,
+            "pthreadCreationsObserved": 0,
+            "coiRequired": false,
+            "freshRealmRequiredForProfileChange": true
+          },
+          "nativeWasmCopiesMeasured": false,
+          "sessionCreations": 2
+        }
+      },
+      "chromiumVersion": "154.0.8037.57"
+    },
+    {
+      "name": "resource4",
+      "result": {
+        "passed": true,
+        "threads": 4,
+        "cases": [
+          {
+            "name": "different thread profile requires realm recreation",
+            "message": "ORT thread profile cannot change after initialization; recreate the worker/realm"
+          }
+        ],
+        "profile": {
+          "id": "ort-wasm-f32-threads4-coi-v1",
+          "numThreads": 4,
+          "firstInitialization": true,
+          "pthreadCreationsObserved": 3,
+          "coiRequired": true,
+          "freshRealmRequiredForProfileChange": true,
+          "pthreadRealmMemoryIncluded": false
+        },
+        "stats": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 2,
+          "attentionRuns": 0,
+          "inputCopyBytes": 32,
+          "outputCopyBytes": 8,
+          "runtimeInputSpanBytes": 32,
+          "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+          "preparedWeights": 0,
+          "preparedWeightBytes": 0,
+          "peakPreparedWeightBytes": 8,
+          "preparedWeightCopies": 1,
+          "preparedWeightTransfers": 0,
+          "preparedWeightCopyBytes": 8,
+          "preparedWeightTransferBytes": 0,
+          "preparedWeightCreations": 1,
+          "preparedWeightReleases": 1,
+          "attentionQueries": {
+            "queryCreations": 0,
+            "queryPreparationsCompleted": 0,
+            "queryReleases": 0,
+            "stepAttempts": 0,
+            "stepsCompleted": 0,
+            "failedSteps": 0,
+            "qSnapshotBytes": 0,
+            "kvSnapshotBytes": 0,
+            "finishCopyBytes": 0,
+            "currentCpuTensorSpanBytes": 0,
+            "peakCpuTensorSpanBytes": 0,
+            "ownedTensors": 0,
+            "peakOwnedTensors": 0,
+            "unknownSizedTensors": 0,
+            "cleanupFailures": 0,
+            "ownedQueryCount": 0,
+            "cleanupPending": false,
+            "disposed": false,
+            "queries": [],
+            "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+          },
+          "timings": {
+            "snapshotMs": 0.11499999463558197,
+            "weightPrepareMs": 0.030000001192092896,
+            "sessionRunMs": 5.674999997019768,
+            "linearSessionRunMs": 5.674999997019768,
+            "attentionSessionRunMs": 0,
+            "outputCopyMs": 0.0950000137090683,
+            "tensorCleanupMs": 0.1300000101327896,
+            "preparedReleaseMs": 0.015000000596046448,
+            "ownerDisposeMs": 0
+          },
+          "resourceProfile": {
+            "numThreads": 4,
+            "firstInitialization": true,
+            "pthreadCreationsObserved": 3,
+            "coiRequired": true,
+            "freshRealmRequiredForProfileChange": true
+          },
+          "nativeWasmCopiesMeasured": false,
+          "sessionCreations": 2
+        }
+      },
+      "chromiumVersion": "154.0.8037.57"
+    },
+    {
+      "name": "nonisolated-refusal",
+      "result": {
+        "passed": true,
+        "case": "nonisolated4 refusal and explicitdefault1 initialization"
+      },
+      "chromiumVersion": "154.0.8037.57"
+    },
+    {
+      "name": "preinitialized-refusal",
+      "result": {
+        "passed": true,
+        "case": "preinitialized vendor1 cannot silently become4; oldowner preserved",
+        "details": {
+          "requested": 4,
+          "pthreadCreations": 0
+        }
+      },
+      "chromiumVersion": "154.0.8037.57"
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+// State/ownership tests only. The module mock performs no neural inference.
+import {test,mock} from 'node:test';
+import assert from 'node:assert/strict';
+import {BASE_MODEL_HASHES} from '../../lora/weights.mjs';
+const created=[];
+let prepareFailure=null,disposeFailure=false,describeFailure=false,delayPrediction=false;
+const raw=()=>({dtype:'float32',shape:[1,16,1,2,4],layout:'NCTHW',meaning:'wan21-raw-generated-sample:v1',data:Float32Array.from({length:128},(_,i)=>i/128),latentContract:{schemaVersion:1,representation:'generated-sample',space:'raw',vaeModelSha256:'2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b',producerModelSha256s:[BASE_MODEL_HASHES.HIGH,BASE_MODEL_HASHES.LOW],normalization:{id:'wan21-comfy-f32-v1',state:'restored',owner:'diffusion_models'}}});
+mock.module(new URL('../../execution/model-sampler-candidate.mjs',import.meta.url).href,{exports:{createBerniniModelSamplerCandidate:async({files,signal,wasmThreads})=>{
+ if(prepareFailure)throw prepareFailure;
+ const state={files,wasmThreads,disposed:false,predictions:[],samples:0};created.push(state);
+ return {
+  describe:()=>{if(describeFailure)throw Error('injected describe failure');return {profile:'unit-state-double-not-NN',models:Object.fromEntries(['HIGH','LOW'].map(side=>[side,{model:{side,modelSha256:BASE_MODEL_HASHES[side]}}])),scheduler:'fixed-unit-double'};},
+  stats:()=>({disposed:state.disposed,predictions:state.predictions.length,samples:state.samples}),
+  async predict(input){assert.ok(input.signal instanceof AbortSignal);state.predictions.push(input.side);input.onProgress?.({operation:'predict',side:input.side,model:{stage:'block-complete',block:0}});if(delayPrediction)await new Promise((resolve,reject)=>input.signal.addEventListener('abort',()=>reject(input.signal.reason),{once:true}));return {...raw(),meaning:'bernini-flow-velocity:v1',latentContract:undefined,modelSha256:BASE_MODEL_HASHES[input.side],evidence:{profile:'unit-state-double-not-NN',publicRuntimeEnabled:false}};},
+  async sample(input){assert.ok(input.signal instanceof AbortSignal);state.samples++;input.onProgress?.({stage:'step-complete',step:5});return {...raw(),evidence:{profile:'unit-state-double-not-NN',publicRuntimeEnabled:false}};},
+  async dispose(){if(disposeFailure)throw Error('injected disposal failure');state.disposed=true;}
+ };
+}}});
+let module;
+try{module=await import('../model-adapter.mjs');}catch{}
+const adapter=()=>{assert.equal(typeof module?.createModelAdapter,'function','Public model adapter is missing');return module.createModelAdapter();};
+const files=()=>({HIGH:new Blob(['high']),LOW:new Blob(['low'])});
+
+test('paired model load owns one runtime and switches sides through ordinary predict',async()=>{
+ const owner=adapter(),pair=files(),loaded=await owner.execute('load',{files:pair});
+ assert.equal(loaded.loaded,true);assert.ok(loaded.modelSessionId);
+ await assert.rejects(owner.execute('load',{files:files()}),{code:'MODEL_ALREADY_LOADED'});
+ const progress=[];
+ for(const side of ['HIGH','LOW']){
+  const result=await owner.execute('predict',{side,timestep:750,modelSessionId:loaded.modelSessionId},{onProgress:event=>progress.push(event)});
+  assert.equal(result.tensor.meaning,'bernini-flow-velocity:v1');assert.equal(result.execution.publicWorkerConnected,true);assert.equal(result.execution.generationReady,false);assert.equal(result.tensor.evidence,undefined);
+ }
+ assert.deepEqual(created.at(-1).predictions,['HIGH','LOW']);assert.equal(progress.length,2);
+ await owner.dispose();assert.equal(created.at(-1).disposed,true);
+});
+
+test('unloaded and stale model sessions fail before numerical dispatch',async()=>{
+ const owner=adapter();await assert.rejects(owner.execute('sample',{}),{code:'MODEL_NOT_LOADED'});
+ const first=await owner.execute('load',{files:files()});await owner.execute('unload',{});
+ const second=await owner.execute('load',{files:files()});assert.notEqual(first.modelSessionId,second.modelSessionId);
+ await assert.rejects(owner.execute('predict',{side:'HIGH',modelSessionId:first.modelSessionId}),{code:'STALE_MODEL'});
+ assert.equal(created.at(-1).predictions.length,0);await owner.dispose();
+});
+
+test('failed preparation leaves the adapter loadable and failed unload remains retryable',async()=>{
+ const owner=adapter();prepareFailure=Error('preparation failure');
+ await assert.rejects(owner.execute('load',{files:files()}),/preparation failure/);prepareFailure=null;
+ await owner.execute('load',{files:files()});disposeFailure=true;
+ await assert.rejects(owner.execute('unload',{}),/disposal failure/);
+ disposeFailure=false;await owner.execute('unload',{});assert.equal((await owner.execute('modelStatus',{})).loaded,false);await owner.dispose();
+});
+
+test('normal model requests reject diagnostic/callback fields instead of requiring or ignoring them',async()=>{
+ const owner=adapter();await owner.execute('load',{files:files()});
+ for(const extra of [{reference:{}},{gate:{}},{receipt:{}},{signal:new AbortController().signal},{onProgress(){}}])await assert.rejects(owner.execute('sample',{...extra}),{code:'INVALID_MODEL_INPUT'});
+ assert.equal(created.at(-1).samples,0);await owner.dispose();
+});
+
+test('canonical generated sample save and actual Blob readback preserve every payload bit and meaning',async()=>{
+ const owner=adapter();await owner.execute('load',{files:files()});const output=await owner.execute('sample',{});
+ const tensor=output.tensor,before=new Uint32Array(tensor.data.buffer).slice();
+ const saved=await owner.execute('saveTensor',{tensor});assert.ok(saved.bytes instanceof Uint8Array);assert.equal(saved.byteLength,saved.bytes.length);
+ const restored=await owner.execute('readTensor',{file:new File([saved.bytes],'saved.wktensor')});
+ assert.deepEqual(new Uint32Array(restored.tensor.data.buffer),before);assert.deepEqual(new Uint32Array(tensor.data.buffer),before);assert.equal(restored.tensor.meaning,'wan21-raw-generated-sample:v1');assert.deepEqual(restored.tensor.latentContract,tensor.latentContract);assert.equal(restored.tensor.normalization,undefined);await owner.dispose();
+});
+
+test('codec bound is separate from pointwise budget and rejects oversize before file read',async()=>{
+ const owner=adapter(),tensor={dtype:'float32',shape:[1048577],layout:'C',meaning:'unit-codec-payload',data:new Float32Array(1048577)};
+ assert.ok((await owner.execute('saveTensor',{tensor})).byteLength>4194304);
+ const huge=new Blob([new Uint8Array(64*1024*1024+1)]);await assert.rejects(owner.execute('readTensor',{file:huge}),{code:'TENSOR_FILE_BUDGET_EXCEEDED'});await owner.dispose();
+});
+
+test('preparation cleanup failure retains the only disposal capability for retry',async()=>{
+ const owner=adapter();describeFailure=true;disposeFailure=true;
+ try{await assert.rejects(owner.execute('load',{files:files()}),{code:'MODEL_PREPARATION_CLEANUP_FAILED'});}finally{describeFailure=false;disposeFailure=false;}
+ const state=await owner.execute('modelStatus',{});assert.equal(state.loaded,false);assert.equal(state.cleanupRequired,true);
+ await assert.rejects(owner.execute('predict',{side:'HIGH'}),{code:'MODEL_CLEANUP_REQUIRED'});
+ await owner.execute('unload',{});assert.equal(created.at(-1).disposed,true);await owner.execute('load',{files:files()});await owner.dispose();
+});
+
+test('dispose aborts an active model operation then awaits cleanup without a busy lock leak',async()=>{
+ const owner=adapter();await owner.execute('load',{files:files()});delayPrediction=true;
+ try{
+  const pending=owner.execute('predict',{side:'HIGH'}),rejected=assert.rejects(pending,{name:'AbortError'});await owner.dispose();await rejected;
+  assert.equal(created.at(-1).disposed,true);assert.equal(owner.status().busy,false);assert.equal(owner.status().disposed,true);
+ }finally{delayPrediction=false;}
+});
+
+test('canonical save rejects a shared attention mask even when an own buffer property conceals it',async()=>{
+ const owner=adapter(),mask=new Uint8Array(new SharedArrayBuffer(2));mask.set([1,0]);Object.defineProperty(mask,'buffer',{value:new ArrayBuffer(2)});
+ const tensor={dtype:'float32',shape:[1,2,4096],layout:'BLC',meaning:'text_hidden_states',data:new Float32Array(8192),attentionMask:mask};
+ await assert.rejects(owner.execute('saveTensor',{tensor}),{code:'INVALID_TENSOR'});await owner.dispose();
+});
+
+test('explicit four-thread resource requires isolated SharedArrayBuffer environment and never falls back',async()=>{
+ const descriptor=Object.getOwnPropertyDescriptor(globalThis,'crossOriginIsolated'),owner=adapter(),before=created.length;
+ try{
+  Object.defineProperty(globalThis,'crossOriginIsolated',{value:false,configurable:true});
+  await assert.rejects(owner.execute('load',{files:files(),resource:{wasmThreads:4}}),{code:'UNSUPPORTED_RESOURCE_CONFIG'});assert.equal(created.length,before);
+  Object.defineProperty(globalThis,'crossOriginIsolated',{value:true,configurable:true});
+  const loaded=await owner.execute('load',{files:files(),resource:{wasmThreads:4}});assert.equal(created.at(-1).wasmThreads,4);assert.equal(loaded.resource.wasmThreads,4);await owner.execute('unload',{});
+  await assert.rejects(owner.execute('load',{files:files(),resource:{wasmThreads:2}}),{code:'UNSUPPORTED_RESOURCE_CONFIG'});
+ }finally{if(descriptor)Object.defineProperty(globalThis,'crossOriginIsolated',descriptor);else delete globalThis.crossOriginIsolated;await owner.dispose();}
+});

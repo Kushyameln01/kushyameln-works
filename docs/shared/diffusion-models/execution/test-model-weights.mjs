@@ -154,3 +154,64 @@ test('completed-F32 port rejects shared, noncompact, forged and nonfinite buffer
   supplied=new Float32Array(64).fill(2);assert.equal((await completed.readVector('head.head.bias',0,64)).values[0],2);
  }finally{completed.dispose();source.dispose();}
 });
+
+test('readAheadBytes rejects invalid bounds before any header read',async()=>{
+ for(const readAheadBytes of [-1,1.5,1048577,NaN]){
+  const f=fixture();
+  await assert.rejects(async()=>{const source=await createModelWeightSource({file:f.file,side:'LOW',bridgeBytes:await kernel(),readAheadBytes});source.dispose();},/readAheadBytes/);
+  assert.equal(f.reads.length,0);
+ }
+});
+
+test('readAheadBytes reuses one tensor window while every selected raw block remains owned',async()=>{
+ const {source,fixture:f}=await sourceOf('LOW',{readAheadBytes:1048576});
+ try{
+  const before=f.reads.length,first=await source.readRows('head.head.weight',0,16);
+  first.raw.fill(0);first.values.fill(99);
+  const second=await source.readRows('head.head.weight',16,16),again=await source.readRows('head.head.weight',0,16);
+  assert.equal(f.reads.length-before,1);assert.equal(source.stats().payloadReads,3);
+  assert.equal(second.values.every(v=>v===1),true);assert.equal(again.values.every(v=>v===1),true);
+  assert.equal(again.raw[1],0x3c);assert.equal(again.raw.length,163840);assert.equal(again.raw.byteLength,again.raw.buffer.byteLength);
+  assert.equal(source.stats().cacheHits,2);assert.equal(source.stats().cachedBytes,655360);
+  assert.equal(source.stats().windowCopyBytes,3*163840);assert.equal(source.stats().storageReads,2+720+1);
+  assert.equal(source.stats().storageReadBytes,181288+11160+655360);
+  assert.ok(source.stats().storageReadMs>=0);assert.ok(source.stats().decodeMs>=0);assert.ok(source.stats().windowCopyMs>=0);
+ }finally{source.dispose();}
+ assert.equal(source.stats().cachedBytes,0);
+});
+
+test('readAheadBytes never crosses a selected tensor boundary and rejects bad ranges before storage',async()=>{
+ const {source,fixture:f}=await sourceOf('LOW',{readAheadBytes:1048576});
+ try{
+  const key='blocks.39.ffn.2.weight',entry=source.describe().entries[key];
+  await source.readRows(key,5119,1);
+  assert.deepEqual(f.reads.at(-1),[entry.absoluteByteOffset+5119*13824,entry.absoluteByteOffset+entry.byteLength]);
+  assert.equal(source.stats().cachedBytes,13824);
+  const calls=f.reads.length;await assert.rejects(source.readRows(key,5119,2),/range/);assert.equal(f.reads.length,calls);
+  await source.readVector('head.head.bias',0,1);
+  const bias=source.describe().entries['head.head.bias'];assert.deepEqual(f.reads.at(-1),[bias.absoluteByteOffset,bias.absoluteByteOffset+bias.byteLength]);
+  assert.equal(source.stats().cacheHits,0);assert.equal(source.stats().cacheMisses,2);
+ }finally{source.dispose();}
+});
+
+test('readAheadBytes aborted refill publishes no cache and a later request can retry',async()=>{
+ const {source,fixture:f}=await sourceOf('LOW',{readAheadBytes:1048576}),control=new AbortController(),hold=f.hold(()=>true);
+ try{
+  const request=source.readRows('head.head.weight',0,16,{signal:control.signal});await Promise.resolve();control.abort();hold.release();
+  await assert.rejects(request,{name:'AbortError'});assert.equal(source.stats().busy,false);assert.equal(source.stats().cachedBytes,0);assert.equal(source.stats().payloadReads,0);
+  const result=await source.readRows('head.head.weight',0,16);assert.equal(result.values.every(v=>v===1),true);assert.equal(source.stats().cacheHits,0);assert.equal(source.stats().storageReads,2+720+2);
+ }finally{source.dispose();}
+});
+
+test('readAheadBytes leaves legacy and lookup F32 bits and selected diagnostic hashes unchanged',async()=>{
+ for(const decoder of ['legacy','lookup']){
+  const options={decoder,...(decoder==='lookup'?{lookupBytes:await lookupKernel()}: {})};
+  const {source:plain}=await sourceOf('LOW',options),{source:windowed}=await sourceOf('LOW',{...options,readAheadBytes:1048576});
+  try{
+   for(const [method,key,start,count]of [['readRows','head.head.weight',0,16],['readRows','head.head.weight',16,16],['readRows','blocks.0.self_attn.q.weight',0,16],['readRows','blocks.0.self_attn.q.weight',16,16],['readRows','blocks.39.ffn.2.weight',5119,1],['readVector','head.modulation',0,10240]]){
+    const expected=await plain[method](key,start,count,{diagnostics:true}),actual=await windowed[method](key,start,count,{diagnostics:true});
+    assert.deepEqual(new Uint32Array(actual.values.buffer),new Uint32Array(expected.values.buffer));assert.deepEqual(actual.source,expected.source);
+   }
+  }finally{plain.dispose();windowed.dispose();}
+ }
+});

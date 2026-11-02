@@ -4,7 +4,7 @@ const MAX_TENSOR_ELEMENTS=POINTWISE_MAX_ELEMENTS;
 import {inspectSafetensors} from './safetensors.mjs';
 import {createEulerKernel} from '../euler-kernel.mjs';
 import {EULER_WASM_SHA256} from '../kernel-registry.mjs';
-let kernel,scheduler,projectionStage,latentSpace,latentKernelInfo,p4Owner;
+let kernel,scheduler,projectionStage,latentSpace,latentKernelInfo,p4Owner,modelAdapter;
 function fail(code,message,details){const error=new Error(message);Object.assign(error,{code,details});throw error;}
 
 async function getScheduler(){
@@ -31,7 +31,16 @@ function metadata(tensor,profileId){
 }
 
 async function execute(op,input){
+ if(['load','predict','sample','unload','modelStatus','saveTensor','readTensor'].includes(op)){
+  if(op==='load'&&p4Owner)fail('RESOURCE_OWNER_CONFLICT','releaseP4 is required before preparing the full-model owner');
+  if(!modelAdapter){const {createModelAdapter}=await import('./model-adapter.mjs');modelAdapter=createModelAdapter();}
+  const request=activeRequest;
+  try{return await modelAdapter.execute(op,input,{onProgress:request?.observeProgress?event=>self.postMessage({...request,buildId:BUILD_ID,input:undefined,status:'progress',result:event}):undefined});}
+  catch(error){if(['load','predict','sample','unload'].includes(op)){let resources;try{resources=modelAdapter.status().resources;}catch{}try{error.details={...(error.details??{}),...(resources?{resources}:{})};}catch{/* Preserve a primitive or frozen owner error. */}}throw error;}
+ }
  if(op==='prepareP4'){
+  const modelState=modelAdapter?.status();
+  if(modelState?.loaded||modelState?.cleanupRequired)fail('RESOURCE_OWNER_CONFLICT','unload the full-model owner before preparing P4');
   if(p4Owner)fail('P4_ALREADY_PREPARED','Release the current P4 owner before preparing another');
   const {createBerniniP4Execution}=await import('../execution/p4.mjs');
   p4Owner=await createBerniniP4Execution(input);return p4Owner.describe();
@@ -51,12 +60,10 @@ async function execute(op,input){
   const result=op==='readLora'?await core.readLoraTensor(input.file,input.binding,input.range):await core.readLoraBytes(input.file,input.binding,input.range);
   return {...result,bindingId:input.bindingId};
  }
- if(op==='inspect'||op==='load'){
+ if(op==='inspect'){
   const inspected=await inspectSafetensors(input.file);
-  if(op==='load')fail('NOT_READY','Model inference has not been implemented or validated',{reasons:inspected.readiness.reasons,payloadBytes:inspected.payloadBytes});
   return inspected;
  }
- if(op==='predict'||op==='sample')fail('NOT_READY','Required-shape model execution and composed resources are not accepted for the public runtime',{reasons:['REQUIRED_SHAPE_FULL_PREDICTION_NOT_ACCEPTED','SIX_UPDATE_RESOURCE_BUDGET_NOT_ACCEPTED','PUBLIC_MODEL_RUNTIME_NOT_CONNECTED']});
 
  if(op==='validateConditioning'||op==='validateRawLatent'){
   const {requireWanConditioning,requireWanRawLatent,requireWanRawLatentF1,requireWanRawLatentRect,WAN21_RAW_PROFILE,WAN21_RAW_F1_PROFILE,WAN21_RAW_RECT_PROFILE}=await import('../tensor-interop.mjs');
@@ -124,11 +131,15 @@ async function execute(op,input){
  if(!latent.length)kernel.step(latent,denoised,sigma,nextSigma);
  return {latent:result,hikeWasmSHA256:EULER_WASM_SHA256,kernel:'EulerDenoised',memoryBytes:kernel.memoryBytes};
 }
+let activeRequest=null;
 self.onmessage=async({data:q})=>{
+ if(activeRequest){self.postMessage({...q,buildId:BUILD_ID,input:undefined,status:'error',error:{code:'BUSY',message:'Only one owned Worker operation may execute at a time'}});return;}
+ activeRequest=q;
  try{
   const result=await execute(q.op,q.input);
   const response={...q,buildId:BUILD_ID,input:undefined,status:'ok',result};
   const transfers=[...new Set([...Object.values(result),result.tensor?.data,result.tensor?.attentionMask].filter(v=>ArrayBuffer.isView(v)).map(v=>v.buffer))];
   self.postMessage(response,transfers);
  }catch(error){self.postMessage({...q,buildId:BUILD_ID,input:undefined,status:'error',error:{code:error.code??'COMPUTE_ERROR',message:String(error.message??error),...(error.details?{details:error.details}:{})}});}
+ finally{activeRequest=null;}
 };

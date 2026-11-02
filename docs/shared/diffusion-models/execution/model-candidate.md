@@ -1,9 +1,11 @@
 # Experimental full Bernini graph
 
 `model-candidate.mjs` contains a complete base-model prediction graph, separate
-from the public runtime. It is experimental: `acceptedProduction`,
-`generationReady`, and `publicRuntimeEnabled` remain false. The public runtime's
-`NOT_READY` behavior is unchanged. This file does not establish D2 acceptance.
+as a reusable numerical owner. It remains experimental: its internal `acceptedProduction`,
+`generationReady`, and `publicRuntimeEnabled` metadata remain false. The public Worker now
+routes to this owner through the fixed [adapter](../api/MODEL_RUNTIME.md); the outer
+`publicWorkerConnected:true` flag records routing, not shape or precision acceptance.
+This file does not establish full-target D2 acceptance.
 
 ```js
 const candidate = await createBerniniModelCandidate({file, side: 'LOW'});

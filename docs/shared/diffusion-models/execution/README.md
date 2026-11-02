@@ -69,7 +69,7 @@ residualはblock0自己注意後のhidden、timeAct1はSiLU後のtime embedding�
 
 保存metadataを保持する共有codec498への更新に合わせ、raw posterior meanはF5／F1／Rectともnormalization marker不在を要求する。以前のF5 metadata validatorだけで許容されていた矛盾するmarkerは拒否する。restoreはversion付きnormalized posterior-meanの意味と、指定された場合の正しい正規化IDを要求する。生成sampleをposterior meanへ読み替えない。
 
-`supported:false`は理由と必要拡張を返す。全体資源peakは未確定であり、partial演算が成功しても`load/predict/sample=NOT_READY`、`generationReady:false`を保つ。
+`supported:false`は理由と必要拡張を返す。全体資源peakは入力域ごとに検証する。公開load/predict/sampleは実全モデル候補へ接続したが、partial演算の成功を原寸のモデル受入へ読み替えず、`generationReady:false`を保つ。[公開モデル契約](../api/MODEL_RUNTIME.md)を参照。
 
 | requiredExtension | 必要な対応箇所 |
 | --- | --- |
