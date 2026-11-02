@@ -43,7 +43,7 @@ export function inspectStreamManifest(manifest){
  const p=manifest.profile,d=manifest.domain,inf=manifest.inference;
  if(!p||typeof p.id!=='string'||!p.id||p.layout!=='NCTHW'||p.latentSpace!=='raw'||p.posterior!=='mean'||p.opset!==17)fail('Only raw mean NCTHW streaming profiles are supported');
  if(d?.maxSourceFrames!==81||d.minSpatial!==16||d.maxSpatial!==848||d.spatialStride!==16)fail('Unsupported streaming VAE domain');
- if(inf?.executionProvider!=='wasm'||inf.threads!==1||inf.graphOptimizationLevel!=='disabled')fail('Streaming VAE requires single-thread ORT WASM');
+ if(inf?.executionProvider!=='wasm'||![1,4].includes(inf.threads)||inf.graphOptimizationLevel!=='disabled')fail('Streaming VAE requires explicit ORT WASM threads1 or4');
  const assets=manifest.assets;if(!assets||typeof assets!=='object'||Array.isArray(assets))fail('Missing streaming assets');
  const names=Object.keys(assets);for(const id of names)checkedAsset(id,assets[id]);
  if(new Set(names.map(id=>assets[id].file)).size!==names.length)fail('Streaming asset filenames must be distinct');
@@ -51,6 +51,13 @@ export function inspectStreamManifest(manifest){
  if(!manifest.programs||!Object.hasOwn(manifest.programs,'encode')||!Object.hasOwn(manifest.programs,'decode'))fail('Missing streaming programs');
  for(const op of ['encode','decode'])validateProgram(manifest.programs[op],assets);
  return structuredClone({kind:STREAM_KIND,profile:p,domain:d,model:manifest.model,assets,inference:inf,programs:manifest.programs});
+}
+function threadEnvironment(threads,environment){
+ if(threads===4&&(environment.crossOriginIsolated!==true||typeof environment.SharedArrayBuffer!=='function'))fail('Streaming VAE threads4 requires cross-origin isolation and SharedArrayBuffer; no fallback to threads1');
+ return threads;
+}
+export function streamThreadCount(manifest,environment=globalThis){
+ return threadEnvironment(inspectStreamManifest(manifest).inference.threads,environment);
 }
 function unitShape(a,s,scale=1){
  if(s[1]!==a.channelsIn||s[2]%a.inputFrames)fail('Streaming feature shape does not match unit');
@@ -72,7 +79,7 @@ function processing(sourceFrames,latentFrames,consumedFrames){
 }
 export function validateStreamDescriptor({operation,tensor,manifest}){
  if(!['encode','decode'].includes(operation))fail('VAE operation must be encode or decode');
- const m=inspectStreamManifest(manifest);requireTensorDescriptor(tensor,{dtype:'float32',layout:'NCTHW'});count(tensor.shape);
+ const m=inspectStreamManifest(manifest);threadEnvironment(m.inference.threads,globalThis);requireTensorDescriptor(tensor,{dtype:'float32',layout:'NCTHW'});count(tensor.shape);
  if(tensor.shape.length!==5||tensor.shape[0]!==1)fail('Streaming VAE requires batch-one NCTHW');
  const encode=operation==='encode',meanings=encode?['raw-decoder-rgb','rgb-unit']:['raw-posterior-mean',RAW_LATENT,GENERATED];
  if(!meanings.includes(tensor.meaning))fail('Tensor meaning cannot connect to streaming VAE');
@@ -99,7 +106,7 @@ export function validateStreamDescriptor({operation,tensor,manifest}){
 }
 export function streamCapabilities(manifest,request={}){
  const m=inspectStreamManifest(manifest);
- return {kind:STREAM_KIND,profileId:m.profile.id,domain:m.domain,layout:'NCTHW',latentSpace:'raw',posterior:'mean',nativeCausalStreaming:true,...(request.tensor&&request.operation?{request:validateStreamDescriptor({...request,manifest})}:{})};
+ return {kind:STREAM_KIND,profileId:m.profile.id,domain:m.domain,inference:m.inference,layout:'NCTHW',latentSpace:'raw',posterior:'mean',nativeCausalStreaming:true,...(request.tensor&&request.operation?{request:validateStreamDescriptor({...request,manifest})}:{})};
 }
 export function requiredStreamAssets(manifest,operation){
  if(!['encode','decode'].includes(operation))fail('VAE operation must be encode or decode');
@@ -149,7 +156,7 @@ export async function runStreamVae({operation,tensor,manifest,files,ort,hike,onP
  if(!(tensor.data instanceof Float32Array)||tensor.data.length!==request.count)fail('Tensor byte length does not match streaming request');
  if(!(files instanceof Map))fail('Local model files must be a Map');
  for(const id of requiredStreamAssets(manifest,operation)){const a=m.assets[id],file=files.get(a.file),size=file instanceof Uint8Array?file.byteLength:file?.size;if(size!==a.bytes)fail('Missing or mismatched local model file: '+a.file);}
- if(!ort?.InferenceSession?.create||!ort?.Tensor||ort.env?.wasm?.numThreads!==1)fail('Streaming VAE requires the pinned single-thread ORT WASM runtime');
+ if(!ort?.InferenceSession?.create||!ort?.Tensor||ort.env?.wasm?.numThreads!==m.inference.threads)fail('Streaming VAE runtime threads do not match the explicit manifest');
  if((operation==='decode'&&(!hike?.matmul||!hike?.affine))||(operation==='encode'&&inputMeaning==='rgb-unit'&&!hike?.affine))fail('Streaming VAE requires real Hike kernels');
  for(const v of tensor.data){if(!Number.isFinite(v))fail('Nonfinite VAE input');if(operation==='encode'&&(v<(inputMeaning==='rgb-unit'?0:-1)||v>1))fail('Encoder RGB values are outside the declared range');}
  abort(signal);
@@ -163,6 +170,7 @@ export async function runStreamVae({operation,tensor,manifest,files,ort,hike,onP
   try{
    progress('loading-unit',{asset:id});const bytes=await bytesFor(a,files,signal);hashes[id]=a.sha256;
    progress('creating-session',{asset:id});session=await ort.InferenceSession.create(bytes,{executionProviders:['wasm'],graphOptimizationLevel:'disabled'});metrics.sessionsCreated++;abort(signal);
+   if(ort.env.wasm.numThreads!==m.inference.threads)fail('ORT WASM changed the explicitly requested streaming thread count; fallback is unsupported');
    for(let offset=0;offset<x.shape[2];offset+=step){
     let inputs=[],outputs;
     try{
@@ -234,6 +242,6 @@ export async function runStreamVae({operation,tensor,manifest,files,ort,hike,onP
   if(operation==='encode'&&context){context.sourceFrameIndices=context.sourceFrameIndices.slice(0,request.processing.consumedFrames);if(context.sourceFrameTimesSeconds)context.sourceFrameTimesSeconds=context.sourceFrameTimesSeconds.slice(0,request.processing.consumedFrames);}
   const frameProcessing=operation==='decode'&&request.metadata.frameProcessing?request.metadata.frameProcessing:{schemaVersion:1,policy:'wan21-causal-floor-v1',sourceFrames:request.processing.sourceFrames,latentFrames:request.processing.latentFrames,consumedFrames:request.processing.consumedFrames,unusedTailFrames:request.processing.ignoredTailFrames,...(operation==='encode'&&request.metadata.context?{sourceContext:request.metadata.context}:{})};
   progress('complete');
-  return {tensor:{dtype:'float32',layout:'NCTHW',shape:request.outputShape,data:result.data,meaning:operation==='encode'?'raw-posterior-mean':'raw-decoder-rgb',modelSha256:m.model.sha256,frameProcessing,...(context?{context}:{})},inputDescriptor,binding:{operation,kind:STREAM_KIND,inputShape:request.inputShape,outputShape:request.outputShape,assetsVerified:true,assetHashes:hashes,graphMetadataChecked:true},processing:request.processing,...(diagnostics?{evidence:{operation,profileId:request.profileId,modelSha256:m.model.sha256,assetHashes:hashes,provider:'wasm',threads:1,executionDtype:'float32',storedDtype:m.model.storedDtype,inputMeaning,inputModelSha256:tensor.modelSha256??null,...(request.metadata.latentContract?{latentContract:request.metadata.latentContract}:{}),normalizationApplied:false,hikeContributed:metrics.hikeCalls>0,...metrics,maxActiveSessions:1,totalMs:performance.now()-start}}:{})};
+  return {tensor:{dtype:'float32',layout:'NCTHW',shape:request.outputShape,data:result.data,meaning:operation==='encode'?'raw-posterior-mean':'raw-decoder-rgb',modelSha256:m.model.sha256,frameProcessing,...(context?{context}:{})},inputDescriptor,binding:{operation,kind:STREAM_KIND,inputShape:request.inputShape,outputShape:request.outputShape,assetsVerified:true,assetHashes:hashes,graphMetadataChecked:true,executionProvider:'wasm',threads:m.inference.threads},processing:request.processing,...(diagnostics?{evidence:{operation,profileId:request.profileId,modelSha256:m.model.sha256,assetHashes:hashes,provider:'wasm',threads:m.inference.threads,executionDtype:'float32',storedDtype:m.model.storedDtype,inputMeaning,inputModelSha256:tensor.modelSha256??null,...(request.metadata.latentContract?{latentContract:request.metadata.latentContract}:{}),normalizationApplied:false,hikeContributed:metrics.hikeCalls>0,...metrics,maxActiveSessions:1,totalMs:performance.now()-start}}:{})};
  }finally{state.clear();}
 }

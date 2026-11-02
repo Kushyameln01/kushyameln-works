@@ -1,6 +1,7 @@
 import * as ort from './vendor/ort.wasm.min.mjs';
 import {createHike} from './hike.mjs';
 import {runVae} from './vae.mjs';
+import {STREAM_KIND,streamThreadCount} from './vae-stream.mjs';
 import {loadTextEncoder} from './text-encoder.mjs';
 import {tokenizePlainText} from './tokenizer.mjs';
 ort.env.wasm.wasmPaths={mjs:new URL('./vendor/ort-wasm-simd-threaded.mjs',import.meta.url).href,wasm:new URL('./vendor/ort-wasm-simd-threaded.wasm',import.meta.url).href};ort.env.wasm.numThreads=1;ort.env.wasm.proxy=false;
@@ -11,6 +12,9 @@ self.onmessage=async({data:job})=>{
  let hike,textModel,result,error;
  try{
   if(job.buildId!=='works-inference-v1')throw Error('Inference build mismatch');
+  // The client gives each job a fresh owner Worker. Select its ORT pool before
+  // the first session; existing fixed VAE and Text jobs retain the default1.
+  if(job.module==='vae'&&job.manifest?.kind===STREAM_KIND)ort.env.wasm.numThreads=streamThreadCount(job.manifest);
   const response=await fetch(new URL('./kernel/tensor.wasm',import.meta.url));if(!response.ok)throw Error('Hike runtime could not load');
   const bytes=await response.arrayBuffer();const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');if(hash!==HIKE_HASH)throw Error('Hike runtime hash mismatch');
   hike=await createHike(bytes);const files=job.files instanceof Map?job.files:new Map(job.files);

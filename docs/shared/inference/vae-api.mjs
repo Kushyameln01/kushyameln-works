@@ -34,7 +34,7 @@ export function createVaeModule({client=createInferenceClient(),ownsClient=true}
     const input=op=>resolved&&request.operation===op?[...resolved.inputShape]:op==='encode'?[1,3,'F','H','W']:[1,16,'T','H/8','W/8'];
     const output=op=>resolved&&request.operation===op?[...resolved.outputShape]:op==='encode'?[1,16,'floor((F-1)/4)+1','H/8','W/8']:[1,3,'4*(T-1)+1','H','W'];
     const graph=op=>({kind:STREAM_KIND,assetIds:requiredStreamAssets(m,op),shapeBinding:'dynamic spatial units; native temporal host program'});
-    return{apiVersion:'works-ai-1',module:'vae',operations:['encode','decode'],configured:true,disposed,profile:structuredClone(p),model:structuredClone(m.model),domain:structuredClone(m.domain),
+    return{apiVersion:'works-ai-1',module:'vae',operations:['encode','decode'],configured:true,disposed,profile:structuredClone(p),model:structuredClone(m.model),domain:structuredClone(m.domain),inference:structuredClone(m.inference),
      encode:{input:{...base,shape:input('encode'),meanings:{'rgb-unit':[0,1],'raw-decoder-rgb':[-1,1]}},output:{...base,shape:output('encode'),meaning:'raw-posterior-mean',normalization:raw,modelSha256:m.model.sha256},graph:graph('encode')},
      decode:{input:{...base,shape:input('decode'),meanings:['raw-posterior-mean',RAW_LATENT,RAW_GENERATED_SAMPLE],normalization:raw,decoderModelSha256:m.model.sha256},output:{...base,shape:output('decode'),meaning:'raw-decoder-rgb',clipped:false},graph:graph('decode')},
      constraints:{batch:1,inputFrames:'1..81 including native incomplete tail',spatialMultiple:16,minimumSpatial:16,maximumSpatial:848,adaptation:'none',tail:'first1 then complete groups4; explicitly reported unused tail'},
