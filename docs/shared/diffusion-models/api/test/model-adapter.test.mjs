@@ -7,12 +7,12 @@ let prepareFailure=null,disposeFailure=false,describeFailure=false,delayPredicti
 const raw=()=>({dtype:'float32',shape:[1,16,1,2,4],layout:'NCTHW',meaning:'wan21-raw-generated-sample:v1',data:Float32Array.from({length:128},(_,i)=>i/128),latentContract:{schemaVersion:1,representation:'generated-sample',space:'raw',vaeModelSha256:'2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b',producerModelSha256s:[BASE_MODEL_HASHES.HIGH,BASE_MODEL_HASHES.LOW],normalization:{id:'wan21-comfy-f32-v1',state:'restored',owner:'diffusion_models'}}});
 mock.module(new URL('../../execution/model-sampler-candidate.mjs',import.meta.url).href,{exports:{createBerniniModelSamplerCandidate:async({files,signal,wasmThreads})=>{
  if(prepareFailure)throw prepareFailure;
- const state={files,wasmThreads,disposed:false,predictions:[],samples:0};created.push(state);
+ const state={files,wasmThreads,disposed:false,predictions:[],samples:0,resources:{},statsFailure:false,executionFailure:null};created.push(state);
  return {
   describe:()=>{if(describeFailure)throw Error('injected describe failure');return {profile:'unit-state-double-not-NN',models:Object.fromEntries(['HIGH','LOW'].map(side=>[side,{model:{side,modelSha256:BASE_MODEL_HASHES[side]}}])),scheduler:'fixed-unit-double'};},
-  stats:()=>({disposed:state.disposed,predictions:state.predictions.length,samples:state.samples}),
-  async predict(input){assert.ok(input.signal instanceof AbortSignal);state.predictions.push(input.side);input.onProgress?.({operation:'predict',side:input.side,model:{stage:'block-complete',block:0}});if(delayPrediction)await new Promise((resolve,reject)=>input.signal.addEventListener('abort',()=>reject(input.signal.reason),{once:true}));return {...raw(),meaning:'bernini-flow-velocity:v1',latentContract:undefined,modelSha256:BASE_MODEL_HASHES[input.side],evidence:{profile:'unit-state-double-not-NN',publicRuntimeEnabled:false}};},
-  async sample(input){assert.ok(input.signal instanceof AbortSignal);state.samples++;input.onProgress?.({stage:'step-complete',step:5});return {...raw(),evidence:{profile:'unit-state-double-not-NN',publicRuntimeEnabled:false}};},
+  stats:()=>{if(state.statsFailure)throw Error('injected stats failure');return {disposed:state.disposed,predictions:state.predictions.length,samples:state.samples,...state.resources};},
+  async predict(input){assert.ok(input.signal instanceof AbortSignal);state.predictions.push(input.side);input.onProgress?.({operation:'predict',side:input.side,model:{stage:'block-complete',block:0}});if(state.executionFailure)throw state.executionFailure;if(delayPrediction)await new Promise((resolve,reject)=>input.signal.addEventListener('abort',()=>reject(input.signal.reason),{once:true}));return {...raw(),meaning:'bernini-flow-velocity:v1',latentContract:undefined,modelSha256:BASE_MODEL_HASHES[input.side],evidence:{profile:'unit-state-double-not-NN',publicRuntimeEnabled:false}};},
+  async sample(input){assert.ok(input.signal instanceof AbortSignal);state.samples++;input.onProgress?.({stage:'step-complete',step:5});if(state.executionFailure)throw state.executionFailure;return {...raw(),evidence:{profile:'unit-state-double-not-NN',publicRuntimeEnabled:false}};},
   async dispose(){if(disposeFailure)throw Error('injected disposal failure');state.disposed=true;}
  };
 }}});
@@ -76,6 +76,61 @@ test('preparation cleanup failure retains the only disposal capability for retry
  const state=await owner.execute('modelStatus',{});assert.equal(state.loaded,false);assert.equal(state.cleanupRequired,true);
  await assert.rejects(owner.execute('predict',{side:'HIGH'}),{code:'MODEL_CLEANUP_REQUIRED'});
  await owner.execute('unload',{});assert.equal(created.at(-1).disposed,true);await owner.execute('load',{files:files()});await owner.dispose();
+});
+
+test('a factory rejection never returns a cleanup owner to the direct adapter',async()=>{
+ const owner=adapter(),before=created.length,error=new AggregateError([Error('partial preparation'),Error('cleanup failed')],'factory preparation and cleanup failed');
+ let recovered=false;error.recover=async()=>{recovered=true;};prepareFailure=error;
+ try{await assert.rejects(owner.execute('load',{files:files()}),failure=>failure===error);}finally{prepareFailure=null;}
+ assert.equal(created.length,before);assert.equal(owner.status().loaded,false);assert.equal(owner.status().resources,null);
+ await owner.execute('unload',{});assert.equal(recovered,false,'the direct adapter received no owner; its public host must discard this Worker');await owner.dispose();
+});
+
+for(const [label,resources] of [
+ ['ops cleanup pending',{ops:{cleanupPending:true}}],
+ ['ops closing',{ops:{closing:true}}],
+ ['HIGH closing',{models:{HIGH:{closing:true},LOW:{closing:false}}}],
+ ['LOW cleanup pending',{models:{HIGH:{closing:false},LOW:{cleanupPending:true}}}]
+])for(const op of ['predict','sample'])test(op+' failure latches cleanup required for '+label,async()=>{
+ const owner=adapter();await owner.execute('load',{files:files()});const state=created.at(-1);state.resources=resources;state.executionFailure=Error('execution cleanup failed');
+ try{
+  await assert.rejects(owner.execute(op,{...(op==='predict'?{side:'HIGH'}:{})}),{code:'MODEL_CLEANUP_REQUIRED'});
+  state.resources={};state.executionFailure=null;
+  const status=owner.status();assert.equal(status.loaded,false);assert.equal(status.cleanupRequired,true);
+  const dispatched=state.predictions.length+state.samples;
+  for(const next of ['predict','sample'])await assert.rejects(owner.execute(next,{}),{code:'MODEL_CLEANUP_REQUIRED'});
+  assert.equal(state.predictions.length+state.samples,dispatched,'cleanup latch must prevent further numerical dispatch');
+  disposeFailure=true;await assert.rejects(owner.execute('unload',{}),{code:'MODEL_UNLOAD_FAILED'});assert.equal(owner.status().cleanupRequired,true);
+  disposeFailure=false;await owner.execute('unload',{});assert.equal(state.disposed,true);assert.equal(owner.status().cleanupRequired,false);
+ }finally{disposeFailure=false;await owner.dispose();}
+});
+
+for(const op of ['predict','sample'])test(op+' input failure with healthy resources preserves the loaded owner',async()=>{
+ const owner=adapter(),loaded=await owner.execute('load',{files:files()}),state=created.at(-1),error=new RangeError('invalid timestep or input');state.executionFailure=error;
+ try{
+  await assert.rejects(owner.execute(op,{}),failure=>failure===error);const status=owner.status();
+  assert.equal(status.loaded,true);assert.equal(status.cleanupRequired,false);assert.equal(status.modelSessionId,loaded.modelSessionId);
+  state.executionFailure=null;await owner.execute('predict',{side:'HIGH',modelSessionId:loaded.modelSessionId});
+ }finally{await owner.dispose();}
+});
+
+test('unreadable resource stats after execution failure require cleanup without stranding unload',async()=>{
+ const owner=adapter();await owner.execute('load',{files:files()});const state=created.at(-1);state.statsFailure=true;state.executionFailure=Error('execution failed');
+ try{
+  await assert.rejects(owner.execute('predict',{side:'HIGH'}),{code:'MODEL_CLEANUP_REQUIRED'});
+  assert.equal(owner.status().cleanupRequired,true);assert.equal(owner.status().resources,null);
+  const unloaded=await owner.execute('unload',{});assert.equal(unloaded.unloaded,true);assert.equal(unloaded.resources,null);assert.equal(state.disposed,true);
+  assert.equal(owner.status().loaded,false);assert.equal(owner.status().cleanupRequired,false);
+ }finally{state.statsFailure=false;await owner.dispose();}
+});
+
+test('unreadable status counters conservatively block dispatch but successful disposal still unloads',async()=>{
+ const owner=adapter();await owner.execute('load',{files:files()});const state=created.at(-1);state.statsFailure=true;
+ try{
+  const status=owner.status();assert.equal(status.loaded,false);assert.equal(status.cleanupRequired,true);assert.equal(status.resources,null);
+  await assert.rejects(owner.execute('sample',{}),{code:'MODEL_CLEANUP_REQUIRED'});assert.equal(state.samples,0);
+  await owner.execute('unload',{});assert.equal(state.disposed,true);assert.equal(owner.status().cleanupRequired,false);
+ }finally{state.statsFailure=false;await owner.dispose();}
 });
 
 test('dispose aborts an active model operation then awaits cleanup without a busy lock leak',async()=>{

@@ -63,14 +63,24 @@ export function createModelAdapter(){
   if(needsCleanup||!description)fail('MODEL_CLEANUP_REQUIRED','A failed preparation or cleanup owner must be unloaded before execution');
   if(input.modelSessionId!==undefined&&input.modelSessionId!==modelSessionId)fail('STALE_MODEL','The model session belongs to an unloaded or replaced owner');
  };
- const status=()=>({adapterImplemented:true,loaded:!!runtime&&!!description&&!needsCleanup,cleanupRequired:!!runtime&&needsCleanup,modelSessionId,modelEpoch:epoch,busy,closing,disposed,generationReady:false,nativeCandidateDescription:description?structuredClone(description):null,resources:runtime?.stats()??null});
+ const observeResources=owner=>{
+  try{
+   const resources=owner.stats(),cleanupRequired=!!(resources?.closing||resources?.cleanupPending||resources?.ops?.closing||resources?.ops?.cleanupPending||Object.values(resources?.models??{}).some(model=>model?.closing||model?.cleanupPending));
+   return {resources,cleanupRequired};
+  }catch{return {resources:null,cleanupRequired:true};}
+ };
+ const status=()=>{
+  const observed=runtime?observeResources(runtime):{resources:null,cleanupRequired:false};
+  if(observed.cleanupRequired)needsCleanup=true;
+  return {adapterImplemented:true,loaded:!!runtime&&!!description&&!needsCleanup,cleanupRequired:!!runtime&&needsCleanup,modelSessionId,modelEpoch:epoch,busy,closing,disposed,generationReady:false,nativeCandidateDescription:description?structuredClone(description):null,resources:observed.resources};
+ };
  const unload=async()=>{
   if(!runtime)return {unloaded:true,modelSessionId:null,modelEpoch:epoch,resources:null};
   const owner=runtime,id=modelSessionId;
   // Retain an owner whose cleanup fails so callers can retry; do not advertise
   // an unloaded model or lose the only remaining disposal capability.
   try{await owner.dispose();}catch(error){needsCleanup=true;const failure=new Error('Model unload cleanup failed: '+String(error.message??error),{cause:error});failure.code='MODEL_UNLOAD_FAILED';throw failure;}
-  const resources=owner.stats();runtime=null;description=null;modelSessionId=null;needsCleanup=false;epoch++;
+  const resources=observeResources(owner).resources;runtime=null;description=null;modelSessionId=null;needsCleanup=false;epoch++;
   return {unloaded:true,modelSessionId:id,modelEpoch:epoch,resources};
  };
  async function execute(op,input={},options={}){
@@ -115,7 +125,16 @@ export function createModelAdapter(){
     const value=fields(input,names,'model '+op);requireRuntime(value);delete value.modelSessionId;
     const id=modelSessionId,modelEpoch=epoch;
     const onProgress=event=>{controller.signal.throwIfAborted();context.onProgress?.({...structuredClone(event),modelSessionId:id,modelEpoch});controller.signal.throwIfAborted();};
-    const result=await runtime[op]({...value,signal:controller.signal,onProgress});controller.signal.throwIfAborted();
+    let result;
+    try{result=await runtime[op]({...value,signal:controller.signal,onProgress});controller.signal.throwIfAborted();}
+    catch(error){
+     if(observeResources(runtime).cleanupRequired){
+      needsCleanup=true;
+      const failure=new Error('Model execution cleanup incomplete; unload is required: '+String(error?.message??error),{cause:error});
+      failure.code='MODEL_CLEANUP_REQUIRED';failure.details={cleanupRequired:true};throw failure;
+     }
+     throw error;
+    }
     const {evidence,...tensor}=result;
     return {tensor,execution:{operation:op,modelSessionId:id,modelEpoch,profile:evidence?.profile??description.profile,publicWorkerConnected:true,generationReady:false,originalWorkflowAccepted:false}};
    }

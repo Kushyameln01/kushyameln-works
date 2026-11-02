@@ -49,3 +49,62 @@ test('diagnostic recovery helper cancels then reloads the same public API instan
  assert.equal(calls[3].input.modelSessionId,'old-model');
  assert.deepEqual(operations.map(value=>value.test),['actual-patch-cancel','cancel-retry-needs-load','reload-stale-session']);
 });
+
+test('failed-pair smoke probe observes termination and a fresh empty realm before ordinary P4 prepare/release',async()=>{
+ const {failPublicPairThenPrepareP4}=await import('./public-model-browser.mjs');assert.equal(typeof failPublicPairThenPrepareP4,'function');
+ const HIGH=new Blob(['retained HIGH']),calls=[],operations=[],workerLifetimes=[],api={sessionId:'same-api-session'};
+ const request=async(op,input)=>{
+  calls.push({op,input});
+  const identity={sessionId:api.sessionId,jobId:'probe-'+calls.length,inputRevision:calls.length,op};
+  if(calls.length===1){
+   workerLifetimes.push({workerEpoch:1,stage:'constructed'},{workerEpoch:1,stage:'terminated'});
+   return {...identity,status:'error',error:{code:'COMPUTE_ERROR',details:{workerTerminated:true,preparationDiscarded:true,reloadRequired:true}}};
+  }
+  if(calls.length===2){workerLifetimes.push({workerEpoch:2,stage:'constructed'});return {...identity,status:'ok',result:{loaded:false,cleanupRequired:false,modelSessionId:null,resources:null}};}
+  if(calls.length===3)return {...identity,status:'ok',result:{model:{side:'HIGH'},modelInference:false}};
+  if(calls.length===4)return {...identity,status:'ok',result:{released:true,activeORTSessions:0,readLeases:0}};
+  assert.fail('Unexpected numerical operation in failed-pair smoke probe');
+ };
+ const result=await failPublicPairThenPrepareP4({api,request,HIGH,wasmThreads:4,operations,workerLifetimes});
+ assert.deepEqual(calls.map(value=>value.op),['load','modelStatus','prepareP4','releaseP4']);
+ assert.equal(calls[0].input.files.HIGH,HIGH);assert.equal(calls[0].input.files.LOW,HIGH);assert.deepEqual(calls[0].input.resource,{wasmThreads:4});
+ assert.deepEqual(calls[2].input,{file:HIGH,side:'HIGH'});assert.deepEqual(calls[3].input,{});
+ assert.equal(result.apiSessionId,api.sessionId);assert.equal(result.failedWorkerEpoch,1);assert.equal(result.freshWorkerEpoch,2);assert.equal(result.failedWorkerTerminated,true);
+ assert.equal(result.failedLoad.requestIdentity.jobId,'probe-1');assert.equal(result.freshStatus.resources,null);assert.equal(result.p4.release.activeORTSessions,0);
+ assert.deepEqual(operations.map(value=>value.test),['failed-pair-discarded','failed-pair-fresh-status','failed-pair-fresh-p4']);
+});
+
+test('failed-pair smoke probe rejects a successful wrong-pair load before any later operation',async()=>{
+ const {failPublicPairThenPrepareP4}=await import('./public-model-browser.mjs');assert.equal(typeof failPublicPairThenPrepareP4,'function');
+ let calls=0;
+ await assert.rejects(failPublicPairThenPrepareP4({api:{sessionId:'same-api'},request:async()=>{calls++;return {status:'ok',result:{loaded:true}};},HIGH:new Blob(),wasmThreads:1,operations:[],workerLifetimes:[]}),/failed paired load/i);
+ assert.equal(calls,1);
+});
+
+for(const [label,details] of [
+ ['missing Worker termination',{preparationDiscarded:true,reloadRequired:true}],
+ ['missing preparation discard',{workerTerminated:true,reloadRequired:true}],
+ ['missing reload requirement',{workerTerminated:true,preparationDiscarded:true}]
+])test('failed-pair smoke probe rejects '+label,async()=>{
+ const {failPublicPairThenPrepareP4}=await import('./public-model-browser.mjs');assert.equal(typeof failPublicPairThenPrepareP4,'function');let calls=0;
+ await assert.rejects(failPublicPairThenPrepareP4({api:{sessionId:'same-api'},request:async()=>{calls++;return {status:'error',error:{code:'COMPUTE_ERROR',details}};},HIGH:new Blob(),wasmThreads:1,operations:[],workerLifetimes:[]}),/discard|terminat|reload/i);
+ assert.equal(calls,1);
+});
+
+for(const [label,state] of [
+ ['loaded owner',{loaded:true,cleanupRequired:false,modelSessionId:'old',resources:null}],
+ ['cleanup owner',{loaded:false,cleanupRequired:true,modelSessionId:null,resources:null}],
+ ['native resources',{loaded:false,cleanupRequired:false,modelSessionId:null,resources:{ops:{}}}]
+])test('failed-pair smoke probe rejects fresh status with '+label,async()=>{
+ const {failPublicPairThenPrepareP4}=await import('./public-model-browser.mjs');assert.equal(typeof failPublicPairThenPrepareP4,'function');let calls=0;const workerLifetimes=[];
+ await assert.rejects(failPublicPairThenPrepareP4({api:{sessionId:'same-api'},request:async()=>{
+  calls++;if(calls===1){workerLifetimes.push({workerEpoch:1,stage:'constructed'},{workerEpoch:1,stage:'terminated'});return {status:'error',error:{code:'COMPUTE_ERROR',details:{workerTerminated:true,preparationDiscarded:true,reloadRequired:true}}};}
+  workerLifetimes.push({workerEpoch:2,stage:'constructed'});return {status:'ok',result:state};
+ },HIGH:new Blob(),wasmThreads:1,operations:[],workerLifetimes}),/fresh|unloaded|cleanup|resources/i);
+ assert.equal(calls,2);
+});
+
+for(const mode of ['predict','sample'])test('browser config rejects failed-pair probe outside smoke before selecting model Files: '+mode,async()=>{
+ const {startPublicModelBrowser}=await import('./public-model-browser.mjs');
+ await assert.rejects(startPublicModelBrowser({mode,wasmThreads:1,timeoutMs:1000,failedPairBeforeRun:true}),/smoke/i);
+});

@@ -84,6 +84,26 @@ with unchanged saved inputs. The receipt links the API session, cancelled model
 session, replacement session and completed sample execution. The flag is never
 sent to `sample`, and no extra numerical reference or gate enters the API.
 
+For failed-preparation recovery, use `--mode smoke --failed-pair-before-run`.
+Before the normal pair load, this optional diagnostic supplies the actual retained
+HIGH File as both `files.HIGH` and `files.LOW`, with the selected
+`resource.wasmThreads`. It requires a terminal error with `workerTerminated`,
+`preparationDiscarded`, and `reloadRequired` all true, and records the request,
+error and observed terminated Worker epoch. A `modelStatus` call through the
+same API instance must construct a different Worker and report no loaded model,
+cleanup owner or native resources. The runner then calls ordinary
+`prepareP4({file:HIGH,side:'HIGH'})` and `releaseP4`, requiring zero remaining
+sessions/read leases, before continuing the existing correct-pair load, actual
+prefix cancellation, reload and saved-input codec smoke checks.
+
+The wrong-side load and P4 preparation/release do not run neural computation.
+They check public lifecycle recovery after a real header/side rejection; they do
+not force a cleanup failure or establish complete prediction/sample numerics.
+The subsequent smoke prefix retains its existing limited numerical scope. The
+flag is rejected for `predict` and `sample`, and is never sent as an API input.
+The receipt's `failedPairRecovery` records these admission and lifetime checks;
+`--check-only` records the planned flag without constructing a browser.
+
 An external process-memory monitor must start before the runner and continue
 through browser cleanup. The runner itself records native stage timings,
 progress and resource counters, source identities, terminal errors, cancellation
@@ -106,7 +126,7 @@ Structural tests use no browser/model inference:
 node --experimental-test-module-mocks --test --test-isolation=none \
   docs/shared/diffusion-models/api/test/model-adapter.test.mjs \
   docs/shared/diffusion-models/api/test/model-host.test.mjs
-node --test tools/diffusion-models/test-public-model-browser.mjs
+node --test --test-isolation=none tools/diffusion-models/test-public-model-browser.mjs
 python tools/diffusion-models/test-public-model-browser.py
 ```
 

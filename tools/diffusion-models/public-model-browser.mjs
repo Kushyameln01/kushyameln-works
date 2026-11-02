@@ -57,6 +57,35 @@ export async function cancelPublicPatchThenReload({api,request,predictInput,file
  return {loaded:reloaded,recovery:{apiSessionId:api.sessionId,cancelledModelSessionId:loaded.modelSessionId,reloadedModelSessionId:reloaded.modelSessionId,cancelProgressJob,cancelledAtPatch:true,workerTerminated:true,completedOperation:null}};
 }
 
+/** Smoke-only wrong-side admission probe. These are ordinary public calls;
+ * Worker lifetime observations remain diagnostic metadata outside the wire. */
+export async function failPublicPairThenPrepareP4({api,request,HIGH,wasmThreads,operations,workerLifetimes}){
+ const beforeFailure=workerLifetimes.length;
+ const failed=await request('load',{files:{HIGH,LOW:HIGH},resource:{wasmThreads}});
+ requireValue(failed?.status==='error','Expected a failed paired load when the retained HIGH File is supplied as LOW');
+ const details=failed.error?.details;
+ requireValue(details?.workerTerminated===true&&details.preparationDiscarded===true&&details.reloadRequired===true,'Failed paired load did not report Worker termination, preparation discard and required reload');
+ const constructed=workerLifetimes.slice(beforeFailure).filter(value=>value.stage==='constructed');
+ requireValue(constructed.length===1,'Failed paired load did not construct exactly one observed public Worker');
+ const failedWorkerEpoch=constructed[0].workerEpoch;
+ requireValue(workerLifetimes.some(value=>value.workerEpoch===failedWorkerEpoch&&value.stage==='terminated'),'Failed paired load Worker was not observed terminated');
+ const requestIdentity=Object.fromEntries(['buildId','protocolVersion','sessionId','jobId','inputRevision','op'].map(key=>[key,failed[key]]));
+ const failedLoad={requestIdentity,input:{files:{HIGH:'retained HIGH File',LOW:'same retained HIGH File, intentional wrong side'},resource:{wasmThreads}},error:plain(failed.error)};
+ operations.push({test:'failed-pair-discarded',workerEpoch:failedWorkerEpoch,requestIdentity,code:failed.error.code,details:plain(details)});
+ const beforeStatus=workerLifetimes.length,freshStatus=expectOk(await request('modelStatus',{}),'fresh status after failed paired load');
+ requireValue(freshStatus.loaded===false&&freshStatus.cleanupRequired===false&&freshStatus.modelSessionId===null&&freshStatus.resources===null,'Fresh Worker retained a loaded owner, cleanup owner or native resources');
+ const freshWorkers=workerLifetimes.slice(beforeStatus).filter(value=>value.stage==='constructed');
+ requireValue(freshWorkers.length===1&&freshWorkers[0].workerEpoch!==failedWorkerEpoch,'Status after failed paired load did not use a fresh observed Worker');
+ const freshWorkerEpoch=freshWorkers[0].workerEpoch;
+ operations.push({test:'failed-pair-fresh-status',workerEpoch:freshWorkerEpoch,loaded:false,cleanupRequired:false,resources:null});
+ const preparation=expectOk(await request('prepareP4',{file:HIGH,side:'HIGH'}),'P4 preparation in the fresh idle realm');
+ const release=expectOk(await request('releaseP4',{}),'P4 release after failed-pair recovery');
+ requireValue(release.released===true&&release.activeORTSessions===0&&release.readLeases===0,'Fresh P4 owner did not release its sessions and read leases');
+ requireValue(workerLifetimes.filter(value=>value.stage==='constructed').at(-1)?.workerEpoch===freshWorkerEpoch&&!workerLifetimes.some(value=>value.workerEpoch===freshWorkerEpoch&&value.stage==='terminated'),'P4 preparation/release replaced the fresh idle Worker unexpectedly');
+ operations.push({test:'failed-pair-fresh-p4',workerEpoch:freshWorkerEpoch,released:true,activeORTSessions:0,readLeases:0});
+ return {apiSessionId:api.sessionId,failedLoad,failedWorkerEpoch,failedWorkerTerminated:true,freshWorkerEpoch,freshStatus:plain(freshStatus),p4:{preparation:plain(preparation),release:plain(release)},neuralExecutionPerformed:false};
+}
+
 /** Public API actual-Worker session. Source/input guards belong to the private
  * host, and are never required fields of load/predict/sample. */
 export async function startPublicModelBrowser(config){
@@ -65,6 +94,8 @@ export async function startPublicModelBrowser(config){
  requireValue(Number.isFinite(config.timeoutMs)&&config.timeoutMs>0,'Bounded session timeout required');
  requireValue(config.cancelBeforeRun===undefined||typeof config.cancelBeforeRun==='boolean','Explicit boolean cancellation probe flag required');
  requireValue(!config.cancelBeforeRun||config.mode==='sample','The explicit pre-run cancellation probe is available in sample mode only');
+ requireValue(config.failedPairBeforeRun===undefined||typeof config.failedPairBeforeRun==='boolean','Explicit boolean failed-pair probe flag required');
+ requireValue(!config.failedPairBeforeRun||config.mode==='smoke','The explicit failed-pair probe is available in smoke mode only');
  const HIGH=document.querySelector('#model-high').files[0],LOW=document.querySelector('#model-low').files[0];
  requireValue(HIGH instanceof File&&LOW instanceof File,'Both actual retained model Files must be selected');
  if(config.wasmThreads===4)requireValue(crossOriginIsolated&&typeof SharedArrayBuffer==='function','Four-thread harness requires real COOP/COEP isolation');
@@ -114,7 +145,7 @@ export async function startPublicModelBrowser(config){
   record({stage:'progress',identity:{jobId:event.jobId,inputRevision:event.inputRevision,op:event.op},progress:event.result});
  };
  const heartbeat=setInterval(()=>record({stage:'heartbeat',lastProgress,progressCount}),15000);
- const run={schemaVersion:'bernini-public-model-worker-browser/0.1',mode:config.mode,side:config.side,timestep:config.timestep,wasmThreads:config.wasmThreads,sourceCommit:config.sourceCommit,caseClass:manifest.caseClass,profileId:manifest.profileId,conditioningFixture:'Separate owned positive/negative copies of the same retained packet; not original negative-prompt/CFG acceptance',publicWorkerConnected:true,numericalReferencePassed:false,generationReady:false,originalWorkflowAccepted:false,inputIdentitiesBefore:before,operations:[],outcome:'failed',error:null};
+ const run={schemaVersion:'bernini-public-model-worker-browser/0.1',mode:config.mode,side:config.side,timestep:config.timestep,wasmThreads:config.wasmThreads,sourceCommit:config.sourceCommit,failedPairBeforeRun:config.failedPairBeforeRun??false,caseClass:manifest.caseClass,profileId:manifest.profileId,conditioningFixture:'Separate owned positive/negative copies of the same retained packet; not original negative-prompt/CFG acceptance',publicWorkerConnected:true,numericalReferencePassed:false,generationReady:false,originalWorkflowAccepted:false,inputIdentitiesBefore:before,operations:[],outcome:'failed',error:null};
  const timeout=setTimeout(()=>{
   run.timeout={timeoutMs:config.timeoutMs,activeIdentity,lastProgress};run.outcome='failed';record({stage:'session-timeout',timeout:run.timeout});
   if(activeIdentity)api.cancel({sessionId:api.sessionId,jobId:activeIdentity.jobId,inputRevision:activeIdentity.inputRevision});
@@ -133,6 +164,10 @@ export async function startPublicModelBrowser(config){
   record({stage:'finished',outcome:run.outcome});await queue;return plain(run);
  }};
  try{
+  if(config.failedPairBeforeRun){
+   run.failedPairRecovery=await failPublicPairThenPrepareP4({api,request,HIGH,wasmThreads:config.wasmThreads,operations:run.operations,workerLifetimes});
+   record({stage:'failed-pair-recovered',recovery:run.failedPairRecovery});
+  }
   loaded=expectOk(await request('load',{files:{HIGH,LOW},resource:{wasmThreads:config.wasmThreads}}),'load actual pair');run.loaded=loaded;
   record({stage:'prepared',modelSessionId:loaded.modelSessionId});
   const normalPredict=(side,model=loaded)=>({side,shapeRequest:input.shapeRequest,tensors:input.tensors,conditioning:input.positive,timestep:config.timestep,modelSessionId:model.modelSessionId});

@@ -22,7 +22,16 @@ export function createDiffusionModels({sessionId=crypto.randomUUID()}={}){
  const progressListeners=new Set();let loadedModel=null,p4Prepared=false,modelCleanupRequired=false;
  const snapshot=entry=>({...structuredClone(entry.metadata),bindingId:entry.bindingId});
  const stopWorker=()=>{generation++;worker?.terminate();worker=null;loadedModel=null;p4Prepared=false;modelCleanupRequired=false;};
- const settle=(reply)=>{const pending=active;active=null;pending?.resolve(reply);};
+ const settle=(reply)=>{
+  const pending=active;active=null;
+  // A factory can fail before returning a disposal owner. Discard the entire
+  // preparation realm on every dispatched paired-load failure, regardless of
+  // its error code; no later P4/model operation may reuse partial ORT state.
+  if(pending?.pairedLoad&&reply.status==='error'){
+   stopWorker();reply={...reply,error:{...reply.error,details:{...reply.error?.details,workerTerminated:true,preparationDiscarded:true,reloadRequired:true}}};
+  }
+  pending?.resolve(reply);
+ };
  function cancel(target){
   target={...target,protocolVersion:PROTOCOL_VERSION,op:'cancel'};
   if(disposed)return errorResponse(target,'DISPOSED','The API has been disposed');
@@ -93,7 +102,7 @@ export function createDiffusionModels({sessionId=crypto.randomUUID()}={}){
    loras.delete(loraBinding.metadata.stage);return ok(q,{bindingId:loraBinding.bindingId,stage:loraBinding.metadata.stage,unloaded:true,applied:false});
   }
   return new Promise(resolve=>{
-   const ownedRequest={...identity(q),input:ownedInput,observeProgress:!!options.onProgress||progressListeners.size>0};active={request:ownedRequest,resolve,loraCandidate,onProgress:options.onProgress};
+   const ownedRequest={...identity(q),input:ownedInput,observeProgress:!!options.onProgress||progressListeners.size>0};active={request:ownedRequest,resolve,loraCandidate,onProgress:options.onProgress,pairedLoad};
    try{
     if(!worker){
      worker=new Worker(new URL('./worker.mjs',import.meta.url),{type:'module'});
@@ -113,7 +122,8 @@ export function createDiffusionModels({sessionId=crypto.randomUUID()}={}){
       if(data.status==='ok'&&active.request.op==='load')loadedModel={modelSessionId:data.result.modelSessionId,modelEpoch:data.result.modelEpoch};
       if(data.status==='ok'&&active.request.op==='prepareP4')p4Prepared=true;
       if(data.status==='ok'&&active.request.op==='releaseP4')p4Prepared=false;
-      if(data.status==='error'&&['MODEL_PREPARATION_CLEANUP_FAILED','MODEL_UNLOAD_FAILED'].includes(data.error?.code))modelCleanupRequired=true;
+      if(data.status==='ok'&&active.request.op==='modelStatus'&&data.result?.cleanupRequired===true)modelCleanupRequired=true;
+      if(data.status==='error'&&['MODEL_PREPARATION_CLEANUP_FAILED','MODEL_UNLOAD_FAILED','MODEL_CLEANUP_REQUIRED'].includes(data.error?.code))modelCleanupRequired=true;
       if(data.status==='ok'&&active.request.op==='unload')stopWorker();
       if(active.loraCandidate&&data.status==='ok'){
        const candidate=active.loraCandidate;

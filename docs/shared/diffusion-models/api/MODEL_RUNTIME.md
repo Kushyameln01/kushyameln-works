@@ -42,11 +42,32 @@ the `predict.side` and perform internal HIGH3→LOW3 sampling with shared sessio
 Loading while a pair is present returns `MODEL_ALREADY_LOADED`; call `unload`
 first. `load` retains immutable files and prepares registries, decoder tables and
 sessions; matrix payloads are staged when the existing runtime needs them.
-Preparation is transactional. If preparation and its cleanup both fail,
-`MODEL_PREPARATION_CLEANUP_FAILED` retains the cleanup capability;
-`modelStatus.cleanupRequired` is true, numerical execution returns
-`MODEL_CLEANUP_REQUIRED`, and `unload` may be retried. A failed ordinary unload
-also retains the owner for retry.
+Every failed paired `load` dispatched to the public Worker's owner terminates
+and discards that Worker before the error is returned. The original error code
+is preserved with `error.details.workerTerminated`, `preparationDiscarded`, and
+`reloadRequired` all true. This covers a factory failure before any cleanup owner
+is returned as well as a failure while describing or cleaning up a returned
+owner. Public model/P4 preparation state is cleared; a later `load` or
+`prepareP4` uses a fresh realm. Retained host LoRA weight-I/O bindings survive.
+Duplicate-load and model/P4-conflict rejections happen before dispatch and
+preserve the current prepared owner.
+
+The internal direct adapter has a narrower rollback boundary: after the factory
+returns an owner, description plus cleanup failure produces
+`MODEL_PREPARATION_CLEANUP_FAILED` and retains that owner for `unload` retry.
+A factory rejection returns no such owner to the adapter; public Worker
+termination supplies the final cleanup boundary. Callers of the public API
+observe the discarded-preparation policy above, not a retained failed-load
+owner.
+
+If `predict` or `sample` fails and native counters report closing or pending
+cleanup, the adapter retains the owner and returns `MODEL_CLEANUP_REQUIRED`.
+`modelStatus.cleanupRequired` remains true and further execution is blocked
+until successful `unload`. Unreadable resource counters conservatively require
+the same cleanup; status reports `resources:null`, and unavailable final counters
+do not prevent a successful disposal from completing `unload`. A failed ordinary
+unload also retains the owner for retry. Ordinary invalid-input failures with
+healthy resources preserve the loaded owner and allow corrected requests.
 
 The old `{file}` load form retains header inspection and returns `NOT_READY`
 with `MODEL_PAIR_REQUIRED`; its legacy single-Memory inspection reasons are not
@@ -62,8 +83,9 @@ cross-origin-isolated Worker with SharedArrayBuffer; otherwise loading returns
 `UNSUPPORTED_RESOURCE_CONFIG` without falling back to one thread. Other thread
 counts are unsupported. Every paired load starts in a fresh Worker after the
 prepared-model/P4 conflict checks, so a previous ORT initialization cannot
-silently determine the new profile. After a successful `unload` reply, the host
-terminates that Worker realm before a later load. Predicting HIGH/LOW within the
+silently determine the new profile. A failed paired load discards its Worker;
+after a successful `unload` reply, the host also terminates that Worker realm
+before a later load. Predicting HIGH/LOW within the
 same pair does not recreate the Worker. Four-thread execution is a resource
 configuration, not acceptance of additional model shapes. GitHub Pages does not
 acquire COOP/COEP headers from this adapter.
