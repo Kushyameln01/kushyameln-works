@@ -2,9 +2,9 @@
 
 API版: `works-ai-1`。Text EncoderとVAEは独立モジュール。包括処理と一括UI、別CodexのDiffusionモジュールはこの実装に含めない。
 
-文書revision: `OWNER-CAPABILITIES-1`（2026-11-02 JST）。`works-ai-1`とG1Cを維持する。通常入口に構成済み実装のdescriptor照会を追加し、詳細evidenceを診断側へ分ける。数値演算・モデル・固定shape・既存P2の意味は変えず、Text実最終正規化のmarkerを追加する。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sampleのmetadata検査は、実生成・復元・decodeの受入を意味しない。
+文書revision: `STANDALONE-STREAM-1`（2026-11-02 JST）。`works-ai-1`とG1Cを維持する。新しいcausal streaming manifest、独立raw latent入力、native末尾処理の保存契約は[単体API追補](../../../development/inference/standalone-20261102/API.md)を参照する。現在の実検証範囲は[単体RESULT](../../../development/inference/standalone-20261102/RESULT.md)にTextとVAEを分けて記録する。構造上の対応域と実数値受入を区別し、通常APIに参照やreceiptを要求しない。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sampleのmetadata検査は、実生成・復元・decodeの受入を意味しない。
 
-既存の診断受入はUMT5の24層FP32経路と、Wan2.1 VAEの5×16×16・F1正方形16×16・F1 Rect16×32の各固定graphである。今回の新規通常実行はRectと固定plain一件で、既存参照を再利用した。現在の能力は構成したmanifest/graphに限定し、大きな動画や別shapeへ合格を広げない。別shapeには対応bundleを用意して、その参照・gate・実WASMを診断側で個別に受け入れる。
+従来の診断受入はUMT5の24層FP32経路と、Wan2.1 VAEの5×16×16・F1正方形16×16・F1 Rect16×32の各固定graphである。前revisionではRectと固定plain一件を通常実行し、既存参照を再利用した。これらのscopeを維持する。新streaming graphの対応域や一部shapeの受入を、他のshape・実生成の合格へ広げない。
 
 ## 呼出し口
 
@@ -111,9 +111,9 @@ Bernini system promptの構築、negativeの選択と実際の文字列・line b
 | 既存公開bundle | `[1,3,5,16,16]` | `[1,16,2,2,2]` | `wan21-raw-f32-5x16x16`。既存FP32参照・ブラウザ受入を保持 |
 | F=1正方形診断bundle（非公開） | `[1,3,1,16,16]` | `[1,16,1,2,2]`（64要素） | `wan21-raw-f32-1x16x16`。元VAE FP32全出力・実Hike/ORT WASM受入済み。実workflow参照媒体ではない |
 | F=1非正方形診断bundle（非公開） | `[1,3,1,16,32]` | `[1,16,1,2,4]`（128要素） | `wan21-raw-f32-1x16x32`。元FP32全出力と実Hike/ORT WASM受入済み。既存128要素profileとshape/時間軸が異なる |
-| 元workflowのsource/video grid | `[1,3,81,480,832]` | `[1,16,21,60,104]` | 必要shape。未export・未ブラウザ受入 |
+| 元workflowのsource/video grid | `[1,3,81,480,832]` | `[1,16,21,60,104]` | 新69-unit stream graphをexport済み。全81frameの数値受入状況は単体RESULTを参照 |
 | 最終decode | `[1,3,81,480,832]`へ復元 | `[1,16,21,60,104]`からdecode | 同じgridでも生成sampleとmeanは別契約。実生成経路未実装 |
-| 静止参照画像、workflow gridを使う場合 | `[1,3,1,480,832]` | `[1,16,1,60,104]` | F=1用の別graphが必要。全slotをこの寸法へ変える意味ではない |
+| 静止参照画像、workflow gridを使う場合 | `[1,3,1,480,832]` | `[1,16,1,60,104]` | 新stream graphで独立参照・実WASMのencode/raw decodeを受入。全slotをこの寸法へ変える意味ではない |
 | 異なるratioの参照画像 | `[1,3,1,H_ref,W_ref]` | `[1,16,1,H_ref/8,W_ref/8]` | 画像・slotごとの実寸法を取得して固定profile化する |
 | 別ratio／長さの参照動画 | `[1,3,F_ref,H_ref,W_ref]` | `[1,16,(F_ref-1)/4+1,H_ref/8,W_ref/8]` | F/H/W確定後に別profileを検証。reference_videoは例workflowで未接続 |
 
@@ -121,7 +121,7 @@ workflowの81×480×832はRGB単体388,177,920 B、latent単体8,386,560 B（2,0
 
 Bernini例の `ref_max_size=848` は長辺上限であり、実参照画像が848×848という情報ではない。元nodeのresize/crop式と実媒体の寸法・EXIF・frame数は別に照合する。今回、縮小、padding、末尾切断、frame削減、縦横の入替えを追加・実行しない。受入済み5-frame graphをF=1や81へ流用せず、manifestだけの書換えも行わない。
 
-別profileの受入は、(1)実入力とrole/slot/F/H/Wを確定、(2)固定原VAE194 keys・FP32参照の全出力を保存、(3)新しい非公開bundleへopset17の固定exportとSHA/shape記録、(4)比較前に数値gateを固定、(5)実ブラウザで入力→Hike/ORT→全結果回収・照合・取消/解放・copy/cache/OS側RAM計測、(6)同じshape・意味の対向tensor接続、をprofileごとに行う。F=1・16×16と16×32の診断profileを個別export・実WASMで受け入れた。他のshapeへ合格を流用しない。小profileの0.002 gateや合格を大動画の画質・負荷へ自動転用しない。
+従来の固定profile方式の受入は、(1)実入力とrole/slot/F/H/Wを確定、(2)固定原VAE194 keys・FP32参照の全出力を保存、(3)新しい非公開bundleへopset17の固定exportとSHA/shape記録、(4)比較前に数値gateを固定、(5)実ブラウザで入力→Hike/ORT→全結果回収・照合・取消/解放・copy/cache/OS側RAM計測、(6)同じshape・意味の対向tensor接続、をprofileごとに行う。F=1・16×16と16×32の診断profileを個別export・実WASMで受け入れた。他のshapeへ合格を流用しない。小profileの0.002 gateや合格を大動画の画質・負荷へ自動転用しない。新stream方式ではdynamic unitとnative causal runtimeを別実装として扱い、比較前に登録した独立参照・新domain gateで全出力を検証する。
 
 ## Diffusionから受け取る生成sample
 

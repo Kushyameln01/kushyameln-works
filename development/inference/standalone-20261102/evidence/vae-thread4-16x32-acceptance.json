@@ -1,0 +1,3932 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "status": "ACCEPTED_SELECTED_CASE",
+  "scope": "One explicit synthetic VAE case, default normal owner API, actual ORT/Hike CPU WASM and independent all-value source comparison",
+  "executionSourceSha": "e5e954ac8faa304c5e90b469970b6fd7940d8c08",
+  "diagnostics": false,
+  "productionReady": false,
+  "originalBf16ArithmeticEquivalence": false,
+  "operations": {
+    "encode": {
+      "browser": {
+        "passed": true,
+        "operation": "encode",
+        "status": "NORMAL_OUTPUT_SAVED",
+        "controls": {
+          "reconfigureBeforeNormal": true,
+          "disposedCapability": {
+            "apiVersion": "works-ai-1",
+            "module": "vae",
+            "operations": [
+              "encode",
+              "decode"
+            ],
+            "inputSpace": "raw",
+            "encode": {
+              "input": {
+                "dtype": "float32",
+                "layout": "NCTHW",
+                "shape": null,
+                "meanings": {
+                  "raw-decoder-rgb": [
+                    -1,
+                    1
+                  ],
+                  "rgb-unit": [
+                    0,
+                    1
+                  ]
+                }
+              },
+              "output": {
+                "dtype": "float32",
+                "layout": "NCTHW",
+                "shape": null,
+                "meaning": "raw-posterior-mean",
+                "posterior": "mean",
+                "normalization": {
+                  "state": "raw",
+                  "conversionApplied": false
+                },
+                "modelSha256": null
+              },
+              "graph": null
+            },
+            "decode": {
+              "input": {
+                "dtype": "float32",
+                "layout": "NCTHW",
+                "shape": null,
+                "meaning": "raw-posterior-mean",
+                "meanings": [
+                  "raw-posterior-mean",
+                  "wan21-raw-latent:v1",
+                  "wan21-raw-generated-sample:v1"
+                ],
+                "normalization": {
+                  "state": "raw",
+                  "conversionApplied": false
+                },
+                "decoderModelSha256": null
+              },
+              "generatedSampleContract": {
+                "schemaVersion": 1,
+                "representation": "generated-sample",
+                "space": "raw",
+                "normalization": {
+                  "id": "wan21-comfy-f32-v1",
+                  "state": "restored",
+                  "owner": "diffusion_models"
+                },
+                "declaredOnly": true,
+                "realGenerationVerified": false
+              },
+              "output": {
+                "dtype": "float32",
+                "layout": "NCTHW",
+                "shape": null,
+                "meaning": "raw-decoder-rgb",
+                "clipped": false
+              },
+              "graph": null
+            },
+            "profile": null,
+            "model": null,
+            "constraints": {
+              "exactConfiguredShapes": true,
+              "manifest": {
+                "batch": 1,
+                "frames": "F=4n+1",
+                "heightWidth": "multiples of 8"
+              },
+              "exporter": {
+                "batch": 1,
+                "frames": "F=4n+1",
+                "minimumHeightWidth": 16,
+                "heightWidthMultiple": 16
+              },
+              "adaptation": "none"
+            },
+            "runtime": {
+              "encode": {
+                "verified": false
+              },
+              "decode": {
+                "verified": false
+              },
+              "note": "Configured declarations are not proof of graph execution; bytes and actual shapes are checked on each run."
+            },
+            "arithmetic": "BF16 values expanded to FP32",
+            "configured": false,
+            "disposed": true,
+            "support": {
+              "supported": false,
+              "code": "MODULE_DISPOSED",
+              "reason": "VAE module disposed",
+              "requiredChanges": [
+                "Create and configure a new VAE module"
+              ],
+              "scope": "configured-contract; runtime verification is separate"
+            }
+          },
+          "disposedError": "Error: VAE module disposed",
+          "cheapControlsWorkers": 0,
+          "cancelError": "Error: Inference cancelled",
+          "cancelAt": {
+            "phase": "chunk-complete",
+            "operation": "encode",
+            "profileId": "wan21-raw-f32-stream",
+            "chunkIndex": 0,
+            "chunkCount": 1
+          },
+          "cancelReturned": true,
+          "recoveryUsesSameAPI": true
+        },
+        "normalWallSeconds": 2.3446799999922514,
+        "output": {
+          "tensor": {
+            "dtype": "float32",
+            "shape": [
+              1,
+              16,
+              1,
+              2,
+              4
+            ],
+            "layout": "NCTHW",
+            "meaning": "raw-posterior-mean",
+            "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+            "context": {
+              "schemaVersion": 1,
+              "contextId": "reference-f1-16x32-encode",
+              "inputId": "synthetic-reference-f1-16x32",
+              "inputSha256": "ccda5ee363f91f2c866f8f0435a670d98dc8c655c9d5be6d02a44c258c930b74",
+              "slotId": "reference",
+              "sourceFrameIndices": [
+                0
+              ],
+              "sourceFrameTimesSeconds": [
+                0
+              ]
+            },
+            "frameProcessing": {
+              "schemaVersion": 1,
+              "policy": "wan21-causal-floor-v1",
+              "sourceFrames": 1,
+              "latentFrames": 1,
+              "consumedFrames": 1,
+              "unusedTailFrames": 0,
+              "sourceContext": {
+                "schemaVersion": 1,
+                "contextId": "reference-f1-16x32-encode",
+                "inputId": "synthetic-reference-f1-16x32",
+                "inputSha256": "ccda5ee363f91f2c866f8f0435a670d98dc8c655c9d5be6d02a44c258c930b74",
+                "slotId": "reference",
+                "sourceFrameIndices": [
+                  0
+                ],
+                "sourceFrameTimesSeconds": [
+                  0
+                ]
+              }
+            }
+          },
+          "inputDescriptor": {
+            "dtype": "float32",
+            "shape": [
+              1,
+              3,
+              1,
+              16,
+              32
+            ],
+            "layout": "NCTHW",
+            "meaning": "raw-decoder-rgb",
+            "context": {
+              "schemaVersion": 1,
+              "contextId": "reference-f1-16x32-encode",
+              "inputId": "synthetic-reference-f1-16x32",
+              "inputSha256": "ccda5ee363f91f2c866f8f0435a670d98dc8c655c9d5be6d02a44c258c930b74",
+              "slotId": "reference",
+              "sourceFrameIndices": [
+                0
+              ],
+              "sourceFrameTimesSeconds": [
+                0
+              ]
+            }
+          },
+          "binding": {
+            "operation": "encode",
+            "kind": "wan21-vae-stream-v1",
+            "inputShape": [
+              1,
+              3,
+              1,
+              16,
+              32
+            ],
+            "outputShape": [
+              1,
+              16,
+              1,
+              2,
+              4
+            ],
+            "assetsVerified": true,
+            "assetHashes": {
+              "encoder.conv1": "343691a09be1cff275f55f7de81ffcdb33c8afdcc40499d53e1b68f98aef0c1f",
+              "encoder.downsamples.0.residual.2": "e4d9694ab54c49dc0b4bc8c3165ca98308c0813b74cf9a71214fb84b9bd8dbd6",
+              "encoder.downsamples.0.residual.6": "3ff49646a9aecaadd98fea487fb08841d1a11e7a10e16ce425a264331255a6e5",
+              "residualAdd": "31d36f4f8c0a7be994b9821824a5eccd55cbf03509dd78f8815658aa72674f7c",
+              "encoder.downsamples.1.residual.2": "fc1795678d070703323f9d1c46beeb263aac213983f25b7fab43016bc2bde538",
+              "encoder.downsamples.1.residual.6": "9a03f4569841fbfce4b401894846c69c0d8a152a4ef189fb52476123492f222a",
+              "encoder.downsamples.2.spatial": "a1b11fc8ef1d83402aa99881a9110c0679225a216077630dff84b13d9d935bf8",
+              "encoder.downsamples.3.shortcut": "ef025a0a917270ffd1461cef3e7fbc5fdd659153e7f27a2df2ad33cc301b3394",
+              "encoder.downsamples.3.residual.2": "f30031a5bf0fcc259200739ad8fafb73783fb8daeb2d2ccbddbc2bc4999131f5",
+              "encoder.downsamples.3.residual.6": "14c43702a9fb0bca957098b36d0e1d2b7d01bc43dde0c70b764ea6df31e4222d",
+              "encoder.downsamples.4.residual.2": "9cbaa886a8303ca21e72de1cb34db33950806a9c7d96a1486a87f71b8458ba46",
+              "encoder.downsamples.4.residual.6": "40d7ab6a1b30f6051daa5fb97a4d343591709e96833aa744b897e27b5138f692",
+              "encoder.downsamples.5.spatial": "cf44c6be12b75ac458c71736512fae6fb06e342c7a543bc875ed27056c6ab714",
+              "encoder.downsamples.6.shortcut": "585423203d3a8f8d6a79becc86f8cb0414775bf1b1b136cc2ebca37589eabaa5",
+              "encoder.downsamples.6.residual.2": "97a1535389eec57bb1abdd3eff34e7d6dd13654248ef1a166ab1f22d75dfeb89",
+              "encoder.downsamples.6.residual.6": "0d4c418fb02855883033a407bb92e6e21cbef90ba71579d31b7568100b66a51f",
+              "encoder.downsamples.7.residual.2": "86e98d279b04152e3ab76ba60d05ccfae14e38a3a69dd28df8b67fdd4547612f",
+              "encoder.downsamples.7.residual.6": "b5e9dc9ceb2c6d4b039c49fc409258b760b73f44fdf06e7653b9d16e9a3165ac",
+              "encoder.downsamples.8.spatial": "9063cab94b863a15fa3d796054beb2008f5483bc8e90741fa6c189ddf767fad6",
+              "encoder.downsamples.9.residual.2": "7885ab4533f4e2cf3dbf00da8a8f9d1206513b27096d91ccca774acb0b5a911a",
+              "encoder.downsamples.9.residual.6": "277e3bedba13e87c7c18d8f4a54a0f0f2b7ada2bc116bd619b69449616d9c21f",
+              "encoder.downsamples.10.residual.2": "fc163dc639022d0e94e2ae934d18066b063a4a2dbc5875cf38f00b3b1fc5112d",
+              "encoder.downsamples.10.residual.6": "b04bda40de4896f977b68c6b4e453b428d5076d201f66cf07e70d2c776c81e7c",
+              "encoder.middle.0.residual.2": "3455c77c28730ba8b1af7ff458e68932800df01556da831d64a37ed584b9fe19",
+              "encoder.middle.0.residual.6": "dd4f76b8db8fa359cac855ff5c24343dfb25a21fdf394a6759c8812ac0b882cd",
+              "encoder.middle.1": "2a509de4f7dab50a8e92dfd3f8fa3d4d963275b005b3dae5f15413451a431c3d",
+              "encoder.middle.2.residual.2": "095226ccea6bad522f5ab421bdb6220836904b13f81eb9a3f7f8acaec9e28b53",
+              "encoder.middle.2.residual.6": "3080d91b235a34875223b67abc30010771ec2a300f245d138762371bb22e8914",
+              "encoder.head.2": "3ca7672224fa50617056b28cdabbca344dd5b9ef027141af68e64053a965536d",
+              "conv1": "3fa4f2f0b8af83056f8a6a52fabfb2f2538d0510378199f3246284f79fab559f"
+            },
+            "graphMetadataChecked": true,
+            "executionProvider": "wasm",
+            "threads": 4
+          },
+          "processing": {
+            "sourceFrames": 1,
+            "latentFrames": 1,
+            "consumedFrames": 1,
+            "ignoredTailFrames": 0,
+            "decodedFrames": 1,
+            "tailRule": "native-floor-complete-groups-of-four-after-first-frame",
+            "consumedFrameIndices": [
+              0
+            ],
+            "ignoredTailFrameIndices": []
+          },
+          "resultKeys": [
+            "tensor",
+            "inputDescriptor",
+            "binding",
+            "processing"
+          ]
+        },
+        "observation": {
+          "jobId": "2",
+          "inputRevision": 2,
+          "stage": "native-final",
+          "created": 39,
+          "released": 39,
+          "active": 0,
+          "maximumActive": 1,
+          "runCalls": 39,
+          "tensorDisposeCalls": 132,
+          "loadMs": 638.2000000327826,
+          "inferMs": 241.54999995231628,
+          "createAttempts": 39,
+          "createErrors": 0,
+          "runErrors": 0,
+          "releaseCalls": 39,
+          "releaseErrors": 0,
+          "repeatedReleaseCalls": 0,
+          "tensorDisposeErrors": 0,
+          "memorySummary": {
+            "readCalls": 39,
+            "readBytes": 212288572,
+            "digestCalls": 40,
+            "digestInputBytes": 212293837,
+            "ortSubmittedModelBytes": 212288572,
+            "wasmGrowCalls": 7,
+            "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+            "events": 177,
+            "maximumSingleWasmCapacityBytes": 58130432,
+            "maximumObservedWasmCapacitySumBytes": 59965440,
+            "maximumDeclaredWasmPages": 65536,
+            "maximumObservedMemoryCount": 2,
+            "wasmGrowFailures": 0
+          },
+          "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+        },
+        "codec": {
+          "bytes": 1516,
+          "download": "encode-reference-f1-16x32.wktensor",
+          "allValuesExact": true,
+          "metadataExact": true
+        },
+        "inputPreserved": true,
+        "capabilitiesAfter": {
+          "apiVersion": "works-ai-1",
+          "module": "vae",
+          "operations": [
+            "encode",
+            "decode"
+          ],
+          "configured": true,
+          "disposed": false,
+          "profile": {
+            "id": "wan21-raw-f32-stream",
+            "layout": "NCTHW",
+            "latentSpace": "raw",
+            "posterior": "mean",
+            "opset": 17
+          },
+          "model": {
+            "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+            "storedDtype": "bfloat16",
+            "executionDtype": "float32",
+            "precisionNote": "Stored BF16 coefficients are unchanged. FP32 arithmetic is not asserted identical to BF16 execution."
+          },
+          "domain": {
+            "maxSourceFrames": 81,
+            "minSpatial": 16,
+            "maxSpatial": 848,
+            "spatialStride": 16
+          },
+          "inference": {
+            "executionProvider": "wasm",
+            "threads": 4,
+            "graphOptimizationLevel": "disabled"
+          },
+          "encode": {
+            "input": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                3,
+                1,
+                16,
+                32
+              ],
+              "meanings": {
+                "rgb-unit": [
+                  0,
+                  1
+                ],
+                "raw-decoder-rgb": [
+                  -1,
+                  1
+                ]
+              }
+            },
+            "output": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                16,
+                1,
+                2,
+                4
+              ],
+              "meaning": "raw-posterior-mean",
+              "normalization": {
+                "state": "raw",
+                "conversionApplied": false
+              },
+              "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+            },
+            "graph": {
+              "kind": "wan21-vae-stream-v1",
+              "assetIds": [
+                "encoder.conv1",
+                "residualAdd",
+                "encoder.downsamples.0.residual.2",
+                "encoder.downsamples.0.residual.6",
+                "encoder.downsamples.1.residual.2",
+                "encoder.downsamples.1.residual.6",
+                "encoder.downsamples.2.spatial",
+                "encoder.downsamples.3.shortcut",
+                "encoder.downsamples.3.residual.2",
+                "encoder.downsamples.3.residual.6",
+                "encoder.downsamples.4.residual.2",
+                "encoder.downsamples.4.residual.6",
+                "encoder.downsamples.5.spatial",
+                "encoder.downsamples.5.temporal",
+                "encoder.downsamples.6.shortcut",
+                "encoder.downsamples.6.residual.2",
+                "encoder.downsamples.6.residual.6",
+                "encoder.downsamples.7.residual.2",
+                "encoder.downsamples.7.residual.6",
+                "encoder.downsamples.8.spatial",
+                "encoder.downsamples.8.temporal",
+                "encoder.downsamples.9.residual.2",
+                "encoder.downsamples.9.residual.6",
+                "encoder.downsamples.10.residual.2",
+                "encoder.downsamples.10.residual.6",
+                "encoder.middle.0.residual.2",
+                "encoder.middle.0.residual.6",
+                "encoder.middle.1",
+                "encoder.middle.2.residual.2",
+                "encoder.middle.2.residual.6",
+                "encoder.head.2",
+                "conv1"
+              ],
+              "shapeBinding": "dynamic spatial units; native temporal host program"
+            }
+          },
+          "decode": {
+            "input": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                16,
+                "T",
+                "H/8",
+                "W/8"
+              ],
+              "meanings": [
+                "raw-posterior-mean",
+                "wan21-raw-latent:v1",
+                "wan21-raw-generated-sample:v1"
+              ],
+              "normalization": {
+                "state": "raw",
+                "conversionApplied": false
+              },
+              "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+            },
+            "output": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                3,
+                "4*(T-1)+1",
+                "H",
+                "W"
+              ],
+              "meaning": "raw-decoder-rgb",
+              "clipped": false
+            },
+            "graph": {
+              "kind": "wan21-vae-stream-v1",
+              "assetIds": [
+                "conv2Weight",
+                "conv2Bias",
+                "decoder.conv1",
+                "residualAdd",
+                "decoder.middle.0.residual.2",
+                "decoder.middle.0.residual.6",
+                "decoder.middle.1",
+                "decoder.middle.2.residual.2",
+                "decoder.middle.2.residual.6",
+                "decoder.upsamples.0.residual.2",
+                "decoder.upsamples.0.residual.6",
+                "decoder.upsamples.1.residual.2",
+                "decoder.upsamples.1.residual.6",
+                "decoder.upsamples.2.residual.2",
+                "decoder.upsamples.2.residual.6",
+                "decoder.upsamples.3.spatial",
+                "decoder.upsamples.3.temporal",
+                "decoder.upsamples.4.shortcut",
+                "decoder.upsamples.4.residual.2",
+                "decoder.upsamples.4.residual.6",
+                "decoder.upsamples.5.residual.2",
+                "decoder.upsamples.5.residual.6",
+                "decoder.upsamples.6.residual.2",
+                "decoder.upsamples.6.residual.6",
+                "decoder.upsamples.7.spatial",
+                "decoder.upsamples.7.temporal",
+                "decoder.upsamples.8.residual.2",
+                "decoder.upsamples.8.residual.6",
+                "decoder.upsamples.9.residual.2",
+                "decoder.upsamples.9.residual.6",
+                "decoder.upsamples.10.residual.2",
+                "decoder.upsamples.10.residual.6",
+                "decoder.upsamples.11.spatial",
+                "decoder.upsamples.12.residual.2",
+                "decoder.upsamples.12.residual.6",
+                "decoder.upsamples.13.residual.2",
+                "decoder.upsamples.13.residual.6",
+                "decoder.upsamples.14.residual.2",
+                "decoder.upsamples.14.residual.6",
+                "decoder.head.2"
+              ],
+              "shapeBinding": "dynamic spatial units; native temporal host program"
+            }
+          },
+          "constraints": {
+            "batch": 1,
+            "inputFrames": "1..81 including native incomplete tail",
+            "spatialMultiple": 16,
+            "minimumSpatial": 16,
+            "maximumSpatial": 848,
+            "adaptation": "none",
+            "tail": "first1 then complete groups4; explicitly reported unused tail"
+          },
+          "runtime": {
+            "encode": {
+              "verified": true,
+              "operation": "encode",
+              "kind": "wan21-vae-stream-v1",
+              "inputShape": [
+                1,
+                3,
+                1,
+                16,
+                32
+              ],
+              "outputShape": [
+                1,
+                16,
+                1,
+                2,
+                4
+              ],
+              "assetsVerified": true,
+              "assetHashes": {
+                "encoder.conv1": "343691a09be1cff275f55f7de81ffcdb33c8afdcc40499d53e1b68f98aef0c1f",
+                "encoder.downsamples.0.residual.2": "e4d9694ab54c49dc0b4bc8c3165ca98308c0813b74cf9a71214fb84b9bd8dbd6",
+                "encoder.downsamples.0.residual.6": "3ff49646a9aecaadd98fea487fb08841d1a11e7a10e16ce425a264331255a6e5",
+                "residualAdd": "31d36f4f8c0a7be994b9821824a5eccd55cbf03509dd78f8815658aa72674f7c",
+                "encoder.downsamples.1.residual.2": "fc1795678d070703323f9d1c46beeb263aac213983f25b7fab43016bc2bde538",
+                "encoder.downsamples.1.residual.6": "9a03f4569841fbfce4b401894846c69c0d8a152a4ef189fb52476123492f222a",
+                "encoder.downsamples.2.spatial": "a1b11fc8ef1d83402aa99881a9110c0679225a216077630dff84b13d9d935bf8",
+                "encoder.downsamples.3.shortcut": "ef025a0a917270ffd1461cef3e7fbc5fdd659153e7f27a2df2ad33cc301b3394",
+                "encoder.downsamples.3.residual.2": "f30031a5bf0fcc259200739ad8fafb73783fb8daeb2d2ccbddbc2bc4999131f5",
+                "encoder.downsamples.3.residual.6": "14c43702a9fb0bca957098b36d0e1d2b7d01bc43dde0c70b764ea6df31e4222d",
+                "encoder.downsamples.4.residual.2": "9cbaa886a8303ca21e72de1cb34db33950806a9c7d96a1486a87f71b8458ba46",
+                "encoder.downsamples.4.residual.6": "40d7ab6a1b30f6051daa5fb97a4d343591709e96833aa744b897e27b5138f692",
+                "encoder.downsamples.5.spatial": "cf44c6be12b75ac458c71736512fae6fb06e342c7a543bc875ed27056c6ab714",
+                "encoder.downsamples.6.shortcut": "585423203d3a8f8d6a79becc86f8cb0414775bf1b1b136cc2ebca37589eabaa5",
+                "encoder.downsamples.6.residual.2": "97a1535389eec57bb1abdd3eff34e7d6dd13654248ef1a166ab1f22d75dfeb89",
+                "encoder.downsamples.6.residual.6": "0d4c418fb02855883033a407bb92e6e21cbef90ba71579d31b7568100b66a51f",
+                "encoder.downsamples.7.residual.2": "86e98d279b04152e3ab76ba60d05ccfae14e38a3a69dd28df8b67fdd4547612f",
+                "encoder.downsamples.7.residual.6": "b5e9dc9ceb2c6d4b039c49fc409258b760b73f44fdf06e7653b9d16e9a3165ac",
+                "encoder.downsamples.8.spatial": "9063cab94b863a15fa3d796054beb2008f5483bc8e90741fa6c189ddf767fad6",
+                "encoder.downsamples.9.residual.2": "7885ab4533f4e2cf3dbf00da8a8f9d1206513b27096d91ccca774acb0b5a911a",
+                "encoder.downsamples.9.residual.6": "277e3bedba13e87c7c18d8f4a54a0f0f2b7ada2bc116bd619b69449616d9c21f",
+                "encoder.downsamples.10.residual.2": "fc163dc639022d0e94e2ae934d18066b063a4a2dbc5875cf38f00b3b1fc5112d",
+                "encoder.downsamples.10.residual.6": "b04bda40de4896f977b68c6b4e453b428d5076d201f66cf07e70d2c776c81e7c",
+                "encoder.middle.0.residual.2": "3455c77c28730ba8b1af7ff458e68932800df01556da831d64a37ed584b9fe19",
+                "encoder.middle.0.residual.6": "dd4f76b8db8fa359cac855ff5c24343dfb25a21fdf394a6759c8812ac0b882cd",
+                "encoder.middle.1": "2a509de4f7dab50a8e92dfd3f8fa3d4d963275b005b3dae5f15413451a431c3d",
+                "encoder.middle.2.residual.2": "095226ccea6bad522f5ab421bdb6220836904b13f81eb9a3f7f8acaec9e28b53",
+                "encoder.middle.2.residual.6": "3080d91b235a34875223b67abc30010771ec2a300f245d138762371bb22e8914",
+                "encoder.head.2": "3ca7672224fa50617056b28cdabbca344dd5b9ef027141af68e64053a965536d",
+                "conv1": "3fa4f2f0b8af83056f8a6a52fabfb2f2538d0510378199f3246284f79fab559f"
+              },
+              "graphMetadataChecked": true,
+              "executionProvider": "wasm",
+              "threads": 4
+            },
+            "decode": {
+              "verified": false
+            },
+            "note": "Domain declaration is structural; verified records describe the last completed operation shape only"
+          },
+          "processing": {
+            "sourceFrames": 1,
+            "latentFrames": 1,
+            "consumedFrames": 1,
+            "ignoredTailFrames": 0,
+            "decodedFrames": 1,
+            "tailRule": "native-floor-complete-groups-of-four-after-first-frame",
+            "consumedFrameIndices": [
+              0
+            ],
+            "ignoredTailFrameIndices": []
+          },
+          "support": {
+            "supported": true,
+            "code": "SUPPORTED",
+            "reason": "Descriptor matches the configured exact shape and native semantics",
+            "requiredChanges": [],
+            "scope": "configured-contract; runtime verification is separate"
+          }
+        }
+      },
+      "comparison": {
+        "passed": true,
+        "file": "encode-reference-f1-16x32.wktensor",
+        "bytes": 1516,
+        "fileSha256": "317e9d0de724ebc2c6ee4e3d575b4cf08ac731c8f966339e1aef3ec390b09eac",
+        "payloadSha256": "64a5c494a4c9ff6a5c0a4a5a28a8c78c1051bc74fce88f764b2e605615bfced0",
+        "header": {
+          "schemaVersion": 1,
+          "dtype": "float32",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-posterior-mean",
+          "byteOrder": "little",
+          "byteLength": 512,
+          "dataSha256": "64a5c494a4c9ff6a5c0a4a5a28a8c78c1051bc74fce88f764b2e605615bfced0",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "context": {
+            "schemaVersion": 1,
+            "contextId": "reference-f1-16x32-encode",
+            "inputId": "synthetic-reference-f1-16x32",
+            "inputSha256": "ccda5ee363f91f2c866f8f0435a670d98dc8c655c9d5be6d02a44c258c930b74",
+            "slotId": "reference",
+            "sourceFrameIndices": [
+              0
+            ],
+            "sourceFrameTimesSeconds": [
+              0
+            ]
+          },
+          "frameProcessing": {
+            "schemaVersion": 1,
+            "policy": "wan21-causal-floor-v1",
+            "sourceFrames": 1,
+            "latentFrames": 1,
+            "consumedFrames": 1,
+            "unusedTailFrames": 0,
+            "sourceContext": {
+              "schemaVersion": 1,
+              "contextId": "reference-f1-16x32-encode",
+              "inputId": "synthetic-reference-f1-16x32",
+              "inputSha256": "ccda5ee363f91f2c866f8f0435a670d98dc8c655c9d5be6d02a44c258c930b74",
+              "slotId": "reference",
+              "sourceFrameIndices": [
+                0
+              ],
+              "sourceFrameTimesSeconds": [
+                0
+              ]
+            }
+          }
+        },
+        "reference": {
+          "file": "mean-reference.f32",
+          "sha256": "f42033ca360629f3f03ec15a45a69458f0d3165bde2a4c6addef71ef65f07b52"
+        },
+        "elements": 128,
+        "allValuesCompared": true,
+        "allFinite": true,
+        "allclose": true,
+        "maxAbs": 7.152557373046875e-07,
+        "rmse": 2.742357562638177e-07,
+        "failedAllcloseElements": 0,
+        "firstFailedElement": null,
+        "gate": {
+          "atol": 0.002,
+          "rtol": 0.002,
+          "maxAbs": 0.002,
+          "registeredBeforeComparison": true,
+          "scope": "New declared FP32 synthetic shape domain; proposed before comparison, not transferred from tiny-model tolerances."
+        },
+        "method": "Chunked little-endian FP32 file memmaps; no frame/pixel/channel subset"
+      }
+    },
+    "decode": {
+      "browser": {
+        "passed": true,
+        "operation": "decode",
+        "status": "NORMAL_OUTPUT_SAVED",
+        "normalWallSeconds": 3.148980000004172,
+        "output": {
+          "tensor": {
+            "dtype": "float32",
+            "shape": [
+              1,
+              3,
+              1,
+              16,
+              32
+            ],
+            "layout": "NCTHW",
+            "meaning": "raw-decoder-rgb",
+            "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+            "context": {
+              "schemaVersion": 1,
+              "contextId": "reference-f1-16x32-decode",
+              "inputId": "synthetic-reference-f1-16x32",
+              "inputSha256": "7da10920b8b9b630d49569b9cef26185a81d61497aa3de6b77fbba59ec947a79",
+              "slotId": "reference",
+              "sourceFrameIndices": [
+                0
+              ],
+              "sourceFrameTimesSeconds": [
+                0
+              ]
+            },
+            "frameProcessing": {
+              "schemaVersion": 1,
+              "policy": "wan21-causal-floor-v1",
+              "sourceFrames": 1,
+              "latentFrames": 1,
+              "consumedFrames": 1,
+              "unusedTailFrames": 0
+            }
+          },
+          "inputDescriptor": {
+            "dtype": "float32",
+            "shape": [
+              1,
+              16,
+              1,
+              2,
+              4
+            ],
+            "layout": "NCTHW",
+            "meaning": "wan21-raw-latent:v1",
+            "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+            "context": {
+              "schemaVersion": 1,
+              "contextId": "reference-f1-16x32-decode",
+              "inputId": "synthetic-reference-f1-16x32",
+              "inputSha256": "7da10920b8b9b630d49569b9cef26185a81d61497aa3de6b77fbba59ec947a79",
+              "slotId": "reference",
+              "sourceFrameIndices": [
+                0
+              ],
+              "sourceFrameTimesSeconds": [
+                0
+              ]
+            }
+          },
+          "binding": {
+            "operation": "decode",
+            "kind": "wan21-vae-stream-v1",
+            "inputShape": [
+              1,
+              16,
+              1,
+              2,
+              4
+            ],
+            "outputShape": [
+              1,
+              3,
+              1,
+              16,
+              32
+            ],
+            "assetsVerified": true,
+            "assetHashes": {
+              "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+              "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+              "decoder.conv1": "30ac55b7223621fee9564fe4a3b52a744c31641cf4b233cb2e747db748ec1451",
+              "decoder.middle.0.residual.2": "730bb2dcac88b12dcd4a2af3986dd4e16eab3f151584d2ca6bd86bb687857a5b",
+              "decoder.middle.0.residual.6": "6b601530e36c4a8a4052fec9c96246443ee839d3915391ae3d06375760f996e7",
+              "residualAdd": "31d36f4f8c0a7be994b9821824a5eccd55cbf03509dd78f8815658aa72674f7c",
+              "decoder.middle.1": "83d17e9c1d840b5281aac47a8890121fffc60eb646cdd8c3aa14b68b05086f1b",
+              "decoder.middle.2.residual.2": "cc899e0913d08a16f5db491f96575fea123cb3be90011d153b610490871dd273",
+              "decoder.middle.2.residual.6": "67f0bfd713db130c21242a0c10bb065c76f1f772e11e501e3f15381c65084b97",
+              "decoder.upsamples.0.residual.2": "3d6107085b124100d7e13f88d6beb8b103d417758071fc0b4a4dae7be305f3f1",
+              "decoder.upsamples.0.residual.6": "44738b4b1c3fd433d8ef175010932d7a874a69bde1070875c1b264e01425fc3d",
+              "decoder.upsamples.1.residual.2": "4a49bc5f6508e42d88ee548e67a8e1f920b8fd384feb79d65dd9a59a64f12d61",
+              "decoder.upsamples.1.residual.6": "f5aafb9b6d855eb16c456ddb46bb6fe35f422601ba558d0d702f9101b139f9d4",
+              "decoder.upsamples.2.residual.2": "527fa3f9905cef7146c44099576304e99047acfe0fe33079d329b2dfa8bd9075",
+              "decoder.upsamples.2.residual.6": "aa6f10e984e757da88cfd612c1ad6e6d288a2af37450e65a16844c9397bb0e39",
+              "decoder.upsamples.3.spatial": "72783c1142a12f369bae6624ffac1597e76944d48d867c9c1755b459500ce64c",
+              "decoder.upsamples.4.shortcut": "0f912d38a35fca6bd97913f21dd25a6aedd03362ac49dafce1abd7988d31766a",
+              "decoder.upsamples.4.residual.2": "08883123671765134fdfe16edde4f73646473db04b49816c6d3f8d668ff9a700",
+              "decoder.upsamples.4.residual.6": "e3c56f4d385df7053180e234ecce093c5b8c2074e1b4a2768f5501edf6c45a0f",
+              "decoder.upsamples.5.residual.2": "bfc50153038249549a1b08b9e5a92a874f163160fde623162f150677a5545468",
+              "decoder.upsamples.5.residual.6": "41e700cd9d4062220bde9f79549b6026107032a357a9bdc1cfa19c82e232aaa2",
+              "decoder.upsamples.6.residual.2": "06e01fb58d1657539e60753b6e4366e5229afc497ef43e6dceecbb783333f2f5",
+              "decoder.upsamples.6.residual.6": "716856f5fe38fb9c4aa3c79ae2fccb28ab11f3835338b2bd80408fa8a2105ad6",
+              "decoder.upsamples.7.spatial": "3a77a8b3805e6ff06bb0a5b3861cf76b4122a92f8e893ada4fd7b3388a90f1bc",
+              "decoder.upsamples.8.residual.2": "4681e3e650fa99e01edbc7ee18bc1dbd930b988ce39cb1c45cb7f503b6833d57",
+              "decoder.upsamples.8.residual.6": "2ebaa7a081c6594835420b4708e3fd3d8364623511d8b0dd9791b988942b8179",
+              "decoder.upsamples.9.residual.2": "0ffa8b905821cc4d9f18b6b08b15b700117f3046fe35651a6772fc772b56c1cb",
+              "decoder.upsamples.9.residual.6": "4786c50cc0454ab0b5bcf1c9efc828da3bb3c45cf8de3460c83cc34c0aed8033",
+              "decoder.upsamples.10.residual.2": "2ffe73a4b86254d4d2e208117e5f9758fca69370279fceb7345291d0ba982b8b",
+              "decoder.upsamples.10.residual.6": "bbe369f21324af4e79010101e579d203745667e93cc09da61167aacd73baf6f8",
+              "decoder.upsamples.11.spatial": "f42c34d3a4d424f27ad7cca42655f58f70851f5e2fc010030aa33469f95c80d3",
+              "decoder.upsamples.12.residual.2": "d67a364dd842d21376217ba56d96e0d8a99626dd9984f3be3d55e7170cad9ad7",
+              "decoder.upsamples.12.residual.6": "9055a7c7fad62ed466e56e3f7f7f84321e80e5c38b8d9b754bc37a227df7fa9e",
+              "decoder.upsamples.13.residual.2": "78a38b4e02a8677d4a5f86dcd7267b9a718a213db05e3509f404979319639c23",
+              "decoder.upsamples.13.residual.6": "d9ac665a95a990e48b2b2317a61ee716a13e65821cbf32637a176865e2b7e622",
+              "decoder.upsamples.14.residual.2": "3045589a6f65b74b9bb010bdcd1bdbd32e94a333808444feab6d1c94f0c4d149",
+              "decoder.upsamples.14.residual.6": "751669b5bdd311dbdb888df64fc606d01e0ffee13761dc4e5ac01a844896ad9d",
+              "decoder.head.2": "548760312cc053a67a6b1094d483efaed3913b7d2d84c8f22edf5f38f608c8f3"
+            },
+            "graphMetadataChecked": true,
+            "executionProvider": "wasm",
+            "threads": 4
+          },
+          "processing": {
+            "sourceFrames": 1,
+            "latentFrames": 1,
+            "consumedFrames": 1,
+            "ignoredTailFrames": 0,
+            "decodedFrames": 1,
+            "tailRule": "native-floor-complete-groups-of-four-after-first-frame",
+            "consumedFrameIndices": [
+              0
+            ],
+            "ignoredTailFrameIndices": []
+          },
+          "resultKeys": [
+            "tensor",
+            "inputDescriptor",
+            "binding",
+            "processing"
+          ]
+        },
+        "observation": {
+          "jobId": "3",
+          "inputRevision": 3,
+          "stage": "native-final",
+          "created": 49,
+          "released": 49,
+          "active": 0,
+          "maximumActive": 1,
+          "runCalls": 49,
+          "tensorDisposeCalls": 172,
+          "loadMs": 740.355000063777,
+          "inferMs": 473.4350000321865,
+          "createAttempts": 49,
+          "createErrors": 0,
+          "runErrors": 0,
+          "releaseCalls": 49,
+          "releaseErrors": 0,
+          "repeatedReleaseCalls": 0,
+          "tensorDisposeErrors": 0,
+          "memorySummary": {
+            "readCalls": 51,
+            "readBytes": 286235519,
+            "digestCalls": 52,
+            "digestInputBytes": 286240784,
+            "ortSubmittedModelBytes": 286234431,
+            "wasmGrowCalls": 4,
+            "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+            "events": 219,
+            "maximumSingleWasmCapacityBytes": 59441152,
+            "maximumObservedWasmCapacitySumBytes": 61276160,
+            "maximumDeclaredWasmPages": 65536,
+            "maximumObservedMemoryCount": 2,
+            "wasmGrowFailures": 0
+          },
+          "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+        },
+        "codec": {
+          "bytes": 6873,
+          "download": "decode-reference-f1-16x32.wktensor",
+          "allValuesExact": true,
+          "metadataExact": true
+        },
+        "inputPreserved": true,
+        "capabilitiesAfter": {
+          "apiVersion": "works-ai-1",
+          "module": "vae",
+          "operations": [
+            "encode",
+            "decode"
+          ],
+          "configured": true,
+          "disposed": false,
+          "profile": {
+            "id": "wan21-raw-f32-stream",
+            "layout": "NCTHW",
+            "latentSpace": "raw",
+            "posterior": "mean",
+            "opset": 17
+          },
+          "model": {
+            "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+            "storedDtype": "bfloat16",
+            "executionDtype": "float32",
+            "precisionNote": "Stored BF16 coefficients are unchanged. FP32 arithmetic is not asserted identical to BF16 execution."
+          },
+          "domain": {
+            "maxSourceFrames": 81,
+            "minSpatial": 16,
+            "maxSpatial": 848,
+            "spatialStride": 16
+          },
+          "inference": {
+            "executionProvider": "wasm",
+            "threads": 4,
+            "graphOptimizationLevel": "disabled"
+          },
+          "encode": {
+            "input": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                3,
+                "F",
+                "H",
+                "W"
+              ],
+              "meanings": {
+                "rgb-unit": [
+                  0,
+                  1
+                ],
+                "raw-decoder-rgb": [
+                  -1,
+                  1
+                ]
+              }
+            },
+            "output": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                16,
+                "floor((F-1)/4)+1",
+                "H/8",
+                "W/8"
+              ],
+              "meaning": "raw-posterior-mean",
+              "normalization": {
+                "state": "raw",
+                "conversionApplied": false
+              },
+              "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+            },
+            "graph": {
+              "kind": "wan21-vae-stream-v1",
+              "assetIds": [
+                "encoder.conv1",
+                "residualAdd",
+                "encoder.downsamples.0.residual.2",
+                "encoder.downsamples.0.residual.6",
+                "encoder.downsamples.1.residual.2",
+                "encoder.downsamples.1.residual.6",
+                "encoder.downsamples.2.spatial",
+                "encoder.downsamples.3.shortcut",
+                "encoder.downsamples.3.residual.2",
+                "encoder.downsamples.3.residual.6",
+                "encoder.downsamples.4.residual.2",
+                "encoder.downsamples.4.residual.6",
+                "encoder.downsamples.5.spatial",
+                "encoder.downsamples.5.temporal",
+                "encoder.downsamples.6.shortcut",
+                "encoder.downsamples.6.residual.2",
+                "encoder.downsamples.6.residual.6",
+                "encoder.downsamples.7.residual.2",
+                "encoder.downsamples.7.residual.6",
+                "encoder.downsamples.8.spatial",
+                "encoder.downsamples.8.temporal",
+                "encoder.downsamples.9.residual.2",
+                "encoder.downsamples.9.residual.6",
+                "encoder.downsamples.10.residual.2",
+                "encoder.downsamples.10.residual.6",
+                "encoder.middle.0.residual.2",
+                "encoder.middle.0.residual.6",
+                "encoder.middle.1",
+                "encoder.middle.2.residual.2",
+                "encoder.middle.2.residual.6",
+                "encoder.head.2",
+                "conv1"
+              ],
+              "shapeBinding": "dynamic spatial units; native temporal host program"
+            }
+          },
+          "decode": {
+            "input": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                16,
+                1,
+                2,
+                4
+              ],
+              "meanings": [
+                "raw-posterior-mean",
+                "wan21-raw-latent:v1",
+                "wan21-raw-generated-sample:v1"
+              ],
+              "normalization": {
+                "state": "raw",
+                "conversionApplied": false
+              },
+              "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+            },
+            "output": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                3,
+                1,
+                16,
+                32
+              ],
+              "meaning": "raw-decoder-rgb",
+              "clipped": false
+            },
+            "graph": {
+              "kind": "wan21-vae-stream-v1",
+              "assetIds": [
+                "conv2Weight",
+                "conv2Bias",
+                "decoder.conv1",
+                "residualAdd",
+                "decoder.middle.0.residual.2",
+                "decoder.middle.0.residual.6",
+                "decoder.middle.1",
+                "decoder.middle.2.residual.2",
+                "decoder.middle.2.residual.6",
+                "decoder.upsamples.0.residual.2",
+                "decoder.upsamples.0.residual.6",
+                "decoder.upsamples.1.residual.2",
+                "decoder.upsamples.1.residual.6",
+                "decoder.upsamples.2.residual.2",
+                "decoder.upsamples.2.residual.6",
+                "decoder.upsamples.3.spatial",
+                "decoder.upsamples.3.temporal",
+                "decoder.upsamples.4.shortcut",
+                "decoder.upsamples.4.residual.2",
+                "decoder.upsamples.4.residual.6",
+                "decoder.upsamples.5.residual.2",
+                "decoder.upsamples.5.residual.6",
+                "decoder.upsamples.6.residual.2",
+                "decoder.upsamples.6.residual.6",
+                "decoder.upsamples.7.spatial",
+                "decoder.upsamples.7.temporal",
+                "decoder.upsamples.8.residual.2",
+                "decoder.upsamples.8.residual.6",
+                "decoder.upsamples.9.residual.2",
+                "decoder.upsamples.9.residual.6",
+                "decoder.upsamples.10.residual.2",
+                "decoder.upsamples.10.residual.6",
+                "decoder.upsamples.11.spatial",
+                "decoder.upsamples.12.residual.2",
+                "decoder.upsamples.12.residual.6",
+                "decoder.upsamples.13.residual.2",
+                "decoder.upsamples.13.residual.6",
+                "decoder.upsamples.14.residual.2",
+                "decoder.upsamples.14.residual.6",
+                "decoder.head.2"
+              ],
+              "shapeBinding": "dynamic spatial units; native temporal host program"
+            }
+          },
+          "constraints": {
+            "batch": 1,
+            "inputFrames": "1..81 including native incomplete tail",
+            "spatialMultiple": 16,
+            "minimumSpatial": 16,
+            "maximumSpatial": 848,
+            "adaptation": "none",
+            "tail": "first1 then complete groups4; explicitly reported unused tail"
+          },
+          "runtime": {
+            "encode": {
+              "verified": true,
+              "operation": "encode",
+              "kind": "wan21-vae-stream-v1",
+              "inputShape": [
+                1,
+                3,
+                1,
+                16,
+                32
+              ],
+              "outputShape": [
+                1,
+                16,
+                1,
+                2,
+                4
+              ],
+              "assetsVerified": true,
+              "assetHashes": {
+                "encoder.conv1": "343691a09be1cff275f55f7de81ffcdb33c8afdcc40499d53e1b68f98aef0c1f",
+                "encoder.downsamples.0.residual.2": "e4d9694ab54c49dc0b4bc8c3165ca98308c0813b74cf9a71214fb84b9bd8dbd6",
+                "encoder.downsamples.0.residual.6": "3ff49646a9aecaadd98fea487fb08841d1a11e7a10e16ce425a264331255a6e5",
+                "residualAdd": "31d36f4f8c0a7be994b9821824a5eccd55cbf03509dd78f8815658aa72674f7c",
+                "encoder.downsamples.1.residual.2": "fc1795678d070703323f9d1c46beeb263aac213983f25b7fab43016bc2bde538",
+                "encoder.downsamples.1.residual.6": "9a03f4569841fbfce4b401894846c69c0d8a152a4ef189fb52476123492f222a",
+                "encoder.downsamples.2.spatial": "a1b11fc8ef1d83402aa99881a9110c0679225a216077630dff84b13d9d935bf8",
+                "encoder.downsamples.3.shortcut": "ef025a0a917270ffd1461cef3e7fbc5fdd659153e7f27a2df2ad33cc301b3394",
+                "encoder.downsamples.3.residual.2": "f30031a5bf0fcc259200739ad8fafb73783fb8daeb2d2ccbddbc2bc4999131f5",
+                "encoder.downsamples.3.residual.6": "14c43702a9fb0bca957098b36d0e1d2b7d01bc43dde0c70b764ea6df31e4222d",
+                "encoder.downsamples.4.residual.2": "9cbaa886a8303ca21e72de1cb34db33950806a9c7d96a1486a87f71b8458ba46",
+                "encoder.downsamples.4.residual.6": "40d7ab6a1b30f6051daa5fb97a4d343591709e96833aa744b897e27b5138f692",
+                "encoder.downsamples.5.spatial": "cf44c6be12b75ac458c71736512fae6fb06e342c7a543bc875ed27056c6ab714",
+                "encoder.downsamples.6.shortcut": "585423203d3a8f8d6a79becc86f8cb0414775bf1b1b136cc2ebca37589eabaa5",
+                "encoder.downsamples.6.residual.2": "97a1535389eec57bb1abdd3eff34e7d6dd13654248ef1a166ab1f22d75dfeb89",
+                "encoder.downsamples.6.residual.6": "0d4c418fb02855883033a407bb92e6e21cbef90ba71579d31b7568100b66a51f",
+                "encoder.downsamples.7.residual.2": "86e98d279b04152e3ab76ba60d05ccfae14e38a3a69dd28df8b67fdd4547612f",
+                "encoder.downsamples.7.residual.6": "b5e9dc9ceb2c6d4b039c49fc409258b760b73f44fdf06e7653b9d16e9a3165ac",
+                "encoder.downsamples.8.spatial": "9063cab94b863a15fa3d796054beb2008f5483bc8e90741fa6c189ddf767fad6",
+                "encoder.downsamples.9.residual.2": "7885ab4533f4e2cf3dbf00da8a8f9d1206513b27096d91ccca774acb0b5a911a",
+                "encoder.downsamples.9.residual.6": "277e3bedba13e87c7c18d8f4a54a0f0f2b7ada2bc116bd619b69449616d9c21f",
+                "encoder.downsamples.10.residual.2": "fc163dc639022d0e94e2ae934d18066b063a4a2dbc5875cf38f00b3b1fc5112d",
+                "encoder.downsamples.10.residual.6": "b04bda40de4896f977b68c6b4e453b428d5076d201f66cf07e70d2c776c81e7c",
+                "encoder.middle.0.residual.2": "3455c77c28730ba8b1af7ff458e68932800df01556da831d64a37ed584b9fe19",
+                "encoder.middle.0.residual.6": "dd4f76b8db8fa359cac855ff5c24343dfb25a21fdf394a6759c8812ac0b882cd",
+                "encoder.middle.1": "2a509de4f7dab50a8e92dfd3f8fa3d4d963275b005b3dae5f15413451a431c3d",
+                "encoder.middle.2.residual.2": "095226ccea6bad522f5ab421bdb6220836904b13f81eb9a3f7f8acaec9e28b53",
+                "encoder.middle.2.residual.6": "3080d91b235a34875223b67abc30010771ec2a300f245d138762371bb22e8914",
+                "encoder.head.2": "3ca7672224fa50617056b28cdabbca344dd5b9ef027141af68e64053a965536d",
+                "conv1": "3fa4f2f0b8af83056f8a6a52fabfb2f2538d0510378199f3246284f79fab559f"
+              },
+              "graphMetadataChecked": true,
+              "executionProvider": "wasm",
+              "threads": 4
+            },
+            "decode": {
+              "verified": true,
+              "operation": "decode",
+              "kind": "wan21-vae-stream-v1",
+              "inputShape": [
+                1,
+                16,
+                1,
+                2,
+                4
+              ],
+              "outputShape": [
+                1,
+                3,
+                1,
+                16,
+                32
+              ],
+              "assetsVerified": true,
+              "assetHashes": {
+                "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+                "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+                "decoder.conv1": "30ac55b7223621fee9564fe4a3b52a744c31641cf4b233cb2e747db748ec1451",
+                "decoder.middle.0.residual.2": "730bb2dcac88b12dcd4a2af3986dd4e16eab3f151584d2ca6bd86bb687857a5b",
+                "decoder.middle.0.residual.6": "6b601530e36c4a8a4052fec9c96246443ee839d3915391ae3d06375760f996e7",
+                "residualAdd": "31d36f4f8c0a7be994b9821824a5eccd55cbf03509dd78f8815658aa72674f7c",
+                "decoder.middle.1": "83d17e9c1d840b5281aac47a8890121fffc60eb646cdd8c3aa14b68b05086f1b",
+                "decoder.middle.2.residual.2": "cc899e0913d08a16f5db491f96575fea123cb3be90011d153b610490871dd273",
+                "decoder.middle.2.residual.6": "67f0bfd713db130c21242a0c10bb065c76f1f772e11e501e3f15381c65084b97",
+                "decoder.upsamples.0.residual.2": "3d6107085b124100d7e13f88d6beb8b103d417758071fc0b4a4dae7be305f3f1",
+                "decoder.upsamples.0.residual.6": "44738b4b1c3fd433d8ef175010932d7a874a69bde1070875c1b264e01425fc3d",
+                "decoder.upsamples.1.residual.2": "4a49bc5f6508e42d88ee548e67a8e1f920b8fd384feb79d65dd9a59a64f12d61",
+                "decoder.upsamples.1.residual.6": "f5aafb9b6d855eb16c456ddb46bb6fe35f422601ba558d0d702f9101b139f9d4",
+                "decoder.upsamples.2.residual.2": "527fa3f9905cef7146c44099576304e99047acfe0fe33079d329b2dfa8bd9075",
+                "decoder.upsamples.2.residual.6": "aa6f10e984e757da88cfd612c1ad6e6d288a2af37450e65a16844c9397bb0e39",
+                "decoder.upsamples.3.spatial": "72783c1142a12f369bae6624ffac1597e76944d48d867c9c1755b459500ce64c",
+                "decoder.upsamples.4.shortcut": "0f912d38a35fca6bd97913f21dd25a6aedd03362ac49dafce1abd7988d31766a",
+                "decoder.upsamples.4.residual.2": "08883123671765134fdfe16edde4f73646473db04b49816c6d3f8d668ff9a700",
+                "decoder.upsamples.4.residual.6": "e3c56f4d385df7053180e234ecce093c5b8c2074e1b4a2768f5501edf6c45a0f",
+                "decoder.upsamples.5.residual.2": "bfc50153038249549a1b08b9e5a92a874f163160fde623162f150677a5545468",
+                "decoder.upsamples.5.residual.6": "41e700cd9d4062220bde9f79549b6026107032a357a9bdc1cfa19c82e232aaa2",
+                "decoder.upsamples.6.residual.2": "06e01fb58d1657539e60753b6e4366e5229afc497ef43e6dceecbb783333f2f5",
+                "decoder.upsamples.6.residual.6": "716856f5fe38fb9c4aa3c79ae2fccb28ab11f3835338b2bd80408fa8a2105ad6",
+                "decoder.upsamples.7.spatial": "3a77a8b3805e6ff06bb0a5b3861cf76b4122a92f8e893ada4fd7b3388a90f1bc",
+                "decoder.upsamples.8.residual.2": "4681e3e650fa99e01edbc7ee18bc1dbd930b988ce39cb1c45cb7f503b6833d57",
+                "decoder.upsamples.8.residual.6": "2ebaa7a081c6594835420b4708e3fd3d8364623511d8b0dd9791b988942b8179",
+                "decoder.upsamples.9.residual.2": "0ffa8b905821cc4d9f18b6b08b15b700117f3046fe35651a6772fc772b56c1cb",
+                "decoder.upsamples.9.residual.6": "4786c50cc0454ab0b5bcf1c9efc828da3bb3c45cf8de3460c83cc34c0aed8033",
+                "decoder.upsamples.10.residual.2": "2ffe73a4b86254d4d2e208117e5f9758fca69370279fceb7345291d0ba982b8b",
+                "decoder.upsamples.10.residual.6": "bbe369f21324af4e79010101e579d203745667e93cc09da61167aacd73baf6f8",
+                "decoder.upsamples.11.spatial": "f42c34d3a4d424f27ad7cca42655f58f70851f5e2fc010030aa33469f95c80d3",
+                "decoder.upsamples.12.residual.2": "d67a364dd842d21376217ba56d96e0d8a99626dd9984f3be3d55e7170cad9ad7",
+                "decoder.upsamples.12.residual.6": "9055a7c7fad62ed466e56e3f7f7f84321e80e5c38b8d9b754bc37a227df7fa9e",
+                "decoder.upsamples.13.residual.2": "78a38b4e02a8677d4a5f86dcd7267b9a718a213db05e3509f404979319639c23",
+                "decoder.upsamples.13.residual.6": "d9ac665a95a990e48b2b2317a61ee716a13e65821cbf32637a176865e2b7e622",
+                "decoder.upsamples.14.residual.2": "3045589a6f65b74b9bb010bdcd1bdbd32e94a333808444feab6d1c94f0c4d149",
+                "decoder.upsamples.14.residual.6": "751669b5bdd311dbdb888df64fc606d01e0ffee13761dc4e5ac01a844896ad9d",
+                "decoder.head.2": "548760312cc053a67a6b1094d483efaed3913b7d2d84c8f22edf5f38f608c8f3"
+              },
+              "graphMetadataChecked": true,
+              "executionProvider": "wasm",
+              "threads": 4
+            },
+            "note": "Domain declaration is structural; verified records describe the last completed operation shape only"
+          },
+          "processing": {
+            "sourceFrames": 1,
+            "latentFrames": 1,
+            "consumedFrames": 1,
+            "ignoredTailFrames": 0,
+            "decodedFrames": 1,
+            "tailRule": "native-floor-complete-groups-of-four-after-first-frame",
+            "consumedFrameIndices": [
+              0
+            ],
+            "ignoredTailFrameIndices": []
+          },
+          "support": {
+            "supported": true,
+            "code": "SUPPORTED",
+            "reason": "Descriptor matches the configured exact shape and native semantics",
+            "requiredChanges": [],
+            "scope": "configured-contract; runtime verification is separate"
+          }
+        }
+      },
+      "comparison": {
+        "passed": true,
+        "file": "decode-reference-f1-16x32.wktensor",
+        "bytes": 6873,
+        "fileSha256": "a959f237ab73e24b37527cbb4392c3a27bf1049f08b2af9b2327f195e9b050ce",
+        "payloadSha256": "f5801552bb379ad67f445e37a3f5f4ef66be25d54e8fc7d6bc14ec49c1ea38ce",
+        "header": {
+          "schemaVersion": 1,
+          "dtype": "float32",
+          "shape": [
+            1,
+            3,
+            1,
+            16,
+            32
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-decoder-rgb",
+          "byteOrder": "little",
+          "byteLength": 6144,
+          "dataSha256": "f5801552bb379ad67f445e37a3f5f4ef66be25d54e8fc7d6bc14ec49c1ea38ce",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "context": {
+            "schemaVersion": 1,
+            "contextId": "reference-f1-16x32-decode",
+            "inputId": "synthetic-reference-f1-16x32",
+            "inputSha256": "7da10920b8b9b630d49569b9cef26185a81d61497aa3de6b77fbba59ec947a79",
+            "slotId": "reference",
+            "sourceFrameIndices": [
+              0
+            ],
+            "sourceFrameTimesSeconds": [
+              0
+            ]
+          },
+          "frameProcessing": {
+            "schemaVersion": 1,
+            "policy": "wan21-causal-floor-v1",
+            "sourceFrames": 1,
+            "latentFrames": 1,
+            "consumedFrames": 1,
+            "unusedTailFrames": 0
+          }
+        },
+        "reference": {
+          "file": "decode-rgb-reference.f32",
+          "sha256": "104928f81d0f0c4906320804c6fd3015ae0edbb09e88b5456eb2c2dc3dba0d40"
+        },
+        "elements": 1536,
+        "allValuesCompared": true,
+        "allFinite": true,
+        "allclose": true,
+        "maxAbs": 5.662441253662109e-07,
+        "rmse": 1.2260916556828976e-07,
+        "failedAllcloseElements": 0,
+        "firstFailedElement": null,
+        "gate": {
+          "atol": 0.002,
+          "rtol": 0.002,
+          "maxAbs": 0.002,
+          "registeredBeforeComparison": true,
+          "scope": "New declared FP32 synthetic shape domain; proposed before comparison, not transferred from tiny-model tolerances."
+        },
+        "method": "Chunked little-endian FP32 file memmaps; no frame/pixel/channel subset"
+      }
+    }
+  },
+  "progressEvents": [
+    {
+      "controlPhase": "cancel-first-chunk",
+      "phase": "chunk-start",
+      "operation": "encode",
+      "profileId": "wan21-raw-f32-stream",
+      "chunkIndex": 0,
+      "chunkCount": 1
+    },
+    {
+      "controlPhase": "cancel-first-chunk",
+      "phase": "chunk-complete",
+      "operation": "encode",
+      "profileId": "wan21-raw-f32-stream",
+      "chunkIndex": 0,
+      "chunkCount": 1
+    },
+    {
+      "controlPhase": "normal-recovery",
+      "phase": "chunk-start",
+      "operation": "encode",
+      "profileId": "wan21-raw-f32-stream",
+      "chunkIndex": 0,
+      "chunkCount": 1
+    },
+    {
+      "controlPhase": "normal-recovery",
+      "phase": "chunk-complete",
+      "operation": "encode",
+      "profileId": "wan21-raw-f32-stream",
+      "chunkIndex": 0,
+      "chunkCount": 1
+    },
+    {
+      "controlPhase": "normal",
+      "phase": "chunk-start",
+      "operation": "decode",
+      "profileId": "wan21-raw-f32-stream",
+      "chunkIndex": 0,
+      "chunkCount": 1
+    },
+    {
+      "controlPhase": "normal",
+      "phase": "chunk-complete",
+      "operation": "decode",
+      "profileId": "wan21-raw-f32-stream",
+      "chunkIndex": 0,
+      "chunkCount": 1
+    }
+  ],
+  "httpRequests": {
+    "/": 1,
+    "/harness/vae/stream_browser.mjs": 1,
+    "/shared/inference/api.mjs": 1,
+    "/shared/vr180/sha256.mjs": 4,
+    "/shared/inference/client.mjs": 1,
+    "/shared/inference/text-encoder-api.mjs": 1,
+    "/shared/inference/vae-api.mjs": 1,
+    "/shared/inference/tensor.mjs": 4,
+    "/shared/inference/text-encoder.mjs": 4,
+    "/shared/inference/vae.mjs": 4,
+    "/shared/inference/vae-stream.mjs": 4,
+    "/harness/vae/stream_observer_worker.mjs": 3,
+    "/harness/text-encoder/plain_memory.mjs": 3,
+    "/shared/inference/vendor/ort.wasm.min.mjs": 3,
+    "/shared/inference/inference-worker.mjs": 3,
+    "/shared/inference/hike.mjs": 3,
+    "/shared/inference/tokenizer.mjs": 3,
+    "/shared/inference/vendor/sentencepiece.mjs": 3,
+    "/shared/inference/kernel/tensor.wasm": 3,
+    "/shared/inference/vendor/ort-wasm-simd-threaded.mjs": 12,
+    "/shared/inference/vendor/ort-wasm-simd-threaded.wasm": 3
+  },
+  "httpErrors": [],
+  "requestFailures": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "case": {
+    "id": "reference-f1-16x32",
+    "role": "reference",
+    "rgbShape": [
+      1,
+      3,
+      1,
+      16,
+      32
+    ],
+    "latentShape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "decodeRgbShape": [
+      1,
+      3,
+      1,
+      16,
+      32
+    ]
+  },
+  "comparisonGate": {
+    "atol": 0.002,
+    "rtol": 0.002,
+    "maxAbs": 0.002,
+    "registeredBeforeComparison": true,
+    "scope": "New declared FP32 synthetic shape domain; proposed before comparison, not transferred from tiny-model tolerances."
+  },
+  "manifestSha256": "532523034a5e5c7590c4fca11d67feec329c6e0e364afd55f472f03ffd8966d2",
+  "referenceReport": {
+    "path": "/tmp/kw-vae-ref-16x32-20261102/reference-report.json",
+    "sha256": "bde3fb22113592b748193719a12c94f7414f7a48136b9457342e334170972034",
+    "executionSourceSha": "37c269aefe6e829ea1bff35019e19c472273813c"
+  },
+  "initialCgroup": {
+    "path": "/sys/fs/cgroup",
+    "limitBytes": 17179869184,
+    "currentBytes": 16758075392,
+    "inactiveFileBytes": 5990748160,
+    "anonBytes": 4821327872,
+    "shmemBytes": 1198682112,
+    "workingSetBytes": 10767327232,
+    "workingSetScope": "max(0,memory.current-observed inactive_file); missing inactive_file falls back to raw charge. Shmem/tmpfs is not separately subtracted. Non-atomic observation, not an exact pressure measurement."
+  },
+  "servedSourcePreflight": {
+    "allCheckedBeforeNumericalExecution": true,
+    "files": [
+      {
+        "path": "tools/inference/vae/accept_stream.py",
+        "bytes": 36869,
+        "sha256": "5520a4c213595e4a8af87a86a85eb73a9f6c2114962752ebe0fcc37743b165f5"
+      },
+      {
+        "path": "tools/inference/vae/stream_browser.mjs",
+        "bytes": 15515,
+        "sha256": "0b37d55d174565ccb432d8bf8a4d4d8070411b69974cc1e5083a35808cdeaeba"
+      },
+      {
+        "path": "tools/inference/vae/stream_observer_worker.mjs",
+        "bytes": 5282,
+        "sha256": "909a6169bef3a246a14fb47773f1f3f2a5c9fda24e10b5e79a84399a2f62907d"
+      },
+      {
+        "path": "tools/inference/vae/process_lifecycle.py",
+        "bytes": 6299,
+        "sha256": "a927fe8f38382563ec8d512745446f32bc7740bff3c1b86b650f4490f178299c"
+      },
+      {
+        "path": "tools/inference/vae/accept_still.py",
+        "bytes": 23812,
+        "sha256": "91f5e010809d54716be620a01a6af2a364d77ebd3b7834cb7c06571b681fb9f6"
+      },
+      {
+        "path": "tools/inference/vae/stream_reference.py",
+        "bytes": 23592,
+        "sha256": "5d5c5c70b01b03841bc85997ad6ec9cf638a1269452a8ce70fb954fb51991543"
+      },
+      {
+        "path": "development/inference/standalone-20261102/vae/predeclared-plan.json",
+        "bytes": 6620,
+        "sha256": "8b5d354a299e8e35863269ace9549148d4265b8d097b8877caabd727a4c193ea"
+      },
+      {
+        "path": "tools/inference/text-encoder/plain_memory.mjs",
+        "bytes": 5508,
+        "sha256": "dd0dcf5ef26ea1b71b2803db4d521af3bfeb24b0fa8323eb7437507b2d3cbc71"
+      },
+      {
+        "path": "docs/shared/vr180/sha256.mjs",
+        "bytes": 6970,
+        "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+      },
+      {
+        "path": "docs/shared/inference/text-encoder.mjs",
+        "bytes": 9309,
+        "sha256": "44e9b144d6c1f3e2d60cb33e2d537f8f523fec0c7c10e30830427b417957252d"
+      },
+      {
+        "path": "docs/shared/inference/vae-api.mjs",
+        "bytes": 7300,
+        "sha256": "8bb6c8f0fbb6987bf0473502842cf7df351f9ce846ddb8a5bd247e2663ad421f"
+      },
+      {
+        "path": "docs/shared/inference/ui.mjs",
+        "bytes": 7205,
+        "sha256": "77895caf5535522ab9a96f9b250fff12d56ae5fedc4b7944b8d4e1d457f0a22f"
+      },
+      {
+        "path": "docs/shared/inference/vae.mjs",
+        "bytes": 13223,
+        "sha256": "e2e8b7901edfe8ac94152dba2c9f246d0dd0d2c595b5ac72e0cade4b36d170ae"
+      },
+      {
+        "path": "docs/shared/inference/api.mjs",
+        "bytes": 2293,
+        "sha256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda"
+      },
+      {
+        "path": "docs/shared/inference/vae-stream.mjs",
+        "bytes": 22976,
+        "sha256": "347ec7d2e3e981a5f0d40c905e7aa5ab82f83ab390dac641012e97ade9f500b1"
+      },
+      {
+        "path": "docs/shared/inference/text-encoder-api.mjs",
+        "bytes": 4952,
+        "sha256": "b33a81b0b92da5668d6eb9a392ce18148c06133cfce431b56e9b8c0fa72152d1"
+      },
+      {
+        "path": "docs/shared/inference/client.mjs",
+        "bytes": 2423,
+        "sha256": "806278b5eb09242cec8726d22b13be6237323862d0c42f0c3948d0a63cc9501f"
+      },
+      {
+        "path": "docs/shared/inference/tokenizer.mjs",
+        "bytes": 1637,
+        "sha256": "4a7811d4e36fbcc568e2a2a1e0941fd78261f84b231a96458d919ea0259fb9a5"
+      },
+      {
+        "path": "docs/shared/inference/hike.mjs",
+        "bytes": 4126,
+        "sha256": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65"
+      },
+      {
+        "path": "docs/shared/inference/inference-worker.mjs",
+        "bytes": 3939,
+        "sha256": "83ede4a2a5353a2bedcfe03eeb9a7979597984955f481724372a3fdb3229950a"
+      },
+      {
+        "path": "docs/shared/inference/tensor.mjs",
+        "bytes": 10825,
+        "sha256": "370a1c8d59fe6d64ba182380697623e8a142ee4f2cc046ca3843a8ab4bf543e2"
+      },
+      {
+        "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "bytes": 24274,
+        "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57"
+      },
+      {
+        "path": "docs/shared/inference/vendor/sentencepiece.mjs",
+        "bytes": 741502,
+        "sha256": "31ce41230f8694c63afa1ffeecb862d0bf3768d858328d335530997a86a1f27d"
+      },
+      {
+        "path": "docs/shared/inference/vendor/ort.wasm.min.mjs",
+        "bytes": 49997,
+        "sha256": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e"
+      },
+      {
+        "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+        "bytes": 12361745,
+        "sha256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+      },
+      {
+        "path": "docs/shared/inference/kernel/tensor.wasm",
+        "bytes": 5265,
+        "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8"
+      }
+    ],
+    "count": 26
+  },
+  "downloadStoragePreflight": {
+    "requiredBytes": 209444,
+    "availableBytes": 8242614272,
+    "scope": "All selected WKT outputs plus one simultaneous browser download staging copy and maximum headers"
+  },
+  "browserVersion": "154.0.8037.57",
+  "capabilities": {
+    "passed": true,
+    "status": "CAPABILITIES_READY",
+    "capabilities": {
+      "encode": {
+        "apiVersion": "works-ai-1",
+        "module": "vae",
+        "operations": [
+          "encode",
+          "decode"
+        ],
+        "configured": true,
+        "disposed": false,
+        "profile": {
+          "id": "wan21-raw-f32-stream",
+          "layout": "NCTHW",
+          "latentSpace": "raw",
+          "posterior": "mean",
+          "opset": 17
+        },
+        "model": {
+          "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "storedDtype": "bfloat16",
+          "executionDtype": "float32",
+          "precisionNote": "Stored BF16 coefficients are unchanged. FP32 arithmetic is not asserted identical to BF16 execution."
+        },
+        "domain": {
+          "maxSourceFrames": 81,
+          "minSpatial": 16,
+          "maxSpatial": 848,
+          "spatialStride": 16
+        },
+        "inference": {
+          "executionProvider": "wasm",
+          "threads": 4,
+          "graphOptimizationLevel": "disabled"
+        },
+        "encode": {
+          "input": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              3,
+              1,
+              16,
+              32
+            ],
+            "meanings": {
+              "rgb-unit": [
+                0,
+                1
+              ],
+              "raw-decoder-rgb": [
+                -1,
+                1
+              ]
+            }
+          },
+          "output": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              16,
+              1,
+              2,
+              4
+            ],
+            "meaning": "raw-posterior-mean",
+            "normalization": {
+              "state": "raw",
+              "conversionApplied": false
+            },
+            "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+          },
+          "graph": {
+            "kind": "wan21-vae-stream-v1",
+            "assetIds": [
+              "encoder.conv1",
+              "residualAdd",
+              "encoder.downsamples.0.residual.2",
+              "encoder.downsamples.0.residual.6",
+              "encoder.downsamples.1.residual.2",
+              "encoder.downsamples.1.residual.6",
+              "encoder.downsamples.2.spatial",
+              "encoder.downsamples.3.shortcut",
+              "encoder.downsamples.3.residual.2",
+              "encoder.downsamples.3.residual.6",
+              "encoder.downsamples.4.residual.2",
+              "encoder.downsamples.4.residual.6",
+              "encoder.downsamples.5.spatial",
+              "encoder.downsamples.5.temporal",
+              "encoder.downsamples.6.shortcut",
+              "encoder.downsamples.6.residual.2",
+              "encoder.downsamples.6.residual.6",
+              "encoder.downsamples.7.residual.2",
+              "encoder.downsamples.7.residual.6",
+              "encoder.downsamples.8.spatial",
+              "encoder.downsamples.8.temporal",
+              "encoder.downsamples.9.residual.2",
+              "encoder.downsamples.9.residual.6",
+              "encoder.downsamples.10.residual.2",
+              "encoder.downsamples.10.residual.6",
+              "encoder.middle.0.residual.2",
+              "encoder.middle.0.residual.6",
+              "encoder.middle.1",
+              "encoder.middle.2.residual.2",
+              "encoder.middle.2.residual.6",
+              "encoder.head.2",
+              "conv1"
+            ],
+            "shapeBinding": "dynamic spatial units; native temporal host program"
+          }
+        },
+        "decode": {
+          "input": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              16,
+              "T",
+              "H/8",
+              "W/8"
+            ],
+            "meanings": [
+              "raw-posterior-mean",
+              "wan21-raw-latent:v1",
+              "wan21-raw-generated-sample:v1"
+            ],
+            "normalization": {
+              "state": "raw",
+              "conversionApplied": false
+            },
+            "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+          },
+          "output": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              3,
+              "4*(T-1)+1",
+              "H",
+              "W"
+            ],
+            "meaning": "raw-decoder-rgb",
+            "clipped": false
+          },
+          "graph": {
+            "kind": "wan21-vae-stream-v1",
+            "assetIds": [
+              "conv2Weight",
+              "conv2Bias",
+              "decoder.conv1",
+              "residualAdd",
+              "decoder.middle.0.residual.2",
+              "decoder.middle.0.residual.6",
+              "decoder.middle.1",
+              "decoder.middle.2.residual.2",
+              "decoder.middle.2.residual.6",
+              "decoder.upsamples.0.residual.2",
+              "decoder.upsamples.0.residual.6",
+              "decoder.upsamples.1.residual.2",
+              "decoder.upsamples.1.residual.6",
+              "decoder.upsamples.2.residual.2",
+              "decoder.upsamples.2.residual.6",
+              "decoder.upsamples.3.spatial",
+              "decoder.upsamples.3.temporal",
+              "decoder.upsamples.4.shortcut",
+              "decoder.upsamples.4.residual.2",
+              "decoder.upsamples.4.residual.6",
+              "decoder.upsamples.5.residual.2",
+              "decoder.upsamples.5.residual.6",
+              "decoder.upsamples.6.residual.2",
+              "decoder.upsamples.6.residual.6",
+              "decoder.upsamples.7.spatial",
+              "decoder.upsamples.7.temporal",
+              "decoder.upsamples.8.residual.2",
+              "decoder.upsamples.8.residual.6",
+              "decoder.upsamples.9.residual.2",
+              "decoder.upsamples.9.residual.6",
+              "decoder.upsamples.10.residual.2",
+              "decoder.upsamples.10.residual.6",
+              "decoder.upsamples.11.spatial",
+              "decoder.upsamples.12.residual.2",
+              "decoder.upsamples.12.residual.6",
+              "decoder.upsamples.13.residual.2",
+              "decoder.upsamples.13.residual.6",
+              "decoder.upsamples.14.residual.2",
+              "decoder.upsamples.14.residual.6",
+              "decoder.head.2"
+            ],
+            "shapeBinding": "dynamic spatial units; native temporal host program"
+          }
+        },
+        "constraints": {
+          "batch": 1,
+          "inputFrames": "1..81 including native incomplete tail",
+          "spatialMultiple": 16,
+          "minimumSpatial": 16,
+          "maximumSpatial": 848,
+          "adaptation": "none",
+          "tail": "first1 then complete groups4; explicitly reported unused tail"
+        },
+        "runtime": {
+          "encode": {
+            "verified": false
+          },
+          "decode": {
+            "verified": false
+          },
+          "note": "Domain declaration is structural; verified records describe the last completed operation shape only"
+        },
+        "processing": {
+          "sourceFrames": 1,
+          "latentFrames": 1,
+          "consumedFrames": 1,
+          "ignoredTailFrames": 0,
+          "decodedFrames": 1,
+          "tailRule": "native-floor-complete-groups-of-four-after-first-frame",
+          "consumedFrameIndices": [
+            0
+          ],
+          "ignoredTailFrameIndices": []
+        },
+        "support": {
+          "supported": true,
+          "code": "SUPPORTED",
+          "reason": "Descriptor matches the configured exact shape and native semantics",
+          "requiredChanges": [],
+          "scope": "configured-contract; runtime verification is separate"
+        }
+      },
+      "decode": {
+        "apiVersion": "works-ai-1",
+        "module": "vae",
+        "operations": [
+          "encode",
+          "decode"
+        ],
+        "configured": true,
+        "disposed": false,
+        "profile": {
+          "id": "wan21-raw-f32-stream",
+          "layout": "NCTHW",
+          "latentSpace": "raw",
+          "posterior": "mean",
+          "opset": 17
+        },
+        "model": {
+          "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "storedDtype": "bfloat16",
+          "executionDtype": "float32",
+          "precisionNote": "Stored BF16 coefficients are unchanged. FP32 arithmetic is not asserted identical to BF16 execution."
+        },
+        "domain": {
+          "maxSourceFrames": 81,
+          "minSpatial": 16,
+          "maxSpatial": 848,
+          "spatialStride": 16
+        },
+        "inference": {
+          "executionProvider": "wasm",
+          "threads": 4,
+          "graphOptimizationLevel": "disabled"
+        },
+        "encode": {
+          "input": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              3,
+              "F",
+              "H",
+              "W"
+            ],
+            "meanings": {
+              "rgb-unit": [
+                0,
+                1
+              ],
+              "raw-decoder-rgb": [
+                -1,
+                1
+              ]
+            }
+          },
+          "output": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              16,
+              "floor((F-1)/4)+1",
+              "H/8",
+              "W/8"
+            ],
+            "meaning": "raw-posterior-mean",
+            "normalization": {
+              "state": "raw",
+              "conversionApplied": false
+            },
+            "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+          },
+          "graph": {
+            "kind": "wan21-vae-stream-v1",
+            "assetIds": [
+              "encoder.conv1",
+              "residualAdd",
+              "encoder.downsamples.0.residual.2",
+              "encoder.downsamples.0.residual.6",
+              "encoder.downsamples.1.residual.2",
+              "encoder.downsamples.1.residual.6",
+              "encoder.downsamples.2.spatial",
+              "encoder.downsamples.3.shortcut",
+              "encoder.downsamples.3.residual.2",
+              "encoder.downsamples.3.residual.6",
+              "encoder.downsamples.4.residual.2",
+              "encoder.downsamples.4.residual.6",
+              "encoder.downsamples.5.spatial",
+              "encoder.downsamples.5.temporal",
+              "encoder.downsamples.6.shortcut",
+              "encoder.downsamples.6.residual.2",
+              "encoder.downsamples.6.residual.6",
+              "encoder.downsamples.7.residual.2",
+              "encoder.downsamples.7.residual.6",
+              "encoder.downsamples.8.spatial",
+              "encoder.downsamples.8.temporal",
+              "encoder.downsamples.9.residual.2",
+              "encoder.downsamples.9.residual.6",
+              "encoder.downsamples.10.residual.2",
+              "encoder.downsamples.10.residual.6",
+              "encoder.middle.0.residual.2",
+              "encoder.middle.0.residual.6",
+              "encoder.middle.1",
+              "encoder.middle.2.residual.2",
+              "encoder.middle.2.residual.6",
+              "encoder.head.2",
+              "conv1"
+            ],
+            "shapeBinding": "dynamic spatial units; native temporal host program"
+          }
+        },
+        "decode": {
+          "input": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              16,
+              1,
+              2,
+              4
+            ],
+            "meanings": [
+              "raw-posterior-mean",
+              "wan21-raw-latent:v1",
+              "wan21-raw-generated-sample:v1"
+            ],
+            "normalization": {
+              "state": "raw",
+              "conversionApplied": false
+            },
+            "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+          },
+          "output": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              3,
+              1,
+              16,
+              32
+            ],
+            "meaning": "raw-decoder-rgb",
+            "clipped": false
+          },
+          "graph": {
+            "kind": "wan21-vae-stream-v1",
+            "assetIds": [
+              "conv2Weight",
+              "conv2Bias",
+              "decoder.conv1",
+              "residualAdd",
+              "decoder.middle.0.residual.2",
+              "decoder.middle.0.residual.6",
+              "decoder.middle.1",
+              "decoder.middle.2.residual.2",
+              "decoder.middle.2.residual.6",
+              "decoder.upsamples.0.residual.2",
+              "decoder.upsamples.0.residual.6",
+              "decoder.upsamples.1.residual.2",
+              "decoder.upsamples.1.residual.6",
+              "decoder.upsamples.2.residual.2",
+              "decoder.upsamples.2.residual.6",
+              "decoder.upsamples.3.spatial",
+              "decoder.upsamples.3.temporal",
+              "decoder.upsamples.4.shortcut",
+              "decoder.upsamples.4.residual.2",
+              "decoder.upsamples.4.residual.6",
+              "decoder.upsamples.5.residual.2",
+              "decoder.upsamples.5.residual.6",
+              "decoder.upsamples.6.residual.2",
+              "decoder.upsamples.6.residual.6",
+              "decoder.upsamples.7.spatial",
+              "decoder.upsamples.7.temporal",
+              "decoder.upsamples.8.residual.2",
+              "decoder.upsamples.8.residual.6",
+              "decoder.upsamples.9.residual.2",
+              "decoder.upsamples.9.residual.6",
+              "decoder.upsamples.10.residual.2",
+              "decoder.upsamples.10.residual.6",
+              "decoder.upsamples.11.spatial",
+              "decoder.upsamples.12.residual.2",
+              "decoder.upsamples.12.residual.6",
+              "decoder.upsamples.13.residual.2",
+              "decoder.upsamples.13.residual.6",
+              "decoder.upsamples.14.residual.2",
+              "decoder.upsamples.14.residual.6",
+              "decoder.head.2"
+            ],
+            "shapeBinding": "dynamic spatial units; native temporal host program"
+          }
+        },
+        "constraints": {
+          "batch": 1,
+          "inputFrames": "1..81 including native incomplete tail",
+          "spatialMultiple": 16,
+          "minimumSpatial": 16,
+          "maximumSpatial": 848,
+          "adaptation": "none",
+          "tail": "first1 then complete groups4; explicitly reported unused tail"
+        },
+        "runtime": {
+          "encode": {
+            "verified": false
+          },
+          "decode": {
+            "verified": false
+          },
+          "note": "Domain declaration is structural; verified records describe the last completed operation shape only"
+        },
+        "processing": {
+          "sourceFrames": 1,
+          "latentFrames": 1,
+          "consumedFrames": 1,
+          "ignoredTailFrames": 0,
+          "decodedFrames": 1,
+          "tailRule": "native-floor-complete-groups-of-four-after-first-frame",
+          "consumedFrameIndices": [
+            0
+          ],
+          "ignoredTailFrameIndices": []
+        },
+        "support": {
+          "supported": true,
+          "code": "SUPPORTED",
+          "reason": "Descriptor matches the configured exact shape and native semantics",
+          "requiredChanges": [],
+          "scope": "configured-contract; runtime verification is separate"
+        }
+      }
+    },
+    "configured": {
+      "apiVersion": "works-ai-1",
+      "module": "vae",
+      "operations": [
+        "encode",
+        "decode"
+      ],
+      "configured": true,
+      "disposed": false,
+      "profile": {
+        "id": "wan21-raw-f32-stream",
+        "layout": "NCTHW",
+        "latentSpace": "raw",
+        "posterior": "mean",
+        "opset": 17
+      },
+      "model": {
+        "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "storedDtype": "bfloat16",
+        "executionDtype": "float32",
+        "precisionNote": "Stored BF16 coefficients are unchanged. FP32 arithmetic is not asserted identical to BF16 execution."
+      },
+      "domain": {
+        "maxSourceFrames": 81,
+        "minSpatial": 16,
+        "maxSpatial": 848,
+        "spatialStride": 16
+      },
+      "inference": {
+        "executionProvider": "wasm",
+        "threads": 4,
+        "graphOptimizationLevel": "disabled"
+      },
+      "encode": {
+        "input": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            "F",
+            "H",
+            "W"
+          ],
+          "meanings": {
+            "rgb-unit": [
+              0,
+              1
+            ],
+            "raw-decoder-rgb": [
+              -1,
+              1
+            ]
+          }
+        },
+        "output": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            "floor((F-1)/4)+1",
+            "H/8",
+            "W/8"
+          ],
+          "meaning": "raw-posterior-mean",
+          "normalization": {
+            "state": "raw",
+            "conversionApplied": false
+          },
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "graph": {
+          "kind": "wan21-vae-stream-v1",
+          "assetIds": [
+            "encoder.conv1",
+            "residualAdd",
+            "encoder.downsamples.0.residual.2",
+            "encoder.downsamples.0.residual.6",
+            "encoder.downsamples.1.residual.2",
+            "encoder.downsamples.1.residual.6",
+            "encoder.downsamples.2.spatial",
+            "encoder.downsamples.3.shortcut",
+            "encoder.downsamples.3.residual.2",
+            "encoder.downsamples.3.residual.6",
+            "encoder.downsamples.4.residual.2",
+            "encoder.downsamples.4.residual.6",
+            "encoder.downsamples.5.spatial",
+            "encoder.downsamples.5.temporal",
+            "encoder.downsamples.6.shortcut",
+            "encoder.downsamples.6.residual.2",
+            "encoder.downsamples.6.residual.6",
+            "encoder.downsamples.7.residual.2",
+            "encoder.downsamples.7.residual.6",
+            "encoder.downsamples.8.spatial",
+            "encoder.downsamples.8.temporal",
+            "encoder.downsamples.9.residual.2",
+            "encoder.downsamples.9.residual.6",
+            "encoder.downsamples.10.residual.2",
+            "encoder.downsamples.10.residual.6",
+            "encoder.middle.0.residual.2",
+            "encoder.middle.0.residual.6",
+            "encoder.middle.1",
+            "encoder.middle.2.residual.2",
+            "encoder.middle.2.residual.6",
+            "encoder.head.2",
+            "conv1"
+          ],
+          "shapeBinding": "dynamic spatial units; native temporal host program"
+        }
+      },
+      "decode": {
+        "input": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            "T",
+            "H/8",
+            "W/8"
+          ],
+          "meanings": [
+            "raw-posterior-mean",
+            "wan21-raw-latent:v1",
+            "wan21-raw-generated-sample:v1"
+          ],
+          "normalization": {
+            "state": "raw",
+            "conversionApplied": false
+          },
+          "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "output": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            "4*(T-1)+1",
+            "H",
+            "W"
+          ],
+          "meaning": "raw-decoder-rgb",
+          "clipped": false
+        },
+        "graph": {
+          "kind": "wan21-vae-stream-v1",
+          "assetIds": [
+            "conv2Weight",
+            "conv2Bias",
+            "decoder.conv1",
+            "residualAdd",
+            "decoder.middle.0.residual.2",
+            "decoder.middle.0.residual.6",
+            "decoder.middle.1",
+            "decoder.middle.2.residual.2",
+            "decoder.middle.2.residual.6",
+            "decoder.upsamples.0.residual.2",
+            "decoder.upsamples.0.residual.6",
+            "decoder.upsamples.1.residual.2",
+            "decoder.upsamples.1.residual.6",
+            "decoder.upsamples.2.residual.2",
+            "decoder.upsamples.2.residual.6",
+            "decoder.upsamples.3.spatial",
+            "decoder.upsamples.3.temporal",
+            "decoder.upsamples.4.shortcut",
+            "decoder.upsamples.4.residual.2",
+            "decoder.upsamples.4.residual.6",
+            "decoder.upsamples.5.residual.2",
+            "decoder.upsamples.5.residual.6",
+            "decoder.upsamples.6.residual.2",
+            "decoder.upsamples.6.residual.6",
+            "decoder.upsamples.7.spatial",
+            "decoder.upsamples.7.temporal",
+            "decoder.upsamples.8.residual.2",
+            "decoder.upsamples.8.residual.6",
+            "decoder.upsamples.9.residual.2",
+            "decoder.upsamples.9.residual.6",
+            "decoder.upsamples.10.residual.2",
+            "decoder.upsamples.10.residual.6",
+            "decoder.upsamples.11.spatial",
+            "decoder.upsamples.12.residual.2",
+            "decoder.upsamples.12.residual.6",
+            "decoder.upsamples.13.residual.2",
+            "decoder.upsamples.13.residual.6",
+            "decoder.upsamples.14.residual.2",
+            "decoder.upsamples.14.residual.6",
+            "decoder.head.2"
+          ],
+          "shapeBinding": "dynamic spatial units; native temporal host program"
+        }
+      },
+      "constraints": {
+        "batch": 1,
+        "inputFrames": "1..81 including native incomplete tail",
+        "spatialMultiple": 16,
+        "minimumSpatial": 16,
+        "maximumSpatial": 848,
+        "adaptation": "none",
+        "tail": "first1 then complete groups4; explicitly reported unused tail"
+      },
+      "runtime": {
+        "encode": {
+          "verified": false
+        },
+        "decode": {
+          "verified": false
+        },
+        "note": "Domain declaration is structural; verified records describe the last completed operation shape only"
+      }
+    },
+    "workersCreated": 0,
+    "manifestSha256": "532523034a5e5c7590c4fca11d67feec329c6e0e364afd55f472f03ffd8966d2",
+    "scope": "Structural exact-descriptor support; no numerical execution performed"
+  },
+  "numericalExecutionPerformed": true,
+  "browserLifecycle": {
+    "disposed": true,
+    "workers": [
+      {
+        "index": 0,
+        "phase": "cancel-first-chunk",
+        "operation": "encode",
+        "terminated": true,
+        "observations": [
+          {
+            "jobId": "1",
+            "inputRevision": 1,
+            "stage": "first-ort-create-start",
+            "created": 0,
+            "released": 0,
+            "active": 0,
+            "maximumActive": 0,
+            "runCalls": 0,
+            "tensorDisposeCalls": 0,
+            "loadMs": 0,
+            "inferMs": 0,
+            "createAttempts": 1,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 0,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 1,
+              "readBytes": 34005,
+              "digestCalls": 2,
+              "digestInputBytes": 39270,
+              "ortSubmittedModelBytes": 34005,
+              "wasmGrowCalls": 1,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 10,
+              "maximumSingleWasmCapacityBytes": 1835008,
+              "maximumObservedWasmCapacitySumBytes": 1835008,
+              "maximumDeclaredWasmPages": 0,
+              "maximumObservedMemoryCount": 1,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          },
+          {
+            "jobId": "1",
+            "inputRevision": 1,
+            "stage": "first-ort-run-start",
+            "created": 1,
+            "released": 0,
+            "active": 1,
+            "maximumActive": 1,
+            "runCalls": 1,
+            "tensorDisposeCalls": 0,
+            "loadMs": 573.5350000113249,
+            "inferMs": 0,
+            "createAttempts": 1,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 0,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 1,
+              "readBytes": 34005,
+              "digestCalls": 2,
+              "digestInputBytes": 39270,
+              "ortSubmittedModelBytes": 34005,
+              "wasmGrowCalls": 1,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 12,
+              "maximumSingleWasmCapacityBytes": 16777216,
+              "maximumObservedWasmCapacitySumBytes": 18612224,
+              "maximumDeclaredWasmPages": 65536,
+              "maximumObservedMemoryCount": 2,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          }
+        ],
+        "terminatedAtEpochMs": 1793598028354
+      },
+      {
+        "index": 1,
+        "phase": "normal-recovery",
+        "operation": "encode",
+        "terminated": true,
+        "observations": [
+          {
+            "jobId": "2",
+            "inputRevision": 2,
+            "stage": "first-ort-create-start",
+            "created": 0,
+            "released": 0,
+            "active": 0,
+            "maximumActive": 0,
+            "runCalls": 0,
+            "tensorDisposeCalls": 0,
+            "loadMs": 0,
+            "inferMs": 0,
+            "createAttempts": 1,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 0,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 1,
+              "readBytes": 34005,
+              "digestCalls": 2,
+              "digestInputBytes": 39270,
+              "ortSubmittedModelBytes": 34005,
+              "wasmGrowCalls": 1,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 10,
+              "maximumSingleWasmCapacityBytes": 1835008,
+              "maximumObservedWasmCapacitySumBytes": 1835008,
+              "maximumDeclaredWasmPages": 0,
+              "maximumObservedMemoryCount": 1,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          },
+          {
+            "jobId": "2",
+            "inputRevision": 2,
+            "stage": "first-ort-run-start",
+            "created": 1,
+            "released": 0,
+            "active": 1,
+            "maximumActive": 1,
+            "runCalls": 1,
+            "tensorDisposeCalls": 0,
+            "loadMs": 384.2850000113249,
+            "inferMs": 0,
+            "createAttempts": 1,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 0,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 1,
+              "readBytes": 34005,
+              "digestCalls": 2,
+              "digestInputBytes": 39270,
+              "ortSubmittedModelBytes": 34005,
+              "wasmGrowCalls": 1,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 12,
+              "maximumSingleWasmCapacityBytes": 16777216,
+              "maximumObservedWasmCapacitySumBytes": 18612224,
+              "maximumDeclaredWasmPages": 65536,
+              "maximumObservedMemoryCount": 2,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          },
+          {
+            "jobId": "2",
+            "inputRevision": 2,
+            "stage": "native-final",
+            "created": 39,
+            "released": 39,
+            "active": 0,
+            "maximumActive": 1,
+            "runCalls": 39,
+            "tensorDisposeCalls": 132,
+            "loadMs": 638.2000000327826,
+            "inferMs": 241.54999995231628,
+            "createAttempts": 39,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 39,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 39,
+              "readBytes": 212288572,
+              "digestCalls": 40,
+              "digestInputBytes": 212293837,
+              "ortSubmittedModelBytes": 212288572,
+              "wasmGrowCalls": 7,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 177,
+              "maximumSingleWasmCapacityBytes": 58130432,
+              "maximumObservedWasmCapacitySumBytes": 59965440,
+              "maximumDeclaredWasmPages": 65536,
+              "maximumObservedMemoryCount": 2,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          }
+        ],
+        "terminatedAtEpochMs": 1793598030725
+      },
+      {
+        "index": 2,
+        "phase": "normal",
+        "operation": "decode",
+        "terminated": true,
+        "observations": [
+          {
+            "jobId": "3",
+            "inputRevision": 3,
+            "stage": "first-ort-create-start",
+            "created": 0,
+            "released": 0,
+            "active": 0,
+            "maximumActive": 0,
+            "runCalls": 0,
+            "tensorDisposeCalls": 0,
+            "loadMs": 0,
+            "inferMs": 0,
+            "createAttempts": 1,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 0,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 3,
+              "readBytes": 668696,
+              "digestCalls": 4,
+              "digestInputBytes": 673961,
+              "ortSubmittedModelBytes": 667608,
+              "wasmGrowCalls": 1,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 18,
+              "maximumSingleWasmCapacityBytes": 1835008,
+              "maximumObservedWasmCapacitySumBytes": 1835008,
+              "maximumDeclaredWasmPages": 0,
+              "maximumObservedMemoryCount": 1,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          },
+          {
+            "jobId": "3",
+            "inputRevision": 3,
+            "stage": "first-ort-run-start",
+            "created": 1,
+            "released": 0,
+            "active": 1,
+            "maximumActive": 1,
+            "runCalls": 1,
+            "tensorDisposeCalls": 0,
+            "loadMs": 399.3200000077486,
+            "inferMs": 0,
+            "createAttempts": 1,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 0,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 3,
+              "readBytes": 668696,
+              "digestCalls": 4,
+              "digestInputBytes": 673961,
+              "ortSubmittedModelBytes": 667608,
+              "wasmGrowCalls": 1,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 20,
+              "maximumSingleWasmCapacityBytes": 16777216,
+              "maximumObservedWasmCapacitySumBytes": 18612224,
+              "maximumDeclaredWasmPages": 65536,
+              "maximumObservedMemoryCount": 2,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          },
+          {
+            "jobId": "3",
+            "inputRevision": 3,
+            "stage": "native-final",
+            "created": 49,
+            "released": 49,
+            "active": 0,
+            "maximumActive": 1,
+            "runCalls": 49,
+            "tensorDisposeCalls": 172,
+            "loadMs": 740.355000063777,
+            "inferMs": 473.4350000321865,
+            "createAttempts": 49,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 49,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 51,
+              "readBytes": 286235519,
+              "digestCalls": 52,
+              "digestInputBytes": 286240784,
+              "ortSubmittedModelBytes": 286234431,
+              "wasmGrowCalls": 4,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 219,
+              "maximumSingleWasmCapacityBytes": 59441152,
+              "maximumObservedWasmCapacitySumBytes": 61276160,
+              "maximumDeclaredWasmPages": 65536,
+              "maximumObservedMemoryCount": 2,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          }
+        ],
+        "terminatedAtEpochMs": 1793598033937
+      }
+    ],
+    "progressCounts": {
+      "chunk-start": 3,
+      "loading-unit": 127,
+      "creating-session": 127,
+      "running-unit": 127,
+      "chunk-complete": 3,
+      "complete": 2,
+      "loading-conv2": 1,
+      "hike-conv2": 1
+    },
+    "chunks": [
+      {
+        "controlPhase": "cancel-first-chunk",
+        "phase": "chunk-start",
+        "operation": "encode",
+        "profileId": "wan21-raw-f32-stream",
+        "chunkIndex": 0,
+        "chunkCount": 1
+      },
+      {
+        "controlPhase": "cancel-first-chunk",
+        "phase": "chunk-complete",
+        "operation": "encode",
+        "profileId": "wan21-raw-f32-stream",
+        "chunkIndex": 0,
+        "chunkCount": 1
+      },
+      {
+        "controlPhase": "normal-recovery",
+        "phase": "chunk-start",
+        "operation": "encode",
+        "profileId": "wan21-raw-f32-stream",
+        "chunkIndex": 0,
+        "chunkCount": 1
+      },
+      {
+        "controlPhase": "normal-recovery",
+        "phase": "chunk-complete",
+        "operation": "encode",
+        "profileId": "wan21-raw-f32-stream",
+        "chunkIndex": 0,
+        "chunkCount": 1
+      },
+      {
+        "controlPhase": "normal",
+        "phase": "chunk-start",
+        "operation": "decode",
+        "profileId": "wan21-raw-f32-stream",
+        "chunkIndex": 0,
+        "chunkCount": 1
+      },
+      {
+        "controlPhase": "normal",
+        "phase": "chunk-complete",
+        "operation": "decode",
+        "profileId": "wan21-raw-f32-stream",
+        "chunkIndex": 0,
+        "chunkCount": 1
+      }
+    ],
+    "lastState": {
+      "status": "disposed",
+      "module": "vae",
+      "operation": "decode",
+      "inputRevision": 3
+    }
+  },
+  "workerTargetObservation": {
+    "schemaVersion": 1,
+    "discoveryEnabled": true,
+    "collectionEndedAt": {
+      "elapsedSeconds": 10.219053460008581,
+      "observedAtEpochMs": 1793598033989
+    },
+    "status": "WORKER_TARGETS_OBSERVED",
+    "parentTargetsIdentifiedByUrl": [
+      "CA3F3D7D250952A5BA8556724935C543",
+      "BD38AD4F3A511C8A4880FE766D5D99E7",
+      "8C143D85BF51A8D3003E196FD67E35BD"
+    ],
+    "pthreadTargetsIdentifiedByUrl": [
+      "370B81DDDD4B1328EF5CEC8E36D0725D",
+      "3628488C33B15DCD4C310E883F5DB91A",
+      "1FE02C2B063DF3BBDE2E8D6D963D7F3B",
+      "B0CDDC76FEF9DF48FEE9E706682EC1DA",
+      "134782546E45C0A65CB788EC6737506B",
+      "443B31F5D7DF8CB613A31BE1A02D936B",
+      "267E43F90FBBD9D7F29D872A87CCD651",
+      "6F819CF2869497BB6E69C3CB7F37B2A0",
+      "596CF81587FA2A48A3DA864FA61B539F"
+    ],
+    "pthreadVisibility": "URL_IDENTIFIED_TARGETS_OBSERVED",
+    "baselineWorkerTargetIdsExcluded": [],
+    "targets": [
+      {
+        "targetId": "CA3F3D7D250952A5BA8556724935C543",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+        "openerId": null,
+        "classification": "inference-parent-url",
+        "firstObserved": {
+          "elapsedSeconds": 1.3273117080098018,
+          "observedAtEpochMs": 1793598025097
+        },
+        "destroyEventObserved": true
+      },
+      {
+        "targetId": "370B81DDDD4B1328EF5CEC8E36D0725D",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url",
+        "firstObserved": {
+          "elapsedSeconds": 1.6411832529993262,
+          "observedAtEpochMs": 1793598025411
+        },
+        "destroyEventObserved": true
+      },
+      {
+        "targetId": "3628488C33B15DCD4C310E883F5DB91A",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url",
+        "firstObserved": {
+          "elapsedSeconds": 1.6472172350040637,
+          "observedAtEpochMs": 1793598025417
+        },
+        "destroyEventObserved": true
+      },
+      {
+        "targetId": "1FE02C2B063DF3BBDE2E8D6D963D7F3B",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url",
+        "firstObserved": {
+          "elapsedSeconds": 1.6473428820027038,
+          "observedAtEpochMs": 1793598025417
+        },
+        "destroyEventObserved": true
+      },
+      {
+        "targetId": "BD38AD4F3A511C8A4880FE766D5D99E7",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+        "openerId": null,
+        "classification": "inference-parent-url",
+        "firstObserved": {
+          "elapsedSeconds": 4.618067567003891,
+          "observedAtEpochMs": 1793598028388
+        },
+        "destroyEventObserved": true
+      },
+      {
+        "targetId": "B0CDDC76FEF9DF48FEE9E706682EC1DA",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url",
+        "firstObserved": {
+          "elapsedSeconds": 4.911525066010654,
+          "observedAtEpochMs": 1793598028681
+        },
+        "destroyEventObserved": true
+      },
+      {
+        "targetId": "134782546E45C0A65CB788EC6737506B",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url",
+        "firstObserved": {
+          "elapsedSeconds": 4.911712328001158,
+          "observedAtEpochMs": 1793598028681
+        },
+        "destroyEventObserved": true
+      },
+      {
+        "targetId": "443B31F5D7DF8CB613A31BE1A02D936B",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url",
+        "firstObserved": {
+          "elapsedSeconds": 4.912388419004856,
+          "observedAtEpochMs": 1793598028682
+        },
+        "destroyEventObserved": true
+      },
+      {
+        "targetId": "8C143D85BF51A8D3003E196FD67E35BD",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+        "openerId": null,
+        "classification": "inference-parent-url",
+        "firstObserved": {
+          "elapsedSeconds": 7.0247426190035185,
+          "observedAtEpochMs": 1793598030794
+        },
+        "destroyEventObserved": false
+      },
+      {
+        "targetId": "267E43F90FBBD9D7F29D872A87CCD651",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url",
+        "firstObserved": {
+          "elapsedSeconds": 7.285772052011453,
+          "observedAtEpochMs": 1793598031055
+        },
+        "destroyEventObserved": false
+      },
+      {
+        "targetId": "6F819CF2869497BB6E69C3CB7F37B2A0",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url",
+        "firstObserved": {
+          "elapsedSeconds": 7.291602092009271,
+          "observedAtEpochMs": 1793598031061
+        },
+        "destroyEventObserved": false
+      },
+      {
+        "targetId": "596CF81587FA2A48A3DA864FA61B539F",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url",
+        "firstObserved": {
+          "elapsedSeconds": 7.291755850004847,
+          "observedAtEpochMs": 1793598031061
+        },
+        "destroyEventObserved": false
+      }
+    ],
+    "events": [
+      {
+        "event": "targetCreated",
+        "elapsedSeconds": 1.3273201470001368,
+        "observedAtEpochMs": 1793598025097,
+        "targetId": "CA3F3D7D250952A5BA8556724935C543",
+        "type": "worker",
+        "url": "",
+        "openerId": null,
+        "classification": "unclassified-worker-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 1.3573112380108796,
+        "observedAtEpochMs": 1793598025127,
+        "targetId": "CA3F3D7D250952A5BA8556724935C543",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+        "openerId": null,
+        "classification": "inference-parent-url"
+      },
+      {
+        "event": "targetCreated",
+        "elapsedSeconds": 1.641189864007174,
+        "observedAtEpochMs": 1793598025411,
+        "targetId": "370B81DDDD4B1328EF5CEC8E36D0725D",
+        "type": "worker",
+        "url": "",
+        "openerId": null,
+        "classification": "unclassified-worker-url"
+      },
+      {
+        "event": "targetCreated",
+        "elapsedSeconds": 1.6472209880012088,
+        "observedAtEpochMs": 1793598025417,
+        "targetId": "3628488C33B15DCD4C310E883F5DB91A",
+        "type": "worker",
+        "url": "",
+        "openerId": null,
+        "classification": "unclassified-worker-url"
+      },
+      {
+        "event": "targetCreated",
+        "elapsedSeconds": 1.6473449559998699,
+        "observedAtEpochMs": 1793598025417,
+        "targetId": "1FE02C2B063DF3BBDE2E8D6D963D7F3B",
+        "type": "worker",
+        "url": "",
+        "openerId": null,
+        "classification": "unclassified-worker-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 1.6629651719995309,
+        "observedAtEpochMs": 1793598025433,
+        "targetId": "370B81DDDD4B1328EF5CEC8E36D0725D",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 1.6672832100011874,
+        "observedAtEpochMs": 1793598025437,
+        "targetId": "1FE02C2B063DF3BBDE2E8D6D963D7F3B",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 1.6748824940004852,
+        "observedAtEpochMs": 1793598025444,
+        "targetId": "3628488C33B15DCD4C310E883F5DB91A",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetCreated",
+        "elapsedSeconds": 4.6180705730075715,
+        "observedAtEpochMs": 1793598028388,
+        "targetId": "BD38AD4F3A511C8A4880FE766D5D99E7",
+        "type": "worker",
+        "url": "",
+        "openerId": null,
+        "classification": "unclassified-worker-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 4.639942834008252,
+        "observedAtEpochMs": 1793598028410,
+        "targetId": "BD38AD4F3A511C8A4880FE766D5D99E7",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+        "openerId": null,
+        "classification": "inference-parent-url"
+      },
+      {
+        "event": "targetCreated",
+        "elapsedSeconds": 4.911530641998979,
+        "observedAtEpochMs": 1793598028681,
+        "targetId": "B0CDDC76FEF9DF48FEE9E706682EC1DA",
+        "type": "worker",
+        "url": "",
+        "openerId": null,
+        "classification": "unclassified-worker-url"
+      },
+      {
+        "event": "targetCreated",
+        "elapsedSeconds": 4.9117150220117765,
+        "observedAtEpochMs": 1793598028681,
+        "targetId": "134782546E45C0A65CB788EC6737506B",
+        "type": "worker",
+        "url": "",
+        "openerId": null,
+        "classification": "unclassified-worker-url"
+      },
+      {
+        "event": "targetCreated",
+        "elapsedSeconds": 4.912393049002276,
+        "observedAtEpochMs": 1793598028682,
+        "targetId": "443B31F5D7DF8CB613A31BE1A02D936B",
+        "type": "worker",
+        "url": "",
+        "openerId": null,
+        "classification": "unclassified-worker-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 4.931503751009586,
+        "observedAtEpochMs": 1793598028701,
+        "targetId": "B0CDDC76FEF9DF48FEE9E706682EC1DA",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 4.934111508002388,
+        "observedAtEpochMs": 1793598028704,
+        "targetId": "134782546E45C0A65CB788EC6737506B",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 4.938099019011133,
+        "observedAtEpochMs": 1793598028708,
+        "targetId": "443B31F5D7DF8CB613A31BE1A02D936B",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 6.62063700100407,
+        "observedAtEpochMs": 1793598030390,
+        "targetId": "370B81DDDD4B1328EF5CEC8E36D0725D",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetDestroyed",
+        "elapsedSeconds": 6.627834266007994,
+        "observedAtEpochMs": 1793598030397,
+        "targetId": "370B81DDDD4B1328EF5CEC8E36D0725D"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 6.628033043001778,
+        "observedAtEpochMs": 1793598030398,
+        "targetId": "3628488C33B15DCD4C310E883F5DB91A",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetDestroyed",
+        "elapsedSeconds": 6.628363323005033,
+        "observedAtEpochMs": 1793598030398,
+        "targetId": "3628488C33B15DCD4C310E883F5DB91A"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 6.628517028002534,
+        "observedAtEpochMs": 1793598030398,
+        "targetId": "1FE02C2B063DF3BBDE2E8D6D963D7F3B",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetDestroyed",
+        "elapsedSeconds": 6.628706084011355,
+        "observedAtEpochMs": 1793598030398,
+        "targetId": "1FE02C2B063DF3BBDE2E8D6D963D7F3B"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 6.634335152004496,
+        "observedAtEpochMs": 1793598030404,
+        "targetId": "CA3F3D7D250952A5BA8556724935C543",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+        "openerId": null,
+        "classification": "inference-parent-url"
+      },
+      {
+        "event": "targetDestroyed",
+        "elapsedSeconds": 6.635687722009607,
+        "observedAtEpochMs": 1793598030405,
+        "targetId": "CA3F3D7D250952A5BA8556724935C543"
+      },
+      {
+        "event": "targetCreated",
+        "elapsedSeconds": 7.024746449009399,
+        "observedAtEpochMs": 1793598030794,
+        "targetId": "8C143D85BF51A8D3003E196FD67E35BD",
+        "type": "worker",
+        "url": "",
+        "openerId": null,
+        "classification": "unclassified-worker-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 7.0471612850087695,
+        "observedAtEpochMs": 1793598030817,
+        "targetId": "8C143D85BF51A8D3003E196FD67E35BD",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+        "openerId": null,
+        "classification": "inference-parent-url"
+      },
+      {
+        "event": "targetCreated",
+        "elapsedSeconds": 7.285777039011009,
+        "observedAtEpochMs": 1793598031055,
+        "targetId": "267E43F90FBBD9D7F29D872A87CCD651",
+        "type": "worker",
+        "url": "",
+        "openerId": null,
+        "classification": "unclassified-worker-url"
+      },
+      {
+        "event": "targetCreated",
+        "elapsedSeconds": 7.291607343009673,
+        "observedAtEpochMs": 1793598031061,
+        "targetId": "6F819CF2869497BB6E69C3CB7F37B2A0",
+        "type": "worker",
+        "url": "",
+        "openerId": null,
+        "classification": "unclassified-worker-url"
+      },
+      {
+        "event": "targetCreated",
+        "elapsedSeconds": 7.291758220002521,
+        "observedAtEpochMs": 1793598031061,
+        "targetId": "596CF81587FA2A48A3DA864FA61B539F",
+        "type": "worker",
+        "url": "",
+        "openerId": null,
+        "classification": "unclassified-worker-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 7.320935694006039,
+        "observedAtEpochMs": 1793598031090,
+        "targetId": "6F819CF2869497BB6E69C3CB7F37B2A0",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 7.324175424000714,
+        "observedAtEpochMs": 1793598031094,
+        "targetId": "596CF81587FA2A48A3DA864FA61B539F",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 7.343867242001579,
+        "observedAtEpochMs": 1793598031113,
+        "targetId": "267E43F90FBBD9D7F29D872A87CCD651",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 8.960990592007875,
+        "observedAtEpochMs": 1793598032731,
+        "targetId": "B0CDDC76FEF9DF48FEE9E706682EC1DA",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetDestroyed",
+        "elapsedSeconds": 8.961374154998339,
+        "observedAtEpochMs": 1793598032731,
+        "targetId": "B0CDDC76FEF9DF48FEE9E706682EC1DA"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 8.989653162003378,
+        "observedAtEpochMs": 1793598032759,
+        "targetId": "443B31F5D7DF8CB613A31BE1A02D936B",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetDestroyed",
+        "elapsedSeconds": 8.989908116011065,
+        "observedAtEpochMs": 1793598032759,
+        "targetId": "443B31F5D7DF8CB613A31BE1A02D936B"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 8.990034104004735,
+        "observedAtEpochMs": 1793598032760,
+        "targetId": "134782546E45C0A65CB788EC6737506B",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "openerId": null,
+        "classification": "ort-pthread-url"
+      },
+      {
+        "event": "targetDestroyed",
+        "elapsedSeconds": 8.990495642006863,
+        "observedAtEpochMs": 1793598032760,
+        "targetId": "134782546E45C0A65CB788EC6737506B"
+      },
+      {
+        "event": "targetInfoChanged",
+        "elapsedSeconds": 8.990685270007816,
+        "observedAtEpochMs": 1793598032760,
+        "targetId": "BD38AD4F3A511C8A4880FE766D5D99E7",
+        "type": "worker",
+        "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+        "openerId": null,
+        "classification": "inference-parent-url"
+      },
+      {
+        "event": "targetDestroyed",
+        "elapsedSeconds": 8.990911393004353,
+        "observedAtEpochMs": 1793598032760,
+        "targetId": "BD38AD4F3A511C8A4880FE766D5D99E7"
+      }
+    ],
+    "snapshots": [
+      {
+        "label": "browser-ready",
+        "elapsedSeconds": 0.0038793569983681664,
+        "observedAtEpochMs": 1793598023773,
+        "workerTargets": [],
+        "snapshotDoesNotPauseRenderer": true,
+        "querySucceeded": true
+      },
+      {
+        "label": "cancel-returned",
+        "elapsedSeconds": 4.613647885009414,
+        "observedAtEpochMs": 1793598028383,
+        "workerTargets": [
+          {
+            "targetId": "370B81DDDD4B1328EF5CEC8E36D0725D",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "3628488C33B15DCD4C310E883F5DB91A",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "1FE02C2B063DF3BBDE2E8D6D963D7F3B",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "BD38AD4F3A511C8A4880FE766D5D99E7",
+            "type": "worker",
+            "url": "",
+            "openerId": null,
+            "classification": "unclassified-worker-url"
+          },
+          {
+            "targetId": "CA3F3D7D250952A5BA8556724935C543",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+            "openerId": null,
+            "classification": "inference-parent-url"
+          }
+        ],
+        "snapshotDoesNotPauseRenderer": true,
+        "browserMarker": {
+          "boundary": "cancel-returned",
+          "operation": "encode",
+          "atEpochMs": 1793598028379,
+          "cancelReturned": true
+        },
+        "querySucceeded": true
+      },
+      {
+        "label": "cancel-rejected",
+        "elapsedSeconds": 4.616898255000706,
+        "observedAtEpochMs": 1793598028386,
+        "workerTargets": [
+          {
+            "targetId": "370B81DDDD4B1328EF5CEC8E36D0725D",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "3628488C33B15DCD4C310E883F5DB91A",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "1FE02C2B063DF3BBDE2E8D6D963D7F3B",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "BD38AD4F3A511C8A4880FE766D5D99E7",
+            "type": "worker",
+            "url": "",
+            "openerId": null,
+            "classification": "unclassified-worker-url"
+          },
+          {
+            "targetId": "CA3F3D7D250952A5BA8556724935C543",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+            "openerId": null,
+            "classification": "inference-parent-url"
+          }
+        ],
+        "snapshotDoesNotPauseRenderer": true,
+        "browserMarker": {
+          "boundary": "cancel-rejected",
+          "operation": "encode",
+          "atEpochMs": 1793598028380
+        },
+        "querySucceeded": true
+      },
+      {
+        "label": "before-normal-recovery",
+        "elapsedSeconds": 4.617843187006656,
+        "observedAtEpochMs": 1793598028387,
+        "workerTargets": [
+          {
+            "targetId": "370B81DDDD4B1328EF5CEC8E36D0725D",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "3628488C33B15DCD4C310E883F5DB91A",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "1FE02C2B063DF3BBDE2E8D6D963D7F3B",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "BD38AD4F3A511C8A4880FE766D5D99E7",
+            "type": "worker",
+            "url": "",
+            "openerId": null,
+            "classification": "unclassified-worker-url"
+          },
+          {
+            "targetId": "CA3F3D7D250952A5BA8556724935C543",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+            "openerId": null,
+            "classification": "inference-parent-url"
+          }
+        ],
+        "snapshotDoesNotPauseRenderer": true,
+        "browserMarker": {
+          "boundary": "before-normal-recovery",
+          "operation": "encode",
+          "atEpochMs": 1793598028380,
+          "recovery": true
+        },
+        "querySucceeded": true
+      },
+      {
+        "label": "encode:operation-returned",
+        "elapsedSeconds": 6.989865705007105,
+        "observedAtEpochMs": 1793598030759,
+        "workerTargets": [
+          {
+            "targetId": "443B31F5D7DF8CB613A31BE1A02D936B",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "BD38AD4F3A511C8A4880FE766D5D99E7",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+            "openerId": null,
+            "classification": "inference-parent-url"
+          },
+          {
+            "targetId": "134782546E45C0A65CB788EC6737506B",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "B0CDDC76FEF9DF48FEE9E706682EC1DA",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          }
+        ],
+        "snapshotDoesNotPauseRenderer": true,
+        "querySucceeded": true
+      },
+      {
+        "label": "before-normal-recovery",
+        "elapsedSeconds": 7.023685178006417,
+        "observedAtEpochMs": 1793598030793,
+        "workerTargets": [
+          {
+            "targetId": "443B31F5D7DF8CB613A31BE1A02D936B",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "BD38AD4F3A511C8A4880FE766D5D99E7",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+            "openerId": null,
+            "classification": "inference-parent-url"
+          },
+          {
+            "targetId": "134782546E45C0A65CB788EC6737506B",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "B0CDDC76FEF9DF48FEE9E706682EC1DA",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "8C143D85BF51A8D3003E196FD67E35BD",
+            "type": "worker",
+            "url": "",
+            "openerId": null,
+            "classification": "unclassified-worker-url"
+          }
+        ],
+        "snapshotDoesNotPauseRenderer": true,
+        "browserMarker": {
+          "boundary": "before-normal-recovery",
+          "operation": "decode",
+          "atEpochMs": 1793598030788,
+          "recovery": false
+        },
+        "querySucceeded": true
+      },
+      {
+        "label": "decode:operation-returned",
+        "elapsedSeconds": 10.192872223007726,
+        "observedAtEpochMs": 1793598033962,
+        "workerTargets": [
+          {
+            "targetId": "6F819CF2869497BB6E69C3CB7F37B2A0",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "596CF81587FA2A48A3DA864FA61B539F",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "267E43F90FBBD9D7F29D872A87CCD651",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "8C143D85BF51A8D3003E196FD67E35BD",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+            "openerId": null,
+            "classification": "inference-parent-url"
+          }
+        ],
+        "snapshotDoesNotPauseRenderer": true,
+        "querySucceeded": true
+      },
+      {
+        "label": "normal-dispose-returned",
+        "elapsedSeconds": 10.216568905001623,
+        "observedAtEpochMs": 1793598033986,
+        "workerTargets": [
+          {
+            "targetId": "6F819CF2869497BB6E69C3CB7F37B2A0",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "596CF81587FA2A48A3DA864FA61B539F",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "267E43F90FBBD9D7F29D872A87CCD651",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "8C143D85BF51A8D3003E196FD67E35BD",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+            "openerId": null,
+            "classification": "inference-parent-url"
+          }
+        ],
+        "snapshotDoesNotPauseRenderer": true,
+        "querySucceeded": true
+      },
+      {
+        "label": "before-browser-close",
+        "elapsedSeconds": 10.218208885999047,
+        "observedAtEpochMs": 1793598033988,
+        "workerTargets": [
+          {
+            "targetId": "6F819CF2869497BB6E69C3CB7F37B2A0",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "596CF81587FA2A48A3DA864FA61B539F",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "267E43F90FBBD9D7F29D872A87CCD651",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+            "openerId": null,
+            "classification": "ort-pthread-url"
+          },
+          {
+            "targetId": "8C143D85BF51A8D3003E196FD67E35BD",
+            "type": "worker",
+            "url": "http://127.0.0.1:42663/harness/vae/stream_observer_worker.mjs",
+            "openerId": null,
+            "classification": "inference-parent-url"
+          }
+        ],
+        "snapshotDoesNotPauseRenderer": true,
+        "querySucceeded": true
+      }
+    ],
+    "dropped": {
+      "targets": 0,
+      "events": 0,
+      "snapshots": 0
+    },
+    "errors": [],
+    "scope": "New worker targets in the helper-owned browser, excluding baseline. URL classification is observational; openerId is retained when CDP supplies it. Nested pthread targets may be absent or have unclassified blob URLs. An empty snapshot or missing target does not prove unexposed child termination. Snapshots do not pause the renderer; browser lifecycle markers and CDP events have separately observed timestamps. No heartbeat or child protocol was injected."
+  },
+  "processOwnership": {
+    "harnessPid": 26704,
+    "harnessCtime": 1793598019.54,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 26739,
+        "ctime": 1793598021.18,
+        "ppid": 26704,
+        "name": "MainThread",
+        "status": "sleeping",
+        "firstPpid": 26704
+      },
+      {
+        "pid": 26751,
+        "ctime": 1793598021.94,
+        "ppid": 26739,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 26739
+      },
+      {
+        "pid": 26767,
+        "ctime": 1793598022.33,
+        "ppid": 26704,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 26704
+      },
+      {
+        "pid": 26772,
+        "ctime": 1793598022.34,
+        "ppid": 26704,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 26704
+      },
+      {
+        "pid": 26769,
+        "ctime": 1793598022.34,
+        "ppid": 26704,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 26751
+      },
+      {
+        "pid": 26771,
+        "ctime": 1793598022.34,
+        "ppid": 26704,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 26751
+      },
+      {
+        "pid": 26795,
+        "ctime": 1793598022.51,
+        "ppid": 26751,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 26751
+      },
+      {
+        "pid": 26794,
+        "ctime": 1793598022.5,
+        "ppid": 26769,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 26769
+      },
+      {
+        "pid": 26819,
+        "ctime": 1793598022.66,
+        "ppid": 26771,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 26771
+      },
+      {
+        "pid": 26836,
+        "ctime": 1793598022.94,
+        "ppid": 26771,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 26771
+      },
+      {
+        "pid": 26843,
+        "ctime": 1793598023.01,
+        "ppid": 26771,
+        "name": "chromium",
+        "status": "running",
+        "firstPpid": 26771
+      },
+      {
+        "pid": 26846,
+        "ctime": 1793598023.03,
+        "ppid": 26771,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 26771
+      },
+      {
+        "pid": 26867,
+        "ctime": 1793598023.26,
+        "ppid": 26771,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 26771
+      },
+      {
+        "pid": 26934,
+        "ctime": 1793598024.43,
+        "ppid": 26704,
+        "name": "git",
+        "status": "zombie",
+        "firstPpid": 26704
+      },
+      {
+        "pid": 26937,
+        "ctime": 1793598024.44,
+        "ppid": 26704,
+        "name": "git",
+        "status": "running",
+        "firstPpid": 26704
+      },
+      {
+        "pid": 26943,
+        "ctime": 1793598024.48,
+        "ppid": 26704,
+        "name": "git",
+        "status": "running",
+        "firstPpid": 26704
+      },
+      {
+        "pid": 26968,
+        "ctime": 1793598027.58,
+        "ppid": 26704,
+        "name": "git",
+        "status": "running",
+        "firstPpid": 26704
+      },
+      {
+        "pid": 26983,
+        "ctime": 1793598027.73,
+        "ppid": 26704,
+        "name": "git",
+        "status": "sleeping",
+        "firstPpid": 26704
+      },
+      {
+        "pid": 27024,
+        "ctime": 1793598030.12,
+        "ppid": 26704,
+        "name": "git",
+        "status": "running",
+        "firstPpid": 26704
+      }
+    ],
+    "reapedChildren": [
+      {
+        "pid": 26767,
+        "ctime": 1793598022.33,
+        "ppid": 26704,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 26704,
+        "waitStatus": 0
+      },
+      {
+        "pid": 26772,
+        "ctime": 1793598022.34,
+        "ppid": 26704,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 26704,
+        "waitStatus": 0
+      },
+      {
+        "pid": 26769,
+        "ctime": 1793598022.34,
+        "ppid": 26704,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 26751,
+        "waitStatus": 0
+      },
+      {
+        "pid": 26771,
+        "ctime": 1793598022.34,
+        "ppid": 26704,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 26751,
+        "waitStatus": 0
+      }
+    ],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "resources": {
+    "file": "resource-measurements.json",
+    "sha256": "2b543f0c45c831ac510905e14c7b0f39823bb8ab6eafa23fcdd7a8a8886e25e2",
+    "phases": {
+      "browser-ready": {
+        "samples": 9,
+        "sampledPeakSumRssBytes": 539250688,
+        "sampledPeakSumPssBytes": 268625920
+      },
+      "exact-capabilities-no-NN": {
+        "samples": 1,
+        "sampledPeakSumRssBytes": 557338624,
+        "sampledPeakSumPssBytes": 283810816
+      },
+      "encode:normal-or-recovery": {
+        "samples": 3,
+        "sampledPeakSumRssBytes": 582025216,
+        "sampledPeakSumPssBytes": 305321984
+      },
+      "encode:cancel-first-chunk": {
+        "samples": 25,
+        "sampledPeakSumRssBytes": 884695040,
+        "sampledPeakSumPssBytes": 605250560
+      },
+      "encode:normal-recovery": {
+        "samples": 16,
+        "sampledPeakSumRssBytes": 868413440,
+        "sampledPeakSumPssBytes": 596593664
+      },
+      "decode:normal-or-recovery": {
+        "samples": 2,
+        "sampledPeakSumRssBytes": 724828160,
+        "sampledPeakSumPssBytes": 448416768
+      },
+      "decode:normal": {
+        "samples": 23,
+        "sampledPeakSumRssBytes": 901033984,
+        "sampledPeakSumPssBytes": 624430080
+      }
+    },
+    "sampledPeakCgroupCurrentBytes": 17179553792,
+    "allObservedPidsGone": true,
+    "liveProcessesAfterClose": [],
+    "zombieProcessesAfterClose": []
+  },
+  "servedSources": [
+    {
+      "path": "tools/inference/vae/accept_stream.py",
+      "bytes": 36869,
+      "sha256": "5520a4c213595e4a8af87a86a85eb73a9f6c2114962752ebe0fcc37743b165f5"
+    },
+    {
+      "path": "tools/inference/vae/stream_browser.mjs",
+      "bytes": 15515,
+      "sha256": "0b37d55d174565ccb432d8bf8a4d4d8070411b69974cc1e5083a35808cdeaeba"
+    },
+    {
+      "path": "tools/inference/vae/stream_observer_worker.mjs",
+      "bytes": 5282,
+      "sha256": "909a6169bef3a246a14fb47773f1f3f2a5c9fda24e10b5e79a84399a2f62907d"
+    },
+    {
+      "path": "tools/inference/vae/process_lifecycle.py",
+      "bytes": 6299,
+      "sha256": "a927fe8f38382563ec8d512745446f32bc7740bff3c1b86b650f4490f178299c"
+    },
+    {
+      "path": "tools/inference/vae/accept_still.py",
+      "bytes": 23812,
+      "sha256": "91f5e010809d54716be620a01a6af2a364d77ebd3b7834cb7c06571b681fb9f6"
+    },
+    {
+      "path": "tools/inference/vae/stream_reference.py",
+      "bytes": 23592,
+      "sha256": "5d5c5c70b01b03841bc85997ad6ec9cf638a1269452a8ce70fb954fb51991543"
+    },
+    {
+      "path": "development/inference/standalone-20261102/vae/predeclared-plan.json",
+      "bytes": 6620,
+      "sha256": "8b5d354a299e8e35863269ace9549148d4265b8d097b8877caabd727a4c193ea"
+    },
+    {
+      "path": "tools/inference/text-encoder/plain_memory.mjs",
+      "bytes": 5508,
+      "sha256": "dd0dcf5ef26ea1b71b2803db4d521af3bfeb24b0fa8323eb7437507b2d3cbc71"
+    },
+    {
+      "path": "docs/shared/vr180/sha256.mjs",
+      "bytes": 6970,
+      "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+    },
+    {
+      "path": "docs/shared/inference/text-encoder.mjs",
+      "bytes": 9309,
+      "sha256": "44e9b144d6c1f3e2d60cb33e2d537f8f523fec0c7c10e30830427b417957252d"
+    },
+    {
+      "path": "docs/shared/inference/vae-api.mjs",
+      "bytes": 7300,
+      "sha256": "8bb6c8f0fbb6987bf0473502842cf7df351f9ce846ddb8a5bd247e2663ad421f"
+    },
+    {
+      "path": "docs/shared/inference/ui.mjs",
+      "bytes": 7205,
+      "sha256": "77895caf5535522ab9a96f9b250fff12d56ae5fedc4b7944b8d4e1d457f0a22f"
+    },
+    {
+      "path": "docs/shared/inference/vae.mjs",
+      "bytes": 13223,
+      "sha256": "e2e8b7901edfe8ac94152dba2c9f246d0dd0d2c595b5ac72e0cade4b36d170ae"
+    },
+    {
+      "path": "docs/shared/inference/api.mjs",
+      "bytes": 2293,
+      "sha256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda"
+    },
+    {
+      "path": "docs/shared/inference/vae-stream.mjs",
+      "bytes": 22976,
+      "sha256": "347ec7d2e3e981a5f0d40c905e7aa5ab82f83ab390dac641012e97ade9f500b1"
+    },
+    {
+      "path": "docs/shared/inference/text-encoder-api.mjs",
+      "bytes": 4952,
+      "sha256": "b33a81b0b92da5668d6eb9a392ce18148c06133cfce431b56e9b8c0fa72152d1"
+    },
+    {
+      "path": "docs/shared/inference/client.mjs",
+      "bytes": 2423,
+      "sha256": "806278b5eb09242cec8726d22b13be6237323862d0c42f0c3948d0a63cc9501f"
+    },
+    {
+      "path": "docs/shared/inference/tokenizer.mjs",
+      "bytes": 1637,
+      "sha256": "4a7811d4e36fbcc568e2a2a1e0941fd78261f84b231a96458d919ea0259fb9a5"
+    },
+    {
+      "path": "docs/shared/inference/hike.mjs",
+      "bytes": 4126,
+      "sha256": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65"
+    },
+    {
+      "path": "docs/shared/inference/inference-worker.mjs",
+      "bytes": 3939,
+      "sha256": "83ede4a2a5353a2bedcfe03eeb9a7979597984955f481724372a3fdb3229950a"
+    },
+    {
+      "path": "docs/shared/inference/tensor.mjs",
+      "bytes": 10825,
+      "sha256": "370a1c8d59fe6d64ba182380697623e8a142ee4f2cc046ca3843a8ab4bf543e2"
+    },
+    {
+      "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "bytes": 24274,
+      "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57"
+    },
+    {
+      "path": "docs/shared/inference/vendor/sentencepiece.mjs",
+      "bytes": 741502,
+      "sha256": "31ce41230f8694c63afa1ffeecb862d0bf3768d858328d335530997a86a1f27d"
+    },
+    {
+      "path": "docs/shared/inference/vendor/ort.wasm.min.mjs",
+      "bytes": 49997,
+      "sha256": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e"
+    },
+    {
+      "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "bytes": 12361745,
+      "sha256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+    },
+    {
+      "path": "docs/shared/inference/kernel/tensor.wasm",
+      "bytes": 5265,
+      "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8"
+    }
+  ],
+  "serverErrors": [],
+  "wallSeconds": 13.860530381993158
+}
