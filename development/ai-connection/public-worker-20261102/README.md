@@ -76,6 +76,14 @@ separate new output paths for every run. `--mode predict --side HIGH --timestep
 COOP/COEP headers and SharedArrayBuffer; no fallback is allowed. `--wasm-threads
 1` is a separate resource profile.
 
+For a same-instance recovery check, use `--mode sample --cancel-before-run`.
+This explicit development flag first executes the real HIGH prefix and cancels
+at patch progress, verifies that a numerical retry requires load, and reloads
+through the same API instance. It then completes the ordinary six-update sample
+with unchanged saved inputs. The receipt links the API session, cancelled model
+session, replacement session and completed sample execution. The flag is never
+sent to `sample`, and no extra numerical reference or gate enters the API.
+
 An external process-memory monitor must start before the runner and continue
 through browser cleanup. The runner itself records native stage timings,
 progress and resource counters, source identities, terminal errors, cancellation

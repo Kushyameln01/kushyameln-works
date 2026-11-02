@@ -23,3 +23,29 @@ test('public harness rejects corrupted saved-input transport before constructing
  const data=new Uint8Array(4);
  await assert.rejects(capturePublicModelInputs({tensors:[{shape:[1],dtype:'float32',url:'/bad',bytes:4,sha256:'0'.repeat(64)}]},async()=>data),/transport identity/);
 });
+
+test('diagnostic recovery helper cancels then reloads the same public API instance without a numerical callback port',async()=>{
+ const {cancelPublicPatchThenReload}=await import('./public-model-browser.mjs');
+ assert.equal(typeof cancelPublicPatchThenReload,'function');
+ const calls=[],operations=[];let cancellation=null;
+ const api={sessionId:'same-api-session',cancel(value){cancellation=value;return {status:'ok',result:{workerTerminated:true}};}};
+ const old={modelSessionId:'old-model'},next={modelSessionId:'new-model'},files={HIGH:new Blob(),LOW:new Blob()};
+ const predictInput=(side,loaded)=>({side,modelSessionId:loaded.modelSessionId,timestep:1000});
+ const request=async(op,input,options)=>{
+  calls.push({op,input});
+  if(calls.length===1){options.onProgress({jobId:'cancel-this',inputRevision:2,result:{model:{stage:'patch'}}});return {status:'error',error:{code:'CANCELLED'}};}
+  if(calls.length===2)return {status:'error',error:{code:'MODEL_NOT_LOADED'}};
+  if(calls.length===3)return {status:'ok',result:next};
+  if(calls.length===4)return {status:'error',error:{code:'STALE_MODEL'}};
+  assert.fail('Unexpected extra numerical operation in recovery helper');
+ };
+ const result=await cancelPublicPatchThenReload({api,request,predictInput,files,wasmThreads:4,onProgress(){},operations,loaded:old});
+ assert.equal(result.loaded,next);assert.equal(result.recovery.apiSessionId,api.sessionId);
+ assert.equal(result.recovery.cancelledModelSessionId,'old-model');assert.equal(result.recovery.reloadedModelSessionId,'new-model');
+ assert.equal(result.recovery.completedOperation,null);
+ assert.deepEqual(cancellation,{sessionId:api.sessionId,jobId:'cancel-this',inputRevision:2});
+ assert.deepEqual(calls.map(value=>value.op),['predict','predict','load','predict']);
+ assert.equal(calls[2].input.resource.wasmThreads,4);
+ assert.equal(calls[3].input.modelSessionId,'old-model');
+ assert.deepEqual(operations.map(value=>value.test),['actual-patch-cancel','cancel-retry-needs-load','reload-stale-session']);
+});

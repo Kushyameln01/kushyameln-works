@@ -38,12 +38,33 @@ export async function capturePublicModelInputs(manifest,fetchBytes=async url=>{
  return {shapeRequest:structuredClone(manifest.shapeRequest),tensors,noise:noise.data,initialEmptyTarget,positive,negative,snapshots};
 }
 
+/** Development lifecycle probe. Numerical requests still use only the public
+ * ordinary inputs; the caller supplies the already constructed real API. */
+export async function cancelPublicPatchThenReload({api,request,predictInput,files,wasmThreads,onProgress,operations,loaded}){
+ let cancellation=null,cancelledAtPatch=false,cancelProgressJob=null;
+ const cancelled=await request('predict',predictInput('HIGH',loaded),{onProgress:event=>{
+  onProgress(event);
+  if(!cancelledAtPatch&&event.result?.model?.stage==='patch'){
+   cancelledAtPatch=true;cancelProgressJob={jobId:event.jobId,inputRevision:event.inputRevision};
+   cancellation=api.cancel({sessionId:api.sessionId,...cancelProgressJob});
+  }
+ }});
+ requireValue(cancelledAtPatch&&isError(cancelled,'CANCELLED')&&cancellation?.status==='ok'&&cancellation.result.workerTerminated,'Actual prefix cancellation did not terminate its owned Worker');
+ operations.push({test:'actual-patch-cancel',code:cancelled.error.code,cancelProgressJob});
+ const afterCancel=await request('predict',predictInput('LOW',loaded));requireValue(isError(afterCancel,'MODEL_NOT_LOADED'),'Cancelled Worker retained a model session');operations.push({test:'cancel-retry-needs-load',code:afterCancel.error.code});
+ const reloaded=expectOk(await request('load',{files,resource:{wasmThreads}}),'reload after cancellation');requireValue(reloaded.modelSessionId!==loaded.modelSessionId,'Reload reused cancelled model identity');
+ const staleAfterReload=await request('predict',{...predictInput('LOW',reloaded),modelSessionId:loaded.modelSessionId});requireValue(isError(staleAfterReload,'STALE_MODEL'),'Old model identity entered replacement Worker');operations.push({test:'reload-stale-session',code:staleAfterReload.error.code});
+ return {loaded:reloaded,recovery:{apiSessionId:api.sessionId,cancelledModelSessionId:loaded.modelSessionId,reloadedModelSessionId:reloaded.modelSessionId,cancelProgressJob,cancelledAtPatch:true,workerTerminated:true,completedOperation:null}};
+}
+
 /** Public API actual-Worker session. Source/input guards belong to the private
  * host, and are never required fields of load/predict/sample. */
 export async function startPublicModelBrowser(config){
  requireValue(['smoke','predict','sample'].includes(config.mode),'Explicit public test mode required');
  requireValue([1,4].includes(config.wasmThreads),'Explicit supported thread profile required');
  requireValue(Number.isFinite(config.timeoutMs)&&config.timeoutMs>0,'Bounded session timeout required');
+ requireValue(config.cancelBeforeRun===undefined||typeof config.cancelBeforeRun==='boolean','Explicit boolean cancellation probe flag required');
+ requireValue(!config.cancelBeforeRun||config.mode==='sample','The explicit pre-run cancellation probe is available in sample mode only');
  const HIGH=document.querySelector('#model-high').files[0],LOW=document.querySelector('#model-low').files[0];
  requireValue(HIGH instanceof File&&LOW instanceof File,'Both actual retained model Files must be selected');
  if(config.wasmThreads===4)requireValue(crossOriginIsolated&&typeof SharedArrayBuffer==='function','Four-thread harness requires real COOP/COEP isolation');
@@ -114,7 +135,12 @@ export async function startPublicModelBrowser(config){
  try{
   loaded=expectOk(await request('load',{files:{HIGH,LOW},resource:{wasmThreads:config.wasmThreads}}),'load actual pair');run.loaded=loaded;
   record({stage:'prepared',modelSessionId:loaded.modelSessionId});
-  const normalPredict=side=>({side,shapeRequest:input.shapeRequest,tensors:input.tensors,conditioning:input.positive,timestep:config.timestep,modelSessionId:loaded.modelSessionId});
+  const normalPredict=(side,model=loaded)=>({side,shapeRequest:input.shapeRequest,tensors:input.tensors,conditioning:input.positive,timestep:config.timestep,modelSessionId:model.modelSessionId});
+  const recover=async()=>{
+   const recovered=await cancelPublicPatchThenReload({api,request,predictInput:normalPredict,files:{HIGH,LOW},wasmThreads:config.wasmThreads,onProgress,operations:run.operations,loaded});
+   loaded=recovered.loaded;run.reloaded=loaded;run.recovery=recovered.recovery;
+   record({stage:'cancelled-reloaded',recovery:run.recovery});
+  };
   const persist=async(tensor,codecScope)=>{
    resultTensor=tensor;run.tensorMetadata=metadata(resultTensor);run.outputIdentity=await identity(resultTensor.data);run.codecScope=codecScope;
    encoded=expectOk(await request('saveTensor',{tensor:resultTensor}),'canonical save');
@@ -130,26 +156,18 @@ export async function startPublicModelBrowser(config){
    for(const side of ['HIGH','LOW']){
     const invalid=await request('predict',{...normalPredict(side),timestep:-1});requireValue(invalid.status==='error'&&!['MODEL_NOT_LOADED','STALE_MODEL','NOT_READY'].includes(invalid.error?.code),'Explicit side selection did not reach input validation');run.operations.push({test:'side-invalid-before-neural',side,error:invalid.error});
    }
-   let cancellation=null,cancelledAtPatch=false,cancelProgressJob=null;
-   const cancelled=await request('predict',normalPredict('HIGH'),{onProgress:event=>{
-    onProgress(event);
-    if(!cancelledAtPatch&&event.result?.model?.stage==='patch'){
-     cancelledAtPatch=true;cancelProgressJob={jobId:event.jobId,inputRevision:event.inputRevision};
-     cancellation=api.cancel({sessionId:api.sessionId,...cancelProgressJob});
-    }
-   }});
-   requireValue(cancelledAtPatch&&isError(cancelled,'CANCELLED')&&cancellation?.status==='ok'&&cancellation.result.workerTerminated,'Actual prefix cancellation did not terminate its owned Worker');
-   run.operations.push({test:'actual-patch-cancel',code:cancelled.error.code,cancelProgressJob});
-   const afterCancel=await request('predict',normalPredict('LOW'));requireValue(isError(afterCancel,'MODEL_NOT_LOADED'),'Cancelled Worker retained a model session');run.operations.push({test:'cancel-retry-needs-load',code:afterCancel.error.code});
-   const previousSession=loaded.modelSessionId;loaded=expectOk(await request('load',{files:{HIGH,LOW},resource:{wasmThreads:config.wasmThreads}}),'reload after cancellation');requireValue(loaded.modelSessionId!==previousSession,'Reload reused cancelled model identity');
-   const staleAfterReload=await request('predict',{...normalPredict('LOW'),modelSessionId:previousSession});requireValue(isError(staleAfterReload,'STALE_MODEL'),'Old model identity entered replacement Worker');run.operations.push({test:'reload-stale-session',code:staleAfterReload.error.code});
-   run.reloaded=loaded;run.smokeCompleted=true;
+   await recover();run.smokeCompleted=true;
    await persist(input.tensors[0],'Explicit saved-input codec only; no generated-sample claim from cancelled prefix');
   }else{
+   if(config.cancelBeforeRun)await recover();
    let value;
    if(config.mode==='predict')value=normalPredict(config.side);
    else value={shapeRequest:input.shapeRequest,tensors:input.tensors.map((tensor,index)=>index===0?{...tensor,data:input.initialEmptyTarget}:tensor),noise:input.noise,positive:input.positive,negative:input.negative,modelSessionId:loaded.modelSessionId};
    const numeric=expectOk(await request(config.mode,value,{onProgress}),config.mode);resultTensor=numeric.tensor;run.execution=numeric.execution;
+   if(run.recovery){
+    requireValue(api.sessionId===run.recovery.apiSessionId&&numeric.execution.modelSessionId===run.recovery.reloadedModelSessionId,'Completed numerical result did not belong to the reloaded owner in the same API instance');
+    run.recovery.completedOperation={operation:config.mode,modelSessionId:numeric.execution.modelSessionId,apiSessionId:api.sessionId,sameApiInstance:true};
+   }
    requireValue(resultTensor.data instanceof Float32Array&&resultTensor.data.every(Number.isFinite),'Normal operation returned nonfinite or nonnative F32');
    if(config.mode==='sample')requireValue(resultTensor.meaning==='wan21-raw-generated-sample:v1'&&resultTensor.latentContract?.normalization?.state==='restored','Sample did not preserve the generated/raw contract');
    else requireValue(resultTensor.meaning==='bernini-flow-velocity:v1','Predict did not return model flow velocity');

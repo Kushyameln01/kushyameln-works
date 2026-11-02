@@ -176,6 +176,7 @@ def main():
     parser.add_argument('--manifest', type=Path, required=True)
     parser.add_argument('--models', type=Path, default=ROOT.parent / 'retained/bernini')
     parser.add_argument('--mode', choices=['smoke', 'predict', 'sample'], default='smoke')
+    parser.add_argument('--cancel-before-run', action='store_true', help='Sample-only lifecycle probe: actual prefix cancel, reload the same API instance, then complete ordinary sample')
     parser.add_argument('--side', choices=['HIGH', 'LOW'], default='HIGH')
     parser.add_argument('--timestep', type=float, default=1000)
     parser.add_argument('--wasm-threads', type=int, choices=[1, 4], default=4)
@@ -187,6 +188,7 @@ def main():
     args = parser.parse_args()
     require(math.isfinite(args.timeout_seconds) and args.timeout_seconds > 0, 'Positive finite timeout required')
     require(math.isfinite(args.timestep) and 0 <= args.timestep <= 1000, 'Timestep0..1000 required')
+    require(not args.cancel_before_run or args.mode == 'sample', '--cancel-before-run requires --mode sample')
     snapshots = snapshot_sources(args.source_commit)
     manifest, binary_inputs, input_receipt = prepare_inputs(args.manifest)
     models = {side: (args.models / name).resolve() for side, name in MODEL_NAMES.items()}
@@ -300,7 +302,7 @@ def main():
                 page.locator('#model-low').set_input_files(str(models['LOW']))
                 config = {'sourceCommit': args.source_commit, 'mode': args.mode, 'side': args.side,
                           'timestep': args.timestep, 'wasmThreads': args.wasm_threads, 'sinkBase': sink_base,
-                          'timeoutMs': args.timeout_seconds * 1000}
+                          'timeoutMs': args.timeout_seconds * 1000, 'cancelBeforeRun': args.cancel_before_run}
 
                 def evaluate_phase(phase, timeout_ms):
                     # Playwright's default timeout does not bound page.evaluate.
@@ -339,6 +341,7 @@ def main():
         guard_error = str(error)
     report = {'schemaVersion': 'bernini-public-model-worker-host/0.1', 'sourceCommit': args.source_commit,
               'mode': args.mode, 'side': args.side, 'timestep': args.timestep,
+              'cancelBeforeRun': args.cancel_before_run,
               'sourceInventory': source_receipt, 'servedSourcesAndInputs': served, 'deniedPaths': denied,
               'sourceGuardAfter': guard_error is None, 'sourceGuardError': guard_error,
               'inputReceipt': input_receipt, 'modelStatBefore': model_stats,
