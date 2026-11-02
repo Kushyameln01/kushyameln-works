@@ -79,4 +79,12 @@ N_total=65520 のとき 5,367,398,400 B
 
 これはstage cache、source／decoder、ORT／Hike、snapshot、Worker／IPC、出力、GC、old/new sessionを含まない。productionのhost／ORT／全pipeline peakと所要時間はnullのまま残す。初期資源計画の仮予算やcurrentの90,000token planning capを、実測済みproduction範囲として扱わない。
 
-coordinatorから、並列の重い実行はautomatic reviewで2回却下され、その後は逐次実行を守っているとの記録を受けた。この監査では重い実行を始めておらず、保留中の承認要求はない。
+並列の重い実行は自動承認レビューで2回拒否されたため、参照・nativeを順次実行した。保留中の承認要求はない。
+
+## 原寸容量確認用storeと最大tile
+
+固定source `98e4aa361532a2de22ea5aed1565de42a084426c`で、非zeroの容量確認用store 5,367,398,400 Bと実FFN重みcache 566,231,040 Bを同時保持した。実LOWのM128/N5120/K13824 Gemm＋Hike biasは655,360値すべて事前gate内、最大誤差8.344650268554688e-7。観測WASM Memoryは372,637,696 B、計測開始から終了までのRSS合算peakは7,425,630,208 B（共有pageの重複を含み得る）。この計測ではPSS合算peakも7,146,511,360 Bと観測できた。先行HIGH／LOW／6更新のPSS未取得とは別に扱う。
+
+初回はRSS観測開始が間に合わず、その0は未観測を意味する。同じ固定参照を再利用した計測付き試験でRSSを取得した。両試験のbiased output hashは一致する。これはcontrolled inputによる容量・tile試験であり、production hidden、全query、全40blockの実predict、原寸6更新、全candidate scheduleの数値・資源受入ではない。
+
+[計測付きreceipt](target-capacity/native-monitored-result.json)／[初回receipt](target-capacity/native-result.json)／[RSS観測](target-capacity/native-full-process-memory.json)

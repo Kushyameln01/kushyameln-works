@@ -12,7 +12,7 @@
 
 全1095重みのregistry／Hike復号、query128・key256・40headのonline attention、全40block・最終headの[単独predict候補](execution/model-candidate.md)、実HIGH／LOWに束縛した[6更新sample候補](execution/model-sampler-candidate.md)を追加した。通常入力へ独立参照・固定payload hash・過去receiptを要求しない。候補の診断入口だけが比較用の中間値を返す。
 
-これらは公開APIとは別の実装候補である。必要shapeでの全predict・6更新・組合せ資源予算は未受入のため、公開`load/predict/sample`とWorkerの状態は引き続き`NOT_READY`。原寸pointwise、部分tile、小Nの全40blockはそれぞれ検証scopeを分ける。[実装・検証計画](../../../development/ai-connection/standalone-d1-d4-20261102/WORK-PLAN.md)を参照。
+これらは公開APIとは別の実装候補である。制御N5／Text L3ではHIGH／LOW各全40block、実HIGH3→LOW3の6更新、raw sample保存・読戻しが固定gateに合格した。原寸相当storeと最大FFN tileの容量試験も別に成立した。必要shapeの全query・全40block・6更新と全工程の資源条件は未受入で、全モデルを公開Workerへ接続するadapterも未実装のため、公開`load/predict/sample`は引き続き`NOT_READY`。[結果・残件](../../../development/ai-connection/standalone-d1-d4-20261102/RESULT.md)と[再現手順](../../../development/ai-connection/standalone-d1-d4-20261102/REPRODUCE.md)を参照。
 
 ## 同一ページの呼出し
 
