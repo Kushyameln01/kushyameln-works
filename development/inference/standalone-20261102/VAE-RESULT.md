@@ -108,10 +108,13 @@ encode の tensor.context は実際に消費した frame の対応を表し、`f
 | source F4 encode | 39 / 39 | 1 / 0 | 実入力 F4 の tail と context を確認 |
 | source F5 encode / decode | 80 / 80、100 / 100 | 各 1 / 0 | 新たな通常呼出しで both 受入 |
 | 診断 F5 encode / decode | 80 / 80、100 / 100 | 各 1 / 0 | first-chunk cancel / same-API recovery、継続 chunk、copy と lifecycle を確認 |
+| 追加の独立 raw T2 decode 制御 | 100 / 100 | 1 / 0 | decode の実 first-chunk 完了後 cancel、同一 API で全 F5 RGB を再実行・保存 |
 
 target/F4/F5 の receipt では session create/run/release と Tensor dispose の observer errors はなく、所有する browser 子プロセスは最終 `liveAfterClose:[]`、`zombiesAfterClose:[]`、ownership `errors:[]`。既知の親 Worker / pthread target は browser close 前の destroy または不在を CDP で観測した。対象列挙には限界があり、未列挙の thread や物理メモリの即時返却まで証明しない。古い F1 / 16×32 receipt は同じ強さの CDP settlement 証拠を持たないため、数値結果と新しい終了観測を混同しない。
 
 通常終了では active session/tensor の `finally` 解放と job history の破棄を行う。cancel は所有 Worker を terminate するため、強制中断した Worker 内の JavaScript `finally` が実行されたという主張はしない。reconfigure/dispose 後に旧処理結果を採用しない契約と、通常成功結果の解放、中断時の Worker 終了、host が追跡した子の reap は別々の確認である。
+
+独立raw decodeの取消境界も、source `dccb88515775ec8aa86dd16f82e8816c9347ed38` で追加確認した。[raw decode control receipt](evidence/vae-raw-decode-cancel-acceptance.json) は F5・16×32、独立raw T2からの実chunk完了後に取消し、同じAPIで通常再実行した。全7,680値のmaxAbsは `1.519918441772461e-6`。保存WKTは31,538 B、SHA256 `0c5c82ee526b6f799c386b2ba9f5b9710eb6b669bc36389ef6f7846ac7274375` で既存copy修正後の保存物と全bytes一致した。正常recoveryは100session/175run/615Tensor dispose、終了時active0。既知の親2・pthread6の全8targetのdestroyとbrowser close前の不在、OS終了後のowned live/zombie/errorsが空であることを記録した。通常recovery52.844680 s、全体91.382865 s。source F80の別jobと同時の小診断であり、過去の専有時間との速度比較に使わない。新profile/export/独立参照の再生成は0。generated sampleの受入ではない。
 
 ## 観測した資源と限界
 
@@ -138,4 +141,4 @@ graph の再構築、依存 version、private model/bundle、native reference、
 
 完了に向けて残るのは、実入力 source F80 の encode 全値受入と、reference F1 848×848 の独立 native reference / 実 WASM both の受入。F80 の結果と 848×848 の結果を得るまでは上表の pending を PASS に変えない。source81 は明記した数値 alias と合成 context codec の再利用範囲を保つ。
 
-実物の画像・動画は今回未提供で、合成 pattern を用いた許可範囲で検証した。実 Diffusion producer の生成 latent と normalization restore 契約、generated-sample decode の実値比較、管理側 consumer、Diffusion、全 workflow、実媒体の品質は未受入。`wan21-raw-generated-sample:v1` の API 契約が存在することは、その経路の数値受入を意味しない。これらを VAE の完了に加算せず、他 owner の ACK を単体実装の仮の前提にも置かない。
+実物の画像・動画の原本は今回の実行環境で取得できておらず、合成 pattern を用いた許可範囲で検証した。実 Diffusion producer の生成 latent と normalization restore 契約、generated-sample decode の実値比較、管理側 consumer、Diffusion、全 workflow、実媒体の品質は未受入。`wan21-raw-generated-sample:v1` の API 契約が存在することは、その経路の数値受入を意味しない。これらを VAE の完了に加算せず、他 owner の ACK を単体実装の仮の前提にも置かない。

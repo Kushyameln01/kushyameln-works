@@ -274,6 +274,21 @@ source oracleは未変更vendorの `WanVAE_.encode/decode`、raw scale `[0,1]` �
 
 出力の `acceptance-results.json`、`resource-measurements.json`、`resource-samples.jsonl`、`.wktensor` を一組で保持する。全値・metadata・mask・meaningの比較と、session/Tensor・owner Worker・live process・zombieの記録を別々に確認する。threads4では親Worker終了だけで子pthread終了まで確認済みとしない。診断hostはCDPで列挙できる親/pthread targetのcreate/destroyを収集し、操作後とdispose後、browserを閉じる前にbounded settlementを待つ。新規F5 runは計12 target、F1参照境界各runは8 targetを観測し、全destroyとその後の不在を確認した。非公開targetや物理RAM回収までの証明ではない。
 
+### 独立raw decodeの取消境界
+
+完了済みの小診断参照を再利用した追加制御runは、source `dccb88515775ec8aa86dd16f82e8816c9347ed38`。新しいprofileや参照を作らず、decodeのfirst chunk後取消→同一API再実行→全値比較・codec保存読戻しを確認する。既存結果を取得するだけなら再実行は不要。
+
+```sh
+python tools/inference/vae/accept_stream.py \
+  --bundle /tmp/kw-vae-stream-threads4-20261102 \
+  --reference /tmp/kw-vae-ref-temporal-f5-16x32-20261102 \
+  --operation decode --controls --timeout-seconds 300 \
+  --execution-source-sha dccb88515775ec8aa86dd16f82e8816c9347ed38 \
+  --output /tmp/kw-vae-new-raw-decode-control
+```
+
+結果は [VAE-RESULT.md](VAE-RESULT.md) の独立raw decode制御行に分けて記録する。この小shapeの取消を大shapeの数値合格や実generated sampleに置き換えない。
+
 ## 資源とscope
 
 このhostはCPU4、cgroup16GiB。workspace空き約1.3GBと `/tmp` tmpfs約8.8GBは別であり、tmpfsはRAMにも課金される。target81 RGB1本は388,177,920 B、latent1本は8,386,560 B。input・reference・WKT・download staging・host history・WASM・sessionを含むpeakはこの単体容量より大きい。

@@ -5,6 +5,14 @@ The source stage writes one full512 input/hidden/normalized checkpoint. The
 native stage runs the unchanged block0 with actual pinned ORT WASM in a fresh
 Node process, then compares every hidden and normalized value. These are local
 diagnostics, never a replacement for the fixed full24 final-output gate.
+
+block-options is bounded to the existing block19, sourceS18 and sourceS19
+checkpoints. It runs ALL first and refuses DISABLED unless the historical ALL
+local-output hash reproduces exactly. It never re-exports or reruns the oracle.
+The stop-only policy is declared before execution: unless DISABLED halves all
+three row0 weighted-norm errors (max, RMS, directional residual) without a larger
+global maximum, stop option probing. Even that local difference is not a full24
+acceptance result, a gate change or permission to change production arithmetic.
 """
 import argparse,base64,gc,hashlib,importlib.util,json,os,re,resource,shutil,struct,subprocess,sys,time
 from pathlib import Path
@@ -13,6 +21,59 @@ HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[2]
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def record(path):
  p=Path(path);raw=p.read_bytes();return {'path':str(p),'bytes':len(raw),'sha256':sha(raw)}
+def stream_record(path):
+ p=Path(path);digest=hashlib.sha256();size=0
+ with p.open('rb') as stream:
+  for chunk in iter(lambda:stream.read(8*1024*1024),b''):digest.update(chunk);size+=len(chunk)
+ return {'path':str(p),'bytes':size,'sha256':digest.hexdigest()}
+
+BLOCK19_PINS={
+ 'manifestSha256':'aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f',
+ 'graphBytes':771822917,'graphSha256':'7ffb27b53e9006b99c330dfecc209f3f8d06aeaaffb70ceed5df5089fea4e447',
+ 'inputSha256':'a21ab47ab0f8a50d84609c17e5a2cd66d126e2f1c13ba3685a26279cf0c10cf4',
+ 'sourceSha256':'1663b842a86dd52883a46073bdcf25882490a98e50c44c85c3a30cb6fe153d8a',
+ 'allLocalSha256':'fefbdb6e6f8e9543401dba3c3951a0f232380fcc0b4621b9651b7b3880169aa4',
+ 'normSha256':'31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02',
+ 'rowsSha256':'5b99eaf70d3f41660491abfbbc142293175b2bfb63c442647a617e28c1a93e48',
+ 'tensorBytes':8388608,'sourceBytes':8388608,'normBytes':16384,'rowsBytes':65536,
+}
+BLOCK_OPTIONS_CREATION={'executionProviders':['wasm'],'graphOptimizationLevel':'all','extra':{'session':{'disable_prepacking':'1','use_ort_model_bytes_directly':'1'}}}
+
+def block_options_preflight(bundle,reference,native_trace_path,layer_index):
+ """Read-only exact selection; verify only this graph and existing checkpoints."""
+ if type(layer_index) is not int or layer_index!=19:raise ValueError('This bounded diagnostic accepts block19 only')
+ bundle,reference,native_trace_path=Path(bundle),Path(reference),Path(native_trace_path)
+ manifest_record=record(bundle/'manifest.json');manifest=json.loads((bundle/'manifest.json').read_text())
+ source_path=reference/'trace-source-results.json';source=json.loads(source_path.read_text());native=json.loads(native_trace_path.read_text())
+ pins=BLOCK19_PINS
+ if manifest_record['sha256']!=pins['manifestSha256'] or manifest.get('modelSha256')!='c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68':raise ValueError('Selected original manifest/model mismatch')
+ if not source.get('passed') or not source.get('allLayerDigestsMatchOriginalOracle') or not source.get('sourceFinalMatchesOriginalOracle') or source.get('originalOracleExecutionSha')!='5954d48e0fb6df1d6977964fd8a7ba2a242b6eff':raise ValueError('Complete unchanged original5954 source checkpoints required')
+ if source.get('selectedNormRows')!=[0,1,255,511] or source.get('manifest',{}).get('sha256')!=pins['manifestSha256']:raise ValueError('Source manifest/normalization row mapping mismatch')
+ inp=source['input']
+ if inp.get('id')!='id-l512-all-active' or inp.get('shape')!=[1,512,4096] or inp.get('manifestSha256')!=pins['manifestSha256'] or inp.get('attentionMask')!=[1]*512 or len(inp.get('tokenIds',[]))!=512:raise ValueError('Original full512 all-active input required')
+ if not native.get('passed') or not native.get('preservedCanaryReproducedBitwise') or native.get('finalFixedGatePassed') is not False or native.get('input')!=inp or native.get('manifest',{}).get('sha256')!=pins['manifestSha256'] or native.get('sourceCheckpointExecutionSha')!=source['executionSourceSha'] or native.get('originalOracleExecutionSha')!=source['originalOracleExecutionSha']:raise ValueError('Unchanged historical native trace and retained failed canary required')
+ if native.get('native',{}).get('options')!=BLOCK_OPTIONS_CREATION:raise ValueError('Historical creation options changed')
+ if len(source.get('layers',[]))!=24 or len(native['native'].get('layers',[]))!=24:raise ValueError('Complete existing source/native trace required')
+ for index,expected in [(18,pins['inputSha256']),(19,pins['sourceSha256'])]:
+  layer=source['layers'][index]
+  if layer.get('index')!=index or layer.get('hiddenSha256')!=expected or layer.get('matchesOriginalOracle') is not True:raise ValueError('Selected source checkpoint does not match original oracle')
+ layer=native['native']['layers'][19]
+ if layer.get('index')!=19 or layer.get('graphSha256')!=pins['graphSha256'] or layer.get('input',{}).get('sourceSha256')!=pins['inputSha256'] or layer.get('output',{}).get('sourceSha256')!=pins['sourceSha256'] or layer.get('output',{}).get('localSha256')!=pins['allLocalSha256']:raise ValueError('Historical block19 input/output baseline mismatch')
+ block=manifest['blocks'][19]
+ if len(manifest['blocks'])!=24 or block.get('index')!=19 or block.get('path')!='block-19.onnx' or block.get('bytes')!=pins['graphBytes'] or block.get('sha256')!=pins['graphSha256']:raise ValueError('Selected block19 manifest record mismatch')
+ graph_record=stream_record(bundle/block['path'])
+ if graph_record['bytes']!=pins['graphBytes'] or graph_record['sha256']!=pins['graphSha256']:raise ValueError('Selected existing graph bytes/hash mismatch')
+ if manifest.get('finalNorm',{}).get('sha256')!=pins['normSha256'] or manifest['finalNorm'].get('epsilon')!=1e-6:raise ValueError('Final normalization identity/epsilon mismatch')
+ checkpoints={}
+ for name,bytes_key,hash_key in [('source-hidden-18.f32','tensorBytes','inputSha256'),('source-hidden-19.f32','sourceBytes','sourceSha256'),('final-norm.f32','normBytes','normSha256'),('source-norm-rows-19.f32','rowsBytes','rowsSha256')]:
+  declared=source['files'].get(name,{});actual=stream_record(reference/name)
+  if declared.get('bytes')!=pins[bytes_key] or declared.get('sha256')!=pins[hash_key] or actual['bytes']!=pins[bytes_key] or actual['sha256']!=pins[hash_key]:raise ValueError('Selected source checkpoint bytes/hash mismatch: '+name)
+  checkpoints[name]=actual
+ return {'layerIndex':19,'input':inp,'manifest':manifest_record,'graph':graph_record,'checkpoints':checkpoints,
+  'sourceTrace':record(source_path),'nativeTrace':record(native_trace_path),'sourceCheckpointExecutionSha':source['executionSourceSha'],
+  'historicalNativeExecutionSha':native['executionSourceSha'],'originalOracleExecutionSha':source['originalOracleExecutionSha'],
+  'expectedAllLocalSha256':pins['allLocalSha256'],'creationOptionsAll':BLOCK_OPTIONS_CREATION,
+  'newExports':0,'newSourceRuns':0,'maximumNativeRuns':2,'full24GateReevaluated':False}
 def write(path,value):Path(path).write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n')
 def committed(path,source):
  rel=str(path.relative_to(ROOT));fixed=subprocess.run(['git','show',source+':'+rel],cwd=ROOT,check=True,capture_output=True).stdout
@@ -381,13 +442,111 @@ def run_trace_native(a,manifest,inp,source_report,report):
   meta,failed=unpack_tensor(a.failed_output.read_bytes());assert meta['modelSha256']==manifest['modelSha256'] and meta['attentionMask']==inp['attentionMask'];actual=np.fromfile(a.output/'native-final-normalized.f32',dtype='<f4').reshape(1,512,4096)
   report['comparisonToPreservedFailedCanary']=metrics(actual,failed,np);report['preservedCanaryReproducedBitwise']=sha(actual.tobytes())==meta['dataSha256'];report['preservedFailedCanary']=record(a.failed_output)
 
+# Reuse the existing all-value/directional metrics and actual Hike normalization
+# helpers, but none of the24-layer executor body.
+_TRACE_BODY_START="check(c.manifest?.blocks?.length===24"
+if _TRACE_BODY_START not in TRACE_NODE_CODE:raise RuntimeError('Trace helper boundary changed; review the bounded diagnostic')
+BLOCK_OPTIONS_NODE_CODE=TRACE_NODE_CODE.split(_TRACE_BODY_START,1)[0]+r'''
+check(c.selection?.layerIndex===19&&c.selection?.maximumNativeRuns===2,'Bounded block19 selection required');
+check(c.selection.creationOptionsAll?.graphOptimizationLevel==='all','Historical ALL baseline required');
+const mask=Array.from(c.selection.input.attentionMask);check(mask.length===ROWS&&mask.every(value=>value===1),'Original all-active512 mask required');
+const base=resolve(c.runtime),ort=await import(pathToFileURL(join(base,'vendor/ort.wasm.min.mjs')).href),{createHike}=await import(pathToFileURL(join(base,'hike.mjs')).href);
+check(ort.env.versions?.web==='1.24.3','Pinned ORT1.24.3 required');
+ort.env.wasm.numThreads=1;ort.env.wasm.proxy=false;
+ort.env.wasm.wasmPaths={mjs:pathToFileURL(join(base,'vendor/ort-wasm-simd-threaded.mjs')).href,wasm:pathToFileURL(join(base,'vendor/ort-wasm-simd-threaded.wasm')).href};
+const counts={createAttempts:0,sessionsCreated:0,sessionsReleased:0,activeSessions:0,maximumActiveSessions:0,runCalls:0,tensorsCreated:0,tensorDisposeCalls:0,tensorDisposeErrors:0,releaseCalls:0,releaseErrors:0};
+const report={passed:false,scope:'Existing block19 only, identical independent sourceS18 feed, actual CPU WASM ALL then DISABLED; no full24 acceptance',
+ nodePid:process.pid,parentPid:process.ppid,startedAtEpochMs:Date.now(),executionProvider:'wasm',threads:1,executionDtype:'float32',variants:[],counts,baselineAllReproduced:false,newExports:0,newSourceRuns:0,full24GateReevaluated:false,full24Acceptance:false,
+ weightedNormReference:'Same pinned Hike final norm on the full independent raw sourceS19; separate four-row Torch-normalization evidence',
+ stopPolicy:'Stop unless DISABLED halves row0 weighted-norm maxAbs, RMS and directional residual versus ALL without a larger global maxAbs. This is a predeclared diagnostic stop rule, not a replacement numerical gate.'};
+const started=performance.now();let session,hike;
+async function closeSession(){
+ if(!session)return;const current=session;session=null;counts.releaseCalls++;
+ try{await current.release();counts.sessionsReleased++;counts.activeSessions--;}
+ catch(error){counts.releaseErrors++;throw error;}
+}
+try{
+ const input=await f32(join(c.reference,'source-hidden-18.f32'),ELEMENTS),source=await f32(join(c.reference,'source-hidden-19.f32'),ELEMENTS),weight=await f32(join(c.reference,'final-norm.f32'),COLUMNS),torchRows=await f32(join(c.reference,'source-norm-rows-19.f32'),SELECTED_ROWS.length*COLUMNS);
+ for(const [name,value]of [['source-hidden-18.f32',input],['source-hidden-19.f32',source],['final-norm.f32',weight],['source-norm-rows-19.f32',torchRows]])check(tensorHash(value)===c.selection.checkpoints[name].sha256,'Checkpoint changed after preflight: '+name);
+ const graphBytes=await u8file(c.selection.graph.path);check(graphBytes.byteLength===c.selection.graph.bytes&&hash(graphBytes)===c.selection.graph.sha256,'Selected graph changed after preflight');
+ const kernel=await u8file(join(base,'kernel/tensor.wasm'));check(hash(kernel)==='9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8','Pinned Hike kernel identity mismatch');hike=await createHike(kernel);
+ const sourceNorm=maskedNorm(hike,source,weight,mask,1e-6);report.hikeVsTorchSourceNormRows=metrics(selected(sourceNorm),torchRows);
+ const retained=[];
+ for(const optimization of ['all','disabled']){
+  if(optimization==='disabled')check(report.baselineAllReproduced,'Do not run DISABLED without the historical ALL hash');
+  const inputSha256=tensorHash(input);check(inputSha256===c.selection.checkpoints['source-hidden-18.f32'].sha256,'Independent source input changed before execution');
+  const graphSha256=hash(graphBytes);check(graphSha256===c.selection.graph.sha256,'Selected graph changed before native execution');
+  const options=structuredClone(c.selection.creationOptionsAll);options.graphOptimizationLevel=optimization;
+  check(options.extra?.session?.disable_prepacking==='1'&&options.extra?.session?.use_ort_model_bytes_directly==='1','Historical creation options must remain fixed');
+  let hiddenInput,maskInput,result,native;const begun=performance.now();
+  try{
+   counts.createAttempts++;session=await ort.InferenceSession.create(graphBytes,options);counts.sessionsCreated++;counts.activeSessions++;counts.maximumActiveSessions=Math.max(counts.maximumActiveSessions,counts.activeSessions);
+   check(ort.env.wasm.numThreads===1,'Runtime changed requested threads1');
+   hiddenInput=new ort.Tensor('float32',input,[1,ROWS,COLUMNS]);counts.tensorsCreated++;maskInput=new ort.Tensor('float32',Float32Array.from(mask),[1,ROWS]);counts.tensorsCreated++;
+   counts.runCalls++;result=await session.run({hidden:hiddenInput,mask:maskInput});counts.tensorsCreated+=Object.keys(result??{}).length;
+   const output=result?.hidden_out;check(output?.type==='float32'&&output.dims.join(',')==='1,512,4096'&&output.data.length===ELEMENTS,'Unexpected native block19 output');
+   native=new Float32Array(output.data);finite(native,'Block19 '+optimization);
+  }finally{
+   let cleanupError;
+   for(const tensor of new Set([...Object.values(result??{}),hiddenInput,maskInput]))if(tensor){
+    counts.tensorDisposeCalls++;try{tensor.dispose();}catch(error){counts.tensorDisposeErrors++;cleanupError??=error;}
+   }
+   try{await closeSession();}catch(error){cleanupError??=error;}
+   if(cleanupError)throw cleanupError;
+  }
+  check(tensorHash(input)===inputSha256,'Independent source input changed during native execution');
+  check(hash(graphBytes)===graphSha256,'Selected graph changed during native execution');
+  const hiddenPath=join(c.output,optimization+'-hidden.f32');await writeFile(hiddenPath,view(native));const actualHash=tensorHash(native);
+  if(optimization==='all'){
+   report.actualAllLocalSha256=actualHash;report.baselineAllReproduced=actualHash===c.selection.expectedAllLocalSha256;
+   check(report.baselineAllReproduced,'Historical ALL local-output hash did not reproduce; DISABLED must not execute');
+  }
+  const normalized=maskedNorm(hike,native,weight,mask,1e-6),normPath=join(c.output,optimization+'-normalized.f32');await writeFile(normPath,view(normalized));
+  report.variants.push({optimization,options,inputSha256,inputPreserved:true,graphSha256,graphUnchanged:true,raw:metrics(native,source),weightedNorm:metrics(normalized,sourceNorm),
+   hiddenArtifact:await fileRecord(hiddenPath),normalizedArtifact:await fileRecord(normPath),wallSeconds:(performance.now()-begun)/1000});
+  retained.push({native,normalized});
+  console.log(JSON.stringify({phase:'block-options',completed:report.variants.length,total:2,optimization,baselineAllReproduced:report.baselineAllReproduced,row0WeightedNorm:report.variants.at(-1).weightedNorm.row0}));
+ }
+ const before=report.variants[0].weightedNorm,after=report.variants[1].weightedNorm,fields=['maxAbsError','rmsError','directionalResidualMaxAbs'];
+ const ratios=Object.fromEntries(fields.map(key=>[key,before.row0[key]>0?after.row0[key]/before.row0[key]:null]));
+ const material=fields.every(key=>before.row0[key]>0&&after.row0[key]<=before.row0[key]/2)&&after.maxAbsError<=before.maxAbsError;
+ report.triage={outcome:material?'MATERIAL_LOCAL_DIFFERENCE_ONLY':'STOP_MARGINAL_LOCAL_DIFFERENCE',row0ErrorRatiosDisabledOverAll:ratios,
+  globalMaximumDidNotIncrease:after.maxAbsError<=before.maxAbsError,productionChangeAuthorizedByDiagnostic:false,
+  nextAction:material?'Review this local difference; full24 gate has not been reevaluated. No automatic further run.':'Stop optimization probing and retain the existing failed full24 case.'};
+ report.disabledVersusAll={raw:metrics(retained[1].native,retained[0].native),weightedNorm:metrics(retained[1].normalized,retained[0].normalized)};
+ check(counts.sessionsCreated===2&&counts.sessionsReleased===2&&counts.activeSessions===0&&counts.maximumActiveSessions===1&&counts.runCalls===2&&counts.tensorsCreated===6&&counts.tensorDisposeCalls===6&&!counts.tensorDisposeErrors&&!counts.releaseErrors,'Unexpected native resource lifetime counts');
+ report.passed=true;
+}catch(error){report.failure={name:error.name,message:error.message,stack:error.stack};process.exitCode=1;}
+finally{
+ try{await closeSession();}catch(error){report.passed=false;report.failure??={name:error.name,message:error.message};process.exitCode=1;}
+ try{hike?.dispose();}catch(error){report.passed=false;report.failure??={name:error.name,message:error.message};process.exitCode=1;}
+ report.wallSeconds=(performance.now()-started)/1000;report.peakRssBytes=process.resourceUsage().maxRSS*1024;
+ await writeFile(join(c.output,'native-option-results.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
+}
+'''
+
+def run_block_options(a,selection,report):
+ config={'runtime':str(ROOT/'docs/shared/inference'),'reference':str(a.reference),'output':str(a.output),'selection':selection}
+ native=subprocess.run(['node','--input-type=module','-e',BLOCK_OPTIONS_NODE_CODE],input=json.dumps(config),text=True,capture_output=True)
+ (a.output/'native-options-stdout.txt').write_text(native.stdout);(a.output/'native-options-stderr.txt').write_text(native.stderr)
+ path=a.output/'native-option-results.json'
+ if path.exists():report['native']=json.loads(path.read_text())
+ report['files']={path.name:stream_record(path)for path in a.output.glob('*.f32')}
+ native.check_returncode()
+ if not report.get('native',{}).get('passed') or not report['native'].get('baselineAllReproduced'):raise ValueError('Bounded native diagnostic did not complete its fixed baseline contract')
+ report.update(passed=True,scope='Completed local block19 option comparison only; retained full24 failure and fixed final gate unchanged',triage=report['native']['triage'],full24Acceptance=False,newSourceRuns=0,newExports=0)
+
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('stage',choices=['source','native','sdpa','trace-source','trace-native']);p.add_argument('--bundle',required=True,type=Path);p.add_argument('--output',required=True,type=Path);p.add_argument('--execution-source-sha',required=True);p.add_argument('--preflight-only',action='store_true');p.add_argument('--model',type=Path);p.add_argument('--inputs',type=Path);p.add_argument('--case-id',default='id-l512-all-active');p.add_argument('--deps',type=Path);p.add_argument('--reference',type=Path);p.add_argument('--optimization',choices=['all','disabled'],default='all');p.add_argument('--oracle-report',type=Path);p.add_argument('--failed-output',type=Path);p.add_argument('--keep-layers',default='0,7,15,23');a=p.parse_args()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('stage',choices=['source','native','sdpa','trace-source','trace-native','block-options']);p.add_argument('--bundle',required=True,type=Path);p.add_argument('--output',required=True,type=Path);p.add_argument('--execution-source-sha',required=True);p.add_argument('--preflight-only',action='store_true');p.add_argument('--model',type=Path);p.add_argument('--inputs',type=Path);p.add_argument('--case-id',default='id-l512-all-active');p.add_argument('--deps',type=Path);p.add_argument('--reference',type=Path);p.add_argument('--optimization',choices=['all','disabled'],default='all');p.add_argument('--oracle-report',type=Path);p.add_argument('--failed-output',type=Path);p.add_argument('--keep-layers',default='0,7,15,23');p.add_argument('--layer-index',type=int,default=19);p.add_argument('--native-trace-report',type=Path);a=p.parse_args()
  if not re.fullmatch('[0-9a-f]{40}',a.execution_source_sha):raise ValueError('Full committed execution source required')
  manifest=json.loads((a.bundle/'manifest.json').read_text());source_files=[Path(__file__),HERE/'prepare.py',HERE/'plain_checks.py',HERE/'pinned-t5.py',HERE/'pinned-umt5-config.json']
- if a.stage in ['native','sdpa','trace-native']:source_files.extend(ROOT/'docs/shared/inference'/name for name in ['hike.mjs','vendor/ort.wasm.min.mjs','vendor/ort-wasm-simd-threaded.mjs','vendor/ort-wasm-simd-threaded.wasm','kernel/tensor.wasm'])
+ if a.stage in ['native','sdpa','trace-native','block-options']:source_files.extend(ROOT/'docs/shared/inference'/name for name in ['hike.mjs','vendor/ort.wasm.min.mjs','vendor/ort-wasm-simd-threaded.mjs','vendor/ort-wasm-simd-threaded.wasm','kernel/tensor.wasm'])
  closure=[committed(path,a.execution_source_sha)for path in source_files]
- if a.stage in ['source','trace-source']:
+ if a.stage=='block-options':
+  if not a.reference or not a.native_trace_report:raise ValueError('block-options needs existing source reference and native trace report')
+  if a.optimization!='all':raise ValueError('block-options always runs the fixed ALL baseline then DISABLED; no option override')
+  selection=block_options_preflight(a.bundle,a.reference,a.native_trace_report,a.layer_index);inp=selection['input']
+ elif a.stage in ['source','trace-source']:
   if not a.model or not a.inputs or not a.deps:raise ValueError('Source stage needs model, inputs and existing CPU deps')
   inp=next(case for case in json.loads(a.inputs.read_text())['inputs'] if case['id']==a.case_id)
   if inp['shape']!=[1,512,4096] or len(inp['tokenIds'])!=512 or len(inp['attentionMask'])!=512:raise ValueError('Full512 diagnostic input required')
@@ -403,8 +562,12 @@ def main():
   if a.stage=='trace-native' and (not source_report.get('allLayerDigestsMatchOriginalOracle') or not source_report.get('sourceFinalMatchesOriginalOracle')):raise ValueError('Trace source must match every original oracle layer and final value')
   for name in source_report['files'] if a.stage=='trace-native' else ['block0-input.f32','block0-source-hidden.f32','block0-source-normalized.f32','final-norm.f32']:
    if record(a.reference/name)['sha256']!=source_report['files'][name]['sha256']:raise ValueError('Source checkpoint changed: '+name)
- if a.preflight_only:print(json.dumps({'passed':True,'stage':a.stage,'caseId':inp['id'],'newNeuralRuns':0,'sourceClosure':closure}));return 0
+ if a.preflight_only:
+  result={'passed':True,'stage':a.stage,'caseId':inp['id'],'newNeuralRuns':0,'sourceClosure':closure}
+  if a.stage=='block-options':result['selection']={key:value for key,value in selection.items() if key!='input'}
+  print(json.dumps(result));return 0
  fresh(a.output);started=time.monotonic();report={'passed':False,'stage':a.stage,'scope':'One existing block0 full512 diagnostic; no full24 acceptance or changed gate','input':inp,'manifest':record(a.bundle/'manifest.json'),'executionSourceSha':a.execution_source_sha,'sourceClosure':closure,'newExports':0}
+ if a.stage=='block-options':report.update(scope='Bounded existing block19 options only; no full24 acceptance or changed gate',selection=selection)
  try:
   if a.stage=='source':
    sys.path.insert(0,str(a.deps));import numpy as np,torch
@@ -432,6 +595,7 @@ def main():
    with torch.inference_mode():normalized=(norm(hidden)*attention[...,None]).numpy().astype('<f4')
    normalized.tofile(a.output/'block0-source-normalized.f32');end=a.model.stat();assert(initial.st_size,initial.st_mtime_ns)==(end.st_size,end.st_mtime_ns)
    report.update(passed=True,strictMissing=strict.missing_keys,strictUnexpected=strict.unexpected_keys,scales=scales,torchVersion=torch.__version__,files={name:record(a.output/name)for name in ['block0-input.f32','block0-source-hidden.f32','block0-source-normalized.f32','final-norm.f32']})
+  elif a.stage=='block-options':run_block_options(a,selection,report)
   elif a.stage=='trace-source':run_trace_source(a,manifest,inp,expected,oracle,report)
   elif a.stage=='trace-native':run_trace_native(a,manifest,inp,source_report,report)
   elif a.stage=='sdpa':run_sdpa(a,manifest,inp,source_report,report)
