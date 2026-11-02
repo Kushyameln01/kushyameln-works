@@ -177,5 +177,148 @@ class StreamReferenceTests(unittest.TestCase):
         self.assertIs(sys.modules.get('torch'), torch_before)
 
 
+class WorkerTargetObserverTests(unittest.TestCase):
+    """Protocol doubles only; these tests do not claim browser worker visibility."""
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, str(ROOT))
+        try:
+            from accept_stream import WorkerTargetObserver
+            cls.Observer = WorkerTargetObserver
+        finally:
+            sys.path.pop(0)
+
+    class CDP:
+        def __init__(self, targets=()):
+            self.targets = {item['targetId']: dict(item) for item in targets}
+            self.handlers = {}
+            self.calls = []
+
+        def on(self, event, handler):
+            self.handlers[event] = handler
+
+        def send(self, method, params=None):
+            self.calls.append((method, params))
+            if method == 'Target.getTargets':
+                return {'targetInfos': list(self.targets.values())}
+            if method == 'Target.setDiscoverTargets':
+                return {}
+            raise AssertionError('Unexpected CDP method: ' + method)
+
+        def create(self, info):
+            self.targets[info['targetId']] = dict(info)
+            self.handlers['Target.targetCreated']({'targetInfo': info})
+
+        def change(self, info):
+            self.targets[info['targetId']].update(info)
+            self.handlers['Target.targetInfoChanged']({'targetInfo': self.targets[info['targetId']]})
+
+        def destroy(self, target_id):
+            del self.targets[target_id]
+            self.handlers['Target.targetDestroyed']({'targetId': target_id})
+
+    def test_baseline_exclusion_parent_pthread_and_destroyed_targets(self):
+        cdp = self.CDP([{'targetId': 'baseline', 'type': 'worker', 'url': 'old-worker.mjs'},
+                        {'targetId': 'page', 'type': 'page', 'url': 'http://127.0.0.1/'}])
+        observer = self.Observer(cdp).start()
+        self.assertEqual(observer.snapshots[0]['workerTargets'], [])
+        cdp.create({'targetId': 'parent', 'type': 'worker', 'url': 'http://local/stream_observer_worker.mjs'})
+        cdp.create({'targetId': 'pthread', 'type': 'worker', 'url': 'blob:opaque', 'openerId': 'parent'})
+        cdp.change({'targetId': 'pthread', 'url': 'http://local/ort-wasm-simd-threaded.mjs'})
+        marker = {'boundary': 'cancel-returned', 'atEpochMs': 123}
+        observer.snapshot('cancel-returned', marker)
+        cdp.destroy('pthread')
+        cdp.destroy('parent')
+        observer.snapshot('before-browser-close')
+        report = observer.report()
+        self.assertEqual(report['baselineWorkerTargetIdsExcluded'], ['baseline'])
+        self.assertEqual(report['parentTargetsIdentifiedByUrl'], ['parent'])
+        self.assertEqual(report['pthreadTargetsIdentifiedByUrl'], ['pthread'])
+        self.assertEqual(report['snapshots'][1]['browserMarker'], marker)
+        self.assertEqual(len(report['snapshots'][1]['workerTargets']), 2)
+        self.assertEqual(report['snapshots'][-1]['workerTargets'], [])
+        self.assertTrue(all(item['destroyEventObserved'] for item in report['targets']))
+        self.assertEqual(report['targets'][1]['openerId'], 'parent')
+        self.assertEqual(sum(event['event'] == 'targetDestroyed' for event in report['events']), 2)
+        self.assertIn('does not prove', report['scope'])
+        json.dumps(report, allow_nan=False)
+
+    def test_parent_only_does_not_claim_nested_pthread_visibility_or_exit(self):
+        cdp = self.CDP()
+        observer = self.Observer(cdp).start()
+        cdp.create({'targetId': 'parent', 'type': 'worker', 'url': '/inference-worker.mjs'})
+        cdp.destroy('parent')
+        observer.snapshot('after-cancellation-rejection')
+        report = observer.report()
+        self.assertEqual(report['status'], 'WORKER_TARGETS_OBSERVED')
+        self.assertEqual(report['pthreadVisibility'], 'UNOBSERVABLE_OR_NOT_CREATED')
+        self.assertEqual(report['pthreadTargetsIdentifiedByUrl'], [])
+        self.assertTrue(report['snapshots'][-1]['snapshotDoesNotPauseRenderer'])
+
+    def test_unclassified_blob_remains_distinct_from_identified_pthread(self):
+        cdp = self.CDP()
+        observer = self.Observer(cdp).start()
+        cdp.create({'targetId': 'blob', 'type': 'worker', 'url': 'blob:http://local/random'})
+        observer.snapshot('operation-returned')
+        report = observer.report()
+        self.assertEqual(report['targets'][0]['classification'], 'unclassified-worker-url')
+        self.assertEqual(report['pthreadTargetsIdentifiedByUrl'], [])
+        self.assertEqual(report['snapshots'][-1]['workerTargets'][0]['url'], 'blob:http://local/random')
+
+    def test_unavailable_protocol_is_reported_not_inferred_empty_success(self):
+        class Unsupported:
+            def send(self, *_args):
+                raise RuntimeError('Target domain unavailable')
+        observer = self.Observer(Unsupported()).start()
+        observer.snapshot('before-browser-close')
+        report = observer.report()
+        self.assertFalse(report['discoveryEnabled'])
+        self.assertEqual(report['status'], 'WORKER_TARGETS_UNOBSERVABLE')
+        self.assertFalse(report['snapshots'][-1]['querySucceeded'])
+        self.assertEqual(len(report['errors']), 2)
+
+    def test_report_is_frozen_before_later_browser_close_events(self):
+        cdp = self.CDP()
+        observer = self.Observer(cdp).start()
+        cdp.create({'targetId': 'parent', 'type': 'worker', 'url': '/inference-worker.mjs'})
+        before_close = observer.report()
+        cdp.destroy('parent')
+        self.assertFalse(before_close['targets'][0]['destroyEventObserved'])
+        self.assertTrue(observer.report()['targets'][0]['destroyEventObserved'])
+        self.assertNotIn('targetDestroyed', [event['event'] for event in before_close['events']])
+
+    def test_reentrant_protocol_callback_reserves_snapshot_before_send(self):
+        cdp = self.CDP()
+        observer = self.Observer(cdp).start()
+        observer.MAX_SNAPSHOTS = 2
+        original_send = cdp.send
+        def nested_send(method, params=None):
+            if method == 'Target.getTargets':
+                observer.snapshot('nested-marker')
+            return original_send(method, params)
+        cdp.send = nested_send
+        observer.snapshot('outer-marker')
+        self.assertEqual([item['label'] for item in observer.snapshots], ['browser-ready', 'outer-marker'])
+        self.assertEqual(observer.dropped['snapshots'], 1)
+
+    def test_target_event_and_snapshot_retention_is_bounded(self):
+        cdp = self.CDP()
+        observer = self.Observer(cdp)
+        observer.MAX_TARGETS, observer.MAX_EVENTS, observer.MAX_SNAPSHOTS = 1, 2, 2
+        observer.start()
+        for index in range(4):
+            cdp.create({'targetId': str(index), 'type': 'worker', 'url': 'blob:' + str(index)})
+        for _ in range(4):
+            observer.snapshot('bounded')
+        report = observer.report()
+        self.assertEqual(len(report['targets']), 1)
+        self.assertLessEqual(len(report['events']), 2)
+        self.assertEqual(len(report['snapshots']), 2)
+        self.assertEqual(len(report['snapshots'][-1]['workerTargets']), 1)
+        self.assertEqual(report['snapshots'][-1]['omittedWorkerTargets'], 3)
+        self.assertGreater(report['dropped']['targets'], 0)
+        self.assertGreater(report['dropped']['snapshots'], 0)
+
+
 if __name__ == '__main__':
     unittest.main()

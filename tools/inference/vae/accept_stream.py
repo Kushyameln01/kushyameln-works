@@ -147,6 +147,147 @@ class FileProcessSampler(ProcessSampler):
         return result
 
 
+class WorkerTargetObserver:
+    """Bounded browser-CDP observations; missing pthread targets never prove exit.
+
+    The browser belongs to this helper. Baseline targets are excluded, but CDP
+    may omit nested dedicated Workers or expose only blob URLs. Event/snapshot
+    order is observed protocol order, not a pause or a complete fork audit.
+    """
+    MAX_TARGETS = 64
+    MAX_EVENTS = 256
+    MAX_SNAPSHOTS = 32
+
+    def __init__(self, session):
+        self.session = session
+        self.started = time.monotonic()
+        self.baseline = set()
+        self.targets = {}
+        self.events = []
+        self.snapshots = []
+        self.errors = []
+        self.dropped = {'targets': 0, 'events': 0, 'snapshots': 0}
+        self.discovery_enabled = False
+
+    def _stamp(self):
+        return {'elapsedSeconds': time.monotonic() - self.started,
+                'observedAtEpochMs': int(time.time() * 1000)}
+
+    def _error(self, phase, error):
+        if len(self.errors) < 16:
+            self.errors.append({'phase': phase, 'message': str(error)[:2000]})
+
+    @staticmethod
+    def _worker(info):
+        return info.get('type') in ('worker', 'dedicated_worker')
+
+    @staticmethod
+    def _record(info):
+        url = str(info.get('url', ''))[:4096]
+        classification = ('ort-pthread-url' if 'ort-wasm-simd-threaded.mjs' in url else
+                          'inference-parent-url' if any(name in url for name in
+                              ('inference-worker.mjs', 'stream_observer_worker.mjs')) else
+                          'unclassified-worker-url')
+        return {'targetId': info['targetId'], 'type': info.get('type'), 'url': url,
+                'openerId': info.get('openerId'), 'classification': classification}
+
+    def _event(self, kind, record):
+        if len(self.events) < self.MAX_EVENTS:
+            self.events.append({'event': kind, **self._stamp(), **record})
+        else:
+            self.dropped['events'] += 1
+
+    def _observe(self, info, kind):
+        if not self._worker(info) or info.get('targetId') in self.baseline:
+            return
+        target_id = info.get('targetId')
+        if not target_id:
+            return
+        if target_id not in self.targets and len(self.targets) >= self.MAX_TARGETS:
+            self.dropped['targets'] += 1
+            return
+        record = self._record(info)
+        previous = self.targets.get(target_id)
+        self.targets[target_id] = {**record,
+            'firstObserved': previous['firstObserved'] if previous else self._stamp(),
+            'destroyEventObserved': previous.get('destroyEventObserved', False) if previous else False}
+        if kind != 'snapshot' or previous is None:
+            self._event(kind, record)
+
+    def _created(self, payload):
+        self._observe(payload.get('targetInfo', {}), 'targetCreated')
+
+    def _changed(self, payload):
+        self._observe(payload.get('targetInfo', {}), 'targetInfoChanged')
+
+    def _destroyed(self, payload):
+        target_id = payload.get('targetId')
+        if target_id in self.targets:
+            self.targets[target_id]['destroyEventObserved'] = True
+            self._event('targetDestroyed', {'targetId': target_id})
+
+    def start(self):
+        try:
+            current = self.session.send('Target.getTargets')['targetInfos']
+            self.baseline = {info['targetId'] for info in current if self._worker(info)}
+            self.session.on('Target.targetCreated', self._created)
+            self.session.on('Target.targetInfoChanged', self._changed)
+            self.session.on('Target.targetDestroyed', self._destroyed)
+            self.session.send('Target.setDiscoverTargets', {'discover': True})
+            self.discovery_enabled = True
+            self.snapshot('browser-ready')
+        except Exception as error:
+            self._error('start', error)
+        return self
+
+    def snapshot(self, label, marker=None):
+        if len(self.snapshots) >= self.MAX_SNAPSHOTS:
+            self.dropped['snapshots'] += 1
+            return
+        value = {'label': label, **self._stamp(), 'workerTargets': [],
+                 'snapshotDoesNotPauseRenderer': True}
+        if marker is not None:
+            value['browserMarker'] = marker
+        # Reserve before send(): Playwright may dispatch a nested console marker
+        # while the synchronous CDP request pumps protocol events.
+        self.snapshots.append(value)
+        try:
+            current = self.session.send('Target.getTargets')['targetInfos']
+            for info in current:
+                self._observe(info, 'snapshot')
+                if self._worker(info) and info.get('targetId') not in self.baseline:
+                    if len(value['workerTargets']) < self.MAX_TARGETS:
+                        value['workerTargets'].append(self._record(info))
+                    else:
+                        value['omittedWorkerTargets'] = value.get('omittedWorkerTargets', 0) + 1
+            value['querySucceeded'] = True
+        except Exception as error:
+            value['querySucceeded'] = False
+            self._error('snapshot:' + label, error)
+
+    def report(self):
+        values = list(self.targets.values())
+        parents = [item['targetId'] for item in values if item['classification'] == 'inference-parent-url']
+        pthreads = [item['targetId'] for item in values if item['classification'] == 'ort-pthread-url']
+        result = {'schemaVersion': 1, 'discoveryEnabled': self.discovery_enabled,
+                  'collectionEndedAt': self._stamp(),
+                'status': 'WORKER_TARGETS_OBSERVED' if values else 'WORKER_TARGETS_UNOBSERVABLE',
+                'parentTargetsIdentifiedByUrl': parents, 'pthreadTargetsIdentifiedByUrl': pthreads,
+                'pthreadVisibility': 'URL_IDENTIFIED_TARGETS_OBSERVED' if pthreads else 'UNOBSERVABLE_OR_NOT_CREATED',
+                'baselineWorkerTargetIdsExcluded': sorted(self.baseline), 'targets': values,
+                'events': self.events, 'snapshots': self.snapshots, 'dropped': self.dropped,
+                'errors': self.errors,
+                'scope': 'New worker targets in the helper-owned browser, excluding baseline. '
+                         'URL classification is observational; openerId is retained when CDP supplies it. '
+                         'Nested pthread targets may be absent or have unclassified blob URLs. '
+                         'An empty snapshot or missing target does not prove unexposed child termination. '
+                         'Snapshots do not pause the renderer; browser lifecycle markers and CDP events '
+                         'have separately observed timestamps. No heartbeat or child protocol was injected.'}
+        # Browser.close() may emit targetDestroyed later. Freeze the before-close
+        # observation so those later events cannot be mistaken for native exit.
+        return json.loads(json.dumps(result, allow_nan=False))
+
+
 def validate_inputs(bundle, reference_dir, operations):
     manifest_path = bundle / 'manifest.json'
     manifest = json.loads(manifest_path.read_text())
@@ -232,6 +373,7 @@ def main(argv=None):
     started = time.monotonic()
     phase, server, browser, sampler, owner, failure = 'input-preflight', None, None, None, None, None
     page = None
+    worker_observer = None
     served, server_errors = {}, []
     browser_session_disposed = False
     sampler_stopped_before_close = False
@@ -340,6 +482,7 @@ def main(argv=None):
                 processes = cdp.send('SystemInfo.getProcessInfo')['processInfo']
                 browser_pid = next(int(process['id']) for process in processes if process['type'] == 'browser')
                 cdp.detach()
+                worker_observer = WorkerTargetObserver(browser.new_browser_cdp_session()).start()
                 sampler = FileProcessSampler(browser_pid, args.output / 'resource-samples.jsonl')
                 sampler.start()
                 context = browser.new_context(accept_downloads=True, service_workers='block')
@@ -356,6 +499,9 @@ def main(argv=None):
                         if len(result['requestFailures']) < 100 else None)
 
                 def progress(message):
+                    if message.type == 'log' and message.text.startswith('vae-stream-lifecycle:'):
+                        value = json.loads(message.text.removeprefix('vae-stream-lifecycle:'))
+                        worker_observer.snapshot(value['boundary'], value)
                     if message.type == 'log' and message.text.startswith('vae-stream-progress:'):
                         value = json.loads(message.text.removeprefix('vae-stream-progress:'))
                         sampler.phase = value.get('operation', '') + ':' + value.get('controlPhase', '')
@@ -383,6 +529,7 @@ def main(argv=None):
                             native = page.evaluate('options=>runVaeStreamOperation(options)',
                                                    {'operation': operation, 'controls': args.controls and index == 0,
                                                     'timeoutMs': args.timeout_seconds * 1000})
+                            worker_observer.snapshot(operation + ':operation-returned')
                             result['operations'][operation] = {'browser': native}
                             if not native['passed']:
                                 raise RuntimeError('Normal streaming execution failed: ' + json.dumps(native))
@@ -402,6 +549,7 @@ def main(argv=None):
                     result['numericalExecutionPerformed'] = True
                 result['browserLifecycle'] = page.evaluate('()=>disposeVaeStream()')
                 browser_session_disposed = True
+                worker_observer.snapshot('normal-dispose-returned')
                 if any(not worker['terminated'] for worker in result['browserLifecycle']['workers']):
                     raise RuntimeError('Owned native Worker remains after normal completion')
                 if result['pageErrors'] or result['httpErrors'] or result['requestFailures'] or server_errors:
@@ -412,6 +560,9 @@ def main(argv=None):
                         result['browserLifecycle'] = page.evaluate('()=>typeof disposeVaeStream===\'function\'?disposeVaeStream():null')
                     except Exception as error:
                         result['browserDisposeError'] = str(error)
+                if worker_observer is not None:
+                    worker_observer.snapshot('before-browser-close')
+                    result['workerTargetObservation'] = worker_observer.report()
                 # Stop the sampler while the browser is still alive, on both paths.
                 try:
                     if sampler is not None:

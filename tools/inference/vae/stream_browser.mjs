@@ -62,6 +62,7 @@ function makeAPI(session){
   }
   if(session.phase==='cancel-first-chunk'&&!session.cancelTriggered&&progress.phase==='chunk-complete'&&progress.chunkIndex===0){
    session.cancelTriggered=true;session.cancelAt=structuredClone(progress);session.cancelReturned=api.vae.cancel();
+   console.log('vae-stream-lifecycle:'+JSON.stringify({boundary:'cancel-returned',operation:session.operation,atEpochMs:Date.now(),cancelReturned:session.cancelReturned}));
   }
  }});
  return api;
@@ -131,10 +132,12 @@ async function runOperation({operation,controls=false}){
    session.phase='cancel-first-chunk';session.cancelTriggered=false;
    result.controls.cancelError=await rejects(()=>api.vae[operation](input),/cancelled/i,'Cancellation after actual first complete chunk');
    check(session.cancelTriggered&&session.cancelReturned&&session.lastState.status==='cancelled','Normal API failed first-chunk cancellation');
+   console.log('vae-stream-lifecycle:'+JSON.stringify({boundary:'cancel-rejected',operation,atEpochMs:Date.now()}));
    result.controls.cancelAt=session.cancelAt;result.controls.cancelReturned=session.cancelReturned;
    result.controls.recoveryUsesSameAPI=true;session.controlsDone=true;
   }
   session.phase=controls&&session.controlsDone?'normal-recovery':'normal';
+  console.log('vae-stream-lifecycle:'+JSON.stringify({boundary:'before-normal-recovery',operation,atEpochMs:Date.now(),recovery:controls&&session.controlsDone}));
   const started=performance.now(),output=await api.vae[operation](input);
   result.normalWallSeconds=(performance.now()-started)/1000;
   check(output.tensor&&output.inputDescriptor&&output.binding,'Normal VAE result is missing its public fields');
