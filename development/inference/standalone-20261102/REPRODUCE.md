@@ -305,6 +305,29 @@ python tools/inference/vae/accept_stream.py \
 
 結果は [VAE-RESULT.md](VAE-RESULT.md) の独立raw decode制御行に分けて記録する。この小shapeの取消を大shapeの数値合格や実generated sampleに置き換えない。
 
+### 完了した848×848境界の再現
+
+実行sourceは `dccb88515775ec8aa86dd16f82e8816c9347ed38`。元controller終了後、未着手だったこのcaseだけを実行した。sourceF80やtarget81を再推論していない。既存の69unit graph/2assetとthreads4 manifestを使い、再exportは0。固定fixtureであり、実参照媒体の寸法とは扱わない。
+
+```sh
+python tools/inference/vae/stream_reference.py \
+  --case-id reference-f1-848x848 --operation both \
+  --model /workspace/work/models/vae/wan_2.1_vae.safetensors \
+  --deps /workspace/work/inference/vae-proof/deps \
+  --memory-reserve-bytes 268435456 \
+  --execution-source-sha dccb88515775ec8aa86dd16f82e8816c9347ed38 \
+  --output /tmp/kw-vae-new-848-reference
+
+python tools/inference/vae/accept_stream.py \
+  --bundle /tmp/kw-vae-stream-threads4-20261102 \
+  --reference /tmp/kw-vae-new-848-reference --operation both \
+  --timeout-seconds 14400 \
+  --execution-source-sha dccb88515775ec8aa86dd16f82e8816c9347ed38 \
+  --output /tmp/kw-vae-new-848-wasm
+```
+
+同じsource/bundle/参照がある場合は上記を再実行せず、既存report・bytes/hashを照合する。実際のad hoc controllerと自己記録のsource SHAは [archive](evidence/scripts/vae-848-recovery-queue.py)、[結果](evidence/vae-848-recovery-queue-results.json)。controller sourceと各数値toolのGit execution sourceは別に記録する。終了状態は [STATUS.md](STATUS.md) を参照する。
+
 ## 資源とscope
 
 このhostはCPU4、cgroup16GiB。workspace空き約1.3GBと `/tmp` tmpfs約8.8GBは別であり、tmpfsはRAMにも課金される。target81 RGB1本は388,177,920 B、latent1本は8,386,560 B。input・reference・WKT・download staging・host history・WASM・sessionを含むpeakはこの単体容量より大きい。

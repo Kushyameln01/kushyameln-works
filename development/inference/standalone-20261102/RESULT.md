@@ -1,11 +1,11 @@
 # Text / VAE 単体検証結果
 
-TextとVAEを個別に判定する。TextはT1入力検査とT3終了・保存が完了し、T2は9case中8件が数値合格、全512有効ID一件が固定gate不合格のため単体完成には至っていない。VAEの81×480×832 targetは実WASMのencode・独立raw decode・保存読戻し・取消復帰まで合格した。17:38 UTC頃の監視接続喪失後、17:50 UTCに同じF80 processの継続を確認し、再実行せず残る受入を再開した。F80の最終成否・保存・資源終了と848×848は引き続き未受入。[中断状況と再開条件](STATUS.md) を参照する。
+TextとVAEを個別に判定する。TextはT1入力検査とT3終了・保存が完了し、T2は9case中8件が数値合格、全512有効ID一件が固定gate不合格のため単体完成には至っていない。VAEの81×480×832 targetは実WASMのencode・独立raw decode・保存読戻し・取消復帰まで合格した。監視接続の喪失後も同じF80 processが完了し、全1,996,800 mean値・保存・native末尾処理・VAE側資源終了を受入済み。848×848の独立参照と実WASM bothも合格し、本計画のVAE必須選択ケースの受入は完了した。[中断状況と再開条件](STATUS.md) を参照する。
 
 | モジュール | 詳細結果 | 現在の判定 |
 | --- | --- | --- |
 | Text T1–T3 | [TEXT-RESULT.md](TEXT-RESULT.md) | T1/T3完了、T2未完了。全512有効IDのmaxAbs0.0016480088233947754が事前gate0.001を超過 |
-| VAE V1–V4 | [VAE-RESULT.md](VAE-RESULT.md) | target81・source F1/F4/F5・参照16×16/16×848/848×16は合格。F80を同じ既存processで継続、848×848は未受入 |
+| VAE V1–V4 | [VAE-RESULT.md](VAE-RESULT.md) | target81・source F1/F4/F5・参照16×16/16×848/848×16は合格。必須選択ケースを受入済み。target81・source F1/F4/F5/F80・参照寸法境界、取消復帰・codec・VAE側終了を確認。全domainの網羅や実媒体/生成経路は別scope |
 
 ## 配布・実行source
 
@@ -43,10 +43,16 @@ TextのWorkerとNode参照hostは同じ共有jobを呼ぶ。Nodeの4GiB超model�
 
 実L512 conditioning、全mask、選択manifest、来歴と任意の独立参照は [full512-conditioning/manifest.json](text/full512-conditioning/manifest.json) から取得できる。固定411210cのWKT・参照・manifestをGitHubから実取得し、bytes/SHAを確認済み。これは送付側の取得確認であり、管理/DiffusionによるACKやconsumerの数値合格とは別である。
 
+## 実測資源と終了の残件
+
+CPU4・cgroup16GiB、WASM4threadではcross-origin isolationとSharedArrayBufferを使用した。Text Node6件の所有group標本RSS peakは3,242,471,424 B、Browser T3は6,906,658,816 B。VAEの選択ケース中ではF80 encodeのgroup RSS/PSSが9,467,285,504 / 9,220,117,504 Bだった。これらを単一WASM32 heap容量、共有cgroup charge、tmpfsと混ぜて最小必要RAMへ換算しない。各時間・個別shape・WASM容量はモジュール別結果、実sample gapは [cadence観測](evidence/final-sampling-intervals.json) を参照する。
+
+VAE側の既知Worker・sessionと各harnessの追跡browser子群は終了した。後続848 controller・reference/WASM harnessも不在を確認したが、接続喪失をまたいだ旧監視controller PID40303がPPID1のzombie（RSS0）として1件残っている。[最終process観測](evidence/post-run-process-observation.json) に分け、全起動processが無条件に0とは報告しない。
+
 ## 再現と未受入事項
 
 [REPRODUCE.md](REPRODUCE.md) にsource固定、元modelとbundle、軽量検査、通常host、参照生成と実WASM受入の手順を記載した。既存assetがある場合はexportや重い推論を繰り返さず、保存済みreceiptとhashを照合する。
 
-Textの全512有効ID数値gate、未知の実媒体と各slotの実寸法、stream宣言域の全組合せ、Diffusion実generated sampleの復元receiptからのdecode、後段の管理保存・結合・製品生成READYは未受入。過去の全体Python52/53とLoRA公開台帳の不整合は今回の接続fixtureや数値受入の結果へ含めない。全repository試験の合格は主張しない。
+Textの全512有効ID数値gate、旧監視controller zombieのreap、未知の実媒体と各slotの実寸法、stream宣言域の全組合せ、Diffusion実generated sampleの復元receiptからのdecode、後段の管理保存・結合・製品生成READYは未受入。過去の全体Python52/53とLoRA公開台帳の不整合は今回の接続fixtureや数値受入の結果へ含めない。全repository試験の合格は主張しない。
 
 PRはDraft、mergeとPages公開は行っていない。単体合格をモジュール間接続・本番生成READYへ読み替えない。

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-11-02T18:28:47.147040+00:00",
+  "scope": "Post-run checks of identified orchestration and neural-harness processes, separate from per-job session/Worker/browser resource receipts. No process signals or ptrace applied.",
+  "processes": [
+    {
+      "role": "original-controller",
+      "pid": 40303,
+      "creationTime": 1793632755.87,
+      "observedCreationTime": 1793632755.87,
+      "sameIdentity": true,
+      "state": "zombie",
+      "parentPid": 1,
+      "rssBytes": 0
+    },
+    {
+      "role": "original-F80-harness",
+      "pid": 43453,
+      "creationTime": 1793634584.62,
+      "state": "GONE"
+    },
+    {
+      "role": "848-controller",
+      "pid": 54145,
+      "creationTime": 1793642855.76,
+      "state": "GONE"
+    },
+    {
+      "role": "848-reference-harness",
+      "pid": 54146,
+      "creationTime": 1793642855.82,
+      "state": "GONE"
+    },
+    {
+      "role": "848-WASM-harness",
+      "pid": 54176,
+      "creationTime": 1793643098.28,
+      "state": "GONE"
+    }
+  ],
+  "current848ControllerAndHarnessesGone": true,
+  "originalF80HarnessGone": true,
+  "remainingOwnedOrchestrationZombies": [
+    40303
+  ],
+  "liveOwnedModelHarnesses": [],
+  "modelSessionAndWorkerEvidence": "See finalized actual F80 and848 WASM acceptance receipts; their owned live/zombie/errors arrays are empty. This does not erase the old outer-controller zombie.",
+  "cleanupLimitation": "The original orphan controller is owned by PID1; no global init intervention is performed. It has zero RSS in this observation."
+}
