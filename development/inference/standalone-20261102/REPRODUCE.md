@@ -59,7 +59,11 @@ Textの通常入口は既存の独立ES module APIのまま。WorkerのText処�
 
 `--node-sdk --skip-controls` は、通常の `createTextEncoderModule()` に専用clientを渡し、共有job・実ORT CPU WASM1 thread・実Hike・既存WKT writer/readerを通す参照hostである。別のT5実装、precision、export、oracle、gateは導入しない。現在のhostも通常の `diagnostics:false` で実行する。privateなsession/Tensor観測とHike呼出回数は外側receiptに記録する。
 
-prepared graph・final norm・row hashes・Tokenizerはnative `fs.openAsBlob` を使う。元6,735,906,897 B modelは、使用Node環境でBlobのsizeが4GiBぶん短くなるため、実 `fs.stat` の64-bit sizeを持つreadonly positional source adapterを使う。既存loaderの8192 B以下のembedding row要求だけを `fs.read` し、size・mtimeNs・inode・deviceを読出し前後に照合する。元model全体のArrayBuffer化や新しい重みfileは作らず、Browser File経路の確認とも記録しない。prepared graphは1 Bも変更しない。
+prepared graphだけは、1個のcaller-owned ArrayBufferへ最大8 MiBのpositional `fs.read` を繰り返す。configure時にreadonly FDと64-bitのsize・mtimeNs・inode・deviceを保持し、各slice読込みの前後でFDとpath双方のstatを照合する。graphは1 GiB未満、sliceは安全整数の範囲内に限定し、短いreadは残りを読み直す。pending readを待って全graph FDをfinallyで閉じ、storage・読込みbytes・回数・close状態は通常tensorの外側receiptへ記録する。prepared graphは1 Bも変更しない。final norm・row hashes・Tokenizerは引き続きnative `fs.openAsBlob` を使う。
+
+元6,735,906,897 B modelは、使用Node環境でBlobのsizeが4GiBぶん短くなるため、実 `fs.stat` の64-bit sizeを持つ既存readonly positional source adapterを使う。loaderの8192 B以下のembedding row要求だけを `fs.read` し、size・mtimeNs・inode・deviceを読出し前後に照合する。元model全体のArrayBuffer化や新しい重みfileは作らず、Browser File経路の確認とも記録しない。
+
+Node v24.19.0のNN0読込みprobeでは、native Blobが読込みchunkを保持したまま最終bufferへconcatする実装を確認した。block00の同一771,822,917 Bをmanifest SHAへ全byte照合し、Blob経路のown RSS peak約1.586 GBに対し、単一ArrayBufferの実production readerは約0.807 GBだった。これはgraph読込み時の約1個分のcopyを除いた測定であり、全24層NNのpeakや受入結果ではない。順序・cache・並列VAEで読込み時間と共有working setが変わるため、速度向上や全jobのRAM上限へ換算しない。実行時のad hoc sourceは [read-probe/README.md](text/evidence/read-probe/README.md) にbytes/SHA付きで保存する。
 
 Python親processは `git cat-file` で指定objectがcommitであることを確認し、親harnessと全Node import closureのbytesを `git show` と照合する。Nodeへ渡す15件のsource recordsはpath集合・bytes・SHA-256・execution SHAを固定する。Nodeは不足・重複・追加を拒否し、現在のfile bytesを再読して照合する。Node自身がGit commitを独立に検証したという意味ではない。親の検査後にsourceが変わった場合も、Node側の再照合で拒否する。
 
@@ -93,10 +97,10 @@ python tools/inference/text-encoder/accept_plain.py \
 
 #### 未完了分の最小再開計画
 
-次のsourceは `153c864e22927b24902ad5343f5438b895459bf6`。所有VAE targetのfinal終了を待つ直列controllerが待機しており、この追補時点ではNode再開も後続Browser jobも開始していない。未完了の5caseと長文plainを次の6件にまとめ、5954 oracleを再利用する。完了済みemptyや既知FAILのall-active ID512 canaryは、このNode jobで再実行しない。
+次のsourceは `b3e5e34430d58bca3bf69b8938ba87beb196d054`。この固定sourceのNN0 preflightは、親harnessとNode closureの18件照合、24 graph FDのclose、graph/source read0 B、NN0で完了した。これは数値受入ではない。旧153cの待機queueを止め、b3e5を指定する直列controllerを再起動した。所有VAE targetのfinal終了を待っており、この追補時点ではNode再開も後続Browser jobも開始していない。未完了の5caseと長文plainを次の6件にまとめ、5954 oracleを再利用する。完了済みemptyや既知FAILのall-active ID512 canaryは、このNode jobで再実行しない。
 
 ```sh
-TEXT_RESUME_SOURCE_SHA=153c864e22927b24902ad5343f5438b895459bf6
+TEXT_RESUME_SOURCE_SHA=b3e5e34430d58bca3bf69b8938ba87beb196d054
 TEXT_REFERENCE_SOURCE_SHA=5954d48e0fb6df1d6977964fd8a7ba2a242b6eff
 
 python tools/inference/text-encoder/accept_plain.py \
@@ -113,7 +117,7 @@ python tools/inference/text-encoder/accept_plain.py \
   --output /tmp/kw-text-node-sdk-remaining-serial-20261102
 ```
 
-Node jobが終了して資源を解放した後、同じ153c sourceで次のBrowser jobを直列実行する計画である。`--node-sdk` と `--skip-controls` を付けず、主caseは `plain-empty` と `id-l2` の2件だけを選ぶ。planの全9 controlsと、同じAPIの `id-l1` recoveryを一度実行するため、正常な全24層NNは合計3件となる。cancel途中のjobや保存revision controlを正常NN件数へ加えない。Browser emptyは取消・保存のhost確認用であり、Node emptyの通常出力受入を付け替えるものではない。
+Node jobが終了して資源を解放した後、同じb3e5 sourceで次のBrowser jobを直列実行する計画である。`--node-sdk` と `--skip-controls` を付けず、主caseは `plain-empty` と `id-l2` の2件だけを選ぶ。planの全9 controlsと、同じAPIの `id-l1` recoveryを一度実行するため、正常な全24層NNは合計3件となる。cancel途中のjobや保存revision controlを正常NN件数へ加えない。Browser emptyは取消・保存のhost確認用であり、Node emptyの通常出力受入を付け替えるものではない。
 
 ```sh
 python tools/inference/text-encoder/accept_plain.py \
@@ -127,7 +131,7 @@ python tools/inference/text-encoder/accept_plain.py \
   --output /tmp/kw-text-browser-t3-controls-20261102
 ```
 
-153cでは、主caseへ選ばないrecovery入力も含め、全control入力のsource/manifest、固定ID/maskと独立full512参照のbytes/SHA-256をNN前に照合する。`controlReferencePreflight` に保存し、古い参照や破損fileを取消後まで持ち越さない。
+b3e5でも、主caseへ選ばないrecovery入力も含め、全control入力のsource/manifest、固定ID/maskと独立full512参照のbytes/SHA-256をNN前に照合する。`controlReferencePreflight` に保存し、古い参照や破損fileを取消後まで持ち越さない。
 
 正常保存とrecovery保存は `encodeTensor()` の後にnative `decodeTensor()` でdescriptor、normalization、model/Tokenizer、全maskと全float値を読戻し、payload/maskが独立所有のbufferであることも確認する。recoveryは `recovery-cancel-run.wktensor` としてdownload・保存し、Pythonが全file bytes/SHA、native header/payloadと元 `id-l1` 参照の全4,096値を再照合する。これらは診断hostの外側receiptであり、通常APIの必須入力やtensor fieldを追加するものではない。新しいBrowser取消・保存結果も未確定であり、実行前から合格とはしない。
 

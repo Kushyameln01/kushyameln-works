@@ -62,9 +62,15 @@ controlが使う参照は、主caseとして選択していない復帰用case�
 
 [node_sdk_host.mjs](../../../tools/inference/text-encoder/node_sdk_host.mjs) は、`createTextEncoderModule({client:referenceClient})` をconfigureしてからencodeする参照hostである。custom clientは同じ共有Text jobを直列に実行する。実ORT WASMの1thread、既存loaderのprepacking停止設定、実Hike最終RMSNormを使い、結果を通常の `encodeTensor()` / `decodeTensor()` で保存・読戻しする。shape・全mask・normalization・model/Tokenizer識別・全float値を照合し、caseごとの `.wktensor` とreceiptを残す。独立FP32参照との数値比較は親Pythonの既存比較器で行う。
 
-各prepared graphは1GB未満で、norm・row hashes・Tokenizerとともにnative `fs.openAsBlob` で開く。6,735,906,897bytesの元modelには、readonly fdを保持するbounded positional readerを使う。実ファイルのBigInt `size / mtimeNs / ino / dev` を捕捉し、最大8192bytesの位置指定readの前後でfdとpathnameのidentityを検査する。全modelの `arrayBuffer()` は提供せず、closeは進行中のreadを待ってfdを閉じる。receiptではprepared assetのfile-backed Blobと、元modelの `bounded positional file source` を区別し、実size・読出し量・close状態を記録する。元model全体の再読出し・再hashは実施しない。
+prepared graphは `0<bytes<1GiB` の範囲でreadonly fdを開き、`single-array positional prepared graph` として保持する。sliceの `.arrayBuffer()` 呼出しごとに一つの返却用ArrayBufferを確保し、そのUint8Arrayへ最大8MiBずつ直接位置指定readする。short readは必要byte数に達するまで繰り返し、途中のEOFは拒否する。実ファイルのBigInt `size / mtimeNs / ino / dev` を捕捉し、readの前後でfdとpathnameのidentityを検査する。closeは新しいreadを拒否し、進行中のreadを待って全graphのfdを閉じる。norm・row hashes・Tokenizerは引き続きnative `fs.openAsBlob` で開く。
+
+6,735,906,897bytesの元modelには、既存のreadonly `bounded positional file source` を使う。実statから得た4GiB超のsizeと位置を保持し、最大8192bytesのembedding row readの前後で同じidentityを検査する。全modelの `arrayBuffer()` は提供せず、closeは進行中のreadを待つ。receiptではgraph reader、小さいassetのfile-backed Blob、元model readerのstorageと実sizeを区別する。graphと元model readerのstat identity・読出し回数とbyte数・close状態もtensor外へ記録する。元model全体の再読出し・再hashは実施しない。
 
 source検証はNN開始前に行う。親Pythonが `git cat-file -t` で指定SHAのcommit型を確認し、固定15 pathのNode依存と親helperの実bytesをGit bytesと照合する。Nodeは親から受け取った `sourceRecords` について、固定path集合の欠落・重複・追加、全40桁SHA、bytes、SHA-256を検査し、現在の各実ファイルを再読出しして照合する。Node内でGitや子processを起動せず、commitの同定は親のGit検証に依存する。直接CLIへ渡した表だけで独立したcommit証明が成立するとは扱わない。
+
+`preflightOnly` は15のNode依存と親3helperの計18 source照合、24 graph readerと元model readerのopen/close、実size・stat identityを検査する。graph/model payloadの読出しは0bytes、NN実行は0とし、この開始前検査をfull NNの完了や数値受入へ読み替えない。
+
+Node24.19.0のnative Blob `arrayBuffer()` は読出しchunkを保持し、最後にconcatして返す。同じ実block00を使ったNN0読出しprobeでは、sampled RSS peakが約1.586GBからproduction graph readerの約0.807GBへ減り、bytes/SHA-256も一致した。この確認は単blockの読出しに限る。full24 NNのpeak、全caseの数値受入、端末RAM保証は [RESULT.md](RESULT.md) の各実行記録で判断する。
 
 資源対策はhost側の明示設定として記録する。使い捨てNodeで明示的に `NODE_OPTIONS=--require=.../node_resource_guard.cjs` を有効にした場合だけ、自身の `oom_score_adj=1000` を設定する。これはOOM停止対象の選好であり、利用可能RAMや完走を保証しない。親PythonはNode開始前の24 graphと各block完了後に、readonly fdへ `POSIX_FADV_DONTNEED` を助言する。対象path・回数・累計file bytes・errorを記録するが、助言成功をpage eviction・RSS低下・空きmemoryの証拠へ読み替えない。
 
@@ -73,7 +79,7 @@ source検証はNN開始前に行う。親Pythonが `git cat-file -t` で指定SH
 | 区分 | 完全source SHA | 証拠・状態の扱い |
 | --- | --- | --- |
 | 既存Node参照host attempt | `dccb88515775ec8aa86dd16f82e8816c9347ed38` | 完了case・途中終了・資源記録は [RESULT.md](RESULT.md) を参照 |
-| 次の直列実行に指定するsource | `153c864e22927b24902ad5343f5438b895459bf6` | VAE最終終了待ちの計画。実行未開始・受入未確定 |
+| 次の直列実行に指定するsource | `b3e5e34430d58bca3bf69b8938ba87beb196d054` | 参照と区別した実行source。個別の進捗・受入はRESULTを参照 |
 | 比較対象の独立full512 FP32 oracle | `5954d48e0fb6df1d6977964fd8a7ba2a242b6eff` | 保存済みの独立参照を再利用 |
 
 後続の文書・証拠追加による配布commit、実際に実行したsource SHA、未実行の計画sourceを分けて保存する。最新配布SHAで実行SHAを付け替えない。NodeとBrowserを含む次の直列化計画は受入結果と区別し、手順・対象case・host指定は [REPRODUCE.md](REPRODUCE.md)、実行後の判定は [RESULT.md](RESULT.md) を参照する。

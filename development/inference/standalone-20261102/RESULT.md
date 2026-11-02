@@ -45,12 +45,13 @@ Textの既存Hello world、選択manifest、Tokenizer、独立参照、最終Hik
 
 ## VAE V1–V4
 
-**新stream runtimeは下記caseを受け入れた。81frameと参照848×848の単体受入は未完了。** encodeと独立raw latent decodeは別入力で比較しており、encode meanを生成sampleへ改名していない。
+**81frame targetの実WASM encode・独立raw decodeは合格した。source境界と参照848×848の単体受入は継続中。** encodeと独立raw latent decodeは別入力で比較しており、encode meanを生成sampleへ改名していない。
 
 | 実WASM case | encode全値 maxAbs / 要素数 | 独立raw decode全値 maxAbs / 要素数 | 通常処理時間 |
 | --- | --- | --- | --- |
 | F1・16×32 | 7.152557373046875e-7 / 128 | 5.662441253662109e-7 / 1,536 | encode3.212秒、decode2.758秒 |
 | F1・480×832 | 1.6689300537109375e-6 / 99,840 | 2.1904706954956055e-6 / 1,198,080 | encode164.829秒、decode243.850秒 |
+| threads4・target F81・480×832 | 2.86102294921875e-6 / 2,096,640 | 5.27501106262207e-6 / 97,044,480 | encode6043.999秒、decode11385.054秒 |
 | threads4・F5・16×32診断 | 1.430511474609375e-6 / 256 | 1.519918441772461e-6 / 7,680 | encode4.618秒、decode7.450秒 |
 | threads4・F1・16×16参照境界 | 7.152557373046875e-7 / 64 | 5.066394805908203e-7 / 768 | encode8.000秒、decode8.211秒 |
 | threads4・F1・16×848参照境界 | 1.1920928955078125e-6 / 3,392 | 1.8775463104248047e-6 / 40,704 | encode14.893秒、decode14.509秒 |
@@ -77,7 +78,7 @@ F1・480×832のencode sampled browser RSS/PSS sum peakは4,479,012,864 / 4,208,
 
 69 graph + Hike conv2 weight/biasのexportは507,834,866 B、8.810秒、RSS peak1,011,138,560 B。原194 keysをstrict loadし、192 ONNX initializersと外部2 assetが重複なく対応する。symbolic空間軸・program構造の静的確認は [vae/partition-inventory.json](vae/partition-inventory.json) に保存した。静的検査だけで任意寸法の数値合格とはしていない。
 
-target81の元vendor独立参照は全量作成済み。source d578の実WASM encodeは全2,096,640要素の比較に合格し、maxAbsは2.86102294921875e-6だった。独立raw decodeは実行中で、最終receipt・全資源終了の判定は未完了。source F4/5/80の実入力境界とF1参照848×848も残る。小診断やencodeだけの結果をtarget全体の成功へ繰り上げない。sourceF81はtarget81が完了した後、完全に同じdescriptor・全tensor bytesの証拠をaliasとして再利用する予定で、別NNとは数えない。
+target81の元vendor独立参照と実WASMの両操作は完了し、全値・codec・資源終了に合格した。sourceF81は同じ数値descriptor・全tensor bytesの証拠を再利用し、source用contextのNN0保存試験と別記する。source F4/5/80の実入力境界とF1参照848×848は残る。F4はencode、F5は両操作、F80はencodeを新たに実行する。独立raw T20→77frame decodeの別呼出しは未実行であり、sourceF80 encodeの成功へ混ぜない。
 
 既存11caseのplanにF5・16×32診断を追加した。`reference_contract.py` は参照作成時commitのplan/toolのbytes/hash、選択case、model/source/precision/gate/patternなどの共有数値規則が不変であることを検査し、無関係なcase追加だけで旧参照を作り直さない。causal prefixからの派生参照は `DERIVED_CAUSAL_PREFIX_REFERENCE` / 新規NN0と明記する。未完了targetの部分receiptを親に使わず、派生を別の元vendor推論と数えない。
 
@@ -130,7 +131,7 @@ Node参照host source `dccb88515775ec8aa86dd16f82e8816c9347ed38` の `plain-empt
 
 その後の多言語caseはblock8で資源guardにより中断した。共有working set16,405,098,496 Bで、PID/create timeを照合した所有Nodeだけを停止した。controller632.053秒、harness630.769秒、harness+Node sampled RSS sum peak3,983,347,712 B。これはVAEとの並行時の値で、専有benchmarkやモデル固有必要RAMではない。完了emptyの証拠を保持し、未完了5caseは合格にも数値FAILにも数えない。終了後の観測owned live/zombie/errorsは空だった。強制停止時のJS finally・fd明示closeまでを主張しない。
 
-残る5caseと長文plainを、target VAE終了後に新source `153c864e22927b24902ad5343f5438b895459bf6` で直列実行する。既存emptyとall-active ID512 canaryを無条件に再推論せず、独立参照5954は再利用する。Browser T3はempty・ID2 bytes・ID1同一API復帰の3完全推論と9controlsを別に実行する。emptyのBrowser再実行は保存取消の実経路に必要な範囲とし、Node受入をBrowser取消へ転用しない。
+残る5caseと長文plainは、読込修正後のsource `b3e5e34430d58bca3bf69b8938ba87beb196d054` でtarget VAE終了後に直列実行を開始した。既存emptyとall-active ID512 canaryを無条件に再推論せず、独立参照5954は再利用する。Browser T3はempty・ID2 bytes・ID1同一API復帰の3完全推論と9controlsを別に実行する。emptyのBrowser再実行は保存取消の実経路に必要な範囲とし、Node受入をBrowser取消へ転用しない。
 
 153cの検証hostは、通常出力に加えて取消復帰WKTも別保存し、native codecで全値・metadataを読戻してから公開する。復帰caseを含む独立参照を最初のNN前にhash検査する。読戻し中に保存ownerのrevisionが変わった場合も公開を拒否する。関連する合成制御・保存試験は合格したが、実Browser T3の新規NN受入とは別である。
 
@@ -139,3 +140,13 @@ Node参照host source `dccb88515775ec8aa86dd16f82e8816c9347ed38` の `plain-empt
 sourceF81の追加NNを行わず、target/source81の4参照tensorについてshape・bytes・記録済みhashと実hardlink identityの一致を確認した。実meanの全2,096,640値はsource81独立参照ともgateに合格し、maxAbs2.86102294921875e-6。source用のsynthetic contextに変えたnative codec fixtureは全値bitwise一致、payload SHA `808db65cbf9b34f1ed1af5db04f2e3948b8207c7bcd52f080463d1355f3ecb46`、81件のframe番号・時刻・重複・sourceContextを保存後も保持した。model hash・meaning・normalizationは変更していない。このNN0証拠はsource-roleの別NN、target raw decode、target最終終了の受入とは区別する。
 
 NN0 fixtureのcodec sourceは `b971adc7930bd42e081ff446a0d6a70b7ff1dc28` のtensor.mjs。実行したad-hoc runnerは当時そのcommitに含まれておらず、script SHA-256 `b9f9bedc9efa3b917f99aa45e2541006b252f944b16e75a2cc4c6bda2298975f` で識別する。実行bytesを [archive](vae/evidence/scripts/source81-alias-codec-fixture.mjs) に変更せず保存し、入力identity・proof・source archiveをevidence indexから取得できるようにした。元の大RGB2組のhashは、親の記録と実hardlink identityを再利用したもので、新しい全file hash計算とは表記しない。
+
+## target81実WASMの完了とText読込境界の改善
+
+source `d578ec006571d82bc50c6c2935d78ae6ea838269` のtarget81は、通常API `diagnostics:false`、明示threads4・COI hostで `ACCEPTED_SELECTED_CASE` となった。全体17624.837秒は取消試行・両操作・全値比較・保存・終了確認を含む。通常encode6043.999秒、独立raw decode11385.054秒。encodeは859 session、decodeは1069 sessionを全releaseし、各最大active1・終了時0。Tensor disposeは6772/9032、runは1999/2569。両操作のWKTはmetadata・全値が読戻し後も一致した。既知の親3・pthread9 targetは全destroy eventとbrowser閉鎖前の不在を確認し、所有processの終了後live/zombie/errorsは空だった。
+
+browser process群のsampled RSS/PSS sum peakはencode9,432,653,824 /9,175,997,440 B、decode9,140,424,704 /8,861,404,160 B。ORT単一WASMの観測最大capacityはencode2,110,652,416 B、decode2,108,948,480 Bであり、host全体のRAM必要量とは区別する。並行したTextや読込診断・scratch page cacheを含む共有cgroup値は別記し、RSSとPSSを加算しない。これを端末ごとの最低RAMや専有性能の保証とはしない。
+
+Node24.19のgraph読込をNN0で切り分けた。771,822,917 Bの同じblock00について、native Blobはchunksと連結後bufferを同時保持し、ArrayBuffers1,543,809,353 B、own RSS peak1,586,036,736 Bだった。単一ArrayBufferへの8MiB以下の位置指定readは同じ全hashを保ち、実production readerでもArrayBuffers772,006,664 B、own RSS peak806,547,456 B、93reads、fd close・pending0を確認した。これは読込一件の資源比較で、全encoderのRSSや速度改善を確定する結果ではない。時間差にはcache順序・並行VAEの影響がある。
+
+このgraph読込だけを `b3e5e34430d58bca3bf69b8938ba87beb196d054` に固定し、small Blob・元modelの8192 B reader・数値graph・Hike・gateを保持した。固定18 source、24 graph FDのclose、0 read/0 NNのpreflightも合格。残る6caseとBrowser T3はこのsourceで実行中で、元5954独立参照を再利用する。以前計画した153cでこれらの新しいNNを実行したという記録は付けない。

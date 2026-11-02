@@ -1,0 +1,2883 @@
+{
+  "schemaVersion": 1,
+  "nnExecutions": 0,
+  "scope": "One prepared Text block00 input only; no ORT, model execution, export, or production source edits",
+  "guard": {
+    "workingSetDefinition": "max(0,memory.current-memory.stat.inactive_file)",
+    "sharedWorkingSetLimitBytes": 16000000000,
+    "ownRssLimitBytes": 1720000000,
+    "signals": "Only current Popen-owned sequential Node child; no VAE or other process signals",
+    "sampleSeconds": 0.02
+  },
+  "cachePolicy": "No cache drop/fadvise; one production-reader run; times reflect cache/order and concurrent VAE activity",
+  "sources": [
+    {
+      "path": "/tmp/kw-text-prepared-reader-probe-20261102/read_probe.mjs",
+      "bytes": 1978,
+      "sha256": "004e6ef1e64aa2cfcb4dbdafa9d38008ed25d8d0c2c1dda6ede51f45a525040e"
+    },
+    {
+      "path": "/tmp/kw-text-prepared-reader-probe-20261102/controller.py",
+      "bytes": 4743,
+      "sha256": "846a300f46366d6e1e8317830d4b615cc2f9ea345b18c5f4264ccc2d91ff50ad"
+    },
+    {
+      "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/node_sdk_host.mjs",
+      "bytes": 24747,
+      "sha256": "1ee7d4c14c1ab785b70a04b5b4477e35eadb41acbce89c58d78f1d7e16c17d40"
+    }
+  ],
+  "runs": [
+    {
+      "mode": "production",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/tmp/kw-text-prepared-reader-probe-20261102/read_probe.mjs",
+        "production",
+        "/workspace/work/inference/text-implementation/bundle"
+      ],
+      "stdout": "/tmp/kw-text-prepared-reader-probe-20261102/production.stdout.jsonl",
+      "stderr": "/tmp/kw-text-prepared-reader-probe-20261102/production.stderr.txt",
+      "before": {
+        "memoryCurrent": 13605113856,
+        "inactiveFile": 719757312,
+        "workingSetMaxZero": 12885356544
+      },
+      "peakObservedSharedWorkingSetBytes": 13904289792,
+      "peakObservedOwnRssBytes": 806547456,
+      "samples": [
+        {
+          "elapsedSeconds": 0.005775051002274267,
+          "cgroup": {
+            "memoryCurrent": 13605027840,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12885270528
+          },
+          "own": {
+            "VmRSS": 376832,
+            "VmHWM": 376832
+          }
+        },
+        {
+          "elapsedSeconds": 0.026259125996148214,
+          "cgroup": {
+            "memoryCurrent": 13606076416,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12886319104
+          },
+          "own": {
+            "VmRSS": 6397952,
+            "VmHWM": 6397952
+          }
+        },
+        {
+          "elapsedSeconds": 0.04685062500357162,
+          "cgroup": {
+            "memoryCurrent": 13610532864,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12890775552
+          },
+          "own": {
+            "VmRSS": 14864384,
+            "VmHWM": 14864384
+          }
+        },
+        {
+          "elapsedSeconds": 0.08368913999584038,
+          "cgroup": {
+            "memoryCurrent": 13613858816,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12894101504
+          },
+          "own": {
+            "VmRSS": 20623360,
+            "VmHWM": 20623360
+          }
+        },
+        {
+          "elapsedSeconds": 0.10413033700024243,
+          "cgroup": {
+            "memoryCurrent": 13615693824,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12895936512
+          },
+          "own": {
+            "VmRSS": 23592960,
+            "VmHWM": 23592960
+          }
+        },
+        {
+          "elapsedSeconds": 0.12466957699507475,
+          "cgroup": {
+            "memoryCurrent": 13616480256,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12896722944
+          },
+          "own": {
+            "VmRSS": 28868608,
+            "VmHWM": 28868608
+          }
+        },
+        {
+          "elapsedSeconds": 0.145234124007402,
+          "cgroup": {
+            "memoryCurrent": 13617790976,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12898033664
+          },
+          "own": {
+            "VmRSS": 30642176,
+            "VmHWM": 30642176
+          }
+        },
+        {
+          "elapsedSeconds": 0.18777037599647883,
+          "cgroup": {
+            "memoryCurrent": 13618311168,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12898553856
+          },
+          "own": {
+            "VmRSS": 31596544,
+            "VmHWM": 31596544
+          }
+        },
+        {
+          "elapsedSeconds": 0.20858588999544736,
+          "cgroup": {
+            "memoryCurrent": 13619359744,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12899602432
+          },
+          "own": {
+            "VmRSS": 33460224,
+            "VmHWM": 33460224
+          }
+        },
+        {
+          "elapsedSeconds": 0.230304773998796,
+          "cgroup": {
+            "memoryCurrent": 13619621888,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12899864576
+          },
+          "own": {
+            "VmRSS": 34172928,
+            "VmHWM": 34172928
+          }
+        },
+        {
+          "elapsedSeconds": 0.2507661240088055,
+          "cgroup": {
+            "memoryCurrent": 13622595584,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12902838272
+          },
+          "own": {
+            "VmRSS": 37179392,
+            "VmHWM": 37179392
+          }
+        },
+        {
+          "elapsedSeconds": 0.28203907000715844,
+          "cgroup": {
+            "memoryCurrent": 13626785792,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12907028480
+          },
+          "own": {
+            "VmRSS": 41766912,
+            "VmHWM": 41766912
+          }
+        },
+        {
+          "elapsedSeconds": 0.30258427500666585,
+          "cgroup": {
+            "memoryCurrent": 13628358656,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12908601344
+          },
+          "own": {
+            "VmRSS": 43081728,
+            "VmHWM": 43081728
+          }
+        },
+        {
+          "elapsedSeconds": 0.32311888500407804,
+          "cgroup": {
+            "memoryCurrent": 13631729664,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12911972352
+          },
+          "own": {
+            "VmRSS": 46391296,
+            "VmHWM": 46391296
+          }
+        },
+        {
+          "elapsedSeconds": 0.3437051840010099,
+          "cgroup": {
+            "memoryCurrent": 13636710400,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12916953088
+          },
+          "own": {
+            "VmRSS": 51478528,
+            "VmHWM": 51478528
+          }
+        },
+        {
+          "elapsedSeconds": 0.382383716001641,
+          "cgroup": {
+            "memoryCurrent": 13653372928,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12933615616
+          },
+          "own": {
+            "VmRSS": 68255744,
+            "VmHWM": 68255744
+          }
+        },
+        {
+          "elapsedSeconds": 0.4042783180047991,
+          "cgroup": {
+            "memoryCurrent": 13653372928,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12933615616
+          },
+          "own": {
+            "VmRSS": 68255744,
+            "VmHWM": 68255744
+          }
+        },
+        {
+          "elapsedSeconds": 0.4251086129952455,
+          "cgroup": {
+            "memoryCurrent": 13661761536,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12942004224
+          },
+          "own": {
+            "VmRSS": 76644352,
+            "VmHWM": 76644352
+          }
+        },
+        {
+          "elapsedSeconds": 0.482760650003911,
+          "cgroup": {
+            "memoryCurrent": 13670150144,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12950392832
+          },
+          "own": {
+            "VmRSS": 85032960,
+            "VmHWM": 85032960
+          }
+        },
+        {
+          "elapsedSeconds": 0.5033791620080592,
+          "cgroup": {
+            "memoryCurrent": 13674082304,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12954324992
+          },
+          "own": {
+            "VmRSS": 88776704,
+            "VmHWM": 88776704
+          }
+        },
+        {
+          "elapsedSeconds": 0.5238522840081714,
+          "cgroup": {
+            "memoryCurrent": 13678014464,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12958257152
+          },
+          "own": {
+            "VmRSS": 92856320,
+            "VmHWM": 92856320
+          }
+        },
+        {
+          "elapsedSeconds": 0.544280197005719,
+          "cgroup": {
+            "memoryCurrent": 13686665216,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12966907904
+          },
+          "own": {
+            "VmRSS": 101695488,
+            "VmHWM": 101695488
+          }
+        },
+        {
+          "elapsedSeconds": 0.6196146770089399,
+          "cgroup": {
+            "memoryCurrent": 13703704576,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12983947264
+          },
+          "own": {
+            "VmRSS": 118595584,
+            "VmHWM": 118595584
+          }
+        },
+        {
+          "elapsedSeconds": 0.6401050279964693,
+          "cgroup": {
+            "memoryCurrent": 13703704576,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12983947264
+          },
+          "own": {
+            "VmRSS": 118595584,
+            "VmHWM": 118595584
+          }
+        },
+        {
+          "elapsedSeconds": 0.6610601790016517,
+          "cgroup": {
+            "memoryCurrent": 13704753152,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12984995840
+          },
+          "own": {
+            "VmRSS": 119738368,
+            "VmHWM": 119738368
+          }
+        },
+        {
+          "elapsedSeconds": 0.6820942710037343,
+          "cgroup": {
+            "memoryCurrent": 13709471744,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12989714432
+          },
+          "own": {
+            "VmRSS": 124465152,
+            "VmHWM": 124465152
+          }
+        },
+        {
+          "elapsedSeconds": 0.7026191320037469,
+          "cgroup": {
+            "memoryCurrent": 13712093184,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12992335872
+          },
+          "own": {
+            "VmRSS": 126984192,
+            "VmHWM": 126984192
+          }
+        },
+        {
+          "elapsedSeconds": 0.723378541006241,
+          "cgroup": {
+            "memoryCurrent": 13712093184,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12992335872
+          },
+          "own": {
+            "VmRSS": 126984192,
+            "VmHWM": 126984192
+          }
+        },
+        {
+          "elapsedSeconds": 0.7441247550013941,
+          "cgroup": {
+            "memoryCurrent": 13712093184,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12992335872
+          },
+          "own": {
+            "VmRSS": 126984192,
+            "VmHWM": 126984192
+          }
+        },
+        {
+          "elapsedSeconds": 0.7824206520017469,
+          "cgroup": {
+            "memoryCurrent": 13718384640,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 12998627328
+          },
+          "own": {
+            "VmRSS": 133234688,
+            "VmHWM": 133234688
+          }
+        },
+        {
+          "elapsedSeconds": 0.8028619950055145,
+          "cgroup": {
+            "memoryCurrent": 13720481792,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13000724480
+          },
+          "own": {
+            "VmRSS": 135372800,
+            "VmHWM": 135372800
+          }
+        },
+        {
+          "elapsedSeconds": 0.8236528889974579,
+          "cgroup": {
+            "memoryCurrent": 13723103232,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13003345920
+          },
+          "own": {
+            "VmRSS": 138022912,
+            "VmHWM": 138022912
+          }
+        },
+        {
+          "elapsedSeconds": 0.8484223859995836,
+          "cgroup": {
+            "memoryCurrent": 13728608256,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13008850944
+          },
+          "own": {
+            "VmRSS": 143609856,
+            "VmHWM": 143609856
+          }
+        },
+        {
+          "elapsedSeconds": 0.8855557339993538,
+          "cgroup": {
+            "memoryCurrent": 13737259008,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13017501696
+          },
+          "own": {
+            "VmRSS": 152150016,
+            "VmHWM": 152150016
+          }
+        },
+        {
+          "elapsedSeconds": 0.9068330730078742,
+          "cgroup": {
+            "memoryCurrent": 13740666880,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13020909568
+          },
+          "own": {
+            "VmRSS": 155533312,
+            "VmHWM": 155533312
+          }
+        },
+        {
+          "elapsedSeconds": 0.9275386710069142,
+          "cgroup": {
+            "memoryCurrent": 13744336896,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13024579584
+          },
+          "own": {
+            "VmRSS": 159109120,
+            "VmHWM": 159109120
+          }
+        },
+        {
+          "elapsedSeconds": 0.9495445520005887,
+          "cgroup": {
+            "memoryCurrent": 13749055488,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13029298176
+          },
+          "own": {
+            "VmRSS": 163913728,
+            "VmHWM": 163913728
+          }
+        },
+        {
+          "elapsedSeconds": 0.9822960989986314,
+          "cgroup": {
+            "memoryCurrent": 13754036224,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13034278912
+          },
+          "own": {
+            "VmRSS": 168943616,
+            "VmHWM": 168943616
+          }
+        },
+        {
+          "elapsedSeconds": 1.0035166419984307,
+          "cgroup": {
+            "memoryCurrent": 13754560512,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13034803200
+          },
+          "own": {
+            "VmRSS": 169492480,
+            "VmHWM": 169492480
+          }
+        },
+        {
+          "elapsedSeconds": 1.0276524899963988,
+          "cgroup": {
+            "memoryCurrent": 13758754816,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13038997504
+          },
+          "own": {
+            "VmRSS": 173826048,
+            "VmHWM": 173826048
+          }
+        },
+        {
+          "elapsedSeconds": 1.0482232159993146,
+          "cgroup": {
+            "memoryCurrent": 13762424832,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13042667520
+          },
+          "own": {
+            "VmRSS": 177332224,
+            "VmHWM": 177332224
+          }
+        },
+        {
+          "elapsedSeconds": 1.0824335380020784,
+          "cgroup": {
+            "memoryCurrent": 13762424832,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13042667520
+          },
+          "own": {
+            "VmRSS": 177332224,
+            "VmHWM": 177332224
+          }
+        },
+        {
+          "elapsedSeconds": 1.135838148999028,
+          "cgroup": {
+            "memoryCurrent": 13771075584,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13051318272
+          },
+          "own": {
+            "VmRSS": 185720832,
+            "VmHWM": 185720832
+          }
+        },
+        {
+          "elapsedSeconds": 1.1596072359971004,
+          "cgroup": {
+            "memoryCurrent": 13771599872,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13051842560
+          },
+          "own": {
+            "VmRSS": 186130432,
+            "VmHWM": 186130432
+          }
+        },
+        {
+          "elapsedSeconds": 1.1800567940081237,
+          "cgroup": {
+            "memoryCurrent": 13776842752,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13057085440
+          },
+          "own": {
+            "VmRSS": 191582208,
+            "VmHWM": 191582208
+          }
+        },
+        {
+          "elapsedSeconds": 1.200818117999006,
+          "cgroup": {
+            "memoryCurrent": 13780512768,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13060755456
+          },
+          "own": {
+            "VmRSS": 195170304,
+            "VmHWM": 195170304
+          }
+        },
+        {
+          "elapsedSeconds": 1.2211845560086658,
+          "cgroup": {
+            "memoryCurrent": 13783396352,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13063639040
+          },
+          "own": {
+            "VmRSS": 198131712,
+            "VmHWM": 198131712
+          }
+        },
+        {
+          "elapsedSeconds": 1.2416300699987914,
+          "cgroup": {
+            "memoryCurrent": 13787590656,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13067833344
+          },
+          "own": {
+            "VmRSS": 202203136,
+            "VmHWM": 202203136
+          }
+        },
+        {
+          "elapsedSeconds": 1.268774944008328,
+          "cgroup": {
+            "memoryCurrent": 13792571392,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13072814080
+          },
+          "own": {
+            "VmRSS": 207114240,
+            "VmHWM": 207114240
+          }
+        },
+        {
+          "elapsedSeconds": 1.2892471340019256,
+          "cgroup": {
+            "memoryCurrent": 13796241408,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13076484096
+          },
+          "own": {
+            "VmRSS": 210845696,
+            "VmHWM": 210845696
+          }
+        },
+        {
+          "elapsedSeconds": 1.309635640005581,
+          "cgroup": {
+            "memoryCurrent": 13799911424,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13080154112
+          },
+          "own": {
+            "VmRSS": 214433792,
+            "VmHWM": 214433792
+          }
+        },
+        {
+          "elapsedSeconds": 1.3300635650084587,
+          "cgroup": {
+            "memoryCurrent": 13803319296,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13083561984
+          },
+          "own": {
+            "VmRSS": 217960448,
+            "VmHWM": 217960448
+          }
+        },
+        {
+          "elapsedSeconds": 1.3503972650069045,
+          "cgroup": {
+            "memoryCurrent": 13807775744,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13088018432
+          },
+          "own": {
+            "VmRSS": 222298112,
+            "VmHWM": 222298112
+          }
+        },
+        {
+          "elapsedSeconds": 1.3842048829974374,
+          "cgroup": {
+            "memoryCurrent": 13813018624,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13093261312
+          },
+          "own": {
+            "VmRSS": 227663872,
+            "VmHWM": 227663872
+          }
+        },
+        {
+          "elapsedSeconds": 1.4064900490047876,
+          "cgroup": {
+            "memoryCurrent": 13815377920,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13095620608
+          },
+          "own": {
+            "VmRSS": 230121472,
+            "VmHWM": 230121472
+          }
+        },
+        {
+          "elapsedSeconds": 1.4271062830084702,
+          "cgroup": {
+            "memoryCurrent": 13818261504,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13098504192
+          },
+          "own": {
+            "VmRSS": 232841216,
+            "VmHWM": 232841216
+          }
+        },
+        {
+          "elapsedSeconds": 1.4475487120071193,
+          "cgroup": {
+            "memoryCurrent": 13821669376,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13101912064
+          },
+          "own": {
+            "VmRSS": 236367872,
+            "VmHWM": 236367872
+          }
+        },
+        {
+          "elapsedSeconds": 1.4681700320070377,
+          "cgroup": {
+            "memoryCurrent": 13825863680,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13106106368
+          },
+          "own": {
+            "VmRSS": 240361472,
+            "VmHWM": 240361472
+          }
+        },
+        {
+          "elapsedSeconds": 1.4902077779988758,
+          "cgroup": {
+            "memoryCurrent": 13829271552,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13109514240
+          },
+          "own": {
+            "VmRSS": 243924992,
+            "VmHWM": 243924992
+          }
+        },
+        {
+          "elapsedSeconds": 1.5157305500033544,
+          "cgroup": {
+            "memoryCurrent": 13833203712,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13113446400
+          },
+          "own": {
+            "VmRSS": 247697408,
+            "VmHWM": 247697408
+          }
+        },
+        {
+          "elapsedSeconds": 1.5361362719995668,
+          "cgroup": {
+            "memoryCurrent": 13836611584,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13116854272
+          },
+          "own": {
+            "VmRSS": 251052032,
+            "VmHWM": 251052032
+          }
+        },
+        {
+          "elapsedSeconds": 1.5564959809998982,
+          "cgroup": {
+            "memoryCurrent": 13840805888,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13121048576
+          },
+          "own": {
+            "VmRSS": 255438848,
+            "VmHWM": 255438848
+          }
+        },
+        {
+          "elapsedSeconds": 1.584196506999433,
+          "cgroup": {
+            "memoryCurrent": 13845786624,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13126029312
+          },
+          "own": {
+            "VmRSS": 260292608,
+            "VmHWM": 260292608
+          }
+        },
+        {
+          "elapsedSeconds": 1.604578655998921,
+          "cgroup": {
+            "memoryCurrent": 13848932352,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13129175040
+          },
+          "own": {
+            "VmRSS": 263532544,
+            "VmHWM": 263532544
+          }
+        },
+        {
+          "elapsedSeconds": 1.6257321020093514,
+          "cgroup": {
+            "memoryCurrent": 13852602368,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13132845056
+          },
+          "own": {
+            "VmRSS": 267124736,
+            "VmHWM": 267124736
+          }
+        },
+        {
+          "elapsedSeconds": 1.6466327340021962,
+          "cgroup": {
+            "memoryCurrent": 13855485952,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13135728640
+          },
+          "own": {
+            "VmRSS": 270163968,
+            "VmHWM": 270163968
+          }
+        },
+        {
+          "elapsedSeconds": 1.6672501130087767,
+          "cgroup": {
+            "memoryCurrent": 13858631680,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13138874368
+          },
+          "own": {
+            "VmRSS": 273346560,
+            "VmHWM": 273346560
+          }
+        },
+        {
+          "elapsedSeconds": 1.6876777660072548,
+          "cgroup": {
+            "memoryCurrent": 13862825984,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13143068672
+          },
+          "own": {
+            "VmRSS": 277417984,
+            "VmHWM": 277417984
+          }
+        },
+        {
+          "elapsedSeconds": 1.7104794780025259,
+          "cgroup": {
+            "memoryCurrent": 13865709568,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13145952256
+          },
+          "own": {
+            "VmRSS": 280248320,
+            "VmHWM": 280248320
+          }
+        },
+        {
+          "elapsedSeconds": 1.7313761690020328,
+          "cgroup": {
+            "memoryCurrent": 13868855296,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13149097984
+          },
+          "own": {
+            "VmRSS": 283418624,
+            "VmHWM": 283418624
+          }
+        },
+        {
+          "elapsedSeconds": 1.7558153419959126,
+          "cgroup": {
+            "memoryCurrent": 13872525312,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13152768000
+          },
+          "own": {
+            "VmRSS": 287150080,
+            "VmHWM": 287150080
+          }
+        },
+        {
+          "elapsedSeconds": 1.7870271680003498,
+          "cgroup": {
+            "memoryCurrent": 13876457472,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13156700160
+          },
+          "own": {
+            "VmRSS": 291065856,
+            "VmHWM": 291065856
+          }
+        },
+        {
+          "elapsedSeconds": 1.8075197550060693,
+          "cgroup": {
+            "memoryCurrent": 13879074816,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13159317504
+          },
+          "own": {
+            "VmRSS": 293416960,
+            "VmHWM": 293416960
+          }
+        },
+        {
+          "elapsedSeconds": 1.8281316339998739,
+          "cgroup": {
+            "memoryCurrent": 13883269120,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13163511808
+          },
+          "own": {
+            "VmRSS": 297394176,
+            "VmHWM": 297394176
+          }
+        },
+        {
+          "elapsedSeconds": 1.8488892659952398,
+          "cgroup": {
+            "memoryCurrent": 13886676992,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13166919680
+          },
+          "own": {
+            "VmRSS": 300670976,
+            "VmHWM": 300670976
+          }
+        },
+        {
+          "elapsedSeconds": 1.881853829996544,
+          "cgroup": {
+            "memoryCurrent": 13888770048,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13169012736
+          },
+          "own": {
+            "VmRSS": 303161344,
+            "VmHWM": 303161344
+          }
+        },
+        {
+          "elapsedSeconds": 1.9021981319965562,
+          "cgroup": {
+            "memoryCurrent": 13891383296,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13171625984
+          },
+          "own": {
+            "VmRSS": 305414144,
+            "VmHWM": 305414144
+          }
+        },
+        {
+          "elapsedSeconds": 1.9226250250067096,
+          "cgroup": {
+            "memoryCurrent": 13894529024,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13174771712
+          },
+          "own": {
+            "VmRSS": 308543488,
+            "VmHWM": 308543488
+          }
+        },
+        {
+          "elapsedSeconds": 1.9433055039989995,
+          "cgroup": {
+            "memoryCurrent": 13897412608,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13177655296
+          },
+          "own": {
+            "VmRSS": 311394304,
+            "VmHWM": 311394304
+          }
+        },
+        {
+          "elapsedSeconds": 1.9644278939958895,
+          "cgroup": {
+            "memoryCurrent": 13900034048,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13180276736
+          },
+          "own": {
+            "VmRSS": 314245120,
+            "VmHWM": 314245120
+          }
+        },
+        {
+          "elapsedSeconds": 1.9849712930008536,
+          "cgroup": {
+            "memoryCurrent": 13903704064,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13183946752
+          },
+          "own": {
+            "VmRSS": 318050304,
+            "VmHWM": 318050304
+          }
+        },
+        {
+          "elapsedSeconds": 2.0077401559974533,
+          "cgroup": {
+            "memoryCurrent": 13907636224,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13187878912
+          },
+          "own": {
+            "VmRSS": 321884160,
+            "VmHWM": 321884160
+          }
+        },
+        {
+          "elapsedSeconds": 2.029242945005535,
+          "cgroup": {
+            "memoryCurrent": 13911044096,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13191286784
+          },
+          "own": {
+            "VmRSS": 325263360,
+            "VmHWM": 325263360
+          }
+        },
+        {
+          "elapsedSeconds": 2.049587743007578,
+          "cgroup": {
+            "memoryCurrent": 13914189824,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13194432512
+          },
+          "own": {
+            "VmRSS": 328327168,
+            "VmHWM": 328327168
+          }
+        },
+        {
+          "elapsedSeconds": 2.0839810489997035,
+          "cgroup": {
+            "memoryCurrent": 13919956992,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13200199680
+          },
+          "own": {
+            "VmRSS": 333877248,
+            "VmHWM": 333877248
+          }
+        },
+        {
+          "elapsedSeconds": 2.108159234005143,
+          "cgroup": {
+            "memoryCurrent": 13923889152,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13204131840
+          },
+          "own": {
+            "VmRSS": 338001920,
+            "VmHWM": 338001920
+          }
+        },
+        {
+          "elapsedSeconds": 2.1286039859987795,
+          "cgroup": {
+            "memoryCurrent": 13927821312,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13208064000
+          },
+          "own": {
+            "VmRSS": 341925888,
+            "VmHWM": 341925888
+          }
+        },
+        {
+          "elapsedSeconds": 2.1493629640026484,
+          "cgroup": {
+            "memoryCurrent": 13930704896,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13210947584
+          },
+          "own": {
+            "VmRSS": 344817664,
+            "VmHWM": 344817664
+          }
+        },
+        {
+          "elapsedSeconds": 2.181887012004154,
+          "cgroup": {
+            "memoryCurrent": 13930967040,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13211209728
+          },
+          "own": {
+            "VmRSS": 345128960,
+            "VmHWM": 345128960
+          }
+        },
+        {
+          "elapsedSeconds": 2.203700950005441,
+          "cgroup": {
+            "memoryCurrent": 13934637056,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13214879744
+          },
+          "own": {
+            "VmRSS": 348831744,
+            "VmHWM": 348831744
+          }
+        },
+        {
+          "elapsedSeconds": 2.2244814910081914,
+          "cgroup": {
+            "memoryCurrent": 13938831360,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13219074048
+          },
+          "own": {
+            "VmRSS": 353038336,
+            "VmHWM": 353038336
+          }
+        },
+        {
+          "elapsedSeconds": 2.2448663889954332,
+          "cgroup": {
+            "memoryCurrent": 13942763520,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13223006208
+          },
+          "own": {
+            "VmRSS": 357101568,
+            "VmHWM": 357101568
+          }
+        },
+        {
+          "elapsedSeconds": 2.2676059789955616,
+          "cgroup": {
+            "memoryCurrent": 13946957824,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13227200512
+          },
+          "own": {
+            "VmRSS": 361254912,
+            "VmHWM": 361254912
+          }
+        },
+        {
+          "elapsedSeconds": 2.28798339900095,
+          "cgroup": {
+            "memoryCurrent": 13948792832,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13229035520
+          },
+          "own": {
+            "VmRSS": 362885120,
+            "VmHWM": 362885120
+          }
+        },
+        {
+          "elapsedSeconds": 2.3101702130079502,
+          "cgroup": {
+            "memoryCurrent": 13952462848,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13232705536
+          },
+          "own": {
+            "VmRSS": 366534656,
+            "VmHWM": 366534656
+          }
+        },
+        {
+          "elapsedSeconds": 2.332122995008831,
+          "cgroup": {
+            "memoryCurrent": 13957181440,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13237424128
+          },
+          "own": {
+            "VmRSS": 371134464,
+            "VmHWM": 371134464
+          }
+        },
+        {
+          "elapsedSeconds": 2.3528389720013365,
+          "cgroup": {
+            "memoryCurrent": 13960589312,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13240832000
+          },
+          "own": {
+            "VmRSS": 374513664,
+            "VmHWM": 374513664
+          }
+        },
+        {
+          "elapsedSeconds": 2.3823193610005546,
+          "cgroup": {
+            "memoryCurrent": 13964783616,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13245026304
+          },
+          "own": {
+            "VmRSS": 378658816,
+            "VmHWM": 378658816
+          }
+        },
+        {
+          "elapsedSeconds": 2.402857686000061,
+          "cgroup": {
+            "memoryCurrent": 13968715776,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13248958464
+          },
+          "own": {
+            "VmRSS": 382525440,
+            "VmHWM": 382525440
+          }
+        },
+        {
+          "elapsedSeconds": 2.42351042800874,
+          "cgroup": {
+            "memoryCurrent": 13972123648,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13252366336
+          },
+          "own": {
+            "VmRSS": 386088960,
+            "VmHWM": 386088960
+          }
+        },
+        {
+          "elapsedSeconds": 2.4441086190054193,
+          "cgroup": {
+            "memoryCurrent": 13978415104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13258657792
+          },
+          "own": {
+            "VmRSS": 392454144,
+            "VmHWM": 392454144
+          }
+        },
+        {
+          "elapsedSeconds": 2.4652491390006617,
+          "cgroup": {
+            "memoryCurrent": 13984182272,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13264424960
+          },
+          "own": {
+            "VmRSS": 398213120,
+            "VmHWM": 398213120
+          }
+        },
+        {
+          "elapsedSeconds": 2.485855638005887,
+          "cgroup": {
+            "memoryCurrent": 13995716608,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13275959296
+          },
+          "own": {
+            "VmRSS": 409894912,
+            "VmHWM": 409894912
+          }
+        },
+        {
+          "elapsedSeconds": 2.5075756930018542,
+          "cgroup": {
+            "memoryCurrent": 14006726656,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13286969344
+          },
+          "own": {
+            "VmRSS": 420847616,
+            "VmHWM": 420847616
+          }
+        },
+        {
+          "elapsedSeconds": 2.5319572730077198,
+          "cgroup": {
+            "memoryCurrent": 14016425984,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13296668672
+          },
+          "own": {
+            "VmRSS": 430485504,
+            "VmHWM": 430485504
+          }
+        },
+        {
+          "elapsedSeconds": 2.5557166439975845,
+          "cgroup": {
+            "memoryCurrent": 14024552448,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13304795136
+          },
+          "own": {
+            "VmRSS": 438546432,
+            "VmHWM": 438546432
+          }
+        },
+        {
+          "elapsedSeconds": 2.5797320480050985,
+          "cgroup": {
+            "memoryCurrent": 14029533184,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13309775872
+          },
+          "own": {
+            "VmRSS": 443363328,
+            "VmHWM": 443363328
+          }
+        },
+        {
+          "elapsedSeconds": 2.6044414979987778,
+          "cgroup": {
+            "memoryCurrent": 14048145408,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13328388096
+          },
+          "own": {
+            "VmRSS": 462061568,
+            "VmHWM": 462061568
+          }
+        },
+        {
+          "elapsedSeconds": 2.650709410008858,
+          "cgroup": {
+            "memoryCurrent": 14057058304,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13337300992
+          },
+          "own": {
+            "VmRSS": 470933504,
+            "VmHWM": 470933504
+          }
+        },
+        {
+          "elapsedSeconds": 2.6730589880025946,
+          "cgroup": {
+            "memoryCurrent": 14058893312,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13339136000
+          },
+          "own": {
+            "VmRSS": 472719360,
+            "VmHWM": 472719360
+          }
+        },
+        {
+          "elapsedSeconds": 2.6934786409983644,
+          "cgroup": {
+            "memoryCurrent": 14062301184,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13342543872
+          },
+          "own": {
+            "VmRSS": 476372992,
+            "VmHWM": 476372992
+          }
+        },
+        {
+          "elapsedSeconds": 2.7140710789972218,
+          "cgroup": {
+            "memoryCurrent": 14065446912,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13345689600
+          },
+          "own": {
+            "VmRSS": 479322112,
+            "VmHWM": 479322112
+          }
+        },
+        {
+          "elapsedSeconds": 2.734661631999188,
+          "cgroup": {
+            "memoryCurrent": 14073835520,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13354078208
+          },
+          "own": {
+            "VmRSS": 487710720,
+            "VmHWM": 487710720
+          }
+        },
+        {
+          "elapsedSeconds": 2.771939063008176,
+          "cgroup": {
+            "memoryCurrent": 14087991296,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13368233984
+          },
+          "own": {
+            "VmRSS": 501751808,
+            "VmHWM": 501751808
+          }
+        },
+        {
+          "elapsedSeconds": 2.792373949996545,
+          "cgroup": {
+            "memoryCurrent": 14093758464,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13374001152
+          },
+          "own": {
+            "VmRSS": 507568128,
+            "VmHWM": 507568128
+          }
+        },
+        {
+          "elapsedSeconds": 2.815923861999181,
+          "cgroup": {
+            "memoryCurrent": 14099525632,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13379768320
+          },
+          "own": {
+            "VmRSS": 513183744,
+            "VmHWM": 513183744
+          }
+        },
+        {
+          "elapsedSeconds": 2.8383296350075398,
+          "cgroup": {
+            "memoryCurrent": 14106603520,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13386846208
+          },
+          "own": {
+            "VmRSS": 520269824,
+            "VmHWM": 520269824
+          }
+        },
+        {
+          "elapsedSeconds": 2.863728270007414,
+          "cgroup": {
+            "memoryCurrent": 14114205696,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13394448384
+          },
+          "own": {
+            "VmRSS": 527937536,
+            "VmHWM": 527937536
+          }
+        },
+        {
+          "elapsedSeconds": 2.884324918995844,
+          "cgroup": {
+            "memoryCurrent": 14118662144,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13398904832
+          },
+          "own": {
+            "VmRSS": 531447808,
+            "VmHWM": 531447808
+          }
+        },
+        {
+          "elapsedSeconds": 2.907994793000398,
+          "cgroup": {
+            "memoryCurrent": 14130458624,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13410701312
+          },
+          "own": {
+            "VmRSS": 537518080,
+            "VmHWM": 537518080
+          }
+        },
+        {
+          "elapsedSeconds": 2.931187016001786,
+          "cgroup": {
+            "memoryCurrent": 14138847232,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13419089920
+          },
+          "own": {
+            "VmRSS": 540561408,
+            "VmHWM": 540561408
+          }
+        },
+        {
+          "elapsedSeconds": 2.951678957004333,
+          "cgroup": {
+            "memoryCurrent": 14147235840,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13427478528
+          },
+          "own": {
+            "VmRSS": 545337344,
+            "VmHWM": 545337344
+          }
+        },
+        {
+          "elapsedSeconds": 2.9724155150033766,
+          "cgroup": {
+            "memoryCurrent": 14153527296,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13433769984
+          },
+          "own": {
+            "VmRSS": 548728832,
+            "VmHWM": 548728832
+          }
+        },
+        {
+          "elapsedSeconds": 2.9957724859996233,
+          "cgroup": {
+            "memoryCurrent": 14160605184,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13440847872
+          },
+          "own": {
+            "VmRSS": 551481344,
+            "VmHWM": 551481344
+          }
+        },
+        {
+          "elapsedSeconds": 3.0163627110014204,
+          "cgroup": {
+            "memoryCurrent": 14166372352,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13446615040
+          },
+          "own": {
+            "VmRSS": 554893312,
+            "VmHWM": 554893312
+          }
+        },
+        {
+          "elapsedSeconds": 3.0455825730023207,
+          "cgroup": {
+            "memoryCurrent": 14173974528,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13454217216
+          },
+          "own": {
+            "VmRSS": 558796800,
+            "VmHWM": 558796800
+          }
+        },
+        {
+          "elapsedSeconds": 3.066914220995386,
+          "cgroup": {
+            "memoryCurrent": 14180265984,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13460508672
+          },
+          "own": {
+            "VmRSS": 561467392,
+            "VmHWM": 561467392
+          }
+        },
+        {
+          "elapsedSeconds": 3.087560180007131,
+          "cgroup": {
+            "memoryCurrent": 14186557440,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13466800128
+          },
+          "own": {
+            "VmRSS": 564088832,
+            "VmHWM": 564088832
+          }
+        },
+        {
+          "elapsedSeconds": 3.1117152990045724,
+          "cgroup": {
+            "memoryCurrent": 14194683904,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13474926592
+          },
+          "own": {
+            "VmRSS": 568213504,
+            "VmHWM": 568213504
+          }
+        },
+        {
+          "elapsedSeconds": 3.132448732998455,
+          "cgroup": {
+            "memoryCurrent": 14199402496,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13479645184
+          },
+          "own": {
+            "VmRSS": 571596800,
+            "VmHWM": 571596800
+          }
+        },
+        {
+          "elapsedSeconds": 3.152942932007136,
+          "cgroup": {
+            "memoryCurrent": 14208577536,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13488820224
+          },
+          "own": {
+            "VmRSS": 576643072,
+            "VmHWM": 576643072
+          }
+        },
+        {
+          "elapsedSeconds": 3.1733145839971257,
+          "cgroup": {
+            "memoryCurrent": 14216966144,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13497208832
+          },
+          "own": {
+            "VmRSS": 580161536,
+            "VmHWM": 580161536
+          }
+        },
+        {
+          "elapsedSeconds": 3.193956989009166,
+          "cgroup": {
+            "memoryCurrent": 14220898304,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13501140992
+          },
+          "own": {
+            "VmRSS": 581128192,
+            "VmHWM": 581128192
+          }
+        },
+        {
+          "elapsedSeconds": 3.2143275370035553,
+          "cgroup": {
+            "memoryCurrent": 14226403328,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13506646016
+          },
+          "own": {
+            "VmRSS": 583528448,
+            "VmHWM": 583528448
+          }
+        },
+        {
+          "elapsedSeconds": 3.235086582004442,
+          "cgroup": {
+            "memoryCurrent": 14236626944,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13516869632
+          },
+          "own": {
+            "VmRSS": 588374016,
+            "VmHWM": 588374016
+          }
+        },
+        {
+          "elapsedSeconds": 3.255540322003071,
+          "cgroup": {
+            "memoryCurrent": 14246064128,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13526306816
+          },
+          "own": {
+            "VmRSS": 593551360,
+            "VmHWM": 593551360
+          }
+        },
+        {
+          "elapsedSeconds": 3.276017669995781,
+          "cgroup": {
+            "memoryCurrent": 14250782720,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13531025408
+          },
+          "own": {
+            "VmRSS": 596819968,
+            "VmHWM": 596819968
+          }
+        },
+        {
+          "elapsedSeconds": 3.2969244179985253,
+          "cgroup": {
+            "memoryCurrent": 14255763456,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13536006144
+          },
+          "own": {
+            "VmRSS": 599351296,
+            "VmHWM": 599351296
+          }
+        },
+        {
+          "elapsedSeconds": 3.317469023997546,
+          "cgroup": {
+            "memoryCurrent": 14264152064,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13544394752
+          },
+          "own": {
+            "VmRSS": 602656768,
+            "VmHWM": 602656768
+          }
+        },
+        {
+          "elapsedSeconds": 3.3379641530045774,
+          "cgroup": {
+            "memoryCurrent": 14271754240,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13551996928
+          },
+          "own": {
+            "VmRSS": 608161792,
+            "VmHWM": 608161792
+          }
+        },
+        {
+          "elapsedSeconds": 3.358499980007764,
+          "cgroup": {
+            "memoryCurrent": 14276472832,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13556715520
+          },
+          "own": {
+            "VmRSS": 612069376,
+            "VmHWM": 612069376
+          }
+        },
+        {
+          "elapsedSeconds": 3.37892444699537,
+          "cgroup": {
+            "memoryCurrent": 14285910016,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13566152704
+          },
+          "own": {
+            "VmRSS": 616923136,
+            "VmHWM": 616923136
+          }
+        },
+        {
+          "elapsedSeconds": 3.399316135997651,
+          "cgroup": {
+            "memoryCurrent": 14291677184,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13571919872
+          },
+          "own": {
+            "VmRSS": 619929600,
+            "VmHWM": 619929600
+          }
+        },
+        {
+          "elapsedSeconds": 3.4197049280046485,
+          "cgroup": {
+            "memoryCurrent": 14297182208,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13577424896
+          },
+          "own": {
+            "VmRSS": 620703744,
+            "VmHWM": 620703744
+          }
+        },
+        {
+          "elapsedSeconds": 3.44033109000884,
+          "cgroup": {
+            "memoryCurrent": 14301638656,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13581881344
+          },
+          "own": {
+            "VmRSS": 623214592,
+            "VmHWM": 623214592
+          }
+        },
+        {
+          "elapsedSeconds": 3.4607355470070615,
+          "cgroup": {
+            "memoryCurrent": 14308978688,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13589221376
+          },
+          "own": {
+            "VmRSS": 627814400,
+            "VmHWM": 627814400
+          }
+        },
+        {
+          "elapsedSeconds": 3.481133918001433,
+          "cgroup": {
+            "memoryCurrent": 14318415872,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13598658560
+          },
+          "own": {
+            "VmRSS": 632655872,
+            "VmHWM": 632655872
+          }
+        },
+        {
+          "elapsedSeconds": 3.5016805510094855,
+          "cgroup": {
+            "memoryCurrent": 14324969472,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13605212160
+          },
+          "own": {
+            "VmRSS": 635052032,
+            "VmHWM": 635052032
+          }
+        },
+        {
+          "elapsedSeconds": 3.522195654004463,
+          "cgroup": {
+            "memoryCurrent": 14330736640,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13610979328
+          },
+          "own": {
+            "VmRSS": 637227008,
+            "VmHWM": 637227008
+          }
+        },
+        {
+          "elapsedSeconds": 3.5427022719959496,
+          "cgroup": {
+            "memoryCurrent": 14338338816,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13618581504
+          },
+          "own": {
+            "VmRSS": 641323008,
+            "VmHWM": 641323008
+          }
+        },
+        {
+          "elapsedSeconds": 3.5630721430061385,
+          "cgroup": {
+            "memoryCurrent": 14347513856,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13627756544
+          },
+          "own": {
+            "VmRSS": 646144000,
+            "VmHWM": 646144000
+          }
+        },
+        {
+          "elapsedSeconds": 3.583485944996937,
+          "cgroup": {
+            "memoryCurrent": 14355640320,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13635883008
+          },
+          "own": {
+            "VmRSS": 650280960,
+            "VmHWM": 650280960
+          }
+        },
+        {
+          "elapsedSeconds": 3.60397496400401,
+          "cgroup": {
+            "memoryCurrent": 14365601792,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13645844480
+          },
+          "own": {
+            "VmRSS": 655024128,
+            "VmHWM": 655024128
+          }
+        },
+        {
+          "elapsedSeconds": 3.6244779340049718,
+          "cgroup": {
+            "memoryCurrent": 14373203968,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13653446656
+          },
+          "own": {
+            "VmRSS": 658485248,
+            "VmHWM": 658485248
+          }
+        },
+        {
+          "elapsedSeconds": 3.644882491003955,
+          "cgroup": {
+            "memoryCurrent": 14382379008,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13662621696
+          },
+          "own": {
+            "VmRSS": 662659072,
+            "VmHWM": 662659072
+          }
+        },
+        {
+          "elapsedSeconds": 3.66529917200387,
+          "cgroup": {
+            "memoryCurrent": 14388932608,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13669175296
+          },
+          "own": {
+            "VmRSS": 665321472,
+            "VmHWM": 665321472
+          }
+        },
+        {
+          "elapsedSeconds": 3.68586965900613,
+          "cgroup": {
+            "memoryCurrent": 14394699776,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13674942464
+          },
+          "own": {
+            "VmRSS": 668065792,
+            "VmHWM": 668065792
+          }
+        },
+        {
+          "elapsedSeconds": 3.7066865939996205,
+          "cgroup": {
+            "memoryCurrent": 14401515520,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13681758208
+          },
+          "own": {
+            "VmRSS": 671830016,
+            "VmHWM": 671830016
+          }
+        },
+        {
+          "elapsedSeconds": 3.7271171110041905,
+          "cgroup": {
+            "memoryCurrent": 14407806976,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13688049664
+          },
+          "own": {
+            "VmRSS": 676253696,
+            "VmHWM": 676253696
+          }
+        },
+        {
+          "elapsedSeconds": 3.7475492619996658,
+          "cgroup": {
+            "memoryCurrent": 14419341312,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13699584000
+          },
+          "own": {
+            "VmRSS": 681906176,
+            "VmHWM": 681906176
+          }
+        },
+        {
+          "elapsedSeconds": 3.768134616999305,
+          "cgroup": {
+            "memoryCurrent": 14442143744,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13722386432
+          },
+          "own": {
+            "VmRSS": 693837824,
+            "VmHWM": 693837824
+          }
+        },
+        {
+          "elapsedSeconds": 3.7884866630047327,
+          "cgroup": {
+            "memoryCurrent": 14451056640,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13731299328
+          },
+          "own": {
+            "VmRSS": 699338752,
+            "VmHWM": 699338752
+          }
+        },
+        {
+          "elapsedSeconds": 3.8094283420068678,
+          "cgroup": {
+            "memoryCurrent": 14458396672,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13738639360
+          },
+          "own": {
+            "VmRSS": 702119936,
+            "VmHWM": 702119936
+          }
+        },
+        {
+          "elapsedSeconds": 3.829749582000659,
+          "cgroup": {
+            "memoryCurrent": 14465212416,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13745455104
+          },
+          "own": {
+            "VmRSS": 706629632,
+            "VmHWM": 706629632
+          }
+        },
+        {
+          "elapsedSeconds": 3.8502690050081583,
+          "cgroup": {
+            "memoryCurrent": 14475960320,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13756203008
+          },
+          "own": {
+            "VmRSS": 712306688,
+            "VmHWM": 712306688
+          }
+        },
+        {
+          "elapsedSeconds": 3.8706617150019156,
+          "cgroup": {
+            "memoryCurrent": 14486446080,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13766688768
+          },
+          "own": {
+            "VmRSS": 718147584,
+            "VmHWM": 718147584
+          }
+        },
+        {
+          "elapsedSeconds": 3.8910530349967303,
+          "cgroup": {
+            "memoryCurrent": 14494834688,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13775077376
+          },
+          "own": {
+            "VmRSS": 722681856,
+            "VmHWM": 722681856
+          }
+        },
+        {
+          "elapsedSeconds": 3.9114698030025465,
+          "cgroup": {
+            "memoryCurrent": 14503747584,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13783990272
+          },
+          "own": {
+            "VmRSS": 726544384,
+            "VmHWM": 726544384
+          }
+        },
+        {
+          "elapsedSeconds": 3.933137555999565,
+          "cgroup": {
+            "memoryCurrent": 14512660480,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13792903168
+          },
+          "own": {
+            "VmRSS": 731021312,
+            "VmHWM": 731021312
+          }
+        },
+        {
+          "elapsedSeconds": 3.9534713280008873,
+          "cgroup": {
+            "memoryCurrent": 14521049088,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13801291776
+          },
+          "own": {
+            "VmRSS": 734515200,
+            "VmHWM": 734515200
+          }
+        },
+        {
+          "elapsedSeconds": 3.973847184999613,
+          "cgroup": {
+            "memoryCurrent": 14532321280,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13812563968
+          },
+          "own": {
+            "VmRSS": 740069376,
+            "VmHWM": 740069376
+          }
+        },
+        {
+          "elapsedSeconds": 3.994232690005447,
+          "cgroup": {
+            "memoryCurrent": 14541496320,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13821739008
+          },
+          "own": {
+            "VmRSS": 744370176,
+            "VmHWM": 744370176
+          }
+        },
+        {
+          "elapsedSeconds": 4.014850574007141,
+          "cgroup": {
+            "memoryCurrent": 14551457792,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13831700480
+          },
+          "own": {
+            "VmRSS": 748728320,
+            "VmHWM": 748728320
+          }
+        },
+        {
+          "elapsedSeconds": 4.035191172006307,
+          "cgroup": {
+            "memoryCurrent": 14558797824,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13839040512
+          },
+          "own": {
+            "VmRSS": 752390144,
+            "VmHWM": 752390144
+          }
+        },
+        {
+          "elapsedSeconds": 4.131239242007723,
+          "cgroup": {
+            "memoryCurrent": 14562729984,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13842972672
+          },
+          "own": {
+            "VmRSS": 754769920,
+            "VmHWM": 754769920
+          }
+        },
+        {
+          "elapsedSeconds": 4.151852769005927,
+          "cgroup": {
+            "memoryCurrent": 14569271296,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13849513984
+          },
+          "own": {
+            "VmRSS": 757690368,
+            "VmHWM": 757690368
+          }
+        },
+        {
+          "elapsedSeconds": 4.172321588004706,
+          "cgroup": {
+            "memoryCurrent": 14578970624,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13859213312
+          },
+          "own": {
+            "VmRSS": 761475072,
+            "VmHWM": 761475072
+          }
+        },
+        {
+          "elapsedSeconds": 4.1928290860087145,
+          "cgroup": {
+            "memoryCurrent": 14583427072,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13863669760
+          },
+          "own": {
+            "VmRSS": 766083072,
+            "VmHWM": 766083072
+          }
+        },
+        {
+          "elapsedSeconds": 4.213202604005346,
+          "cgroup": {
+            "memoryCurrent": 14592339968,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13872582656
+          },
+          "own": {
+            "VmRSS": 774877184,
+            "VmHWM": 774877184
+          }
+        },
+        {
+          "elapsedSeconds": 4.233949079003651,
+          "cgroup": {
+            "memoryCurrent": 14595477504,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13875720192
+          },
+          "own": {
+            "VmRSS": 778158080,
+            "VmHWM": 778158080
+          }
+        },
+        {
+          "elapsedSeconds": 4.254332765005529,
+          "cgroup": {
+            "memoryCurrent": 14600458240,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13880700928
+          },
+          "own": {
+            "VmRSS": 783159296,
+            "VmHWM": 783159296
+          }
+        },
+        {
+          "elapsedSeconds": 4.274759685999015,
+          "cgroup": {
+            "memoryCurrent": 14605176832,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13885419520
+          },
+          "own": {
+            "VmRSS": 787730432,
+            "VmHWM": 787730432
+          }
+        },
+        {
+          "elapsedSeconds": 4.2952188400086015,
+          "cgroup": {
+            "memoryCurrent": 14609895424,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13890138112
+          },
+          "own": {
+            "VmRSS": 792432640,
+            "VmHWM": 792432640
+          }
+        },
+        {
+          "elapsedSeconds": 4.319532225999865,
+          "cgroup": {
+            "memoryCurrent": 14615662592,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13895905280
+          },
+          "own": {
+            "VmRSS": 798142464,
+            "VmHWM": 798142464
+          }
+        },
+        {
+          "elapsedSeconds": 4.340314811997814,
+          "cgroup": {
+            "memoryCurrent": 14619332608,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13899575296
+          },
+          "own": {
+            "VmRSS": 801841152,
+            "VmHWM": 801841152
+          }
+        },
+        {
+          "elapsedSeconds": 4.360756545007462,
+          "cgroup": {
+            "memoryCurrent": 14622740480,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13902983168
+          },
+          "own": {
+            "VmRSS": 805257216,
+            "VmHWM": 805257216
+          }
+        },
+        {
+          "elapsedSeconds": 4.388218410997069,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.409373568996671,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.429780343998573,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.450333557004342,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.482058298002812,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.502467969999998,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.522939314003452,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.543365229998017,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.570779948000563,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.591370733003714,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.61190691300726,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.632333205008763,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.65273228699516,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.6820853399985936,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.702724696006044,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.723308050000924,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.747703207001905,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.78210696199676,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.802528650005115,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.823055166998529,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.8436339019972365,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.881847929005744,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.902930249998462,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.92340192499978,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.945348073000787,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 4.9818531930068275,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.002442297001835,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.022952947008889,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.044284820003668,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.0818858060083585,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.1023131260008086,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.122826039005304,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.143247861997224,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.181860135999159,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.202285232007853,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.223012486007065,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.243543901000521,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.282113309003762,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.302586264995625,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.323042408999754,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.343581827997696,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.381851211001049,
+          "cgroup": {
+            "memoryCurrent": 14624047104,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13904289792
+          },
+          "own": {
+            "VmRSS": 806547456,
+            "VmHWM": 806547456
+          }
+        },
+        {
+          "elapsedSeconds": 5.402314339997247,
+          "cgroup": {
+            "memoryCurrent": 14331936768,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13612179456
+          },
+          "own": {
+            "VmRSS": 489689088,
+            "VmHWM": 806486016
+          }
+        },
+        {
+          "elapsedSeconds": 5.422985527999117,
+          "cgroup": {
+            "memoryCurrent": 13933486080,
+            "inactiveFile": 719757312,
+            "workingSetMaxZero": 13213728768
+          },
+          "own": {
+            "VmRSS": 93278208,
+            "VmHWM": 806486016
+          }
+        }
+      ],
+      "ownedPid": 38390,
+      "ownedProcStartTicks": "12133931",
+      "exitCode": 0,
+      "elapsedSeconds": 5.44332033599494,
+      "after": {
+        "memoryCurrent": 13838274560,
+        "inactiveFile": 719757312,
+        "workingSetMaxZero": 13118517248
+      },
+      "result": {
+        "schemaVersion": 1,
+        "nnExecutions": 0,
+        "mode": "production",
+        "node": "v24.19.0",
+        "pid": 38390,
+        "input": {
+          "path": "/workspace/work/inference/text-implementation/bundle/block-00.onnx",
+          "bytes": 771822917,
+          "expectedSha256": "7fe493343e5a3d9c196284b1a64525c1296ac4f4a56a5d6239e6047cd3fb8807",
+          "manifestSha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f"
+        },
+        "beforeMemory": {
+          "rss": 33554432,
+          "heapTotal": 8384512,
+          "heapUsed": 5667040,
+          "external": 2357298,
+          "arrayBuffers": 164647,
+          "kernelMaxRssBytes": 33554432
+        },
+        "readSeconds": 4.134660621999999,
+        "afterReadMemory": {
+          "rss": 806223872,
+          "heapTotal": 8122368,
+          "heapUsed": 5456112,
+          "external": 774199355,
+          "arrayBuffers": 772006664,
+          "kernelMaxRssBytes": 806223872
+        },
+        "arrayBufferBytes": 771822917,
+        "storage": "single-array positional prepared graph",
+        "statIdentity": {
+          "size": "771822917",
+          "mtimeNs": "1793373763336006060",
+          "ino": "1584767",
+          "dev": "27"
+        },
+        "sha256": "7fe493343e5a3d9c196284b1a64525c1296ac4f4a56a5d6239e6047cd3fb8807",
+        "hashSeconds": 1.0203775210000003,
+        "afterHashMemory": {
+          "rss": 806223872,
+          "heapTotal": 8122368,
+          "heapUsed": 5483624,
+          "external": 774199355,
+          "arrayBuffers": 772006664,
+          "kernelMaxRssBytes": 806223872
+        },
+        "sameStatIdentityAfter": true,
+        "matchesManifest": true,
+        "passed": true,
+        "readObservation": {
+          "readCalls": 93,
+          "readBytes": 771822917,
+          "maximumReadBytes": 8388608,
+          "chunkBytes": 8388608,
+          "pendingReads": 0,
+          "closed": true
+        },
+        "totalSeconds": 5.163516421000001
+      },
+      "stderrText": ""
+    }
+  ],
+  "passed": true
+}
