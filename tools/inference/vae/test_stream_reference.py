@@ -111,6 +111,43 @@ class StreamReferenceTests(unittest.TestCase):
             (path / 'memory.max').write_text('max\n')
             self.assertIsNone(self.reference.read_cgroup_memory(path)['limitBytes'])
 
+    def test_reclaimable_inactive_file_does_not_falsely_trigger_the_guard(self):
+        gib, mib = 1024 ** 3, 1024 ** 2
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root)
+            (path / 'memory.max').write_text(str(16 * gib))
+            (path / 'memory.current').write_text(str(16 * gib - 128 * mib))
+            (path / 'memory.stat').write_text(
+                f'inactive_file {10 * gib}\nanon {5 * gib}\nshmem {gib}\n')
+            memory = self.reference.read_cgroup_memory(path)
+            self.assertEqual(memory['inactiveFileBytes'], 10 * gib)
+            self.assertEqual(memory['anonBytes'], 5 * gib)
+            self.assertEqual(memory['shmemBytes'], gib)
+            self.assertEqual(memory['workingSetBytes'], 6 * gib - 128 * mib)
+            self.assertFalse(self.reference.memory_guard({'cgroup': memory}, 256 * mib))
+
+    def test_unreclaimable_working_set_and_tmpfs_still_trigger_the_guard(self):
+        gib, mib = 1024 ** 3, 1024 ** 2
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root)
+            (path / 'memory.max').write_text(str(16 * gib))
+            (path / 'memory.current').write_text(str(16 * gib - 128 * mib))
+            (path / 'memory.stat').write_text(
+                f'inactive_file {64 * mib}\nanon {10 * gib}\nshmem {5 * gib}\n')
+            memory = self.reference.read_cgroup_memory(path)
+            self.assertEqual(memory['workingSetBytes'], 16 * gib - 192 * mib)
+            self.assertTrue(self.reference.memory_guard({'cgroup': memory}, 256 * mib))
+
+    def test_missing_memory_stat_falls_back_to_raw_charge(self):
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root)
+            (path / 'memory.max').write_text('1024\n')
+            (path / 'memory.current').write_text('1000\n')
+            memory = self.reference.read_cgroup_memory(path)
+            self.assertIsNone(memory['inactiveFileBytes'])
+            self.assertEqual(memory['workingSetBytes'], 1000)
+            self.assertTrue(self.reference.memory_guard({'cgroup': memory}, 32))
+
     def test_vectorized_private_files_match_the_stdlib_pattern_in_ncthw_order(self):
         torch_before = sys.modules.get('torch')
         try:

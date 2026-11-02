@@ -103,13 +103,32 @@ def write_json(path, value):
 
 
 def read_cgroup_memory(root=Path('/sys/fs/cgroup')):
-    values = {'path': str(root), 'limitBytes': None, 'currentBytes': None}
+    values = {'path': str(root), 'limitBytes': None, 'currentBytes': None,
+              'inactiveFileBytes': None, 'anonBytes': None, 'shmemBytes': None,
+              'workingSetBytes': None,
+              'workingSetScope': 'max(0,memory.current-observed inactive_file); missing inactive_file falls back to raw charge. Shmem/tmpfs is not separately subtracted. Non-atomic observation, not an exact pressure measurement.'}
     for file, field in [('memory.max', 'limitBytes'), ('memory.current', 'currentBytes')]:
         try:
             raw = (Path(root) / file).read_text().strip()
             values[field] = None if raw == 'max' else int(raw)
         except (OSError, ValueError):
             pass
+    try:
+        stat = {}
+        for line in (Path(root) / 'memory.stat').read_text().splitlines():
+            parts = line.split()
+            if len(parts) == 2 and parts[0] in ('inactive_file', 'anon', 'shmem'):
+                number = int(parts[1])
+                if number >= 0:
+                    stat[parts[0]] = number
+        for key, field in [('inactive_file', 'inactiveFileBytes'), ('anon', 'anonBytes'), ('shmem', 'shmemBytes')]:
+            values[field] = stat.get(key)
+    except (OSError, ValueError):
+        pass
+    if values['currentBytes'] is not None:
+        # Inactive file cache may be evicted under pressure. Do not subtract
+        # shmem/tmpfs: private scratch pages still consume the cgroup budget.
+        values['workingSetBytes'] = max(0, values['currentBytes'] - (values['inactiveFileBytes'] or 0))
     return values
 
 
@@ -132,8 +151,9 @@ def resource_record(pid):
 
 def memory_guard(record, reserve):
     memory = record['cgroup']
-    limit, current = memory['limitBytes'], memory['currentBytes']
-    return limit is not None and current is not None and current >= limit - reserve
+    limit = memory['limitBytes']
+    working_set = memory.get('workingSetBytes', memory['currentBytes'])
+    return limit is not None and working_set is not None and working_set >= limit - reserve
 
 
 def file_record(path, shape, meaning, provenance, digest=None, minimum=None, maximum=None):
@@ -205,7 +225,8 @@ def execute_reference(request, destination):
               'tailPolicy': 'Original source consumes first1 plus complete groups4; input file and shape retain every actual RGB frame.',
               'resourcePolicy': {'cpuThreads': 2, 'interopThreads': 1,
                                  'memoryReserveBytes': request['memoryReserveBytes'],
-                                 'reserveScope': 'Explicit supervisor reserve, not a measured model memory requirement'},
+                                 'reserveScope': 'Explicit supervisor reserve, not a measured model memory requirement',
+                                 'guardCharge': 'Observed memory.current minus inactive_file only; shmem/tmpfs remains charged'},
               'errors': []}
     stage, started = 'identity', time.monotonic()
     last_event = [0.0]
@@ -263,7 +284,7 @@ def execute_reference(request, destination):
             if now - last_memory_check[0] >= .25:
                 last_memory_check[0] = now
                 if memory_guard({'cgroup': read_cgroup_memory()}, request['memoryReserveBytes']):
-                    raise MemoryError('Observed cgroup memory reached the declared supervisor reserve')
+                    raise MemoryError('Observed cgroup working-set estimate reached the declared supervisor reserve')
             if now - last_event[0] >= 2:
                 last_event[0] = now
                 observed = resource_record(os.getpid())
@@ -324,7 +345,9 @@ def supervise(request, destination):
     worker = multiprocessing.get_context('spawn').Process(target=execute_reference,
                                                           args=(request, str(destination)))
     worker.start()
-    peaks = {'rssBytes': 0, 'pssBytes': 0, 'cgroupCurrentBytes': 0}
+    peaks = {'rssBytes': 0, 'pssBytes': 0, 'cgroupCurrentBytes': 0,
+             'cgroupInactiveFileBytes': 0, 'cgroupAnonBytes': 0,
+             'cgroupShmemBytes': 0, 'cgroupWorkingSetBytes': 0}
     terminated, sample_count = False, 0
     with (destination / 'resources.jsonl').open('x') as log:
         while worker.is_alive():
@@ -335,6 +358,9 @@ def supervise(request, destination):
             for key in ('rssBytes', 'pssBytes'):
                 peaks[key] = max(peaks[key], record['process'][key] or 0)
             peaks['cgroupCurrentBytes'] = max(peaks['cgroupCurrentBytes'], record['cgroup']['currentBytes'] or 0)
+            for observed, peak in [('inactiveFileBytes', 'cgroupInactiveFileBytes'), ('anonBytes', 'cgroupAnonBytes'),
+                                   ('shmemBytes', 'cgroupShmemBytes'), ('workingSetBytes', 'cgroupWorkingSetBytes')]:
+                peaks[peak] = max(peaks[peak], record['cgroup'][observed] or 0)
             if memory_guard(record, request['memoryReserveBytes']):
                 terminated = True
                 worker.terminate()
@@ -350,14 +376,14 @@ def supervise(request, destination):
                                     'sampleIntervalSeconds': .25, 'workerExitCode': worker.exitcode,
                                     'terminatedForCgroupReserve': terminated,
                                     'finalCgroup': read_cgroup_memory(), 'log': 'resources.jsonl',
-                                    'scope': 'Sampled RSS/PSS and shared cgroup usage; cgroup includes scratch page cache and other processes. Sampling may miss transients.'}
+                                    'scope': 'Sampled RSS/PSS and shared cgroup raw current/inactive_file/anon/shmem/working-set estimate. Guard excludes only observed inactive_file; shmem/tmpfs remains charged. Cgroup includes other processes; sampling may miss transients.'}
     report['observedTensorFiles'] = [{'file': path.name, 'bytes': path.stat().st_size}
                                       for path in sorted(destination.glob('*.f32'))]
     if terminated or worker.exitcode:
         report['status'] = 'FAILED'
         report.setdefault('errors', []).append({'stage': 'supervisor',
                                                 'type': 'ResourceLimit' if terminated else 'WorkerExit',
-                                                'message': 'Observed cgroup reserve reached; owned worker stopped' if terminated else f'Owned worker exited {worker.exitcode}'})
+                                                'message': 'Observed cgroup working-set estimate reached reserve; owned worker stopped' if terminated else f'Owned worker exited {worker.exitcode}'})
     write_json(report_path, report)
     print(json.dumps({'status': report['status'], 'report': str(report_path),
                       'resourceObservation': report['resourceObservation']}), flush=True)
