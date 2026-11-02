@@ -1,0 +1,401 @@
+{
+  "schemaVersion": "works-managed-lora-standalone-acceptance/1",
+  "managementBaseline": "92942230fbefe6ff727ba0b6f78f59591c46756e",
+  "executionSource": "9a5a3574e25b4c352d7483ff1811d14c256dab10",
+  "distribution": "The commit containing this record. Full distribution SHA is in the Draft PR and delivery report; no self-hash recursion.",
+  "adoptedLoraDistribution": "6d0c8df4cd4992f26745d2d26394f5e194d2567f",
+  "ownerLifecycleSource": "986b66b3dd54ef26d98f99a1db92a2933f3e31aa",
+  "ownerNumericalSource": "4a3419c768e2b4b38b081314abe2cfaaeed6b14b",
+  "contracts": {
+    "sdk": "lora-standalone/1.0-draft.1",
+    "payload": "lora-owned-package/0.1-draft.1",
+    "singleSide": "works-lora-standalone-management/1",
+    "coordinator": "works-lora-management/1",
+    "common": "works-module-contract/1.0-draft.1",
+    "legacyUnchanged": "lora-connection/2.0-draft.1"
+  },
+  "branch": "codex/ai-connection-e0-e4",
+  "draftPR": "https://github.com/Kushyameln01/kushyameln-works/pull/7",
+  "accepted": {
+    "path": "management to actual standalone SDK/Hike to conformant development provider/consumer",
+    "operations": [
+      "register",
+      "compose",
+      "prepare",
+      "stage",
+      "apply",
+      "strength/pair change",
+      "restoreBase",
+      "save",
+      "openPackage",
+      "cancel",
+      "recover",
+      "release",
+      "dispose"
+    ],
+    "sides": [
+      "HIGH",
+      "LOW"
+    ],
+    "batchPartialFailureIsSuccess": false,
+    "batchRecovery": "SDK recovery then fresh restoreBase for requested sides; failed batch status retained",
+    "scope": "canonical q.weight full5120x5120, original row1/all5120columns, explicit PARTIAL"
+  },
+  "fixtureDomain": {
+    "key": "diffusion_model.blocks.0.self_attn.q.weight",
+    "fullShape": [
+      5120,
+      5120
+    ],
+    "rank": 1,
+    "dtype": "F32",
+    "selectedRows": {
+      "startRow": 1,
+      "rowCount": 1
+    },
+    "kind": "synthetic-development-local-File"
+  },
+  "fixtureKinds": {
+    "files": "generated valid local F32 rank1 safetensors, not the private originals",
+    "base": "owner independent dyadic immutable provider, synthetic modelHash",
+    "consumer": "owner complete-selected-F32 validating reference host, outer development faults only"
+  },
+  "tests": {
+    "newNode": {
+      "pass": 31,
+      "fail": 0,
+      "skip": 0
+    },
+    "newSDKFixedBrowser": {
+      "pass": 14,
+      "fail": 0,
+      "sourceFilesVerified": 36,
+      "resources": {
+        "browserDurationMs": 6674.916486,
+        "workerCreated": 0,
+        "workerClosed": 0,
+        "osRSSBytes": null,
+        "totalPeakRAMBytes": null
+      }
+    },
+    "existingNodeRegression": {
+      "pass": 689,
+      "fail": 0,
+      "skip": 0
+    },
+    "combinedNode": {
+      "pass": 720,
+      "fail": 0,
+      "skip": 0
+    },
+    "existingManagementFixedBrowserRegression": {
+      "pass": 14,
+      "fail": 0,
+      "resources": {
+        "browserDurationMs": 37720.314557,
+        "workerCreated": 0,
+        "workerClosed": 0,
+        "workerScope": "Playwright observed actual Worker events; reference owner normally runs in main realm",
+        "osRSSBytes": null,
+        "ORTMemoryBytes": null,
+        "totalPeakRAMBytes": null,
+        "logicalPayloadAllowanceIsRAMMeasurement": false
+      }
+    }
+  },
+  "reusedEvidence": "Owner R1 all2904-patch numerical and R2 full-stream-matched lifecycle at original scope; runtime14files equalR2. No management full-patch rerun.",
+  "saved": {
+    "packageHash": "e3eea90cc5131ba57102527e60c14355f777e8a5f434c6dd53b9f946d5b02b80",
+    "planId": "993c2deb43849d10030fb58662d7d6a70fc8412691949a361764f7c66c43146f",
+    "sources": [
+      {
+        "fileName": "source-0.safetensors",
+        "byteLength": 41199,
+        "sha256": "0b0e54f6a34b0089e5cedd4657c8a8c76d3ea28aed732f3261ccbd9f7160acf6"
+      },
+      {
+        "fileName": "source-1.safetensors",
+        "byteLength": 41195,
+        "sha256": "5036597526e9f9330f82942f20f931ed939fd41f3820edfad629cd200593152d"
+      }
+    ],
+    "actualPayloadSaved": true,
+    "freshSDKOpenAndReapply": true,
+    "runtimeAuthorityRestored": false
+  },
+  "resources": {
+    "hikeMemoryBytesPerInstance": 33554432,
+    "referenceCacheCapBytesPerSide": 1048576,
+    "selectedOutputBlockBytes": 20480,
+    "observedKernelWorkspaceHighWaterBytes": 61440,
+    "osRSSBytes": null,
+    "totalPeakRAMBytes": null,
+    "finalExplicitNodeAndCurrentConsumerLeasesReleased": true,
+    "unobservedOldPageShutdownCountersInferred": false
+  },
+  "changedSourceFiles": [
+    {
+      "path": "development/ai-connection/lora-standalone/API.md",
+      "byteLength": 16321,
+      "sha256": "adf4b4af36bbcc9961046bba72f063a3efc75a09d886fa51fd4da735b105180f"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/PLAN.md",
+      "byteLength": 2655,
+      "sha256": "546d9ff6b93fc449ac672a8622ed95b97c044afb5611116d4f8e4eea4303ff98"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/REPRODUCE-BROWSER.md",
+      "byteLength": 5046,
+      "sha256": "42ed1644d802dc4a7c3729a03c33a588e3c109cfea73e9ed73082f1acdc45278"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/REPRODUCE.md",
+      "byteLength": 8232,
+      "sha256": "34a80ea3089046cfc407a0964932984b565c8fd87580f8658baa1f1c2839578d"
+    },
+    {
+      "path": "docs/ai-connection/index.html",
+      "byteLength": 6548,
+      "sha256": "6f06f131a6a19432d79f317e3e2e991e69ece4330a179c8f6fb7c5a87cf2196f"
+    },
+    {
+      "path": "docs/ai-connection/lora/index.html",
+      "byteLength": 8648,
+      "sha256": "540a55e1fbdb22c64ea383bb2ed6033a4514f626dd8d2d72a5da4c6988461d56"
+    },
+    {
+      "path": "docs/ai-connection/lora/main.mjs",
+      "byteLength": 25098,
+      "sha256": "570211191ccd4eed8097ac7d8fbc95e61d556a303b7c3e8dd98d866da968e040"
+    },
+    {
+      "path": "docs/ai-connection/lora/styles.css",
+      "byteLength": 1655,
+      "sha256": "69bde2a67c77bf9db911a348d2a3f0db4f156eaa53330c7c54a52f5f5ae3fd8a"
+    },
+    {
+      "path": "docs/shared/ai-connection/adapters/lora-standalone/adapter.mjs",
+      "byteLength": 24843,
+      "sha256": "52e3ea4f887951c9b5d6f40dd07a8ddd087b42cec2875527ee58f46ee77f1a28"
+    },
+    {
+      "path": "docs/shared/ai-connection/adapters/lora-standalone/management.mjs",
+      "byteLength": 10001,
+      "sha256": "10acfc15951fdc11a85315278f988978975dac08d8eb12265e60bbe20187aef0"
+    },
+    {
+      "path": "docs/shared/ai-connection/adapters/lora-standalone/native.mjs",
+      "byteLength": 3698,
+      "sha256": "deedf00135bfef7c921866ed9e4c99a12a7123b92f196565d1d8155b33c9db2a"
+    },
+    {
+      "path": "docs/shared/ai-connection/adapters/lora-standalone/reference.mjs",
+      "byteLength": 5186,
+      "sha256": "28a42231436805fa20edea5c53e58e71ee4fbec6a0b1e4f446cfbc87507aa1cc"
+    },
+    {
+      "path": "docs/shared/ai-connection/adapters/lora-standalone/storage.mjs",
+      "byteLength": 6455,
+      "sha256": "ab281d66902075820e711551b5bdfd190d0d8305e090522da399b2ea3d7e83db"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/SOURCE.json",
+      "byteLength": 2888,
+      "sha256": "2cb4821f9a2bfff7d1de060cc585581c5519099e3ea8533ca3de38160fea1fb2"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/bernini-targets.mjs",
+      "byteLength": 47893,
+      "sha256": "772ca63c3b82bafa7b2345cdda3361679112fcf4a97c79b67564da0fa196217d"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/kernel/LICENSE-Hike.txt",
+      "byteLength": 1068,
+      "sha256": "6b3497e1e711780741457cdcb345be01421b8a7ef6c35d4f084cac7993a0b4ef"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/kernel/streaming/host.mjs",
+      "byteLength": 6907,
+      "sha256": "3b1d6616a1cfbd404a104a356664a51b25d94d2a780524d8773344d271015014"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/kernel/streaming/lora.wasm",
+      "byteLength": 7036,
+      "sha256": "5117e21d789d01b5dd49d7e8cf9bc8d2f78a51f7d3810aab56e4a40588a0c361"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/kernel/streaming/registry.mjs",
+      "byteLength": 303,
+      "sha256": "61cff12c213db8e44d7ec826cab77dee2e6a9385612a84368441d093cc4ef8f0"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/loader-policy.mjs",
+      "byteLength": 1696,
+      "sha256": "f18f9c8dd4168e26f25cd1c77124b1f14a2ffca99424bfa9d4a9a294cbb2dedd"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/owned-package.mjs",
+      "byteLength": 24292,
+      "sha256": "848563d336975a57ac326544356fbf294cc75cb855bcddab8b460ea2ecba01b0"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/planner-v2.mjs",
+      "byteLength": 9581,
+      "sha256": "15ee75eb32177fe8a78335dbd052197fc60af559a8360039e6c6c1d32f9248b6"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/planner.mjs",
+      "byteLength": 3833,
+      "sha256": "a4b2be0d8b90cd339bb0a17d072db4fd572ac122e3cc51a2c97b20ac06af1d02"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/safetensors.mjs",
+      "byteLength": 5088,
+      "sha256": "4ee3713b356ab4a85a2911d3547350146953bc250465f8ef2c88fe9f36c4e45c"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/standalone-planner.mjs",
+      "byteLength": 3609,
+      "sha256": "5a937a58fab383d2104563a8662e3a3b530520cc86821cbefd5d4f5a50e06f9a"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/standalone-registry.mjs",
+      "byteLength": 3896,
+      "sha256": "2b706abbaf548b5db9dbe69f33ee647fce47aec158b5baa0f2aa99bbb2abdfc2"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/inference/lora/standalone-sdk.mjs",
+      "byteLength": 20572,
+      "sha256": "0f0ea46f1d7780bfff4604d1686670c3d9ce1fe6fffb44b94fd237d94d880b3f"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/docs/shared/vr180/sha256.mjs",
+      "byteLength": 6970,
+      "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+    },
+    {
+      "path": "docs/shared/ai-connection/native/lora-6d0c8df/tools/lora/standalone-host.mjs",
+      "byteLength": 10266,
+      "sha256": "4198626d67ef9b22e8cfd547d40541048c70c0c7b17528a4d06a827594a05eca"
+    },
+    {
+      "path": "tools/ai-connection/lora-standalone-fixtures.mjs",
+      "byteLength": 1960,
+      "sha256": "8dad620330c6809e9eca2a5505a8ba5acdfdaf9cfc11713d934d018eeaea2813"
+    },
+    {
+      "path": "tools/ai-connection/run-lora-standalone-browser.mjs",
+      "byteLength": 26657,
+      "sha256": "275659c7ed74630f79b2a921f8f197ec532300ae4f60b013afb268c8c407455c"
+    },
+    {
+      "path": "tools/ai-connection/test-lora-standalone-adapter.mjs",
+      "byteLength": 18113,
+      "sha256": "62df7af3998fbca425204530ffcaee2d7c710ddbcc6945aef068a855821db9e0"
+    },
+    {
+      "path": "tools/ai-connection/test-lora-standalone-management.mjs",
+      "byteLength": 5697,
+      "sha256": "6b8087cf78db91bab38065c99cd518d72ee58a0d354f8d2da246d44d42eecdb2"
+    },
+    {
+      "path": "tools/ai-connection/test-lora-standalone-native.mjs",
+      "byteLength": 1214,
+      "sha256": "10ddbb7b5f213a8dda9f13b0879615508de1ba1efffb098c85e8c745fcdee0d0"
+    },
+    {
+      "path": "tools/ai-connection/test-lora-standalone-reference.mjs",
+      "byteLength": 4880,
+      "sha256": "369efaabd5998598cee2eaada501383b40439f798f04c5effdb3815b2237fe52"
+    },
+    {
+      "path": "tools/ai-connection/test-lora-standalone-storage.mjs",
+      "byteLength": 7724,
+      "sha256": "fbf22bc3f1d77b0ecea18d1f1247263bd9915c6bd76bb9543791cd2e50bb2d77"
+    }
+  ],
+  "evidenceFiles": [
+    {
+      "path": "development/ai-connection/lora-standalone/verification/ADAPTER-RECEIPT.json",
+      "byteLength": 2739,
+      "sha256": "4cb5c659332475f9e6bf463c2ae7b35c86facc83c17585171ddf38f1d55c978b"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/verification/EXISTING-BROWSER-REGRESSION.json",
+      "byteLength": 1044632,
+      "sha256": "cf2904167cd7df34b6b371ed81c878da4c230560d9217a999844309dee15fc60"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/verification/FIXED-CONNECTION-SUITE.log",
+      "byteLength": 3793,
+      "sha256": "a7d7e41aa1ca0aeca79d679858c7cca4ab4f2cab3e20be36f033661559e2bd9c"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/verification/FULL-REGRESSION.log",
+      "byteLength": 72442,
+      "sha256": "e9e261b963381cec069fa6cf5aacdbda27afea0af188240cb734fa605f381ab1"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/verification/INDEPENDENT-REVIEW.md",
+      "byteLength": 19003,
+      "sha256": "38def7712a434a59adc4a69766ae3e66f4ed5d2ea4ef12b06bc851b8503802c8"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/verification/NEW-SDK-BROWSER.json",
+      "byteLength": 1124793,
+      "sha256": "795897aa9fac36bb08ad87cc6b2c40e3e79aad9d224922b41cff4ad600914a30"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/verification/OWNER-EVIDENCE-VERIFIED.json",
+      "byteLength": 683,
+      "sha256": "963669488956cc2b75e21eba37df480b1950eb64988b0c6460cceefa903d9152"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/verification/PURPOSE-AUDIT.md",
+      "byteLength": 16436,
+      "sha256": "57ebd361184f488d2c8480ee9b54610f9e4270e3e07d83adba6a8ed4879f34f1"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/verification/REFERENCE-FIXTURES.json",
+      "byteLength": 4376,
+      "sha256": "9e648fbdf8e23b70220a3ee7ae7fd07764d0c68425faea080739581855cf6515"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/verification/REMOTE-ACQUISITION.json",
+      "byteLength": 3443,
+      "sha256": "f76d520fe26c99638ddabb0eb0b49f747c80370f26f9c81e46ca9e8072f55e70"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/verification/SOURCE-FREEZE.json",
+      "byteLength": 7729,
+      "sha256": "4bd7a159b7d15b32bfecd3069808c2ad577984124cdb9b52ee68fee9943c1a41"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/verification/STORAGE-REPORT.json",
+      "byteLength": 1493,
+      "sha256": "0888ba9c90b8ae04b25daeef8cc405cdb350c9ec8f14b453435a7266280d213e"
+    },
+    {
+      "path": "development/ai-connection/lora-standalone/verification/new-sdk-browser.png",
+      "byteLength": 495723,
+      "sha256": "f30afe7a9ed89de2af28d0f9520d9cff9864c10b6c8833960a392739b802e7dd"
+    }
+  ],
+  "notAccepted": [
+    "real trained Bernini base identity and values",
+    "logical target to real graph/operator binding",
+    "standalone-compatible real model consumer and range ownership",
+    "real model/session application and generation contribution",
+    "full-workflow aggregate resource budget"
+  ],
+  "retainedP4Guard": "NORMAL_P4_LORA_ROUTE_NOT_AVAILABLE on nonempty targetRefs; base P4 unaffected",
+  "graphBinding": "UNBOUND",
+  "trainingBaseVerified": false,
+  "generationReady": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY",
+  "mergePerformed": false,
+  "pagesPublishedByThisWork": false
+}
