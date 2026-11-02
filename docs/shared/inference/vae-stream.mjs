@@ -129,16 +129,47 @@ async function bytesFor(a,files,signal){
 }
 function floats(bytes){const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),data=new Float32Array(bytes.byteLength/4);for(let i=0;i<data.length;i++){data[i]=view.getFloat32(i*4,true);if(!Number.isFinite(data[i]))fail('Nonfinite Hike coefficient');}return data;}
 function feature(data,shape){if(!(data instanceof Float32Array)||data.length!==count(shape))fail('Invalid streaming feature tensor');return {data,shape};}
-// Time is contiguous only within each channel in NCTHW.
-function frames(x,start,length){
- const [,c,t,h,w]=x.shape;if(start<0||length<1||start+length>t)fail('Invalid feature frame slice');
- const plane=h*w,data=new Float32Array(c*length*plane);
- for(let channel=0;channel<c;channel++)data.set(x.data.subarray((channel*t+start)*plane,(channel*t+start+length)*plane),channel*length*plane);
- return feature(data,[1,c,length,h,w]);
+function frameFeature(frameData,shape){
+ count(shape);const frameSize=shape[1]*shape[3]*shape[4];
+ if(frameData.length!==shape[2]||frameData.some(data=>!(data instanceof Float32Array)||data.length!==frameSize))fail('Invalid streaming feature frames');
+ return {frameData,shape};
 }
-function scatter(target,x,start){
+function frameData(x,index,metrics){
+ if(x.frameData)return x.frameData[index];
+ const [,c,t,h,w]=x.shape;if(t===1)return x.data;
+ const plane=h*w,data=new Float32Array(c*plane);
+ for(let channel=0;channel<c;channel++)data.set(x.data.subarray((channel*t+index)*plane,(channel*t+index+1)*plane),channel*plane);
+ metrics.inputFrameCopiedBytes+=data.byteLength;return data;
+}
+// Internal features are lists of CHW frames. Pack NCTHW only for temporal pairs.
+function frames(x,start,length,metrics){
+ const [,c,t,h,w]=x.shape;if(start<0||length<1||start+length>t)fail('Invalid feature frame slice');
+ if(start===0&&length===t)return x;
+ return frameFeature(Array.from({length},(_,i)=>frameData(x,start+i,metrics)),[1,c,length,h,w]);
+}
+function packedFrames(x,start,length,metrics){
+ if(x.data&&start===0&&length===x.shape[2])return x.data;
+ if(length===1)return frameData(x,start,metrics);
+ const [,c,,h,w]=x.shape,plane=h*w,data=new Float32Array(c*length*plane);
+ for(let frame=0;frame<length;frame++){
+  const source=frameData(x,start+frame,metrics);
+  for(let channel=0;channel<c;channel++)data.set(source.subarray(channel*plane,(channel+1)*plane),(channel*length+frame)*plane);
+ }
+ metrics.temporalPackBytes+=data.byteLength;return data;
+}
+function splitFrames(data,shape,metrics){
+ const [,c,t,h,w]=shape;if(t===1)return [data];
+ const plane=h*w,output=Array.from({length:t},()=>new Float32Array(c*plane));
+ for(let frame=0;frame<t;frame++)for(let channel=0;channel<c;channel++)output[frame].set(data.subarray((channel*t+frame)*plane,(channel*t+frame+1)*plane),channel*plane);
+ metrics.temporalSplitBytes+=data.byteLength;return output;
+}
+function scatter(target,x,start,metrics){
  const [,c,t,h,w]=target.shape,plane=h*w,n=x.shape[2];if(c!==x.shape[1]||h!==x.shape[3]||w!==x.shape[4]||start+n>t)fail('Feature output shape mismatch');
- for(let channel=0;channel<c;channel++)target.data.set(x.data.subarray(channel*n*plane,(channel+1)*n*plane),(channel*t+start)*plane);
+ for(let frame=0;frame<n;frame++){
+  const data=frameData(x,frame,metrics);
+  for(let channel=0;channel<c;channel++)target.data.set(data.subarray(channel*plane,(channel+1)*plane),(channel*t+start+frame)*plane);
+ }
+ metrics.finalScatterBytes+=c*n*plane*4;
 }
 function metadata(entries,names,shapes){
  if(!Array.isArray(entries)||entries.length!==names.length)fail('Streaming graph metadata unavailable');
@@ -149,7 +180,7 @@ function metadata(entries,names,shapes){
 }
 function checkedOutput(value,shape,name){
  if(value?.type!=='float32'||!same(value.dims,shape)||!(value.data instanceof Float32Array)||value.data.length!==count(shape))fail('Streaming ORT output shape mismatch: '+name);
- for(const v of value.data)if(!Number.isFinite(v))fail('Nonfinite streaming ORT output');return value.data;
+ return value.data;
 }
 export async function runStreamVae({operation,tensor,manifest,files,ort,hike,onProgress=()=>{},signal,diagnostics=false}){
  const request=validateStreamDescriptor({operation,tensor,manifest}),m=inspectStreamManifest(manifest),inputDescriptor=describeTensor(tensor),inputMeaning=tensor.meaning;
@@ -160,13 +191,24 @@ export async function runStreamVae({operation,tensor,manifest,files,ort,hike,onP
  if((operation==='decode'&&(!hike?.matmul||!hike?.affine))||(operation==='encode'&&inputMeaning==='rgb-unit'&&!hike?.affine))fail('Streaming VAE requires real Hike kernels');
  for(const v of tensor.data){if(!Number.isFinite(v))fail('Nonfinite VAE input');if(operation==='encode'&&(v<(inputMeaning==='rgb-unit'?0:-1)||v>1))fail('Encoder RGB values are outside the declared range');}
  abort(signal);
- const state=new Map(),hashes={},metrics={sessionsCreated:0,graphRuns:0,hikeCalls:0,historyCopies:0,maxHostHistoryBytes:0},start=performance.now();
+ const state=new Map(),hashes={},metrics={sessionsCreated:0,graphRuns:0,hikeCalls:0,historyCopies:0,historyRetentions:0,maxHostHistoryBytes:0,inputFrameCopiedBytes:0,temporalPackBytes:0,temporalSplitBytes:0,hostOutputCopiedBytes:0,hostHistoryCopiedBytes:0,adoptedOutputBytes:0,adoptedHistoryBytes:0,finalScatterBytes:0,finalFiniteScannedValues:0},start=performance.now();
  const result=feature(new Float32Array(count(request.outputShape)),request.outputShape);let chunkIndex=0,hasFuture=false;
  function progress(phase,extra={}){abort(signal);onProgress({phase,operation,profileId:request.profileId,chunkIndex,chunkCount:request.processing.latentFrames,...extra});abort(signal);}
- function save(id,value){if(value){state.set(id,value);metrics.historyCopies++;}else state.delete(id);let bytes=0;for(const v of state.values())bytes+=v.data?.byteLength??0;metrics.maxHostHistoryBytes=Math.max(metrics.maxHostHistoryBytes,bytes);}
+ function save(id,value){if(value){state.set(id,value);metrics.historyRetentions++;}else state.delete(id);let bytes=0;for(const v of state.values())bytes+=v.data?.byteLength??0;metrics.maxHostHistoryBytes=Math.max(metrics.maxHostHistoryBytes,bytes);}
+ function ownedOutput(value,shape,name,history=false){
+  const data=checkedOutput(value,shape,name);
+  // Pinned ORT1.24.3 CPU output processing allocates an ordinary typed array
+  // and copies out of HEAPU8. Tensor.dispose releases its wrapper, not that
+  // array. Never retain a shared heap view, subview, or unknown-provider array.
+  const adopt=ort.env?.versions?.web==='1.24.3'&&value.location==='cpu'&&data.buffer instanceof ArrayBuffer&&data.byteOffset===0&&data.byteLength===data.buffer.byteLength;
+  if(adopt){metrics[history?'adoptedHistoryBytes':'adoptedOutputBytes']+=data.byteLength;return data;}
+  metrics[history?'hostHistoryCopiedBytes':'hostOutputCopiedBytes']+=data.byteLength;
+  if(history)metrics.historyCopies++;
+  return new Float32Array(data);
+ }
  async function runUnit(id,x,{scale=1,shortcut}={}){
   const a=m.assets[id],spatial=a.kind==='spatial',add=a.kind==='add',outputShape=add?[...x.shape]:unitShape(a,x.shape,scale),step=a.inputFrames;
-  const output=feature(new Float32Array(count(outputShape)),outputShape);let session;
+  const outputFrames=[];let session;
   try{
    progress('loading-unit',{asset:id});const bytes=await bytesFor(a,files,signal);hashes[id]=a.sha256;
    progress('creating-session',{asset:id});session=await ort.InferenceSession.create(bytes,{executionProviders:['wasm'],graphOptimizationLevel:'disabled'});metrics.sessionsCreated++;abort(signal);
@@ -174,28 +216,29 @@ export async function runStreamVae({operation,tensor,manifest,files,ort,hike,onP
    for(let offset=0;offset<x.shape[2];offset+=step){
     let inputs=[],outputs;
     try{
-     const current=frames(x,offset,step),inShape=spatial?[1,current.shape[1],current.shape[3],current.shape[4]]:current.shape;
+     const inShape=spatial?[1,x.shape[1],x.shape[3],x.shape[4]]:[1,x.shape[1],step,x.shape[3],x.shape[4]];
      const outShape=spatial?[1,outputShape[1],outputShape[3],outputShape[4]]:[1,outputShape[1],a.kind==='temporalUp'?2:1,outputShape[3],outputShape[4]];
-     const inputShapes=[inShape],inputData=[current.data],outputShapes=[outShape];
+     const inputShapes=[inShape],inputData=[packedFrames(x,offset,step,metrics)],outputShapes=[outShape];
      if(a.historyFrames){
       const hs=[1,a.channelsIn,a.historyFrames,x.shape[3],x.shape[4]],previous=state.get(id);count(hs);
       if(previous&&!same(previous.shape,hs))fail('Streaming history shape mismatch');
       inputShapes.push(hs);inputData.push(previous?.data??new Float32Array(count(hs)));outputShapes.push(hs);
-     }else if(add){const other=frames(shortcut,offset,step);inputShapes.push(other.shape);inputData.push(other.data);}
+     }else if(add){inputShapes.push([1,shortcut.shape[1],step,shortcut.shape[3],shortcut.shape[4]]);inputData.push(packedFrames(shortcut,offset,step,metrics));}
      metadata(session.inputMetadata,a.inputNames,inputShapes);metadata(session.outputMetadata,a.outputNames,outputShapes);
      for(let i=0;i<inputData.length;i++)inputs.push(new ort.Tensor('float32',inputData[i],inputShapes[i]));
      progress('running-unit',{asset:id,featureFrame:offset,featureFrames:x.shape[2]});
      outputs=await session.run(Object.fromEntries(a.inputNames.map((name,i)=>[name,inputs[i]])));metrics.graphRuns++;abort(signal);
      if(!outputs||Object.keys(outputs).length!==a.outputNames.length)fail('Unexpected streaming graph outputs');
-     const copied=new Float32Array(checkedOutput(outputs.output,outShape,'output'));
-     scatter(output,feature(copied,spatial?[1,outShape[1],1,outShape[2],outShape[3]]:outShape),a.kind==='temporalUp'?offset*2:a.kind==='temporalDown'?offset/2:offset);
+     const data=ownedOutput(outputs.output,outShape,'output');
+     outputFrames.push(...splitFrames(data,spatial?[1,outShape[1],1,outShape[2],outShape[3]]:outShape,metrics));
      if(a.historyFrames){
-      const data=checkedOutput(outputs.historyOutput,outputShapes[1],'historyOutput'),keep=hasFuture||offset+step<x.shape[2];
-      save(id,keep?feature(new Float32Array(data),outputShapes[1]):null);
+      const keep=hasFuture||offset+step<x.shape[2];
+      checkedOutput(outputs.historyOutput,outputShapes[1],'historyOutput');
+      save(id,keep?feature(ownedOutput(outputs.historyOutput,outputShapes[1],'historyOutput',true),outputShapes[1]):null);
      }
     }finally{for(const value of new Set([...Object.values(outputs??{}),...inputs]))value?.dispose?.();}
    }
-   return output;
+   return frameFeature(outputFrames,outputShape);
   }finally{if(session)await session.release();}
  }
  async function execute(steps,input,first){
@@ -203,7 +246,7 @@ export async function runStreamVae({operation,tensor,manifest,files,ort,hike,onP
    abort(signal);
    if(s.op==='unit')x=await runUnit(s.asset,x);
    else if(s.op==='residual'){const shortcut=await execute(s.shortcut,x,first);x=await runUnit('residualAdd',await execute(s.body,x,first),{shortcut});}
-   else if(s.op==='mean'){x=feature(new Float32Array(x.data.subarray(0,s.channels*x.shape[2]*x.shape[3]*x.shape[4])),[1,s.channels,...x.shape.slice(2)]);}
+   else if(s.op==='mean'){const size=s.channels*x.shape[3]*x.shape[4];x=frameFeature(Array.from({length:x.shape[2]},(_,i)=>frameData(x,i,metrics).subarray(0,size)),[1,s.channels,...x.shape.slice(2)]);}
    else{
     if(s.mode==='upsample3d'){
      if(first){if(hasFuture)save(s.temporal,{shape:[1,x.shape[1],2,x.shape[3],x.shape[4]]});}
@@ -211,7 +254,7 @@ export async function runStreamVae({operation,tensor,manifest,files,ort,hike,onP
     }
     x=await runUnit(s.spatial,x,{scale:s.mode.startsWith('up')?2:.5});
     if(s.mode==='downsample3d'){
-     if(first){if(hasFuture)save(s.temporal,frames(x,x.shape[2]-1,1));}
+     if(first){if(hasFuture)save(s.temporal,feature(packedFrames(x,x.shape[2]-1,1,metrics),[1,x.shape[1],1,x.shape[3],x.shape[4]]));}
      else x=await runUnit(s.temporal,x);
     }
    }
@@ -225,19 +268,23 @@ export async function runStreamVae({operation,tensor,manifest,files,ort,hike,onP
   let outputOffset=0;
   for(chunkIndex=0;chunkIndex<request.processing.latentFrames;chunkIndex++){
    hasFuture=chunkIndex+1<request.processing.latentFrames;const first=chunkIndex===0,sourceOffset=operation==='encode'?(first?0:1+4*(chunkIndex-1)):chunkIndex;
-   let chunk=frames(feature(tensor.data,request.inputShape),sourceOffset,operation==='encode'&&!first?4:1);progress('chunk-start');
+   let chunk=frames(feature(tensor.data,request.inputShape),sourceOffset,operation==='encode'&&!first?4:1,metrics);progress('chunk-start');
    if(operation==='encode'&&inputMeaning==='rgb-unit'){
-    chunk=feature(hike.affine(chunk.data,2,-1),chunk.shape);metrics.hikeCalls++;
-    for(const v of chunk.data)if(!Number.isFinite(v)||v< -1||v>1)fail('Hike returned invalid RGB values');
+    const converted=[];for(let frame=0;frame<chunk.shape[2];frame++){
+     const data=hike.affine(packedFrames(chunk,frame,1,metrics),2,-1);metrics.hikeCalls++;
+     if(!(data instanceof Float32Array)||data.length!==chunk.shape[1]*chunk.shape[3]*chunk.shape[4])fail('Hike returned invalid RGB tensor');
+     for(const v of data)if(!Number.isFinite(v)||v< -1||v>1)fail('Hike returned invalid RGB values');converted.push(data);
+    }chunk=frameFeature(converted,chunk.shape);
    }else if(operation==='decode'){
-    progress('hike-conv2');const positions=chunk.shape[3]*chunk.shape[4];let data=hike.matmul(weight,chunk.data,16,16,positions);metrics.hikeCalls++;
-    if(!(data instanceof Float32Array)||data.length!==chunk.data.length)fail('Hike returned invalid conv2 tensor');
+    progress('hike-conv2');const positions=chunk.shape[3]*chunk.shape[4];let data=hike.matmul(weight,packedFrames(chunk,0,1,metrics),16,16,positions);metrics.hikeCalls++;
+    if(!(data instanceof Float32Array)||data.length!==16*positions)fail('Hike returned invalid conv2 tensor');
     for(let c=0;c<16;c++){const shifted=hike.affine(data.subarray(c*positions,(c+1)*positions),1,bias[c]);metrics.hikeCalls++;if(!(shifted instanceof Float32Array)||shifted.length!==positions)fail('Hike returned invalid conv2 bias tensor');data.set(shifted,c*positions);}
-    for(const v of data)if(!Number.isFinite(v))fail('Hike returned nonfinite conv2 values');chunk=feature(data,chunk.shape);
+    for(const v of data)if(!Number.isFinite(v))fail('Hike returned nonfinite conv2 values');chunk=frameFeature([data],chunk.shape);
    }
-   const output=await execute(m.programs[operation],chunk,first);scatter(result,output,outputOffset);outputOffset+=output.shape[2];progress('chunk-complete');
+   const output=await execute(m.programs[operation],chunk,first);scatter(result,output,outputOffset,metrics);outputOffset+=output.shape[2];progress('chunk-complete');
   }
   if(outputOffset!==request.outputShape[2])fail('Incomplete streaming VAE output');
+  for(const value of result.data)if(!Number.isFinite(value))fail('Nonfinite VAE output');metrics.finalFiniteScannedValues=result.data.length;
   const context=request.metadata.context?structuredClone(request.metadata.context):undefined;
   if(operation==='encode'&&context){context.sourceFrameIndices=context.sourceFrameIndices.slice(0,request.processing.consumedFrames);if(context.sourceFrameTimesSeconds)context.sourceFrameTimesSeconds=context.sourceFrameTimesSeconds.slice(0,request.processing.consumedFrames);}
   const frameProcessing=operation==='decode'&&request.metadata.frameProcessing?request.metadata.frameProcessing:{schemaVersion:1,policy:'wan21-causal-floor-v1',sourceFrames:request.processing.sourceFrames,latentFrames:request.processing.latentFrames,consumedFrames:request.processing.consumedFrames,unusedTailFrames:request.processing.ignoredTailFrames,...(operation==='encode'&&request.metadata.context?{sourceContext:request.metadata.context}:{})};

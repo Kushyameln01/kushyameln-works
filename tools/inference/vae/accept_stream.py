@@ -4,6 +4,8 @@
 Only local File inputs and real CPU WASM are used. Independent source outputs
 remain external private files and every numerical value is compared in chunks.
 Run model jobs serially; this tool never downsizes an unsupported/failed case.
+Verified source bytes are retained as an immutable per-host commit snapshot;
+later worktree edits do not change the source served by an already-started host.
 """
 import argparse
 import hashlib
@@ -104,6 +106,58 @@ def compare_download(path, reference, expected_metadata, gate, chunk_elements=26
             'maxAbs': maximum, 'rmse': math.sqrt(squares / count),
             'failedAllcloseElements': failed_elements, 'firstFailedElement': first_failed,
             'gate': gate, 'method': 'Chunked little-endian FP32 file memmaps; no frame/pixel/channel subset'}
+
+
+class SnapshotSourceCache:
+    """Retain source bytes only after live bytes match the exact execution commit.
+
+    The snapshot identifies what this host serves, not the worktree after the
+    snapshot was taken. Model weights and tensor payloads never enter this cache.
+    """
+    SOURCE_SUFFIXES = frozenset(('.mjs', '.wasm', '.py', '.json'))
+
+    def __init__(self, repo, revision):
+        if not re.fullmatch('[0-9a-f]{40}', revision):
+            raise ValueError('Source snapshot requires a full40hex execution commit')
+        self.repo = Path(repo).resolve()
+        self.revision = revision
+        self.records = {}
+        self._bytes = {}
+        self._lock = threading.Lock()
+
+    def read(self, path):
+        # URI identity is lexical. Resolving a later replacement symlink before
+        # cache lookup would incorrectly redirect an already-verified source.
+        path = Path(os.path.abspath(path))
+        relative = str(path.relative_to(self.repo))
+        if path.suffix not in self.SOURCE_SUFFIXES:
+            raise ValueError('Only repository source files may enter the source snapshot: ' + relative)
+        with self._lock:
+            if relative in self._bytes:
+                return self._bytes[relative]
+            if not path.resolve().is_relative_to(self.repo):
+                raise ValueError('Source snapshot path escapes the repository: ' + relative)
+            raw = path.read_bytes()
+            fixed = subprocess.run(['git', 'show', self.revision + ':' + relative],
+                                   cwd=self.repo, check=True, capture_output=True).stdout
+            if raw != fixed:
+                raise ValueError('Served source differs from the specified commit: ' + relative)
+            self._bytes[relative] = raw
+            self.records[relative] = {'path': relative, 'bytes': len(raw),
+                                      'sha256': hashlib.sha256(raw).hexdigest()}
+            return raw
+
+    def summary(self):
+        with self._lock:
+            return {'executionSourceSha': self.revision,
+                    'cachedSourceFileCount': len(self._bytes),
+                    'cachedSourceBytes': sum(len(raw) for raw in self._bytes.values()),
+                    'currentWorktreeIdentityClaim': False,
+                    'scope': 'Immutable source-only bytes verified against the exact commit '
+                             'when first captured. Subsequent requests reuse those bytes; '
+                             'later worktree edits are not asserted clean or served. '
+                             'A new dependency still requires its own first-read Git comparison. '
+                             'Model files and numerical tensor payloads are not cached.'}
 
 
 class FileProcessSampler(ProcessSampler):
@@ -443,20 +497,13 @@ def main(argv=None):
     phase, server, browser, sampler, owner, failure = 'input-preflight', None, None, None, None, None
     page = None
     worker_observer = None
-    served, server_errors = {}, []
+    source_cache = SnapshotSourceCache(REPO, args.execution_source_sha)
+    served, server_errors = source_cache.records, []
     browser_session_disposed = False
     sampler_stopped_before_close = False
 
     def source_bytes(path):
-        path = path.resolve()
-        relative = str(path.relative_to(REPO))
-        raw = path.read_bytes()
-        fixed = subprocess.run(['git', 'show', args.execution_source_sha + ':' + relative],
-                               cwd=REPO, check=True, capture_output=True).stdout
-        if raw != fixed:
-            raise ValueError('Served source differs from the specified commit: ' + relative)
-        served[relative] = {'path': relative, 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
-        return raw
+        return source_cache.read(path)
 
     try:
         if not args.browser:
@@ -484,7 +531,8 @@ def main(argv=None):
         for path in source_paths:
             source_bytes(path)
         result['servedSourcePreflight'] = {'allCheckedBeforeNumericalExecution': True,
-                                          'files': list(served.values()), 'count': len(served)}
+                                          'files': list(served.values()), 'count': len(served),
+                                          'sourceSnapshot': source_cache.summary()}
         output_bytes = [math.prod(references[operation]['output']['shape']) * 4 + 65548 for operation in operations]
         required_storage = sum(output_bytes) + max(output_bytes, default=0)
         result['downloadStoragePreflight'] = {'requiredBytes': required_storage,
@@ -517,7 +565,7 @@ def main(argv=None):
                             base, relative = REPO / 'docs', requested.lstrip('/')
                         else:
                             self.send_error(404); return
-                        path = (base / relative).resolve()
+                        path = Path(os.path.abspath(base / relative))
                         if not path.is_relative_to(base.resolve()) or path.suffix not in ('.mjs', '.wasm'):
                             self.send_error(403); return
                         raw = source_bytes(path)
@@ -688,6 +736,7 @@ def main(argv=None):
         if server is not None:
             server.shutdown(); server.server_close()
         result['servedSources'] = list(served.values())
+        result['servedSourceSnapshot'] = source_cache.summary()
         result['serverErrors'] = server_errors
         result['wallSeconds'] = time.monotonic() - started
         if failure is not None:

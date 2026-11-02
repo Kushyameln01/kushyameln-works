@@ -7,6 +7,9 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
+from types import SimpleNamespace
+from concurrent.futures import ThreadPoolExecutor
 
 ROOT = Path(__file__).resolve().parent
 
@@ -175,6 +178,168 @@ class StreamReferenceTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), array.astype('<f4').tobytes(order='C'))
             self.assertTrue(record['complete'])
         self.assertIs(sys.modules.get('torch'), torch_before)
+
+
+class SnapshotSourceCacheTests(unittest.TestCase):
+    """Source-file/git-blob doubles only; no model, browser or NN execution."""
+    REVISION = 'a' * 40
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, str(ROOT))
+        try:
+            import accept_stream
+            cls.accept = accept_stream
+        finally:
+            sys.path.pop(0)
+
+    def fixture(self, directory, blobs):
+        repo = Path(directory).resolve()
+        for relative, raw in blobs.items():
+            path = repo / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(raw)
+        def fixed(command, **kwargs):
+            self.assertEqual(command[:2], ['git', 'show'])
+            self.assertEqual(kwargs, {'cwd': repo, 'check': True, 'capture_output': True})
+            revision, relative = command[2].split(':', 1)
+            self.assertEqual(revision, self.REVISION)
+            if relative not in blobs:
+                raise subprocess.CalledProcessError(128, command)
+            return SimpleNamespace(stdout=blobs[relative])
+        return repo, fixed
+
+    def test_dirty_first_read_is_rejected_and_never_preaccepted(self):
+        with tempfile.TemporaryDirectory() as directory:
+            repo, fixed = self.fixture(directory, {'owner.mjs': b'fixed source'})
+            cache = self.accept.SnapshotSourceCache(repo, self.REVISION)
+            path = repo / 'owner.mjs'
+            path.write_bytes(b'dirty source')
+            with mock.patch.object(self.accept.subprocess, 'run', side_effect=fixed):
+                with self.assertRaisesRegex(ValueError, 'differs from the specified commit'):
+                    cache.read(path)
+                self.assertEqual(cache.records, {})
+                path.write_bytes(b'fixed source')
+                self.assertEqual(cache.read(path), b'fixed source')
+
+    def test_verified_snapshot_survives_later_mutation_and_preserves_original_hash(self):
+        with tempfile.TemporaryDirectory() as directory:
+            original = b'export const source = "fixed";'
+            repo, fixed = self.fixture(directory, {'owner.mjs': original})
+            cache = self.accept.SnapshotSourceCache(repo, self.REVISION)
+            path = repo / 'owner.mjs'
+            with mock.patch.object(self.accept.subprocess, 'run', side_effect=fixed) as git:
+                self.assertEqual(cache.read(path), original)
+                path.write_bytes(b'export const source = "later worktree edit";')
+                self.assertEqual(cache.read(path), original)
+                self.assertEqual(git.call_count, 1)
+            self.assertEqual(cache.records['owner.mjs'], {
+                'path': 'owner.mjs', 'bytes': len(original),
+                'sha256': self.accept.hashlib.sha256(original).hexdigest()})
+
+    def test_late_dependency_still_requires_its_own_exact_commit_verification(self):
+        with tempfile.TemporaryDirectory() as directory:
+            repo, fixed = self.fixture(directory, {'first.mjs': b'first', 'later.mjs': b'later'})
+            cache = self.accept.SnapshotSourceCache(repo, self.REVISION)
+            with mock.patch.object(self.accept.subprocess, 'run', side_effect=fixed) as git:
+                cache.read(repo / 'first.mjs')
+                (repo / 'later.mjs').write_bytes(b'new dirty dependency')
+                with self.assertRaisesRegex(ValueError, 'differs from the specified commit'):
+                    cache.read(repo / 'later.mjs')
+                self.assertEqual(set(cache.records), {'first.mjs'})
+                (repo / 'later.mjs').write_bytes(b'later')
+                self.assertEqual(cache.read(repo / 'later.mjs'), b'later')
+                self.assertEqual(git.call_count, 3)
+
+    def test_snapshot_does_not_reopen_deleted_source_or_replaced_symlink(self):
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as outside:
+            original = b'fixed original'
+            repo, fixed = self.fixture(directory, {'owner.mjs': original})
+            foreign = Path(outside) / 'untrusted.mjs'
+            foreign.write_bytes(b'untrusted later bytes')
+            path = repo / 'owner.mjs'
+            cache = self.accept.SnapshotSourceCache(repo, self.REVISION)
+            with mock.patch.object(self.accept.subprocess, 'run', side_effect=fixed) as git:
+                cache.read(path)
+                path.unlink()
+                self.assertEqual(cache.read(path), original)
+                path.symlink_to(foreign)
+                self.assertEqual(cache.read(path), original)
+                self.assertEqual(git.call_count, 1)
+
+    def test_outside_or_model_tensor_file_is_not_cached(self):
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as outside:
+            repo, fixed = self.fixture(directory, {'source.mjs': b'fixed'})
+            cache = self.accept.SnapshotSourceCache(repo, self.REVISION)
+            foreign = Path(outside) / 'outside.mjs'
+            foreign.write_bytes(b'outside')
+            with mock.patch.object(self.accept.subprocess, 'run', side_effect=fixed) as git:
+                with self.assertRaises(ValueError):
+                    cache.read(foreign)
+                for suffix in ('.safetensors', '.f32', '.wktensor', '.onnx'):
+                    model = repo / ('model' + suffix)
+                    model.write_bytes(b'not source')
+                    with self.assertRaisesRegex(ValueError, 'Only repository source'):
+                        cache.read(model)
+                self.assertEqual(cache.records, {})
+                self.assertEqual(git.call_count, 0)
+
+    def test_concurrent_http_readers_share_one_verified_immutable_capture(self):
+        with tempfile.TemporaryDirectory() as directory:
+            original = b'fixed wasm source bytes'
+            repo, fixed = self.fixture(directory, {'runtime.wasm': original})
+            cache = self.accept.SnapshotSourceCache(repo, self.REVISION)
+            path = repo / 'runtime.wasm'
+            with mock.patch.object(self.accept.subprocess, 'run', side_effect=fixed) as git:
+                with ThreadPoolExecutor(max_workers=4) as readers:
+                    results = list(readers.map(lambda _: cache.read(path), range(12)))
+                self.assertEqual(results, [original] * 12)
+                self.assertEqual(git.call_count, 1)
+            self.assertEqual(cache.summary()['cachedSourceFileCount'], 1)
+            self.assertEqual(cache.summary()['cachedSourceBytes'], len(original))
+
+    def test_summary_identifies_immutable_host_source_not_later_worktree(self):
+        with tempfile.TemporaryDirectory() as directory:
+            repo, fixed = self.fixture(directory, {'owner.mjs': b'fixed', 'plan.json': b'{}'})
+            cache = self.accept.SnapshotSourceCache(repo, self.REVISION)
+            with mock.patch.object(self.accept.subprocess, 'run', side_effect=fixed):
+                cache.read(repo / 'owner.mjs')
+                cache.read(repo / 'plan.json')
+            (repo / 'owner.mjs').write_bytes(b'later edit')
+            summary = cache.summary()
+            self.assertEqual(summary['executionSourceSha'], self.REVISION)
+            self.assertEqual(summary['cachedSourceFileCount'], 2)
+            self.assertEqual(summary['cachedSourceBytes'], 7)
+            self.assertFalse(summary['currentWorktreeIdentityClaim'])
+            self.assertIn('Model files and numerical tensor payloads are not cached', summary['scope'])
+            self.assertNotIn('fixed', json.dumps(summary))
+
+    def test_first_read_cannot_follow_foreign_symlink_or_nonfixed_revision(self):
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as outside:
+            repo, fixed = self.fixture(directory, {})
+            foreign = Path(outside) / 'foreign.mjs'
+            foreign.write_bytes(b'outside')
+            (repo / 'owner.mjs').symlink_to(foreign)
+            cache = self.accept.SnapshotSourceCache(repo, self.REVISION)
+            with mock.patch.object(self.accept.subprocess, 'run', side_effect=fixed) as git:
+                with self.assertRaisesRegex(ValueError, 'escapes the repository'):
+                    cache.read(repo / 'owner.mjs')
+                self.assertEqual(git.call_count, 0)
+                self.assertEqual(cache.records, {})
+            for revision in ('main', 'a' * 7, 'A' * 40):
+                with self.assertRaisesRegex(ValueError, 'full40hex'):
+                    self.accept.SnapshotSourceCache(repo, revision)
+
+    def test_missing_committed_blob_does_not_enter_snapshot(self):
+        with tempfile.TemporaryDirectory() as directory:
+            repo, fixed = self.fixture(directory, {})
+            path = repo / 'uncommitted.mjs'
+            path.write_bytes(b'uncommitted source')
+            cache = self.accept.SnapshotSourceCache(repo, self.REVISION)
+            with mock.patch.object(self.accept.subprocess, 'run', side_effect=fixed):
+                with self.assertRaises(subprocess.CalledProcessError):
+                    cache.read(path)
+                self.assertEqual(cache.records, {})
 
 
 class WorkerTargetObserverTests(unittest.TestCase):

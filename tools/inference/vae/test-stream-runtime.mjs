@@ -46,12 +46,13 @@ console.log('PASS: streaming descriptor native floor, dynamic domain, and raw me
 
 // Deliberately tiny arithmetic doubles exercise the host's channel/time copies.
 // They have no learned weights and are never numerical evidence for the NN.
-function makeOrt({badMetadata=false,badHistory=false,throwRun=false,throwSecondTensor=false,abortCreate,realAdd}={}){
- const stats={created:0,released:0,live:0,maxLive:0,runs:0,inputs:0,disposedInputs:0,outputs:0,disposedOutputs:0};
+function makeOrt({badMetadata=false,badHistory=false,throwRun=false,throwSecondTensor=false,abortCreate,realAdd,pinnedCpu=false,sharedOutput=false,subviewOutput=false,nonfinite=false}={}){
+ const stats={created:0,released:0,live:0,maxLive:0,runs:0,inputs:0,disposedInputs:0,outputs:0,disposedOutputs:0,borrowedOutputInputs:0};
+ const outputArrays=new WeakSet();
  let constructors=0;
- class Tensor{constructor(type,data,dims){if(throwSecondTensor&&++constructors===2)throw Error('helper tensor failed');Object.assign(this,{type,data,dims});stats.inputs++;}dispose(){stats.disposedInputs++;}}
- function output(data,dims){stats.outputs++;return{type:'float32',data,dims,dispose(){stats.disposedOutputs++;}};}
- const ort={env:{wasm:{numThreads:1}},Tensor,InferenceSession:{create:async bytes=>{
+ class Tensor{constructor(type,data,dims){if(throwSecondTensor&&++constructors===2)throw Error('helper tensor failed');Object.assign(this,{type,data,dims});stats.inputs++;if(outputArrays.has(data))stats.borrowedOutputInputs++;}dispose(){stats.disposedInputs++;}}
+ function output(data,dims){stats.outputs++;if(sharedOutput){const shared=new Float32Array(new SharedArrayBuffer(data.byteLength));shared.set(data);data=shared;}else if(subviewOutput){const view=new Float32Array(new ArrayBuffer(data.byteLength+8),4,data.length);view.set(data);data=view;}outputArrays.add(data);return{type:'float32',data,dims,...(pinnedCpu?{location:'cpu'}:{}),dispose(){stats.disposedOutputs++;if(sharedOutput||subviewOutput)data.fill(NaN);this.data=undefined;}};}
+ const ort={env:{wasm:{numThreads:1},...(pinnedCpu?{versions:{web:'1.24.3'}}:{})},Tensor,InferenceSession:{create:async bytes=>{
   const id=new TextDecoder().decode(bytes),a=assets[id];assert.ok(a,'Unknown helper asset');
   stats.created++;stats.live++;stats.maxLive=Math.max(stats.maxLive,stats.live);assert.equal(stats.live,1);
   if(abortCreate)abortCreate.abort();
@@ -82,6 +83,7 @@ function makeOrt({badMetadata=false,badHistory=false,throwRun=false,throwSecondT
     else value=at(x,ic,frame,r,q);
     y[(c*ot+frame)*oh*ow+row*ow+col]=value;
    }
+   if(nonfinite)y.fill(NaN);
    const result={output:output(y,spatial?[1,co,oh,ow]:[1,co,ot,oh,ow])};
    if(a.historyFrames){
     const hd=new Float32Array(ci*a.historyFrames*h*w);
@@ -112,6 +114,19 @@ for(let c=0;c<16;c++){
  assert.ok(Math.abs(five.result.tensor.data[c*8]-.04*(1+c%3))<1e-6);
  assert.ok(Math.abs(five.result.tensor.data[c*8+4]-(.48*(1+c%3)+.076))<1e-6,'Continuation must preserve native down history and per-channel time order');
 }
+const adopted=await run(tensor(5),{pinnedCpu:true});same(adopted.result.tensor.data,five.result.tensor.data);
+assert.ok(adopted.stats.borrowedOutputInputs>0,'Owned pinned CPU outputs should feed subsequent units directly, including retained histories');
+assert.equal(adopted.result.evidence.hostOutputCopiedBytes,0,'Per-frame pinned CPU outputs should not be cloned or scattered between units');
+assert.equal(adopted.result.evidence.hostHistoryCopiedBytes,0,'Pinned CPU history arrays should remain owned after wrapper disposal');
+assert.ok(adopted.result.evidence.temporalPackBytes>0,'Temporal downsampling alone packs frame pairs');
+const shared=await run(tensor(5),{pinnedCpu:true,sharedOutput:true});same(shared.result.tensor.data,five.result.tensor.data);
+assert.equal(shared.stats.borrowedOutputInputs,0,'Shared WASM-like views must not be retained after Tensor.dispose');
+assert.ok(shared.result.evidence.hostOutputCopiedBytes>0);
+const subview=await run(tensor(5),{pinnedCpu:true,subviewOutput:true});same(subview.result.tensor.data,five.result.tensor.data);
+assert.equal(subview.stats.borrowedOutputInputs,0,'Subview outputs retain no borrowed backing storage');
+assert.ok(subview.result.evidence.hostHistoryCopiedBytes>0);
+assert.equal(adopted.result.evidence.finalFiniteScannedValues,adopted.result.tensor.data.length);
+await assert.rejects(run(tensor(1),{pinnedCpu:true,nonfinite:true}),/Nonfinite/);
 same((await run(tensor(5))).result.tensor.data,five.result.tensor.data);
 const eighty=await run(tensor(80)),eightyOne=await run(tensor(81));
 for(let c=0;c<16;c++)same(eighty.result.tensor.data.subarray(c*20*4,(c+1)*20*4),eightyOne.result.tensor.data.subarray(c*21*4,c*21*4+20*4));
@@ -155,5 +170,7 @@ const actualOrt=await import('../../../docs/shared/inference/vendor/ort.wasm.min
 let realRuns=0;
 const realAdd=async()=>{const session=await actualOrt.InferenceSession.create(addBytes,{executionProviders:['wasm'],graphOptimizationLevel:'disabled'});return{inputMetadata:session.inputMetadata,outputMetadata:session.outputMetadata,run:async feeds=>{realRuns++;return session.run(feeds);},release:()=>session.release()};};
 const actualAddition=await run(tensor(5),{realAdd});same(actualAddition.result.tensor.data,five.result.tensor.data);assert.equal(realRuns,5);
+const adoptedAddition=await run(tensor(5),{realAdd,pinnedCpu:true});same(adoptedAddition.result.tensor.data,five.result.tensor.data);assert.equal(realRuns,10);
+assert.ok(adoptedAddition.stats.borrowedOutputInputs>0);
 hike.dispose();
 console.log('PASS: real ORT WASM helper graph performs residual additions inside the streaming interpreter (not NN evidence)');
