@@ -68,7 +68,32 @@ export async function captureOwnedLoraSource(input,{sourceId='source',signal,onP
 export function createLoraProductCache({maxBytes=16*1024*1024}={}){
  if(!integer(maxBytes))throw RangeError('Invalid product cache budget');
  const entries=new Map(),pending=new Map();let bytes=0,hits=0,misses=0,epoch=0;
- const cache={get(key){const a=entries.get(key);if(!a){misses++;return undefined;}hits++;entries.delete(key);entries.set(key,a);return a.slice();},set(key,a){finite(a,a.length);const old=entries.get(key);if(old){entries.delete(key);bytes-=old.byteLength;}if(a.byteLength>maxBytes)return;while(bytes+a.byteLength>maxBytes){const first=entries.keys().next().value;bytes-=entries.get(first).byteLength;entries.delete(first);}entries.set(key,a.slice());bytes+=a.byteLength;},async getOrCompute(key,compute){const existing=cache.get(key);if(existing)return existing;let work=pending.get(key);if(!work){const generation=epoch;work=(async()=>{const value=finite(await compute());if(epoch===generation)cache.set(key,value);return value;})();pending.set(key,work);void work.finally(()=>{if(pending.get(key)===work)pending.delete(key);}).catch(()=>{});}return (await work).slice();},clear(){epoch++;entries.clear();pending.clear();bytes=0;},stats(){return Object.freeze({maxBytes,bytes,entries:entries.size,pending:pending.size,hits,misses});}};
+ async function wait(work,signal){
+  work.waiters++;let active=true;
+  const withdraw=()=>{if(!active)return;active=false;work.waiters--;},abort=()=>{withdraw();if(work.waiters===0&&!work.settled)work.controller.abort(signal.reason);};
+  signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
+  // Aborted callers still join the terminal computation. Their originating
+  // package must retain its source/kernel capabilities while others use it.
+  try{let value;try{value=await work.promise;}catch(error){check(signal);throw error;}check(signal);return value.slice();}
+  finally{signal?.removeEventListener('abort',abort);withdraw();}
+ }
+ const cache={
+  get(key){const a=entries.get(key);if(!a){misses++;return undefined;}hits++;entries.delete(key);entries.set(key,a);return a.slice();},
+  set(key,a){finite(a,a.length);const old=entries.get(key);if(old){entries.delete(key);bytes-=old.byteLength;}if(a.byteLength>maxBytes)return;while(bytes+a.byteLength>maxBytes){const first=entries.keys().next().value;bytes-=entries.get(first).byteLength;entries.delete(first);}entries.set(key,a.slice());bytes+=a.byteLength;},
+  async getOrCompute(key,compute,{signal}={}){
+   check(signal);const existing=cache.get(key);if(existing){check(signal);return existing;}
+   let work=pending.get(key);
+   if(work?.controller.signal.aborted){await work.promise.catch(()=>{});check(signal);return cache.getOrCompute(key,compute,{signal});}
+   if(!work){
+    const generation=epoch;work={controller:new AbortController(),waiters:0,settled:false,promise:null};pending.set(key,work);
+    work.promise=Promise.resolve().then(async()=>{check(work.controller.signal);const value=finite(await compute(work.controller.signal));check(work.controller.signal);if(epoch===generation)cache.set(key,value);return value;});
+    void work.promise.finally(()=>{work.settled=true;if(pending.get(key)===work)pending.delete(key);}).catch(()=>{});
+   }
+   return wait(work,signal);
+  },
+  clear(){epoch++;entries.clear();bytes=0;},
+  stats(){return Object.freeze({maxBytes,bytes,entries:entries.size,pending:pending.size,hits,misses});}
+ };
  return Object.freeze(cache);
 }
 
@@ -126,14 +151,17 @@ export async function createOwnedLoraPackage({plan,baseProvider,kernel,sources={
    for(const a of adapters)for(const op of a.plan.operations){if(op.target.weightId!==weightId)continue;const first=Math.max(start,op.slice.startRow),last=Math.min(end,op.slice.startRow+op.slice.rowCount);if(first>=last)continue;
     const rows=last-first,n=rows*cols,at=(first-start)*cols,source=captured.get(a.sourceId);let delta;
     if(op.kind==='lora'){
-     const getOrCompute=typeof productCache.getOrCompute==='function'?(key,compute)=>productCache.getOrCompute(key,compute):async(key,compute)=>{let a=productCache.get(key);if(!a){a=await compute();productCache.set(key,a);}return a;};
+     const getOrCompute=typeof productCache.getOrCompute==='function'?(key,compute,options)=>productCache.getOrCompute(key,compute,options):async(key,compute,{signal}={})=>{check(signal);let a=productCache.get(key);check(signal);if(!a){a=await compute(signal);check(signal);productCache.set(key,a);}return a;};
      const key=JSON.stringify(['product',source.sourceSha256,kernel.info.wasmSha256,op.downName,op.upName,op.fullShape,first,rows]);
-     delta=await getOrCompute(key,async()=>{
+     delta=await getOrCompute(key,async productSignal=>{
+      check(productSignal);
       const tensor=source.inspection.tensors[op.downName],downKey=JSON.stringify(['factor',source.sourceSha256,kernel.info.wasmSha256,op.downName,tensor.dtype,tensor.shape]);
-      const down=await getOrCompute(downKey,async()=>kernel.decode(await readTensor(source,source.inspection,op.downName),tensor.dtype));
-      const up=kernel.decode(await readTensor(source,source.inspection,op.upName,{elementOffset:first*op.rank,elementCount:rows*op.rank}),source.inspection.tensors[op.upName].dtype);
-      return finite(kernel.product({down,up,rows,cols,rank:op.rank}),n);
-     });
+      const down=await getOrCompute(downKey,async factorSignal=>{check(factorSignal);const raw=await readTensor(source,source.inspection,op.downName,{signal:factorSignal});check(factorSignal);const value=kernel.decode(raw,tensor.dtype);check(factorSignal);return value;},{signal:productSignal});
+      check(productSignal);
+      const raw=await readTensor(source,source.inspection,op.upName,{elementOffset:first*op.rank,elementCount:rows*op.rank,signal:productSignal});check(productSignal);
+      const up=kernel.decode(raw,source.inspection.tensors[op.upName].dtype);check(productSignal);
+      const value=finite(kernel.product({down,up,rows,cols,rank:op.rank}),n);check(productSignal);return value;
+     },{signal});
      await current(signal);
     }else{delta=kernel.decode(await readTensor(source,source.inspection,op.deltaName,{elementOffset:first*cols,elementCount:n,signal}),source.inspection.tensors[op.deltaName].dtype);await current(signal);}
     const merged=finite(kernel.apply({base:out.subarray(at,at+n),delta,scale:op.scale}),n);out.set(merged,at);check(signal);
