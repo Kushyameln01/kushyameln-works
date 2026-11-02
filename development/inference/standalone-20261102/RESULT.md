@@ -39,7 +39,7 @@
 
 canaryは全512位置有効でID0も合法入力である。gateを緩める、ID0を禁止する、入力を差し替える、参照backendを合格に合わせて選び直す処置はしていない。全24層のsource checkpointは既存5954参照と全digest・最終全値が一致した（108.860秒、process RSS peak1,710,813,184 B）。native traceは各層でnative直前出力と同一source直前出力を別々に渡し、局所演算差と伝播差を分離した。18〜23層では局所差に比べ伝播差が大きく、最終8要素がmaxAbs0.001を超過した。単一の修正原因が確定したとはせず、製品の数値実装は変更していない。
 
-native traceは24 sessionをcreate/releaseし、同時active最大1・終了時0、実run47回・Tensor dispose141回。診断を実行できたことを表す `passed:true` と、数値受入の `finalFixedGatePassed:false` を区別する。source checkpoint/native traceはVAE target81独立参照CPU2と並行しており、時間は専有条件の性能比較ではない。追加7短入力caseと9controlsの実WASM検証は進行中で、ここでは合格を先取りしない。
+native traceは24 sessionをcreate/releaseし、同時active最大1・終了時0、実run47回・Tensor dispose141回。診断を実行できたことを表す `passed:true` と、数値受入の `finalFixedGatePassed:false` を区別する。source checkpoint/native traceはVAE target81独立参照CPU2と並行しており、時間は専有条件の性能比較ではない。残る7caseと9controlsは、後述の資源停止を受けて直列実行へ切り替えた。未完了分の合格は先取りしない。
 
 Textの既存Hello world、選択manifest、Tokenizer、独立参照、最終Hike正規化、P2/codec成果は元scopeで維持する。今回の9case合格へ流用しない。graphの再exportと全9case参照の再推論は行っていない。
 
@@ -77,7 +77,7 @@ F1・480×832のencode sampled browser RSS/PSS sum peakは4,479,012,864 / 4,208,
 
 69 graph + Hike conv2 weight/biasのexportは507,834,866 B、8.810秒、RSS peak1,011,138,560 B。原194 keysをstrict loadし、192 ONNX initializersと外部2 assetが重複なく対応する。symbolic空間軸・program構造の静的確認は [vae/partition-inventory.json](vae/partition-inventory.json) に保存した。静的検査だけで任意寸法の数値合格とはしていない。
 
-現時点の未受入はtarget81×480×832、source F4/5/80/81の選定大shape、F1参照848×848、targetでの取消/再実行/保存と資源、明示4 threadの大shape実速度。target81の元vendor独立参照はdecodeを実行中で、target WASMは未実行。部分出力や小診断の合格をtarget成功へ繰り上げていない。
+target81の元vendor独立参照は全量作成済み。source d578の実WASM encodeは全2,096,640要素の比較に合格し、maxAbsは2.86102294921875e-6だった。独立raw decodeは実行中で、最終receipt・全資源終了の判定は未完了。source F4/5/80の実入力境界とF1参照848×848も残る。小診断やencodeだけの結果をtarget全体の成功へ繰り上げない。sourceF81はtarget81が完了した後、完全に同じdescriptor・全tensor bytesの証拠をaliasとして再利用する予定で、別NNとは数えない。
 
 既存11caseのplanにF5・16×32診断を追加した。`reference_contract.py` は参照作成時commitのplan/toolのbytes/hash、選択case、model/source/precision/gate/patternなどの共有数値規則が不変であることを検査し、無関係なcase追加だけで旧参照を作り直さない。causal prefixからの派生参照は `DERIVED_CAUSAL_PREFIX_REFERENCE` / 新規NN0と明記する。未完了targetの部分receiptを親に使わず、派生を別の元vendor推論と数えない。
 
@@ -123,3 +123,15 @@ source F4/F5/F80/F81の参照は、完了した81frame参照と独立F1全値bri
 Text短文suiteの並行試行は共有cgroup working-set監視14.5GiB超過で送付側が所有browserだけを停止した。controller観測15,719,948,288 B、39.495秒。数値gate FAILと区別し、source参照は維持する。全owned live/zombieは回収済みで、残りcaseとcontrolsを資源が空いた状態で実行する。
 
 Text/VAEの完了callback内で再configure/disposeされた旧結果が返るraceを `5f7db87d2800e98eeca28484bf1a209eb06bcc39` で修正した。実client＋合成Workerの8検査で旧結果をAbortErrorとして拒否し、通常成功のpayload/bindingを保持した。これはNN受入の追加ではない。
+
+## 継続記録：Text通常出力・保存と直列再開
+
+Node参照host source `dccb88515775ec8aa86dd16f82e8816c9347ed38` の `plain-empty` は通常 `diagnostics:false` で完了した。出力[1,512,4096]の全2,097,152要素を独立5954参照と比較し、maxAbs4.172325134277344e-6・固定gate0.001に合格。mask無効行は全て厳密0、native WKT encode/decodeのmetadata・mask・normalization・全値が一致した。24 session create/release、run24、Tensor dispose72、active0、最大active1、457.790秒。元6.735GB sourceは64-bit readonly positional reader、prepared graphはnative Blobを使い、NN・Tokenizer・重み・gateは変更していない。
+
+その後の多言語caseはblock8で資源guardにより中断した。共有working set16,405,098,496 Bで、PID/create timeを照合した所有Nodeだけを停止した。controller632.053秒、harness630.769秒、harness+Node sampled RSS sum peak3,983,347,712 B。これはVAEとの並行時の値で、専有benchmarkやモデル固有必要RAMではない。完了emptyの証拠を保持し、未完了5caseは合格にも数値FAILにも数えない。終了後の観測owned live/zombie/errorsは空だった。強制停止時のJS finally・fd明示closeまでを主張しない。
+
+残る5caseと長文plainを、target VAE終了後に新source `153c864e22927b24902ad5343f5438b895459bf6` で直列実行する。既存emptyとall-active ID512 canaryを無条件に再推論せず、独立参照5954は再利用する。Browser T3はempty・ID2 bytes・ID1同一API復帰の3完全推論と9controlsを別に実行する。emptyのBrowser再実行は保存取消の実経路に必要な範囲とし、Node受入をBrowser取消へ転用しない。
+
+153cの検証hostは、通常出力に加えて取消復帰WKTも別保存し、native codecで全値・metadataを読戻してから公開する。復帰caseを含む独立参照を最初のNN前にhash検査する。読戻し中に保存ownerのrevisionが変わった場合も公開を拒否する。関連する合成制御・保存試験は合格したが、実Browser T3の新規NN受入とは別である。
+
+受入hostのSIGINT/SIGTERMはmodel演算を変更せず通常API cancelへ委譲する。source `2f5ff3be69e2ff347f3bcb382a0e1be7f864dff8` の実WASM診断で、chunk開始後のSIGINTを受け `INTERRUPTED_HOST_REQUEST` / exit130 /11.324秒で終了した。数値実行はattempted、正常完了operationは空。owned live/zombie/errorsは空だった。旧target中断時のPlaywright停止と子process回収記録は別receiptに残し、通常取消やtarget数値合格へ数えない。
