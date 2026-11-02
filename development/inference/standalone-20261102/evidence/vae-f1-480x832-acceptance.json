@@ -1,0 +1,2736 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "status": "ACCEPTED_SELECTED_CASE",
+  "scope": "One explicit synthetic VAE case, default normal owner API, actual ORT/Hike CPU WASM and independent all-value source comparison",
+  "executionSourceSha": "e0f0dd7cae05aebcfc60214d51fce90df6197ab7",
+  "diagnostics": false,
+  "productionReady": false,
+  "originalBf16ArithmeticEquivalence": false,
+  "operations": {
+    "encode": {
+      "browser": {
+        "passed": true,
+        "operation": "encode",
+        "status": "NORMAL_OUTPUT_SAVED",
+        "normalWallSeconds": 164.829,
+        "output": {
+          "tensor": {
+            "dtype": "float32",
+            "shape": [
+              1,
+              16,
+              1,
+              60,
+              104
+            ],
+            "layout": "NCTHW",
+            "meaning": "raw-posterior-mean",
+            "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+            "context": {
+              "schemaVersion": 1,
+              "contextId": "source-f1-480x832-encode",
+              "inputId": "synthetic-source-f1-480x832",
+              "inputSha256": "2e581ea64f31b67702e3819397afaf343da2622ce4e95c20bb76ea3ada5b5e0e",
+              "slotId": "source",
+              "sourceFrameIndices": [
+                0
+              ],
+              "sourceFrameTimesSeconds": [
+                0
+              ]
+            },
+            "frameProcessing": {
+              "schemaVersion": 1,
+              "policy": "wan21-causal-floor-v1",
+              "sourceFrames": 1,
+              "latentFrames": 1,
+              "consumedFrames": 1,
+              "unusedTailFrames": 0,
+              "sourceContext": {
+                "schemaVersion": 1,
+                "contextId": "source-f1-480x832-encode",
+                "inputId": "synthetic-source-f1-480x832",
+                "inputSha256": "2e581ea64f31b67702e3819397afaf343da2622ce4e95c20bb76ea3ada5b5e0e",
+                "slotId": "source",
+                "sourceFrameIndices": [
+                  0
+                ],
+                "sourceFrameTimesSeconds": [
+                  0
+                ]
+              }
+            }
+          },
+          "inputDescriptor": {
+            "dtype": "float32",
+            "shape": [
+              1,
+              3,
+              1,
+              480,
+              832
+            ],
+            "layout": "NCTHW",
+            "meaning": "raw-decoder-rgb",
+            "context": {
+              "schemaVersion": 1,
+              "contextId": "source-f1-480x832-encode",
+              "inputId": "synthetic-source-f1-480x832",
+              "inputSha256": "2e581ea64f31b67702e3819397afaf343da2622ce4e95c20bb76ea3ada5b5e0e",
+              "slotId": "source",
+              "sourceFrameIndices": [
+                0
+              ],
+              "sourceFrameTimesSeconds": [
+                0
+              ]
+            }
+          },
+          "binding": {
+            "operation": "encode",
+            "kind": "wan21-vae-stream-v1",
+            "inputShape": [
+              1,
+              3,
+              1,
+              480,
+              832
+            ],
+            "outputShape": [
+              1,
+              16,
+              1,
+              60,
+              104
+            ],
+            "assetsVerified": true,
+            "assetHashes": {
+              "encoder.conv1": "343691a09be1cff275f55f7de81ffcdb33c8afdcc40499d53e1b68f98aef0c1f",
+              "encoder.downsamples.0.residual.2": "e4d9694ab54c49dc0b4bc8c3165ca98308c0813b74cf9a71214fb84b9bd8dbd6",
+              "encoder.downsamples.0.residual.6": "3ff49646a9aecaadd98fea487fb08841d1a11e7a10e16ce425a264331255a6e5",
+              "residualAdd": "31d36f4f8c0a7be994b9821824a5eccd55cbf03509dd78f8815658aa72674f7c",
+              "encoder.downsamples.1.residual.2": "fc1795678d070703323f9d1c46beeb263aac213983f25b7fab43016bc2bde538",
+              "encoder.downsamples.1.residual.6": "9a03f4569841fbfce4b401894846c69c0d8a152a4ef189fb52476123492f222a",
+              "encoder.downsamples.2.spatial": "a1b11fc8ef1d83402aa99881a9110c0679225a216077630dff84b13d9d935bf8",
+              "encoder.downsamples.3.shortcut": "ef025a0a917270ffd1461cef3e7fbc5fdd659153e7f27a2df2ad33cc301b3394",
+              "encoder.downsamples.3.residual.2": "f30031a5bf0fcc259200739ad8fafb73783fb8daeb2d2ccbddbc2bc4999131f5",
+              "encoder.downsamples.3.residual.6": "14c43702a9fb0bca957098b36d0e1d2b7d01bc43dde0c70b764ea6df31e4222d",
+              "encoder.downsamples.4.residual.2": "9cbaa886a8303ca21e72de1cb34db33950806a9c7d96a1486a87f71b8458ba46",
+              "encoder.downsamples.4.residual.6": "40d7ab6a1b30f6051daa5fb97a4d343591709e96833aa744b897e27b5138f692",
+              "encoder.downsamples.5.spatial": "cf44c6be12b75ac458c71736512fae6fb06e342c7a543bc875ed27056c6ab714",
+              "encoder.downsamples.6.shortcut": "585423203d3a8f8d6a79becc86f8cb0414775bf1b1b136cc2ebca37589eabaa5",
+              "encoder.downsamples.6.residual.2": "97a1535389eec57bb1abdd3eff34e7d6dd13654248ef1a166ab1f22d75dfeb89",
+              "encoder.downsamples.6.residual.6": "0d4c418fb02855883033a407bb92e6e21cbef90ba71579d31b7568100b66a51f",
+              "encoder.downsamples.7.residual.2": "86e98d279b04152e3ab76ba60d05ccfae14e38a3a69dd28df8b67fdd4547612f",
+              "encoder.downsamples.7.residual.6": "b5e9dc9ceb2c6d4b039c49fc409258b760b73f44fdf06e7653b9d16e9a3165ac",
+              "encoder.downsamples.8.spatial": "9063cab94b863a15fa3d796054beb2008f5483bc8e90741fa6c189ddf767fad6",
+              "encoder.downsamples.9.residual.2": "7885ab4533f4e2cf3dbf00da8a8f9d1206513b27096d91ccca774acb0b5a911a",
+              "encoder.downsamples.9.residual.6": "277e3bedba13e87c7c18d8f4a54a0f0f2b7ada2bc116bd619b69449616d9c21f",
+              "encoder.downsamples.10.residual.2": "fc163dc639022d0e94e2ae934d18066b063a4a2dbc5875cf38f00b3b1fc5112d",
+              "encoder.downsamples.10.residual.6": "b04bda40de4896f977b68c6b4e453b428d5076d201f66cf07e70d2c776c81e7c",
+              "encoder.middle.0.residual.2": "3455c77c28730ba8b1af7ff458e68932800df01556da831d64a37ed584b9fe19",
+              "encoder.middle.0.residual.6": "dd4f76b8db8fa359cac855ff5c24343dfb25a21fdf394a6759c8812ac0b882cd",
+              "encoder.middle.1": "2a509de4f7dab50a8e92dfd3f8fa3d4d963275b005b3dae5f15413451a431c3d",
+              "encoder.middle.2.residual.2": "095226ccea6bad522f5ab421bdb6220836904b13f81eb9a3f7f8acaec9e28b53",
+              "encoder.middle.2.residual.6": "3080d91b235a34875223b67abc30010771ec2a300f245d138762371bb22e8914",
+              "encoder.head.2": "3ca7672224fa50617056b28cdabbca344dd5b9ef027141af68e64053a965536d",
+              "conv1": "3fa4f2f0b8af83056f8a6a52fabfb2f2538d0510378199f3246284f79fab559f"
+            },
+            "graphMetadataChecked": true
+          },
+          "processing": {
+            "sourceFrames": 1,
+            "latentFrames": 1,
+            "consumedFrames": 1,
+            "ignoredTailFrames": 0,
+            "decodedFrames": 1,
+            "tailRule": "native-floor-complete-groups-of-four-after-first-frame",
+            "consumedFrameIndices": [
+              0
+            ],
+            "ignoredTailFrameIndices": []
+          },
+          "resultKeys": [
+            "tensor",
+            "inputDescriptor",
+            "binding",
+            "processing"
+          ]
+        },
+        "observation": {
+          "jobId": "1",
+          "inputRevision": 1,
+          "stage": "native-final",
+          "created": 39,
+          "released": 39,
+          "active": 0,
+          "maximumActive": 1,
+          "runCalls": 39,
+          "tensorDisposeCalls": 132,
+          "loadMs": 1142.5050000101328,
+          "inferMs": 145402.75999999046,
+          "createAttempts": 39,
+          "createErrors": 0,
+          "runErrors": 0,
+          "releaseCalls": 39,
+          "releaseErrors": 0,
+          "repeatedReleaseCalls": 0,
+          "tensorDisposeErrors": 0,
+          "memorySummary": {
+            "readCalls": 39,
+            "readBytes": 212288572,
+            "digestCalls": 40,
+            "digestInputBytes": 212293837,
+            "ortSubmittedModelBytes": 212288572,
+            "wasmGrowCalls": 13,
+            "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+            "events": 189,
+            "maximumSingleWasmCapacityBytes": 2227372032,
+            "maximumObservedWasmCapacitySumBytes": 2229207040,
+            "maximumDeclaredWasmPages": 65536,
+            "maximumObservedMemoryCount": 2,
+            "wasmGrowFailures": 0
+          },
+          "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+        },
+        "codec": {
+          "bytes": 400360,
+          "download": "encode-source-f1-480x832.wktensor",
+          "allValuesExact": true,
+          "metadataExact": true
+        },
+        "inputPreserved": true,
+        "capabilitiesAfter": {
+          "apiVersion": "works-ai-1",
+          "module": "vae",
+          "operations": [
+            "encode",
+            "decode"
+          ],
+          "configured": true,
+          "disposed": false,
+          "profile": {
+            "id": "wan21-raw-f32-stream",
+            "layout": "NCTHW",
+            "latentSpace": "raw",
+            "posterior": "mean",
+            "opset": 17
+          },
+          "model": {
+            "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+            "storedDtype": "bfloat16",
+            "executionDtype": "float32",
+            "precisionNote": "Stored BF16 coefficients are unchanged. FP32 arithmetic is not asserted identical to BF16 execution."
+          },
+          "domain": {
+            "maxSourceFrames": 81,
+            "minSpatial": 16,
+            "maxSpatial": 848,
+            "spatialStride": 16
+          },
+          "encode": {
+            "input": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                3,
+                1,
+                480,
+                832
+              ],
+              "meanings": {
+                "rgb-unit": [
+                  0,
+                  1
+                ],
+                "raw-decoder-rgb": [
+                  -1,
+                  1
+                ]
+              }
+            },
+            "output": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                16,
+                1,
+                60,
+                104
+              ],
+              "meaning": "raw-posterior-mean",
+              "normalization": {
+                "state": "raw",
+                "conversionApplied": false
+              },
+              "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+            },
+            "graph": {
+              "kind": "wan21-vae-stream-v1",
+              "assetIds": [
+                "encoder.conv1",
+                "residualAdd",
+                "encoder.downsamples.0.residual.2",
+                "encoder.downsamples.0.residual.6",
+                "encoder.downsamples.1.residual.2",
+                "encoder.downsamples.1.residual.6",
+                "encoder.downsamples.2.spatial",
+                "encoder.downsamples.3.shortcut",
+                "encoder.downsamples.3.residual.2",
+                "encoder.downsamples.3.residual.6",
+                "encoder.downsamples.4.residual.2",
+                "encoder.downsamples.4.residual.6",
+                "encoder.downsamples.5.spatial",
+                "encoder.downsamples.5.temporal",
+                "encoder.downsamples.6.shortcut",
+                "encoder.downsamples.6.residual.2",
+                "encoder.downsamples.6.residual.6",
+                "encoder.downsamples.7.residual.2",
+                "encoder.downsamples.7.residual.6",
+                "encoder.downsamples.8.spatial",
+                "encoder.downsamples.8.temporal",
+                "encoder.downsamples.9.residual.2",
+                "encoder.downsamples.9.residual.6",
+                "encoder.downsamples.10.residual.2",
+                "encoder.downsamples.10.residual.6",
+                "encoder.middle.0.residual.2",
+                "encoder.middle.0.residual.6",
+                "encoder.middle.1",
+                "encoder.middle.2.residual.2",
+                "encoder.middle.2.residual.6",
+                "encoder.head.2",
+                "conv1"
+              ],
+              "shapeBinding": "dynamic spatial units; native temporal host program"
+            }
+          },
+          "decode": {
+            "input": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                16,
+                "T",
+                "H/8",
+                "W/8"
+              ],
+              "meanings": [
+                "raw-posterior-mean",
+                "wan21-raw-latent:v1",
+                "wan21-raw-generated-sample:v1"
+              ],
+              "normalization": {
+                "state": "raw",
+                "conversionApplied": false
+              },
+              "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+            },
+            "output": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                3,
+                "4*(T-1)+1",
+                "H",
+                "W"
+              ],
+              "meaning": "raw-decoder-rgb",
+              "clipped": false
+            },
+            "graph": {
+              "kind": "wan21-vae-stream-v1",
+              "assetIds": [
+                "conv2Weight",
+                "conv2Bias",
+                "decoder.conv1",
+                "residualAdd",
+                "decoder.middle.0.residual.2",
+                "decoder.middle.0.residual.6",
+                "decoder.middle.1",
+                "decoder.middle.2.residual.2",
+                "decoder.middle.2.residual.6",
+                "decoder.upsamples.0.residual.2",
+                "decoder.upsamples.0.residual.6",
+                "decoder.upsamples.1.residual.2",
+                "decoder.upsamples.1.residual.6",
+                "decoder.upsamples.2.residual.2",
+                "decoder.upsamples.2.residual.6",
+                "decoder.upsamples.3.spatial",
+                "decoder.upsamples.3.temporal",
+                "decoder.upsamples.4.shortcut",
+                "decoder.upsamples.4.residual.2",
+                "decoder.upsamples.4.residual.6",
+                "decoder.upsamples.5.residual.2",
+                "decoder.upsamples.5.residual.6",
+                "decoder.upsamples.6.residual.2",
+                "decoder.upsamples.6.residual.6",
+                "decoder.upsamples.7.spatial",
+                "decoder.upsamples.7.temporal",
+                "decoder.upsamples.8.residual.2",
+                "decoder.upsamples.8.residual.6",
+                "decoder.upsamples.9.residual.2",
+                "decoder.upsamples.9.residual.6",
+                "decoder.upsamples.10.residual.2",
+                "decoder.upsamples.10.residual.6",
+                "decoder.upsamples.11.spatial",
+                "decoder.upsamples.12.residual.2",
+                "decoder.upsamples.12.residual.6",
+                "decoder.upsamples.13.residual.2",
+                "decoder.upsamples.13.residual.6",
+                "decoder.upsamples.14.residual.2",
+                "decoder.upsamples.14.residual.6",
+                "decoder.head.2"
+              ],
+              "shapeBinding": "dynamic spatial units; native temporal host program"
+            }
+          },
+          "constraints": {
+            "batch": 1,
+            "inputFrames": "1..81 including native incomplete tail",
+            "spatialMultiple": 16,
+            "minimumSpatial": 16,
+            "maximumSpatial": 848,
+            "adaptation": "none",
+            "tail": "first1 then complete groups4; explicitly reported unused tail"
+          },
+          "runtime": {
+            "encode": {
+              "verified": true,
+              "operation": "encode",
+              "kind": "wan21-vae-stream-v1",
+              "inputShape": [
+                1,
+                3,
+                1,
+                480,
+                832
+              ],
+              "outputShape": [
+                1,
+                16,
+                1,
+                60,
+                104
+              ],
+              "assetsVerified": true,
+              "assetHashes": {
+                "encoder.conv1": "343691a09be1cff275f55f7de81ffcdb33c8afdcc40499d53e1b68f98aef0c1f",
+                "encoder.downsamples.0.residual.2": "e4d9694ab54c49dc0b4bc8c3165ca98308c0813b74cf9a71214fb84b9bd8dbd6",
+                "encoder.downsamples.0.residual.6": "3ff49646a9aecaadd98fea487fb08841d1a11e7a10e16ce425a264331255a6e5",
+                "residualAdd": "31d36f4f8c0a7be994b9821824a5eccd55cbf03509dd78f8815658aa72674f7c",
+                "encoder.downsamples.1.residual.2": "fc1795678d070703323f9d1c46beeb263aac213983f25b7fab43016bc2bde538",
+                "encoder.downsamples.1.residual.6": "9a03f4569841fbfce4b401894846c69c0d8a152a4ef189fb52476123492f222a",
+                "encoder.downsamples.2.spatial": "a1b11fc8ef1d83402aa99881a9110c0679225a216077630dff84b13d9d935bf8",
+                "encoder.downsamples.3.shortcut": "ef025a0a917270ffd1461cef3e7fbc5fdd659153e7f27a2df2ad33cc301b3394",
+                "encoder.downsamples.3.residual.2": "f30031a5bf0fcc259200739ad8fafb73783fb8daeb2d2ccbddbc2bc4999131f5",
+                "encoder.downsamples.3.residual.6": "14c43702a9fb0bca957098b36d0e1d2b7d01bc43dde0c70b764ea6df31e4222d",
+                "encoder.downsamples.4.residual.2": "9cbaa886a8303ca21e72de1cb34db33950806a9c7d96a1486a87f71b8458ba46",
+                "encoder.downsamples.4.residual.6": "40d7ab6a1b30f6051daa5fb97a4d343591709e96833aa744b897e27b5138f692",
+                "encoder.downsamples.5.spatial": "cf44c6be12b75ac458c71736512fae6fb06e342c7a543bc875ed27056c6ab714",
+                "encoder.downsamples.6.shortcut": "585423203d3a8f8d6a79becc86f8cb0414775bf1b1b136cc2ebca37589eabaa5",
+                "encoder.downsamples.6.residual.2": "97a1535389eec57bb1abdd3eff34e7d6dd13654248ef1a166ab1f22d75dfeb89",
+                "encoder.downsamples.6.residual.6": "0d4c418fb02855883033a407bb92e6e21cbef90ba71579d31b7568100b66a51f",
+                "encoder.downsamples.7.residual.2": "86e98d279b04152e3ab76ba60d05ccfae14e38a3a69dd28df8b67fdd4547612f",
+                "encoder.downsamples.7.residual.6": "b5e9dc9ceb2c6d4b039c49fc409258b760b73f44fdf06e7653b9d16e9a3165ac",
+                "encoder.downsamples.8.spatial": "9063cab94b863a15fa3d796054beb2008f5483bc8e90741fa6c189ddf767fad6",
+                "encoder.downsamples.9.residual.2": "7885ab4533f4e2cf3dbf00da8a8f9d1206513b27096d91ccca774acb0b5a911a",
+                "encoder.downsamples.9.residual.6": "277e3bedba13e87c7c18d8f4a54a0f0f2b7ada2bc116bd619b69449616d9c21f",
+                "encoder.downsamples.10.residual.2": "fc163dc639022d0e94e2ae934d18066b063a4a2dbc5875cf38f00b3b1fc5112d",
+                "encoder.downsamples.10.residual.6": "b04bda40de4896f977b68c6b4e453b428d5076d201f66cf07e70d2c776c81e7c",
+                "encoder.middle.0.residual.2": "3455c77c28730ba8b1af7ff458e68932800df01556da831d64a37ed584b9fe19",
+                "encoder.middle.0.residual.6": "dd4f76b8db8fa359cac855ff5c24343dfb25a21fdf394a6759c8812ac0b882cd",
+                "encoder.middle.1": "2a509de4f7dab50a8e92dfd3f8fa3d4d963275b005b3dae5f15413451a431c3d",
+                "encoder.middle.2.residual.2": "095226ccea6bad522f5ab421bdb6220836904b13f81eb9a3f7f8acaec9e28b53",
+                "encoder.middle.2.residual.6": "3080d91b235a34875223b67abc30010771ec2a300f245d138762371bb22e8914",
+                "encoder.head.2": "3ca7672224fa50617056b28cdabbca344dd5b9ef027141af68e64053a965536d",
+                "conv1": "3fa4f2f0b8af83056f8a6a52fabfb2f2538d0510378199f3246284f79fab559f"
+              },
+              "graphMetadataChecked": true
+            },
+            "decode": {
+              "verified": false
+            },
+            "note": "Domain declaration is structural; verified records describe the last completed operation shape only"
+          },
+          "processing": {
+            "sourceFrames": 1,
+            "latentFrames": 1,
+            "consumedFrames": 1,
+            "ignoredTailFrames": 0,
+            "decodedFrames": 1,
+            "tailRule": "native-floor-complete-groups-of-four-after-first-frame",
+            "consumedFrameIndices": [
+              0
+            ],
+            "ignoredTailFrameIndices": []
+          },
+          "support": {
+            "supported": true,
+            "code": "SUPPORTED",
+            "reason": "Descriptor matches the configured exact shape and native semantics",
+            "requiredChanges": [],
+            "scope": "configured-contract; runtime verification is separate"
+          }
+        }
+      },
+      "comparison": {
+        "passed": true,
+        "file": "encode-source-f1-480x832.wktensor",
+        "bytes": 400360,
+        "fileSha256": "2179bcb81a5078e61e3789885f8a6fb78d43a90e66fb1472e529630e2c146994",
+        "payloadSha256": "0edb4e4574c1aa04e5326c259b26d76e76544fff07f5017cde075cad10568307",
+        "header": {
+          "schemaVersion": 1,
+          "dtype": "float32",
+          "shape": [
+            1,
+            16,
+            1,
+            60,
+            104
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-posterior-mean",
+          "byteOrder": "little",
+          "byteLength": 399360,
+          "dataSha256": "0edb4e4574c1aa04e5326c259b26d76e76544fff07f5017cde075cad10568307",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "context": {
+            "schemaVersion": 1,
+            "contextId": "source-f1-480x832-encode",
+            "inputId": "synthetic-source-f1-480x832",
+            "inputSha256": "2e581ea64f31b67702e3819397afaf343da2622ce4e95c20bb76ea3ada5b5e0e",
+            "slotId": "source",
+            "sourceFrameIndices": [
+              0
+            ],
+            "sourceFrameTimesSeconds": [
+              0
+            ]
+          },
+          "frameProcessing": {
+            "schemaVersion": 1,
+            "policy": "wan21-causal-floor-v1",
+            "sourceFrames": 1,
+            "latentFrames": 1,
+            "consumedFrames": 1,
+            "unusedTailFrames": 0,
+            "sourceContext": {
+              "schemaVersion": 1,
+              "contextId": "source-f1-480x832-encode",
+              "inputId": "synthetic-source-f1-480x832",
+              "inputSha256": "2e581ea64f31b67702e3819397afaf343da2622ce4e95c20bb76ea3ada5b5e0e",
+              "slotId": "source",
+              "sourceFrameIndices": [
+                0
+              ],
+              "sourceFrameTimesSeconds": [
+                0
+              ]
+            }
+          }
+        },
+        "reference": {
+          "file": "mean-reference.f32",
+          "sha256": "02d1ed91692595440b0aabc7fc1f8b7c0c5e6d5aa2aee0a5c46a7d14ef4274e5"
+        },
+        "elements": 99840,
+        "allValuesCompared": true,
+        "allFinite": true,
+        "allclose": true,
+        "maxAbs": 1.6689300537109375e-06,
+        "rmse": 3.3101616042538805e-07,
+        "failedAllcloseElements": 0,
+        "firstFailedElement": null,
+        "gate": {
+          "atol": 0.002,
+          "rtol": 0.002,
+          "maxAbs": 0.002,
+          "registeredBeforeComparison": true,
+          "scope": "New declared FP32 synthetic shape domain; proposed before comparison, not transferred from tiny-model tolerances."
+        },
+        "method": "Chunked little-endian FP32 file memmaps; no frame/pixel/channel subset"
+      }
+    },
+    "decode": {
+      "browser": {
+        "passed": true,
+        "operation": "decode",
+        "status": "NORMAL_OUTPUT_SAVED",
+        "normalWallSeconds": 243.85004999999703,
+        "output": {
+          "tensor": {
+            "dtype": "float32",
+            "shape": [
+              1,
+              3,
+              1,
+              480,
+              832
+            ],
+            "layout": "NCTHW",
+            "meaning": "raw-decoder-rgb",
+            "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+            "context": {
+              "schemaVersion": 1,
+              "contextId": "source-f1-480x832-decode",
+              "inputId": "synthetic-source-f1-480x832",
+              "inputSha256": "8df382fc976b1a0938c54f56462e6df73d2a0659d30f0cb597c19b81035d7cbf",
+              "slotId": "source",
+              "sourceFrameIndices": [
+                0
+              ],
+              "sourceFrameTimesSeconds": [
+                0
+              ]
+            },
+            "frameProcessing": {
+              "schemaVersion": 1,
+              "policy": "wan21-causal-floor-v1",
+              "sourceFrames": 1,
+              "latentFrames": 1,
+              "consumedFrames": 1,
+              "unusedTailFrames": 0
+            }
+          },
+          "inputDescriptor": {
+            "dtype": "float32",
+            "shape": [
+              1,
+              16,
+              1,
+              60,
+              104
+            ],
+            "layout": "NCTHW",
+            "meaning": "wan21-raw-latent:v1",
+            "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+            "context": {
+              "schemaVersion": 1,
+              "contextId": "source-f1-480x832-decode",
+              "inputId": "synthetic-source-f1-480x832",
+              "inputSha256": "8df382fc976b1a0938c54f56462e6df73d2a0659d30f0cb597c19b81035d7cbf",
+              "slotId": "source",
+              "sourceFrameIndices": [
+                0
+              ],
+              "sourceFrameTimesSeconds": [
+                0
+              ]
+            }
+          },
+          "binding": {
+            "operation": "decode",
+            "kind": "wan21-vae-stream-v1",
+            "inputShape": [
+              1,
+              16,
+              1,
+              60,
+              104
+            ],
+            "outputShape": [
+              1,
+              3,
+              1,
+              480,
+              832
+            ],
+            "assetsVerified": true,
+            "assetHashes": {
+              "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+              "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+              "decoder.conv1": "30ac55b7223621fee9564fe4a3b52a744c31641cf4b233cb2e747db748ec1451",
+              "decoder.middle.0.residual.2": "730bb2dcac88b12dcd4a2af3986dd4e16eab3f151584d2ca6bd86bb687857a5b",
+              "decoder.middle.0.residual.6": "6b601530e36c4a8a4052fec9c96246443ee839d3915391ae3d06375760f996e7",
+              "residualAdd": "31d36f4f8c0a7be994b9821824a5eccd55cbf03509dd78f8815658aa72674f7c",
+              "decoder.middle.1": "83d17e9c1d840b5281aac47a8890121fffc60eb646cdd8c3aa14b68b05086f1b",
+              "decoder.middle.2.residual.2": "cc899e0913d08a16f5db491f96575fea123cb3be90011d153b610490871dd273",
+              "decoder.middle.2.residual.6": "67f0bfd713db130c21242a0c10bb065c76f1f772e11e501e3f15381c65084b97",
+              "decoder.upsamples.0.residual.2": "3d6107085b124100d7e13f88d6beb8b103d417758071fc0b4a4dae7be305f3f1",
+              "decoder.upsamples.0.residual.6": "44738b4b1c3fd433d8ef175010932d7a874a69bde1070875c1b264e01425fc3d",
+              "decoder.upsamples.1.residual.2": "4a49bc5f6508e42d88ee548e67a8e1f920b8fd384feb79d65dd9a59a64f12d61",
+              "decoder.upsamples.1.residual.6": "f5aafb9b6d855eb16c456ddb46bb6fe35f422601ba558d0d702f9101b139f9d4",
+              "decoder.upsamples.2.residual.2": "527fa3f9905cef7146c44099576304e99047acfe0fe33079d329b2dfa8bd9075",
+              "decoder.upsamples.2.residual.6": "aa6f10e984e757da88cfd612c1ad6e6d288a2af37450e65a16844c9397bb0e39",
+              "decoder.upsamples.3.spatial": "72783c1142a12f369bae6624ffac1597e76944d48d867c9c1755b459500ce64c",
+              "decoder.upsamples.4.shortcut": "0f912d38a35fca6bd97913f21dd25a6aedd03362ac49dafce1abd7988d31766a",
+              "decoder.upsamples.4.residual.2": "08883123671765134fdfe16edde4f73646473db04b49816c6d3f8d668ff9a700",
+              "decoder.upsamples.4.residual.6": "e3c56f4d385df7053180e234ecce093c5b8c2074e1b4a2768f5501edf6c45a0f",
+              "decoder.upsamples.5.residual.2": "bfc50153038249549a1b08b9e5a92a874f163160fde623162f150677a5545468",
+              "decoder.upsamples.5.residual.6": "41e700cd9d4062220bde9f79549b6026107032a357a9bdc1cfa19c82e232aaa2",
+              "decoder.upsamples.6.residual.2": "06e01fb58d1657539e60753b6e4366e5229afc497ef43e6dceecbb783333f2f5",
+              "decoder.upsamples.6.residual.6": "716856f5fe38fb9c4aa3c79ae2fccb28ab11f3835338b2bd80408fa8a2105ad6",
+              "decoder.upsamples.7.spatial": "3a77a8b3805e6ff06bb0a5b3861cf76b4122a92f8e893ada4fd7b3388a90f1bc",
+              "decoder.upsamples.8.residual.2": "4681e3e650fa99e01edbc7ee18bc1dbd930b988ce39cb1c45cb7f503b6833d57",
+              "decoder.upsamples.8.residual.6": "2ebaa7a081c6594835420b4708e3fd3d8364623511d8b0dd9791b988942b8179",
+              "decoder.upsamples.9.residual.2": "0ffa8b905821cc4d9f18b6b08b15b700117f3046fe35651a6772fc772b56c1cb",
+              "decoder.upsamples.9.residual.6": "4786c50cc0454ab0b5bcf1c9efc828da3bb3c45cf8de3460c83cc34c0aed8033",
+              "decoder.upsamples.10.residual.2": "2ffe73a4b86254d4d2e208117e5f9758fca69370279fceb7345291d0ba982b8b",
+              "decoder.upsamples.10.residual.6": "bbe369f21324af4e79010101e579d203745667e93cc09da61167aacd73baf6f8",
+              "decoder.upsamples.11.spatial": "f42c34d3a4d424f27ad7cca42655f58f70851f5e2fc010030aa33469f95c80d3",
+              "decoder.upsamples.12.residual.2": "d67a364dd842d21376217ba56d96e0d8a99626dd9984f3be3d55e7170cad9ad7",
+              "decoder.upsamples.12.residual.6": "9055a7c7fad62ed466e56e3f7f7f84321e80e5c38b8d9b754bc37a227df7fa9e",
+              "decoder.upsamples.13.residual.2": "78a38b4e02a8677d4a5f86dcd7267b9a718a213db05e3509f404979319639c23",
+              "decoder.upsamples.13.residual.6": "d9ac665a95a990e48b2b2317a61ee716a13e65821cbf32637a176865e2b7e622",
+              "decoder.upsamples.14.residual.2": "3045589a6f65b74b9bb010bdcd1bdbd32e94a333808444feab6d1c94f0c4d149",
+              "decoder.upsamples.14.residual.6": "751669b5bdd311dbdb888df64fc606d01e0ffee13761dc4e5ac01a844896ad9d",
+              "decoder.head.2": "548760312cc053a67a6b1094d483efaed3913b7d2d84c8f22edf5f38f608c8f3"
+            },
+            "graphMetadataChecked": true
+          },
+          "processing": {
+            "sourceFrames": 1,
+            "latentFrames": 1,
+            "consumedFrames": 1,
+            "ignoredTailFrames": 0,
+            "decodedFrames": 1,
+            "tailRule": "native-floor-complete-groups-of-four-after-first-frame",
+            "consumedFrameIndices": [
+              0
+            ],
+            "ignoredTailFrameIndices": []
+          },
+          "resultKeys": [
+            "tensor",
+            "inputDescriptor",
+            "binding",
+            "processing"
+          ]
+        },
+        "observation": {
+          "jobId": "2",
+          "inputRevision": 2,
+          "stage": "native-final",
+          "created": 49,
+          "released": 49,
+          "active": 0,
+          "maximumActive": 1,
+          "runCalls": 49,
+          "tensorDisposeCalls": 172,
+          "loadMs": 896.9550000429153,
+          "inferMs": 221137.92500004172,
+          "createAttempts": 49,
+          "createErrors": 0,
+          "runErrors": 0,
+          "releaseCalls": 49,
+          "releaseErrors": 0,
+          "repeatedReleaseCalls": 0,
+          "tensorDisposeErrors": 0,
+          "memorySummary": {
+            "readCalls": 51,
+            "readBytes": 286235519,
+            "digestCalls": 52,
+            "digestInputBytes": 286240784,
+            "ortSubmittedModelBytes": 286234431,
+            "wasmGrowCalls": 17,
+            "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+            "events": 245,
+            "maximumSingleWasmCapacityBytes": 1857421312,
+            "maximumObservedWasmCapacitySumBytes": 1859256320,
+            "maximumDeclaredWasmPages": 65536,
+            "maximumObservedMemoryCount": 2,
+            "wasmGrowFailures": 0
+          },
+          "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+        },
+        "codec": {
+          "bytes": 4793049,
+          "download": "decode-source-f1-480x832.wktensor",
+          "allValuesExact": true,
+          "metadataExact": true
+        },
+        "inputPreserved": true,
+        "capabilitiesAfter": {
+          "apiVersion": "works-ai-1",
+          "module": "vae",
+          "operations": [
+            "encode",
+            "decode"
+          ],
+          "configured": true,
+          "disposed": false,
+          "profile": {
+            "id": "wan21-raw-f32-stream",
+            "layout": "NCTHW",
+            "latentSpace": "raw",
+            "posterior": "mean",
+            "opset": 17
+          },
+          "model": {
+            "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+            "storedDtype": "bfloat16",
+            "executionDtype": "float32",
+            "precisionNote": "Stored BF16 coefficients are unchanged. FP32 arithmetic is not asserted identical to BF16 execution."
+          },
+          "domain": {
+            "maxSourceFrames": 81,
+            "minSpatial": 16,
+            "maxSpatial": 848,
+            "spatialStride": 16
+          },
+          "encode": {
+            "input": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                3,
+                "F",
+                "H",
+                "W"
+              ],
+              "meanings": {
+                "rgb-unit": [
+                  0,
+                  1
+                ],
+                "raw-decoder-rgb": [
+                  -1,
+                  1
+                ]
+              }
+            },
+            "output": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                16,
+                "floor((F-1)/4)+1",
+                "H/8",
+                "W/8"
+              ],
+              "meaning": "raw-posterior-mean",
+              "normalization": {
+                "state": "raw",
+                "conversionApplied": false
+              },
+              "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+            },
+            "graph": {
+              "kind": "wan21-vae-stream-v1",
+              "assetIds": [
+                "encoder.conv1",
+                "residualAdd",
+                "encoder.downsamples.0.residual.2",
+                "encoder.downsamples.0.residual.6",
+                "encoder.downsamples.1.residual.2",
+                "encoder.downsamples.1.residual.6",
+                "encoder.downsamples.2.spatial",
+                "encoder.downsamples.3.shortcut",
+                "encoder.downsamples.3.residual.2",
+                "encoder.downsamples.3.residual.6",
+                "encoder.downsamples.4.residual.2",
+                "encoder.downsamples.4.residual.6",
+                "encoder.downsamples.5.spatial",
+                "encoder.downsamples.5.temporal",
+                "encoder.downsamples.6.shortcut",
+                "encoder.downsamples.6.residual.2",
+                "encoder.downsamples.6.residual.6",
+                "encoder.downsamples.7.residual.2",
+                "encoder.downsamples.7.residual.6",
+                "encoder.downsamples.8.spatial",
+                "encoder.downsamples.8.temporal",
+                "encoder.downsamples.9.residual.2",
+                "encoder.downsamples.9.residual.6",
+                "encoder.downsamples.10.residual.2",
+                "encoder.downsamples.10.residual.6",
+                "encoder.middle.0.residual.2",
+                "encoder.middle.0.residual.6",
+                "encoder.middle.1",
+                "encoder.middle.2.residual.2",
+                "encoder.middle.2.residual.6",
+                "encoder.head.2",
+                "conv1"
+              ],
+              "shapeBinding": "dynamic spatial units; native temporal host program"
+            }
+          },
+          "decode": {
+            "input": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                16,
+                1,
+                60,
+                104
+              ],
+              "meanings": [
+                "raw-posterior-mean",
+                "wan21-raw-latent:v1",
+                "wan21-raw-generated-sample:v1"
+              ],
+              "normalization": {
+                "state": "raw",
+                "conversionApplied": false
+              },
+              "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+            },
+            "output": {
+              "dtype": "float32",
+              "layout": "NCTHW",
+              "shape": [
+                1,
+                3,
+                1,
+                480,
+                832
+              ],
+              "meaning": "raw-decoder-rgb",
+              "clipped": false
+            },
+            "graph": {
+              "kind": "wan21-vae-stream-v1",
+              "assetIds": [
+                "conv2Weight",
+                "conv2Bias",
+                "decoder.conv1",
+                "residualAdd",
+                "decoder.middle.0.residual.2",
+                "decoder.middle.0.residual.6",
+                "decoder.middle.1",
+                "decoder.middle.2.residual.2",
+                "decoder.middle.2.residual.6",
+                "decoder.upsamples.0.residual.2",
+                "decoder.upsamples.0.residual.6",
+                "decoder.upsamples.1.residual.2",
+                "decoder.upsamples.1.residual.6",
+                "decoder.upsamples.2.residual.2",
+                "decoder.upsamples.2.residual.6",
+                "decoder.upsamples.3.spatial",
+                "decoder.upsamples.3.temporal",
+                "decoder.upsamples.4.shortcut",
+                "decoder.upsamples.4.residual.2",
+                "decoder.upsamples.4.residual.6",
+                "decoder.upsamples.5.residual.2",
+                "decoder.upsamples.5.residual.6",
+                "decoder.upsamples.6.residual.2",
+                "decoder.upsamples.6.residual.6",
+                "decoder.upsamples.7.spatial",
+                "decoder.upsamples.7.temporal",
+                "decoder.upsamples.8.residual.2",
+                "decoder.upsamples.8.residual.6",
+                "decoder.upsamples.9.residual.2",
+                "decoder.upsamples.9.residual.6",
+                "decoder.upsamples.10.residual.2",
+                "decoder.upsamples.10.residual.6",
+                "decoder.upsamples.11.spatial",
+                "decoder.upsamples.12.residual.2",
+                "decoder.upsamples.12.residual.6",
+                "decoder.upsamples.13.residual.2",
+                "decoder.upsamples.13.residual.6",
+                "decoder.upsamples.14.residual.2",
+                "decoder.upsamples.14.residual.6",
+                "decoder.head.2"
+              ],
+              "shapeBinding": "dynamic spatial units; native temporal host program"
+            }
+          },
+          "constraints": {
+            "batch": 1,
+            "inputFrames": "1..81 including native incomplete tail",
+            "spatialMultiple": 16,
+            "minimumSpatial": 16,
+            "maximumSpatial": 848,
+            "adaptation": "none",
+            "tail": "first1 then complete groups4; explicitly reported unused tail"
+          },
+          "runtime": {
+            "encode": {
+              "verified": true,
+              "operation": "encode",
+              "kind": "wan21-vae-stream-v1",
+              "inputShape": [
+                1,
+                3,
+                1,
+                480,
+                832
+              ],
+              "outputShape": [
+                1,
+                16,
+                1,
+                60,
+                104
+              ],
+              "assetsVerified": true,
+              "assetHashes": {
+                "encoder.conv1": "343691a09be1cff275f55f7de81ffcdb33c8afdcc40499d53e1b68f98aef0c1f",
+                "encoder.downsamples.0.residual.2": "e4d9694ab54c49dc0b4bc8c3165ca98308c0813b74cf9a71214fb84b9bd8dbd6",
+                "encoder.downsamples.0.residual.6": "3ff49646a9aecaadd98fea487fb08841d1a11e7a10e16ce425a264331255a6e5",
+                "residualAdd": "31d36f4f8c0a7be994b9821824a5eccd55cbf03509dd78f8815658aa72674f7c",
+                "encoder.downsamples.1.residual.2": "fc1795678d070703323f9d1c46beeb263aac213983f25b7fab43016bc2bde538",
+                "encoder.downsamples.1.residual.6": "9a03f4569841fbfce4b401894846c69c0d8a152a4ef189fb52476123492f222a",
+                "encoder.downsamples.2.spatial": "a1b11fc8ef1d83402aa99881a9110c0679225a216077630dff84b13d9d935bf8",
+                "encoder.downsamples.3.shortcut": "ef025a0a917270ffd1461cef3e7fbc5fdd659153e7f27a2df2ad33cc301b3394",
+                "encoder.downsamples.3.residual.2": "f30031a5bf0fcc259200739ad8fafb73783fb8daeb2d2ccbddbc2bc4999131f5",
+                "encoder.downsamples.3.residual.6": "14c43702a9fb0bca957098b36d0e1d2b7d01bc43dde0c70b764ea6df31e4222d",
+                "encoder.downsamples.4.residual.2": "9cbaa886a8303ca21e72de1cb34db33950806a9c7d96a1486a87f71b8458ba46",
+                "encoder.downsamples.4.residual.6": "40d7ab6a1b30f6051daa5fb97a4d343591709e96833aa744b897e27b5138f692",
+                "encoder.downsamples.5.spatial": "cf44c6be12b75ac458c71736512fae6fb06e342c7a543bc875ed27056c6ab714",
+                "encoder.downsamples.6.shortcut": "585423203d3a8f8d6a79becc86f8cb0414775bf1b1b136cc2ebca37589eabaa5",
+                "encoder.downsamples.6.residual.2": "97a1535389eec57bb1abdd3eff34e7d6dd13654248ef1a166ab1f22d75dfeb89",
+                "encoder.downsamples.6.residual.6": "0d4c418fb02855883033a407bb92e6e21cbef90ba71579d31b7568100b66a51f",
+                "encoder.downsamples.7.residual.2": "86e98d279b04152e3ab76ba60d05ccfae14e38a3a69dd28df8b67fdd4547612f",
+                "encoder.downsamples.7.residual.6": "b5e9dc9ceb2c6d4b039c49fc409258b760b73f44fdf06e7653b9d16e9a3165ac",
+                "encoder.downsamples.8.spatial": "9063cab94b863a15fa3d796054beb2008f5483bc8e90741fa6c189ddf767fad6",
+                "encoder.downsamples.9.residual.2": "7885ab4533f4e2cf3dbf00da8a8f9d1206513b27096d91ccca774acb0b5a911a",
+                "encoder.downsamples.9.residual.6": "277e3bedba13e87c7c18d8f4a54a0f0f2b7ada2bc116bd619b69449616d9c21f",
+                "encoder.downsamples.10.residual.2": "fc163dc639022d0e94e2ae934d18066b063a4a2dbc5875cf38f00b3b1fc5112d",
+                "encoder.downsamples.10.residual.6": "b04bda40de4896f977b68c6b4e453b428d5076d201f66cf07e70d2c776c81e7c",
+                "encoder.middle.0.residual.2": "3455c77c28730ba8b1af7ff458e68932800df01556da831d64a37ed584b9fe19",
+                "encoder.middle.0.residual.6": "dd4f76b8db8fa359cac855ff5c24343dfb25a21fdf394a6759c8812ac0b882cd",
+                "encoder.middle.1": "2a509de4f7dab50a8e92dfd3f8fa3d4d963275b005b3dae5f15413451a431c3d",
+                "encoder.middle.2.residual.2": "095226ccea6bad522f5ab421bdb6220836904b13f81eb9a3f7f8acaec9e28b53",
+                "encoder.middle.2.residual.6": "3080d91b235a34875223b67abc30010771ec2a300f245d138762371bb22e8914",
+                "encoder.head.2": "3ca7672224fa50617056b28cdabbca344dd5b9ef027141af68e64053a965536d",
+                "conv1": "3fa4f2f0b8af83056f8a6a52fabfb2f2538d0510378199f3246284f79fab559f"
+              },
+              "graphMetadataChecked": true
+            },
+            "decode": {
+              "verified": true,
+              "operation": "decode",
+              "kind": "wan21-vae-stream-v1",
+              "inputShape": [
+                1,
+                16,
+                1,
+                60,
+                104
+              ],
+              "outputShape": [
+                1,
+                3,
+                1,
+                480,
+                832
+              ],
+              "assetsVerified": true,
+              "assetHashes": {
+                "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+                "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+                "decoder.conv1": "30ac55b7223621fee9564fe4a3b52a744c31641cf4b233cb2e747db748ec1451",
+                "decoder.middle.0.residual.2": "730bb2dcac88b12dcd4a2af3986dd4e16eab3f151584d2ca6bd86bb687857a5b",
+                "decoder.middle.0.residual.6": "6b601530e36c4a8a4052fec9c96246443ee839d3915391ae3d06375760f996e7",
+                "residualAdd": "31d36f4f8c0a7be994b9821824a5eccd55cbf03509dd78f8815658aa72674f7c",
+                "decoder.middle.1": "83d17e9c1d840b5281aac47a8890121fffc60eb646cdd8c3aa14b68b05086f1b",
+                "decoder.middle.2.residual.2": "cc899e0913d08a16f5db491f96575fea123cb3be90011d153b610490871dd273",
+                "decoder.middle.2.residual.6": "67f0bfd713db130c21242a0c10bb065c76f1f772e11e501e3f15381c65084b97",
+                "decoder.upsamples.0.residual.2": "3d6107085b124100d7e13f88d6beb8b103d417758071fc0b4a4dae7be305f3f1",
+                "decoder.upsamples.0.residual.6": "44738b4b1c3fd433d8ef175010932d7a874a69bde1070875c1b264e01425fc3d",
+                "decoder.upsamples.1.residual.2": "4a49bc5f6508e42d88ee548e67a8e1f920b8fd384feb79d65dd9a59a64f12d61",
+                "decoder.upsamples.1.residual.6": "f5aafb9b6d855eb16c456ddb46bb6fe35f422601ba558d0d702f9101b139f9d4",
+                "decoder.upsamples.2.residual.2": "527fa3f9905cef7146c44099576304e99047acfe0fe33079d329b2dfa8bd9075",
+                "decoder.upsamples.2.residual.6": "aa6f10e984e757da88cfd612c1ad6e6d288a2af37450e65a16844c9397bb0e39",
+                "decoder.upsamples.3.spatial": "72783c1142a12f369bae6624ffac1597e76944d48d867c9c1755b459500ce64c",
+                "decoder.upsamples.4.shortcut": "0f912d38a35fca6bd97913f21dd25a6aedd03362ac49dafce1abd7988d31766a",
+                "decoder.upsamples.4.residual.2": "08883123671765134fdfe16edde4f73646473db04b49816c6d3f8d668ff9a700",
+                "decoder.upsamples.4.residual.6": "e3c56f4d385df7053180e234ecce093c5b8c2074e1b4a2768f5501edf6c45a0f",
+                "decoder.upsamples.5.residual.2": "bfc50153038249549a1b08b9e5a92a874f163160fde623162f150677a5545468",
+                "decoder.upsamples.5.residual.6": "41e700cd9d4062220bde9f79549b6026107032a357a9bdc1cfa19c82e232aaa2",
+                "decoder.upsamples.6.residual.2": "06e01fb58d1657539e60753b6e4366e5229afc497ef43e6dceecbb783333f2f5",
+                "decoder.upsamples.6.residual.6": "716856f5fe38fb9c4aa3c79ae2fccb28ab11f3835338b2bd80408fa8a2105ad6",
+                "decoder.upsamples.7.spatial": "3a77a8b3805e6ff06bb0a5b3861cf76b4122a92f8e893ada4fd7b3388a90f1bc",
+                "decoder.upsamples.8.residual.2": "4681e3e650fa99e01edbc7ee18bc1dbd930b988ce39cb1c45cb7f503b6833d57",
+                "decoder.upsamples.8.residual.6": "2ebaa7a081c6594835420b4708e3fd3d8364623511d8b0dd9791b988942b8179",
+                "decoder.upsamples.9.residual.2": "0ffa8b905821cc4d9f18b6b08b15b700117f3046fe35651a6772fc772b56c1cb",
+                "decoder.upsamples.9.residual.6": "4786c50cc0454ab0b5bcf1c9efc828da3bb3c45cf8de3460c83cc34c0aed8033",
+                "decoder.upsamples.10.residual.2": "2ffe73a4b86254d4d2e208117e5f9758fca69370279fceb7345291d0ba982b8b",
+                "decoder.upsamples.10.residual.6": "bbe369f21324af4e79010101e579d203745667e93cc09da61167aacd73baf6f8",
+                "decoder.upsamples.11.spatial": "f42c34d3a4d424f27ad7cca42655f58f70851f5e2fc010030aa33469f95c80d3",
+                "decoder.upsamples.12.residual.2": "d67a364dd842d21376217ba56d96e0d8a99626dd9984f3be3d55e7170cad9ad7",
+                "decoder.upsamples.12.residual.6": "9055a7c7fad62ed466e56e3f7f7f84321e80e5c38b8d9b754bc37a227df7fa9e",
+                "decoder.upsamples.13.residual.2": "78a38b4e02a8677d4a5f86dcd7267b9a718a213db05e3509f404979319639c23",
+                "decoder.upsamples.13.residual.6": "d9ac665a95a990e48b2b2317a61ee716a13e65821cbf32637a176865e2b7e622",
+                "decoder.upsamples.14.residual.2": "3045589a6f65b74b9bb010bdcd1bdbd32e94a333808444feab6d1c94f0c4d149",
+                "decoder.upsamples.14.residual.6": "751669b5bdd311dbdb888df64fc606d01e0ffee13761dc4e5ac01a844896ad9d",
+                "decoder.head.2": "548760312cc053a67a6b1094d483efaed3913b7d2d84c8f22edf5f38f608c8f3"
+              },
+              "graphMetadataChecked": true
+            },
+            "note": "Domain declaration is structural; verified records describe the last completed operation shape only"
+          },
+          "processing": {
+            "sourceFrames": 1,
+            "latentFrames": 1,
+            "consumedFrames": 1,
+            "ignoredTailFrames": 0,
+            "decodedFrames": 1,
+            "tailRule": "native-floor-complete-groups-of-four-after-first-frame",
+            "consumedFrameIndices": [
+              0
+            ],
+            "ignoredTailFrameIndices": []
+          },
+          "support": {
+            "supported": true,
+            "code": "SUPPORTED",
+            "reason": "Descriptor matches the configured exact shape and native semantics",
+            "requiredChanges": [],
+            "scope": "configured-contract; runtime verification is separate"
+          }
+        }
+      },
+      "comparison": {
+        "passed": true,
+        "file": "decode-source-f1-480x832.wktensor",
+        "bytes": 4793049,
+        "fileSha256": "5682345801ea799461a9932ef66c3048a66f34ad90c97b55b318b8224eb0ad9f",
+        "payloadSha256": "36b5d7dd8c5b509fb5be19008481b0de727beb23ae8f68cc55a2fff0e8837ca1",
+        "header": {
+          "schemaVersion": 1,
+          "dtype": "float32",
+          "shape": [
+            1,
+            3,
+            1,
+            480,
+            832
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-decoder-rgb",
+          "byteOrder": "little",
+          "byteLength": 4792320,
+          "dataSha256": "36b5d7dd8c5b509fb5be19008481b0de727beb23ae8f68cc55a2fff0e8837ca1",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "context": {
+            "schemaVersion": 1,
+            "contextId": "source-f1-480x832-decode",
+            "inputId": "synthetic-source-f1-480x832",
+            "inputSha256": "8df382fc976b1a0938c54f56462e6df73d2a0659d30f0cb597c19b81035d7cbf",
+            "slotId": "source",
+            "sourceFrameIndices": [
+              0
+            ],
+            "sourceFrameTimesSeconds": [
+              0
+            ]
+          },
+          "frameProcessing": {
+            "schemaVersion": 1,
+            "policy": "wan21-causal-floor-v1",
+            "sourceFrames": 1,
+            "latentFrames": 1,
+            "consumedFrames": 1,
+            "unusedTailFrames": 0
+          }
+        },
+        "reference": {
+          "file": "decode-rgb-reference.f32",
+          "sha256": "78ddf13908ba0a239815f5c13ce9b7d7cb2e1b1afe8847bbcdf86aea889f204f"
+        },
+        "elements": 1198080,
+        "allValuesCompared": true,
+        "allFinite": true,
+        "allclose": true,
+        "maxAbs": 2.1904706954956055e-06,
+        "rmse": 2.1589103344523162e-07,
+        "failedAllcloseElements": 0,
+        "firstFailedElement": null,
+        "gate": {
+          "atol": 0.002,
+          "rtol": 0.002,
+          "maxAbs": 0.002,
+          "registeredBeforeComparison": true,
+          "scope": "New declared FP32 synthetic shape domain; proposed before comparison, not transferred from tiny-model tolerances."
+        },
+        "method": "Chunked little-endian FP32 file memmaps; no frame/pixel/channel subset"
+      }
+    }
+  },
+  "progressEvents": [
+    {
+      "controlPhase": "normal",
+      "phase": "chunk-start",
+      "operation": "encode",
+      "profileId": "wan21-raw-f32-stream",
+      "chunkIndex": 0,
+      "chunkCount": 1
+    },
+    {
+      "controlPhase": "normal",
+      "phase": "chunk-complete",
+      "operation": "encode",
+      "profileId": "wan21-raw-f32-stream",
+      "chunkIndex": 0,
+      "chunkCount": 1
+    },
+    {
+      "controlPhase": "normal",
+      "phase": "chunk-start",
+      "operation": "decode",
+      "profileId": "wan21-raw-f32-stream",
+      "chunkIndex": 0,
+      "chunkCount": 1
+    },
+    {
+      "controlPhase": "normal",
+      "phase": "chunk-complete",
+      "operation": "decode",
+      "profileId": "wan21-raw-f32-stream",
+      "chunkIndex": 0,
+      "chunkCount": 1
+    }
+  ],
+  "httpRequests": {
+    "/": 1,
+    "/harness/vae/stream_browser.mjs": 1,
+    "/shared/inference/api.mjs": 1,
+    "/shared/vr180/sha256.mjs": 3,
+    "/shared/inference/client.mjs": 1,
+    "/shared/inference/text-encoder-api.mjs": 1,
+    "/shared/inference/vae-api.mjs": 1,
+    "/shared/inference/tensor.mjs": 3,
+    "/shared/inference/vae-stream.mjs": 3,
+    "/shared/inference/vae.mjs": 3,
+    "/shared/inference/text-encoder.mjs": 3,
+    "/harness/vae/stream_observer_worker.mjs": 2,
+    "/harness/text-encoder/plain_memory.mjs": 2,
+    "/shared/inference/vendor/ort.wasm.min.mjs": 2,
+    "/shared/inference/inference-worker.mjs": 2,
+    "/shared/inference/hike.mjs": 2,
+    "/shared/inference/tokenizer.mjs": 2,
+    "/shared/inference/vendor/sentencepiece.mjs": 2,
+    "/shared/inference/kernel/tensor.wasm": 2,
+    "/shared/inference/vendor/ort-wasm-simd-threaded.mjs": 2,
+    "/shared/inference/vendor/ort-wasm-simd-threaded.wasm": 2
+  },
+  "httpErrors": [],
+  "requestFailures": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "case": {
+    "id": "source-f1-480x832",
+    "role": "source",
+    "rgbShape": [
+      1,
+      3,
+      1,
+      480,
+      832
+    ],
+    "latentShape": [
+      1,
+      16,
+      1,
+      60,
+      104
+    ],
+    "decodeRgbShape": [
+      1,
+      3,
+      1,
+      480,
+      832
+    ]
+  },
+  "comparisonGate": {
+    "atol": 0.002,
+    "rtol": 0.002,
+    "maxAbs": 0.002,
+    "registeredBeforeComparison": true,
+    "scope": "New declared FP32 synthetic shape domain; proposed before comparison, not transferred from tiny-model tolerances."
+  },
+  "manifestSha256": "64c57a7aeb5e8fcb5089b8d5771ce293b8355e365f2fd5cfe80df0840ca85345",
+  "referenceReport": {
+    "path": "/tmp/kw-vae-ref-f1-target-spatial-20261102/reference-report.json",
+    "sha256": "ba1e3b5da44fc30e63b028887734a94f815e8b52aedfddfdfd5355be81f39c36",
+    "executionSourceSha": "e0f0dd7cae05aebcfc60214d51fce90df6197ab7"
+  },
+  "initialCgroup": {
+    "path": "/sys/fs/cgroup",
+    "limitBytes": 17179869184,
+    "currentBytes": 13197467648,
+    "inactiveFileBytes": 9868677120,
+    "anonBytes": 76255232,
+    "shmemBytes": 642691072,
+    "workingSetBytes": 3328790528,
+    "workingSetScope": "max(0,memory.current-observed inactive_file); missing inactive_file falls back to raw charge. Shmem/tmpfs is not separately subtracted. Non-atomic observation, not an exact pressure measurement."
+  },
+  "servedSourcePreflight": {
+    "allCheckedBeforeNumericalExecution": true,
+    "files": [
+      {
+        "path": "tools/inference/vae/accept_stream.py",
+        "bytes": 29209,
+        "sha256": "bbe18c614e1d24f829befcd93b239de7b8fb63dea1aa2d8a31cee3e1ff9bb1de"
+      },
+      {
+        "path": "tools/inference/vae/stream_browser.mjs",
+        "bytes": 15062,
+        "sha256": "7a09c548f7fffe374a5d8a01b04f5610174b23034aec0b594496fcb7546e08fe"
+      },
+      {
+        "path": "tools/inference/vae/stream_observer_worker.mjs",
+        "bytes": 5282,
+        "sha256": "909a6169bef3a246a14fb47773f1f3f2a5c9fda24e10b5e79a84399a2f62907d"
+      },
+      {
+        "path": "tools/inference/vae/process_lifecycle.py",
+        "bytes": 6299,
+        "sha256": "a927fe8f38382563ec8d512745446f32bc7740bff3c1b86b650f4490f178299c"
+      },
+      {
+        "path": "tools/inference/vae/accept_still.py",
+        "bytes": 23812,
+        "sha256": "91f5e010809d54716be620a01a6af2a364d77ebd3b7834cb7c06571b681fb9f6"
+      },
+      {
+        "path": "tools/inference/vae/stream_reference.py",
+        "bytes": 23592,
+        "sha256": "5d5c5c70b01b03841bc85997ad6ec9cf638a1269452a8ce70fb954fb51991543"
+      },
+      {
+        "path": "development/inference/standalone-20261102/vae/predeclared-plan.json",
+        "bytes": 6620,
+        "sha256": "8b5d354a299e8e35863269ace9549148d4265b8d097b8877caabd727a4c193ea"
+      },
+      {
+        "path": "tools/inference/text-encoder/plain_memory.mjs",
+        "bytes": 5508,
+        "sha256": "dd0dcf5ef26ea1b71b2803db4d521af3bfeb24b0fa8323eb7437507b2d3cbc71"
+      },
+      {
+        "path": "docs/shared/vr180/sha256.mjs",
+        "bytes": 6970,
+        "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+      },
+      {
+        "path": "docs/shared/inference/text-encoder.mjs",
+        "bytes": 9309,
+        "sha256": "44e9b144d6c1f3e2d60cb33e2d537f8f523fec0c7c10e30830427b417957252d"
+      },
+      {
+        "path": "docs/shared/inference/vae-api.mjs",
+        "bytes": 7261,
+        "sha256": "3959e455295135840c566a129ac198507a289a9cc88f813515fe27141cec94a2"
+      },
+      {
+        "path": "docs/shared/inference/ui.mjs",
+        "bytes": 7205,
+        "sha256": "77895caf5535522ab9a96f9b250fff12d56ae5fedc4b7944b8d4e1d457f0a22f"
+      },
+      {
+        "path": "docs/shared/inference/vae.mjs",
+        "bytes": 13223,
+        "sha256": "e2e8b7901edfe8ac94152dba2c9f246d0dd0d2c595b5ac72e0cade4b36d170ae"
+      },
+      {
+        "path": "docs/shared/inference/api.mjs",
+        "bytes": 2293,
+        "sha256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda"
+      },
+      {
+        "path": "docs/shared/inference/vae-stream.mjs",
+        "bytes": 22195,
+        "sha256": "599e9231b3dd754dfa911e385bb666009d5038b71b2e533e09b17e1878643ea0"
+      },
+      {
+        "path": "docs/shared/inference/text-encoder-api.mjs",
+        "bytes": 4952,
+        "sha256": "b33a81b0b92da5668d6eb9a392ce18148c06133cfce431b56e9b8c0fa72152d1"
+      },
+      {
+        "path": "docs/shared/inference/client.mjs",
+        "bytes": 2423,
+        "sha256": "806278b5eb09242cec8726d22b13be6237323862d0c42f0c3948d0a63cc9501f"
+      },
+      {
+        "path": "docs/shared/inference/tokenizer.mjs",
+        "bytes": 1637,
+        "sha256": "4a7811d4e36fbcc568e2a2a1e0941fd78261f84b231a96458d919ea0259fb9a5"
+      },
+      {
+        "path": "docs/shared/inference/hike.mjs",
+        "bytes": 4126,
+        "sha256": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65"
+      },
+      {
+        "path": "docs/shared/inference/inference-worker.mjs",
+        "bytes": 3602,
+        "sha256": "d0168efaecaac8b10f4e33bd3546cb333bdedd151345c3026358d5fb8e86b15b"
+      },
+      {
+        "path": "docs/shared/inference/tensor.mjs",
+        "bytes": 10825,
+        "sha256": "370a1c8d59fe6d64ba182380697623e8a142ee4f2cc046ca3843a8ab4bf543e2"
+      },
+      {
+        "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "bytes": 24274,
+        "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57"
+      },
+      {
+        "path": "docs/shared/inference/vendor/sentencepiece.mjs",
+        "bytes": 741502,
+        "sha256": "31ce41230f8694c63afa1ffeecb862d0bf3768d858328d335530997a86a1f27d"
+      },
+      {
+        "path": "docs/shared/inference/vendor/ort.wasm.min.mjs",
+        "bytes": 49997,
+        "sha256": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e"
+      },
+      {
+        "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+        "bytes": 12361745,
+        "sha256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+      },
+      {
+        "path": "docs/shared/inference/kernel/tensor.wasm",
+        "bytes": 5265,
+        "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8"
+      }
+    ],
+    "count": 26
+  },
+  "downloadStoragePreflight": {
+    "requiredBytes": 10180644,
+    "availableBytes": 8798642176,
+    "scope": "All selected WKT outputs plus one simultaneous browser download staging copy and maximum headers"
+  },
+  "browserVersion": "154.0.8037.57",
+  "capabilities": {
+    "passed": true,
+    "status": "CAPABILITIES_READY",
+    "capabilities": {
+      "encode": {
+        "apiVersion": "works-ai-1",
+        "module": "vae",
+        "operations": [
+          "encode",
+          "decode"
+        ],
+        "configured": true,
+        "disposed": false,
+        "profile": {
+          "id": "wan21-raw-f32-stream",
+          "layout": "NCTHW",
+          "latentSpace": "raw",
+          "posterior": "mean",
+          "opset": 17
+        },
+        "model": {
+          "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "storedDtype": "bfloat16",
+          "executionDtype": "float32",
+          "precisionNote": "Stored BF16 coefficients are unchanged. FP32 arithmetic is not asserted identical to BF16 execution."
+        },
+        "domain": {
+          "maxSourceFrames": 81,
+          "minSpatial": 16,
+          "maxSpatial": 848,
+          "spatialStride": 16
+        },
+        "encode": {
+          "input": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              3,
+              1,
+              480,
+              832
+            ],
+            "meanings": {
+              "rgb-unit": [
+                0,
+                1
+              ],
+              "raw-decoder-rgb": [
+                -1,
+                1
+              ]
+            }
+          },
+          "output": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              16,
+              1,
+              60,
+              104
+            ],
+            "meaning": "raw-posterior-mean",
+            "normalization": {
+              "state": "raw",
+              "conversionApplied": false
+            },
+            "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+          },
+          "graph": {
+            "kind": "wan21-vae-stream-v1",
+            "assetIds": [
+              "encoder.conv1",
+              "residualAdd",
+              "encoder.downsamples.0.residual.2",
+              "encoder.downsamples.0.residual.6",
+              "encoder.downsamples.1.residual.2",
+              "encoder.downsamples.1.residual.6",
+              "encoder.downsamples.2.spatial",
+              "encoder.downsamples.3.shortcut",
+              "encoder.downsamples.3.residual.2",
+              "encoder.downsamples.3.residual.6",
+              "encoder.downsamples.4.residual.2",
+              "encoder.downsamples.4.residual.6",
+              "encoder.downsamples.5.spatial",
+              "encoder.downsamples.5.temporal",
+              "encoder.downsamples.6.shortcut",
+              "encoder.downsamples.6.residual.2",
+              "encoder.downsamples.6.residual.6",
+              "encoder.downsamples.7.residual.2",
+              "encoder.downsamples.7.residual.6",
+              "encoder.downsamples.8.spatial",
+              "encoder.downsamples.8.temporal",
+              "encoder.downsamples.9.residual.2",
+              "encoder.downsamples.9.residual.6",
+              "encoder.downsamples.10.residual.2",
+              "encoder.downsamples.10.residual.6",
+              "encoder.middle.0.residual.2",
+              "encoder.middle.0.residual.6",
+              "encoder.middle.1",
+              "encoder.middle.2.residual.2",
+              "encoder.middle.2.residual.6",
+              "encoder.head.2",
+              "conv1"
+            ],
+            "shapeBinding": "dynamic spatial units; native temporal host program"
+          }
+        },
+        "decode": {
+          "input": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              16,
+              "T",
+              "H/8",
+              "W/8"
+            ],
+            "meanings": [
+              "raw-posterior-mean",
+              "wan21-raw-latent:v1",
+              "wan21-raw-generated-sample:v1"
+            ],
+            "normalization": {
+              "state": "raw",
+              "conversionApplied": false
+            },
+            "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+          },
+          "output": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              3,
+              "4*(T-1)+1",
+              "H",
+              "W"
+            ],
+            "meaning": "raw-decoder-rgb",
+            "clipped": false
+          },
+          "graph": {
+            "kind": "wan21-vae-stream-v1",
+            "assetIds": [
+              "conv2Weight",
+              "conv2Bias",
+              "decoder.conv1",
+              "residualAdd",
+              "decoder.middle.0.residual.2",
+              "decoder.middle.0.residual.6",
+              "decoder.middle.1",
+              "decoder.middle.2.residual.2",
+              "decoder.middle.2.residual.6",
+              "decoder.upsamples.0.residual.2",
+              "decoder.upsamples.0.residual.6",
+              "decoder.upsamples.1.residual.2",
+              "decoder.upsamples.1.residual.6",
+              "decoder.upsamples.2.residual.2",
+              "decoder.upsamples.2.residual.6",
+              "decoder.upsamples.3.spatial",
+              "decoder.upsamples.3.temporal",
+              "decoder.upsamples.4.shortcut",
+              "decoder.upsamples.4.residual.2",
+              "decoder.upsamples.4.residual.6",
+              "decoder.upsamples.5.residual.2",
+              "decoder.upsamples.5.residual.6",
+              "decoder.upsamples.6.residual.2",
+              "decoder.upsamples.6.residual.6",
+              "decoder.upsamples.7.spatial",
+              "decoder.upsamples.7.temporal",
+              "decoder.upsamples.8.residual.2",
+              "decoder.upsamples.8.residual.6",
+              "decoder.upsamples.9.residual.2",
+              "decoder.upsamples.9.residual.6",
+              "decoder.upsamples.10.residual.2",
+              "decoder.upsamples.10.residual.6",
+              "decoder.upsamples.11.spatial",
+              "decoder.upsamples.12.residual.2",
+              "decoder.upsamples.12.residual.6",
+              "decoder.upsamples.13.residual.2",
+              "decoder.upsamples.13.residual.6",
+              "decoder.upsamples.14.residual.2",
+              "decoder.upsamples.14.residual.6",
+              "decoder.head.2"
+            ],
+            "shapeBinding": "dynamic spatial units; native temporal host program"
+          }
+        },
+        "constraints": {
+          "batch": 1,
+          "inputFrames": "1..81 including native incomplete tail",
+          "spatialMultiple": 16,
+          "minimumSpatial": 16,
+          "maximumSpatial": 848,
+          "adaptation": "none",
+          "tail": "first1 then complete groups4; explicitly reported unused tail"
+        },
+        "runtime": {
+          "encode": {
+            "verified": false
+          },
+          "decode": {
+            "verified": false
+          },
+          "note": "Domain declaration is structural; verified records describe the last completed operation shape only"
+        },
+        "processing": {
+          "sourceFrames": 1,
+          "latentFrames": 1,
+          "consumedFrames": 1,
+          "ignoredTailFrames": 0,
+          "decodedFrames": 1,
+          "tailRule": "native-floor-complete-groups-of-four-after-first-frame",
+          "consumedFrameIndices": [
+            0
+          ],
+          "ignoredTailFrameIndices": []
+        },
+        "support": {
+          "supported": true,
+          "code": "SUPPORTED",
+          "reason": "Descriptor matches the configured exact shape and native semantics",
+          "requiredChanges": [],
+          "scope": "configured-contract; runtime verification is separate"
+        }
+      },
+      "decode": {
+        "apiVersion": "works-ai-1",
+        "module": "vae",
+        "operations": [
+          "encode",
+          "decode"
+        ],
+        "configured": true,
+        "disposed": false,
+        "profile": {
+          "id": "wan21-raw-f32-stream",
+          "layout": "NCTHW",
+          "latentSpace": "raw",
+          "posterior": "mean",
+          "opset": 17
+        },
+        "model": {
+          "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "storedDtype": "bfloat16",
+          "executionDtype": "float32",
+          "precisionNote": "Stored BF16 coefficients are unchanged. FP32 arithmetic is not asserted identical to BF16 execution."
+        },
+        "domain": {
+          "maxSourceFrames": 81,
+          "minSpatial": 16,
+          "maxSpatial": 848,
+          "spatialStride": 16
+        },
+        "encode": {
+          "input": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              3,
+              "F",
+              "H",
+              "W"
+            ],
+            "meanings": {
+              "rgb-unit": [
+                0,
+                1
+              ],
+              "raw-decoder-rgb": [
+                -1,
+                1
+              ]
+            }
+          },
+          "output": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              16,
+              "floor((F-1)/4)+1",
+              "H/8",
+              "W/8"
+            ],
+            "meaning": "raw-posterior-mean",
+            "normalization": {
+              "state": "raw",
+              "conversionApplied": false
+            },
+            "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+          },
+          "graph": {
+            "kind": "wan21-vae-stream-v1",
+            "assetIds": [
+              "encoder.conv1",
+              "residualAdd",
+              "encoder.downsamples.0.residual.2",
+              "encoder.downsamples.0.residual.6",
+              "encoder.downsamples.1.residual.2",
+              "encoder.downsamples.1.residual.6",
+              "encoder.downsamples.2.spatial",
+              "encoder.downsamples.3.shortcut",
+              "encoder.downsamples.3.residual.2",
+              "encoder.downsamples.3.residual.6",
+              "encoder.downsamples.4.residual.2",
+              "encoder.downsamples.4.residual.6",
+              "encoder.downsamples.5.spatial",
+              "encoder.downsamples.5.temporal",
+              "encoder.downsamples.6.shortcut",
+              "encoder.downsamples.6.residual.2",
+              "encoder.downsamples.6.residual.6",
+              "encoder.downsamples.7.residual.2",
+              "encoder.downsamples.7.residual.6",
+              "encoder.downsamples.8.spatial",
+              "encoder.downsamples.8.temporal",
+              "encoder.downsamples.9.residual.2",
+              "encoder.downsamples.9.residual.6",
+              "encoder.downsamples.10.residual.2",
+              "encoder.downsamples.10.residual.6",
+              "encoder.middle.0.residual.2",
+              "encoder.middle.0.residual.6",
+              "encoder.middle.1",
+              "encoder.middle.2.residual.2",
+              "encoder.middle.2.residual.6",
+              "encoder.head.2",
+              "conv1"
+            ],
+            "shapeBinding": "dynamic spatial units; native temporal host program"
+          }
+        },
+        "decode": {
+          "input": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              16,
+              1,
+              60,
+              104
+            ],
+            "meanings": [
+              "raw-posterior-mean",
+              "wan21-raw-latent:v1",
+              "wan21-raw-generated-sample:v1"
+            ],
+            "normalization": {
+              "state": "raw",
+              "conversionApplied": false
+            },
+            "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+          },
+          "output": {
+            "dtype": "float32",
+            "layout": "NCTHW",
+            "shape": [
+              1,
+              3,
+              1,
+              480,
+              832
+            ],
+            "meaning": "raw-decoder-rgb",
+            "clipped": false
+          },
+          "graph": {
+            "kind": "wan21-vae-stream-v1",
+            "assetIds": [
+              "conv2Weight",
+              "conv2Bias",
+              "decoder.conv1",
+              "residualAdd",
+              "decoder.middle.0.residual.2",
+              "decoder.middle.0.residual.6",
+              "decoder.middle.1",
+              "decoder.middle.2.residual.2",
+              "decoder.middle.2.residual.6",
+              "decoder.upsamples.0.residual.2",
+              "decoder.upsamples.0.residual.6",
+              "decoder.upsamples.1.residual.2",
+              "decoder.upsamples.1.residual.6",
+              "decoder.upsamples.2.residual.2",
+              "decoder.upsamples.2.residual.6",
+              "decoder.upsamples.3.spatial",
+              "decoder.upsamples.3.temporal",
+              "decoder.upsamples.4.shortcut",
+              "decoder.upsamples.4.residual.2",
+              "decoder.upsamples.4.residual.6",
+              "decoder.upsamples.5.residual.2",
+              "decoder.upsamples.5.residual.6",
+              "decoder.upsamples.6.residual.2",
+              "decoder.upsamples.6.residual.6",
+              "decoder.upsamples.7.spatial",
+              "decoder.upsamples.7.temporal",
+              "decoder.upsamples.8.residual.2",
+              "decoder.upsamples.8.residual.6",
+              "decoder.upsamples.9.residual.2",
+              "decoder.upsamples.9.residual.6",
+              "decoder.upsamples.10.residual.2",
+              "decoder.upsamples.10.residual.6",
+              "decoder.upsamples.11.spatial",
+              "decoder.upsamples.12.residual.2",
+              "decoder.upsamples.12.residual.6",
+              "decoder.upsamples.13.residual.2",
+              "decoder.upsamples.13.residual.6",
+              "decoder.upsamples.14.residual.2",
+              "decoder.upsamples.14.residual.6",
+              "decoder.head.2"
+            ],
+            "shapeBinding": "dynamic spatial units; native temporal host program"
+          }
+        },
+        "constraints": {
+          "batch": 1,
+          "inputFrames": "1..81 including native incomplete tail",
+          "spatialMultiple": 16,
+          "minimumSpatial": 16,
+          "maximumSpatial": 848,
+          "adaptation": "none",
+          "tail": "first1 then complete groups4; explicitly reported unused tail"
+        },
+        "runtime": {
+          "encode": {
+            "verified": false
+          },
+          "decode": {
+            "verified": false
+          },
+          "note": "Domain declaration is structural; verified records describe the last completed operation shape only"
+        },
+        "processing": {
+          "sourceFrames": 1,
+          "latentFrames": 1,
+          "consumedFrames": 1,
+          "ignoredTailFrames": 0,
+          "decodedFrames": 1,
+          "tailRule": "native-floor-complete-groups-of-four-after-first-frame",
+          "consumedFrameIndices": [
+            0
+          ],
+          "ignoredTailFrameIndices": []
+        },
+        "support": {
+          "supported": true,
+          "code": "SUPPORTED",
+          "reason": "Descriptor matches the configured exact shape and native semantics",
+          "requiredChanges": [],
+          "scope": "configured-contract; runtime verification is separate"
+        }
+      }
+    },
+    "configured": {
+      "apiVersion": "works-ai-1",
+      "module": "vae",
+      "operations": [
+        "encode",
+        "decode"
+      ],
+      "configured": true,
+      "disposed": false,
+      "profile": {
+        "id": "wan21-raw-f32-stream",
+        "layout": "NCTHW",
+        "latentSpace": "raw",
+        "posterior": "mean",
+        "opset": 17
+      },
+      "model": {
+        "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "storedDtype": "bfloat16",
+        "executionDtype": "float32",
+        "precisionNote": "Stored BF16 coefficients are unchanged. FP32 arithmetic is not asserted identical to BF16 execution."
+      },
+      "domain": {
+        "maxSourceFrames": 81,
+        "minSpatial": 16,
+        "maxSpatial": 848,
+        "spatialStride": 16
+      },
+      "encode": {
+        "input": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            "F",
+            "H",
+            "W"
+          ],
+          "meanings": {
+            "rgb-unit": [
+              0,
+              1
+            ],
+            "raw-decoder-rgb": [
+              -1,
+              1
+            ]
+          }
+        },
+        "output": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            "floor((F-1)/4)+1",
+            "H/8",
+            "W/8"
+          ],
+          "meaning": "raw-posterior-mean",
+          "normalization": {
+            "state": "raw",
+            "conversionApplied": false
+          },
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "graph": {
+          "kind": "wan21-vae-stream-v1",
+          "assetIds": [
+            "encoder.conv1",
+            "residualAdd",
+            "encoder.downsamples.0.residual.2",
+            "encoder.downsamples.0.residual.6",
+            "encoder.downsamples.1.residual.2",
+            "encoder.downsamples.1.residual.6",
+            "encoder.downsamples.2.spatial",
+            "encoder.downsamples.3.shortcut",
+            "encoder.downsamples.3.residual.2",
+            "encoder.downsamples.3.residual.6",
+            "encoder.downsamples.4.residual.2",
+            "encoder.downsamples.4.residual.6",
+            "encoder.downsamples.5.spatial",
+            "encoder.downsamples.5.temporal",
+            "encoder.downsamples.6.shortcut",
+            "encoder.downsamples.6.residual.2",
+            "encoder.downsamples.6.residual.6",
+            "encoder.downsamples.7.residual.2",
+            "encoder.downsamples.7.residual.6",
+            "encoder.downsamples.8.spatial",
+            "encoder.downsamples.8.temporal",
+            "encoder.downsamples.9.residual.2",
+            "encoder.downsamples.9.residual.6",
+            "encoder.downsamples.10.residual.2",
+            "encoder.downsamples.10.residual.6",
+            "encoder.middle.0.residual.2",
+            "encoder.middle.0.residual.6",
+            "encoder.middle.1",
+            "encoder.middle.2.residual.2",
+            "encoder.middle.2.residual.6",
+            "encoder.head.2",
+            "conv1"
+          ],
+          "shapeBinding": "dynamic spatial units; native temporal host program"
+        }
+      },
+      "decode": {
+        "input": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            16,
+            "T",
+            "H/8",
+            "W/8"
+          ],
+          "meanings": [
+            "raw-posterior-mean",
+            "wan21-raw-latent:v1",
+            "wan21-raw-generated-sample:v1"
+          ],
+          "normalization": {
+            "state": "raw",
+            "conversionApplied": false
+          },
+          "decoderModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+        },
+        "output": {
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "shape": [
+            1,
+            3,
+            "4*(T-1)+1",
+            "H",
+            "W"
+          ],
+          "meaning": "raw-decoder-rgb",
+          "clipped": false
+        },
+        "graph": {
+          "kind": "wan21-vae-stream-v1",
+          "assetIds": [
+            "conv2Weight",
+            "conv2Bias",
+            "decoder.conv1",
+            "residualAdd",
+            "decoder.middle.0.residual.2",
+            "decoder.middle.0.residual.6",
+            "decoder.middle.1",
+            "decoder.middle.2.residual.2",
+            "decoder.middle.2.residual.6",
+            "decoder.upsamples.0.residual.2",
+            "decoder.upsamples.0.residual.6",
+            "decoder.upsamples.1.residual.2",
+            "decoder.upsamples.1.residual.6",
+            "decoder.upsamples.2.residual.2",
+            "decoder.upsamples.2.residual.6",
+            "decoder.upsamples.3.spatial",
+            "decoder.upsamples.3.temporal",
+            "decoder.upsamples.4.shortcut",
+            "decoder.upsamples.4.residual.2",
+            "decoder.upsamples.4.residual.6",
+            "decoder.upsamples.5.residual.2",
+            "decoder.upsamples.5.residual.6",
+            "decoder.upsamples.6.residual.2",
+            "decoder.upsamples.6.residual.6",
+            "decoder.upsamples.7.spatial",
+            "decoder.upsamples.7.temporal",
+            "decoder.upsamples.8.residual.2",
+            "decoder.upsamples.8.residual.6",
+            "decoder.upsamples.9.residual.2",
+            "decoder.upsamples.9.residual.6",
+            "decoder.upsamples.10.residual.2",
+            "decoder.upsamples.10.residual.6",
+            "decoder.upsamples.11.spatial",
+            "decoder.upsamples.12.residual.2",
+            "decoder.upsamples.12.residual.6",
+            "decoder.upsamples.13.residual.2",
+            "decoder.upsamples.13.residual.6",
+            "decoder.upsamples.14.residual.2",
+            "decoder.upsamples.14.residual.6",
+            "decoder.head.2"
+          ],
+          "shapeBinding": "dynamic spatial units; native temporal host program"
+        }
+      },
+      "constraints": {
+        "batch": 1,
+        "inputFrames": "1..81 including native incomplete tail",
+        "spatialMultiple": 16,
+        "minimumSpatial": 16,
+        "maximumSpatial": 848,
+        "adaptation": "none",
+        "tail": "first1 then complete groups4; explicitly reported unused tail"
+      },
+      "runtime": {
+        "encode": {
+          "verified": false
+        },
+        "decode": {
+          "verified": false
+        },
+        "note": "Domain declaration is structural; verified records describe the last completed operation shape only"
+      }
+    },
+    "workersCreated": 0,
+    "manifestSha256": "64c57a7aeb5e8fcb5089b8d5771ce293b8355e365f2fd5cfe80df0840ca85345",
+    "scope": "Structural exact-descriptor support; no numerical execution performed"
+  },
+  "numericalExecutionPerformed": true,
+  "browserLifecycle": {
+    "disposed": true,
+    "workers": [
+      {
+        "index": 0,
+        "phase": "normal",
+        "operation": "encode",
+        "terminated": true,
+        "observations": [
+          {
+            "jobId": "1",
+            "inputRevision": 1,
+            "stage": "first-ort-create-start",
+            "created": 0,
+            "released": 0,
+            "active": 0,
+            "maximumActive": 0,
+            "runCalls": 0,
+            "tensorDisposeCalls": 0,
+            "loadMs": 0,
+            "inferMs": 0,
+            "createAttempts": 1,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 0,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 1,
+              "readBytes": 34005,
+              "digestCalls": 2,
+              "digestInputBytes": 39270,
+              "ortSubmittedModelBytes": 34005,
+              "wasmGrowCalls": 1,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 10,
+              "maximumSingleWasmCapacityBytes": 1835008,
+              "maximumObservedWasmCapacitySumBytes": 1835008,
+              "maximumDeclaredWasmPages": 0,
+              "maximumObservedMemoryCount": 1,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          },
+          {
+            "jobId": "1",
+            "inputRevision": 1,
+            "stage": "first-ort-run-start",
+            "created": 1,
+            "released": 0,
+            "active": 1,
+            "maximumActive": 1,
+            "runCalls": 1,
+            "tensorDisposeCalls": 0,
+            "loadMs": 476.20499999821186,
+            "inferMs": 0,
+            "createAttempts": 1,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 0,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 1,
+              "readBytes": 34005,
+              "digestCalls": 2,
+              "digestInputBytes": 39270,
+              "ortSubmittedModelBytes": 34005,
+              "wasmGrowCalls": 1,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 12,
+              "maximumSingleWasmCapacityBytes": 16777216,
+              "maximumObservedWasmCapacitySumBytes": 18612224,
+              "maximumDeclaredWasmPages": 65536,
+              "maximumObservedMemoryCount": 2,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          },
+          {
+            "jobId": "1",
+            "inputRevision": 1,
+            "stage": "native-final",
+            "created": 39,
+            "released": 39,
+            "active": 0,
+            "maximumActive": 1,
+            "runCalls": 39,
+            "tensorDisposeCalls": 132,
+            "loadMs": 1142.5050000101328,
+            "inferMs": 145402.75999999046,
+            "createAttempts": 39,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 39,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 39,
+              "readBytes": 212288572,
+              "digestCalls": 40,
+              "digestInputBytes": 212293837,
+              "ortSubmittedModelBytes": 212288572,
+              "wasmGrowCalls": 13,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 189,
+              "maximumSingleWasmCapacityBytes": 2227372032,
+              "maximumObservedWasmCapacitySumBytes": 2229207040,
+              "maximumDeclaredWasmPages": 65536,
+              "maximumObservedMemoryCount": 2,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          }
+        ],
+        "terminatedAtEpochMs": 1793596871964
+      },
+      {
+        "index": 1,
+        "phase": "normal",
+        "operation": "decode",
+        "terminated": true,
+        "observations": [
+          {
+            "jobId": "2",
+            "inputRevision": 2,
+            "stage": "first-ort-create-start",
+            "created": 0,
+            "released": 0,
+            "active": 0,
+            "maximumActive": 0,
+            "runCalls": 0,
+            "tensorDisposeCalls": 0,
+            "loadMs": 0,
+            "inferMs": 0,
+            "createAttempts": 1,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 0,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 3,
+              "readBytes": 668696,
+              "digestCalls": 4,
+              "digestInputBytes": 673961,
+              "ortSubmittedModelBytes": 667608,
+              "wasmGrowCalls": 1,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 18,
+              "maximumSingleWasmCapacityBytes": 1835008,
+              "maximumObservedWasmCapacitySumBytes": 1835008,
+              "maximumDeclaredWasmPages": 0,
+              "maximumObservedMemoryCount": 1,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          },
+          {
+            "jobId": "2",
+            "inputRevision": 2,
+            "stage": "first-ort-run-start",
+            "created": 1,
+            "released": 0,
+            "active": 1,
+            "maximumActive": 1,
+            "runCalls": 1,
+            "tensorDisposeCalls": 0,
+            "loadMs": 479.29500000178814,
+            "inferMs": 0,
+            "createAttempts": 1,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 0,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 3,
+              "readBytes": 668696,
+              "digestCalls": 4,
+              "digestInputBytes": 673961,
+              "ortSubmittedModelBytes": 667608,
+              "wasmGrowCalls": 1,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 20,
+              "maximumSingleWasmCapacityBytes": 16777216,
+              "maximumObservedWasmCapacitySumBytes": 18612224,
+              "maximumDeclaredWasmPages": 65536,
+              "maximumObservedMemoryCount": 2,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          },
+          {
+            "jobId": "2",
+            "inputRevision": 2,
+            "stage": "native-final",
+            "created": 49,
+            "released": 49,
+            "active": 0,
+            "maximumActive": 1,
+            "runCalls": 49,
+            "tensorDisposeCalls": 172,
+            "loadMs": 896.9550000429153,
+            "inferMs": 221137.92500004172,
+            "createAttempts": 49,
+            "createErrors": 0,
+            "runErrors": 0,
+            "releaseCalls": 49,
+            "releaseErrors": 0,
+            "repeatedReleaseCalls": 0,
+            "tensorDisposeErrors": 0,
+            "memorySummary": {
+              "readCalls": 51,
+              "readBytes": 286235519,
+              "digestCalls": 52,
+              "digestInputBytes": 286240784,
+              "ortSubmittedModelBytes": 286234431,
+              "wasmGrowCalls": 17,
+              "scope": "Scalar API-visible cumulative read/digest/submitted bytes and observed WASM capacities; not retained bytes, OS RSS/PSS, or proof of deallocation.",
+              "events": 245,
+              "maximumSingleWasmCapacityBytes": 1857421312,
+              "maximumObservedWasmCapacitySumBytes": 1859256320,
+              "maximumDeclaredWasmPages": 65536,
+              "maximumObservedMemoryCount": 2,
+              "wasmGrowFailures": 0
+            },
+            "scope": "Delegated real native Worker/ORT calls; scalar lifecycle counters only. Result contract is unchanged."
+          }
+        ],
+        "terminatedAtEpochMs": 1793597116174
+      }
+    ],
+    "progressCounts": {
+      "chunk-start": 2,
+      "loading-unit": 88,
+      "creating-session": 88,
+      "running-unit": 88,
+      "chunk-complete": 2,
+      "complete": 2,
+      "loading-conv2": 1,
+      "hike-conv2": 1
+    },
+    "chunks": [
+      {
+        "controlPhase": "normal",
+        "phase": "chunk-start",
+        "operation": "encode",
+        "profileId": "wan21-raw-f32-stream",
+        "chunkIndex": 0,
+        "chunkCount": 1
+      },
+      {
+        "controlPhase": "normal",
+        "phase": "chunk-complete",
+        "operation": "encode",
+        "profileId": "wan21-raw-f32-stream",
+        "chunkIndex": 0,
+        "chunkCount": 1
+      },
+      {
+        "controlPhase": "normal",
+        "phase": "chunk-start",
+        "operation": "decode",
+        "profileId": "wan21-raw-f32-stream",
+        "chunkIndex": 0,
+        "chunkCount": 1
+      },
+      {
+        "controlPhase": "normal",
+        "phase": "chunk-complete",
+        "operation": "decode",
+        "profileId": "wan21-raw-f32-stream",
+        "chunkIndex": 0,
+        "chunkCount": 1
+      }
+    ],
+    "lastState": {
+      "status": "disposed",
+      "module": "vae",
+      "operation": "decode",
+      "inputRevision": 2
+    }
+  },
+  "processOwnership": {
+    "harnessPid": 24932,
+    "harnessCtime": 1793596702.69,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 24967,
+        "ctime": 1793596704.4,
+        "ppid": 24932,
+        "name": "MainThread",
+        "status": "zombie",
+        "firstPpid": 24932
+      },
+      {
+        "pid": 24979,
+        "ctime": 1793596704.85,
+        "ppid": 24967,
+        "name": "chromium",
+        "status": "running",
+        "firstPpid": 24967
+      },
+      {
+        "pid": 24986,
+        "ctime": 1793596704.86,
+        "ppid": 24979,
+        "name": "findmnt",
+        "status": "running",
+        "firstPpid": 24979
+      },
+      {
+        "pid": 24995,
+        "ctime": 1793596705.06,
+        "ppid": 24932,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 24932
+      },
+      {
+        "pid": 25000,
+        "ctime": 1793596705.07,
+        "ppid": 24932,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 24932
+      },
+      {
+        "pid": 24997,
+        "ctime": 1793596705.07,
+        "ppid": 24932,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 24979
+      },
+      {
+        "pid": 24998,
+        "ctime": 1793596705.07,
+        "ppid": 24932,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 24979
+      },
+      {
+        "pid": 25025,
+        "ctime": 1793596705.18,
+        "ppid": 24979,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 24979
+      },
+      {
+        "pid": 25022,
+        "ctime": 1793596705.17,
+        "ppid": 24997,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 24997
+      },
+      {
+        "pid": 25047,
+        "ctime": 1793596705.25,
+        "ppid": 24998,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 24998
+      },
+      {
+        "pid": 25064,
+        "ctime": 1793596705.41,
+        "ppid": 24998,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 24998
+      },
+      {
+        "pid": 25073,
+        "ctime": 1793596705.46,
+        "ppid": 24998,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 24998
+      },
+      {
+        "pid": 25075,
+        "ctime": 1793596705.46,
+        "ppid": 24998,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 24998
+      },
+      {
+        "pid": 25096,
+        "ctime": 1793596705.61,
+        "ppid": 24998,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 24998
+      },
+      {
+        "pid": 25160,
+        "ctime": 1793596706.48,
+        "ppid": 24932,
+        "name": "git",
+        "status": "running",
+        "firstPpid": 24932
+      },
+      {
+        "pid": 25269,
+        "ctime": 1793596871.76,
+        "ppid": 24932,
+        "name": "git",
+        "status": "running",
+        "firstPpid": 24932
+      },
+      {
+        "pid": 25270,
+        "ctime": 1793596885.19,
+        "ppid": 24997,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 24997
+      }
+    ],
+    "reapedChildren": [
+      {
+        "pid": 24995,
+        "ctime": 1793596705.06,
+        "ppid": 24932,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 24932,
+        "waitStatus": 0
+      },
+      {
+        "pid": 25000,
+        "ctime": 1793596705.07,
+        "ppid": 24932,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 24932,
+        "waitStatus": 0
+      },
+      {
+        "pid": 24997,
+        "ctime": 1793596705.07,
+        "ppid": 24932,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 24979,
+        "waitStatus": 0
+      },
+      {
+        "pid": 24998,
+        "ctime": 1793596705.07,
+        "ppid": 24932,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 24979,
+        "waitStatus": 0
+      }
+    ],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "resources": {
+    "file": "resource-measurements.json",
+    "sha256": "9da1ed8ddc2013a2f795a761f82a0fe3060bfc512f7bd98f91be1c79c04a900f",
+    "phases": {
+      "browser-ready": {
+        "samples": 6,
+        "sampledPeakSumRssBytes": 557662208,
+        "sampledPeakSumPssBytes": 284171264
+      },
+      "exact-capabilities-no-NN": {
+        "samples": 1,
+        "sampledPeakSumRssBytes": 574418944,
+        "sampledPeakSumPssBytes": 298032128
+      },
+      "encode:normal-or-recovery": {
+        "samples": 2,
+        "sampledPeakSumRssBytes": 591896576,
+        "sampledPeakSumPssBytes": 314920960
+      },
+      "encode:normal": {
+        "samples": 1223,
+        "sampledPeakSumRssBytes": 4479012864,
+        "sampledPeakSumPssBytes": 4208588800
+      },
+      "encode:independent-all-value-comparison": {
+        "samples": 1,
+        "sampledPeakSumRssBytes": 580689920,
+        "sampledPeakSumPssBytes": 303017984
+      },
+      "decode:normal-or-recovery": {
+        "samples": 2,
+        "sampledPeakSumRssBytes": 584544256,
+        "sampledPeakSumPssBytes": 306662400
+      },
+      "decode:normal": {
+        "samples": 1940,
+        "sampledPeakSumRssBytes": 4096307200,
+        "sampledPeakSumPssBytes": 3831917568
+      },
+      "decode:independent-all-value-comparison": {
+        "samples": 1,
+        "sampledPeakSumRssBytes": 606269440,
+        "sampledPeakSumPssBytes": 328500224
+      }
+    },
+    "sampledPeakCgroupCurrentBytes": 17179799552,
+    "allObservedPidsGone": true,
+    "liveProcessesAfterClose": [],
+    "zombieProcessesAfterClose": []
+  },
+  "servedSources": [
+    {
+      "path": "tools/inference/vae/accept_stream.py",
+      "bytes": 29209,
+      "sha256": "bbe18c614e1d24f829befcd93b239de7b8fb63dea1aa2d8a31cee3e1ff9bb1de"
+    },
+    {
+      "path": "tools/inference/vae/stream_browser.mjs",
+      "bytes": 15062,
+      "sha256": "7a09c548f7fffe374a5d8a01b04f5610174b23034aec0b594496fcb7546e08fe"
+    },
+    {
+      "path": "tools/inference/vae/stream_observer_worker.mjs",
+      "bytes": 5282,
+      "sha256": "909a6169bef3a246a14fb47773f1f3f2a5c9fda24e10b5e79a84399a2f62907d"
+    },
+    {
+      "path": "tools/inference/vae/process_lifecycle.py",
+      "bytes": 6299,
+      "sha256": "a927fe8f38382563ec8d512745446f32bc7740bff3c1b86b650f4490f178299c"
+    },
+    {
+      "path": "tools/inference/vae/accept_still.py",
+      "bytes": 23812,
+      "sha256": "91f5e010809d54716be620a01a6af2a364d77ebd3b7834cb7c06571b681fb9f6"
+    },
+    {
+      "path": "tools/inference/vae/stream_reference.py",
+      "bytes": 23592,
+      "sha256": "5d5c5c70b01b03841bc85997ad6ec9cf638a1269452a8ce70fb954fb51991543"
+    },
+    {
+      "path": "development/inference/standalone-20261102/vae/predeclared-plan.json",
+      "bytes": 6620,
+      "sha256": "8b5d354a299e8e35863269ace9549148d4265b8d097b8877caabd727a4c193ea"
+    },
+    {
+      "path": "tools/inference/text-encoder/plain_memory.mjs",
+      "bytes": 5508,
+      "sha256": "dd0dcf5ef26ea1b71b2803db4d521af3bfeb24b0fa8323eb7437507b2d3cbc71"
+    },
+    {
+      "path": "docs/shared/vr180/sha256.mjs",
+      "bytes": 6970,
+      "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+    },
+    {
+      "path": "docs/shared/inference/text-encoder.mjs",
+      "bytes": 9309,
+      "sha256": "44e9b144d6c1f3e2d60cb33e2d537f8f523fec0c7c10e30830427b417957252d"
+    },
+    {
+      "path": "docs/shared/inference/vae-api.mjs",
+      "bytes": 7261,
+      "sha256": "3959e455295135840c566a129ac198507a289a9cc88f813515fe27141cec94a2"
+    },
+    {
+      "path": "docs/shared/inference/ui.mjs",
+      "bytes": 7205,
+      "sha256": "77895caf5535522ab9a96f9b250fff12d56ae5fedc4b7944b8d4e1d457f0a22f"
+    },
+    {
+      "path": "docs/shared/inference/vae.mjs",
+      "bytes": 13223,
+      "sha256": "e2e8b7901edfe8ac94152dba2c9f246d0dd0d2c595b5ac72e0cade4b36d170ae"
+    },
+    {
+      "path": "docs/shared/inference/api.mjs",
+      "bytes": 2293,
+      "sha256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda"
+    },
+    {
+      "path": "docs/shared/inference/vae-stream.mjs",
+      "bytes": 22195,
+      "sha256": "599e9231b3dd754dfa911e385bb666009d5038b71b2e533e09b17e1878643ea0"
+    },
+    {
+      "path": "docs/shared/inference/text-encoder-api.mjs",
+      "bytes": 4952,
+      "sha256": "b33a81b0b92da5668d6eb9a392ce18148c06133cfce431b56e9b8c0fa72152d1"
+    },
+    {
+      "path": "docs/shared/inference/client.mjs",
+      "bytes": 2423,
+      "sha256": "806278b5eb09242cec8726d22b13be6237323862d0c42f0c3948d0a63cc9501f"
+    },
+    {
+      "path": "docs/shared/inference/tokenizer.mjs",
+      "bytes": 1637,
+      "sha256": "4a7811d4e36fbcc568e2a2a1e0941fd78261f84b231a96458d919ea0259fb9a5"
+    },
+    {
+      "path": "docs/shared/inference/hike.mjs",
+      "bytes": 4126,
+      "sha256": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65"
+    },
+    {
+      "path": "docs/shared/inference/inference-worker.mjs",
+      "bytes": 3602,
+      "sha256": "d0168efaecaac8b10f4e33bd3546cb333bdedd151345c3026358d5fb8e86b15b"
+    },
+    {
+      "path": "docs/shared/inference/tensor.mjs",
+      "bytes": 10825,
+      "sha256": "370a1c8d59fe6d64ba182380697623e8a142ee4f2cc046ca3843a8ab4bf543e2"
+    },
+    {
+      "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "bytes": 24274,
+      "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57"
+    },
+    {
+      "path": "docs/shared/inference/vendor/sentencepiece.mjs",
+      "bytes": 741502,
+      "sha256": "31ce41230f8694c63afa1ffeecb862d0bf3768d858328d335530997a86a1f27d"
+    },
+    {
+      "path": "docs/shared/inference/vendor/ort.wasm.min.mjs",
+      "bytes": 49997,
+      "sha256": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e"
+    },
+    {
+      "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "bytes": 12361745,
+      "sha256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+    },
+    {
+      "path": "docs/shared/inference/kernel/tensor.wasm",
+      "bytes": 5265,
+      "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8"
+    }
+  ],
+  "serverErrors": [],
+  "wallSeconds": 413.271734673006
+}

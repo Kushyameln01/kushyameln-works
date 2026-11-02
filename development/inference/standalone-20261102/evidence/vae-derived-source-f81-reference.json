@@ -1,0 +1,946 @@
+{
+  "schemaVersion": 1,
+  "status": "DERIVED_CAUSAL_PREFIX_REFERENCE",
+  "case": {
+    "id": "source-f81-480x832",
+    "role": "source",
+    "rgbShape": [
+      1,
+      3,
+      81,
+      480,
+      832
+    ],
+    "latentShape": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "decodeRgbShape": [
+      1,
+      3,
+      81,
+      480,
+      832
+    ]
+  },
+  "comparisonGate": {
+    "atol": 0.002,
+    "rtol": 0.002,
+    "maxAbs": 0.002,
+    "registeredBeforeComparison": true,
+    "scope": "New declared FP32 synthetic shape domain; proposed before comparison, not transferred from tiny-model tolerances."
+  },
+  "executionSourceSha": "5f7db87d2800e98eeca28484bf1a209eb06bcc39",
+  "executionSourceShaScope": "Exact executing derivation-tool bytes checked against this commit; no model execution or whole-tree clean claim",
+  "derivationToolSha256": "b00b10708d3a74e2c09cf91e7d5d5da4b38477e1d76f59e37a92c709540746d2",
+  "referenceContractSha256": "4c5e7becf75984cf230d9616c4e4297b6c50a0516cc9b79c173bb2cc7c8391c7",
+  "nativeExecutionPerformed": false,
+  "newModelLoads": 0,
+  "newNNRuns": 0,
+  "references": {
+    "encode": {
+      "input": {
+        "file": "rgb-input.f32",
+        "path": "/tmp/kw-vae-ref-derived-source-f81-20261102/rgb-input.f32",
+        "shape": [
+          1,
+          3,
+          81,
+          480,
+          832
+        ],
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "dtype": "float32",
+        "byteOrder": "little",
+        "layout": "NCTHW",
+        "elements": 97044480,
+        "bytes": 388177920,
+        "sha256": "550d2fd2914ace3590afb423906a2528e0b20d97605bf5965477f6c5cc23c6ee",
+        "complete": true,
+        "storage": "hardlink-identical-complete-tensor",
+        "derivation": {
+          "axis": 2,
+          "selection": [
+            0,
+            81
+          ],
+          "sourceShape": [
+            1,
+            3,
+            81,
+            480,
+            832
+          ],
+          "targetShape": [
+            1,
+            3,
+            81,
+            480,
+            832
+          ],
+          "channels": [
+            {
+              "channel": 0,
+              "sourceOffsetBytes": 0,
+              "targetOffsetBytes": 0,
+              "bytes": 129392640
+            },
+            {
+              "channel": 1,
+              "sourceOffsetBytes": 129392640,
+              "targetOffsetBytes": 129392640,
+              "bytes": 129392640
+            },
+            {
+              "channel": 2,
+              "sourceOffsetBytes": 258785280,
+              "targetOffsetBytes": 258785280,
+              "bytes": 129392640
+            }
+          ],
+          "scope": "Per-channel coordinate prefix repacked in NCTHW order; no flattened slice, resizing, padding, or numerical transform"
+        },
+        "meaning": "RGB in [-1,1]",
+        "finite": true,
+        "finiteScope": "Selected values inherited from hash-verified complete finite native parent; no numerical transform",
+        "provenance": "SYNTHETIC_DECLARED_RGB_INPUT",
+        "parent": {
+          "reportSha256": "be767eb59bb26a26aab6b4cf1b114e803179ac21110a7b021dd1ff5c0b9e5a6e",
+          "file": "rgb-input.f32",
+          "sha256": "550d2fd2914ace3590afb423906a2528e0b20d97605bf5965477f6c5cc23c6ee",
+          "shape": [
+            1,
+            3,
+            81,
+            480,
+            832
+          ]
+        }
+      },
+      "output": {
+        "file": "mean-reference.f32",
+        "path": "/tmp/kw-vae-ref-derived-source-f81-20261102/mean-reference.f32",
+        "shape": [
+          1,
+          16,
+          21,
+          60,
+          104
+        ],
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "dtype": "float32",
+        "byteOrder": "little",
+        "layout": "NCTHW",
+        "elements": 2096640,
+        "bytes": 8386560,
+        "sha256": "b94d7bc4d2e2d0ae79ced6e390d3256fbac050d91efc7ba78bdf86a3debd0be4",
+        "complete": true,
+        "storage": "hardlink-identical-complete-tensor",
+        "derivation": {
+          "axis": 2,
+          "selection": [
+            0,
+            21
+          ],
+          "sourceShape": [
+            1,
+            16,
+            21,
+            60,
+            104
+          ],
+          "targetShape": [
+            1,
+            16,
+            21,
+            60,
+            104
+          ],
+          "channels": [
+            {
+              "channel": 0,
+              "sourceOffsetBytes": 0,
+              "targetOffsetBytes": 0,
+              "bytes": 524160
+            },
+            {
+              "channel": 1,
+              "sourceOffsetBytes": 524160,
+              "targetOffsetBytes": 524160,
+              "bytes": 524160
+            },
+            {
+              "channel": 2,
+              "sourceOffsetBytes": 1048320,
+              "targetOffsetBytes": 1048320,
+              "bytes": 524160
+            },
+            {
+              "channel": 3,
+              "sourceOffsetBytes": 1572480,
+              "targetOffsetBytes": 1572480,
+              "bytes": 524160
+            },
+            {
+              "channel": 4,
+              "sourceOffsetBytes": 2096640,
+              "targetOffsetBytes": 2096640,
+              "bytes": 524160
+            },
+            {
+              "channel": 5,
+              "sourceOffsetBytes": 2620800,
+              "targetOffsetBytes": 2620800,
+              "bytes": 524160
+            },
+            {
+              "channel": 6,
+              "sourceOffsetBytes": 3144960,
+              "targetOffsetBytes": 3144960,
+              "bytes": 524160
+            },
+            {
+              "channel": 7,
+              "sourceOffsetBytes": 3669120,
+              "targetOffsetBytes": 3669120,
+              "bytes": 524160
+            },
+            {
+              "channel": 8,
+              "sourceOffsetBytes": 4193280,
+              "targetOffsetBytes": 4193280,
+              "bytes": 524160
+            },
+            {
+              "channel": 9,
+              "sourceOffsetBytes": 4717440,
+              "targetOffsetBytes": 4717440,
+              "bytes": 524160
+            },
+            {
+              "channel": 10,
+              "sourceOffsetBytes": 5241600,
+              "targetOffsetBytes": 5241600,
+              "bytes": 524160
+            },
+            {
+              "channel": 11,
+              "sourceOffsetBytes": 5765760,
+              "targetOffsetBytes": 5765760,
+              "bytes": 524160
+            },
+            {
+              "channel": 12,
+              "sourceOffsetBytes": 6289920,
+              "targetOffsetBytes": 6289920,
+              "bytes": 524160
+            },
+            {
+              "channel": 13,
+              "sourceOffsetBytes": 6814080,
+              "targetOffsetBytes": 6814080,
+              "bytes": 524160
+            },
+            {
+              "channel": 14,
+              "sourceOffsetBytes": 7338240,
+              "targetOffsetBytes": 7338240,
+              "bytes": 524160
+            },
+            {
+              "channel": 15,
+              "sourceOffsetBytes": 7862400,
+              "targetOffsetBytes": 7862400,
+              "bytes": 524160
+            }
+          ],
+          "scope": "Per-channel coordinate prefix repacked in NCTHW order; no flattened slice, resizing, padding, or numerical transform"
+        },
+        "meaning": "Raw posterior mean; no stochastic sampling or latent normalization",
+        "finite": true,
+        "finiteScope": "Selected values inherited from hash-verified complete finite native parent; no numerical transform",
+        "provenance": "DERIVED_CAUSAL_PREFIX_OF_INDEPENDENT_UNCHANGED_WAN21_SOURCE",
+        "parent": {
+          "reportSha256": "be767eb59bb26a26aab6b4cf1b114e803179ac21110a7b021dd1ff5c0b9e5a6e",
+          "file": "mean-reference.f32",
+          "sha256": "b94d7bc4d2e2d0ae79ced6e390d3256fbac050d91efc7ba78bdf86a3debd0be4",
+          "shape": [
+            1,
+            16,
+            21,
+            60,
+            104
+          ]
+        }
+      }
+    },
+    "decode": {
+      "input": {
+        "file": "decode-raw-input.f32",
+        "path": "/tmp/kw-vae-ref-derived-source-f81-20261102/decode-raw-input.f32",
+        "shape": [
+          1,
+          16,
+          21,
+          60,
+          104
+        ],
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "dtype": "float32",
+        "byteOrder": "little",
+        "layout": "NCTHW",
+        "elements": 2096640,
+        "bytes": 8386560,
+        "sha256": "9676a279edf4a9fbc058db8b20ccfaf167ff45d5832b16c9cf6be03b3969c4cd",
+        "complete": true,
+        "storage": "hardlink-identical-complete-tensor",
+        "derivation": {
+          "axis": 2,
+          "selection": [
+            0,
+            21
+          ],
+          "sourceShape": [
+            1,
+            16,
+            21,
+            60,
+            104
+          ],
+          "targetShape": [
+            1,
+            16,
+            21,
+            60,
+            104
+          ],
+          "channels": [
+            {
+              "channel": 0,
+              "sourceOffsetBytes": 0,
+              "targetOffsetBytes": 0,
+              "bytes": 524160
+            },
+            {
+              "channel": 1,
+              "sourceOffsetBytes": 524160,
+              "targetOffsetBytes": 524160,
+              "bytes": 524160
+            },
+            {
+              "channel": 2,
+              "sourceOffsetBytes": 1048320,
+              "targetOffsetBytes": 1048320,
+              "bytes": 524160
+            },
+            {
+              "channel": 3,
+              "sourceOffsetBytes": 1572480,
+              "targetOffsetBytes": 1572480,
+              "bytes": 524160
+            },
+            {
+              "channel": 4,
+              "sourceOffsetBytes": 2096640,
+              "targetOffsetBytes": 2096640,
+              "bytes": 524160
+            },
+            {
+              "channel": 5,
+              "sourceOffsetBytes": 2620800,
+              "targetOffsetBytes": 2620800,
+              "bytes": 524160
+            },
+            {
+              "channel": 6,
+              "sourceOffsetBytes": 3144960,
+              "targetOffsetBytes": 3144960,
+              "bytes": 524160
+            },
+            {
+              "channel": 7,
+              "sourceOffsetBytes": 3669120,
+              "targetOffsetBytes": 3669120,
+              "bytes": 524160
+            },
+            {
+              "channel": 8,
+              "sourceOffsetBytes": 4193280,
+              "targetOffsetBytes": 4193280,
+              "bytes": 524160
+            },
+            {
+              "channel": 9,
+              "sourceOffsetBytes": 4717440,
+              "targetOffsetBytes": 4717440,
+              "bytes": 524160
+            },
+            {
+              "channel": 10,
+              "sourceOffsetBytes": 5241600,
+              "targetOffsetBytes": 5241600,
+              "bytes": 524160
+            },
+            {
+              "channel": 11,
+              "sourceOffsetBytes": 5765760,
+              "targetOffsetBytes": 5765760,
+              "bytes": 524160
+            },
+            {
+              "channel": 12,
+              "sourceOffsetBytes": 6289920,
+              "targetOffsetBytes": 6289920,
+              "bytes": 524160
+            },
+            {
+              "channel": 13,
+              "sourceOffsetBytes": 6814080,
+              "targetOffsetBytes": 6814080,
+              "bytes": 524160
+            },
+            {
+              "channel": 14,
+              "sourceOffsetBytes": 7338240,
+              "targetOffsetBytes": 7338240,
+              "bytes": 524160
+            },
+            {
+              "channel": 15,
+              "sourceOffsetBytes": 7862400,
+              "targetOffsetBytes": 7862400,
+              "bytes": 524160
+            }
+          ],
+          "scope": "Per-channel coordinate prefix repacked in NCTHW order; no flattened slice, resizing, padding, or numerical transform"
+        },
+        "meaning": "Unnormalized raw latent in [-.25,.25], independent of encode",
+        "finite": true,
+        "finiteScope": "Selected values inherited from hash-verified complete finite native parent; no numerical transform",
+        "provenance": "RAW_LATENT_DECLARED_NORMAL_INPUT",
+        "parent": {
+          "reportSha256": "be767eb59bb26a26aab6b4cf1b114e803179ac21110a7b021dd1ff5c0b9e5a6e",
+          "file": "decode-raw-input.f32",
+          "sha256": "9676a279edf4a9fbc058db8b20ccfaf167ff45d5832b16c9cf6be03b3969c4cd",
+          "shape": [
+            1,
+            16,
+            21,
+            60,
+            104
+          ]
+        }
+      },
+      "output": {
+        "file": "decode-rgb-reference.f32",
+        "path": "/tmp/kw-vae-ref-derived-source-f81-20261102/decode-rgb-reference.f32",
+        "shape": [
+          1,
+          3,
+          81,
+          480,
+          832
+        ],
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "dtype": "float32",
+        "byteOrder": "little",
+        "layout": "NCTHW",
+        "elements": 97044480,
+        "bytes": 388177920,
+        "sha256": "f7138c1f54ce7ece54604503a63a128a0e9983a076a310ba831a83773beea5bb",
+        "complete": true,
+        "storage": "hardlink-identical-complete-tensor",
+        "derivation": {
+          "axis": 2,
+          "selection": [
+            0,
+            81
+          ],
+          "sourceShape": [
+            1,
+            3,
+            81,
+            480,
+            832
+          ],
+          "targetShape": [
+            1,
+            3,
+            81,
+            480,
+            832
+          ],
+          "channels": [
+            {
+              "channel": 0,
+              "sourceOffsetBytes": 0,
+              "targetOffsetBytes": 0,
+              "bytes": 129392640
+            },
+            {
+              "channel": 1,
+              "sourceOffsetBytes": 129392640,
+              "targetOffsetBytes": 129392640,
+              "bytes": 129392640
+            },
+            {
+              "channel": 2,
+              "sourceOffsetBytes": 258785280,
+              "targetOffsetBytes": 258785280,
+              "bytes": 129392640
+            }
+          ],
+          "scope": "Per-channel coordinate prefix repacked in NCTHW order; no flattened slice, resizing, padding, or numerical transform"
+        },
+        "meaning": "Raw RGB from independent unnormalized raw latent; no output clipping or channel normalization",
+        "finite": true,
+        "finiteScope": "Selected values inherited from hash-verified complete finite native parent; no numerical transform",
+        "provenance": "DERIVED_CAUSAL_PREFIX_OF_INDEPENDENT_UNCHANGED_WAN21_SOURCE",
+        "parent": {
+          "reportSha256": "be767eb59bb26a26aab6b4cf1b114e803179ac21110a7b021dd1ff5c0b9e5a6e",
+          "file": "decode-rgb-reference.f32",
+          "sha256": "f7138c1f54ce7ece54604503a63a128a0e9983a076a310ba831a83773beea5bb",
+          "shape": [
+            1,
+            3,
+            81,
+            480,
+            832
+          ]
+        }
+      }
+    }
+  },
+  "operations": {
+    "encode": {
+      "status": "DERIVED_CAUSAL_PREFIX_REFERENCE",
+      "nativeExecutionPerformed": false,
+      "inputShape": [
+        1,
+        3,
+        81,
+        480,
+        832
+      ],
+      "outputShape": [
+        1,
+        16,
+        21,
+        60,
+        104
+      ],
+      "rawScale": [
+        0.0,
+        1.0
+      ],
+      "allCaseValuesPreserved": true,
+      "parentNativeOperation": {
+        "status": "REFERENCE_WRITTEN",
+        "nativeSeconds": 1574.5153971030086,
+        "inputShape": [
+          1,
+          3,
+          81,
+          480,
+          832
+        ],
+        "outputShape": [
+          1,
+          16,
+          21,
+          60,
+          104
+        ],
+        "rawScale": [
+          0.0,
+          1.0
+        ],
+        "allValuesPreserved": true
+      }
+    },
+    "decode": {
+      "status": "DERIVED_CAUSAL_PREFIX_REFERENCE",
+      "nativeExecutionPerformed": false,
+      "inputShape": [
+        1,
+        16,
+        21,
+        60,
+        104
+      ],
+      "outputShape": [
+        1,
+        3,
+        81,
+        480,
+        832
+      ],
+      "rawScale": [
+        0.0,
+        1.0
+      ],
+      "allCaseValuesPreserved": true,
+      "parentNativeOperation": {
+        "status": "REFERENCE_WRITTEN",
+        "nativeSeconds": 2993.3301692079986,
+        "inputShape": [
+          1,
+          16,
+          21,
+          60,
+          104
+        ],
+        "outputShape": [
+          1,
+          3,
+          81,
+          480,
+          832
+        ],
+        "rawScale": [
+          0.0,
+          1.0
+        ],
+        "allValuesPreserved": true
+      }
+    }
+  },
+  "errors": [],
+  "nativePlanContracts": {
+    "parent": {
+      "caseId": "target-f81-480x832",
+      "executionSourceSha": "05198dba7959cc95e0c4d770fd85557ad4010a80",
+      "historicalPlanSha256": "8b5d354a299e8e35863269ace9549148d4265b8d097b8877caabd727a4c193ea",
+      "historicalPlanBytes": 6620,
+      "currentPlanSha256": "d8ae3cf436007b0ce7bb7877756bc5663975e65c3c62928bbc48c784d5bd526c",
+      "currentPlanHashEncoding": "exact current file bytes",
+      "toolPath": "tools/inference/vae/stream_reference.py",
+      "toolSha256": "5d5c5c70b01b03841bc85997ad6ec9cf638a1269452a8ce70fb954fb51991543",
+      "selectedCaseSemanticsUnchanged": true,
+      "semanticFieldsChecked": [
+        "schemaVersion",
+        "shapeAuthority",
+        "model",
+        "source",
+        "comparisonGate",
+        "comparisonPolicy",
+        "encodeInput",
+        "encodeOutput",
+        "decodeInput",
+        "decodeOutput",
+        "temporalContract"
+      ],
+      "scope": "Committed historical plan and selected-case/shared numerical semantics; unrelated additional case entries do not invalidate this reference",
+      "status": "REFERENCE_WRITTEN",
+      "nativeExecutionPerformed": true
+    },
+    "directF1": {
+      "caseId": "source-f1-480x832",
+      "executionSourceSha": "e0f0dd7cae05aebcfc60214d51fce90df6197ab7",
+      "historicalPlanSha256": "8b5d354a299e8e35863269ace9549148d4265b8d097b8877caabd727a4c193ea",
+      "historicalPlanBytes": 6620,
+      "currentPlanSha256": "d8ae3cf436007b0ce7bb7877756bc5663975e65c3c62928bbc48c784d5bd526c",
+      "currentPlanHashEncoding": "exact current file bytes",
+      "toolPath": "tools/inference/vae/stream_reference.py",
+      "toolSha256": "5d5c5c70b01b03841bc85997ad6ec9cf638a1269452a8ce70fb954fb51991543",
+      "selectedCaseSemanticsUnchanged": true,
+      "semanticFieldsChecked": [
+        "schemaVersion",
+        "shapeAuthority",
+        "model",
+        "source",
+        "comparisonGate",
+        "comparisonPolicy",
+        "encodeInput",
+        "encodeOutput",
+        "decodeInput",
+        "decodeOutput",
+        "temporalContract"
+      ],
+      "scope": "Committed historical plan and selected-case/shared numerical semantics; unrelated additional case entries do not invalidate this reference",
+      "status": "REFERENCE_WRITTEN",
+      "nativeExecutionPerformed": true
+    }
+  },
+  "parentReport": {
+    "path": "/tmp/kw-vae-ref-target81-20261102/reference-report.json",
+    "sha256": "be767eb59bb26a26aab6b4cf1b114e803179ac21110a7b021dd1ff5c0b9e5a6e",
+    "snapshotFile": "parent-native-report.json",
+    "executionSourceSha": "05198dba7959cc95e0c4d770fd85557ad4010a80"
+  },
+  "directF1Report": {
+    "path": "/tmp/kw-vae-ref-f1-target-spatial-20261102/reference-report.json",
+    "sha256": "ba1e3b5da44fc30e63b028887734a94f815e8b52aedfddfdfd5355be81f39c36",
+    "snapshotFile": "direct-f1-native-report.json",
+    "executionSourceSha": "e0f0dd7cae05aebcfc60214d51fce90df6197ab7"
+  },
+  "inputPatternChecks": {
+    "parent": {
+      "encode": {
+        "pattern": "((c*71+t*13+y*5+x*3)%257-128)/128",
+        "shape": [
+          1,
+          3,
+          81,
+          480,
+          832
+        ],
+        "expectedSha256": "550d2fd2914ace3590afb423906a2528e0b20d97605bf5965477f6c5cc23c6ee",
+        "allInputValuesBoundBySha256": true
+      },
+      "decode": {
+        "pattern": "((c*17+t*11+y*7+x*5)%257-128)/512",
+        "shape": [
+          1,
+          16,
+          21,
+          60,
+          104
+        ],
+        "expectedSha256": "9676a279edf4a9fbc058db8b20ccfaf167ff45d5832b16c9cf6be03b3969c4cd",
+        "allInputValuesBoundBySha256": true
+      }
+    },
+    "directF1": {
+      "encode": {
+        "pattern": "((c*71+t*13+y*5+x*3)%257-128)/128",
+        "shape": [
+          1,
+          3,
+          1,
+          480,
+          832
+        ],
+        "expectedSha256": "2e581ea64f31b67702e3819397afaf343da2622ce4e95c20bb76ea3ada5b5e0e",
+        "allInputValuesBoundBySha256": true
+      },
+      "decode": {
+        "pattern": "((c*17+t*11+y*7+x*5)%257-128)/512",
+        "shape": [
+          1,
+          16,
+          1,
+          60,
+          104
+        ],
+        "expectedSha256": "8df382fc976b1a0938c54f56462e6df73d2a0659d30f0cb597c19b81035d7cbf",
+        "allInputValuesBoundBySha256": true
+      }
+    }
+  },
+  "directF1AllValueBridge": {
+    "encode": {
+      "input": {
+        "passed": true,
+        "elements": 1198080,
+        "allValuesCompared": true,
+        "allFinite": true,
+        "maxAbs": 0.0,
+        "rmse": 0.0,
+        "failedAllcloseElements": 0,
+        "firstFailedElement": null,
+        "gate": {
+          "atol": 0.0,
+          "rtol": 0.0,
+          "maxAbs": 0.0
+        },
+        "axis": 2,
+        "parentShape": [
+          1,
+          3,
+          81,
+          480,
+          832
+        ],
+        "directShape": [
+          1,
+          3,
+          1,
+          480,
+          832
+        ],
+        "scope": "All-channel exact-coordinate prefix versus separately executed direct F1 native reference; no new NN run"
+      },
+      "output": {
+        "passed": true,
+        "elements": 99840,
+        "allValuesCompared": true,
+        "allFinite": true,
+        "maxAbs": 9.5367431640625e-07,
+        "rmse": 7.803197739948703e-08,
+        "failedAllcloseElements": 0,
+        "firstFailedElement": null,
+        "gate": {
+          "atol": 0.002,
+          "rtol": 0.002,
+          "maxAbs": 0.002,
+          "registeredBeforeComparison": true,
+          "scope": "New declared FP32 synthetic shape domain; proposed before comparison, not transferred from tiny-model tolerances."
+        },
+        "axis": 2,
+        "parentShape": [
+          1,
+          16,
+          21,
+          60,
+          104
+        ],
+        "directShape": [
+          1,
+          16,
+          1,
+          60,
+          104
+        ],
+        "scope": "All-channel exact-coordinate prefix versus separately executed direct F1 native reference; no new NN run"
+      }
+    },
+    "decode": {
+      "input": {
+        "passed": true,
+        "elements": 99840,
+        "allValuesCompared": true,
+        "allFinite": true,
+        "maxAbs": 0.0,
+        "rmse": 0.0,
+        "failedAllcloseElements": 0,
+        "firstFailedElement": null,
+        "gate": {
+          "atol": 0.0,
+          "rtol": 0.0,
+          "maxAbs": 0.0
+        },
+        "axis": 2,
+        "parentShape": [
+          1,
+          16,
+          21,
+          60,
+          104
+        ],
+        "directShape": [
+          1,
+          16,
+          1,
+          60,
+          104
+        ],
+        "scope": "All-channel exact-coordinate prefix versus separately executed direct F1 native reference; no new NN run"
+      },
+      "output": {
+        "passed": true,
+        "elements": 1198080,
+        "allValuesCompared": true,
+        "allFinite": true,
+        "maxAbs": 0.0,
+        "rmse": 0.0,
+        "failedAllcloseElements": 0,
+        "firstFailedElement": null,
+        "gate": {
+          "atol": 0.002,
+          "rtol": 0.002,
+          "maxAbs": 0.002,
+          "registeredBeforeComparison": true,
+          "scope": "New declared FP32 synthetic shape domain; proposed before comparison, not transferred from tiny-model tolerances."
+        },
+        "axis": 2,
+        "parentShape": [
+          1,
+          3,
+          81,
+          480,
+          832
+        ],
+        "directShape": [
+          1,
+          3,
+          1,
+          480,
+          832
+        ],
+        "scope": "All-channel exact-coordinate prefix versus separately executed direct F1 native reference; no new NN run"
+      }
+    }
+  },
+  "storagePlan": {
+    "logicalTensorBytes": 793128960,
+    "expectedAdditionalDataBytes": 0,
+    "scope": "Only identical complete shapes on one filesystem use hardlinks; smaller-F files are repacked regular files. Failed hardlinks require checked full-copy storage."
+  },
+  "frameContract": {
+    "inputFrames": 81,
+    "latentFrames": 21,
+    "consumedFrames": 81,
+    "ignoredTailFrames": 0,
+    "decodedFrames": 81
+  },
+  "model": {
+    "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "storedDtype": "bfloat16",
+    "executionDtype": "float32",
+    "identityScope": "Inherited accepted original-model native receipt; no model opened by derivation"
+  },
+  "source": {
+    "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+    "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498",
+    "scope": "Accepted untouched native parent and locally verified source identity; source not executed by derivation"
+  },
+  "parentStrictLoad": {
+    "keys": 194,
+    "missing": [],
+    "unexpected": []
+  },
+  "predeclaredPlan": {
+    "path": "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/standalone-20261102/vae/predeclared-plan.json",
+    "sha256": "d8ae3cf436007b0ce7bb7877756bc5663975e65c3c62928bbc48c784d5bd526c"
+  },
+  "scope": "Diagnostic same-geometry causal coordinate-prefix references, derived from one independent native target81 run; not separately executed shorter native cases or production-WASM evidence",
+  "numericalScope": "Exact-arithmetic prefix identity plus measured all-value F1 bridge at predeclared2e-3. Different total-T pointwise CPU kernels may round differently; bitwise equality or separately measured shorter-native tolerances are not claimed.",
+  "causalEvidence": {
+    "sourceLines": [
+      "17-36: past-only Conv3d padding",
+      "39-54: channel-only RMSNorm",
+      "101-160: past-only resample caches",
+      "240-261: B*T spatial attention",
+      "505-506: pointwise terminal/projection convolutions",
+      "516-568: first1/groups4 encode and one-step decode, no terminal flush"
+    ],
+    "sourceSha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498",
+    "spatialReuse": false
+  },
+  "adaptation": {
+    "resize": false,
+    "spatialCrop": false,
+    "padding": false,
+    "inputFramesReduced": false,
+    "sourceTail": "F4/F80 input files retain literal4/80 frames; native mean covers1/77 as explicitly recorded"
+  },
+  "elapsedSeconds": 8.941458875997341
+}

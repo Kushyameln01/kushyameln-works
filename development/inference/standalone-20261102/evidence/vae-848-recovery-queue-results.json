@@ -1,0 +1,62 @@
+{
+  "scope": "Only previously unstarted848-square source reference and actual WASM acceptance; earlier accepted F80 is not rerun. Controller stdout/stderr use durable file, not lost legacy transport.",
+  "executionSourceSha": "dccb88515775ec8aa86dd16f82e8816c9347ed38",
+  "controllerPid": 54145,
+  "controllerCreationTime": 1793642855.76,
+  "controllerSourceSha256": "9c209670aec91eaddb2d59600612f1991e262b2d4a39832f21d501f17491a032",
+  "status": "FINISHED",
+  "runs": [
+    {
+      "output": "/tmp/kw-vae-ref-reference-f1-848x848-20261102",
+      "command": [
+        "python",
+        "tools/inference/vae/stream_reference.py",
+        "--case-id",
+        "reference-f1-848x848",
+        "--operation",
+        "both",
+        "--model",
+        "/workspace/work/models/vae/wan_2.1_vae.safetensors",
+        "--deps",
+        "/workspace/work/inference/vae-proof/deps",
+        "--memory-reserve-bytes",
+        "268435456",
+        "--execution-source-sha",
+        "dccb88515775ec8aa86dd16f82e8816c9347ed38",
+        "--output",
+        "/tmp/kw-vae-ref-reference-f1-848x848-20261102"
+      ],
+      "status": "FINISHED",
+      "log": "/tmp/kw-vae-ref-reference-f1-848x848-20261102-queue.log",
+      "pid": 54146,
+      "creationTime": 1793642855.82,
+      "exitCode": 0,
+      "elapsedSeconds": 242.45112484699348
+    },
+    {
+      "output": "/tmp/kw-vae-wasm-reference-f1-848x848-20261102",
+      "command": [
+        "python",
+        "tools/inference/vae/accept_stream.py",
+        "--bundle",
+        "/tmp/kw-vae-stream-threads4-20261102",
+        "--reference",
+        "/tmp/kw-vae-ref-reference-f1-848x848-20261102",
+        "--operation",
+        "both",
+        "--timeout-seconds",
+        "14400",
+        "--execution-source-sha",
+        "dccb88515775ec8aa86dd16f82e8816c9347ed38",
+        "--output",
+        "/tmp/kw-vae-wasm-reference-f1-848x848-20261102"
+      ],
+      "status": "FINISHED",
+      "log": "/tmp/kw-vae-wasm-reference-f1-848x848-20261102-queue.log",
+      "pid": 54176,
+      "creationTime": 1793643098.28,
+      "exitCode": 0,
+      "elapsedSeconds": 652.9571827810141
+    }
+  ]
+}

@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "status": "REFERENCE_WRITTEN",
+  "case": {
+    "id": "reference-f1-848x848",
+    "role": "reference",
+    "rgbShape": [
+      1,
+      3,
+      1,
+      848,
+      848
+    ],
+    "latentShape": [
+      1,
+      16,
+      1,
+      106,
+      106
+    ],
+    "decodeRgbShape": [
+      1,
+      3,
+      1,
+      848,
+      848
+    ]
+  },
+  "scope": "Independent untouched Wan2.1 CPU FP32 source references for the declared synthetic shape domain. Actual physical source/reference media were unavailable. These files do not establish original BF16 arithmetic, generated-video quality, real-media parity, or production WASM acceptance.",
+  "operation": "both",
+  "executionSourceSha": "dccb88515775ec8aa86dd16f82e8816c9347ed38",
+  "executionSourceShaScope": "Caller-supplied development revision, not a clean-tree claim",
+  "referenceToolSha256": "5d5c5c70b01b03841bc85997ad6ec9cf638a1269452a8ce70fb954fb51991543",
+  "predeclaredPlan": {
+    "path": "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/standalone-20261102/vae/predeclared-plan.json",
+    "sha256": "d8ae3cf436007b0ce7bb7877756bc5663975e65c3c62928bbc48c784d5bd526c"
+  },
+  "comparisonGate": {
+    "atol": 0.002,
+    "rtol": 0.002,
+    "maxAbs": 0.002,
+    "registeredBeforeComparison": true,
+    "scope": "New declared FP32 synthetic shape domain; proposed before comparison, not transferred from tiny-model tolerances."
+  },
+  "references": {
+    "encode": {
+      "input": {
+        "file": "rgb-input.f32",
+        "path": "/tmp/kw-vae-ref-reference-f1-848x848-20261102/rgb-input.f32",
+        "shape": [
+          1,
+          3,
+          1,
+          848,
+          848
+        ],
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "dtype": "float32",
+        "byteOrder": "little",
+        "layout": "NCTHW",
+        "elements": 2157312,
+        "bytes": 8629248,
+        "sha256": "42c531f736f3122645f9ecacef7bfeaa7d7d2d79d2de0d8f92c595750b307d7a",
+        "finite": true,
+        "min": -1.0,
+        "max": 1.0,
+        "meaning": "RGB in [-1,1]",
+        "provenance": "SYNTHETIC_DECLARED_RGB_INPUT",
+        "storage": "external-private-file",
+        "complete": true
+      },
+      "output": {
+        "file": "mean-reference.f32",
+        "path": "/tmp/kw-vae-ref-reference-f1-848x848-20261102/mean-reference.f32",
+        "shape": [
+          1,
+          16,
+          1,
+          106,
+          106
+        ],
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "dtype": "float32",
+        "byteOrder": "little",
+        "layout": "NCTHW",
+        "elements": 179776,
+        "bytes": 719104,
+        "sha256": "db1c004ea06808bd503881673699c630b5c83ef2cc4584316ffea060b41cce33",
+        "finite": true,
+        "min": -4.079912185668945,
+        "max": 3.691636085510254,
+        "meaning": "Raw posterior mean; no stochastic sampling or latent normalization",
+        "provenance": "INDEPENDENT_UNCHANGED_WAN21_SOURCE",
+        "storage": "external-private-file",
+        "complete": true
+      }
+    },
+    "decode": {
+      "input": {
+        "file": "decode-raw-input.f32",
+        "path": "/tmp/kw-vae-ref-reference-f1-848x848-20261102/decode-raw-input.f32",
+        "shape": [
+          1,
+          16,
+          1,
+          106,
+          106
+        ],
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "dtype": "float32",
+        "byteOrder": "little",
+        "layout": "NCTHW",
+        "elements": 179776,
+        "bytes": 719104,
+        "sha256": "500f784aa4e2cb26b2c79720b4e2ad5d57e93aa88f1e9897a8b5f636c1e415bf",
+        "finite": true,
+        "min": -0.25,
+        "max": 0.25,
+        "meaning": "Unnormalized raw latent in [-.25,.25], independent of encode",
+        "provenance": "RAW_LATENT_DECLARED_NORMAL_INPUT",
+        "storage": "external-private-file",
+        "complete": true
+      },
+      "output": {
+        "file": "decode-rgb-reference.f32",
+        "path": "/tmp/kw-vae-ref-reference-f1-848x848-20261102/decode-rgb-reference.f32",
+        "shape": [
+          1,
+          3,
+          1,
+          848,
+          848
+        ],
+        "axes": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "dtype": "float32",
+        "byteOrder": "little",
+        "layout": "NCTHW",
+        "elements": 2157312,
+        "bytes": 8629248,
+        "sha256": "e4b7ddc0c72a9f681a026b81187bbd591bad0a9a41b22b6d98e9b585ed874817",
+        "finite": true,
+        "min": -0.6838436126708984,
+        "max": 0.1623826026916504,
+        "meaning": "Raw RGB from independent unnormalized raw latent; no output clipping or channel normalization",
+        "provenance": "INDEPENDENT_UNCHANGED_WAN21_SOURCE",
+        "storage": "external-private-file",
+        "complete": true
+      }
+    }
+  },
+  "operations": {
+    "encode": {
+      "status": "REFERENCE_WRITTEN",
+      "nativeSeconds": 48.876636173023144,
+      "inputShape": [
+        1,
+        3,
+        1,
+        848,
+        848
+      ],
+      "outputShape": [
+        1,
+        16,
+        1,
+        106,
+        106
+      ],
+      "rawScale": [
+        0.0,
+        1.0
+      ],
+      "allValuesPreserved": true
+    },
+    "decode": {
+      "status": "REFERENCE_WRITTEN",
+      "nativeSeconds": 186.3317974609963,
+      "inputShape": [
+        1,
+        16,
+        1,
+        106,
+        106
+      ],
+      "outputShape": [
+        1,
+        3,
+        1,
+        848,
+        848
+      ],
+      "rawScale": [
+        0.0,
+        1.0
+      ],
+      "allValuesPreserved": true
+    }
+  },
+  "frameContract": {
+    "inputFrames": 1,
+    "latentFrames": 1,
+    "consumedFrames": 1,
+    "ignoredTailFrames": 0,
+    "decodedFrames": 1
+  },
+  "inputResize": false,
+  "padding": false,
+  "hiddenFrameReduction": false,
+  "tailPolicy": "Original source consumes first1 plus complete groups4; input file and shape retain every actual RGB frame.",
+  "resourcePolicy": {
+    "cpuThreads": 2,
+    "interopThreads": 1,
+    "memoryReserveBytes": 268435456,
+    "reserveScope": "Explicit supervisor reserve, not a measured model memory requirement",
+    "guardCharge": "Observed memory.current minus inactive_file only; shmem/tmpfs remains charged"
+  },
+  "errors": [],
+  "progress": {
+    "event": "operation-complete",
+    "elapsedSeconds": 239.99788625602378,
+    "operation": "decode"
+  },
+  "source": {
+    "repo": "Wan-Video/Wan2.1",
+    "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+    "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+    "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498",
+    "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/vae/vendor/vae.py",
+    "verified": true
+  },
+  "model": {
+    "path": "/workspace/work/models/vae/wan_2.1_vae.safetensors",
+    "bytes": 253815318,
+    "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "verified": true,
+    "storedDtype": "bfloat16",
+    "executionDtype": "float32",
+    "precisionScope": "Unchanged BF16 stored values expanded to FP32; not original BF16 arithmetic equivalence"
+  },
+  "strictLoad": {
+    "keys": 194,
+    "missing": [],
+    "unexpected": []
+  },
+  "versions": {
+    "torch": "2.6.0+cpu",
+    "numpy": "2.3.5"
+  },
+  "acceptance": "NOT_COMPARED: external independent references only; no WASM or production-runtime acceptance claimed",
+  "elapsedSeconds": 240.00950372801162,
+  "workerPeakRssBytes": 6519001088,
+  "resourceObservation": {
+    "peaks": {
+      "rssBytes": 6519586816,
+      "pssBytes": 6515939328,
+      "cgroupCurrentBytes": 13298528256,
+      "cgroupInactiveFileBytes": 414314496,
+      "cgroupAnonBytes": 6514982912,
+      "cgroupShmemBytes": 3438129152,
+      "cgroupWorkingSetBytes": 12884455424
+    },
+    "samples": 536,
+    "sampleIntervalSeconds": 0.25,
+    "workerExitCode": 0,
+    "terminatedForCgroupReserve": false,
+    "finalCgroup": {
+      "path": "/sys/fs/cgroup",
+      "limitBytes": 17179869184,
+      "currentBytes": 6853132288,
+      "inactiveFileBytes": 414068736,
+      "anonBytes": 73682944,
+      "shmemBytes": 3438129152,
+      "workingSetBytes": 6439063552,
+      "workingSetScope": "max(0,memory.current-observed inactive_file); missing inactive_file falls back to raw charge. Shmem/tmpfs is not separately subtracted. Non-atomic observation, not an exact pressure measurement."
+    },
+    "log": "resources.jsonl",
+    "scope": "Sampled RSS/PSS and shared cgroup raw current/inactive_file/anon/shmem/working-set estimate. Guard excludes only observed inactive_file; shmem/tmpfs remains charged. Cgroup includes other processes; sampling may miss transients."
+  },
+  "observedTensorFiles": [
+    {
+      "file": "decode-raw-input.f32",
+      "bytes": 719104
+    },
+    {
+      "file": "decode-rgb-reference.f32",
+      "bytes": 8629248
+    },
+    {
+      "file": "mean-reference.f32",
+      "bytes": 719104
+    },
+    {
+      "file": "rgb-input.f32",
+      "bytes": 8629248
+    }
+  ]
+}

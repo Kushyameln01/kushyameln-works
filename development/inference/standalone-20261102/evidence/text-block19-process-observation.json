@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "scope": "Exact bounded diagnostic parent and child observed while active, then checked after completion. No whole-run RSS/PSS sampling or active resource guard is claimed. VAE processes excluded.",
+  "executionSourceSha": "5b784339a6caf83728a529522538fd43d5fb68f8",
+  "observedParent": {
+    "pid": 47202,
+    "creationTime": 1793636357.72,
+    "rssBytes": 31662080
+  },
+  "observedNode": {
+    "pid": 47217,
+    "creationTime": 1793636361.93,
+    "rssBytes": 3136978944,
+    "cpuSeconds": 71.78
+  },
+  "observedAfterRunUtc": "2026-11-02T16:22:43.780192+00:00",
+  "parentPidExistsAfterRun": false,
+  "nodePidExistsAfterRun": false,
+  "diagnosticCommandExitCode": 0,
+  "lateObserverAttempt": {
+    "exitCode": 1,
+    "status": "NOT_ATTACHED_ALREADY_GONE",
+    "error": "psutil.NoSuchProcess(pid=47217)",
+    "signalsSent": [],
+    "samples": 0,
+    "sourceSha256": "672506dedeb4eeac4f317169519c19ec70b2805319c3defb7df0eee33cb79d55",
+    "sourcePath": "/tmp/kw-text-block19-options-20261102-resource-watch.py",
+    "purpose": "Attempted to attach shared-working-set stop observer after the job had already completed; not numerical failure or successful guard acceptance",
+    "sourceArchive": "scripts/block19-late-resource-watch.py"
+  }
+}

@@ -10,7 +10,7 @@ function digestId(value,name){if(typeof value!=='string'||!SHA256.test(value))th
 export function snapshotTensorMetadata(t){
  const result={};
  const normalization=t.normalization;
- if(normalization!==undefined&&(['raw-posterior-mean','wan21-raw-generated-sample:v1'].includes(t.meaning)||(t.meaning==='wan21-normalized-posterior-mean:v1'&&normalization!=='wan21-comfy-f32-v1')))throw TypeError('Latent normalization marker contradicts its declared meaning');
+ if(normalization!==undefined&&(['raw-posterior-mean','wan21-raw-latent:v1','wan21-raw-generated-sample:v1'].includes(t.meaning)||(t.meaning==='wan21-normalized-posterior-mean:v1'&&normalization!=='wan21-comfy-f32-v1')))throw TypeError('Latent normalization marker contradicts its declared meaning');
  if(t.meaning==='wan21-normalized-posterior-mean:v1'&&normalization!==undefined)result.normalization=normalization;
  if(normalization!==undefined&&(t.meaning==='text_hidden_states'||normalization==='umt5-final-rmsnorm-f32-v1')){
   if(t.dtype!=='float32'||t.layout!=='BLC'||t.meaning!=='text_hidden_states'||normalization!=='umt5-final-rmsnorm-f32-v1')throw TypeError('Text normalization marker contradicts its declared tensor');
@@ -21,14 +21,28 @@ export function snapshotTensorMetadata(t){
   if(t.layout!=='BLC'||t.meaning!=='text_hidden_states')throw TypeError('Tokenizer binding requires text conditioning');
   result.tokenizerSha256=digestId(t.tokenizerSha256,'tokenizer');
  }
- if(t.context!==undefined){
-  const c=object(t.context,['schemaVersion','contextId','inputId','inputSha256','slotId','sourceFrameIndices','sourceFrameTimesSeconds'],'context');
+ function snapshotContext(value){
+  const c=object(value,['schemaVersion','contextId','inputId','inputSha256','slotId','sourceFrameIndices','sourceFrameTimesSeconds'],'context');
   if(c.schemaVersion!==1||!Array.isArray(c.sourceFrameIndices)||!c.sourceFrameIndices.length||Array.from(c.sourceFrameIndices).some(n=>!Number.isSafeInteger(n)||n<0))throw TypeError('Invalid source frame mapping');
-  result.context={schemaVersion:1,contextId:identifier(c.contextId,'contextId'),inputId:identifier(c.inputId,'inputId'),inputSha256:digestId(c.inputSha256,'source input'),slotId:identifier(c.slotId,'slotId'),sourceFrameIndices:[...c.sourceFrameIndices]};
+  const context={schemaVersion:1,contextId:identifier(c.contextId,'contextId'),inputId:identifier(c.inputId,'inputId'),inputSha256:digestId(c.inputSha256,'source input'),slotId:identifier(c.slotId,'slotId'),sourceFrameIndices:[...c.sourceFrameIndices]};
   if(c.sourceFrameTimesSeconds!==undefined){
    if(!Array.isArray(c.sourceFrameTimesSeconds)||c.sourceFrameTimesSeconds.length!==c.sourceFrameIndices.length||Array.from(c.sourceFrameTimesSeconds).some(n=>typeof n!=='number'||!Number.isFinite(n)||n<0))throw TypeError('Invalid source frame timestamps');
-   result.context.sourceFrameTimesSeconds=[...c.sourceFrameTimesSeconds];
+   context.sourceFrameTimesSeconds=[...c.sourceFrameTimesSeconds];
   }
+  return context;
+ }
+ if(t.context!==undefined)result.context=snapshotContext(t.context);
+ if(t.frameProcessing!==undefined){
+  const f=object(t.frameProcessing,['schemaVersion','policy','sourceFrames','latentFrames','consumedFrames','unusedTailFrames','sourceContext'],'frame processing');
+  if(f.schemaVersion!==1||f.policy!=='wan21-causal-floor-v1'||![f.sourceFrames,f.latentFrames,f.consumedFrames,f.unusedTailFrames].every(Number.isSafeInteger)||f.sourceFrames<1||f.sourceFrames>81||f.latentFrames<1||f.latentFrames>21||f.consumedFrames!==1+4*(f.latentFrames-1)||f.unusedTailFrames!==f.sourceFrames-f.consumedFrames||f.unusedTailFrames<0||f.unusedTailFrames>3)throw TypeError('Invalid causal frame processing');
+  const latent=['raw-posterior-mean','wan21-normalized-posterior-mean:v1','wan21-raw-latent:v1','wan21-raw-generated-sample:v1'].includes(t.meaning),rgb=['raw-decoder-rgb','rgb-unit'].includes(t.meaning),shape=t.shape;
+  if(t.dtype!=='float32'||t.layout!=='NCTHW'||!Array.isArray(shape)||shape.length!==5||Array.from(shape).some(n=>!Number.isSafeInteger(n)||n<1)||(!latent&&!rgb)||shape[1]!== (latent?16:3)||(latent?shape[2]!==f.latentFrames:shape[2]!==f.sourceFrames&&shape[2]!==f.consumedFrames))throw TypeError('Frame processing contradicts its declared tensor');
+  const frameProcessing={schemaVersion:1,policy:f.policy,sourceFrames:f.sourceFrames,latentFrames:f.latentFrames,consumedFrames:f.consumedFrames,unusedTailFrames:f.unusedTailFrames};
+  if(f.sourceContext!==undefined){
+   frameProcessing.sourceContext=snapshotContext(f.sourceContext);
+   if(frameProcessing.sourceContext.sourceFrameIndices.length!==f.sourceFrames)throw TypeError('Frame processing source context must map every source frame');
+  }
+  result.frameProcessing=frameProcessing;
  }
  if(t.latentContract!==undefined){
   const c=object(t.latentContract,['schemaVersion','representation','space','vaeModelSha256','producerModelSha256s','normalization'],'latent contract');

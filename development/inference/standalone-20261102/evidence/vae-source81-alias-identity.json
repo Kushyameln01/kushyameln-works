@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "status": "REFERENCE_IDENTITY_CHECKED_NN0",
+  "newNNRuns": 0,
+  "newSourceRoleInferenceInvocations": 0,
+  "finalTargetAcceptanceClaimed": false,
+  "parentNativeReport": {
+    "path": "/tmp/kw-vae-ref-target81-20261102/reference-report.json",
+    "bytes": 9178,
+    "sha256": "be767eb59bb26a26aab6b4cf1b114e803179ac21110a7b021dd1ff5c0b9e5a6e",
+    "executionSourceSha": "05198dba7959cc95e0c4d770fd85557ad4010a80"
+  },
+  "derivedSource81Report": {
+    "path": "/tmp/kw-vae-ref-derived-source-f81-20261102/reference-report.json",
+    "bytes": 27065,
+    "sha256": "ed48f8b49ba01c57fd3d0b9a5dc0ce0e875207cdce87280234c477347c7c84b5",
+    "executionSourceSha": "5f7db87d2800e98eeca28484bf1a209eb06bcc39"
+  },
+  "artifactPairs": [
+    {
+      "operation": "encode",
+      "kind": "input",
+      "targetPath": "/tmp/kw-vae-ref-target81-20261102/rgb-input.f32",
+      "source81Path": "/tmp/kw-vae-ref-derived-source-f81-20261102/rgb-input.f32",
+      "shape": [
+        1,
+        3,
+        81,
+        480,
+        832
+      ],
+      "bytes": 388177920,
+      "recordedParentSha256": "550d2fd2914ace3590afb423906a2528e0b20d97605bf5965477f6c5cc23c6ee",
+      "recordedSource81Sha256": "550d2fd2914ace3590afb423906a2528e0b20d97605bf5965477f6c5cc23c6ee",
+      "sameActualFile": true,
+      "targetIdentity": {
+        "device": 34,
+        "inode": 42680,
+        "links": 2
+      },
+      "source81Identity": {
+        "device": 34,
+        "inode": 42680,
+        "links": 2
+      },
+      "freshlyReadSha256": null,
+      "hashVerificationScope": "Recorded accepted native-parent SHA256 plus actual same-inode/size identity; large RGB bytes not rehashed by NN0 fixture"
+    },
+    {
+      "operation": "encode",
+      "kind": "output",
+      "targetPath": "/tmp/kw-vae-ref-target81-20261102/mean-reference.f32",
+      "source81Path": "/tmp/kw-vae-ref-derived-source-f81-20261102/mean-reference.f32",
+      "shape": [
+        1,
+        16,
+        21,
+        60,
+        104
+      ],
+      "bytes": 8386560,
+      "recordedParentSha256": "b94d7bc4d2e2d0ae79ced6e390d3256fbac050d91efc7ba78bdf86a3debd0be4",
+      "recordedSource81Sha256": "b94d7bc4d2e2d0ae79ced6e390d3256fbac050d91efc7ba78bdf86a3debd0be4",
+      "sameActualFile": true,
+      "targetIdentity": {
+        "device": 34,
+        "inode": 45151,
+        "links": 2
+      },
+      "source81Identity": {
+        "device": 34,
+        "inode": 45151,
+        "links": 2
+      },
+      "freshlyReadSha256": "b94d7bc4d2e2d0ae79ced6e390d3256fbac050d91efc7ba78bdf86a3debd0be4",
+      "hashVerificationScope": "Fresh complete-file SHA256"
+    },
+    {
+      "operation": "decode",
+      "kind": "input",
+      "targetPath": "/tmp/kw-vae-ref-target81-20261102/decode-raw-input.f32",
+      "source81Path": "/tmp/kw-vae-ref-derived-source-f81-20261102/decode-raw-input.f32",
+      "shape": [
+        1,
+        16,
+        21,
+        60,
+        104
+      ],
+      "bytes": 8386560,
+      "recordedParentSha256": "9676a279edf4a9fbc058db8b20ccfaf167ff45d5832b16c9cf6be03b3969c4cd",
+      "recordedSource81Sha256": "9676a279edf4a9fbc058db8b20ccfaf167ff45d5832b16c9cf6be03b3969c4cd",
+      "sameActualFile": true,
+      "targetIdentity": {
+        "device": 34,
+        "inode": 45154,
+        "links": 2
+      },
+      "source81Identity": {
+        "device": 34,
+        "inode": 45154,
+        "links": 2
+      },
+      "freshlyReadSha256": "9676a279edf4a9fbc058db8b20ccfaf167ff45d5832b16c9cf6be03b3969c4cd",
+      "hashVerificationScope": "Fresh complete-file SHA256"
+    },
+    {
+      "operation": "decode",
+      "kind": "output",
+      "targetPath": "/tmp/kw-vae-ref-target81-20261102/decode-rgb-reference.f32",
+      "source81Path": "/tmp/kw-vae-ref-derived-source-f81-20261102/decode-rgb-reference.f32",
+      "shape": [
+        1,
+        3,
+        81,
+        480,
+        832
+      ],
+      "bytes": 388177920,
+      "recordedParentSha256": "f7138c1f54ce7ece54604503a63a128a0e9983a076a310ba831a83773beea5bb",
+      "recordedSource81Sha256": "f7138c1f54ce7ece54604503a63a128a0e9983a076a310ba831a83773beea5bb",
+      "sameActualFile": true,
+      "targetIdentity": {
+        "device": 34,
+        "inode": 47891,
+        "links": 2
+      },
+      "source81Identity": {
+        "device": 34,
+        "inode": 47891,
+        "links": 2
+      },
+      "freshlyReadSha256": null,
+      "hashVerificationScope": "Recorded accepted native-parent SHA256 plus actual same-inode/size identity; large RGB bytes not rehashed by NN0 fixture"
+    }
+  ],
+  "comparisonGate": {
+    "atol": 0.002,
+    "rtol": 0.002,
+    "maxAbs": 0.002,
+    "registeredBeforeComparison": true,
+    "scope": "New declared FP32 synthetic shape domain; proposed before comparison, not transferred from tiny-model tolerances."
+  },
+  "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+  "originalVendorSource": {
+    "repo": "Wan-Video/Wan2.1",
+    "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+    "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+    "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498",
+    "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/vae/vendor/vae.py",
+    "verified": true
+  },
+  "actualMeanWktPath": "/tmp/kw-vae-wasm-target81-copy-reduced-20261102/encode-target-f81-480x832.wktensor",
+  "independentSource81MeanPath": "/tmp/kw-vae-ref-derived-source-f81-20261102/mean-reference.f32",
+  "actualProducerRevision": {
+    "sha": "d578ec006571d82bc50c6c2935d78ae6ea838269",
+    "scope": "Coordinator-provided revision of the ongoing actual target81 WASM job; no final target result asserted"
+  },
+  "nativeCodec": {
+    "path": "/workspace/work/inference/p0-p2-20261031/worktree/docs/shared/inference/tensor.mjs",
+    "gitRevision": "b971adc7930bd42e081ff446a0d6a70b7ff1dc28",
+    "bytes": 10894,
+    "sha256": "7a15d721b1bab60cdade8723fd1c4d543a142d236cf2e59b63f1ba33ba14ed78",
+    "matchesCommittedExecutionBytes": true,
+    "matchesProducerRevisionCodecBytes": true
+  },
+  "manifestObservation": {
+    "path": "/tmp/kw-vae-stream-threads4-20261102/manifest.json",
+    "bytes": 51613,
+    "sha256": "532523034a5e5c7590c4fca11d67feec329c6e0e364afd55f472f03ffd8966d2",
+    "inference": {
+      "executionProvider": "wasm",
+      "threads": 4,
+      "graphOptimizationLevel": "disabled"
+    },
+    "scope": "Read-only identity observation; no ORT/manifest validation or threads4/COI environment execution in Node"
+  }
+}

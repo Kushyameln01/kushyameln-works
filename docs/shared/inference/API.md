@@ -2,9 +2,9 @@
 
 API版: `works-ai-1`。Text EncoderとVAEは独立モジュール。包括処理と一括UI、別CodexのDiffusionモジュールはこの実装に含めない。
 
-文書revision: `OWNER-CAPABILITIES-1`（2026-11-02 JST）。`works-ai-1`とG1Cを維持する。通常入口に構成済み実装のdescriptor照会を追加し、詳細evidenceを診断側へ分ける。数値演算・モデル・固定shape・既存P2の意味は変えず、Text実最終正規化のmarkerを追加する。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sampleのmetadata検査は、実生成・復元・decodeの受入を意味しない。
+文書revision: `STANDALONE-STREAM-1`（2026-11-02 JST）。`works-ai-1`とG1Cを維持する。新しいcausal streaming manifest、独立raw latent入力、native末尾処理の保存契約は[単体API追補](../../../development/inference/standalone-20261102/API.md)を参照する。現在の実検証範囲は[単体RESULT](../../../development/inference/standalone-20261102/RESULT.md)にTextとVAEを分けて記録する。構造上の対応域と実数値受入を区別し、通常APIに参照やreceiptを要求しない。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sampleのmetadata検査は、実生成・復元・decodeの受入を意味しない。
 
-既存の診断受入はUMT5の24層FP32経路と、Wan2.1 VAEの5×16×16・F1正方形16×16・F1 Rect16×32の各固定graphである。今回の新規通常実行はRectと固定plain一件で、既存参照を再利用した。現在の能力は構成したmanifest/graphに限定し、大きな動画や別shapeへ合格を広げない。別shapeには対応bundleを用意して、その参照・gate・実WASMを診断側で個別に受け入れる。
+従来の診断受入はUMT5の24層FP32経路と、Wan2.1 VAEの5×16×16・F1正方形16×16・F1 Rect16×32の各固定graphである。前revisionではRectと固定plain一件を通常実行し、既存参照を再利用した。これらのscopeを維持する。新streaming graphの対応域や一部shapeの受入を、他のshape・実生成の合格へ広げない。
 
 ## 呼出し口
 
@@ -104,30 +104,30 @@ Bernini system promptの構築、negativeの選択と実際の文字列・line b
 
 ## VAE profileの棚卸しと受入条件
 
-すべてNCTHW、N=1。`F=4n+1`、latent時間長 `T=(F-1)/4+1`、空間 `H/8,W/8`、decode出力Fは `4*(T-1)+1`。モデル構造の空間条件は8アラインだが、現exporterは **H/Wが16以上の16倍数** に限定する。この違いを無断で緩めない。
+すべてfloat32 / NCTHW、N=1。従来の固定profile exporterは `F=4n+1`、H/Wが16以上の16倍数を要求する。追加した `wan21-vae-stream-v1` はencodeの元入力 `1≤F≤81` とH/W16..848の16倍数を受け、`T=1+floor((F-1)/4)`、空間 `H/8,W/8` を返す。完全な4frame群に入らないnative末尾は `frameProcessing` へ記録し、元入力shapeと全frame対応を保持する。decodeは `1≤T≤21` から `1+4*(T-1)` frameを返す。固定exporterの制約とstream runtimeの対応域を区別する。モデル構造の8アラインへ無断で緩めない。
 
 | 用途 | RGB shape | latent shape | 状態 |
 | --- | --- | --- | --- |
 | 既存公開bundle | `[1,3,5,16,16]` | `[1,16,2,2,2]` | `wan21-raw-f32-5x16x16`。既存FP32参照・ブラウザ受入を保持 |
 | F=1正方形診断bundle（非公開） | `[1,3,1,16,16]` | `[1,16,1,2,2]`（64要素） | `wan21-raw-f32-1x16x16`。元VAE FP32全出力・実Hike/ORT WASM受入済み。実workflow参照媒体ではない |
 | F=1非正方形診断bundle（非公開） | `[1,3,1,16,32]` | `[1,16,1,2,4]`（128要素） | `wan21-raw-f32-1x16x32`。元FP32全出力と実Hike/ORT WASM受入済み。既存128要素profileとshape/時間軸が異なる |
-| 元workflowのsource/video grid | `[1,3,81,480,832]` | `[1,16,21,60,104]` | 必要shape。未export・未ブラウザ受入 |
-| 最終decode | `[1,3,81,480,832]`へ復元 | `[1,16,21,60,104]`からdecode | 同じgridでも生成sampleとmeanは別契約。実生成経路未実装 |
-| 静止参照画像、workflow gridを使う場合 | `[1,3,1,480,832]` | `[1,16,1,60,104]` | F=1用の別graphが必要。全slotをこの寸法へ変える意味ではない |
-| 異なるratioの参照画像 | `[1,3,1,H_ref,W_ref]` | `[1,16,1,H_ref/8,W_ref/8]` | 画像・slotごとの実寸法を取得して固定profile化する |
-| 別ratio／長さの参照動画 | `[1,3,F_ref,H_ref,W_ref]` | `[1,16,(F_ref-1)/4+1,H_ref/8,W_ref/8]` | F/H/W確定後に別profileを検証。reference_videoは例workflowで未接続 |
+| 元workflowのsource/video grid | `[1,3,81,480,832]` | `[1,16,21,60,104]` | 新69-unit stream graphをexport済み。全81frameの数値受入状況は単体RESULTを参照 |
+| 最終decode | `[1,3,81,480,832]`へ復元 | `[1,16,21,60,104]`からdecode | 同じgridでも生成sampleとmeanは別契約。実生成経路は今回の単体受入外 |
+| 静止参照画像、workflow gridを使う場合 | `[1,3,1,480,832]` | `[1,16,1,60,104]` | 新stream graphで独立参照・実WASMのencode/raw decodeを受入。全slotをこの寸法へ変える意味ではない |
+| 異なるratioの参照画像 | `[1,3,1,H_ref,W_ref]` | `[1,16,1,H_ref/8,W_ref/8]` | stream域内の実寸法をそのまま受ける。構造的対応と当該shapeの数値受入は別。848×848を実媒体の寸法と推測しない |
+| 別ratio／長さの参照動画 | `[1,3,F_ref,H_ref,W_ref]` | `[1,16,1+floor((F_ref-1)/4),H_ref/8,W_ref/8]` | stream域内は元F/H/Wとnative末尾を保持。域外は具体shapeをcapabilitiesへ照会し、graph/runtime追加を検討。例workflowのreference_video接続とは別 |
 
-workflowの81×480×832はRGB単体388,177,920 B、latent単体8,386,560 B（2,096,640要素）。重み、activation、時間cache、copyを含むピークRAMではない。Diffusionの公開pointwise予算1,048,576要素を超え、mean正規化の固定128要素profileからも外れる。VAEのshapeを揃えるだけでは接続できない。
+workflowの81×480×832はRGB単体388,177,920 B、latent単体8,386,560 B（2,096,640要素）。重み、activation、時間cache、copyを含むピークRAMではない。従来の固定128要素mean変換profileのscopeには収まらない。最新Diffusionの対応可否は対向の構成済みcapabilitiesで確認し、VAEのshapeだけで接続合格や生成READYを判断しない。
 
 Bernini例の `ref_max_size=848` は長辺上限であり、実参照画像が848×848という情報ではない。元nodeのresize/crop式と実媒体の寸法・EXIF・frame数は別に照合する。今回、縮小、padding、末尾切断、frame削減、縦横の入替えを追加・実行しない。受入済み5-frame graphをF=1や81へ流用せず、manifestだけの書換えも行わない。
 
-別profileの受入は、(1)実入力とrole/slot/F/H/Wを確定、(2)固定原VAE194 keys・FP32参照の全出力を保存、(3)新しい非公開bundleへopset17の固定exportとSHA/shape記録、(4)比較前に数値gateを固定、(5)実ブラウザで入力→Hike/ORT→全結果回収・照合・取消/解放・copy/cache/OS側RAM計測、(6)同じshape・意味の対向tensor接続、をprofileごとに行う。F=1・16×16と16×32の診断profileを個別export・実WASMで受け入れた。他のshapeへ合格を流用しない。小profileの0.002 gateや合格を大動画の画質・負荷へ自動転用しない。
+従来の固定profile方式の受入は、(1)実入力とrole/slot/F/H/Wを確定、(2)固定原VAE194 keys・FP32参照の全出力を保存、(3)新しい非公開bundleへopset17の固定exportとSHA/shape記録、(4)比較前に数値gateを固定、(5)実ブラウザで入力→Hike/ORT→全結果回収・照合・取消/解放・copy/cache/OS側RAM計測、(6)同じshape・意味の対向tensor接続、をprofileごとに行う。F=1・16×16と16×32の診断profileを個別export・実WASMで受け入れた。他のshapeへ合格を流用しない。小profileの0.002 gateや合格を大動画の画質・負荷へ自動転用しない。新stream方式ではdynamic unitとnative causal runtimeを別実装として扱い、比較前に登録した独立参照・新domain gateで全出力を検証する。
 
 ## Diffusionから受け取る生成sample
 
 旧 `raw-posterior-mean` はVAE encodeの平均。Diffusionの `normalizeRawMean` → `wan21-normalized-posterior-mean:v1` → `restoreRawMean` → raw mean、という現行128要素経路を保持する。`restoreRawMean`へ生成sampleを渡したり、meanへ改名したりしない。
 
-生成sample用のVAE受入口は次の追加schemaを使う。これはVAE側の宣言検査契約であり、現Diffusion APIにはまだ実sample出力や生成sample用復元操作がない。
+生成sample用のVAE受入口は次の追加schemaを使う。これはVAE側の宣言検査契約であり、実producer・Diffusion所有の復元・対応decodeの数値受入は別工程である。今回の単体raw decodeは独立latentで検証し、対向の実generated sampleを待たない。
 
 ```js
 const sample = {
@@ -148,7 +148,7 @@ producerModelSha256sは非空・重複なしの小文字64桁SHA配列。HIGH/LO
 
 latentは有限float32であり、RGBのような単一の `[-1,1]` / `[0,1]` 範囲を課さない。raw値のclampや推測したscalar scale/shiftは行わない。channel別mean/std、FP32順序、`wan21-comfy-f32-v1` による復元はDiffusionが所有する。VAEは復元済みraw値へ実conv2とdecoder bodyを適用し、正規化・復元は追加しない。診断時は`evidence.normalizationApplied=false`も返す。RGB出力のmodelSha256は実際のVAE識別であり、入力producer hashの付替えではない。入力model hashとlatentContractは通常inputDescriptorに保持し、診断時はevidenceにも残す。
 
-`restored` はproducerによる宣言で、metadataだけから変換の実行・二重適用の不存在・モデル互換性を証明できない。元normalized tensor、復元操作/build、前後payload hashを対向側で対応付けて数値比較する。未復元・normalized meaning・違うdecoder bindingは拒否する。現在の `predict/sample=NOT_READY` とmean専用の復元を、fixtureが通っただけで解除しない。
+`restored` はproducerによる宣言で、metadataだけから変換の実行・二重適用の不存在・モデル互換性を証明できない。元normalized tensor、復元操作/build、前後payload hashを対向側で対応付けて数値比較する。未復元・normalized meaning・違うdecoder bindingは拒否する。対向の生成能力とREADYは最新の構成済みAPIで判断し、VAEのmetadata fixtureや独立raw decode合格だけで解除しない。
 
 ## contextと管理側が保持する情報
 
@@ -215,7 +215,7 @@ magic/schemaVersionは変更しない。旧markerなしファイルは読取り�
 
 marker修正までの受入は、Text24層・既存VAE5×16×16のFP32診断に加え、F=1・16×16と16×32の元VAE参照・実WASM比較である。その工程ではTextの重い再推論を実施していなかった。実generated sample、実参照媒体の各ratio、832×480・81frame、全sampling/最終動画、元GPU精度と端末負荷改善は引き続き未受入。実model/profile検証と小規模codec fixtureを合算しない。
 
-上記は元のmarker修正時点の履歴である。今回の追加受入では、管理60d16/native855/storage2bdを選択し、実Rect normalized保存→owner restore→同復元meanの新decode→RGB全1536値の実管理保存読戻しを確認した。固定plain `Hello world`は、未短縮512位置の独立PyTorch source referenceに対し実plain WASM/Hike出力 `[1,512,4096]`全2,097,152値を比較し、maxAbs `3.4570693969726562e-6`（元gate.001）とpadding厳密0を確認した。browserの最大単一process RSSは約5.66GBで4GiB目安を超過したため、資源改善は未受入。任意prompt/512有効token性能、ComfyUI conditioning全体、現固定N2 tailでのcross-attention消費へ一般化しない。[新規実行・再利用・source・資源の分離](../../../development/inference/p2-p3-acceptance/RESULT.md)、[conditioning実data契約](../../../development/inference/p2-p3-acceptance/conditioning/manifest.json)、[P6不足shape](../../../development/inference/p2-p3-acceptance/p6/SOURCE-SLOT-SHAPES.md)を参照する。
+上記は元のmarker修正時点の履歴である。今回の追加受入では、管理60d16/native855/storage2bdを選択し、実Rect normalized保存→owner restore→同復元meanの新decode→RGB全1536値の実管理保存読戻しを確認した。固定plain `Hello world`は、未短縮512位置の独立PyTorch source referenceに対し実plain WASM/Hike出力 `[1,512,4096]`全2,097,152値を比較し、maxAbs `3.4570693969726562e-6`（元gate.001）とpadding厳密0を確認した。このP2/P3時点ではbrowserの最大単一process RSSが約5.66GBで4GiB目安を超え、資源改善は未受入だった。その後の固定Hello worldに限定したRSS低下・時間増の比較は [資源比較](../../../development/inference/text-memory-20261102/RESULT.md)、今回のNode/Browser別の測定は [Text単体結果](../../../development/inference/standalone-20261102/TEXT-RESULT.md) を参照する。任意prompt/512有効token性能、ComfyUI conditioning全体、現固定N2 tailでのcross-attention消費へ一般化しない。[新規実行・再利用・source・資源の分離](../../../development/inference/p2-p3-acceptance/RESULT.md)、[conditioning実data契約](../../../development/inference/p2-p3-acceptance/conditioning/manifest.json)、[P6不足shape](../../../development/inference/p2-p3-acceptance/p6/SOURCE-SLOT-SHAPES.md)を参照する。
 
 追加884のjoint runnerでは、同じ復元mean `[1,16,1,2,4]`から新しい実decodeを正常・取消復帰で再実行し、各RGB1536値のmaxAbs `4.328787326812744e-6 <= 2e-5`を維持した。normalized marker、raw/normalized/restoredのE4 package、context/frame配列、owner/queue、decode入力とRGB保存を各`jointTraceId/currentInputLink`で結んだ。[新884実記録](../../../development/inference/p2-p3-acceptance/p2/updated-884/observer-result.json)のobserver実行sourceはe150e7ac3c4859739528ff278763c6474968ac08、管理は8849891f19124df31847bd691503c2491278eaa8、native855/storage2bd/mean5fは維持する。旧60dの実行を新sourceへ付け替えない。新P4 captureの構造受入と固定L4診断はDiffusion829の別境界であり、本実Textのcross-attention消費は未受入。新配布に対する管理・Diffusion自身のsource取得ACKと最終共同照合は別条件として残す。
 
@@ -223,13 +223,13 @@ marker修正までの受入は、Text24層・既存VAE5×16×16のFP32診断に�
 
 Text最終RMSNormはHikeがreduction・正規化・weight乗算を行う。固定Hike WABT runtimeのsqrt primitiveだけは明示した`env.sqrt -> Math.sqrt` bridgeを使う。VAE decodeは実conv2をHike MatMul+biasに置換し、その結果をORTへ渡す。VAE encodeはrgb-unit入力の値域変換をHikeで行う。既に−1〜1の入力へ無意味な恒等計算を追加せず、raw入力経路はそのままORTを使う。kernel欠落やhash不一致をJS/ORT代替で隠さない。
 
-ORT Web1.24.3のWASM provider、1 thread。元FP8/BF16値をFP32へ展開した検証経路であり、元GPU precisionや性能との同等性は別判定。Textは24層を1件ずつload/releaseする。元2.1GB embedding表は全量展開せず行を検証して読む。モデルファイルと実行用graphは公開資材に同梱しない。
+ORT Web1.24.3のWASM provider。Textと旧固定VAEは1 thread、新stream VAEはmanifestで明示した1または4 thread。4 threadはcross-origin isolationとSharedArrayBufferを要求し、暗黙にfallbackしない。元FP8/BF16値をFP32へ展開した検証経路であり、元GPU precisionや性能との同等性は別判定。Textは24層を1件ずつload/releaseする。元2.1GB embedding表は全量展開せず行を検証して読む。モデルファイルと実行用graphは公開資材に同梱しない。
 
 ## 接続確認の状態
 
 同一originの外部callerから明示MessagePortを通し、実UMT5のtokenize→24層→Hike最終norm、VAEのencode→decode、取消後の再実行、異種tensor拒否を実Chromiumで検証済み。個別UIのファイル選択→処理→保存・読戻しと、不透明PNG入力→Hike値域変換→VAE encodeも検証した。透過画像は背景を勝手に決めず拒否する。
 
-最新Diffusion APIを取得し、旧mean境界・model binding・所有権・build依存を照合した。VAE側のgenerated sample受入口とmetadataの保存契約は小規模fixtureで調整したが、対向の生成sample producer/復元と本番graphは未実装で、包括UIとの実生成接続は未確認である。API入口やfixtureの存在だけで対向の全工程を接続済みとは報告しない。
+これまでに取得したDiffusion APIとの旧mean境界・model binding・所有権・build依存の照合を履歴として保持する。VAE側のgenerated sample受入口とmetadataの保存契約は小規模fixtureで調整済みだが、今回の単体受入は独立raw latentを対象とする。最新producer/復元の実行能力はDiffusion側の構成済みcapabilitiesで確認し、包括UIとの実生成接続は別に検証する。API入口やfixtureの存在だけで対向の全工程を接続済みとは報告しない。
 
 ## V1受入資材と再現
 

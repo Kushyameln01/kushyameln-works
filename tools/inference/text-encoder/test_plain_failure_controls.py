@@ -74,7 +74,7 @@ class FailureControls(unittest.TestCase):
    @contextlib.contextmanager
    def sync_playwright():yield types.SimpleNamespace(chromium=types.SimpleNamespace(launch=lambda **kw:Browser()))
    fake=types.ModuleType('playwright.sync_api');fake.sync_playwright=sync_playwright
-   ns.update(a=types.SimpleNamespace(browser='control',output=output,reference=reference,bundle=root/'bundle',source=root/'unused-model',preflight_only=False,execution_source_sha=original['executionSourceSha']),manifest=manifest,input_record=inp,oracle=json.loads((EVIDENCE/'reference-results.json').read_text()),report=report,base='http://control.invalid',server_errors=[],server=Noop(),serverthread=Noop(),memory_stop=Noop(),memorythread=Noop(),owner=types.SimpleNamespace(finish=lambda **kw:{'liveAfterClose':[],'zombiesAfterClose':[],'errors':[]}),group_peak=0,memory_samples=0,pid_peaks={},start=time.monotonic(),served={},write_json=write)
+   ns.update(a=types.SimpleNamespace(browser='control',output=output,reference=reference,bundle=root/'bundle',source=root/'unused-model',preflight_only=False,execution_source_sha=original['executionSourceSha']),suite_mode=False,manifest=manifest,input_record=inp,oracle=json.loads((EVIDENCE/'reference-results.json').read_text()),report=report,base='http://control.invalid',server_errors=[],server=Noop(),serverthread=Noop(),memory_stop=Noop(),memorythread=Noop(),owner=types.SimpleNamespace(finish=lambda **kw:{'liveAfterClose':[],'zombiesAfterClose':[],'errors':[]}),group_peak=0,memory_samples=0,pid_peaks={},start=time.monotonic(),served={},write_json=write)
    exec(compiled_finalization(main,path,'browser'),ns)
    with patch.dict(sys.modules,{'playwright.sync_api':fake}),contextlib.redirect_stdout(io.StringIO()):code=ns['run_finalization']()
    receipt=json.loads((output/'browser-results.json').read_text())
@@ -88,7 +88,7 @@ class FailureControls(unittest.TestCase):
    output=Path(folder);report={'passed':False};reference=np.fromfile(EVIDENCE/'plain-reference.f32',dtype='<f4').reshape(1,512,4096)
    class ChangedSource:
     def stat(self):return types.SimpleNamespace(st_size=2,st_mtime_ns=1)
-   ns.update(a=types.SimpleNamespace(output=output,model=ChangedSource()),report=report,reference=reference,used=set(),headerraw=b'control-header',torch=types.SimpleNamespace(__version__='model-double-control'),np=np,spm=types.SimpleNamespace(__version__='control'),initial_model_stat=types.SimpleNamespace(st_size=1,st_mtime_ns=1),stop=Noop(),thread=Noop(),process=types.SimpleNamespace(pid=0,create_time=lambda:0,cpu_times=lambda:types.SimpleNamespace(user=0,system=0)),cpu0=types.SimpleNamespace(user=0,system=0),peak=0,samples=[],started=time.monotonic())
+   ns.update(a=types.SimpleNamespace(output=output,model=ChangedSource()),suite_mode=False,report=report,reference=reference,used=set(),headerraw=b'control-header',torch=types.SimpleNamespace(__version__='model-double-control'),np=np,spm=types.SimpleNamespace(__version__='control'),initial_model_stat=types.SimpleNamespace(st_size=1,st_mtime_ns=1),stop=Noop(),thread=Noop(),process=types.SimpleNamespace(pid=0,create_time=lambda:0,cpu_times=lambda:types.SimpleNamespace(user=0,system=0)),cpu0=types.SimpleNamespace(user=0,system=0),peak=0,samples=[],started=time.monotonic())
    exec(compiled_finalization(main,path,'source'),ns)
    with self.assertRaisesRegex(AssertionError,'Original source changed'),contextlib.redirect_stdout(io.StringIO()):ns['run_finalization']()
    receipt=json.loads((output/'reference-results.json').read_text())

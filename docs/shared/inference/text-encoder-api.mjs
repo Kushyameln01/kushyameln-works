@@ -37,7 +37,11 @@ export function createTextEncoderModule({client=createInferenceClient(),ownsClie
    return{apiVersion:'works-ai-1',module:'text_encoder',operations:['encode'],inputs:['plain-text','tokenIds+attentionMask'],inputModes:{'plain-text':{outputShape:[1,512,4096],overflow:'reject'},'token-ids':{outputShape:[1,'L',4096],minimumLength:1,maximumLength:512}},output:{dtype:'float32',layout:'BLC',meaning:'text_hidden_states',shape:[1,'L',4096],attentionMask:true,normalization:TEXT_ENCODER_NORMALIZATION,tokenizerSha256:UMT5_TOKENIZER_SHA256},finalNormalization:{operation:'encoder.final_layer_norm',algorithm:'weighted RMSNorm',epsilon:1e-6,maskedRows:'zero',implementation:'Hike',weightSha256:config?.manifest.finalNorm.sha256??null},modelSha256:TEXT_ENCODER_MODEL_SHA256,tokenizerSha256:UMT5_TOKENIZER_SHA256,maximumTokens:512,arithmetic:'FP32 prepared expansion',configured:!!config,disposed,...(support?{support}:{})};
   },
   configure({manifest,files,diagnostics=false}){if(disposed)throw Error('TextEncoder module disposed');inspectTextEncoderManifest(manifest);if(!(files instanceof Map))throw TypeError('Local files Map required');if(typeof diagnostics!=='boolean')throw TypeError('diagnostics must be boolean');if(client.state.status==='running'&&client.state.module==='text_encoder')client.cancel();config={manifest:structuredClone(manifest),files:new Map(files),diagnostics};return api.capabilities();},
-  async encode(input){ready();return client.run({module:'text_encoder',operation:'encode',...config,input:validateTextEncoderInput(input)});},
+  async encode(input){
+   ready();const selected=config,result=await client.run({module:'text_encoder',operation:'encode',...selected,input:validateTextEncoderInput(input)});
+   if(disposed||config!==selected)throw new DOMException('TextEncoder result superseded by reconfiguration or disposal','AbortError');
+   return result;
+  },
   cancel(){if(client.state.status==='running'&&client.state.module==='text_encoder'){client.cancel();return true;}return false;},
   dispose(){api.cancel();config=null;disposed=true;if(ownsClient)client.dispose();}
  };return Object.freeze(api);

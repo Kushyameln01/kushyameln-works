@@ -1,0 +1,2233 @@
+{
+  "schemaVersion": 1,
+  "kind": "wan21-vae-partition-static-inventory-v1",
+  "scope": "Read-only static ONNX I/O, initializer-name/shape and original safetensors-header inspection. This inventory did not execute NN, export graphs, or rerun model/graph hashes. It does not establish numerical or real-WASM acceptance.",
+  "export": {
+    "executionSourceSha": "a7573012e98b6b94ad2c56788b4c14907f262201",
+    "manifestPath": "/tmp/kw-vae-stream-export-20261102/manifest.json",
+    "manifestSha256": null,
+    "manifestSha256Status": "No manifest digest was present in the existing export metadata; not measured by this inspection.",
+    "graphHashesSource": "Copied from the existing exported manifest assets; no graph/model hash rerun.",
+    "exitCode": 0,
+    "unitGraphs": 69,
+    "totalAssetBytes": 507834866,
+    "resourceRecordPath": "/tmp/kw-vae-stream-export-resource-20261102.json",
+    "recordedExportResources": {
+      "peakRssBytes": 1011138560,
+      "peakPssBytes": 1007525888,
+      "wallSeconds": 8.809989121000399
+    }
+  },
+  "model": {
+    "sha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "identitySource": "Existing exporter model-hash check and manifest; not rehashed by this inventory.",
+    "storedDtype": "bfloat16",
+    "executionDtype": "float32",
+    "originalHeaderPath": "/workspace/work/models/vae/wan_2.1_vae.safetensors",
+    "headerBytes": 30248,
+    "headerSha256": null,
+    "headerSha256Status": "Header names/shapes were read, but its digest was not measured.",
+    "parameterValues": 126892531
+  },
+  "officialSource": {
+    "repo": "Wan-Video/Wan2.1",
+    "commit": "9737cba9c1c3c4d04b33fcad41c111989865d315",
+    "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/9737cba9c1c3c4d04b33fcad41c111989865d315/wan/modules/vae.py",
+    "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498"
+  },
+  "staticChecks": {
+    "graphCount": 69,
+    "allGraphSpatialInputsAndOutputsSymbolic": true,
+    "residualAddChannelAxisSymbolicOnBothInputsAndOutput": true,
+    "graphInitializerCount": 192,
+    "externalConv2StateKeys": [
+      "conv2.weight",
+      "conv2.bias"
+    ],
+    "externalConv2ParameterValues": 272,
+    "graphFloatInitializerValues": 126892259,
+    "combinedParameterValues": 126892531,
+    "uniqueOriginalStateKeysCovered": 194,
+    "missingOriginalKeys": [],
+    "unexpectedOriginalKeys": [],
+    "duplicateOriginalKeys": [],
+    "initializerNameShapeMismatches": [],
+    "method": "Parsed each of the 69 existing ONNX graphs sequentially without Torch/NN. Mapped module/pre initializer names back to their original vendor state keys and compared each initializer shape with the original safetensors JSON header. Matched 192 graph initializers plus external conv2 weight/bias, covering 194 unique original keys. Header and initializer values were not rehashed or numerically compared.",
+    "dynamicDeclarationLimit": "Symbolic declarations are static graph evidence. Actual output dimensions, numerical equivalence, operator support, memory and shape-domain acceptance still require real execution."
+  },
+  "unitKindCounts": {
+    "add": 1,
+    "causal": 52,
+    "spatial": 6,
+    "pointwise": 4,
+    "temporalDown": 2,
+    "attention": 2,
+    "temporalUp": 2
+  },
+  "originalStateKeysAndShapes": [
+    {
+      "name": "conv1.bias",
+      "shape": [
+        32
+      ]
+    },
+    {
+      "name": "conv1.weight",
+      "shape": [
+        32,
+        32,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "conv2.bias",
+      "shape": [
+        16
+      ]
+    },
+    {
+      "name": "conv2.weight",
+      "shape": [
+        16,
+        16,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.conv1.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.conv1.weight",
+      "shape": [
+        384,
+        16,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.head.0.gamma",
+      "shape": [
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.head.2.bias",
+      "shape": [
+        3
+      ]
+    },
+    {
+      "name": "decoder.head.2.weight",
+      "shape": [
+        3,
+        96,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.middle.0.residual.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.middle.0.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.middle.0.residual.2.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.middle.0.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.middle.0.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.middle.0.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.middle.1.norm.gamma",
+      "shape": [
+        384,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.middle.1.proj.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.middle.1.proj.weight",
+      "shape": [
+        384,
+        384,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.middle.1.to_qkv.bias",
+      "shape": [
+        1152
+      ]
+    },
+    {
+      "name": "decoder.middle.1.to_qkv.weight",
+      "shape": [
+        1152,
+        384,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.middle.2.residual.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.middle.2.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.middle.2.residual.2.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.middle.2.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.middle.2.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.middle.2.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.0.residual.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.0.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.0.residual.2.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.0.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.0.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.0.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.1.residual.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.1.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.1.residual.2.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.1.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.1.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.1.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.10.residual.0.gamma",
+      "shape": [
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.10.residual.2.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "decoder.upsamples.10.residual.2.weight",
+      "shape": [
+        192,
+        192,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.10.residual.3.gamma",
+      "shape": [
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.10.residual.6.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "decoder.upsamples.10.residual.6.weight",
+      "shape": [
+        192,
+        192,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.11.resample.1.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "decoder.upsamples.11.resample.1.weight",
+      "shape": [
+        96,
+        192,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.12.residual.0.gamma",
+      "shape": [
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.12.residual.2.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "decoder.upsamples.12.residual.2.weight",
+      "shape": [
+        96,
+        96,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.12.residual.3.gamma",
+      "shape": [
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.12.residual.6.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "decoder.upsamples.12.residual.6.weight",
+      "shape": [
+        96,
+        96,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.13.residual.0.gamma",
+      "shape": [
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.13.residual.2.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "decoder.upsamples.13.residual.2.weight",
+      "shape": [
+        96,
+        96,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.13.residual.3.gamma",
+      "shape": [
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.13.residual.6.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "decoder.upsamples.13.residual.6.weight",
+      "shape": [
+        96,
+        96,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.14.residual.0.gamma",
+      "shape": [
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.14.residual.2.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "decoder.upsamples.14.residual.2.weight",
+      "shape": [
+        96,
+        96,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.14.residual.3.gamma",
+      "shape": [
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.14.residual.6.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "decoder.upsamples.14.residual.6.weight",
+      "shape": [
+        96,
+        96,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.2.residual.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.2.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.2.residual.2.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.2.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.2.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.2.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.3.resample.1.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "decoder.upsamples.3.resample.1.weight",
+      "shape": [
+        192,
+        384,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.3.time_conv.bias",
+      "shape": [
+        768
+      ]
+    },
+    {
+      "name": "decoder.upsamples.3.time_conv.weight",
+      "shape": [
+        768,
+        384,
+        3,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.4.residual.0.gamma",
+      "shape": [
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.4.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.4.residual.2.weight",
+      "shape": [
+        384,
+        192,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.4.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.4.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.4.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.4.shortcut.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.4.shortcut.weight",
+      "shape": [
+        384,
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.5.residual.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.5.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.5.residual.2.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.5.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.5.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.5.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.6.residual.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.6.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.6.residual.2.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.6.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.6.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "decoder.upsamples.6.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.7.resample.1.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "decoder.upsamples.7.resample.1.weight",
+      "shape": [
+        192,
+        384,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.7.time_conv.bias",
+      "shape": [
+        768
+      ]
+    },
+    {
+      "name": "decoder.upsamples.7.time_conv.weight",
+      "shape": [
+        768,
+        384,
+        3,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.8.residual.0.gamma",
+      "shape": [
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.8.residual.2.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "decoder.upsamples.8.residual.2.weight",
+      "shape": [
+        192,
+        192,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.8.residual.3.gamma",
+      "shape": [
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.8.residual.6.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "decoder.upsamples.8.residual.6.weight",
+      "shape": [
+        192,
+        192,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.9.residual.0.gamma",
+      "shape": [
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.9.residual.2.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "decoder.upsamples.9.residual.2.weight",
+      "shape": [
+        192,
+        192,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "decoder.upsamples.9.residual.3.gamma",
+      "shape": [
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "decoder.upsamples.9.residual.6.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "decoder.upsamples.9.residual.6.weight",
+      "shape": [
+        192,
+        192,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.conv1.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "encoder.conv1.weight",
+      "shape": [
+        96,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.0.residual.0.gamma",
+      "shape": [
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.0.residual.2.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "encoder.downsamples.0.residual.2.weight",
+      "shape": [
+        96,
+        96,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.0.residual.3.gamma",
+      "shape": [
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.0.residual.6.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "encoder.downsamples.0.residual.6.weight",
+      "shape": [
+        96,
+        96,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.1.residual.0.gamma",
+      "shape": [
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.1.residual.2.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "encoder.downsamples.1.residual.2.weight",
+      "shape": [
+        96,
+        96,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.1.residual.3.gamma",
+      "shape": [
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.1.residual.6.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "encoder.downsamples.1.residual.6.weight",
+      "shape": [
+        96,
+        96,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.10.residual.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.10.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.downsamples.10.residual.2.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.10.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.10.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.downsamples.10.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.2.resample.1.bias",
+      "shape": [
+        96
+      ]
+    },
+    {
+      "name": "encoder.downsamples.2.resample.1.weight",
+      "shape": [
+        96,
+        96,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.3.residual.0.gamma",
+      "shape": [
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.3.residual.2.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "encoder.downsamples.3.residual.2.weight",
+      "shape": [
+        192,
+        96,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.3.residual.3.gamma",
+      "shape": [
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.3.residual.6.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "encoder.downsamples.3.residual.6.weight",
+      "shape": [
+        192,
+        192,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.3.shortcut.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "encoder.downsamples.3.shortcut.weight",
+      "shape": [
+        192,
+        96,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.4.residual.0.gamma",
+      "shape": [
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.4.residual.2.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "encoder.downsamples.4.residual.2.weight",
+      "shape": [
+        192,
+        192,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.4.residual.3.gamma",
+      "shape": [
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.4.residual.6.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "encoder.downsamples.4.residual.6.weight",
+      "shape": [
+        192,
+        192,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.5.resample.1.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "encoder.downsamples.5.resample.1.weight",
+      "shape": [
+        192,
+        192,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.5.time_conv.bias",
+      "shape": [
+        192
+      ]
+    },
+    {
+      "name": "encoder.downsamples.5.time_conv.weight",
+      "shape": [
+        192,
+        192,
+        3,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.6.residual.0.gamma",
+      "shape": [
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.6.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.downsamples.6.residual.2.weight",
+      "shape": [
+        384,
+        192,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.6.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.6.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.downsamples.6.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.6.shortcut.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.downsamples.6.shortcut.weight",
+      "shape": [
+        384,
+        192,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.7.residual.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.7.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.downsamples.7.residual.2.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.7.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.7.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.downsamples.7.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.8.resample.1.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.downsamples.8.resample.1.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.8.time_conv.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.downsamples.8.time_conv.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.9.residual.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.9.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.downsamples.9.residual.2.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.downsamples.9.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.downsamples.9.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.downsamples.9.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.head.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.head.2.bias",
+      "shape": [
+        32
+      ]
+    },
+    {
+      "name": "encoder.head.2.weight",
+      "shape": [
+        32,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.middle.0.residual.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.middle.0.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.middle.0.residual.2.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.middle.0.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.middle.0.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.middle.0.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.middle.1.norm.gamma",
+      "shape": [
+        384,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.middle.1.proj.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.middle.1.proj.weight",
+      "shape": [
+        384,
+        384,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.middle.1.to_qkv.bias",
+      "shape": [
+        1152
+      ]
+    },
+    {
+      "name": "encoder.middle.1.to_qkv.weight",
+      "shape": [
+        1152,
+        384,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.middle.2.residual.0.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.middle.2.residual.2.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.middle.2.residual.2.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "encoder.middle.2.residual.3.gamma",
+      "shape": [
+        384,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "encoder.middle.2.residual.6.bias",
+      "shape": [
+        384
+      ]
+    },
+    {
+      "name": "encoder.middle.2.residual.6.weight",
+      "shape": [
+        384,
+        384,
+        3,
+        3,
+        3
+      ]
+    }
+  ],
+  "graphs": [
+    {
+      "id": "residualAdd",
+      "file": "residualAdd.onnx",
+      "kind": "add",
+      "bytes": 291,
+      "sha256": "31d36f4f8c0a7be994b9821824a5eccd55cbf03509dd78f8815658aa72674f7c"
+    },
+    {
+      "id": "encoder.conv1",
+      "file": "encoder.conv1.onnx",
+      "kind": "causal",
+      "bytes": 34005,
+      "sha256": "343691a09be1cff275f55f7de81ffcdb33c8afdcc40499d53e1b68f98aef0c1f"
+    },
+    {
+      "id": "encoder.downsamples.0.residual.2",
+      "file": "encoder.downsamples.0.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 999903,
+      "sha256": "e4d9694ab54c49dc0b4bc8c3165ca98308c0813b74cf9a71214fb84b9bd8dbd6"
+    },
+    {
+      "id": "encoder.downsamples.0.residual.6",
+      "file": "encoder.downsamples.0.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 999903,
+      "sha256": "3ff49646a9aecaadd98fea487fb08841d1a11e7a10e16ce425a264331255a6e5"
+    },
+    {
+      "id": "encoder.downsamples.1.residual.2",
+      "file": "encoder.downsamples.1.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 999903,
+      "sha256": "fc1795678d070703323f9d1c46beeb263aac213983f25b7fab43016bc2bde538"
+    },
+    {
+      "id": "encoder.downsamples.1.residual.6",
+      "file": "encoder.downsamples.1.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 999903,
+      "sha256": "9a03f4569841fbfce4b401894846c69c0d8a152a4ef189fb52476123492f222a"
+    },
+    {
+      "id": "encoder.downsamples.2.spatial",
+      "file": "encoder.downsamples.2.spatial.onnx",
+      "kind": "spatial",
+      "bytes": 334880,
+      "sha256": "a1b11fc8ef1d83402aa99881a9110c0679225a216077630dff84b13d9d935bf8"
+    },
+    {
+      "id": "encoder.downsamples.3.shortcut",
+      "file": "encoder.downsamples.3.shortcut.onnx",
+      "kind": "pointwise",
+      "bytes": 76681,
+      "sha256": "ef025a0a917270ffd1461cef3e7fbc5fdd659153e7f27a2df2ad33cc301b3394"
+    },
+    {
+      "id": "encoder.downsamples.3.residual.2",
+      "file": "encoder.downsamples.3.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 1995618,
+      "sha256": "f30031a5bf0fcc259200739ad8fafb73783fb8daeb2d2ccbddbc2bc4999131f5"
+    },
+    {
+      "id": "encoder.downsamples.3.residual.6",
+      "file": "encoder.downsamples.3.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 3986666,
+      "sha256": "14c43702a9fb0bca957098b36d0e1d2b7d01bc43dde0c70b764ea6df31e4222d"
+    },
+    {
+      "id": "encoder.downsamples.4.residual.2",
+      "file": "encoder.downsamples.4.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 3986666,
+      "sha256": "9cbaa886a8303ca21e72de1cb34db33950806a9c7d96a1486a87f71b8458ba46"
+    },
+    {
+      "id": "encoder.downsamples.4.residual.6",
+      "file": "encoder.downsamples.4.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 3986666,
+      "sha256": "40d7ab6a1b30f6051daa5fb97a4d343591709e96833aa744b897e27b5138f692"
+    },
+    {
+      "id": "encoder.downsamples.5.spatial",
+      "file": "encoder.downsamples.5.spatial.onnx",
+      "kind": "spatial",
+      "bytes": 1330597,
+      "sha256": "cf44c6be12b75ac458c71736512fae6fb06e342c7a543bc875ed27056c6ab714"
+    },
+    {
+      "id": "encoder.downsamples.5.temporal",
+      "file": "encoder.downsamples.5.temporal.onnx",
+      "kind": "temporalDown",
+      "bytes": 445973,
+      "sha256": "283b1a130807046fd5099119e96a411c4fc567531da4ef822df1cf71081acf73"
+    },
+    {
+      "id": "encoder.downsamples.6.shortcut",
+      "file": "encoder.downsamples.6.shortcut.onnx",
+      "kind": "pointwise",
+      "bytes": 298635,
+      "sha256": "585423203d3a8f8d6a79becc86f8cb0414775bf1b1b136cc2ebca37589eabaa5"
+    },
+    {
+      "id": "encoder.downsamples.6.residual.2",
+      "file": "encoder.downsamples.6.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 7968746,
+      "sha256": "97a1535389eec57bb1abdd3eff34e7d6dd13654248ef1a166ab1f22d75dfeb89"
+    },
+    {
+      "id": "encoder.downsamples.6.residual.6",
+      "file": "encoder.downsamples.6.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "0d4c418fb02855883033a407bb92e6e21cbef90ba71579d31b7568100b66a51f"
+    },
+    {
+      "id": "encoder.downsamples.7.residual.2",
+      "file": "encoder.downsamples.7.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "86e98d279b04152e3ab76ba60d05ccfae14e38a3a69dd28df8b67fdd4547612f"
+    },
+    {
+      "id": "encoder.downsamples.7.residual.6",
+      "file": "encoder.downsamples.7.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "b5e9dc9ceb2c6d4b039c49fc409258b760b73f44fdf06e7653b9d16e9a3165ac"
+    },
+    {
+      "id": "encoder.downsamples.8.spatial",
+      "file": "encoder.downsamples.8.spatial.onnx",
+      "kind": "spatial",
+      "bytes": 5312680,
+      "sha256": "9063cab94b863a15fa3d796054beb2008f5483bc8e90741fa6c189ddf767fad6"
+    },
+    {
+      "id": "encoder.downsamples.8.temporal",
+      "file": "encoder.downsamples.8.temporal.onnx",
+      "kind": "temporalDown",
+      "bytes": 1773845,
+      "sha256": "6218e55d5127a1ed8b87ebbcd63622e773a1d5d73602a00125c585b4a31ca763"
+    },
+    {
+      "id": "encoder.downsamples.9.residual.2",
+      "file": "encoder.downsamples.9.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "7885ab4533f4e2cf3dbf00da8a8f9d1206513b27096d91ccca774acb0b5a911a"
+    },
+    {
+      "id": "encoder.downsamples.9.residual.6",
+      "file": "encoder.downsamples.9.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "277e3bedba13e87c7c18d8f4a54a0f0f2b7ada2bc116bd619b69449616d9c21f"
+    },
+    {
+      "id": "encoder.downsamples.10.residual.2",
+      "file": "encoder.downsamples.10.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "fc163dc639022d0e94e2ae934d18066b063a4a2dbc5875cf38f00b3b1fc5112d"
+    },
+    {
+      "id": "encoder.downsamples.10.residual.6",
+      "file": "encoder.downsamples.10.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "b04bda40de4896f977b68c6b4e453b428d5076d201f66cf07e70d2c776c81e7c"
+    },
+    {
+      "id": "encoder.middle.0.residual.2",
+      "file": "encoder.middle.0.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "3455c77c28730ba8b1af7ff458e68932800df01556da831d64a37ed584b9fe19"
+    },
+    {
+      "id": "encoder.middle.0.residual.6",
+      "file": "encoder.middle.0.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "dd4f76b8db8fa359cac855ff5c24343dfb25a21fdf394a6759c8812ac0b882cd"
+    },
+    {
+      "id": "encoder.middle.1",
+      "file": "encoder.middle.1.onnx",
+      "kind": "attention",
+      "bytes": 2381709,
+      "sha256": "2a509de4f7dab50a8e92dfd3f8fa3d4d963275b005b3dae5f15413451a431c3d"
+    },
+    {
+      "id": "encoder.middle.2.residual.2",
+      "file": "encoder.middle.2.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "095226ccea6bad522f5ab421bdb6220836904b13f81eb9a3f7f8acaec9e28b53"
+    },
+    {
+      "id": "encoder.middle.2.residual.6",
+      "file": "encoder.middle.2.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "3080d91b235a34875223b67abc30010771ec2a300f245d138762371bb22e8914"
+    },
+    {
+      "id": "encoder.head.2",
+      "file": "encoder.head.2.onnx",
+      "kind": "causal",
+      "bytes": 1332580,
+      "sha256": "3ca7672224fa50617056b28cdabbca344dd5b9ef027141af68e64053a965536d"
+    },
+    {
+      "id": "conv1",
+      "file": "conv1.onnx",
+      "kind": "pointwise",
+      "bytes": 6403,
+      "sha256": "3fa4f2f0b8af83056f8a6a52fabfb2f2538d0510378199f3246284f79fab559f"
+    },
+    {
+      "id": "decoder.conv1",
+      "file": "decoder.conv1.onnx",
+      "kind": "causal",
+      "bytes": 667608,
+      "sha256": "30ac55b7223621fee9564fe4a3b52a744c31641cf4b233cb2e747db748ec1451"
+    },
+    {
+      "id": "decoder.middle.0.residual.2",
+      "file": "decoder.middle.0.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "730bb2dcac88b12dcd4a2af3986dd4e16eab3f151584d2ca6bd86bb687857a5b"
+    },
+    {
+      "id": "decoder.middle.0.residual.6",
+      "file": "decoder.middle.0.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "6b601530e36c4a8a4052fec9c96246443ee839d3915391ae3d06375760f996e7"
+    },
+    {
+      "id": "decoder.middle.1",
+      "file": "decoder.middle.1.onnx",
+      "kind": "attention",
+      "bytes": 2381709,
+      "sha256": "83d17e9c1d840b5281aac47a8890121fffc60eb646cdd8c3aa14b68b05086f1b"
+    },
+    {
+      "id": "decoder.middle.2.residual.2",
+      "file": "decoder.middle.2.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "cc899e0913d08a16f5db491f96575fea123cb3be90011d153b610490871dd273"
+    },
+    {
+      "id": "decoder.middle.2.residual.6",
+      "file": "decoder.middle.2.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "67f0bfd713db130c21242a0c10bb065c76f1f772e11e501e3f15381c65084b97"
+    },
+    {
+      "id": "decoder.upsamples.0.residual.2",
+      "file": "decoder.upsamples.0.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "3d6107085b124100d7e13f88d6beb8b103d417758071fc0b4a4dae7be305f3f1"
+    },
+    {
+      "id": "decoder.upsamples.0.residual.6",
+      "file": "decoder.upsamples.0.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "44738b4b1c3fd433d8ef175010932d7a874a69bde1070875c1b264e01425fc3d"
+    },
+    {
+      "id": "decoder.upsamples.1.residual.2",
+      "file": "decoder.upsamples.1.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "4a49bc5f6508e42d88ee548e67a8e1f920b8fd384feb79d65dd9a59a64f12d61"
+    },
+    {
+      "id": "decoder.upsamples.1.residual.6",
+      "file": "decoder.upsamples.1.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "f5aafb9b6d855eb16c456ddb46bb6fe35f422601ba558d0d702f9101b139f9d4"
+    },
+    {
+      "id": "decoder.upsamples.2.residual.2",
+      "file": "decoder.upsamples.2.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "527fa3f9905cef7146c44099576304e99047acfe0fe33079d329b2dfa8bd9075"
+    },
+    {
+      "id": "decoder.upsamples.2.residual.6",
+      "file": "decoder.upsamples.2.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "aa6f10e984e757da88cfd612c1ad6e6d288a2af37450e65a16844c9397bb0e39"
+    },
+    {
+      "id": "decoder.upsamples.3.spatial",
+      "file": "decoder.upsamples.3.spatial.onnx",
+      "kind": "spatial",
+      "bytes": 2655972,
+      "sha256": "72783c1142a12f369bae6624ffac1597e76944d48d867c9c1755b459500ce64c"
+    },
+    {
+      "id": "decoder.upsamples.3.temporal",
+      "file": "decoder.upsamples.3.temporal.onnx",
+      "kind": "temporalUp",
+      "bytes": 3548825,
+      "sha256": "696de9d2b48b6a784443c70637d8eaf05f1443e95527b4a5da4717489a4c54eb"
+    },
+    {
+      "id": "decoder.upsamples.4.shortcut",
+      "file": "decoder.upsamples.4.shortcut.onnx",
+      "kind": "pointwise",
+      "bytes": 298635,
+      "sha256": "0f912d38a35fca6bd97913f21dd25a6aedd03362ac49dafce1abd7988d31766a"
+    },
+    {
+      "id": "decoder.upsamples.4.residual.2",
+      "file": "decoder.upsamples.4.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 7968746,
+      "sha256": "08883123671765134fdfe16edde4f73646473db04b49816c6d3f8d668ff9a700"
+    },
+    {
+      "id": "decoder.upsamples.4.residual.6",
+      "file": "decoder.upsamples.4.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "e3c56f4d385df7053180e234ecce093c5b8c2074e1b4a2768f5501edf6c45a0f"
+    },
+    {
+      "id": "decoder.upsamples.5.residual.2",
+      "file": "decoder.upsamples.5.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "bfc50153038249549a1b08b9e5a92a874f163160fde623162f150677a5545468"
+    },
+    {
+      "id": "decoder.upsamples.5.residual.6",
+      "file": "decoder.upsamples.5.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "41e700cd9d4062220bde9f79549b6026107032a357a9bdc1cfa19c82e232aaa2"
+    },
+    {
+      "id": "decoder.upsamples.6.residual.2",
+      "file": "decoder.upsamples.6.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "06e01fb58d1657539e60753b6e4366e5229afc497ef43e6dceecbb783333f2f5"
+    },
+    {
+      "id": "decoder.upsamples.6.residual.6",
+      "file": "decoder.upsamples.6.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 15932138,
+      "sha256": "716856f5fe38fb9c4aa3c79ae2fccb28ab11f3835338b2bd80408fa8a2105ad6"
+    },
+    {
+      "id": "decoder.upsamples.7.spatial",
+      "file": "decoder.upsamples.7.spatial.onnx",
+      "kind": "spatial",
+      "bytes": 2655972,
+      "sha256": "3a77a8b3805e6ff06bb0a5b3861cf76b4122a92f8e893ada4fd7b3388a90f1bc"
+    },
+    {
+      "id": "decoder.upsamples.7.temporal",
+      "file": "decoder.upsamples.7.temporal.onnx",
+      "kind": "temporalUp",
+      "bytes": 3548825,
+      "sha256": "db045fdee4c092b9a751418b5891e9ed3507db8a1fd5d5932f80175706dc4f49"
+    },
+    {
+      "id": "decoder.upsamples.8.residual.2",
+      "file": "decoder.upsamples.8.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 3986666,
+      "sha256": "4681e3e650fa99e01edbc7ee18bc1dbd930b988ce39cb1c45cb7f503b6833d57"
+    },
+    {
+      "id": "decoder.upsamples.8.residual.6",
+      "file": "decoder.upsamples.8.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 3986666,
+      "sha256": "2ebaa7a081c6594835420b4708e3fd3d8364623511d8b0dd9791b988942b8179"
+    },
+    {
+      "id": "decoder.upsamples.9.residual.2",
+      "file": "decoder.upsamples.9.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 3986666,
+      "sha256": "0ffa8b905821cc4d9f18b6b08b15b700117f3046fe35651a6772fc772b56c1cb"
+    },
+    {
+      "id": "decoder.upsamples.9.residual.6",
+      "file": "decoder.upsamples.9.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 3986666,
+      "sha256": "4786c50cc0454ab0b5bcf1c9efc828da3bb3c45cf8de3460c83cc34c0aed8033"
+    },
+    {
+      "id": "decoder.upsamples.10.residual.2",
+      "file": "decoder.upsamples.10.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 3986666,
+      "sha256": "2ffe73a4b86254d4d2e208117e5f9758fca69370279fceb7345291d0ba982b8b"
+    },
+    {
+      "id": "decoder.upsamples.10.residual.6",
+      "file": "decoder.upsamples.10.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 3986666,
+      "sha256": "bbe369f21324af4e79010101e579d203745667e93cc09da61167aacd73baf6f8"
+    },
+    {
+      "id": "decoder.upsamples.11.spatial",
+      "file": "decoder.upsamples.11.spatial.onnx",
+      "kind": "spatial",
+      "bytes": 664926,
+      "sha256": "f42c34d3a4d424f27ad7cca42655f58f70851f5e2fc010030aa33469f95c80d3"
+    },
+    {
+      "id": "decoder.upsamples.12.residual.2",
+      "file": "decoder.upsamples.12.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 999903,
+      "sha256": "d67a364dd842d21376217ba56d96e0d8a99626dd9984f3be3d55e7170cad9ad7"
+    },
+    {
+      "id": "decoder.upsamples.12.residual.6",
+      "file": "decoder.upsamples.12.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 999903,
+      "sha256": "9055a7c7fad62ed466e56e3f7f7f84321e80e5c38b8d9b754bc37a227df7fa9e"
+    },
+    {
+      "id": "decoder.upsamples.13.residual.2",
+      "file": "decoder.upsamples.13.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 999903,
+      "sha256": "78a38b4e02a8677d4a5f86dcd7267b9a718a213db05e3509f404979319639c23"
+    },
+    {
+      "id": "decoder.upsamples.13.residual.6",
+      "file": "decoder.upsamples.13.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 999903,
+      "sha256": "d9ac665a95a990e48b2b2317a61ee716a13e65821cbf32637a176865e2b7e622"
+    },
+    {
+      "id": "decoder.upsamples.14.residual.2",
+      "file": "decoder.upsamples.14.residual.2.onnx",
+      "kind": "causal",
+      "bytes": 999903,
+      "sha256": "3045589a6f65b74b9bb010bdcd1bdbd32e94a333808444feab6d1c94f0c4d149"
+    },
+    {
+      "id": "decoder.upsamples.14.residual.6",
+      "file": "decoder.upsamples.14.residual.6.onnx",
+      "kind": "causal",
+      "bytes": 999903,
+      "sha256": "751669b5bdd311dbdb888df64fc606d01e0ffee13761dc4e5ac01a844896ad9d"
+    },
+    {
+      "id": "decoder.head.2",
+      "file": "decoder.head.2.onnx",
+      "kind": "causal",
+      "bytes": 35305,
+      "sha256": "548760312cc053a67a6b1094d483efaed3913b7d2d84c8f22edf5f38f608c8f3"
+    }
+  ],
+  "externalHikeAssets": {
+    "conv2Weight": {
+      "shape": [
+        16,
+        16
+      ],
+      "file": "conv2-weight.f32",
+      "bytes": 1024,
+      "sha256": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f"
+    },
+    "conv2Bias": {
+      "shape": [
+        16
+      ],
+      "file": "conv2-bias.f32",
+      "bytes": 64,
+      "sha256": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd"
+    }
+  },
+  "resourceCapacity": {
+    "scope": "Source-derived scalar byte arithmetic and pinned runtime source inspection, not measured VAE target memory or performance.",
+    "pinnedOrtVersion": "1.24.3",
+    "wasmMemoryMaximumPages": 65536,
+    "wasmMemoryMaximumBytes": 4294967296,
+    "wasmMaximumEvidence": "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs creates WebAssembly.Memory with maximum:65536.",
+    "cacheSlotCounts": {
+      "encoderAllocatedByVendorCountConv3d": 26,
+      "encoderUsed": 24,
+      "decoderAllocatedByVendorCountConv3d": 33,
+      "decoderUsed": 32,
+      "reason": "Vendor count_conv3d includes uncached 1x1 shortcut convolutions."
+    },
+    "stableFp32CacheBytesPerRgbPixel": {
+      "encoder": 5616,
+      "decoder": 9458
+    },
+    "rgb480x832": {
+      "encoderStableCacheBytes": 2242805760,
+      "decoderStableCacheBytes": 3777146880,
+      "decoderOldAndNewCompleteCachesBytes": 7554293760,
+      "attentionScoreMatrixBytesPerFrame": 155750400
+    },
+    "rgb848x848": {
+      "encoderStableCacheBytes": 4038488064,
+      "decoderStableCacheBytes": 6801285632,
+      "attentionScoreMatrixBytesPerFrame": 504990784
+    },
+    "wholeStepCacheConflict": "One complete decoder old/new explicit-cache pair alone exceeds a 4 GiB WASM32 heap. Partitioned execution keeps histories in job-owned host memory and presents only the active unit history to ORT.",
+    "spatialBatch4Conflict": {
+      "operation": "Last decoder spatial upsample at RGB480x832 with four continuation feature frames batched as N=4",
+      "nearestInputShape": [
+        4,
+        192,
+        480,
+        832
+      ],
+      "nearestInputBytes": 1226833920,
+      "convOutputShape": [
+        4,
+        96,
+        480,
+        832
+      ],
+      "convOutputBytes": 613416960,
+      "mlasWorkspaceBytes": 2760376320,
+      "combinedMinimumBytes": 4600627200,
+      "reason": "Pinned MLAS batch>1 segmented-convolution preparation reserves OutputSize*K float workspace; this minimum exceeds 4 GiB before other live buffers."
+    },
+    "operatorSourceEvidence": {
+      "convRouting": "https://github.com/microsoft/onnxruntime/blob/v1.24.3/onnxruntime/core/providers/cpu/nn/conv.cc#L216",
+      "workingBufferPolicy": "https://github.com/microsoft/onnxruntime/blob/v1.24.3/onnxruntime/core/mlas/lib/convolve.cpp#L1535",
+      "finding": "Float Conv kernel ranks1..3 route through MLAS. N=1/group=1 uses bounded segmented Vol2Col; N>1/group>1 uses the larger full-image working-buffer sizing branch."
+    },
+    "partitionResponse": "Causal units process one temporal feature frame; temporal downsamplers process two; spatial Conv2D units always use batch1 per feature frame. Global spatial attention remains intact. No spatial tiling or pixel/frame omission is introduced.",
+    "limitations": [
+      "These are cache/tensor/workspace bounds, not process or cgroup peak measurements.",
+      "Host histories, feature assembly, WASM inputs/outputs, allocator retention, attention intermediates, session/weight loading, saved files and copies must be measured during acceptance.",
+      "Still-image jobs need no retained future-step history; the integrated runtime drops such host states.",
+      "The inventory does not assert that every declared16..848 spatial shape fits available RAM or passes the numerical gate."
+    ]
+  },
+  "acceptanceStatus": {
+    "staticInventory": "PASS",
+    "nativeReferenceComparison": "NOT_ESTABLISHED_BY_THIS_INVENTORY",
+    "realWasmNumericalComparison": "NOT_ESTABLISHED_BY_THIS_INVENTORY",
+    "target81x480x832MemoryAndLifecycle": "NOT_ESTABLISHED_BY_THIS_INVENTORY"
+  }
+}
