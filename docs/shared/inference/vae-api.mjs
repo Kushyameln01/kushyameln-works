@@ -23,7 +23,8 @@ export function createVaeModule({client=createInferenceClient(),ownsClient=true}
  async function run(operation,tensor){
   ready();requireTensor(tensor,{dtype:'float32',layout:'NCTHW'});validateVaeRequest({operation,tensor,manifest:config.manifest});
   const selected=config,result=await client.run({module:'vae',operation,...selected,input:tensor});
-  if(config===selected&&result.binding?.assetsVerified)observed[operation]={verified:true,...structuredClone(result.binding)};
+  if(disposed||config!==selected)throw new DOMException('VAE result superseded by reconfiguration or disposal','AbortError');
+  if(result.binding?.assetsVerified)observed[operation]={verified:true,...structuredClone(result.binding)};
   return result;
  }
  const api={
