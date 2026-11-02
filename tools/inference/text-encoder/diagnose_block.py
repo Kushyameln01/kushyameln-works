@@ -6,7 +6,7 @@ native stage runs the unchanged block0 with actual pinned ORT WASM in a fresh
 Node process, then compares every hidden and normalized value. These are local
 diagnostics, never a replacement for the fixed full24 final-output gate.
 """
-import argparse,base64,gc,hashlib,importlib.util,json,os,re,shutil,struct,subprocess,sys,time
+import argparse,base64,gc,hashlib,importlib.util,json,os,re,resource,shutil,struct,subprocess,sys,time
 from pathlib import Path
 sys.dont_write_bytecode=True
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[2]
@@ -161,22 +161,247 @@ def run_sdpa(a,manifest,inp,source_report,report):
  end=a.model.stat();assert(initial.st_size,initial.st_mtime_ns)==(end.st_size,end.st_mtime_ns)
  report.update(passed=True,sourceCheckpointExecutionSha=source_report['executionSourceSha'],captureScales=scales,torchVersion=torch.__version__,torchDefaultBackendOperations=backend_operations,variants={name:{'bytes':len(raw),'sha256':sha(raw)}for name,raw in variants.items()},variantDefinition={'original-lowering':'Byte-copied existing block0 SDPA nodes including explicit K*8, Q*sqrt(1/8), K*sqrt(1/8), QK+bias, softmax and V','unscaled-t5':'Diagnostic-only same captured Q/K/V+bias with exact real-arithmetic cancellation of K*8 and SDPA scale1/8: softmax(Q@K_raw.T+bias)@V; no product graph or weight file is changed','fp64':'Operator-only double QK/bias/softmax/AV followed by final float32 cast; not the selected source oracle'},wholeSelectedGraphHashRecomputed=False,native=native_observations,comparisons=comparisons,files={path.name:record(path)for path in a.output.glob('*.f32')})
 
+def run_trace_source(a,manifest,inp,expected,oracle,report):
+ """One source path, all layer hashes checked against the original oracle."""
+ sys.path.insert(0,str(a.deps));import numpy as np,torch
+ from safetensors import safe_open
+ from prepare import source_module
+ torch.set_num_threads(2);torch.set_num_interop_threads(1);mod,ops,attend=source_module(HERE/'pinned-t5.py',torch);config=json.loads((HERE/'pinned-umt5-config.json').read_text());initial=a.model.stat()
+ with a.model.open('rb') as f:
+  hlen=struct.unpack('<Q',f.read(8))[0];header=json.loads(f.read(hlen));embedding=header['shared.weight'];assert embedding['dtype']=='F16' and embedding['shape']==[256384,4096];cache={}
+  for token in set(inp['tokenIds']):f.seek(8+hlen+embedding['data_offsets'][0]+token*8192);cache[token]=np.frombuffer(f.read(8192),dtype='<f2').astype(np.float32)
+ x=torch.from_numpy(np.stack([cache[token]for token in inp['tokenIds']])[None]);del cache;x.numpy().astype('<f4').tofile(a.output/'block0-input.f32');attention=torch.tensor([inp['attentionMask']],dtype=torch.float32);mask=(1-attention).reshape(1,1,1,512).expand(1,1,512,512);mask=mask.masked_fill(mask.bool(),-torch.finfo(torch.float32).max)
+ with safe_open(str(a.model),framework='pt',device='cpu') as model:
+  weight=model.get_tensor('encoder.final_layer_norm.weight').float().clone();original_keys=set(model.keys());assert sha(model.get_tensor('spiece_model').numpy().tobytes())==manifest['tokenizer']['sha256']
+ weight.numpy().astype('<f4').tofile(a.output/'final-norm.f32');assert record(a.output/'final-norm.f32')['sha256']==manifest['finalNorm']['sha256'];norm=mod.T5LayerNorm(4096,eps=1e-6,dtype=torch.float32,device='meta',operations=ops);norm.load_state_dict({'weight':weight},strict=True,assign=True);used={'shared.weight','spiece_model','scaled_fp8','encoder.final_layer_norm.weight'};past_bias=None;layers=[];files={name:record(a.output/name)for name in ['block0-input.f32','final-norm.f32']};selected_rows=[0,1,255,511]
+ for index in range(24):
+  begun=time.monotonic();prefix=f'encoder.block.{index}.';state={};scales=[]
+  with safe_open(str(a.model),framework='pt',device='cpu') as model:
+   for key in model.keys():
+    if not key.startswith(prefix):continue
+    used.add(key)
+    if key.endswith('.scale_weight'):continue
+    value=model.get_tensor(key)
+    if value.dtype==torch.float8_e4m3fn:
+     scale=model.get_tensor(key[:-7]+'.scale_weight');assert scale.dtype==torch.float32 and scale.numel()==1 and bool(torch.isfinite(scale).all()) and float(scale)>0;value=value.float()*scale;scales.append({'key':key[:-7]+'.scale_weight','value':float(scale)});del scale
+    else:value=value.float()
+    assert bool(torch.isfinite(value).all());state[key[len(prefix):]]=value
+  with torch.device('meta'):block=mod.T5Block(4096,4096,10240,config['dense_act_fn'],True,64,True,torch.float32,'meta',ops)
+  strict=block.load_state_dict(state,strict=True,assign=True);del state;block.eval()
+  with torch.inference_mode():x,past_bias=block(x,mask,past_bias,attend)
+  assert list(x.shape)==[1,512,4096] and bool(torch.isfinite(x).all());hidden=x.numpy().astype('<f4');digest=sha(hidden.tobytes())
+  if digest!=expected['layers'][index]['hiddenSha256']:raise ValueError(f'Source layer{index} differs from original oracle; stop before continuing')
+  name=f'source-hidden-{index:02}.f32';hidden.tofile(a.output/name);files[name]=record(a.output/name)
+  with torch.inference_mode():normalized=(norm(x)*attention[...,None]).numpy().astype('<f4')
+  name=f'source-norm-rows-{index:02}.f32';normalized[:,selected_rows,:].copy().tofile(a.output/name);files[name]=record(a.output/name)
+  row_stats=[{'position':row,'hiddenRms':float(np.sqrt(np.mean(hidden[0,row].astype(np.float64)**2))),'hiddenMaxAbs':float(np.max(np.abs(hidden[0,row]))),'weightedNormRms':float(np.sqrt(np.mean(normalized[0,row].astype(np.float64)**2)))}for row in selected_rows]
+  layers.append({'index':index,'shape':[1,512,4096],'hiddenSha256':digest,'matchesOriginalOracle':True,'strictMissing':strict.missing_keys,'strictUnexpected':strict.unexpected_keys,'scales':scales,'rows':row_stats,'seconds':time.monotonic()-begun});del block,value,hidden;gc.collect();print(json.dumps({'phase':'trace-source','completed':index+1,'total':24,'matchesOriginalOracle':True}),flush=True)
+ normalized.tofile(a.output/'source-final-normalized.f32');files['source-final-normalized.f32']=record(a.output/'source-final-normalized.f32')
+ if files['source-final-normalized.f32']['sha256']!=expected['reference']['sha256']:raise ValueError('Final source output differs from original oracle')
+ assert not original_keys-used,original_keys-used;end=a.model.stat();assert(initial.st_size,initial.st_mtime_ns)==(end.st_size,end.st_mtime_ns)
+ report.update(passed=True,scope='One full512 source path with exact original oracle hash checks at every layer; diagnostics only',layers=layers,files=files,sourceBlocksLoaded=24,sourceKeysCovered=len(used),originalOracleExecutionSha=oracle['executionSourceSha'],originalOracleReport=record(a.oracle_report),originalOracleReference=expected['reference'],selectedNormRows=selected_rows,allLayerDigestsMatchOriginalOracle=True,sourceFinalMatchesOriginalOracle=True,torchVersion=torch.__version__,peakSelfRssBytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024)
+
+TRACE_NODE_CODE=r'''
+// Diagnostic executor only. Invoked by the source-pinned Python parent.
+// No full-model arrays or sessions are retained across layer boundaries.
+import {readFile,writeFile,stat} from 'node:fs/promises';
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {pathToFileURL} from 'node:url';
+import {join,resolve} from 'node:path';
+
+const c=JSON.parse(readFileSync(0,'utf8'));
+const ROWS=512,COLUMNS=4096,ELEMENTS=ROWS*COLUMNS,SELECTED_ROWS=[0,1,255,511];
+const check=(ok,message)=>{if(!ok)throw Error(message);};
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const view=values=>new Uint8Array(values.buffer,values.byteOffset,values.byteLength);
+const tensorHash=values=>hash(view(values));
+const u8file=async path=>{const raw=await readFile(path);return new Uint8Array(raw.buffer,raw.byteOffset,raw.byteLength);};
+const fileRecord=async path=>{const raw=await readFile(path);return{path,bytes:raw.byteLength,sha256:hash(raw)};};
+const f32=async(path,elements)=>{
+ const raw=await readFile(path);
+ check(raw.byteLength===elements*4,'Unexpected checkpoint length: '+path);
+ const values=new Float32Array(raw.buffer.slice(raw.byteOffset,raw.byteOffset+raw.byteLength));
+ finite(values,path);return values;
+};
+function finite(values,label){
+ check(values instanceof Float32Array,'Expected float32 '+label);
+ for(let i=0;i<values.length;i++)if(!Number.isFinite(values[i]))throw Error('Nonfinite '+label+' element '+i);
+}
+function metrics(actual,reference){
+ check(actual.length===reference.length&&actual.length>0,'Comparison shape mismatch');
+ let maximum=0,squared=0,referenceSquared=0,referencePeak=0,overFixed001=0,allclose=true;
+ let rowMaximum=0,rowSquared=0,rowReferenceSquared=0,rowActualSquared=0,rowDot=0;
+ for(let i=0;i<actual.length;i++){
+  const a=actual[i],r=reference[i];if(!Number.isFinite(a)||!Number.isFinite(r))throw Error('Nonfinite comparison element '+i);
+  const delta=Math.abs(a-r);maximum=Math.max(maximum,delta);squared+=delta*delta;
+  referenceSquared+=r*r;referencePeak=Math.max(referencePeak,Math.abs(r));
+  if(delta>.001)overFixed001++;if(delta>.001+.001*Math.abs(r))allclose=false;
+  if(i<COLUMNS){rowMaximum=Math.max(rowMaximum,delta);rowSquared+=delta*delta;rowReferenceSquared+=r*r;rowActualSquared+=a*a;rowDot+=a*r;}
+ }
+ const rowLength=Math.min(COLUMNS,actual.length),alpha=rowReferenceSquared===0?null:rowDot/rowReferenceSquared;
+ let residualMaximum=0,residualSquared=0,signChanges=0;
+ for(let i=0;i<rowLength;i++){
+  const residual=alpha===null?actual[i]:actual[i]-alpha*reference[i];
+  residualMaximum=Math.max(residualMaximum,Math.abs(residual));residualSquared+=residual*residual;
+  if(actual[i]!==0&&reference[i]!==0&&Math.sign(actual[i])!==Math.sign(reference[i]))signChanges++;
+ }
+ const rmsError=Math.sqrt(squared/actual.length),referenceRms=Math.sqrt(referenceSquared/actual.length);
+ return{finite:true,elements:actual.length,maxAbsError:maximum,rmsError,referencePeak,referenceRms,
+  normalizedPeakError:maximum/Math.max(1,referencePeak),relativeRmsError:rmsError/Math.max(1,referenceRms),
+  overFixed001,allclose,allValuesCompared:true,
+  row0:{maxAbsError:rowMaximum,rmsError:Math.sqrt(rowSquared/rowLength),bestScalar:alpha,
+   directionalResidualMaxAbs:residualMaximum,directionalResidualRms:Math.sqrt(residualSquared/rowLength),
+   normRatio:rowReferenceSquared===0?null:Math.sqrt(rowActualSquared/rowReferenceSquared),signChanges}};
+}
+function selected(values){
+ const out=new Float32Array(SELECTED_ROWS.length*COLUMNS);
+ for(let i=0;i<SELECTED_ROWS.length;i++)out.set(values.subarray(SELECTED_ROWS[i]*COLUMNS,(SELECTED_ROWS[i]+1)*COLUMNS),i*COLUMNS);
+ return out;
+}
+const maskedNorm=(hike,values,weight,mask,epsilon)=>{
+ const output=hike.rmsNorm(values,weight,ROWS,COLUMNS,epsilon);
+ check(output instanceof Float32Array&&output.length===ELEMENTS,'Unexpected Hike normalization shape');
+ for(let row=0;row<ROWS;row++)if(mask[row]===0)output.fill(0,row*COLUMNS,(row+1)*COLUMNS);
+ finite(output,'Hike normalized output');return output;
+};
+
+check(c.manifest?.blocks?.length===24,'Exactly24 manifest blocks required');
+check(c.optimization==='all'||c.optimization==='disabled','Explicit supported ORT optimization required');
+check(c.manifest.finalNorm?.epsilon===1e-6,'Unchanged final RMSNorm epsilon required');
+const mask=Array.from(c.input?.attentionMask??[]);
+check(mask.length===ROWS&&mask.every(v=>v===0||v===1)&&mask.includes(1),'Full512 nonempty binary mask required');
+const keep=new Set(c.keepLayers??[0,7,15,23]);for(const i of keep)check(Number.isInteger(i)&&i>=0&&i<24,'Invalid retained layer');
+check((await stat(c.output)).isDirectory(),'Parent must create fresh private output directory');
+const base=resolve(c.runtime),ort=await import(pathToFileURL(join(base,'vendor/ort.wasm.min.mjs')).href),{createHike}=await import(pathToFileURL(join(base,'hike.mjs')).href);
+ort.env.wasm.numThreads=1;ort.env.wasm.proxy=false;
+ort.env.wasm.wasmPaths={mjs:pathToFileURL(join(base,'vendor/ort-wasm-simd-threaded.mjs')).href,wasm:pathToFileURL(join(base,'vendor/ort-wasm-simd-threaded.wasm')).href};
+const options={executionProviders:['wasm'],graphOptimizationLevel:c.optimization,extra:{session:{disable_prepacking:'1'}}};
+const counts={sessionsCreated:0,sessionsReleased:0,activeSessions:0,maximumActiveSessions:0,runCalls:0,tensorDisposeCalls:0};
+const report={passed:false,scope:'Sequential native Text diagnostics against frozen per-layer source checkpoints; fixed full24 final gate unchanged',actualProvider:'Node actual pinned ORT WASM',options,shape:[1,ROWS,COLUMNS],selectedRows:SELECTED_ROWS,layers:[],counts,files:[],newExports:0};
+const started=performance.now();let hike,session,nativePrevious,sourcePrevious,weight,finalNativeNormalized;
+async function infer(hidden,label){
+ finite(hidden,label+' input');check(hidden.length===ELEMENTS,'Unexpected native input length');
+ let hiddenInput,maskInput,result;
+ try{
+  hiddenInput=new ort.Tensor('float32',hidden,[1,ROWS,COLUMNS]);maskInput=new ort.Tensor('float32',Float32Array.from(mask),[1,ROWS]);
+  counts.runCalls++;result=await session.run({hidden:hiddenInput,mask:maskInput});
+  const output=result.hidden_out;
+  check(output?.type==='float32'&&output.dims.join(',')==='1,512,4096'&&output.data.length===ELEMENTS,'Unexpected native block output');
+  const copy=new Float32Array(output.data);finite(copy,label+' output');return copy;
+ }finally{
+  for(const tensor of new Set([...Object.values(result??{}),hiddenInput,maskInput]))if(tensor){tensor.dispose();counts.tensorDisposeCalls++;}
+ }
+}
+try{
+ let kernel=await u8file(join(base,'kernel/tensor.wasm'));
+ check(hash(kernel)==='9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8','Pinned Hike kernel hash mismatch');
+ hike=await createHike(kernel);kernel=null;
+ weight=await f32(join(c.reference,'final-norm.f32'),COLUMNS);
+ if(c.manifest.finalNorm.sha256)check(tensorHash(weight)===c.manifest.finalNorm.sha256,'Final norm checkpoint hash mismatch');
+ sourcePrevious=await f32(join(c.reference,'block0-input.f32'),ELEMENTS);nativePrevious=sourcePrevious;
+ for(let i=0;i<24;i++){
+  const number=String(i).padStart(2,'0'),block=c.manifest.blocks[i],layerStarted=performance.now();
+  check(block.index===i,'Manifest block index mismatch');
+  let graphBytes=await u8file(join(c.bundle,block.path));
+  const graphSha256=hash(graphBytes);check(graphBytes.byteLength===block.bytes&&graphSha256===block.sha256,'Graph byte/hash mismatch at layer '+i);
+  session=await ort.InferenceSession.create(graphBytes,options);graphBytes=null;
+  counts.sessionsCreated++;counts.activeSessions++;counts.maximumActiveSessions=Math.max(counts.maximumActiveSessions,counts.activeSessions);
+  let nativeCurrent,localCurrent,sourceCurrent,nativeNorm,localNorm,sourceNorm,torchRows,layer;
+  const createEnd=performance.now();
+  try{
+   nativeCurrent=await infer(nativePrevious,'native-chain layer '+i);
+   localCurrent=i===0?nativeCurrent:await infer(sourcePrevious,'same-source-input layer '+i);
+   sourceCurrent=await f32(join(c.reference,'source-hidden-'+number+'.f32'),ELEMENTS);
+   nativeNorm=maskedNorm(hike,nativeCurrent,weight,mask,c.manifest.finalNorm.epsilon);
+   sourceNorm=maskedNorm(hike,sourceCurrent,weight,mask,c.manifest.finalNorm.epsilon);
+   localNorm=maskedNorm(hike,localCurrent,weight,mask,c.manifest.finalNorm.epsilon);
+   torchRows=await f32(join(c.reference,'source-norm-rows-'+number+'.f32'),SELECTED_ROWS.length*COLUMNS);
+   layer={index:i,shape:[1,ROWS,COLUMNS],finite:true,graphSha256,
+    input:{nativeSha256:tensorHash(nativePrevious),sourceSha256:tensorHash(sourcePrevious)},
+    output:{nativeSha256:tensorHash(nativeCurrent),localSha256:tensorHash(localCurrent),sourceSha256:tensorHash(sourceCurrent)},
+    raw:{total:metrics(nativeCurrent,sourceCurrent),local:metrics(localCurrent,sourceCurrent),propagated:metrics(nativeCurrent,localCurrent)},
+    weightedNorm:{total:metrics(nativeNorm,sourceNorm),local:metrics(localNorm,sourceNorm),propagated:metrics(nativeNorm,localNorm)},
+    hikeVsTorchSourceNormRows:metrics(selected(sourceNorm),torchRows),
+    seconds:{create:(createEnd-layerStarted)/1000,total:(performance.now()-layerStarted)/1000},counts:{...counts},hikeStats:hike.stats()};
+   if(keep.has(i)){
+    const path=join(c.output,'native-hidden-'+number+'.f32');await writeFile(path,view(nativeCurrent));report.files.push(await fileRecord(path));
+   }
+   if(i===23){finalNativeNormalized=nativeNorm;const path=join(c.output,'native-final-normalized.f32');await writeFile(path,view(finalNativeNormalized));report.files.push(await fileRecord(path));}
+   report.layers.push(layer);
+   nativePrevious=nativeCurrent;sourcePrevious=sourceCurrent;
+   console.log(JSON.stringify({phase:'native-trace',completed:i+1,total:24,runCalls:counts.runCalls,rawMaxAbsError:layer.raw.total.maxAbsError,localMaxAbsError:layer.raw.local.maxAbsError,normMaxAbsError:layer.weightedNorm.total.maxAbsError,seconds:(performance.now()-started)/1000,peakRssBytes:process.resourceUsage().maxRSS*1024}));
+  }finally{
+   // ORT owns no result/input tensors beyond infer(). Release this block before
+   // any subsequent graph is read. Retain only the next native/source states.
+   localCurrent=null;nativeNorm=null;localNorm=null;sourceNorm=null;torchRows=null;
+   const current=session;session=null;await current.release();counts.sessionsReleased++;counts.activeSessions--;if(layer)layer.counts={...counts};
+  }
+ }
+ check(counts.sessionsCreated===24&&counts.sessionsReleased===24&&counts.activeSessions===0&&counts.maximumActiveSessions===1&&counts.runCalls===47&&counts.tensorDisposeCalls===141,'Unexpected actual session/tensor lifetime counts');
+ const sourceFinal=await f32(join(c.reference,'source-final-normalized.f32'),ELEMENTS);
+ const finalComparison=metrics(finalNativeNormalized,sourceFinal);
+ finalComparison.paddingExactlyZero=true;
+ for(let row=0;row<ROWS;row++)if(mask[row]===0)for(let column=0;column<COLUMNS;column++)if(finalNativeNormalized[row*COLUMNS+column]!==0||sourceFinal[row*COLUMNS+column]!==0)finalComparison.paddingExactlyZero=false;
+ finalComparison.gate={maxAbsError:.001,atol:.001,rtol:.001};
+ finalComparison.passed=finalComparison.finite&&finalComparison.maxAbsError<=.001&&finalComparison.allclose&&finalComparison.paddingExactlyZero;
+ report.finalComparisonVsSourceTorch=finalComparison;report.finalFixedGatePassed=finalComparison.passed;
+ report.passed=true;
+}catch(error){report.failure={name:error.name,message:error.message,stack:error.stack};throw error;
+}finally{
+ if(session){const current=session;session=null;await current.release();counts.sessionsReleased++;counts.activeSessions--;}
+ report.wallSeconds=(performance.now()-started)/1000;report.peakRssBytes=process.resourceUsage().maxRSS*1024;
+ report.hikeStats=hike?.stats()??null;hike?.dispose();
+ await writeFile(join(c.output,'native-trace-results.json'),JSON.stringify(report,null,2)+'\n');
+ console.log(JSON.stringify(report));
+}
+'''
+
+def run_trace_native(a,manifest,inp,source_report,report):
+ import numpy as np
+ keep=[int(value)for value in a.keep_layers.split(',')]
+ if not keep or len(set(keep))!=len(keep) or any(not 0<=value<24 for value in keep):raise ValueError('Distinct retained layer indices0..23 required')
+ if source_report['selectedNormRows']!=[0,1,255,511]:raise ValueError('Trace normalized row mapping mismatch')
+ config={'runtime':str(ROOT/'docs/shared/inference'),'bundle':str(a.bundle),'reference':str(a.reference),'output':str(a.output),'manifest':manifest,'input':inp,'optimization':a.optimization,'keepLayers':keep}
+ last=None
+ with (a.output/'trace-stdout.txt').open('w') as stdout,(a.output/'trace-stderr.txt').open('w') as stderr:
+  process=subprocess.Popen(['node','--input-type=module','-e',TRACE_NODE_CODE],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=stderr,text=True)
+  process.stdin.write(json.dumps(config));process.stdin.close()
+  for line in process.stdout:
+   stdout.write(line);stdout.flush()
+   if line.strip():
+    last=line
+    if json.loads(line).get('phase')=='native-trace':print(line.strip(),flush=True)
+  code=process.wait()
+  if code:raise subprocess.CalledProcessError(code,process.args)
+ native=json.loads(last);assert native['passed'] and len(native['layers'])==24
+ report.update(passed=True,scope='One unchanged Node ORT WASM24-block path plus same-source local feeds; diagnosis only, original final gate unchanged',sourceCheckpointExecutionSha=source_report['executionSourceSha'],originalOracleExecutionSha=source_report['originalOracleExecutionSha'],native=native,selectedNativeLayers=keep,finalFixedGatePassed=native['finalFixedGatePassed'],finalComparisonVsSourceTorch=native['finalComparisonVsSourceTorch'],files={path.name:record(path)for path in a.output.glob('*.f32')})
+ if a.failed_output:
+  from plain_checks import unpack_tensor
+  meta,failed=unpack_tensor(a.failed_output.read_bytes());assert meta['modelSha256']==manifest['modelSha256'] and meta['attentionMask']==inp['attentionMask'];actual=np.fromfile(a.output/'native-final-normalized.f32',dtype='<f4').reshape(1,512,4096)
+  report['comparisonToPreservedFailedCanary']=metrics(actual,failed,np);report['preservedCanaryReproducedBitwise']=sha(actual.tobytes())==meta['dataSha256'];report['preservedFailedCanary']=record(a.failed_output)
+
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('stage',choices=['source','native','sdpa']);p.add_argument('--bundle',required=True,type=Path);p.add_argument('--output',required=True,type=Path);p.add_argument('--execution-source-sha',required=True);p.add_argument('--preflight-only',action='store_true');p.add_argument('--model',type=Path);p.add_argument('--inputs',type=Path);p.add_argument('--case-id',default='id-l512-all-active');p.add_argument('--deps',type=Path);p.add_argument('--reference',type=Path);p.add_argument('--optimization',choices=['all','disabled'],default='all');a=p.parse_args()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('stage',choices=['source','native','sdpa','trace-source','trace-native']);p.add_argument('--bundle',required=True,type=Path);p.add_argument('--output',required=True,type=Path);p.add_argument('--execution-source-sha',required=True);p.add_argument('--preflight-only',action='store_true');p.add_argument('--model',type=Path);p.add_argument('--inputs',type=Path);p.add_argument('--case-id',default='id-l512-all-active');p.add_argument('--deps',type=Path);p.add_argument('--reference',type=Path);p.add_argument('--optimization',choices=['all','disabled'],default='all');p.add_argument('--oracle-report',type=Path);p.add_argument('--failed-output',type=Path);p.add_argument('--keep-layers',default='0,7,15,23');a=p.parse_args()
  if not re.fullmatch('[0-9a-f]{40}',a.execution_source_sha):raise ValueError('Full committed execution source required')
  manifest=json.loads((a.bundle/'manifest.json').read_text());source_files=[Path(__file__),HERE/'prepare.py',HERE/'plain_checks.py',HERE/'pinned-t5.py',HERE/'pinned-umt5-config.json']
- if a.stage in ['native','sdpa']:source_files.extend(ROOT/'docs/shared/inference'/name for name in ['hike.mjs','vendor/ort.wasm.min.mjs','vendor/ort-wasm-simd-threaded.mjs','vendor/ort-wasm-simd-threaded.wasm','kernel/tensor.wasm'])
+ if a.stage in ['native','sdpa','trace-native']:source_files.extend(ROOT/'docs/shared/inference'/name for name in ['hike.mjs','vendor/ort.wasm.min.mjs','vendor/ort-wasm-simd-threaded.mjs','vendor/ort-wasm-simd-threaded.wasm','kernel/tensor.wasm'])
  closure=[committed(path,a.execution_source_sha)for path in source_files]
- if a.stage=='source':
+ if a.stage in ['source','trace-source']:
   if not a.model or not a.inputs or not a.deps:raise ValueError('Source stage needs model, inputs and existing CPU deps')
   inp=next(case for case in json.loads(a.inputs.read_text())['inputs'] if case['id']==a.case_id)
   if inp['shape']!=[1,512,4096] or len(inp['tokenIds'])!=512 or len(inp['attentionMask'])!=512:raise ValueError('Full512 diagnostic input required')
   if a.model.stat().st_size!=manifest['modelBytes'] or inp['modelSha256']!=manifest['modelSha256'] or inp['manifestSha256']!=sha((a.bundle/'manifest.json').read_bytes()):raise ValueError('Selected input/model/manifest mismatch')
+  if a.stage=='trace-source':
+   if not a.oracle_report:raise ValueError('Trace source requires original full oracle report')
+   oracle=json.loads(a.oracle_report.read_text());expected=next(case for case in oracle['cases'] if case['id']==a.case_id)
+   if not oracle['passed'] or expected['input']!=inp or len(expected['layers'])!=24 or any(layer['index']!=i or layer['shape']!=[1,512,4096] for i,layer in enumerate(expected['layers'])):raise ValueError('Original full512 oracle/case/layer evidence required')
  else:
   if not a.reference:raise ValueError('Native stage needs source checkpoint reference')
-  source_report=json.loads((a.reference/'source-results.json').read_text());inp=source_report['input']
+  source_report=json.loads((a.reference/('trace-source-results.json' if a.stage=='trace-native' else 'source-results.json')).read_text());inp=source_report['input']
   if not source_report['passed'] or source_report['manifest']['sha256']!=sha((a.bundle/'manifest.json').read_bytes()):raise ValueError('Complete matching source checkpoint required')
-  for name in ['block0-input.f32','block0-source-hidden.f32','block0-source-normalized.f32','final-norm.f32']:
+  if a.stage=='trace-native' and (not source_report.get('allLayerDigestsMatchOriginalOracle') or not source_report.get('sourceFinalMatchesOriginalOracle')):raise ValueError('Trace source must match every original oracle layer and final value')
+  for name in source_report['files'] if a.stage=='trace-native' else ['block0-input.f32','block0-source-hidden.f32','block0-source-normalized.f32','final-norm.f32']:
    if record(a.reference/name)['sha256']!=source_report['files'][name]['sha256']:raise ValueError('Source checkpoint changed: '+name)
  if a.preflight_only:print(json.dumps({'passed':True,'stage':a.stage,'caseId':inp['id'],'newNeuralRuns':0,'sourceClosure':closure}));return 0
  fresh(a.output);started=time.monotonic();report={'passed':False,'stage':a.stage,'scope':'One existing block0 full512 diagnostic; no full24 acceptance or changed gate','input':inp,'manifest':record(a.bundle/'manifest.json'),'executionSourceSha':a.execution_source_sha,'sourceClosure':closure,'newExports':0}
@@ -207,6 +432,8 @@ def main():
    with torch.inference_mode():normalized=(norm(hidden)*attention[...,None]).numpy().astype('<f4')
    normalized.tofile(a.output/'block0-source-normalized.f32');end=a.model.stat();assert(initial.st_size,initial.st_mtime_ns)==(end.st_size,end.st_mtime_ns)
    report.update(passed=True,strictMissing=strict.missing_keys,strictUnexpected=strict.unexpected_keys,scales=scales,torchVersion=torch.__version__,files={name:record(a.output/name)for name in ['block0-input.f32','block0-source-hidden.f32','block0-source-normalized.f32','final-norm.f32']})
+  elif a.stage=='trace-source':run_trace_source(a,manifest,inp,expected,oracle,report)
+  elif a.stage=='trace-native':run_trace_native(a,manifest,inp,source_report,report)
   elif a.stage=='sdpa':run_sdpa(a,manifest,inp,source_report,report)
   else:
    import numpy as np
