@@ -5,6 +5,10 @@ assert.equal(typeof api?.validateVaeRequest,'function','VAE SDK must validate pr
 const manifest=JSON.parse(fs.readFileSync(new URL('./profile.json',import.meta.url)));
 const tensor={dtype:'float32',layout:'NCTHW',shape:[1,16,2,2,2],data:new Float32Array(128),meaning:'raw-posterior-mean'};
 assert.equal(api.validateVaeRequest({operation:'decode',tensor,manifest}).count,128);
+const rawIndependent={...tensor,meaning:'wan21-raw-latent:v1',modelSha256:manifest.model.sha256};
+assert.equal(api.validateVaeRequest({operation:'decode',tensor:rawIndependent,manifest}).count,128,'Independent raw latent must not be relabelled posterior mean or require generated producer receipts');
+assert.throws(()=>api.validateVaeRequest({operation:'decode',tensor:{...rawIndependent,normalization:'wan21-comfy-f32-v1'},manifest}),/normalization|marker/i);
+assert.throws(()=>api.validateVaeRequest({operation:'decode',tensor:{...rawIndependent,modelSha256:'0'.repeat(64)},manifest}),/model/i);
 // Public tensor semantics and explicit model provenance must survive SDK-only connections.
 assert.throws(()=>api.validateVaeRequest({operation:'decode',tensor:{...tensor,meaning:'normalized-latent'},manifest}),/meaning|semantic/i);
 assert.throws(()=>api.validateVaeRequest({operation:'decode',tensor:{...tensor,modelSha256:'0'.repeat(64)},manifest}),/model/i);

@@ -1,5 +1,7 @@
 // Native Wan2.1 VAE fixed-profile API. Model files stay in the caller's browser.
 import {snapshotTensorMetadata,describeTensor,requireTensorDescriptor} from './tensor.mjs';
+import {STREAM_KIND,RAW_LATENT,inspectStreamManifest,validateStreamDescriptor,runStreamVae} from './vae-stream.mjs';
+export {RAW_LATENT};
 export const RAW_GENERATED_SAMPLE='wan21-raw-generated-sample:v1';
 const MODEL_HASH='2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b';
 const LIMIT=2147483647;
@@ -9,6 +11,7 @@ function shape(value){if(!Array.isArray(value)||value.length!==5||value.some(n=>
 function same(a,b){return a.length===b.length&&a.every((n,i)=>n===b[i]);}
 function asset(name,value){if(!value||typeof value.file!=='string'||!/^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(value.file)||value.file.includes('..'))fail('Invalid local asset path: '+name);if(!Number.isSafeInteger(value.bytes)||value.bytes<1||value.bytes>LIMIT||!HASH.test(value.sha256))fail('Invalid local asset metadata: '+name);return value;}
 export function inspectVaeManifest(manifest){
+ if(manifest?.kind===STREAM_KIND)return inspectStreamManifest(manifest);
  if(manifest?.schemaVersion!==1||manifest.kind!=='wan21-vae-profile-v1'||manifest.model?.sha256!==MODEL_HASH||manifest.model?.executionDtype!=='float32')fail('Unsupported VAE model/profile manifest');
  const p=manifest.profile;if(!p||p.layout!=='NCTHW'||p.latentSpace!=='raw'||p.posterior!=='mean'||p.opset!==17)fail('Only exported raw mean NCTHW profiles are supported');
  shape(p.videoShape);shape(p.latentShape);
@@ -22,16 +25,17 @@ export function inspectVaeManifest(manifest){
  return structuredClone({profile:p,model:manifest.model,assets,inference:inf});
 }
 export function validateVaeDescriptor({operation,tensor,manifest}){
+ if(manifest?.kind===STREAM_KIND)return validateStreamDescriptor({operation,tensor,manifest});
  if(!['encode','decode'].includes(operation))fail('VAE operation must be encode or decode');
  requireTensorDescriptor(tensor,{dtype:'float32',layout:'NCTHW'});
  const {profile:p}=inspectVaeManifest(manifest),frames=p.videoShape[2];
  const wanted=operation==='encode'?p.videoShape:p.latentShape;
- const meanings=operation==='encode'?['raw-decoder-rgb','rgb-unit']:['raw-posterior-mean',RAW_GENERATED_SAMPLE];
+ const meanings=operation==='encode'?['raw-decoder-rgb','rgb-unit']:['raw-posterior-mean',RAW_LATENT,RAW_GENERATED_SAMPLE];
  if(!meanings.includes(tensor?.meaning))fail('Tensor meaning cannot connect to this VAE operation: expected '+meanings.join(' or '));
  if(operation==='decode'){
   if(tensor.normalization!==undefined)fail('Raw decoder input cannot carry a normalization marker');
-  if(tensor.meaning==='raw-posterior-mean'){
-   if(tensor.latentContract!==undefined)fail('Posterior mean cannot carry a generated-sample latent contract');
+  if(tensor.meaning==='raw-posterior-mean'||tensor.meaning===RAW_LATENT){
+   if(tensor.latentContract!==undefined)fail('Mean or independent raw latent cannot carry a generated-sample latent contract');
    if(tensor.modelSha256!==undefined&&tensor.modelSha256!==manifest.model.sha256)fail('Tensor model provenance does not match this VAE model');
   }
  }
@@ -68,6 +72,7 @@ async function bytesFor(descriptor,files){
 }
 function f32(bytes){if(bytes.byteLength%4)fail('Misaligned float32 file');const result=new Float32Array(bytes.byteLength/4);const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);for(let i=0;i<result.length;i++){result[i]=view.getFloat32(i*4,true);if(!Number.isFinite(result[i]))fail('Nonfinite model coefficient');}return result;}
 export async function runVae({operation,tensor,manifest,files,ort,hike,onProgress=()=>{},signal,diagnostics=false}){
+ if(manifest?.kind===STREAM_KIND)return runStreamVae({operation,tensor,manifest,files,ort,hike,onProgress,signal,diagnostics});
  const request=validateVaeRequest({operation,tensor,manifest}),inputMeaning=tensor.meaning,inputModelSha256=tensor.modelSha256,inputDescriptor=describeTensor(tensor);abort(signal);
  if(!(files instanceof Map))fail('Local model files must be a Map');
  const required=operation==='encode'?['encoder']:['decoderBody','conv2Weight','conv2Bias'];

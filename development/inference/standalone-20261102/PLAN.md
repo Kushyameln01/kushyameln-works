@@ -23,6 +23,8 @@ target RGB[1,3,81,480,832]、latent[1,16,21,60,104]。参照domainは前処理�
 
 環境はcgroup RAM16GiB・CPU4、workspace空き約1.3GB。/tmpは別tmpfs約8.8GBでRAM予算へ含める。元Text/VAE重み・既存受入bundleは保持。独立参照とNN/exportはrootが直列化し、別ownerの完成/ACKを待たない。
 
+新規拡張案として、固定profileとは別の`wan21-vae-stream-v1` manifestと、独立未正規化値をposterior meanへ改名しない`wan21-raw-latent:v1`を追加する。保存tensorには任意`frameProcessing`（schemaVersion1、policy wan21-causal-floor-v1、sourceFrames/latentFrames/consumedFrames/unusedTailFrames、任意sourceContext）を保持し、元F80→処理77等を保存後も復元できるようにする。これはownerのnative frame対応で、管理snapshot/owner/build/trace/詳細receiptをcontextへ混ぜる変更ではない。旧ファイルのbytesとmarkerなし互換を維持する。
+
 ## 実装分担と進捗
 
 Text担当は既存Text tools/API/runtimeと専用文書、VAE exporter担当は新stream_program/export_streamとsource比較、rootはVAE通常runtime/API/共有codec・統合・資源・配布を所有する。同時の巨大NN/exportを避け、開始/終了を記録する。BLOCKEDは確認したoperator/shape/資源と必要修正を記し、対象を小診断へ置換しない。
