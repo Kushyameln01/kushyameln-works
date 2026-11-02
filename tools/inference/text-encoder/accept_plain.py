@@ -36,6 +36,47 @@ def validate_node_sdk_mode(skip_controls,suite_mode,inputs):
  if not skip_controls or not suite_mode:raise ValueError('--node-sdk requires an explicit suite plan and --skip-controls; Browser/T3 controls remain separate')
  if any('byteGraph' in record for record in inputs):raise ValueError('--node-sdk accepts File-backed cases only; byteGraph cases require the standard Browser host')
 
+NODE_SDK_SOURCE_PATHS=[
+ 'tools/inference/text-encoder/node_sdk_host.mjs','tools/inference/text-encoder/node_resource_guard.cjs',
+ 'docs/shared/inference/text-encoder-api.mjs','docs/shared/inference/client.mjs','docs/shared/inference/text-job.mjs','docs/shared/inference/text-encoder.mjs','docs/shared/inference/tokenizer.mjs','docs/shared/inference/vendor/sentencepiece.mjs','docs/shared/inference/tensor.mjs','docs/shared/inference/hike.mjs','docs/shared/inference/kernel/tensor.wasm','docs/shared/inference/vendor/ort.wasm.min.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm','docs/shared/vr180/sha256.mjs']
+
+def verify_node_sdk_sources(root,execution_source_sha):
+ """Parent owns Git verification; the child independently checks these bytes."""
+ if not execution_source_sha or not re.fullmatch('[0-9a-f]{40}',execution_source_sha):raise ValueError('Full committed execution source SHA required')
+ root=Path(root);kind=subprocess.run(['git','cat-file','-t',execution_source_sha],cwd=root,check=True,capture_output=True).stdout.strip()
+ if kind!=b'commit':raise ValueError('Execution source object must be a commit')
+ records=[]
+ for relative in ['tools/inference/text-encoder/accept_plain.py','tools/inference/text-encoder/plain_checks.py','tools/inference/vae/process_lifecycle.py',*NODE_SDK_SOURCE_PATHS]:
+  raw=(root/relative).read_bytes();fixed=subprocess.run(['git','show',execution_source_sha+':'+relative],cwd=root,check=True,capture_output=True).stdout
+  if raw!=fixed:raise ValueError('Executed source differs from committed source: '+relative)
+  records.append({'path':relative,'bytes':len(raw),'sha256':sha(raw),'executionSourceSha':execution_source_sha})
+ return records
+
+def advise_text_graph_cache(bundle,blocks,index,policy,*,phase,case_id=None,seen=None):
+ """Best-effort clean-page advice on readonly prepared Text graphs only."""
+ policy.setdefault('policy','readonly POSIX_FADV_DONTNEED for selected prepared Text graph files')
+ policy.setdefault('scope','Advisory requests only; successful calls and cumulative file bytes do not prove page eviction, lower RSS or free memory')
+ for key in ['requestCount','advisedCount','advisedFileBytes']:policy.setdefault(key,0)
+ policy.setdefault('requests',[]);policy.setdefault('errors',[])
+ if type(index) is not int or not 0<=index<len(blocks):policy['errors'].append({'phase':phase,'caseId':case_id,'index':index,'message':'Invalid prepared graph index; no file opened'});return
+ key=(case_id,index)
+ if seen is not None:
+  if key in seen:return
+  seen.add(key)
+ block=blocks[index];path=(bundle/block['path']).resolve();entry={'phase':phase,'caseId':case_id,'index':index,'path':str(path),'bytes':block['bytes'],'advised':False};policy['requests'].append(entry);policy['requestCount']+=1;fd=None
+ try:
+  if not path.is_relative_to(bundle.resolve()) or path.suffix!='.onnx':raise ValueError('Cache advice is restricted to prepared graph files inside the Text bundle')
+  fd=os.open(path,os.O_RDONLY|getattr(os,'O_CLOEXEC',0))
+  if os.fstat(fd).st_size!=block['bytes']:raise ValueError('Prepared graph file size mismatch')
+  os.posix_fadvise(fd,0,0,os.POSIX_FADV_DONTNEED);entry['advised']=True;policy['advisedCount']+=1;policy['advisedFileBytes']+=block['bytes']
+ except FileNotFoundError as error:
+  policy['errors'].append({**entry,'name':type(error).__name__,'message':str(error)});raise
+ except Exception as error:policy['errors'].append({**entry,'name':type(error).__name__,'message':str(error)})
+ finally:
+  if fd is not None:
+   try:os.close(fd)
+   except OSError as error:policy['errors'].append({**entry,'name':type(error).__name__,'message':'Readonly descriptor close: '+str(error)})
+
 def consume_node_sdk_artifacts(a,host,inputs,manifest,oracle_cases,report):
  """Compare each completed public-SDK artifact once, including after host death."""
  import numpy as np
@@ -60,7 +101,7 @@ def run_node_sdk(a,plan,manifest,inputs,oracle_cases,reference_source_sha):
  """Conforming reference host; no Browser Worker or cancellation acceptance."""
  import psutil
  report={'passed':False,'complete':False,'scope':'Node conforming reference host using the normal public Text factory and shared Text job; no Browser Worker/T3 control acceptance','host':'node-sdk','executionSourceSha':a.execution_source_sha,'referenceExecutionSourceSha':reference_source_sha,'inputs':inputs,'selectedCaseIds':[record['id'] for record in inputs],'comparisons':[],'numericFailures':[],'sourceClosure':[],'preflightOnly':a.preflight_only,'browserWorkerAcceptance':False,'cancellationAcceptance':False,'newExports':0,'gate':manifest['numericGate'],'progress':[],'memoryTimeline':[]}
- receipt=a.output/'node-sdk-acceptance.json';host_path=a.output/'node-sdk-results.json';owner=ProcessOwnership().start();stop=threading.Event();process=None;peak=0;started=time.monotonic();root=psutil.Process()
+ receipt=a.output/'node-sdk-acceptance.json';host_path=a.output/'node-sdk-results.json';owner=ProcessOwnership().start();stop=threading.Event();process=None;peak=0;started=time.monotonic();root=psutil.Process();advised_blocks=set();report['preparedGraphCacheAdvice']={}
  def update():
   if host_path.exists():
    host=json.loads(host_path.read_text());report['native']=host
@@ -79,12 +120,11 @@ def run_node_sdk(a,plan,manifest,inputs,oracle_cases,reference_source_sha):
   except Exception as error:report['memorySamplerFailure']=str(error)
  sampler=threading.Thread(target=sample,daemon=True);sampler.start()
  try:
-  if not a.execution_source_sha or not re.fullmatch('[0-9a-f]{40}',a.execution_source_sha):raise ValueError('Node SDK host requires a full committed execution source SHA')
-  for path in [Path(__file__),HERE/'plain_checks.py',HERE/'node_sdk_host.mjs',HERE/'node_resource_guard.cjs',HERE.parent/'vae/process_lifecycle.py']:
-   raw=path.read_bytes();relative=str(path.relative_to(ROOT));fixed=subprocess.run(['git','show',a.execution_source_sha+':'+relative],cwd=ROOT,check=True,capture_output=True).stdout
-   if raw!=fixed:raise ValueError('Executed source differs from committed source: '+relative)
-   report['sourceClosure'].append({'path':relative,'bytes':len(raw),'sha256':sha(raw),'executionSourceSha':a.execution_source_sha})
+  report['sourceClosure']=verify_node_sdk_sources(ROOT,a.execution_source_sha)
+  report['sourceVerification']={'parent':'Git cat-file confirms exact commit; git show byte equality for full Node closure and parent harness','node':'Independent filesystem byte length and SHA-256 checks against the exact parent-verified table','nodeRunsGit':False}
   config={'root':str(ROOT),'bundle':str(a.bundle.resolve()),'source':str(a.source.resolve()),'inputs':inputs,'manifest':manifest,'manifestSha256':inputs[0]['manifestSha256'],'executionSourceSha':a.execution_source_sha,'output':str(a.output.resolve()),'diagnostics':False,'preflightOnly':a.preflight_only}
+  config['sourceRecords']=[record for record in report['sourceClosure'] if record['path'] in NODE_SDK_SOURCE_PATHS]
+  for index in range(len(manifest['blocks'])):advise_text_graph_cache(a.bundle,manifest['blocks'],index,report['preparedGraphCacheAdvice'],phase='before-node')
   write_json(receipt,report)
   with (a.output/'node-sdk-stdout.txt').open('w') as stdout,(a.output/'node-sdk-stderr.txt').open('w') as stderr:
    process=subprocess.Popen(['node',str(HERE/'node_sdk_host.mjs')],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=stderr,text=True)
@@ -93,7 +133,11 @@ def run_node_sdk(a,plan,manifest,inputs,oracle_cases,reference_source_sha):
    for line in process.stdout:
     stdout.write(line);stdout.flush()
     if line.strip():
-     event=json.loads(line);report['progress'].append(event);print(json.dumps(event),flush=True);update()
+     event=json.loads(line);report['progress'].append(event)
+     if event.get('phase')=='node-sdk-progress' and event.get('stage')=='text-block' and event.get('id') in report['selectedCaseIds']:
+      completed=event.get('completed');index=completed-1 if type(completed) is int else None
+      advise_text_graph_cache(a.bundle,manifest['blocks'],index,report['preparedGraphCacheAdvice'],phase='block-complete',case_id=event['id'],seen=advised_blocks)
+     print(json.dumps(event),flush=True);update()
    code=process.wait();report['nodeExitCode']=code;update()
   native=report.get('native',{});report['complete']=a.preflight_only or not report['pendingCaseIds'];report['completedFullNeuralRuns']=0 if a.preflight_only else len(report['completedCaseIds'])
   report['passed']=code==0 and native.get('passed') is True and report['complete'] and not report['numericFailures']

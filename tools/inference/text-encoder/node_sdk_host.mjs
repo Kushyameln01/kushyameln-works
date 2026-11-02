@@ -4,7 +4,6 @@
  */
 import {openAsBlob,readFileSync} from 'node:fs';
 import {readFile,writeFile,rename,stat} from 'node:fs/promises';
-import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {isDeepStrictEqual} from 'node:util';
 import {join,resolve,relative,isAbsolute,sep} from 'node:path';
@@ -80,17 +79,29 @@ export function verifyCaseOutput(output,record,manifest,capabilities,{diagnostic
  return{dtype:tensor.dtype,shape:[...tensor.shape],layout:tensor.layout,meaning:tensor.meaning,normalization:tensor.normalization,modelSha256:tensor.modelSha256,tokenizerSha256:tensor.tokenizerSha256,attentionMask:Array.from(tensor.attentionMask),elements:tensor.data.length,finite:true,paddingExactlyZero:true};
 }
 
-async function sourceClosure(root,executionSourceSha){
- check(/^[0-9a-f]{40}$/.test(executionSourceSha),'Full committed execution source required');
- const hostPath='tools/inference/text-encoder/node_sdk_host.mjs';
- check(resolve(root,hostPath)===fileURLToPath(import.meta.url),'Host path does not match the selected repository root');
- const paths=[hostPath,'tools/inference/text-encoder/node_resource_guard.cjs','docs/shared/inference/text-encoder-api.mjs','docs/shared/inference/client.mjs','docs/shared/inference/text-job.mjs','docs/shared/inference/text-encoder.mjs','docs/shared/inference/tokenizer.mjs','docs/shared/inference/vendor/sentencepiece.mjs','docs/shared/inference/tensor.mjs','docs/shared/inference/hike.mjs','docs/shared/inference/kernel/tensor.wasm','docs/shared/inference/vendor/ort.wasm.min.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm','docs/shared/vr180/sha256.mjs'];
- const records=[];
- for(const path of paths){
-  const raw=await readFile(join(root,path)),fixed=execFileSync('git',['show',executionSourceSha+':'+path],{cwd:root,maxBuffer:64*1024*1024});
-  check(raw.equals(fixed),'Executed source differs from commit: '+path);records.push({path,bytes:raw.byteLength,sha256:sha(raw),executionSourceSha});
+export const NODE_SOURCE_PATHS=Object.freeze(['tools/inference/text-encoder/node_sdk_host.mjs','tools/inference/text-encoder/node_resource_guard.cjs','docs/shared/inference/text-encoder-api.mjs','docs/shared/inference/client.mjs','docs/shared/inference/text-job.mjs','docs/shared/inference/text-encoder.mjs','docs/shared/inference/tokenizer.mjs','docs/shared/inference/vendor/sentencepiece.mjs','docs/shared/inference/tensor.mjs','docs/shared/inference/hike.mjs','docs/shared/inference/kernel/tensor.wasm','docs/shared/inference/vendor/ort.wasm.min.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm','docs/shared/vr180/sha256.mjs']);
+
+// The Python parent establishes commit identity with Git. These supplied rows
+// are a diagnostic input to Node, not independent evidence of commit authority.
+// Node independently rereads every required file and checks its current bytes.
+export async function verifySourceRecords(root,executionSourceSha,sourceRecords){
+ check(typeof executionSourceSha==='string'&&/^[0-9a-f]{40}$/.test(executionSourceSha),'Full parent execution source SHA required');
+ check(Array.isArray(sourceRecords)&&sourceRecords.length===NODE_SOURCE_PATHS.length,'Parent source records must contain the exact required15-path source closure');
+ const required=new Set(NODE_SOURCE_PATHS),recordsByPath=new Map();
+ for(const row of sourceRecords){
+  check(row&&typeof row==='object'&&!Array.isArray(row)&&required.has(row.path),'Unexpected parent source closure path');
+  check(!recordsByPath.has(row.path),'Duplicate parent source closure path: '+row.path);
+  check(Number.isSafeInteger(row.bytes)&&row.bytes>0&&typeof row.sha256==='string'&&/^[0-9a-f]{64}$/.test(row.sha256)&&row.executionSourceSha===executionSourceSha,'Invalid parent source record metadata: '+row.path);
+  recordsByPath.set(row.path,row);
  }
- return records;
+ check(recordsByPath.size===required.size,'Missing parent source closure path');
+ const verified=[];
+ for(const path of NODE_SOURCE_PATHS){
+  const row=recordsByPath.get(path),raw=await readFile(join(root,path)),actualHash=sha(raw);
+  check(raw.byteLength===row.bytes&&actualHash===row.sha256,'Current source bytes/hash differ from parent source records: '+path);
+  verified.push({path,bytes:raw.byteLength,sha256:actualHash,executionSourceSha});
+ }
+ return verified;
 }
 
 function observeOrt(ort){
@@ -108,7 +119,7 @@ function observeOrt(ort){
 export async function runNodeSdkHost(c){
  const root=resolve(c.root),output=resolve(c.output),receiptPath=join(output,'node-sdk-results.json');
  check((await stat(output)).isDirectory(),'Parent must create the private output directory');check(!inside(join(root,'docs'),output),'Public model output prohibited');await absent(receiptPath);await absent(receiptPath+'.tmp');
- const report={passed:false,scope:'Normal Text factory/shared job/tensor codec in a File-backed Node reference host; no browser Worker/T3 or independent numeric acceptance claim',host:'Node fs.openAsBlob reference host',executionSourceSha:c.executionSourceSha,diagnostics:c.diagnostics??false,cases:[],sourceClosure:[],workersUsed:0,browserControlsExercised:false,newExports:0};
+ const report={passed:false,scope:'Normal Text factory/shared job/tensor codec in a File-backed Node reference host; no browser Worker/T3 or independent numeric acceptance claim',host:'Node fs.openAsBlob reference host',executionSourceSha:c.executionSourceSha,diagnostics:c.diagnostics??false,cases:[],sourceClosure:[],sourceVerification:{method:'Parent Git verification plus Node current-byte verification',commitAuthority:'Supplied parent records; Node does not independently establish Git commit identity',nodeCommitVerification:false,nodeByteVerificationComplete:false},workersUsed:0,browserControlsExercised:false,newExports:0};
  let api,client,hike,observer,currentCase=null;
  const persist=async()=>{await writeFile(receiptPath+'.tmp',JSON.stringify(report,null,2)+'\n');await rename(receiptPath+'.tmp',receiptPath);};
  const started=performance.now();
@@ -117,7 +128,8 @@ export async function runNodeSdkHost(c){
   check(Array.isArray(c.inputs)&&c.inputs.length>0,'Nonempty frozen inputs required');
   check(new Set(c.inputs.map(record=>record.id)).size===c.inputs.length,'Unique case IDs required');
   for(const record of c.inputs){validateCaseRecord(record);await absent(join(output,record.id+'.wktensor'));}
-  report.sourceClosure=await sourceClosure(root,c.executionSourceSha);
+  check(resolve(root,NODE_SOURCE_PATHS[0])===fileURLToPath(import.meta.url),'Host path does not match the selected repository root');
+  report.sourceClosure=await verifySourceRecords(root,c.executionSourceSha,c.sourceRecords);report.sourceVerification.nodeByteVerificationComplete=true;
   const manifestRaw=await readFile(join(c.bundle,'manifest.json')),manifest=JSON.parse(manifestRaw),manifestSha256=sha(manifestRaw);
   check(/^[0-9a-f]{64}$/.test(c.manifestSha256)&&manifestSha256===c.manifestSha256,'Selected manifest bytes/hash mismatch');check(isDeepStrictEqual(manifest,c.manifest),'Selected manifest content mismatch');
   inspectTextEncoderManifest(manifest);

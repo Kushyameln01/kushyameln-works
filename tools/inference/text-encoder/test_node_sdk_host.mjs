@@ -2,9 +2,10 @@
 // No model/runtime job is imported or executed by this test module.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile,mkdtemp,writeFile,rm} from 'node:fs/promises';
+import {readFile,mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import {join,dirname} from 'node:path';
 import {createTextEncoderModule} from '../../../docs/shared/inference/text-encoder-api.mjs';
 import {encodeTensor,decodeTensor} from '../../../docs/shared/inference/tensor.mjs';
 const manifest=JSON.parse(await readFile(new URL('../../../development/inference/reference-adoption/p0/evidence/manifests/text.json',import.meta.url),'utf8'));
@@ -46,4 +47,39 @@ test('native openAsBlob keeps an actual local file backed by bounded slices',asy
   const blob=await host.openLocalBlob(path,bytes.length);assert.ok(blob instanceof Blob);assert.equal(blob.size,bytes.length);assert.deepEqual(new Uint8Array(await blob.slice(8192,16384).arrayBuffer()),bytes.subarray(8192));
   await assert.rejects(host.openLocalBlob(path,bytes.length+1),/size/);
  }finally{await rm(folder,{recursive:true,force:true});}
+});
+
+async function sourceFixture(){
+ assert.equal(typeof host?.verifySourceRecords,'function','parent-record byte verifier missing');
+ assert.equal(host.NODE_SOURCE_PATHS.length,15,'exact Node source closure required');
+ const root=await mkdtemp(join(tmpdir(),'text-sdk-source-')),executionSourceSha='a'.repeat(40),records=[];
+ for(const [index,path] of host.NODE_SOURCE_PATHS.entries()){
+  const bytes=Buffer.from('small-source-fixture-'+index+'\n');await mkdir(dirname(join(root,path)),{recursive:true});await writeFile(join(root,path),bytes);
+  records.push({path,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex'),executionSourceSha});
+ }
+ return{root,executionSourceSha,records};
+}
+test('Node byte verifier requires the exact parent-record closure and rehashes actual files',async()=>{
+ const fixture=await sourceFixture();
+ try{
+  const verified=await host.verifySourceRecords(fixture.root,fixture.executionSourceSha,fixture.records);
+  assert.deepEqual(verified.map(row=>row.path),host.NODE_SOURCE_PATHS);
+  for(const records of [undefined,fixture.records.slice(1),[...fixture.records.slice(0,-1),fixture.records[0]],[...fixture.records.slice(0,-1),{...fixture.records.at(-1),path:'unexpected.mjs'}]])await assert.rejects(host.verifySourceRecords(fixture.root,fixture.executionSourceSha,records));
+  for(const change of [{bytes:0},{bytes:fixture.records[0].bytes+1},{sha256:'invalid'},{sha256:'0'.repeat(64)},{executionSourceSha:'b'.repeat(40)}]){
+   const records=fixture.records.map(row=>({...row}));Object.assign(records[0],change);await assert.rejects(host.verifySourceRecords(fixture.root,fixture.executionSourceSha,records));
+  }
+  await assert.rejects(host.verifySourceRecords(fixture.root,'a'.repeat(39),fixture.records));
+  const path=join(fixture.root,fixture.records[0].path),changed=await readFile(path);changed[0]^=1;await writeFile(path,changed);
+  await assert.rejects(host.verifySourceRecords(fixture.root,fixture.executionSourceSha,fixture.records),/hash|bytes/);
+ }finally{await rm(fixture.root,{recursive:true,force:true});}
+});
+test('direct host requires parent source records before opening model assets or running jobs',async()=>{
+ assert.equal(typeof host?.verifySourceRecords,'function','parent-record byte verifier missing');
+ const output=await mkdtemp(join(tmpdir(),'text-sdk-no-records-'));
+ try{
+  const root=new URL('../../../',import.meta.url).pathname;
+  const report=await host.runNodeSdkHost({root,output,inputs:[input],executionSourceSha:'a'.repeat(40),bundle:'missing-bundle',source:'missing-model',preflightOnly:true});
+  assert.equal(report.passed,false);assert.equal(report.cases.length,0);assert.match(report.failure.message,/source records|source closure/i);assert.equal(report.sourceVerification.nodeCommitVerification,false);
+ }finally{await rm(output,{recursive:true,force:true});}
+ const source=await readFile(new URL('./node_sdk_host.mjs',import.meta.url),'utf8');assert.doesNotMatch(source,/node:child_process|execFileSync|spawn\(/);
 });
