@@ -18,6 +18,23 @@ async function withOwner(fn){const owner=await createGeneratedLatentSpace({wasmB
 const admissionError=/native|compact|nonshared|finite|F32|shape/i;
 const rejectsInput=(fn,message)=>assert.rejects(async()=>await fn(),admissionError,message);
 
+test('generated cancellation uses the native aborted state and exact reason',async()=>withOwner(async owner=>{
+ const control=new AbortController(),reason=new Error('native generated cancellation');control.abort(reason);
+ Object.defineProperty(control.signal,'aborted',{value:false});
+ await assert.rejects(async()=>owner.restore(tensor(new Float32Array(elements)),{signal:control.signal}),error=>error===reason);
+ assert.equal(owner.stats().busy,false);
+}));
+
+test('generated cancellation does not invoke an own aborted getter',async()=>withOwner(async owner=>{
+ const control=new AbortController();Object.defineProperty(control.signal,'aborted',{get(){throw Error('shadow getter');}});
+ assert.equal((await owner.restore(tensor(new Float32Array(elements)),{signal:control.signal})).data.length,elements);
+}));
+
+test('generated cancellation rejects duck signals without stranding the owner',async()=>withOwner(async owner=>{
+ await assert.rejects(async()=>owner.restore(tensor(new Float32Array(elements)),{signal:{aborted:false}}),TypeError);
+ assert.equal(owner.stats().busy,false);
+}));
+
 test('generated space accepts compact native finite exact-size F32',async()=>withOwner(async owner=>{
  const result=await owner.restore(tensor(new Float32Array(elements).fill(.5)));
  assert.equal(result.data.length,elements);

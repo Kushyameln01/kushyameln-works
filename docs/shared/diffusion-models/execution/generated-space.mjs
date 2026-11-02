@@ -33,7 +33,8 @@ function arrayCopy(data,elements){
  return owned;
 }
 function noMask(value){for(const key of ['attentionMask','mask','noiseMask','denoiseMask'])if(value[key]!==undefined)throw TypeError('Latent arithmetic does not accept masks');}
-function abort(signal){if(signal?.aborted)throw new DOMException('Generated operation aborted','AbortError');}
+const nativeSignalThrowIfAborted=AbortSignal.prototype.throwIfAborted;
+function abort(signal){if(signal!==undefined)nativeSignalThrowIfAborted.call(signal);}
 function requireHighProducer(tensor){if(!Array.isArray(tensor?.producerModelSha256s)||tensor.producerModelSha256s.length!==1||tensor.producerModelSha256s[0]!==BASE_MODEL_HASHES.HIGH)throw TypeError('HIGH handoff requires exactly the known HIGH producer identity');}
 const yieldTask=()=>new Promise(resolve=>setTimeout(resolve,0));
 function metadataCopy(tensor){

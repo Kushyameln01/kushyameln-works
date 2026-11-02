@@ -27,7 +27,7 @@ _spec.loader.exec_module(BASE)
 EXECUTION = 'docs/shared/diffusion-models/execution/'
 SOURCE_FILES = sorted(set(BASE.SOURCE_FILES + [
     EXECUTION + name for name in [
-        'model-sampler-browser.py', 'model-sampler-browser.mjs',
+        'model-sampler-browser.py', 'model-sampler-browser.mjs', 'wasm-memory-observer.mjs',
         'model-sampler-candidate.mjs', 'generated-space.mjs',
         'generated-space/kernel-registry.mjs', 'generated-space/build/generated-space.wasm',
     ]
@@ -188,12 +188,16 @@ def main():
                     page.locator('#' + side.lower()).set_input_files(str(model))
                 page.locator('#fixture').set_input_files(str(fixture))
                 result = page.evaluate('''async options => {
+                    const {installWasmMemoryObserver}=await import('/shared/diffusion-models/execution/wasm-memory-observer.mjs');
+                    const memoryObserver=installWasmMemoryObserver();
+                    try {
                     const {runModelSamplerBrowser}=await import('/shared/diffusion-models/execution/model-sampler-browser.mjs');
-                    return runModelSamplerBrowser({...options,
+                    return await runModelSamplerBrowser({...options,memoryObserver,
                         files:{HIGH:document.querySelector('#high').files[0],LOW:document.querySelector('#low').files[0]},
                         fixtureFile:document.querySelector('#fixture').files[0],
                         deliverTrace:window.privateSamplerTrace,deliverEncoded:window.privateSamplerEncoded,
                         checkpoint:window.samplerCheckpoint});
+                    } finally {memoryObserver.unhook();}
                 }''', {'mode': mode, 'timeoutMs': args.timeout_seconds * 1000})
                 result['chromiumVersion'] = browser.version
                 if result['outcome'] == 'completed':

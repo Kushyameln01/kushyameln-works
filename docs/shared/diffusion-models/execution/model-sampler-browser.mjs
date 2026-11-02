@@ -27,7 +27,7 @@ export async function createControlledN5SamplerInput(fixtureBytes){
  * ordinary inputs. Diagnostic mode calls the separately exposed .diagnose;
  * snapshots only leave through the private host binding, whose return is ignored.
  */
-export async function runModelSamplerBrowser({files,fixtureFile,mode='sample',deliverTrace,deliverEncoded,checkpoint,timeoutMs=21600000}={}){
+export async function runModelSamplerBrowser({files,fixtureFile,mode='sample',deliverTrace,deliverEncoded,checkpoint,memoryObserver,timeoutMs=21600000}={}){
  demand(files?.HIGH instanceof File&&files?.LOW instanceof File&&fixtureFile instanceof File,'Actual HIGH/LOW retained model Files and frozen fixture File required');
  demand(['sample','diagnose'].includes(mode),'Explicit sample or diagnose mode required');
  demand([deliverTrace,deliverEncoded,checkpoint].every(value=>typeof value==='function'),'Private trace/encoded and public checkpoint bindings required');
@@ -36,7 +36,7 @@ export async function runModelSamplerBrowser({files,fixtureFile,mode='sample',de
  const inputIdentities={noise:await identity({shape:SHAPE,data:input.noise}),tensors:await Promise.all(input.tensors.map(async tensor=>({requirementId:tensor.requirementId,...await identity(tensor)}))),positive:await identity(input.positive),negative:await identity(input.negative)};
  const controller=new AbortController(),started=performance.now(),traceIdentities={},events=[];let candidate=null,result=null,outcome='failed',error=null,cleanupError=null,cancelReason=null,queue=Promise.resolve(),codec=null;
  const enqueue=event=>{const record={elapsedMs:performance.now()-started,...event};events.push(record);queue=queue.then(()=>checkpoint(record));};
- const snapshot=(stage,event={})=>({stage,...event,resources:candidate?.stats()??null});
+ const snapshot=(stage,event={})=>({stage,...event,resources:candidate?.stats()??null,wasmMemory:memoryObserver?.sample(stage)??null});
  const deliver=async(name,tensor,metadata={})=>{
   demand(TRACE_NAMES.includes(name)&&!Object.hasOwn(traceIdentities,name),'Unexpected or duplicate private sampler trace');
   demand(JSON.stringify(tensor.shape)===JSON.stringify(SHAPE)&&tensor.data instanceof Float32Array&&tensor.data.length===128&&tensor.data.every(Number.isFinite),'Finite exact target-shape sampler trace required');
@@ -70,10 +70,12 @@ export async function runModelSamplerBrowser({files,fixtureFile,mode='sample',de
  }catch(caught){error=errorMetadata(caught);outcome=controller.signal.aborted?'cancelled':'failed';}
  finally{
   clearTimeout(timer);clearInterval(heartbeat);enqueue(snapshot('terminal',{outcome,cancelReason,error}));
+  enqueue(snapshot('before-dispose'));
   try{await candidate?.dispose();}catch(caught){cleanupError=errorMetadata(caught);outcome='failed';}
+  enqueue(snapshot('after-dispose'));
   await queue;
  }
- return {schemaVersion:'bernini-model-sampler-browser/0.1',outcome,mode,diagnosticOnly:true,nativeSixFull40PredictionsExecuted:outcome==='completed',actualRetainedFiles:true,fixtureSHA256:captured.fixtureSHA256,fixtureClass:captured.fixtureClass,inputIdentities,noise:'explicit frozen construction.explicitNoise; not seeded RNG',conditioning:'controlled L3 fixture; positive/negative identical; negative validated and skipped at CFG1',initialTarget:'frozen fixture target retained; initial sigma1 CONST coefficient on target is zero',required81FrameWorkflowVerified:false,originalProductionPrecisionVerified:false,acceptedProduction:false,generationReady:false,publicRuntimeEnabled:false,producerVerified:false,sourceFullFileHashRecomputed:false,traceIdentities,traceCount:Object.keys(traceIdentities).length,tensor:result?describeTensor(result):null,evidence:result?.evidence??null,codec,resources:candidate?.stats()??null,elapsedMs:performance.now()-started,error,cleanupError,cancelReason,events};
+ return {schemaVersion:'bernini-model-sampler-browser/0.1',outcome,mode,diagnosticOnly:true,nativeSixFull40PredictionsExecuted:outcome==='completed',actualRetainedFiles:true,fixtureSHA256:captured.fixtureSHA256,fixtureClass:captured.fixtureClass,inputIdentities,noise:'explicit frozen construction.explicitNoise; not seeded RNG',conditioning:'controlled L3 fixture; positive/negative identical; negative validated and skipped at CFG1',initialTarget:'frozen fixture target retained; initial sigma1 CONST coefficient on target is zero',required81FrameWorkflowVerified:false,originalProductionPrecisionVerified:false,acceptedProduction:false,generationReady:false,publicRuntimeEnabled:false,producerVerified:false,sourceFullFileHashRecomputed:false,traceIdentities,traceCount:Object.keys(traceIdentities).length,tensor:result?describeTensor(result):null,evidence:result?.evidence??null,codec,wasmMemory:memoryObserver?.sample('returned-after-dispose')??null,resources:candidate?.stats()??null,elapsedMs:performance.now()-started,error,cleanupError,cancelReason,events};
 }
 
 /** Invoke only after the private host has saved the actual encoded bytes and
