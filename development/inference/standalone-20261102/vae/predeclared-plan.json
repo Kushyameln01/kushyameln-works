@@ -38,7 +38,10 @@
     "layout": "NCTHW",
     "dtype": "float32",
     "pattern": "((c*71+t*13+y*5+x*3)%257-128)/128",
-    "range": [-1, 1],
+    "range": [
+      -1,
+      1
+    ],
     "origin": "Synthetic deterministic literal RGB, already at the declared VAE boundary; no padding, crop, resize, or frame reduction."
   },
   "encodeOutput": {
@@ -53,7 +56,10 @@
     "provenance": "RAW_LATENT_DECLARED_NORMAL_INPUT",
     "derivedFromEncode": false,
     "pattern": "((c*17+t*11+y*7+x*5)%257-128)/512",
-    "range": [-0.25, 0.25],
+    "range": [
+      -0.25,
+      0.25
+    ],
     "meaning": "Deterministic independent unnormalized raw latent; neither a posterior sample nor an asserted Diffusion-produced sample. Producer evidence is not required for normal raw decode."
   },
   "decodeOutput": {
@@ -68,17 +74,307 @@
     "scope": "The unchanged fixed source consumes first1 followed by complete groups4. F4 retains an F4 input file but processes1; F80 retainsF80 and processes77. This is explicitly reported, not hidden padding/reduction."
   },
   "cases": [
-    {"id":"target-f81-480x832","role":"target","rgbShape":[1,3,81,480,832],"latentShape":[1,16,21,60,104],"decodeRgbShape":[1,3,81,480,832]},
-    {"id":"source-f1-480x832","role":"source","rgbShape":[1,3,1,480,832],"latentShape":[1,16,1,60,104],"decodeRgbShape":[1,3,1,480,832]},
-    {"id":"source-f4-480x832","role":"source","rgbShape":[1,3,4,480,832],"latentShape":[1,16,1,60,104],"decodeRgbShape":[1,3,1,480,832]},
-    {"id":"source-f5-480x832","role":"source","rgbShape":[1,3,5,480,832],"latentShape":[1,16,2,60,104],"decodeRgbShape":[1,3,5,480,832]},
-    {"id":"source-f80-480x832","role":"source","rgbShape":[1,3,80,480,832],"latentShape":[1,16,20,60,104],"decodeRgbShape":[1,3,77,480,832]},
-    {"id":"source-f81-480x832","role":"source","rgbShape":[1,3,81,480,832],"latentShape":[1,16,21,60,104],"decodeRgbShape":[1,3,81,480,832]},
-    {"id":"reference-f1-16x16","role":"reference","rgbShape":[1,3,1,16,16],"latentShape":[1,16,1,2,2],"decodeRgbShape":[1,3,1,16,16]},
-    {"id":"reference-f1-16x848","role":"reference","rgbShape":[1,3,1,16,848],"latentShape":[1,16,1,2,106],"decodeRgbShape":[1,3,1,16,848]},
-    {"id":"reference-f1-848x16","role":"reference","rgbShape":[1,3,1,848,16],"latentShape":[1,16,1,106,2],"decodeRgbShape":[1,3,1,848,16]},
-    {"id":"reference-f1-848x848","role":"reference","rgbShape":[1,3,1,848,848],"latentShape":[1,16,1,106,106],"decodeRgbShape":[1,3,1,848,848]},
-    {"id":"reference-f1-16x32","role":"reference","rgbShape":[1,3,1,16,32],"latentShape":[1,16,1,2,4],"decodeRgbShape":[1,3,1,16,32]}
+    {
+      "id": "target-f81-480x832",
+      "role": "target",
+      "rgbShape": [
+        1,
+        3,
+        81,
+        480,
+        832
+      ],
+      "latentShape": [
+        1,
+        16,
+        21,
+        60,
+        104
+      ],
+      "decodeRgbShape": [
+        1,
+        3,
+        81,
+        480,
+        832
+      ]
+    },
+    {
+      "id": "source-f1-480x832",
+      "role": "source",
+      "rgbShape": [
+        1,
+        3,
+        1,
+        480,
+        832
+      ],
+      "latentShape": [
+        1,
+        16,
+        1,
+        60,
+        104
+      ],
+      "decodeRgbShape": [
+        1,
+        3,
+        1,
+        480,
+        832
+      ]
+    },
+    {
+      "id": "source-f4-480x832",
+      "role": "source",
+      "rgbShape": [
+        1,
+        3,
+        4,
+        480,
+        832
+      ],
+      "latentShape": [
+        1,
+        16,
+        1,
+        60,
+        104
+      ],
+      "decodeRgbShape": [
+        1,
+        3,
+        1,
+        480,
+        832
+      ]
+    },
+    {
+      "id": "source-f5-480x832",
+      "role": "source",
+      "rgbShape": [
+        1,
+        3,
+        5,
+        480,
+        832
+      ],
+      "latentShape": [
+        1,
+        16,
+        2,
+        60,
+        104
+      ],
+      "decodeRgbShape": [
+        1,
+        3,
+        5,
+        480,
+        832
+      ]
+    },
+    {
+      "id": "source-f80-480x832",
+      "role": "source",
+      "rgbShape": [
+        1,
+        3,
+        80,
+        480,
+        832
+      ],
+      "latentShape": [
+        1,
+        16,
+        20,
+        60,
+        104
+      ],
+      "decodeRgbShape": [
+        1,
+        3,
+        77,
+        480,
+        832
+      ]
+    },
+    {
+      "id": "source-f81-480x832",
+      "role": "source",
+      "rgbShape": [
+        1,
+        3,
+        81,
+        480,
+        832
+      ],
+      "latentShape": [
+        1,
+        16,
+        21,
+        60,
+        104
+      ],
+      "decodeRgbShape": [
+        1,
+        3,
+        81,
+        480,
+        832
+      ]
+    },
+    {
+      "id": "reference-f1-16x16",
+      "role": "reference",
+      "rgbShape": [
+        1,
+        3,
+        1,
+        16,
+        16
+      ],
+      "latentShape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "decodeRgbShape": [
+        1,
+        3,
+        1,
+        16,
+        16
+      ]
+    },
+    {
+      "id": "reference-f1-16x848",
+      "role": "reference",
+      "rgbShape": [
+        1,
+        3,
+        1,
+        16,
+        848
+      ],
+      "latentShape": [
+        1,
+        16,
+        1,
+        2,
+        106
+      ],
+      "decodeRgbShape": [
+        1,
+        3,
+        1,
+        16,
+        848
+      ]
+    },
+    {
+      "id": "reference-f1-848x16",
+      "role": "reference",
+      "rgbShape": [
+        1,
+        3,
+        1,
+        848,
+        16
+      ],
+      "latentShape": [
+        1,
+        16,
+        1,
+        106,
+        2
+      ],
+      "decodeRgbShape": [
+        1,
+        3,
+        1,
+        848,
+        16
+      ]
+    },
+    {
+      "id": "reference-f1-848x848",
+      "role": "reference",
+      "rgbShape": [
+        1,
+        3,
+        1,
+        848,
+        848
+      ],
+      "latentShape": [
+        1,
+        16,
+        1,
+        106,
+        106
+      ],
+      "decodeRgbShape": [
+        1,
+        3,
+        1,
+        848,
+        848
+      ]
+    },
+    {
+      "id": "reference-f1-16x32",
+      "role": "reference",
+      "rgbShape": [
+        1,
+        3,
+        1,
+        16,
+        32
+      ],
+      "latentShape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "decodeRgbShape": [
+        1,
+        3,
+        1,
+        16,
+        32
+      ]
+    },
+    {
+      "id": "diagnostic-f5-16x32",
+      "role": "temporal-diagnostic",
+      "rgbShape": [
+        1,
+        3,
+        5,
+        16,
+        32
+      ],
+      "latentShape": [
+        1,
+        16,
+        2,
+        2,
+        4
+      ],
+      "decodeRgbShape": [
+        1,
+        3,
+        5,
+        16,
+        32
+      ],
+      "scope": "Additional early continuation/cache graph check; never substitutes target81 or source/reference geometry acceptance"
+    }
   ],
   "executionPolicy": {
     "nativeJobsSequential": true,
