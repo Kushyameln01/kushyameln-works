@@ -15,6 +15,7 @@ def memory_summary(report):
  samples=report.get('memoryTimeline',[]);phases={};pid_peaks={}
  boundaries={event['event']:event['epochMs'] for event in report.get('memoryEvents',[]) if event.get('source')=='page' and event.get('event') in ['full-start','full-end','cancel-start','cancel-end']}
  def phase_at(sample):
+  if not boundaries:return sample.get('phase','startup')
   epoch=sample['epochMs']
   for phase in ['full','cancel']:
    if boundaries.get(phase+'-start',float('inf'))<=epoch<=boundaries.get(phase+'-end',float('inf')):return phase
@@ -34,20 +35,38 @@ def memory_summary(report):
 def main():
  p=argparse.ArgumentParser(description=__doc__)
  for key in ['plan','bundle','source','reference','output']:p.add_argument('--'+key,required=True,type=Path)
- p.add_argument('--execution-source-sha');p.add_argument('--reference-execution-source-sha');p.add_argument('--browser',default=os.environ.get('CHROMIUM_BINARY') or shutil.which('chromium'));p.add_argument('--preflight-only',action='store_true');a=p.parse_args()
+ p.add_argument('--execution-source-sha');p.add_argument('--reference-execution-source-sha');p.add_argument('--browser',default=os.environ.get('CHROMIUM_BINARY') or shutil.which('chromium'));p.add_argument('--preflight-only',action='store_true');p.add_argument('--case-id',action='append');p.add_argument('--skip-controls',action='store_true');a=p.parse_args()
  assert a.browser,'Real Chromium required'
  if a.output.exists():raise FileExistsError('Fresh private output directory required')
  assert not a.output.resolve().is_relative_to(ROOT/'docs')
  assert shutil.disk_usage(a.output.parent).free>=536870912,'At least512MiB disk headroom required'
  a.output.mkdir(parents=True)
- plan=json.loads(a.plan.read_text());manifest=json.loads((a.bundle/'manifest.json').read_text());input_record=json.loads((a.reference/'plain-input.json').read_text())
+ plan=json.loads(a.plan.read_text());manifest=json.loads((a.bundle/'manifest.json').read_text());suite_mode='cases' in plan
+ inputs=json.loads((a.reference/'text-inputs.json').read_text())['inputs'] if suite_mode else [json.loads((a.reference/'plain-input.json').read_text())]
+ if a.case_id:
+  assert suite_mode and set(a.case_id)<=set(record['id'] for record in inputs),'Unknown selected suite case'
+  inputs=[record for record in inputs if record['id'] in a.case_id]
+ input_record=inputs[0]
  reference_source_sha=a.reference_execution_source_sha or a.execution_source_sha
  assert sha((a.bundle/'manifest.json').read_bytes())==plan['selectedManifest']['sha256']==input_record['manifestSha256'];validate_gate(manifest['numericGate'])
- assert input_record['textUtf8Sha256']==plan['input']['utf8Sha256'] and a.source.stat().st_size==manifest['modelBytes']
+ assert a.source.stat().st_size==manifest['modelBytes']
+ if suite_mode:
+  planned={case['id']:case for case in plan['cases']}
+  for record in inputs:
+   expected=planned[record['id']]['input'];assert record['manifestSha256']==input_record['manifestSha256'] and record.get('byteGraph')==planned[record['id']].get('byteGraph')
+   if 'text' in expected:assert record['input']=={'text':expected['text']} and sha(expected['text'].encode())==record['textUtf8Sha256']
+   else:assert record['input']==expected
+ else:assert input_record['textUtf8Sha256']==plan['input']['utf8Sha256']
  if not a.preflight_only:
-  assert a.execution_source_sha and reference_source_sha and input_record['executionSourceSha']==reference_source_sha,'Committed source oracle required'
+  assert a.execution_source_sha and reference_source_sha and all(record['executionSourceSha']==reference_source_sha for record in inputs),'Committed source oracle required'
   oracle=json.loads((a.reference/'reference-results.json').read_text());assert oracle['passed'] and oracle['oracleUsesOnnxOrHike'] is False and oracle['input']['oracleUsesFull512Positions']
-  assert sha((a.reference/'plain-reference.f32').read_bytes())==oracle['reference']['sha256']
+  if suite_mode:
+   assert sha(a.plan.read_bytes())==oracle['plan']['sha256'],'Frozen suite plan changed since source oracle'
+   oracle_cases={case['id']:case for case in oracle['cases']}
+   for record in inputs:
+    case=oracle_cases[record['id']];assert case['input']==record and case['oracleInternalShape']==[1,512,4096]
+    assert sha((a.reference/(record['id']+'-reference.f32')).read_bytes())==case['reference']['sha256']
+  else:assert sha((a.reference/'plain-reference.f32').read_bytes())==oracle['reference']['sha256']
  served={};server_errors=[]
  def source_bytes(path):
   raw=path.read_bytes();relative=str(path.relative_to(ROOT))
@@ -72,7 +91,7 @@ def main():
     self.send_response(200);self.send_header('Content-Type',kind);self.send_header('Content-Length',str(len(raw)));self.end_headers();self.wfile.write(raw)
    except (BrokenPipeError,ConnectionResetError):pass
    except Exception as error:server_errors.append(str(error));self.send_error(500,str(error))
- owner=ProcessOwnership().start();start=time.monotonic();report={'passed':False,'scope':'Native plain Hello world FP32 diagnostic compared with the selected independent full512 reference','executionSourceSha':a.execution_source_sha,'referenceExecutionSourceSha':reference_source_sha,'reusedReference':None if a.preflight_only else {'executionSourceSha':reference_source_sha,'reference':oracle['reference'],'usesFull512Positions':oracle['input']['oracleUsesFull512Positions'],'usesOnnxOrHike':oracle['oracleUsesOnnxOrHike'],'gate':manifest['numericGate']},'preflightOnly':a.preflight_only,'input':input_record,'gate':manifest['numericGate'],'newExports':0,'httpRequests':[],'blockedRequests':[],'pageErrors':[],'consoleErrors':[],'progress':[],'memoryEvents':[],'memoryTimeline':[],'memoryProcesses':[],'servedSources':served,'serverErrors':server_errors}
+ owner=ProcessOwnership().start();start=time.monotonic();report={'passed':False,'scope':'Selected explicit Text cases, actual native Worker/ORT WASM/Hike compared with independent uncompacted full512 source' if suite_mode else 'Native plain Hello world FP32 diagnostic compared with the selected independent full512 reference','executionSourceSha':a.execution_source_sha,'referenceExecutionSourceSha':reference_source_sha,'reusedReference':None if a.preflight_only else {'executionSourceSha':reference_source_sha,'reference':oracle['reference'],'usesFull512Positions':oracle['input']['oracleUsesFull512Positions'],'usesOnnxOrHike':oracle['oracleUsesOnnxOrHike'],'gate':manifest['numericGate']},'preflightOnly':a.preflight_only,'input':input_record,'inputs':inputs,'gate':manifest['numericGate'],'newExports':0,'httpRequests':[],'blockedRequests':[],'pageErrors':[],'consoleErrors':[],'progress':[],'memoryEvents':[],'memoryTimeline':[],'memoryProcesses':[],'servedSources':served,'serverErrors':server_errors}
  server=ThreadingHTTPServer(('127.0.0.1',0),Handler);serverthread=threading.Thread(target=server.serve_forever,daemon=True);serverthread.start();base=f'http://127.0.0.1:{server.server_port}'
  import psutil
  rootprocess=psutil.Process();memory_stop=threading.Event();group_peak=0;pid_peaks={};memory_samples=0;process_details={}
@@ -120,7 +139,44 @@ def main():
     page.on('console',console);page.goto(base+'/',wait_until='networkidle');page.wait_for_function('typeof runPlain === "function"')
     selected=[a.bundle/'manifest.json',*(a.bundle/r['path'] for r in manifest['blocks']),a.bundle/manifest['embedding']['rowHashes']['path'],a.bundle/manifest['finalNorm']['path'],a.bundle/manifest['tokenizer']['path']]
     page.set_input_files('#bundle',[str(path) for path in selected]);page.set_input_files('#source',str(a.source))
-    if a.preflight_only:
+    if suite_mode:
+     suite_spec={'inputs':inputs,'manifest':manifest,'manifestSha256':input_record['manifestSha256'],'negativeCases':plan.get('negativeCases',[])}
+     if a.preflight_only:
+      report['preflight']=page.evaluate('spec=>runTextSuite({...spec,preflightOnly:true})',suite_spec)
+      assert report['preflight']['passed'] and report['preflight']['newNeuralRuns']==0 and report['preflight']['workers']['created']==0,report['preflight'];report['newNeuralRuns']=0;report['passed']=True
+     else:
+      import numpy as np
+      controls=[] if a.skip_controls else plan.get('controls',[])
+      native_cases=[];native_controls=[];comparisons=[]
+      for record in inputs:
+       save_controls=[control for control in controls if control['action']=='cancel-save' and control['caseId']==record['id']]
+       spec={**suite_spec,'inputs':[record],'controls':save_controls,'negativeCases':[]}
+       with page.expect_download(timeout=1800000) as download:native=page.evaluate('spec=>runTextSuite(spec)',spec)
+       download.value.save_as(str(a.output/(record['id']+'.wktensor')))
+       assert native['passed'],native.get('error');assert len(native['cases'])==1
+       native_cases.extend(native['cases']);native_controls.extend(native['controls'])
+       meta,actual=unpack_tensor((a.output/(record['id']+'.wktensor')).read_bytes(),shape=record['shape'])
+       reference=np.fromfile(a.reference/(record['id']+'-reference.f32'),dtype='<f4').reshape(record['shape']);mask=np.array(record['attentionMask'],dtype=np.uint8)
+       assert meta['modelSha256']==manifest['modelSha256'] and meta['tokenizerSha256']==manifest['tokenizer']['sha256'] and meta['attentionMask']==record['attentionMask']
+       comparison=compare_values(actual,reference,mask,shape=record['shape']);assert comparison['passed'],(record['id'],comparison)
+       comparisons.append({'id':record['id'],**comparison,'artifact':{'path':record['id']+'.wktensor','bytes':(a.output/(record['id']+'.wktensor')).stat().st_size,'sha256':sha((a.output/(record['id']+'.wktensor')).read_bytes())},'reference':oracle_cases[record['id']]['reference']})
+      cancel_controls=[control for control in controls if control['action']!='cancel-save']
+      if cancel_controls:
+       control_ids={control['caseId'] for control in cancel_controls};control_inputs=[record for record in json.loads((a.reference/'text-inputs.json').read_text())['inputs'] if record['id'] in control_ids]
+       assert {record['id'] for record in control_inputs}==control_ids,'Control case absent from frozen source inputs'
+       native=page.evaluate('spec=>runTextSuite(spec)',{**suite_spec,'inputs':[],'controlInputs':control_inputs,'controls':cancel_controls})
+       assert native['passed'],native.get('error');native_controls.extend(native['controls'])
+       for control in native['controls']:
+        if 'recovery' not in control:continue
+        recovery=control['recovery'];record=next(record for record in control_inputs if record['id']==control['caseId'])
+        reference=np.fromfile(a.reference/(record['id']+'-reference.f32'),dtype='<f4').reshape(record['shape'])
+        recovery['comparison']=compare_values(np.array(recovery.pop('values'),dtype=np.float32).reshape(record['shape']),reference,np.array(record['attentionMask'],dtype=np.uint8),shape=record['shape']);assert recovery['comparison']['passed'],recovery['comparison']
+      report['native']={'passed':True,'cases':native_cases,'controls':native_controls};report['comparisons']=comparisons
+      report['nativeJobAttempts']=len(native_cases)+len(cancel_controls)+sum('recovery' in control for control in native_controls);report['completedFullNeuralRuns']=len(native_cases)+sum('recovery' in control for control in native_controls);report['cancelledJobs']=len(cancel_controls)
+      assert not report['pageErrors'] and not report['blockedRequests'] and not server_errors
+      report['passed']=True
+      write_json(a.output/'conditioning-handoff.json',{'schemaVersion':'works-text-standalone-handoff/1.0','scope':'Selected explicit Text cases only','executionSourceSha':a.execution_source_sha,'referenceExecutionSourceSha':reference_source_sha,'inputs':inputs,'gate':manifest['numericGate'],'comparisons':comparisons,'controls':native_controls,'independentReference':'Pinned PyTorch source, uncompacted512 positions per case, batch1; final normalized/masked reference sliced to native requested L','generationReady':False})
+    elif a.preflight_only:
      report['preflight']=page.evaluate('''async input=>{const {tokenizePlainText}=await import('/shared/inference/tokenizer.mjs');const ort=await import('/shared/inference/vendor/ort.wasm.min.mjs');const files=new Map(Array.from(document.querySelector('#bundle').files,f=>[f.name,f]));const result=await tokenizePlainText(input.text,new Uint8Array(await files.get('spiece.model').arrayBuffer()));return {ids:Array.from(result.tokenIds),mask:Array.from(result.attentionMask),tokenizerSha256:result.tokenizerSha256,sourceFileBytes:document.querySelector('#source').files[0].size,ortCreateWritable:Object.getOwnPropertyDescriptor(ort.InferenceSession,'create')?.writable,tensorDisposeType:typeof ort.Tensor.prototype.dispose};}''',input_record)
      q=report['preflight'];assert q['ids']==input_record['tokenIds'] and q['mask']==input_record['attentionMask'] and q['tokenizerSha256']==input_record['tokenizerSha256'];assert q['ortCreateWritable'] and q['tensorDisposeType']=='function';assert q['sourceFileBytes']==manifest['modelBytes'];report['newNeuralRuns']=0;report['passed']=True
     else:
@@ -142,14 +198,23 @@ def main():
   report['processOwnership']=proc=owner.finish(timeout_seconds=5)
   report['resource']={'sampledGroupPeakRssSumBytes':group_peak,'sampleIntervalSeconds':.05,'samples':memory_samples,'perPidPeakRss':[{'pid':pid,'ctime':ctime,'peakRssBytes':rss} for (pid,ctime),rss in pid_peaks.items()],'wallSeconds':time.monotonic()-start,**memory_summary(report),'scope':'Sampled RSS/PSS over harness descendants including startup/full/cancellation; sampling can miss short peaks. API-visible bytes and WASM capacity are separate from retained OS memory and user-device benefit.'}
   errors={key:report.get(key,[]) for key in ['pageErrors','consoleErrors','blockedRequests','memorySamplerErrors']};errors['serverErrors']=server_errors
-  if 'memoryEvents' in report and not a.preflight_only:
+  if 'memoryEvents' in report and not a.preflight_only and not suite_mode:
    events=[event for event in report['memoryEvents'] if event.get('source')=='worker' and event.get('phase')=='full']
    coverage={name:sum(event.get('event')==name for event in events) for name in ['ort-create-end','ort-run-end','ort-release-end','tensor-dispose-end']}
    coverage['wasmCapacityObserved']=any(memory.get('capacityBytes',0)>0 for event in events for memory in event.get('wasmMemories',[]));report['memoryCoverage']=coverage
    if coverage!={'ort-create-end':24,'ort-run-end':24,'ort-release-end':24,'tensor-dispose-end':72,'wasmCapacityObserved':True} or not report.get('memoryTimeline'):errors['memoryCoverage']=['Missing full-session events, WASM capacity or process timeline']
+  if suite_mode and not a.preflight_only:
+   coverage={}
+   for record in inputs:
+    events=[event for event in report['memoryEvents'] if event.get('source')=='worker' and event.get('phase')=='case:'+record['id']]
+    counts={name:sum(event.get('event')==name for event in events) for name in ['ort-create-end','ort-run-end','ort-release-end','tensor-dispose-end']}
+    counts['wasmCapacityObserved']=any(memory.get('capacityBytes',0)>0 for event in events for memory in event.get('wasmMemories',[]));coverage[record['id']]=counts
+    if counts!={'ort-create-end':24,'ort-run-end':24,'ort-release-end':24,'tensor-dispose-end':72,'wasmCapacityObserved':True}:errors.setdefault('memoryCoverage',[]).append(record['id'])
+   report['memoryCoverage']=coverage
+   if not report.get('memoryTimeline'):errors.setdefault('memoryCoverage',[]).append('Missing process timeline')
   if any(errors.values()):report['passed']=False;report.setdefault('failure',{'name':'ObservationError','message':'Browser/server/memory observation errors','details':errors})
   if not cleanup_complete(proc['liveAfterClose'],proc['zombiesAfterClose'],proc['errors']):report['passed']=False
   report['servedSources']=list(served.values());write_json(a.output/'browser-results.json',report)
- print(json.dumps({'passed':report['passed'],'failure':report.get('failure'),'comparison':report.get('comparison'),'resource':report['resource'],'newExports':0}),flush=True)
+ print(json.dumps({'passed':report['passed'],'failure':report.get('failure'),'comparison':report.get('comparison'),'comparisons':report.get('comparisons'),'resource':report['resource'],'newExports':0}),flush=True)
  return 0 if report['passed'] else 1
 if __name__=='__main__':raise SystemExit(main())
