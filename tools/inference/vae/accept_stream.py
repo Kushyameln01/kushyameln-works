@@ -17,6 +17,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import signal
 import subprocess
 import threading
 import time
@@ -469,7 +470,55 @@ class Blocked(RuntimeError):
     pass
 
 
+class HostInterrupted(RuntimeError):
+    """Requested validation-host interruption; not a numerical gate failure."""
+
+
+class HostStopController:
+    """Signal handlers only assign plain flags; no locks or browser calls."""
+    def __init__(self):
+        self.requested = False
+        self.last_signal = None
+        self.previous = {}
+
+    def _on_signal(self, signum, _frame):
+        self.last_signal = signum
+        self.requested = True
+
+    def install(self):
+        try:
+            for sig in (signal.SIGINT, signal.SIGTERM):
+                self.previous[sig] = signal.getsignal(sig)
+                signal.signal(sig, self._on_signal)
+        except BaseException:
+            self.restore()
+            raise
+        return self
+
+    def restore(self):
+        for sig, handler in self.previous.items():
+            signal.signal(sig, handler)
+        self.previous.clear()
+
+    def payload(self):
+        return {'stopRequested': self.requested, 'reason': 'host-signal' if self.requested else None,
+                'signal': signal.Signals(self.last_signal).name if self.last_signal is not None else None}
+
+    def checkpoint(self):
+        if self.requested:
+            raise HostInterrupted('Validation host interruption requested by SIGINT or SIGTERM')
+
+
 def main(argv=None):
+    host_stop = HostStopController()
+    try:
+        host_stop.install()
+        return run_acceptance(argv, host_stop=host_stop)
+    finally:
+        host_stop.restore()
+
+
+def run_acceptance(argv=None, *, host_stop):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--bundle', type=Path, required=True)
     parser.add_argument('--reference', type=Path, required=True)
@@ -506,6 +555,7 @@ def main(argv=None):
         return source_cache.read(path)
 
     try:
+        host_stop.checkpoint()
         if not args.browser:
             raise Blocked('Real Chromium is unavailable')
         if not 1 <= args.timeout_seconds <= 2147483:
@@ -513,6 +563,7 @@ def main(argv=None):
         operations = ['encode', 'decode'] if args.operation == 'both' else [args.operation]
         bundle, reference_dir = args.bundle.resolve(), args.reference.resolve()
         manifest, reference_report, references, assets = validate_inputs(bundle, reference_dir, operations)
+        host_stop.checkpoint()
         result.update(case=reference_report['case'], comparisonGate=COMPARISON_GATE,
                       referenceContractValidation=validate_reference_plan(reference_report, reference_dir, operations=operations),
                       manifestSha256=sha256_file(bundle / 'manifest.json'),
@@ -529,6 +580,7 @@ def main(argv=None):
         source_paths += [REPO / 'docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm',
                          REPO / 'docs/shared/inference/kernel/tensor.wasm']
         for path in source_paths:
+            host_stop.checkpoint()
             source_bytes(path)
         result['servedSourcePreflight'] = {'allCheckedBeforeNumericalExecution': True,
                                           'files': list(served.values()), 'count': len(served),
@@ -553,7 +605,10 @@ def main(argv=None):
                 try:
                     if requested == '/favicon.ico':
                         self.send_response(204); self.end_headers(); return
-                    if requested == '/':
+                    if requested == '/host-control':
+                        raw = json.dumps(host_stop.payload()).encode('utf-8')
+                        kind = 'application/json'
+                    elif requested == '/':
                         raw = (b'<!doctype html><meta charset="utf-8"><input id="bundle" type="file" multiple>'
                                b'<input id="encode-input" type="file"><input id="decode-input" type="file">'
                                b'<script type="module" src="/harness/vae/stream_browser.mjs"></script>')
@@ -588,10 +643,12 @@ def main(argv=None):
         server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
         threading.Thread(target=server.serve_forever, daemon=True).start()
         origin = f'http://127.0.0.1:{server.server_port}'
+        host_stop.checkpoint()
         owner = ProcessOwnership().start()
         from playwright.sync_api import sync_playwright
         with sync_playwright() as playwright:
             try:
+                host_stop.checkpoint()
                 phase = 'browser-start'
                 browser = playwright.chromium.launch(executable_path=args.browser, headless=True,
                     args=['--no-sandbox', '--disable-dev-shm-usage'])
@@ -613,8 +670,17 @@ def main(argv=None):
                         if message.type == 'error' and len(result['consoleErrors']) < 100 else None)
                 page.on('response', lambda response: result['httpErrors'].append({'url': response.url, 'status': response.status})
                         if response.status >= 400 and len(result['httpErrors']) < 100 else None)
-                page.on('requestfailed', lambda request: result['requestFailures'].append({'url': request.url, 'failure': request.failure})
-                        if len(result['requestFailures']) < 100 else None)
+                def request_failed(request):
+                    if request.url == origin + '/host-control':
+                        # Final poll abortion is intentional. Keep aggregate host
+                        # telemetry separate from native asset/network failures.
+                        counts = result.setdefault('hostControlRequestFailures', {})
+                        key = str(request.failure)[:200]
+                        if key in counts or len(counts) < 16:
+                            counts[key] = counts.get(key, 0) + 1
+                    elif len(result['requestFailures']) < 100:
+                        result['requestFailures'].append({'url': request.url, 'failure': request.failure})
+                page.on('requestfailed', request_failed)
 
                 def progress(message):
                     if message.type == 'log' and message.text.startswith('vae-stream-lifecycle:'):
@@ -628,11 +694,13 @@ def main(argv=None):
                 page.on('console', progress)
                 page.goto(origin + '/')
                 page.wait_for_function("typeof prepareVaeStream==='function'")
+                host_stop.checkpoint()
                 page.set_input_files('#bundle', [str(path) for path in assets])
                 for operation in operations:
                     page.set_input_files('#' + operation + '-input', str(reference_dir / references[operation]['input']['file']))
                 phase = sampler.phase = 'exact-capabilities-no-NN'
                 result['capabilities'] = page.evaluate('spec=>prepareVaeStream(spec)', spec)
+                host_stop.checkpoint()
                 if not result['capabilities']['passed']:
                     if result['capabilities']['status'] == 'BLOCKED_CAPABILITY':
                         raise Blocked('Configured owner rejects the actual full descriptor: ' + json.dumps(result['capabilities']))
@@ -642,6 +710,7 @@ def main(argv=None):
                     result['numericalExecutionPerformed'] = False
                 else:
                     for index, operation in enumerate(operations):
+                        host_stop.checkpoint()
                         phase = sampler.phase = operation + ':normal-or-recovery'
                         with page.expect_download(timeout=args.timeout_seconds * 1000) as download:
                             native = page.evaluate('options=>runVaeStreamOperation(options)',
@@ -651,6 +720,9 @@ def main(argv=None):
                             sampler.phase = operation + ':worker-settlement'
                             settlement = worker_observer.settle(operation + ':after-operation', page.wait_for_timeout)
                             result['operations'][operation] = {'browser': native, 'workerSettlement': settlement}
+                            if native.get('status') == 'INTERRUPTED_HOST_REQUEST':
+                                raise HostInterrupted('Browser operation cancelled by the local validation host')
+                            host_stop.checkpoint()
                             if not native['passed']:
                                 raise RuntimeError('Normal streaming execution failed: ' + json.dumps(native))
                         path = args.output / native['codec']['download']
@@ -662,6 +734,7 @@ def main(argv=None):
                         comparison = compare_download(path, reference_dir / references[operation]['output']['file'],
                                                       native['output']['tensor'], COMPARISON_GATE)
                         result['operations'][operation]['comparison'] = comparison
+                        host_stop.checkpoint()
                         if not comparison['passed']:
                             raise ValueError('Independent full-value numerical comparison failed: ' + operation)
                         if settlement['status'] == 'KNOWN_WORKERS_STILL_PRESENT_AT_DEADLINE':
@@ -702,10 +775,16 @@ def main(argv=None):
     except Exception as error:
         failure = error
         resource_error = bool(re.search(r'out of memory|allocation failed|memory allocation|could not allocate memory|cannot allocate memory|failed to allocate|cannot enlarge|bad_alloc|memory capacity', str(error), re.I))
-        result['status'] = 'BLOCKED_RUNTIME_RESOURCE' if resource_error else 'BLOCKED' if isinstance(error, Blocked) else 'FAILED'
-        result['failure'] = {'phase': phase, 'type': type(error).__name__, 'message': str(error),
-                             'traceback': traceback.format_exc(),
-                             'scope': 'Observed actual failure; no smaller replacement case was executed'}
+        if isinstance(error, HostInterrupted) or host_stop.requested:
+            result['status'] = 'INTERRUPTED_HOST_REQUEST'
+            result['interruption'] = {'phase': phase, 'type': 'HostInterrupted', 'message': str(error),
+                                      'observedErrorType': type(error).__name__,
+                                      'scope': 'Requested host stop; completed evidence is retained, not a numerical gate failure'}
+        else:
+            result['status'] = 'BLOCKED_RUNTIME_RESOURCE' if resource_error else 'BLOCKED' if isinstance(error, Blocked) else 'FAILED'
+            result['failure'] = {'phase': phase, 'type': type(error).__name__, 'message': str(error),
+                                 'traceback': traceback.format_exc(),
+                                 'scope': 'Observed actual failure; no smaller replacement case was executed'}
     finally:
         if sampler is not None and not sampler.stop_event.is_set():
             sampler.stop()
@@ -739,6 +818,12 @@ def main(argv=None):
         result['servedSourceSnapshot'] = source_cache.summary()
         result['serverErrors'] = server_errors
         result['wallSeconds'] = time.monotonic() - started
+        result['hostControl'] = {**host_stop.payload(), 'path': '/host-control',
+            'scope': 'Read-only local diagnostic host control. SIGINT/SIGTERM handlers only assign plain flags, without locks or Playwright calls; browser polling cancels via the existing normal API.'}
+        if host_stop.requested and result['status'] in ('RUNNING', 'ACCEPTED_SELECTED_CASE', 'PREFLIGHT_ONLY'):
+            result['status'] = 'INTERRUPTED_HOST_REQUEST'
+            result['passed'] = False
+            result['interruption'] = {'phase': phase, 'type': 'HostInterrupted', 'message': 'Host stop requested during completion/cleanup'}
         if failure is not None:
             result['passed'] = False
         if result.get('processCleanupFailure'):
@@ -749,6 +834,8 @@ def main(argv=None):
         print(json.dumps({'passed': result['passed'], 'status': result['status'], 'output': str(args.output),
                           'operations': list(result['operations']), 'failure': result.get('failure'),
                           'wallSeconds': result['wallSeconds']}), flush=True)
+    if result['status'] == 'INTERRUPTED_HOST_REQUEST':
+        return 128 + host_stop.last_signal if host_stop.last_signal is not None else 130
     return 0 if result['passed'] or result['status'] == 'PREFLIGHT_ONLY' else 2 if result['status'].startswith('BLOCKED') else 1
 
 

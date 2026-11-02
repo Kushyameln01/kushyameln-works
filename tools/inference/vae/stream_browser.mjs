@@ -30,6 +30,7 @@ function expectedProcessing(spec,operation){
   ignoredTailFrameIndices:Array.from({length:sourceFrames-consumedFrames},(_,i)=>consumedFrames+i)};
 }
 function errorRecord(error){return {name:error.name,message:error.message,stack:error.stack};}
+function checkHostStop(session){if(session?.hostStopRequested){const error=Error('Validation host interruption requested');error.name='HostInterrupted';throw error;}}
 async function rejects(action,pattern,label){
  try{await action();}catch(error){check(pattern.test(String(error)),label+' rejected unexpectedly: '+error);return String(error);}
  throw Error(label+' was accepted');
@@ -60,7 +61,7 @@ function makeAPI(session){
    check(session.chunks.length<=90,'Unexpected number of chunk progress events');
    console.log('vae-stream-progress:'+JSON.stringify(value));
   }
-  if(session.phase==='cancel-first-chunk'&&!session.cancelTriggered&&progress.phase==='chunk-complete'&&progress.chunkIndex===0){
+  if(session.phase==='cancel-first-chunk'&&!session.hostStopRequested&&!session.cancelTriggered&&progress.phase==='chunk-complete'&&progress.chunkIndex===0){
    session.cancelTriggered=true;session.cancelAt=structuredClone(progress);session.cancelReturned=api.vae.cancel();
    console.log('vae-stream-lifecycle:'+JSON.stringify({boundary:'cancel-returned',operation:session.operation,atEpochMs:Date.now(),cancelReturned:session.cancelReturned}));
   }
@@ -114,10 +115,12 @@ async function runOperation({operation,controls=false}){
   const spec=session.spec,api=session.api;session.operation=operation;
   const sourceFile=document.querySelector('#'+operation+'-input').files[0];
   const bytes=new Uint8Array(await sourceFile.arrayBuffer());
+  checkHostStop(session);
   check(hash(bytes)===spec.references[operation].input.sha256,'Actual source input File SHA256 mismatch');
   check(new Uint8Array(new Uint16Array([1]).buffer)[0]===1,'Little-endian host required');
   const input={...descriptorFor(spec,operation),data:new Float32Array(bytes.buffer)};
   check(input.data.length===elementCount(input.shape),'NCTHW source file element count mismatch');
+  checkHostStop(session);
   if(controls&&!session.controlsDone){
    session.phase='cheap-lifecycle-controls';
    const before=session.workers.length;
@@ -129,6 +132,7 @@ async function runOperation({operation,controls=false}){
    const disposedError=await rejects(()=>disposable.vae[operation](input),/disposed/i,'Disposed normal owner');
    check(session.workers.length===before,'Cheap configure/dispose dispatched model execution');
    result.controls={reconfigureBeforeNormal:true,disposedCapability,disposedError,cheapControlsWorkers:0};
+   checkHostStop(session);
    session.phase='cancel-first-chunk';session.cancelTriggered=false;
    result.controls.cancelError=await rejects(()=>api.vae[operation](input),/cancelled/i,'Cancellation after actual first complete chunk');
    check(session.cancelTriggered&&session.cancelReturned&&session.lastState.status==='cancelled','Normal API failed first-chunk cancellation');
@@ -136,9 +140,11 @@ async function runOperation({operation,controls=false}){
    result.controls.cancelAt=session.cancelAt;result.controls.cancelReturned=session.cancelReturned;
    result.controls.recoveryUsesSameAPI=true;session.controlsDone=true;
   }
+  checkHostStop(session);
   session.phase=controls&&session.controlsDone?'normal-recovery':'normal';
   console.log('vae-stream-lifecycle:'+JSON.stringify({boundary:'before-normal-recovery',operation,atEpochMs:Date.now(),recovery:controls&&session.controlsDone}));
   const started=performance.now(),output=await api.vae[operation](input);
+  checkHostStop(session);
   result.normalWallSeconds=(performance.now()-started)/1000;
   check(output.tensor&&output.inputDescriptor&&output.binding,'Normal VAE result is missing its public fields');
   check(!Object.hasOwn(output,'evidence'),'Normal diagnostics:false result unexpectedly contains evidence');
@@ -170,10 +176,12 @@ async function runOperation({operation,controls=false}){
    observation.maximumActive===1&&observation.runCalls>=observation.created&&observation.tensorDisposeCalls>=2*observation.runCalls,
    'Actual ORT sessions/Tensors were not sequential and released');
   for(const name of ['createErrors','runErrors','releaseErrors','tensorDisposeErrors'])check(observation[name]===0,'Observed native lifecycle error: '+name);
-  const serialized=await encodeTensor(tensor),restored=await decodeTensor(serialized);
+  const serialized=await encodeTensor(tensor);checkHostStop(session);
+  const restored=await decodeTensor(serialized);checkHostStop(session);
   check(same(metadata(restored),metadata(tensor)),'Normal save/read changed metadata/context/frameProcessing');
   check(restored.data.length===tensor.data.length,'Normal save/read changed element count');
   for(let index=0;index<tensor.data.length;index++)check(Object.is(restored.data[index],tensor.data[index]),'Normal save/read changed a numerical value');
+  checkHostStop(session);
   const name=operation+'-'+spec.case.id+'.wktensor',url=URL.createObjectURL(new Blob([serialized],{type:'application/octet-stream'}));
   session.urls.set(operation,url);const anchor=document.createElement('a');anchor.href=url;anchor.download=name;anchor.click();
   result.output={tensor:metadata(tensor),inputDescriptor:output.inputDescriptor,binding:output.binding,processing:output.processing,resultKeys:Object.keys(output)};
@@ -188,9 +196,37 @@ async function runOperation({operation,controls=false}){
 globalThis.runVaeStreamOperation=async options=>{
  const timeoutMs=options.timeoutMs??7200000;
  check(Number.isSafeInteger(timeoutMs)&&timeoutMs>0&&timeoutMs<=2147483647,'Bounded operation timeout required');
- let timer;
+ let timer,hostTimer,fetchTimer,activeFetch,done=false,resolveHostStop;
+ const hostControl={polls:0,queryErrors:0,stopRequested:false,cancelAttempts:0,cancelReturned:null};
+ const interrupted=()=>({passed:false,status:'INTERRUPTED_HOST_REQUEST',operation:options.operation,
+  error:{name:'HostInterrupted',message:'Local validation host requested interruption'},
+  lastProgress:current?.lastProgress??null,workers:current?.workers??[]});
+ const hostStop=new Promise(resolve=>{resolveHostStop=resolve;});
+ async function pollHost(){
+  if(done||hostControl.stopRequested)return;
+  const controller=new AbortController();activeFetch=controller;hostControl.polls++;
+  fetchTimer=setTimeout(()=>controller.abort(),3000);
+  try{
+   const response=await fetch('/host-control',{cache:'no-store',credentials:'same-origin',signal:controller.signal});
+   if(!response.ok)throw Error('Local host control HTTP '+response.status);
+   const value=await response.json();if(done)return;
+   if(typeof value.stopRequested!=='boolean')throw Error('Invalid local host control response');
+   if(value.stopRequested){
+    hostControl.stopRequested=true;const session=current;if(session)session.hostStopRequested=true;
+    hostControl.cancelAttempts++;
+    try{hostControl.cancelReturned=session?.api?.vae.cancel()??false;}
+    catch(error){hostControl.cancelError=String(error).slice(0,200);}
+    // Settle the host RPC even if the stop preceded Worker dispatch or arrived
+    // during File/codec work. runOperation checks the flag before dispatch/save.
+    resolveHostStop(interrupted());
+   }
+  }catch(error){if(!done){hostControl.queryErrors++;hostControl.lastQueryError=String(error).slice(0,200);}}
+  finally{clearTimeout(fetchTimer);fetchTimer=null;activeFetch=null;}
+  if(!done&&!hostControl.stopRequested)hostTimer=setTimeout(pollHost,1000);
+ }
  try{
-  return await Promise.race([runOperation(options),new Promise(resolve=>{
+  void pollHost();
+  const result=await Promise.race([runOperation(options),hostStop,new Promise(resolve=>{
    timer=setTimeout(()=>{
     const session=current;session?.api?.vae.cancel();
     resolve({passed:false,status:'FAILED',operation:options.operation,
@@ -198,7 +234,10 @@ globalThis.runVaeStreamOperation=async options=>{
      lastProgress:session?.lastProgress??null,workers:session?.workers??[]});
    },timeoutMs);
   })]);
- }finally{clearTimeout(timer);}
+  return {...(hostControl.stopRequested?interrupted():result),hostControl:{...hostControl}};
+ }finally{
+  done=true;clearTimeout(timer);clearTimeout(hostTimer);clearTimeout(fetchTimer);activeFetch?.abort();
+ }
 };
 
 globalThis.releaseVaeStreamDownload=operation=>{

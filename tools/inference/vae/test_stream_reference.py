@@ -1,6 +1,8 @@
 """Lightweight independent-reference contracts; no Torch/model execution."""
 import importlib.util
 import json
+import os
+import signal
 from pathlib import Path
 import struct
 import subprocess
@@ -178,6 +180,181 @@ class StreamReferenceTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), array.astype('<f4').tobytes(order='C'))
             self.assertTrue(record['complete'])
         self.assertIs(sys.modules.get('torch'), torch_before)
+
+
+class HostInterruptionTests(unittest.TestCase):
+    """Disposable signals and JavaScript API doubles; never a numerical run."""
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, str(ROOT))
+        try:
+            import accept_stream
+            cls.accept = accept_stream
+        finally:
+            sys.path.pop(0)
+
+    def test_real_sigint_sigterm_set_flags_without_raising_or_playwright_calls(self):
+        code = r"""
+import json, os, signal
+from accept_stream import HostStopController, HostInterrupted
+before = {sig: signal.getsignal(sig) for sig in (signal.SIGINT, signal.SIGTERM)}
+controller = HostStopController()
+controller.install()
+seen = []
+try:
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        controller.requested = False
+        os.kill(os.getpid(), sig)
+        assert controller.requested
+        try:
+            controller.checkpoint()
+        except HostInterrupted:
+            seen.append(sig.name)
+        else:
+            raise AssertionError('Requested stop was not typed')
+finally:
+    controller.restore()
+assert all(signal.getsignal(sig) == handler for sig, handler in before.items())
+print(json.dumps({'signals': seen, 'originalHandlersRestored': True}))
+"""
+        result = subprocess.run([sys.executable, '-c', code], cwd=ROOT,
+                                capture_output=True, text=True, timeout=8)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout), {'signals': ['SIGINT', 'SIGTERM'], 'originalHandlersRestored': True})
+
+    def test_repeated_and_nested_real_signals_do_not_take_event_locks(self):
+        code = r"""
+import json, os, signal
+from accept_stream import HostStopController
+class Nested(HostStopController):
+    armed = False
+    def __setattr__(self, name, value):
+        if name == 'requested' and value is True and self.armed:
+            object.__setattr__(self, 'armed', False)
+            os.kill(os.getpid(), signal.SIGTERM)
+        object.__setattr__(self, name, value)
+controller = Nested().install()
+try:
+    controller.armed = True
+    os.kill(os.getpid(), signal.SIGINT)
+    assert controller.requested and controller.last_signal == signal.SIGTERM
+    assert not hasattr(controller, 'event')
+    for index in range(100):
+        os.kill(os.getpid(), signal.SIGINT if index % 2 == 0 else signal.SIGTERM)
+    assert controller.requested and controller.last_signal == signal.SIGTERM
+finally:
+    controller.restore()
+print(json.dumps({'nestedSignalReturned': True, 'repeatedSignalsReturned': True}))
+"""
+        result = subprocess.run([sys.executable, '-c', code], cwd=ROOT,
+                                capture_output=True, text=True, timeout=8)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(all(json.loads(result.stdout).values()))
+
+    def test_main_restores_original_handlers_when_acceptance_raises(self):
+        before = {sig: signal.getsignal(sig) for sig in (signal.SIGINT, signal.SIGTERM)}
+        with mock.patch.object(self.accept, 'run_acceptance', side_effect=RuntimeError('synthetic host failure')):
+            with self.assertRaisesRegex(RuntimeError, 'synthetic host failure'):
+                self.accept.main([])
+        self.assertTrue(all(signal.getsignal(sig) == handler for sig, handler in before.items()))
+
+    def test_requested_stop_before_preflight_writes_interrupted_not_numeric_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'interrupted'
+            controller = self.accept.HostStopController()
+            controller.requested = True
+            result = self.accept.run_acceptance([
+                '--bundle', directory, '--reference', directory, '--operation', 'encode',
+                '--execution-source-sha', 'a' * 40, '--browser', 'unused', '--output', str(output)
+            ], host_stop=controller)
+            self.assertEqual(result, 130)
+            report = json.loads((output / 'acceptance-results.json').read_text())
+            self.assertEqual(report['status'], 'INTERRUPTED_HOST_REQUEST')
+            self.assertFalse(report['passed'])
+            self.assertEqual(report['operations'], {})
+            self.assertTrue(report['hostControl']['stopRequested'])
+            self.assertNotIn('failure', report)
+            self.assertEqual(report['interruption']['type'], 'HostInterrupted')
+
+    def test_js_host_poll_cancels_once_settles_pending_operation_and_clears_timers(self):
+        code = r"""
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const source=fs.readFileSync('stream_browser.mjs','utf8');
+const start=source.indexOf('globalThis.runVaeStreamOperation=');
+const end=source.indexOf('globalThis.releaseVaeStreamDownload=',start);
+const body=source.slice(start,end);
+let cancelCalls=0,fetchCalls=0;
+const timers=new Set();
+const scope={
+ current:{api:{vae:{cancel(){cancelCalls++;return true;}}},workers:[]},
+ runOperation:()=>new Promise(()=>{}),
+ check(ok,message){if(!ok)throw Error(message);},AbortController,
+ fetch:async(url,options)=>{
+  fetchCalls++;assert.equal(url,'/host-control');assert.equal(options.cache,'no-store');
+  return {ok:true,json:async()=>({stopRequested:true,reason:'host-signal'})};
+ },
+ setTimeout(callback,delay){const id=setTimeout(()=>{timers.delete(id);callback();},delay);timers.add(id);return id;},
+ clearTimeout(id){timers.delete(id);clearTimeout(id);}
+};
+vm.createContext(scope);vm.runInContext(body,scope);
+const result=await scope.runVaeStreamOperation({operation:'decode',timeoutMs:100});
+assert.equal(result.status,'INTERRUPTED_HOST_REQUEST');assert.equal(result.passed,false);
+assert.equal(result.error.name,'HostInterrupted');assert.equal(cancelCalls,1);assert.equal(fetchCalls,1);
+assert.equal(scope.current.hostStopRequested,true);assert.equal(result.hostControl.cancelReturned,true);
+assert.equal(timers.size,0);
+console.log(JSON.stringify({interrupted:true,cancelCalls,fetchCalls,timersRemaining:timers.size}));
+"""
+        result = subprocess.run(['node', '--input-type=module', '-e', code], cwd=ROOT,
+                                capture_output=True, text=True, timeout=8)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout), {'interrupted': True, 'cancelCalls': 1, 'fetchCalls': 1, 'timersRemaining': 0})
+
+    def test_js_normal_completion_retry_timeout_and_invalid_deadline_clear_host_polls(self):
+        code = r"""
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const source=fs.readFileSync('stream_browser.mjs','utf8');
+const start=source.indexOf('globalThis.runVaeStreamOperation=');
+const end=source.indexOf('globalThis.releaseVaeStreamDownload=',start);
+const body=source.slice(start,end);
+function fixture(run,fetcher){
+ const state={cancelCalls:0,fetchCalls:0,aborted:0},timers=new Set();
+ const scope={
+  current:{api:{vae:{cancel(){state.cancelCalls++;return true;}}},workers:[]},
+  runOperation:run,check(ok,message){if(!ok)throw Error(message);},AbortController,
+  fetch:(...args)=>{state.fetchCalls++;return fetcher(state,...args);},
+  setTimeout(callback,delay){const adjusted=delay===1000?1:delay===3000?30:delay;
+   const id=setTimeout(()=>{timers.delete(id);callback();},adjusted);timers.add(id);return id;},
+  clearTimeout(id){timers.delete(id);clearTimeout(id);}
+ };
+ vm.createContext(scope);vm.runInContext(body,scope);return{scope,state,timers};
+}
+const normal=fixture(async()=>({passed:true,status:'NORMAL_OUTPUT_SAVED'}),
+ (state,_url,options)=>new Promise((_resolve,reject)=>options.signal.addEventListener('abort',()=>{
+  state.aborted++;reject(Error('Intentional final abort'));
+ },{once:true})));
+const a=await normal.scope.runVaeStreamOperation({operation:'encode',timeoutMs:100});
+assert.equal(a.passed,true);assert.equal(normal.state.cancelCalls,0);assert.equal(normal.state.aborted,1);assert.equal(normal.timers.size,0);
+const retry=fixture(()=>new Promise(resolve=>setTimeout(()=>resolve({passed:true}),8)),
+ async(state)=>{if(state.fetchCalls===1)throw Error('Synthetic transient poll error');return{ok:true,json:async()=>({stopRequested:false})};});
+const b=await retry.scope.runVaeStreamOperation({operation:'encode',timeoutMs:100});
+assert.equal(b.passed,true);assert.equal(b.hostControl.queryErrors,1);assert.ok(retry.state.fetchCalls>=2);
+assert.equal(retry.state.cancelCalls,0);assert.equal(retry.timers.size,0);
+const timeout=fixture(()=>new Promise(()=>{}),async()=>({ok:true,json:async()=>({stopRequested:false})}));
+const c=await timeout.scope.runVaeStreamOperation({operation:'decode',timeoutMs:8});
+assert.equal(c.status,'FAILED');assert.equal(c.error.name,'TimeoutError');assert.equal(timeout.state.cancelCalls,1);assert.equal(timeout.timers.size,0);
+const invalid=fixture(()=>new Promise(()=>{}),async()=>{throw Error('Must not fetch');});
+await assert.rejects(()=>invalid.scope.runVaeStreamOperation({operation:'decode',timeoutMs:0}),/Bounded operation timeout/);
+assert.equal(invalid.state.fetchCalls,0);assert.equal(invalid.timers.size,0);
+console.log(JSON.stringify({normalAbortClean:true,pollRetryClean:true,deadlineClean:true,invalidDeadlineClean:true}));
+"""
+        result = subprocess.run(['node', '--input-type=module', '-e', code], cwd=ROOT,
+                                capture_output=True, text=True, timeout=8)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(all(json.loads(result.stdout).values()))
 
 
 class SnapshotSourceCacheTests(unittest.TestCase):
