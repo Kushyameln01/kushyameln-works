@@ -8,6 +8,12 @@
 
 通常descriptor／対応判定と、固定診断を分離した。`capabilities.executionDescriptor`、`checkSupport`、`prepareP4/runP4/releaseP4`、単独`createBerniniP4Execution`を追加。P4はN2/block0/Text L1〜512/contextなしの範囲を保ち、通常入口は最終hiddenのみ返す。固定payload hash・過去数値receipt・独立比較は通常の互換性条件にしない。weight feedの通常validateと診断diagnoseも分離した。[通常API契約](execution/README.md)を参照。全モデルload/predict/sampleは引き続きNOT_READY。
 
+## D1〜D4の実装候補
+
+全1095重みのregistry／Hike復号、query128・key256・40headのonline attention、全40block・最終headの[単独predict候補](execution/model-candidate.md)、実HIGH／LOWに束縛した[6更新sample候補](execution/model-sampler-candidate.md)を追加した。通常入力へ独立参照・固定payload hash・過去receiptを要求しない。候補の診断入口だけが比較用の中間値を返す。
+
+これらは公開APIとは別の実装候補である。必要shapeでの全predict・6更新・組合せ資源予算は未受入のため、公開`load/predict/sample`とWorkerの状態は引き続き`NOT_READY`。原寸pointwise、部分tile、小Nの全40blockはそれぞれ検証scopeを分ける。[実装・検証計画](../../../development/ai-connection/standalone-d1-d4-20261102/WORK-PLAN.md)を参照。
+
 ## 同一ページの呼出し
 
 ```js

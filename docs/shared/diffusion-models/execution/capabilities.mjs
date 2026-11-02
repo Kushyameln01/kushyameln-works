@@ -15,7 +15,7 @@ export const P4_LIMITS=freeze({maxDecodeElements:81920,maxRawReadBytes:163840,ma
 export const P4_INPUT_SEMANTICS=freeze({
  residual:{dtype:'float32',shape:P4_SHAPES.residual,layout:'LC',meaning:'bernini-block0-post-self-attention-hidden:v1',normalization:'none'},
  timeAct1:{dtype:'float32',shape:P4_SHAPES.timeAct1,layout:'C',meaning:'bernini-time-embedding-silu:v1',normalization:'none'},
- conditioning:{dtype:'float32',shape:P4_SHAPES.conditioning,layout:'BLC',meaning:'text_hidden_states',normalization:'encoder-final-rmsnorm',modelSha256:WAN_TEXT_ENCODER_SHA256,tokenizerSha256:P4_TEXT_TOKENIZER_SHA256}
+ conditioning:{dtype:'float32',shape:P4_SHAPES.conditioning,layout:'BLC',meaning:'text_hidden_states',normalization:'umt5-final-rmsnorm-f32-v1',modelSha256:WAN_TEXT_ENCODER_SHA256,tokenizerSha256:P4_TEXT_TOKENIZER_SHA256}
 });
 const RAW_PROFILES=[WAN21_RAW_PROFILE,WAN21_RAW_F1_PROFILE,WAN21_RAW_RECT_PROFILE];
 const ADMIN=['capabilities','inspect','inspectLora','loadLora','listLoras','readLora','readLoraSource','unloadLora','cancel','dispose'];
@@ -34,14 +34,14 @@ export function describeExecutionCapabilities(){
  for(const name of MEAN){
   const restoring=name==='restoreRawMean';
   operations[name]={available:true,kind:'posterior-mean',input:'tensor',profiles:RAW_PROFILES.map(profile=>{
-   const strictRaw=name==='normalizeRawMean'||profile!==WAN21_RAW_PROFILE;
-   return {...profile,dtype:'float32',modelSha256:WAN21_VAE_SHA256,normalizationMarkerState:restoring?'optional-exact-rule-id':strictRaw?'absent':'not-checked-by-legacy-f5-validator',latentContractState:restoring||strictRaw?'absent':'not-checked-by-legacy-f5-validator'};
+   const strictRaw=true;
+   return {...profile,dtype:'float32',modelSha256:WAN21_VAE_SHA256,normalizationMarkerState:restoring?'optional-exact-rule-id':strictRaw?'absent':'absent',latentContractState:restoring||strictRaw?'absent':'absent'};
   }),meaning:restoring?NORMALIZED_MEAN:'raw-posterior-mean',normalizationMarkerState:restoring?'optional':name==='normalizeRawMean'?'absent':'profile-specific',normalizationRuleId:restoring?NORMALIZATION:null};
  }
  operations.schedule={available:true,kind:'numeric-primitive',profile:SCHEDULE_PROFILE};
  operations.validateConditioning={available:true,kind:'metadata-validation',input:tensor([1,null,4096],'BLC','text_hidden_states'),textRows:[1,512],modelSha256:WAN_TEXT_ENCODER_SHA256,maxTensorElements:2097152,attentionMask:{dtype:'uint8',shape:['L'],values:[0,1],requiresActivePosition:true}};
  for(const name of ['linearProjection','linearProjectionF32'])operations[name]={available:true,kind:'partial-projection',inputs:{[name==='linearProjection'?'q':'weight']:{dtype:name==='linearProjection'?'uint8':'float32',shape:[16,5120]},x:{dtype:'float32',shape:[5120]},bias:{dtype:'float32',shape:[16]}},output:{dtype:'float32',shape:[16]},...(name==='linearProjection'?{scale:'finite-positive'}:{})};
- operations.postSelfAttention={available:true,kind:'partial-neural-operator',blockIndex:P4_SHAPES.blockIndex,shapes:P4_SHAPES,limits:P4_LIMITS,inputs:P4_INPUT_SEMANTICS,contextLatents:[],modelSides:Object.keys(BASE_MODEL_HASHES),computeDtype:'float32',output:tensor(P4_SHAPES.blockOutput,'LC','bernini-block0-output-hidden:v1','none'),attentionMask:'provenance-only; all Text rows consumed; no cross-attention softmax mask',missingTokenizerPolicy:'reject',producerAuthentication:false};
+ operations.postSelfAttention={available:true,kind:'partial-neural-operator',blockIndex:P4_SHAPES.blockIndex,shapes:P4_SHAPES,limits:P4_LIMITS,inputs:P4_INPUT_SEMANTICS,contextLatents:[],modelSides:Object.keys(BASE_MODEL_HASHES),computeDtype:'float32',output:tensor(P4_SHAPES.blockOutput,'LC','bernini-block0-output-hidden:v1','none'),attentionMask:'provenance-only; all Text rows consumed; no cross-attention softmax mask',missingTokenizerPolicy:'reject',producerAuthentication:false,textNormalizationAliases:['encoder-final-rmsnorm']};
  for(const name of UNREADY)operations[name]={available:false,reason:'NOT_READY'};
  const controls={
   prepareP4:{available:true,transport:['direct','message-port'],input:'local immutable Blob and explicit model side',creates:'owned-idle-p4-execution'},
@@ -82,7 +82,7 @@ export function checkExecutionSupport(request={}){
   dtype(value,name);field(value,name,'layout','BLC');field(value,name,'meaning','text_hidden_states');
   const s=value.shape;if(!Array.isArray(s)||s.length!==3||s[0]!==1||s[2]!==P4_SHAPES.textWidth||!Number.isSafeInteger(s[1])||s[1]<P4_SHAPES.textRows[0]||s[1]>P4_SHAPES.textRows[1])reject('UNSUPPORTED_SHAPE',name+' requires BLC [1,L,4096] with integer 1<=L<=512','text-sequence-extension');
   identity(value,name,WAN_TEXT_ENCODER_SHA256);
-  if(strict||value.normalization!==undefined)field(value,name,'normalization','encoder-final-rmsnorm');
+  if(strict||value.normalization!==undefined){if(!(strict&&value.normalization==='encoder-final-rmsnorm'))field(value,name,'normalization','umt5-final-rmsnorm-f32-v1');}
   if(strict&&value.tokenizerSha256!==P4_TEXT_TOKENIZER_SHA256)reject('TOKENIZER_IDENTITY_MISMATCH',name+' requires the known Text tokenizer identity; missing provenance is rejected','tokenizer-binding');
  };
  if(operation==='postSelfAttention'){
@@ -103,7 +103,7 @@ export function checkExecutionSupport(request={}){
   if(!profile)reject('UNSUPPORTED_SHAPE','Only the three published Wan21 posterior-mean shape profiles are implemented','posterior-mean-shape-profile');
   else if(value.profileId!==undefined&&value.profileId!==profile.id)reject('UNSUPPORTED_PROFILE','Posterior-mean profile ID and dimensions differ','posterior-mean-profile-binding');
   const restored=operation==='restoreRawMean';field(value,'tensor','meaning',restored?NORMALIZED_MEAN:'raw-posterior-mean');
-  const strictRaw=operation==='normalizeRawMean'||profile!==WAN21_RAW_PROFILE;
+  const strictRaw=true;
   if(restored){if(value.normalization!==undefined)field(value,'tensor','normalization',NORMALIZATION);}
   else if(strictRaw&&value.normalization!==undefined)reject('UNSUPPORTED_NORMALIZATION','This raw posterior-mean operation requires the normalization marker to be absent','posterior-mean-normalization');
   if(value.latentContract!==undefined&&(restored||strictRaw))reject('SEMANTIC_MISMATCH','Generated samples are not posterior means','generated-sample-restoration');

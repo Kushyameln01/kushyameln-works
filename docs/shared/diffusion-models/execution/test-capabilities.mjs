@@ -56,20 +56,18 @@ test('three exact mean profiles stay separate from generated samples and equal-c
  tensor.meaning='raw-posterior-mean';tensor.shape=[1,16,1,1,8];assert.ok(codes({operation:'normalizeRawMean',inputs:{tensor}}).includes('UNSUPPORTED_SHAPE'));
  tensor.shape=[1,16,1,2,4];assert.ok(codes({operation:'validateRawLatent',inputs:{tensor}}).includes('MODEL_IDENTITY_MISMATCH'));
 });
-test('mean marker descriptors match existing native guards, including legacy F5 differences',()=>{
+test('mean marker descriptors match canonical shared codec498 guards for every profile',()=>{
  const capabilities=describeExecutionCapabilities(),guards=[requireWanRawLatent,requireWanRawLatentF1,requireWanRawLatentRect];
  capabilities.operations.validateRawLatent.profiles.forEach((profile,i)=>{
   const data=new Float32Array(profile.shape.reduce((a,b)=>a*b,1));
-  assert.equal(profile.normalizationMarkerState,i===0?'not-checked-by-legacy-f5-validator':'absent');
+  assert.equal(profile.normalizationMarkerState,'absent');
   for(const normalization of ['none','wan21-comfy-f32-v1']){
    const tensor={...profile,data,normalization};
-   if(i===0){assert.equal(guards[i](tensor),tensor);assert.equal(checkExecutionSupport({operation:'validateRawLatent',inputs:{tensor}}).supported,true);}
-   else{assert.throws(()=>guards[i](tensor),/normalized\/generated metadata/);assert.ok(codes({operation:'validateRawLatent',inputs:{tensor}}).includes('UNSUPPORTED_NORMALIZATION'));}
+   assert.throws(()=>guards[i](tensor),/normalization|normalized\/generated metadata/);assert.ok(codes({operation:'validateRawLatent',inputs:{tensor}}).includes('UNSUPPORTED_NORMALIZATION'));
    assert.ok(codes({operation:'normalizeRawMean',inputs:{tensor}}).includes('UNSUPPORTED_NORMALIZATION'));
   }
   const generatedMetadata={...profile,data,latentContract:{representation:'generated-sample'}};
-  if(i===0){assert.equal(guards[i](generatedMetadata),generatedMetadata);assert.equal(checkExecutionSupport({operation:'validateRawLatent',inputs:{tensor:generatedMetadata}}).supported,true);}
-  else{assert.throws(()=>guards[i](generatedMetadata));assert.ok(codes({operation:'validateRawLatent',inputs:{tensor:generatedMetadata}}).includes('SEMANTIC_MISMATCH'));}
+  assert.throws(()=>guards[i](generatedMetadata));assert.ok(codes({operation:'validateRawLatent',inputs:{tensor:generatedMetadata}}).includes('SEMANTIC_MISMATCH'));
  });
  assert.equal(capabilities.operations.normalizeRawMean.normalizationMarkerState,'absent');
 });
@@ -89,4 +87,9 @@ test('legacy partial projections and fixed scheduler retain explicit dimensions/
   assert.equal(checkExecutionSupport(q).supported,true);q.inputs[name].shape=[5120,16];assert.ok(codes(q).includes('UNSUPPORTED_SHAPE'));
  }
  assert.equal(checkExecutionSupport({operation:'schedule',profile:'bernini-comfy-simple6-shift5-v1'}).supported,true);assert.deepEqual(codes({operation:'schedule',profile:'other'}),['UNSUPPORTED_PROFILE']);
+});
+
+test('P4 accepts the published Text RMSNorm ID and preserves its old descriptive alias',()=>{
+ for(const normalization of ['umt5-final-rmsnorm-f32-v1','encoder-final-rmsnorm']){const q=request();q.inputs.conditioning.normalization=normalization;assert.equal(checkExecutionSupport(q).supported,true);}
+ const q=request();q.inputs.conditioning.normalization='encoder-final-rmsnorm';assert.ok(codes({operation:'validateConditioning',inputs:{tensor:q.inputs.conditioning}}).includes('UNSUPPORTED_NORMALIZATION'));
 });

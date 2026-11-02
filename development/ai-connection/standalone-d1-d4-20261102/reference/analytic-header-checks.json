@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "bernini-standalone-reference-analytic-header-checks/0.1",
+  "recordedAtUTC": "2026-11-02T04:51:28.167041+00:00",
+  "command": "python development/ai-connection/standalone-d1-d4-20261102/reference/test-reference.py",
+  "exitCode": 0,
+  "tests": 14,
+  "failures": 0,
+  "errors": 0,
+  "testRunnerSeconds": 0.053,
+  "sources": {
+    "generator": {
+      "path": "tools/diffusion-models/standalone-reference.py",
+      "sha256": "6f81afa662f444d0f207a91a5b3778f77c88e4a99e05748221b1ddbfece35c2f"
+    },
+    "tests": {
+      "path": "development/ai-connection/standalone-d1-d4-20261102/reference/test-reference.py",
+      "sha256": "43fcb2c3de0b9f22af7b9ca10ed07e60e2e065b96cf7e6e3c9c0aa5c3be05aba"
+    },
+    "contract": {
+      "path": "development/ai-connection/standalone-d1-d4-20261102/reference/contract.json",
+      "sha256": "227c3c512b53e11eb1841c87eac504216c48ae5614b977828a75897b61cf47d5"
+    }
+  },
+  "independentReview": {
+    "actualSourceOrderChecked": true,
+    "findingsResolved": [
+      "fixed47 traces and separate reference receipt authentication",
+      "dedicated private tmp directory",
+      "explicit per-tile weight release"
+    ],
+    "remainingBlockers": []
+  },
+  "originalModelChecks": "exact retained HIGH/LOW pinned headers and tensor population, one own scale/profile and 64-element head bias per side; zero weight matrices projected",
+  "heavyInferenceExecuted": false,
+  "required81FrameWorkflowVerified": false,
+  "productionReadinessClaimed": false
+}

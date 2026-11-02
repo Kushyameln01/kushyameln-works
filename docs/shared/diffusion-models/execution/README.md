@@ -29,7 +29,7 @@ const descriptor = {
     },
     conditioning: {
       dtype: 'float32', shape: [1,L,4096], layout: 'BLC',
-      meaning: 'text_hidden_states', normalization: 'encoder-final-rmsnorm',
+      meaning: 'text_hidden_states', normalization: 'umt5-final-rmsnorm-f32-v1',
       modelSha256: textModelSha256, tokenizerSha256
     }
   }
@@ -52,7 +52,7 @@ try {
 
 `L`は整数1〜512。`signal`と`onProgress`は省略可能な実行optionsであり、数値入力へ混ぜない。`model`・`operation`・`blockIndex`・`contextLatents`はownerの既定値を省略可能。flatな`residual/timeAct1/conditioning`も受け入れるが、`inputs`との同時指定は拒否する。`checkSupport`と`run`は同じ正規化・契約判定を使う。
 
-通常入力はcompactな非共有のnative Float32Array、maskはUint8Array。値の有限性、入力寸法、maskの0/1と有効位置、masked Text行がzero-out済みであることを検査する。Textは公開UMT5 model `c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68`、tokenizer `e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458`へ束縛する。`Hello world`など特定promptやpayload hashには束縛しない。Textの最終RMSNormを再適用せず、全L行とmaskを保持する。元coreに従いcross softmaxへmaskやRoPEを追加しない。
+通常入力はcompactな非共有のnative Float32Array、maskはUint8Array。値の有限性、入力寸法、maskの0/1と有効位置、masked Text行がzero-out済みであることを検査する。Textは公開UMT5 model `c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68`、tokenizer `e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458`へ束縛する。`Hello world`など特定promptやpayload hashには束縛しない。通常P4では旧説明名`encoder-final-rmsnorm`も互換aliasとして受理するが、共有codecの保存には正式ID`umt5-final-rmsnorm-f32-v1`を使う。数値変換は追加しない。Textの最終RMSNormを再適用せず、全L行とmaskを保持する。元coreに従いcross softmaxへmaskやRoPEを追加しない。
 
 residualはblock0自己注意後のhidden、timeAct1はSiLU後のtime embeddingであり、raw mean・post-modulation hidden・生成latentで代用しない。新しい意味名はownerの通常契約であり、管理側の既存診断semanticIdへ自動的に読み替えない。
 
@@ -67,7 +67,7 @@ residualはblock0自己注意後のhidden、timeAct1はSiLU後のtime embedding�
 - 元81frame target `[1,16,21,60,104]`、contextを含む全N、全block、head、実HIGH→LOW、全samplingは未対応。対応には対象kernel／graph・producer境界・precision・staging／copy／同時保持予算の検証が必要。
 - pointwiseは1,048,576要素。Text検査の2,097,152要素とは別予算。mean変換はF5 `[1,16,2,2,2]`、F1 `[1,16,1,2,2]`、Rect `[1,16,1,2,4]`の専用ABIだけ。同要素数の別shape・paddingは不可。
 
-詳細な既存guardの差もdescriptorに残す。raw normalizeはnormalization marker不在を要求する。raw validationのF1／Rectもmarker不在を要求するが、F5の旧metadata validatorの範囲とは異なる。restoreはversion付きnormalized posterior-meanの意味と、指定された場合の正しい正規化IDを要求する。生成sampleをposterior meanへ読み替えない。
+保存metadataを保持する共有codec498への更新に合わせ、raw posterior meanはF5／F1／Rectともnormalization marker不在を要求する。以前のF5 metadata validatorだけで許容されていた矛盾するmarkerは拒否する。restoreはversion付きnormalized posterior-meanの意味と、指定された場合の正しい正規化IDを要求する。生成sampleをposterior meanへ読み替えない。
 
 `supported:false`は理由と必要拡張を返す。全体資源peakは未確定であり、partial演算が成功しても`load/predict/sample=NOT_READY`、`generationReady:false`を保つ。
 

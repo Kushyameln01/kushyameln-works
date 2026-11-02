@@ -1,0 +1,110 @@
+{
+  "scope": "Standalone source-ordered HIGH/LOW arithmetic on supplied arrays; no NN callbacks",
+  "shape": [
+    1,
+    16,
+    21,
+    60,
+    104
+  ],
+  "elements": 2096640,
+  "profile": "bernini-high-low-wan21-handoff:v1",
+  "highRawMeaning": "bernini-high-handoff-raw:v1",
+  "lowModelMeaning": "bernini-generated-model-latent:v1",
+  "stageOrder": [
+    "inverseNoiseScale(xSigma,splitSigma)",
+    "restoreHighHandoff(process_out)",
+    "normalizeHighHandoff(process_in except whole raw zero)",
+    "noiseMix(zeros,normalizedLow,splitSigma,1)"
+  ],
+  "splitSigma": 0.8333333134651184,
+  "nodeCases": 12,
+  "browserCases": 12,
+  "browserVersion": "154.0.8037.57",
+  "comparisons": {
+    "highHandoffInverse": {
+      "elements": 2096640,
+      "exactValues": 2096640,
+      "maxAbs": 0,
+      "maxRelative": 0,
+      "rmse": 0,
+      "gate": {
+        "exact": true,
+        "maxAbs": 1e-06,
+        "maxRelative": 1e-06,
+        "rmse": 1e-06
+      }
+    },
+    "highHandoffRaw": {
+      "elements": 2096640,
+      "exactValues": 2096640,
+      "maxAbs": 0,
+      "maxRelative": 0,
+      "rmse": 0,
+      "gate": {
+        "exact": true,
+        "maxAbs": 1e-06,
+        "maxRelative": 1e-06,
+        "rmse": 1e-06
+      }
+    },
+    "lowHandoffModel": {
+      "elements": 2096640,
+      "exactValues": 2096640,
+      "maxAbs": 0,
+      "maxRelative": 0,
+      "rmse": 0,
+      "gate": {
+        "exact": true,
+        "maxAbs": 1e-06,
+        "maxRelative": 1e-06,
+        "rmse": 1e-06
+      }
+    },
+    "lowHandoffNoiseMix": {
+      "elements": 2096640,
+      "exactValues": 2096640,
+      "maxAbs": 0,
+      "maxRelative": 0,
+      "rmse": 0,
+      "gate": {
+        "exact": true,
+        "maxAbs": 1e-06,
+        "maxRelative": 1e-06,
+        "rmse": 1e-06
+      }
+    },
+    "lowHandoffAllZeroSkip": {
+      "elements": 2096640,
+      "exactValues": 2096640,
+      "maxAbs": 0,
+      "maxRelative": 0,
+      "rmse": 0,
+      "gate": {
+        "exact": true,
+        "maxAbs": 1e-06,
+        "maxRelative": 1e-06,
+        "rmse": 1e-06
+      }
+    },
+    "lowHandoffMixedZeros": {
+      "elements": 2096640,
+      "exactValues": 2096640,
+      "maxAbs": 0,
+      "maxRelative": 0,
+      "rmse": 0,
+      "gate": {
+        "exact": true,
+        "maxAbs": 1e-06,
+        "maxRelative": 1e-06,
+        "rmse": 1e-06
+      }
+    }
+  },
+  "allZeroHandoffSkips": 1,
+  "hostSha256": "a3157bb48b5ce344d4deb9c52c42b39055087189e9e9bf30d16564a5f6b6f1da",
+  "hikeSourceSha256": "54c8c115c188cee795f2e45d632293b63b054620e4442c5542519950c0524ea8",
+  "wasmSha256": "8763d5ec82fd71e31597bb620729c5393383abed478395a2aaaf0d71f85a9b80",
+  "generationReady": false,
+  "producerBinding": "exactly the known HIGH identity at both handoff transforms"
+}

@@ -1,0 +1,498 @@
+{
+  "head": {
+    "passed": true,
+    "scope": "actual final head operator only; full40block inference not implemented",
+    "originalProductionPrecisionVerified": false,
+    "generationReady": false,
+    "models": [
+      {
+        "side": "LOW",
+        "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+        "fileBytes": 15574833216,
+        "retainedFile": true,
+        "fullSourceTargets": 1095,
+        "fullFileHashRecomputed": false,
+        "payloadSampleAdmission": false,
+        "rawTimeEmbedding": true,
+        "reference": "independent direct-file F16 decode and F64 formula",
+        "parameters": {
+          "weight": {
+            "elements": 327680,
+            "readBytes": 655360,
+            "rawSHA256": "978b2f37a57c7a78121c4cc4d309d58b577628df92dab6e30f85af7ec766b55b"
+          },
+          "modulation": {
+            "elements": 10240,
+            "readBytes": 20480,
+            "rawSHA256": "42074d61180ad9878eecfee1e09a71916756f8ae22e466474dc4cc5c6cbeebf9"
+          },
+          "bias": {
+            "elements": 64,
+            "readBytes": 128,
+            "rawSHA256": "e0f0ad0c7207fe86748414107f671400d51787c29b173770774438098a198ffe"
+          }
+        },
+        "independentReadBytes": 675968,
+        "cases": [
+          {
+            "rows": 128,
+            "phase": 113,
+            "comparison": {
+              "comparedElements": 8192,
+              "failed": 0,
+              "maxAbsolute": 4.306311539359342e-06,
+              "maxRelative": 0.0006899220063228117,
+              "gate": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "fullInner": 5120,
+            "outputColumns": 64,
+            "phantomRows": 0,
+            "linearEvidence": {
+              "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+              "computeF32": true,
+              "computeDtype": "F32",
+              "rows": 128,
+              "columns": 64,
+              "inner": 5120,
+              "fullInner": true,
+              "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "weightBinding": "runtime-input",
+              "ortVersion": "1.24.3"
+            },
+            "sourcePayloadReads": 6
+          },
+          {
+            "rows": 1,
+            "phase": 271,
+            "comparison": {
+              "comparedElements": 64,
+              "failed": 0,
+              "maxAbsolute": 8.694606825621065e-07,
+              "maxRelative": 8.390101571022638e-05,
+              "gate": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "fullInner": 5120,
+            "outputColumns": 64,
+            "phantomRows": 0,
+            "linearEvidence": {
+              "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+              "computeF32": true,
+              "computeDtype": "F32",
+              "rows": 1,
+              "columns": 64,
+              "inner": 5120,
+              "fullInner": true,
+              "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "weightBinding": "runtime-input",
+              "ortVersion": "1.24.3"
+            },
+            "sourcePayloadReads": 0
+          },
+          {
+            "rows": 3,
+            "phase": 617,
+            "comparison": {
+              "comparedElements": 192,
+              "failed": 0,
+              "maxAbsolute": 1.7240204797097647e-06,
+              "maxRelative": 6.658651867247468e-05,
+              "gate": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "fullInner": 5120,
+            "outputColumns": 64,
+            "phantomRows": 0,
+            "linearEvidence": {
+              "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+              "computeF32": true,
+              "computeDtype": "F32",
+              "rows": 3,
+              "columns": 64,
+              "inner": 5120,
+              "fullInner": true,
+              "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "weightBinding": "runtime-input",
+              "ortVersion": "1.24.3"
+            },
+            "sourcePayloadReads": 0
+          }
+        ],
+        "headStats": {
+          "busy": false,
+          "disposed": false,
+          "runs": 3,
+          "rowsProcessed": 132,
+          "sourceReads": 6,
+          "sourceF32Bytes": 1351936,
+          "cacheBytes": 1351936,
+          "lastLinearEvidence": {
+            "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+            "computeF32": true,
+            "computeDtype": "F32",
+            "rows": 3,
+            "columns": 64,
+            "inner": 5120,
+            "fullInner": true,
+            "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+            "weightBinding": "runtime-input",
+            "ortVersion": "1.24.3"
+          }
+        },
+        "sourceStats": {
+          "disposed": false,
+          "busy": false,
+          "reads": 728,
+          "readBytes": 868416,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 6,
+          "payloadReadBytes": 675968,
+          "maxPayloadReadBytes": 163840,
+          "decodedF32Bytes": 1351936,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 6,
+            "inputCopyBytes": 675968,
+            "outputCopyBytes": 1351936,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        }
+      },
+      {
+        "side": "HIGH",
+        "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+        "fileBytes": 15574833216,
+        "retainedFile": true,
+        "fullSourceTargets": 1095,
+        "fullFileHashRecomputed": false,
+        "payloadSampleAdmission": false,
+        "rawTimeEmbedding": true,
+        "reference": "independent direct-file F16 decode and F64 formula",
+        "parameters": {
+          "weight": {
+            "elements": 327680,
+            "readBytes": 655360,
+            "rawSHA256": "1e50dcef44d92a403203f2712c7e0700df04e0fa4ec9b1b4090ebb76ea3fc8c6"
+          },
+          "modulation": {
+            "elements": 10240,
+            "readBytes": 20480,
+            "rawSHA256": "46c588ce01abd618f0c1ea86821d4237f38ee37de2dea524d160c7172f123c57"
+          },
+          "bias": {
+            "elements": 64,
+            "readBytes": 128,
+            "rawSHA256": "771503793f922d73c17e9d17b54bfc87c0c185f4dfa3b1cef9917b453b837a89"
+          }
+        },
+        "independentReadBytes": 675968,
+        "cases": [
+          {
+            "rows": 128,
+            "phase": 113,
+            "comparison": {
+              "comparedElements": 8192,
+              "failed": 0,
+              "maxAbsolute": 6.350332742321996e-06,
+              "maxRelative": 0.007001936928450363,
+              "gate": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "fullInner": 5120,
+            "outputColumns": 64,
+            "phantomRows": 0,
+            "linearEvidence": {
+              "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+              "computeF32": true,
+              "computeDtype": "F32",
+              "rows": 128,
+              "columns": 64,
+              "inner": 5120,
+              "fullInner": true,
+              "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "weightBinding": "runtime-input",
+              "ortVersion": "1.24.3"
+            },
+            "sourcePayloadReads": 6
+          },
+          {
+            "rows": 1,
+            "phase": 271,
+            "comparison": {
+              "comparedElements": 64,
+              "failed": 0,
+              "maxAbsolute": 1.2423440862718849e-06,
+              "maxRelative": 9.222572129633328e-06,
+              "gate": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "fullInner": 5120,
+            "outputColumns": 64,
+            "phantomRows": 0,
+            "linearEvidence": {
+              "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+              "computeF32": true,
+              "computeDtype": "F32",
+              "rows": 1,
+              "columns": 64,
+              "inner": 5120,
+              "fullInner": true,
+              "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "weightBinding": "runtime-input",
+              "ortVersion": "1.24.3"
+            },
+            "sourcePayloadReads": 0
+          },
+          {
+            "rows": 3,
+            "phase": 617,
+            "comparison": {
+              "comparedElements": 192,
+              "failed": 0,
+              "maxAbsolute": 2.027798539749881e-06,
+              "maxRelative": 1.3486477753121241e-05,
+              "gate": {
+                "absolute": 0.001,
+                "relative": 0.0001
+              }
+            },
+            "fullInner": 5120,
+            "outputColumns": 64,
+            "phantomRows": 0,
+            "linearEvidence": {
+              "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+              "computeF32": true,
+              "computeDtype": "F32",
+              "rows": 3,
+              "columns": 64,
+              "inner": 5120,
+              "fullInner": true,
+              "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+              "weightBinding": "runtime-input",
+              "ortVersion": "1.24.3"
+            },
+            "sourcePayloadReads": 0
+          }
+        ],
+        "headStats": {
+          "busy": false,
+          "disposed": false,
+          "runs": 3,
+          "rowsProcessed": 132,
+          "sourceReads": 6,
+          "sourceF32Bytes": 1351936,
+          "cacheBytes": 1351936,
+          "lastLinearEvidence": {
+            "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+            "computeF32": true,
+            "computeDtype": "F32",
+            "rows": 3,
+            "columns": 64,
+            "inner": 5120,
+            "fullInner": true,
+            "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+            "weightBinding": "runtime-input",
+            "ortVersion": "1.24.3"
+          }
+        },
+        "sourceStats": {
+          "disposed": false,
+          "busy": false,
+          "reads": 728,
+          "readBytes": 868416,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 6,
+          "payloadReadBytes": 675968,
+          "maxPayloadReadBytes": 163840,
+          "decodedF32Bytes": 1351936,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 6,
+            "inputCopyBytes": 675968,
+            "outputCopyBytes": 1351936,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        }
+      }
+    ],
+    "mathStats": {
+      "wasmSha256": "84a0b1fa8d6b39f5acaf1829ab387231fdedaf8f07c539d910cd82c0f9e01034",
+      "memoryBytes": 9175040,
+      "memoryIdentity": "model-math-1",
+      "arenaBytes": 8108032,
+      "calls": 30,
+      "kernelCalls": 30,
+      "snapshotCopyBytes": 11619840,
+      "inputCopyBytes": 11619840,
+      "outputCopyBytes": 11126784,
+      "primitiveCalls": {
+        "cos": 0,
+        "exp": 0,
+        "pow": 0,
+        "sin": 0,
+        "sqrt": 264,
+        "tanh": 0
+      },
+      "workspaceReused": true,
+      "busy": false,
+      "disposed": false,
+      "limits": {
+        "maxRows": 128,
+        "width": 5120,
+        "headWidth": 128,
+        "heads": 40,
+        "maxLinearWidth": 13824,
+        "maxElements": 1769472,
+        "chunkElements": 81920,
+        "epsilon": 1e-06
+      },
+      "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+      "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity"
+    },
+    "opsStats": {
+      "busy": false,
+      "disposed": false,
+      "cleanupPending": false,
+      "pendingTensors": 0,
+      "linearRuns": 6,
+      "attentionRuns": 0,
+      "inputCopyBytes": 13271040,
+      "outputCopyBytes": 67584,
+      "sessionCreations": 2
+    },
+    "comparedElements": 16896
+  },
+  "sequence": {
+    "passed": true,
+    "schemaVersion": "bernini-model-sequence-layout/0.1",
+    "shapeDerivation": "deriveWorkflowShapes",
+    "semanticAdmission": "exact caller-declared metadata matching; producer identity and numerical normalization not authenticated",
+    "actualTarget": {
+      "shape": [
+        1,
+        16,
+        21,
+        60,
+        104
+      ],
+      "targetTokens": 32760,
+      "rowsProcessed": 32760,
+      "storedElements": 2096640,
+      "patchComparedElements": 2096640,
+      "roundtripComparedElements": 2096640,
+      "patchMismatches": 0,
+      "roundtripMismatches": 0,
+      "inputPatchOrder": "C,kT,kH,kW",
+      "headPatchOrder": "kT,kH,kW,C",
+      "tailRows": 120,
+      "lastPosition": [
+        20,
+        29,
+        51
+      ]
+    },
+    "mixed": {
+      "streamOrder": [
+        "target.latent",
+        "source.latent",
+        "reference.latent",
+        "context:1:0.latent",
+        "context:5:0.latent",
+        "context:5:1.latent"
+      ],
+      "sourceIds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "tokenRanges": [
+        [
+          0,
+          18
+        ],
+        [
+          18,
+          36
+        ],
+        [
+          36,
+          52
+        ],
+        [
+          52,
+          54
+        ],
+        [
+          54,
+          56
+        ],
+        [
+          56,
+          58
+        ]
+      ],
+      "totalTokens": 58,
+      "exactTailRows": 58,
+      "headRowsInBoundaryTile": 41,
+      "targetRowsStored": 1,
+      "mediaPayloadClaim": false
+    },
+    "modelInference": false,
+    "generationReady": false
+  },
+  "chromiumVersion": "154.0.8037.57",
+  "passed": true,
+  "sourceCommit": "48ff155988d995fc2569e495c8d8820273bd472c",
+  "workingTreeDirtyAtRun": true,
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/execution/model-head-browser.py": "960756133900653fca1bf6b320c42113c2fab2eb763831bf0607c65810b3c4a7",
+    "docs/shared/diffusion-models/execution/model-head-browser.mjs": "dcf06d0c0c11ba86ded92015c5ac7d356d27287654814357b44e6d881284cbe8",
+    "docs/shared/diffusion-models/execution/model-head.mjs": "c7294148d0b69a33dedb663b9735e2328d68c03cf99eb908a975ab36bf4b1bab",
+    "docs/shared/diffusion-models/execution/model-sequence.mjs": "e25c9f59451e9577210c6354f8e4d185ae5b7201109bc11f9c020a29db364c9f",
+    "docs/shared/diffusion-models/execution/model-sequence-browser.mjs": "2bf3113a1cab65f29bc8c5f48d99e97835efc191f5151e1b473f720d8d1854bc",
+    "docs/shared/diffusion-models/execution/model-weights.mjs": "f0488c2f97046165318660eb08aeb9135fc1b84009793788babe0a46393f0d09",
+    "docs/shared/diffusion-models/execution/model-math.mjs": "39377dc93e604b05bfea555e67cbba6833e09b92e6213a21cca01a8560ca47c3",
+    "docs/shared/diffusion-models/execution/model-math/kernel.wasm": "84a0b1fa8d6b39f5acaf1829ab387231fdedaf8f07c539d910cd82c0f9e01034",
+    "docs/shared/diffusion-models/execution/model-math/registry.mjs": "3d270a509d12211a2eef68228fce21eed89646eba3980d5699db633f865c4e60",
+    "docs/shared/diffusion-models/execution/batched-ops.mjs": "338dcc3fb31d522b36f3028c594170b2aead6933a30baed9d76e669f24545215",
+    "docs/shared/diffusion-models/execution/batched-attention-graph.mjs": "95bbf39e692f74a9afb9b1e2b7972c4b148e62a8bd39c13af4ebbbb6ca91e098",
+    "docs/shared/ai-connection/workflow-shapes.mjs": "7a78955fd8156e0b3a5b287ad5f712ff04d62dbb6e501952bc52f9696e9dd821",
+    "docs/shared/diffusion-models/ort-bridge/block-hidden/graph.mjs": "7826723d34a934a78e27335dce5973d41af4e2578136db5604c19b13d0954db0",
+    "docs/shared/diffusion-models/ort-bridge/hike.mjs": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+    "docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+    "docs/shared/diffusion-models/api/safetensors.mjs": "ecb7e750a151489c9b37ffec75e0b784d808b0503ff2181c7b73907398422d7f",
+    "docs/shared/diffusion-models/lora/targets.mjs": "772ca63c3b82bafa7b2345cdda3361679112fcf4a97c79b67564da0fa196217d",
+    "docs/shared/inference/vendor/ort.wasm.min.mjs": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+  }
+}
