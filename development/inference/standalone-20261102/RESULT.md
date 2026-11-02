@@ -150,3 +150,7 @@ browser process群のsampled RSS/PSS sum peakはencode9,432,653,824 /9,175,997,4
 Node24.19のgraph読込をNN0で切り分けた。771,822,917 Bの同じblock00について、native Blobはchunksと連結後bufferを同時保持し、ArrayBuffers1,543,809,353 B、own RSS peak1,586,036,736 Bだった。単一ArrayBufferへの8MiB以下の位置指定readは同じ全hashを保ち、実production readerでもArrayBuffers772,006,664 B、own RSS peak806,547,456 B、93reads、fd close・pending0を確認した。これは読込一件の資源比較で、全encoderのRSSや速度改善を確定する結果ではない。時間差にはcache順序・並行VAEの影響がある。
 
 このgraph読込だけを `b3e5e34430d58bca3bf69b8938ba87beb196d054` に固定し、small Blob・元modelの8192 B reader・数値graph・Hike・gateを保持した。固定18 source、24 graph FDのclose、0 read/0 NNのpreflightも合格。残る6caseとBrowser T3はこのsourceで実行中で、元5954独立参照を再利用する。以前計画した153cでこれらの新しいNNを実行したという記録は付けない。
+
+実512位置すべて有効なplain conditioningを [text/full512-conditioning](text/full512-conditioning/README.md) に収録した。通常の消費に必要なのは未改変 [conditioning.wktensor](text/full512-conditioning/conditioning.wktensor) とnative codecだけで、model重み・独立参照・gate・詳細receiptは消費条件にしない。WKT8,390,098 B / SHA-256 `03b5f0cc3febd68503c56e6f9f8d32a22e1600fb7db4989c35ab475c5a10ea6f`、shape[1,512,4096]、float32/BLC、全mask512=1、model/Tokenizer/最終RMSNormを保持する。
+
+元5954参照8,388,608 B / SHA-256 `6d684253cf55507dcb5e5d10b9b35970d271314131954bc614ae1954ed91312e` は同folderのdiagnostic側へ分けた。新規model NN・exportなしで全2,097,152値bits、全mask、metadata・所有buffer・WKT全byte再encodeを検証した。caseの全値gateはmaxAbs0.00039987266063690186で合格。このfixtureは合成plain a×511+EOSのcaseだけを認定し、ID512の既知FAIL、host最終資源判定、Browser取消、Diffusion consumer、本番READYは別に保持する。外側manifestのfile/bytes/SHA一覧から取得できるようにし、native contextやlatentContractへ管理fieldを追加していない。

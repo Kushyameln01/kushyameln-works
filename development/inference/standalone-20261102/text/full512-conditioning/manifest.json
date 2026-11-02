@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "type": "development-text-conditioning-fixture",
+  "caseId": "plain-long-eos512",
+  "capturedUtc": "2026-11-02T14:42:37.870850+00:00",
+  "ordinaryInput": {
+    "path": "conditioning.wktensor",
+    "format": "WKTSR001",
+    "requiresDiagnosticFiles": false,
+    "metadataSource": "Unmodified native WKT header"
+  },
+  "tensorContract": {
+    "dtype": "float32",
+    "shape": [
+      1,
+      512,
+      4096
+    ],
+    "layout": "BLC",
+    "meaning": "text_hidden_states",
+    "normalization": "umt5-final-rmsnorm-f32-v1",
+    "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+    "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+    "byteOrder": "little",
+    "byteLength": 8388608,
+    "dataSha256": "518d6cd4ab2e00270743d5fa417c686a86016d9f0fdcf409fdadbbfe27fa687b"
+  },
+  "attentionMask": {
+    "source": "native WKT metadata",
+    "length": 512,
+    "activePositions": 512,
+    "allActive": true
+  },
+  "producer": {
+    "executionSourceSha": "b3e5e34430d58bca3bf69b8938ba87beb196d054",
+    "host": "Node conforming reference host; normal public Text factory and shared Text job",
+    "diagnostics": false,
+    "completedLayers": 24,
+    "sessionsReleased": 24,
+    "browserWorkerAcceptance": false,
+    "cancellationAcceptance": false,
+    "newNeuralRunsForFixturePackaging": 0
+  },
+  "independentReference": {
+    "executionSourceSha": "5954d48e0fb6df1d6977964fd8a7ba2a242b6eff",
+    "optionalDiagnostic": true,
+    "path": "diagnostic/plain-long-eos512-reference.f32",
+    "oracleInternalShape": [
+      1,
+      512,
+      4096
+    ],
+    "usesOnnxOrHike": false
+  },
+  "selectedPreparedManifest": {
+    "path": "diagnostic/prepared-model-manifest.json",
+    "sha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f",
+    "finalNorm": {
+      "epsilon": 1e-06,
+      "path": "final-norm.f32",
+      "bytes": 16384,
+      "sha256": "31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02"
+    },
+    "finalNormPayloadIncluded": false
+  },
+  "qualification": {
+    "scope": "Completed plain-long-eos512 case only",
+    "caseNumericGatePassed": true,
+    "allValuesCompared": 2097152,
+    "maxAbsError": 0.00039987266063690186,
+    "gate": {
+      "maxAbsError": 0.001,
+      "atol": 0.001,
+      "rtol": 0.001
+    },
+    "globalHostFinalCleanup": "pending at capture; this fixture does not determine global run status",
+    "knownSeparateFailure": {
+      "caseId": "id-l512-all-active",
+      "maxAbsError": 0.0016480088233947754,
+      "fixedMaxAbsGate": 0.001,
+      "passed": false
+    },
+    "fullTextDomainAcceptance": false,
+    "fullWorkflowQualityClaim": false,
+    "prompt": "Synthetic repeated plain a input; no Bernini or weighted-prompt equivalence"
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3634,
+      "sha256": "22ee8b46504962d65bf8d2aedae3e35cf576f8bac6b046c094a97d59a8545ed9",
+      "requiredForOrdinaryConsumption": false
+    },
+    {
+      "path": "conditioning.wktensor",
+      "bytes": 8390098,
+      "sha256": "03b5f0cc3febd68503c56e6f9f8d32a22e1600fb7db4989c35ab475c5a10ea6f",
+      "requiredForOrdinaryConsumption": true
+    },
+    {
+      "path": "diagnostic/case-native.json",
+      "bytes": 11405,
+      "sha256": "fbdb9e4cfcc53a60b63df1c83d70aa5a1e0ccc56936e4e13793a80b7507a88e9",
+      "requiredForOrdinaryConsumption": false
+    },
+    {
+      "path": "diagnostic/comparison.json",
+      "bytes": 1560,
+      "sha256": "beae5c9056c2e3251ccbb05693ee958cb816c350298727e0a29886ad71d4158c",
+      "requiredForOrdinaryConsumption": false
+    },
+    {
+      "path": "diagnostic/independent-reference-case.json",
+      "bytes": 22674,
+      "sha256": "48c02f2b9d0595404aab3a059c6523e20d41062ca251d1caa24d340bfbeefcd2",
+      "requiredForOrdinaryConsumption": false
+    },
+    {
+      "path": "diagnostic/input-record.json",
+      "bytes": 11046,
+      "sha256": "97b86c52138408aba2d2076c37eac719f41f6e3199a905e00aa394a97239f643",
+      "requiredForOrdinaryConsumption": false
+    },
+    {
+      "path": "diagnostic/native-codec-validation.json",
+      "bytes": 835,
+      "sha256": "592353646dcf6d2da958bf31419f7e367cc1875b0507d68f7af0ec40a6a8b97b",
+      "requiredForOrdinaryConsumption": false
+    },
+    {
+      "path": "diagnostic/plain-long-eos512-reference.f32",
+      "bytes": 8388608,
+      "sha256": "6d684253cf55507dcb5e5d10b9b35970d271314131954bc614ae1954ed91312e",
+      "requiredForOrdinaryConsumption": false
+    },
+    {
+      "path": "diagnostic/prepared-model-manifest.json",
+      "bytes": 19908,
+      "sha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f",
+      "requiredForOrdinaryConsumption": false
+    },
+    {
+      "path": "diagnostic/validate-codec.mjs",
+      "bytes": 2918,
+      "sha256": "742cbd0e0faa4babeffd559d196111d4f7064869bc095dcbbeccadc31584e5cc",
+      "requiredForOrdinaryConsumption": false
+    }
+  ],
+  "inputRecord": {
+    "path": "diagnostic/input-record.json",
+    "lineageExecutionSourceSha": "5954d48e0fb6df1d6977964fd8a7ba2a242b6eff",
+    "sourceSelection": "inputs[id=plain-long-eos512]",
+    "sourceReceipt": {
+      "path": "/tmp/kw-standalone-text-oracle-20261102/text-inputs.json",
+      "bytes": 157585,
+      "sha256": "fe48d25c9d5f0cb25c87a5972e3b05e41d50113eea310994f8ec61b1f658d606"
+    }
+  }
+}
