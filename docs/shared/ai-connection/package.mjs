@@ -141,11 +141,12 @@ async function structuralMetadata(manifest,assets,registry) {
   const hydrate=binaryHydrator(manifest,assets),restoredManifest=hydrate(manifest,'');
   for(const record of artifacts) {
     const a=record.binding,restoredDescriptor=hydrate(record.descriptor,a.descriptorPath);
+    record.restoredDescriptor=restoredDescriptor;
     record.restoredMetadata=restoredDescriptor.native.metadata;
     record.restoredExtensions=restoredDescriptor.extensions;
     record.restoredEvidence=hydrate(record.evidence,a.evidencePath);
     record.restoredTrace=hydrate(record.trace,a.tracePath);
-    hydrate(record.snapshot,a.snapshotPath);
+    record.restoredSnapshot=hydrate(record.snapshot,a.snapshotPath);
     hydrate(record.extensions,a.extensionsPath);
   }
   return {artifacts,issues,restoredPackageExtensions:restoredManifest.extensions};

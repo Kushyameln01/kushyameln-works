@@ -15,6 +15,29 @@ const equal=(a,b)=>{
   return keys.length===Object.keys(b).length&&keys.every(key=>Object.hasOwn(b,key)&&equal(a[key],b[key]));
 };
 
+/** Shared metadata-only admission. Geometry comes from the sole workflow shape
+ * authority; BOUND means ready to ask the owner, never executable capability. */
+export function bindWorkflowRequirement(r,d,{fieldPath='/requirements/0'}={}){
+  if(!record(r)||!text(r.requirementId)||!['known','unknown','absent'].includes(r.state)) throw new TypeError('Requirement needs an identity and explicit state');
+  const entry={...r,required:r.state!=='absent'};
+  if(r.state==='absent') return {...entry,status:'NOT_REQUIRED',reasons:r.issues??[]};
+  if(r.state!=='known'||!geometryKnown(r)) return {...entry,status:'UNVERIFIED',reasons:r.issues?.length?r.issues:[reason('WORKFLOW_REQUIREMENT_UNKNOWN',fieldPath,'Required workflow geometry is unresolved')]};
+  if(!record(d)||!record(d.artifact)||!record(d.artifact.tensor)) return {...entry,status:'UNVERIFIED',reasons:[reason('WORKFLOW_REQUIREMENT_UNBOUND',fieldPath,'No explicit normal descriptor is bound to this requirement')]};
+  const conflict=[
+    [r.shape,d.artifact.tensor.shape,'/artifact/tensor/shape'],
+    [r.dtype,d.artifact.tensor.dtype,'/artifact/tensor/dtype'],
+    [r.axes,d.artifact.tensor.axes,'/artifact/tensor/axes'],
+    [r.meaning,d.artifact.tensor.nativeMeaning,'/artifact/tensor/nativeMeaning'],
+    [r.normalization,d.artifact.semantics?.normalization,'/artifact/semantics/normalization']
+  ].find(([expected,observed])=>expected!==null&&expected!==undefined&&observed!==undefined&&!equal(expected,observed));
+  if(conflict){
+    const [expected,observed,path]=conflict;
+    return {...entry,descriptor:d,ownerResponse:null,status:'NOT_QUERIED',inputAdmission:{state:'REJECTED',code:'WORKFLOW_BINDING_CONTRACT_MISMATCH',fieldPath:path,expected,observed}};
+  }
+  const descriptor={...d,artifact:{...d.artifact,tensor:{...d.artifact.tensor,...(d.artifact.tensor.shape===undefined?{shape:r.shape.slice()}:{}),...(d.artifact.tensor.dtype===undefined?{dtype:r.dtype}:{}),...(d.artifact.tensor.axes===undefined?{axes:r.axes.slice()}: {})}}};
+  return {...entry,descriptor,status:'BOUND',reasons:[]};
+}
+
 /** Query actual owner contracts for explicit, known workflow requirements. */
 export async function queryWorkflowRequirements({shapePlan,bindings,queryOwner}={}){
   if(!record(shapePlan)||!Array.isArray(shapePlan.requirements)||!Array.isArray(bindings)||typeof queryOwner!=='function') throw new TypeError('shapePlan.requirements, bindings and queryOwner are required');
@@ -27,35 +50,10 @@ export async function queryWorkflowRequirements({shapePlan,bindings,queryOwner}=
   for(const r of shapePlan.requirements){
     if(!record(r)||!text(r.requirementId)||seen.has(r.requirementId)||!['known','unknown','absent'].includes(r.state)) throw new TypeError('Requirements need unique identities and explicit states');
     seen.add(r.requirementId);
-    const entry={...r,required:r.state!=='absent'};
-    if(r.state==='absent'){
-      requirements.push({...entry,status:'NOT_REQUIRED',reasons:r.issues??[]});
-      continue;
-    }
-    if(r.state!=='known'||!geometryKnown(r)){
-      requirements.push({...entry,status:'UNVERIFIED',reasons:r.issues?.length?r.issues:[reason('WORKFLOW_REQUIREMENT_UNKNOWN',`/requirements/${requirements.length}`,'Required workflow geometry is unresolved')]});
-      continue;
-    }
-    const d=byId.get(r.requirementId);
-    if(!record(d)||!record(d.artifact)||!record(d.artifact.tensor)){
-      requirements.push({...entry,status:'UNVERIFIED',reasons:[reason('WORKFLOW_REQUIREMENT_UNBOUND',`/requirements/${requirements.length}`,'No explicit normal descriptor is bound to this requirement')]});
-      continue;
-    }
-    const conflict=[
-      [r.shape,d.artifact.tensor.shape,'/artifact/tensor/shape'],
-      [r.dtype,d.artifact.tensor.dtype,'/artifact/tensor/dtype'],
-      [r.axes,d.artifact.tensor.axes,'/artifact/tensor/axes'],
-      [r.meaning,d.artifact.tensor.nativeMeaning,'/artifact/tensor/nativeMeaning'],
-      [r.normalization,d.artifact.semantics?.normalization,'/artifact/semantics/normalization']
-    ].find(([expected,observed])=>expected!==null&&expected!==undefined&&observed!==undefined&&!equal(expected,observed));
-    if(conflict){
-      const [expected,observed,fieldPath]=conflict;
-      requirements.push({...entry,descriptor:d,ownerResponse:null,status:'NOT_QUERIED',inputAdmission:{state:'REJECTED',code:'WORKFLOW_BINDING_CONTRACT_MISMATCH',fieldPath,expected,observed}});
-      continue;
-    }
-    const descriptor={...d,artifact:{...d.artifact,tensor:{...d.artifact.tensor,...(d.artifact.tensor.shape===undefined?{shape:r.shape.slice()}:{}),...(d.artifact.tensor.dtype===undefined?{dtype:r.dtype}:{}),...(d.artifact.tensor.axes===undefined?{axes:r.axes.slice()}: {})}}};
-    const ownerResponse=await queryOwner(descriptor);
-    requirements.push({...entry,descriptor,ownerResponse,status:ownerResponse?.status,reasons:ownerResponse?.reasons});
+    const entry=bindWorkflowRequirement(r,byId.get(r.requirementId),{fieldPath:`/requirements/${requirements.length}`});
+    if(entry.status!=='BOUND'){requirements.push(entry);continue;}
+    const ownerResponse=await queryOwner(entry.descriptor);
+    requirements.push({...entry,ownerResponse,status:ownerResponse?.status,reasons:ownerResponse?.reasons});
   }
   return {shapePlan,requirements,generationReady:false};
 }

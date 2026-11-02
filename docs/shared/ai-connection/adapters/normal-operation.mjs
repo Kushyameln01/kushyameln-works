@@ -65,9 +65,11 @@ export function createNormalOperationAdapter({owner,artifactStore=createOwnedArt
  }
  const releaseInput=r=>{for(const handle of r.inputHandles?.values()??[])releaseArtifactHandle(handle,artifactStore);r.inputHandles?.clear();};
  const disposeSnapshot=async r=>{if(r?.snapshotManager&&!r.snapshotDisposed){await r.snapshotManager.dispose();r.snapshotDisposed=true;}};
- const current=r=>{try{return !closed&&!reconfiguring&&!r.invalidated&&r.epoch===epoch&&selection===r&&same(identity(r.observation),identity(observed()));}catch{return false;}};
- async function execute({descriptor,input,signal,requestId='normal-request:'+crypto.randomUUID()}={}){
+ const bindingCurrent=r=>{try{return !closed&&!reconfiguring&&!r.invalidated&&r.epoch===epoch&&same(identity(r.observation),identity(observed()));}catch{return false;}};
+ const current=r=>selection===r&&bindingCurrent(r);
+ async function execute({descriptor,input,signal,onProgress,requestId='normal-request:'+crypto.randomUUID()}={}){
   live();if(!text(requestId)||usedIds.has(requestId))throw fail('NORMAL_REQUEST_ID_REUSED','Unique normal request ID required');if(signal!==undefined&&!(signal instanceof AbortSignal))throw TypeError('AbortSignal required');
+  if(onProgress!==undefined&&typeof onProgress!=='function')throw TypeError('Progress listener must be a function');
   // Own descriptor and payload before the first asynchronous owner query.
   const r={descriptor:clone(descriptor),input:clone(input),inputHandles:new Map(),requestId,epoch,revision:++serial,transactionTerminal:deferred(),done:deferred(),nativeStarted:false,cancelRequested:false,invalidated:false,finished:false};usedIds.add(requestId);
   const o=ensureQueue();r.queueTarget={...resource(o),requestId,revision:r.revision,activeToken:crypto.randomUUID()};r.target={requestId,managerSessionId,managerRevision:r.revision,resourceBinding:resource(o),activeToken:r.queueTarget.activeToken};records.set(requestId,r);
@@ -84,7 +86,7 @@ export function createNormalOperationAdapter({owner,artifactStore=createOwnedArt
      if(Object.values(decisions).some(d=>d.readiness.state!=='ready'))return {status:'BLOCKED',...decisionFields,reasons:Object.values(decisions).flatMap(d=>d.reasons),normalExecution:false,...flags};
      r.snapshotManager=createSnapshotManager({managerSessionId,registry:support.registry});
      const snapshotOwner={ownerId:o.ownerId,
-      async prepare(){check();r.nativeStarted=true;const nativeInputs=Object.fromEntries([...r.inputHandles].map(([name,handle])=>[name,restoreNativeTensor(handle,artifactStore)])),nativeInput=named?nativeInputs:nativeInputs.input;const value=await owner.invoke({descriptor:clone(r.descriptor),input:nativeInput,target:clone(r.target),signal:c.signal});check();return {candidate:{output:clone(value)}};},
+      async prepare(){check();r.nativeStarted=true;const nativeInputs=Object.fromEntries([...r.inputHandles].map(([name,handle])=>[name,restoreNativeTensor(handle,artifactStore)])),nativeInput=named?nativeInputs:nativeInputs.input;const value=await owner.invoke({descriptor:clone(r.descriptor),input:nativeInput,target:clone(r.target),signal:c.signal,onProgress:progress=>{if(current(r)&&!c.signal.aborted&&!signal?.aborted&&!r.cancelRequested)try{onProgress?.(clone(progress));}catch{/* View callbacks cannot change the native transaction. */}}});check();return {candidate:{output:clone(value)}};},
       async validate(candidate,context){check();return {valid:true,target:context.target,operationId:context.operationId,snapshotId:context.snapshotId,stepId:context.stepId,scope:context.scopeId,sourceRef:context.sourceRef,nativeBuild:context.nativeBuild,capabilityRef:support.capabilityRef};},
       async commit(candidate,context){check();r.output=clone(candidate.output);return {state:'EXECUTION_COMPLETED',target:context.target,ownership:{kind:'independent-copy',ownerId:o.ownerId}};},
       async rollback(){r.invalidated=true;return {restored:true};},
@@ -101,8 +103,12 @@ export function createNormalOperationAdapter({owner,artifactStore=createOwnedArt
    r.finished=true;const terminal=queue.inspect().invocations.find(e=>e.requestId===requestId);
    if(result.status==='EXECUTION_COMPLETED'){
     if(!terminal?.originalTerminal||!terminal.resourceReleased||!terminal.reusable||!terminal.resultAccepted)throw fail('NORMAL_TERMINAL_UNCONFIRMED','Original transaction and owner release must finish before returning success');
-    if(!current(r))throw fail('NORMAL_STALE','Owner changed before result adoption');
-    if(currentSnapshot&&currentSnapshot!==r)await disposeSnapshot(currentSnapshot);currentSnapshot=r;currentResult=r;return {...result,target:clone(r.target),terminal:clone(terminal)};
+    if(!bindingCurrent(r))throw fail('NORMAL_STALE','Owner changed before result adoption');
+    // A following queued operation can start before this continuation resumes.
+    // Its selection does not invalidate an independently copied, released result.
+    if(selection===r){if(currentSnapshot&&currentSnapshot!==r)await disposeSnapshot(currentSnapshot);currentSnapshot=r;currentResult=r;}
+    else await disposeSnapshot(r);
+    return {...result,target:clone(r.target),terminal:clone(terminal)};
    }
    releaseInput(r);return {...result,terminal:clone(terminal)};
   }catch(error){r.invalidated=true;r.finished=true;if(currentResult===r)currentResult=null;try{await disposeSnapshot(r);}catch(cleanup){r.snapshotCleanupError=cleanup;}releaseInput(r);throw error;}

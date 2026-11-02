@@ -1492,3 +1492,11 @@ run at4667f46e5961a34c095a394bf6c75156ab9ab9cb and cancellation at
 f1dceb971bed7e9c9c16ab0a56d897507318a174 keep their original mean-operation
 scope; they are not relabeled as VAE/P4 neural execution. Full workflow/model
 generation and aggregate peak budgets remain unaccepted.
+
+### Standalone management proposal (M1–M3)
+
+The additive pipeline/management-host/workspace APIs and static File/bundle UI
+are documented in [standalone management API](../../../development/ai-connection/standalone-management/API.md).
+Conformant reference-owner control acceptance is separate from real NN or
+intermodule acceptance; ordinary execution still requires no numerical reference,
+gate, prior PASS, detailed numerical receipt or mandatory intermediate saving.
