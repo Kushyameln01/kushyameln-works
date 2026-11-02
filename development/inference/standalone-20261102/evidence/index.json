@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "scope": "Exact completed diagnostic receipts/manifests, raw or losslessly gzipped with original byte counts and SHA-256. This index is separate from the real full512 Text fixture under text/full512-conditioning; graph weights and large VAE RGB payloads remain private. Execution, acquisition, numeric acceptance and cleanup scopes stay separate.",
+  "scope": "Exact diagnostic receipts/manifests and environment-interruption observations, raw or losslessly gzipped with original byte counts and SHA-256. Numeric acceptance, acquisition and resource-termination scopes remain separate. Graph weights and large VAE payloads remain private.",
   "files": [
     {
       "file": "vae-stream-manifest.json",
@@ -398,6 +398,12 @@
       "bytes": 1736,
       "sha256": "c41267401c3ee9742b9abd00e2eb517e8ba7ea96521efcb5a79d9e92ebe52f6f",
       "origin": "Actual git diff of specified fixed source commits"
+    },
+    {
+      "file": "environment-interruption-20261102.json",
+      "bytes": 2705,
+      "sha256": "467900566ba2ef4b66ec1b5771e7fab6d9c1e18b53f1a6037e10a617a28a642b",
+      "origin": "Observed tool/environment messages after command transport loss; no local filesystem availability or numerical result is implied."
     }
   ]
 }
