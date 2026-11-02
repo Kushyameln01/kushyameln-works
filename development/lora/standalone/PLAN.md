@@ -25,8 +25,8 @@
 2. [x] L2 owned source/package: verified immutable sources、bounded factor/product cache、全列tile/末尾/FFN、stream保存・fresh reopen、leaseとrelease。descriptorだけを保存成果としない。
 3. [x] L2 streaming Hike: 既存ascending-rank F32 multiply/addを保つstrict LLVM backend/newkernel、旧kernel bit比較・NumPy検証・再現buildと資源計測。
 4. [x] L3 standalone SDK: 固定sideごとのregister/compose/prepare/stage/apply/restoreBase/cancel/recover/dispose。通常に独立参照を要求しない。local revisionとconsumer epoch、current/abort/rollback権限を分ける。
-5. [ ] L4 reference host/独立参照: Diffusion/管理依存なしのbaseProvider/target/consumer、全selected値、両side/二組/0±1/再適用/除去/復帰・取消・保存・fresh読戻し。全値はchunk比較し参照host成功を実NN受入と呼ばない。
-6. [ ] 変更境界の独立レビュー、適切な回帰、実行source固定、API/結果/再現/資源/未完を別記しGitHub/Draft PR2へpushする。
+5. [x] L4 reference host/独立参照: Diffusion/管理依存なしのbaseProvider/target/consumer、全selected値、両side/二組/0±1/再適用/除去/復帰・取消・保存・fresh読戻し。全値はchunk比較し参照host成功を実NN受入と呼ばない。
+6. [x] 変更境界の独立レビュー、適切な回帰、実行source固定、API/結果/再現/資源/未完を別記しGitHub/Draft PR2へpushする。
 
 ## Review focus
 
@@ -36,6 +36,6 @@
 - logical full coverage、実計算した全座標、実graph binding、training-base同一性を別の判定にする。
 - kernel/backend変更は精度規則を変えず、FMA/reassociation/FP64への置換を認めない。新実行を旧証拠へ付け替えない。
 
-## Progress before full acceptance
+## Completed acceptance
 
-L1–L3の実装とcomponent制御試験が成立。HIGH/LOW予備試験は各2完全層・872,939,520値、いずれも失敗0でPARTIAL。最適化前の予備試験は新規全件受入へ付け替えない。次の固定sourceから両sideの全1052/400 target・全selected値の実行を行う。
+[RESULT.md](./RESULT.md) records terminal all2,904-patch evidence. R1 independently compared 255,748,547,328 selected values; R2's12 sequential transactions matched complete F32 streams to that evidence and independently checked removed targets. Both sides pass cleanup, normal save/fresh open and cancellation/recovery. The R1 numerical source and R2 control source remain separately fixed; prior pilots remain PARTIAL historical evidence. Real Diffusion full-graph integration and generation READY remain later acceptance.

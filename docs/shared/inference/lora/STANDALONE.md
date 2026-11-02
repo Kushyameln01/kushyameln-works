@@ -2,7 +2,7 @@
 
 This is the new `lora-standalone/1.0-draft.1` extension for local light/detail LoRAs, complete logical target mapping, streamed F32 delivery and normal composition control. It accepts a caller-supplied immutable base provider, logical registry and consumer without importing DiffusionModels or management. The existing v1 SDK, v2/Q16 paths and [P4 normal adapter](./NORMAL-TRANSACTIONS.md) retain their separate contracts and accepted scopes.
 
-This document describes the implemented API and its resource/ownership contract. It does not establish that a full acceptance run has passed. Execution source, comparison results and unresolved conditions are recorded separately under `development/lora/standalone/`; a fixed result document will be linked after it exists.
+This document describes the implemented API and its resource/ownership contract. Completed all-target standalone acceptance, separate R1/R2 execution sources and remaining model-integration conditions are recorded in [RESULT.md](../../../../development/lora/standalone/RESULT.md). Standalone FULL coverage does not establish a real Diffusion graph or generation readiness.
 
 ## Entrypoints and versions
 

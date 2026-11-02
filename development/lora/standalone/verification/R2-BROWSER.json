@@ -1,0 +1,1412 @@
+{
+  "status": "TINY_STANDALONE_BROWSER_CONTROLLER_VERIFIED",
+  "passed": true,
+  "scope": "two fixture File safetensors, HIGH registry weight[3,2] and bias[3]; controller/ownership/persistence acceptance only",
+  "wholeModel": false,
+  "all2904Patches": false,
+  "modelInference": false,
+  "normalNumericalComparison": false,
+  "testOnlyManualComparison": true,
+  "browser": "154.0.8037.57",
+  "elapsedMs": 2001,
+  "control": {
+    "kind": "tiny-standalone-browser-controller-domain",
+    "wholeModel": false,
+    "all2904Patches": false,
+    "registry": {
+      "contractVersion": "lora-standalone/1.0-draft.1",
+      "modelHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "registryVersion": "browser-tiny-controller/1",
+      "mappingVersion": "explicit-browser-fixture/1",
+      "side": "HIGH",
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "targets": [
+        {
+          "key": "layer.weight",
+          "weightId": "layer.weight",
+          "fullShape": [
+            3,
+            2
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "weight",
+          "logicalBinding": {
+            "kind": "logical-weight",
+            "name": "layer.weight"
+          }
+        },
+        {
+          "key": "layer.bias",
+          "weightId": "layer.bias",
+          "fullShape": [
+            3
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "bias",
+          "logicalBinding": {
+            "kind": "logical-bias",
+            "name": "layer.bias"
+          }
+        }
+      ]
+    },
+    "sourceFiles": [
+      {
+        "pairId": "light",
+        "name": "light-fixture.safetensors",
+        "bytes": 258,
+        "registration": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "REGISTERED",
+          "pairId": "light",
+          "sourceId": "light@HIGH",
+          "side": "HIGH",
+          "sourceSha256": "6dff74a17da75eec0b597f25c08efbc4b2f47558d0eee270399f42a8886aab4d",
+          "bytes": 258,
+          "tensorCount": 3,
+          "patchCount": 2,
+          "localRevision": 1
+        }
+      },
+      {
+        "pairId": "detail",
+        "name": "detail-fixture.safetensors",
+        "bytes": 254,
+        "registration": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "REGISTERED",
+          "pairId": "detail",
+          "sourceId": "detail@HIGH",
+          "side": "HIGH",
+          "sourceSha256": "5206b9ea8c497730d5296a7716b17e8c17cb18e985906e21092713f459b8cf5f",
+          "bytes": 254,
+          "tensorCount": 3,
+          "patchCount": 2,
+          "localRevision": 2
+        }
+      }
+    ],
+    "cases": [
+      {
+        "label": "light-zero",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 3,
+          "transactionId": "50e10970-8f86-4a2b-9f19-7ebf245b203d",
+          "side": "HIGH",
+          "planId": "1dcbf9ca5beaaefba5b19906955095d596d70594c2a2ee4d00b69dd958037a11",
+          "packageHash": "e36945f5111929c2bba7485243ef2bb448ccd6e474ff17ebbaefb6c73e974377",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 1,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "1dcbf9ca5beaaefba5b19906955095d596d70594c2a2ee4d00b69dd958037a11",
+            "packageHash": "e36945f5111929c2bba7485243ef2bb448ccd6e474ff17ebbaefb6c73e974377",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "ec4587e8-9324-4ad1-90b8-0cf0f34835b0",
+            "epoch": 0,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:ec4587e8-9324-4ad1-90b8-0cf0f34835b0"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 1,
+          "packageHash": "e36945f5111929c2bba7485243ef2bb448ccd6e474ff17ebbaefb6c73e974377",
+          "weight": [
+            -0.0625,
+            -0.0546875,
+            -0.046875,
+            -0.0390625,
+            -0.03125,
+            -0.0234375
+          ],
+          "bias": [
+            -0.0625,
+            -0.0546875,
+            -0.046875
+          ]
+        }
+      },
+      {
+        "label": "light-positive",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 4,
+          "transactionId": "0953e2b2-0d24-4299-98d6-04f06e737235",
+          "side": "HIGH",
+          "planId": "5a7291223a48fec9ef6dd6390df2801e3c74e5815154a854d1f5b675e180dab5",
+          "packageHash": "8fa3e78156c2173b3cdba4f6e8f17112492967e2186275724eaa062db6d94c7d",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 2,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "5a7291223a48fec9ef6dd6390df2801e3c74e5815154a854d1f5b675e180dab5",
+            "packageHash": "8fa3e78156c2173b3cdba4f6e8f17112492967e2186275724eaa062db6d94c7d",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "3fb54f42-9027-4dfe-9424-10906795e31c",
+            "epoch": 1,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:3fb54f42-9027-4dfe-9424-10906795e31c"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 2,
+          "packageHash": "8fa3e78156c2173b3cdba4f6e8f17112492967e2186275724eaa062db6d94c7d",
+          "weight": [
+            2.9375,
+            5.9453125,
+            3.953125,
+            7.9609375,
+            4.96875,
+            9.9765625
+          ],
+          "bias": [
+            0.4375,
+            0.9453125,
+            1.453125
+          ]
+        }
+      },
+      {
+        "label": "light-negative",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 5,
+          "transactionId": "127e8007-84be-4890-8d28-d5c0f3c68aa3",
+          "side": "HIGH",
+          "planId": "f5e3ebab52991e51c449ca8340fb108150f7147ce08d5605a7c436716fed4637",
+          "packageHash": "e9ba6f3bb12efb1b4483f265aa2d0473e959b13b5ce03564e1652c7f42454d0f",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 3,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "f5e3ebab52991e51c449ca8340fb108150f7147ce08d5605a7c436716fed4637",
+            "packageHash": "e9ba6f3bb12efb1b4483f265aa2d0473e959b13b5ce03564e1652c7f42454d0f",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "b04f9db9-3c8c-49a1-9204-0e1d3ca24531",
+            "epoch": 2,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:b04f9db9-3c8c-49a1-9204-0e1d3ca24531"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 3,
+          "packageHash": "e9ba6f3bb12efb1b4483f265aa2d0473e959b13b5ce03564e1652c7f42454d0f",
+          "weight": [
+            -3.0625,
+            -6.0546875,
+            -4.046875,
+            -8.0390625,
+            -5.03125,
+            -10.0234375
+          ],
+          "bias": [
+            -0.5625,
+            -1.0546875,
+            -1.546875
+          ]
+        }
+      },
+      {
+        "label": "detail-zero",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 6,
+          "transactionId": "32562705-2c2f-4766-a2cb-7546ad41e460",
+          "side": "HIGH",
+          "planId": "231a1d0023e094a96e22ad3677335161efd360584e99d94f8506ec83a80a89c2",
+          "packageHash": "408874e5dbbc104e31ef8e2131f04083b6b540a585da76b06298f812a607ef3e",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 4,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "231a1d0023e094a96e22ad3677335161efd360584e99d94f8506ec83a80a89c2",
+            "packageHash": "408874e5dbbc104e31ef8e2131f04083b6b540a585da76b06298f812a607ef3e",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "702f765d-f175-491d-bbc7-33025b19fd6f",
+            "epoch": 3,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:702f765d-f175-491d-bbc7-33025b19fd6f"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 4,
+          "packageHash": "408874e5dbbc104e31ef8e2131f04083b6b540a585da76b06298f812a607ef3e",
+          "weight": [
+            -0.0625,
+            -0.0546875,
+            -0.046875,
+            -0.0390625,
+            -0.03125,
+            -0.0234375
+          ],
+          "bias": [
+            -0.0625,
+            -0.0546875,
+            -0.046875
+          ]
+        }
+      },
+      {
+        "label": "detail-positive",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 7,
+          "transactionId": "d3562f6d-b31d-4913-9d24-9d28726ffd63",
+          "side": "HIGH",
+          "planId": "182f78b3c726088cb3449f5f0ec3b0e4cfdd5546144113d9a6004fe939133e86",
+          "packageHash": "1661cc0c855bf0afc6166dd9ed28c7c34a1cf157570291ff0013f43a0edd156e",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 5,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "182f78b3c726088cb3449f5f0ec3b0e4cfdd5546144113d9a6004fe939133e86",
+            "packageHash": "1661cc0c855bf0afc6166dd9ed28c7c34a1cf157570291ff0013f43a0edd156e",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "6f572b9e-6e5b-4539-99f9-0163c80ce624",
+            "epoch": 4,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:6f572b9e-6e5b-4539-99f9-0163c80ce624"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 5,
+          "packageHash": "1661cc0c855bf0afc6166dd9ed28c7c34a1cf157570291ff0013f43a0edd156e",
+          "weight": [
+            -2.0625,
+            1.9453125,
+            -3.046875,
+            2.9609375,
+            -4.03125,
+            3.9765625
+          ],
+          "bias": [
+            -0.3125,
+            0.4453125,
+            -0.796875
+          ]
+        }
+      },
+      {
+        "label": "detail-negative",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 8,
+          "transactionId": "f7c5de14-0a48-4372-b3c5-18ae2a10da27",
+          "side": "HIGH",
+          "planId": "1d6984ff95f2823df31612801e1cea14e27f012d70245e0a9489662585fc1d46",
+          "packageHash": "648d4b4f04d707574aa32aefb1360286fce846e2dda1415e170a166d89ee33f7",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 6,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "1d6984ff95f2823df31612801e1cea14e27f012d70245e0a9489662585fc1d46",
+            "packageHash": "648d4b4f04d707574aa32aefb1360286fce846e2dda1415e170a166d89ee33f7",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "2cf9e0c3-3084-4898-b760-2dce365fae5e",
+            "epoch": 5,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:2cf9e0c3-3084-4898-b760-2dce365fae5e"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 6,
+          "packageHash": "648d4b4f04d707574aa32aefb1360286fce846e2dda1415e170a166d89ee33f7",
+          "weight": [
+            1.9375,
+            -2.0546875,
+            2.953125,
+            -3.0390625,
+            3.96875,
+            -4.0234375
+          ],
+          "bias": [
+            0.1875,
+            -0.5546875,
+            0.703125
+          ]
+        }
+      },
+      {
+        "label": "both-zero",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 9,
+          "transactionId": "4130b039-4324-4da0-b3f8-d18ef4c93365",
+          "side": "HIGH",
+          "planId": "a413bbec6a929f8caf8426d486f1ad1fb3d4cd55d9e2dea9e4a1d75838218ff8",
+          "packageHash": "bfc2541e1a0592609fe2b73fcf0050dd0fdbd04be47f0298413133f1182e32ef",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 7,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "a413bbec6a929f8caf8426d486f1ad1fb3d4cd55d9e2dea9e4a1d75838218ff8",
+            "packageHash": "bfc2541e1a0592609fe2b73fcf0050dd0fdbd04be47f0298413133f1182e32ef",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "5f61cb49-8f5c-42db-8ba3-ec6edfd6f9b0",
+            "epoch": 6,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:5f61cb49-8f5c-42db-8ba3-ec6edfd6f9b0"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 7,
+          "packageHash": "bfc2541e1a0592609fe2b73fcf0050dd0fdbd04be47f0298413133f1182e32ef",
+          "weight": [
+            -0.0625,
+            -0.0546875,
+            -0.046875,
+            -0.0390625,
+            -0.03125,
+            -0.0234375
+          ],
+          "bias": [
+            -0.0625,
+            -0.0546875,
+            -0.046875
+          ]
+        }
+      },
+      {
+        "label": "both-positive",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 10,
+          "transactionId": "7e1dca8f-fbf6-43b6-a5e7-6f2393e514d2",
+          "side": "HIGH",
+          "planId": "3e5f3b94dc3f8b7eef0b7de5144b092265df6c115bc2c1fae330a4df251bafff",
+          "packageHash": "9e1d9a6ebb1c1c9510a82cc4b37fc753228bae8484363466293540f6780d5f59",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 8,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "3e5f3b94dc3f8b7eef0b7de5144b092265df6c115bc2c1fae330a4df251bafff",
+            "packageHash": "9e1d9a6ebb1c1c9510a82cc4b37fc753228bae8484363466293540f6780d5f59",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "891257de-1fc2-4e32-a237-ae0a273395ee",
+            "epoch": 7,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:891257de-1fc2-4e32-a237-ae0a273395ee"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 8,
+          "packageHash": "9e1d9a6ebb1c1c9510a82cc4b37fc753228bae8484363466293540f6780d5f59",
+          "weight": [
+            0.9375,
+            7.9453125,
+            0.953125,
+            10.9609375,
+            0.96875,
+            13.9765625
+          ],
+          "bias": [
+            0.1875,
+            1.4453125,
+            0.703125
+          ]
+        }
+      },
+      {
+        "label": "both-negative",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 11,
+          "transactionId": "5247cc97-c969-4ea0-be0e-c8f081764862",
+          "side": "HIGH",
+          "planId": "ffa58cfa1f96868174e9e92412c87a61a953ff56d422c25644009db60954ba7d",
+          "packageHash": "30dddf4bdcb3acabfe57a2e2725ccc13b28b29025e984a7468680f380f238b7f",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 9,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "ffa58cfa1f96868174e9e92412c87a61a953ff56d422c25644009db60954ba7d",
+            "packageHash": "30dddf4bdcb3acabfe57a2e2725ccc13b28b29025e984a7468680f380f238b7f",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "d23018e7-0333-433f-8027-4d60e4c3ca45",
+            "epoch": 8,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:d23018e7-0333-433f-8027-4d60e4c3ca45"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 9,
+          "packageHash": "30dddf4bdcb3acabfe57a2e2725ccc13b28b29025e984a7468680f380f238b7f",
+          "weight": [
+            -1.0625,
+            -8.0546875,
+            -1.046875,
+            -11.0390625,
+            -1.03125,
+            -14.0234375
+          ],
+          "bias": [
+            -0.3125,
+            -1.5546875,
+            -0.796875
+          ]
+        }
+      },
+      {
+        "label": "both-reapply",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 12,
+          "transactionId": "8b24c933-58c2-4612-9e53-26b240422966",
+          "side": "HIGH",
+          "planId": "5cef9a80cb078dffde7f80b48f7a2667a80032be8ad399e601d078f48c9d6971",
+          "packageHash": "812df96c37f285c185c914e31cb1ee08053e3134dc87b27d98081c2a44ce6f89",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 10,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "5cef9a80cb078dffde7f80b48f7a2667a80032be8ad399e601d078f48c9d6971",
+            "packageHash": "812df96c37f285c185c914e31cb1ee08053e3134dc87b27d98081c2a44ce6f89",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "65d2f2b8-b623-4ce3-b7bc-87645a50c276",
+            "epoch": 9,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:65d2f2b8-b623-4ce3-b7bc-87645a50c276"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 10,
+          "packageHash": "812df96c37f285c185c914e31cb1ee08053e3134dc87b27d98081c2a44ce6f89",
+          "weight": [
+            0.9375,
+            7.9453125,
+            0.953125,
+            10.9609375,
+            0.96875,
+            13.9765625
+          ],
+          "bias": [
+            0.1875,
+            1.4453125,
+            0.703125
+          ]
+        }
+      },
+      {
+        "label": "both-reapply-same",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 13,
+          "transactionId": "2539b8b3-7048-442f-9590-f2f63fa917f8",
+          "side": "HIGH",
+          "planId": "df13824d6608c0b81cc12bbd647532500d5817b3b71d9b400872080791fc5270",
+          "packageHash": "61c4778c8ffd1789b650fcb271ff6bdbbbf8c384aff6779d085fb9c78f3811e3",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 11,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "df13824d6608c0b81cc12bbd647532500d5817b3b71d9b400872080791fc5270",
+            "packageHash": "61c4778c8ffd1789b650fcb271ff6bdbbbf8c384aff6779d085fb9c78f3811e3",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "89ef768d-0254-47d4-92db-e3098f497b5b",
+            "epoch": 10,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:89ef768d-0254-47d4-92db-e3098f497b5b"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 11,
+          "packageHash": "61c4778c8ffd1789b650fcb271ff6bdbbbf8c384aff6779d085fb9c78f3811e3",
+          "weight": [
+            0.9375,
+            7.9453125,
+            0.953125,
+            10.9609375,
+            0.96875,
+            13.9765625
+          ],
+          "bias": [
+            0.1875,
+            1.4453125,
+            0.703125
+          ]
+        }
+      },
+      {
+        "label": "remove-detail",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 14,
+          "transactionId": "8fecd02e-0350-43b4-99d6-0a8a7e4254a0",
+          "side": "HIGH",
+          "planId": "987a88f461122a2e62335964c838b76f5e2cf90cd3207f0697fa3ca17eeb3305",
+          "packageHash": "dc5e3deba5254cb1eaf801388f9b2fccb8cefb433b9ffbfdf742f523ea8b1163",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 12,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "987a88f461122a2e62335964c838b76f5e2cf90cd3207f0697fa3ca17eeb3305",
+            "packageHash": "dc5e3deba5254cb1eaf801388f9b2fccb8cefb433b9ffbfdf742f523ea8b1163",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "f30825fb-ff93-47c5-937e-5f27af25b2e4",
+            "epoch": 11,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:f30825fb-ff93-47c5-937e-5f27af25b2e4"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 12,
+          "packageHash": "dc5e3deba5254cb1eaf801388f9b2fccb8cefb433b9ffbfdf742f523ea8b1163",
+          "weight": [
+            2.9375,
+            5.9453125,
+            3.953125,
+            7.9609375,
+            4.96875,
+            9.9765625
+          ],
+          "bias": [
+            0.4375,
+            0.9453125,
+            1.453125
+          ]
+        }
+      },
+      {
+        "label": "both-before-remove-light",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 15,
+          "transactionId": "32049136-00e7-422c-adb2-ab3b692c92b0",
+          "side": "HIGH",
+          "planId": "e3a439ebc29165c68188d7f3cbd68c2b76e023281e0a0d657bac3c1771f6da7b",
+          "packageHash": "5c9cf72cbea81d0ae54d626646d8e2f32fc2326beac942eb7c4c9cbd3000f5bc",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 13,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "e3a439ebc29165c68188d7f3cbd68c2b76e023281e0a0d657bac3c1771f6da7b",
+            "packageHash": "5c9cf72cbea81d0ae54d626646d8e2f32fc2326beac942eb7c4c9cbd3000f5bc",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "5a7a9688-e0ac-40e1-8f83-754b7fd43f11",
+            "epoch": 12,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:5a7a9688-e0ac-40e1-8f83-754b7fd43f11"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 13,
+          "packageHash": "5c9cf72cbea81d0ae54d626646d8e2f32fc2326beac942eb7c4c9cbd3000f5bc",
+          "weight": [
+            0.9375,
+            7.9453125,
+            0.953125,
+            10.9609375,
+            0.96875,
+            13.9765625
+          ],
+          "bias": [
+            0.1875,
+            1.4453125,
+            0.703125
+          ]
+        }
+      },
+      {
+        "label": "remove-light",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 16,
+          "transactionId": "dc5d1b2a-6486-45ae-87a4-27af2acafff6",
+          "side": "HIGH",
+          "planId": "0774726a988c887477e99ca1dce5ccd9580831420d72b6d6e8df56993f4a7273",
+          "packageHash": "c3b1259a64386ad171bac90c0f8ead88a485d5b251a577789270c8f54158f9db",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 14,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "0774726a988c887477e99ca1dce5ccd9580831420d72b6d6e8df56993f4a7273",
+            "packageHash": "c3b1259a64386ad171bac90c0f8ead88a485d5b251a577789270c8f54158f9db",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "dc36beef-5753-4182-86ca-13e1d6849265",
+            "epoch": 13,
+            "checkedElements": 9,
+            "blockCount": 3,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:dc36beef-5753-4182-86ca-13e1d6849265"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 14,
+          "packageHash": "c3b1259a64386ad171bac90c0f8ead88a485d5b251a577789270c8f54158f9db",
+          "weight": [
+            -2.0625,
+            1.9453125,
+            -3.046875,
+            2.9609375,
+            -4.03125,
+            3.9765625
+          ],
+          "bias": [
+            -0.3125,
+            0.4453125,
+            -0.796875
+          ]
+        }
+      },
+      {
+        "label": "restore-base",
+        "receipt": {
+          "contractVersion": "lora-standalone/1.0-draft.1",
+          "state": "CONSUMER_APPLIED",
+          "sdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+          "localRevision": 17,
+          "transactionId": "2a002d46-885f-47af-a639-42343a9aa755",
+          "side": "HIGH",
+          "planId": "1308541af42522e5f7bbd9dad42014b3097e6a35b77fb00d45cab45034cf4c9e",
+          "packageHash": "ec1e78594e96b794facba25b53bea1fbb1f32d2ddf388781d6f1bdba23c7fa8f",
+          "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+          "coverage": "FULL",
+          "scope": "full-adapter",
+          "validationMode": "normal",
+          "consumerEpoch": 15,
+          "validation": {
+            "contractVersion": "lora-standalone/1.0-draft.1",
+            "valid": true,
+            "validationMode": "normal",
+            "planId": "1308541af42522e5f7bbd9dad42014b3097e6a35b77fb00d45cab45034cf4c9e",
+            "packageHash": "ec1e78594e96b794facba25b53bea1fbb1f32d2ddf388781d6f1bdba23c7fa8f",
+            "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+            "coverage": "FULL",
+            "scope": "full-adapter",
+            "candidateId": "e99154cf-cb72-40c3-ab20-40acadfdc2c2",
+            "epoch": 14,
+            "checkedElements": 0,
+            "blockCount": 0,
+            "numericalComparison": false,
+            "modelInference": false,
+            "generationReady": false
+          },
+          "ownership": {
+            "kind": "lease",
+            "ownerId": "reference-active:e99154cf-cb72-40c3-ab20-40acadfdc2c2"
+          },
+          "generationReady": false
+        },
+        "actual": {
+          "epoch": 15,
+          "packageHash": "ec1e78594e96b794facba25b53bea1fbb1f32d2ddf388781d6f1bdba23c7fa8f",
+          "weight": [
+            -0.0625,
+            -0.0546875,
+            -0.046875,
+            -0.0390625,
+            -0.03125,
+            -0.0234375
+          ],
+          "bias": [
+            -0.0625,
+            -0.0546875,
+            -0.046875
+          ]
+        }
+      }
+    ],
+    "normalContextKeys": [
+      "contractVersion",
+      "coverage",
+      "isCurrent",
+      "localRevision",
+      "packageHash",
+      "planId",
+      "registryHash",
+      "scope",
+      "sdkInstanceId",
+      "side",
+      "signal",
+      "transactionId",
+      "validationMode"
+    ],
+    "kernel": {
+      "abiVersion": "lora-streaming-f32-v1",
+      "wasmSha256": "5117e21d789d01b5dd49d7e8cf9bc8d2f78a51f7d3810aab56e4a40588a0c361",
+      "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+      "backend": "hike-llvm-clang19-simd128-strict-f32",
+      "productExport": "LoraProduct16",
+      "memoryBytes": 33554432,
+      "maxWorkspaceBytes": 32505856
+    },
+    "cancellation": {
+      "error": {
+        "name": "AggregateError",
+        "code": null,
+        "message": "Consumer rollback/release failed; recovery required"
+      },
+      "epochBefore": 16,
+      "epochAfter": 16,
+      "oldActivePreserved": {
+        "epoch": 16,
+        "packageHash": "112961c94bd06ae5e75206a639ed9254b2557031d89b4af3afa92c4626a26635",
+        "weight": [
+          0.9375,
+          7.9453125,
+          0.953125,
+          10.9609375,
+          0.96875,
+          13.9765625
+        ],
+        "bias": [
+          0.1875,
+          1.4453125,
+          0.703125
+        ]
+      },
+      "recovered": true,
+      "stalePlanRejected": true
+    },
+    "saved": {
+      "directoryName": "lora-standalone-fixture-2026-11-02T05-58-04-086Z-864167d2",
+      "manifestFile": "package.json",
+      "packageHash": "7c325b63d9e1dfc2c1d3177b4e39e1a2942ba2eae379ecc06427583aeb1ffe51",
+      "originPlanId": "369b495a9972a000bf82bf311e7a4ce4dd8a536c2cb2c03313760420cff9e79e",
+      "originTransactionId": "432fefa0-c731-41aa-89c0-97ad07118069",
+      "originSdkInstanceId": "4913f401-047e-4a4d-b621-a3efca5ecf99",
+      "writes": [
+        {
+          "fileName": "source-0.safetensors",
+          "bytes": 258
+        },
+        {
+          "fileName": "source-1.safetensors",
+          "bytes": 254
+        }
+      ],
+      "sourceDescriptors": [
+        {
+          "sourceId": "light@HIGH",
+          "fileName": "source-0.safetensors",
+          "size": 258,
+          "sourceSha256": "6dff74a17da75eec0b597f25c08efbc4b2f47558d0eee270399f42a8886aab4d"
+        },
+        {
+          "sourceId": "detail@HIGH",
+          "fileName": "source-1.safetensors",
+          "size": 254,
+          "sourceSha256": "5206b9ea8c497730d5296a7716b17e8c17cb18e985906e21092713f459b8cf5f"
+        }
+      ]
+    },
+    "ownerReleasedActiveRead": {
+      "epoch": 17,
+      "packageHash": "7c325b63d9e1dfc2c1d3177b4e39e1a2942ba2eae379ecc06427583aeb1ffe51",
+      "weight": [
+        0.9375,
+        7.9453125,
+        0.953125,
+        10.9609375,
+        0.96875,
+        13.9765625
+      ],
+      "bias": [
+        0.1875,
+        1.4453125,
+        0.703125
+      ]
+    },
+    "beforeFinalConsumerRelease": {
+      "sdk": {
+        "side": "HIGH",
+        "localRevision": 24,
+        "busy": false,
+        "operation": null,
+        "disposed": true,
+        "registeredSources": 0,
+        "preparedPackages": 0,
+        "recoveryRequired": false
+      },
+      "consumer": {
+        "disposed": false,
+        "epoch": 17,
+        "candidates": 0,
+        "readLeases": 0,
+        "inFlight": 0,
+        "pendingReleases": 0,
+        "active": true,
+        "activePackageHash": "7c325b63d9e1dfc2c1d3177b4e39e1a2942ba2eae379ecc06427583aeb1ffe51"
+      },
+      "kernel": {
+        "productCalls": 73,
+        "applyCalls": 121,
+        "decodeCalls": 146,
+        "downUploads": 73,
+        "workspaceHighWaterBytes": 72,
+        "residentDownBytes": 0,
+        "memoryBytes": 33554432,
+        "closing": true,
+        "disposed": false,
+        "leaseCount": 1
+      },
+      "package": {
+        "references": 1,
+        "inFlight": 0,
+        "released": false,
+        "cache": {
+          "maxBytes": 16777216,
+          "bytes": 112,
+          "entries": 8,
+          "pending": 0,
+          "hits": 4,
+          "misses": 8
+        }
+      }
+    },
+    "terminal": {
+      "sdk": {
+        "side": "HIGH",
+        "localRevision": 24,
+        "busy": false,
+        "operation": null,
+        "disposed": true,
+        "registeredSources": 0,
+        "preparedPackages": 0,
+        "recoveryRequired": false
+      },
+      "consumer": {
+        "disposed": true,
+        "epoch": 18,
+        "candidates": 0,
+        "readLeases": 0,
+        "inFlight": 0,
+        "pendingReleases": 0,
+        "active": false,
+        "activePackageHash": null
+      },
+      "kernel": {
+        "productCalls": 73,
+        "applyCalls": 121,
+        "decodeCalls": 146,
+        "downUploads": 73,
+        "workspaceHighWaterBytes": 72,
+        "residentDownBytes": 0,
+        "memoryBytes": 0,
+        "closing": true,
+        "disposed": true,
+        "leaseCount": 0
+      },
+      "base": {
+        "disposed": true,
+        "inFlight": 0,
+        "reads": 83,
+        "retainedBytes": 0
+      },
+      "package": {
+        "references": 0,
+        "inFlight": 0,
+        "released": true,
+        "cache": {
+          "maxBytes": 16777216,
+          "bytes": 0,
+          "entries": 0,
+          "pending": 0,
+          "hits": 4,
+          "misses": 8
+        }
+      }
+    },
+    "normalBlocksRead": 49,
+    "elapsedMs": 308.70000000298023,
+    "passed": true
+  },
+  "readback": {
+    "kind": "fresh-browser-page-opfs-readback",
+    "wholeModel": false,
+    "all2904Patches": false,
+    "passed": true,
+    "sourceFiles": [
+      {
+        "name": "source-0.safetensors",
+        "bytes": 258,
+        "sourceSha256": "6dff74a17da75eec0b597f25c08efbc4b2f47558d0eee270399f42a8886aab4d"
+      },
+      {
+        "name": "source-1.safetensors",
+        "bytes": 254,
+        "sourceSha256": "5206b9ea8c497730d5296a7716b17e8c17cb18e985906e21092713f459b8cf5f"
+      }
+    ],
+    "manifestBytes": 6793,
+    "originPlanId": "369b495a9972a000bf82bf311e7a4ce4dd8a536c2cb2c03313760420cff9e79e",
+    "transactionId": "1154f992-d2ca-4638-9e43-fad4849cb82d",
+    "sdkInstanceId": "b04a409b-072e-4b23-89ac-87e384e80028",
+    "packageHash": "7c325b63d9e1dfc2c1d3177b4e39e1a2942ba2eae379ecc06427583aeb1ffe51",
+    "receipt": {
+      "contractVersion": "lora-standalone/1.0-draft.1",
+      "state": "CONSUMER_APPLIED",
+      "sdkInstanceId": "b04a409b-072e-4b23-89ac-87e384e80028",
+      "localRevision": 1,
+      "transactionId": "1154f992-d2ca-4638-9e43-fad4849cb82d",
+      "side": "HIGH",
+      "planId": "369b495a9972a000bf82bf311e7a4ce4dd8a536c2cb2c03313760420cff9e79e",
+      "packageHash": "7c325b63d9e1dfc2c1d3177b4e39e1a2942ba2eae379ecc06427583aeb1ffe51",
+      "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+      "coverage": "FULL",
+      "scope": "full-adapter",
+      "validationMode": "normal",
+      "consumerEpoch": 1,
+      "validation": {
+        "contractVersion": "lora-standalone/1.0-draft.1",
+        "valid": true,
+        "validationMode": "normal",
+        "planId": "369b495a9972a000bf82bf311e7a4ce4dd8a536c2cb2c03313760420cff9e79e",
+        "packageHash": "7c325b63d9e1dfc2c1d3177b4e39e1a2942ba2eae379ecc06427583aeb1ffe51",
+        "registryHash": "26c409babc3d5060e76c65086ab8d86daefc47397561ca865510d1f9ecf67a43",
+        "coverage": "FULL",
+        "scope": "full-adapter",
+        "candidateId": "d1e9e200-a095-47a9-9ff3-2252d7240134",
+        "epoch": 0,
+        "checkedElements": 9,
+        "blockCount": 3,
+        "numericalComparison": false,
+        "modelInference": false,
+        "generationReady": false
+      },
+      "ownership": {
+        "kind": "lease",
+        "ownerId": "reference-active:d1e9e200-a095-47a9-9ff3-2252d7240134"
+      },
+      "generationReady": false
+    },
+    "actual": {
+      "epoch": 1,
+      "packageHash": "7c325b63d9e1dfc2c1d3177b4e39e1a2942ba2eae379ecc06427583aeb1ffe51",
+      "weight": [
+        0.9375,
+        7.9453125,
+        0.953125,
+        10.9609375,
+        0.96875,
+        13.9765625
+      ],
+      "bias": [
+        0.1875,
+        1.4453125,
+        0.703125
+      ]
+    },
+    "afterOwnerDisposal": {
+      "epoch": 1,
+      "packageHash": "7c325b63d9e1dfc2c1d3177b4e39e1a2942ba2eae379ecc06427583aeb1ffe51",
+      "weight": [
+        0.9375,
+        7.9453125,
+        0.953125,
+        10.9609375,
+        0.96875,
+        13.9765625
+      ],
+      "bias": [
+        0.1875,
+        1.4453125,
+        0.703125
+      ]
+    },
+    "terminal": {
+      "sdk": {
+        "side": "HIGH",
+        "localRevision": 2,
+        "busy": false,
+        "operation": null,
+        "disposed": true,
+        "registeredSources": 0,
+        "preparedPackages": 0,
+        "recoveryRequired": false
+      },
+      "consumer": {
+        "disposed": true,
+        "epoch": 2,
+        "candidates": 0,
+        "readLeases": 0,
+        "inFlight": 0,
+        "pendingReleases": 0,
+        "active": false,
+        "activePackageHash": null
+      },
+      "kernel": {
+        "productCalls": 6,
+        "applyCalls": 14,
+        "decodeCalls": 14,
+        "downUploads": 6,
+        "workspaceHighWaterBytes": 72,
+        "residentDownBytes": 0,
+        "memoryBytes": 0,
+        "closing": true,
+        "disposed": true,
+        "leaseCount": 0
+      },
+      "base": {
+        "disposed": true,
+        "inFlight": 0,
+        "reads": 7,
+        "retainedBytes": 0
+      },
+      "package": {
+        "references": 0,
+        "inFlight": 0,
+        "released": true,
+        "cache": {
+          "maxBytes": 16777216,
+          "bytes": 0,
+          "entries": 0,
+          "pending": 0,
+          "hits": 6,
+          "misses": 8
+        }
+      }
+    },
+    "elapsedMs": 246.40000000596046,
+    "opfsRemoved": true
+  },
+  "sources": [
+    {
+      "path": "docs/shared/inference/lora/bernini-targets.mjs",
+      "bytes": 47893,
+      "sha256": "772ca63c3b82bafa7b2345cdda3361679112fcf4a97c79b67564da0fa196217d"
+    },
+    {
+      "path": "docs/shared/inference/lora/kernel/streaming/host.mjs",
+      "bytes": 6907,
+      "sha256": "3b1d6616a1cfbd404a104a356664a51b25d94d2a780524d8773344d271015014"
+    },
+    {
+      "path": "docs/shared/inference/lora/kernel/streaming/lora.wasm",
+      "bytes": 7036,
+      "sha256": "5117e21d789d01b5dd49d7e8cf9bc8d2f78a51f7d3810aab56e4a40588a0c361"
+    },
+    {
+      "path": "docs/shared/inference/lora/kernel/streaming/registry.mjs",
+      "bytes": 303,
+      "sha256": "61cff12c213db8e44d7ec826cab77dee2e6a9385612a84368441d093cc4ef8f0"
+    },
+    {
+      "path": "docs/shared/inference/lora/loader-policy.mjs",
+      "bytes": 1696,
+      "sha256": "f18f9c8dd4168e26f25cd1c77124b1f14a2ffca99424bfa9d4a9a294cbb2dedd"
+    },
+    {
+      "path": "docs/shared/inference/lora/owned-package.mjs",
+      "bytes": 24292,
+      "sha256": "848563d336975a57ac326544356fbf294cc75cb855bcddab8b460ea2ecba01b0"
+    },
+    {
+      "path": "docs/shared/inference/lora/planner-v2.mjs",
+      "bytes": 9581,
+      "sha256": "15ee75eb32177fe8a78335dbd052197fc60af559a8360039e6c6c1d32f9248b6"
+    },
+    {
+      "path": "docs/shared/inference/lora/planner.mjs",
+      "bytes": 3833,
+      "sha256": "a4b2be0d8b90cd339bb0a17d072db4fd572ac122e3cc51a2c97b20ac06af1d02"
+    },
+    {
+      "path": "docs/shared/inference/lora/safetensors.mjs",
+      "bytes": 5088,
+      "sha256": "4ee3713b356ab4a85a2911d3547350146953bc250465f8ef2c88fe9f36c4e45c"
+    },
+    {
+      "path": "docs/shared/inference/lora/standalone-planner.mjs",
+      "bytes": 3609,
+      "sha256": "5a937a58fab383d2104563a8662e3a3b530520cc86821cbefd5d4f5a50e06f9a"
+    },
+    {
+      "path": "docs/shared/inference/lora/standalone-registry.mjs",
+      "bytes": 3896,
+      "sha256": "2b706abbaf548b5db9dbe69f33ee647fce47aec158b5baa0f2aa99bbb2abdfc2"
+    },
+    {
+      "path": "docs/shared/inference/lora/standalone-sdk.mjs",
+      "bytes": 20572,
+      "sha256": "0f0ea46f1d7780bfff4604d1686670c3d9ce1fe6fffb44b94fd237d94d880b3f"
+    },
+    {
+      "path": "docs/shared/vr180/sha256.mjs",
+      "bytes": 6970,
+      "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c"
+    },
+    {
+      "path": "tools/lora/standalone-browser-fixture.mjs",
+      "bytes": 15695,
+      "sha256": "f93597c6a4b28587d44c7d45fe67d75ca20e84b86d335ad52a8c7178886741cd"
+    },
+    {
+      "path": "tools/lora/standalone-host.mjs",
+      "bytes": 10266,
+      "sha256": "4198626d67ef9b22e8cfd547d40541048c70c0c7b17528a4d06a827594a05eca"
+    }
+  ],
+  "httpRequests": [
+    "/tools/lora/standalone-browser-fixture.mjs",
+    "/docs/shared/inference/lora/standalone-sdk.mjs",
+    "/docs/shared/inference/lora/kernel/streaming/host.mjs",
+    "/docs/shared/inference/lora/standalone-registry.mjs",
+    "/tools/lora/standalone-host.mjs",
+    "/docs/shared/inference/lora/kernel/streaming/registry.mjs",
+    "/docs/shared/inference/lora/planner.mjs",
+    "/docs/shared/inference/lora/safetensors.mjs",
+    "/docs/shared/inference/lora/loader-policy.mjs",
+    "/docs/shared/inference/lora/standalone-planner.mjs",
+    "/docs/shared/inference/lora/owned-package.mjs",
+    "/docs/shared/inference/lora/bernini-targets.mjs",
+    "/docs/shared/inference/lora/planner-v2.mjs",
+    "/docs/shared/vr180/sha256.mjs",
+    "/docs/shared/inference/lora/kernel/streaming/lora.wasm",
+    "/tools/lora/standalone-browser-fixture.mjs",
+    "/docs/shared/inference/lora/standalone-sdk.mjs",
+    "/docs/shared/inference/lora/kernel/streaming/host.mjs",
+    "/docs/shared/inference/lora/standalone-registry.mjs",
+    "/tools/lora/standalone-host.mjs",
+    "/docs/shared/inference/lora/planner.mjs",
+    "/docs/shared/inference/lora/safetensors.mjs",
+    "/docs/shared/inference/lora/loader-policy.mjs",
+    "/docs/shared/inference/lora/standalone-planner.mjs",
+    "/docs/shared/inference/lora/owned-package.mjs",
+    "/docs/shared/inference/lora/kernel/streaming/registry.mjs",
+    "/docs/shared/inference/lora/bernini-targets.mjs",
+    "/docs/shared/inference/lora/planner-v2.mjs",
+    "/docs/shared/vr180/sha256.mjs",
+    "/docs/shared/inference/lora/kernel/streaming/lora.wasm"
+  ],
+  "errors": []
+}
