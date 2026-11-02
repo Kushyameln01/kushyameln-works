@@ -1,0 +1,37 @@
+{
+  "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+  "backend": "wabt",
+  "mode": "normal",
+  "sourceSha256": "ac566af35fda0deb1e5671d4b68a999efcbeac450b189dc28150102b8b8cdb98",
+  "sourceBytes": 1102,
+  "hostSha256": "4b5311829d007f576ae16c7a3296514100767e1fd7c557c63f2c72e72ea41dff",
+  "hostBytes": 4695,
+  "builderSha256": "330d769f3e13c5d964748a78eca0eb11d43f39c14a26bbdaa6020aa927c6af3f",
+  "builderBytes": 2526,
+  "wasmSha256": "54c1690e4581a1de0b231d0b538ff280696542c2eb44ebedb4c2c661a6dd3925",
+  "wasmBytes": 4018,
+  "watSha256": "6f1a46e5e36db107e55d1b9c663e9c2e1371db41fa984ac469f9315d6a2492b2",
+  "runtimeSha256": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+  "imports": [],
+  "abi": {
+    "GateResidual": "i32 i32 i32 i32 i32 i32 i32 i32 i32"
+  },
+  "command": [
+    "/workspace/work/diffusion-investigation/toolchain/hikec",
+    "build",
+    "-target",
+    "wabt",
+    "-wasm-mode",
+    "normal",
+    "-o",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/self-attention-tail/kernel.wasm",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/self-attention-tail/math.hike"
+  ],
+  "versions": {
+    "go": "go version go1.22.12 linux/amd64",
+    "wabt": "1.0.39",
+    "node": "v24.19.0"
+  },
+  "scope": "natural N2 width5120 gate=F32(modulationChunk2+timeGate), gated=F32(O*gate), residual=F32(originalPatchHidden+gated); separate multiply/add diagnostic, not fused/GPU precision parity or full block/model"
+}
