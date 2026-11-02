@@ -1,0 +1,95 @@
+{
+  "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "hikeCompilerSha256": "556a11f406482a0b2015ba0a40e34813ad6c1ec2c50eed175f9d005e7f39a95f",
+  "hikeSourceArchive": {
+    "url": "https://codeload.github.com/kanryu/hike-lang/tar.gz/3c51fde6675f317453919bd505d0e2d0f638e7f1",
+    "sha256": "1c7d302e737b3209fe9a49b0ac51b212fd6c5c6c931def4421910b716d23e24c"
+  },
+  "sourceSha256": "56d589cc3e238a19419b17fef705c932f6cbefce432743d8d41d1c503a19bed8",
+  "llvmIrSha256": "8290cf0fe2b08bf22f0e3279d3b23fd4d8b466dce879910979dca882b994b80b",
+  "wasmSha256": "5117e21d789d01b5dd49d7e8cf9bc8d2f78a51f7d3810aab56e4a40588a0c361",
+  "wasmBytes": 7036,
+  "watSha256": "882a95b8c5879deb97de05544a20260e833ee051a122df31e6ed4df8fedda9b9",
+  "backend": "hike-llvm-clang19-simd128-strict-f32",
+  "preferredProductExport": "LoraProduct16",
+  "finiteValidationExport": "LoraFinite",
+  "flags": [
+    "--target=wasm32-unknown-unknown",
+    "-O3",
+    "-msimd128",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fuse-ld=/workspace/work/lora/standalone-task/llvm/root/usr/lib/llvm-19/bin/wasm-ld",
+    "-nostdlib",
+    "-Wl,--no-entry",
+    "-Wl,--export=LoraProduct4",
+    "-Wl,--export=LoraProduct8",
+    "-Wl,--export=LoraProduct16",
+    "-Wl,--export=LoraProduct32",
+    "-Wl,--export=LoraAdd",
+    "-Wl,--export=LoraCopy",
+    "-Wl,--export=LoraDecode",
+    "-Wl,--export=LoraFinite",
+    "-Wl,--export-memory",
+    "-Wl,--initial-memory=33554432",
+    "-Wl,--max-memory=33554432"
+  ],
+  "emitCommand": [
+    "/workspace/work/lora-toolchain/hikec",
+    "emit-ir",
+    "-target",
+    "wasm32",
+    "-o",
+    "/workspace/work/lora-implementation/tools/lora/kernel/streaming/build/lora.ll",
+    "/workspace/work/lora-implementation/tools/lora/kernel/streaming/lora.hike"
+  ],
+  "bootstrap": {
+    "packages": [
+      {
+        "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/clang-19_19.1.7-3+b1_amd64.deb",
+        "sha256": "bbb74458d782b7792b61b0eed92746df5e6d033778c045cf8c2b3835b7c4efc4",
+        "bytes": 116584
+      },
+      {
+        "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/libclang-cpp19_19.1.7-3+b1_amd64.deb",
+        "sha256": "a7d2b6df51050834f6ea5c0d5e34869c2298b0bcdaa91eff17ba3db2cd545c47",
+        "bytes": 13191148
+      },
+      {
+        "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/lld-19_19.1.7-3+b1_amd64.deb",
+        "sha256": "756a805e8811d527dd2b5417f016c9342b8631fa9c1ddcd56265c13ae33bf3a4",
+        "bytes": 1374952
+      }
+    ],
+    "systemLLVM": {
+      "path": "/usr/lib/x86_64-linux-gnu/libLLVM-19.so",
+      "realPath": "/usr/lib/x86_64-linux-gnu/libLLVM.so.19.1",
+      "sha256": "3523f50f635d2a1ea47518a392451f2854b92823ceaf1345fb806099dd1a3b8a",
+      "debianVersion": "1:19.1.7-3+b1"
+    },
+    "clang": {
+      "path": "/workspace/work/lora/standalone-task/llvm/root/usr/lib/llvm-19/bin/clang",
+      "sha256": "0a3c55936ac43954fbe4914e6e73b577ca9e35e75d89ef13d3e28c187f41ca1a",
+      "version": "Debian clang version 19.1.7 (3+b1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /workspace/work/lora/standalone-task/llvm/root/usr/lib/llvm-19/bin"
+    },
+    "lld": {
+      "path": "/workspace/work/lora/standalone-task/llvm/root/usr/lib/llvm-19/bin/lld",
+      "sha256": "7a2fd87d82662beac4371a1a21067b37cd4b7d43777aa61c089d85c45f772f6e",
+      "version": "Debian LLD 19.1.7"
+    },
+    "libclangCpp": {
+      "path": "/workspace/work/lora/standalone-task/llvm/root/usr/lib/x86_64-linux-gnu/libclang-cpp.so.19.1",
+      "sha256": "0108c687d2f500d77687984c46c9fad663782603f5c623e3c14224c155b4fd21"
+    }
+  },
+  "audit": {
+    "unsafeFPFlags": [],
+    "imports": [],
+    "f32x4MulCount": 18,
+    "f32x4AddCount": 18,
+    "f32MulCount": 60,
+    "f32AddCount": 61,
+    "fma": false,
+    "fp64": false
+  }
+}

@@ -1,0 +1,160 @@
+--- a/pkg/backend/wabt/structured.go
++++ b/pkg/backend/wabt/structured.go
+@@ -44,14 +44,9 @@
+ 				return false
+ 			}
+ 		case *hir.TableNode:
+-			for _, c := range n.Cases {
+-				if !canEmitStructuredBody(c.Body, copyVisible(visible)) {
+-					return false
+-				}
+-			}
+-			if !canEmitStructuredBody(n.Default, copyVisible(visible)) {
+-				return false
+-			}
++			// Keep switches on the established CFG lowering. Enabling ordinary
++			// returns must not expose the incomplete structured table emitter.
++			return false
+ 		case *hir.BrNode:
+ 			if n.TargetID < 0 || !visible[n.TargetID] {
+ 				return false
+@@ -60,6 +55,9 @@
+ 			if n.Cond == nil || n.TargetID < 0 || !visible[n.TargetID] {
+ 				return false
+ 			}
++		case *hir.ReturnNode:
++			// Returns have no control-label dependency and use the same ABI
++			// and stack restoration as the compatibility CFG path.
+ 		default:
+ 			return false
+ 		}
+@@ -106,15 +104,15 @@
+ 	return out
+ }
+ 
+-func (e *Emitter) emitStructuredSubset(body hir.ControlBody, indent string) {
+-	e.emitStructuredBody(body, indent, map[int]string{})
++func (e *Emitter) emitStructuredSubset(body hir.ControlBody, indent string, fn *hir.Function) {
++	e.emitStructuredBody(body, indent, map[int]string{}, fn)
+ }
+ 
+ // emitStructuredBody emits the structured HIR directly as WAT. The labels
+ // map is lexical: it contains only labels that are valid ancestors at the
+ // current point. Loop lowering temporarily remaps the loop ID between its
+ // body (continue -> post) and its post region (back-edge -> loop header).
+-func (e *Emitter) emitStructuredBody(body hir.ControlBody, indent string, labels map[int]string) {
++func (e *Emitter) emitStructuredBody(body hir.ControlBody, indent string, labels map[int]string, fn *hir.Function) {
+ 	for _, node := range body {
+ 		switch n := node.(type) {
+ 		case *hir.InstructionNode:
+@@ -124,20 +122,20 @@
+ 			blockLabels := copyLabels(labels)
+ 			blockLabels[n.ID] = structuredLabel(n.ID)
+ 			e.b.WriteString(indent + "(block " + structuredLabel(n.ID) + "\n")
+-			e.emitStructuredBody(n.Body, indent+"  ", blockLabels)
++			e.emitStructuredBody(n.Body, indent+"  ", blockLabels, fn)
+ 			e.b.WriteString(indent + ")\n")
+ 		case *hir.LoopNode:
+-			e.emitStructuredLoop(n, indent, labels)
++			e.emitStructuredLoop(n, indent, labels, fn)
+ 		case *hir.TableNode:
+-			e.emitStructuredTable(n, indent, labels)
++			e.emitStructuredTable(n, indent, labels, fn)
+ 		case *hir.IfNode:
+ 			e.b.WriteString(indent + "(if " + e.val(n.Cond) + "\n")
+ 			e.b.WriteString(indent + "  (then\n")
+-			e.emitStructuredBody(n.Then, indent+"    ", copyLabels(labels))
++			e.emitStructuredBody(n.Then, indent+"    ", copyLabels(labels), fn)
+ 			e.b.WriteString(indent + "  )\n")
+ 			if len(n.Else) > 0 {
+ 				e.b.WriteString(indent + "  (else\n")
+-				e.emitStructuredBody(n.Else, indent+"    ", copyLabels(labels))
++				e.emitStructuredBody(n.Else, indent+"    ", copyLabels(labels), fn)
+ 				e.b.WriteString(indent + "  )\n")
+ 			}
+ 			e.b.WriteString(indent + ")\n")
+@@ -145,11 +143,13 @@
+ 			e.b.WriteString(indent + "(br " + resolveStructuredLabel(labels, n.TargetID) + ")\n")
+ 		case *hir.BrIfNode:
+ 			e.b.WriteString(indent + "(br_if " + resolveStructuredLabel(labels, n.TargetID) + " " + e.val(n.Cond) + ")\n")
+-		}
+-	}
+-}
+-
+-func (e *Emitter) emitStructuredTable(n *hir.TableNode, indent string, parent map[int]string) {
++		case *hir.ReturnNode:
++			e.cfgTerminator(&hir.InstrReturn{Vals: n.Values}, fn, nil)
++		}
++	}
++}
++
++func (e *Emitter) emitStructuredTable(n *hir.TableNode, indent string, parent map[int]string, fn *hir.Function) {
+ 	exitLabel := "$hir_table_exit_" + itoa(n.ID)
+ 	caseLabels := make([]string, len(n.Cases))
+ 	for i := range caseLabels {
+@@ -182,19 +182,19 @@
+ 	e.b.WriteString(indent + "      (br_table " + fmtTargets + " " + e.val(n.IndexValue) + ")\n")
+ 	e.b.WriteString(indent + "    )\n")
+ 	defaultLabels := copyLabels(parent)
+-	e.emitStructuredBody(n.Default, indent+"    ", defaultLabels)
++	e.emitStructuredBody(n.Default, indent+"    ", defaultLabels, fn)
+ 	e.b.WriteString(indent + "    (br " + exitLabel + ")\n")
+ 
+ 	for i := len(n.Cases) - 1; i >= 0; i-- {
+ 		caseLabelsForBody := copyLabels(parent)
+-		e.emitStructuredBody(n.Cases[i].Body, indent+"    ", caseLabelsForBody)
++		e.emitStructuredBody(n.Cases[i].Body, indent+"    ", caseLabelsForBody, fn)
+ 		e.b.WriteString(indent + "    (br " + exitLabel + ")\n")
+ 		e.b.WriteString(indent + "  )\n")
+ 	}
+ 	e.b.WriteString(indent + ")\n")
+ }
+ 
+-func (e *Emitter) emitStructuredLoop(n *hir.LoopNode, indent string, parent map[int]string) {
++func (e *Emitter) emitStructuredLoop(n *hir.LoopNode, indent string, parent map[int]string, fn *hir.Function) {
+ 	exitLabel := structuredLoopExitLabel(n.ID)
+ 	loopLabel := structuredLabel(n.ID)
+ 	postLabel := structuredLoopPostLabel(n.ID)
+@@ -208,15 +208,18 @@
+ 	}
+ 	bodyLabels[n.ID] = postLabel
+ 
++	// Source for-loop initialization runs once. The back-edge targets only
++	// the condition/body/post region; putting Init in the loop resets its
++	// induction variable and can repeatedly allocate its stack slot.
++	if len(n.Init) > 0 {
++		e.emitStructuredBody(n.Init, indent, parent, fn)
++	}
+ 	e.b.WriteString(indent + "(block " + exitLabel + "\n")
+ 	e.b.WriteString(indent + "  (loop " + loopLabel + "\n")
+-	if len(n.Init) > 0 {
+-		e.emitStructuredBody(n.Init, indent+"    ", parent)
+-	}
+ 	// The canonical body already contains the condition IfNode. Keeping the
+ 	// condition in the body avoids evaluating it twice.
+ 	e.b.WriteString(indent + "    (block " + postLabel + "\n")
+-	e.emitStructuredBody(n.Body, indent+"      ", bodyLabels)
++	e.emitStructuredBody(n.Body, indent+"      ", bodyLabels, fn)
+ 	e.b.WriteString(indent + "    )\n")
+ 
+ 	postLabels := copyLabels(parent)
+@@ -224,7 +227,7 @@
+ 		postLabels[n.Continuation.ID] = exitLabel
+ 	}
+ 	postLabels[n.ID] = loopLabel
+-	e.emitStructuredBody(n.Post, indent+"    ", postLabels)
++	e.emitStructuredBody(n.Post, indent+"    ", postLabels, fn)
+ 	e.b.WriteString(indent + "    (br " + loopLabel + ")\n")
+ 	e.b.WriteString(indent + "  )\n")
+ 	e.b.WriteString(indent + ")\n")
+--- a/pkg/backend/wabt/emitter.go
++++ b/pkg/backend/wabt/emitter.go
+@@ -830,7 +830,7 @@
+ 	}
+ 	e.b.WriteString("    (local.set $frame_sp (global.get $__sp))\n")
+ 	if structured {
+-		e.emitStructuredSubset(fn.StructuredBody, "    ")
++		e.emitStructuredSubset(fn.StructuredBody, "    ", fn)
+ 		e.defaultReturn(fn)
+ 	} else {
+ 		e.emitCFG(fn, blocks)

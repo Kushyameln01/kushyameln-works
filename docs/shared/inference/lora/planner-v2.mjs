@@ -76,6 +76,10 @@ function classify(inspection,{loaderPolicyId,strength,alphaValues}){
  return patches;
 }
 
+// Shared by graph-bound v2 and the graph-free standalone contract. Keep a
+// single classifier so dialect, rank, alpha and full-coordinate rules agree.
+export {classify as classifyPatchesV2};
+
 export function buildPlanV2({inspection,registry,diagnostic,sourceSha256,strength,loaderPolicyId,alphaValues={}}={}){
  if(loaderPolicyId!==LOADER_POLICY_ID)throw Error('Unsupported or missing loader policy');
  if(typeof sourceSha256!=='string'||!SHA.test(sourceSha256))throw Error('Verified whole source SHA-256 required');
