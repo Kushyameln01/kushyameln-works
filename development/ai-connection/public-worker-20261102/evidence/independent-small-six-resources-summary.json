@@ -1,0 +1,3223 @@
+{
+  "schemaVersion": "bernini-gated-process-tree-observation-summary/1",
+  "monitorSourceSHA256": "d57aefdf04c3b4ec9b09c37da7650150a46d88a67d6323bc534e2209f3aec164",
+  "startedEpochSeconds": 1793614808.4610062,
+  "durationSeconds": 718.1262455340038,
+  "rootPid": 96175,
+  "commandExecutableBasename": "python",
+  "childExitCode": 0,
+  "signalReceived": null,
+  "error": null,
+  "gateInstalledBeforeCommandExec": true,
+  "sampleIntervalSeconds": 0.5,
+  "postCleanupObservationSeconds": 1.0,
+  "totalSamples": 1269,
+  "retainedSamples": 1269,
+  "omittedMiddleSamples": 0,
+  "observedPeakRssSumBytes": 817807360,
+  "observedPeakPssSumBytes": 813915136,
+  "peakElapsedSeconds": {
+    "rss": 424.6031847109989,
+    "pss": 135.37229232300888
+  },
+  "sharedCgroupBeforeChildLaunch": {
+    "memory.current": 10265591808,
+    "memory.peak": 17180176384,
+    "memory.max": 17179869184,
+    "memory.swap.current": 0,
+    "memory.stat": {
+      "anon": 56442880,
+      "file": 10064900096,
+      "shmem": 2232328192,
+      "file_mapped": 24576,
+      "file_dirty": 327680,
+      "file_writeback": 0,
+      "inactive_file": 839602176,
+      "active_file": 6992969728,
+      "kernel": 143069184,
+      "pagetables": 1974272,
+      "slab": 140460568,
+      "sock": 0
+    },
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 794522,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "memory.events.local": {
+      "low": 0,
+      "high": 0,
+      "max": 794522,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "tmpFilesystem": {
+      "capacityBytes": 9441329152,
+      "availableBytes": 7209005056,
+      "usedBytes": 2232324096
+    }
+  },
+  "beforeCommandExec": {
+    "elapsedSeconds": 0.0005287660023896024,
+    "phase": "before-command-exec-gate-closed",
+    "processCount": 1,
+    "rootPresent": true,
+    "rssSumBytes": 6590464,
+    "pssSumBytes": 4563968,
+    "pssReadableProcesses": 1,
+    "pssComplete": true,
+    "byRoleHeuristic": {
+      "command-root": {
+        "processCount": 1,
+        "rssSumBytes": 6590464,
+        "pssSumBytes": 4563968,
+        "pssReadableProcesses": 1
+      }
+    },
+    "processes": [
+      {
+        "pid": 96175,
+        "parentPid": 96174,
+        "name": "python",
+        "state": "S",
+        "startTicks": 10781842,
+        "rssBytes": 6590464,
+        "pssBytes": 4563968,
+        "roleHeuristic": "command-root"
+      }
+    ],
+    "sharedCgroup": {
+      "memory.current": 10269147136,
+      "memory.peak": 17180176384,
+      "memory.max": 17179869184,
+      "memory.swap.current": 0,
+      "memory.stat": {
+        "anon": 59908096,
+        "file": 10064900096,
+        "shmem": 2232328192,
+        "file_mapped": 24576,
+        "file_dirty": 327680,
+        "file_writeback": 0,
+        "inactive_file": 839602176,
+        "active_file": 6992969728,
+        "kernel": 143507456,
+        "pagetables": 2072576,
+        "slab": 140777584,
+        "sock": 0
+      },
+      "memory.events": {
+        "low": 0,
+        "high": 0,
+        "max": 794522,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "memory.events.local": {
+        "low": 0,
+        "high": 0,
+        "max": 794522,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "tmpFilesystem": {
+        "capacityBytes": 9441329152,
+        "availableBytes": 7209005056,
+        "usedBytes": 2232324096
+      }
+    }
+  },
+  "scope": {
+    "start": "before child launch; first child tree sample while exec gate remains closed",
+    "end": "command exit plus configured post-cleanup interval; known surviving descendants remain sampled",
+    "rss": "sum duplicates shared pages; sampled peaks can miss spikes",
+    "pss": "best effort /proc smaps_rollup; null and completeness flags mark inaccessible scopes; excludes unmapped file cache",
+    "roles": "heuristics only; a DedicatedWorker/WASM/ORT allocator cannot be separated from its Chromium renderer process here",
+    "sharedCgroup": "shared with all workloads; memory.peak is historical; memory.stat file already includes shmem, so do not add them",
+    "tmpFilesystem": "shared /tmp filesystem occupancy, not private tensor bytes or command-owned memory",
+    "notObserved": [
+      "unsampled transient peaks",
+      "native allocator suballocations",
+      "other process trees",
+      "memory after retained surviving descendants stop being observed"
+    ]
+  },
+  "originalReceipt": {
+    "path": "/tmp/public-worker-run/independent-small-six-resources.json",
+    "bytes": 2372384,
+    "sha256": "618aafef91a24a669da8b46d7fb7121320a59b9eac82476f6b492b99b3975938"
+  },
+  "executionSourceCommit": "3e68d2fc54c67b16f8a82002f69fa183674a9f14",
+  "acceptedScope": "independent reference six controlled N5 updates, not native resources",
+  "retainedRawObservationCount": 1269,
+  "summaryObservationSelection": "first retained row, nearest every30seconds, last3rows, and +/-2rows around RSS/PSS/shared-current maxima; independent all-sample peaks preserved verbatim",
+  "summaryObservationCount": 43,
+  "rawObservationsExcludedFromPublicSummary": 1226,
+  "sharedObservedPeaksNotAttributed": {
+    "memory.current": {
+      "observedMaximum": 17179869184,
+      "elapsedSeconds": 259.2028300460079,
+      "sharedNotAttributed": true
+    },
+    "memory.peak": {
+      "observedMaximum": 17180176384,
+      "elapsedSeconds": 718.0725236060098,
+      "sharedNotAttributed": true
+    },
+    "memory.swap.current": {
+      "observedMaximum": 0,
+      "elapsedSeconds": 718.0725236060098,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.anon": {
+      "observedMaximum": 2161152000,
+      "elapsedSeconds": 602.6784883460059,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.file": {
+      "observedMaximum": 16336805888,
+      "elapsedSeconds": 452.8880864590028,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.shmem": {
+      "observedMaximum": 2249596928,
+      "elapsedSeconds": 217.67083947300853,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.file_mapped": {
+      "observedMaximum": 15138816,
+      "elapsedSeconds": 217.67083947300853,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.file_dirty": {
+      "observedMaximum": 1220608,
+      "elapsedSeconds": 245.8527412340045,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.file_writeback": {
+      "observedMaximum": 0,
+      "elapsedSeconds": 718.0725236060098,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.inactive_file": {
+      "observedMaximum": 5972574208,
+      "elapsedSeconds": 64.643302950004,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.active_file": {
+      "observedMaximum": 13030711296,
+      "elapsedSeconds": 185.69381117601006,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.kernel": {
+      "observedMaximum": 175812608,
+      "elapsedSeconds": 220.55488899200282,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.pagetables": {
+      "observedMaximum": 26529792,
+      "elapsedSeconds": 219.0488375390123,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.slab": {
+      "observedMaximum": 145327208,
+      "elapsedSeconds": 219.89923290000297,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.sock": {
+      "observedMaximum": 3571712,
+      "elapsedSeconds": 495.95120323001174,
+      "sharedNotAttributed": true
+    }
+  },
+  "roleHeuristicObservedPeaks": {
+    "command-root": {
+      "rssSumBytes": 817807360,
+      "pssSumBytes": 813915136,
+      "maxProcessCount": 1,
+      "scope": "maximum sampled role-group sums; heuristics only; native Worker is not separately identifiable"
+    }
+  },
+  "pssObservationCompleteness": {
+    "allAvailableRowsComplete": true,
+    "rowsWithInaccessiblePss": 0,
+    "nativeWorkerSeparable": false
+  },
+  "observations": [
+    {
+      "originalRetainedIndex": 0,
+      "elapsedSeconds": 0.045774055004585534,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 17199104,
+      "pssSumBytes": 14827520,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 17199104,
+          "pssSumBytes": 14827520,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 17199104,
+          "pssBytes": 14827520,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 10277146624,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 68009984,
+          "file": 10064900096,
+          "shmem": 2232328192,
+          "file_mapped": 24576,
+          "file_dirty": 327680,
+          "file_writeback": 0,
+          "inactive_file": 839602176,
+          "active_file": 6992969728,
+          "kernel": 143572992,
+          "pagetables": 2125824,
+          "slab": 140787944,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 794522,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 794522,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7209005056,
+          "usedBytes": 2232324096
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 55,
+      "elapsedSeconds": 30.243274437001674,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 640143360,
+      "pssSumBytes": 637549568,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 640143360,
+          "pssSumBytes": 637549568,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 640143360,
+          "pssBytes": 637549568,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 12963872768,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 687968256,
+          "file": 12130492416,
+          "shmem": 2232492032,
+          "file_mapped": 139264,
+          "file_dirty": 389120,
+          "file_writeback": 0,
+          "inactive_file": 2526330880,
+          "active_file": 7371661312,
+          "kernel": 144920576,
+          "pagetables": 3383296,
+          "slab": 140879328,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 794522,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 794522,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208841216,
+          "usedBytes": 2232487936
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 108,
+      "elapsedSeconds": 59.72007388299971,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 581758976,
+      "pssSumBytes": 581262336,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 581758976,
+          "pssSumBytes": 581262336,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 581758976,
+          "pssBytes": 581262336,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16492027904,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 632578048,
+          "file": 15711596544,
+          "shmem": 2232705024,
+          "file_mapped": 344064,
+          "file_dirty": 425984,
+          "file_writeback": 0,
+          "inactive_file": 5542207488,
+          "active_file": 7936679936,
+          "kernel": 144859136,
+          "pagetables": 3276800,
+          "slab": 140923200,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 794522,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 794522,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208628224,
+          "usedBytes": 2232700928
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 162,
+      "elapsedSeconds": 89.81297703699965,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 607141888,
+      "pssSumBytes": 604548096,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 607141888,
+          "pssSumBytes": 604548096,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 607141888,
+          "pssBytes": 604548096,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17068351488,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 656883712,
+          "file": 16269123584,
+          "shmem": 2232504320,
+          "file_mapped": 139264,
+          "file_dirty": 188416,
+          "file_writeback": 0,
+          "inactive_file": 4984578048,
+          "active_file": 9052041216,
+          "kernel": 141676544,
+          "pagetables": 3321856,
+          "slab": 137676768,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 797077,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 797077,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208828928,
+          "usedBytes": 2232500224
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 216,
+      "elapsedSeconds": 120.21903189099976,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 610873344,
+      "pssSumBytes": 608279552,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 610873344,
+          "pssSumBytes": 608279552,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 610873344,
+          "pssBytes": 608279552,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17073508352,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 660676608,
+          "file": 16273985536,
+          "shmem": 2232471552,
+          "file_mapped": 24576,
+          "file_dirty": 196608,
+          "file_writeback": 0,
+          "inactive_file": 5111865344,
+          "active_file": 8929648640,
+          "kernel": 137916416,
+          "pagetables": 3330048,
+          "slab": 133930336,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 799579,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 799579,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208861696,
+          "usedBytes": 2232467456
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 241,
+      "elapsedSeconds": 134.2517424240068,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 640327680,
+      "pssSumBytes": 637733888,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 640327680,
+          "pssSumBytes": 637733888,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 640327680,
+          "pssBytes": 637733888,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17074835456,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 690053120,
+          "file": 16245612544,
+          "shmem": 2232578048,
+          "file_mapped": 139264,
+          "file_dirty": 86016,
+          "file_writeback": 0,
+          "inactive_file": 4915154944,
+          "active_file": 9097879552,
+          "kernel": 138141696,
+          "pagetables": 3379200,
+          "slab": 134121648,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 799896,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 799896,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208755200,
+          "usedBytes": 2232573952
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 242,
+      "elapsedSeconds": 134.83146384901193,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 640327680,
+      "pssSumBytes": 637733888,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 640327680,
+          "pssSumBytes": 637733888,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 640327680,
+          "pssBytes": 637733888,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17074835456,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 690057216,
+          "file": 16245612544,
+          "shmem": 2232578048,
+          "file_mapped": 139264,
+          "file_dirty": 86016,
+          "file_writeback": 0,
+          "inactive_file": 4915154944,
+          "active_file": 9097879552,
+          "kernel": 138141696,
+          "pagetables": 3379200,
+          "slab": 134121648,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 799896,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 799896,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208755200,
+          "usedBytes": 2232573952
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 243,
+      "elapsedSeconds": 135.37229232300888,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 816508928,
+      "pssSumBytes": 813915136,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 816508928,
+          "pssSumBytes": 813915136,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 816508928,
+          "pssBytes": 813915136,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17178378240,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 866598912,
+          "file": 16186417152,
+          "shmem": 2232582144,
+          "file_mapped": 139264,
+          "file_dirty": 86016,
+          "file_writeback": 0,
+          "inactive_file": 4804153344,
+          "active_file": 9149681664,
+          "kernel": 124256256,
+          "pagetables": 3731456,
+          "slab": 119879960,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 800042,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 800042,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208751104,
+          "usedBytes": 2232578048
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 244,
+      "elapsedSeconds": 135.9394508430123,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 451702784,
+      "pssSumBytes": 449108992,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 451702784,
+          "pssSumBytes": 449108992,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 451702784,
+          "pssBytes": 449108992,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16869216256,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 501436416,
+          "file": 16229097472,
+          "shmem": 2232582144,
+          "file_mapped": 139264,
+          "file_dirty": 86016,
+          "file_writeback": 0,
+          "inactive_file": 4789252096,
+          "active_file": 9207263232,
+          "kernel": 137764864,
+          "pagetables": 3010560,
+          "slab": 134113272,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 800061,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 800061,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208751104,
+          "usedBytes": 2232578048
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 245,
+      "elapsedSeconds": 136.49022213600983,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 608870400,
+      "pssSumBytes": 606276608,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 608870400,
+          "pssSumBytes": 606276608,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 608870400,
+          "pssBytes": 606276608,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17035120640,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 658608128,
+          "file": 16237711360,
+          "shmem": 2232582144,
+          "file_mapped": 139264,
+          "file_dirty": 86016,
+          "file_writeback": 0,
+          "inactive_file": 4783804416,
+          "active_file": 9221324800,
+          "kernel": 138076160,
+          "pagetables": 3321856,
+          "slab": 134113064,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 800064,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 800064,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208751104,
+          "usedBytes": 2232578048
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 269,
+      "elapsedSeconds": 149.90860617400904,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 545968128,
+      "pssSumBytes": 543374336,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 545968128,
+          "pssSumBytes": 543374336,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 545968128,
+          "pssBytes": 543374336,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16997421056,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 600055808,
+          "file": 16261173248,
+          "shmem": 2232582144,
+          "file_mapped": 139264,
+          "file_dirty": 98304,
+          "file_writeback": 0,
+          "inactive_file": 3648659456,
+          "active_file": 10379870208,
+          "kernel": 135307264,
+          "pagetables": 3219456,
+          "slab": 131406872,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 800855,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 800855,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208751104,
+          "usedBytes": 2232578048
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 322,
+      "elapsedSeconds": 179.92026728400378,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 608874496,
+      "pssSumBytes": 606280704,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 608874496,
+          "pssSumBytes": 606280704,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 608874496,
+          "pssBytes": 606280704,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17068912640,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 658948096,
+          "file": 16271687680,
+          "shmem": 2232590336,
+          "file_mapped": 139264,
+          "file_dirty": 98304,
+          "file_writeback": 0,
+          "inactive_file": 1470324736,
+          "active_file": 12568772608,
+          "kernel": 138010624,
+          "pagetables": 3321856,
+          "slab": 134048968,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 802872,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 802872,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208742912,
+          "usedBytes": 2232586240
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 375,
+      "elapsedSeconds": 209.75400373600132,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 608878592,
+      "pssSumBytes": 606284800,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 608878592,
+          "pssSumBytes": 606284800,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 608878592,
+          "pssBytes": 606284800,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17068998656,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 659341312,
+          "file": 16269815808,
+          "shmem": 2232594432,
+          "file_mapped": 126976,
+          "file_dirty": 32768,
+          "file_writeback": 0,
+          "inactive_file": 1287995392,
+          "active_file": 12749225984,
+          "kernel": 139005952,
+          "pagetables": 3321856,
+          "slab": 135032128,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 804559,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 804559,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208738816,
+          "usedBytes": 2232590336
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 428,
+      "elapsedSeconds": 240.22424907200912,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 640376832,
+      "pssSumBytes": 637783040,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 640376832,
+          "pssSumBytes": 637783040,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 640376832,
+          "pssBytes": 637783040,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17097891840,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 691421184,
+          "file": 16265170944,
+          "shmem": 2232631296,
+          "file_mapped": 126976,
+          "file_dirty": 1191936,
+          "file_writeback": 0,
+          "inactive_file": 1644888064,
+          "active_file": 12387647488,
+          "kernel": 140820480,
+          "pagetables": 3383296,
+          "slab": 136788480,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 808008,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 808008,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208701952,
+          "usedBytes": 2232627200
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 459,
+      "elapsedSeconds": 258.07508610399964,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 609001472,
+      "pssSumBytes": 606407680,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 609001472,
+          "pssSumBytes": 606407680,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 609001472,
+          "pssBytes": 606407680,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17069457408,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 659566592,
+          "file": 16268337152,
+          "shmem": 2232709120,
+          "file_mapped": 126976,
+          "file_dirty": 49152,
+          "file_writeback": 0,
+          "inactive_file": 1524649984,
+          "active_file": 12510978048,
+          "kernel": 140849152,
+          "pagetables": 3317760,
+          "slab": 136886744,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 809591,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 809591,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208624128,
+          "usedBytes": 2232705024
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 460,
+      "elapsedSeconds": 258.6249246390071,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 640458752,
+      "pssSumBytes": 636806144,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 640458752,
+          "pssSumBytes": 636806144,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 640458752,
+          "pssBytes": 636806144,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17110618112,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 735567872,
+          "file": 16231026688,
+          "shmem": 2232741888,
+          "file_mapped": 126976,
+          "file_dirty": 69632,
+          "file_writeback": 0,
+          "inactive_file": 1494011904,
+          "active_file": 12504244224,
+          "kernel": 143032320,
+          "pagetables": 4685824,
+          "slab": 137583816,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 809720,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 809720,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208591360,
+          "usedBytes": 2232737792
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 461,
+      "elapsedSeconds": 259.2028300460079,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 667725824,
+      "pssSumBytes": 667637760,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 667725824,
+          "pssSumBytes": 667637760,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 667725824,
+          "pssBytes": 667637760,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17179869184,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 875253760,
+          "file": 16157749248,
+          "shmem": 2232741888,
+          "file_mapped": 126976,
+          "file_dirty": 86016,
+          "file_writeback": 0,
+          "inactive_file": 1398415360,
+          "active_file": 12526592000,
+          "kernel": 146006016,
+          "pagetables": 7233536,
+          "slab": 137760496,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 809909,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 809909,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7208591360,
+          "usedBytes": 2232737792
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 462,
+      "elapsedSeconds": 259.7920405710029,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 640454656,
+      "pssSumBytes": 642207744,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 640454656,
+          "pssSumBytes": 642207744,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 640454656,
+          "pssBytes": 642207744,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17070551040,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 875253760,
+          "file": 16157749248,
+          "shmem": 2232741888,
+          "file_mapped": 126976,
+          "file_dirty": 86016,
+          "file_writeback": 0,
+          "inactive_file": 1398415360,
+          "active_file": 12526592000,
+          "kernel": 146006016,
+          "pagetables": 7233536,
+          "slab": 137760496,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 810181,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 810181,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207530496,
+          "usedBytes": 2233798656
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 463,
+      "elapsedSeconds": 260.4922250420059,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 573689856,
+      "pssSumBytes": 577529856,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 573689856,
+          "pssSumBytes": 577529856,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 573689856,
+          "pssBytes": 577529856,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17082945536,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 875253760,
+          "file": 16157749248,
+          "shmem": 2232741888,
+          "file_mapped": 126976,
+          "file_dirty": 86016,
+          "file_writeback": 0,
+          "inactive_file": 1398415360,
+          "active_file": 12526592000,
+          "kernel": 146006016,
+          "pagetables": 7233536,
+          "slab": 137760496,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 810256,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 810256,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207321600,
+          "usedBytes": 2234007552
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 480,
+      "elapsedSeconds": 270.16076146499836,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 609001472,
+      "pssSumBytes": 604452864,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 609001472,
+          "pssSumBytes": 604452864,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 609001472,
+          "pssBytes": 604452864,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17007800320,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 1022533632,
+          "file": 15826407424,
+          "shmem": 2239229952,
+          "file_mapped": 5795840,
+          "file_dirty": 86016,
+          "file_writeback": 0,
+          "inactive_file": 1534320640,
+          "active_file": 12052877312,
+          "kernel": 158167040,
+          "pagetables": 14069760,
+          "slab": 141353888,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 810668,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 810668,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207333888,
+          "usedBytes": 2233995264
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 532,
+      "elapsedSeconds": 299.72219817600853,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 609001472,
+      "pssSumBytes": 604452864,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 609001472,
+          "pssSumBytes": 604452864,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 609001472,
+          "pssBytes": 604452864,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17023569920,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 1012543488,
+          "file": 15852773376,
+          "shmem": 2239193088,
+          "file_mapped": 5795840,
+          "file_dirty": 122880,
+          "file_writeback": 0,
+          "inactive_file": 1334046720,
+          "active_file": 12279554048,
+          "kernel": 157716480,
+          "pagetables": 14090240,
+          "slab": 140968360,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 811344,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 811344,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207370752,
+          "usedBytes": 2233958400
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 585,
+      "elapsedSeconds": 330.0509469870012,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 609001472,
+      "pssSumBytes": 604452864,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 609001472,
+          "pssSumBytes": 604452864,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 609001472,
+          "pssBytes": 604452864,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17054289920,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 1009483776,
+          "file": 15885914112,
+          "shmem": 2239213568,
+          "file_mapped": 5808128,
+          "file_dirty": 122880,
+          "file_writeback": 0,
+          "inactive_file": 1388638208,
+          "active_file": 12258066432,
+          "kernel": 158060544,
+          "pagetables": 14098432,
+          "slab": 141312000,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 812455,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 812455,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207350272,
+          "usedBytes": 2233978880
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 638,
+      "elapsedSeconds": 359.7590112800099,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 657281024,
+      "pssSumBytes": 661098496,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 657281024,
+          "pssSumBytes": 661098496,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 657281024,
+          "pssBytes": 661098496,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17037824000,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 1065402368,
+          "file": 15811162112,
+          "shmem": 2243416064,
+          "file_mapped": 5808128,
+          "file_dirty": 122880,
+          "file_writeback": 0,
+          "inactive_file": 1476300800,
+          "active_file": 12091449344,
+          "kernel": 158408704,
+          "pagetables": 14213120,
+          "slab": 141548256,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 813240,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 813240,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7203147776,
+          "usedBytes": 2238181376
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 692,
+      "elapsedSeconds": 390.19660451600794,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 610168832,
+      "pssSumBytes": 607575040,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 610168832,
+          "pssSumBytes": 607575040,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 610168832,
+          "pssBytes": 607575040,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17069715456,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 662024192,
+          "file": 16271581184,
+          "shmem": 2234015744,
+          "file_mapped": 126976,
+          "file_dirty": 4096,
+          "file_writeback": 0,
+          "inactive_file": 2162130944,
+          "active_file": 11875434496,
+          "kernel": 135942144,
+          "pagetables": 3321856,
+          "slab": 131973168,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 814661,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 814661,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207317504,
+          "usedBytes": 2234011648
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 745,
+      "elapsedSeconds": 420.05514916100947,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 610168832,
+      "pssSumBytes": 606039040,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 610168832,
+          "pssSumBytes": 606039040,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 610168832,
+          "pssBytes": 606039040,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17151524864,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 769556480,
+          "file": 16211759104,
+          "shmem": 2234052608,
+          "file_mapped": 126976,
+          "file_dirty": 28672,
+          "file_writeback": 0,
+          "inactive_file": 2022412288,
+          "active_file": 11955294208,
+          "kernel": 131821568,
+          "pagetables": 4370432,
+          "slab": 126565376,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 816530,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 816530,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7206219776,
+          "usedBytes": 2235109376
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 751,
+      "elapsedSeconds": 423.51686410600087,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 610168832,
+      "pssSumBytes": 607575040,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 610168832,
+          "pssSumBytes": 607575040,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 610168832,
+          "pssBytes": 607575040,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16780591104,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 661835776,
+          "file": 15988551680,
+          "shmem": 2234028032,
+          "file_mapped": 126976,
+          "file_dirty": 28672,
+          "file_writeback": 0,
+          "inactive_file": 1752498176,
+          "active_file": 12002025472,
+          "kernel": 129712128,
+          "pagetables": 3325952,
+          "slab": 125753440,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 816788,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 816788,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207305216,
+          "usedBytes": 2234023936
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 752,
+      "elapsedSeconds": 424.06037123499846,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 641626112,
+      "pssSumBytes": 639032320,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 641626112,
+          "pssSumBytes": 639032320,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 641626112,
+          "pssBytes": 639032320,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16848478208,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 693293056,
+          "file": 16024956928,
+          "shmem": 2234028032,
+          "file_mapped": 126976,
+          "file_dirty": 28672,
+          "file_writeback": 0,
+          "inactive_file": 1788874752,
+          "active_file": 12002025472,
+          "kernel": 129716224,
+          "pagetables": 3383296,
+          "slab": 125694640,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 816788,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 816788,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207305216,
+          "usedBytes": 2234023936
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 753,
+      "elapsedSeconds": 424.6031847109989,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 817807360,
+      "pssSumBytes": 712428544,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 817807360,
+          "pssSumBytes": 712428544,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 817807360,
+          "pssBytes": 712428544,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17072504832,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 766689280,
+          "file": 16175603712,
+          "shmem": 2234028032,
+          "file_mapped": 126976,
+          "file_dirty": 28672,
+          "file_writeback": 0,
+          "inactive_file": 1928216576,
+          "active_file": 12013359104,
+          "kernel": 129626112,
+          "pagetables": 3538944,
+          "slab": 125444120,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 816788,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 816788,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207305216,
+          "usedBytes": 2234023936
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 754,
+      "elapsedSeconds": 425.16795162700873,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 453001216,
+      "pssSumBytes": 450407424,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 453001216,
+          "pssSumBytes": 450407424,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 453001216,
+          "pssBytes": 450407424,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16895995904,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 504676352,
+          "file": 16261844992,
+          "shmem": 2234130432,
+          "file_mapped": 229376,
+          "file_dirty": 28672,
+          "file_writeback": 0,
+          "inactive_file": 2012381184,
+          "active_file": 12015333376,
+          "kernel": 128937984,
+          "pagetables": 3018752,
+          "slab": 125269384,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 816792,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 816792,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207202816,
+          "usedBytes": 2234126336
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 755,
+      "elapsedSeconds": 425.7297955480026,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 610168832,
+      "pssSumBytes": 607575040,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 610168832,
+          "pssSumBytes": 607575040,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 610168832,
+          "pssBytes": 607575040,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17073983488,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 661860352,
+          "file": 16282558464,
+          "shmem": 2234028032,
+          "file_mapped": 126976,
+          "file_dirty": 28672,
+          "file_writeback": 0,
+          "inactive_file": 2031046656,
+          "active_file": 12017483776,
+          "kernel": 129097728,
+          "pagetables": 3325952,
+          "slab": 125132296,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 816842,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 816842,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207305216,
+          "usedBytes": 2234023936
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 798,
+      "elapsedSeconds": 450.08379535900895,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 480370688,
+      "pssSumBytes": 481971200,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 480370688,
+          "pssSumBytes": 481971200,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 480370688,
+          "pssBytes": 481971200,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16964947968,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 538443776,
+          "file": 16299802624,
+          "shmem": 2234134528,
+          "file_mapped": 241664,
+          "file_dirty": 61440,
+          "file_writeback": 0,
+          "inactive_file": 1960796160,
+          "active_file": 12104871936,
+          "kernel": 124346368,
+          "pagetables": 3088384,
+          "slab": 120606824,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 818385,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 818385,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207198720,
+          "usedBytes": 2234130432
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 851,
+      "elapsedSeconds": 480.0485940940125,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 616460288,
+      "pssSumBytes": 613866496,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 616460288,
+          "pssSumBytes": 613866496,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 616460288,
+          "pssBytes": 613866496,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17077542912,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 668299264,
+          "file": 16300462080,
+          "shmem": 2234101760,
+          "file_mapped": 139264,
+          "file_dirty": 61440,
+          "file_writeback": 0,
+          "inactive_file": 1861328896,
+          "active_file": 12205031424,
+          "kernel": 108281856,
+          "pagetables": 3346432,
+          "slab": 104287480,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 820402,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 820402,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207231488,
+          "usedBytes": 2234097664
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 903,
+      "elapsedSeconds": 509.72445423599856,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 610168832,
+      "pssSumBytes": 606005248,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 610168832,
+          "pssSumBytes": 606005248,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 610168832,
+          "pssBytes": 606005248,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16452435968,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 736235520,
+          "file": 15592808448,
+          "shmem": 2234228736,
+          "file_mapped": 139264,
+          "file_dirty": 184320,
+          "file_writeback": 0,
+          "inactive_file": 2084007936,
+          "active_file": 11274571776,
+          "kernel": 122548224,
+          "pagetables": 4440064,
+          "slab": 117322184,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 824399,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 824399,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7207104512,
+          "usedBytes": 2234224640
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 956,
+      "elapsedSeconds": 540.1832781900011,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 641626112,
+      "pssSumBytes": 637081600,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 641626112,
+          "pssSumBytes": 637081600,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 641626112,
+          "pssBytes": 637081600,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17144164352,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 1005785088,
+          "file": 15998504960,
+          "shmem": 2244341760,
+          "file_mapped": 8638464,
+          "file_dirty": 45056,
+          "file_writeback": 0,
+          "inactive_file": 2494509056,
+          "active_file": 11259674624,
+          "kernel": 139100160,
+          "pagetables": 13598720,
+          "slab": 122769928,
+          "sock": 8192
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 826227,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 826227,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7205191680,
+          "usedBytes": 2236137472
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 1008,
+      "elapsedSeconds": 570.0739477250027,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 553566208,
+      "pssSumBytes": 559495168,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 553566208,
+          "pssSumBytes": 559495168,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 553566208,
+          "pssBytes": 559495168,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17012236288,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 1664454656,
+          "file": 15245991936,
+          "shmem": 2241675264,
+          "file_mapped": 5902336,
+          "file_dirty": 45056,
+          "file_writeback": 0,
+          "inactive_file": 1783037952,
+          "active_file": 11221274624,
+          "kernel": 143179776,
+          "pagetables": 16883712,
+          "slab": 123486624,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 829645,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 829645,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7205003264,
+          "usedBytes": 2236325888
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 1060,
+      "elapsedSeconds": 599.7659980169992,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 641626112,
+      "pssSumBytes": 637067264,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 641626112,
+          "pssSumBytes": 637067264,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 641626112,
+          "pssBytes": 637067264,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17079205888,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 1739382784,
+          "file": 15195095040,
+          "shmem": 2241740800,
+          "file_mapped": 5935104,
+          "file_dirty": 49152,
+          "file_writeback": 0,
+          "inactive_file": 1728790528,
+          "active_file": 11224563712,
+          "kernel": 143978496,
+          "pagetables": 17260544,
+          "slab": 124001832,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 832819,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 832819,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7204888576,
+          "usedBytes": 2236440576
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 1113,
+      "elapsedSeconds": 630.0041863880033,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 662601728,
+      "pssSumBytes": 664334336,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 662601728,
+          "pssSumBytes": 664334336,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 662601728,
+          "pssBytes": 664334336,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17179344896,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 2063003648,
+          "file": 14910349312,
+          "shmem": 2241785856,
+          "file_mapped": 5935104,
+          "file_dirty": 28672,
+          "file_writeback": 0,
+          "inactive_file": 1478684672,
+          "active_file": 11189874688,
+          "kernel": 144859136,
+          "pagetables": 18087936,
+          "slab": 124070040,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 836556,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 836556,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7200649216,
+          "usedBytes": 2240679936
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 1166,
+      "elapsedSeconds": 660.1732836430019,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 713056256,
+      "pssSumBytes": 718983168,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 713056256,
+          "pssSumBytes": 718983168,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 713056256,
+          "pssBytes": 718983168,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17177309184,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 1756184576,
+          "file": 15277907968,
+          "shmem": 2246033408,
+          "file_mapped": 5984256,
+          "file_dirty": 28672,
+          "file_writeback": 0,
+          "inactive_file": 1841192960,
+          "active_file": 11190595584,
+          "kernel": 142618624,
+          "pagetables": 16273408,
+          "slab": 123639776,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 840163,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 840163,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7200595968,
+          "usedBytes": 2240733184
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 1218,
+      "elapsedSeconds": 690.0294717830111,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 610172928,
+      "pssSumBytes": 605614080,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 610172928,
+          "pssSumBytes": 605614080,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 96175,
+          "parentPid": 96174,
+          "name": "python",
+          "state": "R",
+          "startTicks": 10781842,
+          "rssBytes": 610172928,
+          "pssBytes": 605614080,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 17160331264,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 1663844352,
+          "file": 15353188352,
+          "shmem": 2246082560,
+          "file_mapped": 5984256,
+          "file_dirty": 0,
+          "file_writeback": 0,
+          "inactive_file": 1906208768,
+          "active_file": 11200897024,
+          "kernel": 142532608,
+          "pagetables": 16056320,
+          "slab": 123777872,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 843887,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 843887,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7200546816,
+          "usedBytes": 2240782336
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 1265,
+      "elapsedSeconds": 717.0136933040048,
+      "phase": "command-exited",
+      "processCount": 0,
+      "rootPresent": false,
+      "rssSumBytes": 0,
+      "pssSumBytes": null,
+      "pssReadableProcesses": 0,
+      "pssComplete": false,
+      "byRoleHeuristic": {},
+      "processes": [],
+      "sharedCgroup": {
+        "memory.current": 16410685440,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 1025458176,
+          "file": 15243079680,
+          "shmem": 2246807552,
+          "file_mapped": 5869568,
+          "file_dirty": 28672,
+          "file_writeback": 0,
+          "inactive_file": 1809256448,
+          "active_file": 11187015680,
+          "kernel": 141524992,
+          "pagetables": 14757888,
+          "slab": 124078608,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 846614,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 846614,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7199821824,
+          "usedBytes": 2241507328
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 1266,
+      "elapsedSeconds": 717.5744505960029,
+      "phase": "post-command-cleanup-observation",
+      "processCount": 0,
+      "rootPresent": false,
+      "rssSumBytes": 0,
+      "pssSumBytes": null,
+      "pssReadableProcesses": 0,
+      "pssComplete": false,
+      "byRoleHeuristic": {},
+      "processes": [],
+      "sharedCgroup": {
+        "memory.current": 16415739904,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 1030377472,
+          "file": 15243079680,
+          "shmem": 2246807552,
+          "file_mapped": 5869568,
+          "file_dirty": 28672,
+          "file_writeback": 0,
+          "inactive_file": 1809256448,
+          "active_file": 11187015680,
+          "kernel": 141524992,
+          "pagetables": 14757888,
+          "slab": 124078360,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 846614,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 846614,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7199821824,
+          "usedBytes": 2241507328
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 1267,
+      "elapsedSeconds": 718.0725236060098,
+      "phase": "post-command-cleanup-observation",
+      "processCount": 0,
+      "rootPresent": false,
+      "rssSumBytes": 0,
+      "pssSumBytes": null,
+      "pssReadableProcesses": 0,
+      "pssComplete": false,
+      "byRoleHeuristic": {},
+      "processes": [],
+      "sharedCgroup": {
+        "memory.current": 16373252096,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 944582656,
+          "file": 15250391040,
+          "shmem": 2247331840,
+          "file_mapped": 6393856,
+          "file_dirty": 28672,
+          "file_writeback": 0,
+          "inactive_file": 1815961600,
+          "active_file": 11187015680,
+          "kernel": 141312000,
+          "pagetables": 14557184,
+          "slab": 124068464,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 846614,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 846614,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7199821824,
+          "usedBytes": 2241507328
+        }
+      }
+    }
+  ]
+}

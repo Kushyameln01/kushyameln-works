@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "bernini-public-model-independent-comparison/1",
+  "passed": true,
+  "comparator": {
+    "path": "tools/diffusion-models/compare-public-model.py",
+    "bytes": 16270,
+    "sha256": "69fd02bc6e44e2a5a298dc012ca366a843e21d3f0cc69494e77941acb7d3351b"
+  },
+  "nativeValuesPublished": false,
+  "modelRuntimeImported": false,
+  "newInferenceExecuted": false,
+  "generationReady": false,
+  "originalWorkflowAccepted": false,
+  "sourceCommit": "7cf77c21889d9642e61d9a41d3242a816e24d6be",
+  "mode": "predict",
+  "array": "velocity00",
+  "profileId": "bernini-small-n5-real-l512-f32-chunks-v1",
+  "manifestSHA256": "11d345729b9132dd600b3fa73b61fd5e686b3f5a0ed7b72ef12e3a83791307e9",
+  "shape": [
+    1,
+    16,
+    1,
+    2,
+    4
+  ],
+  "elements": 128,
+  "actual": {
+    "bytes": 512,
+    "sha256": "688283496be3bfc40c2ac5924c6c0865173ec4257ffe2b5782266e48b06c6b1c"
+  },
+  "expected": {
+    "bytes": 512,
+    "sha256": "ae03aa6322573be84109d8f380536cee788df05dc4db533de3f36ce1c4a6a9f0"
+  },
+  "text": {
+    "shape": [
+      1,
+      512,
+      4096
+    ],
+    "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+    "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+    "producer": {
+      "module": "text_encoder",
+      "sourceCommit": "5537b8932343aa2476b95191817e8913f99dab02"
+    },
+    "normalization": "umt5-final-rmsnorm-f32-v1",
+    "payloadSHA256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+    "maskSHA256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62"
+  },
+  "identities": {
+    "nativeReceipt": {
+      "bytes": 557926,
+      "sha256": "503dd980e9886844d2501bc824b1a2fa032d1171921b8f585b74d8dcfacb1d3b"
+    },
+    "reference": {
+      "bytes": 382664,
+      "sha256": "1d61a202c88f922f95bc7e5b4347fe9e4d38788c2211b022176b634df4c45e37"
+    },
+    "contract": {
+      "bytes": 2585,
+      "sha256": "3cfcd13cd27650848b97c4523726a4ee75be4f5ef1cc65ec8646c84eb863a98d"
+    }
+  },
+  "comparison": {
+    "elements": 128,
+    "failedElements": 0,
+    "nonfiniteActual": 0,
+    "nonfiniteReference": 0,
+    "maxAbsoluteError": 2.7418136596679688e-06,
+    "maxRelativeError": 0.0025426066777455313,
+    "maxNormalizedGateError": 0.00026110506116849635,
+    "maxErrorsScope": "Finite value pairs only; every nonfinite pair fails separately",
+    "firstFailureIndex": null,
+    "allF32BitsExact": false,
+    "allElementsCompared": true,
+    "chunkElements": 128,
+    "gate": {
+      "abs": 0.01,
+      "rel": 0.001
+    }
+  },
+  "referenceExecution": {
+    "sourceCommit": "3e68d2fc54c67b16f8a82002f69fa183674a9f14",
+    "attribution": "Execution SHA declared by harness/operator; reference JSON itself does not embed an execution commit",
+    "frozenContractSourcesAtCommit": {
+      "tools/diffusion-models/production-reference.py": {
+        "bytes": 62171,
+        "sha256": "9d3faad4db7db710a6341bca24e541d898dd7b0dd4d68b8ed0bccd2df07d1ce8"
+      },
+      "tools/diffusion-models/standalone-reference.py": {
+        "bytes": 36222,
+        "sha256": "6f81afa662f444d0f207a91a5b3778f77c88e4a99e05748221b1ddbfece35c2f"
+      },
+      "tools/diffusion-models/standalone-sampler-reference.py": {
+        "bytes": 20016,
+        "sha256": "65c9970d79777875de85d9bd198ca7954a28127aec710f2bdc59448537279bae"
+      },
+      "development/ai-connection/profile-adoption/p4/core-source/comfy/ldm/wan/model.py": {
+        "bytes": 83811,
+        "sha256": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699"
+      },
+      "docs/shared/ai-connection/workflow-shapes.mjs": {
+        "bytes": 17269,
+        "sha256": "7a78955fd8156e0b3a5b287ad5f712ff04d62dbb6e501952bc52f9696e9dd821"
+      }
+    }
+  },
+  "scope": "All values of the identified normal public output at the exact saved input shape/Text512; not original81 workflow or production precision acceptance"
+}

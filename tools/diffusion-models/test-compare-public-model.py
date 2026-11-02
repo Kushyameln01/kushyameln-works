@@ -114,7 +114,7 @@ class ComparatorTests(unittest.TestCase):
             result = C.compare_files(a, b, admitted)
             self.assertEqual(result['elements'], 128)
             self.assertTrue(result['allF32BitsExact'])
-            values = list(struct.unpack('<128f', data));values[0] = math_nan = float('nan');values[-1] += 1
+            values = list(struct.unpack('<128f', data));values[0] = float('nan');values[-1] += 1
             changed = struct.pack('<128f', *values);a.write_bytes(changed)
             admitted['actual'] = identity(changed)
             result = C.compare_files(a, b, admitted)

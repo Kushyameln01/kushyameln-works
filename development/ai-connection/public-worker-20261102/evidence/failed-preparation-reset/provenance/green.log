@@ -1,0 +1,50 @@
+✔ paired model load owns one runtime and switches sides through ordinary predict (11.516742ms)
+✔ unloaded and stale model sessions fail before numerical dispatch (1.546522ms)
+✔ failed preparation leaves the adapter loadable and failed unload remains retryable (3.045133ms)
+✔ normal model requests reject diagnostic/callback fields instead of requiring or ignoring them (0.889401ms)
+(node:107123) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ canonical generated sample save and actual Blob readback preserve every payload bit and meaning (5.519125ms)
+✔ codec bound is separate from pointwise budget and rejects oversize before file read (109.529674ms)
+✔ preparation cleanup failure retains the only disposal capability for retry (3.07619ms)
+✔ a factory rejection never returns a cleanup owner to the direct adapter (0.686606ms)
+✔ predict failure latches cleanup required for ops cleanup pending (0.885705ms)
+✔ sample failure latches cleanup required for ops cleanup pending (0.826036ms)
+✔ predict failure latches cleanup required for ops closing (0.882672ms)
+✔ sample failure latches cleanup required for ops closing (0.53047ms)
+✔ predict failure latches cleanup required for HIGH closing (0.601226ms)
+✔ sample failure latches cleanup required for HIGH closing (0.527425ms)
+✔ predict failure latches cleanup required for LOW cleanup pending (0.64331ms)
+✔ sample failure latches cleanup required for LOW cleanup pending (0.515728ms)
+✔ predict input failure with healthy resources preserves the loaded owner (0.594837ms)
+✔ sample input failure with healthy resources preserves the loaded owner (0.422728ms)
+✔ unreadable resource stats after execution failure require cleanup without stranding unload (0.763231ms)
+✔ unreadable status counters conservatively block dispatch but successful disposal still unloads (0.4643ms)
+✔ dispose aborts an active model operation then awaits cleanup without a busy lock leak (0.553915ms)
+✔ canonical save rejects a shared attention mask even when an own buffer property conceals it (0.198209ms)
+✔ explicit four-thread resource requires isolated SharedArrayBuffer environment and never falls back (0.58995ms)
+✔ progress never settles the model request and observers cannot replace its result (1.367874ms)
+✔ cancel inside progress and late responses cannot settle a newer generation (0.503399ms)
+✔ newer revision submitted by a progress listener preserves its own pending job (0.27856ms)
+✔ model operation additions are routed and caller arrays remain retained (0.374015ms)
+✔ explicit ports forward only their own job progress and stop after detach (34.550459ms)
+✔ paired load gets a fresh Worker and successful unload terminates its resource realm (0.582308ms)
+✔ paired load preserves a prepared P4 owner until explicit release (0.321155ms)
+✔ failed paired load COMPUTE_ERROR discards its Worker before prepareP4 (1.551791ms)
+✔ failed paired load MODEL_PREPARATION_CLEANUP_FAILED discards its Worker before prepareP4 (0.523449ms)
+✔ failed paired load UNSUPPORTED_RESOURCE_CONFIG discards its Worker before prepareP4 (0.385562ms)
+✔ legacy single-file rejection preserves its Worker for later non-model operations (0.211259ms)
+✔ execution cleanup failure blocks P4 and paired reload until successful unload resets the Worker (0.60328ms)
+✔ successful modelStatus cleanup observation latches host capabilities until unload (1.154872ms)
+✔ paired load error failure reports a discarded preparation realm (0.51746ms)
+✔ paired load messageerror failure reports a discarded preparation realm (1.514044ms)
+✔ paired load dispatch failure reports a discarded preparation realm (0.180462ms)
+✔ failed paired preparation preserves retained LoRA bindings and file-backed reads (0.892576ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 231.38817

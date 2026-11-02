@@ -1,0 +1,69 @@
+✔ paired model load owns one runtime and switches sides through ordinary predict (7.342216ms)
+✔ unloaded and stale model sessions fail before numerical dispatch (1.810962ms)
+✔ failed preparation leaves the adapter loadable and failed unload remains retryable (1.894218ms)
+✔ normal model requests reject diagnostic/callback fields instead of requiring or ignoring them (1.059178ms)
+(node:106900) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ canonical generated sample save and actual Blob readback preserve every payload bit and meaning (10.199245ms)
+✔ codec bound is separate from pointwise budget and rejects oversize before file read (102.674378ms)
+✔ preparation cleanup failure retains the only disposal capability for retry (2.094189ms)
+✔ a factory rejection never returns a cleanup owner to the direct adapter (2.46616ms)
+✔ predict failure latches cleanup required for ops cleanup pending (1.031877ms)
+✔ sample failure latches cleanup required for ops cleanup pending (0.939968ms)
+✔ predict failure latches cleanup required for ops closing (0.885546ms)
+✔ sample failure latches cleanup required for ops closing (0.703752ms)
+✔ predict failure latches cleanup required for HIGH closing (0.666917ms)
+✔ sample failure latches cleanup required for HIGH closing (0.540305ms)
+✔ predict failure latches cleanup required for LOW cleanup pending (0.773888ms)
+✔ sample failure latches cleanup required for LOW cleanup pending (0.632695ms)
+✔ predict input failure with healthy resources preserves the loaded owner (0.677181ms)
+✔ sample input failure with healthy resources preserves the loaded owner (0.528146ms)
+✔ unreadable resource stats after execution failure require cleanup without stranding unload (0.689991ms)
+✔ unreadable status counters conservatively block dispatch but successful disposal still unloads (0.542418ms)
+✔ dispose aborts an active model operation then awaits cleanup without a busy lock leak (0.633085ms)
+✔ canonical save rejects a shared attention mask even when an own buffer property conceals it (0.230138ms)
+✔ explicit four-thread resource requires isolated SharedArrayBuffer environment and never falls back (0.740297ms)
+✔ progress never settles the model request and observers cannot replace its result (1.546363ms)
+✔ cancel inside progress and late responses cannot settle a newer generation (0.580175ms)
+✔ newer revision submitted by a progress listener preserves its own pending job (0.39712ms)
+✔ model operation additions are routed and caller arrays remain retained (0.421155ms)
+✔ explicit ports forward only their own job progress and stop after detach (32.191291ms)
+✔ paired load gets a fresh Worker and successful unload terminates its resource realm (0.50346ms)
+✔ paired load preserves a prepared P4 owner until explicit release (0.392683ms)
+✔ failed paired load COMPUTE_ERROR discards its Worker before prepareP4 (1.768097ms)
+✔ failed paired load MODEL_PREPARATION_CLEANUP_FAILED discards its Worker before prepareP4 (0.565113ms)
+✔ failed paired load UNSUPPORTED_RESOURCE_CONFIG discards its Worker before prepareP4 (0.559834ms)
+✔ legacy single-file rejection preserves its Worker for later non-model operations (0.232721ms)
+✔ execution cleanup failure blocks P4 and paired reload until successful unload resets the Worker (0.734979ms)
+✖ successful modelStatus cleanup observation latches host capabilities until unload (1.47182ms)
+✔ paired load error failure reports a discarded preparation realm (0.374875ms)
+✔ paired load messageerror failure reports a discarded preparation realm (0.234354ms)
+✔ paired load dispatch failure reports a discarded preparation realm (0.237729ms)
+✔ failed paired preparation preserves retained LoRA bindings and file-backed reads (0.863642ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 39
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 221.899943
+
+✖ failing tests:
+
+test at docs/shared/diffusion-models/api/test/model-host.test.mjs:124:1
+✖ successful modelStatus cleanup observation latches host capabilities until unload (1.47182ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-host.test.mjs:131:95)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

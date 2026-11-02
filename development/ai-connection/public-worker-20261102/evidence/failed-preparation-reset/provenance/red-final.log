@@ -1,0 +1,400 @@
+✔ paired model load owns one runtime and switches sides through ordinary predict (9.419789ms)
+✔ unloaded and stale model sessions fail before numerical dispatch (1.78998ms)
+✔ failed preparation leaves the adapter loadable and failed unload remains retryable (2.449475ms)
+✔ normal model requests reject diagnostic/callback fields instead of requiring or ignoring them (1.0739ms)
+(node:107102) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ canonical generated sample save and actual Blob readback preserve every payload bit and meaning (7.323056ms)
+✔ codec bound is separate from pointwise budget and rejects oversize before file read (119.888779ms)
+✔ preparation cleanup failure retains the only disposal capability for retry (1.997503ms)
+✔ a factory rejection never returns a cleanup owner to the direct adapter (0.690552ms)
+✖ predict failure latches cleanup required for ops cleanup pending (3.69318ms)
+✖ sample failure latches cleanup required for ops cleanup pending (0.91482ms)
+✖ predict failure latches cleanup required for ops closing (0.728138ms)
+✖ sample failure latches cleanup required for ops closing (0.668529ms)
+✖ predict failure latches cleanup required for HIGH closing (0.54378ms)
+✖ sample failure latches cleanup required for HIGH closing (0.498181ms)
+✖ predict failure latches cleanup required for LOW cleanup pending (0.548227ms)
+✖ sample failure latches cleanup required for LOW cleanup pending (0.440134ms)
+✔ predict input failure with healthy resources preserves the loaded owner (0.683311ms)
+✔ sample input failure with healthy resources preserves the loaded owner (0.913478ms)
+✖ unreadable resource stats after execution failure require cleanup without stranding unload (0.652344ms)
+✖ unreadable status counters conservatively block dispatch but successful disposal still unloads (0.426834ms)
+✔ dispose aborts an active model operation then awaits cleanup without a busy lock leak (0.577551ms)
+✔ canonical save rejects a shared attention mask even when an own buffer property conceals it (0.211569ms)
+✔ explicit four-thread resource requires isolated SharedArrayBuffer environment and never falls back (0.714517ms)
+✔ progress never settles the model request and observers cannot replace its result (1.314062ms)
+✔ cancel inside progress and late responses cannot settle a newer generation (0.492553ms)
+✔ newer revision submitted by a progress listener preserves its own pending job (0.280613ms)
+✔ model operation additions are routed and caller arrays remain retained (0.335386ms)
+✔ explicit ports forward only their own job progress and stop after detach (32.923444ms)
+✔ paired load gets a fresh Worker and successful unload terminates its resource realm (0.63608ms)
+✔ paired load preserves a prepared P4 owner until explicit release (0.712425ms)
+✖ failed paired load COMPUTE_ERROR discards its Worker before prepareP4 (0.909481ms)
+✖ failed paired load MODEL_PREPARATION_CLEANUP_FAILED discards its Worker before prepareP4 (0.639545ms)
+✖ failed paired load UNSUPPORTED_RESOURCE_CONFIG discards its Worker before prepareP4 (1.02758ms)
+✔ legacy single-file rejection preserves its Worker for later non-model operations (0.371821ms)
+✖ execution cleanup failure blocks P4 and paired reload until successful unload resets the Worker (1.351609ms)
+✖ successful modelStatus cleanup observation latches host capabilities until unload (0.625363ms)
+✖ paired load error failure reports a discarded preparation realm (0.568618ms)
+✖ paired load messageerror failure reports a discarded preparation realm (0.261174ms)
+✖ paired load dispatch failure reports a discarded preparation realm (0.184017ms)
+✖ failed paired preparation preserves retained LoRA bindings and file-backed reads (0.831694ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 21
+ℹ fail 19
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 253.513702
+
+✖ failing tests:
+
+test at docs/shared/diffusion-models/api/test/model-adapter.test.mjs:94:40
+✖ predict failure latches cleanup required for ops cleanup pending (3.69318ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + Comparison {}
+  - Comparison {
+  -   code: 'MODEL_CLEANUP_REQUIRED'
+  - }
+  
+      at async TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:97:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: execution cleanup failed
+        at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:95:144)
+        at async Test.run (node:internal/test_runner/test:1389:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:960:7),
+    expected: [Object],
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-adapter.test.mjs:94:40
+✖ sample failure latches cleanup required for ops cleanup pending (0.91482ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + Comparison {}
+  - Comparison {
+  -   code: 'MODEL_CLEANUP_REQUIRED'
+  - }
+  
+      at async TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:97:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: execution cleanup failed
+        at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:95:144)
+        at async Test.run (node:internal/test_runner/test:1389:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:960:7),
+    expected: [Object],
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-adapter.test.mjs:94:40
+✖ predict failure latches cleanup required for ops closing (0.728138ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + Comparison {}
+  - Comparison {
+  -   code: 'MODEL_CLEANUP_REQUIRED'
+  - }
+  
+      at async TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:97:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: execution cleanup failed
+        at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:95:144)
+        at async Test.run (node:internal/test_runner/test:1389:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:960:7),
+    expected: [Object],
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-adapter.test.mjs:94:40
+✖ sample failure latches cleanup required for ops closing (0.668529ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + Comparison {}
+  - Comparison {
+  -   code: 'MODEL_CLEANUP_REQUIRED'
+  - }
+  
+      at async TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:97:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: execution cleanup failed
+        at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:95:144)
+        at async Test.run (node:internal/test_runner/test:1389:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:960:7),
+    expected: [Object],
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-adapter.test.mjs:94:40
+✖ predict failure latches cleanup required for HIGH closing (0.54378ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + Comparison {}
+  - Comparison {
+  -   code: 'MODEL_CLEANUP_REQUIRED'
+  - }
+  
+      at async TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:97:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: execution cleanup failed
+        at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:95:144)
+        at async Test.run (node:internal/test_runner/test:1389:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:960:7),
+    expected: [Object],
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-adapter.test.mjs:94:40
+✖ sample failure latches cleanup required for HIGH closing (0.498181ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + Comparison {}
+  - Comparison {
+  -   code: 'MODEL_CLEANUP_REQUIRED'
+  - }
+  
+      at async TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:97:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: execution cleanup failed
+        at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:95:144)
+        at async Test.run (node:internal/test_runner/test:1389:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:960:7),
+    expected: [Object],
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-adapter.test.mjs:94:40
+✖ predict failure latches cleanup required for LOW cleanup pending (0.548227ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + Comparison {}
+  - Comparison {
+  -   code: 'MODEL_CLEANUP_REQUIRED'
+  - }
+  
+      at async TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:97:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: execution cleanup failed
+        at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:95:144)
+        at async Test.run (node:internal/test_runner/test:1389:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:960:7),
+    expected: [Object],
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-adapter.test.mjs:94:40
+✖ sample failure latches cleanup required for LOW cleanup pending (0.440134ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + Comparison {}
+  - Comparison {
+  -   code: 'MODEL_CLEANUP_REQUIRED'
+  - }
+  
+      at async TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:97:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: execution cleanup failed
+        at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:95:144)
+        at async Test.run (node:internal/test_runner/test:1389:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:960:7),
+    expected: [Object],
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-adapter.test.mjs:117:1
+✖ unreadable resource stats after execution failure require cleanup without stranding unload (0.652344ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + Comparison {}
+  - Comparison {
+  -   code: 'MODEL_CLEANUP_REQUIRED'
+  - }
+  
+      at async TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:120:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: execution failed
+        at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:118:142)
+        at async Test.run (node:internal/test_runner/test:1389:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:960:7),
+    expected: [Object],
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-adapter.test.mjs:127:1
+✖ unreadable status counters conservatively block dispatch but successful disposal still unloads (0.426834ms)
+  Error: injected stats failure
+      at Object.stats (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:13:42)
+      at Object.status (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/model-adapter.mjs:66:300)
+      at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-adapter.test.mjs:130:22)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at docs/shared/diffusion-models/api/test/model-host.test.mjs:89:102
+✖ failed paired load COMPUTE_ERROR discards its Worker before prepareP4 (0.909481ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-host.test.mjs:93:72)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-host.test.mjs:89:102
+✖ failed paired load MODEL_PREPARATION_CLEANUP_FAILED discards its Worker before prepareP4 (0.639545ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-host.test.mjs:93:72)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-host.test.mjs:89:102
+✖ failed paired load UNSUPPORTED_RESOURCE_CONFIG discards its Worker before prepareP4 (1.02758ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-host.test.mjs:93:72)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-host.test.mjs:110:1
+✖ execution cleanup failure blocks P4 and paired reload until successful unload resets the Worker (1.351609ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-host.test.mjs:115:72)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-host.test.mjs:124:1
+✖ successful modelStatus cleanup observation latches host capabilities until unload (0.625363ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-host.test.mjs:131:95)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/api/test/model-host.test.mjs:140:58
+✖ paired load error failure reports a discarded preparation realm (0.568618ms)
+  TypeError: Cannot read properties of undefined (reading 'workerTerminated')
+      at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-host.test.mjs:147:36)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at docs/shared/diffusion-models/api/test/model-host.test.mjs:140:58
+✖ paired load messageerror failure reports a discarded preparation realm (0.261174ms)
+  TypeError: Cannot read properties of undefined (reading 'workerTerminated')
+      at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-host.test.mjs:147:36)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at docs/shared/diffusion-models/api/test/model-host.test.mjs:140:58
+✖ paired load dispatch failure reports a discarded preparation realm (0.184017ms)
+  TypeError: Cannot read properties of undefined (reading 'workerTerminated')
+      at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-host.test.mjs:147:36)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at docs/shared/diffusion-models/api/test/model-host.test.mjs:152:1
+✖ failed paired preparation preserves retained LoRA bindings and file-backed reads (0.831694ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///tmp/diffusion-preparation-reset/docs/shared/diffusion-models/api/test/model-host.test.mjs:157:140)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

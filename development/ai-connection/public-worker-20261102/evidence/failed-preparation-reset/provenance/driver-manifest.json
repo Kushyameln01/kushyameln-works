@@ -1,0 +1,41 @@
+{
+  "baseCommit": "0f761f374dce1d447bbb912ad13c08f9bf85c279",
+  "worktree": "/tmp/diffusion-preparation-reset",
+  "patch": "/tmp/diffusion-failed-pair-driver.patch",
+  "patchSHA256": "436f8665ea81de85e794d80df4db25253ed489c3d43a77c5e476d4714f7c62b9",
+  "apiFixPatchSHA256": "9fc8a97060f5b8dddbf3d9662b81308cc161c91a1f999407de6e1a81f6ec32f0",
+  "sourceSHA256": {
+    "tools/diffusion-models/public-model-browser.py": "2eee23fcc03db1481f2a515fc4e059d21c80f1d627f25c9f30b6959a0519434a",
+    "tools/diffusion-models/public-model-browser.mjs": "449aa4c29d34f1f8d7a6ced1037ef66f384a4dc24e700e778d7a72e56b5bcb15",
+    "tools/diffusion-models/test-public-model-browser.py": "05a3d4ef3a5968c611a865e7ff06d93488092c5df595543d4d243d9dca15d179",
+    "tools/diffusion-models/test-public-model-browser.mjs": "6e1fc17c24679d958319ebe88fd9796d532e9dcfe65b174349b2e5da7b9074e6",
+    "development/ai-connection/public-worker-20261102/CONTRACT.json": "a32ddae9d7a403e0956d489933e6ec66aecd4a7713e4d4aabf359133d61808a3",
+    "development/ai-connection/public-worker-20261102/README.md": "f323159e08aa510f83aab95ef3482ba53f4e4dc3490e21f177c5d8638fba50d0"
+  },
+  "logsSHA256": {
+    "driver-red-node.log": "3c61de70334f633f8df17a9fecf23c15cd9506c58ed25137573ff83fe0e6fecf",
+    "driver-red-python.log": "8d1fb252b9c647f7ac4030999839b1bb9ae1c086f069e8faf93759ba0b11c7f3",
+    "driver-green-node.log": "735340f55975f42f2bc527ab639870179836835351f33174e7be11d387c2ad79",
+    "driver-green-python.log": "5482a5c2073375d5ed3ebbebc6fd4d2c3957bb6b45d779caa470c253e4fec4a4"
+  },
+  "verification": {
+    "node": {
+      "passed": 13,
+      "failed": 0
+    },
+    "python": {
+      "passed": 4,
+      "failed": 0
+    },
+    "originalDriverNodeRed": {
+      "passed": 3,
+      "failed": 10
+    },
+    "originalDriverPythonRedFailingChecks": 3,
+    "syntaxAndContractJSON": true,
+    "actualBrowserRun": false,
+    "actualModelRun": false,
+    "noFullAPIOrNeuralRerun": true
+  },
+  "scope": "Smoke-only diagnostic lifecycle flag; existing ordinary API wire and normal numerical path unchanged. Actual run is deferred until root NN ends, both patches are applied, build-info is regenerated, and source is committed."
+}

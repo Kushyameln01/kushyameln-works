@@ -1,0 +1,79 @@
+{
+  "baseCommit": "0f761f374dce1d447bbb912ad13c08f9bf85c279",
+  "worktree": "/tmp/diffusion-preparation-reset",
+  "patch": "/tmp/diffusion-preparation-reset.patch",
+  "patchSHA256": "9fc8a97060f5b8dddbf3d9662b81308cc161c91a1f999407de6e1a81f6ec32f0",
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/api/index.mjs": "bacea0297154d1620e6d948c12b5299ef36fc0fd341d1d9337defadf17416df9",
+    "docs/shared/diffusion-models/api/model-adapter.mjs": "12651cbb58e13b8a1212de0db9da5c801e3b3d15d91febd0db745abca9ca9566",
+    "docs/shared/diffusion-models/api/MODEL_RUNTIME.md": "a4dfbe835ed810a832ec951951b97606ba4f113bc6d2042731603618bf7fcadc",
+    "docs/shared/diffusion-models/api/test/model-adapter.test.mjs": "714816cb7c3bac44359f2244efa3ec3a106646941484096d491fa153d3552e14",
+    "docs/shared/diffusion-models/api/test/model-host.test.mjs": "8de3c73ee3a01b24c44f6d14cc2b16be351861afd7dff6272ba3269aaaebfb8d"
+  },
+  "originalRootSourceSHA256": {
+    "docs/shared/diffusion-models/api/index.mjs": "e8e1801335e4fc3ee68d6cf49dfc9726e5c0f70a44218c852855e59f90e4d28c",
+    "docs/shared/diffusion-models/api/model-adapter.mjs": "851f3e1a96f91185bea7abd4ca839b67a40b770baf3b343f8f99e5e6554e221e",
+    "docs/shared/diffusion-models/api/MODEL_RUNTIME.md": "26ad84d28db24455554d22aed2e4c08714372fcb2aa93267955e1a45168a1f0a",
+    "docs/shared/diffusion-models/api/test/model-adapter.test.mjs": "d651765022c8d9e1c917900cb55a795de128bbf61524481a3991055443bde584",
+    "docs/shared/diffusion-models/api/test/model-host.test.mjs": "fd2035d401e64cdf016c315c61defec809edf9143d0898a7a0ed28b4c01d4e93"
+  },
+  "changedPaths": [
+    "docs/shared/diffusion-models/api/MODEL_RUNTIME.md",
+    "docs/shared/diffusion-models/api/index.mjs",
+    "docs/shared/diffusion-models/api/model-adapter.mjs",
+    "docs/shared/diffusion-models/api/test/model-adapter.test.mjs",
+    "docs/shared/diffusion-models/api/test/model-host.test.mjs"
+  ],
+  "verification": {
+    "baselineOriginalSuite": {
+      "passed": 17,
+      "failed": 0
+    },
+    "finalTestsAgainstOriginalProduction": {
+      "passed": 21,
+      "failed": 19,
+      "log": "red-final.log"
+    },
+    "reviewStatusSyncRed": {
+      "passed": 39,
+      "failed": 1,
+      "log": "review-status-red.log"
+    },
+    "finalFocusedAPI": {
+      "passed": 40,
+      "failed": 0,
+      "log": "green.log",
+      "scope": "Mocked runtime and Worker state/lifecycle only; no model inference proof"
+    },
+    "apiBrowserRegression": {
+      "passed": 22,
+      "failed": 0,
+      "log": "api-browser.log",
+      "scope": "Public API primitives and bounded existing partial projection fixtures; no full model inference"
+    },
+    "componentNode": {
+      "passed": 13,
+      "failed": 0,
+      "log": "component-node.log"
+    },
+    "componentBrowser": {
+      "passed": 13,
+      "failed": 0,
+      "log": "component-browser.log"
+    },
+    "diffCheck": true,
+    "syntaxChecks": true,
+    "patchAppliesToRoot": true,
+    "rootHeadAndOwnedSourcesUnchanged": true
+  },
+  "evidenceSHA256": {
+    "green.log": "ec63bb3d735f55dd1b000ecb472ec021ecbeaf80169f616e75ea2c4b9e57cfa7",
+    "red-final.log": "9585c73119df4189f70c3d5840a3919435e6b8875b69cc09b99a9afa55d78b49",
+    "review-status-red.log": "e0e5cc6c381fb3864e9dd7c13e63b5344907c47ad79e16c66c17122243674c89",
+    "api-browser.log": "40da9d44efc0772fdb919bfb2f83021bbcbb0a87086db3588eb7d13127ba93cc",
+    "component-node.log": "411fff9e540fdbd10feee330dc49bae246305e9b392521efd98229e9e9f5a207",
+    "component-browser.log": "a05c90713c0acfc7c5526a6d0a182620b228d99863fbf40ae4b40bc8d357972b",
+    "private-fixture-sha256.txt": "8be090ed0524f4caa00b2b63dd3dae6bda476c707e058d3637f4ab22cddedef4"
+  },
+  "integrationNote": "Apply only after root NN run ends. Regenerate api/build-info afterward; not changed by this scoped patch. No commits or pushes made."
+}

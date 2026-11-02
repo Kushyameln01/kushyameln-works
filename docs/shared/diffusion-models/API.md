@@ -2,7 +2,7 @@
 
 このAPIは同じページのES module、または呼出し側が明示して渡した専用MessagePortから利用する。全体UI、Text Encoder、VAEのAPIを実装・推測しない。HTTP・WebSocketサーバーやグローバルなwindow message listenerは設けない。静的HTTP(S)配信とWorker/WASMを利用できるブラウザが必要。
 
-現在動く操作は、safetensorsのヘッダー検査、実Hike WASMのEuler・固定scheduler・noise/flow更新・Wan21 posterior-mean正規化と復元、公開Text Encoder/VAEのtensor境界検査、Hike→ORT WASM→Hikeによる固定Q射影の部分演算。API版0.1に操作を追加し、既存envelopeは維持している。公開`load/predict/sample`は実全モデル候補へ接続した。呼出し経路の実装と、入力域ごとの数値・資源受入は分ける。対応域と試験結果は下記の単体実行資料を参照し、未検証shapeを生成READYとは扱わない。
+部分演算として提供する操作は、safetensorsのヘッダー検査、実Hike WASMのEuler・固定scheduler・noise/flow更新・Wan21 posterior-mean正規化と復元、公開Text Encoder/VAEのtensor境界検査、Hike→ORT WASM→Hikeによる固定Q射影の部分演算。API版0.1に操作を追加し、既存envelopeは維持している。公開`load/predict/sample`は実全モデル候補へ接続した。呼出し経路の実装と、入力域ごとの数値・資源受入は分ける。対応域と試験結果は下記の単体実行資料を参照し、未検証shapeを生成READYとは扱わない。
 
 ## 通常実行と診断の分離
 
@@ -116,14 +116,16 @@ node api/test/browser-check.cjs /absolute/path/LOW.safetensors /absolute/path/HI
 
 build-info.pyはAPI source、生成スクリプト、Euler、scheduler、Wan21 latent-space、tensor interopと公開codec、ORT bridgeのsource/kernel、ORT1.24.3実runtime・manifestのhashをまとめ、hostとworkerが独立に読み込む固定buildIdを生成する。対象sourceやkernelを変えたら必ず再生成する。build-info.mjs自体・テスト・READMEはhash対象外。
 
-REDの記録はtest/red-*.json、最新GREENはtest/browser-results.json。Chromiumの実Worker・MessageChannel・Hike/ORT WASMで22ケースを確認した。固定schedule・noise/flow式、raw meanの16 channel正規化と復元・公開codec保存読戻し、tensor境界拒否、literal部分射影と実重み2タイル32出力、partial取消後の再実行を含む。追加の実File試験では保存済み各15.57 GBのLOW/HIGHを入力し、1815 tensors、181280 bytesのheader hashを独立Python棚卸しと照合した。どちらもloadはNOT_READYで拒否した。これはモデル本体の推論合格ではない。
+以下の部分APIの結果は、各固定source・入力scopeの履歴である。履歴内の`NOT_READY`は当時のモデル経路の宣言を表し、現行公開入口の状態は冒頭の[モデル実行契約](api/MODEL_RUNTIME.md)と今回の結果を参照する。過去receiptの数値scopeは変更しない。
+
+REDの記録はtest/red-*.json、最新GREENはtest/browser-results.json。Chromiumの実Worker・MessageChannel・Hike/ORT WASMで22ケースを確認した。固定schedule・noise/flow式、raw meanの16 channel正規化と復元・公開codec保存読戻し、tensor境界拒否、literal部分射影と実重み2タイル32出力、partial取消後の再実行を含む。追加の実File試験では保存済み各15.57 GBのLOW/HIGHを入力し、1815 tensors、181280 bytesのheader hashを独立Python棚卸しと照合した。どちらも当時の単一file loadはNOT_READYで拒否した。これはモデル本体の推論合格ではない。
 
 
 ## LoRA重みの入力
 
 LoRA用に `inspectLora` / `loadLora` / `listLoras` / `readLora` / `readLoraSource` / `unloadLora` を追加した。同じrequest envelope、Worker、取消・revision・MessagePort契約を使用する。HIGH/LOWごとのFile/Blob、強度、既知base hashを明示し、成功時だけ所有bindingを更新する。loadは1MiB以下の分割読込みで全file hashを計算する。登録は取消によるWorker再生成後も保持され、disposeで解除する。
 
-読出しは1回4MiB以下の所有Uint8Array。F16/BF16/F32の保存bitsと元のshape・tensor名・範囲・hashを返し、LoRAの数値加算を行わない。対応する通常pairと `.diff/.diff_b` のshapeを実Bernini targetと照合する。`loraWeightIO:true` と `loraApplied:false` を区別し、モデル全体のNOT_READYを解除しない。
+読出しは1回4MiB以下の所有Uint8Array。F16/BF16/F32の保存bitsと元のshape・tensor名・範囲・hashを返し、LoRAの数値加算を行わない。対応する通常pairと `.diff/.diff_b` のshapeを実Bernini targetと照合する。`loraWeightIO:true` と `loraApplied:false` を区別する。LoRA適用が未受入であることと、現行baseモデルの公開実行経路を分ける。
 
 別担当LoRA SDKのsource契約へは `createLoraSource` で接続できる。後述のv2 adapterは限定Q射影のruntime feed-setへ接続する。全モデルのgraph/package/session切替は未実装である。元のweight I/O、対象モデルhash、対応形式、保持・所有権は [LoRA接続仕様](lora/API.md) を参照する。
 
@@ -185,7 +187,7 @@ native contextの既知fieldは所有コピーし、frame配列の順序と重�
 
 native executionProfileIdは `bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1`。本単位のattentionは宣言した選択16keyで、旧attentionのprecomputed K32760試験と別scopeである。入力position/sourceId、gate、独立reference、元precisionとの差、所有権・取消・解放・同時保持資源は [qkv/README.md](ort-bridge/qkv/README.md) と固定candidate planに記載する。Q/K normへ渡すprojection値は、本診断の明示admissionとしてabs≤1e16に制限する。既存generic RMSNormを有限巨大値全般の受入へ拡大しない。
 
-元storage FP8/F16を実HikeでF32へ復号するが、計算は明示したF32診断profileである。実model由来のmodulation後hidden、元production compute精度、全N32760/context65520以上、全query/head/stageと組合せ資源予算は別の未成立条件。`productionQKVVerified:false`、P5=BLOCKED、native `load/predict/sample=NOT_READY` を維持する。本native profileはownerの新しい候補宣言であり、固定catalogへの登録・管理採用は別に行う。
+元storage FP8/F16を実HikeでF32へ復号するが、計算は明示したF32診断profileである。実model由来のmodulation後hidden、元production compute精度、全N32760/context65520以上、全query/head/stageと組合せ資源予算は別の未成立条件。`productionQKVVerified:false`、P5=BLOCKED、当時のnative宣言は `load/predict/sample=NOT_READY` だった。現行の公開接続とは別scopeである。本native profileはownerの新しい候補宣言であり、固定catalogへの登録・管理採用は別に行う。
 
 ## QKV Profileの登録案と実block由来N2境界
 
@@ -230,7 +232,7 @@ hidden/positionsはcompact・非sharedの有限F32、sourceIdsはcompactなInt32
 
 数値規則・shape・sourceとの対応は [prefix契約](ort-bridge/block-hidden/README.md)、[全head境界](ort-bridge/attention-heads/API.md)、[結果・再現・段階別資源](../../../development/ai-connection/qkv-next/RESULT.md) を参照。trusted receiptはartifact・hidden・座標・side/block/timestep・producer sourceのhashを束縛する整合証拠であり、任意callerの出所を暗号学的に認証する機能ではない。
 
-全N32760/65520の数値実行、元81frame入力、ordered context、HIGH→LOW受渡し、production precision、全工程の同時保持・ORT Memory・copy/time予算は未受入。大規模allocation-only試験をモデル実行や全query数値合格と扱わず、`load/predict/sample=NOT_READY` を維持する。
+全N32760/65520の数値実行、元81frame入力、ordered context、HIGH→LOW受渡し、production precision、全工程の同時保持・ORT Memory・copy/time予算は未受入。大規模allocation-only試験をモデル実行や全query数値合格と扱わず、この固定診断当時の宣言は `load/predict/sample=NOT_READY` であり、現行公開base経路の状態を表すものではない。
 
 ## N2共通catalog登録packageと追加資源検証
 
@@ -238,7 +240,7 @@ hidden/positionsはcompact・非sharedの有限F32、sourceIdsはcompactなInt32
 
 新しい資源観測は既存の数値runtimeを変更せず、[追加結果](../../../development/ai-connection/qkv-followup/RESULT.md) に保存する。ORTのsession数とWebAssembly.Memory数を区別し、同一Memoryはidentityで一度だけ数える。観測する線形Memory容量・高水位、名前付きhost staging、累積copy、allocator live/GC/OSの未知量を別に扱う。計測器の追加をnative RPCの新operationや本番の資源保証と扱わない。
 
-[再利用scope](../../../development/ai-connection/qkv-followup/REUSE_SCOPE.md) と [次の本番境界](../../../development/ai-connection/qkv-followup/BOUNDARIES.md) は、N2数値・旧precomputed-K32760・3H allocationの証拠を合成して本番受入へ昇格させない条件を示す。元gridでの新たな数値受入には、その入力の実producer receipt・座標・precision・独立referenceが必要である。`load/predict/sample=NOT_READY`、元Euler/simple6steps/shift5/split3を維持する。
+[再利用scope](../../../development/ai-connection/qkv-followup/REUSE_SCOPE.md) と [次の本番境界](../../../development/ai-connection/qkv-followup/BOUNDARIES.md) は、N2数値・旧precomputed-K32760・3H allocationの証拠を合成して本番受入へ昇格させない条件を示す。元gridでの新たな数値受入には、その入力の実producer receipt・座標・precision・独立referenceが必要である。当時の診断宣言 `load/predict/sample=NOT_READY` は履歴として保ち、現行経路でも元Euler/simple6steps/shift5/split3を維持する。
 
 ## N2 O projection・chunk2 gate・自己注意残差
 
@@ -262,7 +264,7 @@ Oは元FP8 E4M3FN `[5120,5120]` とO固有のscalar scale/config、F16 biasを�
 
 BUSYを外部getterより前に獲得し、取消はcooperativeとする。abort後にPromise終端を待ってからdisposeする。native解放失敗時はhandleを保持して再利用を止め、recoverで解放を再試行する。全体queue・工程管理は管理、内部数値計算と資源は本ownerの責任である。
 
-O・gate・gated・residualの独立参照と事前gate、重み範囲/source識別、Memory/copy・再利用/新規検証は [結果と再現手順](../../../development/ai-connection/self-attention-tail/RESULT.md) に記録する。cross-attention・FFN・全block・本番生成は後続とし、`load/predict/sample=NOT_READY`を維持する。
+O・gate・gated・residualの独立参照と事前gate、重み範囲/source識別、Memory/copy・再利用/新規検証は [結果と再現手順](../../../development/ai-connection/self-attention-tail/RESULT.md) に記録する。cross-attention・FFN・全block・本番生成は後続とし、当時の診断宣言 `load/predict/sample=NOT_READY` は履歴として保つ。現行base接続は冒頭を参照。
 
 ## P4: cross-attention・FFNの別入力候補
 
@@ -299,7 +301,7 @@ Text ownerの最終RMSNormは適用済みのまま受け取る。Diffusionは`te
 
 LoRA用の新入口は`createP4WeightFeed({source})`。immutable `baseProvider.readBlock`、疎patch `createSink`、`prepareLoad→validate→commit/rollback→releaseCandidate`、`captureSource`を公開する。registryはoriginal key/full shape/選択範囲、実program slot→ORT入力`weight`／Hike bias parameter、保存/計算dtype、FP8 profile、base/graph/registry識別を保持する。最終F32 weight/biasは再scaleせず実演算へ渡す。低rank積・loader/full-shape mappingはLoRA ownerのままで、新P4へのcanonical adapter共同受入は別条件である。詳細は[consumer契約](../../../development/ai-connection/p4-cross-ffn/WEIGHT-FEED.md)を参照。
 
-本候補のproducer認証、独立参照・事前gateの数値判定、本番shape、複数stageの組合せ資源予算はそれぞれ別判定とする。[conditioning契約](../../../development/ai-connection/p4-cross-ffn/CONDITIONING.md)・[候補gate](../../../development/ai-connection/p4-cross-ffn/core/candidate-plan.json)・[結果](../../../development/ai-connection/p4-cross-ffn/RESULT.md)にsourceと受入scopeを記録する。N2の部品成功からP5へ昇格せず、`load/predict/sample=NOT_READY`、generationReady=falseを維持する。
+本候補のproducer認証、独立参照・事前gateの数値判定、本番shape、複数stageの組合せ資源予算はそれぞれ別判定とする。[conditioning契約](../../../development/ai-connection/p4-cross-ffn/CONDITIONING.md)・[候補gate](../../../development/ai-connection/p4-cross-ffn/core/candidate-plan.json)・[結果](../../../development/ai-connection/p4-cross-ffn/RESULT.md)にsourceと受入scopeを記録する。N2の部品成功からP5へ昇格せず、当時の診断宣言は `load/predict/sample=NOT_READY`。現行base経路への接続後もgenerationReady=falseは維持する。
 
 ### 実Text L512専用の結合診断
 
@@ -313,4 +315,4 @@ LoRA用の新入口は`createP4WeightFeed({source})`。immutable `baseProvider.r
 
 実LoRA結合は別入口 [runP4RealTextL512Lora](diagnostics/p4-real-text-l512/lora.mjs) と [driver](../../../tools/diffusion-models/p4-real-text-l512-lora-browser.py) を使う。owner `a80db72feea60b9bd69e292e4716665c6f0ee77f` の `createLoraV2/createDiffusionP4Adapter` をexact sourceで読み、低rank積は本担当で実装しない。限定受入はlight/LOW、実L512・保存LOW3/N2/block0、cross Q先頭4行×全5120列とbias4、strength+1のみ。canonical adapterがregistry/provider/sink/candidateを接続し、完成F32を実ORT/Hikeへ渡す。
 
-独立Aのweight/bias数値gateと、独立Bの全25中間値/最終出力gateは別である。A-rounded F32とSDK完成F32のhashを分け、SDK bytesの実消費proofを参照Bの置換に使わない。candidate検証中に実NNを一回実行し、commit後・rollback後はpackage/epochとbyte readbackを確認した。SDK/prepared解放後のcopy保持、旧base/active read lease、全session/lease解放を記録する。[LoRA限定結果](../../../development/ai-connection/p4-real-text-l512/LORA-RESULT.md) のscopeを超える実行は未受入で、coverage:PARTIAL、completeAdapter:false、`load/predict/sample=NOT_READY`を維持する。
+独立Aのweight/bias数値gateと、独立Bの全25中間値/最終出力gateは別である。A-rounded F32とSDK完成F32のhashを分け、SDK bytesの実消費proofを参照Bの置換に使わない。candidate検証中に実NNを一回実行し、commit後・rollback後はpackage/epochとbyte readbackを確認した。SDK/prepared解放後のcopy保持、旧base/active read lease、全session/lease解放を記録する。[LoRA限定結果](../../../development/ai-connection/p4-real-text-l512/LORA-RESULT.md) のscopeを超える実行は未受入で、coverage:PARTIAL、completeAdapter:false、当時の診断宣言 `load/predict/sample=NOT_READY` は履歴として保つ。現行base接続は冒頭を参照。

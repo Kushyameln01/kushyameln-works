@@ -1,6 +1,6 @@
 # Experimental full Bernini graph
 
-`model-candidate.mjs` contains a complete base-model prediction graph, separate
+`model-candidate.mjs` contains a complete base-model prediction graph
 as a reusable numerical owner. It remains experimental: its internal `acceptedProduction`,
 `generationReady`, and `publicRuntimeEnabled` metadata remain false. The public Worker now
 routes to this owner through the fixed [adapter](../api/MODEL_RUNTIME.md); the outer

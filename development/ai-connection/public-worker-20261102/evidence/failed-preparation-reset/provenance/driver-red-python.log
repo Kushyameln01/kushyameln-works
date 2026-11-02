@@ -1,0 +1,29 @@
+FFF..
+======================================================================
+FAIL: test_help_declares_smoke_only_probe_without_reading_inputs (__main__.FailedPairCLI.test_help_declares_smoke_only_probe_without_reading_inputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/diffusion-preparation-reset/tools/diffusion-models/test-public-model-browser.py", line 40, in test_help_declares_smoke_only_probe_without_reading_inputs
+    self.assertIn('--failed-pair-before-run', result.stdout)
+AssertionError: '--failed-pair-before-run' not found in 'usage: public-model-browser.py [-h] --source-commit SOURCE_COMMIT --manifest\n                               MANIFEST [--models MODELS]\n                               [--mode {smoke,predict,sample}]\n                               [--cancel-before-run] [--side {HIGH,LOW}]\n                               [--timestep TIMESTEP] [--wasm-threads {1,4}]\n                               --private-output PRIVATE_OUTPUT --output OUTPUT\n                               [--chromium CHROMIUM]\n                               [--timeout-seconds TIMEOUT_SECONDS]\n                               [--check-only]\n\nSource-pinned real public API/Worker execution, cancellation and disk\nreadback. Models enter only as actual browser File inputs. Only manifest-\ndeclared input binary files may be fetched. Normal API calls contain no\nreferences/gates; a separate independent comparison consumes private\ntensor.f32 after completion. --check-only verifies files and committed sources\nwithout constructing a browser.\n\noptions:\n  -h, --help            show this help message and exit\n  --source-commit SOURCE_COMMIT\n  --manifest MANIFEST\n  --models MODELS\n  --mode {smoke,predict,sample}\n  --cancel-before-run   Sample-only lifecycle probe: actual prefix cancel,\n                        reload the same API instance, then complete ordinary\n                        sample\n  --side {HIGH,LOW}\n  --timestep TIMESTEP\n  --wasm-threads {1,4}\n  --private-output PRIVATE_OUTPUT\n  --output OUTPUT       Public metadata/resources only\n  --chromium CHROMIUM\n  --timeout-seconds TIMEOUT_SECONDS\n  --check-only\n'
+
+======================================================================
+FAIL: test_probe_rejects_numerical_modes_before_source_or_input_reads (__main__.FailedPairCLI.test_probe_rejects_numerical_modes_before_source_or_input_reads) (mode='predict')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/diffusion-preparation-reset/tools/diffusion-models/test-public-model-browser.py", line 50, in test_probe_rejects_numerical_modes_before_source_or_input_reads
+    self.assertIn('--failed-pair-before-run requires --mode smoke', result.stderr)
+AssertionError: '--failed-pair-before-run requires --mode smoke' not found in 'usage: public-model-browser.py [-h] --source-commit SOURCE_COMMIT --manifest\n                               MANIFEST [--models MODELS]\n                               [--mode {smoke,predict,sample}]\n                               [--cancel-before-run] [--side {HIGH,LOW}]\n                               [--timestep TIMESTEP] [--wasm-threads {1,4}]\n                               --private-output PRIVATE_OUTPUT --output OUTPUT\n                               [--chromium CHROMIUM]\n                               [--timeout-seconds TIMEOUT_SECONDS]\n                               [--check-only]\npublic-model-browser.py: error: unrecognized arguments: --failed-pair-before-run\n'
+
+======================================================================
+FAIL: test_probe_rejects_numerical_modes_before_source_or_input_reads (__main__.FailedPairCLI.test_probe_rejects_numerical_modes_before_source_or_input_reads) (mode='sample')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/diffusion-preparation-reset/tools/diffusion-models/test-public-model-browser.py", line 50, in test_probe_rejects_numerical_modes_before_source_or_input_reads
+    self.assertIn('--failed-pair-before-run requires --mode smoke', result.stderr)
+AssertionError: '--failed-pair-before-run requires --mode smoke' not found in 'usage: public-model-browser.py [-h] --source-commit SOURCE_COMMIT --manifest\n                               MANIFEST [--models MODELS]\n                               [--mode {smoke,predict,sample}]\n                               [--cancel-before-run] [--side {HIGH,LOW}]\n                               [--timestep TIMESTEP] [--wasm-threads {1,4}]\n                               --private-output PRIVATE_OUTPUT --output OUTPUT\n                               [--chromium CHROMIUM]\n                               [--timeout-seconds TIMEOUT_SECONDS]\n                               [--check-only]\npublic-model-browser.py: error: unrecognized arguments: --failed-pair-before-run\n'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.183s
+
+FAILED (failures=3)
