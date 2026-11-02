@@ -25,6 +25,7 @@ sys.path.insert(0, str(ROOT))
 from stream_reference import (COMPARISON_GATE, MODEL_SHA256, SOURCE_SHA256, SOURCE_COMMIT,
                               PLAN_PATH, case_by_id, frame_contract, load_plan, pattern_values,
                               sha256_file, create_output, write_json)
+from reference_contract import validate_native_reference_plan
 
 PATTERNS = {'rgb': '((c*71+t*13+y*5+x*3)%257-128)/128',
             'raw-latent': '((c*17+t*11+y*7+x*5)%257-128)/512'}
@@ -153,9 +154,9 @@ def validate_native_metadata(report, expected_case_id):
         raise ValueError('Parent/direct original model/source identity verification differs')
     if report.get('strictLoad') != {'keys': 194, 'missing': [], 'unexpected': []}:
         raise ValueError('Parent/direct source did not strictly load all194 original keys')
-    if report.get('predeclaredPlan', {}).get('sha256') != sha256_file(PLAN_PATH):
-        raise ValueError('Parent/direct receipt belongs to a different frozen input plan')
+    checked = validate_native_reference_plan(report)
     validate_pattern_declaration(load_plan())
+    return checked
 
 
 def pattern_sha256(shape, kind):
@@ -211,17 +212,6 @@ def validate_native_files(directory, report, operations):
     return pattern_checks
 
 
-def verify_committed_tool(report):
-    revision = report.get('executionSourceSha', '')
-    if not re.fullmatch('[0-9a-f]{40}', revision):
-        raise ValueError('Native source receipt lacks a full execution revision')
-    relative = 'tools/inference/vae/stream_reference.py'
-    raw = subprocess.run(['git', 'show', revision + ':' + relative], cwd=ROOT.parents[2],
-                         check=True, capture_output=True).stdout
-    if hashlib.sha256(raw).hexdigest() != report.get('referenceToolSha256'):
-        raise ValueError('Native reference tool bytes differ from the committed execution receipt')
-
-
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--parent', type=Path, required=True)
@@ -243,7 +233,8 @@ def main(argv=None):
     result = {'schemaVersion': 1, 'status': 'FAILED', 'case': case,
               'comparisonGate': COMPARISON_GATE, 'executionSourceSha': args.execution_source_sha,
               'executionSourceShaScope': 'Exact executing derivation-tool bytes checked against this commit; no model execution or whole-tree clean claim',
-              'derivationToolSha256': sha256_file(Path(__file__)), 'nativeExecutionPerformed': False,
+              'derivationToolSha256': sha256_file(Path(__file__)),
+              'referenceContractSha256': sha256_file(ROOT / 'reference_contract.py'), 'nativeExecutionPerformed': False,
               'newModelLoads': 0, 'newNNRuns': 0, 'references': {}, 'operations': {}, 'errors': []}
     started, stage = time.monotonic(), 'committed-diagnostic-tool'
     try:
@@ -251,13 +242,20 @@ def main(argv=None):
                                    cwd=ROOT.parents[2], check=True, capture_output=True).stdout
         if hashlib.sha256(committed).hexdigest() != result['derivationToolSha256']:
             raise ValueError('Executing diagnostic derivation tool differs from its specified source commit')
+        committed_contract = subprocess.run(['git', 'show', args.execution_source_sha + ':tools/inference/vae/reference_contract.py'],
+                                            cwd=ROOT.parents[2], check=True, capture_output=True).stdout
+        if hashlib.sha256(committed_contract).hexdigest() != result['referenceContractSha256']:
+            raise ValueError('Executing diagnostic reference-contract helper differs from its source commit')
+        committed_plan = subprocess.run(['git', 'show', args.execution_source_sha + ':development/inference/standalone-20261102/vae/predeclared-plan.json'],
+                                        cwd=ROOT.parents[2], check=True, capture_output=True).stdout
+        if hashlib.sha256(committed_plan).hexdigest() != sha256_file(PLAN_PATH):
+            raise ValueError('Executing derivation plan differs from its specified source commit')
         stage = 'accepted-native-receipts'
         parent_dir, direct_dir = args.parent.resolve(), args.direct_f1.resolve()
         parent, parent_raw = read_accepted_report(parent_dir, args.parent_report_sha256)
         direct, direct_raw = read_accepted_report(direct_dir, args.direct_f1_report_sha256)
-        validate_native_metadata(parent, 'target-f81-480x832')
-        validate_native_metadata(direct, 'source-f1-480x832')
-        verify_committed_tool(parent); verify_committed_tool(direct)
+        result['nativePlanContracts'] = {'parent': validate_native_metadata(parent, 'target-f81-480x832'),
+                                         'directF1': validate_native_metadata(direct, 'source-f1-480x832')}
         if sha256_file(ROOT / 'vendor/vae.py') != SOURCE_SHA256:
             raise ValueError('Local untouched vendor causal source bytes differ')
         if parent.get('frameContract') != frame_contract(81) or direct.get('frameContract') != frame_contract(1):

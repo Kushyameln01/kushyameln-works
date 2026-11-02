@@ -25,6 +25,7 @@ from accept_still import ProcessSampler
 from process_lifecycle import ProcessOwnership, cleanup_complete
 from stream_reference import (COMPARISON_GATE, MODEL_SHA256, SOURCE_SHA256,
                               PLAN_PATH, case_by_id, sha256_file, read_cgroup_memory)
+from reference_contract import validate_reference_plan
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
@@ -368,20 +369,13 @@ def validate_inputs(bundle, reference_dir, operations):
     manifest = json.loads(manifest_path.read_text())
     report_path = reference_dir / 'reference-report.json'
     report = json.loads(report_path.read_text())
-    if report.get('status') != 'REFERENCE_WRITTEN':
-        raise ValueError('A completed independent untouched-source reference is required')
+    validate_reference_plan(report, reference_dir, operations=operations)
     if manifest.get('kind') != 'wan21-vae-stream-v1' or manifest.get('model', {}).get('sha256') != MODEL_SHA256:
         raise ValueError('Expected the original-model streaming VAE bundle')
     if manifest.get('source', {}).get('sha256') != SOURCE_SHA256:
         raise ValueError('Streaming bundle has a different pinned VAE source')
     if report.get('model', {}).get('sha256') != MODEL_SHA256 or report.get('source', {}).get('sha256') != SOURCE_SHA256:
         raise ValueError('Independent reference model/source identity differs')
-    if report['model'].get('verified') is not True or report['source'].get('verified') is not True:
-        raise ValueError('Independent model/source hash verification is missing')
-    if report.get('strictLoad') != {'keys': 194, 'missing': [], 'unexpected': []}:
-        raise ValueError('Independent source did not strictly load all194 keys')
-    if report.get('comparisonGate') != COMPARISON_GATE or report.get('predeclaredPlan', {}).get('sha256') != sha256_file(PLAN_PATH):
-        raise ValueError('Frozen source-reference gate/plan does not match current predeclared plan')
     case = case_by_id(report['case']['id'])
     if report['case'] != case:
         raise ValueError('Independent source case shape differs from its explicit declaration')
@@ -397,7 +391,7 @@ def validate_inputs(bundle, reference_dir, operations):
     references = {}
     for operation in operations:
         record = report['references'].get(operation)
-        if not record or report.get('operations', {}).get(operation, {}).get('status') != 'REFERENCE_WRITTEN':
+        if not record or report.get('operations', {}).get(operation, {}).get('status') != report['status']:
             raise ValueError('Independent source operation is unavailable: ' + operation)
         expected_in = case['rgbShape'] if operation == 'encode' else case['latentShape']
         expected_out = case['latentShape'] if operation == 'encode' else case['decodeRgbShape']
@@ -473,6 +467,7 @@ def main(argv=None):
         bundle, reference_dir = args.bundle.resolve(), args.reference.resolve()
         manifest, reference_report, references, assets = validate_inputs(bundle, reference_dir, operations)
         result.update(case=reference_report['case'], comparisonGate=COMPARISON_GATE,
+                      referenceContractValidation=validate_reference_plan(reference_report, reference_dir, operations=operations),
                       manifestSha256=sha256_file(bundle / 'manifest.json'),
                       referenceReport={'path': str(reference_dir / 'reference-report.json'),
                                        'sha256': sha256_file(reference_dir / 'reference-report.json'),
@@ -480,7 +475,7 @@ def main(argv=None):
                       initialCgroup=read_cgroup_memory())
         # All native worker imports are checked before a numerical job can start.
         source_paths = [Path(__file__), HERE / 'stream_browser.mjs', HERE / 'stream_observer_worker.mjs',
-                        HERE / 'process_lifecycle.py', HERE / 'accept_still.py', HERE / 'stream_reference.py', PLAN_PATH,
+                        HERE / 'process_lifecycle.py', HERE / 'accept_still.py', HERE / 'stream_reference.py', HERE / 'reference_contract.py', PLAN_PATH,
                         HERE.parent / 'text-encoder/plain_memory.mjs', REPO / 'docs/shared/vr180/sha256.mjs']
         source_paths += list((REPO / 'docs/shared/inference').glob('*.mjs'))
         source_paths += list((REPO / 'docs/shared/inference/vendor').glob('*.mjs'))

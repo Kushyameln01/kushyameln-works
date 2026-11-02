@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 import struct
+import subprocess
 import tempfile
 import unittest
 
@@ -81,12 +82,17 @@ class PrefixTests(unittest.TestCase):
     def test_native_report_metadata_requires_pinned_source_model_and_declared_pattern(self):
         plan = self.tool.load_plan()
         case = self.tool.case_by_id('target-f81-480x832')
+        revision = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT.parents[2], check=True, capture_output=True, text=True).stdout.strip()
+        original_plan = subprocess.run(['git', 'show', revision + ':development/inference/standalone-20261102/vae/predeclared-plan.json'], cwd=ROOT.parents[2], check=True, capture_output=True).stdout
+        original_tool = subprocess.run(['git', 'show', revision + ':tools/inference/vae/stream_reference.py'], cwd=ROOT.parents[2], check=True, capture_output=True).stdout
         report = {'status': 'REFERENCE_WRITTEN', 'case': case,
                   'comparisonGate': self.tool.COMPARISON_GATE,
-                  'model': {'sha256': self.tool.MODEL_SHA256, 'verified': True, 'executionDtype': 'float32'},
+                  'model': {'sha256': self.tool.MODEL_SHA256, 'verified': True, 'storedDtype': 'bfloat16', 'executionDtype': 'float32'},
                   'source': {'sha256': self.tool.SOURCE_SHA256, 'commit': self.tool.SOURCE_COMMIT, 'verified': True},
                   'strictLoad': {'keys': 194, 'missing': [], 'unexpected': []},
-                  'predeclaredPlan': {'sha256': self.tool.sha256_file(self.tool.PLAN_PATH)}}
+                  'frameContract': self.tool.frame_contract(81), 'executionSourceSha': revision,
+                  'referenceToolSha256': hashlib.sha256(original_tool).hexdigest(),
+                  'predeclaredPlan': {'sha256': hashlib.sha256(original_plan).hexdigest()}}
         self.tool.validate_native_metadata(report, case['id'])
         for field, key in [('model', 'sha256'), ('source', 'sha256')]:
             bad = json.loads(json.dumps(report));bad[field][key] = '0' * 64
