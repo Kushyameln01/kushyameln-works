@@ -708,11 +708,15 @@ def run_acceptance(argv=None, *, host_stop):
                 if args.preflight_only:
                     result['status'] = 'PREFLIGHT_ONLY'
                     result['numericalExecutionPerformed'] = False
+                    result['numericalExecutionAttempted'] = False
                 else:
+                    result['numericalExecutionAttempted'] = False
+                    result['normalOperationsCompleted'] = []
                     for index, operation in enumerate(operations):
                         host_stop.checkpoint()
                         phase = sampler.phase = operation + ':normal-or-recovery'
                         with page.expect_download(timeout=args.timeout_seconds * 1000) as download:
+                            result['numericalExecutionAttempted'] = True
                             native = page.evaluate('options=>runVaeStreamOperation(options)',
                                                    {'operation': operation, 'controls': args.controls and index == 0,
                                                     'timeoutMs': args.timeout_seconds * 1000})
@@ -725,6 +729,7 @@ def run_acceptance(argv=None, *, host_stop):
                             host_stop.checkpoint()
                             if not native['passed']:
                                 raise RuntimeError('Normal streaming execution failed: ' + json.dumps(native))
+                            result['normalOperationsCompleted'].append(operation)
                         path = args.output / native['codec']['download']
                         download.value.save_as(str(path))
                         # Avoid retaining every prior388MB browser staging artifact.
