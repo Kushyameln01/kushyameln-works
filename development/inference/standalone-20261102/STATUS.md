@@ -1,6 +1,10 @@
 # 実行中断と再開条件
 
-Text・VAEの単体完成は未達。確定済みの実装・試験・証拠はGitHubへ保存したが、2026-11-02 17:38 UTC頃に実行環境との接続を失い、残るVAE受入が中断した。[機械可読の観測記録](evidence/environment-interruption-20261102.json) と [全体結果](RESULT.md) を参照する。
+Text・VAEの単体完成は未達。2026-11-02 17:38 UTC頃に監視接続を失ったが、17:50 UTCにコマンド・filesystemへのアクセスが回復した。同じF80 processが接続喪失中も継続していたことを確認し、再実行せず検証を再開した。[機械可読の観測記録](evidence/environment-interruption-20261102.json) と [全体結果](RESULT.md) を参照する。
+
+## 再接続の観測
+
+[回復観測](evidence/environment-recovery-20261102.json) は、元のF80 PID43453・creation time1793634584.62・元command一致と、接続喪失より前の起動時刻を確認した。17:50 UTCには17chunk完了・index17処理中まで進んでいた。これは同一jobの継続であり、新しい推論・exportを開始していない。元のunified exec監視sessionは再接続できないため、以後は保存されたqueue/progress/reportとPID identityを使う。最終数値比較・保存読戻し・終了の合否はまだpending。
 
 ## 確定した成果
 

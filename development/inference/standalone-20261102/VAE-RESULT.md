@@ -1,6 +1,6 @@
 # VAE 単体検証結果
 
-VAE の単体検証は実行環境 unavailable により中断している。target の **81×480×832 encode と独立 raw latent decode は、通常 API・実 CPU WASM・全値比較で PASS** した。source F1、F4 encode、F5 both、reference の非正方形を含む下表のケースも PASS している。source F80 encode は接続喪失により成否未確認、reference F1 848×848 は最後の観測時点で未着手。VAE 全体の完了は宣言しない。[中断と再開条件](STATUS.md) を参照する。
+制御接続は 17:50 UTC に復旧し、接続断前からの source F80 job が継続していることを確認した。NN の再実行や再 export は行っていない。target の **81×480×832 encode と独立 raw latent decode は、通常 API・実 CPU WASM・全値比較で PASS** した。source F1、F4 encode、F5 both、reference の非正方形を含む下表のケースも PASS している。source F80 encode の最終数値結果は未受入、reference F1 848×848 は未着手。VAE 全体の完了は宣言しない。17:38〜17:50 UTC の接続断と復旧の記録は [STATUS.md](STATUS.md) を参照する。
 
 ここでの受入は、明示した合成入力、元の BF16 係数を FP32 に展開した演算、固定したモデル・graph・実行 source の範囲に限る。実媒体、元実装の BF16 演算との一致、Diffusion からの実生成結果、全 workflow の受入は含まない。証拠の入口は [evidence/index.json](evidence/index.json)。
 
@@ -69,7 +69,7 @@ BF16 で保存された係数を変更せず FP32 に展開している。[parti
 | source F4 に対応する独立 raw T1 | decode → F1 RGB | 1,198,080 | 上記 T1 と同じ受入 | — | F1 と同一 shape/raw 入力/reference を再利用。F4 名での新規 decode 呼出しはなし |
 | source F5・480×832 | encode → T2 mean | 199,680 | 2.1457672119140625e-6 | 631.024105 | [実入力 F5 で PASS](evidence/vae-source-f5-acceptance.json) |
 | source・独立 raw T2 | decode → F5 RGB | 5,990,400 | 3.6656856536865234e-6 | 1,058.420245 | [実 WASM PASS](evidence/vae-source-f5-acceptance.json) |
-| source F80・480×832 | encode → T20 mean、tail 3 | 予定 1,996,800 | — | — | **成否未確認・未受入（環境 unavailable）**。target の計算 prefix を実入力 F80 の呼出しに代用しない |
+| source F80・480×832 | encode → T20 mean、tail 3 | 予定 1,996,800 | — | — | **既存 job 継続中・未受入**。target の計算 prefix を実入力 F80 の呼出しに代用しない |
 | source F80 に対応する独立 raw T20 | decode → F77 RGB | — | — | — | **NOT_RUN**。今回選択した source RGB F80 encode 範囲の必須操作には含めない |
 | source F81・480×832 | target F81 と同一の数値入力・reference | mean 2,096,640、RGB 97,044,480 | target の受入を再利用 | — | 新規 NN なし。下記の同一性確認と source-role codec fixture を併記 |
 | reference F1・16×16 | encode / 独立 decode | 64 / 768 | 7.152557373046875e-7 / 5.066394805908203e-7 | 7.999845 / 8.210600 | [実 WASM both PASS](evidence/vae-reference-f1-16x16-acceptance.json) |
@@ -139,6 +139,6 @@ RSS と PSS を加算せず、shared cgroup charge や 4 GiB の単一 WASM32 �
 
 graph の再構築、依存 version、private model/bundle、native reference、通常 browser API の実行方法は [REPRODUCE.md](REPRODUCE.md) と [export tool](../../../tools/inference/vae/export_stream.py)、[independent reference tool](../../../tools/inference/vae/stream_reference.py)、[acceptance tool](../../../tools/inference/vae/accept_stream.py) を参照する。再実行には receipt の固定 execution source と served bytes、同じ元モデル hash、manifest/asset hash、実環境の thread 条件を合わせる。約 3.16 時間の target decode を含むため、短いケース用 timeout をそのまま用いない。モデル・graph・巨大 tensor payload は private に置き、公開 evidence は hash と検査結果を中心にする。
 
-接続回復後に残るのは、実入力 source F80 の encode 全値受入と、reference F1 848×848 の独立 native reference / 実 WASM both の受入。F80 の最終正常観測は17:37:55 UTC・15chunk完了、index15処理中。接続喪失後のprocess・保存・終了は未確認。F80 と848×848の最終reportを回収・照合するまで上表のpendingをPASSに変えない。source81 は明記した数値 alias と合成 context codec の再利用範囲を保つ。
+残るのは、実入力 source F80 の encode 全値受入と、reference F1 848×848 の独立 native reference / 実 WASM both の受入。接続断前の F80 観測は 17:37:55 UTC・15 chunk 完了、index15 処理中。17:38〜17:50 UTC は制御接続を失ったが、17:50 UTC の復旧確認で同じ既存 process と Chrome 子が生存し、17 chunk 完了・index17/20 の処理を継続していた。再実行ではなく、最終保存・終了・数値受入はまだ未確認。F80 と 848×848 の最終 report を回収・照合するまで上表の pending を PASS に変えない。source81 は明記した数値 alias と合成 context codec の再利用範囲を保つ。
 
 実物の画像・動画の原本は今回の実行環境で取得できておらず、合成 pattern を用いた許可範囲で検証した。実 Diffusion producer の生成 latent と normalization restore 契約、generated-sample decode の実値比較、管理側 consumer、Diffusion、全 workflow、実媒体の品質は未受入。`wan21-raw-generated-sample:v1` の API 契約が存在することは、その経路の数値受入を意味しない。これらを VAE の完了に加算せず、他 owner の ACK を単体実装の仮の前提にも置かない。
