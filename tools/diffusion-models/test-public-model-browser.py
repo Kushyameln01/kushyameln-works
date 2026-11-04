@@ -51,5 +51,27 @@ class FailedPairCLI(unittest.TestCase):
                 self.assertNotIn('Execution source must equal HEAD', result.stderr)
 
 
+class ResourceProfile(unittest.TestCase):
+    def test_default_pages_is_one_thread_without_isolation(self):
+        self.assertEqual(MODULE.resource_config(1, None), {
+            'wasmThreads': 1, 'coi': False, 'profile': 'pages-1-thread-no-coi'})
+
+    def test_explicit_four_threads_requires_isolation_and_never_falls_back(self):
+        self.assertEqual(MODULE.resource_config(4, None), {
+            'wasmThreads': 4, 'coi': True, 'profile': 'explicit-4-thread-coi'})
+        with self.assertRaisesRegex(ValueError, 'requires --coi true'):
+            MODULE.resource_config(4, 'false')
+        self.assertEqual(MODULE.resource_config(1, 'true')['profile'], 'explicit-1-thread-coi')
+
+    def test_invalid_profile_fails_before_reading_source_or_inputs(self):
+        result = subprocess.run([sys.executable, str(Path(__file__).with_name('public-model-browser.py')),
+                                 '--source-commit', '0' * 40, '--manifest', '/tmp/not-read-input.json',
+                                 '--private-output', '/tmp/not-created-values', '--output', '/tmp/not-created-result.json',
+                                 '--wasm-threads', '4', '--coi', 'false'], capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('requires --coi true', result.stderr)
+        self.assertNotIn('Execution source must equal HEAD', result.stderr)
+
+
 if __name__ == '__main__':
     unittest.main()

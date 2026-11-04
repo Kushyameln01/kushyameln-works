@@ -99,6 +99,7 @@ export async function startPublicModelBrowser(config){
  const HIGH=document.querySelector('#model-high').files[0],LOW=document.querySelector('#model-low').files[0];
  requireValue(HIGH instanceof File&&LOW instanceof File,'Both actual retained model Files must be selected');
  if(config.wasmThreads===4)requireValue(crossOriginIsolated&&typeof SharedArrayBuffer==='function','Four-thread harness requires real COOP/COEP isolation');
+ if(config.expectedCOI!==undefined)requireValue(crossOriginIsolated===config.expectedCOI,'Observed COI differs from the explicitly requested resource profile');
  const response=await fetch('/__case__.json');requireValue(response.ok,'Private case manifest unavailable');const manifest=await response.json();
  const input=await capturePublicModelInputs(manifest),before=await input.snapshots();
  const started=performance.now(),nativeWorker=globalThis.Worker;let workerEpoch=0;

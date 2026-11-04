@@ -38,6 +38,15 @@ def require(value, message):
         raise ValueError(message)
 
 
+def resource_config(wasm_threads, coi):
+    require(wasm_threads in [1, 4] and coi in [None, 'true', 'false'], 'Explicit supported resource profile required')
+    isolated = wasm_threads == 4 if coi is None else coi == 'true'
+    require(wasm_threads != 4 or isolated, 'Four-thread execution requires --coi true; no fallback')
+    return {'wasmThreads': wasm_threads, 'coi': isolated,
+            'profile': 'explicit-4-thread-coi' if wasm_threads == 4 else
+                       'explicit-1-thread-coi' if isolated else 'pages-1-thread-no-coi'}
+
+
 def sha(value):
     return hashlib.sha256(value).hexdigest()
 
@@ -180,7 +189,9 @@ def main():
     parser.add_argument('--failed-pair-before-run', action='store_true', help='Smoke-only lifecycle probe: reject HIGH supplied as LOW, verify Worker reset, then prepare/release P4 before the unchanged smoke run')
     parser.add_argument('--side', choices=['HIGH', 'LOW'], default='HIGH')
     parser.add_argument('--timestep', type=float, default=1000)
-    parser.add_argument('--wasm-threads', type=int, choices=[1, 4], default=4)
+    parser.add_argument('--wasm-threads', type=int, choices=[1, 4], default=1)
+    parser.add_argument('--coi', choices=['true', 'false'], default=None,
+                        help='Default false for Pages1, true for explicit4; 4/false is refused')
     parser.add_argument('--private-output', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True, help='Public metadata/resources only')
     parser.add_argument('--chromium', default=shutil.which('chromium') or '/usr/bin/chromium')
@@ -191,6 +202,7 @@ def main():
     require(math.isfinite(args.timestep) and 0 <= args.timestep <= 1000, 'Timestep0..1000 required')
     require(not args.cancel_before_run or args.mode == 'sample', '--cancel-before-run requires --mode sample')
     require(not args.failed_pair_before_run or args.mode == 'smoke', '--failed-pair-before-run requires --mode smoke')
+    resource = resource_config(args.wasm_threads, args.coi)
     snapshots = snapshot_sources(args.source_commit)
     manifest, binary_inputs, input_receipt = prepare_inputs(args.manifest)
     models = {side: (args.models / name).resolve() for side, name in MODEL_NAMES.items()}
@@ -199,7 +211,7 @@ def main():
     source_receipt = {name[1:]: {'bytes': len(data), 'sha256': sha(data)} for name, data in snapshots.items()}
     if args.check_only:
         print(json.dumps({'checkOnly': True, 'passed': True, 'sourceCommit': args.source_commit,
-                          'failedPairBeforeRun': args.failed_pair_before_run,
+                          'failedPairBeforeRun': args.failed_pair_before_run, 'requestedResource': resource,
                           'guardedSources': len(snapshots), 'nativeNNExecuted': False,
                           'inputs': input_receipt, 'modelStats': model_stats}))
         return
@@ -222,8 +234,9 @@ def main():
             self.send_header('Content-Type', content_type)
             self.send_header('Content-Length', str(len(body)))
             self.send_header('Cache-Control', 'no-store')
-            self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
-            self.send_header('Cross-Origin-Embedder-Policy', 'require-corp')
+            if resource['coi']:
+                self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
+                self.send_header('Cross-Origin-Embedder-Policy', 'require-corp')
             self.send_header('Cross-Origin-Resource-Policy', 'same-origin')
             self.end_headers()
             self.wfile.write(body)
@@ -304,7 +317,8 @@ def main():
                 page.locator('#model-high').set_input_files(str(models['HIGH']))
                 page.locator('#model-low').set_input_files(str(models['LOW']))
                 config = {'sourceCommit': args.source_commit, 'mode': args.mode, 'side': args.side,
-                          'timestep': args.timestep, 'wasmThreads': args.wasm_threads, 'sinkBase': sink_base,
+                          'timestep': args.timestep, 'wasmThreads': args.wasm_threads,
+                          'expectedCOI': resource['coi'], 'resourceProfile': resource['profile'], 'sinkBase': sink_base,
                           'timeoutMs': args.timeout_seconds * 1000, 'cancelBeforeRun': args.cancel_before_run,
                           'failedPairBeforeRun': args.failed_pair_before_run}
 
@@ -347,6 +361,7 @@ def main():
               'mode': args.mode, 'side': args.side, 'timestep': args.timestep,
               'cancelBeforeRun': args.cancel_before_run,
               'failedPairBeforeRun': args.failed_pair_before_run,
+              'requestedResource': resource,
               'sourceInventory': source_receipt, 'servedSourcesAndInputs': served, 'deniedPaths': denied,
               'sourceGuardAfter': guard_error is None, 'sourceGuardError': guard_error,
               'inputReceipt': input_receipt, 'modelStatBefore': model_stats,
@@ -354,7 +369,9 @@ def main():
               'fullModelSHA256Recomputed': False, 'privateValuesPublished': False,
               'privateOutputs': sink.entries, 'publicResult': result, 'hostError': launch_error,
               'browser': {'version': browser_version, 'closed': True, 'pageErrors': page_errors,
-                          'consoleErrors': console_errors, 'coop': 'same-origin', 'coep': 'require-corp'},
+                          'consoleErrors': console_errors,
+                          'coop': 'same-origin' if resource['coi'] else None,
+                          'coep': 'require-corp' if resource['coi'] else None},
               'progressEvents': event_count, 'elapsedSeconds': time.monotonic() - started,
               'resources': 'Native owner stats and progress; external process monitor is separate',
               'passed': bool(result and result.get('outcome') == 'completed' and result.get('callerInputsBitExact') and not launch_error and not guard_error and not page_errors and not denied),
