@@ -40,6 +40,8 @@ stream VAEはN1・float32 NCTHW、encode元F1..81、H/W16..848の16倍数。T=`1
 
 復元済み生成sampleの入力は `wan21-raw-generated-sample:v1`、finite float32 NCTHW、`generated-sample/raw`、元producer群、実VAE decoder hash、Diffusion所有 `wan21-comfy-f32-v1/restored` が必要。追加の復元・clamp・meanへの改名は行わない。実管理Rectでは保存契約fixtureをこの経路へ通し、raw＋RGBを同じpackageへ保存した。実producerによる生成・復元receiptと最終target decodeの共同受入は後段。
 
+最終取得したDiffusion48ffのstrict通常P4は `encoder-final-rmsnorm` を要求し、実Text markerを現状では拒否する。[取得・契約照合](CONTRACT-CHECK.md)を参照する。FFE captureの合格を通常consumerの受入へ拡張しない。Text／管理でmarkerを書き換えず、Diffusion ownerで正式受理する契約と実装を調整する。
+
 ## 保存・取消・解放
 
 現codecを実管理workspaceへ注入する。`WKTSR001/schemaVersion1`と旧ファイル互換を維持し、存在しないmarkerを推測しない。WKT内はpayload／shape／dtype／layout／meaning／識別／mask／normalization／context／latentContract。owner・snapshot・graphBindings・trace・evidenceは外側管理packageへ保存する。RGBだけを保存し元raw依存がない要求は拒否する。

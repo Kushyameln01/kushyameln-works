@@ -59,9 +59,15 @@ source `78954ee92d1b76c6652f50df1668159a55db6dc9`、採用manifest `420ebccc3bd6
 
 全512有効ID payload・採用manifest・APIはGitHub固定789 URLから[取得確認](recipient-acquisition/README.md)を行った。後から得た長文plain／管理payloadの公開取得確認とは区別する。これはownerによる取得照合で、他担当の別環境ACKとは区別する。通常入口へ固定prompt／payload hash／品質receiptを条件として追加していない。
 
+追加で、pushした固定744の新長文／管理WKTとAPI／HANDOFF本文を[公開URLから取得照合](final-acquisition/README.md)した。各実bytes／SHAは同じ固定Git blobに一致した。これは取得確認で、モデルNN／export／相手環境のACKではない。
+
 診断観測の重複は[lossless NN0 replay](text/managed-accepted/diagnostic-replay/replay-receipt.json)で別に改善した。全18,550観測の全field・順序hashと非観測fieldを保ち、JSON269,180,893→5,359,171Bへ減らした。新しいNN実行時間や推論RSSの改善結果へは拡張しない。最終の変更境界試験は[verification](verification/README.md)、受取手順・契約は[HANDOFF](HANDOFF.md)を参照する。
 
 ## 未受入
+
+最終の[対向契約照合](CONTRACT-CHECK.md)では、Diffusion48ffのstrict通常P4が依然 `encoder-final-rmsnorm` を要求し、実Textの `umt5-final-rmsnorm-f32-v1` を拒否することを確認した。FFE captureで実markerを保持できることと、この通常入口で受理できることは別である。Text側・管理側でmarkerを改名せず、Diffusion ownerの正式な受理契約と実装を残件にする。
+
+今回の実管理経路は `createTextVaeAdapter`＋queue＋capture＋workspaceを注入したbridgeである。管理5ab／a543はe166の祖先だが、別の `normal-vae-owner` facadeを使った新しい実NN受入と同一には扱わない。相手環境での当該facade実行は未受入である。
 
 管理読戻しの既定展開budgetは1GiBで、`read(bytes,{maxUnpackedBytes})`で設定できる。最小target81 package約396.6MBは構造上budget内だが、複数cloneを伴う管理81保存の資源・実行成功は未受入。native81の合格を拡張しない。
 
