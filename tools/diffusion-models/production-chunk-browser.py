@@ -375,7 +375,7 @@ def main():
             cleanup = owner.close(graceful=True)
             assert cleanup['cleanupErrors'][0]['phase'] == 'graceful-close' and not cleanup['childStillAlive'] and owner.close(graceful=True) is cleanup
         print(json.dumps({'passed': True, 'coverageRejectsDuplicates': True, 'completeTailRequired': True, 'closedOraclePipeReportedWithoutSkippingCleanup': True, 'idempotentOracleClose': True, 'modelWorkExecuted': False}))
-        return
+        return 0
     required = ['manifest', 'contract', 'source_commit', 'output'] + ([] if args.verify_reference_threads else ['private_reference_dir'])
     require(all(getattr(args, name) is not None for name in required), 'Manifest, contract, source commit, private reference directory and output required')
     require(not(args.verify_reference_threads and args.validate_only), 'Choose reference thread verification or validate-only')
@@ -412,13 +412,13 @@ def main():
                 result.update(passed=False, sourceAfterError={'name': type(error).__name__, 'message': str(error)[:4000]})
         reference.write_json(args.output, result, exclusive=True)
         print(json.dumps({'passed': result['passed'], 'mode': 'reference-thread-verification', 'output': str(args.output), 'nativeModelExecuted': False}))
-        return
+        return 0 if result['passed'] else 1
     run_id = secrets.token_hex(24)
     config, inputs = input_config(manifest, args.side, block_limit, run_id, operation=args.operation, wasm_threads=args.wasm_threads, decoder=args.decoder, read_ahead_bytes=args.read_ahead_bytes, skip_prefix=args.skip_prefix_comparison)
     config['wasmModules'] = [{'role': name, 'sha256': sha(raw)} for name, raw in sources.items() if name.endswith('.wasm')]
     if args.validate_only:
         print(json.dumps({'passed': True, 'sourceCommit': args.source_commit, 'sources': captured['count'], 'inputFiles': len(inputs), 'totalTokens': config['totalTokens'], 'operation': args.operation, 'blockLimit': block_limit, 'resource': resource_config, 'modelWorkExecuted': False}))
-        return
+        return 0
     private_dir = reference.private_directory(args.private_reference_dir)
     require(not any(private_dir.iterdir()), 'Fresh empty private reference directory required')
     coverage = load_sample_helpers().SampleCoverage(manifest) if args.operation == 'sample' else Coverage(manifest, config['stages'], block_limit, args.operation)
@@ -438,7 +438,7 @@ def main():
             failure['failures'].append({'stage': 'fixed-source-after', 'name': type(source_error).__name__, 'message': str(source_error)[:4000]})
         reference.write_json(args.output, failure, exclusive=True)
         print(json.dumps({'passed': False, 'stage': 'independent-oracle-startup', 'output': str(args.output), 'modelWorkExecuted': False}))
-        return
+        return 1
 
     class Handler(http.server.BaseHTTPRequestHandler):
         def log_message(self, *_args):
@@ -575,7 +575,8 @@ def main():
         json.dump(result, stream, indent=2, allow_nan=False)
         stream.write('\n')
     print(json.dumps({'passed': success, 'output': str(args.output), 'comparedChunks': metrics['chunks'], 'failedElements': metrics['failedElements'], 'coverageComplete': coverage.summary()['complete'], 'elapsedSeconds': result['elapsedSeconds']}))
+    return 0 if success else 1
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())

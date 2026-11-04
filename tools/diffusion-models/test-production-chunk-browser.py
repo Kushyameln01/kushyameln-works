@@ -1,10 +1,14 @@
 """No model inference: exact bounded coverage, identities, source and cleanup."""
 import importlib.util
+from contextlib import ExitStack, nullcontext, redirect_stdout
+import io
 from pathlib import Path
+import sys
 import tempfile
 import threading
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 import json
 
 spec=importlib.util.spec_from_file_location('production_chunk_browser',Path(__file__).with_name('production-chunk-browser.py'))
@@ -13,6 +17,78 @@ spec.loader.exec_module(module)
 sample_spec=importlib.util.spec_from_file_location('production_sample_chunks',Path(__file__).with_name('production-sample-chunks.py'))
 sample=importlib.util.module_from_spec(sample_spec)
 sample_spec.loader.exec_module(sample)
+
+
+class ExitStatusTests(unittest.TestCase):
+    def run_main(self,flags=(),*,reference_passed=True,startup_error=False,worker_completed=True):
+        """Exercise real result/receipt branches without model, oracle or browser work."""
+        with tempfile.TemporaryDirectory() as directory,ExitStack() as stack:
+            root=Path(directory)
+            manifest=root/'manifest.json';manifest.write_text(json.dumps({'tensors':[{'shape':[1,16,1,2,4]}]}))
+            contract=root/'contract.json';contract.write_text('{}')
+            (root/'empty-weight-fixture').touch()  # stat only; no retained model is opened.
+            private=root/'private';private.mkdir()
+            output=root/'receipt.json'
+            def write_json(path,value,**_):Path(path).write_text(json.dumps(value))
+            reference=SimpleNamespace(REF=SimpleNamespace(MODELS={'HIGH':('empty-weight-fixture',)},MODEL_BYTES=0),np=SimpleNamespace(__version__='test-only'),GATE={'abs':0.01,'rel':0.001},reference_contract=lambda _: {},file_sha=lambda _: '0'*64,write_json=write_json,private_directory=lambda _: private)
+            cleanup={'cleanupErrors':[],'backingFilesRemaining':[],'childStillAlive':False}
+            oracle=SimpleNamespace(initial={'kind':'ready'},close=lambda **_:cleanup)
+            page=SimpleNamespace(set_default_timeout=lambda _:None,on=lambda *_:None,goto=lambda _:None,locator=lambda _:SimpleNamespace(set_input_files=lambda _:None),evaluate=lambda *_:{'done':True,'result':{'completed':worker_completed},'error':None,'events':[]})
+            browser=SimpleNamespace(new_page=lambda:page,close=lambda:None)
+            playwright=SimpleNamespace(chromium=SimpleNamespace(launch=lambda **_:browser))
+            server=SimpleNamespace(server_port=1,serve_forever=lambda:None,shutdown=lambda:None,server_close=lambda:None)
+            replacements={
+                'load_reference':lambda:reference,
+                'committed_sources':lambda *_:{'fixture.mjs':b'fixed'},
+                'verify_reference_threads':lambda *_:{'passed':reference_passed},
+                'input_config':lambda *_,**__:({'totalTokens':5,'stages':['k']},{}),
+                'Coverage':lambda *_:SimpleNamespace(summary=lambda:{'complete':True}),
+                'OracleProcess':lambda *_,**__:oracle,
+            }
+            if startup_error:
+                def reject_startup(*_,**__):raise RuntimeError('injected oracle startup failure')
+                replacements['OracleProcess']=reject_startup
+            for name,value in replacements.items():stack.enter_context(patch.object(module,name,value))
+            stack.enter_context(patch.object(module.http.server,'ThreadingHTTPServer',lambda *_:server))
+            stack.enter_context(patch.object(module.threading,'Thread',lambda **_:SimpleNamespace(start=lambda:None)))
+            stack.enter_context(patch.dict(sys.modules,{'playwright.sync_api':SimpleNamespace(sync_playwright=lambda:nullcontext(playwright))}))
+            stack.enter_context(patch.object(sys,'argv',['production-chunk-browser.py','--manifest',str(manifest),'--contract',str(contract),'--model-dir',str(root),'--source-commit','1'*40,'--private-reference-dir',str(private),'--output',str(output),*flags]))
+            printed=stack.enter_context(redirect_stdout(io.StringIO()))
+            status=module.main()
+            return status,json.loads(printed.getvalue().splitlines()[-1]),json.loads(output.read_text()) if output.exists() else None
+
+    def test_reference_thread_failure_exits_one_and_success_exits_zero(self):
+        for passed,want in [(False,1),(True,0)]:
+            with self.subTest(passed=passed):
+                status,summary,receipt=self.run_main(['--verify-reference-threads'],reference_passed=passed)
+                self.assertEqual(summary['passed'],passed)
+                self.assertEqual(receipt['passed'],passed)
+                self.assertEqual(status,want)
+
+    def test_oracle_startup_failure_exits_one_after_writing_failure_receipt(self):
+        status,summary,receipt=self.run_main(startup_error=True)
+        self.assertFalse(summary['passed'])
+        self.assertEqual(receipt['failures'][0]['stage'],'independent-oracle-startup')
+        self.assertEqual(status,1)
+
+    def test_final_worker_comparison_failure_exits_one_and_completion_exits_zero(self):
+        for completed,want in [(False,1),(True,0)]:
+            with self.subTest(completed=completed):
+                status,summary,receipt=self.run_main(worker_completed=completed)
+                self.assertEqual(summary['passed'],completed)
+                self.assertEqual(receipt['passed'],completed)
+                self.assertEqual(status,want)
+
+    def test_validate_only_exits_zero_without_an_oracle(self):
+        status,summary,receipt=self.run_main(['--validate-only'],startup_error=True)
+        self.assertTrue(summary['passed'])
+        self.assertIsNone(receipt)
+        self.assertEqual(status,0)
+
+    def test_self_test_exits_zero(self):
+        with patch.object(sys,'argv',['production-chunk-browser.py','--self-test']),redirect_stdout(io.StringIO()) as printed:
+            self.assertEqual(module.main(),0)
+        self.assertTrue(json.loads(printed.getvalue())['passed'])
 
 
 class CoverageTests(unittest.TestCase):
