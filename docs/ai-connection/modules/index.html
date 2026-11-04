@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>実モジュール管理｜Kushyameln Works</title>
+  <link rel="stylesheet" href="../../shared/inference/inference.css">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <nav aria-label="ツール間の移動"><a href="../../github/">GitHub・ツール</a><a href="../">管理制御の参照画面</a><a href="../lora/">LoRA単体SDK管理</a></nav>
+  <header>
+    <p class="eyebrow">Kushyameln Works</p>
+    <h1>実モジュール管理</h1>
+    <p>ローカルの実モデルを選び、Text Encoder・VAE・Diffusionの設定、実行、取消、保存と読戻しを管理します。入力とモデルはブラウザ内で処理します。</p>
+    <p class="notice">TextとVAEの結果を参照して、base Diffusionへ渡す経路です。<strong>LoRA完成重みを実Diffusionへ渡すconsumerは未公開です。</strong>LoRAは別の単体SDK画面で扱います。全体接続・製品生成は未受入です。</p>
+    <p id="environment" class="muted"></p>
+  </header>
+  <main>
+    <section aria-labelledby="control-heading">
+      <h2 id="control-heading">実行の状態</h2>
+      <p id="status" role="status" aria-live="polite" aria-atomic="true" data-state="INITIALIZING">管理moduleを読み込んでいます。</p>
+      <progress id="progress" max="1" value="0" aria-label="実行の進捗"></progress>
+      <div class="actions"><button id="cancel" type="button" disabled>現在の実行を取消</button><button id="retry" type="button" disabled>直前の実行を再実行</button><button id="recover" type="button" disabled>選択moduleを復旧</button><button id="dispose" type="button" disabled>全moduleを終了</button></div>
+      <label for="recovery-module">復旧するmodule</label><select id="recovery-module"><option value="">全module</option><option value="text">Text Encoder</option><option value="vae">VAE</option><option value="diffusion">Diffusion</option><option value="mean">Mean変換</option></select>
+      <p class="muted">取消後のDiffusionは、元のHIGH・LOWモデルを再loadしてください。保存からの読戻しもモデルsessionやFileの選択権限を復元しません。</p>
+      <div class="table-scroll"><table><caption>moduleの構成と状態</caption><thead><tr><th scope="col">module</th><th scope="col">設定</th><th scope="col">状態</th></tr></thead><tbody id="module-list"></tbody></table></div>
+    </section>
+
+    <section aria-labelledby="reference-heading">
+      <h2 id="reference-heading">入力tensorと結果の参照</h2>
+      <div class="columns"><div><label for="tensor-file">保存したWorks tensor</label><input id="tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream"><label for="tensor-ref">登録する参照名</label><input id="tensor-ref" type="text" value="input" autocomplete="off"><button id="tensor-import" type="button" disabled>tensorを登録</button><p id="tensor-status" class="muted">登録したtensorは、各moduleの入力JSONから参照できます。</p></div>
+      <div><label for="reference-ref">入力に使う保存済みtensor・実行結果</label><select id="reference-ref"><option value="">まだありません</option></select><label for="reference-path">参照する値</label><select id="reference-path"><option value="tensor">tensor</option><option value="tensor.data">tensor.data（noise等の配列）</option><option value="result.tensor">result.tensor</option><option value="">結果全体</option></select><label for="reference-requirement">Diffusion slotのrequirementId（任意）</label><input id="reference-requirement" type="text" value="" autocomplete="off"><p class="muted">VAEのraw tensorをDiffusionのslotへ結ぶ識別子です。共有shape導出のtarget・source・reference requirementから指定します。経路JSONのworkflowShapeRequestで照合し、tensorのshapeや意味は変更しません。通常の参照では空欄にします。</p><label for="reference-target">参照を書き込む入力欄</label><select id="reference-target"><option value="vae-input">VAE</option><option value="mean-input">Mean変換</option><option value="diffusion-input">Diffusion</option><option value="route-json">経路JSON</option></select><button id="insert-reference" type="button" disabled>カーソル位置へ参照JSONを挿入</button><p class="muted">参照は <code>{"$ref":"input","path":"tensor"}</code> の形式です。入力JSONの数値配列をtyped arrayへ自動変換しません。</p></div></div>
+    </section>
+
+    <div class="module-panels">
+      <section class="module-panel" data-module="text" aria-labelledby="text-heading">
+        <h2 id="text-heading">1. Text Encoder</h2>
+        <label for="text-manifest">実行用manifest JSON</label><input id="text-manifest" type="file" accept=".json,application/json">
+        <p class="muted">prepared-model-manifest.json等をそのまま選べます。未選択ならモデルフォルダ直下のmanifest.jsonを使います。</p>
+        <label for="text-bundle">実行用モデルフォルダ</label><input id="text-bundle" type="file" webkitdirectory multiple>
+        <label for="text-source">元のUMT5モデル（必要な場合）</label><input id="text-source" type="file" accept=".safetensors,application/octet-stream">
+        <p id="text-files" class="muted">manifestが参照する実モデルのフォルダを選択してください。内部の相対pathは保持します。</p>
+        <button id="text-configure" type="button" disabled>Textのモデル設定を適用</button>
+        <label for="text-prompt">テキスト</label><textarea id="text-prompt" placeholder="テキストを入力"></textarea>
+        <details><summary>Token IDとattention maskを直接指定</summary><label for="text-tokens">空欄ならテキストを使用</label><textarea id="text-tokens" class="json-input" placeholder='{"tokenIds":[42,1],"attentionMask":[1,1]}' spellcheck="false"></textarea></details>
+        <label for="text-output">出力の参照名</label><input id="text-output" type="text" value="text-output" autocomplete="off">
+        <div class="actions section-actions"><button id="text-query" type="button" disabled>encode能力を確認</button><button id="text-run" class="primary" type="button" disabled>Textをencode</button></div>
+        <p id="text-state" class="module-state muted">未設定</p>
+      </section>
+
+      <section class="module-panel" data-module="vae" aria-labelledby="vae-heading">
+        <h2 id="vae-heading">2. VAE</h2>
+        <label for="vae-manifest">実行用manifest JSON</label><input id="vae-manifest" type="file" accept=".json,application/json">
+        <p class="muted">vae-stream-manifest.jsonやvae-stream-threads4-manifest.json等を選べます。未選択ならモデルフォルダ直下のmanifest.jsonを使います。</p>
+        <label for="vae-bundle">実行用モデルフォルダ</label><input id="vae-bundle" type="file" webkitdirectory multiple>
+        <p id="vae-files" class="muted">manifestが参照するONNX・重みのフォルダを選択してください。</p>
+        <button id="vae-configure" type="button" disabled>VAEのモデル設定を適用</button>
+        <label for="vae-operation">操作</label><select id="vae-operation"><option value="encode">encode · 画像tensor → raw mean</option><option value="decode">decode · raw latent → 画像tensor</option></select>
+        <label for="vae-input">native入力JSON</label><textarea id="vae-input" class="json-input" spellcheck="false">{"$ref":"input","path":"tensor"}</textarea>
+        <p class="muted">VAEはtensorを直接受け取ります。shape・値域・decoder情報はownerが確認します。拡縮や意味の付替えは行いません。</p>
+        <label for="vae-output">出力の参照名</label><input id="vae-output" type="text" value="vae-output" autocomplete="off">
+        <div class="actions section-actions"><button id="vae-query" type="button" disabled>選択操作の能力を確認</button><button id="vae-run" class="primary" type="button" disabled>VAEを実行</button></div>
+        <p id="vae-state" class="module-state muted">未設定</p>
+      </section>
+
+      <section class="module-panel" data-module="mean" aria-labelledby="mean-heading">
+        <h2 id="mean-heading">3. Mean変換</h2>
+        <p class="muted">固定Diffusion ownerのraw mean正規化・復元を呼びます。生成sampleのdecodeには、このmean復元を挟まずraw generated sampleを渡します。</p>
+        <button id="mean-configure" type="button" disabled>Mean変換を準備</button>
+        <label for="mean-operation">操作</label><select id="mean-operation"><option value="normalizeRawMean">normalizeRawMean · 正規化</option><option value="restoreRawMean">restoreRawMean · raw meanへ復元</option></select>
+        <label for="mean-input">native入力JSON</label><textarea id="mean-input" class="json-input" spellcheck="false">{"tensor":{"$ref":"vae-output","path":"tensor"}}</textarea>
+        <label for="mean-output">出力の参照名</label><input id="mean-output" type="text" value="mean-output" autocomplete="off">
+        <div class="actions section-actions"><button id="mean-query" type="button" disabled>選択操作の能力を確認</button><button id="mean-run" class="primary" type="button" disabled>Mean変換を実行</button></div>
+        <p id="mean-state" class="module-state muted">未設定</p>
+      </section>
+
+      <section class="module-panel" data-module="diffusion" aria-labelledby="diffusion-heading">
+        <h2 id="diffusion-heading">4. Base Diffusion</h2>
+        <label for="diffusion-high">HIGHの実モデル</label><input id="diffusion-high" type="file" accept=".safetensors,application/octet-stream">
+        <label for="diffusion-low">LOWの実モデル</label><input id="diffusion-low" type="file" accept=".safetensors,application/octet-stream">
+        <label for="diffusion-threads">WASM threads（明示指定）</label><select id="diffusion-threads"><option value="1">1 thread · COI不要</option><option value="4">4 threads · COI必須</option></select>
+        <p id="diffusion-files" class="muted">HIGHとLOWは別々の完全な実モデルFileを指定します。</p>
+        <div class="actions"><button id="diffusion-configure" type="button" disabled>Diffusionを準備</button><button id="diffusion-load" type="button" disabled>選択モデルをload</button></div>
+        <label for="diffusion-operation">操作</label><select id="diffusion-operation"><option value="modelStatus">modelStatus</option><option value="predict">predict</option><option value="sample">sample</option><option value="unload">unload</option></select>
+        <label for="diffusion-input">native入力JSON</label><textarea id="diffusion-input" class="json-input" spellcheck="false">{}</textarea>
+        <p class="muted">predict: side / shapeRequest / tensors / conditioning / timestep。sample: shapeRequest / tensors / noise / positive / negative。shapeと入力構造はモデルの契約に合わせて指定します。noiseは登録tensorの <code>tensor.data</code> を参照できます。</p>
+        <label for="diffusion-output">出力の参照名</label><input id="diffusion-output" type="text" value="diffusion-output" autocomplete="off">
+        <div class="actions section-actions"><button id="diffusion-query" type="button" disabled>選択操作の能力を確認</button><button id="diffusion-run" class="primary" type="button" disabled>Diffusionを実行</button></div>
+        <p id="diffusion-state" class="module-state muted">未設定</p>
+      </section>
+    </div>
+
+    <section aria-labelledby="route-heading">
+      <h2 id="route-heading">5. 複数moduleの経路を実行</h2>
+      <p>各stepでmodule、操作、入力、出力参照を指定します。Textのembedding、VAEのcontexts、Diffusionのraw generated sampleを、対応するnative入力の位置へ参照で渡してください。</p>
+      <div class="actions"><button id="route-from-forms" type="button" disabled>各moduleの現在の入力から経路を作る</button><label class="check"><input id="route-text" type="checkbox" checked> Text</label><label class="check"><input id="route-vae-encode" type="checkbox"> VAE encode</label><label class="check"><input id="route-mean" type="checkbox"> Mean変換</label><label class="check"><input id="route-diffusion" type="checkbox"> Diffusion</label><label class="check"><input id="route-vae-decode" type="checkbox"> VAE decode</label></div>
+      <p class="muted">経路作成は、選択した欄を順番に転記します。Diffusion入力内のText・contexts参照は下のJSONで確認してください。VAE decodeは選択したDiffusion出力のtensorを直接参照します。</p>
+      <label for="route-decode-input">経路のVAE decode入力（encode入力とは別に指定）</label><textarea id="route-decode-input" class="json-input" spellcheck="false">{"$ref":"diffusion-output","path":"tensor"}</textarea>
+      <label for="route-json">経路JSON</label><textarea id="route-json" class="json-input route-input" spellcheck="false">{"steps":[{"stepId":"text-encode","moduleId":"text","operation":"encode","input":{"text":""},"outputRef":"text-output"}],"externalRefs":[],"finalRefs":["text-output"]}</textarea>
+      <div class="actions section-actions"><button id="route-run" class="primary" type="button" disabled>この経路を実行</button></div>
+      <div class="table-scroll"><table><caption>直近の経路</caption><thead><tr><th scope="col">step</th><th scope="col">module / 操作</th><th scope="col">状態</th></tr></thead><tbody id="step-list"><tr><td colspan="3">まだ経路を実行していません。</td></tr></tbody></table></div>
+    </section>
+
+    <section aria-labelledby="save-heading">
+      <h2 id="save-heading">6. 結果を保存・読戻し</h2>
+      <ul id="output-list" class="outputs"><li>出力はまだありません。</li></ul>
+      <div class="actions"><button id="save-workspace" type="button" disabled>現在の部分結果・設定をbundle保存</button></div>
+      <label for="workspace-file">保存したworkspace bundleを読戻す</label><input id="workspace-file" type="file" accept=".zip,application/zip" disabled>
+      <p id="saved-state" class="muted">実payload、descriptor、設定と実行記録を保存します。読戻したtensorは再利用できます。モデルFileは選び直して設定を適用し、Diffusionはloadしてください。</p>
+      <details><summary>管理・nativeの状態</summary><pre id="state-details">{}</pre><pre id="result-details">{}</pre></details>
+      <details><summary>直近のエラー</summary><pre id="error-details">なし</pre></details>
+    </section>
+  </main>
+  <footer>generationReady: false · fullImplementationComplete: false。管理制御の成功と実モデルの数値受入・全体運用試験は別に確認します。</footer>
+  <script type="module" src="./main.mjs"></script>
+</body>
+</html>
