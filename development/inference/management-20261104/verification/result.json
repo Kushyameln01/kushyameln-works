@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-11-04T17:22:35.264768+00:00",
+  "sourceSha": "003601db1cb92981d41ba5c68efa08e625680223",
+  "note": "Commands ran immediately before this code-only commit; fixed Git bytes equal the tested files. Production native/bridge code is unchanged from78954ee. No full model inference, export, independent reference generation or global Python run was repeated. Node --test output reports files; previous direct-run logs retain individual 8 bridge / 2 cancellation case counts.",
+  "commands": [
+    {
+      "command": "python -m unittest discover -s tools/inference/text-encoder -p 'test_*.py'",
+      "exitCode": 0,
+      "log": "release-python-tests.log",
+      "bytes": 155,
+      "sha256": "4321256b06ecd119a4935714b88130fd9d5b1719bed108b4d2a02bb4acae9356"
+    },
+    {
+      "command": "node --test tools/inference/test-text-normalization.mjs tools/inference/text-encoder/test-norm-graph-lowering.mjs tools/inference/text-encoder/test-runtime.mjs tools/inference/text-encoder/test-sdpa-scale-recipe.mjs tools/inference/text-encoder/test-text-job.mjs tools/inference/text-encoder/test-wasm-sgemm-fma.mjs tools/inference/vae/test-api.mjs tools/inference/vae/test-fixed-frame-processing.mjs tools/inference/vae/test-stream-runtime.mjs",
+      "exitCode": 0,
+      "log": "release-node-tests.log",
+      "bytes": 722,
+      "sha256": "f5cadbfc097af7e6bea5e9b7203caf29a011614879d212747b1c3adf937609f7"
+    },
+    {
+      "command": "node --test tools/inference/management-connection/test-bridge.mjs",
+      "exitCode": 0,
+      "log": "release-bridge-tests.log",
+      "bytes": 192,
+      "sha256": "4c0ed0b031112d359ed3b3bb182cc1f0d75b380919b8391085348a1704d6ebcb"
+    },
+    {
+      "command": "node --test tools/inference/management-connection/test-observation-archive.mjs tools/inference/management-connection/test-browser-controls.mjs",
+      "exitCode": 0,
+      "log": "release-controls-tests.log",
+      "bytes": 286,
+      "sha256": "06bfe31d8334d4c312b53690e2b55937139ec5ffdf7d34c3e46bd0fc6a3fa1a6"
+    },
+    {
+      "command": "python -m unittest discover -s tools/inference/management-connection -p 'test_*.py'",
+      "exitCode": 0,
+      "log": "release-mapping-tests.log",
+      "bytes": 104,
+      "sha256": "5153ff3bdc9db0e7ac1f262fd5027c58db038e9790c5bb663b5d942a22e539dc"
+    }
+  ],
+  "diagnosticSourceByteProof": [
+    {
+      "path": "tools/inference/management-connection/browser.mjs",
+      "bytes": 13824,
+      "sha256": "79b307ba6c68295f5ea5ee791a9de6aebaf1eee9c4e278153586c6b323822717",
+      "fixedSourceBytesEqual": true
+    },
+    {
+      "path": "tools/inference/management-connection/run-browser.py",
+      "bytes": 21691,
+      "sha256": "5a0a8e3b2a432b405be91efed6fd55ba4b263bc4268e4fa5f4254b8c32e38551",
+      "fixedSourceBytesEqual": true
+    },
+    {
+      "path": "tools/inference/management-connection/observation-archive.mjs",
+      "bytes": 4981,
+      "sha256": "f5edfada30c60db37e4fc74bf4dc03838528033f62d3360c813aa4cfad0a4ac5",
+      "fixedSourceBytesEqual": true
+    },
+    {
+      "path": "tools/inference/management-connection/replay-observations.mjs",
+      "bytes": 5084,
+      "sha256": "4bcf6206f19f0de9166d25c696b2c96f0e75398a7d6cfda5e00760869e1944d1",
+      "fixedSourceBytesEqual": true
+    },
+    {
+      "path": "tools/inference/management-connection/test-observation-archive.mjs",
+      "bytes": 5537,
+      "sha256": "eb823f1c0440c1fca6f03af8d202a1b6b33cf80c1e39227073389a0f31a6693f",
+      "fixedSourceBytesEqual": true
+    }
+  ],
+  "independentFinalReview": {
+    "critical": 0,
+    "important": 0,
+    "scope": "Lossless observer pool only; original cancellation messages and all structured evidence retained; no native/math/bridge/normal Worker diff from78954ee."
+  },
+  "knownUnrelatedBaseline": "Whole Python52/53 and LoRA public ledger inconsistency are not reassessed or represented by these scoped PASS results."
+}

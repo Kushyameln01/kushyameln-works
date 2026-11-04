@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "scope": "Capture verifier execution only, no model NN/export",
+  "scriptSourceSha": "941b2a6e3e956d000a3339ae05c0ef84aafed47e",
+  "attempts": [
+    {
+      "environment": "Default sandbox",
+      "passed": false,
+      "error": "Node execFileSync git: spawnSync git EPERM; stdout returned but Node reported an error",
+      "stoppedBeforeInputDecodeAndCapture": true,
+      "neuralRuns": 0
+    },
+    {
+      "environment": "Approved execution without subprocess sandbox restriction",
+      "passed": true,
+      "scriptUnchanged": true,
+      "sourceProof": "conditioning-handoff-source-proof.json",
+      "receipt": "conditioning-handoff.json",
+      "captureCalls": 1,
+      "snapshotCalls": 3,
+      "neuralRuns": 0,
+      "projectionExecuted": false,
+      "crossAttentionExecuted": false,
+      "ffnExecuted": false
+    }
+  ]
+}

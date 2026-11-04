@@ -37,7 +37,7 @@ const decoded = await bridge.execute({module: 'vae', operation: 'decode', input:
 
 `configure` は実native `.configure`、`execute` は実管理 `createTextVaeAdapter.invoke` からnative `.encode/.decode` を呼ぶ。TextとVAEのbindingは実管理queueの同じresource groupに登録する。plain文字列をdummy tensorへ変換しない。shape計算・数値演算・model／Tokenizer／decoder照合はnative ownerが行う。shape外の要求を縮小・padding・frame削減で適合させない。
 
-Textはplain `[1,512,4096]` とID `[1,L,4096]` を維持し、返却 `native.inputMode` で区別する。実L、float32／BLC、mask、model／Tokenizer、`umt5-final-rmsnorm-f32-v1` は返却tensorから取得できる。bridgeは使用可能な入力域を狭めない。全512有効IDの数値問題の解消・受入は別のText数値検証として報告する。
+Textはplain `[1,512,4096]` とID `[1,L,4096]` を維持し、返却 `native.inputMode` で区別する。実L、float32／BLC、mask、model／Tokenizer、`umt5-final-rmsnorm-f32-v1` は返却tensorから取得できる。bridgeは使用可能な入力域を狭めない。全512有効IDの数値問題は内部normのFP32集計順で解消し、元gate0.001で受け入れた。採用manifest・局所比較・通常SDKと管理経由の結果は[RESULT](RESULT.md)で範囲を分ける。最終Hike RMSNorm、model／Tokenizer、合法入力域は変更しない。
 
 VAEの対応域は構成したnative manifestと `querySupport` が返す完全shape／制約が正本である。固定Rectを構成すれば81frameは対応外となり、stream manifestを構成すればnative streamの対応域を返す。設定できたこと、local assetが揃うこと、メタデータ照会の成功は、全domainの推論成功を意味しない。
 

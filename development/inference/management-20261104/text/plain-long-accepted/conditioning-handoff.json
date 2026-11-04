@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "scope": "Saved real conditioning payload -> actual fixed Diffusion capture/snapshot only; no model arithmetic",
+  "caseId": "plain-long-eos512",
+  "producerExecutionSourceSha": "78954ee92d1b76c6652f50df1668159a55db6dc9",
+  "sourceProof": {
+    "schemaVersion": 1,
+    "scope": "Verifier and actual codec/capture source bytes checked before execution",
+    "script": {
+      "path": "tools/inference/management-connection/verify-conditioning-handoff.mjs",
+      "bytes": 8406,
+      "sha256": "409fefbd685c61a991b3268a015d354364c8d7fc62d18c2abc2151c4ed5954a5",
+      "executionSourceSha": "941b2a6e3e956d000a3339ae05c0ef84aafed47e",
+      "uncommittedAtExecution": false,
+      "baseImplementationSourceSha": "78954ee92d1b76c6652f50df1668159a55db6dc9",
+      "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/941b2a6e3e956d000a3339ae05c0ef84aafed47e/tools/inference/management-connection/verify-conditioning-handoff.mjs"
+    },
+    "sourceClosure": [
+      {
+        "path": "docs/shared/inference/tensor.mjs",
+        "bytes": 10894,
+        "sha256": "7a15d721b1bab60cdade8723fd1c4d543a142d236cf2e59b63f1ba33ba14ed78",
+        "executionSourceSha": "78954ee92d1b76c6652f50df1668159a55db6dc9",
+        "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/78954ee92d1b76c6652f50df1668159a55db6dc9/docs/shared/inference/tensor.mjs"
+      },
+      {
+        "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs",
+        "bytes": 19270,
+        "sha256": "f65a5150257dd7c50bbf6c073e931ebb33bdba6ae4d9f96d92e6b885b191ad63",
+        "executionSourceSha": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+        "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/ffeeeedb6b57d182a977c3ac02c042ce235fc87a/docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs"
+      }
+    ]
+  },
+  "input": {
+    "path": "/workspace/work/inference/management-20261104/text-plain-long-approved/plain-long-eos512.wktensor",
+    "bytes": 8390098,
+    "sha256": "18ed985965e4dd90e5db3fe85b3ea55e0839d073008749ab99c9cc9d6927c00a",
+    "dtype": "float32",
+    "layout": "BLC",
+    "meaning": "text_hidden_states",
+    "shape": [
+      1,
+      512,
+      4096
+    ],
+    "elements": 2097152,
+    "dataSha256": "ae0bfeae43676afd976a0883b34d9a8e04f4daa8856bb567e618093b3d71bca0",
+    "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+    "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+    "normalization": "umt5-final-rmsnorm-f32-v1",
+    "maskLength": 512,
+    "activeMaskValues": 512,
+    "maskSha256": "6caf38d537984e261527b8caef5f990fb91415a1db917198821a79ed28997973"
+  },
+  "checks": {
+    "allDataWordsEqual": true,
+    "allMaskValuesEqual": true,
+    "modelTokenizerFinalMarkerRetained": true,
+    "inputCaptureSnapshotBuffersIndependent": true,
+    "inputMutationDoesNotChangeCapture": true,
+    "snapshotMutationDoesNotChangeProtectedCapture": true
+  },
+  "capture": {
+    "schemaVersion": "bernini-p4-conditioning-snapshot/0.1",
+    "rows": 512,
+    "verification": {
+      "producerAuthenticated": false,
+      "realExecutionVerified": false,
+      "jointlyAccepted": false
+    },
+    "normalizationLocation": "metadata.nativeTensorMetadata.normalization"
+  },
+  "elapsedMs": 10932.565942000001,
+  "nodeRusagePeakRssBytes": 531230720,
+  "projectionExecuted": false,
+  "crossAttentionExecuted": false,
+  "ffnExecuted": false,
+  "neuralRuns": 0,
+  "exports": 0,
+  "independentRecipientEnvironmentAck": false,
+  "normalConnection": "Native tensor and explicit model/Tokenizer bindings only; no prompt hash,payload hash,numerical gate or detailed receipt is required by ordinary capture",
+  "ownership": "Capture and snapshots own independent bytes; caller releases all references when finished. Protected capture token is local to the receiving Diffusion module instance."
+}
