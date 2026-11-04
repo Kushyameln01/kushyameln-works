@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "lora-model-source-execution/1",
+  "contractVersion": "lora-diffusion-model/1.0-draft.1",
+  "distribution": "The commit containing this file; see fixed URL and external post-push delivery receipt, not a self-referential hash",
+  "implementationSourceSHA": "168a1e2fde2b643cc662514da288a7fd67ab2213",
+  "nodeRegressionSourceSHA": "168a1e2fde2b643cc662514da288a7fd67ab2213",
+  "browserFailedAttemptSourceSHA": "168a1e2fde2b643cc662514da288a7fd67ab2213",
+  "browserSuccessSourceSHA": "cfdea995f7f316786ed32a885b10478f66906a23",
+  "cleanArchiveReproductionSourceSHA": "cfdea995f7f316786ed32a885b10478f66906a23",
+  "managementSourceSHA": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+  "diffusionSourceSHA": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+  "node": {
+    "tests": 265,
+    "pass": 265,
+    "fail": 0,
+    "skipped": 0,
+    "newTests": 24,
+    "legacyTests": 241
+  },
+  "archiveReproduction": {
+    "tests": 24,
+    "pass": 24,
+    "scope": "Same new cases, separately proves sanitized published archive portability"
+  },
+  "browser": {
+    "cases": 13,
+    "comparedElements": 317500,
+    "failedElements": 0,
+    "maxAbsolute": 0.0
+  },
+  "implementationFiles": [
+    {
+      "path": "docs/shared/inference/lora/diffusion-model-registry.mjs",
+      "bytes": 5591,
+      "sha256": "47d76957b08ca5d1dca793f88f7c98b68c1d40b681bd2238fdb7689c9179fe6c",
+      "gitBlobSHA": "34383f77cb87872a13c6ab5e103e1b61deee15c9"
+    },
+    {
+      "path": "docs/shared/inference/lora/diffusion-model-adapter.mjs",
+      "bytes": 15472,
+      "sha256": "2868a568a11a853188ee23a2bf2f5a93bd698354abcbe253b3e76f533a0418a0",
+      "gitBlobSHA": "7d07d2a163445d62370f88ccb8ce53fe9a8540e5"
+    },
+    {
+      "path": "docs/shared/inference/lora/diffusion-model-session.mjs",
+      "bytes": 4937,
+      "sha256": "16a58962d1d93b2eb75e6d122603e59317dd59eaf0fa89a860fd957543865ccd",
+      "gitBlobSHA": "f7029dac47826bbced027d7e892cd74433fc6243"
+    }
+  ],
+  "harnessFile": {
+    "path": "tools/lora/run-model-connection-browser.cjs",
+    "bytes": 3895,
+    "sha256": "f8df1760131b9899c9553f6b462035ad4aa230162feacbd3c7a3e2134c718ac0",
+    "gitBlobSHA": "8fccb41e84853d9fbd56635f1602c61f880de48c"
+  },
+  "sourceClosure": "OWNER-SOURCES.json",
+  "servedSourceReceipt": "verification/BROWSER-SOURCE-RECEIPT.json",
+  "reusedEvidence": [
+    {
+      "sha": "4a3419c768e2b4b38b081314abe2cfaaeed6b14b",
+      "scope": "Standalone all2904 arithmetic on independent nonzero dyadic base; not actual model integration"
+    },
+    {
+      "sha": "986b66b3dd54ef26d98f99a1db92a2933f3e31aa",
+      "scope": "Standalone lifecycle hashes reuse R1 completed F32 values"
+    },
+    {
+      "sha": "6d0c8df4cd4992f26745d2d26394f5e194d2567f",
+      "scope": "Standalone unit distribution;18 runtime source files remain identical"
+    }
+  ],
+  "acceptance": {
+    "standaloneMaintained": true,
+    "managementPartialConnected": true,
+    "actualCompletedF32PortConnected": true,
+    "nativeConstructorControlTested": true,
+    "coverage": "PARTIAL",
+    "actualHIGHBaseUsed": false,
+    "originalExperimentalLoRAUsed": false,
+    "experimentalLoRASent": false,
+    "wholeConnectionImplementationComplete": false,
+    "publicSamplerAdopted": false,
+    "fullNeuralPrediction": false,
+    "wholeOperationExperiment": false,
+    "generationReady": false,
+    "merged": false,
+    "pagesPublished": false
+  },
+  "receiverACK": "Not obtained; sender fetched fixed owner sources and verified them. Do not infer receiver personal ACK."
+}

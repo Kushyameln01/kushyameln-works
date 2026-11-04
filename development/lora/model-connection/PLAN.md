@@ -33,10 +33,10 @@ Produces: createDiffusionLoraModelSession、管理requestからnormal適用・�
 ## Task 3: 対応台帳・証拠再利用・配布
 
 Files: DIFFUSION-MODEL-CONNECTION.md、development/lora/model-connection/{RESULT,REPRODUCE,HANDOFF,FILES,bindings/verification}。
-- [ ] 4 pair/side全2904 MAPPINGとowner target/bindingを結合し、全対象・選択領域・除外とdtype/slotを出力する。
-- [ ] 変更境界のsuiteとbrowserを実行し、69 baseline/全241 legacy scopeと新規を別記録する。全値算術の再実行はしない。
-- [ ] 一回の独立コードレビュー、必要修正、source固定・GitHub push・Draft PR2と固定body取得照合。
-- [ ] 単体/管理部分接続/実port/全体実装残件/全体実験未実施/原本未送付を別に報告する。
+- [x] 全2904patchと1053native binding/42base対象の対応台帳を出力した。
+- [x] 既存241+新規24=265件PASS、browser13ケース/独立317500要素比較、archiveから新規24件の再現を確認した。全patch算術は再実行しない。
+- [x] 独立コードレビューとsource C1/C2の固定・pushを完了。最終配布後の固定body照合は配布receiptへ記録する。
+- [x] 単体/管理部分接続/実port/全体実装残件/全体実験未実施/原本未送付をRESULT/HANDOFFへ分けて記録した。
 
 ## Review focus
 
