@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "diffusion-diagnostic-exit-status/1",
+  "sourceCommit": "716ffd169cf1b77ac086e030131af9de6222e528",
+  "scope": "Lightweight host control tests only; no model reads, native inference, original trial mutation or new numerical acceptance",
+  "passed": true,
+  "files": [
+    {
+      "path": "tools/diffusion-models/production-chunk-browser.py",
+      "bytes": 41908,
+      "sha256": "981ddbfcd81399a2c6ec44fd87e94b6d80030e32c18f5b03b3361a0d8785165f"
+    },
+    {
+      "path": "tools/diffusion-models/test-production-chunk-browser.py",
+      "bytes": 20950,
+      "sha256": "e30338e019a345047fa3db219a939f28466f01ecef5fd1b8f953ba266d2cc5f2"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "python",
+        "tools/diffusion-models/test-production-chunk-browser.py"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "................\n----------------------------------------------------------------------\nRan 16 tests in 0.394s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python",
+        "tools/diffusion-models/production-chunk-browser.py",
+        "--self-test"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"passed\": true, \"coverageRejectsDuplicates\": true, \"completeTailRequired\": true, \"closedOraclePipeReportedWithoutSkippingCleanup\": true, \"idempotentOracleClose\": true, \"modelWorkExecuted\": false}\n",
+      "stderr": ""
+    }
+  ]
+}

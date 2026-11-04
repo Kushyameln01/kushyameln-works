@@ -38,6 +38,8 @@
 
 管理には、既存の実公開API adapterを再利用して新固定sourceを採用できる。保存資材は [SAVED-INPUTS.md](SAVED-INPUTS.md) と復元scriptから取得できる。管理の旧固定sourceによるcontrol受入と、今回のDiffusion実Worker接続受入を区別する。管理側で新sourceのNN／VAE／LoRAを通した全体運用は未実施で、取得ACKを単体試験の着手条件にはしていない。
 
+[管理採用の照合結果](MANAGEMENT-ADOPTION.md) では、管理の固定source `296c18d5f2c878fa42bbb198a706991fc901065f` の実adapter・保存入力を取得して確認した。baseの既存7操作は互換だが、管理が採用済みの旧runtime144件に対し最新は153件であり、変更11・追加9のsource／build／closure更新が必要である。管理の結果cloneはMessagePortを扱えないため、`openWeightFeed`の操作名追加だけで接続完了にはならない。専用のport/client所有経路と取消・解放を管理ownerが実装する必要がある。これは実コードから確認した未実装境界であり、管理の新source採用・全体接続の完了や相手の取得ACKを主張しない。照合した固定source・path・bytes・SHA-256は [差分manifest](MANAGEMENT-SOURCE-DIFF.json) に保存する。
+
 ## 原寸の容量と最初の障害
 
 明示した別caseはtarget `[1,16,21,60,104]`、source81frames相当、848×848参照3stream、reference_videoなし、合計73947 token。実媒体のframe数／有効slot／寸法を測った結果ではない。target-firstのconcatと、contextのsource→有効slot順、frame順を維持する。元workflowを推測で復元していない。

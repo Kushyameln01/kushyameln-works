@@ -88,6 +88,8 @@ python tools/diffusion-models/observe-process-run.py \
 
 `--skip-prefix-comparison`は、変更されていないprefix／post-modulationの既存数値証拠を再利用する選択である。native計算を省かず、全K/V・self／cross／FFNを独立比較する。完了判定ではJSONの `passed`、全selected stageのcoverage、source前後、cleanupを読む。この版の診断processは失敗receiptでもexit0となり得るため、exit codeだけで合格にしない。
 
+診断hostのsource `716ffd169cf1b77ac086e030131af9de6222e528` 以降は、比較失敗・参照startup失敗・参照thread検証失敗をexit1として返す。16件の軽量試験で各分岐を確認した。これはhostの終了状態の修正であり、上の実行sourceや数値scopeを変更しない。固定8d試験の結果確認には、引き続きreceipt本体を使う。
+
 完全40block/headは同runnerの `--operation predict`、六更新は `--operation sample` に分離して実装した。sample比較は六つの完全predict出力と16個のsampler状態／handoff／復元を対象とし、全block中間比較とは別scopeである。必要な前段の数値・資源gateが合格してから進め、部分runを受入済みに数えない。
 
 RoPE cacheの新sourceと容量は [ROPE-MATRIX-CACHE.md](ROPE-MATRIX-CACHE.md)、次候補の未受入事項は [resident-ort/FEASIBILITY.md](resident-ort/FEASIBILITY.md) を参照する。native buffer probeや容量用storeだけで、モデル生成が成立したとは扱わない。
