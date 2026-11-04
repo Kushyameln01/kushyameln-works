@@ -36,6 +36,8 @@ Each mode reused prepared inputs twice:
 
 Every compared value was bit-identical to the existing `attentionTile` graph. The test-only independent gate was fixed at `abs <= 0.001 + 0.0001 * abs(reference)`; no reference or gate enters normal execution. Copy/take, mutation isolation, finite admission, aligned range/order, foreign/stale handles, cancellation/retry, active release and actual native disposal-failure/recovery passed. Final prepared pair count, bytes, leases and query owners were zero.
 
+Recorded additional receipts: [evidence/node-boundaries.json](evidence/node-boundaries.json) contains29 passing Node tests in five commands; [evidence/existing-operator-boundaries.json](evidence/existing-operator-boundaries.json) contains eight passing pre-existing native ownership/operator/thread-admission cases. The pre-existing browser driver now captures the new import dependency.
+
 Node ownership/layout tests cover direct ordered rows with 256+219 keys, final91-row append, exact head-major mapping, absence of full row-major stores, gaps/ranges, partial pool cancellation and cleanup retries. Existing query-owner and model admission/cancellation tests also pass.
 
 ## Capacity and reused evidence
@@ -50,7 +52,10 @@ The unchanged baseline partial run at `../public-worker-20261102/evidence/full73
 node docs/shared/diffusion-models/execution/test-prepared-attention-kv-owner.mjs
 node docs/shared/diffusion-models/execution/test-owned-attention-query-owner.mjs
 node docs/shared/diffusion-models/execution/test-model-candidate.mjs
+node docs/shared/diffusion-models/execution/test-model-chunk-entry.mjs
+node docs/shared/diffusion-models/execution/test-model-signal-cleanup.mjs
 python3 docs/shared/diffusion-models/execution/test-prepared-attention-kv-browser.py --output /tmp/prepared-kv-native.json
+python3 docs/shared/diffusion-models/execution/test-prepared-batched-browser.py --output /tmp/existing-operator-boundaries.json
 ```
 
 The browser driver captures exact source bytes before serving, records all SHA-256 values, checks no dependency is missing and verifies bytes are unchanged during execution. Chromium and Playwright are required. These tests do not load model weights.
