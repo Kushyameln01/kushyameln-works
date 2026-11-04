@@ -35,3 +35,5 @@ capture/save/read/P4 handoff, Rect actual cancel/recovery/encode/decode and
 saved synthetic generated-sample decode/save. Commit/push API/results and
 record distribution vs actual execution source. Full P5/LoRA operation remains
 outside these partial checks.
+
+Update: initial scaling candidate completed and failed at0.0017351508140563965; not adopted. Rect actual management API run8594722e693bda9901f61cededfc1b3338e66c92 passed encode/mean decode/saved synthetic raw decode/cancel/recovery/storage, Worker4/4 ended and final live/zombie0. Corrected source-exact AVX2 norm operator matched every value in3 frozen independent source fixtures. Norm-only full24 normalSDK is running at c99d89ca7a9edbe04d0fb451ef7c2529dbaa48d3, private output text-norm-all512, normal manifest40afd296805a8ecfbadcca1602cea2d1d93421f93db3af9b9b196b9a7af2e3af; read acceptance.json for its result. Private FMA block19 experiment was much worse and is not adopted. No model inference should be repeated merely to retrieve receipts.

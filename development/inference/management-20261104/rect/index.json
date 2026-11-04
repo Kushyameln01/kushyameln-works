@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "status": "RECT_OWNER_HOST_ACTUAL_MANAGEMENT_API_PARTIAL_CONNECTION_PASS",
+  "executionSourceSha": "8594722e693bda9901f61cededfc1b3338e66c92",
+  "managementSourceSha": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+  "diffusionSourceSha": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+  "actor": "VAE/TextEncoder owner host with actual management adapter, shared queue, artifact/package APIs and actual VAE Chromium WASM",
+  "independentManagementEnvironmentAck": false,
+  "profile": "wan21-raw-f32-1x16x32",
+  "videoShape": [
+    1,
+    3,
+    1,
+    16,
+    32
+  ],
+  "latentShape": [
+    1,
+    16,
+    1,
+    2,
+    4
+  ],
+  "comparisons": {
+    "mean": {
+      "elements": 128,
+      "maxAbs": 8.642673492431641e-07,
+      "rmse": 2.8540611647251395e-07,
+      "gate": {
+        "atol": 2e-05,
+        "rtol": 2e-05,
+        "maxAbs": 2e-05
+      },
+      "passed": true
+    },
+    "rgb": {
+      "elements": 1536,
+      "maxAbs": 3.334134817123413e-06,
+      "rmse": 6.158878606912979e-07,
+      "gate": {
+        "atol": 2e-05,
+        "rtol": 2e-05,
+        "maxAbs": 2e-05
+      },
+      "passed": true
+    }
+  },
+  "savedGeneratedScope": "Synthetic saved contract input; actual VAE decode and management storage; no real Diffusion generation acceptance",
+  "samePackageInputAndOutput": true,
+  "cancellation": {
+    "errorCode": "INVOCATION_CANCELLED",
+    "barrier": {
+      "notStarted": false,
+      "stopConfirmed": true,
+      "originalTerminal": true,
+      "resourceReleased": true,
+      "reusable": true,
+      "quarantined": false
+    }
+  },
+  "workerSummary": {
+    "created": 4,
+    "terminated": 4,
+    "live": 0
+  },
+  "processSummary": {
+    "observed": 20,
+    "explicitlyReaped": 4,
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": []
+  },
+  "outerWallSeconds": 51.05771165900023,
+  "initialFailure": {
+    "file": "initial-result.json",
+    "executionSourceSha": "e481e857de98a828159a2fd48fba4f16be2274e9",
+    "passed": false,
+    "scope": "Canonical JSON key-order sensitive harness metadata comparison; not a VAE numerical change; initial mean comparison passed, later stages not accepted"
+  },
+  "sourceAcquisition": "source-acquisition.json",
+  "packageAudit": "package-audit.json",
+  "files": [
+    {
+      "file": "README.md",
+      "bytes": 7532,
+      "sha256": "a9addab4ef86c137e25f4102fe2fde0704f5b0e2bfa6b705c7e91b81c0fe2c91"
+    },
+    {
+      "file": "accepted-result.json",
+      "bytes": 173336,
+      "sha256": "363093c13297cae7f54ab6c26f04c0bbe92c85d5e3a82b63dbb317a70d03eb59"
+    },
+    {
+      "file": "artifacts/rect-mean.management.zip",
+      "bytes": 20225,
+      "sha256": "2f70ddb3720917c884280b2c25840b58cadf57d3944d163fd1dbaf9b07c01641"
+    },
+    {
+      "file": "artifacts/rect-mean.wktensor",
+      "bytes": 1084,
+      "sha256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8"
+    },
+    {
+      "file": "artifacts/rect-rgb.management.zip",
+      "bytes": 20911,
+      "sha256": "8980ea36344d18258d5c5f8d8d110e97d70a25b008032db2a2e5975760e6cd80"
+    },
+    {
+      "file": "artifacts/rect-rgb.wktensor",
+      "bytes": 6715,
+      "sha256": "4da5e22fc0bc668ab6224fa83f8d100843ed9021d2c70049fd1464d4c9696c7f"
+    },
+    {
+      "file": "artifacts/saved-generated-rgb.management.zip",
+      "bytes": 23175,
+      "sha256": "0aa7156db9232b897fae001f8179efbd65d701286582834dcb77215f91212e02"
+    },
+    {
+      "file": "artifacts/saved-generated-rgb.wktensor",
+      "bytes": 6756,
+      "sha256": "3b6b8680935d8bf18bdf06f924ac115a1561e61844abd7dffb3c3057b52d7a20"
+    },
+    {
+      "file": "initial-result.json",
+      "bytes": 91459,
+      "sha256": "9994da68b901df16ee89446768a20889c83d0730d0c349e9c429f25d5cc7ba58"
+    },
+    {
+      "file": "package-audit.json",
+      "bytes": 6194,
+      "sha256": "4f307bcf2d8612eadcfb72dffaaa01d1ec2fe13bac53da5b8f3b25e772c9404d"
+    },
+    {
+      "file": "source-acquisition.json",
+      "bytes": 57033,
+      "sha256": "2ff367325484ad0830323f6a3c206ba0798260d3cde65f0d11ec92f2934a97aa"
+    }
+  ],
+  "packagingOnly": {
+    "newNeuralCalls": 0,
+    "newExports": 0,
+    "newOracleRuns": 0
+  },
+  "acceptedRun": {
+    "successfulNeuralCalls": 3,
+    "cancelledWorkerCount": 1,
+    "newExports": 0,
+    "newOracleRuns": 0
+  },
+  "generatedProductionAccepted": false,
+  "generationReady": false,
+  "unaccepted": [
+    "Independent recipient management-host acquisition and operation ACK",
+    "Real Diffusion model-produced generated sample",
+    "Independent full-value generated RGB oracle comparison",
+    "Text numerical completion",
+    "LoRA full workflow experiment",
+    "New stream81frame management execution",
+    "Merge/Pages publication"
+  ]
+}

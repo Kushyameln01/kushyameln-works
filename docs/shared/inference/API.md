@@ -270,6 +270,11 @@ float32 BLC、binary mask、model/Tokenizer SHA、`umt5-final-rmsnorm-f32-v1`
 weighted prompt/custom embeddingは未対応。合法なID0を禁止せず、最終gateを引き上げない。
 選択manifestの `blocks[].attentionLowering` は元asset SHAと実行graph SHAを分離する。
 実行時は元bytesを検証後、同一bufferの2 scalarだけを変更し、実行hashを検証する。
+この倍率候補は固定gate未達のため採用していない。
+別候補の `blocks[].normLowering` は、両内部RMSNormのReduceMeanを元Torchの
+FP32 AVX2集計順へ置換する。元graph/weightsは保持し、metadata置換用に1回コピーした後、
+実行graph SHAを検証する。Lを固定せず、dtype・軸・epsilonを維持する。
+同一blockへ両変換を重ねる指定は拒否する。異block構成の数値受入を意味する制約ではない。
 通常返却の `graphBindings` はtensor外に置く。候補の数値合否・採用状況は
 [今回の結果](../../../development/inference/management-20261104/RESULT.md)に従う。
 

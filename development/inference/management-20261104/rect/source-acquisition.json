@@ -1,0 +1,984 @@
+{
+  "schemaVersion": 1,
+  "actor": "VAE and TextEncoder owner host executes actual fixed management JavaScript APIs in local Chromium",
+  "independentManagementHostAck": false,
+  "qualification": "Actual source acquisition and API execution by the owner host; not an independent recipient environment acquisition/operational ACK",
+  "runs": [
+    {
+      "label": "initial-harness-failure",
+      "executionSourceSha": "e481e857de98a828159a2fd48fba4f16be2274e9",
+      "managementSourceSha": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+      "diffusionSourceSha": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+      "sourceAcquisition": {
+        "management": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "method": "git show exact acquired full commit; static relative source import closure",
+          "roots": [
+            "docs/shared/ai-connection/adapters/text-vae.mjs",
+            "docs/shared/ai-connection/adapters/artifacts.mjs",
+            "docs/shared/ai-connection/queue.mjs",
+            "docs/shared/ai-connection/management-workspace.mjs"
+          ],
+          "files": [
+            {
+              "path": "docs/shared/ai-connection/adapters/text-vae.mjs",
+              "bytes": 895,
+              "sha256": "d03276078726fe8c843ea628d427b15934ec936fba0fa475ffd6afa930dbc443",
+              "gitBlobSha": "50a7a9c57a1ce7121d3d0234a22788925660d3ee",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/adapters/text-vae.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/adapters/artifacts.mjs",
+              "bytes": 5879,
+              "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290",
+              "gitBlobSha": "734466ba9ea077c7db26f3a56c8a66afce2d21bd",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/adapters/artifacts.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/queue.mjs",
+              "bytes": 18094,
+              "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484",
+              "gitBlobSha": "cdc1c9515176b317026681c19ed91e164e1a759e",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/queue.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/management-workspace.mjs",
+              "bytes": 12660,
+              "sha256": "6423b987c3b43cbd6c640965ba776983c99a8e2d1fabd91cc00f773ed71fd2f3",
+              "gitBlobSha": "ad04cc4a4b93ce5b6a2fbe1345358026e2421733",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/management-workspace.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/adapters/core.mjs",
+              "bytes": 4511,
+              "sha256": "8c854f77f19174aa0ea72cbc78eafd342a9c75d3d2b9048465905d06c4c07455",
+              "gitBlobSha": "56a5d5ff641ee757a0b2f85e39ce1d0e15f9034f",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/adapters/core.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/descriptor.mjs",
+              "bytes": 14882,
+              "sha256": "1395ee9879c14b42d3e05a5ea674680f75c404210ca112d44d370114a7756d2e",
+              "gitBlobSha": "ae78d2973c9c8c1c83982fc8910191951a45f5c8",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/descriptor.mjs"
+            },
+            {
+              "path": "docs/shared/ft/vendor/fflate.mjs",
+              "bytes": 89198,
+              "sha256": "8cc1f687e0159e977addb6b85e274dbd11e622cf151f4fcb7b85d49622ea43e7",
+              "gitBlobSha": "e1a21e982fefc2021cce24909764661ac6e0fd37",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ft/vendor/fflate.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/canonical.mjs",
+              "bytes": 3212,
+              "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782",
+              "gitBlobSha": "d1e8790566d601e505d9c98451ced956c23a4d80",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/canonical.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/package.mjs",
+              "bytes": 23713,
+              "sha256": "4dc4b101cc06358f6ebb5a3cd460c24ad042a69538ae1263ecd10ded9b39acb0",
+              "gitBlobSha": "4cb3ccd2df80624822aa884b00d5e0f81729738c",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/package.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/codecs/workspace-wktensor.mjs",
+              "bytes": 615,
+              "sha256": "762df3b11e801386922f183a8d0650584c6f936624d80d68cba23d7779a4703e",
+              "gitBlobSha": "52b28f460d10420dc3ee03a181243fe2380978da",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/codecs/workspace-wktensor.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/compatibility.mjs",
+              "bytes": 20619,
+              "sha256": "66420e483ed188aa38a1dd18ae4c171eb5420bc4ea44ce770721bffd49280d07",
+              "gitBlobSha": "8fdfd494aa4a2a99481c005216729628eeea2d74",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/compatibility.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/contracts/schemas.mjs",
+              "bytes": 89275,
+              "sha256": "46b22950d8b5047a3fb7788969660836fb37452fdc6f294d0b8575ac7485c573",
+              "gitBlobSha": "0fa37dc7c4219482bc9856cdd04ac7b72947de23",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/contracts/schemas.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/codecs/tensor-498eb25.mjs",
+              "bytes": 9104,
+              "sha256": "e200fef69be3909a13bc91a59743681df1072817eadc7c1865717afe0c3c9f8e",
+              "gitBlobSha": "7fcd1eb90c74c8f7c6055bfde4b24de33c48f06c",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/codecs/tensor-498eb25.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/norm-bindings.mjs",
+              "bytes": 32732,
+              "sha256": "2cfdf5db6d5e511a93455bf0342a39a170c35373e5f2685dae2e77fdcbab5f18",
+              "gitBlobSha": "32bfd4b4bb37405e18331dba4c89f718ff8475e0",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/norm-bindings.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/reference-loader.mjs",
+              "bytes": 13765,
+              "sha256": "e603d6314326b3f3ed5defd15cea9821010f50b1395c9abc88e54d5e8527c963",
+              "gitBlobSha": "29a632ae51105ddeaa1bf8636f20051f407b1ee2",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/reference-loader.mjs"
+            }
+          ],
+          "scope": "Source acquisition only; no model inference or numeric acceptance",
+          "fixedCommitUrl": "https://github.com/Kushyameln01/kushyameln-works/tree/e1661e561dfb1a4f20544ff48bc375175b5981d1"
+        },
+        "diffusion": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+          "method": "git show exact acquired full commit; static relative source import closure",
+          "roots": [
+            "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs"
+          ],
+          "files": [
+            {
+              "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs",
+              "bytes": 19270,
+              "sha256": "f65a5150257dd7c50bbf6c073e931ebb33bdba6ae4d9f96d92e6b885b191ad63",
+              "gitBlobSha": "6b1eab70c200b0c25077e9c3c635cf55f9f97d0e",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/ffeeeedb6b57d182a977c3ac02c042ce235fc87a/docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs"
+            }
+          ],
+          "scope": "Source acquisition only; no model inference or numeric acceptance",
+          "fixedCommitUrl": "https://github.com/Kushyameln01/kushyameln-works/tree/ffeeeedb6b57d182a977c3ac02c042ce235fc87a"
+        }
+      },
+      "servedSources": [
+        {
+          "module": "owner",
+          "path": "tools/inference/management-connection/run-browser.py",
+          "bytes": 20562,
+          "sha256": "a60a2cad81a528469375fc136658b3ebac1a924a1c638786efefa62699d95720",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/tools/inference/management-connection/run-browser.py"
+        },
+        {
+          "module": "owner",
+          "path": "tools/inference/management-connection/browser.mjs",
+          "bytes": 12972,
+          "sha256": "392d67d378d523238405b2806936e494807fefa9c24f0ab3debf807b5c15c4dc",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/tools/inference/management-connection/browser.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/management-adapter.mjs",
+          "bytes": 13782,
+          "sha256": "4dbdf9b901bee972a88a988b618d8a576ca35210400d4bbcb71d03c40ed93d40",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/management-adapter.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "tools/inference/owner-normal-worker.mjs",
+          "bytes": 2870,
+          "sha256": "250c0cfa70acd5694c3398129ebcd539d00b4fa1210fe28aa129421e9e0bd6e1",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/tools/inference/owner-normal-worker.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/api.mjs",
+          "bytes": 2293,
+          "sha256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/api.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/queue.mjs",
+          "bytes": 18094,
+          "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/queue.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/management-workspace.mjs",
+          "bytes": 12660,
+          "sha256": "6423b987c3b43cbd6c640965ba776983c99a8e2d1fabd91cc00f773ed71fd2f3",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/management-workspace.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/adapters/artifacts.mjs",
+          "bytes": 5879,
+          "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/adapters/artifacts.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/adapters/text-vae.mjs",
+          "bytes": 895,
+          "sha256": "d03276078726fe8c843ea628d427b15934ec936fba0fa475ffd6afa930dbc443",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/adapters/text-vae.mjs"
+        },
+        {
+          "module": "diffusion",
+          "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs",
+          "bytes": 19270,
+          "sha256": "f65a5150257dd7c50bbf6c073e931ebb33bdba6ae4d9f96d92e6b885b191ad63",
+          "commit": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/ffeeeedb6b57d182a977c3ac02c042ce235fc87a/docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/text-encoder-api.mjs",
+          "bytes": 5224,
+          "sha256": "81190a1f47b7ddf0a32f3e9c81aaf3298ce24c87bfeada8ff4cd05cc46f42164",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/text-encoder-api.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vae-api.mjs",
+          "bytes": 7407,
+          "sha256": "bbdd72f49004f15974e7aa87cdebe4ce86e04827ca75ff8257f7148c0194d21a",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/vae-api.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/tensor.mjs",
+          "bytes": 10894,
+          "sha256": "7a15d721b1bab60cdade8723fd1c4d543a142d236cf2e59b63f1ba33ba14ed78",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/tensor.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/client.mjs",
+          "bytes": 2423,
+          "sha256": "806278b5eb09242cec8726d22b13be6237323862d0c42f0c3948d0a63cc9501f",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/client.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/canonical.mjs",
+          "bytes": 3212,
+          "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/canonical.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/codecs/workspace-wktensor.mjs",
+          "bytes": 615,
+          "sha256": "762df3b11e801386922f183a8d0650584c6f936624d80d68cba23d7779a4703e",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/codecs/workspace-wktensor.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ft/vendor/fflate.mjs",
+          "bytes": 89198,
+          "sha256": "8cc1f687e0159e977addb6b85e274dbd11e622cf151f4fcb7b85d49622ea43e7",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ft/vendor/fflate.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/descriptor.mjs",
+          "bytes": 14882,
+          "sha256": "1395ee9879c14b42d3e05a5ea674680f75c404210ca112d44d370114a7756d2e",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/descriptor.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/package.mjs",
+          "bytes": 23713,
+          "sha256": "4dc4b101cc06358f6ebb5a3cd460c24ad042a69538ae1263ecd10ded9b39acb0",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/package.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/adapters/core.mjs",
+          "bytes": 4511,
+          "sha256": "8c854f77f19174aa0ea72cbc78eafd342a9c75d3d2b9048465905d06c4c07455",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/adapters/core.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/text-encoder.mjs",
+          "bytes": 9941,
+          "sha256": "1e109587fc9ef01e9add4f074b143a17a66bc80e8d2d5b8eceab6c922fe7085f",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/text-encoder.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/codecs/tensor-498eb25.mjs",
+          "bytes": 9104,
+          "sha256": "e200fef69be3909a13bc91a59743681df1072817eadc7c1865717afe0c3c9f8e",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/codecs/tensor-498eb25.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vae.mjs",
+          "bytes": 13223,
+          "sha256": "e2e8b7901edfe8ac94152dba2c9f246d0dd0d2c595b5ac72e0cade4b36d170ae",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/vae.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vae-stream.mjs",
+          "bytes": 26085,
+          "sha256": "424aaa73963c97c0d3b943ecc18801394c18ab3ff7ffd07b3d111af6ab58d68c",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/vae-stream.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/contracts/schemas.mjs",
+          "bytes": 89275,
+          "sha256": "46b22950d8b5047a3fb7788969660836fb37452fdc6f294d0b8575ac7485c573",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/contracts/schemas.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/compatibility.mjs",
+          "bytes": 20619,
+          "sha256": "66420e483ed188aa38a1dd18ae4c171eb5420bc4ea44ce770721bffd49280d07",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/compatibility.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/vr180/sha256.mjs",
+          "bytes": 6970,
+          "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/vr180/sha256.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/text-attention-lowering.mjs",
+          "bytes": 4136,
+          "sha256": "f19d622429778c86c2041cf627d5bd8694b3e12dc48dafb6d4333d0ea01e505b",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/text-attention-lowering.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/norm-bindings.mjs",
+          "bytes": 32732,
+          "sha256": "2cfdf5db6d5e511a93455bf0342a39a170c35373e5f2685dae2e77fdcbab5f18",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/norm-bindings.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/reference-loader.mjs",
+          "bytes": 13765,
+          "sha256": "e603d6314326b3f3ed5defd15cea9821010f50b1395c9abc88e54d5e8527c963",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/reference-loader.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vendor/ort.wasm.min.mjs",
+          "bytes": 49997,
+          "sha256": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/vendor/ort.wasm.min.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/inference-worker.mjs",
+          "bytes": 2527,
+          "sha256": "2b68116682912b2faa2d53e750932015df63ac5fb011777c094f3a33db80669a",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/inference-worker.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/hike.mjs",
+          "bytes": 4126,
+          "sha256": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/hike.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/text-job.mjs",
+          "bytes": 1975,
+          "sha256": "a70c47c0cc7e1068673e4291490015aa9f222d01590477ffe863720c3da5a72e",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/text-job.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/tokenizer.mjs",
+          "bytes": 1637,
+          "sha256": "4a7811d4e36fbcc568e2a2a1e0941fd78261f84b231a96458d919ea0259fb9a5",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/tokenizer.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vendor/sentencepiece.mjs",
+          "bytes": 741502,
+          "sha256": "31ce41230f8694c63afa1ffeecb862d0bf3768d858328d335530997a86a1f27d",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/vendor/sentencepiece.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/kernel/tensor.wasm",
+          "bytes": 5265,
+          "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/kernel/tensor.wasm"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+          "bytes": 24274,
+          "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+          "bytes": 12361745,
+          "sha256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+          "commit": "e481e857de98a828159a2fd48fba4f16be2274e9",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e481e857de98a828159a2fd48fba4f16be2274e9/docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm"
+        }
+      ],
+      "inputAcquisition": [
+        {
+          "path": "/workspace/work/inference/management-20261104/generated-fixture/raw-generated.wktensor",
+          "bytes": 1475,
+          "sha256": "de12bab3ad3c0089e10a36b87f5b42310196e9a5c0f77b7f3da8eec78086517b"
+        },
+        {
+          "path": "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/native.wktensor",
+          "bytes": 1084,
+          "sha256": "dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612"
+        },
+        {
+          "path": "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/e6/fixtures/png-unit.f32",
+          "bytes": 6144,
+          "sha256": "38a55378d909bad14f3c4f16e2db9a288ea60b14e3a2a253409fdee54c5fce34"
+        },
+        {
+          "path": "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/e6/fixtures/png-mean.f32",
+          "bytes": 512,
+          "sha256": "708236f54db779900c00915d1738336210b420531efc873bb9f634c1fc819bcb"
+        },
+        {
+          "path": "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/e6/fixtures/png-roundtrip.f32",
+          "bytes": 6144,
+          "sha256": "44cf55e9ea5896f985a0ccf26f61cbb52650fd1a53d3fe80fc3e03aaae545c29"
+        }
+      ]
+    },
+    {
+      "label": "accepted-corrected-harness",
+      "executionSourceSha": "8594722e693bda9901f61cededfc1b3338e66c92",
+      "managementSourceSha": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+      "diffusionSourceSha": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+      "sourceAcquisition": {
+        "management": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "method": "git show exact acquired full commit; static relative source import closure",
+          "roots": [
+            "docs/shared/ai-connection/adapters/text-vae.mjs",
+            "docs/shared/ai-connection/adapters/artifacts.mjs",
+            "docs/shared/ai-connection/queue.mjs",
+            "docs/shared/ai-connection/management-workspace.mjs"
+          ],
+          "files": [
+            {
+              "path": "docs/shared/ai-connection/adapters/text-vae.mjs",
+              "bytes": 895,
+              "sha256": "d03276078726fe8c843ea628d427b15934ec936fba0fa475ffd6afa930dbc443",
+              "gitBlobSha": "50a7a9c57a1ce7121d3d0234a22788925660d3ee",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/adapters/text-vae.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/adapters/artifacts.mjs",
+              "bytes": 5879,
+              "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290",
+              "gitBlobSha": "734466ba9ea077c7db26f3a56c8a66afce2d21bd",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/adapters/artifacts.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/queue.mjs",
+              "bytes": 18094,
+              "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484",
+              "gitBlobSha": "cdc1c9515176b317026681c19ed91e164e1a759e",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/queue.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/management-workspace.mjs",
+              "bytes": 12660,
+              "sha256": "6423b987c3b43cbd6c640965ba776983c99a8e2d1fabd91cc00f773ed71fd2f3",
+              "gitBlobSha": "ad04cc4a4b93ce5b6a2fbe1345358026e2421733",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/management-workspace.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/adapters/core.mjs",
+              "bytes": 4511,
+              "sha256": "8c854f77f19174aa0ea72cbc78eafd342a9c75d3d2b9048465905d06c4c07455",
+              "gitBlobSha": "56a5d5ff641ee757a0b2f85e39ce1d0e15f9034f",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/adapters/core.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/descriptor.mjs",
+              "bytes": 14882,
+              "sha256": "1395ee9879c14b42d3e05a5ea674680f75c404210ca112d44d370114a7756d2e",
+              "gitBlobSha": "ae78d2973c9c8c1c83982fc8910191951a45f5c8",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/descriptor.mjs"
+            },
+            {
+              "path": "docs/shared/ft/vendor/fflate.mjs",
+              "bytes": 89198,
+              "sha256": "8cc1f687e0159e977addb6b85e274dbd11e622cf151f4fcb7b85d49622ea43e7",
+              "gitBlobSha": "e1a21e982fefc2021cce24909764661ac6e0fd37",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ft/vendor/fflate.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/canonical.mjs",
+              "bytes": 3212,
+              "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782",
+              "gitBlobSha": "d1e8790566d601e505d9c98451ced956c23a4d80",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/canonical.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/package.mjs",
+              "bytes": 23713,
+              "sha256": "4dc4b101cc06358f6ebb5a3cd460c24ad042a69538ae1263ecd10ded9b39acb0",
+              "gitBlobSha": "4cb3ccd2df80624822aa884b00d5e0f81729738c",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/package.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/codecs/workspace-wktensor.mjs",
+              "bytes": 615,
+              "sha256": "762df3b11e801386922f183a8d0650584c6f936624d80d68cba23d7779a4703e",
+              "gitBlobSha": "52b28f460d10420dc3ee03a181243fe2380978da",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/codecs/workspace-wktensor.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/compatibility.mjs",
+              "bytes": 20619,
+              "sha256": "66420e483ed188aa38a1dd18ae4c171eb5420bc4ea44ce770721bffd49280d07",
+              "gitBlobSha": "8fdfd494aa4a2a99481c005216729628eeea2d74",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/compatibility.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/contracts/schemas.mjs",
+              "bytes": 89275,
+              "sha256": "46b22950d8b5047a3fb7788969660836fb37452fdc6f294d0b8575ac7485c573",
+              "gitBlobSha": "0fa37dc7c4219482bc9856cdd04ac7b72947de23",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/contracts/schemas.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/codecs/tensor-498eb25.mjs",
+              "bytes": 9104,
+              "sha256": "e200fef69be3909a13bc91a59743681df1072817eadc7c1865717afe0c3c9f8e",
+              "gitBlobSha": "7fcd1eb90c74c8f7c6055bfde4b24de33c48f06c",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/codecs/tensor-498eb25.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/norm-bindings.mjs",
+              "bytes": 32732,
+              "sha256": "2cfdf5db6d5e511a93455bf0342a39a170c35373e5f2685dae2e77fdcbab5f18",
+              "gitBlobSha": "32bfd4b4bb37405e18331dba4c89f718ff8475e0",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/norm-bindings.mjs"
+            },
+            {
+              "path": "docs/shared/ai-connection/reference-loader.mjs",
+              "bytes": 13765,
+              "sha256": "e603d6314326b3f3ed5defd15cea9821010f50b1395c9abc88e54d5e8527c963",
+              "gitBlobSha": "29a632ae51105ddeaa1bf8636f20051f407b1ee2",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/reference-loader.mjs"
+            }
+          ],
+          "scope": "Source acquisition only; no model inference or numeric acceptance",
+          "fixedCommitUrl": "https://github.com/Kushyameln01/kushyameln-works/tree/e1661e561dfb1a4f20544ff48bc375175b5981d1"
+        },
+        "diffusion": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+          "method": "git show exact acquired full commit; static relative source import closure",
+          "roots": [
+            "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs"
+          ],
+          "files": [
+            {
+              "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs",
+              "bytes": 19270,
+              "sha256": "f65a5150257dd7c50bbf6c073e931ebb33bdba6ae4d9f96d92e6b885b191ad63",
+              "gitBlobSha": "6b1eab70c200b0c25077e9c3c635cf55f9f97d0e",
+              "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/ffeeeedb6b57d182a977c3ac02c042ce235fc87a/docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs"
+            }
+          ],
+          "scope": "Source acquisition only; no model inference or numeric acceptance",
+          "fixedCommitUrl": "https://github.com/Kushyameln01/kushyameln-works/tree/ffeeeedb6b57d182a977c3ac02c042ce235fc87a"
+        }
+      },
+      "servedSources": [
+        {
+          "module": "owner",
+          "path": "tools/inference/management-connection/run-browser.py",
+          "bytes": 20562,
+          "sha256": "a60a2cad81a528469375fc136658b3ebac1a924a1c638786efefa62699d95720",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/tools/inference/management-connection/run-browser.py"
+        },
+        {
+          "module": "owner",
+          "path": "tools/inference/management-connection/browser.mjs",
+          "bytes": 13701,
+          "sha256": "5b6048f1a2bac79f7d83388ae4a667de8a7cf0dffaa505b4396f462c3f4ae9f3",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/tools/inference/management-connection/browser.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/management-adapter.mjs",
+          "bytes": 13782,
+          "sha256": "4dbdf9b901bee972a88a988b618d8a576ca35210400d4bbcb71d03c40ed93d40",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/management-adapter.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "tools/inference/owner-normal-worker.mjs",
+          "bytes": 2870,
+          "sha256": "250c0cfa70acd5694c3398129ebcd539d00b4fa1210fe28aa129421e9e0bd6e1",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/tools/inference/owner-normal-worker.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/api.mjs",
+          "bytes": 2293,
+          "sha256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/api.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/adapters/text-vae.mjs",
+          "bytes": 895,
+          "sha256": "d03276078726fe8c843ea628d427b15934ec936fba0fa475ffd6afa930dbc443",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/adapters/text-vae.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/queue.mjs",
+          "bytes": 18094,
+          "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/queue.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/adapters/artifacts.mjs",
+          "bytes": 5879,
+          "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/adapters/artifacts.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/management-workspace.mjs",
+          "bytes": 12660,
+          "sha256": "6423b987c3b43cbd6c640965ba776983c99a8e2d1fabd91cc00f773ed71fd2f3",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/management-workspace.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/client.mjs",
+          "bytes": 2423,
+          "sha256": "806278b5eb09242cec8726d22b13be6237323862d0c42f0c3948d0a63cc9501f",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/client.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/tensor.mjs",
+          "bytes": 10894,
+          "sha256": "7a15d721b1bab60cdade8723fd1c4d543a142d236cf2e59b63f1ba33ba14ed78",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/tensor.mjs"
+        },
+        {
+          "module": "diffusion",
+          "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs",
+          "bytes": 19270,
+          "sha256": "f65a5150257dd7c50bbf6c073e931ebb33bdba6ae4d9f96d92e6b885b191ad63",
+          "commit": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/ffeeeedb6b57d182a977c3ac02c042ce235fc87a/docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vae-api.mjs",
+          "bytes": 7407,
+          "sha256": "bbdd72f49004f15974e7aa87cdebe4ce86e04827ca75ff8257f7148c0194d21a",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/vae-api.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/adapters/core.mjs",
+          "bytes": 4511,
+          "sha256": "8c854f77f19174aa0ea72cbc78eafd342a9c75d3d2b9048465905d06c4c07455",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/adapters/core.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/text-encoder-api.mjs",
+          "bytes": 5224,
+          "sha256": "81190a1f47b7ddf0a32f3e9c81aaf3298ce24c87bfeada8ff4cd05cc46f42164",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/text-encoder-api.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/descriptor.mjs",
+          "bytes": 14882,
+          "sha256": "1395ee9879c14b42d3e05a5ea674680f75c404210ca112d44d370114a7756d2e",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/descriptor.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ft/vendor/fflate.mjs",
+          "bytes": 89198,
+          "sha256": "8cc1f687e0159e977addb6b85e274dbd11e622cf151f4fcb7b85d49622ea43e7",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ft/vendor/fflate.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/canonical.mjs",
+          "bytes": 3212,
+          "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/canonical.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/package.mjs",
+          "bytes": 23713,
+          "sha256": "4dc4b101cc06358f6ebb5a3cd460c24ad042a69538ae1263ecd10ded9b39acb0",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/package.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/codecs/workspace-wktensor.mjs",
+          "bytes": 615,
+          "sha256": "762df3b11e801386922f183a8d0650584c6f936624d80d68cba23d7779a4703e",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/codecs/workspace-wktensor.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vae.mjs",
+          "bytes": 13223,
+          "sha256": "e2e8b7901edfe8ac94152dba2c9f246d0dd0d2c595b5ac72e0cade4b36d170ae",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/vae.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/compatibility.mjs",
+          "bytes": 20619,
+          "sha256": "66420e483ed188aa38a1dd18ae4c171eb5420bc4ea44ce770721bffd49280d07",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/compatibility.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vae-stream.mjs",
+          "bytes": 26085,
+          "sha256": "424aaa73963c97c0d3b943ecc18801394c18ab3ff7ffd07b3d111af6ab58d68c",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/vae-stream.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/text-encoder.mjs",
+          "bytes": 9941,
+          "sha256": "1e109587fc9ef01e9add4f074b143a17a66bc80e8d2d5b8eceab6c922fe7085f",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/text-encoder.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/contracts/schemas.mjs",
+          "bytes": 89275,
+          "sha256": "46b22950d8b5047a3fb7788969660836fb37452fdc6f294d0b8575ac7485c573",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/contracts/schemas.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/codecs/tensor-498eb25.mjs",
+          "bytes": 9104,
+          "sha256": "e200fef69be3909a13bc91a59743681df1072817eadc7c1865717afe0c3c9f8e",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/codecs/tensor-498eb25.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/norm-bindings.mjs",
+          "bytes": 32732,
+          "sha256": "2cfdf5db6d5e511a93455bf0342a39a170c35373e5f2685dae2e77fdcbab5f18",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/norm-bindings.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/vr180/sha256.mjs",
+          "bytes": 6970,
+          "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/vr180/sha256.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/text-attention-lowering.mjs",
+          "bytes": 4136,
+          "sha256": "f19d622429778c86c2041cf627d5bd8694b3e12dc48dafb6d4333d0ea01e505b",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/text-attention-lowering.mjs"
+        },
+        {
+          "module": "management",
+          "path": "docs/shared/ai-connection/reference-loader.mjs",
+          "bytes": 13765,
+          "sha256": "e603d6314326b3f3ed5defd15cea9821010f50b1395c9abc88e54d5e8527c963",
+          "commit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/e1661e561dfb1a4f20544ff48bc375175b5981d1/docs/shared/ai-connection/reference-loader.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vendor/ort.wasm.min.mjs",
+          "bytes": 49997,
+          "sha256": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/vendor/ort.wasm.min.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/inference-worker.mjs",
+          "bytes": 2527,
+          "sha256": "2b68116682912b2faa2d53e750932015df63ac5fb011777c094f3a33db80669a",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/inference-worker.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/hike.mjs",
+          "bytes": 4126,
+          "sha256": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/hike.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/text-job.mjs",
+          "bytes": 1975,
+          "sha256": "a70c47c0cc7e1068673e4291490015aa9f222d01590477ffe863720c3da5a72e",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/text-job.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/tokenizer.mjs",
+          "bytes": 1637,
+          "sha256": "4a7811d4e36fbcc568e2a2a1e0941fd78261f84b231a96458d919ea0259fb9a5",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/tokenizer.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vendor/sentencepiece.mjs",
+          "bytes": 741502,
+          "sha256": "31ce41230f8694c63afa1ffeecb862d0bf3768d858328d335530997a86a1f27d",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/vendor/sentencepiece.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/kernel/tensor.wasm",
+          "bytes": 5265,
+          "sha256": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/kernel/tensor.wasm"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+          "bytes": 24274,
+          "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs"
+        },
+        {
+          "module": "owner",
+          "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+          "bytes": 12361745,
+          "sha256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+          "commit": "8594722e693bda9901f61cededfc1b3338e66c92",
+          "githubUrl": "https://github.com/Kushyameln01/kushyameln-works/blob/8594722e693bda9901f61cededfc1b3338e66c92/docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm"
+        }
+      ],
+      "inputAcquisition": [
+        {
+          "path": "/workspace/work/inference/management-20261104/generated-fixture/raw-generated.wktensor",
+          "bytes": 1475,
+          "sha256": "de12bab3ad3c0089e10a36b87f5b42310196e9a5c0f77b7f3da8eec78086517b"
+        },
+        {
+          "path": "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/restored-mean/native.wktensor",
+          "bytes": 1084,
+          "sha256": "dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612"
+        },
+        {
+          "path": "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/e6/fixtures/png-unit.f32",
+          "bytes": 6144,
+          "sha256": "38a55378d909bad14f3c4f16e2db9a288ea60b14e3a2a253409fdee54c5fce34"
+        },
+        {
+          "path": "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/e6/fixtures/png-mean.f32",
+          "bytes": 512,
+          "sha256": "708236f54db779900c00915d1738336210b420531efc873bb9f634c1fc819bcb"
+        },
+        {
+          "path": "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/e6/fixtures/png-roundtrip.f32",
+          "bytes": 6144,
+          "sha256": "44cf55e9ea5896f985a0ccf26f61cbb52650fd1a53d3fe80fc3e03aaae545c29"
+        }
+      ]
+    }
+  ]
+}
