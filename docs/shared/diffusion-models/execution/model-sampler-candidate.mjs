@@ -1,6 +1,7 @@
 import {deriveWorkflowShapes} from '../../ai-connection/workflow-shapes.mjs';
 import {createBerniniModelCandidate,MODEL_CANDIDATE_PROFILE} from './model-candidate.mjs';
 import {createFullModelWeightSource} from './model-weights.mjs';
+import {createFullModelWeightFeed} from './model-weight-feed.mjs';
 import {createModelMath} from './model-math.mjs';
 import {createBatchedModelOps} from './batched-ops.mjs';
 import {snapshotP4NativeConditioning} from '../ort-bridge/post-self-attention/conditioning.mjs';
@@ -94,13 +95,13 @@ export async function createBerniniModelSamplerCandidate(options={}){
  signalCheck(signal);
  // Capture every byte input and model reference before the first await.
  const prepared=Object.fromEntries(['bridgeBytes','lookupBytes','mathWasmBytes','schedulerWasmBytes','eulerWasmBytes','generatedSpaceWasmBytes'].map(key=>[key,wasmBytes(options[key])]));
- const sources={},models={};let math=null,ops=null,scheduler=null,euler=null,generatedBytes=null;
+ const sources={},weightFeeds={},models={};let math=null,ops=null,scheduler=null,euler=null,generatedBytes=null;
  let disposed=false,closing=false,busy=false,pendingDispose=null,controller=null,terminal=null;
  const metrics={predictions:0,samples:0,failedOperations:0,stepsCompleted:0,highPredictions:0,lowPredictions:0,rawContextNormalizations:0,lastRun:null};
  const live=s=>{signalCheck(signal);signalCheck(s);if(disposed||closing)throw Error('Model sampler candidate disposed or closing');};
  const cleanup=async()=>{
   const errors=[];
-  const operations=[...SIDES.map(side=>async()=>{await models[side]?.dispose();}),async()=>{await ops?.dispose();},async()=>{math?.dispose();},...SIDES.map(side=>async()=>{sources[side]?.dispose();}),async()=>{scheduler?.dispose();},async()=>{euler?.dispose();}];
+  const operations=[...SIDES.map(side=>async()=>{await models[side]?.dispose();}),...SIDES.map(side=>async()=>{await weightFeeds[side]?.dispose();}),async()=>{await ops?.dispose();},async()=>{math?.dispose();},...SIDES.map(side=>async()=>{sources[side]?.dispose();}),async()=>{scheduler?.dispose();},async()=>{euler?.dispose();}];
   for(const operation of operations)try{await operation();}catch(error){errors.push(error);}
   if(errors.length)throw new AggregateError(errors,'Model sampler cleanup incomplete; retry disposal');
   generatedBytes=null;
@@ -133,19 +134,23 @@ export async function createBerniniModelSamplerCandidate(options={}){
  function progress(callback,event,s){live(s);callback?.({profile:MODEL_SAMPLER_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,...event});live(s);}
  async function predict(input={}){
   const run=start(input,['side','shapeRequest','tensors','conditioning','timestep','signal','onProgress']);
+  let lease;
   try{
    const {side,onProgress}=input;if(!SIDES.includes(side))throw TypeError('Explicit HIGH or LOW side required');
    if(onProgress!==undefined&&typeof onProgress!=='function')throw TypeError('onProgress must be a function');
+   lease=weightFeeds[side].capture({operation:true});
    const result=await models[side].predict({shapeRequest:input.shapeRequest,tensors:input.tensors,conditioning:input.conditioning,timestep:input.timestep,signal:run.signal,onProgress:event=>progress(onProgress,{operation:'predict',side,model:event},run.signal)});
-   live(run.signal);metrics.predictions++;return result;
-  }catch(error){metrics.failedOperations++;throw error;}finally{run.finish();}
+   live(run.signal);result.evidence={...result.evidence,effectiveWeights:{[side]:{epoch:lease.epoch,packageHash:lease.packageHash}}};metrics.predictions++;return result;
+  }catch(error){metrics.failedOperations++;throw error;}finally{try{await lease?.release();}finally{run.finish();}}
  }
  async function sample(input={},onTrace=null){
   const run=start(input,['shapeRequest','tensors','noise','positive','negative','signal','onProgress']);
   let space=null,pointwise=null,ownedTensors=[],ownedNoise=null,positive=null,negative=null,x=null,output=null;
+  const weightLeases={};
   const temporaries=new Set(),retain=value=>{temporaries.add(value);return value;},drop=value=>{if(value&&temporaries.delete(value))value.fill(0);};
   try{
    const {onProgress}=input;if(onProgress!==undefined&&typeof onProgress!=='function')throw TypeError('onProgress must be a function');
+   for(const side of SIDES)weightLeases[side]=weightFeeds[side].capture({operation:true});
    const shapeRequest=plain(input.shapeRequest),canonical=deriveWorkflowShapes(shapeRequest),contexts=canonical.orderedContexts.entries;
    const ids=['target.latent',...contexts.map(entry=>entry.contextKey+'.latent')],requirements=ids.map(id=>canonical.requirements.find(value=>value.requirementId===id));
    if(!canonical.orderedContexts.complete||requirements.some(value=>value?.state!=='known'||value.dtype!=='float32')||!canonical.concatenation.totalTokens)throw RangeError('Complete explicit canonical float32 workflow shapes required');
@@ -218,15 +223,17 @@ export async function createBerniniModelSamplerCandidate(options={}){
    output=await space.restore(targetTensor(shape,finalModel,[BASE_MODEL_HASHES.HIGH,BASE_MODEL_HASHES.LOW]),{signal:run.signal});live(run.signal);drop(finalModel);
    await trace('finalRaw',output.data,{meaning:output.meaning,latentContract:structuredClone(output.latentContract)});
    const evidence={profile:MODEL_SAMPLER_CANDIDATE_PROFILE,modelProfile:MODEL_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,generationReady:false,publicRuntimeEnabled:false,steps:6,highUpdates:3,lowUpdates:3,cfg:1,negativeConditioning:'structurally validated; negative neural pass skipped at CFG1',contexts:'one canonical ordered population shared by both conditioning branches',targetShape:[...shape],originalProductionTarget:ORIGINAL81_TARGET_SHAPE.slice(),totalTokens:layout.totalTokens,schedule:{profile:schedule.profile,source:schedule.source,shift:schedule.shift,splitStep:3,sigmas:Array.from(schedule.sigmas),tableIndices:Array.from(schedule.tableIndices),timesteps:Array.from(timesteps)},handoff:{high:'inverseNoiseScale -> Wan21 process_out',low:'Wan21 process_in (all-zero raw skip) -> zero-noise CONST noiseMix',handoffNormalization},final:'inverseNoiseScale(sigma0) -> one generated-sample restore',producerModelSha256s:[BASE_MODEL_HASHES.HIGH,BASE_MODEL_HASHES.LOW],modelRuns:stepEvidence,weightCache:'owned prepared F32 stage weights; native ORT upload copies are not claimed eliminated',fullFileSHA256Verified:false,originalProductionPrecisionVerified:false,requiredShapeAcceptance:'BLOCKED until original [1,16,21,60,104] target with full canonical contexts is executed and independently compared'};
+   evidence.effectiveWeights=Object.fromEntries(SIDES.map(side=>[side,{epoch:weightLeases[side].epoch,packageHash:weightLeases[side].packageHash}]));
    metrics.samples++;metrics.lastRun=structuredClone(evidence);output.evidence=evidence;return output;
   }catch(error){metrics.failedOperations++;wipeTensor(output);throw error;}finally{
-   for(const value of temporaries)value.fill(0);temporaries.clear();for(const tensor of ownedTensors)wipeTensor(tensor);ownedNoise?.fill(0);wipeTensor(positive);wipeTensor(negative);positive?.attentionMask.fill(0);negative?.attentionMask.fill(0);pointwise?.dispose();space?.dispose();run.finish();
+   try{for(const value of temporaries)value.fill(0);temporaries.clear();for(const tensor of ownedTensors)wipeTensor(tensor);ownedNoise?.fill(0);wipeTensor(positive);wipeTensor(negative);positive?.attentionMask.fill(0);negative?.attentionMask.fill(0);pointwise?.dispose();space?.dispose();}finally{try{const released=await Promise.allSettled(Object.values(weightLeases).map(lease=>lease.release())),errors=released.filter(value=>value.status==='rejected').map(value=>value.reason);if(errors.length)throw new AggregateError(errors,'Sampler weight operation lease cleanup incomplete');}finally{run.finish();}}
   }
  }
  try{
   for(const side of SIDES){sources[side]=await createFullModelWeightSource({file:files[side],side,decoder:'lookup',bridgeBytes:prepared.bridgeBytes,lookupBytes:prepared.lookupBytes,readAheadBytes,signal});live();}
+  for(const side of SIDES){weightFeeds[side]=await createFullModelWeightFeed({source:sources[side],side});live();}
   math=await createModelMath({wasmBytes:prepared.mathWasmBytes});live();ops=await createBatchedModelOps({numThreads:wasmThreads});live();
-  for(const side of SIDES){models[side]=await createBerniniModelCandidate({source:sources[side],math,ops,signal});live();}
+  for(const side of SIDES){models[side]=await createBerniniModelCandidate({source:weightFeeds[side].source,math,ops,signal});live();}
   const schedulerBytes=await loadBytes(prepared.schedulerWasmBytes,new URL('../scheduler/build/scheduler.wasm',import.meta.url),signal);
   const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',schedulerBytes)),v=>v.toString(16).padStart(2,'0')).join('');if(digest!==SCHEDULER_SHA256)throw Error('Pinned scheduler WASM hash mismatch');
   scheduler=createSchedulerKernel(await WebAssembly.compile(schedulerBytes));live();
@@ -236,9 +243,10 @@ export async function createBerniniModelSamplerCandidate(options={}){
   const check=await createGeneratedLatentSpace({wasmBytes:generatedBytes,targetShape:[1,16,1,2,2]});check.dispose();live();
   return Object.freeze({
    predict,sample:input=>sample(input),
+   getWeightFeed(side){live();if(!SIDES.includes(side))throw TypeError('Explicit HIGH or LOW weight side required');return weightFeeds[side];},
    diagnose(input={},options={}){known(options,['onTrace'],'sampler diagnostics');if(typeof options.onTrace!=='function')return Promise.reject(TypeError('diagnose requires an onTrace function'));return sample(input,options.onTrace);},
    describe(){live();return {schemaVersion:'works-bernini-model-sampler-candidate/0.1',profile:MODEL_SAMPLER_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,generationReady:false,publicRuntimeEnabled:false,scheduler:SCHEDULE_PROFILE,resource:{wasmThreads,readAheadBytes,thread4RequiresCrossOriginIsolation:true},sampler:'Euler',steps:6,splitStep:3,cfg:1,noise:'explicit compact nonshared finite Float32Array; no seed or RNG port',models:Object.fromEntries(SIDES.map(side=>[side,models[side].describe()])),sharedOwners:'one model math owner; one linear and one attention ORT session; both model candidates internally constructed',input:'deriveWorkflowShapes canonical target plus ordered contexts; raw contexts normalized by generated-space owner; target defaults zero only when tensors omitted and no contexts',output:{dtype:'float32',layout:'NCTHW',meaning:GENERATED_RAW_SAMPLE,space:'raw',latentContract:'generated-sample / restored / diffusion_models'},weightCache:'owned prepared F32 stage weights; native ORT upload copies are not claimed eliminated',requiredShapeAcceptance:'BLOCKED until original target and canonical context population are independently accepted'};},
-   stats(){return {...structuredClone(metrics),busy,disposed,closing,models:Object.fromEntries(SIDES.map(side=>[side,models[side]?.stats()??null])),sources:Object.fromEntries(SIDES.map(side=>[side,sources[side]?.stats()??null])),math:math?.stats()??null,ops:ops?.stats()??null,sharedSessionCreations:ops?.stats().sessionCreations??0};},
+   stats(){return {...structuredClone(metrics),busy,disposed,closing,models:Object.fromEntries(SIDES.map(side=>[side,models[side]?.stats()??null])),sources:Object.fromEntries(SIDES.map(side=>[side,sources[side]?.stats()??null])),weightFeeds:Object.fromEntries(SIDES.map(side=>[side,weightFeeds[side]?.stats()??null])),math:math?.stats()??null,ops:ops?.stats()??null,sharedSessionCreations:ops?.stats().sessionCreations??0};},
    dispose,recover:dispose
   });
  }catch(error){closing=true;try{await cleanup();disposed=true;}catch(cleanupError){throw new AggregateError([error,cleanupError],'Model sampler preparation and cleanup failed',{cause:error});}throw error;}

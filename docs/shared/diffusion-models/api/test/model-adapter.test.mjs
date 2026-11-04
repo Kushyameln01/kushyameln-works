@@ -13,7 +13,8 @@ mock.module(new URL('../../execution/model-sampler-candidate.mjs',import.meta.ur
   stats:()=>{if(state.statsFailure)throw Error('injected stats failure');return {disposed:state.disposed,predictions:state.predictions.length,samples:state.samples,...state.resources};},
   async predict(input){assert.ok(input.signal instanceof AbortSignal);state.predictions.push(input.side);input.onProgress?.({operation:'predict',side:input.side,model:{stage:'block-complete',block:0}});if(state.executionFailure)throw state.executionFailure;if(delayPrediction)await new Promise((resolve,reject)=>input.signal.addEventListener('abort',()=>reject(input.signal.reason),{once:true}));return {...raw(),meaning:'bernini-flow-velocity:v1',latentContract:undefined,modelSha256:BASE_MODEL_HASHES[input.side],evidence:{profile:'unit-state-double-not-NN',publicRuntimeEnabled:false}};},
   async sample(input){assert.ok(input.signal instanceof AbortSignal);state.samples++;input.onProgress?.({stage:'step-complete',step:5});if(state.executionFailure)throw state.executionFailure;return {...raw(),evidence:{profile:'unit-state-double-not-NN',publicRuntimeEnabled:false}};},
-  async dispose(){if(disposeFailure)throw Error('injected disposal failure');state.disposed=true;}
+  getWeightFeed(side){return state.weightFeed??{describe:()=>({side,epoch:0,logicalRegistry:{side,targets:[]}}),consumer:{currentEpoch:()=>0},baseProvider:{}};},
+  async dispose(){if(disposeFailure)throw Error('injected disposal failure');await state.disposeWait;state.disposed=true;}
  };
 }}});
 let module;
@@ -40,6 +41,36 @@ test('unloaded and stale model sessions fail before numerical dispatch',async()=
  const second=await owner.execute('load',{files:files()});assert.notEqual(first.modelSessionId,second.modelSessionId);
  await assert.rejects(owner.execute('predict',{side:'HIGH',modelSessionId:first.modelSessionId}),{code:'STALE_MODEL'});
  assert.equal(created.at(-1).predictions.length,0);await owner.dispose();
+});
+
+test('explicit weight ports bind the current model and become stale after unload',async()=>{
+ const {createDiffusionWeightClient}=await import('../weight-port.mjs'),owner=adapter();
+ await assert.rejects(owner.execute('openWeightFeed',{side:'LOW'}),{code:'MODEL_NOT_LOADED'});
+ const loaded=await owner.execute('load',{files:files()});
+ await assert.rejects(owner.execute('openWeightFeed',{side:'OTHER',modelSessionId:loaded.modelSessionId}),{code:'INVALID_MODEL_INPUT'});
+ await assert.rejects(owner.execute('openWeightFeed',{side:'LOW',modelSessionId:'old'}),{code:'STALE_MODEL'});
+ const opened=await owner.execute('openWeightFeed',{side:'LOW',modelSessionId:loaded.modelSessionId}),client=await createDiffusionWeightClient({port:opened.port,binding:opened.binding});
+ assert.equal(opened.binding.modelSessionId,loaded.modelSessionId);assert.equal((await client.describe()).side,'LOW');
+ await owner.execute('unload',{});for(let i=0;i<20&&client.isValid();i++)await new Promise(resolve=>setImmediate(resolve));assert.equal(client.isValid(),false);await owner.dispose();
+});
+
+test('unload aborts duplex validation before waiting for the runtime to drain it',async()=>{
+ const {createDiffusionWeightClient}=await import('../weight-port.mjs'),owner=adapter();await owner.execute('load',{files:files()});const state=created.at(-1);let resolveDrain,entered=false,refs=1,timer;
+ state.disposeWait=new Promise(resolve=>{resolveDrain=resolve;});state.weightFeed={describe:()=>({epoch:0}),stats:()=>({activePackageHash:null}),baseProvider:{},consumer:{currentEpoch:()=>0,async prepareLoad(pkg){return {pkg:pkg.retain('native-test')};},async validate(candidate,ctx){entered=true;try{return await candidate.pkg.readBlock('unit',0,1,{signal:ctx.signal});}finally{resolveDrain();}},async rollback(){},async releaseCandidate(candidate){await candidate.pkg.release();}}};
+ const opened=await owner.execute('openWeightFeed',{side:'LOW'}),client=await createDiffusionWeightClient({port:opened.port}),pkg={describe:()=>({}),isValid:()=>true,retain(){refs++;return {describe:this.describe,isValid:this.isValid,readBlock:this.readBlock,async release(){refs--;}};},async readBlock(id,offset,count,{signal}){await new Promise((resolve,reject)=>signal.addEventListener('abort',()=>reject(signal.reason),{once:true}));},async release(){refs--;}};
+ try{
+  const candidate=await client.consumer.prepareLoad(pkg),validation=client.consumer.validate(candidate).catch(error=>error);while(!entered)await new Promise(resolve=>setImmediate(resolve));
+  await Promise.race([owner.execute('unload',{}),new Promise((resolve,reject)=>{timer=setTimeout(()=>reject(Error('unload waited for a port that it had not aborted')),500);})]);clearTimeout(timer);assert.equal((await validation).code,'STALE_MODEL');
+  await client.dispose();await pkg.release();assert.equal(refs,0);assert.equal(state.disposed,true);
+ }finally{clearTimeout(timer);resolveDrain();await owner.dispose();}
+});
+
+test('a direct weight-port cleanup failure blocks the next prediction without a status query',async()=>{
+ const {createDiffusionWeightClient}=await import('../weight-port.mjs'),owner=adapter();await owner.execute('load',{files:files()});const state=created.at(-1);
+ state.weightFeed={describe:()=>({epoch:0}),stats:()=>({activePackageHash:null}),baseProvider:{},consumer:{currentEpoch:()=>0},async clear(){state.resources.weightFeeds={LOW:{cleanupPending:1}};throw Object.assign(Error('package release failed'),{code:'PACKAGE_RELEASE_FAILED'});}};
+ const opened=await owner.execute('openWeightFeed',{side:'LOW'}),client=await createDiffusionWeightClient({port:opened.port});
+ try{await assert.rejects(client.clear(),{code:'PACKAGE_RELEASE_FAILED'});await assert.rejects(owner.execute('predict',{side:'LOW'}),{code:'MODEL_CLEANUP_REQUIRED'});assert.equal(state.predictions.length,0);}
+ finally{await owner.execute('unload',{});await client.dispose();await owner.dispose();}
 });
 
 test('failed preparation leaves the adapter loadable and failed unload remains retryable',async()=>{

@@ -36,22 +36,25 @@ export function createModelHead({source,math,ops}={}){
  }
  const entry=entries['head.head.weight'],weightRows=Math.min(entry.maxRows,Math.floor(MODEL_WEIGHT_LIMITS.maxBlockElements/width));
  if(entry.columns!==width||!Number.isSafeInteger(weightRows)||weightRows<1)throw TypeError('Bounded full-inner head source rows required');
- let busy=false,disposed=false,cache=null,runs=0,rowsProcessed=0,sourceReads=0,sourceF32Bytes=0,lastEvidence=null;
+ let busy=false,disposed=false,cache=null,cacheWeightEpoch=null,cacheInvalidations=0,runs=0,rowsProcessed=0,sourceReads=0,sourceF32Bytes=0,lastEvidence=null;
  const live=signal=>{if(disposed)throw Error('Model head disposed');abort(signal);};
- async function load(signal){
+ const weightEpoch=()=>{const at=typeof source.weightEpoch==='function'?source.weightEpoch():source.describe().weightEpoch??null;if(at!==null&&(!Number.isSafeInteger(at)||at<0))throw TypeError('Valid source weight epoch required');return at;};
+ function currentEpoch(at){if(weightEpoch()!==at){cache=null;cacheWeightEpoch=null;cacheInvalidations++;throw Object.assign(new Error('Model head weight epoch changed during execution'),{code:'STALE_WEIGHT_EPOCH'});}}
+ async function load(signal,at){
+  if(cache&&cacheWeightEpoch!==at){cache=null;cacheWeightEpoch=null;cacheInvalidations++;}
   if(cache)return cache;
   // Build privately and publish only after every bounded read succeeds. A
   // cancelled/failed load never exposes a partially initialized cache.
   const weight=new Float32Array(columns*width);
   for(let start=0;start<columns;start+=weightRows){
-   const count=Math.min(weightRows,columns-start),read=await source.readRows('head.head.weight',start,count,{signal,diagnostics:false});live(signal);
+   const count=Math.min(weightRows,columns-start),read=await source.readRows('head.head.weight',start,count,{signal,diagnostics:false});live(signal);currentEpoch(at);
    const values=snapshot(read.values,count*width,'Head weight');weight.set(values,start*width);sourceReads++;sourceF32Bytes+=values.byteLength;
   }
-  const readMod=await source.readVector('head.modulation',0,2*width,{signal,diagnostics:false});live(signal);
+  const readMod=await source.readVector('head.modulation',0,2*width,{signal,diagnostics:false});live(signal);currentEpoch(at);
   const modulation=snapshot(readMod.values,2*width,'Head modulation');sourceReads++;sourceF32Bytes+=modulation.byteLength;
-  const readBias=await source.readVector('head.head.bias',0,columns,{signal,diagnostics:false});live(signal);
+  const readBias=await source.readVector('head.head.bias',0,columns,{signal,diagnostics:false});live(signal);currentEpoch(at);
   const bias=snapshot(readBias.values,columns,'Head bias');sourceReads++;sourceF32Bytes+=bias.byteLength;
-  cache={weight,shift:modulation.slice(0,width),scale:modulation.slice(width),bias};return cache;
+  cache={weight,shift:modulation.slice(0,width),scale:modulation.slice(width),bias};cacheWeightEpoch=at;return cache;
  }
  return Object.freeze({
   async run(input={}){
@@ -61,18 +64,18 @@ export function createModelHead({source,math,ops}={}){
     const {rows}=input;if(!Number.isSafeInteger(rows)||rows<1||rows>maxRows)throw RangeError('Head rows shape requires 1..128');
     // Snapshot hidden before reading any later caller-controlled getter.
     const hidden=snapshot(input.hidden,rows*width,'Head hidden'),timeEmbedding=snapshot(input.timeEmbedding,width,'Raw time embedding'),signal=input.signal;live(signal);
-    const parameters=await load(signal);live(signal);
+    const at=weightEpoch(),parameters=await load(signal,at);live(signal);currentEpoch(at);
     // e is time_embedding's raw output. It is added separately to both
     // learned vectors; SiLU/time_projection are not part of the final head.
     const shift=math.add({a:parameters.shift,b:timeEmbedding}),scale=math.add({a:parameters.scale,b:timeEmbedding});
     const normalized=math.layerNorm({input:hidden,rows,width,epsilon}),modulated=math.modulate({input:normalized,shift,scale,rows,width});live(signal);
-    const projected=await ops.linear({x:modulated,weight:parameters.weight,rows,columns,inner:width,signal});live(signal);
+    const projected=await ops.linear({x:modulated,weight:parameters.weight,rows,columns,inner:width,signal});live(signal);currentEpoch(at);
     const projection=snapshot(projected.output,rows*columns,'Head projection'),output=snapshot(math.bias({input:projection,bias:parameters.bias,rows,width:columns}),rows*columns,'Head output');live(signal);
     runs++;rowsProcessed+=rows;lastEvidence=projected.evidence?structuredClone(projected.evidence):null;return output;
    }finally{busy=false;}
   },
   describe(){live();return {schemaVersion:'works-model-head/0.1',profile:MODEL_HEAD_PROFILE,limits:{...MODEL_HEAD_LIMITS},sourceSchema:MODEL_WEIGHT_SCHEMA,operator:'head.norm -> (modulation + raw time_embedding) -> head.head',timeInput:'raw time_embedding e; no timeAct1 or projected e0',fullInner:width,outputColumns:columns,contextRowsExecute:true,normalization:{kind:'layernorm',elementwiseAffine:false,epsilon},cachePolicy:'bounded full head only; no payload hashes',originalProductionPrecisionVerified:false,modelInference:false,generationReady:false};},
-  stats(){return {busy,disposed,runs,rowsProcessed,sourceReads,sourceF32Bytes,cacheBytes:cache?cache.weight.byteLength+cache.shift.byteLength+cache.scale.byteLength+cache.bias.byteLength:0,lastLinearEvidence:lastEvidence?structuredClone(lastEvidence):null};},
+  stats(){return {busy,disposed,runs,rowsProcessed,sourceReads,sourceF32Bytes,cacheWeightEpoch,cacheInvalidations,cacheBytes:cache?cache.weight.byteLength+cache.shift.byteLength+cache.scale.byteLength+cache.bias.byteLength:0,lastLinearEvidence:lastEvidence?structuredClone(lastEvidence):null};},
   dispose(){if(busy)throw Error('Await active model head before disposal; owner busy');cache=null;disposed=true;}
  });
 }

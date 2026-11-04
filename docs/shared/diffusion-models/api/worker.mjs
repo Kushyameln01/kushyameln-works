@@ -31,7 +31,7 @@ function metadata(tensor,profileId){
 }
 
 async function execute(op,input){
- if(['load','predict','sample','unload','modelStatus','saveTensor','readTensor'].includes(op)){
+ if(['load','predict','sample','unload','modelStatus','saveTensor','readTensor','openWeightFeed'].includes(op)){
   if(op==='load'&&p4Owner)fail('RESOURCE_OWNER_CONFLICT','releaseP4 is required before preparing the full-model owner');
   if(!modelAdapter){const {createModelAdapter}=await import('./model-adapter.mjs');modelAdapter=createModelAdapter();}
   const request=activeRequest;
@@ -139,6 +139,7 @@ self.onmessage=async({data:q})=>{
   const result=await execute(q.op,q.input);
   const response={...q,buildId:BUILD_ID,input:undefined,status:'ok',result};
   const transfers=[...new Set([...Object.values(result),result.tensor?.data,result.tensor?.attentionMask].filter(v=>ArrayBuffer.isView(v)).map(v=>v.buffer))];
+  if(result.port instanceof MessagePort)transfers.push(result.port);
   self.postMessage(response,transfers);
  }catch(error){self.postMessage({...q,buildId:BUILD_ID,input:undefined,status:'error',error:{code:error.code??'COMPUTE_ERROR',message:String(error.message??error),...(error.details?{details:error.details}:{})}});}
  finally{activeRequest=null;}

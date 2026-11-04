@@ -85,6 +85,14 @@ test('raw canonical context enters the dedicated normalization owner before any 
  const original=structuredClone(context),pending=candidate.diagnose({...request,signal:controller.signal},{onTrace(event){assert.equal(event.name,'initialX');controller.abort();}});
  try{await assert.rejects(pending,{name:'AbortError'});assert.equal(candidate.stats().rawContextNormalizations,1);assert.deepEqual(context,original);assert.equal(HIGH.payloadReads+LOW.payloadReads,0);}finally{await candidate.dispose();}
 });
+test('a whole sample holds both HIGH and LOW weight epochs until cancelled terminal cleanup',async()=>{
+ const {candidate,HIGH,LOW}=await prepare(),controller=new AbortController(),feeds=['HIGH','LOW'].map(side=>candidate.getWeightFeed(side));
+ try{
+  const pending=candidate.diagnose({...input(),signal:controller.signal},{async onTrace(event){assert.equal(event.name,'initialX');for(const feed of feeds){assert.equal(feed.stats().operationLeases,1);await assert.rejects(feed.clear(),{code:'WEIGHT_OPERATION_ACTIVE'});}controller.abort();}});
+  await assert.rejects(pending,{name:'AbortError'});for(const feed of feeds){assert.equal(feed.stats().operationLeases,0);assert.equal(feed.stats().readLeases,0);await feed.clear();}
+  assert.equal(HIGH.payloadReads+LOW.payloadReads,0);assert.equal(candidate.stats().busy,false);
+ }finally{await candidate.dispose();}
+});
 test('pointwise boundary preserves actual HIGH public conversion, LOW process_in and zero-noise remapping',async()=>{
  const kernelBytes=await preparationBytes(),scheduler=createSchedulerKernel(await WebAssembly.compile(kernelBytes.schedulerWasmBytes)),euler=await createEulerKernel(kernelBytes.eulerWasmBytes),shape=[1,16,1,2,4],space=await createGeneratedLatentSpace({wasmBytes:kernelBytes.generatedSpaceWasmBytes,targetShape:shape}),pointwise=createGeneratedTargetPointwise({scheduler,euler,targetShape:shape});
  const generated=data=>({dtype:'float32',shape,layout:'NCTHW',meaning:GENERATED_MODEL_LATENT,normalization:NORMALIZATION,producerModelSha256s:[BASE_MODEL_HASHES.HIGH],data});

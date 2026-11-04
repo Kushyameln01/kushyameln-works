@@ -61,6 +61,7 @@ api.dispose();
 | sample | `{shapeRequest,tensors?,noise,positive,negative,modelSessionId?}` | Euler/simple6/shift5/split3、HIGH3→LOW3候補のowned raw generated sample |
 | unload / modelStatus | `{}` | 実owner解放／状態・資源統計。unload成功後はWorkerを終了 |
 | saveTensor / readTensor | `{tensor}` / `{file}` | canonical WKTSR001保存bytes／実File読戻し。生成sampleのmeaning・latentContractを保持、独立64MiB file予算 |
+| openWeightFeed | `{side:'HIGH'|'LOW',modelSessionId?}` | 明示MessagePort・model session binding・全モデルnative descriptor。`createDiffusionWeightClient`で不変base providerと完成F32 consumerへ接続。低rank積はLoRA owner、実LoRA全モデル数値受入は別scope |
 | cancel | `{jobId: 対象jobId,inputRevision: 対象revision}` | 自分が所有する実行中Workerだけ終了。対象のPromiseはCANCELLEDで終端化 |
 | dispose | `{}` | Workerを終了し以後の呼出しをDISPOSEDで拒否 |
 
@@ -127,7 +128,7 @@ LoRA用に `inspectLora` / `loadLora` / `listLoras` / `readLora` / `readLoraSour
 
 読出しは1回4MiB以下の所有Uint8Array。F16/BF16/F32の保存bitsと元のshape・tensor名・範囲・hashを返し、LoRAの数値加算を行わない。対応する通常pairと `.diff/.diff_b` のshapeを実Bernini targetと照合する。`loraWeightIO:true` と `loraApplied:false` を区別する。LoRA適用が未受入であることと、現行baseモデルの公開実行経路を分ける。
 
-別担当LoRA SDKのsource契約へは `createLoraSource` で接続できる。後述のv2 adapterは限定Q射影のruntime feed-setへ接続する。全モデルのgraph/package/session切替は未実装である。元のweight I/O、対象モデルhash、対応形式、保持・所有権は [LoRA接続仕様](lora/API.md) を参照する。
+別担当LoRA SDKのsource契約へは `createLoraSource` で接続できる。後述のv2 adapterは限定Q射影のruntime feed-setへ接続する。現行の全モデル接続は [完成F32 weight port契約](api/WEIGHT_PORT.md) を正本とし、canonical logical targetから実reader/operator、不変base供給、owned packageの通常検証・切替・解除を実装した。`predict`中は選択side、6更新の`sample`中は両sideのepochを保持する。実LoRAを使う全モデル数値・全体運用受入は別であり、元のweight I/O、対象モデルhash、対応形式、保持・所有権は [LoRA接続仕様](lora/API.md) を参照する。
 
 
 ## L1: bounded F32 runtime weightと実base診断

@@ -92,3 +92,14 @@ test('head cancellation releases busy ownership and retries an incomplete cache'
   assert.equal(head.stats().rowsProcessed,1);
  }finally{head.dispose();math.dispose();}
 });
+
+test('head invalidates retained weights on source epoch change and rejects a mid-load switch',async()=>{
+ const f=fixture();let epoch=0;f.source.weightEpoch=()=>epoch;
+ const math=await mathOwner(),head=api.createModelHead({source:f.source,math,ops:scalarOps()}),input={hidden:new Float32Array(W),timeEmbedding:new Float32Array(W),rows:1};
+ try{
+  const first=await head.run(input),reads=f.reads.length;f.bias[0]+=7;epoch++;
+  const next=await head.run(input);assert.equal(next[0],F(first[0]+7));assert.equal(f.reads.length,reads+6);assert.equal(head.stats().cacheWeightEpoch,1);
+  epoch++;const release=f.hold(),pending=head.run(input);await Promise.resolve();epoch++;release();await assert.rejects(pending,/epoch|weight.*chang/i);assert.equal(head.stats().cacheBytes,0);
+  await head.run(input);assert.equal(head.stats().cacheWeightEpoch,3);
+ }finally{head.dispose();math.dispose();}
+});

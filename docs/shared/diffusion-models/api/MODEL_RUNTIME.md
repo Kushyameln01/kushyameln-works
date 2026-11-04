@@ -27,6 +27,7 @@ Each operation uses the existing envelope containing `protocolVersion`,
 | `modelStatus` | `{}` | Current model session, state and optional native counters/description |
 | `saveTensor` | `{tensor}` | `{bytes:Uint8Array,byteLength,sha256,metadata}` encoded by the canonical shared tensor codec |
 | `readTensor` | `{file:FileOrBlob}` | `{tensor,byteLength,sha256}` decoded from actual supplied file bytes by that same codec |
+| `openWeightFeed` | `{side:'HIGH'|'LOW',modelSessionId?}` | Explicit transferred MessagePort, binding and native full-model descriptor; immutable base provider and completed-F32 standalone consumer through `createDiffusionWeightClient` |
 
 `execution` contains operation, model session/epoch, actual numerical profile,
 `publicWorkerConnected:true`, `generationReady:false`, and

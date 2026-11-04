@@ -1,5 +1,7 @@
 import {describeExecutionCapabilities,checkExecutionSupport,POINTWISE_MAX_ELEMENTS} from '../execution/capabilities.mjs';
 export {describeExecutionCapabilities,checkExecutionSupport} from '../execution/capabilities.mjs';
+export {createDiffusionWeightClient,WEIGHT_PORT_PROTOCOL} from './weight-port.mjs';
+import {WEIGHT_PORT_PROTOCOL} from './weight-port.mjs';
 export async function createBerniniP4Execution(options={}){const owned=structuredClone(options);const owner=await import('../execution/p4.mjs');return owner.createBerniniP4Execution(owned);}
 import {validateLoraBinding,LORA_LIMITS} from '../lora/weights.mjs';
 import {BUILD_ID} from './build-info.mjs';
@@ -7,7 +9,7 @@ import {MODEL_ADAPTER_CAPABILITIES} from './model-adapter.mjs';
 export {BUILD_ID} from './build-info.mjs';
 export const PROTOCOL_VERSION='diffusion-models/0.1';
 export const MAX_TENSOR_ELEMENTS=POINTWISE_MAX_ELEMENTS;
-const OPERATIONS=new Set(['capabilities','checkSupport','prepareP4','runP4','releaseP4','inspect','eulerStep','schedule','noiseMix','inverseNoiseScale','flowDenoised','validateConditioning','validateRawLatent','normalizeRawMean','restoreRawMean','linearProjection','linearProjectionF32','inspectLora','loadLora','listLoras','readLora','readLoraSource','unloadLora','load','predict','sample','unload','modelStatus','saveTensor','readTensor','cancel','dispose']);
+const OPERATIONS=new Set(['capabilities','checkSupport','prepareP4','runP4','releaseP4','inspect','eulerStep','schedule','noiseMix','inverseNoiseScale','flowDenoised','validateConditioning','validateRawLatent','normalizeRawMean','restoreRawMean','linearProjection','linearProjectionF32','inspectLora','loadLora','listLoras','readLora','readLoraSource','unloadLora','load','predict','sample','unload','modelStatus','saveTensor','readTensor','openWeightFeed','cancel','dispose']);
 const validId=x=>typeof x==='string'&&x.length>0&&x.length<=128&&/^[A-Za-z0-9_.:-]+$/.test(x);
 const identity=q=>({buildId:BUILD_ID,protocolVersion:q?.protocolVersion,sessionId:q?.sessionId,jobId:q?.jobId,inputRevision:q?.inputRevision,op:q?.op});
 const matches=(a,b)=>['buildId','protocolVersion','sessionId','jobId','inputRevision','op'].every(k=>a[k]===b[k]);
@@ -19,9 +21,22 @@ export function createDiffusionModels({sessionId=crypto.randomUUID()}={}){
  if(!validId(sessionId))throw new TypeError('Invalid sessionId');
  let worker=null,active=null,disposed=false,revision=0,generation=0;
  const loras=new Map();
+ const weightBridges=new Set();
  const progressListeners=new Set();let loadedModel=null,p4Prepared=false,modelCleanupRequired=false;
  const snapshot=entry=>({...structuredClone(entry.metadata),bindingId:entry.bindingId});
- const stopWorker=()=>{generation++;worker?.terminate();worker=null;loadedModel=null;p4Prepared=false;modelCleanupRequired=false;};
+ const stopWorker=()=>{for(const close of weightBridges)close();weightBridges.clear();generation++;worker?.terminate();worker=null;loadedModel=null;p4Prepared=false;modelCleanupRequired=false;};
+ // Retain a relay endpoint in this API realm. It delivers terminal invalidation
+ // even if the returned explicit port has subsequently moved to another realm.
+ // Its bounded message copies are additional host staging, not zero-copy NN IO.
+ function bridgeWeightPort(nativePort){
+  if(!(nativePort instanceof MessagePort))throw TypeError('Worker weight feed did not return an explicit MessagePort');
+  const channel=new MessageChannel();let open=true;
+  const close=()=>{if(!open)return;open=false;try{channel.port1.postMessage({protocol:WEIGHT_PORT_PROTOCOL,kind:'closed',error:{code:'STALE_MODEL',message:'Owning public Worker was cancelled, unloaded, reloaded or disposed'}});}catch{}nativePort.close();channel.port1.close();weightBridges.delete(close);};
+  nativePort.addEventListener('message',event=>{if(open)try{channel.port1.postMessage(event.data);if(event.data?.protocol===WEIGHT_PORT_PROTOCOL&&event.data.kind==='closed')close();}catch{close();}});
+  channel.port1.addEventListener('message',event=>{if(open)try{nativePort.postMessage(event.data);if(event.data?.protocol===WEIGHT_PORT_PROTOCOL&&event.data.kind==='closed')close();}catch{close();}});
+  nativePort.addEventListener('messageerror',close);channel.port1.addEventListener('messageerror',close);
+  nativePort.start();channel.port1.start();weightBridges.add(close);return channel.port2;
+ }
  const settle=(reply)=>{
   const pending=active;active=null;
   // A factory can fail before returning a disposal owner. Discard the entire
@@ -120,6 +135,10 @@ export function createDiffusionModels({sessionId=crypto.randomUUID()}={}){
       }
       if(data.status!=='ok'&&data.status!=='error')return;
       if(data.status==='ok'&&active.request.op==='load')loadedModel={modelSessionId:data.result.modelSessionId,modelEpoch:data.result.modelEpoch};
+      if(data.status==='ok'&&active.request.op==='openWeightFeed'){
+       try{if(!loadedModel||data.result?.binding?.modelSessionId!==loadedModel.modelSessionId||data.result.binding.modelEpoch!==loadedModel.modelEpoch)throw Error('Weight feed belongs to another model owner');data={...data,result:{...data.result,port:bridgeWeightPort(data.result.port)}};}
+       catch(error){const pending=active.request;stopWorker();settle(errorResponse(pending,'WORKER_ERROR',String(error.message??error)));return;}
+      }
       if(data.status==='ok'&&active.request.op==='prepareP4')p4Prepared=true;
       if(data.status==='ok'&&active.request.op==='releaseP4')p4Prepared=false;
       if(data.status==='ok'&&active.request.op==='modelStatus'&&data.result?.cleanupRequired===true)modelCleanupRequired=true;
@@ -166,7 +185,7 @@ export function attachDiffusionPort(port,api,{progress=false}={}){
  const onMessage=async event=>{
   const ownedKey=key(event.data);if(ownedKey)pending.set(ownedKey,(pending.get(ownedKey)??0)+1);
   try{
-   const reply=await api.request(event.data);if(attached)try{port.postMessage(reply);}catch{detach();}
+   const reply=await api.request(event.data);if(attached)try{port.postMessage(reply,reply.result?.port instanceof MessagePort?[reply.result.port]:[]);}catch{detach();}else if(reply.result?.port instanceof MessagePort){try{reply.result.port.postMessage({protocol:WEIGHT_PORT_PROTOCOL,kind:'closed',error:{code:'WEIGHT_PORT_CLOSED',message:'Outer API port detached before weight feed delivery'}});}finally{reply.result.port.close();}}
   }finally{if(ownedKey){const count=(pending.get(ownedKey)??1)-1;if(count)pending.set(ownedKey,count);else pending.delete(ownedKey);}}
  };
  function detach(){if(!attached)return;attached=false;unsubscribe();pending.clear();port.removeEventListener('message',onMessage);port.close();}

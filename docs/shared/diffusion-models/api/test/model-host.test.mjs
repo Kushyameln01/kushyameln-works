@@ -13,8 +13,23 @@ class MockWorker{
  fail(q,code,details){this.onmessage({data:{...q,input:undefined,status:'error',error:{code,message:'injected Worker failure',...(details?{details}:{})}}});}
 }
 globalThis.Worker=MockWorker;
-const {createDiffusionModels,attachDiffusionPort,PROTOCOL_VERSION}=await import('../index.mjs');
+const {createDiffusionModels,attachDiffusionPort,createDiffusionWeightClient,PROTOCOL_VERSION}=await import('../index.mjs');
+const {attachDiffusionWeightServer}=await import('../weight-port.mjs');
 const q=(api,id,op='load',input={files:{HIGH:new Blob(['h']),LOW:new Blob(['l'])}},rev=0)=>({protocolVersion:PROTOCOL_VERSION,sessionId:api.sessionId,jobId:id,inputRevision:rev,op,input});
+
+for(const explicit of [false,true])test('weight port '+(explicit?'explicit outer transport':'same-page')+' survives nested base calls and is invalidated by Worker cancellation',async()=>{
+ const api=createDiffusionModels({sessionId:'host-weights-'+explicit}),binding={side:'LOW',modelSessionId:'weight-model',modelEpoch:1},native=new MessageChannel();let server,detach,outer,client;
+ try{
+  const loading=api.request(q(api,'load')),worker=MockWorker.all.at(-1);worker.emit(worker.messages.at(-1),'ok',{loaded:true,...binding});await loading;
+  const feed={describe:()=>({epoch:0,side:'LOW'}),consumer:{currentEpoch:()=>0},baseProvider:{describe:()=>({side:'LOW'}),readBlock:async(id,offset,count)=>new Float32Array(count).fill(3)}};
+  server=attachDiffusionWeightServer(native.port1,feed,{binding});let opened;
+  if(explicit){outer=new MessageChannel();detach=attachDiffusionPort(outer.port1,api);const received=new Promise(resolve=>outer.port2.once('message',resolve));outer.port2.postMessage(q(api,'open','openWeightFeed',{side:'LOW',modelSessionId:binding.modelSessionId}));for(let i=0;i<20&&worker.messages.at(-1).op!=='openWeightFeed';i++)await new Promise(resolve=>setImmediate(resolve));worker.emit(worker.messages.at(-1),'ok',{port:native.port2,binding});opened=await received;}
+  else{const pending=api.request(q(api,'open','openWeightFeed',{side:'LOW',modelSessionId:binding.modelSessionId}));worker.emit(worker.messages.at(-1),'ok',{port:native.port2,binding});opened=await pending;}
+  assert.equal(opened.status,'ok');client=await createDiffusionWeightClient({port:opened.result.port,binding});assert.equal((await client.baseProvider.readBlock('unit',0,4))[0],3);
+  const prediction=q(api,'predict','predict',{side:'LOW'}),pending=api.request(prediction);api.cancel({sessionId:api.sessionId,jobId:prediction.jobId,inputRevision:0});assert.equal((await pending).error.code,'CANCELLED');
+  for(let i=0;i<20&&client.isValid();i++)await new Promise(resolve=>setImmediate(resolve));assert.equal(client.isValid(),false);await assert.rejects(client.describe(),{code:'WEIGHT_PORT_CLOSED'});
+ }finally{detach?.();outer?.port2.close();server?.close();api.dispose();}
+});
 
 test('progress never settles the model request and observers cannot replace its result',async()=>{
  const api=createDiffusionModels({sessionId:'host-progress'}),events=[];
