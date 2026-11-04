@@ -134,14 +134,14 @@ export function verifyCaseOutput(output,record,manifest,capabilities,{diagnostic
  return{dtype:tensor.dtype,shape:[...tensor.shape],layout:tensor.layout,meaning:tensor.meaning,normalization:tensor.normalization,modelSha256:tensor.modelSha256,tokenizerSha256:tensor.tokenizerSha256,attentionMask:Array.from(tensor.attentionMask),elements:tensor.data.length,finite:true,paddingExactlyZero:true};
 }
 
-export const NODE_SOURCE_PATHS=Object.freeze(['tools/inference/text-encoder/node_sdk_host.mjs','tools/inference/text-encoder/node_resource_guard.cjs','docs/shared/inference/text-encoder-api.mjs','docs/shared/inference/client.mjs','docs/shared/inference/text-job.mjs','docs/shared/inference/text-encoder.mjs','docs/shared/inference/tokenizer.mjs','docs/shared/inference/vendor/sentencepiece.mjs','docs/shared/inference/tensor.mjs','docs/shared/inference/hike.mjs','docs/shared/inference/kernel/tensor.wasm','docs/shared/inference/vendor/ort.wasm.min.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm','docs/shared/vr180/sha256.mjs']);
+export const NODE_SOURCE_PATHS=Object.freeze(['tools/inference/text-encoder/node_sdk_host.mjs','tools/inference/text-encoder/node_resource_guard.cjs','docs/shared/inference/text-encoder-api.mjs','docs/shared/inference/client.mjs','docs/shared/inference/text-job.mjs','docs/shared/inference/text-encoder.mjs','docs/shared/inference/text-attention-lowering.mjs','docs/shared/inference/tokenizer.mjs','docs/shared/inference/vendor/sentencepiece.mjs','docs/shared/inference/tensor.mjs','docs/shared/inference/hike.mjs','docs/shared/inference/kernel/tensor.wasm','docs/shared/inference/vendor/ort.wasm.min.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm','docs/shared/vr180/sha256.mjs']);
 
 // The Python parent establishes commit identity with Git. These supplied rows
 // are a diagnostic input to Node, not independent evidence of commit authority.
 // Node independently rereads every required file and checks its current bytes.
 export async function verifySourceRecords(root,executionSourceSha,sourceRecords){
  check(typeof executionSourceSha==='string'&&/^[0-9a-f]{40}$/.test(executionSourceSha),'Full parent execution source SHA required');
- check(Array.isArray(sourceRecords)&&sourceRecords.length===NODE_SOURCE_PATHS.length,'Parent source records must contain the exact required15-path source closure');
+ check(Array.isArray(sourceRecords)&&sourceRecords.length===NODE_SOURCE_PATHS.length,'Parent source records must contain the exact required source closure');
  const required=new Set(NODE_SOURCE_PATHS),recordsByPath=new Map();
  for(const row of sourceRecords){
   check(row&&typeof row==='object'&&!Array.isArray(row)&&required.has(row.path),'Unexpected parent source closure path');

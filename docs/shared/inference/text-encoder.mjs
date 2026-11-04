@@ -1,5 +1,6 @@
 /** Actual staged Wan UMT5 encoder. CPU WASM only; FP32 prepared diagnostics. */
 import {Sha256} from '../vr180/sha256.mjs';
+import {inspectSdpaScaleRecipe,applySdpaScaleRecipeInPlace} from './text-attention-lowering.mjs';
 const TYPE='wan-umt5-staged-fp32';
 const MODEL='c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68';
 export const TEXT_ENCODER_MODEL_SHA256=MODEL;
@@ -20,11 +21,11 @@ export function inspectTextEncoderManifest(manifest){
  if(manifest.onnxOpset!==17||manifest.ortVersion!=='1.24.3'||manifest.maxTokens!==512)failure('Unsupported text runtime manifest');
  const e=manifest.embedding;
  if(!e||e.dtype!=='float16-le'||e.hiddenSize!==DIM||e.vocabSize!==256384||!Number.isSafeInteger(e.offset)||typeof e.sourceFile!=='string'||e.sourceBytes!==6735906897)failure('Invalid text embedding manifest');
- manifest.blocks.forEach((r,i)=>{record(r,'block');if(r.index!==i)failure('Invalid text block manifest');});
+ manifest.blocks.forEach((r,i)=>{record(r,'block');if(r.index!==i)failure('Invalid text block manifest');if(r.attentionLowering!==undefined)inspectSdpaScaleRecipe(r.attentionLowering,r);});
  record(manifest.finalNorm,'final norm');if(manifest.finalNorm.bytes!==DIM*4||manifest.finalNorm.epsilon!==1e-6)failure('Invalid final norm manifest');
  record(e.rowHashes,'embedding row hashes');if(e.rowHashes.bytes!==e.vocabSize*32)failure('Invalid embedding row hash table');
  if(manifest.tokenizer!==undefined&&manifest.tokenizer.sha256!==UMT5_TOKENIZER_SHA256)failure('Unsupported embedded tokenizer identity');
- return {type:TYPE,hiddenSize:DIM,numLayers:24,maxTokens:512,arithmetic:manifest.arithmetic,modelSha256:MODEL,tokenizerSha256:UMT5_TOKENIZER_SHA256};
+ return {type:TYPE,hiddenSize:DIM,numLayers:24,maxTokens:512,arithmetic:manifest.arithmetic,modelSha256:MODEL,tokenizerSha256:UMT5_TOKENIZER_SHA256,graphBindings:manifest.blocks.map(r=>({index:r.index,path:r.path,sourceAssetSha256:r.sha256,executedGraphSha256:r.attentionLowering?.executedGraphSha256??r.sha256,recipeId:r.attentionLowering?.type??null}))};
 }
 export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress}={}){
  const info=inspectTextEncoderManifest(manifest);checkSignal(signal);
@@ -96,6 +97,10 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
    let hidden=await embeddings(effectiveIds);check(runSignal);emit({stage:'text-embedding',effectiveTokens:length,outputTokens:ids.length});
    for(const b of manifest.blocks){
     check(runSignal);let bytes=await verified(b,runSignal);check(runSignal);
+    if(b.attentionLowering){
+     await applySdpaScaleRecipeInPlace(bytes,b.attentionLowering,{signal:runSignal,verifiedSourceAssetSha256:b.sha256,onProgress:event=>{check(runSignal);emit(event);check(runSignal);}});
+     check(runSignal);
+    }
     // One-use staged sessions avoid an additional prepacked weight buffer.
     currentSession=await ort.InferenceSession.create(bytes,{executionProviders:['wasm'],extra:{session:{disable_prepacking:'1'}}});bytes=null;
     let hiddenInput,maskInput,result;

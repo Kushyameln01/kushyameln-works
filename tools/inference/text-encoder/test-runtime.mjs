@@ -47,6 +47,18 @@ test('runtime manifests do not require historical native diagnostic receipts',as
  manifest.blocks[0].index=1;assert.throws(()=>module.inspectTextEncoderManifest(manifest),/block manifest/i);
  manifest.blocks[0].index=0;manifest.blocks[0].sha256='invalid';assert.throws(()=>module.inspectTextEncoderManifest(manifest),/block.*manifest/i);
 });
+test('selected lowering verifies original assets then passes only the separately bound execution graph to ORT',async()=>{
+ const {manifest,files}=await fixture(),original=Uint8Array.from([9,9,0,0,0,63,9,9,9,9,0,0,128,63,9,9]),expected=Uint8Array.from([9,9,0,0,0,0,9,9,9,9,0,0,0,65,9,9]);
+ const assetHash=await digest(original),executionHash=await digest(expected);
+ for(const block of manifest.blocks){block.bytes=original.length;block.sha256=assetHash;files.set(block.path,original);block.attentionLowering={schemaVersion:1,type:'umt5-sdpa-scale-cancellation-candidate-v1',status:'diagnostic-only-unaccepted',index:block.index,path:block.path,sourceAsset:{bytes:block.bytes,sha256:assetHash},executedGraphSha256:executionHash,patches:[{offset:2,beforeHex:'0000003f',afterHex:'00000000',nodeName:'/block/layer.0/SelfAttention/Constant_16'},{offset:10,beforeHex:'0000803f',afterHex:'00000041',nodeName:'/block/layer.0/SelfAttention/Constant_26'}]};}
+ let created=0,released=0;
+ const ort={env:{wasm:{}},Tensor:class{constructor(type,data,dims){Object.assign(this,{type,data,dims});}dispose(){}},InferenceSession:{create:async bytes=>{
+  assert.deepEqual(bytes,expected,'Session must receive patched graph instead of the original asset');created++;
+  return{run:async feeds=>({hidden_out:new ort.Tensor('float32',new Float32Array(feeds.hidden.data),feeds.hidden.dims)}),release:async()=>{released++;}};
+ }}};
+ const encoder=await module.loadTextEncoder({manifest,files,ort,hike:{rmsNorm:x=>new Float32Array(x)}});
+ try{const result=await encoder.run({tokenIds:[0],attentionMask:[1]});assert.equal(created,24);assert.equal(released,24);assert.equal(result.normalization,'umt5-final-rmsnorm-f32-v1');assert.deepEqual([...result.attentionMask],[1]);assert.equal(result.provenance.graphBindings.length,24);assert.equal(result.provenance.graphBindings[0].sourceAssetSha256,assetHash);assert.equal(result.provenance.graphBindings[0].executedGraphSha256,executionHash);assert.deepEqual(original,Uint8Array.from([9,9,0,0,0,63,9,9,9,9,0,0,128,63,9,9]),'Selected source assets must remain unchanged');}finally{await encoder.dispose();}
+});
 test('abort immediately after session creation still releases that session',async()=>{
  const {manifest,files}=await fixture(),controller=new AbortController();let released=0,ran=0;
  const ort={env:{wasm:{}},Tensor:class{},InferenceSession:{create:async()=>{controller.abort(new Error('Cancelled'));return{release:async()=>{released++;},run:async()=>{ran++;}};}}};
