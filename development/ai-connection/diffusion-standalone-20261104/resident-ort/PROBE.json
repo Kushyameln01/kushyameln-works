@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "resident-ort-probe/1",
+  "scope": "8-byte caller-owned native OrtValue buffer probe, not inference",
+  "execution": {
+    "environment": "Node.js v24.19.0 on managed Linux",
+    "threadCount": 1,
+    "observed": true,
+    "modelBytesRead": 0,
+    "ortRuns": 0,
+    "subprocessExited": true,
+    "browserThread1InitializationProven": false,
+    "browserThread4InitializationProven": false,
+    "above2GiBProven": false
+  },
+  "originalExecutedSource": {
+    "origin": "Exact JavaScript source from successful exec_command stdin; source text preserved here after the run.",
+    "text": "import factory from '/workspace/work/diffusion-models/docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs';\nconst m=await factory({numThreads:1}),init=m._OrtInit(1,2),sp=m.stackSave();\nconst b=m._malloc(8)>>>0,d=m.stackAlloc(4)>>>0,o=m.stackAlloc(16)>>>0;\nm.setValue(d,2,'i32');new Float32Array(m.HEAPU8.buffer,b,2).set([1.25,-2.5]);\nconst h=m._OrtCreateTensor(1,b,8,d,1,1)>>>0;if(!h)throw Error('CreateTensor failed');\nconst status=m._OrtGetTensorData(h,o,o+4,o+8,o+12);if(status)throw Error('GetTensorData failed '+status);\nconst raw=m.getValue(o+4,'*')>>>0,dp=m.getValue(o+8,'*')>>>0;new Float32Array(m.HEAPU8.buffer,raw,2)[0]=3.5;\nconst r={init,ptrSize:m.PTR_SIZE,heapBytes:m.HEAPU8.byteLength,tensor:h,raw,base:b,sameRawPointer:raw===b,type:m.getValue(o,'i32'),rank:m.getValue(o+12,'i32'),dim:m.getValue(dp,'i32'),mutationVisible:new Float32Array(m.HEAPU8.buffer,b,2)[0]};\nm._OrtFree(dp);r.release=m._OrtReleaseTensor(h);r.bufferAfterTensorRelease=new Float32Array(m.HEAPU8.buffer,b,2)[0];m._free(b);m.stackRestore(sp);r.rss=process.memoryUsage().rss;r.modelBytesRead=0;r.ortRuns=0;console.log(JSON.stringify(r));process.exit(0);\n",
+    "bytes": 1139,
+    "sha256": "13c4446efd5d5ca65a67cdacffb800022be6fdc92ca681eac40998c806304d0c"
+  },
+  "portableSource": {
+    "path": "portable-probe.mjs",
+    "executed": false,
+    "differenceFromOriginal": "Only the factory import path changes from the original workspace absolute path to a repository-relative path.",
+    "command": "timeout 8s node development/ai-connection/diffusion-standalone-20261104/resident-ort/portable-probe.mjs",
+    "bytes": 1118,
+    "sha256": "baffb6b6601772874c02a410b45b219bd72e642d8d3cd318bf79dfd028b44a84"
+  },
+  "successfulStdout": {
+    "init": 0,
+    "ptrSize": 4,
+    "heapBytes": 16777216,
+    "tensor": 9051360,
+    "raw": 9074264,
+    "base": 9074264,
+    "sameRawPointer": true,
+    "type": 1,
+    "rank": 1,
+    "dim": 2,
+    "mutationVisible": 3.5,
+    "release": 0,
+    "bufferAfterTensorRelease": 3.5,
+    "rss": 104960000,
+    "modelBytesRead": 0,
+    "ortRuns": 0
+  },
+  "failedAttempts": [
+    {
+      "cause": "Used data_location=0 from stale api.h comment before checking implementation enum.",
+      "observation": "Initial probe failed to complete and its Node process was terminated; no inference or model reads."
+    },
+    {
+      "cause": "Same data_location=0 with extra boundary logging.",
+      "stdout": [
+        "factory-ready 16777216",
+        "init-call",
+        "init-result 0",
+        "malloc-call",
+        "malloc-result 9074264",
+        "createTensor-call",
+        "createTensor-result 0",
+        "getTensorData-call",
+        "getTensorData-result 9",
+        "raw 0 expected 9074264"
+      ],
+      "exitCode": 1,
+      "stderrSummary": "RuntimeError: memory access out of bounds after continuing with invalid null handle.",
+      "correction": "Exact api.cc enum DATA_LOCATION_CPU=1, DATA_LOCATION_CPU_PINNED=2. Corrected successful probe uses CPU=1 and checks nonzero tensor/status before proceeding."
+    }
+  ],
+  "limitations": [
+    "Raw tool stdout was not saved as a separate file during execution; successfulStdout and failed boundary output transcribe the recorded tool result.",
+    "Pointer values and RSS are run-specific.",
+    "No native OrtRun, model inference, large allocation, browser init, numerical comparison, or production acceptance was performed."
+  ],
+  "vendoredFactorySHA256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+  "vendoredWasmSHA256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+}

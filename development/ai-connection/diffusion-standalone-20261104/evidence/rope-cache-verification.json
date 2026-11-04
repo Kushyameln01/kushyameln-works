@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "hike-rope-cache-verification/1",
+  "executionSourceCommit": "cacef11ab8d92091f59edb7abe2b665088b08922",
+  "sources": {
+    "docs/shared/diffusion-models/execution/model-math.mjs": {
+      "bytes": 15754,
+      "sha256": "1e0af6542d4b6421f788c55390b6297096c973616c449235143c262d7b25adb0"
+    },
+    "docs/shared/diffusion-models/execution/test-model-rope-cache.mjs": {
+      "bytes": 8650,
+      "sha256": "81825aa67a9bee1641ba3b845229c9afae6df65b2b6a16865f917e4867fbe9ce"
+    },
+    "docs/shared/diffusion-models/execution/test-model-math.mjs": {
+      "bytes": 19266,
+      "sha256": "0c6dcab39c80765cc252ec6c01fe8fa8bf9223cf2834d9c02aae954698e1ea50"
+    },
+    "docs/shared/diffusion-models/execution/model-math/kernel.wasm": {
+      "bytes": 23645,
+      "sha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319"
+    }
+  },
+  "sourceGuardBeforeAfter": true,
+  "commands": [
+    {
+      "command": [
+        "node",
+        "docs/shared/diffusion-models/execution/test-model-rope-cache.mjs"
+      ],
+      "exitCode": 0,
+      "seconds": 0.8095413060000283,
+      "stdout": "\u2714 cached real Hike matrices preserve every output bit for changed Q/K-like inputs and exact tails (626.644114ms)\n\u2139 {\"cached\":{\"profile\":\"6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319:RopeBuild-axis44-42-42-source128/key1\",\"enabled\":true,\"maxBytes\":100663296,\"maxEntries\":1024,\"entries\":3,\"hits\":3,\"misses\":3,\"builds\":3,\"buildMatrixBytes\":262144,\"stagingCopies\":3,\"stagingBytes\":262144,\"retentionCopyBytes\":262144,\"keyCopyBytes\":4120,\"evictions\":0,\"clears\":0,\"uncacheableBuilds\":0,\"matrixBytes\":262144,\"keyBytes\":4120,\"peakRetainedBytes\":266264,\"retainedBytes\":266264,\"physicalMemoryBytes\":null,\"memoryAccounting\":\"explicit retained matrix/key backing-store bytes; JS Map/object overhead, GC timing and process physical memory unknown; WASM staging copies retained\"},\"uncached\":{\"profile\":\"6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319:RopeBuild-axis44-42-42-source128/key1\",\"enabled\":false,\"maxBytes\":0,\"maxEntries\":0,\"entries\":0,\"hits\":0,\"misses\":6,\"builds\":6,\"buildMatrixBytes\":524288,\"stagingCopies\":0,\"stagingBytes\":0,\"retentionCopyBytes\":0,\"keyCopyBytes\":0,\"evictions\":0,\"clears\":0,\"uncacheableBuilds\":6,\"matrixBytes\":0,\"keyBytes\":0,\"peakRetainedBytes\":0,\"retainedBytes\":0,\"physicalMemoryBytes\":null,\"memoryAccounting\":\"explicit retained matrix/key backing-store bytes; JS Map/object overhead, GC timing and process physical memory unknown; WASM staging copies retained\"},\"wasmBytes\":9175040,\"primitiveCalls\":{\"cached\":{\"cos\":29376,\"exp\":0,\"pow\":29376,\"sin\":29376,\"sqrt\":0,\"tanh\":0},\"uncached\":{\"cos\":58752,\"exp\":0,\"pow\":58752,\"sin\":58752,\"sqrt\":0,\"tanh\":0}}}\n\u2714 geometry keys distinguish exact F32 signed zeros, coordinate bits, source boundary bits and owner identity (44.978475ms)\n\u2714 different exact geometry keys sharing a hash never alias cached matrices (16.825922ms)\n\u2714 hits retain every ordinary shape, finite, ID, ownership and overflow admission (24.679198ms)\n\u2714 LRU enforces both explicit key+matrix byte and entry bounds, with clear/disposal dropping retained references (26.43776ms)\n\u2714 resource configuration cannot exceed explicit cache bounds or bypass busy ownership (9.62707ms)\n\u2139 tests 6\n\u2139 suites 0\n\u2139 pass 6\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 756.601976\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "docs/shared/diffusion-models/execution/test-model-math.mjs"
+      ],
+      "exitCode": 0,
+      "seconds": 3.0930636580014834,
+      "stdout": "\u2714 real128x5120 LN, affine LN and RMS use independent full-feature F64 references for every value (384.742923ms)\n\u2139 {\"reference\":\"independent F64\",\"elementsEach\":655360,\"gate\":{\"absolute\":0.001,\"relative\":0.0001},\"maxAbsolute\":{\"layerNorm\":0.0000026454445778423263,\"affineNorm\":0.000003859551809259898,\"rmsNorm\":0.0000037741793708079285}}\n\u2714 128-row all40head RoPE matches independent F64 coordinates, grid ends and source IDs0..9 (144.054985ms)\n\u2139 {\"reference\":\"independent F64\",\"elements\":655360,\"gate\":{\"absolute\":0.00002,\"relative\":0.00002},\"maxAbsolute\":4.175179291188158e-7,\"rows\":128,\"heads\":40,\"lastGridCoordinate\":[20,29,51],\"sourceIds\":\"0..9 and16777216\"}\n\u2714 existing validated P4/N2 math retains exact F32 outputs for legacy shapes (59.293466ms)\n\u2714 modulation and residual gate have separate F32 operations, exact128 rows and no gate+1 (601.221837ms)\n\u2714 GELU, SiLU, bias and add stream actual widths13824 and final element without padding (1446.487495ms)\n\u2714 declared Hike SiLU profile matches an independent stable F64 reference over broad and extreme inputs (16.761112ms)\n\u2139 {\"reference\":\"independent stable F64\",\"operation\":\"SiLU\",\"elements\":8217,\"gate\":{\"absolute\":2e-7,\"relative\":0.000002},\"maxAbsolute\":0.0000012328022229723956,\"ortBitParity\":false}\n\u2714 Hike head-major attention division is bit-exact on all655360 values and exact query3 tail (236.11311ms)\n\u2139 {\"operation\":\"divideAttention\",\"reference\":\"independent JS fround division\",\"queries\":[128,3,1],\"elements\":[655360,15360,5120],\"exactValues\":675840,\"maxAbsolute\":0}\n\u2714 owner pins identity, snapshots bytes and arrays, rejects bad shape/shared/nonfinite and recovers BUSY (25.992976ms)\n\u2714 real Hike ABI accepts128 rows, exact1-row tail and rejects129/capacity/NaN/source IDs before output (113.610041ms)\n\u2139 tests 9\n\u2139 suites 0\n\u2139 pass 9\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 3039.627281\n",
+      "stderr": ""
+    }
+  ],
+  "passed": true,
+  "scope": "bounded actual Hike cache/uncached parity and existing independent math references; no model weights, full40 or six-step execution",
+  "originalGenerationAccepted": false,
+  "kernelChanged": false
+}
