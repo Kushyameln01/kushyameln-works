@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "independentEntries": [
+    {
+      "adoptionId": "text-vae",
+      "commit": "20f640a6e071b6c060a212e89b28f0c8965923f7",
+      "factory": [
+        "createTextEncoderModule",
+        "createVaeModule"
+      ],
+      "root": "docs/shared/ai-connection/native/text-vae-20f640a",
+      "entrypoint": "docs/shared/inference/api.mjs",
+      "entryByteLength": 2293,
+      "entrySHA256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda",
+      "manifestSHA256": "59c46aabbd8dbc4838096ced69e7e132227a191c59f17ade7fe22ee3fae8c6b2",
+      "files": 32,
+      "byteLength": 14473296,
+      "build": "works-ai-1",
+      "scope": "Native implementation adoption only, not a new model execution receipt"
+    },
+    {
+      "adoptionId": "full-model",
+      "commit": "b6e166478a8e072c9ffd3ce562bfdb0c89634920",
+      "factory": [
+        "createDiffusionModels",
+        "createDiffusionWeightClient"
+      ],
+      "root": "docs/shared/ai-connection/native/diffusion-b6e16647",
+      "entrypoint": "docs/shared/diffusion-models/api/index.mjs",
+      "entryByteLength": 17027,
+      "entrySHA256": "39a6c77c9d0366072f03f53b2fdaa185802388fcd54232db0ee34c56a2b6c4b7",
+      "manifestSHA256": "f2fd51b3c3f1ce429c4680f6823b20db90d08fdef4da60de8f150be63d6ef85f",
+      "files": 164,
+      "byteLength": 14473285,
+      "build": "diffusion-models/0.1+e5ba40ce01bd04e4a432846afb737a9d8c37c56450df68af51460d9140c3e4c6",
+      "scope": "Native implementation adoption only, not a new model execution receipt"
+    },
+    {
+      "adoptionId": "normal-p4",
+      "commit": "b6e166478a8e072c9ffd3ce562bfdb0c89634920",
+      "factory": [
+        "createBerniniP4Execution",
+        "describeExecutionCapabilities",
+        "checkExecutionSupport"
+      ],
+      "root": "docs/shared/ai-connection/native/diffusion-b6e16647",
+      "entrypoint": "docs/shared/diffusion-models/api/index.mjs",
+      "entryByteLength": 17027,
+      "entrySHA256": "39a6c77c9d0366072f03f53b2fdaa185802388fcd54232db0ee34c56a2b6c4b7",
+      "manifestSHA256": "f2fd51b3c3f1ce429c4680f6823b20db90d08fdef4da60de8f150be63d6ef85f",
+      "files": 164,
+      "byteLength": 14473285,
+      "build": "diffusion-models/0.1+e5ba40ce01bd04e4a432846afb737a9d8c37c56450df68af51460d9140c3e4c6",
+      "scope": "Native implementation adoption only, not a new model execution receipt"
+    }
+  ],
+  "note": "Full-model and P4 were separately verified and pinned even though this release uses the same native tree. Changing full-model pin does not change the P4 constants."
+}

@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 const module=await import('../../docs/shared/ai-connection/adapters/diffusion-public/adapter.mjs').catch(e=>e.code==='ERR_MODULE_NOT_FOUND'?{}:Promise.reject(e));
-const BUILD='diffusion-models/0.1+9c5d8d18e9a7b046d7768c8c32ca6a48eaa084c900e916d59d63e735ebeb2a20',VERSION='diffusion-models/0.1';
+const {BUILD_ID:BUILD,PROTOCOL_VERSION:VERSION}=await import('../../docs/shared/ai-connection/adapters/diffusion-public/native.mjs');
 const deferred=()=>{let resolve;const promise=new Promise(r=>resolve=r);return {promise,resolve};};
 const tensor=(meaning='wan21-raw-generated-sample:v1')=>({dtype:'float32',shape:[1,1,1,1,2],layout:'NCTHW',meaning,data:new Float32Array([2,3]),...(meaning==='wan21-raw-generated-sample:v1'?{latentContract:{schemaVersion:1,representation:'generated-sample',space:'raw',normalization:{id:'wan21-comfy-f32-v1',state:'restored',owner:'diffusion_models'},producerModelSha256s:['a'.repeat(64),'b'.repeat(64)],vaeModelSha256:'c'.repeat(64)}}:{})});
 const input=()=>({shapeRequest:{height:16,width:16,frames:5},noise:tensor('explicit-noise'),positive:{...tensor('text-conditioning'),attentionMask:new Uint8Array([1,0])},negative:{...tensor('text-conditioning'),attentionMask:new Uint8Array([1,0])}});

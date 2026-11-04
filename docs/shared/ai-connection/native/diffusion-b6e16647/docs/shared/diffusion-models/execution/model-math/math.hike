@@ -1,0 +1,219 @@
+package main
+
+// Only fixed scalar mathematical primitives cross the host boundary. Every
+// model reduction, index, broadcast, and F32 rounding boundary lives here.
+func cos(x float64) float64
+func sin(x float64) float64
+func pow(x float64,y float64) float64
+func sqrt(x float64) float64
+func tanh(x float64) float64
+func exp(x float64) float64
+
+func Finite(x float32) bool {return x==x && x-x==float32(0)}
+func Valid(x *float32,count int) bool {
+ i:=0;for i<count {if !Finite(x[i]) {return false};i=i+1};return true
+}
+func Admitted(x *float32,count int) bool {
+ i:=0
+ for i<count {
+  // The pinned compiler allocates short-circuit expression temporaries on its
+  // stack. Separate guards keep stack usage independent of element count.
+  if !Finite(x[i]) {return false}
+  if float64(x[i])>float64(10000000000000000) {return false}
+  if float64(x[i]) < -float64(10000000000000000) {return false}
+  i=i+1
+ };return true
+}
+
+// Full feature reduction: modes 1=nonaffine LN, 2=affine LN, 3=affine RMS.
+// No head-local reduction or synthetic query padding is used.
+cfunc Norm(x *float32,weight *float32,bias *float32,rows int,mode int,out *float32,capacity int) int {
+ if rows<1 || rows>128 || capacity!=rows*5120 || mode<1 || mode>3 {return -1}
+ if !Admitted(x,rows*5120) {return -2}
+ if mode>1 {if !Valid(weight,5120) {return -2}}
+ if mode==2 {if !Valid(bias,5120) {return -2}}
+ row:=0;i:=0;mean:=float32(0);variance:=float32(0);d:=float32(0);root:=float32(0);inverse:=float32(0);value:=float32(0)
+ for row<rows {
+  mean=float32(0);i=0
+  if mode!=3 {for i<5120 {mean=mean+x[row*5120+i];i=i+1};mean=mean/float32(5120)}
+  variance=float32(0);i=0
+  for i<5120 {d=x[row*5120+i]-mean;variance=variance+d*d;i=i+1}
+  variance=variance/float32(5120)
+  root=float32(sqrt(float64(variance+float32(0.000001))))
+  inverse=float32(1)/root
+  if !Finite(mean) || !Finite(variance) || !Finite(inverse) {return -3}
+  i=0
+  for i<5120 {
+   value=(x[row*5120+i]-mean)*inverse
+   if mode>1 {value=value*weight[i]}
+   if mode==2 {value=value+bias[i]}
+   out[row*5120+i]=value;i=i+1
+  }
+  row=row+1
+ }
+ if !Valid(out,rows*5120) {return -3};return 0
+}
+
+cfunc Modulate(x *float32,shift *float32,scale *float32,rows int,out *float32,capacity int) int {
+ if rows<1 || rows>128 || capacity!=rows*5120 {return -1}
+ if !Valid(x,capacity) || !Valid(shift,5120) || !Valid(scale,5120) {return -2}
+ row:=0;i:=0;plus:=float32(0);product:=float32(0)
+ for row<rows {
+  i=0;for i<5120 {
+   plus=float32(1)+scale[i]
+   product=x[row*5120+i]*plus
+   out[row*5120+i]=shift[i]+product;i=i+1
+  };row=row+1
+ }
+ if !Valid(out,capacity) {return -3};return 0
+}
+
+cfunc GateResidual(base *float32,value *float32,gate *float32,rows int,out *float32,capacity int) int {
+ if rows<1 || rows>128 || capacity!=rows*5120 {return -1}
+ if !Valid(base,capacity) || !Valid(value,capacity) || !Valid(gate,5120) {return -2}
+ row:=0;i:=0;index:=0;product:=float32(0)
+ for row<rows {
+  i=0;for i<5120 {
+   index=row*5120+i
+   product=value[index]*gate[i]
+   out[index]=base[index]+product;i=i+1
+  };row=row+1
+ }
+ if !Valid(out,capacity) {return -3};return 0
+}
+
+// Chunk capacity is part of this ABI, and is independent of query row count.
+cfunc Add(a *float32,b *float32,count int,out *float32,capacity int) int {
+ if count<1 || count>81920 || capacity!=count {return -1}
+ if !Valid(a,count) || !Valid(b,count) {return -2}
+ i:=0;for i<count {out[i]=a[i]+b[i];i=i+1}
+ if !Valid(out,count) {return -3};return 0
+}
+cfunc Gelu(x *float32,count int,out *float32,capacity int) int {
+ if count<1 || count>81920 || capacity!=count {return -1}
+ if !Valid(x,count) {return -2}
+ i:=0;square:=float32(0);cube:=float32(0);inner:=float32(0);phase:=float32(0);activation:=float32(0);half:=float32(0)
+ for i<count {
+  if x[i]>float32(1000000) {return -2}
+  if x[i]<-float32(1000000) {return -2}
+  square=x[i]*x[i];cube=square*x[i]
+  inner=x[i]+float32(0.044715)*cube
+  phase=float32(0.7978845608028654)*inner
+  activation=float32(tanh(float64(phase)))
+  half=float32(0.5)*x[i]
+  out[i]=half*(float32(1)+activation);i=i+1
+ }
+ if !Valid(out,count) {return -3};return 0
+}
+cfunc Silu(x *float32,count int,out *float32,capacity int) int {
+ if count<1 || count>81920 || capacity!=count {return -1}
+ if !Valid(x,count) {return -2}
+ i:=0;sigmoid:=float32(0)
+ for i<count {
+  // Declared Hike SiLU profile: F32 exp, add, reciprocal, multiply. exp may
+  // overflow internally for negative finite x, yielding a finite signed zero.
+  // This is not a claim of bit parity with an ORT Sigmoid implementation.
+  sigmoid=float32(1)/(float32(1)+float32(exp(-float64(x[i]))))
+  out[i]=x[i]*sigmoid;i=i+1
+ }
+ if !Valid(out,count) {return -3};return 0
+}
+cfunc Bias(x *float32,bias *float32,count int,width int,columnStart int,out *float32,capacity int) int {
+ if count<1 || count>81920 || width<1 || width>13824 || columnStart<0 || columnStart>=width || capacity!=count {return -1}
+ if !Valid(x,count) || !Valid(bias,width) {return -2}
+ i:=0;column:=columnStart
+ for i<count {
+  out[i]=x[i]+bias[column];i=i+1;column=column+1
+  if column==width {column=0}
+ }
+ if !Valid(out,count) {return -3};return 0
+}
+
+// Head-major attention recurrence normalization: [40,Q,128]/[40,Q].
+// offset/count address a real contiguous chunk of the caller's exact query
+// count, so a tail never introduces an extra query or a fake denominator.
+cfunc DivideAttention(context *float32,denominator *float32,heads int,queries int,headDim int,offset int,count int,out *float32,capacity int) int {
+ if heads!=40 || queries<1 || queries>128 || headDim!=128 {return -1}
+ if offset<0 || offset>=heads*queries*headDim || count<1 || count>81920 || offset+count>heads*queries*headDim || capacity!=count {return -1}
+ if !Valid(context,count) {return -2}
+ i:=0;row:=0
+ for i<heads*queries {
+  if !Finite(denominator[i]) {return -2}
+  if denominator[i]<=float32(0) {return -2}
+  i=i+1
+ }
+ i=0
+ for i<count {
+  row=(offset+i)/128
+  out[i]=context[i]/denominator[row];i=i+1
+ }
+ if !Valid(out,count) {return -3};return 0
+}
+
+cfunc Sinusoidal(t float32,out *float32,capacity int) int {
+ if capacity!=256 || !Finite(t) || t<float32(0) || t>float32(1000) {return -1}
+ i:=0;exponent:=float32(0);frequency:=float32(0);phase:=float32(0)
+ for i<128 {
+  exponent=-float32(i)/float32(128)
+  frequency=float32(pow(float64(10000),float64(exponent)))
+  phase=t*frequency
+  out[i]=float32(cos(float64(phase)))
+  out[i+128]=float32(sin(float64(phase)));i=i+1
+ }
+ if !Valid(out,256) {return -3};return 0
+}
+
+func BuildPair(positions *float32,sourceIds *int,row int,pair int,out *float32) {
+ axis:=0;local:=pair;dim:=44
+ if pair>=22 {axis=1;local=pair-22;dim=42}
+ if pair>=43 {axis=2;local=pair-43;dim=42}
+ exponent:=float64(2*local)/float64(dim)
+ omega:=float64(1)/pow(float64(10000),exponent)
+ angle:=float64(positions[row*3+axis])*omega
+ c:=float32(cos(angle));s:=float32(sin(angle))
+ index:=(row*64+pair)*4
+ out[index]=c;out[index+1]=-s;out[index+2]=s;out[index+3]=c
+ if sourceIds[row]!=0 {
+  sourceExponent:=float64(2*pair)/float64(128)
+  sourceOmega:=float64(1)/pow(float64(10000),sourceExponent)
+  sourceAngle:=float64(float32(sourceIds[row]))*sourceOmega
+  sc:=float32(cos(sourceAngle));ss:=float32(sin(sourceAngle))
+  // Preserve the original core's separate F32 spatial/source matmul.
+  out[index]=c*sc+(-s)*ss
+  out[index+1]=c*(-ss)+(-s)*sc
+  out[index+2]=s*sc+c*ss
+  out[index+3]=s*(-ss)+c*sc
+ }
+}
+cfunc RopeBuild(positions *float32,sourceIds *int,rows int,out *float32,capacity int) int {
+ if rows<1 || rows>128 || capacity!=rows*256 {return -1}
+ if !Valid(positions,rows*3) {return -2}
+ row:=0;pair:=0
+ for row<rows {
+  if sourceIds[row]<0 || sourceIds[row]>16777216 {return -2}
+  row=row+1
+ }
+ row=0
+ for row<rows {
+  pair=0;for pair<64 {BuildPair(positions,sourceIds,row,pair,out);pair=pair+1};row=row+1
+ }
+ if !Valid(out,capacity) {return -3};return 0
+}
+cfunc RopeApply(x *float32,matrices *float32,rows int,out *float32,capacity int) int {
+ if rows<1 || rows>128 || capacity!=rows*5120 {return -1}
+ if !Valid(x,capacity) || !Valid(matrices,rows*256) {return -2}
+ row:=0;head:=0;pair:=0;index:=0;matrix:=0;a:=float32(0);b:=float32(0)
+ for row<rows {
+  head=0;for head<40 {
+   pair=0;for pair<64 {
+    index=row*5120+head*128+pair*2
+    matrix=(row*64+pair)*4
+    a=matrices[matrix]*x[index]+matrices[matrix+1]*x[index+1]
+    b=matrices[matrix+2]*x[index]+matrices[matrix+3]*x[index+1]
+    out[index]=a;out[index+1]=b;pair=pair+1
+   };head=head+1
+  };row=row+1
+ }
+ if !Valid(out,capacity) {return -3};return 0
+}
+func main() int {return 0}

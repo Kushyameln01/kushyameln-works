@@ -1,4 +1,4 @@
-"""Run the fixed management facade against the real public model Worker.
+"""Run the fixed operational controller against the real public model Worker.
 
 No model is read by this server. Only exact committed source and manifest-listed
 small inputs are served. --check-only never constructs a browser or runs NN.
@@ -19,9 +19,10 @@ import time
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[2]
-OWNER_COMMIT = 'ffeeeedb6b57d182a977c3ac02c042ce235fc87a'
-NATIVE = Path('docs/shared/ai-connection/native/diffusion-ffeeeedb')
+OWNER_COMMIT = 'b6e166478a8e072c9ffd3ce562bfdb0c89634920'
+NATIVE = Path('docs/shared/ai-connection/native/diffusion-b6e16647')
 API = NATIVE / 'docs/shared/diffusion-models/api'
+TEXT_CODEC_NATIVE = Path('docs/shared/ai-connection/native/text-vae-20f640a')
 OWNER_HELPERS = ['tools/diffusion-models/public-model-browser.py',
                  'tools/diffusion-models/public-model-browser.mjs',
                  'tools/diffusion-models/public-model-worker-observer.mjs']
@@ -79,6 +80,8 @@ def snapshot_sources(commit):
     manifest_bytes = (ROOT / manifest_path).read_bytes()
     manifest = json.loads(manifest_bytes)
     require(manifest['sourceCommit'] == OWNER_COMMIT, 'Adopted source manifest changed owner commit')
+    require(len(declared) == manifest['ownerBuildSourceCount'] == 153, 'Expected the current 153-source native build')
+    require(len(manifest['files']) == 164, 'Expected the complete current 164-file adoption')
     names.add(manifest_path.as_posix())
     for entry in manifest['files']:
         name = (NATIVE / entry['path']).as_posix()
@@ -87,6 +90,18 @@ def snapshot_sources(commit):
         if name in pinned:
             require(pinned[name] is None or pinned[name] == entry['sha256'], 'Build/adoption manifests disagree: ' + name)
         pinned[name] = entry['sha256']
+    # Controller-owned tensor persistence uses the separately adopted current
+    # canonical codec. Include its full verified closure, including WASM bytes.
+    codec_manifest_path = TEXT_CODEC_NATIVE / 'SOURCE.json'
+    codec_manifest = json.loads((ROOT / codec_manifest_path).read_bytes())
+    require(codec_manifest['sourceRef']['commit'] == '20f640a6e071b6c060a212e89b28f0c8965923f7', 'Current codec source changed')
+    names.add(codec_manifest_path.as_posix())
+    codec_pinned = {}
+    for entry in codec_manifest['files']:
+        name = (TEXT_CODEC_NATIVE / entry['path']).as_posix()
+        require((ROOT / name).resolve().is_relative_to(ROOT / TEXT_CODEC_NATIVE), 'Codec manifest escaped pinned tree')
+        names.add(name)
+        codec_pinned[name] = (entry['byteLength'], entry['sha256'])
     # The manager's imports are intentionally a committed source superset.
     # Denied HTTP paths fail the run, so an omitted lazy dependency is visible.
     tracked = git('ls-tree', '-r', '--name-only', commit, 'docs/shared/ai-connection').decode().splitlines()
@@ -97,6 +112,9 @@ def snapshot_sources(commit):
     for name in sorted(names):
         data = (ROOT / name).read_bytes()
         require(data == git('show', commit + ':' + name), 'Management source not exactly committed: ' + name)
+        if name in codec_pinned:
+            length, digest = codec_pinned[name]
+            require(len(data) == length and sha(data) == digest, 'Current codec source differs: ' + name)
         if name in pinned:
             original = Path(name).relative_to(NATIVE).as_posix()
             require(data == git('show', OWNER_COMMIT + ':' + original), 'Native source differs from fixed owner: ' + original)
@@ -105,6 +123,8 @@ def snapshot_sources(commit):
         snapshots['/' + name] = data
     return snapshots, {'nativeDeclaredSources': len(declared), 'nativeClosureWithBuildInfo': len(declared) + 1,
                        'adoptedSourceFiles': len(manifest['files']), 'adoptionManifestSHA256': sha(manifest_bytes),
+                       'operationalController': 'docs/shared/ai-connection/operational-management.mjs',
+                       'currentCodecSources': len(codec_manifest['files']),
                        'sourceCommit': commit, 'ownerCommit': OWNER_COMMIT, 'allExactCommittedBytes': True}
 
 
@@ -144,9 +164,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source-commit', required=True)
     parser.add_argument('--manifest', type=Path, required=True)
-    parser.add_argument('--models', type=Path, default=ROOT.parent / 'retained/bernini')
+    parser.add_argument('--models', type=Path, default=Path('/workspace/work/retained/bernini'))
     parser.add_argument('--mode', choices=['smoke', 'predict', 'sample'], default='sample')
     parser.add_argument('--cancel-before-run', action='store_true')
+    parser.add_argument('--base-weight-probe', action='store_true', help='Before NN, open/describe/read one immutable base row and close the dedicated feed; no LoRA input')
     parser.add_argument('--side', choices=['HIGH', 'LOW'], default='HIGH')
     parser.add_argument('--timestep', type=float, default=1000)
     parser.add_argument('--wasm-threads', type=int, choices=[1, 4], default=1)
@@ -294,7 +315,7 @@ def main():
                 config = {'sourceCommit': args.source_commit, 'mode': args.mode, 'side': args.side,
                           'timestep': args.timestep, 'wasmThreads': args.wasm_threads, 'coi': args.coi,
                           'sinkBase': sink_base, 'timeoutMs': args.timeout_seconds * 1000,
-                          'cancelBeforeRun': args.cancel_before_run}
+                          'cancelBeforeRun': args.cancel_before_run, 'baseWeightProbe': args.base_weight_probe}
 
                 def evaluate_phase(phase, timeout_ms):
                     return page.evaluate("""async({phase,config,timeoutMs,path})=>{
@@ -339,6 +360,7 @@ def main():
               'sourceCommit': args.source_commit, 'ownerCommit': OWNER_COMMIT,
               'sourceProof': checked['sourceProof'], 'mode': args.mode, 'wasmThreads': args.wasm_threads,
               'cancelBeforeRun': args.cancel_before_run,
+              'baseWeightProbeRequested': args.base_weight_probe,
               'sourceInventory': {name[1:]: {'bytes': len(data), 'sha256': sha(data)} for name, data in snapshots.items()},
               'servedSourcesAndInputs': served, 'deniedPaths': denied,
               'sourceGuardAfter': guard_error is None, 'sourceGuardError': guard_error,

@@ -13,7 +13,7 @@ python3 -m http.server 8765 --directory docs
 
 このserverはCOOP／COEPを加えない。1-threadを明示して使う。4-threadは別途実際にCOI／SABが成立する環境が必要で、選択不可時に自動で1-threadへ変更しない。GitHub Pagesへの公開はこの手順に含まない。
 
-最新Text／VAEの配布はbadff7a436b56207a084c4c770e01490899a576c。必要なモデル／graph資材とasset hashはowner manifestを正本にする。ファイル名の一致だけで資材検証済みとはしない。資材が足りない場合はnativeの理由を表示し、合成FileでNNを代用しない。
+最新Text／VAEの配布は20f640a6e071b6c060a212e89b28f0c8965923f7。必要なモデル／graph資材とasset hashはowner manifestを正本にする。ファイル名の一致だけで資材検証済みとはしない。資材が足りない場合はnativeの理由を表示し、合成FileでNNを代用しない。
 
 ## 新規制御試験
 
@@ -46,7 +46,7 @@ node tools/ai-connection/run-operational-browser.mjs \
 
 実モデルpair／保存N5入力を持つ環境で、同じ管理実行sourceをcheckoutする。保持環境の絶対pathだけでこちらへ取得済みと記録しない。全原本の管理環境への複製は必要ない。
 
-既存[実モデルrunner手順](../diffusion-public/REPRODUCE-HOLDING.md)を同じ固定sourceに対して使用できる。固定ownerのGit object `ffeeeedb6b57d182a977c3ac02c042ce235fc87a`も用意する。
+既存[実モデルrunner手順](../diffusion-public/REPRODUCE-HOLDING.md)を同じ固定sourceに対して使用できる。固定ownerのGit object `b6e166478a8e072c9ffd3ce562bfdb0c89634920`も用意する。
 
 ```bash
 node tools/ai-connection/run-diffusion-public-browser.mjs \
@@ -61,8 +61,10 @@ node tools/ai-connection/run-diffusion-public-browser.mjs \
 
 private parentは0700、出力名は未使用にする。これは実adapterの部分接続を検証するrunnerであり、新画面からの全体運用やLoRA適用を代替しない。返却時は配布／実行source／owner SHA、入力identity、実COI/SABとthreads、progress、取消終端・実close・reload、sampleのraw意味、保存実File／hash／読戻し、資源の観測scopeを分ける。
 
-## 未実装edgeと後段実験
+## 管理採用と受入待ち
 
-固定DiffusionにはLoRA完成重みを受けるpublic consumerがない。管理がproviderを未知のnative引数へ追加したり、LoRA適用済みに書き換えたりしない。owner側でsampler／Workerへ正規base／consumer／取引／leaseを接続した固定版を受領し、その境界を実装する必要がある。
+b6公開consumerと専用port経路を使う。旧「公開consumerなし」はffe版の履歴で、現在の不足理由ではない。通常P4も独立した正規marker対応pinを使う。採用版・codec・port ownershipの実装確認と、資材保持側での新固定管理source実NN結果は分ける。
 
-全体接続の実装が揃うまで、新しい試験LoRAを送付・受領しない。「全体接続実装完了・全体運用未検証」の宣言後に、必要なFileと受渡し先を明示し、入力→重み適用→生成→VAE decode→保存の全体運用を別に受け入れる。
+保持環境にはモデル・保存入力が存在することをowner資料で確認済み。source checkout・実行窓口と返却receiptを受け取り、現在の管理sourceによるNNを受け入れる。管理環境にないことを資材自体の不存在と呼ばない。現在の具体的な実行・返却条件は../latest-adoption/のhandoffを正本にする。
+
+全体接続実装のレビュー完了と全体運用未検証を区分し、新しい試験LoRAの受領・全体実験は指定順序を守る。モデルや入力の再取得を、固定sourceの取得確認へ追加しない。

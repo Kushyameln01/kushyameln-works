@@ -1,8 +1,8 @@
-// Derived from the exact ffeeeedb public-model-worker-observer.mjs. Only the
+// Derived from the unchanged b6e16647 public-model-worker-observer.mjs. Only the
 // allowed repository-relative Worker path and COI/SAB observation are changed.
 // Native arguments, message values, WASM calls and numerical owners are retained.
 const target=new URL(location.href).searchParams.get('worker');
-const allowed='/docs/shared/ai-connection/native/diffusion-ffeeeedb/docs/shared/diffusion-models/api/worker.mjs';
+const allowed='/docs/shared/ai-connection/native/diffusion-b6e16647/docs/shared/diffusion-models/api/worker.mjs';
 if(!target||new URL(target).origin!==location.origin||new URL(target).pathname!==allowed)throw Error('Only the exact adopted public API Worker may be observed');
 const initialMessages=[];
 const captureInitial=event=>{event.stopImmediatePropagation();if(initialMessages.length===16)throw Error('Diagnostic Worker bootstrap message queue exceeded');initialMessages.push(event);};

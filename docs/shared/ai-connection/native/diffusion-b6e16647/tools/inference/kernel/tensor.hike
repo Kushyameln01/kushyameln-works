@@ -1,0 +1,72 @@
+package main
+
+// Fixed Hike WABT runtime primitive (env.sqrt: f64 -> f64).
+func sqrt(x float64) float64
+
+// Caller owns validated, disjoint f32 arenas. No allocation or host imports.
+cfunc Affine(input *float32, count int32, scale float32, shift float32, output *float32, capacity int32) int32 {
+    if count < 0 || count > capacity { return -1 }
+    var i int32 = 0
+    for i < count {
+        output[i] = input[i] * scale + shift
+        i = i + 1
+    }
+    return count
+}
+
+cfunc MatMul(left *float32, right *float32, rows int32, inner int32, cols int32, output *float32, capacity int32) int32 {
+    if rows <= 0 || inner <= 0 || cols <= 0 || rows > capacity / cols { return -1 }
+    var row int32 = 0
+    var col int32 = 0
+    var k int32 = 0
+    var value float32 = 0
+    for row < rows {
+        col = 0
+        for col < cols {
+            k = 0
+            value = 0
+            for k < inner {
+                value = value + left[row * inner + k] * right[k * cols + col]
+                k = k + 1
+            }
+            output[row * cols + col] = value
+            col = col + 1
+        }
+        row = row + 1
+    }
+    return rows * cols
+}
+
+func main() int { return 0 }
+
+// Scalar division is separate from multiplication by a reciprocal.
+cfunc Divide(input *float32, count int32, divisor float32, output *float32, capacity int32) int32 {
+    if count < 0 || count > capacity || divisor == 0 { return -1 }
+    var i int32 = 0
+    for i < count { output[i] = input[i] / divisor; i = i + 1 }
+    return count
+}
+
+cfunc RMSNorm(input *float32, weight *float32, rows int32, cols int32, epsilon float32, output *float32, capacity int32) int32 {
+    if rows < 1 || cols < 1 || rows > capacity / cols || epsilon <= 0 { return -1 }
+    var row int32 = 0
+    for row < rows {
+        var sum float32 = 0
+        var col int32 = 0
+        for col < cols {
+            var value float32 = input[row * cols + col]
+            sum = sum + value * value
+            col = col + 1
+        }
+        var variance float32 = sum / float32(cols)
+        var inv float32 = float32(1) / float32(sqrt(float64(variance + epsilon)))
+        col = 0
+        for col < cols {
+            var normalized float32 = input[row * cols + col] * inv
+            output[row * cols + col] = normalized * weight[col]
+            col = col + 1
+        }
+        row = row + 1
+    }
+    return rows * cols
+}

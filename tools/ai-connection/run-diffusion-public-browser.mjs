@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// No model bytes pass through Node. The Python host reuses the frozen owner's
-// private-input reader and selects the retained model paths as browser Files.
+// The holding harness configures the actual operational controller. No model
+// bytes pass through Node; the frozen Python host selects real browser Files.
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 

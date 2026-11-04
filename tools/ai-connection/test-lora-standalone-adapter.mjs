@@ -87,3 +87,10 @@ test('late cancel after action terminal but before queue acceptance never adopts
  try{await manager.register({pairId:'light',file:createLoraFixtureFile({side:'HIGH',pairId:'light'})});await assert.rejects(()=>manager.apply({selections:[{pairId:'light',strength:1}],targets:f.targets,signal:controller.signal}),{code:'INVOCATION_CANCELLED'});assert.equal(cancelObserved,true);assert.equal(consumer.currentEpoch(),1);assert.equal(manager.inspect().snapshot,null);assert.equal(manager.inspect().publicationDiverged,true);assert.equal((await manager.query()).dispatchSupported,false);await manager.recover();assert.equal(manager.inspect().publicationDiverged,true);await manager.restoreBase();assert.equal(manager.inspect().publicationDiverged,false);}
  finally{await manager.dispose();await f.disposeBacking();}
 });
+
+test('revoked native consumer epoch stays observable and cannot prevent SDK disposal',async()=>{
+ const backing=await createReferenceSide({side:'HIGH'});let revoked=false;const consumer={...backing.consumer,currentEpoch(){if(revoked)throw Object.assign(Error('Managed weight feed revoked'),{code:'DIFFUSION_WEIGHT_FEED_STALE'});return backing.consumer.currentEpoch();}};
+ const manager=await module.createLoraManagementSide({...backing,consumer});assert.equal(manager.inspect().consumerEpoch,0);revoked=true;
+ const observation=manager.inspect();assert.equal(observation.consumerEpoch,null);assert.equal(observation.consumerEpochUnavailable.code,'DIFFUSION_WEIGHT_FEED_STALE');assert.equal(observation.recoveryRequired,true);
+ await manager.dispose();assert.equal(manager.inspect().disposed,true);assert.equal(manager.inspect().consumerEpoch,null);await manager.dispose();await backing.disposeBacking();
+});

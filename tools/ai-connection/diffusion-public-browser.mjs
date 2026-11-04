@@ -1,10 +1,10 @@
 /** Holder-only development harness. Normal requests use the actual management
  * facade; this module has no API injection or numerical implementation port. */
-import {createDiffusionPublicManagement} from '../../docs/shared/ai-connection/adapters/diffusion-public/adapter.mjs';
-import {capturePublicModelInputs} from '../../docs/shared/ai-connection/native/diffusion-ffeeeedb/tools/diffusion-models/public-model-browser.mjs';
-import {describeTensor} from '../../docs/shared/ai-connection/native/diffusion-ffeeeedb/docs/shared/inference/tensor.mjs';
+import {createOperationalManagement} from '../../docs/shared/ai-connection/operational-management.mjs';
+import {capturePublicModelInputs} from '../../docs/shared/ai-connection/native/diffusion-b6e16647/tools/diffusion-models/public-model-browser.mjs';
+import {describeTensor} from '../../docs/shared/ai-connection/native/diffusion-b6e16647/docs/shared/inference/tensor.mjs';
 
-const PUBLIC_WORKER='/docs/shared/ai-connection/native/diffusion-ffeeeedb/docs/shared/diffusion-models/api/worker.mjs';
+const PUBLIC_WORKER='/docs/shared/ai-connection/native/diffusion-b6e16647/docs/shared/diffusion-models/api/worker.mjs';
 const OBSERVER='/tools/ai-connection/diffusion-public-worker-observer.mjs';
 const requireValue=(condition,message)=>{if(!condition)throw Error(message);};
 const plain=value=>JSON.parse(JSON.stringify(value));
@@ -14,6 +14,42 @@ const metadata=tensor=>Object.fromEntries(Object.entries(describeTensor(tensor))
 const errorInfo=error=>({name:String(error?.name??'Error'),message:String(error?.message??error).slice(0,4000),...(error?.code?{code:String(error.code)}:{}),...(error?.details?{details:plain(error.details)}:{})});
 const expectResult=(reply,label)=>{requireValue(reply?.status==='EXECUTION_COMPLETED'&&reply.nativeReply?.status==='ok',label+' did not return an accepted management/native result');return reply.nativeReply.result;};
 const requireError=async(promise,codes,label)=>{try{await promise;}catch(error){requireValue(codes.includes(error?.code),label+': '+String(error?.code??error));return errorInfo(error);}throw Error(label+' unexpectedly succeeded');};
+
+/** Runner compatibility facade over the actual operational controller. It owns
+ * no numerical implementation, artifact map, native API or cancellation token. */
+export async function createHoldingOperationalManager(configuration={}){
+ const controller=createOperationalManagement();
+ try{await controller.configureModule('diffusion',configuration);}catch(error){await controller.dispose();throw error;}
+ const inspect=()=>{const root=controller.inspect();return {...root.modules.diffusion.observation,activeTarget:root.activeTarget,root,controlTestDouble:root.controlTestDouble};};
+ async function execute(operation,input,{requestId='holder:'+crypto.randomUUID(),onProgress}={}){
+  let rootTarget=null,progressIdentityError=null;
+  const unsubscribe=controller.subscribe(event=>{
+   if(event.kind==='started')rootTarget=event.state.activeTarget;
+   if(event.kind==='progress'&&event.value.moduleId==='diffusion'){
+    const progress=event.value.progress,publicTarget=event.state.modules.diffusion.observation.activeTarget;
+    if(!event.state.activeTarget||!publicTarget||event.state.activeTarget.requestId===publicTarget.requestId){progressIdentityError=Error('Root and public progress identities must remain distinct');return;}
+    onProgress?.({...progress,rootTarget:event.state.activeTarget,rootRevision:event.state.revision,publicTarget});
+   }
+  });
+  try{
+   const reply=await controller.execute({moduleId:'diffusion',operation,input,outputRef:requestId});
+   if(progressIdentityError)throw progressIdentityError;
+   requireValue(rootTarget&&reply.target&&rootTarget.requestId!==reply.target.requestId,'Root and public terminal identities must remain distinct');
+   const rootTerminal=controller.inspect().queue.invocations.find(value=>value.requestId===rootTarget.requestId);
+   requireValue(rootTerminal?.originalTerminal&&rootTerminal.resourceReleased&&rootTerminal.resultAccepted,'Operational root terminal/release not confirmed');
+   return {...reply,rootTarget,rootTerminal,identitySeparation:{rootRequestId:rootTarget.requestId,rootRevision:rootTarget.revision,publicRequestId:reply.target.requestId,publicManagerRevision:reply.target.managerRevision,nativeInputRevision:reply.target.inputRevision}};
+  }finally{unsubscribe();}
+ }
+ return Object.freeze({inspect,execute,
+  load:({files,resource,...options}={})=>execute('load',{files,...(resource!==undefined?{resource}:{})},options),
+  modelStatus:options=>execute('modelStatus',{},options),unload:options=>execute('unload',{},options),
+  predict:({input,...options}={})=>execute('predict',input,options),sample:({input,...options}={})=>execute('sample',input,options),
+  saveTensor:({tensor,...options}={})=>execute('saveTensor',{tensor},options),readTensor:({file,...options}={})=>execute('readTensor',{file},options),
+  cancel:target=>controller.cancel(target),dispose:()=>controller.dispose(),
+  saveRetainedTensor:ref=>controller.saveTensor(ref),
+  openWeightFeed:input=>controller.openWeightFeed(input),getWeightFeedClient:id=>controller.getWeightFeedClient(id),closeWeightFeed:id=>controller.closeWeightFeed(id)
+ });
+}
 
 export async function startDiffusionPublicBrowser(config){
  requireValue(['smoke','predict','sample'].includes(config.mode),'Explicit mode required');
@@ -54,7 +90,7 @@ export async function startDiffusionPublicBrowser(config){
  const run={schemaVersion:'works-diffusion-public-management-browser/0.1',sourceCommit:config.sourceCommit,
   mode:config.mode,wasmThreads:config.wasmThreads,coiHeadersRequested:config.coi,windowEnvironment,
   caseClass:manifest.caseClass,profileId:manifest.profileId,
-  managementPath:'createDiffusionPublicManagement -> adopted createDiffusionModels -> dedicated Worker -> native model owner',
+  managementPath:'createOperationalManagement -> configured diffusion -> createDiffusionPublicManagement -> adopted createDiffusionModels -> dedicated Worker -> native model owner',
   controlTestDouble:false,publicWorkerConnected:false,nativeNNExecuted:false,
   conditioningFixture:'Separate owned positive/negative copies of the same saved real L512 packet; CFG1, not original prompt-pair acceptance',
   inputIdentitiesBefore:before,operations:[],outcome:'failed',error:null,
@@ -64,16 +100,16 @@ export async function startDiffusionPublicBrowser(config){
   try{
    const reply=await manager[operation]({...args,requestId});
    expectResult(reply,operation);
-   record({stage:'request-terminal',operation,requestId,status:reply.status,target:reply.target,terminal:{originalTerminal:reply.terminal?.originalTerminal,resourceReleased:reply.terminal?.resourceReleased,resultAccepted:reply.terminal?.resultAccepted}});
+   record({stage:'request-terminal',operation,requestId,status:reply.status,rootTarget:reply.rootTarget,publicTarget:reply.target,identitySeparation:reply.identitySeparation,rootTerminal:reply.rootTerminal,terminal:{originalTerminal:reply.terminal?.originalTerminal,resourceReleased:reply.terminal?.resourceReleased,resultAccepted:reply.terminal?.resultAccepted}});
    return reply;
   }catch(error){record({stage:'request-terminal',operation,requestId,status:'error',error:errorInfo(error)});throw error;}
  };
  const onProgress=event=>{
   if(settled){lateProgressCount++;return;}
-  lastProgress={sessionId:event.sessionId,jobId:event.jobId,inputRevision:event.inputRevision,managerRevision:event.managerRevision,requestId:event.requestId,op:event.op,result:event.result};
+  lastProgress={sessionId:event.sessionId,jobId:event.jobId,inputRevision:event.inputRevision,managerRevision:event.managerRevision,requestId:event.requestId,rootTarget:event.rootTarget,rootRevision:event.rootRevision,publicTarget:event.publicTarget,op:event.op,result:event.result};
   progressCount++;if(event.result?.model?.stage==='patch')run.nativeNNExecuted=true;
   if(event.op==='sample'&&event.result?.stage==='step-complete')sampleSteps.push({step:event.result.step,steps:event.result.steps,side:event.result.side});
-  record({stage:'progress',identity:{sessionId:event.sessionId,jobId:event.jobId,inputRevision:event.inputRevision,managerRevision:event.managerRevision,requestId:event.requestId,op:event.op},progress:event.result});
+  record({stage:'progress',identity:{sessionId:event.sessionId,jobId:event.jobId,inputRevision:event.inputRevision,managerRevision:event.managerRevision,requestId:event.requestId,rootTarget:event.rootTarget,rootRevision:event.rootRevision,publicTarget:event.publicTarget,op:event.op},progress:event.result});
  };
  const heartbeat=setInterval(()=>record({stage:'heartbeat',lastProgress,progressCount}),15000);
  const timeout=setTimeout(()=>{
@@ -103,8 +139,8 @@ export async function startDiffusionPublicBrowser(config){
   record({stage:'finished',outcome:run.outcome});await queue;return plain(run);
  }};
  try{
-  // Omitting api creates the adopted real public factory. No test seam is used.
-  manager=await createDiffusionPublicManagement({apiSessionId:'management-public:'+crypto.randomUUID(),managerSessionId:'holder-management:'+crypto.randomUUID()});
+  // Default operational configuration creates the adopted real public factory.
+  manager=await createHoldingOperationalManager({apiSessionId:'management-public:'+crypto.randomUUID(),managerSessionId:'holder-management:'+crypto.randomUUID()});
   const admission=manager.inspect();requireValue(admission.controlTestDouble===false,'Real management API factory required');
   run.apiSessionId=admission.apiSessionId;run.managerSessionId=admission.managerSessionId;
   run.capabilities={modelRuntime:admission.modelRuntime,legacyModelInference:admission.capabilities?.modelInference};
@@ -123,7 +159,7 @@ export async function startDiffusionPublicBrowser(config){
     }
    }}),['INVOCATION_CANCELLED','CANCELLED'],'Actual prefix cancel');
    const terminal=cancellation?await cancellation:null;
-   requireValue(cancelledAtPatch&&terminal?.cancelled&&terminal.originalTerminal&&!cancelError,'Actual prefix cancellation did not confirm the original terminal');
+   requireValue(cancelledAtPatch&&terminal?.originalTerminal&&terminal.resourceReleased&&terminal.stopConfirmed&&!cancelError,'Actual prefix cancellation did not confirm the operational root terminal');
    requireValue(workerLifetimes.some(value=>value.workerEpoch===cancelledWorkerEpoch&&value.stage==='terminate-called'),'Actual prefix cancellation did not terminate the observed owned Worker');
    const closeDeadline=performance.now()+30000;let closeProof=null;
    do{
@@ -145,10 +181,17 @@ export async function startDiffusionPublicBrowser(config){
    run.reloaded=loaded;run.recovery={apiSessionId:run.apiSessionId,cancelledModelSessionId:old.modelSessionId,reloadedModelSessionId:loaded.modelSessionId,cancelledWorkerEpoch,reloadedWorkerEpoch,cancelledWorkerClosedBeforeReload:closeProof,cancelTarget,cancelledAtPatch:true,originalTerminal:true,completedOperation:null};
    record({stage:'cancelled-reloaded',recovery:run.recovery});
   };
-  const persist=async(tensor,scope)=>{
+  const persist=async(tensor,scope,outputRef)=>{
    resultTensor=tensor;run.tensorMetadata=metadata(tensor);run.outputIdentity=await identity(tensor.data);run.codecScope=scope;
    encoded=expectResult(await request('saveTensor',{tensor}),'save tensor');
    requireValue(encoded.bytes instanceof Uint8Array&&encoded.byteLength===encoded.bytes.byteLength&&await sha(encoded.bytes)===encoded.sha256,'Native canonical bytes differ');
+   if(outputRef){
+    // This Blob comes from the controller's retained artifact, not a runner map.
+    const retained=await manager.saveRetainedTensor(outputRef),decoded=expectResult(await request('readTensor',{file:retained}),'controller-owned artifact readback');
+    requireValue(decoded.sha256===encoded.sha256&&JSON.stringify(metadata(decoded.tensor))===JSON.stringify(metadata(tensor)),'Controller retained artifact differs from the native output');
+    run.controllerArtifact={outputRef,persistedBy:'createOperationalManagement.saveTensor',canonicalSHA256:decoded.sha256,byteLength:decoded.byteLength,nativeReadbackBitExact:await sha(decoded.tensor.data)===await sha(tensor.data)};
+    requireValue(run.controllerArtifact.nativeReadbackBitExact,'Controller retained artifact payload differs');
+   }
    const post=async(name,bytes)=>{const response=await fetch(config.sinkBase+'/'+name,{method:'POST',headers:{'Content-Type':'application/octet-stream','X-Content-SHA256':await sha(bytes)},body:bytes});requireValue(response.ok,'Actual private disk save failed: '+name);return await response.json();};
    run.savedPayload=await post('tensor.f32',new Uint8Array(tensor.data.buffer,tensor.data.byteOffset,tensor.data.byteLength));
    run.savedCanonical=await post('tensor.wktensor',encoded.bytes);
@@ -161,11 +204,22 @@ export async function startDiffusionPublicBrowser(config){
    await persist(input.tensors[0],'Explicit saved-input codec only; cancelled prefix does not establish generated sample numerics');
   }else{
    if(config.cancelBeforeRun)await recover();
+   if(config.baseWeightProbe){
+    const feed=await manager.openWeightFeed({side:config.side,modelSessionId:loaded.modelSessionId});
+    try{
+     const client=manager.getWeightFeedClient(feed.feedId),description=await client.describe(),base=await client.baseProvider.describe();
+     const block=await client.baseProvider.readBlock('blocks.0.cross_attn.q.weight',0,5120,{...base,fullShape:[5120,5120]});
+     requireValue(block instanceof Float32Array&&block.length===5120&&block.every(Number.isFinite),'Bounded immutable base read failed');
+     run.baseWeightProbe={binding:feed.binding,protocol:feed.protocol,descriptionSHA256:await sha(new TextEncoder().encode(JSON.stringify(description))),baseIdentity:base,weightId:'blocks.0.cross_attn.q.weight',offset:0,elements:block.length,readIdentity:await identity(block),realLoraLoaded:false,packagePrepared:false};
+    }finally{run.baseWeightProbeClose=await manager.closeWeightFeed(feed.feedId);requireValue(run.baseWeightProbeClose.closed===true,'Base-only feed was not closed before NN');}
+   }
    const nativeInput=config.mode==='predict'?normalPredict(config.side):{shapeRequest:input.shapeRequest,tensors:input.tensors.map((tensor,index)=>index===0?{...tensor,data:input.initialEmptyTarget}:tensor),noise:input.noise,positive:input.positive,negative:input.negative,modelSessionId:loaded.modelSessionId};
    const reply=await request(config.mode,{input:nativeInput,onProgress});
    const numeric=expectResult(reply,config.mode);resultTensor=numeric.tensor;run.execution=numeric.execution;
    requireValue(reply.normalExecution===true&&reply.snapshot?.executionScope?.kind==='normal'&&reply.artifactRecord,'Actual tensor was not connected to normal management result/snapshot/artifact');
-   run.managementResult={status:reply.status,normalExecution:reply.normalExecution,target:reply.target,terminal:reply.terminal,snapshot:reply.snapshot,artifactRecord:reply.artifactRecord,edgeDecisions:reply.edgeDecisions};
+   requireValue(reply.artifact?.tensor&&reply.artifact?.snapshot?.executionScope?.kind==='normal','Operational controller did not retain the actual normal tensor/snapshot');
+   requireValue(await sha(reply.artifact.tensor.data)===await sha(resultTensor.data),'Operational artifact payload differs from the public result');
+   run.managementResult={status:reply.status,normalExecution:reply.normalExecution,rootTarget:reply.rootTarget,publicTarget:reply.target,identitySeparation:reply.identitySeparation,rootTerminal:reply.rootTerminal,terminal:reply.terminal,snapshot:reply.snapshot,artifactRecord:reply.artifactRecord,controllerArtifactDescriptor:reply.artifact.descriptor,edgeDecisions:reply.edgeDecisions};
    requireValue(numeric.execution.publicWorkerConnected===true&&numeric.execution.modelSessionId===loaded.modelSessionId,'Numerical result did not belong to current native owner');
    requireValue(resultTensor.data instanceof Float32Array&&resultTensor.data.every(Number.isFinite),'Actual output must be finite native F32');run.nativeNNExecuted=true;
    if(config.mode==='sample'){
@@ -173,7 +227,7 @@ export async function startDiffusionPublicBrowser(config){
     requireValue(sampleSteps.length===6&&sampleSteps.every((value,index)=>value.step===index&&value.steps===6&&value.side===(index<3?'HIGH':'LOW')),'Actual six-update HIGH3/LOW3 progress was not observed');
    }else requireValue(resultTensor.meaning==='bernini-flow-velocity:v1','Predict velocity meaning changed');
    if(run.recovery)run.recovery.completedOperation={operation:config.mode,modelSessionId:numeric.execution.modelSessionId,apiSessionId:run.apiSessionId,sameApiInstance:true};
-   await persist(resultTensor,'Actual normal management '+config.mode+' output');
+   await persist(resultTensor,'Actual operational controller '+config.mode+' output',reply.outputRef);
   }
  }catch(error){run.error=errorInfo(error);run.outcome='failed';record({stage:'operation-error',error:run.error});}
  await queue;return plain(run);

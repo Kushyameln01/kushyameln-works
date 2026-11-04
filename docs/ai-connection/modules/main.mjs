@@ -1,11 +1,12 @@
 import {createOperationalManagement} from '../../shared/ai-connection/operational-management.mjs';
 
 const $=id=>document.getElementById(id);
-const moduleIds=['text','vae','mean','diffusion'];
-const moduleNames={text:'Text Encoder',vae:'VAE',mean:'Mean変換',diffusion:'Diffusion'};
-const dirty=new Set(['text','vae','mean','diffusion']);
+const moduleIds=['text','vae','mean','diffusion','p4','lora'];
+const moduleNames={text:'Text Encoder',vae:'VAE',mean:'Mean変換',diffusion:'Diffusion',p4:'Normal P4',lora:'LoRA'};
+const dirty=new Set(moduleIds);
 let controller=null,unsubscribe=null,busy=false,disposed=false,lastExecution=null,lastRoute=null,diffusionNeedsLoad=true,diffusionSelectionChanged=true,cancellation=null;
-let revision=0;
+let revision=0,loraSavedDirectory=null;
+const loraHandles={HIGH:{},LOW:{}};
 
 function json(value){
  const seen=new WeakSet();
@@ -50,7 +51,7 @@ function cancelledStatus(){
  status('取消の終端を確認しました。'+diffusionNotice(),'CANCELLED');
 }
 function workspaceSettings(){
- return {fields:Object.fromEntries([...document.querySelectorAll('textarea,input[type=text],select')].filter(field=>!['reference-ref','recovery-module'].includes(field.id)).map(field=>[field.id,field.value])),routeSelections:Object.fromEntries([...document.querySelectorAll('section[aria-labelledby="route-heading"] input[type=checkbox]')].map(field=>[field.id,field.checked]))};
+ return {fields:Object.fromEntries([...document.querySelectorAll('textarea,input[type=text],select')].filter(field=>!['reference-ref','recovery-module','weight-feed-select'].includes(field.id)).map(field=>[field.id,field.value])),routeSelections:Object.fromEntries([...document.querySelectorAll('section[aria-labelledby="route-heading"] input[type=checkbox]')].map(field=>[field.id,field.checked]))};
 }
 function restoreSettings(settings){
  for(const [id,value]of Object.entries(settings?.fields??{})){const field=$(id);if(field&&typeof value==='string'&&field.matches('textarea,input[type=text],select'))field.value=value;}
@@ -70,12 +71,12 @@ async function modelConfiguration(id){
   const path=parts.join('/');if(files.has(path))fail('DUPLICATE_MODEL_PATH',`モデルFileのpathが重複しています: ${path}`);files.set(path,file);
  }
  let manifestFile=$(id+'-manifest').files[0];
- if(!manifestFile){
+ if(!manifestFile&&!(id==='text'&&$('text-manifest-mode').value==='current')){
   const manifests=[...files.keys()].filter(path=>path.split('/').at(-1)==='manifest.json');
   if(manifests.length!==1||manifests[0]!=='manifest.json')fail('MANIFEST_SELECTION_REQUIRED','実行用manifest JSONを選択してください。未選択の場合は、フォルダ直下に一つだけmanifest.jsonが必要です。');
   manifestFile=files.get('manifest.json');
  }
- const manifest=JSON.parse(await manifestFile.text());
+ const manifest=id==='text'&&$('text-manifest-mode').value==='current'?await (await import('../../shared/ai-connection/adapters/text-vae-standalone/native.mjs')).readTextVaeConfigurationManifest('text'):JSON.parse(await manifestFile.text());
  if(id==='text'&&$('text-source').files[0]){
   const binding=manifest?.embedding?.sourceFile;
   if(typeof binding!=='string'||!binding)fail('SOURCE_BINDING_REQUIRED','manifest.embedding.sourceFileがないため元UMT5 Fileを対応付けできません。');
@@ -88,6 +89,14 @@ function textInput(){
  return {text:$('text-prompt').value};
 }
 function operationRequest(id){
+ if(id==='lora'){
+  const operation=$('lora-operation').value,side=$('lora-side').value;let input={side};
+  if(['apply','compose'].includes(operation))input={side,...parse('lora-input')};
+  if(operation==='prepare')input.planHandle=$('lora-plan-handle').value.trim();
+  if(['stage','release'].includes(operation))input.preparedHandle=$('lora-prepared-handle').value.trim();
+  if(operation==='register'){const file=$('lora-file').files[0],pairId=$('lora-pair').value.trim();if(!file||!pairId)fail('LORA_FILE_REQUIRED','pair IDと登録するLoRA Fileを選択してください。');input={side,pairId,file};}
+  return {moduleId:id,operation,input,outputRef:outputRef(id)};
+ }
  if(id==='text')return {moduleId:id,operation:'encode',input:textInput(),outputRef:outputRef(id)};
  return {moduleId:id,operation:$(id+'-operation').value,input:parse(id+'-input'),outputRef:outputRef(id)};
 }
@@ -97,7 +106,9 @@ function requireConfigured(id,operation){
  if(id==='diffusion'&&diffusionNeedsLoad&&['predict','sample'].includes(operation))fail('MODEL_LOAD_REQUIRED','選択したHIGH・LOWモデルをloadしてください。');
 }
 async function configure(id){
- const config=['text','vae'].includes(id)?await modelConfiguration(id):{};
+ let config=['text','vae'].includes(id)?await modelConfiguration(id):{};
+ if(id==='p4'){const modelFile=$('p4-file').files[0];if(!modelFile)fail('P4_MODEL_FILE_REQUIRED','Normal P4のモデルFileを選択してください。');const rawBudget=$('p4-input-budget').value.trim(),inputPayloadBudgetBytes=Number(rawBudget);if(!rawBudget||!Number.isSafeInteger(inputPayloadBudgetBytes)||inputPayloadBudgetBytes<0)fail('P4_INPUT_BUDGET_REQUIRED','入力payloadの許可byte数を0以上の整数で指定してください。');config={modelFile,side:$('p4-side').value,inputPayloadBudgetBytes};}
+ if(id==='lora'){const feedIds=Object.fromEntries((state().weightFeeds??[]).filter(feed=>feed.live!==false).map(feed=>[feed.binding.side,feed.feedId]));if(!Object.keys(feedIds).length)fail('WEIGHT_FEED_REQUIRED','load済みDiffusionのweight feedを開いてください。');config={feedIds};}
  await controller.configureModule(id,config);dirty.delete(id);
  if(id==='diffusion')diffusionSelectionChanged=true;
  status(`${moduleNames[id]}の設定を適用しました。`,'CONFIGURED');
@@ -106,6 +117,7 @@ async function execute(request){
  requireConfigured(request.moduleId,request.operation);
  lastExecution={kind:'module',request:structuredClone(request),revision};
  const result=await controller.execute(request);$('result-details').textContent=json(result);
+ if(request.moduleId==='lora'){const value=result.result?.result??{},side=request.input.side;if(value.planHandle)loraHandles[side].planHandle=value.planHandle;if(value.preparedHandle)loraHandles[side].preparedHandle=value.preparedHandle;syncLoraHandles();}
  if(request.moduleId==='diffusion'&&request.operation==='load')diffusionSelectionChanged=false;
  syncDiffusion();
  status(`${moduleNames[request.moduleId]} / ${request.operation}: ${result.status??'実行完了'}`,result.status??'EXECUTION_COMPLETED');return result;
@@ -168,6 +180,14 @@ function render(event){
   $(id+'-query').disabled=unavailable||locked||!ready;
   $(id+'-run').disabled=unavailable||locked||!ready||(id==='diffusion'&&diffusionNeedsLoad&&['predict','sample'].includes($('diffusion-operation').value));
  }
+ const feeds=view.weightFeeds??[],picker=$('weight-feed-select'),selected=picker.value;picker.replaceChildren();for(const feed of feeds){const option=document.createElement('option');option.value=feed.feedId;option.textContent=feed.binding.side+' / '+feed.feedId;picker.append(option);}if(feeds.some(feed=>feed.feedId===selected))picker.value=selected;
+ $('weight-feed-open').disabled=unavailable||locked||dirty.has('diffusion')||diffusionNeedsLoad;
+ for(const id of ['weight-feed-close','weight-feed-retry-close'])$(id).disabled=unavailable||locked||!picker.value;
+ $('lora-configure').disabled=unavailable||locked||!feeds.some(feed=>feed.live!==false);
+ const loraReady=!dirty.has('lora')&&view.modules?.lora?.configured===true;
+ $('lora-save-package').disabled=unavailable||locked||!loraReady||!$('lora-prepared-handle').value;
+ $('lora-open-package').disabled=unavailable||locked||!loraReady||!$('lora-package-manifest').files[0];
+ $('lora-open-saved').disabled=unavailable||locked||!loraReady||!loraSavedDirectory;
  $('diffusion-load').disabled=unavailable||locked||dirty.has('diffusion')||!view.modules?.diffusion?.configured||!$('diffusion-high').files[0]||!$('diffusion-low').files[0];
  if(event?.kind==='progress'){
   const value=event.value??{},raw=value.progress??{},progress=raw.result??raw.progress??raw;
@@ -186,6 +206,8 @@ function routeFromForms(){
  if($('route-text').checked)add('text-encode',operationRequest('text'));
  if($('route-vae-encode').checked)add('vae-encode',{moduleId:'vae',operation:'encode',input:parse('vae-input'),outputRef:outputRef('vae')});
  if($('route-mean').checked)add('mean-transform',operationRequest('mean'));
+ if($('route-p4').checked)add('normal-p4',operationRequest('p4'));
+ if($('route-lora').checked)add('lora',operationRequest('lora'));
  if($('route-diffusion').checked)add('diffusion-model',operationRequest('diffusion'));
  if($('route-vae-decode').checked)add('vae-decode',{moduleId:'vae',operation:'decode',input:parse('route-decode-input'),outputRef:'decoded-output'});
  if(!steps.length)fail('ROUTE_STEPS_REQUIRED','経路に含めるmoduleを選んでください。');
@@ -196,9 +218,24 @@ function routeFromForms(){
 
 for(const id of moduleIds){
  $(id+'-configure').addEventListener('click',()=>action(()=>configure(id)));
- $(id+'-query').addEventListener('click',()=>action(async()=>{const request=operationRequest(id);requireConfigured(id,request.operation);const result=await controller.query(request);$('result-details').textContent=json(result);status(`${moduleNames[id]}の能力照会: ${result.status??'完了'}`,result.status??'QUERIED');}));
+ $(id+'-query').addEventListener('click',()=>action(async()=>{const request=id==='lora'?{moduleId:id,input:{side:$('lora-side').value}}:operationRequest(id);requireConfigured(id,request.operation);const result=await controller.query(request);$('result-details').textContent=json(result);status(`${moduleNames[id]}の能力照会: ${result.status??'完了'}`,result.status??'QUERIED');}));
  $(id+'-run').addEventListener('click',()=>action(()=>execute(operationRequest(id))));
 }
+for(const id of ['p4-file','p4-side','p4-input-budget'])$(id).addEventListener('change',()=>markDirty('p4'));
+for(const id of ['lora-file','lora-pair'])$(id).addEventListener('change',()=>{revision++;render();});
+function syncLoraHandles(){const value=loraHandles[$('lora-side').value];$('lora-plan-handle').value=value.planHandle??'';$('lora-prepared-handle').value=value.preparedHandle??'';}
+$('lora-side').addEventListener('change',()=>{syncLoraHandles();revision++;render();});
+for(const id of ['lora-package-manifest','lora-package-sources'])$(id).addEventListener('change',()=>render());
+$('lora-save-package').addEventListener('click',()=>action(async()=>{
+ requireConfigured('lora','save');const root=await navigator.storage.getDirectory(),directory=await root.getDirectoryHandle('works-product-lora-'+crypto.randomUUID(),{create:true});
+ const result=await controller.saveLoraPackage({side:$('lora-side').value,preparedHandle:$('lora-prepared-handle').value.trim(),directoryHandle:directory});loraSavedDirectory=directory;$('lora-storage-status').textContent='OPFSへnative source payloadとmanifestをstream保存しました。保存先: '+directory.name;$('result-details').textContent=json(result);status('LoRA packageを保存しました。','SAVED');
+}));
+async function openLoraPackage(value){return execute({moduleId:'lora',operation:'openPackage',input:{side:$('lora-side').value,...value},outputRef:outputRef('lora')});}
+$('lora-open-package').addEventListener('click',()=>action(async()=>{const file=$('lora-package-manifest').files[0];if(!file)fail('MANIFEST_FILE_REQUIRED','native package manifestを選択してください。');const manifest=JSON.parse(await file.text()),sources=Object.fromEntries(fileList('lora-package-sources').map(file=>[file.name,file]));await openLoraPackage({manifest,sources});}));
+$('lora-open-saved').addEventListener('click',()=>action(async()=>{const {createLoraDirectoryStorage}=await import('../../shared/ai-connection/adapters/lora-standalone/storage.mjs'),value=await createLoraDirectoryStorage(loraSavedDirectory).readPackage();await openLoraPackage({...value,sources:Object.fromEntries(value.sources)});}));
+$('text-manifest-mode').addEventListener('change',()=>markDirty('text'));
+$('weight-feed-open').addEventListener('click',()=>action(async()=>{requireConfigured('diffusion','predict');const result=await controller.openWeightFeed({side:$('weight-feed-side').value});dirty.add('lora');$('result-details').textContent=json(result);status('選択sideのweight feedを開きました。LoRAの接続を適用してください。','WEIGHT_FEED_OPEN');}));
+for(const [id,method]of [['weight-feed-close','closeWeightFeed'],['weight-feed-retry-close','retryCloseWeightFeed']])$(id).addEventListener('click',()=>action(async()=>{await controller[method]($('weight-feed-select').value);dirty.add('lora');status('weight feedの解放を確認しました。','WEIGHT_FEED_CLOSED');}));
 for(const id of ['text','vae'])$(id+'-bundle').addEventListener('change',()=>{$(id+'-files').textContent=fileSummary(fileList(id+'-bundle'));markDirty(id);});
 for(const id of ['text','vae'])$(id+'-manifest').addEventListener('change',()=>markDirty(id));
 $('text-source').addEventListener('change',()=>markDirty('text'));
@@ -219,7 +256,7 @@ $('dispose').addEventListener('click',()=>action(async()=>{await controller.disp
 $('route-from-forms').addEventListener('click',()=>action(async()=>routeFromForms()));
 $('route-run').addEventListener('click',()=>action(()=>executeRoute(parse('route-json'))));
 $('save-workspace').addEventListener('click',()=>action(async()=>{const bundle=await controller.saveWorkspace({workspaceSettings:workspaceSettings()});download(bundle?.bytes??bundle,'ai-modules-workspace.zip','application/zip');$('saved-state').textContent='現在の部分結果・入力欄・経路設定を保存しました。読戻しではtensorを復元し、モデルFileは再選択します。';status('workspace bundleを保存しました。','SAVED');}));
-$('workspace-file').addEventListener('change',()=>action(async()=>{const file=$('workspace-file').files[0];if(!file)return;const restored=await controller.restoreWorkspace(file);restoreSettings(restored.workspaceSettings);for(const id of moduleIds)dirty.add(id);for(const id of ['text-manifest','text-bundle','text-source','vae-manifest','vae-bundle','diffusion-high','diffusion-low','tensor-file'])$(id).value='';for(const id of ['text','vae'])$(id+'-files').textContent='保存設定を読戻しました。元のmanifestとモデルフォルダを再選択してください。';$('diffusion-files').textContent='元のHIGH・LOWモデルFileを再選択してください。';diffusionSelectionChanged=true;lastExecution=null;lastRoute=null;revision++;$('result-details').textContent=json(restored);$('saved-state').textContent=`${file.name} の入力欄・経路設定とtensorを読戻しました。実行には元のモデルFileを再選択して設定を適用し、Diffusionをloadしてください。`;status('bundleを読戻しました。モデルFileを再選択してください。','RESTORED');}));
+$('workspace-file').addEventListener('change',()=>action(async()=>{const file=$('workspace-file').files[0];if(!file)return;const restored=await controller.restoreWorkspace(file);restoreSettings(restored.workspaceSettings);for(const id of moduleIds)dirty.add(id);for(const id of ['text-manifest','text-bundle','text-source','vae-manifest','vae-bundle','diffusion-high','diffusion-low','p4-file','lora-file','lora-package-manifest','lora-package-sources','tensor-file'])$(id).value='';for(const id of ['text','vae'])$(id+'-files').textContent='保存設定を読戻しました。元のmanifestとモデルフォルダを再選択してください。';$('diffusion-files').textContent='元のHIGH・LOWモデルFileを再選択してください。';diffusionSelectionChanged=true;loraSavedDirectory=null;for(const side of ['HIGH','LOW'])loraHandles[side]={};syncLoraHandles();lastExecution=null;lastRoute=null;revision++;$('result-details').textContent=json(restored);$('saved-state').textContent=`${file.name} の入力欄・経路設定とtensorを読戻しました。実行には元のモデルFileを再選択して設定を適用し、Diffusionをloadしてください。`;status('bundleを読戻しました。モデルFileを再選択してください。','RESTORED');}));
 for(const element of document.querySelectorAll('textarea,input[type=text],select'))element.addEventListener('change',()=>{revision++;render();});
 
 $('environment').textContent=`このページのCOI: ${globalThis.crossOriginIsolated===true?'有効（4 threadsを選択可能）':'無効（1 threadを選択可能）'}。threadsは自動で切り替えません。`;

@@ -15,7 +15,7 @@ import {performance} from 'node:perf_hooks';
 
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'../..'),DOCS=join(ROOT,'docs');
 const ADAPTER='/shared/ai-connection/adapters/diffusion-public/adapter.mjs';
-const NATIVE='/shared/ai-connection/native/diffusion-ffeeeedb/';
+const NATIVE='/shared/ai-connection/native/diffusion-b6e16647/';
 const git=promisify(execFile),sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const failure=(code,message)=>Object.assign(Error(message),{code});
 const SCOPE='CONTROL ONLY: actual adopted public factory/Worker, default one-thread admission, no-COI rejection, queue and canonical synthetic-file preservation. No real HIGH/LOW model loaded; no neural predict/sample or production/Pages numerical acceptance.';
