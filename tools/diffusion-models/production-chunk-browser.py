@@ -295,7 +295,14 @@ class OracleProcess:
         return self.stats
 
 
-def input_config(manifest, side, block_limit, run_id, *, operation='blocks', wasm_threads=1, decoder='lookup', read_ahead_bytes=1048576):
+def comparison_stages(operation, *, skip_prefix=False):
+    require(type(skip_prefix) is bool, 'Explicit prefix comparison selection required')
+    require(not(skip_prefix and operation == 'sample'), 'sample compares sixteen sampler traces; prefix reuse selection is only for blocks/predict')
+    stages = STAGES + HEAD_STAGES if operation == 'predict' else list(STAGES)
+    return [name for name in stages if name not in PREFIX_STAGES + ['postModulated']] if skip_prefix else stages
+
+
+def input_config(manifest, side, block_limit, run_id, *, operation='blocks', wasm_threads=1, decoder='lookup', read_ahead_bytes=1048576, skip_prefix=False):
     whitelist = {}
 
     def entry(path, count, digest):
@@ -316,7 +323,7 @@ def input_config(manifest, side, block_limit, run_id, *, operation='blocks', was
         tensors.append(item)
     text = manifest['conditioning']
     conditioning = {'metadata': text['metadata'], 'payload': entry(text['payloadPath'], 512 * 4096 * 4, text['payloadSHA256']), 'mask': entry(text['maskPath'], 512, text['maskSHA256'])}
-    stages = STAGES + HEAD_STAGES if operation == 'predict' else STAGES
+    stages = comparison_stages(operation, skip_prefix=skip_prefix)
     config = {'runId': run_id, 'shapeRequest': manifest['shapeRequest'], 'side': side, 'timestep': manifest['timestep'], 'totalTokens': manifest['canonicalShape']['concatenation']['totalTokens'], 'tensors': tensors, 'conditioning': conditioning, 'stages': stages, 'blockLimit': block_limit, 'operation': operation, 'wasmThreads': wasm_threads, 'crossOriginIsolationRequired': wasm_threads == 4, 'decoder': decoder, 'readAheadBytes': read_ahead_bytes}
     if operation == 'sample':
         for name in ['initialEmptyTarget', 'explicitNoise']:
@@ -340,6 +347,7 @@ def main():
     parser.add_argument('--decoder', choices=['legacy', 'lookup'], default='lookup')
     parser.add_argument('--read-ahead-bytes', type=int, default=1048576)
     parser.add_argument('--reference-threads', type=int, choices=[1, 4], default=1, help='Explicit independent BLAS thread profile; never changes native WASM threads')
+    parser.add_argument('--skip-prefix-comparison', action='store_true', help='Reuse unchanged prefix/post-modulation evidence; still computes every native prefix/KV, compares all self/cross/FFN stages, and records the selected comparison scope')
     parser.add_argument('--verify-reference-threads', action='store_true', help='Bounded real-weight 1-vs4 BLAS reference gate only, without browser/model prediction')
     parser.add_argument('--diagnostic-timeout-seconds', type=float, default=3600)
     parser.add_argument('--validate-only', action='store_true')
@@ -389,7 +397,7 @@ def main():
     models = {side: args.model_dir / reference.REF.MODELS[side][0] for side in ['HIGH', 'LOW']} if args.operation == 'sample' else {args.side: model}
     require(all(path.stat().st_size == reference.REF.MODEL_BYTES for path in models.values()), 'Both pinned model File byte lengths required for sample')
     require(args.operation != 'sample' or math.prod(manifest['tensors'][0]['shape']) * 4 <= MAX_CHUNK_BYTES, 'Sampler trace target must fit explicit8MiB profile')
-    resource_config = {'wasmThreads': args.wasm_threads, 'crossOriginIsolationRequired': args.wasm_threads == 4, 'decoder': args.decoder, 'readAheadBytes': args.read_ahead_bytes, 'referenceThreads': args.reference_threads, 'fallback': False}
+    resource_config = {'wasmThreads': args.wasm_threads, 'crossOriginIsolationRequired': args.wasm_threads == 4, 'decoder': args.decoder, 'readAheadBytes': args.read_ahead_bytes, 'referenceThreads': args.reference_threads, 'prefixComparisonsSkipped': args.skip_prefix_comparison, 'fallback': False}
     if args.verify_reference_threads:
         result = {'schemaVersion': 'bernini-production-reference-thread-verification/1', 'sourceCommit': args.source_commit, 'sourceBefore': captured, 'side': args.side, 'manifestSHA256': reference.file_sha(args.manifest), 'contractSHA256': reference.file_sha(args.contract), 'numpy': reference.np.__version__, 'generationReady': False}
         try:
@@ -406,7 +414,7 @@ def main():
         print(json.dumps({'passed': result['passed'], 'mode': 'reference-thread-verification', 'output': str(args.output), 'nativeModelExecuted': False}))
         return
     run_id = secrets.token_hex(24)
-    config, inputs = input_config(manifest, args.side, block_limit, run_id, operation=args.operation, wasm_threads=args.wasm_threads, decoder=args.decoder, read_ahead_bytes=args.read_ahead_bytes)
+    config, inputs = input_config(manifest, args.side, block_limit, run_id, operation=args.operation, wasm_threads=args.wasm_threads, decoder=args.decoder, read_ahead_bytes=args.read_ahead_bytes, skip_prefix=args.skip_prefix_comparison)
     config['wasmModules'] = [{'role': name, 'sha256': sha(raw)} for name, raw in sources.items() if name.endswith('.wasm')]
     if args.validate_only:
         print(json.dumps({'passed': True, 'sourceCommit': args.source_commit, 'sources': captured['count'], 'inputFiles': len(inputs), 'totalTokens': config['totalTokens'], 'operation': args.operation, 'blockLimit': block_limit, 'resource': resource_config, 'modelWorkExecuted': False}))

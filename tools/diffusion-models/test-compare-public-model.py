@@ -62,6 +62,23 @@ def fixture(mode='predict', values=None):
 
 
 class ComparatorTests(unittest.TestCase):
+    def test_complete_predict_reference_does_not_require_six_unrelated_updates(self):
+        n,r,c,ident,_=fixture()
+        descriptor=r['arrays']['velocity00']
+        r.update(operation='predict',arrays={'velocity':descriptor},metrics=[{
+            'side':'HIGH','totalTokens':5,'coverage':[
+                *[{'block':block,'name':'blockOutput','rows':5,'intervals':[[0,5]]} for block in range(40)],
+                {'block':None,'name':'headAll','rows':5,'intervals':[[0,5]]},
+                {'block':None,'name':'prediction','rows':32,'intervals':[[0,32]]}]}])
+        self.assertEqual(C.admit(n,r,c,ident)['array'],'velocity')
+        for name in ['blockOutput','headAll','prediction']:
+            incomplete=copy.deepcopy(r)
+            incomplete['metrics'][0]['coverage']=[x for x in incomplete['metrics'][0]['coverage'] if not(x['name']==name and (name!='blockOutput' or x['block']==7))]
+            with self.subTest(missing=name),self.assertRaises(ValueError):C.admit(n,incomplete,c,ident)
+        sample=copy.deepcopy(n)
+        sample['mode']=sample['publicResult']['mode']='sample'
+        with self.assertRaises(ValueError):C.admit(sample,r,c,ident)
+
     def test_full_shape_high_first_velocity_admitted(self):
         n, r, c, ident, _ = fixture()
         admitted = C.admit(n, r, c, ident)

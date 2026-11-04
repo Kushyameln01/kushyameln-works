@@ -16,6 +16,18 @@ sample_spec.loader.exec_module(sample)
 
 
 class CoverageTests(unittest.TestCase):
+    def test_prefix_reuse_skips_only_explicit_comparisons_and_keeps_block_and_head(self):
+        stages=module.comparison_stages('predict',skip_prefix=True)
+        self.assertFalse(set(module.PREFIX_STAGES+['postModulated']) & set(stages))
+        self.assertTrue(set(['k','v','q','selfAttention','oProjection','selfResidual','crossK','crossV','crossQ','crossAttention','crossResidual','ffnOutput','blockOutput','headAll','prediction']) <= set(stages))
+        coverage=module.Coverage(self.manifest(),stages,39,'predict')
+        self.assertFalse(coverage.summary()['complete'])
+        with self.assertRaisesRegex(ValueError,'Unexpected'):
+            coverage.check({'name':'patchHidden','block':None,'globalRowStart':0,'rowCount':1})
+        self.assertEqual(module.comparison_stages('blocks'),module.STAGES)
+        with self.assertRaisesRegex(ValueError,'sample'):
+            module.comparison_stages('sample',skip_prefix=True)
+
     def manifest(self):
         return {'canonicalShape':{'concatenation':{'totalTokens':259}},'conditioning':{'metadata':{'shape':[1,512,4096]}},'tensors':[{'shape':[1,16,1,2,4]}]}
 

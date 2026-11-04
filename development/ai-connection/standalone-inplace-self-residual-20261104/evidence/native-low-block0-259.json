@@ -1,0 +1,937 @@
+{
+  "schemaVersion": "bernini-self-residual-inplace-native/1",
+  "sourceCommit": "426323e8709ad4456a979325e17f97f1a2f8b357",
+  "sourceSHA256": {
+    "shared/ai-connection/workflow-shapes.mjs": "7a78955fd8156e0b3a5b287ad5f712ff04d62dbb6e501952bc52f9696e9dd821",
+    "shared/inference/hike.mjs": "26f4eda97daf0ca66a05264aebf0cd9a7fd2e97350b974a5c2e7ad6e10fa5b65",
+    "shared/inference/kernel/runtime.js": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+    "shared/inference/kernel/tensor.wasm": "9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8",
+    "shared/inference/lora/bernini-targets.mjs": "772ca63c3b82bafa7b2345cdda3361679112fcf4a97c79b67564da0fa196217d",
+    "shared/inference/lora/loader-policy.mjs": "f18f9c8dd4168e26f25cd1c77124b1f14a2ffca99424bfa9d4a9a294cbb2dedd",
+    "shared/inference/lora/planner.mjs": "a4b2be0d8b90cd339bb0a17d072db4fd572ac122e3cc51a2c97b20ac06af1d02",
+    "shared/inference/lora/standalone-registry.mjs": "2b706abbaf548b5db9dbe69f33ee647fce47aec158b5baa0f2aa99bbb2abdfc2",
+    "shared/inference/tensor.mjs": "e200fef69be3909a13bc91a59743681df1072817eadc7c1865717afe0c3c9f8e",
+    "shared/inference/vendor/license-sources.json": "0a200083c8a8e805511e5ff417e21b27b1ad836450af364b1b2d51d1b89fd558",
+    "shared/inference/vendor/ort-wasm-simd-threaded.mjs": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+    "shared/inference/vendor/ort-wasm-simd-threaded.wasm": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+    "shared/inference/vendor/ort.wasm.min.mjs": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+    "shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+    "shared/diffusion-models/euler-kernel.mjs": "77ba1fb46771bf7f3053454a3eca8981f17d3992874497a72eed6d0bf2ddf52c",
+    "shared/diffusion-models/execution/batched-attention-graph.mjs": "95bbf39e692f74a9afb9b1e2b7972c4b148e62a8bd39c13af4ebbbb6ca91e098",
+    "shared/diffusion-models/execution/batched-ops.mjs": "3c02d50b4c48297aaac726ca84054ce5c13256b1d7b91885089bfe80d0469eac",
+    "shared/diffusion-models/execution/capabilities.mjs": "614283e9b12f3874b8deef81165f3b90312ddbbf5db48b122a947c7d3bb4d4b3",
+    "shared/diffusion-models/execution/generated-space.mjs": "0f9dd3a1cc2258729ba74bf78b9a6daa1a9f3399e23d9ea6556dc275f92c22c8",
+    "shared/diffusion-models/execution/generated-space/build.py": "50a5ccf723465670f6dcda0ae0b1400881d43775de20244a3efc1334cadc1291",
+    "shared/diffusion-models/execution/generated-space/build/build-record.json": "1f1d73c574fae65c183ea2d5236b4560a47ced632e848ebd0c92a9bc7d3ea9b9",
+    "shared/diffusion-models/execution/generated-space/build/generated-space.wasm": "8763d5ec82fd71e31597bb620729c5393383abed478395a2aaaf0d71f85a9b80",
+    "shared/diffusion-models/execution/generated-space/generated-space.hike": "54c8c115c188cee795f2e45d632293b63b054620e4442c5542519950c0524ea8",
+    "shared/diffusion-models/execution/generated-space/kernel-registry.mjs": "ba3bf27519ec953c770772e6d22788a89428dc323043715d735dffbc91f45400",
+    "shared/diffusion-models/execution/lora-source-manifest.json": "fb4840c1ecdc547f8596a27d083ab64bb8d9fe920106edb1df1f619ee2aa5f9d",
+    "shared/diffusion-models/execution/model-candidate.mjs": "5a9fd37aca735f37570938248ba4419183ab781c78807df69cee8e04b0e20a5d",
+    "shared/diffusion-models/execution/model-chunk-diagnostics.mjs": "d1e186b93e918eaa2ffb85a981d49ddec69aa9c4c68b7cb545681e4318ae0926",
+    "shared/diffusion-models/execution/model-decode.mjs": "7c30e0a48c55e83fc075cf36d5f22e98da89ece67542d999e7ba0d64f8b52346",
+    "shared/diffusion-models/execution/model-decode/build-record.json": "ca19f2d5bf68b774ca66156ae9b6f0aeb086e1cc45b99c62afecc9d7181ee45e",
+    "shared/diffusion-models/execution/model-decode/build.py": "f2e39da4145a27768e48d2e416fd7b94ceb8047cb56177a0f1abd9d3ceb0c841",
+    "shared/diffusion-models/execution/model-decode/model-decode.hike": "6abf3598172664416145f51964f2d5c39f80975b92973954f3aafdc653402453",
+    "shared/diffusion-models/execution/model-decode/model-decode.wasm": "4d6fa6efdf89a694ddf607b7a00c49601f6190ac8f9c82c3a636fffb70c507a2",
+    "shared/diffusion-models/execution/model-decode/registry.mjs": "8bb36b70fbe3734770eb3fa31a4f363ca66d1514993b3a2a042a4b5b95e5102b",
+    "shared/diffusion-models/execution/model-execution-timing.mjs": "a01e0cddef1699af8b294016086e5c1ecbfbf736cc0f9bf68d17eaabb9cf5ca1",
+    "shared/diffusion-models/execution/model-head.mjs": "d13ed2a4499b1813c8ac781156a29014418b9f9191ad3a8893531012697234a4",
+    "shared/diffusion-models/execution/model-math.mjs": "f55d9024b2b17c3333ac312b80ef178c03b1a4d17476ce752c64c04114363f90",
+    "shared/diffusion-models/execution/model-math/build-record.json": "8aa8ab82f2dd6b019320c9821b1f06655710b3a036198b5b035fcfd1b8b0b9e2",
+    "shared/diffusion-models/execution/model-math/build.py": "4dd143efc0fc02e57b2ecb473c2260981a439b77d2c6f94a96fdfe389ac9113f",
+    "shared/diffusion-models/execution/model-math/kernel.wasm": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+    "shared/diffusion-models/execution/model-math/math.hike": "5f92c767ab2d1a5ca0a6b01bb670383b271ede4f94dcdb1cbc11a54e06f5752f",
+    "shared/diffusion-models/execution/model-math/registry.mjs": "8e9709a8deb18065192f9718b31647b34f04951516e14657fbb0ceb7a5ae73c8",
+    "shared/diffusion-models/execution/model-read-window.mjs": "ca138fa1490c97967e3cfb9e2eb6a58a7b81467212cb27217fe5c171d14dee31",
+    "shared/diffusion-models/execution/model-sampler-candidate.mjs": "2a36a15bafe5467c4c8728d654f80eb3850ce308a6019c5af5c4490103e28590",
+    "shared/diffusion-models/execution/model-sequence.mjs": "e25c9f59451e9577210c6354f8e4d185ae5b7201109bc11f9c020a29db364c9f",
+    "shared/diffusion-models/execution/model-weight-bindings.mjs": "0eb04c60aa1deadded4498489da29d9b03c2a30608ceeb282505687477353399",
+    "shared/diffusion-models/execution/model-weight-feed.mjs": "00c61c682f3cb5d99466760804851e23e4c2228b3f078a0cfae88054d8d28f87",
+    "shared/diffusion-models/execution/model-weights.mjs": "99dba006628a56a254b99f34303d49c15e1d61702b50fb697741d77271af446e",
+    "shared/diffusion-models/execution/owned-attention-query.mjs": "f02ca1d263a521d69a47c7cdfcb240b2f5bd63c2e93d1f775a54d49f46cadb9f",
+    "shared/diffusion-models/execution/p4.mjs": "b71115876c22e7987ecfcd45dae211901ef8cab36e4f8c67bb15d9559c883fdb",
+    "shared/diffusion-models/execution/prepared-attention-kv.mjs": "3b2ee701c2bdbd352a3f1150eb81756cefe322285b86fe5f4da0803c5e493596",
+    "shared/diffusion-models/kernel-registry.mjs": "75c0f0cd973f627891f8af130daa637db2d7afbd7da38b6c275891592b4eb8ce",
+    "shared/diffusion-models/kernel/euler.wasm": "17aea5e5d967595dbef52099aa330f61f48ff9815b098fa0bf6a421517459803",
+    "shared/diffusion-models/latent-space/build.py": "f5ef11ecfda792b05d572942a164d7a9775636557f1f1b04b7b9bac43e7215b1",
+    "shared/diffusion-models/latent-space/build/build-record.json": "679df4f5cffd41fb5639b32146eea9b102a354bf17c8b3a4be5ad44ba978cf99",
+    "shared/diffusion-models/latent-space/build/latent-space.wasm": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+    "shared/diffusion-models/latent-space/kernel-registry.mjs": "191f85b0bedc8ad439a486b077f0891c7846a7535b0d71d26350b8581f8d11b8",
+    "shared/diffusion-models/latent-space/latent-space.hike": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+    "shared/diffusion-models/latent-space/latent-space.mjs": "3d28445a5c36eeb4f31b7bfe89163e43091438f571488a665888833e1d860104",
+    "shared/diffusion-models/lora/base-block.mjs": "4b153ebd1a261449addc99168a4c56a7e4b470d31cdb646f7868e61764b08c2f",
+    "shared/diffusion-models/lora/diagnostic-base.mjs": "a252458a300fa6b305ed976b412b9924cf61e3795c8cace625f91742eab179a8",
+    "shared/diffusion-models/lora/diagnostic-consumer.mjs": "fdac31542f87d68b9e01a1ba674ee9b60433cae685d6670222f8d914dd27f943",
+    "shared/diffusion-models/lora/diagnostic-identity.mjs": "35ed52cde91236e764acd61ce912a96aea6627c249eeccd3c8039036069de9c9",
+    "shared/diffusion-models/lora/source.mjs": "43a2ceb5adc5030826fc76bb8f7dabae43b315edd2c5c8ecbb6f8db9281e2474",
+    "shared/diffusion-models/lora/strict-json.mjs": "c68a353f9be2567361b075a6e5480e953a7d8df862f5b154e9cd368ec2571a98",
+    "shared/diffusion-models/lora/targets.mjs": "6a8be3a014a8b27287b2069cac2c454251b917f5be09a2612eb86cf20a6f11bb",
+    "shared/diffusion-models/lora/v2-adapter.mjs": "21aad3041e73ce06882cc2b35b1437a596fb566e5519c52dad6b7f726daec4e6",
+    "shared/diffusion-models/lora/weights.mjs": "b6d60af5924c2cc5cef9398867424288cab36d9788149c954fa8526b3b51fcc5",
+    "shared/diffusion-models/ort-bridge/attention-heads/attention.mjs": "38778c112243ccd72444923be0bf9ab396de1b1b6aa208a2a759d17d6894310c",
+    "shared/diffusion-models/ort-bridge/attention-heads/budget.mjs": "7e28ad2a230e0d63bafafc0e0d10130a83759dfebc22df5aa70c365c30dd4200",
+    "shared/diffusion-models/ort-bridge/attention-heads/graph.mjs": "dce76cdb3ca5f19aa0837b861b6ec73d3c7ee3ba6b2b15efa74cb46f903561ca",
+    "shared/diffusion-models/ort-bridge/attention-heads/rope.mjs": "790c1bc0c6bf3673e378b6397438a384824b828623d4c832b2e05a7d49832f38",
+    "shared/diffusion-models/ort-bridge/attention-heads/stage.mjs": "5a5073d522895f24669421b5c66d4e2fcac324d3ba1d201e9c52e10b01699a41",
+    "shared/diffusion-models/ort-bridge/block-hidden/build-record.json": "420e7b1cc550d803cdb587c73d38e008d98360aa8faed11c5f38f87c0d59db37",
+    "shared/diffusion-models/ort-bridge/block-hidden/build.py": "3cc9cd8196336c627d9232be01fc7dd6d736bbb55cf89fde487e285ca16ad543",
+    "shared/diffusion-models/ort-bridge/block-hidden/graph.mjs": "7826723d34a934a78e27335dce5973d41af4e2578136db5604c19b13d0954db0",
+    "shared/diffusion-models/ort-bridge/block-hidden/kernel.wasm": "ec95f1ca2bb76c332d1ff1072d48347e8a79d48f15618fa59b191dabe9117f7c",
+    "shared/diffusion-models/ort-bridge/block-hidden/kernel.wat": "5aac278c93ba6517a0332234042c22314aa4c59126daf2307e77e070c754da5d",
+    "shared/diffusion-models/ort-bridge/block-hidden/linear.mjs": "4e9dfc16d661e70c9d9176ac4eb3abacccf83f4dbd00b891cfb45d0f72f50987",
+    "shared/diffusion-models/ort-bridge/block-hidden/math.hike": "17782a1c12542e0755736a92f8115348865f55bfe5b34ebc670afb80b0f54ac8",
+    "shared/diffusion-models/ort-bridge/block-hidden/math.mjs": "b50c8c8badd58881bba64850ae71ee18fb9ec7755dd52e21658fce929dd47d8e",
+    "shared/diffusion-models/ort-bridge/block-hidden/registry.mjs": "161429dd074a55b311b63ec2cf30545a0639ac81e7858221e0ea594efb956c57",
+    "shared/diffusion-models/ort-bridge/block-hidden/runtime.js": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+    "shared/diffusion-models/ort-bridge/block-hidden/source.mjs": "88f15adc3b495f12960ba376146aff5e2dd1e19344c52f462c1ae425e4dea1a3",
+    "shared/diffusion-models/ort-bridge/block-hidden/stage.mjs": "4df01bc324119444fa9f1ce5e7f1ef6c0aa36e7f12fd5ff919af721472a99198",
+    "shared/diffusion-models/ort-bridge/graph.mjs": "7ffd4b22dc33685e6461eeb057b184d153fd25d897355e14f64ecc3abf1d1dc7",
+    "shared/diffusion-models/ort-bridge/hike.mjs": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+    "shared/diffusion-models/ort-bridge/kernel/bridge.hike": "1c1301545592e05c414fd8a4ad2ab1b20376810471418e515070a2590cd599ca",
+    "shared/diffusion-models/ort-bridge/kernel/bridge.wasm": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+    "shared/diffusion-models/ort-bridge/kernel/build-record.json": "4ba7874d1ce6d319bd570113e0e0f08a952ab957e1f3a8aff8456f5ff06bf429",
+    "shared/diffusion-models/ort-bridge/kernel/build.py": "9366f8f529ea3f0046dd6707a6262aedfa00b85affb3e36eca9a8abba16cfe62",
+    "shared/diffusion-models/ort-bridge/kernel/registry.mjs": "c4ea25478d44b70146ba2574d98c761d1bb345b4d6f10ccaedfb660f30489cdd",
+    "shared/diffusion-models/ort-bridge/post-self-attention/build-record.json": "4d0839dce6657788a7a93fad15ddafebcf3f249a7e3a641383f25b5cba5ac1f9",
+    "shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs": "f65a5150257dd7c50bbf6c073e931ebb33bdba6ae4d9f96d92e6b885b191ad63",
+    "shared/diffusion-models/ort-bridge/post-self-attention/kernel.wasm": "4d8518e94bd2de3ab9bf50f09b2fd17b69a5c57e7fd45dc65cd062d7fdbdbc4e",
+    "shared/diffusion-models/ort-bridge/post-self-attention/linear.mjs": "3821cca4b031aae4adf3944f15f8d171ed602f97878307ce495b7dcd8b05118a",
+    "shared/diffusion-models/ort-bridge/post-self-attention/math.hike": "4df36305e6d0faad458d326e4926cb0fd3a8f98c7bca6b75d2ace6e988122574",
+    "shared/diffusion-models/ort-bridge/post-self-attention/math.mjs": "c26d169c90bced0524c73081bd92b13bbb635f57718086b6224826b2464bf9a0",
+    "shared/diffusion-models/ort-bridge/post-self-attention/registry.mjs": "76c16302cc62d94f278322a895e8fd343f10ec49626fb1ab04ec546842c64a7c",
+    "shared/diffusion-models/ort-bridge/post-self-attention/runtime.js": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+    "shared/diffusion-models/ort-bridge/post-self-attention/source.mjs": "57e460cd7efc10b66c8d22523085db0767e07068c5b56f16e2428945f06e02f4",
+    "shared/diffusion-models/ort-bridge/post-self-attention/stage.mjs": "d28340f7cbdcc8ea9b35e59a209b4f62c81a8ac2dfd226c7a0ccc933680ee649",
+    "shared/diffusion-models/ort-bridge/post-self-attention/weights.mjs": "9e4369dcedf7720b6a5770b970107d3043f308e34bf1f812c1536d55db69c59c",
+    "shared/diffusion-models/ort-bridge/qkv/base.mjs": "57efe6090359c1d909fb18471786c6ec6acc7a9b05162b3d3c6e36809d470a9e",
+    "shared/diffusion-models/ort-bridge/qkv/build-record.json": "b5c44fe9374a653a99e81e7a32f62071fc6c1d5eb19010743997c1933d5c46ae",
+    "shared/diffusion-models/ort-bridge/qkv/build.py": "6ee07dd770017d847ae7cba4e4cf4d225569faaf1943b459c499b70f042af5b4",
+    "shared/diffusion-models/ort-bridge/qkv/graph.mjs": "23402a28df0ab90da6869523f855e0f78e1c7c727236290eb5217387c9a4a895",
+    "shared/diffusion-models/ort-bridge/qkv/kernel.wasm": "46cd2ac1859e809d9bcb722b55822c606185e67b3639392fa00d21b698825997",
+    "shared/diffusion-models/ort-bridge/qkv/kernel.wat": "187cd770cf9f2f254bec003628fc58dec3650f94ffffd5e528d5f5e9d37d2b84",
+    "shared/diffusion-models/ort-bridge/qkv/norm-admission.mjs": "59e0b05920ccef858f017988f9b4f40b158deddfade5a5ff4a4475c14cd9daab",
+    "shared/diffusion-models/ort-bridge/qkv/ownership.mjs": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+    "shared/diffusion-models/ort-bridge/qkv/registry.mjs": "e5cec64144f2474342dbd34aa4c94ec777c29100a99ecb158684da6bef4d8eb9",
+    "shared/diffusion-models/ort-bridge/qkv/rope.hike": "1be9901cdb8632903237c221cc7de06f3e82391b5342dc78abbabd8666b0905e",
+    "shared/diffusion-models/ort-bridge/qkv/rope.mjs": "94be2fd2b0e1369bb0be522c64c8b875ec8f320a4d6cfd54fbf6104dbae7603e",
+    "shared/diffusion-models/ort-bridge/qkv/runtime.js": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+    "shared/diffusion-models/ort-bridge/qkv/stage.mjs": "28ec21b9ce3f22fc5e8c68422ddcf7fafb4b4b2c2a2f4dd5f24f5b2acf5042e7",
+    "shared/diffusion-models/ort-bridge/self-attention-tail/build-record.json": "e48fdb571194b7a628d764848eba09b7a6e02d22074fe9ea8654fa4b69e470ed",
+    "shared/diffusion-models/ort-bridge/self-attention-tail/build.py": "330d769f3e13c5d964748a78eca0eb11d43f39c14a26bbdaa6020aa927c6af3f",
+    "shared/diffusion-models/ort-bridge/self-attention-tail/kernel.wasm": "54c1690e4581a1de0b231d0b538ff280696542c2eb44ebedb4c2c661a6dd3925",
+    "shared/diffusion-models/ort-bridge/self-attention-tail/kernel.wat": "6f1a46e5e36db107e55d1b9c663e9c2e1371db41fa984ac469f9315d6a2492b2",
+    "shared/diffusion-models/ort-bridge/self-attention-tail/math.hike": "ac566af35fda0deb1e5671d4b68a999efcbeac450b189dc28150102b8b8cdb98",
+    "shared/diffusion-models/ort-bridge/self-attention-tail/math.mjs": "4b5311829d007f576ae16c7a3296514100767e1fd7c557c63f2c72e72ea41dff",
+    "shared/diffusion-models/ort-bridge/self-attention-tail/registry.mjs": "706b52a1ab926e1c01484512ace3bb06cbf9061f1070b2784407b6feefed16ed",
+    "shared/diffusion-models/ort-bridge/self-attention-tail/runtime.js": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+    "shared/diffusion-models/ort-bridge/self-attention-tail/source.mjs": "e52d1384d0981fb176899bdc86f3ce9347496eb1b868831df29aa47a932f6469",
+    "shared/diffusion-models/ort-bridge/self-attention-tail/stage.mjs": "ca35f70de8ced5a5c11223b63b98a1f346b1f21118d674195c6abd8c56ee33f3",
+    "shared/diffusion-models/ort-bridge/self-attention-tail/trusted.mjs": "af551e9c4aa13377ce7563b54e786674a69e614b785841fd39eade9f6cbba616",
+    "shared/diffusion-models/ort-bridge/stage.mjs": "9b484163791a89526c7ad7e6fc997ff3cc308090a13fc07489a48fa8af974d67",
+    "shared/diffusion-models/ort-bridge/stream-attention/build-record.json": "7f999cf04429ad270727d1c4cade6e62dc96eab29f72575ac02faa21ae4bfa59",
+    "shared/diffusion-models/ort-bridge/stream-attention/build.py": "ce27ca6f0fd8164439fb48bb483a1e264a009759fbde7425ac059e66ad7aa3b5",
+    "shared/diffusion-models/ort-bridge/stream-attention/graph.mjs": "07a627a0af4d19f8febbbb3233479f75998dcd6c0b6d6145d45096fc251a39a2",
+    "shared/diffusion-models/ort-bridge/stream-attention/hike.mjs": "67d5ada9d4c6c4217c3845c9ddbed5fb246cedeb35d5283840e1057087d4c3cd",
+    "shared/diffusion-models/ort-bridge/stream-attention/kernel.hike": "766b771e10e00bb3ce24d360567981e2d028762547c820e481dbcdf4deab1e75",
+    "shared/diffusion-models/ort-bridge/stream-attention/kernel.wasm": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+    "shared/diffusion-models/ort-bridge/stream-attention/registry.mjs": "99c1c3c56fe22608c4652d830cd7f03978b036332a0505b9f07ed548bc8b6ecb",
+    "shared/diffusion-models/ort-bridge/stream-attention/runtime.js": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+    "shared/diffusion-models/ort-bridge/stream-attention/stage.mjs": "2e4ef278be34d3c510c45732e63f97ab86035e3f0f8c1b94f467e629145f0870",
+    "shared/diffusion-models/ort-bridge/tiled-q.mjs": "54b6e3e446e15b10f7ee987fe3b49ebf6150046227297b34fcce5136ffb2b9f3",
+    "shared/diffusion-models/scheduler/build/build-record.json": "830bfbb2f64b8dea7376734e8a64ccd4b32a6ba0386db79e8ae5b2b75cc7d9ba",
+    "shared/diffusion-models/scheduler/build/scheduler.wasm": "bcd35eb9e0bef45c2f21d99ca77a1edeae57c8ea7fa763086492dc1fa40dd220",
+    "shared/diffusion-models/scheduler/scheduler-kernel.mjs": "352ae0cf9b3357ab41955ca3feab54eda046424451e0b2f810c2d5f167dbc64d",
+    "shared/diffusion-models/scheduler/scheduler.hike": "e0c099f609c6bd74097f350ffadefa159f65f1b3d3955957466ded46605f5f19",
+    "shared/diffusion-models/tensor-interop.mjs": "13c3595f0786a45a62d0a8739b6acd58d3025c80f7eaff4baf7314559665c1c1",
+    "shared/diffusion-models/api/build-info.py": "a48fd58b5e247799bdc0c468eca1c42db05ac70f9d267194afabc69fec24cf60",
+    "shared/diffusion-models/api/index.mjs": "39a6c77c9d0366072f03f53b2fdaa185802388fcd54232db0ee34c56a2b6c4b7",
+    "shared/diffusion-models/api/model-adapter.mjs": "968d34edaeafb5ec635b390c6b262edbcc31537751b0fe5f6b71c11b2adcdd81",
+    "shared/diffusion-models/api/safetensors.mjs": "ecb7e750a151489c9b37ffec75e0b784d808b0503ff2181c7b73907398422d7f",
+    "shared/diffusion-models/api/weight-port.mjs": "805d39cdd145df98f66b893ed377b114dad016cf11e4441f56a332991509bcef",
+    "shared/diffusion-models/api/worker.mjs": "22855fab6a6d831ee8e7cb7d12746301a25738fedc18ec36bdc8bef15aa152ce",
+    "shared/diffusion-models/execution/test-self-residual-inplace-browser.mjs": "bcebcf0028b11677d46eddb2fb816c3e27607a3c482e1ad98325e6c2264dde0d"
+  },
+  "testOnlyInstrumentedVariantsSHA256": {
+    "self-residual-inplace": "522d826048c7dc9c7d81c7068f7c7cca7530468c4ff86cface030a808a5a4f34",
+    "self-residual-separate": "4a69415c06526e1010fa4f4d315e93f33e87702e7517077dcca2154c4d0414b1"
+  },
+  "instrumentation": "Captured candidate adds private test method calling actual selfAttention and chunk emitter; separate-output variant changes only output storage and logical span accounting",
+  "driverSHA256": "b9e405ed90be8c2e62f1e633cc938263da54cda9bcf4cb9e1bd97c4e49396059",
+  "browserVersion": "154.0.8037.57",
+  "pageErrors": [],
+  "model": {
+    "name": "Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+    "bytes": 15574833216,
+    "fullFileHashRecomputed": false
+  },
+  "sourcesServedFromCapturedBytes": true,
+  "sourceBytesUnchangedDuringRun": true,
+  "passed": true,
+  "result": {
+    "passed": true,
+    "scope": "bounded LOW block0 real-weight self attention on explicit259-row deterministic hidden fixture; not full40, native Text provenance or original73947 acceptance",
+    "totalTokens": 259,
+    "heads": 40,
+    "queryRows": 128,
+    "keyRows": 256,
+    "allQueries": true,
+    "allKeys": true,
+    "inputSHA256": "fb1b10f6f575b0edd76330ead07c12e206e02859f5e0a59bfe2701ecec02ed73",
+    "positionsSHA256": "93a4aebd15447025b64be0cdd66297cbcd6518a23a165fb97d530b8e1c07f4fa",
+    "sourceIdsSHA256": "3d79d78067c932d2ce3d48f5caeccc968d8642bde8216ad11dd6d4d93530b173",
+    "bitIdentical": true,
+    "independentF64Residual": {
+      "abs": 1e-05,
+      "rel": 1e-06,
+      "elements": 2652160,
+      "failed": 0,
+      "maxAbsolute": 4.4528860598802567e-08,
+      "maxNormalizedToGate": 0.004236786498640275
+    },
+    "results": [
+      {
+        "variant": "separate",
+        "outputSHA256": "1ed83c1c0a5a649b3a7393da272ea2972b01a6f3ff7fe11d0d360f8d86f06c31",
+        "chunks": [
+          {
+            "name": "postModulated",
+            "start": 0,
+            "rows": 128,
+            "sha256": "6bc30ede0958a505d8448ab75ddab5c313d900879b23a8de7ec6664fe7120912"
+          },
+          {
+            "name": "kProjected",
+            "start": 0,
+            "rows": 128,
+            "sha256": "5148ece4856db38c29d6c6a8c255774d6128230f74ed29647a1c78d309b33dd1"
+          },
+          {
+            "name": "kNormalized",
+            "start": 0,
+            "rows": 128,
+            "sha256": "ca982d0281067057890620432af0a1b0de81906961a41273a15438c7a5e8adb0"
+          },
+          {
+            "name": "k",
+            "start": 0,
+            "rows": 128,
+            "sha256": "95b1bc9f57adad1a83a9ab97397ffe2614caad26ed125e4e6c05495ce9086d26"
+          },
+          {
+            "name": "v",
+            "start": 0,
+            "rows": 128,
+            "sha256": "ef5cb0c624c07bed3533b04229d87374a1b544260f968015a40d3dc1e10ecb7a"
+          },
+          {
+            "name": "postModulated",
+            "start": 128,
+            "rows": 128,
+            "sha256": "4044c2513126cb06f0049c731ea9fcfe712a5f05d9f03b39d199b973380431d7"
+          },
+          {
+            "name": "kProjected",
+            "start": 128,
+            "rows": 128,
+            "sha256": "a6896865fa1dc869e6f7e26e4e22dce39ab9627ad7fa852d033123ee5f9b66e0"
+          },
+          {
+            "name": "kNormalized",
+            "start": 128,
+            "rows": 128,
+            "sha256": "6f705ca3b8983b84f29da76178f59e5ed421b1b3440b10020a74bf8697a120d1"
+          },
+          {
+            "name": "k",
+            "start": 128,
+            "rows": 128,
+            "sha256": "7e32bbb20ad9f18aef5130d1fd5fcafbd801ead268866367b871c6ca221c19fe"
+          },
+          {
+            "name": "v",
+            "start": 128,
+            "rows": 128,
+            "sha256": "a8507c7657dfe35ca58cc378873a3cefae986b8b17ef5c0b49a541345bae9a14"
+          },
+          {
+            "name": "postModulated",
+            "start": 256,
+            "rows": 3,
+            "sha256": "016d8242a1c647937c5a76439f80ce126667e001609d3e889a023b77570f0559"
+          },
+          {
+            "name": "kProjected",
+            "start": 256,
+            "rows": 3,
+            "sha256": "a91703697ded28353a93cd251507672f04fa0ba9c0b97c777481e3a932bbbe45"
+          },
+          {
+            "name": "kNormalized",
+            "start": 256,
+            "rows": 3,
+            "sha256": "b8cd7e89bd016a4f530b18071f618f9c61780e357ef24a00d89aabbe30f1361a"
+          },
+          {
+            "name": "k",
+            "start": 256,
+            "rows": 3,
+            "sha256": "9e97c5b6aaacc0b555d99b918bda23d2dd030ec174400d79b9a9669a353362cb"
+          },
+          {
+            "name": "v",
+            "start": 256,
+            "rows": 3,
+            "sha256": "0c431e702592c3a50943dc2dc467387a08cef3b2bec50f13c39cf4b43a302703"
+          },
+          {
+            "name": "qProjected",
+            "start": 0,
+            "rows": 128,
+            "sha256": "f95e04d7fe1d52c4169496ebb5334f3954abb0448e94e480058e7a1f5fea2cf7"
+          },
+          {
+            "name": "qNormalized",
+            "start": 0,
+            "rows": 128,
+            "sha256": "21545844bbbe641456172bf2a3467b41db5db57dd5779c470b5249bced83c40f"
+          },
+          {
+            "name": "q",
+            "start": 0,
+            "rows": 128,
+            "sha256": "8133d7f00f88088862388acfd3fed542db96cc21a95165a59b7cc24397d4a5ae"
+          },
+          {
+            "name": "selfAttention",
+            "start": 0,
+            "rows": 128,
+            "sha256": "0d64fa09942709e98d860c2d67c8034cbf628e6119412bd1485141b70c2084b9"
+          },
+          {
+            "name": "oProjection",
+            "start": 0,
+            "rows": 128,
+            "sha256": "f91c1bfedd457cde858aae791ab40a2a8c3501cb608b596b4b49fba4f99f9a35"
+          },
+          {
+            "name": "selfResidual",
+            "start": 0,
+            "rows": 128,
+            "sha256": "838a7f0b38c28b70ec2ef158d3873f3b7f573159a313d8ddb065e40c3ae740ab"
+          },
+          {
+            "name": "qProjected",
+            "start": 128,
+            "rows": 128,
+            "sha256": "a448e07e77be4ca47f90c51a0075820db448b0d357cd596e04456f0f705c4a79"
+          },
+          {
+            "name": "qNormalized",
+            "start": 128,
+            "rows": 128,
+            "sha256": "41f0951837a2e1b98adbec4d0311c3ccb35c509d5fca2dc46d0a65c20788ada2"
+          },
+          {
+            "name": "q",
+            "start": 128,
+            "rows": 128,
+            "sha256": "003a1c8c65de237ad73b830051a3fbc0641d29a6b9e96848ef59a87cf1a82694"
+          },
+          {
+            "name": "selfAttention",
+            "start": 128,
+            "rows": 128,
+            "sha256": "3b6d55955a1a3009156cf8029d70d65932a3bba05118b20d8aec77bf1b4449b7"
+          },
+          {
+            "name": "oProjection",
+            "start": 128,
+            "rows": 128,
+            "sha256": "ccd1c06ea6f673cd2f62bfbdce16b56aa00d87b05907ad2fb112ec8619456030"
+          },
+          {
+            "name": "selfResidual",
+            "start": 128,
+            "rows": 128,
+            "sha256": "bd5a6c68a30a2b5e0a8a73bc37a50307328aea1befefa5144063f78d07e3437e"
+          },
+          {
+            "name": "qProjected",
+            "start": 256,
+            "rows": 3,
+            "sha256": "39db30c354cc4c9f5103cd764ac02267e247a0fd5013f4ceb62b5db5763ca5b1"
+          },
+          {
+            "name": "qNormalized",
+            "start": 256,
+            "rows": 3,
+            "sha256": "675a82596f21a01aa2bcc2d844cf4529ef2920239c67fcd4072c28835e1159c1"
+          },
+          {
+            "name": "q",
+            "start": 256,
+            "rows": 3,
+            "sha256": "6c78fc6aebd5654b880347745630362b44beede6e3ee1af832f956e07c28be0e"
+          },
+          {
+            "name": "selfAttention",
+            "start": 256,
+            "rows": 3,
+            "sha256": "697589122e7fd4d109c50fe670c8d590d990e17a1d8bc24a5f69a96b716e15e3"
+          },
+          {
+            "name": "oProjection",
+            "start": 256,
+            "rows": 3,
+            "sha256": "59f6cdc689cf0d3c0bb9458872464d7cf6251998c75906698443c70f37458e33"
+          },
+          {
+            "name": "selfResidual",
+            "start": 256,
+            "rows": 3,
+            "sha256": "b44ada242664bba4051f7e2efc3740fb600605adba997c1141caac1be4ada927"
+          }
+        ],
+        "progress": [
+          {
+            "stage": "self-k",
+            "done": 128
+          },
+          {
+            "stage": "self-v",
+            "done": 128
+          },
+          {
+            "stage": "self-k",
+            "done": 256
+          },
+          {
+            "stage": "self-v",
+            "done": 256
+          },
+          {
+            "stage": "self-k",
+            "done": 259
+          },
+          {
+            "stage": "self-v",
+            "done": 259
+          },
+          {
+            "stage": "self-attention",
+            "done": 128
+          },
+          {
+            "stage": "self-attention",
+            "done": 256
+          },
+          {
+            "stage": "self-attention",
+            "done": 259
+          }
+        ],
+        "hiddenStores": 4,
+        "peakHiddenStoreBytes": 21217280,
+        "stageWeightCacheBytes": 0,
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 12,
+          "attentionRuns": 6,
+          "inputCopyBytes": 26521600,
+          "outputCopyBytes": 26604480,
+          "runtimeInputSpanBytes": 1332717440,
+          "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+          "preparedWeights": 0,
+          "preparedWeightBytes": 0,
+          "peakPreparedWeightBytes": 209715200,
+          "preparedWeightCopies": 0,
+          "preparedWeightTransfers": 4,
+          "preparedWeightCopyBytes": 0,
+          "preparedWeightTransferBytes": 419430400,
+          "preparedWeightCreations": 4,
+          "preparedWeightReleases": 4,
+          "attentionQueries": {
+            "queryCreations": 3,
+            "queryPreparationsCompleted": 3,
+            "queryReleases": 3,
+            "stepAttempts": 6,
+            "stepsCompleted": 6,
+            "failedSteps": 0,
+            "preparedSteps": 6,
+            "qSnapshotBytes": 5304320,
+            "kvSnapshotBytes": 0,
+            "finishCopyBytes": 5387200,
+            "currentCpuTensorSpanBytes": 0,
+            "peakCpuTensorSpanBytes": 7946240,
+            "ownedTensors": 0,
+            "peakOwnedTensors": 7,
+            "unknownSizedTensors": 0,
+            "cleanupFailures": 0,
+            "ownedQueryCount": 0,
+            "cleanupPending": false,
+            "disposed": false,
+            "queries": [],
+            "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+          },
+          "preparedAttentionKV": {
+            "creations": 2,
+            "releases": 2,
+            "currentBytes": 0,
+            "peakBytes": 10608640,
+            "copies": 0,
+            "copyBytes": 0,
+            "transfers": 2,
+            "transferBytes": 10608640,
+            "activeLeases": 0,
+            "peakLeases": 1,
+            "cleanupFailures": 0,
+            "ownedPairs": 0,
+            "cleanupPending": false,
+            "disposed": false,
+            "layout": "compact head-major [40,K<=256,128]",
+            "binding": "CPU ort.Tensor runtime-input; native ORT/WASM upload not eliminated or measured"
+          },
+          "timings": {
+            "snapshotMs": 36.200000000186265,
+            "weightPrepareMs": 293.3999999994412,
+            "kvPrepareMs": 11.099999999627471,
+            "kvReleaseMs": 0,
+            "sessionRunMs": 3131.10000000149,
+            "linearSessionRunMs": 3015.900000001304,
+            "attentionSessionRunMs": 115.20000000018626,
+            "outputCopyMs": 130.99999999813735,
+            "tensorCleanupMs": 0.9999999990686774,
+            "preparedReleaseMs": 0.09999999962747097,
+            "ownerDisposeMs": 0
+          },
+          "resourceProfile": {
+            "numThreads": 1,
+            "firstInitialization": true,
+            "pthreadCreationsObserved": 0,
+            "coiRequired": false,
+            "freshRealmRequiredForProfileChange": true
+          },
+          "nativeWasmCopiesMeasured": false,
+          "sessionCreations": 2
+        }
+      },
+      {
+        "variant": "inplace",
+        "outputSHA256": "1ed83c1c0a5a649b3a7393da272ea2972b01a6f3ff7fe11d0d360f8d86f06c31",
+        "chunks": [
+          {
+            "name": "postModulated",
+            "start": 0,
+            "rows": 128,
+            "sha256": "6bc30ede0958a505d8448ab75ddab5c313d900879b23a8de7ec6664fe7120912"
+          },
+          {
+            "name": "kProjected",
+            "start": 0,
+            "rows": 128,
+            "sha256": "5148ece4856db38c29d6c6a8c255774d6128230f74ed29647a1c78d309b33dd1"
+          },
+          {
+            "name": "kNormalized",
+            "start": 0,
+            "rows": 128,
+            "sha256": "ca982d0281067057890620432af0a1b0de81906961a41273a15438c7a5e8adb0"
+          },
+          {
+            "name": "k",
+            "start": 0,
+            "rows": 128,
+            "sha256": "95b1bc9f57adad1a83a9ab97397ffe2614caad26ed125e4e6c05495ce9086d26"
+          },
+          {
+            "name": "v",
+            "start": 0,
+            "rows": 128,
+            "sha256": "ef5cb0c624c07bed3533b04229d87374a1b544260f968015a40d3dc1e10ecb7a"
+          },
+          {
+            "name": "postModulated",
+            "start": 128,
+            "rows": 128,
+            "sha256": "4044c2513126cb06f0049c731ea9fcfe712a5f05d9f03b39d199b973380431d7"
+          },
+          {
+            "name": "kProjected",
+            "start": 128,
+            "rows": 128,
+            "sha256": "a6896865fa1dc869e6f7e26e4e22dce39ab9627ad7fa852d033123ee5f9b66e0"
+          },
+          {
+            "name": "kNormalized",
+            "start": 128,
+            "rows": 128,
+            "sha256": "6f705ca3b8983b84f29da76178f59e5ed421b1b3440b10020a74bf8697a120d1"
+          },
+          {
+            "name": "k",
+            "start": 128,
+            "rows": 128,
+            "sha256": "7e32bbb20ad9f18aef5130d1fd5fcafbd801ead268866367b871c6ca221c19fe"
+          },
+          {
+            "name": "v",
+            "start": 128,
+            "rows": 128,
+            "sha256": "a8507c7657dfe35ca58cc378873a3cefae986b8b17ef5c0b49a541345bae9a14"
+          },
+          {
+            "name": "postModulated",
+            "start": 256,
+            "rows": 3,
+            "sha256": "016d8242a1c647937c5a76439f80ce126667e001609d3e889a023b77570f0559"
+          },
+          {
+            "name": "kProjected",
+            "start": 256,
+            "rows": 3,
+            "sha256": "a91703697ded28353a93cd251507672f04fa0ba9c0b97c777481e3a932bbbe45"
+          },
+          {
+            "name": "kNormalized",
+            "start": 256,
+            "rows": 3,
+            "sha256": "b8cd7e89bd016a4f530b18071f618f9c61780e357ef24a00d89aabbe30f1361a"
+          },
+          {
+            "name": "k",
+            "start": 256,
+            "rows": 3,
+            "sha256": "9e97c5b6aaacc0b555d99b918bda23d2dd030ec174400d79b9a9669a353362cb"
+          },
+          {
+            "name": "v",
+            "start": 256,
+            "rows": 3,
+            "sha256": "0c431e702592c3a50943dc2dc467387a08cef3b2bec50f13c39cf4b43a302703"
+          },
+          {
+            "name": "qProjected",
+            "start": 0,
+            "rows": 128,
+            "sha256": "f95e04d7fe1d52c4169496ebb5334f3954abb0448e94e480058e7a1f5fea2cf7"
+          },
+          {
+            "name": "qNormalized",
+            "start": 0,
+            "rows": 128,
+            "sha256": "21545844bbbe641456172bf2a3467b41db5db57dd5779c470b5249bced83c40f"
+          },
+          {
+            "name": "q",
+            "start": 0,
+            "rows": 128,
+            "sha256": "8133d7f00f88088862388acfd3fed542db96cc21a95165a59b7cc24397d4a5ae"
+          },
+          {
+            "name": "selfAttention",
+            "start": 0,
+            "rows": 128,
+            "sha256": "0d64fa09942709e98d860c2d67c8034cbf628e6119412bd1485141b70c2084b9"
+          },
+          {
+            "name": "oProjection",
+            "start": 0,
+            "rows": 128,
+            "sha256": "f91c1bfedd457cde858aae791ab40a2a8c3501cb608b596b4b49fba4f99f9a35"
+          },
+          {
+            "name": "selfResidual",
+            "start": 0,
+            "rows": 128,
+            "sha256": "838a7f0b38c28b70ec2ef158d3873f3b7f573159a313d8ddb065e40c3ae740ab"
+          },
+          {
+            "name": "qProjected",
+            "start": 128,
+            "rows": 128,
+            "sha256": "a448e07e77be4ca47f90c51a0075820db448b0d357cd596e04456f0f705c4a79"
+          },
+          {
+            "name": "qNormalized",
+            "start": 128,
+            "rows": 128,
+            "sha256": "41f0951837a2e1b98adbec4d0311c3ccb35c509d5fca2dc46d0a65c20788ada2"
+          },
+          {
+            "name": "q",
+            "start": 128,
+            "rows": 128,
+            "sha256": "003a1c8c65de237ad73b830051a3fbc0641d29a6b9e96848ef59a87cf1a82694"
+          },
+          {
+            "name": "selfAttention",
+            "start": 128,
+            "rows": 128,
+            "sha256": "3b6d55955a1a3009156cf8029d70d65932a3bba05118b20d8aec77bf1b4449b7"
+          },
+          {
+            "name": "oProjection",
+            "start": 128,
+            "rows": 128,
+            "sha256": "ccd1c06ea6f673cd2f62bfbdce16b56aa00d87b05907ad2fb112ec8619456030"
+          },
+          {
+            "name": "selfResidual",
+            "start": 128,
+            "rows": 128,
+            "sha256": "bd5a6c68a30a2b5e0a8a73bc37a50307328aea1befefa5144063f78d07e3437e"
+          },
+          {
+            "name": "qProjected",
+            "start": 256,
+            "rows": 3,
+            "sha256": "39db30c354cc4c9f5103cd764ac02267e247a0fd5013f4ceb62b5db5763ca5b1"
+          },
+          {
+            "name": "qNormalized",
+            "start": 256,
+            "rows": 3,
+            "sha256": "675a82596f21a01aa2bcc2d844cf4529ef2920239c67fcd4072c28835e1159c1"
+          },
+          {
+            "name": "q",
+            "start": 256,
+            "rows": 3,
+            "sha256": "6c78fc6aebd5654b880347745630362b44beede6e3ee1af832f956e07c28be0e"
+          },
+          {
+            "name": "selfAttention",
+            "start": 256,
+            "rows": 3,
+            "sha256": "697589122e7fd4d109c50fe670c8d590d990e17a1d8bc24a5f69a96b716e15e3"
+          },
+          {
+            "name": "oProjection",
+            "start": 256,
+            "rows": 3,
+            "sha256": "59f6cdc689cf0d3c0bb9458872464d7cf6251998c75906698443c70f37458e33"
+          },
+          {
+            "name": "selfResidual",
+            "start": 256,
+            "rows": 3,
+            "sha256": "b44ada242664bba4051f7e2efc3740fb600605adba997c1141caac1be4ada927"
+          }
+        ],
+        "progress": [
+          {
+            "stage": "self-k",
+            "done": 128
+          },
+          {
+            "stage": "self-v",
+            "done": 128
+          },
+          {
+            "stage": "self-k",
+            "done": 256
+          },
+          {
+            "stage": "self-v",
+            "done": 256
+          },
+          {
+            "stage": "self-k",
+            "done": 259
+          },
+          {
+            "stage": "self-v",
+            "done": 259
+          },
+          {
+            "stage": "self-attention",
+            "done": 128
+          },
+          {
+            "stage": "self-attention",
+            "done": 256
+          },
+          {
+            "stage": "self-attention",
+            "done": 259
+          }
+        ],
+        "hiddenStores": 3,
+        "peakHiddenStoreBytes": 15912960,
+        "stageWeightCacheBytes": 0,
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 24,
+          "attentionRuns": 12,
+          "inputCopyBytes": 53043200,
+          "outputCopyBytes": 53208960,
+          "runtimeInputSpanBytes": 2665434880,
+          "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+          "preparedWeights": 0,
+          "preparedWeightBytes": 0,
+          "peakPreparedWeightBytes": 209715200,
+          "preparedWeightCopies": 0,
+          "preparedWeightTransfers": 8,
+          "preparedWeightCopyBytes": 0,
+          "preparedWeightTransferBytes": 838860800,
+          "preparedWeightCreations": 8,
+          "preparedWeightReleases": 8,
+          "attentionQueries": {
+            "queryCreations": 6,
+            "queryPreparationsCompleted": 6,
+            "queryReleases": 6,
+            "stepAttempts": 12,
+            "stepsCompleted": 12,
+            "failedSteps": 0,
+            "preparedSteps": 12,
+            "qSnapshotBytes": 10608640,
+            "kvSnapshotBytes": 0,
+            "finishCopyBytes": 10774400,
+            "currentCpuTensorSpanBytes": 0,
+            "peakCpuTensorSpanBytes": 7946240,
+            "ownedTensors": 0,
+            "peakOwnedTensors": 7,
+            "unknownSizedTensors": 0,
+            "cleanupFailures": 0,
+            "ownedQueryCount": 0,
+            "cleanupPending": false,
+            "disposed": false,
+            "queries": [],
+            "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+          },
+          "preparedAttentionKV": {
+            "creations": 4,
+            "releases": 4,
+            "currentBytes": 0,
+            "peakBytes": 10608640,
+            "copies": 0,
+            "copyBytes": 0,
+            "transfers": 4,
+            "transferBytes": 21217280,
+            "activeLeases": 0,
+            "peakLeases": 1,
+            "cleanupFailures": 0,
+            "ownedPairs": 0,
+            "cleanupPending": false,
+            "disposed": false,
+            "layout": "compact head-major [40,K<=256,128]",
+            "binding": "CPU ort.Tensor runtime-input; native ORT/WASM upload not eliminated or measured"
+          },
+          "timings": {
+            "snapshotMs": 63.70000000204891,
+            "weightPrepareMs": 589.5999999996275,
+            "kvPrepareMs": 17.40000000037253,
+            "kvReleaseMs": 0,
+            "sessionRunMs": 5746.200000000186,
+            "linearSessionRunMs": 5532.100000000559,
+            "attentionSessionRunMs": 214.09999999962747,
+            "outputCopyMs": 204.39999999850988,
+            "tensorCleanupMs": 1.3999999994412065,
+            "preparedReleaseMs": 0.09999999962747097,
+            "ownerDisposeMs": 0
+          },
+          "resourceProfile": {
+            "numThreads": 1,
+            "firstInitialization": true,
+            "pthreadCreationsObserved": 0,
+            "coiRequired": false,
+            "freshRealmRequiredForProfileChange": true
+          },
+          "nativeWasmCopiesMeasured": false,
+          "sessionCreations": 2
+        }
+      }
+    ],
+    "finalOperatorStats": {
+      "busy": false,
+      "disposed": false,
+      "cleanupPending": false,
+      "pendingTensors": 0,
+      "linearRuns": 24,
+      "attentionRuns": 12,
+      "inputCopyBytes": 53043200,
+      "outputCopyBytes": 53208960,
+      "runtimeInputSpanBytes": 2665434880,
+      "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+      "preparedWeights": 0,
+      "preparedWeightBytes": 0,
+      "peakPreparedWeightBytes": 209715200,
+      "preparedWeightCopies": 0,
+      "preparedWeightTransfers": 8,
+      "preparedWeightCopyBytes": 0,
+      "preparedWeightTransferBytes": 838860800,
+      "preparedWeightCreations": 8,
+      "preparedWeightReleases": 8,
+      "attentionQueries": {
+        "queryCreations": 6,
+        "queryPreparationsCompleted": 6,
+        "queryReleases": 6,
+        "stepAttempts": 12,
+        "stepsCompleted": 12,
+        "failedSteps": 0,
+        "preparedSteps": 12,
+        "qSnapshotBytes": 10608640,
+        "kvSnapshotBytes": 0,
+        "finishCopyBytes": 10774400,
+        "currentCpuTensorSpanBytes": 0,
+        "peakCpuTensorSpanBytes": 7946240,
+        "ownedTensors": 0,
+        "peakOwnedTensors": 7,
+        "unknownSizedTensors": 0,
+        "cleanupFailures": 0,
+        "ownedQueryCount": 0,
+        "cleanupPending": false,
+        "disposed": false,
+        "queries": [],
+        "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+      },
+      "preparedAttentionKV": {
+        "creations": 4,
+        "releases": 4,
+        "currentBytes": 0,
+        "peakBytes": 10608640,
+        "copies": 0,
+        "copyBytes": 0,
+        "transfers": 4,
+        "transferBytes": 21217280,
+        "activeLeases": 0,
+        "peakLeases": 1,
+        "cleanupFailures": 0,
+        "ownedPairs": 0,
+        "cleanupPending": false,
+        "disposed": false,
+        "layout": "compact head-major [40,K<=256,128]",
+        "binding": "CPU ort.Tensor runtime-input; native ORT/WASM upload not eliminated or measured"
+      },
+      "timings": {
+        "snapshotMs": 63.70000000204891,
+        "weightPrepareMs": 589.5999999996275,
+        "kvPrepareMs": 17.40000000037253,
+        "kvReleaseMs": 0,
+        "sessionRunMs": 5746.200000000186,
+        "linearSessionRunMs": 5532.100000000559,
+        "attentionSessionRunMs": 214.09999999962747,
+        "outputCopyMs": 204.39999999850988,
+        "tensorCleanupMs": 1.3999999994412065,
+        "preparedReleaseMs": 0.09999999962747097,
+        "ownerDisposeMs": 0
+      },
+      "resourceProfile": {
+        "numThreads": 1,
+        "firstInitialization": true,
+        "pthreadCreationsObserved": 0,
+        "coiRequired": false,
+        "freshRealmRequiredForProfileChange": true
+      },
+      "nativeWasmCopiesMeasured": false,
+      "sessionCreations": 2
+    }
+  }
+}

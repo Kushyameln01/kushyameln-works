@@ -132,8 +132,8 @@ def admit(native, reference, contract, contract_identity, source_commit=None):
         require(native.get('side') == public.get('side') == 'HIGH' and native.get('timestep') == public.get('timestep') == 1000,
                 'velocity00 comparison requires HIGH at first timestep1000')
         require(metadata.get('meaning') == 'bernini-flow-velocity:v1' and metadata.get('modelSha256') == model_ids[0], 'Flow-velocity meaning/model mismatch')
-        require(reference.get('operation') == 'sample', 'velocity00 must come from the fixed independent six-update reference')
-        name = 'velocity00'
+        require(reference.get('operation') in ['predict', 'sample'], 'Complete independent prediction or six-update reference required')
+        name = 'velocity' if reference['operation'] == 'predict' else 'velocity00'
     else:
         latent = metadata.get('latentContract', {})
         require(metadata.get('meaning') == 'wan21-raw-generated-sample:v1'
@@ -144,8 +144,18 @@ def admit(native, reference, contract, contract_identity, source_commit=None):
         require(reference.get('operation') == 'sample', 'Final sample requires the complete independent sampler reference')
         name = 'finalRaw'
     metrics = reference.get('metrics', [])
-    require(len(metrics) == 6 and [x.get('side') for x in metrics] == ['HIGH'] * 3 + ['LOW'] * 3,
-            'Independent HIGH3→LOW3 six-update reference required')
+    if reference.get('operation') == 'predict':
+        require(mode == 'predict' and len(metrics) == 1 and metrics[0].get('side') == 'HIGH', 'Single HIGH prediction reference required')
+        coverage = metrics[0].get('coverage', [])
+        expected = [(block, 'blockOutput', contract['totalTokens']) for block in range(40)]
+        expected += [(None, 'headAll', contract['totalTokens']), (None, 'prediction', math.prod(shape) // shape[-1])]
+        for block, stage, rows in expected:
+            selected = [entry for entry in coverage if entry.get('block') == block and entry.get('name') == stage]
+            require(len(selected) == 1 and selected[0].get('rows') == rows and selected[0].get('intervals') == [[0, rows]],
+                    'Independent prediction must complete all40 blocks, all-token head and full target unpatch: ' + stage)
+    else:
+        require(len(metrics) == 6 and [x.get('side') for x in metrics] == ['HIGH'] * 3 + ['LOW'] * 3,
+                'Independent HIGH3→LOW3 six-update reference required')
     require(all(x.get('totalTokens') == contract['totalTokens'] for x in metrics), 'Reference context token population mismatch')
     descriptor = reference['arrays'][name]
     require(shape == exact_shape(descriptor.get('shape')), 'Reference/native full shapes differ')
