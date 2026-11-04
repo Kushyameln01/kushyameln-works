@@ -137,9 +137,16 @@ Worker termination still requires the existing model reload. Another module's
 owned LoRA source/kernel is not disposed by Diffusion.
 
 A failed asynchronous host package release remains retained in the client.
-`inspect().cleanupRequired` and `retainedPackages` report that local obligation;
+`inspect().cleanupRequired`, `failedReleaseIDs` and `retainedPackages` report that
+local obligation, including a release failure while the port remains live;
 `dispose()` waits for in-progress release and retries failed release even after
 the port is closed. Disposal does not silently succeed while that cleanup fails.
+The final native proxy reference is released only after a live host acknowledgement.
+Concurrent attempts share one release, and retain is rejected while the last
+reference is ending. Failed live release keeps the native recovery fence until
+an actual retry succeeds. When the transport is closed, native teardown releases
+its local proxy without a dead RPC; the host client separately retains and retries
+its cleanup obligation.
 An unadopted preparation reply is cancelled by its package identity and its
 native candidate is rolled back/released. Cleanup can use its original candidate
 after admission cancellation; it cannot activate a new candidate.

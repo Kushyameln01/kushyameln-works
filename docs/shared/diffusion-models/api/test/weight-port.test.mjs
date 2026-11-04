@@ -92,6 +92,29 @@ test('host release failure retains its cleanup capability and disposal retries a
  }finally{p.releaseFailure=false;await client.dispose();server.close();await feed.dispose();}
 });
 
+test('live final-release failure keeps the native recovery fence until a real host retry succeeds',async()=>{
+ const {feed,client,server}=await fixture(),p=await packageOf(client),context=ctx(p.manifest);
+ try{
+  const candidate=await client.consumer.prepareLoad(p.pkg,context);await client.consumer.validate(candidate,context);await client.consumer.commit(candidate,context);await client.consumer.releaseCandidate(candidate,context);await p.pkg.release();assert.equal(p.refs,1);
+  p.releaseFailure=true;await assert.rejects(client.clear(),/injected release failure/);assert.equal(feed.stats().cleanupPending,1);
+  await assert.rejects(client.clear(),/injected release failure/,'A second failed host release must not become a successful local no-op');
+  assert.equal(feed.stats().cleanupPending,1);assert.equal(client.inspect().cleanupRequired,true);assert.equal(client.inspect().failedReleaseIDs.length,1);assert.equal(p.refs,1);
+  const unprepared={...context,isCurrent:()=>true};await assert.rejects(feed.consumer.prepareLoad(p.pkg,unprepared),{code:'RECOVERY_REQUIRED'});
+  p.releaseFailure=false;assert.equal((await client.clear()).restored,true);assert.equal(p.refs,0);assert.equal(feed.stats().cleanupPending,0);assert.equal(client.inspect().cleanupRequired,false);assert.deepEqual(client.inspect().failedReleaseIDs,[]);await client.dispose();
+ }finally{p.releaseFailure=false;await client.dispose();server.close();await feed.dispose();}
+});
+
+test('concurrent final proxy release shares one host acknowledgement and rejects retain while ending',async()=>{
+ const c=new MessageChannel();let native,allowRelease,hostCalls=0,refs=1;
+ const feed={describe:()=>({epoch:0}),stats:()=>({activePackageHash:null}),baseProvider:{},consumer:{currentEpoch:()=>0,async prepareLoad(pkg){native=pkg.retain('retained-native');return {};},async rollback(){},async releaseCandidate(){await native.release();}},async clear(){return {restored:true};}};
+ const server=attachDiffusionWeightServer(c.port1,feed),client=await createDiffusionWeightClient({port:c.port2});
+ const pkg={describe:()=>({}),isValid:()=>true,retain(){refs++;return {describe:this.describe,isValid:this.isValid,readBlock(){},async release(){hostCalls++;await new Promise(resolve=>{allowRelease=resolve;});refs--;}};},async release(){refs--;}};
+ try{
+  const candidate=await client.consumer.prepareLoad(pkg);await pkg.release();const first=native.release(),second=native.release();assert.equal(first,second);assert.throws(()=>native.retain('too-late'),/released|ending|valid/i);
+  while(!allowRelease)await new Promise(resolve=>setImmediate(resolve));assert.equal(hostCalls,1);assert.equal(refs,1);allowRelease();await Promise.all([first,second]);assert.equal(refs,0);assert.equal(hostCalls,1);await native.release();assert.equal(hostCalls,1);await client.consumer.releaseCandidate(candidate);await client.dispose();
+ }finally{allowRelease?.();server.close();await client.dispose();}
+});
+
 test('a remotely completed clear invalidates old ownership before a stale post-reply guard throws',async()=>{
  const feed=await createFullModelWeightFeed({source:source()}),c=new MessageChannel();let current=true;
  const server=attachDiffusionWeightServer(c.port1,{...feed,async clear(context){const value=await feed.clear(context);current=false;return value;}}),client=await createDiffusionWeightClient({port:c.port2});

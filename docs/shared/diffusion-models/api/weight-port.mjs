@@ -88,14 +88,28 @@ export function attachDiffusionWeightServer(port,feed,{isCurrent=()=>true,bindin
   if(id!==undefined){candidates.delete(id);candidatePackages.delete(id);}
  }
  function packageProxy(packageId,manifest){
-  let refs=1,ended=false;
-  function cap(){let released=false;const valid=()=>!released&&!ended&&rpc.isValid();return Object.freeze({
+  let refs=1,ended=false,ending=false;
+  function cap(){let released=false,releaseTask=null;const valid=()=>!released&&!ended&&!ending&&rpc.isValid();return Object.freeze({
    describe(){if(!valid())throw error('WEIGHT_PACKAGE_RELEASED','Remote package released');return structuredClone(manifest);},
    isValid:valid,
    retain(ownerId){if(!valid()||typeof ownerId!=='string'||!ownerId)throw error('WEIGHT_PACKAGE_RELEASED','Valid remote package and owner required');refs++;return cap();},
    async readBlock(weightId,offset,count,ctx={}){if(!valid())throw error('WEIGHT_PACKAGE_RELEASED','Remote package released');guard(ctx);range(offset,count);const value=await rpc.call('package.readBlock',[packageId,weightId,offset,count,context(ctx)],{signal:ctx.signal});guard(ctx);if(!valid())throw error('WEIGHT_PACKAGE_RELEASED','Remote package released during read');return block(value,count);},
-   async release(){if(released)return;released=true;if(--refs===0&&!ended){ended=true;if(rpc.isValid())await rpc.call('package.release',[packageId]);}},
-   stats:()=>({references:refs,released:ended,remote:true})
+   release(){
+    if(released)return Promise.resolve();if(releaseTask)return releaseTask;
+    if(refs>1){refs--;released=true;return Promise.resolve();}
+    // Keep the final local capability until a live peer acknowledges its real
+    // release. A failed RPC must leave the native cleanup fence retryable.
+    ending=true;releaseTask=Promise.resolve().then(async()=>{
+     try{
+      if(rpc.isValid())try{await rpc.call('package.release',[packageId]);}catch(cause){if(!rpc.stats().closed)throw cause;}
+      else if(!rpc.stats().closed)rpc.close(error('STALE_MODEL','Package connection lost its model session'));
+      // A closed transport has a different owner: host onClose retains and
+      // retries its package cleanup. Native unload must not await that dead RPC.
+      refs--;released=true;ended=true;
+     }finally{ending=false;}
+    });releaseTask.catch(()=>{releaseTask=null;});return releaseTask;
+   },
+   stats:()=>({references:refs,released:ended,ending,remote:true})
   });}return cap();
  }
  const handlers={
@@ -134,13 +148,14 @@ export function attachDiffusionWeightServer(port,feed,{isCurrent=()=>true,bindin
 /** Host side adapter matching the latest standalone LoRA base/consumer APIs.
  * Owned package functions remain on this side; nested reads use this duplex port. */
 export async function createDiffusionWeightClient({port,binding}={}){
- const packages=new Map(),releases=new Map(),candidates=new WeakMap();let serial=0,currentEpoch=0,authorityGeneration=0,closed=false,rpc,description,closingCleanup=null,lastCleanupError=null;
+ const packages=new Map(),releases=new Map(),failedReleases=new Map(),candidates=new WeakMap();let serial=0,currentEpoch=0,authorityGeneration=0,closed=false,rpc,description,closingCleanup=null,lastCleanupError=null;
+ const updateCleanup=()=>{lastCleanupError=failedReleases.size?new AggregateError([...failedReleases.values()],'Host completed-package release requires retry'):null;};
  async function releasePackage(id){
   if(releases.has(id))return releases.get(id);const pkg=packages.get(id);if(!pkg)return;
-  const pending=Promise.resolve().then(async()=>{await pkg.release();if(packages.get(id)===pkg)packages.delete(id);});releases.set(id,pending);
+  const pending=Promise.resolve().then(async()=>{await pkg.release();if(packages.get(id)===pkg)packages.delete(id);failedReleases.delete(id);updateCleanup();}).catch(cause=>{failedReleases.set(id,cause);updateCleanup();throw cause;});releases.set(id,pending);
   try{await pending;}finally{releases.delete(id);}
  }
- async function releasePackages(){const results=await Promise.allSettled([...packages.keys()].map(releasePackage)),errors=results.filter(value=>value.status==='rejected').map(value=>value.reason);if(errors.length){lastCleanupError=new AggregateError(errors,'Host completed-package release requires retry');throw lastCleanupError;}lastCleanupError=null;}
+ async function releasePackages(){const results=await Promise.allSettled([...packages.keys()].map(releasePackage)),errors=results.filter(value=>value.status==='rejected').map(value=>value.reason);if(errors.length)throw lastCleanupError??new AggregateError(errors,'Host completed-package release requires retry');updateCleanup();}
  const handlers={
   'package.readBlock':async([id,weightId,offset,count,metadata],{signal})=>{range(offset,count);const pkg=packages.get(id);if(!pkg||pkg.isValid()!==true)throw error('WEIGHT_PACKAGE_RELEASED','Completed package capability is unavailable');return block(await pkg.readBlock(weightId,offset,count,{...metadata,signal}),count);},
   'package.release':async([id])=>{await releasePackage(id);return {released:true};}
@@ -177,7 +192,7 @@ export async function createDiffusionWeightClient({port,binding}={}){
   binding:structuredClone(description.binding),describe:()=>call('describe'),
   baseProvider:Object.freeze({describe:()=>call('base.describe'),readBlock:async(weightId,offset,count,ctx={})=>{range(offset,count);return block(await call('base.readBlock',[weightId,offset,count,context(ctx)],ctx),count);}}),
   consumer,clear:(ctx={})=>{authorityGeneration++;return call('clear',[context(ctx)],ctx);},stats:()=>call('stats'),
-  inspect:()=>({closed,retainedPackages:packages.size,pendingReleases:releases.size,cleanupRequired:!!lastCleanupError,lastCleanupError:lastCleanupError?wireError(lastCleanupError):null}),
+  inspect:()=>({closed,retainedPackages:packages.size,pendingReleases:releases.size,cleanupRequired:failedReleases.size>0,failedReleaseIDs:[...failedReleases.keys()],lastCleanupError:lastCleanupError?wireError(lastCleanupError):null}),
   async dispose(){
    if(!closed){try{await call('close',[{}]);}catch(cause){if(!closed&&rpc.isValid()&&!['STALE_MODEL','WEIGHT_PORT_CLOSED'].includes(cause?.code))throw cause;rpc.close(cause);}rpc.close();}
    await closingCleanup?.catch(()=>{});await releasePackages();
