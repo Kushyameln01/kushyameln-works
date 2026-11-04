@@ -16,9 +16,9 @@ class TorchCascadeOrder(unittest.TestCase):
         spec.loader.exec_module(module)
         return module
 
-    def test_avx512_cascade_preserves_the_source_chunk_and_lane_order(self):
-        # Hand-derived for Torch4096/AVX512: chunk0 loses15 unit addends;
-        # chunk totals, ILP4 and lane16 addition yield100004080, not100000000.
+    def test_avx2_cascade_preserves_the_source_chunk_and_lane_order(self):
+        # Hand-derived for Torch4096/AVX2: chunk0 loses15 unit addends;
+        # chunk totals, ILP4 and lane8 addition yield100004080, not100000000.
         values = np.ones((1, 4096), dtype=np.float32)
         values[0, 0] = 100000000.
         result = self.target().torch_cascade_mean_f32(values)
@@ -31,6 +31,13 @@ class TorchCascadeOrder(unittest.TestCase):
         np.testing.assert_array_equal(result, np.array([[1.], [2048.5]], dtype=np.float32))
         with self.assertRaisesRegex(ValueError, '4096'):
             self.target().torch_cascade_mean_f32(values[:, :2048])
+
+    def test_sum_kernel_uses_avx2_fallback_even_when_cpu_capability_is_avx512(self):
+        # AVX2 puts these four values in four ILP vectors, rounding each4 away.
+        # AVX512 groups8+24 into another lane, yielding an incorrect +8 result.
+        values = np.zeros((1, 4096), dtype=np.float32)
+        values[0, [0, 8, 16, 24]] = [100000000., 4., 4., 4.]
+        self.assertEqual(float(self.target().torch_cascade_mean_f32(values)[0, 0]), 24414.0625)
 
 
 if __name__ == '__main__':

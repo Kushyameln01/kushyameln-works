@@ -4,7 +4,9 @@
 Torch2.6.0 CPU source2236df1770800ffea5697b11b0bb0d910b2e59e1:
 aten/src/ATen/native/ReduceOps.cpp mean_out uses sum_out(...).div_(4096).
 aten/src/ATen/native/cpu/SumKernel.cpp multi_row_sum/row_sum/
-vectorized_inner_sum define the four-level, ILP4, AVX512 lane16 order used here.
+vectorized_inner_sum define the four-level, ILP4, AVX2 lane8 order used here.
+DispatchStub.h REGISTER_DISPATCH registers nullptr for AVX512 unless explicitly
+opted in; SumKernel lacks that opt-in, so actual CPU capability AVX512 falls back.
 This preserves float32 at every operation. Float64 is used only for error metrics.
 Preparation and native stages are explicit; importing this module runs no model.
 """
@@ -36,26 +38,26 @@ def record(path):
 
 
 def torch_cascade_mean_f32(values):
-    """Exact4096-element SumKernel AVX512 order, then F32 division by4096."""
+    """Exact4096-element SumKernel AVX2 order, then F32 division by4096."""
     import numpy as np
     values = np.asarray(values)
     if values.dtype != np.float32 or values.shape[-1] != WIDTH:
         raise ValueError('Expected float32 rows of4096 values')
-    rows = values.reshape(-1, 4, 16, 4, 16)
-    # multi_row_sum<vec16,ilp4>: sixteen sequential steps per cascade chunk.
-    chunks = np.zeros((rows.shape[0], 4, 4, 16), dtype=np.float32)
+    rows = values.reshape(-1, 8, 16, 4, 8)
+    # multi_row_sum<vec8,ilp4>: sixteen sequential steps per cascade chunk.
+    chunks = np.zeros((rows.shape[0], 8, 4, 8), dtype=np.float32)
     for step in range(16):
         chunks = np.add(chunks, rows[:, :, step], dtype=np.float32)
-    partial = np.zeros((rows.shape[0], 4, 16), dtype=np.float32)
-    for chunk in range(4):
+    partial = np.zeros((rows.shape[0], 4, 8), dtype=np.float32)
+    for chunk in range(8):
         partial = np.add(partial, chunks[:, chunk], dtype=np.float32)
     # row_sum combines the four ILP vectors in their original order.
     vector = partial[:, 0].copy()
     for group in range(1, 4):
         vector = np.add(vector, partial[:, group], dtype=np.float32)
-    # vectorized_inner_sum stores lanes, then adds each of16 scalar lanes.
+    # vectorized_inner_sum stores lanes, then adds each of8 scalar lanes.
     total = np.zeros(rows.shape[0], dtype=np.float32)
-    for lane in range(16):
+    for lane in range(8):
         total = np.add(total, vector[:, lane], dtype=np.float32)
     return np.divide(total, np.float32(WIDTH), dtype=np.float32).reshape(*values.shape[:-1], 1)
 
@@ -79,10 +81,10 @@ def cascade_nodes(square, output, onnx):
         nodes.append(h.make_node('Constant', [], [name], name=name,
                                 value=h.make_tensor(name + '-value', dtype, [len(values)], values)))
         return name
-    shape = constant('cascade-input-shape', [0, 0, 4, 16, 4, 16])
+    shape = constant('cascade-input-shape', [0, 0, 8, 16, 4, 8])
     nodes.append(h.make_node('Reshape', [square, shape], ['cascade-input'], name='cascade-input'))
     current = 'cascade-input'
-    for stage, axis, count in [('step', 3, 16), ('chunk', 2, 4), ('ilp', 4, 4), ('lane', 5, 16)]:
+    for stage, axis, count in [('step', 3, 16), ('chunk', 2, 8), ('ilp', 4, 4), ('lane', 5, 8)]:
         names = ['cascade-' + stage + '-' + str(index) for index in range(count)]
         nodes.append(h.make_node('Split', [current], names, axis=axis, name='cascade-split-' + stage))
         current = names[0]
@@ -117,10 +119,10 @@ def norm_graphs(block_path, source_weight, onnx):
     outputs = {'square': prefix + 'Pow_output_0', 'mean': prefix + 'ReduceMean_output_0',
                'inverse': prefix + 'Div_output_0', 'normalized': prefix + 'Mul_1_output_0'}
     result = {}
-    for variant in ['original', 'torch-avx512-cascade']:
+    for variant in ['original', 'torch-avx2-cascade']:
         nodes = []
         for node in selected:
-            if variant == 'torch-avx512-cascade' and node.name == prefix + 'ReduceMean':
+            if variant == 'torch-avx2-cascade' and node.name == prefix + 'ReduceMean':
                 nodes.extend(cascade_nodes(node.input[0], node.output[0], onnx))
             else:
                 nodes.append(node)
@@ -171,6 +173,8 @@ def prepare(args):
               'newFullModelRuns': 0, 'newModelExports': 0, 'sourceNormOperators': 0,
               'torchVersion': torch.__version__, 'torchGitVersion': torch.version.git_version,
               'cpuCapability': torch.backends.cpu.get_cpu_capability(), 'sourceOracle': record(args.checkpoints / 'trace-source-results.json')}
+    report['sumKernelDispatch'] = 'AVX2 fallback; REGISTER_DISPATCH leaves AVX512 null for SumKernel'
+    report['sumVectorLanes'] = 8
     report['manifest'] = record(args.bundle / 'manifest.json')
     report['originalModel'] = {'path': str(args.model), 'bytes': args.model.stat().st_size,
                                'sha256': manifest['modelSha256'], 'wholeFileHashRecomputed': False,
@@ -209,6 +213,50 @@ def prepare(args):
     report['passed'] = True
     (args.output / 'source-results.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps({'passed': True, 'sourceNormOperators': len(report['cases']), 'newFullModelRuns': 0,
+                      'cascadeMeanBitwiseMatches': [case['numpyCascadeVsTorchMean']['bitwiseEqual'] for case in report['cases']]}))
+
+
+def retarget(args):
+    """Reuse every saved independent reference; only replace diagnostic graphs."""
+    sys.path.insert(0, str(args.deps))
+    import numpy as np
+    import onnx
+    original = json.loads((args.reference / 'source-results.json').read_text())
+    manifest = json.loads((args.bundle / 'manifest.json').read_text())
+    if not original['passed'] or record(args.bundle / 'manifest.json')['sha256'] != original['manifest']['sha256']:
+        raise ValueError('Completed matching original norm references required')
+    report = copy.deepcopy(original)
+    report.update(executionSourceSha=args.execution_source_sha,
+                  referenceExecutionSourceSha=original['executionSourceSha'],
+                  reusedSourceReport=record(args.reference / 'source-results.json'),
+                  reusedSourceNormOperators=len(original['cases']), sourceNormOperators=0,
+                  sourceClosure=[committed(path, args.execution_source_sha) for path in [Path(__file__), HERE / 'diagnose_block.py']],
+                  reusedSourceClosure=original['sourceClosure'], sumVectorLanes=8,
+                  sumKernelDispatch='AVX2 fallback; REGISTER_DISPATCH leaves AVX512 null for SumKernel')
+    args.output.mkdir()
+    for case in report['cases']:
+        if case['index'] not in args.layers:
+            raise ValueError('Unexpected source norm case')
+        for value in [case['input'], *case['reference'].values(), *case['graphs'].values()]:
+            if record(value['path'])['sha256'] != value['sha256']:
+                raise ValueError('Saved independent norm data/graph changed')
+        graph = onnx.load_from_string(Path(case['graphs']['original']['path']).read_bytes())
+        weight = onnx.numpy_helper.to_array(graph.graph.initializer[0]).astype('<f4').tobytes()
+        if sha(weight) != case['sourceWeightSha256']:
+            raise ValueError('Retained norm source weight mismatch')
+        square = np.fromfile(case['reference']['square']['path'], dtype='<f4').reshape(SHAPE)
+        mean = np.fromfile(case['reference']['mean']['path'], dtype='<f4').reshape(1, 512, 1)
+        case['previousCandidateComparison'] = case['numpyCascadeVsTorchMean']
+        case['numpyCascadeVsTorchMean'] = metrics(torch_cascade_mean_f32(square), mean)
+        if not case['numpyCascadeVsTorchMean']['bitwiseEqual']:
+            raise ValueError('AVX2 source-order reduction does not match retained source mean')
+        case['graphs'] = {}
+        for variant, raw in norm_graphs(args.bundle / manifest['blocks'][case['index']]['path'], weight, onnx).items():
+            path = args.output / ('block%02d-%s.onnx' % (case['index'], variant))
+            path.write_bytes(raw)
+            case['graphs'][variant] = record(path)
+    (args.output / 'source-results.json').write_text(json.dumps(report, indent=2) + '\n')
+    print(json.dumps({'passed': True, 'sourceNormOperators': 0, 'reusedSourceNormOperators': len(report['cases']),
                       'cascadeMeanBitwiseMatches': [case['numpyCascadeVsTorchMean']['bitwiseEqual'] for case in report['cases']]}))
 
 
@@ -294,7 +342,7 @@ def native(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('stage', choices=['prepare', 'native'])
+    parser.add_argument('stage', choices=['prepare', 'retarget', 'native'])
     parser.add_argument('--execution-source-sha', required=True)
     parser.add_argument('--output', required=True, type=Path)
     for name in ['checkpoints', 'bundle', 'model', 'deps', 'reference']:
@@ -308,6 +356,10 @@ def main():
         if not all([args.checkpoints, args.bundle, args.model, args.deps]):
             raise ValueError('Prepare requires original checkpoints/bundle/model/deps')
         prepare(args)
+    elif args.stage == 'retarget':
+        if not all([args.reference, args.bundle, args.deps]):
+            raise ValueError('Retarget requires retained source references, original bundle and deps')
+        retarget(args)
     else:
         if not args.reference:
             raise ValueError('Native stage requires prepared independent norm references')
