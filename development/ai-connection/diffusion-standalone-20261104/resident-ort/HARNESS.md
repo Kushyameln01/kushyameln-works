@@ -1,9 +1,13 @@
 # Bounded public attention timing diagnostic
 
-Implementation status: code and native-free unit/static checks only. **Do not run
-the browser/native diagnostic while the original-shape long trial is active.**
-No timing, browser initialization, output bit comparison, speedup, resident K/V,
-or production acceptance result is supplied by the implementation checks.
+Historical implementation status at source
+`5eef220918ec88e9761f121e3b9c511b82c41e31`: code and native-free unit/static
+checks only. [HARNESS-VALIDATION.json](HARNESS-VALIDATION.json) remains that
+unchanged historical receipt; its hashes are not a receipt for later source/docs.
+Subsequent bounded browser results at source
+`89fc9cb9d1f71b9b2da63e856ddcdcd4a9c80ed8` are documented separately in
+[TIMING-RESULT.md](TIMING-RESULT.md). They do not establish resident K/V or
+production acceptance. **Do not run this diagnostic alongside an active long trial.**
 
 ## Files and execution boundary
 
@@ -32,8 +36,9 @@ python tools/diffusion-models/resident-ort-attention-timing.py --execute-after-o
 python tools/diffusion-models/resident-ort-attention-timing.py --execute-after-original-trial --threads 4 --tiles 3 --output development/ai-connection/diffusion-standalone-20261104/resident-ort/attention-timing-threads4.json
 ```
 
-These commands have **not** been executed for this implementation. Existing output
-files are refused. Python Playwright and Chromium are runtime prerequisites.
+Execution was pending at the historical 5eef snapshot. Later executions and their
+exact receipts are linked above. Existing output files are refused. Python
+Playwright and Chromium are runtime prerequisites.
 The child-process deadline is 120 seconds per case, followed by process-group
 termination signals on timeout. A timed-out case fails and explicitly leaves
 browser-close confirmation unproven; it cannot count as successful cleanup.

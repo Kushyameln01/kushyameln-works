@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "diffusion-original-public-high-running/1",
+  "observedAtUTC": "2026-11-04T19:08:50.574611+00:00",
+  "status": "running at observation; not numerical acceptance",
+  "executionSourceCommit": "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
+  "executionWorktree": "/tmp/diffusion-public-execution-20261104",
+  "execSession": 30165,
+  "execSessionRunningConfirmed": true,
+  "observerPid": null,
+  "pidObservation": "No matched process visible in the observer caller process namespace; actual process-family PID/resources are owned by the running outer observer. No PID is inferred.",
+  "publicAPI": {
+    "loadObserved": true,
+    "predictObserved": true,
+    "mode": "predict",
+    "side": "HIGH",
+    "timestep": 1000,
+    "baseWithoutLora": true,
+    "full40AndFinalHeadRequested": true,
+    "normalAPIRequiresReferences": false
+  },
+  "resource": {
+    "wasmThreads": 4,
+    "coi": true,
+    "fallback": false,
+    "timeoutSeconds": 345600,
+    "timeoutIsNumericalAcceptanceGate": false,
+    "anotherHeavyNNRunning": false
+  },
+  "input": {
+    "manifestPath": "/tmp/d1-d4-production-73947-inputs/inputs.json",
+    "bytes": 82481,
+    "sha256": "7c1545413898de4c18cee2ed19dbec9f8abe61cfed7b48ee0954d33f0206c6b6",
+    "targetShape": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "totalTokens": 73947,
+    "textShape": [
+      1,
+      512,
+      4096
+    ],
+    "maskActiveCount": 3,
+    "scope": "Declared target81/source81/three848-square-slot case; not original media replay"
+  },
+  "lastProgress": {
+    "elapsedMs": 390001.0799999982,
+    "stage": "self-attention",
+    "block": 0,
+    "completedRows": 1024,
+    "totalRows": 73947,
+    "publicJobId": "public-2",
+    "modelSessionId": "0a26b608-bf84-4ad3-964e-4c03a79409e4",
+    "modelEpoch": 1
+  },
+  "paths": {
+    "terminalReceipt": "/tmp/diffusion-original-high-public-20261104.json",
+    "progress": "/tmp/diffusion-original-high-public-20261104.json.progress.jsonl",
+    "log": "/tmp/diffusion-original-high-public-20261104.log",
+    "resources": "/tmp/diffusion-original-high-public-resources-20261104.json",
+    "privateOutput": "/tmp/diffusion-original-high-public-20261104/private"
+  },
+  "terminalReceiptExists": false,
+  "accepted": false,
+  "publicFull40Accepted": false,
+  "numericalReferencePending": true,
+  "originalLowPredictAccepted": false,
+  "originalSixUpdatesAccepted": false,
+  "generationReady": false,
+  "wholeOperationExperimentExecuted": false,
+  "realLoraSent": false
+}

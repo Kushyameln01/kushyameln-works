@@ -93,3 +93,24 @@ python tools/diffusion-models/observe-process-run.py \
 完全40block/headは同runnerの `--operation predict`、六更新は `--operation sample` に分離して実装した。sample比較は六つの完全predict出力と16個のsampler状態／handoff／復元を対象とし、全block中間比較とは別scopeである。必要な前段の数値・資源gateが合格してから進め、部分runを受入済みに数えない。
 
 RoPE cacheの新sourceと容量は [ROPE-MATRIX-CACHE.md](ROPE-MATRIX-CACHE.md)、次候補の未受入事項は [resident-ort/FEASIBILITY.md](resident-ort/FEASIBILITY.md) を参照する。native buffer probeや容量用storeだけで、モデル生成が成立したとは扱わない。
+
+
+## 実行中の公開原寸HIGH predict
+
+上の固定8d block0は選択13 stageが合格して終了した。続く小attention診断1/no-COI・4/COIの終了後、次の公開実行を専用worktreeから開始済みである。exec session30165が実行を所有する。**以下は実起動したcommandの記録であり、同時にもう一度起動しない。**
+
+```sh
+cd /tmp/diffusion-public-execution-20261104
+PYTHONDONTWRITEBYTECODE=1 python tools/diffusion-models/public-model-browser.py \
+ --source-commit 6cda0a686d30a4bd748909fc56c61c1acece7bfb \
+ --manifest /tmp/d1-d4-production-73947-inputs/inputs.json \
+ --models /workspace/work/retained/bernini \
+ --mode predict --side HIGH --wasm-threads 4 --coi true \
+ --private-output /tmp/diffusion-original-high-public-20261104/private \
+ --output /tmp/diffusion-original-high-public-20261104.json \
+ --timeout-seconds 345600
+```
+
+[preflight](evidence/original-public-high-preflight.json) はこの固定sourceでcheck-onlyが成功した記録であり、推論完了証拠ではない。実行時は外側process-family observerを伴い、進捗は `/tmp/diffusion-original-high-public-20261104.json.progress.jsonl`、logは `/tmp/diffusion-original-high-public-20261104.log`、資源receiptは `/tmp/diffusion-original-high-public-resources-20261104.json` へ記録する。raw／canonical成果は上のprivate出力先で保持し、Gitへ追加しない。現在の観測は [RUNNING-PUBLIC-HIGH.json](RUNNING-PUBLIC-HIGH.json) に固定した。これは既存jobへ新たな照会を行わず保存した観測で、終端receiptはまだなく受入未確定。
+
+運用watchdog96時間は所要時間予測・数値gateではない。完了後に実source前後・全40block/head・target抽出／unpatchify・意味／shape・caller保持・実File保存読戻し・cleanup／資源を確認し、保存成果を同一manifest／timestepの独立完全predict参照と比較してから数値受入を判断する。block0の合格やprocess exitだけで完全predict合格にしない。LOW、六更新、raw sample、実LoRA、管理の最新native採用／weight port所有経路、全体運用は別の未受入／未実装範囲である。

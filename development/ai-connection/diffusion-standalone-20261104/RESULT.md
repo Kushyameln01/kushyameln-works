@@ -58,7 +58,13 @@ row一時配列、最大stage weight cache566,231,040B、source／decode、WASM�
 
 3-span source `8ddefbafdb27ce8a0451c3ad5ba36d63729acd87` を凍結して、他のNN試験を終えた後に再開した。native4/COIと参照BLAS1を明示し、旧4-reference trialと環境を混同しない。prefix／post-modulationの数値証拠は、変更されていない演算に限って再利用する。診断の `--skip-prefix-comparison` は再比較を省く選択であり、native prefix計算・全K/V生成・全self/cross/FFNの比較は行う。比較したstageはreceiptに列挙し、省いた境界を新規比較と呼ばない。
 
-この再試験の終端receiptが出るまでは原寸all-queryは未受入。必要な境界が合格した順に完全HIGH／LOW predict、全40block/head、HIGH3→LOW3、raw sample保存へ進める。モデルの数値演算・資源管理はDiffusion、全体の待機列・工程管理は管理側が所有する。
+この再試験は終端 `passed:true`、外側process exit0で完了した。HIGH block0の選択した13 stageは全query／key／headのcoverageを満たし、6,366 chunks・4,169,937,920要素の比較失敗0。最大絶対誤差0.0002288818359375、最大gate比0.01576734089608632、事前gate `abs .01 + rel .001*abs(reference)` は変更していない。所要13,737.908823秒。末尾query91行／key219行を含み、prefix再利用を新規比較とは数えていない。[block0結果・原本receipt](evidence/original-block0/RESULT.md) に根拠を残す。
+
+外側monitorは実行前から終了後まで全期間6,312 samplesを観測し、PSS合算peak12,217,216,000B、RSS合算peak12,494,725,120B。保存履歴の4,512 samples省略は未観測を意味せず、全期間sampled peakには反映されている。OOM10／kill2は開始時から増えていない。ownerのstore／K/V／query／prepared weightは解放され、参照child exit0・backing残留なし。after-disposeでも観測されたWASM容量はnative allocator生存量やOS解放の証明ではなく、最終zombie2件のPSSはnullだった。詳細と未知範囲は [SUMMARY.json](evidence/original-block0/SUMMARY.json) を参照する。
+
+このblock0終端後、[小attention診断](resident-ort/TIMING-RESULT.md) を1/no-COI、4/COIの順で終え、その後に公開APIの原寸HIGH predictだけを開始した。source `6cda0a686d30a4bd748909fc56c61c1acece7bfb`、専用worktree、exec session30165で実`load`→`predict`を実行中。固定した [観測記録](RUNNING-PUBLIC-HIGH.json) ではblock0 self-attention 1,024／73,947行まで進み、終端receiptはまだない。これは観測時点の状態であり、その後の進捗や完了を推定しない。345,600秒（96時間）のwatchdogは運用上の上限で、所要時間予測や数値gateではない。
+
+今回受け入れた原寸all-queryは **HIGH block0の選択境界のみ**。原寸の公開HIGH完全predict／全40block・headと独立数値比較、LOW完全predict、HIGH3→LOW3、raw sample保存は未受入。小attention診断もprofile内のbaseline/wrapper全10,649,600 bytes一致に限り、profile間bit一致・原寸の時間比・速度改善・resident K/V成立を示さない。モデルの数値演算・資源管理はDiffusion、全体の待機列・工程管理は管理側が所有する。
 
 生成sampleの復元はDiffusionで一度だけ行い、`wan21-raw-generated-sample:v1`／NCTHW F32／`normalization.state=restored`としてVAEへ渡す。posterior meanへの改名・mean専用復元への代用は行わない。この契約の実装と旧小入力のraw保存証拠は保持するが、原寸raw生成・VAE decodeを今回受入済みとはしない。
 

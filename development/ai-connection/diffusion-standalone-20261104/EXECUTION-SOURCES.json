@@ -31,8 +31,14 @@
     },
     {
       "sourceCommit": "8ddefbafdb27ce8a0451c3ad5ba36d63729acd87",
-      "scope": "Sequential original73947 HIGH/block0 three-store trial; native4/COI, referenceBLAS1, unchanged prefix proof reused; pending terminal result",
-      "normalAPIRequiresPrefixReceipt": false
+      "scope": "Completed original73947 HIGH/block0 only:13 selected stages all-query/key/head coverage,6366chunks/4169937920elements/failed0; native4/COI, referenceBLAS1; unchanged prefix/post-modulation evidence reused. No full40/head/public predict/sample acceptance.",
+      "normalAPIRequiresPrefixReceipt": false,
+      "receipts": [
+        "evidence/original-block0/diffusion73947-inplace-block0-20261104.json",
+        "evidence/original-block0/diffusion73947-inplace-block0-resource-20261104.json"
+      ],
+      "summary": "evidence/original-block0/SUMMARY.json",
+      "passed": true
     },
     {
       "sourceCommit": "cacef11ab8d92091f59edb7abe2b665088b08922",
@@ -62,6 +68,17 @@
       "nativeOrBrowserDiagnosticExecuted": false,
       "modelPayloadBytesRead": 0,
       "ortRunCalls": 0
+    },
+    {
+      "sourceCommit": "89fc9cb9d1f71b9b2da63e856ddcdcd4a9c80ed8",
+      "scope": "Bounded synthetic attention diagnostic: separate1/noCOI and4/COI profiles, each baseline then wrapper in fresh browsers, one warmup plus3 measured tiles. Each within-profile baseline/wrapper10649600outputbytes exactly equal; no cross-profile equality, original-shape time fraction, speedup or residentKV/production acceptance.",
+      "receipts": [
+        "resident-ort/evidence/diffusion-attention-timing-threads1-20261104.json",
+        "resident-ort/evidence/diffusion-attention-timing-threads4-20261104.json"
+      ],
+      "document": "resident-ort/TIMING-RESULT.md",
+      "modelPayloadBytesRead": 0,
+      "nativeOrBrowserDiagnosticExecuted": true
     }
   ],
   "canonicalMappingSource": "6d0c8df4cd4992f26745d2d26394f5e194d2567f",
@@ -69,7 +86,7 @@
   "apiPath": "docs/shared/diffusion-models/API.md",
   "normalWeightContractPath": "docs/shared/diffusion-models/api/WEIGHT_PORT.md",
   "scopeLimits": {
-    "original73947AllQueriesAccepted": false,
+    "original73947AllQueriesAccepted": true,
     "originalFull40Accepted": false,
     "originalSixUpdatesAccepted": false,
     "realFullModelLoraAccepted": false,
@@ -80,7 +97,9 @@
     "managementWeightPortImplemented": false,
     "wholeConnectionImplementationComplete": false,
     "managementLatestSourceNumericalExecutionAccepted": false,
-    "residentAttentionBrowserDiagnosticExecuted": false
+    "residentAttentionBrowserDiagnosticExecuted": true,
+    "originalPublicPredictAccepted": false,
+    "originalLowPredictAccepted": false
   },
   "runtimeBuild": {
     "path": "docs/shared/diffusion-models/api/build-info.mjs",
@@ -94,13 +113,32 @@
   "activeOriginalTrial": {
     "sourceCommit": "8ddefbafdb27ce8a0451c3ad5ba36d63729acd87",
     "execSession": 39985,
-    "status": "pending terminal receipt",
-    "scope": "Original73947 HIGH/block0, native4/COI with independent referenceBLAS1; current packaging does not query, alter or stop the job"
+    "status": "completed-block0",
+    "scope": "Only selected HIGH block0 stages accepted; terminal receipt and wrapperexit0 confirmed. Full40/head/public predict/six remain unaccepted.",
+    "passed": true,
+    "receipt": "evidence/original-block0/SUMMARY.json"
   },
-  "distributionCommit": "5eef220918ec88e9761f121e3b9c511b82c41e31",
+  "distributionCommit": "89fc9cb9d1f71b9b2da63e856ddcdcd4a9c80ed8",
   "managementAdoptionAudit": {
     "document": "MANAGEMENT-ADOPTION.md",
     "receipt": "MANAGEMENT-SOURCE-DIFF.json",
     "scope": "Read-only fixed-source compatibility/adoption audit; current management remains on ffeeeedb runtime; latest native adoption and dedicated weight-port ownership route require manager-owner implementation. No counterpart ACK or management numerical execution."
+  },
+  "originalHighBlock0Only": {
+    "appliesTo": "scopeLimits.original73947AllQueriesAccepted",
+    "side": "HIGH",
+    "block": 0,
+    "selectedStages": 13,
+    "scope": "Declared73947 case only; prefix/post-modulation comparison reused; not original media replay or all40/head/publicpredict/six acceptance."
+  },
+  "activePublicHighTrial": {
+    "sourceCommit": "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
+    "execSession": 30165,
+    "status": "running at saved observation; no terminal receipt",
+    "observation": "RUNNING-PUBLIC-HIGH.json",
+    "observedAtUTC": "2026-11-04T19:08:50.574611+00:00",
+    "accepted": false,
+    "scope": "Actual public API load/predict, original declared73947 HIGH full40/head requested,4COI; progress is not numerical acceptance;96h operational watchdog is not forecast/gate.",
+    "executionOrder": "8dblock0 completed -> bounded attention threads1 then4 completed -> publicHIGH alone"
   }
 }

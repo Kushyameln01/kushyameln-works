@@ -1,5 +1,10 @@
 # Resident ORT K/V and attention state: feasibility only
 
+Historical feasibility/probe scope below. Later bounded public attention
+factory-capture and browser 1-noCOI/4-COI observations are recorded separately in
+[TIMING-RESULT.md](TIMING-RESULT.md). They do not validate resident K/V/state,
+addresses above 2 GiB, original-shape admission, or production acceptance.
+
 Status: **unimplemented candidate; no production acceptance**. The normal public
 API remains canonical. This investigation concerns keeping one layer's K/V and
 one query range's online attention state in native ORT WASM memory while weights
