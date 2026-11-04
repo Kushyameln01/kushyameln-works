@@ -32,3 +32,16 @@ Original73947 all queries, full40/head and six updates remain unaccepted until c
 - Portable saved-input recovery tests pass4/4; byte-exact old full/small manifests are restored. No Text inference or raw re-export was needed.
 
 Runtime job receipts are pending, not completion evidence. Current stdout/progress and private oracle files remain outside Git until terminal results and cleanup are recorded.
+
+
+## Packaged continuation at `6cda0a686d30a4bd748909fc56c61c1acece7bfb`
+
+The earlier Task C/D “in progress” and review-finding notes above are historical. Their implementation, cleanup fixes, and scoped public Worker verification are now recorded in [weight-feed results](../standalone-weight-feed-20261104/RESULT.md) and [public Worker receipts](../standalone-weight-feed-20261104/public-worker/RESULT.md). Prepared-KV and in-place residual controls are recorded in [prepared-KV results](../standalone-prepared-kv-20261104/RESULT.md) and [residual results](../standalone-inplace-self-residual-20261104/RESULT.md). These boundaries do not accept original full-model execution or real LoRA.
+
+The latest API source is `6cda0a686d30a4bd748909fc56c61c1acece7bfb`, runtime build source SHA-256 `e5ba40ce01bd04e4a432846afb737a9d8c37c56450df68af51460d9140c3e4c6` (153 source entries, all checked against local bytes). Final live proxy release now keeps its ownership and native recovery fence until the host actually releases; failed live cleanup remains retryable, concurrent release shares one operation, and retain is blocked while ending. Closed-port host cleanup remains independently retained and retryable.
+
+Fresh bounded Node controls passed transport10/10, mocked adapter26/26, and MockWorker host19/19 in separate processes. Exact stdout/stderr, exits, source-before/after bytes and SHA-256 are archived in [integration verification](evidence/integration-release-verification.json). These controls read no model bytes and execute no neural inference. The optional 8-byte Node resident-OrtValue probe was rerun once; [portable execution](resident-ort/PROBE.json) records exact output and source identity, with no OrtRun, model read, browser proof or allocation above 2GiB. Original failed CPU-location attempts remain recorded.
+
+The GitHub connector retrieved both latest full weight-port source and contract bodies at the fixed commit; [acquisition proof](evidence/github-latest-acquisition.json) confirms exact local bytes, SHA-256 and Git blob SHA. This is owner-side retrieval evidence only, not counterpart acknowledgement or acceptance. [Delivery inventory](DELIVERY.json) enumerates the scoped existing evidence without private inputs or models.
+
+The sole original heavy trial remains pending under frozen source `8ddefbafdb27ce8a0451c3ad5ba36d63729acd87`, exec session39985. This packaging did not read models, run another neural test, edit or stop that trial. Original all-query, full40/head, six updates, real full-model LoRA and whole-operation acceptance remain open. No merge, Pages publication or new delivery acknowledgement is claimed.

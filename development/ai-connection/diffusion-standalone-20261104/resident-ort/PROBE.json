@@ -20,11 +20,51 @@
   },
   "portableSource": {
     "path": "portable-probe.mjs",
-    "executed": false,
+    "executed": true,
     "differenceFromOriginal": "Only the factory import path changes from the original workspace absolute path to a repository-relative path.",
     "command": "timeout 8s node development/ai-connection/diffusion-standalone-20261104/resident-ort/portable-probe.mjs",
     "bytes": 1118,
-    "sha256": "baffb6b6601772874c02a410b45b219bd72e642d8d3cd318bf79dfd028b44a84"
+    "sha256": "baffb6b6601772874c02a410b45b219bd72e642d8d3cd318bf79dfd028b44a84",
+    "execution": {
+      "recordedAtUTC": "2026-11-04T16:53:06.980571+00:00",
+      "command": [
+        "timeout",
+        "8s",
+        "node",
+        "development/ai-connection/diffusion-standalone-20261104/resident-ort/portable-probe.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"init\":0,\"ptrSize\":4,\"heapBytes\":16777216,\"tensor\":9051416,\"raw\":9015200,\"base\":9015200,\"sameRawPointer\":true,\"type\":1,\"rank\":1,\"dim\":2,\"mutationVisible\":3.5,\"release\":0,\"bufferAfterTensorRelease\":3.5,\"rss\":106336256,\"modelBytesRead\":0,\"ortRuns\":0}\n",
+      "stderr": "",
+      "sourceBefore": {
+        "bytes": 1118,
+        "sha256": "baffb6b6601772874c02a410b45b219bd72e642d8d3cd318bf79dfd028b44a84"
+      },
+      "sourceAfter": {
+        "bytes": 1118,
+        "sha256": "baffb6b6601772874c02a410b45b219bd72e642d8d3cd318bf79dfd028b44a84"
+      },
+      "sourceUnchanged": true,
+      "result": {
+        "init": 0,
+        "ptrSize": 4,
+        "heapBytes": 16777216,
+        "tensor": 9051416,
+        "raw": 9015200,
+        "base": 9015200,
+        "sameRawPointer": true,
+        "type": 1,
+        "rank": 1,
+        "dim": 2,
+        "mutationVisible": 3.5,
+        "release": 0,
+        "bufferAfterTensorRelease": 3.5,
+        "rss": 106336256,
+        "modelBytesRead": 0,
+        "ortRuns": 0
+      },
+      "scope": "8-byte Node caller-owned native OrtValue only, thread1; no OrtRun, models, browser or allocation above 2GiB"
+    }
   },
   "successfulStdout": {
     "init": 0,
