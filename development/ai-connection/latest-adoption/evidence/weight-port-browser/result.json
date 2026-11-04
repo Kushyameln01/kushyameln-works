@@ -1,0 +1,184 @@
+{
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+  "scope": "actual Chromium MessageChannel + native factory relay + synthetic dedicated Worker weight owner; no model files/NN",
+  "cases": [
+    {
+      "name": "actual factory cancel terminates Worker; relay invalidates client; failed lease retained and retry/new-generation isolation",
+      "passed": true,
+      "terminal": true,
+      "client": {
+        "closed": true,
+        "retainedPackages": 0,
+        "pendingReleases": 0,
+        "cleanupRequired": false,
+        "failedReleaseIDs": [],
+        "lastCleanupError": null,
+        "managedCurrent": false,
+        "managedCleanupRequired": false
+      }
+    },
+    {
+      "name": "targeted cancel during native client handshake",
+      "passed": true
+    },
+    {
+      "name": "ordinary local dispose uses native close protocol and settles",
+      "passed": true
+    },
+    {
+      "name": "failed local close revokes cached facade immediately and retry releases retained package",
+      "passed": true,
+      "cachedFacadeFence": [
+        {
+          "operation": "prepareLoad",
+          "rejected": true,
+          "code": "DIFFUSION_WEIGHT_FEED_STALE"
+        },
+        {
+          "operation": "validate",
+          "rejected": true,
+          "code": "DIFFUSION_WEIGHT_FEED_STALE"
+        },
+        {
+          "operation": "commit",
+          "rejected": true,
+          "code": "DIFFUSION_WEIGHT_FEED_STALE"
+        },
+        {
+          "operation": "readBlock",
+          "rejected": true,
+          "code": "DIFFUSION_WEIGHT_FEED_STALE"
+        }
+      ]
+    },
+    {
+      "name": "pre-admission rejection sends existing native terminal packet through actual factory relay",
+      "passed": true,
+      "rejectionCases": [
+        {
+          "name": "wrong reply identity",
+          "passed": true,
+          "remoteClosedPacket": {
+            "probe": "rejected-feed-closed",
+            "sessionId": "404d26ef-a118-4b3a-820b-492e3e2050c7",
+            "jobId": "managed-model:3",
+            "serverClosed": true
+          },
+          "relayContract": "native bridge forwards closed then deletes its captured bridge record"
+        },
+        {
+          "name": "wrong side",
+          "passed": true,
+          "remoteClosedPacket": {
+            "probe": "rejected-feed-closed",
+            "sessionId": "26e0fdfa-e07c-4b56-92ab-3c1d1a80a1c4",
+            "jobId": "managed-model:3",
+            "serverClosed": true
+          },
+          "relayContract": "native bridge forwards closed then deletes its captured bridge record"
+        },
+        {
+          "name": "stale model binding",
+          "passed": true,
+          "remoteClosedPacket": {
+            "probe": "rejected-feed-closed",
+            "sessionId": "4c45ed36-a3bb-48bc-8429-6b0f29ef8c82",
+            "jobId": "managed-model:3",
+            "serverClosed": true
+          },
+          "relayContract": "native bridge forwards closed then deletes its captured bridge record"
+        }
+      ]
+    },
+    {
+      "name": "native unload succeeds separately while host lease pending; reuse blocked until retained ID retry",
+      "passed": true
+    },
+    {
+      "name": "raw local MessagePort.close without protocol invalidation",
+      "expectedContractLimit": true,
+      "passed": true,
+      "observation": {
+        "settled": false
+      },
+      "contractGap": "Native RPC cannot observe a browser-local raw endpoint close; manager does not expose raw ports and relies on native graceful disposal/factory relay invalidation"
+    }
+  ],
+  "handshakeProbe": {
+    "openResult": {
+      "settled": true,
+      "ok": false,
+      "error": {
+        "code": "INVOCATION_CANCELLED",
+        "message": "Cancelled invocation result was not accepted"
+      }
+    },
+    "stopped": {
+      "settled": true,
+      "ok": true,
+      "value": {
+        "cancelled": true,
+        "originalTerminal": true,
+        "target": {
+          "managerSessionId": "diffusion-manager:16600dcd-cdd7-4237-b638-9796e4d7227e",
+          "managerRevision": 2,
+          "requestId": "diffusion-request:e89deafb-938a-4d35-86e2-27713e35015b",
+          "activeToken": "cee496aa-bb25-4b7f-bf64-c281b0b09096",
+          "resourceBinding": {
+            "bindingId": "diffusion-manager:16600dcd-cdd7-4237-b638-9796e4d7227e:public-api",
+            "ownerId": "diffusion-public:fe75fd57-d1ce-4e6e-a517-79f24b33f725",
+            "resourceGeneration": "diffusion-api:fe75fd57-d1ce-4e6e-a517-79f24b33f725:0"
+          },
+          "sessionId": "4d844bf8-bb33-4e49-8914-499c66b493f5",
+          "jobId": "managed-model:3",
+          "inputRevision": 3,
+          "modelSessionId": "browser-model-1",
+          "modelEpoch": 1,
+          "modelGeneration": 1
+        },
+        "notStarted": false,
+        "stopConfirmed": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "quarantined": false,
+        "generationReady": false,
+        "originalWorkflowAccepted": false,
+        "acceptedProduction": false,
+        "load": "IMPLEMENTED",
+        "predict": "IMPLEMENTED",
+        "sample": "IMPLEMENTED"
+      }
+    }
+  },
+  "sourceProof": {
+    "commit": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+    "beforeSHA256": "eb29e8bb823c8d81cb58007fb2903fa2b3c654d79616c695c8f02a70212bd80b",
+    "afterSHA256": "eb29e8bb823c8d81cb58007fb2903fa2b3c654d79616c695c8f02a70212bd80b",
+    "unchanged": true,
+    "trackedSourceCount": 498,
+    "totalBytes": 58808272,
+    "allEqualCommittedBytes": true,
+    "beforeGitStatus": "",
+    "afterGitStatus": "",
+    "harnessSHA256": "0046d20f03e4919ba10150f12b141880abc84723c777d3a9c0794745effecbdb",
+    "runnerSHA256": "04654038437185ba1b16442c020b12568ae452415f0e6cc482525dc818dd0d29",
+    "servedFromFrozenBeforeBytes": true,
+    "servedRequestCount": 220,
+    "servedUniqueSourceCount": 177,
+    "deniedPaths": []
+  },
+  "physicalWorkerTrace": {
+    "playwrightWorkerCreated": 10,
+    "playwrightWorkerClosedBeforeBrowserClose": 10,
+    "playwrightLiveBeforeBrowserClose": [],
+    "cdpWorkerCreated": 10,
+    "cdpWorkerDestroyedBeforeBrowserClose": 10,
+    "cdpLiveBeforeBrowserClose": [],
+    "allObservedWorkersPhysicallyClosed": true,
+    "scope": "All actual synthetic-provider dedicated Workers observed across the complete ownership trace; closing recorded before browser shutdown"
+  },
+  "modelProvider": "synthetic; native factory relay and native weight client/server are actual adopted code",
+  "nativeNNExecuted": false,
+  "realModelFilesLoaded": false,
+  "passed": true
+}

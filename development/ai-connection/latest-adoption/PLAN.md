@@ -31,4 +31,6 @@ Text/VAE保持資料にもprepared Text／Rect／stream bundleと管理e166 brid
 ## 進捗
 
 - 本文・実export取得済み。旧「公開consumerなし」はffe時点の履歴。b6はopenWeightFeed／createDiffusionWeightClientを提供する。
-- Text32files／Diffusion164filesをexact採用。通常P4正規marker肯定例NN0を確認。専用port管理・controller/UI統合を実装中。
+- Text32files／Diffusion164filesをexact採用。通常P4正規marker肯定例NN0、専用port管理・controller/UI統合を完了。
+- 管理実行source f084790d7f594915c869ef375fcbdc6e44ee56f3を固定・push。841/841回帰、固定UI14/14、portの固定Chromium試験PASS。独立reviewの指摘を解消。
+- 実装完成と、今回sourceの実NN未実行／未受入を分離。保持環境への実行経路は未接続で、固定handoffを提示して実行先だけを確認中。モデル再送・試験LoRA受領・全体実験・READY昇格は行っていない。

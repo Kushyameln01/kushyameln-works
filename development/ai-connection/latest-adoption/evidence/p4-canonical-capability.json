@@ -1,0 +1,272 @@
+{
+  "adoption": {
+    "sourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "b6e166478a8e072c9ffd3ce562bfdb0c89634920",
+      "path": "docs/shared/diffusion-models/api/index.mjs",
+      "sha256": "39a6c77c9d0366072f03f53b2fdaa185802388fcd54232db0ee34c56a2b6c4b7"
+    },
+    "buildId": "diffusion-models/0.1+e5ba40ce01bd04e4a432846afb737a9d8c37c56450df68af51460d9140c3e4c6",
+    "protocolVersion": "diffusion-models/0.1",
+    "operationId": "postSelfAttention",
+    "conditioning": {
+      "dtype": "float32",
+      "shape": [
+        1,
+        null,
+        4096
+      ],
+      "layout": "BLC",
+      "meaning": "text_hidden_states",
+      "normalization": "umt5-final-rmsnorm-f32-v1",
+      "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+      "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458"
+    },
+    "inputs": {
+      "residual": {
+        "dtype": "float32",
+        "shape": [
+          2,
+          5120
+        ],
+        "layout": "LC",
+        "meaning": "bernini-block0-post-self-attention-hidden:v1",
+        "normalization": "none"
+      },
+      "timeAct1": {
+        "dtype": "float32",
+        "shape": [
+          5120
+        ],
+        "layout": "C",
+        "meaning": "bernini-time-embedding-silu:v1",
+        "normalization": "none"
+      },
+      "conditioning": {
+        "dtype": "float32",
+        "shape": [
+          1,
+          null,
+          4096
+        ],
+        "layout": "BLC",
+        "meaning": "text_hidden_states",
+        "normalization": "umt5-final-rmsnorm-f32-v1",
+        "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+        "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458"
+      }
+    },
+    "capability": {
+      "available": true,
+      "kind": "partial-neural-operator",
+      "blockIndex": 0,
+      "shapes": {
+        "blockIndex": 0,
+        "tokens": 2,
+        "hiddenWidth": 5120,
+        "textWidth": 4096,
+        "textRows": [
+          1,
+          512
+        ],
+        "residual": [
+          2,
+          5120
+        ],
+        "timeAct1": [
+          5120
+        ],
+        "conditioning": [
+          1,
+          null,
+          4096
+        ],
+        "blockOutput": [
+          2,
+          5120
+        ],
+        "ffnWidth": 13824,
+        "headCount": 40,
+        "headDim": 128
+      },
+      "limits": {
+        "maxDecodeElements": 81920,
+        "maxRawReadBytes": 163840,
+        "maxProjectionRows": 16,
+        "maxWeightRows": 16,
+        "ffnDownMaxWeightRows": 4,
+        "ordinaryInnerMax": 5120,
+        "ffnDownInner": 13824,
+        "ffnDownInnerSplit": false,
+        "graphQueryRows": 2,
+        "keyChunkMin": 1,
+        "keyChunkMax": 64,
+        "aggregatePeakBytes": null,
+        "aggregatePeakMeasured": false
+      },
+      "inputs": {
+        "residual": {
+          "dtype": "float32",
+          "shape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "meaning": "bernini-block0-post-self-attention-hidden:v1",
+          "normalization": "none"
+        },
+        "timeAct1": {
+          "dtype": "float32",
+          "shape": [
+            5120
+          ],
+          "layout": "C",
+          "meaning": "bernini-time-embedding-silu:v1",
+          "normalization": "none"
+        },
+        "conditioning": {
+          "dtype": "float32",
+          "shape": [
+            1,
+            null,
+            4096
+          ],
+          "layout": "BLC",
+          "meaning": "text_hidden_states",
+          "normalization": "umt5-final-rmsnorm-f32-v1",
+          "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+          "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458"
+        }
+      },
+      "contextLatents": [],
+      "modelSides": [
+        "HIGH",
+        "LOW"
+      ],
+      "computeDtype": "float32",
+      "output": {
+        "dtype": "float32",
+        "shape": [
+          2,
+          5120
+        ],
+        "layout": "LC",
+        "meaning": "bernini-block0-output-hidden:v1",
+        "normalization": "none"
+      },
+      "attentionMask": "provenance-only; all Text rows consumed; no cross-attention softmax mask",
+      "missingTokenizerPolicy": "reject",
+      "producerAuthentication": false,
+      "textNormalizationAliases": [
+        "encoder-final-rmsnorm"
+      ]
+    },
+    "sourceDigest": "e5ba40ce01bd04e4a432846afb737a9d8c37c56450df68af51460d9140c3e4c6",
+    "ownerBuildSourceCount": 153,
+    "sourceCount": 164,
+    "modelFilesEmbedded": false,
+    "generationReady": false
+  },
+  "request": {
+    "operation": "postSelfAttention",
+    "modelSide": "LOW",
+    "inputs": {
+      "residual": {
+        "dtype": "float32",
+        "shape": [
+          2,
+          5120
+        ],
+        "layout": "LC",
+        "meaning": "bernini-block0-post-self-attention-hidden:v1",
+        "normalization": "none"
+      },
+      "timeAct1": {
+        "dtype": "float32",
+        "shape": [
+          5120
+        ],
+        "layout": "C",
+        "meaning": "bernini-time-embedding-silu:v1",
+        "normalization": "none"
+      },
+      "conditioning": {
+        "dtype": "float32",
+        "shape": [
+          1,
+          512,
+          4096
+        ],
+        "layout": "BLC",
+        "meaning": "text_hidden_states",
+        "normalization": "umt5-final-rmsnorm-f32-v1",
+        "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+        "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+        "attentionMask": {
+          "dtype": "uint8",
+          "shape": [
+            512
+          ],
+          "allActive": true
+        }
+      }
+    }
+  },
+  "status": "SUPPORTED",
+  "dispatchSupported": true,
+  "nativeSupport": {
+    "schemaVersion": "diffusion-execution-support/0.1",
+    "operation": "postSelfAttention",
+    "supported": true,
+    "reasons": [],
+    "modelInference": false,
+    "generationReady": false,
+    "validation": "metadata-only"
+  },
+  "nativeCalls": 0,
+  "observation": {
+    "ownerId": "normal:p4:f7a65052-6e95-4bf4-97b4-60d5b9d2106d",
+    "ownerInstanceId": "f7a65052-6e95-4bf4-97b4-60d5b9d2106d",
+    "configurationRevision": 0,
+    "resourceGeneration": "normal-p4:f7a65052-6e95-4bf4-97b4-60d5b9d2106d:0",
+    "sourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "b6e166478a8e072c9ffd3ce562bfdb0c89634920",
+      "path": "docs/shared/diffusion-models/api/index.mjs",
+      "sha256": "39a6c77c9d0366072f03f53b2fdaa185802388fcd54232db0ee34c56a2b6c4b7"
+    },
+    "nativeAPI": {
+      "version": "diffusion-models/0.1",
+      "build": "diffusion-models/0.1+e5ba40ce01bd04e4a432846afb737a9d8c37c56450df68af51460d9140c3e4c6",
+      "transport": "direct",
+      "entrypoint": "docs/shared/diffusion-models/api/index.mjs"
+    },
+    "resourceState": {
+      "status": "available",
+      "ownerId": "normal:p4:f7a65052-6e95-4bf4-97b4-60d5b9d2106d",
+      "requiredBytes": 8450560,
+      "budgetBytes": 8450560,
+      "occupiedBytes": 0,
+      "scope": "configured allowance for one logical native input payload (three tensor extents plus mask); excludes copies, opaque metadata, workspaces, ORT, host and full pipeline"
+    },
+    "loadedState": {
+      "moduleLoaded": true,
+      "fileConfigured": true,
+      "configuredFile": {
+        "name": null,
+        "byteLength": 27
+      },
+      "nativeOwnerPrepared": false,
+      "modelWeightsLoaded": false,
+      "modelIdentityRole": "selected Bernini Blob streamed by the partial native owner; no whole model loaded claim",
+      "lastPreparedObservation": null,
+      "aggregatePeakBytes": null
+    },
+    "nativeProfileId": null,
+    "nativeProfileIdAuthority": null,
+    "profileBindingAuthority": "management-sidecar-for-native-execution-descriptor",
+    "disposed": false,
+    "cleanupPending": false
+  },
+  "scope": "Actual owner metadata helper; no model header, weights, ORT, inference or numerical acceptance"
+}

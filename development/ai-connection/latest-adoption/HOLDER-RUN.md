@@ -2,12 +2,12 @@
 
 資材の存在はDiffusion／Text/VAE保持資料で確認済み。本書はモデルの再送・再取得を要求しない。未接続なのはこのチャットから保持側を実行するterminal／endpoint／セッションへの経路であり、資材自体の不存在ではない。
 
-配布のRESULT／HANDOFFに記載された**管理実行sourceの完全SHA**を`MANAGER_SHA`へ設定する。配布文書commitやDiffusion owner SHAを代入しない。本書のplaceholderは、同じ配布の固定実行sourceを使う意味である。
+管理実行sourceは`f084790d7f594915c869ef375fcbdc6e44ee56f3`。配布文書commitやDiffusion owner SHAを代入しない。保持側の取得ACKと、実行receiptはそれぞれ未受領である。
 
 ## source取得と独立checkout
 
 ```bash
-MANAGER_SHA=<FULL_MANAGEMENT_EXECUTION_SOURCE_SHA>
+MANAGER_SHA=f084790d7f594915c869ef375fcbdc6e44ee56f3
 git fetch origin codex/management-full-route
 git fetch origin b6e166478a8e072c9ffd3ce562bfdb0c89634920
 git fetch origin 20f640a6e071b6c060a212e89b28f0c8965923f7
