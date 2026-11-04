@@ -5,6 +5,7 @@ import {createInvocationQueue} from '/manager/docs/shared/ai-connection/queue.mj
 import * as artifacts from '/manager/docs/shared/ai-connection/adapters/artifacts.mjs';
 import * as workspace from '/manager/docs/shared/ai-connection/management-workspace.mjs';
 import * as diffusion from '/diffusion/docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs';
+import {createObservationArchive,appendObservation} from './observation-archive.mjs';
 
 const check=(ok,message)=>{if(!ok)throw Error(message);};
 // Management canonical JSON sorts object keys. Compare metadata structurally;
@@ -31,10 +32,10 @@ globalThis.runManagementConnection=async spec=>{
  let api,bridge,phase='setup',cancelPromise,cancelIssued=false,textCancelPromise,textCancelIssued=false;
  const phaseStart=performance.now(),mark=value=>{phase=value;const event={phase,epochMs:Date.now(),elapsedSeconds:(performance.now()-phaseStart)/1000};result.phases.push(event);console.log('management-connection-progress:'+JSON.stringify(event));};
  const workerFactory=()=>{
-  const worker=new Worker('/observer/owner-normal-worker.mjs',{type:'module'}),record={phase,index:result.workers.length,terminated:false,observations:[]};result.workers.push(record);
+  const worker=new Worker('/observer/owner-normal-worker.mjs',{type:'module'}),record={phase,index:result.workers.length,terminated:false,observations:createObservationArchive()};result.workers.push(record);
   const terminate=worker.terminate.bind(worker);worker.terminate=()=>{record.terminated=true;record.terminatedAtEpochMs=Date.now();return terminate();};
   worker.addEventListener('message',({data})=>{
-   if(!data.ownerObservation)return;record.observations.push({type:data.type,...data.ownerObservation});
+   if(!data.ownerObservation)return;appendObservation(record.observations,{type:data.type,...data.ownerObservation});
    if(phase==='rect-cancel'&&!cancelIssued&&data.ownerObservation.event==='session-created'){
     cancelIssued=true;const target=bridge.inspect().targets.find(x=>x.module==='vae'&&x.operation==='decode')?.target;check(target,'Exact active management cancellation target');cancelPromise=bridge.cancel(target);
    }

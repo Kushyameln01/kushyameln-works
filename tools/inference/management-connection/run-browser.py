@@ -212,7 +212,7 @@ def main():
                                          'commit': args.execution_source_sha if module == 'owner' else MANAGER if module == 'management' else DIFFUSION}
             return raw
 
-        for path in (Path(__file__), HERE / 'browser.mjs', ROOT / 'docs/shared/inference/management-adapter.mjs', HERE.parent / 'owner-normal-worker.mjs'):
+        for path in (Path(__file__), HERE / 'browser.mjs', HERE / 'observation-archive.mjs', ROOT / 'docs/shared/inference/management-adapter.mjs', HERE.parent / 'owner-normal-worker.mjs'):
             source_bytes('owner', path.relative_to(ROOT).as_posix())
 
         class Handler(BaseHTTPRequestHandler):
@@ -234,6 +234,8 @@ def main():
                         return
                     elif requested == '/tools/browser.mjs':
                         raw = source_bytes('owner', 'tools/inference/management-connection/browser.mjs')
+                    elif requested == '/tools/observation-archive.mjs':
+                        raw = source_bytes('owner', 'tools/inference/management-connection/observation-archive.mjs')
                     elif requested == '/observer/owner-normal-worker.mjs':
                         raw = source_bytes('owner', 'tools/inference/owner-normal-worker.mjs')
                     elif requested.startswith('/shared/'):
