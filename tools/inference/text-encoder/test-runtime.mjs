@@ -59,6 +59,15 @@ test('selected lowering verifies original assets then passes only the separately
  const encoder=await module.loadTextEncoder({manifest,files,ort,hike:{rmsNorm:x=>new Float32Array(x)}});
  try{const result=await encoder.run({tokenIds:[0],attentionMask:[1]});assert.equal(created,24);assert.equal(released,24);assert.equal(result.normalization,'umt5-final-rmsnorm-f32-v1');assert.deepEqual([...result.attentionMask],[1]);assert.equal(result.provenance.graphBindings.length,24);assert.equal(result.provenance.graphBindings[0].sourceAssetSha256,assetHash);assert.equal(result.provenance.graphBindings[0].executedGraphSha256,executionHash);assert.deepEqual(original,Uint8Array.from([9,9,0,0,0,63,9,9,9,9,0,0,128,63,9,9]),'Selected source assets must remain unchanged');}finally{await encoder.dispose();}
 });
+test('selected inner norm transform preserves original file identity and passes expanded graph to the session',async()=>{
+ const {manifest,files}=await fixture(),original=Uint8Array.from([19,9,1,2,9,9,9,9,9,9,3,4,9,9,9,9,9,9,9,9]),expected=Uint8Array.from([22,9,10,11,12,9,9,9,9,9,9,20,21,22,23,9,9,9,9,9,9,9,9]);
+ const operation=(role,offset,before,after)=>({role,offset,beforeHex:Buffer.from(before).toString('hex'),afterBase64:Buffer.from(after).toString('base64')});
+ const block=manifest.blocks[0];block.bytes=original.length;block.sha256=await digest(original);files.set(block.path,original);
+ block.normLowering={schemaVersion:1,type:'umt5-inner-rmsnorm-avx2-cascade-f32-v1',status:'diagnostic-only-unaccepted',index:0,path:block.path,sourceAsset:{bytes:block.bytes,sha256:block.sha256},executedBytes:expected.length,executedGraphSha256:await digest(expected),sourceGraphPayloadOffset:1,sourceGraphLength:19,executedGraphLength:22,operations:[operation('graph-length',0,[19],[22]),operation('inner-rmsnorm-0-reduce-mean',2,[1,2],[10,11,12]),operation('inner-rmsnorm-1-reduce-mean',10,[3,4],[20,21,22,23])]};
+ const stop=new Error('sentinel after selected norm graph verification');let created=0;
+ const encoder=await module.loadTextEncoder({manifest,files,ort:{env:{wasm:{}},Tensor:class{},InferenceSession:{create:async bytes=>{created++;assert.deepEqual(bytes,expected);throw stop;}}},hike:{rmsNorm(){throw Error('No NN execution');}}});
+ try{await assert.rejects(encoder.run({tokenIds:[0],attentionMask:[1]}),error=>error===stop);assert.equal(created,1);assert.equal(encoder.info.graphBindings[0].sourceAssetSha256,block.sha256);assert.equal(encoder.info.graphBindings[0].executedGraphSha256,block.normLowering.executedGraphSha256);assert.equal(original[0],19);}finally{await encoder.dispose();}
+});
 test('abort immediately after session creation still releases that session',async()=>{
  const {manifest,files}=await fixture(),controller=new AbortController();let released=0,ran=0;
  const ort={env:{wasm:{}},Tensor:class{},InferenceSession:{create:async()=>{controller.abort(new Error('Cancelled'));return{release:async()=>{released++;},run:async()=>{ran++;}};}}};

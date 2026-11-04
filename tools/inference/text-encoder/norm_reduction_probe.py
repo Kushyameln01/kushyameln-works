@@ -74,7 +74,7 @@ def metrics(actual, expected):
             'row0MaxAbsError': float(np.max(np.abs(delta.reshape(512, -1)[0])))}
 
 
-def cascade_nodes(square, output, onnx):
+def cascade_nodes(square, output, onnx, prefix='cascade'):
     h = onnx.helper
     nodes = []
     def constant(name, values, dtype=onnx.TensorProto.INT64):
@@ -96,6 +96,18 @@ def cascade_nodes(square, output, onnx):
     nodes.append(h.make_node('Reshape', [current, shape], ['cascade-sum'], name='cascade-sum'))
     divisor = constant('cascade-divisor', [4096.], onnx.TensorProto.FLOAT)
     nodes.append(h.make_node('Div', ['cascade-sum', divisor], [output], name='cascade-mean'))
+    if prefix != 'cascade':
+        def renamed(value):
+            return prefix + value[len('cascade'):] if value.startswith('cascade') else value
+        for node in nodes:
+            node.name = renamed(node.name)
+            for index, value in enumerate(node.input):
+                node.input[index] = renamed(value)
+            for index, value in enumerate(node.output):
+                node.output[index] = renamed(value)
+            for attribute in node.attribute:
+                if attribute.type == onnx.AttributeProto.TENSOR:
+                    attribute.t.name = renamed(attribute.t.name)
     return nodes
 
 

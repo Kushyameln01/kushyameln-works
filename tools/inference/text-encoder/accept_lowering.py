@@ -41,7 +41,8 @@ def main():
     stripped = copy.deepcopy(manifest)
     for block in stripped['blocks']:
         block.pop('attentionLowering',None)
-    assert stripped == original_manifest, 'Only explicit block attentionLowering may change'
+        block.pop('normLowering',None)
+    assert stripped == original_manifest, 'Only explicit block attentionLowering or normLowering may change'
     selected = json.loads(args.selection.read_text())['cases']
     records, references, provenance = [], {}, []
     for entry in selected:
@@ -91,7 +92,9 @@ def main():
         'gate':manifest['numericGate'], 'newExports':0, 'comparisons':[]}
     report['manifestMapping'] = {'originalPath':str(args.original_manifest),
         'originalSha256':digest(original_manifest_raw),
-        'selectedSha256':manifest_sha,'onlyAddedBlockAttentionLowering':True}
+        'selectedSha256':manifest_sha,'onlyAddedBlockLowering':True,
+        'attentionLoweringBlocks':sum('attentionLowering' in b for b in manifest['blocks']),
+        'normLoweringBlocks':sum('normLowering' in b for b in manifest['blocks'])}
     config = {'root':str(ROOT), 'bundle':str(args.bundle.resolve()),
         'source':str(args.source.resolve()), 'output':str(args.output.resolve()),
         'manifest':manifest, 'manifestSha256':manifest_sha, 'inputs':records,

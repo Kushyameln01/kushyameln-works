@@ -1,6 +1,7 @@
 /** Actual staged Wan UMT5 encoder. CPU WASM only; FP32 prepared diagnostics. */
 import {Sha256} from '../vr180/sha256.mjs';
 import {inspectSdpaScaleRecipe,applySdpaScaleRecipeInPlace} from './text-attention-lowering.mjs';
+import {inspectInnerRmsNormRecipe,rewriteInnerRmsNormGraph,verifyInnerRmsNormGraph} from './text-norm-lowering.mjs';
 const TYPE='wan-umt5-staged-fp32';
 const MODEL='c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68';
 export const TEXT_ENCODER_MODEL_SHA256=MODEL;
@@ -21,11 +22,11 @@ export function inspectTextEncoderManifest(manifest){
  if(manifest.onnxOpset!==17||manifest.ortVersion!=='1.24.3'||manifest.maxTokens!==512)failure('Unsupported text runtime manifest');
  const e=manifest.embedding;
  if(!e||e.dtype!=='float16-le'||e.hiddenSize!==DIM||e.vocabSize!==256384||!Number.isSafeInteger(e.offset)||typeof e.sourceFile!=='string'||e.sourceBytes!==6735906897)failure('Invalid text embedding manifest');
- manifest.blocks.forEach((r,i)=>{record(r,'block');if(r.index!==i)failure('Invalid text block manifest');if(r.attentionLowering!==undefined)inspectSdpaScaleRecipe(r.attentionLowering,r);});
+ manifest.blocks.forEach((r,i)=>{record(r,'block');if(r.index!==i)failure('Invalid text block manifest');if(r.attentionLowering!==undefined&&r.normLowering!==undefined)failure('Numeric lowering candidates must not be mixed');if(r.attentionLowering!==undefined)inspectSdpaScaleRecipe(r.attentionLowering,r);if(r.normLowering!==undefined)inspectInnerRmsNormRecipe(r.normLowering,r);});
  record(manifest.finalNorm,'final norm');if(manifest.finalNorm.bytes!==DIM*4||manifest.finalNorm.epsilon!==1e-6)failure('Invalid final norm manifest');
  record(e.rowHashes,'embedding row hashes');if(e.rowHashes.bytes!==e.vocabSize*32)failure('Invalid embedding row hash table');
  if(manifest.tokenizer!==undefined&&manifest.tokenizer.sha256!==UMT5_TOKENIZER_SHA256)failure('Unsupported embedded tokenizer identity');
- return {type:TYPE,hiddenSize:DIM,numLayers:24,maxTokens:512,arithmetic:manifest.arithmetic,modelSha256:MODEL,tokenizerSha256:UMT5_TOKENIZER_SHA256,graphBindings:manifest.blocks.map(r=>({index:r.index,path:r.path,sourceAssetSha256:r.sha256,executedGraphSha256:r.attentionLowering?.executedGraphSha256??r.sha256,recipeId:r.attentionLowering?.type??null}))};
+ return {type:TYPE,hiddenSize:DIM,numLayers:24,maxTokens:512,arithmetic:manifest.arithmetic,modelSha256:MODEL,tokenizerSha256:UMT5_TOKENIZER_SHA256,graphBindings:manifest.blocks.map(r=>({index:r.index,path:r.path,sourceAssetSha256:r.sha256,executedGraphSha256:r.normLowering?.executedGraphSha256??r.attentionLowering?.executedGraphSha256??r.sha256,recipeId:r.normLowering?.type??r.attentionLowering?.type??null}))};
 }
 export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress}={}){
  const info=inspectTextEncoderManifest(manifest);checkSignal(signal);
@@ -97,7 +98,11 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
    let hidden=await embeddings(effectiveIds);check(runSignal);emit({stage:'text-embedding',effectiveTokens:length,outputTokens:ids.length});
    for(const b of manifest.blocks){
     check(runSignal);let bytes=await verified(b,runSignal);check(runSignal);
-    if(b.attentionLowering){
+    if(b.normLowering){
+     bytes=await rewriteInnerRmsNormGraph(bytes,b.normLowering,{verifiedSourceAssetSha256:b.sha256,signal:runSignal,onProgress:event=>{check(runSignal);emit(event);check(runSignal);}});
+     // The original private buffer reference is replaced before the hash yields.
+     check(runSignal);await verifyInnerRmsNormGraph(bytes,b.normLowering,{signal:runSignal,onProgress:event=>{check(runSignal);emit(event);check(runSignal);}});check(runSignal);
+    }else if(b.attentionLowering){
      await applySdpaScaleRecipeInPlace(bytes,b.attentionLowering,{signal:runSignal,verifiedSourceAssetSha256:b.sha256,onProgress:event=>{check(runSignal);emit(event);check(runSignal);}});
      check(runSignal);
     }
