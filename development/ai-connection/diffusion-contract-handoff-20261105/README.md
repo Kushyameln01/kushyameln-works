@@ -43,8 +43,12 @@ PYTHONDONTWRITEBYTECODE=1 python3 tools/diffusion-models/continue-public-high-va
  --watch --state-dir /tmp/diffusion-original-high-validation-20261105
 ```
 
-The latter command is recorded for later use; it has not been executed during
-implementation. It polls every30 seconds. State, append-only events, commands,
+The latter command was not executed during implementation at source
+`5b006e34e0e885d1c3cd16bf8faa07fd0908adab`; that is the historical development
+boundary. The coordinator subsequently armed it: [CONTINUATION-ARMED.json](CONTINUATION-ARMED.json)
+records actual watcher session25717 in WAIT, heavyWorkStarted:false and no launch
+claim/reference directory at the saved observation. Do not start a second watcher.
+It polls every30 seconds. State, append-only events, commands,
 source hashes, launcher BLAS observations, reference progress/resources and the
 comparison receipt stay in the specified Git-external private directory.
 `run.json` is the authoritative launched-phase record; check-only observations
@@ -83,7 +87,8 @@ Lightweight tests (no model, browser or reference inference):
 python3 tools/diffusion-models/test-continue-public-high-validation.py
 ```
 
-Development verification:28 small tests passed, including observed failing
+Historical development verification at source5b006e34e0e885d1c3cd16bf8faa07fd0908adab:
+28 small tests passed, including observed failing
 regressions for admission, source/input ownership, fresh output reservation,
 signal windows, incomplete cleanup, retry prevention and comparison identity.
 Independent schema and interruption reviews found no remaining Important or
@@ -101,4 +106,7 @@ inside these receipts are the actual UTC values. Reviewed watcher SHA256 is
 `bea290c7c48d5753d409057a99d3b033c7ccfe11ce82199b00b417cd16cff0ae`;
 test SHA256 is
 `2c4e55c978f18856a909e3860151c28014d5710a37bda7e8d8b8fb4bf0845406`.
-The coordinator owns the later commit and explicit `--watch` arm.
+The subsequent explicit `--watch` arm is recorded in
+[CONTINUATION-ARMED.json](CONTINUATION-ARMED.json); its saved WAIT state does not
+establish that a reference or comparison has run. [RESULT.md](RESULT.md) separates
+that operational state from contract delivery and numerical acceptance.

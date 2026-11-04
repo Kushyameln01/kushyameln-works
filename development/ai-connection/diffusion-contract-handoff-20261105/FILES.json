@@ -1,20 +1,55 @@
 {
   "schemaVersion": "diffusion-existing-contract-handoff-files/1",
-  "recordedAtUTC": "2026-11-04T22:21:14.266284+00:00",
+  "recordedAtUTC": "2026-11-04T22:45:16.376012+00:00",
   "dateJST": "2026-11-05",
   "runtimeSourceCommit": "b6e166478a8e072c9ffd3ce562bfdb0c89634920",
   "identicalModelExecutionSource": "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
-  "scope": "Existing normal P4 canonical Text marker and existing public completed-F32 weight API handoff; ingress validation only",
+  "scope": "Existing normal-contract handoff, ingress-only probe, historical native-free watcher validation and saved actual armed WAIT observation; no new neural/reference execution in packaging",
   "files": [
+    {
+      "path": "development/ai-connection/diffusion-contract-handoff-20261105/CONTINUATION-ARMED.json",
+      "bytes": 6633,
+      "sha256": "60e933bf84a5078f6d81e66791e017b5a0151811b70fbf70933184da755acf38"
+    },
+    {
+      "path": "development/ai-connection/diffusion-contract-handoff-20261105/CONTRACT.json",
+      "bytes": 24275,
+      "sha256": "50c853f508c26c2d364100cd7f3839a5fc4a39ed29e2702d32c84ec76fdf44ac"
+    },
     {
       "path": "development/ai-connection/diffusion-contract-handoff-20261105/HANDOFF.md",
       "bytes": 11974,
       "sha256": "2ced235252b0cda06cad4627841ba8313f1c905f19ddf3df4c8d71debbd0fc8d"
     },
     {
-      "path": "development/ai-connection/diffusion-contract-handoff-20261105/CONTRACT.json",
-      "bytes": 24275,
-      "sha256": "50c853f508c26c2d364100cd7f3839a5fc4a39ed29e2702d32c84ec76fdf44ac"
+      "path": "development/ai-connection/diffusion-contract-handoff-20261105/MANAGEMENT-DELIVERY.json",
+      "bytes": 3569,
+      "sha256": "e43ff824e615f7e1f4f7fd3f7c5d67985fff9af15f4e4c396de8095a28582f7d"
+    },
+    {
+      "path": "development/ai-connection/diffusion-contract-handoff-20261105/README.md",
+      "bytes": 6370,
+      "sha256": "feee666e71bc09fb804da6f7705846a897f5a91443b53c322349a18327ada1ff"
+    },
+    {
+      "path": "development/ai-connection/diffusion-contract-handoff-20261105/RESULT.md",
+      "bytes": 4220,
+      "sha256": "eb8049720e2f4e9ff90ea00a7926021de3002ad94448a8732292872b36acac50"
+    },
+    {
+      "path": "development/ai-connection/diffusion-contract-handoff-20261105/evidence/check-only-wait.json",
+      "bytes": 2449,
+      "sha256": "1442562f82a7e574660f7181396e813f6ff5777527920eb9a57e4fc484ed1f3b"
+    },
+    {
+      "path": "development/ai-connection/diffusion-contract-handoff-20261105/evidence/unit-tests.json",
+      "bytes": 464,
+      "sha256": "3c8f45a881f6d1d3169d9e629964a25a1c7b7177470ab936b808e274187a5036"
+    },
+    {
+      "path": "development/ai-connection/diffusion-contract-handoff-20261105/evidence/verification.json",
+      "bytes": 3005,
+      "sha256": "b8b593bcfa6e76f5cf4a9abf20ae4a5ad9f896d81c83440eff362a5348b16160"
     },
     {
       "path": "development/ai-connection/diffusion-contract-handoff-20261105/p4-canonical-text-receipt.json",
@@ -25,6 +60,21 @@
       "path": "tools/diffusion-models/verify-p4-canonical-text.mjs",
       "bytes": 7198,
       "sha256": "e1d263627dec9734e7dbf44dac062ba108cad80f6fc8c0357c153a4d50eedf88"
+    },
+    {
+      "path": "tools/diffusion-models/continue-public-high-validation.py",
+      "bytes": 41400,
+      "sha256": "bea290c7c48d5753d409057a99d3b033c7ccfe11ce82199b00b417cd16cff0ae"
+    },
+    {
+      "path": "tools/diffusion-models/test-continue-public-high-validation.py",
+      "bytes": 30557,
+      "sha256": "2c4e55c978f18856a909e3860151c28014d5710a37bda7e8d8b8fb4bf0845406"
+    },
+    {
+      "path": "development/ai-connection/diffusion-contract-handoff-20261105/SOURCE-RETRIEVAL.json",
+      "bytes": 1356,
+      "sha256": "879ae96689db88174f677da47278cfe6fdbba570dc8457f4ba20815fd56632f7"
     }
   ],
   "driverIncludedInContainingCommit": true,
@@ -35,5 +85,137 @@
   "managementNumericalExecutionAccepted": false,
   "activeOriginalInputReplaced": false,
   "newHeavyNNStarted": false,
-  "counterpartAcknowledged": false
+  "counterpartAcknowledged": false,
+  "packagingBaseCommit": "5b006e34e0e885d1c3cd16bf8faa07fd0908adab",
+  "normalHandoffSourceCommit": "bc5ee5a694f5039f39318932f1d51d7a46d4423c",
+  "watcherSourceCommit": "5b006e34e0e885d1c3cd16bf8faa07fd0908adab",
+  "exclusions": [
+    "FILES.json itself",
+    "all November4 immutable history",
+    "private values/models/active input files and job state directories"
+  ],
+  "runtimeSourceValidation": {
+    "sourceCount": 153,
+    "allHashesMatch": true,
+    "identicalToFrozenExecutionCommit": "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
+    "buildID": "diffusion-models/0.1+e5ba40ce01bd04e4a432846afb737a9d8c37c56450df68af51460d9140c3e4c6"
+  },
+  "sourceAndBodyConsistency": {
+    "deliveryCommentBodyHash": true,
+    "fixedContractSourceObjectsVerified": 21,
+    "fixedCanonicalPacketSourceObjectsVerified": 4,
+    "snapshotRuntimeSourceFilesVerified": 153,
+    "armedRecordAndWatcherSourceConsistent": true,
+    "activeInputRecordOnlyNotReread": 12,
+    "checkOnlyReceiptHash": true,
+    "runtime153BytesIdenticalToFrozen6cda": true,
+    "fixedFullBodyRetrievalProofEntriesVerified": 2
+  },
+  "localMarkdownLinks": {
+    "checked": 17,
+    "allExist": true,
+    "checks": [
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/README.md",
+        "target": "CONTINUATION-ARMED.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/README.md",
+        "target": "evidence/verification.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/README.md",
+        "target": "evidence/unit-tests.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/README.md",
+        "target": "evidence/check-only-wait.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/README.md",
+        "target": "CONTINUATION-ARMED.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/README.md",
+        "target": "RESULT.md",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/RESULT.md",
+        "target": "MANAGEMENT-DELIVERY.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/RESULT.md",
+        "target": "SOURCE-RETRIEVAL.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/RESULT.md",
+        "target": "HANDOFF.md",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/RESULT.md",
+        "target": "CONTRACT.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/RESULT.md",
+        "target": "p4-canonical-text-receipt.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/RESULT.md",
+        "target": "CONTINUATION-ARMED.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/RESULT.md",
+        "target": "README.md",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/RESULT.md",
+        "target": "FILES.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/HANDOFF.md",
+        "target": "CONTRACT.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/HANDOFF.md",
+        "target": "p4-canonical-text-receipt.json",
+        "exists": true
+      },
+      {
+        "document": "development/ai-connection/diffusion-contract-handoff-20261105/HANDOFF.md",
+        "target": "p4-canonical-text-receipt.json",
+        "exists": true
+      }
+    ]
+  },
+  "managementDelivered": true,
+  "managementDeliveryProof": "MANAGEMENT-DELIVERY.json",
+  "managementAdopted": false,
+  "watcherArmed": true,
+  "watcherExecSession": 25717,
+  "watcherStatusAtSavedObservation": "WAIT",
+  "referenceHeavyWorkStartedAtSavedObservation": false,
+  "nativeHighFull40Accepted": false,
+  "independentComparisonComplete": false,
+  "originalLowAccepted": false,
+  "sixUpdatesAccepted": false,
+  "rawGeneratedSampleSaveAccepted": false,
+  "originalSizeOneThreadAccepted": false,
+  "activeInputsReadDuringPackaging": false,
+  "jobQueriedDuringPackaging": false,
+  "metadataScope": "Current uncommitted result/README/inventory metadata will be bound by the coordinator containing commit; fixed HANDOFF/CONTRACT bodies retain original distribution identities."
 }
