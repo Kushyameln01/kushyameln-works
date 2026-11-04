@@ -5,6 +5,7 @@ No export, oracle generation, full generation or LoRA operation. Independent
 references and gates below are development checks, never normal API inputs.
 """
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -33,14 +34,59 @@ def digest(value):
     return hashlib.sha256(value).hexdigest()
 
 
+def validate_text_manifest_mapping(*, selected_raw, original_raw, plain, oracle):
+    """Bind a runtime graph selection to unchanged independent oracle records.
+
+    Only block attentionLowering may be added. No original input/manifest/gate
+    or oracle file is rewritten to make the selected runtime look identical.
+    """
+    selected, original = json.loads(selected_raw), json.loads(original_raw)
+    original_sha, selected_sha = digest(original_raw), digest(selected_raw)
+    if plain['manifestSha256'] != original_sha:
+        raise ValueError('Independent input does not bind the original manifest SHA')
+    stripped = copy.deepcopy(selected)
+    added = []
+    for index, block in enumerate(stripped['blocks']):
+        if 'attentionLowering' in block:
+            added.append(index)
+            del block['attentionLowering']
+    if stripped != original:
+        raise ValueError('Only added blocks[*].attentionLowering may differ from the original manifest')
+    if not oracle.get('passed') or oracle.get('oracleUsesOnnxOrHike') is not False:
+        raise ValueError('A passed independent oracle is required for development comparison')
+    if oracle.get('input') != plain:
+        raise ValueError('Development comparison must keep the unchanged oracle input record')
+    if plain.get('oracleUsesFull512Positions') is not True or plain.get('text') != 'Hello world':
+        raise ValueError('Existing independent all-position Hello world input required')
+    if (plain['modelSha256'] != selected['modelSha256'] or
+            plain['tokenizerSha256'] != selected['tokenizer']['sha256'] or
+            selected['modelSha256'] != original['modelSha256'] or
+            selected['tokenizer'] != original['tokenizer']):
+        raise ValueError('Selected model and Tokenizer must equal the original independent binding')
+    if selected['numericGate'] != original['numericGate'] or selected['numericGate'] != oracle.get('gate'):
+        raise ValueError('Selected, original and independent comparison gate must remain identical')
+    if oracle.get('manifest', {}).get('sha256') != original_sha:
+        raise ValueError('Independent oracle does not identify the original manifest')
+    gate = selected['numericGate']
+    if gate.get('maxAbsError') != .001 or gate.get('rtol') != .001 or gate.get('registeredBeforeComparison') is not True:
+        raise ValueError('Original predeclared Text numeric gate required')
+    return {'originalSha256': original_sha, 'selectedSha256': selected_sha,
+            'onlyAddedBlockAttentionLowering': True, 'addedAttentionLoweringBlocks': added,
+            'modelSha256': selected['modelSha256'], 'tokenizerSha256': selected['tokenizer']['sha256'],
+            'gate': copy.deepcopy(gate), 'originalInputUnchanged': True,
+            'independentReferenceUnchanged': True}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--scope', choices=('rect', 'text', 'both'), default='rect')
     for name in ('sources-root', 'output'):
         parser.add_argument('--' + name, required=True, type=Path)
     parser.add_argument('--execution-source-sha', required=True)
-    for name in ('vae-bundle', 'generated-input', 'text-bundle', 'text-source', 'text-reference'):
+    for name in ('vae-bundle', 'generated-input', 'text-bundle', 'text-source', 'text-reference', 'text-original-manifest'):
         parser.add_argument('--' + name, type=Path)
+    parser.add_argument('--text-cancel-stage', choices=('sdpa-execution-graph-hash',),
+                        help='Observe native execution-graph hash progress, cancel, then recover with the selected plain run')
     parser.add_argument('--browser', default=os.environ.get('CHROMIUM_BINARY') or shutil.which('chromium'))
     parser.add_argument('--timeout-seconds', type=int, default=1800)
     parser.add_argument('--preflight-only', action='store_true')
@@ -95,14 +141,33 @@ def main():
         if args.scope in ('text', 'both'):
             if not all((args.text_bundle, args.text_source, args.text_reference)):
                 raise ValueError('Text requires its local bundle/source and existing independent reference directory')
-            manifest = json.loads((args.text_bundle / 'manifest.json').read_text())
+            manifest_raw = (args.text_bundle / 'manifest.json').read_bytes()
+            manifest = json.loads(manifest_raw)
             plain = json.loads((args.text_reference / 'plain-input.json').read_text())
-            if plain['text'] != 'Hello world' or digest((args.text_bundle / 'manifest.json').read_bytes()) != plain['manifestSha256']:
-                raise ValueError('Selected independent Hello world input/manifest mismatch')
+            oracle_raw = (args.text_reference / 'reference-results.json').read_bytes()
+            oracle = json.loads(oracle_raw)
+            original_path = args.text_original_manifest or args.text_bundle / 'manifest.json'
+            mapping = validate_text_manifest_mapping(selected_raw=manifest_raw, original_raw=original_path.read_bytes(),
+                                                     plain=plain, oracle=oracle)
+            mapping['originalPath'] = str(original_path)
+            mapping['selectedPath'] = str(args.text_bundle / 'manifest.json')
+            mapping['oracleReportSha256'] = digest(oracle_raw)
+            reference_path = args.text_reference / 'plain-reference.f32'
+            reference_raw = reference_path.read_bytes()
+            if len(reference_raw) != oracle['reference']['bytes'] or digest(reference_raw) != oracle['reference']['sha256']:
+                raise ValueError('Unchanged independent Text reference bytes/SHA mismatch')
+            mapping['reference'] = {'path': str(reference_path), 'bytes': len(reference_raw), 'sha256': digest(reference_raw)}
+            if args.text_cancel_stage and not mapping['addedAttentionLoweringBlocks']:
+                raise ValueError('Execution-hash cancellation needs a selected attentionLowering recipe')
             if args.text_source.stat().st_size != manifest['modelBytes']:
                 raise ValueError('Text original model file size mismatch')
             spec['plainInput'] = plain
-            inputs['plain-reference.f32'] = args.text_reference / 'plain-reference.f32'
+            spec['textManifestMapping'] = mapping
+            spec['textCancelStage'] = args.text_cancel_stage
+            report['textManifestMapping'] = mapping
+            spec['textGate'] = {'atol': mapping['gate']['maxAbsError'], 'rtol': mapping['gate']['rtol'],
+                                'maxAbs': mapping['gate']['maxAbsError']}
+            inputs['plain-reference.f32'] = reference_path
             text_selected = [args.text_bundle / 'manifest.json', *(args.text_bundle / a['path'] for a in manifest['blocks']),
                              args.text_bundle / manifest['finalNorm']['path'], args.text_bundle / manifest['embedding']['rowHashes']['path'],
                              args.text_bundle / manifest['tokenizer']['path']]

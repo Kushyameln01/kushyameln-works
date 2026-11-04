@@ -104,7 +104,7 @@ export function createManagedInferenceBridge({manager,nativeAPI,nativeModule,sou
   const {value:native,terminal,target}=await invoke({...request,input:selected});
   if(!native?.tensor)throw error('NATIVE_TENSOR_REQUIRED','Native inference must return an owned tensor');
   const artifactId='output:'+crypto.randomUUID();
-  const nativeDetails={...(native.inputDescriptor?{inputDescriptor:clone(native.inputDescriptor)}:{}),...(native.binding?{binding:clone(native.binding)}:{}),...(native.processing?{processing:clone(native.processing)}:{})};
+  const nativeDetails={...(native.inputDescriptor?{inputDescriptor:clone(native.inputDescriptor)}:{}),...(native.binding?{binding:clone(native.binding)}:{}),...(native.processing?{processing:clone(native.processing)}:{}),...(native.graphBindings?{graphBindings:clone(native.graphBindings)}:{})};
   const inputMetadata=inputRecord?{artifactRef:inputRecord.descriptor.artifactId,nativeInputDescriptor:nativeModule.describeTensor(inputRecord.tensor)}:{nativeInput:clone(selected),inputMode:selected.text!==undefined?'plain-text':'token-ids'};
   const record=captureSavedTensor(native.tensor,{artifactId,sourceRecords:[inputMetadata],trace:{schemaVersion:1,artifactId,records:[{traceId:target.requestId,data:{scope:'normal management control; no numerical acceptance implied',sourceRef:clone(sourceRef),module:request.module,operation:request.operation,target,terminal,native:nativeDetails}}]}});
   return {native,record,inputRecord,terminal,target};

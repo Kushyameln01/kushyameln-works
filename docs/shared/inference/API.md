@@ -252,3 +252,36 @@ ORT Web1.24.3のWASM provider。Textと旧固定VAEは1 thread、新stream VAE�
 438版も旧storage codec/wrapperのG1C metadata完全保存は未成立なので、原native artifact/metadata/evidenceを外側で保持し、G1C codecを明示選択する。取得した管理 `a26879057d169cb2eecff30503d64adba5057c52` のadapter/packageは、実G1C codecを指定したNode検査で情報保全を確認した。これは全管理ブラウザ工程、Diffusion RPC全経路、実generated sampleや全生成の受入を意味しない。初期21e77f取得待ちの記録は歴史として保持する。
 
 モデル/ONNXは従来の非公開bundle入力を維持する。source branchへはmanifest/hash・診断fixture・全出力参照・計測証拠・再生成/検証手順を含め、約499MBの神経graphとモデル原本は同梱しない。
+
+## 現行の単体能力と管理接続（2026-11-04）
+
+上記の固定版照合は履歴である。現行stream VAEの入力域・実装・受入は
+[単体API](../../../development/inference/standalone-20261102/API.md)と
+[VAE結果](../../../development/inference/standalone-20261102/VAE-RESULT.md)を参照する。
+N=1、RGBはfloat32 NCTHW、encode F=1..81、H/W=16..848の16倍数。
+実処理Fは `1+4*floor((F-1)/4)`、出力Tは `1+floor((F-1)/4)`。
+元入力のsourceContextと実処理context/frameProcessingを区別し、末尾を隠して捨てない。
+decodeはT=1..21、latent h/w=2..106の偶数で、出力F=`1+4*(T-1)`、H/Wは8倍。
+構成する固定graphまたはstream graphの実能力をcapabilitiesで返す。
+
+Textのplainは `[1,512,4096]`、ID入力は `[1,L,4096]`（L=1..512）。
+float32 BLC、binary mask、model/Tokenizer SHA、`umt5-final-rmsnorm-f32-v1`
+を通常tensorから取得でき、既存codecが保持する。system/negativeの組立ては管理側。
+weighted prompt/custom embeddingは未対応。合法なID0を禁止せず、最終gateを引き上げない。
+選択manifestの `blocks[].attentionLowering` は元asset SHAと実行graph SHAを分離する。
+実行時は元bytesを検証後、同一bufferの2 scalarだけを変更し、実行hashを検証する。
+通常返却の `graphBindings` はtensor外に置く。候補の数値合否・採用状況は
+[今回の結果](../../../development/inference/management-20261104/RESULT.md)に従う。
+
+新しい実装 `management-adapter.mjs` の `createManagedInferenceBridge` は、
+実管理のadapter/queue/workspaceとnative APIを注入して実行・取消・保存・読戻しを行う。
+詳細は[管理接続API](../../../development/inference/management-20261104/API.md)。
+通常入口へ独立参照・誤差gate・過去receiptを要求しない。current native codecを注入する。
+decodeでは入力raw artifactとRGBを同じpackageへ保持し、元producer/decoder bindingと
+inputDescriptor、graphBindingsを外側trace/sourceRecordsへ保存する。
+取消は元呼出しと管理releaseの終端を待ち、未dispatch取消も解放してから再実行する。
+
+復元済み `wan21-raw-generated-sample:v1` は、その意味とproducer/decoder bindingのまま
+decodeする。posterior meanへの改名やVAE側での追加復元を行わない。
+実Diffusion復元APIを通したsynthetic保存入力の部分接続と、実producer生成の全体実験は
+別の受入である。実P4 captureによる情報保持も投影/cross-attentionの実行とは区別する。

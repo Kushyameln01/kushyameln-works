@@ -8,6 +8,7 @@ import {tmpdir} from 'node:os';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import * as native from '../../../docs/shared/inference/api.mjs';
+import {inspectTextEncoderManifest} from '../../../docs/shared/inference/text-encoder.mjs';
 import {createManagedInferenceBridge,createCurrentNativeCodec,captureRestoredConditioning} from '../../../docs/shared/inference/management-adapter.mjs';
 import {acquireConnectionSources,importManagementSource,importDiffusionConditioning} from './source.mjs';
 
@@ -30,7 +31,7 @@ before(async()=>{
 });
 after(async()=>{if(temporary)await rm(temporary,{recursive:true,force:true});});
 
-function setup({hold=false,onNativeRequest}={}){
+function setup({hold=false,onNativeRequest,graphBindings,textConfigurationManifest=textManifest}={}){
  let state={status:'idle'},active=null,disposed=false,maxActive=0,inFlight=0;const calls=[];
  const client={get state(){return state;},run(request){
   assert.equal(disposed,false);assert.equal(inFlight,0,'real shared queue must serialize both modules');
@@ -38,7 +39,7 @@ function setup({hold=false,onNativeRequest}={}){
   return new Promise((accept,reject)=>{
    const finish=(error)=>{if(!active)return;active=null;inFlight--;state={status:'idle'};
     if(error){reject(error);return;}
-    if(request.module==='text_encoder'){accept({tensor:structuredClone(text),attentionMask:new Uint8Array(text.attentionMask),inputMode:request.input.text!==undefined?'plain-text':'token-ids'});return;}
+    if(request.module==='text_encoder'){accept({tensor:structuredClone(text),attentionMask:new Uint8Array(text.attentionMask),inputMode:request.input.text!==undefined?'plain-text':'token-ids',...(graphBindings?{graphBindings}: {})});return;}
     const out=request.operation==='encode'?mean:rgb;
     accept({tensor:structuredClone(out),inputDescriptor:native.describeTensor(request.input),binding:{operation:request.operation,inputShape:[...request.input.shape],outputShape:[...out.shape],assetsVerified:true,assetHashes:{controlFixture:'not-a-model-run'},graphMetadataChecked:true}});
    };
@@ -48,9 +49,10 @@ function setup({hold=false,onNativeRequest}={}){
  const api={apiVersion:'works-ai-1',textEncoder:native.createTextEncoderModule({client,ownsClient:false}),vae:native.createVaeModule({client,ownsClient:false}),dispose(){this.textEncoder.dispose();this.vae.dispose();client.dispose();}};
  const codec=createCurrentNativeCodec(native,sourceRef);
  const bridge=createManagedInferenceBridge({manager,nativeAPI:api,nativeModule:native,sourceRef,codec,onNativeRequest});
- const textFiles=new Map([...textManifest.blocks,textManifest.finalNorm,textManifest.embedding.rowHashes,{path:textManifest.embedding.sourceFile,bytes:textManifest.embedding.sourceBytes},textManifest.tokenizer].map(a=>[a.path??a.file,{size:a.bytes}]));
+ const tm=textConfigurationManifest;
+ const textFiles=new Map([...tm.blocks,tm.finalNorm,tm.embedding.rowHashes,{path:tm.embedding.sourceFile,bytes:tm.embedding.sourceBytes},tm.tokenizer].map(a=>[a.path??a.file,{size:a.bytes}]));
  const vaeFiles=new Map(Object.values(vaeManifest.assets).map(a=>[a.file,{size:a.bytes}]));
- return {bridge,client,calls,configure:async()=>{await bridge.configure('text_encoder',{manifest:textManifest,files:textFiles});await bridge.configure('vae',{manifest:vaeManifest,files:vaeFiles});},get disposed(){return disposed;},get maxActive(){return maxActive;}};
+ return {bridge,client,calls,configure:async()=>{await bridge.configure('text_encoder',{manifest:tm,files:textFiles});await bridge.configure('vae',{manifest:vaeManifest,files:vaeFiles});},get disposed(){return disposed;},get maxActive(){return maxActive;}};
 }
 
 test('actual management adapter, native plain/ID input and owned tensor capture preserve final normalization',async()=>{
@@ -63,6 +65,23 @@ test('actual management adapter, native plain/ID input and owned tensor capture 
   for(const r of [plain,ids]){assert.deepEqual(r.record.tensor.data,text.data);assert.deepEqual(r.record.tensor.attentionMask,text.attentionMask);assert.equal(r.record.tensor.normalization,'umt5-final-rmsnorm-f32-v1');assert.equal(r.record.tensor.tokenizerSha256,text.tokenizerSha256);assert.equal(r.terminal.resourceReleased,true);}
   assert.equal(s.bridge.inspect().artifactStoreEntries,0);
  }finally{await s.bridge.dispose();}assert.equal(s.disposed,true);
+});
+
+test('current native Text graph bindings survive actual management save/read outside tensor metadata',async()=>{
+ const candidate=JSON.parse(await readFile(resolve(ROOT,'development/inference/management-20261104/text/candidate-manifest.json')));
+ const bindings=inspectTextEncoderManifest(candidate).graphBindings,expected=structuredClone(bindings);
+ assert.equal(bindings.length,24);assert.ok(bindings.every(b=>b.sourceAssetSha256!==b.executedGraphSha256));
+ const s=setup({graphBindings:bindings,textConfigurationManifest:candidate});try{await s.configure();
+  const execution=await s.bridge.execute({module:'text_encoder',operation:'encode',input:plainInput.input});
+  assert.deepEqual(execution.native.graphBindings,expected,'Actual public native factory must retain its ordinary result bindings');
+  assert.equal(Object.hasOwn(execution.native.tensor,'graphBindings'),false);
+  assert.deepEqual(execution.record.trace.records[0].data.native.graphBindings,expected);
+  execution.native.graphBindings[0].executedGraphSha256='f'.repeat(64);
+  const saved=await s.bridge.save({records:{conditioning:execution.record}}),loaded=await s.bridge.read(saved.bytes);
+  assert.deepEqual(loaded.artifacts.conditioning.trace.records[0].data.native.graphBindings,expected);
+  assert.equal(Object.hasOwn(loaded.artifacts.conditioning.tensor,'graphBindings'),false);
+  assert.deepEqual(loaded.artifacts.conditioning.tensor.data,text.data);
+ }finally{await s.bridge.dispose();}
 });
 
 test('Rect native encode/decode paths preserve context; restored generated-sample stays generated',async()=>{

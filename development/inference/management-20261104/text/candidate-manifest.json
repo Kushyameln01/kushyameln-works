@@ -1,0 +1,1317 @@
+{
+  "schemaVersion": 1,
+  "type": "wan-umt5-staged-fp32",
+  "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+  "modelBytes": 6735906897,
+  "sourceSha256": "797f11b69256dffa8d9a6d236fe1e05d0c250c84d231a5993accde0ff44238bc",
+  "config": {
+    "d_ff": 10240,
+    "d_kv": 64,
+    "d_model": 4096,
+    "decoder_start_token_id": 0,
+    "dropout_rate": 0.1,
+    "eos_token_id": 1,
+    "dense_act_fn": "gelu_pytorch_tanh",
+    "initializer_factor": 1.0,
+    "is_encoder_decoder": true,
+    "is_gated_act": true,
+    "layer_norm_epsilon": 1e-06,
+    "model_type": "umt5",
+    "num_decoder_layers": 24,
+    "num_heads": 64,
+    "num_layers": 24,
+    "output_past": true,
+    "pad_token_id": 0,
+    "relative_attention_num_buckets": 32,
+    "tie_word_embeddings": false,
+    "vocab_size": 256384
+  },
+  "arithmetic": "FP32 diagnostic expansion of original scaled FP8 values; not original GPU FP8 execution equivalence",
+  "embedding": {
+    "sourceFile": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+    "sourceBytes": 6735906897,
+    "offset": 549240,
+    "vocabSize": 256384,
+    "hiddenSize": 4096,
+    "dtype": "float16-le",
+    "rowHashes": {
+      "path": "embedding-row-sha256.bin",
+      "bytes": 8204288,
+      "sha256": "b827dfa98cd61ad45b380b1a68c779c6e685f35128ac76d1b588e3c06ed30928"
+    }
+  },
+  "numLayers": 24,
+  "hiddenSize": 4096,
+  "maxTokens": 512,
+  "minimumValidatedTokens": 4,
+  "dynamicTokens": true,
+  "blocks": [
+    {
+      "index": 0,
+      "path": "block-00.onnx",
+      "bytes": 771822917,
+      "sha256": "7fe493343e5a3d9c196284b1a64525c1296ac4f4a56a5d6239e6047cd3fb8807",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-00.f32",
+        "bytes": 65536,
+        "sha256": "9a874571a131437829943aecd08f6729e37626f8f6a9e8fa29c269882f23e70b"
+      },
+      "nativeMaxAbsError": 0.08984375,
+      "nativeNormalizedPeakError": 4.390248705021804e-06,
+      "nativeRelativeRmsError": 4.351552016427257e-06,
+      "nativePass": true,
+      "prepareSeconds": 6.670520171000135,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 0,
+        "path": "block-00.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "7fe493343e5a3d9c196284b1a64525c1296ac4f4a56a5d6239e6047cd3fb8807"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "4e5b85d357590f0237efd44757f2121306a4a012a9357a1380b1470e5e87f0d0"
+      }
+    },
+    {
+      "index": 1,
+      "path": "block-01.onnx",
+      "bytes": 771822917,
+      "sha256": "00eda8f5f4b85050ec275da13dd8bd3cfe3ec120362ced66cdcaa90c94c69b80",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-01.f32",
+        "bytes": 65536,
+        "sha256": "008041fbbd8fa8adc9c69141389aa08456382014edf568a952930323f679172b"
+      },
+      "nativeMaxAbsError": 0.091796875,
+      "nativeNormalizedPeakError": 4.095417807548074e-06,
+      "nativeRelativeRmsError": 4.1148639985621625e-06,
+      "nativePass": true,
+      "prepareSeconds": 17.72576097199999,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 1,
+        "path": "block-01.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "00eda8f5f4b85050ec275da13dd8bd3cfe3ec120362ced66cdcaa90c94c69b80"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "44ad6a1a81d701e84814a771e3b1f2faf3b054b8e481fed63e788fbfde2e0c80"
+      }
+    },
+    {
+      "index": 2,
+      "path": "block-02.onnx",
+      "bytes": 771822917,
+      "sha256": "1c25b78cdae445f1655cfee39d3560cfc39acbf4c94b3318e1adaa85a2873f58",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-02.f32",
+        "bytes": 65536,
+        "sha256": "d67c96724e4df60022f741869549b73fb88affb65c8f5078b87819c6ee7fc2e3"
+      },
+      "nativeMaxAbsError": 0.091796875,
+      "nativeNormalizedPeakError": 3.977648248110199e-06,
+      "nativeRelativeRmsError": 4.014335453739738e-06,
+      "nativePass": true,
+      "prepareSeconds": 21.800075543000276,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 2,
+        "path": "block-02.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "1c25b78cdae445f1655cfee39d3560cfc39acbf4c94b3318e1adaa85a2873f58"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "6fc190a634b7bb098bbefaf1549a0f1b846fb125a25f40b4632db397233bd1b3"
+      }
+    },
+    {
+      "index": 3,
+      "path": "block-03.onnx",
+      "bytes": 771822917,
+      "sha256": "90cfb936edd4d6805a82f43b4037966813079d4aedd158549c66582bc3984779",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-03.f32",
+        "bytes": 65536,
+        "sha256": "7eca9f97e1554f8e127635f5e993462a47df5f19f78ae6c6149e8de241c466df"
+      },
+      "nativeMaxAbsError": 0.09375,
+      "nativeNormalizedPeakError": 3.979933353548404e-06,
+      "nativeRelativeRmsError": 4.02647935988285e-06,
+      "nativePass": true,
+      "prepareSeconds": 18.695351213999857,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 3,
+        "path": "block-03.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "90cfb936edd4d6805a82f43b4037966813079d4aedd158549c66582bc3984779"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "f7af5dd4a711a09bd9b010393618987d0947982d53a6855a04bf9402b1fe2164"
+      }
+    },
+    {
+      "index": 4,
+      "path": "block-04.onnx",
+      "bytes": 771822917,
+      "sha256": "0f2e67515143617f9c0b77d8059932d79390a1394b990d00f5f928fc5cbd572a",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-04.f32",
+        "bytes": 65536,
+        "sha256": "891d66562a89ae837b3ae485f92c4e716d5594fbf15d931266b2ec87124caf52"
+      },
+      "nativeMaxAbsError": 0.095703125,
+      "nativeNormalizedPeakError": 3.929105787392473e-06,
+      "nativeRelativeRmsError": 3.9621197253709005e-06,
+      "nativePass": true,
+      "prepareSeconds": 21.76284426499933,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 4,
+        "path": "block-04.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "0f2e67515143617f9c0b77d8059932d79390a1394b990d00f5f928fc5cbd572a"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "192faef051b6a4e782c7c476ab4507ae7dd982d9848bbbe8a5c7b33b738c21e9"
+      }
+    },
+    {
+      "index": 5,
+      "path": "block-05.onnx",
+      "bytes": 771822917,
+      "sha256": "d7bc22cb6040e0b704000d0091bfe260b41b928e590016ff76330b04fb520003",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-05.f32",
+        "bytes": 65536,
+        "sha256": "cebc0a3b880039fa530ba4723a1c72d2f0f4123986a997ef54ccd74fd750a63b"
+      },
+      "nativeMaxAbsError": 0.099609375,
+      "nativeNormalizedPeakError": 3.992932761320844e-06,
+      "nativeRelativeRmsError": 3.916066951121272e-06,
+      "nativePass": true,
+      "prepareSeconds": 19.14849069200045,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 5,
+        "path": "block-05.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "d7bc22cb6040e0b704000d0091bfe260b41b928e590016ff76330b04fb520003"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "e8daa31efb9e5e88fdb6e1010e2adbf75bbde98a36f6b78c96d202531b3e727f"
+      }
+    },
+    {
+      "index": 6,
+      "path": "block-06.onnx",
+      "bytes": 771822917,
+      "sha256": "975428ef81f75d8a6247d77fa178efb3f6f6aa7762936236864f36eb3893506c",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-06.f32",
+        "bytes": 65536,
+        "sha256": "d629b696d7ea99b311c0962d19687537298c6b073476b949a6f5e72f7c526344"
+      },
+      "nativeMaxAbsError": 0.1015625,
+      "nativeNormalizedPeakError": 3.9814526644477155e-06,
+      "nativeRelativeRmsError": 3.898311547675419e-06,
+      "nativePass": true,
+      "prepareSeconds": 17.982959494999704,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 6,
+        "path": "block-06.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "975428ef81f75d8a6247d77fa178efb3f6f6aa7762936236864f36eb3893506c"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "4b540adc951fdddd5ccd5f7bdbae1a8893ac5027a86dbdd4baa3af39e1de912d"
+      }
+    },
+    {
+      "index": 7,
+      "path": "block-07.onnx",
+      "bytes": 771822917,
+      "sha256": "d6ae6199015f6cf273f6be4e6b8fee62936e62ad0300c2d17d6ae70b4062257d",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-07.f32",
+        "bytes": 65536,
+        "sha256": "d7d6d2db499a1648cff70e067a133879c1453526b2f981bba4e342e8cee9a91b"
+      },
+      "nativeMaxAbsError": 0.103515625,
+      "nativeNormalizedPeakError": 3.9637452573515475e-06,
+      "nativeRelativeRmsError": 3.8845849950786715e-06,
+      "nativePass": true,
+      "prepareSeconds": 23.7024185220007,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 7,
+        "path": "block-07.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "d6ae6199015f6cf273f6be4e6b8fee62936e62ad0300c2d17d6ae70b4062257d"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "859ed92186d370cb793d90c68625b165d8e7328789d6746d224fe78555545b84"
+      }
+    },
+    {
+      "index": 8,
+      "path": "block-08.onnx",
+      "bytes": 771822917,
+      "sha256": "1f8589ba197450330cff9cce373e1171469172157254d7176407419f5d6bbfb7",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-08.f32",
+        "bytes": 65536,
+        "sha256": "3a73a1606be74b95bfb8978bfa20f861dcb6a4e2480203beb0606868df87ec8f"
+      },
+      "nativeMaxAbsError": 0.10546875,
+      "nativeNormalizedPeakError": 3.891877440764802e-06,
+      "nativeRelativeRmsError": 3.825214159806807e-06,
+      "nativePass": true,
+      "prepareSeconds": 27.99117984500026,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 8,
+        "path": "block-08.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "1f8589ba197450330cff9cce373e1171469172157254d7176407419f5d6bbfb7"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "ad9a537a5c2660032e18c7354dd3c14b248844675d1e9aa8dd92ff05f5335bab"
+      }
+    },
+    {
+      "index": 9,
+      "path": "block-09.onnx",
+      "bytes": 771822917,
+      "sha256": "4b75f4fc30a603e0d7fbe65f8fc929e23c78892eff1be81ccee1230001f6bfae",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-09.f32",
+        "bytes": 65536,
+        "sha256": "28044d94de20a5e102b8d5ff31ef51078eafae3a9cc2f1046e44674060629233"
+      },
+      "nativeMaxAbsError": 0.11328125,
+      "nativeNormalizedPeakError": 3.941981503885472e-06,
+      "nativeRelativeRmsError": 3.921811528550248e-06,
+      "nativePass": true,
+      "prepareSeconds": 16.959295714999826,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 9,
+        "path": "block-09.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "4b75f4fc30a603e0d7fbe65f8fc929e23c78892eff1be81ccee1230001f6bfae"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "ee24a2ff8c22cd5e0c77060553b780331488c5e1f603b144ee6e744ad5a4d638"
+      }
+    },
+    {
+      "index": 10,
+      "path": "block-10.onnx",
+      "bytes": 771822917,
+      "sha256": "62c442a553fa409dfe90b66c83e4a84a15bb4bf53290a86916101ef1789b36ce",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-10.f32",
+        "bytes": 65536,
+        "sha256": "9c8524e1860967fed2b7bf8ab3d15abd8ded77639ab7b76d3dc9fbe7b9918166"
+      },
+      "nativeMaxAbsError": 0.119140625,
+      "nativeNormalizedPeakError": 3.9136543819040526e-06,
+      "nativeRelativeRmsError": 3.940941480842597e-06,
+      "nativePass": true,
+      "prepareSeconds": 17.431457773000147,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 10,
+        "path": "block-10.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "62c442a553fa409dfe90b66c83e4a84a15bb4bf53290a86916101ef1789b36ce"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "4fbccb3137453633984ea0c44daf91476d1aa1e4cfbf3aefd24fd99d964da230"
+      }
+    },
+    {
+      "index": 11,
+      "path": "block-11.onnx",
+      "bytes": 771822917,
+      "sha256": "07ce7f167f8e2e751cbcfc1f4e70ffe1511c4720c6b461fa623892acfdf1be3f",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-11.f32",
+        "bytes": 65536,
+        "sha256": "936f3b98a0709d9a066869b171a73199577577e9d73eace8e87d1bdabd52fb56"
+      },
+      "nativeMaxAbsError": 0.1328125,
+      "nativeNormalizedPeakError": 3.911609837814467e-06,
+      "nativeRelativeRmsError": 3.852950490564888e-06,
+      "nativePass": true,
+      "prepareSeconds": 20.781347117999758,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 11,
+        "path": "block-11.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "07ce7f167f8e2e751cbcfc1f4e70ffe1511c4720c6b461fa623892acfdf1be3f"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "13533b6251de580971758c88389eb3d1ba32987a6b3b5cfd9c25175e4a4c7b4d"
+      }
+    },
+    {
+      "index": 12,
+      "path": "block-12.onnx",
+      "bytes": 771822917,
+      "sha256": "448bc243e1feec0d194740bbe2ba7a91a91d81d5df9cb5371345e12b50715528",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-12.f32",
+        "bytes": 65536,
+        "sha256": "5c99e57a2002bb19794c6efb14c0180f4c8a839acb010e17effd90533652deb7"
+      },
+      "nativeMaxAbsError": 0.1328125,
+      "nativeNormalizedPeakError": 3.847814241453307e-06,
+      "nativeRelativeRmsError": 3.8513999621343815e-06,
+      "nativePass": true,
+      "prepareSeconds": 22.543096696000248,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 12,
+        "path": "block-12.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "448bc243e1feec0d194740bbe2ba7a91a91d81d5df9cb5371345e12b50715528"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "59cf005de4610e9c15bf3586cd04ae6152510b6c2c28ddc2f0ddb5b762df46ed"
+      }
+    },
+    {
+      "index": 13,
+      "path": "block-13.onnx",
+      "bytes": 771822917,
+      "sha256": "9bbd7fcfcde448b638e3f52398f5334f2bb1e80d96e9876fe920443507f21284",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-13.f32",
+        "bytes": 65536,
+        "sha256": "0a81cc51222fc61662ddfb21a3dc5f36576ea147703b0bc3f689934dadf462ba"
+      },
+      "nativeMaxAbsError": 0.1328125,
+      "nativeNormalizedPeakError": 3.821568952844245e-06,
+      "nativeRelativeRmsError": 3.869085541383049e-06,
+      "nativePass": true,
+      "prepareSeconds": 20.723017303000233,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 13,
+        "path": "block-13.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "9bbd7fcfcde448b638e3f52398f5334f2bb1e80d96e9876fe920443507f21284"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "48ceb1dbe9ff6d7b5dc2291a4523a5819bd9816c3b9b5377b235f80440c63d4f"
+      }
+    },
+    {
+      "index": 14,
+      "path": "block-14.onnx",
+      "bytes": 771822917,
+      "sha256": "1e96e89fe58446b93a054db33394f59f43bd2d3cf1ae2a104561f274e7742494",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-14.f32",
+        "bytes": 65536,
+        "sha256": "5996212b0214bb63dc27a32b427d4723e1b69b7af76cadbfcf2e8944f6dc7171"
+      },
+      "nativeMaxAbsError": 0.1328125,
+      "nativeNormalizedPeakError": 3.7964241528243292e-06,
+      "nativeRelativeRmsError": 3.874587100996624e-06,
+      "nativePass": true,
+      "prepareSeconds": 23.49551234000046,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 14,
+        "path": "block-14.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "1e96e89fe58446b93a054db33394f59f43bd2d3cf1ae2a104561f274e7742494"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "08068f73f3c0e712bfa0f56a602121114202429a2a5738132a482b38df365afd"
+      }
+    },
+    {
+      "index": 15,
+      "path": "block-15.onnx",
+      "bytes": 771822917,
+      "sha256": "9e23e5d5bd2267659b2a86f0bbf7a404bece617a8e72cb15fe60c37a18de376b",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-15.f32",
+        "bytes": 65536,
+        "sha256": "b05509199bbba6b269450114c8347935c16d194fb178a6b00180a539483bcef7"
+      },
+      "nativeMaxAbsError": 0.1328125,
+      "nativeNormalizedPeakError": 3.7924414755252656e-06,
+      "nativeRelativeRmsError": 3.887807228154235e-06,
+      "nativePass": true,
+      "prepareSeconds": 22.836613843000123,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 15,
+        "path": "block-15.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "9e23e5d5bd2267659b2a86f0bbf7a404bece617a8e72cb15fe60c37a18de376b"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "01137ebb4f0c43f619c7781d4e68425eb5842bce11a4738c3c4f2016eb8c4493"
+      }
+    },
+    {
+      "index": 16,
+      "path": "block-16.onnx",
+      "bytes": 771822917,
+      "sha256": "837c4703e6f58004dac3eaa964b758397107f8b3ab47bdec1adc091345a104b7",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-16.f32",
+        "bytes": 65536,
+        "sha256": "95fddacdc3fc40e6c845525c6537e5d7d539ca4f62733142f0f6cfca456a6495"
+      },
+      "nativeMaxAbsError": 0.1328125,
+      "nativeNormalizedPeakError": 3.795574002651847e-06,
+      "nativeRelativeRmsError": 3.891770637440917e-06,
+      "nativePass": true,
+      "prepareSeconds": 19.383806369999547,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 16,
+        "path": "block-16.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "837c4703e6f58004dac3eaa964b758397107f8b3ab47bdec1adc091345a104b7"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "5fdad8f937720118bbfc0d3ffa1eb7a620918ea56effd8fe83b7f029626f67f0"
+      }
+    },
+    {
+      "index": 17,
+      "path": "block-17.onnx",
+      "bytes": 771822917,
+      "sha256": "018cc4113a73c884be38764a1568b940c097fab63296a29df507171d1974b49a",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-17.f32",
+        "bytes": 65536,
+        "sha256": "f700efe8cba434f9402446850e3951546afe5a216d9411f50e5a1777525080c6"
+      },
+      "nativeMaxAbsError": 0.1328125,
+      "nativeNormalizedPeakError": 3.812440127148875e-06,
+      "nativeRelativeRmsError": 3.891060170386294e-06,
+      "nativePass": true,
+      "prepareSeconds": 23.70806869900025,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 17,
+        "path": "block-17.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "018cc4113a73c884be38764a1568b940c097fab63296a29df507171d1974b49a"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "8a18513bf62f19f9cb62d87b4786bdfcc1d3fcc833a48c5899a5e6d4e4fc3ebc"
+      }
+    },
+    {
+      "index": 18,
+      "path": "block-18.onnx",
+      "bytes": 771822917,
+      "sha256": "874cdf2f56b562fc7a78d116c1a944766f3fef6105bdb9c0766b608542e6b979",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-18.f32",
+        "bytes": 65536,
+        "sha256": "b02ce28e47c0db10c1cab02fd0d6da7648c977233d543576d240afbddc83eccb"
+      },
+      "nativeMaxAbsError": 0.140625,
+      "nativeNormalizedPeakError": 3.813891453319229e-06,
+      "nativeRelativeRmsError": 3.860692242020194e-06,
+      "nativePass": true,
+      "prepareSeconds": 21.803448930999366,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 18,
+        "path": "block-18.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "874cdf2f56b562fc7a78d116c1a944766f3fef6105bdb9c0766b608542e6b979"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "d3381a042ef49e71727a2895eb8321bdcf8f0aa0e9dbb5c1e91aa0204e427ff0"
+      }
+    },
+    {
+      "index": 19,
+      "path": "block-19.onnx",
+      "bytes": 771822917,
+      "sha256": "7ffb27b53e9006b99c330dfecc209f3f8d06aeaaffb70ceed5df5089fea4e447",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-19.f32",
+        "bytes": 65536,
+        "sha256": "423e2cdb3253b9e39283441c5ce7388b41c21fb588cfd6bb8a6e24e646fe4e85"
+      },
+      "nativeMaxAbsError": 0.15625,
+      "nativeNormalizedPeakError": 3.9797746467229445e-06,
+      "nativeRelativeRmsError": 3.875524521153019e-06,
+      "nativePass": true,
+      "prepareSeconds": 18.08269674100029,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 19,
+        "path": "block-19.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "7ffb27b53e9006b99c330dfecc209f3f8d06aeaaffb70ceed5df5089fea4e447"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "d700afefd3ba9a816cd063e1a712f35930e3f4178b5ab24d5e87607db33c1d17"
+      }
+    },
+    {
+      "index": 20,
+      "path": "block-20.onnx",
+      "bytes": 771822917,
+      "sha256": "fb02a98472528e58aebab28fe55dec970ca9a03ab62316c1fcc293c6ed22cee1",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-20.f32",
+        "bytes": 65536,
+        "sha256": "f40d69c716895cd4c641145a8a8065d77bf2e0c5569e86c9dbaaff3ba2a43f8f"
+      },
+      "nativeMaxAbsError": 0.17578125,
+      "nativeNormalizedPeakError": 3.7057764075143496e-06,
+      "nativeRelativeRmsError": 3.6853811481606933e-06,
+      "nativePass": true,
+      "prepareSeconds": 20.659806966999895,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 20,
+        "path": "block-20.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "fb02a98472528e58aebab28fe55dec970ca9a03ab62316c1fcc293c6ed22cee1"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "665ca5425fec119dbb869b67592df63536a92b3515e550253f5126ca115f51f3"
+      }
+    },
+    {
+      "index": 21,
+      "path": "block-21.onnx",
+      "bytes": 771822917,
+      "sha256": "40313bd1ef3e90341e3a88ae423e422100eff35aabdb1a6719b82857da767fdd",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-21.f32",
+        "bytes": 65536,
+        "sha256": "78f3c3557f79296bc3dfc697f80d10ef7acbd13dce2c784c898bd6fc3bab6a52"
+      },
+      "nativeMaxAbsError": 0.18359375,
+      "nativeNormalizedPeakError": 3.637034978964948e-06,
+      "nativeRelativeRmsError": 3.517394410970927e-06,
+      "nativePass": true,
+      "prepareSeconds": 22.457699008999953,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 21,
+        "path": "block-21.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "40313bd1ef3e90341e3a88ae423e422100eff35aabdb1a6719b82857da767fdd"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "0fe65e30ddbc08f0bbb8a3f4687877f8bac44bc21f9219c6d27b7f53b86b60d0"
+      }
+    },
+    {
+      "index": 22,
+      "path": "block-22.onnx",
+      "bytes": 771822917,
+      "sha256": "e0ab8b928319b15713e7d74e766529600d6678e153e1acb3272f03e6cc120162",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-22.f32",
+        "bytes": 65536,
+        "sha256": "3f5d0ba58988253b1979beb1042f0f16298bacb757d2e8886ca01c9d67346724"
+      },
+      "nativeMaxAbsError": 0.17578125,
+      "nativeNormalizedPeakError": 3.4746024084597593e-06,
+      "nativeRelativeRmsError": 3.379957217141774e-06,
+      "nativePass": true,
+      "prepareSeconds": 22.65530157699959,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 22,
+        "path": "block-22.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "e0ab8b928319b15713e7d74e766529600d6678e153e1acb3272f03e6cc120162"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "76abd22de9849514b2af3e5760364d8219f870314b894607d20ccbe9799f83d1"
+      }
+    },
+    {
+      "index": 23,
+      "path": "block-23.onnx",
+      "bytes": 771822917,
+      "sha256": "1e68f2e96c3753ccdaf2c3bb07f54879fe541b94925662d7d1ac655554a1cd74",
+      "scaleCount": 7,
+      "strictMissing": [],
+      "strictUnexpected": [],
+      "reference": {
+        "path": "reference-23.f32",
+        "bytes": 65536,
+        "sha256": "2771368c61e4a32746262d432e1b7e928a958365fd44aff145f9e6a3989f6249"
+      },
+      "nativeMaxAbsError": 0.16796875,
+      "nativeNormalizedPeakError": 3.331256948513328e-06,
+      "nativeRelativeRmsError": 3.244123871779589e-06,
+      "nativePass": true,
+      "prepareSeconds": 21.014299642999504,
+      "attentionLowering": {
+        "schemaVersion": 1,
+        "type": "umt5-sdpa-scale-cancellation-candidate-v1",
+        "status": "diagnostic-only-unaccepted",
+        "index": 23,
+        "path": "block-23.onnx",
+        "sourceAsset": {
+          "bytes": 771822917,
+          "sha256": "1e68f2e96c3753ccdaf2c3bb07f54879fe541b94925662d7d1ac655554a1cd74"
+        },
+        "patches": [
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_16",
+            "offset": 13145,
+            "beforeHex": "0000003f",
+            "afterHex": "00000000",
+            "beforeValue": 0.5,
+            "afterValue": 0.0
+          },
+          {
+            "nodeName": "/block/layer.0/SelfAttention/Constant_26",
+            "offset": 21226,
+            "beforeHex": "0000803f",
+            "afterHex": "00000041",
+            "beforeValue": 1.0,
+            "afterValue": 8.0
+          }
+        ],
+        "executedGraphSha256": "c80144db993230a567bdfc9ed8b962d5c27e07984fb39747fafe9861af0e5fa2"
+      }
+    }
+  ],
+  "finalNorm": {
+    "epsilon": 1e-06,
+    "path": "final-norm.f32",
+    "bytes": 16384,
+    "sha256": "31ec55a911ef90efa7cfb36d7f3b004a8652d36979b0b1824dc7c2b335b24a02"
+  },
+  "fixture": {
+    "tokenIds": [
+      42,
+      1234,
+      1,
+      0
+    ],
+    "attentionMask": [
+      1.0,
+      1.0,
+      1.0,
+      0.0
+    ],
+    "input": {
+      "path": "embedding-reference.f32",
+      "bytes": 65536,
+      "sha256": "9fd52aa9a4994de30c7109386ed5fb0aeb88f8fce753f595958fd6a58c4af5ad"
+    },
+    "preFinal": {
+      "path": "pre-final-reference.f32",
+      "bytes": 65536,
+      "sha256": "2771368c61e4a32746262d432e1b7e928a958365fd44aff145f9e6a3989f6249"
+    },
+    "finalReference": {
+      "path": "final-reference.f32",
+      "bytes": 65536,
+      "sha256": "1c511d512ddea17ef59e583f294b22dfd8a9837fc45b8a55526b5ac5eb4803c3"
+    },
+    "nativeFinal": {
+      "path": "native-final.f32",
+      "bytes": 65536,
+      "sha256": "419988b2c5ac37e210944a6ebcf1f88013977687c1139e4c96184086ece4cce4"
+    }
+  },
+  "numericGate": {
+    "maxAbsError": 0.001,
+    "rtol": 0.001,
+    "registeredBeforeComparison": true,
+    "scope": "FP32 source-reference diagnostics; no original workflow quality guarantee"
+  },
+  "intermediateGate": {
+    "normalizedPeakError": 0.0001,
+    "relativeRmsError": 0.0001,
+    "revisionReason": "Original unscaled absolute-only stage gate failed0.08984375 on hiddenpeak20464.387 while allclose passed; failed trial retained; final normalizedembedding maxabs.001 unchanged",
+    "registeredBeforeRemainingStages": true
+  },
+  "ortVersion": "1.24.3",
+  "onnxOpset": 17,
+  "complete": true,
+  "nativeFinalMaxAbsError": 2.142973244190216e-06,
+  "sourceKeysCovered": 412,
+  "tokenizer": {
+    "path": "spiece.model",
+    "bytes": 4548313,
+    "sha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+    "algorithm": "sentencepiece",
+    "addBos": false,
+    "addEos": true,
+    "eosId": 1,
+    "padId": 0,
+    "referenceMinTokens": 512,
+    "plainTextOnly": true,
+    "emphasisCompatibility": "not claimed"
+  },
+  "originalSourceHashVerified": true,
+  "trailingMaskCompaction": {
+    "pass": true,
+    "rule": "crop trailing mask0 only; preserve internal positions; final zero-pad to originallength",
+    "proof": {
+      "sourceSha256": "797f11b69256dffa8d9a6d236fe1e05d0c250c84d231a5993accde0ff44238bc",
+      "paddedLength": 512,
+      "compactLength": 3,
+      "preserveInternalPositions": true,
+      "gate": {
+        "hiddenNormalizedPeakError": 0.0001,
+        "normalizedOutputMaxAbsError": 0.001,
+        "scope": "one real block0, originalweights, FP32reference; arbitrary fullworkflow still separate"
+      },
+      "hiddenMaxAbsError": 0.00390625,
+      "hiddenNormalizedPeakError": 1.908803852757046e-07,
+      "normalizedOutputMaxAbsError": 3.203749656677246e-07,
+      "seconds": 2.737389455999619,
+      "pass": true
+    }
+  }
+}

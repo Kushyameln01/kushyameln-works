@@ -17,7 +17,7 @@ function download(name,bytes){const url=URL.createObjectURL(new Blob([bytes])),a
 
 globalThis.runManagementConnection=async spec=>{
  const result={passed:false,scope:'Actual management adapter/shared queue and actual browser native API, selected cases only',executionSourceSha:spec.executionSourceSha,managementSourceSha:spec.managementSourceSha,diffusionSourceSha:spec.diffusionSourceSha,newExports:0,newOracleRuns:0,generatedProductionAccepted:false,generationReady:false,workers:[],phases:[],comparisons:{},storage:[]};
- let api,bridge,phase='setup',cancelPromise,cancelIssued=false;
+ let api,bridge,phase='setup',cancelPromise,cancelIssued=false,textCancelPromise,textCancelIssued=false;
  const phaseStart=performance.now(),mark=value=>{phase=value;const event={phase,epochMs:Date.now(),elapsedSeconds:(performance.now()-phaseStart)/1000};result.phases.push(event);console.log('management-connection-progress:'+JSON.stringify(event));};
  const workerFactory=()=>{
   const worker=new Worker('/observer/owner-normal-worker.mjs',{type:'module'}),record={phase,index:result.workers.length,terminated:false,observations:[]};result.workers.push(record);
@@ -41,7 +41,13 @@ globalThis.runManagementConnection=async spec=>{
   result.storage.push({name,packageBytes:saved.bytes.length,packageSha256:await sha(saved.bytes),wktBytes:bytes.length,wktSha256:await sha(bytes),payloadAndMetadataExact:true,inputRetained:!!execution.inputRecord,receipt:saved.receipt});return loaded.artifacts[name];
  }
  try{
-  api=native.createInferenceAPI({workerFactory});
+  api=native.createInferenceAPI({workerFactory,onState:state=>{
+   if(phase!=='text-cancel'||textCancelIssued||!spec.textCancelStage||state.module!=='text_encoder'||state.progress?.stage!==spec.textCancelStage)return;
+   const target=bridge?.inspect().targets.find(x=>x.module==='text_encoder'&&x.operation==='encode')?.target;
+   if(!target)return;
+   textCancelIssued=true;result.textCancel={stage:spec.textCancelStage,boundary:structuredClone(state.progress),target:structuredClone(target)};
+   textCancelPromise=bridge.cancel(target);
+  }});
   const manager={createTextVaeAdapter,createInvocationQueue,...artifacts,...workspace},sourceRef={repository:'Kushyameln01/kushyameln-works',commit:spec.executionSourceSha,path:'docs/shared/inference/api.mjs'};
   bridge=createManagedInferenceBridge({manager,nativeAPI:api,nativeModule:native,sourceRef,codec:createCurrentNativeCodec(native,sourceRef)});
   if(spec.scope==='rect'||spec.scope==='both'){
@@ -66,22 +72,34 @@ globalThis.runManagementConnection=async spec=>{
    }
   }
   if(spec.scope==='text'||spec.scope==='both'){
-   const configuration=await selected('#text-bundle'),source=document.querySelector('#text-source').files[0];configuration.files.set(configuration.manifest.embedding.sourceFile,source);await bridge.configure('text_encoder',configuration);
+   const configuration=await selected('#text-bundle'),source=document.querySelector('#text-source').files[0];
+   const selectedManifestSha256=await sha(await configuration.files.get('manifest.json').arrayBuffer());
+   check(selectedManifestSha256===spec.textManifestMapping?.selectedSha256,'Runtime selected Text manifest differs from explicit mapping');
+   check(spec.plainInput.manifestSha256===spec.textManifestMapping.originalSha256,'Original independent input manifest binding changed');
+   result.textManifestMapping=structuredClone(spec.textManifestMapping);
+   configuration.files.set(configuration.manifest.embedding.sourceFile,source);await bridge.configure('text_encoder',configuration);
    const plainInput=spec.plainInput;
    result.textSupport=bridge.querySupport('text_encoder','encode',{text:plainInput.text});check(result.textSupport.support.supported,'Configured Text support');
    if(!spec.preflightOnly){
     const expected=new Float32Array((await fetchBytes('plain-reference.f32')).buffer);
+    if(spec.textCancelStage){
+     mark('text-cancel');try{await bridge.execute({module:'text_encoder',operation:'encode',input:{text:plainInput.text}});throw Error('Requested Text execution-hash cancellation did not reject');}catch(e){check(e.code==='INVOCATION_CANCELLED','Unexpected Text cancel error: '+e);}
+     check(textCancelIssued&&textCancelPromise,'Requested native execution-hash progress was not observed');
+     result.textCancel.barrier=await textCancelPromise;
+     check(result.textCancel.barrier.originalTerminal&&result.textCancel.barrier.resourceReleased&&result.textCancel.barrier.reusable,'Text original terminal/release cancellation barrier');
+    }
     for(const [name,input]of [['text-plain',{text:plainInput.text}],['text-id',{tokenIds:plainInput.tokenIds,attentionMask:plainInput.attentionMask}]]){
      mark(name);const execution=await bridge.execute({module:'text_encoder',operation:'encode',input});
      result.comparisons[name]=compare(execution.native.tensor.data,expected,spec.textGate);check(result.comparisons[name].passed,'Selected Text mode independent all-value comparison');
      const restored=await persist(name,execution),capture=captureRestoredConditioning({record:restored,diffusion}),snapshot=diffusion.snapshotP4CapturedConditioning(capture);
      check(equal(snapshot.data,execution.native.tensor.data)&&equal(snapshot.attentionMask,execution.native.tensor.attentionMask),'Real P4 capture changed payload/mask');check(snapshot.metadata.nativeTensorMetadata.normalization==='umt5-final-rmsnorm-f32-v1','P4 capture lost final RMSNorm marker');
      result[name]={inputMode:execution.native.inputMode,tensor:native.describeTensor(restored.tensor),diffusionCapture:{rows:snapshot.rows,modelSha256:snapshot.modelSha256,tokenizerSha256:snapshot.tokenizerSha256,normalization:snapshot.metadata.nativeTensorMetadata.normalization,verification:snapshot.metadata.verification,projectionExecuted:false,crossAttentionExecuted:false}};
+     if(name==='text-plain'&&result.textCancel)result.textCancel.recoveredBy=name;
     }
    }
   }
-  result.newNeuralCalls=spec.preflightOnly?0:result.workers.filter(w=>w.phase!=='rect-cancel').length;
-  result.cancelledWorkers=result.workers.filter(w=>w.phase==='rect-cancel').length;
+  result.newNeuralCalls=spec.preflightOnly?0:result.workers.filter(w=>!['rect-cancel','text-cancel'].includes(w.phase)).length;
+  result.cancelledWorkers=result.workers.filter(w=>['rect-cancel','text-cancel'].includes(w.phase)).length;
   result.passed=true;
  }catch(e){result.failure={name:e.name,code:e.code??null,message:e.message,stack:e.stack};}
  finally{
