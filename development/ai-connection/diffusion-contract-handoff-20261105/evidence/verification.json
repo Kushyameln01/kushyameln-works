@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "diffusion-public-high-continuation-light-verification/1",
+  "verifiedAtUTC": "2026-11-04T22:36:35.300576+00:00",
+  "handoffDateJST": "2026-11-05",
+  "cwd": "/workspace/work/diffusion-models",
+  "nativeExecutionSourceCommit": "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
+  "watcherCommittedByThisAgent": false,
+  "sourceFiles": {
+    "tools/diffusion-models/continue-public-high-validation.py": {
+      "bytes": 41400,
+      "sha256": "bea290c7c48d5753d409057a99d3b033c7ccfe11ce82199b00b417cd16cff0ae"
+    },
+    "tools/diffusion-models/test-continue-public-high-validation.py": {
+      "bytes": 30557,
+      "sha256": "2c4e55c978f18856a909e3860151c28014d5710a37bda7e8d8b8fb4bf0845406"
+    }
+  },
+  "unitTests": {
+    "passed": true,
+    "count": 28,
+    "receipt": "unit-tests.json",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "tools/diffusion-models/test-continue-public-high-validation.py"
+    ],
+    "startedAtUTC": "2026-11-04T22:36:34.802514+00:00",
+    "completedAtUTC": "2026-11-04T22:36:35.160397+00:00",
+    "exitCode": 0
+  },
+  "checkOnly": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "tools/diffusion-models/continue-public-high-validation.py",
+      "--check-only",
+      "--state-dir",
+      "/tmp/diffusion-public-high-validation-check-20261105"
+    ],
+    "startedAtUTC": "2026-11-04T22:36:35.160520+00:00",
+    "completedAtUTC": "2026-11-04T22:36:35.299924+00:00",
+    "exitCode": 0,
+    "stdout": "{\"status\": \"WAIT\", \"reason\": \"Receipt not created: /tmp/diffusion-original-high-public-20261104.json\", \"observedAtUTC\": \"2026-11-04T22:36:35.235460+00:00\"}\n",
+    "stderr": "",
+    "status": "WAIT",
+    "heavyWorkStarted": false,
+    "savedReceipt": "check-only-wait.json",
+    "savedReceiptIdentity": {
+      "bytes": 2449,
+      "sha256": "1442562f82a7e574660f7181396e813f6ff5777527920eb9a57e4fc484ed1f3b"
+    },
+    "privateStatePath": "/tmp/diffusion-public-high-validation-check-20261105/state.json",
+    "launchClaimExists": false
+  },
+  "independentReviews": {
+    "schemaAndStorage": "Approved; no remaining Important/Critical issue in scoped read-only review",
+    "interruptionAndSourceGuards": "Approved; independent28/28 mock tests, watcher/test hashes match this receipt"
+  },
+  "executionRestrictions": {
+    "watcherArmed": false,
+    "numericalReferenceExecuted": false,
+    "comparatorProcessExecuted": false,
+    "browserExecuted": false,
+    "modelPayloadRead": false,
+    "frozenCodeEdited": false,
+    "frozenInputsOrTextChanged": false,
+    "hugeModelCopied": false,
+    "commitCreated": false
+  },
+  "acceptance": {
+    "highPredictAccepted": false,
+    "lowPredictAccepted": false,
+    "sixUpdatesAccepted": false,
+    "rawGeneratedSampleSaveAccepted": false,
+    "originalSizeOneThreadAccepted": false,
+    "generationReady": false,
+    "wholeOperationAccepted": false,
+    "counterpartACK": false
+  }
+}
