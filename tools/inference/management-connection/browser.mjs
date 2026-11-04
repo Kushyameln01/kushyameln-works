@@ -7,7 +7,18 @@ import * as workspace from '/manager/docs/shared/ai-connection/management-worksp
 import * as diffusion from '/diffusion/docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs';
 
 const check=(ok,message)=>{if(!ok)throw Error(message);};
-const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+// Management canonical JSON sorts object keys. Compare metadata structurally;
+// array/axis order, typed bytes, field presence and identity values stay strict.
+function same(a,b){
+ if(Object.is(a,b))return true;
+ if(!a||!b||typeof a!=='object'||typeof b!=='object')return false;
+ if(ArrayBuffer.isView(a)||ArrayBuffer.isView(b)){
+  if(!ArrayBuffer.isView(a)||!ArrayBuffer.isView(b)||a.constructor!==b.constructor||a.byteLength!==b.byteLength)return false;
+  const x=new Uint8Array(a.buffer,a.byteOffset,a.byteLength),y=new Uint8Array(b.buffer,b.byteOffset,b.byteLength);return x.every((v,i)=>v===y[i]);
+ }
+ if(Array.isArray(a)!==Array.isArray(b))return false;
+ const keys=Object.keys(a);return keys.length===Object.keys(b).length&&keys.every(k=>Object.hasOwn(b,k)&&same(a[k],b[k]));
+}
 const equal=(a,b)=>a.length===b.length&&a.every((v,i)=>Object.is(v,b[i]));
 const sha=async bytes=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),v=>v.toString(16).padStart(2,'0')).join('');
 async function selected(id){const files=new Map(Array.from(document.querySelector(id).files,file=>[file.name,file]));return {manifest:JSON.parse(await files.get('manifest.json').text()),files};}

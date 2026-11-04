@@ -7,6 +7,7 @@ import {mkdtemp,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import vm from 'node:vm';
 import * as native from '../../../docs/shared/inference/api.mjs';
 import {inspectTextEncoderManifest} from '../../../docs/shared/inference/text-encoder.mjs';
 import {createManagedInferenceBridge,createCurrentNativeCodec,captureRestoredConditioning} from '../../../docs/shared/inference/management-adapter.mjs';
@@ -99,6 +100,23 @@ test('Rect native encode/decode paths preserve context; restored generated-sampl
   assert.deepEqual(recoveredRaw.data,generated.data);assert.equal(recoveredRaw.meaning,generated.meaning);assert.deepEqual(recoveredRaw.latentContract,generated.latentContract);
   assert.deepEqual(loaded.artifacts.decoded.tensor.data,rgb.data);assert.deepEqual(loaded.artifacts.decoded.sourceRecords[0].nativeInputDescriptor.latentContract,generated.latentContract);
   assert.deepEqual(loaded.artifacts.decoded.trace.records[0].data.native.binding,decoded.native.binding);
+ }finally{await s.bridge.dispose();}
+});
+
+test('browser metadata equality accepts canonical management key order and rejects actual binding changes',async()=>{
+ const browserSource=(await readFile(new URL('./browser.mjs',import.meta.url),'utf8')).replace(/^import .*;\n/gm,'');
+ const sandbox=vm.createContext({});vm.runInContext(browserSource+'\nglobalThis.compareNativeMetadata=same;',sandbox);
+ const s=setup();try{await s.configure();
+  const execution=await s.bridge.execute({module:'vae',operation:'encode',input:encodeInput});
+  const saved=await s.bridge.save({records:{mean:execution.record},inputs:{[execution.inputRecord.descriptor.artifactId]:execution.inputRecord}});
+  const loaded=await s.bridge.read(saved.bytes),restored=loaded.artifacts.mean.trace.records[0].data.native.binding;
+  assert.deepEqual(restored,execution.native.binding,'Real management save/read retains every binding value');
+  assert.notEqual(JSON.stringify(restored),JSON.stringify(execution.native.binding),'Pinned manager canonical JSON changes native object key order');
+  assert.equal(sandbox.compareNativeMetadata(restored,execution.native.binding),true);
+  const wrongShape=structuredClone(restored);wrongShape.outputShape=[1,16,1,4,2];
+  assert.equal(sandbox.compareNativeMetadata(wrongShape,execution.native.binding),false,'Tensor axis order must remain strict');
+  const wrongHash=structuredClone(restored);wrongHash.assetHashes.controlFixture='changed';
+  assert.equal(sandbox.compareNativeMetadata(wrongHash,execution.native.binding),false,'Asset hash values must remain strict');
  }finally{await s.bridge.dispose();}
 });
 
