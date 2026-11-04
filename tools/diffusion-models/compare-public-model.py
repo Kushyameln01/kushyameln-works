@@ -82,7 +82,7 @@ def contract_source_check(contract, commit):
     return verified
 
 
-def admit(native, reference, contract, contract_identity, source_commit=None):
+def admit(native, reference, contract, contract_identity, source_commit=None, *, reference_manifest_raw=None):
     require(native.get('schemaVersion') == 'bernini-public-model-worker-host/0.1', 'Ordinary public host receipt required')
     require(native.get('passed') is True and native.get('sourceGuardAfter') is True
             and native.get('sourceGuardError') is None and native.get('hostError') is None, 'Native run/source guard did not pass')
@@ -145,6 +145,13 @@ def admit(native, reference, contract, contract_identity, source_commit=None):
         name = 'finalRaw'
     metrics = reference.get('metrics', [])
     if reference.get('operation') == 'predict':
+        require(isinstance(reference_manifest_raw, bytes) and 0 < len(reference_manifest_raw) <= 16 * 1024 * 1024,
+                'Standalone predict reference requires --reference-manifest with bounded saved bytes')
+        require(hashlib.sha256(reference_manifest_raw).hexdigest() == manifest_sha, 'Reference manifest bytes/hash mismatch')
+        document = json.loads(reference_manifest_raw, object_pairs_hook=no_duplicates,
+                              parse_constant=lambda _: (_ for _ in ()).throw(ValueError('Nonfinite manifest constant')))
+        require(isinstance(document, dict) and type(document.get('timestep')) in [int, float] and document['timestep'] == 1000,
+                'Independent manifest timestep must match the public HIGH timestep1000')
         require(mode == 'predict' and len(metrics) == 1 and metrics[0].get('side') == 'HIGH', 'Single HIGH prediction reference required')
         coverage = metrics[0].get('coverage', [])
         expected = [(block, 'blockOutput', contract['totalTokens']) for block in range(40)]
@@ -222,6 +229,7 @@ def main():
     parser.add_argument('--native-receipt', type=Path, required=True)
     parser.add_argument('--actual-f32', type=Path, required=True)
     parser.add_argument('--reference', type=Path, required=True)
+    parser.add_argument('--reference-manifest', type=Path, help='Hash-verified saved input manifest required for a standalone prediction reference; diagnostic only')
     parser.add_argument('--contract', type=Path, default=DEFAULT_CONTRACT)
     parser.add_argument('--source-commit')
     parser.add_argument('--reference-source-commit', default=REFERENCE_EXECUTION)
@@ -234,7 +242,12 @@ def main():
     try:
         native, reference, contract = map(read_json, [args.native_receipt, args.reference, args.contract])
         identities = {name: file_identity(path) for name, path in [('nativeReceipt', args.native_receipt), ('reference', args.reference), ('contract', args.contract)]}
-        admission = admit(native, reference, contract, identities['contract'], args.source_commit)
+        manifest_raw = None
+        if args.reference_manifest is not None:
+            with args.reference_manifest.open('rb') as stream:
+                manifest_raw = stream.read(16 * 1024 * 1024 + 1)
+            identities['referenceManifest'] = {'bytes': len(manifest_raw), 'sha256': hashlib.sha256(manifest_raw).hexdigest()}
+        admission = admit(native, reference, contract, identities['contract'], args.source_commit, reference_manifest_raw=manifest_raw)
         source_inventory = contract_source_check(contract, args.reference_source_commit)
         expected_path = Path(admission['descriptor']['path'])
         if not expected_path.is_absolute():

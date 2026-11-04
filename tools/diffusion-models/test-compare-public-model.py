@@ -70,14 +70,27 @@ class ComparatorTests(unittest.TestCase):
                 *[{'block':block,'name':'blockOutput','rows':5,'intervals':[[0,5]]} for block in range(40)],
                 {'block':None,'name':'headAll','rows':5,'intervals':[[0,5]]},
                 {'block':None,'name':'prediction','rows':32,'intervals':[[0,32]]}]}])
-        self.assertEqual(C.admit(n,r,c,ident)['array'],'velocity')
+        manifest=json.dumps({'timestep':1000}).encode()
+        digest=identity(manifest)['sha256']
+        n['inputReceipt']['manifestSHA256']=r['manifestSHA256']=c['manifestSHA256']=digest
+        ident=identity(json.dumps(c).encode())
+        r['contractSHA256']=ident['sha256']
+        self.assertEqual(C.admit(n,r,c,ident,reference_manifest_raw=manifest)['array'],'velocity')
+        with self.assertRaises(ValueError):C.admit(n,r,c,ident)
+        with self.assertRaises(ValueError):C.admit(n,r,c,ident,reference_manifest_raw=manifest+b' ')
+        wrong=json.dumps({'timestep':500}).encode()
+        badn,badr,badc=copy.deepcopy((n,r,c))
+        badn['inputReceipt']['manifestSHA256']=badr['manifestSHA256']=badc['manifestSHA256']=identity(wrong)['sha256']
+        badident=identity(json.dumps(badc).encode());badr['contractSHA256']=badident['sha256']
+        with self.assertRaisesRegex(ValueError,'timestep'):
+            C.admit(badn,badr,badc,badident,reference_manifest_raw=wrong)
         for name in ['blockOutput','headAll','prediction']:
             incomplete=copy.deepcopy(r)
             incomplete['metrics'][0]['coverage']=[x for x in incomplete['metrics'][0]['coverage'] if not(x['name']==name and (name!='blockOutput' or x['block']==7))]
-            with self.subTest(missing=name),self.assertRaises(ValueError):C.admit(n,incomplete,c,ident)
+            with self.subTest(missing=name),self.assertRaises(ValueError):C.admit(n,incomplete,c,ident,reference_manifest_raw=manifest)
         sample=copy.deepcopy(n)
         sample['mode']=sample['publicResult']['mode']='sample'
-        with self.assertRaises(ValueError):C.admit(sample,r,c,ident)
+        with self.assertRaises(ValueError):C.admit(sample,r,c,ident,reference_manifest_raw=manifest)
 
     def test_full_shape_high_first_velocity_admitted(self):
         n, r, c, ident, _ = fixture()

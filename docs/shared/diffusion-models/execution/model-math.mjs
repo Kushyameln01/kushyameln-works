@@ -7,6 +7,10 @@ const typedArrayPrototype=Object.getPrototypeOf(Float32Array.prototype);
 const slots=Object.fromEntries(['length','byteOffset','byteLength','buffer'].map(name=>[name,Object.getOwnPropertyDescriptor(typedArrayPrototype,name).get]));
 const tag=Object.getOwnPropertyDescriptor(typedArrayPrototype,Symbol.toStringTag).get;
 const arrayBufferLength=Object.getOwnPropertyDescriptor(ArrayBuffer.prototype,'byteLength').get;
+const ROPE_CACHE_MAX_BYTES=96*1024*1024,ROPE_CACHE_MAX_ENTRIES=1024;
+// Each owner is bound to this exact compiled profile. Header words record its
+// key schema and rows; remaining words are raw F32 coordinates and I32 IDs.
+const ROPE_CACHE_PROFILE=MODEL_MATH_WASM_SHA256+':RopeBuild-axis44-42-42-source128/key1';
 let nextMemoryIdentity=0;
 
 function snapshot(value,length,type='Float32Array'){
@@ -32,7 +36,11 @@ function countOf(value){
 }
 function known(input,names){if(Object.keys(input).some(k=>!names.includes(k)))throw TypeError('Unknown model math input');}
 
-export async function createModelMath({wasmBytes}={}){
+export async function createModelMath({wasmBytes,ropeCache}={}){
+ if(ropeCache!==undefined&&ropeCache!==false&&(ropeCache===null||typeof ropeCache!=='object'||Array.isArray(ropeCache)))throw TypeError('RoPE cache configuration requires false or bounds');
+ if(ropeCache&&Object.keys(ropeCache).some(k=>!['maxBytes','maxEntries'].includes(k)))throw TypeError('Unknown RoPE cache configuration');
+ const cacheMaxBytes=ropeCache===false?0:ropeCache?.maxBytes??ROPE_CACHE_MAX_BYTES,cacheMaxEntries=ropeCache===false?0:ropeCache?.maxEntries??ROPE_CACHE_MAX_ENTRIES;
+ if(!Number.isSafeInteger(cacheMaxBytes)||cacheMaxBytes<0||cacheMaxBytes>ROPE_CACHE_MAX_BYTES||!Number.isSafeInteger(cacheMaxEntries)||cacheMaxEntries<0||cacheMaxEntries>ROPE_CACHE_MAX_ENTRIES)throw RangeError('RoPE cache bounds require bytes0..100663296 and entries0..1024');
  if(wasmBytes===undefined){const response=await fetch(new URL('./model-math/kernel.wasm',import.meta.url));if(!response.ok)throw Error('Model math Hike unavailable');wasmBytes=await response.arrayBuffer();}
  const owned=wasmBytes instanceof ArrayBuffer?new Uint8Array(wasmBytes).slice():ArrayBuffer.isView(wasmBytes)&&tag.call(wasmBytes)==='Uint8Array'&&slots.buffer.call(wasmBytes) instanceof ArrayBuffer?new Uint8Array(wasmBytes):null;
  if(!owned)throw TypeError('Nonshared model math WASM bytes required');
@@ -52,6 +60,44 @@ export async function createModelMath({wasmBytes}={}){
  memory.grow(Math.ceil(arenaBytes/65536));
  const memoryIdentity='model-math-'+(++nextMemoryIdentity);
  let busy=false,calls=0,kernelCalls=0,snapshotCopyBytes=0,inputCopyBytes=0,outputCopyBytes=0;
+ // Hash buckets only select candidates: every key word is compared on hits.
+ // LRU retains geometry/matrices only, never x, Q/K results or weight state.
+ const ropeBuckets=new Map(),ropeLru=new Map();
+ const ropeCounts={hits:0,misses:0,builds:0,buildMatrixBytes:0,stagingCopies:0,stagingBytes:0,retentionCopyBytes:0,keyCopyBytes:0,evictions:0,clears:0,uncacheableBuilds:0,matrixBytes:0,keyBytes:0,peakRetainedBytes:0};
+ const cacheEnabled=cacheMaxBytes>0&&cacheMaxEntries>0;
+ function dropRopeCache(){ropeBuckets.clear();ropeLru.clear();ropeCounts.matrixBytes=0;ropeCounts.keyBytes=0;ropeCounts.clears++;}
+ function ropeKeyHash(rows,ps,ss){
+  let hash=Math.imul(2166136261^1,16777619);hash=Math.imul(hash^rows,16777619);
+  for(const word of new Uint32Array(ps.buffer))hash=Math.imul(hash^word,16777619);
+  for(const word of new Uint32Array(ss.buffer))hash=Math.imul(hash^word,16777619);
+  return hash>>>0;
+ }
+ function findRope(hash,rows,ps,ss){
+  const p=new Uint32Array(ps.buffer),s=new Uint32Array(ss.buffer);
+  for(const entry of ropeBuckets.get(hash)??[]){
+   const key=entry.key;
+   if(key[0]!==1||key[1]!==rows)continue;
+   let same=true;
+   for(let i=0;i<p.length&&same;i++)same=key[i+2]===p[i];
+   for(let i=0;i<s.length&&same;i++)same=key[i+2+p.length]===s[i];
+   if(same){ropeLru.delete(entry);ropeLru.set(entry,true);return entry;}
+  }
+  return null;
+ }
+ function retainRope(hash,rows,ps,ss){
+  const matrixBytes=rows*256*4,keyBytes=(2+rows*4)*4,bytes=matrixBytes+keyBytes;
+  if(!cacheEnabled||bytes>cacheMaxBytes){ropeCounts.uncacheableBuilds++;return;}
+  while(ropeLru.size>=cacheMaxEntries||ropeCounts.matrixBytes+ropeCounts.keyBytes+bytes>cacheMaxBytes){
+   const oldest=ropeLru.keys().next().value,bucket=ropeBuckets.get(oldest.hash);
+   bucket.splice(bucket.indexOf(oldest),1);if(bucket.length===0)ropeBuckets.delete(oldest.hash);
+   ropeLru.delete(oldest);ropeCounts.matrixBytes-=oldest.matrix.byteLength;ropeCounts.keyBytes-=oldest.key.byteLength;ropeCounts.evictions++;
+  }
+  const key=new Uint32Array(2+rows*4);key[0]=1;key[1]=rows;key.set(new Uint32Array(ps.buffer),2);key.set(new Uint32Array(ss.buffer),2+rows*3);
+  const matrix=take(matrices,rows*256),entry={hash,key,matrix};
+  const bucket=ropeBuckets.get(hash)??[];bucket.push(entry);ropeBuckets.set(hash,bucket);ropeLru.set(entry,true);
+  ropeCounts.matrixBytes+=matrixBytes;ropeCounts.keyBytes+=keyBytes;ropeCounts.retentionCopyBytes+=matrixBytes;ropeCounts.keyCopyBytes+=keyBytes;
+  ropeCounts.peakRetainedBytes=Math.max(ropeCounts.peakRetainedBytes,ropeCounts.matrixBytes+ropeCounts.keyBytes);
+ }
  const lock=()=>{if(!instance)throw Error('Model math disposed');if(busy)throw Error('Model math busy');busy=true;};
  const copy=(value,length,type)=>{const owned=snapshot(value,length,type);snapshotCopyBytes+=owned.byteLength;return owned;};
  const put=(pointer,value)=>{const View=value instanceof Int32Array?Int32Array:Float32Array;new View(memory.buffer,pointer,value.length).set(value);inputCopyBytes+=value.byteLength;};
@@ -117,9 +163,13 @@ export async function createModelMath({wasmBytes}={}){
    known(input,['input','rows','positions','sourceIds']);const {rows}=input,count=shape(rows);
    const xs=copy(input.input,count),ps=copy(input.positions,rows*3),ss=copy(input.sourceIds,rows,'Int32Array');
    put(a,xs);put(positions,ps);put(ids,ss);
-   call('RopeBuild',positions,ids,rows,matrices,rows*256);call('RopeApply',a,matrices,rows,out,count);return take(out,count);
+   const hash=cacheEnabled?ropeKeyHash(rows,ps,ss):0,entry=cacheEnabled?findRope(hash,rows,ps,ss):null;
+   if(entry){ropeCounts.hits++;put(matrices,entry.matrix);ropeCounts.stagingCopies++;ropeCounts.stagingBytes+=entry.matrix.byteLength;}
+   else{ropeCounts.misses++;call('RopeBuild',positions,ids,rows,matrices,rows*256);ropeCounts.builds++;ropeCounts.buildMatrixBytes+=rows*256*4;retainRope(hash,rows,ps,ss);}
+   call('RopeApply',a,matrices,rows,out,count);return take(out,count);
   });},
-  stats(){return {wasmSha256:MODEL_MATH_WASM_SHA256,memoryBytes:memory?.buffer.byteLength??0,memoryIdentity,arenaBytes,calls,kernelCalls,snapshotCopyBytes,inputCopyBytes,outputCopyBytes,primitiveCalls:{...primitiveCalls},workspaceReused:true,busy,disposed:!instance,limits:MODEL_MATH_LIMITS,arithmetic:'F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges',siluProfile:'F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity',attentionDivisionLayout:'head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128'};},
-  dispose(){if(busy)throw Error('Model math busy');instance=null;memory=null;}
+  clearRopeCache(){lock();try{dropRopeCache();}finally{busy=false;}},
+  stats(){return {wasmSha256:MODEL_MATH_WASM_SHA256,memoryBytes:memory?.buffer.byteLength??0,memoryIdentity,arenaBytes,calls,kernelCalls,snapshotCopyBytes,inputCopyBytes,outputCopyBytes,primitiveCalls:{...primitiveCalls},ropeCache:{profile:ROPE_CACHE_PROFILE,enabled:cacheEnabled,maxBytes:cacheMaxBytes,maxEntries:cacheMaxEntries,entries:ropeLru.size,...ropeCounts,retainedBytes:ropeCounts.matrixBytes+ropeCounts.keyBytes,physicalMemoryBytes:null,memoryAccounting:'explicit retained matrix/key backing-store bytes; JS Map/object overhead, GC timing and process physical memory unknown; WASM staging copies retained'},workspaceReused:true,busy,disposed:!instance,limits:MODEL_MATH_LIMITS,arithmetic:'F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges',siluProfile:'F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity',attentionDivisionLayout:'head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128'};},
+  dispose(){if(busy)throw Error('Model math busy');dropRopeCache();instance=null;memory=null;}
  });
 }
