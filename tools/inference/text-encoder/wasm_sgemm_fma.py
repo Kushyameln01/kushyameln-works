@@ -221,7 +221,7 @@ def main():
     destination = args.output / 'ort-wasm-simd-threaded-fma-candidate.wasm'
     destination.write_bytes(candidate)
     validate = subprocess.run(['node', '--input-type=module', '-e', "import{readFile}from'node:fs/promises';const b=await readFile(process.argv[1]);if(!WebAssembly.validate(b))throw Error('Invalid private runtime');console.log('validated');", str(destination)], capture_output=True, text=True, check=True)
-    report = {'schemaVersion': 1, 'status': 'diagnostic-only-unaccepted', 'variant': 'text-sgemm-f32-fma-v1',
+    report = {'schemaVersion': 1, 'status': 'diagnostic-only-unaccepted', 'variant': 'text-sgemm-f32-fma-v2-evaluation-order',
               'scope': 'Only two source-pinned MLAS SGEMM bodies; product vendor/VAE runtime untouched', 'newNeuralRuns': 0, 'newModelExports': 0,
               'source': {'path': str(args.source), 'bytes': len(raw), 'sha256': sha(raw)},
               'candidate': {'path': str(destination), 'bytes': len(candidate), 'sha256': sha(candidate)},

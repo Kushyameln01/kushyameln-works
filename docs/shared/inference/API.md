@@ -2,7 +2,7 @@
 
 API版: `works-ai-1`。Text EncoderとVAEは独立モジュール。包括処理と一括UI、別CodexのDiffusionモジュールはこの実装に含めない。
 
-文書revision: `STANDALONE-STREAM-1`（2026-11-02 JST）。`works-ai-1`とG1Cを維持する。新しいcausal streaming manifest、独立raw latent入力、native末尾処理の保存契約は[単体API追補](../../../development/inference/standalone-20261102/API.md)を参照する。現在の実検証範囲は[単体RESULT](../../../development/inference/standalone-20261102/RESULT.md)にTextとVAEを分けて記録する。構造上の対応域と実数値受入を区別し、通常APIに参照やreceiptを要求しない。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sampleのmetadata検査は、実生成・復元・decodeの受入を意味しない。
+文書revision: `NATIVE-MANAGED-2`。`works-ai-1`とG1Cを維持する。最新の[管理接続と数値修正結果](../../../development/inference/management-20261104/RESULT.md)、[採用Text manifest](../../../development/inference/management-20261104/text/source-ordered-fp32/README.md)を参照する。causal streaming manifest、独立raw latent入力、native末尾処理の契約は[単体API追補](../../../development/inference/standalone-20261102/API.md)に保持する。TextとVAE、構造上の対応域と実数値受入を区別し、通常APIに参照やreceiptを要求しない。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sampleのmetadata検査は、実生成・復元・decodeの受入を意味しない。
 
 従来の診断受入はUMT5の24層FP32経路と、Wan2.1 VAEの5×16×16・F1正方形16×16・F1 Rect16×32の各固定graphである。前revisionではRectと固定plain一件を通常実行し、既存参照を再利用した。これらのscopeを維持する。新streaming graphの対応域や一部shapeの受入を、他のshape・実生成の合格へ広げない。
 
@@ -271,11 +271,14 @@ weighted prompt/custom embeddingは未対応。合法なID0を禁止せず、最
 選択manifestの `blocks[].attentionLowering` は元asset SHAと実行graph SHAを分離する。
 実行時は元bytesを検証後、同一bufferの2 scalarだけを変更し、実行hashを検証する。
 この倍率候補は固定gate未達のため採用していない。
-別候補の `blocks[].normLowering` は、両内部RMSNormのReduceMeanを元Torchの
+採用した `blocks[].normLowering` は、両内部RMSNormのReduceMeanを元Torchの
 FP32 AVX2集計順へ置換する。元graph/weightsは保持し、metadata置換用に1回コピーした後、
 実行graph SHAを検証する。Lを固定せず、dtype・軸・epsilonを維持する。
+選択manifestと元固定gateの全512有効ID受入は[採用資料](../../../development/inference/management-20261104/text/source-ordered-fp32/README.md)を参照する。
+中立statusは`source-ordered-fp32`。旧`diagnostic-only-unaccepted`も再現互換で受理し、実recipeのstatusを返す。
+品質receiptや独立参照を通常configure／encodeの条件へ追加しない。旧manifestの元経路も維持する。
 同一blockへ両変換を重ねる指定は拒否する。異block構成の数値受入を意味する制約ではない。
-通常返却の `graphBindings` はtensor外に置く。候補の数値合否・採用状況は
+通常返却の `graphBindings` はtensor外に置き、元asset／実行graphのSHAとrecipe識別・`recipeStatus`を区別する。数値合否・採用状況は
 [今回の結果](../../../development/inference/management-20261104/RESULT.md)に従う。
 
 新しい実装 `management-adapter.mjs` の `createManagedInferenceBridge` は、

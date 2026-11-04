@@ -32,7 +32,7 @@ before(async()=>{
 });
 after(async()=>{if(temporary)await rm(temporary,{recursive:true,force:true});});
 
-function setup({hold=false,onNativeRequest,graphBindings,textConfigurationManifest=textManifest}={}){
+function setup({hold=false,onNativeRequest,graphBindings,textConfigurationManifest=textManifest,diagnostics=false,diagnosticEvidence}={}){
  let state={status:'idle'},active=null,disposed=false,maxActive=0,inFlight=0;const calls=[];
  const client={get state(){return state;},run(request){
   assert.equal(disposed,false);assert.equal(inFlight,0,'real shared queue must serialize both modules');
@@ -40,9 +40,10 @@ function setup({hold=false,onNativeRequest,graphBindings,textConfigurationManife
   return new Promise((accept,reject)=>{
    const finish=(error)=>{if(!active)return;active=null;inFlight--;state={status:'idle'};
     if(error){reject(error);return;}
-    if(request.module==='text_encoder'){accept({tensor:structuredClone(text),attentionMask:new Uint8Array(text.attentionMask),inputMode:request.input.text!==undefined?'plain-text':'token-ids',...(graphBindings?{graphBindings}: {})});return;}
+    const evidence=request.diagnostics===true&&diagnosticEvidence?{evidence:structuredClone(diagnosticEvidence)}:{};
+    if(request.module==='text_encoder'){accept({tensor:structuredClone(text),attentionMask:new Uint8Array(text.attentionMask),inputMode:request.input.text!==undefined?'plain-text':'token-ids',...(graphBindings?{graphBindings}: {}),...evidence});return;}
     const out=request.operation==='encode'?mean:rgb;
-    accept({tensor:structuredClone(out),inputDescriptor:native.describeTensor(request.input),binding:{operation:request.operation,inputShape:[...request.input.shape],outputShape:[...out.shape],assetsVerified:true,assetHashes:{controlFixture:'not-a-model-run'},graphMetadataChecked:true}});
+    accept({tensor:structuredClone(out),inputDescriptor:native.describeTensor(request.input),binding:{operation:request.operation,inputShape:[...request.input.shape],outputShape:[...out.shape],assetsVerified:true,assetHashes:{controlFixture:'not-a-model-run'},graphMetadataChecked:true},...evidence});
    };
    active={finish};if(!hold)queueMicrotask(()=>finish());
   });
@@ -53,7 +54,7 @@ function setup({hold=false,onNativeRequest,graphBindings,textConfigurationManife
  const tm=textConfigurationManifest;
  const textFiles=new Map([...tm.blocks,tm.finalNorm,tm.embedding.rowHashes,{path:tm.embedding.sourceFile,bytes:tm.embedding.sourceBytes},tm.tokenizer].map(a=>[a.path??a.file,{size:a.bytes}]));
  const vaeFiles=new Map(Object.values(vaeManifest.assets).map(a=>[a.file,{size:a.bytes}]));
- return {bridge,client,calls,configure:async()=>{await bridge.configure('text_encoder',{manifest:tm,files:textFiles});await bridge.configure('vae',{manifest:vaeManifest,files:vaeFiles});},get disposed(){return disposed;},get maxActive(){return maxActive;}};
+ return {bridge,client,calls,configure:async()=>{await bridge.configure('text_encoder',{manifest:tm,files:textFiles,diagnostics});await bridge.configure('vae',{manifest:vaeManifest,files:vaeFiles,diagnostics});},get disposed(){return disposed;},get maxActive(){return maxActive;}};
 }
 
 test('actual management adapter, native plain/ID input and owned tensor capture preserve final normalization',async()=>{
@@ -83,6 +84,24 @@ test('current native Text graph bindings survive actual management save/read out
   assert.equal(Object.hasOwn(loaded.artifacts.conditioning.tensor,'graphBindings'),false);
   assert.deepEqual(loaded.artifacts.conditioning.tensor.data,text.data);
  }finally{await s.bridge.dispose();}
+});
+
+test('optional diagnostic evidence survives management save/read without entering native tensor or normal requirements',async()=>{
+ const evidence={scope:'Control transport fixture; no new numeric acceptance',provider:'wasm',timings:{encodeMs:1.25},sample:new Uint8Array([7,8,9])};
+ const expected=structuredClone(evidence),diagnostic=setup({diagnostics:true,diagnosticEvidence:evidence}),normal=setup({diagnosticEvidence:evidence});
+ try{await diagnostic.configure();await normal.configure();
+  const detailed=await diagnostic.bridge.execute({module:'vae',operation:'encode',input:encodeInput});
+  assert.deepEqual(detailed.native.evidence,expected,'Actual current factory returns the requested optional native evidence');
+  assert.deepEqual(detailed.record.trace.records[0].data.native.evidence,expected);
+  detailed.native.evidence.timings.encodeMs=999;detailed.native.evidence.sample[0]=0;
+  const saved=await diagnostic.bridge.save({records:{mean:detailed.record},inputs:{[detailed.inputRecord.descriptor.artifactId]:detailed.inputRecord}});
+  const loaded=await diagnostic.bridge.read(saved.bytes);
+  assert.deepEqual(loaded.artifacts.mean.trace.records[0].data.native.evidence,expected,'Outer trace preserves an independent copy and optional binary evidence');
+  assert.equal(Object.hasOwn(loaded.artifacts.mean.tensor,'evidence'),false);
+  const ordinary=await normal.bridge.execute({module:'vae',operation:'encode',input:encodeInput});
+  assert.equal(Object.hasOwn(ordinary.native,'evidence'),false);assert.equal(Object.hasOwn(ordinary.record.trace.records[0].data.native,'evidence'),false);
+  assert.deepEqual(ordinary.record.tensor,detailed.record.tensor,'Diagnostics do not change the ordinary tensor contract or payload');
+ }finally{await diagnostic.bridge.dispose();await normal.bridge.dispose();}
 });
 
 test('Rect native encode/decode paths preserve context; restored generated-sample stays generated',async()=>{

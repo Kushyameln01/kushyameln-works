@@ -28,6 +28,10 @@ from accept_still import ProcessSampler
 
 MANAGER = 'e1661e561dfb1a4f20544ff48bc375175b5981d1'
 DIFFUSION = 'ffeeeedb6b57d182a977c3ac02c042ce235fc87a'
+TEXT_CANCEL_RECIPE_FIELDS = {
+    'sdpa-execution-graph-hash': ('attentionLowering', 'addedAttentionLoweringBlocks'),
+    'text-norm-execution-graph-hash': ('normLowering', 'addedNormLoweringBlocks'),
+}
 
 
 def digest(value):
@@ -37,21 +41,26 @@ def digest(value):
 def validate_text_manifest_mapping(*, selected_raw, original_raw, plain, oracle):
     """Bind a runtime graph selection to unchanged independent oracle records.
 
-    Only block attentionLowering may be added. No original input/manifest/gate
-    or oracle file is rewritten to make the selected runtime look identical.
+    Only block attentionLowering or normLowering may be added. No original
+    input/manifest/gate or oracle file is rewritten to make runtime look identical.
     """
     selected, original = json.loads(selected_raw), json.loads(original_raw)
     original_sha, selected_sha = digest(original_raw), digest(selected_raw)
     if plain['manifestSha256'] != original_sha:
         raise ValueError('Independent input does not bind the original manifest SHA')
     stripped = copy.deepcopy(selected)
-    added = []
+    added_attention, added_norm = [], []
     for index, block in enumerate(stripped['blocks']):
+        if 'attentionLowering' in block and 'normLowering' in block:
+            raise ValueError('attentionLowering and normLowering cannot share the same block')
         if 'attentionLowering' in block:
-            added.append(index)
+            added_attention.append(index)
             del block['attentionLowering']
+        if 'normLowering' in block:
+            added_norm.append(index)
+            del block['normLowering']
     if stripped != original:
-        raise ValueError('Only added blocks[*].attentionLowering may differ from the original manifest')
+        raise ValueError('Only added blocks[*].attentionLowering or normLowering may differ from the original manifest')
     if not oracle.get('passed') or oracle.get('oracleUsesOnnxOrHike') is not False:
         raise ValueError('A passed independent oracle is required for development comparison')
     if oracle.get('input') != plain:
@@ -71,10 +80,21 @@ def validate_text_manifest_mapping(*, selected_raw, original_raw, plain, oracle)
     if gate.get('maxAbsError') != .001 or gate.get('rtol') != .001 or gate.get('registeredBeforeComparison') is not True:
         raise ValueError('Original predeclared Text numeric gate required')
     return {'originalSha256': original_sha, 'selectedSha256': selected_sha,
-            'onlyAddedBlockAttentionLowering': True, 'addedAttentionLoweringBlocks': added,
+            'onlyAddedBlockLowering': True, 'onlyAddedBlockAttentionLowering': not added_norm,
+            'addedAttentionLoweringBlocks': added_attention, 'addedNormLoweringBlocks': added_norm,
             'modelSha256': selected['modelSha256'], 'tokenizerSha256': selected['tokenizer']['sha256'],
             'gate': copy.deepcopy(gate), 'originalInputUnchanged': True,
             'independentReferenceUnchanged': True}
+
+
+def validate_text_cancel_stage(mapping, stage):
+    if stage is None:
+        return
+    if stage not in TEXT_CANCEL_RECIPE_FIELDS:
+        raise ValueError('Unsupported native Text cancellation stage')
+    recipe, field = TEXT_CANCEL_RECIPE_FIELDS[stage]
+    if not mapping.get(field):
+        raise ValueError('Execution-hash cancellation stage requires selected blocks[*].' + recipe)
 
 
 def main():
@@ -85,7 +105,7 @@ def main():
     parser.add_argument('--execution-source-sha', required=True)
     for name in ('vae-bundle', 'generated-input', 'text-bundle', 'text-source', 'text-reference', 'text-original-manifest'):
         parser.add_argument('--' + name, type=Path)
-    parser.add_argument('--text-cancel-stage', choices=('sdpa-execution-graph-hash',),
+    parser.add_argument('--text-cancel-stage', choices=tuple(TEXT_CANCEL_RECIPE_FIELDS),
                         help='Observe native execution-graph hash progress, cancel, then recover with the selected plain run')
     parser.add_argument('--browser', default=os.environ.get('CHROMIUM_BINARY') or shutil.which('chromium'))
     parser.add_argument('--timeout-seconds', type=int, default=1800)
@@ -157,8 +177,7 @@ def main():
             if len(reference_raw) != oracle['reference']['bytes'] or digest(reference_raw) != oracle['reference']['sha256']:
                 raise ValueError('Unchanged independent Text reference bytes/SHA mismatch')
             mapping['reference'] = {'path': str(reference_path), 'bytes': len(reference_raw), 'sha256': digest(reference_raw)}
-            if args.text_cancel_stage and not mapping['addedAttentionLoweringBlocks']:
-                raise ValueError('Execution-hash cancellation needs a selected attentionLowering recipe')
+            validate_text_cancel_stage(mapping, args.text_cancel_stage)
             if args.text_source.stat().st_size != manifest['modelBytes']:
                 raise ValueError('Text original model file size mismatch')
             spec['plainInput'] = plain

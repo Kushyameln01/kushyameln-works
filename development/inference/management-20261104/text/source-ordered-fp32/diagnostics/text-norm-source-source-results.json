@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "scope": "Only first RMSNorm in three original blocks; no MatMul/SDPA/full24",
+  "executionSourceSha": "329d7048eeab06f32ce6bf7946516709bbd30b18",
+  "sourceClosure": [
+    {
+      "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/norm_reduction_probe.py",
+      "bytes": 18681,
+      "sha256": "8267f98d03f27d6ef8860eb921273bf1a226ac7b29aed2d7a0b67e345335bb06",
+      "relativePath": "tools/inference/text-encoder/norm_reduction_probe.py",
+      "executionSourceSha": "329d7048eeab06f32ce6bf7946516709bbd30b18"
+    },
+    {
+      "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/diagnose_block.py",
+      "bytes": 61896,
+      "sha256": "14324f290ed338559025611d817d4e1466aaa7358f091882a7bc06d477e9187b",
+      "relativePath": "tools/inference/text-encoder/diagnose_block.py",
+      "executionSourceSha": "329d7048eeab06f32ce6bf7946516709bbd30b18"
+    },
+    {
+      "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/prepare.py",
+      "bytes": 10677,
+      "sha256": "5e6bba21e100034743780468857fd9970e1564a0c5e5fbc6b26e70d34a872490",
+      "relativePath": "tools/inference/text-encoder/prepare.py",
+      "executionSourceSha": "329d7048eeab06f32ce6bf7946516709bbd30b18"
+    },
+    {
+      "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/text-encoder/pinned-t5.py",
+      "bytes": 12665,
+      "sha256": "797f11b69256dffa8d9a6d236fe1e05d0c250c84d231a5993accde0ff44238bc",
+      "relativePath": "tools/inference/text-encoder/pinned-t5.py",
+      "executionSourceSha": "329d7048eeab06f32ce6bf7946516709bbd30b18"
+    }
+  ],
+  "cases": [
+    {
+      "index": 18,
+      "input": {
+        "path": "/workspace/work/inference/management-20261104/text-source-restored/source-hidden-17.f32",
+        "bytes": 8388608,
+        "sha256": "c030c6609ed3e06e920739e20a60348a2bac4685b542125a56b6a9ad50ca994a"
+      },
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "epsilon": 1e-06,
+      "sourceWeightSha256": "d190d9a1bb15a64c6420e5271ead439833113fc2f386e05c7fbe03e10b7ca95c",
+      "reference": {
+        "square": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block18-source-square.f32",
+          "bytes": 8388608,
+          "sha256": "d66fff22310f33d174df6ee262fad190eaeedb0983f7af4f6f458e44aa418294",
+          "shape": [
+            1,
+            512,
+            4096
+          ]
+        },
+        "mean": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block18-source-mean.f32",
+          "bytes": 2048,
+          "sha256": "a0474083ae4bcf5f2e5c00197045505b7b6fe1cd690ca81a148534260a402d05",
+          "shape": [
+            1,
+            512,
+            1
+          ]
+        },
+        "inverse": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block18-source-inverse.f32",
+          "bytes": 2048,
+          "sha256": "314f5e465c56be97e8715dd4567f04d75e56042c3bdcd83cb681361251389cda",
+          "shape": [
+            1,
+            512,
+            1
+          ]
+        },
+        "normalized": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block18-source-normalized.f32",
+          "bytes": 8388608,
+          "sha256": "6facff621d04085a2db8e7befd40513e8491aea3de521693658961008d6da154",
+          "shape": [
+            1,
+            512,
+            4096
+          ]
+        }
+      },
+      "graphs": {
+        "original": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block18-original.onnx",
+          "bytes": 18342,
+          "sha256": "d8e458e4c28231330441cd8a1d02f6e43308320589306dcc6904c222727008ed"
+        },
+        "torch-avx512-cascade": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block18-torch-avx512-cascade.onnx",
+          "bytes": 22679,
+          "sha256": "b7d666a8d88f787def38b6ba424b10c83ad6d563b005f5976c3c2dd1c49fa411"
+        }
+      },
+      "numpyCascadeVsTorchMean": {
+        "elements": 512,
+        "finite": true,
+        "bitwiseEqual": false,
+        "unequalElements": 297,
+        "maxAbsError": 0.0625,
+        "rmsError": 0.004624193585174759,
+        "row0MaxAbsError": 0.0
+      }
+    },
+    {
+      "index": 19,
+      "input": {
+        "path": "/workspace/work/inference/management-20261104/text-source-restored/source-hidden-18.f32",
+        "bytes": 8388608,
+        "sha256": "a21ab47ab0f8a50d84609c17e5a2cd66d126e2f1c13ba3685a26279cf0c10cf4"
+      },
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "epsilon": 1e-06,
+      "sourceWeightSha256": "c09be83bbbca335642c47d8b67f714abc586638dd9106777387edc43d8451136",
+      "reference": {
+        "square": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block19-source-square.f32",
+          "bytes": 8388608,
+          "sha256": "363908888e6486d941ce88f919644bfdc50789e244d87e679384e9d118cf205c",
+          "shape": [
+            1,
+            512,
+            4096
+          ]
+        },
+        "mean": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block19-source-mean.f32",
+          "bytes": 2048,
+          "sha256": "6e1cd106b2c320c2005628e51b003317837e3da0b3804981e49fd32205ea03e6",
+          "shape": [
+            1,
+            512,
+            1
+          ]
+        },
+        "inverse": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block19-source-inverse.f32",
+          "bytes": 2048,
+          "sha256": "7a033828714ca8055735ca3cc08419f28198fc9ce1ea6cf87c572ddc021f1572",
+          "shape": [
+            1,
+            512,
+            1
+          ]
+        },
+        "normalized": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block19-source-normalized.f32",
+          "bytes": 8388608,
+          "sha256": "a72e8a10922f88874eb053741b5e3fa70d869d88faddbdbf7b588dd77b309e59",
+          "shape": [
+            1,
+            512,
+            4096
+          ]
+        }
+      },
+      "graphs": {
+        "original": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block19-original.onnx",
+          "bytes": 18342,
+          "sha256": "6106721e6c7ef7c614ed5e25c702ad49c1f1c7219f930807f53bc79c948d973e"
+        },
+        "torch-avx512-cascade": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block19-torch-avx512-cascade.onnx",
+          "bytes": 22679,
+          "sha256": "e2a297c99136e750ecd54ce6d3e4b7ec6febfb6191fc46dc986ed8d2db828597"
+        }
+      },
+      "numpyCascadeVsTorchMean": {
+        "elements": 512,
+        "finite": true,
+        "bitwiseEqual": false,
+        "unequalElements": 300,
+        "maxAbsError": 0.5,
+        "rmsError": 0.022456624819491157,
+        "row0MaxAbsError": 0.0
+      }
+    },
+    {
+      "index": 20,
+      "input": {
+        "path": "/workspace/work/inference/management-20261104/text-source-restored/source-hidden-19.f32",
+        "bytes": 8388608,
+        "sha256": "1663b842a86dd52883a46073bdcf25882490a98e50c44c85c3a30cb6fe153d8a"
+      },
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "epsilon": 1e-06,
+      "sourceWeightSha256": "ff094275f52f94f36f212a8355713f4c45a1031e53cde97cc29629a095bd6c7d",
+      "reference": {
+        "square": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block20-source-square.f32",
+          "bytes": 8388608,
+          "sha256": "749b1e4f080dddfff4741b79eea70104076ee3fe6002f33775d9509fabb85718",
+          "shape": [
+            1,
+            512,
+            4096
+          ]
+        },
+        "mean": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block20-source-mean.f32",
+          "bytes": 2048,
+          "sha256": "e9883d5d4c238cafd5cc3ab5c9379918b3a87e0a24cfeae59f77950552f4a3b4",
+          "shape": [
+            1,
+            512,
+            1
+          ]
+        },
+        "inverse": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block20-source-inverse.f32",
+          "bytes": 2048,
+          "sha256": "b3bf0cd24c1fb30876a2117d9dbd1832d97538e6d71003efa76b04de4aba9e87",
+          "shape": [
+            1,
+            512,
+            1
+          ]
+        },
+        "normalized": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block20-source-normalized.f32",
+          "bytes": 8388608,
+          "sha256": "b46891ec7e9ca3606f2431e625b80785346323455d3bc1a7899f8453d8a95015",
+          "shape": [
+            1,
+            512,
+            4096
+          ]
+        }
+      },
+      "graphs": {
+        "original": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block20-original.onnx",
+          "bytes": 18342,
+          "sha256": "d998980a19946e27e6a6f4bb2864c206356075158b81fb746a3c798043b148a8"
+        },
+        "torch-avx512-cascade": {
+          "path": "/workspace/work/inference/management-20261104/text-norm-source/block20-torch-avx512-cascade.onnx",
+          "bytes": 22679,
+          "sha256": "716bd54ab70c142752d5abec8e33132f6d092cd231db1f73bf9fb60b8a34a357"
+        }
+      },
+      "numpyCascadeVsTorchMean": {
+        "elements": 512,
+        "finite": true,
+        "bitwiseEqual": false,
+        "unequalElements": 323,
+        "maxAbsError": 0.125,
+        "rmsError": 0.007109482313750506,
+        "row0MaxAbsError": 0.0
+      }
+    }
+  ],
+  "newFullModelRuns": 0,
+  "newModelExports": 0,
+  "sourceNormOperators": 3,
+  "torchVersion": "2.6.0+cpu",
+  "torchGitVersion": "2236df1770800ffea5697b11b0bb0d910b2e59e1",
+  "cpuCapability": "AVX512",
+  "sourceOracle": {
+    "path": "/workspace/work/inference/management-20261104/text-source-restored/trace-source-results.json",
+    "bytes": 89198,
+    "sha256": "3ea9a945a17b101d9001cd1ceee79cb3206bd9a3eacd28df986e9136b2bb5252"
+  },
+  "manifest": {
+    "path": "/workspace/work/inference/text-implementation/bundle/manifest.json",
+    "bytes": 19908,
+    "sha256": "aeb7986de538fb4a55c94ae55ea4d132d3a35b4b561d7a32cc2a3b6aedee133f"
+  },
+  "originalModel": {
+    "path": "/workspace/work/models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+    "bytes": 6735906897,
+    "sha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+    "wholeFileHashRecomputed": false,
+    "identityScope": "Retained original model identity; selected norm weights independently match graph bytes"
+  },
+  "passed": true
+}

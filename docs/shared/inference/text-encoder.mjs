@@ -26,7 +26,7 @@ export function inspectTextEncoderManifest(manifest){
  record(manifest.finalNorm,'final norm');if(manifest.finalNorm.bytes!==DIM*4||manifest.finalNorm.epsilon!==1e-6)failure('Invalid final norm manifest');
  record(e.rowHashes,'embedding row hashes');if(e.rowHashes.bytes!==e.vocabSize*32)failure('Invalid embedding row hash table');
  if(manifest.tokenizer!==undefined&&manifest.tokenizer.sha256!==UMT5_TOKENIZER_SHA256)failure('Unsupported embedded tokenizer identity');
- return {type:TYPE,hiddenSize:DIM,numLayers:24,maxTokens:512,arithmetic:manifest.arithmetic,modelSha256:MODEL,tokenizerSha256:UMT5_TOKENIZER_SHA256,graphBindings:manifest.blocks.map(r=>({index:r.index,path:r.path,sourceAssetSha256:r.sha256,executedGraphSha256:r.normLowering?.executedGraphSha256??r.attentionLowering?.executedGraphSha256??r.sha256,recipeId:r.normLowering?.type??r.attentionLowering?.type??null}))};
+ return {type:TYPE,hiddenSize:DIM,numLayers:24,maxTokens:512,arithmetic:manifest.arithmetic,modelSha256:MODEL,tokenizerSha256:UMT5_TOKENIZER_SHA256,graphBindings:manifest.blocks.map(r=>({index:r.index,path:r.path,sourceAssetSha256:r.sha256,executedGraphSha256:r.normLowering?.executedGraphSha256??r.attentionLowering?.executedGraphSha256??r.sha256,recipeId:r.normLowering?.type??r.attentionLowering?.type??null,...(r.normLowering?{recipeStatus:r.normLowering.status}:{})}))};
 }
 export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress}={}){
  const info=inspectTextEncoderManifest(manifest);checkSignal(signal);

@@ -18,7 +18,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 TYPE = 'umt5-inner-rmsnorm-avx2-cascade-f32-v1'
-STATUS = 'diagnostic-only-unaccepted'
+STATUS = 'source-ordered-fp32'
 MODEL = 'c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68'
 
 

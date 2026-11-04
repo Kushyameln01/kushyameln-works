@@ -1,6 +1,6 @@
-/** Original graph/weights stay immutable. This bounded diagnostic uses one copy. */
+/** Source-ordered FP32 inner norm lowering. Original graph/weights stay immutable. */
 import {Sha256} from '../vr180/sha256.mjs';
-const TYPE='umt5-inner-rmsnorm-avx2-cascade-f32-v1',STATUS='diagnostic-only-unaccepted',CHUNK=8*1024*1024;
+const TYPE='umt5-inner-rmsnorm-avx2-cascade-f32-v1',STATUSES=new Set(['source-ordered-fp32','diagnostic-only-unaccepted']),CHUNK=8*1024*1024;
 const checkSignal=signal=>{if(signal?.aborted)throw signal.reason??new DOMException('Aborted','AbortError');};
 const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
 const decodeHex=value=>Uint8Array.from(value.match(/../g)??[],value=>parseInt(value,16));
@@ -8,7 +8,7 @@ const decodeBase64=value=>Uint8Array.from(atob(value),value=>value.charCodeAt(0)
 function integer(bytes){let value=0,scale=1;for(const byte of bytes){value+=(byte&127)*scale;if(byte<128)return value;scale*=128;}throw TypeError('Invalid graph length varint');}
 
 export function inspectInnerRmsNormRecipe(recipe,sourceRecord){
- if(recipe?.schemaVersion!==1||recipe.type!==TYPE||recipe.status!==STATUS)throw TypeError('Unsupported inner RMSNorm recipe');
+ if(recipe?.schemaVersion!==1||recipe.type!==TYPE||!STATUSES.has(recipe.status))throw TypeError('Unsupported inner RMSNorm recipe');
  if(!Number.isSafeInteger(recipe.index)||recipe.index<0||recipe.index>23||!Number.isSafeInteger(recipe.sourceAsset?.bytes)||recipe.sourceAsset.bytes<1||!/^[0-9a-f]{64}$/.test(recipe.sourceAsset.sha256)||!/^[0-9a-f]{64}$/.test(recipe.executedGraphSha256))throw TypeError('Invalid norm graph identity');
  if(sourceRecord&&(recipe.index!==sourceRecord.index||recipe.path!==sourceRecord.path||recipe.sourceAsset.bytes!==sourceRecord.bytes||recipe.sourceAsset.sha256!==sourceRecord.sha256))throw TypeError('Norm recipe does not match original asset');
  if(!Array.isArray(recipe.operations)||recipe.operations.length!==3)throw TypeError('Exactly two inner norm replacements and graph length required');
@@ -22,7 +22,7 @@ export function inspectInnerRmsNormRecipe(recipe,sourceRecord){
  if(!Number.isSafeInteger(recipe.executedBytes)||recipe.executedBytes!==recipe.sourceAsset.bytes+delta||delta<1||delta>65536)throw TypeError('Invalid norm graph growth');
  const header=operations[0],nodesDelta=operations.slice(1).reduce((sum,value)=>sum+value.after.length-value.before.length,0);
  if(integer(header.before)!==recipe.sourceGraphLength||integer(header.after)!==recipe.executedGraphLength||recipe.executedGraphLength!==recipe.sourceGraphLength+nodesDelta||header.offset+header.before.length!==recipe.sourceGraphPayloadOffset||recipe.sourceGraphPayloadOffset+recipe.sourceGraphLength>recipe.sourceAsset.bytes)throw TypeError('Invalid original/executed graph length');
- return {operations,recipeId:TYPE,status:STATUS,sourceAssetSha256:recipe.sourceAsset.sha256,executedGraphSha256:recipe.executedGraphSha256};
+ return {operations,recipeId:TYPE,status:recipe.status,sourceAssetSha256:recipe.sourceAsset.sha256,executedGraphSha256:recipe.executedGraphSha256};
 }
 
 /** Original-asset verification belongs to the loader before this one allocation. */
@@ -48,5 +48,5 @@ export async function verifyInnerRmsNormGraph(bytes,recipe,{signal,onProgress}={
  const hash=new Sha256();
  for(let offset=0;offset<bytes.length;offset+=CHUNK){checkSignal(signal);onProgress?.({stage:'text-norm-execution-graph-hash',index:recipe.index,offset,total:bytes.length});checkSignal(signal);hash.update(bytes.subarray(offset,Math.min(offset+CHUNK,bytes.length)));await tick();checkSignal(signal);}
  const actual=hash.digestHex();if(actual!==recipe.executedGraphSha256)throw Error('Norm execution graph hash mismatch');
- return {recipeId:TYPE,index:recipe.index,path:recipe.path,sourceAssetSha256:recipe.sourceAsset.sha256,executedGraphSha256:actual,sourceBytes:recipe.sourceAsset.bytes,executedBytes:recipe.executedBytes,wholeGraphCopies:1,newModelExports:0};
+ return {recipeId:TYPE,status:recipe.status,index:recipe.index,path:recipe.path,sourceAssetSha256:recipe.sourceAsset.sha256,executedGraphSha256:actual,sourceBytes:recipe.sourceAsset.bytes,executedBytes:recipe.executedBytes,wholeGraphCopies:1,newModelExports:0};
 }

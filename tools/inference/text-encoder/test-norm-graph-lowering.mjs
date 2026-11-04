@@ -14,6 +14,12 @@ assert.deepEqual(output,expected);assert.notEqual(output.buffer,original.buffer)
 assert.deepEqual(original,Uint8Array.from([19,9,1,2,9,9,9,9,9,9,3,4,9,9,9,9,9,9,9,9]));
 const result=await verifyInnerRmsNormGraph(output,recipe);
 assert.equal(result.sourceAssetSha256,sha(original));assert.equal(result.executedGraphSha256,sha(expected));assert.equal(result.wholeGraphCopies,1);
+for(const status of ['source-ordered-fp32','diagnostic-only-unaccepted']){
+ const selected={...recipe,status};
+ const prepared=await rewriteInnerRmsNormGraph(original,selected,{verifiedSourceAssetSha256:sha(original)});
+ const verified=await verifyInnerRmsNormGraph(prepared,selected);
+ assert.equal(verified.status,status,'Return the selected recipe status without requiring a quality receipt');
+}
 await assert.rejects(rewriteInnerRmsNormGraph(original,recipe,{verifiedSourceAssetSha256:'0'.repeat(64)}),/source.*hash/i);
 const corrupt=new Uint8Array(output);corrupt[corrupt.length-1]^=1;
 await assert.rejects(verifyInnerRmsNormGraph(corrupt,recipe),/execution.*hash/i);

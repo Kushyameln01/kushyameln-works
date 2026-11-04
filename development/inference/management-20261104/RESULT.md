@@ -1,6 +1,6 @@
 # Text／VAEの単体修正と管理部分接続
 
-進行中。VAEのRect実管理部分接続は合格した。Textの全512有効IDは固定gate未達で、単体完成とは扱わない。以下の初回制御試験と、末尾の実NN結果は分けて読む。
+進行中。VAEのRect実管理部分接続と、Textの全512有効IDの固定gate比較が合格した。修正manifestでのText実管理実行を確認中である。以下の初回制御試験と、末尾の実NN結果は分けて読む。
 
 - 実管理source：`e1661e561dfb1a4f20544ff48bc375175b5981d1`。
 - 実Diffusion conditioning capture source：`ffeeeedb6b57d182a977c3ac02c042ce235fc87a`。
@@ -36,7 +36,11 @@ Diffusion自身の復元APIを一度だけ通したsynthetic generated sampleも
 
 SDPA倍率候補は通常SDKで全24層を実行したが、maxAbs0.0017351508140563965で不合格だった。採用していない。[不合格原本](text/rejected-scaling-acceptance.json)は実行・codec・資源終了と数値gateを区別する。全2,097,152値を元独立referenceへ比較し、wall1,106.81秒、標本所有群peak RSS3,194,269,696B、session24/24 release・最終live/zombie各0だった。
 
-内部RMSNorm局所試験では、Torchの実SumKernel dispatchがAVX2であることを固定sourceから確認した。実行source `08b4d32d83c81124f2b3bf6f3e2692bcff44238c`。block18/19/20の元入力を使い、各2,097,152値のsquare／正規化出力と全512 mean／inverseを比較した。source順FP32 cascadeは3件すべてbit単位で一致した。元ONNX正規化にはmaxAbs1.5974e-5／1.1206e-5／1.4067e-5の差があった。6 tiny sessionを全release、30 Tensorをdispose、active0。この局所一致だけで全24層の最終gate合格とは扱わず、両内部normへの反映を準備している。
+内部RMSNorm局所試験では、Torchの実SumKernel dispatchがAVX2であることを固定sourceから確認した。実行source `08b4d32d83c81124f2b3bf6f3e2692bcff44238c`。block18/19/20の元入力を使い、各2,097,152値のsquare／正規化出力と全512 mean／inverseを比較した。source順FP32 cascadeは3件すべてbit単位で一致した。元ONNX正規化にはmaxAbs1.5974e-5／1.1206e-5／1.4067e-5の差があった。6 tiny sessionを全release、30 Tensorをdispose、active0。
+
+この集計順だけを両内部norm×24層へ反映し、通常SDKをsource `c99d89ca7a9edbe04d0fb451ef7c2529dbaa48d3` で実行した。[全値受入](text/norm-accepted/README.md)は2,097,152値のmaxAbs8.52346420288086e-5で、元gate0.001を満たす。元model／Tokenizer／mask／最終RMSNorm marker、codec保存読戻しを保持した。session24/24 release、Tensor72 dispose、active0、最終live/zombie各0。wall1,142.75秒、標本所有群peak RSS3,909,136,384B。metadata置換用のgraph1コピーが資源増加に含まれる。ブラウザ／管理実行とは別scopeである。
+
+採用manifestは[中立status版](text/source-ordered-fp32/README.md)。受入実行manifest40afd…からstatus24件だけを変え、全24の元asset・実行graph bytes/SHA・gateは同一と確認した。採用後も独立参照・品質receiptを通常入力の必須条件にしない。異block混成等の未実行構成へ数値受入を拡張しない。
 
 既存plain／IDの合格は元graphのscopeを維持し、新graphへ無条件に転用しない。Textの実NNを管理経由で完了したとはまだ報告しない。初回制御5件に加え、graphBindingsの外側trace保存とcanonical JSON比較の回帰を追加した。graphBindingsをstrictなnative tensorへ混入させない。
 
@@ -44,4 +48,4 @@ SDPA倍率候補は通常SDKで全24層を実行したが、maxAbs0.001735150814
 
 管理読戻しの既定展開budgetは1GiBで、`read(bytes,{maxUnpackedBytes})`で設定できる。最小target81 package約396.6MBは構造上budget内だが、複数cloneを伴う管理81保存の資源・実行成功は未受入。native81の合格を拡張しない。
 
-Text全512有効IDの最終gateと修正後の通常管理実行、管理大payload保存資源、実producerと復元receiptを使う最終decode、全体運用は残件である。LoRA送付・全体生成・merge・Pages公開は実施していない。基点の全Python52/53とLoRA公開台帳不整合は、接続fixtureの結果と分けて引き継ぐ。
+修正後Textの通常管理実行と新plain比較、管理大payload保存資源、実producerと復元receiptを使う最終decode、全体運用は残件である。LoRA送付・全体生成・merge・Pages公開は実施していない。基点の全Python52/53とLoRA公開台帳不整合は、接続fixtureの結果と分けて引き継ぐ。

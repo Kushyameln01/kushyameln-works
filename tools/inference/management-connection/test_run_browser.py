@@ -52,6 +52,32 @@ class ManifestMapping(unittest.TestCase):
         self.assertEqual(mapping['addedAttentionLoweringBlocks'], [])
         self.assertEqual(mapping['selectedSha256'], mapping['originalSha256'])
 
+    def test_norm_only_selection_and_cancel_stage_bind_the_matching_recipe(self):
+        candidate = json.loads(self.old_raw)
+        for block in candidate['blocks']:
+            block['normLowering'] = {'mapping-test-only': True, 'index': block['index']}
+        original_plain, original_oracle = copy.deepcopy(self.plain), copy.deepcopy(self.oracle)
+        mapping = self.validate(candidate)
+        self.assertEqual(mapping['addedAttentionLoweringBlocks'], [])
+        self.assertEqual(mapping['addedNormLoweringBlocks'], list(range(24)))
+        self.assertTrue(mapping['onlyAddedBlockLowering'])
+        self.assertFalse(mapping['onlyAddedBlockAttentionLowering'])
+        runner.validate_text_cancel_stage(mapping, 'text-norm-execution-graph-hash')
+        with self.assertRaisesRegex(ValueError, 'attentionLowering'):
+            runner.validate_text_cancel_stage(mapping, 'sdpa-execution-graph-hash')
+        self.assertEqual(self.plain, original_plain)
+        self.assertEqual(self.oracle, original_oracle)
+
+    def test_cancel_stage_requires_its_recipe_and_block_recipe_families_cannot_overlap(self):
+        attention = self.validate(self.selection())
+        runner.validate_text_cancel_stage(attention, 'sdpa-execution-graph-hash')
+        with self.assertRaisesRegex(ValueError, 'normLowering'):
+            runner.validate_text_cancel_stage(attention, 'text-norm-execution-graph-hash')
+        candidate = self.selection()
+        candidate['blocks'][0]['normLowering'] = {'mapping-test-only': True}
+        with self.assertRaisesRegex(ValueError, 'same block'):
+            self.validate(candidate)
+
     def test_unrelated_model_tokenizer_gate_and_graph_changes_are_rejected(self):
         for field in ('model', 'tokenizer', 'gate', 'graph'):
             with self.subTest(field=field):

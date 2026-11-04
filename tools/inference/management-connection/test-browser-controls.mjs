@@ -6,9 +6,10 @@ import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import {webcrypto,createHash} from 'node:crypto';
 
-test('execution-hash progress cancels the exact managed Text job and recovers without changing the oracle record',async()=>{
+for(const stage of ['sdpa-execution-graph-hash','text-norm-execution-graph-hash'])test(`${stage} cancels the exact managed Text job and recovers without changing the oracle record`,async()=>{
  const source=(await readFile(new URL('./browser.mjs',import.meta.url),'utf8')).replace(/^import .*;\n/gm,'');
- const manifest={embedding:{sourceFile:'original.safetensors'},blocks:[{attentionLowering:{type:'control-only'}}]};
+ const recipeField=stage==='text-norm-execution-graph-hash'?'normLowering':'attentionLowering';
+ const manifest={embedding:{sourceFile:'original.safetensors'},blocks:[{[recipeField]:{type:'control-only'}}]};
  const manifestBytes=new TextEncoder().encode(JSON.stringify(manifest));
  const selectedSha256=createHash('sha256').update(manifestBytes).digest('hex');
  const downloads=[],calls=[],target={requestId:'managed-text-control',activeToken:'current-token'};
@@ -21,7 +22,7 @@ test('execution-hash progress cancels the exact managed Text job and recovers wi
    rejectRunning=reject;queueMicrotask(()=>{
     options.onState({module:'text_encoder',progress:{stage:'text-block',completed:0}});
     assert.equal(calls.length,1);assert.equal(bridge.cancelCalls,undefined,'unrelated progress must not cancel');
-    options.onState({module:'text_encoder',progress:{stage:'sdpa-execution-graph-hash',completedBytes:1048576}});
+    options.onState({module:'text_encoder',progress:{stage,offset:1048576}});
    });
   });
   return {native:{tensor,inputMode:request.input.text!==undefined?'plain-text':'token-ids'},record:{tensor,trace:{records:[{data:{native:{}}}]}},inputRecord:null};
@@ -35,9 +36,9 @@ test('execution-hash progress cancels the exact managed Text job and recovers wi
  vm.createContext(sandbox);vm.runInContext(source,sandbox);
  const plainInput={text:'Hello world',tokenIds:[1],attentionMask:[1],manifestSha256:'old-independent-manifest'};
  const original=structuredClone(plainInput);
- const result=await sandbox.runManagementConnection({scope:'text',executionSourceSha:'a'.repeat(40),managementSourceSha:'b'.repeat(40),diffusionSourceSha:'c'.repeat(40),plainInput,textManifestMapping:{originalSha256:plainInput.manifestSha256,selectedSha256},textCancelStage:'sdpa-execution-graph-hash',textGate:{atol:.001,rtol:.001,maxAbs:.001}});
+ const result=await sandbox.runManagementConnection({scope:'text',executionSourceSha:'a'.repeat(40),managementSourceSha:'b'.repeat(40),diffusionSourceSha:'c'.repeat(40),plainInput,textManifestMapping:{originalSha256:plainInput.manifestSha256,selectedSha256},textCancelStage:stage,textGate:{atol:.001,rtol:.001,maxAbs:.001}});
  assert.equal(result.passed,true,JSON.stringify(result.failure));assert.equal(bridge.cancelCalls,1);
- assert.equal(result.textCancel.boundary.stage,'sdpa-execution-graph-hash');assert.equal(result.textCancel.barrier.resourceReleased,true);
+ assert.equal(result.textCancel.boundary.stage,stage);assert.equal(result.textCancel.barrier.resourceReleased,true);
  assert.equal(result.textCancel.recoveredBy,'text-plain');assert.equal(calls.length,3);assert.equal(disposed,true);
  assert.deepEqual(plainInput,original);assert.equal(downloads.length,4);
 });
