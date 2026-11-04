@@ -7,6 +7,7 @@ import {BERNINI_TARGETS,TARGET_PROVENANCE} from '../lora/targets.mjs';
 import {BASE_MODEL_HASHES} from '../lora/weights.mjs';
 import {createModelChunkEmitter,validateModelChunkOptions,MODEL_CHUNK_STAGES,MODEL_CHUNK_MAX_ELEMENTS} from './model-chunk-diagnostics.mjs';
 import {createModelExecutionTiming} from './model-execution-timing.mjs';
+import {createOrderedAttentionKVPool} from './prepared-attention-kv.mjs';
 
 export const MODEL_CANDIDATE_PROFILE='bernini-full40-batched-f32-experimental-v1';
 export const MODEL_CANDIDATE_LIMITS=Object.freeze({blocks:40,rows:128,keys:256,hiddenWidth:5120,heads:40,headDim:128,ffnWidth:13824,textWidth:4096,textRows:512,maxSequenceTokens:90000,hostHiddenStoreCount:4,maxHiddenStoreBytesExclusive:2147483648,diagnosticMaxTokens:128,maxStageWeightCacheBytes:566231040});
@@ -84,7 +85,7 @@ export async function createBerniniModelCandidate(options={}){
  let source=prepared.source??null,math=prepared.math??null,ops=prepared.ops??null,head=null;
  const owned={source:!source,math:!math,ops:!ops};let disposed=false,busy=false,closing=false,disposePending=null,activeController=null,activeTerminal=null;
  const metrics={predictions:0,diagnosticRuns:0,failedPredictions:0,sourceReads:0,sourceF32Bytes:0,linearRuns:0,attentionTiles:0,blocksCompleted:0,activeHiddenStores:0,activeHiddenStoreBytes:0,peakHiddenStoreBytes:0,stageWeightCacheBytes:0,peakStageWeightCacheBytes:0,lastRun:null,lastTiming:null,lastDiagnostic:null,lastFailure:null};
- const weights=new Set(),cacheSizes=new WeakMap(),preparedHandles=new WeakSet(),weightLabels=new WeakMap();
+ const kvPools=new Set(),weights=new Set(),cacheSizes=new WeakMap(),preparedHandles=new WeakSet(),weightLabels=new WeakMap();
  let currentTiming=null,currentChunks=null,currentContext=null,releaseRetained=null;
  const timed=(kind,detail,fn)=>currentTiming?currentTiming.sync(kind,detail,fn):fn();
  const timedAsync=(kind,detail,fn)=>currentTiming?currentTiming.async(kind,detail,fn):fn();
@@ -93,6 +94,7 @@ export async function createBerniniModelCandidate(options={}){
  const live=s=>{abort(signal);abort(s);if(disposed||closing)throw Error('Model candidate disposed or closing');};
  const cleanup=async()=>{
   const errors=[];
+  for(const pool of [...kvPools])try{pool.dispose();kvPools.delete(pool);}catch(error){errors.push(error);}
   if(releaseRetained)for(const weight of [...weights])try{releaseRetained(weight);}catch(error){errors.push(error);}
   for(const operation of [async()=>{head?.dispose();head=null;},async()=>{if(owned.ops){await ops?.dispose();weights.clear();metrics.stageWeightCacheBytes=0;}},async()=>{if(owned.math)math?.dispose();},async()=>{if(owned.source)source?.dispose();}])try{await operation();}catch(error){errors.push(error);}
   if(errors.length)throw new AggregateError(errors,'Model candidate cleanup incomplete; retry disposal');
@@ -116,6 +118,9 @@ export async function createBerniniModelCandidate(options={}){
   head=createModelHead({source:headSource,math:compute,ops:headOps});
   const preparedWeightsEnabled=['prepareLinearWeight','linearPrepared','releaseLinearWeight'].every(key=>typeof ops[key]==='function');
   const persistentAttentionEnabled=['beginAttentionQuery','attentionQueryTile','finishAttentionQuery','releaseAttentionQuery'].every(key=>typeof ops[key]==='function');
+  const preparedAttentionKVEnabled=persistentAttentionEnabled&&['prepareAttentionKV','attentionQueryPreparedTile','releaseAttentionKV'].every(key=>typeof ops[key]==='function');
+  const makeKVPool=(totalKeys,s)=>{const pool=createOrderedAttentionKVPool({totalKeys,signal:s,prepare:input=>timed('attentionKVPrepare',{keyRowStart:input.keyStart,keys:input.keys,bytes:input.k.byteLength+input.v.byteLength},()=>ops.prepareAttentionKV(input)),release:handle=>timed('attentionKVRelease',{keyRowStart:handle.keyStart,keys:handle.keys,bytes:handle.byteLength},()=>ops.releaseAttentionKV(handle))});kvPools.add(pool);return pool;};
+  const releaseKVPool=pool=>{if(pool){pool.dispose();kvPools.delete(pool);}};
   const release=value=>{if(value&&weights.has(value)){if(preparedHandles.has(value))timed('weightRelease',{...weightLabels.get(value)},()=>ops.releaseLinearWeight(value));weights.delete(value);metrics.stageWeightCacheBytes-=cacheSizes.get(value)??0;cacheSizes.delete(value);}};
   releaseRetained=release;
   const retain=value=>{weights.add(value);cacheSizes.set(value,value.byteLength);metrics.stageWeightCacheBytes+=value.byteLength;metrics.peakStageWeightCacheBytes=Math.max(metrics.peakStageWeightCacheBytes,metrics.stageWeightCacheBytes);return value;};
@@ -151,16 +156,19 @@ export async function createBerniniModelCandidate(options={}){
   }
   function hiddenStores(count,total){metrics.activeHiddenStores=count;metrics.activeHiddenStoreBytes=count*total*W*4;metrics.peakHiddenStoreBytes=Math.max(metrics.peakHiddenStoreBytes,metrics.activeHiddenStoreBytes);}
   function modulated(x,rows,shift,scale){return compute.modulate({input:compute.layerNorm({input:x,rows,width:W,epsilon:EPS}),shift,scale,rows,width:W});}
-  async function attend(q,queries,keys,values,totalKeys,s,detail={}){
+  async function attend(q,queries,keys,values,totalKeys,s,detail={},kvPool=null){
    const query=timed('layoutCopy',{operator:'query-head-major',rows:queries,bytes:queries*W*4},()=>headMajor(queries,q));
    let handle=null,error,failed=false,state=persistentAttentionEnabled?null:{max:new Float32Array(H*queries).fill(INITIAL_MAX),denominator:new Float32Array(H*queries),context:new Float32Array(queries*W)};
    try{
     if(persistentAttentionEnabled)handle=timed('attentionPrepare',{...detail,queries,heads:H,headDim:D,expectedKeys:totalKeys},()=>ops.beginAttentionQuery({q:query,heads:H,queries,headDim:D,expectedKeys:totalKeys,signal:s}));
     for(let start=0;start<totalKeys;start+=K){
      const n=Math.min(K,totalKeys-start);live(s);
-     const keyTile=timed('layoutCopy',{operator:'key-head-major',rows:n,bytes:n*W*4},()=>headMajor(n,keys,start)),valueTile=timed('layoutCopy',{operator:'value-head-major',rows:n,bytes:n*W*4},()=>headMajor(n,values,start));
-     if(handle)await timedAsync('attention',{...detail,keyRowStart:start,keys:n,queries,heads:H,headDim:D},()=>ops.attentionQueryTile({queryHandle:handle,k:keyTile,v:valueTile,keys:n,signal:s}));
-     else state=await timedAsync('attention',{...detail,keyRowStart:start,keys:n,queries,heads:H,headDim:D},()=>ops.attentionTile({q:query,k:keyTile,v:valueTile,previousMax:state.max,previousDenominator:state.denominator,previousContext:state.context,heads:H,queries,keys:n,headDim:D,signal:s}));
+     if(kvPool)await timedAsync('attention',{...detail,keyRowStart:start,keys:n,queries,heads:H,headDim:D,preparedKV:true},()=>ops.attentionQueryPreparedTile({queryHandle:handle,kvHandle:kvPool.tileAt(start),signal:s}));
+     else{
+      const keyTile=timed('layoutCopy',{operator:'key-head-major',rows:n,bytes:n*W*4},()=>headMajor(n,keys,start)),valueTile=timed('layoutCopy',{operator:'value-head-major',rows:n,bytes:n*W*4},()=>headMajor(n,values,start));
+      if(handle)await timedAsync('attention',{...detail,keyRowStart:start,keys:n,queries,heads:H,headDim:D},()=>ops.attentionQueryTile({queryHandle:handle,k:keyTile,v:valueTile,keys:n,signal:s}));
+      else state=await timedAsync('attention',{...detail,keyRowStart:start,keys:n,queries,heads:H,headDim:D},()=>ops.attentionTile({q:query,k:keyTile,v:valueTile,previousMax:state.max,previousDenominator:state.denominator,previousContext:state.context,heads:H,queries,keys:n,headDim:D,signal:s}));
+     }
      live(s);metrics.attentionTiles++;
     }
     if(handle)state=timed('attentionFinish',{...detail,queries,heads:H,headDim:D},()=>ops.finishAttentionQuery(handle,{signal:s}));
@@ -191,7 +199,8 @@ export async function createBerniniModelCandidate(options={}){
    return {hidden,text,e,e0};
   }
   async function selfAttention(input,sequence,total,block,modulation,s,progress){
-   const base='blocks.'+block+'.self_attn',keys=new Float32Array(total*W),values=new Float32Array(total*W),output=new Float32Array(total*W);hiddenStores(4,total);
+   const base='blocks.'+block+'.self_attn',kvPool=preparedAttentionKVEnabled?makeKVPool(total,s):null,keys=kvPool?null:new Float32Array(total*W),values=kvPool?null:new Float32Array(total*W),output=new Float32Array(total*W);hiddenStores(4,total);
+   try{
    // K/V share one LN1/modulation result per row. Their two matrices occupy
    // the same 2x5120^2 cache bound already required by the Q/O phase. Every
    // scalar projection/norm/RoPE operation remains unchanged.
@@ -202,41 +211,47 @@ export async function createBerniniModelCandidate(options={}){
      const rows=Math.min(R,total-start),x=modulated(input.slice(start*W,(start+rows)*W),rows,modulation[0],modulation[1]);
      if(currentChunks)await emitRows('postModulated',x,[1,total,W],1,W,start,rows,block,true);
      const kp=await linear(x,kw,rows,W,W,kb,s),normalized=compute.rmsNorm({input:kp,weight:kn,rows,width:W,epsilon:EPS}),k=compute.rope({input:normalized,rows,...sequence.readPositions(start,rows)}),v=await linear(x,vw,rows,W,W,vb,s);
-     keys.set(k,start*W);values.set(v,start*W);
+     if(kvPool)timed('layoutCopy',{operator:'key-value-head-major-once',rows,bytes:(k.byteLength+v.byteLength)},()=>kvPool.appendRows({k,v,rowStart:start,rows}));
+     else{keys.set(k,start*W);values.set(v,start*W);}
      if(currentChunks){await emitRows('kProjected',kp,[1,total,H,D],1,W,start,rows,block,true);await emitRows('kNormalized',normalized,[1,total,H,D],1,W,start,rows,block,true);await emitRows('k',k,[1,total,H,D],1,W,start,rows,block,true);await emitRows('v',v,[1,total,H,D],1,W,start,rows,block,true);}
      progress('self-k',block,start+rows,total);progress('self-v',block,start+rows,total);
     }
    }finally{release(kw);release(vw);}
+   kvPool?.finish();
    const qw=await matrix(base+'.q.weight',s),ow=await matrix(base+'.o.weight',s);
    try{
     const qb=await vector(base+'.q.bias',s),ob=await vector(base+'.o.bias',s),qn=await vector(base+'.norm_q.weight',s);
     for(let start=0;start<total;start+=R){
      const rows=Math.min(R,total-start),original=input.slice(start*W,(start+rows)*W),x=modulated(original,rows,modulation[0],modulation[1]),qp=await linear(x,qw,rows,W,W,qb,s),normalized=compute.rmsNorm({input:qp,weight:qn,rows,width:W,epsilon:EPS}),q=compute.rope({input:normalized,rows,...sequence.readPositions(start,rows)});
      if(currentChunks){await emitRows('qProjected',qp,[1,total,H,D],1,W,start,rows,block,true);await emitRows('qNormalized',normalized,[1,total,H,D],1,W,start,rows,block,true);await emitRows('q',q,[1,total,H,D],1,W,start,rows,block,true);}
-     const context=await attend(q,rows,keys,values,total,s,{phase:'self-attention',block,queryRowStart:start}),projected=await linear(context,ow,rows,W,W,ob,s),residual=compute.gateResidual({base:original,value:projected,gate:modulation[2],rows,width:W});output.set(residual,start*W);
+     const context=await attend(q,rows,keys,values,total,s,{phase:'self-attention',block,queryRowStart:start},kvPool),projected=await linear(context,ow,rows,W,W,ob,s),residual=compute.gateResidual({base:original,value:projected,gate:modulation[2],rows,width:W});output.set(residual,start*W);
      if(currentChunks){await emitRows('selfAttention',context,[1,total,H,D],1,W,start,rows,block,true);await emitRows('oProjection',projected,[1,total,W],1,W,start,rows,block,true);await emitRows('selfResidual',residual,[1,total,W],1,W,start,rows,block,true);}
      progress('self-attention',block,start+rows,total);
     }
    }finally{release(qw);release(ow);}
    return output;
+   }finally{releaseKVPool(kvPool);}
   }
   async function crossAttention(hidden,text,textRows,total,block,s,progress){
-   const base='blocks.'+block+'.cross_attn',keys=new Float32Array(textRows*W),values=new Float32Array(textRows*W);
+   const base='blocks.'+block+'.cross_attn',kvPool=preparedAttentionKVEnabled?makeKVPool(textRows,s):null;let keys=new Float32Array(textRows*W),values=new Float32Array(textRows*W);
+   try{
    for(const [kind,store]of [['k',keys],['v',values]]){
     const weight=await matrix(base+'.'+kind+'.weight',s),bias=await vector(base+'.'+kind+'.bias',s),norm=kind==='k'?await vector(base+'.norm_k.weight',s):null;
     try{for(let start=0;start<textRows;start+=R){const rows=Math.min(R,textRows-start);let projected=await linear(text.slice(start*W,(start+rows)*W),weight,rows,W,W,bias,s);if(norm)projected=compute.rmsNorm({input:projected,weight:norm,rows,width:W,epsilon:EPS});store.set(projected,start*W);if(currentChunks)await emitRows(kind==='k'?'crossK':'crossV',projected,[1,textRows,H,D],1,W,start,rows,block);}}finally{release(weight);}
    }
+   if(kvPool){for(let start=0;start<textRows;start+=R){const rows=Math.min(R,textRows-start);timed('layoutCopy',{operator:'cross-key-value-head-major-once',rows,bytes:rows*W*8},()=>kvPool.appendRows({k:keys.subarray(start*W,(start+rows)*W),v:values.subarray(start*W,(start+rows)*W),rowStart:start,rows}));}kvPool.finish();keys=null;values=null;}
    const qw=await matrix(base+'.q.weight',s),ow=await matrix(base+'.o.weight',s);
    try{
     const qb=await vector(base+'.q.bias',s),ob=await vector(base+'.o.bias',s),qn=await vector(base+'.norm_q.weight',s),nw=await vector('blocks.'+block+'.norm3.weight',s),nb=await vector('blocks.'+block+'.norm3.bias',s);
     for(let start=0;start<total;start+=R){
      const rows=Math.min(R,total-start),original=hidden.slice(start*W,(start+rows)*W),x=compute.affineNorm({input:original,weight:nw,bias:nb,rows,width:W,epsilon:EPS}),q=compute.rmsNorm({input:await linear(x,qw,rows,W,W,qb,s),weight:qn,rows,width:W,epsilon:EPS});
      if(currentChunks)await emitRows('crossQ',q,[1,total,H,D],1,W,start,rows,block,true);
-     const context=await attend(q,rows,keys,values,textRows,s,{phase:'cross-attention',block,queryRowStart:start}),projected=await linear(context,ow,rows,W,W,ob,s),residual=compute.add({a:original,b:projected});hidden.set(residual,start*W);
+     const context=await attend(q,rows,keys,values,textRows,s,{phase:'cross-attention',block,queryRowStart:start},kvPool),projected=await linear(context,ow,rows,W,W,ob,s),residual=compute.add({a:original,b:projected});hidden.set(residual,start*W);
      if(currentChunks){await emitRows('crossAttention',context,[1,total,H,D],1,W,start,rows,block,true);await emitRows('crossResidual',residual,[1,total,W],1,W,start,rows,block,true);}
      progress('cross-attention',block,start+rows,total);
     }
    }finally{release(qw);release(ow);}
+   }finally{releaseKVPool(kvPool);}
   }
   async function ffn(hidden,total,block,modulation,s,progress){
    const base='blocks.'+block+'.ffn',chunks=[];let down=null;
@@ -304,7 +319,7 @@ export async function createBerniniModelCandidate(options={}){
      if(currentChunks)await emitRows('prediction',output,layout.targetShape,null,layout.targetShape.at(-1),0,output.length/layout.targetShape.at(-1));
      const afterOps=ops.stats?.(),copyDelta=key=>Number.isFinite(beforeOps?.[key])&&Number.isFinite(afterOps?.[key])?afterOps[key]-beforeOps[key]:null;
      const operatorTimings=beforeOps?.timings&&afterOps?.timings?Object.fromEntries(Object.keys(afterOps.timings).map(key=>[key,afterOps.timings[key]-(beforeOps.timings[key]??0)])):null;
-     const evidence={profile:MODEL_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,generationReady:false,blockCount:40,blocksCompleted:metrics.blocksCompleted,totalTokens:total,targetTokens:layout.targetTokens,contextTokens:layout.contextTokens,headRows,writtenTargetRows:writtenRows,textRows:conditioning.rows,textMask:'validated provenance; every supplied row participates in cross-attention softmax',rawTimeEmbeddingInHead:true,weightStrategy:preparedWeightsEnabled?'owned opaque stage weights; one validated JS buffer and persistent ORT Tensor reused; native WASM uploads not measured':'host full stage matrices, loaded once per prediction; compact FFN output chunks; head cache retained; ORT weight inputs snapshotted on every tile',preparedWeightsEnabled,persistentAttentionEnabled,sourceReads:metrics.sourceReads-before.sourceReads,sourceF32Bytes:metrics.sourceF32Bytes-before.sourceF32Bytes,linearRuns:metrics.linearRuns-before.linearRuns,attentionTiles:metrics.attentionTiles-before.attentionTiles,operatorInputCopyBytes:copyDelta('inputCopyBytes'),operatorOutputCopyBytes:copyDelta('outputCopyBytes'),operatorRuntimeInputSpanBytes:copyDelta('runtimeInputSpanBytes'),timings:currentTiming.snapshot(),operatorTimings,...(currentChunks?{chunkDiagnostics:currentChunks.stats()}:{}),elapsedMs:performance.now()-started,source:{side:identity.side,modelSha256:identity.modelHash,headerSHA256:identity.headerSHA256,fullFileSHA256Verified:false},originalProductionPrecisionVerified:false};
+     const evidence={profile:MODEL_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,generationReady:false,blockCount:40,blocksCompleted:metrics.blocksCompleted,totalTokens:total,targetTokens:layout.targetTokens,contextTokens:layout.contextTokens,headRows,writtenTargetRows:writtenRows,textRows:conditioning.rows,textMask:'validated provenance; every supplied row participates in cross-attention softmax',rawTimeEmbeddingInHead:true,weightStrategy:preparedWeightsEnabled?'owned opaque stage weights; one validated JS buffer and persistent ORT Tensor reused; native WASM uploads not measured':'host full stage matrices, loaded once per prediction; compact FFN output chunks; head cache retained; ORT weight inputs snapshotted on every tile',preparedWeightsEnabled,persistentAttentionEnabled,preparedAttentionKVEnabled,sourceReads:metrics.sourceReads-before.sourceReads,sourceF32Bytes:metrics.sourceF32Bytes-before.sourceF32Bytes,linearRuns:metrics.linearRuns-before.linearRuns,attentionTiles:metrics.attentionTiles-before.attentionTiles,operatorInputCopyBytes:copyDelta('inputCopyBytes'),operatorOutputCopyBytes:copyDelta('outputCopyBytes'),operatorRuntimeInputSpanBytes:copyDelta('runtimeInputSpanBytes'),timings:currentTiming.snapshot(),operatorTimings,...(currentChunks?{chunkDiagnostics:currentChunks.stats()}:{}),elapsedMs:performance.now()-started,source:{side:identity.side,modelSha256:identity.modelHash,headerSHA256:identity.headerSHA256,fullFileSHA256Verified:false},originalProductionPrecisionVerified:false};
      metrics.predictions++;counted='prediction';metrics.lastRun=structuredClone(evidence);
      return {data:output,dtype:'float32',shape:[...layout.targetShape],layout:'NCTHW',meaning:'bernini-flow-velocity:v1',space:'model',modelSha256:identity.modelHash,evidence};
     }catch(error){executionFailed=true;executionError=error;try{const ownerState=ops.stats?.();if(ownerState?.closing||ownerState?.cleanupPending||ownerState?.attentionQueries?.cleanupPending)closing=true;}catch{}metrics.failedPredictions++;metrics.lastFailure={name:String(error?.name??'Error'),message:String(error?.message??error).slice(0,1000),code:error?.code??null,context:currentContext?{block:currentContext.block,phase:currentContext.phase}:null,timing:currentTiming.snapshot(),chunkDiagnostics:currentChunks?.stats()??null};throw error;}
@@ -324,7 +339,7 @@ export async function createBerniniModelCandidate(options={}){
    predict(input={}){return execute(input);},
    diagnose(input={},options={}){known(options,['onTrace'],'candidate diagnostics');if(typeof options.onTrace!=='function')return Promise.reject(TypeError('diagnose requires an onTrace function'));return execute(input,options.onTrace);},
    diagnoseChunks(input={},options={}){let captured;try{captured=validateModelChunkOptions(options);}catch(error){return Promise.reject(error);}return execute(input,null,captured);},
-   describe(){live();return {schemaVersion:'works-bernini-model-candidate/0.1',profile:MODEL_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,generationReady:false,publicRuntimeEnabled:false,model:{side:identity.side,modelSha256:identity.modelHash,headerSHA256:identity.headerSHA256,pinnedCoreCommit:identity.pinnedCoreCommit,fullFileSHA256Verified:false},limits:{...MODEL_CANDIDATE_LIMITS},chunkDiagnostics:{schemaVersion:'bernini-model-chunk/1',maxRows:128,maxElements:MODEL_CHUNK_MAX_ELEMENTS,stages:[...MODEL_CHUNK_STAGES],legacyTraceMaxTokens:128,wholeSequenceChunkComparison:true,diagnosticStopAfterBlock:true},allocationAdmission:{kind:'conservative host allocation planning cap; not an accepted production domain',maxSequenceTokens:90000,hostHiddenStoreCount:4,hiddenStoreDtype:'float32',hiddenStoreWidth:5120,plannedHiddenStoreBytesAtCap:1843200000,plannedFourHiddenStoreBytesAtCap:7372800000,maxHiddenStoreBytesExclusive:2147483648,aggregatePeakMeasured:false},graph:'patch/text/time prefix -> all 40 global-self/cross/FFN blocks -> final head on all tokens -> target-only unpatchify',conditioning:'canonical native Text float32 BLC [1,L,4096], L1..512, known model/tokenizer, mask and umt5-final-rmsnorm-f32-v1',attention:'all sequence keys; query128/key256 tiles; no score matrix spanning the sequence; native denominator division; cross text mask not applied to softmax',memory:'self: block input, output, K and V host stores of N*5120; Q per128rows; cross/FFN inplace after self stores released; one stage cache, not all40 blocks',resourceAccounting:'named host spans and stage weight caches only; temporary snapshots, source decode buffers, GC latency and ORT allocator additional; aggregate peak unmeasured',lora:'no adapter application in this base candidate',output:{dtype:'float32',layout:'NCTHW',meaning:'bernini-flow-velocity:v1',space:'model',coordinates:'flow velocity in Bernini model latent coordinates; not a generated sample or VAE posterior mean'},originalProductionPrecisionVerified:false,requiredShapeAcceptance:'BLOCKED: complete requested target/context, all40 blocks and final head require scoped native numerical and aggregate resource acceptance'};},
+   describe(){live();return {schemaVersion:'works-bernini-model-candidate/0.1',profile:MODEL_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,generationReady:false,publicRuntimeEnabled:false,model:{side:identity.side,modelSha256:identity.modelHash,headerSHA256:identity.headerSHA256,pinnedCoreCommit:identity.pinnedCoreCommit,fullFileSHA256Verified:false},limits:{...MODEL_CANDIDATE_LIMITS},chunkDiagnostics:{schemaVersion:'bernini-model-chunk/1',maxRows:128,maxElements:MODEL_CHUNK_MAX_ELEMENTS,stages:[...MODEL_CHUNK_STAGES],legacyTraceMaxTokens:128,wholeSequenceChunkComparison:true,diagnosticStopAfterBlock:true},allocationAdmission:{kind:'conservative host allocation planning cap; not an accepted production domain',maxSequenceTokens:90000,hostHiddenStoreCount:4,hiddenStoreDtype:'float32',hiddenStoreWidth:5120,plannedHiddenStoreBytesAtCap:1843200000,plannedFourHiddenStoreBytesAtCap:7372800000,maxHiddenStoreBytesExclusive:2147483648,aggregatePeakMeasured:false},graph:'patch/text/time prefix -> all 40 global-self/cross/FFN blocks -> final head on all tokens -> target-only unpatchify',conditioning:'canonical native Text float32 BLC [1,L,4096], L1..512, known model/tokenizer, mask and umt5-final-rmsnorm-f32-v1',attentionKVOwnership:{implementation:preparedAttentionKVEnabled?'owned-prepared-head-major-kv-v1':'legacy-row-major-injected-ops',scope:'self and cross attention',fullRowMajorKVStores:preparedAttentionKVEnabled?0:2,extraFullKVSpan:false,queryRows:128,keyRows:256,crossStaging:'existing at-most512-row K/V projection stores dropped after preparation',nativeWasmCopiesMeasured:false},attention:'all sequence keys; query128/key256 tiles; no score matrix spanning the sequence; native denominator division; cross text mask not applied to softmax',memory:'self: block input/output and K/V total N*5120 spans (prepared compact tile pool replaces full row-major K/V stores); Q per128rows; cross/FFN inplace after self stores released; one stage cache, not all40 blocks',resourceAccounting:'named host spans and stage weight caches only; temporary snapshots, source decode buffers, GC latency and ORT allocator additional; aggregate peak unmeasured',lora:'no adapter application in this base candidate',output:{dtype:'float32',layout:'NCTHW',meaning:'bernini-flow-velocity:v1',space:'model',coordinates:'flow velocity in Bernini model latent coordinates; not a generated sample or VAE posterior mean'},originalProductionPrecisionVerified:false,requiredShapeAcceptance:'BLOCKED: complete requested target/context, all40 blocks and final head require scoped native numerical and aggregate resource acceptance'};},
    stats(){return {...structuredClone(metrics),timing:currentTiming?.snapshot()??structuredClone(metrics.lastTiming),chunkDiagnostics:currentChunks?.stats()??metrics.lastTiming?.chunkDiagnostics??null,busy,disposed,closing,head:head?.stats()??null,math:math?.stats?.()??null,ops:ops?.stats?.()??null,source:source?.stats?.()??null};},
    dispose,recover:dispose
   });

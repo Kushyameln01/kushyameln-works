@@ -29,6 +29,8 @@ ROOT = Path(__file__).resolve().parents[2]
 PREFIX = 'development/ai-connection/d1-d4-production-20261102'
 MAX_CHUNK_BYTES = 8388608
 STAGES = ['patchHidden', 'textEmbedded', 'timeRaw', 'timeAct1', 'timeProjection', 'postModulated', 'k', 'v', 'q', 'selfAttention', 'oProjection', 'selfResidual', 'crossK', 'crossV', 'crossQ', 'crossAttention', 'crossResidual', 'ffnOutput', 'blockOutput']
+PREFIX_STAGES = ['patchHidden', 'textEmbedded', 'timeRaw', 'timeAct1', 'timeProjection']
+HEAD_STAGES = ['headAll', 'prediction']
 SCRIPT = 'tools/diffusion-models/production-chunk-browser.py'
 WORKER = 'tools/diffusion-models/production-chunk-browser.mjs'
 REFERENCE = 'tools/diffusion-models/production-reference.py'
@@ -82,19 +84,58 @@ def source_receipt(sources):
     return {'entries': entries, 'count': len(entries), 'capturedHTTPBytes': sum(len(raw) for raw in sources.values()), 'inventorySHA256': sha(json.dumps(entries, sort_keys=True, separators=(',', ':')).encode())}
 
 
+def reference_resource(threadpoolctl, requested):
+    pools = [{key: value.get(key) for key in ['user_api', 'internal_api', 'num_threads', 'prefix', 'version', 'threading_layer', 'architecture']} for value in threadpoolctl.threadpool_info() if value.get('user_api') == 'blas']
+    require(pools and all(value['num_threads'] == requested for value in pools), 'Observed reference BLAS thread count differs from explicit request')
+    return {'requestedThreads': requested, 'threadpoolctlVersion': threadpoolctl.__version__, 'observedBLASPools': pools, 'numericOperatorChange': False, 'fallback': False}
+
+
+def verify_reference_threads(reference, model, side):
+    """Bounded real-weight evidence only; this does not accept a model run."""
+    import threadpoolctl
+    np = reference.np
+    params = reference.CachedParameters(model, side)
+    cases, profiles = [], {}
+    try:
+        for rows in [1, 3]:
+            x = reference.REF.dyadic(rows * 5120, 17, 11, 257, 128, 1024).reshape(rows, 5120)
+            outputs = {}
+            for threads in [1, 4]:
+                with threadpoolctl.threadpool_limits(limits=threads, user_api='blas'):
+                    profiles[str(threads)] = reference_resource(threadpoolctl, threads)
+                    begin = time.perf_counter()
+                    outputs[threads] = [params.linear('blocks.0.self_attn.' + name, x) for name in ['q', 'k', 'v']]
+                    outputs[threads].append(reference.streamed_attention(*outputs[threads], key_rows=2))
+                    elapsed = time.perf_counter() - begin
+                profiles[str(threads)]['lastCaseElapsedSeconds'] = elapsed
+            for index, name in enumerate(['q', 'k', 'v', 'all40headAttention']):
+                expected, actual = outputs[1][index], outputs[4][index]
+                error = np.abs(actual.astype(np.float64) - expected.astype(np.float64))
+                gate = reference.GATE['abs'] + reference.GATE['rel'] * np.abs(expected.astype(np.float64))
+                failed = int(np.count_nonzero(~np.isfinite(error) | (error > gate)))
+                cases.append({'name': name, 'rows': rows, 'elements': int(actual.size), 'bitExact': bool(np.array_equal(actual.view('<u4'), expected.view('<u4'))), 'failed': failed, 'maxAbsolute': float(np.max(error, initial=0)), 'maxNormalizedToGate': float(np.max(error / gate, initial=0)), 'oneThreadSHA256': sha(expected.tobytes()), 'fourThreadSHA256': sha(actual.tobytes())})
+                print(json.dumps({'phase': 'reference-thread-verification', **cases[-1]}), flush=True)
+        return {'passed': all(case['failed'] == 0 for case in cases), 'gate': reference.GATE, 'cases': cases, 'resources': profiles, 'actualRetainedWeightRows': True, 'independentOriginalReference': True, 'oldOneThreadReceiptReused': False, 'nativeModelExecuted': False, 'fullPredictionAccepted': False, 'weightPayloadBytesRead': params.payload_read}
+    finally:
+        params.close()
+
+
 class Coverage:
-    def __init__(self, manifest, stages, block_limit):
+    def __init__(self, manifest, stages, block_limit, operation='blocks'):
         self.total = manifest['canonicalShape']['concatenation']['totalTokens']
         self.text_rows = manifest['conditioning']['metadata']['shape'][1]
-        self.stages, self.block_limit, self.rows, self.count = stages, block_limit, {}, 0
+        self.target_shape = manifest['tensors'][0]['shape'] if 'tensors' in manifest else None
+        require(operation in ['blocks', 'predict'], 'Explicit blocks or predict chunk coverage required')
+        require(operation != 'predict' or block_limit == 39 and all(name in stages for name in HEAD_STAGES), 'Full prediction requires all40 blocks and head/unpatch stages')
+        self.stages, self.block_limit, self.operation, self.rows, self.count = stages, block_limit, operation, {}, 0
 
     def extent(self, name):
-        return 1 if name in ['timeRaw', 'timeAct1'] else 6 if name == 'timeProjection' else self.text_rows if name in ['textEmbedded', 'crossK', 'crossV'] else self.total
+        return math.prod(self.target_shape) // self.target_shape[-1] if name == 'prediction' else 1 if name in ['timeRaw', 'timeAct1'] else 6 if name == 'timeProjection' else self.text_rows if name in ['textEmbedded', 'crossK', 'crossV'] else self.total
 
     def check(self, event, *, commit=False):
         name, block = event.get('name'), event.get('block')
         require(name in self.stages, 'Unexpected diagnostic stage')
-        prefix = name in ['patchHidden', 'textEmbedded', 'timeRaw', 'timeAct1', 'timeProjection']
+        prefix = name in PREFIX_STAGES + HEAD_STAGES
         require(block is None if prefix else type(block) is int and 0 <= block <= self.block_limit, 'Unexpected diagnostic block')
         key = (block, name)
         start, count = event.get('globalRowStart'), event.get('rowCount')
@@ -104,31 +145,35 @@ class Coverage:
             self.count += 1
 
     def summary(self):
-        expected = [(None, name) for name in self.stages if name in ['patchHidden', 'textEmbedded', 'timeRaw', 'timeAct1', 'timeProjection']]
-        expected += [(block, name) for block in range(self.block_limit + 1) for name in self.stages if name not in ['patchHidden', 'textEmbedded', 'timeRaw', 'timeAct1', 'timeProjection']]
+        expected = [(None, name) for name in self.stages if name in PREFIX_STAGES + HEAD_STAGES]
+        expected += [(block, name) for block in range(self.block_limit + 1) for name in self.stages if name not in PREFIX_STAGES + HEAD_STAGES]
         rows = [{'block': block, 'name': name, 'completedRows': self.rows.get((block, name), 0), 'requiredRows': self.extent(name)} for block, name in expected]
-        return {'complete': all(row['completedRows'] == row['requiredRows'] for row in rows), 'chunks': self.count, 'rows': rows, 'allQueriesKeysHeads': 'numerical acceptance requires every selected stage complete plus independent comparisons passing'}
+        return {'complete': all(row['completedRows'] == row['requiredRows'] for row in rows), 'operation': self.operation, 'chunks': self.count, 'rows': rows, 'allQueriesKeysHeads': 'numerical acceptance requires every selected stage complete plus independent comparisons passing'}
 
 
-def oracle_child(connection, manifest, model, side, directory):
+def oracle_child(connection, manifest, model, side, directory, reference_threads=1):
     owner = None
     try:
         reference = load_reference()
-        owner = reference.ChunkOracle(manifest, model, side, directory, allow_model_work=True)
-        connection.send({'kind': 'ready', 'numpy': reference.np.__version__})
-        while True:
-            message = connection.recv()
-            if message['kind'] == 'compare':
-                connection.send({'kind': 'started', 'name': message['event']['name'], 'block': message['event'].get('block'), 'rowStart': message['event']['globalRowStart'], 'rowCount': message['event']['rowCount']})
-                result = owner.compare(message['event'], message['raw'])
-                connection.send({'kind': 'comparison', 'value': result})
-            elif message['kind'] == 'close':
-                before = owner.stats()
-                owner.close()
-                connection.send({'kind': 'closed', 'beforeClose': before, 'afterClose': owner.stats()})
-                return
-            else:
-                raise ValueError('Unknown oracle control message')
+        import threadpoolctl
+        with threadpoolctl.threadpool_limits(limits=reference_threads, user_api='blas'):
+            resource = reference_resource(threadpoolctl, reference_threads)
+            owner = reference.ChunkOracle(manifest, model, side, directory, allow_model_work=True)
+            connection.send({'kind': 'ready', 'numpy': reference.np.__version__, 'resource': resource})
+            while True:
+                message = connection.recv()
+                if message['kind'] == 'compare':
+                    connection.send({'kind': 'started', 'name': message['event']['name'], 'block': message['event'].get('block'), 'rowStart': message['event']['globalRowStart'], 'rowCount': message['event']['rowCount']})
+                    result = owner.compare(message['event'], message['raw'])
+                    reference_resource(threadpoolctl, reference_threads)
+                    connection.send({'kind': 'comparison', 'value': result})
+                elif message['kind'] == 'close':
+                    before = owner.stats()
+                    owner.close()
+                    connection.send({'kind': 'closed', 'beforeClose': before, 'afterClose': owner.stats(), 'resource': reference_resource(threadpoolctl, reference_threads)})
+                    return
+                else:
+                    raise ValueError('Unknown oracle control message')
     except BaseException as error:
         try:
             connection.send({'kind': 'error', 'error': {'name': type(error).__name__, 'message': str(error)[:3000]}})
@@ -141,10 +186,10 @@ def oracle_child(connection, manifest, model, side, directory):
 
 
 class OracleProcess:
-    def __init__(self, manifest, model, side, directory):
+    def __init__(self, manifest, model, side, directory, reference_threads=1):
         context = multiprocessing.get_context('spawn')
         self.connection, child = context.Pipe()
-        self.process = context.Process(target=oracle_child, args=(child, str(manifest), str(model), side, str(directory)), daemon=True)
+        self.process = context.Process(target=oracle_child, args=(child, str(manifest), str(model), side, str(directory), reference_threads), daemon=True)
         self.directory = Path(directory)
         self.lock, self.closed = threading.Lock(), False
         self.last_started, self.stats = None, None
@@ -218,7 +263,7 @@ class OracleProcess:
         return self.stats
 
 
-def input_config(manifest, side, block_limit, run_id):
+def input_config(manifest, side, block_limit, run_id, *, operation='blocks', wasm_threads=1, decoder='lookup', read_ahead_bytes=1048576):
     whitelist = {}
 
     def entry(path, count, digest):
@@ -239,7 +284,8 @@ def input_config(manifest, side, block_limit, run_id):
         tensors.append(item)
     text = manifest['conditioning']
     conditioning = {'metadata': text['metadata'], 'payload': entry(text['payloadPath'], 512 * 4096 * 4, text['payloadSHA256']), 'mask': entry(text['maskPath'], 512, text['maskSHA256'])}
-    return {'runId': run_id, 'shapeRequest': manifest['shapeRequest'], 'side': side, 'timestep': manifest['timestep'], 'totalTokens': manifest['canonicalShape']['concatenation']['totalTokens'], 'tensors': tensors, 'conditioning': conditioning, 'stages': STAGES, 'blockLimit': block_limit}, whitelist
+    stages = STAGES + HEAD_STAGES if operation == 'predict' else STAGES
+    return {'runId': run_id, 'shapeRequest': manifest['shapeRequest'], 'side': side, 'timestep': manifest['timestep'], 'totalTokens': manifest['canonicalShape']['concatenation']['totalTokens'], 'tensors': tensors, 'conditioning': conditioning, 'stages': stages, 'blockLimit': block_limit, 'operation': operation, 'wasmThreads': wasm_threads, 'crossOriginIsolationRequired': wasm_threads == 4, 'decoder': decoder, 'readAheadBytes': read_ahead_bytes}, whitelist
 
 
 def main():
@@ -252,6 +298,12 @@ def main():
     parser.add_argument('--private-reference-dir', type=Path)
     parser.add_argument('--output', type=Path)
     parser.add_argument('--block-limit', type=int, choices=range(40), default=0)
+    parser.add_argument('--operation', choices=['blocks', 'predict'], default='blocks', help='blocks preserves the historical bounded block0 diagnostic; predict runs all40 plus head/target unpatch')
+    parser.add_argument('--wasm-threads', type=int, choices=[1, 4], default=1, help='1 uses no COI; explicit4 requires COI, with no fallback')
+    parser.add_argument('--decoder', choices=['legacy', 'lookup'], default='lookup')
+    parser.add_argument('--read-ahead-bytes', type=int, default=1048576)
+    parser.add_argument('--reference-threads', type=int, choices=[1, 4], default=1, help='Explicit independent BLAS thread profile; never changes native WASM threads')
+    parser.add_argument('--verify-reference-threads', action='store_true', help='Bounded real-weight 1-vs4 BLAS reference gate only, without browser/model prediction')
     parser.add_argument('--diagnostic-timeout-seconds', type=float, default=3600)
     parser.add_argument('--validate-only', action='store_true')
     parser.add_argument('--self-test', action='store_true')
@@ -279,8 +331,13 @@ def main():
             assert cleanup['cleanupErrors'][0]['phase'] == 'graceful-close' and not cleanup['childStillAlive'] and owner.close(graceful=True) is cleanup
         print(json.dumps({'passed': True, 'coverageRejectsDuplicates': True, 'completeTailRequired': True, 'closedOraclePipeReportedWithoutSkippingCleanup': True, 'idempotentOracleClose': True, 'modelWorkExecuted': False}))
         return
-    require(all(getattr(args, name) is not None for name in ['manifest', 'contract', 'source_commit', 'private_reference_dir', 'output']), 'Manifest, contract, source commit, private reference directory and output required')
+    required = ['manifest', 'contract', 'source_commit', 'output'] + ([] if args.verify_reference_threads else ['private_reference_dir'])
+    require(all(getattr(args, name) is not None for name in required), 'Manifest, contract, source commit, private reference directory and output required')
+    require(not(args.verify_reference_threads and args.validate_only), 'Choose reference thread verification or validate-only')
     require(args.diagnostic_timeout_seconds > 0, 'Positive operational watchdog required')
+    require(0 <= args.read_ahead_bytes <= 1048576, 'Bounded read-ahead0..1048576 required')
+    require(args.operation != 'predict' or args.block_limit in [0, 39], '--operation predict executes all40 blocks; a partial block-limit is not a prediction')
+    block_limit = 39 if args.operation == 'predict' else args.block_limit
     require(not args.output.exists(), 'Existing diagnostic receipt must not be overwritten')
     reference = load_reference()
     manifest = read_json(args.manifest)
@@ -289,23 +346,44 @@ def main():
     captured = source_receipt(sources)
     model = args.model_dir / reference.REF.MODELS[args.side][0]
     require(model.stat().st_size == reference.REF.MODEL_BYTES, 'Pinned local model byte length mismatch')
+    resource_config = {'wasmThreads': args.wasm_threads, 'crossOriginIsolationRequired': args.wasm_threads == 4, 'decoder': args.decoder, 'readAheadBytes': args.read_ahead_bytes, 'referenceThreads': args.reference_threads, 'fallback': False}
+    if args.verify_reference_threads:
+        result = {'schemaVersion': 'bernini-production-reference-thread-verification/1', 'sourceCommit': args.source_commit, 'sourceBefore': captured, 'side': args.side, 'manifestSHA256': reference.file_sha(args.manifest), 'contractSHA256': reference.file_sha(args.contract), 'numpy': reference.np.__version__, 'generationReady': False}
+        try:
+            result.update(verify_reference_threads(reference, model, args.side))
+        except BaseException as error:
+            result.update(passed=False, error={'name': type(error).__name__, 'message': str(error)[:4000]})
+        finally:
+            try:
+                result['sourceAfter'] = source_receipt(committed_sources(args.source_commit, args.contract))
+                require(result['sourceAfter'] == captured, 'Fixed source changed during reference thread verification')
+            except BaseException as error:
+                result.update(passed=False, sourceAfterError={'name': type(error).__name__, 'message': str(error)[:4000]})
+        reference.write_json(args.output, result, exclusive=True)
+        print(json.dumps({'passed': result['passed'], 'mode': 'reference-thread-verification', 'output': str(args.output), 'nativeModelExecuted': False}))
+        return
     run_id = secrets.token_hex(24)
-    config, inputs = input_config(manifest, args.side, args.block_limit, run_id)
+    config, inputs = input_config(manifest, args.side, block_limit, run_id, operation=args.operation, wasm_threads=args.wasm_threads, decoder=args.decoder, read_ahead_bytes=args.read_ahead_bytes)
     config['wasmModules'] = [{'role': name, 'sha256': sha(raw)} for name, raw in sources.items() if name.endswith('.wasm')]
     if args.validate_only:
-        print(json.dumps({'passed': True, 'sourceCommit': args.source_commit, 'sources': captured['count'], 'inputFiles': len(inputs), 'totalTokens': config['totalTokens'], 'modelWorkExecuted': False}))
+        print(json.dumps({'passed': True, 'sourceCommit': args.source_commit, 'sources': captured['count'], 'inputFiles': len(inputs), 'totalTokens': config['totalTokens'], 'operation': args.operation, 'blockLimit': block_limit, 'resource': resource_config, 'modelWorkExecuted': False}))
         return
     private_dir = reference.private_directory(args.private_reference_dir)
     require(not any(private_dir.iterdir()), 'Fresh empty private reference directory required')
-    coverage, comparison_lock = Coverage(manifest, STAGES, args.block_limit), threading.Lock()
+    coverage, comparison_lock = Coverage(manifest, config['stages'], block_limit, args.operation), threading.Lock()
     metrics = {'chunks': 0, 'bytes': 0, 'failedElements': 0, 'maxAbsolute': 0.0, 'maxNormalizedToGate': 0.0, 'compareSeconds': 0.0, 'byStage': {}}
     last_events, requests, browser_errors = deque(maxlen=160), {}, []
     failures, worker_result, source_after, cleanup = [], None, None, None
     started = time.monotonic()
     try:
-        oracle = OracleProcess(args.manifest, model, args.side, private_dir)
+        oracle = OracleProcess(args.manifest, model, args.side, private_dir, args.reference_threads)
     except BaseException as error:
-        failure = {'schemaVersion': 'bernini-production-chunk-browser/1', 'passed': False, 'sourceCommit': args.source_commit, 'sourceBefore': captured, 'sourceAfter': None, 'manifestSHA256': reference.file_sha(args.manifest), 'contractSHA256': reference.file_sha(args.contract), 'side': args.side, 'targetShape': manifest['tensors'][0]['shape'], 'totalTokens': config['totalTokens'], 'blockLimit': args.block_limit, 'coverage': coverage.summary(), 'failures': [{'stage': 'independent-oracle-startup', 'name': type(error).__name__, 'message': str(error)[:4000]}], 'oracleCleanup': getattr(error, 'oracle_cleanup', None), 'elapsedSeconds': time.monotonic() - started, 'browserConstructed': False, 'rawIntermediateArraysSaved': False, 'modelBytesServedOverHTTP': 0, 'generationReady': False, 'unknownObservationScope': ['No native model stage executed; see startup cleanup result']}
+        failure = {'schemaVersion': 'bernini-production-chunk-browser/1', 'passed': False, 'sourceCommit': args.source_commit, 'sourceBefore': captured, 'sourceAfter': None, 'manifestSHA256': reference.file_sha(args.manifest), 'contractSHA256': reference.file_sha(args.contract), 'side': args.side, 'targetShape': manifest['tensors'][0]['shape'], 'totalTokens': config['totalTokens'], 'operation': args.operation, 'blockLimit': block_limit, 'resource': resource_config, 'coverage': coverage.summary(), 'failures': [{'stage': 'independent-oracle-startup', 'name': type(error).__name__, 'message': str(error)[:4000]}], 'oracleCleanup': getattr(error, 'oracle_cleanup', None), 'elapsedSeconds': time.monotonic() - started, 'browserConstructed': False, 'rawIntermediateArraysSaved': False, 'modelBytesServedOverHTTP': 0, 'generationReady': False, 'unknownObservationScope': ['No native model stage executed; see startup cleanup result']}
+        try:
+            failure['sourceAfter'] = source_receipt(committed_sources(args.source_commit, args.contract))
+            require(failure['sourceAfter'] == captured, 'Fixed source changed during oracle startup')
+        except BaseException as source_error:
+            failure['failures'].append({'stage': 'fixed-source-after', 'name': type(source_error).__name__, 'message': str(source_error)[:4000]})
         reference.write_json(args.output, failure, exclusive=True)
         print(json.dumps({'passed': False, 'stage': 'independent-oracle-startup', 'output': str(args.output), 'modelWorkExecuted': False}))
         return
@@ -316,7 +394,8 @@ def main():
 
         def send(self, status, raw, kind='application/json'):
             self.send_response(status)
-            for key, value in [('Cross-Origin-Opener-Policy', 'same-origin'), ('Cross-Origin-Embedder-Policy', 'require-corp'), ('Cross-Origin-Resource-Policy', 'same-origin'), ('Cache-Control', 'no-store'), ('Content-Type', kind), ('Content-Length', str(len(raw)))]:
+            isolation = [('Cross-Origin-Opener-Policy', 'same-origin'), ('Cross-Origin-Embedder-Policy', 'require-corp'), ('Cross-Origin-Resource-Policy', 'same-origin')] if args.wasm_threads == 4 else []
+            for key, value in isolation + [('Cache-Control', 'no-store'), ('Content-Type', kind), ('Content-Length', str(len(raw)))]:
                 self.send_header(key, value)
             self.end_headers()
             try:
@@ -413,18 +492,22 @@ def main():
                 page.evaluate('()=>globalThis.__diagnosticWorker.terminate()')
             finally:
                 browser.close()
-        source_after = source_receipt(committed_sources(args.source_commit, args.contract))
-        require(source_after == captured, 'Fixed source changed during execution')
     except BaseException as error:
         failures.append({'name': type(error).__name__, 'message': str(error)[:4000], 'elapsedSeconds': time.monotonic() - started})
     finally:
+        try:
+            source_after = source_receipt(committed_sources(args.source_commit, args.contract))
+            require(source_after == captured, 'Fixed source changed during execution')
+        except BaseException as error:
+            failures.append({'stage': 'fixed-source-after', 'name': type(error).__name__, 'message': str(error)[:4000], 'elapsedSeconds': time.monotonic() - started})
         success = bool(worker_result and worker_result['completed'] and coverage.summary()['complete'] and metrics['failedElements'] == 0 and not failures and not browser_errors)
         cleanup = oracle.close(graceful=success)
         server.shutdown()
         server.server_close()
         if cleanup['cleanupErrors'] or cleanup['backingFilesRemaining'] or cleanup['childStillAlive']:
             success = False
-    result = {'schemaVersion': 'bernini-production-chunk-browser/1', 'passed': success, 'sourceCommit': args.source_commit, 'sourceBefore': captured, 'sourceAfter': source_after, 'manifestSHA256': reference.file_sha(args.manifest), 'contractSHA256': reference.file_sha(args.contract), 'side': args.side, 'targetShape': manifest['tensors'][0]['shape'], 'totalTokens': config['totalTokens'], 'blockLimit': args.block_limit, 'scope': 'all declared query/key/head rows through selected complete block boundaries only; no final head or complete predict/sample', 'gate': reference.GATE, 'coverage': coverage.summary(), 'comparison': metrics, 'worker': worker_result, 'failures': failures, 'browserErrors': browser_errors, 'lastEvents': list(last_events), 'requests': requests, 'oracleCleanup': cleanup, 'elapsedSeconds': time.monotonic() - started, 'rawIntermediateArraysSaved': False, 'modelBytesServedOverHTTP': 0, 'normalAPIRequiresGateOrReference': False, 'generationReady': False, 'unknownObservationScope': ['native/internal ORT staging/allocator peaks not directly observable', 'reference IPC adds bounded binary copies and is included only by outer process monitor', 'whole-process RSS/PSS sampling is supplied by outer resource wrapper']}
+    scope = 'all selected stages across40 complete blocks, all-token final head, target extraction and NCTHW unpatch' if args.operation == 'predict' else 'all declared query/key/head rows through selected complete block boundaries only; no final head or complete predict/sample'
+    result = {'schemaVersion': 'bernini-production-chunk-browser/1', 'passed': success, 'sourceCommit': args.source_commit, 'sourceBefore': captured, 'sourceAfter': source_after, 'manifestSHA256': reference.file_sha(args.manifest), 'contractSHA256': reference.file_sha(args.contract), 'side': args.side, 'targetShape': manifest['tensors'][0]['shape'], 'totalTokens': config['totalTokens'], 'operation': args.operation, 'blockLimit': block_limit, 'resource': resource_config, 'oracleResource': oracle.initial, 'scope': scope, 'gate': reference.GATE, 'coverage': coverage.summary(), 'comparison': metrics, 'worker': worker_result, 'failures': failures, 'browserErrors': browser_errors, 'lastEvents': list(last_events), 'requests': requests, 'oracleCleanup': cleanup, 'elapsedSeconds': time.monotonic() - started, 'rawIntermediateArraysSaved': False, 'modelBytesServedOverHTTP': 0, 'normalAPIRequiresGateOrReference': False, 'generationReady': False, 'unknownObservationScope': ['native/internal ORT staging/allocator peaks not directly observable', 'reference IPC adds bounded binary copies and is included only by outer process monitor', 'whole-process RSS/PSS sampling is supplied by outer resource wrapper']}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open('x') as stream:
         json.dump(result, stream, indent=2, allow_nan=False)

@@ -1,0 +1,902 @@
+{
+  "schemaVersion": "prepared-attention-kv-changed-boundaries/1",
+  "sourceCommit": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+  "sourceSHA256": {
+    "shared/diffusion-models/execution/test-prepared-attention-kv.mjs": "dd152f17f8802f4ece903cf643b7b15736bdbdce5dcfcf622cba805759039e01",
+    "shared/diffusion-models/execution/batched-ops.mjs": "3c02d50b4c48297aaac726ca84054ce5c13256b1d7b91885089bfe80d0469eac",
+    "shared/diffusion-models/execution/owned-attention-query.mjs": "f02ca1d263a521d69a47c7cdfcb240b2f5bd63c2e93d1f775a54d49f46cadb9f",
+    "shared/diffusion-models/execution/prepared-attention-kv.mjs": "3b2ee701c2bdbd352a3f1150eb81756cefe322285b86fe5f4da0803c5e493596",
+    "shared/diffusion-models/execution/batched-attention-graph.mjs": "95bbf39e692f74a9afb9b1e2b7972c4b148e62a8bd39c13af4ebbbb6ca91e098",
+    "shared/diffusion-models/ort-bridge/block-hidden/graph.mjs": "7826723d34a934a78e27335dce5973d41af4e2578136db5604c19b13d0954db0",
+    "shared/diffusion-models/ort-bridge/qkv/ownership.mjs": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+    "shared/inference/vendor/ort.wasm.min.mjs": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+    "shared/inference/vendor/ort-wasm-simd-threaded.mjs": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+    "shared/inference/vendor/ort-wasm-simd-threaded.wasm": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+  },
+  "missingSourcePaths": [],
+  "driverSHA256": "396af726c989f78ffcbcaf820b41ec6409a9126a7e89bcec700d4402aba88b52",
+  "sourcesServedFromCapturedBytes": true,
+  "sourceBytesUnchangedDuringRun": true,
+  "passed": true,
+  "scope": "Bounded native ORT operator/resource changes; no model weights/inference or expanded production capabilities",
+  "results": [
+    {
+      "name": "prepared-kv-threads1",
+      "result": {
+        "passed": true,
+        "scope": "Bounded native ORT preparation/resource regression only; no full-model or original-shape acceptance",
+        "gate": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        },
+        "numThreads": 1,
+        "crossOriginIsolated": false,
+        "cases": [
+          {
+            "name": "native prepared reuse Q3 all-475 keys",
+            "queries": 3,
+            "keys": 475,
+            "keyTiles": [
+              256,
+              219
+            ],
+            "phantomKeys": 0,
+            "reuses": [
+              {
+                "parity": {
+                  "max": {
+                    "elements": 120,
+                    "bitExact": true
+                  },
+                  "denominator": {
+                    "elements": 120,
+                    "bitExact": true
+                  },
+                  "context": {
+                    "elements": 15360,
+                    "bitExact": true
+                  }
+                },
+                "independent": {
+                  "max": {
+                    "elements": 120,
+                    "failed": 0,
+                    "maxAbsolute": 3.7039171729702502e-09,
+                    "maxRelative": 5.639954116109391e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "denominator": {
+                    "elements": 120,
+                    "failed": 0,
+                    "maxAbsolute": 0.00013975230757523605,
+                    "maxRelative": 3.1788507460384997e-07,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "context": {
+                    "elements": 15360,
+                    "failed": 0,
+                    "maxAbsolute": 2.9209636198679334e-06,
+                    "maxRelative": 0.0081454438277539,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  }
+                }
+              },
+              {
+                "parity": {
+                  "max": {
+                    "elements": 120,
+                    "bitExact": true
+                  },
+                  "denominator": {
+                    "elements": 120,
+                    "bitExact": true
+                  },
+                  "context": {
+                    "elements": 15360,
+                    "bitExact": true
+                  }
+                },
+                "independent": {
+                  "max": {
+                    "elements": 120,
+                    "failed": 0,
+                    "maxAbsolute": 3.7039171729702502e-09,
+                    "maxRelative": 5.639954116109391e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "denominator": {
+                    "elements": 120,
+                    "failed": 0,
+                    "maxAbsolute": 0.00013975230757523605,
+                    "maxRelative": 3.1788507460384997e-07,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "context": {
+                    "elements": 15360,
+                    "failed": 0,
+                    "maxAbsolute": 2.9209636198679334e-06,
+                    "maxRelative": 0.0081454438277539,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  }
+                }
+              }
+            ],
+            "kvOwnedBytes": 19456000,
+            "inputSnapshotBytes": 19578880,
+            "nativeWasmCopiesMeasured": false
+          },
+          {
+            "name": "native prepared reuse Q91 all-3 keys",
+            "queries": 91,
+            "keys": 3,
+            "keyTiles": [
+              3
+            ],
+            "phantomKeys": 0,
+            "reuses": [
+              {
+                "parity": {
+                  "max": {
+                    "elements": 3640,
+                    "bitExact": true
+                  },
+                  "denominator": {
+                    "elements": 3640,
+                    "bitExact": true
+                  },
+                  "context": {
+                    "elements": 465920,
+                    "bitExact": true
+                  }
+                },
+                "independent": {
+                  "max": {
+                    "elements": 3640,
+                    "failed": 0,
+                    "maxAbsolute": 3.7039171729702502e-09,
+                    "maxRelative": 5.594113523469118e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "denominator": {
+                    "elements": 3640,
+                    "failed": 0,
+                    "maxAbsolute": 2.2757575068865776e-07,
+                    "maxRelative": 7.81843862571764e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "context": {
+                    "elements": 465920,
+                    "failed": 0,
+                    "maxAbsolute": 2.771020835012905e-07,
+                    "maxRelative": 0.0003579155168906303,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  }
+                }
+              },
+              {
+                "parity": {
+                  "max": {
+                    "elements": 3640,
+                    "bitExact": true
+                  },
+                  "denominator": {
+                    "elements": 3640,
+                    "bitExact": true
+                  },
+                  "context": {
+                    "elements": 465920,
+                    "bitExact": true
+                  }
+                },
+                "independent": {
+                  "max": {
+                    "elements": 3640,
+                    "failed": 0,
+                    "maxAbsolute": 3.7039171729702502e-09,
+                    "maxRelative": 5.594113523469118e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "denominator": {
+                    "elements": 3640,
+                    "failed": 0,
+                    "maxAbsolute": 2.2757575068865776e-07,
+                    "maxRelative": 7.81843862571764e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "context": {
+                    "elements": 465920,
+                    "failed": 0,
+                    "maxAbsolute": 2.771020835012905e-07,
+                    "maxRelative": 0.0003579155168906303,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  }
+                }
+              }
+            ],
+            "kvOwnedBytes": 122880,
+            "inputSnapshotBytes": 3850240,
+            "nativeWasmCopiesMeasured": false
+          },
+          {
+            "name": "native prepared reuse Q128 all-256 keys",
+            "queries": 128,
+            "keys": 256,
+            "keyTiles": [
+              256
+            ],
+            "phantomKeys": 0,
+            "reuses": [
+              {
+                "parity": {
+                  "max": {
+                    "elements": 5120,
+                    "bitExact": true
+                  },
+                  "denominator": {
+                    "elements": 5120,
+                    "bitExact": true
+                  },
+                  "context": {
+                    "elements": 655360,
+                    "bitExact": true
+                  }
+                },
+                "independent": {
+                  "max": {
+                    "elements": 5120,
+                    "failed": 0,
+                    "maxAbsolute": 3.7150584830669686e-09,
+                    "maxRelative": 5.8046731439457674e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "denominator": {
+                    "elements": 5120,
+                    "failed": 0,
+                    "maxAbsolute": 0.00012351352754080835,
+                    "maxRelative": 5.179062769658356e-07,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "context": {
+                    "elements": 655360,
+                    "failed": 0,
+                    "maxAbsolute": 2.629300068779372e-06,
+                    "maxRelative": 10737418241,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  }
+                }
+              },
+              {
+                "parity": {
+                  "max": {
+                    "elements": 5120,
+                    "bitExact": true
+                  },
+                  "denominator": {
+                    "elements": 5120,
+                    "bitExact": true
+                  },
+                  "context": {
+                    "elements": 655360,
+                    "bitExact": true
+                  }
+                },
+                "independent": {
+                  "max": {
+                    "elements": 5120,
+                    "failed": 0,
+                    "maxAbsolute": 3.7150584830669686e-09,
+                    "maxRelative": 5.8046731439457674e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "denominator": {
+                    "elements": 5120,
+                    "failed": 0,
+                    "maxAbsolute": 0.00012351352754080835,
+                    "maxRelative": 5.179062769658356e-07,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "context": {
+                    "elements": 655360,
+                    "failed": 0,
+                    "maxAbsolute": 2.629300068779372e-06,
+                    "maxRelative": 10737418241,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  }
+                }
+              }
+            ],
+            "kvOwnedBytes": 10485760,
+            "inputSnapshotBytes": 15728640,
+            "nativeWasmCopiesMeasured": false
+          },
+          {
+            "name": "take/copy ownership, finite gate, foreign/stale/range/order, cancellation retry and active release",
+            "passed": true
+          },
+          {
+            "name": "native prepared tensor disposal failure retains ownership and recovery clears counters",
+            "passed": true
+          }
+        ],
+        "stats": {
+          "busy": false,
+          "disposed": true,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 13,
+          "inputCopyBytes": 79268160,
+          "outputCopyBytes": 13977600,
+          "runtimeInputSpanBytes": 118879040,
+          "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+          "preparedWeights": 0,
+          "preparedWeightBytes": 0,
+          "peakPreparedWeightBytes": 0,
+          "preparedWeightCopies": 0,
+          "preparedWeightTransfers": 0,
+          "preparedWeightCopyBytes": 0,
+          "preparedWeightTransferBytes": 0,
+          "preparedWeightCreations": 0,
+          "preparedWeightReleases": 0,
+          "attentionQueries": {
+            "queryCreations": 9,
+            "queryPreparationsCompleted": 9,
+            "queryReleases": 9,
+            "stepAttempts": 10,
+            "stepsCompleted": 9,
+            "failedSteps": 5,
+            "preparedSteps": 9,
+            "qSnapshotBytes": 9277440,
+            "kvSnapshotBytes": 0,
+            "finishCopyBytes": 9297600,
+            "currentCpuTensorSpanBytes": 0,
+            "peakCpuTensorSpanBytes": 7946240,
+            "ownedTensors": 0,
+            "peakOwnedTensors": 8,
+            "unknownSizedTensors": 0,
+            "cleanupFailures": 0,
+            "ownedQueryCount": 0,
+            "cleanupPending": false,
+            "disposed": true,
+            "queries": [],
+            "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+          },
+          "preparedAttentionKV": {
+            "creations": 7,
+            "releases": 7,
+            "currentBytes": 0,
+            "peakBytes": 19456000,
+            "copies": 6,
+            "copyBytes": 30638080,
+            "transfers": 1,
+            "transferBytes": 286720,
+            "activeLeases": 0,
+            "peakLeases": 1,
+            "cleanupFailures": 1,
+            "ownedPairs": 0,
+            "cleanupPending": false,
+            "disposed": true,
+            "layout": "compact head-major [40,K<=256,128]",
+            "binding": "CPU ort.Tensor runtime-input; native ORT/WASM upload not eliminated or measured"
+          },
+          "timings": {
+            "snapshotMs": 43.70000000111759,
+            "weightPrepareMs": 0,
+            "kvPrepareMs": 27.800000000279397,
+            "kvReleaseMs": 0.7000000001862645,
+            "sessionRunMs": 219.40000000037253,
+            "linearSessionRunMs": 0,
+            "attentionSessionRunMs": 219.40000000037253,
+            "outputCopyMs": 37.3000000002794,
+            "tensorCleanupMs": 0.2999999998137355,
+            "preparedReleaseMs": 0,
+            "ownerDisposeMs": 0.39999999990686774
+          },
+          "resourceProfile": {
+            "numThreads": 1,
+            "firstInitialization": true,
+            "pthreadCreationsObserved": 0,
+            "coiRequired": false,
+            "freshRealmRequiredForProfileChange": true
+          },
+          "nativeWasmCopiesMeasured": false,
+          "sessionCreations": 2
+        }
+      },
+      "chromiumVersion": "154.0.8037.57"
+    },
+    {
+      "name": "prepared-kv-threads4",
+      "result": {
+        "passed": true,
+        "scope": "Bounded native ORT preparation/resource regression only; no full-model or original-shape acceptance",
+        "gate": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        },
+        "numThreads": 4,
+        "crossOriginIsolated": true,
+        "cases": [
+          {
+            "name": "native prepared reuse Q3 all-475 keys",
+            "queries": 3,
+            "keys": 475,
+            "keyTiles": [
+              256,
+              219
+            ],
+            "phantomKeys": 0,
+            "reuses": [
+              {
+                "parity": {
+                  "max": {
+                    "elements": 120,
+                    "bitExact": true
+                  },
+                  "denominator": {
+                    "elements": 120,
+                    "bitExact": true
+                  },
+                  "context": {
+                    "elements": 15360,
+                    "bitExact": true
+                  }
+                },
+                "independent": {
+                  "max": {
+                    "elements": 120,
+                    "failed": 0,
+                    "maxAbsolute": 3.7039171729702502e-09,
+                    "maxRelative": 5.639954116109391e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "denominator": {
+                    "elements": 120,
+                    "failed": 0,
+                    "maxAbsolute": 0.00013975230757523605,
+                    "maxRelative": 3.1788507460384997e-07,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "context": {
+                    "elements": 15360,
+                    "failed": 0,
+                    "maxAbsolute": 2.9209636198679334e-06,
+                    "maxRelative": 0.0081454438277539,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  }
+                }
+              },
+              {
+                "parity": {
+                  "max": {
+                    "elements": 120,
+                    "bitExact": true
+                  },
+                  "denominator": {
+                    "elements": 120,
+                    "bitExact": true
+                  },
+                  "context": {
+                    "elements": 15360,
+                    "bitExact": true
+                  }
+                },
+                "independent": {
+                  "max": {
+                    "elements": 120,
+                    "failed": 0,
+                    "maxAbsolute": 3.7039171729702502e-09,
+                    "maxRelative": 5.639954116109391e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "denominator": {
+                    "elements": 120,
+                    "failed": 0,
+                    "maxAbsolute": 0.00013975230757523605,
+                    "maxRelative": 3.1788507460384997e-07,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "context": {
+                    "elements": 15360,
+                    "failed": 0,
+                    "maxAbsolute": 2.9209636198679334e-06,
+                    "maxRelative": 0.0081454438277539,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  }
+                }
+              }
+            ],
+            "kvOwnedBytes": 19456000,
+            "inputSnapshotBytes": 19578880,
+            "nativeWasmCopiesMeasured": false
+          },
+          {
+            "name": "native prepared reuse Q91 all-3 keys",
+            "queries": 91,
+            "keys": 3,
+            "keyTiles": [
+              3
+            ],
+            "phantomKeys": 0,
+            "reuses": [
+              {
+                "parity": {
+                  "max": {
+                    "elements": 3640,
+                    "bitExact": true
+                  },
+                  "denominator": {
+                    "elements": 3640,
+                    "bitExact": true
+                  },
+                  "context": {
+                    "elements": 465920,
+                    "bitExact": true
+                  }
+                },
+                "independent": {
+                  "max": {
+                    "elements": 3640,
+                    "failed": 0,
+                    "maxAbsolute": 3.7039171729702502e-09,
+                    "maxRelative": 5.594113523469118e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "denominator": {
+                    "elements": 3640,
+                    "failed": 0,
+                    "maxAbsolute": 2.2757575068865776e-07,
+                    "maxRelative": 7.81843862571764e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "context": {
+                    "elements": 465920,
+                    "failed": 0,
+                    "maxAbsolute": 2.771020835012905e-07,
+                    "maxRelative": 0.0003579155168906303,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  }
+                }
+              },
+              {
+                "parity": {
+                  "max": {
+                    "elements": 3640,
+                    "bitExact": true
+                  },
+                  "denominator": {
+                    "elements": 3640,
+                    "bitExact": true
+                  },
+                  "context": {
+                    "elements": 465920,
+                    "bitExact": true
+                  }
+                },
+                "independent": {
+                  "max": {
+                    "elements": 3640,
+                    "failed": 0,
+                    "maxAbsolute": 3.7039171729702502e-09,
+                    "maxRelative": 5.594113523469118e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "denominator": {
+                    "elements": 3640,
+                    "failed": 0,
+                    "maxAbsolute": 2.2757575068865776e-07,
+                    "maxRelative": 7.81843862571764e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "context": {
+                    "elements": 465920,
+                    "failed": 0,
+                    "maxAbsolute": 2.771020835012905e-07,
+                    "maxRelative": 0.0003579155168906303,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  }
+                }
+              }
+            ],
+            "kvOwnedBytes": 122880,
+            "inputSnapshotBytes": 3850240,
+            "nativeWasmCopiesMeasured": false
+          },
+          {
+            "name": "native prepared reuse Q128 all-256 keys",
+            "queries": 128,
+            "keys": 256,
+            "keyTiles": [
+              256
+            ],
+            "phantomKeys": 0,
+            "reuses": [
+              {
+                "parity": {
+                  "max": {
+                    "elements": 5120,
+                    "bitExact": true
+                  },
+                  "denominator": {
+                    "elements": 5120,
+                    "bitExact": true
+                  },
+                  "context": {
+                    "elements": 655360,
+                    "bitExact": true
+                  }
+                },
+                "independent": {
+                  "max": {
+                    "elements": 5120,
+                    "failed": 0,
+                    "maxAbsolute": 3.7150584830669686e-09,
+                    "maxRelative": 5.8046731439457674e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "denominator": {
+                    "elements": 5120,
+                    "failed": 0,
+                    "maxAbsolute": 0.00012351352754080835,
+                    "maxRelative": 5.179062769658356e-07,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "context": {
+                    "elements": 655360,
+                    "failed": 0,
+                    "maxAbsolute": 2.629300068779372e-06,
+                    "maxRelative": 10737418241,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  }
+                }
+              },
+              {
+                "parity": {
+                  "max": {
+                    "elements": 5120,
+                    "bitExact": true
+                  },
+                  "denominator": {
+                    "elements": 5120,
+                    "bitExact": true
+                  },
+                  "context": {
+                    "elements": 655360,
+                    "bitExact": true
+                  }
+                },
+                "independent": {
+                  "max": {
+                    "elements": 5120,
+                    "failed": 0,
+                    "maxAbsolute": 3.7150584830669686e-09,
+                    "maxRelative": 5.8046731439457674e-08,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "denominator": {
+                    "elements": 5120,
+                    "failed": 0,
+                    "maxAbsolute": 0.00012351352754080835,
+                    "maxRelative": 5.179062769658356e-07,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  },
+                  "context": {
+                    "elements": 655360,
+                    "failed": 0,
+                    "maxAbsolute": 2.629300068779372e-06,
+                    "maxRelative": 10737418241,
+                    "gate": {
+                      "absolute": 0.001,
+                      "relative": 0.0001
+                    }
+                  }
+                }
+              }
+            ],
+            "kvOwnedBytes": 10485760,
+            "inputSnapshotBytes": 15728640,
+            "nativeWasmCopiesMeasured": false
+          },
+          {
+            "name": "take/copy ownership, finite gate, foreign/stale/range/order, cancellation retry and active release",
+            "passed": true
+          },
+          {
+            "name": "native prepared tensor disposal failure retains ownership and recovery clears counters",
+            "passed": true
+          }
+        ],
+        "stats": {
+          "busy": false,
+          "disposed": true,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 13,
+          "inputCopyBytes": 79268160,
+          "outputCopyBytes": 13977600,
+          "runtimeInputSpanBytes": 118879040,
+          "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+          "preparedWeights": 0,
+          "preparedWeightBytes": 0,
+          "peakPreparedWeightBytes": 0,
+          "preparedWeightCopies": 0,
+          "preparedWeightTransfers": 0,
+          "preparedWeightCopyBytes": 0,
+          "preparedWeightTransferBytes": 0,
+          "preparedWeightCreations": 0,
+          "preparedWeightReleases": 0,
+          "attentionQueries": {
+            "queryCreations": 9,
+            "queryPreparationsCompleted": 9,
+            "queryReleases": 9,
+            "stepAttempts": 10,
+            "stepsCompleted": 9,
+            "failedSteps": 5,
+            "preparedSteps": 9,
+            "qSnapshotBytes": 9277440,
+            "kvSnapshotBytes": 0,
+            "finishCopyBytes": 9297600,
+            "currentCpuTensorSpanBytes": 0,
+            "peakCpuTensorSpanBytes": 7946240,
+            "ownedTensors": 0,
+            "peakOwnedTensors": 8,
+            "unknownSizedTensors": 0,
+            "cleanupFailures": 0,
+            "ownedQueryCount": 0,
+            "cleanupPending": false,
+            "disposed": true,
+            "queries": [],
+            "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+          },
+          "preparedAttentionKV": {
+            "creations": 7,
+            "releases": 7,
+            "currentBytes": 0,
+            "peakBytes": 19456000,
+            "copies": 6,
+            "copyBytes": 30638080,
+            "transfers": 1,
+            "transferBytes": 286720,
+            "activeLeases": 0,
+            "peakLeases": 1,
+            "cleanupFailures": 1,
+            "ownedPairs": 0,
+            "cleanupPending": false,
+            "disposed": true,
+            "layout": "compact head-major [40,K<=256,128]",
+            "binding": "CPU ort.Tensor runtime-input; native ORT/WASM upload not eliminated or measured"
+          },
+          "timings": {
+            "snapshotMs": 47.119999999180436,
+            "weightPrepareMs": 0,
+            "kvPrepareMs": 28.96000000135973,
+            "kvReleaseMs": 0.40499999979510903,
+            "sessionRunMs": 116.22500000102445,
+            "linearSessionRunMs": 0,
+            "attentionSessionRunMs": 116.22500000102445,
+            "outputCopyMs": 49.53000000072643,
+            "tensorCleanupMs": 0.34500000067055225,
+            "preparedReleaseMs": 0,
+            "ownerDisposeMs": 0.27499999990686774
+          },
+          "resourceProfile": {
+            "numThreads": 4,
+            "firstInitialization": true,
+            "pthreadCreationsObserved": 3,
+            "coiRequired": true,
+            "freshRealmRequiredForProfileChange": true
+          },
+          "nativeWasmCopiesMeasured": false,
+          "sessionCreations": 2
+        }
+      },
+      "chromiumVersion": "154.0.8037.57"
+    }
+  ]
+}

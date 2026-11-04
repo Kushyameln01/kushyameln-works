@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "prepared-kv-node-boundaries/1",
+  "baseHEAD": "c0cbd456df2274078c89de3cdb3856f612543aeb",
+  "scope": "Ownership/layout/admission/cancellation doubles and exact array layout; no numerical model inference",
+  "passed": true,
+  "results": [
+    {
+      "command": [
+        "node",
+        "docs/shared/diffusion-models/execution/test-prepared-attention-kv-owner.mjs"
+      ],
+      "sourceSHA256": "851f8fbaa02f197f6f93fd6c46461caec0fe5ea14360855307246d3a0cd3f6ae",
+      "exitCode": 0,
+      "stdout": "\u2714 prepared K/V owner and ordered builder are available (1.509856ms)\n\u2714 copy isolates caller bytes; take detaches both and leases protect immutable owner-local tensors (6.153655ms)\n\u2714 range, foreign, malformed and aborted preparation reject before transfer; disposal retries retain failed resources (6.92645ms)\n\u2714 ordered rows create exact head-major 256+219 tiles without full row-major stores and dispose every pair (129.500112ms)\n\u2714 ordered pool rejects gaps and releases completed and partial tiles on cancellation (59.287187ms)\n\u2139 tests 5\n\u2139 suites 0\n\u2139 pass 5\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 215.115381\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "docs/shared/diffusion-models/execution/test-owned-attention-query-owner.mjs"
+      ],
+      "sourceSHA256": "a6543913fbe73710dc522fce989123ee8da4a8341257191617626df95f465cd4",
+      "exitCode": 0,
+      "stdout": "\u2714 query captures Q once, retains private state and finishes only after all keys (10.745962ms)\n\u2714 foreign handles and key overflow reject before K/V capture (1.045626ms)\n\u2714 aborted run cleans new outputs and K/V while keeping the old state retryable (1.746562ms)\n\u2714 release failure retains failed owners, attempts every tensor and permits recovery (0.436468ms)\n\u2714 finish cannot return a partial success when native release fails (1.215823ms)\n\u2714 partial query preparation retains failed cleanup for disposeAll recovery (0.551532ms)\n\u2714 wrong native result binding does not leak the other returned Tensor owners (1.138456ms)\n\u2139 tests 7\n\u2139 suites 0\n\u2139 pass 7\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 26.834818\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "docs/shared/diffusion-models/execution/test-model-candidate.mjs"
+      ],
+      "sourceSHA256": "b39510434bf96e3025164407f111bb94ac889f2e4d5acc0aa234141e83c6eccf",
+      "exitCode": 0,
+      "stdout": "\u2714 candidate describes full40 experimental graph and keeps caller dependencies owned by caller (18.370695ms)\n\u2714 source admission rejects incomplete targets, altered identity and shape forgeries before reading values (50.925843ms)\n\u2714 candidate rejects predictor substitutions and native math without denominator division (5.940264ms)\n\u2714 preparation snapshots operator bytes before its first asynchronous hash/compile (33.033224ms)\n\u2714 native Text, timestep and canonical latent semantics reject before weight or numeric operator access (35.696118ms)\n\u2714 cancelled weight loading releases ownership and never returns a partial velocity (8.172217ms)\n\u2714 full intermediate tracing is separately bounded before any numeric operator or source read (12.338508ms)\n\u2714 canonical 90001-token input rejects before payload reads with a named four-store planning estimate (53.361059ms)\n\u2714 prepared native K/V capability selects a direct ordered pool; old injected operators are explicitly labelled (24.684021ms)\n\u2139 tests 9\n\u2139 suites 0\n\u2139 pass 9\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 252.958747\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "docs/shared/diffusion-models/execution/test-model-chunk-entry.mjs"
+      ],
+      "sourceSHA256": "91a94fbac3160ba856e8ffa5a29840b1b3f5f216bb75c9086d18cd232df7b1f6",
+      "exitCode": 0,
+      "stdout": "\u2714 chunk diagnosis admits a whole sequence above the old128 trace cap without granting readiness (28.226675ms)\n\u2714 chunk-only fields stay out of the ordinary prediction contract (4.924903ms)\n\u2714 failed prepared-weight release fences another prediction until cleanup is recovered (36.527292ms)\n\u2714 a native operator cleanup-pending state fences prefix reloads until recovery (8.175177ms)\n\u2139 tests 4\n\u2139 suites 0\n\u2139 pass 4\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 92.349276\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "docs/shared/diffusion-models/execution/test-model-signal-cleanup.mjs"
+      ],
+      "sourceSHA256": "d460e5bce5e128cbe950b5227e75f11c26a0d6c01e9cbbc0e65e3ea7c0e4693f",
+      "exitCode": 0,
+      "stdout": "\u2714 candidate releases busy/terminal ownership with a throwing own signal addEventListener (14.450792ms)\n\u2714 candidate releases busy/terminal ownership with a throwing own signal removeEventListener (2.26586ms)\n\u2714 candidate validates native AbortSignal slots and remains reusable after a duck signal (11.870602ms)\n\u2714 candidate preserves native abort reason despite throwing own reason and no-op abort methods (2.759574ms)\n\u2139 tests 4\n\u2139 suites 0\n\u2139 pass 4\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 40.27095\n",
+      "stderr": ""
+    }
+  ]
+}

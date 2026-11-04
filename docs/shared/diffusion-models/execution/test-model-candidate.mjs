@@ -88,3 +88,10 @@ test('canonical 90001-token input rejects before payload reads with a named four
   const requiredTokens=deriveWorkflowShapes(required).concatenation.totalTokens;assert.equal(requiredTokens,87992);assert.ok(requiredTokens<=MODEL_CANDIDATE_LIMITS.maxSequenceTokens);
  }finally{await candidate.dispose();}
 });
+test('prepared native K/V capability selects a direct ordered pool; old injected operators are explicitly labelled',async()=>{
+ const legacy=fixture(),legacyCandidate=await createBerniniModelCandidate({source:legacy.source,math:legacy.math,ops:legacy.ops});
+ try{assert.equal(legacyCandidate.describe().attentionKVOwnership.implementation,'legacy-row-major-injected-ops');}finally{await legacyCandidate.dispose();}
+ const f=fixture();for(const name of ['beginAttentionQuery','attentionQueryTile','finishAttentionQuery','releaseAttentionQuery','prepareAttentionKV','attentionQueryPreparedTile','releaseAttentionKV'])f.ops[name]=()=>{throw Error('Capability test must not execute operators');};
+ const candidate=await createBerniniModelCandidate({source:f.source,math:f.math,ops:f.ops});
+ try{const contract=candidate.describe().attentionKVOwnership;assert.equal(contract.implementation,'owned-prepared-head-major-kv-v1');assert.equal(contract.fullRowMajorKVStores,0);assert.equal(contract.extraFullKVSpan,false);assert.equal(contract.queryRows,128);assert.equal(contract.keyRows,256);assert.equal(candidate.describe().acceptedProduction,false);}finally{await candidate.dispose();}
+});

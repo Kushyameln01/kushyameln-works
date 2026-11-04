@@ -3,6 +3,7 @@ import {createDynamicLinearGraph} from '../ort-bridge/block-hidden/graph.mjs';
 import {releaseOwnedResources,cleanupAfterFailure} from '../ort-bridge/qkv/ownership.mjs';
 import {createBatchedAttentionGraph,BATCHED_ATTENTION_SCALE} from './batched-attention-graph.mjs';
 import {createOwnedAttentionQueries} from './owned-attention-query.mjs';
+import {createPreparedAttentionKV} from './prepared-attention-kv.mjs';
 
 ort.env.wasm.wasmPaths={mjs:new URL('../../inference/vendor/ort-wasm-simd-threaded.mjs',import.meta.url).href,wasm:new URL('../../inference/vendor/ort-wasm-simd-threaded.wasm',import.meta.url).href};
 ort.env.wasm.proxy=false;
@@ -64,10 +65,10 @@ export async function createBatchedModelOps(options={}){
    globalThis.Worker=wrapped;restoreWorker=()=>{if(globalThis.Worker===wrapped)globalThis.Worker=NativeWorker;};
   }
  }}catch(error){initializingThreads=null;ort.env.wasm.numThreads=previousThreads;throw resourceFailure('Could not install the verified ORT thread resource profile',{requested:numThreads,cause:String(error.message??error)});}
- let linearSession=null,attentionSession=null,attentionQueries=null,finalAttentionQueryStats=null,busy=false,disposed=false,closing=false,pending=null,linearRuns=0,attentionRuns=0,inputCopyBytes=0,outputCopyBytes=0;
+ let linearSession=null,attentionSession=null,attentionQueries=null,finalAttentionQueryStats=null,preparedAttentionKV=null,finalPreparedAttentionKVStats=null,busy=false,disposed=false,closing=false,pending=null,linearRuns=0,attentionRuns=0,inputCopyBytes=0,outputCopyBytes=0;
  let preparedWeightBytes=0,peakPreparedWeightBytes=0,preparedWeightCopies=0,preparedWeightTransfers=0,preparedWeightCopyBytes=0,preparedWeightTransferBytes=0,preparedWeightCreations=0,preparedWeightReleases=0,runtimeInputSpanBytes=0;
  const preparedWeights=new Map(),knownPreparedWeights=new WeakSet();
- const timings={snapshotMs:0,weightPrepareMs:0,sessionRunMs:0,linearSessionRunMs:0,attentionSessionRunMs:0,outputCopyMs:0,tensorCleanupMs:0,preparedReleaseMs:0,ownerDisposeMs:0};
+ const timings={snapshotMs:0,weightPrepareMs:0,kvPrepareMs:0,kvReleaseMs:0,sessionRunMs:0,linearSessionRunMs:0,attentionSessionRunMs:0,outputCopyMs:0,tensorCleanupMs:0,preparedReleaseMs:0,ownerDisposeMs:0};
  const tensors=new Set(),retain=value=>{tensors.add(value);return value;};
  const live=()=>{if(disposed)throw Error('Batched model ops disposed');if(closing)throw Object.assign(Error('Batched model ops cleanup required'),{code:'RECOVERY_REQUIRED'});};
  const cleanupTensors=()=>releaseOwnedResources([...tensors].map(value=>({value,release:t=>t.dispose(),clear:()=>tensors.delete(value)})));
@@ -77,6 +78,7 @@ export async function createBatchedModelOps(options={}){
   {value:tensors.size?tensors:null,release:()=>cleanupTensors(),clear:()=>{}},
   {value:preparedWeights.size?preparedWeights:null,release:()=>cleanupPrepared(),clear:()=>{}},
   {value:attentionQueries,release:owner=>owner.disposeAll(),clear:()=>{finalAttentionQueryStats=attentionQueries.stats();attentionQueries=null;}},
+  {value:preparedAttentionKV,release:owner=>owner.disposeAll(),clear:()=>{finalPreparedAttentionKVStats=preparedAttentionKV.stats();preparedAttentionKV=null;}},
   {value:linearSession,release:s=>s.release(),clear:()=>{linearSession=null;}},
   {value:attentionSession,release:s=>s.release(),clear:()=>{attentionSession=null;}}
  ]);
@@ -98,8 +100,22 @@ export async function createBatchedModelOps(options={}){
    initializedThreads=numThreads;
   }
   attentionSession=await ort.InferenceSession.create(attentionGraph,{executionProviders:['wasm'],graphOptimizationLevel:'disabled'});
-  attentionQueries=createOwnedAttentionQueries({ort,session:attentionSession,assertLive:live,capture,validateOutput,copyOutput:copiedOutput,run,addRuntimeSpan:bytes=>{runtimeInputSpanBytes+=bytes;},addAttentionRun:()=>{attentionRuns++;},onCleanupFailure:()=>{closing=true;}});
+  preparedAttentionKV=createPreparedAttentionKV({ort,assertLive:live,validateView:validatedView,onCopy:bytes=>{inputCopyBytes+=bytes;},onCleanupFailure:()=>{closing=true;}});
+  attentionQueries=createOwnedAttentionQueries({ort,session:attentionSession,assertLive:live,capture,validateOutput,copyOutput:copiedOutput,run,addRuntimeSpan:bytes=>{runtimeInputSpanBytes+=bytes;},addAttentionRun:()=>{attentionRuns++;},onCleanupFailure:()=>{closing=true;},borrowPreparedKV:(handle,options)=>preparedAttentionKV.borrow(handle,options)});
   return Object.freeze({
+   prepareAttentionKV(input={}){
+    live();if(busy)throw Error('Batched model ops busy');busy=true;const began=performance.now();
+    try{return preparedAttentionKV.prepare(input);}finally{timings.kvPrepareMs+=performance.now()-began;busy=false;}
+   },
+   releaseAttentionKV(handle){
+    if(busy)throw Error('Await active batched operation before releasing prepared K/V');
+    if(!preparedAttentionKV)throw Error('Batched model ops disposed');const began=performance.now();
+    try{return preparedAttentionKV.release(handle);}finally{timings.kvReleaseMs+=performance.now()-began;}
+   },
+   async attentionQueryPreparedTile(input={}){
+    live();if(busy)throw Error('Batched model ops busy');busy=true;
+    try{return await attentionQueries.stepPrepared(input);}finally{busy=false;}
+   },
    beginAttentionQuery(input={}){
     live();if(busy)throw Error('Batched model ops busy');busy=true;
     try{return attentionQueries.begin(input);}finally{busy=false;}
@@ -175,8 +191,8 @@ export async function createBatchedModelOps(options={}){
      return {max,denominator,context,evidence:{precisionProfile:BATCHED_F32_PROFILE,computeF32:true,computeDtype:'F32',heads,queries,keys,headDim,logicalScoreElements:heads*queries*keys,phantomQueries:0,phantomKeys:0,scale:BATCHED_ATTENTION_SCALE,contextReduction:'ORT F32 batched MatMul; independent profile from Hike scalar recurrence',graphSHA256:attentionGraphSHA256,ortVersion:ort.env.versions?.web??null}};
     }catch(error){primary=error;throw error;}finally{await finish(primary);}
    },
-   describe(){live();return {schemaVersion:'works-batched-model-ops/0.1',precisionProfile:BATCHED_F32_PROFILE,computeF32:true,limits:{...limits},linearGraphSHA256,attentionGraphSHA256,sessionCreations:2,resourceProfile:{id:numThreads===4?'ort-wasm-f32-threads4-coi-v1':'ort-wasm-f32-threads1-v1',numThreads,firstInitialization,pthreadCreationsObserved:pthreadCreations,coiRequired:numThreads===4,freshRealmRequiredForProfileChange:true,pthreadRealmMemoryIncluded:false},preparedLinearWeights:{available:true,ownership:['copy','take'],opaqueOwnerLocal:true,validation:'finite/native/shape once at preparation',persistentBinding:'CPU ort.Tensor; native WASM upload still unmeasured'},ownedAttentionQueries:{available:true,implementationProfile:'owned-online-attention-query-v1',opaqueOwnerLocal:true,qSnapshot:'once per query range',state:'owned CPU tensors retained between key tiles',finish:'requires all expected keys and releases query',nativeWasmCopiesMeasured:false},initialAttentionState:{max:-3.4028234663852886e38,denominator:0,context:0},layout:'head-major contiguous [H,Q,D]/[H,K,D]',context:'unnormalized online numerator; divide by denominator after all keys',scale:BATCHED_ATTENTION_SCALE,originalProductionPrecisionVerified:false,modelInference:false};},
-   stats(){return {busy,disposed,cleanupPending:closing,pendingTensors:tensors.size,linearRuns,attentionRuns,inputCopyBytes,outputCopyBytes,runtimeInputSpanBytes,inputCopyBytesScope:'Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured',preparedWeights:preparedWeights.size,preparedWeightBytes,peakPreparedWeightBytes,preparedWeightCopies,preparedWeightTransfers,preparedWeightCopyBytes,preparedWeightTransferBytes,preparedWeightCreations,preparedWeightReleases,attentionQueries:attentionQueries?.stats()??finalAttentionQueryStats,timings:{...timings},resourceProfile:{numThreads,firstInitialization,pthreadCreationsObserved:pthreadCreations,coiRequired:numThreads===4,freshRealmRequiredForProfileChange:true},nativeWasmCopiesMeasured:false,sessionCreations:2};},dispose,recover:dispose
+   describe(){live();return {schemaVersion:'works-batched-model-ops/0.1',precisionProfile:BATCHED_F32_PROFILE,computeF32:true,limits:{...limits},linearGraphSHA256,attentionGraphSHA256,sessionCreations:2,resourceProfile:{id:numThreads===4?'ort-wasm-f32-threads4-coi-v1':'ort-wasm-f32-threads1-v1',numThreads,firstInitialization,pthreadCreationsObserved:pthreadCreations,coiRequired:numThreads===4,freshRealmRequiredForProfileChange:true,pthreadRealmMemoryIncluded:false},preparedLinearWeights:{available:true,ownership:['copy','take'],opaqueOwnerLocal:true,validation:'finite/native/shape once at preparation',persistentBinding:'CPU ort.Tensor; native WASM upload still unmeasured'},preparedAttentionKV:{available:true,implementationProfile:'owned-prepared-head-major-kv-v1',ownership:['copy','take'],opaqueOwnerLocal:true,validation:'finite/native/shape once at preparation; exact key range on each lease',layout:'compact [40,K<=256,128]',reuseAcrossQueries:true,nativeWasmCopiesMeasured:false},ownedAttentionQueries:{available:true,implementationProfile:'owned-online-attention-query-v1',opaqueOwnerLocal:true,qSnapshot:'once per query range',state:'owned CPU tensors retained between key tiles',finish:'requires all expected keys and releases query',nativeWasmCopiesMeasured:false},initialAttentionState:{max:-3.4028234663852886e38,denominator:0,context:0},layout:'head-major contiguous [H,Q,D]/[H,K,D]',context:'unnormalized online numerator; divide by denominator after all keys',scale:BATCHED_ATTENTION_SCALE,originalProductionPrecisionVerified:false,modelInference:false};},
+   stats(){return {busy,disposed,cleanupPending:closing,pendingTensors:tensors.size,linearRuns,attentionRuns,inputCopyBytes,outputCopyBytes,runtimeInputSpanBytes,inputCopyBytesScope:'Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured',preparedWeights:preparedWeights.size,preparedWeightBytes,peakPreparedWeightBytes,preparedWeightCopies,preparedWeightTransfers,preparedWeightCopyBytes,preparedWeightTransferBytes,preparedWeightCreations,preparedWeightReleases,attentionQueries:attentionQueries?.stats()??finalAttentionQueryStats,preparedAttentionKV:preparedAttentionKV?.stats()??finalPreparedAttentionKVStats,timings:{...timings},resourceProfile:{numThreads,firstInitialization,pthreadCreationsObserved:pthreadCreations,coiRequired:numThreads===4,freshRealmRequiredForProfileChange:true},nativeWasmCopiesMeasured:false,sessionCreations:2};},dispose,recover:dispose
   });
  }catch(error){closing=true;throw await cleanupAfterFailure(error,dispose);}
  finally{restoreWorker?.();if(firstInitialization){initializingThreads=null;if(initializedThreads===null)ort.env.wasm.numThreads=previousThreads;}}

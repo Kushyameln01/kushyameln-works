@@ -8,7 +8,7 @@ DOCS=ROOT/'docs'
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--output',type=Path,required=True)
 args=parser.parse_args()
-names=['shared/diffusion-models/execution/test-owned-attention-query.mjs','shared/diffusion-models/execution/owned-attention-query.mjs','shared/diffusion-models/execution/batched-ops.mjs','shared/diffusion-models/execution/test-prepared-batched-ops.mjs','shared/diffusion-models/execution/test-thread-resource.mjs','shared/diffusion-models/execution/test-batched-ops.mjs','shared/diffusion-models/execution/batched-attention-graph.mjs','shared/diffusion-models/ort-bridge/block-hidden/graph.mjs','shared/diffusion-models/ort-bridge/qkv/ownership.mjs','shared/inference/vendor/ort.wasm.min.mjs','shared/inference/vendor/ort-wasm-simd-threaded.mjs','shared/inference/vendor/ort-wasm-simd-threaded.wasm']
+names=['shared/diffusion-models/execution/prepared-attention-kv.mjs','shared/diffusion-models/execution/test-owned-attention-query.mjs','shared/diffusion-models/execution/owned-attention-query.mjs','shared/diffusion-models/execution/batched-ops.mjs','shared/diffusion-models/execution/test-prepared-batched-ops.mjs','shared/diffusion-models/execution/test-thread-resource.mjs','shared/diffusion-models/execution/test-batched-ops.mjs','shared/diffusion-models/execution/batched-attention-graph.mjs','shared/diffusion-models/ort-bridge/block-hidden/graph.mjs','shared/diffusion-models/ort-bridge/qkv/ownership.mjs','shared/inference/vendor/ort.wasm.min.mjs','shared/inference/vendor/ort-wasm-simd-threaded.mjs','shared/inference/vendor/ort-wasm-simd-threaded.wasm']
 snapshot={name:(DOCS/name).read_bytes() for name in names}
 class Handler(http.server.BaseHTTPRequestHandler):
  def log_message(self,*args):pass
