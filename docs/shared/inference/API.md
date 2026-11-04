@@ -2,7 +2,9 @@
 
 API版: `works-ai-1`。Text EncoderとVAEは独立モジュール。包括処理と一括UI、別CodexのDiffusionモジュールはこの実装に含めない。
 
-文書revision: `NATIVE-MANAGED-2`。`works-ai-1`とG1Cを維持する。最新の[管理接続と数値修正結果](../../../development/inference/management-20261104/RESULT.md)、[採用Text manifest](../../../development/inference/management-20261104/text/source-ordered-fp32/README.md)を参照する。causal streaming manifest、独立raw latent入力、native末尾処理の契約は[単体API追補](../../../development/inference/standalone-20261102/API.md)に保持する。TextとVAE、構造上の対応域と実数値受入を区別し、通常APIに参照やreceiptを要求しない。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sampleのmetadata検査は、実生成・復元・decodeの受入を意味しない。
+文書revision: `NATIVE-MANAGED-3`。`works-ai-1`とG1Cを維持する。[採用設定と最新P4通常入力の確認](../../../development/inference/management-adoption-20261105/RESULT.md)、[管理接続と数値修正結果](../../../development/inference/management-20261104/RESULT.md)、[採用Text manifest](../../../development/inference/management-20261104/text/source-ordered-fp32/README.md)を参照する。causal streaming manifest、独立raw latent入力、native末尾処理の契約は[単体API追補](../../../development/inference/standalone-20261102/API.md)に保持する。TextとVAE、構造上の対応域と実数値受入を区別し、通常APIに参照やreceiptを要求しない。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sampleのmetadata検査は、実生成・復元・decodeの受入を意味しない。
+
+Textの採用manifestはSHA-256 `420ebccc3bd6bb2124324512b60bf7f6b9dc49f1f57bdcff6ee29f561eb72405`。旧manifestも独立APIでは有効なので、管理サービスの構成時には実manifest bytesとconfigure戻りの24 `graphBindings` を照合する。Text markerは引き続き `umt5-final-rmsnorm-f32-v1`。最新版Diffusion `b6e166478a8e072c9ffd3ce562bfdb0c89634920` の通常P4はこれを正式受理する。旧aliasのために改名したり、最終RMSNormを再適用したりしない。通常入力受理と投影以降の実NN検証は区別する。
 
 従来の診断受入はUMT5の24層FP32経路と、Wan2.1 VAEの5×16×16・F1正方形16×16・F1 Rect16×32の各固定graphである。前revisionではRectと固定plain一件を通常実行し、既存参照を再利用した。これらのscopeを維持する。新streaming graphの対応域や一部shapeの受入を、他のshape・実生成の合格へ広げない。
 

@@ -1,5 +1,7 @@
 # Text／VAEの引継ぎと受入境界
 
+2026-11-05 JST追補：採用manifestの実選択・現codecの保存確認と、最新版b6eで解消した通常P4 marker差分は[新しい管理反映資料](../management-adoption-20261105/HANDOFF.md)へ引き継ぐ。本書のNN実行source／受入scopeはそのまま保持し、48ffの未対応記述を最新b6eの状態へ転用しない。
+
 Textの全512有効ID不一致を元gateのまま解消し、TextとVAEを実管理APIから部分運用した。配布branchは `codex/text-vae-management-20261104`、[Draft PR #20](https://github.com/Kushyameln01/kushyameln-works/pull/20)。この文書を取得した固定commitが配布sourceであり、以下の実行sourceとは区別する。
 
 ## 実行source

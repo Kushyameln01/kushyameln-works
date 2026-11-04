@@ -1,4 +1,6 @@
-# 実行中断と再開条件
+# 実行中断と再開条件（履歴）
+
+2026-11-05 JST追補：旧全512有効ID FAILは修正manifest420eで解消済み。[現在の採用設定と検証範囲](../management-adoption-20261105/RESULT.md)を参照する。以下は当時の中断・回復・旧graphの観測記録であり、現在も同じ数値FAILが未解消という意味ではない。旧監視controllerの観測はそのsourceと時点のまま保持する。
 
 TextはT2一件が未受入。VAEは今回の必須選択ケースの機能・数値受入を完了。旧監視controllerのzombie1件は別残件として記録する。2026-11-02 17:38 UTC頃に監視接続を失ったが、17:50 UTCにコマンド・filesystemへのアクセスが回復した。同じF80 processが接続喪失中も継続していたことを確認し、再実行せず検証を再開し、同じF80 jobを受入済み。848×848だけを新しいfile-backed監視で実行し、独立参照と実WASM bothも受入済み。VAE必須選択ケースは完了、TextのT2一件と旧監視controller zombieは残件として分離する。[機械可読の観測記録](evidence/environment-interruption-20261102.json) と [全体結果](RESULT.md) を参照する。
 

@@ -1,5 +1,7 @@
 # Text markerとDiffusion通常P4の契約照合
 
+2026-11-05 JST追補：以下は48ffの固定sourceに対する履歴。最新版 `b6e166478a8e072c9ffd3ce562bfdb0c89634920` では実markerが正式受理され、この差分は解消済みである。保存実L512を使った通常入力のNN0確認と残るNN未検証範囲は[最新照合](../management-adoption-20261105/RESULT.md)を参照する。Text側の改名・RMSNorm再適用は行っていない。
+
 確認対象はDiffusion固定source `48ff155988d995fc2569e495c8d8820273bd472c`。
 GitHub pluginで下記本文を取得し、同じ完全commitのGit objectと全bytesおよびGit blob SHAを照合した。モデル推論・export・投影は実行していない。
 

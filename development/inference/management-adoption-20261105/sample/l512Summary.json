@@ -1,0 +1,903 @@
+{
+  "schemaVersion": "bernini-public-sample-recovery-summary/1",
+  "nativeExecutionSourceCommit": "0f761f374dce1d447bbb912ad13c08f9bf85c279",
+  "independentReferenceExecutionSourceCommit": "3e68d2fc54c67b16f8a82002f69fa183674a9f14",
+  "comparator": {
+    "path": "tools/diffusion-models/compare-public-model.py",
+    "bytes": 16270,
+    "sha256": "69fd02bc6e44e2a5a298dc012ca366a843e21d3f0cc69494e77941acb7d3351b"
+  },
+  "sourceGuards": {
+    "beforeSourceCount": null,
+    "sourceGuardAfter": true,
+    "sourceGuardError": null,
+    "fullNativeReceipt": {
+      "path": "/tmp/public-worker-run/sample-recovery-result.json",
+      "bytes": 671206,
+      "sha256": "aced4fcf70f8d536ff10d7a08c6d43e820771793e365fbaa56815ae7fbb251ac"
+    }
+  },
+  "inputScope": {
+    "profileId": "bernini-small-n5-real-l512-f32-chunks-v1",
+    "caseClass": "controlled-n5-with-real512-text-not-original-workflow-replay",
+    "targetShape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "totalTokens": 5,
+    "targetTokens": 2,
+    "contextTokens": 3,
+    "contexts": "controlled source2tokens then reference-video1token; source_id1/2, not original media",
+    "conditioning": {
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+      "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+      "producer": {
+        "module": "text_encoder",
+        "sourceCommit": "5537b8932343aa2476b95191817e8913f99dab02"
+      },
+      "normalization": "umt5-final-rmsnorm-f32-v1",
+      "payloadSHA256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+      "maskSHA256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62"
+    },
+    "baseOnly": true,
+    "fullTarget81": false,
+    "originalWorkflowReplay": false,
+    "originalMxfp8Equivalence": "unconfirmed, not standalone stagedF32 comparison baseline"
+  },
+  "completedNormalOperation": {
+    "publicWorkerConnected": true,
+    "execution": {
+      "operation": "sample",
+      "modelSessionId": "bcfe8337-88ea-4d18-ac0e-079213d4672f",
+      "modelEpoch": 1,
+      "profile": "bernini-full40-euler-simple6-shift5-split3-experimental-v1",
+      "publicWorkerConnected": true,
+      "generationReady": false,
+      "originalWorkflowAccepted": false
+    },
+    "samplingSteps": 6,
+    "highUpdates": 3,
+    "lowUpdates": 3,
+    "executedBlocksAcrossAllPredictions": 240,
+    "perRun": [
+      {
+        "step": 0,
+        "side": "HIGH",
+        "sigma": 1,
+        "nextSigma": 0.9617158770561218,
+        "timestep": 1000,
+        "blocksCompleted": 40,
+        "headRows": 5,
+        "targetRows": 2,
+        "elapsedMs": 486489.75500001013
+      },
+      {
+        "step": 1,
+        "side": "HIGH",
+        "sigma": 0.9617158770561218,
+        "nextSigma": 0.9092148542404175,
+        "timestep": 961.7158813476562,
+        "blocksCompleted": 40,
+        "headRows": 5,
+        "targetRows": 2,
+        "elapsedMs": 485564.9350000024
+      },
+      {
+        "step": 2,
+        "side": "HIGH",
+        "sigma": 0.9092148542404175,
+        "nextSigma": 0.8333333134651184,
+        "timestep": 909.21484375,
+        "blocksCompleted": 40,
+        "headRows": 5,
+        "targetRows": 2,
+        "elapsedMs": 488127.4050000012
+      },
+      {
+        "step": 3,
+        "side": "LOW",
+        "sigma": 0.8333333134651184,
+        "nextSigma": 0.7148972749710083,
+        "timestep": 833.3333129882812,
+        "blocksCompleted": 40,
+        "headRows": 5,
+        "targetRows": 2,
+        "elapsedMs": 481421.45999999344
+      },
+      {
+        "step": 4,
+        "side": "LOW",
+        "sigma": 0.7148972749710083,
+        "nextSigma": 0.5005995035171509,
+        "timestep": 714.8972778320312,
+        "blocksCompleted": 40,
+        "headRows": 5,
+        "targetRows": 2,
+        "elapsedMs": 486350.82000000775
+      },
+      {
+        "step": 5,
+        "side": "LOW",
+        "sigma": 0.5005995035171509,
+        "nextSigma": 0,
+        "timestep": 500.5995178222656,
+        "blocksCompleted": 40,
+        "headRows": 5,
+        "targetRows": 2,
+        "elapsedMs": 499347.77500000596
+      }
+    ],
+    "counterMeaning": "per-model blocksCompleted=40 is last-prediction counter; cumulative240 is sum over six per-run receipts; direct public predict count0 does not mean sampler omitted internal predictions",
+    "samplerCounters": {
+      "predictions": 0,
+      "samples": 1,
+      "failedOperations": 0,
+      "stepsCompleted": 6,
+      "highPredictions": 3,
+      "lowPredictions": 3,
+      "rawContextNormalizations": 0
+    },
+    "schedule": {
+      "profile": "bernini-comfy-simple6-shift5-v1",
+      "source": "ComfyUI b5a432157de6b8884f81104cd02926adf4d597e4",
+      "shift": 5,
+      "splitStep": 3,
+      "sigmas": [
+        1,
+        0.9617158770561218,
+        0.9092148542404175,
+        0.8333333134651184,
+        0.7148972749710083,
+        0.5005995035171509,
+        0
+      ],
+      "tableIndices": [
+        999,
+        833,
+        666,
+        499,
+        333,
+        166
+      ],
+      "timesteps": [
+        1000,
+        961.7158813476562,
+        909.21484375,
+        833.3333129882812,
+        714.8972778320312,
+        500.5995178222656
+      ]
+    },
+    "handoff": {
+      "high": "inverseNoiseScale -> Wan21 process_out",
+      "low": "Wan21 process_in (all-zero raw skip) -> zero-noise CONST noiseMix",
+      "handoffNormalization": "applied"
+    },
+    "finalRestoration": "inverseNoiseScale(sigma0) -> one generated-sample restore",
+    "tensorMetadata": {
+      "dtype": "float32",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "layout": "NCTHW",
+      "meaning": "wan21-raw-generated-sample:v1",
+      "latentContract": {
+        "schemaVersion": 1,
+        "representation": "generated-sample",
+        "space": "raw",
+        "vaeModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "producerModelSha256s": [
+          "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+          "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3"
+        ],
+        "normalization": {
+          "id": "wan21-comfy-f32-v1",
+          "state": "restored",
+          "owner": "diffusion_models"
+        }
+      }
+    },
+    "generationReady": false,
+    "originalWorkflowAccepted": false
+  },
+  "recoveryAndOwnership": {
+    "sameAPIInstance": {
+      "apiSessionId": "public-model-92951673-a999-4bac-84bc-f30665fe9e58",
+      "cancelledModelSessionId": "28562446-2b70-4a0a-909f-a6bee5de1f84",
+      "reloadedModelSessionId": "bcfe8337-88ea-4d18-ac0e-079213d4672f",
+      "cancelProgressJob": {
+        "jobId": "public-2",
+        "inputRevision": 2
+      },
+      "cancelledAtPatch": true,
+      "workerTerminated": true,
+      "completedOperation": {
+        "operation": "sample",
+        "modelSessionId": "bcfe8337-88ea-4d18-ac0e-079213d4672f",
+        "apiSessionId": "public-model-92951673-a999-4bac-84bc-f30665fe9e58",
+        "sameApiInstance": true
+      }
+    },
+    "operations": [
+      {
+        "test": "actual-patch-cancel",
+        "code": "CANCELLED",
+        "cancelProgressJob": {
+          "jobId": "public-2",
+          "inputRevision": 2
+        }
+      },
+      {
+        "test": "cancel-retry-needs-load",
+        "code": "MODEL_NOT_LOADED"
+      },
+      {
+        "test": "reload-stale-session",
+        "code": "STALE_MODEL"
+      }
+    ],
+    "callerInputsBitExact": true,
+    "inputIdentitiesBefore": {
+      "tensors": [
+        {
+          "requirementId": "target.latent",
+          "bytes": 512,
+          "sha256": "ece94cda18a964b7d445303c31053cd84417d0e909b6056b251061f839c422df"
+        },
+        {
+          "requirementId": "source.latent",
+          "bytes": 512,
+          "sha256": "32007fbe7ca0b3eff16b1eff68f48a742cfadaad06685005d21ca9e569e62dfc"
+        },
+        {
+          "requirementId": "reference.latent",
+          "bytes": 256,
+          "sha256": "103b065f6c18417d8aa7529507376adf4dff549bcbde62238e487147bc5314f7"
+        }
+      ],
+      "noise": {
+        "bytes": 512,
+        "sha256": "ece94cda18a964b7d445303c31053cd84417d0e909b6056b251061f839c422df"
+      },
+      "initialEmptyTarget": {
+        "bytes": 512,
+        "sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560"
+      },
+      "positive": {
+        "bytes": 8388608,
+        "sha256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+        "mask": {
+          "bytes": 512,
+          "sha256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62"
+        }
+      },
+      "negative": {
+        "bytes": 8388608,
+        "sha256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+        "mask": {
+          "bytes": 512,
+          "sha256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62"
+        }
+      }
+    },
+    "inputIdentitiesAfter": {
+      "tensors": [
+        {
+          "requirementId": "target.latent",
+          "bytes": 512,
+          "sha256": "ece94cda18a964b7d445303c31053cd84417d0e909b6056b251061f839c422df"
+        },
+        {
+          "requirementId": "source.latent",
+          "bytes": 512,
+          "sha256": "32007fbe7ca0b3eff16b1eff68f48a742cfadaad06685005d21ca9e569e62dfc"
+        },
+        {
+          "requirementId": "reference.latent",
+          "bytes": 256,
+          "sha256": "103b065f6c18417d8aa7529507376adf4dff549bcbde62238e487147bc5314f7"
+        }
+      ],
+      "noise": {
+        "bytes": 512,
+        "sha256": "ece94cda18a964b7d445303c31053cd84417d0e909b6056b251061f839c422df"
+      },
+      "initialEmptyTarget": {
+        "bytes": 512,
+        "sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560"
+      },
+      "positive": {
+        "bytes": 8388608,
+        "sha256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+        "mask": {
+          "bytes": 512,
+          "sha256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62"
+        }
+      },
+      "negative": {
+        "bytes": 8388608,
+        "sha256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+        "mask": {
+          "bytes": 512,
+          "sha256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62"
+        }
+      }
+    },
+    "lateProgressCount": 0,
+    "workerLifetimes": [
+      {
+        "workerEpoch": 1,
+        "stage": "constructed",
+        "elapsedMs": 1.7300000041723251
+      },
+      {
+        "workerEpoch": 1,
+        "stage": "terminated",
+        "elapsedMs": 10908.67499999702
+      },
+      {
+        "workerEpoch": 2,
+        "stage": "constructed",
+        "elapsedMs": 10909.055000007153
+      },
+      {
+        "workerEpoch": 2,
+        "stage": "terminated",
+        "elapsedMs": 10989.605000004172
+      },
+      {
+        "workerEpoch": 3,
+        "stage": "constructed",
+        "elapsedMs": 10989.814999997616
+      },
+      {
+        "workerEpoch": 3,
+        "stage": "terminated",
+        "elapsedMs": 2944028.9450000077
+      }
+    ],
+    "workerObserverRestored": true,
+    "disposed": true,
+    "afterDisposeCode": "DISPOSED",
+    "unloaded": true,
+    "postUnloadOwnedResources": {
+      "disposed": true,
+      "closing": false,
+      "busy": false,
+      "opsDisposed": true,
+      "pendingTensors": 0,
+      "preparedWeights": 0,
+      "attentionOwnedQueries": 0,
+      "cleanupPending": false,
+      "mathMemoryBytes": 0,
+      "sourceDisposed": {
+        "HIGH": true,
+        "LOW": true
+      }
+    }
+  },
+  "numericValidation": {
+    "newlyComparedArray": "finalRaw",
+    "allNewCaseIntermediatesCompared": false,
+    "comparison": {
+      "elements": 128,
+      "failedElements": 0,
+      "nonfiniteActual": 0,
+      "nonfiniteReference": 0,
+      "maxAbsoluteError": 7.62939453125e-06,
+      "maxRelativeError": 0.00011985077488973728,
+      "maxNormalizedGateError": 0.0006182760546939364,
+      "maxErrorsScope": "Finite value pairs only; every nonfinite pair fails separately",
+      "firstFailureIndex": null,
+      "allF32BitsExact": false,
+      "allElementsCompared": true,
+      "chunkElements": 128,
+      "gate": {
+        "abs": 0.01,
+        "rel": 0.001
+      }
+    },
+    "actual": {
+      "bytes": 512,
+      "sha256": "e2100e283427ffd3477093cd5f02b38cca7da2eea059583a2a6367005696389f"
+    },
+    "expected": {
+      "bytes": 512,
+      "sha256": "67dab2cfea47e9567a8a4888f52dc3828601c410ef35dbb8b5b10cbf5e8c0d63"
+    },
+    "referenceExecution": {
+      "sourceCommit": "3e68d2fc54c67b16f8a82002f69fa183674a9f14",
+      "attribution": "Execution SHA declared by harness/operator; reference JSON itself does not embed an execution commit",
+      "frozenContractSourcesAtCommit": {
+        "tools/diffusion-models/production-reference.py": {
+          "bytes": 62171,
+          "sha256": "9d3faad4db7db710a6341bca24e541d898dd7b0dd4d68b8ed0bccd2df07d1ce8"
+        },
+        "tools/diffusion-models/standalone-reference.py": {
+          "bytes": 36222,
+          "sha256": "6f81afa662f444d0f207a91a5b3778f77c88e4a99e05748221b1ddbfece35c2f"
+        },
+        "tools/diffusion-models/standalone-sampler-reference.py": {
+          "bytes": 20016,
+          "sha256": "65c9970d79777875de85d9bd198ca7954a28127aec710f2bdc59448537279bae"
+        },
+        "development/ai-connection/profile-adoption/p4/core-source/comfy/ldm/wan/model.py": {
+          "bytes": 83811,
+          "sha256": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699"
+        },
+        "docs/shared/ai-connection/workflow-shapes.mjs": {
+          "bytes": 17269,
+          "sha256": "7a78955fd8156e0b3a5b287ad5f712ff04d62dbb6e501952bc52f9696e9dd821"
+        }
+      }
+    },
+    "reuseScope": "Earlier N5/L3 six-update16-array comparison remains scoped to its frozen controlledL3 case and unchanged sampler math. This new normal Worker L512 sample adds finalRaw-only independent comparison, not16 newly compared arrays.",
+    "noReferenceOrGateRequiredByNormalAPI": true
+  },
+  "saveAndReadback": {
+    "meaning": "wan21-raw-generated-sample:v1",
+    "posteriorMeanSubstitution": false,
+    "savedCanonical": {
+      "bytes": 1179,
+      "sha256": "cf7ef51123233101efc0191bfd48338008cfae703c828d3ba4fc684d27521c2d",
+      "mode": "0600",
+      "oExcl": true,
+      "actualFileHostReadback": true
+    },
+    "codec": {
+      "sha256": "cf7ef51123233101efc0191bfd48338008cfae703c828d3ba4fc684d27521c2d",
+      "byteLength": 1179,
+      "metadata": {
+        "dtype": "float32",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "layout": "NCTHW",
+        "meaning": "wan21-raw-generated-sample:v1",
+        "latentContract": {
+          "schemaVersion": 1,
+          "representation": "generated-sample",
+          "space": "raw",
+          "vaeModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "producerModelSha256s": [
+            "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+            "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3"
+          ],
+          "normalization": {
+            "id": "wan21-comfy-f32-v1",
+            "state": "restored",
+            "owner": "diffusion_models"
+          }
+        }
+      }
+    },
+    "readback": {
+      "realDiskFileSelected": true,
+      "sha256": "cf7ef51123233101efc0191bfd48338008cfae703c828d3ba4fc684d27521c2d",
+      "byteLength": 1179,
+      "payload": {
+        "bytes": 512,
+        "sha256": "e2100e283427ffd3477093cd5f02b38cca7da2eea059583a2a6367005696389f"
+      },
+      "payloadElements": 128,
+      "allF32BitsExact": true,
+      "metadata": {
+        "dtype": "float32",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "layout": "NCTHW",
+        "meaning": "wan21-raw-generated-sample:v1",
+        "latentContract": {
+          "schemaVersion": 1,
+          "representation": "generated-sample",
+          "space": "raw",
+          "vaeModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "producerModelSha256s": [
+            "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+            "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3"
+          ],
+          "normalization": {
+            "id": "wan21-comfy-f32-v1",
+            "state": "restored",
+            "owner": "diffusion_models"
+          }
+        }
+      }
+    },
+    "codecScope": "Actual normal sample output"
+  },
+  "timing": {
+    "hostSeconds": 2945.9879547570017,
+    "outerObservationSeconds": 2948.0393425960065,
+    "perRunOperatorTotalsSummed": {
+      "inputSnapshot": {
+        "calls": 12,
+        "elapsedMs": 3374.0699999779463,
+        "failures": 0
+      },
+      "math": {
+        "calls": 11214,
+        "elapsedMs": 136252.2450005561,
+        "failures": 0
+      },
+      "weightReadDecode": {
+        "calls": 1092768,
+        "elapsedMs": 1986051.7649940848,
+        "failures": 0
+      },
+      "snapshotCopy": {
+        "calls": 1102080,
+        "elapsedMs": 197947.72500114143,
+        "failures": 0
+      },
+      "hostCopy": {
+        "calls": 1092756,
+        "elapsedMs": 109973.29500316083,
+        "failures": 0
+      },
+      "weightPrepare": {
+        "calls": 2946,
+        "elapsedMs": 189167.47000022233,
+        "failures": 0
+      },
+      "linear": {
+        "calls": 4428,
+        "elapsedMs": 281037.38499967754,
+        "failures": 0
+      },
+      "weightRelease": {
+        "calls": 2946,
+        "elapsedMs": 27.795000180602074,
+        "failures": 0
+      },
+      "stage.prefix": {
+        "calls": 6,
+        "elapsedMs": 54760.05499999225,
+        "failures": 0
+      },
+      "layoutCopy": {
+        "calls": 2400,
+        "elapsedMs": 3137.7999997735023,
+        "failures": 0
+      },
+      "attentionPrepare": {
+        "calls": 480,
+        "elapsedMs": 78.9650002270937,
+        "failures": 0
+      },
+      "attention": {
+        "calls": 720,
+        "elapsedMs": 7131.080000177026,
+        "failures": 0
+      },
+      "attentionFinish": {
+        "calls": 480,
+        "elapsedMs": 183.63499994575977,
+        "failures": 0
+      },
+      "attentionRelease": {
+        "calls": 480,
+        "elapsedMs": 1.6950000673532486,
+        "failures": 0
+      },
+      "stage.selfAttention": {
+        "calls": 240,
+        "elapsedMs": 754807.245000124,
+        "failures": 0
+      },
+      "stage.crossAttention": {
+        "calls": 240,
+        "elapsedMs": 1092544.6899998933,
+        "failures": 0
+      },
+      "stage.ffn": {
+        "calls": 240,
+        "elapsedMs": 1023134.7950001657,
+        "failures": 0
+      },
+      "stage.head": {
+        "calls": 6,
+        "elapsedMs": 86.25,
+        "failures": 0
+      }
+    },
+    "operatorScope": "sum of per-prediction inclusive timers across six runs; parent-stage and child totals overlap and must not be added",
+    "sharedORTTimings": {
+      "snapshotMs": 9633.254999920726,
+      "weightPrepareMs": 189132.3100003153,
+      "sessionRunMs": 261562.61499989033,
+      "linearSessionRunMs": 259410.0049997568,
+      "attentionSessionRunMs": 2152.6100001335144,
+      "outputCopyMs": 16413.730000033975,
+      "tensorCleanupMs": 223.06999929249287,
+      "preparedReleaseMs": 17.895000129938126,
+      "ownerDisposeMs": 0
+    },
+    "sourceTotalsAcrossHighLow": {
+      "storageReads": 100558,
+      "storageReadBytes": 93445525632,
+      "storageReadMs": 331918.50500167906,
+      "decodeMs": 1559683.5199980736,
+      "windowCopyMs": 52381.54999509454,
+      "payloadReads": 1092768,
+      "decodedF32Bytes": 342918390272,
+      "cacheHits": 993654,
+      "cacheMisses": 99114,
+      "windowCopyBytes": 93445140736
+    },
+    "sourceTimingScope": "storage/config payload windows and quantization config; header inspect separately; source decode and copy times recorded independently"
+  },
+  "resources": {
+    "wasmPeakBytes": 324534272,
+    "wasmCoverage": "Observed main public Worker memories only; process RSS/PSS and JS host buffers are separate",
+    "processTreeRssPeakBytes": 2045706240,
+    "processTreePssPeakBytes": 1752406016,
+    "rawResourceReceipt": {
+      "path": "/tmp/public-worker-run/sample-recovery-resources.json",
+      "bytes": 29286373,
+      "sha256": "6192e1786c45c7e21b41f2cbe4645eb6790e8b6d4ee01bd5341bbfd009065b31"
+    },
+    "nativeOperatorStats": {
+      "busy": false,
+      "disposed": false,
+      "cleanupPending": false,
+      "pendingTensors": 0,
+      "linearRuns": 4428,
+      "attentionRuns": 720,
+      "inputCopyBytes": 10574771712,
+      "outputCopyBytes": 5448906240,
+      "runtimeInputSpanBytes": 507864402432,
+      "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+      "preparedWeights": 0,
+      "preparedWeightBytes": 0,
+      "peakPreparedWeightBytes": 566231040,
+      "preparedWeightCopies": 0,
+      "preparedWeightTransfers": 2946,
+      "preparedWeightCopyBytes": 0,
+      "preparedWeightTransferBytes": 342797844480,
+      "preparedWeightCreations": 2946,
+      "preparedWeightReleases": 2946,
+      "attentionQueries": {
+        "queryCreations": 480,
+        "queryPreparationsCompleted": 480,
+        "queryReleases": 480,
+        "stepAttempts": 720,
+        "stepsCompleted": 720,
+        "failedSteps": 0,
+        "qSnapshotBytes": 49152000,
+        "kvSnapshotBytes": 5082316800,
+        "finishCopyBytes": 49920000,
+        "currentCpuTensorSpanBytes": 0,
+        "peakCpuTensorSpanBytes": 10796160,
+        "ownedTensors": 0,
+        "peakOwnedTensors": 9,
+        "unknownSizedTensors": 0,
+        "cleanupFailures": 0,
+        "ownedQueryCount": 0,
+        "cleanupPending": false,
+        "disposed": false,
+        "queries": [],
+        "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+      },
+      "timings": {
+        "snapshotMs": 9633.254999920726,
+        "weightPrepareMs": 189132.3100003153,
+        "sessionRunMs": 261562.61499989033,
+        "linearSessionRunMs": 259410.0049997568,
+        "attentionSessionRunMs": 2152.6100001335144,
+        "outputCopyMs": 16413.730000033975,
+        "tensorCleanupMs": 223.06999929249287,
+        "preparedReleaseMs": 17.895000129938126,
+        "ownerDisposeMs": 0
+      },
+      "resourceProfile": {
+        "numThreads": 4,
+        "firstInitialization": true,
+        "pthreadCreationsObserved": 3,
+        "coiRequired": true,
+        "freshRealmRequiredForProfileChange": true
+      },
+      "nativeWasmCopiesMeasured": false,
+      "sessionCreations": 2
+    },
+    "sourceStats": {
+      "HIGH": {
+        "disposed": false,
+        "busy": false,
+        "reads": 547106,
+        "readBytes": 46722762816,
+        "headerReads": 2,
+        "headerReadBytes": 181288,
+        "configReads": 720,
+        "configReadBytes": 11160,
+        "payloadReads": 546384,
+        "payloadReadBytes": 46722570368,
+        "maxPayloadReadBytes": 163840,
+        "decodedF32Bytes": 171459195136,
+        "readAheadBytes": 1048576,
+        "storageReads": 50279,
+        "storageReadBytes": 46722762816,
+        "maxStorageReadBytes": 1048576,
+        "storageReadAttempts": 50279,
+        "storageReadFailures": 0,
+        "discardedStorageReads": 0,
+        "discardedStorageBytes": 0,
+        "storageReadMs": 164332.97999988496,
+        "headerInspectMs": 36.810000002384186,
+        "decodeMs": 781629.4449986219,
+        "cacheHits": 496827,
+        "cacheMisses": 49557,
+        "cachedBytes": 10240,
+        "peakCachedBytes": 1048576,
+        "windowCopyBytes": 46722570368,
+        "windowCopyMs": 25348.57999165356,
+        "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+        "hike": {
+          "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+          "memoryBytes": 1572864,
+          "arenaBytes": 491648,
+          "calls": 361,
+          "inputCopyBytes": 218416,
+          "outputCopyBytes": 619712,
+          "workspaceReused": true,
+          "disposed": false
+        },
+        "decoder": {
+          "disposed": false,
+          "workspaceReused": true,
+          "memoryBytes": 1835008,
+          "arenaBytes": 754688,
+          "tableBytes": 631808,
+          "wasmTableBytes": 263168,
+          "hostTableBytes": 368640,
+          "fp8Tables": 360,
+          "calls": 546384,
+          "inputCopyBytes": 46722570368,
+          "outputCopyBytes": 171459195136,
+          "wasmTableCopyBytes": 507510784
+        },
+        "decoderSelection": "lookup",
+        "fullFileHashRecomputed": false,
+        "payloadSampleAdmission": false
+      },
+      "LOW": {
+        "disposed": false,
+        "busy": false,
+        "reads": 547106,
+        "readBytes": 46722762816,
+        "headerReads": 2,
+        "headerReadBytes": 181288,
+        "configReads": 720,
+        "configReadBytes": 11160,
+        "payloadReads": 546384,
+        "payloadReadBytes": 46722570368,
+        "maxPayloadReadBytes": 163840,
+        "decodedF32Bytes": 171459195136,
+        "readAheadBytes": 1048576,
+        "storageReads": 50279,
+        "storageReadBytes": 46722762816,
+        "maxStorageReadBytes": 1048576,
+        "storageReadAttempts": 50279,
+        "storageReadFailures": 0,
+        "discardedStorageReads": 0,
+        "discardedStorageBytes": 0,
+        "storageReadMs": 167585.5250017941,
+        "headerInspectMs": 13.299999997019768,
+        "decodeMs": 778054.0749994516,
+        "cacheHits": 496827,
+        "cacheMisses": 49557,
+        "cachedBytes": 10240,
+        "peakCachedBytes": 1048576,
+        "windowCopyBytes": 46722570368,
+        "windowCopyMs": 27032.970003440976,
+        "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+        "hike": {
+          "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+          "memoryBytes": 1572864,
+          "arenaBytes": 491648,
+          "calls": 361,
+          "inputCopyBytes": 218416,
+          "outputCopyBytes": 619712,
+          "workspaceReused": true,
+          "disposed": false
+        },
+        "decoder": {
+          "disposed": false,
+          "workspaceReused": true,
+          "memoryBytes": 1835008,
+          "arenaBytes": 754688,
+          "tableBytes": 631808,
+          "wasmTableBytes": 263168,
+          "hostTableBytes": 368640,
+          "fp8Tables": 360,
+          "calls": 546384,
+          "inputCopyBytes": 46722570368,
+          "outputCopyBytes": 171459195136,
+          "wasmTableCopyBytes": 507510784
+        },
+        "decoderSelection": "lookup",
+        "fullFileHashRecomputed": false,
+        "payloadSampleAdmission": false
+      }
+    },
+    "nativeMathStats": {
+      "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+      "memoryBytes": 9175040,
+      "memoryIdentity": "model-math-1",
+      "arenaBytes": 8108032,
+      "calls": 11214,
+      "kernelCalls": 25638,
+      "snapshotCopyBytes": 8770622976,
+      "inputCopyBytes": 8770622976,
+      "outputCopyBytes": 8493848064,
+      "primitiveCalls": {
+        "cos": 246528,
+        "exp": 61440,
+        "pow": 246528,
+        "sin": 246528,
+        "sqrt": 131310,
+        "tanh": 32317440
+      },
+      "workspaceReused": true,
+      "busy": false,
+      "disposed": false,
+      "limits": {
+        "maxRows": 128,
+        "width": 5120,
+        "headWidth": 128,
+        "heads": 40,
+        "maxLinearWidth": 13824,
+        "maxElements": 1769472,
+        "chunkElements": 81920,
+        "epsilon": 1e-06
+      },
+      "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+      "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+      "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+    },
+    "sharedSessionCreations": 2,
+    "sessionInterpretation": "two live ORT sessions reused across HIGH and LOW after reload, not one session per block or timestep",
+    "copyScope": "cumulative JS snapshots/F32 transfers and runtime input spans; not simultaneous physical peak or measured ORT internal upload traffic",
+    "notObserved": [
+      "unsampled process-memory peaks",
+      "internal ORT/WASM allocator live suballocations and copies",
+      "native Worker separated from Chromium renderer",
+      "originalmxfp8 GPU compute precision"
+    ]
+  },
+  "notAccepted": [
+    "full target81 all-context block0 all queries",
+    "full target81 all40 blocks and head",
+    "full target81 six-update generation/save",
+    "standalone direct public LOW predict at independent API boundary",
+    "original media/prompt/noise/workflow replay",
+    "all newL512 sampler intermediate arrays independently compared"
+  ],
+  "packaging": {
+    "newInferenceExecuted": false,
+    "rawTensorValuesPublished": false,
+    "modelPayloadPublished": false,
+    "privateFilesUntouched": true
+  }
+}

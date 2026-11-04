@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "scope": "Actual saved Text L512 metadata support and ordinary/protected native ingress only; no model arithmetic",
+  "fixedDiffusionDistributionSha": "b6e166478a8e072c9ffd3ce562bfdb0c89634920",
+  "helper": {
+    "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/management-connection/verify-normal-p4.mjs",
+    "bytes": 13091,
+    "sha256": "3cc59c08565b099c4f3b9e856201ac86680c7a807a20cc2dbda684a7550e9b18",
+    "gitBlob": "45bb9957b82d5209d9d8d4b8066bcc6098195968",
+    "checkoutSha": "eba0533fb62ff6caa9d0785f8079f783f23f825c",
+    "scriptSourceSha": "eba0533fb62ff6caa9d0785f8079f783f23f825c",
+    "uncommittedAtExecution": false
+  },
+  "acquisition": {
+    "path": "/workspace/work/inference/p0-p2-20261031/worktree/development/inference/management-adoption-20261105/p4/acquisition.json",
+    "bytes": 32260,
+    "sha256": "cf1c5ad86c0acc2c1fca95cac98b6be25531e44c4616fd9647483a1e460237c5",
+    "checkedFiles": 71,
+    "checkedBytes": 13168995,
+    "fixedGitObjectsVerified": true
+  },
+  "codec": {
+    "path": "/workspace/work/inference/p0-p2-20261031/worktree/docs/shared/inference/tensor.mjs",
+    "sourceSha": "20f640a6e071b6c060a212e89b28f0c8965923f7",
+    "bytes": 10894,
+    "sha256": "7a15d721b1bab60cdade8723fd1c4d543a142d236cf2e59b63f1ba33ba14ed78"
+  },
+  "producerExecutionSourceSha": "78954ee92d1b76c6652f50df1668159a55db6dc9",
+  "approvedManifestSha256": "420ebccc3bd6bb2124324512b60bf7f6b9dc49f1f57bdcff6ee29f561eb72405",
+  "input": {
+    "path": "/workspace/work/inference/management-followup-20261105/fixed-input/conditioning-from-management.wktensor",
+    "bytes": 8390098,
+    "wholeSha256": "18ed985965e4dd90e5db3fe85b3ea55e0839d073008749ab99c9cc9d6927c00a",
+    "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+    "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+    "normalization": "umt5-final-rmsnorm-f32-v1",
+    "dataSha256": "ae0bfeae43676afd976a0883b34d9a8e04f4daa8856bb567e618093b3d71bca0",
+    "maskSha256": "6caf38d537984e261527b8caef5f990fb91415a1db917198821a79ed28997973",
+    "shape": [
+      1,
+      512,
+      4096
+    ],
+    "elements": 2097152,
+    "activeMaskValues": 512
+  },
+  "descriptor": {
+    "operation": "postSelfAttention",
+    "model": {
+      "side": "LOW",
+      "modelSha256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3"
+    },
+    "blockIndex": 0,
+    "contextLatents": [],
+    "inputs": {
+      "residual": {
+        "dtype": "float32",
+        "shape": [
+          2,
+          5120
+        ],
+        "layout": "LC",
+        "meaning": "bernini-block0-post-self-attention-hidden:v1",
+        "normalization": "none"
+      },
+      "timeAct1": {
+        "dtype": "float32",
+        "shape": [
+          5120
+        ],
+        "layout": "C",
+        "meaning": "bernini-time-embedding-silu:v1",
+        "normalization": "none"
+      },
+      "conditioning": {
+        "dtype": "float32",
+        "shape": [
+          1,
+          512,
+          4096
+        ],
+        "layout": "BLC",
+        "meaning": "text_hidden_states",
+        "normalization": "umt5-final-rmsnorm-f32-v1",
+        "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+        "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458"
+      }
+    }
+  },
+  "lowSupport": {
+    "schemaVersion": "diffusion-execution-support/0.1",
+    "operation": "postSelfAttention",
+    "supported": true,
+    "reasons": [],
+    "modelInference": false,
+    "generationReady": false,
+    "validation": "metadata-only"
+  },
+  "highSupport": {
+    "schemaVersion": "diffusion-execution-support/0.1",
+    "operation": "postSelfAttention",
+    "supported": true,
+    "reasons": [],
+    "modelInference": false,
+    "generationReady": false,
+    "validation": "metadata-only"
+  },
+  "negativeChecks": {
+    "wrongNormalization": {
+      "schemaVersion": "diffusion-execution-support/0.1",
+      "operation": "postSelfAttention",
+      "supported": false,
+      "reasons": [
+        {
+          "code": "UNSUPPORTED_NORMALIZATION",
+          "message": "conditioning requires normalization umt5-final-rmsnorm-f32-v1",
+          "requiredExtension": "normalization-adapter"
+        }
+      ],
+      "modelInference": false,
+      "generationReady": false,
+      "validation": "metadata-only"
+    },
+    "missingTokenizer": {
+      "schemaVersion": "diffusion-execution-support/0.1",
+      "operation": "postSelfAttention",
+      "supported": false,
+      "reasons": [
+        {
+          "code": "TOKENIZER_IDENTITY_MISMATCH",
+          "message": "conditioning requires the known Text tokenizer identity; missing provenance is rejected",
+          "requiredExtension": "tokenizer-binding"
+        }
+      ],
+      "modelInference": false,
+      "generationReady": false,
+      "validation": "metadata-only"
+    }
+  },
+  "capabilityContract": {
+    "canonicalConditioning": {
+      "dtype": "float32",
+      "shape": [
+        1,
+        null,
+        4096
+      ],
+      "layout": "BLC",
+      "meaning": "text_hidden_states",
+      "normalization": "umt5-final-rmsnorm-f32-v1",
+      "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+      "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458"
+    },
+    "normalizationAliases": [
+      "encoder-final-rmsnorm"
+    ]
+  },
+  "checks": {
+    "all2097152DataWordsRetained": true,
+    "all512MaskBytesRetained": true,
+    "normalNativeAndProtectedSnapshotsOwnIndependentBuffers": true,
+    "modelTokenizerFinalMarkerRetained": true,
+    "decodedInputUnchanged": true,
+    "savedInputUnchanged": true,
+    "normalRequestNeedsNoReferenceGateReceiptOrFixedPrompt": true
+  },
+  "verificationFlags": {
+    "producerAuthenticated": false,
+    "realExecutionVerified": false,
+    "jointlyAccepted": false
+  },
+  "metadataSupportOnly": true,
+  "neuralRuns": 0,
+  "modelsLoaded": 0,
+  "projectionExecuted": false,
+  "crossAttentionExecuted": false,
+  "ffnExecuted": false,
+  "exports": 0,
+  "numericalAcceptance": false,
+  "aggregateResourceAcceptance": false,
+  "independentOwnerAcknowledgement": false,
+  "elapsedMs": 7155.003994000001,
+  "nodeRusagePeakRssBytes": 602480640
+}

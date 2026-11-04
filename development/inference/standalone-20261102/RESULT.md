@@ -1,8 +1,10 @@
 # Text / VAE 単体検証結果
 
-TextとVAEを個別に判定する。TextはT1入力検査とT3終了・保存が完了し、T2は9case中8件が数値合格、全512有効ID一件が固定gate不合格のため単体完成には至っていない。VAEの81×480×832 targetは実WASMのencode・独立raw decode・保存読戻し・取消復帰まで合格した。監視接続の喪失後も同じF80 processが完了し、全1,996,800 mean値・保存・native末尾処理・VAE側資源終了を受入済み。848×848の独立参照と実WASM bothも合格し、本計画のVAE必須選択ケースの受入は完了した。[中断状況と再開条件](STATUS.md) を参照する。
+2026-11-05 JST追補：旧全512有効IDの数値FAILは修正manifest420eで解消済み。元gateと入力域を維持した全値比較・実行source・管理への採用設定は[現在の結果](../management-adoption-20261105/RESULT.md)へ引き継ぐ。以下の旧source結果とreceiptは履歴として保持する。
 
-| モジュール | 詳細結果 | 現在の判定 |
+この文書の旧sourceではTextとVAEを個別に判定した。TextはT1入力検査とT3終了・保存が完了し、T2は9case中8件が数値合格、全512有効ID一件が固定gate不合格だった。VAEの81×480×832 targetは実WASMのencode・独立raw decode・保存読戻し・取消復帰まで合格した。監視接続の喪失後も同じF80 processが完了し、全1,996,800 mean値・保存・native末尾処理・VAE側資源終了を受入済み。848×848の独立参照と実WASM bothも合格し、本計画のVAE必須選択ケースの受入は完了した。[中断状況と再開条件](STATUS.md) を参照する。
+
+| モジュール | 詳細結果 | この旧sourceでの判定 |
 | --- | --- | --- |
 | Text T1–T3 | [TEXT-RESULT.md](TEXT-RESULT.md) | T1/T3完了、T2未完了。全512有効IDのmaxAbs0.0016480088233947754が事前gate0.001を超過 |
 | VAE V1–V4 | [VAE-RESULT.md](VAE-RESULT.md) | target81・source F1/F4/F5・参照16×16/16×848/848×16は合格。必須選択ケースを受入済み。target81・source F1/F4/F5/F80・参照寸法境界、取消復帰・codec・VAE側終了を確認。全domainの網羅や実媒体/生成経路は別scope |

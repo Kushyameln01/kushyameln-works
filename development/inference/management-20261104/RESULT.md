@@ -1,5 +1,7 @@
 # Text／VAEの単体修正と管理部分接続
 
+2026-11-05 JST追補：修正manifestの選択確認・現codecの提供と、最新P4で解消したmarker差分は[管理反映の結果](../management-adoption-20261105/RESULT.md)へ引き継ぐ。本書のNN実行source／数値／資源は変更しない。後述の48ff strict marker不一致はその固定sourceでの履歴である。
+
 今回の単体修正と管理APIによる部分接続は合格した。Textの全512有効ID不一致を解消し、長文plainと管理経由plain／IDも独立参照へ全値比較した。VAEは既存単体証拠を再利用し、Rectの新しい管理encode／decode／保存を受け入れた。全体運用の受入とは分ける。
 
 - 実管理source：`e1661e561dfb1a4f20544ff48bc375175b5981d1`。

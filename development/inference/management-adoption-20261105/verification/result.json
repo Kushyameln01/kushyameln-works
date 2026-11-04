@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "sourceSha": "eba0533fb62ff6caa9d0785f8079f783f23f825c",
+  "scope": "Developer verification and control/storage; not new model inference or whole-repository test acceptance",
+  "command": "KW_ADOPTION_TEST_BUNDLE=<actual-existing-bundle> KW_ADOPTION_TEST_SOURCE=<actual-original-model> node --test tools/inference/management-connection/verify-adoption.test.mjs tools/inference/management-connection/verify-normal-p4.test.mjs tools/inference/management-connection/test-bridge.mjs",
+  "exitCode": 0,
+  "tests": 21,
+  "pass": 21,
+  "fail": 0,
+  "skip": 0,
+  "sourceProof": [
+    {
+      "path": "tools/inference/management-connection/source.mjs",
+      "bytes": 4138,
+      "sha256": "d428dd123b879311625379672b80c92d1de1f82a4c78878fe6ff53285939d15d",
+      "fixedGitBytesEqual": true
+    },
+    {
+      "path": "tools/inference/management-connection/verify-adoption.mjs",
+      "bytes": 20396,
+      "sha256": "39febfc709fd3a3bd4a64fb0d98f0af145a133cd9fb81050f048ebf6d40b0c08",
+      "fixedGitBytesEqual": true
+    },
+    {
+      "path": "tools/inference/management-connection/verify-adoption.test.mjs",
+      "bytes": 5683,
+      "sha256": "dd1d9905a55f6c294823434114064e138d7e8f6bce21f1958ac046a754ab258c",
+      "fixedGitBytesEqual": true
+    },
+    {
+      "path": "tools/inference/management-connection/verify-normal-p4.mjs",
+      "bytes": 13091,
+      "sha256": "3cc59c08565b099c4f3b9e856201ac86680c7a807a20cc2dbda684a7550e9b18",
+      "fixedGitBytesEqual": true
+    },
+    {
+      "path": "tools/inference/management-connection/verify-normal-p4.test.mjs",
+      "bytes": 3523,
+      "sha256": "841917820506cee1469bdb0ecf185e801b6d3d0e15ac8fda0d727eded7de65c7",
+      "fixedGitBytesEqual": true
+    }
+  ],
+  "review": {
+    "remainingCritical": 0,
+    "remainingImportant": 0,
+    "correctedSourceImportGap": "Required exact management roots/closure derived from fixed Git before import, with negative regression",
+    "correctedProvenance": "Default normalized mean pinned; caller override described separately",
+    "testEnvironment": "Permitted network execution context used for local Node child-process policy; no model acquisition or NN"
+  },
+  "normalApiChanged": false,
+  "coreNumericalCodeChanged": false,
+  "reusedNativeFrameMetadataControls": true,
+  "newFullModelInference": 0,
+  "exports": 0
+}
