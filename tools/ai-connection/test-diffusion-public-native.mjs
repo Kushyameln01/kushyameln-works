@@ -13,13 +13,13 @@ test('the adoption exposes the complete real owner namespace including explicit 
 });
 test('the latest source proof covers every owner build source and relative runtime dependency',async()=>{
  const proof=await n.verifyDiffusionPublicSources(),adoption=n.inspectDiffusionPublicAdoption();
- assert.equal(proof.sourceRef.commit,'b6e166478a8e072c9ffd3ce562bfdb0c89634920');
+ assert.equal(proof.sourceRef.commit,'296e4fe14dff26689f5075e3103cf3c4a54e3485');
  assert.equal(proof.sourceRef.sha256,'39a6c77c9d0366072f03f53b2fdaa185802388fcd54232db0ee34c56a2b6c4b7');
- assert.equal(proof.sourceDigest,'e5ba40ce01bd04e4a432846afb737a9d8c37c56450df68af51460d9140c3e4c6');
+ assert.equal(proof.sourceDigest,'6f8203f8f0a6dbb906dc212abcf1ce9d9fa6ae46d4cd8f399ae787aed7bf4de8');
  const build=await import(new URL('docs/shared/diffusion-models/api/build-info.mjs',n.DIFFUSION_PUBLIC_ROOT_URL));
  const files=new Map(proof.files.map(file=>[file.path,file]));
- assert.equal(Object.keys(build.BUILD_SOURCES).length,153);assert.equal(adoption.ownerBuildSourceCount,153);
- assert.equal(proof.files.filter(file=>file.ownerBuildInventory).length,153);
+ assert.equal(Object.keys(build.BUILD_SOURCES).length,154);assert.equal(adoption.ownerBuildSourceCount,154);
+ assert.equal(proof.files.filter(file=>file.ownerBuildInventory).length,154);
  assert.equal(createHash('sha256').update(JSON.stringify(build.BUILD_SOURCES)).digest('hex'),proof.sourceDigest);
  assert.equal(build.BUILD_ID,proof.buildId);assert.equal(proof.buildId,n.BUILD_ID);
  for(const [path,hash] of Object.entries(build.BUILD_SOURCES)){

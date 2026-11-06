@@ -13,10 +13,10 @@
 <header><h1>DiffusionModels</h1><span>Kushyameln Works</span></header>
 <nav class="site-nav" aria-label="サイト内ナビゲーション"><a href="../github/">GitHub・ツール</a><a href="../text-encoder/">Text Encoder</a><a href="../vae/">VAE</a></nav>
 <main>
-<p>Hike/WASMの数値処理を、同じページのJavaScriptや明示したMessagePortから呼び出すモジュールです。モデル全体の推論・画像生成は提供していません（<code>modelInference: false</code>）。</p>
+<p><a href="../ai-connection/">AI実行管理を開く</a>と、モデルとconditioningのローカルFileを選択し、実行・取消・raw sampleの取得・保存を操作できます。既定は32×16・1frameの限定入力です。原寸81frameと全体生成の受入は未完了です。</p>
 <section aria-labelledby="operations"><h2 id="operations">利用できる処理</h2>
 <ul class="catalog-list">
-<li><strong>LoRA重みの入力</strong><p>HIGH/LOWごとにローカルFileを登録し、保存dtypeの重みを必要な範囲だけ読み出します。別担当SDKのsource接続に対応し、モデルへの適用は未実装です。</p><p><a href="../shared/diffusion-models/lora/API.md">LoRA接続仕様</a></p></li>
+<li><strong>LoRA重みの入力</strong><p>HIGH/LOWごとのFile読出しに加え、既存weight-portで真正baseの供給と完成F32重みの受取を扱います。この管理操作欄で実LoRAを適用する全体運用は未検証です。</p><p><a href="../shared/diffusion-models/API.md">公開APIとweight-port契約</a></p></li>
 <li><strong>モデル情報とtensorの検査</strong><p>safetensorsのヘッダーと、公開Text Encoder・VAEのshape、意味、モデル識別を確認します。</p></li>
 <li><strong>Euler・固定scheduler・noise/flow計算</strong><p>固定プロファイルの6 stepとHIGH/LOWの区切り、渡された配列の数値更新をHikeで計算します。</p></li>
 <li><strong>Wan2.1 raw meanの正規化と復元</strong><p>公開VAEの固定profile <code>[1,16,2,2,2]</code> を明示的に変換します。生成sampleをposterior meanへ読み替えません。</p></li>

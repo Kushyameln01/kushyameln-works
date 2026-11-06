@@ -12,7 +12,6 @@ const text=value=>typeof value==='string'&&value.length>0;
 const fail=(code,message,details)=>Object.assign(Error(message),{code,...(details?{details}:{})});
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const deferred=()=>{let resolve;const promise=new Promise(r=>resolve=r);return {promise,resolve};};
-const source={repository:'Kushyameln01/kushyameln-works',commit:'b6e166478a8e072c9ffd3ce562bfdb0c89634920',path:'docs/shared/diffusion-models/api/index.mjs'};
 const holderSource={repository:'Kushyameln01/kushyameln-works',commit:'59ae817d0e5aa0d2b5031f88e182ac36d16a6a9f',path:'docs/shared/ai-connection/adapters/artifacts.mjs'};
 const tensorSchema='works:diffusion-public-native-tensor',semanticSchema='works:diffusion-public-native-value';
 const operations=['load','modelStatus','unload','predict','sample','saveTensor','readTensor'];
@@ -41,6 +40,7 @@ const acceptance={generationReady:false,originalWorkflowAccepted:false,acceptedP
  * public createDiffusionModels factory, including its own dedicated Worker. */
 export async function createDiffusionPublicManagement({api,apiSessionId,managerSessionId='diffusion-manager:'+crypto.randomUUID(),environment}={}){
  const native=await import('./native.mjs');
+ const source=structuredClone(native.ADOPTED_DIFFUSION_PUBLIC_SOURCE);
  if(!text(managerSessionId))throw TypeError('Explicit management session required');
  const injected=api!==undefined;
  const client=api??native.createDiffusionModels({sessionId:apiSessionId??crypto.randomUUID()});

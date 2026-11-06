@@ -7,7 +7,7 @@ test('adopted mean service creates an independent model-free API and uses owner 
  const a=await createDiffusionMeanManagement(),b=await createDiffusionMeanManagement();
  try{
   assert.notEqual(a.inspect().ownerObservation.nativeSessionId,b.inspect().ownerObservation.nativeSessionId);
-  assert.equal(a.inspect().sourceRef.commit,'b6e166478a8e072c9ffd3ce562bfdb0c89634920');
+  assert.equal(a.inspect().sourceRef.commit,'296e4fe14dff26689f5075e3103cf3c4a54e3485');
   assert.equal(a.inspect().modelWeightsLoaded,false);
   assert.equal((await a.query({operation:'normalizeRawMean',input:{tensor:tensor()}})).dispatchSupported,true);
   const large=tensor();large.shape=[1,16,21,60,104];

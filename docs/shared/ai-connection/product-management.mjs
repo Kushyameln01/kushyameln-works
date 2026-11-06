@@ -1,7 +1,7 @@
 /** Form-facing orchestration. Native owners retain all tensor admission,
  * normalization, model math, scheduler, LoRA mapping and rollback authority. */
 import {createOperationalManagement} from './operational-management.mjs';
-import {deriveWorkflowShapes,BERNINI_WORKFLOW_RULE_ID} from './workflow-shapes.mjs';
+import {deriveWorkflowShapes} from './workflow-shapes.mjs';
 
 const copy=structuredClone;
 const fail=(code,message,details)=>Object.assign(Error(message),{code,...(details?{details}:{} )});
@@ -105,26 +105,24 @@ export function createProductManagement({manager=createOperationalManagement(),m
  async function runInternal(r,input){
   requireConfigured();requireLoraRestored();result=null;resultTensor=null;
   if(typeof input.prompt!=='string'||typeof(input.negativePrompt??'')!=='string')throw fail('PROMPT_REQUIRED','Prompt and negative prompt must be text.');
-  if(input.seed!==undefined&&input.seed!==null&&input.seed!=='')throw fail('SEED_UNSUPPORTED','The adopted model owner has no seed-to-noise generator. Select a zero initial value or a noise file.');
+  if(input.seed!==undefined&&input.seed!==null&&input.seed!=='')throw fail('SEED_UNSUPPORTED','The adopted model owner accepts no seed. Select owner-generated standard-normal noise or a saved noise file.');
+  const mode=input.noise?.mode;if(!['owner','file'].includes(mode))throw fail('NOISE_MODE_UNSUPPORTED','Select owner mode for owner-generated standard-normal noise, or select a saved noise file. The saved zeros mode is unsupported.');
   const native=await owner();check(r);const capabilities=native.describeExecutionCapabilities(),capability=capabilities.operations.sample,schedule=capability.schedule;
+  const defaults=capability.normalInputs?.defaults?.shapeRequest;if(!defaults)throw fail('OWNER_NORMAL_INPUTS_REQUIRED','The Diffusion owner must declare its normal generation shapeRequest defaults.');
   if((input.steps??schedule.steps)!==schedule.steps||(input.guidance??schedule.cfg)!==schedule.cfg)throw fail('SCHEDULE_UNSUPPORTED','The adopted sampler supports only '+schedule.steps+' Euler steps and CFG '+schedule.cfg+'.');
-  const target={batch:1,...input.target};if(['width','height','frames'].some(key=>!Number.isSafeInteger(target[key])||target[key]<1))throw fail('TARGET_REQUIRED','Width, height and frames must be positive integers.');
+  const target={...copy(defaults.target),...input.target};if(['width','height','frames'].some(key=>!Number.isSafeInteger(target[key])||target[key]<1))throw fail('TARGET_REQUIRED','Width, height and frames must be positive integers.');
   progress(r,'owner-support');
   const textCaps=await manager.query({moduleId:'text',operation:'encode',input:{text:input.prompt}});check(r);requireSupport(textCaps.support??textCaps,'Text');
   const negativeCaps=await manager.query({moduleId:'text',operation:'encode',input:{text:input.negativePrompt??''}});check(r);requireSupport(negativeCaps.support??negativeCaps,'Text');
   const vaeCaps=await manager.query({moduleId:'vae'});check(r);
-  // These are declarations from the fixed Wan21 VAE owner (vae-api/vae-stream),
-  // supplied to the shared shape owner. No local compression formula is used.
-  const geometry={...capability.geometry,rgbChannels:3,temporalCompression:4,spatialCompression:[8,8],temporalRule:'first-then-groups-floor',paddingMode:'unsupported'};
-  const normalization=capability.output.latentContract.normalization.id;
-  const shapeRequest={schemaVersion:1,ruleId:capability.workflowRuleId??BERNINI_WORKFLOW_RULE_ID,target,refMaxSize:input.refMaxSize??vaeCaps.domain?.maxSpatial??848,geometry,
-   semantics:{'target-latent':{meaning:'bernini-generated-model-latent:v1',normalization},...Object.fromEntries(['source','reference','context'].map(role=>[role+'-latent',{meaning:capability.contexts.predictMeaning,normalization}]))},
-   media:{sourceVideo:copy(input.media?.source?.supply??absent()),referenceVideo:copy(input.media?.reference?.supply??absent()),slots:[]}};
+  // Clone the fixed owner's complete geometry/semantics/media template, then
+  // submit the user's declarations to the existing shared metadata shape owner.
+  const shapeRequest={...copy(defaults),target,refMaxSize:input.refMaxSize??defaults.refMaxSize,
+   media:{...copy(defaults.media),sourceVideo:copy(input.media?.source?.supply??(input.media?.source?{state:'unknown'}:absent())),referenceVideo:copy(input.media?.reference?.supply??(input.media?.reference?{state:'unknown'}:absent()))}};
   const canonical=deriveWorkflowShapes(shapeRequest),requirements=new Map(canonical.requirements.map(q=>[q.requirementId,q])),latent=requirements.get('target.latent');
   const declaredText=caps=>({...copy(caps.output),shape:copy(caps.inputModes['plain-text'].outputShape),modelSha256:caps.modelSha256,tokenizerSha256:caps.tokenizerSha256,attentionMask:{dtype:'uint8',shape:[caps.inputModes['plain-text'].outputShape[1]]}});
-  const targetDescriptor={requirementId:'target.latent',dtype:geometry.dtype,layout:'NCTHW',shape:copy(latent.shape),meaning:shapeRequest.semantics['target-latent'].meaning,normalization};
   const contextDescriptors=canonical.orderedContexts.entries.map(entry=>({requirementId:entry.contextKey+'.latent',dtype:'float32',layout:'NCTHW',shape:copy(entry.latentShape),meaning:vaeCaps.encode.output.meaning,modelSha256:vaeCaps.model.sha256}));
-  const descriptor={operation:'sample',shapeRequest,inputs:{noise:{dtype:'float32',shape:copy(latent.shape)},positive:declaredText(textCaps),negative:declaredText(negativeCaps),...(contextDescriptors.length?{tensors:[targetDescriptor,...contextDescriptors]}:{})}};
+  const descriptor={operation:'sample',shapeRequest,inputs:{positive:declaredText(textCaps),negative:declaredText(negativeCaps),...(contextDescriptors.length?{tensors:contextDescriptors}:{})}};
   lastSupport=native.checkExecutionSupport(descriptor);requireSupport(lastSupport,'Diffusion');check(r);
   const generated={...copy(capability.output),shape:copy(latent.shape),latentContract:{schemaVersion:1,representation:'generated-sample',space:'raw',vaeModelSha256:vaeCaps.model.sha256,producerModelSha256s:sides.map(side=>capabilities.models[side]),normalization:copy(capability.output.latentContract.normalization)}};
   const decodeSupport=await manager.query({moduleId:'vae',operation:'decode',input:generated});check(r);requireSupport(decodeSupport.support??decodeSupport,'VAE decode');
@@ -136,10 +134,8 @@ export function createProductManagement({manager=createOperationalManagement(),m
    const support=await manager.query({moduleId:'vae',operation:'encode',input:rgb});check(r);requireSupport(support.support??support,'VAE encode');
    rgbInputs.push({entry,requirement,facts});
   }
-  const mode=input.noise?.mode;if(!['zeros','file'].includes(mode))throw fail('NOISE_MODE_UNSUPPORTED','Choose a zero initial value or a noise file.');
   const runId='product:'+ ++serial+':'+crypto.randomUUID(),noiseRef=runId+':noise';let noise;
   if(mode==='file'){if(!(input.noise.file instanceof Blob))throw fail('NOISE_FILE_REQUIRED','Select a native noise tensor file.');progress(r,'read-noise');const record=await manager.importTensor(noiseRef,input.noise.file);check(r);requireSupport(native.checkExecutionSupport({...descriptor,inputs:{...descriptor.inputs,noise:tensorMetadata(record.tensor)}}),'Diffusion noise');noise={$ref:noiseRef,path:'tensor.data'};}
-  else noise=new Float32Array(latent.shape.reduce((a,b)=>a*b,1));
   const steps=[{stepId:'positive',moduleId:'text',operation:'encode',input:{text:input.prompt},outputRef:runId+':positive'},{stepId:'negative',moduleId:'text',operation:'encode',input:{text:input.negativePrompt??''},outputRef:runId+':negative'}];
   for(let index=0;index<rgbInputs.length;index++){
    const {entry,requirement,facts}=rgbInputs[index];progress(r,'prepare-media-'+entry.contextKey);
@@ -147,8 +143,8 @@ export function createProductManagement({manager=createOperationalManagement(),m
    steps.push({stepId:'context-'+index,moduleId:'vae',operation:'encode',input:tensor,outputRef:runId+':context:'+index});
   }
   if(input.loraSelections!==undefined)await applyLoraInternal(r,input.loraSelections);check(r);
-  const tensors=rgbInputs.length?[{...targetDescriptor,data:new Float32Array(latent.shape.reduce((a,b)=>a*b,1))},...rgbInputs.map(({entry},index)=>({$ref:runId+':context:'+index,path:'tensor',requirementId:entry.contextKey+'.latent'}))]:undefined;
-  steps.push({stepId:'sample',moduleId:'diffusion',operation:'sample',input:{shapeRequest,noise,positive:{$ref:runId+':positive',path:'tensor'},negative:{$ref:runId+':negative',path:'tensor'},...(tensors?{tensors}:{})},outputRef:runId+':sample'},
+  const tensors=rgbInputs.length?rgbInputs.map(({entry},index)=>({$ref:runId+':context:'+index,path:'tensor',requirementId:entry.contextKey+'.latent'})):undefined;
+  steps.push({stepId:'sample',moduleId:'diffusion',operation:'sample',input:{shapeRequest,...(mode==='file'?{noise}:{}),positive:{$ref:runId+':positive',path:'tensor'},negative:{$ref:runId+':negative',path:'tensor'},...(tensors?{tensors}:{})},outputRef:runId+':sample'},
    {stepId:'decode',moduleId:'vae',operation:'decode',input:{$ref:runId+':sample',path:'tensor'},outputRef:runId+':decoded'});
   lastSettings={prompt:input.prompt,negativePrompt:input.negativePrompt??'',target,steps:schedule.steps,guidance:schedule.cfg,noise:{mode,fileReselectionRequired:mode==='file'},refMaxSize:shapeRequest.refMaxSize};
   progress(r,'generation');const route=await manager.executeRoute({steps,workflowShapeRequest:shapeRequest,finalRefs:[runId+':decoded']});check(r);

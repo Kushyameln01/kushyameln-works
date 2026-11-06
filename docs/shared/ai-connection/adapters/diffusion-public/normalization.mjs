@@ -22,8 +22,8 @@ function request(operation,input){
 
 export async function createDiffusionMeanManagement({managerSessionId='diffusion-mean-manager:'+crypto.randomUUID()}={}){
  const [interop,latentModule]=await Promise.all([
-  import(new URL('../../native/diffusion-b6e16647/docs/shared/diffusion-models/tensor-interop.mjs',import.meta.url)),
-  import(new URL('../../native/diffusion-b6e16647/docs/shared/diffusion-models/latent-space/latent-space.mjs',import.meta.url))
+  import(new URL('docs/shared/diffusion-models/tensor-interop.mjs',nativeModule.DIFFUSION_PUBLIC_ROOT_URL)),
+  import(new URL('docs/shared/diffusion-models/latent-space/latent-space.mjs',nativeModule.DIFFUSION_PUBLIC_ROOT_URL))
  ]);
  const owner=await createNormalDiffusionOwner({nativeModule,interop,latentModule,sourceRef:nativeModule.ADOPTED_DIFFUSION_PUBLIC_SOURCE});
  const host=createNormalOperationAdapter({owner,managerSessionId});
