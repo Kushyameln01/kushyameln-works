@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Text・VAE管理 | Kushyameln Works</title>
   <meta name="description" content="Text EncoderとVAEの設定、実行、テンソルの保存と再利用。">
-  <link rel="stylesheet" href="/works-style.css">
+  <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="/favicon.svg">
+  <link rel="icon" href="../favicon.svg">
 </head>
 <body>
   <header><h1>Text・VAE管理</h1><span>Kushyameln Works</span></header>
@@ -16,27 +16,36 @@
     <p>モデルと入力を選び、ブラウザ内で実行します。結果はテンソル単体、または元入力を含む管理ZIPとして保存できます。</p>
     <section aria-labelledby="models-heading">
       <h2 id="models-heading">1. モデルを設定</h2>
+      <p>対応するエクスポーターで作った準備済みフォルダが必要です。元の <code>.safetensors</code> だけでは実行できません。manifestやファイルの対応表を編集する必要はありません。</p>
       <div class="models">
         <fieldset>
           <legend>Text Encoder</legend>
-          <p class="small">この候補の採用済みmanifestを使います。</p>
-          <label for="text-assets">準備済み資材（複数選択）</label>
-          <input id="text-assets" type="file" multiple disabled>
+          <label for="text-bundle">Textの準備済みフォルダ</label>
+          <input id="text-bundle" type="file" webkitdirectory multiple disabled>
+          <p class="small">24層のONNX、最終正規化の重み、embedding行の検証用ファイル、tokenizerの計27資材を含むフォルダを選びます。元のUMT5モデルは下で別に選びます。</p>
+          <p id="text-bundle-info" class="small">フォルダ内のmanifestは使わず、このページの採用済み修正版を使います。元graphなどの資材が一致しなければ設定できません。</p>
           <label for="text-source">元のUMT5モデル</label>
           <input id="text-source" type="file" accept=".safetensors" disabled>
           <p class="small">元モデルはファイルとして保持し、必要なembedding行を読みます。</p>
+          <details><summary>資材を個別に選ぶ</summary><label for="text-assets">準備済み資材（複数選択）</label><input id="text-assets" type="file" multiple disabled><p class="small">フォルダ選択に対応しない場合に、同じ準備済み資材一式を選んでください。</p></details>
           <div class="actions"><button id="configure-text" disabled>Textを設定</button></div>
           <p id="text-model-info" class="small">未設定</p>
           <dl id="text-capabilities" class="metadata"></dl>
         </fieldset>
         <fieldset>
           <legend>VAE</legend>
-          <label for="vae-manifest">manifest JSON</label>
-          <input id="vae-manifest" type="file" accept=".json,application/json" disabled>
+          <label for="vae-bundle">VAEの準備済みフォルダ</label>
+          <input id="vae-bundle" type="file" webkitdirectory multiple disabled>
+          <p class="small">エクスポート済みgraph・重みと、対応するmanifest.jsonを含むフォルダを選びます。manifestは自動で読み込みます。</p>
           <div class="actions"><button id="use-host-vae" hidden disabled>用意されたmanifestを使う</button></div>
-          <p id="vae-manifest-info" class="small">manifestを選んでください</p>
-          <label for="vae-assets">準備済み資材（複数選択）</label>
-          <input id="vae-assets" type="file" multiple disabled>
+          <p id="vae-manifest-info" class="small">準備済みフォルダを選んでください</p>
+          <details><summary>manifest・資材を個別に選ぶ</summary>
+            <label for="vae-manifest">準備済みmanifest JSON</label>
+            <input id="vae-manifest" type="file" accept=".json,application/json" disabled>
+            <label for="vae-assets">準備済み資材（複数選択）</label>
+            <input id="vae-assets" type="file" multiple disabled>
+            <p class="small">フォルダ選択に対応しない場合に使います。資材と一緒にmanifest.jsonを選べば、自動で読み込みます。</p>
+          </details>
           <div class="actions"><button id="configure-vae" disabled>VAEを設定</button></div>
           <p id="vae-model-info" class="small">未設定</p>
           <dl id="vae-capabilities" class="metadata"></dl>
@@ -80,6 +89,7 @@
       <dl id="result-summary" class="metadata"><dt>状態</dt><dd>結果はありません</dd></dl>
       <div class="actions"><button id="use-result" disabled>選択したテンソルを入力に使う</button><button id="download-tensor" disabled>WKTを保存</button><button id="save-package" disabled>管理ZIPを保存</button></div>
       <p class="small">管理ZIPには、選択した結果と再利用に必要な元入力が含まれます。</p>
+      <p id="rgb-format-help" class="small">VAE decodeのRGB出力はfloat32・NCTHW形式のraw-decoder-rgbテンソルです。値はクリップされていません。WKT・管理ZIPには元の数値を保って保存します。</p>
       <div class="actions lifecycle"><button id="clear-records" disabled>履歴を消す</button><button id="dispose" disabled>資源を解放</button><button id="reinitialize" disabled>再初期化</button></div>
     </section>
   </main>

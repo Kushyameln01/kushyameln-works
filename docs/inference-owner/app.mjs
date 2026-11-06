@@ -1,8 +1,8 @@
-import {createOperationalInferenceOwner} from '/shared/inference/operational-owner.mjs';
-import * as textVae from '/manager/docs/shared/ai-connection/adapters/text-vae.mjs';
-import * as artifacts from '/manager/docs/shared/ai-connection/adapters/artifacts.mjs';
-import * as queue from '/manager/docs/shared/ai-connection/queue.mjs';
-import * as workspace from '/manager/docs/shared/ai-connection/management-workspace.mjs';
+import {createOperationalInferenceOwner} from '../shared/inference/operational-owner.mjs';
+import * as textVae from '../shared/ai-connection/adapters/text-vae.mjs';
+import * as artifacts from '../shared/ai-connection/adapters/artifacts.mjs';
+import * as queue from '../shared/ai-connection/queue.mjs';
+import * as workspace from '../shared/ai-connection/management-workspace.mjs';
 
 const manager={...textVae,...artifacts,...queue,...workspace};
 const $=id=>document.getElementById(id);
@@ -10,14 +10,18 @@ const controls=[...document.querySelectorAll('input,select,textarea,button')];
 const modelCaps={text_encoder:null,vae:null};
 const configured={text_encoder:false,vae:false};
 const urls=new Set();
-let owner=null,config=null,textManifest=null,vaeManifest=null,action=null;
+let owner=null,config=null,textManifest=null,vaeManifest=null,vaeManifestSource=null,action=null;
 let disposed=true,cancelling=false,generation=0,runPromise=null,runOutcome=null,ready;
 
 function message(value,tone='normal'){
   $('status').textContent=value;
   $('status').dataset.tone=tone;
 }
-function failed(error){message(`${error?.code?`${error.code}: `:''}${error?.message??error}`,'error');}
+function failed(error){
+  const detail=`${error?.code?`${error.code}: `:''}${error?.message??error}`;
+  const assetError=action==='configure'&&/^(MISSING_ASSET|ASSET_SIZE_MISMATCH|AMBIGUOUS_ASSET|TEXT_RECIPE_REQUIRED|TEXT_BINDING_MISMATCH)$/.test(error?.code??'');
+  message(assetError?`準備済み資材を設定できません。採用manifestに対応するフォルダと元モデルを確認してください。\n${detail}`:detail,'error');
+}
 function isCancelled(error){return error?.name==='AbortError'||/CANCEL|ABORT/i.test(error?.code??'')||/cancelled|canceled|aborted/i.test(error?.message??'');}
 function busy(){return Boolean(action||cancelling||owner?.busy);}
 function live(){return Boolean(owner&&!disposed);}
@@ -84,8 +88,8 @@ function updateControls(){
   for(const control of controls)control.disabled=locked||!active;
   $('cancel').disabled=action!=='run'||cancelling||!owner?.busy;
   $('reinitialize').disabled=locked||!disposed;
-  $('configure-text').disabled=locked||!active||!textManifest;
-  $('configure-vae').disabled=locked||!active||!vaeManifest;
+  $('configure-text').disabled=locked||!active||!textManifest||!preparedFiles('text').length;
+  $('configure-vae').disabled=locked||!active||!vaeManifest||!preparedFiles('vae').length;
   $('use-host-vae').disabled=locked||!active||!config?.vaeManifestUrl;
   $('operation').disabled=locked||!active||text;
   const decodeOption=$('operation').querySelector('[value="decode"]');decodeOption.disabled=text;
@@ -141,7 +145,7 @@ async function initialize(){
   if(action)return;
   action='initialize';message('起動しています');updateControls();
   try{
-    config??=await fetchJSON('/candidate-config.json');
+    config??=await fetchJSON('./candidate-config.json');
     textManifest??=await fetchJSON(config.textManifestUrl);
     const currentGeneration=++generation;
     owner=await createOperationalInferenceOwner({manager,sourceRef:config.sourceRef,onState:state=>onState(state,currentGeneration)});
@@ -161,23 +165,53 @@ function invalidateModel(module){
   $(module==='text_encoder'?'text-model-info':'vae-model-info').textContent='資材を変更しました。設定し直してください';
   updateControls();
 }
-for(const id of ['text-assets','text-source'])$(id).addEventListener('change',()=>invalidateModel('text_encoder'));
-$('vae-assets').addEventListener('change',()=>invalidateModel('vae'));
+function preparedFiles(module){return [...($(module+'-bundle').files.length?$(module+'-bundle').files:$(module+'-assets').files)];}
+async function readVaeBundleManifest(files,{required=false}={}){
+  const manifests=files.filter(file=>file.name==='manifest.json');
+  if(manifests.length){vaeManifest=null;vaeManifestSource=null;$('vae-manifest-info').textContent='manifest.jsonを読み込んでいます';}
+  if(manifests.length>1)throw Error('manifest.jsonが複数あります。使うVAE一式だけが入った準備済みフォルダを選んでください');
+  if(!manifests.length){
+    if(required)throw Error('manifest.jsonがありません。エクスポート済みgraph・重みとmanifest.jsonが入った準備済みフォルダを選んでください');
+    return false;
+  }
+  vaeManifest=JSON.parse(await manifests[0].text());vaeManifestSource='bundle';
+  $('vae-manifest').value='';$('vae-manifest-info').textContent=`${manifests[0].webkitRelativePath||manifests[0].name}を自動読込 · ${files.length}ファイル選択`;
+  return true;
+}
+$('text-bundle').addEventListener('change',()=>{
+  $('text-assets').value='';invalidateModel('text_encoder');
+  message('Textの準備済みフォルダを選びました。元のUMT5モデルを選んで設定してください。フォルダ内の旧manifestは使用しません');
+});
+$('text-assets').addEventListener('change',()=>{$('text-bundle').value='';invalidateModel('text_encoder');});
+$('text-source').addEventListener('change',()=>invalidateModel('text_encoder'));
+$('vae-bundle').addEventListener('change',()=>perform('manifest',async()=>{
+  $('vae-assets').value='';$('vae-manifest').value='';vaeManifest=null;vaeManifestSource=null;invalidateModel('vae');
+  $('vae-manifest-info').textContent='準備済みフォルダを選んでください';
+  const files=preparedFiles('vae');if(!files.length)return;
+  await readVaeBundleManifest(files,{required:true});message('VAEのmanifestを読み込みました。「VAEを設定」を押してください');
+}));
+$('vae-assets').addEventListener('change',()=>perform('manifest',async()=>{
+  $('vae-bundle').value='';invalidateModel('vae');
+  if(vaeManifestSource==='bundle'){vaeManifest=null;vaeManifestSource=null;}
+  const files=preparedFiles('vae');
+  if(await readVaeBundleManifest(files))message('VAEのmanifestを読み込みました。「VAEを設定」を押してください');
+  else if(!vaeManifest)$('vae-manifest-info').textContent='対応する準備済みmanifest JSONを選んでください';
+}));
 $('vae-manifest').addEventListener('change',()=>perform('manifest',async()=>{
-  vaeManifest=null;invalidateModel('vae');
+  vaeManifest=null;vaeManifestSource=null;invalidateModel('vae');
   const file=$('vae-manifest').files[0];if(!file)return;
-  vaeManifest=JSON.parse(await file.text());$('vae-manifest-info').textContent=file.name;
+  vaeManifest=JSON.parse(await file.text());vaeManifestSource='file';$('vae-manifest-info').textContent=file.name;
   message('VAE資材を選んで設定してください');
 }));
 $('use-host-vae').addEventListener('click',()=>perform('manifest',async()=>{
-  vaeManifest=null;invalidateModel('vae');
-  vaeManifest=await fetchJSON(config.vaeManifestUrl);$('vae-manifest').value='';
+  vaeManifest=null;vaeManifestSource=null;invalidateModel('vae');
+  vaeManifest=await fetchJSON(config.vaeManifestUrl);vaeManifestSource='host';$('vae-manifest').value='';
   $('vae-manifest-info').textContent='用意されたmanifestを選択中';message('VAE資材を選んで設定してください');
 }));
 $('configure-text').addEventListener('click',()=>perform('configure',async()=>{
   invalidateModel('text_encoder');
   message('Textを設定しています');
-  const files=[...$('text-assets').files,...$('text-source').files];
+  const files=[...preparedFiles('text'),...$('text-source').files];
   await owner.configureText({manifest:textManifest,files});
   const caps=await owner.capabilities('text_encoder');modelCaps.text_encoder=caps;configured.text_encoder=Boolean(caps.configured);
   renderCapabilities('text_encoder',caps);$('text-model-info').textContent=`選択資材 ${files.length}件`;
@@ -186,7 +220,7 @@ $('configure-text').addEventListener('click',()=>perform('configure',async()=>{
 $('configure-vae').addEventListener('click',()=>perform('configure',async()=>{
   invalidateModel('vae');
   message('VAEを設定しています');
-  const files=[...$('vae-assets').files];await owner.configureVae({manifest:vaeManifest,files});
+  const files=preparedFiles('vae');await owner.configureVae({manifest:vaeManifest,files});
   const caps=await owner.capabilities('vae');modelCaps.vae=caps;configured.vae=Boolean(caps.configured);
   renderCapabilities('vae',caps);$('vae-model-info').textContent=`選択資材 ${files.length}件`;
   message('VAEを設定しました。入力を選んで実行してください');
@@ -272,10 +306,10 @@ $('clear-records').addEventListener('click',()=>perform('clear',async()=>{
   await owner.clearRecords();revokeDownloads();refreshRecords();message('履歴を消しました');
 }));
 $('dispose').addEventListener('click',()=>perform('dispose',async()=>{
-  await owner.dispose();disposed=true;generation++;revokeDownloads();vaeManifest=null;
+  await owner.dispose();disposed=true;generation++;revokeDownloads();vaeManifest=null;vaeManifestSource=null;
   for(const module of ['text_encoder','vae']){configured[module]=false;modelCaps[module]=null;renderCapabilities(module,null);}
-  for(const id of ['text-assets','text-source','vae-manifest','vae-assets','tensor-file','package-file'])$(id).value='';
-  $('text-model-info').textContent='未設定';$('vae-model-info').textContent='未設定';$('vae-manifest-info').textContent='manifestを選んでください';
+  for(const id of ['text-bundle','text-assets','text-source','vae-bundle','vae-manifest','vae-assets','tensor-file','package-file'])$(id).value='';
+  $('text-model-info').textContent='未設定';$('vae-model-info').textContent='未設定';$('vae-manifest-info').textContent='準備済みフォルダを選んでください';
   refreshRecords();message('資源を解放しました。再初期化すると続けられます');
 }));
 $('reinitialize').addEventListener('click',()=>{ready=initialize();ready.catch(()=>{});});
