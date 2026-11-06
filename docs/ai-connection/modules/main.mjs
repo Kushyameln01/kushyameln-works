@@ -66,7 +66,7 @@ function render(){
  $('result-tensor-file').disabled=!mediaTools||busy;
  renderVideo(busy);
  $('save-workspace').disabled=!controller||busy||disposed;$('workspace-file').disabled=!createController||busy;
- for(const field of document.querySelectorAll('[aria-labelledby="models-heading"] input,[aria-labelledby="models-heading"] select,[aria-labelledby="lora-heading"] input,[aria-labelledby="generation-heading"] input:not(#seed),[aria-labelledby="generation-heading"] select,[aria-labelledby="generation-heading"] textarea,.media-grid input[type=file]'))field.disabled=busy;
+ for(const field of document.querySelectorAll('[aria-labelledby="models-heading"] input,[aria-labelledby="models-heading"] select,[aria-labelledby="lora-heading"] input,[aria-labelledby="generation-heading"] input:not(#seed),[aria-labelledby="generation-heading"] select,[aria-labelledby="generation-heading"] textarea,.media-grid input[type=file]:not([id$="-tensor-file"])'))field.disabled=busy;
  $('text-manifest').disabled=busy||$('text-manifest-mode').value!=='selected';$('noise-file').disabled=busy||$('noise-mode').value!=='file';
  $('diffusion-threads').querySelector('option[value="4"]').disabled=!(globalThis.crossOriginIsolated===true&&typeof SharedArrayBuffer==='function');
 }
@@ -158,4 +158,6 @@ async function initialize(){
  $('environment').textContent=`COI: ${globalThis.crossOriginIsolated===true?'有効':'無効'} · SharedArrayBuffer: ${typeof SharedArrayBuffer==='function'?'利用可':'利用不可'}`;
  try{const [product,media]=await Promise.all([import('../../shared/ai-connection/product-management.mjs'),import('../../shared/ai-connection/product-media.mjs')]);createController=product.createProductManagement;mediaTools=media;connect();status('モデルと入力を選択してください。');render();}catch(error){showError(error);}
 }
+// Disable actions until the asynchronous controller/media imports are ready.
+render();
 initialize();

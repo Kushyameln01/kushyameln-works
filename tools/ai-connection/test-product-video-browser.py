@@ -60,7 +60,16 @@ def main():
  assert(frames.every((f,i)=>f.timestamp===[2,2.1,2.35][i]&&f.data[0]===i*80),'Exporter mutated source frames');
  return {formats:done,frames:3,sourceTiming:true,explicitFps:true,cancelThenRetry:true,sourceUnchanged:true};
 }''', base_url + 'shared/ai-connection/product-media.mjs')
+                pending = []
+                page.route('**/shared/ai-connection/product-management.mjs', lambda route: pending.append(route))
                 page.goto(base_url + 'ai-connection/modules/')
+                assert page.locator('#result-tensor-file').is_disabled(), 'Tensor input enabled before controller initialization'
+                for slot in ('source', 'reference'):
+                    assert page.locator(f'#{slot}-tensor-file').is_disabled(), 'Input tensor enabled before initialization'
+                assert page.locator('#source-load').is_disabled(), 'Media action enabled before initialization'
+                assert pending, 'Controller import was not delayed'
+                pending[0].continue_()
+                page.unroute('**/shared/ai-connection/product-management.mjs')
                 page.wait_for_function("!document.querySelector('#source-load').disabled")
                 page.locator('#result-tensor-file').set_input_files({
                     'name': 'test.wktensor', 'mimeType': 'application/octet-stream',

@@ -41,13 +41,13 @@
       <div class="columns media-grid">
         <fieldset><legend>Source · 変換元</legend>
           <label for="source-file">画像・動画・フレームZIP</label><input id="source-file" type="file" accept="image/*,video/*,.zip,application/zip" multiple>
-          <div class="actions"><button id="source-load" type="button">入力を読込</button><button id="source-clear" type="button" disabled>入力を外す</button></div><p id="source-status" class="muted" role="status">未選択</p><div id="source-preview" class="media-preview empty-preview">入力のpreview</div>
-          <div class="actions media-actions"><button id="source-export" type="button" disabled>入力をPNGフレームで保存</button><button id="source-tensor-save" type="button" disabled>入力の内部tensorを保存</button></div><label for="source-tensor-file">保存した入力tensorを読戻す</label><input id="source-tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream">
+          <div class="actions"><button id="source-load" type="button" disabled>入力を読込</button><button id="source-clear" type="button" disabled>入力を外す</button></div><p id="source-status" class="muted" role="status">未選択</p><div id="source-preview" class="media-preview empty-preview">入力のpreview</div>
+          <div class="actions media-actions"><button id="source-export" type="button" disabled>入力をPNGフレームで保存</button><button id="source-tensor-save" type="button" disabled>入力の内部tensorを保存</button></div><label for="source-tensor-file">保存した入力tensorを読戻す</label><input id="source-tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream" disabled>
         </fieldset>
         <fieldset><legend>Reference · 参照</legend>
           <label for="reference-file">画像・動画・フレームZIP</label><input id="reference-file" type="file" accept="image/*,video/*,.zip,application/zip" multiple>
-          <div class="actions"><button id="reference-load" type="button">参照を読込</button><button id="reference-clear" type="button" disabled>参照を外す</button></div><p id="reference-status" class="muted" role="status">未選択</p><div id="reference-preview" class="media-preview empty-preview">参照のpreview</div>
-          <div class="actions media-actions"><button id="reference-export" type="button" disabled>参照をPNGフレームで保存</button><button id="reference-tensor-save" type="button" disabled>参照の内部tensorを保存</button></div><label for="reference-tensor-file">保存した参照tensorを読戻す</label><input id="reference-tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream">
+          <div class="actions"><button id="reference-load" type="button" disabled>参照を読込</button><button id="reference-clear" type="button" disabled>参照を外す</button></div><p id="reference-status" class="muted" role="status">未選択</p><div id="reference-preview" class="media-preview empty-preview">参照のpreview</div>
+          <div class="actions media-actions"><button id="reference-export" type="button" disabled>参照をPNGフレームで保存</button><button id="reference-tensor-save" type="button" disabled>参照の内部tensorを保存</button></div><label for="reference-tensor-file">保存した参照tensorを読戻す</label><input id="reference-tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream" disabled>
         </fieldset>
       </div><p class="muted">入力の読込・preview・PNG保存は媒体管理の操作です。生成結果は実際のモデル実行後に「結果」へ表示します。透過画像はpreview・PNG保存に対応します。モデル入力への変換は対応する値域・透過条件を確認します。</p>
     </section>
@@ -71,7 +71,7 @@
         <div><label for="video-timing">再生時刻</label><select id="video-timing" disabled><option value="auto">保存時刻があれば使用／なければ指定FPS</option><option value="source">保存されたフレーム時刻を使用</option><option value="fps">指定FPSで等間隔に再生</option></select></div>
         <div><label for="video-fps">保存時のFPS</label><input id="video-fps" type="number" value="16" min="0.1" max="120" step="any" required disabled></div>
       </div><p id="video-status" class="muted" role="status">結果のサイズでブラウザが書き出せる形式を確認します。</p><p class="muted">動画は無音・非可逆圧縮です。入力動画の音声は保持していません。元の値は内部tensorで保存してください。指定FPSは保存動画の再生速度で、入力の撮影情報を変更しません。</p><div class="actions"><button id="result-video-save" type="button" disabled>全結果を動画で保存</button></div></fieldset>
-      <label for="result-tensor-file">保存した結果tensorを読戻す</label><input id="result-tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream"><p id="storage-status" class="muted" aria-live="polite"></p>
+      <label for="result-tensor-file">保存した結果tensorを読戻す</label><input id="result-tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream" disabled><p id="storage-status" class="muted" aria-live="polite"></p>
     </section>
     <section aria-labelledby="workspace-heading">
       <h2 id="workspace-heading">6. 作業・中間結果を保存</h2>
