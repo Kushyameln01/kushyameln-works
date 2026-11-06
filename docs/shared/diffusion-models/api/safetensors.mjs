@@ -2,7 +2,8 @@
 const MAX_HEADER_BYTES=8*1024*1024;
 const WIDTH={BOOL:1,U8:1,I8:1,F8_E4M3:1,F8_E5M2:1,I16:2,U16:2,F16:2,BF16:2,I32:4,U32:4,F32:4,I64:8,U64:8,F64:8};
 function invalid(message){const e=new Error(message);e.code='INVALID_SAFETENSORS';throw e;}
-export async function inspectSafetensors(file){
+export async function inspectSafetensors(file,{rejectDuplicateKeys=false}={}){
+ if(typeof rejectDuplicateKeys!=='boolean')invalid('Invalid strict JSON option');
  if(!(file instanceof Blob))invalid('Expected a File or Blob');
  if(!Number.isSafeInteger(file.size)||file.size<8)invalid('Invalid file length');
  const prefix=await file.slice(0,8).arrayBuffer();
@@ -10,7 +11,13 @@ export async function inspectSafetensors(file){
  if(headerLength<2n||headerLength>BigInt(MAX_HEADER_BYTES)||headerLength>BigInt(file.size-8))invalid('Header length exceeds file or 8 MiB limit');
  const bytes=await file.slice(8,8+Number(headerLength)).arrayBuffer();
  let header;
- try{header=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{invalid('Invalid header JSON or UTF-8');}
+ try{
+  const text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);
+  if(rejectDuplicateKeys){
+   if(new Uint8Array(bytes)[0]!==0x7b)invalid('Strict header must begin with object');
+   const {parseStrictJson}=await import('../lora/strict-json.mjs');header=parseStrictJson(text,{maxDepth:32});
+  }else header=JSON.parse(text);
+ }catch{invalid('Invalid header JSON or UTF-8');}
  if(!header||Array.isArray(header)||typeof header!=='object')invalid('Header must be an object');
  if(header.__metadata__!==undefined && (!header.__metadata__||Array.isArray(header.__metadata__)||typeof header.__metadata__!=='object'||Object.values(header.__metadata__).some(v=>typeof v!=='string')))invalid('Metadata must map strings to strings');
  const payloadBytes=file.size-8-Number(headerLength),tensors=[],dtypes={};
@@ -19,8 +26,18 @@ export async function inspectSafetensors(file){
   if(!t||!Object.hasOwn(WIDTH,t.dtype)||!Array.isArray(t.shape)||t.shape.some(x=>!Number.isSafeInteger(x)||x<0)||!Array.isArray(t.data_offsets)||t.data_offsets.length!==2)invalid('Invalid tensor descriptor: '+name);
   const [start,end]=t.data_offsets;
   if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start<0||end<start||end>payloadBytes)invalid('Invalid tensor bounds: '+name);
-  const elements=t.shape.reduce((p,x)=>p*BigInt(x),1n);
-  if(elements*BigInt(WIDTH[t.dtype])!==BigInt(end-start))invalid('Tensor byte length does not match dtype/shape: '+name);
+  const width=BigInt(WIDTH[t.dtype]),byteLength=BigInt(end-start);
+  // A later zero dimension makes the tensor empty. Otherwise the product is
+  // monotonic: reject against its byte capacity before BigInts can grow huge.
+  let elements=t.shape.includes(0)?0n:1n;
+  if(elements!==0n){
+   const capacity=byteLength/width;
+   for(const dimension of t.shape){
+    elements*=BigInt(dimension);
+    if(elements>capacity)invalid('Tensor byte length does not match dtype/shape: '+name);
+   }
+  }
+  if(elements*width!==byteLength)invalid('Tensor byte length does not match dtype/shape: '+name);
   tensors.push({name,dtype:t.dtype,shape:[...t.shape],dataOffsets:[start,end],byteLength:end-start});
   dtypes[t.dtype]=(dtypes[t.dtype]??0)+(end-start);
  }
