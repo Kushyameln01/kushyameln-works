@@ -17,6 +17,7 @@ export async function runTextEncoderJob({input,manifest,files,ort,hike,signal,on
   textModel=await loadTextEncoder({manifest,files,ort,hike,signal,onProgress});
   const output=await textModel.run({tokenIds,attentionMask,signal,onProgress});
   const result={tensor:{dtype:'float32',shape:output.shape,layout:'BLC',meaning:'text_hidden_states',data:output.hiddenStates,modelSha256:manifest.modelSha256,tokenizerSha256:output.provenance.tokenizerSha256,normalization:output.normalization,attentionMask:output.attentionMask},attentionMask:output.attentionMask,inputMode:tokenizerEvidence?'plain-text':'token-ids'};
+  if(output.provenance.graphBindings)result.graphBindings=output.provenance.graphBindings;
   if(diagnostics===true)result.evidence={...output.provenance,hikeStats:hike.stats(),inputMode:result.inputMode,tokenizer:tokenizerEvidence?{sha256:tokenizerEvidence.tokenizerSha256,effectiveTokens:tokenizerEvidence.effectiveTokens,semantics:tokenizerEvidence.semantics}:null};
   return result;
  }finally{await textModel?.dispose();}

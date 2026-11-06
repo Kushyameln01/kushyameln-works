@@ -1,8 +1,10 @@
 # Text単体検証結果
 
-**Text全体は未完了。T1の入力契約とT3の取消・復帰・保存は完了したが、T2の全有効ID512 caseが固定数値gateに不合格である。** 計画した数値9caseはすべて実行済みで、8caseがPASS、1caseがFAIL。T1の旧source未記録の結果と、新しいNN0結果の実行後source照合を区別する。別入力の合格で既知FAILを補わない。
+2026-11-05 JST追補：**この文書の旧全512有効ID FAILは、修正manifest420eで解消済み。** 同じ入力・独立参照・gate0.001で全2,097,152値のmaxAbsは8.52346420288086e-5、実行sourceは `c99d89ca7a9edbe04d0fb451ef7c2529dbaa48d3`。最終marker／入力域は維持した。[現在の採用設定と検証範囲](../management-adoption-20261105/RESULT.md)を参照する。新manifestの管理browser plain／同512ID（3有効）も789で実行済みだが、全512有効caseの新browser NNは未実施である。
 
-| 項目 | 判定 | 確認範囲 |
+**以下は修正前sourceの記録である。当時はT2の全有効ID512 caseが固定gateに不合格だった。** 計画した数値9caseはすべて実行済みで、8caseがPASS、1caseがFAIL。T1の旧source未記録の結果と、新しいNN0結果の実行後source照合を区別する。旧FAIL値とreceiptは履歴として保持し、別入力や別manifestの合格へ付け替えない。
+
+| 項目 | 当時の判定 | 確認範囲 |
 | --- | --- | --- |
 | T1 入力・Tokenizer・拒否 | 完了 | b3e5/ref5954指定で9 valid / 9 reject、Worker0/NN0/export0。記録された配信source全17件は独立した実行後補足でGit/current bytesへ照合 |
 | T2 数値domain | 未完了 | 9case実行済み。全有効 `id-l512-all-active` のmaxAbsが0.001を超過 |

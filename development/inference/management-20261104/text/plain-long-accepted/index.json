@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "status": "REAL_PLAIN_L512_NODE_FULLVALUE_PASS_AND_ACTUAL_DIFFUSION_CAPTURE_NN0_PASS",
+  "modelExecutionSourceSha": "78954ee92d1b76c6652f50df1668159a55db6dc9",
+  "manifestSha256": "420ebccc3bd6bb2124324512b60bf7f6b9dc49f1f57bdcff6ee29f561eb72405",
+  "referenceExecutionSourceSha": "5954d48e0fb6df1d6977964fd8a7ba2a242b6eff",
+  "captureScriptSourceSha": "941b2a6e3e956d000a3339ae05c0ef84aafed47e",
+  "captureCodecSourceSha": "78954ee92d1b76c6652f50df1668159a55db6dc9",
+  "captureDiffusionSourceSha": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+  "caseId": "plain-long-eos512",
+  "inputMode": "plain-text",
+  "output": {
+    "dtype": "float32",
+    "layout": "BLC",
+    "shape": [
+      1,
+      512,
+      4096
+    ],
+    "elements": 2097152,
+    "activeTokens": 512,
+    "normalization": "umt5-final-rmsnorm-f32-v1"
+  },
+  "comparisons": [
+    {
+      "id": "plain-long-eos512",
+      "passed": true,
+      "finite": true,
+      "elements": 2097152,
+      "activeElements": 2097152,
+      "paddingElements": 0,
+      "paddingExactlyZero": true,
+      "maxAbsError": 0.000151902437210083,
+      "activeMaxAbsError": 0.000151902437210083,
+      "allclose": true,
+      "gate": {
+        "maxAbsError": 0.001,
+        "atol": 0.001,
+        "rtol": 0.001
+      },
+      "allValuesCompared": true,
+      "artifactBytes": 8390098,
+      "artifactSha256": "18ed985965e4dd90e5db3fe85b3ea55e0839d073008749ab99c9cc9d6927c00a",
+      "metadataPreserved": true
+    }
+  ],
+  "wallSeconds": 1417.1977774770003,
+  "sampledGroupPeakRssBytes": 3960307712,
+  "cleanupPassed": true,
+  "sessionObservation": {
+    "created": 24,
+    "released": 24,
+    "active": 0,
+    "maximumActive": 1,
+    "runCalls": 24,
+    "tensorDisposeCalls": 72
+  },
+  "originalReference": "../../../standalone-20261102/text/full512-conditioning/diagnostic/plain-long-eos512-reference.f32",
+  "referenceDuplicateBytes": 0,
+  "captureChecks": {
+    "allDataWordsEqual": true,
+    "allMaskValuesEqual": true,
+    "modelTokenizerFinalMarkerRetained": true,
+    "inputCaptureSnapshotBuffersIndependent": true,
+    "inputMutationDoesNotChangeCapture": true,
+    "snapshotMutationDoesNotChangeProtectedCapture": true
+  },
+  "captureElapsedMs": 10932.565942000001,
+  "captureNodeRusagePeakRssBytes": 531230720,
+  "captureMetadataVerification": {
+    "producerAuthenticated": false,
+    "realExecutionVerified": false,
+    "jointlyAccepted": false
+  },
+  "captureProof": "conditioning-handoff-source-proof.json",
+  "files": [
+    {
+      "file": "README.md",
+      "bytes": 9703,
+      "sha256": "34b25c136865c56c1df1a890b389baee1dc69491186f868c1b51e65c6da9862b"
+    },
+    {
+      "file": "acceptance.json",
+      "bytes": 70220,
+      "sha256": "8a2a981ec51b99a3e3ea8c75f424c9c6d8ca12d8f226eca4b756e95c2580389b"
+    },
+    {
+      "file": "compression-receipt.json",
+      "bytes": 669,
+      "sha256": "0c65e4d43c615badec7cb6d74bbf21acbf15b617623f148f5d0a0d5835b49dee"
+    },
+    {
+      "file": "conditioning-handoff-attempts.json",
+      "bytes": 861,
+      "sha256": "44c980c1d94634a0ecd6cae875ab424df5b9931ce478a499555e49193678af64"
+    },
+    {
+      "file": "conditioning-handoff-source-proof.json",
+      "bytes": 1579,
+      "sha256": "4b0f081178102b9dfefd9053a2308b8c1c1c0130fbf4095dd7eff95d38db8f65"
+    },
+    {
+      "file": "conditioning-handoff.json",
+      "bytes": 3971,
+      "sha256": "6dd58d93cffc39046c9e8e0d10f87782eff859e646f8241849f0bcb029030ee3"
+    },
+    {
+      "file": "input-record.json",
+      "bytes": 11046,
+      "sha256": "97b86c52138408aba2d2076c37eac719f41f6e3199a905e00aa394a97239f643"
+    },
+    {
+      "file": "memory.json.gz",
+      "bytes": 71098,
+      "sha256": "826fa5c270161c26479fcc7844b359296c2d65b10619a9e5398d023e4dac735f"
+    },
+    {
+      "file": "node-sdk-results.json",
+      "bytes": 40911,
+      "sha256": "882183c95efd9e04828dd71c70c815c9fae9cc75a98fb5649372da161616afb0"
+    },
+    {
+      "file": "payload-descriptor.json",
+      "bytes": 4109,
+      "sha256": "f87b330a073980163c2a3366a670fd70cc739b9a6a7fa51f3a23a0650f713bfc"
+    },
+    {
+      "file": "plain-long-eos512.wktensor",
+      "bytes": 8390098,
+      "sha256": "18ed985965e4dd90e5db3fe85b3ea55e0839d073008749ab99c9cc9d6927c00a"
+    },
+    {
+      "file": "reproduce-selection.json",
+      "bytes": 318,
+      "sha256": "997a87d17566b3645992dbabb6846ffb26e27b50c711dea8ce92e353df1fd4f2"
+    },
+    {
+      "file": "source-and-reference-index.json",
+      "bytes": 11279,
+      "sha256": "9325202a08daff91dd74413207baf9d3331d2b0c4617616af83c615d98d92849"
+    },
+    {
+      "file": "stdout.log.gz",
+      "bytes": 42733,
+      "sha256": "b64534370273288f4cc84b4e89573fe8e0d2f74e88f78ac29c894e78930d7241"
+    }
+  ],
+  "fixtureQualification": "NewrealplainL512 receiverfixture; fixedprompt/payloadhash/gate are not ordinaryconnection requirements",
+  "packagingModelNeuralRuns": 0,
+  "packagingExports": 0,
+  "captureNeuralRuns": 0,
+  "projectionExecuted": false,
+  "crossAttentionExecuted": false,
+  "ffnExecuted": false,
+  "independentRecipientEnvironmentAck": false,
+  "unaccepted": [
+    "RecipientDiffusion environmentACK",
+    "Actualprojection/crossattention/FFN",
+    "Otherbrowser/managementText run",
+    "Systemnegativeprompt/fullconditioning assembly",
+    "LoRAfullworkflow and generationREADY",
+    "Merge/Pagespublication"
+  ]
+}

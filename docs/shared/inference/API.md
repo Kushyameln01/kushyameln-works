@@ -2,7 +2,9 @@
 
 API版: `works-ai-1`。Text EncoderとVAEは独立モジュール。包括処理と一括UI、別CodexのDiffusionモジュールはこの実装に含めない。
 
-文書revision: `STANDALONE-STREAM-1`（2026-11-02 JST）。`works-ai-1`とG1Cを維持する。新しいcausal streaming manifest、独立raw latent入力、native末尾処理の保存契約は[単体API追補](../../../development/inference/standalone-20261102/API.md)を参照する。現在の実検証範囲は[単体RESULT](../../../development/inference/standalone-20261102/RESULT.md)にTextとVAEを分けて記録する。構造上の対応域と実数値受入を区別し、通常APIに参照やreceiptを要求しない。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sampleのmetadata検査は、実生成・復元・decodeの受入を意味しない。
+文書revision: `NATIVE-MANAGED-3`。`works-ai-1`とG1Cを維持する。[採用設定と最新P4通常入力の確認](../../../development/inference/management-adoption-20261105/RESULT.md)、[管理接続と数値修正結果](../../../development/inference/management-20261104/RESULT.md)、[採用Text manifest](../../../development/inference/management-20261104/text/source-ordered-fp32/README.md)を参照する。causal streaming manifest、独立raw latent入力、native末尾処理の契約は[単体API追補](../../../development/inference/standalone-20261102/API.md)に保持する。TextとVAE、構造上の対応域と実数値受入を区別し、通常APIに参照やreceiptを要求しない。source branchの文書であり、main/Pagesの配信更新を意味しない。generated sampleのmetadata検査は、実生成・復元・decodeの受入を意味しない。
+
+Textの採用manifestはSHA-256 `420ebccc3bd6bb2124324512b60bf7f6b9dc49f1f57bdcff6ee29f561eb72405`。旧manifestも独立APIでは有効なので、管理サービスの構成時には実manifest bytesとconfigure戻りの24 `graphBindings` を照合する。Text markerは引き続き `umt5-final-rmsnorm-f32-v1`。最新版Diffusion `b6e166478a8e072c9ffd3ce562bfdb0c89634920` の通常P4はこれを正式受理する。旧aliasのために改名したり、最終RMSNormを再適用したりしない。通常入力受理と投影以降の実NN検証は区別する。
 
 従来の診断受入はUMT5の24層FP32経路と、Wan2.1 VAEの5×16×16・F1正方形16×16・F1 Rect16×32の各固定graphである。前revisionではRectと固定plain一件を通常実行し、既存参照を再利用した。これらのscopeを維持する。新streaming graphの対応域や一部shapeの受入を、他のshape・実生成の合格へ広げない。
 
@@ -252,3 +254,44 @@ ORT Web1.24.3のWASM provider。Textと旧固定VAEは1 thread、新stream VAE�
 438版も旧storage codec/wrapperのG1C metadata完全保存は未成立なので、原native artifact/metadata/evidenceを外側で保持し、G1C codecを明示選択する。取得した管理 `a26879057d169cb2eecff30503d64adba5057c52` のadapter/packageは、実G1C codecを指定したNode検査で情報保全を確認した。これは全管理ブラウザ工程、Diffusion RPC全経路、実generated sampleや全生成の受入を意味しない。初期21e77f取得待ちの記録は歴史として保持する。
 
 モデル/ONNXは従来の非公開bundle入力を維持する。source branchへはmanifest/hash・診断fixture・全出力参照・計測証拠・再生成/検証手順を含め、約499MBの神経graphとモデル原本は同梱しない。
+
+## 現行の単体能力と管理接続（2026-11-04）
+
+上記の固定版照合は履歴である。現行stream VAEの入力域・実装・受入は
+[単体API](../../../development/inference/standalone-20261102/API.md)と
+[VAE結果](../../../development/inference/standalone-20261102/VAE-RESULT.md)を参照する。
+N=1、RGBはfloat32 NCTHW、encode F=1..81、H/W=16..848の16倍数。
+実処理Fは `1+4*floor((F-1)/4)`、出力Tは `1+floor((F-1)/4)`。
+元入力のsourceContextと実処理context/frameProcessingを区別し、末尾を隠して捨てない。
+decodeはT=1..21、latent h/w=2..106の偶数で、出力F=`1+4*(T-1)`、H/Wは8倍。
+構成する固定graphまたはstream graphの実能力をcapabilitiesで返す。
+
+Textのplainは `[1,512,4096]`、ID入力は `[1,L,4096]`（L=1..512）。
+float32 BLC、binary mask、model/Tokenizer SHA、`umt5-final-rmsnorm-f32-v1`
+を通常tensorから取得でき、既存codecが保持する。system/negativeの組立ては管理側。
+weighted prompt/custom embeddingは未対応。合法なID0を禁止せず、最終gateを引き上げない。
+選択manifestの `blocks[].attentionLowering` は元asset SHAと実行graph SHAを分離する。
+実行時は元bytesを検証後、同一bufferの2 scalarだけを変更し、実行hashを検証する。
+この倍率候補は固定gate未達のため採用していない。
+採用した `blocks[].normLowering` は、両内部RMSNormのReduceMeanを元Torchの
+FP32 AVX2集計順へ置換する。元graph/weightsは保持し、metadata置換用に1回コピーした後、
+実行graph SHAを検証する。Lを固定せず、dtype・軸・epsilonを維持する。
+選択manifestと元固定gateの全512有効ID受入は[採用資料](../../../development/inference/management-20261104/text/source-ordered-fp32/README.md)を参照する。
+中立statusは`source-ordered-fp32`。旧`diagnostic-only-unaccepted`も再現互換で受理し、実recipeのstatusを返す。
+品質receiptや独立参照を通常configure／encodeの条件へ追加しない。旧manifestの元経路も維持する。
+同一blockへ両変換を重ねる指定は拒否する。異block構成の数値受入を意味する制約ではない。
+通常返却の `graphBindings` はtensor外に置き、元asset／実行graphのSHAとrecipe識別・`recipeStatus`を区別する。数値合否・採用状況は
+[今回の結果](../../../development/inference/management-20261104/RESULT.md)に従う。
+
+新しい実装 `management-adapter.mjs` の `createManagedInferenceBridge` は、
+実管理のadapter/queue/workspaceとnative APIを注入して実行・取消・保存・読戻しを行う。
+詳細は[管理接続API](../../../development/inference/management-20261104/API.md)。
+通常入口へ独立参照・誤差gate・過去receiptを要求しない。current native codecを注入する。
+decodeでは入力raw artifactとRGBを同じpackageへ保持し、元producer/decoder bindingと
+inputDescriptor、graphBindingsを外側trace/sourceRecordsへ保存する。
+取消は元呼出しと管理releaseの終端を待ち、未dispatch取消も解放してから再実行する。
+
+復元済み `wan21-raw-generated-sample:v1` は、その意味とproducer/decoder bindingのまま
+decodeする。posterior meanへの改名やVAE側での追加復元を行わない。
+実Diffusion復元APIを通したsynthetic保存入力の部分接続と、実producer生成の全体実験は
+別の受入である。実P4 captureによる情報保持も投影/cross-attentionの実行とは区別する。

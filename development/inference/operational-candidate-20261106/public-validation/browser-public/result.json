@@ -1,0 +1,169 @@
+{
+  "requestedScope": "vae",
+  "sourceURL": "https://kushyameln01.github.io/kushyameln-works/inference-owner/",
+  "assetConfig": "/workspace/work/inference/operational-candidate-20261106/public-local-assets.json",
+  "startedAt": 1793973514.8199866,
+  "limitations": [
+    "No new Text NN",
+    "No whole-model hash/export or full-repository tests",
+    "VAE posterior mean is not a real Diffusion generated sample"
+  ],
+  "scopes": {},
+  "browserUsesInheritedProxy": true,
+  "passed": false,
+  "failure": "Traceback (most recent call last):\n  File \"/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/management-connection/validate-operational.py\", line 395, in main\n    result['scopes']['vae'] = vae(browser, args, args.output)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/management-connection/validate-operational.py\", line 344, in vae\n    assert not errors['overriddenPaths'] and len(errors['workers']) == 3\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+  "processCleanup": {
+    "harnessPid": 6923,
+    "harnessCtime": 1793973513.68,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 6928,
+        "ctime": 1793973514.02,
+        "ppid": 6923,
+        "name": "MainThread",
+        "status": "sleeping",
+        "firstPpid": 6923
+      },
+      {
+        "pid": 6940,
+        "ctime": 1793973515.23,
+        "ppid": 6928,
+        "name": "chromium",
+        "status": "running",
+        "firstPpid": 6928
+      },
+      {
+        "pid": 6956,
+        "ctime": 1793973515.4,
+        "ppid": 6923,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 6923
+      },
+      {
+        "pid": 6958,
+        "ctime": 1793973515.4,
+        "ppid": 6923,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 6923
+      },
+      {
+        "pid": 6961,
+        "ctime": 1793973515.4,
+        "ppid": 6923,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 6940
+      },
+      {
+        "pid": 6962,
+        "ctime": 1793973515.41,
+        "ppid": 6923,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 6940
+      },
+      {
+        "pid": 6985,
+        "ctime": 1793973515.62,
+        "ppid": 6940,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 6940
+      },
+      {
+        "pid": 6981,
+        "ctime": 1793973515.6,
+        "ppid": 6961,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 6961
+      },
+      {
+        "pid": 6998,
+        "ctime": 1793973515.7,
+        "ppid": 6962,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 6962
+      },
+      {
+        "pid": 7026,
+        "ctime": 1793973515.91,
+        "ppid": 6962,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 6962
+      },
+      {
+        "pid": 7035,
+        "ctime": 1793973515.98,
+        "ppid": 6962,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 6962
+      },
+      {
+        "pid": 7036,
+        "ctime": 1793973515.98,
+        "ppid": 6962,
+        "name": "chromium",
+        "status": "running",
+        "firstPpid": 6962
+      }
+    ],
+    "reapedChildren": [
+      {
+        "pid": 6956,
+        "ctime": 1793973515.4,
+        "ppid": 6923,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 6923,
+        "waitStatus": 0
+      },
+      {
+        "pid": 6958,
+        "ctime": 1793973515.4,
+        "ppid": 6923,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 6923,
+        "waitStatus": 0
+      },
+      {
+        "pid": 6961,
+        "ctime": 1793973515.4,
+        "ppid": 6923,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 6940,
+        "waitStatus": 0
+      },
+      {
+        "pid": 6962,
+        "ctime": 1793973515.41,
+        "ppid": 6923,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 6940,
+        "waitStatus": 0
+      }
+    ],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    },
+    "complete": true
+  },
+  "finishedAt": 1793973532.8600724
+}

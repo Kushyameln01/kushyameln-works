@@ -68,7 +68,7 @@ def validate_node_sdk_mode(skip_controls,suite_mode,inputs):
 
 NODE_SDK_SOURCE_PATHS=[
  'tools/inference/text-encoder/node_sdk_host.mjs','tools/inference/text-encoder/node_resource_guard.cjs',
- 'docs/shared/inference/text-encoder-api.mjs','docs/shared/inference/client.mjs','docs/shared/inference/text-job.mjs','docs/shared/inference/text-encoder.mjs','docs/shared/inference/tokenizer.mjs','docs/shared/inference/vendor/sentencepiece.mjs','docs/shared/inference/tensor.mjs','docs/shared/inference/hike.mjs','docs/shared/inference/kernel/tensor.wasm','docs/shared/inference/vendor/ort.wasm.min.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm','docs/shared/vr180/sha256.mjs']
+ 'docs/shared/inference/text-encoder-api.mjs','docs/shared/inference/client.mjs','docs/shared/inference/text-job.mjs','docs/shared/inference/text-encoder.mjs','docs/shared/inference/text-attention-lowering.mjs','docs/shared/inference/text-norm-lowering.mjs','docs/shared/inference/tokenizer.mjs','docs/shared/inference/vendor/sentencepiece.mjs','docs/shared/inference/tensor.mjs','docs/shared/inference/hike.mjs','docs/shared/inference/kernel/tensor.wasm','docs/shared/inference/vendor/ort.wasm.min.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs','docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm','docs/shared/vr180/sha256.mjs']
 
 def verify_node_sdk_sources(root,execution_source_sha):
  """Parent owns Git verification; the child independently checks these bytes."""
@@ -236,7 +236,7 @@ def main():
    if raw!=fixed:raise ValueError('Executed source differs from committed source: '+relative)
   served[relative]={'path':relative,'bytes':len(raw),'sha256':sha(raw),'executionSourceSha':a.execution_source_sha}
   return raw
- for path in [Path(__file__),HERE/'plain_checks.py',HERE/'plain_browser.mjs',HERE/'plain_observer_worker.mjs',HERE/'plain_memory.mjs',HERE.parent/'vae/process_lifecycle.py',ROOT/'docs/shared/vr180/sha256.mjs']:source_bytes(path)
+ for path in [Path(__file__),HERE/'plain_checks.py',HERE/'plain_browser.mjs',HERE/'plain_observer_worker.mjs',HERE/'plain_memory.mjs',HERE.parent/'vae/process_lifecycle.py',ROOT/'docs/shared/vr180/sha256.mjs',ROOT/'docs/shared/inference/text-attention-lowering.mjs']:source_bytes(path)
  class Handler(BaseHTTPRequestHandler):
   def log_message(self,*args):pass
   def do_GET(self):

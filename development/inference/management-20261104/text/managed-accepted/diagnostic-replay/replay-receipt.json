@@ -1,0 +1,98 @@
+{
+  "passed": true,
+  "scope": "Lossless diagnostic observation transport replay; every event/count/boundary/cancel field and all session metadata verified; no numerical/model change",
+  "originalExecutionSourceSha": "78954ee92d1b76c6652f50df1668159a55db6dc9",
+  "originalPassed": true,
+  "originalNativePassed": true,
+  "newNeuralRuns": 0,
+  "newExports": 0,
+  "input": {
+    "path": "/workspace/work/inference/management-20261104/text-browser-norm/result.json.gz",
+    "bytes": 2012244,
+    "sha256": "2c80ee58ac1ca686025690a402a9358be349ee9accb35b23644a753f3f8aad1f",
+    "gzip": true,
+    "jsonBytes": 269180893,
+    "jsonSha256": "d7014b8fc5c1429dc6412b6fb0bf8bfcb3e3853ca5d65c31474a57e00ad93f32"
+  },
+  "compacted": {
+    "path": "result.compact.json.gz",
+    "bytes": 262511,
+    "sha256": "3038629d759ffaf911429965c0c03480e2f2d233616257520736226df471f054",
+    "jsonBytes": 5359171,
+    "jsonSha256": "b9907c2df40e715de6911177e6cac8bbcf6e917e2b15cc325c4588b04df391dc",
+    "jsonReductionFraction": 0.980090819447575
+  },
+  "verification": {
+    "allNonObservationFieldsDeepEqual": true,
+    "allObservationsDeepEqual": true,
+    "fullOriginalSequenceHashesEqual": true,
+    "method": "Per-observation complete deepEqual and ordered JSON hash; every remaining worker/native/report field deepEqual"
+  },
+  "workers": [
+    {
+      "index": 0,
+      "phase": "text-cancel",
+      "observations": 198,
+      "sessionMetadataRecords": 0,
+      "prefixReferences": 196,
+      "explicitReferences": 0,
+      "deepEqual": true,
+      "originalSequenceSha256": "b29be487f885ac79f788a947f83a045a849f5dac79b52a2a493b0636bf59ddd6",
+      "restoredSequenceSha256": "b29be487f885ac79f788a947f83a045a849f5dac79b52a2a493b0636bf59ddd6"
+    },
+    {
+      "index": 1,
+      "phase": "text-plain",
+      "observations": 9176,
+      "sessionMetadataRecords": 24,
+      "prefixReferences": 9126,
+      "explicitReferences": 0,
+      "deepEqual": true,
+      "originalSequenceSha256": "1d0db39de38c4b5d5703de782362fe267d50b76827fff879bb912f2387fa3bea",
+      "restoredSequenceSha256": "1d0db39de38c4b5d5703de782362fe267d50b76827fff879bb912f2387fa3bea"
+    },
+    {
+      "index": 2,
+      "phase": "text-id",
+      "observations": 9176,
+      "sessionMetadataRecords": 24,
+      "prefixReferences": 9126,
+      "explicitReferences": 0,
+      "deepEqual": true,
+      "originalSequenceSha256": "1d0db39de38c4b5d5703de782362fe267d50b76827fff879bb912f2387fa3bea",
+      "restoredSequenceSha256": "1d0db39de38c4b5d5703de782362fe267d50b76827fff879bb912f2387fa3bea"
+    }
+  ],
+  "sources": [
+    {
+      "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/management-connection/observation-archive.mjs",
+      "bytes": 4981,
+      "sha256": "f5edfada30c60db37e4fc74bf4dc03838528033f62d3360c813aa4cfad0a4ac5"
+    },
+    {
+      "path": "/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/management-connection/replay-observations.mjs",
+      "bytes": 5084,
+      "sha256": "4bcf6206f19f0de9166d25c696b2c96f0e75398a7d6cfda5e00760869e1944d1"
+    }
+  ],
+  "wallSeconds": 14.793543236,
+  "processResources": {
+    "userCPUTime": 9729017,
+    "systemCPUTime": 7453940,
+    "maxRSS": 1145108,
+    "sharedMemorySize": 0,
+    "unsharedDataSize": 0,
+    "unsharedStackSize": 0,
+    "minorPageFault": 290502,
+    "majorPageFault": 0,
+    "swappedOut": 0,
+    "fsRead": 0,
+    "fsWrite": 560,
+    "ipcSent": 0,
+    "ipcReceived": 0,
+    "signalsCount": 0,
+    "voluntaryContextSwitches": 1614,
+    "involuntaryContextSwitches": 180,
+    "rssBytes": 1172205568
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-11-04",
+  "scope": "Read-only recovery search before exact reconstitution; no binary download",
+  "checks": [
+    {
+      "tool": "github_fetch",
+      "url": "https://api.github.com/repos/Kushyameln01/kushyameln-works/releases?per_page=100",
+      "result": [],
+      "error": false
+    },
+    {
+      "tool": "github_fetch",
+      "url": "https://api.github.com/repos/Kushyameln01/kushyameln-works/actions/artifacts?per_page=100",
+      "error": {
+        "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+        "error_code": "INVALID_ARGUMENT"
+      }
+    },
+    {
+      "tool": "github_fetch",
+      "url": "https://api.github.com/repos/Kushyameln01/kushyameln-works/actions/runs?per_page=100",
+      "totalCount": 139,
+      "returnedCount": 100,
+      "latest": [
+        {
+          "id": 41106163803,
+          "name": "pages build and deployment",
+          "headSha": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+          "createdAt": "2026-10-30T18:20:58Z"
+        }
+      ],
+      "qualification": "Only first100 runs inspected; latest predates2026-11-02 stream export"
+    },
+    {
+      "tool": "github_fetch",
+      "url": "https://api.github.com/repos/Kushyameln01/kushyameln-works/actions/runs?head_sha=a7573012e98b6b94ad2c56788b4c14907f262201&per_page=100",
+      "result": {
+        "total_count": 0,
+        "workflow_runs": []
+      }
+    },
+    {
+      "tool": "github_fetch_workflow_run_artifacts",
+      "repo": "Kushyameln01/kushyameln-works",
+      "runId": 41106163803,
+      "result": {
+        "artifacts": []
+      }
+    }
+  ],
+  "persistentSearch": {
+    "roots": [
+      "/workspace/shared",
+      "/workspace/artifacts",
+      "/workspace/work",
+      "/workspace/attachments"
+    ],
+    "matchingUnit": "encoder.conv1.onnx",
+    "matchingArchive": "*vae*stream*.zip",
+    "matches": 0,
+    "qualification": "Bounded filename and retained archive inventory; does not prove no external backup exists"
+  }
+}

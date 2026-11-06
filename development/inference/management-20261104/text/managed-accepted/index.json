@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 1,
+  "status": "OWNER_HOST_ACTUAL_MANAGEMENT_BROWSER_TEXT_PLAIN_ID_PASS",
+  "executionSourceSha": "78954ee92d1b76c6652f50df1668159a55db6dc9",
+  "managementSourceSha": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+  "diffusionSourceSha": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+  "referenceExecutionSourceSha": "5537b8932343aa2476b95191817e8913f99dab02",
+  "actor": "Owner host invokes actual management APIs and actual native browser Text Worker; not an independent recipient environment",
+  "independentRecipientEnvironmentAck": false,
+  "shape": [
+    1,
+    512,
+    4096
+  ],
+  "maskLength": 512,
+  "activeTokens": 3,
+  "zeroMaskTokens": 509,
+  "allValuesComparedPerMode": 2097152,
+  "comparisons": {
+    "text-plain": {
+      "elements": 2097152,
+      "maxAbs": 2.4437904357910156e-06,
+      "rmse": 6.719350782459486e-09,
+      "gate": {
+        "atol": 0.001,
+        "rtol": 0.001,
+        "maxAbs": 0.001
+      },
+      "passed": true
+    },
+    "text-id": {
+      "elements": 2097152,
+      "maxAbs": 2.4437904357910156e-06,
+      "rmse": 6.719350782459486e-09,
+      "gate": {
+        "atol": 0.001,
+        "rtol": 0.001,
+        "maxAbs": 0.001
+      },
+      "passed": true
+    }
+  },
+  "sameOutputWktSha256": "6be07864f6c92601b689bfa69e0c4ddc870fdc3be4dc719f3d9c611ec4c1f101",
+  "cancellation": {
+    "stage": "text-norm-execution-graph-hash",
+    "boundary": {
+      "stage": "text-norm-execution-graph-hash",
+      "index": 0,
+      "offset": 0,
+      "total": 771842293
+    },
+    "target": {
+      "invocationId": "inference:b685dfb3-b07e-460e-8df8-e3fd5cca26d8",
+      "bindingId": "managed-inference:329a61ed-7ef3-4bd7-bad3-3335b394ba3c:text_encoder",
+      "ownerId": "text_encoder",
+      "resourceGeneration": "managed-inference:329a61ed-7ef3-4bd7-bad3-3335b394ba3c:generation:1",
+      "requestId": "inference:b685dfb3-b07e-460e-8df8-e3fd5cca26d8",
+      "revision": 2,
+      "activeToken": "832d71d7-f2e8-4e36-b2aa-5ccd393c1d88"
+    },
+    "barrier": {
+      "notStarted": false,
+      "stopConfirmed": true,
+      "originalTerminal": true,
+      "resourceReleased": true,
+      "reusable": true,
+      "quarantined": false
+    },
+    "recoveredBy": "text-plain"
+  },
+  "cancellationBoundaryScope": "Norm executiongraph hash index0 offset0,ORTsessions0; no postORT-arithmetic cancellationclaim",
+  "workerSummary": {
+    "created": 3,
+    "terminated": 3,
+    "live": 0
+  },
+  "processCounts": {
+    "observed": 22,
+    "explicitlyReaped": 4,
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": []
+  },
+  "httpPageConsoleBlockedCounts": {
+    "httpErrors": 0,
+    "pageErrors": 0,
+    "consoleErrors": 0,
+    "blockedRequests": 0
+  },
+  "browserNativeWallSeconds": 2036.0335999999995,
+  "controllerWallSeconds": 3312.824011642,
+  "resourceScope": "Browser process and its observed descendants; Python/export/reference processes excluded",
+  "resourcePhases": {
+    "browser-ready": {
+      "samples": 19,
+      "sampledPeakSumRssBytes": 607637504,
+      "sampledPeakSumPssBytes": 331196416
+    },
+    "text-cancel": {
+      "samples": 234,
+      "sampledPeakSumRssBytes": 2167795712,
+      "sampledPeakSumPssBytes": 1895032832
+    },
+    "text-plain": {
+      "samples": 5675,
+      "sampledPeakSumRssBytes": 5099126784,
+      "sampledPeakSumPssBytes": 4818772992
+    },
+    "text-id": {
+      "samples": 5001,
+      "sampledPeakSumRssBytes": 5211181056,
+      "sampledPeakSumPssBytes": 4931945472
+    },
+    "dispose": {
+      "samples": 1025,
+      "sampledPeakSumRssBytes": 5344391168,
+      "sampledPeakSumPssBytes": 4945536000
+    }
+  },
+  "performanceQualification": "Overlaps the longplain Node run; controller includes giant observationJSON receive/postprocessing. No host speedcomparison or requiredRAM inference.",
+  "originalArchive": {
+    "file": "result.json.gz",
+    "bytes": 2012244,
+    "sha256": "2c80ee58ac1ca686025690a402a9358be349ee9accb35b23644a753f3f8aad1f",
+    "rawBytes": 269180893,
+    "rawSha256": "d7014b8fc5c1429dc6412b6fb0bf8bfcb3e3853ca5d65c31474a57e00ad93f32",
+    "rawNotDuplicatedInGit": true
+  },
+  "diagnosticReplay": {
+    "originalNeuralExecutionSourceSha": "78954ee92d1b76c6652f50df1668159a55db6dc9",
+    "diagnosticExecutionSourceSha": null,
+    "uncommittedAtReplayExecution": true,
+    "sourceByteProof": "diagnostic-replay/source-byte-proof.json",
+    "receipt": "diagnostic-replay/replay-receipt.json",
+    "gzip": "diagnostic-replay/result.compact.json.gz",
+    "all18550ObservationsDeepEqual": true,
+    "allNonObservationFieldsDeepEqual": true,
+    "newNeuralRuns": 0,
+    "newReplayRunsAtPackaging": 0,
+    "postReplayByteIdenticalSourceSha": "003601db1cb92981d41ba5c68efa08e625680223"
+  },
+  "files": [
+    {
+      "file": "README.md",
+      "bytes": 10704,
+      "sha256": "efe30e3bc111627b4ab845edd3938c704b6c3a9eb83f4b9f641a622f519a8812"
+    },
+    {
+      "file": "artifacts/text-id.management.zip",
+      "bytes": 8407549,
+      "sha256": "1d95d20665bd60f24c4af30d077c826a31b65e3aadaaa4925cdabb92680f24a0"
+    },
+    {
+      "file": "artifacts/text-id.wktensor",
+      "bytes": 8390098,
+      "sha256": "6be07864f6c92601b689bfa69e0c4ddc870fdc3be4dc719f3d9c611ec4c1f101"
+    },
+    {
+      "file": "artifacts/text-plain.management.zip",
+      "bytes": 8405503,
+      "sha256": "1a04a3ab16d1890720b556d58df0d387d1e4f5c174f52de08656ce7bc186466b"
+    },
+    {
+      "file": "artifacts/text-plain.wktensor",
+      "bytes": 8390098,
+      "sha256": "6be07864f6c92601b689bfa69e0c4ddc870fdc3be4dc719f3d9c611ec4c1f101"
+    },
+    {
+      "file": "compression-receipt.json",
+      "bytes": 450,
+      "sha256": "a2c0bdbc174c86002155b5fa1d767c05bcc3d396cb77a116fa407993a0898aff"
+    },
+    {
+      "file": "compression-recheck.json",
+      "bytes": 413,
+      "sha256": "e101f6d31b307b4d7e421617c6cd9e3abbfa99874c3fe0154bac4c27e372c964"
+    },
+    {
+      "file": "diagnostic-replay/replay-receipt.json",
+      "bytes": 3572,
+      "sha256": "4f372f32448e317386a3f0c8701e26e4a1cff9bb51eda9f0f89a51f46b23c86f"
+    },
+    {
+      "file": "diagnostic-replay/result.compact.json.gz",
+      "bytes": 262511,
+      "sha256": "3038629d759ffaf911429965c0c03480e2f2d233616257520736226df471f054"
+    },
+    {
+      "file": "diagnostic-replay/source-byte-proof.json",
+      "bytes": 2145,
+      "sha256": "c997ed0e99ece23daa8415d4191fbd384b727223cf70ec599c895ebb344e87f8"
+    },
+    {
+      "file": "package-audit.json",
+      "bytes": 38874,
+      "sha256": "7832dccaf69c5776775e0237da28b6bcfae5784aed0666bf29509e408ec8c2e0"
+    },
+    {
+      "file": "result.json.gz",
+      "bytes": 2012244,
+      "sha256": "2c80ee58ac1ca686025690a402a9358be349ee9accb35b23644a753f3f8aad1f"
+    },
+    {
+      "file": "source-input-acquisition.json",
+      "bytes": 28676,
+      "sha256": "bb5edcd63464354ab3a73439a6d4c9878a0bb11220fc29167114d7eeef475591"
+    },
+    {
+      "file": "summary.json",
+      "bytes": 27099,
+      "sha256": "c09accc35624cf5d1a16efa21e395f360b43e5f1ffe8fa3f38e8d5e2630bbfe2"
+    }
+  ],
+  "sourceInputIndex": "source-input-acquisition.json",
+  "packageAudit": "package-audit.json",
+  "packagingNeuralRuns": 0,
+  "packagingExports": 0,
+  "diffusionCaptureVerificationFlagsRemainFalse": true,
+  "diffusionProjectionExecuted": false,
+  "diffusionCrossAttentionExecuted": false,
+  "diffusionFfnExecuted": false,
+  "unaccepted": [
+    "Independentrecipient management/Diffusion-hostACK",
+    "Browserotherinput including full512-activecase",
+    "Diffusionprojection/crossattention/FFN",
+    "Systemnegative/fullconditioningassembly",
+    "LoRAfullworkflow and generationREADY",
+    "Merge/Pagespublication"
+  ],
+  "workerObservationSummary": [
+    {
+      "phase": "text-cancel",
+      "index": 0,
+      "terminated": true,
+      "observations": 198,
+      "finalCounts": {
+        "created": 0,
+        "released": 0,
+        "active": 0,
+        "maximumActive": 0,
+        "runCalls": 0,
+        "tensorDisposeCalls": 0
+      },
+      "sessions": 0
+    },
+    {
+      "phase": "text-plain",
+      "index": 1,
+      "terminated": true,
+      "observations": 9176,
+      "finalCounts": {
+        "created": 24,
+        "released": 24,
+        "active": 0,
+        "maximumActive": 1,
+        "runCalls": 24,
+        "tensorDisposeCalls": 72
+      },
+      "sessions": 24
+    },
+    {
+      "phase": "text-id",
+      "index": 2,
+      "terminated": true,
+      "observations": 9176,
+      "finalCounts": {
+        "created": 24,
+        "released": 24,
+        "active": 0,
+        "maximumActive": 1,
+        "runCalls": 24,
+        "tensorDisposeCalls": 72
+      },
+      "sessions": 24
+    }
+  ]
+}

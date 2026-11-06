@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "status": "FAILED_PROBE_EXPECTATION",
+  "phase": "read-only exploratory configure probe before the reproducible CLI",
+  "managementCommit": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+  "ownerNamespaceCommit": "20f640a6e071b6c060a212e89b28f0c8965923f7",
+  "manifestSha256": "420ebccc3bd6bb2124324512b60bf7f6b9dc49f1f57bdcff6ee29f561eb72405",
+  "incorrectProbeAssertion": "caps.graphBindings.every(b => b.recipeStatus === 'adopted')",
+  "failure": "AssertionError: the expression evaluated to a falsy value",
+  "actualRecipeStatus": "source-ordered-fp32",
+  "actualRecipeId": "umt5-inner-rmsnorm-avx2-cascade-f32-v1",
+  "correction": "Compare all24 returned graphBindings with owner inspectTextEncoderManifest(selectedManifest).graphBindings. The manifest bytes and status are unchanged.",
+  "productChange": false,
+  "neuralCalls": 0,
+  "workersCreated": 0,
+  "exports": 0,
+  "note": "The initial probe aborted before writing a receipt; this record preserves the actual assertion failure and correction. No original NN evidence is rewritten."
+}

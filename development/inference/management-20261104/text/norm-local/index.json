@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "status": "LOCAL_THREE_RMSNORMS_CORRECTED_AVX2_BITWISE_EQUAL",
+  "scope": "Only firstRMSNorm of blocks18,19,20 at[1,512,4096]; noMatMul/SDPA/full24 acceptance",
+  "initialExecutionSourceSha": "329d7048eeab06f32ce6bf7946516709bbd30b18",
+  "correctedExecutionSourceSha": "08b4d32d83c81124f2b3bf6f3e2692bcff44238c",
+  "sourceReferenceExecutionSourceSha": "329d7048eeab06f32ce6bf7946516709bbd30b18",
+  "cpuCapability": "AVX512",
+  "actualSumKernelDispatch": "AVX2 fallback,8lanes; SumKernel has noAVX512 opt-in",
+  "initialAvx512AssumptionCorrect": false,
+  "initialPassedMeans": "Diagnostic harness completed; initialcandidate is not bitwise equal",
+  "correctedOutputs": {
+    "blocks": [
+      18,
+      19,
+      20
+    ],
+    "meanElementsPerBlock": 512,
+    "inverseElementsPerBlock": 512,
+    "normalizedElementsPerBlock": 2097152,
+    "bitwiseEqual": true,
+    "maxAbsError": 0
+  },
+  "sourceNormReferenceReuse": {
+    "originalOperators": 3,
+    "newSourceNormOperatorsInRetarget": 0,
+    "referenceUnchanged": true
+  },
+  "nativeLifecycle": {
+    "sessionsCreated": 6,
+    "sessionsReleased": 6,
+    "tensorsDisposed": 30,
+    "activeSessions": 0
+  },
+  "nativeWallSeconds": 3.290879167,
+  "nativePeakRssBytes": 255516672,
+  "totalHarnessWallSeconds": 5.945208035000178,
+  "parentPeakRssBytes": 84623360,
+  "processOwnership": {
+    "harnessPid": 7326,
+    "harnessCtime": 1793804604.49,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 7336,
+        "ctime": 1793804605.6,
+        "ppid": 7326,
+        "name": "MainThread",
+        "status": "running",
+        "firstPpid": 7326
+      }
+    ],
+    "reapedChildren": [],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "full24Candidate": {
+    "sourceSha": "c99d89ca7a9edbe04d0fb451ef7c2529dbaa48d3",
+    "status": "UNACCEPTED_IN_THIS_LOCAL_EVIDENCE",
+    "resultIncluded": false
+  },
+  "files": [
+    {
+      "file": "README.md",
+      "bytes": 7253,
+      "sha256": "9cda6922bdd8ea54897c594024748725598ef0ce16b979e1fef58e64893f93f5"
+    },
+    {
+      "file": "corrected-avx2/comparison-results.json",
+      "bytes": 18511,
+      "sha256": "7ab70a601f5c60b2c6a3f293f7da1282486b381986f133b8e4e3c578bd8c0bec"
+    },
+    {
+      "file": "corrected-avx2/native-results.json",
+      "bytes": 9172,
+      "sha256": "ee2f5223940b9b066e56042334192e7c56da8c45311e8d021f6f265502584269"
+    },
+    {
+      "file": "corrected-avx2/source-results.json",
+      "bytes": 12680,
+      "sha256": "0eb77d7e741af95e9c01f61c6903b0dce539242bc721921c5b957b913ac6edb1"
+    },
+    {
+      "file": "initial-avx512/comparison-results.json",
+      "bytes": 18741,
+      "sha256": "4a9a1cad6d897cbff9acd1f3c3aee3c5fb6e1b411b8da1880f63df06d79bc986"
+    },
+    {
+      "file": "initial-avx512/native-results.json",
+      "bytes": 9089,
+      "sha256": "1dfb7ba5e558903dddfef733ad1019393d5b68db4801e405ae867eba12258494"
+    },
+    {
+      "file": "initial-avx512/source-results.json",
+      "bytes": 10688,
+      "sha256": "3b174383b4dc7fc92f45ae19b45794e57cedd49383975a30ec3f64898d9fee67"
+    },
+    {
+      "file": "payload-inventory.json",
+      "bytes": 42570,
+      "sha256": "34f0e6cdc1ddae9568e612e13f842ea976c8675db57851c8605754d4b2036640"
+    },
+    {
+      "file": "source-acquisition.json",
+      "bytes": 13088,
+      "sha256": "1603ee6f5032f27bde97bc07649e1ab875165b143771206b4a001ddec1a59cd4"
+    }
+  ],
+  "privatePayloadFiles": 75,
+  "privatePayloadsCopied": 0,
+  "privatePayloadHashesRecomputed": false,
+  "packagingOnly": {
+    "neuralRuns": 0,
+    "sourceNormRuns": 0,
+    "exports": 0
+  },
+  "textFullCompletion": false,
+  "generationReady": false,
+  "apiAndReproductionReferences": "source-acquisition.json",
+  "unaccepted": [
+    "Full24cumulative error and final512-active-ID gate",
+    "Plain/ID fullmanagement operational acceptance",
+    "Diffusion wholeconsumer integration",
+    "GenerationREADY"
+  ]
+}

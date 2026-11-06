@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "status": "FULL24_ALL512_ACTIVE_ID_NODE_SDK_GATE_PASS",
+  "executionSourceSha": "c99d89ca7a9edbe04d0fb451ef7c2529dbaa48d3",
+  "manifestSha256": "40afd296805a8ecfbadcca1602cea2d1d93421f93db3af9b9b196b9a7af2e3af",
+  "caseId": "id-l512-all-active",
+  "inputMode": "token-ids",
+  "mask": {
+    "length": 512,
+    "active": 512,
+    "padding": 0
+  },
+  "output": {
+    "dtype": "float32",
+    "layout": "BLC",
+    "shape": [
+      1,
+      512,
+      4096
+    ],
+    "meaning": "text_hidden_states",
+    "normalization": "umt5-final-rmsnorm-f32-v1"
+  },
+  "comparisons": [
+    {
+      "id": "id-l512-all-active",
+      "passed": true,
+      "finite": true,
+      "elements": 2097152,
+      "activeElements": 2097152,
+      "paddingElements": 0,
+      "paddingExactlyZero": true,
+      "maxAbsError": 8.52346420288086e-05,
+      "activeMaxAbsError": 8.52346420288086e-05,
+      "allclose": true,
+      "gate": {
+        "maxAbsError": 0.001,
+        "atol": 0.001,
+        "rtol": 0.001
+      },
+      "allValuesCompared": true,
+      "artifactBytes": 8390098,
+      "artifactSha256": "efaed289fbeeb69a1fb6ab172d35d8e2f09bf164bedba5a360787cc29f4e4e29",
+      "metadataPreserved": true
+    }
+  ],
+  "ordinaryNodeSdk": {
+    "publicTextFactory": true,
+    "sharedTextJob": true,
+    "diagnostics": false,
+    "workersUsed": 0,
+    "browserControlsExercised": false,
+    "completedFullNeuralRuns": 1
+  },
+  "referenceExecutionSourceSha": "5954d48e0fb6df1d6977964fd8a7ba2a242b6eff",
+  "referenceExistingPublicPath": "../id-l512-all-active-reference.f32",
+  "referenceCopiedAgain": false,
+  "sourceAndReferenceIndex": "source-and-reference-index.json",
+  "sessionObservation": {
+    "created": 24,
+    "released": 24,
+    "active": 0,
+    "maximumActive": 1,
+    "runCalls": 24,
+    "tensorDisposeCalls": 72
+  },
+  "wallSeconds": 1142.7529186539996,
+  "sampledGroupPeakRssBytes": 3909136384,
+  "nodeRusagePeakRssBytes": 3867672576,
+  "cleanupPassed": true,
+  "processOwnership": {
+    "harnessPid": 8163,
+    "harnessCtime": 1793805663.81,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 8192,
+        "ctime": 1793805665.11,
+        "ppid": 8163,
+        "name": "MainThread",
+        "status": "zombie",
+        "firstPpid": 8163
+      }
+    ],
+    "reapedChildren": [],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    }
+  },
+  "manifestScope": "Exact original executed40afd manifest only; later status adoption/source-ordered manifest reuse is a separate recorded operation",
+  "files": [
+    {
+      "file": "README.md",
+      "bytes": 8029,
+      "sha256": "7a30993bd46b4f94453d25f7b0e6c358a8a994fcea9891e572cf2027a7be7f51"
+    },
+    {
+      "file": "acceptance.json",
+      "bytes": 84706,
+      "sha256": "2356fbabb5a526502fb30704029f6428cb6e795b607793b78b4de60beaae6821"
+    },
+    {
+      "file": "accepted-execution-manifest.json",
+      "bytes": 696291,
+      "sha256": "40afd296805a8ecfbadcca1602cea2d1d93421f93db3af9b9b196b9a7af2e3af"
+    },
+    {
+      "file": "compression-receipt.json",
+      "bytes": 750,
+      "sha256": "a81f23e3d106d1d375010b3f3f6ca370416973ac56e54a677d9b8a832b605610"
+    },
+    {
+      "file": "id-l512-all-active.wktensor",
+      "bytes": 8390098,
+      "sha256": "efaed289fbeeb69a1fb6ab172d35d8e2f09bf164bedba5a360787cc29f4e4e29"
+    },
+    {
+      "file": "input-record.json",
+      "bytes": 20627,
+      "sha256": "dff00ec1c01c4bfe20ded8b2bbc51f820b64b78612290a3cd7b4260c73f52ee6"
+    },
+    {
+      "file": "memory.json.gz",
+      "bytes": 58100,
+      "sha256": "41881011e5c25575ab666b5db0d9f68789cb880f4772d093be6322cdfc7a7e6b"
+    },
+    {
+      "file": "node-sdk-results.json",
+      "bytes": 39781,
+      "sha256": "5daa5c504807b927b3feca8e433034c7f1c7156b78ef7c41d5795c606a22661e"
+    },
+    {
+      "file": "payload-descriptor.json",
+      "bytes": 4109,
+      "sha256": "8e17cf3505bd3004715715204a0fb48a0e1b74bcf9ff0e0ec067c9feab52307e"
+    },
+    {
+      "file": "reproduce-selection.json",
+      "bytes": 288,
+      "sha256": "882c044bfc4e3a4d21100ef403274b5ef3c6ded255a09af69c201799a1d7e61b"
+    },
+    {
+      "file": "source-and-reference-index.json",
+      "bytes": 12985,
+      "sha256": "636a39f248ded08aa03e064a7b8948dcb287700f37c3524fe4e3bcc3ec58ae47"
+    },
+    {
+      "file": "stdout.log.gz",
+      "bytes": 42808,
+      "sha256": "2e4d5184e275203355069d38acad4aa3b1551af99fb48903e011ae23c169c6dd"
+    }
+  ],
+  "packagingOnly": {
+    "newNeuralRuns": 0,
+    "newExports": 0,
+    "newOracleRuns": 0
+  },
+  "acceptedRun": {
+    "newFull24Runs": 1,
+    "newExports": 0
+  },
+  "diffusionResponsibility": [
+    "4096hidden projection to5120 targetwidth",
+    "cross-attention",
+    "FFN"
+  ],
+  "unaccepted": [
+    "BrowserWorker execution/T3 with this selectedcandidate",
+    "Newplaincomparison or fullsystem/negativeprompt conditioning",
+    "NewmanagementTextoperation",
+    "RealDiffusionprojection/crossattentionconsumer",
+    "LoRAwholeworkflow and generationREADY",
+    "Merge/Pagespublication"
+  ]
+}
