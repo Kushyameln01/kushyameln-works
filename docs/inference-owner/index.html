@@ -65,6 +65,9 @@
         <div id="token-ids-input" hidden><label for="token-input">Token ID・attention maskのJSON</label><textarea id="token-input" rows="4" spellcheck="false" placeholder='{"tokenIds":[42,1],"attentionMask":[1,1]}' disabled></textarea></div>
       </div>
       <div id="vae-inputs" hidden>
+        <label for="media-file">encodeする画像・動画</label>
+        <input id="media-file" type="file" accept="image/png,image/jpeg,image/webp,video/webm,video/mp4" disabled>
+        <p class="small">VAEの設定後に選びます。PNG・JPEG・静止WebP、VP9 WebM・H.264 MP4を読み出せます。4 MiB・10秒以内で、設定したVAEの寸法・フレーム数に合う非透過の媒体が必要です。拡大縮小・余白追加・フレーム選別は行いません。媒体取込は、元ファイル・保持RGBA・生成tensorの合計見積り64 MiBまでです。超える入力は前処理済みWKTを使ってください。</p>
         <label for="input-artifact">入力テンソル</label><select id="input-artifact" disabled><option value="">テンソルを読み込んでください</option></select>
         <p class="small">encodeには前処理済みRGB、decodeには対応するlatentのWKTを使います。形状と意味は設定したVAEが確認します。</p>
         <dl id="input-summary" class="metadata"></dl>

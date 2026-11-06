@@ -1,4 +1,6 @@
 import {createOperationalInferenceOwner} from '../shared/inference/operational-owner.mjs';
+import {prepareVaeMediaInput} from '../shared/inference/media-input.mjs';
+import {encodeTensor} from '../shared/inference/tensor.mjs';
 import * as textVae from '../shared/ai-connection/adapters/text-vae.mjs';
 import * as artifacts from '../shared/ai-connection/adapters/artifacts.mjs';
 import * as queue from '../shared/ai-connection/queue.mjs';
@@ -12,6 +14,7 @@ const configured={text_encoder:false,vae:false};
 const urls=new Set();
 let owner=null,config=null,textManifest=null,vaeManifest=null,vaeManifestSource=null,action=null;
 let disposed=true,cancelling=false,generation=0,runPromise=null,runOutcome=null,ready;
+let mediaController=null,mediaPromise=null,mediaOutcome=null;
 
 function message(value,tone='normal'){
   $('status').textContent=value;
@@ -86,7 +89,7 @@ function refreshRecords(preferredId){
 function updateControls(){
   const locked=busy(),active=live(),module=$('module').value,text=module==='text_encoder';
   for(const control of controls)control.disabled=locked||!active;
-  $('cancel').disabled=action!=='run'||cancelling||!owner?.busy;
+  $('cancel').disabled=action==='media'?cancelling||!mediaController:action!=='run'||cancelling||!owner?.busy;
   $('reinitialize').disabled=locked||!disposed;
   $('configure-text').disabled=locked||!active||!textManifest||!preparedFiles('text').length;
   $('configure-vae').disabled=locked||!active||!vaeManifest||!preparedFiles('vae').length;
@@ -103,6 +106,7 @@ function updateControls(){
   for(const id of ['use-result','download-tensor','save-package'])$(id).disabled=locked||!active||!$('result-artifact').value;
   $('clear-records').disabled=locked||!active||!owner?.records().length;
   $('load-fixture').disabled=locked||!active||!$('fixture-select').value;
+  $('media-file').disabled=locked||!active||!configured.vae;
   $('dispose').disabled=locked||!active;
 }
 function clearProgress(){$('progress').hidden=true;$('progress').removeAttribute('value');}
@@ -129,7 +133,7 @@ async function fetchJSON(url){
 async function perform(name,task){
   if(busy()||!live())return;
   action=name;updateControls();
-  try{return await task();}catch(error){failed(error);}finally{action=null;updateControls();}
+  try{return await task();}catch(error){if(!cancelling){if(name==='media'&&isCancelled(error))message('媒体の読出しを取り消しました');else failed(error);}}finally{action=null;updateControls();}
 }
 function revokeDownloads(){for(const url of urls)URL.revokeObjectURL(url);urls.clear();}
 function download(bytes,name,type){
@@ -229,6 +233,23 @@ for(const id of ['module','operation','text-mode'])$(id).addEventListener('chang
 $('input-artifact').addEventListener('change',()=>{renderRecord($('input-summary'),selectedRecord($('input-artifact').value));updateControls();});
 $('result-artifact').addEventListener('change',()=>{renderRecord($('result-summary'),selectedRecord($('result-artifact').value));updateControls();});
 $('fixture-select').addEventListener('change',updateControls);
+$('media-file').addEventListener('change',()=>{
+  if(busy()||!live())return;
+  const file=$('media-file').files[0];if(!file)return;
+  mediaController=new AbortController();mediaOutcome=null;const signal=mediaController.signal;
+  mediaPromise=perform('media',async()=>{
+    try{
+      message('媒体を読み込んでいます');
+      const input=await prepareVaeMediaInput(file,{manifest:vaeManifest,slotId:'vae-encode-input',signal,capabilities:request=>owner.capabilities('vae',request),onProgress:progress=>{if(!cancelling)message(`媒体を読み込んでいます · ${progress.frameCount}フレーム`);}});
+      const bytes=await encodeTensor(input);signal.throwIfAborted();
+      const record=await owner.importTensor(bytes,{name:file.name});
+      mediaOutcome={status:'completed'};
+      $('module').value='vae';$('operation').value='encode';refreshRecords(recordId(record));
+      if(!cancelling)message(`媒体${input.shape[2]}フレームを読み込みました。encodeを実行できます`);
+    }catch(error){mediaOutcome={status:isCancelled(error)?'cancelled':'failed',error};throw error;}
+    finally{mediaController=null;$('media-file').value='';}
+  });
+});
 $('tensor-file').addEventListener('change',()=>perform('import',async()=>{
   const file=$('tensor-file').files[0];if(!file)return;
   message('テンソルを読み込んでいます');
@@ -277,6 +298,15 @@ $('run').addEventListener('click',()=>{
   })();
 });
 $('cancel').addEventListener('click',async()=>{
+  if(action==='media'&&mediaController&&!cancelling){
+    cancelling=true;message('媒体の読出しを取り消しています。終了を待っています');mediaController.abort();updateControls();
+    try{await mediaPromise;
+      if(mediaOutcome?.status==='completed')message('媒体の読出しは完了しています。encodeを実行できます');
+      else if(mediaOutcome?.status==='cancelled')message('媒体の読出しを取り消しました。もう一度選択できます');
+      else if(mediaOutcome?.error)failed(mediaOutcome.error);
+    }finally{cancelling=false;updateControls();}
+    return;
+  }
   if(action!=='run'||cancelling)return;
   cancelling=true;message('取消中です。元の実行の終了を待っています');updateControls();
   try{
@@ -305,15 +335,19 @@ $('save-package').addEventListener('click',()=>perform('save',async()=>{
 $('clear-records').addEventListener('click',()=>perform('clear',async()=>{
   await owner.clearRecords();revokeDownloads();refreshRecords();message('履歴を消しました');
 }));
-$('dispose').addEventListener('click',()=>perform('dispose',async()=>{
+$('dispose').addEventListener('click',async()=>{
+  if(action==='media'){mediaController?.abort();await mediaPromise;}
+  return perform('dispose',async()=>{
+  mediaController?.abort();
   await owner.dispose();disposed=true;generation++;revokeDownloads();vaeManifest=null;vaeManifestSource=null;
   for(const module of ['text_encoder','vae']){configured[module]=false;modelCaps[module]=null;renderCapabilities(module,null);}
-  for(const id of ['text-bundle','text-assets','text-source','vae-bundle','vae-manifest','vae-assets','tensor-file','package-file'])$(id).value='';
+  for(const id of ['text-bundle','text-assets','text-source','vae-bundle','vae-manifest','vae-assets','media-file','tensor-file','package-file'])$(id).value='';
   $('text-model-info').textContent='未設定';$('vae-model-info').textContent='未設定';$('vae-manifest-info').textContent='準備済みフォルダを選んでください';
   refreshRecords();message('資源を解放しました。再初期化すると続けられます');
-}));
+  });
+});
 $('reinitialize').addEventListener('click',()=>{ready=initialize();ready.catch(()=>{});});
-window.addEventListener('pagehide',()=>{generation++;revokeDownloads();if(live())void Promise.resolve(owner.dispose()).catch(()=>{});});
+window.addEventListener('pagehide',()=>{mediaController?.abort();generation++;revokeDownloads();if(live())void Promise.resolve(owner.dispose()).catch(()=>{});});
 ready=initialize();
 window.ownerCandidate=Object.freeze({get owner(){return owner;},get ready(){return ready;}});
 ready.catch(()=>{});
