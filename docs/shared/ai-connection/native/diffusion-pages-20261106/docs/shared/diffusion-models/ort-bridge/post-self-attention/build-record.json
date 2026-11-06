@@ -1,0 +1,54 @@
+{
+  "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+  "backend": "wabt",
+  "mode": "normal",
+  "sourceSha256": "4df36305e6d0faad458d326e4926cb0fd3a8f98c7bca6b75d2ace6e988122574",
+  "sourceBytes": 2985,
+  "hostSha256": "c26d169c90bced0524c73081bd92b13bbb635f57718086b6224826b2464bf9a0",
+  "hostBytes": 6699,
+  "builderSha256": "775e82f1f9572c6e3ea5a73e651d80e655eda1183b4521e75d2178504d66b25b",
+  "builderBytes": 3111,
+  "wasmSha256": "4d8518e94bd2de3ab9bf50f09b2fd17b69a5c57e7fd45dc65cd062d7fdbdbc4e",
+  "wasmBytes": 10094,
+  "watSha256": "a4624677c8903e4b4c900af9775236a646226b76a9758b2cd5f38fffa249e14e",
+  "runtimeSha256": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+  "imports": [
+    {
+      "module": "env",
+      "name": "sqrt",
+      "signature": "f64 -> f64",
+      "bridge": "fixed ECMAScript Math.sqrt"
+    },
+    {
+      "module": "env",
+      "name": "tanh",
+      "signature": "f64 -> f64",
+      "bridge": "fixed ECMAScript Math.tanh"
+    }
+  ],
+  "abi": {
+    "Norm": "i32 i32 i32 i32 i32 i32",
+    "Gelu": "i32 i32 i32 i32",
+    "Add": "i32 i32 i32 i32 i32",
+    "Modulate": "i32 i32 i32 i32 i32",
+    "GateResidual": "i32 i32 i32 i32 i32 i32"
+  },
+  "command": [
+    "/workspace/work/diffusion-investigation/toolchain/hikec",
+    "build",
+    "-target",
+    "wabt",
+    "-wasm-mode",
+    "normal",
+    "-o",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/post-self-attention/kernel.wasm",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/post-self-attention/math.hike"
+  ],
+  "versions": {
+    "go": "go version go1.22.12 linux/amd64",
+    "wabt": "1.0.39",
+    "node": "v24.19.0"
+  },
+  "scope": "P4 full5120 nonaffine/affine LayerNorm and affine RMSNorm epsilon1e-6; tanh GELU bounded27648; N2 modulation/add/gated cross residual; F32 separate multiply/add diagnostic, not GPU precision parity or full model"
+}

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI実行管理｜Kushyameln Works</title>
+  <link rel="stylesheet" href="../shared/inference/inference.css">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <nav aria-label="ツール間の移動"><a href="../github/">GitHub・ツール</a><a href="../vae/">VAE</a><a href="../diffusion-models/">DiffusionModels</a><a href="../lora/">LoRA接続管理</a></nav>
+  <header>
+    <p class="eyebrow">Kushyameln Works</p>
+    <h1>AI実行管理</h1>
+    <p>ローカルの HIGH / LOW モデルと conditioning File から Diffusion を実行し、結果の tensor を保存します。保存済み WKTENSOR の読戻しはモデルなしでも使えます。</p>
+  </header>
+  <main>
+    <section id="df-panel" aria-labelledby="df-heading" aria-busy="true">
+      <div class="df-heading"><div><p class="eyebrow">Diffusion</p><h2 id="df-heading">モデルを読み込んで生成する</h2></div><span class="df-badge">ブラウザ内で実行</span></div>
+      <p class="notice">このパネルは target のみを生成します。初期値は幅32・高さ16・1フレームの小さい出力です。原寸81フレームの受入や生成品質の保証を示すものではありません。</p>
+      <div class="df-step">
+        <h3>1. HIGH / LOW モデルを選ぶ</h3>
+        <div class="columns">
+          <div><label for="df-high-file">HIGH モデル（safetensors）</label><input id="df-high-file" type="file" accept=".safetensors,application/octet-stream" disabled></div>
+          <div><label for="df-low-file">LOW モデル（safetensors）</label><input id="df-low-file" type="file" accept=".safetensors,application/octet-stream" disabled></div>
+        </div>
+        <label for="df-threads">WASM threads</label>
+        <select id="df-threads" aria-describedby="df-thread-note" disabled><option value="1">1（標準）</option><option value="4" disabled>4（対応環境のみ）</option></select>
+        <p id="df-thread-note" class="muted">実行環境を確認しています。</p>
+        <div class="actions"><button id="df-load" type="button" disabled>モデルを読み込む / 再読込み</button><button id="df-unload" type="button" disabled>モデルを解放</button><button id="df-inspect-status" type="button" disabled>モデルの状態を確認</button></div>
+        <p id="df-model-status" class="muted">モデルは未読込みです。</p>
+      </div>
+      <div class="df-step">
+        <h3>2. conditioning と出力サイズを指定する</h3>
+        <p class="muted">Text Encoder で保存した正規の WKTENSOR を選びます。全 L 行と attention mask をそのまま渡します。</p>
+        <div class="columns">
+          <div><label for="df-positive-file">positive conditioning（WKTENSOR）</label><input id="df-positive-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream" disabled></div>
+          <div><label for="df-negative-file">negative conditioning（WKTENSOR）</label><input id="df-negative-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream" aria-describedby="df-negative-note" disabled></div>
+        </div>
+        <label class="check" for="df-same-positive"><input id="df-same-positive" type="checkbox" disabled> negative にも同じ positive File を使う（明示指定）</label>
+        <p id="df-negative-note" class="muted">CFG は1固定です。negative も入力検査を行いますが、negative のニューラル推論は実行しません。別 File を選ぶか、上の指定を有効にしてください。</p>
+        <div class="df-dimensions">
+          <div><label for="df-width">幅（RGB換算 px）</label><input id="df-width" type="number" min="16" step="16" value="32" inputmode="numeric" disabled></div>
+          <div><label for="df-height">高さ（RGB換算 px）</label><input id="df-height" type="number" min="16" step="16" value="16" inputmode="numeric" disabled></div>
+          <div><label for="df-frames">フレーム数</label><input id="df-frames" type="number" min="1" step="4" value="1" inputmode="numeric" disabled></div>
+        </div>
+        <p id="df-shape-summary" class="muted">出力サイズの規則を読み込んでいます。</p>
+        <p id="df-fixed-settings" class="df-fixed" aria-label="固定の生成設定">Euler / simple / 6 steps / shift 5 / split 3 / CFG 1 / noise scale 1 / augmentation 0 / batch 1</p>
+        <p class="muted">初期 target はゼロ、ノイズは標準正規分布で実行側が作成します。seed 指定と ComfyUI の乱数の一致には対応していません。</p>
+        <p class="muted">source・参照 context、RGB 入力、LoRA の数値適用はこのパネルでは扱いません。</p>
+      </div>
+      <div class="df-step">
+        <h3>3. 生成する</h3>
+        <div class="actions"><button id="df-run" class="primary" type="button" disabled>生成を実行</button><button id="df-cancel" type="button" disabled>対象の処理を取消</button><button id="df-dispose" type="button" disabled>管理を終了</button><button id="df-restart" type="button" disabled>管理を再開</button></div>
+        <p id="df-status" role="status" aria-live="polite" aria-atomic="true" data-state="INITIALIZING">Diffusion の公開 API を読み込んでいます。</p>
+        <progress id="df-progress" value="0" max="1" aria-label="Diffusion の進捗"></progress>
+        <p id="df-progress-text" class="muted" aria-live="polite"></p>
+        <p class="muted">取消は対象の Worker を終了します。完了を待ってから、保持している同じモデル File を再読込みしてください。以前の成功結果はそのまま保存できます。</p>
+        <p id="df-error" class="df-error" role="alert" hidden></p>
+        <details><summary>エラーの詳細・必要な変更</summary><pre id="df-error-details">なし</pre></details>
+      </div>
+      <div class="df-step">
+        <h3>結果を確認して保存する</h3>
+        <p id="df-result-summary">結果はまだありません。</p>
+        <div class="actions"><button id="df-save" type="button" disabled>結果を WKTENSOR で保存</button></div>
+        <p id="df-saved-state" class="muted">生成結果は raw generated sample として保存します。VAE による画像への復号は行っていません。</p>
+        <details><summary>結果の metadata</summary><pre id="df-result-metadata">{}</pre></details>
+      </div>
+      <div class="df-step">
+        <h3>保存済み WKTENSOR を使う（モデル不要）</h3>
+        <label for="df-reuse-file">読み戻す WKTENSOR File</label><input id="df-reuse-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream" disabled>
+        <div class="actions"><button id="df-read" type="button" disabled>File の tensor を読む</button></div>
+        <p class="muted">読戻した tensor を上の結果欄に表示します。再保存では generated / raw / restored の意味を保ち、追加の復元計算は行いません。</p>
+      </div>
+      <details><summary>実行条件と接続情報</summary><pre id="df-technical">{}</pre><h3>読み込んだ conditioning の metadata</h3><pre id="df-conditioning-summary">{}</pre></details>
+    </section>
+    <details id="reference-diagnostics" class="reference-diagnostics">
+      <summary>管理制御の診断（tensor を複写する参照実装）</summary>
+      <p class="notice">以下は pipeline 管理の診断専用です。tensor の複写で入力解決・取消・bundle 復旧を確認します。実モデルの推論や LoRA の数値適用は行いません。</p>
+      <div class="diagnostic-body">
+    <section aria-labelledby="input-heading">
+      <h2 id="input-heading">1. 入力とpipeline</h2>
+      <div class="columns">
+        <div>
+          <label for="tensor-file">入力tensor（WKTENSOR）</label>
+          <input id="tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream">
+          <label for="input-ref">このFileを対応させる入力参照</label>
+          <input id="input-ref" type="text" value="input" autocomplete="off">
+          <p id="file-status" class="muted" data-reselection-required="false">入力Fileを選択してください。</p>
+          <label for="asset-files">追加のローカルFile（任意）</label>
+          <input id="asset-files" type="file" multiple>
+          <p id="asset-status" class="muted">追加のFileは選択されていません。</p>
+          <label class="check"><input id="require-assets" type="checkbox"> 選択した追加Fileをownerの必須資材にする</label>
+        </div>
+        <div>
+          <label for="pipeline-file">pipeline設定をJSONから読み込む</label>
+          <input id="pipeline-file" type="file" accept=".json,application/json">
+          <label class="check"><input id="lora-enabled" type="checkbox"> LoRA経路を選択する</label>
+          <p class="muted">この参照ownerでは条件分岐と通過のみを確認します。選択しない場合、LoRA用Fileや規範は要求しません。</p>
+          <label for="budget-bytes">参照ownerの対応容量（bytes）</label>
+          <input id="budget-bytes" type="number" min="0" step="1" value="536870912">
+        </div>
+      </div>
+      <details>
+        <summary>pipeline設定を確認・編集</summary>
+        <label for="profile-json">PipelineProfile JSON</label>
+        <textarea id="profile-json" rows="17" spellcheck="false"></textarea>
+      </details>
+      <details>
+        <summary>管理制御の参照条件</summary>
+        <p class="muted">正常・遅延・失敗・取消後の遅着・解放失敗を、数値推論とは分けて確認できます。</p>
+        <label for="reference-mode">ownerの応答</label>
+        <select id="reference-mode">
+          <option value="success">正常</option>
+          <option value="delay">手動で継続するまで遅延</option>
+          <option value="fail">実行失敗</option>
+          <option value="cancel-late">取消後に旧結果が遅着</option>
+          <option value="release-fail">解放が一度失敗</option>
+        </select>
+        <button id="continue-run" type="button" disabled>遅延した実行を継続</button>
+      </details>
+      <div class="actions section-actions">
+        <button id="configure" type="button">設定を適用</button>
+        <button id="query" type="button" disabled>実行能力を確認</button>
+      </div>
+      <p id="configuration-status" class="muted">設定は未適用です。</p>
+    </section>
+
+    <section aria-labelledby="run-heading">
+      <h2 id="run-heading">2. 実行</h2>
+      <div class="actions">
+        <button id="run" class="primary" type="button" disabled>実行</button>
+        <button id="cancel" type="button" disabled>対象の実行を取消</button>
+        <button id="retry" type="button" disabled>再実行</button>
+        <button id="recover" type="button" disabled>解放を再試行</button>
+        <button id="dispose" type="button" disabled>管理を終了</button>
+      </div>
+      <p id="status" role="status" aria-live="polite" aria-atomic="true" data-state="INITIALIZING">管理moduleを読み込んでいます。</p>
+      <progress id="progress" max="1" value="0" aria-label="pipelineの進捗"></progress>
+      <div class="table-scroll"><table><caption>各stepの状態</caption><thead><tr><th scope="col">step</th><th scope="col">状態</th><th scope="col">理由</th></tr></thead><tbody id="step-list"><tr><td colspan="3">設定適用後に表示します。</td></tr></tbody></table></div>
+      <details><summary>能力照会と制御の詳細</summary><pre id="control-details">{}</pre><pre id="owner-state" aria-label="ownerと管理状態">{}</pre><pre id="reference-state" aria-label="参照ownerの診断状態">{}</pre></details>
+    </section>
+
+    <section aria-labelledby="save-heading">
+      <h2 id="save-heading">3. 結果を保存・復旧</h2>
+      <ul id="output-list" class="outputs"><li>保存できる出力はまだありません。</li></ul>
+      <div class="actions">
+        <button id="save-partial" type="button" disabled>部分結果をbundle保存</button>
+        <button id="save-final" type="button" disabled>最終結果をbundle保存</button>
+      </div>
+      <label for="bundle-file">保存したbundleを読み戻す</label>
+      <input id="bundle-file" type="file" accept=".zip,application/zip">
+      <p id="saved-state" class="muted">bundleにはpayload、descriptor、設定、snapshot、traceを含めます。tensorは保存payloadから復旧できます。元の追加Fileが必要な場合は、読戻し後に再選択してください。</p>
+      <details><summary>直近のエラー</summary><pre id="error-details">なし</pre></details>
+    </section>
+      </div>
+    </details>
+  </main>
+  <footer>処理と File の読取りはこのブラウザ内で行います。選択したローカル File をサーバーへ送信しません。</footer>
+  <script type="module" src="./diffusion.mjs"></script>
+  <script type="module" src="./main.mjs"></script>
+</body>
+</html>
