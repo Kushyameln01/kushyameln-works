@@ -181,6 +181,9 @@ class Verification:
         }
 
     def json_ui(self, selector):
+        details = self.page.locator(selector).locator("xpath=ancestor::details[1]")
+        if details.count() and details.get_attribute("open") is None:
+            details.locator(":scope > summary").click()
         return json.loads(self.page.locator(selector).inner_text())
 
     def capture_failure_ui(self):
@@ -481,7 +484,10 @@ def parse_args():
 def main():
     parser, args = parse_args()
     for parent in (args.output, *args.output.parents):
-        if (parent / ".git").exists():
+        marker = parent / ".git"
+        # Managed sandboxes may mount an empty read-only .git placeholder at
+        # /tmp. Only a worktree file or a repository with HEAD is a checkout.
+        if marker.is_file() or marker.is_dir() and (marker / "HEAD").exists():
             parser.error("--output must be outside Git checkouts; private outputs must never be published")
     if args.output.exists():
         parser.error("--output must be a fresh directory that does not already exist")
