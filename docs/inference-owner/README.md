@@ -11,12 +11,16 @@ VAEは`manifest.json`と、その`assets`に記載されたgraph・外部重み�
 ## 操作
 
 1. 対応する資材を選んで「設定」を押します。設定だけでは推論しません。
-2. Textは通常テキスト、又はToken ID／maskを指定します。VAEは前処理済みRGB又はlatentのWKTを読み込みます。「用意された入力」は1×16×32の小さい診断用tensorです。選択したVAEが対応するshapeだけ実行できます。
+2. Textは通常テキスト、又はToken ID／maskを指定します。VAE encodeは画像・動画、又は前処理済みRGBのWKT、decodeはlatentのWKTを読み込みます。「用意された入力」は1×16×32の小さい診断用tensorです。選択したVAEが対応するshapeだけ実行できます。
 3. 「実行」を押します。「取消」は資源の終端を待ってから再実行できる状態へ戻します。
 4. 結果をWKT又は管理ZIPへ保存します。管理ZIPは元入力の依存記録も含み、読み戻して再利用できます。Textのmask／モデル・Tokenizer／最終RMSNorm marker、VAEのframe情報／producer・decoder bindingを保持します。
 5. 「資源を解放」でFile・結果の保持と実行資源を終了します。再初期化後はモデルを設定し直します。
 
 VAE decodeは復元済みraw生成sampleを直接受け取ります。追加の正規化復元やposterior meanへの改名は行いません。出力は未clipのfloat32 `NCTHW`、meaning `raw-decoder-rgb`です。画素値を変えずWKT／管理ZIPで表示側・保存側へ渡します。PNG変換や映像プレビューはこの画面の対応範囲に含みません。
+
+VAE媒体取込はPNG／JPEG／静止WebP、VP9 WebM／H.264 MP4を既存媒体decoderで読み出します。向き・sRGBの処理はそのdecoderに従い、寸法と全フレームを保持します。RGBA8から`rgb-unit`への配置は従来のowner処理を共通化し、`rgb-unit`→[-1,1]はnative VAEのHikeだけが担当します。取込は取消・再選択できます。
+
+透過、VAEが受け付けない寸法・フレーム数、既存decoderの4MiB・10秒制限、元ファイル＋保持RGBA＋生成tensorの64MiB見積り超過は理由を表示して停止します。64MiBは全ブラウザのピーク上限ではありません。動画の実codecを使うUI試験は未実施で、frame順序・時刻の確認は小さい制御fixtureです。原寸動画のUI取込を合格扱いにはしていません。
 
 ## 制限と検証範囲
 
