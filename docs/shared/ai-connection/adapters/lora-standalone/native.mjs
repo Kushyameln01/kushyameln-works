@@ -3,7 +3,7 @@
  * mirrored owner modules below are byte-exact and retain their own APIs. */
 import {sha256Bytes} from '../../canonical.mjs';
 export const LORA_STANDALONE_ROOT_URL=new URL('../../native/lora-6d0c8df/',import.meta.url);
-export const LORA_STANDALONE_WASM_URL=new URL('docs/shared/inference/lora/kernel/streaming/lora.wasm',LORA_STANDALONE_ROOT_URL);
+export const LORA_STANDALONE_WASM_URL=new URL('../../native/lora-6d0c8df/docs/shared/inference/lora/kernel/streaming/lora.wasm',import.meta.url);
 export const ADOPTED_LORA_STANDALONE_SOURCE=Object.freeze({repository:'Kushyameln01/kushyameln-works',commit:'6d0c8df4cd4992f26745d2d26394f5e194d2567f',path:'docs/shared/inference/lora/standalone-sdk.mjs',sha256:'0f0ea46f1d7780bfff4604d1686670c3d9ce1fe6fffb44b94fd237d94d880b3f'});
 const mismatch=path=>Object.assign(Error('Fixed standalone LoRA source bytes differ: '+path),{code:'LORA_NATIVE_SOURCE_MISMATCH',fieldPath:path});
 async function read(file){const url=new URL(file,LORA_STANDALONE_ROOT_URL);if(url.protocol==='file:'){const {readFile}=await import('node:fs/promises');return new Uint8Array(await readFile(url));}const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Object.assign(Error('Standalone source unavailable: '+file),{code:'LORA_NATIVE_SOURCE_UNAVAILABLE'});return new Uint8Array(await r.arrayBuffer());}
@@ -16,11 +16,11 @@ export async function verifyLoraStandaloneSources({read:reader=read}={}){
 }
 const verified=await verifyLoraStandaloneSources();
 const [sdk,registry,kernel,owned,reference]=await Promise.all([
- import(new URL('docs/shared/inference/lora/standalone-sdk.mjs',LORA_STANDALONE_ROOT_URL)),
- import(new URL('docs/shared/inference/lora/standalone-registry.mjs',LORA_STANDALONE_ROOT_URL)),
- import(new URL('docs/shared/inference/lora/kernel/streaming/host.mjs',LORA_STANDALONE_ROOT_URL)),
- import(new URL('docs/shared/inference/lora/owned-package.mjs',LORA_STANDALONE_ROOT_URL)),
- import(new URL('tools/lora/standalone-host.mjs',LORA_STANDALONE_ROOT_URL))
+ import(new URL('../../native/lora-6d0c8df/docs/shared/inference/lora/standalone-sdk.mjs',import.meta.url)),
+ import(new URL('../../native/lora-6d0c8df/docs/shared/inference/lora/standalone-registry.mjs',import.meta.url)),
+ import(new URL('../../native/lora-6d0c8df/docs/shared/inference/lora/kernel/streaming/host.mjs',import.meta.url)),
+ import(new URL('../../native/lora-6d0c8df/docs/shared/inference/lora/owned-package.mjs',import.meta.url)),
+ import(new URL('../../native/lora-6d0c8df/tools/lora/standalone-host.mjs',import.meta.url))
 ]);
 export const createLoraStandalone=sdk.createLoraStandalone;
 export const STANDALONE_CONTRACT_VERSION=sdk.STANDALONE_CONTRACT_VERSION;

@@ -14,7 +14,7 @@ export async function verifyTextVaeStandaloneSources({read:reader=read}={}){
  return {sourceRef:ADOPTED_TEXT_VAE_SOURCE,files,scope:source.scope};
 }
 const verification=await verifyTextVaeStandaloneSources();
-const [native,client,stream,integration]=await Promise.all([import(new URL('docs/shared/inference/api.mjs',TEXT_VAE_STANDALONE_ROOT_URL)),import(new URL('docs/shared/inference/client.mjs',TEXT_VAE_STANDALONE_ROOT_URL)),import(new URL('docs/shared/inference/vae-stream.mjs',TEXT_VAE_STANDALONE_ROOT_URL)),import(new URL('docs/shared/inference/management-adapter.mjs',TEXT_VAE_STANDALONE_ROOT_URL))]);
+const [native,client,stream,integration]=await Promise.all([import(new URL('../../native/text-vae-20f640a/docs/shared/inference/api.mjs',import.meta.url)),import(new URL('../../native/text-vae-20f640a/docs/shared/inference/client.mjs',import.meta.url)),import(new URL('../../native/text-vae-20f640a/docs/shared/inference/vae-stream.mjs',import.meta.url)),import(new URL('../../native/text-vae-20f640a/docs/shared/inference/management-adapter.mjs',import.meta.url))]);
 export const {API_VERSION,createTextEncoderModule,createVaeModule,encodeTensor,decodeTensor,describeTensor,requireTensor}=native;
 export const createInferenceClient=client.createInferenceClient;
 export const requiredStreamAssets=stream.requiredStreamAssets;
