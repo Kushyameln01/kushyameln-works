@@ -15,6 +15,11 @@ from urllib.parse import urlsplit, unquote
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / 'security/public-files.json'
 REFERENCE_EXCEPTIONS = ROOT / 'security/reference-exceptions.json'
+SOURCE_HARNESS_FILES = {
+    'shared/ai-connection/native/diffusion-b6e16647/tools/diffusion-models/public-model-browser.mjs',
+    'shared/ai-connection/native/diffusion-ffeeeedb/tools/diffusion-models/public-model-browser.mjs',
+}
+SOURCE_HARNESS_REFERENCES = {'/__case__.json', '/tools/diffusion-models/public-model-worker-observer.mjs'}
 
 
 def javascript_references(source):
@@ -113,7 +118,14 @@ def reference_exceptions():
         safe_path(entry.get('file'))
         if not re.fullmatch('[a-f0-9]{64}', entry.get('sha256', '')) or not entry.get('reason'): raise ValueError('Invalid pinned reference exception')
         node_dependencies = ('module', 'worker_threads', 'node:module', 'node:worker_threads', 'node:crypto', 'node:child_process', 'node:fs/promises', 'node:path', 'node:url')
-        if not isinstance(entry.get('specifiers'), list) or not entry['specifiers'] or any(value not in node_dependencies for value in entry['specifiers']): raise ValueError('Reference exception is not a reviewed Node dependency')
+        if not isinstance(entry.get('specifiers'), list) or not entry['specifiers']: raise ValueError('Invalid pinned reference specifiers')
+        kinds = entry.get('referenceKinds', ['import'])
+        if kinds == ['import']:
+            if any(value not in node_dependencies for value in entry['specifiers']): raise ValueError('Reference exception is not a reviewed Node dependency')
+        elif kinds == ['fetch', 'url']:
+            if entry['file'] not in SOURCE_HARNESS_FILES or set(entry['specifiers']) != SOURCE_HARNESS_REFERENCES:
+                raise ValueError('Reference exception is not a reviewed non-runtime source harness')
+        else: raise ValueError('Unsupported pinned reference kinds')
     return obj['exceptions']
 
 
@@ -164,11 +176,11 @@ def check_references(root, exceptions=None):
     root = Path(root).resolve()
     exceptions = reference_exceptions() if exceptions is None else exceptions
     def check(page, value, kind=None):
+        for entry in exceptions:
+            if kind in entry.get('referenceKinds', ['import']) and page.relative_to(root).as_posix() == entry['file'] and value in entry['specifiers']:
+                if digest(page) != entry['sha256']: raise ValueError('Pinned vendor reference hash mismatch: ' + entry['file'])
+                return
         if kind == 'import':
-            for entry in exceptions:
-                if page.relative_to(root).as_posix() == entry['file'] and value in entry['specifiers']:
-                    if digest(page) != entry['sha256']: raise ValueError('Pinned vendor reference hash mismatch: ' + entry['file'])
-                    return
             if value.startswith('node:'): raise ValueError('Unreviewed Node-only import: ' + value)
         u = urlsplit(value)
         if u.scheme or u.netloc or not u.path:

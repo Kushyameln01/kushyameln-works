@@ -1,0 +1,37 @@
+{
+  "contractVersion": "works-module-contract/1.0-draft.1",
+  "profileId": "example:single-audio-stage",
+  "profileVersion": "1",
+  "semanticProfileRefs": [
+    "example:stereo-480/1"
+  ],
+  "externalArtifactRefs": [
+    "example:audio-input"
+  ],
+  "steps": [
+    {
+      "stepId": "condition",
+      "moduleId": "example:synthetic-audio",
+      "operationId": "condition-audio",
+      "inputBindings": [
+        {
+          "portId": "pcm",
+          "artifactRef": "example:audio-input"
+        }
+      ],
+      "outputBindings": [
+        {
+          "portId": "conditioned-pcm",
+          "artifactRef": "example:audio-output"
+        }
+      ],
+      "adapterRefs": [],
+      "resourceGroupRefs": [
+        "example:audio-resource"
+      ]
+    }
+  ],
+  "requiredEvidenceScopes": [
+    "descriptor-fixture"
+  ]
+}

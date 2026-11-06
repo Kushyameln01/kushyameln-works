@@ -1,0 +1,234 @@
+{
+  "contractVersion": "works-module-contract/1.0-draft.1",
+  "moduleId": "example:works-text",
+  "moduleVersion": "external-description/1",
+  "implementationRef": {
+    "repository": "https://github.com/Kushyameln01/kushyameln-works",
+    "commit": "6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095",
+    "path": "docs/shared/inference/text-encoder-api.mjs"
+  },
+  "nativeAPI": {
+    "version": "works-ai-1",
+    "build": "works-inference-v1",
+    "transport": "direct",
+    "entrypoint": "textEncoder.encode"
+  },
+  "adapterRef": null,
+  "operations": [
+    {
+      "operationId": "encode-text",
+      "roles": [
+        "text-encoding"
+      ],
+      "inputPorts": [],
+      "outputPorts": [
+        {
+          "portId": "hiddenStates",
+          "bindingRef": "example:works-text:hiddenStates",
+          "owner": "text",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095",
+            "path": "docs/shared/inference/text-encoder-api.mjs"
+          },
+          "nativeAPI": {
+            "version": "works-ai-1",
+            "build": "works-inference-v1",
+            "transport": "direct",
+            "entrypoint": "textEncoder.encode"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:text-hidden-states",
+            "schemaVersion": "1",
+            "spaceId": "raw",
+            "unit": "unitless",
+            "normalization": "none"
+          },
+          "profileRef": "wan-umt5-staged-fp32/1:text512",
+          "requiredMetadata": [
+            "/attentionMask",
+            "/modelSha256",
+            "/tokenizerSha256"
+          ],
+          "requiredIdentities": [
+            {
+              "identityKind": "model",
+              "role": "producer",
+              "algorithm": "sha256",
+              "value": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+              "scope": "full-file"
+            },
+            {
+              "identityKind": "tokenizer",
+              "role": "tokenizer",
+              "algorithm": "sha256",
+              "value": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+              "scope": "full-file"
+            }
+          ],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              1,
+              512,
+              4096
+            ],
+            "axes": [
+              "B",
+              "L",
+              "C"
+            ]
+          }
+        }
+      ],
+      "implementationState": "implemented",
+      "constraints": {
+        "nativeMethod": "textEncoder.encode",
+        "inputMode": "text",
+        "bos": false,
+        "eos": 1,
+        "pad": 0,
+        "truncation": false
+      },
+      "profileRefs": [
+        "wan-umt5-staged-fp32/1:text512"
+      ],
+      "semanticSchemaRefs": [
+        {
+          "schemaId": "example:text-hidden-states",
+          "schemaVersion": "1"
+        }
+      ]
+    },
+    {
+      "operationId": "encode-ids",
+      "roles": [
+        "text-encoding"
+      ],
+      "inputPorts": [],
+      "outputPorts": [
+        {
+          "portId": "hiddenStates-ids",
+          "bindingRef": "example:works-text:hiddenStates",
+          "owner": "text",
+          "sourceRef": {
+            "repository": "https://github.com/Kushyameln01/kushyameln-works",
+            "commit": "6432de584b633e7b0fb1a4b7ab6d4cc8f8ccd095",
+            "path": "docs/shared/inference/text-encoder-api.mjs"
+          },
+          "nativeAPI": {
+            "version": "works-ai-1",
+            "build": "works-inference-v1",
+            "transport": "direct",
+            "entrypoint": "textEncoder.encode"
+          },
+          "artifactKind": "tensor",
+          "semantics": {
+            "schemaId": "example:text-hidden-states",
+            "schemaVersion": "1",
+            "spaceId": "raw",
+            "unit": "unitless",
+            "normalization": "none"
+          },
+          "profileRef": "wan-umt5-staged-fp32/1:ids-1-to-512",
+          "requiredMetadata": [
+            "/attentionMask",
+            "/modelSha256",
+            "/tokenizerSha256"
+          ],
+          "requiredIdentities": [
+            {
+              "identityKind": "model",
+              "role": "producer",
+              "algorithm": "sha256",
+              "value": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+              "scope": "full-file"
+            },
+            {
+              "identityKind": "tokenizer",
+              "role": "tokenizer",
+              "algorithm": "sha256",
+              "value": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+              "scope": "full-file"
+            }
+          ],
+          "ownershipModes": [
+            "copy"
+          ],
+          "transports": [
+            "direct"
+          ],
+          "allowedAdapterRefs": [],
+          "requiredExtensionSchemas": [],
+          "tensor": {
+            "dtypes": [
+              "float32"
+            ],
+            "shape": [
+              1,
+              null,
+              4096
+            ],
+            "axes": [
+              "B",
+              "L",
+              "C"
+            ]
+          }
+        }
+      ],
+      "implementationState": "implemented",
+      "constraints": {
+        "nativeMethod": "textEncoder.encode",
+        "inputMode": "tokenIds/attentionMask",
+        "tokenLengthMin": 1,
+        "tokenLengthMax": 512,
+        "autoAddEOS": false,
+        "autoPad": false
+      },
+      "profileRefs": [
+        "wan-umt5-staged-fp32/1:ids-1-to-512"
+      ],
+      "semanticSchemaRefs": [
+        {
+          "schemaId": "example:text-hidden-states",
+          "schemaVersion": "1"
+        }
+      ]
+    }
+  ],
+  "resourceContract": {
+    "owner": "text",
+    "activeBindings": [],
+    "currentBudget": null,
+    "readiness": "not-bound"
+  },
+  "cancellation": {
+    "nativeContractRef": "docs/shared/inference/text-encoder-api.mjs",
+    "mappingState": "M4-not-implemented"
+  },
+  "evidenceRefs": [],
+  "extensions": {
+    "example:status": {
+      "schemaId": "example:descriptor-status",
+      "schemaVersion": "1",
+      "requiredForUse": false,
+      "data": {
+        "scope": "external-description-static",
+        "ownerAdoption": "not-confirmed",
+        "notes": "G1C PR #1 is unmerged. Plain-text and IDs are separate accepted input paths. Comfy weighted prompt/custom embedding/clip-skip are not supported."
+      }
+    }
+  }
+}

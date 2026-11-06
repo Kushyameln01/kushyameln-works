@@ -11,8 +11,8 @@ ROOT = Path(__file__).resolve().parents[2]
 BASE = 'docs/shared/diffusion-models/api'
 DEST = 'docs/shared/ai-connection/native/diffusion-pages-20261106'
 BOOTSTRAP = 'docs/shared/ai-connection/adapters/diffusion-public/native.mjs'
-OLD = 'ffeeeedb6b57d182a977c3ac02c042ce235fc87a'
-MANAGER = 'e1661e561dfb1a4f20544ff48bc375175b5981d1'
+OLD = 'b6e166478a8e072c9ffd3ce562bfdb0c89634920'
+MANAGER = '9a80078757da9be3ca152e4205bf73fdea363e9f'
 sha = lambda value: hashlib.sha256(value).hexdigest()
 
 
@@ -47,8 +47,9 @@ def main():
         target = ROOT / DEST / path
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(raw)
-        records.append({'path': path, 'byteLength': len(raw), 'sha256': sha(raw)})
-    digest = sha(json.dumps(records, separators=(',', ':')).encode())
+        records.append({'path': path, 'byteLength': len(raw), 'sha256': sha(raw),
+                        'ownerBuildInventory': path != BASE + '/build-info.mjs' and path not in [BASE + '/MODEL_RUNTIME.md', BASE + '/WEIGHT_PORT.md', BASE + '/NORMAL_GENERATION_INPUTS.md']})
+    digest = re.search(rb'BUILD_SOURCE_SHA256=[\'\"]([^\'\"]+)[\'\"]', build).group(1).decode()
     manifest = {'sourceCommit': commit, 'buildId': build_id,
                 'entrypoint': BASE + '/index.mjs', 'ownerBuildSourceCount': len(inventory),
                 'sourceDigest': digest, 'files': records, 'modelFilesEmbedded': False,
@@ -56,12 +57,11 @@ def main():
     manifest_bytes = (json.dumps(manifest, indent=2) + '\n').encode()
     (ROOT / DEST / 'SOURCE.json').write_bytes(manifest_bytes)
     bootstrap = read(MANAGER, BOOTSTRAP).decode()
-    bootstrap = bootstrap.replace('diffusion-ffeeeedb/', 'diffusion-pages-20261106/')
+    bootstrap = bootstrap.replace('diffusion-b6e16647/', 'diffusion-pages-20261106/')
     bootstrap = bootstrap.replace(OLD, commit)
     index_hash = sha(sources[BASE + '/index.mjs'])
     bootstrap = re.sub(r"(path:'docs/shared/diffusion-models/api/index.mjs',sha256:')[a-f0-9]+", r'\g<1>' + index_hash, bootstrap)
-    bootstrap = bootstrap.replace('5df689d94e1eba9bcf326480caae5a77ff8e0d231b46ce8a6ae53683b0defa1d', sha(manifest_bytes))
-    bootstrap += "\nexport const attachDiffusionPort=api.attachDiffusionPort;\nexport const createDiffusionWeightClient=api.createDiffusionWeightClient;\nexport const MAX_TENSOR_ELEMENTS=api.MAX_TENSOR_ELEMENTS;\n"
+    bootstrap = bootstrap.replace('f2fd51b3c3f1ce429c4680f6823b20db90d08fdef4da60de8f150be63d6ef85f', sha(manifest_bytes))
     bootstrap += "const shapes=await import(new URL('docs/shared/ai-connection/workflow-shapes.mjs',DIFFUSION_PUBLIC_ROOT_URL));\nexport const deriveWorkflowShapes=shapes.deriveWorkflowShapes;\n"
     target = ROOT / BOOTSTRAP
     target.parent.mkdir(parents=True, exist_ok=True)

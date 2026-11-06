@@ -1,0 +1,310 @@
+{
+  "schemaVersion": "works-profile-reference/1.0-draft.1",
+  "category": "numeric-execution",
+  "documentVersion": "1.0-draft.1",
+  "status": "documented-draft",
+  "runtimeIntegrated": false,
+  "records": [
+    {
+      "recordId": "EXEC-BERNINI-Q16-F32",
+      "nativeProfileId": "bernini-q16x5120-f32-wasm-v1",
+      "ownerRole": "diffusion_models",
+      "nativeContract": "bernini-diagnostic-registry/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/diagnostic-base.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+          "path": "development/ai-connection/E1-ADOPT-RESULT.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "execution": "ORT Web 1.24.3 WASM F32 Gemm then Hike F32 bias",
+        "weightShape": [
+          16,
+          5120
+        ],
+        "biasShape": [
+          16
+        ],
+        "activationShape": [
+          5120
+        ],
+        "outputShape": [
+          16
+        ],
+        "fullWeightShape": [
+          5120,
+          5120
+        ],
+        "originalTarget": "blocks.0.self_attn.q.weight",
+        "bindings": {
+          "weight": "runtime-input:weight",
+          "bias": "hike-parameter:bias"
+        },
+        "coverage": "PARTIAL",
+        "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+        "lowLevelRpcContract": "diffusion-models/0.1",
+        "lowLevelRpcOperation": "linearProjectionF32",
+        "nativeProviderRows": "16 consecutive rows, rowStart 0..5104; all input columns",
+        "acceptedLoRaDiagnosticRows": [
+          0,
+          16
+        ],
+        "baseIdentity": "native modelHash/graphHash/registryHash; independent whole-file receipt is a separate evidence scope"
+      },
+      "admissionConstraints": {
+        "inputBuffers": "compact ordinary ArrayBuffer-backed finite Float32Array; no shared/detached input",
+        "requiredElements": {
+          "weight": 81920,
+          "bias": 16,
+          "x": 5120,
+          "output": 16
+        },
+        "callerInputRetained": true,
+        "consumerCandidateIsFullModelSession": false,
+        "initializerSubstitutionAllowed": false,
+        "lowRankMultiplicationOwner": "lora",
+        "independentExpected16AndExplicitToleranceRequiredForConsumerValidation": true,
+        "consumerOwnsIndependentCopyBeforePreparedRelease": true,
+        "nativePackageAndRegistryAndManagerSnapshotHashesAreDistinct": true
+      },
+      "evidenceScopes": [
+        "Owner real base slice provider and ORT/Hike consumer evidence",
+        "LoRA owner real four-original PARTIAL joint20 evidence, reused at its fixed pins",
+        "Management real Local File control uses explicitly synthetic immutable base; separate scope"
+      ],
+      "limitations": [
+        "Not attention, one complete model prediction, full-target LoRA application, or generation",
+        "Original FP8 activation/scaled_mm precision equivalence is not established",
+        "Newest owner commit does not silently replace management-adopted Diffusion438 pin",
+        "Runtime-level pointwise limit is not enlarged by this record"
+      ]
+    },
+    {
+      "recordId": "EXEC-FP8-SCALAR-F32",
+      "nativeProfileId": "scaled-e4m3fn-scalar-f32-v1",
+      "ownerRole": "diffusion_models",
+      "nativeContract": "bernini-diagnostic-registry/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/diagnostic-base.mjs"
+        }
+      ],
+      "requiredDeclarations": {
+        "storageDtype": "F8_E4M3",
+        "computeDtype": "F32",
+        "scaleStorageDtype": "F32",
+        "scaleScope": "per-tensor scalar",
+        "quantizationConfigExactUtf8": "{\"format\": \"float8_e4m3fn\"}",
+        "quantizationConfigBytes": 27,
+        "numericRule": "W_F32 = F32Multiply(HikeE4M3FNDecode(storageBits), scale)",
+        "biasRule": "Original F16 bias is converted by separate Hike DecodeF16, not FP8 weight scale",
+        "nativeBindingFields": [
+          "modelHash",
+          "graphHash",
+          "registryHash",
+          "fp8ProfileId",
+          "scale key/shape/dtype/value/hash",
+          "source byte offsets and selected row mapping"
+        ]
+      },
+      "admissionConstraints": {
+        "scaleFiniteAndStrictlyPositive": true,
+        "nanWeightCodeAllowed": false,
+        "quantizationConfigAndOriginalDescriptorsMustMatch": true,
+        "unsupportedQuantizationMayFallbackToJavaScript": false,
+        "loraReceivesOwnedF32BlockOnly": true,
+        "wholeFileHashRecomputedByBoundedProvider": false,
+        "priorReceiptIsFreshWholeFileHashProof": false,
+        "requantizationEnabled": false
+      },
+      "evidenceScopes": [
+        "Actual selected base FP8/F16 raw ranges decoded by Hike and compared to independent F32 reference",
+        "Bounded raw-range integrity and registry identity are distinct from whole-file authentication"
+      ],
+      "limitations": [
+        "Not arbitrary FP8/per-channel/block scale/quantization support",
+        "Does not authorize LoRA SDK to accept quantized base bytes directly",
+        "No original GPU FP8/scaled_mm/activation-quantization equivalence claim",
+        "No whole-model residency or full inference acceptance"
+      ]
+    },
+    {
+      "recordId": "EXEC-BERNINI-SIMPLE6-SHIFT5",
+      "nativeProfileId": "bernini-comfy-simple6-shift5-v1",
+      "ownerRole": "diffusion_models",
+      "nativeContract": "diffusion-models/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/scheduler/scheduler-kernel.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/scheduler/scheduler.hike"
+        }
+      ],
+      "requiredDeclarations": {
+        "sourceComfyCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+        "shift": 5,
+        "timesteps": 1000,
+        "multiplier": 1000,
+        "steps": 6,
+        "splitStep": 3,
+        "sigmaBoundaryCount": 7,
+        "tableIndices": [
+          999,
+          833,
+          666,
+          499,
+          333,
+          166
+        ],
+        "highSigmas": "sigmas[0:4]",
+        "lowSigmas": "sigmas[3:7]",
+        "modelTimesteps": "six selected sigmas multiplied by float32(1000)",
+        "numericPrecision": "float32 operations in source order; final sigma is float32(0)",
+        "tableRule": "For table index j=0..999: t=f32(j+1)/f32(1000); t=t*f32(1000); t=t/f32(1000); sigma=(f32(5)*t)/(f32(1)+f32(4)*t)",
+        "primitiveRules": {
+          "noiseMix": "scaledNoise=noiseScale*noise; noisePart=sigma*scaledNoise; latentPart=(1-sigma)*latent; out=noisePart+latentPart; each intermediate F32",
+          "inverseNoiseScale": "out=latent/(1-sigma), F32; sigma=1 rejected",
+          "flowDenoised": "product=velocity*sigma; out=input-product; each intermediate F32"
+        }
+      },
+      "admissionConstraints": {
+        "scheduleRequiresExactNativeProfileId": true,
+        "sigmaFiniteRange": [
+          0,
+          1
+        ],
+        "noiseScaleFiniteAndNonnegative": true,
+        "inputTensorFiniteAndMatchingShape": true,
+        "seedToNoiseImplemented": false,
+        "nativePublicPointwiseMaxElements": 1048576,
+        "internalSchedulerMaxElements": 4194304,
+        "internalSchedulerChunkElements": 4096,
+        "internalCapacityRaisesPublicLimit": false,
+        "generatesNeuralPrediction": false,
+        "noiseScaleFiniteAfterFloat32Conversion": true
+      },
+      "evidenceScopes": [
+        "Real Hike fixed schedule and numerical primitive checks at their pinned build",
+        "No neural-network model prediction performed by scheduler kernel"
+      ],
+      "limitations": [
+        "Not arbitrary scheduler, step count, shift, or split selection",
+        "Neither HIGH/LOW full orchestration nor original stage-boundary correctness follows from sigma generation",
+        "Production latent2096640 exceeds current public pointwise limit",
+        "No implicit APG/CFG algorithm is added"
+      ]
+    },
+    {
+      "recordId": "EXEC-ATTENTION-Q16-ONEHEAD",
+      "nativeProfileId": null,
+      "ownerRole": "diffusion_models",
+      "nativeContract": null,
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/ort-bridge/stream-attention/graph.mjs"
+        }
+      ],
+      "requiredDeclarations": {
+        "entryKind": "independent ES module; not native RPC predict/sample",
+        "entryPath": "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs",
+        "factoryExport": "createStreamAttention",
+        "descriptorSchemaVersion": "works-stream-attention/0.1",
+        "inputSourceSchema": "works-postnorm-rope-qkv/0.1",
+        "precisionProfile": "f32-ort-score-exp-hike-recurrence-v1",
+        "scope": "EXPLICIT_Q16_ONE_HEAD_ALL_KEYS",
+        "queryShape": [
+          16,
+          128
+        ],
+        "keyValueLogicalShape": "[keyCount,128] per one head",
+        "keyCountRange": [
+          1,
+          32760
+        ],
+        "logicalTileMax": 64,
+        "fullTestKeyCount": 32760,
+        "lastTileAtFullCount": 56,
+        "attentionScaleRule": "Math.fround(1/Math.sqrt(128))",
+        "numericOwnership": "ORT F32 MatMul/scale/row-max/exp; Hike online max-rescaling sum and value accumulation",
+        "sourceSpaces": {
+          "query": "post-qk-norm-rope",
+          "key": "post-qk-norm-rope",
+          "value": "projected-value"
+        }
+      },
+      "admissionConstraints": {
+        "inputBuffers": "compact ordinary ArrayBuffer-backed finite Float32Array",
+        "mask": "none",
+        "dropout": 0,
+        "sourceProvenanceKindAllowed": [
+          "explicit-fixture",
+          "precomputed-tensors"
+        ],
+        "sourceIdentityAndEachOffsetCountShapeChecked": true,
+        "tailPaddedWithPhantomKeys": false,
+        "productionQKVVerified": false,
+        "fullHeadCountVerified": false,
+        "originalProductionPrecisionVerified": false,
+        "nativeRpcOperationAdded": false,
+        "E8": "BLOCKED"
+      },
+      "evidenceScopes": [
+        "Selected16 query rows, one head, explicit postnorm/RoPE source and all32760 keys including exact56-key tail",
+        "Candidate ORT/Hike numerical boundary and bounded-workspace measurements only"
+      ],
+      "limitations": [
+        "No formally declared executionProfileId; recordId is local reference only",
+        "precisionProfile and input schema are not interchangeable with executionProfileId",
+        "Actual production Q/K/V generation and QK norm/RoPE are outside this boundary",
+        "All query/head and combined staging/copy/Memory are not accepted",
+        "Producer residency and ORT Memory are not fully measured",
+        "Not whole attention/model prediction or generation acceptance"
+      ]
+    }
+  ]
+}

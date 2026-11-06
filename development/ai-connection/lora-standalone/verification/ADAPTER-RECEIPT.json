@@ -1,0 +1,57 @@
+{
+  "role": "single-side-management-adapter",
+  "sourceFrozen": true,
+  "ownerContract": "lora-standalone/1.0-draft.1",
+  "ownerPin": "6d0c8df4cd4992f26745d2d26394f5e194d2567f",
+  "files": [
+    {
+      "path": "docs/shared/ai-connection/adapters/lora-standalone/adapter.mjs",
+      "byteLength": 24843,
+      "sha256": "52e3ea4f887951c9b5d6f40dd07a8ddd087b42cec2875527ee58f46ee77f1a28"
+    },
+    {
+      "path": "tools/ai-connection/test-lora-standalone-adapter.mjs",
+      "byteLength": 18113,
+      "sha256": "62df7af3998fbca425204530ffcaee2d7c710ddbcc6945aef068a855821db9e0"
+    }
+  ],
+  "tests": {
+    "adapter": {
+      "passed": 14,
+      "failed": 0
+    },
+    "adapterReferenceQueueSnapshotRegression": {
+      "passed": 44,
+      "failed": 0
+    },
+    "postReviewQueueCoordinatorSnapshotRegression": {
+      "passed": 45,
+      "failed": 0
+    },
+    "postReviewQueueCoordinatorSnapshotReferenceRegression": {
+      "passed": 51,
+      "failed": 0
+    }
+  },
+  "newBoundaries": [
+    "actualFile\u2192SDK+Hike\u2192normal snapshot applied, two/single/reapply/base",
+    "private branded runtime plans/packages with opaque manager handles",
+    "streaming filesystem save and fresh SDK open/stage; no original registrations",
+    "exact target and duplicate request protection; original Promise barrier",
+    "SDK cleanup recovery plus resource generation rebind",
+    "native commit then delayedcleanup cancellation retains divergence until fresh application/base compensation",
+    "queued argument capture prevents handle/writer/source-map retargeting",
+    "SDK disposal preserves consumer-owned leases and caller backing; failed disposal can recover after queue closure and retry",
+    "Queue running-before-dispatch cancellation does not await an uncreated native Promise or invoke SDK cancel; actual queue terminal/reuse barrier verified",
+    "Native consumer commit attempt is transparently observed without changing arguments, receiver, returned native receipt or F32 validation; missing cleanup acknowledgement cannot imply readiness",
+    "Action completion is distinct from actual queue result acceptance; cancellation in original-terminal/running window retains divergence until fresh compensation"
+  ],
+  "receiptRule": "nativeReceipt is actual SDK REGISTERED/CONSUMER_APPLIED only; COMPOSED/PREPARED/SAVED/RELEASED metadata lives under managementAcknowledgement",
+  "notAccepted": [
+    "real trained Bernini base/graph/model session binding",
+    "full patch numerical recomputation in management",
+    "total process RAM/ORT resources",
+    "product generation READY"
+  ],
+  "independentReview": "Known three boundary exact reproductions passed, including final backing resources zero; reviewer lora_review"
+}

@@ -1,0 +1,65 @@
+package main
+func sqrt(x float64) float64
+func tanh(x float64) float64
+func Finite(x float32) bool { return x == x && x-x == float32(0) }
+func Valid(x *float32,n int) bool {i:=0;for i<n {if !Finite(x[i]) {return false};i=i+1};return true}
+func Admitted(x *float32,n int) bool {i:=0;for i<n {if !Finite(x[i]) || float64(x[i])>float64(10000000000000000) || float64(x[i]) < -float64(10000000000000000) {return false};i=i+1};return true}
+// mode1: nonaffine LN; mode2: affine LN; mode3: affine RMSNorm.
+// Each call reduces all5120 original channels in their original order.
+cfunc Norm(x *float32,weight *float32,bias *float32,out *float32,mode int,capacity int) int {
+ if capacity!=5120 || mode<1 || mode>3 {return -1}
+ if !Admitted(x,5120) {return -2}
+ if mode>1 {if !Valid(weight,5120) {return -2}}
+ if mode==2 {if !Valid(bias,5120) {return -2}}
+ mean:=float32(0);i:=0
+ if mode!=3 {for i<5120 {mean=mean+x[i];i=i+1};mean=mean/float32(5120)}
+ variance:=float32(0);i=0
+ for i<5120 {d:=x[i]-mean;variance=variance+d*d;i=i+1}
+ variance=variance/float32(5120)
+ inverse:=float32(1)/float32(sqrt(float64(variance+float32(0.000001))))
+ if !Finite(mean) || !Finite(variance) || !Finite(inverse) {return -3}
+ i=0
+ for i<5120 {
+  v:=(x[i]-mean)*inverse
+  if mode>1 {v=v*weight[i]}
+  if mode==2 {v=v+bias[i]}
+  out[i]=v;i=i+1
+ }
+ if !Valid(out,5120) {return -3};return 0
+}
+cfunc Gelu(x *float32,count int,out *float32,capacity int) int {
+ if count<1 || count>27648 || capacity!=count {return -1}
+ if !Valid(x,count) {return -2}
+ i:=0
+ for i<count {
+  if x[i]>float32(1000000) || x[i]<-float32(1000000) {return -2}
+  square:=x[i]*x[i];cube:=square*x[i]
+  inner:=x[i]+float32(0.044715)*cube
+  phase:=float32(0.7978845608028654)*inner
+  activation:=float32(tanh(float64(phase)))
+  half:=float32(0.5)*x[i]
+  out[i]=half*(float32(1)+activation);i=i+1
+ }
+ if !Valid(out,count) {return -3};return 0
+}
+cfunc Add(a *float32,b *float32,count int,out *float32,capacity int) int {
+ if count<1 || count>10240 || capacity!=count {return -1}
+ if !Valid(a,count) || !Valid(b,count) {return -2}
+ i:=0;for i<count {out[i]=a[i]+b[i];i=i+1}
+ if !Valid(out,count) {return -3};return 0
+}
+cfunc Modulate(x *float32,shift *float32,scale *float32,out *float32,capacity int) int {
+ if capacity!=10240 {return -1}
+ if !Valid(x,10240) || !Valid(shift,5120) || !Valid(scale,5120) {return -2}
+ row:=0;i:=0
+ for row<2 {i=0;for i<5120 {plus:=float32(1)+scale[i];product:=x[row*5120+i]*plus;out[row*5120+i]=shift[i]+product;i=i+1};row=row+1}
+ if !Valid(out,10240) {return -3};return 0
+}
+cfunc GateResidual(x *float32,y *float32,gate *float32,gated *float32,out *float32,capacity int) int {
+ if capacity!=10240 {return -1}
+ if !Valid(x,10240) || !Valid(y,10240) || !Valid(gate,5120) {return -2}
+ row:=0;i:=0
+ for row<2 {i=0;for i<5120 {idx:=row*5120+i;product:=y[idx]*gate[i];gated[idx]=product;out[idx]=x[idx]+product;i=i+1};row=row+1}
+ if !Valid(gated,10240) || !Valid(out,10240) {return -3};return 0
+}
+func main() int {return 0}

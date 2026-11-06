@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "works-root-receiver-verification/0.1-draft.1",
+  "dateJST": "2026-11-02",
+  "source": "copied published verification scripts, independently rerun by management coordinator",
+  "vae": {
+    "status": "PASS_SCOPED_RECEIVER_RECONCILIATION",
+    "indexEntries": 93,
+    "managementClosure": 20,
+    "packages": 10,
+    "outputByteExactToWorker": true
+  },
+  "lora": {
+    "status": "PASS",
+    "metadataChecks": 249,
+    "failed": 0,
+    "snapshotCanonicalHashes": 6
+  },
+  "p4": {
+    "status": "PASS_PUBLIC_ACQUISITION_AND_RECEIPT_RECONCILIATION",
+    "metadataChecks": 745,
+    "failed": 0
+  },
+  "nativeExecutionCount": 0,
+  "reExportCount": 0,
+  "modelDownloads": 0,
+  "scripts": [
+    {
+      "path": "vae/prepare-git-origins.py",
+      "byteLength": 4216,
+      "sha256": "473c86f492dc2ef068338c18b9fa6945741cc60c6698309d81507ddc4b2b428b"
+    },
+    {
+      "path": "vae/verify-vae-return.mjs",
+      "byteLength": 22066,
+      "sha256": "506f08a5c4b4e146649288208f50700a8bccfd1a7fa3d0258c087b653b917369"
+    },
+    {
+      "path": "lora/verify-lora-return.py",
+      "byteLength": 15550,
+      "sha256": "8a5fec88069d9566dbea06495b9b131917ba4f0527b55a00010a29eda3837638"
+    },
+    {
+      "path": "lora/verify-snapshot-hashes.mjs",
+      "byteLength": 980,
+      "sha256": "bb180138c8933eab2bdc34278ee3a6684cd1e28486eef953ae6acc3c4dd04bb3"
+    },
+    {
+      "path": "p4/verify-p4.py",
+      "byteLength": 15938,
+      "sha256": "a7e7071023718990fd2d498ac02e11e1ad9016c67f6cba5d8fceb0e1fbd2cd4e"
+    }
+  ],
+  "fixedVerificationScriptSource": "67fb256f3cf47d85a338f8a0af8b30a884796193",
+  "sourceBindingMethod": "Executed script bytes listed in scripts[] match the fixed Git blobs; this is receiver verification, not a new native inference."
+}

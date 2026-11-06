@@ -1,0 +1,92 @@
+{
+  "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+  "backend": "wabt",
+  "mode": "normal",
+  "sourceSha256": "5f92c767ab2d1a5ca0a6b01bb670383b271ede4f94dcdb1cbc11a54e06f5752f",
+  "sourceBytes": 8500,
+  "hostSha256": "f55d9024b2b17c3333ac312b80ef178c03b1a4d17476ce752c64c04114363f90",
+  "hostBytes": 11236,
+  "builderSha256": "4dd143efc0fc02e57b2ecb473c2260981a439b77d2c6f94a96fdfe389ac9113f",
+  "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+  "wasmBytes": 23645,
+  "watSha256": "a1975d5142bec493dce5d62ff60acbf85f7927720b76e15860eeeff2ab28cc6d",
+  "runtimeSha256": "b776bfdbc3aa9bfcddb9e8b61a8f69063c8dacd01eaf582ab2738d6b3f40a06b",
+  "imports": [
+    {
+      "module": "env",
+      "name": "cos",
+      "signature": "f64 -> f64",
+      "bridge": "fixed ECMAScript Math.cos"
+    },
+    {
+      "module": "env",
+      "name": "sin",
+      "signature": "f64 -> f64",
+      "bridge": "fixed ECMAScript Math.sin"
+    },
+    {
+      "module": "env",
+      "name": "pow",
+      "signature": "f64 f64 -> f64",
+      "bridge": "fixed ECMAScript Math.pow"
+    },
+    {
+      "module": "env",
+      "name": "sqrt",
+      "signature": "f64 -> f64",
+      "bridge": "fixed ECMAScript Math.sqrt"
+    },
+    {
+      "module": "env",
+      "name": "tanh",
+      "signature": "f64 -> f64",
+      "bridge": "fixed ECMAScript Math.tanh"
+    },
+    {
+      "module": "env",
+      "name": "exp",
+      "signature": "f64 -> f64",
+      "bridge": "fixed ECMAScript Math.exp"
+    }
+  ],
+  "abi": {
+    "Norm": "i32 i32 i32 i32 i32 i32 i32",
+    "Modulate": "i32 i32 i32 i32 i32 i32",
+    "GateResidual": "i32 i32 i32 i32 i32 i32",
+    "Add": "i32 i32 i32 i32 i32",
+    "Gelu": "i32 i32 i32 i32",
+    "Silu": "i32 i32 i32 i32",
+    "Bias": "i32 i32 i32 i32 i32 i32 i32",
+    "DivideAttention": "i32 i32 i32 i32 i32 i32 i32 i32 i32",
+    "Sinusoidal": "f32 i32 i32",
+    "RopeBuild": "i32 i32 i32 i32 i32",
+    "RopeApply": "i32 i32 i32 i32 i32"
+  },
+  "command": [
+    "/workspace/work/diffusion-investigation/toolchain/hikec",
+    "build",
+    "-target",
+    "wabt",
+    "-wasm-mode",
+    "normal",
+    "-o",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/execution/model-math/kernel.wasm",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/execution/model-math/math.hike"
+  ],
+  "versions": {
+    "go": "go version go1.22.12 linux/amd64",
+    "wabt": "1.0.39",
+    "node": "v24.19.0"
+  },
+  "limits": {
+    "queryRows": 128,
+    "featureWidth": 5120,
+    "headWidth": 128,
+    "heads": 40,
+    "unaryChunkElements": 81920,
+    "linearWidth": 13824
+  },
+  "attentionDivisionProfile": "F32 division; head-major[40,Q,128] / finite-positive denominator[40,Q]; Q1..128 exact tails; chunk<=81920, native offset+count bounds",
+  "scope": "general synchronous D1 F32 model math and D2 attention denominator division; full5120 norms and token-major all40heads RoPE, rows1..128 exact tails; fixed scalar transcendentals; not complete model or GPU precision parity"
+}

@@ -1,0 +1,629 @@
+{
+  "schemaVersion": "works-workflow-media-vae-handoff/0.1-draft.1",
+  "status": "SOURCE_RULES_AND_SERIALIZED_SLOTS_ACQUIRED_ACTUAL_MEDIA_UNKNOWN",
+  "publicationEdition": "PUBLIC_MINIMIZED_DRAFT_NOT_SENT",
+  "recordDateJst": "2026-11-02",
+  "recipientRole": "VAE / TextEncoder owner; delivery by management after publication",
+  "deliveryStatus": "DRAFT_NOT_SENT",
+  "workflowSource": {
+    "path": "source/bernini_rv2v_basic.ca69274.original.json",
+    "sha256": "543865dfeeb9a94427bea543624e51db5f1dfcf88a7af6a497ddcdbeadc477dd",
+    "originalSuppliedWorkflowByteMatch": true,
+    "sourceReceipt": "SOURCE-ACQUISITION.json"
+  },
+  "procedureAcquisition": {
+    "originalWorkflowJson": "ACQUIRED_BYTE_IDENTICAL_TO_RETAINED_SUPPLIED_ENTRY",
+    "pinnedBerniniNodeAndEditorSource": "ACQUIRED",
+    "actualUserComfyUIBerniniVhsRuntime": "NOT_ACQUIRED",
+    "actualSourceAndSlots": "NOT_ACQUIRED",
+    "executionFeasibility": "Only exact-media-dependent processing/profile/decode remains blocked; metadata/rule/slot handoff can proceed."
+  },
+  "workflowConfiguredGrid": {
+    "width": 832,
+    "height": 480,
+    "requestedOutputFrames": 81,
+    "batchSize": 1,
+    "taskType": "rv2v",
+    "refMaxSize": 848,
+    "notObservedMediaDimensionsOrFrameSupply": true,
+    "candidateRgbNCTHW": [
+      1,
+      3,
+      81,
+      480,
+      832
+    ],
+    "candidateLatentNCTHW": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "candidateOnly": true
+  },
+  "encodeSupplyOrder": {
+    "rule": "source_video if supplied, then reference_video if supplied, then successfully supplied original slots 0..7, each frame of each slot in original order",
+    "sourceVideoContextsPerSuppliedVideo": 1,
+    "referenceVideoContextsPerSuppliedVideo": 1,
+    "slotFramesPerEncodedContext": 1,
+    "observedContextCount": null,
+    "observedContextOrder": null,
+    "missingSlotCompaction": true,
+    "preserveOriginalSlotIdentity": true,
+    "sourceIdPolicy": "This is ordered context supply only. Do not use management slot/stream indices as Diffusion RoPE source_id; actual core mapping is a separate owner contract.",
+    "bothConditioningBranchesShareSameOrderedContexts": true,
+    "sourceEvidence": {
+      "pythonLines": [
+        630,
+        688
+      ]
+    }
+  },
+  "preprocessingRules": {
+    "source-video-grid": {
+      "operations": [
+        "take source_video[:length, :, :, :3]",
+        "move channels to NCHW",
+        "common_upscale(width=832,height=480,interpolation=area,crop=center)",
+        "move channels back; keep RGB"
+      ],
+      "configuredOutputHeight": 480,
+      "configuredOutputWidth": 832,
+      "actualOutputFrames": null,
+      "actualProcessedShape": null,
+      "frameCountRule": "slice preserves only available frames; no repetition or padding is added by this source",
+      "sourceEvidence": {
+        "pythonLines": [
+          634,
+          641
+        ]
+      }
+    },
+    "original-long-edge-848": {
+      "scale": "min(848 / max(h,w), 1.0)",
+      "height": "max(16, Python round(h * scale / 16) * 16)",
+      "width": "max(16, Python round(w * scale / 16) * 16)",
+      "rounding": "Python ties-to-even",
+      "interpolation": "area",
+      "crop": "disabled",
+      "channelSelection": "RGB first three channels",
+      "fixed848Square": false,
+      "actualHeight": null,
+      "actualWidth": null,
+      "sourceEvidence": {
+        "pythonLines": [
+          379,
+          388
+        ]
+      }
+    },
+    "editor-loader": {
+      "operations": [
+        "resolve safe filename in original ComfyUI input directory",
+        "PIL Image.open",
+        "ImageOps.exif_transpose",
+        "convert RGB",
+        "numpy float32 / 255",
+        "prepend one frame dimension"
+      ],
+      "loaderOutputLayout": "[1,H,W,3]",
+      "loaderOutputRange": [
+        0,
+        1
+      ],
+      "sourceEvidence": {
+        "pythonLines": [
+          391,
+          430
+        ]
+      }
+    },
+    "pixelReproductionStatus": "Parameters/formula are source-confirmed; exact processed dimensions and pixels are unobserved. Original runtime/common_upscale/PIL/VHS versions are unconfirmed. Do not replace area/center/Python round with Canvas defaults or JavaScript Math.round without comparison."
+  },
+  "sourceVideo": {
+    "role": "source_video_context_encode",
+    "declaredFilename": "132123.mp4",
+    "workflowNodeId": 21,
+    "linkId": 29,
+    "consumerNodeId": 5,
+    "consumerPort": "source_video",
+    "loaderSettings": {
+      "video": "132123.mp4",
+      "force_rate": 16,
+      "custom_width": 0,
+      "custom_height": 0,
+      "frame_load_cap": 81,
+      "skip_first_frames": 0,
+      "select_every_nth": 1,
+      "format": "AnimateDiff"
+    },
+    "preprocessingRule": "source-video-grid",
+    "actual": {
+      "mediaSha256": null,
+      "mediaAvailable": false,
+      "decodedFrameCount": null,
+      "decodedWidth": null,
+      "decodedHeight": null,
+      "orientationAppliedWidth": null,
+      "orientationAppliedHeight": null,
+      "rotation": null,
+      "colorSpace": null,
+      "alpha": null,
+      "sourceFrameIndices": null,
+      "sourceFrameTimesSeconds": null,
+      "observedProcessedRgbNCTHW": null,
+      "observedLatentNCTHW": null,
+      "unknownReason": "Actual media bytes and runtime supply/probe metadata are not acquired. Filename/grid/link is not supply, shape, orientation or timestamp evidence."
+    },
+    "configuredPostprocessHeight": 480,
+    "configuredPostprocessWidth": 832,
+    "configuredPostprocessDimensionsConditionalOnValidSupply": true,
+    "postprocessFrameCount": null,
+    "postprocessFrameRule": "min(actual supplied tensor F,81), if a valid source tensor is supplied",
+    "profileReadiness": "BLOCKED_ACTUAL_MEDIA_AND_EXACT_SHAPE"
+  },
+  "referenceVideo": {
+    "role": "reference_video_context_encode",
+    "connectedInSerializedWorkflow": false,
+    "consumerPort": "reference_video",
+    "preprocessingRule": "first length frames then original-long-edge-848",
+    "actual": null,
+    "readiness": "NOT_APPLICABLE_TO_SERIALIZED_WORKFLOW",
+    "blockingOtherRoles": false,
+    "ifLaterConnectedRequires": "actual identity, F/H/W, frame/time arrays and resulting exact shape; no source-grid substitution"
+  },
+  "slots": [
+    {
+      "originalSlotIndex": 0,
+      "role": "reference_image_or_editor_slot_context_encode",
+      "wiredCandidate": {
+        "linkId": 32,
+        "nodeId": 24,
+        "serializedMode": 4,
+        "declaredFilename": "0000.png",
+        "runtimeSupplied": null
+      },
+      "editorCandidate": {
+        "declaredFilename": "videoframe_80.png",
+        "actualFileAvailable": false
+      },
+      "selectionRule": "Use wired tensor when non-null; otherwise load truthy editor filename. Append only successfully supplied slots, preserving original slot identity separately from compacted reference index.",
+      "runtimeSelection": null,
+      "compactedReferenceIndex": null,
+      "contextsPerSuppliedWiredSlot": "one per batch frame, in frame order",
+      "framesPerEncodedContext": 1,
+      "editorLoaderFramesPerFile": 1,
+      "preprocessingRule": "original-long-edge-848",
+      "actual": {
+        "mediaSha256": null,
+        "mediaAvailable": false,
+        "decodedFrameCount": null,
+        "decodedWidth": null,
+        "decodedHeight": null,
+        "orientationAppliedWidth": null,
+        "orientationAppliedHeight": null,
+        "rotation": null,
+        "colorSpace": null,
+        "alpha": null,
+        "sourceFrameIndices": null,
+        "sourceFrameTimesSeconds": null,
+        "observedProcessedRgbNCTHW": null,
+        "observedLatentNCTHW": null,
+        "unknownReason": "Actual media bytes and runtime supply/probe metadata are not acquired. Filename/grid/link is not supply, shape, orientation or timestamp evidence."
+      },
+      "blockingReason": "Runtime wire/mode resolution and actual selected image metadata are required.",
+      "sourceEvidence": {
+        "workflowNode": 5,
+        "workflowPort": "image0",
+        "pythonLines": [
+          648,
+          674
+        ]
+      }
+    },
+    {
+      "originalSlotIndex": 1,
+      "role": "reference_image_or_editor_slot_context_encode",
+      "wiredCandidate": {
+        "linkId": 33,
+        "nodeId": 25,
+        "serializedMode": 4,
+        "declaredFilename": "0000.png",
+        "runtimeSupplied": null
+      },
+      "editorCandidate": {
+        "declaredFilename": "00108-_lora_Ed Sheeran - SDXL - Trigger is Edsheeran person_.8_  Edsheeran person, film footage, a society where people can geneticall.png",
+        "actualFileAvailable": false
+      },
+      "selectionRule": "Use wired tensor when non-null; otherwise load truthy editor filename. Append only successfully supplied slots, preserving original slot identity separately from compacted reference index.",
+      "runtimeSelection": null,
+      "compactedReferenceIndex": null,
+      "contextsPerSuppliedWiredSlot": "one per batch frame, in frame order",
+      "framesPerEncodedContext": 1,
+      "editorLoaderFramesPerFile": 1,
+      "preprocessingRule": "original-long-edge-848",
+      "actual": {
+        "mediaSha256": null,
+        "mediaAvailable": false,
+        "decodedFrameCount": null,
+        "decodedWidth": null,
+        "decodedHeight": null,
+        "orientationAppliedWidth": null,
+        "orientationAppliedHeight": null,
+        "rotation": null,
+        "colorSpace": null,
+        "alpha": null,
+        "sourceFrameIndices": null,
+        "sourceFrameTimesSeconds": null,
+        "observedProcessedRgbNCTHW": null,
+        "observedLatentNCTHW": null,
+        "unknownReason": "Actual media bytes and runtime supply/probe metadata are not acquired. Filename/grid/link is not supply, shape, orientation or timestamp evidence."
+      },
+      "blockingReason": "Runtime wire/mode resolution and actual selected image metadata are required.",
+      "sourceEvidence": {
+        "workflowNode": 5,
+        "workflowPort": "image1",
+        "pythonLines": [
+          648,
+          674
+        ]
+      }
+    },
+    {
+      "originalSlotIndex": 2,
+      "role": "reference_image_or_editor_slot_context_encode",
+      "wiredCandidate": {
+        "linkId": 34,
+        "nodeId": 26,
+        "serializedMode": 4,
+        "declaredFilename": "0000.png",
+        "runtimeSupplied": null
+      },
+      "editorCandidate": {
+        "declaredFilename": null,
+        "actualFileAvailable": null
+      },
+      "selectionRule": "Use wired tensor when non-null; otherwise load truthy editor filename. Append only successfully supplied slots, preserving original slot identity separately from compacted reference index.",
+      "runtimeSelection": null,
+      "compactedReferenceIndex": null,
+      "contextsPerSuppliedWiredSlot": "one per batch frame, in frame order",
+      "framesPerEncodedContext": 1,
+      "editorLoaderFramesPerFile": 1,
+      "preprocessingRule": "original-long-edge-848",
+      "actual": {
+        "mediaSha256": null,
+        "mediaAvailable": false,
+        "decodedFrameCount": null,
+        "decodedWidth": null,
+        "decodedHeight": null,
+        "orientationAppliedWidth": null,
+        "orientationAppliedHeight": null,
+        "rotation": null,
+        "colorSpace": null,
+        "alpha": null,
+        "sourceFrameIndices": null,
+        "sourceFrameTimesSeconds": null,
+        "observedProcessedRgbNCTHW": null,
+        "observedLatentNCTHW": null,
+        "unknownReason": "Actual media bytes and runtime supply/probe metadata are not acquired. Filename/grid/link is not supply, shape, orientation or timestamp evidence."
+      },
+      "blockingReason": "Runtime wire/mode resolution and actual selected image metadata are required.",
+      "sourceEvidence": {
+        "workflowNode": 5,
+        "workflowPort": "image2",
+        "pythonLines": [
+          648,
+          674
+        ]
+      }
+    },
+    {
+      "originalSlotIndex": 3,
+      "role": "reference_image_or_editor_slot_context_encode",
+      "wiredCandidate": {
+        "linkId": null,
+        "nodeId": null,
+        "serializedMode": null,
+        "declaredFilename": null,
+        "runtimeSupplied": false
+      },
+      "editorCandidate": {
+        "declaredFilename": null,
+        "actualFileAvailable": null
+      },
+      "selectionRule": "Use wired tensor when non-null; otherwise load truthy editor filename. Append only successfully supplied slots, preserving original slot identity separately from compacted reference index.",
+      "runtimeSelection": "ABSENT_IN_SERIALIZED_WORKFLOW",
+      "compactedReferenceIndex": null,
+      "contextsPerSuppliedWiredSlot": "one per batch frame, in frame order",
+      "framesPerEncodedContext": 1,
+      "editorLoaderFramesPerFile": 1,
+      "preprocessingRule": "original-long-edge-848",
+      "actual": null,
+      "blockingReason": null,
+      "sourceEvidence": {
+        "workflowNode": 5,
+        "workflowPort": "image3",
+        "pythonLines": [
+          648,
+          674
+        ]
+      }
+    },
+    {
+      "originalSlotIndex": 4,
+      "role": "reference_image_or_editor_slot_context_encode",
+      "wiredCandidate": {
+        "linkId": null,
+        "nodeId": null,
+        "serializedMode": null,
+        "declaredFilename": null,
+        "runtimeSupplied": false
+      },
+      "editorCandidate": {
+        "declaredFilename": null,
+        "actualFileAvailable": null
+      },
+      "selectionRule": "Use wired tensor when non-null; otherwise load truthy editor filename. Append only successfully supplied slots, preserving original slot identity separately from compacted reference index.",
+      "runtimeSelection": "ABSENT_IN_SERIALIZED_WORKFLOW",
+      "compactedReferenceIndex": null,
+      "contextsPerSuppliedWiredSlot": "one per batch frame, in frame order",
+      "framesPerEncodedContext": 1,
+      "editorLoaderFramesPerFile": 1,
+      "preprocessingRule": "original-long-edge-848",
+      "actual": null,
+      "blockingReason": null,
+      "sourceEvidence": {
+        "workflowNode": 5,
+        "workflowPort": "image4",
+        "pythonLines": [
+          648,
+          674
+        ]
+      }
+    },
+    {
+      "originalSlotIndex": 5,
+      "role": "reference_image_or_editor_slot_context_encode",
+      "wiredCandidate": {
+        "linkId": null,
+        "nodeId": null,
+        "serializedMode": null,
+        "declaredFilename": null,
+        "runtimeSupplied": false
+      },
+      "editorCandidate": {
+        "declaredFilename": null,
+        "actualFileAvailable": null
+      },
+      "selectionRule": "Use wired tensor when non-null; otherwise load truthy editor filename. Append only successfully supplied slots, preserving original slot identity separately from compacted reference index.",
+      "runtimeSelection": "ABSENT_IN_SERIALIZED_WORKFLOW",
+      "compactedReferenceIndex": null,
+      "contextsPerSuppliedWiredSlot": "one per batch frame, in frame order",
+      "framesPerEncodedContext": 1,
+      "editorLoaderFramesPerFile": 1,
+      "preprocessingRule": "original-long-edge-848",
+      "actual": null,
+      "blockingReason": null,
+      "sourceEvidence": {
+        "workflowNode": 5,
+        "workflowPort": "image5",
+        "pythonLines": [
+          648,
+          674
+        ]
+      }
+    },
+    {
+      "originalSlotIndex": 6,
+      "role": "reference_image_or_editor_slot_context_encode",
+      "wiredCandidate": {
+        "linkId": null,
+        "nodeId": null,
+        "serializedMode": null,
+        "declaredFilename": null,
+        "runtimeSupplied": false
+      },
+      "editorCandidate": {
+        "declaredFilename": null,
+        "actualFileAvailable": null
+      },
+      "selectionRule": "Use wired tensor when non-null; otherwise load truthy editor filename. Append only successfully supplied slots, preserving original slot identity separately from compacted reference index.",
+      "runtimeSelection": "ABSENT_IN_SERIALIZED_WORKFLOW",
+      "compactedReferenceIndex": null,
+      "contextsPerSuppliedWiredSlot": "one per batch frame, in frame order",
+      "framesPerEncodedContext": 1,
+      "editorLoaderFramesPerFile": 1,
+      "preprocessingRule": "original-long-edge-848",
+      "actual": null,
+      "blockingReason": null,
+      "sourceEvidence": {
+        "workflowNode": 5,
+        "workflowPort": "image6",
+        "pythonLines": [
+          648,
+          674
+        ]
+      }
+    },
+    {
+      "originalSlotIndex": 7,
+      "role": "reference_image_or_editor_slot_context_encode",
+      "wiredCandidate": {
+        "linkId": null,
+        "nodeId": null,
+        "serializedMode": null,
+        "declaredFilename": null,
+        "runtimeSupplied": false
+      },
+      "editorCandidate": {
+        "declaredFilename": null,
+        "actualFileAvailable": null
+      },
+      "selectionRule": "Use wired tensor when non-null; otherwise load truthy editor filename. Append only successfully supplied slots, preserving original slot identity separately from compacted reference index.",
+      "runtimeSelection": "ABSENT_IN_SERIALIZED_WORKFLOW",
+      "compactedReferenceIndex": null,
+      "contextsPerSuppliedWiredSlot": "one per batch frame, in frame order",
+      "framesPerEncodedContext": 1,
+      "editorLoaderFramesPerFile": 1,
+      "preprocessingRule": "original-long-edge-848",
+      "actual": null,
+      "blockingReason": null,
+      "sourceEvidence": {
+        "workflowNode": 5,
+        "workflowPort": "image7",
+        "pythonLines": [
+          648,
+          674
+        ]
+      }
+    }
+  ],
+  "finalDecode": {
+    "workflowPath": [
+      {
+        "nodeId": 16,
+        "port": "output"
+      },
+      {
+        "nodeId": 17,
+        "port": "samples"
+      },
+      {
+        "nodeId": 22,
+        "port": "images"
+      }
+    ],
+    "outputEncodeSettings": {
+      "frame_rate": 16,
+      "loop_count": 0,
+      "filename_prefix": "BerniniStudio",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 19,
+      "save_metadata": true,
+      "trim_to_audio": false,
+      "pingpong": false,
+      "save_output": true
+    },
+    "configuredLatentCandidateNCTHW": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "configuredRgbCandidateNCTHW": [
+      1,
+      3,
+      81,
+      480,
+      832
+    ],
+    "actualGeneratedSampleShape": null,
+    "actualGeneratedSampleSha256": null,
+    "producerModelSha256s": null,
+    "decoderVaeModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "nativeMeaningRequired": "wan21-raw-generated-sample:v1",
+    "rawRestoration": {
+      "owner": "diffusion_models",
+      "id": "wan21-comfy-f32-v1",
+      "stateRequiredAtVaeInput": "restored",
+      "numericalReceipt": null,
+      "metadataDeclarationAloneSufficient": false
+    },
+    "readiness": "BLOCKED_P5_ACTUAL_PRODUCER_RESTORATION_AND_MATCHING_PROFILE",
+    "reuseRectMeanAsGeneratedSample": false
+  },
+  "vaeOwnerNextActions": [
+    "Consume the fixed workflow/node/editor sources and this role/slot inventory; preserve exact role-specific rules.",
+    "For source and candidate slots, obtain original media identity and actual runtime supply metadata before choosing exact profiles. Do not require unconnected reference_video.",
+    "Record pre/postprocessing exact F/H/W, original input/slot/frame/time mapping, selected wired/editor origin and payload hashes.",
+    "Compare those exact shapes to accepted profiles; add only missing shapes in a separate owner export/reference/WASM acceptance stage.",
+    "For final generated decode, wait only for actual P5 producer/restoration plus matching exact profile/reference/gate/resources. Keep independent metadata and accepted diagnostic work available."
+  ],
+  "preservationContract": {
+    "nativeTensorMetadata": "Copy without relabeling; strict native context/latentContract gain no management-only fields. Keep management role/supply details externally.",
+    "producers": "Preserve every producerModelSha256s identity in its original order; decoder VAE hash is separate.",
+    "text": "Preserve selected manifest, Tokenizer identity/config, masks, staged route and payload; do not collapse masks or mix Tokenizer hashes with model hashes.",
+    "frames": "Preserve sourceFrameIndices and optional same-length sourceFrameTimesSeconds arrays, order and duplicates per context; do not scalarize, sort, deduplicate, invent timestamps, or truncate arrays to latent T.",
+    "unknownOptionalMetadata": "Retain opaquely in original response/common extensions; unknown required semantics block only dependent edges.",
+    "rawMeanAndGeneratedSample": "Keep distinct native meanings/normalization and independent acceptance scopes."
+  },
+  "dependentBlocks": [
+    {
+      "id": "MEDIA_SOURCE",
+      "missing": [
+        "source original identity",
+        "actual decoded/orientation/corrected F/H/W",
+        "actual frame selection and timestamps"
+      ],
+      "blockedStages": [
+        "source exact processed tensor observation",
+        "source exactshape profile choice/export/acceptance"
+      ],
+      "unblocked": [
+        "source preprocessing contract inventory",
+        "P2/P3 existing bounded diagnostic work",
+        "Text contract preservation"
+      ]
+    },
+    {
+      "id": "MEDIA_SLOTS_0_1_2",
+      "missing": [
+        "runtime mode4 wire resolution",
+        "selected wired/editor origin",
+        "selected media identity and orientation-corrected H/W",
+        "wired batch frame count/order"
+      ],
+      "blockedStages": [
+        "exact context list",
+        "selected slot processed dimensions",
+        "selected slot exactshape profile choice/acceptance"
+      ],
+      "unblocked": [
+        "literal 0..7 slot map and precedence/order rules",
+        "absence record for empty slots 3..7",
+        "reference_video unconnected status"
+      ]
+    },
+    {
+      "id": "RUNTIME_PIXEL_REPRODUCTION",
+      "missing": [
+        "actual ComfyUI/VHS/Bernini/PIL/runtime revisions"
+      ],
+      "blockedStages": [
+        "claim of exact source runtime pixel reproduction"
+      ],
+      "unblocked": [
+        "fixed source formula/parameter/byte inventory"
+      ]
+    },
+    {
+      "id": "P5_FINAL_SAMPLE",
+      "missing": [
+        "real generated payload/shape/producer hashes",
+        "Diffusion numerical raw restoration receipt",
+        "matching VAE profile/reference/gate/resources"
+      ],
+      "blockedStages": [
+        "actual final generated-sample decode acceptance"
+      ],
+      "unblocked": [
+        "configured final-grid requirement",
+        "all independent shape/source/slot inventory"
+      ]
+    }
+  ],
+  "operationsPerformed": {
+    "mediaDownload": false,
+    "mediaProbe": false,
+    "resizeOrFrameSelectionExecution": false,
+    "modelDownload": false,
+    "profileExport": false,
+    "neuralInference": false,
+    "publicPageWrite": false,
+    "externalOwnerMessage": false
+  },
+  "generationReady": false
+}

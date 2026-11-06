@@ -1,0 +1,200 @@
+{
+  "schemaVersion": "works-holding-fixed-source-preflight/1",
+  "readiness": "BLOCKED_LOCAL",
+  "managementSource": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+  "headBefore": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+  "headAfter": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+  "gitCleanBefore": true,
+  "gitCleanAfter": true,
+  "sourceGuardPassed": true,
+  "beforeAfterSourceBytesIdentical": true,
+  "sourceProof": {
+    "nativeDeclaredSources": 153,
+    "nativeClosureWithBuildInfo": 154,
+    "adoptedSourceFiles": 164,
+    "adoptionManifestSHA256": "f2fd51b3c3f1ce429c4680f6823b20db90d08fdef4da60de8f150be63d6ef85f",
+    "operationalController": "docs/shared/ai-connection/operational-management.mjs",
+    "currentCodecSources": 32,
+    "sourceCommit": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+    "ownerCommit": "b6e166478a8e072c9ffd3ce562bfdb0c89634920",
+    "allExactCommittedBytes": true
+  },
+  "guardSummary": {
+    "guardedSources": 443,
+    "totalGuardedFileBytes": 32636961,
+    "inventorySHA256": "75e0715a3aac1164f23fefedc4c39d11ba7509758ed61257e9d82486fcd218ca"
+  },
+  "beforeReceipt": {
+    "path": "/workspace/work/ai-connection/adoption-r18/holding-fixed-source-before.json",
+    "byteLength": 98755,
+    "sha256": "694b67f5c6c8cf3dc8d994df57fbfa28aa2679f0dcd9ef6cc0c7f76b0057bf80"
+  },
+  "afterReceipt": {
+    "path": "/workspace/work/ai-connection/adoption-r18/holding-fixed-source-after.json",
+    "byteLength": 98755,
+    "sha256": "694b67f5c6c8cf3dc8d994df57fbfa28aa2679f0dcd9ef6cc0c7f76b0057bf80"
+  },
+  "rawCLI": {
+    "path": "/workspace/work/ai-connection/adoption-r18/holding-fixed-check-only.raw.json",
+    "byteLength": 1376,
+    "sha256": "6959e8b89f9b2f3c40157eba4f050602297133cd426315aea3cc636d61f49e72"
+  },
+  "stderr": {
+    "path": "/workspace/work/ai-connection/adoption-r18/holding-fixed-check-only.stderr.txt",
+    "byteLength": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "command": [
+    "node",
+    "tools/ai-connection/run-diffusion-public-browser.mjs",
+    "--source-commit",
+    "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+    "--manifest",
+    "/tmp/d1-d4-real-l512-n5-inputs/inputs.json",
+    "--models",
+    "/workspace/work/retained/bernini",
+    "--mode",
+    "sample",
+    "--wasm-threads",
+    "1",
+    "--coi",
+    "false",
+    "--check-only"
+  ],
+  "exitCode": 2,
+  "elapsedSeconds": 2.504711964999842,
+  "cli": {
+    "checkOnly": true,
+    "nativeNNExecuted": false,
+    "browserLaunched": false,
+    "sourceCommit": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+    "ownerCommit": "b6e166478a8e072c9ffd3ce562bfdb0c89634920",
+    "wasmThreads": 1,
+    "coiHeadersRequested": false,
+    "generationReady": false,
+    "originalWorkflowAccepted": false,
+    "errors": [
+      {
+        "stage": "saved-inputs",
+        "type": "FileNotFoundError",
+        "message": "[Errno 2] No such file or directory: '/tmp/d1-d4-real-l512-n5-inputs/inputs.json'"
+      },
+      {
+        "stage": "model-HIGH",
+        "type": "FileNotFoundError",
+        "message": "[Errno 2] No such file or directory: '/workspace/work/retained/bernini/Wan22_Bernini_HIGH_fp8_e4m3fn_scaled.safetensors'"
+      },
+      {
+        "stage": "model-LOW",
+        "type": "FileNotFoundError",
+        "message": "[Errno 2] No such file or directory: '/workspace/work/retained/bernini/Bernini_LOW_fp8_e4m3fn_scaled.safetensors'"
+      }
+    ],
+    "modelStats": {},
+    "sourceProof": {
+      "nativeDeclaredSources": 153,
+      "nativeClosureWithBuildInfo": 154,
+      "adoptedSourceFiles": 164,
+      "adoptionManifestSHA256": "f2fd51b3c3f1ce429c4680f6823b20db90d08fdef4da60de8f150be63d6ef85f",
+      "operationalController": "docs/shared/ai-connection/operational-management.mjs",
+      "currentCodecSources": 32,
+      "sourceCommit": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+      "ownerCommit": "b6e166478a8e072c9ffd3ce562bfdb0c89634920",
+      "allExactCommittedBytes": true
+    },
+    "guardedSources": 443,
+    "passed": false,
+    "status": "BLOCKED"
+  },
+  "adoptionMatrix": {
+    "path": "development/ai-connection/latest-adoption/ADOPTION-MATRIX.json",
+    "byteLength": 2553,
+    "sha256": "5ce41f8cefa94450d8bf69d529db136f7f5b8e60decec3c57e22f9b29e78972f",
+    "entries": [
+      {
+        "adoptionId": "text-vae",
+        "fileCount": 32,
+        "byteLength": 14473296,
+        "entryByteLength": 2293,
+        "entrySHA256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda",
+        "manifestSHA256": "59c46aabbd8dbc4838096ced69e7e132227a191c59f17ade7fe22ee3fae8c6b2",
+        "allDeclaredFilesVerified": true,
+        "matchesMatrix": true
+      },
+      {
+        "adoptionId": "full-model",
+        "fileCount": 164,
+        "byteLength": 14473285,
+        "entryByteLength": 17027,
+        "entrySHA256": "39a6c77c9d0366072f03f53b2fdaa185802388fcd54232db0ee34c56a2b6c4b7",
+        "manifestSHA256": "f2fd51b3c3f1ce429c4680f6823b20db90d08fdef4da60de8f150be63d6ef85f",
+        "allDeclaredFilesVerified": true,
+        "matchesMatrix": true
+      },
+      {
+        "adoptionId": "normal-p4",
+        "fileCount": 164,
+        "byteLength": 14473285,
+        "entryByteLength": 17027,
+        "entrySHA256": "39a6c77c9d0366072f03f53b2fdaa185802388fcd54232db0ee34c56a2b6c4b7",
+        "manifestSHA256": "f2fd51b3c3f1ce429c4680f6823b20db90d08fdef4da60de8f150be63d6ef85f",
+        "allDeclaredFilesVerified": true,
+        "matchesMatrix": true
+      }
+    ],
+    "allEntriesMatch": true
+  },
+  "historicalAdoptions": [
+    {
+      "root": "docs/shared/ai-connection/native/diffusion-ffeeeedb",
+      "baseline": "9fe2c2e1dd35e17a3063a2c67d3bda676e953c8a",
+      "source": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+      "changedFiles": [],
+      "preserved": true
+    },
+    {
+      "root": "docs/shared/ai-connection/native/lora-6d0c8df",
+      "baseline": "9fe2c2e1dd35e17a3063a2c67d3bda676e953c8a",
+      "source": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+      "changedFiles": [],
+      "preserved": true
+    },
+    {
+      "root": "docs/shared/ai-connection/native/text-vae-badff7a",
+      "baseline": "9fe2c2e1dd35e17a3063a2c67d3bda676e953c8a",
+      "source": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+      "changedFiles": [],
+      "preserved": true
+    }
+  ],
+  "allHistoricalAdoptionsPreserved": true,
+  "assetScope": {
+    "localEnvironmentOnly": true,
+    "localMissingPaths": [
+      {
+        "stage": "saved-inputs",
+        "type": "FileNotFoundError",
+        "message": "[Errno 2] No such file or directory: '/tmp/d1-d4-real-l512-n5-inputs/inputs.json'"
+      },
+      {
+        "stage": "model-HIGH",
+        "type": "FileNotFoundError",
+        "message": "[Errno 2] No such file or directory: '/workspace/work/retained/bernini/Wan22_Bernini_HIGH_fp8_e4m3fn_scaled.safetensors'"
+      },
+      {
+        "stage": "model-LOW",
+        "type": "FileNotFoundError",
+        "message": "[Errno 2] No such file or directory: '/workspace/work/retained/bernini/Bernini_LOW_fp8_e4m3fn_scaled.safetensors'"
+      }
+    ],
+    "holderAssetsPreviouslyConfirmed": true,
+    "holderConfirmationDocument": "development/ai-connection/latest-adoption/HOLDER-RUN.md",
+    "holderEndpointConnectedHere": false,
+    "globalAssetAbsenceClaimed": false
+  },
+  "browserLaunched": false,
+  "nativeNNExecuted": false,
+  "modelDownloaded": false,
+  "generationReady": false,
+  "originalWorkflowAccepted": false
+}

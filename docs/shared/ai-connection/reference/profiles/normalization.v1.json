@@ -1,0 +1,430 @@
+{
+  "schemaVersion": "works-profile-reference/1.0-draft.1",
+  "category": "normalization",
+  "documentVersion": "1.0-draft.1",
+  "status": "documented-draft",
+  "runtimeIntegrated": false,
+  "records": [
+    {
+      "recordId": "NORM-WAN21-MEAN-F5",
+      "nativeProfileId": "wan21-raw-f32-5x16x16",
+      "ownerRole": "tensor-transform",
+      "nativeContract": "diffusion-models/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/latent-space.hike"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/latent-space.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/kernel-registry.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "development/ai-connection/e6/RECT-RESULT.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "ownerModule": "diffusion_models",
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "shape": [
+          1,
+          16,
+          2,
+          2,
+          2
+        ],
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "meaningBefore": "raw-posterior-mean",
+        "meaningAfter": "wan21-normalized-posterior-mean:v1",
+        "normalizationRuleId": "wan21-comfy-f32-v1",
+        "kernelABI": "wan21-raw-mean-f32-v3",
+        "kernelExports": [
+          "NormalizeRawMean",
+          "RestoreRawMean"
+        ],
+        "channelIndexRule": "floor(i/8)",
+        "contextPolicy": "preserve owned context copy, sourceFrameIndices order and duplicates; do not equate RGB F and latent T",
+        "numericalRuleRefs": [
+          "NR-WAN21-MEAN-F32",
+          "NR-SCOPED-GATES"
+        ]
+      },
+      "admissionConstraints": {
+        "exactShapeRequired": true,
+        "equalElementCountIsNotCompatibility": true,
+        "profileIdIfPresentMustMatch": true,
+        "noAttentionMask": true,
+        "noGeneratedSampleLatentContract": true,
+        "rawNormalizationMarker": "must be absent",
+        "normalizedMarker": "optional; if present must equal wan21-comfy-f32-v1",
+        "finiteF32": "owner validates inputs and outputs",
+        "rawZero": "apply source formula; no zero special case",
+        "modelOperationsOwnerOnly": true,
+        "managerAction": "compare declared profile/meaning/owner/source/kernel/evidence bindings; do not execute the numerical formula",
+        "numericGate": {
+          "status": "NOT_VERIFIED_FOR_F5_IN_THIS_CATALOG",
+          "scope": "F5 posterior-mean profile only",
+          "source": "Obtain the pinned F5 owner acceptance record before assigning a numeric threshold; do not reuse the F1/Rect gate."
+        }
+      },
+      "evidenceScopes": [
+        "source expressions inspected at fixed commit",
+        "recorded independent struct-f32 full-value normalize/restore comparison",
+        "recorded received-VAE mean roundtrip and explicit G1C codec scope; no new test executed for this catalog"
+      ],
+      "limitations": [
+        "mean only; generated-sample restoration is not implemented by these operations",
+        "no 81-frame production latent or arbitrary dimensions",
+        "ABI version is not normalization rule ID",
+        "catalog runtime integration is not implemented"
+      ]
+    },
+    {
+      "recordId": "NORM-WAN21-MEAN-F1",
+      "nativeProfileId": "wan21-raw-f32-1x16x16",
+      "ownerRole": "tensor-transform",
+      "nativeContract": "diffusion-models/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/latent-space.hike"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/latent-space.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/kernel-registry.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "development/ai-connection/e6/RECT-RESULT.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "ownerModule": "diffusion_models",
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          2
+        ],
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "meaningBefore": "raw-posterior-mean",
+        "meaningAfter": "wan21-normalized-posterior-mean:v1",
+        "normalizationRuleId": "wan21-comfy-f32-v1",
+        "kernelABI": "wan21-raw-mean-f32-v3",
+        "kernelExports": [
+          "NormalizeRawMeanF1",
+          "RestoreRawMeanF1"
+        ],
+        "channelIndexRule": "floor(i/4)",
+        "contextPolicy": "preserve owned context copy, sourceFrameIndices order and duplicates; do not equate RGB F and latent T",
+        "numericalRuleRefs": [
+          "NR-WAN21-MEAN-F32",
+          "NR-SCOPED-GATES"
+        ]
+      },
+      "admissionConstraints": {
+        "exactShapeRequired": true,
+        "equalElementCountIsNotCompatibility": true,
+        "profileIdIfPresentMustMatch": true,
+        "noAttentionMask": true,
+        "noGeneratedSampleLatentContract": true,
+        "rawNormalizationMarker": "must be absent",
+        "normalizedMarker": "optional; if present must equal wan21-comfy-f32-v1",
+        "finiteF32": "owner validates inputs and outputs",
+        "rawZero": "apply source formula; no zero special case",
+        "modelOperationsOwnerOnly": true,
+        "managerAction": "compare declared profile/meaning/owner/source/kernel/evidence bindings; do not execute the numerical formula",
+        "numericGate": {
+          "scope": "fixed accepted mean profile roundtrip only",
+          "maximumAbsoluteError": 2e-06,
+          "source": "predeclared gate in RECT-RESULT; not a global gate"
+        }
+      },
+      "evidenceScopes": [
+        "source expressions inspected at fixed commit",
+        "recorded independent struct-f32 full-value normalize/restore comparison",
+        "recorded received-VAE mean roundtrip and explicit G1C codec scope; no new test executed for this catalog"
+      ],
+      "limitations": [
+        "mean only; generated-sample restoration is not implemented by these operations",
+        "no 81-frame production latent or arbitrary dimensions",
+        "ABI version is not normalization rule ID",
+        "catalog runtime integration is not implemented"
+      ]
+    },
+    {
+      "recordId": "NORM-WAN21-MEAN-RECT",
+      "nativeProfileId": "wan21-raw-f32-1x16x32",
+      "ownerRole": "tensor-transform",
+      "nativeContract": "diffusion-models/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/latent-space.hike"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/latent-space.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/kernel-registry.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "development/ai-connection/e6/RECT-RESULT.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "ownerModule": "diffusion_models",
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "meaningBefore": "raw-posterior-mean",
+        "meaningAfter": "wan21-normalized-posterior-mean:v1",
+        "normalizationRuleId": "wan21-comfy-f32-v1",
+        "kernelABI": "wan21-raw-mean-f32-v3",
+        "kernelExports": [
+          "NormalizeRawMeanRect",
+          "RestoreRawMeanRect"
+        ],
+        "channelIndexRule": "floor(i/8)",
+        "contextPolicy": "preserve owned context copy, sourceFrameIndices order and duplicates; do not equate RGB F and latent T",
+        "numericalRuleRefs": [
+          "NR-WAN21-MEAN-F32",
+          "NR-SCOPED-GATES"
+        ]
+      },
+      "admissionConstraints": {
+        "exactShapeRequired": true,
+        "equalElementCountIsNotCompatibility": true,
+        "profileIdIfPresentMustMatch": true,
+        "noAttentionMask": true,
+        "noGeneratedSampleLatentContract": true,
+        "rawNormalizationMarker": "must be absent",
+        "normalizedMarker": "optional; if present must equal wan21-comfy-f32-v1",
+        "finiteF32": "owner validates inputs and outputs",
+        "rawZero": "apply source formula; no zero special case",
+        "modelOperationsOwnerOnly": true,
+        "managerAction": "compare declared profile/meaning/owner/source/kernel/evidence bindings; do not execute the numerical formula",
+        "numericGate": {
+          "scope": "fixed accepted mean profile roundtrip only",
+          "maximumAbsoluteError": 2e-06,
+          "source": "predeclared gate in RECT-RESULT; not a global gate"
+        }
+      },
+      "evidenceScopes": [
+        "source expressions inspected at fixed commit",
+        "recorded independent struct-f32 full-value normalize/restore comparison",
+        "recorded received-VAE mean roundtrip and explicit G1C codec scope; no new test executed for this catalog"
+      ],
+      "limitations": [
+        "mean only; generated-sample restoration is not implemented by these operations",
+        "no 81-frame production latent or arbitrary dimensions",
+        "ABI version is not normalization rule ID",
+        "catalog runtime integration is not implemented"
+      ]
+    },
+    {
+      "recordId": "NORM-RGB-UNIT-TO-RAW",
+      "nativeProfileId": null,
+      "ownerRole": "latent-encoding",
+      "nativeContract": "works-ai-1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/vae.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "tools/inference/kernel/tensor.hike"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/API.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "ownerModule": "vae",
+        "inputMeaning": "rgb-unit",
+        "outputIntermediateMeaning": "raw-decoder-rgb",
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "inputRange": [
+          0,
+          1
+        ],
+        "intermediateRange": [
+          -1,
+          1
+        ],
+        "operation": "vae.encode",
+        "kernelOperation": "Affine(scale=2,shift=-1)",
+        "numericalRuleRefs": [
+          "NR-RGB-AFFINE-F32"
+        ]
+      },
+      "admissionConstraints": {
+        "profileBinding": "must match the configured VAE exported profile; null nativeProfileId means no separate RGB conversion profile ID was found",
+        "rawInputPolicy": "raw-decoder-rgb input bypasses this conversion; do not add an identity Hike call",
+        "outputPolicy": "no implicit output clamp or inverse color conversion",
+        "managerAction": "check range/meaning/profile declarations and owner evidence; request VAE operation, do not implement x*2-1"
+      },
+      "evidenceScopes": [
+        "fixed VAE runtime and Hike source inspected",
+        "API records opaque PNG/rgb-unit encode and fixed diagnostic profile acceptance"
+      ],
+      "limitations": [
+        "not VAE latent channel normalization",
+        "RGB range rules do not constrain latent to [0,1] or [-1,1]",
+        "new alpha/background/color handling is not authorized",
+        "no new universal tolerance selected"
+      ]
+    },
+    {
+      "recordId": "NORM-RAW-GENERATED-DECLARATION",
+      "nativeProfileId": null,
+      "ownerRole": "tensor-transform",
+      "nativeContract": "works-ai-1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/vae.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "restorationOwnerModule": "diffusion_models",
+        "consumerModule": "vae",
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "meaning": "wan21-raw-generated-sample:v1",
+        "latentContract": {
+          "schemaVersion": 1,
+          "representation": "generated-sample",
+          "space": "raw",
+          "vaeModelSha256": "must match configured decoder",
+          "producerModelSha256s": "nonempty unique actual producer hashes; decoder VAE is separate",
+          "normalization": {
+            "id": "wan21-comfy-f32-v1",
+            "state": "restored",
+            "owner": "diffusion_models"
+          }
+        },
+        "numericalRuleRefs": [
+          "NR-GENERATED-MEAN-SEPARATION"
+        ]
+      },
+      "admissionConstraints": {
+        "consumerProfile": "exact configured shape and decoder binding",
+        "numericalRestorationStatus": "unverified/not implemented by current Diffusion generated producer",
+        "noRelabeling": "must not rename generated sample to raw-posterior-mean",
+        "noRawClamp": true,
+        "noDoubleRestoration": true,
+        "managerAction": "verify declarations plus owner-issued restoration trace and required accepted evidence; metadata restored alone is insufficient",
+        "executionReadiness": "blocked until actual generated producer/restoration and decode acceptance exist"
+      },
+      "evidenceScopes": [
+        "consumer declaration validator and metadata codec fixtures only",
+        "no accepted full generated-sample numerical route"
+      ],
+      "limitations": [
+        "normalization ID is a declared rule binding, not proof that conversion occurred",
+        "mean profile success does not qualify generated sample",
+        "producer order/LoRA/steps must remain in execution trace, not inferred from the hash list",
+        "no numerical formula or tolerance has been newly authorized for this unimplemented route"
+      ]
+    },
+    {
+      "recordId": "NORM-UMT5-RMSNORM",
+      "nativeProfileId": null,
+      "ownerRole": "text-encoding",
+      "nativeContract": "works-ai-1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/text-encoder.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "tools/inference/kernel/tensor.hike"
+        }
+      ],
+      "requiredDeclarations": {
+        "ownerModule": "text_encoder",
+        "operation": "actual encoder.final_layer_norm",
+        "dtype": "float32",
+        "hiddenSize": 4096,
+        "epsilon": 1e-06,
+        "weightBinding": "verified manifest.finalNorm.path/bytes/sha256",
+        "inputLayout": "row-major effective token rows by hidden4096",
+        "sqrtBridge": "fixed env.sqrt -> Math.sqrt, f64 -> f64",
+        "numericalRuleRefs": [
+          "NR-UMT5-RMSNORM-F32"
+        ]
+      },
+      "admissionConstraints": {
+        "manifestType": "wan-umt5-staged-fp32; not a separate normalization profile ID",
+        "epsilonMustMatchPinnedManifest": true,
+        "managerAction": "compare model/manifest/owner/kernel and existing gate evidence; do not run RMSNorm",
+        "numericGate": "manifest.numericGate must be obtained from the selected accepted manifest; no global value inferred here"
+      },
+      "evidenceScopes": [
+        "fixed Hike and text runtime expressions inspected",
+        "previous fixed 24-layer FP32 diagnostic acceptance recorded in native API, not rerun here"
+      ],
+      "limitations": [
+        "internal neural model normalization, not latent or RGB normalization",
+        "no Comfy prompt weighting/clip skip/pooled embedding coverage",
+        "does not establish all512-effective-token performance or arbitrary model RMSNorm compatibility"
+      ]
+    }
+  ]
+}

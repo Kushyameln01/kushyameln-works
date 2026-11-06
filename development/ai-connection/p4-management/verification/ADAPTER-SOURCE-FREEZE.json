@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "works-p4-adapter-source-freeze/0.1",
+  "dateJST": "2026-11-02",
+  "managementBaseCommit": "5aa5a806f84a875c542b2922fe80ef6faafc7915",
+  "files": [
+    {
+      "path": "docs/shared/ai-connection/adapters/norm-required-p4-cross-ffn.mjs",
+      "byteLength": 29424,
+      "sha256": "d284f5db581f50c5c49924da15e5711ca75d147fd96293a150900e9767089a34"
+    },
+    {
+      "path": "docs/shared/ai-connection/adapters/p4-cross-ffn/package.mjs",
+      "byteLength": 12787,
+      "sha256": "1b24da8d22727c9c4deb6ae068ef59e31e22ca1a3a60552b5a4ff592129a45c1"
+    },
+    {
+      "path": "tools/ai-connection/test-norm-required-p4-cross-ffn.mjs",
+      "byteLength": 21940,
+      "sha256": "ddee909617e91d4edf4f336003b3310bbe8638e97a29335c88183cbc1702e319"
+    },
+    {
+      "path": "tools/ai-connection/test-p4-cross-ffn-package.mjs",
+      "byteLength": 9187,
+      "sha256": "f548c89b0dd8d625410b902939309b143f469d3d434460d77453cb1eba22d921"
+    }
+  ],
+  "logs": [
+    {
+      "path": "adapter-red.log",
+      "byteLength": 10350,
+      "sha256": "eee80ad339c6e7ce75eb00088e75289943f869b5f6c088293dc9a38837f4f266"
+    },
+    {
+      "path": "package-red.log",
+      "byteLength": 4551,
+      "sha256": "50c65bc03e6bbf0ae066cb821ab2a3698152df49acb4bdb419b01e0a7c854cb3"
+    },
+    {
+      "path": "package-snapshot-trace-red.log",
+      "byteLength": 3575,
+      "sha256": "85018ac47a09f40d495b234e20c37cebb2a3b97b649248d7442fe9e77ad84298"
+    },
+    {
+      "path": "lifecycle-metadata-red.log",
+      "byteLength": 2695,
+      "sha256": "b50ec59c144d58a9a39422993005c5b73cbc2c88c030b13afc99975260642205"
+    },
+    {
+      "path": "focused-green.log",
+      "byteLength": 1627,
+      "sha256": "5c5f3ccec48092555cb03722020ff0964098664244ccca50462da189cb24a536"
+    },
+    {
+      "path": "regression.log",
+      "byteLength": 13132,
+      "sha256": "e0959cc044819de63e37e1f1a19bbfa5c2e40f82f2d82279cc3ce96d8e057318"
+    },
+    {
+      "path": "comparison-modes-red.log",
+      "byteLength": 4487,
+      "sha256": "7aabd51cc2138c4942d444e98ce31f66c087915bafca94dfdb1430ba57311495"
+    },
+    {
+      "path": "comparison-modes-green.log",
+      "byteLength": 1813,
+      "sha256": "35abd28ebce1a5c8c14d5755876ebccf42ece7b53f07ce09e61093a3f8855336"
+    }
+  ],
+  "focusedTests": {
+    "tests": 20,
+    "pass": 20,
+    "fail": 0,
+    "skip": 0,
+    "log": "comparison-modes-green.log"
+  },
+  "relatedRegression": {
+    "tests": 133,
+    "pass": 131,
+    "fail": 0,
+    "skip": 2,
+    "skippedNames": [
+      "real pinned public54b wktensor codec preserves context/producers/decoder and detects outer metadata mismatch",
+      "real54b codec plus E2 capture saves and restores mask and optional Uint16 owned bytes"
+    ],
+    "scope": "Previous related regression before explicit mode guard update; root final full suite is pending all component freezes"
+  },
+  "actualNativeP4Executed": false,
+  "actualTextP4NumericalAccepted": false,
+  "privateInputsFetched": false,
+  "oldPinsChanged": false,
+  "generationReady": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY",
+  "comparisonModes": {
+    "nativeTextAllowed": [
+      [
+        "composed"
+      ],
+      [
+        "local",
+        "composed"
+      ]
+    ],
+    "inferredModes": false,
+    "priorPassModesMustMatchExactly": true,
+    "countBindings": "25 arrays * declared mode count; element extents * declared mode count",
+    "fixtureScope": "Unchanged50 local/composed; optional supplied modes must match"
+  }
+}

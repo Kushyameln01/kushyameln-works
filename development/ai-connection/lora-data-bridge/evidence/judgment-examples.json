@@ -1,0 +1,158 @@
+{
+  "schemaVersion": "works-lora-data-judgment-examples/0.1",
+  "sourceEvidence": "low-failure.json.gz",
+  "generationReady": false,
+  "records": [
+    {
+      "caseId": "matching-observation",
+      "scope": "isolated loader binding over actual formal preflight DATA; no native execution",
+      "compatibility": "COMPATIBLE",
+      "validation": [],
+      "readiness": {
+        "state": "ready",
+        "reasons": []
+      },
+      "normTrace": null,
+      "checks": []
+    },
+    {
+      "caseId": "missing-target-dtype",
+      "scope": "isolated loader binding over actual formal preflight DATA; no native execution",
+      "compatibility": "UNVERIFIED",
+      "validation": [],
+      "readiness": {
+        "state": "blocked",
+        "reasons": [
+          "CONTRACT_UNVERIFIED"
+        ]
+      },
+      "normTrace": null,
+      "checks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/numericDeclarations/observed/target/dtype",
+          "expected": "F32",
+          "observed": null,
+          "outcome": "unknown",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: unknown",
+          "owner": "diffusion:b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+            "lora-connection/2.0-draft.1",
+            "3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24",
+            "works:receiver-q16-weight@1",
+            "bernini-q16x5120-f32-wasm-v1",
+            "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+            "bernini-diagnostic-registry/0.1",
+            "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        },
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/numericDeclarations/presence/observed/target/dtype",
+          "expected": true,
+          "observed": false,
+          "outcome": "unknown",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: unknown",
+          "owner": "diffusion:b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+            "lora-connection/2.0-draft.1",
+            "3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24",
+            "works:receiver-q16-weight@1",
+            "bernini-q16x5120-f32-wasm-v1",
+            "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+            "bernini-diagnostic-registry/0.1",
+            "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "caseId": "conflicting-target-dtype",
+      "scope": "isolated loader binding over actual formal preflight DATA; no native execution",
+      "compatibility": "INCOMPATIBLE",
+      "validation": [],
+      "readiness": {
+        "state": "blocked",
+        "reasons": [
+          "CONTRACT_INCOMPATIBLE"
+        ]
+      },
+      "normTrace": null,
+      "checks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/numericDeclarations/observed/target/dtype",
+          "expected": "F32",
+          "observed": "F16",
+          "outcome": "mismatch",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: mismatch",
+          "owner": "diffusion:b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+            "lora-connection/2.0-draft.1",
+            "3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24",
+            "works:receiver-q16-weight@1",
+            "bernini-q16x5120-f32-wasm-v1",
+            "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+            "bernini-diagnostic-registry/0.1",
+            "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "caseId": "matching-contract-numerical-receipt-missing",
+      "scope": "existing management normative fixture; unphased full requirement; no native execution",
+      "compatibility": "COMPATIBLE",
+      "validation": [
+        {
+          "scope": "norm-test:projection",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-TRANSACTION",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-EVIDENCE",
+          "result": "not-verified",
+          "evidenceRefs": []
+        }
+      ],
+      "readiness": {
+        "state": "blocked",
+        "reasons": [
+          "SCOPE_not-verified:norm-test:projection",
+          "SCOPE_not-verified:norm:N-TRANSACTION",
+          "SCOPE_not-verified:norm:N-EVIDENCE"
+        ]
+      },
+      "checks": []
+    }
+  ]
+}

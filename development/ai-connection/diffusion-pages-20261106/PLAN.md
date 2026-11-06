@@ -16,3 +16,5 @@
 既存のN5/Text L3 raw sample原本は非公開受渡しで再利用する。公開repoにraw payloadや非公開取得URLを同梱しない。実LoRA送付・全体モジュール運用実験・VAE decodeは今回のUI境界確認へ含めない。
 
 公開前確認：ownerの関連109試験、新初期化の独立8,264値、build154source、採用tree158file、管理6試験、canonical入口とnative factoryの同一性、全新入口の静的参照、独立レビューを確認した。公開操作の完了は未記入であり、次工程で実測する。
+
+統合時にmainが9a80078757da9be3ca152e4205bf73fdea363e9fへ進んだため、そのText/VAE/media/実モジュール管理を保持してmergeした。実モジュールフォームもnoise/targetを管理で作らずownerへ委任するよう揃え、既存native namespace/weight/P4 exportsを保持した。管理native5・adapter17・mean2・panel6・product13の変更境界試験が通過。公開runnerは実URLのTLS検証済み応答だけを使用し、application API注入やlocal contentで代替しない。

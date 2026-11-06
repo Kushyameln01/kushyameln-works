@@ -1,5 +1,7 @@
 import {createInferenceClient} from './client.mjs';
 import {encodeTensor,decodeTensor,requireTensor} from './tensor.mjs';
+import {validateVaeRequest} from './vae.mjs';
+import {writeOpaqueRgbaToNcthw} from './media-input.mjs';
 const $=s=>document.querySelector(s),mode=document.body.dataset.inference;
 let manifest,files=new Map(),inputTensor,result,outputURL,revision=0,sourceFile;
 const status=$('#status'),run=$('#run'),cancel=$('#cancel'),save=$('#save');
@@ -14,7 +16,7 @@ $('#bundle').addEventListener('change',async event=>{
   const parsed=JSON.parse(await matches[0].text());if(rev!==revision)return;
   const isText=parsed.type==='wan-umt5-staged-fp32';if((mode==='text_encoder')!==isText)throw Error('選択したモデル一式は、このモジュールに対応していません');
   manifest=parsed;const source=$('#source')?.files?.[0];if(source){files.set(source.name,source);sourceFile=source;}
-  const desc=isText?`UMT5 · 24層 · FP32診断演算 · 最大512 token`:`Wan2.1 · ${parsed.profile.videoShape[2]}フレーム / ${parsed.profile.videoShape[4]}×${parsed.profile.videoShape[3]} · FP32診断演算`;
+  const desc=isText?`UMT5 · 24層 · FP32診断演算 · 最大512 token`:parsed.kind==='wan21-vae-stream-v1'?`Wan2.1 · 1〜81フレーム · 幅と高さ16〜848・16単位`:`Wan2.1 · ${parsed.profile.videoShape[2]}フレーム / ${parsed.profile.videoShape[4]}×${parsed.profile.videoShape[3]} · FP32診断演算`;
   $('#model-info').textContent=desc;run.disabled=false;status.textContent='入力を選んで実行できます';
  }catch(e){status.textContent=e.message;run.disabled=true;}
 });
@@ -27,13 +29,19 @@ $('#images')?.addEventListener('change',async e=>{
  invalidated();inputTensor=null;const rev=revision;
  try{
   if(!manifest?.profile)throw Error('先に実行用モデル一式を選んでください');
-  const shape=manifest.profile.videoShape,[,channels,frames,height,width]=shape,images=Array.from(e.target.files).sort((a,b)=>a.name<b.name?-1:a.name>b.name?1:0);
+  const images=Array.from(e.target.files).sort((a,b)=>a.name<b.name?-1:a.name>b.name?1:0);
+  let shape=manifest.profile.videoShape;
+  if(manifest.kind==='wan21-vae-stream-v1'){
+   if(!images.length)throw Error('画像を選んでください');
+   const first=await createImageBitmap(images[0]);try{shape=[1,3,images.length,first.height,first.width];}finally{first.close();}
+  }
+  const [,channels,frames,height,width]=shape;
   if(images.length!==frames)throw Error(`このプロファイルには${frames}フレーム必要です`);
   const data=new Float32Array(channels*frames*height*width),canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d',{willReadFrequently:true});
   for(let t=0;t<frames;t++){
    const bitmap=await createImageBitmap(images[t]);
    try{if(bitmap.width!==width||bitmap.height!==height)throw Error(`画像寸法は${width}×${height}に揃えてください`);ctx.clearRect(0,0,width,height);ctx.drawImage(bitmap,0,0);const pixels=ctx.getImageData(0,0,width,height).data;
-    for(let i=0;i<width*height;i++){if(pixels[i*4+3]!==255)throw Error('透過画像は、背景を明示的に合成してから選んでください');for(let c=0;c<3;c++)data[(c*frames+t)*height*width+i]=pixels[i*4+c]/255;}
+    writeOpaqueRgbaToNcthw({data:pixels,width,height},data,{frameIndex:t,frameCount:frames});
    }finally{bitmap.close();}
   }
   if(rev!==revision)return;inputTensor={dtype:'float32',layout:'NCTHW',shape:[...shape],meaning:'rgb-unit',data};$('#operation').value='encode';$('#input-info').textContent=`画像${frames}枚 / [${shape.join(', ')}]`;
@@ -51,11 +59,11 @@ run.addEventListener('click',async()=>{
   }else{
    if(!inputTensor)throw Error('Works tensorファイルを選んでください');operation=$('#operation').value;
    requireTensor(inputTensor,{dtype:'float32',layout:'NCTHW'});
-   if(operation==='decode'?inputTensor.meaning!=='raw-posterior-mean':!['raw-decoder-rgb','rgb-unit'].includes(inputTensor.meaning))throw Error('この操作に接続できないtensorです');
+   validateVaeRequest({operation,tensor:inputTensor,manifest});
    input=inputTensor;
   }
-  const output=await client.run({module:mode,operation,manifest,files,input});if(rev!==revision)return;
-  result=output;status.textContent='完了';$('#output').textContent=`${output.tensor.meaning}\nshape [${output.tensor.shape.join(', ')}]\n${output.tensor.data.byteLength.toLocaleString()} bytes`;
+  const output=await client.run({module:mode,operation,manifest,files,input,diagnostics:true});if(rev!==revision)return;
+  result=output;status.textContent=output.processing?.ignoredTailFrames?`完了 · 入力${output.processing.sourceFrames}フレーム / 処理${output.processing.consumedFrames}フレーム（元モデルの末尾規則で${output.processing.ignoredTailFrames}フレーム未使用）`:'完了';$('#output').textContent=`${output.tensor.meaning}\nshape [${output.tensor.shape.join(', ')}]\n${output.tensor.data.byteLength.toLocaleString()} bytes`;
   $('#evidence').textContent=JSON.stringify(output.evidence,null,2);save.disabled=false;
  }catch(e){if(rev===revision)status.textContent=e.message;}
 });

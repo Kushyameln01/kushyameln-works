@@ -1,5 +1,5 @@
 import {SentencePieceProcessor} from './vendor/sentencepiece.mjs';
-const EXPECTED='e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458';
+import {UMT5_TOKENIZER_SHA256 as EXPECTED} from './text-encoder.mjs';
 export async function tokenizePlainText(text,modelBytes,{minimumLength=512,maximumLength=512}={}){
  if(typeof text!=='string'||!Number.isInteger(minimumLength)||!Number.isInteger(maximumLength)||minimumLength<1||maximumLength<minimumLength)throw TypeError('Invalid text tokenizer input');
  const bytes=modelBytes instanceof Uint8Array?modelBytes:new Uint8Array(modelBytes);

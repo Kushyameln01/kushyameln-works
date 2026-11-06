@@ -8,9 +8,9 @@ export function createInferenceClient({workerFactory=()=>new Worker(new URL('./i
  const api={get state(){return{...state};},
   async run(request){
    if(disposed)throw Error('Inference client disposed');if(current)throw Error('Inference client busy');
-   const {module,operation,manifest,files,input}=request;
+   const {module,operation,manifest,files,input,diagnostics=false}=request;
    if(!['vae','text_encoder'].includes(module))throw TypeError('Unsupported inference module');
-   const envelope={buildId:BUILD,sessionId,jobId:String(++serial),inputRevision:++revision,module,operation,manifest,files,input};
+   const envelope={buildId:BUILD,sessionId,jobId:String(++serial),inputRevision:++revision,module,operation,manifest,files,input,diagnostics};
    const worker=workerFactory();
    return new Promise((resolve,reject)=>{
     const job={worker,resolve,reject,envelope};current=job;

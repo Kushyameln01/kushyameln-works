@@ -1,0 +1,797 @@
+{
+  "schemaVersion": "works-owner-data-declaration-probe-summary/0.1-draft.1",
+  "status": "PASS_MANAGER_DECLARATION_METADATA_CONFORMANCE",
+  "scope": "retained owner metadata declarations in the authenticated management common edge fixture; no live owner plan/resource/snapshot or numerical runtime acceptance",
+  "receiverSourceRef": {
+    "repository": "Kushyameln01/kushyameln-works",
+    "commit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+    "path": "tools/ai-connection/probe-manager-lora-declarations.mjs"
+  },
+  "dataImplementationCommit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+  "managerCommit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+  "comparisonOrder": "12 negative declaration mutations first; then 2 supported BF16/F32/row-major positives",
+  "fixtureOnly": true,
+  "currentLiveAdmission": false,
+  "runtimeAcceptance": false,
+  "formalThreePhaseEntry": {
+    "status": "NOT_ASSESSED_BY_THIS_DECLARATION_PROBE",
+    "methodNames": null,
+    "adoptionAccepted": false
+  },
+  "catalog": {
+    "sourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+      "path": "docs/shared/ai-connection/reference/catalog.v1.json"
+    },
+    "sha256": "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c"
+  },
+  "negativeResults": [
+    {
+      "probeId": "q.weight:missing:baseDtype",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.weight",
+      "weightId": "q.weight",
+      "kind": "missing",
+      "field": "baseDtype",
+      "expected": {
+        "compatibility": "UNVERIFIED",
+        "readiness": "blocked"
+      },
+      "conforms": true,
+      "decisionEqualsPositiveBaseline": false,
+      "observed": {
+        "compatibility": "UNVERIFIED",
+        "readiness": "blocked"
+      },
+      "fieldChecks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/baseDtype",
+          "expected": "F32",
+          "observed": null,
+          "outcome": "unknown",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: unknown",
+          "owner": "consumer",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "fixture/1",
+            "fixture-build-1",
+            "fixture:latent@1",
+            "fixture:tiny/1",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "probeId": "q.weight:mutated:baseDtype",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.weight",
+      "weightId": "q.weight",
+      "kind": "mutated",
+      "field": "baseDtype",
+      "expected": {
+        "compatibility": "INCOMPATIBLE",
+        "readiness": "blocked"
+      },
+      "conforms": true,
+      "decisionEqualsPositiveBaseline": false,
+      "observed": {
+        "compatibility": "INCOMPATIBLE",
+        "readiness": "blocked"
+      },
+      "fieldChecks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/baseDtype",
+          "expected": "F32",
+          "observed": "F16",
+          "outcome": "mismatch",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: mismatch",
+          "owner": "consumer",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "fixture/1",
+            "fixture-build-1",
+            "fixture:latent@1",
+            "fixture:tiny/1",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "probeId": "q.weight:missing:outputDtype",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.weight",
+      "weightId": "q.weight",
+      "kind": "missing",
+      "field": "outputDtype",
+      "expected": {
+        "compatibility": "UNVERIFIED",
+        "readiness": "blocked"
+      },
+      "conforms": true,
+      "decisionEqualsPositiveBaseline": false,
+      "observed": {
+        "compatibility": "UNVERIFIED",
+        "readiness": "blocked"
+      },
+      "fieldChecks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/outputDtype",
+          "expected": "F32",
+          "observed": null,
+          "outcome": "unknown",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: unknown",
+          "owner": "consumer",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "fixture/1",
+            "fixture-build-1",
+            "fixture:latent@1",
+            "fixture:tiny/1",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "probeId": "q.weight:mutated:outputDtype",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.weight",
+      "weightId": "q.weight",
+      "kind": "mutated",
+      "field": "outputDtype",
+      "expected": {
+        "compatibility": "INCOMPATIBLE",
+        "readiness": "blocked"
+      },
+      "conforms": true,
+      "decisionEqualsPositiveBaseline": false,
+      "observed": {
+        "compatibility": "INCOMPATIBLE",
+        "readiness": "blocked"
+      },
+      "fieldChecks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/outputDtype",
+          "expected": "F32",
+          "observed": "BF16",
+          "outcome": "mismatch",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: mismatch",
+          "owner": "consumer",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "fixture/1",
+            "fixture-build-1",
+            "fixture:latent@1",
+            "fixture:tiny/1",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "probeId": "q.weight:missing:layout",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.weight",
+      "weightId": "q.weight",
+      "kind": "missing",
+      "field": "layout",
+      "expected": {
+        "compatibility": "UNVERIFIED",
+        "readiness": "blocked"
+      },
+      "conforms": true,
+      "decisionEqualsPositiveBaseline": false,
+      "observed": {
+        "compatibility": "UNVERIFIED",
+        "readiness": "blocked"
+      },
+      "fieldChecks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/layout",
+          "expected": "row-major",
+          "observed": null,
+          "outcome": "unknown",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: unknown",
+          "owner": "consumer",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "fixture/1",
+            "fixture-build-1",
+            "fixture:latent@1",
+            "fixture:tiny/1",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "probeId": "q.weight:mutated:layout",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.weight",
+      "weightId": "q.weight",
+      "kind": "mutated",
+      "field": "layout",
+      "expected": {
+        "compatibility": "INCOMPATIBLE",
+        "readiness": "blocked"
+      },
+      "conforms": true,
+      "decisionEqualsPositiveBaseline": false,
+      "observed": {
+        "compatibility": "INCOMPATIBLE",
+        "readiness": "blocked"
+      },
+      "fieldChecks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/layout",
+          "expected": "row-major",
+          "observed": "column-major",
+          "outcome": "mismatch",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: mismatch",
+          "owner": "consumer",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "fixture/1",
+            "fixture-build-1",
+            "fixture:latent@1",
+            "fixture:tiny/1",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "probeId": "q.bias:missing:baseDtype",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.bias",
+      "weightId": "q.bias",
+      "kind": "missing",
+      "field": "baseDtype",
+      "expected": {
+        "compatibility": "UNVERIFIED",
+        "readiness": "blocked"
+      },
+      "conforms": true,
+      "decisionEqualsPositiveBaseline": false,
+      "observed": {
+        "compatibility": "UNVERIFIED",
+        "readiness": "blocked"
+      },
+      "fieldChecks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/baseDtype",
+          "expected": "F32",
+          "observed": null,
+          "outcome": "unknown",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: unknown",
+          "owner": "consumer",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "fixture/1",
+            "fixture-build-1",
+            "fixture:latent@1",
+            "fixture:tiny/1",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "probeId": "q.bias:mutated:baseDtype",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.bias",
+      "weightId": "q.bias",
+      "kind": "mutated",
+      "field": "baseDtype",
+      "expected": {
+        "compatibility": "INCOMPATIBLE",
+        "readiness": "blocked"
+      },
+      "conforms": true,
+      "decisionEqualsPositiveBaseline": false,
+      "observed": {
+        "compatibility": "INCOMPATIBLE",
+        "readiness": "blocked"
+      },
+      "fieldChecks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/baseDtype",
+          "expected": "F32",
+          "observed": "F16",
+          "outcome": "mismatch",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: mismatch",
+          "owner": "consumer",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "fixture/1",
+            "fixture-build-1",
+            "fixture:latent@1",
+            "fixture:tiny/1",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "probeId": "q.bias:missing:outputDtype",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.bias",
+      "weightId": "q.bias",
+      "kind": "missing",
+      "field": "outputDtype",
+      "expected": {
+        "compatibility": "UNVERIFIED",
+        "readiness": "blocked"
+      },
+      "conforms": true,
+      "decisionEqualsPositiveBaseline": false,
+      "observed": {
+        "compatibility": "UNVERIFIED",
+        "readiness": "blocked"
+      },
+      "fieldChecks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/outputDtype",
+          "expected": "F32",
+          "observed": null,
+          "outcome": "unknown",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: unknown",
+          "owner": "consumer",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "fixture/1",
+            "fixture-build-1",
+            "fixture:latent@1",
+            "fixture:tiny/1",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "probeId": "q.bias:mutated:outputDtype",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.bias",
+      "weightId": "q.bias",
+      "kind": "mutated",
+      "field": "outputDtype",
+      "expected": {
+        "compatibility": "INCOMPATIBLE",
+        "readiness": "blocked"
+      },
+      "conforms": true,
+      "decisionEqualsPositiveBaseline": false,
+      "observed": {
+        "compatibility": "INCOMPATIBLE",
+        "readiness": "blocked"
+      },
+      "fieldChecks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/outputDtype",
+          "expected": "F32",
+          "observed": "BF16",
+          "outcome": "mismatch",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: mismatch",
+          "owner": "consumer",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "fixture/1",
+            "fixture-build-1",
+            "fixture:latent@1",
+            "fixture:tiny/1",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "probeId": "q.bias:missing:layout",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.bias",
+      "weightId": "q.bias",
+      "kind": "missing",
+      "field": "layout",
+      "expected": {
+        "compatibility": "UNVERIFIED",
+        "readiness": "blocked"
+      },
+      "conforms": true,
+      "decisionEqualsPositiveBaseline": false,
+      "observed": {
+        "compatibility": "UNVERIFIED",
+        "readiness": "blocked"
+      },
+      "fieldChecks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/layout",
+          "expected": "row-major",
+          "observed": null,
+          "outcome": "unknown",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: unknown",
+          "owner": "consumer",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "fixture/1",
+            "fixture-build-1",
+            "fixture:latent@1",
+            "fixture:tiny/1",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    },
+    {
+      "probeId": "q.bias:mutated:layout",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.bias",
+      "weightId": "q.bias",
+      "kind": "mutated",
+      "field": "layout",
+      "expected": {
+        "compatibility": "INCOMPATIBLE",
+        "readiness": "blocked"
+      },
+      "conforms": true,
+      "decisionEqualsPositiveBaseline": false,
+      "observed": {
+        "compatibility": "INCOMPATIBLE",
+        "readiness": "blocked"
+      },
+      "fieldChecks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/layout",
+          "expected": "row-major",
+          "observed": "column-major",
+          "outcome": "mismatch",
+          "code": "N-LOADER_MISMATCH",
+          "reason": "manager-norm: mismatch",
+          "owner": "consumer",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "fixture/1",
+            "fixture-build-1",
+            "fixture:latent@1",
+            "fixture:tiny/1",
+            "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-LOADER"
+        }
+      ]
+    }
+  ],
+  "positiveResults": [
+    {
+      "probeId": "q.weight:positive",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.weight",
+      "weightId": "q.weight",
+      "kind": "positive",
+      "field": null,
+      "expected": {
+        "compatibility": "COMPATIBLE",
+        "readiness": "ready"
+      },
+      "conforms": true,
+      "observed": {
+        "compatibility": "COMPATIBLE",
+        "readiness": "ready"
+      }
+    },
+    {
+      "probeId": "q.bias:positive",
+      "patchKey": "diffusion_model.blocks.0.self_attn.q.bias",
+      "weightId": "q.bias",
+      "kind": "positive",
+      "field": null,
+      "expected": {
+        "compatibility": "COMPATIBLE",
+        "readiness": "ready"
+      },
+      "conforms": true,
+      "observed": {
+        "compatibility": "COMPATIBLE",
+        "readiness": "ready"
+      }
+    }
+  ],
+  "counts": {
+    "negativeConforming": 12,
+    "negativeTotal": 12,
+    "positiveConforming": 2,
+    "positiveTotal": 2
+  },
+  "previousOwnerBaseline": {
+    "sourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+      "path": "development/ai-connection/reference-adoption/lora/management-handoff/evidence/manager-baseline.json"
+    },
+    "managerCommit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+    "status": "BLOCKED_MANAGER_DECLARATION_COMPARISONS_UNIMPLEMENTED",
+    "negativeConforming": 0,
+    "negativeTotal": 12,
+    "positiveConforming": 2,
+    "positiveTotal": 2,
+    "overwritten": false
+  },
+  "ownerProbe": {
+    "repository": "Kushyameln01/kushyameln-works",
+    "commit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+    "path": "tools/ai-connection/probe-manager-lora-declarations.mjs",
+    "gitBlob": "9ba6cf4429079edf149c1e5a4de1731751843b9c",
+    "byteLength": 14257,
+    "sha256": "7d3182ab4e7b3f9457b49345b36564fe24f8d5c7c651213d2fd4d26dfb3703c1",
+    "gitObjectBytesVerified": true
+  },
+  "ownerWitness": {
+    "repository": "Kushyameln01/kushyameln-works",
+    "commit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+    "path": "development/ai-connection/reference-adoption/lora/management-handoff/OWNER-NUMERIC-WITNESS.json",
+    "gitBlob": "b101820a0bf056ff383b0a7ce2a2f184094e6c07",
+    "byteLength": 43089,
+    "sha256": "30a81eb6dbfe775543b1a1b8ec734695f499299749729ace8215dc6d8a30ca6d",
+    "gitObjectBytesVerified": true
+  },
+  "managementSourceProof": [
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/compatibility.mjs",
+      "gitBlob": "0ef050af69ed5cc2ab2100702da98109e9343bc8",
+      "byteLength": 17760,
+      "sha256": "ae024ff7fb52da45c11952a84ffeebd641c6c61cde98a9036f31f26fda7d139a",
+      "gitObjectBytesVerified": true,
+      "kind": "management-module"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/descriptor.mjs",
+      "gitBlob": "ae78d2973c9c8c1c83982fc8910191951a45f5c8",
+      "byteLength": 14882,
+      "sha256": "1395ee9879c14b42d3e05a5ea674680f75c404210ca112d44d370114a7756d2e",
+      "gitObjectBytesVerified": true,
+      "kind": "management-module"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/contracts/schemas.mjs",
+      "gitBlob": "0fa37dc7c4219482bc9856cdd04ac7b72947de23",
+      "byteLength": 89275,
+      "sha256": "46b22950d8b5047a3fb7788969660836fb37452fdc6f294d0b8575ac7485c573",
+      "gitObjectBytesVerified": true,
+      "kind": "management-module"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/norm-bindings.mjs",
+      "gitBlob": "dc2e5ae71c930edd0e1eb6eac92b61fbaf0540d4",
+      "byteLength": 18479,
+      "sha256": "a9a65e12cdcd93963339f3661a15a3c52f23484b1680b374cd20e1ee397d4a24",
+      "gitObjectBytesVerified": true,
+      "kind": "management-module"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/reference-loader.mjs",
+      "gitBlob": "6bf73debe1580fd37d63075adfb59288ccae2174",
+      "byteLength": 13692,
+      "sha256": "cb99828265fc24600b360dd47b75c61665db086d2dd21b8281da85c414b37312",
+      "gitObjectBytesVerified": true,
+      "kind": "management-module"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/canonical.mjs",
+      "gitBlob": "d1e8790566d601e505d9c98451ced956c23a4d80",
+      "byteLength": 3212,
+      "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782",
+      "gitObjectBytesVerified": true,
+      "kind": "management-module"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "tools/ai-connection/fixtures.mjs",
+      "gitBlob": "4dd95c5ae1026defd2d2b23117b03ebc2f44dffb",
+      "byteLength": 2561,
+      "sha256": "b054455ea3bce4a6145ddb24137cd89aa63e48c9ad9d30e1048d697db0eecfaa",
+      "gitObjectBytesVerified": true,
+      "kind": "management-module"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/reference/catalog.v1.json",
+      "gitBlob": "82f96ee240097232fd259920686dacdaea44e4eb",
+      "byteLength": 8343,
+      "sha256": "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+      "gitObjectBytesVerified": true,
+      "kind": "reference-json"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/reference/profiles/shape.v1.json",
+      "gitBlob": "68dcc36acb7f6de511919d1ba9dc25f643fd65a0",
+      "byteLength": 11876,
+      "sha256": "7204b409c609c1f962cc2e0ae96c8d71f9779729baa187b6a9b7c1a68580388e",
+      "gitObjectBytesVerified": true,
+      "kind": "reference-json"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/reference/profiles/numeric-execution.v1.json",
+      "gitBlob": "e838bc88a1c5541181aba8d6dd68850c28438a93",
+      "byteLength": 12695,
+      "sha256": "616c9e6f395c43c02aa7b0cd27eedbbafffb186ea80c6eb23e2aff5047e7e39e",
+      "gitObjectBytesVerified": true,
+      "kind": "reference-json"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/reference/profiles/normalization.v1.json",
+      "gitBlob": "bbb2b65b7cfda5a4ff6c2caf6fa132b9d290fd33",
+      "byteLength": 17730,
+      "sha256": "6465b50f586f8515b416eac3de93c5333bfe11c5dc6b09d7edb70bf7b545f460",
+      "gitObjectBytesVerified": true,
+      "kind": "reference-json"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/reference/profiles/loader-policy.v1.json",
+      "gitBlob": "36ec4c56f8efee1171c63f17c132848ab2473533",
+      "byteLength": 6022,
+      "sha256": "2f9eef460cc38e9837a8ee3f6d0e643774847cde535abb7424cff753627eed5a",
+      "gitObjectBytesVerified": true,
+      "kind": "reference-json"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/reference/norms.v1.json",
+      "gitBlob": "8635b940579fc0fbe89bd8fe6c461d2a9780f35e",
+      "byteLength": 11810,
+      "sha256": "fd16f1511f9ea5bc7d4215b431dcb5a47f5e7da691a67182b952267638175d13",
+      "gitObjectBytesVerified": true,
+      "kind": "reference-json"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "c84bc495562a393a437056cef944fb2e0f95ba08",
+      "path": "docs/shared/ai-connection/reference/numerical-rules.v1.json",
+      "gitBlob": "57e970cc54fda398e4efb92ba4c74343932e7423",
+      "byteLength": 26030,
+      "sha256": "50cb2fd27f0b07b550cdb0a0ec602cdf6ebf3c95c8bb35ba3ec821757c52ea6d",
+      "gitObjectBytesVerified": true,
+      "kind": "reference-json"
+    }
+  ],
+  "metadataOriginProof": [
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+      "path": "development/ai-connection/reference-adoption/lora/evidence/p3/run-result.json.gz",
+      "gitBlob": "dce354200df127899cce0db136044c7a604b6eff",
+      "byteLength": 197667,
+      "sha256": "37a229469a21c8d78057d5a6202e59920a4c10e081019bcc401485481758f6bd",
+      "gitObjectBytesVerified": true
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "40f7f0cfc95bfb5f3e8ed5cc68c4bdb196cbbf68",
+      "path": "development/ai-connection/reference-adoption/lora/evidence/p3/selected-scope.json",
+      "gitBlob": "df8dd5a073e1eb01c81aa902a8074a1a299bbf6f",
+      "byteLength": 253143,
+      "sha256": "1af75e98c507e25e4e306503c7f851a882e33751ec000dd589d3b75add1414f7",
+      "gitObjectBytesVerified": true
+    }
+  ],
+  "rawProbeResult": {
+    "byteLength": 795025,
+    "sha256": "cdf3d832ced55dcf0457d18392b2983583764f05de1f98a2c42173255b5edb31",
+    "scope": "Full local metadata report; this public summary retains decisions and source receipts without raw arrays or private paths"
+  },
+  "operations": {
+    "numericalExecutions": 0,
+    "originalPayloadFilesRead": 0,
+    "originalWholeHashesComputed": 0,
+    "newNativeCalls": 0,
+    "newSnapshotPublication": false
+  },
+  "acceptance": {
+    "declarationMetadataConformance": "PASS",
+    "newDataFormalPhaseIntegration": "NOT_ASSESSED",
+    "nativePinsChanged": false,
+    "oldSixNumericalCasesExpanded": false,
+    "existingMandatoryNativeControlExpanded": false,
+    "realBaseNewlyVerified": false,
+    "fullModelSessionAccepted": false,
+    "generationReady": false
+  },
+  "reproduce": {
+    "sourceCheckoutCommit": "40abf43c7c9cf565b115cafc36c7e33f4ae661f1",
+    "command": "node tools/ai-connection/probe-manager-lora-declarations.mjs --manager-root <fixed-c84bc-checkout> --manager-commit c84bc495562a393a437056cef944fb2e0f95ba08 --owner-declarations development/ai-connection/reference-adoption/lora/management-handoff/OWNER-NUMERIC-WITNESS.json --out <new-empty-output-directory>",
+    "expectedExitCode": 0,
+    "requires": "Exact committed owner probe/witness, fixed manager HEAD/source bytes and fixed 6dae reference JSON; no models or original LoRA Files"
+  }
+}

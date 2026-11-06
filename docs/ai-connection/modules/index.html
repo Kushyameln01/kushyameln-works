@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>モデル・生成管理｜Kushyameln Works</title>
+  <link rel="stylesheet" href="../../shared/inference/inference.css"><link rel="stylesheet" href="../styles.css"><link rel="stylesheet" href="./product.css"><link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <nav aria-label="ツール間の移動"><a href="../../github/">GitHub・ツール</a><a href="../">接続管理</a><a href="./diagnostics.html">開発診断</a></nav>
+  <header><p class="eyebrow">Kushyameln Works / AI connection</p><h1>モデル・生成管理</h1><p>端末内のモデルと画像・動画を選び、生成、取消、結果の確認と保存を行います。モデルと入力はブラウザ内で処理します。</p><p id="environment" class="muted"></p></header>
+  <main>
+    <section aria-labelledby="control-heading" class="run-panel">
+      <div class="section-title"><h2 id="control-heading">実行の状態</h2><span id="state-badge" class="badge">準備中</span></div>
+      <p id="status" role="status" aria-live="polite" aria-atomic="true" data-state="INITIALIZING">管理機能を読み込んでいます。</p>
+      <p id="operation-feedback" class="muted" aria-live="polite">モデルを選択して「モデルを準備・読込」を押してください。画像・動画の読込と保存はモデルなしでも使えます。</p>
+      <progress id="progress" max="1" value="0" aria-label="実行の進捗"></progress>
+      <div class="actions"><button id="run" class="primary" type="button" disabled>生成を実行</button><button id="cancel" type="button" disabled>実行を取消</button><button id="reload" type="button" disabled>選択モデルを再読込</button><button id="recover" type="button" disabled>解放・復旧を再試行</button><button id="dispose" type="button" disabled>モデルを終了</button></div><p id="model-state" class="muted">モデル未読込</p>
+    </section>
+    <section aria-labelledby="models-heading">
+      <div class="section-title"><h2 id="models-heading">1. モデルを選ぶ</h2><span id="configuration-state" class="badge">未設定</span></div>
+      <div class="model-grid">
+        <fieldset><legend>Text Encoder</legend>
+          <label for="text-manifest-mode">実行設定</label><select id="text-manifest-mode"><option value="current">採用版 source-ordered-fp32</option><option value="selected">手元の互換manifestを選択</option></select>
+          <label for="text-manifest">Text manifest</label><input id="text-manifest" type="file" accept=".json,application/json" disabled>
+          <label for="text-bundle">モデルフォルダ</label><input id="text-bundle" type="file" webkitdirectory multiple>
+          <label for="text-source">元のUMT5モデル（設定が必要とする場合）</label><input id="text-source" type="file" accept=".safetensors,application/octet-stream"><p id="text-files" class="muted file-summary">未選択</p>
+        </fieldset>
+        <fieldset><legend>VAE</legend>
+          <label for="vae-manifest">VAE manifest（任意）</label><input id="vae-manifest" type="file" accept=".json,application/json"><p class="muted">未選択ならフォルダ直下のmanifest.jsonを使います。stream版などのmanifestも選べます。</p>
+          <label for="vae-bundle">モデルフォルダ</label><input id="vae-bundle" type="file" webkitdirectory multiple><p id="vae-files" class="muted file-summary">未選択</p>
+        </fieldset>
+        <fieldset><legend>Diffusion</legend>
+          <label for="diffusion-high">HIGHモデル</label><input id="diffusion-high" type="file" accept=".safetensors,application/octet-stream"><label for="diffusion-low">LOWモデル</label><input id="diffusion-low" type="file" accept=".safetensors,application/octet-stream">
+          <label for="diffusion-threads">実行threads</label><select id="diffusion-threads"><option value="1">1 thread</option><option value="4" disabled>4 threads（COI・SharedArrayBufferが必要）</option></select><p id="diffusion-files" class="muted file-summary">HIGH・LOWの完全なモデルをそれぞれ選択してください。</p>
+        </fieldset>
+      </div>
+      <p class="muted">フォルダ内の相対pathを保って読み込みます。モデルFileの選択はページを閉じると解除されます。</p><div class="actions section-actions"><button id="configure" type="button" disabled>モデルを準備・読込</button></div>
+    </section>
+    <section aria-labelledby="inputs-heading">
+      <h2 id="inputs-heading">2. 入力の画像・動画</h2><p class="muted">画像、動画、連番PNG、またはこの画面で保存したフレームZIPを選択できます。</p>
+      <div class="columns media-grid">
+        <fieldset><legend>Source · 変換元</legend>
+          <label for="source-file">画像・動画・フレームZIP</label><input id="source-file" type="file" accept="image/*,video/*,.zip,application/zip" multiple>
+          <div class="actions"><button id="source-load" type="button">入力を読込</button><button id="source-clear" type="button" disabled>入力を外す</button></div><p id="source-status" class="muted" role="status">未選択</p><div id="source-preview" class="media-preview empty-preview">入力のpreview</div>
+          <div class="actions media-actions"><button id="source-export" type="button" disabled>入力をPNGフレームで保存</button><button id="source-tensor-save" type="button" disabled>入力の内部tensorを保存</button></div><label for="source-tensor-file">保存した入力tensorを読戻す</label><input id="source-tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream">
+        </fieldset>
+        <fieldset><legend>Reference · 参照</legend>
+          <label for="reference-file">画像・動画・フレームZIP</label><input id="reference-file" type="file" accept="image/*,video/*,.zip,application/zip" multiple>
+          <div class="actions"><button id="reference-load" type="button">参照を読込</button><button id="reference-clear" type="button" disabled>参照を外す</button></div><p id="reference-status" class="muted" role="status">未選択</p><div id="reference-preview" class="media-preview empty-preview">参照のpreview</div>
+          <div class="actions media-actions"><button id="reference-export" type="button" disabled>参照をPNGフレームで保存</button><button id="reference-tensor-save" type="button" disabled>参照の内部tensorを保存</button></div><label for="reference-tensor-file">保存した参照tensorを読戻す</label><input id="reference-tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream">
+        </fieldset>
+      </div><p class="muted">入力の読込・preview・PNG保存は媒体管理の操作です。生成結果は実際のモデル実行後に「結果」へ表示します。透過画像はpreview・PNG保存に対応します。モデル入力への変換は対応する値域・透過条件を確認します。</p>
+    </section>
+    <section aria-labelledby="generation-heading">
+      <h2 id="generation-heading">3. 生成条件</h2><div class="columns"><div><label for="prompt">Prompt</label><textarea id="prompt" placeholder="生成したい内容"></textarea></div><div><label for="negative-prompt">Negative prompt</label><textarea id="negative-prompt" placeholder="避けたい内容"></textarea></div></div>
+      <div class="condition-grid">
+        <div><label for="width">幅（px）</label><input id="width" type="number" value="16" min="16" max="848" step="16" required></div><div><label for="height">高さ（px）</label><input id="height" type="number" value="16" min="16" max="848" step="16" required></div><div><label for="frames">フレーム数</label><input id="frames" type="number" value="1" min="1" max="81" step="1" required></div><div><label for="steps">Steps</label><input id="steps" type="number" value="6" readonly aria-describedby="generation-limits"></div><div><label for="seed">Seed</label><input id="seed" type="number" placeholder="未対応" disabled aria-describedby="generation-limits"></div><div><label for="guidance">Guidance</label><input id="guidance" type="number" value="1" readonly aria-describedby="generation-limits"></div>
+      </div><p id="generation-limits" class="muted">現在のモデル経路は6 steps・guidance 1です。seedによる乱数初期化には対応していません。</p><label for="noise-mode">生成のnoise</label><select id="noise-mode"><option value="owner">実行側が標準正規noiseを作成</option><option value="file">保存したnoiseファイル</option></select><label for="noise-file">保存したnoiseファイル</label><input id="noise-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream" disabled><p class="muted">初期targetと標準正規noiseは実行側が作成します。seed指定とComfyUIの乱数の一致には対応していません。ファイル入力は対応するshapeと型を確認します。生成サイズと入力のサイズが合わない場合は理由を表示し、入力を自動で拡縮しません。</p>
+    </section>
+    <section aria-labelledby="lora-heading">
+      <div class="section-title"><h2 id="lora-heading">4. LoRA（任意）</h2><span id="lora-state" class="badge">Baseモデル</span></div><p class="muted">使うLoRAのHIGH・LOWを選び、強度を指定してください。Fileを選択しない場合はBaseモデルを使います。</p>
+      <div class="columns"><fieldset><legend>light</legend><label for="lora-light-high">HIGH File</label><input id="lora-light-high" type="file" accept=".safetensors,application/octet-stream"><label for="lora-light-low">LOW File</label><input id="lora-light-low" type="file" accept=".safetensors,application/octet-stream"><div class="columns"><div><label for="lora-light-high-strength">HIGH 強度</label><input id="lora-light-high-strength" type="number" value="1" step="0.05"></div><div><label for="lora-light-low-strength">LOW 強度</label><input id="lora-light-low-strength" type="number" value="1" step="0.05"></div></div></fieldset>
+      <fieldset><legend>detail</legend><label for="lora-detail-high">HIGH File</label><input id="lora-detail-high" type="file" accept=".safetensors,application/octet-stream"><label for="lora-detail-low">LOW File</label><input id="lora-detail-low" type="file" accept=".safetensors,application/octet-stream"><div class="columns"><div><label for="lora-detail-high-strength">HIGH 強度</label><input id="lora-detail-high-strength" type="number" value="1" step="0.05"></div><div><label for="lora-detail-low-strength">LOW 強度</label><input id="lora-detail-low-strength" type="number" value="1" step="0.05"></div></div></fieldset></div>
+      <div class="actions section-actions"><button id="lora-apply" type="button" disabled>選択したLoRA・強度を適用</button><button id="lora-remove" type="button" disabled>LoRAを外してBaseへ戻す</button></div>
+    </section>
+    <section aria-labelledby="results-heading">
+      <div class="section-title"><h2 id="results-heading">5. 結果</h2><span id="result-state" class="badge">結果なし</span></div><p id="result-status" class="muted" role="status">実モデルの生成結果をここに表示します。</p><div id="result-preview" class="media-preview empty-preview">結果のpreview</div>
+      <div class="actions section-actions"><button id="result-image-save" class="primary" type="button" disabled>表示中の画像をPNGで保存</button><button id="result-export" type="button" disabled>全結果をPNGフレームで保存</button><button id="result-tensor-save" type="button" disabled>結果の内部tensorを保存</button></div><p class="muted">PNGフレームは表示・共有用です。内部tensorは値と付随情報を保持する再利用用のファイルです。</p><label for="result-tensor-file">保存した結果tensorを読戻す</label><input id="result-tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream"><p id="storage-status" class="muted" aria-live="polite"></p>
+    </section>
+    <section aria-labelledby="workspace-heading">
+      <h2 id="workspace-heading">6. 作業・中間結果を保存</h2>
+      <p class="muted">保持済みの中間tensor・結果とフォーム設定をまとめて保存します。生成を完了できなかった場合も、保持された部分結果を保存できます。入力媒体とモデルFileの選択は、読戻した後に選び直してください。</p>
+      <div class="actions"><button id="save-workspace" type="button" disabled>作業・中間結果をbundle保存</button></div>
+      <label for="workspace-file">保存した作業bundleを読戻す</label><input id="workspace-file" type="file" accept=".zip,application/zip" disabled>
+      <p id="workspace-status" class="muted" aria-live="polite">PNGや個別の内部tensor保存とは別に、保持中の部分結果をまとめて保存します。</p>
+    </section>
+  </main>
+  <footer>対応する実モデルと実行環境が必要です。入力の読込や保存だけではモデルを実行したことにはなりません。</footer><script type="module" src="./main.mjs"></script>
+</body>
+</html>

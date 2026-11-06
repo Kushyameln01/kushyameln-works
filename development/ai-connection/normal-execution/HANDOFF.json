@@ -1,0 +1,279 @@
+{
+  "schemaVersion": "works-normal-execution-handoff/0.1",
+  "dateJST": "2026-11-02",
+  "repository": "Kushyameln01/kushyameln-works",
+  "branch": "codex/ai-connection-e0-e4",
+  "draftPR": "https://github.com/Kushyameln01/kushyameln-works/pull/7",
+  "distributionCommitResolution": "Commit containing this handoff, reported separately in PR/final reply; not the execution source",
+  "executionSources": {
+    "normalAndDiagnostic": "4667f46e5961a34c095a394bf6c75156ab9ab9cb",
+    "cancellation": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+    "diffusionNative": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3"
+  },
+  "nativeAPI": "diffusion-models/0.1",
+  "nativeBuild": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+  "descriptorVersion": "works-module-contract/1.0-draft.1",
+  "workflowRuleId": "bernini-ca69274-b5a4321-wan21-shapes-v1",
+  "acceptedScope": {
+    "ordinaryDescriptorWithoutDiagnosticInputs": true,
+    "normalOperations": [
+      "normalizeRawMean",
+      "restoreRawMean"
+    ],
+    "actualShape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "ownerSelectedProfile": "wan21-raw-f32-1x16x32",
+    "normalNativeDispatches": 2,
+    "normalNumericalVerification": "NOT_REQUESTED",
+    "optionalPostNormalDiagnosis": "DIAGNOSTIC_PASS",
+    "cancellation": "LIFECYCLE_VERIFIED",
+    "oldTargetDuringActualB": "TARGET_MISMATCH",
+    "actualWorkerClose": {
+      "normal": {
+        "created": 2,
+        "closed": 2,
+        "live": 0
+      },
+      "cancellation": {
+        "created": 2,
+        "closed": 2,
+        "live": 0
+      }
+    }
+  },
+  "requested81": {
+    "shape": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "ownerStatus": "UNSUPPORTED",
+    "ownerReasonCode": "OWNER_SHAPE_UNSUPPORTED",
+    "fieldPath": "/artifact/tensor/shape",
+    "nativeDispatches": 0,
+    "actualOriginalSampleMedia": "UNKNOWN"
+  },
+  "reuse": {
+    "rawMeanSource": {
+      "commit": "f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48",
+      "path": "development/inference/p2-p3-acceptance/p2/updated-884/decode/mean/raw-mean/native.wktensor",
+      "byteLength": 1084,
+      "sha256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8"
+    },
+    "previousNumericalReference": {
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "path": "development/ai-connection/e6/reference-received.json"
+      },
+      "sha256": "0e4d44e0c8199fcebfb9fa111865fc26cd2906f321d64282920c4f82dd3151dc",
+      "byteLength": 17605,
+      "scope": "retained independent Python mean outputs; raw is received VAE output, not an independent VAE encode oracle"
+    },
+    "previousGate": {
+      "sourceRef": {
+        "repository": "Kushyameln01/kushyameln-works",
+        "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "path": "development/ai-connection/e6/rect-receipt.json"
+      },
+      "sha256": "fae031603cce81eee70bad3c8446ced2192c95557ce26438c2a733562181f43b",
+      "byteLength": 3974,
+      "appliesTo": "raw-to-restored roundtrip only"
+    },
+    "normal4667NotRetaggedAsCancellationSource": true,
+    "nativePinsBulkReplaced": false
+  },
+  "regression": {
+    "tests": 576,
+    "pass": 576,
+    "fail": 0,
+    "skip": 0,
+    "stableFilesDuringTests": 162
+  },
+  "sourceFiles": [
+    {
+      "path": "docs/shared/ai-connection/API.md",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 83206,
+      "sha256": "fac11d0f9d398ad7068e10deb372557e69fb65ff57a542255ff8f8f7d989c103"
+    },
+    {
+      "path": "docs/shared/ai-connection/snapshot.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 20882,
+      "sha256": "7d687565bfb8d2a478c3acf69b19d12700bbc457069dc22c9bc64302807342b7"
+    },
+    {
+      "path": "docs/shared/ai-connection/workflow-shapes.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 17269,
+      "sha256": "7a78955fd8156e0b3a5b287ad5f712ff04d62dbb6e501952bc52f9696e9dd821"
+    },
+    {
+      "path": "docs/shared/ai-connection/adapters/normal-operation.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 18194,
+      "sha256": "6f70980011ca0707afecc43835ed0c931773cd3c980056983643b045838612a8"
+    },
+    {
+      "path": "docs/shared/ai-connection/adapters/normal-diffusion-owner.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 15288,
+      "sha256": "0d1ed687e9e0ccb0429b9596ed9885a882883f75dec0ec8c3ef78d91a1155ebd"
+    },
+    {
+      "path": "docs/shared/ai-connection/adapters/workflow-normal-requests.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 4014,
+      "sha256": "b4f9f01559f2af2d7e04bd681a4176c9eab9066cd00b4a9e719a2674f9234647"
+    },
+    {
+      "path": "tools/ai-connection/run-normal-operation.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 19907,
+      "sha256": "fb15555fa1eea41f2043f2e1b921daebddbba12f3eb52edc29eff65aa51cdbfc"
+    },
+    {
+      "path": "tools/ai-connection/normal-operation-browser.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 13827,
+      "sha256": "76ef2fe7954d8e44b528b3eff0e1149a2ed6364c6ebc94bf46e47dc3305489cb"
+    },
+    {
+      "path": "tools/ai-connection/test-run-normal-operation.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 12274,
+      "sha256": "d4f13f714b02d200a8cb3d8ffacea076d5630598483429f43a4fa4c400d2dda9"
+    },
+    {
+      "path": "tools/ai-connection/test-normal-operation.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 9744,
+      "sha256": "e028660d8066c6c1c49785e2a1855505f47d7eb341e8c20e9c4c431ff0b9b152"
+    },
+    {
+      "path": "tools/ai-connection/test-normal-diffusion-owner.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 9138,
+      "sha256": "da19bfbe8df420f8fd9a636a108452cf97891b45ca375efa0b65daaf7ba3dac4"
+    },
+    {
+      "path": "tools/ai-connection/test-workflow-shapes.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 12858,
+      "sha256": "4482ffc44d3ce96d68c5252e1a912671e7f59c41fbfbf249934787b342edf7b9"
+    },
+    {
+      "path": "tools/ai-connection/test-workflow-normal-requests.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 11845,
+      "sha256": "8eb25c8efdf841f85c9451c8eb969551be73c9bbb8f2502d93b1e8f5a9a4685c"
+    },
+    {
+      "path": "tools/ai-connection/test-snapshot-normal.mjs",
+      "sourceCommit": "f1dceb971bed7e9c9c16ab0a56d897507318a174",
+      "byteLength": 7135,
+      "sha256": "1071e9eadc789ba26583522a59eba73a0b2abc9c4430fd220a7e37c3c76be7b1"
+    }
+  ],
+  "receipts": [
+    {
+      "path": "development/ai-connection/normal-execution/normal/result.json",
+      "byteLength": 356118,
+      "sha256": "9d190f9e54f95d5e33139936dabcf9b700fd435188b4ac9c41ab0f51b6c91453"
+    },
+    {
+      "path": "development/ai-connection/normal-execution/normal/normalized.wktensor",
+      "byteLength": 1137,
+      "sha256": "f7b2b158096937648a14a224ca4961543eace129a24ae3b88394a810f6c18840"
+    },
+    {
+      "path": "development/ai-connection/normal-execution/normal/restored.wktensor",
+      "byteLength": 1084,
+      "sha256": "dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612"
+    },
+    {
+      "path": "development/ai-connection/normal-execution/diagnostic/diagnostic.json",
+      "byteLength": 2483,
+      "sha256": "ca0f34e2ddc29f4511870e6f705c97959325ebd720d4e0f522fc09c4c3431b20"
+    },
+    {
+      "path": "development/ai-connection/normal-execution/cancel/result.json",
+      "byteLength": 115138,
+      "sha256": "d20e3eb0ca85f0dafdfc5ee0a373a57dd1a952c8795a4e35f15c2d3a2097916a"
+    },
+    {
+      "path": "development/ai-connection/normal-execution/cancel/PROCESS.json",
+      "byteLength": 733,
+      "sha256": "416ce4131878c3297088c9c450ed5fbf3ce4174a5593f9e3b1e1e5dd0b9a4367"
+    },
+    {
+      "path": "development/ai-connection/normal-execution/verification/CANCEL-4667-FAILED-ATTEMPT.json",
+      "byteLength": 1424,
+      "sha256": "d53222efddd32d0c6f7374e50de7e4ec2ed95213ce4c903a28f75f7778826ca8"
+    },
+    {
+      "path": "development/ai-connection/normal-execution/verification/SOURCE-GITHUB-RETRIEVAL.json",
+      "byteLength": 403,
+      "sha256": "cb38bf0ca321b64237a37e6abe026243544d691fb3488895ec0c0e860d952181"
+    },
+    {
+      "path": "development/ai-connection/normal-execution/verification/CANCEL-SOURCE-GITHUB-RETRIEVAL.json",
+      "byteLength": 407,
+      "sha256": "e753864ea7c439372708f1cf5275a4a3e63fe964ede3ab94aa65743d875650fa"
+    },
+    {
+      "path": "development/ai-connection/normal-execution/verification/INDEPENDENT-REVIEW.md",
+      "byteLength": 4120,
+      "sha256": "a006838ca76393e6fdd1c7ad40d207f4629c87a65ab298bc3395c330bbce7e7c"
+    },
+    {
+      "path": "development/ai-connection/normal-execution/verification/ROOT-SUITE.log",
+      "byteLength": 58029,
+      "sha256": "0160cbd2df1a1aa4094bddb2c54ec485967410469b3c68c37f3df7991abad7bf"
+    },
+    {
+      "path": "development/ai-connection/normal-execution/verification/SUITE-SOURCE-RECEIPT.json",
+      "byteLength": 31202,
+      "sha256": "c4656c8f11fba74d941118627b190a6557735dbd86721e83eb7ca0fbd8b7d3b7"
+    },
+    {
+      "path": "development/ai-connection/normal-execution/verification/BASELINE-PRESERVATION.json",
+      "byteLength": 51221,
+      "sha256": "bc684874f05f617a9b8419a4a88a175e31fbcfb0007e1ad93ac0fa543e78e43e"
+    }
+  ],
+  "selfDigest": "excluded; no self digest asserted",
+  "resources": {
+    "observedMeanHikeCapacityBytes": 1114112,
+    "observedArenaBytes": 1024,
+    "hostPeakBytes": null,
+    "allocatorPeakBytes": null,
+    "totalPeakBytes": null
+  },
+  "notAccepted": [
+    "Other native-advertised mean shapes were not newly executed in this normal test",
+    "VAE/Text/LoRA/P4 normal owner facades",
+    "Original81-frame workflow runtime",
+    "Arbitrary shapes or LoRA",
+    "Full generation and total resource budget"
+  ],
+  "generationReady": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY",
+  "recipientAcknowledgments": {
+    "senderGitHubFixedSourceDownload": "MATCHED",
+    "ownerPersonalACK": "PENDING",
+    "newInferenceForDownloadConfirmationRequired": false
+  },
+  "merge": "NOT_PERFORMED",
+  "pagesPublication": "NOT_PERFORMED"
+}

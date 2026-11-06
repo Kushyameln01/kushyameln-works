@@ -1,0 +1,6 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const native=await import('../../docs/shared/ai-connection/adapters/lora-standalone/native.mjs').catch(e=>e.code==='ERR_MODULE_NOT_FOUND'?{}:Promise.reject(e));
+test('actual pinned LoRA source is checked internally and creates the actual owner Hike kernel',async()=>{assert.equal(typeof native.createAdoptedLoraKernel,'function');const kernel=await native.createAdoptedLoraKernel();try{assert.equal(kernel.info.wasmSha256,'5117e21d789d01b5dd49d7e8cf9bc8d2f78a51f7d3810aab56e4a40588a0c361');assert.equal(kernel.stats().memoryBytes,33554432);assert.equal(typeof native.createLoraStandalone,'function');}finally{kernel.dispose();}assert.equal(kernel.stats().memoryBytes,0);});
+test('a substituted source cannot be admitted as the fixed native implementation',async()=>{assert.equal(typeof native.verifyLoraStandaloneSources,'function');await assert.rejects(()=>native.verifyLoraStandaloneSources({read:async file=>{const b=new Uint8Array(await readFile(new URL(file,native.LORA_STANDALONE_ROOT_URL)));if(file.endsWith('standalone-sdk.mjs'))b[0]^=1;return b;}}),{code:'LORA_NATIVE_SOURCE_MISMATCH'});});

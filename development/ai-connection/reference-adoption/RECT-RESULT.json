@@ -1,0 +1,2946 @@
+{
+  "schemaVersion": "works-p2-rect-adoption-result/0.1-draft.1",
+  "date": "2026-10-31",
+  "status": "PARTIAL",
+  "candidateAdoptedForFreshVaePipeline": false,
+  "generationReady": false,
+  "scope": "Received real Rect VAE mean -> E4 save/read -> explicit owned cache -> owner Rect Hike normalize/restore -> E4 save/read. Separate received owner RGB save/read. No fresh VAE neural encode/decode.",
+  "planSourceRef": {
+    "repository": "Kushyameln01/kushyameln-works",
+    "commit": "0fb553fd081d3bcbbad4ead7accd165679f77d34",
+    "path": "development/ai-connection/reference-catalog/EXECUTION-PLAN.md",
+    "sha256": "dd0717363a00bbd57b784aee123135b6ed0f9a6f7e6a9a484f182a585c4ee648"
+  },
+  "referenceCatalog": {
+    "documentVersion": "1.0-draft.1",
+    "sha256": "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+    "sourceRef": {
+      "commit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+      "path": "docs/shared/ai-connection/reference/catalog.v1.json",
+      "repository": "Kushyameln01/kushyameln-works"
+    }
+  },
+  "candidatePins": {
+    "diffusion": {
+      "apiVersion": "diffusion-models/0.1",
+      "build": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+      "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "entrypoint": "docs/shared/diffusion-models/latent-space/latent-space.mjs",
+      "kernelABI": "wan21-raw-mean-f32-v3",
+      "kernelSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d"
+    },
+    "vae": {
+      "apiVersion": "works-ai-1",
+      "build": "works-inference-v1",
+      "codec": "docs/shared/inference/tensor.mjs",
+      "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "entrypoint": "docs/shared/inference/vae-api.mjs"
+    }
+  },
+  "previousAcceptedSetUnchanged": {
+    "loraCommit": "0c27874908638afc748ea2455a2779a16736730b",
+    "diffusionCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+    "codecCommit": "2c171a09ccda65c54899f322ae490f1bfcaac6fb"
+  },
+  "managementSource": {
+    "baseCommit": "74b4b4b0b6cff5b98e5410f9b604f88f587915c7",
+    "commit": "74b4b4b0b6cff5b98e5410f9b604f88f587915c7",
+    "reason": "Every recorded executed management file was independently matched to this complete Git commit after the run. Original private runtime report is retained unchanged.",
+    "runnerSha256": "91eb8d740b4b10d6adbf8c2e50db256191fb1c1987fde2a39111928b819fffe3",
+    "sourceReceipts": [
+      {
+        "byteLength": 29874,
+        "path": "tools/ai-connection/rect-management-runner.mjs",
+        "sha256": "91eb8d740b4b10d6adbf8c2e50db256191fb1c1987fde2a39111928b819fffe3"
+      },
+      {
+        "byteLength": 3212,
+        "path": "docs/shared/ai-connection/canonical.mjs",
+        "sha256": "4efc4a38a9dd38ff682e408fdd43167fab940d7d0e739523db65e25388577782"
+      },
+      {
+        "byteLength": 14882,
+        "path": "docs/shared/ai-connection/descriptor.mjs",
+        "sha256": "1395ee9879c14b42d3e05a5ea674680f75c404210ca112d44d370114a7756d2e"
+      },
+      {
+        "byteLength": 89275,
+        "path": "docs/shared/ai-connection/contracts/schemas.mjs",
+        "sha256": "46b22950d8b5047a3fb7788969660836fb37452fdc6f294d0b8575ac7485c573"
+      },
+      {
+        "byteLength": 15828,
+        "path": "docs/shared/ai-connection/compatibility.mjs",
+        "sha256": "8c38333856eaa9a3c1666e99426972ada2bdc92a95ebc51101b09b982ffd8095"
+      },
+      {
+        "byteLength": 17696,
+        "path": "docs/shared/ai-connection/norm-bindings.mjs",
+        "sha256": "0d2e9707aff78d2e0ed82f70f60880a1a417e77e1499a27715f5fc761eea367d"
+      },
+      {
+        "byteLength": 13692,
+        "path": "docs/shared/ai-connection/reference-loader.mjs",
+        "sha256": "cb99828265fc24600b360dd47b75c61665db086d2dd21b8281da85c414b37312"
+      },
+      {
+        "byteLength": 5879,
+        "path": "docs/shared/ai-connection/adapters/artifacts.mjs",
+        "sha256": "eb916e0ffa6ec16b44af0bd44ca346e52a2201ea709d28ef0a9af438cdfb1290"
+      },
+      {
+        "byteLength": 23639,
+        "path": "docs/shared/ai-connection/package.mjs",
+        "sha256": "5df0ee782bcb479fdd28b87f61a777797a9274328aaf4acd79efb7fb6c7f7192"
+      },
+      {
+        "byteLength": 18094,
+        "path": "docs/shared/ai-connection/queue.mjs",
+        "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484"
+      },
+      {
+        "byteLength": 16194,
+        "path": "docs/shared/ai-connection/cache.mjs",
+        "sha256": "c231b443e34353b2a73c1298a032ea8f82f51e51b8a9509ecb24b63436d7c651"
+      }
+    ],
+    "sourceState": "working-tree-source-digest-separate-from-base-commit",
+    "reportedRuntimeCommit": null,
+    "gitObjectMatched": true
+  },
+  "nativeSourceReceipts": [
+    {
+      "byteLength": 5771,
+      "owner": "diffusion",
+      "sha256": "e988e290d61e7c88cd8e78082caf15035ef54ada3d95b0ef19fbb7aef0951970",
+      "sourceRef": {
+        "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "path": "docs/shared/diffusion-models/api/build-info.mjs",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 6387,
+      "owner": "diffusion",
+      "sha256": "3d28445a5c36eeb4f31b7bfe89163e43091438f571488a665888833e1d860104",
+      "sourceRef": {
+        "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "path": "docs/shared/diffusion-models/latent-space/latent-space.mjs",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 343,
+      "owner": "diffusion",
+      "sha256": "191f85b0bedc8ad439a486b077f0891c7846a7535b0d71d26350b8581f8d11b8",
+      "sourceRef": {
+        "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "path": "docs/shared/diffusion-models/latent-space/kernel-registry.mjs",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 5844,
+      "owner": "diffusion",
+      "sha256": "13c3595f0786a45a62d0a8739b6acd58d3025c80f7eaff4baf7314559665c1c1",
+      "sourceRef": {
+        "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "path": "docs/shared/diffusion-models/tensor-interop.mjs",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 4164,
+      "owner": "diffusion",
+      "sha256": "a3fdfc1654361713a5e8278e6af5d76a65aafed7f654c06813eebb933f7a0f4c",
+      "sourceRef": {
+        "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "path": "docs/shared/inference/tensor.mjs",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 8210,
+      "owner": "diffusion",
+      "sha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+      "sourceRef": {
+        "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "path": "docs/shared/diffusion-models/latent-space/build/latent-space.wasm",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 3974,
+      "owner": "diffusion",
+      "sha256": "fae031603cce81eee70bad3c8446ced2192c95557ce26438c2a733562181f43b",
+      "sourceRef": {
+        "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "path": "development/ai-connection/e6/rect-receipt.json",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 17605,
+      "owner": "diffusion",
+      "sha256": "0e4d44e0c8199fcebfb9fa111865fc26cd2906f321d64282920c4f82dd3151dc",
+      "sourceRef": {
+        "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "path": "development/ai-connection/e6/reference-received.json",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 2393,
+      "owner": "vae",
+      "sha256": "53751cde923b7128da29266a29810942afd6e6ae32fad1fc87605e952cecd55e",
+      "sourceRef": {
+        "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+        "path": "docs/shared/inference/client.mjs",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 2369,
+      "owner": "vae",
+      "sha256": "75f791130cbb27961ea530376d4715ddd9555e80ee3e2b8453824af42be0511e",
+      "sourceRef": {
+        "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+        "path": "docs/shared/inference/vae-api.mjs",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 8106,
+      "owner": "vae",
+      "sha256": "4c6992a7b6f44722e84a7184ed5c878312a203071054335827f7f0adcd01c07b",
+      "sourceRef": {
+        "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+        "path": "docs/shared/inference/tensor.mjs",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 12426,
+      "owner": "vae",
+      "sha256": "6fb061673a5af6cf4e3a8deaee5c9919bc71b7eafd8205b3f6f4a0d203965a3b",
+      "sourceRef": {
+        "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+        "path": "development/inference/e6/receipt.json",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 2981,
+      "owner": "vae",
+      "sha256": "8b2eefef3fa532e9fd57115d73a037176ab43760a1bacb95e8d776e21251b347",
+      "sourceRef": {
+        "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+        "path": "development/inference/e6/acceptance-plan.json",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 4820,
+      "owner": "vae",
+      "sha256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a",
+      "sourceRef": {
+        "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+        "path": "development/inference/e6/fixtures/bundle-manifest.json",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 1084,
+      "owner": "vae",
+      "sha256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8",
+      "sourceRef": {
+        "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+        "path": "development/inference/e6/fixtures/api-recovery.wktensor",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "byteLength": 6460,
+      "owner": "vae",
+      "sha256": "0d0a28c963445ab88cb4553296489d965a73d3a56b0f1bbff7daa54f6d60834a",
+      "sourceRef": {
+        "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+        "path": "development/inference/e6/fixtures/png-roundtrip.wktensor",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    }
+  ],
+  "inputIdentity": {
+    "byteLength": 1084,
+    "sha256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8",
+    "sourceRef": {
+      "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "path": "development/inference/e6/fixtures/api-recovery.wktensor",
+      "repository": "Kushyameln01/kushyameln-works"
+    }
+  },
+  "profile": {
+    "nativeProfileId": "wan21-raw-f32-1x16x32",
+    "latentShape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "rgbShape": [
+      1,
+      3,
+      1,
+      16,
+      32
+    ],
+    "dtype": "float32",
+    "layout": "NCTHW",
+    "meaning": "raw-posterior-mean"
+  },
+  "nativeApiUnchanged": true,
+  "gates": {
+    "exporterDefault": {
+      "atol": 0.002,
+      "maxAbs": 0.002,
+      "rtol": 0.002,
+      "scope": "FP32 reference, synthetic fixed-profile checks only"
+    },
+    "meanRoundtrip": 2e-06,
+    "vae": {
+      "atol": 2e-05,
+      "maxAbs": 2e-05,
+      "rtol": 2e-05,
+      "scope": "all output values, fixed before accepted export/reference/WASM"
+    }
+  },
+  "transform": {
+    "calls": 2,
+    "comparison": {
+      "comparedValues": 128,
+      "gate": 2e-06,
+      "maxAbs": 2.384185791015625e-07,
+      "passed": true
+    },
+    "normalized": {
+      "comparedValues": 128,
+      "referenceEqual": true,
+      "sha256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5"
+    },
+    "restored": {
+      "comparedValues": 128,
+      "referenceEqual": true,
+      "sha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063"
+    }
+  },
+  "operations": [
+    {
+      "build": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+      "inputPayloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+      "nativeExport": "NormalizeRawMeanRect",
+      "operation": "normalizeRawMean",
+      "outputPayloadSha256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5",
+      "sourceRef": {
+        "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "path": "docs/shared/diffusion-models/latent-space/latent-space.mjs",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    },
+    {
+      "build": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+      "inputPayloadSha256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5",
+      "nativeExport": "RestoreRawMeanRect",
+      "operation": "restoreRawMean",
+      "outputPayloadSha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+      "sourceRef": {
+        "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+        "path": "docs/shared/diffusion-models/latent-space/latent-space.mjs",
+        "repository": "Kushyameln01/kushyameln-works"
+      }
+    }
+  ],
+  "nativePackages": [
+    {
+      "artifactId": "works:p2:received-raw-mean",
+      "nativeFileSha256": "8134bc943a60b3f0e0d388048ef0943a5274ef37511ce5630cc40d7596bb26a8",
+      "payloadSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+      "scope": "received-real-vae-mean-save-read",
+      "stage": "received-raw-mean",
+      "status": "complete",
+      "privateOutputDirectoryName": "raw-mean",
+      "receipt": {
+        "manifestByteLength": 1676,
+        "manifestPath": "manifest.json",
+        "manifestSha256": "cb9808fa75961eff85610c45bb2f39d0f33f4e9047464dc36701768b1d637753",
+        "packageId": "works:p2:package:received-raw-mean",
+        "packageVersion": "works-artifact-package/1.0-draft.1"
+      },
+      "nativeMetadata": {
+        "byteLength": 512,
+        "byteOrder": "little",
+        "context": {
+          "contextId": "v1-still-0",
+          "inputId": "existing-diagnostic-png",
+          "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+          "schemaVersion": 1,
+          "slotId": "diagnostic-still",
+          "sourceFrameIndices": [
+            0
+          ],
+          "sourceFrameTimesSeconds": [
+            0
+          ]
+        },
+        "dataSha256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "meaning": "raw-posterior-mean",
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "schemaVersion": 1,
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ]
+      },
+      "nativeByteLength": 1084,
+      "rawArtifactsPublished": true,
+      "publicArtifactDirectory": "fixtures/rect-raw-mean"
+    },
+    {
+      "artifactId": "works:p2:owner-restored-mean",
+      "nativeFileSha256": "dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612",
+      "payloadSha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+      "scope": "actual-owner-rect-restore-save-read",
+      "stage": "owner-restored-mean",
+      "status": "complete",
+      "privateOutputDirectoryName": "restored-mean",
+      "receipt": {
+        "manifestByteLength": 1682,
+        "manifestPath": "manifest.json",
+        "manifestSha256": "b52b861e5d31147566fe3a5ab86e838f23b5c5d83b9fa7ad04fc9cf2e40839a5",
+        "packageId": "works:p2:package:owner-restored-mean",
+        "packageVersion": "works-artifact-package/1.0-draft.1"
+      },
+      "nativeMetadata": {
+        "context": {
+          "contextId": "v1-still-0",
+          "inputId": "existing-diagnostic-png",
+          "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+          "schemaVersion": 1,
+          "slotId": "diagnostic-still",
+          "sourceFrameIndices": [
+            0
+          ],
+          "sourceFrameTimesSeconds": [
+            0
+          ]
+        },
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "meaning": "raw-posterior-mean",
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ]
+      },
+      "nativeByteLength": 1084,
+      "rawArtifactsPublished": true,
+      "publicArtifactDirectory": "fixtures/rect-restored-mean"
+    },
+    {
+      "artifactId": "works:p2:received-owner-rgb",
+      "nativeFileSha256": "0d0a28c963445ab88cb4553296489d965a73d3a56b0f1bbff7daa54f6d60834a",
+      "payloadSha256": "e13806a2db0893872a9efb3a1b2ddc49fc58d1fac811fecb2cfc14c76ac2d799",
+      "scope": "received-owner-rgb-save-read-only",
+      "stage": "received-owner-rgb",
+      "status": "complete",
+      "privateOutputDirectoryName": "received-rgb",
+      "receipt": {
+        "manifestByteLength": 1680,
+        "manifestPath": "manifest.json",
+        "manifestSha256": "3b990b32f0eee0f4897ee95acee2c2615b129d04cca810029e6c0c140d8d679e",
+        "packageId": "works:p2:package:received-owner-rgb",
+        "packageVersion": "works-artifact-package/1.0-draft.1"
+      },
+      "nativeMetadata": {
+        "byteLength": 6144,
+        "byteOrder": "little",
+        "dataSha256": "e13806a2db0893872a9efb3a1b2ddc49fc58d1fac811fecb2cfc14c76ac2d799",
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "meaning": "raw-decoder-rgb",
+        "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "schemaVersion": 1,
+        "shape": [
+          1,
+          3,
+          1,
+          16,
+          32
+        ]
+      },
+      "nativeByteLength": 6460,
+      "rawArtifactsPublished": true,
+      "publicArtifactDirectory": "fixtures/received-owner-rgb"
+    }
+  ],
+  "normalizedOwnedCapture": {
+    "context": {
+      "contextId": "v1-still-0",
+      "inputId": "existing-diagnostic-png",
+      "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+      "schemaVersion": 1,
+      "slotId": "diagnostic-still",
+      "sourceFrameIndices": [
+        0
+      ],
+      "sourceFrameTimesSeconds": [
+        0
+      ]
+    },
+    "diskPackageAccepted": false,
+    "meaning": "wan21-normalized-posterior-mean:v1",
+    "mode": "copy",
+    "normalization": "wan21-comfy-f32-v1",
+    "payloadSha256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5"
+  },
+  "normalizedPackageNegative": {
+    "code": "NATIVE_METADATA_MISMATCH",
+    "fieldPath": "descriptor.json/native/metadata/normalization",
+    "filesWritten": 0,
+    "scope": "exact-candidate-codec-normalization-marker-loss",
+    "status": "blocked"
+  },
+  "edgeDecision": {
+    "adapterRefs": [],
+    "adapterSelections": [],
+    "checks": [
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/bindingRef",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/owner",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/artifactKind",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/profileRef",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "source",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/sourceRef",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "source: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "native-api",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/nativeAPI/version",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "native-api: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "native-api",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/nativeAPI/build",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "native-api: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "native-api",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/nativeAPI/transport",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "native-api: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "native-api",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/nativeAPI/entrypoint",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "native-api: match"
+      },
+      {
+        "adaptable": false,
+        "code": "UNKNOWN_SCHEMA",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "schema",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/semantics",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "schema: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/requiredMetadata",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/requiredIdentities",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/ownershipModes",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/transports",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/allowedAdapterRefs",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/requiredExtensionSchemas",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/bindingRef",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/owner",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/artifactKind",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/profileRef",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "source",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/sourceRef",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "source: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "native-api",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/nativeAPI/version",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "native-api: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "native-api",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/nativeAPI/build",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "native-api: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "native-api",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/nativeAPI/transport",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "native-api: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "native-api",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/nativeAPI/entrypoint",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "native-api: match"
+      },
+      {
+        "adaptable": false,
+        "code": "UNKNOWN_SCHEMA",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "schema",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/semantics",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "schema: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/requiredMetadata",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/requiredIdentities",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/ownershipModes",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/transports",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/allowedAdapterRefs",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/requiredExtensionSchemas",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "UNKNOWN_SCHEMA",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "contract-version",
+        "evidenceRefs": [],
+        "expected": "works-module-contract/1.0-draft.1",
+        "fieldPath": "/contractVersion",
+        "observed": "works-module-contract/1.0-draft.1",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "contract-version: match"
+      },
+      {
+        "adaptable": false,
+        "code": "SEMANTIC_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "native-meaning",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/tensor/nativeMeaning",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "nativeMeaning must be explicitly defined by the selected versioned semantic registry entry"
+      },
+      {
+        "adaptable": false,
+        "code": "ARTIFACT_KIND_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "artifact-kind",
+        "evidenceRefs": [],
+        "expected": "tensor",
+        "fieldPath": "/kind",
+        "observed": "tensor",
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "artifact-kind: match"
+      },
+      {
+        "adaptable": false,
+        "code": "SEMANTIC_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "semantics",
+        "evidenceRefs": [],
+        "expected": "works:p2:raw-posterior-mean",
+        "fieldPath": "/semantics/schemaId",
+        "observed": "works:p2:raw-posterior-mean",
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "semantics: match"
+      },
+      {
+        "adaptable": false,
+        "code": "SEMANTIC_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "semantics",
+        "evidenceRefs": [],
+        "expected": "1",
+        "fieldPath": "/semantics/schemaVersion",
+        "observed": "1",
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "semantics: match"
+      },
+      {
+        "adaptable": false,
+        "code": "SEMANTIC_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "semantics",
+        "evidenceRefs": [],
+        "expected": "raw-posterior-mean",
+        "fieldPath": "/semantics/spaceId",
+        "observed": "raw-posterior-mean",
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "semantics: match"
+      },
+      {
+        "adaptable": false,
+        "code": "SEMANTIC_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "semantics",
+        "evidenceRefs": [],
+        "expected": "native-f32-value",
+        "fieldPath": "/semantics/unit",
+        "observed": "native-f32-value",
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "semantics: match"
+      },
+      {
+        "adaptable": false,
+        "code": "SEMANTIC_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "semantics",
+        "evidenceRefs": [],
+        "expected": "none",
+        "fieldPath": "/semantics/normalization",
+        "observed": "none",
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "semantics: match"
+      },
+      {
+        "adaptable": false,
+        "code": "PROFILE_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "profile",
+        "evidenceRefs": [],
+        "expected": "wan21-raw-f32-1x16x32",
+        "fieldPath": "/profileRef",
+        "observed": "wan21-raw-f32-1x16x32",
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "profile: match"
+      },
+      {
+        "adaptable": false,
+        "code": "REQUIRED_METADATA_MISSING",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "required-metadata",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/native/metadata/meaning",
+        "observed": true,
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "required-metadata: match"
+      },
+      {
+        "adaptable": false,
+        "code": "REQUIRED_METADATA_MISSING",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "required-metadata",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/native/metadata/modelSha256",
+        "observed": true,
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "required-metadata: match"
+      },
+      {
+        "adaptable": false,
+        "code": "REQUIRED_METADATA_MISSING",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "required-metadata",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/native/metadata/context",
+        "observed": true,
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "required-metadata: match"
+      },
+      {
+        "adaptable": false,
+        "code": "OWNERSHIP_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "ownership",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/ownership/mode",
+        "observed": true,
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "ownership: match"
+      },
+      {
+        "adaptable": false,
+        "code": "TRANSPORT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "transport",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/transports",
+        "observed": true,
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "transport: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "tensor-declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/producerPort/tensor",
+        "observed": true,
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "tensor-declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "DTYPE_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "dtype",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/tensor/dtype",
+        "observed": true,
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "dtype: match"
+      },
+      {
+        "adaptable": false,
+        "code": "AXES_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "axes",
+        "evidenceRefs": [],
+        "expected": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "fieldPath": "/tensor/axes",
+        "observed": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "axes: match"
+      },
+      {
+        "adaptable": false,
+        "code": "SHAPE_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "shape",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/tensor/shape",
+        "observed": true,
+        "outcome": "match",
+        "owner": "diffusion",
+        "reason": "shape: match"
+      },
+      {
+        "adaptable": false,
+        "code": "ARTIFACT_KIND_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "artifact-kind",
+        "evidenceRefs": [],
+        "expected": "tensor",
+        "fieldPath": "/kind",
+        "observed": "tensor",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "artifact-kind: match"
+      },
+      {
+        "adaptable": false,
+        "code": "SEMANTIC_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "semantics",
+        "evidenceRefs": [],
+        "expected": "works:p2:raw-posterior-mean",
+        "fieldPath": "/semantics/schemaId",
+        "observed": "works:p2:raw-posterior-mean",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "semantics: match"
+      },
+      {
+        "adaptable": false,
+        "code": "SEMANTIC_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "semantics",
+        "evidenceRefs": [],
+        "expected": "1",
+        "fieldPath": "/semantics/schemaVersion",
+        "observed": "1",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "semantics: match"
+      },
+      {
+        "adaptable": true,
+        "code": "SEMANTIC_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "semantics",
+        "evidenceRefs": [],
+        "expected": "raw-posterior-mean",
+        "fieldPath": "/semantics/spaceId",
+        "observed": "raw-posterior-mean",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "semantics: match"
+      },
+      {
+        "adaptable": true,
+        "code": "SEMANTIC_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "semantics",
+        "evidenceRefs": [],
+        "expected": "native-f32-value",
+        "fieldPath": "/semantics/unit",
+        "observed": "native-f32-value",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "semantics: match"
+      },
+      {
+        "adaptable": true,
+        "code": "SEMANTIC_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "semantics",
+        "evidenceRefs": [],
+        "expected": "none",
+        "fieldPath": "/semantics/normalization",
+        "observed": "none",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "semantics: match"
+      },
+      {
+        "adaptable": false,
+        "code": "PROFILE_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "profile",
+        "evidenceRefs": [],
+        "expected": "wan21-raw-f32-1x16x32",
+        "fieldPath": "/profileRef",
+        "observed": "wan21-raw-f32-1x16x32",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "profile: match"
+      },
+      {
+        "adaptable": false,
+        "code": "REQUIRED_METADATA_MISSING",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "required-metadata",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/native/metadata/meaning",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "required-metadata: match"
+      },
+      {
+        "adaptable": false,
+        "code": "REQUIRED_METADATA_MISSING",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "required-metadata",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/native/metadata/modelSha256",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "required-metadata: match"
+      },
+      {
+        "adaptable": false,
+        "code": "REQUIRED_METADATA_MISSING",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "required-metadata",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/native/metadata/context",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "required-metadata: match"
+      },
+      {
+        "adaptable": false,
+        "code": "OWNERSHIP_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "ownership",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/ownership/mode",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "ownership: match"
+      },
+      {
+        "adaptable": false,
+        "code": "TRANSPORT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "transport",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/transports",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "transport: match"
+      },
+      {
+        "adaptable": false,
+        "code": "CONTRACT_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "tensor-declaration",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/consumerPort/tensor",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "tensor-declaration: match"
+      },
+      {
+        "adaptable": false,
+        "code": "DTYPE_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "dtype",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/tensor/dtype",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "dtype: match"
+      },
+      {
+        "adaptable": false,
+        "code": "AXES_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "axes",
+        "evidenceRefs": [],
+        "expected": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "fieldPath": "/tensor/axes",
+        "observed": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "axes: match"
+      },
+      {
+        "adaptable": false,
+        "code": "SHAPE_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1"
+        ],
+        "criterion": "shape",
+        "evidenceRefs": [],
+        "expected": true,
+        "fieldPath": "/tensor/shape",
+        "observed": true,
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "shape: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-SHAPE_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "fieldPath": "/tensor/shape",
+        "normId": "N-SHAPE",
+        "observed": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-SHAPE_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": "float32",
+        "fieldPath": "/tensor/dtype",
+        "normId": "N-SHAPE",
+        "observed": "float32",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-SHAPE_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "fieldPath": "/tensor/axes",
+        "normId": "N-SHAPE",
+        "observed": [
+          "N",
+          "C",
+          "T",
+          "H",
+          "W"
+        ],
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-SHAPE_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": "raw-posterior-mean",
+        "fieldPath": "/tensor/nativeMeaning",
+        "normId": "N-SHAPE",
+        "observed": "raw-posterior-mean",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-SHAPE_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": "wan21-raw-f32-1x16x32",
+        "fieldPath": "/referenceContext/nativeDeclarations/producer/nativeProfileId",
+        "normId": "N-SHAPE",
+        "observed": "wan21-raw-f32-1x16x32",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-SHAPE_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "fieldPath": "/referenceContext/nativeDeclarations/producer/modelSha256",
+        "normId": "N-SHAPE",
+        "observed": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-NORMALIZATION_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": "wan21-raw-f32-1x16x32",
+        "fieldPath": "/referenceContext/nativeDeclarations/producer/nativeProfileId",
+        "normId": "N-NORMALIZATION",
+        "observed": "wan21-raw-f32-1x16x32",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-NORMALIZATION_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": "wan21-comfy-f32-v1",
+        "fieldPath": "/referenceContext/nativeDeclarations/producer/normalizationRuleId",
+        "normId": "N-NORMALIZATION",
+        "observed": "wan21-comfy-f32-v1",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-NORMALIZATION_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": "wan21-raw-mean-f32-v3",
+        "fieldPath": "/referenceContext/nativeDeclarations/producer/kernelABI",
+        "normId": "N-NORMALIZATION",
+        "observed": "wan21-raw-mean-f32-v3",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-NORMALIZATION_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "fieldPath": "/referenceContext/nativeDeclarations/producer/modelSha256",
+        "normId": "N-NORMALIZATION",
+        "observed": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-NORMALIZATION_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": "raw-posterior-mean",
+        "fieldPath": "/tensor/nativeMeaning",
+        "normId": "N-NORMALIZATION",
+        "observed": "raw-posterior-mean",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-NORMALIZATION_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "fieldPath": "/tensor/shape",
+        "normId": "N-NORMALIZATION",
+        "observed": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-NORMALIZATION_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": "float32",
+        "fieldPath": "/tensor/dtype",
+        "normId": "N-NORMALIZATION",
+        "observed": "float32",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      },
+      {
+        "adaptable": false,
+        "code": "N-NORMALIZATION_MISMATCH",
+        "contractRefs": [
+          "works-module-contract/1.0-draft.1",
+          "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "diffusion-models/0.1",
+          "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+          "works:p2:raw-posterior-mean@1",
+          "wan21-raw-f32-1x16x32",
+          "855f435120f08eb9e818e51281fc26f0e2633829",
+          "works-ai-1",
+          "works-inference-v1",
+          "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+          "works-reference-catalog/1.0-draft.1"
+        ],
+        "criterion": "manager-norm",
+        "evidenceRefs": [],
+        "expected": "restored",
+        "fieldPath": "/referenceContext/nativeDeclarations/producer/normalizationState",
+        "normId": "N-NORMALIZATION",
+        "observed": "restored",
+        "outcome": "match",
+        "owner": "vae",
+        "reason": "manager-norm: match"
+      }
+    ],
+    "compatibility": "COMPATIBLE",
+    "consumerBindingRef": "works:p2:vae",
+    "contractRefs": [
+      "works-module-contract/1.0-draft.1",
+      "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "diffusion-models/0.1",
+      "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+      "works:p2:raw-posterior-mean@1",
+      "wan21-raw-f32-1x16x32",
+      "855f435120f08eb9e818e51281fc26f0e2633829",
+      "works-ai-1",
+      "works-inference-v1",
+      "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+      "works-reference-catalog/1.0-draft.1"
+    ],
+    "contractVersion": "works-module-contract/1.0-draft.1",
+    "decisionId": "edge:works:p2:diffusion:works:p2:vae:works:p2:owner-restored-mean",
+    "implementationState": {
+      "consumer": {
+        "bindingRef": "works:p2:vae",
+        "operationId": "decode",
+        "roles": [
+          "latent-decoding"
+        ],
+        "state": "implemented"
+      },
+      "producer": {
+        "bindingRef": "works:p2:diffusion",
+        "operationId": "restoreRawMean/RestoreRawMeanRect",
+        "roles": [
+          "tensor-transform"
+        ],
+        "state": "implemented"
+      }
+    },
+    "producerBindingRef": "works:p2:diffusion",
+    "readiness": {
+      "reasons": [
+        "SCOPE_not-verified:rect:same-profile-fresh-vae-decode",
+        "BINDING_NOT_CURRENT:consumer",
+        "RESOURCE_NOT_READY"
+      ],
+      "state": "blocked"
+    },
+    "reasons": [],
+    "referenceTrace": {
+      "appliedNormIds": [
+        "N-SHAPE",
+        "N-NORMALIZATION",
+        "N-NUMERIC",
+        "N-ARTIFACT"
+      ],
+      "catalogSha256": "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+      "classificationMapping": {
+        "readiness": {
+          "blocked": "BLOCKED",
+          "failed": "FAILED",
+          "ready": "READY"
+        },
+        "validation": {
+          "fail": "FAIL",
+          "not-verified": "NOT_VERIFIED",
+          "pass": "PASS"
+        }
+      },
+      "delegations": [
+        {
+          "checker": "package.mjs",
+          "checkingOwner": "existing manager/owner checker",
+          "normId": "N-ARTIFACT",
+          "receiptRef": "works:p2:readback:b52b861e5d31147566fe3a5ab86e838f23b5c5d83b9fa7ad04fc9cf2e40839a5",
+          "scope": "norm:N-ARTIFACT"
+        }
+      ],
+      "documentVersion": "1.0-draft.1",
+      "evidenceRefs": [
+        "works:p2:actual-roundtrip",
+        "works:p2:readback:b52b861e5d31147566fe3a5ab86e838f23b5c5d83b9fa7ad04fc9cf2e40839a5"
+      ],
+      "integrityReceipts": [
+        {
+          "byteLength": 8343,
+          "path": "docs/shared/ai-connection/reference/catalog.v1.json",
+          "sha256": "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c"
+        },
+        {
+          "byteLength": 11876,
+          "path": "docs/shared/ai-connection/reference/profiles/shape.v1.json",
+          "sha256": "7204b409c609c1f962cc2e0ae96c8d71f9779729baa187b6a9b7c1a68580388e"
+        },
+        {
+          "byteLength": 12695,
+          "path": "docs/shared/ai-connection/reference/profiles/numeric-execution.v1.json",
+          "sha256": "616c9e6f395c43c02aa7b0cd27eedbbafffb186ea80c6eb23e2aff5047e7e39e"
+        },
+        {
+          "byteLength": 17730,
+          "path": "docs/shared/ai-connection/reference/profiles/normalization.v1.json",
+          "sha256": "6465b50f586f8515b416eac3de93c5333bfe11c5dc6b09d7edb70bf7b545f460"
+        },
+        {
+          "byteLength": 6022,
+          "path": "docs/shared/ai-connection/reference/profiles/loader-policy.v1.json",
+          "sha256": "2f9eef460cc38e9837a8ee3f6d0e643774847cde535abb7424cff753627eed5a"
+        },
+        {
+          "byteLength": 11810,
+          "path": "docs/shared/ai-connection/reference/norms.v1.json",
+          "sha256": "fd16f1511f9ea5bc7d4215b431dcb5a47f5e7da691a67182b952267638175d13"
+        },
+        {
+          "byteLength": 26030,
+          "path": "docs/shared/ai-connection/reference/numerical-rules.v1.json",
+          "sha256": "50cb2fd27f0b07b550cdb0a0ec602cdf6ebf3c95c8bb35ba3ec821757c52ea6d"
+        }
+      ],
+      "profileRefs": [
+        "SHAPE-VAE-WAN21-F1-16X32",
+        "NORM-WAN21-MEAN-RECT"
+      ],
+      "readiness": "BLOCKED",
+      "schemaVersion": "works-norm-trace/0.1-draft.1",
+      "sourceRefs": [
+        {
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/API.md",
+          "repository": "Kushyameln01/kushyameln-works"
+        },
+        {
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md",
+          "repository": "Kushyameln01/kushyameln-works"
+        },
+        {
+          "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+          "path": "docs/shared/diffusion-models/API.md",
+          "repository": "Kushyameln01/kushyameln-works"
+        },
+        {
+          "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+          "path": "development/ai-connection/E1-ADOPT-RESULT.md",
+          "repository": "Kushyameln01/kushyameln-works"
+        },
+        {
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/latent-space.hike",
+          "repository": "Kushyameln01/kushyameln-works"
+        },
+        {
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/latent-space.mjs",
+          "repository": "Kushyameln01/kushyameln-works"
+        },
+        {
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/kernel-registry.mjs",
+          "repository": "Kushyameln01/kushyameln-works"
+        },
+        {
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "development/ai-connection/e6/RECT-RESULT.md",
+          "repository": "Kushyameln01/kushyameln-works"
+        }
+      ],
+      "sourceRuntimeIntegrated": false,
+      "validation": [
+        {
+          "evidenceRefs": [
+            "works:p2:actual-roundtrip"
+          ],
+          "result": "PASS",
+          "scope": "rect:owner-mean-roundtrip"
+        },
+        {
+          "evidenceRefs": [],
+          "result": "NOT_VERIFIED",
+          "scope": "rect:same-profile-fresh-vae-decode"
+        },
+        {
+          "evidenceRefs": [
+            "works:p2:readback:b52b861e5d31147566fe3a5ab86e838f23b5c5d83b9fa7ad04fc9cf2e40839a5"
+          ],
+          "result": "PASS",
+          "scope": "norm:N-ARTIFACT"
+        }
+      ]
+    },
+    "roles": {
+      "consumer": {
+        "bindingRef": "works:p2:vae",
+        "operationId": "decode",
+        "roles": [
+          "latent-decoding"
+        ],
+        "state": "implemented"
+      },
+      "producer": {
+        "bindingRef": "works:p2:diffusion",
+        "operationId": "restoreRawMean/RestoreRawMeanRect",
+        "roles": [
+          "tensor-transform"
+        ],
+        "state": "implemented"
+      }
+    },
+    "unresolvedRefs": [],
+    "validation": [
+      {
+        "evidenceRefs": [
+          "works:p2:actual-roundtrip"
+        ],
+        "result": "pass",
+        "scope": "rect:owner-mean-roundtrip"
+      },
+      {
+        "evidenceRefs": [],
+        "result": "not-verified",
+        "scope": "rect:same-profile-fresh-vae-decode"
+      },
+      {
+        "evidenceRefs": [
+          "works:p2:readback:b52b861e5d31147566fe3a5ab86e838f23b5c5d83b9fa7ad04fc9cf2e40839a5"
+        ],
+        "result": "pass",
+        "scope": "norm:N-ARTIFACT"
+      }
+    ]
+  },
+  "gateOmissionProbe": {
+    "compatibility": "COMPATIBLE",
+    "validation": [
+      {
+        "evidenceRefs": [],
+        "result": "not-verified",
+        "scope": "rect:gate-omitted-input-probe"
+      },
+      {
+        "evidenceRefs": [
+          "works:p2:readback:b52b861e5d31147566fe3a5ab86e838f23b5c5d83b9fa7ad04fc9cf2e40839a5"
+        ],
+        "result": "pass",
+        "scope": "norm:N-ARTIFACT"
+      }
+    ],
+    "readiness": {
+      "reasons": [
+        "SCOPE_not-verified:rect:gate-omitted-input-probe"
+      ],
+      "state": "blocked"
+    },
+    "reasons": [],
+    "referenceTrace": {
+      "catalogSha256": "14978376e8fc3ca0ab018a9d360640b56f5152fefa0139200fbf72d16755a74c",
+      "documentVersion": "1.0-draft.1",
+      "appliedNormIds": [
+        "N-SHAPE",
+        "N-NORMALIZATION",
+        "N-NUMERIC",
+        "N-ARTIFACT"
+      ],
+      "profileRefs": [
+        "SHAPE-VAE-WAN21-F1-16X32",
+        "NORM-WAN21-MEAN-RECT"
+      ],
+      "evidenceRefs": [
+        "works:p2:readback:b52b861e5d31147566fe3a5ab86e838f23b5c5d83b9fa7ad04fc9cf2e40839a5"
+      ],
+      "validation": [
+        {
+          "evidenceRefs": [],
+          "result": "NOT_VERIFIED",
+          "scope": "rect:gate-omitted-input-probe"
+        },
+        {
+          "evidenceRefs": [
+            "works:p2:readback:b52b861e5d31147566fe3a5ab86e838f23b5c5d83b9fa7ad04fc9cf2e40839a5"
+          ],
+          "result": "PASS",
+          "scope": "norm:N-ARTIFACT"
+        }
+      ],
+      "readiness": "BLOCKED"
+    }
+  },
+  "resources": {
+    "cacheReleaseCount": 1,
+    "cacheRetainedBytes": 0,
+    "kernelDisposed": true,
+    "ownerLifecycle": [
+      {
+        "released": true,
+        "target": {
+          "activeToken": "9424eb2d-42fb-45a9-b795-fe3298386f17",
+          "bindingId": "works:p2:rect-kernel",
+          "invocationId": "works:p2:normalizeRawMean",
+          "ownerId": "works:p2-rect-manager",
+          "requestId": "6a4a3069-9426-42f7-8e8f-600efc53c1d2",
+          "resourceGeneration": "3b5d357f-bc37-4895-924b-d7f232b51c2b",
+          "revision": 1
+        }
+      },
+      {
+        "released": true,
+        "target": {
+          "activeToken": "62ed0767-948b-456c-af30-1b3828cbbb93",
+          "bindingId": "works:p2:rect-kernel",
+          "invocationId": "works:p2:restoreRawMean",
+          "ownerId": "works:p2-rect-manager",
+          "requestId": "a2cd849d-c624-4286-869c-3fba64ea3dd7",
+          "resourceGeneration": "3b5d357f-bc37-4895-924b-d7f232b51c2b",
+          "revision": 1
+        }
+      }
+    ],
+    "storeEntries": 0
+  },
+  "queue": {
+    "disposed": false,
+    "groups": [
+      {
+        "activeInvocationId": null,
+        "groupId": "works:p2:rect-kernel",
+        "quarantined": false,
+        "queued": []
+      }
+    ],
+    "invocations": [
+      {
+        "activeToken": "9424eb2d-42fb-45a9-b795-fe3298386f17",
+        "calculationStopped": true,
+        "errorCode": null,
+        "id": "works:p2:normalizeRawMean",
+        "nativeOutcome": "fulfilled",
+        "originalTerminal": true,
+        "ownerId": "works:p2-rect-manager",
+        "parentId": null,
+        "requestId": "6a4a3069-9426-42f7-8e8f-600efc53c1d2",
+        "resourceBinding": "works:p2:rect-kernel",
+        "resourceGeneration": "3b5d357f-bc37-4895-924b-d7f232b51c2b",
+        "resourceReleased": true,
+        "resultAccepted": true,
+        "reusable": true,
+        "revision": 1,
+        "state": "completed",
+        "stopAcknowledged": false
+      },
+      {
+        "activeToken": "62ed0767-948b-456c-af30-1b3828cbbb93",
+        "calculationStopped": true,
+        "errorCode": null,
+        "id": "works:p2:restoreRawMean",
+        "nativeOutcome": "fulfilled",
+        "originalTerminal": true,
+        "ownerId": "works:p2-rect-manager",
+        "parentId": null,
+        "requestId": "a2cd849d-c624-4286-869c-3fba64ea3dd7",
+        "resourceBinding": "works:p2:rect-kernel",
+        "resourceGeneration": "3b5d357f-bc37-4895-924b-d7f232b51c2b",
+        "resourceReleased": true,
+        "resultAccepted": true,
+        "reusable": true,
+        "revision": 1,
+        "state": "completed",
+        "stopAcknowledged": false
+      }
+    ]
+  },
+  "cache": {
+    "hit": true
+  },
+  "assetInventory": {
+    "allPresent": false,
+    "assets": [
+      {
+        "expectedBytes": 212362391,
+        "expectedSha256": "0105bc12f13d3aceb35d1765681c427643bf04cc4ce5978c7339e04beff09e0d",
+        "observedBytes": null,
+        "path": "/workspace/work/inference/e6-rect/accepted-bundle/encode.onnx",
+        "role": "encoder",
+        "state": "missing"
+      },
+      {
+        "expectedBytes": 286313363,
+        "expectedSha256": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e",
+        "observedBytes": null,
+        "path": "/workspace/work/inference/e6-rect/accepted-bundle/decoder-body.onnx",
+        "role": "decoderBody",
+        "state": "missing"
+      },
+      {
+        "expectedBytes": 1024,
+        "expectedSha256": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+        "observedBytes": null,
+        "path": "/workspace/work/inference/e6-rect/accepted-bundle/conv2-weight.f32",
+        "role": "conv2Weight",
+        "state": "missing"
+      },
+      {
+        "expectedBytes": 64,
+        "expectedSha256": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+        "observedBytes": null,
+        "path": "/workspace/work/inference/e6-rect/accepted-bundle/conv2-bias.f32",
+        "role": "conv2Bias",
+        "state": "missing"
+      }
+    ],
+    "automaticDownload": false,
+    "automaticExport": false,
+    "root": "/workspace/work/inference/e6-rect/accepted-bundle"
+  },
+  "blockedEdges": [
+    {
+      "code": "NATIVE_METADATA_MISMATCH",
+      "edge": "normalized-mean-disk-package",
+      "fieldPath": "descriptor.json/native/metadata/normalization",
+      "filesWritten": 0,
+      "scope": "exact-candidate-codec-normalization-marker-loss",
+      "status": "blocked"
+    },
+    {
+      "edge": "fresh-vae-encode",
+      "reason": "No new real VAE neural session was executed; input is the exact received owner mean."
+    },
+    {
+      "edge": "same-profile-fresh-vae-decode",
+      "missingAssets": [
+        "/workspace/work/inference/e6-rect/accepted-bundle/encode.onnx",
+        "/workspace/work/inference/e6-rect/accepted-bundle/decoder-body.onnx",
+        "/workspace/work/inference/e6-rect/accepted-bundle/conv2-weight.f32",
+        "/workspace/work/inference/e6-rect/accepted-bundle/conv2-bias.f32"
+      ],
+      "reason": "Exact owner exported graph/conv assets are absent; no export or shape substitution is performed."
+    }
+  ],
+  "verification": {
+    "targetedTests": {
+      "command": "WORKS_RECT_DIFFUSION_ROOT=<fixed5f-source> WORKS_RECT_VAE_ROOT=<fixed855-source> node tools/ai-connection/test-rect-management.mjs",
+      "tests": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    "allValues": {
+      "normalizedValues": 128,
+      "restoredValues": 128,
+      "exactIndependentOwnerReferenceHashes": true
+    },
+    "metadataProbe": "Explicit metadata-only duplicate frame/time probe; original received native context not rewritten. Unknown optional extension order preserved in owned capture.",
+    "cancelScope": "Explicit pre-abort prevents native dispatch; active preemption is not asserted.",
+    "relatedRegression": {
+      "scope": "Rect + norm/reference + E4 package actual codec + queue + cache",
+      "tests": 113,
+      "passed": 113,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "privateRunReceipt": {
+    "relativePath": "work/ai-connection/profile-adopt/rect-management-checkpoint/result.json",
+    "sha256": "ba148448ad162ffca201c9838f9c6bd198a724d85c0ed23fc0650ecdd85867f5",
+    "byteLength": 123850,
+    "originalUnchanged": true
+  },
+  "ownerQuestions": [
+    "Provide exact already-exported Rect encoder/decoder/conv assets with existing hash receipts; no re-export or alternate shape.",
+    "Decide owner codec support for optional normalized-mean normalization marker; E4 currently refuses the loss.",
+    "Run same-profile actual raw restored mean decode, accepted all1536 comparison and resource-end evidence once exact assets are available."
+  ],
+  "notAccepted": [
+    "Fresh VAE encode/decode in management trace",
+    "Normalized-mean disk package",
+    "Actual generated-sample restoration/decode",
+    "81-frame production profile",
+    "Persistent full-model sessions",
+    "Production generation readiness"
+  ],
+  "modelArithmeticOwnerOnly": true
+}

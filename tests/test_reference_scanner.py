@@ -55,6 +55,30 @@ class JavaScriptReferences(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'Node-only'):
                 sync.check_references(p,exceptions=[])
 
+    def test_source_harness_exception_cannot_authorize_other_files_kinds_or_bytes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p=Path(tmp);name=sorted(sync.SOURCE_HARNESS_FILES)[0];harness=p/name;harness.parent.mkdir(parents=True)
+            content="export async function run(){fetch('/__case__.json');new URL('/tools/diffusion-models/public-model-worker-observer.mjs',location.href);}"
+            harness.write_text(content)
+            records=[{'file':name,'sha256':hashlib.sha256(content.encode()).hexdigest(),'specifiers':sorted(sync.SOURCE_HARNESS_REFERENCES),'referenceKinds':['fetch','url'],'reason':'Fixed non-runtime SOURCE verification harness'}]
+            sync.check_references(p,exceptions=records)
+            harness.write_text(content+'\n// modified')
+            with self.assertRaisesRegex(ValueError,'hash'):sync.check_references(p,exceptions=records)
+            harness.write_text(content);other=p/'product.mjs';other.write_text("fetch('/__case__.json');")
+            with self.assertRaisesRegex(ValueError,'Broken/escaping'):sync.check_references(p,exceptions=records)
+            other.unlink();records[0]['referenceKinds']=['import']
+            with self.assertRaisesRegex(ValueError,'Broken/escaping'):sync.check_references(p,exceptions=records)
+
+    def test_source_harness_policy_rejects_an_unreviewed_file_or_specifier(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            policy=Path(tmp)/'exceptions.json';record={'file':sorted(sync.SOURCE_HARNESS_FILES)[0],'sha256':'0'*64,'specifiers':sorted(sync.SOURCE_HARNESS_REFERENCES),'referenceKinds':['fetch','url'],'reason':'Fixed non-runtime SOURCE verification harness'}
+            with patch.object(sync,'REFERENCE_EXCEPTIONS',policy):
+                policy.write_text(json.dumps({'version':1,'exceptions':[record]}));self.assertEqual(sync.reference_exceptions(),[record])
+                record['file']='product.mjs';policy.write_text(json.dumps({'version':1,'exceptions':[record]}))
+                with self.assertRaisesRegex(ValueError,'non-runtime'):sync.reference_exceptions()
+                record['file']=sorted(sync.SOURCE_HARNESS_FILES)[0];record['specifiers']=['/private.json'];policy.write_text(json.dumps({'version':1,'exceptions':[record]}))
+                with self.assertRaisesRegex(ValueError,'non-runtime'):sync.reference_exceptions()
+
     def test_asset_base_url_directory_does_not_authorize_missing_page_or_fetch(self):
         with tempfile.TemporaryDirectory() as tmp:
             p=Path(tmp);(p/'vendor').mkdir();app=p/'app.mjs'

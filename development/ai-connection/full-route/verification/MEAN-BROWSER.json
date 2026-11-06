@@ -1,0 +1,269 @@
+{
+  "scope": "Actual adopted public Worker and Hike mean normalization/restoration; synthetic rectangular raw128 input; no model NN or production-shape acceptance",
+  "coi": false,
+  "build": "diffusion-models/0.1+9c5d8d18e9a7b046d7768c8c32ca6a48eaa084c900e916d59d63e735ebeb2a20",
+  "source": {
+    "repository": "Kushyameln01/kushyameln-works",
+    "commit": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+    "path": "docs/shared/diffusion-models/api/index.mjs",
+    "sha256": "bacea0297154d1620e6d948c12b5299ef36fc0fd341d1d9337defadf17416df9"
+  },
+  "nativeSessionId": "5bd00b85-b6da-4b6e-a434-eee8f428ddb0",
+  "modelWeightsLoaded": false,
+  "normalized": {
+    "status": "EXECUTION_COMPLETED",
+    "tensor": {
+      "dtype": "float32",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "layout": "NCTHW",
+      "meaning": "wan21-normalized-posterior-mean:v1",
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "normalization": "wan21-comfy-f32-v1"
+    },
+    "resultEvidence": {
+      "scope": "explicit Wan21 posterior-mean normalization only; no model inference",
+      "profileId": "wan21-raw-f32-1x16x32",
+      "hikeWasmSHA256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+      "hike": {
+        "calls": 1,
+        "memoryBytes": 1114112,
+        "arenaBytes": 1024,
+        "inputCopyBytes": 512,
+        "outputCopyBytes": 512,
+        "workspaceReused": true,
+        "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+        "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+        "profiles": [
+          "wan21-raw-f32-5x16x16",
+          "wan21-raw-f32-1x16x16",
+          "wan21-raw-f32-1x16x32"
+        ],
+        "imports": 0
+      }
+    },
+    "target": {
+      "requestId": "mean-browser-normalize",
+      "managerSessionId": "diffusion-mean-manager:a9b16763-e042-4a27-a74b-a8a5e5936035",
+      "managerRevision": 1,
+      "resourceBinding": {
+        "bindingId": "diffusion-mean-manager:a9b16763-e042-4a27-a74b-a8a5e5936035:resource",
+        "ownerId": "normal:diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac",
+        "resourceGeneration": "normal-diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac:0"
+      },
+      "activeToken": "29de41f0-8341-470f-a995-9f711826e96d"
+    },
+    "terminal": {
+      "resultAccepted": true,
+      "originalTerminal": true,
+      "stopAcknowledged": false,
+      "calculationStopped": true,
+      "resourceReleased": true,
+      "reusable": true,
+      "id": "mean-browser-normalize",
+      "requestId": "mean-browser-normalize",
+      "ownerId": "normal:diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac",
+      "resourceBinding": "diffusion-mean-manager:a9b16763-e042-4a27-a74b-a8a5e5936035:resource",
+      "resourceGeneration": "normal-diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac:0",
+      "revision": 1,
+      "activeToken": "29de41f0-8341-470f-a995-9f711826e96d",
+      "parentId": null,
+      "state": "completed",
+      "nativeOutcome": "fulfilled",
+      "errorCode": null
+    },
+    "inputMetadata": {
+      "dtype": "float32",
+      "layout": "NCTHW",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "meaning": "raw-posterior-mean",
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "frameProcessing": {
+        "crop": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "sourceFrameIndices": [
+        7
+      ],
+      "sourceFrameTimesSeconds": [
+        0.25
+      ],
+      "processing": {
+        "test": "sidecar-preservation"
+      },
+      "evidence": {
+        "test": "synthetic-input-no-neural-execution"
+      }
+    }
+  },
+  "restored": {
+    "status": "EXECUTION_COMPLETED",
+    "tensor": {
+      "dtype": "float32",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "layout": "NCTHW",
+      "meaning": "raw-posterior-mean",
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+    },
+    "resultEvidence": {
+      "scope": "explicit Wan21 posterior-mean normalization only; no model inference",
+      "profileId": "wan21-raw-f32-1x16x32",
+      "hikeWasmSHA256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+      "hike": {
+        "calls": 1,
+        "memoryBytes": 1114112,
+        "arenaBytes": 1024,
+        "inputCopyBytes": 512,
+        "outputCopyBytes": 512,
+        "workspaceReused": true,
+        "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+        "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+        "profiles": [
+          "wan21-raw-f32-5x16x16",
+          "wan21-raw-f32-1x16x16",
+          "wan21-raw-f32-1x16x32"
+        ],
+        "imports": 0
+      }
+    },
+    "target": {
+      "requestId": "mean-browser-restore",
+      "managerSessionId": "diffusion-mean-manager:a9b16763-e042-4a27-a74b-a8a5e5936035",
+      "managerRevision": 2,
+      "resourceBinding": {
+        "bindingId": "diffusion-mean-manager:a9b16763-e042-4a27-a74b-a8a5e5936035:resource",
+        "ownerId": "normal:diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac",
+        "resourceGeneration": "normal-diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac:0"
+      },
+      "activeToken": "8b5d411b-4be4-4241-9979-dcfe9e55b9b1"
+    },
+    "terminal": {
+      "resultAccepted": true,
+      "originalTerminal": true,
+      "stopAcknowledged": false,
+      "calculationStopped": true,
+      "resourceReleased": true,
+      "reusable": true,
+      "id": "mean-browser-restore",
+      "requestId": "mean-browser-restore",
+      "ownerId": "normal:diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac",
+      "resourceBinding": "diffusion-mean-manager:a9b16763-e042-4a27-a74b-a8a5e5936035:resource",
+      "resourceGeneration": "normal-diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac:0",
+      "revision": 2,
+      "activeToken": "8b5d411b-4be4-4241-9979-dcfe9e55b9b1",
+      "parentId": null,
+      "state": "completed",
+      "nativeOutcome": "fulfilled",
+      "errorCode": null
+    }
+  },
+  "unsupported": {
+    "status": "UNSUPPORTED",
+    "reasons": [
+      {
+        "code": "OWNER_SHAPE_UNSUPPORTED",
+        "fieldPath": "/artifact/tensor/shape",
+        "reason": "Shape not advertised by the actual current native owner",
+        "owner": "normal:diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac",
+        "authority": "actual-native-capabilities-and-boundary-contract"
+      }
+    ]
+  },
+  "concurrentQueuedCalls": [
+    {
+      "status": "EXECUTION_COMPLETED",
+      "target": {
+        "requestId": "mean-browser-queued-a",
+        "managerSessionId": "diffusion-mean-manager:a9b16763-e042-4a27-a74b-a8a5e5936035",
+        "managerRevision": 4,
+        "resourceBinding": {
+          "bindingId": "diffusion-mean-manager:a9b16763-e042-4a27-a74b-a8a5e5936035:resource",
+          "ownerId": "normal:diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac",
+          "resourceGeneration": "normal-diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac:0"
+        },
+        "activeToken": "ff1ff839-8f46-4aa9-9750-8eece2f3189a"
+      },
+      "terminal": {
+        "resultAccepted": true,
+        "originalTerminal": true,
+        "stopAcknowledged": false,
+        "calculationStopped": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "id": "mean-browser-queued-a",
+        "requestId": "mean-browser-queued-a",
+        "ownerId": "normal:diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac",
+        "resourceBinding": "diffusion-mean-manager:a9b16763-e042-4a27-a74b-a8a5e5936035:resource",
+        "resourceGeneration": "normal-diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac:0",
+        "revision": 4,
+        "activeToken": "ff1ff839-8f46-4aa9-9750-8eece2f3189a",
+        "parentId": null,
+        "state": "completed",
+        "nativeOutcome": "fulfilled",
+        "errorCode": null
+      }
+    },
+    {
+      "status": "EXECUTION_COMPLETED",
+      "target": {
+        "requestId": "mean-browser-queued-b",
+        "managerSessionId": "diffusion-mean-manager:a9b16763-e042-4a27-a74b-a8a5e5936035",
+        "managerRevision": 5,
+        "resourceBinding": {
+          "bindingId": "diffusion-mean-manager:a9b16763-e042-4a27-a74b-a8a5e5936035:resource",
+          "ownerId": "normal:diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac",
+          "resourceGeneration": "normal-diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac:0"
+        },
+        "activeToken": "e44d84fc-f89e-4419-b390-49d78a1a49da"
+      },
+      "terminal": {
+        "resultAccepted": true,
+        "originalTerminal": true,
+        "stopAcknowledged": false,
+        "calculationStopped": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "id": "mean-browser-queued-b",
+        "requestId": "mean-browser-queued-b",
+        "ownerId": "normal:diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac",
+        "resourceBinding": "diffusion-mean-manager:a9b16763-e042-4a27-a74b-a8a5e5936035:resource",
+        "resourceGeneration": "normal-diffusion:09cfd51c-deff-4b79-9680-7cd7989581ac:0",
+        "revision": 5,
+        "activeToken": "e44d84fc-f89e-4419-b390-49d78a1a49da",
+        "parentId": null,
+        "state": "completed",
+        "nativeOutcome": "fulfilled",
+        "errorCode": null
+      }
+    }
+  ],
+  "inputPreserved": true,
+  "outputFinite": true,
+  "workers": {
+    "created": 4,
+    "closed": 4
+  },
+  "requestCount": 323,
+  "hikeWasmRequested": true
+}

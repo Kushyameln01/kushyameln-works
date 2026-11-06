@@ -1,0 +1,33 @@
+"""Generate the shared host/worker build identity after source/kernel changes."""
+from pathlib import Path
+import hashlib,json
+api=Path(__file__).resolve().parent
+names=[
+ 'index.mjs','worker.mjs','model-adapter.mjs','safetensors.mjs','build-info.py',
+ '../execution/capabilities.mjs','../execution/p4.mjs',
+ '../ort-bridge/post-self-attention/stage.mjs','../ort-bridge/post-self-attention/source.mjs','../ort-bridge/post-self-attention/weights.mjs','../ort-bridge/post-self-attention/conditioning.mjs','../ort-bridge/post-self-attention/linear.mjs','../ort-bridge/post-self-attention/math.mjs','../ort-bridge/post-self-attention/registry.mjs','../ort-bridge/post-self-attention/kernel.wasm','../ort-bridge/post-self-attention/build-record.json','../ort-bridge/post-self-attention/math.hike','../ort-bridge/post-self-attention/runtime.js',
+ '../lora/weights.mjs','../lora/targets.mjs','../lora/strict-json.mjs','../lora/source.mjs','../lora/diagnostic-identity.mjs','../lora/diagnostic-base.mjs','../lora/base-block.mjs','../lora/diagnostic-consumer.mjs','../lora/v2-adapter.mjs','../../vr180/sha256.mjs',
+ '../euler-kernel.mjs','../kernel-registry.mjs','../kernel/euler.wasm',
+ '../tensor-interop.mjs','../../inference/tensor.mjs',
+ '../latent-space/latent-space.mjs','../latent-space/kernel-registry.mjs','../latent-space/latent-space.hike','../latent-space/build.py','../latent-space/build/latent-space.wasm','../latent-space/build/build-record.json',
+ '../scheduler/scheduler-kernel.mjs','../scheduler/scheduler.hike','../scheduler/build/scheduler.wasm','../scheduler/build/build-record.json',
+ '../ort-bridge/tiled-q.mjs','../ort-bridge/stage.mjs','../ort-bridge/graph.mjs','../ort-bridge/hike.mjs','../ort-bridge/kernel/registry.mjs','../ort-bridge/kernel/bridge.wasm','../ort-bridge/kernel/build-record.json','../ort-bridge/kernel/bridge.hike','../ort-bridge/kernel/build.py',
+ '../ort-bridge/stream-attention/stage.mjs','../ort-bridge/stream-attention/graph.mjs','../ort-bridge/stream-attention/hike.mjs','../ort-bridge/stream-attention/registry.mjs','../ort-bridge/stream-attention/kernel.wasm','../ort-bridge/stream-attention/build-record.json','../ort-bridge/stream-attention/kernel.hike','../ort-bridge/stream-attention/build.py','../ort-bridge/stream-attention/runtime.js',
+ '../ort-bridge/qkv/base.mjs','../ort-bridge/qkv/stage.mjs','../ort-bridge/qkv/graph.mjs','../ort-bridge/qkv/rope.mjs','../ort-bridge/qkv/norm-admission.mjs','../ort-bridge/qkv/ownership.mjs','../ort-bridge/qkv/registry.mjs','../ort-bridge/qkv/kernel.wasm','../ort-bridge/qkv/kernel.wat','../ort-bridge/qkv/build-record.json','../ort-bridge/qkv/rope.hike','../ort-bridge/qkv/build.py','../ort-bridge/qkv/runtime.js',
+ '../ort-bridge/block-hidden/source.mjs','../ort-bridge/block-hidden/stage.mjs','../ort-bridge/block-hidden/linear.mjs','../ort-bridge/block-hidden/graph.mjs','../ort-bridge/block-hidden/math.mjs','../ort-bridge/block-hidden/registry.mjs','../ort-bridge/block-hidden/math.hike','../ort-bridge/block-hidden/build.py','../ort-bridge/block-hidden/build-record.json','../ort-bridge/block-hidden/kernel.wasm','../ort-bridge/block-hidden/kernel.wat','../ort-bridge/block-hidden/runtime.js',
+ '../ort-bridge/attention-heads/stage.mjs','../ort-bridge/attention-heads/attention.mjs','../ort-bridge/attention-heads/graph.mjs','../ort-bridge/attention-heads/rope.mjs','../ort-bridge/attention-heads/budget.mjs',
+ '../ort-bridge/self-attention-tail/source.mjs','../ort-bridge/self-attention-tail/trusted.mjs','../ort-bridge/self-attention-tail/stage.mjs','../ort-bridge/self-attention-tail/math.mjs','../ort-bridge/self-attention-tail/registry.mjs','../ort-bridge/self-attention-tail/math.hike','../ort-bridge/self-attention-tail/build.py','../ort-bridge/self-attention-tail/build-record.json','../ort-bridge/self-attention-tail/kernel.wasm','../ort-bridge/self-attention-tail/kernel.wat','../ort-bridge/self-attention-tail/runtime.js',
+ '../../inference/hike.mjs','../../inference/kernel/tensor.wasm','../../inference/kernel/runtime.js','../../../../tools/inference/kernel/tensor.hike','../../../../tools/inference/kernel/manifest.json','../../../../tools/inference/kernel/build.py','../../../../tools/inference/kernel/tensor.wat',
+ '../../inference/vendor/ort.wasm.min.mjs','../../inference/vendor/ort-wasm-simd-threaded.mjs','../../inference/vendor/ort-wasm-simd-threaded.wasm','../../inference/vendor/license-sources.json',
+ '../../../../development/inference/publication-candidate.json'
+]
+names += ['../execution/model-read-window.mjs', '../execution/owned-attention-query.mjs', '../execution/prepared-attention-kv.mjs', '../execution/model-chunk-diagnostics.mjs', '../execution/model-execution-timing.mjs', '../execution/model-weights.mjs', '../execution/model-decode.mjs', '../execution/model-decode/registry.mjs', '../execution/model-decode/model-decode.wasm', '../execution/model-decode/model-decode.hike', '../execution/model-decode/build.py', '../execution/model-decode/build-record.json', '../execution/model-math.mjs', '../execution/model-math/registry.mjs', '../execution/model-math/kernel.wasm', '../execution/model-math/math.hike', '../execution/model-math/build.py', '../execution/model-math/build-record.json', '../execution/batched-ops.mjs', '../execution/batched-attention-graph.mjs', '../execution/model-sequence.mjs', '../execution/model-head.mjs', '../execution/model-candidate.mjs', '../execution/model-sampler-candidate.mjs', '../execution/generated-space.mjs', '../execution/generated-space/kernel-registry.mjs', '../execution/generated-space/build/generated-space.wasm', '../execution/generated-space/generated-space.hike', '../execution/generated-space/build.py', '../execution/generated-space/build/build-record.json', '../../ai-connection/workflow-shapes.mjs']
+names += ['weight-port.mjs', '../execution/model-weight-bindings.mjs', '../execution/model-weight-feed.mjs', '../execution/lora-source-manifest.json', '../../inference/lora/standalone-registry.mjs', '../../inference/lora/loader-policy.mjs', '../../inference/lora/bernini-targets.mjs', '../../inference/lora/planner.mjs']
+hashes={name:hashlib.sha256((api/name).read_bytes()).hexdigest() for name in names}
+source_digest=hashlib.sha256(json.dumps(hashes,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+text='// Generated by build-info.py; regenerate after changing listed sources.\n'
+text+='export const BUILD_ID='+json.dumps('diffusion-models/0.1+'+source_digest)+';\n'
+text+='export const BUILD_SOURCE_SHA256='+json.dumps(source_digest)+';\n'
+text+='export const BUILD_SOURCES=Object.freeze('+json.dumps(hashes,sort_keys=True,indent=2)+');\n'
+(api/'build-info.mjs').write_text(text)
+print('diffusion-models/0.1+'+source_digest)

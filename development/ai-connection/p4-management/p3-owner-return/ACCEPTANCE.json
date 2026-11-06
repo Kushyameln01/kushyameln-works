@@ -1,0 +1,356 @@
+{
+  "schemaVersion": "management-owner884-scoped-acceptance/1",
+  "observedUTC": "2026-11-01T16:28:14.267467+00:00",
+  "originalObservedUTC": "2026-11-01T15:46:08.373Z",
+  "distributionCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+  "executionSourceCommit": "8849891f19124df31847bd691503c2491278eaa8",
+  "status": "ACCEPTED_P3_ADDED_BOUNDARIES_FROM_OWNER_RETURN",
+  "accepted": true,
+  "scope": {
+    "pair": "light",
+    "side": "HIGH",
+    "coverage": "PARTIAL",
+    "selectedWeightShape": [
+      16,
+      5120
+    ],
+    "selectedBiasShape": [
+      16
+    ],
+    "output16E4": true,
+    "payloadTamperRefusal": "ASSET_HASH_MISMATCH",
+    "snapshotMissingRefusal": "REQUIRED_ASSET_MISSING",
+    "preNativeReferenceGuard": "NORM_REFERENCE_PAYLOAD_MISMATCH"
+  },
+  "runtimeCounts": {
+    "publishedCases": 6,
+    "nativePrepareAttempts": 7,
+    "nativeStageAttempts": 7,
+    "separateRestoreTransactions": 1,
+    "wrongReferenceNativePreparations": 0
+  },
+  "cases": [
+    {
+      "id": "initial-zero",
+      "strength": 0,
+      "managerRevision": 1001,
+      "nativeTuple": {
+        "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+        "localInputRevision": 1,
+        "localApplicationRevision": 1
+      },
+      "snapshotTarget": {
+        "snapshotId": "p3:actual:initial-zero:2dc1d9d1-26ff-4eef-a30f-24292cbdd53b",
+        "snapshotHash": "157afbfc180e118ca693fd8bf1d965e739947d95b6338c4c59be0fd0a40845e9",
+        "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+        "managerRevision": 1001,
+        "stepId": "HIGH",
+        "operationId": "diagnose",
+        "resourceBinding": {
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "bindingId": "p3:actual-high-q16",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 1,
+          "localApplicationRevision": 1
+        }
+      },
+      "outputSha256": "b9fa765c35fe23a578f0d389272db9c7a2784fbb9bd0014074dd105e0cb7611b"
+    },
+    {
+      "id": "initial-one",
+      "strength": 1,
+      "managerRevision": 1002,
+      "nativeTuple": {
+        "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+        "localInputRevision": 2,
+        "localApplicationRevision": 2
+      },
+      "snapshotTarget": {
+        "snapshotId": "p3:actual:initial-one:1cede09d-50ad-46ba-8289-ec9e5d7e0669",
+        "snapshotHash": "70052e13634e2218092ed167ac41800bf8a1c9ee77726b53592d9fc9870ae108",
+        "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+        "managerRevision": 1002,
+        "stepId": "HIGH",
+        "operationId": "diagnose",
+        "resourceBinding": {
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "bindingId": "p3:actual-high-q16",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 2,
+          "localApplicationRevision": 2
+        }
+      },
+      "outputSha256": "04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575"
+    },
+    {
+      "id": "initial-negative",
+      "strength": -1,
+      "managerRevision": 1003,
+      "nativeTuple": {
+        "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+        "localInputRevision": 3,
+        "localApplicationRevision": 3
+      },
+      "snapshotTarget": {
+        "snapshotId": "p3:actual:initial-negative:9487164d-cd2e-4a30-9310-6824a10789b2",
+        "snapshotHash": "7beb1b57653f30a30f9cc1d553d202bdaaadd82e0513f932ece68f3f6f5835f6",
+        "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+        "managerRevision": 1003,
+        "stepId": "HIGH",
+        "operationId": "diagnose",
+        "resourceBinding": {
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "bindingId": "p3:actual-high-q16",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 3,
+          "localApplicationRevision": 3
+        }
+      },
+      "outputSha256": "f59fcd9b23e68f802072d469ca03ed9a675c395a2f25b965c953b29fc0babc4a"
+    },
+    {
+      "id": "reapply-one",
+      "strength": 1,
+      "managerRevision": 1004,
+      "nativeTuple": {
+        "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+        "localInputRevision": 4,
+        "localApplicationRevision": 4
+      },
+      "snapshotTarget": {
+        "snapshotId": "p3:actual:reapply-one:809ad917-b7f2-4de5-bf2f-1f54b356d447",
+        "snapshotHash": "1d1036813c5e86226e5c942c48c10dbf6b691a99187c4e05d5024c63c22245d9",
+        "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+        "managerRevision": 1004,
+        "stepId": "HIGH",
+        "operationId": "diagnose",
+        "resourceBinding": {
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "bindingId": "p3:actual-high-q16",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 4,
+          "localApplicationRevision": 4
+        }
+      },
+      "outputSha256": "04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575"
+    },
+    {
+      "id": "validation-recovery",
+      "strength": 1,
+      "managerRevision": 1006,
+      "nativeTuple": {
+        "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+        "localInputRevision": 6,
+        "localApplicationRevision": 6
+      },
+      "snapshotTarget": {
+        "snapshotId": "p3:actual:validation-recovery:3a24a665-bf1f-4346-a1d8-3852a1098ef9",
+        "snapshotHash": "b446149d026075b2385823473c8f48ef28eee2d8377f4713da5ce0c611a99ef8",
+        "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+        "managerRevision": 1006,
+        "stepId": "HIGH",
+        "operationId": "diagnose",
+        "resourceBinding": {
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "bindingId": "p3:actual-high-q16",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 6,
+          "localApplicationRevision": 6
+        }
+      },
+      "outputSha256": "04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575"
+    },
+    {
+      "id": "cancel-recovery",
+      "strength": 1,
+      "managerRevision": 1008,
+      "nativeTuple": {
+        "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+        "localInputRevision": 9,
+        "localApplicationRevision": 9
+      },
+      "snapshotTarget": {
+        "snapshotId": "p3:actual:cancel-recovery:6a26aeee-8f0d-4a5d-87e6-9753a40c99f0",
+        "snapshotHash": "22047693627539aea22df27d9876432834af04abdec7ca2fb7ca22296258c723",
+        "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+        "managerRevision": 1008,
+        "stepId": "HIGH",
+        "operationId": "diagnose",
+        "resourceBinding": {
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "bindingId": "p3:actual-high-q16",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 9,
+          "localApplicationRevision": 9
+        }
+      },
+      "outputSha256": "04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575"
+    }
+  ],
+  "ownerPackageMetadata": {
+    "status": "complete",
+    "outputSha256": "04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575",
+    "snapshotHash": "70052e13634e2218092ed167ac41800bf8a1c9ee77726b53592d9fc9870ae108",
+    "manifestReceipt": {
+      "packageVersion": "works-artifact-package/1.0-draft.1",
+      "packageId": "works:diagnostic-package:9e3dcb7a24cb3264484226b85561e41f8c9236f9c640c48489b68ab469995bd6:04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575",
+      "manifestPath": "manifest.json",
+      "manifestByteLength": 2124,
+      "manifestSha256": "6d12468c1ca1348f01f74e023ed09942ea622f25930c03a6fa0ee04d9bd18979"
+    },
+    "files": [
+      {
+        "path": "packages/initial-one/output.wktensor",
+        "byteLength": 304,
+        "sha256": "18b694146ee7b659cd818764579a852afa18ebe81765fd63c27e2a62a6ede2f8",
+        "readbackCount": 3
+      },
+      {
+        "path": "packages/initial-one/descriptor.json",
+        "byteLength": 9830,
+        "sha256": "e6501a3e6e4483abf2efd7ec2a5b4a9a0c36266bb137e83f593de2b989c6b1dd",
+        "readbackCount": 2
+      },
+      {
+        "path": "packages/initial-one/evidence.json",
+        "byteLength": 7283,
+        "sha256": "0da4e738a905fdb79b1714dcf191e1d0aca8442153cc8eefc72ed2f5ea67954f",
+        "readbackCount": 2
+      },
+      {
+        "path": "packages/initial-one/trace.json",
+        "byteLength": 2422,
+        "sha256": "9da5ce614fb0eaf734f38dc976a37a51168e029f9ae6fa557aeea3ba10540fd3",
+        "readbackCount": 2
+      },
+      {
+        "path": "packages/initial-one/snapshot.json",
+        "byteLength": 1587,
+        "sha256": "66ac8a594ca402844f1767e6730366398703653632ccac8195b7c29c7b55a6e6",
+        "readbackCount": 1
+      },
+      {
+        "path": "packages/initial-one/extensions.json",
+        "byteLength": 8256,
+        "sha256": "b6d524be8a3bf961ae4484a0eb6f85b89438305fb5d9be5be66b4e2118607ad0",
+        "readbackCount": 1
+      },
+      {
+        "path": "packages/initial-one/manifest.json",
+        "byteLength": 2124,
+        "sha256": "6d12468c1ca1348f01f74e023ed09942ea622f25930c03a6fa0ee04d9bd18979",
+        "readbackCount": 3
+      },
+      {
+        "path": "packages/initial-one/receipt.json",
+        "byteLength": 365,
+        "sha256": "bcf6494b8be3c05b25fa28302d6083cf3a28c29fd1574d353a9d53c15818f2e2",
+        "readbackCount": 3
+      }
+    ],
+    "independentExistingReaderReadback": {
+      "status": "complete",
+      "decodedOutputSha256": "04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575",
+      "snapshotHash": "70052e13634e2218092ed167ac41800bf8a1c9ee77726b53592d9fc9870ae108"
+    }
+  },
+  "evidenceLimits": [
+    "Current receiver rechecked original public Git bytes, hashes, metadata bindings and saved output16 only.",
+    "The private selected artifact26 and package8 payload readbacks are original owner/independent-auditor observations, not fresh receiver payload reads.",
+    "Original884 tamper/missing tests alter freshly disk-read return bytes or omit a reader result; physical copied negative directories are not asserted.",
+    "Serialized publication records do not recreate a live publication brand.",
+    "Owner independent152 count is historical recorded evidence, distinct from this verifier count."
+  ],
+  "previousEvidence": {
+    "distributionCommit": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+    "executionCommit": "28f44c3a1b71bef59e2d018a0db736de6d84675c",
+    "managementCommit": "60d16b64d6020d3d20239f087f8add91268dcaad",
+    "unchanged": true
+  },
+  "avoidRedundantLocalRun": true,
+  "localDeltaRunnerExecuted": false,
+  "newP4Candidate": {
+    "acceptedByManagement": false,
+    "files": [
+      {
+        "distributionCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+        "path": "docs/shared/inference/lora/P4-API.md",
+        "byteLength": 18731,
+        "sha256": "a13d62a861c8453f6cb0153b517948f28dcd83078538bcfc903053d049b9def2",
+        "gitObjectId": "22166c5685e99f6ef3e3f2f297dca9dbec3dc7e6",
+        "classification": "NEW_P4_CANONICAL_ADAPTER_CANDIDATE_NOT_MANAGEMENT_ADOPTED"
+      },
+      {
+        "distributionCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+        "path": "docs/shared/inference/lora/diffusion-p4-adapter.mjs",
+        "byteLength": 19871,
+        "sha256": "c8be4e2bde579593e6c3fc230544a68f542f12ac98f6a8412b6cc94352bb3002",
+        "gitObjectId": "4a4bad224572d47670d1ba03f0fe68350c15f4af",
+        "classification": "NEW_P4_CANONICAL_ADAPTER_CANDIDATE_NOT_MANAGEMENT_ADOPTED"
+      },
+      {
+        "distributionCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+        "path": "docs/shared/inference/lora/diffusion-p4-registry.mjs",
+        "byteLength": 8227,
+        "sha256": "ee215da2d62e026a4f61fd514afbf6e19336408e615e2d30095e00213bf2272a",
+        "gitObjectId": "7c82c2a009e60d7878195b63035c02a09eaf6837",
+        "classification": "NEW_P4_CANONICAL_ADAPTER_CANDIDATE_NOT_MANAGEMENT_ADOPTED"
+      }
+    ]
+  },
+  "unaccepted": [
+    "selected-weight N-ARTIFACT",
+    "LoRA-modified new P4 weight-feed/mapping integration",
+    "other pair/sides",
+    "joint HIGH/LOW atomic snapshot",
+    "new lease model",
+    "full-target/full-model session",
+    "generation",
+    "merge/Pages publication"
+  ],
+  "generationReady": false,
+  "currentLiveAdmission": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY",
+  "ownerObservedResources": {
+    "scope": "historical owner884 bounded diagnostic measurements; no fresh receiver runtime",
+    "loraKernelMemoryBytes": 33554432,
+    "boundedBaseHikeMemoryBytes": 1572864,
+    "ortVersion": "1.24.3",
+    "lastProjectionElapsedMs": {
+      "ortMs": 0.29999999701976776,
+      "biasMs": 0.10000000149011612,
+      "totalRunMs": 0.3999999985098839
+    },
+    "totalOSPeakBytes": null,
+    "fullPipelinePeakBytes": null,
+    "freshReceiverResourceRun": false
+  },
+  "actualFileHashEvidence": {
+    "scope": "owner884 new immutable browser File load; receiver did not reopen it",
+    "byteLength": 1244141856,
+    "sha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+    "wholeHashComputedByThisBrowserLoad": true,
+    "newOwnerLoadHashCount": 1,
+    "headerInspectionIsSeparate": true
+  }
+}
