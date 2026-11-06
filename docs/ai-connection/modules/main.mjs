@@ -58,7 +58,8 @@ function showError(error){
  if(['AbortError','CANCELLED','INVOCATION_CANCELLED'].includes(code)){const {cleanup,reload}=cleanupState();status('取消の終端を確認しました。',cleanup?'CLEANUP_REQUIRED':reload?'RELOAD_REQUIRED':'CANCELLED');feedback(cleanup?'「解放・復旧を再試行」で資源の解放を確認してください。':reload?'次の生成には「選択モデルを再読込」が必要です。':'入力と設定を確認して次の操作を選べます。');return;}
  const reasons=error.reasons??error.details?.reasons??error.support?.reasons??[],detail=[error.message,...reasons.map(reason=>typeof reason==='string'?reason:reason.reason??reason.message)].filter(Boolean).join(' / ');
  let next='入力と設定を確認し、表示された理由に対応してから再実行してください。';
- if(/MODEL.*(?:LOAD|RELOAD)|RELOAD_REQUIRED/.test(code))next='選択したHIGH・LOWモデルを再読込してください。';
+ if(/INVALID_SAFETENSORS/.test(code))next='選択したHIGH・LOWモデルが完全なsafetensorsか確認して選び直し、モデルを再読込してください。';
+ else if(/MODEL.*(?:LOAD|RELOAD)|RELOAD_REQUIRED/.test(code))next='選択したHIGH・LOWモデルを再読込してください。';
  else if(/LORA_RESTORE_REQUIRED/.test(code))next='「LoRAを外してBaseへ戻す」または「解放・復旧を再試行」で適用状態を復元してください。';
  else if(/CLEANUP|RECOVERY|TERMINAL_UNCONFIRMED|CLOSE_UNCONFIRMED|RESTORE_UNCONFIRMED|APPLICATION_UNCONFIRMED/.test(code))next='「解放・復旧を再試行」で資源の解放を確認してください。';
  else if(/MODEL_FOLDER|MODEL_SELECTION|MANIFEST|SOURCE_BINDING|MODEL_PATH|MULTIPLE_MODEL_ROOTS/.test(code))next='manifestと対応するモデルフォルダを選び直し、「モデルを準備・読込」を実行してください。';
