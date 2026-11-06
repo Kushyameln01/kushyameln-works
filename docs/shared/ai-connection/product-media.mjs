@@ -146,6 +146,80 @@ export async function saveProductImage(media,{frameIndex=0,signal}={}){
  const blob=await encodePng(frames[frameIndex],{limits:PRODUCT_MEDIA_LIMITS,adapterMemoryBudgetBytes:536870912});check(signal);
  return {blob,filename:`frame-${String(frameIndex).padStart(6,'0')}.png`};
 }
+
+const VIDEO_FORMATS=Object.freeze([
+ {id:'webm',label:'WebM (VP9)',mimeType:'video/webm',extension:'webm',codec:'vp9'},
+ {id:'mp4',label:'MP4 (H.264)',mimeType:'video/mp4',extension:'mp4',codec:'avc'}
+]);
+function videoFrames(media){
+ const frames=requireFrames(media),{width,height}=frames[0];
+ if(frames.length>PRODUCT_MEDIA_LIMITS.maxFrames||frames.some(f=>f.width!==width||f.height!==height))fail('VIDEO_DIMENSIONS','Video export requires at most 100 frames with the same dimensions');
+ if(frames.reduce((sum,f)=>sum+f.data.byteLength,0)>FRAME_BYTES_LIMIT)fail('MEDIA_MEMORY_LIMIT','Video frames exceed 256 MiB');
+ return {frames,width,height};
+}
+function videoTimeline(frames,timing,fps){
+ if(timing==='fps'){
+  if(!Number.isFinite(fps)||fps<=0||fps>120)fail('VIDEO_FPS','Specify a playback FPS greater than 0 and at most 120');
+  return frames.map((_,i)=>({timestamp:i/fps,duration:1/fps}));
+ }
+ if(timing!=='source'||frames.some((f,i)=>!Number.isFinite(f.timestamp)||!Number.isFinite(f.duration)||f.duration<=0||i>0&&f.timestamp<=frames[i-1].timestamp))fail('VIDEO_TIMING_REQUIRED','Source playback timing is unavailable; select an explicit export FPS');
+ const origin=frames[0].timestamp;
+ return frames.map(f=>({timestamp:f.timestamp-origin,duration:f.duration}));
+}
+
+/** Probe the actual export dimensions; browser decoders do not imply encoders.
+ * Both probing and encoding use the same quality and latency settings. */
+export async function productVideoFormats(media){
+ const {width,height}=videoFrames(media);
+ if(typeof VideoEncoder==='undefined'||typeof OffscreenCanvas==='undefined')return VIDEO_FORMATS.map(f=>({...f,supported:false,reason:'This browser has no video encoder'}));
+ const {canEncodeVideo,QUALITY_HIGH}=await import('../media-basic/vendor/mediabunny.mjs');
+ return Promise.all(VIDEO_FORMATS.map(async f=>{
+  try{return {...f,supported:await canEncodeVideo(f.codec,{width,height,quality:QUALITY_HIGH,latencyMode:'quality'})};}
+  catch(error){return {...f,supported:false,reason:error.message};}
+ }));
+}
+
+/** Local, silent, lossy playback copy of display frames. Source tensor values,
+ * alpha and lineage are never rewritten to make a container encodable. */
+export async function saveProductVideo(media,{format='webm',timing='source',fps,signal,onProgress=()=>{}}={}){
+ check(signal);const {frames,width,height}=videoFrames(media),timeline=videoTimeline(frames,timing,fps);
+ const durationSeconds=Math.max(...timeline.map(f=>f.timestamp+f.duration));
+ if(durationSeconds>PRODUCT_MEDIA_LIMITS.maxDurationSeconds)fail('VIDEO_DURATION_LIMIT','Video export exceeds the 10 second media limit; adjust the export FPS or use frame ZIP');
+ const selected=(await productVideoFormats(media)).find(f=>f.id===format);check(signal);
+ if(!selected?.supported)fail('VIDEO_ENCODE_UNSUPPORTED','The selected video format cannot encode these dimensions in this browser');
+ const {CanvasSource,Output,BufferTarget,WebMOutputFormat,Mp4OutputFormat,QUALITY_HIGH}=await import('../media-basic/vendor/mediabunny.mjs');check(signal);
+ let canvas,output,cancelPromise,cleanupError;
+ const cancel=()=>{if(output&&!['finalizing','finalized'].includes(output.state))cancelPromise??=output.cancel().catch(error=>{cleanupError=error;});return cancelPromise;};
+ const aborted=()=>{void cancel();};
+ try{
+  canvas=new OffscreenCanvas(width,height);const context=canvas.getContext('2d',{alpha:false,colorSpace:'srgb'});
+  if(!context)fail('VIDEO_CANVAS_UNAVAILABLE','Could not create the video export canvas');
+  const source=new CanvasSource(canvas,{codec:selected.codec,quality:QUALITY_HIGH,latencyMode:'quality'}),target=new BufferTarget();
+  output=new Output({format:format==='mp4'?new Mp4OutputFormat({fastStart:false}):new WebMOutputFormat(),target});
+  output.addVideoTrack(source,timing==='fps'?{frameRate:fps}:{});signal?.addEventListener('abort',aborted,{once:true});check(signal);
+  await output.start();check(signal);
+  const pixels=new Uint8ClampedArray(width*height*4),image=new ImageData(pixels,width,height);
+  for(let i=0;i<frames.length;i++){
+   check(signal);const frame=frames[i];
+   for(let y=0;y<height;y++){
+    const row=frame.data.subarray(y*frame.stride,y*frame.stride+width*4);
+    for(let x=3;x<row.length;x+=4)if(row[x]!==255)fail('MEDIA_ALPHA_UNSUPPORTED','Video export requires opaque pixels; use PNG or frame ZIP to preserve transparency');
+    pixels.set(row,y*width*4);
+   }
+   context.putImageData(image,0,0);await source.add(timeline[i].timestamp,timeline[i].duration);check(signal);
+   onProgress({phase:'save-video',frameCount:i+1,totalFrames:frames.length});await tick();
+  }
+  check(signal);source.close();await output.finalize();check(signal);
+  if(!target.buffer?.byteLength||target.buffer.byteLength>PRODUCT_MEDIA_LIMITS.maxArtifactBytes)fail('VIDEO_ARTIFACT_LIMIT','Encoded video is empty or exceeds 256 MiB');
+  const blob=new Blob([target.buffer],{type:selected.mimeType});check(signal);
+  return {blob,filename:`media.${selected.extension}`,format,timing,...(timing==='fps'?{fps}:{}),frameCount:frames.length,durationSeconds,audio:false};
+ }catch(error){
+  await cancel();if(cleanupError)throw cleanupError;check(signal);throw error;
+ }finally{
+  signal?.removeEventListener('abort',aborted);await cancel();if(canvas)canvas.width=canvas.height=0;
+ }
+}
+
 export async function saveProductFrames(media,{signal,onProgress=()=>{}}={}){
  const frames=requireFrames(media),files={},records=[];let bytes=0;
  for(let i=0;i<frames.length;i++){
