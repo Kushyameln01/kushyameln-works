@@ -4,6 +4,8 @@
 
 部分演算として提供する操作は、safetensorsのヘッダー検査、実Hike WASMのEuler・固定scheduler・noise/flow更新・Wan21 posterior-mean正規化と復元、公開Text Encoder/VAEのtensor境界検査、Hike→ORT WASM→Hikeによる固定Q射影の部分演算。API版0.1に操作を追加し、既存envelopeは維持している。公開`load/predict/sample`は実全モデル候補へ接続した。呼出し経路の実装と、入力域ごとの数値・資源受入は分ける。対応域と試験結果は下記の単体実行資料を参照し、未検証shapeを生成READYとは扱わない。
 
+2026-11-06の[運用候補の起動・必要資材・保存raw Fileの取得](../../../development/ai-connection/diffusion-operations-20261106/RUN.md)を追加した。API／数値kernel／build／対応shapeは変更していない。1-thread/no-COIと明示4-thread/COIを区別し、保存済みN5/Text L3 raw sampleの原本を非公開Pageから取得できる。旧原寸HIGH試験は環境移行後に終端を回収できず、全40block／6更新の受入は未確認のまま維持する。
+
 ## 通常実行と診断の分離
 
 通常descriptor／対応判定と、固定診断を分離した。`capabilities.executionDescriptor`、`checkSupport`、`prepareP4/runP4/releaseP4`、単独`createBerniniP4Execution`を追加。P4はN2/block0/Text L1〜512/contextなしの範囲を保ち、通常入口は最終hiddenのみ返す。固定payload hash・過去数値receipt・独立比較は通常の互換性条件にしない。weight feedの通常validateと診断diagnoseも分離した。[通常API契約](execution/README.md)を参照。全モデル公開入口は[モデル実行契約](api/MODEL_RUNTIME.md)を参照。

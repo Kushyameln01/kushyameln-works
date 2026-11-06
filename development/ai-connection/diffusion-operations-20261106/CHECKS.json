@@ -1,0 +1,270 @@
+{
+  "checkedAtUTC": "2026-11-06T13:09:48.613815+00:00",
+  "executionSourceCommit": "e3d64d8743d8c1a3e2346cc98a072cf6cff84398",
+  "runtimeUnchangedFrom": "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
+  "apiChanged": false,
+  "numericalKernelChanged": false,
+  "buildChanged": false,
+  "normalPayloadHashAdmissionAdded": false,
+  "inputRecovery": {
+    "command": [
+      "python3",
+      "tools/diffusion-models/recover-standalone-inputs.py",
+      "--private-root",
+      "/tmp/diffusion-operations-20261106/recovery",
+      "--full-dir",
+      "/tmp/diffusion-operations-20261106/full-inputs",
+      "--small-dir",
+      "/tmp/diffusion-operations-20261106/small-inputs"
+    ],
+    "ownerExecutionSource": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+    "packetSource": {
+      "commit": "f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48",
+      "path": "development/inference/p2-p3-acceptance/plain/evidence/plain-conditioning.wktensor",
+      "blob": "79f2e153d32846b6a9ed154aaf63b5d35112abae",
+      "bytes": 8390054,
+      "sha256": "90f9aed262027c5a273a71e2601a953a49d4e55593b34310565cfcd112fc95c9"
+    },
+    "restored": {
+      "packet": {
+        "path": "/tmp/text-packet-receipt-20261102/source/development/inference/p2-p3-acceptance/plain/evidence/plain-conditioning.wktensor",
+        "bytes": 8390054,
+        "sha256": "90f9aed262027c5a273a71e2601a953a49d4e55593b34310565cfcd112fc95c9"
+      },
+      "nativeJSON": {
+        "path": "/tmp/p4-real-text-l512/inputs/real-text-l512-native.json",
+        "bytes": 8604657,
+        "sha256": "9cbbdace203ea996d9dd6afc1a8ae832f4b68c2bf1fc54306b9f944f818bd6a8"
+      },
+      "oldN5L3": {
+        "path": "/tmp/diffusion-operations-20261106/recovery/old-n5-l3-input.json",
+        "bytes": 162181,
+        "sha256": "a30177ba13a922f29b8d9664ff1b24bc68d6a1e308c95e3a6faf23f402751d3c",
+        "sourcePath": "/workspace/work/diffusion-private-hidden/standalone-n5-l3-input.json"
+      }
+    },
+    "cases": {
+      "full": {
+        "profileId": "bernini-declared-target81-source81-ref3-848-l512-f32-chunks-v1",
+        "totalTokens": 73947,
+        "manifest": {
+          "path": "/tmp/diffusion-operations-20261106/full-inputs/inputs.json",
+          "bytes": 82589,
+          "sha256": "7d817b382996b4fccf29081e2caf4910a1c2ac7829ee7c68b729851837820a3d"
+        },
+        "originalManifest": {
+          "path": "/tmp/d1-d4-production-73947-inputs/inputs.json",
+          "bytes": 82481,
+          "sha256": "7c1545413898de4c18cee2ed19dbec9f8abe61cfed7b48ee0954d33f0206c6b6"
+        },
+        "exactOriginalManifestBytes": false,
+        "equivalentAfterDeclaredPathRebase": true,
+        "numericalModelExecution": false,
+        "originalWorkflowReplay": false,
+        "producerVerified": false
+      },
+      "small": {
+        "profileId": "bernini-small-n5-real-l512-f32-chunks-v1",
+        "totalTokens": 5,
+        "manifest": {
+          "path": "/tmp/diffusion-operations-20261106/small-inputs/inputs.json",
+          "bytes": 43342,
+          "sha256": "73d083fd0160e586a2142b3d62d583218b4b78608bd521b5836adac72738dfbb"
+        },
+        "originalManifest": {
+          "path": "/tmp/d1-d4-real-l512-n5-inputs/inputs.json",
+          "bytes": 43223,
+          "sha256": "11d345729b9132dd600b3fa73b61fd5e686b3f5a0ed7b72ef12e3a83791307e9"
+        },
+        "exactOriginalManifestBytes": false,
+        "equivalentAfterDeclaredPathRebase": true,
+        "numericalModelExecution": false,
+        "originalWorkflowReplay": false,
+        "producerVerified": false
+      }
+    },
+    "numericalInferenceExecuted": false,
+    "newTextExport": false
+  },
+  "preflight": [
+    {
+      "command": [
+        "python3",
+        "tools/diffusion-models/public-model-browser.py",
+        "--source-commit",
+        "e3d64d8743d8c1a3e2346cc98a072cf6cff84398",
+        "--manifest",
+        "/tmp/diffusion-operations-20261106/small-inputs/inputs.json",
+        "--models",
+        "/workspace/work/retained/bernini",
+        "--mode",
+        "smoke",
+        "--wasm-threads",
+        "1",
+        "--coi",
+        "false",
+        "--private-output",
+        "/tmp/diffusion-operations-20261106/pages1-no-coi-private-unused",
+        "--output",
+        "/tmp/diffusion-operations-20261106/pages1-no-coi-unused.json",
+        "--check-only"
+      ],
+      "exitCode": 0,
+      "stdoutPath": "/tmp/diffusion-operations-20261106/pages1-no-coi.stdout.json",
+      "stderrPath": "/tmp/diffusion-operations-20261106/pages1-no-coi.stderr.txt",
+      "summary": {
+        "passed": true,
+        "sourceCommit": "e3d64d8743d8c1a3e2346cc98a072cf6cff84398",
+        "requestedResource": {
+          "wasmThreads": 1,
+          "coi": false,
+          "profile": "pages-1-thread-no-coi"
+        },
+        "guardedSources": 158,
+        "nativeNNExecuted": false,
+        "modelStats": {
+          "HIGH": {
+            "st_dev": 27,
+            "st_ino": 786578,
+            "st_size": 15574833216,
+            "st_mtime_ns": 1793375135928463448,
+            "st_ctime_ns": 1793375135932463550
+          },
+          "LOW": {
+            "st_dev": 27,
+            "st_ino": 786563,
+            "st_size": 15574833216,
+            "st_mtime_ns": 1793375145368689874,
+            "st_ctime_ns": 1793375145376690078
+          }
+        }
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "tools/diffusion-models/public-model-browser.py",
+        "--source-commit",
+        "e3d64d8743d8c1a3e2346cc98a072cf6cff84398",
+        "--manifest",
+        "/tmp/diffusion-operations-20261106/small-inputs/inputs.json",
+        "--models",
+        "/workspace/work/retained/bernini",
+        "--mode",
+        "smoke",
+        "--wasm-threads",
+        "4",
+        "--coi",
+        "true",
+        "--private-output",
+        "/tmp/diffusion-operations-20261106/explicit4-coi-private-unused",
+        "--output",
+        "/tmp/diffusion-operations-20261106/explicit4-coi-unused.json",
+        "--check-only"
+      ],
+      "exitCode": 0,
+      "stdoutPath": "/tmp/diffusion-operations-20261106/explicit4-coi.stdout.json",
+      "stderrPath": "/tmp/diffusion-operations-20261106/explicit4-coi.stderr.txt",
+      "summary": {
+        "passed": true,
+        "sourceCommit": "e3d64d8743d8c1a3e2346cc98a072cf6cff84398",
+        "requestedResource": {
+          "wasmThreads": 4,
+          "coi": true,
+          "profile": "explicit-4-thread-coi"
+        },
+        "guardedSources": 158,
+        "nativeNNExecuted": false,
+        "modelStats": {
+          "HIGH": {
+            "st_dev": 27,
+            "st_ino": 786578,
+            "st_size": 15574833216,
+            "st_mtime_ns": 1793375135928463448,
+            "st_ctime_ns": 1793375135932463550
+          },
+          "LOW": {
+            "st_dev": 27,
+            "st_ino": 786563,
+            "st_size": 15574833216,
+            "st_mtime_ns": 1793375145368689874,
+            "st_ctime_ns": 1793375145376690078
+          }
+        }
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "tools/diffusion-models/public-model-browser.py",
+        "--source-commit",
+        "e3d64d8743d8c1a3e2346cc98a072cf6cff84398",
+        "--manifest",
+        "/tmp/diffusion-operations-20261106/small-inputs/inputs.json",
+        "--models",
+        "/workspace/work/retained/bernini",
+        "--mode",
+        "smoke",
+        "--wasm-threads",
+        "4",
+        "--coi",
+        "false",
+        "--private-output",
+        "/tmp/diffusion-operations-20261106/invalid4-no-coi-private-unused",
+        "--output",
+        "/tmp/diffusion-operations-20261106/invalid4-no-coi-unused.json",
+        "--check-only"
+      ],
+      "exitCode": 1,
+      "stdoutPath": "/tmp/diffusion-operations-20261106/invalid4-no-coi.stdout.json",
+      "stderrPath": "/tmp/diffusion-operations-20261106/invalid4-no-coi.stderr.txt",
+      "summary": {
+        "stderr": "Traceback (most recent call last):\n  File \"/workspace/work/diffusion-models/tools/diffusion-models/public-model-browser.py\", line 391, in <module>\n    main()\n  File \"/workspace/work/diffusion-models/tools/diffusion-models/public-model-browser.py\", line 205, in main\n    resource = resource_config(args.wasm_threads, args.coi)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/work/diffusion-models/tools/diffusion-models/public-model-browser.py\", line 44, in resource_config\n    require(wasm_threads != 4 or isolated, 'Four-thread execution requires --coi true; no fallback')\n  File \"/workspace/work/diffusion-models/tools/diffusion-models/public-model-browser.py\", line 38, in require\n    raise ValueError(message)\nValueError: Four-thread execution requires --coi true; no fallback"
+      }
+    }
+  ],
+  "savedFile": {
+    "localPath": "/workspace/outputs/bernini-standalone-20261102/raw-sample-n5.wktensor",
+    "bytes": 1179,
+    "sha256": "c9fb6541b92ff5ea3b81b4decd4b29073aace11b5b9794810d826b34e5be7dd4",
+    "executionSourceCommit": "e6f76c6a36a641be0a3483fd7b6bf6fcdf287ce2",
+    "scope": "controlled N5/Text L3 raw generated sample; not full shape or real L512 result",
+    "privatePage": "https://chatgpt.com/space/page_2b15f0bb13288191837ee215949aa89d",
+    "originalFileUploadAccessConfirmed": true,
+    "originalFileUploadBytes": 1179,
+    "originalFileUploadSHA256": "c9fb6541b92ff5ea3b81b4decd4b29073aace11b5b9794810d826b34e5be7dd4",
+    "binaryCompanionJSON": {
+      "bytes": 1755,
+      "sha256": "69e8ca4a64691d4e68f2bc62c0bc6d0bf539c9d3b49a2d26090f23166c2f6051",
+      "pageToolReadRepresentation": "source",
+      "decodedBytesMatchOriginal": true,
+      "newTensorEncoding": false
+    },
+    "browserProbe": "file-reuse.json",
+    "payloadPublishedToGitHub": false
+  },
+  "originalHigh": {
+    "executionSourceCommit": "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
+    "status": "TERMINAL_NOT_RECOVERED_UNVERIFIED",
+    "nativeSession": 30165,
+    "watcherSession": 25717,
+    "sessionReconnectResult": "Unknown process id for both old sessions",
+    "missing": [
+      "/tmp/diffusion-public-execution-20261104",
+      "/tmp/diffusion-original-high-public-20261104.json",
+      "/tmp/diffusion-original-high-validation-20261105/state.json"
+    ],
+    "lastHistoricalRecord": "block2 in progress; no full40/head terminal or independent comparison",
+    "nativeRestarted": false,
+    "watcherRestarted": false,
+    "completionClaimed": false,
+    "failureClaimed": false
+  },
+  "nativeNNExecuted": false,
+  "modelsFullRehashed": false,
+  "modelReexported": false,
+  "realLoraDelivered": false,
+  "wholeOperationExecuted": false,
+  "mergePerformed": false,
+  "pagesPublished": false
+}
