@@ -19,10 +19,64 @@ function json(value){
   return item;
  },2)??'null';
 }
-function errorInfo(error){return {code:error?.code??error?.name??'ERROR',message:error?.message??String(error),...(error?.details?{details:error.details}:{}),...(error?.issues?{issues:error.issues}:{}),...(error?.reasons?{reasons:error.reasons}:{}),...(error?.response?{response:error.response}:{})};}
+function errorInfo(error){return {code:error?.code??error?.name??'ERROR',message:error?.message??String(error),...(error?.details?{details:error.details}:{}),...(error?.issues?{issues:error.issues}:{}),...(error?.reasons?{reasons:error.reasons}:{}),...(error?.support?{support:error.support}:{}),...(error?.response?{response:error.response}:{})};}
 function fail(code,message){throw Object.assign(Error(message),{code});}
 function status(message,state='READY'){$('status').textContent=message;$('status').dataset.state=state;}
-function showError(error){const details=errorInfo(error);$('error-details').textContent=json(details);status(`${details.code}: ${details.message}`,'ERROR');}
+function feedback(message,category=''){$('operation-feedback').textContent=message;$('operation-feedback').dataset.category=category;}
+function nativeIssueReasons(value){
+ const reasons=[];
+ const add=(reason,source='')=>{if(typeof reason==='string')reasons.push({code:reason,reason:source?`${source}: ${reason}`:reason});else if(reason&&typeof reason==='object')reasons.push({...reason,...(source?{reason:`${source}: ${reason.reason??reason.message??reason.code??''}`}:{})});};
+ for(const reply of [value,value.response].filter(Boolean)){
+  if(reply.support)add(reply.support);
+  for(const reason of reply.reasons??[])add(reason);
+  const edges={...(reply.edgeDecision?{input:reply.edgeDecision}:{}),...reply.edgeDecisions};
+  for(const [name,edge]of Object.entries(edges)){
+   for(const reason of edge?.reasons??[])add(reason,name);
+   for(const reason of edge?.readiness?.reasons??[])add(reason,`${name} / readiness`);
+   for(const validation of edge?.validation??[])if(validation.pending===true||validation.result!=='pass')add({reason:`${validation.scope}: ${validation.result}${validation.pending===true?' / pending: true':''}${validation.duePhase?' / duePhase: '+validation.duePhase:''}`},`${name} / validation`);
+  }
+ }
+ return reasons;
+}
+function showIssue(value){
+ const support=value.support??value.response?.support;
+ const reasons=nativeIssueReasons(value),contractBlocked=value.status==='SUPPORTED'&&value.dispatchSupported===false;
+ const code=support?.code??reasons.find(reason=>reason.code)?.code??value.code??(value.dispatchSupported===false||support?.supported===false?'BLOCKED':value.status??'ERROR');
+ let category='EXECUTION_FAILED',label='実行失敗',next='直近のエラー詳細を確認し、入力や設定を修正してから各moduleの実行を選んでください。';
+ if(/MISSING_ASSET|ASSET.*(?:MISSING|MISMATCH|UNAVAILABLE)|SOURCE_(?:MISMATCH|UNAVAILABLE)/.test(code)){
+  category='MISSING_ASSET';label='資材不足';next='理由に示された資材とmanifestの対応を確認し、相対pathを保ったモデルフォルダを選び直して設定を適用してください。配信資材の取得失敗は、この画面と同じ版の配信資材を確認してください。';
+ }else if(/CROSS_ORIGIN_ISOLATION_REQUIRED|SHARED_ARRAY_BUFFER_REQUIRED/.test(code)){
+  category='UNSUPPORTED';label='環境非対応';next='4 threadsにはCOIとSharedArrayBufferが必要です。両方が使える配信環境で開くか、1 threadを明示的に選択してください。';
+ }else if(/CLEANUP|RECOVERY|TERMINAL_UNCONFIRMED|WEIGHT_FEED_CLOSE_UNCONFIRMED/.test(code)){
+  category='RECOVERY_REQUIRED';label='復旧が必要';next='対象moduleを選んで復旧してください。Diffusionに解放確認が必要と表示されている場合は、操作unloadを実行してください。weight feedの解放失敗は「失敗した解放を再試行」を使ってください。';
+ }else if(/MODEL_LOAD_REQUIRED|RELOAD_REQUIRED/.test(code)){
+  category='CONFIGURATION_REQUIRED';label='モデルloadが必要';next='元のHIGH・LOWモデルFileを選択し、「選択モデルをload」を実行してください。';
+ }else if(/CONFIGURATION_REQUIRED|NOT_CONFIGURED|MODEL_FOLDER_REQUIRED|MANIFEST_SELECTION_REQUIRED|SOURCE_BINDING_REQUIRED|INVALID_MODEL_PATH|MULTIPLE_MODEL_ROOTS|DUPLICATE_MODEL_PATH|(?:FILE|FEED|BUDGET|REF|INPUT|STEPS)_REQUIRED/.test(code)){
+  category='CONFIGURATION_REQUIRED';label='設定不足';next='理由に示された選択欄や入力を確認し、対象moduleの設定を適用してください。LoRAはDiffusionをloadして専用weight feedを開いてから接続を適用します。';
+ }else if(/INVALID_SAFETENSORS/.test(code)){
+  next='選択したモデルFileが完全なsafetensorsか確認して選び直し、Diffusionは再loadしてください。同じFileの再実行だけでは破損は直りません。';
+ }else if(/NATIVE_SAVE_METADATA_LOSS/.test(code)){
+  next='「現在の部分結果・設定をbundle保存」を使うと、native tensor単体形式に収まらないmetadataも保存できます。';
+ }else if(contractBlocked||code==='BLOCKED'){
+  category='BLOCKED';label='現在は実行不可';next='nativeが示したreadiness・validationの状態を確認してください。RESOURCE_NOT_READYの場合は、許可byte数などの資源設定を確認して再度能力を照会してください。';
+ }else if(/UNSUPPORTED|BLOCKED|INPUT_CONTRACT|INVALID_INPUT_JSON|SyntaxError|INVALID_REFERENCE|UNRESOLVED_|PIPELINE_INVALID|RESOURCE|PAYLOAD/.test(code)){
+  category='UNSUPPORTED';label='入力・操作が非対応';next='nativeの理由・変更要件に合わせて、操作、入力JSON、参照先、shapeや許可byte数を確認してください。入力の拡縮や型変換は自動では行いません。';
+ }
+ const nativeReasons=[...new Set([value.message,...reasons.map(reason=>reason.reason??reason.message)].filter(Boolean))];
+ const changes=[...new Set(reasons.flatMap(reason=>reason.requiredChanges??[]))];
+ feedback(`${label} (${code})。${nativeReasons.join(' / ')} 次の操作: ${next}${changes.length?' nativeの変更要件: '+changes.join(' / '):''}${diffusionNotice()}`,category);
+ return {code,label};
+}
+function showError(error){const details=errorInfo(error);$('error-details').textContent=json(details);const issue=showIssue(details);status(`${issue.label}: ${details.code} · ${details.message}`,'ERROR');}
+function showQuery(id,result){
+ $('result-details').textContent=json(result);
+ if(result.support?.supported===false||result.dispatchSupported===false||['UNSUPPORTED','BLOCKED','RESOURCE_UNAVAILABLE'].includes(result.status)){
+  const issue=showIssue(result);status(`${moduleNames[id]}の能力照会: ${issue.label} (${issue.code})`,result.status==='SUPPORTED'&&result.dispatchSupported===false?'BLOCKED':issue.code);return;
+ }
+ const supported=result.support?.supported===true||result.dispatchSupported===true||result.status==='SUPPORTED';
+ feedback(supported?'能力照会で現在の入力・操作が受理されました。実モデルの実行完了や数値検証を示す結果ではありません。':'能力照会の詳細は「管理・nativeの状態」で確認できます。','QUERY');
+ status(`${moduleNames[id]}の能力照会: ${supported?'受理':'完了'}`,result.status??'QUERIED');
+}
 function parse(id){try{return JSON.parse($(id).value);}catch(error){fail('INVALID_INPUT_JSON',`${id}: ${error.message}`);}}
 function outputRef(id){const value=$(id+'-output').value.trim();if(!value)fail('OUTPUT_REF_REQUIRED','出力の参照名を入力してください。');return value;}
 function state(){return controller?.inspect()??{};}
@@ -133,8 +187,8 @@ async function executeRoute(route){
 async function action(fn,{working=true}={}){
  if(!controller||disposed)return;
  if(working&&(busy||cancellation?.pending))return;
- if(working){busy=true;cancellation=null;$('error-details').textContent='なし';status('処理しています。','RUNNING');render();}
- try{return await fn();}catch(error){if(['INVOCATION_CANCELLED','CANCELLED'].includes(error?.code))cancelledStatus();else showError(error);}finally{if(working)busy=false;render();}
+ if(working){busy=true;cancellation=null;$('error-details').textContent='なし';feedback('処理の終端を待っています。進捗と取消は上の実行状態で確認できます。');status('処理しています。','RUNNING');render();}
+ try{return await fn();}catch(error){if(['INVOCATION_CANCELLED','CANCELLED'].includes(error?.code))cancelledStatus();else showError(error);}finally{if(working){busy=false;if(!$('operation-feedback').dataset.category)feedback('');}render();}
 }
 function renderModules(view){
  const body=$('module-list');body.replaceChildren();
@@ -169,6 +223,9 @@ function render(event){
  const unavailable=!controller||disposed,locked=busy||cancellation?.pending===true;
  for(const input of document.querySelectorAll('input,textarea,select'))input.disabled=unavailable||locked;
  for(const button of document.querySelectorAll('button'))button.disabled=unavailable||locked;
+ const currentTextManifest=$('text-manifest-mode').value==='current';
+ $('text-manifest').disabled=unavailable||locked||currentTextManifest;
+ $('text-manifest-hint').textContent=currentTextManifest?'採用版では、この画面に同梱したsource-ordered-fp32 manifestを使用します。別のmanifestを選ぶ場合は、上の選択を「選択した互換manifest」に切り替えてください。normLoweringと全ての相対pathを保持します。':'選択した互換manifestを使用します。manifest未選択ならモデルフォルダ直下のmanifest.jsonが必要です。normLoweringと全ての相対pathを保持します。';
  $('cancel').disabled=unavailable||cancellation?.pending===true||!view.activeTarget;
  $('retry').disabled=unavailable||locked||!lastExecution||lastExecution.revision!==revision;
  $('recover').disabled=unavailable||locked;
@@ -218,7 +275,7 @@ function routeFromForms(){
 
 for(const id of moduleIds){
  $(id+'-configure').addEventListener('click',()=>action(()=>configure(id)));
- $(id+'-query').addEventListener('click',()=>action(async()=>{const request=id==='lora'?{moduleId:id,input:{side:$('lora-side').value}}:operationRequest(id);requireConfigured(id,request.operation);const result=await controller.query(request);$('result-details').textContent=json(result);status(`${moduleNames[id]}の能力照会: ${result.status??'完了'}`,result.status??'QUERIED');}));
+ $(id+'-query').addEventListener('click',()=>action(async()=>{const request=id==='lora'?{moduleId:id,input:{side:$('lora-side').value}}:operationRequest(id);requireConfigured(id,request.operation);showQuery(id,await controller.query(request));}));
  $(id+'-run').addEventListener('click',()=>action(()=>execute(operationRequest(id))));
 }
 for(const id of ['p4-file','p4-side','p4-input-budget'])$(id).addEventListener('change',()=>markDirty('p4'));
@@ -243,6 +300,7 @@ for(const id of ['diffusion-high','diffusion-low','diffusion-threads'])$(id).add
 $('diffusion-load').addEventListener('click',()=>action(async()=>{
  const wasmThreads=Number($('diffusion-threads').value);
  if(wasmThreads===4&&globalThis.crossOriginIsolated!==true)fail('CROSS_ORIGIN_ISOLATION_REQUIRED','4 threadsにはCOIが必要です。このページはCOI無効です。1 threadは明示的に選択できます。');
+ if(wasmThreads===4&&typeof SharedArrayBuffer!=='function')fail('SHARED_ARRAY_BUFFER_REQUIRED','4 threadsにはSharedArrayBufferが必要です。このブラウザでは利用できません。1 threadは明示的に選択できます。');
  await execute({moduleId:'diffusion',operation:'load',input:{files:{HIGH:$('diffusion-high').files[0],LOW:$('diffusion-low').files[0]},resource:{wasmThreads}},outputRef:'diffusion-load'});
 }));
 $('tensor-file').addEventListener('change',()=>render());
@@ -259,6 +317,6 @@ $('save-workspace').addEventListener('click',()=>action(async()=>{const bundle=a
 $('workspace-file').addEventListener('change',()=>action(async()=>{const file=$('workspace-file').files[0];if(!file)return;const restored=await controller.restoreWorkspace(file);restoreSettings(restored.workspaceSettings);for(const id of moduleIds)dirty.add(id);for(const id of ['text-manifest','text-bundle','text-source','vae-manifest','vae-bundle','diffusion-high','diffusion-low','p4-file','lora-file','lora-package-manifest','lora-package-sources','tensor-file'])$(id).value='';for(const id of ['text','vae'])$(id+'-files').textContent='保存設定を読戻しました。元のmanifestとモデルフォルダを再選択してください。';$('diffusion-files').textContent='元のHIGH・LOWモデルFileを再選択してください。';diffusionSelectionChanged=true;loraSavedDirectory=null;for(const side of ['HIGH','LOW'])loraHandles[side]={};syncLoraHandles();lastExecution=null;lastRoute=null;revision++;$('result-details').textContent=json(restored);$('saved-state').textContent=`${file.name} の入力欄・経路設定とtensorを読戻しました。実行には元のモデルFileを再選択して設定を適用し、Diffusionをloadしてください。`;status('bundleを読戻しました。モデルFileを再選択してください。','RESTORED');}));
 for(const element of document.querySelectorAll('textarea,input[type=text],select'))element.addEventListener('change',()=>{revision++;render();});
 
-$('environment').textContent=`このページのCOI: ${globalThis.crossOriginIsolated===true?'有効（4 threadsを選択可能）':'無効（1 threadを選択可能）'}。threadsは自動で切り替えません。`;
+$('environment').textContent=`このページのCOI: ${globalThis.crossOriginIsolated===true?'有効':'無効'}。SharedArrayBuffer: ${typeof SharedArrayBuffer==='function'?'利用可能':'利用不可'}。4 threadsには両方が必要です。threadsは自動で切り替えません。`;
 try{controller=await createOperationalManagement();unsubscribe=controller.subscribe(render);render();status('使用するmoduleのモデルを選び、設定を適用してください。','READY_FOR_INPUT');}catch(error){showError(error);render();}
 addEventListener('pagehide',()=>{unsubscribe?.();void controller?.dispose().catch(()=>{});},{once:true});
