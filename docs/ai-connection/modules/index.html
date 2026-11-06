@@ -65,7 +65,13 @@
     </section>
     <section aria-labelledby="results-heading">
       <div class="section-title"><h2 id="results-heading">5. 結果</h2><span id="result-state" class="badge">結果なし</span></div><p id="result-status" class="muted" role="status">実モデルの生成結果をここに表示します。</p><div id="result-preview" class="media-preview empty-preview">結果のpreview</div>
-      <div class="actions section-actions"><button id="result-image-save" class="primary" type="button" disabled>表示中の画像をPNGで保存</button><button id="result-export" type="button" disabled>全結果をPNGフレームで保存</button><button id="result-tensor-save" type="button" disabled>結果の内部tensorを保存</button></div><p class="muted">PNGフレームは表示・共有用です。内部tensorは値と付随情報を保持する再利用用のファイルです。</p><label for="result-tensor-file">保存した結果tensorを読戻す</label><input id="result-tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream"><p id="storage-status" class="muted" aria-live="polite"></p>
+      <div class="actions section-actions"><button id="result-image-save" class="primary" type="button" disabled>表示中の画像をPNGで保存</button><button id="result-export" type="button" disabled>全結果をPNGフレームで保存</button><button id="result-tensor-save" type="button" disabled>結果の内部tensorを保存</button></div><p class="muted">PNGフレームは表示・共有用です。内部tensorは値と付随情報を保持する再利用用のファイルです。</p>
+      <fieldset><legend>動画で保存</legend><div class="condition-grid">
+        <div><label for="video-format">動画形式</label><select id="video-format" disabled><option value="">結果を用意してください</option></select></div>
+        <div><label for="video-timing">再生時刻</label><select id="video-timing" disabled><option value="auto">保存時刻があれば使用／なければ指定FPS</option><option value="source">保存されたフレーム時刻を使用</option><option value="fps">指定FPSで等間隔に再生</option></select></div>
+        <div><label for="video-fps">保存時のFPS</label><input id="video-fps" type="number" value="16" min="0.1" max="120" step="any" required disabled></div>
+      </div><p id="video-status" class="muted" role="status">結果のサイズでブラウザが書き出せる形式を確認します。</p><p class="muted">動画は無音・非可逆圧縮です。入力動画の音声は保持していません。元の値は内部tensorで保存してください。指定FPSは保存動画の再生速度で、入力の撮影情報を変更しません。</p><div class="actions"><button id="result-video-save" type="button" disabled>全結果を動画で保存</button></div></fieldset>
+      <label for="result-tensor-file">保存した結果tensorを読戻す</label><input id="result-tensor-file" type="file" accept=".wktensor,.wkt,.tensor,application/octet-stream"><p id="storage-status" class="muted" aria-live="polite"></p>
     </section>
     <section aria-labelledby="workspace-heading">
       <h2 id="workspace-heading">6. 作業・中間結果を保存</h2>
