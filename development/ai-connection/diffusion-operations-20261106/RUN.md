@@ -99,4 +99,4 @@ weight接続は既存`openWeightFeed`／`createDiffusionWeightClient`のみ。�
 
 旧原寸HIGH sourceは`6cda0a686d30a4bd748909fc56c61c1acece7bfb`のまま。2026-11-06の保持環境では旧`/tmp`worktree・進捗／終端・watcher stateがなく、旧native session30165／watcher25717は`Unknown process id`。最後の記録はblock2処理中で、**現在の終端は取得不能・未確認**である。完了にも失敗にも変更せず、nativeもwatcherも再起動していない。[以前の記録](../diffusion-contract-handoff-20261105/CONTINUATION-ARMED.json)は当時点の状態として保持する。原寸block0合格を全40block／6更新へ拡張しない。
 
-merge・Pages公開・実LoRA送付・全体運用実験は行っていない。今回の確認結果は[CHECKS.json](CHECKS.json)と[File再利用結果](file-reuse.json)にまとめる。
+merge・Pages公開・実LoRA送付・全体運用実験は行っていない。今回の確認結果は[CHECKS.json](CHECKS.json)と[File再利用結果](file-reuse.json)にまとめる。File再利用の実行sourceは`9047f25c0a1846acd8ca849698bf7b27623f4711`で、runner自体もcommit済みの本文と一致する。Pageツールから取得・復号した原本Fileをその実公開Workerへ渡した。起動前確認は旧e3 sourceでの結果を、変更のないruntime／既存runnerの範囲で再利用する。
