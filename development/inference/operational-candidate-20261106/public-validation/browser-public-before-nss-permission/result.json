@@ -1,0 +1,177 @@
+{
+  "requestedScope": "vae",
+  "sourceURL": "https://kushyameln01.github.io/kushyameln-works/inference-owner/",
+  "assetConfig": "/workspace/work/inference/operational-candidate-20261106/public-local-assets.json",
+  "startedAt": 1793973250.3730898,
+  "limitations": [
+    "No new Text NN",
+    "No whole-model hash/export or full-repository tests",
+    "VAE posterior mean is not a real Diffusion generated sample"
+  ],
+  "scopes": {},
+  "browserUsesInheritedProxy": true,
+  "passed": false,
+  "failure": "Traceback (most recent call last):\n  File \"/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/management-connection/validate-operational.py\", line 395, in main\n    result['scopes']['vae'] = vae(browser, args, args.output)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/management-connection/validate-operational.py\", line 280, in vae\n    context, page, errors, config = setup_page(browser, args.url, output, 'vae')\n                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/work/inference/p0-p2-20261031/worktree/tools/inference/management-connection/validate-operational.py\", line 198, in setup_page\n    page.goto(url, wait_until='networkidle')\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/sync_api/_generated.py\", line 9875, in goto\n    self._sync(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_page.py\", line 560, in goto\n    return await self._main_frame.goto(**locals_to_params(locals()))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 156, in goto\n    await self._channel.send(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.Error: Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://kushyameln01.github.io/kushyameln-works/inference-owner/\nCall log:\n  - navigating to \"https://kushyameln01.github.io/kushyameln-works/inference-owner/\", waiting until \"networkidle\"\n\n",
+  "processCleanup": {
+    "harnessPid": 5832,
+    "harnessCtime": 1793973249.26,
+    "subreaper": true,
+    "initialDescendants": [],
+    "observedChildren": [
+      {
+        "pid": 5836,
+        "ctime": 1793973249.57,
+        "ppid": 5832,
+        "name": "MainThread",
+        "status": "running",
+        "firstPpid": 5832
+      },
+      {
+        "pid": 5856,
+        "ctime": 1793973250.26,
+        "ppid": 5836,
+        "name": "chromium",
+        "status": "running",
+        "firstPpid": 5836
+      },
+      {
+        "pid": 5872,
+        "ctime": 1793973250.41,
+        "ppid": 5832,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 5832
+      },
+      {
+        "pid": 5877,
+        "ctime": 1793973250.42,
+        "ppid": 5832,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 5832
+      },
+      {
+        "pid": 5874,
+        "ctime": 1793973250.41,
+        "ppid": 5832,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 5856
+      },
+      {
+        "pid": 5876,
+        "ctime": 1793973250.42,
+        "ppid": 5832,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 5856
+      },
+      {
+        "pid": 5896,
+        "ctime": 1793973250.57,
+        "ppid": 5874,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 5874
+      },
+      {
+        "pid": 5906,
+        "ctime": 1793973250.59,
+        "ppid": 5856,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 5856
+      },
+      {
+        "pid": 5915,
+        "ctime": 1793973250.69,
+        "ppid": 5876,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 5876
+      },
+      {
+        "pid": 5944,
+        "ctime": 1793973250.87,
+        "ppid": 5876,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 5876
+      },
+      {
+        "pid": 5953,
+        "ctime": 1793973250.96,
+        "ppid": 5876,
+        "name": "chromium",
+        "status": "sleeping",
+        "firstPpid": 5876
+      },
+      {
+        "pid": 5954,
+        "ctime": 1793973250.97,
+        "ppid": 5876,
+        "name": "chromium",
+        "status": "running",
+        "firstPpid": 5876
+      },
+      {
+        "pid": 5974,
+        "ctime": 1793973251.17,
+        "ppid": 5876,
+        "name": "chromium",
+        "status": "running",
+        "firstPpid": 5876
+      }
+    ],
+    "reapedChildren": [
+      {
+        "pid": 5872,
+        "ctime": 1793973250.41,
+        "ppid": 5832,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 5832,
+        "waitStatus": 0
+      },
+      {
+        "pid": 5877,
+        "ctime": 1793973250.42,
+        "ppid": 5832,
+        "name": "chrome_crashpad",
+        "status": "zombie",
+        "firstPpid": 5832,
+        "waitStatus": 0
+      },
+      {
+        "pid": 5874,
+        "ctime": 1793973250.41,
+        "ppid": 5832,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 5856,
+        "waitStatus": 0
+      },
+      {
+        "pid": 5876,
+        "ctime": 1793973250.42,
+        "ppid": 5832,
+        "name": "chromium",
+        "status": "zombie",
+        "firstPpid": 5856,
+        "waitStatus": 0
+      }
+    ],
+    "liveAfterClose": [],
+    "zombiesAfterClose": [],
+    "errors": [],
+    "scope": {
+      "method": "sampled descendant identities",
+      "sampleIntervalSeconds": 0.05,
+      "signalsSent": 0,
+      "initialDescendantsExcluded": true,
+      "limitation": "Short-lived unobserved children may be missed; this is not an exhaustive fork audit."
+    },
+    "complete": true
+  },
+  "finishedAt": 1793973252.3703895
+}

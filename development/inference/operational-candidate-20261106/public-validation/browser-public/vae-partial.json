@@ -1,0 +1,719 @@
+{
+  "scope": "Actual VAE Rect posterior-mean decode; ordinary native client/Worker/ORT/Hike; no Diffusion generated sample",
+  "sourceURL": "https://kushyameln01.github.io/kushyameln-works/inference-owner/",
+  "sourceRef": {
+    "repository": "Kushyameln01/kushyameln-works",
+    "commit": "143526fc29787e282dcc91cfb8423621e4da3fd3",
+    "path": "docs/shared/inference/api.mjs"
+  },
+  "workingTreeSource": false,
+  "browser": {
+    "pageErrors": [],
+    "consoleErrors": [],
+    "httpErrors": [],
+    "requestFailures": [],
+    "workers": [
+      "https://kushyameln01.github.io/kushyameln-works/shared/inference/inference-worker.mjs",
+      "https://kushyameln01.github.io/kushyameln-works/shared/inference/inference-worker.mjs"
+    ],
+    "runtimeResponses": [
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/inference-worker.mjs",
+        "status": 200
+      },
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/vendor/ort.wasm.min.mjs",
+        "status": 200
+      },
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/kernel/tensor.wasm",
+        "status": 200
+      },
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "status": 200
+      },
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+        "status": 200
+      },
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/inference-worker.mjs",
+        "status": 200
+      },
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/vendor/ort.wasm.min.mjs",
+        "status": 200
+      },
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/kernel/tensor.wasm",
+        "status": 200
+      },
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+        "status": 200
+      },
+      {
+        "url": "https://kushyameln01.github.io/kushyameln-works/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+        "status": 200
+      }
+    ],
+    "overriddenPaths": []
+  },
+  "manifestSelection": {
+    "kind": "ordinary local File input",
+    "path": "/workspace/work/inference/e6-rect/accepted-bundle/manifest.json",
+    "sha256": "450e5f7a60d2fca50498a8d5eae89c7bbc54a9fcfc579250f580f3e008a65a8a"
+  },
+  "originalMean": {
+    "artifactId": "saved:4bb364b8-8f7b-4e38-973f-c7f774961d49",
+    "dtype": "float32",
+    "layout": "NCTHW",
+    "shape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "meaning": "raw-posterior-mean",
+    "words": 128,
+    "dataSha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+    "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "tokenizerSha256": null,
+    "normalization": null,
+    "context": {
+      "schemaVersion": 1,
+      "contextId": "v1-still-0",
+      "inputId": "existing-diagnostic-png",
+      "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+      "slotId": "diagnostic-still",
+      "sourceFrameIndices": [
+        0
+      ],
+      "sourceFrameTimesSeconds": [
+        0
+      ]
+    },
+    "latentContract": null,
+    "attentionMask": null,
+    "sourceRecords": [
+      {
+        "fileName": "VAE診断用 posterior mean・1×16×32",
+        "scope": "caller-selected tensor file"
+      }
+    ],
+    "trace": {
+      "schemaVersion": 1,
+      "artifactId": "saved:4bb364b8-8f7b-4e38-973f-c7f774961d49",
+      "records": []
+    },
+    "comparison": {
+      "differingBytes": 0,
+      "maxAbs": 0,
+      "metadataEqual": true
+    }
+  },
+  "cancelBarrier": {
+    "status": "実行を取り消しました。再実行できます",
+    "ownerBusy": false,
+    "workerCount": 0
+  },
+  "decode": {
+    "artifactId": "output:f547efc8-9717-484d-bb18-f64f3c93bd33",
+    "dtype": "float32",
+    "layout": "NCTHW",
+    "shape": [
+      1,
+      3,
+      1,
+      16,
+      32
+    ],
+    "meaning": "raw-decoder-rgb",
+    "words": 1536,
+    "dataSha256": "aacf932664139862197c2dab5c087ce76305b2622bf02b3f5bde44eb73392d85",
+    "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "tokenizerSha256": null,
+    "normalization": null,
+    "context": {
+      "schemaVersion": 1,
+      "contextId": "v1-still-0",
+      "inputId": "existing-diagnostic-png",
+      "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+      "slotId": "diagnostic-still",
+      "sourceFrameIndices": [
+        0
+      ],
+      "sourceFrameTimesSeconds": [
+        0
+      ]
+    },
+    "latentContract": null,
+    "attentionMask": null,
+    "sourceRecords": [
+      {
+        "artifactRef": "input:9baa91ce-fcc1-4192-afb6-52416c0eb24e",
+        "nativeInputDescriptor": {
+          "dtype": "float32",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-posterior-mean",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "context": {
+            "schemaVersion": 1,
+            "contextId": "v1-still-0",
+            "inputId": "existing-diagnostic-png",
+            "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+            "slotId": "diagnostic-still",
+            "sourceFrameIndices": [
+              0
+            ],
+            "sourceFrameTimesSeconds": [
+              0
+            ]
+          }
+        }
+      }
+    ],
+    "trace": {
+      "schemaVersion": 1,
+      "artifactId": "output:f547efc8-9717-484d-bb18-f64f3c93bd33",
+      "records": [
+        {
+          "traceId": "inference:8a063b6c-64ad-4a8b-8488-48701dda289e",
+          "data": {
+            "scope": "normal management control; no numerical acceptance implied",
+            "sourceRef": {
+              "repository": "Kushyameln01/kushyameln-works",
+              "commit": "143526fc29787e282dcc91cfb8423621e4da3fd3",
+              "path": "docs/shared/inference/api.mjs"
+            },
+            "module": "vae",
+            "operation": "decode",
+            "target": {
+              "invocationId": "inference:8a063b6c-64ad-4a8b-8488-48701dda289e",
+              "bindingId": "managed-inference:0dfe726d-e330-4807-8c79-8d51e1fedbb6:vae",
+              "ownerId": "vae",
+              "resourceGeneration": "managed-inference:0dfe726d-e330-4807-8c79-8d51e1fedbb6:generation:1",
+              "requestId": "inference:8a063b6c-64ad-4a8b-8488-48701dda289e",
+              "revision": 3,
+              "activeToken": "86424a65-786d-4eed-95fb-febbb20e12a5"
+            },
+            "terminal": {
+              "resultAccepted": true,
+              "originalTerminal": true,
+              "stopAcknowledged": false,
+              "calculationStopped": true,
+              "resourceReleased": true,
+              "reusable": true,
+              "id": "inference:8a063b6c-64ad-4a8b-8488-48701dda289e",
+              "requestId": "inference:8a063b6c-64ad-4a8b-8488-48701dda289e",
+              "ownerId": "vae",
+              "resourceBinding": "managed-inference:0dfe726d-e330-4807-8c79-8d51e1fedbb6:vae",
+              "resourceGeneration": "managed-inference:0dfe726d-e330-4807-8c79-8d51e1fedbb6:generation:1",
+              "revision": 3,
+              "activeToken": "86424a65-786d-4eed-95fb-febbb20e12a5",
+              "parentId": null,
+              "state": "completed",
+              "nativeOutcome": "fulfilled",
+              "errorCode": null
+            },
+            "native": {
+              "inputDescriptor": {
+                "dtype": "float32",
+                "shape": [
+                  1,
+                  16,
+                  1,
+                  2,
+                  4
+                ],
+                "layout": "NCTHW",
+                "meaning": "raw-posterior-mean",
+                "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+                "context": {
+                  "schemaVersion": 1,
+                  "contextId": "v1-still-0",
+                  "inputId": "existing-diagnostic-png",
+                  "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+                  "slotId": "diagnostic-still",
+                  "sourceFrameIndices": [
+                    0
+                  ],
+                  "sourceFrameTimesSeconds": [
+                    0
+                  ]
+                }
+              },
+              "binding": {
+                "operation": "decode",
+                "inputShape": [
+                  1,
+                  16,
+                  1,
+                  2,
+                  4
+                ],
+                "outputShape": [
+                  1,
+                  3,
+                  1,
+                  16,
+                  32
+                ],
+                "assetsVerified": true,
+                "assetHashes": {
+                  "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+                  "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+                  "decoderBody": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+                },
+                "graphMetadataChecked": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    "comparison": {
+      "differingBytes": 1524,
+      "maxAbs": 2.4437904357910156e-06,
+      "metadataEqual": false
+    }
+  },
+  "rgbDownload": {
+    "path": "/workspace/work/inference/operational-candidate-20261106/browser-public/vae-rect-rgb.wktensor",
+    "bytes": 6715,
+    "sha256": "4de752c8a7d6df05fed012065bfd222b2f41d4c1c93c2cf8be58edfa24a46d72",
+    "suggestedFilename": "raw-decoder-rgb-1x3x1x16x32.wktensor"
+  },
+  "saveRead": {
+    "download": {
+      "path": "/workspace/work/inference/operational-candidate-20261106/browser-public/vae-management.zip",
+      "bytes": 27268,
+      "sha256": "f811100e5bb16c8d64462ef34f8e3f4ee35bef2d80d2f9a936e53365c61d6884",
+      "suggestedFilename": "raw-decoder-rgb-1x3x1x16x32-management.zip",
+      "entries": [
+        "artifacts/0/tensor.wktensor",
+        "artifacts/0/descriptor.json",
+        "artifacts/0/evidence.json",
+        "artifacts/0/trace.json",
+        "artifacts/0/snapshot.json",
+        "artifacts/0/extensions.json",
+        "artifacts/1/tensor.wktensor",
+        "artifacts/1/descriptor.json",
+        "artifacts/1/evidence.json",
+        "artifacts/1/trace.json",
+        "artifacts/1/snapshot.json",
+        "artifacts/1/extensions.json",
+        "artifacts/2/tensor.wktensor",
+        "artifacts/2/descriptor.json",
+        "artifacts/2/evidence.json",
+        "artifacts/2/trace.json",
+        "artifacts/2/snapshot.json",
+        "artifacts/2/extensions.json",
+        "manifest.json",
+        "receipt.json"
+      ]
+    },
+    "beforeArtifactIds": [
+      "saved:4bb364b8-8f7b-4e38-973f-c7f774961d49",
+      "input:9baa91ce-fcc1-4192-afb6-52416c0eb24e",
+      "output:f547efc8-9717-484d-bb18-f64f3c93bd33"
+    ],
+    "restoredArtifactIds": [
+      "saved:4bb364b8-8f7b-4e38-973f-c7f774961d49",
+      "input:9baa91ce-fcc1-4192-afb6-52416c0eb24e",
+      "output:f547efc8-9717-484d-bb18-f64f3c93bd33"
+    ],
+    "selectedForReuse": "output:f547efc8-9717-484d-bb18-f64f3c93bd33"
+  },
+  "restoredRGB": {
+    "artifactId": "output:f547efc8-9717-484d-bb18-f64f3c93bd33",
+    "dtype": "float32",
+    "layout": "NCTHW",
+    "shape": [
+      1,
+      3,
+      1,
+      16,
+      32
+    ],
+    "meaning": "raw-decoder-rgb",
+    "words": 1536,
+    "dataSha256": "aacf932664139862197c2dab5c087ce76305b2622bf02b3f5bde44eb73392d85",
+    "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "tokenizerSha256": null,
+    "normalization": null,
+    "context": {
+      "contextId": "v1-still-0",
+      "inputId": "existing-diagnostic-png",
+      "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+      "schemaVersion": 1,
+      "slotId": "diagnostic-still",
+      "sourceFrameIndices": [
+        0
+      ],
+      "sourceFrameTimesSeconds": [
+        0
+      ]
+    },
+    "latentContract": null,
+    "attentionMask": null,
+    "sourceRecords": [
+      {
+        "artifactRef": "input:9baa91ce-fcc1-4192-afb6-52416c0eb24e",
+        "nativeInputDescriptor": {
+          "context": {
+            "contextId": "v1-still-0",
+            "inputId": "existing-diagnostic-png",
+            "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+            "schemaVersion": 1,
+            "slotId": "diagnostic-still",
+            "sourceFrameIndices": [
+              0
+            ],
+            "sourceFrameTimesSeconds": [
+              0
+            ]
+          },
+          "dtype": "float32",
+          "layout": "NCTHW",
+          "meaning": "raw-posterior-mean",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ]
+        }
+      }
+    ],
+    "trace": {
+      "artifactId": "output:f547efc8-9717-484d-bb18-f64f3c93bd33",
+      "records": [
+        {
+          "data": {
+            "module": "vae",
+            "native": {
+              "binding": {
+                "assetHashes": {
+                  "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+                  "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+                  "decoderBody": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+                },
+                "assetsVerified": true,
+                "graphMetadataChecked": true,
+                "inputShape": [
+                  1,
+                  16,
+                  1,
+                  2,
+                  4
+                ],
+                "operation": "decode",
+                "outputShape": [
+                  1,
+                  3,
+                  1,
+                  16,
+                  32
+                ]
+              },
+              "inputDescriptor": {
+                "context": {
+                  "contextId": "v1-still-0",
+                  "inputId": "existing-diagnostic-png",
+                  "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+                  "schemaVersion": 1,
+                  "slotId": "diagnostic-still",
+                  "sourceFrameIndices": [
+                    0
+                  ],
+                  "sourceFrameTimesSeconds": [
+                    0
+                  ]
+                },
+                "dtype": "float32",
+                "layout": "NCTHW",
+                "meaning": "raw-posterior-mean",
+                "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+                "shape": [
+                  1,
+                  16,
+                  1,
+                  2,
+                  4
+                ]
+              }
+            },
+            "operation": "decode",
+            "scope": "normal management control; no numerical acceptance implied",
+            "sourceRef": {
+              "commit": "143526fc29787e282dcc91cfb8423621e4da3fd3",
+              "path": "docs/shared/inference/api.mjs",
+              "repository": "Kushyameln01/kushyameln-works"
+            },
+            "target": {
+              "activeToken": "86424a65-786d-4eed-95fb-febbb20e12a5",
+              "bindingId": "managed-inference:0dfe726d-e330-4807-8c79-8d51e1fedbb6:vae",
+              "invocationId": "inference:8a063b6c-64ad-4a8b-8488-48701dda289e",
+              "ownerId": "vae",
+              "requestId": "inference:8a063b6c-64ad-4a8b-8488-48701dda289e",
+              "resourceGeneration": "managed-inference:0dfe726d-e330-4807-8c79-8d51e1fedbb6:generation:1",
+              "revision": 3
+            },
+            "terminal": {
+              "activeToken": "86424a65-786d-4eed-95fb-febbb20e12a5",
+              "calculationStopped": true,
+              "errorCode": null,
+              "id": "inference:8a063b6c-64ad-4a8b-8488-48701dda289e",
+              "nativeOutcome": "fulfilled",
+              "originalTerminal": true,
+              "ownerId": "vae",
+              "parentId": null,
+              "requestId": "inference:8a063b6c-64ad-4a8b-8488-48701dda289e",
+              "resourceBinding": "managed-inference:0dfe726d-e330-4807-8c79-8d51e1fedbb6:vae",
+              "resourceGeneration": "managed-inference:0dfe726d-e330-4807-8c79-8d51e1fedbb6:generation:1",
+              "resourceReleased": true,
+              "resultAccepted": true,
+              "reusable": true,
+              "revision": 3,
+              "state": "completed",
+              "stopAcknowledged": false
+            }
+          },
+          "traceId": "inference:8a063b6c-64ad-4a8b-8488-48701dda289e"
+        }
+      ],
+      "schemaVersion": 1
+    },
+    "comparison": null
+  },
+  "restoredMean": {
+    "artifactId": "saved:4bb364b8-8f7b-4e38-973f-c7f774961d49",
+    "dtype": "float32",
+    "layout": "NCTHW",
+    "shape": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ],
+    "meaning": "raw-posterior-mean",
+    "words": 128,
+    "dataSha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+    "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "tokenizerSha256": null,
+    "normalization": null,
+    "context": {
+      "contextId": "v1-still-0",
+      "inputId": "existing-diagnostic-png",
+      "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+      "schemaVersion": 1,
+      "slotId": "diagnostic-still",
+      "sourceFrameIndices": [
+        0
+      ],
+      "sourceFrameTimesSeconds": [
+        0
+      ]
+    },
+    "latentContract": null,
+    "attentionMask": null,
+    "sourceRecords": [
+      {
+        "fileName": "VAE診断用 posterior mean・1×16×32",
+        "scope": "caller-selected tensor file"
+      }
+    ],
+    "trace": {
+      "artifactId": "saved:4bb364b8-8f7b-4e38-973f-c7f774961d49",
+      "records": [],
+      "schemaVersion": 1
+    },
+    "comparison": {
+      "differingBytes": 0,
+      "maxAbs": 0,
+      "metadataEqual": true
+    }
+  },
+  "reuseDecode": {
+    "artifactId": "output:e507f96b-4c10-48f4-8e95-52f520128114",
+    "dtype": "float32",
+    "layout": "NCTHW",
+    "shape": [
+      1,
+      3,
+      1,
+      16,
+      32
+    ],
+    "meaning": "raw-decoder-rgb",
+    "words": 1536,
+    "dataSha256": "aacf932664139862197c2dab5c087ce76305b2622bf02b3f5bde44eb73392d85",
+    "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+    "tokenizerSha256": null,
+    "normalization": null,
+    "context": {
+      "schemaVersion": 1,
+      "contextId": "v1-still-0",
+      "inputId": "existing-diagnostic-png",
+      "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+      "slotId": "diagnostic-still",
+      "sourceFrameIndices": [
+        0
+      ],
+      "sourceFrameTimesSeconds": [
+        0
+      ]
+    },
+    "latentContract": null,
+    "attentionMask": null,
+    "sourceRecords": [
+      {
+        "artifactRef": "input:3e8acd72-358a-4d1f-bad9-961aab6791ce",
+        "nativeInputDescriptor": {
+          "dtype": "float32",
+          "shape": [
+            1,
+            16,
+            1,
+            2,
+            4
+          ],
+          "layout": "NCTHW",
+          "meaning": "raw-posterior-mean",
+          "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+          "context": {
+            "schemaVersion": 1,
+            "contextId": "v1-still-0",
+            "inputId": "existing-diagnostic-png",
+            "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+            "slotId": "diagnostic-still",
+            "sourceFrameIndices": [
+              0
+            ],
+            "sourceFrameTimesSeconds": [
+              0
+            ]
+          }
+        }
+      }
+    ],
+    "trace": {
+      "schemaVersion": 1,
+      "artifactId": "output:e507f96b-4c10-48f4-8e95-52f520128114",
+      "records": [
+        {
+          "traceId": "inference:8b7efead-ff17-4996-b4d8-84539eb6460a",
+          "data": {
+            "scope": "normal management control; no numerical acceptance implied",
+            "sourceRef": {
+              "repository": "Kushyameln01/kushyameln-works",
+              "commit": "143526fc29787e282dcc91cfb8423621e4da3fd3",
+              "path": "docs/shared/inference/api.mjs"
+            },
+            "module": "vae",
+            "operation": "decode",
+            "target": {
+              "invocationId": "inference:8b7efead-ff17-4996-b4d8-84539eb6460a",
+              "bindingId": "managed-inference:0dfe726d-e330-4807-8c79-8d51e1fedbb6:vae",
+              "ownerId": "vae",
+              "resourceGeneration": "managed-inference:0dfe726d-e330-4807-8c79-8d51e1fedbb6:generation:1",
+              "requestId": "inference:8b7efead-ff17-4996-b4d8-84539eb6460a",
+              "revision": 4,
+              "activeToken": "8b9796d7-4a0c-4b0e-9597-c128d9c5f60b"
+            },
+            "terminal": {
+              "resultAccepted": true,
+              "originalTerminal": true,
+              "stopAcknowledged": false,
+              "calculationStopped": true,
+              "resourceReleased": true,
+              "reusable": true,
+              "id": "inference:8b7efead-ff17-4996-b4d8-84539eb6460a",
+              "requestId": "inference:8b7efead-ff17-4996-b4d8-84539eb6460a",
+              "ownerId": "vae",
+              "resourceBinding": "managed-inference:0dfe726d-e330-4807-8c79-8d51e1fedbb6:vae",
+              "resourceGeneration": "managed-inference:0dfe726d-e330-4807-8c79-8d51e1fedbb6:generation:1",
+              "revision": 4,
+              "activeToken": "8b9796d7-4a0c-4b0e-9597-c128d9c5f60b",
+              "parentId": null,
+              "state": "completed",
+              "nativeOutcome": "fulfilled",
+              "errorCode": null
+            },
+            "native": {
+              "inputDescriptor": {
+                "dtype": "float32",
+                "shape": [
+                  1,
+                  16,
+                  1,
+                  2,
+                  4
+                ],
+                "layout": "NCTHW",
+                "meaning": "raw-posterior-mean",
+                "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+                "context": {
+                  "schemaVersion": 1,
+                  "contextId": "v1-still-0",
+                  "inputId": "existing-diagnostic-png",
+                  "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+                  "slotId": "diagnostic-still",
+                  "sourceFrameIndices": [
+                    0
+                  ],
+                  "sourceFrameTimesSeconds": [
+                    0
+                  ]
+                }
+              },
+              "binding": {
+                "operation": "decode",
+                "inputShape": [
+                  1,
+                  16,
+                  1,
+                  2,
+                  4
+                ],
+                "outputShape": [
+                  1,
+                  3,
+                  1,
+                  16,
+                  32
+                ],
+                "assetsVerified": true,
+                "assetHashes": {
+                  "conv2Weight": "9ce97eaf137ab64ae409384b6f6177a7b07e593faf103e7e986c0c99d0a1316f",
+                  "conv2Bias": "1a79fbc83c80584e46d5683d49df3482b575ffb4aca99c843a0e8a2aef9df9cd",
+                  "decoderBody": "6674457d2170352760b3aa73543ee1d2bf5713e6bf4d7ea6bf63d8f9703ac27e"
+                },
+                "graphMetadataChecked": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    "comparison": {
+      "differingBytes": 1524,
+      "maxAbs": 2.4437904357910156e-06,
+      "metadataEqual": false
+    }
+  },
+  "lastStatus": "実行が完了しました。結果を保存・再利用できます"
+}

@@ -11,10 +11,12 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import sys
 import time
 import traceback
+from urllib.parse import urljoin, urlsplit
 import zipfile
 
 from playwright.sync_api import sync_playwright, expect
@@ -30,13 +32,16 @@ def sha(path):
 
 def controlled_source(record):
     source = r"""
-import {decodeTensor} from '/shared/inference/tensor.mjs';
-import {inspectTextEncoderManifest} from '/shared/inference/text-encoder.mjs';
+const {decodeTensor}=await import(new URL('../shared/inference/tensor.mjs',document.baseURI));
+const {inspectTextEncoderManifest}=await import(new URL('../shared/inference/text-encoder.mjs',document.baseURI));
 const accepted = __RECORD__;
 const equal=(a,b)=>JSON.stringify(Array.from(a))===JSON.stringify(Array.from(b));
 const assert=(value,message)=>{if(!value)throw Error('Controlled input assertion: '+message);};
 window.operationalControl={scope:'saved real Text tensor; no new Text NN',calls:[],terminals:[],cancelRequests:0,clients:0};
-const fixture=fetch('/fixtures/text-long-l512').then(async response=>{
+const config=await (await fetch(new URL('candidate-config.json',document.baseURI))).json();
+const fixtureURL=config.fixtures.find(item=>item.id==='text-long-l512')?.url;
+if(!fixtureURL)throw Error('No declared saved real Text fixture');
+const fixture=fetch(new URL(fixtureURL,document.baseURI)).then(async response=>{
  if(!response.ok)throw Error('Missing saved real Text output');
  return decodeTensor(new Uint8Array(await response.arrayBuffer()));
 });
@@ -98,9 +103,30 @@ def open_imports(page):
         details.locator('summary').click()
 
 
+def reveal_picker(page, picker_id):
+    for details in page.locator(f'details:has(#{picker_id})').all():
+        if details.get_attribute('open') is None:
+            details.locator('summary').first.click()
+
+
+def selected_assets(args, config, module):
+    local = getattr(args, 'asset_config_data', {})
+    assets = local.get('retainedAssets', config.get('retainedAssets', {})).get(module)
+    if not assets or any(not item.get('localPath') for item in assets):
+        raise ValueError(f'Local {module} File paths required in --asset-config retainedAssets')
+    return assets
+
+
+def fixture_url(config, fixture_id, page):
+    fixture = next((item for item in config.get('fixtures', []) if item['id'] == fixture_id), None)
+    if not fixture:
+        raise ValueError(f'Declared fixture required: {fixture_id}')
+    return urljoin(page.url, fixture['url'])
+
+
 def record_snapshot(page, artifact_id=None, fixture=None):
     return page.evaluate("""async ({id,fixture})=>{
- const api=await import('/shared/inference/api.mjs');
+ const api=await import(new URL('../shared/inference/api.mjs',document.baseURI));
  const owner=window.ownerCandidate.owner;
  id??=document.querySelector('#result-artifact').value;
  const record=owner.getRecord(id),t=record.tensor;
@@ -156,7 +182,7 @@ def save_read(page, output, prefix, preferred_id):
 
 
 def setup_page(browser, url, output, name, override=None):
-    context = browser.new_context(accept_downloads=True, viewport={'width': 1380, 'height': 1100})
+    context = browser.new_context(accept_downloads=True, ignore_https_errors=False, viewport={'width': 1380, 'height': 1100})
     if override is not None:
         context.route('**/shared/inference/client.mjs', lambda route: route.fulfill(status=200, content_type='text/javascript', body=override))
     page = context.new_page()
@@ -173,7 +199,7 @@ def setup_page(browser, url, output, name, override=None):
     page.evaluate('window.ownerCandidate.ready')
     wait_status(page, 'モデル資材を選んで設定してください')
     assert not findings['pageErrors'] and not findings['consoleErrors'] and not findings['httpErrors'], findings
-    config = context.request.get(url.rstrip('/') + '/candidate-config.json').json()
+    config = context.request.get(urljoin(page.url, 'candidate-config.json')).json()
     (output / f'{name}-config.json').write_text(json.dumps(config, ensure_ascii=False, indent=2) + '\n')
     return context, page, findings, config
 
@@ -185,9 +211,11 @@ def controls(browser, args, output):
     (output / 'controlled-client.mjs').write_text(source)
     context, page, errors, config = setup_page(browser, args.url, output, 'controls', source)
     result = {'scope': 'UI/native factories/real management codec with controlled executor and saved real Text output; no new Text NN',
-              'sourceURL': args.url, 'sourceRef': config['sourceRef'], 'workingTreeSource': config['workingTreeSource'], 'browser': errors}
+              'sourceURL': args.url, 'sourceRef': config['sourceRef'], 'workingTreeSource': config.get('workingTreeSource', False), 'browser': errors}
     try:
-        assets = config['retainedAssets']['text']
+        assets = selected_assets(args, config, 'text')
+        text_fixture = fixture_url(config, 'text-long-l512', page)
+        reveal_picker(page, 'text-assets')
         page.locator('#text-assets').set_input_files([item['localPath'] for item in assets if item['role'] == 'prepared'])
         page.locator('#text-source').set_input_files([item['localPath'] for item in assets if item['role'] == 'source'])
         page.locator('#configure-text').click()
@@ -196,13 +224,13 @@ def controls(browser, args, output):
         page.locator('#prompt').fill(record['input']['text'])
         page.locator('#run').click()
         wait_status(page, '実行が完了しました')
-        result['plain'] = record_snapshot(page, fixture='/fixtures/text-long-l512')
+        result['plain'] = record_snapshot(page, fixture=text_fixture)
         assert result['plain']['words'] == 2097152 and result['plain']['comparison']['differingBytes'] == 0
         assert result['plain']['comparison']['metadataEqual']
         result['textDownload'] = download(page, '#download-tensor', output / 'text-long-l512.wktensor')
         assert result['textDownload']['sha256'] == TEXT_WKT_SHA256
         result['saveRead'] = save_read(page, output, 'text', result['plain']['artifactId'])
-        restored = record_snapshot(page, result['plain']['artifactId'], '/fixtures/text-long-l512')
+        restored = record_snapshot(page, result['plain']['artifactId'], text_fixture)
         assert restored['comparison'] == result['plain']['comparison']
         result['restoredText'] = restored
         page.locator('#module').select_option('text_encoder')
@@ -217,7 +245,7 @@ def controls(browser, args, output):
         page.locator('#token-input').fill(json.dumps({'tokenIds': record['tokenIds'], 'attentionMask': record['attentionMask']}))
         page.locator('#run').click()
         wait_status(page, '実行が完了しました')
-        result['idRetry'] = record_snapshot(page, fixture='/fixtures/text-long-l512')
+        result['idRetry'] = record_snapshot(page, fixture=text_fixture)
         assert result['idRetry']['words'] == 2097152 and result['idRetry']['comparison']['differingBytes'] == 0
         assert result['idRetry']['comparison']['metadataEqual']
         result['telemetry'] = page.evaluate('window.operationalControl')
@@ -251,14 +279,27 @@ def vae(browser, args, output):
     step('vae: start; actual ordinary Worker, ORT and Hike; posterior mean input')
     context, page, errors, config = setup_page(browser, args.url, output, 'vae')
     result = {'scope': 'Actual VAE Rect posterior-mean decode; ordinary native client/Worker/ORT/Hike; no Diffusion generated sample',
-              'sourceURL': args.url, 'sourceRef': config['sourceRef'], 'workingTreeSource': config['workingTreeSource'], 'browser': errors}
+              'sourceURL': args.url, 'sourceRef': config['sourceRef'], 'workingTreeSource': config.get('workingTreeSource', False), 'browser': errors}
     try:
-        assert not config['workingTreeSource'], 'Real VAE scope requires a fixed --source-sha host'
+        assert not config.get('workingTreeSource', False), 'Real VAE scope requires fixed source or published configuration'
+        assets = selected_assets(args, config, 'vae')
+        mean_fixture = fixture_url(config, 'vae-rect-mean', page)
+        rgb_fixture = fixture_url(config, 'vae-rgb', page)
         page.locator('#module').select_option('vae')
         page.locator('#operation').select_option('decode')
-        page.locator('#use-host-vae').click()
+        manifest_path = getattr(args, 'asset_config_data', {}).get('vaeManifestPath')
+        if manifest_path:
+            manifest_path = Path(manifest_path).resolve()
+            reveal_picker(page, 'vae-manifest')
+            page.locator('#vae-manifest').set_input_files(str(manifest_path))
+            result['manifestSelection'] = {'kind': 'ordinary local File input', 'path': str(manifest_path), 'sha256': sha(manifest_path)}
+        else:
+            assert config.get('vaeManifestUrl'), 'Select a local manifest using --asset-config vaeManifestPath'
+            page.locator('#use-host-vae').click()
+            result['manifestSelection'] = {'kind': 'host manifest', 'url': urljoin(page.url, config['vaeManifestUrl'])}
         wait_status(page, 'VAE資材を選んで設定してください')
-        page.locator('#vae-assets').set_input_files([item['localPath'] for item in config['retainedAssets']['vae']])
+        reveal_picker(page, 'vae-assets')
+        page.locator('#vae-assets').set_input_files([item['localPath'] for item in assets])
         page.locator('#configure-vae').click()
         wait_status(page, 'VAEを設定しました')
         open_imports(page)
@@ -266,7 +307,7 @@ def vae(browser, args, output):
         page.locator('#load-fixture').click()
         wait_status(page, '入力テンソルを読み込みました')
         raw_id = page.locator('#input-artifact').input_value()
-        result['originalMean'] = record_snapshot(page, raw_id, '/fixtures/vae-rect-mean')
+        result['originalMean'] = record_snapshot(page, raw_id, mean_fixture)
         assert result['originalMean']['meaning'] == 'raw-posterior-mean'
         page.locator('#run').click()
         expect(page.locator('#cancel')).to_be_enabled()
@@ -278,13 +319,16 @@ def vae(browser, args, output):
         step('vae: cancelled startup terminal observed; recovery decode')
         page.locator('#run').click()
         wait_status(page, '実行が完了しました', args.vae_timeout_ms)
-        result['decode'] = record_snapshot(page, fixture='/fixtures/vae-rgb')
+        result['decode'] = record_snapshot(page, fixture=rgb_fixture)
         assert result['decode']['shape'] == [1, 3, 1, 16, 32] and result['decode']['meaning'] == 'raw-decoder-rgb'
         assert result['decode']['comparison']['maxAbs'] <= 2e-5
         result['rgbDownload'] = download(page, '#download-tensor', output / 'vae-rect-rgb.wktensor')
         result['saveRead'] = save_read(page, output, 'vae', result['decode']['artifactId'])
         assert raw_id in result['saveRead']['restoredArtifactIds']
-        restored_mean = record_snapshot(page, raw_id, '/fixtures/vae-rect-mean')
+        result['restoredRGB'] = record_snapshot(page, result['decode']['artifactId'])
+        for key in ['dataSha256', 'dtype', 'layout', 'shape', 'meaning', 'modelSha256', 'context', 'sourceRecords', 'trace']:
+            assert result['restoredRGB'][key] == result['decode'][key], key
+        restored_mean = record_snapshot(page, raw_id, mean_fixture)
         assert restored_mean['comparison']['differingBytes'] == 0 and restored_mean['comparison']['metadataEqual']
         result['restoredMean'] = restored_mean
         page.locator('#result-artifact').select_option(raw_id)
@@ -293,11 +337,16 @@ def vae(browser, args, output):
         step('vae: saved package restored; one short reuse decode')
         page.locator('#run').click()
         wait_status(page, '実行が完了しました', args.vae_timeout_ms)
-        result['reuseDecode'] = record_snapshot(page, fixture='/fixtures/vae-rgb')
+        result['reuseDecode'] = record_snapshot(page, fixture=rgb_fixture)
         assert result['reuseDecode']['comparison']['maxAbs'] <= 2e-5
         assert result['reuseDecode']['dataSha256'] == result['decode']['dataSha256']
         assert any(item.get('artifactRef') for item in result['decode']['sourceRecords'])
-        assert not errors['overriddenPaths'] and len(errors['workers']) == 3
+        # Playwright emits the worker event after worker startup. On a remote
+        # host an early cancellation can terminate it before that event; the
+        # original execute terminal above, rather than this count, owns retry.
+        assert not errors['overriddenPaths']
+        assert result['cancelBarrier']['workerCount'] in [0, 1]
+        assert len(errors['workers']) == result['cancelBarrier']['workerCount'] + 2
         assert any('tensor.wasm' in item['url'] and item['status'] == 200 for item in errors['runtimeResponses'])
         assert any('ort-wasm-simd-threaded.wasm' in item['url'] and item['status'] == 200 for item in errors['runtimeResponses'])
         page.screenshot(path=str(output / 'vae-complete.png'), full_page=True)
@@ -320,20 +369,30 @@ def main():
     parser.add_argument('--url', required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--scope', choices=['controls', 'vae', 'all'], default='controls')
+    parser.add_argument('--asset-config', type=Path, help='Private JSON with retainedAssets local File paths and optional vaeManifestPath; never changes public configuration')
     parser.add_argument('--chromium', default='/usr/bin/chromium')
     parser.add_argument('--vae-timeout-ms', type=int, default=300000)
     args = parser.parse_args()
+    args.asset_config_data = {}
+    if args.asset_config:
+        supplied = json.loads(args.asset_config.read_text())
+        args.asset_config_data = supplied.get('config', supplied)
     args.output.mkdir(parents=True, exist_ok=True)
     module_spec = importlib.util.spec_from_file_location('operational_process_lifecycle', ROOT / 'tools/inference/vae/process_lifecycle.py')
     lifecycle = importlib.util.module_from_spec(module_spec)
     module_spec.loader.exec_module(lifecycle)
     ownership = lifecycle.ProcessOwnership().start()
-    result = {'requestedScope': args.scope, 'sourceURL': args.url, 'startedAt': time.time(),
+    result = {'requestedScope': args.scope, 'sourceURL': args.url, 'assetConfig': str(args.asset_config.resolve()) if args.asset_config else None, 'startedAt': time.time(),
               'limitations': ['No new Text NN', 'No whole-model hash/export or full-repository tests',
                               'VAE posterior mean is not a real Diffusion generated sample'], 'scopes': {}}
     try:
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(executable_path=args.chromium, headless=True, args=['--no-sandbox'])
+            launch = {'executable_path': args.chromium, 'headless': True, 'args': ['--no-sandbox']}
+            proxy = os.environ.get('HTTPS_PROXY') or os.environ.get('HTTP_PROXY')
+            if urlsplit(args.url).scheme == 'https' and proxy:
+                launch['proxy'] = {'server': proxy}
+            result['browserUsesInheritedProxy'] = 'proxy' in launch
+            browser = playwright.chromium.launch(**launch)
             try:
                 if args.scope in ['controls', 'all']:
                     result['scopes']['controls'] = controls(browser, args, args.output)

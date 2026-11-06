@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-06",
+  "scope": "Owner media input packing and public UI import boundary; neural inference executions: 0",
+  "targetedTests": {
+    "command": "node --test --test-isolation=none tools/inference/test-media-input.mjs",
+    "passed": 4,
+    "failed": 0,
+    "coverage": [
+      "Shared opaque RGBA8 / 255 to float32 NCTHW rgb-unit packing",
+      "Controlled four-frame sequence and original timestamps without sampling",
+      "Alpha, dimensions, frame count and abort rejection",
+      "Native capability refusal before retaining remaining frames and import estimate budget"
+    ]
+  },
+  "realBrowserPngComparison": {
+    "browser": "/usr/bin/chromium via Python Playwright",
+    "input": "development/inference/e6/fixtures/rect-32x16.png",
+    "inputSha256": "46305e1cecc1c97a6d90bde022d5495cde6537c8e17a6e4d905dd3ba25a1a34a",
+    "reference": "development/inference/e6/fixtures/png-unit.f32",
+    "decoder": "Actual media-basic readMediaFrames, createImageBitmap and sRGB canvas",
+    "shape": [1, 3, 1, 16, 32],
+    "valuesCompared": 1536,
+    "maxAbsError": 0,
+    "meaning": "rgb-unit",
+    "slotId": "vae-encode-input",
+    "sourceFrameIndices": [0],
+    "sourceFrameTimesSeconds": "Omitted because this still image supplies no source timestamp",
+    "normalizationFieldPresent": false
+  },
+  "realBrowserUiImport": {
+    "source": "public-owner-20261106 existing public management modules, with the new app/index/media-input fulfilled from the owner worktree",
+    "modelSetup": "Existing accepted-bundle File grants, configure only; no model execution",
+    "controlledBoundary": "createImageBitmap delayed by 600 ms for deterministic cancellation; actual decoder and output pixels retained",
+    "cancelledImport": {
+      "originalPerformAwaited": true,
+      "recordsAfterTerminal": 0,
+      "mediaSelectionReenabled": true,
+      "runEnabled": false
+    },
+    "samePngRetry": {
+      "records": 1,
+      "name": "rect-32x16.png",
+      "shape": [1, 3, 1, 16, 32],
+      "meaning": "rgb-unit",
+      "sourceFrameIndices": [0],
+      "slotId": "vae-encode-input",
+      "nativeBusy": false,
+      "runEnabled": true
+    },
+    "pageErrors": []
+  },
+  "checks": {
+    "nodeSyntaxChecks": [
+      "docs/shared/inference/media-input.mjs",
+      "docs/shared/inference/ui.mjs",
+      "docs/inference-owner/app.mjs"
+    ],
+    "gitDiffCheck": "passed"
+  },
+  "limits": {
+    "realVideoCodecUiTest": "Not run; sequence/timestamp packing tested with a controlled four-frame decoder fixture only",
+    "rgbPreview": "No display conversion added; raw decode tensors keep their original WKT/management ZIP values",
+    "numericalAcceptance": "No new neural inference or expanded numerical acceptance"
+  },
+  "processCleanup": {
+    "successfulBrowserChecks": "Both scripts called browser.close and exited with code 0",
+    "ownedHttpServers": [
+      {"port": 44879, "pid": 5555, "stopped": true, "method": "SIGTERM", "exitCode": 143},
+      {"port": 44880, "pid": 6121, "stopped": true, "method": "SIGTERM", "exitCode": 143}
+    ],
+    "serverPidRecheck": "ps -p 5555,6121 returned no processes"
+  },
+  "frozenFilesSha256": {
+    "docs/shared/inference/media-input.mjs": "00b8c45c776be055f040778a9679e1779f115d80643469a50bf83395926f6680",
+    "docs/shared/inference/ui.mjs": "ff17ee7f339b05c06c25541cabc8533536288f74fa884e28914156db995a415b",
+    "docs/inference-owner/app.mjs": "0ef88db2d17d3360fdeb470f02e8403a84c19d30678b49fefd009c553010411b",
+    "docs/inference-owner/index.html": "77826c81d2e4ec638e26381eb523e05f902b2d400376dd7fb005d4709468271f",
+    "tools/inference/test-media-input.mjs": "c9a2128f9b8238792a7c8e5b21358fb1a89c5b6592af903cac438f1ad2c45ed0"
+  }
+}
