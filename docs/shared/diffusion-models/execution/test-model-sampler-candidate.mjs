@@ -67,10 +67,29 @@ test('actual internally constructed models use lookup sources and share exactly 
 test('sample rejects noise, both Text branches, ambiguous metadata and canonical binding before neural access',async()=>{
  const {candidate,HIGH,LOW}=await prepare();
  try{
-  for(const change of [x=>delete x.noise,x=>x.noise=new Float64Array(128),x=>x.noise[127]=NaN,x=>x.seed=10,x=>x.predictor=()=>{},x=>x.onTrace=()=>{},x=>x.cfg=2,x=>delete x.negative,x=>x.negative.normalization='none',x=>x.negative.attentionMask[0]=0,x=>x.positive.modelSha256='0'.repeat(64),x=>x.shapeRequest.semantics['target-latent'].meaning='raw-posterior-mean',x=>x.tensors[0].requirementId='source.latent',x=>x.tensors[0].data=new Float32Array(129),x=>x.tensors[0].latentContract={},x=>x.tensors[0].mask=new Float32Array(128),x=>x.onProgress=1]){
+  for(const change of [x=>x.noise=null,x=>x.noise=new Float64Array(128),x=>x.noise[127]=NaN,x=>x.seed=10,x=>x.predictor=()=>{},x=>x.onTrace=()=>{},x=>x.cfg=2,x=>delete x.negative,x=>x.negative.normalization='none',x=>x.negative.attentionMask[0]=0,x=>x.positive.modelSha256='0'.repeat(64),x=>x.shapeRequest.semantics['target-latent'].meaning='raw-posterior-mean',x=>x.tensors[0].requirementId='source.latent',x=>x.tensors[0].data=new Float32Array(129),x=>x.tensors[0].latentContract={},x=>x.tensors[0].mask=new Float32Array(128),x=>x.onProgress=1]){
    const request=input();change(request);await assert.rejects(candidate.sample(request));
   }
   assert.equal(candidate.stats().samples,0);assert.equal(candidate.stats().busy,false);assert.equal(HIGH.payloadReads+LOW.payloadReads,0);assert.equal(candidate.stats().models.HIGH.stats?.predictions??candidate.stats().models.HIGH.predictions,0);
+ }finally{await candidate.dispose();}
+});
+
+test('omitted noise and target initialize inside the owner before neural access',async()=>{
+ const {candidate,HIGH,LOW}=await prepare(),request=input(),controller=new AbortController();delete request.noise;delete request.tensors;let initial;
+ try{
+  await assert.rejects(candidate.diagnose({...request,signal:controller.signal},{onTrace(event){assert.equal(event.name,'initialX');initial=event;controller.abort();}}),{name:'AbortError'});
+  assert.equal(initial.data.length,128);assert.ok(initial.data.every(Number.isFinite));assert.ok(initial.data.some(value=>value!==0));assert.equal(HIGH.payloadReads+LOW.payloadReads,0);assert.equal(candidate.stats().busy,false);
+ }finally{await candidate.dispose();}
+});
+
+test('canonical context-only sample prepends an owner zero target and preserves supplied contexts and explicit noise bits',async()=>{
+ const {candidate,HIGH,LOW}=await prepare(),request=input({context:true}),controller=new AbortController();request.tensors=request.tensors.slice(1);const original=structuredClone(request);let initial;
+ try{
+  await assert.rejects(candidate.diagnose({...request,signal:controller.signal},{onTrace(event){initial=event;controller.abort();}}),{name:'AbortError'});
+  assert.equal(initial.name,'initialX');assert.deepEqual(new Uint32Array(initial.data.buffer),new Uint32Array(original.noise.buffer));assert.deepEqual(request,original);assert.equal(HIGH.payloadReads+LOW.payloadReads,0);
+  const wrong=input({context:true});wrong.tensors=wrong.tensors.slice(1);wrong.tensors[0].requirementId='reference.latent';await assert.rejects(candidate.sample(wrong),/binding|ordered|canonical/i);
+  const incomplete=input({context:true});delete incomplete.tensors;await assert.rejects(candidate.sample(incomplete),/context|ordered/i);
+  const reordered=input({context:true});reordered.shapeRequest.media.referenceVideo=structuredClone(reordered.shapeRequest.media.sourceVideo);const source=reordered.tensors[1],reference={...structuredClone(source),requirementId:'reference.latent'};reordered.tensors=[reference,source];await assert.rejects(candidate.sample(reordered),/binding|ordered|canonical/i);
  }finally{await candidate.dispose();}
 });
 test('diagnostic initial X uses real Hike, copies snapshots, and cancellation disposes owned shared sessions',async()=>{
@@ -78,11 +97,11 @@ test('diagnostic initial X uses real Hike, copies snapshots, and cancellation di
  const pending=candidate.diagnose({...request,signal:controller.signal},{onTrace(event){trace=event;assert.equal(event.name,'initialX');assert.deepEqual(event.data,original);event.data.fill(17);disposing=candidate.dispose();return new Float32Array(128).fill(99);}});
  await assert.rejects(pending,{name:'AbortError'});await disposing;assert.ok(trace);assert.deepEqual(request.noise,original);assert.equal(candidate.stats().disposed,true);assert.equal(candidate.stats().samples,0);assert.equal(candidate.stats().models.HIGH.predictions,0);assert.equal(candidate.stats().models.LOW.predictions,0);assert.equal(HIGH.payloadReads+LOW.payloadReads,0);
 });
-test('raw canonical context enters the dedicated normalization owner before any neural call',async()=>{
+test('raw canonical context-only input enters the dedicated normalization owner before any neural call',async()=>{
  const {candidate,HIGH,LOW}=await prepare(),request=input({context:true}),controller=new AbortController();
  const context=request.tensors[1];context.meaning='raw-posterior-mean';delete context.normalization;
  const {WAN21_VAE_SHA256}=await import('../tensor-interop.mjs');context.modelSha256=WAN21_VAE_SHA256;context.context={inputId:'source-test',originalFrameIndices:[0],sourceFrameTimesSeconds:[0]};
- const original=structuredClone(context),pending=candidate.diagnose({...request,signal:controller.signal},{onTrace(event){assert.equal(event.name,'initialX');controller.abort();}});
+ const original=structuredClone(context);request.tensors=request.tensors.slice(1);const pending=candidate.diagnose({...request,signal:controller.signal},{onTrace(event){assert.equal(event.name,'initialX');controller.abort();}});
  try{await assert.rejects(pending,{name:'AbortError'});assert.equal(candidate.stats().rawContextNormalizations,1);assert.deepEqual(context,original);assert.equal(HIGH.payloadReads+LOW.payloadReads,0);}finally{await candidate.dispose();}
 });
 test('a whole sample holds both HIGH and LOW weight epochs until cancelled terminal cleanup',async()=>{

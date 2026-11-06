@@ -74,11 +74,26 @@ test('planning caps and generated-space capacity remain separate from validated 
 });
 
 test('sample noise, raw context conversion and optional zero target match runtime ownership',()=>{
- const q=request('sample');delete q.inputs.tensors;assert.equal(checkExecutionSupport(q).supported,true);delete q.inputs.noise;assert.ok(reasons(q).includes('MISSING_INPUT'));
+ const q=request('sample');delete q.inputs.tensors;assert.equal(checkExecutionSupport(q).supported,true);delete q.inputs.noise;assert.equal(checkExecutionSupport(q).supported,true);
  const withContext=request('sample',{full:true});withContext.inputs.tensors[1].meaning='raw-posterior-mean';delete withContext.inputs.tensors[1].normalization;withContext.inputs.tensors[1].modelSha256=WAN21_VAE_SHA256;assert.equal(checkExecutionSupport(withContext).supported,true);
  withContext.inputs.tensors[1].normalization='none';assert.ok(reasons(withContext).includes('UNSUPPORTED_NORMALIZATION'));delete withContext.inputs.tensors[1].normalization;delete withContext.inputs.tensors[1].modelSha256;assert.ok(reasons(withContext).includes('MODEL_IDENTITY_MISMATCH'));
  delete withContext.inputs.tensors;assert.ok(reasons(withContext).includes('MISSING_INPUT'));
  const prediction=request('predict',{full:true});prediction.inputs.tensors[1].meaning='raw-posterior-mean';assert.ok(reasons(prediction).includes('SEMANTIC_MISMATCH'));
+});
+
+test('normal generation defaults and canonical context-only tensors are declared by the existing owner route',t=>{
+ const capabilities=describeExecutionCapabilities(),sample=capabilities.operations.sample,defaults=sample.normalInputs;
+ assert.ok(defaults,'Normal generation owner contract required');assert.equal(defaults.owner,'diffusion_models');assert.equal(defaults.target.default,'zero-from-shapeRequest');assert.equal(defaults.noise.optional,true);assert.match(defaults.noise.profile,/host/);assert.equal(defaults.noise.comfyRngBitIdentity,false);assert.equal(defaults.seedInput,false);
+ assert.equal(sample.supportedUISettings.cfg.value,1);assert.equal(sample.supportedUISettings.steps.value,6);assert.equal(defaults.limits.targetMaxElements,4194304);assert.equal(defaults.limits.totalSequenceTokens,90000);assert.equal(defaults.limits.pointwiseMaxElementsAppliesToSample,false);
+ assert.deepEqual(capabilities.operations.load.normalInputs,defaults);
+ const template=defaults.defaults.shapeRequest;assert.deepEqual(template.target,{batch:1,frames:1,height:16,width:32});assert.equal(template.media.slots.length,8);assert.ok(template.media.slots.every(slot=>slot.wired.state==='absent'&&slot.editor.state==='absent'));
+ const canonical=deriveWorkflowShapes(template);assert.deepEqual(canonical.requirements.find(value=>value.requirementId==='target.latent').shape,[1,16,1,2,4]);
+ t.mock.method(crypto,'getRandomValues',()=>assert.fail('Metadata support must not consume entropy'));
+ const ordinary=request('sample');ordinary.shapeRequest=template;delete ordinary.inputs.noise;delete ordinary.inputs.tensors;assert.equal(checkExecutionSupport(ordinary).supported,true);
+ template.target.width=999;assert.equal(describeExecutionCapabilities().operations.sample.normalInputs.defaults.shapeRequest.target.width,32);
+ const q=request('sample',{full:true});q.inputs.tensors=q.inputs.tensors.slice(1);delete q.inputs.noise;const result=checkExecutionSupport(q);assert.equal(result.supported,true);assert.equal(result.structure.initialTarget,'owner-zero');assert.equal(result.structure.noiseProfile,defaults.noise.profile);
+ [q.inputs.tensors[0],q.inputs.tensors[1]]=[q.inputs.tensors[1],q.inputs.tensors[0]];assert.ok(reasons(q).includes('CONTEXT_ORDER_MISMATCH'));
+ const seeded=request('sample');seeded.seed=1;assert.ok(reasons(seeded).includes('UNSUPPORTED_OPTION'));
 });
 
 test('no receipt, sample payload hash or independent reference is required for structural admission',()=>{

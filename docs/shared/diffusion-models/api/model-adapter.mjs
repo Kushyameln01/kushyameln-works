@@ -1,5 +1,6 @@
 import {encodeTensor,decodeTensor,describeTensor} from '../../inference/tensor.mjs';
 import {attachDiffusionWeightServer} from './weight-port.mjs';
+import {describeNormalGenerationInputs,NORMAL_GENERATION_INPUTS} from '../execution/sample-initialization.mjs';
 
 export const MODEL_CODEC_MAX_BYTES=64*1024*1024;
 export const MODEL_ADAPTER_CAPABILITIES=Object.freeze({
@@ -10,6 +11,7 @@ export const MODEL_ADAPTER_CAPABILITIES=Object.freeze({
  generationReady:false,originalWorkflowAccepted:false,
  numericalAcceptance:'See separately scoped execution capabilities; routing does not establish shape or precision acceptance',
  maxEncodedTensorBytes:MODEL_CODEC_MAX_BYTES,
+ normalInputs:NORMAL_GENERATION_INPUTS,
  cancellation:'The owning public API terminates its dedicated Worker; load is required again',
  weightFeed:'explicit duplex MessagePort; immutable base provider and completed-F32 standalone consumer; independent of the inference request queue',
  codec:'canonical WKTSR001; generated samples retain their raw/restored latentContract'
@@ -127,7 +129,7 @@ export function createModelAdapter(){
      throw error;
     }
     runtime=owner;description=nextDescription;modelSessionId=crypto.randomUUID();epoch++;
-    return {loaded:true,modelSessionId,modelEpoch:epoch,profile:description.profile,models,scheduler:description.scheduler,resource:{wasmThreads,crossOriginIsolated:globalThis.crossOriginIsolated===true},publicWorkerConnected:true,generationReady:false,originalWorkflowAccepted:false};
+    return {loaded:true,modelSessionId,modelEpoch:epoch,profile:description.profile,models,scheduler:description.scheduler,resource:{wasmThreads,crossOriginIsolated:globalThis.crossOriginIsolated===true},publicWorkerConnected:true,generationReady:false,originalWorkflowAccepted:false,normalInputs:describeNormalGenerationInputs()};
    }
    if(op==='unload'){fields(input,[],'model unload');return await unload();}
    if(op==='openWeightFeed'){

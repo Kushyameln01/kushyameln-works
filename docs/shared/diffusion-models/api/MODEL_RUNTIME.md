@@ -22,12 +22,18 @@ Each operation uses the existing envelope containing `protocolVersion`,
 | --- | --- | --- |
 | `load` | `{files:{HIGH:FileOrBlob,LOW:FileOrBlob},resource?:{wasmThreads:1|4}}` | `{loaded,modelSessionId,modelEpoch,models,profile,scheduler,resource,publicWorkerConnected:true,generationReady:false}` |
 | `predict` | `{side:'HIGH'|'LOW',shapeRequest,tensors,conditioning,timestep,modelSessionId?}` | `{tensor,execution}`; native `float32` NCTHW flow velocity with meaning `bernini-flow-velocity:v1` |
-| `sample` | `{shapeRequest,tensors?,noise,positive,negative,modelSessionId?}` | `{tensor,execution}`; raw generated sample with meaning `wan21-raw-generated-sample:v1` and restored `latentContract` |
+| `sample` | `{shapeRequest,tensors?,noise?,positive,negative,modelSessionId?}` | `{tensor,execution}`; raw generated sample with meaning `wan21-raw-generated-sample:v1` and restored `latentContract` |
 | `unload` | `{}` | Awaited logical owner cleanup and final resource counters |
 | `modelStatus` | `{}` | Current model session, state and optional native counters/description |
 | `saveTensor` | `{tensor}` | `{bytes:Uint8Array,byteLength,sha256,metadata}` encoded by the canonical shared tensor codec |
 | `readTensor` | `{file:FileOrBlob}` | `{tensor,byteLength,sha256}` decoded from actual supplied file bytes by that same codec |
 | `openWeightFeed` | `{side:'HIGH'|'LOW',modelSessionId?}` | Explicit transferred MessagePort, binding and native full-model descriptor; immutable base provider and completed-F32 standalone consumer through `createDiffusionWeightClient` |
+
+The [normal generation input contract](NORMAL_GENERATION_INPUTS.md) declares the
+owner shape template, zero target and optional host normal-noise initialization.
+Read `capabilities.executionDescriptor.operations.sample.normalInputs`;
+successful `load` also returns `normalInputs`. Context-only `tensors` retain exact
+canonical order and receive an owner zero target. Explicit noise remains supported.
 
 `execution` contains operation, model session/epoch, actual numerical profile,
 `publicWorkerConnected:true`, `generationReady:false`, and

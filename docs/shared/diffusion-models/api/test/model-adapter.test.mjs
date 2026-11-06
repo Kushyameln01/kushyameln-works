@@ -43,6 +43,16 @@ test('unloaded and stale model sessions fail before numerical dispatch',async()=
  assert.equal(created.at(-1).predictions.length,0);await owner.dispose();
 });
 
+test('paired load declares owner initialization and ordinary sample permits omitted noise without seed inputs',async()=>{
+ const owner=adapter(),loaded=await owner.execute('load',{files:files()});
+ try{
+  assert.equal(loaded.normalInputs.owner,'diffusion_models');assert.equal(loaded.normalInputs.noise.optional,true);assert.match(loaded.normalInputs.noise.profile,/host/);assert.equal(loaded.normalInputs.defaults.shapeRequest.target.width,32);
+  assert.throws(()=>{module.MODEL_ADAPTER_CAPABILITIES.normalInputs.defaults.shapeRequest.target.width=999;},TypeError);assert.equal(module.MODEL_ADAPTER_CAPABILITIES.normalInputs.defaults.shapeRequest.target.width,32);
+  const result=await owner.execute('sample',{shapeRequest:loaded.normalInputs.defaults.shapeRequest,positive:{},negative:{}});assert.equal(result.execution.publicWorkerConnected,true);assert.equal(created.at(-1).samples,1);
+  await assert.rejects(owner.execute('sample',{seed:1}),{code:'INVALID_MODEL_INPUT'});assert.equal(created.at(-1).samples,1);
+ }finally{await owner.dispose();}
+});
+
 test('explicit weight ports bind the current model and become stale after unload',async()=>{
  const {createDiffusionWeightClient}=await import('../weight-port.mjs'),owner=adapter();
  await assert.rejects(owner.execute('openWeightFeed',{side:'LOW'}),{code:'MODEL_NOT_LOADED'});

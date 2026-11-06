@@ -60,7 +60,7 @@ api.dispose();
 | linearProjectionF32 | `{weight:Float32Array(81920),x:Float32Array(5120),bias:Float32Array(16)}` | 明示F32 runtime weightを実ORT Gemmへ渡し実Hike biasを加算。partialOnly。LoRA低rank演算や全モデル適用は行わない |
 | load | `{files:{HIGH:File,LOW:File},resource?:{wasmThreads:1\|4}}` | 両originalモデルを固定provider・実Hike/ORTへ準備。modelSessionIdを返す。旧`{file}`は検査のみでNOT_READY |
 | predict | `{side,shapeRequest,tensors,conditioning,timestep,modelSessionId?}` | 全40block・head候補のowned model-space flow velocity。モデル未load時MODEL_NOT_LOADED |
-| sample | `{shapeRequest,tensors?,noise,positive,negative,modelSessionId?}` | Euler/simple6/shift5/split3、HIGH3→LOW3候補のowned raw generated sample |
+| sample | `{shapeRequest,tensors?,noise?,positive,negative,modelSessionId?}` | Euler/simple6/shift5/split3、HIGH3→LOW3候補のowned raw generated sample。zero target／省略時noiseは[owner契約](api/NORMAL_GENERATION_INPUTS.md)が供給 |
 | unload / modelStatus | `{}` | 実owner解放／状態・資源統計。unload成功後はWorkerを終了 |
 | saveTensor / readTensor | `{tensor}` / `{file}` | canonical WKTSR001保存bytes／実File読戻し。生成sampleのmeaning・latentContractを保持、独立64MiB file予算 |
 | openWeightFeed | `{side:'HIGH'|'LOW',modelSessionId?}` | 明示MessagePort・model session binding・全モデルnative descriptor。`createDiffusionWeightClient`で不変base providerと完成F32 consumerへ接続。低rank積はLoRA owner、実LoRA全モデル数値受入は別scope |

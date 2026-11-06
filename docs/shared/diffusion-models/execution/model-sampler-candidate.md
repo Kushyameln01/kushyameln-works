@@ -41,8 +41,9 @@ target `bernini-generated-model-latent:v1`, contexts
 `tensors` is the exact ordered target followed by canonical context population,
 each with its canonical `requirementId`, shape, `float32` dtype and compact,
 finite, nonshared `Float32Array` data. If `layout` or `axes` is supplied it must
-agree with NCTHW. Omit `tensors` only when no contexts exist; the initial target
-then defaults to a zero model latent. This zero input is not a prediction.
+agree with NCTHW. Alternatively supply only the exact ordered canonical contexts;
+the owner prepends its zero model-latent target. Omit `tensors` entirely when no
+contexts exist. This zero input is not a prediction.
 The original augment value is zero; the candidate has no augmentation port.
 
 Raw context posterior means may instead declare `meaning: 'raw-posterior-mean'`
@@ -52,8 +53,10 @@ their canonical requirement IDs before sequence validation. The sampler performs
 no numerical normalization in JavaScript. Shape, population, role order and
 source IDs remain derived from the same canonical request for both branches.
 
-`noise` is always an explicit target-shaped compact, finite, nonshared
-`Float32Array`. There is no seed or RNG reproduction port. `positive` and
+Omitted `noise` selects the named WebCrypto/Box–Muller host F32 initializer in the
+[normal generation owner contract](../api/NORMAL_GENERATION_INPUTS.md). Explicit
+target-shaped compact, finite, nonshared `Float32Array` noise follows its existing
+snapshot path. There is no seed or RNG reproduction port. `positive` and
 `negative` are canonical native Text tensors: BLC `[1,L,4096]`, L1..512,
 `text_hidden_states`, pinned Text model/tokenizer identities, valid attention
 mask, and `umt5-final-rmsnorm-f32-v1` normalization. Both are captured and

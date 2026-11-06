@@ -7,9 +7,10 @@ import {createBatchedModelOps} from './batched-ops.mjs';
 import {snapshotP4NativeConditioning} from '../ort-bridge/post-self-attention/conditioning.mjs';
 import {createSchedulerKernel,PROFILE as SCHEDULE_PROFILE} from '../scheduler/scheduler-kernel.mjs';
 import {createEulerKernel} from '../euler-kernel.mjs';
-import {createGeneratedLatentSpace,createGeneratedTargetPointwise,GENERATED_MODEL_LATENT,GENERATED_RAW_SAMPLE,NORMALIZATION,ORIGINAL81_TARGET_SHAPE} from './generated-space.mjs';
+import {createGeneratedLatentSpace,createGeneratedTargetPointwise,GENERATED_MODEL_LATENT,GENERATED_RAW_SAMPLE,GENERATED_MAX_ELEMENTS,NORMALIZATION,ORIGINAL81_TARGET_SHAPE} from './generated-space.mjs';
 import {createModelSequence} from './model-sequence.mjs';
 import {BASE_MODEL_HASHES} from '../lora/weights.mjs';
+import {createSampleNoise,SAMPLE_INITIALIZATION_PROFILE,describeNormalGenerationInputs} from './sample-initialization.mjs';
 
 export const MODEL_SAMPLER_CANDIDATE_PROFILE='bernini-full40-euler-simple6-shift5-split3-experimental-v1';
 const SCHEDULER_SHA256='bcd35eb9e0bef45c2f21d99ca77a1edeae57c8ea7fa763086492dc1fa40dd220';
@@ -158,10 +159,18 @@ export async function createBerniniModelSamplerCandidate(options={}){
     const requirement=requirements[index];if(requirement.meaning!==(index===0?GENERATED_MODEL_LATENT:CONTEXT_MEAN)||requirement.normalization!==NORMALIZATION)throw TypeError('Canonical generated target and normalized context meanings required');
    }
    const target=requirements[0],shape=target.shape,elements=shape.reduce((a,b)=>a*b,1);
-   // Explicit noise is mandatory; no seed, RNG or externally supplied predictor.
-   ownedNoise=f32(input.noise,elements,'Noise');positive=conditioning(input.positive);negative=conditioning(input.negative);
+   if(!Number.isSafeInteger(elements)||elements<1||elements>GENERATED_MAX_ELEMENTS)throw RangeError('Sample target exceeds generated-space element capacity');
+   // Capture caller inputs before the first await. Omitted noise is generated
+   // later by the named host initializer, after canonical sequence admission.
+   const suppliedNoise=input.noise,noiseProfile=suppliedNoise===undefined?SAMPLE_INITIALIZATION_PROFILE:'explicit-caller-f32';
+   ownedNoise=suppliedNoise===undefined?null:f32(suppliedNoise,elements,'Noise');positive=conditioning(input.positive);negative=conditioning(input.negative);
    let tensors=input.tensors;
-   if(tensors===undefined){if(contexts.length)throw TypeError('Explicit ordered target and context tensors required when contexts exist');tensors=[{requirementId:'target.latent',shape:[...shape],dtype:'float32',meaning:GENERATED_MODEL_LATENT,normalization:NORMALIZATION,data:new Float32Array(elements)}];}
+   if(tensors===undefined){if(contexts.length)throw TypeError('Explicit ordered context tensors required when contexts exist');tensors=[];}
+   if(Array.isArray(tensors)&&Object.getPrototypeOf(tensors)===Array.prototype&&tensors.length===contexts.length){
+    const ordered=[{requirementId:'target.latent',shape:[...shape],dtype:'float32',meaning:GENERATED_MODEL_LATENT,normalization:NORMALIZATION,data:new Float32Array(elements)}];
+    for(let index=0;index<tensors.length;index++){const item=Object.getOwnPropertyDescriptor(tensors,String(index));if(!item||!Object.hasOwn(item,'value'))throw TypeError('Dense ordered context tensor data required');ordered.push(item.value);}
+    tensors=ordered;
+   }
    if(!Array.isArray(tensors)||Object.getPrototypeOf(tensors)!==Array.prototype||tensors.length!==ids.length)throw TypeError('Exact ordered target and canonical context tensors required');
    for(let index=0;index<tensors.length;index++){
     const item=Object.getOwnPropertyDescriptor(tensors,String(index));if(!item||!Object.hasOwn(item,'value'))throw TypeError('Dense tensor data array required');
@@ -188,6 +197,7 @@ export async function createBerniniModelSamplerCandidate(options={}){
    // and unsupported padding before any neural model or scheduler operation.
    const sequence=createModelSequence({shapeRequest,tensors:ownedTensors});let layout;
    try{layout=sequence.describe();}finally{sequence.dispose();}
+   if(ownedNoise===null){ownedNoise=await createSampleNoise(elements,{signal:run.signal});live(run.signal);}
    const schedule=scheduler.schedule();
    if(schedule.profile!==SCHEDULE_PROFILE||schedule.steps!==6||schedule.splitStep!==3||schedule.sigmas.length!==7||schedule.sigmas[0]!==1||schedule.sigmas[6]!==0)throw Error('Pinned simple6/shift5/split3 scheduler mismatch');
    const timesteps=scheduler.timesteps(schedule.sigmas.slice(0,6)),stepEvidence=[];
@@ -222,7 +232,7 @@ export async function createBerniniModelSamplerCandidate(options={}){
    const finalModel=await invoke('inverseNoiseScale',{latent:x,sigma:schedule.sigmas[6]});drop(x);x=null;
    output=await space.restore(targetTensor(shape,finalModel,[BASE_MODEL_HASHES.HIGH,BASE_MODEL_HASHES.LOW]),{signal:run.signal});live(run.signal);drop(finalModel);
    await trace('finalRaw',output.data,{meaning:output.meaning,latentContract:structuredClone(output.latentContract)});
-   const evidence={profile:MODEL_SAMPLER_CANDIDATE_PROFILE,modelProfile:MODEL_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,generationReady:false,publicRuntimeEnabled:false,steps:6,highUpdates:3,lowUpdates:3,cfg:1,negativeConditioning:'structurally validated; negative neural pass skipped at CFG1',contexts:'one canonical ordered population shared by both conditioning branches',targetShape:[...shape],originalProductionTarget:ORIGINAL81_TARGET_SHAPE.slice(),totalTokens:layout.totalTokens,schedule:{profile:schedule.profile,source:schedule.source,shift:schedule.shift,splitStep:3,sigmas:Array.from(schedule.sigmas),tableIndices:Array.from(schedule.tableIndices),timesteps:Array.from(timesteps)},handoff:{high:'inverseNoiseScale -> Wan21 process_out',low:'Wan21 process_in (all-zero raw skip) -> zero-noise CONST noiseMix',handoffNormalization},final:'inverseNoiseScale(sigma0) -> one generated-sample restore',producerModelSha256s:[BASE_MODEL_HASHES.HIGH,BASE_MODEL_HASHES.LOW],modelRuns:stepEvidence,weightCache:'owned prepared F32 stage weights; native ORT upload copies are not claimed eliminated',fullFileSHA256Verified:false,originalProductionPrecisionVerified:false,requiredShapeAcceptance:'BLOCKED until original [1,16,21,60,104] target with full canonical contexts is executed and independently compared'};
+   const evidence={profile:MODEL_SAMPLER_CANDIDATE_PROFILE,modelProfile:MODEL_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,generationReady:false,publicRuntimeEnabled:false,steps:6,highUpdates:3,lowUpdates:3,cfg:1,negativeConditioning:'structurally validated; negative neural pass skipped at CFG1',contexts:'one canonical ordered population shared by both conditioning branches',targetShape:[...shape],originalProductionTarget:ORIGINAL81_TARGET_SHAPE.slice(),initialization:{noiseProfile,comfyRngBitIdentity:false},totalTokens:layout.totalTokens,schedule:{profile:schedule.profile,source:schedule.source,shift:schedule.shift,splitStep:3,sigmas:Array.from(schedule.sigmas),tableIndices:Array.from(schedule.tableIndices),timesteps:Array.from(timesteps)},handoff:{high:'inverseNoiseScale -> Wan21 process_out',low:'Wan21 process_in (all-zero raw skip) -> zero-noise CONST noiseMix',handoffNormalization},final:'inverseNoiseScale(sigma0) -> one generated-sample restore',producerModelSha256s:[BASE_MODEL_HASHES.HIGH,BASE_MODEL_HASHES.LOW],modelRuns:stepEvidence,weightCache:'owned prepared F32 stage weights; native ORT upload copies are not claimed eliminated',fullFileSHA256Verified:false,originalProductionPrecisionVerified:false,requiredShapeAcceptance:'BLOCKED until original [1,16,21,60,104] target with full canonical contexts is executed and independently compared'};
    evidence.effectiveWeights=Object.fromEntries(SIDES.map(side=>[side,{epoch:weightLeases[side].epoch,packageHash:weightLeases[side].packageHash}]));
    metrics.samples++;metrics.lastRun=structuredClone(evidence);output.evidence=evidence;return output;
   }catch(error){metrics.failedOperations++;wipeTensor(output);throw error;}finally{
@@ -245,7 +255,7 @@ export async function createBerniniModelSamplerCandidate(options={}){
    predict,sample:input=>sample(input),
    getWeightFeed(side){live();if(!SIDES.includes(side))throw TypeError('Explicit HIGH or LOW weight side required');return weightFeeds[side];},
    diagnose(input={},options={}){known(options,['onTrace'],'sampler diagnostics');if(typeof options.onTrace!=='function')return Promise.reject(TypeError('diagnose requires an onTrace function'));return sample(input,options.onTrace);},
-   describe(){live();return {schemaVersion:'works-bernini-model-sampler-candidate/0.1',profile:MODEL_SAMPLER_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,generationReady:false,publicRuntimeEnabled:false,scheduler:SCHEDULE_PROFILE,resource:{wasmThreads,readAheadBytes,thread4RequiresCrossOriginIsolation:true},sampler:'Euler',steps:6,splitStep:3,cfg:1,noise:'explicit compact nonshared finite Float32Array; no seed or RNG port',models:Object.fromEntries(SIDES.map(side=>[side,models[side].describe()])),sharedOwners:'one model math owner; one linear and one attention ORT session; both model candidates internally constructed',input:'deriveWorkflowShapes canonical target plus ordered contexts; raw contexts normalized by generated-space owner; target defaults zero only when tensors omitted and no contexts',output:{dtype:'float32',layout:'NCTHW',meaning:GENERATED_RAW_SAMPLE,space:'raw',latentContract:'generated-sample / restored / diffusion_models'},weightCache:'owned prepared F32 stage weights; native ORT upload copies are not claimed eliminated',requiredShapeAcceptance:'BLOCKED until original target and canonical context population are independently accepted'};},
+   describe(){live();return {schemaVersion:'works-bernini-model-sampler-candidate/0.1',profile:MODEL_SAMPLER_CANDIDATE_PROFILE,experimental:true,acceptedProduction:false,generationReady:false,publicRuntimeEnabled:false,scheduler:SCHEDULE_PROFILE,resource:{wasmThreads,readAheadBytes,thread4RequiresCrossOriginIsolation:true},sampler:'Euler',steps:6,splitStep:3,cfg:1,noise:'optional; owner WebCrypto/host Box-Muller F32 or explicit compact nonshared finite Float32Array; no seed or RNG input',normalInputs:describeNormalGenerationInputs(),models:Object.fromEntries(SIDES.map(side=>[side,models[side].describe()])),sharedOwners:'one model math owner; one linear and one attention ORT session; both model candidates internally constructed',input:'deriveWorkflowShapes canonical target plus ordered contexts; raw contexts normalized by generated-space owner; target defaults zero when omitted; supplied contexts retain exact canonical order',output:{dtype:'float32',layout:'NCTHW',meaning:GENERATED_RAW_SAMPLE,space:'raw',latentContract:'generated-sample / restored / diffusion_models'},weightCache:'owned prepared F32 stage weights; native ORT upload copies are not claimed eliminated',requiredShapeAcceptance:'BLOCKED until original target and canonical context population are independently accepted'};},
    stats(){return {...structuredClone(metrics),busy,disposed,closing,models:Object.fromEntries(SIDES.map(side=>[side,models[side]?.stats()??null])),sources:Object.fromEntries(SIDES.map(side=>[side,sources[side]?.stats()??null])),weightFeeds:Object.fromEntries(SIDES.map(side=>[side,weightFeeds[side]?.stats()??null])),math:math?.stats()??null,ops:ops?.stats()??null,sharedSessionCreations:ops?.stats().sessionCreations??0};},
    dispose,recover:dispose
   });
