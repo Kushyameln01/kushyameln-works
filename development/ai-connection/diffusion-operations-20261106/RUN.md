@@ -13,7 +13,7 @@
 
 ## 保存済みraw sampleの原本を使う
 
-原本は保持環境の`/workspace/outputs/bernini-standalone-20261102/raw-sample-n5.wktensor`。別環境では、既存の非公開[原本取得Page](https://chatgpt.com/space/page_2b15f0bb13288191837ee215949aa89d)の「保存済みraw生成sampleの原本File」から取得する。Pageには**実File**と、binaryを読めないPageツール向けの**同じFile bytesのbase64 JSON**を添付済み。JSONを`read_page_reference`で取得し、Page掲載の手順で原本Fileへ戻せる。公開GitHubにpayloadは追加していない。
+原本は保持環境の`/workspace/outputs/bernini-standalone-20261102/raw-sample-n5.wktensor`。別環境向けの**実File**と、binaryを読めないツール向けの**同じFile bytesのbase64 JSON**も非公開で提供する。取得先はユーザーの会話内で案内し、ここには掲載しない。JSONの`data`をbase64復号すると原本Fileへ戻せる。公開GitHubにpayloadは追加していない。
 
 | 識別 | 値 |
 | --- | --- |
