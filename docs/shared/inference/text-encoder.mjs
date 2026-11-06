@@ -1,7 +1,15 @@
 /** Actual staged Wan UMT5 encoder. CPU WASM only; FP32 prepared diagnostics. */
+import {Sha256} from '../vr180/sha256.mjs';
+import {inspectSdpaScaleRecipe,applySdpaScaleRecipeInPlace} from './text-attention-lowering.mjs';
+import {inspectInnerRmsNormRecipe,rewriteInnerRmsNormGraph,verifyInnerRmsNormGraph} from './text-norm-lowering.mjs';
 const TYPE='wan-umt5-staged-fp32';
 const MODEL='c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68';
+export const TEXT_ENCODER_MODEL_SHA256=MODEL;
+export const UMT5_TOKENIZER_SHA256='e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458';
+export const TEXT_ENCODER_NORMALIZATION='umt5-final-rmsnorm-f32-v1';
 const DIM=4096;
+const HASH_CHUNK_BYTES=8*1024*1024;
+const yieldTask=()=>new Promise(resolve=>setTimeout(resolve,0));
 const HEX=/^[0-9a-f]{64}$/;
 const failure=(message)=>{throw new Error(message);};
 const checkSignal=(signal)=>{if(signal?.aborted)throw signal.reason??new DOMException('Aborted','AbortError');};
@@ -14,10 +22,11 @@ export function inspectTextEncoderManifest(manifest){
  if(manifest.onnxOpset!==17||manifest.ortVersion!=='1.24.3'||manifest.maxTokens!==512)failure('Unsupported text runtime manifest');
  const e=manifest.embedding;
  if(!e||e.dtype!=='float16-le'||e.hiddenSize!==DIM||e.vocabSize!==256384||!Number.isSafeInteger(e.offset)||typeof e.sourceFile!=='string'||e.sourceBytes!==6735906897)failure('Invalid text embedding manifest');
- manifest.blocks.forEach((r,i)=>{record(r,'block');if(r.index!==i||!r.nativePass)failure('Unverified text block manifest');});
+ manifest.blocks.forEach((r,i)=>{record(r,'block');if(r.index!==i)failure('Invalid text block manifest');if(r.attentionLowering!==undefined&&r.normLowering!==undefined)failure('Numeric lowering candidates must not be mixed');if(r.attentionLowering!==undefined)inspectSdpaScaleRecipe(r.attentionLowering,r);if(r.normLowering!==undefined)inspectInnerRmsNormRecipe(r.normLowering,r);});
  record(manifest.finalNorm,'final norm');if(manifest.finalNorm.bytes!==DIM*4||manifest.finalNorm.epsilon!==1e-6)failure('Invalid final norm manifest');
  record(e.rowHashes,'embedding row hashes');if(e.rowHashes.bytes!==e.vocabSize*32)failure('Invalid embedding row hash table');
- return {type:TYPE,hiddenSize:DIM,numLayers:24,maxTokens:512,arithmetic:manifest.arithmetic,modelSha256:MODEL};
+ if(manifest.tokenizer!==undefined&&manifest.tokenizer.sha256!==UMT5_TOKENIZER_SHA256)failure('Unsupported embedded tokenizer identity');
+ return {type:TYPE,hiddenSize:DIM,numLayers:24,maxTokens:512,arithmetic:manifest.arithmetic,modelSha256:MODEL,tokenizerSha256:UMT5_TOKENIZER_SHA256,graphBindings:manifest.blocks.map(r=>({index:r.index,path:r.path,sourceAssetSha256:r.sha256,executedGraphSha256:r.normLowering?.executedGraphSha256??r.attentionLowering?.executedGraphSha256??r.sha256,recipeId:r.normLowering?.type??r.attentionLowering?.type??null,...(r.normLowering?{recipeStatus:r.normLowering.status}:{})}))};
 }
 export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress}={}){
  const info=inspectTextEncoderManifest(manifest);checkSignal(signal);
@@ -29,6 +38,7 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
  if(!ort.env?.wasm)failure('ORT WASM environment required');
  ort.env.wasm.numThreads=1;
  let disposed=false,running=false,currentSession=null,activeDone=Promise.resolve();
+ const check=(s)=>{checkSignal(signal);checkSignal(s);if(disposed)failure('Text encoder disposed');};
  const get=(path)=>files.get(path)??failure(`Missing text model file: ${path}`);
  function size(file){return file instanceof Uint8Array?file.byteLength:file.size;}
  async function read(path,start=0,length){
@@ -36,9 +46,16 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
   if(!Number.isSafeInteger(start)||start<0||end>size(f))failure(`Invalid text file range: ${path}`);
   return f instanceof Uint8Array?f.slice(start,end):new Uint8Array(await f.slice(start,end).arrayBuffer());
  }
- async function verified(r){
+ async function verified(r,runSignal){
+  check(runSignal);
   if(size(get(r.path))!==r.bytes)failure(`Text file size mismatch: ${r.path}`);
-  const bytes=await read(r.path);if(await sha256(bytes)!==r.sha256)failure(`Text file hash mismatch: ${r.path}`);return bytes;
+  const bytes=await read(r.path);check(runSignal);const hash=new Sha256();
+  // Views keep the required full model buffer without a whole-input WebCrypto snapshot.
+  for(let offset=0;offset<bytes.byteLength;offset+=HASH_CHUNK_BYTES){
+   check(runSignal);hash.update(bytes.subarray(offset,Math.min(offset+HASH_CHUNK_BYTES,bytes.byteLength)));
+   await yieldTask();check(runSignal);
+  }
+  if(hash.digestHex()!==r.sha256)failure(`Text file hash mismatch: ${r.path}`);return bytes;
  }
  const source=manifest.embedding;
  if(size(get(source.sourceFile))!==source.sourceBytes)failure('Original UMT5 source size mismatch');
@@ -47,7 +64,6 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
  const rowHashes=await verified(source.rowHashes);
  checkSignal(signal);
  onProgress?.({stage:'text-ready',blocks:24});
- const check=(s)=>{checkSignal(signal);checkSignal(s);if(disposed)failure('Text encoder disposed');};
  function half(u){
   const sign=(u&32768)?-1:1,exponent=(u>>>10)&31,fraction=u&1023;
   return exponent===0?sign*fraction*2**-24:exponent===31?(fraction?NaN:sign*Infinity):sign*(1+fraction/1024)*2**(exponent-15);
@@ -81,8 +97,17 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
   try{
    let hidden=await embeddings(effectiveIds);check(runSignal);emit({stage:'text-embedding',effectiveTokens:length,outputTokens:ids.length});
    for(const b of manifest.blocks){
-    check(runSignal);let bytes=await verified(b);check(runSignal);
-    currentSession=await ort.InferenceSession.create(bytes,{executionProviders:['wasm']});bytes=null;
+    check(runSignal);let bytes=await verified(b,runSignal);check(runSignal);
+    if(b.normLowering){
+     bytes=await rewriteInnerRmsNormGraph(bytes,b.normLowering,{verifiedSourceAssetSha256:b.sha256,signal:runSignal,onProgress:event=>{check(runSignal);emit(event);check(runSignal);}});
+     // The original private buffer reference is replaced before the hash yields.
+     check(runSignal);await verifyInnerRmsNormGraph(bytes,b.normLowering,{signal:runSignal,onProgress:event=>{check(runSignal);emit(event);check(runSignal);}});check(runSignal);
+    }else if(b.attentionLowering){
+     await applySdpaScaleRecipeInPlace(bytes,b.attentionLowering,{signal:runSignal,verifiedSourceAssetSha256:b.sha256,onProgress:event=>{check(runSignal);emit(event);check(runSignal);}});
+     check(runSignal);
+    }
+    // One-use staged sessions avoid an additional prepacked weight buffer.
+    currentSession=await ort.InferenceSession.create(bytes,{executionProviders:['wasm'],extra:{session:{disable_prepacking:'1'}}});bytes=null;
     let hiddenInput,maskInput,result;
     try{
      check(runSignal);
@@ -103,7 +128,7 @@ export async function loadTextEncoder({manifest,files,ort,hike,signal,onProgress
    const result=new Float32Array(ids.length*DIM);
    for(let i=0;i<length;i++)if(mask[i])result.set(normalized.subarray(i*DIM,(i+1)*DIM),i*DIM);
    check(runSignal);emit({stage:'text-complete',completed:24,total:24});
-   return {hiddenStates:result,shape:[1,ids.length,DIM],attentionMask:Uint8Array.from(mask),provenance:{...info,effectiveTokens:length,trailingMaskCompaction:length<ids.length,hikeOperation:'actual encoder.final_layer_norm',hikeContributed:true,finalNumericGate:manifest.numericGate,preparedFixtureNativeMaxAbsError:manifest.nativeFinalMaxAbsError,sourceSha256:manifest.sourceSha256,manifestModelSha256:MODEL}};
+   return {hiddenStates:result,shape:[1,ids.length,DIM],attentionMask:Uint8Array.from(mask),normalization:TEXT_ENCODER_NORMALIZATION,provenance:{...info,effectiveTokens:length,trailingMaskCompaction:length<ids.length,hikeOperation:'actual encoder.final_layer_norm',hikeContributed:true,finalNumericGate:manifest.numericGate,preparedFixtureNativeMaxAbsError:manifest.nativeFinalMaxAbsError,sourceSha256:manifest.sourceSha256,manifestModelSha256:MODEL}};
   }finally{running=false;finish();}
  }
  async function dispose(){disposed=true;await activeDone;if(currentSession){await currentSession.release();currentSession=null;}}
