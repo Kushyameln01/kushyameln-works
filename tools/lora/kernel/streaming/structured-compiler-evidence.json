@@ -1,0 +1,75 @@
+{
+  "kind": "optional-development-wabt-backend-evidence",
+  "productionBuild": "build.py uses the unchanged pinned Hike compiler and LLVM; this optional script publishes no artifacts",
+  "reproduce": "python tools/lora/kernel/streaming/build-wabt-structured.py --out <fresh-private-directory> --test --compile",
+  "upstreamCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "originalCompilerUnmodified": true,
+  "originalCompilerSha256": "556a11f406482a0b2015ba0a40e34813ad6c1ec2c50eed175f9d005e7f39a95f",
+  "patchSha256": "679c8d52fadf3d4f261bcb2312051ae6ec541611c26e19658eee80d9004e567c",
+  "compilerSha256": "948ff2039007a6055389f8bce40b639a26aa94090862368c10b08aa2311f2c03",
+  "goVersion": "go version go1.27.3 linux/amd64",
+  "buildFlags": [
+    "-trimpath",
+    "-buildvcs=false"
+  ],
+  "repairs": [
+    "Emit structured ReturnNode through the existing return ABI and stack restoration",
+    "Execute source for-loop initialization once, before the loop back-edge",
+    "Retain established CFG lowering for switch TableNode"
+  ],
+  "regressionSources": {
+    "pkg/backend/wabt/structured_return_test.go": "d7a7be79d953c55a54ecf510b54fa2f82dce56f5e062e8334a5038fc77e21cc3",
+    "pkg/compiler/structured_return_loop_test.go": "21df7e0fbaf2ef4bf06dac9ec38d20748b5a53964bfd368acf34658c658d3042"
+  },
+  "freshReproduction": {
+    "compilerByteIdentical": true,
+    "relevantSuites": [
+      "pkg/backend/wabt",
+      "pkg/compiler",
+      "tests/wabt"
+    ],
+    "relevantTests": "passed",
+    "privateKernel": {
+      "sourceSha256": "08f7ab77ca720e0bcf55362c8ee2dfa51bb359304a1e4011caebe432272cfec1",
+      "wasmSha256": "d72fe71bfa10f8fc38e34f1b8f2ee3091cdc4aa87597f9da91f29239d67eb690",
+      "wasmBytes": 20459,
+      "watSha256": "10bbc8e94133eb45beae7720abce8cd285748ce676c07254e7bdfa3dcfe53062",
+      "backend": "patched-wabt-normal-structured",
+      "imports": [],
+      "cfgDispatcher": false,
+      "fp64Arithmetic": false,
+      "f64LiteralCount": 1
+    }
+  },
+  "numericalVerification": {
+    "reference": "Existing pinned Hike WABT kernel 3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24",
+    "comparison": "bitwise F32 equality",
+    "finiteBF16Patterns": 65280,
+    "finiteF16Patterns": 63488,
+    "addCopyElements": 1003,
+    "productExports": [
+      "LoraProduct4",
+      "LoraProduct8",
+      "LoraProduct16",
+      "LoraProduct32"
+    ],
+    "syntheticMatrixCases": 7,
+    "realSourceFullWidthBlocks": [
+      {
+        "rows": 6,
+        "columns": 5120,
+        "rank": 128
+      },
+      {
+        "rows": 2,
+        "columns": 13824,
+        "rank": 128
+      }
+    ]
+  },
+  "scope": "Compiler and bounded kernel development verification; no full-adapter, model inference, browser, or production performance acceptance claim",
+  "fullCompilerSuiteLimitations": [
+    "The attempted full Go suite required Clang on PATH for native end-to-end tests",
+    "cmd/wasm-checker required uncached wasmtime-go/v48 while offline"
+  ]
+}

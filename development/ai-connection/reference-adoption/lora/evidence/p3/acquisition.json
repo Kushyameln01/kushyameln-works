@@ -1,0 +1,307 @@
+{
+  "scope": "P3 receiver acquisition, selected light HIGH bounded base only",
+  "managerCommit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+  "loraCandidateCommit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+  "diffusionCandidateCommit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+  "catalogCommit": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad",
+  "artifact": {
+    "bytes": 709364,
+    "sha256": "25a845e0c87a1bcab04740b011d0aa7cd969f46745412810cfd73269b69e8cff",
+    "sourcePage": "page_2b15f0bb13288191837ee215949aa89d",
+    "coverage": "PARTIAL",
+    "fullFileHashRecomputed": false,
+    "selectedSide": "HIGH",
+    "ranges": [
+      {
+        "id": "header",
+        "absoluteByteOffset": 8,
+        "byteLength": 181280,
+        "sha256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3"
+      },
+      {
+        "id": "q.weight",
+        "absoluteByteOffset": 2845110856,
+        "byteLength": 81920,
+        "sha256": "c933e5188ee07fe64154cd15fb27b493f8dc58af3fdf2bd5d7232bc78fa614d6"
+      },
+      {
+        "id": "q.bias",
+        "absoluteByteOffset": 52833736,
+        "byteLength": 32,
+        "sha256": "b2d6f7517bd87f5d3d772888650fd0508e361417ea15714d771b81adcfd12e04"
+      },
+      {
+        "id": "weight_scale",
+        "absoluteByteOffset": 181316,
+        "byteLength": 4,
+        "sha256": "e810073dda55130632879cca5c19c5227667018245177cd14f163f5d7ac7559e"
+      },
+      {
+        "id": "comfy_quant",
+        "absoluteByteOffset": 15574823685,
+        "byteLength": 27,
+        "sha256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a"
+      }
+    ],
+    "registry": {
+      "schemaVersion": "bernini-diagnostic-registry/0.1",
+      "scope": "PARTIAL",
+      "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+      "side": "HIGH",
+      "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+      "executionProfileId": "bernini-q16x5120-f32-wasm-v1",
+      "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+      "quantizationConfig": {
+        "key": "blocks.0.self_attn.q.comfy_quant",
+        "sha256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+        "format": "float8_e4m3fn"
+      },
+      "baseVerification": {
+        "kind": "header-and-ranges",
+        "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+        "fileBytes": 15574833216,
+        "fullFileSHA256Verified": false,
+        "modelHashRole": "expected-original-full-hash-not-current-file-proof"
+      },
+      "targets": [
+        {
+          "key": "diffusion_model.blocks.0.self_attn.q.weight",
+          "weightId": "q.weight",
+          "originalKey": "blocks.0.self_attn.q.weight",
+          "fullShape": [
+            5120,
+            5120
+          ],
+          "shape": [
+            16,
+            5120
+          ],
+          "dtype": "F32",
+          "storageDtype": "F8_E4M3",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "binding": {
+            "kind": "runtime-input",
+            "name": "weight"
+          },
+          "transform": {
+            "kind": "row-slice",
+            "rowStart": 0,
+            "rowCount": 16,
+            "columnStart": 0,
+            "columnCount": 5120,
+            "transpose": false
+          },
+          "source": {
+            "payloadByteOffset": 2844929568,
+            "elementOffset": 0,
+            "byteWidth": 1
+          },
+          "fp8": {
+            "profileId": "scaled-e4m3fn-scalar-f32-v1",
+            "scaleKey": "blocks.0.self_attn.q.weight_scale",
+            "scaleShape": [],
+            "scaleDtype": "F32",
+            "scale": 0.0004648481262847781,
+            "scaleSHA256": "e810073dda55130632879cca5c19c5227667018245177cd14f163f5d7ac7559e"
+          }
+        },
+        {
+          "key": "diffusion_model.blocks.0.self_attn.q.bias",
+          "weightId": "q.bias",
+          "originalKey": "blocks.0.self_attn.q.bias",
+          "fullShape": [
+            5120
+          ],
+          "shape": [
+            16
+          ],
+          "dtype": "F32",
+          "storageDtype": "F16",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "bias"
+          },
+          "transform": {
+            "kind": "row-slice",
+            "rowStart": 0,
+            "rowCount": 16,
+            "transpose": false
+          },
+          "source": {
+            "payloadByteOffset": 52652448,
+            "elementOffset": 0,
+            "byteWidth": 2
+          },
+          "fp8": null
+        }
+      ],
+      "coverage": {
+        "kind": "PARTIAL",
+        "fullModel": false,
+        "selectedOriginalKeys": [
+          "blocks.0.self_attn.q.weight",
+          "blocks.0.self_attn.q.bias"
+        ],
+        "excluded": "all other parameters and unselected rows",
+        "selectedRowCount": 16
+      },
+      "registryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b"
+    },
+    "priorOwnerReceipt": {
+      "kind": "retained-download-manifest",
+      "manifestSha256": "bae909390a21f32131126c92a72dd92648a39383395c97f2a96f195c1b2f4357",
+      "sha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+      "verified": true,
+      "verification": "PRIOR_OWNER_RECEIPT_NOT_REHASHED",
+      "authenticity": "not-independently-certified"
+    }
+  },
+  "referenceManifest": {
+    "bytes": 18333,
+    "sha256": "2fe56045248bf75c3c2e63a310a56546288dd0b3a34c19cafc0e5ee9fc2c782d",
+    "gates": {
+      "baseDecode": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "weight": {
+        "absolute": 1e-05,
+        "relative": 0.0001
+      },
+      "bias": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "projection": {
+        "absolute": 1e-06,
+        "relative": 1e-05
+      }
+    },
+    "baseIdentity": {
+      "expectedFullSha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+      "headerSha256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+      "fullFileHashComputedByThisOracle": false
+    }
+  },
+  "referenceFiles": [
+    {
+      "file": "activation.f32",
+      "dtype": "float32",
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "231fdb75596206b5e27942f36ebee8177d336791cb84813af3ec9cf1e54d9b0f"
+    },
+    {
+      "file": "base-weight.f32",
+      "dtype": "float32",
+      "elements": 81920,
+      "bytes": 327680,
+      "sha256": "716323810c36affed35f130f246daa9984fcecd50a7ecdc262b89d3655387c9d"
+    },
+    {
+      "file": "base-bias.f32",
+      "dtype": "float32",
+      "elements": 16,
+      "bytes": 64,
+      "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+    },
+    {
+      "file": "light-HIGH-s0-weight.f64",
+      "dtype": "float64",
+      "elements": 81920,
+      "bytes": 655360,
+      "sha256": "b30f15df61ef2bc74d33162e3919382b987e956bfb149daffc273f340fbef3e0"
+    },
+    {
+      "file": "light-HIGH-s0-bias.f32",
+      "dtype": "float32",
+      "elements": 16,
+      "bytes": 64,
+      "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+    },
+    {
+      "file": "light-HIGH-s1-weight.f64",
+      "dtype": "float64",
+      "elements": 81920,
+      "bytes": 655360,
+      "sha256": "4d3152f3ec4d877c0ee29b42e63e984a5f0fa2106b5ed99ad7b3d6df9512e646"
+    },
+    {
+      "file": "light-HIGH-s1-bias.f32",
+      "dtype": "float32",
+      "elements": 16,
+      "bytes": 64,
+      "sha256": "8c9f42a24af000e6948a3fb8684fe81bf86703c193f713ef096ab46b498ae913"
+    },
+    {
+      "file": "light-HIGH-s-1-weight.f64",
+      "dtype": "float64",
+      "elements": 81920,
+      "bytes": 655360,
+      "sha256": "5603927c8b96f7db2f137e4761c70ff8a496d49883097a50d0e0430a2a853fa2"
+    },
+    {
+      "file": "light-HIGH-s-1-bias.f32",
+      "dtype": "float32",
+      "elements": 16,
+      "bytes": 64,
+      "sha256": "508efb2c42ec5378f7da7f208f17bcc67d9c2fe92bf73c7b8c0c1a6fe32e1af4"
+    }
+  ],
+  "sourceReceipts": [
+    {
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/reference-loader.mjs",
+      "byteLength": 13692,
+      "sha256": "cb99828265fc24600b360dd47b75c61665db086d2dd21b8281da85c414b37312"
+    },
+    {
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/norm-bindings.mjs",
+      "byteLength": 17696,
+      "sha256": "0d2e9707aff78d2e0ed82f70f60880a1a417e77e1499a27715f5fc761eea367d"
+    },
+    {
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/compatibility.mjs",
+      "byteLength": 15828,
+      "sha256": "8c38333856eaa9a3c1666e99426972ada2bdc92a95ebc51101b09b982ffd8095"
+    },
+    {
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/adapters/adopted-lora.mjs",
+      "byteLength": 18669,
+      "sha256": "46bc01de24c25fc5a0070a03532e46335c8a8422438a18eecef562ffa675a210"
+    },
+    {
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/adapters/snapshot-native-lora.mjs",
+      "byteLength": 11559,
+      "sha256": "e7db4a355e99f065a8b2d86617c165ce8af745010a8173b6e78f697a7bae0fe4"
+    },
+    {
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "docs/shared/ai-connection/snapshot.mjs",
+      "byteLength": 16115,
+      "sha256": "5a4eea83aefc5498e7447dbb0e5b69131ef023267845a588b4318f66d0f5c68a"
+    },
+    {
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "development/ai-connection/reference-adoption/P3-NATIVE-RESULT.json",
+      "byteLength": 111942,
+      "sha256": "4740eb08b161a9c4a6bbd21cc6a7b13804a7a695dff242a6931e54b7b55d9fdc"
+    },
+    {
+      "commit": "edda43f9ea69c5b3ab1af3c6eb82295f2912887c",
+      "path": "development/ai-connection/reference-adoption/P3-BROWSER-RESULT.json",
+      "byteLength": 104160,
+      "sha256": "0be74f3ad35f1f313e024d91d08e9ef17da83277e9026b9d127d3546ab15dc78"
+    }
+  ],
+  "historicalFourOriginalsRequired": false,
+  "historicalOriginalInventoryRecomputed": false,
+  "newSessionAcceptance": false
+}

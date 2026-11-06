@@ -1,0 +1,38 @@
+# E1 delivery documentation review
+
+2026-10-31 UTC. Read-only audit of the uncommitted delivery documents at LoRA HEAD `bbfeaedd5e4307e41210a1e5723e6e63243e64f7`.
+
+**Final disposition: PASS.** The final integration addendum below closes the initial pending status notes. The initial audit findings are retained as history.
+
+Scope: `development/lora/REPRODUCE.md`, `docs/shared/inference/lora/CONNECTION_V2.md`, `development/ai-connection/{SOURCE-BASELINE,CONTRACT-MAPPING}.md`, and `evidence/lora-e0/current-peer-source-manifest.json`.
+
+- Adapter factory/method arguments match `diffusion-diagnostic-adapter.mjs`; SDK arguments match `sdk-v2.mjs`. Required owner-current callback, caller ownership of native consumer/stage/provider, independent-copy receipt, prepared release, candidate finalization, owner-authorized cleanup, and selected-slice base restoration are accurately separated.
+- Coordinate descriptions preserve full logical shapes and element offsets. Native/connection registry hashes, package/bundle hashes, PARTIAL/native scope, detail base-bias pass-through, and absence of native lease/detach support are accurately described.
+- All 10 relative Markdown links in the four scoped documents resolve locally.
+- Runner CLI arguments match its `--help`/parser. The documented `bbfeaedd…` checkout differs from HIGH's `4d5fd736…` only by the disclosed stronger old-committed-candidate rollback test. Product SDK/adapter/kernel/oracle files are identical between those commits.
+- The exact inline Python receipt block compiles and executes with mocked paths/stat/hash. It produces `fileStat` keys `size`, `mtimeNs`, `ino`, `dev`, matching the runner's BigInt stat comparison; role, byte count, expected/actual hash, and `fullFileVerified` fields satisfy the runner schema. This exercise read no original file and performed no model hash.
+- Manifest verification checked 34 records against fixed Git objects: 18 peer files, 12 HIGH LoRA runtime files, and four requested-original comparisons. All byte counts, SHA-256 values, recorded Git blob identities for runtime files, and pinned runtime URLs match. All 28 runtime files in the HIGH receipt match the manifest.
+- Saved and copied HIGH results both have SHA-256 `27e90af150c7e264d8cd661e2cef70819ff9e7620dddb3eb3c5fec50e406fc53`, status `PASS_DIAGNOSTIC_PARTIAL`, 10 cases, and the documented source commits. Documented gates match saved pre-execution gates. Current API/baseline/mapping prose does not claim LOW passed or full-model acceptance.
+- Stored v0.1 contract (18,858 bytes, SHA `f00b469cb32dd620a292007178feb10b135ddb4022a934df38876b754ee579e6`) and stored original inventory (495,806 bytes, SHA `97229d6ea17738dc983fa898a38e771a784aeafff9513734c5af0ba0250c23b3`) match their documented identities. Only repository evidence was hashed.
+- Old unavailable-source/BLOCKED statements in the reviewed baseline/mapping are explicitly enclosed in historical sections. The reviewed current prose retains native `fullFileSHA256Verified:false` while attributing whole-file authentication to the separate outer receipt.
+
+Final integration notes already reported to the coordinator:
+
+1. `JOINT-LORA-RESULT.md`, linked as current status, still opens `BLOCKED / NOT_RUN` and says the peer is unavailable. The coordinator confirmed that this file and the matrix are awaiting the LOW trial and will be rewritten. Recheck these links' status claims after that rewrite.
+2. `REPRODUCE.md` currently says LOW was acquired in the past tense (`LOWを取得した`). At this audit's cutoff LOW acquisition is pending. That wording requires the completed LOW receipt, or should describe acquisition as in progress.
+
+No original model/LoRA bytes were read or hashed, no full-model run or broad test suite was executed, and no repository files were edited or committed during this audit. Only this external review report was created.
+
+## Final integration addendum — HIGH and LOW complete
+
+**PASS; no remaining delivery-document blocker identified.** This supersedes the initial pending result/matrix and LOW-acquisition notes above. Reviewed the completed result, matrix, external adapter contract, updated current API/baseline/reproduction documents, and public E1 evidence. The separate independent actual-result review also explicitly supports both sides within PARTIAL scope.
+
+- Public HIGH and LOW results are exact copies of their successful saved reports. HIGH source is `4d5fd7363f40f0d743ead448193ef2bf1915bbdc`; LOW source is `e1f03a4f6092c3154d5b47f166b77bbd32897ac9`. Git comparison changes only the browser test runner; SDK, adapter, kernel and independent oracle are identical. The reproducible checkout now pins the successful LOW source.
+- The matrix's 20 case records, every actual/expected output, comparison/gate/artifact record, four scope records, and external contract's side/pair SDK instances, source hashes, native/connection registry hashes, plan IDs and local input/application revisions match the reports. Totals are **20 cases, 1,638,400 weight comparisons, 320 consumer-bias comparisons, 320 output comparisons**. The initial three strengths are separately **12 cases, 983,040 weights, 192 bias values, 192 outputs**; detail bias is correctly identified as immutable base pass-through.
+- Machine-readable adapter/native-contract/inventory hashes match their pinned Git objects: adapter 20,746 bytes / `bcea7b495e819d1e1052543f36cbdad0ed8515e74bd8914cf66dc03b093c6e4f`; native contract 13,748 bytes / `87e132af1739114f171254888c04f3050df27c47cd02e92fd67bc5babe4ac6d2`; inventory identity remains unchanged. Actual bindings, full/selected shapes, element coordinates, owner/cleanup authority, independent-copy lifecycle, manager revision mapping, and PARTIAL/no-publish limitations remain accurate. The historical A0/L1 descriptor is explicitly distinct from the E1 identity.
+- HIGH's real old rollback remains described as an older uncommitted candidate. LOW's distinct real committed-old-candidate case records epochs **17 → 18**, `restored:false`. Initial HIGH numerical failure and stale-test LOW setup failure remain preserved separately and excluded from successful totals. Public failure JSONs are labeled retained summaries; their full raw reports remain in the separate archives.
+- Parsed all 21 scoped delivery/evidence JSON files. Verified four numeric archives against their public byte counts/SHA-256 and all **155 manifest-bound internal files** against their recorded bytes/hashes. Successful public result/reference/gate JSON copies match their archive members. The archives contain selected evidence and no original `.safetensors` file.
+- Found and reported three broken copied acquisition links; the coordinator replaced historical local paths with plain labels and linked the embedded HIGH/LOW acquisition receipts. Found and reported formatting-only scope byte/hash differences; the coordinator copied all four original scope JSON byte sequences. Fresh verification confirms all four now match their public `scopeArtifact` byte counts/SHA-256 exactly, and **all 25 relative Markdown links resolve**.
+- Completed LOW full-hash/stat-bound acquisition evidence now supports the reproduction document's past-tense acquisition statement. Current status prose reports both PARTIAL passes while preserving native header/range-only verification, external complete-file proof, and E9/full-model/management limits. The refreshed published fixture log records 97 passed / 0 failed; this review did not rerun that suite.
+
+This final pass used source, saved reports, public JSON and selected-evidence archives. No original model/LoRA file was read or rehashed, and no new inference, product change, gate change or repository edit was performed by this reviewer.

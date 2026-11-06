@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "lora-existing-rect-mean-receiver/1",
+  "status": "PASS_DIAGNOSTIC_SAME_BROWSER",
+  "authorization": "User selected existingprofile connection/joint verification; no new LoRA mean API",
+  "lora": {
+    "nativeContract": "lora-connection/2.0-draft.1",
+    "adapterVersion": "lora-diffusion-diagnostic-adapter/0.1",
+    "productAPIDelta": false,
+    "executedSourceCommit": "e66733a74a24405091e25805e7985d11a77683cd",
+    "weightBindings": [
+      "runtime-input:weight",
+      "hike-parameter:bias"
+    ],
+    "coverage": "PARTIAL",
+    "completeAdapter": false,
+    "fullShape": [
+      5120,
+      5120
+    ],
+    "rows": [
+      0,
+      16
+    ],
+    "columns": [
+      0,
+      5120
+    ],
+    "lightBias": [
+      0,
+      16
+    ],
+    "pairMode": "light/detail select/switch only"
+  },
+  "diffusion": {
+    "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+    "nativeBuildId": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+    "meanOperations": [
+      "validateRawLatent",
+      "normalizeRawMean",
+      "restoreRawMean"
+    ],
+    "requestWrapper": "input:{tensor}",
+    "nonrectProfile": {
+      "id": "wan21-raw-f32-1x16x32",
+      "dtype": "float32",
+      "layout": "NCTHW",
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "elements": 128,
+      "rawMeaning": "raw-posterior-mean",
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+      "abi": "wan21-raw-mean-f32-v3",
+      "exports": [
+        "NormalizeRawMeanRect",
+        "RestoreRawMeanRect"
+      ],
+      "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+      "roundTripAbsoluteGate": 2e-06
+    },
+    "legacyProfilesRetained": [
+      {
+        "id": "wan21-raw-f32-1x16x16",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          2
+        ],
+        "elements": 64
+      },
+      {
+        "id": "wan21-raw-f32-5x16x16",
+        "shape": [
+          1,
+          16,
+          2,
+          2,
+          2
+        ],
+        "elements": 128
+      }
+    ],
+    "sameCountReshapeAllowed": false
+  },
+  "privateArtifact": {
+    "schemaVersion": "bernini-diagnostic-base-block/0.1",
+    "bytes": 709364,
+    "sha256": "25a845e0c87a1bcab04740b011d0aa7cd969f46745412810cfd73269b69e8cff",
+    "rangesPerSide": [
+      "header",
+      "q.weight",
+      "q.bias",
+      "weight_scale",
+      "comfy_quant"
+    ],
+    "wholeFileHashRecomputed": false,
+    "unprovidedRangesAvailable": false,
+    "rawPublicPayload": false,
+    "sourcePage": "https://chatgpt.com/space/page_2b15f0bb13288191837ee215949aa89d"
+  },
+  "independentReference": {
+    "acceptedCommit": "0c27874908638afc748ea2455a2779a16736730b",
+    "arrays": "all expected arrays verified against fixed original-receiver JSON hashes",
+    "rawAndDecodedRangeEqualityVerified": true,
+    "freshOriginalLoRaSourceHashRequired": true
+  },
+  "combinedVerification": {
+    "browser": "154.0.8037.57",
+    "nativeMeanAPICases": 4,
+    "meanBeforeCases": 7,
+    "originalLoRaCases": 20,
+    "meanAfterCases": 7,
+    "meanOutputsUnchanged": true,
+    "persistentMeanInstanceTested": false,
+    "managementSnapshotTested": false,
+    "bindingsOrCoverageRelabeled": false,
+    "generatedContributionVerified": false,
+    "fullModelExecuted": false
+  },
+  "ownership": {
+    "mean": "each owner test constructs/disposes own mean space; before/after not persistent identity",
+    "LoRaPrepared": "release after actual native independent-copy receipt; active run remains valid",
+    "base": "bounded immutable provider, no fake full File",
+    "nativeLease": "not supported; copy path verified",
+    "cancel": "cooperative after bounded Hike/ORT; late rollback same owner/current epoch only"
+  },
+  "management": {
+    "generationReady": false,
+    "snapshotPublished": false,
+    "revisionSeries": "mean native session/build and LoRA sdkInstanceId/local revisions stay distinct; no implicit common revision",
+    "readiness": "load/predict/sample NOT_READY; E8 BLOCKED"
+  },
+  "evidence": "evidence/joint-result.json"
+}

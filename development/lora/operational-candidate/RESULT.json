@@ -1,0 +1,475 @@
+{
+  "status": "PASS_OPERATIONAL_CANDIDATE_PARTIAL",
+  "managementSHA": "2b26ee70e9e1925622a59459ccd18bd94ec7e33d",
+  "managementPriorExecutionSHA": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+  "diffusionSHA": "b6e166478a8e072c9ffd3ce562bfdb0c89634920",
+  "sdkSHA": "6d0c8df4cd4992f26745d2d26394f5e194d2567f",
+  "distributionSHA": "Use the full commit containing this file, as reported in the handoff URL",
+  "runtimeChanges": "SDK, mapping, loader, rank/alpha, F32 arithmetic and existing public port unchanged. Candidate HTML fixes two unsupported defaultpair values; added setup/browser utilities only.",
+  "normalSDKRequiresExpected": false,
+  "directAdapterAdopted": false,
+  "startup": {
+    "status": "PASS",
+    "cases": [
+      "fixed-source setup and actual management localhost startup",
+      "exact candidate overlay index with supported light defaults",
+      "wrong management source rejected before serving"
+    ],
+    "scope": "No model or NN; HTML only",
+    "bytes": 22233,
+    "managementSHA": "2b26ee70e9e1925622a59459ccd18bd94ec7e33d"
+  },
+  "targetedTests": {
+    "nativePort": {
+      "pass": 3,
+      "fail": 0
+    },
+    "managementLora": {
+      "pass": 3,
+      "fail": 0
+    },
+    "fullUnchangedSuitesRepeated": false,
+    "all2904PatchMathRepeated": false,
+    "modelRehashed": false,
+    "modelReexported": false
+  },
+  "browser": {
+    "cases": [
+      {
+        "name": "compose-prepare-stage-light",
+        "selections": [
+          {
+            "pairId": "light",
+            "strength": 1
+          }
+        ],
+        "biasSelected": true,
+        "coverage": "PARTIAL",
+        "compared": 20484,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "hashes": {
+          "weight": {
+            "actual": "0b0bb1eddcc67e0043f1a52370ad8908f34327b7cba8caf952b845242a07251a",
+            "expected": "0b0bb1eddcc67e0043f1a52370ad8908f34327b7cba8caf952b845242a07251a"
+          },
+          "bias": {
+            "actual": "e4816d2b77699faa6360ea951f0b8c36bfd291dce1f8412addb4e5e9d1d61844",
+            "expected": "e4816d2b77699faa6360ea951f0b8c36bfd291dce1f8412addb4e5e9d1d61844"
+          }
+        }
+      },
+      {
+        "name": "active-after-prepared-release",
+        "selections": [
+          {
+            "pairId": "light",
+            "strength": 1
+          }
+        ],
+        "biasSelected": true,
+        "coverage": "PARTIAL",
+        "compared": 20484,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "hashes": {
+          "weight": {
+            "actual": "0b0bb1eddcc67e0043f1a52370ad8908f34327b7cba8caf952b845242a07251a",
+            "expected": "0b0bb1eddcc67e0043f1a52370ad8908f34327b7cba8caf952b845242a07251a"
+          },
+          "bias": {
+            "actual": "e4816d2b77699faa6360ea951f0b8c36bfd291dce1f8412addb4e5e9d1d61844",
+            "expected": "e4816d2b77699faa6360ea951f0b8c36bfd291dce1f8412addb4e5e9d1d61844"
+          }
+        }
+      },
+      {
+        "name": "light-zero",
+        "selections": [
+          {
+            "pairId": "light",
+            "strength": 0
+          }
+        ],
+        "biasSelected": true,
+        "coverage": "PARTIAL",
+        "compared": 20484,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "hashes": {
+          "weight": {
+            "actual": "0202f7cfcb2b11a206a0d4bae6fd1ecaa2b3b34fcf7761a5a96adf4f8a982b9f",
+            "expected": "0202f7cfcb2b11a206a0d4bae6fd1ecaa2b3b34fcf7761a5a96adf4f8a982b9f"
+          },
+          "bias": {
+            "actual": "34ce46a8de9226eb87226c20434109efbf21081d7482a23edf3d0d16cab51b40",
+            "expected": "34ce46a8de9226eb87226c20434109efbf21081d7482a23edf3d0d16cab51b40"
+          }
+        }
+      },
+      {
+        "name": "light-negative",
+        "selections": [
+          {
+            "pairId": "light",
+            "strength": -1
+          }
+        ],
+        "biasSelected": true,
+        "coverage": "PARTIAL",
+        "compared": 20484,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "hashes": {
+          "weight": {
+            "actual": "4b369309673b57c435581bf6b916550d5960b6a7cfb7002c8975750221e936b2",
+            "expected": "4b369309673b57c435581bf6b916550d5960b6a7cfb7002c8975750221e936b2"
+          },
+          "bias": {
+            "actual": "35ce761dde1d0bbc2fc57337991976050e2b701a94f61c8e49c328112c59af0e",
+            "expected": "35ce761dde1d0bbc2fc57337991976050e2b701a94f61c8e49c328112c59af0e"
+          }
+        }
+      },
+      {
+        "name": "both-weight-only",
+        "selections": [
+          {
+            "pairId": "detail",
+            "strength": 1
+          },
+          {
+            "pairId": "light",
+            "strength": 1
+          }
+        ],
+        "biasSelected": false,
+        "coverage": "PARTIAL",
+        "compared": 20484,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "hashes": {
+          "weight": {
+            "actual": "afd44df0ebe0bab93e5b08bdb098a4c61a5b2d0b98278c943c17f4975dd89f1b",
+            "expected": "afd44df0ebe0bab93e5b08bdb098a4c61a5b2d0b98278c943c17f4975dd89f1b"
+          },
+          "bias": {
+            "actual": "34ce46a8de9226eb87226c20434109efbf21081d7482a23edf3d0d16cab51b40",
+            "expected": "34ce46a8de9226eb87226c20434109efbf21081d7482a23edf3d0d16cab51b40"
+          }
+        }
+      },
+      {
+        "name": "remove-detail",
+        "selections": [
+          {
+            "pairId": "light",
+            "strength": 1
+          }
+        ],
+        "biasSelected": true,
+        "coverage": "PARTIAL",
+        "compared": 20484,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "hashes": {
+          "weight": {
+            "actual": "0b0bb1eddcc67e0043f1a52370ad8908f34327b7cba8caf952b845242a07251a",
+            "expected": "0b0bb1eddcc67e0043f1a52370ad8908f34327b7cba8caf952b845242a07251a"
+          },
+          "bias": {
+            "actual": "e4816d2b77699faa6360ea951f0b8c36bfd291dce1f8412addb4e5e9d1d61844",
+            "expected": "e4816d2b77699faa6360ea951f0b8c36bfd291dce1f8412addb4e5e9d1d61844"
+          }
+        }
+      },
+      {
+        "name": "base-restored",
+        "selections": [],
+        "biasSelected": false,
+        "coverage": "PARTIAL",
+        "compared": 20484,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "hashes": {
+          "weight": {
+            "actual": "0202f7cfcb2b11a206a0d4bae6fd1ecaa2b3b34fcf7761a5a96adf4f8a982b9f",
+            "expected": "0202f7cfcb2b11a206a0d4bae6fd1ecaa2b3b34fcf7761a5a96adf4f8a982b9f"
+          },
+          "bias": {
+            "actual": "34ce46a8de9226eb87226c20434109efbf21081d7482a23edf3d0d16cab51b40",
+            "expected": "34ce46a8de9226eb87226c20434109efbf21081d7482a23edf3d0d16cab51b40"
+          }
+        }
+      },
+      {
+        "name": "retained-old-capture",
+        "selections": [
+          {
+            "pairId": "light",
+            "strength": 1
+          }
+        ],
+        "biasSelected": true,
+        "coverage": "PARTIAL",
+        "compared": 20484,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "hashes": {
+          "weight": {
+            "actual": "0b0bb1eddcc67e0043f1a52370ad8908f34327b7cba8caf952b845242a07251a",
+            "expected": "0b0bb1eddcc67e0043f1a52370ad8908f34327b7cba8caf952b845242a07251a"
+          },
+          "bias": {
+            "actual": "e4816d2b77699faa6360ea951f0b8c36bfd291dce1f8412addb4e5e9d1d61844",
+            "expected": "e4816d2b77699faa6360ea951f0b8c36bfd291dce1f8412addb4e5e9d1d61844"
+          }
+        }
+      },
+      {
+        "name": "cancel-preserves-base",
+        "selections": [],
+        "biasSelected": false,
+        "coverage": "PARTIAL",
+        "compared": 20484,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "hashes": {
+          "weight": {
+            "actual": "0202f7cfcb2b11a206a0d4bae6fd1ecaa2b3b34fcf7761a5a96adf4f8a982b9f",
+            "expected": "0202f7cfcb2b11a206a0d4bae6fd1ecaa2b3b34fcf7761a5a96adf4f8a982b9f"
+          },
+          "bias": {
+            "actual": "34ce46a8de9226eb87226c20434109efbf21081d7482a23edf3d0d16cab51b40",
+            "expected": "34ce46a8de9226eb87226c20434109efbf21081d7482a23edf3d0d16cab51b40"
+          }
+        }
+      },
+      {
+        "name": "reuse-after-cancel",
+        "selections": [
+          {
+            "pairId": "light",
+            "strength": 1
+          }
+        ],
+        "biasSelected": true,
+        "coverage": "PARTIAL",
+        "compared": 20484,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "hashes": {
+          "weight": {
+            "actual": "0b0bb1eddcc67e0043f1a52370ad8908f34327b7cba8caf952b845242a07251a",
+            "expected": "0b0bb1eddcc67e0043f1a52370ad8908f34327b7cba8caf952b845242a07251a"
+          },
+          "bias": {
+            "actual": "e4816d2b77699faa6360ea951f0b8c36bfd291dce1f8412addb4e5e9d1d61844",
+            "expected": "e4816d2b77699faa6360ea951f0b8c36bfd291dce1f8412addb4e5e9d1d61844"
+          }
+        }
+      },
+      {
+        "name": "fresh-open-stage",
+        "selections": [
+          {
+            "pairId": "light",
+            "strength": 1
+          }
+        ],
+        "biasSelected": true,
+        "coverage": "PARTIAL",
+        "compared": 20484,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "hashes": {
+          "weight": {
+            "actual": "0b0bb1eddcc67e0043f1a52370ad8908f34327b7cba8caf952b845242a07251a",
+            "expected": "0b0bb1eddcc67e0043f1a52370ad8908f34327b7cba8caf952b845242a07251a"
+          },
+          "bias": {
+            "actual": "e4816d2b77699faa6360ea951f0b8c36bfd291dce1f8412addb4e5e9d1d61844",
+            "expected": "e4816d2b77699faa6360ea951f0b8c36bfd291dce1f8412addb4e5e9d1d61844"
+          }
+        }
+      }
+    ],
+    "comparedElements": 225324,
+    "failedElements": 0,
+    "maxAbsolute": 0,
+    "comparisonRole": "Deterministic development-fixture comparison; reuses known formula and factor generator, not new independent real-original LoRA numerical acceptance",
+    "coverage": "PARTIAL",
+    "fullShape": [
+      5120,
+      5120
+    ],
+    "selectedRows": [
+      1,
+      3
+    ],
+    "selectedColumns": [
+      0,
+      5120
+    ],
+    "lightBiasRows": [
+      1,
+      3
+    ],
+    "comparisonRows": [
+      0,
+      4
+    ],
+    "cancelPreservedEpoch": 6,
+    "reuseEpoch": 7,
+    "savedFiles": [
+      {
+        "name": "source-0.safetensors",
+        "bytes": 61892,
+        "sha256": "917b6781e942b832cf832f6664fcdc2ae3dac1b8b77ec95b26c6de203439115c"
+      },
+      {
+        "name": "manifest.json",
+        "bytes": 538817,
+        "sha256": "8a4a70493a46b2b466d1a93cf5a4153889db16fa2e28facb753c449f19dc1892"
+      }
+    ],
+    "freshReadback": true,
+    "producerFeedBeforeUnload": {
+      "feed": {
+        "disposed": false,
+        "closing": false,
+        "epoch": 9,
+        "activePackageHash": null,
+        "candidates": 0,
+        "readLeases": 0,
+        "operationLeases": 0,
+        "inFlight": 0,
+        "cleanupPending": 0,
+        "validatedElements": 61450,
+        "effectiveReadBytes": 819360,
+        "baseReadBytes": 1392896,
+        "packageReadBytes": 327736,
+        "ownsOriginalBase": false,
+        "denseCompletedWeightResident": false
+      },
+      "base": {
+        "disposed": false,
+        "busy": false,
+        "reads": 47,
+        "maxElements": 20480,
+        "fixtureOnly": true
+      },
+      "servers": [
+        {
+          "pending": 0,
+          "incoming": 0,
+          "closed": true
+        }
+      ],
+      "captures": 0
+    },
+    "freshFeedBeforeUnload": {
+      "feed": {
+        "disposed": false,
+        "closing": false,
+        "epoch": 3,
+        "activePackageHash": null,
+        "candidates": 0,
+        "readLeases": 0,
+        "operationLeases": 0,
+        "inFlight": 0,
+        "cleanupPending": 0,
+        "validatedElements": 10242,
+        "effectiveReadBytes": 81936,
+        "baseReadBytes": 163872,
+        "packageReadBytes": 40968,
+        "ownsOriginalBase": false,
+        "denseCompletedWeightResident": false
+      },
+      "base": {
+        "disposed": false,
+        "busy": false,
+        "reads": 6,
+        "maxElements": 20480,
+        "fixtureOnly": true
+      },
+      "servers": [
+        {
+          "pending": 0,
+          "incoming": 0,
+          "closed": true
+        }
+      ],
+      "captures": 0
+    },
+    "workersCreated": 2,
+    "workersClosedBeforeBrowserTeardown": 2,
+    "runnerExitCode": 0,
+    "servedSourcesByOwner": {
+      "lora-ui-candidate": 1,
+      "management": 210,
+      "lora-development": 2
+    }
+  },
+  "uiChange": {
+    "baseManagementSHA": "2b26ee70e9e1925622a59459ccd18bd94ec7e33d",
+    "basePath": "docs/ai-connection/modules/index.html",
+    "baseSHA256": "baba8411f7f51291e5e3f57e353c8d3ab92276d5c9b1d23dca8138fb06e42cae",
+    "candidatePath": "tools/lora/adopted-candidate-index.html",
+    "candidateSHA256": "52eab90bd8a65b73292328a5d9b860a452efe940ea70334f6d0304de110d034e",
+    "changes": 2,
+    "before": "selected-lora",
+    "after": "light"
+  },
+  "kitSourceFiles": [
+    {
+      "path": "tools/lora/start-adopted-candidate.py",
+      "bytes": 4753,
+      "sha256": "a681421d458948072ff17e34205c8d50a9a11f1cfdd6a241f89932f32170ae0a"
+    },
+    {
+      "path": "tools/lora/adopted-candidate-index.html",
+      "bytes": 22233,
+      "sha256": "52eab90bd8a65b73292328a5d9b860a452efe940ea70334f6d0304de110d034e"
+    },
+    {
+      "path": "tools/lora/adopted-port-fixture.mjs",
+      "bytes": 4786,
+      "sha256": "535fddff5916217e8422281fc998b50c5596f247f5718c7fb650763c8bb60e4f"
+    },
+    {
+      "path": "tools/lora/adopted-port-worker.mjs",
+      "bytes": 3757,
+      "sha256": "8135097ab6a755835789d37a36e8e2b9c3c75899bf9fdda3e01eb1431321ef7f"
+    },
+    {
+      "path": "tools/lora/run-adopted-port-browser.cjs",
+      "bytes": 15714,
+      "sha256": "c049d91dba9a5e77fe01d500ef27bae241cbf9cc3d57283dc49b32ae10e0bbdb"
+    }
+  ],
+  "diagnostics": {
+    "path": "diagnostics/browser-result.json.gz",
+    "bytes": 43146,
+    "sha256": "d0f14a6f2df00ca9edfbaecf16d8d5ff3b085025bcfb895319f95a2e79affe16",
+    "uncompressedBytes": 1281157,
+    "uncompressedSHA256": "396af1f45b1daaa13ab2586889b8fb363091d830f6d329a26a8681d7bbe384b4"
+  },
+  "reusedEvidence": {
+    "runtimeFilesUnchanged": 18,
+    "allPatchNumericalR1": "4a3419c768e2b4b38b081314abe2cfaaeed6b14b",
+    "lifecycleR2": "986b66b3dd54ef26d98f99a1db92a2933f3e31aa",
+    "newDirectAdapterEvidenceRequired": false
+  },
+  "limits": {
+    "baseProvider": "synthetic dyadic F32; original model identity is declared conformance metadata only",
+    "modelWorker": "explicit development replacement; native host/relay/client/server/full-feed and SDK are real",
+    "fullModelNeuralExecution": false,
+    "originalExperimentalLoRASent": false,
+    "wholeOperationalExperiment": false,
+    "generationReady": false,
+    "merge": false,
+    "pagesPublished": false,
+    "fullProcessPeakRAM": "Not measured; unchanged numeric implementation resource evidence reused"
+  }
+}

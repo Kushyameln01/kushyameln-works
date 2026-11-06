@@ -1,0 +1,336 @@
+{
+  "contractVersion": "lora-connection/2.0-draft.1",
+  "status": "A0_L1_IMPLEMENTATION_CONTRACT_REAL_DIFFUSION_CONSUMER_NOT_ACCEPTED",
+  "commonReference": {
+    "url": "https://chatgpt.com/space/page_65b303c9bc708191a7e48c78b51c35a7",
+    "documentTitle": "Kushyameln Works AI推論モジュール 総合接続仕様書 Draft",
+    "documentVersion": "1.1-draft.1",
+    "pageSequence": 1,
+    "retrieval": "Page body retrieved; not URL presence only",
+    "commonContractId": "works-module-contract/1.0-draft.1",
+    "relationship": "Separate optional management descriptor; never sent as native protocolVersion"
+  },
+  "baseline": {
+    "repository": "https://github.com/Kushyameln01/kushyameln-works",
+    "commit": "029ce9336a61e53bc6172fa4a7b7189b15f2efa0",
+    "legacyEntrypoint": "docs/shared/inference/lora/sdk.mjs",
+    "legacyApiVersion": 1
+  },
+  "entrypoints": {
+    "sdk": "docs/shared/inference/lora/sdk-v2.mjs",
+    "planner": "docs/shared/inference/lora/planner-v2.mjs",
+    "loaderPolicy": "docs/shared/inference/lora/loader-policy.mjs",
+    "documentation": "docs/shared/inference/lora/CONNECTION_V2.md",
+    "v1Adapter": "docs/shared/inference/lora/v1-adapter.mjs",
+    "v1AdapterExports": [
+      "adaptV1Registry",
+      "createV1SinkAdapter",
+      "adaptV1Consumer"
+    ]
+  },
+  "sourceEvidence": {
+    "originalInventory": {
+      "path": "development/lora/contracts/original-inventory.json",
+      "bytes": 495806,
+      "sha256": "97229d6ea17738dc983fa898a38e771a784aeafff9513734c5af0ba0250c23b3"
+    },
+    "previousProposal": {
+      "path": "development/lora/contracts/connection-contract-v0.1.json",
+      "bytes": 18858,
+      "sha256": "f00b469cb32dd620a292007178feb10b135ddb4022a934df38876b754ee579e6"
+    },
+    "reusedWithoutOriginalPayloadRehash": true,
+    "registryCorrespondence": "development/lora/contracts/registry-correspondence-v2.json",
+    "registryExamples": "development/lora/contracts/registry-binding-examples-v2.json",
+    "cachedPlannerEvidence": "development/lora/contracts/cached-header-planner-evidence.json",
+    "moduleDescriptor": "development/lora/contracts/module-descriptor-v2.json",
+    "reproducibleInventoryPlanFixture": "development/lora/contracts/inventory-plan-fixture-v2.json",
+    "inventoryPlanFixtureScope": "RECONSTRUCTED_INVENTORY_SCHEMA_FIXTURE_NOT_RAW_HEADER_NOT_REAL_BASE_OR_GRAPH",
+    "inventoryPlanFixtureCommand": "node tools/lora/check-inventory-plan-v2.mjs --write development/lora/contracts/inventory-plan-fixture-v2.json"
+  },
+  "loaderPolicy": {
+    "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+    "source": {
+      "repository": "https://github.com/comfyanonymous/ComfyUI",
+      "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "paths": {
+        "factorLoad": "comfy/weight_adapter/lora.py:160",
+        "alphaScale": "comfy/weight_adapter/lora.py:248",
+        "matrixProduct": "comfy/weight_adapter/lora.py:267",
+        "alphaRead": "comfy/lora.py:45",
+        "diffRead": "comfy/lora.py:76",
+        "biasRead": "comfy/lora.py:83",
+        "diffApply": "comfy/lora.py:537"
+      }
+    },
+    "variants": [
+      "linear-down-up",
+      "linear-a-b",
+      "additive-diff",
+      "additive-diff-b"
+    ],
+    "factorOrientation": {
+      "downOrA": "[rank,input]",
+      "upOrB": "[output,rank]",
+      "output": "[output,input], F32 row-major"
+    },
+    "scale": {
+      "alphaPresent": "strength * alpha / rank; scalar zero and negative values are present values",
+      "alphaAbsent": "strength * 1 ONLY under this explicit pinned loader policy",
+      "diffAndBias": "strength * delta; no rank or alpha multiplier"
+    },
+    "rank": "Positive safe integer from actual factor dimensions; down.rank must equal up.rank",
+    "sourceDtypes": [
+      "BF16",
+      "F16",
+      "F32"
+    ],
+    "computeDtype": "F32",
+    "unsupported": [
+      "unknown loader policy",
+      "unknown variant",
+      "unknown tensor suffix anywhere, including excluded targets",
+      "mixed factor dialects",
+      "incomplete or conflicting factors",
+      "nonfinite alpha/strength/effective F32 scale",
+      "Conv or non-2D low-rank factors",
+      "DoRA/LoHa/LoKr/mid/reshape/set_weight",
+      "implicit transposes",
+      "column slices",
+      "fused or quantized target representations",
+      "general bias-learning scheme other than additive .diff_b"
+    ],
+    "scopeNote": "Subset of the fixed ComfyUI loader, not a claim to implement every variant supported by that loader. Names/shapes/hash do not certify training base compatibility."
+  },
+  "registry": {
+    "required": [
+      "contractVersion",
+      "modelHash",
+      "graphHash",
+      "registryVersion",
+      "side",
+      "executionProfileId",
+      "loaderPolicyId",
+      "targets"
+    ],
+    "side": [
+      "HIGH",
+      "LOW"
+    ],
+    "targetRequired": [
+      "key",
+      "weightId",
+      "module",
+      "shape",
+      "dtype",
+      "layout",
+      "parameterRole",
+      "binding",
+      "transform"
+    ],
+    "parameterRole": [
+      "weight",
+      "bias"
+    ],
+    "dtype": "F32",
+    "layout": "row-major",
+    "shape": "Original full logical parameter shape, 1D/2D; no diagnostic shape substitution",
+    "binding": {
+      "required": [
+        "kind",
+        "name"
+      ],
+      "kinds": {
+        "runtime-input": "Actual consumer runtime weight feed",
+        "initializer": "Actual graph initializer or package initializer",
+        "hike-parameter": "Actual Hike parameter, e.g. bias at declared operator position"
+      }
+    },
+    "transform": {
+      "kind": "identity"
+    },
+    "forbidden": [
+      "graphInitializer field in v2",
+      "transpose",
+      "slice on target registry entry",
+      "quantization",
+      "unsupported transform"
+    ],
+    "identityNote": "Model/graph/registry/profile identity must be supplied by the consumer; examples use labelled fixture identities only."
+  },
+  "planner": {
+    "function": "buildPlanV2({inspection,registry,diagnostic,sourceSha256,strength,loaderPolicyId,alphaValues})",
+    "full": {
+      "coverage": "FULL",
+      "completeAdapter": true,
+      "mapping": "Every original recognized patch must map with full shape; all unknowns reject",
+      "acceptance": "Logical complete-adapter plan only; not full-model inference readiness"
+    },
+    "partial": {
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "scope": "diagnostic-projection",
+      "diagnosticInput": {
+        "targets": [
+          {
+            "key": "original logical key",
+            "slice": {
+              "startRow": "nonnegative safe integer",
+              "rowCount": "positive safe integer"
+            }
+          }
+        ]
+      },
+      "columns": "All columns; only contiguous output-row slices are supported",
+      "retained": [
+        "sourceSha256",
+        "loaderPolicyId",
+        "registry",
+        "fullShape",
+        "selected slice",
+        "includedPatches",
+        "excludedTargets",
+        "excludedRegions"
+      ],
+      "globalValidation": "All original patches are classified and structurally validated before selection; unknown tensors cannot be hidden in exclusions",
+      "excludedTargetReason": "outside-diagnostic-selection",
+      "generationReady": false
+    }
+  },
+  "sdk": {
+    "factory": "createLoraV2({folder,sourceFactory,kernel})",
+    "selection": {
+      "pairId": "Opaque native selection identity; Bernini reference profile uses light/detail",
+      "noise": [
+        "high",
+        "low"
+      ]
+    },
+    "methods": [
+      "inspect",
+      "plan",
+      "prepare",
+      "stage",
+      "cancel",
+      "release",
+      "recover",
+      "dispose"
+    ],
+    "source": "size/read/hash with mandatory source identity for plan; File refs remain immutable caller-owned selections",
+    "revisions": "SDK local revisions are never management revision or Diffusion transport inputRevision",
+    "preparation": "Read immutable F32 full-base element offsets, calculate selected rows using actual Hike, emit owned binding-tagged Float32Array blocks",
+    "validation": "v2 scope-bearing result must identify the prepared plan and coverage; boolean alone is rejected",
+    "receipt": "Explicit STAGED or CONSUMER_APPLIED, with ownership evidence; neither means management snapshot published",
+    "stateValues": [
+      "SOURCE_REGISTERED",
+      "SOURCE_INSPECTED",
+      "PREPARED",
+      "STAGED",
+      "CONSUMER_APPLIED",
+      "SNAPSHOT_PUBLISHED"
+    ],
+    "stateNote": "SOURCE_REGISTERED belongs to source host and SNAPSHOT_PUBLISHED to management. Native LoRA does not publish snapshots.",
+    "validationResult": {
+      "contractVersion": "lora-connection/2.0-draft.1",
+      "valid": true,
+      "coverage": "PARTIAL or FULL",
+      "scope": "diagnostic-projection or full-adapter",
+      "planId": "matching plan",
+      "registryHash": "matching registry",
+      "sourceSha256": "matching original"
+    },
+    "commitReceipt": {
+      "contractVersion": "lora-connection/2.0-draft.1",
+      "state": [
+        "STAGED",
+        "CONSUMER_APPLIED"
+      ],
+      "planId": "matching plan",
+      "ownershipAlternatives": [
+        {
+          "kind": "independent-copy",
+          "ownerId": "consumer bytes owner"
+        },
+        {
+          "kind": "lease",
+          "ownerId": "consumer lease owner",
+          "isValid": "local callback, never cloned over port"
+        }
+      ]
+    },
+    "generationReady": false
+  },
+  "ownership": {
+    "base": "Immutable, never patched in place; strength changes rebuild from base, never re-add to applied weights or subtract deltas",
+    "wasm": "No pointers cross Memory owners; bounded Hike call completes before cooperative cancel checkpoint",
+    "sink": "Must copy/persist block before writeBlock resolves; validate extent/duplicates/missing blocks and package/feed identity",
+    "prepared": "Release forbidden during load/validation/commit and until consumer independent-copy or valid lease conditions are met",
+    "session": "Consumer owns independent bytes or a valid lease for every future read; releasing prepared must not invalidate live session bytes",
+    "cleanup": "Failed sink abort and release retain cleanup ownership for retry via recover()/dispose; new transactions blocked while sink-abort recovery remains",
+    "recovery": "Rollback failure retains package as RECOVERY_REQUIRED; recover(prepared) retries rollback before release"
+  },
+  "v1Compatibility": {
+    "nativeVersionUnchanged": 1,
+    "legacyBehavior": "Numeric apiVersion1 and boolean validate retained at existing entrypoint",
+    "registryAdapter": "Explicit initializer-only conversion; runtime-input and hike-parameter cannot be disguised as graphInitializer",
+    "validationAdapter": "Boolean true is not fabricated PARTIAL/FULL evidence; explicit scope assertion is required at version boundary",
+    "legacyPanel": "v2 or staging-only connection must be rejected or explicitly adapted to state-aware UI, never labelled applied from preparation/staging",
+    "sinkAdapter": "createV1SinkAdapter(sink,{registry:nativeV1Registry}) requires FULL/initializer, maps fullShape/local revisions and preserves native and connection identities separately",
+    "consumerAdapter": "adaptV1Consumer(target,{side,executionProfileId,loaderPolicyId,validationScope:full-adapter,ownership}) keeps legacy-boolean evidence, opaque candidate lifetime, and original native rollback manifest"
+  },
+  "berniniReferenceProfile": {
+    "selectionMode": "single-pair",
+    "pairIds": [
+      "light",
+      "detail"
+    ],
+    "sides": [
+      "HIGH",
+      "LOW"
+    ],
+    "instances": "One SDK instance per side, coordinated by management snapshot",
+    "composition": "Not implemented; two pairs are selection/switch alternatives",
+    "managerResponsibilities": [
+      "pair/side/original hash mapping",
+      "manager/local/transport revision correspondence",
+      "both-side stage and snapshot publication",
+      "base state on detach with LoRA-only fields null",
+      "compare-current commit/old rollback rejection/recovery",
+      "resource queue and child source-read ordering"
+    ],
+    "l2": "Whole-target real consumer acceptance separately for light and detail after actual registry/provider/consumer exists"
+  },
+  "verificationScopes": [
+    "Header interpretation",
+    "Original full-file identity from retained inventory",
+    "Hike fixture calculation",
+    "Test consumer transaction",
+    "Real base compatibility",
+    "Real session application",
+    "Generated-output contribution"
+  ],
+  "deferredInputsFromDiffusion": [
+    "Source full commit/build and contractVersion",
+    "Real graph binding registry with original full shapes and slice maps",
+    "Immutable owned F32 block provider and FP8 scale/decode profile",
+    "Sink package/feed schema and identity/hash rules",
+    "Scope-bearing candidate validation and tolerances",
+    "Stage/commit/rollback authority and revision/current checks",
+    "Copy or lease ownership/release semantics"
+  ],
+  "outOfScope": [
+    "Actual real-base application before consumer receipt",
+    "L2 all-target real acceptance",
+    "Full-model inference",
+    "Two-pair simultaneous composition",
+    "GitHub push or public deployment"
+  ],
+  "handoffIdentity": "Final complete commit and obtainable archive SHA-256 are recorded by the root in the handoff receipt; no circular self-digest is embedded here.",
+  "nativeMetadataHash": {
+    "scheme": "lora-native-json/2.0-draft.1",
+    "encoding": "UTF-8",
+    "digest": "SHA-256",
+    "ordering": "recursively sort object keys, retain array order; schema permits only JSON metadata",
+    "managementSnapshotHash": "separate owner/contract, not implemented or certified by this scheme"
+  }
+}

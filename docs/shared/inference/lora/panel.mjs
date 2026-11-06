@@ -1,5 +1,6 @@
 import {openLoraFolder} from './folder.mjs';
 import {createLora} from './sdk.mjs';
+import {assertV1PanelConnection} from './state.mjs';
 
 export function mountLoraPanel(root,options={}){
  if(!root||typeof root.replaceChildren!=='function')throw Error('LoRA panel root required');
@@ -38,13 +39,13 @@ export function mountLoraPanel(root,options={}){
  async function inspect(){return operation(async({selected,owned,guard,signal})=>{status.textContent='内容を確認しています。';const report=await owned.inspect(selected,{signal});guard();result.textContent=`${report.fileName}\ntensor: ${report.tensorCount}\n未対応tensor: ${report.unknownTensors.length}\nサイズ: ${report.size} bytes`;status.textContent='内容を確認しました。モデルへの適合は未検証です。';return report;});}
  async function apply(){return operation(async({selected,strength,owned,guard})=>{
   const link=connection;if(!link)throw Error('推論モジュール未接続');status.textContent='適用する重みを準備しています。';
-  const target=await link.targetResolver(selected);guard();const registry=await target.describe();guard();
+  const target=await link.targetResolver(selected);guard();assertV1PanelConnection(target);const registry=await target.describe();guard();
   const plan=await owned.plan({selection:selected,strength,target:registry});guard();
   const sink=await link.createSink(plan);guard();let prepared;
-  try{prepared=await owned.prepare(plan,{baseProvider:link.baseProvider,sink,blockRows:link.blockRows??16});guard();const applied=await owned.apply(prepared,target);guard();lastTarget=target;result.textContent=`適用状態: ${applied.applicationRevision}`;status.textContent='適用しました。';return applied;}
+  try{prepared=await owned.prepare(plan,{baseProvider:link.baseProvider,sink,blockRows:link.blockRows??16});guard();const applied=await owned.apply(prepared,target);guard();lastTarget=target;result.textContent=`consumer処理: ${applied.applicationRevision}`;status.textContent='consumerの切替処理が完了しました。生成snapshotは未確認です。';return applied;}
   finally{if(prepared)await owned.release(prepared);}
  });}
- async function detach(){return operation(async({selected,owned,guard})=>{const link=connection;if(!link)throw Error('推論モジュール未接続');const target=lastTarget??await link.targetResolver(selected);guard();status.textContent='元の重みへ戻しています。';const state=await owned.detach(target);guard();lastTarget=null;result.textContent='';status.textContent='解除しました。';return state;});}
+ async function detach(){return operation(async({selected,owned,guard})=>{const link=connection;if(!link)throw Error('推論モジュール未接続');const target=lastTarget??await link.targetResolver(selected);guard();assertV1PanelConnection(target);status.textContent='元の重みへ戻しています。';const state=await owned.detach(target);guard();lastTarget=null;result.textContent='';status.textContent='選択したsideを解除しました。管理snapshotは未確認です。';return state;});}
  async function loadFolder(){
   if(disposed)return;invalidate();const g=generation,old=sdk;sdk=null;folder=null;pairSelect.replaceChildren();lastTarget=null;update();
   try{
@@ -55,11 +56,11 @@ export function mountLoraPanel(root,options={}){
    if(disposed||g!==generation){await next.dispose();return;}sdk=next;status.textContent='フォルダーを読み込みました。';update();
   }catch(e){if(!disposed&&g===generation){folder=null;status.textContent=e.message;update();}}
  }
- function connect(next){if(disposed)throw Error('LoRA panel disposed');if(next!==null&&(!next||typeof next.targetResolver!=='function'||typeof next.baseProvider?.readBlock!=='function'||typeof next.createSink!=='function'))throw Error('推論モジュールの接続APIを確認してください。');invalidate();connection=next;lastTarget=null;update();return api;}
+ function connect(next){if(disposed)throw Error('LoRA panel disposed');assertV1PanelConnection(next);if(next!==null&&(!next||typeof next.targetResolver!=='function'||typeof next.baseProvider?.readBlock!=='function'||typeof next.createSink!=='function'))throw Error('推論モジュールの接続APIを確認してください。');invalidate();connection=next;lastTarget=null;update();return api;}
  listen(folderInput,'change',()=>{void loadFolder();});
  for(const node of [pairSelect,noiseSelect,strengthInput])listen(node,'change',()=>invalidate('設定を変更しました。'));
  const launch=fn=>()=>{const before=generation;void fn().catch(e=>{if(!disposed&&generation===before)status.textContent=e.name==='AbortError'?'取り消しました。':e.message;});};
- listen(inspectButton,'click',launch(inspect));listen(applyButton,'click',launch(apply));listen(detachButton,'click',launch(detach));listen(cancelButton,'click',()=>invalidate('取り消しました。'));
+ listen(inspectButton,'click',launch(inspect));listen(applyButton,'click',launch(apply));listen(detachButton,'click',launch(detach));listen(cancelButton,'click',()=>invalidate('取消を要求しました。'));
  const api=Object.freeze({connect,inspect,async dispose(){if(disposed)return;invalidate();disposed=true;folderInput.value='';for(const remove of listeners)remove();const old=sdk;sdk=null;folder=null;connection=null;lastTarget=null;update();await old?.dispose();}});
  update();if(options.connection)connect(options.connection);return api;
 }

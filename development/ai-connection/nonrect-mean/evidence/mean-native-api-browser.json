@@ -1,0 +1,67 @@
+{
+  "browser": "154.0.8037.57",
+  "pageErrors": [],
+  "passed": true,
+  "nativeBuildId": "diffusion-models/0.1+35b5ecdf924b13ccfcd08ec1eeaf840700dfc7c69acd168bbb39e72376542a20",
+  "scope": "Diffusion strict64/128/rect mean boundary fixtures and actualHike only; no VAE graph or joint producer rerun",
+  "cases": [
+    {
+      "name": "strict64 profile direct validation and realHike normalize/restore without padding",
+      "passed": true,
+      "evidence": {
+        "scope": "explicit Wan21 posterior-mean normalization only; no model inference",
+        "profileId": "wan21-raw-f32-1x16x16",
+        "hikeWasmSHA256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+        "hike": {
+          "calls": 1,
+          "memoryBytes": 1114112,
+          "arenaBytes": 1024,
+          "inputCopyBytes": 256,
+          "outputCopyBytes": 256,
+          "workspaceReused": true,
+          "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+          "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+          "profiles": [
+            "wan21-raw-f32-5x16x16",
+            "wan21-raw-f32-1x16x16",
+            "wan21-raw-f32-1x16x32"
+          ],
+          "imports": 0
+        }
+      }
+    },
+    {
+      "name": "wrong axes/profile/generated meaning rejected independently of element count",
+      "passed": true
+    },
+    {
+      "name": "MessagePort64 profile owned binary boundary",
+      "passed": true
+    },
+    {
+      "name": "rect128shape has dedicated profile/ABI and samecount does not authorize different axes",
+      "passed": true,
+      "evidence": {
+        "scope": "explicit Wan21 posterior-mean normalization only; no model inference",
+        "profileId": "wan21-raw-f32-1x16x32",
+        "hikeWasmSHA256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+        "hike": {
+          "calls": 4,
+          "memoryBytes": 1114112,
+          "arenaBytes": 1024,
+          "inputCopyBytes": 1280,
+          "outputCopyBytes": 1280,
+          "workspaceReused": true,
+          "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+          "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+          "profiles": [
+            "wan21-raw-f32-5x16x16",
+            "wan21-raw-f32-1x16x16",
+            "wan21-raw-f32-1x16x32"
+          ],
+          "imports": 0
+        }
+      }
+    }
+  ]
+}

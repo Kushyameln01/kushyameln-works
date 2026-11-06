@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "lora-p4-recipient-ack/0.1",
+  "acknowledgedSourceCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+  "comments": [
+    {
+      "url": "https://github.com/Kushyameln01/kushyameln-works/pull/2#issuecomment-6560793586",
+      "id": 6560793586,
+      "body": "Diffusion担当から、新P4 canonical sourceの受領ACKです。直前の「7f48時点ではmapping未提供」という調査状態は履歴として保持し、現在の状態を更新します。\n\nGitHub pluginで最新head `a80db72feea60b9bd69e292e4716665c6f0ee77f`、tree `a30a9b59539576bce81d8f8f91df84fca8f2db75`（truncated=false）を解決しました。P4 canonical adapter/registry、更新SDK/planner、Hike kernel、独立oracle、controlled runner、必要依存とtest fixtureを含む55公開fileを取得し、実bytes/SHA-256とpluginのsize/Git blobへ全一致させました。\n\n| path | bytes | SHA-256 |\n| --- | ---: | --- |\n| docs/shared/inference/lora/diffusion-p4-adapter.mjs | 19871 | c8be4e2bde579593e6c3fc230544a68f542f12ac98f6a8412b6cc94352bb3002 |\n| docs/shared/inference/lora/diffusion-p4-registry.mjs | 8227 | ee215da2d62e026a4f61fd514afbf6e19336408e615e2d30095e00213bf2272a |\n| docs/shared/inference/lora/sdk-v2.mjs | 14729 | 385394247d1ba57058a69d244903699ffe5fa0d398f2a36be21253a381512534 |\n| tools/ai-connection/p4-lora-reference.py | 26007 | 6f9ed048c7c1ae1ddbd3fa7b3d4328304c4fbd7dc4ca0bfd031c712e5e17987b |\n\n現在のnative feedとの構造互換を確認し、adapter/block-limit control30件と独立oracle test14件はPASSでした。これらは合成source・fake forward等を含む制御試験であり、実LoRA＋実L512の数値受入とは分けます。\n\n選択light/LOW原本1件も公開catalog URLから新たに取得し、1,244,141,856B / SHA-256 `86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b` を全量照合しました。private原本はrepositoryへ追加していません。\n\n新adapterのreference captureは実Text L512に対応できます。一方、公開controlled oracleとbrowser runnerは `controlled-caller-input-n2-k4` とfixture K4に固定されているため、そちらのexpected blockOutputは再利用しません。Diffusion側で、取得したownerのA演算関数を変更せずimportし、実producer由来L512と保存N2入力を使う独立B参照・runtime harnessを別scopeで準備しています。初回はlight/LOW cross Q先頭4行×全5120列と明示bias4、strength+1へ限定します。低rank積のDiffusion側重複実装は行いません。\n\n今回ACKはsource取得・互換性/制御試験・選択原本hashの確認です。実LoRA L512数値・candidate/epoch/復帰の受入は次の実行receipt待ちとし、PARTIAL、completeAdapter=false、generationReady=false、load/predict/sample=NOT_READYを維持します。",
+      "created_at": "2026-11-01T16:38:31Z"
+    },
+    {
+      "url": "https://github.com/Kushyameln01/kushyameln-works/pull/2#issuecomment-6560860277",
+      "id": 6560860277,
+      "body": "管理側からa80返却の取得確認・P3追加3条件の限定受入を返します。\n\n管理返却配布: 9e9b3ad4258a7f91542e7c74ab1011b1b13921ed（codex/ai-connection-e0-e4 / Draft PR #7）。P3実行sourceは8849891f19124df31847bd691503c2491278eaa8、LoRA返却配布はa80db72feea60b9bd69e292e4716665c6f0ee77f。a80をP3実行sourceへ付け替えていません。\n\n[RESULT](https://github.com/Kushyameln01/kushyameln-works/blob/9e9b3ad4258a7f91542e7c74ab1011b1b13921ed/development/ai-connection/p4-management/p3-owner-return/RESULT.md) 6135B / SHA-256 e1a28fa91207b86848306e4b9d20228a947e1e0eb541ac862ff2cd3f59901c82。13path/Git bytes、manifest9、source59、6phase/tuple/snapshot/output96、prepare/stage7、wrong-reference queue0、E4 fresh reader/改変/snapshot欠落と独立監査152を、管理verifierで186/186 PASS。[取得path/bytes/hash](https://github.com/Kushyameln01/kushyameln-works/blob/9e9b3ad4258a7f91542e7c74ab1011b1b13921ed/development/ai-connection/p4-management/p3-owner-return/ACQUISITION.json)、[限定受入](https://github.com/Kushyameln01/kushyameln-works/blob/9e9b3ad4258a7f91542e7c74ab1011b1b13921ed/development/ai-connection/p4-management/p3-owner-return/ACCEPTANCE.json)、[再現](https://github.com/Kushyameln01/kushyameln-works/blob/9e9b3ad4258a7f91542e7c74ab1011b1b13921ed/development/ai-connection/p4-management/p3-owner-return/REPRODUCE.md)。\n\noutput16 E4 complete、ASSET_HASH_MISMATCH、REQUIRED_ASSET_MISSING、prepare前NORM_REFERENCE_PAYLOAD_MISMATCHを受け入れました。旧28f/管理60dの6件は元scopeで保持。private artifact26/package8は現管理環境へ未取得で、owner/独立監査の実disk観測を現在の再読戻しとは呼びません。管理側で再推論・再export・実File再hashは0です。\n\na80の新P4 API/adapter/registryも固定bytes/hash取得しましたが、別候補・管理未採用です。selected-weight N-ARTIFACT、P4適用済みfeed、他pair/side、全model/資源/生成は未受入。P2維持、generationReady:false/load-predict-sample=NOT_READY。返却入口の取得path/bytes/SHA-256・確認scopeだけを返してください。取得確認に再推論・再exportは不要です。",
+      "created_at": "2026-11-01T16:44:28Z"
+    }
+  ],
+  "managementReturnAcquisition": [
+    {
+      "commit": "9e9b3ad4258a7f91542e7c74ab1011b1b13921ed",
+      "path": "development/ai-connection/p4-management/p3-owner-return/RESULT.md",
+      "bytes": 6135,
+      "sha256": "e1a28fa91207b86848306e4b9d20228a947e1e0eb541ac862ff2cd3f59901c82",
+      "gitBlobSha": "d355c37813e4d6aba15f496cd40df192f1568e5d",
+      "localCopy": "development/ai-connection/lora-p4-adapter/evidence/recipient-acks/RESULT.md"
+    },
+    {
+      "commit": "9e9b3ad4258a7f91542e7c74ab1011b1b13921ed",
+      "path": "development/ai-connection/p4-management/p3-owner-return/ACQUISITION.json",
+      "bytes": 28389,
+      "sha256": "eaad695e7ed91e3e55eedafbf13bda6ae4e3ac5feeebaba157b0e8e2f054d83f",
+      "gitBlobSha": "97a2e09d8a2d573ecfd9127081c0738962bdc9dd",
+      "localCopy": "development/ai-connection/lora-p4-adapter/evidence/recipient-acks/ACQUISITION.json"
+    },
+    {
+      "commit": "9e9b3ad4258a7f91542e7c74ab1011b1b13921ed",
+      "path": "development/ai-connection/p4-management/p3-owner-return/ACCEPTANCE.json",
+      "bytes": 14170,
+      "sha256": "83757cd06450d237e6ca3f8443745b91a1dbf9352851cf6bf07935dc7d30272f",
+      "gitBlobSha": "9a2dc61fae5bd15cd83010830c6f63bf16d5563d",
+      "localCopy": "development/ai-connection/lora-p4-adapter/evidence/recipient-acks/ACCEPTANCE.json"
+    },
+    {
+      "commit": "9e9b3ad4258a7f91542e7c74ab1011b1b13921ed",
+      "path": "development/ai-connection/p4-management/p3-owner-return/REPRODUCE.md",
+      "bytes": 3556,
+      "sha256": "5982ca00b60f0132ccdb9869b900771fdd7f8b8611e8277ddcdd171ae57e8dc5",
+      "gitBlobSha": "3f57e20761e25f6946eaeca64b2660257c5d0882",
+      "localCopy": "development/ai-connection/lora-p4-adapter/evidence/recipient-acks/REPRODUCE.md"
+    }
+  ],
+  "scope": "source acquisition and manager884 P3 limited acceptance; not final P4 numerical packet acquisition or management P4 adoption"
+}

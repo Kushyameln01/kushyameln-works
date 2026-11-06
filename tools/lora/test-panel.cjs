@@ -9,6 +9,8 @@ const assert=require('node:assert/strict');const fs=require('node:fs');const fsp
   const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));await page.goto(`http://127.0.0.1:${server.address().port}/lora/`);
   await page.locator('input[type=file][webkitdirectory]').waitFor({timeout:3000});
   assert.match(await page.locator('[data-role=connection]').textContent(),/推論モジュール未接続/);
+  const rejected=await page.evaluate(()=>[ {contractVersion:'lora-connection/2.0-draft.1'}, {stagingOnly:true} ].map(connection=>{try{window.loraPanel.connect(connection);return null;}catch(e){return e.message;}}));
+  assert.match(rejected[0],/v1/);assert.match(rejected[1],/staging/);
   await page.locator('input[type=file]').setInputFiles(dir);await page.waitForFunction(()=>!document.querySelector('[data-action=inspect]').disabled);
   assert.equal(await page.locator('[data-role=pair] option').count(),1);assert.equal(await page.locator('[data-role=noise]').inputValue(),'high');
   await page.locator('[data-action=inspect]').click();await page.waitForFunction(()=>document.querySelector('[data-role=result]').textContent.includes('tensor: 2'));
@@ -21,14 +23,14 @@ const assert=require('node:assert/strict');const fs=require('node:fs');const fsp
    const connection={targetResolver:async()=>target,baseProvider:{readBlock:async()=>new Float32Array([1])},createSink:async()=>{let data;return{begin:async()=>{},writeBlock:async block=>{data=block.data;},finish:async()=>({data}),abort:async()=>{},release:async()=>{}};}};
    window.fixture.connection=connection;window.loraPanel.connect(connection);
   });
-  await page.locator('[data-action=apply]').click();await page.waitForFunction(()=>document.querySelector('[data-role=status]').textContent==='適用しました。');
+  await page.locator('[data-action=apply]').click();await page.waitForFunction(()=>document.querySelector('[data-role=status]').textContent==='consumerの切替処理が完了しました。生成snapshotは未確認です。');
   assert.deepEqual(await page.evaluate(()=>window.fixture.weights),[3]);
-  await page.locator('[data-action=detach]').click();await page.waitForFunction(()=>document.querySelector('[data-role=status]').textContent==='解除しました。');assert.deepEqual(await page.evaluate(()=>window.fixture.weights),[1]);
+  await page.locator('[data-action=detach]').click();await page.waitForFunction(()=>document.querySelector('[data-role=status]').textContent==='選択したsideを解除しました。管理snapshotは未確認です。');assert.deepEqual(await page.evaluate(()=>window.fixture.weights),[1]);
   await page.evaluate(()=>{window.fixture.connection.targetResolver=()=>new Promise(resolve=>{window.resolveOldTarget=resolve;});window.loraPanel.connect(window.fixture.connection);});
   await page.locator('[data-action=apply]').click();await page.waitForFunction(()=>typeof window.resolveOldTarget==='function');await page.locator('[data-role=noise]').selectOption('high');
   await page.evaluate(async()=>{window.resolveOldTarget({describe:async()=>{throw Error('Stale target must not be read');}});await new Promise(r=>setTimeout(r,30));});
   assert.equal(await page.locator('[data-role=status]').textContent(),'設定を変更しました。');assert.equal(await page.evaluate(()=>window.fixture.commits),2);
   assert.deepEqual(errors,[]);assert.equal(requests.some(u=>/\.safetensors|huggingface|google/.test(u)),false);await page.evaluate(()=>window.loraPanel.dispose());assert.equal(await page.locator('input[type=file]').evaluate(el=>el.files.length),0);
-  console.log(JSON.stringify({status:'PASS',host:'Chromium',cases:10,tensorCount:2,modelHTTPRequests:0,requests}));
+  console.log(JSON.stringify({status:'PASS',host:'Chromium',cases:12,tensorCount:2,modelHTTPRequests:0,requests}));
  }finally{await browser.close();await new Promise(r=>server.close(r));await fsp.rm(temp,{recursive:true,force:true});}
 })().catch(e=>{console.error(e);process.exitCode=1;});

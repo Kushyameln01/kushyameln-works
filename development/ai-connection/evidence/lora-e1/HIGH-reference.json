@@ -1,0 +1,613 @@
+{
+  "side": "HIGH",
+  "gates": {
+    "baseDecode": {
+      "absolute": 0,
+      "relative": 0
+    },
+    "weight": {
+      "absolute": 1e-05,
+      "relative": 0.0001
+    },
+    "bias": {
+      "absolute": 0,
+      "relative": 0
+    },
+    "projection": {
+      "absolute": 1e-06,
+      "relative": 1e-05
+    }
+  },
+  "activation": {
+    "file": "activation.f32",
+    "dtype": "float32",
+    "elements": 5120,
+    "bytes": 20480,
+    "sha256": "231fdb75596206b5e27942f36ebee8177d336791cb84813af3ec9cf1e54d9b0f"
+  },
+  "baseWeight": {
+    "file": "base-weight.f32",
+    "dtype": "float32",
+    "elements": 81920,
+    "bytes": 327680,
+    "sha256": "716323810c36affed35f130f246daa9984fcecd50a7ecdc262b89d3655387c9d"
+  },
+  "baseBias": {
+    "file": "base-bias.f32",
+    "dtype": "float32",
+    "elements": 16,
+    "bytes": 64,
+    "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+  },
+  "baseExpectedOutput": [
+    -0.09342752397060394,
+    0.001661026617512107,
+    0.0051456172950565815,
+    0.10052218288183212,
+    0.022552626207470894,
+    0.05325041711330414,
+    -0.04579925537109375,
+    -0.013788122683763504,
+    -0.0801541805267334,
+    0.021522250026464462,
+    -0.004330908413976431,
+    0.0035002571530640125,
+    -0.009618861600756645,
+    -0.013021334074437618,
+    -0.012810435146093369,
+    -0.0156392902135849
+  ],
+  "baseIdentity": {
+    "expectedFullSha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+    "headerSha256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+    "fullFileHashComputedByThisOracle": false
+  },
+  "inputRanges": [
+    {
+      "name": "blocks.0.self_attn.q.weight",
+      "elementOffset": 0,
+      "elementCount": 81920,
+      "byteLength": 81920,
+      "sha256": "c933e5188ee07fe64154cd15fb27b493f8dc58af3fdf2bd5d7232bc78fa614d6"
+    },
+    {
+      "name": "blocks.0.self_attn.q.bias",
+      "elementOffset": 0,
+      "elementCount": 16,
+      "byteLength": 32,
+      "sha256": "b2d6f7517bd87f5d3d772888650fd0508e361417ea15714d771b81adcfd12e04"
+    },
+    {
+      "name": "blocks.0.self_attn.q.weight_scale",
+      "elementOffset": 0,
+      "elementCount": 1,
+      "byteLength": 4,
+      "sha256": "e810073dda55130632879cca5c19c5227667018245177cd14f163f5d7ac7559e"
+    },
+    {
+      "name": "blocks.0.self_attn.q.comfy_quant",
+      "elementOffset": 0,
+      "elementCount": 27,
+      "byteLength": 27,
+      "sha256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a"
+    }
+  ],
+  "cases": [
+    {
+      "id": "light-HIGH-s0",
+      "pairId": "light",
+      "side": "HIGH",
+      "strength": 0,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "rank": 128,
+      "alpha": 128.0,
+      "scale": 0.0,
+      "retainedOriginalIdentity": {
+        "fileName": "Bernini-R_LightX2V_high_noise.safetensors",
+        "sha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "status": "inventory identity; real runtime source hash must match before accepting trial"
+      },
+      "inputRanges": [
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+          "elementOffset": 0,
+          "elementCount": 655360,
+          "byteLength": 1310720,
+          "sha256": "16a84dcfe31dfc01cf9fba7cf3a683c08127a5ea605805e0058c318d846f7bbc"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+          "elementOffset": 0,
+          "elementCount": 2048,
+          "byteLength": 4096,
+          "sha256": "cd53ab7c2a3d23674492db6fc496bb835cf97c7338d361577141d965c052e773"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.alpha",
+          "elementOffset": 0,
+          "elementCount": 1,
+          "byteLength": 2,
+          "sha256": "b563a5e69628743929eddec0ccfeb0745c39577e12a72e84915edd6633cb97f2"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.diff_b",
+          "elementOffset": 0,
+          "elementCount": 16,
+          "byteLength": 32,
+          "sha256": "03749ba5fdd20d86d9d7b17637a54bdf428f80a3aa263b461b1908129e0a5d65"
+        }
+      ],
+      "weight": {
+        "file": "light-HIGH-s0-weight.f64",
+        "dtype": "float64",
+        "elements": 81920,
+        "bytes": 655360,
+        "sha256": "b30f15df61ef2bc74d33162e3919382b987e956bfb149daffc273f340fbef3e0"
+      },
+      "bias": {
+        "file": "light-HIGH-s0-bias.f32",
+        "dtype": "float32",
+        "elements": 16,
+        "bytes": 64,
+        "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+      },
+      "expectedOutput": [
+        -0.09342752397060394,
+        0.001661026617512107,
+        0.0051456172950565815,
+        0.10052218288183212,
+        0.022552626207470894,
+        0.05325041711330414,
+        -0.04579925537109375,
+        -0.013788122683763504,
+        -0.0801541805267334,
+        0.021522250026464462,
+        -0.004330908413976431,
+        0.0035002571530640125,
+        -0.009618861600756645,
+        -0.013021334074437618,
+        -0.012810435146093369,
+        -0.0156392902135849
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "excludedPatchCount": 1050,
+      "unpatchedBaseBiasPassThrough": false
+    },
+    {
+      "id": "light-HIGH-s1",
+      "pairId": "light",
+      "side": "HIGH",
+      "strength": 1,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "rank": 128,
+      "alpha": 128.0,
+      "scale": 1.0,
+      "retainedOriginalIdentity": {
+        "fileName": "Bernini-R_LightX2V_high_noise.safetensors",
+        "sha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "status": "inventory identity; real runtime source hash must match before accepting trial"
+      },
+      "inputRanges": [
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+          "elementOffset": 0,
+          "elementCount": 655360,
+          "byteLength": 1310720,
+          "sha256": "16a84dcfe31dfc01cf9fba7cf3a683c08127a5ea605805e0058c318d846f7bbc"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+          "elementOffset": 0,
+          "elementCount": 2048,
+          "byteLength": 4096,
+          "sha256": "cd53ab7c2a3d23674492db6fc496bb835cf97c7338d361577141d965c052e773"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.alpha",
+          "elementOffset": 0,
+          "elementCount": 1,
+          "byteLength": 2,
+          "sha256": "b563a5e69628743929eddec0ccfeb0745c39577e12a72e84915edd6633cb97f2"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.diff_b",
+          "elementOffset": 0,
+          "elementCount": 16,
+          "byteLength": 32,
+          "sha256": "03749ba5fdd20d86d9d7b17637a54bdf428f80a3aa263b461b1908129e0a5d65"
+        }
+      ],
+      "weight": {
+        "file": "light-HIGH-s1-weight.f64",
+        "dtype": "float64",
+        "elements": 81920,
+        "bytes": 655360,
+        "sha256": "4d3152f3ec4d877c0ee29b42e63e984a5f0fa2106b5ed99ad7b3d6df9512e646"
+      },
+      "bias": {
+        "file": "light-HIGH-s1-bias.f32",
+        "dtype": "float32",
+        "elements": 16,
+        "bytes": 64,
+        "sha256": "8c9f42a24af000e6948a3fb8684fe81bf86703c193f713ef096ab46b498ae913"
+      },
+      "expectedOutput": [
+        -0.09358997642993927,
+        0.0018521916354075074,
+        0.005111460108309984,
+        0.1005745604634285,
+        0.022563999518752098,
+        0.05315256491303444,
+        -0.04570585861802101,
+        -0.01375177875161171,
+        -0.08017013221979141,
+        0.021647445857524872,
+        -0.0043082935735583305,
+        0.003505478845909238,
+        -0.009675130248069763,
+        -0.012903423048555851,
+        -0.01279386319220066,
+        -0.01573960669338703
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "excludedPatchCount": 1050,
+      "unpatchedBaseBiasPassThrough": false
+    },
+    {
+      "id": "light-HIGH-s-1",
+      "pairId": "light",
+      "side": "HIGH",
+      "strength": -1,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "rank": 128,
+      "alpha": 128.0,
+      "scale": -1.0,
+      "retainedOriginalIdentity": {
+        "fileName": "Bernini-R_LightX2V_high_noise.safetensors",
+        "sha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "status": "inventory identity; real runtime source hash must match before accepting trial"
+      },
+      "inputRanges": [
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+          "elementOffset": 0,
+          "elementCount": 655360,
+          "byteLength": 1310720,
+          "sha256": "16a84dcfe31dfc01cf9fba7cf3a683c08127a5ea605805e0058c318d846f7bbc"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+          "elementOffset": 0,
+          "elementCount": 2048,
+          "byteLength": 4096,
+          "sha256": "cd53ab7c2a3d23674492db6fc496bb835cf97c7338d361577141d965c052e773"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.alpha",
+          "elementOffset": 0,
+          "elementCount": 1,
+          "byteLength": 2,
+          "sha256": "b563a5e69628743929eddec0ccfeb0745c39577e12a72e84915edd6633cb97f2"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.diff_b",
+          "elementOffset": 0,
+          "elementCount": 16,
+          "byteLength": 32,
+          "sha256": "03749ba5fdd20d86d9d7b17637a54bdf428f80a3aa263b461b1908129e0a5d65"
+        }
+      ],
+      "weight": {
+        "file": "light-HIGH-s-1-weight.f64",
+        "dtype": "float64",
+        "elements": 81920,
+        "bytes": 655360,
+        "sha256": "5603927c8b96f7db2f137e4761c70ff8a496d49883097a50d0e0430a2a853fa2"
+      },
+      "bias": {
+        "file": "light-HIGH-s-1-bias.f32",
+        "dtype": "float32",
+        "elements": 16,
+        "bytes": 64,
+        "sha256": "508efb2c42ec5378f7da7f208f17bcc67d9c2fe92bf73c7b8c0c1a6fe32e1af4"
+      },
+      "expectedOutput": [
+        -0.09326507896184921,
+        0.0014698615996167064,
+        0.005179774481803179,
+        0.10046979784965515,
+        0.02254125289618969,
+        0.05334826558828354,
+        -0.04589265212416649,
+        -0.013824466615915298,
+        -0.08013822883367538,
+        0.021397054195404053,
+        -0.004353522788733244,
+        0.003495035460218787,
+        -0.009562592953443527,
+        -0.013139245100319386,
+        -0.012827008031308651,
+        -0.015538972802460194
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "excludedPatchCount": 1050,
+      "unpatchedBaseBiasPassThrough": false
+    },
+    {
+      "id": "detail-HIGH-s0",
+      "pairId": "detail",
+      "side": "HIGH",
+      "strength": 0,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "rank": 64,
+      "alpha": null,
+      "scale": 0,
+      "retainedOriginalIdentity": {
+        "fileName": "NSFW-22-H-e8.safetensors",
+        "sha256": "34e2144d3cd65360f97d09ccbe03e1c39a096df6c9234af5fe3899d1b63cda39",
+        "status": "inventory identity; real runtime source hash must match before accepting trial"
+      },
+      "inputRanges": [
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_A.weight",
+          "elementOffset": 0,
+          "elementCount": 327680,
+          "byteLength": 655360,
+          "sha256": "3198b01d8f701599f9c5507c69d9c82894d5d713620947dbda0bf46db844df44"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_B.weight",
+          "elementOffset": 0,
+          "elementCount": 1024,
+          "byteLength": 2048,
+          "sha256": "cd6b3a12d98f29ed876ae495ac3211c618f7276b2c3a784cee9cf959969072f8"
+        }
+      ],
+      "weight": {
+        "file": "detail-HIGH-s0-weight.f64",
+        "dtype": "float64",
+        "elements": 81920,
+        "bytes": 655360,
+        "sha256": "b30f15df61ef2bc74d33162e3919382b987e956bfb149daffc273f340fbef3e0"
+      },
+      "bias": {
+        "file": "detail-HIGH-s0-bias.f32",
+        "dtype": "float32",
+        "elements": 16,
+        "bytes": 64,
+        "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+      },
+      "expectedOutput": [
+        -0.09342752397060394,
+        0.001661026617512107,
+        0.0051456172950565815,
+        0.10052218288183212,
+        0.022552626207470894,
+        0.05325041711330414,
+        -0.04579925537109375,
+        -0.013788122683763504,
+        -0.0801541805267334,
+        0.021522250026464462,
+        -0.004330908413976431,
+        0.0035002571530640125,
+        -0.009618861600756645,
+        -0.013021334074437618,
+        -0.012810435146093369,
+        -0.0156392902135849
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "excludedPatchCount": 399,
+      "unpatchedBaseBiasPassThrough": true
+    },
+    {
+      "id": "detail-HIGH-s1",
+      "pairId": "detail",
+      "side": "HIGH",
+      "strength": 1,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "rank": 64,
+      "alpha": null,
+      "scale": 1,
+      "retainedOriginalIdentity": {
+        "fileName": "NSFW-22-H-e8.safetensors",
+        "sha256": "34e2144d3cd65360f97d09ccbe03e1c39a096df6c9234af5fe3899d1b63cda39",
+        "status": "inventory identity; real runtime source hash must match before accepting trial"
+      },
+      "inputRanges": [
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_A.weight",
+          "elementOffset": 0,
+          "elementCount": 327680,
+          "byteLength": 655360,
+          "sha256": "3198b01d8f701599f9c5507c69d9c82894d5d713620947dbda0bf46db844df44"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_B.weight",
+          "elementOffset": 0,
+          "elementCount": 1024,
+          "byteLength": 2048,
+          "sha256": "cd6b3a12d98f29ed876ae495ac3211c618f7276b2c3a784cee9cf959969072f8"
+        }
+      ],
+      "weight": {
+        "file": "detail-HIGH-s1-weight.f64",
+        "dtype": "float64",
+        "elements": 81920,
+        "bytes": 655360,
+        "sha256": "f28d7e3394922fef051e2063e7b5da91ce4e2723a2536b8247cb8eb4df8100f4"
+      },
+      "bias": {
+        "file": "detail-HIGH-s1-bias.f32",
+        "dtype": "float32",
+        "elements": 16,
+        "bytes": 64,
+        "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+      },
+      "expectedOutput": [
+        -0.09332774579524994,
+        0.001845099963247776,
+        0.005321877542883158,
+        0.10054536163806915,
+        0.022791963070631027,
+        0.053239770233631134,
+        -0.0458565279841423,
+        -0.013761154375970364,
+        -0.0802060216665268,
+        0.021440492942929268,
+        -0.004416544921696186,
+        0.0035550715401768684,
+        -0.009547856636345387,
+        -0.012986531481146812,
+        -0.012848736718297005,
+        -0.01568342186510563
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "excludedPatchCount": 399,
+      "unpatchedBaseBiasPassThrough": true
+    },
+    {
+      "id": "detail-HIGH-s-1",
+      "pairId": "detail",
+      "side": "HIGH",
+      "strength": -1,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "rank": 64,
+      "alpha": null,
+      "scale": -1,
+      "retainedOriginalIdentity": {
+        "fileName": "NSFW-22-H-e8.safetensors",
+        "sha256": "34e2144d3cd65360f97d09ccbe03e1c39a096df6c9234af5fe3899d1b63cda39",
+        "status": "inventory identity; real runtime source hash must match before accepting trial"
+      },
+      "inputRanges": [
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_A.weight",
+          "elementOffset": 0,
+          "elementCount": 327680,
+          "byteLength": 655360,
+          "sha256": "3198b01d8f701599f9c5507c69d9c82894d5d713620947dbda0bf46db844df44"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_B.weight",
+          "elementOffset": 0,
+          "elementCount": 1024,
+          "byteLength": 2048,
+          "sha256": "cd6b3a12d98f29ed876ae495ac3211c618f7276b2c3a784cee9cf959969072f8"
+        }
+      ],
+      "weight": {
+        "file": "detail-HIGH-s-1-weight.f64",
+        "dtype": "float64",
+        "elements": 81920,
+        "bytes": 655360,
+        "sha256": "e29cac4aa10bc71024f912a733111eb0552e5b56082f6bc0cd709a44332c3d24"
+      },
+      "bias": {
+        "file": "detail-HIGH-s-1-bias.f32",
+        "dtype": "float32",
+        "elements": 16,
+        "bytes": 64,
+        "sha256": "e43ae1fd2b1b80b29aff9212368fd282cb5a216b5c13526c8696bf25b1a0d6e0"
+      },
+      "expectedOutput": [
+        -0.09352730214595795,
+        0.0014769532717764378,
+        0.004969357047230005,
+        0.10049900412559509,
+        0.02231328934431076,
+        0.053261060267686844,
+        -0.0457419827580452,
+        -0.013815090991556644,
+        -0.08010233938694,
+        0.021604007109999657,
+        -0.004245271440595388,
+        0.0034454427659511566,
+        -0.009689866565167904,
+        -0.013056137599050999,
+        -0.012772134505212307,
+        -0.015595157630741596
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "excludedPatchCount": 399,
+      "unpatchedBaseBiasPassThrough": true
+    }
+  ]
+}

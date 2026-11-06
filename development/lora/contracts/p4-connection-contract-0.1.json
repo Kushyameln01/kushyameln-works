@@ -1,0 +1,2042 @@
+{
+  "schemaVersion": "lora-p4-connection-contract/0.1-draft.1",
+  "adapterVersion": "lora-diffusion-p4-adapter/0.1-draft.1",
+  "nativeContractVersion": "lora-connection/2.0-draft.1",
+  "status": "REAL_CONTROLLED_LIGHT_LOW_CROSS_Q4_PARTIAL_VERIFIED_MANAGEMENT_P4_ADOPTION_PENDING",
+  "runtimeSourceCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+  "baseContract": {
+    "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+    "path": "development/lora/contracts/connection-contract-v2.json",
+    "bytes": 13748,
+    "sha256": "87e132af1739114f171254888c04f3050df27c47cd02e92fd67bc5babe4ac6d2"
+  },
+  "originalInventory": {
+    "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+    "path": "development/lora/contracts/original-inventory.json",
+    "bytes": 495806,
+    "sha256": "97229d6ea17738dc983fa898a38e771a784aeafff9513734c5af0ba0250c23b3"
+  },
+  "adapter": {
+    "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+    "path": "docs/shared/inference/lora/diffusion-p4-adapter.mjs",
+    "bytes": 19871,
+    "sha256": "c8be4e2bde579593e6c3fc230544a68f542f12ac98f6a8412b6cc94352bb3002"
+  },
+  "registryValidator": {
+    "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+    "path": "docs/shared/inference/lora/diffusion-p4-registry.mjs",
+    "bytes": 8227,
+    "sha256": "ee215da2d62e026a4f61fd514afbf6e19336408e615e2d30095e00213bf2272a"
+  },
+  "sdk": {
+    "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+    "path": "docs/shared/inference/lora/sdk-v2.mjs",
+    "bytes": 14729,
+    "sha256": "385394247d1ba57058a69d244903699ffe5fa0d398f2a36be21253a381512534"
+  },
+  "planner": {
+    "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+    "path": "docs/shared/inference/lora/planner-v2.mjs",
+    "bytes": 9387,
+    "sha256": "f1acbc0678cf49a433cf7eab5a33e149b19f84185d20c10144d3a3caf7df8eac"
+  },
+  "loader": {
+    "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+    "path": "docs/shared/inference/lora/loader-policy.mjs",
+    "bytes": 1696,
+    "sha256": "f18f9c8dd4168e26f25cd1c77124b1f14a2ffca99424bfa9d4a9a294cbb2dedd"
+  },
+  "api": {
+    "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+    "path": "docs/shared/inference/lora/P4-API.md",
+    "bytes": 18731,
+    "sha256": "a13d62a861c8453f6cb0153b517948f28dcd83078538bcfc903053d049b9def2"
+  },
+  "diffusionSourceCommit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+  "managementQueueSourceCommit": "8849891f19124df31847bd691503c2491278eaa8",
+  "optionalRegistryExtension": {
+    "field": "targets[].blockLimits",
+    "contractVersion": "lora-block-limits/0.1-draft.1",
+    "requiredFields": [
+      "contractVersion",
+      "offsetUnit",
+      "coordinateSpace",
+      "rowAlignment",
+      "maxElements",
+      "maxRows"
+    ],
+    "offsetUnit": "elements",
+    "coordinateSpace": "original-full-tensor",
+    "rowAlignment": "all-columns",
+    "maxElements": 81920,
+    "maxRows": "native per-target4 FFN-down/16 other matrices; vectors81920",
+    "absence": "Preserve previous registry/plan/manifest structure and Q16 identity",
+    "unknownFields": "reject"
+  },
+  "bindings": {
+    "adapterVersion": "lora-diffusion-p4-adapter/0.1-draft.1",
+    "nativeSourceCommit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+    "nativeRegistryHash": "91396a30bc675b93fd1709988a3c7b09b0752af0f2ea67a5ccd643f32ef3d409",
+    "connectionRegistryHash": "1d624b0de69a7c099bea2cdf198a830392ca4317b56020ee7e89a4ed2092261e",
+    "nativeRegistry": {
+      "schemaVersion": "bernini-p4-f32-feed-registry/0.1",
+      "scope": "PARTIAL",
+      "completeAdapter": false,
+      "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+      "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+      "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+      "side": "LOW",
+      "original": {
+        "schemaVersion": "bernini-p4-original-weights/0.1",
+        "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+        "side": "LOW",
+        "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+        "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+        "fileBytes": 15574833216,
+        "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+        "bridgeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+        "precisionProfile": "per-entry original F16 or scalar-scaled E4M3FN decoded by Hike to F32; ORT F32 Gemm and separate Hike F32 parameters; original production precision unverified",
+        "fullFileSHA256Verified": false,
+        "fullFileHashRecomputed": false,
+        "modelHashRole": "expected-original-full-hash-not-current-reauthentication",
+        "packageHash": null,
+        "entries": {
+          "text_embedding.0.weight": {
+            "originalKey": "text_embedding.0.weight",
+            "key": "diffusion_model.text_embedding.0.weight",
+            "weightId": "text_embedding.0.weight",
+            "fullShape": [
+              5120,
+              4096
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": 4096,
+            "absoluteByteOffset": 2108394056,
+            "byteLength": 41943040,
+            "binding": {
+              "kind": "runtime-input",
+              "name": "text_embedding.0.weight"
+            },
+            "operatorBinding": {
+              "programSlot": "text_embedding.0.weight",
+              "graphInput": "weight",
+              "operator": "text_embedding.0"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedRows": [
+              0,
+              5120
+            ],
+            "maxRows": 16
+          },
+          "text_embedding.0.bias": {
+            "originalKey": "text_embedding.0.bias",
+            "key": "diffusion_model.text_embedding.0.bias",
+            "weightId": "text_embedding.0.bias",
+            "fullShape": [
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 2108383816,
+            "byteLength": 10240,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "text_embedding.0.bias"
+            },
+            "operatorBinding": {
+              "programSlot": "text_embedding.0.bias",
+              "hikeExport": "AddBias",
+              "hikeParameter": "bias",
+              "operator": "text_embedding.0"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              0,
+              5120
+            ]
+          },
+          "text_embedding.2.weight": {
+            "originalKey": "text_embedding.2.weight",
+            "key": "diffusion_model.text_embedding.2.weight",
+            "weightId": "text_embedding.2.weight",
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": 5120,
+            "absoluteByteOffset": 2150347336,
+            "byteLength": 52428800,
+            "binding": {
+              "kind": "runtime-input",
+              "name": "text_embedding.2.weight"
+            },
+            "operatorBinding": {
+              "programSlot": "text_embedding.2.weight",
+              "graphInput": "weight",
+              "operator": "text_embedding.2"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedRows": [
+              0,
+              5120
+            ],
+            "maxRows": 16
+          },
+          "text_embedding.2.bias": {
+            "originalKey": "text_embedding.2.bias",
+            "key": "diffusion_model.text_embedding.2.bias",
+            "weightId": "text_embedding.2.bias",
+            "fullShape": [
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 2150337096,
+            "byteLength": 10240,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "text_embedding.2.bias"
+            },
+            "operatorBinding": {
+              "programSlot": "text_embedding.2.bias",
+              "hikeExport": "AddBias",
+              "hikeParameter": "bias",
+              "operator": "text_embedding.2"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              0,
+              5120
+            ]
+          },
+          "blocks.0.cross_attn.q.weight": {
+            "originalKey": "blocks.0.cross_attn.q.weight",
+            "key": "diffusion_model.blocks.0.cross_attn.q.weight",
+            "weightId": "blocks.0.cross_attn.q.weight",
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "storageDtype": "F8_E4M3",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": 5120,
+            "absoluteByteOffset": 2598695496,
+            "byteLength": 26214400,
+            "binding": {
+              "kind": "runtime-input",
+              "name": "blocks.0.cross_attn.q.weight"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.cross_attn.q.weight",
+              "graphInput": "weight",
+              "operator": "blocks.0.cross_attn.q"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+            "allowedRows": [
+              0,
+              5120
+            ],
+            "maxRows": 16,
+            "scaleSHA256": "f501056e42ea5d7180b5bf7d00515305aa45bbadc939c8df74359887dab05c8d",
+            "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+            "scaleSource": {
+              "originalKey": "blocks.0.cross_attn.q.weight_scale",
+              "fullShape": [],
+              "storageDtype": "F32",
+              "absoluteByteOffset": 181292,
+              "byteLength": 4
+            },
+            "quantConfigSource": {
+              "originalKey": "blocks.0.cross_attn.q.comfy_quant",
+              "fullShape": [
+                27
+              ],
+              "storageDtype": "U8",
+              "absoluteByteOffset": 15574823523,
+              "byteLength": 27
+            }
+          },
+          "blocks.0.cross_attn.q.bias": {
+            "originalKey": "blocks.0.cross_attn.q.bias",
+            "key": "diffusion_model.blocks.0.cross_attn.q.bias",
+            "weightId": "blocks.0.cross_attn.q.bias",
+            "fullShape": [
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 52652488,
+            "byteLength": 10240,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "blocks.0.cross_attn.q.bias"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.cross_attn.q.bias",
+              "hikeExport": "AddBias",
+              "hikeParameter": "bias",
+              "operator": "blocks.0.cross_attn.q"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              0,
+              5120
+            ]
+          },
+          "blocks.0.cross_attn.k.weight": {
+            "originalKey": "blocks.0.cross_attn.k.weight",
+            "key": "diffusion_model.blocks.0.cross_attn.k.weight",
+            "weightId": "blocks.0.cross_attn.k.weight",
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "storageDtype": "F8_E4M3",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": 5120,
+            "absoluteByteOffset": 2572481096,
+            "byteLength": 26214400,
+            "binding": {
+              "kind": "runtime-input",
+              "name": "blocks.0.cross_attn.k.weight"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.cross_attn.k.weight",
+              "graphInput": "weight",
+              "operator": "blocks.0.cross_attn.k"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+            "allowedRows": [
+              0,
+              5120
+            ],
+            "maxRows": 16,
+            "scaleSHA256": "9bdfe97dead1e1ddeb6e8b63be899c2e45dea6d8f5b87118c44e0d96c058f3bd",
+            "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+            "scaleSource": {
+              "originalKey": "blocks.0.cross_attn.k.weight_scale",
+              "fullShape": [],
+              "storageDtype": "F32",
+              "absoluteByteOffset": 181288,
+              "byteLength": 4
+            },
+            "quantConfigSource": {
+              "originalKey": "blocks.0.cross_attn.k.comfy_quant",
+              "fullShape": [
+                27
+              ],
+              "storageDtype": "U8",
+              "absoluteByteOffset": 15574823496,
+              "byteLength": 27
+            }
+          },
+          "blocks.0.cross_attn.k.bias": {
+            "originalKey": "blocks.0.cross_attn.k.bias",
+            "key": "diffusion_model.blocks.0.cross_attn.k.bias",
+            "weightId": "blocks.0.cross_attn.k.bias",
+            "fullShape": [
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 182728,
+            "byteLength": 10240,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "blocks.0.cross_attn.k.bias"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.cross_attn.k.bias",
+              "hikeExport": "AddBias",
+              "hikeParameter": "bias",
+              "operator": "blocks.0.cross_attn.k"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              0,
+              5120
+            ]
+          },
+          "blocks.0.cross_attn.v.weight": {
+            "originalKey": "blocks.0.cross_attn.v.weight",
+            "key": "diffusion_model.blocks.0.cross_attn.v.weight",
+            "weightId": "blocks.0.cross_attn.v.weight",
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "storageDtype": "F8_E4M3",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": 5120,
+            "absoluteByteOffset": 2624909896,
+            "byteLength": 26214400,
+            "binding": {
+              "kind": "runtime-input",
+              "name": "blocks.0.cross_attn.v.weight"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.cross_attn.v.weight",
+              "graphInput": "weight",
+              "operator": "blocks.0.cross_attn.v"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+            "allowedRows": [
+              0,
+              5120
+            ],
+            "maxRows": 16,
+            "scaleSHA256": "448576f3f24e586678a881e5d2b01c8e680329cedb9e35a14195a9163d79d4f0",
+            "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+            "scaleSource": {
+              "originalKey": "blocks.0.cross_attn.v.weight_scale",
+              "fullShape": [],
+              "storageDtype": "F32",
+              "absoluteByteOffset": 181296,
+              "byteLength": 4
+            },
+            "quantConfigSource": {
+              "originalKey": "blocks.0.cross_attn.v.comfy_quant",
+              "fullShape": [
+                27
+              ],
+              "storageDtype": "U8",
+              "absoluteByteOffset": 15574823550,
+              "byteLength": 27
+            }
+          },
+          "blocks.0.cross_attn.v.bias": {
+            "originalKey": "blocks.0.cross_attn.v.bias",
+            "key": "diffusion_model.blocks.0.cross_attn.v.bias",
+            "weightId": "blocks.0.cross_attn.v.bias",
+            "fullShape": [
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 52662728,
+            "byteLength": 10240,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "blocks.0.cross_attn.v.bias"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.cross_attn.v.bias",
+              "hikeExport": "AddBias",
+              "hikeParameter": "bias",
+              "operator": "blocks.0.cross_attn.v"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              0,
+              5120
+            ]
+          },
+          "blocks.0.cross_attn.o.weight": {
+            "originalKey": "blocks.0.cross_attn.o.weight",
+            "key": "diffusion_model.blocks.0.cross_attn.o.weight",
+            "weightId": "blocks.0.cross_attn.o.weight",
+            "fullShape": [
+              5120,
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": 5120,
+            "absoluteByteOffset": 223688,
+            "byteLength": 52428800,
+            "binding": {
+              "kind": "runtime-input",
+              "name": "blocks.0.cross_attn.o.weight"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.cross_attn.o.weight",
+              "graphInput": "weight",
+              "operator": "blocks.0.cross_attn.o"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedRows": [
+              0,
+              5120
+            ],
+            "maxRows": 16
+          },
+          "blocks.0.cross_attn.o.bias": {
+            "originalKey": "blocks.0.cross_attn.o.bias",
+            "key": "diffusion_model.blocks.0.cross_attn.o.bias",
+            "weightId": "blocks.0.cross_attn.o.bias",
+            "fullShape": [
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 213448,
+            "byteLength": 10240,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "blocks.0.cross_attn.o.bias"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.cross_attn.o.bias",
+              "hikeExport": "AddBias",
+              "hikeParameter": "bias",
+              "operator": "blocks.0.cross_attn.o"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              0,
+              5120
+            ]
+          },
+          "blocks.0.ffn.0.weight": {
+            "originalKey": "blocks.0.ffn.0.weight",
+            "key": "diffusion_model.blocks.0.ffn.0.weight",
+            "weightId": "blocks.0.ffn.0.weight",
+            "fullShape": [
+              13824,
+              5120
+            ],
+            "storageDtype": "F8_E4M3",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": 5120,
+            "absoluteByteOffset": 2651124296,
+            "byteLength": 70778880,
+            "binding": {
+              "kind": "runtime-input",
+              "name": "blocks.0.ffn.0.weight"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.ffn.0.weight",
+              "graphInput": "weight",
+              "operator": "blocks.0.ffn.0"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+            "allowedRows": [
+              0,
+              13824
+            ],
+            "maxRows": 16,
+            "scaleSHA256": "6bc1b3e5137a6b025b58c431ed6858e1c1ddfa99938e5aace2400f67ae76bd26",
+            "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+            "scaleSource": {
+              "originalKey": "blocks.0.ffn.0.weight_scale",
+              "fullShape": [],
+              "storageDtype": "F32",
+              "absoluteByteOffset": 181300,
+              "byteLength": 4
+            },
+            "quantConfigSource": {
+              "originalKey": "blocks.0.ffn.0.comfy_quant",
+              "fullShape": [
+                27
+              ],
+              "storageDtype": "U8",
+              "absoluteByteOffset": 15574823577,
+              "byteLength": 27
+            }
+          },
+          "blocks.0.ffn.0.bias": {
+            "originalKey": "blocks.0.ffn.0.bias",
+            "key": "diffusion_model.blocks.0.ffn.0.bias",
+            "weightId": "blocks.0.ffn.0.bias",
+            "fullShape": [
+              13824
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 52672968,
+            "byteLength": 27648,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "blocks.0.ffn.0.bias"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.ffn.0.bias",
+              "hikeExport": "AddBias",
+              "hikeParameter": "bias",
+              "operator": "blocks.0.ffn.0"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              0,
+              13824
+            ]
+          },
+          "blocks.0.ffn.2.weight": {
+            "originalKey": "blocks.0.ffn.2.weight",
+            "key": "diffusion_model.blocks.0.ffn.2.weight",
+            "weightId": "blocks.0.ffn.2.weight",
+            "fullShape": [
+              5120,
+              13824
+            ],
+            "storageDtype": "F8_E4M3",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": 13824,
+            "absoluteByteOffset": 2721903176,
+            "byteLength": 70778880,
+            "binding": {
+              "kind": "runtime-input",
+              "name": "blocks.0.ffn.2.weight"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.ffn.2.weight",
+              "graphInput": "weight",
+              "operator": "blocks.0.ffn.2"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+            "allowedRows": [
+              0,
+              5120
+            ],
+            "maxRows": 4,
+            "scaleSHA256": "1a554ad2a65cb89fd78a081bcfcf443a337050671cff5a62f6b381fdb106c18c",
+            "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+            "scaleSource": {
+              "originalKey": "blocks.0.ffn.2.weight_scale",
+              "fullShape": [],
+              "storageDtype": "F32",
+              "absoluteByteOffset": 181304,
+              "byteLength": 4
+            },
+            "quantConfigSource": {
+              "originalKey": "blocks.0.ffn.2.comfy_quant",
+              "fullShape": [
+                27
+              ],
+              "storageDtype": "U8",
+              "absoluteByteOffset": 15574823604,
+              "byteLength": 27
+            }
+          },
+          "blocks.0.ffn.2.bias": {
+            "originalKey": "blocks.0.ffn.2.bias",
+            "key": "diffusion_model.blocks.0.ffn.2.bias",
+            "weightId": "blocks.0.ffn.2.bias",
+            "fullShape": [
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 52700616,
+            "byteLength": 10240,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "blocks.0.ffn.2.bias"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.ffn.2.bias",
+              "hikeExport": "AddBias",
+              "hikeParameter": "bias",
+              "operator": "blocks.0.ffn.2"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              0,
+              5120
+            ]
+          },
+          "blocks.0.norm3.weight": {
+            "originalKey": "blocks.0.norm3.weight",
+            "key": "diffusion_model.blocks.0.norm3.weight",
+            "weightId": "blocks.0.norm3.weight",
+            "fullShape": [
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 52782536,
+            "byteLength": 10240,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "blocks.0.norm3.weight"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.norm3.weight",
+              "hikeExport": "Norm",
+              "hikeParameter": "weight",
+              "operator": "norm3-affine-layernorm"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              0,
+              5120
+            ]
+          },
+          "blocks.0.norm3.bias": {
+            "originalKey": "blocks.0.norm3.bias",
+            "key": "diffusion_model.blocks.0.norm3.bias",
+            "weightId": "blocks.0.norm3.bias",
+            "fullShape": [
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 52772296,
+            "byteLength": 10240,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "blocks.0.norm3.bias"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.norm3.bias",
+              "hikeExport": "Norm",
+              "hikeParameter": "bias",
+              "operator": "norm3-affine-layernorm"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              0,
+              5120
+            ]
+          },
+          "blocks.0.cross_attn.norm_q.weight": {
+            "originalKey": "blocks.0.cross_attn.norm_q.weight",
+            "key": "diffusion_model.blocks.0.cross_attn.norm_q.weight",
+            "weightId": "blocks.0.cross_attn.norm_q.weight",
+            "fullShape": [
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 203208,
+            "byteLength": 10240,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "blocks.0.cross_attn.norm_q.weight"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.cross_attn.norm_q.weight",
+              "hikeExport": "Norm",
+              "hikeParameter": "weight",
+              "operator": "blocks.0.cross_attn.norm_q"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              0,
+              5120
+            ]
+          },
+          "blocks.0.cross_attn.norm_k.weight": {
+            "originalKey": "blocks.0.cross_attn.norm_k.weight",
+            "key": "diffusion_model.blocks.0.cross_attn.norm_k.weight",
+            "weightId": "blocks.0.cross_attn.norm_k.weight",
+            "fullShape": [
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 192968,
+            "byteLength": 10240,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "blocks.0.cross_attn.norm_k.weight"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.cross_attn.norm_k.weight",
+              "hikeExport": "Norm",
+              "hikeParameter": "weight",
+              "operator": "blocks.0.cross_attn.norm_k"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              0,
+              5120
+            ]
+          },
+          "time_projection.1.weight": {
+            "originalKey": "time_projection.1.weight",
+            "key": "diffusion_model.time_projection.1.weight",
+            "weightId": "time_projection.1.weight",
+            "fullShape": [
+              30720,
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": 5120,
+            "absoluteByteOffset": 2257908296,
+            "byteLength": 314572800,
+            "binding": {
+              "kind": "runtime-input",
+              "name": "time_projection.1.weight"
+            },
+            "operatorBinding": {
+              "programSlot": "time_projection.1.weight",
+              "graphInput": "weight",
+              "operator": "time_projection.1"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedRows": [
+              15360,
+              30720
+            ],
+            "maxRows": 16
+          },
+          "time_projection.1.bias": {
+            "originalKey": "time_projection.1.bias",
+            "key": "diffusion_model.time_projection.1.bias",
+            "weightId": "time_projection.1.bias",
+            "fullShape": [
+              30720
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 2257846856,
+            "byteLength": 61440,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "time_projection.1.bias"
+            },
+            "operatorBinding": {
+              "programSlot": "time_projection.1.bias",
+              "hikeExport": "AddBias",
+              "hikeParameter": "bias",
+              "operator": "time_projection.1"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              15360,
+              30720
+            ]
+          },
+          "blocks.0.modulation": {
+            "originalKey": "blocks.0.modulation",
+            "key": "diffusion_model.blocks.0.modulation",
+            "weightId": "blocks.0.modulation",
+            "fullShape": [
+              1,
+              6,
+              5120
+            ],
+            "storageDtype": "F16",
+            "computeDtype": "F32",
+            "layout": "row-major",
+            "columns": null,
+            "absoluteByteOffset": 52710856,
+            "byteLength": 61440,
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "blocks.0.modulation"
+            },
+            "operatorBinding": {
+              "programSlot": "blocks.0.modulation",
+              "hikeExport": "Add",
+              "hikeParameter": "x",
+              "operator": "ffn-modulation-chunks3-5"
+            },
+            "transform": {
+              "kind": "identity",
+              "transpose": false
+            },
+            "fp8ProfileId": null,
+            "allowedElements": [
+              15360,
+              30720
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "originalKey": "blocks.0.cross_attn.q.weight",
+          "key": "diffusion_model.blocks.0.cross_attn.q.weight",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "fullShape": [
+            5120,
+            5120
+          ],
+          "storageDtype": "F8_E4M3",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "columns": 5120,
+          "absoluteByteOffset": 2598695496,
+          "byteLength": 26214400,
+          "binding": {
+            "kind": "runtime-input",
+            "name": "blocks.0.cross_attn.q.weight"
+          },
+          "operatorBinding": {
+            "programSlot": "blocks.0.cross_attn.q.weight",
+            "graphInput": "weight",
+            "operator": "blocks.0.cross_attn.q"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+          "allowedRows": [
+            0,
+            5120
+          ],
+          "maxRows": 16,
+          "scaleSHA256": "f501056e42ea5d7180b5bf7d00515305aa45bbadc939c8df74359887dab05c8d",
+          "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+          "scaleSource": {
+            "originalKey": "blocks.0.cross_attn.q.weight_scale",
+            "fullShape": [],
+            "storageDtype": "F32",
+            "absoluteByteOffset": 181292,
+            "byteLength": 4
+          },
+          "quantConfigSource": {
+            "originalKey": "blocks.0.cross_attn.q.comfy_quant",
+            "fullShape": [
+              27
+            ],
+            "storageDtype": "U8",
+            "absoluteByteOffset": 15574823523,
+            "byteLength": 27
+          },
+          "parameterRole": "weight",
+          "dtype": "F32",
+          "shape": [
+            5120,
+            5120
+          ],
+          "patchCoordinates": "full-original-elements",
+          "unchangedRanges": "immutable-base-pass-through"
+        },
+        {
+          "originalKey": "blocks.0.cross_attn.q.bias",
+          "key": "diffusion_model.blocks.0.cross_attn.q.bias",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "fullShape": [
+            5120
+          ],
+          "storageDtype": "F16",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "columns": null,
+          "absoluteByteOffset": 52652488,
+          "byteLength": 10240,
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "blocks.0.cross_attn.q.bias"
+          },
+          "operatorBinding": {
+            "programSlot": "blocks.0.cross_attn.q.bias",
+            "hikeExport": "AddBias",
+            "hikeParameter": "bias",
+            "operator": "blocks.0.cross_attn.q"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "fp8ProfileId": null,
+          "allowedElements": [
+            0,
+            5120
+          ],
+          "parameterRole": "bias",
+          "dtype": "F32",
+          "shape": [
+            5120
+          ],
+          "patchCoordinates": "full-original-elements",
+          "unchangedRanges": "immutable-base-pass-through"
+        },
+        {
+          "originalKey": "blocks.0.cross_attn.k.weight",
+          "key": "diffusion_model.blocks.0.cross_attn.k.weight",
+          "weightId": "blocks.0.cross_attn.k.weight",
+          "fullShape": [
+            5120,
+            5120
+          ],
+          "storageDtype": "F8_E4M3",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "columns": 5120,
+          "absoluteByteOffset": 2572481096,
+          "byteLength": 26214400,
+          "binding": {
+            "kind": "runtime-input",
+            "name": "blocks.0.cross_attn.k.weight"
+          },
+          "operatorBinding": {
+            "programSlot": "blocks.0.cross_attn.k.weight",
+            "graphInput": "weight",
+            "operator": "blocks.0.cross_attn.k"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+          "allowedRows": [
+            0,
+            5120
+          ],
+          "maxRows": 16,
+          "scaleSHA256": "9bdfe97dead1e1ddeb6e8b63be899c2e45dea6d8f5b87118c44e0d96c058f3bd",
+          "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+          "scaleSource": {
+            "originalKey": "blocks.0.cross_attn.k.weight_scale",
+            "fullShape": [],
+            "storageDtype": "F32",
+            "absoluteByteOffset": 181288,
+            "byteLength": 4
+          },
+          "quantConfigSource": {
+            "originalKey": "blocks.0.cross_attn.k.comfy_quant",
+            "fullShape": [
+              27
+            ],
+            "storageDtype": "U8",
+            "absoluteByteOffset": 15574823496,
+            "byteLength": 27
+          },
+          "parameterRole": "weight",
+          "dtype": "F32",
+          "shape": [
+            5120,
+            5120
+          ],
+          "patchCoordinates": "full-original-elements",
+          "unchangedRanges": "immutable-base-pass-through"
+        },
+        {
+          "originalKey": "blocks.0.cross_attn.k.bias",
+          "key": "diffusion_model.blocks.0.cross_attn.k.bias",
+          "weightId": "blocks.0.cross_attn.k.bias",
+          "fullShape": [
+            5120
+          ],
+          "storageDtype": "F16",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "columns": null,
+          "absoluteByteOffset": 182728,
+          "byteLength": 10240,
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "blocks.0.cross_attn.k.bias"
+          },
+          "operatorBinding": {
+            "programSlot": "blocks.0.cross_attn.k.bias",
+            "hikeExport": "AddBias",
+            "hikeParameter": "bias",
+            "operator": "blocks.0.cross_attn.k"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "fp8ProfileId": null,
+          "allowedElements": [
+            0,
+            5120
+          ],
+          "parameterRole": "bias",
+          "dtype": "F32",
+          "shape": [
+            5120
+          ],
+          "patchCoordinates": "full-original-elements",
+          "unchangedRanges": "immutable-base-pass-through"
+        },
+        {
+          "originalKey": "blocks.0.cross_attn.v.weight",
+          "key": "diffusion_model.blocks.0.cross_attn.v.weight",
+          "weightId": "blocks.0.cross_attn.v.weight",
+          "fullShape": [
+            5120,
+            5120
+          ],
+          "storageDtype": "F8_E4M3",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "columns": 5120,
+          "absoluteByteOffset": 2624909896,
+          "byteLength": 26214400,
+          "binding": {
+            "kind": "runtime-input",
+            "name": "blocks.0.cross_attn.v.weight"
+          },
+          "operatorBinding": {
+            "programSlot": "blocks.0.cross_attn.v.weight",
+            "graphInput": "weight",
+            "operator": "blocks.0.cross_attn.v"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+          "allowedRows": [
+            0,
+            5120
+          ],
+          "maxRows": 16,
+          "scaleSHA256": "448576f3f24e586678a881e5d2b01c8e680329cedb9e35a14195a9163d79d4f0",
+          "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+          "scaleSource": {
+            "originalKey": "blocks.0.cross_attn.v.weight_scale",
+            "fullShape": [],
+            "storageDtype": "F32",
+            "absoluteByteOffset": 181296,
+            "byteLength": 4
+          },
+          "quantConfigSource": {
+            "originalKey": "blocks.0.cross_attn.v.comfy_quant",
+            "fullShape": [
+              27
+            ],
+            "storageDtype": "U8",
+            "absoluteByteOffset": 15574823550,
+            "byteLength": 27
+          },
+          "parameterRole": "weight",
+          "dtype": "F32",
+          "shape": [
+            5120,
+            5120
+          ],
+          "patchCoordinates": "full-original-elements",
+          "unchangedRanges": "immutable-base-pass-through"
+        },
+        {
+          "originalKey": "blocks.0.cross_attn.v.bias",
+          "key": "diffusion_model.blocks.0.cross_attn.v.bias",
+          "weightId": "blocks.0.cross_attn.v.bias",
+          "fullShape": [
+            5120
+          ],
+          "storageDtype": "F16",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "columns": null,
+          "absoluteByteOffset": 52662728,
+          "byteLength": 10240,
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "blocks.0.cross_attn.v.bias"
+          },
+          "operatorBinding": {
+            "programSlot": "blocks.0.cross_attn.v.bias",
+            "hikeExport": "AddBias",
+            "hikeParameter": "bias",
+            "operator": "blocks.0.cross_attn.v"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "fp8ProfileId": null,
+          "allowedElements": [
+            0,
+            5120
+          ],
+          "parameterRole": "bias",
+          "dtype": "F32",
+          "shape": [
+            5120
+          ],
+          "patchCoordinates": "full-original-elements",
+          "unchangedRanges": "immutable-base-pass-through"
+        },
+        {
+          "originalKey": "blocks.0.cross_attn.o.weight",
+          "key": "diffusion_model.blocks.0.cross_attn.o.weight",
+          "weightId": "blocks.0.cross_attn.o.weight",
+          "fullShape": [
+            5120,
+            5120
+          ],
+          "storageDtype": "F16",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "columns": 5120,
+          "absoluteByteOffset": 223688,
+          "byteLength": 52428800,
+          "binding": {
+            "kind": "runtime-input",
+            "name": "blocks.0.cross_attn.o.weight"
+          },
+          "operatorBinding": {
+            "programSlot": "blocks.0.cross_attn.o.weight",
+            "graphInput": "weight",
+            "operator": "blocks.0.cross_attn.o"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "fp8ProfileId": null,
+          "allowedRows": [
+            0,
+            5120
+          ],
+          "maxRows": 16,
+          "parameterRole": "weight",
+          "dtype": "F32",
+          "shape": [
+            5120,
+            5120
+          ],
+          "patchCoordinates": "full-original-elements",
+          "unchangedRanges": "immutable-base-pass-through"
+        },
+        {
+          "originalKey": "blocks.0.cross_attn.o.bias",
+          "key": "diffusion_model.blocks.0.cross_attn.o.bias",
+          "weightId": "blocks.0.cross_attn.o.bias",
+          "fullShape": [
+            5120
+          ],
+          "storageDtype": "F16",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "columns": null,
+          "absoluteByteOffset": 213448,
+          "byteLength": 10240,
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "blocks.0.cross_attn.o.bias"
+          },
+          "operatorBinding": {
+            "programSlot": "blocks.0.cross_attn.o.bias",
+            "hikeExport": "AddBias",
+            "hikeParameter": "bias",
+            "operator": "blocks.0.cross_attn.o"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "fp8ProfileId": null,
+          "allowedElements": [
+            0,
+            5120
+          ],
+          "parameterRole": "bias",
+          "dtype": "F32",
+          "shape": [
+            5120
+          ],
+          "patchCoordinates": "full-original-elements",
+          "unchangedRanges": "immutable-base-pass-through"
+        },
+        {
+          "originalKey": "blocks.0.ffn.0.weight",
+          "key": "diffusion_model.blocks.0.ffn.0.weight",
+          "weightId": "blocks.0.ffn.0.weight",
+          "fullShape": [
+            13824,
+            5120
+          ],
+          "storageDtype": "F8_E4M3",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "columns": 5120,
+          "absoluteByteOffset": 2651124296,
+          "byteLength": 70778880,
+          "binding": {
+            "kind": "runtime-input",
+            "name": "blocks.0.ffn.0.weight"
+          },
+          "operatorBinding": {
+            "programSlot": "blocks.0.ffn.0.weight",
+            "graphInput": "weight",
+            "operator": "blocks.0.ffn.0"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+          "allowedRows": [
+            0,
+            13824
+          ],
+          "maxRows": 16,
+          "scaleSHA256": "6bc1b3e5137a6b025b58c431ed6858e1c1ddfa99938e5aace2400f67ae76bd26",
+          "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+          "scaleSource": {
+            "originalKey": "blocks.0.ffn.0.weight_scale",
+            "fullShape": [],
+            "storageDtype": "F32",
+            "absoluteByteOffset": 181300,
+            "byteLength": 4
+          },
+          "quantConfigSource": {
+            "originalKey": "blocks.0.ffn.0.comfy_quant",
+            "fullShape": [
+              27
+            ],
+            "storageDtype": "U8",
+            "absoluteByteOffset": 15574823577,
+            "byteLength": 27
+          },
+          "parameterRole": "weight",
+          "dtype": "F32",
+          "shape": [
+            13824,
+            5120
+          ],
+          "patchCoordinates": "full-original-elements",
+          "unchangedRanges": "immutable-base-pass-through"
+        },
+        {
+          "originalKey": "blocks.0.ffn.0.bias",
+          "key": "diffusion_model.blocks.0.ffn.0.bias",
+          "weightId": "blocks.0.ffn.0.bias",
+          "fullShape": [
+            13824
+          ],
+          "storageDtype": "F16",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "columns": null,
+          "absoluteByteOffset": 52672968,
+          "byteLength": 27648,
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "blocks.0.ffn.0.bias"
+          },
+          "operatorBinding": {
+            "programSlot": "blocks.0.ffn.0.bias",
+            "hikeExport": "AddBias",
+            "hikeParameter": "bias",
+            "operator": "blocks.0.ffn.0"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "fp8ProfileId": null,
+          "allowedElements": [
+            0,
+            13824
+          ],
+          "parameterRole": "bias",
+          "dtype": "F32",
+          "shape": [
+            13824
+          ],
+          "patchCoordinates": "full-original-elements",
+          "unchangedRanges": "immutable-base-pass-through"
+        },
+        {
+          "originalKey": "blocks.0.ffn.2.weight",
+          "key": "diffusion_model.blocks.0.ffn.2.weight",
+          "weightId": "blocks.0.ffn.2.weight",
+          "fullShape": [
+            5120,
+            13824
+          ],
+          "storageDtype": "F8_E4M3",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "columns": 13824,
+          "absoluteByteOffset": 2721903176,
+          "byteLength": 70778880,
+          "binding": {
+            "kind": "runtime-input",
+            "name": "blocks.0.ffn.2.weight"
+          },
+          "operatorBinding": {
+            "programSlot": "blocks.0.ffn.2.weight",
+            "graphInput": "weight",
+            "operator": "blocks.0.ffn.2"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+          "allowedRows": [
+            0,
+            5120
+          ],
+          "maxRows": 4,
+          "scaleSHA256": "1a554ad2a65cb89fd78a081bcfcf443a337050671cff5a62f6b381fdb106c18c",
+          "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+          "scaleSource": {
+            "originalKey": "blocks.0.ffn.2.weight_scale",
+            "fullShape": [],
+            "storageDtype": "F32",
+            "absoluteByteOffset": 181304,
+            "byteLength": 4
+          },
+          "quantConfigSource": {
+            "originalKey": "blocks.0.ffn.2.comfy_quant",
+            "fullShape": [
+              27
+            ],
+            "storageDtype": "U8",
+            "absoluteByteOffset": 15574823604,
+            "byteLength": 27
+          },
+          "parameterRole": "weight",
+          "dtype": "F32",
+          "shape": [
+            5120,
+            13824
+          ],
+          "patchCoordinates": "full-original-elements",
+          "unchangedRanges": "immutable-base-pass-through"
+        },
+        {
+          "originalKey": "blocks.0.ffn.2.bias",
+          "key": "diffusion_model.blocks.0.ffn.2.bias",
+          "weightId": "blocks.0.ffn.2.bias",
+          "fullShape": [
+            5120
+          ],
+          "storageDtype": "F16",
+          "computeDtype": "F32",
+          "layout": "row-major",
+          "columns": null,
+          "absoluteByteOffset": 52700616,
+          "byteLength": 10240,
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "blocks.0.ffn.2.bias"
+          },
+          "operatorBinding": {
+            "programSlot": "blocks.0.ffn.2.bias",
+            "hikeExport": "AddBias",
+            "hikeParameter": "bias",
+            "operator": "blocks.0.ffn.2"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "fp8ProfileId": null,
+          "allowedElements": [
+            0,
+            5120
+          ],
+          "parameterRole": "bias",
+          "dtype": "F32",
+          "shape": [
+            5120
+          ],
+          "patchCoordinates": "full-original-elements",
+          "unchangedRanges": "immutable-base-pass-through"
+        }
+      ],
+      "coverage": {
+        "fullModel": false,
+        "kind": "explicit-sparse-final-f32-ranges",
+        "unselectedTargets": "immutable-base-pass-through",
+        "unselectedRows": "immutable-base-pass-through",
+        "canonicalLoraAdapterExtension": "PENDING"
+      },
+      "validationGate": {
+        "id": "p4-cross-ffn-composed-f32-v1",
+        "absolute": 0.01,
+        "relative": 0.001,
+        "scope": "composed-new-stage-only"
+      },
+      "resourceLimits": {
+        "maxBlockElements": 81920,
+        "maxPatchBytes": 16777216,
+        "maxRetainedPatchBytes": 67108864,
+        "maxPackages": 4,
+        "maxCandidates": 4,
+        "maxReadLeases": 16,
+        "maxTransactions": 4
+      },
+      "generationReady": false,
+      "registryHash": "91396a30bc675b93fd1709988a3c7b09b0752af0f2ea67a5ccd643f32ef3d409"
+    },
+    "connectionRegistry": {
+      "contractVersion": "lora-connection/2.0-draft.1",
+      "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+      "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+      "registryVersion": "lora-diffusion-p4-adapter/0.1-draft.1",
+      "side": "LOW",
+      "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "targets": [
+        {
+          "key": "diffusion_model.blocks.0.cross_attn.q.weight",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "module": "diffusion_models",
+          "shape": [
+            5120,
+            5120
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "weight",
+          "binding": {
+            "kind": "runtime-input",
+            "name": "blocks.0.cross_attn.q.weight"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "blockLimits": {
+            "contractVersion": "lora-block-limits/0.1-draft.1",
+            "offsetUnit": "elements",
+            "coordinateSpace": "original-full-tensor",
+            "rowAlignment": "all-columns",
+            "maxElements": 81920,
+            "maxRows": 16
+          }
+        },
+        {
+          "key": "diffusion_model.blocks.0.cross_attn.q.bias",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "module": "diffusion_models",
+          "shape": [
+            5120
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "bias",
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "blocks.0.cross_attn.q.bias"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "blockLimits": {
+            "contractVersion": "lora-block-limits/0.1-draft.1",
+            "offsetUnit": "elements",
+            "coordinateSpace": "original-full-tensor",
+            "rowAlignment": "all-columns",
+            "maxElements": 81920,
+            "maxRows": 81920
+          }
+        },
+        {
+          "key": "diffusion_model.blocks.0.cross_attn.k.weight",
+          "weightId": "blocks.0.cross_attn.k.weight",
+          "module": "diffusion_models",
+          "shape": [
+            5120,
+            5120
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "weight",
+          "binding": {
+            "kind": "runtime-input",
+            "name": "blocks.0.cross_attn.k.weight"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "blockLimits": {
+            "contractVersion": "lora-block-limits/0.1-draft.1",
+            "offsetUnit": "elements",
+            "coordinateSpace": "original-full-tensor",
+            "rowAlignment": "all-columns",
+            "maxElements": 81920,
+            "maxRows": 16
+          }
+        },
+        {
+          "key": "diffusion_model.blocks.0.cross_attn.k.bias",
+          "weightId": "blocks.0.cross_attn.k.bias",
+          "module": "diffusion_models",
+          "shape": [
+            5120
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "bias",
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "blocks.0.cross_attn.k.bias"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "blockLimits": {
+            "contractVersion": "lora-block-limits/0.1-draft.1",
+            "offsetUnit": "elements",
+            "coordinateSpace": "original-full-tensor",
+            "rowAlignment": "all-columns",
+            "maxElements": 81920,
+            "maxRows": 81920
+          }
+        },
+        {
+          "key": "diffusion_model.blocks.0.cross_attn.v.weight",
+          "weightId": "blocks.0.cross_attn.v.weight",
+          "module": "diffusion_models",
+          "shape": [
+            5120,
+            5120
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "weight",
+          "binding": {
+            "kind": "runtime-input",
+            "name": "blocks.0.cross_attn.v.weight"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "blockLimits": {
+            "contractVersion": "lora-block-limits/0.1-draft.1",
+            "offsetUnit": "elements",
+            "coordinateSpace": "original-full-tensor",
+            "rowAlignment": "all-columns",
+            "maxElements": 81920,
+            "maxRows": 16
+          }
+        },
+        {
+          "key": "diffusion_model.blocks.0.cross_attn.v.bias",
+          "weightId": "blocks.0.cross_attn.v.bias",
+          "module": "diffusion_models",
+          "shape": [
+            5120
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "bias",
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "blocks.0.cross_attn.v.bias"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "blockLimits": {
+            "contractVersion": "lora-block-limits/0.1-draft.1",
+            "offsetUnit": "elements",
+            "coordinateSpace": "original-full-tensor",
+            "rowAlignment": "all-columns",
+            "maxElements": 81920,
+            "maxRows": 81920
+          }
+        },
+        {
+          "key": "diffusion_model.blocks.0.cross_attn.o.weight",
+          "weightId": "blocks.0.cross_attn.o.weight",
+          "module": "diffusion_models",
+          "shape": [
+            5120,
+            5120
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "weight",
+          "binding": {
+            "kind": "runtime-input",
+            "name": "blocks.0.cross_attn.o.weight"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "blockLimits": {
+            "contractVersion": "lora-block-limits/0.1-draft.1",
+            "offsetUnit": "elements",
+            "coordinateSpace": "original-full-tensor",
+            "rowAlignment": "all-columns",
+            "maxElements": 81920,
+            "maxRows": 16
+          }
+        },
+        {
+          "key": "diffusion_model.blocks.0.cross_attn.o.bias",
+          "weightId": "blocks.0.cross_attn.o.bias",
+          "module": "diffusion_models",
+          "shape": [
+            5120
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "bias",
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "blocks.0.cross_attn.o.bias"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "blockLimits": {
+            "contractVersion": "lora-block-limits/0.1-draft.1",
+            "offsetUnit": "elements",
+            "coordinateSpace": "original-full-tensor",
+            "rowAlignment": "all-columns",
+            "maxElements": 81920,
+            "maxRows": 81920
+          }
+        },
+        {
+          "key": "diffusion_model.blocks.0.ffn.0.weight",
+          "weightId": "blocks.0.ffn.0.weight",
+          "module": "diffusion_models",
+          "shape": [
+            13824,
+            5120
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "weight",
+          "binding": {
+            "kind": "runtime-input",
+            "name": "blocks.0.ffn.0.weight"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "blockLimits": {
+            "contractVersion": "lora-block-limits/0.1-draft.1",
+            "offsetUnit": "elements",
+            "coordinateSpace": "original-full-tensor",
+            "rowAlignment": "all-columns",
+            "maxElements": 81920,
+            "maxRows": 16
+          }
+        },
+        {
+          "key": "diffusion_model.blocks.0.ffn.0.bias",
+          "weightId": "blocks.0.ffn.0.bias",
+          "module": "diffusion_models",
+          "shape": [
+            13824
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "bias",
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "blocks.0.ffn.0.bias"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "blockLimits": {
+            "contractVersion": "lora-block-limits/0.1-draft.1",
+            "offsetUnit": "elements",
+            "coordinateSpace": "original-full-tensor",
+            "rowAlignment": "all-columns",
+            "maxElements": 81920,
+            "maxRows": 81920
+          }
+        },
+        {
+          "key": "diffusion_model.blocks.0.ffn.2.weight",
+          "weightId": "blocks.0.ffn.2.weight",
+          "module": "diffusion_models",
+          "shape": [
+            5120,
+            13824
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "weight",
+          "binding": {
+            "kind": "runtime-input",
+            "name": "blocks.0.ffn.2.weight"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "blockLimits": {
+            "contractVersion": "lora-block-limits/0.1-draft.1",
+            "offsetUnit": "elements",
+            "coordinateSpace": "original-full-tensor",
+            "rowAlignment": "all-columns",
+            "maxElements": 81920,
+            "maxRows": 4
+          }
+        },
+        {
+          "key": "diffusion_model.blocks.0.ffn.2.bias",
+          "weightId": "blocks.0.ffn.2.bias",
+          "module": "diffusion_models",
+          "shape": [
+            5120
+          ],
+          "dtype": "F32",
+          "layout": "row-major",
+          "parameterRole": "bias",
+          "binding": {
+            "kind": "hike-parameter",
+            "name": "blocks.0.ffn.2.bias"
+          },
+          "transform": {
+            "kind": "identity"
+          },
+          "blockLimits": {
+            "contractVersion": "lora-block-limits/0.1-draft.1",
+            "offsetUnit": "elements",
+            "coordinateSpace": "original-full-tensor",
+            "rowAlignment": "all-columns",
+            "maxElements": 81920,
+            "maxRows": 81920
+          }
+        }
+      ]
+    },
+    "offsetUnit": "elements in original full tensor",
+    "coordinateSpace": "original-full-tensor",
+    "unselectedRanges": "immutable-base-pass-through",
+    "conditioningMetadata": "plain finite acyclic JSON only; rich/typed/cyclic metadata explicitly unsupported in0.1",
+    "copyBoundary": "native sink.writeBlock owns copied final F32 blocks; prepareLoad shares private native blocks; independent of SDK handle lifetime",
+    "prepareLoadNumericalCopy": false,
+    "internalReadLeaseIsSdkLease": false,
+    "scope": "diagnostic-projection",
+    "coverage": "PARTIAL",
+    "generationReady": false
+  },
+  "acceptedSelection": {
+    "pairId": "light",
+    "side": "LOW",
+    "noise": "low",
+    "weightId": "blocks.0.cross_attn.q.weight",
+    "biasWeightId": "blocks.0.cross_attn.q.bias",
+    "fullWeightShape": [
+      5120,
+      5120
+    ],
+    "fullBiasShape": [
+      5120
+    ],
+    "rows": [
+      0,
+      4
+    ],
+    "columns": [
+      0,
+      5120
+    ],
+    "coverage": "PARTIAL",
+    "completeAdapter": false,
+    "logicalPatchCount": 1052,
+    "excludedPatchCount": 1050,
+    "excludedTargetPolicy": "all original LoRA targets except the selected cross-Q weight and explicit bias",
+    "unselectedRegions": [
+      {
+        "weightId": "blocks.0.cross_attn.q.weight",
+        "rows": [
+          4,
+          5120
+        ],
+        "columns": [
+          0,
+          5120
+        ]
+      },
+      {
+        "weightId": "blocks.0.cross_attn.q.bias",
+        "elements": [
+          4,
+          5120
+        ]
+      }
+    ]
+  },
+  "acceptedLoader": {
+    "fileName": "Bernini-R_LightX2V_low_noise.safetensors",
+    "byteLength": 1244141856,
+    "expectedSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+    "headerSha256": "bd4e95892305560456676c8fc9a4545c27f4deb979f5d2b929b7be7df2d5d333",
+    "wholeHashVerifiedByOracle": false,
+    "newRuntimeLoadWholeHashRequired": true,
+    "historicalFourOriginalsRequired": false,
+    "sourceDtype": "BF16",
+    "rank": 128,
+    "alpha": 128,
+    "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+    "ranges": [
+      {
+        "name": "diffusion_model.blocks.0.cross_attn.q.lora_down.weight",
+        "elementOffset": 0,
+        "elementCount": 655360,
+        "absoluteByteOffset": 5516678,
+        "byteLength": 1310720,
+        "sha256": "f10a0f687bd96c4f5838b56b88fa11fd88848715cc0e6d8175984a653520d0d8",
+        "dtype": "BF16",
+        "fullShape": [
+          128,
+          5120
+        ]
+      },
+      {
+        "name": "diffusion_model.blocks.0.cross_attn.q.lora_up.weight",
+        "elementOffset": 0,
+        "elementCount": 512,
+        "absoluteByteOffset": 6827398,
+        "byteLength": 1024,
+        "sha256": "86d24c0de2edf8b39168e47fb7d0ef6270a78a5d6c17c6e752e689bb76a5b808",
+        "dtype": "BF16",
+        "fullShape": [
+          5120,
+          128
+        ]
+      },
+      {
+        "name": "diffusion_model.blocks.0.cross_attn.q.alpha",
+        "elementOffset": 0,
+        "elementCount": 1,
+        "absoluteByteOffset": 5506436,
+        "byteLength": 2,
+        "sha256": "b563a5e69628743929eddec0ccfeb0745c39577e12a72e84915edd6633cb97f2",
+        "dtype": "BF16",
+        "fullShape": []
+      },
+      {
+        "name": "diffusion_model.blocks.0.cross_attn.q.diff_b",
+        "elementOffset": 0,
+        "elementCount": 4,
+        "absoluteByteOffset": 5506438,
+        "byteLength": 8,
+        "sha256": "6a6f7bdbe66c800d4dc7ff7c71e8c6ad4206eb5a945f201ef10ab23c396a0f25",
+        "dtype": "BF16",
+        "fullShape": [
+          5120
+        ]
+      }
+    ]
+  },
+  "acceptedScope": "controlled-caller-input-n2-k4",
+  "coverage": "PARTIAL",
+  "managerSnapshotPublished": false,
+  "managementP4NormAdoption": false,
+  "generationReady": false,
+  "lifetime": {
+    "sdkPreparedOwnership": "independent-copy",
+    "copyBoundary": "native sink private copy; package/candidate/active may share those native private blocks; no second numerical copy at prepareLoad",
+    "externalSource": "LoRA capability may be released after preparation; immutable base source must remain live for untouched ranges",
+    "internalNativeRunLease": "Distinct from SDK active lease; native old zero-strength feed lease tested",
+    "sdkInstanceDisposalAfterActiveRun": "Not tested; SDK disposed only during final cleanup after base restore",
+    "release": "finalize candidate, release prepared package, preserve active private bytes until native restore/dispose"
+  },
+  "revisionNamespaces": [
+    "SDK instanceId + localInputRevision/localApplicationRevision",
+    "management session/queueTarget/revision/owner resourceGeneration",
+    "native packageHash/candidateId/active epoch"
+  ],
+  "unsupported": [
+    "FULL selection and all-target acceptance",
+    "v1 adapter for PARTIAL/runtime-input",
+    "unknown variant/loader/transpose/column slice",
+    "generic quantized LoRA base representation in SDK",
+    "rich/typed/cyclic conditioning metadata in adapter0.1",
+    "formal management P4 norm/catalog/snapshot adoption",
+    "E4 output16 formal reimport-to-native-prepare",
+    "natural P2/N2/real Text L512/whole-model/generation acceptance",
+    "two-pair simultaneous composition"
+  ]
+}

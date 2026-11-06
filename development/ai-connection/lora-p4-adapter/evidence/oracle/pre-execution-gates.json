@@ -1,0 +1,50 @@
+{
+  "scope": "controlled-caller-input-n2-k4",
+  "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+  "strengths": [
+    0,
+    1,
+    -1
+  ],
+  "declaredStrengthRange": [
+    -1,
+    1
+  ],
+  "gates": {
+    "weight": {
+      "absolute": 1e-05,
+      "relative": 0.0001
+    },
+    "bias": {
+      "absolute": 0,
+      "relative": 0
+    },
+    "projection": {
+      "absolute": 0.01,
+      "relative": 0.001
+    },
+    "projectionGateId": "p4-cross-ffn-composed-f32-v1"
+  },
+  "budget": {
+    "allMatrixWeightsResident": false,
+    "parameterReadsAreBounded": true,
+    "maxDecodedElementsPerTile": 81920,
+    "ffnDownMaxRowsPerRead": 4,
+    "fullBaseHashRecomputed": false,
+    "controlledForwardValuesPerStrength": 321536,
+    "controlledForwardF32ArrayBytesPerStrength": 1286144,
+    "ASelectedDownBF16Bytes": 1310720,
+    "ASelectedUpBF16Bytes": 1024,
+    "ASelectedBaseRawWeightBytes": 20480,
+    "ASelectedBaseRawBiasBytes": 8,
+    "AExpectedWeightF64BytesPerStrength": 163840,
+    "BSelectedOriginalBytesPerStrength": 524671171,
+    "BThreeStrengthSelectedOriginalBytes": 1574013513,
+    "maxReferenceFileBytes": 2097152,
+    "maxOutputBytes": 16777216,
+    "minimumFreeDiskBytes": 67108864,
+    "minimumAvailableMemoryBytes": 268435456,
+    "peakRSSMeasured": false,
+    "scope": "Static array/read bounds; excludes Python/BLAS/OS cache and native resources"
+  }
+}

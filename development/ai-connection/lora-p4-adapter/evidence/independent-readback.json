@@ -1,0 +1,4549 @@
+{
+  "schemaVersion": "lora-p4-native-independent-readback/0.1-draft.1",
+  "status": "PASS_NATIVE_P4_CONTROLLED_PARTIAL_READBACK",
+  "result": {
+    "file": "native-a80-run1/result.json",
+    "byteLength": 35805981,
+    "sha256": "f07081581e46d8252c207fd945f676b888bf35dbca888bd03a019dfd56bdb6b0",
+    "executionCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f"
+  },
+  "fixedCommits": {
+    "diffusion": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+    "manager": "8849891f19124df31847bd691503c2491278eaa8",
+    "lora": "a80db72feea60b9bd69e292e4716665c6f0ee77f"
+  },
+  "oracle": {
+    "manifestFile": "oracle-a80-run1/manifest.json",
+    "byteLength": 21434,
+    "sha256": "04e643dfddf37337c44d210d20c44b9eefe0d2328efbc7833a0903d59c0167ef",
+    "executionSource": {
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "tools/ai-connection/p4-lora-reference.py",
+      "sha256": "6f9ed048c7c1ae1ddbd3fa7b3d4328304c4fbd7dc4ca0bfd031c712e5e17987b",
+      "peerCommit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "corePath": "tools/diffusion-models/p4-cross-ffn-reference.py",
+      "coreSha256": "66ded34a4bb74d261b81484bf2abd2d9ee75b0e4cf82ce6a063e02237a7a7ecf",
+      "planPath": "development/ai-connection/p4-cross-ffn/core/candidate-plan.json",
+      "planSha256": "051b6833be54aed9e1e0c3657bd28aa926b46c238a1c3a06fb298f6cc6427600"
+    },
+    "scope": "controlled-caller-input-n2-k4",
+    "gates": {
+      "weight": {
+        "absolute": 1e-05,
+        "relative": 0.0001
+      },
+      "bias": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "projection": {
+        "absolute": 0.01,
+        "relative": 0.001
+      },
+      "projectionGateId": "p4-cross-ffn-composed-f32-v1"
+    },
+    "boundedReadback": [
+      {
+        "file": "candidate-plan.json",
+        "bytes": 9348,
+        "sha256": "051b6833be54aed9e1e0c3657bd28aa926b46c238a1c3a06fb298f6cc6427600",
+        "dtype": "JSON",
+        "observedBytes": 9348,
+        "observedSha256": "051b6833be54aed9e1e0c3657bd28aa926b46c238a1c3a06fb298f6cc6427600",
+        "readKind": "metadata"
+      },
+      {
+        "file": "pre-execution-gates.json",
+        "bytes": 1375,
+        "sha256": "5fffb38a48885ee02a6eca9c4bed07e7a865645cbe2bf743dfefd2894bbedca2",
+        "dtype": "JSON",
+        "observedBytes": 1375,
+        "observedSha256": "5fffb38a48885ee02a6eca9c4bed07e7a865645cbe2bf743dfefd2894bbedca2",
+        "readKind": "metadata"
+      },
+      {
+        "file": "controlled-inputs.json",
+        "bytes": 2943,
+        "sha256": "625c7bf98b2936d753e87db1d413c3596f5de592f00749170ab7757874e4ce78",
+        "dtype": "JSON",
+        "observedBytes": 2943,
+        "observedSha256": "625c7bf98b2936d753e87db1d413c3596f5de592f00749170ab7757874e4ce78",
+        "readKind": "metadata"
+      },
+      {
+        "file": "source-proof.json",
+        "bytes": 14687,
+        "sha256": "1d9593262acf1f4b8ee2e3f3b34ea7ff906eb9cdd386669b310d473399ca2494",
+        "dtype": "JSON",
+        "observedBytes": 14687,
+        "observedSha256": "1d9593262acf1f4b8ee2e3f3b34ea7ff906eb9cdd386669b310d473399ca2494",
+        "readKind": "metadata"
+      },
+      {
+        "file": "s0-forward-reference.json",
+        "bytes": 39104,
+        "sha256": "e395f9ea78f1166bb054a3a74c000b3b8e5d26f5729337835da5c532530ee672",
+        "dtype": "JSON",
+        "observedBytes": 39104,
+        "observedSha256": "e395f9ea78f1166bb054a3a74c000b3b8e5d26f5729337835da5c532530ee672",
+        "readKind": "metadata"
+      },
+      {
+        "file": "s1-forward-reference.json",
+        "bytes": 39104,
+        "sha256": "3f21e9d58c05a11baa376690999291ec816a3f0fe0566057b76323afa3f3401e",
+        "dtype": "JSON",
+        "observedBytes": 39104,
+        "observedSha256": "3f21e9d58c05a11baa376690999291ec816a3f0fe0566057b76323afa3f3401e",
+        "readKind": "metadata"
+      },
+      {
+        "file": "s-1-forward-reference.json",
+        "bytes": 39106,
+        "sha256": "022937210dc03639945a6a56c6e610c1f438d4daec524313195ff362f942d641",
+        "dtype": "JSON",
+        "observedBytes": 39106,
+        "observedSha256": "022937210dc03639945a6a56c6e610c1f438d4daec524313195ff362f942d641",
+        "readKind": "metadata"
+      },
+      {
+        "file": "s0-blockOutput.f32",
+        "dtype": "F32",
+        "shape": [
+          10240
+        ],
+        "elements": 10240,
+        "bytes": 40960,
+        "sha256": "a67b42500db4d81e32b6974b672a94fb0091e0409801e7ec2b9384381d75f8a0",
+        "observedBytes": 40960,
+        "observedSha256": "a67b42500db4d81e32b6974b672a94fb0091e0409801e7ec2b9384381d75f8a0",
+        "readKind": "independent B output activation"
+      },
+      {
+        "file": "s1-blockOutput.f32",
+        "dtype": "F32",
+        "shape": [
+          10240
+        ],
+        "elements": 10240,
+        "bytes": 40960,
+        "sha256": "bc40a6975651633c1824d93e509843f6b02a9a08ceb90609592949050adc6d8e",
+        "observedBytes": 40960,
+        "observedSha256": "bc40a6975651633c1824d93e509843f6b02a9a08ceb90609592949050adc6d8e",
+        "readKind": "independent B output activation"
+      },
+      {
+        "file": "s-1-blockOutput.f32",
+        "dtype": "F32",
+        "shape": [
+          10240
+        ],
+        "elements": 10240,
+        "bytes": 40960,
+        "sha256": "dd9b728b99d856399ee1e37f566d212c7da33f54c8189df27298e68add1cc368",
+        "observedBytes": 40960,
+        "observedSha256": "dd9b728b99d856399ee1e37f566d212c7da33f54c8189df27298e68add1cc368",
+        "readKind": "independent B output activation"
+      }
+    ],
+    "referenceAWeightOrBaseArraysReopened": false
+  },
+  "summary": {
+    "sourceAndOutputChecks": 399,
+    "failures": 0,
+    "loadedSourceFiles": 40,
+    "allPreverifiedGitFiles": 42,
+    "sourcePins": 8,
+    "actualArtifacts": 33,
+    "acceptedCases": 7,
+    "acceptedWeightReceiptComparisonValues": 143360,
+    "acceptedBiasReceiptComparisonValues": 28,
+    "independentlyComparedAcceptedOutputValues": 71680,
+    "separateRestorationOutputValues": 10240,
+    "newlyComparedTotalOutputValues": 81920,
+    "recordedWbArithmeticIndependentlyRecomputed": false,
+    "maxAcceptedWeightReceiptAbsoluteError": 2.4756445782259107e-09,
+    "maxAcceptedBiasReceiptAbsoluteError": 0,
+    "maxAcceptedOutputAbsoluteError": 6.079673767089844e-06,
+    "largestNumericArrayInResult": 4,
+    "phaseLifetimeResourceChecks": 76
+  },
+  "sourceProof": [
+    {
+      "owner": "receiver",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "tools/ai-connection/test-lora-p4-real.mjs",
+      "bytes": 34976,
+      "sha256": "375061365f29b96546026877c80a46f9dd618a13d7f7012e3d132b60982f6fbe",
+      "gitBlobSha": "8aba48df7d8c182e11a54d5c9539aaa53772c363",
+      "servedRequests": 0,
+      "executedByHost": true,
+      "observedBytes": 34976,
+      "observedSha256": "375061365f29b96546026877c80a46f9dd618a13d7f7012e3d132b60982f6fbe",
+      "observedGitBlobSha": "8aba48df7d8c182e11a54d5c9539aaa53772c363",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "receiver",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "tools/ai-connection/lora-p4-real-browser.mjs",
+      "bytes": 22016,
+      "sha256": "2ba0f743f5864336802666a7d37b9437feca37c5695e56ecb0717d010e33f119",
+      "gitBlobSha": "7239a15f775cee7962c98921057670ae77c48808",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 22016,
+      "observedSha256": "2ba0f743f5864336802666a7d37b9437feca37c5695e56ecb0717d010e33f119",
+      "observedGitBlobSha": "7239a15f775cee7962c98921057670ae77c48808",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "lora",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "docs/shared/inference/lora/sdk-v2.mjs",
+      "bytes": 14729,
+      "sha256": "385394247d1ba57058a69d244903699ffe5fa0d398f2a36be21253a381512534",
+      "gitBlobSha": "9715f6a50e7ab7124c2626e281a8b59820c31063",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 14729,
+      "observedSha256": "385394247d1ba57058a69d244903699ffe5fa0d398f2a36be21253a381512534",
+      "observedGitBlobSha": "9715f6a50e7ab7124c2626e281a8b59820c31063",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "lora",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "docs/shared/inference/lora/planner-v2.mjs",
+      "bytes": 9387,
+      "sha256": "f1acbc0678cf49a433cf7eab5a33e149b19f84185d20c10144d3a3caf7df8eac",
+      "gitBlobSha": "54740da8cfa53f02eb248b1986d8514fad59379b",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 9387,
+      "observedSha256": "f1acbc0678cf49a433cf7eab5a33e149b19f84185d20c10144d3a3caf7df8eac",
+      "observedGitBlobSha": "54740da8cfa53f02eb248b1986d8514fad59379b",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "lora",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "docs/shared/inference/lora/diffusion-p4-adapter.mjs",
+      "bytes": 19871,
+      "sha256": "c8be4e2bde579593e6c3fc230544a68f542f12ac98f6a8412b6cc94352bb3002",
+      "gitBlobSha": "4a4bad224572d47670d1ba03f0fe68350c15f4af",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 19871,
+      "observedSha256": "c8be4e2bde579593e6c3fc230544a68f542f12ac98f6a8412b6cc94352bb3002",
+      "observedGitBlobSha": "4a4bad224572d47670d1ba03f0fe68350c15f4af",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "lora",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "docs/shared/inference/lora/kernel/lora.wasm",
+      "bytes": 5051,
+      "sha256": "3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24",
+      "gitBlobSha": "626d4d0b5134e095c190480192c546c14b128925",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 5051,
+      "observedSha256": "3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24",
+      "observedGitBlobSha": "626d4d0b5134e095c190480192c546c14b128925",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/weights.mjs",
+      "bytes": 22015,
+      "sha256": "b80cdcb74584ef3f224c8eb6fcbef9cfb065f8387427a04a708d53d273856c9c",
+      "gitBlobSha": "0f67655895181cf2fe3660be3d70c4ad9a0445dd",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 22015,
+      "observedSha256": "b80cdcb74584ef3f224c8eb6fcbef9cfb065f8387427a04a708d53d273856c9c",
+      "observedGitBlobSha": "0f67655895181cf2fe3660be3d70c4ad9a0445dd",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/stage.mjs",
+      "bytes": 21978,
+      "sha256": "ff184acbabc589472a95b0bbf0eb2d3949b4478ecc0b19266817e8c313e7826d",
+      "gitBlobSha": "2de13bc2cc5a3cf2c3cec1521909ddd402dcda2f",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 21978,
+      "observedSha256": "ff184acbabc589472a95b0bbf0eb2d3949b4478ecc0b19266817e8c313e7826d",
+      "observedGitBlobSha": "2de13bc2cc5a3cf2c3cec1521909ddd402dcda2f",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs",
+      "bytes": 18862,
+      "sha256": "b4518ea35ca35e63e6ba8cdbe67e5d9fea0fa2125dac7dac0f5d4ac6c83ac7c2",
+      "gitBlobSha": "c1eaf632c44f6e1369f1d07c38a97c8a85ef752c",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 18862,
+      "observedSha256": "b4518ea35ca35e63e6ba8cdbe67e5d9fea0fa2125dac7dac0f5d4ac6c83ac7c2",
+      "observedGitBlobSha": "c1eaf632c44f6e1369f1d07c38a97c8a85ef752c",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "manager",
+      "commit": "8849891f19124df31847bd691503c2491278eaa8",
+      "path": "docs/shared/ai-connection/queue.mjs",
+      "bytes": 18094,
+      "sha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484",
+      "gitBlobSha": "cdc1c9515176b317026681c19ed91e164e1a759e",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 18094,
+      "observedSha256": "0af6d2dec8042de37cd6a4b13ba7619be96c03276a50ba8662a42246c7b79484",
+      "observedGitBlobSha": "cdc1c9515176b317026681c19ed91e164e1a759e",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "receiver",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "tools/ai-connection/p4-lora-reference.py",
+      "bytes": 26007,
+      "sha256": "6f9ed048c7c1ae1ddbd3fa7b3d4328304c4fbd7dc4ca0bfd031c712e5e17987b",
+      "gitBlobSha": "e6bd55197009f46fe93e2f50f89d60f8f2f61887",
+      "servedRequests": 0,
+      "executedByHost": false,
+      "observedBytes": 26007,
+      "observedSha256": "6f9ed048c7c1ae1ddbd3fa7b3d4328304c4fbd7dc4ca0bfd031c712e5e17987b",
+      "observedGitBlobSha": "e6bd55197009f46fe93e2f50f89d60f8f2f61887",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "tools/diffusion-models/p4-cross-ffn-reference.py",
+      "bytes": 40251,
+      "sha256": "66ded34a4bb74d261b81484bf2abd2d9ee75b0e4cf82ce6a063e02237a7a7ecf",
+      "gitBlobSha": "888e5a4e600514c1919bcd800ee9ecde0e7eeb9b",
+      "servedRequests": 0,
+      "executedByHost": false,
+      "observedBytes": 40251,
+      "observedSha256": "66ded34a4bb74d261b81484bf2abd2d9ee75b0e4cf82ce6a063e02237a7a7ecf",
+      "observedGitBlobSha": "888e5a4e600514c1919bcd800ee9ecde0e7eeb9b",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "lora",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "docs/shared/vr180/sha256.mjs",
+      "bytes": 6970,
+      "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+      "gitBlobSha": "346ba73b9735b3d56f4d3956c2fbc7a2674f68fe",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 6970,
+      "observedSha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+      "observedGitBlobSha": "346ba73b9735b3d56f4d3956c2fbc7a2674f68fe",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/source.mjs",
+      "bytes": 10907,
+      "sha256": "5bf263b8b6465b395dd6ea3634ef9619626479f95b8a22cc207dd923541c9d63",
+      "gitBlobSha": "02229a4a32bab1259d34771bb41a7821b95f5963",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 10907,
+      "observedSha256": "5bf263b8b6465b395dd6ea3634ef9619626479f95b8a22cc207dd923541c9d63",
+      "observedGitBlobSha": "02229a4a32bab1259d34771bb41a7821b95f5963",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "lora",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "docs/shared/inference/lora/kernel/host.mjs",
+      "bytes": 3656,
+      "sha256": "ee8c3c5abc6fcbf082d3557d792536024d0109f56a9aac4c959e98315a933d54",
+      "gitBlobSha": "d80d131726dad3cb48f3a2eb15b49e0d37ef1775",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 3656,
+      "observedSha256": "ee8c3c5abc6fcbf082d3557d792536024d0109f56a9aac4c959e98315a933d54",
+      "observedGitBlobSha": "d80d131726dad3cb48f3a2eb15b49e0d37ef1775",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "lora",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "docs/shared/inference/lora/safetensors.mjs",
+      "bytes": 5088,
+      "sha256": "4ee3713b356ab4a85a2911d3547350146953bc250465f8ef2c88fe9f36c4e45c",
+      "gitBlobSha": "8a41366714c2d097d89deb9eb7bb62ae2f9504fe",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 5088,
+      "observedSha256": "4ee3713b356ab4a85a2911d3547350146953bc250465f8ef2c88fe9f36c4e45c",
+      "observedGitBlobSha": "8a41366714c2d097d89deb9eb7bb62ae2f9504fe",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "lora",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "docs/shared/inference/lora/loader-policy.mjs",
+      "bytes": 1696,
+      "sha256": "f18f9c8dd4168e26f25cd1c77124b1f14a2ffca99424bfa9d4a9a294cbb2dedd",
+      "gitBlobSha": "d0715ae5f9f646e04763446f080858597f56b1c5",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 1696,
+      "observedSha256": "f18f9c8dd4168e26f25cd1c77124b1f14a2ffca99424bfa9d4a9a294cbb2dedd",
+      "observedGitBlobSha": "d0715ae5f9f646e04763446f080858597f56b1c5",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "lora",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "docs/shared/inference/lora/planner.mjs",
+      "bytes": 3833,
+      "sha256": "a4b2be0d8b90cd339bb0a17d072db4fd572ac122e3cc51a2c97b20ac06af1d02",
+      "gitBlobSha": "ca8de47a9cd313651dd8014081924e81f93e7089",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 3833,
+      "observedSha256": "a4b2be0d8b90cd339bb0a17d072db4fd572ac122e3cc51a2c97b20ac06af1d02",
+      "observedGitBlobSha": "ca8de47a9cd313651dd8014081924e81f93e7089",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "lora",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "docs/shared/inference/lora/diffusion-p4-registry.mjs",
+      "bytes": 8227,
+      "sha256": "ee215da2d62e026a4f61fd514afbf6e19336408e615e2d30095e00213bf2272a",
+      "gitBlobSha": "7c82c2a009e60d7878195b63035c02a09eaf6837",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 8227,
+      "observedSha256": "ee215da2d62e026a4f61fd514afbf6e19336408e615e2d30095e00213bf2272a",
+      "observedGitBlobSha": "7c82c2a009e60d7878195b63035c02a09eaf6837",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/lora/diagnostic-identity.mjs",
+      "bytes": 1365,
+      "sha256": "35ed52cde91236e764acd61ce912a96aea6627c249eeccd3c8039036069de9c9",
+      "gitBlobSha": "d7dbff9bcd9cdd2fff2b1fe141c498870a2f3d59",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 1365,
+      "observedSha256": "35ed52cde91236e764acd61ce912a96aea6627c249eeccd3c8039036069de9c9",
+      "observedGitBlobSha": "d7dbff9bcd9cdd2fff2b1fe141c498870a2f3d59",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/linear.mjs",
+      "bytes": 7075,
+      "sha256": "3821cca4b031aae4adf3944f15f8d171ed602f97878307ce495b7dcd8b05118a",
+      "gitBlobSha": "3b23f643b87c6f29b448a8ba563040d5c0fe5c6e",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 7075,
+      "observedSha256": "3821cca4b031aae4adf3944f15f8d171ed602f97878307ce495b7dcd8b05118a",
+      "observedGitBlobSha": "3b23f643b87c6f29b448a8ba563040d5c0fe5c6e",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/math.mjs",
+      "bytes": 6699,
+      "sha256": "c26d169c90bced0524c73081bd92b13bbb635f57718086b6224826b2464bf9a0",
+      "gitBlobSha": "a17cbd0f3c663755a40c03a641259046fbdd50c7",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 6699,
+      "observedSha256": "c26d169c90bced0524c73081bd92b13bbb635f57718086b6224826b2464bf9a0",
+      "observedGitBlobSha": "a17cbd0f3c663755a40c03a641259046fbdd50c7",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/stream-attention/hike.mjs",
+      "bytes": 3128,
+      "sha256": "67d5ada9d4c6c4217c3845c9ddbed5fb246cedeb35d5283840e1057087d4c3cd",
+      "gitBlobSha": "ee2786a6e182a68888ea4a3c2ea2b564775315ca",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 3128,
+      "observedSha256": "67d5ada9d4c6c4217c3845c9ddbed5fb246cedeb35d5283840e1057087d4c3cd",
+      "observedGitBlobSha": "ee2786a6e182a68888ea4a3c2ea2b564775315ca",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/stream-attention/registry.mjs",
+      "bytes": 142,
+      "sha256": "99c1c3c56fe22608c4652d830cd7f03978b036332a0505b9f07ed548bc8b6ecb",
+      "gitBlobSha": "c236a83f4a2af447e39a420f2c1899f0d6c4cd1f",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 142,
+      "observedSha256": "99c1c3c56fe22608c4652d830cd7f03978b036332a0505b9f07ed548bc8b6ecb",
+      "observedGitBlobSha": "c236a83f4a2af447e39a420f2c1899f0d6c4cd1f",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/kernel/registry.mjs",
+      "bytes": 160,
+      "sha256": "c4ea25478d44b70146ba2574d98c761d1bb345b4d6f10ccaedfb660f30489cdd",
+      "gitBlobSha": "73395d6b51a6c02b570cc8a3a85e81bacbc3e2ac",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 160,
+      "observedSha256": "c4ea25478d44b70146ba2574d98c761d1bb345b4d6f10ccaedfb660f30489cdd",
+      "observedGitBlobSha": "73395d6b51a6c02b570cc8a3a85e81bacbc3e2ac",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/registry.mjs",
+      "bytes": 158,
+      "sha256": "76c16302cc62d94f278322a895e8fd343f10ec49626fb1ab04ec546842c64a7c",
+      "gitBlobSha": "9f7a2a0e5cb829fa38407e22d01c1818e4c4ea37",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 158,
+      "observedSha256": "76c16302cc62d94f278322a895e8fd343f10ec49626fb1ab04ec546842c64a7c",
+      "observedGitBlobSha": "9f7a2a0e5cb829fa38407e22d01c1818e4c4ea37",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs",
+      "bytes": 942,
+      "sha256": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+      "gitBlobSha": "280e7c2e3e67f88438b1fa61d04ca5766c1b8cc8",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 942,
+      "observedSha256": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+      "observedGitBlobSha": "280e7c2e3e67f88438b1fa61d04ca5766c1b8cc8",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/vr180/sha256.mjs",
+      "bytes": 6970,
+      "sha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+      "gitBlobSha": "346ba73b9735b3d56f4d3956c2fbc7a2674f68fe",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 6970,
+      "observedSha256": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+      "observedGitBlobSha": "346ba73b9735b3d56f4d3956c2fbc7a2674f68fe",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/api/safetensors.mjs",
+      "bytes": 3948,
+      "sha256": "ecb7e750a151489c9b37ffec75e0b784d808b0503ff2181c7b73907398422d7f",
+      "gitBlobSha": "2adf61484054248f728b6aa467daba8e67092373",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 3948,
+      "observedSha256": "ecb7e750a151489c9b37ffec75e0b784d808b0503ff2181c7b73907398422d7f",
+      "observedGitBlobSha": "2adf61484054248f728b6aa467daba8e67092373",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/lora/targets.mjs",
+      "bytes": 47893,
+      "sha256": "772ca63c3b82bafa7b2345cdda3361679112fcf4a97c79b67564da0fa196217d",
+      "gitBlobSha": "467d09c8aa86b3daa3093670029f5da0b54155b8",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 47893,
+      "observedSha256": "772ca63c3b82bafa7b2345cdda3361679112fcf4a97c79b67564da0fa196217d",
+      "observedGitBlobSha": "467d09c8aa86b3daa3093670029f5da0b54155b8",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/hike.mjs",
+      "bytes": 4111,
+      "sha256": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+      "gitBlobSha": "15260d73bfeedba7ff3cd37d2bc51e8940ad566a",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 4111,
+      "observedSha256": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+      "observedGitBlobSha": "15260d73bfeedba7ff3cd37d2bc51e8940ad566a",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/lora/weights.mjs",
+      "bytes": 11233,
+      "sha256": "b6d60af5924c2cc5cef9398867424288cab36d9788149c954fa8526b3b51fcc5",
+      "gitBlobSha": "18dd954e7106b2f8c58e78fef5de4e2cf2764161",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 11233,
+      "observedSha256": "b6d60af5924c2cc5cef9398867424288cab36d9788149c954fa8526b3b51fcc5",
+      "observedGitBlobSha": "18dd954e7106b2f8c58e78fef5de4e2cf2764161",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/block-hidden/graph.mjs",
+      "bytes": 1531,
+      "sha256": "7826723d34a934a78e27335dce5973d41af4e2578136db5604c19b13d0954db0",
+      "gitBlobSha": "69f96cb0aba906f2a071ffa07fb28f20674ba707",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 1531,
+      "observedSha256": "7826723d34a934a78e27335dce5973d41af4e2578136db5604c19b13d0954db0",
+      "observedGitBlobSha": "69f96cb0aba906f2a071ffa07fb28f20674ba707",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "lora",
+      "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+      "path": "docs/shared/inference/lora/kernel/registry.mjs",
+      "bytes": 240,
+      "sha256": "564bc92d6f408bf1847f42b46762836bd9e903d24b598bcf4adc395331c90e1a",
+      "gitBlobSha": "f3701d07f36a68bee4ff326525fca109a775ff12",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 240,
+      "observedSha256": "564bc92d6f408bf1847f42b46762836bd9e903d24b598bcf4adc395331c90e1a",
+      "observedGitBlobSha": "f3701d07f36a68bee4ff326525fca109a775ff12",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/inference/vendor/ort.wasm.min.mjs",
+      "bytes": 49997,
+      "sha256": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+      "gitBlobSha": "c984bc119269524c1501dc54f4c18a680a56c809",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 49997,
+      "observedSha256": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+      "observedGitBlobSha": "c984bc119269524c1501dc54f4c18a680a56c809",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/attention-heads/graph.mjs",
+      "bytes": 2558,
+      "sha256": "dce76cdb3ca5f19aa0837b861b6ec73d3c7ee3ba6b2b15efa74cb46f903561ca",
+      "gitBlobSha": "1d9202a2ffb4557ff66638d783560512317865ef",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 2558,
+      "observedSha256": "dce76cdb3ca5f19aa0837b861b6ec73d3c7ee3ba6b2b15efa74cb46f903561ca",
+      "observedGitBlobSha": "1d9202a2ffb4557ff66638d783560512317865ef",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/lora/strict-json.mjs",
+      "bytes": 1544,
+      "sha256": "c68a353f9be2567361b075a6e5480e953a7d8df862f5b154e9cd368ec2571a98",
+      "gitBlobSha": "490090b560d70546fecee42f702ecdae466ce181",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 1544,
+      "observedSha256": "c68a353f9be2567361b075a6e5480e953a7d8df862f5b154e9cd368ec2571a98",
+      "observedGitBlobSha": "490090b560d70546fecee42f702ecdae466ce181",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm",
+      "bytes": 6899,
+      "sha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+      "gitBlobSha": "0f5547d91b3bf69040c751edd8cef0b8bac89d28",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 6899,
+      "observedSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+      "observedGitBlobSha": "0f5547d91b3bf69040c751edd8cef0b8bac89d28",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/kernel.wasm",
+      "bytes": 10094,
+      "sha256": "4d8518e94bd2de3ab9bf50f09b2fd17b69a5c57e7fd45dc65cd062d7fdbdbc4e",
+      "gitBlobSha": "b4aff6b90525067e438ac76e62b0462a712a78ac",
+      "servedRequests": 20,
+      "executedByHost": false,
+      "observedBytes": 10094,
+      "observedSha256": "4d8518e94bd2de3ab9bf50f09b2fd17b69a5c57e7fd45dc65cd062d7fdbdbc4e",
+      "observedGitBlobSha": "b4aff6b90525067e438ac76e62b0462a712a78ac",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.wasm",
+      "bytes": 5940,
+      "sha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+      "gitBlobSha": "f16c46306f8aaac0f4d1ad3fb04394e119ab2184",
+      "servedRequests": 20,
+      "executedByHost": false,
+      "observedBytes": 5940,
+      "observedSha256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+      "observedGitBlobSha": "f16c46306f8aaac0f4d1ad3fb04394e119ab2184",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "bytes": 24274,
+      "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+      "gitBlobSha": "6b5b22c36426db6dd4ab144166b30c96f403fd0d",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 24274,
+      "observedSha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+      "observedGitBlobSha": "6b5b22c36426db6dd4ab144166b30c96f403fd0d",
+      "fixedGitMatched": true
+    },
+    {
+      "owner": "diffusion",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "bytes": 12361745,
+      "sha256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+      "gitBlobSha": "f21ee10a4c63dad354cba1477eed8f0945e4635c",
+      "servedRequests": 1,
+      "executedByHost": false,
+      "observedBytes": 12361745,
+      "observedSha256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+      "observedGitBlobSha": "f21ee10a4c63dad354cba1477eed8f0945e4635c",
+      "fixedGitMatched": true
+    }
+  ],
+  "artifactReadback": [
+    {
+      "file": "initial-zero-weight.f32",
+      "bytes": 81920,
+      "sha256": "90a81a1a5e02cb66babca3d3ef51a8586558e28fd174e7481af736eb00b86245",
+      "observedBytes": 81920,
+      "observedSha256": "90a81a1a5e02cb66babca3d3ef51a8586558e28fd174e7481af736eb00b86245",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "initial-zero-bias.f32",
+      "bytes": 16,
+      "sha256": "50e720dd7fdde0ee017ea272950ff01f60e6228b44c582372ad1de241a6e6af7",
+      "observedBytes": 16,
+      "observedSha256": "50e720dd7fdde0ee017ea272950ff01f60e6228b44c582372ad1de241a6e6af7",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "initial-zero-output.f32",
+      "bytes": 40960,
+      "sha256": "3e60f8d1fc36d583b661e0170726b68ebff8055c95f01b472ef47fde14201f6b",
+      "observedBytes": 40960,
+      "observedSha256": "3e60f8d1fc36d583b661e0170726b68ebff8055c95f01b472ef47fde14201f6b",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "initial-zero-scope.json",
+      "bytes": 252831,
+      "sha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "observedBytes": 252831,
+      "observedSha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "initial-one-weight.f32",
+      "bytes": 81920,
+      "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+      "observedBytes": 81920,
+      "observedSha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "initial-one-bias.f32",
+      "bytes": 16,
+      "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+      "observedBytes": 16,
+      "observedSha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "initial-one-output.f32",
+      "bytes": 40960,
+      "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784",
+      "observedBytes": 40960,
+      "observedSha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "initial-one-scope.json",
+      "bytes": 252831,
+      "sha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "observedBytes": 252831,
+      "observedSha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "initial-negative-weight.f32",
+      "bytes": 81920,
+      "sha256": "686cd9077fce64e226b67019bfd2e36375572e49349f12c91f8c2fc51af8590f",
+      "observedBytes": 81920,
+      "observedSha256": "686cd9077fce64e226b67019bfd2e36375572e49349f12c91f8c2fc51af8590f",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "initial-negative-bias.f32",
+      "bytes": 16,
+      "sha256": "5a14885357c6d617ad09d81b5c26c81cadf6c80a6e71904a059a9a329b02f2f1",
+      "observedBytes": 16,
+      "observedSha256": "5a14885357c6d617ad09d81b5c26c81cadf6c80a6e71904a059a9a329b02f2f1",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "initial-negative-output.f32",
+      "bytes": 40960,
+      "sha256": "acd412bab52e1a3e4b7318ce91aa846c5c39582c7204deda6feef50e9c90e968",
+      "observedBytes": 40960,
+      "observedSha256": "acd412bab52e1a3e4b7318ce91aa846c5c39582c7204deda6feef50e9c90e968",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "initial-negative-scope.json",
+      "bytes": 252831,
+      "sha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "observedBytes": 252831,
+      "observedSha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "reapply-one-weight.f32",
+      "bytes": 81920,
+      "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+      "observedBytes": 81920,
+      "observedSha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "reapply-one-bias.f32",
+      "bytes": 16,
+      "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+      "observedBytes": 16,
+      "observedSha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "reapply-one-output.f32",
+      "bytes": 40960,
+      "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784",
+      "observedBytes": 40960,
+      "observedSha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "reapply-one-scope.json",
+      "bytes": 252831,
+      "sha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "observedBytes": 252831,
+      "observedSha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "validation-failure-weight.f32",
+      "bytes": 81920,
+      "sha256": "686cd9077fce64e226b67019bfd2e36375572e49349f12c91f8c2fc51af8590f",
+      "observedBytes": 81920,
+      "observedSha256": "686cd9077fce64e226b67019bfd2e36375572e49349f12c91f8c2fc51af8590f",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "validation-failure-bias.f32",
+      "bytes": 16,
+      "sha256": "5a14885357c6d617ad09d81b5c26c81cadf6c80a6e71904a059a9a329b02f2f1",
+      "observedBytes": 16,
+      "observedSha256": "5a14885357c6d617ad09d81b5c26c81cadf6c80a6e71904a059a9a329b02f2f1",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "validation-recovery-weight.f32",
+      "bytes": 81920,
+      "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+      "observedBytes": 81920,
+      "observedSha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "validation-recovery-bias.f32",
+      "bytes": 16,
+      "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+      "observedBytes": 16,
+      "observedSha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "validation-recovery-output.f32",
+      "bytes": 40960,
+      "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784",
+      "observedBytes": 40960,
+      "observedSha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "validation-recovery-scope.json",
+      "bytes": 252831,
+      "sha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "observedBytes": 252831,
+      "observedSha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "prepare-cancel-recovery-weight.f32",
+      "bytes": 81920,
+      "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+      "observedBytes": 81920,
+      "observedSha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "prepare-cancel-recovery-bias.f32",
+      "bytes": 16,
+      "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+      "observedBytes": 16,
+      "observedSha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "prepare-cancel-recovery-output.f32",
+      "bytes": 40960,
+      "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784",
+      "observedBytes": 40960,
+      "observedSha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "prepare-cancel-recovery-scope.json",
+      "bytes": 252831,
+      "sha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "observedBytes": 252831,
+      "observedSha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "cancel-native-read-weight.f32",
+      "bytes": 81920,
+      "sha256": "686cd9077fce64e226b67019bfd2e36375572e49349f12c91f8c2fc51af8590f",
+      "observedBytes": 81920,
+      "observedSha256": "686cd9077fce64e226b67019bfd2e36375572e49349f12c91f8c2fc51af8590f",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "cancel-native-read-bias.f32",
+      "bytes": 16,
+      "sha256": "5a14885357c6d617ad09d81b5c26c81cadf6c80a6e71904a059a9a329b02f2f1",
+      "observedBytes": 16,
+      "observedSha256": "5a14885357c6d617ad09d81b5c26c81cadf6c80a6e71904a059a9a329b02f2f1",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "native-cancel-recovery-weight.f32",
+      "bytes": 81920,
+      "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+      "observedBytes": 81920,
+      "observedSha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "native-cancel-recovery-bias.f32",
+      "bytes": 16,
+      "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+      "observedBytes": 16,
+      "observedSha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+      "mode": "600",
+      "readKind": "hash only"
+    },
+    {
+      "file": "native-cancel-recovery-output.f32",
+      "bytes": 40960,
+      "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784",
+      "observedBytes": 40960,
+      "observedSha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "native-cancel-recovery-scope.json",
+      "bytes": 252831,
+      "sha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "observedBytes": 252831,
+      "observedSha256": "01319222e487b3cb388719c7ee3fd5552a325c14c85d7b405259c7be2077943d",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    },
+    {
+      "file": "restored-base-output.f32",
+      "bytes": 40960,
+      "sha256": "3e60f8d1fc36d583b661e0170726b68ebff8055c95f01b472ef47fde14201f6b",
+      "observedBytes": 40960,
+      "observedSha256": "3e60f8d1fc36d583b661e0170726b68ebff8055c95f01b472ef47fde14201f6b",
+      "mode": "600",
+      "readKind": "activation or scope metadata"
+    }
+  ],
+  "acceptedCases": [
+    {
+      "id": "initial-zero",
+      "strength": 0,
+      "planId": "6ab9f22cca12520e20585951e71959c6adb5fae004ca6cb6cdada51b5aae405c",
+      "managerRevision": 3001,
+      "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+      "localInputRevision": 1,
+      "localApplicationRevision": 1,
+      "nativeEpoch": 1,
+      "weightComparisonReceipt": {
+        "passed": true,
+        "compared": 20480,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparisonReceipt": {
+        "passed": true,
+        "compared": 4,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputIndependentReadback": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 6.079673767089844e-06,
+        "gate": {
+          "absolute": 0.01,
+          "relative": 0.001
+        },
+        "referenceArtifact": {
+          "file": "s0-blockOutput.f32",
+          "dtype": "F32",
+          "shape": [
+            10240
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "a67b42500db4d81e32b6974b672a94fb0091e0409801e7ec2b9384381d75f8a0"
+        },
+        "actualArtifact": {
+          "file": "initial-zero-output.f32",
+          "bytes": 40960,
+          "sha256": "3e60f8d1fc36d583b661e0170726b68ebff8055c95f01b472ef47fde14201f6b"
+        }
+      },
+      "actualPreparedWeightArtifact": {
+        "file": "initial-zero-weight.f32",
+        "bytes": 81920,
+        "sha256": "90a81a1a5e02cb66babca3d3ef51a8586558e28fd174e7481af736eb00b86245"
+      },
+      "actualPreparedBiasArtifact": {
+        "file": "initial-zero-bias.f32",
+        "bytes": 16,
+        "sha256": "50e720dd7fdde0ee017ea272950ff01f60e6228b44c582372ad1de241a6e6af7"
+      },
+      "consumptionProof": [
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "90a81a1a5e02cb66babca3d3ef51a8586558e28fd174e7481af736eb00b86245",
+          "effectiveParameterSHA256": "c2320c9b71ebd93df590f5c9da143477dfe76cae8f8966a45203db77ea5b34af",
+          "packageHash": "54b63c42447802d49364184843b240b44c131a98bc49340c597dedd2492c809d",
+          "nativeEpoch": 0
+        },
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "50e720dd7fdde0ee017ea272950ff01f60e6228b44c582372ad1de241a6e6af7",
+          "effectiveParameterSHA256": "a3010fd7215d389218b1a5ccad9ff8e996cf326effb5ef8e9555518568c795a4",
+          "packageHash": "54b63c42447802d49364184843b240b44c131a98bc49340c597dedd2492c809d",
+          "nativeEpoch": 0
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "90a81a1a5e02cb66babca3d3ef51a8586558e28fd174e7481af736eb00b86245",
+          "effectiveParameterSHA256": "c2320c9b71ebd93df590f5c9da143477dfe76cae8f8966a45203db77ea5b34af",
+          "packageHash": "54b63c42447802d49364184843b240b44c131a98bc49340c597dedd2492c809d",
+          "nativeEpoch": 1
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "50e720dd7fdde0ee017ea272950ff01f60e6228b44c582372ad1de241a6e6af7",
+          "effectiveParameterSHA256": "a3010fd7215d389218b1a5ccad9ff8e996cf326effb5ef8e9555518568c795a4",
+          "packageHash": "54b63c42447802d49364184843b240b44c131a98bc49340c597dedd2492c809d",
+          "nativeEpoch": 1
+        }
+      ]
+    },
+    {
+      "id": "initial-one",
+      "strength": 1,
+      "planId": "0cf30967a126fbe34efcfc783c85719e6b073d7a3fd8cf833dc8c62c6124f31f",
+      "managerRevision": 3002,
+      "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+      "localInputRevision": 2,
+      "localApplicationRevision": 2,
+      "nativeEpoch": 2,
+      "weightComparisonReceipt": {
+        "passed": true,
+        "compared": 20480,
+        "maxAbsoluteError": 2.4756445782259107e-09,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparisonReceipt": {
+        "passed": true,
+        "compared": 4,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputIndependentReadback": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 3.2186508178710938e-06,
+        "gate": {
+          "absolute": 0.01,
+          "relative": 0.001
+        },
+        "referenceArtifact": {
+          "file": "s1-blockOutput.f32",
+          "dtype": "F32",
+          "shape": [
+            10240
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "bc40a6975651633c1824d93e509843f6b02a9a08ceb90609592949050adc6d8e"
+        },
+        "actualArtifact": {
+          "file": "initial-one-output.f32",
+          "bytes": 40960,
+          "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784"
+        }
+      },
+      "actualPreparedWeightArtifact": {
+        "file": "initial-one-weight.f32",
+        "bytes": 81920,
+        "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+      },
+      "actualPreparedBiasArtifact": {
+        "file": "initial-one-bias.f32",
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "consumptionProof": [
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+          "effectiveParameterSHA256": "b6d9afea306c9d0fe59e83de5c7d913be447574d4054a2693c922eb3147e33bf",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 1
+        },
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+          "effectiveParameterSHA256": "ffb7739fae8e213465f89cd2f3bec5661555bf913aae2634288d7bec31fbc01c",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 1
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+          "effectiveParameterSHA256": "b6d9afea306c9d0fe59e83de5c7d913be447574d4054a2693c922eb3147e33bf",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 2
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+          "effectiveParameterSHA256": "ffb7739fae8e213465f89cd2f3bec5661555bf913aae2634288d7bec31fbc01c",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 2
+        }
+      ]
+    },
+    {
+      "id": "initial-negative",
+      "strength": -1,
+      "planId": "c8790d6b62707f5490eab1dd5ecb5edddcaf34adc28a63e4743ef752d99b7e21",
+      "managerRevision": 3003,
+      "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+      "localInputRevision": 3,
+      "localApplicationRevision": 3,
+      "nativeEpoch": 3,
+      "weightComparisonReceipt": {
+        "passed": true,
+        "compared": 20480,
+        "maxAbsoluteError": 2.4756445782259107e-09,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparisonReceipt": {
+        "passed": true,
+        "compared": 4,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputIndependentReadback": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 3.337860107421875e-06,
+        "gate": {
+          "absolute": 0.01,
+          "relative": 0.001
+        },
+        "referenceArtifact": {
+          "file": "s-1-blockOutput.f32",
+          "dtype": "F32",
+          "shape": [
+            10240
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "dd9b728b99d856399ee1e37f566d212c7da33f54c8189df27298e68add1cc368"
+        },
+        "actualArtifact": {
+          "file": "initial-negative-output.f32",
+          "bytes": 40960,
+          "sha256": "acd412bab52e1a3e4b7318ce91aa846c5c39582c7204deda6feef50e9c90e968"
+        }
+      },
+      "actualPreparedWeightArtifact": {
+        "file": "initial-negative-weight.f32",
+        "bytes": 81920,
+        "sha256": "686cd9077fce64e226b67019bfd2e36375572e49349f12c91f8c2fc51af8590f"
+      },
+      "actualPreparedBiasArtifact": {
+        "file": "initial-negative-bias.f32",
+        "bytes": 16,
+        "sha256": "5a14885357c6d617ad09d81b5c26c81cadf6c80a6e71904a059a9a329b02f2f1"
+      },
+      "consumptionProof": [
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "686cd9077fce64e226b67019bfd2e36375572e49349f12c91f8c2fc51af8590f",
+          "effectiveParameterSHA256": "f5b31d9b16b56bb5917d2fa527c6e7fab60e6eb934fffd45bd925fced239f8cc",
+          "packageHash": "e66a6eae85c43cece135f4f9791cf30716defa69c94dff77ec1372ec32ede74e",
+          "nativeEpoch": 2
+        },
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "5a14885357c6d617ad09d81b5c26c81cadf6c80a6e71904a059a9a329b02f2f1",
+          "effectiveParameterSHA256": "fe8cb64828e95dd9a51369b581cce29a3134e6ff51fe0dc8a9b8622e11567db2",
+          "packageHash": "e66a6eae85c43cece135f4f9791cf30716defa69c94dff77ec1372ec32ede74e",
+          "nativeEpoch": 2
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "686cd9077fce64e226b67019bfd2e36375572e49349f12c91f8c2fc51af8590f",
+          "effectiveParameterSHA256": "f5b31d9b16b56bb5917d2fa527c6e7fab60e6eb934fffd45bd925fced239f8cc",
+          "packageHash": "e66a6eae85c43cece135f4f9791cf30716defa69c94dff77ec1372ec32ede74e",
+          "nativeEpoch": 3
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "5a14885357c6d617ad09d81b5c26c81cadf6c80a6e71904a059a9a329b02f2f1",
+          "effectiveParameterSHA256": "fe8cb64828e95dd9a51369b581cce29a3134e6ff51fe0dc8a9b8622e11567db2",
+          "packageHash": "e66a6eae85c43cece135f4f9791cf30716defa69c94dff77ec1372ec32ede74e",
+          "nativeEpoch": 3
+        }
+      ]
+    },
+    {
+      "id": "reapply-one",
+      "strength": 1,
+      "planId": "c49cd8973d24837ba2aa5bb061edd54634edd537e65404e4705cf18baa258839",
+      "managerRevision": 3004,
+      "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+      "localInputRevision": 4,
+      "localApplicationRevision": 4,
+      "nativeEpoch": 4,
+      "weightComparisonReceipt": {
+        "passed": true,
+        "compared": 20480,
+        "maxAbsoluteError": 2.4756445782259107e-09,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparisonReceipt": {
+        "passed": true,
+        "compared": 4,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputIndependentReadback": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 3.2186508178710938e-06,
+        "gate": {
+          "absolute": 0.01,
+          "relative": 0.001
+        },
+        "referenceArtifact": {
+          "file": "s1-blockOutput.f32",
+          "dtype": "F32",
+          "shape": [
+            10240
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "bc40a6975651633c1824d93e509843f6b02a9a08ceb90609592949050adc6d8e"
+        },
+        "actualArtifact": {
+          "file": "reapply-one-output.f32",
+          "bytes": 40960,
+          "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784"
+        }
+      },
+      "actualPreparedWeightArtifact": {
+        "file": "reapply-one-weight.f32",
+        "bytes": 81920,
+        "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+      },
+      "actualPreparedBiasArtifact": {
+        "file": "reapply-one-bias.f32",
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "consumptionProof": [
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+          "effectiveParameterSHA256": "b6d9afea306c9d0fe59e83de5c7d913be447574d4054a2693c922eb3147e33bf",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 3
+        },
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+          "effectiveParameterSHA256": "ffb7739fae8e213465f89cd2f3bec5661555bf913aae2634288d7bec31fbc01c",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 3
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+          "effectiveParameterSHA256": "b6d9afea306c9d0fe59e83de5c7d913be447574d4054a2693c922eb3147e33bf",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 4
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+          "effectiveParameterSHA256": "ffb7739fae8e213465f89cd2f3bec5661555bf913aae2634288d7bec31fbc01c",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 4
+        }
+      ]
+    },
+    {
+      "id": "validation-recovery",
+      "strength": 1,
+      "planId": "e6475c2921d75725fa65abff2f1859e4e875f2c9fe62a22c73c15c475749f1fb",
+      "managerRevision": 3006,
+      "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+      "localInputRevision": 6,
+      "localApplicationRevision": 6,
+      "nativeEpoch": 5,
+      "weightComparisonReceipt": {
+        "passed": true,
+        "compared": 20480,
+        "maxAbsoluteError": 2.4756445782259107e-09,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparisonReceipt": {
+        "passed": true,
+        "compared": 4,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputIndependentReadback": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 3.2186508178710938e-06,
+        "gate": {
+          "absolute": 0.01,
+          "relative": 0.001
+        },
+        "referenceArtifact": {
+          "file": "s1-blockOutput.f32",
+          "dtype": "F32",
+          "shape": [
+            10240
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "bc40a6975651633c1824d93e509843f6b02a9a08ceb90609592949050adc6d8e"
+        },
+        "actualArtifact": {
+          "file": "validation-recovery-output.f32",
+          "bytes": 40960,
+          "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784"
+        }
+      },
+      "actualPreparedWeightArtifact": {
+        "file": "validation-recovery-weight.f32",
+        "bytes": 81920,
+        "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+      },
+      "actualPreparedBiasArtifact": {
+        "file": "validation-recovery-bias.f32",
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "consumptionProof": [
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+          "effectiveParameterSHA256": "b6d9afea306c9d0fe59e83de5c7d913be447574d4054a2693c922eb3147e33bf",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 4
+        },
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+          "effectiveParameterSHA256": "ffb7739fae8e213465f89cd2f3bec5661555bf913aae2634288d7bec31fbc01c",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 4
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+          "effectiveParameterSHA256": "b6d9afea306c9d0fe59e83de5c7d913be447574d4054a2693c922eb3147e33bf",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 5
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+          "effectiveParameterSHA256": "ffb7739fae8e213465f89cd2f3bec5661555bf913aae2634288d7bec31fbc01c",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 5
+        }
+      ]
+    },
+    {
+      "id": "prepare-cancel-recovery",
+      "strength": 1,
+      "planId": "fbf321691ed2baf6a4d048ce7c6bd7c8d4bc1fa82dcaa3f378bb5e69415d0c23",
+      "managerRevision": 3008,
+      "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+      "localInputRevision": 9,
+      "localApplicationRevision": 9,
+      "nativeEpoch": 6,
+      "weightComparisonReceipt": {
+        "passed": true,
+        "compared": 20480,
+        "maxAbsoluteError": 2.4756445782259107e-09,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparisonReceipt": {
+        "passed": true,
+        "compared": 4,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputIndependentReadback": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 3.2186508178710938e-06,
+        "gate": {
+          "absolute": 0.01,
+          "relative": 0.001
+        },
+        "referenceArtifact": {
+          "file": "s1-blockOutput.f32",
+          "dtype": "F32",
+          "shape": [
+            10240
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "bc40a6975651633c1824d93e509843f6b02a9a08ceb90609592949050adc6d8e"
+        },
+        "actualArtifact": {
+          "file": "prepare-cancel-recovery-output.f32",
+          "bytes": 40960,
+          "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784"
+        }
+      },
+      "actualPreparedWeightArtifact": {
+        "file": "prepare-cancel-recovery-weight.f32",
+        "bytes": 81920,
+        "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+      },
+      "actualPreparedBiasArtifact": {
+        "file": "prepare-cancel-recovery-bias.f32",
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "consumptionProof": [
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+          "effectiveParameterSHA256": "b6d9afea306c9d0fe59e83de5c7d913be447574d4054a2693c922eb3147e33bf",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 5
+        },
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+          "effectiveParameterSHA256": "ffb7739fae8e213465f89cd2f3bec5661555bf913aae2634288d7bec31fbc01c",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 5
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+          "effectiveParameterSHA256": "b6d9afea306c9d0fe59e83de5c7d913be447574d4054a2693c922eb3147e33bf",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 6
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+          "effectiveParameterSHA256": "ffb7739fae8e213465f89cd2f3bec5661555bf913aae2634288d7bec31fbc01c",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 6
+        }
+      ]
+    },
+    {
+      "id": "native-cancel-recovery",
+      "strength": 1,
+      "planId": "7dbf9b0e8fc716993ecee4bb9514fdbcf5317b0933346455c73da7c023888bf4",
+      "managerRevision": 3010,
+      "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+      "localInputRevision": 12,
+      "localApplicationRevision": 12,
+      "nativeEpoch": 7,
+      "weightComparisonReceipt": {
+        "passed": true,
+        "compared": 20480,
+        "maxAbsoluteError": 2.4756445782259107e-09,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparisonReceipt": {
+        "passed": true,
+        "compared": 4,
+        "maxAbsoluteError": 0,
+        "failedValues": 0,
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputIndependentReadback": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 3.2186508178710938e-06,
+        "gate": {
+          "absolute": 0.01,
+          "relative": 0.001
+        },
+        "referenceArtifact": {
+          "file": "s1-blockOutput.f32",
+          "dtype": "F32",
+          "shape": [
+            10240
+          ],
+          "elements": 10240,
+          "bytes": 40960,
+          "sha256": "bc40a6975651633c1824d93e509843f6b02a9a08ceb90609592949050adc6d8e"
+        },
+        "actualArtifact": {
+          "file": "native-cancel-recovery-output.f32",
+          "bytes": 40960,
+          "sha256": "381525046e0eb5276a8e350b19b08b01ffe217f2ec4e651cdedf5f2d6abb9784"
+        }
+      },
+      "actualPreparedWeightArtifact": {
+        "file": "native-cancel-recovery-weight.f32",
+        "bytes": 81920,
+        "sha256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85"
+      },
+      "actualPreparedBiasArtifact": {
+        "file": "native-cancel-recovery-bias.f32",
+        "bytes": 16,
+        "sha256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49"
+      },
+      "consumptionProof": [
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+          "effectiveParameterSHA256": "b6d9afea306c9d0fe59e83de5c7d913be447574d4054a2693c922eb3147e33bf",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 6
+        },
+        {
+          "phase": "validation",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+          "effectiveParameterSHA256": "ffb7739fae8e213465f89cd2f3bec5661555bf913aae2634288d7bec31fbc01c",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 6
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.weight",
+          "offset": 0,
+          "count": 20480,
+          "actualPreparedSHA256": "f5b76a1de323194fa88dab6fbaa7b5138cc0c27724d3bece336aeadcb609cd85",
+          "effectiveParameterSHA256": "b6d9afea306c9d0fe59e83de5c7d913be447574d4054a2693c922eb3147e33bf",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 7
+        },
+        {
+          "phase": "active",
+          "weightId": "blocks.0.cross_attn.q.bias",
+          "offset": 0,
+          "count": 4,
+          "actualPreparedSHA256": "b5a4674fd0865509179117934d39549a6c1b1a12679d03cb71a69f3c4411ca49",
+          "effectiveParameterSHA256": "ffb7739fae8e213465f89cd2f3bec5661555bf913aae2634288d7bec31fbc01c",
+          "packageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+          "nativeEpoch": 7
+        }
+      ]
+    }
+  ],
+  "restoredOutputReadback": {
+    "compared": 10240,
+    "failedValues": 0,
+    "maxAbsoluteError": 6.079673767089844e-06,
+    "actualArtifact": {
+      "file": "restored-base-output.f32",
+      "bytes": 40960,
+      "sha256": "3e60f8d1fc36d583b661e0170726b68ebff8055c95f01b472ef47fde14201f6b"
+    },
+    "referenceArtifact": {
+      "file": "s0-blockOutput.f32",
+      "dtype": "F32",
+      "shape": [
+        10240
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "a67b42500db4d81e32b6974b672a94fb0091e0409801e7ec2b9384381d75f8a0"
+    },
+    "notAnAcceptedLoRaCase": true
+  },
+  "controlledActivationDelta": {
+    "initial-one": {
+      "compared": 10240,
+      "differentValues": 10235,
+      "maxAbsoluteDeltaFromZero": 0.0004372596740722656,
+      "scope": "Saved controlled P4 activation difference; not natural-input or generation contribution"
+    },
+    "initial-negative": {
+      "compared": 10240,
+      "differentValues": 10240,
+      "maxAbsoluteDeltaFromZero": 0.0004425048828125,
+      "scope": "Saved controlled P4 activation difference; not natural-input or generation contribution"
+    }
+  },
+  "checks": [
+    {
+      "name": "fixed_execution",
+      "passed": true
+    },
+    {
+      "name": "status_scope",
+      "passed": true
+    },
+    {
+      "name": "oracle_manifest",
+      "passed": true
+    },
+    {
+      "name": "oracle_is_independent",
+      "passed": true
+    },
+    {
+      "name": "source_counts",
+      "passed": true
+    },
+    {
+      "name": "unique:receiver:tools/ai-connection/test-lora-p4-real.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:receiver:tools/ai-connection/test-lora-p4-real.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:receiver:tools/ai-connection/lora-p4-real-browser.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:receiver:tools/ai-connection/lora-p4-real-browser.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:lora:docs/shared/inference/lora/sdk-v2.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:lora:docs/shared/inference/lora/sdk-v2.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:lora:docs/shared/inference/lora/planner-v2.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:lora:docs/shared/inference/lora/planner-v2.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:lora:docs/shared/inference/lora/diffusion-p4-adapter.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:lora:docs/shared/inference/lora/diffusion-p4-adapter.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:lora:docs/shared/inference/lora/kernel/lora.wasm",
+      "passed": true
+    },
+    {
+      "name": "source:lora:docs/shared/inference/lora/kernel/lora.wasm",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/weights.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/weights.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/stage.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/stage.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:manager:docs/shared/ai-connection/queue.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:manager:docs/shared/ai-connection/queue.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:receiver:tools/ai-connection/p4-lora-reference.py",
+      "passed": true
+    },
+    {
+      "name": "source:receiver:tools/ai-connection/p4-lora-reference.py",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:tools/diffusion-models/p4-cross-ffn-reference.py",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:tools/diffusion-models/p4-cross-ffn-reference.py",
+      "passed": true
+    },
+    {
+      "name": "unique:lora:docs/shared/vr180/sha256.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:lora:docs/shared/vr180/sha256.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/source.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/source.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:lora:docs/shared/inference/lora/kernel/host.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:lora:docs/shared/inference/lora/kernel/host.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:lora:docs/shared/inference/lora/safetensors.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:lora:docs/shared/inference/lora/safetensors.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:lora:docs/shared/inference/lora/loader-policy.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:lora:docs/shared/inference/lora/loader-policy.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:lora:docs/shared/inference/lora/planner.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:lora:docs/shared/inference/lora/planner.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:lora:docs/shared/inference/lora/diffusion-p4-registry.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:lora:docs/shared/inference/lora/diffusion-p4-registry.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/lora/diagnostic-identity.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/lora/diagnostic-identity.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/linear.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/linear.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/math.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/math.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/stream-attention/hike.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/stream-attention/hike.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/stream-attention/registry.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/stream-attention/registry.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/kernel/registry.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/kernel/registry.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/registry.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/registry.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/vr180/sha256.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/vr180/sha256.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/api/safetensors.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/api/safetensors.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/lora/targets.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/lora/targets.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/hike.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/hike.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/lora/weights.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/lora/weights.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/block-hidden/graph.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/block-hidden/graph.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:lora:docs/shared/inference/lora/kernel/registry.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:lora:docs/shared/inference/lora/kernel/registry.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/inference/vendor/ort.wasm.min.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/inference/vendor/ort.wasm.min.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/attention-heads/graph.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/attention-heads/graph.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/lora/strict-json.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/lora/strict-json.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/kernel.wasm",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/post-self-attention/kernel.wasm",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.wasm",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/diffusion-models/ort-bridge/stream-attention/kernel.wasm",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "passed": true
+    },
+    {
+      "name": "unique:diffusion:docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "passed": true
+    },
+    {
+      "name": "source:diffusion:docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+      "passed": true
+    },
+    {
+      "name": "loaded_set_exact",
+      "passed": true
+    },
+    {
+      "name": "pin:sdk",
+      "passed": true
+    },
+    {
+      "name": "pin:planner",
+      "passed": true
+    },
+    {
+      "name": "pin:adapter",
+      "passed": true
+    },
+    {
+      "name": "pin:kernel",
+      "passed": true
+    },
+    {
+      "name": "pin:diffusion",
+      "passed": true
+    },
+    {
+      "name": "pin:stage",
+      "passed": true
+    },
+    {
+      "name": "pin:conditioning",
+      "passed": true
+    },
+    {
+      "name": "pin:queue",
+      "passed": true
+    },
+    {
+      "name": "kernel5051",
+      "passed": true
+    },
+    {
+      "name": "oracle_wrapper",
+      "passed": true
+    },
+    {
+      "name": "oracle_core",
+      "passed": true
+    },
+    {
+      "name": "candidate_plan",
+      "passed": true
+    },
+    {
+      "name": "oracle_metadata:candidate-plan.json",
+      "passed": true
+    },
+    {
+      "name": "oracle_metadata:pre-execution-gates.json",
+      "passed": true
+    },
+    {
+      "name": "oracle_metadata:controlled-inputs.json",
+      "passed": true
+    },
+    {
+      "name": "oracle_metadata:source-proof.json",
+      "passed": true
+    },
+    {
+      "name": "oracle_metadata:s0-forward-reference.json",
+      "passed": true
+    },
+    {
+      "name": "oracle_metadata:s1-forward-reference.json",
+      "passed": true
+    },
+    {
+      "name": "oracle_metadata:s-1-forward-reference.json",
+      "passed": true
+    },
+    {
+      "name": "plan_exact_git",
+      "passed": true
+    },
+    {
+      "name": "artifact_count",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:initial-zero-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:initial-zero-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:initial-zero-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:initial-zero-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:initial-zero-output.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:initial-zero-output.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:initial-zero-scope.json",
+      "passed": true
+    },
+    {
+      "name": "artifact:initial-zero-scope.json",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:initial-one-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:initial-one-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:initial-one-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:initial-one-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:initial-one-output.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:initial-one-output.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:initial-one-scope.json",
+      "passed": true
+    },
+    {
+      "name": "artifact:initial-one-scope.json",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:initial-negative-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:initial-negative-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:initial-negative-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:initial-negative-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:initial-negative-output.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:initial-negative-output.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:initial-negative-scope.json",
+      "passed": true
+    },
+    {
+      "name": "artifact:initial-negative-scope.json",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:reapply-one-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:reapply-one-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:reapply-one-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:reapply-one-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:reapply-one-output.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:reapply-one-output.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:reapply-one-scope.json",
+      "passed": true
+    },
+    {
+      "name": "artifact:reapply-one-scope.json",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:validation-failure-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:validation-failure-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:validation-failure-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:validation-failure-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:validation-recovery-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:validation-recovery-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:validation-recovery-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:validation-recovery-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:validation-recovery-output.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:validation-recovery-output.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:validation-recovery-scope.json",
+      "passed": true
+    },
+    {
+      "name": "artifact:validation-recovery-scope.json",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:prepare-cancel-recovery-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:prepare-cancel-recovery-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:prepare-cancel-recovery-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:prepare-cancel-recovery-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:prepare-cancel-recovery-output.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:prepare-cancel-recovery-output.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:prepare-cancel-recovery-scope.json",
+      "passed": true
+    },
+    {
+      "name": "artifact:prepare-cancel-recovery-scope.json",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:cancel-native-read-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:cancel-native-read-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:cancel-native-read-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:cancel-native-read-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:native-cancel-recovery-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:native-cancel-recovery-weight.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:native-cancel-recovery-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:native-cancel-recovery-bias.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:native-cancel-recovery-output.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:native-cancel-recovery-output.f32",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:native-cancel-recovery-scope.json",
+      "passed": true
+    },
+    {
+      "name": "artifact:native-cancel-recovery-scope.json",
+      "passed": true
+    },
+    {
+      "name": "unique_artifact:restored-base-output.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact:restored-base-output.f32",
+      "passed": true
+    },
+    {
+      "name": "artifact_directory_exact",
+      "passed": true
+    },
+    {
+      "name": "B_output:s0",
+      "passed": true
+    },
+    {
+      "name": "B_output:s1",
+      "passed": true
+    },
+    {
+      "name": "B_output:s-1",
+      "passed": true
+    },
+    {
+      "name": "fixed_gates",
+      "passed": true
+    },
+    {
+      "name": "accepted_cases",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:artifacts",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:weightComparison",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:biasComparison",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:outputComparison",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:reference_descriptors",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:all10240",
+      "passed": true,
+      "detail": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 6.079673767089844e-06
+      }
+    },
+    {
+      "name": "initial-zero:scope",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:selected_patch_shapes",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:native_validation",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:active_hash",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:actual_and_expectation_namespaces",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:registry_namespaces",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:original_selection",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:controlled_scope",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:input:residualSHA256",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:input:timeAct1SHA256",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:input:conditioningSHA256",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:input:conditioningMaskSHA256",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:validation_two_targets",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:validation:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:validation:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:validation:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:validation:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:active_two_targets",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:active:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:active:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:active:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:active:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "initial-zero:native_epochs",
+      "passed": true
+    },
+    {
+      "name": "initial-one:artifacts",
+      "passed": true
+    },
+    {
+      "name": "initial-one:weightComparison",
+      "passed": true
+    },
+    {
+      "name": "initial-one:biasComparison",
+      "passed": true
+    },
+    {
+      "name": "initial-one:outputComparison",
+      "passed": true
+    },
+    {
+      "name": "initial-one:reference_descriptors",
+      "passed": true
+    },
+    {
+      "name": "initial-one:all10240",
+      "passed": true,
+      "detail": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 3.2186508178710938e-06
+      }
+    },
+    {
+      "name": "initial-one:scope",
+      "passed": true
+    },
+    {
+      "name": "initial-one:selected_patch_shapes",
+      "passed": true
+    },
+    {
+      "name": "initial-one:native_validation",
+      "passed": true
+    },
+    {
+      "name": "initial-one:active_hash",
+      "passed": true
+    },
+    {
+      "name": "initial-one:actual_and_expectation_namespaces",
+      "passed": true
+    },
+    {
+      "name": "initial-one:registry_namespaces",
+      "passed": true
+    },
+    {
+      "name": "initial-one:original_selection",
+      "passed": true
+    },
+    {
+      "name": "initial-one:controlled_scope",
+      "passed": true
+    },
+    {
+      "name": "initial-one:input:residualSHA256",
+      "passed": true
+    },
+    {
+      "name": "initial-one:input:timeAct1SHA256",
+      "passed": true
+    },
+    {
+      "name": "initial-one:input:conditioningSHA256",
+      "passed": true
+    },
+    {
+      "name": "initial-one:input:conditioningMaskSHA256",
+      "passed": true
+    },
+    {
+      "name": "initial-one:validation_two_targets",
+      "passed": true
+    },
+    {
+      "name": "initial-one:validation:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "initial-one:validation:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "initial-one:validation:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "initial-one:validation:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "initial-one:active_two_targets",
+      "passed": true
+    },
+    {
+      "name": "initial-one:active:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "initial-one:active:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "initial-one:active:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "initial-one:active:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "initial-one:native_epochs",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:artifacts",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:weightComparison",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:biasComparison",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:outputComparison",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:reference_descriptors",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:all10240",
+      "passed": true,
+      "detail": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 3.337860107421875e-06
+      }
+    },
+    {
+      "name": "initial-negative:scope",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:selected_patch_shapes",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:native_validation",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:active_hash",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:actual_and_expectation_namespaces",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:registry_namespaces",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:original_selection",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:controlled_scope",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:input:residualSHA256",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:input:timeAct1SHA256",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:input:conditioningSHA256",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:input:conditioningMaskSHA256",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:validation_two_targets",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:validation:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:validation:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:validation:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:validation:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:active_two_targets",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:active:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:active:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:active:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:active:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "initial-negative:native_epochs",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:artifacts",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:weightComparison",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:biasComparison",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:outputComparison",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:reference_descriptors",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:all10240",
+      "passed": true,
+      "detail": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 3.2186508178710938e-06
+      }
+    },
+    {
+      "name": "reapply-one:scope",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:selected_patch_shapes",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:native_validation",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:active_hash",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:actual_and_expectation_namespaces",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:registry_namespaces",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:original_selection",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:controlled_scope",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:input:residualSHA256",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:input:timeAct1SHA256",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:input:conditioningSHA256",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:input:conditioningMaskSHA256",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:validation_two_targets",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:validation:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:validation:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:validation:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:validation:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:active_two_targets",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:active:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:active:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:active:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:active:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "reapply-one:native_epochs",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:artifacts",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:weightComparison",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:biasComparison",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:outputComparison",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:reference_descriptors",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:all10240",
+      "passed": true,
+      "detail": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 3.2186508178710938e-06
+      }
+    },
+    {
+      "name": "validation-recovery:scope",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:selected_patch_shapes",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:native_validation",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:active_hash",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:actual_and_expectation_namespaces",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:registry_namespaces",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:original_selection",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:controlled_scope",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:input:residualSHA256",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:input:timeAct1SHA256",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:input:conditioningSHA256",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:input:conditioningMaskSHA256",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:validation_two_targets",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:validation:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:validation:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:validation:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:validation:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:active_two_targets",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:active:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:active:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:active:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:active:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "validation-recovery:native_epochs",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:artifacts",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:weightComparison",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:biasComparison",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:outputComparison",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:reference_descriptors",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:all10240",
+      "passed": true,
+      "detail": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 3.2186508178710938e-06
+      }
+    },
+    {
+      "name": "prepare-cancel-recovery:scope",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:selected_patch_shapes",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:native_validation",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:active_hash",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:actual_and_expectation_namespaces",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:registry_namespaces",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:original_selection",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:controlled_scope",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:input:residualSHA256",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:input:timeAct1SHA256",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:input:conditioningSHA256",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:input:conditioningMaskSHA256",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:validation_two_targets",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:validation:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:validation:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:validation:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:validation:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:active_two_targets",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:active:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:active:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:active:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:active:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "prepare-cancel-recovery:native_epochs",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:artifacts",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:weightComparison",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:biasComparison",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:outputComparison",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:reference_descriptors",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:all10240",
+      "passed": true,
+      "detail": {
+        "compared": 10240,
+        "failedValues": 0,
+        "maxAbsoluteError": 3.2186508178710938e-06
+      }
+    },
+    {
+      "name": "native-cancel-recovery:scope",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:selected_patch_shapes",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:native_validation",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:active_hash",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:actual_and_expectation_namespaces",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:registry_namespaces",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:original_selection",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:controlled_scope",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:input:residualSHA256",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:input:timeAct1SHA256",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:input:conditioningSHA256",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:input:conditioningMaskSHA256",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:validation_two_targets",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:validation:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:validation:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:validation:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:validation:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:active_two_targets",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:active:operator_patch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:active:package_epoch:blocks.0.cross_attn.q.weight",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:active:operator_patch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:active:package_epoch:blocks.0.cross_attn.q.bias",
+      "passed": true
+    },
+    {
+      "name": "native-cancel-recovery:native_epochs",
+      "passed": true
+    },
+    {
+      "name": "restore_all10240",
+      "passed": true
+    },
+    {
+      "name": "restore_equals_zero",
+      "passed": true
+    },
+    {
+      "name": "positive_reapply_and_recover_equal",
+      "passed": true
+    },
+    {
+      "name": "validation-failure:hash_matches_accepted_negative:weight",
+      "passed": true
+    },
+    {
+      "name": "validation-failure:hash_matches_accepted_negative:bias",
+      "passed": true
+    },
+    {
+      "name": "cancel-native-read:hash_matches_accepted_negative:weight",
+      "passed": true
+    },
+    {
+      "name": "cancel-native-read:hash_matches_accepted_negative:bias",
+      "passed": true
+    },
+    {
+      "name": "controls_not_accepted",
+      "passed": true
+    },
+    {
+      "name": "fresh_lora_hash_not_oracle_hash",
+      "passed": true
+    },
+    {
+      "name": "no_host_original_reads_or_new_expectations",
+      "passed": true
+    },
+    {
+      "name": "base_fresh_header_prior_whole_hash",
+      "passed": true
+    },
+    {
+      "name": "identity_and_transport",
+      "passed": true
+    },
+    {
+      "name": "metadata_no_raw_numeric_arrays",
+      "passed": true,
+      "detail": {
+        "largestNumericArray": 4
+      }
+    }
+  ],
+  "reviewerActions": {
+    "originalOrBaseFilesReopened": false,
+    "LoRaOriginalFactorsReopened": false,
+    "referenceAWeightOrBaseArraysReopened": false,
+    "generatedWeightBiasArtifacts": "bytes/SHA-256 only; no value decoding or LoRa arithmetic",
+    "outputActivations": "Decoded generated F32 output and saved independent B F32 output for new all-element gate readback",
+    "newExpectedValuesGenerated": false,
+    "nativeOrNNExecutions": 0,
+    "productCodeEdits": 0
+  },
+  "scope": {
+    "selection": "light/LOW cross-attention Q first4 original rows/all5120 columns plus explicit bias4",
+    "fullWeightShape": [
+      5120,
+      5120
+    ],
+    "fullBiasShape": [
+      5120
+    ],
+    "coverage": "PARTIAL",
+    "excludedTargets": 1050,
+    "producerAuthenticated": false,
+    "naturalP2OrN2Acceptance": false,
+    "managementP4NormOrSnapshotAdoption": false,
+    "fullTargetOrModelInference": false,
+    "generationReady": false
+  },
+  "advisories": [
+    "Host filter LORA-P4(space) does not forward LORA-P4-REAL progress; events[] is not a chronological trace. Queue/runtime receipts retain actual observations.",
+    "Old-base-view control retains initial-zero sparse feed(epoch1) across later commit, not native immutable-base empty-feed view.",
+    "Active copy survives prepared/candidate/package release and LoRa File read/hash capability invalidation with SDK instance/base source still alive. No run after SDK instance/base-source disposal was tested.",
+    "prepareLoad is not a second numerical copy; sparse patch buffers are retained/deduplicated across package/candidate/active/internal read leases.",
+    "A references and actual prepared patches can differ within fixed weight gate; their identities stay distinct.",
+    "RSS is a partial sampled owned-process sum with shared-page double counting, not global OS/device/full-pipeline peak."
+  ],
+  "phaseAudit": {
+    "schemaVersion": "independent-native-p4-phase-audit/1",
+    "status": "PROCEED",
+    "reviewer": "actual_phase_audit",
+    "input": "/workspace/work/lora/p4-adapter-task/native-a80-run1/result.json",
+    "oracleManifest": "/workspace/work/lora/p4-adapter-task/oracle-a80-run1/manifest.json",
+    "executionCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+    "scope": "Seven controlled light/LOW cross-Q first4-row native P4 cases; native management queue only. No formal manager P4 norm/snapshot, natural upstream or full-model/generation admission.",
+    "checks": [
+      {
+        "id": "controlled-scope-not-formal-or-natural-admission",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/status",
+          "/scope",
+          "/coverage",
+          "/managerSnapshotPublished",
+          "/managementP4NormAdoption",
+          "/currentLiveAdmission"
+        ],
+        "observation": "Actual controlled-caller N2/K4 native queue acceptance only; no manager P4 catalog/snapshot or natural upstream/production admission."
+      },
+      {
+        "id": "oracle-execution-scope",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/oracle/executionSource",
+          "/independentReferences"
+        ],
+        "observation": "Oracle declared independent expectations remain separate from actual native prepared-patch identity. Parent audits numerical artifacts."
+      },
+      {
+        "id": "no-host-whole-file-or-export-reclassification",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/browserFileInputs",
+          "/original",
+          "/baseIdentity",
+          "/basePriorEvidence"
+        ],
+        "observation": "One selected LoRA File was hashed by browser for this load; historical base identity does not become fresh whole-base verification."
+      },
+      {
+        "id": "copy-boundary-is-one-native-patch-copy",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/binding/copyBoundary",
+          "/binding/prepareLoadNumericalCopy",
+          "/binding/internalReadLeaseIsSdkLease"
+        ],
+        "observation": "SDK independent-copy ownership is relative to released prepared/package handles and LoRA File read/hash capability. Native prepareLoad shares already-private sink buffers; no second numerical copy, SDK-instance-disposal survival or SDK lease is inferred."
+      },
+      {
+        "id": "initial-zero:exact-queue-and-native-application-binding",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/0/queueTarget",
+          "/cases/0/application/validation/evidence/applicationBinding",
+          "/queue/invocations"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "initial-zero:sdk-identity-and-copy-ownership",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/0/application",
+          "/cases/0/sdkInstanceId",
+          "/cases/0/localInputRevision",
+          "/cases/0/managerRevision"
+        ],
+        "observation": "SDK revision, manager queue revision and native feed epoch remain separate namespaces."
+      },
+      {
+        "id": "initial-zero:validation-then-active-epoch",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/0/application/validation/evidence/nativeReceipt",
+          "/cases/0/validationConsumption",
+          "/cases/0/activeConsumption",
+          "/cases/0/nativeStats"
+        ],
+        "observation": "Candidate validation occurs at the previous active epoch; commit advances native epoch by one while preserving candidate package identity."
+      },
+      {
+        "id": "initial-zero:finalized-handles-retain-one-private-feed",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/0/nativeStats"
+        ],
+        "observation": "After SDK handle/candidate finalization exactly 81,936 deduplicated private patch bytes in two buffers remain active: 20,480 weight and four bias F32 elements. No double-counted second copy."
+      },
+      {
+        "id": "initial-zero:runtime-scope-barriers",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/0/outputEvidence",
+          "/cases/0/application/validation/evidence/nativeReceipt"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "initial-one:exact-queue-and-native-application-binding",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/1/queueTarget",
+          "/cases/1/application/validation/evidence/applicationBinding",
+          "/queue/invocations"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "initial-one:sdk-identity-and-copy-ownership",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/1/application",
+          "/cases/1/sdkInstanceId",
+          "/cases/1/localInputRevision",
+          "/cases/1/managerRevision"
+        ],
+        "observation": "SDK revision, manager queue revision and native feed epoch remain separate namespaces."
+      },
+      {
+        "id": "initial-one:validation-then-active-epoch",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/1/application/validation/evidence/nativeReceipt",
+          "/cases/1/validationConsumption",
+          "/cases/1/activeConsumption",
+          "/cases/1/nativeStats"
+        ],
+        "observation": "Candidate validation occurs at the previous active epoch; commit advances native epoch by one while preserving candidate package identity."
+      },
+      {
+        "id": "initial-one:finalized-handles-retain-one-private-feed",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/1/nativeStats"
+        ],
+        "observation": "After SDK handle/candidate finalization exactly 81,936 deduplicated private patch bytes in two buffers remain active: 20,480 weight and four bias F32 elements. No double-counted second copy."
+      },
+      {
+        "id": "initial-one:runtime-scope-barriers",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/1/outputEvidence",
+          "/cases/1/application/validation/evidence/nativeReceipt"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "initial-negative:exact-queue-and-native-application-binding",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/2/queueTarget",
+          "/cases/2/application/validation/evidence/applicationBinding",
+          "/queue/invocations"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "initial-negative:sdk-identity-and-copy-ownership",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/2/application",
+          "/cases/2/sdkInstanceId",
+          "/cases/2/localInputRevision",
+          "/cases/2/managerRevision"
+        ],
+        "observation": "SDK revision, manager queue revision and native feed epoch remain separate namespaces."
+      },
+      {
+        "id": "initial-negative:validation-then-active-epoch",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/2/application/validation/evidence/nativeReceipt",
+          "/cases/2/validationConsumption",
+          "/cases/2/activeConsumption",
+          "/cases/2/nativeStats"
+        ],
+        "observation": "Candidate validation occurs at the previous active epoch; commit advances native epoch by one while preserving candidate package identity."
+      },
+      {
+        "id": "initial-negative:finalized-handles-retain-one-private-feed",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/2/nativeStats"
+        ],
+        "observation": "After SDK handle/candidate finalization exactly 81,936 deduplicated private patch bytes in two buffers remain active: 20,480 weight and four bias F32 elements. No double-counted second copy."
+      },
+      {
+        "id": "initial-negative:runtime-scope-barriers",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/2/outputEvidence",
+          "/cases/2/application/validation/evidence/nativeReceipt"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "reapply-one:exact-queue-and-native-application-binding",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/3/queueTarget",
+          "/cases/3/application/validation/evidence/applicationBinding",
+          "/queue/invocations"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "reapply-one:sdk-identity-and-copy-ownership",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/3/application",
+          "/cases/3/sdkInstanceId",
+          "/cases/3/localInputRevision",
+          "/cases/3/managerRevision"
+        ],
+        "observation": "SDK revision, manager queue revision and native feed epoch remain separate namespaces."
+      },
+      {
+        "id": "reapply-one:validation-then-active-epoch",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/3/application/validation/evidence/nativeReceipt",
+          "/cases/3/validationConsumption",
+          "/cases/3/activeConsumption",
+          "/cases/3/nativeStats"
+        ],
+        "observation": "Candidate validation occurs at the previous active epoch; commit advances native epoch by one while preserving candidate package identity."
+      },
+      {
+        "id": "reapply-one:finalized-handles-retain-one-private-feed",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/3/nativeStats"
+        ],
+        "observation": "After SDK handle/candidate finalization exactly 81,936 deduplicated private patch bytes in two buffers remain active: 20,480 weight and four bias F32 elements. No double-counted second copy."
+      },
+      {
+        "id": "reapply-one:runtime-scope-barriers",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/3/outputEvidence",
+          "/cases/3/application/validation/evidence/nativeReceipt"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "validation-recovery:exact-queue-and-native-application-binding",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/4/queueTarget",
+          "/cases/4/application/validation/evidence/applicationBinding",
+          "/queue/invocations"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "validation-recovery:sdk-identity-and-copy-ownership",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/4/application",
+          "/cases/4/sdkInstanceId",
+          "/cases/4/localInputRevision",
+          "/cases/4/managerRevision"
+        ],
+        "observation": "SDK revision, manager queue revision and native feed epoch remain separate namespaces."
+      },
+      {
+        "id": "validation-recovery:validation-then-active-epoch",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/4/application/validation/evidence/nativeReceipt",
+          "/cases/4/validationConsumption",
+          "/cases/4/activeConsumption",
+          "/cases/4/nativeStats"
+        ],
+        "observation": "Candidate validation occurs at the previous active epoch; commit advances native epoch by one while preserving candidate package identity."
+      },
+      {
+        "id": "validation-recovery:finalized-handles-retain-one-private-feed",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/4/nativeStats"
+        ],
+        "observation": "After SDK handle/candidate finalization exactly 81,936 deduplicated private patch bytes in two buffers remain active: 20,480 weight and four bias F32 elements. No double-counted second copy."
+      },
+      {
+        "id": "validation-recovery:runtime-scope-barriers",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/4/outputEvidence",
+          "/cases/4/application/validation/evidence/nativeReceipt"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "prepare-cancel-recovery:exact-queue-and-native-application-binding",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/5/queueTarget",
+          "/cases/5/application/validation/evidence/applicationBinding",
+          "/queue/invocations"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "prepare-cancel-recovery:sdk-identity-and-copy-ownership",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/5/application",
+          "/cases/5/sdkInstanceId",
+          "/cases/5/localInputRevision",
+          "/cases/5/managerRevision"
+        ],
+        "observation": "SDK revision, manager queue revision and native feed epoch remain separate namespaces."
+      },
+      {
+        "id": "prepare-cancel-recovery:validation-then-active-epoch",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/5/application/validation/evidence/nativeReceipt",
+          "/cases/5/validationConsumption",
+          "/cases/5/activeConsumption",
+          "/cases/5/nativeStats"
+        ],
+        "observation": "Candidate validation occurs at the previous active epoch; commit advances native epoch by one while preserving candidate package identity."
+      },
+      {
+        "id": "prepare-cancel-recovery:finalized-handles-retain-one-private-feed",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/5/nativeStats"
+        ],
+        "observation": "After SDK handle/candidate finalization exactly 81,936 deduplicated private patch bytes in two buffers remain active: 20,480 weight and four bias F32 elements. No double-counted second copy."
+      },
+      {
+        "id": "prepare-cancel-recovery:runtime-scope-barriers",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/5/outputEvidence",
+          "/cases/5/application/validation/evidence/nativeReceipt"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "native-cancel-recovery:exact-queue-and-native-application-binding",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/6/queueTarget",
+          "/cases/6/application/validation/evidence/applicationBinding",
+          "/queue/invocations"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "native-cancel-recovery:sdk-identity-and-copy-ownership",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/6/application",
+          "/cases/6/sdkInstanceId",
+          "/cases/6/localInputRevision",
+          "/cases/6/managerRevision"
+        ],
+        "observation": "SDK revision, manager queue revision and native feed epoch remain separate namespaces."
+      },
+      {
+        "id": "native-cancel-recovery:validation-then-active-epoch",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/6/application/validation/evidence/nativeReceipt",
+          "/cases/6/validationConsumption",
+          "/cases/6/activeConsumption",
+          "/cases/6/nativeStats"
+        ],
+        "observation": "Candidate validation occurs at the previous active epoch; commit advances native epoch by one while preserving candidate package identity."
+      },
+      {
+        "id": "native-cancel-recovery:finalized-handles-retain-one-private-feed",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/6/nativeStats"
+        ],
+        "observation": "After SDK handle/candidate finalization exactly 81,936 deduplicated private patch bytes in two buffers remain active: 20,480 weight and four bias F32 elements. No double-counted second copy."
+      },
+      {
+        "id": "native-cancel-recovery:runtime-scope-barriers",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/6/outputEvidence",
+          "/cases/6/application/validation/evidence/nativeReceipt"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "seven-distinct-sdk-copy-owners",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases"
+        ],
+        "observation": "Independent-copy identities are dynamic candidate-bound owner IDs; native epochs advance only for accepted applications."
+      },
+      {
+        "id": "runtime-0:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/0/beforeDispose",
+          "/runtimeCalls/0/afterDispose",
+          "/runtimeStates/0"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-1:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/1/beforeDispose",
+          "/runtimeCalls/1/afterDispose",
+          "/runtimeStates/1"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-2:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/2/beforeDispose",
+          "/runtimeCalls/2/afterDispose",
+          "/runtimeStates/2"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-3:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/3/beforeDispose",
+          "/runtimeCalls/3/afterDispose",
+          "/runtimeStates/3"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-4:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/4/beforeDispose",
+          "/runtimeCalls/4/afterDispose",
+          "/runtimeStates/4"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-5:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/5/beforeDispose",
+          "/runtimeCalls/5/afterDispose",
+          "/runtimeStates/5"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-6:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/6/beforeDispose",
+          "/runtimeCalls/6/afterDispose",
+          "/runtimeStates/6"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-7:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/7/beforeDispose",
+          "/runtimeCalls/7/afterDispose",
+          "/runtimeStates/7"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-8:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/8/beforeDispose",
+          "/runtimeCalls/8/afterDispose",
+          "/runtimeStates/8"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-9:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/9/beforeDispose",
+          "/runtimeCalls/9/afterDispose",
+          "/runtimeStates/9"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-10:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/10/beforeDispose",
+          "/runtimeCalls/10/afterDispose",
+          "/runtimeStates/10"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-11:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/11/beforeDispose",
+          "/runtimeCalls/11/afterDispose",
+          "/runtimeStates/11"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-12:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/12/beforeDispose",
+          "/runtimeCalls/12/afterDispose",
+          "/runtimeStates/12"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-13:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/13/beforeDispose",
+          "/runtimeCalls/13/afterDispose",
+          "/runtimeStates/13"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-14:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/14/beforeDispose",
+          "/runtimeCalls/14/afterDispose",
+          "/runtimeStates/14"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-15:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/15/beforeDispose",
+          "/runtimeCalls/15/afterDispose",
+          "/runtimeStates/15"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-16:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/16/beforeDispose",
+          "/runtimeCalls/16/afterDispose",
+          "/runtimeStates/16"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-17:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/17/beforeDispose",
+          "/runtimeCalls/17/afterDispose",
+          "/runtimeStates/17"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-18:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/18/beforeDispose",
+          "/runtimeCalls/18/afterDispose",
+          "/runtimeStates/18"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-19:stage-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls/19/beforeDispose",
+          "/runtimeCalls/19/afterDispose",
+          "/runtimeStates/19"
+        ],
+        "observation": "Each real runtime owns two ORT sessions and releases them before its run wrapper settles."
+      },
+      {
+        "id": "runtime-call-classification",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/runtimeCalls",
+          "/runtimeStates"
+        ],
+        "observation": "Seven validation/active pairs plus completed failure, source-release checks and restore runs; one native-read cancellation, no completed native run for prepare cancellation."
+      },
+      {
+        "id": "actual-numerical-invalid-receipt-not-unrelated-error",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/controls/1/validationReceipt",
+          "/controls/1/control",
+          "/controls/1/nativeStats",
+          "/controls/1/queue"
+        ],
+        "observation": "Runtime completed and produced an actual valid:false numerical receipt before SDK rejected staging. It was not counted among seven accepted cases."
+      },
+      {
+        "id": "cancel-prepare:exact-cancel-terminal-release",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/controls/2/queueTarget",
+          "/controls/2/cancelReply",
+          "/queue/invocations"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "cancel-prepare:prior-feed-and-cleanup-preserved",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/controls/2/preparedBlocks",
+          "/controls/2/nativeStats"
+        ],
+        "observation": "Cancelled partial/prepared candidate resources are gone; remaining private bytes belong to the previous accepted active feed."
+      },
+      {
+        "id": "cancel-native-read:exact-cancel-terminal-release",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/controls/3/queueTarget",
+          "/controls/3/cancelReply",
+          "/queue/invocations"
+        ],
+        "observation": ""
+      },
+      {
+        "id": "cancel-native-read:prior-feed-and-cleanup-preserved",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/controls/3/preparedBlocks",
+          "/controls/3/nativeStats"
+        ],
+        "observation": "Cancelled partial/prepared candidate resources are gone; remaining private bytes belong to the previous accepted active feed."
+      },
+      {
+        "id": "fresh-recovery-revisions-after-two-cancels",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cases/4",
+          "/cases/5",
+          "/cases/6"
+        ],
+        "observation": "Fresh SDK plans recover each control; queue revisions and native epochs do not reuse cancellation permission."
+      },
+      {
+        "id": "retained-zero-feed-read-view",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/controls/0",
+          "/cases/0/nativeStats"
+        ],
+        "observation": "This held the strength-zero sparse package across the positive commit, then released it. Base-equal bytes do not make its package the native empty immutable-base package."
+      },
+      {
+        "id": "loRa-source-capability-release-survives",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/controls/4",
+          "/cases/6/outputEvidence"
+        ],
+        "observation": "Only the LoRA File capability was released. The immutable original base source remained live for unselected ranges; no self-contained whole-base copy is inferred."
+      },
+      {
+        "id": "restore-exact-queue-and-runtime-validation",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/controls/5",
+          "/queue/invocations"
+        ],
+        "observation": "Restoration was an owned queue invocation with actual base candidate validation, not a manager snapshot publication."
+      },
+      {
+        "id": "restored-base-retains-no-patch-resource",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/finalNativeStats",
+          "/controls/5/nativeStats",
+          "/controls/5/receipt"
+        ],
+        "observation": "Native empty immutable-base feed is active after restore; no sparse patch buffers, packages, candidates, transactions or read views remain."
+      },
+      {
+        "id": "queue-all-original-invocations-terminal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/queue"
+        ],
+        "observation": "Final serialized queue inspection is before dispose; all 11 original invocations are terminal/released and cleanup separately confirms disposal."
+      },
+      {
+        "id": "final-feed-and-source-disposal",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/cleanup"
+        ],
+        "observation": "Both afterFeed and afterSource snapshots were taken after all disposal steps; do not interpret their ordering as separate intermediate source-lifetime observations."
+      },
+      {
+        "id": "rss-sampled-sum-math-and-identity-metadata",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/hostResourceObservation/samples",
+          "/hostResourceObservation/processRecords",
+          "/hostResourceObservation/sampledPeakObservation"
+        ],
+        "observation": "Checks recorded accounting and identity metadata only. RSS is a noninstantaneous sampled sum with shared-page double counting, not a unique physical-memory or device peak."
+      },
+      {
+        "id": "rss-partial-status-and-node-high-water",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/hostResourceObservation"
+        ],
+        "observation": "Report sampled sum peak 1,472,950,272 bytes and Node high-water 648,708,096 bytes separately, with PARTIAL status and sampling limitations."
+      },
+      {
+        "id": "no-host-or-browser-errors-and-inputs-unchanged",
+        "status": "PASS",
+        "evidenceRefs": [
+          "/pageErrors",
+          "/serverErrors",
+          "/cleanupErrors",
+          "/privateInputHTTPRequests"
+        ],
+        "observation": ""
+      }
+    ],
+    "findings": [
+      {
+        "id": "CONSOLE_PREFIX_MISMATCH",
+        "status": "ADVISE",
+        "evidenceRefs": [
+          "/events",
+          "git:a80db72:tools/ai-connection/lora-p4-real-browser.mjs:62",
+          "git:a80db72:tools/ai-connection/test-lora-p4-real.mjs:374"
+        ],
+        "observation": "Browser logs LORA-P4-REAL followed by space; host forwards only LORA-P4 followed by space. Progress lines were suppressed. /events is empty, so it is not a chronological execution trace. Structured receipts/runtimeCalls provide the lifetime evidence.",
+        "blocksAcceptance": false
+      },
+      {
+        "id": "OLD_BASE_LEASE_LABEL_SCOPE",
+        "status": "ADVISE",
+        "evidenceRefs": [
+          "/controls/0",
+          "/cases/0/nativeStats",
+          "/finalNativeStats"
+        ],
+        "observation": "The retained view is the zero-strength sparse package at native epoch1, not the empty immutable-base package later restored. Say retained zero-feed read view with base-equal selected bytes.",
+        "blocksAcceptance": false
+      },
+      {
+        "id": "SOURCE_RELEASE_SCOPE",
+        "status": "ADVISE",
+        "evidenceRefs": [
+          "/controls/4",
+          "/binding/copyBoundary",
+          "/binding/prepareLoadNumericalCopy"
+        ],
+        "observation": "Prepared/candidate/package handles were released and LoRA File read/hash capability disabled while the original base source and SDK instance remained live. SDK instance disposal happened only after final base restoration. No second native numerical copy, self-contained whole-base copy or SDK lease is inferred.",
+        "blocksAcceptance": false
+      }
+    ],
+    "caseLifetimes": [
+      {
+        "id": "initial-zero",
+        "managerRevision": 3001,
+        "sdk": {
+          "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+          "localInputRevision": 1,
+          "localApplicationRevision": 1
+        },
+        "validationNativeEpoch": 0,
+        "activeNativeEpoch": 1,
+        "queueTarget": {
+          "invocationId": "p4:initial-zero:381ebb01-76ad-475c-a2a1-c8e151a8bb6c",
+          "bindingId": "lora-p4-low-cross-q",
+          "ownerId": "lora-p4-owner:d519000e-fb61-4d3e-bb76-ab76c6678298",
+          "resourceGeneration": "160809df-56b4-477d-a74d-f37a4f42816a",
+          "requestId": "p4:initial-zero:request",
+          "revision": 3001,
+          "activeToken": "541d15c3-13de-4f3e-89ec-8ffc5b4131ee"
+        },
+        "nativeCandidateId": "1788d047-79ba-4012-85a2-4b439ff4248c",
+        "nativePackageHash": "54b63c42447802d49364184843b240b44c131a98bc49340c597dedd2492c809d",
+        "sdkCopyOwnerId": "fd746356-c30e-439a-b755-3dd39e26ed27:1788d047-79ba-4012-85a2-4b439ff4248c",
+        "activePrivatePatchBytes": 81936,
+        "retainedPatchBuffers": 2
+      },
+      {
+        "id": "initial-one",
+        "managerRevision": 3002,
+        "sdk": {
+          "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+          "localInputRevision": 2,
+          "localApplicationRevision": 2
+        },
+        "validationNativeEpoch": 1,
+        "activeNativeEpoch": 2,
+        "queueTarget": {
+          "invocationId": "p4:initial-one:127597bf-5334-4f86-ad3c-1002688911fb",
+          "bindingId": "lora-p4-low-cross-q",
+          "ownerId": "lora-p4-owner:d519000e-fb61-4d3e-bb76-ab76c6678298",
+          "resourceGeneration": "160809df-56b4-477d-a74d-f37a4f42816a",
+          "requestId": "p4:initial-one:request",
+          "revision": 3002,
+          "activeToken": "a8cf6db7-d7b3-449d-9987-60437415ca96"
+        },
+        "nativeCandidateId": "70a503f8-6a1d-4db5-9928-8307e08c5962",
+        "nativePackageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+        "sdkCopyOwnerId": "fd746356-c30e-439a-b755-3dd39e26ed27:70a503f8-6a1d-4db5-9928-8307e08c5962",
+        "activePrivatePatchBytes": 81936,
+        "retainedPatchBuffers": 2
+      },
+      {
+        "id": "initial-negative",
+        "managerRevision": 3003,
+        "sdk": {
+          "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+          "localInputRevision": 3,
+          "localApplicationRevision": 3
+        },
+        "validationNativeEpoch": 2,
+        "activeNativeEpoch": 3,
+        "queueTarget": {
+          "invocationId": "p4:initial-negative:f5ae18db-d1f9-48cd-8bac-1fb0d858fc6d",
+          "bindingId": "lora-p4-low-cross-q",
+          "ownerId": "lora-p4-owner:d519000e-fb61-4d3e-bb76-ab76c6678298",
+          "resourceGeneration": "160809df-56b4-477d-a74d-f37a4f42816a",
+          "requestId": "p4:initial-negative:request",
+          "revision": 3003,
+          "activeToken": "4977ff4f-87bb-4207-b655-035a528b645d"
+        },
+        "nativeCandidateId": "153e49cc-1f6f-43c7-93d7-d6f33897a80a",
+        "nativePackageHash": "e66a6eae85c43cece135f4f9791cf30716defa69c94dff77ec1372ec32ede74e",
+        "sdkCopyOwnerId": "fd746356-c30e-439a-b755-3dd39e26ed27:153e49cc-1f6f-43c7-93d7-d6f33897a80a",
+        "activePrivatePatchBytes": 81936,
+        "retainedPatchBuffers": 2
+      },
+      {
+        "id": "reapply-one",
+        "managerRevision": 3004,
+        "sdk": {
+          "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+          "localInputRevision": 4,
+          "localApplicationRevision": 4
+        },
+        "validationNativeEpoch": 3,
+        "activeNativeEpoch": 4,
+        "queueTarget": {
+          "invocationId": "p4:reapply-one:85990a51-1852-4b8a-abb6-81cfc53c29b3",
+          "bindingId": "lora-p4-low-cross-q",
+          "ownerId": "lora-p4-owner:d519000e-fb61-4d3e-bb76-ab76c6678298",
+          "resourceGeneration": "160809df-56b4-477d-a74d-f37a4f42816a",
+          "requestId": "p4:reapply-one:request",
+          "revision": 3004,
+          "activeToken": "f1f4bc0b-03d7-4323-a7c9-5458488f7461"
+        },
+        "nativeCandidateId": "e7a4c575-2ca8-42e5-a811-b05be7b8bd96",
+        "nativePackageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+        "sdkCopyOwnerId": "fd746356-c30e-439a-b755-3dd39e26ed27:e7a4c575-2ca8-42e5-a811-b05be7b8bd96",
+        "activePrivatePatchBytes": 81936,
+        "retainedPatchBuffers": 2
+      },
+      {
+        "id": "validation-recovery",
+        "managerRevision": 3006,
+        "sdk": {
+          "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+          "localInputRevision": 6,
+          "localApplicationRevision": 6
+        },
+        "validationNativeEpoch": 4,
+        "activeNativeEpoch": 5,
+        "queueTarget": {
+          "invocationId": "p4:validation-recovery:89372db5-c694-4bc7-aa17-1f640e3d39ec",
+          "bindingId": "lora-p4-low-cross-q",
+          "ownerId": "lora-p4-owner:d519000e-fb61-4d3e-bb76-ab76c6678298",
+          "resourceGeneration": "160809df-56b4-477d-a74d-f37a4f42816a",
+          "requestId": "p4:validation-recovery:request",
+          "revision": 3006,
+          "activeToken": "372853c5-041a-4ae2-bd70-1953d751180e"
+        },
+        "nativeCandidateId": "902195d2-1142-4617-8bbe-0355e0c2294c",
+        "nativePackageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+        "sdkCopyOwnerId": "fd746356-c30e-439a-b755-3dd39e26ed27:902195d2-1142-4617-8bbe-0355e0c2294c",
+        "activePrivatePatchBytes": 81936,
+        "retainedPatchBuffers": 2
+      },
+      {
+        "id": "prepare-cancel-recovery",
+        "managerRevision": 3008,
+        "sdk": {
+          "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+          "localInputRevision": 9,
+          "localApplicationRevision": 9
+        },
+        "validationNativeEpoch": 5,
+        "activeNativeEpoch": 6,
+        "queueTarget": {
+          "invocationId": "p4:prepare-cancel-recovery:bc359952-829f-4015-98bc-375125d97399",
+          "bindingId": "lora-p4-low-cross-q",
+          "ownerId": "lora-p4-owner:d519000e-fb61-4d3e-bb76-ab76c6678298",
+          "resourceGeneration": "160809df-56b4-477d-a74d-f37a4f42816a",
+          "requestId": "p4:prepare-cancel-recovery:request",
+          "revision": 3008,
+          "activeToken": "2f58ba99-17ee-40f9-ab96-cdb3b368d2bc"
+        },
+        "nativeCandidateId": "a4c212de-396d-41cc-94de-ee665f2b2d11",
+        "nativePackageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+        "sdkCopyOwnerId": "fd746356-c30e-439a-b755-3dd39e26ed27:a4c212de-396d-41cc-94de-ee665f2b2d11",
+        "activePrivatePatchBytes": 81936,
+        "retainedPatchBuffers": 2
+      },
+      {
+        "id": "native-cancel-recovery",
+        "managerRevision": 3010,
+        "sdk": {
+          "sdkInstanceId": "2a72b9c4-b52c-4252-8d14-dff4832fec4b",
+          "localInputRevision": 12,
+          "localApplicationRevision": 12
+        },
+        "validationNativeEpoch": 6,
+        "activeNativeEpoch": 7,
+        "queueTarget": {
+          "invocationId": "p4:native-cancel-recovery:1e4bfb0b-2c11-4875-99a6-183c0937c46b",
+          "bindingId": "lora-p4-low-cross-q",
+          "ownerId": "lora-p4-owner:d519000e-fb61-4d3e-bb76-ab76c6678298",
+          "resourceGeneration": "160809df-56b4-477d-a74d-f37a4f42816a",
+          "requestId": "p4:native-cancel-recovery:request",
+          "revision": 3010,
+          "activeToken": "5fe13163-6e86-4f72-9b18-46669a2a2bdb"
+        },
+        "nativeCandidateId": "051e37e1-5c16-48c7-9aa8-4af9a79bbc03",
+        "nativePackageHash": "384b781c89783f38c9e0ae002a055b49715235335b483feb9d0f558377546ab4",
+        "sdkCopyOwnerId": "fd746356-c30e-439a-b755-3dd39e26ed27:051e37e1-5c16-48c7-9aa8-4af9a79bbc03",
+        "activePrivatePatchBytes": 81936,
+        "retainedPatchBuffers": 2
+      }
+    ],
+    "blockers": [],
+    "resourceSummary": {
+      "activePatchedPrivateBuffersPerAcceptedCase": 2,
+      "activePatchedPrivateBytesPerAcceptedCase": 81936,
+      "prepareLoadNumericalCopy": false,
+      "internalReadLeaseIsSdkLease": false,
+      "finalBaseEpoch": 8,
+      "postDisposeEpoch": 9,
+      "finalPatchBytes": 0,
+      "sampledOwnedProcessRssSumPeakBytes": 1472950272,
+      "nodeHighWaterRssBytes": 648708096,
+      "rssStatus": "PARTIAL_SAMPLED_OBSERVATION"
+    },
+    "limitations": [
+      "Read-only recorded receipt/accounting audit and targeted fixed-source lifetime/console inspection; no native, NN or test reexecution.",
+      "No original/base/LoRA or persisted generated artifact arrays were opened, and no file hashes were recomputed.",
+      "Parent owns source/Git pins, all33 artifact byte/hash checks, selected weight/bias numerical metadata and all10240-output comparisons.",
+      "Runtime source-release control does not release the immutable base provider.",
+      "No late-binding fault, SDK lease ownership, formal P4 norm/snapshot or whole-model production inference is established.",
+      "Serialized PID identities do not independently reauthenticate runtime ownership; sampler source guards and explicit root anchor underlie attribution.",
+      "There was no active-feed run after SDK instance disposal; SDK disposal occurs only in final cleanup after immutable-base restoration."
+    ],
+    "constraintsObserved": {
+      "modelOrOriginalReads": false,
+      "generatedArtifactArraysRead": false,
+      "hashesRecomputed": false,
+      "testsOrNativeExecuted": false,
+      "productEdits": false,
+      "onlyWrittenFile": "/workspace/work/lora/p4-adapter-task/native-a80-run1-phase.json"
+    }
+  },
+  "phaseAuditReceipt": {
+    "file": "native-a80-run1-phase.json",
+    "byteLength": 38120,
+    "sha256": "f3c46fbc4bdae1a52afbb43860c325af02dba51a7e053bfcaaec349805357e3e",
+    "embedded": true
+  },
+  "resources": {
+    "activePatchedPrivateBuffersPerAcceptedCase": 2,
+    "activePatchedPrivateBytesPerAcceptedCase": 81936,
+    "prepareLoadNumericalCopy": false,
+    "internalReadLeaseIsSdkLease": false,
+    "finalBaseEpoch": 8,
+    "postDisposeEpoch": 9,
+    "finalPatchBytes": 0,
+    "sampledOwnedProcessRssSumPeakBytes": 1472950272,
+    "nodeHighWaterRssBytes": 648708096,
+    "rssStatus": "PARTIAL_SAMPLED_OBSERVATION"
+  },
+  "limitations": [
+    "Seven accepted LoRa cases only, controlled caller-supplied N2/K4, light/LOW cross-Q first4 rows plus bias4; not natural upstream, other pair/side, all-target, management P4 norm/snapshot or generation acceptance.",
+    "Generated W/b artifacts were read only for bytes/SHA, and recorded complete comparison counts/gates plus native consumed-patch links were audited. A/base/LoRa-original factor arrays were not reopened or arithmetically recomputed.",
+    "Seven output activation arrays plus a separate restored-base output were independently compared against the saved independent B F32 output arrays. No new expected output was generated and no NN/native execution was repeated.",
+    "Runtime process ownership cannot be reauthenticated after process exit from serialized PIDs. Fixed sampler source, explicit BrowserServer PID/starttime anchor and recorded identity/accounting consistency support attribution. RSS remains PARTIAL_SAMPLED_OBSERVATION.",
+    "Old lease control retained a zero-strength sparse feed, not an empty immutable-base view. Prepared/candidate/package and LoRa capability release did not dispose the SDK instance/base provider before the successful active run.",
+    "Progress console prefix mismatch suppressed LORA-P4-REAL lines; events[] is empty and not used as chronological execution evidence."
+  ],
+  "recipientSourceAcknowledgements": {
+    "recordPath": "development/ai-connection/lora-p4-adapter/evidence/recipient-acks/ACKS.json",
+    "recordByteLength": 7224,
+    "recordSha256": "cf3e0c6d8455e719ac211f5d5958283dd683afd448c694557efecd8d46daea27",
+    "acknowledgedSourceCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+    "sourceAcquisitionAckReceived": true,
+    "commentUrls": [
+      "https://github.com/Kushyameln01/kushyameln-works/pull/2#issuecomment-6560793586",
+      "https://github.com/Kushyameln01/kushyameln-works/pull/2#issuecomment-6560860277"
+    ],
+    "scope": "Diffusion source55 and control30+14 acknowledgement; management source acquisition plus separate manager884 P3-limited186/186 return. This is not acquisition/adoption of this final numerical packet or formal management P4 adoption.",
+    "managementReturnDistributionCommit": "9e9b3ad4258a7f91542e7c74ab1011b1b13921ed",
+    "finalP4NumericalPacketRecipientAcquisitionAccepted": false,
+    "formalManagementP4Adoption": false,
+    "reviewMethod": "Read root-acquired ACK metadata/comments; plugin/Git body acquisition and byte verification are recorded in root evidence."
+  }
+}

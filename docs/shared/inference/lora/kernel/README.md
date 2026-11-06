@@ -17,6 +17,12 @@ All input values and strengths must be finite; strengths must remain finite when
 
 Pinned Hike commit `3c51fde6675f317453919bd505d0e2d0f638e7f1`, WABT normal. Actual WAT signatures are recorded in `tools/lora/kernel/build-record.json`.
 
+The pinned compiler reserves stack slots at each executed local declaration.
+Reusable merge/decode loop variables are declared once outside the loops so
+compiler stack use stays constant and cannot grow into the host arena. Regression
+tests include rank128×5120 BF16/F16 input and a 1024×1024 rank1 merge. Small slices
+alone did not exercise the former collision; the real E1 trial exposed it.
+
 | Export | Parameters | Result |
 | --- | --- | --- |
 | LoraMerge | base/down/up/out byte pointers i32, rows/cols/rank i32, scale f32 | i32 status |

@@ -1,0 +1,1 @@
+export const KERNEL = Object.freeze({"abiVersion": "lora-streaming-f32-v1", "wasmSha256": "5117e21d789d01b5dd49d7e8cf9bc8d2f78a51f7d3810aab56e4a40588a0c361", "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1", "backend": "hike-llvm-clang19-simd128-strict-f32", "productExport": "LoraProduct16"});

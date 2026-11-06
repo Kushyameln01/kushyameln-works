@@ -1,0 +1,108 @@
+{
+  "residual": {
+    "file": "input-residual.f32",
+    "dtype": "F32",
+    "shape": [
+      2,
+      5120
+    ],
+    "elements": 10240,
+    "bytes": 40960,
+    "sha256": "6b95d821c8f21a6c8adb294bb8193d38de0e95e1a82ff8f3610c81d218103797"
+  },
+  "timeAct1": {
+    "file": "input-timeAct1.f32",
+    "dtype": "F32",
+    "shape": [
+      5120
+    ],
+    "elements": 5120,
+    "bytes": 20480,
+    "sha256": "3ae8a9271f409afc11f612c9f13fdaa51119418cb35d65a0112e815d1edf9e95"
+  },
+  "conditioning": {
+    "file": "input-conditioning.f32",
+    "dtype": "F32",
+    "shape": [
+      1,
+      4,
+      4096
+    ],
+    "elements": 16384,
+    "bytes": 65536,
+    "sha256": "0cd4fa87e24e6d875207aca52cc214a1b46157a886d4c090fb7c5cfc9a5925ae"
+  },
+  "conditioningMask": {
+    "file": "input-conditioning-mask.u8",
+    "dtype": "U8",
+    "shape": [
+      4
+    ],
+    "elements": 4,
+    "bytes": 4,
+    "sha256": "252c0b6b080fa045acfcd1437f693f3be2be2ac8223ea525d492fa19ab028942"
+  },
+  "conditioningContract": {
+    "schemaVersion": "bernini-p4-fixture-contract/0.1",
+    "status": "FROZEN_BEFORE_NUMERICAL_EXECUTION",
+    "fixtureId": "bernini-p4-explicit-text-l4-dyadic-v1",
+    "sourceRef": "development/ai-connection/p4-cross-ffn/core/fixture-contract.json",
+    "inputClass": "explicit-fixture",
+    "producer": "independent-deterministic-diagnostic-fixture",
+    "meaning": "p4-fixture-text-hidden-states:v1",
+    "shape": [
+      1,
+      4,
+      4096
+    ],
+    "dtype": "float32",
+    "layout": "BLC",
+    "rows": 4,
+    "attentionMask": [
+      1,
+      1,
+      0,
+      1
+    ],
+    "attentionMaskSHA256": "252c0b6b080fa045acfcd1437f693f3be2be2ac8223ea525d492fa19ab028942",
+    "dataSHA256": "0cd4fa87e24e6d875207aca52cc214a1b46157a886d4c090fb7c5cfc9a5925ae",
+    "construction": "zero-based row r, channel c: row2 => positive zero; otherwise (((r+1)*131+(c+1)*17)%257-128)/1024; exact dyadic binary32",
+    "maskedRowsPreserved": true,
+    "crossAttentionMask": "none",
+    "originalWorkflowTextVerified": false,
+    "textEncoderProducerVerified": false,
+    "modelSha256": null,
+    "tokenizerSha256": null
+  },
+  "declaration": {
+    "schemaVersion": "lora-p4-controlled-inputs/0.1-draft.1",
+    "scope": "controlled-caller-input-n2-k4",
+    "producerAuthenticated": false,
+    "naturalN2Reused": false,
+    "timeEmbeddingProducerVerified": false,
+    "scheduleAuthenticated": false,
+    "formulas": {
+      "residual": "((i%17)-8)/128",
+      "timeAct1": "((i%13)-6)/256"
+    },
+    "identities": {
+      "residual": {
+        "shape": [
+          2,
+          5120
+        ],
+        "elements": 10240,
+        "bytes": 40960,
+        "sha256": "6b95d821c8f21a6c8adb294bb8193d38de0e95e1a82ff8f3610c81d218103797"
+      },
+      "timeAct1": {
+        "shape": [
+          5120
+        ],
+        "elements": 5120,
+        "bytes": 20480,
+        "sha256": "3ae8a9271f409afc11f612c9f13fdaa51119418cb35d65a0112e815d1edf9e95"
+      }
+    }
+  }
+}

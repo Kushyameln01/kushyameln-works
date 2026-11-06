@@ -1,0 +1,18 @@
+{
+  "status": "FAIL_RETAINED_INITIAL_ATTEMPT",
+  "loraSourceCommit": "55b82f01fe524f94de44932121558280e0b1b8f8",
+  "kernelSHA256": "da6d56fca5d9bc91173681c22b91cd9337f53ea067d84455b9d659ee7ee52984",
+  "side": "HIGH",
+  "pairId": "light",
+  "strength": 1,
+  "compared": 81920,
+  "failedCount": 66071,
+  "maxAbsoluteError": 0.000257150889268587,
+  "gate": {
+    "absolute": 1e-05,
+    "relative": 0.0001
+  },
+  "captureLimitation": "Original outer error path retained raw selected arrays but lost previously completed cases metadata; raw result and arrays kept in separate private initial-failure archive. Counts here independently reconstructed from saved arrays.",
+  "cause": "Hike loop-local declarations advanced stack into host arena for large BF16 input; fixed with fixed-frame variables, unchanged math/ABI/gates.",
+  "fixedKernelSourceCommit": "4d5fd7363f40f0d743ead448193ef2bf1915bbdc"
+}

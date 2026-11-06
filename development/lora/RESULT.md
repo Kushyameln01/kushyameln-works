@@ -1,3 +1,7 @@
+# 現在のLoRA接続状況
+
+現在のE0照合・実PARTIAL共同試験は [JOINT-LORA-RESULT.md](../ai-connection/JOINT-LORA-RESULT.md)、固定sourceの取得と検証は [REPRODUCE.md](REPRODUCE.md) を参照。以下はv1実装当時の履歴であり、未push・対向未取得等の記述もその時点の状態である。
+
 # LoRA implementation result — revision 2, 2026-10-31 JST
 
 Implemented locally on branch `feat/lora-hike` in `/workspace/work/lora-implementation`. No upload/push/deploy, no original model edits.

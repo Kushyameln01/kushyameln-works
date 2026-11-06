@@ -1,0 +1,1129 @@
+{
+  "schemaVersion": "lora-manager884-real-partial-result/0.1-draft.1",
+  "dateJST": "2026-11-02",
+  "status": "PASS_SELECTED_LIGHT_HIGH_MANAGER884_REAL_PARTIAL_WITH_OUTPUT16_E4",
+  "runtimeStatus": "PASS_MANAGED_FORMAL_DATA_REAL_BASE_PARTIAL_SNAPSHOT",
+  "scope": "Task1 management884 additional conditions; existing Q16 bounded diagnostic only, not new P4 weight-feed acceptance",
+  "executionSourceCommit": "8849891f19124df31847bd691503c2491278eaa8",
+  "runtimeDistributionCommit": "8849891f19124df31847bd691503c2491278eaa8",
+  "deliveryDistributionCommit": "resolved by enclosing delivery commit; not substituted for executionSourceCommit",
+  "fixedCommits": {
+    "lora": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+    "diffusion": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+    "manager": "8849891f19124df31847bd691503c2491278eaa8",
+    "ownerDATA": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+    "codec": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+    "reference": "0c27874908638afc748ea2455a2779a16736730b",
+    "catalog": "6dae9a6fac3e9ad29ea941f22211edbe4aa894ad"
+  },
+  "api": {
+    "management": "https://github.com/Kushyameln01/kushyameln-works/blob/8849891f19124df31847bd691503c2491278eaa8/docs/shared/ai-connection/API.md#joint-p2p3-receiver-runners",
+    "managementReproduce": "https://github.com/Kushyameln01/kushyameln-works/blob/8849891f19124df31847bd691503c2491278eaa8/development/ai-connection/p23-joint-acceptance/P3-REPRODUCE.md",
+    "ownerCanonicalMapping": "https://github.com/Kushyameln01/kushyameln-works/blob/fc2789a0f649e33f15eb13750e6a983b5c52d170/docs/shared/inference/lora/DIFFUSION_DIAGNOSTIC_ADAPTER.md"
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "SOURCE_ACQUISITION_BLOCKED",
+      "exitCode": 1,
+      "nativeTransactions": 0,
+      "sourceChanged": false,
+      "evidence": "evidence/first-attempt.json"
+    },
+    {
+      "attempt": 2,
+      "status": "PASS_MANAGED_FORMAL_DATA_REAL_BASE_PARTIAL_SNAPSHOT",
+      "exitCode": 0,
+      "nativeTransactions": 7,
+      "sourceChanged": false,
+      "usedNewEmptyOutput": true
+    }
+  ],
+  "acceptedScope": {
+    "pairId": "light",
+    "side": "HIGH",
+    "coverage": "PARTIAL",
+    "fullWeightShape": [
+      5120,
+      5120
+    ],
+    "fullBiasShape": [
+      5120
+    ],
+    "selectedWeightShape": [
+      16,
+      5120
+    ],
+    "selectedBiasShape": [
+      16
+    ],
+    "rows": {
+      "start": 0,
+      "count": 16
+    },
+    "columns": {
+      "start": 0,
+      "count": 5120
+    },
+    "includedPatchCount": 2,
+    "excludedTargetCount": 1050,
+    "excludedRows": [
+      16,
+      5120
+    ],
+    "weightBinding": {
+      "kind": "runtime-input",
+      "name": "weight"
+    },
+    "biasBinding": {
+      "kind": "hike-parameter",
+      "name": "bias"
+    },
+    "nativeRegistryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+    "connectionRegistryHash": "cc6a329b0cffbdf3c2a50914843da33e7d402a815921e206ddf5f8b0fea4c806",
+    "baseKind": "actual-original-bounded-fragments"
+  },
+  "loader": [
+    {
+      "patch": "diffusion_model.blocks.0.self_attn.q.weight",
+      "variant": "linear-down-up",
+      "sourceDtype": "BF16",
+      "declaration": {
+        "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+        "variant": "linear-down-up",
+        "sourceDtype": "BF16",
+        "targetRank": 2,
+        "strength": 1,
+        "inputKind": "local-file",
+        "sourceHash": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "baseDtype": "F32",
+        "outputDtype": "F32",
+        "layout": "row-major"
+      },
+      "loaderDetails": {
+        "rank": 128,
+        "alpha": 128,
+        "alphaName": "diffusion_model.blocks.0.self_attn.q.alpha",
+        "effectiveScale": 1,
+        "strength": 1,
+        "names": [
+          "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+          "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+          "diffusion_model.blocks.0.self_attn.q.alpha"
+        ],
+        "fullShape": [
+          5120,
+          5120
+        ],
+        "slice": {
+          "startRow": 0,
+          "rowCount": 16
+        }
+      }
+    },
+    {
+      "patch": "diffusion_model.blocks.0.self_attn.q.bias",
+      "variant": "additive-diff-b",
+      "sourceDtype": "BF16",
+      "declaration": {
+        "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+        "variant": "additive-diff-b",
+        "sourceDtype": "BF16",
+        "targetRank": 1,
+        "strength": 1,
+        "inputKind": "local-file",
+        "sourceHash": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+        "baseDtype": "F32",
+        "outputDtype": "F32",
+        "layout": "row-major"
+      },
+      "loaderDetails": {
+        "rank": null,
+        "alpha": null,
+        "alphaName": null,
+        "effectiveScale": 1,
+        "strength": 1,
+        "names": [
+          "diffusion_model.blocks.0.self_attn.q.diff_b"
+        ],
+        "fullShape": [
+          5120
+        ],
+        "slice": {
+          "startRow": 0,
+          "rowCount": 16
+        }
+      }
+    }
+  ],
+  "localInput": {
+    "fileName": "Bernini-R_LightX2V_high_noise.safetensors",
+    "byteLength": 1244141856,
+    "lastModified": 1793377657813,
+    "inspection": {
+      "state": "SOURCE_INSPECTED",
+      "tensorCount": 1857,
+      "integrity": "header-only",
+      "sourceSha256": null
+    },
+    "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+    "wholeHashComputedByThisBrowserLoad": true,
+    "hashCacheScope": "same captured immutable File only"
+  },
+  "wholeSourceHashesForNewLoads": 1,
+  "historicalFourOriginalsRequired": false,
+  "baseEvidence": {
+    "artifact": {
+      "bytes": 709364,
+      "sha256": "25a845e0c87a1bcab04740b011d0aa7cd969f46745412810cfd73269b69e8cff",
+      "mode": "600",
+      "coverage": "PARTIAL",
+      "fullFileHashRecomputed": false
+    },
+    "rangeCount": 5,
+    "decodedBase": {
+      "weight": {
+        "passed": true,
+        "compared": 81920,
+        "maxAbsoluteError": 0,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "bias": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 0,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "weightBytesEqual": true,
+      "biasBytesEqual": true
+    },
+    "fullFileSHA256Verified": false,
+    "fullFileHashRecomputed": false,
+    "priorReceiptIsHistorical": true
+  },
+  "referenceInputs": {
+    "referenceIdentity": {
+      "sourceRef": {
+        "repository": "https://github.com/Kushyameln01/kushyameln-works",
+        "commit": "0c27874908638afc748ea2455a2779a16736730b",
+        "path": "development/ai-connection/evidence/lora-e1/HIGH-reference.json"
+      },
+      "sha256": "2fe56045248bf75c3c2e63a310a56546288dd0b3a34c19cafc0e5ee9fc2c782d",
+      "referenceId": "p3:accepted-high-reference"
+    },
+    "gateIdentity": {
+      "sourceRef": {
+        "repository": "https://github.com/Kushyameln01/kushyameln-works",
+        "commit": "0c27874908638afc748ea2455a2779a16736730b",
+        "path": "development/ai-connection/evidence/lora-e1/HIGH-gates.json"
+      },
+      "sha256": "e435071fa955d66afee0f5a01d0b2f63e123bcf30d5982fe7bcba01da4513511",
+      "gateId": "p3:accepted-high-gates"
+    }
+  },
+  "referenceArraysReused": 9,
+  "referenceOracleRecalculations": 0,
+  "counts": {
+    "publishedCases": 6,
+    "publishedWeights": 491520,
+    "publishedBiases": 96,
+    "publishedOutputs": 96,
+    "cancelledCheckpointWeights": 81920,
+    "cancelledCheckpointBiases": 16,
+    "nativePrepareAttempts": 7,
+    "nativeStageAttempts": 7,
+    "nativeCommitsAfterBaseline": 7,
+    "immutableBaseRestoreTransactions": 1,
+    "baselineInitializationsSeparate": 1,
+    "preNativeWrongReferenceAttempts": 1,
+    "wrongReferenceNativePreparations": 0,
+    "loadedSources": 59,
+    "selectedArtifactFiles": 26,
+    "e4PackageFiles": 8
+  },
+  "maxErrors": {
+    "weight": 3.72290287486976e-09,
+    "bias": 0,
+    "output": 7.450580596923828e-09
+  },
+  "cases": [
+    {
+      "id": "initial-zero",
+      "strength": 0,
+      "planId": "af3e565aea65a81539563967d7e9b5d5e14b377f5cfd50d8b498b2a22cd63dc6",
+      "managerRevision": 1001,
+      "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+      "localInputRevision": 1,
+      "localApplicationRevision": 1,
+      "weightComparison": {
+        "passed": true,
+        "compared": 81920,
+        "maxAbsoluteError": 0,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 0,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputComparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 1.3969838619232178e-09,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-06,
+          "relative": 1e-05
+        }
+      },
+      "outputArtifact": {
+        "file": "initial-zero-output.f32",
+        "bytes": 64,
+        "sha256": "b9fa765c35fe23a578f0d389272db9c7a2784fbb9bd0014074dd105e0cb7611b"
+      },
+      "nativeEpoch": 2,
+      "snapshotTarget": {
+        "snapshotId": "p3:actual:initial-zero:2dc1d9d1-26ff-4eef-a30f-24292cbdd53b",
+        "snapshotHash": "157afbfc180e118ca693fd8bf1d965e739947d95b6338c4c59be0fd0a40845e9",
+        "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+        "managerRevision": 1001,
+        "stepId": "HIGH",
+        "operationId": "diagnose",
+        "resourceBinding": {
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "bindingId": "p3:actual-high-q16",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 1,
+          "localApplicationRevision": 1
+        }
+      },
+      "nativeOwnership": {
+        "kind": "independent-copy",
+        "ownerId": "c2a27bff-417c-4ef9-9960-056cbd28afc0:3d271ea4-bfc0-4344-8258-a3e2a9d98227"
+      },
+      "phases": {
+        "preflight": "preflight",
+        "checkpoint": "checkpoint",
+        "postpublication": "postpublication"
+      }
+    },
+    {
+      "id": "initial-one",
+      "strength": 1,
+      "planId": "9e3dcb7a24cb3264484226b85561e41f8c9236f9c640c48489b68ab469995bd6",
+      "managerRevision": 1002,
+      "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+      "localInputRevision": 2,
+      "localApplicationRevision": 2,
+      "weightComparison": {
+        "passed": true,
+        "compared": 81920,
+        "maxAbsoluteError": 3.72290287486976e-09,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 0,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputComparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 7.450580596923828e-09,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-06,
+          "relative": 1e-05
+        }
+      },
+      "outputArtifact": {
+        "file": "initial-one-output.f32",
+        "bytes": 64,
+        "sha256": "04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575"
+      },
+      "nativeEpoch": 3,
+      "snapshotTarget": {
+        "snapshotId": "p3:actual:initial-one:1cede09d-50ad-46ba-8289-ec9e5d7e0669",
+        "snapshotHash": "70052e13634e2218092ed167ac41800bf8a1c9ee77726b53592d9fc9870ae108",
+        "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+        "managerRevision": 1002,
+        "stepId": "HIGH",
+        "operationId": "diagnose",
+        "resourceBinding": {
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "bindingId": "p3:actual-high-q16",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 2,
+          "localApplicationRevision": 2
+        }
+      },
+      "nativeOwnership": {
+        "kind": "independent-copy",
+        "ownerId": "c2a27bff-417c-4ef9-9960-056cbd28afc0:97f3df08-c356-4cab-8246-2b8aac3e4432"
+      },
+      "phases": {
+        "preflight": "preflight",
+        "checkpoint": "checkpoint",
+        "postpublication": "postpublication"
+      }
+    },
+    {
+      "id": "initial-negative",
+      "strength": -1,
+      "planId": "3eb392a58fddfd900c67bb4613d5eb943b6d8e8799fdee9d7e1579bb067d7c1d",
+      "managerRevision": 1003,
+      "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+      "localInputRevision": 3,
+      "localApplicationRevision": 3,
+      "weightComparison": {
+        "passed": true,
+        "compared": 81920,
+        "maxAbsoluteError": 3.72290287486976e-09,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 0,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputComparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 7.450580596923828e-09,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-06,
+          "relative": 1e-05
+        }
+      },
+      "outputArtifact": {
+        "file": "initial-negative-output.f32",
+        "bytes": 64,
+        "sha256": "f59fcd9b23e68f802072d469ca03ed9a675c395a2f25b965c953b29fc0babc4a"
+      },
+      "nativeEpoch": 4,
+      "snapshotTarget": {
+        "snapshotId": "p3:actual:initial-negative:9487164d-cd2e-4a30-9310-6824a10789b2",
+        "snapshotHash": "7beb1b57653f30a30f9cc1d553d202bdaaadd82e0513f932ece68f3f6f5835f6",
+        "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+        "managerRevision": 1003,
+        "stepId": "HIGH",
+        "operationId": "diagnose",
+        "resourceBinding": {
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "bindingId": "p3:actual-high-q16",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 3,
+          "localApplicationRevision": 3
+        }
+      },
+      "nativeOwnership": {
+        "kind": "independent-copy",
+        "ownerId": "c2a27bff-417c-4ef9-9960-056cbd28afc0:1b2670a5-c19f-42d6-9e26-6d2578ef90b2"
+      },
+      "phases": {
+        "preflight": "preflight",
+        "checkpoint": "checkpoint",
+        "postpublication": "postpublication"
+      }
+    },
+    {
+      "id": "reapply-one",
+      "strength": 1,
+      "planId": "f218b0d404ca8b2c0ec7a0094980936cd1c49e5dbd551c187ac05973e54f4c34",
+      "managerRevision": 1004,
+      "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+      "localInputRevision": 4,
+      "localApplicationRevision": 4,
+      "weightComparison": {
+        "passed": true,
+        "compared": 81920,
+        "maxAbsoluteError": 3.72290287486976e-09,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 0,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputComparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 7.450580596923828e-09,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-06,
+          "relative": 1e-05
+        }
+      },
+      "outputArtifact": {
+        "file": "reapply-one-output.f32",
+        "bytes": 64,
+        "sha256": "04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575"
+      },
+      "nativeEpoch": 5,
+      "snapshotTarget": {
+        "snapshotId": "p3:actual:reapply-one:809ad917-b7f2-4de5-bf2f-1f54b356d447",
+        "snapshotHash": "1d1036813c5e86226e5c942c48c10dbf6b691a99187c4e05d5024c63c22245d9",
+        "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+        "managerRevision": 1004,
+        "stepId": "HIGH",
+        "operationId": "diagnose",
+        "resourceBinding": {
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "bindingId": "p3:actual-high-q16",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 4,
+          "localApplicationRevision": 4
+        }
+      },
+      "nativeOwnership": {
+        "kind": "independent-copy",
+        "ownerId": "c2a27bff-417c-4ef9-9960-056cbd28afc0:011a0846-e7c3-4a07-8730-aaba0ad7033a"
+      },
+      "phases": {
+        "preflight": "preflight",
+        "checkpoint": "checkpoint",
+        "postpublication": "postpublication"
+      }
+    },
+    {
+      "id": "validation-recovery",
+      "strength": 1,
+      "planId": "c8af33434b0396e79bd0ceffd88a95ec22fbf4feea138e40fa3c880918853c1f",
+      "managerRevision": 1006,
+      "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+      "localInputRevision": 6,
+      "localApplicationRevision": 6,
+      "weightComparison": {
+        "passed": true,
+        "compared": 81920,
+        "maxAbsoluteError": 3.72290287486976e-09,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 0,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputComparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 7.450580596923828e-09,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-06,
+          "relative": 1e-05
+        }
+      },
+      "outputArtifact": {
+        "file": "validation-recovery-output.f32",
+        "bytes": 64,
+        "sha256": "04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575"
+      },
+      "nativeEpoch": 6,
+      "snapshotTarget": {
+        "snapshotId": "p3:actual:validation-recovery:3a24a665-bf1f-4346-a1d8-3852a1098ef9",
+        "snapshotHash": "b446149d026075b2385823473c8f48ef28eee2d8377f4713da5ce0c611a99ef8",
+        "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+        "managerRevision": 1006,
+        "stepId": "HIGH",
+        "operationId": "diagnose",
+        "resourceBinding": {
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "bindingId": "p3:actual-high-q16",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 6,
+          "localApplicationRevision": 6
+        }
+      },
+      "nativeOwnership": {
+        "kind": "independent-copy",
+        "ownerId": "c2a27bff-417c-4ef9-9960-056cbd28afc0:66610000-a5de-495b-8640-fdc7d4d06d5e"
+      },
+      "phases": {
+        "preflight": "preflight",
+        "checkpoint": "checkpoint",
+        "postpublication": "postpublication"
+      }
+    },
+    {
+      "id": "cancel-recovery",
+      "strength": 1,
+      "planId": "5def9facc84c357511f6b93d632b4606a06cfec0b37e086400984021777edec9",
+      "managerRevision": 1008,
+      "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+      "localInputRevision": 9,
+      "localApplicationRevision": 9,
+      "weightComparison": {
+        "passed": true,
+        "compared": 81920,
+        "maxAbsoluteError": 3.72290287486976e-09,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-05,
+          "relative": 0.0001
+        }
+      },
+      "biasComparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 0,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 0,
+          "relative": 0
+        }
+      },
+      "outputComparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 7.450580596923828e-09,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-06,
+          "relative": 1e-05
+        }
+      },
+      "outputArtifact": {
+        "file": "cancel-recovery-output.f32",
+        "bytes": 64,
+        "sha256": "04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575"
+      },
+      "nativeEpoch": 7,
+      "snapshotTarget": {
+        "snapshotId": "p3:actual:cancel-recovery:6a26aeee-8f0d-4a5d-87e6-9753a40c99f0",
+        "snapshotHash": "22047693627539aea22df27d9876432834af04abdec7ca2fb7ca22296258c723",
+        "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+        "managerRevision": 1008,
+        "stepId": "HIGH",
+        "operationId": "diagnose",
+        "resourceBinding": {
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "bindingId": "p3:actual-high-q16",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 9,
+          "localApplicationRevision": 9
+        }
+      },
+      "nativeOwnership": {
+        "kind": "independent-copy",
+        "ownerId": "c2a27bff-417c-4ef9-9960-056cbd28afc0:2a51cd47-7d82-4d87-a428-6c4edd2b5839"
+      },
+      "phases": {
+        "preflight": "preflight",
+        "checkpoint": "checkpoint",
+        "postpublication": "postpublication"
+      }
+    }
+  ],
+  "output16E4": {
+    "status": "complete",
+    "scope": "output16 diagnostic package; separate from selected-weight N-ARTIFACT",
+    "receipt": {
+      "packageVersion": "works-artifact-package/1.0-draft.1",
+      "packageId": "works:diagnostic-package:9e3dcb7a24cb3264484226b85561e41f8c9236f9c640c48489b68ab469995bd6:04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575",
+      "manifestPath": "manifest.json",
+      "manifestByteLength": 2124,
+      "manifestSha256": "6d12468c1ca1348f01f74e023ed09942ea622f25930c03a6fa0ee04d9bd18979"
+    },
+    "outputSha256": "04f51332b6934ad9a8658f9b52a6aa7000733b7f4ad1d453c8c68bdcabdb3575",
+    "snapshotId": "p3:actual:initial-one:1cede09d-50ad-46ba-8289-ec9e5d7e0669",
+    "snapshotHash": "70052e13634e2218092ed167ac41800bf8a1c9ee77726b53592d9fc9870ae108",
+    "tampered": {
+      "rejected": true,
+      "code": "ASSET_HASH_MISMATCH",
+      "codes": [
+        "ASSET_HASH_MISMATCH"
+      ],
+      "error": "PackageError: Whole-file byte length or hash mismatch.",
+      "aggregate": false
+    },
+    "missing": {
+      "rejected": true,
+      "code": "REQUIRED_ASSET_MISSING",
+      "codes": [
+        "REQUIRED_ASSET_MISSING"
+      ],
+      "error": "PackageError: Required package bytes were not recovered.",
+      "aggregate": false
+    },
+    "generationReady": false,
+    "packageFiles": [
+      {
+        "path": "packages/initial-one/output.wktensor",
+        "byteLength": 304,
+        "sha256": "18b694146ee7b659cd818764579a852afa18ebe81765fd63c27e2a62a6ede2f8",
+        "readbackCount": 3
+      },
+      {
+        "path": "packages/initial-one/descriptor.json",
+        "byteLength": 9830,
+        "sha256": "e6501a3e6e4483abf2efd7ec2a5b4a9a0c36266bb137e83f593de2b989c6b1dd",
+        "readbackCount": 2
+      },
+      {
+        "path": "packages/initial-one/evidence.json",
+        "byteLength": 7283,
+        "sha256": "0da4e738a905fdb79b1714dcf191e1d0aca8442153cc8eefc72ed2f5ea67954f",
+        "readbackCount": 2
+      },
+      {
+        "path": "packages/initial-one/trace.json",
+        "byteLength": 2422,
+        "sha256": "9da5ce614fb0eaf734f38dc976a37a51168e029f9ae6fa557aeea3ba10540fd3",
+        "readbackCount": 2
+      },
+      {
+        "path": "packages/initial-one/snapshot.json",
+        "byteLength": 1587,
+        "sha256": "66ac8a594ca402844f1767e6730366398703653632ccac8195b7c29c7b55a6e6",
+        "readbackCount": 1
+      },
+      {
+        "path": "packages/initial-one/extensions.json",
+        "byteLength": 8256,
+        "sha256": "b6d524be8a3bf961ae4484a0eb6f85b89438305fb5d9be5be66b4e2118607ad0",
+        "readbackCount": 1
+      },
+      {
+        "path": "packages/initial-one/manifest.json",
+        "byteLength": 2124,
+        "sha256": "6d12468c1ca1348f01f74e023ed09942ea622f25930c03a6fa0ee04d9bd18979",
+        "readbackCount": 3
+      },
+      {
+        "path": "packages/initial-one/receipt.json",
+        "byteLength": 365,
+        "sha256": "bcf6494b8be3c05b25fa28302d6083cf3a28c29fd1574d353a9d53c15818f2e2",
+        "readbackCount": 3
+      }
+    ],
+    "rawPackageBinaryPublished": false,
+    "storedTensor": {
+      "dtype": "float32",
+      "shape": [
+        1,
+        16
+      ],
+      "axes": [
+        "N",
+        "C"
+      ],
+      "nativeMeaning": "works:diagnostic-q-projection:v1"
+    }
+  },
+  "lifecycle": {
+    "preNativeExpectedPayloadGuard": {
+      "code": "NORM_REFERENCE_PAYLOAD_MISMATCH",
+      "expectedPayloadModified": true,
+      "activationModified": false,
+      "beforeNativePreparation": true,
+      "previousFeedRetained": true,
+      "snapshotUncurrent": true,
+      "recovery": "validation-recovery"
+    },
+    "cancel": {
+      "exactQueueTarget": {
+        "resultAccepted": false,
+        "originalTerminal": true,
+        "stopAcknowledged": true,
+        "calculationStopped": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "id": "p3:formal:cancel-at-checkpoint:invocation:1",
+        "requestId": "p3:formal:cancel-at-checkpoint:native:1",
+        "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+        "resourceBinding": "p3:actual-high-q16",
+        "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e",
+        "revision": 1007,
+        "activeToken": "p3:formal:cancel-at-checkpoint:token:1",
+        "parentId": null,
+        "state": "cancelled",
+        "cancelRequested": true,
+        "nativeOutcome": "rejected",
+        "nativeStopRequired": true,
+        "errorCode": "INVOCATION_CANCELLED"
+      },
+      "reply": {
+        "notStarted": false,
+        "stopConfirmed": true,
+        "originalTerminal": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "quarantined": false
+      },
+      "previousFeedRetained": true,
+      "snapshotUncurrent": true,
+      "recovery": "cancel-recovery"
+    },
+    "sourceRelease": {
+      "code": "SOURCE_BINDING_UNAVAILABLE",
+      "activeFeedSurvived": true
+    },
+    "baseRestore": {
+      "kind": "immutable-base-restore",
+      "receipt": {
+        "adapterVersion": "lora-diffusion-diagnostic-adapter/0.1",
+        "state": "CONSUMER_APPLIED",
+        "application": "IMMUTABLE_BASE",
+        "coverage": "PARTIAL",
+        "scope": "diagnostic-projection",
+        "nativeRegistryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+        "validation": {
+          "schemaVersion": "bernini-diagnostic-validation/0.1",
+          "valid": true,
+          "scope": "PARTIAL",
+          "modelInference": false,
+          "candidateId": "318c0bee-5039-47a6-a629-1865c585a17d",
+          "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+          "graphHash": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+          "registryHash": "b1142c55f5f43ac78cd1b167ceed5be0d7f8e9b87b21047ff565d08d38c4c87b",
+          "side": "HIGH",
+          "packageHash": "661ad5dbd07a881eac21a61e6a7c1e5874ae278c3c5c3596def76c740cfc674d",
+          "expectedSHA256": "848c1e46e6ed36f2d14995e04d7cdc40c11a910ca322f977a8d2c4ead30226a8",
+          "tolerance": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "maxAbsoluteError": 1.3969838619232178e-09,
+          "failedIndices": [],
+          "evidence": {
+            "scope": "partial-explicit-runtime-F32-weight; explicit activation; not full-model prediction or complete LoRA application",
+            "inputEncoding": "F32-runtime-weight",
+            "executionProviders": [
+              "wasm"
+            ],
+            "ortVersion": "1.24.3",
+            "numThreads": 1,
+            "proxy": false,
+            "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+            "hikeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "hikeMemory": {
+              "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+              "memoryBytes": 1572864,
+              "arenaBytes": 491648,
+              "calls": 34,
+              "inputCopyBytes": 4352,
+              "outputCopyBytes": 2176,
+              "workspaceReused": true,
+              "disposed": false
+            },
+            "sessionCreateMs": 466.79999999701977,
+            "elapsed": {
+              "ortMs": 0.29999999701976776,
+              "biasMs": 0,
+              "totalRunMs": 0.29999999701976776
+            },
+            "boundaryBytes": {
+              "f32WeightInput": 327680,
+              "xInput": 20480,
+              "ortOutputToHike": 64,
+              "biasInput": 64,
+              "ownedOutput": 64
+            },
+            "OSMemoryPeak": null,
+            "OSMemoryReason": "not measured for bounded operator validation"
+          }
+        },
+        "commit": {
+          "committed": true,
+          "scope": "PARTIAL",
+          "modelInference": false,
+          "epoch": 8,
+          "packageHash": "661ad5dbd07a881eac21a61e6a7c1e5874ae278c3c5c3596def76c740cfc674d"
+        },
+        "generationReady": false,
+        "snapshotPublished": false
+      },
+      "management": {
+        "target": {
+          "managerSessionId": "p3:actual:33e15a38-2a48-4809-8e0f-1ea9511cc5b4",
+          "managerRevision": 1008,
+          "requestId": "p3:actual:restore-base:17",
+          "resourceBinding": {
+            "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+            "bindingId": "p3:actual-high-q16",
+            "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e"
+          }
+        },
+        "queueTarget": {
+          "invocationId": "p3:restore:d33fefe4-b5e0-40d9-9884-2cb96222d730",
+          "bindingId": "p3:actual-high-q16",
+          "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+          "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e",
+          "requestId": "p3:restore-queue:406f400a-6c87-4ed2-9eda-5125ebecbf59",
+          "revision": 1008,
+          "activeToken": "p3:restore-token:abd90fa7-955b-4a97-b63f-93412e3edc28"
+        },
+        "localRevisionBindings": {
+          "sdkInstanceId": "91855308-84c5-4172-a1d7-c0c84c3d36a1",
+          "localInputRevision": 9,
+          "localApplicationRevision": 9
+        },
+        "snapshotRef": {
+          "snapshotId": "p3:actual:cancel-recovery:6a26aeee-8f0d-4a5d-87e6-9753a40c99f0",
+          "snapshotHash": "22047693627539aea22df27d9876432834af04abdec7ca2fb7ca22296258c723"
+        },
+        "snapshotPublished": false,
+        "generationReady": false
+      },
+      "queue": {
+        "resultAccepted": true,
+        "originalTerminal": true,
+        "stopAcknowledged": false,
+        "calculationStopped": true,
+        "resourceReleased": true,
+        "reusable": true,
+        "id": "p3:restore:d33fefe4-b5e0-40d9-9884-2cb96222d730",
+        "requestId": "p3:restore-queue:406f400a-6c87-4ed2-9eda-5125ebecbf59",
+        "ownerId": "p3:actual-owner:257161d6-edc2-4d64-a163-a23782bcac20",
+        "resourceBinding": "p3:actual-high-q16",
+        "resourceGeneration": "011a2c16-8559-432c-b861-dd431d097d6e",
+        "revision": 1008,
+        "activeToken": "p3:restore-token:abd90fa7-955b-4a97-b63f-93412e3edc28",
+        "parentId": null,
+        "state": "completed",
+        "nativeOutcome": "fulfilled",
+        "errorCode": null
+      },
+      "comparison": {
+        "passed": true,
+        "compared": 16,
+        "maxAbsoluteError": 1.3969838619232178e-09,
+        "failedCount": 0,
+        "failedIndices": [],
+        "gate": {
+          "absolute": 1e-06,
+          "relative": 1e-05
+        }
+      },
+      "snapshotUncurrent": true,
+      "originalTerminal": true,
+      "afterTerminal": true,
+      "resourceReleased": true
+    },
+    "ownership": {
+      "mode": "independent-copy",
+      "sourceReleased": true,
+      "preparedReleased": true,
+      "nativeLease": "N/A",
+      "dynamicConsumerOwnerIds": [
+        "c2a27bff-417c-4ef9-9960-056cbd28afc0:3d271ea4-bfc0-4344-8258-a3e2a9d98227",
+        "c2a27bff-417c-4ef9-9960-056cbd28afc0:97f3df08-c356-4cab-8246-2b8aac3e4432",
+        "c2a27bff-417c-4ef9-9960-056cbd28afc0:1b2670a5-c19f-42d6-9e26-6d2578ef90b2",
+        "c2a27bff-417c-4ef9-9960-056cbd28afc0:011a0846-e7c3-4a07-8730-aaba0ad7033a",
+        "c2a27bff-417c-4ef9-9960-056cbd28afc0:66610000-a5de-495b-8640-fdc7d4d06d5e",
+        "c2a27bff-417c-4ef9-9960-056cbd28afc0:2a51cd47-7d82-4d87-a428-6c4edd2b5839"
+      ]
+    },
+    "finalSnapshot": {
+      "state": "SNAPSHOT_PUBLISHED",
+      "managerRevision": 1008,
+      "activeSnapshotId": "p3:actual:cancel-recovery:6a26aeee-8f0d-4a5d-87e6-9753a40c99f0",
+      "selectionCurrent": false,
+      "generationReady": false
+    },
+    "cleanup": {
+      "managerDisposed": true,
+      "queueTerminal": true,
+      "sdkDisposed": true,
+      "consumerDisposed": true,
+      "stageDisposed": true,
+      "baseDisposed": true
+    }
+  },
+  "sourceVerification": {
+    "allLoadedSourcesGitMatched": true,
+    "owners": {
+      "receiver": 3,
+      "manager": 28,
+      "lora": 12,
+      "diffusion": 16
+    },
+    "ownerDATA": [
+      {
+        "repository": "https://github.com/Kushyameln01/kushyameln-works",
+        "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+        "path": "docs/shared/inference/lora/management-admission-inputs.mjs",
+        "deploymentPath": "docs/shared/ai-connection/adapters/lora-data/management-admission-inputs.mjs",
+        "byteLength": 32961,
+        "sha256": "ddf57f4c76333ada1ddf93cf238e5f4ea6219b39afd5dc4d567213667a7d897e",
+        "gitObjectMatched": true
+      },
+      {
+        "repository": "https://github.com/Kushyameln01/kushyameln-works",
+        "commit": "82b21f09cb63926543181b16f0e97ebc6b9fa6be",
+        "path": "docs/shared/inference/lora/numeric-declarations.mjs",
+        "deploymentPath": "docs/shared/ai-connection/adapters/lora-data/numeric-declarations.mjs",
+        "byteLength": 9909,
+        "sha256": "e7dd99d570c666969d76e93747998f3e1c20ba64d9e3b9d1b5f7a19e05aa6b17",
+        "gitObjectMatched": true
+      }
+    ],
+    "codec": {
+      "commit": "2bdca59ea78580d4fe7a9d31a8de33209b64d029",
+      "path": "docs/shared/inference/tensor.mjs",
+      "deploymentPath": "docs/shared/ai-connection/codecs/tensor-2bdca59.mjs",
+      "byteLength": 8256,
+      "sha256": "d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5",
+      "gitObjectMatched": true
+    },
+    "legacyBridgeLoaded": false,
+    "privateInputHTTPRequests": [],
+    "pageErrors": [],
+    "serverErrors": []
+  },
+  "independentReview": {
+    "status": "PASS_SAVED_REAL_PARTIAL_FORMAL_ROUTE_AUDIT",
+    "result": "evidence/manager884-run-2-independent.json",
+    "prose": "evidence/manager884-run-2-independent.md",
+    "scope": "independent saved-evidence/source/hash/output16 package readback; no original reopen, rehash, inference or weight/bias recomputation",
+    "checksPassed": 152,
+    "checksTotal": 152,
+    "blockers": 0
+  },
+  "evidence": {
+    "receipt": "evidence/receipt.json",
+    "rawMetadata": {
+      "path": "evidence/run-result.json.gz",
+      "encoding": "gzip-json",
+      "decodedByteLength": 64415767,
+      "decodedSha256": "123538bcf1aac5df2f2c26d6d989378b5e04efd2b96260e787ab279c61481d50",
+      "byteLength": 2053790,
+      "sha256": "d860d9eef7354b29f644f8defcd728e8e0d3758153c4a9f6e9bb0cf16282970e"
+    },
+    "loadedSources": "evidence/sources.json",
+    "privateArtifactPackageManifest": "evidence/artifact-package-manifest.json",
+    "browserLog": "evidence/browser-run.log",
+    "firstAttempt": "evidence/first-attempt.json",
+    "manifest": "evidence/MANIFEST.json"
+  },
+  "previousEvidencePreserved": {
+    "delivery": "dd95ed05f058930a391f015c11b9a2b963a42db5",
+    "execution": "28f44c3a1b71bef59e2d018a0db736de6d84675c",
+    "manager": "60d16b64d6020d3d20239f087f8add91268dcaad",
+    "newRunNotRetroactivelyApplied": true
+  },
+  "receivingStatus": {
+    "runtimeFormalBridgeAccepted": true,
+    "managementPersonReceiptAck": "NOT_RECEIVED",
+    "managementPersonAcceptanceOfThisNewReturn": "NOT_RECEIVED",
+    "sourceAcquisitionAndNewRuntimeAndRecipientAdmissionSeparate": true
+  },
+  "unaccepted": [
+    "selected-weight N-ARTIFACT package",
+    "new P4 canonical LoRA mapping or applied WEIGHT-FEED",
+    "other pair/side combinations",
+    "joint HIGH/LOW atomic snapshot",
+    "lease ownership",
+    "full-target/full-model session",
+    "generation and contribution to generated output",
+    "two-pair simultaneous composition",
+    "merge or Pages deployment"
+  ],
+  "finalFlags": {
+    "coverage": "PARTIAL",
+    "completeAdapter": false,
+    "modelInference": false,
+    "generationReady": false,
+    "currentLiveAdmission": false,
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY"
+  },
+  "productRuntimeChanged": false,
+  "committedByThisTask": false,
+  "pushedByThisTask": false
+}

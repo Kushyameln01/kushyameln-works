@@ -1,0 +1,170 @@
+{
+  "scope": "Actual browser native File, fixed Diffusion source.describe registry and selected block acquisition; numeric scales and arrays omitted",
+  "ownerSourceSHA": "ffeeeedb6b57d182a977c3ac02c042ce235fc87a",
+  "file": {
+    "name": "Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+    "size": 15574833216,
+    "isFile": true
+  },
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+  "nativeHeaderSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+  "fullFileHashRecomputed": false,
+  "reads": [
+    {
+      "key": "blocks.0.self_attn.q.weight",
+      "shape": [
+        2,
+        5120
+      ],
+      "source": {
+        "originalKey": "blocks.0.self_attn.q.weight",
+        "fullShape": [
+          5120,
+          5120
+        ],
+        "storageDtype": "F8_E4M3",
+        "computeDtype": "F32",
+        "layout": "row-major",
+        "binding": {
+          "kind": "runtime-input",
+          "name": "blocks.0.self_attn.q.weight"
+        },
+        "operatorBinding": {
+          "programSlot": "blocks.0.self_attn.q.weight",
+          "graphInput": "weight",
+          "operator": "blocks.0.self_attn.q",
+          "blockIndex": 0,
+          "kind": "linear"
+        },
+        "transform": {
+          "kind": "identity",
+          "transpose": false
+        },
+        "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+        "elementOffset": 5120,
+        "selectedElementCount": 10240,
+        "rawSHA256": "3f7a08f8c1f1a5cadf719032df189f84e0bb85f959d2b3c74df1c3687a68625c",
+        "decodedF32SHA256": "2ed0fa4040fc6d393c5a9930e3835d4cfa1a0e126c16891a611069288525b148"
+      }
+    },
+    {
+      "key": "blocks.0.self_attn.q.bias",
+      "shape": [
+        2
+      ],
+      "source": {
+        "originalKey": "blocks.0.self_attn.q.bias",
+        "fullShape": [
+          5120
+        ],
+        "storageDtype": "F16",
+        "computeDtype": "F32",
+        "layout": "row-major",
+        "binding": {
+          "kind": "hike-parameter",
+          "name": "blocks.0.self_attn.q.bias"
+        },
+        "operatorBinding": {
+          "programSlot": "blocks.0.self_attn.q.bias",
+          "hikeExport": "AddBias",
+          "hikeParameter": "bias",
+          "operator": "blocks.0.self_attn.q",
+          "blockIndex": 0,
+          "kind": "linear-bias"
+        },
+        "transform": {
+          "kind": "identity",
+          "transpose": false
+        },
+        "fp8ProfileId": null,
+        "elementOffset": 1,
+        "selectedElementCount": 2,
+        "rawSHA256": "f0e90e1ae33e42ddf40024706110d6d0372175942e4ffa42174b1379a784b036",
+        "decodedF32SHA256": "1ab3972a0e740cf55f72946ba4d37bbebf8de2bc9395afdf321cff00d9d87e87"
+      }
+    }
+  ],
+  "stats": {
+    "disposed": false,
+    "busy": false,
+    "reads": 724,
+    "readBytes": 202692,
+    "headerReads": 2,
+    "headerReadBytes": 181288,
+    "configReads": 720,
+    "configReadBytes": 11160,
+    "payloadReads": 2,
+    "payloadReadBytes": 10244,
+    "maxPayloadReadBytes": 10240,
+    "decodedF32Bytes": 40968,
+    "readAheadBytes": 0,
+    "storageReads": 724,
+    "storageReadBytes": 202692,
+    "maxStorageReadBytes": 181280,
+    "storageReadAttempts": 724,
+    "storageReadFailures": 0,
+    "discardedStorageReads": 0,
+    "discardedStorageBytes": 0,
+    "storageReadMs": 604.2999999999593,
+    "headerInspectMs": 34.70000000001164,
+    "decodeMs": 4.2999999999883585,
+    "cacheHits": 0,
+    "cacheMisses": 0,
+    "cachedBytes": 0,
+    "peakCachedBytes": 0,
+    "windowCopyBytes": 0,
+    "windowCopyMs": 0,
+    "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+    "hike": {
+      "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+      "memoryBytes": 1572864,
+      "arenaBytes": 491648,
+      "calls": 2,
+      "inputCopyBytes": 10244,
+      "outputCopyBytes": 40968,
+      "workspaceReused": true,
+      "disposed": false
+    },
+    "decoder": null,
+    "decoderSelection": "legacy",
+    "fullFileHashRecomputed": false,
+    "payloadSampleAdmission": false
+  },
+  "terminal": {
+    "disposed": true,
+    "busy": false,
+    "reads": 724,
+    "readBytes": 202692,
+    "headerReads": 2,
+    "headerReadBytes": 181288,
+    "configReads": 720,
+    "configReadBytes": 11160,
+    "payloadReads": 2,
+    "payloadReadBytes": 10244,
+    "maxPayloadReadBytes": 10240,
+    "decodedF32Bytes": 40968,
+    "readAheadBytes": 0,
+    "storageReads": 724,
+    "storageReadBytes": 202692,
+    "maxStorageReadBytes": 181280,
+    "storageReadAttempts": 724,
+    "storageReadFailures": 0,
+    "discardedStorageReads": 0,
+    "discardedStorageBytes": 0,
+    "storageReadMs": 604.2999999999593,
+    "headerInspectMs": 34.70000000001164,
+    "decodeMs": 4.2999999999883585,
+    "cacheHits": 0,
+    "cacheMisses": 0,
+    "cachedBytes": 0,
+    "peakCachedBytes": 0,
+    "windowCopyBytes": 0,
+    "windowCopyMs": 0,
+    "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+    "hike": null,
+    "decoder": null,
+    "decoderSelection": "legacy",
+    "fullFileHashRecomputed": false,
+    "payloadSampleAdmission": false
+  }
+}

@@ -1,0 +1,613 @@
+{
+  "side": "LOW",
+  "gates": {
+    "baseDecode": {
+      "absolute": 0,
+      "relative": 0
+    },
+    "weight": {
+      "absolute": 1e-05,
+      "relative": 0.0001
+    },
+    "bias": {
+      "absolute": 0,
+      "relative": 0
+    },
+    "projection": {
+      "absolute": 1e-06,
+      "relative": 1e-05
+    }
+  },
+  "activation": {
+    "file": "activation.f32",
+    "dtype": "float32",
+    "elements": 5120,
+    "bytes": 20480,
+    "sha256": "231fdb75596206b5e27942f36ebee8177d336791cb84813af3ec9cf1e54d9b0f"
+  },
+  "baseWeight": {
+    "file": "base-weight.f32",
+    "dtype": "float32",
+    "elements": 81920,
+    "bytes": 327680,
+    "sha256": "9ccabb6bff52fcc841b4cca9a863dc54b73a1cb032cd739d7b091d097529906b"
+  },
+  "baseBias": {
+    "file": "base-bias.f32",
+    "dtype": "float32",
+    "elements": 16,
+    "bytes": 64,
+    "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e"
+  },
+  "baseExpectedOutput": [
+    -0.0822296142578125,
+    -0.01670367456972599,
+    0.0052767652086913586,
+    0.07709503173828125,
+    0.02548435889184475,
+    0.052226271480321884,
+    -0.053225792944431305,
+    -0.008055755868554115,
+    -0.06568895280361176,
+    0.010614192113280296,
+    -0.007516998797655106,
+    0.0063398899510502815,
+    0.005040032789111137,
+    -0.012978418730199337,
+    -0.015704836696386337,
+    -0.003669602796435356
+  ],
+  "baseIdentity": {
+    "expectedFullSha256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+    "headerSha256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+    "fullFileHashComputedByThisOracle": false
+  },
+  "inputRanges": [
+    {
+      "name": "blocks.0.self_attn.q.weight",
+      "elementOffset": 0,
+      "elementCount": 81920,
+      "byteLength": 81920,
+      "sha256": "d0d649ab3cf1e15ccda51055a35cf14b3a65a0f273b194a4b94d1bd2087a7d4e"
+    },
+    {
+      "name": "blocks.0.self_attn.q.bias",
+      "elementOffset": 0,
+      "elementCount": 16,
+      "byteLength": 32,
+      "sha256": "f2e8b86836b663262acc0e01460005bdbf254fa4d380f4060987d907be2f670f"
+    },
+    {
+      "name": "blocks.0.self_attn.q.weight_scale",
+      "elementOffset": 0,
+      "elementCount": 1,
+      "byteLength": 4,
+      "sha256": "2575543940692eed901ec08a566b96b426db16691fdc5b57f51be56c51333925"
+    },
+    {
+      "name": "blocks.0.self_attn.q.comfy_quant",
+      "elementOffset": 0,
+      "elementCount": 27,
+      "byteLength": 27,
+      "sha256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a"
+    }
+  ],
+  "cases": [
+    {
+      "id": "light-LOW-s0",
+      "pairId": "light",
+      "side": "LOW",
+      "strength": 0,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "rank": 128,
+      "alpha": 128.0,
+      "scale": 0.0,
+      "retainedOriginalIdentity": {
+        "fileName": "Bernini-R_LightX2V_low_noise.safetensors",
+        "sha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+        "status": "inventory identity; real runtime source hash must match before accepting trial"
+      },
+      "inputRanges": [
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+          "elementOffset": 0,
+          "elementCount": 655360,
+          "byteLength": 1310720,
+          "sha256": "960c52da4d64d3eb24f3e7fc18763a69bc703e19d6d8ee9a6df3ed6d62e57a45"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+          "elementOffset": 0,
+          "elementCount": 2048,
+          "byteLength": 4096,
+          "sha256": "5abbb3399b91b5cb9db039aed9888cef16b5d172c58fdace2dc4a42b186b6f1c"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.alpha",
+          "elementOffset": 0,
+          "elementCount": 1,
+          "byteLength": 2,
+          "sha256": "b563a5e69628743929eddec0ccfeb0745c39577e12a72e84915edd6633cb97f2"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.diff_b",
+          "elementOffset": 0,
+          "elementCount": 16,
+          "byteLength": 32,
+          "sha256": "f1cb2c17cfc14632aca9eb33ae95b5c2ac07f827d3d4a44ff58dc2eaa3dd82c9"
+        }
+      ],
+      "weight": {
+        "file": "light-LOW-s0-weight.f64",
+        "dtype": "float64",
+        "elements": 81920,
+        "bytes": 655360,
+        "sha256": "0a62ed1b30e85f96b00d82e900b2aa528abd03c320f7b660f388637006899db8"
+      },
+      "bias": {
+        "file": "light-LOW-s0-bias.f32",
+        "dtype": "float32",
+        "elements": 16,
+        "bytes": 64,
+        "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e"
+      },
+      "expectedOutput": [
+        -0.0822296142578125,
+        -0.01670367456972599,
+        0.0052767652086913586,
+        0.07709503173828125,
+        0.02548435889184475,
+        0.052226271480321884,
+        -0.053225792944431305,
+        -0.008055755868554115,
+        -0.06568895280361176,
+        0.010614192113280296,
+        -0.007516998797655106,
+        0.0063398899510502815,
+        0.005040032789111137,
+        -0.012978418730199337,
+        -0.015704836696386337,
+        -0.003669602796435356
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "excludedPatchCount": 1050,
+      "unpatchedBaseBiasPassThrough": false
+    },
+    {
+      "id": "light-LOW-s1",
+      "pairId": "light",
+      "side": "LOW",
+      "strength": 1,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "rank": 128,
+      "alpha": 128.0,
+      "scale": 1.0,
+      "retainedOriginalIdentity": {
+        "fileName": "Bernini-R_LightX2V_low_noise.safetensors",
+        "sha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+        "status": "inventory identity; real runtime source hash must match before accepting trial"
+      },
+      "inputRanges": [
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+          "elementOffset": 0,
+          "elementCount": 655360,
+          "byteLength": 1310720,
+          "sha256": "960c52da4d64d3eb24f3e7fc18763a69bc703e19d6d8ee9a6df3ed6d62e57a45"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+          "elementOffset": 0,
+          "elementCount": 2048,
+          "byteLength": 4096,
+          "sha256": "5abbb3399b91b5cb9db039aed9888cef16b5d172c58fdace2dc4a42b186b6f1c"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.alpha",
+          "elementOffset": 0,
+          "elementCount": 1,
+          "byteLength": 2,
+          "sha256": "b563a5e69628743929eddec0ccfeb0745c39577e12a72e84915edd6633cb97f2"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.diff_b",
+          "elementOffset": 0,
+          "elementCount": 16,
+          "byteLength": 32,
+          "sha256": "f1cb2c17cfc14632aca9eb33ae95b5c2ac07f827d3d4a44ff58dc2eaa3dd82c9"
+        }
+      ],
+      "weight": {
+        "file": "light-LOW-s1-weight.f64",
+        "dtype": "float64",
+        "elements": 81920,
+        "bytes": 655360,
+        "sha256": "eef5df82e8fa5a052b88a85ac1ff6cb0adcce6492f44f0ea4823c3c833a512cb"
+      },
+      "bias": {
+        "file": "light-LOW-s1-bias.f32",
+        "dtype": "float32",
+        "elements": 16,
+        "bytes": 64,
+        "sha256": "84229270dbcc5a863baac723b4d93d442683f07c5b9f8855a99de01b3395a887"
+      },
+      "expectedOutput": [
+        -0.08232666552066803,
+        -0.01664060913026333,
+        0.00531073147431016,
+        0.07711898535490036,
+        0.025551358237862587,
+        0.05225925147533417,
+        -0.053157344460487366,
+        -0.007894587703049183,
+        -0.06575307250022888,
+        0.010548831894993782,
+        -0.007581501733511686,
+        0.006417191121727228,
+        0.004935441538691521,
+        -0.012904568575322628,
+        -0.015783708542585373,
+        -0.003693857928737998
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "excludedPatchCount": 1050,
+      "unpatchedBaseBiasPassThrough": false
+    },
+    {
+      "id": "light-LOW-s-1",
+      "pairId": "light",
+      "side": "LOW",
+      "strength": -1,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "rank": 128,
+      "alpha": 128.0,
+      "scale": -1.0,
+      "retainedOriginalIdentity": {
+        "fileName": "Bernini-R_LightX2V_low_noise.safetensors",
+        "sha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+        "status": "inventory identity; real runtime source hash must match before accepting trial"
+      },
+      "inputRanges": [
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_down.weight",
+          "elementOffset": 0,
+          "elementCount": 655360,
+          "byteLength": 1310720,
+          "sha256": "960c52da4d64d3eb24f3e7fc18763a69bc703e19d6d8ee9a6df3ed6d62e57a45"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_up.weight",
+          "elementOffset": 0,
+          "elementCount": 2048,
+          "byteLength": 4096,
+          "sha256": "5abbb3399b91b5cb9db039aed9888cef16b5d172c58fdace2dc4a42b186b6f1c"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.alpha",
+          "elementOffset": 0,
+          "elementCount": 1,
+          "byteLength": 2,
+          "sha256": "b563a5e69628743929eddec0ccfeb0745c39577e12a72e84915edd6633cb97f2"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.diff_b",
+          "elementOffset": 0,
+          "elementCount": 16,
+          "byteLength": 32,
+          "sha256": "f1cb2c17cfc14632aca9eb33ae95b5c2ac07f827d3d4a44ff58dc2eaa3dd82c9"
+        }
+      ],
+      "weight": {
+        "file": "light-LOW-s-1-weight.f64",
+        "dtype": "float64",
+        "elements": 81920,
+        "bytes": 655360,
+        "sha256": "7bdbc99c617c8b06e54357af9648399af9c725f27c4aab6d43841dc949d09bd2"
+      },
+      "bias": {
+        "file": "light-LOW-s-1-bias.f32",
+        "dtype": "float32",
+        "elements": 16,
+        "bytes": 64,
+        "sha256": "0feebfe16245e397fa8d23a659fbdcbe59b5ad85a51688dc77cd18a2317bfca3"
+      },
+      "expectedOutput": [
+        -0.08213257044553757,
+        -0.016766740009188652,
+        0.0052427989430725574,
+        0.07707108557224274,
+        0.025417359545826912,
+        0.0521932952105999,
+        -0.053294237703084946,
+        -0.008216924965381622,
+        -0.06562483310699463,
+        0.01067955233156681,
+        -0.007452495861798525,
+        0.006262589246034622,
+        0.005144624505192041,
+        -0.013052267953753471,
+        -0.0156259648501873,
+        -0.003645347896963358
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "excludedPatchCount": 1050,
+      "unpatchedBaseBiasPassThrough": false
+    },
+    {
+      "id": "detail-LOW-s0",
+      "pairId": "detail",
+      "side": "LOW",
+      "strength": 0,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "rank": 64,
+      "alpha": null,
+      "scale": 0,
+      "retainedOriginalIdentity": {
+        "fileName": "NSFW-22-L-e8.safetensors",
+        "sha256": "d6b783742f4d5fd63a0223ae1d5bf64fc995a6b408480ac2a00528ae0d4146db",
+        "status": "inventory identity; real runtime source hash must match before accepting trial"
+      },
+      "inputRanges": [
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_A.weight",
+          "elementOffset": 0,
+          "elementCount": 327680,
+          "byteLength": 655360,
+          "sha256": "bf5655ad2dcd55583b6a41b2a7be2d9359860deb9f4c68a5d3202151c8372613"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_B.weight",
+          "elementOffset": 0,
+          "elementCount": 1024,
+          "byteLength": 2048,
+          "sha256": "2e97d690d57804717df6c682ab341d6729e0a0d0f9ef015604b796a79ee0980f"
+        }
+      ],
+      "weight": {
+        "file": "detail-LOW-s0-weight.f64",
+        "dtype": "float64",
+        "elements": 81920,
+        "bytes": 655360,
+        "sha256": "0a62ed1b30e85f96b00d82e900b2aa528abd03c320f7b660f388637006899db8"
+      },
+      "bias": {
+        "file": "detail-LOW-s0-bias.f32",
+        "dtype": "float32",
+        "elements": 16,
+        "bytes": 64,
+        "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e"
+      },
+      "expectedOutput": [
+        -0.0822296142578125,
+        -0.01670367456972599,
+        0.0052767652086913586,
+        0.07709503173828125,
+        0.02548435889184475,
+        0.052226271480321884,
+        -0.053225792944431305,
+        -0.008055755868554115,
+        -0.06568895280361176,
+        0.010614192113280296,
+        -0.007516998797655106,
+        0.0063398899510502815,
+        0.005040032789111137,
+        -0.012978418730199337,
+        -0.015704836696386337,
+        -0.003669602796435356
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "excludedPatchCount": 399,
+      "unpatchedBaseBiasPassThrough": true
+    },
+    {
+      "id": "detail-LOW-s1",
+      "pairId": "detail",
+      "side": "LOW",
+      "strength": 1,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "rank": 64,
+      "alpha": null,
+      "scale": 1,
+      "retainedOriginalIdentity": {
+        "fileName": "NSFW-22-L-e8.safetensors",
+        "sha256": "d6b783742f4d5fd63a0223ae1d5bf64fc995a6b408480ac2a00528ae0d4146db",
+        "status": "inventory identity; real runtime source hash must match before accepting trial"
+      },
+      "inputRanges": [
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_A.weight",
+          "elementOffset": 0,
+          "elementCount": 327680,
+          "byteLength": 655360,
+          "sha256": "bf5655ad2dcd55583b6a41b2a7be2d9359860deb9f4c68a5d3202151c8372613"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_B.weight",
+          "elementOffset": 0,
+          "elementCount": 1024,
+          "byteLength": 2048,
+          "sha256": "2e97d690d57804717df6c682ab341d6729e0a0d0f9ef015604b796a79ee0980f"
+        }
+      ],
+      "weight": {
+        "file": "detail-LOW-s1-weight.f64",
+        "dtype": "float64",
+        "elements": 81920,
+        "bytes": 655360,
+        "sha256": "94157968cba67f0326f997d49eeda02a00efd25461a402c338264786683a6b37"
+      },
+      "bias": {
+        "file": "detail-LOW-s1-bias.f32",
+        "dtype": "float32",
+        "elements": 16,
+        "bytes": 64,
+        "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e"
+      },
+      "expectedOutput": [
+        -0.08215545862913132,
+        -0.016725851222872734,
+        0.005239023827016354,
+        0.07696991413831711,
+        0.025402216240763664,
+        0.05225592106580734,
+        -0.05319035053253174,
+        -0.008152359165251255,
+        -0.0656483843922615,
+        0.010660833679139614,
+        -0.007507790345698595,
+        0.006349361035972834,
+        0.005051375832408667,
+        -0.0129336416721344,
+        -0.01584785059094429,
+        -0.0035797087475657463
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "excludedPatchCount": 399,
+      "unpatchedBaseBiasPassThrough": true
+    },
+    {
+      "id": "detail-LOW-s-1",
+      "pairId": "detail",
+      "side": "LOW",
+      "strength": -1,
+      "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+      "rank": 64,
+      "alpha": null,
+      "scale": -1,
+      "retainedOriginalIdentity": {
+        "fileName": "NSFW-22-L-e8.safetensors",
+        "sha256": "d6b783742f4d5fd63a0223ae1d5bf64fc995a6b408480ac2a00528ae0d4146db",
+        "status": "inventory identity; real runtime source hash must match before accepting trial"
+      },
+      "inputRanges": [
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_A.weight",
+          "elementOffset": 0,
+          "elementCount": 327680,
+          "byteLength": 655360,
+          "sha256": "bf5655ad2dcd55583b6a41b2a7be2d9359860deb9f4c68a5d3202151c8372613"
+        },
+        {
+          "name": "diffusion_model.blocks.0.self_attn.q.lora_B.weight",
+          "elementOffset": 0,
+          "elementCount": 1024,
+          "byteLength": 2048,
+          "sha256": "2e97d690d57804717df6c682ab341d6729e0a0d0f9ef015604b796a79ee0980f"
+        }
+      ],
+      "weight": {
+        "file": "detail-LOW-s-1-weight.f64",
+        "dtype": "float64",
+        "elements": 81920,
+        "bytes": 655360,
+        "sha256": "0781a379b03a2d5a9cc3b98dd6ae5e25803bb96f4605c17a04be69647a05220b"
+      },
+      "bias": {
+        "file": "detail-LOW-s-1-bias.f32",
+        "dtype": "float32",
+        "elements": 16,
+        "bytes": 64,
+        "sha256": "2d6cabbb0c26620dc56eee8533ae4a0248eda52ac71ab5d69e0a1d3251aacb7e"
+      },
+      "expectedOutput": [
+        -0.08230376988649368,
+        -0.016681497916579247,
+        0.0053145065903663635,
+        0.07722014933824539,
+        0.025566501542925835,
+        0.052196621894836426,
+        -0.05326123163104057,
+        -0.007959152571856976,
+        -0.06572951376438141,
+        0.010567550547420979,
+        -0.007526207249611616,
+        0.006330419331789017,
+        0.0050286902114748955,
+        -0.0130231948569417,
+        -0.015561822801828384,
+        -0.0037594970781356096
+      ],
+      "coverage": "PARTIAL",
+      "completeAdapter": false,
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "rows": [
+        0,
+        16
+      ],
+      "columns": [
+        0,
+        5120
+      ],
+      "excludedPatchCount": 399,
+      "unpatchedBaseBiasPassThrough": true
+    }
+  ]
+}
