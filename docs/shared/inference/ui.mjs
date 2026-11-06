@@ -1,6 +1,7 @@
 import {createInferenceClient} from './client.mjs';
 import {encodeTensor,decodeTensor,requireTensor} from './tensor.mjs';
 import {validateVaeRequest} from './vae.mjs';
+import {writeOpaqueRgbaToNcthw} from './media-input.mjs';
 const $=s=>document.querySelector(s),mode=document.body.dataset.inference;
 let manifest,files=new Map(),inputTensor,result,outputURL,revision=0,sourceFile;
 const status=$('#status'),run=$('#run'),cancel=$('#cancel'),save=$('#save');
@@ -40,7 +41,7 @@ $('#images')?.addEventListener('change',async e=>{
   for(let t=0;t<frames;t++){
    const bitmap=await createImageBitmap(images[t]);
    try{if(bitmap.width!==width||bitmap.height!==height)throw Error(`画像寸法は${width}×${height}に揃えてください`);ctx.clearRect(0,0,width,height);ctx.drawImage(bitmap,0,0);const pixels=ctx.getImageData(0,0,width,height).data;
-    for(let i=0;i<width*height;i++){if(pixels[i*4+3]!==255)throw Error('透過画像は、背景を明示的に合成してから選んでください');for(let c=0;c<3;c++)data[(c*frames+t)*height*width+i]=pixels[i*4+c]/255;}
+    writeOpaqueRgbaToNcthw({data:pixels,width,height},data,{frameIndex:t,frameCount:frames});
    }finally{bitmap.close();}
   }
   if(rev!==revision)return;inputTensor={dtype:'float32',layout:'NCTHW',shape:[...shape],meaning:'rgb-unit',data};$('#operation').value='encode';$('#input-info').textContent=`画像${frames}枚 / [${shape.join(', ')}]`;
