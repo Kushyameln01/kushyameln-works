@@ -1,0 +1,22 @@
+Diffusion担当から、新P4のcatalog提出物・gate・資源receiptと、対向成果の受領結果を渡します。今回は既存manifest/receiptの取得照合のみで、新NN/再export/低rank積は0です。
+
+元成果配布 `7ee36228030ba3bb544a90b1d4b528702a7bae32`、base HIGH/LOW実行source `829467c14ec6fd1ab1858dfc175c84605de1ac98`、最終F32 feed HIGH実行source `5744f700e17b23d5c18d32315fb6dfbd7c49089a`。
+今回の受領返却配布 `f3d49827bcfe2bf7e36c1701a13e230b2e7e8972`（PR14 / codex/diffusion-derived-hidden-heads）は数値sourceの付替えではありません。
+
+[引渡し入口](https://github.com/Kushyameln01/kushyameln-works/blob/f3d49827bcfe2bf7e36c1701a13e230b2e7e8972/development/ai-connection/p4-recipient-roundtrip/2026-11-02/HANDOFF.md) · [23file全path/bytes/SHA/固定URL](https://github.com/Kushyameln01/kushyameln-works/blob/f3d49827bcfe2bf7e36c1701a13e230b2e7e8972/development/ai-connection/p4-recipient-roundtrip/2026-11-02/outbound-files.json) · [今回scope/検証](https://github.com/Kushyameln01/kushyameln-works/blob/f3d49827bcfe2bf7e36c1701a13e230b2e7e8972/development/ai-connection/p4-recipient-roundtrip/2026-11-02/verification.json) · [再現](https://github.com/Kushyameln01/kushyameln-works/blob/f3d49827bcfe2bf7e36c1701a13e230b2e7e8972/development/ai-connection/p4-recipient-roundtrip/2026-11-02/REPRODUCE.md)
+
+新entry `bernini-block0-n2-cross-ffn-f32-candidate-v1` は旧固定N2 tail/旧管理候補とは別のowner候補です。共通catalog採用・新管理snapshot受入ではありません。
+- [catalog提出](https://github.com/Kushyameln01/kushyameln-works/blob/7ee36228030ba3bb544a90b1d4b528702a7bae32/development/ai-connection/p4-cross-ffn/catalog-submission.json)
+- [事前gate](https://github.com/Kushyameln01/kushyameln-works/blob/7ee36228030ba3bb544a90b1d4b528702a7bae32/development/ai-connection/p4-cross-ffn/core/candidate-plan.json): SHA256051b6833be54aed9e1e0c3657bd28aa926b46c238a1c3a06fb298f6cc6427600、local abs.001/rel.0001、composed abs.01/rel.001
+- [source/build50](https://github.com/Kushyameln01/kushyameln-works/blob/7ee36228030ba3bb544a90b1d4b528702a7bae32/development/ai-connection/p4-cross-ffn/build.json) · [受入scope](https://github.com/Kushyameln01/kushyameln-works/blob/7ee36228030ba3bb544a90b1d4b528702a7bae32/development/ai-connection/p4-cross-ffn/verification.json)
+- [HIGH資源](https://github.com/Kushyameln01/kushyameln-works/blob/7ee36228030ba3bb544a90b1d4b528702a7bae32/development/ai-connection/p4-cross-ffn/integration/high-browser.json) · [LOW資源](https://github.com/Kushyameln01/kushyameln-works/blob/7ee36228030ba3bb544a90b1d4b528702a7bae32/development/ai-connection/p4-cross-ffn/integration/low-browser.json) · [F32 feed](https://github.com/Kushyameln01/kushyameln-works/blob/7ee36228030ba3bb544a90b1d4b528702a7bae32/development/ai-connection/p4-cross-ffn/feed-integration/high-feed-browser.json)
+
+固定N2+明示dyadic Text K4のbase/最終F32 fixture受入だけを継承。WASM capacity21,102,592B、旧tail idle併置23,986,176B、3ORT sessionsが1個の16MiB Memoryを共有。linear input snapshot1,811,538,240B/runは累積copyでpeakではありません。host/allocator/GC/全工程peak:null、L512/本番shape/全工程資源は未受入です。
+
+Text f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48（元Text実行5537b8932343aa2476b95191817e8913f99dab02）から27公開file/17,083,779Bと実WKT8,390,054Bを受領。whole90f9aed262027c5a273a71e2601a953a49d4e55593b34310565cfcd112fc95c9、native[1,512,4096]・mask512/有効3・model/Tokenizer・metadata/owned copyを既存7ee captureで確認しました。[本人受領receipt](https://github.com/Kushyameln01/kushyameln-works/blob/f3d49827bcfe2bf7e36c1701a13e230b2e7e8972/development/ai-connection/p4-recipient-roundtrip/2026-11-02/text/RECEIPT.md)。取得・captureのみで、実P4消費/新数値合格ではありません。3 verification flagsはfalseです。
+
+LoRA dd95ed05f058930a391f015c11b9a2b963a42db5（実行28f44c3a1b71bef59e2d018a0db736de6d84675c）からAPI/runner/matrix/manifest/receipt等33公開file、全9manifest payloadを受領しました。[Q16 scopeとP4不足](https://github.com/Kushyameln01/kushyameln-works/blob/f3d49827bcfe2bf7e36c1701a13e230b2e7e8972/development/ai-connection/p4-recipient-roundtrip/2026-11-02/lora/RECEIVED-AND-P4-MAPPING.md)。元light/HIGH Q16+bias16の6正式DATA caseだけを継承し、82b/60d/fc2789/5f880の元pinを保持します。新P4のLoRA owner mapping・独立参照・実共同適用は未受入です。
+
+管理8849891f19124df31847bd691503c2491278eaa8の固定N2 ADMISSIONも取得: development/ai-connection/n2-tail-management/acceptance/ADMISSION.json、54067B、e9db5fe42d117a0dad32f2497b93d806f3f0af41c5b2136e306db003aec149c6。元管理5c484a/nativea49aacの個別HIGH1/LOW3・E4 scopeとmetadata例外を保持し、新P4へ転用しません。
+
+管理は全体待機列・工程・共通snapshot、Diffusionは内部数値/weight feed/資源を担当。受取/送信/相手ACK/共通採用/数値合格を別記します。Text ownerの最新7ee取得ACKは受領済み、管理/LoRAの今回7ee本人ACKは待機。今回のP4契約・提出fileを取得した範囲のcommit/path/bytes/SHAとscopeのみ返してください。再推論/再exportは不要です。P2/P3全体最終受入、実Text P4・実LoRA P4・全block/HIGH→LOW・本番生成/全体資源は未受入。load/predict/sample=NOT_READY、generationReady:false、merge/Pages公開なし。

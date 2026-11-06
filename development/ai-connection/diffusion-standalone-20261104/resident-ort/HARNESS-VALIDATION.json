@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "resident-ort-harness-implementation-validation/1",
+  "recordedAtUTC": "2026-11-04T17:27:13.233329+00:00",
+  "sourceCommit": "716ffd169cf1b77ac086e030131af9de6222e528",
+  "scope": "Native-free unit/static implementation checks only. The browser/native diagnostic has not executed.",
+  "nativeOrBrowserDiagnosticExecuted": false,
+  "ortRunCalls": 0,
+  "modelPayloadBytesRead": 0,
+  "acceptedProduction": false,
+  "speedupClaim": false,
+  "nodeUnitTests": 7,
+  "pythonUnitTests": 3,
+  "checks": [
+    {
+      "command": [
+        "node",
+        "/workspace/work/diffusion-models/tools/diffusion-models/test-resident-ort-attention-timing.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "\u2714 profile admission refuses implicit threads, nonisolated4, isolated1 and unbounded tile counts (5.658822ms)\n\u2714 fixture fixes full shapes, finite initial state and ordered deterministic key tiles (234.135589ms)\n\u2714 trace preparation/native/output intervals remain separate and original console methods restore (0.84204ms)\n\u2714 native errors preserve identity, unfinished traces fail the frame and restoration avoids clobbering another hook (7.669905ms)\n\u2714 baseline leaves native duration unobserved rather than reporting zero time (0.371ms)\n\u2714 captured factory runs once, returns same module and native wrapper preserves synchronous result and errors (0.991145ms)\n\u2714 byte comparison detects signed zero and length mismatches instead of numeric equality (0.343358ms)\n\u2139 tests 7\n\u2139 suites 0\n\u2139 pass 7\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 283.389094\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/work/diffusion-models/tools/diffusion-models/test-resident-ort-attention-timing.py"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.050s\n\nOK\n"
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "/workspace/work/diffusion-models/tools/diffusion-models/resident-ort-attention-timing-core.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "/workspace/work/diffusion-models/tools/diffusion-models/resident-ort-attention-timing-factory.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "/workspace/work/diffusion-models/tools/diffusion-models/resident-ort-attention-timing-browser.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "/workspace/work/diffusion-models/tools/diffusion-models/test-resident-ort-attention-timing.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "pythonSyntaxFiles": 2,
+  "staticSourceCaptureFiles": 9,
+  "pinnedVendorHashesVerified": 3,
+  "sourceSHA256": {
+    "tools/diffusion-models/resident-ort-attention-timing.py": "19bcbdeb754df98779f19f5a7511f8f78076959c2718785c4a08f56d54b903fc",
+    "tools/diffusion-models/resident-ort-attention-timing-core.mjs": "bc2fd3c13c02049932f09e0e8d1dcb5d90ac2a18f9ea59fd46e929f5aa8ed1cf",
+    "tools/diffusion-models/resident-ort-attention-timing-factory.mjs": "b83d2a1b1c3a3a136e5ddeb4b5e4aacab5c81315c74216ddfb349a6011267b24",
+    "tools/diffusion-models/resident-ort-attention-timing-browser.mjs": "3cd4edf267bcc8b0dcaeead78f9dced98e26d66c94fe87a675cd565c3b0f9e29",
+    "docs/shared/diffusion-models/execution/batched-attention-graph.mjs": "95bbf39e692f74a9afb9b1e2b7972c4b148e62a8bd39c13af4ebbbb6ca91e098",
+    "docs/shared/diffusion-models/execution/wasm-memory-observer.mjs": "598a6a26d4c276968f67b4b88b2f6bf1381b8b499bdaf27661c7aab084dea34b",
+    "docs/shared/inference/vendor/ort.wasm.min.mjs": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+    "tools/diffusion-models/test-resident-ort-attention-timing.mjs": "768d9a89c36e9f2ddc045f406bc078a42b9dd2c73bae47e43c2281faa6b16163",
+    "tools/diffusion-models/test-resident-ort-attention-timing.py": "dcbb2961d4f5a140ebc41597c8b2c5b73003d16a32688579dfee399bb0b1d3a2",
+    "development/ai-connection/diffusion-standalone-20261104/resident-ort/HARNESS.md": "371940b442442d410c0c5d4585145596889655d26bf44d34d52e0d97d2193e4f",
+    "development/ai-connection/diffusion-standalone-20261104/resident-ort/HARNESS-PLAN.md": "065fa27822cec2b3acc84ce9d2dfe594de943307d43e93397ade0f2a0b089861"
+  },
+  "pending": [
+    "Browser noCOI threads1 and COI threads4 initialization",
+    "Native timing collection",
+    "Baseline/wrapped output byte comparison",
+    "Actual ORT lifecycle cleanup and heap/pthread observations",
+    "Independent review before native execution"
+  ],
+  "passed": true
+}

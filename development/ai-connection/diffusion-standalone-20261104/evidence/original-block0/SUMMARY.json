@@ -1,0 +1,387 @@
+{
+  "schemaVersion": "diffusion-original-block0-summary/1",
+  "recordedAtUTC": "2026-11-04T19:02:38.748501+00:00",
+  "sourceCommit": "8ddefbafdb27ce8a0451c3ad5ba36d63729acd87",
+  "sourceBeforeEqualsAfter": true,
+  "capturedSourceCount": 165,
+  "sourceInventorySHA256": "54b291de777a9afc5dbac3237bc725914ae5bdffc60e96a59813081ea3a18fa4",
+  "files": [
+    {
+      "path": "diffusion73947-inplace-block0-20261104.json",
+      "bytes": 3851283,
+      "sha256": "4fb033af318c90b362892f180a2208fb044102290314a1ba0ea67c9f2815b4fb",
+      "exactCopy": true
+    },
+    {
+      "path": "diffusion73947-inplace-block0-resource-20261104.json",
+      "bytes": 12154583,
+      "sha256": "60ec57057496bf8e920dbb0da62254c99337cffa5ccf62b00f1dccb2786e530c",
+      "exactCopy": true
+    }
+  ],
+  "scope": "all declared query/key/head rows through selected complete block boundaries only; no final head or complete predict/sample",
+  "inputCase": {
+    "profileId": "bernini-declared-target81-source81-ref3-848-l512-f32-chunks-v1",
+    "manifestSHA256": "7c1545413898de4c18cee2ed19dbec9f8abe61cfed7b48ee0954d33f0206c6b6",
+    "contractSHA256": "1943f1a528580ae5f7055342cb1c117131592ca776ed655c3a9a81caadefb8d3",
+    "targetShape": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "tokens": 73947,
+    "classification": "Declared target81/source81/three848sq reference case; unavailable original media frame count/reference dimensions/effective streams and original mxfp8 equivalence remain unconfirmed. Not an original-media replay."
+  },
+  "execution": {
+    "side": "HIGH",
+    "operation": "blocks",
+    "blockLimit": 0,
+    "resource": {
+      "wasmThreads": 4,
+      "crossOriginIsolationRequired": true,
+      "decoder": "lookup",
+      "readAheadBytes": 1048576,
+      "referenceThreads": 1,
+      "prefixComparisonsSkipped": true,
+      "fallback": false
+    },
+    "crossOriginIsolated": true,
+    "nativeResourceProfile": {
+      "numThreads": 4,
+      "firstInitialization": true,
+      "pthreadCreationsObserved": 3,
+      "coiRequired": true,
+      "freshRealmRequiredForProfileChange": true
+    },
+    "oracleResource": {
+      "kind": "ready",
+      "numpy": "2.3.5",
+      "resource": {
+        "requestedThreads": 1,
+        "threadpoolctlVersion": "3.6.0",
+        "observedBLASPools": [
+          {
+            "user_api": "blas",
+            "internal_api": "openblas",
+            "num_threads": 1,
+            "prefix": "libscipy_openblas",
+            "version": "0.3.30",
+            "threading_layer": "pthreads",
+            "architecture": "SkylakeX"
+          }
+        ],
+        "numericOperatorChange": false,
+        "fallback": false
+      }
+    },
+    "prefixComparisonReused": true,
+    "prefixScope": "Unchanged prefix/post-modulation prior evidence reused via skip-prefix-comparison; native prefix and all K/V still computed. Prefix/post-modulation are not newly compared stages in this receipt.",
+    "queryChunkMaxRows": 128,
+    "maxChunkElements": 655360,
+    "queryTailRows": 91,
+    "keyTileMaxRows": 256,
+    "keyTailRows": 219
+  },
+  "acceptance": {
+    "selectedBlock0AllQueriesKeysHeadsAccepted": true,
+    "originalFull40Accepted": false,
+    "originalSixUpdatesAccepted": false,
+    "publicPredictAccepted": false,
+    "productionSampleAccepted": false,
+    "generationReady": false,
+    "realFullModelLoraAccepted": false,
+    "wholeOperationAccepted": false
+  },
+  "numerics": {
+    "coverage": {
+      "complete": true,
+      "operation": "blocks",
+      "chunks": 6366,
+      "rows": [
+        {
+          "block": 0,
+          "name": "k",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "v",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "q",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "selfAttention",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "oProjection",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "selfResidual",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "crossK",
+          "completedRows": 512,
+          "requiredRows": 512
+        },
+        {
+          "block": 0,
+          "name": "crossV",
+          "completedRows": 512,
+          "requiredRows": 512
+        },
+        {
+          "block": 0,
+          "name": "crossQ",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "crossAttention",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "crossResidual",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "ffnOutput",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "blockOutput",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        }
+      ],
+      "allQueriesKeysHeads": "numerical acceptance requires every selected stage complete plus independent comparisons passing"
+    },
+    "chunks": 6366,
+    "comparedElements": 4169937920,
+    "failedElements": 0,
+    "maxAbsolute": 0.0002288818359375,
+    "maxNormalizedToGate": 0.01576734089608632,
+    "gate": {
+      "abs": 0.01,
+      "rel": 0.001
+    },
+    "gateUnchanged": true
+  },
+  "timing": {
+    "hostElapsedSeconds": 13737.908823000002,
+    "workerElapsedMs": 13731738.415,
+    "referenceCompareSeconds": 6104.242217160919,
+    "diagnosticCallbackMs": 6901119.445000094,
+    "nativePublicSessionRunMs": 4179220.4900005497,
+    "nativePublicLinearSessionRunMs": 776307.4100001222,
+    "nativePublicAttentionSessionRunMs": 3402913.0800004276,
+    "scope": "Nested/inclusive frames overlap; diagnostic callbacks include reference/IPC. Do not add them or treat session.run wall time as pure native kernels, exclusive time or a benchmark."
+  },
+  "memory": {
+    "peakNamedHiddenSpanBytes": 4543303680,
+    "peakNativeStageWeightCacheBytes": 566231040,
+    "referencePeakCachedWeightBytes": 597688320,
+    "wrapperDurationSeconds": 13742.272645797999,
+    "sampleIntervalSeconds": 2.0,
+    "postCleanupObservationSeconds": 3.0,
+    "gateInstalledBeforeCommandExec": true,
+    "totalSamples": 6312,
+    "retainedSamples": 1800,
+    "omittedMiddleSamples": 4512,
+    "observedLifetimePeakRssSumBytes": 12494725120,
+    "observedLifetimePeakPssSumBytes": 12217216000,
+    "peakElapsedSeconds": {
+      "rss": 10675.509224029,
+      "pss": 10998.638496115
+    },
+    "retentionMeaning": "Lifetime sampled peaks updated before bounded history retention; omittedMiddleSamples were observed but omitted from serialized history, not unobserved. Samples span pre-exec gate through command exit and configured cleanup interval.",
+    "sharedCgroupEventsBaseline": {
+      "low": 0,
+      "high": 0,
+      "max": 63536,
+      "oom": 10,
+      "oom_kill": 2,
+      "oom_group_kill": 0
+    },
+    "sharedCgroupEventsFinal": {
+      "low": 0,
+      "high": 0,
+      "max": 108272,
+      "oom": 10,
+      "oom_kill": 2,
+      "oom_group_kill": 0
+    },
+    "oomCountDelta": 0,
+    "oomKillCountDelta": 0,
+    "sharedCgroupCaveat": "Shared/historical memory.peak and file/shmem are not command-private memory; file already includes shmem.",
+    "scope": {
+      "start": "before child launch; first child tree sample while exec gate remains closed",
+      "end": "command exit plus configured post-cleanup interval; known surviving descendants remain sampled",
+      "rss": "sum duplicates shared pages; sampled peaks can miss spikes",
+      "pss": "best effort /proc smaps_rollup; null and completeness flags mark inaccessible scopes; excludes unmapped file cache",
+      "roles": "heuristics only; a DedicatedWorker/WASM/ORT allocator cannot be separated from its Chromium renderer process here",
+      "sharedCgroup": "shared with all workloads; memory.peak is historical; memory.stat file already includes shmem, so do not add them",
+      "tmpFilesystem": "shared /tmp filesystem occupancy, not private tensor bytes or command-owned memory",
+      "notObserved": [
+        "unsampled transient peaks",
+        "native allocator suballocations",
+        "other process trees",
+        "memory after retained surviving descendants stop being observed"
+      ]
+    },
+    "monitorSourceSHA256": "d57aefdf04c3b4ec9b09c37da7650150a46d88a67d6323bc534e2209f3aec164",
+    "lifetimePeakAlgorithmVerified": "Matching monitor source updates total count and lifetime RSS/PSS peaks in sample() before appending to bounded deque history."
+  },
+  "cleanup": {
+    "workerCleanupError": null,
+    "observerRestored": true,
+    "candidateDisposed": true,
+    "opsDisposed": true,
+    "sourceDisposed": true,
+    "activeHiddenStores": 0,
+    "activeHiddenStoreBytes": 0,
+    "stageWeightCacheBytes": 0,
+    "pendingTensors": 0,
+    "preparedWeights": 0,
+    "kvOwnedPairs": 0,
+    "kvBytes": 0,
+    "kvActiveLeases": 0,
+    "queryOwners": 0,
+    "queryOwnedTensors": 0,
+    "cleanupPending": false,
+    "oracle": {
+      "childExitCode": 0,
+      "childStillAlive": false,
+      "terminated": false,
+      "backingFilesRemoved": [
+        "reference-x.f32"
+      ],
+      "backingFilesRemaining": [],
+      "cleanupErrors": []
+    },
+    "oracleClosed": true,
+    "referenceCachedWeightBytesAfterClose": 0,
+    "afterDisposeObservedMemories": [
+      {
+        "id": 1,
+        "moduleSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+        "moduleSHA256s": [
+          "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd"
+        ],
+        "roles": [
+          "docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm"
+        ],
+        "capacityBytes": 1572864,
+        "highWaterBytes": 1572864,
+        "alive": true
+      },
+      {
+        "id": 2,
+        "moduleSHA256": "4d6fa6efdf89a694ddf607b7a00c49601f6190ac8f9c82c3a636fffb70c507a2",
+        "moduleSHA256s": [
+          "4d6fa6efdf89a694ddf607b7a00c49601f6190ac8f9c82c3a636fffb70c507a2"
+        ],
+        "roles": [
+          "docs/shared/diffusion-models/execution/model-decode/model-decode.wasm"
+        ],
+        "capacityBytes": 1835008,
+        "highWaterBytes": 1835008,
+        "alive": true
+      },
+      {
+        "id": 3,
+        "moduleSHA256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+        "moduleSHA256s": [
+          "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319"
+        ],
+        "roles": [
+          "docs/shared/diffusion-models/execution/model-math/kernel.wasm"
+        ],
+        "capacityBytes": 9175040,
+        "highWaterBytes": 9175040,
+        "alive": true
+      },
+      {
+        "id": 4,
+        "moduleSHA256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+        "moduleSHA256s": [
+          "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+        ],
+        "roles": [
+          "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm"
+        ],
+        "capacityBytes": 432865280,
+        "highWaterBytes": 432865280,
+        "alive": true
+      }
+    ],
+    "wrapperChildExitCode": 0,
+    "postCleanupFinalProcesses": [
+      {
+        "pid": 17920,
+        "parentPid": 1,
+        "name": "chromium",
+        "state": "Z",
+        "startTicks": 692311,
+        "rssBytes": 0,
+        "pssBytes": null,
+        "roleHeuristic": "chromium-browser-or-helper"
+      },
+      {
+        "pid": 17922,
+        "parentPid": 1,
+        "name": "chromium",
+        "state": "Z",
+        "startTicks": 692311,
+        "rssBytes": 0,
+        "pssBytes": null,
+        "roleHeuristic": "chromium-browser-or-helper"
+      }
+    ],
+    "postCleanupRssSumBytes": 0,
+    "postCleanupPssSumBytes": null,
+    "postCleanupPssComplete": false,
+    "scope": "Owner cleanup succeeded, but live observed WASM memory capacities are not allocator live bytes or OS-release proof. Final two Chromium crash-handler descendants are zombies with RSS0 and PSS inaccessible/null; do not describe them as live workers or all PIDs gone."
+  },
+  "unknownObservationScope": [
+    "native/internal ORT staging/allocator peaks not directly observable",
+    "reference IPC adds bounded binary copies and is included only by outer process monitor",
+    "whole-process RSS/PSS sampling is supplied by outer resource wrapper",
+    "WASM Memory capacity is not allocator usage",
+    "ORT native internal copies/allocator live bytes are not directly observable",
+    "performance.memory excludes most ArrayBuffer backing stores",
+    "RSS/PSS and whole-process observations belong to outer runner"
+  ],
+  "rawIntermediateArraysSaved": false,
+  "normalAPIRequiresGateOrReference": false,
+  "packagingOnly": {
+    "newInferenceExecuted": false,
+    "modelFilesRead": false,
+    "rawTensorFilesCopied": false
+  }
+}

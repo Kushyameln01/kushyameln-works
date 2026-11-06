@@ -1,0 +1,925 @@
+{
+  "schemaVersion": "works-numerical-rules/1.0-draft.1",
+  "documentVersion": "1.0-draft.2",
+  "status": "documented-draft",
+  "rules": [
+    {
+      "ruleId": "NR-WAN21-MEAN-F32",
+      "ownerRole": "tensor-transform",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/latent-space.hike"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/latent-space.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/latent-space/kernel-registry.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "development/ai-connection/e6/RECT-RESULT.md"
+        }
+      ],
+      "rule": {
+        "ownerModule": "diffusion_models",
+        "arithmetic": "source float32 operations in order; verify generated WAT/binary if backend/compiler changes",
+        "constants": {
+          "channelMean": [
+            -0.7571,
+            -0.7089,
+            -0.9113,
+            0.1075,
+            -0.1745,
+            0.9653,
+            -0.1517,
+            1.5508,
+            0.4134,
+            -0.0715,
+            0.5517,
+            -0.3632,
+            -0.1922,
+            -0.9497,
+            0.2503,
+            -0.2921
+          ],
+          "channelStd": [
+            2.8184,
+            1.4541,
+            2.3275,
+            2.6558,
+            1.2196,
+            1.7708,
+            2.6052,
+            2.0743,
+            3.2687,
+            2.1526,
+            2.8652,
+            1.5579,
+            1.6382,
+            1.1253,
+            2.8251,
+            1.916
+          ],
+          "scaleFactor": 1,
+          "literalInterpretation": "decimal literals are converted to float32 by source compiler, not retained as FP64 coefficients"
+        },
+        "normalizeSteps": [
+          "difference=f32(x-mean[c])",
+          "scaled=f32(difference*1.0f)",
+          "normalized=f32(scaled/std[c])"
+        ],
+        "restoreSteps": [
+          "product=f32(z*std[c])",
+          "divided=f32(product/1.0f)",
+          "raw=f32(divided+mean[c])"
+        ],
+        "channelIndex": {
+          "F5": "floor(i/8)",
+          "F1-square": "floor(i/4)",
+          "F1-rect": "floor(i/8)"
+        },
+        "noRewrite": [
+          "do not replace division by reciprocal multiplication",
+          "do not algebraically remove source multiply/divide when claiming identical operation sequence",
+          "do not add zero special handling"
+        ]
+      },
+      "conditions": {
+        "semanticInput": "raw-posterior-mean or the explicitly versioned normalized mean, correct direction",
+        "profiles": "exact three shapes in normalization catalog; owner dispatch selects dedicated export",
+        "inputsAndResults": "finite float32",
+        "noGeneratedSample": true
+      },
+      "evidenceScope": "Fixed mean components and received-VAE diagnostic arrays only; independently recorded full-value f32 references and 2e-6 roundtrip gate.",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "normalizationRecordId": "NORM-WAN21-MEAN-F5",
+          "declarations": [
+            "dtype/layout/meaning/shape/modelSha256",
+            "normalization rule wan21-comfy-f32-v1 distinct from ABI wan21-raw-mean-f32-v3",
+            "owner source/kernel hash and scoped accepted gate"
+          ],
+          "condition": "exact shape/meaning/owner/evidence must agree before admission"
+        },
+        {
+          "normalizationRecordId": "NORM-WAN21-MEAN-F1",
+          "declarations": [
+            "dtype/layout/meaning/shape/modelSha256",
+            "normalization rule wan21-comfy-f32-v1 distinct from ABI wan21-raw-mean-f32-v3",
+            "owner source/kernel hash and scoped accepted gate"
+          ],
+          "condition": "exact shape/meaning/owner/evidence must agree before admission"
+        },
+        {
+          "normalizationRecordId": "NORM-WAN21-MEAN-RECT",
+          "declarations": [
+            "dtype/layout/meaning/shape/modelSha256",
+            "normalization rule wan21-comfy-f32-v1 distinct from ABI wan21-raw-mean-f32-v3",
+            "owner source/kernel hash and scoped accepted gate"
+          ],
+          "condition": "exact shape/meaning/owner/evidence must agree before admission"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-RGB-AFFINE-F32",
+      "ownerRole": "latent-encoding",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/vae.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "tools/inference/kernel/tensor.hike"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/API.md"
+        }
+      ],
+      "rule": {
+        "ownerModule": "vae",
+        "steps": [
+          "product=f32(x*2.0f)",
+          "raw=f32(product+(-1.0f))"
+        ],
+        "sourceCall": "hike.affine(data,2,-1)",
+        "rawRGBInput": "bypasses range conversion",
+        "output": "encoder returns raw-posterior-mean; decoder output is raw-decoder-rgb without clamp"
+      },
+      "conditions": {
+        "inputMeaning": "rgb-unit",
+        "range": [
+          0,
+          1
+        ],
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "configuredProfile": "exact exported profile",
+        "nonfinite": "owner rejects"
+      },
+      "evidenceScope": "Opaque-image/rgb-unit encode and native fixed VAE profiles; no universal scalar tolerance derived.",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "normalizationRecordId": "NORM-RGB-UNIT-TO-RAW",
+          "declarations": [
+            "rgb-unit vs raw-decoder-rgb meaning",
+            "input range and configured RGB/latent shapes",
+            "VAE operation owner and real Hike contribution"
+          ],
+          "condition": "range conversion happens once in VAE encode; manager does not duplicate it"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-UMT5-RMSNORM-F32",
+      "ownerRole": "text-encoding",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/text-encoder.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "tools/inference/kernel/tensor.hike"
+        }
+      ],
+      "rule": {
+        "ownerModule": "text_encoder",
+        "steps": [
+          "sum starts f32(0); j ascends 0..cols-1: square=f32(x[j]*x[j]); sum=f32(sum+square)",
+          "variance=f32(sum/f32(cols))",
+          "withEpsilon=f32(variance+epsilon)",
+          "sqrt64=env.sqrt(f64(withEpsilon)); sqrt32=f32(sqrt64)",
+          "inverse=f32(1.0f/sqrt32)",
+          "normalized=f32(x[j]*inverse)",
+          "result=f32(normalized*weight[j])"
+        ],
+        "hiddenSize": 4096,
+        "epsilon": 1e-06,
+        "noImplicitAlternative": "no FP64 reduction, inverse-sqrt rewrite or fused multiply-add claim; generated output must preserve pinned source order"
+      },
+      "conditions": {
+        "model": "fixed UMT5 manifest",
+        "weights": "verified finalNorm bytes/hash",
+        "effectiveTokenRows": "keep original mask/output length; only accepted trailing compaction applies",
+        "gate": "read selected manifest.numericGate; value not retrieved for a new profile"
+      },
+      "evidenceScope": "Internal encoder.final_layer_norm source and prior accepted 24-layer FP32 diagnostics, not an arbitrary normalization engine.",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "normalizationRecordId": "NORM-UMT5-RMSNORM",
+          "declarations": [
+            "verified manifest.finalNorm epsilon and hash",
+            "model/Tokenizer/kernel/runtime identity",
+            "manifest.numericGate and exact accepted evidence scope"
+          ],
+          "condition": "same epsilon does not prove same model or precision; no numeric gate fabricated"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-LORA-LINEAR-F32",
+      "ownerRole": "adapter-weight-transform",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+          "path": "docs/shared/inference/lora/loader-policy.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+          "path": "docs/shared/inference/lora/kernel/host.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+          "path": "tools/lora/kernel/lora.hike"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+          "path": "docs/shared/inference/lora/kernel/README.md"
+        }
+      ],
+      "rule": {
+        "ownerModule": "lora",
+        "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+        "scalePreparation": "effectiveScale uses JS number strength*(alpha/rank), or strength*1 only for explicit null alpha in this fixed Linear policy; host converts to f32 with Math.fround",
+        "matrixShapes": {
+          "base": "[rows,cols]",
+          "downOrA": "[rank,cols]",
+          "upOrB": "[rows,rank]"
+        },
+        "kernelSteps": [
+          "for each output row i and col j, sum=f32(0)",
+          "k ascends 0..rank-1: product=f32(up[i,k]*down[k,j]); sum=f32(sum+product)",
+          "delta=f32(scale32*sum)",
+          "applied=f32(base[i,j]+delta)"
+        ],
+        "noAlternative": [
+          "no FP64 accumulation or FMA promise",
+          "no implicit transpose/flatten",
+          "always rebuild from immutable base, not already applied weights"
+        ]
+      },
+      "conditions": {
+        "variants": [
+          "linear-down-up",
+          "linear-a-b"
+        ],
+        "rank": "positive safe integer",
+        "alpha": "explicit finite value or explicit null according to selected fixed policy; not guessed from metadata/filename",
+        "strength": "finite JS number and finite after f32 rounding; numeric test range is not a product default",
+        "target": "F32 row-major and actual binding/slice registry",
+        "unsupported": [
+          "quantized-base direct input",
+          "Conv",
+          "DoRA",
+          "LoHa",
+          "LoKr",
+          "mid",
+          "transpose",
+          "fusion"
+        ]
+      },
+      "evidenceScope": "Source rule plus existing actual four-LoRA Q16x5120 PARTIAL acceptance; not all-target/model precision acceptance.",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "declarations": [
+            "fixed loaderPolicyId and variant",
+            "rank/alpha/strength/target layout and shape",
+            "native/connection registry, source/kernel identity and PARTIAL coverage"
+          ],
+          "condition": "unknown policy/variant/target or partial coverage cannot pass full-adapter/generation admission"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-LORA-DELTA-F32",
+      "ownerRole": "adapter-weight-transform",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+          "path": "docs/shared/inference/lora/loader-policy.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+          "path": "docs/shared/inference/lora/kernel/host.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+          "path": "tools/lora/kernel/lora.hike"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+          "path": "docs/shared/inference/lora/kernel/README.md"
+        }
+      ],
+      "rule": {
+        "ownerModule": "lora",
+        "steps": [
+          "product=f32(scale32*delta[i])",
+          "applied=f32(base[i]+product)"
+        ],
+        "scale": "f32 strength; no alpha/rank for additive diff/diff_b",
+        "decode": "host unpacks little-endian u16; Hike decodes BF16/F16 to F32; nonfinite rejected; F32 copy also crosses Hike",
+        "base": "immutable original; no subtract-to-restore"
+      },
+      "conditions": {
+        "variants": [
+          "additive-diff",
+          "additive-diff-b"
+        ],
+        "arrays": "equal length finite Float32Array; source dtype BF16/F16/F32 only",
+        "scopeNote": "light Q bias included; all201 weight diff patches are outside accepted Q diagnostic; detail missing LoRA bias uses immutable base pass-through"
+      },
+      "evidenceScope": "All patch kinds have component fixtures; selected light bias actual PARTIAL acceptance does not certify the excluded201 diff patches against the real whole model.",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "declarations": [
+            "weight vs bias role",
+            "whether patch exists or immutable-base-pass-through",
+            "source dtype/storage vs compute dtype",
+            "included/excluded targets and real evidence scope"
+          ],
+          "condition": "do not fabricate zero bias or claim excluded patches applied"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-FLOW-SCHEDULE-F32",
+      "ownerRole": "sampling",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/scheduler/scheduler.hike"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/scheduler/scheduler-kernel.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        }
+      ],
+      "rule": {
+        "ownerModule": "diffusion_models",
+        "nativeProfileId": "bernini-comfy-simple6-shift5-v1",
+        "tableSteps": [
+          "for i=0..999: t=f32(f32(i+1)/1000.0f); t=f32(t*1000.0f); t=f32(t/1000.0f)",
+          "numerator=f32(5.0f*t); denominator=f32(1.0f+f32(4.0f*t)); table[i]=f32(numerator/denominator)",
+          "for i=0..5: index=999-floor(i*1000/6); sigma[i]=table[index]; sigma[6]=0.0f"
+        ],
+        "selectedIndices": [
+          999,
+          833,
+          666,
+          499,
+          333,
+          166
+        ],
+        "segments": {
+          "HIGH": "sigma[0:4]",
+          "LOW": "sigma[3:7]"
+        },
+        "timesteps": "f32(sigma*1000.0f)"
+      },
+      "conditions": {
+        "fixedProfileOnly": true,
+        "steps": 6,
+        "splitStep": 3,
+        "shift": 5,
+        "randomness": "no RNG in this kernel; explicit noise is caller supplied"
+      },
+      "evidenceScope": "Fixed schedule primitive/source correspondence, not a neural predictor or completed HIGH/LOW model handoff.",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "declarations": [
+            "exact schedule profile and source/build",
+            "six steps and split3 boundary overlap",
+            "noise input identity and separate augmentation"
+          ],
+          "condition": "do not replace with other scheduler or infer full sampling readiness from table generation"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-FLOW-NOISE-F32",
+      "ownerRole": "sampling",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/scheduler/scheduler.hike"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/scheduler/scheduler-kernel.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        }
+      ],
+      "rule": {
+        "ownerModule": "diffusion_models",
+        "mixSteps": [
+          "complement=f32(1.0f-sigma)",
+          "scaledNoise=f32(noiseScale*noise[i])",
+          "noisePart=f32(sigma*scaledNoise)",
+          "latentPart=f32(complement*latent[i])",
+          "mixed=f32(noisePart+latentPart)"
+        ],
+        "inverseSteps": [
+          "complement=f32(1.0f-sigma)",
+          "result=f32(latent[i]/complement)"
+        ],
+        "denoisedSteps": [
+          "product=f32(velocity[i]*sigma)",
+          "denoised=f32(x[i]-product)"
+        ]
+      },
+      "conditions": {
+        "sigma": "finite in [0,1], converted to f32; inverse rejects sigma=1",
+        "noiseScale": "finite nonnegative and finite as f32; native request requires explicit value even if direct helper has default1",
+        "arrays": "matching caller-owned finite Float32Array",
+        "componentVsRPCBudget": "scheduler helper MAX_ELEMENTS=4194304, CHUNK4096; native RPC API retains1048576; do not lift RPC limit based on helper constant"
+      },
+      "evidenceScope": "Explicit caller arrays and fixed Hike numeric primitives only; NOT_READY model predict/sample and no normalization relabel.",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "declarations": [
+            "input meaning and shape",
+            "noiseScale/sigma and precision",
+            "operation-specific limit and owner layer"
+          ],
+          "condition": "manager checks selected operation declarations; does not reproduce noise/flow math or promote primitive output to raw mean"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-EULER-DENOISED-F32",
+      "ownerRole": "sampling",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/kernel/euler.hike"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        }
+      ],
+      "rule": {
+        "ownerModule": "diffusion_models",
+        "steps": [
+          "dt=f32(nextSigma-sigma)",
+          "difference=f32(x[i]-denoised[i])",
+          "derivative=f32(difference/sigma)",
+          "increment=f32(derivative*dt)",
+          "next=f32(x[i]+increment)"
+        ],
+        "inputSemantic": "denoised x0, not raw network velocity",
+        "sourceMode": "sample_euler with s_churn=0"
+      },
+      "conditions": {
+        "sigma": "positive",
+        "nextSigma": "nonnegative and no larger than sigma",
+        "finite": "host checks input/params/result",
+        "capacity": "operation-specific validated bounds; native RPC budget1048576",
+        "scheduling": "fixed workspace chunking is not neural graph partition"
+      },
+      "evidenceScope": "Euler primitive acceptance on supplied denoised tensor; no full model inference claim.",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "declarations": [
+            "denoised vs velocity semantics",
+            "Euler profile/sigma interval",
+            "owner source/kernel and operation budget"
+          ],
+          "condition": "flow velocity requires owner flowDenoised step before Euler; manager must not silently treat it as x0"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-GENERATED-MEAN-SEPARATION",
+      "ownerRole": "tensor-transform",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/vae.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        }
+      ],
+      "rule": {
+        "restorationOwnerModule": "diffusion_models",
+        "consumerOwnerModule": "vae",
+        "numericalRestorationStatus": "unverified; current generated producer and restoration not implemented",
+        "declarationContract": "wan21-raw-generated-sample:v1 plus separate decoder binding, producer array, raw/restored/owner normalization contract",
+        "nonRules": [
+          "do not copy mean normalization operation into generated route by relabeling",
+          "do not clamp raw latent as RGB",
+          "do not regard metadata restored as arithmetic proof"
+        ]
+      },
+      "conditions": {
+        "requiredEvidence": "actual owner-issued before/after tensor hashes, operation/build/source and numerical comparison for the generated route",
+        "consumer": "exact shape/profile and decoder binding; VAE adds no latent normalization/restoration"
+      },
+      "evidenceScope": "Generated consumer validation/codec fixtures only; no real generated sample numeric acceptance.",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "normalizationRecordId": "NORM-RAW-GENERATED-DECLARATION",
+          "declarations": [
+            "actual producer hashes distinct from decoder",
+            "raw/restored normalization owner and rule binding",
+            "actual restoration evidence scope rather than metadata alone"
+          ],
+          "condition": "keep generated operation blocked until real numerical owner route is accepted"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-SCOPED-GATES",
+      "ownerRole": "evidence-validation",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "development/ai-connection/e6/RECT-RESULT.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "0c27874908638afc748ea2455a2779a16736730b",
+          "path": "development/ai-connection/JOINT-LORA-RESULT.md"
+        }
+      ],
+      "rule": {
+        "gatePolicy": "only gates fixed before the scoped comparison can authorize that scope; new model/profile/precision requires an explicit gate decision",
+        "acceptedExamples": [
+          {
+            "scope": "received F1/Rect posterior-mean roundtrip",
+            "gate": {
+              "maxAbs": 2e-06
+            },
+            "reference": "independent struct-f32 source expression"
+          },
+          {
+            "scope": "selected Q actual four-LoRA PARTIAL weights",
+            "gate": {
+              "absolute": 1e-05,
+              "relative": 0.0001
+            },
+            "formula": "abs(actual-ref)<=absolute+relative*abs(ref)"
+          },
+          {
+            "scope": "decoded immutable base selected81920 weights plus16 biases",
+            "gate": "exact F32 numeric and byte equality against independent original-base reference"
+          },
+          {
+            "scope": "applied selected bias16 values",
+            "gate": "exact F32 numeric equality; do not impose a new bitwise requirement beyond the recorded gate"
+          },
+          {
+            "scope": "selected Q consumer16 outputs",
+            "gate": {
+              "absolute": 1e-06,
+              "relative": 1e-05
+            },
+            "formula": "abs(actual-ref)<=absolute+relative*abs(ref)"
+          }
+        ],
+        "unverifiedGates": [
+          "new Text/VAE manifests not retrieved here",
+          "81-frame production profile",
+          "generated-sample producer/restoration",
+          "whole-model FP8/GPU equivalence"
+        ],
+        "noGlobalThreshold": true
+      },
+      "conditions": {
+        "precision": "bind oracle dtype, actual dtype/accumulation/runtime and tolerance together",
+        "managerAction": "verify pre-existing gate declaration/evidence/target scope, do not compute model outputs or select a tolerance from observed error",
+        "actualNewExecution": "not performed for this catalog"
+      },
+      "evidenceScope": "Recorded component/real PARTIAL gates only; finite observed errors and test counts do not define new acceptance thresholds.",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "declarations": [
+            "gate fixed before execution",
+            "oracle/source/shape/precision/coverage",
+            "owner-issued complete comparison results and output hashes"
+          ],
+          "condition": "norm admission compares the declared gate and scope; unrelated PASS or lower error does not authorize a new scope"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-BERNINI-QKV-N16-F32",
+      "ownerRole": "diffusion_models",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "docs/shared/diffusion-models/ort-bridge/qkv/stage.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/candidate-plan.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/runtime-admission.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/RUNTIME-RESULT.md"
+        }
+      ],
+      "rule": {
+        "operations": [
+          "Decode original E4M3FN code, multiply scalar scale with F32 rounding",
+          "ORT WASM F32 Gemm over all5120 input columns, then real Hike F32 bias addition"
+        ],
+        "storage": {
+          "projection": "F8_E4M3",
+          "scale": "per-tensor scalar F32",
+          "bias": "F16",
+          "normWeight": "F16",
+          "decodeProfile": "scaled-e4m3fn-scalar-f32-v1",
+          "computeProfile": "F32 diagnostic; original GPU/scaled_mm/activation quantization parity UNVERIFIED"
+        },
+        "reference": "independent E4M3FN decode and F32 scalar product; binary64 dot accumulation -> F32; F32 bias addition",
+        "gate": {
+          "absolute": 0.0001,
+          "relative": 1e-05,
+          "origin": "existing independent full-width Q F32 diagnostic boundary; extended batch16 is a new acceptance scope"
+        }
+      },
+      "conditions": {
+        "nativeExecutionProfileId": "bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1",
+        "scope": "ACTUAL_WEIGHTS_EXPLICIT_HIDDEN_N16_FULL_WIDTH_HEAD0",
+        "originalWorkflowInputsVerified": false,
+        "productionPrecisionVerified": false
+      },
+      "evidenceScope": "Fixed actual retained HIGH/LOW block0 weights and explicit deterministic hidden16 fixture; reused owner receipt, not fresh inference for this registration",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "normalizationRecordId": "NORM-BERNINI-QK5120-N16-F32",
+          "declarations": [
+            "full5120 axis",
+            "source/build/kernel",
+            "predeclared gate/reference",
+            "fixed scope"
+          ],
+          "condition": "P4 candidate only; never mean/generated or UMT5 profile"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-BERNINI-QK5120-F32",
+      "ownerRole": "diffusion_models",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "docs/shared/diffusion-models/ort-bridge/qkv/stage.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/candidate-plan.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/runtime-admission.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/RUNTIME-RESULT.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "docs/shared/inference/hike.mjs"
+        }
+      ],
+      "rule": {
+        "operations": [
+          "Reduce x*x in ascending-column F32 order across all5120 channels",
+          "F32 mean and epsilon addition, fixed env.sqrt F64 primitive, F32 reciprocal, x then affine weight multiplication"
+        ],
+        "epsilonLiteral": 1e-06,
+        "axis": 5120,
+        "inputMaxAbs": 1e+16,
+        "admissionProof": "5120*(1e16)^2=5.12e35, below finite F32 maximum by over two orders of magnitude including sequential-rounding margin",
+        "reference": "independent binary64 mean-square/sqrt reference from all5120 dimensions, eps is source1e-6; also record ordered F32 loop/sqrtF64->F32 reciprocal reference",
+        "gate": {
+          "absolute": 0.0001,
+          "relative": 0.0001,
+          "origin": "new predeclared F32 sequential5120 reduction/reciprocal diagnostic tolerance versus independent binary64 oracle; not Torch fused rsqrt parity"
+        },
+        "originalTorchRsqrtParity": "UNVERIFIED"
+      },
+      "conditions": {
+        "nativeExecutionProfileId": "bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1",
+        "scope": "ACTUAL_WEIGHTS_EXPLICIT_HIDDEN_N16_FULL_WIDTH_HEAD0",
+        "originalWorkflowInputsVerified": false,
+        "productionPrecisionVerified": false
+      },
+      "evidenceScope": "Fixed actual retained HIGH/LOW block0 weights and explicit deterministic hidden16 fixture; reused owner receipt, not fresh inference for this registration",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "normalizationRecordId": "NORM-BERNINI-QK5120-N16-F32",
+          "declarations": [
+            "full5120 axis",
+            "source/build/kernel",
+            "predeclared gate/reference",
+            "fixed scope"
+          ],
+          "condition": "P4 candidate only; never mean/generated or UMT5 profile"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-BERNINI-ROPE64-F32",
+      "ownerRole": "diffusion_models",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "docs/shared/diffusion-models/ort-bridge/qkv/stage.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/candidate-plan.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/runtime-admission.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/RUNTIME-RESULT.md"
+        }
+      ],
+      "rule": {
+        "operations": [
+          "F64 power/cos/sin primitives construct per-axis44/42/42 rotation matrices then cast to F32",
+          "Construct sourceId rotation over all64 pairs separately",
+          "Compose each2x2 matrix with ordered F32 two-product sums; do not add angles",
+          "Apply matrix to each Q/K pair with ordered F32 products/sums"
+        ],
+        "reference": "NumPy binary64 linspace/power/cos/sin -> F32 2x2 matrices; T/H/W axis dims44/42/42; separate sourceId full128 matrices composed with F32 two-term products/sums; no angle collapse",
+        "matrixGate": {
+          "absolute": 2e-06,
+          "relative": 2e-06,
+          "origin": "new predeclared F64 primitive/F32 matrix construction and composition diagnostic tolerance"
+        },
+        "applicationGate": {
+          "absolute": 0.0001,
+          "relative": 0.0001,
+          "origin": "new predeclared fullwidth norm to selectedhead matrix-apply diagnostic"
+        }
+      },
+      "conditions": {
+        "nativeExecutionProfileId": "bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1",
+        "scope": "ACTUAL_WEIGHTS_EXPLICIT_HIDDEN_N16_FULL_WIDTH_HEAD0",
+        "originalWorkflowInputsVerified": false,
+        "productionPrecisionVerified": false
+      },
+      "evidenceScope": "Fixed actual retained HIGH/LOW block0 weights and explicit deterministic hidden16 fixture; reused owner receipt, not fresh inference for this registration",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "normalizationRecordId": "NORM-BERNINI-QK5120-N16-F32",
+          "declarations": [
+            "full5120 axis",
+            "source/build/kernel",
+            "predeclared gate/reference",
+            "fixed scope"
+          ],
+          "condition": "P4 candidate only; never mean/generated or UMT5 profile"
+        }
+      ]
+    },
+    {
+      "ruleId": "NR-BERNINI-QKV-ATTENTION-N16-F32",
+      "ownerRole": "diffusion_models",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "docs/shared/diffusion-models/ort-bridge/qkv/stage.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/candidate-plan.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/runtime-admission.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/RUNTIME-RESULT.md"
+        }
+      ],
+      "rule": {
+        "operations": [
+          "Existing ORT score/max/Exp and Hike online numerator/denominator accumulation",
+          "Use all16 explicitly declared selected keys, no mask/dropout, no phantom padding"
+        ],
+        "reference": "independent binary64 softmax over all16 declared selected keys, no mask/dropout",
+        "gate": {
+          "absolute": 0.001,
+          "relative": 0.0001,
+          "origin": "new predeclared composed-stage F32 diagnostic error budget; not production acceptance"
+        },
+        "existingK32760FixturePassIsSeparate": true
+      },
+      "conditions": {
+        "nativeExecutionProfileId": "bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1",
+        "scope": "ACTUAL_WEIGHTS_EXPLICIT_HIDDEN_N16_FULL_WIDTH_HEAD0",
+        "originalWorkflowInputsVerified": false,
+        "productionPrecisionVerified": false
+      },
+      "evidenceScope": "Fixed actual retained HIGH/LOW block0 weights and explicit deterministic hidden16 fixture; reused owner receipt, not fresh inference for this registration",
+      "notManagerResponsibility": true,
+      "normInputs": [
+        {
+          "normalizationRecordId": "NORM-BERNINI-QK5120-N16-F32",
+          "declarations": [
+            "full5120 axis",
+            "source/build/kernel",
+            "predeclared gate/reference",
+            "fixed scope"
+          ],
+          "condition": "P4 candidate only; never mean/generated or UMT5 profile"
+        }
+      ]
+    }
+  ],
+  "registrationStatus": "proposal-preview-not-published"
+}

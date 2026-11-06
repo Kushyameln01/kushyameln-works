@@ -1,0 +1,454 @@
+{
+  "schemaVersion": "works-manager-norms/1.0-draft.1",
+  "documentVersion": "1.0-draft.2",
+  "status": "documented-draft",
+  "runtimeIntegrated": false,
+  "fieldNamespace": "catalog/manager-adapter declaration vocabulary; native APIs remain unchanged",
+  "classification": {
+    "compatibility": [
+      "COMPATIBLE",
+      "NEEDS_ADAPTER",
+      "INCOMPATIBLE",
+      "UNVERIFIED"
+    ],
+    "validation": [
+      "PASS",
+      "FAIL",
+      "NOT_VERIFIED"
+    ],
+    "readiness": [
+      "READY",
+      "BLOCKED",
+      "FAILED"
+    ],
+    "unknownDefaults": {
+      "missingRequiredContractOrIdentity": "UNVERIFIED",
+      "knownConflict": "INCOMPATIBLE",
+      "identifiedRequiredAdapterNotExecuted": "NEEDS_ADAPTER",
+      "requiredTransformNotIdentified": "UNVERIFIED",
+      "missingNumericalAcceptanceEvidence": {
+        "compatibility": "retain contract-based result",
+        "validation": "NOT_VERIFIED",
+        "readiness": "BLOCKED"
+      }
+    }
+  },
+  "rules": [
+    {
+      "normId": "N-IDENTITY",
+      "title": "出典・実buildの一致",
+      "decisionOwner": "管理",
+      "managerReads": [
+        "sourcePins",
+        "nativeContractVersion",
+        "kernelDigest",
+        "byteLength",
+        "adoptionSetId"
+      ],
+      "comparisons": [
+        "exact-source-and-loaded-bytes",
+        "no-api-version-only-equivalence"
+      ],
+      "profileRefs": [],
+      "numericalRuleRefs": [],
+      "reasonLabels": [
+        "source-identity-mismatch",
+        "loaded-bytes-unverified"
+      ],
+      "status": "documented-draft"
+    },
+    {
+      "normId": "N-SHAPE",
+      "title": "shape・dtype・layout・意味の一致",
+      "decisionOwner": "producer / consumer宣言、管理照合",
+      "managerReads": [
+        "shape",
+        "dtype",
+        "layout",
+        "semantic",
+        "byteLength",
+        "nativeProfileId"
+      ],
+      "comparisons": [
+        "exact-axis-order",
+        "product-of-shape-times-bytes",
+        "profile-applicability"
+      ],
+      "profileRefs": [
+        "SHAPE-VAE-WAN21-F5-16X16",
+        "SHAPE-VAE-WAN21-F1-16X16",
+        "SHAPE-VAE-WAN21-F1-16X32",
+        "SHAPE-TEXT-UMT5-BLC"
+      ],
+      "numericalRuleRefs": [],
+      "reasonLabels": [
+        "shape-mismatch",
+        "semantic-mismatch",
+        "payload-size-mismatch"
+      ],
+      "status": "documented-draft"
+    },
+    {
+      "normId": "N-NUMERIC",
+      "title": "実行profileとowner検証の範囲",
+      "decisionOwner": "数値owner、管理照合",
+      "managerReads": [
+        "executionProfileId",
+        "precisionProfile",
+        "sourceVersion",
+        "ownerValidationReceipt",
+        "gateRef",
+        "scope"
+      ],
+      "comparisons": [
+        "exact-declared-execution",
+        "gate-established-before-run",
+        "receipt-matches-profile-and-reference"
+      ],
+      "profileRefs": [
+        "EXEC-BERNINI-Q16-F32",
+        "EXEC-FP8-SCALAR-F32",
+        "EXEC-BERNINI-SIMPLE6-SHIFT5",
+        "EXEC-ATTENTION-Q16-ONEHEAD"
+      ],
+      "numericalRuleRefs": [
+        "NR-SCOPED-GATES",
+        "NR-FLOW-SCHEDULE-F32",
+        "NR-FLOW-NOISE-F32",
+        "NR-EULER-DENOISED-F32"
+      ],
+      "reasonLabels": [
+        "numeric-profile-mismatch",
+        "numeric-gate-unverified"
+      ],
+      "status": "documented-draft"
+    },
+    {
+      "normId": "N-NORMALIZATION",
+      "title": "正規化の意味・版・変換経路",
+      "decisionOwner": "VAE / TextEncoder / Diffusion",
+      "managerReads": [
+        "normalizationProfile",
+        "semantic",
+        "transformTraceRef",
+        "ownerValidationReceipt"
+      ],
+      "comparisons": [
+        "same-semantics-or-explicit-versioned-owner-transform",
+        "no-manager-recomputation"
+      ],
+      "profileRefs": [
+        "NORM-WAN21-MEAN-F5",
+        "NORM-WAN21-MEAN-F1",
+        "NORM-WAN21-MEAN-RECT",
+        "NORM-RGB-UNIT-TO-RAW",
+        "NORM-RAW-GENERATED-DECLARATION",
+        "NORM-UMT5-RMSNORM"
+      ],
+      "numericalRuleRefs": [
+        "NR-WAN21-MEAN-F32",
+        "NR-RGB-AFFINE-F32",
+        "NR-UMT5-RMSNORM-F32",
+        "NR-GENERATED-MEAN-SEPARATION"
+      ],
+      "reasonLabels": [
+        "normalization-mismatch",
+        "transform-evidence-missing"
+      ],
+      "status": "documented-draft"
+    },
+    {
+      "normId": "N-LOADER",
+      "title": "入力・loader subsetの適合",
+      "decisionOwner": "LoRA / weight-source owner",
+      "managerReads": [
+        "inputKind",
+        "loaderPolicyId",
+        "variant",
+        "sourceDtype",
+        "registryBinding",
+        "strength",
+        "sourceHash"
+      ],
+      "comparisons": [
+        "explicit-loader-and-variant",
+        "local-file-product-input",
+        "unsupported-known-variant-rejected"
+      ],
+      "profileRefs": [
+        "LOAD-COMFY-LINEAR-DIFF",
+        "LOAD-LOCAL-SAFETENSORS",
+        "LOAD-FP8-BASE"
+      ],
+      "numericalRuleRefs": [
+        "NR-LORA-LINEAR-F32",
+        "NR-LORA-DELTA-F32"
+      ],
+      "reasonLabels": [
+        "loader-policy-mismatch",
+        "unsupported-loader-variant",
+        "input-source-mismatch"
+      ],
+      "status": "documented-draft"
+    },
+    {
+      "normId": "N-MAPPING",
+      "title": "mapping正本ownerと経路の一意性",
+      "decisionOwner": "LoRA owner adapter / 管理binding",
+      "managerReads": [
+        "mappingOwner",
+        "adapterVersion",
+        "executionPath",
+        "registryIdentityPair",
+        "selectionRegion"
+      ],
+      "comparisons": [
+        "owner-adapter-only-for-adopted-path",
+        "old-management-bridge-regression-only",
+        "no-stacked-or-duplicate-mapping"
+      ],
+      "profileRefs": [],
+      "numericalRuleRefs": [],
+      "reasonLabels": [
+        "duplicate-mapping",
+        "mapping-owner-unverified"
+      ],
+      "status": "documented-draft"
+    },
+    {
+      "normId": "N-EVIDENCE",
+      "title": "証拠scopeと申請scopeの一致",
+      "decisionOwner": "各実行owner、管理照合",
+      "managerReads": [
+        "coverage",
+        "scope",
+        "baseKind",
+        "referenceId",
+        "evidenceRefs",
+        "validationResult",
+        "currentness"
+      ],
+      "comparisons": [
+        "no-partial-to-full",
+        "no-fixture-to-real-base",
+        "no-reused-evidence-as-fresh-run",
+        "matching-owner-source-and-selection"
+      ],
+      "profileRefs": [],
+      "numericalRuleRefs": [
+        "NR-SCOPED-GATES"
+      ],
+      "reasonLabels": [
+        "scope-insufficient",
+        "evidence-missing",
+        "fixture-scope-only"
+      ],
+      "status": "documented-draft"
+    },
+    {
+      "normId": "N-TRANSACTION",
+      "title": "取消・寿命・revisionの一致",
+      "decisionOwner": "各resource owner / 管理",
+      "managerReads": [
+        "managerSessionId",
+        "managerRevision",
+        "requestId",
+        "resourceBinding",
+        "nativeRevisions",
+        "ownership",
+        "recoveryState"
+      ],
+      "comparisons": [
+        "current-cohort-only",
+        "terminal-receipt-before-finalize",
+        "uncertain-cleanup-blocks-resource-reuse",
+        "no-ownership-renaming"
+      ],
+      "profileRefs": [],
+      "numericalRuleRefs": [],
+      "reasonLabels": [
+        "stale-request",
+        "ownership-mismatch",
+        "cleanup-unresolved"
+      ],
+      "status": "documented-draft"
+    },
+    {
+      "normId": "N-ARTIFACT",
+      "title": "保存・読戻しの同一性",
+      "decisionOwner": "管理package owner / codec owner",
+      "managerReads": [
+        "packageSchemaVersion",
+        "headerHash",
+        "payloadHash",
+        "evidenceRefs",
+        "context",
+        "provenance",
+        "sourceHashNamespaces"
+      ],
+      "comparisons": [
+        "verify-digests-with-declared-serialization",
+        "preserve-producer-order-and-native-uniqueness",
+        "preserve-optional-metadata",
+        "do-not-conflate-distinct-native-hashes",
+        "preserve-context-frame-array-order-and-duplicates"
+      ],
+      "profileRefs": [],
+      "numericalRuleRefs": [],
+      "reasonLabels": [
+        "artifact-integrity-failed",
+        "evidence-missing",
+        "identity-namespace-mismatch"
+      ],
+      "status": "documented-draft"
+    },
+    {
+      "normId": "N-LEGACY",
+      "title": "旧v1契約の受理範囲",
+      "decisionOwner": "LoRA",
+      "managerReads": [
+        "bindingKind",
+        "coverage",
+        "evidenceLevel",
+        "adapterVersion"
+      ],
+      "comparisons": [
+        "actual-initializer-and-full-only",
+        "retain-legacy-boolean-level"
+      ],
+      "profileRefs": [
+        "LOAD-V1-FULL-ONLY"
+      ],
+      "numericalRuleRefs": [],
+      "reasonLabels": [
+        "legacy-partial-rejected",
+        "legacy-binding-rejected"
+      ],
+      "status": "documented-draft"
+    },
+    {
+      "normId": "N-GENERATION",
+      "title": "生成受付と診断受入の区別",
+      "decisionOwner": "Diffusion生成owner / 管理admission",
+      "managerReads": [
+        "requestedOperation",
+        "nativeReadiness",
+        "coverage",
+        "scope",
+        "fullSessionEvidence",
+        "resourceBudgetEvidence"
+      ],
+      "comparisons": [
+        "load-predict-sample-not-ready-blocked",
+        "diagnostic-even-full-does-not-imply-generation-ready",
+        "full-native-session-and-budget-required"
+      ],
+      "profileRefs": [],
+      "numericalRuleRefs": [],
+      "reasonLabels": [
+        "generation-not-ready",
+        "full-session-unaccepted",
+        "resource-budget-unaccepted"
+      ],
+      "status": "documented-draft"
+    },
+    {
+      "normId": "N-EXTENSION",
+      "title": "拡張と未確認入力の扱い",
+      "decisionOwner": "宣言owner / 管理",
+      "managerReads": [
+        "requiredFeatures",
+        "optionalMetadata",
+        "moduleDescriptor",
+        "edgeId"
+      ],
+      "comparisons": [
+        "unknown-required-feature-unverified",
+        "known-conflict-incompatible",
+        "optional-metadata-preserved",
+        "block-dependent-edge-only"
+      ],
+      "profileRefs": [],
+      "numericalRuleRefs": [],
+      "reasonLabels": [
+        "required-feature-unverified",
+        "declared-conflict"
+      ],
+      "status": "documented-draft"
+    },
+    {
+      "normId": "N-QKV-N16-DIAGNOSTIC",
+      "title": "QKV実重みと明示hidden16の限定診断",
+      "decisionOwner": "管理",
+      "managerReads": [
+        "nativeExecutionProfileId",
+        "loadedSourceBuildKernelBytes",
+        "exactShapeAndFullNormAxis",
+        "hiddenProvenance",
+        "predeclaredGateAndReference",
+        "ownerReceiptScope",
+        "resourceAndCleanupState"
+      ],
+      "comparisons": [
+        "exact-source-and-byte-identity",
+        "no-shape-or-precision-scope-promotion",
+        "owner-numerical-receipt-not-manager-recalculation"
+      ],
+      "profileRefs": [
+        "SHAPE-BERNINI-QKV-N16",
+        "EXEC-BERNINI-QKV-N16-F32",
+        "NORM-BERNINI-QK5120-N16-F32"
+      ],
+      "numericalRuleRefs": [
+        "NR-BERNINI-QKV-N16-F32",
+        "NR-BERNINI-QK5120-F32",
+        "NR-BERNINI-ROPE64-F32",
+        "NR-BERNINI-QKV-ATTENTION-N16-F32",
+        "NR-SCOPED-GATES"
+      ],
+      "reasonLabels": [
+        "qkv-candidate-not-adopted",
+        "qkv-provenance-or-scope-mismatch",
+        "qkv-gate-or-source-mismatch"
+      ],
+      "status": "proposed-not-runtime-integrated"
+    }
+  ],
+  "notManagerResponsibilities": [
+    "derive-model-formulas",
+    "choose-new-tolerances",
+    "normalize-tensors",
+    "reimplement-low-rank-or-FP8-math",
+    "infer-undeclared-profile-from-shape-or-filename",
+    "promote-evidence-scope"
+  ],
+  "changePolicy": {
+    "numericalOwner": "proposes rule/source/profile/reference/gate",
+    "normMaintainer": "publishes versioned conditions derived from reviewed rule",
+    "manager": "compares against a pinned published norm",
+    "missingNorm": "If required contract/semantic identity is unknown, compatibility UNVERIFIED on dependent edge. If only numerical gate/acceptance receipt is missing, retain contract-based compatibility and set validation NOT_VERIFIED/readiness BLOCKED; no inferred fallback."
+  },
+  "sourceRefs": [
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+      "path": "docs/shared/ai-connection/API.md"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+      "path": "docs/shared/inference/lora/CONNECTION_V2.md"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "path": "docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md"
+    },
+    {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "path": "docs/shared/inference/API.md"
+    }
+  ],
+  "registrationStatus": "proposal-preview-not-published"
+}

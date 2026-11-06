@@ -1,0 +1,1647 @@
+{
+  "schemaVersion": "bernini-gated-process-tree-observation-summary/1",
+  "monitorSourceSHA256": "d57aefdf04c3b4ec9b09c37da7650150a46d88a67d6323bc534e2209f3aec164",
+  "startedEpochSeconds": 1793621102.500851,
+  "durationSeconds": 17.20583435399749,
+  "rootPid": 108279,
+  "commandExecutableBasename": "python",
+  "childExitCode": 0,
+  "signalReceived": null,
+  "error": null,
+  "gateInstalledBeforeCommandExec": true,
+  "sampleIntervalSeconds": 0.5,
+  "postCleanupObservationSeconds": 1.0,
+  "totalSamples": 32,
+  "retainedSamples": 32,
+  "omittedMiddleSamples": 0,
+  "observedPeakRssSumBytes": 1293922304,
+  "observedPeakPssSumBytes": 1015780352,
+  "peakElapsedSeconds": {
+    "rss": 13.224209855005029,
+    "pss": 13.224209855005029
+  },
+  "sharedCgroupBeforeChildLaunch": {
+    "memory.current": 15574306816,
+    "memory.peak": 17180487680,
+    "memory.max": 17179869184,
+    "memory.swap.current": 0,
+    "memory.stat": {
+      "anon": 57159680,
+      "file": 15363244032,
+      "shmem": 2401185792,
+      "file_mapped": 24576,
+      "file_dirty": 618496,
+      "file_writeback": 0,
+      "inactive_file": 7496441856,
+      "active_file": 5465616384,
+      "kernel": 153088000,
+      "pagetables": 1986560,
+      "slab": 150480424,
+      "sock": 0
+    },
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 1462958,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "memory.events.local": {
+      "low": 0,
+      "high": 0,
+      "max": 1462958,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "tmpFilesystem": {
+      "capacityBytes": 9441329152,
+      "availableBytes": 7040147456,
+      "usedBytes": 2401181696
+    }
+  },
+  "beforeCommandExec": {
+    "elapsedSeconds": 0.000645752006676048,
+    "phase": "before-command-exec-gate-closed",
+    "processCount": 1,
+    "rootPresent": true,
+    "rssSumBytes": 6582272,
+    "pssSumBytes": 4553728,
+    "pssReadableProcesses": 1,
+    "pssComplete": true,
+    "byRoleHeuristic": {
+      "command-root": {
+        "processCount": 1,
+        "rssSumBytes": 6582272,
+        "pssSumBytes": 4553728,
+        "pssReadableProcesses": 1
+      }
+    },
+    "processes": [
+      {
+        "pid": 108279,
+        "parentPid": 108278,
+        "name": "python",
+        "state": "S",
+        "startTicks": 11411246,
+        "rssBytes": 6582272,
+        "pssBytes": 4553728,
+        "roleHeuristic": "command-root"
+      }
+    ],
+    "sharedCgroup": {
+      "memory.current": 15577944064,
+      "memory.peak": 17180487680,
+      "memory.max": 17179869184,
+      "memory.swap.current": 0,
+      "memory.stat": {
+        "anon": 60649472,
+        "file": 15363244032,
+        "shmem": 2401185792,
+        "file_mapped": 24576,
+        "file_dirty": 618496,
+        "file_writeback": 0,
+        "inactive_file": 7496441856,
+        "active_file": 5465616384,
+        "kernel": 153526272,
+        "pagetables": 2088960,
+        "slab": 150787856,
+        "sock": 0
+      },
+      "memory.events": {
+        "low": 0,
+        "high": 0,
+        "max": 1462958,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "memory.events.local": {
+        "low": 0,
+        "high": 0,
+        "max": 1462958,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "tmpFilesystem": {
+        "capacityBytes": 9441329152,
+        "availableBytes": 7040147456,
+        "usedBytes": 2401181696
+      }
+    }
+  },
+  "scope": {
+    "start": "before child launch; first child tree sample while exec gate remains closed",
+    "end": "command exit plus configured post-cleanup interval; known surviving descendants remain sampled",
+    "rss": "sum duplicates shared pages; sampled peaks can miss spikes",
+    "pss": "best effort /proc smaps_rollup; null and completeness flags mark inaccessible scopes; excludes unmapped file cache",
+    "roles": "heuristics only; a DedicatedWorker/WASM/ORT allocator cannot be separated from its Chromium renderer process here",
+    "sharedCgroup": "shared with all workloads; memory.peak is historical; memory.stat file already includes shmem, so do not add them",
+    "tmpFilesystem": "shared /tmp filesystem occupancy, not private tensor bytes or command-owned memory",
+    "notObserved": [
+      "unsampled transient peaks",
+      "native allocator suballocations",
+      "other process trees",
+      "memory after retained surviving descendants stop being observed"
+    ]
+  },
+  "originalReceipt": {
+    "path": "/tmp/public-worker-run/failed-pair-smoke-resources.json",
+    "bytes": 158282,
+    "sha256": "2e48b1faed68ae87c19177e01f8bf118f7a1fadecef7a35bb9a3d0de387901f8"
+  },
+  "executionSourceCommit": "6d12140eeab204385fa31f5da73d4796968a4003",
+  "acceptedScope": "post-exception-fix actual Worker lifecycle smoke, no full40 or sampler neural rerun",
+  "retainedRawObservationCount": 32,
+  "summaryObservationSelection": "first retained row, nearest every30seconds, last3rows, and +/-2rows around RSS/PSS/shared-current maxima; independent all-sample peaks preserved verbatim",
+  "summaryObservationCount": 10,
+  "rawObservationsExcludedFromPublicSummary": 22,
+  "sharedObservedPeaksNotAttributed": {
+    "memory.current": {
+      "observedMaximum": 16448245760,
+      "elapsedSeconds": 13.224209855005029,
+      "sharedNotAttributed": true
+    },
+    "memory.peak": {
+      "observedMaximum": 17180487680,
+      "elapsedSeconds": 17.158638916997006,
+      "sharedNotAttributed": true
+    },
+    "memory.swap.current": {
+      "observedMaximum": 0,
+      "elapsedSeconds": 17.158638916997006,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.anon": {
+      "observedMaximum": 903929856,
+      "elapsedSeconds": 13.224209855005029,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.file": {
+      "observedMaximum": 15372984320,
+      "elapsedSeconds": 8.028721782000503,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.shmem": {
+      "observedMaximum": 2410876928,
+      "elapsedSeconds": 8.028721782000503,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.file_mapped": {
+      "observedMaximum": 8888320,
+      "elapsedSeconds": 8.028721782000503,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.file_dirty": {
+      "observedMaximum": 618496,
+      "elapsedSeconds": 17.158638916997006,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.file_writeback": {
+      "observedMaximum": 0,
+      "elapsedSeconds": 17.158638916997006,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.inactive_file": {
+      "observedMaximum": 7496450048,
+      "elapsedSeconds": 0.6036888340022415,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.active_file": {
+      "observedMaximum": 5465702400,
+      "elapsedSeconds": 17.158638916997006,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.kernel": {
+      "observedMaximum": 173518848,
+      "elapsedSeconds": 13.224209855005029,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.pagetables": {
+      "observedMaximum": 15523840,
+      "elapsedSeconds": 13.224209855005029,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.slab": {
+      "observedMaximum": 155401176,
+      "elapsedSeconds": 14.389713590993779,
+      "sharedNotAttributed": true
+    },
+    "memory.stat.sock": {
+      "observedMaximum": 4096,
+      "elapsedSeconds": 2.3574121889978414,
+      "sharedNotAttributed": true
+    }
+  },
+  "roleHeuristicObservedPeaks": {
+    "command-root": {
+      "rssSumBytes": 85549056,
+      "pssSumBytes": 82939904,
+      "maxProcessCount": 1,
+      "scope": "maximum sampled role-group sums; heuristics only; native Worker is not separately identifiable"
+    },
+    "other-command-child": {
+      "rssSumBytes": 130768896,
+      "pssSumBytes": 129159168,
+      "maxProcessCount": 1,
+      "scope": "maximum sampled role-group sums; heuristics only; native Worker is not separately identifiable"
+    },
+    "chromium-browser-or-helper": {
+      "rssSumBytes": 145395712,
+      "pssSumBytes": 105164800,
+      "maxProcessCount": 2,
+      "scope": "maximum sampled role-group sums; heuristics only; native Worker is not separately identifiable"
+    },
+    "chromium-crash-handler": {
+      "rssSumBytes": 103612416,
+      "pssSumBytes": 45631488,
+      "maxProcessCount": 2,
+      "scope": "maximum sampled role-group sums; heuristics only; native Worker is not separately identifiable"
+    },
+    "chromium-gpu-process": {
+      "rssSumBytes": 42381312,
+      "pssSumBytes": 25283584,
+      "maxProcessCount": 1,
+      "scope": "maximum sampled role-group sums; heuristics only; native Worker is not separately identifiable"
+    },
+    "chromium-utility": {
+      "rssSumBytes": 89661440,
+      "pssSumBytes": 38690816,
+      "maxProcessCount": 2,
+      "scope": "maximum sampled role-group sums; heuristics only; native Worker is not separately identifiable"
+    },
+    "chromium-renderer-worker-not-separable": {
+      "rssSumBytes": 737914880,
+      "pssSumBytes": 648108032,
+      "maxProcessCount": 3,
+      "scope": "maximum sampled role-group sums; heuristics only; native Worker is not separately identifiable"
+    }
+  },
+  "pssObservationCompleteness": {
+    "allAvailableRowsComplete": false,
+    "rowsWithInaccessiblePss": 8,
+    "nativeWorkerSeparable": false
+  },
+  "observations": [
+    {
+      "originalRetainedIndex": 0,
+      "elapsedSeconds": 0.05006273600156419,
+      "phase": "running",
+      "processCount": 1,
+      "rootPresent": true,
+      "rssSumBytes": 15118336,
+      "pssSumBytes": 12652544,
+      "pssReadableProcesses": 1,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 15118336,
+          "pssSumBytes": 12652544,
+          "pssReadableProcesses": 1
+        }
+      },
+      "processes": [
+        {
+          "pid": 108279,
+          "parentPid": 108278,
+          "name": "python",
+          "state": "R",
+          "startTicks": 11411246,
+          "rssBytes": 15118336,
+          "pssBytes": 12652544,
+          "roleHeuristic": "command-root"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 15585972224,
+        "memory.peak": 17180487680,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 68153344,
+          "file": 15363244032,
+          "shmem": 2401185792,
+          "file_mapped": 24576,
+          "file_dirty": 618496,
+          "file_writeback": 0,
+          "inactive_file": 7496441856,
+          "active_file": 5465616384,
+          "kernel": 153546752,
+          "pagetables": 2109440,
+          "slab": 150783176,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7040147456,
+          "usedBytes": 2401181696
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 21,
+      "elapsedSeconds": 12.079952382002375,
+      "phase": "running",
+      "processCount": 11,
+      "rootPresent": true,
+      "rssSumBytes": 1206845440,
+      "pssSumBytes": 933705728,
+      "pssReadableProcesses": 11,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 52641792,
+          "pssSumBytes": 49188864,
+          "pssReadableProcesses": 1
+        },
+        "other-command-child": {
+          "processCount": 1,
+          "rssSumBytes": 130703360,
+          "pssSumBytes": 129093632,
+          "pssReadableProcesses": 1
+        },
+        "chromium-browser-or-helper": {
+          "processCount": 1,
+          "rssSumBytes": 138936320,
+          "pssSumBytes": 98742272,
+          "pssReadableProcesses": 1
+        },
+        "chromium-crash-handler": {
+          "processCount": 2,
+          "rssSumBytes": 103612416,
+          "pssSumBytes": 28576768,
+          "pssReadableProcesses": 2
+        },
+        "chromium-gpu-process": {
+          "processCount": 1,
+          "rssSumBytes": 40808448,
+          "pssSumBytes": 23736320,
+          "pssReadableProcesses": 1
+        },
+        "chromium-utility": {
+          "processCount": 2,
+          "rssSumBytes": 89325568,
+          "pssSumBytes": 38359040,
+          "pssReadableProcesses": 2
+        },
+        "chromium-renderer-worker-not-separable": {
+          "processCount": 3,
+          "rssSumBytes": 650817536,
+          "pssSumBytes": 566008832,
+          "pssReadableProcesses": 3
+        }
+      },
+      "processes": [
+        {
+          "pid": 108279,
+          "parentPid": 108278,
+          "name": "python",
+          "state": "S",
+          "startTicks": 11411246,
+          "rssBytes": 52641792,
+          "pssBytes": 49188864,
+          "roleHeuristic": "command-root"
+        },
+        {
+          "pid": 108431,
+          "parentPid": 108279,
+          "name": "MainThread",
+          "state": "S",
+          "startTicks": 11411314,
+          "rssBytes": 130703360,
+          "pssBytes": 129093632,
+          "roleHeuristic": "other-command-child"
+        },
+        {
+          "pid": 108443,
+          "parentPid": 108431,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411353,
+          "rssBytes": 138936320,
+          "pssBytes": 98742272,
+          "roleHeuristic": "chromium-browser-or-helper"
+        },
+        {
+          "pid": 108462,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411360,
+          "rssBytes": 51806208,
+          "pssBytes": 16519168,
+          "roleHeuristic": "chromium-crash-handler"
+        },
+        {
+          "pid": 108464,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411360,
+          "rssBytes": 51806208,
+          "pssBytes": 12057600,
+          "roleHeuristic": "chromium-crash-handler"
+        },
+        {
+          "pid": 108484,
+          "parentPid": 108462,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411367,
+          "rssBytes": 40808448,
+          "pssBytes": 23736320,
+          "roleHeuristic": "chromium-gpu-process"
+        },
+        {
+          "pid": 108493,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411369,
+          "rssBytes": 66088960,
+          "pssBytes": 32335872,
+          "roleHeuristic": "chromium-utility"
+        },
+        {
+          "pid": 108509,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411375,
+          "rssBytes": 23236608,
+          "pssBytes": 6023168,
+          "roleHeuristic": "chromium-utility"
+        },
+        {
+          "pid": 108528,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411382,
+          "rssBytes": 91676672,
+          "pssBytes": 57531392,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        },
+        {
+          "pid": 108537,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411385,
+          "rssBytes": 524386304,
+          "pssBytes": 496614400,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        },
+        {
+          "pid": 108561,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411397,
+          "rssBytes": 34754560,
+          "pssBytes": 11863040,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16365223936,
+        "memory.peak": 17180487680,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 768475136,
+          "file": 15369879552,
+          "shmem": 2407772160,
+          "file_mapped": 5779456,
+          "file_dirty": 618496,
+          "file_writeback": 0,
+          "inactive_file": 7496425472,
+          "active_file": 5465702400,
+          "kernel": 172929024,
+          "pagetables": 14983168,
+          "slab": 155294976,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7038828544,
+          "usedBytes": 2402500608
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 22,
+      "elapsedSeconds": 12.660283524994156,
+      "phase": "running",
+      "processCount": 11,
+      "rootPresent": true,
+      "rssSumBytes": 1258450944,
+      "pssSumBytes": 977590272,
+      "pssReadableProcesses": 11,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 52641792,
+          "pssSumBytes": 49188864,
+          "pssReadableProcesses": 1
+        },
+        "other-command-child": {
+          "processCount": 1,
+          "rssSumBytes": 130703360,
+          "pssSumBytes": 129093632,
+          "pssReadableProcesses": 1
+        },
+        "chromium-browser-or-helper": {
+          "processCount": 1,
+          "rssSumBytes": 138907648,
+          "pssSumBytes": 98713600,
+          "pssReadableProcesses": 1
+        },
+        "chromium-crash-handler": {
+          "processCount": 2,
+          "rssSumBytes": 103612416,
+          "pssSumBytes": 28576768,
+          "pssReadableProcesses": 2
+        },
+        "chromium-gpu-process": {
+          "processCount": 1,
+          "rssSumBytes": 40808448,
+          "pssSumBytes": 23736320,
+          "pssReadableProcesses": 1
+        },
+        "chromium-utility": {
+          "processCount": 2,
+          "rssSumBytes": 89325568,
+          "pssSumBytes": 38359040,
+          "pssReadableProcesses": 2
+        },
+        "chromium-renderer-worker-not-separable": {
+          "processCount": 3,
+          "rssSumBytes": 702451712,
+          "pssSumBytes": 609922048,
+          "pssReadableProcesses": 3
+        }
+      },
+      "processes": [
+        {
+          "pid": 108279,
+          "parentPid": 108278,
+          "name": "python",
+          "state": "S",
+          "startTicks": 11411246,
+          "rssBytes": 52641792,
+          "pssBytes": 49188864,
+          "roleHeuristic": "command-root"
+        },
+        {
+          "pid": 108431,
+          "parentPid": 108279,
+          "name": "MainThread",
+          "state": "S",
+          "startTicks": 11411314,
+          "rssBytes": 130703360,
+          "pssBytes": 129093632,
+          "roleHeuristic": "other-command-child"
+        },
+        {
+          "pid": 108443,
+          "parentPid": 108431,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411353,
+          "rssBytes": 138907648,
+          "pssBytes": 98713600,
+          "roleHeuristic": "chromium-browser-or-helper"
+        },
+        {
+          "pid": 108462,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411360,
+          "rssBytes": 51806208,
+          "pssBytes": 16519168,
+          "roleHeuristic": "chromium-crash-handler"
+        },
+        {
+          "pid": 108464,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411360,
+          "rssBytes": 51806208,
+          "pssBytes": 12057600,
+          "roleHeuristic": "chromium-crash-handler"
+        },
+        {
+          "pid": 108484,
+          "parentPid": 108462,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411367,
+          "rssBytes": 40808448,
+          "pssBytes": 23736320,
+          "roleHeuristic": "chromium-gpu-process"
+        },
+        {
+          "pid": 108493,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411369,
+          "rssBytes": 66088960,
+          "pssBytes": 32335872,
+          "roleHeuristic": "chromium-utility"
+        },
+        {
+          "pid": 108509,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411375,
+          "rssBytes": 23236608,
+          "pssBytes": 6023168,
+          "roleHeuristic": "chromium-utility"
+        },
+        {
+          "pid": 108528,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411382,
+          "rssBytes": 91676672,
+          "pssBytes": 57531392,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        },
+        {
+          "pid": 108537,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411385,
+          "rssBytes": 576020480,
+          "pssBytes": 540527616,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        },
+        {
+          "pid": 108561,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411397,
+          "rssBytes": 34754560,
+          "pssBytes": 11863040,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16406450176,
+        "memory.peak": 17180487680,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 862732288,
+          "file": 15369908224,
+          "shmem": 2407800832,
+          "file_mapped": 5779456,
+          "file_dirty": 618496,
+          "file_writeback": 0,
+          "inactive_file": 7496425472,
+          "active_file": 5465702400,
+          "kernel": 173350912,
+          "pagetables": 15376384,
+          "slab": 155315336,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7038828544,
+          "usedBytes": 2402500608
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 23,
+      "elapsedSeconds": 13.224209855005029,
+      "phase": "running",
+      "processCount": 11,
+      "rootPresent": true,
+      "rssSumBytes": 1293922304,
+      "pssSumBytes": 1015780352,
+      "pssReadableProcesses": 11,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 52641792,
+          "pssSumBytes": 49188864,
+          "pssReadableProcesses": 1
+        },
+        "other-command-child": {
+          "processCount": 1,
+          "rssSumBytes": 130703360,
+          "pssSumBytes": 129093632,
+          "pssReadableProcesses": 1
+        },
+        "chromium-browser-or-helper": {
+          "processCount": 1,
+          "rssSumBytes": 138907648,
+          "pssSumBytes": 98713600,
+          "pssReadableProcesses": 1
+        },
+        "chromium-crash-handler": {
+          "processCount": 2,
+          "rssSumBytes": 103612416,
+          "pssSumBytes": 28576768,
+          "pssReadableProcesses": 2
+        },
+        "chromium-gpu-process": {
+          "processCount": 1,
+          "rssSumBytes": 40808448,
+          "pssSumBytes": 23736320,
+          "pssReadableProcesses": 1
+        },
+        "chromium-utility": {
+          "processCount": 2,
+          "rssSumBytes": 89333760,
+          "pssSumBytes": 38363136,
+          "pssReadableProcesses": 2
+        },
+        "chromium-renderer-worker-not-separable": {
+          "processCount": 3,
+          "rssSumBytes": 737914880,
+          "pssSumBytes": 648108032,
+          "pssReadableProcesses": 3
+        }
+      },
+      "processes": [
+        {
+          "pid": 108279,
+          "parentPid": 108278,
+          "name": "python",
+          "state": "S",
+          "startTicks": 11411246,
+          "rssBytes": 52641792,
+          "pssBytes": 49188864,
+          "roleHeuristic": "command-root"
+        },
+        {
+          "pid": 108431,
+          "parentPid": 108279,
+          "name": "MainThread",
+          "state": "S",
+          "startTicks": 11411314,
+          "rssBytes": 130703360,
+          "pssBytes": 129093632,
+          "roleHeuristic": "other-command-child"
+        },
+        {
+          "pid": 108443,
+          "parentPid": 108431,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411353,
+          "rssBytes": 138907648,
+          "pssBytes": 98713600,
+          "roleHeuristic": "chromium-browser-or-helper"
+        },
+        {
+          "pid": 108462,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411360,
+          "rssBytes": 51806208,
+          "pssBytes": 16519168,
+          "roleHeuristic": "chromium-crash-handler"
+        },
+        {
+          "pid": 108464,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411360,
+          "rssBytes": 51806208,
+          "pssBytes": 12057600,
+          "roleHeuristic": "chromium-crash-handler"
+        },
+        {
+          "pid": 108484,
+          "parentPid": 108462,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411367,
+          "rssBytes": 40808448,
+          "pssBytes": 23736320,
+          "roleHeuristic": "chromium-gpu-process"
+        },
+        {
+          "pid": 108493,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411369,
+          "rssBytes": 66097152,
+          "pssBytes": 32339968,
+          "roleHeuristic": "chromium-utility"
+        },
+        {
+          "pid": 108509,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411375,
+          "rssBytes": 23236608,
+          "pssBytes": 6023168,
+          "roleHeuristic": "chromium-utility"
+        },
+        {
+          "pid": 108528,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411382,
+          "rssBytes": 91676672,
+          "pssBytes": 57530368,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        },
+        {
+          "pid": 108537,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411385,
+          "rssBytes": 611483648,
+          "pssBytes": 578714624,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        },
+        {
+          "pid": 108561,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411397,
+          "rssBytes": 34754560,
+          "pssBytes": 11863040,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16448245760,
+        "memory.peak": 17180487680,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 903929856,
+          "file": 15369908224,
+          "shmem": 2407800832,
+          "file_mapped": 5779456,
+          "file_dirty": 618496,
+          "file_writeback": 0,
+          "inactive_file": 7496425472,
+          "active_file": 5465702400,
+          "kernel": 173518848,
+          "pagetables": 15523840,
+          "slab": 155329288,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7038828544,
+          "usedBytes": 2402500608
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 24,
+      "elapsedSeconds": 13.810467791001429,
+      "phase": "running",
+      "processCount": 11,
+      "rootPresent": true,
+      "rssSumBytes": 1136627712,
+      "pssSumBytes": 855801856,
+      "pssReadableProcesses": 11,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 52662272,
+          "pssSumBytes": 49209344,
+          "pssReadableProcesses": 1
+        },
+        "other-command-child": {
+          "processCount": 1,
+          "rssSumBytes": 130768896,
+          "pssSumBytes": 129159168,
+          "pssReadableProcesses": 1
+        },
+        "chromium-browser-or-helper": {
+          "processCount": 1,
+          "rssSumBytes": 140333056,
+          "pssSumBytes": 100163584,
+          "pssReadableProcesses": 1
+        },
+        "chromium-crash-handler": {
+          "processCount": 2,
+          "rssSumBytes": 103612416,
+          "pssSumBytes": 28576768,
+          "pssReadableProcesses": 2
+        },
+        "chromium-gpu-process": {
+          "processCount": 1,
+          "rssSumBytes": 40808448,
+          "pssSumBytes": 23736320,
+          "pssReadableProcesses": 1
+        },
+        "chromium-utility": {
+          "processCount": 2,
+          "rssSumBytes": 89661440,
+          "pssSumBytes": 38690816,
+          "pssReadableProcesses": 2
+        },
+        "chromium-renderer-worker-not-separable": {
+          "processCount": 3,
+          "rssSumBytes": 578781184,
+          "pssSumBytes": 486265856,
+          "pssReadableProcesses": 3
+        }
+      },
+      "processes": [
+        {
+          "pid": 108279,
+          "parentPid": 108278,
+          "name": "python",
+          "state": "S",
+          "startTicks": 11411246,
+          "rssBytes": 52662272,
+          "pssBytes": 49209344,
+          "roleHeuristic": "command-root"
+        },
+        {
+          "pid": 108431,
+          "parentPid": 108279,
+          "name": "MainThread",
+          "state": "S",
+          "startTicks": 11411314,
+          "rssBytes": 130768896,
+          "pssBytes": 129159168,
+          "roleHeuristic": "other-command-child"
+        },
+        {
+          "pid": 108443,
+          "parentPid": 108431,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411353,
+          "rssBytes": 140333056,
+          "pssBytes": 100163584,
+          "roleHeuristic": "chromium-browser-or-helper"
+        },
+        {
+          "pid": 108462,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411360,
+          "rssBytes": 51806208,
+          "pssBytes": 16519168,
+          "roleHeuristic": "chromium-crash-handler"
+        },
+        {
+          "pid": 108464,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411360,
+          "rssBytes": 51806208,
+          "pssBytes": 12057600,
+          "roleHeuristic": "chromium-crash-handler"
+        },
+        {
+          "pid": 108484,
+          "parentPid": 108462,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411367,
+          "rssBytes": 40808448,
+          "pssBytes": 23736320,
+          "roleHeuristic": "chromium-gpu-process"
+        },
+        {
+          "pid": 108493,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411369,
+          "rssBytes": 66424832,
+          "pssBytes": 32667648,
+          "roleHeuristic": "chromium-utility"
+        },
+        {
+          "pid": 108509,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411375,
+          "rssBytes": 23236608,
+          "pssBytes": 6023168,
+          "roleHeuristic": "chromium-utility"
+        },
+        {
+          "pid": 108528,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411382,
+          "rssBytes": 91676672,
+          "pssBytes": 57530368,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        },
+        {
+          "pid": 108537,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411385,
+          "rssBytes": 452349952,
+          "pssBytes": 416872448,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        },
+        {
+          "pid": 108561,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411397,
+          "rssBytes": 34754560,
+          "pssBytes": 11863040,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16284889088,
+        "memory.peak": 17180487680,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 740982784,
+          "file": 15369981952,
+          "shmem": 2407874560,
+          "file_mapped": 5779456,
+          "file_dirty": 618496,
+          "file_writeback": 0,
+          "inactive_file": 7496425472,
+          "active_file": 5465702400,
+          "kernel": 173297664,
+          "pagetables": 15237120,
+          "slab": 155386608,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7038820352,
+          "usedBytes": 2402508800
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 25,
+      "elapsedSeconds": 14.389713590993779,
+      "phase": "running",
+      "processCount": 11,
+      "rootPresent": true,
+      "rssSumBytes": 1102729216,
+      "pssSumBytes": 822302720,
+      "pssReadableProcesses": 11,
+      "pssComplete": true,
+      "byRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 52662272,
+          "pssSumBytes": 49209344,
+          "pssReadableProcesses": 1
+        },
+        "other-command-child": {
+          "processCount": 1,
+          "rssSumBytes": 130768896,
+          "pssSumBytes": 129159168,
+          "pssReadableProcesses": 1
+        },
+        "chromium-browser-or-helper": {
+          "processCount": 1,
+          "rssSumBytes": 145395712,
+          "pssSumBytes": 105164800,
+          "pssReadableProcesses": 1
+        },
+        "chromium-crash-handler": {
+          "processCount": 2,
+          "rssSumBytes": 103612416,
+          "pssSumBytes": 28576768,
+          "pssReadableProcesses": 2
+        },
+        "chromium-gpu-process": {
+          "processCount": 1,
+          "rssSumBytes": 40808448,
+          "pssSumBytes": 23736320,
+          "pssReadableProcesses": 1
+        },
+        "chromium-utility": {
+          "processCount": 2,
+          "rssSumBytes": 89661440,
+          "pssSumBytes": 38690816,
+          "pssReadableProcesses": 2
+        },
+        "chromium-renderer-worker-not-separable": {
+          "processCount": 3,
+          "rssSumBytes": 539820032,
+          "pssSumBytes": 447765504,
+          "pssReadableProcesses": 3
+        }
+      },
+      "processes": [
+        {
+          "pid": 108279,
+          "parentPid": 108278,
+          "name": "python",
+          "state": "S",
+          "startTicks": 11411246,
+          "rssBytes": 52662272,
+          "pssBytes": 49209344,
+          "roleHeuristic": "command-root"
+        },
+        {
+          "pid": 108431,
+          "parentPid": 108279,
+          "name": "MainThread",
+          "state": "S",
+          "startTicks": 11411314,
+          "rssBytes": 130768896,
+          "pssBytes": 129159168,
+          "roleHeuristic": "other-command-child"
+        },
+        {
+          "pid": 108443,
+          "parentPid": 108431,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411353,
+          "rssBytes": 145395712,
+          "pssBytes": 105164800,
+          "roleHeuristic": "chromium-browser-or-helper"
+        },
+        {
+          "pid": 108462,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411360,
+          "rssBytes": 51806208,
+          "pssBytes": 16519168,
+          "roleHeuristic": "chromium-crash-handler"
+        },
+        {
+          "pid": 108464,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411360,
+          "rssBytes": 51806208,
+          "pssBytes": 12057600,
+          "roleHeuristic": "chromium-crash-handler"
+        },
+        {
+          "pid": 108484,
+          "parentPid": 108462,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411367,
+          "rssBytes": 40808448,
+          "pssBytes": 23736320,
+          "roleHeuristic": "chromium-gpu-process"
+        },
+        {
+          "pid": 108493,
+          "parentPid": 108443,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411369,
+          "rssBytes": 66424832,
+          "pssBytes": 32667648,
+          "roleHeuristic": "chromium-utility"
+        },
+        {
+          "pid": 108509,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411375,
+          "rssBytes": 23236608,
+          "pssBytes": 6023168,
+          "roleHeuristic": "chromium-utility"
+        },
+        {
+          "pid": 108528,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411382,
+          "rssBytes": 91676672,
+          "pssBytes": 57530368,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        },
+        {
+          "pid": 108537,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411385,
+          "rssBytes": 413388800,
+          "pssBytes": 378372096,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        },
+        {
+          "pid": 108561,
+          "parentPid": 108464,
+          "name": "chromium",
+          "state": "S",
+          "startTicks": 11411397,
+          "rssBytes": 34754560,
+          "pssBytes": 11863040,
+          "roleHeuristic": "chromium-renderer-worker-not-separable"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 16252665856,
+        "memory.peak": 17180487680,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 708403200,
+          "file": 15370043392,
+          "shmem": 2407936000,
+          "file_mapped": 5844992,
+          "file_dirty": 618496,
+          "file_writeback": 0,
+          "inactive_file": 7496425472,
+          "active_file": 5465702400,
+          "kernel": 173350912,
+          "pagetables": 15282176,
+          "slab": 155401176,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7038820352,
+          "usedBytes": 2402508800
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 28,
+      "elapsedSeconds": 16.10282157199981,
+      "phase": "command-exited",
+      "processCount": 2,
+      "rootPresent": false,
+      "rssSumBytes": 0,
+      "pssSumBytes": null,
+      "pssReadableProcesses": 0,
+      "pssComplete": false,
+      "byRoleHeuristic": {
+        "chromium-browser-or-helper": {
+          "processCount": 2,
+          "rssSumBytes": 0,
+          "pssSumBytes": null,
+          "pssReadableProcesses": 0
+        }
+      },
+      "processes": [
+        {
+          "pid": 108462,
+          "parentPid": 1,
+          "name": "chromium",
+          "state": "Z",
+          "startTicks": 11411360,
+          "rssBytes": 0,
+          "pssBytes": null,
+          "roleHeuristic": "chromium-browser-or-helper"
+        },
+        {
+          "pid": 108464,
+          "parentPid": 1,
+          "name": "chromium",
+          "state": "Z",
+          "startTicks": 11411360,
+          "rssBytes": 0,
+          "pssBytes": null,
+          "roleHeuristic": "chromium-browser-or-helper"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 15577079808,
+        "memory.peak": 17180487680,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 58253312,
+          "file": 15364136960,
+          "shmem": 2402029568,
+          "file_mapped": 24576,
+          "file_dirty": 618496,
+          "file_writeback": 0,
+          "inactive_file": 7496404992,
+          "active_file": 5465702400,
+          "kernel": 153636864,
+          "pagetables": 1990656,
+          "slab": 151018304,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7039303680,
+          "usedBytes": 2402025472
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 29,
+      "elapsedSeconds": 16.65860381499806,
+      "phase": "post-command-cleanup-observation",
+      "processCount": 2,
+      "rootPresent": false,
+      "rssSumBytes": 0,
+      "pssSumBytes": null,
+      "pssReadableProcesses": 0,
+      "pssComplete": false,
+      "byRoleHeuristic": {
+        "chromium-browser-or-helper": {
+          "processCount": 2,
+          "rssSumBytes": 0,
+          "pssSumBytes": null,
+          "pssReadableProcesses": 0
+        }
+      },
+      "processes": [
+        {
+          "pid": 108462,
+          "parentPid": 1,
+          "name": "chromium",
+          "state": "Z",
+          "startTicks": 11411360,
+          "rssBytes": 0,
+          "pssBytes": null,
+          "roleHeuristic": "chromium-browser-or-helper"
+        },
+        {
+          "pid": 108464,
+          "parentPid": 1,
+          "name": "chromium",
+          "state": "Z",
+          "startTicks": 11411360,
+          "rssBytes": 0,
+          "pssBytes": null,
+          "roleHeuristic": "chromium-browser-or-helper"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 15577079808,
+        "memory.peak": 17180487680,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 58257408,
+          "file": 15364136960,
+          "shmem": 2402029568,
+          "file_mapped": 24576,
+          "file_dirty": 618496,
+          "file_writeback": 0,
+          "inactive_file": 7496404992,
+          "active_file": 5465702400,
+          "kernel": 153600000,
+          "pagetables": 1990656,
+          "slab": 150983616,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7039303680,
+          "usedBytes": 2402025472
+        }
+      }
+    },
+    {
+      "originalRetainedIndex": 30,
+      "elapsedSeconds": 17.158638916997006,
+      "phase": "post-command-cleanup-observation",
+      "processCount": 2,
+      "rootPresent": false,
+      "rssSumBytes": 0,
+      "pssSumBytes": null,
+      "pssReadableProcesses": 0,
+      "pssComplete": false,
+      "byRoleHeuristic": {
+        "chromium-browser-or-helper": {
+          "processCount": 2,
+          "rssSumBytes": 0,
+          "pssSumBytes": null,
+          "pssReadableProcesses": 0
+        }
+      },
+      "processes": [
+        {
+          "pid": 108462,
+          "parentPid": 1,
+          "name": "chromium",
+          "state": "Z",
+          "startTicks": 11411360,
+          "rssBytes": 0,
+          "pssBytes": null,
+          "roleHeuristic": "chromium-browser-or-helper"
+        },
+        {
+          "pid": 108464,
+          "parentPid": 1,
+          "name": "chromium",
+          "state": "Z",
+          "startTicks": 11411360,
+          "rssBytes": 0,
+          "pssBytes": null,
+          "roleHeuristic": "chromium-browser-or-helper"
+        }
+      ],
+      "sharedCgroup": {
+        "memory.current": 15577079808,
+        "memory.peak": 17180487680,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 58265600,
+          "file": 15364136960,
+          "shmem": 2402029568,
+          "file_mapped": 24576,
+          "file_dirty": 618496,
+          "file_writeback": 0,
+          "inactive_file": 7496404992,
+          "active_file": 5465702400,
+          "kernel": 153600000,
+          "pagetables": 1990656,
+          "slab": 150983616,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 1462958,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7039303680,
+          "usedBytes": 2402025472
+        }
+      }
+    }
+  ]
+}

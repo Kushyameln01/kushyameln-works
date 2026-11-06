@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "bernini-self-attention-tail-output-export/0.1",
+  "purpose": "accepted output bit persistence replay; not new numerical acceptance or resource measurement",
+  "passed": true,
+  "side": "LOW",
+  "blockIndex": 0,
+  "scheduleIndex": 3,
+  "tokens": 2,
+  "acceptedTailReceiptSHA256": "93f7c2a03e36ec9a2bc1eaefbd794dc14e16a615bfaf0863ecc83236e206ad96",
+  "acceptedOutputBitMatch": true,
+  "arrayIdentities": {
+    "o": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "7898781992c33a1910f088506d9b39ce91240c1a24de44509979462f6e195869"
+    },
+    "gateProjection": {
+      "shape": [
+        5120
+      ],
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "6248c76f4f2dcdf0ca2b468238a7e85b9048b184011bd0cb62681bbfeab89a80"
+    },
+    "gate": {
+      "shape": [
+        5120
+      ],
+      "elements": 5120,
+      "bytes": 20480,
+      "sha256": "f3c2d060da70eb64ba89dd4f87cbf1b3e9509f38e52827e5d50676607e772645"
+    },
+    "gated": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "ce1435416ee7eccc0b8448f7f1e1a0fb7e2d5eac27da16f77f8857658a0fc866"
+    },
+    "residual": {
+      "shape": [
+        2,
+        5120
+      ],
+      "elements": 10240,
+      "bytes": 40960,
+      "sha256": "0024d0b19db9988d218e2a2ded4cc3713aca32d9517966455d17b34cfee801b6"
+    }
+  },
+  "inputBindings": {
+    "schemaVersion": "bernini-self-attention-tail-trusted-inputs/0.1",
+    "side": "LOW",
+    "blockIndex": 0,
+    "scheduleIndex": 3,
+    "tokens": 2,
+    "fullPrefix": {
+      "receiptSHA256": "ec161f89a53f8dbd6b8c4a02c59a236ac544224cfe700592e8982900eeb4ade5",
+      "artifactSHA256": "1b2808f5ee1185db85cba4e2c59c030fd45d6e3c83c9fde457e70c7d1545d797",
+      "patchHiddenSHA256": "1dc2ad17c0f7f7e7c41272efa538d573fc99e355c99dfd7b238cb9aa16e77b8b",
+      "timeAct1SHA256": "cf07ca0bf0160886acafb9bf42d22f57f56482cd82a8cad5aa3791901e9938c5"
+    },
+    "attention": {
+      "receiptSHA256": "618c46b6ad4233a519516d923dc8df317b54c8f673299ef2428fba9b99c23e77",
+      "artifactSHA256": "2833c85cb79ce250fcc81ca2dac0e42e1a918126604661df13999b7c31304886",
+      "contextSHA256": "b688a5ad16637c42fe22f1a069c1e786881f028aa23da421c27170e84f7778fd",
+      "fullPrefixReceiptSHA256": "ec161f89a53f8dbd6b8c4a02c59a236ac544224cfe700592e8982900eeb4ade5",
+      "fullPrefixArtifactSHA256": "1b2808f5ee1185db85cba4e2c59c030fd45d6e3c83c9fde457e70c7d1545d797"
+    },
+    "productionHiddenVerified": false,
+    "originalWorkflowInputsVerified": false,
+    "originalProductionPrecisionVerified": false,
+    "fullBlockVerified": false,
+    "modelInference": false,
+    "lowIsHighHandoff": false,
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY"
+  },
+  "actualExecutedSourceSHA256": {
+    "tools/diffusion-models/tail-export.py": "b1ff1d22ec8621389936180de83dff8c27c0e4ac98dee2dac1dd23bd45b2d800",
+    "docs/shared/diffusion-models/diagnostics/self-attention-tail/export.mjs": "dc04dc6da02ee9cc928fed873e7b21811277987cab823bbb295a82f63d227627",
+    "docs/shared/diffusion-models/ort-bridge/self-attention-tail/stage.mjs": "ca35f70de8ced5a5c11223b63b98a1f346b1f21118d674195c6abd8c56ee33f3",
+    "docs/shared/diffusion-models/diagnostics/self-attention-tail/common.mjs": "b2c0abad30840c7c31c9e4e4f13218cdaa5b64576ff139abe9bf589bfdf3834f",
+    "docs/shared/diffusion-models/ort-bridge/self-attention-tail/math.mjs": "4b5311829d007f576ae16c7a3296514100767e1fd7c557c63f2c72e72ea41dff",
+    "docs/shared/diffusion-models/ort-bridge/self-attention-tail/source.mjs": "e52d1384d0981fb176899bdc86f3ce9347496eb1b868831df29aa47a932f6469",
+    "docs/shared/diffusion-models/ort-bridge/self-attention-tail/trusted.mjs": "af551e9c4aa13377ce7563b54e786674a69e614b785841fd39eade9f6cbba616",
+    "docs/shared/diffusion-models/ort-bridge/block-hidden/linear.mjs": "4e9dfc16d661e70c9d9176ac4eb3abacccf83f4dbd00b891cfb45d0f72f50987",
+    "docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+    "docs/shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+    "docs/shared/diffusion-models/ort-bridge/kernel/registry.mjs": "c4ea25478d44b70146ba2574d98c761d1bb345b4d6f10ccaedfb660f30489cdd",
+    "docs/shared/diffusion-models/ort-bridge/self-attention-tail/registry.mjs": "706b52a1ab926e1c01484512ace3bb06cbf9061f1070b2784407b6feefed16ed",
+    "docs/shared/diffusion-models/api/safetensors.mjs": "ecb7e750a151489c9b37ffec75e0b784d808b0503ff2181c7b73907398422d7f",
+    "docs/shared/diffusion-models/lora/weights.mjs": "b6d60af5924c2cc5cef9398867424288cab36d9788149c954fa8526b3b51fcc5",
+    "docs/shared/diffusion-models/lora/targets.mjs": "772ca63c3b82bafa7b2345cdda3361679112fcf4a97c79b67564da0fa196217d",
+    "docs/shared/diffusion-models/ort-bridge/hike.mjs": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+    "docs/shared/inference/vendor/ort.wasm.min.mjs": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+    "docs/shared/diffusion-models/ort-bridge/block-hidden/graph.mjs": "7826723d34a934a78e27335dce5973d41af4e2578136db5604c19b13d0954db0",
+    "docs/shared/diffusion-models/lora/strict-json.mjs": "c68a353f9be2567361b075a6e5480e953a7d8df862f5b154e9cd368ec2571a98",
+    "docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+    "docs/shared/diffusion-models/ort-bridge/self-attention-tail/kernel.wasm": "54c1690e4581a1de0b231d0b538ff280696542c2eb44ebedb4c2c661a6dd3925",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+  },
+  "currentBuild": {
+    "buildId": "diffusion-models/0.1+bba4dc740028dcecf849a36e395970b24358a6185378336d61d3a063ad72bc74",
+    "sourceInventorySHA256": "bba4dc740028dcecf849a36e395970b24358a6185378336d61d3a063ad72bc74",
+    "verifiedSourceCount": 100,
+    "buildInfoModuleSHA256": "663d319af83247c6c45914f374d572ccf341d2dfdc8127e9727575b186ac326e",
+    "scope": "current100 source closure; independently verified from current bytes; separate from historical old98 guard and actual requested execution modules"
+  },
+  "privateArtifactSHA256": "714d96b41cb9e5ba8349b4a9202722f2f94e3fdeeaa984dbc1850b449190d37d",
+  "privateArtifactUTF8Bytes": 1384348,
+  "outputF32Bytes": 163840,
+  "nativeOwnerDisposed": true,
+  "numericalAcceptanceRerun": false,
+  "resourceBudgetMeasured": false,
+  "resourceObserverUsed": false,
+  "nativeMemoryMeasurementPerformed": false,
+  "privatePayloadPublished": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY",
+  "exportSourceSHA256": {
+    "tools/diffusion-models/tail-export.py": "b1ff1d22ec8621389936180de83dff8c27c0e4ac98dee2dac1dd23bd45b2d800",
+    "docs/shared/diffusion-models/diagnostics/self-attention-tail/export.mjs": "dc04dc6da02ee9cc928fed873e7b21811277987cab823bbb295a82f63d227627"
+  },
+  "reusedAdmissionSourceSHA256": {
+    "tools/diffusion-models/tail-browser.py": "4242b23aa662cd31063fa76bd0dec93bfa8dd72112624d2681927856342dc536",
+    "tools/diffusion-models/resource-browser.py": "f9c118520a40ed98e39b5e6f8a1d44bf65dc46bf547164c730fb365871234a0b"
+  },
+  "browserVersion": "154.0.8037.57",
+  "modelHTTPRequests": [],
+  "pageErrors": [],
+  "browserCloseBarrier": {
+    "closedBeforeNextSide": true,
+    "browserDisconnected": true,
+    "gcReclamationClaimed": false
+  }
+}

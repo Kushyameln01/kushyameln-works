@@ -1,0 +1,2967 @@
+{
+  "sourceCommit": "98e4aa361532a2de22ea5aed1565de42a084426c",
+  "sourceSHA256": {
+    "development/ai-connection/profile-adoption/p4/core-source/comfy/ldm/wan/model.py": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699",
+    "development/ai-connection/standalone-d1-d4-20261102/reference/contract.json": "227c3c512b53e11eb1841c87eac504216c48ae5614b977828a75897b61cf47d5",
+    "development/ai-connection/standalone-d1-d4-20261102/target-capacity/README.md": "7c61ae21ee943545013cf7e45c08a5bada9d471d75362ff2a3ce0ffeb57be485",
+    "development/ai-connection/standalone-d1-d4-20261102/target-capacity/browser-cases.mjs": "f76b389de57effc5bc6605b396ccffe47ad95432b3379e6b7ec059bc723133a8",
+    "development/ai-connection/standalone-d1-d4-20261102/target-capacity/contract.json": "391d800641fb5037c2bd9ad024235bbb18d7735e9c58df1033669951462f2c66",
+    "development/ai-connection/standalone-d1-d4-20261102/target-capacity/plan.mjs": "233b2654aed1496359701fb7b0740cecbac19b1de61754cfc9384d68db5e8a39",
+    "development/ai-connection/standalone-d1-d4-20261102/target-capacity/run.py": "3baedc5a445cb70e7cbb6da19989975d32615d8235d48b23b6d8cc320c6cca44",
+    "development/ai-connection/standalone-d1-d4-20261102/target-capacity/test-plan.mjs": "10c51e5909f9cf063b7b289713675cc54c14a66de67a347fbbcabee37dd03fa4",
+    "docs/shared/ai-connection/workflow-shapes.mjs": "7a78955fd8156e0b3a5b287ad5f712ff04d62dbb6e501952bc52f9696e9dd821",
+    "docs/shared/diffusion-models/api/safetensors.mjs": "ecb7e750a151489c9b37ffec75e0b784d808b0503ff2181c7b73907398422d7f",
+    "docs/shared/diffusion-models/execution/batched-attention-graph.mjs": "95bbf39e692f74a9afb9b1e2b7972c4b148e62a8bd39c13af4ebbbb6ca91e098",
+    "docs/shared/diffusion-models/execution/batched-ops.mjs": "338dcc3fb31d522b36f3028c594170b2aead6933a30baed9d76e669f24545215",
+    "docs/shared/diffusion-models/execution/model-candidate-browser.mjs": "52c397c287bca371913ee484cb28150c64e50c711416f6b49f8a11ddaa6c6f8c",
+    "docs/shared/diffusion-models/execution/model-candidate-browser.py": "b1737d71d016b0a2eb721336521219f6875b440ed00db555c489f3b9e0a8420a",
+    "docs/shared/diffusion-models/execution/model-candidate.mjs": "00ac5a728a2a530f2111cb8e0b7801d65c6dc750ac15ce32608bb678cea89381",
+    "docs/shared/diffusion-models/execution/model-decode.mjs": "7c30e0a48c55e83fc075cf36d5f22e98da89ece67542d999e7ba0d64f8b52346",
+    "docs/shared/diffusion-models/execution/model-decode/model-decode.wasm": "4d6fa6efdf89a694ddf607b7a00c49601f6190ac8f9c82c3a636fffb70c507a2",
+    "docs/shared/diffusion-models/execution/model-decode/registry.mjs": "8bb36b70fbe3734770eb3fa31a4f363ca66d1514993b3a2a042a4b5b95e5102b",
+    "docs/shared/diffusion-models/execution/model-head.mjs": "c7294148d0b69a33dedb663b9735e2328d68c03cf99eb908a975ab36bf4b1bab",
+    "docs/shared/diffusion-models/execution/model-math.mjs": "f55d9024b2b17c3333ac312b80ef178c03b1a4d17476ce752c64c04114363f90",
+    "docs/shared/diffusion-models/execution/model-math/kernel.wasm": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+    "docs/shared/diffusion-models/execution/model-math/registry.mjs": "8e9709a8deb18065192f9718b31647b34f04951516e14657fbb0ceb7a5ae73c8",
+    "docs/shared/diffusion-models/execution/model-sequence.mjs": "e25c9f59451e9577210c6354f8e4d185ae5b7201109bc11f9c020a29db364c9f",
+    "docs/shared/diffusion-models/execution/model-weights.mjs": "a81e0af89e98447e49d093148d89e7dc75074294e5e2e682bfea0933af81acf0",
+    "docs/shared/diffusion-models/execution/wasm-memory-observer.mjs": "598a6a26d4c276968f67b4b88b2f6bf1381b8b499bdaf27661c7aab084dea34b",
+    "docs/shared/diffusion-models/lora/strict-json.mjs": "c68a353f9be2567361b075a6e5480e953a7d8df862f5b154e9cd368ec2571a98",
+    "docs/shared/diffusion-models/lora/targets.mjs": "772ca63c3b82bafa7b2345cdda3361679112fcf4a97c79b67564da0fa196217d",
+    "docs/shared/diffusion-models/lora/weights.mjs": "b6d60af5924c2cc5cef9398867424288cab36d9788149c954fa8526b3b51fcc5",
+    "docs/shared/diffusion-models/ort-bridge/block-hidden/graph.mjs": "7826723d34a934a78e27335dce5973d41af4e2578136db5604c19b13d0954db0",
+    "docs/shared/diffusion-models/ort-bridge/hike.mjs": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+    "docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+    "docs/shared/diffusion-models/ort-bridge/kernel/registry.mjs": "c4ea25478d44b70146ba2574d98c761d1bb345b4d6f10ccaedfb660f30489cdd",
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs": "f65a5150257dd7c50bbf6c073e931ebb33bdba6ae4d9f96d92e6b885b191ad63",
+    "docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+    "docs/shared/inference/vendor/ort.wasm.min.mjs": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+    "docs/shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+    "tools/diffusion-models/standalone-reference.py": "6f81afa662f444d0f207a91a5b3778f77c88e4a99e05748221b1ddbfece35c2f"
+  },
+  "allSourcesAtHead": true,
+  "contractSHA256": "391d800641fb5037c2bd9ad024235bbb18d7735e9c58df1033669951462f2c66",
+  "referenceOutputSHA256": "33dbdc50b5c9a422d59698660314cd1c08116fb98560d3681a797a5c634a96a9",
+  "referenceMetaSHA256": "c54555d56930c08aef5be3727b1a7d7f0f60826b9243e6a4330e676ee912cf5c",
+  "sourcesServedFromVerifiedSnapshot": true,
+  "modelStatBefore": {
+    "st_dev": 27,
+    "st_ino": 786563,
+    "st_size": 15574833216,
+    "st_mtime_ns": 1793375145368689874,
+    "st_ctime_ns": 1793375145376690078
+  },
+  "modelStatAfter": {
+    "st_dev": 27,
+    "st_ino": 786563,
+    "st_size": 15574833216,
+    "st_mtime_ns": 1793375145368689874,
+    "st_ctime_ns": 1793375145376690078
+  },
+  "model": {
+    "side": "LOW",
+    "fileName": "Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+    "bytes": 15574833216,
+    "previouslyVerifiedModelSHA256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+    "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+    "fullFileHashRecomputed": false
+  },
+  "fullModelFileHashRecomputed": false,
+  "modelFileServedByHttp": false,
+  "admission": {
+    "memoryBefore": {
+      "memory.current": 14803853312,
+      "memory.max": 17179869184,
+      "memory.peak": 17180176384,
+      "stat": {
+        "anon": 72634368,
+        "file": 14556778496,
+        "file_dirty": 1589248,
+        "file_writeback": 0,
+        "shmem": 2187739136,
+        "active_file": 11211444224,
+        "inactive_file": 1157599232
+      },
+      "scope": "Shared cgroup; file cache is not an immediately-free guarantee; memory.peak is historical, not this run peak"
+    },
+    "otherNNProcesses": [],
+    "exclusiveNNGateRequiredForHeavy": true,
+    "planningOnly": true,
+    "largestHostArrayBytes": 1341849600,
+    "hostArrayExclusive2GiBBound": 2147483648,
+    "namedSpansAndUnverifiedReservations": 8415555616,
+    "extraSafetyBytes": 2147483648,
+    "noCachesDropped": true,
+    "doesNotProveAllocationWillSucceed": true
+  },
+  "memoryAfterBrowserClose": {
+    "memory.current": 10225442816,
+    "memory.max": 17179869184,
+    "memory.peak": 17180176384,
+    "stat": {
+      "anon": 114110464,
+      "file": 10008961024,
+      "file_dirty": 73728,
+      "file_writeback": 0,
+      "shmem": 2187743232,
+      "active_file": 6952132608,
+      "inactive_file": 869081088
+    },
+    "scope": "Shared cgroup; file cache is not an immediately-free guarantee; memory.peak is historical, not this run peak"
+  },
+  "browserClosed": true,
+  "hostElapsedSeconds": 10.80033129399817,
+  "schemaVersion": "bernini-target-capacity-result/0.1",
+  "profileId": "bernini-target65520-four-stores-ffn-down128-capacity-diagnostic-v1",
+  "outcome": "completed",
+  "passed": true,
+  "plan": {
+    "profile": "bernini-target65520-four-stores-ffn-down128-capacity-diagnostic-v1",
+    "targetShape": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "sourceShape": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "targetTokens": 32760,
+    "totalTokens": 65520,
+    "hostStoreShape": [
+      1,
+      65520,
+      5120
+    ],
+    "hostStoreCount": 4,
+    "hostStoreBytes": 1341849600,
+    "components": {
+      "fourHostStores": 5367398400,
+      "ffnStageCache": 566231040,
+      "controlledInput": 7077888,
+      "operatorWeightSnapshot": 283115520,
+      "operatorInputSnapshot": 7077888,
+      "projectionOutput": 2621440,
+      "operatorHostOutputIntermediate": 2621440,
+      "biasedOutput": 2621440,
+      "biasInputSnapshot": 2621440,
+      "biasBroadcastSnapshot": 20480,
+      "biasChunkOwnedOutput": 327680,
+      "independentReference": 2621440,
+      "inputHashSnapshotAllowance": 7077888,
+      "outputHashSnapshotAllowance": 2621440,
+      "sourceRawDecodeBlock": 163840,
+      "sourceOwnedDecodeBlock": 327680,
+      "weightPageSnapshots": 552992,
+      "bias": 20480,
+      "modelMathArenaAndSourceWasm": 12582912,
+      "sourceHostLookupTables": 368640
+    },
+    "namedBytes": 6268071968,
+    "reservations": {
+      "ortAllocator": 1073741824,
+      "otherJsAndAllocator": 1073741824,
+      "safety": 2147483648
+    },
+    "namedPlusRuntimeReservations": 8415555616,
+    "withSafety": 10563039264,
+    "budgetMeaning": "Named spans plus unverified runtime reservations, not a measured peak or hard allocator bound",
+    "semantics": "Capacity-sentinel storage, not real model hidden states; conservative four-store/FFN-cache overlap, not the actual stage schedule",
+    "actualCandidateSchedule": "Self-attention uses four hidden stores; FFN normally uses one remaining hidden store. This diagnostic keeps all four while testing the FFN-down tile."
+  },
+  "comparison": {
+    "comparedElements": 655360,
+    "failed": 0,
+    "nonfinite": 0,
+    "maxAbs": 8.344650268554688e-07,
+    "maxGateFraction": 0.0007494132121313769,
+    "projectionSHA256": "21669987d42607e63733a1a2b8a684eaed375a8886c39e18b7f3c93f8d62b844",
+    "biasedProjectionSHA256": "9e5e03c17516fb1959daae669a54f987aaf0920e8c3ca84bbb55a3000632a83e",
+    "inputSHA256Preserved": true,
+    "inputSHA256": "049f4b877a9f63932ad1e708472e14b5681354eff9aaea39ab8babfd15df2943",
+    "weightsPagePreserved": true,
+    "weightPreservationScope": "One native F32 word per4096byte page plus exact tail, not a full-weight bit comparison",
+    "hiddenPageSentinelsChecked": 1310404,
+    "hiddenPreservationScope": "Nonzero-filled capacity sentinels sampled per4096byte page plus tail; no payload hash and no real hidden meaning"
+  },
+  "error": null,
+  "cleanupErrors": [],
+  "checkpointErrors": [],
+  "elapsedMs": 9372,
+  "wasmMemory": {
+    "label": "returned-after-dispose",
+    "atMs": 9548,
+    "hookActive": true,
+    "identities": 5,
+    "reachableObjects": 4,
+    "noLongerDereferenceableObjects": 1,
+    "byteLengthUnavailableObjects": 0,
+    "currentReachableBytes": 372637696,
+    "peakObservedReachableBytes": 372637696,
+    "sumPerIdentityPeaks": 372637696,
+    "observationErrors": 0,
+    "memories": [
+      {
+        "id": "wasm-memory-1",
+        "sources": [
+          "instantiate:export:memory"
+        ],
+        "state": "reachable-at-sample",
+        "currentBytes": 1572864,
+        "firstObservedBytes": 1048576,
+        "lastObservedBytes": 1572864,
+        "peakObservedBytes": 1572864,
+        "samples": 16
+      },
+      {
+        "id": "wasm-memory-2",
+        "sources": [
+          "instantiate:export:memory"
+        ],
+        "state": "reachable-at-sample",
+        "currentBytes": 1835008,
+        "firstObservedBytes": 1048576,
+        "lastObservedBytes": 1835008,
+        "peakObservedBytes": 1835008,
+        "samples": 16
+      },
+      {
+        "id": "wasm-memory-3",
+        "sources": [
+          "Memory.constructor"
+        ],
+        "state": "no-longer-dereferenceable",
+        "currentBytes": null,
+        "firstObservedBytes": 0,
+        "lastObservedBytes": 0,
+        "peakObservedBytes": 0,
+        "samples": 16
+      },
+      {
+        "id": "wasm-memory-4",
+        "sources": [
+          "Memory.constructor"
+        ],
+        "state": "reachable-at-sample",
+        "currentBytes": 360054784,
+        "firstObservedBytes": 16777216,
+        "lastObservedBytes": 360054784,
+        "peakObservedBytes": 360054784,
+        "samples": 16
+      },
+      {
+        "id": "wasm-memory-5",
+        "sources": [
+          "instantiate:export:memory"
+        ],
+        "state": "reachable-at-sample",
+        "currentBytes": 9175040,
+        "firstObservedBytes": 1048576,
+        "lastObservedBytes": 9175040,
+        "peakObservedBytes": 9175040,
+        "samples": 16
+      }
+    ],
+    "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+  },
+  "resources": {
+    "ops": {
+      "busy": false,
+      "disposed": true,
+      "cleanupPending": false,
+      "pendingTensors": 0,
+      "linearRuns": 1,
+      "attentionRuns": 0,
+      "inputCopyBytes": 290193408,
+      "outputCopyBytes": 2621440,
+      "sessionCreations": 2
+    },
+    "math": {
+      "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+      "memoryBytes": 0,
+      "memoryIdentity": "model-math-1",
+      "arenaBytes": 8108032,
+      "calls": 1,
+      "kernelCalls": 8,
+      "snapshotCopyBytes": 2641920,
+      "inputCopyBytes": 2641920,
+      "outputCopyBytes": 2621440,
+      "primitiveCalls": {
+        "cos": 0,
+        "exp": 0,
+        "pow": 0,
+        "sin": 0,
+        "sqrt": 0,
+        "tanh": 0
+      },
+      "workspaceReused": true,
+      "busy": false,
+      "disposed": true,
+      "limits": {
+        "maxRows": 128,
+        "width": 5120,
+        "headWidth": 128,
+        "heads": 40,
+        "maxLinearWidth": 13824,
+        "maxElements": 1769472,
+        "chunkElements": 81920,
+        "epsilon": 1e-06
+      },
+      "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+      "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+      "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+    },
+    "source": {
+      "disposed": true,
+      "busy": false,
+      "reads": 2611,
+      "readBytes": 141760448,
+      "headerReads": 2,
+      "headerReadBytes": 181288,
+      "configReads": 720,
+      "configReadBytes": 11160,
+      "payloadReads": 1889,
+      "payloadReadBytes": 141568000,
+      "maxPayloadReadBytes": 81920,
+      "decodedF32Bytes": 566251520,
+      "hike": null,
+      "decoder": null,
+      "decoderSelection": "lookup",
+      "fullFileHashRecomputed": false,
+      "payloadSampleAdmission": false
+    }
+  },
+  "events": [
+    {
+      "stage": "before-owner-create",
+      "elapsedMs": 42.70000000298023,
+      "resources": {
+        "source": null,
+        "ops": null,
+        "math": null,
+        "liveHostStoreCount": 0,
+        "liveHostStoreBytes": 0,
+        "liveWeightCacheBytes": 0
+      },
+      "wasmMemory": {
+        "label": "before-owner-create",
+        "atMs": 218.90000000596046,
+        "hookActive": true,
+        "identities": 0,
+        "reachableObjects": 0,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 0,
+        "peakObservedReachableBytes": 0,
+        "sumPerIdentityPeaks": 0,
+        "observationErrors": 0,
+        "memories": [],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "owners-ready",
+      "elapsedMs": 718.0999999940395,
+      "sourceIdentity": {
+        "side": "LOW",
+        "modelHash": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+        "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+        "fullFileHashRecomputed": false,
+        "registryTargetCount": 1095
+      },
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 722,
+          "readBytes": 192448,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 0,
+          "payloadReadBytes": 0,
+          "maxPayloadReadBytes": 0,
+          "decodedF32Bytes": 0,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 0,
+            "inputCopyBytes": 0,
+            "outputCopyBytes": 0,
+            "wasmTableCopyBytes": 262144
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 0,
+          "kernelCalls": 0,
+          "snapshotCopyBytes": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 0,
+        "liveHostStoreBytes": 0,
+        "liveWeightCacheBytes": 0
+      },
+      "wasmMemory": {
+        "label": "owners-ready",
+        "atMs": 894.4000000059605,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 5,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 29360128,
+        "peakObservedReachableBytes": 29360128,
+        "sumPerIdentityPeaks": 29360128,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 1
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 1
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 0,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 1
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 16777216,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 16777216,
+            "peakObservedBytes": 16777216,
+            "samples": 1
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 1
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "host-store-allocated",
+      "elapsedMs": 1427,
+      "storeIndex": 0,
+      "nativeBytes": 1341849600,
+      "meaning": "capacity-sentinel-not-model-hidden",
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 722,
+          "readBytes": 192448,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 0,
+          "payloadReadBytes": 0,
+          "maxPayloadReadBytes": 0,
+          "decodedF32Bytes": 0,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 0,
+            "inputCopyBytes": 0,
+            "outputCopyBytes": 0,
+            "wasmTableCopyBytes": 262144
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 0,
+          "kernelCalls": 0,
+          "snapshotCopyBytes": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 1,
+        "liveHostStoreBytes": 1341849600,
+        "liveWeightCacheBytes": 0
+      },
+      "wasmMemory": {
+        "label": "host-store-allocated",
+        "atMs": 1603.2000000029802,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 5,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 29360128,
+        "peakObservedReachableBytes": 29360128,
+        "sumPerIdentityPeaks": 29360128,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 2
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 2
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 0,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 2
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 16777216,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 16777216,
+            "peakObservedBytes": 16777216,
+            "samples": 2
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 2
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "host-store-allocated",
+      "elapsedMs": 2085.4000000059605,
+      "storeIndex": 1,
+      "nativeBytes": 1341849600,
+      "meaning": "capacity-sentinel-not-model-hidden",
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 722,
+          "readBytes": 192448,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 0,
+          "payloadReadBytes": 0,
+          "maxPayloadReadBytes": 0,
+          "decodedF32Bytes": 0,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 0,
+            "inputCopyBytes": 0,
+            "outputCopyBytes": 0,
+            "wasmTableCopyBytes": 262144
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 0,
+          "kernelCalls": 0,
+          "snapshotCopyBytes": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 2,
+        "liveHostStoreBytes": 2683699200,
+        "liveWeightCacheBytes": 0
+      },
+      "wasmMemory": {
+        "label": "host-store-allocated",
+        "atMs": 2261.5,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 5,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 29360128,
+        "peakObservedReachableBytes": 29360128,
+        "sumPerIdentityPeaks": 29360128,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 3
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 3
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 0,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 3
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 16777216,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 16777216,
+            "peakObservedBytes": 16777216,
+            "samples": 3
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 3
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "host-store-allocated",
+      "elapsedMs": 2954.2000000029802,
+      "storeIndex": 2,
+      "nativeBytes": 1341849600,
+      "meaning": "capacity-sentinel-not-model-hidden",
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 722,
+          "readBytes": 192448,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 0,
+          "payloadReadBytes": 0,
+          "maxPayloadReadBytes": 0,
+          "decodedF32Bytes": 0,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 0,
+            "inputCopyBytes": 0,
+            "outputCopyBytes": 0,
+            "wasmTableCopyBytes": 262144
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 0,
+          "kernelCalls": 0,
+          "snapshotCopyBytes": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 3,
+        "liveHostStoreBytes": 4025548800,
+        "liveWeightCacheBytes": 0
+      },
+      "wasmMemory": {
+        "label": "host-store-allocated",
+        "atMs": 3130.300000011921,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 5,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 29360128,
+        "peakObservedReachableBytes": 29360128,
+        "sumPerIdentityPeaks": 29360128,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 4
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 4
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 0,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 4
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 16777216,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 16777216,
+            "peakObservedBytes": 16777216,
+            "samples": 4
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 4
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "host-store-allocated",
+      "elapsedMs": 3739.9000000059605,
+      "storeIndex": 3,
+      "nativeBytes": 1341849600,
+      "meaning": "capacity-sentinel-not-model-hidden",
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 722,
+          "readBytes": 192448,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 0,
+          "payloadReadBytes": 0,
+          "maxPayloadReadBytes": 0,
+          "decodedF32Bytes": 0,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 0,
+            "inputCopyBytes": 0,
+            "outputCopyBytes": 0,
+            "wasmTableCopyBytes": 262144
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 0,
+          "kernelCalls": 0,
+          "snapshotCopyBytes": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 4,
+        "liveHostStoreBytes": 5367398400,
+        "liveWeightCacheBytes": 0
+      },
+      "wasmMemory": {
+        "label": "host-store-allocated",
+        "atMs": 3916,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 5,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 29360128,
+        "peakObservedReachableBytes": 29360128,
+        "sumPerIdentityPeaks": 29360128,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 5
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 5
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 0,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 5
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 16777216,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 16777216,
+            "peakObservedBytes": 16777216,
+            "samples": 5
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 5
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "host-stores-ready",
+      "elapsedMs": 3778.2999999970198,
+      "pageSentinelsChecked": 1310404,
+      "hiddenPayloadHashed": false,
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 722,
+          "readBytes": 192448,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 0,
+          "payloadReadBytes": 0,
+          "maxPayloadReadBytes": 0,
+          "decodedF32Bytes": 0,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 0,
+            "inputCopyBytes": 0,
+            "outputCopyBytes": 0,
+            "wasmTableCopyBytes": 262144
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 0,
+          "kernelCalls": 0,
+          "snapshotCopyBytes": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 4,
+        "liveHostStoreBytes": 5367398400,
+        "liveWeightCacheBytes": 0
+      },
+      "wasmMemory": {
+        "label": "host-stores-ready",
+        "atMs": 3954.300000011921,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 5,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 29360128,
+        "peakObservedReachableBytes": 29360128,
+        "sumPerIdentityPeaks": 29360128,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 6
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 6
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 0,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 6
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 16777216,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 16777216,
+            "peakObservedBytes": 16777216,
+            "samples": 6
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 6
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "up-chunk-staged",
+      "elapsedMs": 4556.70000000298,
+      "rowStart": 0,
+      "rowCount": 5120,
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 1042,
+          "readBytes": 26406848,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 320,
+          "payloadReadBytes": 26214400,
+          "maxPayloadReadBytes": 81920,
+          "decodedF32Bytes": 104857600,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 320,
+            "inputCopyBytes": 26214400,
+            "outputCopyBytes": 104857600,
+            "wasmTableCopyBytes": 589824
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 0,
+          "kernelCalls": 0,
+          "snapshotCopyBytes": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 4,
+        "liveHostStoreBytes": 5367398400,
+        "liveWeightCacheBytes": 104857600
+      },
+      "wasmMemory": {
+        "label": "up-chunk-staged",
+        "atMs": 4732.800000011921,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 5,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 29360128,
+        "peakObservedReachableBytes": 29360128,
+        "sumPerIdentityPeaks": 29360128,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 0,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 16777216,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 16777216,
+            "peakObservedBytes": 16777216,
+            "samples": 7
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 7
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "up-chunk-staged",
+      "elapsedMs": 5340.70000000298,
+      "rowStart": 5120,
+      "rowCount": 5120,
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 1362,
+          "readBytes": 52621248,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 640,
+          "payloadReadBytes": 52428800,
+          "maxPayloadReadBytes": 81920,
+          "decodedF32Bytes": 209715200,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 640,
+            "inputCopyBytes": 52428800,
+            "outputCopyBytes": 209715200,
+            "wasmTableCopyBytes": 917504
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 0,
+          "kernelCalls": 0,
+          "snapshotCopyBytes": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 4,
+        "liveHostStoreBytes": 5367398400,
+        "liveWeightCacheBytes": 209715200
+      },
+      "wasmMemory": {
+        "label": "up-chunk-staged",
+        "atMs": 5516.70000000298,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 5,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 29360128,
+        "peakObservedReachableBytes": 29360128,
+        "sumPerIdentityPeaks": 29360128,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 8
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 8
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 0,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 8
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 16777216,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 16777216,
+            "peakObservedBytes": 16777216,
+            "samples": 8
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 8
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "up-chunk-staged",
+      "elapsedMs": 5906.9000000059605,
+      "rowStart": 10240,
+      "rowCount": 3584,
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 1586,
+          "readBytes": 70971328,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 864,
+          "payloadReadBytes": 70778880,
+          "maxPayloadReadBytes": 81920,
+          "decodedF32Bytes": 283115520,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 864,
+            "inputCopyBytes": 70778880,
+            "outputCopyBytes": 283115520,
+            "wasmTableCopyBytes": 1146880
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 0,
+          "kernelCalls": 0,
+          "snapshotCopyBytes": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 4,
+        "liveHostStoreBytes": 5367398400,
+        "liveWeightCacheBytes": 283115520
+      },
+      "wasmMemory": {
+        "label": "up-chunk-staged",
+        "atMs": 6083,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 5,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 29360128,
+        "peakObservedReachableBytes": 29360128,
+        "sumPerIdentityPeaks": 29360128,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 9
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 9
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 0,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 9
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 16777216,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 16777216,
+            "peakObservedBytes": 16777216,
+            "samples": 9
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 9
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "weights-ready",
+      "elapsedMs": 8080.5,
+      "weightBindings": [
+        {
+          "originalKey": "blocks.0.ffn.0.weight",
+          "fullShape": [
+            13824,
+            5120
+          ],
+          "rowChunks": [
+            [
+              0,
+              5120
+            ],
+            [
+              5120,
+              5120
+            ],
+            [
+              10240,
+              3584
+            ]
+          ],
+          "binding": "runtime-input",
+          "storageDtype": "F8_E4M3",
+          "computeDtype": "F32",
+          "fp8Profile": "scaled-e4m3fn-scalar-f32-v1"
+        },
+        {
+          "originalKey": "blocks.0.ffn.2.weight",
+          "fullShape": [
+            5120,
+            13824
+          ],
+          "rowChunks": [
+            [
+              0,
+              5120
+            ]
+          ],
+          "binding": "runtime-input",
+          "storageDtype": "F8_E4M3",
+          "computeDtype": "F32",
+          "fp8Profile": "scaled-e4m3fn-scalar-f32-v1"
+        },
+        {
+          "originalKey": "blocks.0.ffn.2.bias",
+          "fullShape": [
+            5120
+          ],
+          "binding": "hike-parameter",
+          "storageDtype": "F16",
+          "computeDtype": "F32"
+        }
+      ],
+      "weightPageSampleCount": 138244,
+      "fullWeightHashComputed": false,
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 2611,
+          "readBytes": 141760448,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 1889,
+          "payloadReadBytes": 141568000,
+          "maxPayloadReadBytes": 81920,
+          "decodedF32Bytes": 566251520,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 1889,
+            "inputCopyBytes": 141568000,
+            "outputCopyBytes": 566251520,
+            "wasmTableCopyBytes": 2195456
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 0,
+          "kernelCalls": 0,
+          "snapshotCopyBytes": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 4,
+        "liveHostStoreBytes": 5367398400,
+        "liveWeightCacheBytes": 566231040
+      },
+      "wasmMemory": {
+        "label": "weights-ready",
+        "atMs": 8256.40000000596,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 4,
+        "noLongerDereferenceableObjects": 1,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 29360128,
+        "peakObservedReachableBytes": 29360128,
+        "sumPerIdentityPeaks": 29360128,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 10
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 10
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "no-longer-dereferenceable",
+            "currentBytes": null,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 10
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 16777216,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 16777216,
+            "peakObservedBytes": 16777216,
+            "samples": 10
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 10
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "before-linear",
+      "elapsedMs": 8106,
+      "inputSHA256": "049f4b877a9f63932ad1e708472e14b5681354eff9aaea39ab8babfd15df2943",
+      "inputBytes": 7077888,
+      "rows": 128,
+      "columns": 5120,
+      "inner": 13824,
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 2611,
+          "readBytes": 141760448,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 1889,
+          "payloadReadBytes": 141568000,
+          "maxPayloadReadBytes": 81920,
+          "decodedF32Bytes": 566251520,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 1889,
+            "inputCopyBytes": 141568000,
+            "outputCopyBytes": 566251520,
+            "wasmTableCopyBytes": 2195456
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 0,
+          "attentionRuns": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 0,
+          "kernelCalls": 0,
+          "snapshotCopyBytes": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 4,
+        "liveHostStoreBytes": 5367398400,
+        "liveWeightCacheBytes": 566231040
+      },
+      "wasmMemory": {
+        "label": "before-linear",
+        "atMs": 8282,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 4,
+        "noLongerDereferenceableObjects": 1,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 29360128,
+        "peakObservedReachableBytes": 29360128,
+        "sumPerIdentityPeaks": 29360128,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 11
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 11
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "no-longer-dereferenceable",
+            "currentBytes": null,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 11
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 16777216,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 16777216,
+            "peakObservedBytes": 16777216,
+            "samples": 11
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 11
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "after-linear",
+      "elapsedMs": 9256.59999999404,
+      "linearEvidence": {
+        "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+        "computeF32": true,
+        "computeDtype": "F32",
+        "rows": 128,
+        "columns": 5120,
+        "inner": 13824,
+        "fullInner": true,
+        "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+        "weightBinding": "runtime-input",
+        "ortVersion": "1.24.3"
+      },
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 2611,
+          "readBytes": 141760448,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 1889,
+          "payloadReadBytes": 141568000,
+          "maxPayloadReadBytes": 81920,
+          "decodedF32Bytes": 566251520,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 1889,
+            "inputCopyBytes": 141568000,
+            "outputCopyBytes": 566251520,
+            "wasmTableCopyBytes": 2195456
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 1,
+          "attentionRuns": 0,
+          "inputCopyBytes": 290193408,
+          "outputCopyBytes": 2621440,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 0,
+          "kernelCalls": 0,
+          "snapshotCopyBytes": 0,
+          "inputCopyBytes": 0,
+          "outputCopyBytes": 0,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 4,
+        "liveHostStoreBytes": 5367398400,
+        "liveWeightCacheBytes": 566231040
+      },
+      "wasmMemory": {
+        "label": "after-linear",
+        "atMs": 9432.5,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 4,
+        "noLongerDereferenceableObjects": 1,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 372637696,
+        "peakObservedReachableBytes": 372637696,
+        "sumPerIdentityPeaks": 372637696,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 12
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 12
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "no-longer-dereferenceable",
+            "currentBytes": null,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 12
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 360054784,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 360054784,
+            "peakObservedBytes": 360054784,
+            "samples": 12
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 12
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "compared",
+      "elapsedMs": 9357.40000000596,
+      "comparison": {
+        "comparedElements": 655360,
+        "failed": 0,
+        "nonfinite": 0,
+        "maxAbs": 8.344650268554688e-07,
+        "maxGateFraction": 0.0007494132121313769,
+        "projectionSHA256": "21669987d42607e63733a1a2b8a684eaed375a8886c39e18b7f3c93f8d62b844",
+        "biasedProjectionSHA256": "9e5e03c17516fb1959daae669a54f987aaf0920e8c3ca84bbb55a3000632a83e",
+        "inputSHA256Preserved": true,
+        "inputSHA256": "049f4b877a9f63932ad1e708472e14b5681354eff9aaea39ab8babfd15df2943",
+        "weightsPagePreserved": true,
+        "weightPreservationScope": "One native F32 word per4096byte page plus exact tail, not a full-weight bit comparison",
+        "hiddenPageSentinelsChecked": 1310404,
+        "hiddenPreservationScope": "Nonzero-filled capacity sentinels sampled per4096byte page plus tail; no payload hash and no real hidden meaning"
+      },
+      "resources": {
+        "source": {
+          "disposed": false,
+          "busy": false,
+          "reads": 2611,
+          "readBytes": 141760448,
+          "headerReads": 2,
+          "headerReadBytes": 181288,
+          "configReads": 720,
+          "configReadBytes": 11160,
+          "payloadReads": 1889,
+          "payloadReadBytes": 141568000,
+          "maxPayloadReadBytes": 81920,
+          "decodedF32Bytes": 566251520,
+          "hike": {
+            "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "memoryBytes": 1572864,
+            "arenaBytes": 491648,
+            "calls": 361,
+            "inputCopyBytes": 218416,
+            "outputCopyBytes": 619712,
+            "workspaceReused": true,
+            "disposed": false
+          },
+          "decoder": {
+            "disposed": false,
+            "workspaceReused": true,
+            "memoryBytes": 1835008,
+            "arenaBytes": 754688,
+            "tableBytes": 631808,
+            "wasmTableBytes": 263168,
+            "hostTableBytes": 368640,
+            "fp8Tables": 360,
+            "calls": 1889,
+            "inputCopyBytes": 141568000,
+            "outputCopyBytes": 566251520,
+            "wasmTableCopyBytes": 2195456
+          },
+          "decoderSelection": "lookup",
+          "fullFileHashRecomputed": false,
+          "payloadSampleAdmission": false
+        },
+        "ops": {
+          "busy": false,
+          "disposed": false,
+          "cleanupPending": false,
+          "pendingTensors": 0,
+          "linearRuns": 1,
+          "attentionRuns": 0,
+          "inputCopyBytes": 290193408,
+          "outputCopyBytes": 2621440,
+          "sessionCreations": 2
+        },
+        "math": {
+          "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+          "memoryBytes": 9175040,
+          "memoryIdentity": "model-math-1",
+          "arenaBytes": 8108032,
+          "calls": 1,
+          "kernelCalls": 8,
+          "snapshotCopyBytes": 2641920,
+          "inputCopyBytes": 2641920,
+          "outputCopyBytes": 2621440,
+          "primitiveCalls": {
+            "cos": 0,
+            "exp": 0,
+            "pow": 0,
+            "sin": 0,
+            "sqrt": 0,
+            "tanh": 0
+          },
+          "workspaceReused": true,
+          "busy": false,
+          "disposed": false,
+          "limits": {
+            "maxRows": 128,
+            "width": 5120,
+            "headWidth": 128,
+            "heads": 40,
+            "maxLinearWidth": 13824,
+            "maxElements": 1769472,
+            "chunkElements": 81920,
+            "epsilon": 1e-06
+          },
+          "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+          "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+          "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+        },
+        "liveHostStoreCount": 4,
+        "liveHostStoreBytes": 5367398400,
+        "liveWeightCacheBytes": 566231040
+      },
+      "wasmMemory": {
+        "label": "compared",
+        "atMs": 9533.300000011921,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 4,
+        "noLongerDereferenceableObjects": 1,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 372637696,
+        "peakObservedReachableBytes": 372637696,
+        "sumPerIdentityPeaks": 372637696,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 13
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 13
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "no-longer-dereferenceable",
+            "currentBytes": null,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 13
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 360054784,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 360054784,
+            "peakObservedBytes": 360054784,
+            "samples": 13
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 13
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      }
+    },
+    {
+      "stage": "before-dispose",
+      "elapsedMs": 9362.90000000596,
+      "wasmMemory": {
+        "label": "before-dispose",
+        "atMs": 9538.800000011921,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 4,
+        "noLongerDereferenceableObjects": 1,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 372637696,
+        "peakObservedReachableBytes": 372637696,
+        "sumPerIdentityPeaks": 372637696,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 14
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 14
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "no-longer-dereferenceable",
+            "currentBytes": null,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 14
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 360054784,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 360054784,
+            "peakObservedBytes": 360054784,
+            "samples": 14
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 14
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      },
+      "logicalHostStoreBytes": 5367398400,
+      "logicalWeightCacheBytes": 566231040
+    },
+    {
+      "stage": "after-dispose",
+      "elapsedMs": 9367.40000000596,
+      "wasmMemory": {
+        "label": "after-dispose",
+        "atMs": 9543.300000011921,
+        "hookActive": true,
+        "identities": 5,
+        "reachableObjects": 4,
+        "noLongerDereferenceableObjects": 1,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 372637696,
+        "peakObservedReachableBytes": 372637696,
+        "sumPerIdentityPeaks": 372637696,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1572864,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1572864,
+            "peakObservedBytes": 1572864,
+            "samples": 15
+          },
+          {
+            "id": "wasm-memory-2",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 1835008,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 1835008,
+            "peakObservedBytes": 1835008,
+            "samples": 15
+          },
+          {
+            "id": "wasm-memory-3",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "no-longer-dereferenceable",
+            "currentBytes": null,
+            "firstObservedBytes": 0,
+            "lastObservedBytes": 0,
+            "peakObservedBytes": 0,
+            "samples": 15
+          },
+          {
+            "id": "wasm-memory-4",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 360054784,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 360054784,
+            "peakObservedBytes": 360054784,
+            "samples": 15
+          },
+          {
+            "id": "wasm-memory-5",
+            "sources": [
+              "instantiate:export:memory"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 9175040,
+            "firstObservedBytes": 1048576,
+            "lastObservedBytes": 9175040,
+            "peakObservedBytes": 9175040,
+            "samples": 15
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      },
+      "logicalHostStoreCount": 0,
+      "logicalWeightCacheBytes": 0,
+      "ops": {
+        "busy": false,
+        "disposed": true,
+        "cleanupPending": false,
+        "pendingTensors": 0,
+        "linearRuns": 1,
+        "attentionRuns": 0,
+        "inputCopyBytes": 290193408,
+        "outputCopyBytes": 2621440,
+        "sessionCreations": 2
+      },
+      "math": {
+        "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+        "memoryBytes": 0,
+        "memoryIdentity": "model-math-1",
+        "arenaBytes": 8108032,
+        "calls": 1,
+        "kernelCalls": 8,
+        "snapshotCopyBytes": 2641920,
+        "inputCopyBytes": 2641920,
+        "outputCopyBytes": 2621440,
+        "primitiveCalls": {
+          "cos": 0,
+          "exp": 0,
+          "pow": 0,
+          "sin": 0,
+          "sqrt": 0,
+          "tanh": 0
+        },
+        "workspaceReused": true,
+        "busy": false,
+        "disposed": true,
+        "limits": {
+          "maxRows": 128,
+          "width": 5120,
+          "headWidth": 128,
+          "heads": 40,
+          "maxLinearWidth": 13824,
+          "maxElements": 1769472,
+          "chunkElements": 81920,
+          "epsilon": 1e-06
+        },
+        "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+        "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+        "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+      },
+      "source": {
+        "disposed": true,
+        "busy": false,
+        "reads": 2611,
+        "readBytes": 141760448,
+        "headerReads": 2,
+        "headerReadBytes": 181288,
+        "configReads": 720,
+        "configReadBytes": 11160,
+        "payloadReads": 1889,
+        "payloadReadBytes": 141568000,
+        "maxPayloadReadBytes": 81920,
+        "decodedF32Bytes": 566251520,
+        "hike": null,
+        "decoder": null,
+        "decoderSelection": "lookup",
+        "fullFileHashRecomputed": false,
+        "payloadSampleAdmission": false
+      }
+    }
+  ],
+  "scope": {
+    "capacitySentinelsOnly": true,
+    "actualOriginalLowFfnDownTile": true,
+    "fullInnerDimension": 13824,
+    "all655360OutputsCompared": true,
+    "noHiddenPayloadHash": true,
+    "realProductionHidden": false,
+    "allQueryExecution": false,
+    "full40Prediction": false,
+    "sampling": false,
+    "acceptedProduction": false,
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY",
+    "generationReady": false
+  },
+  "releaseMeaning": "Logical owner/session/tensor disposal and browser closure; reachable WASM memories may remain before browser closure; no forced GC or OS-release claim",
+  "chromiumVersion": "154.0.8037.57"
+}

@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "works-profile-reference/1.0-draft.1",
+  "category": "loader-policy",
+  "documentVersion": "1.0-draft.2",
+  "status": "documented-draft",
+  "runtimeIntegrated": false,
+  "records": [
+    {
+      "recordId": "LOAD-COMFY-LINEAR-DIFF",
+      "nativeProfileId": "comfy-lora-b5a4321-linear-diff-v1",
+      "ownerRole": "LoRA",
+      "nativeContract": "lora-connection/2.0-draft.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+          "path": "docs/shared/inference/lora/CONNECTION_V2.md"
+        },
+        {
+          "repository": "comfyanonymous/ComfyUI",
+          "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+          "path": "comfy/weight_adapter/lora.py"
+        },
+        {
+          "repository": "comfyanonymous/ComfyUI",
+          "commit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+          "path": "comfy/lora.py"
+        }
+      ],
+      "requiredDeclarations": {
+        "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+        "variants": [
+          "linear-down-up",
+          "linear-a-b",
+          "additive-diff",
+          "additive-diff-b"
+        ],
+        "sourceDtypes": [
+          "BF16",
+          "F16",
+          "F32"
+        ],
+        "baseDtype": "F32",
+        "outputDtype": "F32",
+        "layout": "row-major",
+        "supportedTargetRanks": [
+          1,
+          2
+        ],
+        "explicitStrengthRequired": true,
+        "ruleRefs": [
+          "NR-LORA-LINEAR-F32",
+          "NR-LORA-DELTA-F32"
+        ]
+      },
+      "admissionConstraints": {
+        "linearTargetRank": 2,
+        "rankFromFactorShape": true,
+        "missingAlphaMultiplier": 1,
+        "zeroOrNegativeAlphaIsExplicitValue": true,
+        "registryTransform": "identity",
+        "unsupportedVariants": "reject",
+        "immutableBaseRequired": true
+      },
+      "evidenceScopes": [
+        "diagnostic-projection",
+        "full-adapter-contract"
+      ],
+      "limitations": [
+        "Contract support for FULL is not actual full-model acceptance.",
+        "No transpose/fusion/Conv/DoRA/LoHa/LoKr/mid/reshape or direct quantized base.",
+        "HIGH=3/LOW=1 from an old workflow is not a default for light/detail."
+      ]
+    },
+    {
+      "recordId": "LOAD-LOCAL-SAFETENSORS",
+      "nativeProfileId": null,
+      "ownerRole": "LoRA / Diffusion weight-source owner",
+      "nativeContract": "lora-connection/2.0-draft.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+          "path": "docs/shared/inference/lora/CONNECTION_V2.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+          "path": "docs/shared/ai-connection/API.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "productInput": "user-selected-local-File-or-Blob",
+        "format": ".safetensors",
+        "fileIdentity": "owner-verified-whole-file-SHA-256",
+        "sourceFactory": "explicitly-injected-source-path",
+        "lifetime": "owner-contract",
+        "selection": "caller-explicit"
+      },
+      "admissionConstraints": {
+        "historicalFourOriginalsMandatory": false,
+        "remoteUrlIsLocalFile": false,
+        "inspectIsApplicationProof": false,
+        "sdkInspectPlanPrepareStageAreSeparate": true
+      },
+      "evidenceScopes": [
+        "local-file-input",
+        "source-inspection"
+      ],
+      "limitations": [
+        "A remote sharing URL is a transfer/reference aid, not the product input API.",
+        "File presence or inspect success does not establish matching base/graph or numerical acceptance."
+      ]
+    },
+    {
+      "recordId": "LOAD-V1-FULL-ONLY",
+      "nativeProfileId": null,
+      "ownerRole": "LoRA",
+      "nativeContract": null,
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "fc2789a0f649e33f15eb13750e6a983b5c52d170",
+          "path": "docs/shared/inference/lora/CONNECTION_V2.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "adapters": [
+          "adaptV1Registry",
+          "createV1SinkAdapter",
+          "adaptV1Consumer"
+        ],
+        "requiredCoverage": "FULL",
+        "requiredBinding": "actual-initializer",
+        "evidenceLevel": "legacy-boolean"
+      },
+      "admissionConstraints": {
+        "partialAllowed": false,
+        "runtimeInputAsInitializerAllowed": false,
+        "booleanPromotedToNumericalEvidence": false,
+        "v1AndV2HashesConflated": false
+      },
+      "evidenceScopes": [
+        "legacy-regression"
+      ],
+      "limitations": [
+        "An explicit v1 adapter preserves legacy semantics; it does not create a PARTIAL runtime-input consumer."
+      ]
+    },
+    {
+      "recordId": "LOAD-FP8-BASE",
+      "nativeProfileId": "scaled-e4m3fn-scalar-f32-v1",
+      "ownerRole": "Diffusion",
+      "nativeContract": "diffusion-models/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "executionRecordRef": "EXEC-FP8-SCALAR-F32",
+        "outputForLoRA": "owned-F32-row-major",
+        "sourceProfileExplicit": true,
+        "sliceMappingOwner": "LoRA:createDiffusionDiagnosticAdapter"
+      },
+      "admissionConstraints": {
+        "decodeOwner": "Diffusion",
+        "decodeImplementationInManager": false,
+        "quantizedBytesPassedAsF32": false
+      },
+      "evidenceScopes": [
+        "real-base-selected-Q-diagnostic"
+      ],
+      "limitations": [
+        "Decoder applicability belongs to its own execution profile. This loader record does not add a second FP8 formula or full-model profile."
+      ]
+    }
+  ],
+  "registrationStatus": "proposal-preview-not-published"
+}

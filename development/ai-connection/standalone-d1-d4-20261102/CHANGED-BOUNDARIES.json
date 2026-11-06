@@ -1,0 +1,31 @@
+{
+  "previousSourceCommit": "efa9b0a753fa9cefc49685189bb5766d40aa5594",
+  "changes": [
+    "Generated-space cancellation uses native AbortSignal state and preserves exact reason; 3 new red/green regressions",
+    "Diagnostic-only weak WASM Memory observer installed before module imports; native module arithmetic unchanged",
+    "Sampler development harness observes memory before/after disposal; no normal input field added"
+  ],
+  "numericKernelReuse": [
+    {
+      "path": "docs/shared/diffusion-models/execution/model-math/kernel.wasm",
+      "bytes": 23645,
+      "sha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+      "unchangedSince": "efa9b0a753fa9cefc49685189bb5766d40aa5594"
+    },
+    {
+      "path": "docs/shared/diffusion-models/execution/model-decode/model-decode.wasm",
+      "bytes": 2940,
+      "sha256": "4d6fa6efdf89a694ddf607b7a00c49601f6190ac8f9c82c3a636fffb70c507a2",
+      "unchangedSince": "efa9b0a753fa9cefc49685189bb5766d40aa5594"
+    },
+    {
+      "path": "docs/shared/diffusion-models/execution/generated-space/build/generated-space.wasm",
+      "bytes": 8983,
+      "sha256": "8763d5ec82fd71e31597bb620729c5393383abed478395a2aaaf0d71f85a9b80",
+      "unchangedSince": "efa9b0a753fa9cefc49685189bb5766d40aa5594"
+    }
+  ],
+  "normalInputRequiresReference": false,
+  "existingNumericEvidenceScope": "Unchanged legitimate inputs and numerical paths; original scopes retained. No production-shape promotion.",
+  "newVerification": "pre-sampler-node.log:102/102; observer native tests7, generated admission+cancel18; actual prefix cancellation receipt is before observer integration"
+}

@@ -1,0 +1,388 @@
+{
+  "schemaVersion": "works-profile-reference/1.0-draft.1",
+  "category": "shape",
+  "documentVersion": "1.0-draft.2",
+  "status": "documented-draft",
+  "runtimeIntegrated": false,
+  "records": [
+    {
+      "recordId": "SHAPE-VAE-WAN21-F5-16X16",
+      "nativeProfileId": "wan21-raw-f32-5x16x16",
+      "ownerRole": "vae",
+      "nativeContract": "works-ai-1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+          "path": "development/ai-connection/E1-ADOPT-RESULT.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "rgbShape": [
+          1,
+          3,
+          5,
+          16,
+          16
+        ],
+        "rawLatentShape": [
+          1,
+          16,
+          2,
+          2,
+          2
+        ],
+        "rawLatentMeaning": "raw-posterior-mean",
+        "rawLatentElements": 128,
+        "rawLatentBytes": 512,
+        "vaeModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "assets": [
+          "profile manifest",
+          "matching encoder/decoder graph and weights",
+          "asset bytes and SHA-256"
+        ],
+        "profileSpecificCounterpart": "diffusion-models/0.1 mean operations; explicit input:{tensor}",
+        "selectedManagementDiffusionCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+        "selectedManagementDiffusionHasThisMeanShape": true,
+        "ownerDiffusionCommitWithThisMeanShape": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3"
+      },
+      "admissionConstraints": {
+        "exactShapeRequired": true,
+        "sameElementCountReshapeAllowed": false,
+        "manifestOnlyShapeChangeAllowed": false,
+        "implicitPaddingOrResizeAllowed": false,
+        "profileAndAssetHashesMustMatch": true,
+        "rawMeanIsNotGeneratedSample": true,
+        "shapeAndSemanticProfileAreSeparate": true,
+        "normalizationOwner": "diffusion_models",
+        "currentnessAndEvidenceScopeMustBeCheckedSeparately": true
+      },
+      "evidenceScopes": [
+        "VAE owner FP32 reference and real Hike/ORT WASM for this fixed diagnostic profile",
+        "Diffusion mean validation/normalization/restoration only at explicitly selected commit and profile",
+        "management adoption status is separate from newest owner support"
+      ],
+      "limitations": [
+        "Not arbitrary Wan VAE shape support",
+        "Not original 81-frame 480x832 workflow acceptance",
+        "Generated-sample input uses a separate latentContract and has no completed production producer/decode acceptance",
+        "This reference JSON is not consumed by the runtime"
+      ]
+    },
+    {
+      "recordId": "SHAPE-VAE-WAN21-F1-16X16",
+      "nativeProfileId": "wan21-raw-f32-1x16x16",
+      "ownerRole": "vae",
+      "nativeContract": "works-ai-1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+          "path": "development/ai-connection/E1-ADOPT-RESULT.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "rgbShape": [
+          1,
+          3,
+          1,
+          16,
+          16
+        ],
+        "rawLatentShape": [
+          1,
+          16,
+          1,
+          2,
+          2
+        ],
+        "rawLatentMeaning": "raw-posterior-mean",
+        "rawLatentElements": 64,
+        "rawLatentBytes": 256,
+        "vaeModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "assets": [
+          "profile manifest",
+          "matching encoder/decoder graph and weights",
+          "asset bytes and SHA-256"
+        ],
+        "profileSpecificCounterpart": "diffusion-models/0.1 mean operations; explicit input:{tensor}",
+        "selectedManagementDiffusionCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+        "selectedManagementDiffusionHasThisMeanShape": true,
+        "ownerDiffusionCommitWithThisMeanShape": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3"
+      },
+      "admissionConstraints": {
+        "exactShapeRequired": true,
+        "sameElementCountReshapeAllowed": false,
+        "manifestOnlyShapeChangeAllowed": false,
+        "implicitPaddingOrResizeAllowed": false,
+        "profileAndAssetHashesMustMatch": true,
+        "rawMeanIsNotGeneratedSample": true,
+        "shapeAndSemanticProfileAreSeparate": true,
+        "normalizationOwner": "diffusion_models",
+        "currentnessAndEvidenceScopeMustBeCheckedSeparately": true
+      },
+      "evidenceScopes": [
+        "VAE owner FP32 reference and real Hike/ORT WASM for this fixed diagnostic profile",
+        "Diffusion mean validation/normalization/restoration only at explicitly selected commit and profile",
+        "management adoption status is separate from newest owner support"
+      ],
+      "limitations": [
+        "Not arbitrary Wan VAE shape support",
+        "Not original 81-frame 480x832 workflow acceptance",
+        "Generated-sample input uses a separate latentContract and has no completed production producer/decode acceptance",
+        "This reference JSON is not consumed by the runtime"
+      ]
+    },
+    {
+      "recordId": "SHAPE-VAE-WAN21-F1-16X32",
+      "nativeProfileId": "wan21-raw-f32-1x16x32",
+      "ownerRole": "vae",
+      "nativeContract": "works-ai-1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+          "path": "development/ai-connection/E1-ADOPT-RESULT.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "dtype": "float32",
+        "layout": "NCTHW",
+        "rgbShape": [
+          1,
+          3,
+          1,
+          16,
+          32
+        ],
+        "rawLatentShape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "rawLatentMeaning": "raw-posterior-mean",
+        "rawLatentElements": 128,
+        "rawLatentBytes": 512,
+        "vaeModelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b",
+        "assets": [
+          "profile manifest",
+          "matching encoder/decoder graph and weights",
+          "asset bytes and SHA-256"
+        ],
+        "profileSpecificCounterpart": "diffusion-models/0.1 mean operations; explicit input:{tensor}",
+        "selectedManagementDiffusionCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+        "selectedManagementDiffusionHasThisMeanShape": false,
+        "ownerDiffusionCommitWithThisMeanShape": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3"
+      },
+      "admissionConstraints": {
+        "exactShapeRequired": true,
+        "sameElementCountReshapeAllowed": false,
+        "manifestOnlyShapeChangeAllowed": false,
+        "implicitPaddingOrResizeAllowed": false,
+        "profileAndAssetHashesMustMatch": true,
+        "rawMeanIsNotGeneratedSample": true,
+        "shapeAndSemanticProfileAreSeparate": true,
+        "normalizationOwner": "diffusion_models",
+        "currentnessAndEvidenceScopeMustBeCheckedSeparately": true
+      },
+      "evidenceScopes": [
+        "VAE owner FP32 reference and real Hike/ORT WASM for this fixed diagnostic profile",
+        "Diffusion mean validation/normalization/restoration only at explicitly selected commit and profile",
+        "management adoption status is separate from newest owner support"
+      ],
+      "limitations": [
+        "Not arbitrary Wan VAE shape support",
+        "Not original 81-frame 480x832 workflow acceptance",
+        "Generated-sample input uses a separate latentContract and has no completed production producer/decode acceptance",
+        "This reference JSON is not consumed by the runtime"
+      ]
+    },
+    {
+      "recordId": "SHAPE-TEXT-UMT5-BLC",
+      "nativeProfileId": null,
+      "ownerRole": "text_encoder",
+      "nativeContract": "works-ai-1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+          "path": "docs/shared/inference/API.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "dtype": "float32",
+        "layout": "BLC",
+        "meaning": "text_hidden_states",
+        "plainTextOutputShape": [
+          1,
+          512,
+          4096
+        ],
+        "tokenIdOutputShapeRule": "[1,L,4096], integer 1<=L<=512",
+        "attentionMaskRule": "Uint8Array[L], 0/1; token-ID input has at least one valid position",
+        "tokenIdRange": [
+          0,
+          256383
+        ],
+        "plainTextTokenization": "No BOS; append EOS1; PAD0 to 512; no silent truncation",
+        "tokenIdInputPolicy": "No automatic EOS or padding; retain internal mask and output L",
+        "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+        "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+        "modelManifestFormat": "wan-umt5-staged-fp32"
+      },
+      "admissionConstraints": {
+        "nativeShapeProfileIdExists": false,
+        "textAndTokenIdsMayBeCombined": false,
+        "plainTextElements": 2097152,
+        "plainTextBytes": 8388608,
+        "diffusionPointwiseLimitAppliesToConditioningValidator": false,
+        "shapeAloneProvesTokenizerIdentity": false,
+        "legacyMissingTokenizerHashMeansIdentityVerified": false
+      },
+      "evidenceScopes": [
+        "Owner documented UMT5 staged FP32 and real tokenizer/encode evidence at their accepted scopes",
+        "Native contract retains full output shape and zero hidden rows at mask0",
+        "No new execution in this documentation task"
+      ],
+      "limitations": [
+        "No invented native shapeProfileId",
+        "No ComfyUI prompt-weight/custom embedding/clip-skip/pooled-output support",
+        "Expected tokenizer hash is not authentication of arbitrary caller-supplied token-ID provenance",
+        "Full 512-position performance and all prompts are not certified by the shape contract"
+      ]
+    },
+    {
+      "ownerRole": "diffusion_models",
+      "nativeContract": "bernini-qkv-diagnostic/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "docs/shared/diffusion-models/ort-bridge/qkv/stage.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/candidate-plan.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/runtime-admission.json"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "8cdfd3f5f7db0cd66762e78f09c209fb5b27366b",
+          "path": "development/ai-connection/profile-adoption/p4/RUNTIME-RESULT.md"
+        }
+      ],
+      "evidenceScopes": [
+        "Fixed actual retained HIGH/LOW block0 weights and explicit deterministic hidden16 fixture; reused owner receipt, not fresh inference for this registration"
+      ],
+      "limitations": [
+        "No actual timestep/block post-modulation hidden provenance",
+        "No original production precision/backend parity",
+        "No full32760 or context65520+ sequence, all heads/stages or combined pipeline budget",
+        "load/predict/sample remain NOT_READY; registration is not management adoption"
+      ],
+      "recordId": "SHAPE-BERNINI-QKV-N16",
+      "nativeProfileId": null,
+      "requiredDeclarations": {
+        "dtype": "float32",
+        "layout": "row-major",
+        "hiddenShape": [
+          16,
+          5120
+        ],
+        "projectionShape": [
+          16,
+          5120
+        ],
+        "normalizationAxis": 5120,
+        "selectedHead": 0,
+        "selectedHeadShape": [
+          16,
+          128
+        ],
+        "sourceIdShape": [
+          16
+        ],
+        "positionShape": [
+          16,
+          3
+        ],
+        "ropeMatrixShape": [
+          16,
+          64,
+          2,
+          2
+        ],
+        "attentionKeyCount": 16,
+        "nativeExecutionProfileId": "bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1"
+      },
+      "admissionConstraints": {
+        "exactShapeRequired": true,
+        "noPaddingOrHeadLocalNorm": true,
+        "shapeIdIsCatalogOnly": true,
+        "positionGrid": [
+          21,
+          30,
+          52
+        ],
+        "sourceIds": "Int32 0..16777216; only the predeclared0/1/2 coordinate fixture is numerically evidenced"
+      }
+    }
+  ],
+  "registrationStatus": "proposal-preview-not-published"
+}

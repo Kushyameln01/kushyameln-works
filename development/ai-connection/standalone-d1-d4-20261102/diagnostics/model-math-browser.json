@@ -1,0 +1,202 @@
+{
+  "schemaVersion": "model-math-d1/1",
+  "passed": true,
+  "reference": "independent JS F64 all values; fixed gates",
+  "cases": [
+    {
+      "id": "full128x5120-layerNorm",
+      "status": "PASS"
+    },
+    {
+      "id": "full128x5120-affineNorm",
+      "status": "PASS"
+    },
+    {
+      "id": "full128x5120-rmsNorm",
+      "status": "PASS"
+    },
+    {
+      "id": "full128x5120-all40head-RoPE",
+      "status": "PASS"
+    },
+    {
+      "id": "exact1row-norm-and-RoPE-tails",
+      "status": "PASS"
+    },
+    {
+      "id": "128x13824-bias-chunks",
+      "status": "PASS"
+    },
+    {
+      "id": "independent-stable-F64-SiLU-broad-and-extreme",
+      "status": "PASS"
+    },
+    {
+      "id": "head-major-attention-division-Q128",
+      "status": "PASS"
+    },
+    {
+      "id": "head-major-attention-division-Q3",
+      "status": "PASS"
+    }
+  ],
+  "comparisons": {
+    "layerNorm": {
+      "elements": 655360,
+      "maxAbsolute": 2.6454445778423263e-06,
+      "failed": 0,
+      "gate": {
+        "absolute": 0.001,
+        "relative": 0.0001
+      }
+    },
+    "affineNorm": {
+      "elements": 655360,
+      "maxAbsolute": 4.3318471001363434e-06,
+      "failed": 0,
+      "gate": {
+        "absolute": 0.001,
+        "relative": 0.0001
+      }
+    },
+    "rmsNorm": {
+      "elements": 655360,
+      "maxAbsolute": 4.683190986121133e-06,
+      "failed": 0,
+      "gate": {
+        "absolute": 0.001,
+        "relative": 0.0001
+      }
+    },
+    "rope": {
+      "elements": 655360,
+      "maxAbsolute": 4.175179291188158e-07,
+      "failed": 0,
+      "gate": {
+        "absolute": 2e-05,
+        "relative": 2e-05
+      }
+    },
+    "ropeTail": {
+      "elements": 5120,
+      "maxAbsolute": 3.307713472011642e-07,
+      "failed": 0,
+      "gate": {
+        "absolute": 2e-05,
+        "relative": 2e-05
+      }
+    },
+    "normTail": {
+      "elements": 5120,
+      "maxAbsolute": 2.0911186937588866e-06,
+      "failed": 0,
+      "gate": {
+        "absolute": 0.001,
+        "relative": 0.0001
+      }
+    },
+    "wideBias": {
+      "elements": 1769472,
+      "failed": 0,
+      "maxAbsolute": 0
+    },
+    "silu": {
+      "elements": 8210,
+      "maxAbsolute": 1.2328022229723956e-06,
+      "failed": 0,
+      "gate": {
+        "absolute": 2e-07,
+        "relative": 2e-06
+      }
+    },
+    "divideAttentionQ128": {
+      "elements": 655360,
+      "maxAbsolute": 0,
+      "failed": 0,
+      "gate": {
+        "absolute": 0,
+        "relative": 0
+      }
+    },
+    "divideAttentionQ3": {
+      "elements": 15360,
+      "maxAbsolute": 0,
+      "failed": 0,
+      "gate": {
+        "absolute": 0,
+        "relative": 0
+      }
+    }
+  },
+  "stats": {
+    "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+    "memoryBytes": 9175040,
+    "memoryIdentity": "model-math-1",
+    "arenaBytes": 8108032,
+    "calls": 10,
+    "kernelCalls": 40,
+    "snapshotCopyBytes": 20460088,
+    "inputCopyBytes": 20460088,
+    "outputCopyBytes": 20320328,
+    "primitiveCalls": {
+      "cos": 15680,
+      "exp": 8210,
+      "pow": 15680,
+      "sin": 15680,
+      "sqrt": 385,
+      "tanh": 0
+    },
+    "workspaceReused": true,
+    "busy": false,
+    "disposed": false,
+    "limits": {
+      "maxRows": 128,
+      "width": 5120,
+      "headWidth": 128,
+      "heads": 40,
+      "maxLinearWidth": 13824,
+      "maxElements": 1769472,
+      "chunkElements": 81920,
+      "epsilon": 1e-06
+    },
+    "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+    "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+    "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+  },
+  "siluOrtBitParity": false,
+  "scope": "D1 math primitives only; no model weights, NN callback, complete block or model forward",
+  "browserVersion": "154.0.8037.57",
+  "network": [
+    {
+      "method": "GET",
+      "url": "/shared/diffusion-models/execution/model-math/"
+    },
+    {
+      "method": "GET",
+      "url": "/shared/diffusion-models/execution/model-math/test-cases.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "/shared/diffusion-models/execution/model-math.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "/shared/diffusion-models/execution/model-math/registry.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "/shared/diffusion-models/execution/model-math/kernel.wasm"
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "blockedRequests": [],
+  "sourceSHA256": {
+    "diffusion-models/execution/model-math.mjs": "f55d9024b2b17c3333ac312b80ef178c03b1a4d17476ce752c64c04114363f90",
+    "diffusion-models/execution/model-math/math.hike": "5f92c767ab2d1a5ca0a6b01bb670383b271ede4f94dcdb1cbc11a54e06f5752f",
+    "diffusion-models/execution/model-math/kernel.wasm": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+    "diffusion-models/execution/model-math/build-record.json": "8aa8ab82f2dd6b019320c9821b1f06655710b3a036198b5b035fcfd1b8b0b9e2",
+    "diffusion-models/execution/model-math/test-cases.mjs": "3fc2911a14564e960a1436e049673e83b5a59af43142bc5e48577ebfeb93405c",
+    "diffusion-models/execution/model-math/test-browser.py": "be77778a428e91fdfd1c8ee90c6ea4004c2b7f3f5efb3826d9fae153542c0271"
+  }
+}

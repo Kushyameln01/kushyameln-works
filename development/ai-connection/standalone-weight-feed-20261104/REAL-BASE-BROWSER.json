@@ -1,0 +1,292 @@
+{
+  "schemaVersion": "bernini-full-model-weight-feed-real-base-check/1",
+  "passed": true,
+  "scope": "LOW crossQ four rows and explicit bias four values; two query rows; conforming completed-F32 test package only",
+  "actualLoRA": false,
+  "fullModelLoRA": false,
+  "modelPredictExecuted": false,
+  "generationReady": false,
+  "environment": {
+    "crossOriginIsolated": false,
+    "wasmThreads": 1,
+    "silentThreadFallback": false
+  },
+  "shape": {
+    "input": [
+      2,
+      5120
+    ],
+    "originalWeight": [
+      5120,
+      5120
+    ],
+    "selectedWeight": [
+      4,
+      5120
+    ],
+    "bias": [
+      4
+    ]
+  },
+  "baseDecode": {
+    "weight": {
+      "elements": 20480,
+      "maxAbsolute": 0,
+      "failed": 0,
+      "absolute": 1e-05,
+      "relative": 0.0001
+    },
+    "bias": {
+      "elements": 4,
+      "maxAbsolute": 0,
+      "failed": 0,
+      "absolute": 1e-05,
+      "relative": 0.0001
+    }
+  },
+  "admission": {
+    "contractVersion": "lora-standalone/1.0-draft.1",
+    "valid": true,
+    "validationMode": "normal",
+    "planId": "2222222222222222222222222222222222222222222222222222222222222222",
+    "packageHash": "5868459c168884946b352e4ad196ea3d073c96a6f4637372327224d2df7ac34e",
+    "registryHash": "7850e560afff0fa9bf79ca135828b2e7e5681611e84f936f3fff8305a0b32558",
+    "coverage": "PARTIAL",
+    "scope": "diagnostic-projection",
+    "validatedElements": 20484,
+    "validatedBlocks": 2,
+    "comparedElements": 0,
+    "numericalComparison": false,
+    "allDeclaredElementsValidated": true,
+    "epoch": 0,
+    "generationReady": false
+  },
+  "commit": {
+    "contractVersion": "lora-standalone/1.0-draft.1",
+    "state": "CONSUMER_APPLIED",
+    "validationMode": "normal",
+    "planId": "2222222222222222222222222222222222222222222222222222222222222222",
+    "packageHash": "5868459c168884946b352e4ad196ea3d073c96a6f4637372327224d2df7ac34e",
+    "registryHash": "7850e560afff0fa9bf79ca135828b2e7e5681611e84f936f3fff8305a0b32558",
+    "coverage": "PARTIAL",
+    "scope": "diagnostic-projection",
+    "epoch": 1,
+    "ownership": {
+      "kind": "lease",
+      "ownerId": "diffusion-active:72122f10-f6fb-42b6-bbcf-eab03b957757"
+    },
+    "generationReady": false
+  },
+  "comparison": {
+    "elements": 8,
+    "maxAbsolute": 2.3283064365386963e-09,
+    "failed": 0,
+    "absolute": 1e-05,
+    "relative": 0.0001
+  },
+  "restored": {
+    "elements": 8,
+    "maxAbsolute": 2.3283064365386963e-09,
+    "failed": 0,
+    "absolute": 1e-05,
+    "relative": 0.0001
+  },
+  "readLeasesPreservedAcrossClear": true,
+  "creatorReleasedBeforeOperator": true,
+  "actualORT": {
+    "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+    "rows": 2,
+    "inner": 5120,
+    "columns": 4,
+    "weightBinding": "final-f32-runtime-input",
+    "computeDtype": "F32",
+    "innerSplit": false
+  },
+  "actualHikeBias": true,
+  "resource": {
+    "source": {
+      "disposed": false,
+      "busy": false,
+      "reads": 731,
+      "readBytes": 315352,
+      "headerReads": 2,
+      "headerReadBytes": 181288,
+      "configReads": 720,
+      "configReadBytes": 11160,
+      "payloadReads": 9,
+      "payloadReadBytes": 122904,
+      "maxPayloadReadBytes": 20480,
+      "decodedF32Bytes": 491568,
+      "readAheadBytes": 0,
+      "storageReads": 731,
+      "storageReadBytes": 315352,
+      "maxStorageReadBytes": 181280,
+      "storageReadAttempts": 731,
+      "storageReadFailures": 0,
+      "discardedStorageReads": 0,
+      "discardedStorageBytes": 0,
+      "storageReadMs": 870.5000000009313,
+      "headerInspectMs": 73.1000000005588,
+      "decodeMs": 4.5,
+      "cacheHits": 0,
+      "cacheMisses": 0,
+      "cachedBytes": 0,
+      "peakCachedBytes": 0,
+      "windowCopyBytes": 0,
+      "windowCopyMs": 0,
+      "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+      "hike": {
+        "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+        "memoryBytes": 1572864,
+        "arenaBytes": 491648,
+        "calls": 365,
+        "inputCopyBytes": 218544,
+        "outputCopyBytes": 619776,
+        "workspaceReused": true,
+        "disposed": false
+      },
+      "decoder": {
+        "disposed": false,
+        "workspaceReused": true,
+        "memoryBytes": 1835008,
+        "arenaBytes": 754688,
+        "tableBytes": 631808,
+        "wasmTableBytes": 263168,
+        "hostTableBytes": 368640,
+        "fp8Tables": 360,
+        "calls": 9,
+        "inputCopyBytes": 122904,
+        "outputCopyBytes": 491568,
+        "wasmTableCopyBytes": 268288
+      },
+      "decoderSelection": "lookup",
+      "fullFileHashRecomputed": false,
+      "payloadSampleAdmission": false
+    },
+    "feed": {
+      "disposed": false,
+      "closing": false,
+      "epoch": 2,
+      "activePackageHash": null,
+      "candidates": 0,
+      "readLeases": 0,
+      "operationLeases": 0,
+      "inFlight": 0,
+      "cleanupPending": 0,
+      "validatedElements": 20484,
+      "effectiveReadBytes": 327712,
+      "baseReadBytes": 491568,
+      "packageReadBytes": 163856,
+      "ownsOriginalBase": false,
+      "denseCompletedWeightResident": false
+    },
+    "linear": {
+      "busy": false,
+      "disposed": false,
+      "cleanupPending": false,
+      "pendingTensors": 0,
+      "runs": 2,
+      "scoreRuns": 0,
+      "inputCopyBytes": 245760,
+      "outputCopyBytes": 64,
+      "ortMs": 15.100000000558794,
+      "sessionCreations": 2,
+      "activeORTSessions": 2
+    }
+  },
+  "cleanup": {
+    "linear": {
+      "busy": false,
+      "disposed": true,
+      "cleanupPending": false,
+      "pendingTensors": 0,
+      "runs": 2,
+      "scoreRuns": 0,
+      "inputCopyBytes": 245760,
+      "outputCopyBytes": 64,
+      "ortMs": 15.100000000558794,
+      "sessionCreations": 2,
+      "activeORTSessions": 0
+    },
+    "feed": {
+      "disposed": true,
+      "closing": false,
+      "epoch": 2,
+      "activePackageHash": null,
+      "candidates": 0,
+      "readLeases": 0,
+      "operationLeases": 0,
+      "inFlight": 0,
+      "cleanupPending": 0,
+      "validatedElements": 20484,
+      "effectiveReadBytes": 327712,
+      "baseReadBytes": 491568,
+      "packageReadBytes": 163856,
+      "ownsOriginalBase": false,
+      "denseCompletedWeightResident": false
+    },
+    "source": {
+      "disposed": true,
+      "busy": false,
+      "reads": 731,
+      "readBytes": 315352,
+      "headerReads": 2,
+      "headerReadBytes": 181288,
+      "configReads": 720,
+      "configReadBytes": 11160,
+      "payloadReads": 9,
+      "payloadReadBytes": 122904,
+      "maxPayloadReadBytes": 20480,
+      "decodedF32Bytes": 491568,
+      "readAheadBytes": 0,
+      "storageReads": 731,
+      "storageReadBytes": 315352,
+      "maxStorageReadBytes": 181280,
+      "storageReadAttempts": 731,
+      "storageReadFailures": 0,
+      "discardedStorageReads": 0,
+      "discardedStorageBytes": 0,
+      "storageReadMs": 870.5000000009313,
+      "headerInspectMs": 73.1000000005588,
+      "decodeMs": 4.5,
+      "cacheHits": 0,
+      "cacheMisses": 0,
+      "cachedBytes": 0,
+      "peakCachedBytes": 0,
+      "windowCopyBytes": 0,
+      "windowCopyMs": 0,
+      "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+      "hike": null,
+      "decoder": null,
+      "decoderSelection": "lookup",
+      "fullFileHashRecomputed": false,
+      "payloadSampleAdmission": false
+    },
+    "packageReferences": 0
+  },
+  "elapsedMs": 2286,
+  "chromiumVersion": "154.0.8037.57",
+  "sourceFiles": [
+    {
+      "path": "docs/shared/diffusion-models/execution/model-weight-feed.mjs",
+      "bytes": 20005,
+      "sha256": "00c61c682f3cb5d99466760804851e23e4c2228b3f078a0cfae88054d8d28f87"
+    },
+    {
+      "path": "docs/shared/diffusion-models/execution/model-weight-bindings.mjs",
+      "bytes": 5710,
+      "sha256": "0eb04c60aa1deadded4498489da29d9b03c2a30608ceeb282505687477353399"
+    },
+    {
+      "path": "docs/shared/diffusion-models/execution/test-model-weight-feed-browser.mjs",
+      "bytes": 6442,
+      "sha256": "253fd9183a289d5635bfd6592c4c41968570ae21ba1abdcf7e01d2ce907dfad1"
+    }
+  ],
+  "originalBase": {
+    "fileName": "Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+    "bytes": 15574833216,
+    "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+    "fullFileSHA256Recomputed": false
+  }
+}

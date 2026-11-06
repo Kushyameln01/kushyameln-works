@@ -1,0 +1,70 @@
+✖ generated cancellation uses the native aborted state and exact reason (9.069989ms)
+✖ generated cancellation does not invoke an own aborted getter (0.945246ms)
+✖ generated cancellation rejects duck signals without stranding the owner (1.317058ms)
+✔ generated space accepts compact native finite exact-size F32 (1.158688ms)
+✔ generated restoration rejects a 64-element native view with own length spoofed as 128 (1.848119ms)
+✔ normalizeContextRaw rejects a spoofed native F32 length (0.913448ms)
+✔ normalizeContexts rejects a spoofed native F32 length (0.612184ms)
+✔ restoreHighHandoff rejects a spoofed native F32 length (0.567667ms)
+✔ normalizeHighHandoff rejects a spoofed native F32 length (0.548778ms)
+✔ generated space rejects a shared native buffer hidden by an own buffer property (2.546618ms)
+✔ generated space rejects noncompact storage hidden by own offset byteLength and buffer properties (0.622469ms)
+✔ generated space rejects extra backing bytes hidden by an ArrayBuffer byteLength property (0.612945ms)
+✔ generated space rejects typed-array subclasses with forged extent getters (0.619756ms)
+✔ generated space rejects another typed-array brand with a forged Float32Array prototype (1.080386ms)
+✔ generated space ignores throwing own extent accessors when native F32 slots are valid (1.671863ms)
+✔ generated space keeps native nonfinite and detached input rejection (0.601909ms)
+✔ target pointwise rejects spoofed native length before real scheduler arithmetic (2.526038ms)
+✔ target pointwise rejects shared native storage hidden behind a buffer property (1.201624ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 15
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 56.405806
+
+✖ failing tests:
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:21:1
+✖ generated cancellation uses the native aborted state and exact reason (9.069989ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:24:2
+      at async withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:117)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: [Function (anonymous)],
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:28:1
+✖ generated cancellation does not invoke an own aborted getter (0.945246ms)
+  Error: shadow getter
+      at AbortSignal.get (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:29:98)
+      at abort (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/generated-space.mjs:36:33)
+      at before (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/generated-space.mjs:80:101)
+      at Object.restore (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/generated-space.mjs:111:4)
+      at file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:30:28
+      at withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:123)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:33:1
+✖ generated cancellation rejects duck signals without stranding the owner (1.317058ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection (TypeError).
+      at async file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:34:2
+      at async withOwner (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/execution/test-generated-space-admission.mjs:17:117)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: [Function: TypeError],
+    operator: 'rejects',
+    diff: 'simple'
+  }

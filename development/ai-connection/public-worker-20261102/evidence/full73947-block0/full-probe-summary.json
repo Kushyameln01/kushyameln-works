@@ -1,0 +1,1717 @@
+{
+  "schemaVersion": "bernini-declared-full-target-partial-probe-summary/1",
+  "executionSourceCommit": "0f761f374dce1d447bbb912ad13c08f9bf85c279",
+  "originalResult": {
+    "path": "/tmp/public-worker-run/full73947-block0-result.json",
+    "bytes": 1160442,
+    "sha256": "23b41f4fd039c92209032b4d90270fa0810021059563c2719175414219bbcda9"
+  },
+  "originalResources": {
+    "path": "/tmp/public-worker-run/full73947-block0-resources.json",
+    "bytes": 17724731,
+    "sha256": "706bff23a2643eca57515dea1a05a7a4cb9d277284e78b42b4d79f1ae486daba"
+  },
+  "publishedResult": {
+    "path": "development/ai-connection/public-worker-20261102/evidence/full73947-block0/full73947-block0-result.json",
+    "bytes": 1160442,
+    "sha256": "23b41f4fd039c92209032b4d90270fa0810021059563c2719175414219bbcda9"
+  },
+  "publishedResources": {
+    "path": "development/ai-connection/public-worker-20261102/evidence/full73947-block0/full73947-block0-resources-summary.json",
+    "bytes": 545911,
+    "sha256": "6b57512c5966f4eb954390fe770ed455e1b1ddab1a35319cfde028defad60eea"
+  },
+  "publishedDriverLog": {
+    "path": "development/ai-connection/public-worker-20261102/evidence/full73947-block0/full73947-block0.log",
+    "bytes": 747437,
+    "sha256": "a8fc1cdc5ddd1d59b356532b070105a380cfd3792331b1467bfca917a9525fdf"
+  },
+  "case": {
+    "profileId": "bernini-declared-target81-source81-ref3-848-l512-f32-chunks-v1",
+    "inputManifestSHA256": "7c1545413898de4c18cee2ed19dbec9f8abe61cfed7b48ee0954d33f0206c6b6",
+    "preexecutionContractSHA256": "1943f1a528580ae5f7055342cb1c117131592ca776ed655c3a9a81caadefb8d3",
+    "targetRGB": [
+      1,
+      3,
+      81,
+      480,
+      832
+    ],
+    "targetLatent": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "targetTokens": 32760,
+    "sourceRGB": [
+      1,
+      3,
+      81,
+      480,
+      832
+    ],
+    "sourceTokens": 32760,
+    "referenceVideo": "absent",
+    "references": {
+      "count": 3,
+      "eachRGB": [
+        1,
+        3,
+        1,
+        848,
+        848
+      ],
+      "eachLatent": [
+        1,
+        16,
+        1,
+        106,
+        106
+      ],
+      "eachTokens": 2809,
+      "origin": "declared non-null wired slots0,1,2; slot files not added"
+    },
+    "allContextTokens": 41187,
+    "totalTokens": 73947,
+    "orderedStreamSourceIDs": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalMediaObserved": false,
+    "originalWorkflowReplay": false,
+    "conditioning": {
+      "rows": 512,
+      "activeMaskEntries": 3,
+      "all512RowsRetained": true,
+      "payloadSHA256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+      "maskMeaning": "validated provenance, not a cross-attention softmax mask in pinned core"
+    },
+    "side": "HIGH",
+    "timestep": 1000,
+    "heads": 40,
+    "headDim": 128,
+    "queryRows": 128,
+    "keyRows": 256,
+    "precision": "fixed original F16/scaled E4M3FN decode to staged F32 versus independent F64 reductions and staged F32 outputs",
+    "wasmThreads": 4,
+    "pthreadCreationsObserved": 3,
+    "readAheadBytes": 1048576
+  },
+  "outcome": {
+    "passed": false,
+    "completeBlockAccepted": false,
+    "completePredictAccepted": false,
+    "completeSampleAccepted": false,
+    "generationReady": false,
+    "stopReason": "1800-second operational diagnostic watchdog, not a kernel or numerical failure",
+    "watchdogElapsedSeconds": 1800.8663569619966,
+    "harnessElapsedSeconds": 1812.2266456429934,
+    "firstIncompleteStage": "block0 self-attention all-query traversal",
+    "lastNumericallyAcceptedQueryRows": 5120,
+    "projectedQRowsCompared": 5248,
+    "remainingUncomparedSelfQueryRows": 68827,
+    "queryTailRows": 91,
+    "queryTailAccepted": false,
+    "keyValueTailRows": 91,
+    "keyValueTailAccepted": true,
+    "queryScope": "accepted queries are the target-stream prefix; all supplied source/reference keys participated for these queries",
+    "noOOMOrKernelFailureObserved": true
+  },
+  "numerical": {
+    "gate": {
+      "abs": 0.01,
+      "rel": 0.001
+    },
+    "comparedChunks": 2485,
+    "comparedElements": 1622609920,
+    "failedElements": 0,
+    "maxAbsolute": 0.000217437744140625,
+    "maxNormalizedToGate": 0.01576734089608632,
+    "coverage": {
+      "complete": false,
+      "chunks": 2485,
+      "rows": [
+        {
+          "block": null,
+          "name": "patchHidden",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": null,
+          "name": "textEmbedded",
+          "completedRows": 512,
+          "requiredRows": 512
+        },
+        {
+          "block": null,
+          "name": "timeRaw",
+          "completedRows": 1,
+          "requiredRows": 1
+        },
+        {
+          "block": null,
+          "name": "timeAct1",
+          "completedRows": 1,
+          "requiredRows": 1
+        },
+        {
+          "block": null,
+          "name": "timeProjection",
+          "completedRows": 6,
+          "requiredRows": 6
+        },
+        {
+          "block": 0,
+          "name": "postModulated",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "k",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "v",
+          "completedRows": 73947,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "q",
+          "completedRows": 5248,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "selfAttention",
+          "completedRows": 5120,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "oProjection",
+          "completedRows": 5120,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "selfResidual",
+          "completedRows": 5120,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "crossK",
+          "completedRows": 0,
+          "requiredRows": 512
+        },
+        {
+          "block": 0,
+          "name": "crossV",
+          "completedRows": 0,
+          "requiredRows": 512
+        },
+        {
+          "block": 0,
+          "name": "crossQ",
+          "completedRows": 0,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "crossAttention",
+          "completedRows": 0,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "crossResidual",
+          "completedRows": 0,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "ffnOutput",
+          "completedRows": 0,
+          "requiredRows": 73947
+        },
+        {
+          "block": 0,
+          "name": "blockOutput",
+          "completedRows": 0,
+          "requiredRows": 73947
+        }
+      ],
+      "allQueriesKeysHeads": "numerical acceptance requires every selected stage complete plus independent comparisons passing"
+    },
+    "byStage": {
+      "None:timeRaw": {
+        "elements": 5120,
+        "failed": 0,
+        "maxAbsolute": 5.960464477539063e-08,
+        "maxNormalizedToGate": 5.899339442777259e-06
+      },
+      "None:timeAct1": {
+        "elements": 5120,
+        "failed": 0,
+        "maxAbsolute": 3.725290298461914e-08,
+        "maxNormalizedToGate": 3.701046733219989e-06
+      },
+      "None:timeProjection": {
+        "elements": 30720,
+        "failed": 0,
+        "maxAbsolute": 4.76837158203125e-07,
+        "maxNormalizedToGate": 3.5605929241761055e-05
+      },
+      "None:textEmbedded": {
+        "elements": 2621440,
+        "failed": 0,
+        "maxAbsolute": 1.862645149230957e-07,
+        "maxNormalizedToGate": 1.846454055266853e-05
+      },
+      "None:patchHidden": {
+        "elements": 378608640,
+        "failed": 0,
+        "maxAbsolute": 1.1920928955078125e-07,
+        "maxNormalizedToGate": 1.1400688081688757e-05
+      },
+      "0:postModulated": {
+        "elements": 378608640,
+        "failed": 0,
+        "maxAbsolute": 1.1444091796875e-05,
+        "maxNormalizedToGate": 0.0006161802357313881
+      },
+      "0:k": {
+        "elements": 378608640,
+        "failed": 0,
+        "maxAbsolute": 2.288818359375e-05,
+        "maxNormalizedToGate": 0.0012703042251588832
+      },
+      "0:v": {
+        "elements": 378608640,
+        "failed": 0,
+        "maxAbsolute": 4.00543212890625e-05,
+        "maxNormalizedToGate": 0.0017552904454024429
+      },
+      "0:q": {
+        "elements": 26869760,
+        "failed": 0,
+        "maxAbsolute": 2.384185791015625e-05,
+        "maxNormalizedToGate": 0.0011791942379066628
+      },
+      "0:selfAttention": {
+        "elements": 26214400,
+        "failed": 0,
+        "maxAbsolute": 8.392333984375e-05,
+        "maxNormalizedToGate": 0.007742706810111398
+      },
+      "0:oProjection": {
+        "elements": 26214400,
+        "failed": 0,
+        "maxAbsolute": 0.000217437744140625,
+        "maxNormalizedToGate": 0.01576734089608632
+      },
+      "0:selfResidual": {
+        "elements": 26214400,
+        "failed": 0,
+        "maxAbsolute": 0.0001068115234375,
+        "maxNormalizedToGate": 0.0021479759876633824
+      }
+    },
+    "allOriginalNativeChunksRetainedAsValues": false
+  },
+  "timing": {
+    "harnessElapsedSeconds": 1812.2266456429934,
+    "workerElapsedMs": 1804467.6850000024,
+    "nativeCandidateElapsedMsIncludingDiagnosticWait": 1803457.5700000077,
+    "independentComparisonComputeSeconds": 622.5319651338505,
+    "workerComparisonWaitMsIncludingTransport": 839625.0049998909,
+    "stageOperatorTotals": {
+      "inputSnapshot": {
+        "calls": 2,
+        "elapsedMs": 537.3050000071526,
+        "failures": 0
+      },
+      "math": {
+        "calls": 4403,
+        "elapsedMs": 190534.59999991953,
+        "failures": 0
+      },
+      "weightReadDecode": {
+        "calls": 4813,
+        "elapsedMs": 8898.949999719858,
+        "failures": 0
+      },
+      "snapshotCopy": {
+        "calls": 8518,
+        "elapsedMs": 8568.285000219941,
+        "failures": 0
+      },
+      "hostCopy": {
+        "calls": 4813,
+        "elapsedMs": 407.4399993568659,
+        "failures": 0
+      },
+      "weightPrepare": {
+        "calls": 15,
+        "elapsedMs": 790.4350000172853,
+        "failures": 0
+      },
+      "linear": {
+        "calls": 1832,
+        "elapsedMs": 169129.13000017405,
+        "failures": 0
+      },
+      "weightRelease": {
+        "calls": 15,
+        "elapsedMs": 0.3449999839067459,
+        "failures": 0
+      },
+      "stage.prefix": {
+        "calls": 1,
+        "elapsedMs": 104850.59499999881,
+        "failures": 0
+      },
+      "layoutCopy": {
+        "calls": 23780,
+        "elapsedMs": 102429.90000008047,
+        "failures": 0
+      },
+      "attentionPrepare": {
+        "calls": 41,
+        "elapsedMs": 188.33500008285046,
+        "failures": 0
+      },
+      "attention": {
+        "calls": 11849,
+        "elapsedMs": 474379.6599996835,
+        "failures": 0
+      },
+      "attentionFinish": {
+        "calls": 41,
+        "elapsedMs": 405.0850001126528,
+        "failures": 0
+      },
+      "attentionRelease": {
+        "calls": 41,
+        "elapsedMs": 0.4450000077486038,
+        "failures": 0
+      },
+      "stage.selfAttention": {
+        "calls": 1,
+        "elapsedMs": 1698005.2399999946,
+        "failures": 1
+      }
+    },
+    "timingScope": "inclusive hierarchical totals; do not add stage and child-operator totals. Diagnostic callback wait includes reference work/IPC/HTTP and is not native attention compute.",
+    "nativeOpsSessionTimings": {
+      "snapshotMs": 146444.40499922633,
+      "weightPrepareMs": 789.6299999654293,
+      "sessionRunMs": 384122.5050009489,
+      "linearSessionRunMs": 150015.68999999762,
+      "attentionSessionRunMs": 234106.8150009513,
+      "outputCopyMs": 15602.849999830127,
+      "tensorCleanupMs": 83.16999988257885,
+      "preparedReleaseMs": 0.1850000023841858,
+      "ownerDisposeMs": 0
+    },
+    "originalSourceReadTiming": {
+      "storageReadMs": 2484.5850004702806,
+      "headerInspectMs": 20.765000000596046,
+      "decodeMs": 6353.099999859929,
+      "windowCopyMs": 254.11499981582165,
+      "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately"
+    }
+  },
+  "resources": {
+    "nativeHostLogicalSpans": {
+      "peakHiddenStoreBytes": 6057738240,
+      "activeHiddenStoreBytes": 0,
+      "peakStageWeightCacheBytes": 209715200,
+      "stageWeightCacheBytes": 0
+    },
+    "spanScope": "named native host stores/cache spans, not aggregate physical memory; four full hidden stores planned6,057,738,240B, reference memmaps additional",
+    "nativeOperatorStats": {
+      "busy": false,
+      "disposed": false,
+      "cleanupPending": false,
+      "pendingTensors": 0,
+      "linearRuns": 1832,
+      "attentionRuns": 11849,
+      "inputCopyBytes": 127572889344,
+      "outputCopyBytes": 4888555520,
+      "runtimeInputSpanBytes": 322139156224,
+      "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+      "preparedWeights": 0,
+      "preparedWeightBytes": 0,
+      "peakPreparedWeightBytes": 209715200,
+      "preparedWeightCopies": 0,
+      "preparedWeightTransfers": 15,
+      "preparedWeightCopyBytes": 0,
+      "preparedWeightTransferBytes": 1348730880,
+      "preparedWeightCreations": 15,
+      "preparedWeightReleases": 15,
+      "attentionQueries": {
+        "queryCreations": 41,
+        "queryPreparationsCompleted": 41,
+        "queryReleases": 41,
+        "stepAttempts": 11849,
+        "stepsCompleted": 11849,
+        "failedSteps": 0,
+        "qSnapshotBytes": 107479040,
+        "kvSnapshotBytes": 124183633920,
+        "finishCopyBytes": 109158400,
+        "currentCpuTensorSpanBytes": 0,
+        "peakCpuTensorSpanBytes": 18432000,
+        "ownedTensors": 0,
+        "peakOwnedTensors": 9,
+        "unknownSizedTensors": 0,
+        "cleanupFailures": 0,
+        "ownedQueryCount": 0,
+        "cleanupPending": false,
+        "disposed": false,
+        "queries": [],
+        "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+      },
+      "timings": {
+        "snapshotMs": 146444.40499922633,
+        "weightPrepareMs": 789.6299999654293,
+        "sessionRunMs": 384122.5050009489,
+        "linearSessionRunMs": 150015.68999999762,
+        "attentionSessionRunMs": 234106.8150009513,
+        "outputCopyMs": 15602.849999830127,
+        "tensorCleanupMs": 83.16999988257885,
+        "preparedReleaseMs": 0.1850000023841858,
+        "ownerDisposeMs": 0
+      },
+      "resourceProfile": {
+        "numThreads": 4,
+        "firstInitialization": true,
+        "pthreadCreationsObserved": 3,
+        "coiRequired": true,
+        "freshRealmRequiredForProfileChange": true
+      },
+      "nativeWasmCopiesMeasured": false,
+      "sessionCreations": 2
+    },
+    "nativeSourceStats": {
+      "disposed": false,
+      "busy": false,
+      "reads": 5535,
+      "readBytes": 569935808,
+      "headerReads": 2,
+      "headerReadBytes": 181288,
+      "configReads": 720,
+      "configReadBytes": 11160,
+      "payloadReads": 4813,
+      "payloadReadBytes": 569743360,
+      "maxPayloadReadBytes": 163840,
+      "decodedF32Bytes": 1349201920,
+      "readAheadBytes": 1048576,
+      "storageReads": 1315,
+      "storageReadBytes": 569935808,
+      "maxStorageReadBytes": 1048576,
+      "storageReadAttempts": 1315,
+      "storageReadFailures": 0,
+      "discardedStorageReads": 0,
+      "discardedStorageBytes": 0,
+      "storageReadMs": 2484.5850004702806,
+      "headerInspectMs": 20.765000000596046,
+      "decodeMs": 6353.099999859929,
+      "cacheHits": 4220,
+      "cacheMisses": 593,
+      "cachedBytes": 10240,
+      "peakCachedBytes": 1048576,
+      "windowCopyBytes": 569743360,
+      "windowCopyMs": 254.11499981582165,
+      "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+      "hike": {
+        "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+        "memoryBytes": 1572864,
+        "arenaBytes": 491648,
+        "calls": 361,
+        "inputCopyBytes": 218416,
+        "outputCopyBytes": 619712,
+        "workspaceReused": true,
+        "disposed": false
+      },
+      "decoder": {
+        "disposed": false,
+        "workspaceReused": true,
+        "memoryBytes": 1835008,
+        "arenaBytes": 754688,
+        "tableBytes": 631808,
+        "wasmTableBytes": 263168,
+        "hostTableBytes": 368640,
+        "fp8Tables": 360,
+        "calls": 4813,
+        "inputCopyBytes": 569743360,
+        "outputCopyBytes": 1349201920,
+        "wasmTableCopyBytes": 1572864
+      },
+      "decoderSelection": "lookup",
+      "fullFileHashRecomputed": false,
+      "payloadSampleAdmission": false
+    },
+    "wasmObservation": {
+      "uniqueObservedMemories": 4,
+      "sumObservedHighWaterBytes": 178520064,
+      "memories": [
+        {
+          "id": 1,
+          "roles": [
+            "docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm"
+          ],
+          "capacityBytes": 1572864,
+          "highWaterBytes": 1572864,
+          "weakReferenceAliveAtLastObservation": true
+        },
+        {
+          "id": 2,
+          "roles": [
+            "docs/shared/diffusion-models/execution/model-decode/model-decode.wasm"
+          ],
+          "capacityBytes": 1835008,
+          "highWaterBytes": 1835008,
+          "weakReferenceAliveAtLastObservation": true
+        },
+        {
+          "id": 3,
+          "roles": [
+            "docs/shared/diffusion-models/execution/model-math/kernel.wasm"
+          ],
+          "capacityBytes": 9175040,
+          "highWaterBytes": 9175040,
+          "weakReferenceAliveAtLastObservation": true
+        },
+        {
+          "id": 4,
+          "roles": [
+            "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm"
+          ],
+          "capacityBytes": 165937152,
+          "highWaterBytes": 165937152,
+          "weakReferenceAliveAtLastObservation": true
+        }
+      ],
+      "scope": "observed WASM linear Memory capacity, not allocator live bytes; weak references can remain alive after dispose until GC/Worker termination",
+      "measurement": "linear-memory-capacity",
+      "memoryImportObservationComplete": true,
+      "unknownModuleCount": 0,
+      "skippedMemoryImports": 0,
+      "unattributedMemoryImports": []
+    },
+    "processTree": {
+      "observedPeakRssSumBytes": 11457220608,
+      "observedPeakPssSumBytes": 11180201984,
+      "peakElapsedSeconds": {
+        "rss": 1737.382973751999,
+        "pss": 1776.9231456069974
+      },
+      "rssPeakByRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 169476096,
+          "pssSumBytes": 163280896,
+          "pssReadableProcesses": 1
+        },
+        "python-command-or-helper": {
+          "processCount": 1,
+          "rssSumBytes": 10412032,
+          "pssSumBytes": 7110656,
+          "pssReadableProcesses": 1
+        },
+        "python-spawn-child-oracle-not-proven-by-role": {
+          "processCount": 1,
+          "rssSumBytes": 3817930752,
+          "pssSumBytes": 3811801088,
+          "pssReadableProcesses": 1
+        },
+        "other-command-child": {
+          "processCount": 1,
+          "rssSumBytes": 738308096,
+          "pssSumBytes": 736654336,
+          "pssReadableProcesses": 1
+        },
+        "chromium-browser-or-helper": {
+          "processCount": 1,
+          "rssSumBytes": 139362304,
+          "pssSumBytes": 99013632,
+          "pssReadableProcesses": 1
+        },
+        "chromium-crash-handler": {
+          "processCount": 2,
+          "rssSumBytes": 103608320,
+          "pssSumBytes": 28500992,
+          "pssReadableProcesses": 2
+        },
+        "chromium-gpu-process": {
+          "processCount": 1,
+          "rssSumBytes": 40677376,
+          "pssSumBytes": 23502848,
+          "pssReadableProcesses": 1
+        },
+        "chromium-utility": {
+          "processCount": 2,
+          "rssSumBytes": 92778496,
+          "pssSumBytes": 41275392,
+          "pssReadableProcesses": 2
+        },
+        "chromium-renderer-worker-not-separable": {
+          "processCount": 3,
+          "rssSumBytes": 6344667136,
+          "pssSumBytes": 6214695936,
+          "pssReadableProcesses": 3
+        }
+      },
+      "pssPeakByRoleHeuristic": {
+        "command-root": {
+          "processCount": 1,
+          "rssSumBytes": 175001600,
+          "pssSumBytes": 168806400,
+          "pssReadableProcesses": 1
+        },
+        "python-command-or-helper": {
+          "processCount": 1,
+          "rssSumBytes": 10412032,
+          "pssSumBytes": 7110656,
+          "pssReadableProcesses": 1
+        },
+        "python-spawn-child-oracle-not-proven-by-role": {
+          "processCount": 1,
+          "rssSumBytes": 3768254464,
+          "pssSumBytes": 3762124800,
+          "pssReadableProcesses": 1
+        },
+        "other-command-child": {
+          "processCount": 1,
+          "rssSumBytes": 734932992,
+          "pssSumBytes": 733279232,
+          "pssReadableProcesses": 1
+        },
+        "chromium-browser-or-helper": {
+          "processCount": 1,
+          "rssSumBytes": 137924608,
+          "pssSumBytes": 97575936,
+          "pssReadableProcesses": 1
+        },
+        "chromium-crash-handler": {
+          "processCount": 2,
+          "rssSumBytes": 103608320,
+          "pssSumBytes": 28500992,
+          "pssReadableProcesses": 2
+        },
+        "chromium-gpu-process": {
+          "processCount": 1,
+          "rssSumBytes": 40677376,
+          "pssSumBytes": 23502848,
+          "pssReadableProcesses": 1
+        },
+        "chromium-utility": {
+          "processCount": 2,
+          "rssSumBytes": 90116096,
+          "pssSumBytes": 38612992,
+          "pssReadableProcesses": 2
+        },
+        "chromium-renderer-worker-not-separable": {
+          "processCount": 3,
+          "rssSumBytes": 6379642880,
+          "pssSumBytes": 6320688128,
+          "pssReadableProcesses": 3
+        }
+      },
+      "scope": "native browser + driver + simultaneous independent reference process; no native-only peak inferred. Renderer/Worker cannot be separated by process role."
+    },
+    "referenceBacking": {
+      "maxLogicalFiles": 3,
+      "maxLogicalBytes": 4543303680,
+      "tmpFilesystemIsShared": true,
+      "oracleFinalStatsUnavailableAfterForcedTermination": true
+    },
+    "sharedCgroup": {
+      "beforeChildLaunch": {
+        "memory.current": 14837084160,
+        "memory.peak": 17180176384,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 57171968,
+          "file": 14656933888,
+          "shmem": 2246000640,
+          "file_mapped": 24576,
+          "file_dirty": 294912,
+          "file_writeback": 0,
+          "inactive_file": 1158885376,
+          "active_file": 11252047872,
+          "kernel": 122462208,
+          "pagetables": 1978368,
+          "slab": 119818392,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 866739,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 866739,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7195332608,
+          "usedBytes": 2245996544
+        }
+      },
+      "atRssPeak": {
+        "memory.current": 17127469056,
+        "memory.peak": 17180487680,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 7910088704,
+          "file": 9058201600,
+          "shmem": 5382983680,
+          "file_mapped": 3150254080,
+          "file_dirty": 4096,
+          "file_writeback": 0,
+          "inactive_file": 604741632,
+          "active_file": 3070480384,
+          "kernel": 157921280,
+          "pagetables": 46522368,
+          "slab": 108558856,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 923814,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 923814,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 4063318016,
+          "usedBytes": 5378011136
+        }
+      },
+      "atPssPeak": {
+        "memory.current": 17141510144,
+        "memory.peak": 17180487680,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 7949471744,
+          "file": 9008373760,
+          "shmem": 5388271616,
+          "file_mapped": 3155496960,
+          "file_dirty": 0,
+          "file_writeback": 0,
+          "inactive_file": 586203136,
+          "active_file": 3033903104,
+          "kernel": 182542336,
+          "pagetables": 46612480,
+          "slab": 133094896,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 924093,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 924093,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 4058030080,
+          "usedBytes": 5383299072
+        }
+      },
+      "afterCommandCleanup": {
+        "memory.current": 6129414144,
+        "memory.peak": 17180487680,
+        "memory.max": 17179869184,
+        "memory.swap.current": 0,
+        "memory.stat": {
+          "anon": 107921408,
+          "file": 5895950336,
+          "shmem": 2247958528,
+          "file_mapped": 24576,
+          "file_dirty": 8192,
+          "file_writeback": 0,
+          "inactive_file": 612675584,
+          "active_file": 3035164672,
+          "kernel": 124416000,
+          "pagetables": 2691072,
+          "slab": 120999704,
+          "sock": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 924093,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "memory.events.local": {
+          "low": 0,
+          "high": 0,
+          "max": 924093,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "tmpFilesystem": {
+          "capacityBytes": 9441329152,
+          "availableBytes": 7193374720,
+          "usedBytes": 2247954432
+        }
+      },
+      "memoryEventsDelta": {
+        "low": 0,
+        "high": 0,
+        "max": 57354,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "observedPeaksNotAttributed": {
+        "memory.current": {
+          "observedMaximum": 17179856896,
+          "elapsedSeconds": 1394.3410279109958,
+          "sharedNotAttributed": true
+        },
+        "memory.peak": {
+          "observedMaximum": 17180487680,
+          "elapsedSeconds": 1814.2808572590002,
+          "sharedNotAttributed": true
+        },
+        "memory.swap.current": {
+          "observedMaximum": 0,
+          "elapsedSeconds": 1814.2808572590002,
+          "sharedNotAttributed": true
+        },
+        "memory.stat.anon": {
+          "observedMaximum": 7949471744,
+          "elapsedSeconds": 1776.9231456069974,
+          "sharedNotAttributed": true
+        },
+        "memory.stat.file": {
+          "observedMaximum": 14677057536,
+          "elapsedSeconds": 24.679158611994353,
+          "sharedNotAttributed": true
+        },
+        "memory.stat.shmem": {
+          "observedMaximum": 5399502848,
+          "elapsedSeconds": 1768.1660349229933,
+          "sharedNotAttributed": true
+        },
+        "memory.stat.file_mapped": {
+          "observedMaximum": 3166732288,
+          "elapsedSeconds": 1768.1660349229933,
+          "sharedNotAttributed": true
+        },
+        "memory.stat.file_dirty": {
+          "observedMaximum": 2326528,
+          "elapsedSeconds": 400.8607643680007,
+          "sharedNotAttributed": true
+        },
+        "memory.stat.file_writeback": {
+          "observedMaximum": 0,
+          "elapsedSeconds": 1814.2808572590002,
+          "sharedNotAttributed": true
+        },
+        "memory.stat.inactive_file": {
+          "observedMaximum": 1477873664,
+          "elapsedSeconds": 110.29377440799726,
+          "sharedNotAttributed": true
+        },
+        "memory.stat.active_file": {
+          "observedMaximum": 11252064256,
+          "elapsedSeconds": 32.57772520999424,
+          "sharedNotAttributed": true
+        },
+        "memory.stat.kernel": {
+          "observedMaximum": 182558720,
+          "elapsedSeconds": 1802.9507721949922,
+          "sharedNotAttributed": true
+        },
+        "memory.stat.pagetables": {
+          "observedMaximum": 46612480,
+          "elapsedSeconds": 1776.9231456069974,
+          "sharedNotAttributed": true
+        },
+        "memory.stat.slab": {
+          "observedMaximum": 133190968,
+          "elapsedSeconds": 1765.9928613719967,
+          "sharedNotAttributed": true
+        },
+        "memory.stat.sock": {
+          "observedMaximum": 2904064,
+          "elapsedSeconds": 491.0912562779995,
+          "sharedNotAttributed": true
+        }
+      },
+      "scope": "shared observations, not command ownership or cause; file includes shmem and memory.peak is historical. max events rose57,354 while oom/oom_kill remained0."
+    },
+    "unknowns": [
+      "native/internal ORT staging/allocator peaks not directly observable",
+      "reference IPC adds bounded binary copies and is included only by outer process monitor",
+      "whole-process RSS/PSS sampling is supplied by outer resource wrapper",
+      "WASM Memory capacity is not allocator usage",
+      "ORT native internal copies/allocator live bytes are not directly observable",
+      "performance.memory excludes most ArrayBuffer backing stores",
+      "RSS/PSS and whole-process observations belong to outer runner"
+    ],
+    "nativeMathStats": {
+      "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+      "memoryBytes": 9175040,
+      "memoryIdentity": "model-math-1",
+      "arenaBytes": 8108032,
+      "calls": 4403,
+      "kernelCalls": 18099,
+      "snapshotCopyBytes": 11678758320,
+      "inputCopyBytes": 11678758320,
+      "outputCopyBytes": 11492660224,
+      "primitiveCalls": {
+        "cos": 7704576,
+        "exp": 10240,
+        "pow": 7704576,
+        "sin": 7704576,
+        "sqrt": 158390,
+        "tanh": 2621440
+      },
+      "workspaceReused": true,
+      "busy": false,
+      "disposed": false,
+      "limits": {
+        "maxRows": 128,
+        "width": 5120,
+        "headWidth": 128,
+        "heads": 40,
+        "maxLinearWidth": 13824,
+        "maxElements": 1769472,
+        "chunkElements": 81920,
+        "epsilon": 1e-06
+      },
+      "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+      "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+      "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+    }
+  },
+  "cancellationAndCleanup": {
+    "nativeExecutionError": {
+      "name": "AbortError",
+      "message": "Diagnostic cancelled by harness",
+      "code": 20,
+      "stack": ""
+    },
+    "nativeCleanupError": null,
+    "nativeTimingCleanupErrors": [],
+    "nativeAfterFailureResources": {
+      "activeHiddenStores": 0,
+      "activeHiddenStoreBytes": 0,
+      "stageWeightCacheBytes": 0,
+      "pendingTensors": 0,
+      "preparedWeights": 0,
+      "ownedAttentionQueries": 0,
+      "cleanupPending": false
+    },
+    "observerRestored": true,
+    "oracleCleanup": {
+      "oracle": null,
+      "childExitCode": -15,
+      "childStillAlive": false,
+      "terminated": true,
+      "backingFilesRemoved": [
+        "reference-x.f32",
+        "reference-k.f32",
+        "reference-v.f32"
+      ],
+      "backingFilesRemaining": [],
+      "cleanupErrors": []
+    },
+    "failureEvents": [
+      {
+        "name": "DiagnosticWatchdog",
+        "message": "Operational timeout; not a numerical/resource acceptance gate",
+        "last": {
+          "type": "chunk-compared",
+          "value": {
+            "name": "q",
+            "block": 0,
+            "globalRowStart": 5120,
+            "rowCount": 128,
+            "elements": 655360,
+            "failed": 0,
+            "maxAbsolute": 2.384185791015625e-05,
+            "maxNormalizedToGate": 0.001151325424249603,
+            "actualSHA256": "ac9fe75bc4ecca5fa13675e35967fb263a1940c5576b06ecf7b5037716eeab70",
+            "referenceSHA256": "dc22368de25d83cd20ae6548a237cc3846ba382eea28e24ca447defc53bdbafc",
+            "gate": {
+              "abs": 0.01,
+              "rel": 0.001
+            },
+            "elapsedSeconds": 0.231770503000007,
+            "elapsedMs": 1790380.2399999946
+          }
+        },
+        "oracleActive": null,
+        "elapsedSeconds": 1800.8663569619966
+      },
+      {
+        "name": "EOFError",
+        "message": "",
+        "stage": {
+          "schemaVersion": "bernini-model-chunk/1",
+          "name": "selfAttention",
+          "block": 0,
+          "globalRowStart": 5120,
+          "rowCount": 128,
+          "rowAxis": 1,
+          "columns": 5120,
+          "storageElementOffset": 26214400,
+          "shape": [
+            1,
+            128,
+            40,
+            128
+          ],
+          "fullShape": [
+            1,
+            73947,
+            40,
+            128
+          ],
+          "dtype": "float32",
+          "layout": "BLHD",
+          "axes": [
+            "B",
+            "L",
+            "H",
+            "D"
+          ],
+          "fullAxes": [
+            "B",
+            "L",
+            "H",
+            "D"
+          ],
+          "coordinateAxes": [
+            "T",
+            "H",
+            "W"
+          ],
+          "model": {
+            "side": "HIGH",
+            "modelSha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52"
+          },
+          "timestep": 1000,
+          "coordinates": {
+            "positions": [
+              3,
+              8,
+              24,
+              3,
+              8,
+              25,
+              3,
+              8,
+              26,
+              3,
+              8,
+              27,
+              3,
+              8,
+              28,
+              3,
+              8,
+              29,
+              3,
+              8,
+              30,
+              3,
+              8,
+              31,
+              3,
+              8,
+              32,
+              3,
+              8,
+              33,
+              3,
+              8,
+              34,
+              3,
+              8,
+              35,
+              3,
+              8,
+              36,
+              3,
+              8,
+              37,
+              3,
+              8,
+              38,
+              3,
+              8,
+              39,
+              3,
+              8,
+              40,
+              3,
+              8,
+              41,
+              3,
+              8,
+              42,
+              3,
+              8,
+              43,
+              3,
+              8,
+              44,
+              3,
+              8,
+              45,
+              3,
+              8,
+              46,
+              3,
+              8,
+              47,
+              3,
+              8,
+              48,
+              3,
+              8,
+              49,
+              3,
+              8,
+              50,
+              3,
+              8,
+              51,
+              3,
+              9,
+              0,
+              3,
+              9,
+              1,
+              3,
+              9,
+              2,
+              3,
+              9,
+              3,
+              3,
+              9,
+              4,
+              3,
+              9,
+              5,
+              3,
+              9,
+              6,
+              3,
+              9,
+              7,
+              3,
+              9,
+              8,
+              3,
+              9,
+              9,
+              3,
+              9,
+              10,
+              3,
+              9,
+              11,
+              3,
+              9,
+              12,
+              3,
+              9,
+              13,
+              3,
+              9,
+              14,
+              3,
+              9,
+              15,
+              3,
+              9,
+              16,
+              3,
+              9,
+              17,
+              3,
+              9,
+              18,
+              3,
+              9,
+              19,
+              3,
+              9,
+              20,
+              3,
+              9,
+              21,
+              3,
+              9,
+              22,
+              3,
+              9,
+              23,
+              3,
+              9,
+              24,
+              3,
+              9,
+              25,
+              3,
+              9,
+              26,
+              3,
+              9,
+              27,
+              3,
+              9,
+              28,
+              3,
+              9,
+              29,
+              3,
+              9,
+              30,
+              3,
+              9,
+              31,
+              3,
+              9,
+              32,
+              3,
+              9,
+              33,
+              3,
+              9,
+              34,
+              3,
+              9,
+              35,
+              3,
+              9,
+              36,
+              3,
+              9,
+              37,
+              3,
+              9,
+              38,
+              3,
+              9,
+              39,
+              3,
+              9,
+              40,
+              3,
+              9,
+              41,
+              3,
+              9,
+              42,
+              3,
+              9,
+              43,
+              3,
+              9,
+              44,
+              3,
+              9,
+              45,
+              3,
+              9,
+              46,
+              3,
+              9,
+              47,
+              3,
+              9,
+              48,
+              3,
+              9,
+              49,
+              3,
+              9,
+              50,
+              3,
+              9,
+              51,
+              3,
+              10,
+              0,
+              3,
+              10,
+              1,
+              3,
+              10,
+              2,
+              3,
+              10,
+              3,
+              3,
+              10,
+              4,
+              3,
+              10,
+              5,
+              3,
+              10,
+              6,
+              3,
+              10,
+              7,
+              3,
+              10,
+              8,
+              3,
+              10,
+              9,
+              3,
+              10,
+              10,
+              3,
+              10,
+              11,
+              3,
+              10,
+              12,
+              3,
+              10,
+              13,
+              3,
+              10,
+              14,
+              3,
+              10,
+              15,
+              3,
+              10,
+              16,
+              3,
+              10,
+              17,
+              3,
+              10,
+              18,
+              3,
+              10,
+              19,
+              3,
+              10,
+              20,
+              3,
+              10,
+              21,
+              3,
+              10,
+              22,
+              3,
+              10,
+              23,
+              3,
+              10,
+              24,
+              3,
+              10,
+              25,
+              3,
+              10,
+              26,
+              3,
+              10,
+              27,
+              3,
+              10,
+              28,
+              3,
+              10,
+              29,
+              3,
+              10,
+              30,
+              3,
+              10,
+              31,
+              3,
+              10,
+              32,
+              3,
+              10,
+              33,
+              3,
+              10,
+              34,
+              3,
+              10,
+              35,
+              3,
+              10,
+              36,
+              3,
+              10,
+              37,
+              3,
+              10,
+              38,
+              3,
+              10,
+              39,
+              3,
+              10,
+              40,
+              3,
+              10,
+              41,
+              3,
+              10,
+              42,
+              3,
+              10,
+              43,
+              3,
+              10,
+              44,
+              3,
+              10,
+              45,
+              3,
+              10,
+              46,
+              3,
+              10,
+              47
+            ],
+            "sourceIds": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "elapsedSeconds": 1811.760521122007
+      }
+    ],
+    "EOFErrorClassification": "aborted in-flight oracle comparison IPC after harness cancellation/forced child termination; retained cleanup/failure event, not a numerical mismatch or kernel error",
+    "cleanupAcceptance": "native cleanup reported no error; oracle was forcibly terminated and all3backing files removed. No claim of graceful oracle final stats.",
+    "outerFinalProcesses": [
+      {
+        "pid": 101674,
+        "parentPid": 1,
+        "name": "chromium",
+        "state": "Z",
+        "startTicks": 10911132,
+        "rssBytes": 0,
+        "pssBytes": null,
+        "roleHeuristic": "chromium-browser-or-helper"
+      },
+      {
+        "pid": 101677,
+        "parentPid": 1,
+        "name": "chromium",
+        "state": "Z",
+        "startTicks": 10911132,
+        "rssBytes": 0,
+        "pssBytes": null,
+        "roleHeuristic": "chromium-browser-or-helper"
+      },
+      {
+        "pid": 101750,
+        "parentPid": 1,
+        "name": "chromium",
+        "state": "Z",
+        "startTicks": 10911153,
+        "rssBytes": 0,
+        "pssBytes": null,
+        "roleHeuristic": "chromium-browser-or-helper"
+      }
+    ],
+    "outerFinalRssSumBytes": 0,
+    "outerFinalPssSumBytes": null,
+    "finalZeroRssZombieScope": "three known Chromium zombie records remain with zeroRSS and inaccessible PSS; no living allocation inferred from PID presence"
+  },
+  "notAccepted": [
+    "complete HIGH block0 all-query boundary",
+    "full40 HIGH or LOW at declared fullshape",
+    "final head and target extraction at declared fullshape",
+    "HIGH3 to LOW3 six fullshape updates",
+    "raw generated sample/save at declared fullshape",
+    "fullshape cross-attention or FFN",
+    "original media/prompt/noise or mxfp8 equivalence"
+  ],
+  "inferencePerformedForEvidencePackaging": false,
+  "rawTensorValuesPublished": false,
+  "modelPayloadPublished": false
+}

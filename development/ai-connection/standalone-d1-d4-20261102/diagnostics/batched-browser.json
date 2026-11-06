@@ -1,0 +1,273 @@
+{
+  "passed": true,
+  "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+  "cases": [
+    {
+      "name": "actual large Gemm 128x16x13824",
+      "shape": {
+        "rows": 128,
+        "columns": 16,
+        "inner": 13824
+      },
+      "comparison": {
+        "elements": 2048,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "maxRelative": 0,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "evidence": {
+        "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+        "computeF32": true,
+        "computeDtype": "F32",
+        "rows": 128,
+        "columns": 16,
+        "inner": 13824,
+        "fullInner": true,
+        "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+        "weightBinding": "runtime-input",
+        "ortVersion": "1.24.3"
+      }
+    },
+    {
+      "name": "actual large Gemm 128x5120x3",
+      "shape": {
+        "rows": 128,
+        "columns": 5120,
+        "inner": 3
+      },
+      "comparison": {
+        "elements": 655360,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "maxRelative": 0,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "evidence": {
+        "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+        "computeF32": true,
+        "computeDtype": "F32",
+        "rows": 128,
+        "columns": 5120,
+        "inner": 3,
+        "fullInner": true,
+        "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+        "weightBinding": "runtime-input",
+        "ortVersion": "1.24.3"
+      }
+    },
+    {
+      "name": "actual H40 Q128 K256 D128 attention",
+      "max": {
+        "elements": 5120,
+        "failed": 0,
+        "maxAbsolute": 3.7150584830669686e-09,
+        "maxRelative": 5.8046731439457674e-08,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "denominator": {
+        "elements": 5120,
+        "failed": 0,
+        "maxAbsolute": 0.00012351352754080835,
+        "maxRelative": 5.179062769658356e-07,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "context": {
+        "elements": 655360,
+        "failed": 0,
+        "maxAbsolute": 2.629300068779372e-06,
+        "maxRelative": 10737418241,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "evidence": {
+        "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+        "computeF32": true,
+        "computeDtype": "F32",
+        "heads": 40,
+        "queries": 128,
+        "keys": 256,
+        "headDim": 128,
+        "logicalScoreElements": 1310720,
+        "phantomQueries": 0,
+        "phantomKeys": 0,
+        "scale": 0.0883883461356163,
+        "contextReduction": "ORT F32 batched MatMul; independent profile from Hike scalar recurrence",
+        "graphSHA256": "67ada02d3936f55a7d81e35f92819fe895f29a63a83889f70675624b27df2139",
+        "ortVersion": "1.24.3"
+      }
+    },
+    {
+      "name": "actual H40 Q3 K7 D128 attention",
+      "max": {
+        "elements": 120,
+        "failed": 0,
+        "maxAbsolute": 3.7039171729702502e-09,
+        "maxRelative": 5.090199182633651e-08,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "denominator": {
+        "elements": 120,
+        "failed": 0,
+        "maxAbsolute": 6.367822553698943e-07,
+        "maxRelative": 9.484977453236882e-08,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "context": {
+        "elements": 15360,
+        "failed": 0,
+        "maxAbsolute": 3.570142204090132e-07,
+        "maxRelative": 0.0005930567653440431,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "evidence": {
+        "precisionProfile": "f32-ort-gemm-batched-online-softmax-context-matmul-v1",
+        "computeF32": true,
+        "computeDtype": "F32",
+        "heads": 40,
+        "queries": 3,
+        "keys": 7,
+        "headDim": 128,
+        "logicalScoreElements": 840,
+        "phantomQueries": 0,
+        "phantomKeys": 0,
+        "scale": 0.0883883461356163,
+        "contextReduction": "ORT F32 batched MatMul; independent profile from Hike scalar recurrence",
+        "graphSHA256": "67ada02d3936f55a7d81e35f92819fe895f29a63a83889f70675624b27df2139",
+        "ortVersion": "1.24.3"
+      }
+    },
+    {
+      "name": "exact all-263-key stream with tail7",
+      "max": {
+        "elements": 120,
+        "failed": 0,
+        "maxAbsolute": 3.7039171729702502e-09,
+        "maxRelative": 5.639954116109391e-08,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "denominator": {
+        "elements": 120,
+        "failed": 0,
+        "maxAbsolute": 0.00011288508150641974,
+        "maxRelative": 4.603398756511374e-07,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "context": {
+        "elements": 15360,
+        "failed": 0,
+        "maxAbsolute": 2.087440825304654e-06,
+        "maxRelative": 0.0016501139052682507,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "keysConsumed": 263,
+      "phantomKeys": 0
+    },
+    {
+      "name": "stable rescale of prior numerator and denominator when maxima rise",
+      "max": {
+        "elements": 120,
+        "failed": 0,
+        "maxAbsolute": 0,
+        "maxRelative": 0,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "denominator": {
+        "elements": 120,
+        "failed": 0,
+        "maxAbsolute": 7.743650520808387e-08,
+        "maxRelative": 1.1062222878305312e-08,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "context": {
+        "elements": 15360,
+        "failed": 0,
+        "maxAbsolute": 7.988013059900823e-07,
+        "maxRelative": 2.8528443983809427e-08,
+        "tolerance": {
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      }
+    },
+    {
+      "name": "snapshot/cancel/reuse/busy/finite/shape/cleanup guards",
+      "passed": true
+    },
+    {
+      "name": "actual ORT tensor release failure retains handle for recovery",
+      "passed": true,
+      "beforeRecovery": {
+        "busy": false,
+        "disposed": false,
+        "cleanupPending": true,
+        "pendingTensors": 1,
+        "linearRuns": 7,
+        "attentionRuns": 8,
+        "inputCopyBytes": 37278792,
+        "outputCopyBytes": 5728864,
+        "sessionCreations": 2
+      },
+      "afterRecovery": {
+        "busy": false,
+        "disposed": true,
+        "cleanupPending": false,
+        "pendingTensors": 0,
+        "linearRuns": 7,
+        "attentionRuns": 8,
+        "inputCopyBytes": 37278792,
+        "outputCopyBytes": 5728864,
+        "sessionCreations": 2
+      }
+    }
+  ],
+  "stats": {
+    "busy": false,
+    "disposed": true,
+    "cleanupPending": false,
+    "pendingTensors": 0,
+    "linearRuns": 7,
+    "attentionRuns": 8,
+    "inputCopyBytes": 37278792,
+    "outputCopyBytes": 5728864,
+    "sessionCreations": 2
+  }
+}

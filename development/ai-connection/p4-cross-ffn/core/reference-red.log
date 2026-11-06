@@ -1,0 +1,86 @@
+EEEEEEEEE
+======================================================================
+ERROR: test_cross_attention_keeps_masked_zero_keys (__main__.ReferenceBoundaries.test_cross_attention_keeps_masked_zero_keys)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/diffusion-models/tools/diffusion-models/test-p4-reference.py", line 67, in test_cross_attention_keeps_masked_zero_keys
+    result = P4.all_head_attention(q, k, v)
+             ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'p4_reference' has no attribute 'all_head_attention'
+
+======================================================================
+ERROR: test_frozen_plan_and_exact_fixture (__main__.ReferenceBoundaries.test_frozen_plan_and_exact_fixture)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/diffusion-models/tools/diffusion-models/test-p4-reference.py", line 20, in test_frozen_plan_and_exact_fixture
+    plan = P4.load_plan()
+           ^^^^^^^^^^^^
+AttributeError: module 'p4_reference' has no attribute 'load_plan'
+
+======================================================================
+ERROR: test_full_value_gate_and_private_write (__main__.ReferenceBoundaries.test_full_value_gate_and_private_write)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/diffusion-models/tools/diffusion-models/test-p4-reference.py", line 108, in test_full_value_gate_and_private_write
+    result = P4.compare(np.array([0., 2.], dtype=np.float32), np.array([0., 2.], dtype=np.float32), gate)
+             ^^^^^^^^^^
+AttributeError: module 'p4_reference' has no attribute 'compare'
+
+======================================================================
+ERROR: test_gelu_is_tanh_formula (__main__.ReferenceBoundaries.test_gelu_is_tanh_formula)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/diffusion-models/tools/diffusion-models/test-p4-reference.py", line 90, in test_gelu_is_tanh_formula
+    np.testing.assert_array_equal(P4.gelu_tanh(x), expected)
+                                  ^^^^^^^^^^^^
+AttributeError: module 'p4_reference' has no attribute 'gelu_tanh'
+
+======================================================================
+ERROR: test_independent_binary16_all_codes (__main__.ReferenceBoundaries.test_independent_binary16_all_codes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/diffusion-models/tools/diffusion-models/test-p4-reference.py", line 30, in test_independent_binary16_all_codes
+    decoded = P4.decode_f16(bytes(range(256)) * 2)  # finite ordinary sample
+              ^^^^^^^^^^^^^
+AttributeError: module 'p4_reference' has no attribute 'decode_f16'
+
+======================================================================
+ERROR: test_independent_fp8_nan_negative_zero_and_scaled_bytes (__main__.ReferenceBoundaries.test_independent_fp8_nan_negative_zero_and_scaled_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/diffusion-models/tools/diffusion-models/test-p4-reference.py", line 48, in test_independent_fp8_nan_negative_zero_and_scaled_bytes
+    result = P4.decode_fp8(bytes([0, 128, 56, 184]), np.float32(0.5))
+             ^^^^^^^^^^^^^
+AttributeError: module 'p4_reference' has no attribute 'decode_fp8'
+
+======================================================================
+ERROR: test_native_text_payload_does_not_fabricate_identity_or_drop_mask (__main__.ReferenceBoundaries.test_native_text_payload_does_not_fabricate_identity_or_drop_mask)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/diffusion-models/tools/diffusion-models/test-p4-reference.py", line 95, in test_native_text_payload_does_not_fabricate_identity_or_drop_mask
+    x, mask, metadata = P4.validate_native_text(payload)
+                        ^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'p4_reference' has no attribute 'validate_native_text'
+
+======================================================================
+ERROR: test_norm_affine_axis_and_ffn_gate_basis (__main__.ReferenceBoundaries.test_norm_affine_axis_and_ffn_gate_basis)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/diffusion-models/tools/diffusion-models/test-p4-reference.py", line 74, in test_norm_affine_axis_and_ffn_gate_basis
+    ln = P4.layer_norm(x)
+         ^^^^^^^^^^^^^
+AttributeError: module 'p4_reference' has no attribute 'layer_norm'
+
+======================================================================
+ERROR: test_selection_preserves_full_shape_and_exact_tiling (__main__.ReferenceBoundaries.test_selection_preserves_full_shape_and_exact_tiling)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/work/diffusion-models/tools/diffusion-models/test-p4-reference.py", line 56, in test_selection_preserves_full_shape_and_exact_tiling
+    self.assertEqual(P4.select_offset(d, [5120, 13824], 'F8_E4M3', row_start=4, rows=4), (99 + 4 * 13824, 4 * 13824))
+                     ^^^^^^^^^^^^^^^^
+AttributeError: module 'p4_reference' has no attribute 'select_offset'
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.038s
+
+FAILED (errors=9)

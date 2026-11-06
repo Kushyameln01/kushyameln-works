@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "works-long-attention-diagnostic/0.1",
+  "scope": "SELECTED128QUERIES_ALL40HEADS_ALL65520KEYS_BEFORE_O",
+  "modelInference": false,
+  "productionQKV": false,
+  "shape": {"heads": 40, "queries": 128, "keys": 65520, "headDim": 128},
+  "keyTile": 256,
+  "tiles": 256,
+  "tailKeys": 240,
+  "layout": "head-major contiguous [H,Q,D] and [H,K,D]",
+  "generator": {
+    "id": "dyadic-coordinate-qkv-final-key-sentinel-v1",
+    "query": "(((h*7 + query*3 + d*5) % 29) - 14) / 64",
+    "key": "(((h*11 + globalKey*7 + d*3) % 31) - 15) / 64 + ((floor(globalKey/256) % 11) - 5) / 128",
+    "value": "1/8 + ((h*13 + globalKey*5 + d*7) % 37) / 256",
+    "finalKeyValue": "2048 + ((h*3 + d) % 17) / 16",
+    "finalKey": 65519,
+    "inputDtype": "IEEE754 F32 little-endian; formulas are exactly representable dyadic values",
+    "streamHashOrder": "query once; key and value separately concatenate each exact logical head-major tile in ascending global-key offset"
+  },
+  "reference": {
+    "compute": "NumPy F64 batched MatMul, stable online max/denominator/unnormalized-context update across every exact key tile",
+    "scale": 0.0883883461356163,
+    "scaleRule": "F64 representation of F32(1/sqrt(128))",
+    "privateArrays": ["max.f64", "denominator.f64", "context.f64", "output.f64"],
+    "normalization": "F64 context / denominator; browser final division is Hike F32 divideAttention",
+    "sentinelMinimumAbsoluteNormalizedEffect": 0.01
+  },
+  "gate": {"absolute": 0.001, "relative": 0.0001, "rule": "every value finite and abs(actual-reference) <= absolute + relative*abs(reference)", "arrays": ["max", "denominator", "context", "output"]},
+  "sourcePaths": [
+    "development/ai-connection/standalone-d1-d4-20261102/long-attention/contract.json",
+    "development/ai-connection/standalone-d1-d4-20261102/long-attention/run.py",
+    "development/ai-connection/standalone-d1-d4-20261102/long-attention/browser-cases.mjs",
+    "docs/shared/diffusion-models/execution/batched-ops.mjs",
+    "docs/shared/diffusion-models/execution/batched-attention-graph.mjs",
+    "docs/shared/diffusion-models/execution/model-math.mjs",
+    "docs/shared/diffusion-models/execution/model-math/kernel.wasm",
+    "docs/shared/diffusion-models/execution/model-math/registry.mjs",
+    "docs/shared/diffusion-models/ort-bridge/block-hidden/graph.mjs",
+    "docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs",
+    "docs/shared/inference/vendor/ort.wasm.min.mjs",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+    "docs/shared/inference/vendor/ort-wasm-simd-threaded.wasm",
+    "docs/shared/vr180/sha256.mjs"
+  ]
+}

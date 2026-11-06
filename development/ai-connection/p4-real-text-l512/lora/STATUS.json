@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "diffusion-p4-lora-real-l512-status/0.1",
+  "status": "PASS_LIMITED_REAL_LORA_L512",
+  "updatedAtUTC": "2026-11-01T17:15:07.685558+00:00",
+  "ownerSourceCommit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+  "diffusionExecutionSourceCommit": "db5df292b21366ec385d92bb281b5f3ee74183c4",
+  "scope": {
+    "side": "LOW",
+    "pair": "light",
+    "strength": 1,
+    "blockIndex": 0,
+    "scheduleIndex": 3,
+    "queryRows": 2,
+    "textShape": [
+      1,
+      512,
+      4096
+    ],
+    "weightId": "blocks.0.cross_attn.q.weight",
+    "fullWeightShape": [
+      5120,
+      5120
+    ],
+    "rows": [
+      0,
+      4
+    ],
+    "columns": [
+      0,
+      5120
+    ],
+    "biasId": "blocks.0.cross_attn.q.bias",
+    "biasValues": 4,
+    "coverage": "PARTIAL",
+    "completeAdapter": false
+  },
+  "original": {
+    "fileName": "Bernini-R_LightX2V_low_noise.safetensors",
+    "bytes": 1244141856,
+    "sha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+    "freshHashVerified": true,
+    "receipt": "original-acquisition.json"
+  },
+  "ownerSourceAcquiredCount": 55,
+  "executableOverlayAvailableCount": 21,
+  "ownerActuallyExecutedCount": 11,
+  "newNumericalAcceptanceClaimed": true,
+  "lowRankImplementation": "Exact owner a80 SDK/Hike and independent ownerA functions; no duplicate Diffusion lowrank",
+  "numericalSummary": "../LORA-NUMERICAL-SUMMARY.json",
+  "result": "../LORA-RESULT.md",
+  "baseResult": "../BASE-RESULT.md",
+  "actualNativeRunCount": 1,
+  "extraActiveOrRestoreNativeRun": false,
+  "commitEpoch": 1,
+  "rollbackEpoch": 2,
+  "rollbackProof": "Package/selected+unselected+old/active lease byte checks only",
+  "selectedNativeOwnedPatchBytes": 81936,
+  "allNativeLeasesAndPatchBytesZeroAfterCleanup": true,
+  "managementProfileAccepted": false,
+  "jointSnapshotPublished": false,
+  "history": [
+    "history/7f48-STATUS.json",
+    "history/a80-before-native-status.json"
+  ],
+  "notAccepted": [
+    "Other sides/pairs/strengths/ranges/all targets/two sets composed",
+    "Actual LoRA cancellation/reapply/validation-failure recovery",
+    "Post-commit/restoration NN or actual HIGH-to-LOW handoff",
+    "Production conditions/full model/whole-pipeline resource budget/generation/VAE decode",
+    "Management common catalog adoption/joint snapshot"
+  ],
+  "generationReady": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY"
+}

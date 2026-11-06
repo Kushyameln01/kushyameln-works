@@ -17,8 +17,8 @@ export async function runL1APICases(){
   const q={protocolVersion:PROTOCOL_VERSION,sessionId:api.sessionId,jobId:'cancel-l1',inputRevision:2,op:'linearProjectionF32',input:data()};
   const pending=api.request(q),cancelled=api.cancel(q);assert(cancelled.result?.workerTerminated===true,'Owned worker not terminated');assert((await pending).error?.code==='CANCELLED','Cancelled work did not terminate');
   assert((await ask('linearProjectionF32',data(),3)).result?.output[0]===6.5,'Cancelled Worker was not safely recreated');
-  for(const op of ['predict','sample'])assert((await ask(op,{},3)).error?.code==='NOT_READY','Model inference incorrectly enabled');
-  cases.push({name:'owned Worker cancellation, subsequent rerun, NOT_READY preserved',passed:true});
+  for(const op of ['predict','sample'])assert((await ask(op,{},3)).error?.code==='MODEL_NOT_LOADED','Unloaded model operation did not require an original pair');
+  cases.push({name:'owned Worker cancellation, subsequent rerun, unloaded model pair required',passed:true});
   return {passed:true,nativeBuildId:cap.result.buildId,scope:'actual Worker/MessagePort Hike-ORT-Hike F32 partial feed, not LoRA matrix multiplication or Bernini generation',cases};
  }finally{api.dispose();}
 }

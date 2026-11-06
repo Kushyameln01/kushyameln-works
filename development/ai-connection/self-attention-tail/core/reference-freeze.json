@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "bernini-tail-reference-freeze/0.1",
+  "scope": "Independent reference preparation only; O-to-chunk2-gate-to-original-patchHidden-residual is one later runtime acceptance unit",
+  "planSHA256": "58a7a187d9580cd5af1d12e4d9552f8880a47c8a89e50b7bf1d27fec4ff11549",
+  "finalGeneratorPath": "tools/diffusion-models/tail-reference.py",
+  "finalGeneratorSHA256": "0d17f340c3dbd6947d2bca15330834cb56d8d5c68eac85a594508e7b26f0eb32",
+  "initialGeneratorSnapshot": "development/ai-connection/self-attention-tail/core/source-snapshots/tail-reference-initial.py",
+  "initialGeneratorSHA256": "5f7cd194bfbca512e028efaa506f520e744688ae361bdf9bfb124c4dd96d8f3d",
+  "preAcceptanceAdmissionHardening": [
+    "exact known composed head receipt bytes, verified against fixed runtime and baseline Git objects",
+    "binary64 comparison with exact1e16 literal; reject nearest F32 above bound"
+  ],
+  "numericalArithmeticChanged": false,
+  "comparisonGatesChanged": false,
+  "fixedComposedReceiptAnchors": {
+    "HIGH": {
+      "path": "development/ai-connection/qkv-next/expansion/high-composed-reference-receipt.json",
+      "sha256": "a13a44b46ddcb4aba7e03fa2856d815adc0bcf2437db586d9a7109a2ed13f31d",
+      "fixedCommitSHA256": {
+        "e48021d8da29ef3b3b9e9d6161331c282798b6b3": "a13a44b46ddcb4aba7e03fa2856d815adc0bcf2437db586d9a7109a2ed13f31d",
+        "caa521ca23d1e32b36775d0a913b0731962c5df4": "a13a44b46ddcb4aba7e03fa2856d815adc0bcf2437db586d9a7109a2ed13f31d"
+      }
+    },
+    "LOW": {
+      "path": "development/ai-connection/qkv-next/expansion/low-composed-reference-receipt.json",
+      "sha256": "2979711e0ba0ee4d838d95eab8443847db5df47fd8009e7b2226355feacd43ad",
+      "fixedCommitSHA256": {
+        "e48021d8da29ef3b3b9e9d6161331c282798b6b3": "2979711e0ba0ee4d838d95eab8443847db5df47fd8009e7b2226355feacd43ad",
+        "caa521ca23d1e32b36775d0a913b0731962c5df4": "2979711e0ba0ee4d838d95eab8443847db5df47fd8009e7b2226355feacd43ad"
+      }
+    }
+  },
+  "finalReferenceReceipts": {
+    "high-composed-reference-receipt.json": {
+      "publicReceiptSHA256": "4f9a25ea913d59fb0ba4d9f7ea7977c805bf14da54e6058095dc41c901648ae5",
+      "privateReferenceSHA256": "9ca18c2e852dbd981b4bec745eab1ac24e1dde76658478ddc673b7fa2f7b9d8e",
+      "privateReferenceBytes": 836814,
+      "samePrivateBytesAsInitial": true
+    },
+    "high-local-reference-receipt.json": {
+      "publicReceiptSHA256": "467bba24bce9066abf00156b534c8df9df999dd2bf314844bf72882b9f33814b",
+      "privateReferenceSHA256": "eabbe3255c99b815615ac06736c52e2f8547403ddb095f0f84be481fab64c9f1",
+      "privateReferenceBytes": 836832,
+      "samePrivateBytesAsInitial": true
+    },
+    "low-composed-reference-receipt.json": {
+      "publicReceiptSHA256": "5a4499396cd8fbedfd2b7a45bcd70d5c79557854f7240471b2190dd232bc1582",
+      "privateReferenceSHA256": "2a30505c909fcca78fe1475a97c0cad01f0d2520b052abcefe628123681dd159",
+      "privateReferenceBytes": 844845,
+      "samePrivateBytesAsInitial": true
+    },
+    "low-local-reference-receipt.json": {
+      "publicReceiptSHA256": "5fe1601c3ef0f4391cb55ccb6bd6340fbc543b8fd77ca83410c15cb91a319774",
+      "privateReferenceSHA256": "ac7596ea3bb2a071d3f3827ce06d14d9df426351fad01ebfd76e3e03df43234e",
+      "privateReferenceBytes": 845041,
+      "samePrivateBytesAsInitial": true
+    }
+  },
+  "tests": {
+    "path": "development/ai-connection/self-attention-tail/core/reference-boundaries-final.log",
+    "sha256": "614682f54205b311c63df0e02528446adbf1a8bb3f4a7ca4b37a254446133031",
+    "tests": 11,
+    "passed": true,
+    "modelFilesOpened": false
+  },
+  "privatePayloadPublished": false,
+  "readiness": {
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY"
+  }
+}

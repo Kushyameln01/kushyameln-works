@@ -1,0 +1,389 @@
+{
+  "schemaVersion": "bernini-standalone-reference-contract/0.1",
+  "status": "PRE_EXECUTION_GATE_FIXED",
+  "profileId": "bernini-independent-full40-controlled-n5-l3-f64-reference-v1",
+  "gateMayNotBeRelaxedAfterComparison": true,
+  "gate": {
+    "abs": 0.01,
+    "rel": 0.001
+  },
+  "fixtureClass": "controlled-n5-l3-not-original-media-or-81-frame-workflow",
+  "fixtureSHA256": "a30177ba13a922f29b8d9664ff1b24bc68d6a1e308c95e3a6faf23f402751d3c",
+  "fixtureBytes": 162181,
+  "fixtureIdentities": {
+    "target.latent": {
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "elements": 128,
+      "bytes": 512,
+      "sha256": "43ec8072d7ab0b19fbd6cb391153d7a9d6fdf2b2f5e9910aaabd8ee07362b7a8"
+    },
+    "source.latent": {
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        4
+      ],
+      "elements": 128,
+      "bytes": 512,
+      "sha256": "32007fbe7ca0b3eff16b1eff68f48a742cfadaad06685005d21ca9e569e62dfc"
+    },
+    "reference.latent": {
+      "shape": [
+        1,
+        16,
+        1,
+        2,
+        2
+      ],
+      "elements": 64,
+      "bytes": 256,
+      "sha256": "103b065f6c18417d8aa7529507376adf4dff549bcbde62238e487147bc5314f7"
+    },
+    "text": {
+      "shape": [
+        3,
+        4096
+      ],
+      "elements": 12288,
+      "bytes": 49152,
+      "sha256": "77c0fc1e6f066d9ccaf16e049dde8919348094281fb8669f1d2c257bf89c65ab"
+    },
+    "patchRows": {
+      "shape": [
+        5,
+        64
+      ],
+      "elements": 320,
+      "bytes": 1280,
+      "sha256": "e051fb1e54c18a6ad0a85da0c600e02bdd9147df831d401484c6f80732b9241e"
+    }
+  },
+  "tokenPositions": [
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0
+    ]
+  ],
+  "sourceIds": [
+    0,
+    0,
+    1,
+    1,
+    2
+  ],
+  "coreSourceSHA256": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699",
+  "blockRange": [
+    0,
+    40
+  ],
+  "allHeads": 40,
+  "headDim": 128,
+  "hiddenWidth": 5120,
+  "ffnWidth": 13824,
+  "allTextRows": 3,
+  "targetHeadTokens": 2,
+  "headAllTokens": 5,
+  "models": {
+    "HIGH": {
+      "fileName": "Wan22_Bernini_HIGH_fp8_e4m3fn_scaled.safetensors",
+      "previouslyVerifiedModelSHA256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+      "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+      "bytes": 15574833216
+    },
+    "LOW": {
+      "fileName": "Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+      "previouslyVerifiedModelSHA256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+      "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+      "bytes": 15574833216
+    }
+  },
+  "precision": {
+    "decode": "original F16 or E4M3FN times own positive scalar -> F32",
+    "linear": "full-inner F64 dot -> F32 -> separate F32 bias",
+    "norm": "F64 mean/variance/sqrt -> F32 then staged F32 affine",
+    "attention": "all40 heads, global all supplied keys, F64 score/softmax/context -> F32",
+    "elementwise": "separate F32 add/multiply, no fused addcmul",
+    "activations": "mathematical F64 SiLU/GELU(tanh) -> F32"
+  },
+  "scope": {
+    "full40ControlledCaseOnly": true,
+    "originalWorkflowInputsVerified": false,
+    "originalProductionPrecisionVerified": false,
+    "required81FrameWorkflowVerified": false,
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY",
+    "generationReady": false
+  },
+  "traceShapes": {
+    "patchHidden": [
+      1,
+      5,
+      5120
+    ],
+    "textEmbedded": [
+      1,
+      3,
+      5120
+    ],
+    "timeRaw": [
+      1,
+      5120
+    ],
+    "timeAct1": [
+      1,
+      5120
+    ],
+    "timeProjection": [
+      1,
+      6,
+      5120
+    ],
+    "block00Output": [
+      1,
+      5,
+      5120
+    ],
+    "block01Output": [
+      1,
+      5,
+      5120
+    ],
+    "block02Output": [
+      1,
+      5,
+      5120
+    ],
+    "block03Output": [
+      1,
+      5,
+      5120
+    ],
+    "block04Output": [
+      1,
+      5,
+      5120
+    ],
+    "block05Output": [
+      1,
+      5,
+      5120
+    ],
+    "block06Output": [
+      1,
+      5,
+      5120
+    ],
+    "block07Output": [
+      1,
+      5,
+      5120
+    ],
+    "block08Output": [
+      1,
+      5,
+      5120
+    ],
+    "block09Output": [
+      1,
+      5,
+      5120
+    ],
+    "block10Output": [
+      1,
+      5,
+      5120
+    ],
+    "block11Output": [
+      1,
+      5,
+      5120
+    ],
+    "block12Output": [
+      1,
+      5,
+      5120
+    ],
+    "block13Output": [
+      1,
+      5,
+      5120
+    ],
+    "block14Output": [
+      1,
+      5,
+      5120
+    ],
+    "block15Output": [
+      1,
+      5,
+      5120
+    ],
+    "block16Output": [
+      1,
+      5,
+      5120
+    ],
+    "block17Output": [
+      1,
+      5,
+      5120
+    ],
+    "block18Output": [
+      1,
+      5,
+      5120
+    ],
+    "block19Output": [
+      1,
+      5,
+      5120
+    ],
+    "block20Output": [
+      1,
+      5,
+      5120
+    ],
+    "block21Output": [
+      1,
+      5,
+      5120
+    ],
+    "block22Output": [
+      1,
+      5,
+      5120
+    ],
+    "block23Output": [
+      1,
+      5,
+      5120
+    ],
+    "block24Output": [
+      1,
+      5,
+      5120
+    ],
+    "block25Output": [
+      1,
+      5,
+      5120
+    ],
+    "block26Output": [
+      1,
+      5,
+      5120
+    ],
+    "block27Output": [
+      1,
+      5,
+      5120
+    ],
+    "block28Output": [
+      1,
+      5,
+      5120
+    ],
+    "block29Output": [
+      1,
+      5,
+      5120
+    ],
+    "block30Output": [
+      1,
+      5,
+      5120
+    ],
+    "block31Output": [
+      1,
+      5,
+      5120
+    ],
+    "block32Output": [
+      1,
+      5,
+      5120
+    ],
+    "block33Output": [
+      1,
+      5,
+      5120
+    ],
+    "block34Output": [
+      1,
+      5,
+      5120
+    ],
+    "block35Output": [
+      1,
+      5,
+      5120
+    ],
+    "block36Output": [
+      1,
+      5,
+      5120
+    ],
+    "block37Output": [
+      1,
+      5,
+      5120
+    ],
+    "block38Output": [
+      1,
+      5,
+      5120
+    ],
+    "block39Output": [
+      1,
+      5,
+      5120
+    ],
+    "headAll": [
+      1,
+      5,
+      64
+    ],
+    "prediction": [
+      1,
+      16,
+      1,
+      2,
+      4
+    ]
+  },
+  "preExecutionRevision": {
+    "revision": 1,
+    "supersedesFixtureSHA256": "4741b413693a6b196f11a770a061e7e7ff52dbb59dcee629261497cd43a67a9e",
+    "reason": "Native conditioning admission requires mask0 rows to be zero. Use mask1 on all3 controlled nonzero rows. Gate, timestep and numerical data unchanged; neither NN had executed."
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "scope": "bounded native boundary tests with three actual projection tiles and explicit fail-once cleanup injection; no complete tail or fullmodel inference",
+  "cases": [
+    {
+      "name": "operator bytes and trusted metadata snapshotted before first await",
+      "passed": true
+    },
+    {
+      "name": "run BUSY before reentrant input getters",
+      "passed": true
+    },
+    {
+      "name": "compact finite exact run shape and no time override",
+      "passed": true,
+      "sharedArrayBufferAvailable": false
+    },
+    {
+      "name": "cancel during hash await and owner reuse without payload read",
+      "passed": true
+    },
+    {
+      "name": "all run inputs snapshotted before await; actual tile cancellation cleans tensors and allows reuse",
+      "passed": true
+    },
+    {
+      "name": "subclass virtual slice cannot retain caller alias after input hash snapshot",
+      "passed": true
+    },
+    {
+      "name": "failed actual Tensor disposal retains handle and recover disposes native owner",
+      "passed": true,
+      "failedCalls": 2,
+      "nativeTensorDisposals": 3
+    },
+    {
+      "name": "actual session synchronous-throw retains native handle until recover",
+      "passed": true,
+      "releaseCalls": 2,
+      "nativeReleases": 1
+    },
+    {
+      "name": "actual session rejected-promise retains native handle until recover",
+      "passed": true,
+      "releaseCalls": 2,
+      "nativeReleases": 1
+    }
+  ],
+  "driverSHA256": "318f196e6e02ccfd887ba58d72fd4c746f12c048f8203a7d3c57e6d02e5c4420",
+  "testModuleSHA256": "fe7f3a093f79c1fc9f3ec31ee47e21af44ced5ec3dc2482f4b6e81c0c8894659"
+}

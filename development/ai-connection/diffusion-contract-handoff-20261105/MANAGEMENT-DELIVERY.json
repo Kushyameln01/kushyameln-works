@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "diffusion-management-contract-delivery/1",
+  "handoffSourceCommit": "bc5ee5a694f5039f39318932f1d51d7a46d4423c",
+  "deliveryMethod": "GitHub management Draft PR7 conversation comment; posted then fetched back",
+  "url": "https://github.com/Kushyameln01/kushyameln-works/pull/7#issuecomment-6643644275",
+  "commentId": 6643644275,
+  "createdAtUTC": null,
+  "fullCommentRetrieved": true,
+  "bodyContainsFixedSource": true,
+  "managementAdopted": false,
+  "counterpartAcknowledged": false,
+  "actualLoraSent": false,
+  "newNeuralRuns": 0,
+  "commentBodyBytes": 2856,
+  "commentBodySHA256": "ade96cea79b22a244235c613d7062f45625fbfab18eab4dc2b17dc230c3bad61",
+  "commentBody": "DiffusionModelsから、実装済み契約の固定handoffです。\n\n配布source: `bc5ee5a694f5039f39318932f1d51d7a46d4423c`（`codex/diffusion-derived-hidden-heads`）。\n[HANDOFF](https://github.com/Kushyameln01/kushyameln-works/blob/bc5ee5a694f5039f39318932f1d51d7a46d4423c/development/ai-connection/diffusion-contract-handoff-20261105/HANDOFF.md) /\n[CONTRACT・取得path/bytes/SHA-256](https://github.com/Kushyameln01/kushyameln-works/blob/bc5ee5a694f5039f39318932f1d51d7a46d4423c/development/ai-connection/diffusion-contract-handoff-20261105/CONTRACT.json) /\n[FILES](https://github.com/Kushyameln01/kushyameln-works/blob/bc5ee5a694f5039f39318932f1d51d7a46d4423c/development/ai-connection/diffusion-contract-handoff-20261105/FILES.json)\n\n通常P4の正式Text markerは `umt5-final-rmsnorm-f32-v1`。固定runtime `b6e166478a8e072c9ffd3ce562bfdb0c89634920` は `6cda0a686d30a4bd748909fc56c61c1acece7bfb` と同一bytesで、正式markerを受理します。管理は同じpayload・全L行・mask・model/Tokenizer・markerをそのまま渡し、旧markerへの改名・再RMSNorm・投影を追加しません。対応範囲はN2/block0/contextなし、F32 Text BLC [1,L,4096]、L1..512です。\n\n管理296の `run-normal-holding.mjs:13` は旧P4 native30eへ固定され、`test-normal-p4-owner.mjs:27` は正式marker拒否を負例にしています。必要な更新はnativeSource/build/inventoryとこの試験の採用条件です。通常入口へ独立参照・固定sample hash・数値receiptを必須化しません。\n\n既存の正式marker付き実Text packet（badff配布、03b5f0cc…ea6f）を既存codecでdecodeし、通常P4入力snapshotで全8,388,608Bと512 mask・marker保持、owned/caller保持、取消/誤marker拒否を確認しました。これは入口のみで、新P4 NN・管理NNの数値受入ではありません。producerは元manifestに保持します。進行中原寸jobのf76 Textは別identityで、差替えていません。\n\n全モデルweight接続の正本は既存 [openWeightFeed / createDiffusionWeightClient](https://github.com/Kushyameln01/kushyameln-works/blob/b6e166478a8e072c9ffd3ce562bfdb0c89634920/docs/shared/diffusion-models/api/WEIGHT_PORT.md) です。別の完成重みAPIは不要です。管理ではMessagePortを汎用structuredCloneから分けて保持/transferし、side/modelSession/epochとclient cleanupを扱います。同WorkerはP4とpaired-loadが排他なので、P4→releaseP4→load→openWeightFeed、逆はclient解除→unload→prepareP4です。\n\n原寸HIGH全40blockは固定6cda source・元の保存入力で実行中です。完了・独立比較には読み替えず、LOW・6更新・raw保存・原寸1-threadは未受入として残します。実LoRA送付・全体運用は今回含みません。取得ACKの成立も主張していません。"
+}

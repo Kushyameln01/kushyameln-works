@@ -1,0 +1,1488 @@
+{
+  "checkOnly": true,
+  "passed": true,
+  "sourceCommit": "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
+  "failedPairBeforeRun": false,
+  "requestedResource": {
+    "wasmThreads": 4,
+    "coi": true,
+    "profile": "explicit-4-thread-coi"
+  },
+  "guardedSources": 158,
+  "nativeNNExecuted": false,
+  "inputs": {
+    "manifestSHA256": "7c1545413898de4c18cee2ed19dbec9f8abe61cfed7b48ee0954d33f0206c6b6",
+    "bytes": 82481,
+    "files": [
+      {
+        "url": "/__input__/attention-mask.u8",
+        "bytes": 512,
+        "sha256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62"
+      },
+      {
+        "url": "/__input__/conditioning.f32",
+        "bytes": 8388608,
+        "sha256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7"
+      },
+      {
+        "url": "/__input__/initial-target.f32",
+        "bytes": 8386560,
+        "sha256": "c203d000da7de7905cf319766a4e16db5376d3c161b05ae7a08280622edab48d"
+      },
+      {
+        "url": "/__input__/noise.f32",
+        "bytes": 8386560,
+        "sha256": "455ca1bc979554b349147ad2f316ba329acb003e9c5531241824183346ae7625"
+      },
+      {
+        "url": "/__input__/tensor-0.f32",
+        "bytes": 8386560,
+        "sha256": "455ca1bc979554b349147ad2f316ba329acb003e9c5531241824183346ae7625"
+      },
+      {
+        "url": "/__input__/tensor-1.f32",
+        "bytes": 8386560,
+        "sha256": "46e3784dfba900a5aadf2d13c667d718df5be9ad45f21cafc0ee814f75c19739"
+      },
+      {
+        "url": "/__input__/tensor-2.f32",
+        "bytes": 719104,
+        "sha256": "2a14b17be63734ddc21475f566d7875c3fee73a1a6782a80f0dae795a1232af5"
+      },
+      {
+        "url": "/__input__/tensor-3.f32",
+        "bytes": 719104,
+        "sha256": "e2451854b9c478655759b59d2c6f935c8ef39dd00e448e52e3a24294560e43d0"
+      },
+      {
+        "url": "/__input__/tensor-4.f32",
+        "bytes": 719104,
+        "sha256": "887b9ca919abc4bdfb19a8378f1392ba88ac4362821915f3f57dc9863a9566a3"
+      }
+    ],
+    "caseClass": "explicit-controlled-full-geometry-real-text512-not-original-workflow-replay",
+    "profileId": "bernini-declared-target81-source81-ref3-848-l512-f32-chunks-v1",
+    "shapeRequest": {
+      "ruleId": "bernini-ca69274-b5a4321-wan21-shapes-v1",
+      "target": {
+        "batch": 1,
+        "frames": 81,
+        "height": 480,
+        "width": 832
+      },
+      "refMaxSize": 848,
+      "geometry": {
+        "rgbChannels": 3,
+        "latentChannels": 16,
+        "temporalCompression": 4,
+        "spatialCompression": [
+          8,
+          8
+        ],
+        "temporalRule": "first-then-groups-floor",
+        "patchSize": [
+          1,
+          2,
+          2
+        ],
+        "hiddenSize": 5120,
+        "dtype": "float32",
+        "concatOrder": "target-first",
+        "paddingMode": "none"
+      },
+      "semantics": {
+        "target-latent": {
+          "meaning": "bernini-generated-model-latent:v1",
+          "normalization": "wan21-comfy-f32-v1"
+        },
+        "source-latent": {
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1"
+        },
+        "reference-latent": {
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1"
+        },
+        "context-latent": {
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1"
+        }
+      },
+      "media": {
+        "sourceVideo": {
+          "state": "present",
+          "rgb": {
+            "frames": 81,
+            "height": 480,
+            "width": 832
+          },
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media"
+          }
+        },
+        "referenceVideo": {
+          "state": "absent"
+        },
+        "slots": [
+          {
+            "slotIndex": 0,
+            "wired": {
+              "state": "present",
+              "rgb": {
+                "frames": 1,
+                "height": 848,
+                "width": 848
+              },
+              "provenance": {
+                "kind": "explicit-controlled-geometry-not-original-media"
+              }
+            },
+            "editor": {
+              "state": "absent"
+            }
+          },
+          {
+            "slotIndex": 1,
+            "wired": {
+              "state": "present",
+              "rgb": {
+                "frames": 1,
+                "height": 848,
+                "width": 848
+              },
+              "provenance": {
+                "kind": "explicit-controlled-geometry-not-original-media"
+              }
+            },
+            "editor": {
+              "state": "absent"
+            }
+          },
+          {
+            "slotIndex": 2,
+            "wired": {
+              "state": "present",
+              "rgb": {
+                "frames": 1,
+                "height": 848,
+                "width": 848
+              },
+              "provenance": {
+                "kind": "explicit-controlled-geometry-not-original-media"
+              }
+            },
+            "editor": {
+              "state": "absent"
+            }
+          }
+        ]
+      }
+    },
+    "canonicalShape": {
+      "schemaVersion": 1,
+      "ruleId": "bernini-ca69274-b5a4321-wan21-shapes-v1",
+      "ownerSupport": "NOT_QUERIED",
+      "geometry": {
+        "rgbChannels": 3,
+        "latentChannels": 16,
+        "temporalCompression": 4,
+        "spatialCompression": [
+          8,
+          8
+        ],
+        "temporalRule": "first-then-groups-floor",
+        "patchSize": [
+          1,
+          2,
+          2
+        ],
+        "hiddenSize": 5120,
+        "dtype": "float32",
+        "concatOrder": "target-first",
+        "paddingMode": "none"
+      },
+      "requirements": [
+        {
+          "requirementId": "target.rgb",
+          "role": "target-rgb",
+          "state": "known",
+          "shape": [
+            1,
+            3,
+            81,
+            480,
+            832
+          ],
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": []
+        },
+        {
+          "requirementId": "target.latent",
+          "role": "target-latent",
+          "state": "known",
+          "shape": [
+            1,
+            16,
+            21,
+            60,
+            104
+          ],
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": "bernini-generated-model-latent:v1",
+          "normalization": "wan21-comfy-f32-v1",
+          "provenance": {},
+          "issues": [],
+          "qualification": {
+            "inputRgbFrames": 81,
+            "coveredRgbFrames": 81,
+            "fullFrameRetention": true,
+            "spatialRoundtripExact": true
+          }
+        },
+        {
+          "requirementId": "target.tokens",
+          "role": "target-tokens",
+          "state": "known",
+          "shape": [
+            1,
+            32760,
+            5120
+          ],
+          "dtype": "float32",
+          "axes": [
+            "B",
+            "L",
+            "C"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "tokenGrid": [
+            21,
+            30,
+            52
+          ],
+          "tokenCount": 32760,
+          "padding": {
+            "tail": [
+              0,
+              0,
+              0
+            ],
+            "mode": "none"
+          }
+        },
+        {
+          "requirementId": "source.rgb",
+          "role": "source-rgb",
+          "state": "known",
+          "shape": [
+            1,
+            3,
+            81,
+            480,
+            832
+          ],
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media"
+          },
+          "issues": [],
+          "preprocessing": {
+            "interpolation": "area",
+            "crop": "center",
+            "canvas": {
+              "height": 480,
+              "width": 832
+            }
+          }
+        },
+        {
+          "requirementId": "source.latent",
+          "role": "source-latent",
+          "state": "known",
+          "shape": [
+            1,
+            16,
+            21,
+            60,
+            104
+          ],
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1",
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media"
+          },
+          "issues": [],
+          "preprocessing": {
+            "interpolation": "area",
+            "crop": "center",
+            "canvas": {
+              "height": 480,
+              "width": 832
+            }
+          },
+          "qualification": {
+            "inputRgbFrames": 81,
+            "coveredRgbFrames": 81,
+            "fullFrameRetention": true,
+            "spatialRoundtripExact": true
+          }
+        },
+        {
+          "requirementId": "source.tokens",
+          "role": "source-tokens",
+          "state": "known",
+          "shape": [
+            1,
+            32760,
+            5120
+          ],
+          "dtype": "float32",
+          "axes": [
+            "B",
+            "L",
+            "C"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media"
+          },
+          "issues": [],
+          "tokenGrid": [
+            21,
+            30,
+            52
+          ],
+          "tokenCount": 32760,
+          "padding": {
+            "tail": [
+              0,
+              0,
+              0
+            ],
+            "mode": "none"
+          }
+        },
+        {
+          "requirementId": "reference.rgb",
+          "role": "reference-rgb",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "preprocessing": {
+            "interpolation": "area",
+            "crop": "disabled",
+            "longEdge": 848,
+            "rounding": "python-ties-to-even",
+            "stride": 16
+          }
+        },
+        {
+          "requirementId": "reference.latent",
+          "role": "reference-latent",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1",
+          "provenance": {},
+          "issues": [],
+          "preprocessing": {
+            "interpolation": "area",
+            "crop": "disabled",
+            "longEdge": 848,
+            "rounding": "python-ties-to-even",
+            "stride": 16
+          },
+          "qualification": null
+        },
+        {
+          "requirementId": "reference.tokens",
+          "role": "reference-tokens",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "B",
+            "L",
+            "C"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "tokenGrid": null,
+          "tokenCount": null,
+          "padding": null
+        },
+        {
+          "requirementId": "context:0:0.rgb",
+          "role": "context-rgb",
+          "state": "known",
+          "shape": [
+            1,
+            3,
+            1,
+            848,
+            848
+          ],
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media",
+            "originalSlotIndex": 0,
+            "originalFrameIndex": 0
+          },
+          "issues": [],
+          "selectedOrigin": "wired",
+          "originalSlotIndex": 0,
+          "originalFrameIndex": 0,
+          "compactedSlotOrdinal": 0,
+          "preprocessing": {
+            "interpolation": "area",
+            "crop": "disabled",
+            "longEdge": 848,
+            "rounding": "python-ties-to-even",
+            "stride": 16
+          }
+        },
+        {
+          "requirementId": "context:0:0.latent",
+          "role": "context-latent",
+          "state": "known",
+          "shape": [
+            1,
+            16,
+            1,
+            106,
+            106
+          ],
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1",
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media",
+            "originalSlotIndex": 0,
+            "originalFrameIndex": 0
+          },
+          "issues": [],
+          "selectedOrigin": "wired",
+          "originalSlotIndex": 0,
+          "originalFrameIndex": 0,
+          "compactedSlotOrdinal": 0,
+          "preprocessing": {
+            "interpolation": "area",
+            "crop": "disabled",
+            "longEdge": 848,
+            "rounding": "python-ties-to-even",
+            "stride": 16
+          },
+          "qualification": {
+            "inputRgbFrames": 1,
+            "coveredRgbFrames": 1,
+            "fullFrameRetention": true,
+            "spatialRoundtripExact": true
+          }
+        },
+        {
+          "requirementId": "context:0:0.tokens",
+          "role": "context-tokens",
+          "state": "known",
+          "shape": [
+            1,
+            2809,
+            5120
+          ],
+          "dtype": "float32",
+          "axes": [
+            "B",
+            "L",
+            "C"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media",
+            "originalSlotIndex": 0,
+            "originalFrameIndex": 0
+          },
+          "issues": [],
+          "tokenGrid": [
+            1,
+            53,
+            53
+          ],
+          "tokenCount": 2809,
+          "padding": {
+            "tail": [
+              0,
+              0,
+              0
+            ],
+            "mode": "none"
+          }
+        },
+        {
+          "requirementId": "context:1:0.rgb",
+          "role": "context-rgb",
+          "state": "known",
+          "shape": [
+            1,
+            3,
+            1,
+            848,
+            848
+          ],
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media",
+            "originalSlotIndex": 1,
+            "originalFrameIndex": 0
+          },
+          "issues": [],
+          "selectedOrigin": "wired",
+          "originalSlotIndex": 1,
+          "originalFrameIndex": 0,
+          "compactedSlotOrdinal": 1,
+          "preprocessing": {
+            "interpolation": "area",
+            "crop": "disabled",
+            "longEdge": 848,
+            "rounding": "python-ties-to-even",
+            "stride": 16
+          }
+        },
+        {
+          "requirementId": "context:1:0.latent",
+          "role": "context-latent",
+          "state": "known",
+          "shape": [
+            1,
+            16,
+            1,
+            106,
+            106
+          ],
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1",
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media",
+            "originalSlotIndex": 1,
+            "originalFrameIndex": 0
+          },
+          "issues": [],
+          "selectedOrigin": "wired",
+          "originalSlotIndex": 1,
+          "originalFrameIndex": 0,
+          "compactedSlotOrdinal": 1,
+          "preprocessing": {
+            "interpolation": "area",
+            "crop": "disabled",
+            "longEdge": 848,
+            "rounding": "python-ties-to-even",
+            "stride": 16
+          },
+          "qualification": {
+            "inputRgbFrames": 1,
+            "coveredRgbFrames": 1,
+            "fullFrameRetention": true,
+            "spatialRoundtripExact": true
+          }
+        },
+        {
+          "requirementId": "context:1:0.tokens",
+          "role": "context-tokens",
+          "state": "known",
+          "shape": [
+            1,
+            2809,
+            5120
+          ],
+          "dtype": "float32",
+          "axes": [
+            "B",
+            "L",
+            "C"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media",
+            "originalSlotIndex": 1,
+            "originalFrameIndex": 0
+          },
+          "issues": [],
+          "tokenGrid": [
+            1,
+            53,
+            53
+          ],
+          "tokenCount": 2809,
+          "padding": {
+            "tail": [
+              0,
+              0,
+              0
+            ],
+            "mode": "none"
+          }
+        },
+        {
+          "requirementId": "context:2:0.rgb",
+          "role": "context-rgb",
+          "state": "known",
+          "shape": [
+            1,
+            3,
+            1,
+            848,
+            848
+          ],
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media",
+            "originalSlotIndex": 2,
+            "originalFrameIndex": 0
+          },
+          "issues": [],
+          "selectedOrigin": "wired",
+          "originalSlotIndex": 2,
+          "originalFrameIndex": 0,
+          "compactedSlotOrdinal": 2,
+          "preprocessing": {
+            "interpolation": "area",
+            "crop": "disabled",
+            "longEdge": 848,
+            "rounding": "python-ties-to-even",
+            "stride": 16
+          }
+        },
+        {
+          "requirementId": "context:2:0.latent",
+          "role": "context-latent",
+          "state": "known",
+          "shape": [
+            1,
+            16,
+            1,
+            106,
+            106
+          ],
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1",
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media",
+            "originalSlotIndex": 2,
+            "originalFrameIndex": 0
+          },
+          "issues": [],
+          "selectedOrigin": "wired",
+          "originalSlotIndex": 2,
+          "originalFrameIndex": 0,
+          "compactedSlotOrdinal": 2,
+          "preprocessing": {
+            "interpolation": "area",
+            "crop": "disabled",
+            "longEdge": 848,
+            "rounding": "python-ties-to-even",
+            "stride": 16
+          },
+          "qualification": {
+            "inputRgbFrames": 1,
+            "coveredRgbFrames": 1,
+            "fullFrameRetention": true,
+            "spatialRoundtripExact": true
+          }
+        },
+        {
+          "requirementId": "context:2:0.tokens",
+          "role": "context-tokens",
+          "state": "known",
+          "shape": [
+            1,
+            2809,
+            5120
+          ],
+          "dtype": "float32",
+          "axes": [
+            "B",
+            "L",
+            "C"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {
+            "kind": "explicit-controlled-geometry-not-original-media",
+            "originalSlotIndex": 2,
+            "originalFrameIndex": 0
+          },
+          "issues": [],
+          "tokenGrid": [
+            1,
+            53,
+            53
+          ],
+          "tokenCount": 2809,
+          "padding": {
+            "tail": [
+              0,
+              0,
+              0
+            ],
+            "mode": "none"
+          }
+        },
+        {
+          "requirementId": "slot:3.rgb",
+          "role": "context-rgb",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "originalSlotIndex": 3
+        },
+        {
+          "requirementId": "slot:3.latent",
+          "role": "context-latent",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1",
+          "provenance": {},
+          "issues": [],
+          "originalSlotIndex": 3,
+          "qualification": null
+        },
+        {
+          "requirementId": "slot:3.tokens",
+          "role": "context-tokens",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "B",
+            "L",
+            "C"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "tokenGrid": null,
+          "tokenCount": null,
+          "padding": null
+        },
+        {
+          "requirementId": "slot:4.rgb",
+          "role": "context-rgb",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "originalSlotIndex": 4
+        },
+        {
+          "requirementId": "slot:4.latent",
+          "role": "context-latent",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1",
+          "provenance": {},
+          "issues": [],
+          "originalSlotIndex": 4,
+          "qualification": null
+        },
+        {
+          "requirementId": "slot:4.tokens",
+          "role": "context-tokens",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "B",
+            "L",
+            "C"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "tokenGrid": null,
+          "tokenCount": null,
+          "padding": null
+        },
+        {
+          "requirementId": "slot:5.rgb",
+          "role": "context-rgb",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "originalSlotIndex": 5
+        },
+        {
+          "requirementId": "slot:5.latent",
+          "role": "context-latent",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1",
+          "provenance": {},
+          "issues": [],
+          "originalSlotIndex": 5,
+          "qualification": null
+        },
+        {
+          "requirementId": "slot:5.tokens",
+          "role": "context-tokens",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "B",
+            "L",
+            "C"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "tokenGrid": null,
+          "tokenCount": null,
+          "padding": null
+        },
+        {
+          "requirementId": "slot:6.rgb",
+          "role": "context-rgb",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "originalSlotIndex": 6
+        },
+        {
+          "requirementId": "slot:6.latent",
+          "role": "context-latent",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1",
+          "provenance": {},
+          "issues": [],
+          "originalSlotIndex": 6,
+          "qualification": null
+        },
+        {
+          "requirementId": "slot:6.tokens",
+          "role": "context-tokens",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "B",
+            "L",
+            "C"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "tokenGrid": null,
+          "tokenCount": null,
+          "padding": null
+        },
+        {
+          "requirementId": "slot:7.rgb",
+          "role": "context-rgb",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "originalSlotIndex": 7
+        },
+        {
+          "requirementId": "slot:7.latent",
+          "role": "context-latent",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "N",
+            "C",
+            "T",
+            "H",
+            "W"
+          ],
+          "meaning": "wan21-normalized-posterior-mean:v1",
+          "normalization": "wan21-comfy-f32-v1",
+          "provenance": {},
+          "issues": [],
+          "originalSlotIndex": 7,
+          "qualification": null
+        },
+        {
+          "requirementId": "slot:7.tokens",
+          "role": "context-tokens",
+          "state": "absent",
+          "shape": null,
+          "dtype": "float32",
+          "axes": [
+            "B",
+            "L",
+            "C"
+          ],
+          "meaning": null,
+          "normalization": null,
+          "provenance": {},
+          "issues": [],
+          "tokenGrid": null,
+          "tokenCount": null,
+          "padding": null
+        }
+      ],
+      "issues": [],
+      "target": {
+        "requestedRgbShape": [
+          1,
+          3,
+          81,
+          480,
+          832
+        ],
+        "initialLatentShape": [
+          1,
+          16,
+          21,
+          60,
+          104
+        ],
+        "tokenGrid": [
+          21,
+          30,
+          52
+        ],
+        "tokenCount": 32760,
+        "padding": {
+          "tail": [
+            0,
+            0,
+            0
+          ],
+          "mode": "none"
+        }
+      },
+      "slotSelections": [
+        {
+          "originalSlotIndex": 0,
+          "state": "present",
+          "selectedOrigin": "wired",
+          "compactedSlotOrdinal": 0
+        },
+        {
+          "originalSlotIndex": 1,
+          "state": "present",
+          "selectedOrigin": "wired",
+          "compactedSlotOrdinal": 1
+        },
+        {
+          "originalSlotIndex": 2,
+          "state": "present",
+          "selectedOrigin": "wired",
+          "compactedSlotOrdinal": 2
+        },
+        {
+          "originalSlotIndex": 3,
+          "state": "absent",
+          "selectedOrigin": null,
+          "compactedSlotOrdinal": null
+        },
+        {
+          "originalSlotIndex": 4,
+          "state": "absent",
+          "selectedOrigin": null,
+          "compactedSlotOrdinal": null
+        },
+        {
+          "originalSlotIndex": 5,
+          "state": "absent",
+          "selectedOrigin": null,
+          "compactedSlotOrdinal": null
+        },
+        {
+          "originalSlotIndex": 6,
+          "state": "absent",
+          "selectedOrigin": null,
+          "compactedSlotOrdinal": null
+        },
+        {
+          "originalSlotIndex": 7,
+          "state": "absent",
+          "selectedOrigin": null,
+          "compactedSlotOrdinal": null
+        }
+      ],
+      "orderedContexts": {
+        "complete": true,
+        "entries": [
+          {
+            "contextKey": "source",
+            "role": "source",
+            "sourceId": 1,
+            "rgbShape": [
+              1,
+              3,
+              81,
+              480,
+              832
+            ],
+            "latentShape": [
+              1,
+              16,
+              21,
+              60,
+              104
+            ],
+            "tokenGrid": [
+              21,
+              30,
+              52
+            ],
+            "tokenCount": 32760,
+            "concatTokenRange": [
+              32760,
+              65520
+            ],
+            "provenance": {
+              "kind": "explicit-controlled-geometry-not-original-media"
+            }
+          },
+          {
+            "contextKey": "context:0:0",
+            "role": "reference-image",
+            "selectedOrigin": "wired",
+            "originalSlotIndex": 0,
+            "originalFrameIndex": 0,
+            "compactedSlotOrdinal": 0,
+            "preprocessing": {
+              "interpolation": "area",
+              "crop": "disabled",
+              "longEdge": 848,
+              "rounding": "python-ties-to-even",
+              "stride": 16
+            },
+            "sourceId": 2,
+            "rgbShape": [
+              1,
+              3,
+              1,
+              848,
+              848
+            ],
+            "latentShape": [
+              1,
+              16,
+              1,
+              106,
+              106
+            ],
+            "tokenGrid": [
+              1,
+              53,
+              53
+            ],
+            "tokenCount": 2809,
+            "concatTokenRange": [
+              65520,
+              68329
+            ],
+            "provenance": {
+              "kind": "explicit-controlled-geometry-not-original-media",
+              "originalSlotIndex": 0,
+              "originalFrameIndex": 0
+            }
+          },
+          {
+            "contextKey": "context:1:0",
+            "role": "reference-image",
+            "selectedOrigin": "wired",
+            "originalSlotIndex": 1,
+            "originalFrameIndex": 0,
+            "compactedSlotOrdinal": 1,
+            "preprocessing": {
+              "interpolation": "area",
+              "crop": "disabled",
+              "longEdge": 848,
+              "rounding": "python-ties-to-even",
+              "stride": 16
+            },
+            "sourceId": 3,
+            "rgbShape": [
+              1,
+              3,
+              1,
+              848,
+              848
+            ],
+            "latentShape": [
+              1,
+              16,
+              1,
+              106,
+              106
+            ],
+            "tokenGrid": [
+              1,
+              53,
+              53
+            ],
+            "tokenCount": 2809,
+            "concatTokenRange": [
+              68329,
+              71138
+            ],
+            "provenance": {
+              "kind": "explicit-controlled-geometry-not-original-media",
+              "originalSlotIndex": 1,
+              "originalFrameIndex": 0
+            }
+          },
+          {
+            "contextKey": "context:2:0",
+            "role": "reference-image",
+            "selectedOrigin": "wired",
+            "originalSlotIndex": 2,
+            "originalFrameIndex": 0,
+            "compactedSlotOrdinal": 2,
+            "preprocessing": {
+              "interpolation": "area",
+              "crop": "disabled",
+              "longEdge": 848,
+              "rounding": "python-ties-to-even",
+              "stride": 16
+            },
+            "sourceId": 4,
+            "rgbShape": [
+              1,
+              3,
+              1,
+              848,
+              848
+            ],
+            "latentShape": [
+              1,
+              16,
+              1,
+              106,
+              106
+            ],
+            "tokenGrid": [
+              1,
+              53,
+              53
+            ],
+            "tokenCount": 2809,
+            "concatTokenRange": [
+              71138,
+              73947
+            ],
+            "provenance": {
+              "kind": "explicit-controlled-geometry-not-original-media",
+              "originalSlotIndex": 2,
+              "originalFrameIndex": 0
+            }
+          }
+        ],
+        "positiveAndNegativeReferenceSameList": true
+      },
+      "concatenation": {
+        "axis": "token",
+        "order": [
+          "target",
+          "source",
+          "context:0:0",
+          "context:1:0",
+          "context:2:0"
+        ],
+        "targetSourceId": 0,
+        "hiddenWidth": 5120,
+        "targetTokens": 32760,
+        "contextTokens": 41187,
+        "totalTokens": 73947,
+        "shapePerBatch": [
+          1,
+          73947,
+          5120
+        ]
+      }
+    },
+    "conditioning": {
+      "shape": [
+        1,
+        512,
+        4096
+      ],
+      "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+      "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+      "producer": {
+        "module": "text_encoder",
+        "sourceCommit": "5537b8932343aa2476b95191817e8913f99dab02"
+      },
+      "normalization": "umt5-final-rmsnorm-f32-v1",
+      "payloadSHA256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+      "maskSHA256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62"
+    }
+  },
+  "modelStats": {
+    "HIGH": {
+      "st_dev": 27,
+      "st_ino": 786578,
+      "st_size": 15574833216,
+      "st_mtime_ns": 1793375135928463448,
+      "st_ctime_ns": 1793375135932463550
+    },
+    "LOW": {
+      "st_dev": 27,
+      "st_ino": 786563,
+      "st_size": 15574833216,
+      "st_mtime_ns": 1793375145368689874,
+      "st_ctime_ns": 1793375145376690078
+    }
+  },
+  "preflightArchive": {
+    "schemaVersion": "diffusion-original-public-high-preflight/1",
+    "recordedAtUTC": "2026-11-04T18:48:21.203532+00:00",
+    "cwd": "/tmp/diffusion-public-execution-20261104",
+    "command": [
+      "python",
+      "tools/diffusion-models/public-model-browser.py",
+      "--check-only",
+      "--source-commit",
+      "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
+      "--manifest",
+      "/tmp/d1-d4-production-73947-inputs/inputs.json",
+      "--models",
+      "/workspace/work/retained/bernini",
+      "--mode",
+      "predict",
+      "--side",
+      "HIGH",
+      "--wasm-threads",
+      "4",
+      "--coi",
+      "true",
+      "--private-output",
+      "/tmp/diffusion-original-high-public-20261104/private",
+      "--output",
+      "/tmp/diffusion-original-high-public-20261104.json",
+      "--timeout-seconds",
+      "345600"
+    ],
+    "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "exitCode": 0,
+    "stdout": "{\"checkOnly\": true, \"passed\": true, \"sourceCommit\": \"6cda0a686d30a4bd748909fc56c61c1acece7bfb\", \"failedPairBeforeRun\": false, \"requestedResource\": {\"wasmThreads\": 4, \"coi\": true, \"profile\": \"explicit-4-thread-coi\"}, \"guardedSources\": 158, \"nativeNNExecuted\": false, \"inputs\": {\"manifestSHA256\": \"7c1545413898de4c18cee2ed19dbec9f8abe61cfed7b48ee0954d33f0206c6b6\", \"bytes\": 82481, \"files\": [{\"url\": \"/__input__/attention-mask.u8\", \"bytes\": 512, \"sha256\": \"19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62\"}, {\"url\": \"/__input__/conditioning.f32\", \"bytes\": 8388608, \"sha256\": \"107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7\"}, {\"url\": \"/__input__/initial-target.f32\", \"bytes\": 8386560, \"sha256\": \"c203d000da7de7905cf319766a4e16db5376d3c161b05ae7a08280622edab48d\"}, {\"url\": \"/__input__/noise.f32\", \"bytes\": 8386560, \"sha256\": \"455ca1bc979554b349147ad2f316ba329acb003e9c5531241824183346ae7625\"}, {\"url\": \"/__input__/tensor-0.f32\", \"bytes\": 8386560, \"sha256\": \"455ca1bc979554b349147ad2f316ba329acb003e9c5531241824183346ae7625\"}, {\"url\": \"/__input__/tensor-1.f32\", \"bytes\": 8386560, \"sha256\": \"46e3784dfba900a5aadf2d13c667d718df5be9ad45f21cafc0ee814f75c19739\"}, {\"url\": \"/__input__/tensor-2.f32\", \"bytes\": 719104, \"sha256\": \"2a14b17be63734ddc21475f566d7875c3fee73a1a6782a80f0dae795a1232af5\"}, {\"url\": \"/__input__/tensor-3.f32\", \"bytes\": 719104, \"sha256\": \"e2451854b9c478655759b59d2c6f935c8ef39dd00e448e52e3a24294560e43d0\"}, {\"url\": \"/__input__/tensor-4.f32\", \"bytes\": 719104, \"sha256\": \"887b9ca919abc4bdfb19a8378f1392ba88ac4362821915f3f57dc9863a9566a3\"}], \"caseClass\": \"explicit-controlled-full-geometry-real-text512-not-original-workflow-replay\", \"profileId\": \"bernini-declared-target81-source81-ref3-848-l512-f32-chunks-v1\", \"shapeRequest\": {\"ruleId\": \"bernini-ca69274-b5a4321-wan21-shapes-v1\", \"target\": {\"batch\": 1, \"frames\": 81, \"height\": 480, \"width\": 832}, \"refMaxSize\": 848, \"geometry\": {\"rgbChannels\": 3, \"latentChannels\": 16, \"temporalCompression\": 4, \"spatialCompression\": [8, 8], \"temporalRule\": \"first-then-groups-floor\", \"patchSize\": [1, 2, 2], \"hiddenSize\": 5120, \"dtype\": \"float32\", \"concatOrder\": \"target-first\", \"paddingMode\": \"none\"}, \"semantics\": {\"target-latent\": {\"meaning\": \"bernini-generated-model-latent:v1\", \"normalization\": \"wan21-comfy-f32-v1\"}, \"source-latent\": {\"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\"}, \"reference-latent\": {\"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\"}, \"context-latent\": {\"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\"}}, \"media\": {\"sourceVideo\": {\"state\": \"present\", \"rgb\": {\"frames\": 81, \"height\": 480, \"width\": 832}, \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\"}}, \"referenceVideo\": {\"state\": \"absent\"}, \"slots\": [{\"slotIndex\": 0, \"wired\": {\"state\": \"present\", \"rgb\": {\"frames\": 1, \"height\": 848, \"width\": 848}, \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\"}}, \"editor\": {\"state\": \"absent\"}}, {\"slotIndex\": 1, \"wired\": {\"state\": \"present\", \"rgb\": {\"frames\": 1, \"height\": 848, \"width\": 848}, \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\"}}, \"editor\": {\"state\": \"absent\"}}, {\"slotIndex\": 2, \"wired\": {\"state\": \"present\", \"rgb\": {\"frames\": 1, \"height\": 848, \"width\": 848}, \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\"}}, \"editor\": {\"state\": \"absent\"}}]}}, \"canonicalShape\": {\"schemaVersion\": 1, \"ruleId\": \"bernini-ca69274-b5a4321-wan21-shapes-v1\", \"ownerSupport\": \"NOT_QUERIED\", \"geometry\": {\"rgbChannels\": 3, \"latentChannels\": 16, \"temporalCompression\": 4, \"spatialCompression\": [8, 8], \"temporalRule\": \"first-then-groups-floor\", \"patchSize\": [1, 2, 2], \"hiddenSize\": 5120, \"dtype\": \"float32\", \"concatOrder\": \"target-first\", \"paddingMode\": \"none\"}, \"requirements\": [{\"requirementId\": \"target.rgb\", \"role\": \"target-rgb\", \"state\": \"known\", \"shape\": [1, 3, 81, 480, 832], \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": []}, {\"requirementId\": \"target.latent\", \"role\": \"target-latent\", \"state\": \"known\", \"shape\": [1, 16, 21, 60, 104], \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": \"bernini-generated-model-latent:v1\", \"normalization\": \"wan21-comfy-f32-v1\", \"provenance\": {}, \"issues\": [], \"qualification\": {\"inputRgbFrames\": 81, \"coveredRgbFrames\": 81, \"fullFrameRetention\": true, \"spatialRoundtripExact\": true}}, {\"requirementId\": \"target.tokens\", \"role\": \"target-tokens\", \"state\": \"known\", \"shape\": [1, 32760, 5120], \"dtype\": \"float32\", \"axes\": [\"B\", \"L\", \"C\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"tokenGrid\": [21, 30, 52], \"tokenCount\": 32760, \"padding\": {\"tail\": [0, 0, 0], \"mode\": \"none\"}}, {\"requirementId\": \"source.rgb\", \"role\": \"source-rgb\", \"state\": \"known\", \"shape\": [1, 3, 81, 480, 832], \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": null, \"normalization\": null, \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\"}, \"issues\": [], \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"center\", \"canvas\": {\"height\": 480, \"width\": 832}}}, {\"requirementId\": \"source.latent\", \"role\": \"source-latent\", \"state\": \"known\", \"shape\": [1, 16, 21, 60, 104], \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\", \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\"}, \"issues\": [], \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"center\", \"canvas\": {\"height\": 480, \"width\": 832}}, \"qualification\": {\"inputRgbFrames\": 81, \"coveredRgbFrames\": 81, \"fullFrameRetention\": true, \"spatialRoundtripExact\": true}}, {\"requirementId\": \"source.tokens\", \"role\": \"source-tokens\", \"state\": \"known\", \"shape\": [1, 32760, 5120], \"dtype\": \"float32\", \"axes\": [\"B\", \"L\", \"C\"], \"meaning\": null, \"normalization\": null, \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\"}, \"issues\": [], \"tokenGrid\": [21, 30, 52], \"tokenCount\": 32760, \"padding\": {\"tail\": [0, 0, 0], \"mode\": \"none\"}}, {\"requirementId\": \"reference.rgb\", \"role\": \"reference-rgb\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"disabled\", \"longEdge\": 848, \"rounding\": \"python-ties-to-even\", \"stride\": 16}}, {\"requirementId\": \"reference.latent\", \"role\": \"reference-latent\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\", \"provenance\": {}, \"issues\": [], \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"disabled\", \"longEdge\": 848, \"rounding\": \"python-ties-to-even\", \"stride\": 16}, \"qualification\": null}, {\"requirementId\": \"reference.tokens\", \"role\": \"reference-tokens\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"B\", \"L\", \"C\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"tokenGrid\": null, \"tokenCount\": null, \"padding\": null}, {\"requirementId\": \"context:0:0.rgb\", \"role\": \"context-rgb\", \"state\": \"known\", \"shape\": [1, 3, 1, 848, 848], \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": null, \"normalization\": null, \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\", \"originalSlotIndex\": 0, \"originalFrameIndex\": 0}, \"issues\": [], \"selectedOrigin\": \"wired\", \"originalSlotIndex\": 0, \"originalFrameIndex\": 0, \"compactedSlotOrdinal\": 0, \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"disabled\", \"longEdge\": 848, \"rounding\": \"python-ties-to-even\", \"stride\": 16}}, {\"requirementId\": \"context:0:0.latent\", \"role\": \"context-latent\", \"state\": \"known\", \"shape\": [1, 16, 1, 106, 106], \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\", \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\", \"originalSlotIndex\": 0, \"originalFrameIndex\": 0}, \"issues\": [], \"selectedOrigin\": \"wired\", \"originalSlotIndex\": 0, \"originalFrameIndex\": 0, \"compactedSlotOrdinal\": 0, \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"disabled\", \"longEdge\": 848, \"rounding\": \"python-ties-to-even\", \"stride\": 16}, \"qualification\": {\"inputRgbFrames\": 1, \"coveredRgbFrames\": 1, \"fullFrameRetention\": true, \"spatialRoundtripExact\": true}}, {\"requirementId\": \"context:0:0.tokens\", \"role\": \"context-tokens\", \"state\": \"known\", \"shape\": [1, 2809, 5120], \"dtype\": \"float32\", \"axes\": [\"B\", \"L\", \"C\"], \"meaning\": null, \"normalization\": null, \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\", \"originalSlotIndex\": 0, \"originalFrameIndex\": 0}, \"issues\": [], \"tokenGrid\": [1, 53, 53], \"tokenCount\": 2809, \"padding\": {\"tail\": [0, 0, 0], \"mode\": \"none\"}}, {\"requirementId\": \"context:1:0.rgb\", \"role\": \"context-rgb\", \"state\": \"known\", \"shape\": [1, 3, 1, 848, 848], \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": null, \"normalization\": null, \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\", \"originalSlotIndex\": 1, \"originalFrameIndex\": 0}, \"issues\": [], \"selectedOrigin\": \"wired\", \"originalSlotIndex\": 1, \"originalFrameIndex\": 0, \"compactedSlotOrdinal\": 1, \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"disabled\", \"longEdge\": 848, \"rounding\": \"python-ties-to-even\", \"stride\": 16}}, {\"requirementId\": \"context:1:0.latent\", \"role\": \"context-latent\", \"state\": \"known\", \"shape\": [1, 16, 1, 106, 106], \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\", \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\", \"originalSlotIndex\": 1, \"originalFrameIndex\": 0}, \"issues\": [], \"selectedOrigin\": \"wired\", \"originalSlotIndex\": 1, \"originalFrameIndex\": 0, \"compactedSlotOrdinal\": 1, \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"disabled\", \"longEdge\": 848, \"rounding\": \"python-ties-to-even\", \"stride\": 16}, \"qualification\": {\"inputRgbFrames\": 1, \"coveredRgbFrames\": 1, \"fullFrameRetention\": true, \"spatialRoundtripExact\": true}}, {\"requirementId\": \"context:1:0.tokens\", \"role\": \"context-tokens\", \"state\": \"known\", \"shape\": [1, 2809, 5120], \"dtype\": \"float32\", \"axes\": [\"B\", \"L\", \"C\"], \"meaning\": null, \"normalization\": null, \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\", \"originalSlotIndex\": 1, \"originalFrameIndex\": 0}, \"issues\": [], \"tokenGrid\": [1, 53, 53], \"tokenCount\": 2809, \"padding\": {\"tail\": [0, 0, 0], \"mode\": \"none\"}}, {\"requirementId\": \"context:2:0.rgb\", \"role\": \"context-rgb\", \"state\": \"known\", \"shape\": [1, 3, 1, 848, 848], \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": null, \"normalization\": null, \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\", \"originalSlotIndex\": 2, \"originalFrameIndex\": 0}, \"issues\": [], \"selectedOrigin\": \"wired\", \"originalSlotIndex\": 2, \"originalFrameIndex\": 0, \"compactedSlotOrdinal\": 2, \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"disabled\", \"longEdge\": 848, \"rounding\": \"python-ties-to-even\", \"stride\": 16}}, {\"requirementId\": \"context:2:0.latent\", \"role\": \"context-latent\", \"state\": \"known\", \"shape\": [1, 16, 1, 106, 106], \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\", \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\", \"originalSlotIndex\": 2, \"originalFrameIndex\": 0}, \"issues\": [], \"selectedOrigin\": \"wired\", \"originalSlotIndex\": 2, \"originalFrameIndex\": 0, \"compactedSlotOrdinal\": 2, \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"disabled\", \"longEdge\": 848, \"rounding\": \"python-ties-to-even\", \"stride\": 16}, \"qualification\": {\"inputRgbFrames\": 1, \"coveredRgbFrames\": 1, \"fullFrameRetention\": true, \"spatialRoundtripExact\": true}}, {\"requirementId\": \"context:2:0.tokens\", \"role\": \"context-tokens\", \"state\": \"known\", \"shape\": [1, 2809, 5120], \"dtype\": \"float32\", \"axes\": [\"B\", \"L\", \"C\"], \"meaning\": null, \"normalization\": null, \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\", \"originalSlotIndex\": 2, \"originalFrameIndex\": 0}, \"issues\": [], \"tokenGrid\": [1, 53, 53], \"tokenCount\": 2809, \"padding\": {\"tail\": [0, 0, 0], \"mode\": \"none\"}}, {\"requirementId\": \"slot:3.rgb\", \"role\": \"context-rgb\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"originalSlotIndex\": 3}, {\"requirementId\": \"slot:3.latent\", \"role\": \"context-latent\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\", \"provenance\": {}, \"issues\": [], \"originalSlotIndex\": 3, \"qualification\": null}, {\"requirementId\": \"slot:3.tokens\", \"role\": \"context-tokens\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"B\", \"L\", \"C\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"tokenGrid\": null, \"tokenCount\": null, \"padding\": null}, {\"requirementId\": \"slot:4.rgb\", \"role\": \"context-rgb\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"originalSlotIndex\": 4}, {\"requirementId\": \"slot:4.latent\", \"role\": \"context-latent\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\", \"provenance\": {}, \"issues\": [], \"originalSlotIndex\": 4, \"qualification\": null}, {\"requirementId\": \"slot:4.tokens\", \"role\": \"context-tokens\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"B\", \"L\", \"C\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"tokenGrid\": null, \"tokenCount\": null, \"padding\": null}, {\"requirementId\": \"slot:5.rgb\", \"role\": \"context-rgb\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"originalSlotIndex\": 5}, {\"requirementId\": \"slot:5.latent\", \"role\": \"context-latent\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\", \"provenance\": {}, \"issues\": [], \"originalSlotIndex\": 5, \"qualification\": null}, {\"requirementId\": \"slot:5.tokens\", \"role\": \"context-tokens\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"B\", \"L\", \"C\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"tokenGrid\": null, \"tokenCount\": null, \"padding\": null}, {\"requirementId\": \"slot:6.rgb\", \"role\": \"context-rgb\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"originalSlotIndex\": 6}, {\"requirementId\": \"slot:6.latent\", \"role\": \"context-latent\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\", \"provenance\": {}, \"issues\": [], \"originalSlotIndex\": 6, \"qualification\": null}, {\"requirementId\": \"slot:6.tokens\", \"role\": \"context-tokens\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"B\", \"L\", \"C\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"tokenGrid\": null, \"tokenCount\": null, \"padding\": null}, {\"requirementId\": \"slot:7.rgb\", \"role\": \"context-rgb\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"originalSlotIndex\": 7}, {\"requirementId\": \"slot:7.latent\", \"role\": \"context-latent\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"N\", \"C\", \"T\", \"H\", \"W\"], \"meaning\": \"wan21-normalized-posterior-mean:v1\", \"normalization\": \"wan21-comfy-f32-v1\", \"provenance\": {}, \"issues\": [], \"originalSlotIndex\": 7, \"qualification\": null}, {\"requirementId\": \"slot:7.tokens\", \"role\": \"context-tokens\", \"state\": \"absent\", \"shape\": null, \"dtype\": \"float32\", \"axes\": [\"B\", \"L\", \"C\"], \"meaning\": null, \"normalization\": null, \"provenance\": {}, \"issues\": [], \"tokenGrid\": null, \"tokenCount\": null, \"padding\": null}], \"issues\": [], \"target\": {\"requestedRgbShape\": [1, 3, 81, 480, 832], \"initialLatentShape\": [1, 16, 21, 60, 104], \"tokenGrid\": [21, 30, 52], \"tokenCount\": 32760, \"padding\": {\"tail\": [0, 0, 0], \"mode\": \"none\"}}, \"slotSelections\": [{\"originalSlotIndex\": 0, \"state\": \"present\", \"selectedOrigin\": \"wired\", \"compactedSlotOrdinal\": 0}, {\"originalSlotIndex\": 1, \"state\": \"present\", \"selectedOrigin\": \"wired\", \"compactedSlotOrdinal\": 1}, {\"originalSlotIndex\": 2, \"state\": \"present\", \"selectedOrigin\": \"wired\", \"compactedSlotOrdinal\": 2}, {\"originalSlotIndex\": 3, \"state\": \"absent\", \"selectedOrigin\": null, \"compactedSlotOrdinal\": null}, {\"originalSlotIndex\": 4, \"state\": \"absent\", \"selectedOrigin\": null, \"compactedSlotOrdinal\": null}, {\"originalSlotIndex\": 5, \"state\": \"absent\", \"selectedOrigin\": null, \"compactedSlotOrdinal\": null}, {\"originalSlotIndex\": 6, \"state\": \"absent\", \"selectedOrigin\": null, \"compactedSlotOrdinal\": null}, {\"originalSlotIndex\": 7, \"state\": \"absent\", \"selectedOrigin\": null, \"compactedSlotOrdinal\": null}], \"orderedContexts\": {\"complete\": true, \"entries\": [{\"contextKey\": \"source\", \"role\": \"source\", \"sourceId\": 1, \"rgbShape\": [1, 3, 81, 480, 832], \"latentShape\": [1, 16, 21, 60, 104], \"tokenGrid\": [21, 30, 52], \"tokenCount\": 32760, \"concatTokenRange\": [32760, 65520], \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\"}}, {\"contextKey\": \"context:0:0\", \"role\": \"reference-image\", \"selectedOrigin\": \"wired\", \"originalSlotIndex\": 0, \"originalFrameIndex\": 0, \"compactedSlotOrdinal\": 0, \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"disabled\", \"longEdge\": 848, \"rounding\": \"python-ties-to-even\", \"stride\": 16}, \"sourceId\": 2, \"rgbShape\": [1, 3, 1, 848, 848], \"latentShape\": [1, 16, 1, 106, 106], \"tokenGrid\": [1, 53, 53], \"tokenCount\": 2809, \"concatTokenRange\": [65520, 68329], \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\", \"originalSlotIndex\": 0, \"originalFrameIndex\": 0}}, {\"contextKey\": \"context:1:0\", \"role\": \"reference-image\", \"selectedOrigin\": \"wired\", \"originalSlotIndex\": 1, \"originalFrameIndex\": 0, \"compactedSlotOrdinal\": 1, \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"disabled\", \"longEdge\": 848, \"rounding\": \"python-ties-to-even\", \"stride\": 16}, \"sourceId\": 3, \"rgbShape\": [1, 3, 1, 848, 848], \"latentShape\": [1, 16, 1, 106, 106], \"tokenGrid\": [1, 53, 53], \"tokenCount\": 2809, \"concatTokenRange\": [68329, 71138], \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\", \"originalSlotIndex\": 1, \"originalFrameIndex\": 0}}, {\"contextKey\": \"context:2:0\", \"role\": \"reference-image\", \"selectedOrigin\": \"wired\", \"originalSlotIndex\": 2, \"originalFrameIndex\": 0, \"compactedSlotOrdinal\": 2, \"preprocessing\": {\"interpolation\": \"area\", \"crop\": \"disabled\", \"longEdge\": 848, \"rounding\": \"python-ties-to-even\", \"stride\": 16}, \"sourceId\": 4, \"rgbShape\": [1, 3, 1, 848, 848], \"latentShape\": [1, 16, 1, 106, 106], \"tokenGrid\": [1, 53, 53], \"tokenCount\": 2809, \"concatTokenRange\": [71138, 73947], \"provenance\": {\"kind\": \"explicit-controlled-geometry-not-original-media\", \"originalSlotIndex\": 2, \"originalFrameIndex\": 0}}], \"positiveAndNegativeReferenceSameList\": true}, \"concatenation\": {\"axis\": \"token\", \"order\": [\"target\", \"source\", \"context:0:0\", \"context:1:0\", \"context:2:0\"], \"targetSourceId\": 0, \"hiddenWidth\": 5120, \"targetTokens\": 32760, \"contextTokens\": 41187, \"totalTokens\": 73947, \"shapePerBatch\": [1, 73947, 5120]}}, \"conditioning\": {\"shape\": [1, 512, 4096], \"modelSha256\": \"c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68\", \"tokenizerSha256\": \"e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458\", \"producer\": {\"module\": \"text_encoder\", \"sourceCommit\": \"5537b8932343aa2476b95191817e8913f99dab02\"}, \"normalization\": \"umt5-final-rmsnorm-f32-v1\", \"payloadSHA256\": \"107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7\", \"maskSHA256\": \"19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62\"}}, \"modelStats\": {\"HIGH\": {\"st_dev\": 27, \"st_ino\": 786578, \"st_size\": 15574833216, \"st_mtime_ns\": 1793375135928463448, \"st_ctime_ns\": 1793375135932463550}, \"LOW\": {\"st_dev\": 27, \"st_ino\": 786563, \"st_size\": 15574833216, \"st_mtime_ns\": 1793375145368689874, \"st_ctime_ns\": 1793375145376690078}}}\n",
+    "stdoutBytes": 20871,
+    "stdoutSHA256": "7d06b1525b701196c957293235ea56199fb1e9f4181182688dc15a2cdd366758",
+    "stderr": "",
+    "sourceBefore": "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
+    "sourceAfter": "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
+    "worktreeCleanAfter": true,
+    "scope": "Check-only source/input admission and retained model stat checks; saved inputs and committed source bytes read for validation. No model payload reads, browser/Worker/native runtime initialization, inference, numerical comparison or resource acceptance. Active original diagnostic was not queried, modified or stopped.",
+    "browserExecuted": false,
+    "nativeNNExecuted": false,
+    "modelPayloadBytesRead": 0,
+    "originalAllQueriesAccepted": false,
+    "originalFull40Accepted": false,
+    "originalSixUpdatesAccepted": false,
+    "runtimeAPICommit": "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
+    "outputPathsRemainAbsent": true
+  }
+}

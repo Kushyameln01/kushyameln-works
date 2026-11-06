@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "bernini-production-independent-contract/1",
+  "status": "PRE_EXECUTION_GATE_FIXED",
+  "gate": {
+    "abs": 0.01,
+    "rel": 0.001
+  },
+  "gateMayNotBeRelaxedAfterComparison": true,
+  "profileId": "bernini-small-n5-real-l512-f32-chunks-v1",
+  "manifestSHA256": "11d345729b9132dd600b3fa73b61fd5e686b3f5a0ed7b72ef12e3a83791307e9",
+  "totalTokens": 5,
+  "allQueries": true,
+  "allKeys": true,
+  "heads": 40,
+  "textRows": 512,
+  "sourceSHA256": {
+    "tools/diffusion-models/production-reference.py": "9d3faad4db7db710a6341bca24e541d898dd7b0dd4d68b8ed0bccd2df07d1ce8",
+    "tools/diffusion-models/standalone-reference.py": "6f81afa662f444d0f207a91a5b3778f77c88e4a99e05748221b1ddbfece35c2f",
+    "tools/diffusion-models/standalone-sampler-reference.py": "65c9970d79777875de85d9bd198ca7954a28127aec710f2bdc59448537279bae",
+    "development/ai-connection/profile-adoption/p4/core-source/comfy/ldm/wan/model.py": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699",
+    "docs/shared/ai-connection/workflow-shapes.mjs": "7a78955fd8156e0b3a5b287ad5f712ff04d62dbb6e501952bc52f9696e9dd821"
+  },
+  "models": {
+    "HIGH": {
+      "fileName": "Wan22_Bernini_HIGH_fp8_e4m3fn_scaled.safetensors",
+      "previouslyVerifiedSHA256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+      "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+      "bytes": 15574833216
+    },
+    "LOW": {
+      "fileName": "Bernini_LOW_fp8_e4m3fn_scaled.safetensors",
+      "previouslyVerifiedSHA256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+      "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+      "bytes": 15574833216
+    }
+  },
+  "precision": {
+    "weights": "retained E4M3FN times own scalar F32 or original F16, decoded exactly to F32",
+    "linear": "full-inner F64 matrix product, F32 output then separate F32 bias",
+    "normalization": "independent frozen F64 reductions then original staged F32 boundaries",
+    "attention": "F64 online max-rescaled softmax over every supplied key; F32 output; all40 heads",
+    "pointwise": "separate original-source F32 operations, no fused gate/add",
+    "originalMxfp8Equivalence": "UNCONFIRMED_NOT_COMPLETION_GATE"
+  },
+  "resources": {
+    "fullReferenceBackingFiles": 3,
+    "maxBackingBytes": 307200,
+    "maxCachedF32WeightBytes": 600000000,
+    "maxQueryRows": 128,
+    "attentionKeyRows": 256,
+    "fullQueryOrScoresSaved": false
+  },
+  "normalAPIRequiresReference": false,
+  "originalWorkflowReplay": false
+}

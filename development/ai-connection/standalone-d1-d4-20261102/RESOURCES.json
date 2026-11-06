@@ -1,0 +1,393 @@
+{
+  "schemaVersion": "bernini-standalone-d1-d4-resource-feasibility/0.1",
+  "baselineCommit": "48ff155988d995fc2569e495c8d8820273bd472c",
+  "scope": "Read-only source/receipt/resource audit plus exact arithmetic; only RESOURCES.json and RESOURCES.md created. No inference, graph construction, allocation stress test, model download, model payload load, full-model hashing, commit or push.",
+  "decision": {
+    "status": "DESIGN_CANDIDATE_SELECTED_NOT_RUNTIME_ACCEPTED",
+    "architecture": "segmented-host-hidden-double-buffer-and-KV; row-query; batched-online-attention; full-inner row-FFN; range-read weights",
+    "resourceConclusion": "Existing single-memory/full-model and dense-block forms are rejected using retained evidence. A bounded F32 WASM architecture has a plausible named capacity budget; its ABI, production numerical execution, measured peak and duration are not implemented/accepted by this audit.",
+    "notComplete": [
+      "D1 production all-head/context/block numerical acceptance",
+      "D2 all40 blocks and finalhead predict",
+      "D3 six Euler updates and internal HIGH-to-LOW",
+      "D4 production API/Worker/resource/time acceptance"
+    ],
+    "readiness": {
+      "load": "NOT_READY",
+      "predict": "NOT_READY",
+      "sample": "NOT_READY",
+      "generationReady": false
+    }
+  },
+  "measurement": {
+    "observedAtUTC": "2026-11-02T04:23:40.225114+00:00",
+    "cgroupMemoryLimitBytes": 17179869184,
+    "cgroupMemoryCurrentBytes": 4496244736,
+    "cpuMax": {
+      "quotaUsec": 400000,
+      "periodUsec": 100000,
+      "cpuEquivalent": 4.0,
+      "correction": "Current cpu.max is 4 CPU-equivalent, not the 5 stated in the task handoff."
+    },
+    "disk": {
+      "/workspace": {
+        "totalBytes": 33770192896,
+        "usedBytes": 31881666560,
+        "freeBytes": 153763840
+      },
+      "/tmp": {
+        "totalBytes": 9441329152,
+        "usedBytes": 2035478528,
+        "freeBytes": 7405850624
+      }
+    },
+    "memoryEvents": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "interpretation": "Instantaneous whole-environment observation, including other processes and page cache; not an isolated allocator or inference peak."
+  },
+  "requiredShape": {
+    "targetLatentBCTHW": [
+      1,
+      16,
+      21,
+      60,
+      104
+    ],
+    "targetF32Bytes": 8386560,
+    "targetTokens": 32760,
+    "source81Tokens": 32760,
+    "minimumNWithSource81": 65520,
+    "actualN": "32760 + 1560*(1+(F_source-1)//4) + sum(reference_patch_tokens)",
+    "source81N": "65520 + sum(reference_patch_tokens)",
+    "actualSourceFAndReferencesKnown": false,
+    "eachReferenceTokens": "(H_prime/16)*(W_prime/16), using resolved actual frame streams and pinned resize rule",
+    "sourceIdOrder": "target0, then actual ordered source_video/reference_video/reference-frame streams, no reserved gaps",
+    "all40BlocksQueryAndKeyCount": "N_total for every self-attention block, including context queries",
+    "headExecution": "Run head on all N_total; retain target32760 only after head, then unpatchify.",
+    "referenceMaxIllustration": {
+      "status": "conditional capacity illustration, not actual input assertion",
+      "perFrameMaxTokens": 2809,
+      "eightSingleFrameStreamsTokens": 22472,
+      "NWithSource81AndEightFrames": 87992,
+      "fourStoresBytes": 7208304640
+    }
+  },
+  "reusedRejections": [
+    {
+      "form": "one wasm32 memory containing model",
+      "rawPayloadBytesPerModel": 15574651928,
+      "f32NumericBytesPerModel": 57153967776,
+      "wasm32LimitBytes": 4294967296,
+      "result": "REJECTED; no reimplementation or new failed allocation"
+    },
+    {
+      "form": "dense scores all40 heads",
+      "N": 65520,
+      "f32Bytes": 686859264000,
+      "oneHeadF32Bytes": 17171481600,
+      "result": "REJECTED; retained arithmetic/source evidence reused"
+    },
+    {
+      "form": "current E7 selected boundary",
+      "keysCap": 32760,
+      "queryRows": 16,
+      "heads": 1,
+      "result": "Cannot represent source81 K65520+refs; fixture success is not production evidence."
+    },
+    {
+      "form": "current P4 public wrapper",
+      "rowsCap": 16,
+      "ordinaryInnerMax": 5120,
+      "ordinaryColumnsMax": 16,
+      "ffnDownInner": 13824,
+      "ffnDownColumnsMax": 4,
+      "executionProfile": "N2 block0/context[]",
+      "result": "Underlying symbolic Gemm graph can be reused, but wrapper/capacity/numerical contract does not admit production."
+    }
+  ],
+  "candidateSchedule": [
+    "Lease retained HIGH/LOW File/range source; retain no full model ArrayBuffer or OPFS duplicate. Decode one needed weight matrix or bounded row slab with full inner dimension. Bind side/block/epoch and exact dtype/scale/bias.",
+    "Patch target and each ordered context independently, concatenate logical rows into segmented immutable hidden input; preserve stream-local grid/RoPE coordinates and source IDs.",
+    "Per block generate K and V once across N_total into segmented/head-major host stores; QK RMS normalization must reduce complete5120 channels before splitting40heads; apply source-aware RoPE.",
+    "Keep immutable hidden input and separate hidden output. For each128-query row group generate full5120 Q with a cached full-inner matrix. For all40heads scan exact256-key tiles including tail; use F32 online max/numerator/denominator, never concatenate all scores.",
+    "Prefer one new batched ORT QK/scale/max/exp/AV/recurrence graph to avoid scalar Hike AV and host weight-result roundtrips. Hike remains responsible for declared norm/RoPE/pointwise boundaries. Equivalent F32 behavior must be independently verified; this is not the existing E7 graph.",
+    "Project attended rows through self O and gated residual directly into hidden output. After all self queries finish release KV; apply cross-attention and norm/FFN by128-row groups, preserving complete5120/13824 reductions. Cross/FFN row-local results may replace hidden output in place.",
+    "Swap hidden input/output only after complete block success. Execute all40 blocks. Apply final norm/modulation/head64 to all N_total in rows; slice target afterward and unpatchify to exact target latent.",
+    "For six Euler updates retain only required target latent/noise/prediction/history. Release weight leases and old side resources across HIGH-to-LOW; preserve original schedule and latent representation contract."
+  ],
+  "capacity": {
+    "modelFilesRetainedBytes": 31149666432,
+    "logicalHiddenStoreBytes": 1341849600,
+    "hostStoreCountAtSelfAttentionPeak": 4,
+    "hostStoresBytes": 5367398400,
+    "hostStoresGiB": 4.998779296875,
+    "globalQStored": false,
+    "globalFFNStored": false,
+    "globalScoresStored": false,
+    "singleBufferPolicy": "Segment hidden ArrayBuffers <=256MiB; K/V may use40 separate head stores. No entire hidden tensor clone at each owner call.",
+    "queryRows": 128,
+    "keyRows": 256,
+    "headsPerBatch": 40,
+    "headDim": 128,
+    "queryTail": 112,
+    "keyTail": 240,
+    "queryTileCount": 512,
+    "keyTileCount": 256,
+    "tilePairsPerBlock": 131072,
+    "queryTileBytes": 2621440,
+    "oneKVTileBytes": 5242880,
+    "scoreTileBytes": 5242880,
+    "onlineNumeratorBytes": 2621440,
+    "rowFFNActivationBytes": 7077888,
+    "maxOrdinaryWeightF32Bytes": 104857600,
+    "eachFFNWeightF32Bytes": 283115520,
+    "twoFFNWeightF32Bytes": 566231040,
+    "headAllN64BytesIfAssembled": 16773120,
+    "runtimeCopiesSessionsReserveBytes": 3221225472,
+    "safetyMarginBytes": 1073741824,
+    "plannedNamedCgroupBytesIncludingObservedBaseline": 14158610432,
+    "maxNFromThisInstantaneousNamedBudget": 102400,
+    "admissionFormula": "memoryCurrentBeforeJob + 81920*N_total + 3GiB runtime/copy allowance + 1GiB margin <= memory.max. Reject actual request if not satisfied; do not trim source/refs.",
+    "reserveMeaning": "Planning allowance for host decoded matrix caches, one ORT WASM arena, Hike arenas, native input/output copies, raw slice/transient decoding, browser overhead and old/new session overlap. This is not a measured or proven allocator upper bound.",
+    "wasmArenaPolicy": "Keep each WASM32 Memory bounded independently; global hidden/KV stores remain in segmented host memory. ORT arena high-water must be measured; release sessions does not imply immediate Memory shrink.",
+    "unknownPeakFields": {
+      "hostAllocatorPeakBytes": null,
+      "ORTAllocatorPeakBytes": null,
+      "browserPeakAtProductionShapeBytes": null,
+      "fullPipelinePeakBytes": null
+    }
+  },
+  "storageAndCopies": {
+    "baseModelFileAdditionalDiskBytes": 0,
+    "baseModelFileAdditionalDiskStatus": "Required design: operate directly on retained File/ranges. File staging/backing behavior still needs target browser observation.",
+    "requiredOPFSModelCopies": 0,
+    "requiredTmpActivationSpillBytes": 0,
+    "workspaceUse": "Small code/evidence only; no full hidden checkpoint or weights on nearly full workspace.",
+    "optionalTwoHiddenCheckpointBytes": 2683699200,
+    "fourStoreSpillBytes": 5367398400,
+    "duplicateFourStoreSpillBytes": 10734796800,
+    "OPFSQuotaKnown": false,
+    "OPFSQuotaRule": "Read navigator.storage.estimate, retain headroom and account for temporary/atomic replacement copies; do not infer browser quota from df.",
+    "modelCopyToTmpFits": false,
+    "modelCopyToWorkspaceFits": false,
+    "copyInventoryRequired": [
+      "File/range raw slice",
+      "F16/FP8 decodedF32 matrix/slab",
+      "host cache and owner snapshot",
+      "ORT Tensor/native copy and output",
+      "Hike input/output arena",
+      "old/new session and live tensor overlap",
+      "optional OPFS write/atomic replacement",
+      "caller output and Worker transfer",
+      "reference comparator chunks"
+    ],
+    "prohibitedCompletionShortcut": "Do not reduce actual shape, use only target keys, omit context queries/head rows, change F32 math, add WebGPU/server inference or call small fixtures complete.",
+    "independentReferenceStorage": "Stream all-value comparison in chunks; storing every block/cut is not feasible here. Forty complete N65520 hidden outputs alone are53,673,984,000B. Keep bounded current/next reference cut or provide independent chunk references; no percentile/selected-only acceptance for full output.",
+    "vaeOutsideCoreNote": "F32 RGB[1,3,81,480,832] is388,177,920B; preprocessing/VAE ownership and copies must be added for a later full pipeline budget."
+  },
+  "computeEstimate": {
+    "class": "Exact count for stated dense matrix products; runtime is an estimate/scenario only. Multiply+add counts2 FLOP.",
+    "N": 65520,
+    "D": 5120,
+    "F": 13824,
+    "textLIllustrative": 512,
+    "originalTextLKnown": false,
+    "perBlockDenseLinearFormula": "12*N*D^2 + 4*N*D*F + 4*L*D^2",
+    "perBlockSelfAttentionFormula": "4*N^2*D",
+    "perBlockCrossAttentionFormula": "4*N*L*D",
+    "perBlockDenseLinearFLOPs": 39214225817600,
+    "perBlockSelfAttentionFLOPs": 87917985792000,
+    "perBlockCrossAttentionFLOPs": 687026995200,
+    "perBlockIncludedFLOPs": 127819238604800,
+    "fortyBlockPredictionIncludedFLOPs": 5112769544192000,
+    "sixPredictionsIncludedFLOPs": 30676617265152000,
+    "excluded": [
+      "patch/text/time prefix projections",
+      "final output head",
+      "norm/RoPE/GELU/exp/reductions",
+      "weight decoding/LoRA feed",
+      "all memory/disk/IPC copies",
+      "independent reference generation/comparison"
+    ],
+    "scenarios": [
+      {
+        "assumedSustainedGFLOPs": 1,
+        "predictionHours": 1420.2137622755556,
+        "sixPredictionsHours": 8521.282573653334,
+        "status": "arithmetic scenario; throughput not measured or promised"
+      },
+      {
+        "assumedSustainedGFLOPs": 5,
+        "predictionHours": 284.0427524551111,
+        "sixPredictionsHours": 1704.2565147306666,
+        "status": "arithmetic scenario; throughput not measured or promised"
+      },
+      {
+        "assumedSustainedGFLOPs": 10,
+        "predictionHours": 142.02137622755555,
+        "sixPredictionsHours": 852.1282573653333,
+        "status": "arithmetic scenario; throughput not measured or promised"
+      },
+      {
+        "assumedSustainedGFLOPs": 25,
+        "predictionHours": 56.80855049102222,
+        "sixPredictionsHours": 340.85130294613333,
+        "status": "arithmetic scenario; throughput not measured or promised"
+      },
+      {
+        "assumedSustainedGFLOPs": 50,
+        "predictionHours": 28.40427524551111,
+        "sixPredictionsHours": 170.42565147306667,
+        "status": "arithmetic scenario; throughput not measured or promised"
+      },
+      {
+        "assumedSustainedGFLOPs": 100,
+        "predictionHours": 14.202137622755554,
+        "sixPredictionsHours": 85.21282573653333,
+        "status": "arithmetic scenario; throughput not measured or promised"
+      }
+    ],
+    "minimumKVHostReadTrafficPerBlockBytesFor128QuerySchedule": 1374053990400,
+    "fortyBlockKVHostReadTrafficBytes": 54962159616000,
+    "interpretation": "Tiling removes allocation growth, not quadratic attention arithmetic. KV traffic assumes each K/V row read once per query tile and excludes actual copy multipliers. Full duration cannot be promised before new production operators are measured."
+  },
+  "existingCalibration": {
+    "normalP4": {
+      "sourceCommit": "30e283bb115741af6b475e9bdc41700a4e564053",
+      "actualElapsedMs": 131182.1000000015,
+      "side": "LOW",
+      "blockIndex": 0,
+      "N": 2,
+      "textL": 512,
+      "contextCount": 0,
+      "outputShape": [
+        2,
+        5120
+      ],
+      "projectionRunCounterAtDiagnosticBefore": 44704,
+      "scoreRunCounterAtDiagnosticBefore": 320,
+      "normalResourcePeakBytes": null,
+      "limitations": "Not prefix/self-attention/fullblock/head/predict/sample. Small row/output tiling and repeated input copies dominate differently from a new batched architecture. Do not multiply131s by N/2 and claim an actual or guaranteed speed."
+    },
+    "E7": {
+      "actualK32760ElapsedMsApprox": 1117.1,
+      "queryRows": 16,
+      "heads": 1,
+      "declaredK": 32760,
+      "includes": "fixture source generation/validation/copies, ORT score and Hike recurrence",
+      "excludes": "real model QKV/weights/norm/RoPE/allqueries/allheads/allblocks",
+      "extrapolationUsedAsProductionForecast": false
+    }
+  },
+  "requiredNewBoundaries": [
+    {
+      "boundary": "Shape/store ownership",
+      "required": "Explicit N_total, actual ordered stream grid/source IDs, target offset, side/block/timestep, compact/segmented owned row views, leases/epochs, cancellation and exact tails; prohibit whole-store snapshot clones."
+    },
+    {
+      "boundary": "F32 full-inner linears",
+      "required": "Reuse symbolic Gemm graph where valid; create new wrapper/registry/capacity contract for rows1..128 and columns5120/13824/64, inner5120/13824 (also prefix4096/256/64). Preserve inner reduction intact; declare weight reuse/copy count and matrix-cache leases."
+    },
+    {
+      "boundary": "Production norm/RoPE/pointwise Hike",
+      "required": "5120-channel LayerNorm/RMSNorm, per-block modulation/gates, ordered stream coordinates/source rotation, row/tail handling,13824-channel GELU and finalhead/unpatchify semantics; no change to old fixture caps."
+    },
+    {
+      "boundary": "Batched online attention ORT",
+      "required": "40heads, query1..128, key1..256, headDim128, exact logical tails; F32 QK/max/Exp/AV/online recurrence and final divide. Validate all keys, all queries and contexts with independent F32 specification; graph must not return/materialize full NxN."
+    },
+    {
+      "boundary": "Weight/provider and LoRA completedF32",
+      "required": "All40 block/finalhead target registry; range/full-inner row feed, model side/hash, dtype/scale/bias and epoch. Stream completedF32 weights from a conforming provider; do not retain whole-model finalF32 patches or implement LoRA low-rank math here."
+    },
+    {
+      "boundary": "Session/Worker lifetime",
+      "required": "Budget actual old/new ORT sessions and live tensors; worker restart/termination after cancellation; stale reply rejection and checkpoint ownership. Keep only one active model side and bound any prepare overlap; do not assume GC immediate."
+    }
+  ],
+  "nextEvidenceRequired": [
+    "Implement new production operator contracts and freeze independent reference/gates before running them; old N2/E7 acceptance stays scoped.",
+    "Measure real full-inner128-row projection and40head128x256 attention tile including source, weight/native copies, Hike/ORT memory high-water, cgroup/PSS and cancellation; these are bounded operator experiments, not D1-D4 completion.",
+    "Then execute all65520+actualRefs queries/keys for one real block, all40blocks/finalhead and target prediction with chunked all-value independent comparison. Record actual resolved input descriptors. Original media are unnecessary only when standalone conforming input tensors are supplied, not when claiming original-workflow equivalence.",
+    "Measure full predict, six-step HIGH-to-LOW, Worker lifecycle and production-shape cumulative time/peak. If actual capacity or duration fails, name operator, shape, peak/time and next bounded change; no universal WASM-impossibility claim."
+  ],
+  "validation": {
+    "checks": {
+      "latentElements": true,
+      "targetTokens": true,
+      "source81MinimumN": true,
+      "fourStoresWithinObservedNamedBudget": true,
+      "singleModelCannotBeCopiedToTmp": true,
+      "singleModelCannotBeCopiedToWorkspace": true,
+      "denseOneHeadExceedsWasm32": true,
+      "exactQueryTail112": true,
+      "exactKeyTail240": true,
+      "noMaterializedDenseAttentionRequired": true
+    },
+    "allArithmeticChecksPassed": true,
+    "allocationStressTestRun": false,
+    "allocationReason": "No production graph exists in this audit; a successful malloc/touch probe would not bound ORT allocator/session/copy peak. Avoid consuming multiple GiB alongside concurrent workers.",
+    "inferenceRun": false,
+    "existingEvidenceOnly": true
+  },
+  "sources": [
+    {
+      "path": "development/ai-connection/standalone-d1-d4-20261102/PLAN-SOURCE.md",
+      "sha256": "8f41796cd90005c8c877b9e03eccb2fc7b814dc6a44dcdb05dbd7b38e6903dab"
+    },
+    {
+      "path": "development/ai-connection/original81-profile-comparison-20261102/REPORT.md",
+      "sha256": "2d0627c5838e0fb5a0487550531d6b09bcc215bb73863ad0645b92a961b71683"
+    },
+    {
+      "path": "development/ai-connection/original81-profile-comparison-20261102/workflow-shape-audit.json",
+      "sha256": "62200da5999787d732f7f700de9f5701347e0d46fcb44d606ff75c8bc2d1ba96"
+    },
+    {
+      "path": "development/ai-connection/e7-attention/RESULT.md",
+      "sha256": "26f27d7a8707a8e632f591f5f2a6aae3d48a2ce920521f42472e65bb2a1f9d40"
+    },
+    {
+      "path": "development/ai-connection/e7-attention/browser-green.json",
+      "sha256": "4742526552b78ecc4a962a3104b6ca9563965be78df1c2bcb79080a0845a3954"
+    },
+    {
+      "path": "development/ai-connection/normal-execution-20261102/RESULT.md",
+      "sha256": "07eea5130806ec191d9c0e20a3a2c8d1433af815c95728e72577a38d29802536"
+    },
+    {
+      "path": "development/ai-connection/normal-execution-20261102/diagnostics/normal-low-browser.json",
+      "sha256": "76046761d6dad3e94282455584b1e395885144d400a7e7f60163786feb8f2ff3"
+    },
+    {
+      "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/linear.mjs",
+      "sha256": "3821cca4b031aae4adf3944f15f8d171ed602f97878307ce495b7dcd8b05118a"
+    },
+    {
+      "path": "docs/shared/diffusion-models/ort-bridge/block-hidden/graph.mjs",
+      "sha256": "7826723d34a934a78e27335dce5973d41af4e2578136db5604c19b13d0954db0"
+    },
+    {
+      "path": "docs/shared/diffusion-models/ort-bridge/stream-attention/README.md",
+      "sha256": "c23732ffceb8883e99de488c178b4c5f012e4652dd08874d32b6e477b916cd90"
+    },
+    {
+      "path": "/workspace/work/diffusion-investigation/model-architecture/architecture-report.json",
+      "sha256": "07250a90e609cbb9098056be40d01972409c881de3c5ba94e74e188e8861a299"
+    },
+    {
+      "path": "/workspace/work/diffusion-investigation/model-architecture/comfy_ldm_wan_model.py",
+      "sha256": "17dd8f793f09fb71dce847e48e64ea18afd9270bcef916d11fc34e309a30b699"
+    },
+    {
+      "path": "/workspace/work/diffusion-investigation/model-architecture/quant-and-block-memory.json",
+      "sha256": "d7b6c5296a9c8d510a56e81245684f10facc62327a639af4a0fe50f434ea2a2e"
+    }
+  ]
+}

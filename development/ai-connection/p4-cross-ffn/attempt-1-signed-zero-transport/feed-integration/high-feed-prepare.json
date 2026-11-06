@@ -1,0 +1,260 @@
+{
+  "schemaVersion": "bernini-p4-final-f32-prepare/0.1",
+  "passed": true,
+  "side": "HIGH",
+  "candidatePlanSHA256": "051b6833be54aed9e1e0c3657bd28aa926b46c238a1c3a06fb298f6cc6427600",
+  "inputClass": "caller-final-f32-feed-fixture",
+  "registry": {
+    "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+    "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+    "registryHash": "23e72150978c08e4b997109b51cb379307bf142074118ccb06438a93608e7b83",
+    "side": "HIGH",
+    "executionProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+    "scope": "PARTIAL",
+    "schemaVersion": "bernini-p4-f32-feed-registry/0.1",
+    "coverage": {
+      "fullModel": false,
+      "kind": "explicit-sparse-final-f32-ranges",
+      "unselectedTargets": "immutable-base-pass-through",
+      "unselectedRows": "immutable-base-pass-through",
+      "canonicalLoraAdapterExtension": "PENDING"
+    },
+    "validationGate": {
+      "id": "p4-cross-ffn-composed-f32-v1",
+      "absolute": 0.01,
+      "relative": 0.001,
+      "scope": "composed-new-stage-only"
+    },
+    "resourceLimits": {
+      "maxBlockElements": 81920,
+      "maxPatchBytes": 16777216,
+      "maxRetainedPatchBytes": 67108864,
+      "maxPackages": 4,
+      "maxCandidates": 4,
+      "maxReadLeases": 16,
+      "maxTransactions": 4
+    },
+    "targets": [
+      {
+        "weightId": "blocks.0.cross_attn.q.weight",
+        "originalKey": "blocks.0.cross_attn.q.weight",
+        "fullShape": [
+          5120,
+          5120
+        ],
+        "storageDtype": "F8_E4M3",
+        "computeDtype": "F32",
+        "layout": "row-major",
+        "fp8ProfileId": "scaled-e4m3fn-scalar-f32-v1",
+        "scaleSHA256": "8b41e351c823ecba22d6d4c936503ce61cbcf6c283e4c4390ec7fccbbeb71bc1",
+        "quantConfigSHA256": "dc6ecd1e9459beb7956b08ac094a9d0cd2e5fd54678085b6a8f43e2e96b6b28a",
+        "patchCoordinates": "full-original-elements",
+        "unchangedRanges": "immutable-base-pass-through",
+        "binding": {
+          "kind": "runtime-input",
+          "name": "blocks.0.cross_attn.q.weight"
+        },
+        "scaleSource": {
+          "originalKey": "blocks.0.cross_attn.q.weight_scale",
+          "fullShape": [],
+          "storageDtype": "F32",
+          "absoluteByteOffset": 181292,
+          "byteLength": 4
+        },
+        "quantConfigSource": {
+          "originalKey": "blocks.0.cross_attn.q.comfy_quant",
+          "fullShape": [
+            27
+          ],
+          "storageDtype": "U8",
+          "absoluteByteOffset": 15574823523,
+          "byteLength": 27
+        }
+      },
+      {
+        "weightId": "blocks.0.cross_attn.q.bias",
+        "originalKey": "blocks.0.cross_attn.q.bias",
+        "fullShape": [
+          5120
+        ],
+        "storageDtype": "F16",
+        "computeDtype": "F32",
+        "layout": "row-major",
+        "fp8ProfileId": null,
+        "patchCoordinates": "full-original-elements",
+        "unchangedRanges": "immutable-base-pass-through",
+        "binding": {
+          "kind": "hike-parameter",
+          "name": "blocks.0.cross_attn.q.bias"
+        }
+      }
+    ],
+    "generationReady": false
+  },
+  "patches": [
+    {
+      "weightId": "blocks.0.cross_attn.q.weight",
+      "offset": 0,
+      "count": 20480,
+      "dtype": "F32",
+      "sha256": "7e03ee8426d4507c3fda8fe20f59b168a15cb314500f47831028908f692a3d21",
+      "fullShape": [
+        5120,
+        5120
+      ],
+      "binding": {
+        "kind": "runtime-input",
+        "name": "blocks.0.cross_attn.q.weight"
+      },
+      "baseF32SHA256": "5e5fe3aca56d886e35279ad191d39e4f1d759d7342381eb7bad294dddaa8d2fe",
+      "independentOwnedF32Copies": true,
+      "providerMutationObserved": false,
+      "secondOriginalReadUnchanged": true,
+      "changedElements": 1,
+      "changedElementIndex": 0,
+      "fixtureTransform": "one-existing-nonzero-F32-sign-bit-flip"
+    },
+    {
+      "weightId": "blocks.0.cross_attn.q.bias",
+      "offset": 0,
+      "count": 4,
+      "dtype": "F32",
+      "sha256": "f51c976e8490f33a219642ce4b143effba05851c4a7a0a45678dea053e82e802",
+      "fullShape": [
+        5120
+      ],
+      "binding": {
+        "kind": "hike-parameter",
+        "name": "blocks.0.cross_attn.q.bias"
+      },
+      "baseF32SHA256": "efed71aa0f5ed328f39ccf1364843a26157506a9e8ed948ada936a7e0b5097f7",
+      "independentOwnedF32Copies": true,
+      "providerMutationObserved": false,
+      "secondOriginalReadUnchanged": true,
+      "changedElements": 1,
+      "changedElementIndex": 0,
+      "fixtureTransform": "one-existing-nonzero-F32-sign-bit-flip"
+    }
+  ],
+  "privatePatchSHA256": "faa385caf927a121c3ec9e70255ef816ccd60351bddf576923a61f6986b4c341",
+  "resources": {
+    "disposed": false,
+    "epoch": 0,
+    "activePackageHash": "f67f129f052eaabb8a18da1a96dce3c20745669221f12c176b0811afbea32249",
+    "activePatchBytes": 0,
+    "retainedPatchBytes": 0,
+    "pendingPatchBytes": 0,
+    "knownPatchBytes": 0,
+    "effectiveReadBytes": 0,
+    "patchedReadBytes": 0,
+    "source": {
+      "disposed": false,
+      "busy": false,
+      "readBytes": 222419,
+      "headerReads": 2,
+      "headerReadBytes": 181288,
+      "configReads": 10,
+      "configReadBytes": 155,
+      "payloadReads": 4,
+      "payloadReadBytes": 40976,
+      "maxPayloadReadBytes": 20480,
+      "hike": {
+        "memoryBytes": 1572864,
+        "arenaBytes": 491648,
+        "inputCopyBytes": 40976,
+        "outputCopyBytes": 163872,
+        "workspaceReused": true,
+        "disposed": false
+      },
+      "fullFileHashRecomputed": false
+    },
+    "allocatorPeakBytes": null
+  },
+  "lowRankMathImplemented": false,
+  "fullFileHashRecomputed": false,
+  "generationReady": false,
+  "observerRestoredAfterRun": true,
+  "baseProviderProof": {
+    "selections": [
+      {
+        "weightId": "blocks.0.cross_attn.q.weight",
+        "fullShape": [
+          5120,
+          5120
+        ],
+        "offset": 0,
+        "count": 20480,
+        "storageDtype": "F8_E4M3",
+        "rawSHA256": "6876c6fa4636453fa744a23ed4befc832cb6cb370905d9cf80331fd8288f98a4",
+        "decodedF32SHA256": "5e5fe3aca56d886e35279ad191d39e4f1d759d7342381eb7bad294dddaa8d2fe",
+        "actualHikeProviderBitsExact": true
+      },
+      {
+        "weightId": "blocks.0.cross_attn.q.bias",
+        "fullShape": [
+          5120
+        ],
+        "offset": 0,
+        "count": 4,
+        "storageDtype": "F16",
+        "rawSHA256": "b61792233b34d1927523ee75a72850f75b2720abcf66c5820f4c48626e1bd593",
+        "decodedF32SHA256": "efed71aa0f5ed328f39ccf1364843a26157506a9e8ed948ada936a7e0b5097f7",
+        "actualHikeProviderBitsExact": true
+      }
+    ],
+    "independentBoundedDecodeBitsExact": true,
+    "modelFullHashRecomputed": false,
+    "scope": "Only original Q first4rows and bias first4elements; no full matrix or prefix recomputation."
+  },
+  "sourceSHA256": {
+    "tools/diffusion-models/p4-cross-ffn-feed-browser.py": "c1ca1af54244267216c9f0fc9787eb07d1c1a0d49e72a8dbfa6d8741bd8df225",
+    "tools/diffusion-models/p4-cross-ffn-browser.py": "6eaab51a2ccd80e5f76e96ba911f192a7188177f70a78c5d1de75a2a2fb42910",
+    "tools/diffusion-models/p4-cross-ffn-reference.py": "2c731fd61d7b44b020603434834c7c199924c158036ddd8779b8f9cda0212d8b",
+    "docs/shared/diffusion-models/ort-bridge/hike.mjs": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/weights.mjs": "b80cdcb74584ef3f224c8eb6fcbef9cfb065f8387427a04a708d53d273856c9c",
+    "docs/shared/diffusion-models/api/safetensors.mjs": "ecb7e750a151489c9b37ffec75e0b784d808b0503ff2181c7b73907398422d7f",
+    "docs/shared/diffusion-models/lora/weights.mjs": "b6d60af5924c2cc5cef9398867424288cab36d9788149c954fa8526b3b51fcc5",
+    "docs/shared/diffusion-models/lora/diagnostic-identity.mjs": "35ed52cde91236e764acd61ce912a96aea6627c249eeccd3c8039036069de9c9",
+    "docs/shared/diffusion-models/lora/strict-json.mjs": "c68a353f9be2567361b075a6e5480e953a7d8df862f5b154e9cd368ec2571a98",
+    "docs/shared/diffusion-models/ort-bridge/kernel/bridge.wasm": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs": "b4518ea35ca35e63e6ba8cdbe67e5d9fea0fa2125dac7dac0f5d4ac6c83ac7c2",
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/source.mjs": "5bf263b8b6465b395dd6ea3634ef9619626479f95b8a22cc207dd923541c9d63",
+    "docs/shared/vr180/sha256.mjs": "cbf39a47d19ef1a0a150ad5219dd8a49e2ee5fc67d2550640ce33c73d08da36c",
+    "docs/shared/diffusion-models/ort-bridge/block-hidden/graph.mjs": "7826723d34a934a78e27335dce5973d41af4e2578136db5604c19b13d0954db0",
+    "docs/shared/diffusion-models/diagnostics/resource-observer/observer.mjs": "efd172d318fefff1581367a260ae688b0ba02c5dbdab0302ad9a7a5055c4f13b",
+    "docs/shared/diffusion-models/diagnostics/p4-cross-ffn/run.mjs": "77a556318f23e14c005c249eb37b21bbb936ca3f7258097c320684770b8bbcc3",
+    "docs/shared/diffusion-models/ort-bridge/kernel/registry.mjs": "c4ea25478d44b70146ba2574d98c761d1bb345b4d6f10ccaedfb660f30489cdd",
+    "docs/shared/diffusion-models/diagnostics/p4-cross-ffn/feed.mjs": "bbf1b308ffa6cee64acbdadc99091e425565092db311c1132113062bee8f3629",
+    "docs/shared/diffusion-models/lora/targets.mjs": "772ca63c3b82bafa7b2345cdda3361679112fcf4a97c79b67564da0fa196217d"
+  },
+  "sourceCommit": "3ae9b934ffcd2cf092171699fd7a5b55110f1197",
+  "inputBindings": {
+    "savedTailGuard": {
+      "side": "HIGH",
+      "blockIndex": 0,
+      "scheduleIndex": 1,
+      "tokens": 2,
+      "exportReceiptPath": "development/ai-connection/self-attention-tail/output-export/high-export-receipt.json",
+      "exportReceiptSHA256": "21fd376bf498c411fbcaf4cc68c1ee3a3320d77923a3da107c2550f0698a72c4",
+      "savedArtifactSHA256": "5040656cf0bf6bd9f06bbf007b16d22ae026a25a5080d666758e0b52a10e86bd",
+      "savedArtifactBytes": 1375283,
+      "residualSHA256": "72a7de56a7364122197f4126a996f7131ff4fbda94f7f8201bdacbaad04d85b9",
+      "timeAct1SHA256": "1b69ffc7e86fbc52ea9ae5bd32950d8e62439417089577f9c5f66243e0b734f7",
+      "acceptedTailReceiptSHA256": "759380dcbe016b1f1d9a51579c21a1e1d47545d250e1badc9e93842a4537d62e",
+      "prefixRecomputed": false,
+      "fullModelHashRecomputed": false
+    },
+    "oldE4Package": {
+      "manifestSHA256": "d87c1a36270d40a57c218a1bc2eaf2bc6fac5f6ad01e66dc304a76a180bbeaa7",
+      "verifiedFileCount": 30,
+      "verifiedOutputCount": 5
+    }
+  },
+  "browser": {
+    "version": "154.0.8037.57",
+    "pageErrorCount": 0,
+    "modelHTTPRequests": 0,
+    "wallSeconds": 1.5501217900018673,
+    "disconnected": true
+  }
+}

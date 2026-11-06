@@ -2,7 +2,21 @@
 
 このAPIは同じページのES module、または呼出し側が明示して渡した専用MessagePortから利用する。全体UI、Text Encoder、VAEのAPIを実装・推測しない。HTTP・WebSocketサーバーやグローバルなwindow message listenerは設けない。静的HTTP(S)配信とWorker/WASMを利用できるブラウザが必要。
 
-現在動く操作は、safetensorsのヘッダー検査、実Hike WASMのEuler・固定scheduler・noise/flow更新・Wan21 posterior-mean正規化と復元、公開Text Encoder/VAEのtensor境界検査、Hike→ORT WASM→Hikeによる固定Q射影の部分演算。API版0.1に操作を追加し、既存envelopeは維持している。`load`・`predict`・`sample`は常に構造化エラーで拒否する。モデル推論の実装・変換・利用経路完成を意味しない。
+部分演算として提供する操作は、safetensorsのヘッダー検査、実Hike WASMのEuler・固定scheduler・noise/flow更新・Wan21 posterior-mean正規化と復元、公開Text Encoder/VAEのtensor境界検査、Hike→ORT WASM→Hikeによる固定Q射影の部分演算。API版0.1に操作を追加し、既存envelopeは維持している。公開`load/predict/sample`は実全モデル候補へ接続した。呼出し経路の実装と、入力域ごとの数値・資源受入は分ける。対応域と試験結果は下記の単体実行資料を参照し、未検証shapeを生成READYとは扱わない。
+
+2026-11-06の[運用候補の起動・必要資材・保存raw Fileの取得](../../../development/ai-connection/diffusion-operations-20261106/RUN.md)を追加した。API／数値kernel／build／対応shapeは変更していない。1-thread/no-COIと明示4-thread/COIを区別し、保存済みN5/Text L3 raw sampleの原本を非公開Pageから取得できる。旧原寸HIGH試験は環境移行後に終端を回収できず、全40block／6更新の受入は未確認のまま維持する。
+
+## 通常実行と診断の分離
+
+通常descriptor／対応判定と、固定診断を分離した。`capabilities.executionDescriptor`、`checkSupport`、`prepareP4/runP4/releaseP4`、単独`createBerniniP4Execution`を追加。P4はN2/block0/Text L1〜512/contextなしの範囲を保ち、通常入口は最終hiddenのみ返す。固定payload hash・過去数値receipt・独立比較は通常の互換性条件にしない。weight feedの通常validateと診断diagnoseも分離した。[通常API契約](execution/README.md)を参照。全モデル公開入口は[モデル実行契約](api/MODEL_RUNTIME.md)を参照。
+
+## D1〜D4の実装候補
+
+全1095重みのregistry／Hike復号、query128・key256・40headのonline attention、全40block・最終headの[単独predict候補](execution/model-candidate.md)、実HIGH／LOWに束縛した[6更新sample候補](execution/model-sampler-candidate.md)を追加した。通常入力へ独立参照・固定payload hash・過去receiptを要求しない。候補の診断入口だけが比較用の中間値を返す。
+
+公開APIの専用Workerから、これらの実装候補を固定adapter経由で呼ぶ。runtime・predictor・数値参照を注入する通常入口はない。制御N5／Text L3ではHIGH／LOW各全40block、実HIGH3→LOW3の6更新、raw sample保存・読戻しが固定gateに合格した。原寸相当storeと最大FFN tileの容量試験も別に成立した。必要shapeの全query・全40block・6更新と全工程の資源条件は、下記の今回結果で個別に記録する。90,000 tokenの実装上の計画上限は、数値検証済みshapeの範囲を意味しない。[結果・残件](../../../development/ai-connection/standalone-d1-d4-20261102/RESULT.md)と[再現手順](../../../development/ai-connection/standalone-d1-d4-20261102/REPRODUCE.md)を参照。
+
+今回の実行source・検証範囲・未受入事項は[公開Worker検証](../../../development/ai-connection/public-worker-20261102/RESULT.md)と[原寸段階検証](../../../development/ai-connection/d1-d4-production-20261102/RESULT.md)へ記録する。元媒体・元mxfp8環境の記録未取得は、明示した別caseの固定scaled-FP8→F32単体試験とは別の未確認事項である。
 
 ## 同一ページの呼出し
 
@@ -44,8 +58,12 @@ api.dispose();
 | restoreRawMean | `{tensor}` | version付きnormalized posterior meanを実Hikeでraw meanへ復元。生成sampleをmeanへ言い換えない |
 | linearProjection | `{q,scale,bias,x}` | 実Hike FP8復号→ORT WASM Gemm→Hike biasの固定部分演算。output16要素と証拠 |
 | linearProjectionF32 | `{weight:Float32Array(81920),x:Float32Array(5120),bias:Float32Array(16)}` | 明示F32 runtime weightを実ORT Gemmへ渡し実Hike biasを加算。partialOnly。LoRA低rank演算や全モデル適用は行わない |
-| load | `{file: File または Blob}` | 先にヘッダー検査を行い、その後NOT_READY。大容量モデルはdetails.reasonsにSINGLE_WASM32_MEMORY_EXCEEDED |
-| predict / sample | `{}` | NOT_READY。仮のニューラル出力や注入predictorを返さない |
+| load | `{files:{HIGH:File,LOW:File},resource?:{wasmThreads:1\|4}}` | 両originalモデルを固定provider・実Hike/ORTへ準備。modelSessionIdを返す。旧`{file}`は検査のみでNOT_READY |
+| predict | `{side,shapeRequest,tensors,conditioning,timestep,modelSessionId?}` | 全40block・head候補のowned model-space flow velocity。モデル未load時MODEL_NOT_LOADED |
+| sample | `{shapeRequest,tensors?,noise?,positive,negative,modelSessionId?}` | Euler/simple6/shift5/split3、HIGH3→LOW3候補のowned raw generated sample。zero target／省略時noiseは[owner契約](api/NORMAL_GENERATION_INPUTS.md)が供給 |
+| unload / modelStatus | `{}` | 実owner解放／状態・資源統計。unload成功後はWorkerを終了 |
+| saveTensor / readTensor | `{tensor}` / `{file}` | canonical WKTSR001保存bytes／実File読戻し。生成sampleのmeaning・latentContractを保持、独立64MiB file予算 |
+| openWeightFeed | `{side:'HIGH'|'LOW',modelSessionId?}` | 明示MessagePort・model session binding・全モデルnative descriptor。`createDiffusionWeightClient`で不変base providerと完成F32 consumerへ接続。低rank積はLoRA owner、実LoRA全モデル数値受入は別scope |
 | cancel | `{jobId: 対象jobId,inputRevision: 対象revision}` | 自分が所有する実行中Workerだけ終了。対象のPromiseはCANCELLEDで終端化 |
 | dispose | `{}` | Workerを終了し以後の呼出しをDISPOSEDで拒否 |
 
@@ -57,11 +75,11 @@ Eulerの上限1,048,576要素は、このAPIの作業予算。モデル全体の
 
 noiseMix / inverseNoiseScale / flowDenoisedはFloat32Arrayと正のshapeを要求する。shape積と配列長を一致させ、1 tensorあたり1,048,576要素まで、NaN/Infinityを拒否する。結果は `{data: Float32Array,shape,operation,normalizationApplied:false,evidence}`。これら3つの低水準primitiveは入力空間を変換せず、出力をraw latentへ自動でラベル付けしない。raw meanとの接続に必要な数値変換は、本DiffusionモジュールのnormalizeRawMean / restoreRawMeanが担当する。包括UIは呼出し順・待機列・入力出力の受渡しを担当する。schedulerは固定ComfyUI版のsimple6・shift5・split3だけを提供し、別profileへ黙って切り替えない。noise配列は呼出し側から渡し、seedからの乱数再現は実装しない。
 
-normalizeRawMean / restoreRawMeanはこのDiffusionモジュール内の明示的なHike処理である。下記3種の公開VAE固定profileとVAE model hashを照合し、ComfyUI固定版の16 channel mean/stdとFP32演算順で変換する。rawのmeaningは `raw-posterior-mean`、正規化後はversionを含む `wan21-normalized-posterior-mean:v1`。結果は `{tensor,normalizationApplied:true,evidence}` で、tensor.dataは所有されたFloat32Arrayとなる。raw0も数値式どおり非0へ変換し、無断のzero特別扱いを加えない。全sampling内のzero判定やHIGH/LOW orchestrationを実装済みとは扱わない。
+normalizeRawMean / restoreRawMeanはこのDiffusionモジュール内の明示的なHike処理である。下記3種の公開VAE固定profileとVAE model hashを照合し、ComfyUI固定版の16 channel mean/stdとFP32演算順で変換する。rawのmeaningは `raw-posterior-mean`、正規化後はversionを含む `wan21-normalized-posterior-mean:v1`。結果は `{tensor,normalizationApplied:true,evidence}` で、tensor.dataは所有されたFloat32Arrayとなる。raw0も数値式どおり非0へ変換し、無断のzero特別扱いを加えない。生成sample経路では別の専用ownerがHIGH/LOW変換と生成sample復元を行い、このmean専用演算を代用しない。
 
 normalized meanのmeaningに版を含めるため、公開 `.wktensor` codecの保存・読戻しを通しても復元可能。追加の `normalization:'wan21-comfy-f32-v1'` は保存形式が保持しない説明属性であり、復元時に省略可能だが、値がある場合の不一致は拒否する。意味・shape・producer hashを揃えただけで任意の生成sampleをposterior meanへ再分類しない。復元はこの固定mean契約の入力だけを受け入れる。
 
-linearProjectionの入力は `q:Uint8Array(81920)`（16×5120 E4M3FNコード）、`x:Float32Array(5120)`、`bias:Float32Array(16)`、正の有限scale。出力は `output:Float32Array(16)` とHike/ORT/hash・copy量等のevidence。これは単一の固定Q射影であり、attention全体、1 stepのモデル予測、samplingではない。準備されたモデル値と明示activationを調べるための部分APIである。`load/predict/sample`はこの操作の追加後もNOT_READYのまま。
+linearProjectionの入力は `q:Uint8Array(81920)`（16×5120 E4M3FNコード）、`x:Float32Array(5120)`、`bias:Float32Array(16)`、正の有限scale。出力は `output:Float32Array(16)` とHike/ORT/hash・copy量等のevidence。これは単一の固定Q射影であり、attention全体、1 stepのモデル予測、samplingではない。準備されたモデル値と明示activationを調べるための部分APIである。全モデル公開経路と、この固定部分演算の受入scopeは別である。
 
 validateConditioningとvalidateRawLatentはtensor本体を返さず、dtype/shape/layout/meaning/byteLength/modelSha256と必要なmaskを返す。Text Encoderのhash `c3355d...`、VAEのhash `2fc39d...`、Bernini diffusionモデルhashは別の識別子であり混用しない。出所hash未記載を検証済みにはせず拒否する。VAE公開固定profile以外のshape、normalized latentをrawと名付けた入力も拒否する。Conditioningは公開上限512 tokenを保ち、このmetadata検査の範囲をpointwise演算の1M要素予算と混同しない。
 
@@ -71,7 +89,7 @@ ORT・scheduler・tensor境界ヘルパーは対応操作で初めてWorker内�
 
 inspectは最初の8 bytesと最大8 MiBのヘッダーだけを読む。dtype/shapeからの正確なbyte長、offset範囲、隙間・重複、実file終端を確認し、全payloadを読み込まない。headerSHA256はヘッダーのみのhash。`fullFileSHA256=null`、`fullFileHashStatus=NOT_COMPUTED_HEADER_ONLY`で、重みやモデルの完全hash検証を行ったと誤認させない。
 
-検査の制限: JSON.parseが重複キーを後の値で置き換えるため、同じtensor名が重複した不正JSONの厳密拒否は未対応。このinspectはparsed descriptorの構造・範囲検査であり、safetensors形式全体や重み内容の検証を保証しない。厳密なimportが必要なモデル推論経路は現在NOT_READY。
+検査の制限: JSON.parseが重複キーを後の値で置き換えるため、同じtensor名が重複した不正JSONの厳密拒否は未対応。このinspectはparsed descriptorの構造・範囲検査であり、safetensors形式全体や重み内容の検証を保証しない。全モデルproviderは別の固定registry・strict header・profile検査を行う。このinspectの結果でproviderの検査を代替しない。
 
 ## MessagePort
 
@@ -101,16 +119,18 @@ node api/test/browser-check.cjs /absolute/path/LOW.safetensors /absolute/path/HI
 
 build-info.pyはAPI source、生成スクリプト、Euler、scheduler、Wan21 latent-space、tensor interopと公開codec、ORT bridgeのsource/kernel、ORT1.24.3実runtime・manifestのhashをまとめ、hostとworkerが独立に読み込む固定buildIdを生成する。対象sourceやkernelを変えたら必ず再生成する。build-info.mjs自体・テスト・READMEはhash対象外。
 
-REDの記録はtest/red-*.json、最新GREENはtest/browser-results.json。Chromiumの実Worker・MessageChannel・Hike/ORT WASMで22ケースを確認した。固定schedule・noise/flow式、raw meanの16 channel正規化と復元・公開codec保存読戻し、tensor境界拒否、literal部分射影と実重み2タイル32出力、partial取消後の再実行を含む。追加の実File試験では保存済み各15.57 GBのLOW/HIGHを入力し、1815 tensors、181280 bytesのheader hashを独立Python棚卸しと照合した。どちらもloadはNOT_READYで拒否した。これはモデル本体の推論合格ではない。
+以下の部分APIの結果は、各固定source・入力scopeの履歴である。履歴内の`NOT_READY`は当時のモデル経路の宣言を表し、現行公開入口の状態は冒頭の[モデル実行契約](api/MODEL_RUNTIME.md)と今回の結果を参照する。過去receiptの数値scopeは変更しない。
+
+REDの記録はtest/red-*.json、最新GREENはtest/browser-results.json。Chromiumの実Worker・MessageChannel・Hike/ORT WASMで22ケースを確認した。固定schedule・noise/flow式、raw meanの16 channel正規化と復元・公開codec保存読戻し、tensor境界拒否、literal部分射影と実重み2タイル32出力、partial取消後の再実行を含む。追加の実File試験では保存済み各15.57 GBのLOW/HIGHを入力し、1815 tensors、181280 bytesのheader hashを独立Python棚卸しと照合した。どちらも当時の単一file loadはNOT_READYで拒否した。これはモデル本体の推論合格ではない。
 
 
 ## LoRA重みの入力
 
 LoRA用に `inspectLora` / `loadLora` / `listLoras` / `readLora` / `readLoraSource` / `unloadLora` を追加した。同じrequest envelope、Worker、取消・revision・MessagePort契約を使用する。HIGH/LOWごとのFile/Blob、強度、既知base hashを明示し、成功時だけ所有bindingを更新する。loadは1MiB以下の分割読込みで全file hashを計算する。登録は取消によるWorker再生成後も保持され、disposeで解除する。
 
-読出しは1回4MiB以下の所有Uint8Array。F16/BF16/F32の保存bitsと元のshape・tensor名・範囲・hashを返し、LoRAの数値加算を行わない。対応する通常pairと `.diff/.diff_b` のshapeを実Bernini targetと照合する。`loraWeightIO:true` と `loraApplied:false` を区別し、モデル全体のNOT_READYを解除しない。
+読出しは1回4MiB以下の所有Uint8Array。F16/BF16/F32の保存bitsと元のshape・tensor名・範囲・hashを返し、LoRAの数値加算を行わない。対応する通常pairと `.diff/.diff_b` のshapeを実Bernini targetと照合する。`loraWeightIO:true` と `loraApplied:false` を区別する。LoRA適用が未受入であることと、現行baseモデルの公開実行経路を分ける。
 
-別担当LoRA SDKのsource契約へは `createLoraSource` で接続できる。後述のv2 adapterは限定Q射影のruntime feed-setへ接続する。全モデルのgraph/package/session切替は未実装である。元のweight I/O、対象モデルhash、対応形式、保持・所有権は [LoRA接続仕様](lora/API.md) を参照する。
+別担当LoRA SDKのsource契約へは `createLoraSource` で接続できる。後述のv2 adapterは限定Q射影のruntime feed-setへ接続する。現行の全モデル接続は [完成F32 weight port契約](api/WEIGHT_PORT.md) を正本とし、canonical logical targetから実reader/operator、不変base供給、owned packageの通常検証・切替・解除を実装した。`predict`中は選択side、6更新の`sample`中は両sideのepochを保持する。実LoRAを使う全モデル数値・全体運用受入は別であり、元のweight I/O、対象モデルhash、対応形式、保持・所有権は [LoRA接続仕様](lora/API.md) を参照する。
 
 
 ## L1: bounded F32 runtime weightと実base診断
@@ -170,4 +190,132 @@ native contextの既知fieldは所有コピーし、frame配列の順序と重�
 
 native executionProfileIdは `bernini-block0-qkv5120-norm-rope-selected16-head0-f32-v1`。本単位のattentionは宣言した選択16keyで、旧attentionのprecomputed K32760試験と別scopeである。入力position/sourceId、gate、独立reference、元precisionとの差、所有権・取消・解放・同時保持資源は [qkv/README.md](ort-bridge/qkv/README.md) と固定candidate planに記載する。Q/K normへ渡すprojection値は、本診断の明示admissionとしてabs≤1e16に制限する。既存generic RMSNormを有限巨大値全般の受入へ拡大しない。
 
-元storage FP8/F16を実HikeでF32へ復号するが、計算は明示したF32診断profileである。実model由来のmodulation後hidden、元production compute精度、全N32760/context65520以上、全query/head/stageと組合せ資源予算は別の未成立条件。`productionQKVVerified:false`、P5=BLOCKED、native `load/predict/sample=NOT_READY` を維持する。本native profileはownerの新しい候補宣言であり、固定catalogへの登録・管理採用は別に行う。
+元storage FP8/F16を実HikeでF32へ復号するが、計算は明示したF32診断profileである。実model由来のmodulation後hidden、元production compute精度、全N32760/context65520以上、全query/head/stageと組合せ資源予算は別の未成立条件。`productionQKVVerified:false`、P5=BLOCKED、当時のnative宣言は `load/predict/sample=NOT_READY` だった。現行の公開接続とは別scopeである。本native profileはownerの新しい候補宣言であり、固定catalogへの登録・管理採用は別に行う。
+
+## QKV Profileの登録案と実block由来N2境界
+
+[登録package](profiles/registration-QKV.md) は、上記の既存N16診断を固定source `8cdfd3f5f7db0cd66762e78f09c209fb5b27366b`・旧build・事前gate・数値receiptへ結び付ける。共通catalog `6dae9a6fac3e9ad29ea941f22211edbe4aa894ad` と旧管理候補を保持し、別entry `CANDIDATE-DIFFUSION-QKV-N16-8CDFD3F` を追加するpreviewである。提案文書版は `1.0-draft.2`、正本の登録・管理runtime採用は未実施。新しいN2実験へN16の受入scopeを広げない。
+
+後述のN2単位は [別登録案](../../../development/ai-connection/qkv-next/expansion/profile-proposal.json) `CANDIDATE-DIFFUSION-DERIVED-N2-ALL40-F32-V1` として提示する。新build・source・gate・結果はこの別案へ束縛し、旧N16登録案を更新しない。
+
+次の独立ES入口は、native RPCやMessagePortの新opではない。同一realmで所有する管理コードから利用し、関数・AbortSignal・opaque ownerをwire payloadへ入れない。
+
+```js
+import {createBlockHiddenPrefix} from './ort-bridge/block-hidden/stage.mjs';
+import {createDerivedQkvHeads} from './ort-bridge/attention-heads/stage.mjs';
+
+const prefix = await createBlockHiddenPrefix({file: originalHighFile, side:'HIGH'});
+let produced;
+try {
+  produced = await prefix.run({
+    rawMean: actualRectMean, noise: fixedDiagnosticNoise,
+    noiseScale: 1, scheduleIndex: 1, signal
+  });
+} finally { await prefix.dispose(); } // resource barrier
+// Compare the private artifact with the independently pinned reference first.
+// trustedProducer is that external passing receipt, not a caller success flag.
+const downstream = await createDerivedQkvHeads({
+  file: originalHighFile, side:'HIGH', trustedProducer
+});
+try {
+  const {attention,evidence} = await downstream.run({
+    hidden: produced.hidden, positions: produced.positions,
+    sourceIds: produced.sourceIds, evidence: produced.evidence,
+    artifactSHA256: trustedProducer.artifactSHA256, signal
+  });
+  // attention: owned F32 [2,5120], all2 queries / all40 heads, BEFORE O projection
+} finally { await downstream.dispose(); }
+```
+
+この呼出し例は固定診断条件の例であり、任意のrawMean/noise/timestepを受け入れる生成APIではない。入力はVAE `855f435120f08eb9e818e51281fc26f0e2633829` の実Rect mean `[1,16,1,2,4]`、固定明示noise128、noiseScale1、HIGH index1 / LOW index3である。LOWは独立した試験で、HIGHの出力受渡しではない。元Euler/simple6/shift5/split3を変更しない。
+
+実F16 patch `(1,2,2)`・time embedding・block0 modulation・全5120 LayerNormから、native profile `bernini-rect2-block0-postmod-f32-v1` のhiddenを得る。元core BLC `[1,2,5120]` を暗黙batch1のLC `[2,5120]` に下げ、token座標は `(0,0,0),(0,0,1)`、source0、contextなし。16tokenへのpadding/反復を行わない。F32診断profileとして元production精度との違いを残す。後段は全幅QKV→全5120 QK RMSNorm→各head RoPE→2 query/2 keyのattentionであり、O projection・残差・cross-attention・FFNを含まない。
+
+hidden/positionsはcompact・非sharedの有限F32、sourceIdsはcompactなInt32Array(2)で、runはawait前に所有snapshotを取得する。返却配列はcaller所有で、caller入力を変更・detachしない。BUSYはgetter前に獲得し、取消は協調式のためPromise終端を待ってからdisposeする。native Tensor/sessionの解放失敗ではhandleを保持して再利用を止め、`recover()`で解放を再試行する。全体queue・工程管理は管理、内部演算と資源は各ownerが担当する。
+
+数値規則・shape・sourceとの対応は [prefix契約](ort-bridge/block-hidden/README.md)、[全head境界](ort-bridge/attention-heads/API.md)、[結果・再現・段階別資源](../../../development/ai-connection/qkv-next/RESULT.md) を参照。trusted receiptはartifact・hidden・座標・side/block/timestep・producer sourceのhashを束縛する整合証拠であり、任意callerの出所を暗号学的に認証する機能ではない。
+
+全N32760/65520の数値実行、元81frame入力、ordered context、HIGH→LOW受渡し、production precision、全工程の同時保持・ORT Memory・copy/time予算は未受入。大規模allocation-only試験をモデル実行や全query数値合格と扱わず、この固定診断当時の宣言は `load/predict/sample=NOT_READY` であり、現行公開base経路の状態を表すものではない。
+
+## N2共通catalog登録packageと追加資源検証
+
+[registration-QKV-N2.md](profiles/registration-QKV-N2.md) と `profiles/registration-qkv-n2.json` は、新N2の共通catalog形式の登録資料である。旧owner独自 `expansion/profile-proposal.json` だけでは不足したrecord/rule/norm/category mapping、依存prefix実行profile、厳密native guard、完全commitと実source/build/evidenceを対応付ける。旧managerとN16候補を保持して別entryへ追加するpreviewであり、外部catalog正本や管理runtimeの採用状態を変更しない。
+
+新しい資源観測は既存の数値runtimeを変更せず、[追加結果](../../../development/ai-connection/qkv-followup/RESULT.md) に保存する。ORTのsession数とWebAssembly.Memory数を区別し、同一Memoryはidentityで一度だけ数える。観測する線形Memory容量・高水位、名前付きhost staging、累積copy、allocator live/GC/OSの未知量を別に扱う。計測器の追加をnative RPCの新operationや本番の資源保証と扱わない。
+
+[再利用scope](../../../development/ai-connection/qkv-followup/REUSE_SCOPE.md) と [次の本番境界](../../../development/ai-connection/qkv-followup/BOUNDARIES.md) は、N2数値・旧precomputed-K32760・3H allocationの証拠を合成して本番受入へ昇格させない条件を示す。元gridでの新たな数値受入には、その入力の実producer receipt・座標・precision・独立referenceが必要である。当時の診断宣言 `load/predict/sample=NOT_READY` は履歴として保ち、現行経路でも元Euler/simple6steps/shift5/split3を維持する。
+
+## N2 O projection・chunk2 gate・自己注意残差
+
+独立ES module [self-attention-tail](ort-bridge/self-attention-tail/README.md) の `createSelfAttentionTail` は、受入済みの同一N2 attentionから、実O projection→chunk2 gateのbroadcast乗算→block0入力への残差加算を一単位で実行する。native profileは `bernini-block0-n2-self-attention-residual-f32-v1`。native RPC/MessagePortへ新opを追加するものではない。
+
+```js
+import {createSelfAttentionTail} from './ort-bridge/self-attention-tail/stage.mjs';
+const tail = await createSelfAttentionTail({file: originalFile, side:'HIGH', trustedInputs});
+try {
+  const r = await tail.run({attention, patchHidden, timeAct1, signal});
+  // r.o / r.gated / r.residual: owned F32 LC [2,5120]
+  // r.gateProjection / r.gate: owned F32 [5120], broadcast across2 tokens
+} finally { await tail.dispose(); }
+```
+
+`trustedInputs`は、固定fullprefix receipt/artifact、patchHidden/timeAct1のbits、別途保存した実attention artifact/receipt/context bits、side/block0/HIGH1またはLOW3を束縛する。callerのsuccess booleanだけを出所証明にしない。配列はcompact・非sharedの有限F32、形はattention/patchHidden `[2,5120]`、timeAct1 `[5120]`。所有snapshotをawait前に取得し、callerを変更・detachせず、WASM viewやnative Tensorを返さない。
+
+Oは元FP8 E4M3FN `[5120,5120]` とO固有のscalar scale/config、F16 biasを使う。gateは保存済みtimeAct1に対し、元F16 time projectionのrows `[10240,15360)` とbias、modulation chunk2だけを追加取得して計算する。`gate = modulation_chunk2 + timeGate`、`gated = O*gate`、`residual = patchHidden+gated`。残差元にpost-modulation hiddenを使わず、gateへscale+1も適用しない。
+
+計算は明示F32診断で、Hikeの乗算と加算を分ける。元torch.addcmul/GPU fused precisionとの一致は未受入。返すresidualは自己注意後のtoken hiddenであり、生成latentやVAE posterior meanへ読み替えない。HIGH/LOWは独立ケースで、実HIGH→LOW受渡しではない。
+
+BUSYを外部getterより前に獲得し、取消はcooperativeとする。abort後にPromise終端を待ってからdisposeする。native解放失敗時はhandleを保持して再利用を止め、recoverで解放を再試行する。全体queue・工程管理は管理、内部数値計算と資源は本ownerの責任である。
+
+O・gate・gated・residualの独立参照と事前gate、重み範囲/source識別、Memory/copy・再利用/新規検証は [結果と再現手順](../../../development/ai-connection/self-attention-tail/RESULT.md) に記録する。cross-attention・FFN・全block・本番生成は後続とし、当時の診断宣言 `load/predict/sample=NOT_READY` は履歴として保つ。現行base接続は冒頭を参照。
+
+## P4: cross-attention・FFNの別入力候補
+
+独立ES入口 [post-self-attention](ort-bridge/post-self-attention/README.md) を追加する。profileは`bernini-block0-n2-cross-ffn-f32-candidate-v1`、factoryは`createPostSelfAttention`。上記固定tailのhash検査とProfileを変更せず、別のcaller入力・F32 weight feedを検証する候補として扱う。native RPC/MessagePortに新しい生成operationは追加しない。
+
+```javascript
+import {createP4WeightSource} from './ort-bridge/post-self-attention/source.mjs';
+import {captureP4Conditioning} from './ort-bridge/post-self-attention/conditioning.mjs';
+import {createPostSelfAttention} from './ort-bridge/post-self-attention/stage.mjs';
+const source = await createP4WeightSource({file: originalFile, side: 'HIGH'});
+const conditioning = captureP4Conditioning(textTensor); // strict model/tokenizer binding
+const stage = await createPostSelfAttention({source});
+try {
+  const result = await stage.run({residual, timeAct1, conditioning, signal});
+  // result.output aliases result.blockOutput; no new latent/sample meaning.
+} finally {
+  await stage.dispose(); // await a running native call's terminal state
+  source.dispose();      // caller owns source unless disposeSource:true
+}
+```
+
+| 入力 | 境界 |
+| --- | --- |
+| residual | compact owned-copy F32 `[2,5120]`、LC、自己注意残差。固定回帰では既存export/E4のhash・意味・producerを照合してから渡す |
+| timeAct1 | compact F32 `[5120]`、保存済みtime embedding SiLU出力。別producerの数値を元timestepの証明として使わない |
+| native conditioning | `float32 / BLC / text_hidden_states / [1,L,4096]`、`1<=L<=512`、Uint8 mask`[L]`、model/tokenizer識別、全metadataを明示capture |
+| fixture conditioning | 別名`captureP4FixtureConditioning`、独自fixtureId/sourceRef、`p4-fixture-text-hidden-states:v1`。実Text model/tokenizer識別を挿入しない |
+
+Text ownerの最終RMSNormは適用済みのまま受け取る。Diffusionは`text_embedding.0→GELU(tanh)→text_embedding.2`を所有し、全L行を保持する。maskはproducer metadataとして保持し、cross softmaxには適用しない。masked hidden行の削除、暗黙padding、再正規化は行わない。native tokenizer欠落は既定で拒否し、明示`missingTokenizerPolicy:'retain-unknown'`の場合もunknownを保持する。captureの形・識別一致は実producerの数値認証ではない。正負conditioningは別artifactで、管理が対象branchを明示して呼び出す。CFGや正負の自動合成はこの部品に含めない。
+
+演算順はaffine LN(norm3)→cross QKV→full5120 RMSNorm→40head×128 attention→O→ungated残差→nonaffine LN→chunks3/4 modulation→FFN5120/13824/5120（GELU tanh）→chunk5 gate→cross残差。全norm epsilonは1e-6、crossにRoPEはない。FFN downは全13824列を保った4出力行tileを使う。復号上限81920要素を引き上げず、inner次元を分割しない。O/text/timeのF16と、各自scalar scaleを持つQKV/FFNのFP8を区別する。
+
+出力は25の診断中間配列と`blockOutput:F32[2,5120]`、入力/出力hash・source・weight epoch/package・Memory/copy/time evidence。`output`は`blockOutput`と同じbufferを指す。全配列は呼出し側が保持でき、dispose後も値を保持する。conditioning captureはsealを所有し、改変されたcaptureを拒否する。runは最初のawait前に入力をcopyし、weight feedのimmutable leaseを取る。取消はbounded WASM/ORTの終端を待ち、busy中の二重実行を拒否する。`dispose/recover`は終端と解放を待つ。管理は全体queueを所有する。
+
+LoRA用の新入口は`createP4WeightFeed({source})`。immutable `baseProvider.readBlock`、疎patch `createSink`、`prepareLoad→validate→commit/rollback→releaseCandidate`、`captureSource`を公開する。registryはoriginal key/full shape/選択範囲、実program slot→ORT入力`weight`／Hike bias parameter、保存/計算dtype、FP8 profile、base/graph/registry識別を保持する。最終F32 weight/biasは再scaleせず実演算へ渡す。低rank積・loader/full-shape mappingはLoRA ownerのままで、新P4へのcanonical adapter共同受入は別条件である。詳細は[consumer契約](../../../development/ai-connection/p4-cross-ffn/WEIGHT-FEED.md)を参照。
+
+本候補のproducer認証、独立参照・事前gateの数値判定、本番shape、複数stageの組合せ資源予算はそれぞれ別判定とする。[conditioning契約](../../../development/ai-connection/p4-cross-ffn/CONDITIONING.md)・[候補gate](../../../development/ai-connection/p4-cross-ffn/core/candidate-plan.json)・[結果](../../../development/ai-connection/p4-cross-ffn/RESULT.md)にsourceと受入scopeを記録する。N2の部品成功からP5へ昇格せず、当時の診断宣言は `load/predict/sample=NOT_READY`。現行base経路への接続後もgenerationReady=falseは維持する。
+
+### 実Text L512専用の結合診断
+
+[runP4RealTextL512](diagnostics/p4-real-text-l512/run.mjs) は、固定f76の実Text packetを消費する独立診断入口である。従来のL4 fixture入場検査を変更しない。`runP4RealTextL512(file,payload,{writeOutput,phaseEvent})` を同一ページで呼び、管理のqueueやRPC/MessagePortへ生成operationを追加しない。
+
+`payload.nativeInputText` は実WKTからbit-preservingに作ったnative JSON原文で、whole SHA `9cbbdace203ea996d9dd6afc1a8ae832f4b68c2bf1fc54306b9f944f818bd6a8`。元WKT・header・payload・全512 mask・model/Tokenizer・元Text source5537へのbindingと、保存済みN2 residual/timeAct1・side/block0/HIGH1またはLOW3をnative構築前に照合する。`float32 BLC[1,512,4096]` 全行を4096→5120投影・K/V・cross-attentionへ渡し、そのN2残差をFFNへ渡す。maskのsoftmax適用・行削除・Text最終RMSNormの再適用は行わない。
+
+`writeOutput` は `{name,offset,byteLength,base64}` を受ける非公開sinkであり、復号後最大256KiBのaligned F32 byte chunkを25配列の全bytes/hashと照合して保存する。返す公開receiptは配列値を含まず、`blockOutput` の意味はLC `[2,5120]` のblock0 cross-attention＋FFN後出力（保存済み自己注意残差を起点）のままである。生成latent/sampleやVAE posterior meanには変換しない。`phaseEvent` は数値配列を受け取らず、工程時刻と資源観測だけに用いる。
+
+[Python driver](../../../tools/diffusion-models/p4-real-text-l512-browser.py) は、固定commitの実行source・事前composed reference manifest/hash・入力identity・既存gate・全25参照identityをChromium起動前に検査する。数値core/kernel・gateは従来と同一で、local abs.001/rel.0001、composed abs.01/rel.001の全値比較を行う。数値受入、LoRA適用、source取得ACK、管理採用は別scopeとし、[限定結果](../../../development/ai-connection/p4-real-text-l512/RESULT.md)・[再現手順](../../../development/ai-connection/p4-real-text-l512/REPRODUCE.md)へ記録する。
+
+実LoRA結合は別入口 [runP4RealTextL512Lora](diagnostics/p4-real-text-l512/lora.mjs) と [driver](../../../tools/diffusion-models/p4-real-text-l512-lora-browser.py) を使う。owner `a80db72feea60b9bd69e292e4716665c6f0ee77f` の `createLoraV2/createDiffusionP4Adapter` をexact sourceで読み、低rank積は本担当で実装しない。限定受入はlight/LOW、実L512・保存LOW3/N2/block0、cross Q先頭4行×全5120列とbias4、strength+1のみ。canonical adapterがregistry/provider/sink/candidateを接続し、完成F32を実ORT/Hikeへ渡す。
+
+独立Aのweight/bias数値gateと、独立Bの全25中間値/最終出力gateは別である。A-rounded F32とSDK完成F32のhashを分け、SDK bytesの実消費proofを参照Bの置換に使わない。candidate検証中に実NNを一回実行し、commit後・rollback後はpackage/epochとbyte readbackを確認した。SDK/prepared解放後のcopy保持、旧base/active read lease、全session/lease解放を記録する。[LoRA限定結果](../../../development/ai-connection/p4-real-text-l512/LORA-RESULT.md) のscopeを超える実行は未受入で、coverage:PARTIAL、completeAdapter:false、当時の診断宣言 `load/predict/sample=NOT_READY` は履歴として保つ。現行base接続は冒頭を参照。

@@ -1,0 +1,328 @@
+{
+  "schemaVersion": "ort-wasm-thread-resource-experiment/1",
+  "sourceCommit": "3aed2f696adf36385b54cfaa5019d447d64984e0",
+  "sourceSHA256": {
+    "shared/diffusion-models/execution/thread-profile-cases.mjs": "276aaaeb1efd8771a473e438ce520529f55008ae16b419340a7ec464dadbedb0",
+    "shared/diffusion-models/execution/wasm-memory-observer.mjs": "598a6a26d4c276968f67b4b88b2f6bf1381b8b499bdaf27661c7aab084dea34b",
+    "shared/diffusion-models/execution/batched-attention-graph.mjs": "95bbf39e692f74a9afb9b1e2b7972c4b148e62a8bd39c13af4ebbbb6ca91e098",
+    "shared/diffusion-models/ort-bridge/block-hidden/graph.mjs": "7826723d34a934a78e27335dce5973d41af4e2578136db5604c19b13d0954db0",
+    "shared/inference/vendor/ort.wasm.min.mjs": "d5a6d7bc8ee587648fb3742dde8c0094d17cbd3822a68bbec8ddfcd4f2adb88e",
+    "shared/inference/vendor/ort-wasm-simd-threaded.mjs": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+    "shared/inference/vendor/ort-wasm-simd-threaded.wasm": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17"
+  },
+  "driverSHA256": "d117c731a8468df45d176e760f05b732e3b1e484ce0117b91a32a9ea6b1a5a8c",
+  "fixtureSHA256": {
+    "x.f32": "a69386f5967a1bb0d396648f01d1ab2425daec3077b35a3fb867ac0c6997779d",
+    "weight.f32": "c06e61318a025827d948436633072a22eb0aa36f0bd438c5d6f24c89179f7a57",
+    "q.f32": "0df893b715f09f9898dffa4fbb70412312af1a961458cad4366d0e52ab151ca7",
+    "k.f32": "583f2afa7fb624531fa5afd843ba68d7ddf38efa77bd0202e4f5a4271efa6dbe",
+    "v.f32": "e318fe21a7f3a3e01a8ce125cd223e2d4c741c7a4c64f43028a37645bb63e746",
+    "linear.f64": "832051accf587de4925989cab3a1da6fba46c3d9ae679ff57f9f3e916a073260",
+    "max.f64": "00a1ed77ed20635d439247118970f57cfc41a1fa577b764db9285c3819941cd1",
+    "denominator.f64": "88ceb4bc697b3228bcd6e5e27d7605a465c2ede80ab7bf7c79cf0299eee79119",
+    "context.f64": "52e69d706003926697bc7456050890453360f7f3fbec8ea22d4c160f693c5d91"
+  },
+  "gateFixedBeforeExecution": {
+    "absolute": 0.001,
+    "relative": 0.0001,
+    "allElements": true
+  },
+  "threadOutputBitIdentical": true,
+  "sourceBytesUnchangedDuringRun": true,
+  "records": [
+    {
+      "passed": true,
+      "fixtureClass": "controlled non-dyadic F32 matrices; not real model QKV or production inference",
+      "threadsRequested": 1,
+      "threadsReported": 1,
+      "workerCreations": 0,
+      "crossOriginIsolated": true,
+      "sharedArrayBufferAvailable": true,
+      "prepareMs": 211.8149999976158,
+      "repetitions": 7,
+      "sessionCreations": 2,
+      "measurements": {
+        "linear": [
+          41.40499998629093,
+          42.50499999523163,
+          46.33999998867512,
+          45.08500000834465,
+          43.95499999821186,
+          41.230000004172325,
+          49.375
+        ],
+        "attention": [
+          40.57500000298023,
+          38.73999999463558,
+          39.79000000655651,
+          38.07500000298023,
+          36.21999999880791,
+          37.855000004172325,
+          42.059999987483025
+        ]
+      },
+      "mediansMs": {
+        "linear": 43.95499999821186,
+        "attention": 38.73999999463558
+      },
+      "timingScope": "Native session.run only, including its internal binding/copy; excludes fixture generation, hash, independent comparison and owned host snapshots",
+      "comparisons": {
+        "linear": {
+          "elements": 262144,
+          "failed": 0,
+          "maxAbs": 6.752679248406279e-08,
+          "absolute": 0.001,
+          "relative": 0.0001
+        },
+        "max": {
+          "elements": 5120,
+          "failed": 0,
+          "maxAbs": 2.1784272111885494e-09,
+          "absolute": 0.001,
+          "relative": 0.0001
+        },
+        "denominator": {
+          "elements": 5120,
+          "failed": 0,
+          "maxAbs": 0.00024006546908594828,
+          "absolute": 0.001,
+          "relative": 0.0001
+        },
+        "context": {
+          "elements": 655360,
+          "failed": 0,
+          "maxAbs": 3.940941742663906e-07,
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "outputHashes": {
+        "linear": "2bbbdfa797c592399cb949ba6b1d7c1b9bd08a8acc266c0a879cf2ce61ea4a09",
+        "max": "7d2bdf158a1e82fb38eaf5b8a9c7dce4ef492d9431eb88cd702982881e082cc9",
+        "denominator": "0a1a72f9bcb5a555dbb2e18f466148d667be4499587b7ad2af09520808b3d853",
+        "context": "6e93c7ea66fdef485ddeedc1ddd596219a6e4228926619bab37d33f00213a36f"
+      },
+      "inputHashes": {
+        "x": "a69386f5967a1bb0d396648f01d1ab2425daec3077b35a3fb867ac0c6997779d",
+        "weight": "c06e61318a025827d948436633072a22eb0aa36f0bd438c5d6f24c89179f7a57",
+        "q": "0df893b715f09f9898dffa4fbb70412312af1a961458cad4366d0e52ab151ca7",
+        "k": "583f2afa7fb624531fa5afd843ba68d7ddf38efa77bd0202e4f5a4271efa6dbe",
+        "v": "e318fe21a7f3a3e01a8ce125cd223e2d4c741c7a4c64f43028a37645bb63e746"
+      },
+      "memoryBeforeDispose": {
+        "label": "before-dispose",
+        "atMs": 1292.0649999976158,
+        "hookActive": true,
+        "identities": 1,
+        "reachableObjects": 1,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 47906816,
+        "peakObservedReachableBytes": 47906816,
+        "sumPerIdentityPeaks": 47906816,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 47906816,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 47906816,
+            "peakObservedBytes": 47906816,
+            "samples": 1
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      },
+      "ortVersion": "1.24.3",
+      "acceptedProduction": false,
+      "defaultRuntimeChanged": false,
+      "cleanupErrors": [],
+      "memoryAfterDispose": {
+        "label": "after-dispose",
+        "atMs": 1293.484999999404,
+        "hookActive": true,
+        "identities": 1,
+        "reachableObjects": 1,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 47906816,
+        "peakObservedReachableBytes": 47906816,
+        "sumPerIdentityPeaks": 47906816,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 47906816,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 47906816,
+            "peakObservedBytes": 47906816,
+            "samples": 2
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      },
+      "chromiumVersion": "154.0.8037.57"
+    },
+    {
+      "passed": true,
+      "fixtureClass": "controlled non-dyadic F32 matrices; not real model QKV or production inference",
+      "threadsRequested": 4,
+      "threadsReported": 4,
+      "workerCreations": 3,
+      "crossOriginIsolated": true,
+      "sharedArrayBufferAvailable": true,
+      "prepareMs": 251.0300000011921,
+      "repetitions": 7,
+      "sessionCreations": 2,
+      "measurements": {
+        "linear": [
+          17.270000010728836,
+          17.21500000357628,
+          17.030000001192093,
+          18.775000005960464,
+          18.79500000178814,
+          16.759999990463257,
+          16.58500000834465
+        ],
+        "attention": [
+          17.555000007152557,
+          25.759999990463257,
+          17.66499999165535,
+          17.78499999642372,
+          16.49500000476837,
+          15.765000000596046,
+          14.929999992251396
+        ]
+      },
+      "mediansMs": {
+        "linear": 17.21500000357628,
+        "attention": 17.555000007152557
+      },
+      "timingScope": "Native session.run only, including its internal binding/copy; excludes fixture generation, hash, independent comparison and owned host snapshots",
+      "comparisons": {
+        "linear": {
+          "elements": 262144,
+          "failed": 0,
+          "maxAbs": 6.752679248406279e-08,
+          "absolute": 0.001,
+          "relative": 0.0001
+        },
+        "max": {
+          "elements": 5120,
+          "failed": 0,
+          "maxAbs": 2.1784272111885494e-09,
+          "absolute": 0.001,
+          "relative": 0.0001
+        },
+        "denominator": {
+          "elements": 5120,
+          "failed": 0,
+          "maxAbs": 0.00024006546908594828,
+          "absolute": 0.001,
+          "relative": 0.0001
+        },
+        "context": {
+          "elements": 655360,
+          "failed": 0,
+          "maxAbs": 3.940941742663906e-07,
+          "absolute": 0.001,
+          "relative": 0.0001
+        }
+      },
+      "outputHashes": {
+        "linear": "2bbbdfa797c592399cb949ba6b1d7c1b9bd08a8acc266c0a879cf2ce61ea4a09",
+        "max": "7d2bdf158a1e82fb38eaf5b8a9c7dce4ef492d9431eb88cd702982881e082cc9",
+        "denominator": "0a1a72f9bcb5a555dbb2e18f466148d667be4499587b7ad2af09520808b3d853",
+        "context": "6e93c7ea66fdef485ddeedc1ddd596219a6e4228926619bab37d33f00213a36f"
+      },
+      "inputHashes": {
+        "x": "a69386f5967a1bb0d396648f01d1ab2425daec3077b35a3fb867ac0c6997779d",
+        "weight": "c06e61318a025827d948436633072a22eb0aa36f0bd438c5d6f24c89179f7a57",
+        "q": "0df893b715f09f9898dffa4fbb70412312af1a961458cad4366d0e52ab151ca7",
+        "k": "583f2afa7fb624531fa5afd843ba68d7ddf38efa77bd0202e4f5a4271efa6dbe",
+        "v": "e318fe21a7f3a3e01a8ce125cd223e2d4c741c7a4c64f43028a37645bb63e746"
+      },
+      "memoryBeforeDispose": {
+        "label": "before-dispose",
+        "atMs": 892.4100000113249,
+        "hookActive": true,
+        "identities": 1,
+        "reachableObjects": 1,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 48758784,
+        "peakObservedReachableBytes": 48758784,
+        "sumPerIdentityPeaks": 48758784,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 48758784,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 48758784,
+            "peakObservedBytes": 48758784,
+            "samples": 1
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      },
+      "ortVersion": "1.24.3",
+      "acceptedProduction": false,
+      "defaultRuntimeChanged": false,
+      "cleanupErrors": [],
+      "memoryAfterDispose": {
+        "label": "after-dispose",
+        "atMs": 893.8800000101328,
+        "hookActive": true,
+        "identities": 1,
+        "reachableObjects": 1,
+        "noLongerDereferenceableObjects": 0,
+        "byteLengthUnavailableObjects": 0,
+        "currentReachableBytes": 48758784,
+        "peakObservedReachableBytes": 48758784,
+        "sumPerIdentityPeaks": 48758784,
+        "observationErrors": 0,
+        "memories": [
+          {
+            "id": "wasm-memory-1",
+            "sources": [
+              "Memory.constructor"
+            ],
+            "state": "reachable-at-sample",
+            "currentBytes": 48758784,
+            "firstObservedBytes": 16777216,
+            "lastObservedBytes": 48758784,
+            "peakObservedBytes": 48758784,
+            "samples": 2
+          }
+        ],
+        "scope": "Observed memory object buffer.byteLength only; unreadable current sizes are null; shared backing may be counted by multiple object identities; no total process/allocator/OS release claim"
+      },
+      "chromiumVersion": "154.0.8037.57"
+    }
+  ],
+  "ratiosOneOverFour": {
+    "linear": 2.553296543077581,
+    "attention": 2.2067786943236385
+  },
+  "scope": "Controlled Gemm128x2048x2048 and H40/Q128/K256/D128; no model read, no production shape acceptance or default change; this realm memory observations exclude pthread realms",
+  "requirements": [
+    "COOP same-origin",
+    "COEP require-corp",
+    "crossOriginIsolated true",
+    "SharedArrayBuffer available",
+    "one fresh ORT realm per thread profile"
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "bernini-p4-real-text-l512-lora-reference-freeze/0.1",
+  "status": "SOURCES_AND_PURE_BOUNDARIES_VERIFIED_WAITING_FOR_PARENT_COMMITTED_EXECUTION_SOURCE",
+  "parentBaseCommit": "994ebb9ce01c9e95db9cd18eb877a981152693c5",
+  "sourceSHA256": {
+    "development/ai-connection/p4-real-text-l512/lora-reference/lora-reference.py": "779ca5fe1130a4be7c4163333c6ff528614c797fc3c5da6da2fa83469239f403",
+    "development/ai-connection/p4-real-text-l512/lora-reference/test-lora-reference.py": "ae22972d6cdff98a7ed43bed1c44cc5221da95bfb2be7eff77858c5608452672",
+    "development/ai-connection/p4-real-text-l512/lora-reference/LORA-REFERENCE-PLAN.md": "38bac9eb38e1f8f094ebd1b145f76af42df029275820641f6deef50dee0317cd",
+    "development/ai-connection/p4-real-text-l512/reference/run-reference.py": "599dd92de2afc3dab266132eb86180ec6253a31caf1a7455b0454467435a03f8",
+    "development/ai-connection/p4-real-text-l512/reference/prepare-input.py": "e59320fbd28f0402e6b5bdb389535bd41afbf245095d801d016476a642c278cb",
+    "tools/diffusion-models/p4-cross-ffn-reference.py": "66ded34a4bb74d261b81484bf2abd2d9ee75b0e4cf82ce6a063e02237a7a7ecf",
+    "tools/diffusion-models/p4-cross-ffn-browser.py": "141ab992ec58f3b985e739ec00f79ec98b03d0bbfc4d1581bc4131a3c986707b",
+    "development/ai-connection/p4-cross-ffn/core/candidate-plan.json": "051b6833be54aed9e1e0c3657bd28aa926b46c238a1c3a06fb298f6cc6427600"
+  },
+  "ownerSource": {
+    "commit": "a80db72feea60b9bd69e292e4716665c6f0ee77f",
+    "path": "/tmp/p4-l512-lora/a80/source/tools/ai-connection/p4-lora-reference.py",
+    "sha256": "6f9ed048c7c1ae1ddbd3fa7b3d4328304c4fbd7dc4ca0bfd031c712e5e17987b",
+    "functions": [
+      "original_header",
+      "read_tensor",
+      "decode_fp8",
+      "merge_reference",
+      "bias_reference"
+    ],
+    "controlledK4GenerateCalled": false
+  },
+  "originalAcquisitionReceiptSHA256": "a54a869f681af2c4cda38bbcda2c66404dd1bf0c6cebfa3735c92592cc6d73b6",
+  "originalSHA256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+  "originalHeaderSHA256": "bd4e95892305560456676c8fc9a4545c27f4deb979f5d2b929b7be7df2d5d333",
+  "realNativeTextSHA256": "9cbbdace203ea996d9dd6afc1a8ae832f4b68c2bf1fc54306b9f944f818bd6a8",
+  "acceptedLOWBaseComposedManifestSHA256": "530746b1e2d59d0c9cbe82e1ddad6d743ae32eb8fd7029f56cca694b57672be7",
+  "selectedScope": {
+    "side": "LOW",
+    "scheduleIndex": 3,
+    "tokens": 2,
+    "blockIndex": 0,
+    "TextRows": 512,
+    "pairId": "light",
+    "strength": 1,
+    "weightRows": [
+      0,
+      4
+    ],
+    "allInputColumns": 5120,
+    "biasElements": [
+      0,
+      4
+    ],
+    "rank": 128,
+    "alpha": 128,
+    "metadataMaskUnchanged": true,
+    "completeAdapter": false
+  },
+  "gates": {
+    "Aweight": {
+      "abs": 1e-05,
+      "rel": 0.0001
+    },
+    "Abias": {
+      "abs": 0,
+      "rel": 0
+    },
+    "BcomposedAll25": {
+      "abs": 0.01,
+      "rel": 0.001
+    },
+    "BlocalAll25": {
+      "abs": 0.001,
+      "rel": 0.0001
+    }
+  },
+  "nativeSDKPatchHashesSeparateFromIndependentA": true,
+  "thinSDKByteOverlayProofHasLowrankOrForwardMath": false,
+  "tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python development/ai-connection/p4-real-text-l512/lora-reference/test-lora-reference.py",
+    "passed": 6,
+    "failed": 0
+  },
+  "newReferenceModelReadsExecuted": false,
+  "newLoRAMathExecutedOnOriginalValues": false,
+  "newReferenceForwardExecuted": false,
+  "existingFrozenBaseFilesModified": false,
+  "commitOrPushPerformedByReferenceAgent": false
+}

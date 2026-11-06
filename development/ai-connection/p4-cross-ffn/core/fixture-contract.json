@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "bernini-p4-fixture-contract/0.1",
+  "status": "FROZEN_BEFORE_NUMERICAL_EXECUTION",
+  "fixtureId": "bernini-p4-explicit-text-l4-dyadic-v1",
+  "sourceRef": "development/ai-connection/p4-cross-ffn/core/fixture-contract.json",
+  "inputClass": "explicit-fixture",
+  "producer": "independent-deterministic-diagnostic-fixture",
+  "meaning": "p4-fixture-text-hidden-states:v1",
+  "shape": [
+    1,
+    4,
+    4096
+  ],
+  "dtype": "float32",
+  "layout": "BLC",
+  "rows": 4,
+  "attentionMask": [
+    1,
+    1,
+    0,
+    1
+  ],
+  "attentionMaskSHA256": "252c0b6b080fa045acfcd1437f693f3be2be2ac8223ea525d492fa19ab028942",
+  "dataSHA256": "0cd4fa87e24e6d875207aca52cc214a1b46157a886d4c090fb7c5cfc9a5925ae",
+  "construction": "zero-based row r, channel c: row2 => positive zero; otherwise (((r+1)*131+(c+1)*17)%257-128)/1024; exact dyadic binary32",
+  "maskedRowsPreserved": true,
+  "crossAttentionMask": "none",
+  "originalWorkflowTextVerified": false,
+  "textEncoderProducerVerified": false,
+  "modelSha256": null,
+  "tokenizerSha256": null
+}

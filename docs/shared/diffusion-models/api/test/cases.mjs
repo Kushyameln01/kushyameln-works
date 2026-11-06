@@ -108,8 +108,8 @@ export async function run(){
   const fixture=await (await fetch('../../linear/work/fixture.json')).json();
   for(const item of fixture.models){const q=new Uint8Array(await (await fetch('../../linear/'+item.tileFile)).arrayBuffer()),bias=new Float32Array(await (await fetch('../../linear/'+item.biasFile)).arrayBuffer()),x=Float32Array.from({length:5120},(_,i)=>((i%31)-15)/64);const r=await ask('linearProjection',{q,scale:item.scale,bias,x});assert(r.status==='ok',JSON.stringify(r.error));r.result.output.forEach((v,i)=>assert(Math.abs(v-item.expectedDouble[i])<=1e-4+1e-5*Math.abs(item.expectedDouble[i]),'realweight partial tolerance'));}
  });
- await test('Neural operations fail closed without injection or fake predictions',async()=>{
-  for(const op of ['load','predict','sample']){const r=await ask(op,op==='load'?{file:fixture()}:{});assert(r.status==='error'&&r.error.code==='NOT_READY','NN fake result');}
+ await test('Legacy single-file load stays NOT_READY and unloaded model operations require a pair',async()=>{
+  for(const op of ['load','predict','sample']){const r=await ask(op,op==='load'?{file:fixture()}:{});assert(r.status==='error'&&r.error.code===(op==='load'?'NOT_READY':'MODEL_NOT_LOADED'),'Unexpected unloaded model result for '+op);}
  });
  await test('Identity protocol and unsupported operations are rejected before work',async()=>{
   for(const change of [{protocolVersion:'wrong'},{sessionId:'wrong'},{jobId:''},{inputRevision:-1}]){

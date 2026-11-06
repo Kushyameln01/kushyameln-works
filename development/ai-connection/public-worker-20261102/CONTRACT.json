@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "bernini-public-worker-test-contract/0.1",
+  "ordinaryProtocol": "diffusion-models/0.1",
+  "runner": "tools/diffusion-models/public-model-browser.py",
+  "browserSource": "tools/diffusion-models/public-model-browser.mjs",
+  "workerMemoryObserver": "tools/diffusion-models/public-model-worker-observer.mjs",
+  "scope": "Actual public host -> dedicated Worker -> fixed Bernini model/sampler owner; acceptance follows the supplied explicit saved-input shape",
+  "modelFileInput": ["HIGH", "LOW"],
+  "sourceInventory": "Parse the complete generated API BUILD_SOURCES dictionary and add the two runner files, fixed Worker observer, this contract and generated build-info itself; all must equal the exact execution commit before and after running",
+  "resourceProfiles": {
+    "1": "One-thread default",
+    "4": "Explicit four-thread operator profile; real COOP same-origin / COEP require-corp / SharedArrayBuffer, no fallback"
+  },
+  "normalCalls": {
+    "load": ["files.HIGH", "files.LOW", "resource.wasmThreads"],
+    "predict": ["side", "shapeRequest", "tensors", "conditioning", "timestep", "modelSessionId"],
+    "sample": ["shapeRequest", "tensors", "noise", "positive", "negative", "modelSessionId"],
+    "saveTensor": ["tensor"],
+    "readTensor": ["file"]
+  },
+  "smoke": [
+    "Real pair load",
+    "Reject second load without discarding owner",
+    "Reject stale model session before numerical dispatch",
+    "Both HIGH and LOW explicit selection with out-of-range timestep before neural computation",
+    "Actual HIGH prefix then hard cancellation at patch progress; no fake prediction callback",
+    "Numerical retry requires load after Worker termination",
+    "Reload in a fresh realm, reject the previous model session",
+    "Canonical saved-input tensor write and actual-disk File readback; no generated sample inferred from cancelled prefix",
+    "Await unload cleanup then physical Worker termination and dispose"
+  ],
+  "predict": "Actual selected-side all-block prediction with explicit noise target and full supplied saved conditioning/context; persist velocity and canonical file",
+  "sample": "Actual internal HIGH3 then LOW3 with explicit initial target/noise and separate positive/negative copies; persist raw generated sample, not posterior mean",
+  "sampleRecoveryProbe": "Explicit runner-only --cancel-before-run: actual HIGH prefix cancel, require unloaded retry, reload in the same public API instance, reject old model session, then complete the unchanged normal sample call using the reloaded model session; compare API/model identities in receipt. This flag is not an ordinary API input",
+  "failedPairRecoveryProbe": "Explicit runner-only --failed-pair-before-run, smoke mode only: ordinary load with the retained HIGH File deliberately supplied as both HIGH and LOW; require terminal error details workerTerminated/preparationDiscarded/reloadRequired all true and observe the failed Worker epoch terminate. In the same API instance, require a new Worker modelStatus with loaded=false, cleanupRequired=false, modelSessionId=null and resources=null, then ordinary prepareP4({file:HIGH,side:'HIGH'}) and releaseP4 with zero sessions/read leases. Afterwards execute the unchanged correct-pair smoke load/prefix-cancel/reload/codec path. Wrong-side rejection and P4 preparation/release perform no neural execution; this does not inject a cleanup failure or establish full prediction/sample numerics. The flag and Worker epochs are diagnostic metadata, never ordinary API fields",
+  "readback": "POST bounded binary bytes into private O_EXCL mode0600 files, select the actual saved file again, read through public readTensor, compare canonical metadata and every F32 bit",
+  "inputOwnership": "Hash caller-owned tensor/noise/Text/mask inputs before and after; public API sends no transfer list",
+  "referenceAndGate": "Development comparison only; never ordinary API fields or compatibility requirements",
+  "claimsExcluded": ["Original workflow acceptance from a small case", "Generation READY", "Original production mixed-precision equivalence", "Unobserved process-memory peak"]
+}

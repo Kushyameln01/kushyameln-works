@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "p4-l512-pre-execution-independent-resource-review/0.1",
+  "createdUTC": "2026-11-01T16:14:20.404324+00:00",
+  "status": "NO_REMAINING_STATIC_NUMERICAL_TRANSPORT_LIFECYCLE_PRIVACY_BLOCKER_FOUND_AFTER_REVISIONS",
+  "scope": "Read-only current uncommitted new runner/driver/reference adapter. Not a numerical execution, approval, benchmark or replacement for pending unit/preflight tests.",
+  "sourceSHA256": {
+    "docs/shared/diffusion-models/diagnostics/p4-real-text-l512/run.mjs": "f22e540f0f30dbd8496663b732d36232eb145febd6a81987283a05178609afe7",
+    "tools/diffusion-models/p4-real-text-l512-browser.py": "3bdc3b73ac7865785c2a8794f905308a12df6d6315ff83dd8e4f74e02505fa3b",
+    "development/ai-connection/p4-real-text-l512/reference/run-reference.py": "599dd92de2afc3dab266132eb86180ec6253a31caf1a7455b0454467435a03f8",
+    "development/ai-connection/p4-real-text-l512/reference/prepare-input.py": "e59320fbd28f0402e6b5bdb389535bd41afbf245095d801d016476a642c278cb"
+  },
+  "baselineCoreHashesUnchanged": {
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/stage.mjs": {
+      "expected": "ff184acbabc589472a95b0bbf0eb2d3949b4478ecc0b19266817e8c313e7826d",
+      "observed": "ff184acbabc589472a95b0bbf0eb2d3949b4478ecc0b19266817e8c313e7826d"
+    },
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/linear.mjs": {
+      "expected": "3821cca4b031aae4adf3944f15f8d171ed602f97878307ce495b7dcd8b05118a",
+      "observed": "3821cca4b031aae4adf3944f15f8d171ed602f97878307ce495b7dcd8b05118a"
+    },
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/math.mjs": {
+      "expected": "c26d169c90bced0524c73081bd92b13bbb635f57718086b6224826b2464bf9a0",
+      "observed": "c26d169c90bced0524c73081bd92b13bbb635f57718086b6224826b2464bf9a0"
+    },
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/source.mjs": {
+      "expected": "5bf263b8b6465b395dd6ea3634ef9619626479f95b8a22cc207dd923541c9d63",
+      "observed": "5bf263b8b6465b395dd6ea3634ef9619626479f95b8a22cc207dd923541c9d63"
+    },
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/conditioning.mjs": {
+      "expected": "b4518ea35ca35e63e6ba8cdbe67e5d9fea0fa2125dac7dac0f5d4ac6c83ac7c2",
+      "observed": "b4518ea35ca35e63e6ba8cdbe67e5d9fea0fa2125dac7dac0f5d4ac6c83ac7c2"
+    },
+    "docs/shared/diffusion-models/ort-bridge/post-self-attention/weights.mjs": {
+      "expected": "b80cdcb74584ef3f224c8eb6fcbef9cfb065f8387427a04a708d53d273856c9c",
+      "observed": "b80cdcb74584ef3f224c8eb6fcbef9cfb065f8387427a04a708d53d273856c9c"
+    },
+    "docs/shared/diffusion-models/ort-bridge/hike.mjs": {
+      "expected": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a",
+      "observed": "a56e4f52c8639fc9be40ebd3d3092a0c590f8e73f21d2f54156f7b217cd6499a"
+    },
+    "docs/shared/diffusion-models/ort-bridge/stream-attention/hike.mjs": {
+      "expected": "67d5ada9d4c6c4217c3845c9ddbed5fb246cedeb35d5283840e1057087d4c3cd",
+      "observed": "67d5ada9d4c6c4217c3845c9ddbed5fb246cedeb35d5283840e1057087d4c3cd"
+    },
+    "docs/shared/diffusion-models/ort-bridge/qkv/ownership.mjs": {
+      "expected": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d",
+      "observed": "64759f90185e7250437bf2ad691cddb1486e299eaa963b556b38301fc0daec4d"
+    }
+  },
+  "checks": {
+    "nativeTextWholeArtifactAdmittedBeforeNativeConstructor": true,
+    "originalWKTReconstructionHashAndHeaderMetadataBinding": true,
+    "modelTokenizerProducerAndAll512RowsMaskBitsBound": true,
+    "savedN2SideBlockSchedulesBound": true,
+    "requiredPreRuntimeComposedFreezeCheckedBeforeChromium": true,
+    "all25BinaryOutputsExactNativeF32HashesAndShapes": true,
+    "base64InternalSlabBoundBytes": 8192,
+    "binarySinkRawChunkMaxBytes": 262144,
+    "privateFilesUnderTmpExclusive0600": true,
+    "all25LocalAndComposedGatesUseUnchangedOracle": true,
+    "all29IndependentParameterVerifierPinned": true,
+    "exactPreRuntimeRecompositionRequired": true,
+    "gateThresholdsChanged": false,
+    "OSMemoryMonitorOnlineBoundedPhaseAggregation": true,
+    "OSMemoryMonitorSerializedReadsAndReadErrors": true,
+    "phasePromisesHandledAndSettled": true,
+    "leaseSessionTensorCleanupChecksPresent": true,
+    "privateFailureReceiptPreservesSanitizedMemoryMetrics": true,
+    "rawValuesExcludedFromPublicReceipt": true
+  },
+  "operationalConditions": [
+    "Root must complete/freeze both sides composed reference manifests before the runtime command; --composed-freeze must use those exact manifests.",
+    "Playwright page.set_default_timeout does not bound an async page.evaluate call. Use an explicit external INT followed by KILL time budget or equivalent watchdog; interrupted run remains failure.",
+    "Reference local CLI can exit zero with receipt passed:false. Root must inspect/assert every comparison and receipt passed.",
+    "Monitor RSS/PSS are sampled browser-process sums; cgroup values cover whole environment and memory.peak is historical; neither is full pipeline allocator peak.",
+    "Named stage retained counters are not a full simultaneous caller/native/export live set. Suggested explicit partial caller/output/seal spans."
+  ],
+  "executed": {
+    "modelPayloadReads": false,
+    "modelHashRecomputation": false,
+    "WASM": false,
+    "Chromium": false,
+    "newUnitTestsByThisReviewer": false
+  },
+  "addressedFindings": [
+    "Missing mandatory pre-runtime composed identity admission added by runner agent.",
+    "All-sample list replaced by online aggregate and fixed phase count.",
+    "Numeric operator/head events now propagated through handled bounded binding promises.",
+    "Exceptions now preserve sanitized private memory receipt.",
+    "Browser launch moved into cleanup try/finally."
+  ]
+}

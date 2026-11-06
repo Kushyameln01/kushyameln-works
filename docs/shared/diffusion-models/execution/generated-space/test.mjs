@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {existsSync} from 'node:fs';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+assert.ok(existsSync(new URL('../generated-space.mjs',import.meta.url)),'Dedicated generated-space owner is missing');
+assert.ok(existsSync(new URL('./build/generated-space.wasm',import.meta.url)),'Dedicated generated-space Hike kernel is missing');
+const {runGeneratedCases}=await import('./test-cases.mjs');
+const result=await runGeneratedCases(async path=>new Uint8Array(await readFile(new URL(path,import.meta.url))));
+await mkdir(new URL('./work/',import.meta.url),{recursive:true});
+await writeFile(new URL('./work/node-results.json',import.meta.url),JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result));

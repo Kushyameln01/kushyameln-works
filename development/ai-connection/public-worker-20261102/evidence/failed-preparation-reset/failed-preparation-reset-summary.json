@@ -1,0 +1,2052 @@
+{
+  "schemaVersion": "bernini-failed-preparation-reset-actual-smoke/1",
+  "executionSourceCommit": "6d12140eeab204385fa31f5da73d4796968a4003",
+  "passed": true,
+  "actualSmokeReceipt": {
+    "path": "/tmp/public-worker-run/failed-pair-smoke-result.json",
+    "bytes": 371076,
+    "sha256": "921adb675f835da11ff1f9cdbccf64c4c909300dce3c41614021d757136363c0"
+  },
+  "rawResourceReceipt": {
+    "path": "/tmp/public-worker-run/failed-pair-smoke-resources.json",
+    "bytes": 158282,
+    "sha256": "2e48b1faed68ae87c19177e01f8bf118f7a1fadecef7a35bb9a3d0de387901f8"
+  },
+  "changedScope": {
+    "baseCommit": "0f761f374dce1d447bbb912ad13c08f9bf85c279",
+    "changedPaths": [
+      "development/ai-connection/build-verification.json",
+      "development/ai-connection/public-worker-20261102/CONTRACT.json",
+      "development/ai-connection/public-worker-20261102/README.md",
+      "docs/shared/diffusion-models/api/MODEL_RUNTIME.md",
+      "docs/shared/diffusion-models/api/build-info.mjs",
+      "docs/shared/diffusion-models/api/index.mjs",
+      "docs/shared/diffusion-models/api/model-adapter.mjs",
+      "docs/shared/diffusion-models/api/test/model-adapter.test.mjs",
+      "docs/shared/diffusion-models/api/test/model-host.test.mjs",
+      "tools/diffusion-models/public-model-browser.mjs",
+      "tools/diffusion-models/public-model-browser.py",
+      "tools/diffusion-models/test-public-model-browser.mjs",
+      "tools/diffusion-models/test-public-model-browser.py"
+    ],
+    "reviewedAPIExceptionPatchSHA256": "9fc8a97060f5b8dddbf3d9662b81308cc161c91a1f999407de6e1a81f6ec32f0",
+    "reviewedSmokeDriverPatchSHA256": "436f8665ea81de85e794d80df4db25253ed489c3d43a77c5e476d4714f7c62b9",
+    "numericalExecutionFilesChanged": false,
+    "claim": "postpatch exception/status/harness acceptance only; previous complete N5/L512 sample remains executed at0f761f3, not reattributed to6d12140"
+  },
+  "actualFailedPair": {
+    "requestIdentity": {
+      "buildId": "diffusion-models/0.1+9c5d8d18e9a7b046d7768c8c32ca6a48eaa084c900e916d59d63e735ebeb2a20",
+      "protocolVersion": "diffusion-models/0.1",
+      "sessionId": "public-model-58843b74-5cdd-43a6-92e2-f2c9399ff6bf",
+      "jobId": "public-1",
+      "inputRevision": 1,
+      "op": "load"
+    },
+    "intentionalInput": {
+      "files": {
+        "HIGH": "retained HIGH File",
+        "LOW": "same retained HIGH File, intentional wrong side"
+      },
+      "resource": {
+        "wasmThreads": 4
+      }
+    },
+    "error": {
+      "code": "COMPUTE_ERROR",
+      "message": "Original base side/header/size mismatch",
+      "details": {
+        "workerTerminated": true,
+        "preparationDiscarded": true,
+        "reloadRequired": true
+      }
+    },
+    "failedWorkerEpoch": 1,
+    "failedWorkerTerminated": true,
+    "freshWorkerEpoch": 2,
+    "freshStatus": {
+      "adapterImplemented": true,
+      "loaded": false,
+      "cleanupRequired": false,
+      "modelSessionId": null,
+      "modelEpoch": 0,
+      "busy": false,
+      "closing": false,
+      "disposed": false,
+      "generationReady": false,
+      "nativeCandidateDescription": null,
+      "resources": null
+    },
+    "actualP4PreparationAndRelease": {
+      "preparation": {
+        "available": true,
+        "kind": "partial-neural-operator",
+        "blockIndex": 0,
+        "shapes": {
+          "blockIndex": 0,
+          "tokens": 2,
+          "hiddenWidth": 5120,
+          "textWidth": 4096,
+          "textRows": [
+            1,
+            512
+          ],
+          "residual": [
+            2,
+            5120
+          ],
+          "timeAct1": [
+            5120
+          ],
+          "conditioning": [
+            1,
+            null,
+            4096
+          ],
+          "blockOutput": [
+            2,
+            5120
+          ],
+          "ffnWidth": 13824,
+          "headCount": 40,
+          "headDim": 128
+        },
+        "limits": {
+          "maxDecodeElements": 81920,
+          "maxRawReadBytes": 163840,
+          "maxProjectionRows": 16,
+          "maxWeightRows": 16,
+          "ffnDownMaxWeightRows": 4,
+          "ordinaryInnerMax": 5120,
+          "ffnDownInner": 13824,
+          "ffnDownInnerSplit": false,
+          "graphQueryRows": 2,
+          "keyChunkMin": 1,
+          "keyChunkMax": 64,
+          "aggregatePeakBytes": null,
+          "aggregatePeakMeasured": false
+        },
+        "inputs": {
+          "residual": {
+            "dtype": "float32",
+            "shape": [
+              2,
+              5120
+            ],
+            "layout": "LC",
+            "meaning": "bernini-block0-post-self-attention-hidden:v1",
+            "normalization": "none"
+          },
+          "timeAct1": {
+            "dtype": "float32",
+            "shape": [
+              5120
+            ],
+            "layout": "C",
+            "meaning": "bernini-time-embedding-silu:v1",
+            "normalization": "none"
+          },
+          "conditioning": {
+            "dtype": "float32",
+            "shape": [
+              1,
+              null,
+              4096
+            ],
+            "layout": "BLC",
+            "meaning": "text_hidden_states",
+            "normalization": "umt5-final-rmsnorm-f32-v1",
+            "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+            "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458"
+          }
+        },
+        "contextLatents": [],
+        "modelSides": [
+          "HIGH",
+          "LOW"
+        ],
+        "computeDtype": "float32",
+        "output": {
+          "dtype": "float32",
+          "shape": [
+            2,
+            5120
+          ],
+          "layout": "LC",
+          "meaning": "bernini-block0-output-hidden:v1",
+          "normalization": "none"
+        },
+        "attentionMask": "provenance-only; all Text rows consumed; no cross-attention softmax mask",
+        "missingTokenizerPolicy": "reject",
+        "producerAuthentication": false,
+        "textNormalizationAliases": [
+          "encoder-final-rmsnorm"
+        ],
+        "model": {
+          "side": "HIGH",
+          "modelSha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52"
+        },
+        "normalOutput": "final tensor only",
+        "diagnosticMethod": "diagnose",
+        "source": {
+          "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+          "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+          "graphHash": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+          "precisionProfile": "per-entry original F16 or scalar-scaled E4M3FN decoded by Hike to F32; ORT F32 Gemm and separate Hike F32 parameters; original production precision unverified",
+          "fullFileSHA256Verified": false
+        }
+      },
+      "release": {
+        "released": true,
+        "activeORTSessions": 0,
+        "readLeases": 0
+      }
+    },
+    "P4NeuralExecutionPerformed": false
+  },
+  "followingValidPairSmoke": {
+    "loaded": {
+      "loaded": true,
+      "modelSessionId": "9a684b38-2642-4e20-9fa9-8f18315d2e39",
+      "modelEpoch": 1,
+      "profile": "bernini-full40-euler-simple6-shift5-split3-experimental-v1",
+      "models": {
+        "HIGH": {
+          "side": "HIGH",
+          "modelSha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+          "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+          "pinnedCoreCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+          "fullFileSHA256Verified": false
+        },
+        "LOW": {
+          "side": "LOW",
+          "modelSha256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+          "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+          "pinnedCoreCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+          "fullFileSHA256Verified": false
+        }
+      },
+      "scheduler": "bernini-comfy-simple6-shift5-v1",
+      "resource": {
+        "wasmThreads": 4,
+        "crossOriginIsolated": true
+      },
+      "publicWorkerConnected": true,
+      "generationReady": false,
+      "originalWorkflowAccepted": false
+    },
+    "reloaded": {
+      "loaded": true,
+      "modelSessionId": "f0abaf38-5b7d-42de-98d6-b6eb244386ef",
+      "modelEpoch": 1,
+      "profile": "bernini-full40-euler-simple6-shift5-split3-experimental-v1",
+      "models": {
+        "HIGH": {
+          "side": "HIGH",
+          "modelSha256": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+          "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+          "pinnedCoreCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+          "fullFileSHA256Verified": false
+        },
+        "LOW": {
+          "side": "LOW",
+          "modelSha256": "ce35c070f345c91abe43d6bf29b0eccb8687e4026fadc0e0a70a73c9afb7bbb3",
+          "headerSHA256": "286333af0c02bc74084c8af08465f43e753890ee0eeb51734b97bdeb2806165b",
+          "pinnedCoreCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+          "fullFileSHA256Verified": false
+        }
+      },
+      "scheduler": "bernini-comfy-simple6-shift5-v1",
+      "resource": {
+        "wasmThreads": 4,
+        "crossOriginIsolated": true
+      },
+      "publicWorkerConnected": true,
+      "generationReady": false,
+      "originalWorkflowAccepted": false
+    },
+    "operations": [
+      {
+        "test": "failed-pair-discarded",
+        "workerEpoch": 1,
+        "requestIdentity": {
+          "buildId": "diffusion-models/0.1+9c5d8d18e9a7b046d7768c8c32ca6a48eaa084c900e916d59d63e735ebeb2a20",
+          "protocolVersion": "diffusion-models/0.1",
+          "sessionId": "public-model-58843b74-5cdd-43a6-92e2-f2c9399ff6bf",
+          "jobId": "public-1",
+          "inputRevision": 1,
+          "op": "load"
+        },
+        "code": "COMPUTE_ERROR",
+        "details": {
+          "workerTerminated": true,
+          "preparationDiscarded": true,
+          "reloadRequired": true
+        }
+      },
+      {
+        "test": "failed-pair-fresh-status",
+        "workerEpoch": 2,
+        "loaded": false,
+        "cleanupRequired": false,
+        "resources": null
+      },
+      {
+        "test": "failed-pair-fresh-p4",
+        "workerEpoch": 2,
+        "released": true,
+        "activeORTSessions": 0,
+        "readLeases": 0
+      },
+      {
+        "test": "already-loaded",
+        "code": "MODEL_ALREADY_LOADED"
+      },
+      {
+        "test": "stale-session",
+        "code": "STALE_MODEL"
+      },
+      {
+        "test": "side-invalid-before-neural",
+        "side": "HIGH",
+        "error": {
+          "code": "COMPUTE_ERROR",
+          "message": "Timestep in 0..1000 required",
+          "details": {
+            "resources": {
+              "predictions": 0,
+              "samples": 0,
+              "failedOperations": 1,
+              "stepsCompleted": 0,
+              "highPredictions": 0,
+              "lowPredictions": 0,
+              "rawContextNormalizations": 0,
+              "lastRun": null,
+              "busy": false,
+              "disposed": false,
+              "closing": false,
+              "models": {
+                "HIGH": {
+                  "predictions": 0,
+                  "diagnosticRuns": 0,
+                  "failedPredictions": 1,
+                  "sourceReads": 0,
+                  "sourceF32Bytes": 0,
+                  "linearRuns": 0,
+                  "attentionTiles": 0,
+                  "blocksCompleted": 0,
+                  "activeHiddenStores": 0,
+                  "activeHiddenStoreBytes": 0,
+                  "peakHiddenStoreBytes": 0,
+                  "stageWeightCacheBytes": 0,
+                  "peakStageWeightCacheBytes": 0,
+                  "lastRun": null,
+                  "lastTiming": {
+                    "elapsedMs": 0.7650000005960464,
+                    "inclusive": true,
+                    "sumIsNotExclusiveTotal": true,
+                    "totals": {},
+                    "activeOperator": null,
+                    "firstFailure": null,
+                    "cleanupErrors": []
+                  },
+                  "lastDiagnostic": null,
+                  "lastFailure": {
+                    "name": "RangeError",
+                    "message": "Timestep in 0..1000 required",
+                    "code": null,
+                    "context": null,
+                    "timing": {
+                      "elapsedMs": 0.6550000011920929,
+                      "inclusive": true,
+                      "sumIsNotExclusiveTotal": true,
+                      "totals": {},
+                      "activeOperator": null,
+                      "firstFailure": null
+                    },
+                    "chunkDiagnostics": null
+                  },
+                  "timing": {
+                    "elapsedMs": 0.7650000005960464,
+                    "inclusive": true,
+                    "sumIsNotExclusiveTotal": true,
+                    "totals": {},
+                    "activeOperator": null,
+                    "firstFailure": null,
+                    "cleanupErrors": []
+                  },
+                  "chunkDiagnostics": null,
+                  "busy": false,
+                  "disposed": false,
+                  "closing": false,
+                  "head": {
+                    "busy": false,
+                    "disposed": false,
+                    "runs": 0,
+                    "rowsProcessed": 0,
+                    "sourceReads": 0,
+                    "sourceF32Bytes": 0,
+                    "cacheBytes": 0,
+                    "lastLinearEvidence": null
+                  },
+                  "math": {
+                    "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+                    "memoryBytes": 9175040,
+                    "memoryIdentity": "model-math-1",
+                    "arenaBytes": 8108032,
+                    "calls": 0,
+                    "kernelCalls": 0,
+                    "snapshotCopyBytes": 0,
+                    "inputCopyBytes": 0,
+                    "outputCopyBytes": 0,
+                    "primitiveCalls": {
+                      "cos": 0,
+                      "exp": 0,
+                      "pow": 0,
+                      "sin": 0,
+                      "sqrt": 0,
+                      "tanh": 0
+                    },
+                    "workspaceReused": true,
+                    "busy": false,
+                    "disposed": false,
+                    "limits": {
+                      "maxRows": 128,
+                      "width": 5120,
+                      "headWidth": 128,
+                      "heads": 40,
+                      "maxLinearWidth": 13824,
+                      "maxElements": 1769472,
+                      "chunkElements": 81920,
+                      "epsilon": 1e-06
+                    },
+                    "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+                    "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+                    "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+                  },
+                  "ops": {
+                    "busy": false,
+                    "disposed": false,
+                    "cleanupPending": false,
+                    "pendingTensors": 0,
+                    "linearRuns": 0,
+                    "attentionRuns": 0,
+                    "inputCopyBytes": 0,
+                    "outputCopyBytes": 0,
+                    "runtimeInputSpanBytes": 0,
+                    "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+                    "preparedWeights": 0,
+                    "preparedWeightBytes": 0,
+                    "peakPreparedWeightBytes": 0,
+                    "preparedWeightCopies": 0,
+                    "preparedWeightTransfers": 0,
+                    "preparedWeightCopyBytes": 0,
+                    "preparedWeightTransferBytes": 0,
+                    "preparedWeightCreations": 0,
+                    "preparedWeightReleases": 0,
+                    "attentionQueries": {
+                      "queryCreations": 0,
+                      "queryPreparationsCompleted": 0,
+                      "queryReleases": 0,
+                      "stepAttempts": 0,
+                      "stepsCompleted": 0,
+                      "failedSteps": 0,
+                      "qSnapshotBytes": 0,
+                      "kvSnapshotBytes": 0,
+                      "finishCopyBytes": 0,
+                      "currentCpuTensorSpanBytes": 0,
+                      "peakCpuTensorSpanBytes": 0,
+                      "ownedTensors": 0,
+                      "peakOwnedTensors": 0,
+                      "unknownSizedTensors": 0,
+                      "cleanupFailures": 0,
+                      "ownedQueryCount": 0,
+                      "cleanupPending": false,
+                      "disposed": false,
+                      "queries": [],
+                      "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+                    },
+                    "timings": {
+                      "snapshotMs": 0,
+                      "weightPrepareMs": 0,
+                      "sessionRunMs": 0,
+                      "linearSessionRunMs": 0,
+                      "attentionSessionRunMs": 0,
+                      "outputCopyMs": 0,
+                      "tensorCleanupMs": 0,
+                      "preparedReleaseMs": 0,
+                      "ownerDisposeMs": 0
+                    },
+                    "resourceProfile": {
+                      "numThreads": 4,
+                      "firstInitialization": true,
+                      "pthreadCreationsObserved": 3,
+                      "coiRequired": true,
+                      "freshRealmRequiredForProfileChange": true
+                    },
+                    "nativeWasmCopiesMeasured": false,
+                    "sessionCreations": 2
+                  },
+                  "source": {
+                    "disposed": false,
+                    "busy": false,
+                    "reads": 722,
+                    "readBytes": 192448,
+                    "headerReads": 2,
+                    "headerReadBytes": 181288,
+                    "configReads": 720,
+                    "configReadBytes": 11160,
+                    "payloadReads": 0,
+                    "payloadReadBytes": 0,
+                    "maxPayloadReadBytes": 0,
+                    "decodedF32Bytes": 0,
+                    "readAheadBytes": 1048576,
+                    "storageReads": 722,
+                    "storageReadBytes": 192448,
+                    "maxStorageReadBytes": 181280,
+                    "storageReadAttempts": 722,
+                    "storageReadFailures": 0,
+                    "discardedStorageReads": 0,
+                    "discardedStorageBytes": 0,
+                    "storageReadMs": 371.5699998140335,
+                    "headerInspectMs": 16.564999997615814,
+                    "decodeMs": 0,
+                    "cacheHits": 0,
+                    "cacheMisses": 0,
+                    "cachedBytes": 0,
+                    "peakCachedBytes": 0,
+                    "windowCopyBytes": 0,
+                    "windowCopyMs": 0,
+                    "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+                    "hike": {
+                      "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                      "memoryBytes": 1572864,
+                      "arenaBytes": 491648,
+                      "calls": 361,
+                      "inputCopyBytes": 218416,
+                      "outputCopyBytes": 619712,
+                      "workspaceReused": true,
+                      "disposed": false
+                    },
+                    "decoder": {
+                      "disposed": false,
+                      "workspaceReused": true,
+                      "memoryBytes": 1835008,
+                      "arenaBytes": 754688,
+                      "tableBytes": 631808,
+                      "wasmTableBytes": 263168,
+                      "hostTableBytes": 368640,
+                      "fp8Tables": 360,
+                      "calls": 0,
+                      "inputCopyBytes": 0,
+                      "outputCopyBytes": 0,
+                      "wasmTableCopyBytes": 262144
+                    },
+                    "decoderSelection": "lookup",
+                    "fullFileHashRecomputed": false,
+                    "payloadSampleAdmission": false
+                  }
+                },
+                "LOW": {
+                  "predictions": 0,
+                  "diagnosticRuns": 0,
+                  "failedPredictions": 0,
+                  "sourceReads": 0,
+                  "sourceF32Bytes": 0,
+                  "linearRuns": 0,
+                  "attentionTiles": 0,
+                  "blocksCompleted": 0,
+                  "activeHiddenStores": 0,
+                  "activeHiddenStoreBytes": 0,
+                  "peakHiddenStoreBytes": 0,
+                  "stageWeightCacheBytes": 0,
+                  "peakStageWeightCacheBytes": 0,
+                  "lastRun": null,
+                  "lastTiming": null,
+                  "lastDiagnostic": null,
+                  "lastFailure": null,
+                  "timing": null,
+                  "chunkDiagnostics": null,
+                  "busy": false,
+                  "disposed": false,
+                  "closing": false,
+                  "head": {
+                    "busy": false,
+                    "disposed": false,
+                    "runs": 0,
+                    "rowsProcessed": 0,
+                    "sourceReads": 0,
+                    "sourceF32Bytes": 0,
+                    "cacheBytes": 0,
+                    "lastLinearEvidence": null
+                  },
+                  "math": {
+                    "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+                    "memoryBytes": 9175040,
+                    "memoryIdentity": "model-math-1",
+                    "arenaBytes": 8108032,
+                    "calls": 0,
+                    "kernelCalls": 0,
+                    "snapshotCopyBytes": 0,
+                    "inputCopyBytes": 0,
+                    "outputCopyBytes": 0,
+                    "primitiveCalls": {
+                      "cos": 0,
+                      "exp": 0,
+                      "pow": 0,
+                      "sin": 0,
+                      "sqrt": 0,
+                      "tanh": 0
+                    },
+                    "workspaceReused": true,
+                    "busy": false,
+                    "disposed": false,
+                    "limits": {
+                      "maxRows": 128,
+                      "width": 5120,
+                      "headWidth": 128,
+                      "heads": 40,
+                      "maxLinearWidth": 13824,
+                      "maxElements": 1769472,
+                      "chunkElements": 81920,
+                      "epsilon": 1e-06
+                    },
+                    "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+                    "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+                    "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+                  },
+                  "ops": {
+                    "busy": false,
+                    "disposed": false,
+                    "cleanupPending": false,
+                    "pendingTensors": 0,
+                    "linearRuns": 0,
+                    "attentionRuns": 0,
+                    "inputCopyBytes": 0,
+                    "outputCopyBytes": 0,
+                    "runtimeInputSpanBytes": 0,
+                    "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+                    "preparedWeights": 0,
+                    "preparedWeightBytes": 0,
+                    "peakPreparedWeightBytes": 0,
+                    "preparedWeightCopies": 0,
+                    "preparedWeightTransfers": 0,
+                    "preparedWeightCopyBytes": 0,
+                    "preparedWeightTransferBytes": 0,
+                    "preparedWeightCreations": 0,
+                    "preparedWeightReleases": 0,
+                    "attentionQueries": {
+                      "queryCreations": 0,
+                      "queryPreparationsCompleted": 0,
+                      "queryReleases": 0,
+                      "stepAttempts": 0,
+                      "stepsCompleted": 0,
+                      "failedSteps": 0,
+                      "qSnapshotBytes": 0,
+                      "kvSnapshotBytes": 0,
+                      "finishCopyBytes": 0,
+                      "currentCpuTensorSpanBytes": 0,
+                      "peakCpuTensorSpanBytes": 0,
+                      "ownedTensors": 0,
+                      "peakOwnedTensors": 0,
+                      "unknownSizedTensors": 0,
+                      "cleanupFailures": 0,
+                      "ownedQueryCount": 0,
+                      "cleanupPending": false,
+                      "disposed": false,
+                      "queries": [],
+                      "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+                    },
+                    "timings": {
+                      "snapshotMs": 0,
+                      "weightPrepareMs": 0,
+                      "sessionRunMs": 0,
+                      "linearSessionRunMs": 0,
+                      "attentionSessionRunMs": 0,
+                      "outputCopyMs": 0,
+                      "tensorCleanupMs": 0,
+                      "preparedReleaseMs": 0,
+                      "ownerDisposeMs": 0
+                    },
+                    "resourceProfile": {
+                      "numThreads": 4,
+                      "firstInitialization": true,
+                      "pthreadCreationsObserved": 3,
+                      "coiRequired": true,
+                      "freshRealmRequiredForProfileChange": true
+                    },
+                    "nativeWasmCopiesMeasured": false,
+                    "sessionCreations": 2
+                  },
+                  "source": {
+                    "disposed": false,
+                    "busy": false,
+                    "reads": 722,
+                    "readBytes": 192448,
+                    "headerReads": 2,
+                    "headerReadBytes": 181288,
+                    "configReads": 720,
+                    "configReadBytes": 11160,
+                    "payloadReads": 0,
+                    "payloadReadBytes": 0,
+                    "maxPayloadReadBytes": 0,
+                    "decodedF32Bytes": 0,
+                    "readAheadBytes": 1048576,
+                    "storageReads": 722,
+                    "storageReadBytes": 192448,
+                    "maxStorageReadBytes": 181280,
+                    "storageReadAttempts": 722,
+                    "storageReadFailures": 0,
+                    "discardedStorageReads": 0,
+                    "discardedStorageBytes": 0,
+                    "storageReadMs": 369.4849997907877,
+                    "headerInspectMs": 12.950000002980232,
+                    "decodeMs": 0,
+                    "cacheHits": 0,
+                    "cacheMisses": 0,
+                    "cachedBytes": 0,
+                    "peakCachedBytes": 0,
+                    "windowCopyBytes": 0,
+                    "windowCopyMs": 0,
+                    "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+                    "hike": {
+                      "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                      "memoryBytes": 1572864,
+                      "arenaBytes": 491648,
+                      "calls": 361,
+                      "inputCopyBytes": 218416,
+                      "outputCopyBytes": 619712,
+                      "workspaceReused": true,
+                      "disposed": false
+                    },
+                    "decoder": {
+                      "disposed": false,
+                      "workspaceReused": true,
+                      "memoryBytes": 1835008,
+                      "arenaBytes": 754688,
+                      "tableBytes": 631808,
+                      "wasmTableBytes": 263168,
+                      "hostTableBytes": 368640,
+                      "fp8Tables": 360,
+                      "calls": 0,
+                      "inputCopyBytes": 0,
+                      "outputCopyBytes": 0,
+                      "wasmTableCopyBytes": 262144
+                    },
+                    "decoderSelection": "lookup",
+                    "fullFileHashRecomputed": false,
+                    "payloadSampleAdmission": false
+                  }
+                }
+              },
+              "sources": {
+                "HIGH": {
+                  "disposed": false,
+                  "busy": false,
+                  "reads": 722,
+                  "readBytes": 192448,
+                  "headerReads": 2,
+                  "headerReadBytes": 181288,
+                  "configReads": 720,
+                  "configReadBytes": 11160,
+                  "payloadReads": 0,
+                  "payloadReadBytes": 0,
+                  "maxPayloadReadBytes": 0,
+                  "decodedF32Bytes": 0,
+                  "readAheadBytes": 1048576,
+                  "storageReads": 722,
+                  "storageReadBytes": 192448,
+                  "maxStorageReadBytes": 181280,
+                  "storageReadAttempts": 722,
+                  "storageReadFailures": 0,
+                  "discardedStorageReads": 0,
+                  "discardedStorageBytes": 0,
+                  "storageReadMs": 371.5699998140335,
+                  "headerInspectMs": 16.564999997615814,
+                  "decodeMs": 0,
+                  "cacheHits": 0,
+                  "cacheMisses": 0,
+                  "cachedBytes": 0,
+                  "peakCachedBytes": 0,
+                  "windowCopyBytes": 0,
+                  "windowCopyMs": 0,
+                  "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+                  "hike": {
+                    "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                    "memoryBytes": 1572864,
+                    "arenaBytes": 491648,
+                    "calls": 361,
+                    "inputCopyBytes": 218416,
+                    "outputCopyBytes": 619712,
+                    "workspaceReused": true,
+                    "disposed": false
+                  },
+                  "decoder": {
+                    "disposed": false,
+                    "workspaceReused": true,
+                    "memoryBytes": 1835008,
+                    "arenaBytes": 754688,
+                    "tableBytes": 631808,
+                    "wasmTableBytes": 263168,
+                    "hostTableBytes": 368640,
+                    "fp8Tables": 360,
+                    "calls": 0,
+                    "inputCopyBytes": 0,
+                    "outputCopyBytes": 0,
+                    "wasmTableCopyBytes": 262144
+                  },
+                  "decoderSelection": "lookup",
+                  "fullFileHashRecomputed": false,
+                  "payloadSampleAdmission": false
+                },
+                "LOW": {
+                  "disposed": false,
+                  "busy": false,
+                  "reads": 722,
+                  "readBytes": 192448,
+                  "headerReads": 2,
+                  "headerReadBytes": 181288,
+                  "configReads": 720,
+                  "configReadBytes": 11160,
+                  "payloadReads": 0,
+                  "payloadReadBytes": 0,
+                  "maxPayloadReadBytes": 0,
+                  "decodedF32Bytes": 0,
+                  "readAheadBytes": 1048576,
+                  "storageReads": 722,
+                  "storageReadBytes": 192448,
+                  "maxStorageReadBytes": 181280,
+                  "storageReadAttempts": 722,
+                  "storageReadFailures": 0,
+                  "discardedStorageReads": 0,
+                  "discardedStorageBytes": 0,
+                  "storageReadMs": 369.4849997907877,
+                  "headerInspectMs": 12.950000002980232,
+                  "decodeMs": 0,
+                  "cacheHits": 0,
+                  "cacheMisses": 0,
+                  "cachedBytes": 0,
+                  "peakCachedBytes": 0,
+                  "windowCopyBytes": 0,
+                  "windowCopyMs": 0,
+                  "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+                  "hike": {
+                    "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                    "memoryBytes": 1572864,
+                    "arenaBytes": 491648,
+                    "calls": 361,
+                    "inputCopyBytes": 218416,
+                    "outputCopyBytes": 619712,
+                    "workspaceReused": true,
+                    "disposed": false
+                  },
+                  "decoder": {
+                    "disposed": false,
+                    "workspaceReused": true,
+                    "memoryBytes": 1835008,
+                    "arenaBytes": 754688,
+                    "tableBytes": 631808,
+                    "wasmTableBytes": 263168,
+                    "hostTableBytes": 368640,
+                    "fp8Tables": 360,
+                    "calls": 0,
+                    "inputCopyBytes": 0,
+                    "outputCopyBytes": 0,
+                    "wasmTableCopyBytes": 262144
+                  },
+                  "decoderSelection": "lookup",
+                  "fullFileHashRecomputed": false,
+                  "payloadSampleAdmission": false
+                }
+              },
+              "math": {
+                "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+                "memoryBytes": 9175040,
+                "memoryIdentity": "model-math-1",
+                "arenaBytes": 8108032,
+                "calls": 0,
+                "kernelCalls": 0,
+                "snapshotCopyBytes": 0,
+                "inputCopyBytes": 0,
+                "outputCopyBytes": 0,
+                "primitiveCalls": {
+                  "cos": 0,
+                  "exp": 0,
+                  "pow": 0,
+                  "sin": 0,
+                  "sqrt": 0,
+                  "tanh": 0
+                },
+                "workspaceReused": true,
+                "busy": false,
+                "disposed": false,
+                "limits": {
+                  "maxRows": 128,
+                  "width": 5120,
+                  "headWidth": 128,
+                  "heads": 40,
+                  "maxLinearWidth": 13824,
+                  "maxElements": 1769472,
+                  "chunkElements": 81920,
+                  "epsilon": 1e-06
+                },
+                "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+                "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+                "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+              },
+              "ops": {
+                "busy": false,
+                "disposed": false,
+                "cleanupPending": false,
+                "pendingTensors": 0,
+                "linearRuns": 0,
+                "attentionRuns": 0,
+                "inputCopyBytes": 0,
+                "outputCopyBytes": 0,
+                "runtimeInputSpanBytes": 0,
+                "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+                "preparedWeights": 0,
+                "preparedWeightBytes": 0,
+                "peakPreparedWeightBytes": 0,
+                "preparedWeightCopies": 0,
+                "preparedWeightTransfers": 0,
+                "preparedWeightCopyBytes": 0,
+                "preparedWeightTransferBytes": 0,
+                "preparedWeightCreations": 0,
+                "preparedWeightReleases": 0,
+                "attentionQueries": {
+                  "queryCreations": 0,
+                  "queryPreparationsCompleted": 0,
+                  "queryReleases": 0,
+                  "stepAttempts": 0,
+                  "stepsCompleted": 0,
+                  "failedSteps": 0,
+                  "qSnapshotBytes": 0,
+                  "kvSnapshotBytes": 0,
+                  "finishCopyBytes": 0,
+                  "currentCpuTensorSpanBytes": 0,
+                  "peakCpuTensorSpanBytes": 0,
+                  "ownedTensors": 0,
+                  "peakOwnedTensors": 0,
+                  "unknownSizedTensors": 0,
+                  "cleanupFailures": 0,
+                  "ownedQueryCount": 0,
+                  "cleanupPending": false,
+                  "disposed": false,
+                  "queries": [],
+                  "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+                },
+                "timings": {
+                  "snapshotMs": 0,
+                  "weightPrepareMs": 0,
+                  "sessionRunMs": 0,
+                  "linearSessionRunMs": 0,
+                  "attentionSessionRunMs": 0,
+                  "outputCopyMs": 0,
+                  "tensorCleanupMs": 0,
+                  "preparedReleaseMs": 0,
+                  "ownerDisposeMs": 0
+                },
+                "resourceProfile": {
+                  "numThreads": 4,
+                  "firstInitialization": true,
+                  "pthreadCreationsObserved": 3,
+                  "coiRequired": true,
+                  "freshRealmRequiredForProfileChange": true
+                },
+                "nativeWasmCopiesMeasured": false,
+                "sessionCreations": 2
+              },
+              "sharedSessionCreations": 2
+            }
+          }
+        }
+      },
+      {
+        "test": "side-invalid-before-neural",
+        "side": "LOW",
+        "error": {
+          "code": "COMPUTE_ERROR",
+          "message": "Timestep in 0..1000 required",
+          "details": {
+            "resources": {
+              "predictions": 0,
+              "samples": 0,
+              "failedOperations": 2,
+              "stepsCompleted": 0,
+              "highPredictions": 0,
+              "lowPredictions": 0,
+              "rawContextNormalizations": 0,
+              "lastRun": null,
+              "busy": false,
+              "disposed": false,
+              "closing": false,
+              "models": {
+                "HIGH": {
+                  "predictions": 0,
+                  "diagnosticRuns": 0,
+                  "failedPredictions": 1,
+                  "sourceReads": 0,
+                  "sourceF32Bytes": 0,
+                  "linearRuns": 0,
+                  "attentionTiles": 0,
+                  "blocksCompleted": 0,
+                  "activeHiddenStores": 0,
+                  "activeHiddenStoreBytes": 0,
+                  "peakHiddenStoreBytes": 0,
+                  "stageWeightCacheBytes": 0,
+                  "peakStageWeightCacheBytes": 0,
+                  "lastRun": null,
+                  "lastTiming": {
+                    "elapsedMs": 0.7650000005960464,
+                    "inclusive": true,
+                    "sumIsNotExclusiveTotal": true,
+                    "totals": {},
+                    "activeOperator": null,
+                    "firstFailure": null,
+                    "cleanupErrors": []
+                  },
+                  "lastDiagnostic": null,
+                  "lastFailure": {
+                    "name": "RangeError",
+                    "message": "Timestep in 0..1000 required",
+                    "code": null,
+                    "context": null,
+                    "timing": {
+                      "elapsedMs": 0.6550000011920929,
+                      "inclusive": true,
+                      "sumIsNotExclusiveTotal": true,
+                      "totals": {},
+                      "activeOperator": null,
+                      "firstFailure": null
+                    },
+                    "chunkDiagnostics": null
+                  },
+                  "timing": {
+                    "elapsedMs": 0.7650000005960464,
+                    "inclusive": true,
+                    "sumIsNotExclusiveTotal": true,
+                    "totals": {},
+                    "activeOperator": null,
+                    "firstFailure": null,
+                    "cleanupErrors": []
+                  },
+                  "chunkDiagnostics": null,
+                  "busy": false,
+                  "disposed": false,
+                  "closing": false,
+                  "head": {
+                    "busy": false,
+                    "disposed": false,
+                    "runs": 0,
+                    "rowsProcessed": 0,
+                    "sourceReads": 0,
+                    "sourceF32Bytes": 0,
+                    "cacheBytes": 0,
+                    "lastLinearEvidence": null
+                  },
+                  "math": {
+                    "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+                    "memoryBytes": 9175040,
+                    "memoryIdentity": "model-math-1",
+                    "arenaBytes": 8108032,
+                    "calls": 0,
+                    "kernelCalls": 0,
+                    "snapshotCopyBytes": 0,
+                    "inputCopyBytes": 0,
+                    "outputCopyBytes": 0,
+                    "primitiveCalls": {
+                      "cos": 0,
+                      "exp": 0,
+                      "pow": 0,
+                      "sin": 0,
+                      "sqrt": 0,
+                      "tanh": 0
+                    },
+                    "workspaceReused": true,
+                    "busy": false,
+                    "disposed": false,
+                    "limits": {
+                      "maxRows": 128,
+                      "width": 5120,
+                      "headWidth": 128,
+                      "heads": 40,
+                      "maxLinearWidth": 13824,
+                      "maxElements": 1769472,
+                      "chunkElements": 81920,
+                      "epsilon": 1e-06
+                    },
+                    "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+                    "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+                    "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+                  },
+                  "ops": {
+                    "busy": false,
+                    "disposed": false,
+                    "cleanupPending": false,
+                    "pendingTensors": 0,
+                    "linearRuns": 0,
+                    "attentionRuns": 0,
+                    "inputCopyBytes": 0,
+                    "outputCopyBytes": 0,
+                    "runtimeInputSpanBytes": 0,
+                    "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+                    "preparedWeights": 0,
+                    "preparedWeightBytes": 0,
+                    "peakPreparedWeightBytes": 0,
+                    "preparedWeightCopies": 0,
+                    "preparedWeightTransfers": 0,
+                    "preparedWeightCopyBytes": 0,
+                    "preparedWeightTransferBytes": 0,
+                    "preparedWeightCreations": 0,
+                    "preparedWeightReleases": 0,
+                    "attentionQueries": {
+                      "queryCreations": 0,
+                      "queryPreparationsCompleted": 0,
+                      "queryReleases": 0,
+                      "stepAttempts": 0,
+                      "stepsCompleted": 0,
+                      "failedSteps": 0,
+                      "qSnapshotBytes": 0,
+                      "kvSnapshotBytes": 0,
+                      "finishCopyBytes": 0,
+                      "currentCpuTensorSpanBytes": 0,
+                      "peakCpuTensorSpanBytes": 0,
+                      "ownedTensors": 0,
+                      "peakOwnedTensors": 0,
+                      "unknownSizedTensors": 0,
+                      "cleanupFailures": 0,
+                      "ownedQueryCount": 0,
+                      "cleanupPending": false,
+                      "disposed": false,
+                      "queries": [],
+                      "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+                    },
+                    "timings": {
+                      "snapshotMs": 0,
+                      "weightPrepareMs": 0,
+                      "sessionRunMs": 0,
+                      "linearSessionRunMs": 0,
+                      "attentionSessionRunMs": 0,
+                      "outputCopyMs": 0,
+                      "tensorCleanupMs": 0,
+                      "preparedReleaseMs": 0,
+                      "ownerDisposeMs": 0
+                    },
+                    "resourceProfile": {
+                      "numThreads": 4,
+                      "firstInitialization": true,
+                      "pthreadCreationsObserved": 3,
+                      "coiRequired": true,
+                      "freshRealmRequiredForProfileChange": true
+                    },
+                    "nativeWasmCopiesMeasured": false,
+                    "sessionCreations": 2
+                  },
+                  "source": {
+                    "disposed": false,
+                    "busy": false,
+                    "reads": 722,
+                    "readBytes": 192448,
+                    "headerReads": 2,
+                    "headerReadBytes": 181288,
+                    "configReads": 720,
+                    "configReadBytes": 11160,
+                    "payloadReads": 0,
+                    "payloadReadBytes": 0,
+                    "maxPayloadReadBytes": 0,
+                    "decodedF32Bytes": 0,
+                    "readAheadBytes": 1048576,
+                    "storageReads": 722,
+                    "storageReadBytes": 192448,
+                    "maxStorageReadBytes": 181280,
+                    "storageReadAttempts": 722,
+                    "storageReadFailures": 0,
+                    "discardedStorageReads": 0,
+                    "discardedStorageBytes": 0,
+                    "storageReadMs": 371.5699998140335,
+                    "headerInspectMs": 16.564999997615814,
+                    "decodeMs": 0,
+                    "cacheHits": 0,
+                    "cacheMisses": 0,
+                    "cachedBytes": 0,
+                    "peakCachedBytes": 0,
+                    "windowCopyBytes": 0,
+                    "windowCopyMs": 0,
+                    "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+                    "hike": {
+                      "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                      "memoryBytes": 1572864,
+                      "arenaBytes": 491648,
+                      "calls": 361,
+                      "inputCopyBytes": 218416,
+                      "outputCopyBytes": 619712,
+                      "workspaceReused": true,
+                      "disposed": false
+                    },
+                    "decoder": {
+                      "disposed": false,
+                      "workspaceReused": true,
+                      "memoryBytes": 1835008,
+                      "arenaBytes": 754688,
+                      "tableBytes": 631808,
+                      "wasmTableBytes": 263168,
+                      "hostTableBytes": 368640,
+                      "fp8Tables": 360,
+                      "calls": 0,
+                      "inputCopyBytes": 0,
+                      "outputCopyBytes": 0,
+                      "wasmTableCopyBytes": 262144
+                    },
+                    "decoderSelection": "lookup",
+                    "fullFileHashRecomputed": false,
+                    "payloadSampleAdmission": false
+                  }
+                },
+                "LOW": {
+                  "predictions": 0,
+                  "diagnosticRuns": 0,
+                  "failedPredictions": 1,
+                  "sourceReads": 0,
+                  "sourceF32Bytes": 0,
+                  "linearRuns": 0,
+                  "attentionTiles": 0,
+                  "blocksCompleted": 0,
+                  "activeHiddenStores": 0,
+                  "activeHiddenStoreBytes": 0,
+                  "peakHiddenStoreBytes": 0,
+                  "stageWeightCacheBytes": 0,
+                  "peakStageWeightCacheBytes": 0,
+                  "lastRun": null,
+                  "lastTiming": {
+                    "elapsedMs": 0.12999999523162842,
+                    "inclusive": true,
+                    "sumIsNotExclusiveTotal": true,
+                    "totals": {},
+                    "activeOperator": null,
+                    "firstFailure": null,
+                    "cleanupErrors": []
+                  },
+                  "lastDiagnostic": null,
+                  "lastFailure": {
+                    "name": "RangeError",
+                    "message": "Timestep in 0..1000 required",
+                    "code": null,
+                    "context": null,
+                    "timing": {
+                      "elapsedMs": 0.09999999403953552,
+                      "inclusive": true,
+                      "sumIsNotExclusiveTotal": true,
+                      "totals": {},
+                      "activeOperator": null,
+                      "firstFailure": null
+                    },
+                    "chunkDiagnostics": null
+                  },
+                  "timing": {
+                    "elapsedMs": 0.12999999523162842,
+                    "inclusive": true,
+                    "sumIsNotExclusiveTotal": true,
+                    "totals": {},
+                    "activeOperator": null,
+                    "firstFailure": null,
+                    "cleanupErrors": []
+                  },
+                  "chunkDiagnostics": null,
+                  "busy": false,
+                  "disposed": false,
+                  "closing": false,
+                  "head": {
+                    "busy": false,
+                    "disposed": false,
+                    "runs": 0,
+                    "rowsProcessed": 0,
+                    "sourceReads": 0,
+                    "sourceF32Bytes": 0,
+                    "cacheBytes": 0,
+                    "lastLinearEvidence": null
+                  },
+                  "math": {
+                    "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+                    "memoryBytes": 9175040,
+                    "memoryIdentity": "model-math-1",
+                    "arenaBytes": 8108032,
+                    "calls": 0,
+                    "kernelCalls": 0,
+                    "snapshotCopyBytes": 0,
+                    "inputCopyBytes": 0,
+                    "outputCopyBytes": 0,
+                    "primitiveCalls": {
+                      "cos": 0,
+                      "exp": 0,
+                      "pow": 0,
+                      "sin": 0,
+                      "sqrt": 0,
+                      "tanh": 0
+                    },
+                    "workspaceReused": true,
+                    "busy": false,
+                    "disposed": false,
+                    "limits": {
+                      "maxRows": 128,
+                      "width": 5120,
+                      "headWidth": 128,
+                      "heads": 40,
+                      "maxLinearWidth": 13824,
+                      "maxElements": 1769472,
+                      "chunkElements": 81920,
+                      "epsilon": 1e-06
+                    },
+                    "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+                    "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+                    "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+                  },
+                  "ops": {
+                    "busy": false,
+                    "disposed": false,
+                    "cleanupPending": false,
+                    "pendingTensors": 0,
+                    "linearRuns": 0,
+                    "attentionRuns": 0,
+                    "inputCopyBytes": 0,
+                    "outputCopyBytes": 0,
+                    "runtimeInputSpanBytes": 0,
+                    "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+                    "preparedWeights": 0,
+                    "preparedWeightBytes": 0,
+                    "peakPreparedWeightBytes": 0,
+                    "preparedWeightCopies": 0,
+                    "preparedWeightTransfers": 0,
+                    "preparedWeightCopyBytes": 0,
+                    "preparedWeightTransferBytes": 0,
+                    "preparedWeightCreations": 0,
+                    "preparedWeightReleases": 0,
+                    "attentionQueries": {
+                      "queryCreations": 0,
+                      "queryPreparationsCompleted": 0,
+                      "queryReleases": 0,
+                      "stepAttempts": 0,
+                      "stepsCompleted": 0,
+                      "failedSteps": 0,
+                      "qSnapshotBytes": 0,
+                      "kvSnapshotBytes": 0,
+                      "finishCopyBytes": 0,
+                      "currentCpuTensorSpanBytes": 0,
+                      "peakCpuTensorSpanBytes": 0,
+                      "ownedTensors": 0,
+                      "peakOwnedTensors": 0,
+                      "unknownSizedTensors": 0,
+                      "cleanupFailures": 0,
+                      "ownedQueryCount": 0,
+                      "cleanupPending": false,
+                      "disposed": false,
+                      "queries": [],
+                      "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+                    },
+                    "timings": {
+                      "snapshotMs": 0,
+                      "weightPrepareMs": 0,
+                      "sessionRunMs": 0,
+                      "linearSessionRunMs": 0,
+                      "attentionSessionRunMs": 0,
+                      "outputCopyMs": 0,
+                      "tensorCleanupMs": 0,
+                      "preparedReleaseMs": 0,
+                      "ownerDisposeMs": 0
+                    },
+                    "resourceProfile": {
+                      "numThreads": 4,
+                      "firstInitialization": true,
+                      "pthreadCreationsObserved": 3,
+                      "coiRequired": true,
+                      "freshRealmRequiredForProfileChange": true
+                    },
+                    "nativeWasmCopiesMeasured": false,
+                    "sessionCreations": 2
+                  },
+                  "source": {
+                    "disposed": false,
+                    "busy": false,
+                    "reads": 722,
+                    "readBytes": 192448,
+                    "headerReads": 2,
+                    "headerReadBytes": 181288,
+                    "configReads": 720,
+                    "configReadBytes": 11160,
+                    "payloadReads": 0,
+                    "payloadReadBytes": 0,
+                    "maxPayloadReadBytes": 0,
+                    "decodedF32Bytes": 0,
+                    "readAheadBytes": 1048576,
+                    "storageReads": 722,
+                    "storageReadBytes": 192448,
+                    "maxStorageReadBytes": 181280,
+                    "storageReadAttempts": 722,
+                    "storageReadFailures": 0,
+                    "discardedStorageReads": 0,
+                    "discardedStorageBytes": 0,
+                    "storageReadMs": 369.4849997907877,
+                    "headerInspectMs": 12.950000002980232,
+                    "decodeMs": 0,
+                    "cacheHits": 0,
+                    "cacheMisses": 0,
+                    "cachedBytes": 0,
+                    "peakCachedBytes": 0,
+                    "windowCopyBytes": 0,
+                    "windowCopyMs": 0,
+                    "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+                    "hike": {
+                      "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                      "memoryBytes": 1572864,
+                      "arenaBytes": 491648,
+                      "calls": 361,
+                      "inputCopyBytes": 218416,
+                      "outputCopyBytes": 619712,
+                      "workspaceReused": true,
+                      "disposed": false
+                    },
+                    "decoder": {
+                      "disposed": false,
+                      "workspaceReused": true,
+                      "memoryBytes": 1835008,
+                      "arenaBytes": 754688,
+                      "tableBytes": 631808,
+                      "wasmTableBytes": 263168,
+                      "hostTableBytes": 368640,
+                      "fp8Tables": 360,
+                      "calls": 0,
+                      "inputCopyBytes": 0,
+                      "outputCopyBytes": 0,
+                      "wasmTableCopyBytes": 262144
+                    },
+                    "decoderSelection": "lookup",
+                    "fullFileHashRecomputed": false,
+                    "payloadSampleAdmission": false
+                  }
+                }
+              },
+              "sources": {
+                "HIGH": {
+                  "disposed": false,
+                  "busy": false,
+                  "reads": 722,
+                  "readBytes": 192448,
+                  "headerReads": 2,
+                  "headerReadBytes": 181288,
+                  "configReads": 720,
+                  "configReadBytes": 11160,
+                  "payloadReads": 0,
+                  "payloadReadBytes": 0,
+                  "maxPayloadReadBytes": 0,
+                  "decodedF32Bytes": 0,
+                  "readAheadBytes": 1048576,
+                  "storageReads": 722,
+                  "storageReadBytes": 192448,
+                  "maxStorageReadBytes": 181280,
+                  "storageReadAttempts": 722,
+                  "storageReadFailures": 0,
+                  "discardedStorageReads": 0,
+                  "discardedStorageBytes": 0,
+                  "storageReadMs": 371.5699998140335,
+                  "headerInspectMs": 16.564999997615814,
+                  "decodeMs": 0,
+                  "cacheHits": 0,
+                  "cacheMisses": 0,
+                  "cachedBytes": 0,
+                  "peakCachedBytes": 0,
+                  "windowCopyBytes": 0,
+                  "windowCopyMs": 0,
+                  "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+                  "hike": {
+                    "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                    "memoryBytes": 1572864,
+                    "arenaBytes": 491648,
+                    "calls": 361,
+                    "inputCopyBytes": 218416,
+                    "outputCopyBytes": 619712,
+                    "workspaceReused": true,
+                    "disposed": false
+                  },
+                  "decoder": {
+                    "disposed": false,
+                    "workspaceReused": true,
+                    "memoryBytes": 1835008,
+                    "arenaBytes": 754688,
+                    "tableBytes": 631808,
+                    "wasmTableBytes": 263168,
+                    "hostTableBytes": 368640,
+                    "fp8Tables": 360,
+                    "calls": 0,
+                    "inputCopyBytes": 0,
+                    "outputCopyBytes": 0,
+                    "wasmTableCopyBytes": 262144
+                  },
+                  "decoderSelection": "lookup",
+                  "fullFileHashRecomputed": false,
+                  "payloadSampleAdmission": false
+                },
+                "LOW": {
+                  "disposed": false,
+                  "busy": false,
+                  "reads": 722,
+                  "readBytes": 192448,
+                  "headerReads": 2,
+                  "headerReadBytes": 181288,
+                  "configReads": 720,
+                  "configReadBytes": 11160,
+                  "payloadReads": 0,
+                  "payloadReadBytes": 0,
+                  "maxPayloadReadBytes": 0,
+                  "decodedF32Bytes": 0,
+                  "readAheadBytes": 1048576,
+                  "storageReads": 722,
+                  "storageReadBytes": 192448,
+                  "maxStorageReadBytes": 181280,
+                  "storageReadAttempts": 722,
+                  "storageReadFailures": 0,
+                  "discardedStorageReads": 0,
+                  "discardedStorageBytes": 0,
+                  "storageReadMs": 369.4849997907877,
+                  "headerInspectMs": 12.950000002980232,
+                  "decodeMs": 0,
+                  "cacheHits": 0,
+                  "cacheMisses": 0,
+                  "cachedBytes": 0,
+                  "peakCachedBytes": 0,
+                  "windowCopyBytes": 0,
+                  "windowCopyMs": 0,
+                  "storageReadTimingScope": "Payload windows and quantization configs; header inspect (including hash/parse) is timed separately",
+                  "hike": {
+                    "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+                    "memoryBytes": 1572864,
+                    "arenaBytes": 491648,
+                    "calls": 361,
+                    "inputCopyBytes": 218416,
+                    "outputCopyBytes": 619712,
+                    "workspaceReused": true,
+                    "disposed": false
+                  },
+                  "decoder": {
+                    "disposed": false,
+                    "workspaceReused": true,
+                    "memoryBytes": 1835008,
+                    "arenaBytes": 754688,
+                    "tableBytes": 631808,
+                    "wasmTableBytes": 263168,
+                    "hostTableBytes": 368640,
+                    "fp8Tables": 360,
+                    "calls": 0,
+                    "inputCopyBytes": 0,
+                    "outputCopyBytes": 0,
+                    "wasmTableCopyBytes": 262144
+                  },
+                  "decoderSelection": "lookup",
+                  "fullFileHashRecomputed": false,
+                  "payloadSampleAdmission": false
+                }
+              },
+              "math": {
+                "wasmSha256": "6043135dbc7354905b6b4e8e1113bb1541f9e05154d18af99831088226f07319",
+                "memoryBytes": 9175040,
+                "memoryIdentity": "model-math-1",
+                "arenaBytes": 8108032,
+                "calls": 0,
+                "kernelCalls": 0,
+                "snapshotCopyBytes": 0,
+                "inputCopyBytes": 0,
+                "outputCopyBytes": 0,
+                "primitiveCalls": {
+                  "cos": 0,
+                  "exp": 0,
+                  "pow": 0,
+                  "sin": 0,
+                  "sqrt": 0,
+                  "tanh": 0
+                },
+                "workspaceReused": true,
+                "busy": false,
+                "disposed": false,
+                "limits": {
+                  "maxRows": 128,
+                  "width": 5120,
+                  "headWidth": 128,
+                  "heads": 40,
+                  "maxLinearWidth": 13824,
+                  "maxElements": 1769472,
+                  "chunkElements": 81920,
+                  "epsilon": 1e-06
+                },
+                "arithmetic": "F32 sequential full5120 reduction; separate multiply/add; F64 fixed scalar transcendental bridges",
+                "siluProfile": "F32(x * F32(1 / F32(1 + F32(exp(-F64(x))))))); not ORT Sigmoid bit parity",
+                "attentionDivisionLayout": "head-major[40,Q,128] / denominator[40,Q], F32 division, exactQ1..128"
+              },
+              "ops": {
+                "busy": false,
+                "disposed": false,
+                "cleanupPending": false,
+                "pendingTensors": 0,
+                "linearRuns": 0,
+                "attentionRuns": 0,
+                "inputCopyBytes": 0,
+                "outputCopyBytes": 0,
+                "runtimeInputSpanBytes": 0,
+                "inputCopyBytesScope": "Owned JavaScript F32 snapshots only; native ORT/WASM copies are not measured",
+                "preparedWeights": 0,
+                "preparedWeightBytes": 0,
+                "peakPreparedWeightBytes": 0,
+                "preparedWeightCopies": 0,
+                "preparedWeightTransfers": 0,
+                "preparedWeightCopyBytes": 0,
+                "preparedWeightTransferBytes": 0,
+                "preparedWeightCreations": 0,
+                "preparedWeightReleases": 0,
+                "attentionQueries": {
+                  "queryCreations": 0,
+                  "queryPreparationsCompleted": 0,
+                  "queryReleases": 0,
+                  "stepAttempts": 0,
+                  "stepsCompleted": 0,
+                  "failedSteps": 0,
+                  "qSnapshotBytes": 0,
+                  "kvSnapshotBytes": 0,
+                  "finishCopyBytes": 0,
+                  "currentCpuTensorSpanBytes": 0,
+                  "peakCpuTensorSpanBytes": 0,
+                  "ownedTensors": 0,
+                  "peakOwnedTensors": 0,
+                  "unknownSizedTensors": 0,
+                  "cleanupFailures": 0,
+                  "ownedQueryCount": 0,
+                  "cleanupPending": false,
+                  "disposed": false,
+                  "queries": [],
+                  "spanScope": "Owned CPU tensor spans; possible backing aliases and native ORT/WASM copies are not measured"
+                },
+                "timings": {
+                  "snapshotMs": 0,
+                  "weightPrepareMs": 0,
+                  "sessionRunMs": 0,
+                  "linearSessionRunMs": 0,
+                  "attentionSessionRunMs": 0,
+                  "outputCopyMs": 0,
+                  "tensorCleanupMs": 0,
+                  "preparedReleaseMs": 0,
+                  "ownerDisposeMs": 0
+                },
+                "resourceProfile": {
+                  "numThreads": 4,
+                  "firstInitialization": true,
+                  "pthreadCreationsObserved": 3,
+                  "coiRequired": true,
+                  "freshRealmRequiredForProfileChange": true
+                },
+                "nativeWasmCopiesMeasured": false,
+                "sessionCreations": 2
+              },
+              "sharedSessionCreations": 2
+            }
+          }
+        }
+      },
+      {
+        "test": "actual-patch-cancel",
+        "code": "CANCELLED",
+        "cancelProgressJob": {
+          "jobId": "public-10",
+          "inputRevision": 10
+        }
+      },
+      {
+        "test": "cancel-retry-needs-load",
+        "code": "MODEL_NOT_LOADED"
+      },
+      {
+        "test": "reload-stale-session",
+        "code": "STALE_MODEL"
+      }
+    ],
+    "actualPatchNeuralPrefixExecuted": true,
+    "completeModelNeuralRun": false,
+    "smokeCompleted": true,
+    "codecScope": "Explicit saved-input codec only; no generated-sample claim from cancelled prefix",
+    "readback": {
+      "realDiskFileSelected": true,
+      "sha256": "3f66f5597cb292ba9e629b2d0bb007e522775e7f096be9d412317adbc0bad214",
+      "byteLength": 763,
+      "payload": {
+        "bytes": 512,
+        "sha256": "ece94cda18a964b7d445303c31053cd84417d0e909b6056b251061f839c422df"
+      },
+      "payloadElements": 128,
+      "allF32BitsExact": true,
+      "metadata": {
+        "dtype": "float32",
+        "shape": [
+          1,
+          16,
+          1,
+          2,
+          4
+        ],
+        "layout": "NCTHW",
+        "meaning": "bernini-generated-model-latent:v1"
+      }
+    },
+    "callerInputsBitExact": true,
+    "lateProgressCount": 0,
+    "disposed": true,
+    "afterDisposeCode": "DISPOSED",
+    "workerObserverRestored": true,
+    "workerLifetimes": [
+      {
+        "workerEpoch": 1,
+        "stage": "constructed",
+        "elapsedMs": 2.2150000035762787
+      },
+      {
+        "workerEpoch": 1,
+        "stage": "terminated",
+        "elapsedMs": 558.7600000053644
+      },
+      {
+        "workerEpoch": 2,
+        "stage": "constructed",
+        "elapsedMs": 559.2100000083447
+      },
+      {
+        "workerEpoch": 2,
+        "stage": "terminated",
+        "elapsedMs": 952.9249999970198
+      },
+      {
+        "workerEpoch": 3,
+        "stage": "constructed",
+        "elapsedMs": 953.1899999976158
+      },
+      {
+        "workerEpoch": 3,
+        "stage": "terminated",
+        "elapsedMs": 11511.814999997616
+      },
+      {
+        "workerEpoch": 4,
+        "stage": "constructed",
+        "elapsedMs": 11512.255000010133
+      },
+      {
+        "workerEpoch": 4,
+        "stage": "terminated",
+        "elapsedMs": 11603.534999996424
+      },
+      {
+        "workerEpoch": 5,
+        "stage": "constructed",
+        "elapsedMs": 11603.740000009537
+      },
+      {
+        "workerEpoch": 5,
+        "stage": "terminated",
+        "elapsedMs": 12938.855000004172
+      }
+    ]
+  },
+  "sourceGuards": {
+    "sourceCommit": "6d12140eeab204385fa31f5da73d4796968a4003",
+    "sourceGuardError": null,
+    "sourceGuardAfter": true,
+    "fullModelReadByHTTPServer": false,
+    "modelsSelectedAsActualFiles": true
+  },
+  "timingAndMemory": {
+    "hostSeconds": 15.00974346100702,
+    "outerObservationSeconds": 17.20583435399749,
+    "sampledTreeRssPeakBytes": 1293922304,
+    "sampledTreePssPeakBytes": 1015780352,
+    "observedPublicWorkerWasmCapacityPeakBytes": 157220864,
+    "scope": {
+      "start": "before child launch; first child tree sample while exec gate remains closed",
+      "end": "command exit plus configured post-cleanup interval; known surviving descendants remain sampled",
+      "rss": "sum duplicates shared pages; sampled peaks can miss spikes",
+      "pss": "best effort /proc smaps_rollup; null and completeness flags mark inaccessible scopes; excludes unmapped file cache",
+      "roles": "heuristics only; a DedicatedWorker/WASM/ORT allocator cannot be separated from its Chromium renderer process here",
+      "sharedCgroup": "shared with all workloads; memory.peak is historical; memory.stat file already includes shmem, so do not add them",
+      "tmpFilesystem": "shared /tmp filesystem occupancy, not private tensor bytes or command-owned memory",
+      "notObserved": [
+        "unsampled transient peaks",
+        "native allocator suballocations",
+        "other process trees",
+        "memory after retained surviving descendants stop being observed"
+      ]
+    },
+    "wasmCoverage": "Observed main public Worker memories only; process RSS/PSS and JS host buffers are separate"
+  },
+  "lightweightRegressionProvenance": {
+    "isolatedAPIRed": {
+      "passed": 21,
+      "failed": 19
+    },
+    "isolatedStatusRed": {
+      "passed": 39,
+      "failed": 1
+    },
+    "isolatedAPIGreen": {
+      "passed": 40,
+      "failed": 0
+    },
+    "isolatedAPIBrowser": {
+      "passed": 22,
+      "failed": 0,
+      "fullModelExecuted": false
+    },
+    "isolatedDriverRed": {
+      "nodePassed": 3,
+      "nodeFailed": 10,
+      "pythonFailingChecks": 3
+    },
+    "isolatedDriverGreen": {
+      "nodePassed": 13,
+      "nodeFailed": 0,
+      "pythonPassed": 4,
+      "pythonFailed": 0
+    },
+    "integratedNode": {
+      "apiStatePassed": 40,
+      "driverPassed": 13,
+      "nativeBoundedPassed": 83
+    },
+    "integratedPythonFreshLog": {
+      "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/integrated-driver-python.log",
+      "bytes": 102,
+      "sha256": "945692a6f46c5701955aab7bcf177d0bc1797809f2e279517ea00b06a0799556"
+    },
+    "artifacts": [
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/manifest.json",
+        "bytes": 3827,
+        "sha256": "194f40387a878dea9621c391828edf683802a2a0fd0be03aba216315d38caed7"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/driver-manifest.json",
+        "bytes": 2183,
+        "sha256": "9d3727231866481e42a95b3be6afeaae00c60d7fd574add2c9a83e916018ec6e"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/red-final.log",
+        "bytes": 20499,
+        "sha256": "9585c73119df4189f70c3d5840a3919435e6b8875b69cc09b99a9afa55d78b49"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/review-status-red.log",
+        "bytes": 4747,
+        "sha256": "e0e5cc6c381fb3864e9dd7c13e63b5344907c47ad79e16c66c17122243674c89"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/green.log",
+        "bytes": 4021,
+        "sha256": "ec63bb3d735f55dd1b000ecb472ec021ecbeaf80169f616e75ea2c4b9e57cfa7"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/api-browser.log",
+        "bytes": 9179,
+        "sha256": "40da9d44efc0772fdb919bfb2f83021bbcbb0a87086db3588eb7d13127ba93cc"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/api-browser-results.json",
+        "bytes": 11096,
+        "sha256": "debe7352cdd7421fc16c0b3575a385964e633a8dd28544348ee543a2f7938981"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/component-node.log",
+        "bytes": 1269,
+        "sha256": "411fff9e540fdbd10feee330dc49bae246305e9b392521efd98229e9e9f5a207"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/component-browser.log",
+        "bytes": 1367,
+        "sha256": "a05c90713c0acfc7c5526a6d0a182620b228d99863fbf40ae4b40bc8d357972b"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/driver-baseline-node.log",
+        "bytes": 186,
+        "sha256": "0e91e73cfc3f88ccf3eeb97dd270cbb606d00d2e385dd65b7c790329bf0e0c77"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/driver-baseline-python.log",
+        "bytes": 100,
+        "sha256": "fe008aab760eb03ccac7578e2b84665b1b50b0d7f855b17a0c7a8d039435b658"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/driver-red-node.log",
+        "bytes": 9632,
+        "sha256": "3c61de70334f633f8df17a9fecf23c15cd9506c58ed25137573ff83fe0e6fecf"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/driver-red-python.log",
+        "bytes": 5079,
+        "sha256": "8d1fb252b9c647f7ac4030999839b1bb9ae1c086f069e8faf93759ba0b11c7f3"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/driver-green-node.log",
+        "bytes": 1384,
+        "sha256": "735340f55975f42f2bc527ab639870179836835351f33174e7be11d387c2ad79"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/driver-green-python.log",
+        "bytes": 102,
+        "sha256": "5482a5c2073375d5ed3ebbebc6fd4d2c3957bb6b45d779caa470c253e4fec4a4"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/integrated-cleanup-state-tests.log",
+        "bytes": 4027,
+        "sha256": "305b23eb7f5c4cbfc24077d9b7ac2652a2e0820752ae36dcf9dadb22353cecd4"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/integrated-failure-driver-tests.log",
+        "bytes": 1382,
+        "sha256": "0676f9813be25aadf1cf8ed3e08e55b6fc96a2b358246e035f28f30f1be1d8df"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/final-native-node.log",
+        "bytes": 8365,
+        "sha256": "4e62e924f4eb991378882b6994c3c7c0b91070f26ebc569c3bfc79d44fd84131"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/integrated-driver-python.log",
+        "bytes": 102,
+        "sha256": "945692a6f46c5701955aab7bcf177d0bc1797809f2e279517ea00b06a0799556"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/integrated-api-browser.log",
+        "bytes": 9179,
+        "sha256": "9573dd5d14787dfeba0049e7951587d0708682eae86a99c7d461c0a172a18242"
+      },
+      {
+        "path": "development/ai-connection/public-worker-20261102/evidence/failed-preparation-reset/provenance/integrated-api-browser-results.json",
+        "bytes": 11096,
+        "sha256": "11aa6448f746d0d611758f26bd8be24d36c08446d478ae5a8b48501917aff10e"
+      }
+    ],
+    "integratedPython": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "fresh integration CLI/driver checks, no NN"
+    },
+    "integratedBrowser": {
+      "passed": 22,
+      "failed": 0,
+      "browser": "154.0.8037.57",
+      "buildIdentity": {
+        "buildId": "diffusion-models/0.1+9c5d8d18e9a7b046d7768c8c32ca6a48eaa084c900e916d59d63e735ebeb2a20",
+        "ownerSources": 144,
+        "servedPaths": 152
+      },
+      "errors": [],
+      "actualModels": [],
+      "tests": [
+        {
+          "name": "Capabilities truthfully distinguish real Euler from unavailable neural inference",
+          "passed": true
+        },
+        {
+          "name": "Header-only inspection validates bytes and returns original identities",
+          "passed": true
+        },
+        {
+          "name": "Invalid safetensors extents dtype shape and payload are rejected",
+          "passed": true
+        },
+        {
+          "name": "Real Hike Euler returns numeric result and preserves caller arrays",
+          "passed": true
+        },
+        {
+          "name": "Euler rejects invalid dtype shape and nonfinite values",
+          "passed": true
+        },
+        {
+          "name": "Euler enforces its tensor budget before result allocation",
+          "passed": true
+        },
+        {
+          "name": "Stale worker replies cannot settle the active request",
+          "passed": true
+        },
+        {
+          "name": "Actual Hike schedule exposes exact simple6 and HIGH LOW split with six times",
+          "passed": true
+        },
+        {
+          "name": "Actual Hike noise inverse and flow primitives preserve caller bytes and shape",
+          "passed": true
+        },
+        {
+          "name": "Pointwise primitives reject shape dtype nonfinite singular and overbudget input",
+          "passed": true
+        },
+        {
+          "name": "Published tensor boundary validation returns metadata only and rejects mixed spaces provenance",
+          "passed": true
+        },
+        {
+          "name": "Diffusion Hike explicitly normalizes raw means and restores published binary readback",
+          "passed": true
+        },
+        {
+          "name": "Raw mean normalization rejects wrong meaning model shape and generated sample semantics",
+          "passed": true
+        },
+        {
+          "name": "Real Hike ORT Hike partial projection computes literal without claiming model inference",
+          "passed": true
+        },
+        {
+          "name": "Both actual weight tiles pass independent tolerance through external partial API",
+          "passed": true
+        },
+        {
+          "name": "Legacy single-file load stays NOT_READY and unloaded model operations require a pair",
+          "passed": true
+        },
+        {
+          "name": "Identity protocol and unsupported operations are rejected before work",
+          "passed": true
+        },
+        {
+          "name": "New input revision terminates the older job and suppresses its result",
+          "passed": true
+        },
+        {
+          "name": "Busy refusal and cancellation settle active request then allow reuse",
+          "passed": true
+        },
+        {
+          "name": "Explicit MessagePort returns binary results with echoed identifiers",
+          "passed": true
+        },
+        {
+          "name": "Cancelling a pending partial pipeline allows a fresh real partial result",
+          "passed": true
+        },
+        {
+          "name": "Dispose settles active request and permanently refuses later work",
+          "passed": true
+        }
+      ],
+      "captureScope": "raw browser-results working file copied to stable metadata before historical tracked file was restored; not published as a current repository-source input"
+    }
+  },
+  "notAccepted": [
+    "new6d full40predict execution",
+    "new6d six-update sampling execution",
+    "full target81 acceptance",
+    "generated-sample result from this cancelled smoke",
+    "originalworkflow replay"
+  ],
+  "generationReady": false,
+  "packaging": {
+    "newInferenceExecuted": false,
+    "rawTensorValuesPublished": false,
+    "modelPayloadPublished": false,
+    "privateOriginalsUntouched": true
+  }
+}

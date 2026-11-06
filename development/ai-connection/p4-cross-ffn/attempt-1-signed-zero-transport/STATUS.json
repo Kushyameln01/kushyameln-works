@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "executionSourceCommit": "3ae9b934ffcd2cf092171699fd7a5b55110f1197",
+  "status": "UNACCEPTED_FIXTURE_BIT_BINDING_AND_OUTPUT_SERIALIZATION",
+  "rawReceiptsUnmodified": true,
+  "numericComparisons": "both sides50comparisons/643072values each failed0; numerical values only, not joined fixture-byte acceptance",
+  "originalWeightProof": "29original selections per side verified; unchanged original bytes and independent decoder bits",
+  "incomingTransport": {
+    "expectedConditioningSHA256": "0cd4fa87e24e6d875207aca52cc214a1b46157a886d4c090fb7c5cfc9a5925ae",
+    "observedConditioningSHA256": "f2e71ce5d553d65b5eb9a0c6248ad3568405c480ff43c6a3125dafcfa85ee05a",
+    "differingElements": 4144,
+    "nonzeroValueDifferences": 0,
+    "cause": "Installed Playwright Python serialize_value tests value == float(-0), matching positive-zero values; dictionary argument changes +0 to -0"
+  },
+  "outboundArtifact": {
+    "mismatchedArrayIdentities": [
+      "ffnGelu"
+    ],
+    "cause": "JSON.stringify converts -0 to +0; private reconstructed F32 bytes disagree with actual output identity"
+  },
+  "feedValidate": "REJECTED_BEFORE_MODEL_FACTORY_BY_INPUT_HASH_GUARD",
+  "repair": "JSON string transport + browser JSON.parse; private JSON writer emits -0.0; all input/output bytes verified before model/reference acceptance",
+  "mathOrGatesChanged": false,
+  "generationReady": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY",
+  "files": [
+    {
+      "path": "feed-integration/high-feed-prepare.json",
+      "byteLength": 10633,
+      "sha256": "51c6ae15386b5579d5b10e524864bd1f6c716577ff3c6c4d59f3b2a8cf30fb00"
+    },
+    {
+      "path": "feed-validate-rejected.log",
+      "byteLength": 3063,
+      "sha256": "b434a7aca2b940840042f6f8cbcb57692b704cb2aafd43749d2724bd390a6f65"
+    },
+    {
+      "path": "integration/high-browser.json",
+      "byteLength": 1570223,
+      "sha256": "d1c3ce3dc9e6db427e2583490336999665261cd9a97b3a651c43942ffbbc037d"
+    },
+    {
+      "path": "integration/high-comparison.json",
+      "byteLength": 51526,
+      "sha256": "672a38711d2cca514e967d3e92a21e129f3dd6a86230f703e5be69c49e127ff9"
+    },
+    {
+      "path": "integration/low-browser.json",
+      "byteLength": 1570176,
+      "sha256": "c1be83bdd60337cbd86d384931c78d84cebff9e3d4c707d799c2fea23463de9f"
+    },
+    {
+      "path": "integration/low-comparison.json",
+      "byteLength": 51541,
+      "sha256": "0cea9494726280f4168ac6c325cc7793196f0f958ff595341ee34d74cbd714a0"
+    },
+    {
+      "path": "receiver/receipt.json",
+      "byteLength": 26004,
+      "sha256": "9a840897918526d0f6ef46a0982ccd84591d4be50f8ded326b0d09ed8d0524ae"
+    },
+    {
+      "path": "reference-baseline/high-composed-reference-receipt.json",
+      "byteLength": 49613,
+      "sha256": "bb336ca844a370d2e662ffc3f58e0cb7b8b7c88e79eeb4ccd5b12c4aee35a4d1"
+    },
+    {
+      "path": "reference-baseline/high-local-reference-receipt.json",
+      "byteLength": 49512,
+      "sha256": "b48fd3db1a44b1ede382f19b7cd72d41e824fd5c7bb293dc05a6dce681f53190"
+    },
+    {
+      "path": "reference-baseline/low-composed-reference-receipt.json",
+      "byteLength": 49620,
+      "sha256": "81e00caf8052d8a48e93f9ac6cdf2860e6d2431dda0f1638e3130c93f5fcac12"
+    },
+    {
+      "path": "reference-baseline/low-local-reference-receipt.json",
+      "byteLength": 49515,
+      "sha256": "a6547d410e3f6005a2546fabd1945977e504ceeef04a1c106a104e126829a4ba"
+    },
+    {
+      "path": "reference-patched/high-composed-reference-receipt.json",
+      "byteLength": 41063,
+      "sha256": "bb814b3b706c2a990df285bce6c30a99a69c2011e4a5200ff04c1efd8c6b7e6d"
+    }
+  ]
+}

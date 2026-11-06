@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "scope": "Pre-execution arithmetic estimates and admission conditions; measured N2 receipt is separate",
+  "sourceCore": "ComfyUI b5a432157de6b8884f81104cd02926adf4d597e4 model.py",
+  "fullModelPair": {
+    "bytesPerOriginal": 15574833216,
+    "storageDtypes": "per-entry F8_E4M3/F16/F32 and config U8",
+    "singleWasm32FullResident": "Previously rejected; not reimplemented",
+    "fileSplittingSolvesExecutionMemory": false,
+    "priorEvidence": [
+      "development/ai-connection/E0-E7_RESULT.md",
+      "development/ai-connection/e7/RESULT.md",
+      "development/ai-connection/e7-attention/RESULT.md"
+    ]
+  },
+  "onePassSelectedMatrixExtents": {
+    "rawBytes": 524288000,
+    "decodedF32Bytes": 1488977920,
+    "allAtOnceResident": false,
+    "meaning": "text2layers+cross4projections+FFN2+timechunks3..5; excludes vectors and additional copies"
+  },
+  "actualOperatorBounds": {
+    "queryRows": 2,
+    "ordinaryWeightOutputRowsPerTile": 16,
+    "ffnDownInner": 13824,
+    "ffnDownOutputRowsPerTile": 4,
+    "maxDecodeElements": 81920,
+    "maxRawReadBytes": 163840,
+    "maxDecodedWeightTileBytes": 327680,
+    "ffnDownWeightTileF32Bytes": 221184,
+    "attentionLogicalQueryRows": 2,
+    "attentionLogicalKeyTileMax": 64,
+    "attentionHeads": 40,
+    "attentionDim": 128,
+    "independentInnerSplit": false
+  },
+  "scenarios": [
+    {
+      "queryTokens": 2,
+      "hiddenShape": [
+        2,
+        5120
+      ],
+      "hiddenF32Bytes": 40960,
+      "ffnIntermediateShape": [
+        2,
+        13824
+      ],
+      "ffnIntermediateF32Bytes": 110592,
+      "threeHiddenBuffersF32Bytes": 122880,
+      "denseAll40CrossScoresAtK512Bytes": 163840,
+      "measurementPerformed": false,
+      "numericAdmission": "N2 diagnostic candidate only"
+    },
+    {
+      "queryTokens": 32760,
+      "hiddenShape": [
+        32760,
+        5120
+      ],
+      "hiddenF32Bytes": 670924800,
+      "ffnIntermediateShape": [
+        32760,
+        13824
+      ],
+      "ffnIntermediateF32Bytes": 1811496960,
+      "threeHiddenBuffersF32Bytes": 2012774400,
+      "denseAll40CrossScoresAtK512Bytes": 2683699200,
+      "measurementPerformed": false,
+      "numericAdmission": "NOT_VERIFIED_NOT_ADOPTED"
+    },
+    {
+      "queryTokens": 65520,
+      "hiddenShape": [
+        65520,
+        5120
+      ],
+      "hiddenF32Bytes": 1341849600,
+      "ffnIntermediateShape": [
+        65520,
+        13824
+      ],
+      "ffnIntermediateF32Bytes": 3622993920,
+      "threeHiddenBuffersF32Bytes": 4025548800,
+      "denseAll40CrossScoresAtK512Bytes": 5367398400,
+      "measurementPerformed": false,
+      "numericAdmission": "NOT_VERIFIED_NOT_ADOPTED"
+    }
+  ],
+  "textK512Estimates": {
+    "textHiddenF32Bytes": 8388608,
+    "embeddedF32Bytes": 10485760,
+    "kAndVF32Bytes": 20971520,
+    "actualTextProducerVerified": false,
+    "originalWorkflowK512NumericallyRun": false
+  },
+  "stagingPolicy": "N2 full-width component proof only. Current diagnostic retains25 intermediates; do not scale that retention or per-N2 repeated-weight traversal as an adopted production execution policy. Existing naive full/block-resident rejections remain in force.",
+  "requiredBeforeP5": [
+    "Actual producer-conditioned boundary, positive/negative and ordered contexts",
+    "Real production token/grid/frame shapes and all model boundaries",
+    "Explicit runtime precision agreement with fixed source/reference",
+    "Cache/staging/scheduling design avoiding naive repeated full-weight traversals",
+    "Observed combined Memory/host/staging/copy/time budget for the chosen scope",
+    "Real HIGH-to-LOW handoff and output meaning/normalization contracts"
+  ],
+  "totalPeakBytes": null,
+  "hostPeakBytes": null,
+  "P5": "BLOCKED",
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY"
+}

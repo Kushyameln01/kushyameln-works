@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "bernini-head-anchor-negative/0.1",
+  "passed": true,
+  "cases": [
+    {
+      "name": "actual artifact bit change",
+      "passed": true,
+      "admissionFailure": "AssertionError",
+      "beforeBrowserOrModel": true
+    },
+    {
+      "name": "failed producer cannot enter",
+      "passed": true,
+      "admissionFailure": "AssertionError",
+      "beforeBrowserOrModel": true
+    },
+    {
+      "name": "private local gate tamper",
+      "passed": true,
+      "admissionFailure": "AssertionError: ('Reference hash mismatch', 'local')",
+      "beforeBrowserOrModel": true
+    },
+    {
+      "name": "composed relabelled as local",
+      "passed": true,
+      "admissionFailure": "AssertionError",
+      "beforeBrowserOrModel": true
+    }
+  ],
+  "scope": "admission only; no original model opened, no browser or numerical proof"
+}

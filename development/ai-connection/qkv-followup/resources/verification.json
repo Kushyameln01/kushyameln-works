@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "bernini-resource-final-verification/0.1",
+  "passed": true,
+  "verifiedAtUTC": "2026-11-01T04:44:50.551270+00:00",
+  "tests": [
+    {
+      "command": [
+        "node",
+        "--expose-gc",
+        "--test",
+        "--test-isolation=none",
+        "tools/diffusion-models/test-resource-observer.mjs"
+      ],
+      "exitCode": 0,
+      "output": "\u2714 resource observer API exists (0.913362ms)\n\u2714 bytes and Module inputs identify imported/exported Memory once and update capacity (13.988266ms)\n\u2714 compile then synchronous Instance construction observes exports and preserves newTarget (1.500934ms)\n\u2714 actual imported Memory is observed even when the module does not export it (1.14516ms)\n\u2714 known module hash cannot hide an unobserved getter Memory import (0.990888ms)\n\u2714 compileStreaming and instantiateStreaming retain shape and MIME rejection (48.049302ms)\n\u2714 unknown modules remain explicit and shared Memory can carry multiple known roles (1.400103ms)\n\u2714 wrappers return the exact native Promise and preserve synchronous thrown error and receiver (0.629025ms)\n\u2714 native WebAssembly functions remain non-constructible and retain function metadata (0.338358ms)\n\u2714 stream read rejection remains the native error without an observer unhandled rejection (1.652151ms)\n\u2714 digest completion is separate from native Promise resolution and failure stays diagnostic (0.771979ms)\n\u2714 observer retains only weak references to Memory (129.157045ms)\n\u2139 tests 12\n\u2139 suites 0\n\u2139 pass 12\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 226.402783\n"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "--test-isolation=none",
+        "tools/diffusion-models/test-resource-browser.mjs"
+      ],
+      "exitCode": 0,
+      "output": "\u2714 executed inventory selects requested modules and new harness, rejecting an unanchored request (1.570478ms)\n\u2714 cleanup restores observer after a failed owner release and still releases the other owner (0.376345ms)\n\u2139 tests 2\n\u2139 suites 0\n\u2139 pass 2\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 23.309948\n"
+    },
+    {
+      "command": [
+        "python",
+        "tools/diffusion-models/test-resource-browser.py"
+      ],
+      "exitCode": 0,
+      "output": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.968s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python",
+        "tools/diffusion-models/check-build.py"
+      ],
+      "exitCode": 0,
+      "output": "{\"passed\": true, \"sourceCount\": 89, \"buildId\": \"diffusion-models/0.1+148a33420c9b87accd25b92d94f8160bbc7e14298e6ef7cdd4b5b65d70701c10\", \"kernelWasmSHA256\": \"ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd\", \"latentWasmSHA256\": \"bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d\", \"streamAttentionWasmSHA256\": \"b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c\", \"qkvRopeWasmSHA256\": \"46cd2ac1859e809d9bcb722b55822c606185e67b3639392fa00d21b698825997\", \"blockHiddenWasmSHA256\": \"ec95f1ca2bb76c332d1ff1072d48347e8a79d48f15618fa59b191dabe9117f7c\", \"derivedRuntimeImportCount\": 28, \"reusedTensorWasmSHA256\": \"9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8\", \"reusedTensorHistoricalCompilerSHA256\": \"f41a501783e98f2d1d72dca95099f87ef3b4dff30477d0db486e7b2e44106e75\", \"reusedTensorRebuilt\": false, \"kernelReceiptsChecked\": 29, \"ownerBuilder\": \"docs/shared/diffusion-models/api/build-info.py\", \"scope\": \"source closure/receipt only, not real-model validation\"}\n"
+    }
+  ],
+  "testCounts": {
+    "observer": 12,
+    "browserSourceAndCleanup": 2,
+    "pythonAdmission": 3
+  },
+  "runtimeAssetsUnchanged": 98,
+  "runtimeCodeCommit": "e48021d8da29ef3b3b9e9d6161331c282798b6b3",
+  "freshReceipts": {
+    "high": {
+      "path": "development/ai-connection/qkv-followup/resources/high-browser.json",
+      "sha256": "2824a70d2569e44557d802e4922101542a140ab039ff895d2d25df003a9911fc",
+      "allSourceSHA256Match": true,
+      "prefixComparisons": 14,
+      "headComparisons": 11,
+      "failed": 0,
+      "freshArtifactSHA256": "2e0c7634777c0eabadbb0aa96805ea18e3a892c2fdf6bbc6f5c29ecfd9971527"
+    },
+    "low": {
+      "path": "development/ai-connection/qkv-followup/resources/low-browser.json",
+      "sha256": "469d02546d4cc8cbd2b81a0b2de79341d3ac3746b24d24dce0c54db31bda4728",
+      "allSourceSHA256Match": true,
+      "prefixComparisons": 14,
+      "headComparisons": 11,
+      "failed": 0,
+      "freshArtifactSHA256": "7c6938173db323ac50a320a7433853af80a24ac9d610f7c4af7f6cbcb9a74836"
+    }
+  },
+  "redGreenEvidence": {
+    "observer": "missing observer, native function/streaming errors, and getter import gap were observed RED before their GREEN implementations",
+    "browserAdmission": "3 missing validator failures before GREEN",
+    "executedSourceInventory": "missing selector failed before GREEN",
+    "observerCleanup": "missing cleanup boundary failed before GREEN"
+  },
+  "privateArtifactsOverwritten": false,
+  "fullModelInferenceExecuted": false
+}

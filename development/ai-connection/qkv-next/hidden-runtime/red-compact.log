@@ -1,0 +1,28 @@
+✖ bounded actual source exposes immutable F16 rows and rejects cross-key/range reads (26.598996ms)
+✔ dynamic graph keeps dimensions symbolic and runtime weight binding (0.516694ms)
+✔ new Hike math uses exact N2 LayerNorm, admission and owned workspace (6.132993ms)
+✔ actual source abort during asynchronous identity hashing never commits a block (19.722216ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 70.680482
+
+✖ failing tests:
+
+test at docs/shared/diffusion-models/ort-bridge/block-hidden/test-boundaries.mjs:9:1
+✖ bounded actual source exposes immutable F16 rows and rejects cross-key/range reads (26.598996ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///workspace/work/diffusion-models/docs/shared/diffusion-models/ort-bridge/block-hidden/test-boundaries.mjs:21:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /compact/,
+    operator: 'throws',
+    diff: 'simple'
+  }

@@ -1,0 +1,188 @@
+{
+  "schemaVersion": "diffusion-original-cli-admission/1",
+  "sourceCommit": "716ffd169cf1b77ac086e030131af9de6222e528",
+  "scope": "Original input/contract/source shape admission only, no native model work/browser/reference computation, no numerical or resource acceptance",
+  "passed": true,
+  "cases": [
+    {
+      "command": [
+        "python",
+        "tools/diffusion-models/production-chunk-browser.py",
+        "--manifest",
+        "/tmp/d1-d4-production-73947-inputs/inputs.json",
+        "--contract",
+        "development/ai-connection/d1-d4-production-20261102/reference/full-declared-preexecution.json",
+        "--model-dir",
+        "/workspace/work/retained/bernini",
+        "--source-commit",
+        "716ffd169cf1b77ac086e030131af9de6222e528",
+        "--private-reference-dir",
+        "/tmp/original-validate-only-unused",
+        "--output",
+        "/tmp/original-validate-only-unused-receipt.json",
+        "--validate-only",
+        "--operation",
+        "blocks",
+        "--wasm-threads",
+        "1"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"passed\": true, \"sourceCommit\": \"716ffd169cf1b77ac086e030131af9de6222e528\", \"sources\": 165, \"inputFiles\": 7, \"totalTokens\": 73947, \"operation\": \"blocks\", \"blockLimit\": 0, \"resource\": {\"wasmThreads\": 1, \"crossOriginIsolationRequired\": false, \"decoder\": \"lookup\", \"readAheadBytes\": 1048576, \"referenceThreads\": 1, \"prefixComparisonsSkipped\": false, \"fallback\": false}, \"modelWorkExecuted\": false}\n",
+      "stderr": "",
+      "validation": {
+        "passed": true,
+        "sourceCommit": "716ffd169cf1b77ac086e030131af9de6222e528",
+        "sources": 165,
+        "inputFiles": 7,
+        "totalTokens": 73947,
+        "operation": "blocks",
+        "blockLimit": 0,
+        "resource": {
+          "wasmThreads": 1,
+          "crossOriginIsolationRequired": false,
+          "decoder": "lookup",
+          "readAheadBytes": 1048576,
+          "referenceThreads": 1,
+          "prefixComparisonsSkipped": false,
+          "fallback": false
+        },
+        "modelWorkExecuted": false
+      }
+    },
+    {
+      "command": [
+        "python",
+        "tools/diffusion-models/production-chunk-browser.py",
+        "--manifest",
+        "/tmp/d1-d4-production-73947-inputs/inputs.json",
+        "--contract",
+        "development/ai-connection/d1-d4-production-20261102/reference/full-declared-preexecution.json",
+        "--model-dir",
+        "/workspace/work/retained/bernini",
+        "--source-commit",
+        "716ffd169cf1b77ac086e030131af9de6222e528",
+        "--private-reference-dir",
+        "/tmp/original-validate-only-unused",
+        "--output",
+        "/tmp/original-validate-only-unused-receipt.json",
+        "--validate-only",
+        "--operation",
+        "blocks",
+        "--wasm-threads",
+        "4"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"passed\": true, \"sourceCommit\": \"716ffd169cf1b77ac086e030131af9de6222e528\", \"sources\": 165, \"inputFiles\": 7, \"totalTokens\": 73947, \"operation\": \"blocks\", \"blockLimit\": 0, \"resource\": {\"wasmThreads\": 4, \"crossOriginIsolationRequired\": true, \"decoder\": \"lookup\", \"readAheadBytes\": 1048576, \"referenceThreads\": 1, \"prefixComparisonsSkipped\": false, \"fallback\": false}, \"modelWorkExecuted\": false}\n",
+      "stderr": "",
+      "validation": {
+        "passed": true,
+        "sourceCommit": "716ffd169cf1b77ac086e030131af9de6222e528",
+        "sources": 165,
+        "inputFiles": 7,
+        "totalTokens": 73947,
+        "operation": "blocks",
+        "blockLimit": 0,
+        "resource": {
+          "wasmThreads": 4,
+          "crossOriginIsolationRequired": true,
+          "decoder": "lookup",
+          "readAheadBytes": 1048576,
+          "referenceThreads": 1,
+          "prefixComparisonsSkipped": false,
+          "fallback": false
+        },
+        "modelWorkExecuted": false
+      }
+    },
+    {
+      "command": [
+        "python",
+        "tools/diffusion-models/production-chunk-browser.py",
+        "--manifest",
+        "/tmp/d1-d4-production-73947-inputs/inputs.json",
+        "--contract",
+        "development/ai-connection/d1-d4-production-20261102/reference/full-declared-preexecution.json",
+        "--model-dir",
+        "/workspace/work/retained/bernini",
+        "--source-commit",
+        "716ffd169cf1b77ac086e030131af9de6222e528",
+        "--private-reference-dir",
+        "/tmp/original-validate-only-unused",
+        "--output",
+        "/tmp/original-validate-only-unused-receipt.json",
+        "--validate-only",
+        "--operation",
+        "predict",
+        "--wasm-threads",
+        "4"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"passed\": true, \"sourceCommit\": \"716ffd169cf1b77ac086e030131af9de6222e528\", \"sources\": 165, \"inputFiles\": 7, \"totalTokens\": 73947, \"operation\": \"predict\", \"blockLimit\": 39, \"resource\": {\"wasmThreads\": 4, \"crossOriginIsolationRequired\": true, \"decoder\": \"lookup\", \"readAheadBytes\": 1048576, \"referenceThreads\": 1, \"prefixComparisonsSkipped\": false, \"fallback\": false}, \"modelWorkExecuted\": false}\n",
+      "stderr": "",
+      "validation": {
+        "passed": true,
+        "sourceCommit": "716ffd169cf1b77ac086e030131af9de6222e528",
+        "sources": 165,
+        "inputFiles": 7,
+        "totalTokens": 73947,
+        "operation": "predict",
+        "blockLimit": 39,
+        "resource": {
+          "wasmThreads": 4,
+          "crossOriginIsolationRequired": true,
+          "decoder": "lookup",
+          "readAheadBytes": 1048576,
+          "referenceThreads": 1,
+          "prefixComparisonsSkipped": false,
+          "fallback": false
+        },
+        "modelWorkExecuted": false
+      }
+    },
+    {
+      "command": [
+        "python",
+        "tools/diffusion-models/production-chunk-browser.py",
+        "--manifest",
+        "/tmp/d1-d4-production-73947-inputs/inputs.json",
+        "--contract",
+        "development/ai-connection/d1-d4-production-20261102/reference/full-declared-preexecution.json",
+        "--model-dir",
+        "/workspace/work/retained/bernini",
+        "--source-commit",
+        "716ffd169cf1b77ac086e030131af9de6222e528",
+        "--private-reference-dir",
+        "/tmp/original-validate-only-unused",
+        "--output",
+        "/tmp/original-validate-only-unused-receipt.json",
+        "--validate-only",
+        "--operation",
+        "sample",
+        "--wasm-threads",
+        "4"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"passed\": true, \"sourceCommit\": \"716ffd169cf1b77ac086e030131af9de6222e528\", \"sources\": 165, \"inputFiles\": 9, \"totalTokens\": 73947, \"operation\": \"sample\", \"blockLimit\": 39, \"resource\": {\"wasmThreads\": 4, \"crossOriginIsolationRequired\": true, \"decoder\": \"lookup\", \"readAheadBytes\": 1048576, \"referenceThreads\": 1, \"prefixComparisonsSkipped\": false, \"fallback\": false}, \"modelWorkExecuted\": false}\n",
+      "stderr": "",
+      "validation": {
+        "passed": true,
+        "sourceCommit": "716ffd169cf1b77ac086e030131af9de6222e528",
+        "sources": 165,
+        "inputFiles": 9,
+        "totalTokens": 73947,
+        "operation": "sample",
+        "blockLimit": 39,
+        "resource": {
+          "wasmThreads": 4,
+          "crossOriginIsolationRequired": true,
+          "decoder": "lookup",
+          "readAheadBytes": 1048576,
+          "referenceThreads": 1,
+          "prefixComparisonsSkipped": false,
+          "fallback": false
+        },
+        "modelWorkExecuted": false
+      }
+    }
+  ]
+}

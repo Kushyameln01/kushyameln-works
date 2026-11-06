@@ -1,0 +1,503 @@
+{
+  "passed": true,
+  "stats": {
+    "busy": false,
+    "disposed": true,
+    "cleanupPending": false,
+    "pendingTensors": 0,
+    "runs": 3,
+    "siluRuns": 0,
+    "inputCopyBytes": 56,
+    "outputCopyBytes": 24,
+    "sessionCreations": 1
+  },
+  "prefixArtifactPathRole": "private explicit output; not published",
+  "prefixSide": "HIGH",
+  "evidence": {
+    "schemaVersion": "bernini-block-hidden-evidence/0.1",
+    "executionProfileId": "bernini-rect2-block0-postmod-f32-v1",
+    "precisionProfile": "bernini-block0-prefix-hike-f32-ort-silu-v1",
+    "scope": "ACTUAL_MODEL_OPERATORS_FROM_ACTUAL_RECT_MEAN_WITH_EXPLICIT_DIAGNOSTIC_NOISE",
+    "side": "HIGH",
+    "modelHash": "9ff3d7369da98f8eaf71045f7d0e99d5e344eea5e7dc934a930608786fe73f52",
+    "headerSHA256": "d8aec897e3af480492d7eca7b57141ea968e89cde7f46ea7886db11754ebd6e3",
+    "fullFileSHA256Verified": false,
+    "blockIndex": 0,
+    "scheduleIndex": 1,
+    "sigma": 0.9617158770561218,
+    "timestep": 961.7158813476562,
+    "sigmaSHA256": "ed7c50510c64f8fe536d3b309fc72b1b11956546c2fb043d949135bc54f4feee",
+    "timestepSHA256": "9adb171155c1ad188a5b8531d8d32d524f2844a6a233fd7299e5ffa94e170a3e",
+    "rawMeanSHA256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+    "noiseSHA256": "88463c36453f5edf61682e77df267645e68903f17b57f22fc561c4443f3bb28b",
+    "hiddenSHA256": "99066357aff4ebc1a13f63aa9486298153b43f8f026f6db8ada2a31a6671c61c",
+    "positionsSHA256": "9c96abcf679f283862a28bc89f5d9fa1085c5b3f360389f00ac996ca84570fd0",
+    "sourceIdsSHA256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+    "implicitBatch": 1,
+    "originalCoreShape": [
+      1,
+      2,
+      5120
+    ],
+    "operatorShape": [
+      2,
+      5120
+    ],
+    "layout": "LC",
+    "grid": [
+      1,
+      1,
+      2
+    ],
+    "rowToGrid": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ],
+    "sourceIds": [
+      0,
+      0
+    ],
+    "contextLatents": [],
+    "noiseScale": 1,
+    "postModulationComputedByModelOperators": true,
+    "rawMeanSource": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "855f435120f08eb9e818e51281fc26f0e2633829",
+      "path": "development/inference/e6/fixtures/png-mean.wktensor",
+      "fileSHA256": "6539204ef61dc0f706238b74e2bcabf8bbcce971f5056d0b0d7e288811516b71",
+      "payloadSHA256": "289977e71b65ca42ac9f3fa2b614882bc0eba7420e70620927a25740db6f53a3",
+      "modelSha256": "2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b"
+    },
+    "originalWorkflowInputsVerified": false,
+    "productionHiddenVerified": false,
+    "originalProductionPrecisionVerified": false,
+    "fullBlockVerified": false,
+    "lowIsHighHandoff": false,
+    "modelInference": false,
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY",
+    "operatorSources": {
+      "upstreamCoreCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+      "mathWasmSHA256": "ec95f1ca2bb76c332d1ff1072d48347e8a79d48f15618fa59b191dabe9117f7c",
+      "schedulerWasmSHA256": "bcd35eb9e0bef45c2f21d99ca77a1edeae57c8ea7fa763086492dc1fa40dd220",
+      "latent": {
+        "calls": 0,
+        "memoryBytes": 1114112,
+        "arenaBytes": 1024,
+        "inputCopyBytes": 0,
+        "outputCopyBytes": 0,
+        "workspaceReused": true,
+        "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+        "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+        "profiles": [
+          "wan21-raw-f32-5x16x16",
+          "wan21-raw-f32-1x16x16",
+          "wan21-raw-f32-1x16x32"
+        ],
+        "imports": 0
+      },
+      "linear": {
+        "graphSHA256": "9c3bbaf2488a763ab56a96a8f5ddfc65510bf197799ed83b9f6ead512cf7a52e",
+        "siluGraphSHA256": "e72e6b3ef1750672d78f2aac16f4a7c5e38660327245cb0caa62757495563d64",
+        "ortVersion": "1.24.3",
+        "silu": "F32 Sigmoid then Mul; finite abs input <= 1e6",
+        "sessionCreations": 2
+      },
+      "bridgeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd"
+    },
+    "parameterSources": {
+      "patch_embedding.weight": {
+        "originalKey": "patch_embedding.weight",
+        "fullShape": [
+          5120,
+          16,
+          1,
+          2,
+          2
+        ],
+        "storageDtype": "F16",
+        "computeDtype": "F32",
+        "columns": 64,
+        "elementCount": 327680,
+        "absoluteByteOffset": 2107728456,
+        "byteLength": 655360,
+        "binding": "runtime-input",
+        "transform": "conv3d-im2col-C-kT-kH-kW",
+        "selectedRows": [
+          0,
+          5120
+        ],
+        "rawSHA256": "e3e78dd4258575b58c840b268ce29c140dbda4aa3597535feba61499349a47d8",
+        "decodedF32SHA256": "efeb389bcaff43a3b8542d8b63618be302aa6b4a873be743a9f4b8bcb805b4a8",
+        "selectedRawBytes": 655360,
+        "selectedDecodedBytes": 1310720,
+        "bias": {
+          "originalKey": "patch_embedding.bias",
+          "fullShape": [
+            5120
+          ],
+          "storageDtype": "F16",
+          "computeDtype": "F32",
+          "columns": null,
+          "elementCount": 5120,
+          "absoluteByteOffset": 2107718216,
+          "byteLength": 10240,
+          "binding": "hike-parameter",
+          "transform": "identity-row-major",
+          "rowStart": null,
+          "rowCount": null,
+          "elementOffset": 0,
+          "selectedByteLength": 10240,
+          "rawSHA256": "a3e79236c51e7f51b1c6a3228126e11bdb9e44378aa08425c485986731b348c9",
+          "decodedF32SHA256": "faa7f77710a49c4b55318bb644ae625f0efe1bf84c271840baaac4407fd821b2"
+        }
+      },
+      "time_embedding.0.weight": {
+        "originalKey": "time_embedding.0.weight",
+        "fullShape": [
+          5120,
+          256
+        ],
+        "storageDtype": "F16",
+        "computeDtype": "F32",
+        "columns": 256,
+        "elementCount": 1310720,
+        "absoluteByteOffset": 2202786376,
+        "byteLength": 2621440,
+        "binding": "runtime-input",
+        "transform": "identity-row-major",
+        "selectedRows": [
+          0,
+          5120
+        ],
+        "rawSHA256": "b5648d44cd5774466476a7953d133b050f933ad48b6ad5e8be90fd4c74e52b7f",
+        "decodedF32SHA256": "af7f3ec040353e4a3183e94c080ae00919beba77cdbb39298a5aa92564389f0c",
+        "selectedRawBytes": 2621440,
+        "selectedDecodedBytes": 5242880,
+        "bias": {
+          "originalKey": "time_embedding.0.bias",
+          "fullShape": [
+            5120
+          ],
+          "storageDtype": "F16",
+          "computeDtype": "F32",
+          "columns": null,
+          "elementCount": 5120,
+          "absoluteByteOffset": 2202776136,
+          "byteLength": 10240,
+          "binding": "hike-parameter",
+          "transform": "identity-row-major",
+          "rowStart": null,
+          "rowCount": null,
+          "elementOffset": 0,
+          "selectedByteLength": 10240,
+          "rawSHA256": "aada7a5bf84a8a3d21f949a6aa1c49c8e74becba0eec5eea2048460f1e9caa10",
+          "decodedF32SHA256": "44fbfaea7acefda8674a3a12fe3e97e0cd522b23a5978e355c40bb54d3baf2c4"
+        }
+      },
+      "time_embedding.2.weight": {
+        "originalKey": "time_embedding.2.weight",
+        "fullShape": [
+          5120,
+          5120
+        ],
+        "storageDtype": "F16",
+        "computeDtype": "F32",
+        "columns": 5120,
+        "elementCount": 26214400,
+        "absoluteByteOffset": 2205418056,
+        "byteLength": 52428800,
+        "binding": "runtime-input",
+        "transform": "identity-row-major",
+        "selectedRows": [
+          0,
+          5120
+        ],
+        "rawSHA256": "bd7142b00abe539f722abdb3f916ab494a3104335e0150f19e68e1de88608c97",
+        "decodedF32SHA256": "87b22dcca5d587bd20c29d6c1e5495d6e6a345937dba182f93fcd208762fb804",
+        "selectedRawBytes": 52428800,
+        "selectedDecodedBytes": 104857600,
+        "bias": {
+          "originalKey": "time_embedding.2.bias",
+          "fullShape": [
+            5120
+          ],
+          "storageDtype": "F16",
+          "computeDtype": "F32",
+          "columns": null,
+          "elementCount": 5120,
+          "absoluteByteOffset": 2205407816,
+          "byteLength": 10240,
+          "binding": "hike-parameter",
+          "transform": "identity-row-major",
+          "rowStart": null,
+          "rowCount": null,
+          "elementOffset": 0,
+          "selectedByteLength": 10240,
+          "rawSHA256": "481bbbfa9f6af212be25e907a7c749c0c0ead0cc57a8f25c5ccd7f041feb7544",
+          "decodedF32SHA256": "2c2b82c770b4bd53ddf4ad60a1f7f84dfab4a8ec0dfb309d438ab72756de6a66"
+        }
+      },
+      "time_projection.1.weight": {
+        "originalKey": "time_projection.1.weight",
+        "fullShape": [
+          30720,
+          5120
+        ],
+        "storageDtype": "F16",
+        "computeDtype": "F32",
+        "columns": 5120,
+        "elementCount": 157286400,
+        "absoluteByteOffset": 2257908296,
+        "byteLength": 314572800,
+        "binding": "runtime-input",
+        "transform": "identity-row-major",
+        "selectedRows": [
+          0,
+          10240
+        ],
+        "rawSHA256": "71d58ca8b5ada1b323c89aacd5cee97c4f315fffaf4b2b7eedd0b625137003ca",
+        "decodedF32SHA256": "b26017a32b6dffa41edfaa0fde83e17c576df70f80b95f1aeedc982150f4edc8",
+        "selectedRawBytes": 104857600,
+        "selectedDecodedBytes": 209715200,
+        "bias": {
+          "originalKey": "time_projection.1.bias",
+          "fullShape": [
+            30720
+          ],
+          "storageDtype": "F16",
+          "computeDtype": "F32",
+          "columns": null,
+          "elementCount": 10240,
+          "absoluteByteOffset": 2257846856,
+          "byteLength": 61440,
+          "binding": "hike-parameter",
+          "transform": "identity-row-major",
+          "rowStart": null,
+          "rowCount": null,
+          "elementOffset": 0,
+          "selectedByteLength": 20480,
+          "rawSHA256": "5c8c9e529a3057bb917cf1a41a58e4bb917d66a5fae03b8ef2608795553aa0d9",
+          "decodedF32SHA256": "f65f7a17d55118ca7941fe6be94c0a90626c27aae4fd16ba8230a5a5f9d6eb6b"
+        }
+      },
+      "blocks.0.modulation": {
+        "originalKey": "blocks.0.modulation",
+        "fullShape": [
+          1,
+          6,
+          5120
+        ],
+        "storageDtype": "F16",
+        "computeDtype": "F32",
+        "columns": null,
+        "elementCount": 10240,
+        "absoluteByteOffset": 52710856,
+        "byteLength": 61440,
+        "binding": "hike-parameter",
+        "transform": "identity-row-major",
+        "rowStart": null,
+        "rowCount": null,
+        "elementOffset": 0,
+        "selectedByteLength": 20480,
+        "rawSHA256": "843d2db08bd5ae51ba67e3ac3c6a2bda8caddf2dc5c4cb1560a5db619e1408c2",
+        "decodedF32SHA256": "8829d0723a91c671b004a1acc4e7e04499f976f7079955100ceb6deb31e36946"
+      }
+    },
+    "tiles": 1600,
+    "before": {
+      "source": {
+        "disposed": false,
+        "busy": false,
+        "reads": 10,
+        "readBytes": 193669,
+        "maxReadBytes": 181280,
+        "hike": {
+          "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+          "memoryBytes": 1572864,
+          "arenaBytes": 491648,
+          "calls": 4,
+          "inputCopyBytes": 12544,
+          "outputCopyBytes": 24704,
+          "workspaceReused": true,
+          "disposed": false
+        },
+        "fullFileHashRecomputed": false
+      },
+      "math": {
+        "wasmSHA256": "ec95f1ca2bb76c332d1ff1072d48347e8a79d48f15618fa59b191dabe9117f7c",
+        "busy": false,
+        "disposed": false,
+        "memoryBytes": 1245184,
+        "arenaBytes": 143360,
+        "calls": 0,
+        "inputCopyBytes": 0,
+        "outputCopyBytes": 0,
+        "snapshotCopyBytes": 0,
+        "primitiveCalls": {
+          "cos": 0,
+          "sin": 0,
+          "pow": 0,
+          "sqrt": 0
+        },
+        "workspaceReused": true
+      },
+      "latent": {
+        "calls": 1,
+        "memoryBytes": 1114112,
+        "arenaBytes": 1024,
+        "inputCopyBytes": 512,
+        "outputCopyBytes": 512,
+        "workspaceReused": true,
+        "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+        "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+        "profiles": [
+          "wan21-raw-f32-5x16x16",
+          "wan21-raw-f32-1x16x16",
+          "wan21-raw-f32-1x16x32"
+        ],
+        "imports": 0
+      },
+      "scheduler": {
+        "memoryBytes": 1114112,
+        "arenaBytes": 49152,
+        "chunkElements": 4096,
+        "calls": 3,
+        "inputCopyBytes": 1028,
+        "outputCopyBytes": 568,
+        "workspaceReused": true,
+        "imports": 0
+      },
+      "linear": {
+        "busy": false,
+        "disposed": false,
+        "cleanupPending": false,
+        "pendingTensors": 0,
+        "runs": 1,
+        "siluRuns": 0,
+        "inputCopyBytes": 4608,
+        "outputCopyBytes": 128,
+        "sessionCreations": 2
+      }
+    },
+    "after": {
+      "source": {
+        "disposed": false,
+        "busy": false,
+        "reads": 1615,
+        "readBytes": 160828549,
+        "maxReadBytes": 181280,
+        "hike": {
+          "wasmSha256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+          "memoryBytes": 1572864,
+          "arenaBytes": 491648,
+          "calls": 3529,
+          "inputCopyBytes": 160893184,
+          "outputCopyBytes": 321417344,
+          "workspaceReused": true,
+          "disposed": false
+        },
+        "fullFileHashRecomputed": false
+      },
+      "math": {
+        "wasmSHA256": "ec95f1ca2bb76c332d1ff1072d48347e8a79d48f15618fa59b191dabe9117f7c",
+        "busy": false,
+        "disposed": false,
+        "memoryBytes": 1245184,
+        "arenaBytes": 143360,
+        "calls": 4,
+        "inputCopyBytes": 204800,
+        "outputCopyBytes": 123904,
+        "snapshotCopyBytes": 204800,
+        "primitiveCalls": {
+          "cos": 128,
+          "sin": 128,
+          "pow": 128,
+          "sqrt": 2
+        },
+        "workspaceReused": true
+      },
+      "latent": {
+        "calls": 2,
+        "memoryBytes": 1114112,
+        "arenaBytes": 1024,
+        "inputCopyBytes": 1024,
+        "outputCopyBytes": 1024,
+        "workspaceReused": true,
+        "wasmSha256": "bd42d4a608fb964b2b1894cf961b5a17002cfc2dabad1721e000236cc335be1d",
+        "sourceSha256": "bd51d724b5a4fbad545670674701f316343a17e63916a57daf144bd763cfd81e",
+        "profiles": [
+          "wan21-raw-f32-5x16x16",
+          "wan21-raw-f32-1x16x16",
+          "wan21-raw-f32-1x16x32"
+        ],
+        "imports": 0
+      },
+      "scheduler": {
+        "memoryBytes": 1114112,
+        "arenaBytes": 49152,
+        "chunkElements": 4096,
+        "calls": 6,
+        "inputCopyBytes": 2056,
+        "outputCopyBytes": 1136,
+        "workspaceReused": true,
+        "imports": 0
+      },
+      "linear": {
+        "busy": false,
+        "disposed": false,
+        "cleanupPending": false,
+        "pendingTensors": 0,
+        "runs": 1601,
+        "siluRuns": 2,
+        "inputCopyBytes": 341324288,
+        "outputCopyBytes": 163968,
+        "sessionCreations": 2
+      }
+    },
+    "elapsed": {
+      "readMs": 13453.899999979883,
+      "linearMs": 1251.0000000074506,
+      "biasMs": 32.899999998509884,
+      "totalMs": 14760.199999999255
+    },
+    "resources": {
+      "returnedStageArraysBytes": 289280,
+      "positionsAndSourceIdsBytes": 32,
+      "callerAndOwnedRawMeanNoiseBytes": 2048,
+      "maxRawWeightTileBytes": 163840,
+      "maxDecodedWeightTileBytes": 327680,
+      "maxLinearXSnapshotBytes": 20480,
+      "maxLinearWeightSnapshotBytes": 327680,
+      "maxBiasVectorBytes": 40960,
+      "maxWeightTileAndDecodeCopiesBytes": 655360,
+      "maxBridgeDecodeTypedBitsBytes": 163840,
+      "maxShiftScaleTemporaryBytes": 40960,
+      "hikeMemoryBytes": 5046272,
+      "hikeMemoryCount": 4,
+      "ORTMemoryBytes": null,
+      "ORTSessionCount": 2,
+      "sourceReadBytes": 160634880,
+      "hikeDecodeClearTrafficBytes": 1733059200,
+      "linearInputSnapshotTrafficBytes": 341319680,
+      "linearOutputSnapshotTrafficBytes": 163840,
+      "scope": "serial prefix only; numeric live-set upper bound excludes ORT allocator, GC/browser/File/harness/reference and downstream; not production peak proof"
+    },
+    "boundaryTests": {
+      "cancelledAtFirstWeightTile": true,
+      "reentrantGetterRejected": true,
+      "inputSnapshotBeforeAwait": true,
+      "reusedAfterAbort": true
+    }
+  },
+  "browserVersion": "154.0.8037.57"
+}

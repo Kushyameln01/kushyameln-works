@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "commands": [
+    {
+      "command": "node --test --test-isolation=none docs/shared/diffusion-models/ort-bridge/post-self-attention/test-*.mjs docs/shared/diffusion-models/diagnostics/p4-cross-ffn/test-*.mjs",
+      "exitCode": 0,
+      "passed": 42,
+      "failed": 0,
+      "log": "node.log",
+      "sha256": "78b570b5e7cabf46746e623baf08ba42ad42d83d3305f50aa7addc479d8a130b",
+      "scope": "focused source/lifecycle/math/control; no whole model numerical execution"
+    },
+    {
+      "command": "python tools/diffusion-models/test-p4-cross-ffn-reference.py",
+      "exitCode": 0,
+      "passed": 12,
+      "failed": 0,
+      "log": "reference-tests.log",
+      "sha256": "5718d0a4b69f3cf6ad3acabda9847540c96da6ada1bce64aba7900c919a04bf0",
+      "scope": "focused source/lifecycle/math/control; no whole model numerical execution"
+    },
+    {
+      "command": "python tools/diffusion-models/test-p4-cross-ffn-browser.py",
+      "exitCode": 0,
+      "passed": 11,
+      "failed": 0,
+      "log": "browser-tests.log",
+      "sha256": "0e0ff48818165bc025ea30dd179e6fddcf43567b32239c9f54ea734d19862220",
+      "scope": "focused source/lifecycle/math/control; no whole model numerical execution"
+    },
+    {
+      "command": "python tools/diffusion-models/test-p4-cross-ffn-feed-browser.py",
+      "exitCode": 0,
+      "passed": 7,
+      "failed": 0,
+      "log": "feed-tests.log",
+      "sha256": "7d7171a44972f14a5842f077bb526804289ad5dbf5240545bb8eb03995d7fc4e",
+      "scope": "focused source/lifecycle/math/control; no whole model numerical execution"
+    },
+    {
+      "command": "node --test --test-isolation=none docs/shared/diffusion-models/ort-bridge/self-attention-tail/test-{trusted,math,stage}.mjs",
+      "exitCode": 0,
+      "passed": 11,
+      "failed": 0,
+      "log": "old-tail-tests.log",
+      "sha256": "c604c289abe01e66cd9a55de921977b3412918224d4f0a4256bb083258785f31",
+      "scope": "focused source/lifecycle/math/control; no whole model numerical execution"
+    }
+  ],
+  "countsAreIndependentScopesNotWholePipelineAcceptance": true,
+  "actualNewNumericalIntegration": "PENDING",
+  "oldTailFixedSourceUnchanged": true,
+  "oldQ16LoraAnd82bPinsUnchanged": true,
+  "generationReady": false,
+  "load": "NOT_READY",
+  "predict": "NOT_READY",
+  "sample": "NOT_READY"
+}

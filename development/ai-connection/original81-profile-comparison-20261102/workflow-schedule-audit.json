@@ -1,0 +1,419 @@
+{
+  "scope": "Original uploaded workflow schedule/noise source audit; no model inference or torch import",
+  "workflowMember": "example_workflows/bernini_rv2v_basic.json",
+  "workflowSha256": "543865dfeeb9a94427bea543624e51db5f1dfcf88a7af6a497ddcdbeadc477dd",
+  "nodes": {
+    "6": {
+      "type": "UNETLoader",
+      "widgets_values": [
+        "Bernini - Bytedance\\Wan22_Bernini_HIGH_mxfp8.safetensors",
+        "default"
+      ]
+    },
+    "7": {
+      "type": "LoraLoaderModelOnly",
+      "widgets_values": [
+        "lightx2v_T2V_14B_cfg_step_distill_v2_lora_rank64_bf16.safetensors",
+        3
+      ]
+    },
+    "8": {
+      "type": "ModelSamplingSD3",
+      "widgets_values": [
+        5
+      ]
+    },
+    "9": {
+      "type": "UNETLoader",
+      "widgets_values": [
+        "Bernini - Bytedance\\Wan22_Bernini_LOW_mxfp8.safetensors",
+        "default"
+      ]
+    },
+    "10": {
+      "type": "LoraLoaderModelOnly",
+      "widgets_values": [
+        "Lightx2v-Lighning-latest\\Wan2.2-Lightning_I2V-A14B-4steps-lora_LOW_fp16.safetensors",
+        1
+      ]
+    },
+    "11": {
+      "type": "ModelSamplingSD3",
+      "widgets_values": [
+        5
+      ]
+    },
+    "12": {
+      "type": "KSamplerSelect",
+      "widgets_values": [
+        "euler"
+      ]
+    },
+    "13": {
+      "type": "BasicScheduler",
+      "widgets_values": [
+        "simple",
+        6,
+        1
+      ]
+    },
+    "14": {
+      "type": "SplitSigmas",
+      "widgets_values": [
+        3
+      ]
+    },
+    "15": {
+      "type": "SamplerCustom",
+      "widgets_values": [
+        true,
+        0,
+        "fixed",
+        1
+      ]
+    },
+    "16": {
+      "type": "SamplerCustom",
+      "widgets_values": [
+        false,
+        0,
+        "fixed",
+        1
+      ]
+    }
+  },
+  "links": [
+    [
+      5,
+      6,
+      0,
+      7,
+      0,
+      "MODEL"
+    ],
+    [
+      6,
+      7,
+      0,
+      8,
+      0,
+      "MODEL"
+    ],
+    [
+      7,
+      9,
+      0,
+      10,
+      0,
+      "MODEL"
+    ],
+    [
+      8,
+      10,
+      0,
+      11,
+      0,
+      "MODEL"
+    ],
+    [
+      9,
+      8,
+      0,
+      15,
+      0,
+      "MODEL"
+    ],
+    [
+      10,
+      11,
+      0,
+      16,
+      0,
+      "MODEL"
+    ],
+    [
+      11,
+      8,
+      0,
+      13,
+      0,
+      "MODEL"
+    ],
+    [
+      12,
+      12,
+      0,
+      15,
+      3,
+      "SAMPLER"
+    ],
+    [
+      13,
+      12,
+      0,
+      16,
+      3,
+      "SAMPLER"
+    ],
+    [
+      14,
+      13,
+      0,
+      14,
+      0,
+      "SIGMAS"
+    ],
+    [
+      15,
+      14,
+      0,
+      15,
+      4,
+      "SIGMAS"
+    ],
+    [
+      16,
+      14,
+      1,
+      16,
+      4,
+      "SIGMAS"
+    ],
+    [
+      17,
+      5,
+      0,
+      15,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      18,
+      5,
+      1,
+      15,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      19,
+      5,
+      2,
+      15,
+      5,
+      "LATENT"
+    ],
+    [
+      20,
+      5,
+      0,
+      16,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      21,
+      5,
+      1,
+      16,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      22,
+      15,
+      0,
+      16,
+      5,
+      "LATENT"
+    ],
+    [
+      23,
+      16,
+      0,
+      17,
+      0,
+      "LATENT"
+    ]
+  ],
+  "schedule": {
+    "scheduler": "simple",
+    "steps": 6,
+    "denoise": 1,
+    "shift": 5,
+    "bufferSize": 1000,
+    "sigmaBufferIndices": [
+      999,
+      833,
+      666,
+      499,
+      333,
+      166
+    ],
+    "highSigmas": [
+      1.0,
+      0.9617158770561218,
+      0.9092148542404175,
+      0.8333333134651184
+    ],
+    "lowSigmas": [
+      0.8333333134651184,
+      0.7148972749710083,
+      0.5005995035171509,
+      0.0
+    ],
+    "allSigmas": [
+      1.0,
+      0.9617158770561218,
+      0.9092148542404175,
+      0.8333333134651184,
+      0.7148972749710083,
+      0.5005995035171509,
+      0.0
+    ],
+    "float32LittleEndianHex": [
+      "0000803f",
+      "0333763f",
+      "4ec2683f",
+      "5555553f",
+      "8203373f",
+      "4a27003f",
+      "00000000"
+    ],
+    "precisionStatus": "source-derived elementary f32 arithmetic, not captured PyTorch runtime output; exact formulas/indices are authoritative",
+    "highUpdates": 3,
+    "lowUpdates": 3
+  },
+  "noise": {
+    "highAddNoise": true,
+    "highSeed": 0,
+    "lowAddNoise": false,
+    "lowSeed": 0,
+    "cfgHigh": 1,
+    "cfgLow": 1,
+    "eulerChurnDefault": 0,
+    "sameSeedIsNotNoiseTensorProof": true,
+    "requirementsForExactComparison": [
+      "retain original noise tensor with hash, dtype and layout",
+      "match latent shape",
+      "match generator algorithm and runtime",
+      "match batch_index behavior",
+      "match initial-noise noise_scale",
+      "match the same input latent and conditioning tensors"
+    ]
+  },
+  "sources": [
+    {
+      "path": "/workspace/work/diffusion-investigation/references/comfy_model_sampling.py",
+      "upstreamPath": "comfy/model_sampling.py",
+      "sha256": "f1f7e0a6206b1c0c44bb6d6792851e256f436bd765e98b9bc239c37f747542e6",
+      "lines": [
+        [
+          86,
+          101
+        ],
+        [
+          289,
+          329
+        ]
+      ],
+      "provenance": "manifest-matched b5a432157de6b8884f81104cd02926adf4d597e4"
+    },
+    {
+      "path": "/workspace/work/diffusion-investigation/references/comfy_samplers.py",
+      "upstreamPath": "comfy/samplers.py",
+      "sha256": "ec98c4ef227772c7fc9953341833347e7c4f4050209617b0e2771b283e2f08ee",
+      "lines": [
+        [
+          592,
+          627
+        ],
+        [
+          645,
+          652
+        ],
+        [
+          983,
+          1007
+        ],
+        [
+          1220,
+          1239
+        ],
+        [
+          1379,
+          1387
+        ]
+      ],
+      "provenance": "manifest-matched b5a432157de6b8884f81104cd02926adf4d597e4"
+    },
+    {
+      "path": "/workspace/work/diffusion-investigation/references/comfy_k_diffusion_sampling.py",
+      "upstreamPath": "comfy/k_diffusion/sampling.py",
+      "sha256": "1d7255045abdcc50f704383f36c63e603976055d342442c34d628cf327a05dde",
+      "lines": [
+        [
+          63,
+          65
+        ],
+        [
+          190,
+          212
+        ]
+      ],
+      "provenance": "manifest-matched b5a432157de6b8884f81104cd02926adf4d597e4"
+    },
+    {
+      "path": "/workspace/work/diffusion-rev3-checks/source/comfy_extras_nodes_custom_sampler.py",
+      "upstreamPath": "comfy_extras/nodes_custom_sampler.py",
+      "sha256": "63c80757de8bbcabd51bf9bca30c0817574122ca8963d55622b43fcd55e9697c",
+      "lines": [
+        [
+          17,
+          42
+        ],
+        [
+          204,
+          224
+        ],
+        [
+          716,
+          731
+        ],
+        [
+          733,
+          793
+        ]
+      ],
+      "provenance": "manifest-matched b5a432157de6b8884f81104cd02926adf4d597e4"
+    },
+    {
+      "path": "/workspace/work/diffusion-rev3-checks/source/comfy_extras_nodes_model_advanced.py",
+      "upstreamPath": "comfy_extras/nodes_model_advanced.py",
+      "sha256": "e45bd656744c7888f28bb2b2d20b55bff70d70dc97f867df491031d28eeb3c9b",
+      "lines": [
+        [
+          120,
+          149
+        ]
+      ],
+      "provenance": "manifest-matched b5a432157de6b8884f81104cd02926adf4d597e4"
+    },
+    {
+      "path": "/workspace/work/diffusion-rev3-checks/source/comfy_sample.py",
+      "upstreamPath": "comfy/sample.py",
+      "sha256": "15493453d371a6fa43395c0a1c27051df3741686d2c74130ab1cc38c47351b97",
+      "lines": [
+        [
+          9,
+          43
+        ],
+        [
+          86,
+          89
+        ]
+      ],
+      "provenance": "locally retained; digest independently recorded, not listed in a0 core-source-manifest"
+    }
+  ]
+}

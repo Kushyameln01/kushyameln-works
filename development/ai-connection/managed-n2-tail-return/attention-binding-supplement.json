@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Separate attention hash-metadata supplement from existing fixed public export receipts; unmodified result.json remains authoritative for the actual run",
+  "reason": "Fixed runner publicN2TailReceipt removes keys named attention including trustedInputs.attention; this file does not edit or replace the execution result",
+  "sourceCommit": "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+  "sides": [
+    {
+      "side": "HIGH",
+      "fixedPublicReceipt": {
+        "path": "development/ai-connection/self-attention-tail/output-export/high-export-receipt.json",
+        "sha256": "21fd376bf498c411fbcaf4cc68c1ee3a3320d77923a3da107c2550f0698a72c4",
+        "byteLength": 7658
+      },
+      "attentionBinding": {
+        "receiptSHA256": "75bdf4a9e6e09769d5edcbab400db103eead7822c92f12e355fc7028938b158b",
+        "artifactSHA256": "26c4128fa09e2f755413787241fd32d28fe3f5bee23b85df2f64d9cd4c738ddf",
+        "contextSHA256": "69838610e717a8d7c65adda4133233f581a5173cf10820a130471b96d75985ee",
+        "fullPrefixReceiptSHA256": "c12885eb71b0b46f91f79b94bba0315f1c9eae635daa3493686bb5882c7703f0",
+        "fullPrefixArtifactSHA256": "4493d93b56f434b6292da1c9898dd30b474444073796a10e25788d5c71a65a52"
+      },
+      "actualRunAttentionArtifactSHA256": "26c4128fa09e2f755413787241fd32d28fe3f5bee23b85df2f64d9cd4c738ddf",
+      "actualRunInputF32SHA256": "69838610e717a8d7c65adda4133233f581a5173cf10820a130471b96d75985ee",
+      "artifactAndActualInputHashesMatch": true
+    },
+    {
+      "side": "LOW",
+      "fixedPublicReceipt": {
+        "path": "development/ai-connection/self-attention-tail/output-export/low-export-receipt.json",
+        "sha256": "98edf8cbc42cfe80989f87a6459cb378ef08c73c7f7bb49688cf903aaa81b9d0",
+        "byteLength": 7656
+      },
+      "attentionBinding": {
+        "receiptSHA256": "618c46b6ad4233a519516d923dc8df317b54c8f673299ef2428fba9b99c23e77",
+        "artifactSHA256": "2833c85cb79ce250fcc81ca2dac0e42e1a918126604661df13999b7c31304886",
+        "contextSHA256": "b688a5ad16637c42fe22f1a069c1e786881f028aa23da421c27170e84f7778fd",
+        "fullPrefixReceiptSHA256": "ec161f89a53f8dbd6b8c4a02c59a236ac544224cfe700592e8982900eeb4ade5",
+        "fullPrefixArtifactSHA256": "1b2808f5ee1185db85cba4e2c59c030fd45d6e3c83c9fde457e70c7d1545d797"
+      },
+      "actualRunAttentionArtifactSHA256": "2833c85cb79ce250fcc81ca2dac0e42e1a918126604661df13999b7c31304886",
+      "actualRunInputF32SHA256": "b688a5ad16637c42fe22f1a069c1e786881f028aa23da421c27170e84f7778fd",
+      "artifactAndActualInputHashesMatch": true
+    }
+  ]
+}

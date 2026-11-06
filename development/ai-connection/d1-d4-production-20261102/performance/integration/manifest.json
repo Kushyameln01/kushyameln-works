@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "diffusion-api-unloaded-integration/1",
+  "baselineCommit": "3aed2f696adf36385b54cfaa5019d447d64984e0",
+  "testedSourceIdentity": "Modified source paths/bytes/SHA256; baseline does not identify modified files",
+  "scope": "Existing API/LoRA/L1/E6 loaded numerical primitives and unloaded public model contract only; no paired model load, full predict or sample inference",
+  "expectedUnloadedModelError": "MODEL_NOT_LOADED",
+  "expectedLegacySingleFileLoadError": "NOT_READY",
+  "source": [
+    {
+      "path": "docs/shared/diffusion-models/api/test/cases.mjs",
+      "bytes": 18822,
+      "sha256": "a50bfc4078baaceb016ffe90a4e20dda74d073b8b02b3adee1a355bb957ac2e1"
+    },
+    {
+      "path": "docs/shared/diffusion-models/api/test/l1-cases.mjs",
+      "bytes": 3725,
+      "sha256": "5eda6683dbd846a7283bf60e043c933087b298a04781d99a025215a92a2e4cde"
+    },
+    {
+      "path": "docs/shared/diffusion-models/api/test/e6-cases.mjs",
+      "bytes": 4942,
+      "sha256": "8b6e02fd4331f296261542fbe7d381b3aff822f6d76e98debb46e28cd8b0db2d"
+    },
+    {
+      "path": "docs/shared/diffusion-models/api/test/lora-cases.mjs",
+      "bytes": 15017,
+      "sha256": "c8c90a4d170ae92f1da1939873a16896d4cc79b09ea3d0e52eed27670e37f917"
+    },
+    {
+      "path": "docs/shared/diffusion-models/api/test/browser-check.cjs",
+      "bytes": 4190,
+      "sha256": "6ac3833fdcc0e68c8cda81e2076a12a324b3e07111fb82114ec332ce58858ee4"
+    },
+    {
+      "path": "docs/shared/diffusion-models/api/test/lora-browser-check.cjs",
+      "bytes": 2153,
+      "sha256": "f3cf60bf174f49bb5ca16b68c61ae457b523b0419d874daf84318f4cb9d53643"
+    },
+    {
+      "path": "docs/shared/diffusion-models/api/index.mjs",
+      "bytes": 13952,
+      "sha256": "e8e1801335e4fc3ee68d6cf49dfc9726e5c0f70a44218c852855e59f90e4d28c"
+    },
+    {
+      "path": "docs/shared/diffusion-models/api/worker.mjs",
+      "bytes": 11316,
+      "sha256": "597f05dc46104443a7d1aefe6f60f4ec91d02b3082352d4caacc3cb2e6e00033"
+    },
+    {
+      "path": "docs/shared/diffusion-models/api/model-adapter.mjs",
+      "bytes": 12245,
+      "sha256": "851f3e1a96f91185bea7abd4ca839b67a40b770baf3b343f8f99e5e6554e221e"
+    },
+    {
+      "path": "docs/shared/diffusion-models/api/build-info.mjs",
+      "bytes": 15512,
+      "sha256": "03a3961c5ed7c61425cc4590143695425f43d641ccaeed810bef68894167c31f"
+    },
+    {
+      "path": "docs/shared/inference/tensor.mjs",
+      "bytes": 9104,
+      "sha256": "e200fef69be3909a13bc91a59743681df1072817eadc7c1865717afe0c3c9f8e"
+    },
+    {
+      "path": "tools/diffusion-models/test-l1-browser.py",
+      "bytes": 2587,
+      "sha256": "083a24fe478c985e9df6ffa95cbc914de5b9a15781bc7550fcca7b2a48c0691b"
+    },
+    {
+      "path": "tools/diffusion-models/e6-api-browser.py",
+      "bytes": 1350,
+      "sha256": "24569318d36d6292de2bd2c6f1523cf2473fd181b3be1ba05f54e5c0c10af319"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "development/ai-connection/d1-d4-production-20261102/performance/integration/api-browser-red.log",
+      "bytes": 433,
+      "sha256": "acea6fe86cafc0089d30da32fe5a6acb9155221c4d025929ba6803f806df394f"
+    },
+    {
+      "path": "development/ai-connection/d1-d4-production-20261102/performance/integration/browser-results.json",
+      "bytes": 7003,
+      "sha256": "61cf711716d05d3357d440219fc0ee80e855398cc89b90e583b9c52e60579143"
+    },
+    {
+      "path": "development/ai-connection/d1-d4-production-20261102/performance/integration/e6-api.json",
+      "bytes": 2475,
+      "sha256": "630d00856e81c5724a126d5242b3d219be101006e5bb8dd90b68d9e6fc56c904"
+    },
+    {
+      "path": "development/ai-connection/d1-d4-production-20261102/performance/integration/l1-api.json",
+      "bytes": 2505,
+      "sha256": "aecf0ac60bb1088580f8c4029059b7144974c7bfd8a2fb9f75ba4ca9aa04072a"
+    },
+    {
+      "path": "development/ai-connection/d1-d4-production-20261102/performance/integration/lora-browser-results.json",
+      "bytes": 2395,
+      "sha256": "13490605cefe381856f7db9444e60a1fa86d17b88e4d4423c126ad91d1e4eeb0"
+    }
+  ],
+  "results": {
+    "browser-results.json": {
+      "passed": true,
+      "checks": 22,
+      "pageErrors": []
+    },
+    "lora-browser-results.json": {
+      "passed": true,
+      "checks": 16,
+      "pageErrors": []
+    },
+    "l1-api.json": {
+      "passed": true,
+      "checks": 4,
+      "pageErrors": []
+    },
+    "e6-api.json": {
+      "passed": true,
+      "checks": 4,
+      "pageErrors": []
+    }
+  },
+  "passed": true
+}

@@ -1,0 +1,420 @@
+{
+  "schemaVersion": "bernini-self-attention-tail-integration-summary/0.1",
+  "passed": true,
+  "acceptanceUnit": "Each side independently accepts all O projection, chunk2 gate and original patchHidden residual local/composed gates together",
+  "sides": {
+    "HIGH": {
+      "receiptSHA256": "759380dcbe016b1f1d9a51579c21a1e1d47545d250e1badc9e93842a4537d62e",
+      "allValueComparisons": {
+        "localO": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 2.288818359375e-05,
+          "worstIndex": 3053,
+          "actualSHA256": "275407a7ef2515af2ef4c04061d3032f41ff80d64f4ed41d912d43b92980330d",
+          "gate": {
+            "abs": 0.0001,
+            "rel": 1e-05
+          }
+        },
+        "localGateProjection": {
+          "values": 5120,
+          "failed": 0,
+          "maxAbsolute": 7.152557373046875e-07,
+          "worstIndex": 4394,
+          "actualSHA256": "36be45ee632f5db4713ac210010086f809150507d674ed60eabff1efc4f3c46f",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "localGate": {
+          "values": 5120,
+          "failed": 0,
+          "maxAbsolute": 7.152557373046875e-07,
+          "worstIndex": 4394,
+          "actualSHA256": "6d3907674b17e9b546d824a93ab25d77580c4bff4759346628f2e947dd41776f",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "localGated": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 5.340576171875e-05,
+          "worstIndex": 4394,
+          "actualSHA256": "c03d8d98beb6b749f480eb448f1e2ed308fb6fc16983d65b800eaa0742ca2811",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "localResidual": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 5.340576171875e-05,
+          "worstIndex": 4394,
+          "actualSHA256": "72a7de56a7364122197f4126a996f7131ff4fbda94f7f8201bdacbaad04d85b9",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "composedO": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 7.534027099609375e-05,
+          "worstIndex": 361,
+          "actualSHA256": "275407a7ef2515af2ef4c04061d3032f41ff80d64f4ed41d912d43b92980330d",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        },
+        "composedGated": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 2.288818359375e-05,
+          "worstIndex": 9514,
+          "actualSHA256": "c03d8d98beb6b749f480eb448f1e2ed308fb6fc16983d65b800eaa0742ca2811",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        },
+        "composedResidual": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 2.288818359375e-05,
+          "worstIndex": 9514,
+          "actualSHA256": "72a7de56a7364122197f4126a996f7131ff4fbda94f7f8201bdacbaad04d85b9",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        }
+      },
+      "strictDecoderParameters": 7,
+      "boundaries": {
+        "wrongSide": {
+          "rejected": true,
+          "errorType": "Error"
+        },
+        "wrongTime": {
+          "rejected": true,
+          "errorType": "Error"
+        },
+        "unknownOldArtifact": {
+          "rejected": true,
+          "errorType": "Error"
+        },
+        "unknownAttentionReceipt": {
+          "rejected": true,
+          "errorType": "Error"
+        },
+        "patchHiddenBasisSwap": {
+          "rejected": true,
+          "errorType": "Error"
+        },
+        "wrongShape": {
+          "rejected": true,
+          "errorType": "TypeError"
+        },
+        "nonfinite": {
+          "rejected": true,
+          "errorType": "TypeError"
+        },
+        "numericRange": {
+          "rejected": true,
+          "errorType": "RangeError"
+        },
+        "cancelledAtFirstWeightTile": {
+          "rejected": true,
+          "errorType": "AbortError"
+        },
+        "reentry": {
+          "rejected": true,
+          "errorType": "Error"
+        },
+        "inputSnapshotBeforeAwait": {
+          "passed": true,
+          "callerArraysMutatedImmediately": true,
+          "verifiedByAllLocalComparisons": true
+        },
+        "reusedAfterAbort": {
+          "passed": true
+        },
+        "outputRetentionAfterDispose": {
+          "passed": true,
+          "outputSHA256": {
+            "o": "275407a7ef2515af2ef4c04061d3032f41ff80d64f4ed41d912d43b92980330d",
+            "gateProjection": "36be45ee632f5db4713ac210010086f809150507d674ed60eabff1efc4f3c46f",
+            "gate": "6d3907674b17e9b546d824a93ab25d77580c4bff4759346628f2e947dd41776f",
+            "gated": "c03d8d98beb6b749f480eb448f1e2ed308fb6fc16983d65b800eaa0742ca2811",
+            "residual": "72a7de56a7364122197f4126a996f7131ff4fbda94f7f8201bdacbaad04d85b9"
+          }
+        }
+      },
+      "topology": {
+        "measurementScope": "tail-only fresh realm; old attention owner disposed and browser closed in prior capture receipt",
+        "oldNativeOwnerDisposed": true,
+        "oldBrowserClosed": true,
+        "activeTailORTSessions": 1,
+        "distinctORTMemoryCount": 1,
+        "ORTMemoryByIdentity": [
+          {
+            "id": 3,
+            "moduleSHA256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+            "capacityBytes": 16777216,
+            "highWaterBytes": 16777216
+          }
+        ],
+        "tailHikeMemoryCount": 2,
+        "tailHikeCapacityBytes": 2883584,
+        "tailHikeByIdentity": [
+          {
+            "id": 1,
+            "roles": [
+              "Hike.decode"
+            ],
+            "moduleSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "capacityBytes": 1572864,
+            "highWaterBytes": 1572864
+          },
+          {
+            "id": 2,
+            "roles": [
+              "Hike.self-attention-tail"
+            ],
+            "moduleSHA256": "54c1690e4581a1de0b231d0b538ff280696542c2eb44ebedb4c2c661a6dd3925",
+            "capacityBytes": 1310720,
+            "highWaterBytes": 1310720
+          }
+        ],
+        "sessionCountIsMemoryCount": false,
+        "activeORTSessionsAfterDispose": 0,
+        "activeTailOwnersAfterDispose": 0
+      },
+      "observerRestoredAfterRun": true,
+      "currentBuild": {
+        "buildId": "diffusion-models/0.1+bba4dc740028dcecf849a36e395970b24358a6185378336d61d3a063ad72bc74",
+        "sourceInventorySHA256": "bba4dc740028dcecf849a36e395970b24358a6185378336d61d3a063ad72bc74",
+        "verifiedSourceCount": 100,
+        "buildInfoModuleSHA256": "663d319af83247c6c45914f374d572ccf341d2dfdc8127e9727575b186ac326e",
+        "scope": "current100 source closure; independently verified from current bytes; separate from historical old98 guard and actual requested execution modules"
+      },
+      "privatePayloadPublished": false
+    },
+    "LOW": {
+      "receiptSHA256": "93f7c2a03e36ec9a2bc1eaefbd794dc14e16a615bfaf0863ecc83236e206ad96",
+      "allValueComparisons": {
+        "localO": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 1.1444091796875e-05,
+          "worstIndex": 2332,
+          "actualSHA256": "7898781992c33a1910f088506d9b39ce91240c1a24de44509979462f6e195869",
+          "gate": {
+            "abs": 0.0001,
+            "rel": 1e-05
+          }
+        },
+        "localGateProjection": {
+          "values": 5120,
+          "failed": 0,
+          "maxAbsolute": 2.384185791015625e-07,
+          "worstIndex": 54,
+          "actualSHA256": "6248c76f4f2dcdf0ca2b468238a7e85b9048b184011bd0cb62681bbfeab89a80",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "localGate": {
+          "values": 5120,
+          "failed": 0,
+          "maxAbsolute": 2.384185791015625e-07,
+          "worstIndex": 54,
+          "actualSHA256": "f3c2d060da70eb64ba89dd4f87cbf1b3e9509f38e52827e5d50676607e772645",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "localGated": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 1.1444091796875e-05,
+          "worstIndex": 4394,
+          "actualSHA256": "ce1435416ee7eccc0b8448f7f1e1a0fb7e2d5eac27da16f77f8857658a0fc866",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "localResidual": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 1.1444091796875e-05,
+          "worstIndex": 4394,
+          "actualSHA256": "0024d0b19db9988d218e2a2ded4cc3713aca32d9517966455d17b34cfee801b6",
+          "gate": {
+            "abs": 0.001,
+            "rel": 0.0001
+          }
+        },
+        "composedO": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 2.6702880859375e-05,
+          "worstIndex": 2332,
+          "actualSHA256": "7898781992c33a1910f088506d9b39ce91240c1a24de44509979462f6e195869",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        },
+        "composedGated": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 1.71661376953125e-05,
+          "worstIndex": 54,
+          "actualSHA256": "ce1435416ee7eccc0b8448f7f1e1a0fb7e2d5eac27da16f77f8857658a0fc866",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        },
+        "composedResidual": {
+          "values": 10240,
+          "failed": 0,
+          "maxAbsolute": 1.71661376953125e-05,
+          "worstIndex": 54,
+          "actualSHA256": "0024d0b19db9988d218e2a2ded4cc3713aca32d9517966455d17b34cfee801b6",
+          "gate": {
+            "abs": 0.01,
+            "rel": 0.001
+          }
+        }
+      },
+      "strictDecoderParameters": 7,
+      "boundaries": {
+        "wrongSide": {
+          "rejected": true,
+          "errorType": "Error"
+        },
+        "wrongTime": {
+          "rejected": true,
+          "errorType": "Error"
+        },
+        "unknownOldArtifact": {
+          "rejected": true,
+          "errorType": "Error"
+        },
+        "unknownAttentionReceipt": {
+          "rejected": true,
+          "errorType": "Error"
+        },
+        "patchHiddenBasisSwap": {
+          "rejected": true,
+          "errorType": "Error"
+        },
+        "wrongShape": {
+          "rejected": true,
+          "errorType": "TypeError"
+        },
+        "nonfinite": {
+          "rejected": true,
+          "errorType": "TypeError"
+        },
+        "numericRange": {
+          "rejected": true,
+          "errorType": "RangeError"
+        },
+        "cancelledAtFirstWeightTile": {
+          "rejected": true,
+          "errorType": "AbortError"
+        },
+        "reentry": {
+          "rejected": true,
+          "errorType": "Error"
+        },
+        "inputSnapshotBeforeAwait": {
+          "passed": true,
+          "callerArraysMutatedImmediately": true,
+          "verifiedByAllLocalComparisons": true
+        },
+        "reusedAfterAbort": {
+          "passed": true
+        },
+        "outputRetentionAfterDispose": {
+          "passed": true,
+          "outputSHA256": {
+            "o": "7898781992c33a1910f088506d9b39ce91240c1a24de44509979462f6e195869",
+            "gateProjection": "6248c76f4f2dcdf0ca2b468238a7e85b9048b184011bd0cb62681bbfeab89a80",
+            "gate": "f3c2d060da70eb64ba89dd4f87cbf1b3e9509f38e52827e5d50676607e772645",
+            "gated": "ce1435416ee7eccc0b8448f7f1e1a0fb7e2d5eac27da16f77f8857658a0fc866",
+            "residual": "0024d0b19db9988d218e2a2ded4cc3713aca32d9517966455d17b34cfee801b6"
+          }
+        }
+      },
+      "topology": {
+        "measurementScope": "tail-only fresh realm; old attention owner disposed and browser closed in prior capture receipt",
+        "oldNativeOwnerDisposed": true,
+        "oldBrowserClosed": true,
+        "activeTailORTSessions": 1,
+        "distinctORTMemoryCount": 1,
+        "ORTMemoryByIdentity": [
+          {
+            "id": 3,
+            "moduleSHA256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+            "capacityBytes": 16777216,
+            "highWaterBytes": 16777216
+          }
+        ],
+        "tailHikeMemoryCount": 2,
+        "tailHikeCapacityBytes": 2883584,
+        "tailHikeByIdentity": [
+          {
+            "id": 1,
+            "roles": [
+              "Hike.decode"
+            ],
+            "moduleSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+            "capacityBytes": 1572864,
+            "highWaterBytes": 1572864
+          },
+          {
+            "id": 2,
+            "roles": [
+              "Hike.self-attention-tail"
+            ],
+            "moduleSHA256": "54c1690e4581a1de0b231d0b538ff280696542c2eb44ebedb4c2c661a6dd3925",
+            "capacityBytes": 1310720,
+            "highWaterBytes": 1310720
+          }
+        ],
+        "sessionCountIsMemoryCount": false,
+        "activeORTSessionsAfterDispose": 0,
+        "activeTailOwnersAfterDispose": 0
+      },
+      "observerRestoredAfterRun": true,
+      "currentBuild": {
+        "buildId": "diffusion-models/0.1+bba4dc740028dcecf849a36e395970b24358a6185378336d61d3a063ad72bc74",
+        "sourceInventorySHA256": "bba4dc740028dcecf849a36e395970b24358a6185378336d61d3a063ad72bc74",
+        "verifiedSourceCount": 100,
+        "buildInfoModuleSHA256": "663d319af83247c6c45914f374d572ccf341d2dfdc8127e9727575b186ac326e",
+        "scope": "current100 source closure; independently verified from current bytes; separate from historical old98 guard and actual requested execution modules"
+      },
+      "privatePayloadPublished": false
+    }
+  },
+  "unknownTotalPeakBytes": null,
+  "combinedOldAndTailRealmMeasured": false,
+  "readiness": {
+    "load": "NOT_READY",
+    "predict": "NOT_READY",
+    "sample": "NOT_READY"
+  }
+}

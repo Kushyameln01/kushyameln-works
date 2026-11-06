@@ -1,0 +1,245 @@
+{
+  "schemaVersion": "p4-l512-actual-resource-audit/0.1",
+  "createdUTC": "2026-11-01T16:25:56.240371+00:00",
+  "scope": "Read-only receipts/private manifests only. No model/WASM/browser/reference/test run. No rehash of binary output arrays during LOW benchmark.",
+  "passed": true,
+  "sides": {
+    "HIGH": {
+      "passed": true,
+      "checks": {
+        "copy:inputSnapshotBytes": true,
+        "copy:conditioningSnapshotBytes": true,
+        "copy:returnedArraysBytes": true,
+        "copy:projectionBatchCopyTrafficBytes": true,
+        "copy:linearInputSnapshotTrafficBytes": true,
+        "copy:linearOutputSnapshotTrafficBytes": true,
+        "copy:linearOutputAssemblyTrafficBytes": true,
+        "copy:attentionHostCopyTrafficBytes": true,
+        "copy:attentionDenominatorsCopyTrafficBytes": true,
+        "copy:attentionContextAssemblyTrafficBytes": true,
+        "copy:geluBatchCopyTrafficBytes": true,
+        "copy:geluOutputAssemblyTrafficBytes": true,
+        "copy:mathSnapshotTrafficBytes": true,
+        "copy:mathInputTrafficBytes": true,
+        "copy:mathOutputTrafficBytes": true,
+        "copy:attentionInputTrafficBytes": true,
+        "copy:attentionOutputTrafficBytes": true,
+        "copy:sourceVectorSnapshotTrafficBytes": true,
+        "copy:mathClearTrafficBytes": true,
+        "copy:bridgeCallCount": true,
+        "copy:bridgeArenaZeroFillTrafficBytes": true,
+        "sourceCommit": true,
+        "manifestBinding": true,
+        "projectionCalls": true,
+        "scoreCalls": true,
+        "matrixAndVectorReadCount": true,
+        "rawMatrixAndVectorReadBytes": true,
+        "bridgeInputCopies": true,
+        "bridgeOutputCopies": true,
+        "mathCalls": true,
+        "allSampledNumericLeasesPinned": true,
+        "afterAbort": true,
+        "afterNumericRun": true,
+        "afterDispose": true,
+        "disposedSessions": true,
+        "firstTileCancel32Calls": true,
+        "numericFixedDistinctCapacity": true,
+        "oneORTMemoryTwoSessions": true,
+        "namedPartialSpans": true,
+        "retainedOutputsAfterDispose": true,
+        "noNativeObservationFailures": true,
+        "binaryTransport": true,
+        "monitorPhaseSampleTotals": true,
+        "scopedUnknownsRemainNull": true,
+        "noPublicPrivateFields": true,
+        "noHTTPPrivateInputs": true
+      },
+      "receiptPath": "development/ai-connection/p4-real-text-l512/integration/high-browser.json",
+      "receiptSHA256": "de50a61318ada25fda4a06361e21a83b26889b47ef0f220a68003ffa2acf3be7",
+      "runtimeManifestSHA256": "51fe7d39d832fac5211cb749bda10414586acd12c897ae1f48000c1499a9cf6f",
+      "runtimeOutputBinaryFilesRehashedByThisAudit": false,
+      "sourceCommit": "994ebb9ce01c9e95db9cd18eb877a981152693c5",
+      "preRuntimeReference": {
+        "freezeSHA256": "3982b57a4cc2cebedc83d1d90cdaf31e5f6f414a46e5f711a23717337fea935c",
+        "manifestSHA256": "8dd640f0cbf127c149903eec558ea2a5b804a5bc0a4533dab67ae54da86ec97d",
+        "mode": "COMPOSED_BEFORE_RUNTIME",
+        "verifiedBeforeNativeConstruction": true,
+        "verifiedOutputCount": 25,
+        "gates": {
+          "localCut": {
+            "abs": 0.001,
+            "rel": 0.0001
+          },
+          "composed": {
+            "abs": 0.01,
+            "rel": 0.001
+          },
+          "rule": "abs(actual-reference) <= abs + rel*abs(reference); all values, no percentile pass"
+        },
+        "scope": "Independent composed all25 identities existed before this runtime; numerical acceptance remains pending."
+      },
+      "namedPartialRetainedSpansBytes": 88937984,
+      "numericDistinctWASMCacityBytes": 21102592,
+      "elapsed": {
+        "readMs": 46516.19999997318,
+        "linearMs": 76842.9999993071,
+        "biasMs": 4944.10000167042,
+        "mathMs": 538.3999999538064,
+        "attentionMs": 318.4999999925494,
+        "totalMs": 147640
+      },
+      "browserWallSeconds": 159.82482366300246,
+      "exportElapsedMs": 3898.7999999970198,
+      "monitor": {
+        "sampleCount": 1455,
+        "firstElapsedMs": 2.418686999590136,
+        "lastElapsedMs": 159814.64780200622,
+        "rssPeakProcessSumBytes": 1420918784,
+        "pssPeakProcessSumBytes": 1138219008,
+        "cgroupCurrentObservedPeakBytes": 3635404800,
+        "cgroupHistoricalPeakBytes": 3687833600,
+        "cgroupLimitBytes": 17179869184,
+        "maxSamplingGapMs": 317.4072260007961,
+        "sampleWallMs": 20730.034988868283,
+        "intervalTargetMs": 100.0,
+        "readErrors": {},
+        "onlineAggregation": true,
+        "scope": "Sampled owned Chromium process sums include harness/File/ORT/Hike; RSS counts shared pages repeatedly. PSS apportions shared pages. Cgroup includes the entire environment and memory.peak predates this run. Sampling can miss short peaks; neither is allocator usage or full-pipeline peak."
+      },
+      "monitorPeakPhases": {
+        "rssPeakProcessSumBytes": [
+          "p4-aborted-first-weight-tile"
+        ],
+        "pssPeakProcessSumBytes": [
+          "p4-aborted-first-weight-tile"
+        ]
+      },
+      "actualNumericalAccepted": false,
+      "findings": []
+    },
+    "LOW": {
+      "passed": true,
+      "checks": {
+        "copy:inputSnapshotBytes": true,
+        "copy:conditioningSnapshotBytes": true,
+        "copy:returnedArraysBytes": true,
+        "copy:projectionBatchCopyTrafficBytes": true,
+        "copy:linearInputSnapshotTrafficBytes": true,
+        "copy:linearOutputSnapshotTrafficBytes": true,
+        "copy:linearOutputAssemblyTrafficBytes": true,
+        "copy:attentionHostCopyTrafficBytes": true,
+        "copy:attentionDenominatorsCopyTrafficBytes": true,
+        "copy:attentionContextAssemblyTrafficBytes": true,
+        "copy:geluBatchCopyTrafficBytes": true,
+        "copy:geluOutputAssemblyTrafficBytes": true,
+        "copy:mathSnapshotTrafficBytes": true,
+        "copy:mathInputTrafficBytes": true,
+        "copy:mathOutputTrafficBytes": true,
+        "copy:attentionInputTrafficBytes": true,
+        "copy:attentionOutputTrafficBytes": true,
+        "copy:sourceVectorSnapshotTrafficBytes": true,
+        "copy:mathClearTrafficBytes": true,
+        "copy:bridgeCallCount": true,
+        "copy:bridgeArenaZeroFillTrafficBytes": true,
+        "sourceCommit": true,
+        "manifestBinding": true,
+        "projectionCalls": true,
+        "scoreCalls": true,
+        "matrixAndVectorReadCount": true,
+        "rawMatrixAndVectorReadBytes": true,
+        "bridgeInputCopies": true,
+        "bridgeOutputCopies": true,
+        "mathCalls": true,
+        "allSampledNumericLeasesPinned": true,
+        "afterAbort": true,
+        "afterNumericRun": true,
+        "afterDispose": true,
+        "disposedSessions": true,
+        "firstTileCancel32Calls": true,
+        "numericFixedDistinctCapacity": true,
+        "oneORTMemoryTwoSessions": true,
+        "namedPartialSpans": true,
+        "retainedOutputsAfterDispose": true,
+        "noNativeObservationFailures": true,
+        "binaryTransport": true,
+        "monitorPhaseSampleTotals": true,
+        "scopedUnknownsRemainNull": true,
+        "noPublicPrivateFields": true,
+        "noHTTPPrivateInputs": true
+      },
+      "receiptPath": "development/ai-connection/p4-real-text-l512/integration/low-browser.json",
+      "receiptSHA256": "d0397ecc4a7abbeeae49e1cd978c807d60586fc3e6c458114756e54a21aa0f35",
+      "runtimeManifestSHA256": "81d3b6a44d81b7cd6dd5b76f0441cd7f0e5ef810425bfcfcefc63519f5ec5782",
+      "runtimeOutputBinaryFilesRehashedByThisAudit": false,
+      "sourceCommit": "994ebb9ce01c9e95db9cd18eb877a981152693c5",
+      "preRuntimeReference": {
+        "freezeSHA256": "3982b57a4cc2cebedc83d1d90cdaf31e5f6f414a46e5f711a23717337fea935c",
+        "manifestSHA256": "530746b1e2d59d0c9cbe82e1ddad6d743ae32eb8fd7029f56cca694b57672be7",
+        "mode": "COMPOSED_BEFORE_RUNTIME",
+        "verifiedBeforeNativeConstruction": true,
+        "verifiedOutputCount": 25,
+        "gates": {
+          "localCut": {
+            "abs": 0.001,
+            "rel": 0.0001
+          },
+          "composed": {
+            "abs": 0.01,
+            "rel": 0.001
+          },
+          "rule": "abs(actual-reference) <= abs + rel*abs(reference); all values, no percentile pass"
+        },
+        "scope": "Independent composed all25 identities existed before this runtime; numerical acceptance remains pending."
+      },
+      "namedPartialRetainedSpansBytes": 88937984,
+      "numericDistinctWASMCacityBytes": 21102592,
+      "elapsed": {
+        "readMs": 47561.89999976009,
+        "linearMs": 77333.59999999404,
+        "biasMs": 4966.900000579655,
+        "mathMs": 479.8000000268221,
+        "attentionMs": 258.89999996870756,
+        "totalMs": 149203.19999999553
+      },
+      "browserWallSeconds": 160.63697248599783,
+      "exportElapsedMs": 3903.60000000149,
+      "monitor": {
+        "sampleCount": 1441,
+        "firstElapsedMs": 2.551236000726931,
+        "lastElapsedMs": 160615.71988200012,
+        "rssPeakProcessSumBytes": 1411518464,
+        "pssPeakProcessSumBytes": 1175014400,
+        "cgroupCurrentObservedPeakBytes": 3790884864,
+        "cgroupHistoricalPeakBytes": 3851964416,
+        "cgroupLimitBytes": 17179869184,
+        "maxSamplingGapMs": 263.0099849993712,
+        "sampleWallMs": 23036.320460108982,
+        "intervalTargetMs": 100.0,
+        "readErrors": {},
+        "onlineAggregation": true,
+        "scope": "Sampled owned Chromium process sums include harness/File/ORT/Hike; RSS counts shared pages repeatedly. PSS apportions shared pages. Cgroup includes the entire environment and memory.peak predates this run. Sampling can miss short peaks; neither is allocator usage or full-pipeline peak."
+      },
+      "monitorPeakPhases": {
+        "rssPeakProcessSumBytes": [
+          "p4-aborted-first-weight-tile"
+        ],
+        "pssPeakProcessSumBytes": [
+          "p4-aborted-first-weight-tile"
+        ]
+      },
+      "actualNumericalAccepted": false,
+      "findings": []
+    }
+  },
+  "interpretation": [
+    "Copy/read/zero-fill categories match static unchanged-loop arithmetic; they are cumulative traffic, not peak allocation.",
+    "Projection ORT run counters are owner cumulative and include the initial cancelled32-call first tile; successful-run before/after deltas correctly equal44704.",
+    "Numeric stage distinct WASM capacity stays21102592B:16MiB ORT shared by2sessions plus4325376B source/math/attention Hike. Observed7memories include3additional Hike memories for separate disposal probe; do not sum7high-water values as concurrent peak.",
+    "Named partial spans88937984B are admitted/caller/protected-seal/output buffers. Source constructors clone these categories; returned output alias output=blockOutput is intentionally excluded. No runtime heap-wide dedup or full live-heap claim is made.",
+    "The existing stage knownRetainedNumericBytes80645994B is a different named accounting scope, including15210B metadata encoding; it must not be added to the named partial spans.",
+    "RSS/PSS maxima cover admission/cancellation/probes/export/browser lifecycle, not just numerical operators. RSS sums double-count shared mappings; PSS apportions them. cgroup current covers whole environment and cgroup memory.peak is historical.",
+    "Sampling100ms is target; actual max gap is recorded. No read errors observed in these receipts. Timing includes diagnostic overhead and OS monitor PSS scans; not a production performance claim.",
+    "Disposed sessions/tensors/leases are zero, while WASM memories may remain weakly observed until GC. No immediate memory reclamation is inferred.",
+    "All host/ORT allocator/full-pipeline peaks remain unknown. Numerical acceptance remains pending independent all25 local/composed gates; no gate inference from resources."
+  ]
+}
