@@ -3,7 +3,7 @@ import {inspectMediaFile,prepareImageDecode,resolveMediaLimits,FORMAT_BUDGETS} f
 
 export const ADAPTER_MEMORY_DEFAULT=64*1024*1024;
 function dimensions(width,height,limits){if(!Number.isSafeInteger(width)||!Number.isSafeInteger(height)||width<1||height<1||!Number.isSafeInteger(width*height)||width*height>limits.maxPixels)throw RangeError('DECODE_PIXEL_LIMIT');return width*height;}
-function check(signal){if(signal?.aborted)throw Error('CANCELLED');}
+function check(signal){if(signal?.aborted)throw Object.assign(Error('CANCELLED'),{code:'CANCELLED'});}
 function budget(value){if(!Number.isSafeInteger(value)||value<1024||value>512*1024*1024)throw RangeError('INVALID_ADAPTER_BUDGET');return value;}
 function reserveEstimate(bytes,limit){if(!Number.isSafeInteger(bytes)||bytes>limit)throw RangeError('ADAPTER_MEMORY_BUDGET');return bytes;}
 function canvas(w,h){if(typeof OffscreenCanvas!=='function')throw Error('CANVAS_UNSUPPORTED');return new OffscreenCanvas(w,h);}

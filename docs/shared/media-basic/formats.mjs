@@ -5,7 +5,7 @@ const PNG=[137,80,78,71,13,10,26,10],EXIF=[69,120,105,102,0,0];
 const ascii=bytes=>String.fromCharCode(...bytes);
 const matches=(bytes,signature)=>signature.every((value,i)=>bytes[i]===value);
 const error=code=>{throw new Error(code);};
-const check=signal=>{if(signal?.aborted)error('CANCELLED');};
+const check=signal=>{if(signal?.aborted)throw Object.assign(Error('CANCELLED'),{code:'CANCELLED'});};
 export function resolveMediaLimits(overrides={}){
   if(!overrides||typeof overrides!=='object'||Array.isArray(overrides)||Object.keys(overrides).some(key=>!Object.hasOwn(PROTOTYPE_LIMITS,key)))error('INVALID_LIMITS');
   const limits={...PROTOTYPE_LIMITS,...overrides};
