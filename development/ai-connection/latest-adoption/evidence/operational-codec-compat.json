@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "works-operational-r18-source-freeze/1",
+  "fullImplementationComplete": true,
+  "implementationReview": {
+    "status": "PASSED",
+    "missingCodePaths": []
+  },
+  "managedNumericalAcceptance": "AWAITING_HOLDER_RECEIPT",
+  "wholeOperationalExperiment": "NOT_RUN",
+  "generationReady": false,
+  "files": [
+    {
+      "path": "docs/shared/ai-connection/operational-management.mjs",
+      "byteLength": 45607,
+      "sha256": "94c5efccfe52ce1bcdfbf227199b4fa9812c8c13ffdd7a4249be670a2ecc5114"
+    },
+    {
+      "path": "docs/ai-connection/modules/main.mjs",
+      "byteLength": 28680,
+      "sha256": "084c3b6560eac7e826155c7bd86740d778d993537d8313f05be5ddcc4447cb63"
+    },
+    {
+      "path": "docs/ai-connection/modules/index.html",
+      "byteLength": 22249,
+      "sha256": "baba8411f7f51291e5e3f57e353c8d3ab92276d5c9b1d23dca8138fb06e42cae"
+    },
+    {
+      "path": "tools/ai-connection/test-operational-management.mjs",
+      "byteLength": 52795,
+      "sha256": "105e28a6628d4b46bab966d8337183702a49d1baa3d3a5111f2d473b8b3aef3f"
+    },
+    {
+      "path": "tools/ai-connection/run-operational-browser.mjs",
+      "byteLength": 26059,
+      "sha256": "26fce7b14e506112cc7c8a02ecaf1b65671a0392f638a1f4c1df88a5dc170751"
+    },
+    {
+      "path": "docs/shared/ai-connection/adapters/lora-standalone/adapter.mjs",
+      "byteLength": 25096,
+      "sha256": "94b8a4506ceca30ee6dec504734a80a249e928b187e9a12ad23fc66c722e579f"
+    },
+    {
+      "path": "tools/ai-connection/test-lora-standalone-adapter.mjs",
+      "byteLength": 19022,
+      "sha256": "83316e0f7ba9bd20307c0de22486d52d1ad385a0ffe090cadf993497b33de9f2"
+    }
+  ],
+  "legacyReadCompatibility": {
+    "codecId": "works:operational-wktensor",
+    "codecVersion": "badff7a/WKTSR001",
+    "sourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "badff7a436b56207a084c4c770e01490899a576c",
+      "path": "docs/shared/inference/tensor.mjs"
+    },
+    "verifiedIdenticalTensorSha256": "7a15d721b1bab60cdade8723fd1c4d543a142d236cf2e59b63f1ba33ba14ed78",
+    "historicalWorkspaceSha256": "2ebe7f9ebd334fa02833cfee43c1f5a407a7d0e18ac680536a1cec9fe2fc21bf",
+    "readOnly": true
+  },
+  "focusedTests": {
+    "command": "node --test --test-isolation=none tools/ai-connection/test-operational-management.mjs tools/ai-connection/test-lora-standalone-adapter.mjs",
+    "passed": 66,
+    "failed": 0,
+    "log": "operational-focused-tests.log"
+  }
+}

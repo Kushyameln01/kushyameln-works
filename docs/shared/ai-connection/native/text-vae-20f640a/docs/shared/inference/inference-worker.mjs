@@ -1,0 +1,29 @@
+import * as ort from './vendor/ort.wasm.min.mjs';
+import {createHike} from './hike.mjs';
+import {runVae} from './vae.mjs';
+import {STREAM_KIND,streamThreadCount} from './vae-stream.mjs';
+import {runTextEncoderJob} from './text-job.mjs';
+ort.env.wasm.wasmPaths={mjs:new URL('./vendor/ort-wasm-simd-threaded.mjs',import.meta.url).href,wasm:new URL('./vendor/ort-wasm-simd-threaded.wasm',import.meta.url).href};ort.env.wasm.numThreads=1;ort.env.wasm.proxy=false;
+const HIKE_HASH='9dfdcb5f267e96d2f0bd1ebfeaf59f2eeb9710e8d1f6c9982ebebec1120a90f8';
+self.onmessage=async({data:job})=>{
+ const identity={buildId:job.buildId,sessionId:job.sessionId,jobId:job.jobId,inputRevision:job.inputRevision};
+ const progress=value=>self.postMessage({...identity,type:'progress',progress:value});
+ let hike,result,error;
+ try{
+  if(job.buildId!=='works-inference-v1')throw Error('Inference build mismatch');
+  // The client gives each job a fresh owner Worker. Select its ORT pool before
+  // the first session; existing fixed VAE and Text jobs retain the default1.
+  if(job.module==='vae'&&job.manifest?.kind===STREAM_KIND)ort.env.wasm.numThreads=streamThreadCount(job.manifest);
+  const response=await fetch(new URL('./kernel/tensor.wasm',import.meta.url));if(!response.ok)throw Error('Hike runtime could not load');
+  const bytes=await response.arrayBuffer();const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');if(hash!==HIKE_HASH)throw Error('Hike runtime hash mismatch');
+  hike=await createHike(bytes);const files=job.files instanceof Map?job.files:new Map(job.files);
+  if(job.module==='vae')result=await runVae({operation:job.operation,tensor:job.input,manifest:job.manifest,files,ort,hike,onProgress:progress,diagnostics:job.diagnostics===true});
+  else if(job.module==='text_encoder')result=await runTextEncoderJob({input:job.input,manifest:job.manifest,files,ort,hike,onProgress:progress,diagnostics:job.diagnostics===true});
+  else throw Error('Unsupported inference module');
+  if(result?.tensor)result.tensor.modelSha256=job.manifest.modelSha256??job.manifest.model?.sha256;
+  if(job.diagnostics!==true&&result)delete result.evidence;
+ }catch(e){error=String(e.message??e);}
+ finally{hike?.dispose();}
+ if(error)self.postMessage({...identity,type:'failure',error});
+ else{const transfers=[result.tensor.data.buffer];if(result.attentionMask)transfers.push(result.attentionMask.buffer);self.postMessage({...identity,type:'success',result},transfers);}
+};

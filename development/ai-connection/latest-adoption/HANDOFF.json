@@ -1,0 +1,401 @@
+{
+  "schemaVersion": "works-management-latest-adoption-handoff/1",
+  "distribution": {
+    "repository": "Kushyameln01/kushyameln-works",
+    "branch": "codex/management-full-route",
+    "draftPR": "https://github.com/Kushyameln01/kushyameln-works/pull/19",
+    "commitAuthority": "Containing Git commit of this HANDOFF; complete distribution SHA reported in PR19 and delivery. Self-commit is excluded to avoid a circular identity.",
+    "containsRuntimeChangesAfterExecutionSource": false
+  },
+  "management": {
+    "executionSource": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+    "baselineDistribution": "9fe2c2e1dd35e17a3063a2c67d3bda676e953c8a",
+    "sourceDiffFileCount": 232,
+    "apiURL": "https://github.com/Kushyameln01/kushyameln-works/blob/f084790d7f594915c869ef375fcbdc6e44ee56f3/development/ai-connection/full-route/API.md",
+    "runtimeEntry": "docs/shared/ai-connection/operational-management.mjs",
+    "uiEntry": "docs/ai-connection/modules/index.html"
+  },
+  "adoptions": [
+    {
+      "adoptionId": "text-vae",
+      "commit": "20f640a6e071b6c060a212e89b28f0c8965923f7",
+      "factory": [
+        "createTextEncoderModule",
+        "createVaeModule"
+      ],
+      "root": "docs/shared/ai-connection/native/text-vae-20f640a",
+      "entrypoint": "docs/shared/inference/api.mjs",
+      "entryByteLength": 2293,
+      "entrySHA256": "b637a22e6447b638e0739d8510c4361cec52f9bf25b4be15e8cf65bfc06accda",
+      "manifestSHA256": "59c46aabbd8dbc4838096ced69e7e132227a191c59f17ade7fe22ee3fae8c6b2",
+      "files": 32,
+      "byteLength": 14473296,
+      "build": "works-ai-1",
+      "scope": "Native implementation adoption only, not a new model execution receipt"
+    },
+    {
+      "adoptionId": "full-model",
+      "commit": "b6e166478a8e072c9ffd3ce562bfdb0c89634920",
+      "factory": [
+        "createDiffusionModels",
+        "createDiffusionWeightClient"
+      ],
+      "root": "docs/shared/ai-connection/native/diffusion-b6e16647",
+      "entrypoint": "docs/shared/diffusion-models/api/index.mjs",
+      "entryByteLength": 17027,
+      "entrySHA256": "39a6c77c9d0366072f03f53b2fdaa185802388fcd54232db0ee34c56a2b6c4b7",
+      "manifestSHA256": "f2fd51b3c3f1ce429c4680f6823b20db90d08fdef4da60de8f150be63d6ef85f",
+      "files": 164,
+      "byteLength": 14473285,
+      "build": "diffusion-models/0.1+e5ba40ce01bd04e4a432846afb737a9d8c37c56450df68af51460d9140c3e4c6",
+      "scope": "Native implementation adoption only, not a new model execution receipt"
+    },
+    {
+      "adoptionId": "normal-p4",
+      "commit": "b6e166478a8e072c9ffd3ce562bfdb0c89634920",
+      "factory": [
+        "createBerniniP4Execution",
+        "describeExecutionCapabilities",
+        "checkExecutionSupport"
+      ],
+      "root": "docs/shared/ai-connection/native/diffusion-b6e16647",
+      "entrypoint": "docs/shared/diffusion-models/api/index.mjs",
+      "entryByteLength": 17027,
+      "entrySHA256": "39a6c77c9d0366072f03f53b2fdaa185802388fcd54232db0ee34c56a2b6c4b7",
+      "manifestSHA256": "f2fd51b3c3f1ce429c4680f6823b20db90d08fdef4da60de8f150be63d6ef85f",
+      "files": 164,
+      "byteLength": 14473285,
+      "build": "diffusion-models/0.1+e5ba40ce01bd04e4a432846afb737a9d8c37c56450df68af51460d9140c3e4c6",
+      "scope": "Native implementation adoption only, not a new model execution receipt"
+    }
+  ],
+  "retainedLora": {
+    "commit": "6d0c8df4cd4992f26745d2d26394f5e194d2567f",
+    "contract": "lora-standalone/1.0-draft.1",
+    "nativePinChanged": false,
+    "managementGraphBindingRelabelled": false
+  },
+  "schemas": {
+    "textVaeAPI": "works-ai-1",
+    "diffusionProtocol": "diffusion-models/0.1",
+    "nativeTensor": "WKTSR001/schemaVersion1",
+    "codecId": "works:wktensor",
+    "textNormalization": "umt5-final-rmsnorm-f32-v1",
+    "sharedDescriptorAndPackage": "Existing schema/validator/evaluateEdge/package path reused; no parallel numerical classifier"
+  },
+  "status": {
+    "fullImplementationComplete": true,
+    "implementationReview": {
+      "status": "PASSED",
+      "missingCodePaths": []
+    },
+    "managedNumericalAcceptance": "AWAITING_HOLDER_RECEIPT",
+    "newSourceNNExecution": "NOT_DISPATCHED",
+    "executionRoute": "EXECUTION_ROUTE_NOT_CONNECTED",
+    "holderAssetsConfirmedFromFixedOwnerRecords": true,
+    "holderAcquisitionACK": "NOT_RECEIVED",
+    "wholeOperationalExperiment": "NOT_RUN",
+    "trialLoraReceivedThisWork": false,
+    "generationReady": false,
+    "mergePerformed": false,
+    "pagesPublished": false
+  },
+  "newVerification": {
+    "node": {
+      "tests": 841,
+      "pass": 841,
+      "fail": 0,
+      "skip": 0,
+      "includesHistoricalRegression": true,
+      "newNNRuns": 0
+    },
+    "fixedUI": {
+      "cases": 14,
+      "pass": 14,
+      "exactSourceFiles": 235,
+      "GETRequests": 1043,
+      "workersCreated": 9,
+      "physicallyClosedBeforeBrowserTeardown": 9,
+      "nativeNNExecuted": false
+    },
+    "fixedPort": {
+      "status": "PASS",
+      "nativeFactoryRelayClientServer": true,
+      "provider": "synthetic",
+      "workersCreated": 10,
+      "physicallyClosedBeforeBrowserTeardown": 10,
+      "independentlyObservedBy": [
+        "Playwright",
+        "CDP"
+      ],
+      "nativeNNExecuted": false,
+      "unannouncedRawPortClose": "Expected native contract limitation, outside supported management protocol"
+    },
+    "sourceGuard": {
+      "passed": true,
+      "files": 443,
+      "byteLength": 32636961,
+      "localCheckOnlyExitCode": 2,
+      "localCheckOnlyReason": "Known model/input paths absent only in this local execution environment; assets exist at holders",
+      "browserOrNNLaunched": false
+    },
+    "githubReadback": {
+      "sourceFiles": 7,
+      "bytesEqualFixedGitObjects": true,
+      "method": "Connected GitHub fetch_file",
+      "countsAsHolderACK": false
+    }
+  },
+  "reuse": {
+    "textRectManagerSource": "e1661e561dfb1a4f20544ff48bc375175b5981d1",
+    "textOwnerExecution": "78954ee92d1b76c6652f50df1668159a55db6dc9",
+    "rectOwnerExecution": "8594722e693bda9901f61cededfc1b3338e66c92",
+    "diffusionPortOwnerExecution": "a23d5276d705605903afa599b1e049f62948d094",
+    "diffusionRuntimeEvidenceSource": "6cda0a686d30a4bd748909fc56c61c1acece7bfb",
+    "notRelabelledAsNewManagerNN": true,
+    "oldAcceptanceAndNativeTreesPreserved": true
+  },
+  "pendingAcceptance": [
+    "Holder acquisition ACK of management execution source A",
+    "Actual A-managed Text/VAE and normal P4 execution/cancel/release/save at holders",
+    "Actual A-managed base Diffusion sample/progress/cancel-reload/save-readback and real-model feed boundary",
+    "LoRA full operational experiment with explicitly selected later trial files",
+    "Original81frame/arbitrary shape/production generation/Pages actual-model run and total resource budgets"
+  ],
+  "resourceScope": {
+    "browser": "Chromium154.0.8037.57",
+    "node": "24.19.0",
+    "fixedUITestThreads": 1,
+    "crossOriginIsolated": false,
+    "silentThreadFallback": false,
+    "p4LogicalInputByteLength": 8450560,
+    "p4UILogicalAllowanceBytes": 16777216,
+    "logicalAllowanceExcludes": [
+      "model",
+      "copies",
+      "ORT",
+      "workspaces",
+      "host",
+      "total RAM"
+    ],
+    "realModelRSSMeasured": false,
+    "ORTMemoryMeasured": false,
+    "aggregatePeakMeasured": false
+  },
+  "reproduce": {
+    "focusedAndUI": "development/ai-connection/latest-adoption/RESULT.md",
+    "holding": "development/ai-connection/latest-adoption/HOLDER-RUN.md",
+    "evidenceDetails": "development/ai-connection/latest-adoption/evidence/README.md",
+    "runSourceMustEqual": "f084790d7f594915c869ef375fcbdc6e44ee56f3",
+    "notRequiredForAcquisitionACK": [
+      "NN re-inference",
+      "re-export",
+      "all-model rehash",
+      "model transfer"
+    ]
+  },
+  "integrity": {
+    "algorithm": "SHA-256",
+    "fileListScope": "All latest-adoption files except HANDOFF.json itself; source A full diff and native entry hashes are separately recorded",
+    "selfDigestExcluded": true,
+    "selfCommitExcluded": true,
+    "jsonNumericEncoding": "ordinary manifest numbers; no numerical inference computation"
+  },
+  "files": [
+    {
+      "path": "development/ai-connection/latest-adoption/ADOPTION-MATRIX.json",
+      "byteLength": 2553,
+      "sha256": "5ce41f8cefa94450d8bf69d529db136f7f5b8e60decec3c57e22f9b29e78972f"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/HOLDER-RUN.md",
+      "byteLength": 7077,
+      "sha256": "9563cfba42152b5b857ae23ffb65dc74cd7033d03fba95e7d237f2f646219bec"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/PLAN.md",
+      "byteLength": 4151,
+      "sha256": "f7eb37e9de2f2381ca94b63926ce9cd6b8ffadeb04388050da5e14e93c0c2999"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/RESULT.md",
+      "byteLength": 13057,
+      "sha256": "68a6af78f23198d015a0bdecc4dd200458d25c4f6ab4d6507f280d31103a5590"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/AUDIT.md",
+      "byteLength": 12140,
+      "sha256": "3a97a89145b539de5f5abfed08b694f26b55c56a3df5e570bc59669e33d781c7"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/NODE.log",
+      "byteLength": 86745,
+      "sha256": "86a0e165c76df644e592835a955edfadc36818e115ef11d2822e5375241f2789"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/OWNER-DOCUMENTS-RECEIVED.json",
+      "byteLength": 2689,
+      "sha256": "4bf64b8b60892933bcb8d510c40f561dd45d30e878c4cdc645771203251e8e63"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/OWNER-EVIDENCE.json",
+      "byteLength": 8195,
+      "sha256": "c6054a60d462175790625b2ded89ee839f840d7b207439bedb5f248cce13d86d"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/README.md",
+      "byteLength": 4278,
+      "sha256": "5979f317199606f1868a75ebdb85e4f761d7fc71e3d9687fc1327adce6eaf0b6"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/REVIEW.md",
+      "byteLength": 18231,
+      "sha256": "06d3b146fc2d094c88956f1b1a0e59166ba215ea7add140762a8b38ae15185a7"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/SOURCE-FREEZE.json",
+      "byteLength": 55941,
+      "sha256": "3de2567856eba7bc5efd75af4465362aaddbadee71eb7b2257c26299d386486f"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/SOURCE-RECEIVED.json",
+      "byteLength": 3669,
+      "sha256": "4b01217c59f109baa380358e428153b71536475b08abd0e76cbe4c5e3f075eff"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/holding-check-only.raw.json",
+      "byteLength": 1376,
+      "sha256": "6959e8b89f9b2f3c40157eba4f050602297133cd426315aea3cc636d61f49e72"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/holding-controller-tests.log",
+      "byteLength": 1966,
+      "sha256": "6e0e77fb9ffb078c3ec06bd6870af5a59e92ed8acd22102d53f49562721a8625"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/holding-preflight.json",
+      "byteLength": 7427,
+      "sha256": "4ba2fa1166648bb99e034c7c10d67d983b96ff2ad7143eb08cb2fe9f72fee6e2"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/holding-source-after.json",
+      "byteLength": 98755,
+      "sha256": "694b67f5c6c8cf3dc8d994df57fbfa28aa2679f0dcd9ef6cc0c7f76b0057bf80"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/holding-source-before.json",
+      "byteLength": 98755,
+      "sha256": "694b67f5c6c8cf3dc8d994df57fbfa28aa2679f0dcd9ef6cc0c7f76b0057bf80"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/legacy-rect-preflight.wktensor",
+      "byteLength": 1084,
+      "sha256": "dd483ad83be782b769043f4a28b3ff3d05e5f0c8f6588215d85a3e780eb12612"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/operational-browser/REPORT.md",
+      "byteLength": 2084,
+      "sha256": "6781661c8acf79da7026f1cc9294d4610debb5f5c1b682f2fb01ddea7ef95206"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/operational-browser/masked-text-readback.wktensor",
+      "byteLength": 33234,
+      "sha256": "273f9104248876fe646a935dc7d24ae858d4bfb82f875453d0c3496acd932c61"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/operational-browser/restored-mean.wktensor",
+      "byteLength": 1073,
+      "sha256": "46e651dd84547659a75c69241d05e7badd8e6d3f872e16c45ffa6eb447a6c33f"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/operational-browser/result.json",
+      "byteLength": 228620,
+      "sha256": "cbfe593897ec64e6d4a9383919780ba7324239fd25a154882eaa3e325e7610d7"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/operational-browser/summary.json",
+      "byteLength": 2306,
+      "sha256": "021eb7cae99d209b8a67d78362ea28a8e576f6000d2e895eadf3a89c13a2916e"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/operational-browser/synthetic-rectangular-raw128.wktensor",
+      "byteLength": 1468,
+      "sha256": "370b0e840e0f1596f90b7a3abbe04e9d9ffed4ba6843a10aa29e4bc8bffbddc4"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/operational-browser/workspace-transport.json",
+      "byteLength": 537,
+      "sha256": "536655a027fa7152437ff5f97670862b8934f6dbc9ff30ecac5c7bce137ea79b"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/operational-browser/workspace.zip.gz",
+      "byteLength": 55206,
+      "sha256": "dde398014aad4d3b6e3ed462d67ecf2393ecbdd250bc7267b44e49c4190754c6"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/operational-codec-compat.json",
+      "byteLength": 2451,
+      "sha256": "df3ef5049dbcbf80790a3a9d200b4709b1896a1f6a5ebda7e23ef044edf057b7"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/p4-canonical-capability.json",
+      "byteLength": 8105,
+      "sha256": "980d189b99dde5b902722dee3327388367febdb00092c245c1faa27313e98eac"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/regression-env.sh",
+      "byteLength": 2032,
+      "sha256": "b159f6fd1cb183c4d50324a0805cb5fd5c18de5de5c2af6426f6a2828c15a765"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/weight-port-browser/REPORT.md",
+      "byteLength": 4051,
+      "sha256": "874fd9d5a8d16a4102febdaf759bfac5c6d3dbc278367309dbf785fa2df3476d"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/weight-port-browser/first-attempt-favicon404.json",
+      "byteLength": 6636,
+      "sha256": "f20f18bf20ad7bf83f93b3d77df834a335fa3d9afeb05e34e65acfde5deb73fa"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/weight-port-browser/harness.mjs",
+      "byteLength": 12795,
+      "sha256": "0046d20f03e4919ba10150f12b141880abc84723c777d3a9c0794745effecbdb"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/weight-port-browser/result.json",
+      "byteLength": 6610,
+      "sha256": "0f1776f3e42b620777805e1e7da9cffa431f91d2b47956f036f2e937dce5a645"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/weight-port-browser/run.py",
+      "byteLength": 6512,
+      "sha256": "04654038437185ba1b16442c020b12568ae452415f0e6cc482525dc818dd0d29"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/weight-port-browser/served-sources.json",
+      "byteLength": 51819,
+      "sha256": "671cbabdba29da4a9c2813ab63cb3ebb4b61aaad7679969c765a25e10d504da4"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/weight-port-browser/source-after.json",
+      "byteLength": 117996,
+      "sha256": "0e4154d6bf21a70e02124b57dacc4538c1dc5c5daa2bec01a32d9cfa00865151"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/weight-port-browser/source-before.json",
+      "byteLength": 117996,
+      "sha256": "8c4459a5749fefdd516a6550906c76a1174c00c89fba8b03e29db43fb3c99d7c"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/weight-port-browser/source-proof.json",
+      "byteLength": 684,
+      "sha256": "e32c33f221d29fd6565203f2d31b214a33f7172efb94472efdbde8c9188a627a"
+    },
+    {
+      "path": "development/ai-connection/latest-adoption/evidence/weight-port-browser/worker-trace.json",
+      "byteLength": 10927,
+      "sha256": "cbb625408135856fa5c0658406bb72be418f54c99c9fa0aa0c41c74ae1e7ed01"
+    }
+  ]
+}

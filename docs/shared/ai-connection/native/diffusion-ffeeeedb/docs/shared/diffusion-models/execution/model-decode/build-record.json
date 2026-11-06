@@ -1,0 +1,34 @@
+{
+  "hikeCommit": "3c51fde6675f317453919bd505d0e2d0f638e7f1",
+  "compilerSha256": "fb4588cba306b8dded91ad02735254681eaca08fa997f55919185cd607e89b26",
+  "backend": "wabt",
+  "mode": "normal",
+  "sourceSha256": "6abf3598172664416145f51964f2d5c39f80975b92973954f3aafdc653402453",
+  "hostSha256": "7c30e0a48c55e83fc075cf36d5f22e98da89ece67542d999e7ba0d64f8b52346",
+  "builderSha256": "f2e39da4145a27768e48d2e416fd7b94ceb8047cb56177a0f1abd9d3ceb0c841",
+  "wasmSha256": "4d6fa6efdf89a694ddf607b7a00c49601f6190ac8f9c82c3a636fffb70c507a2",
+  "watSha256": "3386378c063fe99b923651ae9f20bcd752b1bb0cc07635a54cf92a7cbdf38002",
+  "runtimeSha256": "0d37c1f5ea89304ce0b0654efb51733e5cfb5e9491fb5ac465ca14db5f935922",
+  "versions": {
+    "go": "go version go1.22.12 linux/amd64",
+    "wabt": "1.0.39",
+    "node": "v24.19.0"
+  },
+  "command": [
+    "/workspace/work/diffusion-investigation/toolchain/hikec",
+    "build",
+    "-target",
+    "wabt",
+    "-wasm-mode",
+    "normal",
+    "-o",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/execution/model-decode/model-decode.wasm",
+    "/workspace/work/diffusion-models/docs/shared/diffusion-models/execution/model-decode/model-decode.hike"
+  ],
+  "imports": [],
+  "abi": {
+    "Lookup8": "i32 i32 i32 i32 i32",
+    "Lookup16": "i32 i32 i32 i32 i32"
+  },
+  "status": "BUILT_ABI_INSPECTED; exhaustive runtime tests in test-model-decode.mjs"
+}

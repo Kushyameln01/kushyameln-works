@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "kind": "management-LoRA-reference-fixtures",
+  "ownerSource": "6d0c8df4cd4992f26745d2d26394f5e194d2567f",
+  "sourceFiles": [
+    {
+      "path": "docs/shared/ai-connection/adapters/lora-standalone/reference.mjs",
+      "byteLength": 5186,
+      "sha256": "28a42231436805fa20edea5c53e58e71ee4fbec6a0b1e4f446cfbc87507aa1cc"
+    },
+    {
+      "path": "tools/ai-connection/lora-standalone-fixtures.mjs",
+      "byteLength": 1960,
+      "sha256": "8dad620330c6809e9eca2a5505a8ba5acdfdaf9cfc11713d934d018eeaea2813"
+    },
+    {
+      "path": "tools/ai-connection/test-lora-standalone-reference.mjs",
+      "byteLength": 4880,
+      "sha256": "369efaabd5998598cee2eaada501383b40439f798f04c5effdb3815b2237fe52"
+    }
+  ],
+  "files": [
+    {
+      "side": "HIGH",
+      "pairId": "light",
+      "fileName": "management-light-HIGH.safetensors",
+      "byteLength": 41199,
+      "sha256": "0b0e54f6a34b0089e5cedd4657c8a8c76d3ea28aed732f3261ccbd9f7160acf6",
+      "kind": "generated development local File, not private original",
+      "tensorCount": 2,
+      "storageDtype": "F32",
+      "rank": 1,
+      "fullFactorShapes": [
+        [
+          1,
+          5120
+        ],
+        [
+          5120,
+          1
+        ]
+      ],
+      "targetKey": "diffusion_model.blocks.0.self_attn.q.weight",
+      "targetFullShape": [
+        5120,
+        5120
+      ],
+      "selectedRows": {
+        "startRow": 1,
+        "rowCount": 1
+      }
+    },
+    {
+      "side": "HIGH",
+      "pairId": "detail",
+      "fileName": "management-detail-HIGH.safetensors",
+      "byteLength": 41195,
+      "sha256": "5036597526e9f9330f82942f20f931ed939fd41f3820edfad629cd200593152d",
+      "kind": "generated development local File, not private original",
+      "tensorCount": 2,
+      "storageDtype": "F32",
+      "rank": 1,
+      "fullFactorShapes": [
+        [
+          1,
+          5120
+        ],
+        [
+          5120,
+          1
+        ]
+      ],
+      "targetKey": "diffusion_model.blocks.0.self_attn.q.weight",
+      "targetFullShape": [
+        5120,
+        5120
+      ],
+      "selectedRows": {
+        "startRow": 1,
+        "rowCount": 1
+      }
+    },
+    {
+      "side": "LOW",
+      "pairId": "light",
+      "fileName": "management-light-LOW.safetensors",
+      "byteLength": 41199,
+      "sha256": "6ae96a7decb5fe7da109f069998b0d6c856c0ca4ae2d7dbd8fe77fc600c45f5d",
+      "kind": "generated development local File, not private original",
+      "tensorCount": 2,
+      "storageDtype": "F32",
+      "rank": 1,
+      "fullFactorShapes": [
+        [
+          1,
+          5120
+        ],
+        [
+          5120,
+          1
+        ]
+      ],
+      "targetKey": "diffusion_model.blocks.0.self_attn.q.weight",
+      "targetFullShape": [
+        5120,
+        5120
+      ],
+      "selectedRows": {
+        "startRow": 1,
+        "rowCount": 1
+      }
+    },
+    {
+      "side": "LOW",
+      "pairId": "detail",
+      "fileName": "management-detail-LOW.safetensors",
+      "byteLength": 41195,
+      "sha256": "3df6dd53f1a8fd789a2dd83e2b46a1c69ac4f962030b071c8d3b06f552d2ed3d",
+      "kind": "generated development local File, not private original",
+      "tensorCount": 2,
+      "storageDtype": "F32",
+      "rank": 1,
+      "fullFactorShapes": [
+        [
+          1,
+          5120
+        ],
+        [
+          5120,
+          1
+        ]
+      ],
+      "targetKey": "diffusion_model.blocks.0.self_attn.q.weight",
+      "targetFullShape": [
+        5120,
+        5120
+      ],
+      "selectedRows": {
+        "startRow": 1,
+        "rowCount": 1
+      }
+    }
+  ],
+  "base": {
+    "kind": "owner createIndependentBaseProvider",
+    "meaning": "independent-dyadic-f32-base-v1",
+    "trainingBaseVerified": false
+  },
+  "consumer": {
+    "kind": "byte-exact owner createStandaloneReferenceHost plus outer fault/barrier controls",
+    "fullSelectedF32ValidationOwner": true,
+    "graphBinding": "UNBOUND"
+  },
+  "resources": {
+    "kernelMemoryBytesPerSide": 33554432,
+    "productCacheMaxBytesPerSide": 1048576,
+    "processPeakBytes": null
+  },
+  "verification": {
+    "ownTests": 4,
+    "nativeBootstrapTests": 2,
+    "passed": 6,
+    "failed": 0,
+    "scope": "real SDK/Hike, canonical full shape and explicitly bounded row, no neural inference/all-original recomputation"
+  },
+  "redLog": "reference-red.log",
+  "greenLog": "reference-green.log"
+}

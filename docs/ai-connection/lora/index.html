@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>LoRA接続管理｜Kushyameln Works</title>
+  <link rel="stylesheet" href="../../shared/inference/inference.css">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <nav aria-label="ツール間の移動"><a href="../">AI実行管理</a><a href="../../github/">GitHub・ツール</a><a href="../../diffusion-models/">DiffusionModels</a></nav>
+  <header>
+    <p class="eyebrow">Kushyameln Works</p>
+    <h1>LoRA接続管理</h1>
+    <p>選択したローカルLoRAを、新版SDKで登録・合成し、適用、解除、保存と復旧を管理します。HIGHとLOWは別々のSDKで扱います。</p>
+    <p class="notice">この入口は実LoRA SDKとHikeを、開発用の不変base・準拠consumerへ接続します。数値処理とmappingはLoRA SDKが担当します。<strong>実Diffusionへのbindingと製品生成は未受入です。</strong></p>
+  </header>
+  <main>
+    <section class="overview" aria-labelledby="overview-heading">
+      <h2 id="overview-heading">操作するsideを選ぶ</h2>
+      <p class="muted">各sideはlightだけ、detailだけ、二組、なしを選べます。選択しないFileの用意は不要です。なしを適用すると、そのsideを元baseへ戻します。</p>
+      <div class="actions">
+        <label class="check"><input id="batch-high" type="checkbox" checked> HIGHを一括操作に含める</label>
+        <label class="check"><input id="batch-low" type="checkbox" checked> LOWを一括操作に含める</label>
+      </div>
+      <div class="actions section-actions">
+        <button id="batch-apply" class="primary" type="button">選択sideへまとめて適用</button>
+        <button id="batch-recover" type="button">一括操作を回復してbaseへ戻す</button>
+        <button id="dispose-all" type="button">全SDKと参照資源を終了</button>
+      </div>
+      <p id="status" role="status" aria-live="polite" data-state="INITIALIZING">管理moduleを読み込んでいます。</p>
+      <progress id="progress" max="1" value="0" aria-label="LoRA管理の進捗"></progress>
+      <details><summary>一括操作の状態</summary><pre id="batch-state">{}</pre></details>
+    </section>
+    <div id="side-panels" class="side-panels"></div>
+    <section aria-labelledby="restore-heading">
+      <h2 id="restore-heading">保存と復旧について</h2>
+      <p>保存するのはSDKの実payloadとmanifestです。payloadはstreamで書き込み、すべての書込みが終わってからmanifestを保存します。管理の状態表示だけではLoRAを復元できません。</p>
+      <p>読戻しでは新しいSDKから実payloadを検査し、新しい取引として開きます。保存前のruntime handleや適用権限は復活しません。不変baseと準拠consumerは改めて接続します。</p>
+      <details><summary>直近のエラー</summary><pre id="error-details">なし</pre></details>
+    </section>
+  </main>
+  <footer>Fileとpayloadの処理はこのブラウザ内で行います。graphBinding: UNBOUND、generationReady: false。HIGH／LOW一括操作の片側失敗を全体成功とは扱いません。</footer>
+  <template id="side-template">
+    <section class="side-panel">
+      <div class="side-heading"><h2 data-label="side-title"></h2><span class="badge" data-label="side-mode">未起動</span></div>
+      <div class="pair-inputs">
+        <fieldset data-pair="light"><legend>light</legend><label data-for="light-file">ローカル .safetensors</label><input data-id="light-file" type="file" accept=".safetensors,application/octet-stream"><p data-id="light-file-state" class="muted">未選択</p><div class="pair-options"><label class="check"><input data-id="light-enabled" type="checkbox"> 使用する</label><label data-for="light-strength">強度</label><input data-id="light-strength" type="number" value="1" step="0.1"></div></fieldset>
+        <fieldset data-pair="detail"><legend>detail</legend><label data-for="detail-file">ローカル .safetensors</label><input data-id="detail-file" type="file" accept=".safetensors,application/octet-stream"><p data-id="detail-file-state" class="muted">未選択</p><div class="pair-options"><label class="check"><input data-id="detail-enabled" type="checkbox"> 使用する</label><label data-for="detail-strength">強度</label><input data-id="detail-strength" type="number" value="1" step="0.1"></div></fieldset>
+      </div>
+      <div class="actions section-actions"><button data-id="register" type="button">選択Fileを登録</button><button data-id="query" type="button">接続能力を確認</button><button data-id="apply" class="primary" type="button">現在の組合せを適用</button><button data-id="restore" type="button">baseへ戻す</button></div>
+      <div class="actions"><button data-id="cancel" type="button" disabled>対象の実行を取消</button><button data-id="recover" type="button">回復を実行</button><button data-id="release" type="button" disabled>準備packageを解放</button><button data-id="dispose" type="button">このsideを終了</button></div>
+      <p data-id="status" role="status" aria-live="polite" data-state="IDLE">Fileを選ぶか、組合せなしでbaseへ戻せます。</p>
+      <p data-id="identities" class="identity-line">SDK revision・管理revision・consumer epochは別々に記録します。</p>
+      <details><summary>合成・準備・適用を個別に操作</summary><div class="actions"><button data-id="compose" type="button">合成planを作る</button><button data-id="prepare" type="button" disabled>planから準備</button><button data-id="stage" type="button" disabled>準備packageを適用</button></div><p class="muted">PREPAREDは遅延評価するpackageの準備です。全重みの計算完了や実Diffusion適用を意味しません。</p></details>
+      <details open><summary>実payloadを保存・読戻し</summary><div class="actions"><button data-id="choose-directory" type="button">保存先フォルダを選ぶ</button><button data-id="save" type="button" disabled>packageをstream保存</button><button data-id="open-saved" type="button">ブラウザ保存から新SDKで開く</button></div><p data-id="storage-state" class="muted">保存先未選択時は、このブラウザの専用保存領域（OPFS）を使います。</p><label data-for="manifest-file">保存したmanifest.json</label><input data-id="manifest-file" type="file" accept=".json,application/json"><label data-for="payload-files">保存したsource payload（選択分だけ）</label><input data-id="payload-files" type="file" accept=".safetensors,application/octet-stream" multiple><button data-id="open-files" type="button">選択したpackageを新SDKで開く</button><p data-id="save-message" class="muted">読戻し後は「準備packageを適用」で再適用できます。</p><details><summary>保存内容と実読戻しreceipt</summary><pre data-id="save-state">{}</pre></details></details>
+      <details><summary>管理・SDKの状態</summary><pre data-id="state">{}</pre></details>
+      <details class="development-controls"><summary>開発用consumerと所有権の確認</summary><p class="muted">この開発用base／consumerの限定範囲を確認します。実モデルへの適用状態とは別です。</p><label data-for="mode">consumerの応答</label><select data-id="mode"><option value="success">正常</option><option value="delay">継続するまで遅延</option><option value="fail">実行失敗</option><option value="release-fail">候補解放が一度失敗</option></select><button data-id="continue" type="button">遅延した処理を継続</button><div class="actions"><button data-id="read-active" type="button">適用中の完成値を読む</button><button data-id="capture-lease" type="button">読取りleaseを保持</button><button data-id="read-lease" type="button" disabled>保持leaseから読む</button><button data-id="release-lease" type="button" disabled>読取りleaseを解放</button></div><div class="actions"><button data-id="dispose-sdk" type="button">SDKだけを終了</button><button data-id="cancel-old" type="button">古い対象の取消を確認</button></div><pre data-id="lease-state">{}</pre><pre data-id="reference-state">{}</pre></details>
+    </section>
+  </template>
+  <script type="module" src="./main.mjs"></script>
+</body>
+</html>

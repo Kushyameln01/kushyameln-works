@@ -18,6 +18,140 @@
       "sha256": "222922e8eec98720810047a9d29a588b27161c2aafb616cd32f40401d75b5368",
       "specifiers": ["node:crypto", "node:child_process", "node:module", "node:fs/promises", "node:path", "node:url"],
       "reason": "Existing reviewed public Node-only source supplement for rebuilding the VR180 vendor; it is not imported by a browser runtime. Preserve its declared build dependencies without exempting other source files."
+    },
+    {
+      "file": "shared/ai-connection/adapters/diffusion-public/native.mjs",
+      "sha256": "15739282282d9dc517640e6d8f8e3ac8a078d0707e43b13c2c293b62aa3d1610",
+      "specifiers": [
+        "node:fs/promises"
+      ],
+      "reason": "Reviewed management source loader: node:fs/promises is dynamically imported only when its module/asset URL uses file: for local Node execution; the HTTPS browser path reads the same source through fetch."
+    },
+    {
+      "file": "shared/ai-connection/adapters/lora-standalone/adapter.mjs",
+      "sha256": "94b8a4506ceca30ee6dec504734a80a249e928b187e9a12ad23fc66c722e579f",
+      "specifiers": [
+        "node:fs/promises"
+      ],
+      "reason": "Reviewed management source loader: node:fs/promises is dynamically imported only when its module/asset URL uses file: for local Node execution; the HTTPS browser path reads the same source through fetch."
+    },
+    {
+      "file": "shared/ai-connection/adapters/lora-standalone/native.mjs",
+      "sha256": "300e8fd2ce42cb3f339721aa85d910cb7af405006b5fd649645352c0d9962889",
+      "specifiers": [
+        "node:fs/promises"
+      ],
+      "reason": "Reviewed management source loader: node:fs/promises is dynamically imported only when its module/asset URL uses file: for local Node execution; the HTTPS browser path reads the same source through fetch."
+    },
+    {
+      "file": "shared/ai-connection/adapters/p4-current/native.mjs",
+      "sha256": "b5111f3967af2c0c3cad474b04d2cad96635e06bca9b6adf5d8c66225353d7f1",
+      "specifiers": [
+        "node:fs/promises"
+      ],
+      "reason": "Reviewed management source loader: node:fs/promises is dynamically imported only when its module/asset URL uses file: for local Node execution; the HTTPS browser path reads the same source through fetch."
+    },
+    {
+      "file": "shared/ai-connection/adapters/text-vae-standalone/native.mjs",
+      "sha256": "9dd1322e1f8c14f35b47dea02cbe190bf3890018c0caebc1d47c7b2873d49e80",
+      "specifiers": [
+        "node:fs/promises"
+      ],
+      "reason": "Reviewed management source loader: node:fs/promises is dynamically imported only when its module/asset URL uses file: for local Node execution; the HTTPS browser path reads the same source through fetch."
+    },
+    {
+      "file": "shared/ai-connection/native/diffusion-b6e16647/docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+      "specifiers": [
+        "module",
+        "worker_threads"
+      ],
+      "reason": "Pinned byte-identical ORT Web 1.24.3 mirror; module and worker_threads imports execute only in Emscripten Node-only branches, while the HTTPS browser path uses the published WASM assets."
+    },
+    {
+      "file": "shared/ai-connection/native/diffusion-ffeeeedb/docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+      "specifiers": [
+        "module",
+        "worker_threads"
+      ],
+      "reason": "Pinned byte-identical ORT Web 1.24.3 mirror; module and worker_threads imports execute only in Emscripten Node-only branches, while the HTTPS browser path uses the published WASM assets."
+    },
+    {
+      "file": "shared/ai-connection/native/text-vae-20f640a/docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+      "specifiers": [
+        "module",
+        "worker_threads"
+      ],
+      "reason": "Pinned byte-identical ORT Web 1.24.3 mirror; module and worker_threads imports execute only in Emscripten Node-only branches, while the HTTPS browser path uses the published WASM assets."
+    },
+    {
+      "file": "shared/ai-connection/native/text-vae-20f640a/docs/shared/inference/vendor/sentencepiece.mjs",
+      "sha256": "31ce41230f8694c63afa1ffeecb862d0bf3768d858328d335530997a86a1f27d",
+      "specifiers": [
+        "module"
+      ],
+      "reason": "Pinned byte-identical SentencePiece 1.3.3 mirror; the module import is confined to Node-only setup and is not executed by the HTTPS browser tokenizer path."
+    },
+    {
+      "file": "shared/ai-connection/native/text-vae-badff7a/docs/shared/inference/vendor/ort-wasm-simd-threaded.mjs",
+      "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+      "specifiers": [
+        "module",
+        "worker_threads"
+      ],
+      "reason": "Pinned byte-identical ORT Web 1.24.3 mirror; module and worker_threads imports execute only in Emscripten Node-only branches, while the HTTPS browser path uses the published WASM assets."
+    },
+    {
+      "file": "shared/ai-connection/native/text-vae-badff7a/docs/shared/inference/vendor/sentencepiece.mjs",
+      "sha256": "31ce41230f8694c63afa1ffeecb862d0bf3768d858328d335530997a86a1f27d",
+      "specifiers": [
+        "module"
+      ],
+      "reason": "Pinned byte-identical SentencePiece 1.3.3 mirror; the module import is confined to Node-only setup and is not executed by the HTTPS browser tokenizer path."
+    },
+    {
+      "file": "shared/ai-connection/operational-management.mjs",
+      "sha256": "94c5efccfe52ce1bcdfbf227199b4fa9812c8c13ffdd7a4249be670a2ecc5114",
+      "specifiers": [
+        "node:fs/promises"
+      ],
+      "reason": "Reviewed management source loader: node:fs/promises is dynamically imported only when its module/asset URL uses file: for local Node execution; the HTTPS browser path reads the same source through fetch."
+    },
+    {
+      "file": "shared/ai-connection/reference-owner.mjs",
+      "sha256": "6d04a62582daaf28a0b083ce74a10b3ea24902721239c6fe5dc13cb320f04f8a",
+      "specifiers": [
+        "node:fs/promises"
+      ],
+      "reason": "Reviewed management source loader: node:fs/promises is dynamically imported only when its module/asset URL uses file: for local Node execution; the HTTPS browser path reads the same source through fetch."
+    },
+    {
+      "file": "shared/ai-connection/native/diffusion-b6e16647/tools/diffusion-models/public-model-browser.mjs",
+      "sha256": "e89888e78fed0e1cb88f969a6f3bccded5a766214932b1c47ef147209e12730a",
+      "specifiers": [
+        "/__case__.json",
+        "/tools/diffusion-models/public-model-worker-observer.mjs"
+      ],
+      "referenceKinds": [
+        "fetch",
+        "url"
+      ],
+      "reason": "Pinned owner SOURCE-inventory browser validation harness; not imported or executed by product entrypoints. Source verification reads these exact bytes only. The two literal routes belong to the separate private validation server and do not require public Pages routes."
+    },
+    {
+      "file": "shared/ai-connection/native/diffusion-ffeeeedb/tools/diffusion-models/public-model-browser.mjs",
+      "sha256": "449aa4c29d34f1f8d7a6ced1037ef66f384a4dc24e700e778d7a72e56b5bcb15",
+      "specifiers": [
+        "/__case__.json",
+        "/tools/diffusion-models/public-model-worker-observer.mjs"
+      ],
+      "referenceKinds": [
+        "fetch",
+        "url"
+      ],
+      "reason": "Pinned owner SOURCE-inventory browser validation harness; not imported or executed by product entrypoints. Source verification reads these exact bytes only. The two literal routes belong to the separate private validation server and do not require public Pages routes."
     }
   ]
 }

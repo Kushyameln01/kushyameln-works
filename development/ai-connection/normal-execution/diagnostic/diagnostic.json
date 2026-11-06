@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "works-normal-operation-diagnostic/0.1",
+  "status": "DIAGNOSTIC_PASS",
+  "scope": "optional post-normal independent stage-bit and owner roundtrip checks only",
+  "normalResultUnchanged": true,
+  "normalStatus": "EXECUTION_COMPLETED",
+  "normalManagementCommit": "4667f46e5961a34c095a394bf6c75156ab9ab9cb",
+  "stages": {
+    "normalized": {
+      "profileId": "wan21-raw-f32-1x16x32",
+      "count": 128,
+      "payloadSha256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5",
+      "independentReferencePayloadSha256": "4c6802f01df4ecd426cfc5910ee33d450858214c3d4bd4823499c2ddd313bfe5",
+      "byteExact": true
+    },
+    "restored": {
+      "profileId": "wan21-raw-f32-1x16x32",
+      "count": 128,
+      "payloadSha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+      "independentReferencePayloadSha256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+      "byteExact": true
+    }
+  },
+  "roundtrip": {
+    "values": 128,
+    "failed": 0,
+    "maxAbsolute": 2.384185791015625e-7,
+    "worstIndex": 62,
+    "actualSHA256": "71e89e4bb70e036b28b30c8bb8dd3138cbc08fe61f51102f6ef47d5781cc7063",
+    "gate": {
+      "abs": 0.000002,
+      "rel": 0
+    }
+  },
+  "reference": {
+    "sourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "path": "development/ai-connection/e6/reference-received.json"
+    },
+    "sha256": "0e4d44e0c8199fcebfb9fa111865fc26cd2906f321d64282920c4f82dd3151dc",
+    "byteLength": 17605,
+    "scope": "retained independent Python mean outputs; raw is received VAE output, not an independent VAE encode oracle"
+  },
+  "gate": {
+    "sourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+      "path": "development/ai-connection/e6/rect-receipt.json"
+    },
+    "sha256": "fae031603cce81eee70bad3c8446ced2192c95557ce26438c2a733562181f43b",
+    "byteLength": 3974,
+    "appliesTo": "raw-to-restored roundtrip only"
+  },
+  "ownerJudge": {
+    "sourceRef": {
+      "repository": "Kushyameln01/kushyameln-works",
+      "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+      "path": "docs/shared/diffusion-models/diagnostics/self-attention-tail/common.mjs"
+    },
+    "sha256": "b2c0abad30840c7c31c9e4e4f13218cdaa5b64576ff139abe9bf589bfdf3834f",
+    "byteLength": 2695
+  },
+  "nativeCalls": 0,
+  "generationReady": false
+}

@@ -1,0 +1,56 @@
+package main
+func cos(x float64) float64
+func sin(x float64) float64
+func pow(x float64,y float64) float64
+func sqrt(x float64) float64
+func Finite(x float32) bool { return x == x && x-x == float32(0) }
+func Valid(x *float32,n int) bool { i:=0;for i<n {if !Finite(x[i]) {return false};i=i+1};return true }
+cfunc Sinusoidal(t float32,out *float32,capacity int) int {
+ if capacity != 256 || !Finite(t) || t < float32(0) || t > float32(1000) {return -1}
+ i:=0
+ for i<128 {
+  exponent:= -float32(i)/float32(128)
+  frequency:=float32(pow(float64(10000),float64(exponent)))
+  phase:=t*frequency
+  out[i]=float32(cos(float64(phase)))
+  out[i+128]=float32(sin(float64(phase)))
+  i=i+1
+ }
+ if !Valid(out,256) {return -3};return 0
+}
+cfunc LayerNorm(x *float32,rows int,out *float32,capacity int) int {
+ if rows != 2 || capacity != 10240 {return -1}
+ if !Valid(x,10240) {return -2}
+ i:=0
+ for i<10240 {if x[i] > float32(10000000000000000) || x[i] < -float32(10000000000000000) {return -2};i=i+1}
+ row:=0
+ for row<2 {
+  sum:=float32(0);i=0
+  for i<5120 {sum=sum+x[row*5120+i];i=i+1}
+  mean:=sum/float32(5120)
+  variance:=float32(0);i=0
+  for i<5120 {d:=x[row*5120+i]-mean;variance=variance+d*d;i=i+1}
+  variance=variance/float32(5120)
+  root:=float32(sqrt(float64(variance+float32(0.000001))))
+  inverse:=float32(1)/root
+  if !Finite(mean) || !Finite(variance) || !Finite(inverse) {return -3}
+  i=0
+  for i<5120 {out[row*5120+i]=(x[row*5120+i]-mean)*inverse;i=i+1}
+  row=row+1
+ }
+ if !Valid(out,10240) {return -3};return 0
+}
+cfunc Add(a *float32,b *float32,count int,out *float32,capacity int) int {
+ if count<1 || count>10240 || capacity<count || capacity>10240 {return -1}
+ if !Valid(a,count) || !Valid(b,count) {return -2}
+ i:=0;for i<count {out[i]=a[i]+b[i];i=i+1}
+ if !Valid(out,count) {return -3};return 0
+}
+cfunc Modulate(x *float32,shift *float32,scale *float32,rows int,out *float32,capacity int) int {
+ if rows != 2 || capacity != 10240 {return -1}
+ if !Valid(x,10240) || !Valid(shift,5120) || !Valid(scale,5120) {return -2}
+ row:=0;i:=0
+ for row<2 {i=0;for i<5120 {plus:=float32(1)+scale[i];product:=x[row*5120+i]*plus;out[row*5120+i]=shift[i]+product;i=i+1};row=row+1}
+ if !Valid(out,10240) {return -3};return 0
+}
+func main() int { return 0 }

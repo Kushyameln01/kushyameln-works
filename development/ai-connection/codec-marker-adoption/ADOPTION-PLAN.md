@@ -1,0 +1,13 @@
+# 新codecの実保存経路への採用
+
+ユーザーの「新Codecを採用」に対応し、基点 `634397e7b9111cfbcf7646b6b6c60d9bbb2debbf` の候補受領・外部helper確認から、管理自身の保存経路へ接続する。
+
+正本はowner PR#13の `3571c5fe8a4b2c3a31754607e424e64d24d798e5`。codec実装は不変の `2bdca59ea78580d4fe7a9d31a8de33209b64d029:docs/shared/inference/tensor.mjs`、8256 bytes、SHA-256 `d82b8aaf00be2379c073205aabf82eceaea558a5d10e6f202365bc4a295f26e5`。WKTSR001/schemaVersion1とAPIの意味・数値処理は維持する。
+
+1. owner codecをbyte exactで管理codecs配下へ同梱し、同じsourceRef・encode/decode capability・実bytes検査を返す管理factoryを用意する。出所とdeployment pathを別に記録する。独自codecの再実装・marker推測・ライセンス宣言の推定追加は行わない。
+2. 現在のRect管理runner、規範必須RectのNode/browser保存、LoRA管理の2scenarioの保存をこのfactoryへ接続する。manifest.codecとregistry.codecsは同じ新sourceRefとする。normalized中間packageの旧失敗前提は新codecでの正例へ更新し、旧writerの負例は旧sourceを明示した回帰として残す。
+3. LoRA CLIはcodec未指定時に新同梱codecを使う。既存のcodec-root/codec-commitを両方明示した外部codec注入は維持し、選択modeと実sourceを記録する。旧LoRA scenario名legacyと、保存codecの選択を混同しない。
+4. native855の旧codec依存・SDK/kernel/worker・既存packageの旧reader回帰・過去receiptは維持する。storage sourceをpersistenceCodecSourceとして別に記録し、実行moduleのpinを機械的に変更しない。
+5. 先にmarker消失・既定codec選択の負例を確認し、新codecでのnormalized/旧unmarked互換・実E4保存読戻し・source不一致拒否を検証する。関連回帰と変更後の全回帰、独立レビューを行う。新NN・VAE encode再実行・モデルasset受領は保存採用の条件にしない。
+
+成果物、固定source/hash、採用範囲、再現手順、試験結果をGitHub同branch/Draft PR#7へ共有する。新管理の実Rect NN/decode/cancel/release/実RGB保存は、その実receiptがない限り別の未受入として保持する。main merge/Pages公開/生成受付解除は行わない。

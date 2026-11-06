@@ -1,0 +1,26 @@
+package main
+func Finite(x float32) bool { return x == x && x-x == float32(0) }
+func Valid(x *float32,n int) bool { i:=0;for i<n {if !Finite(x[i]) {return false};i=i+1};return true }
+func Admitted(x float32) bool { return Finite(x) && float64(x) <= float64(10000000000000000) && float64(x) >= -float64(10000000000000000) }
+cfunc GateResidual(o *float32,projection *float32,modulation *float32,patch *float32,rows int,gate *float32,gated *float32,residual *float32,capacity int) int {
+ if rows != 2 || capacity != 10240 {return -1}
+ if !Valid(o,10240) || !Valid(projection,5120) || !Valid(modulation,5120) || !Valid(patch,10240) {return -2}
+ i:=0
+ for i<10240 {if !Admitted(o[i]) || !Admitted(patch[i]) {return -2};i=i+1}
+ i=0
+ for i<5120 {gate[i]=modulation[i]+projection[i];if !Admitted(gate[i]) {return -2};i=i+1}
+ row:=0
+ for row<2 {
+  i=0
+  for i<5120 {
+   index:=row*5120+i
+   product:=o[index]*gate[i]
+   gated[index]=product
+   residual[index]=patch[index]+product
+   i=i+1
+  }
+  row=row+1
+ }
+ if !Valid(gated,10240) || !Valid(residual,10240) {return -3};return 0
+}
+func main() int { return 0 }

@@ -1,0 +1,40 @@
+package main
+
+// Tables contain exact legacy Hike outputs. This kernel performs no floating
+// point arithmetic: it validates integer storage codes, then copies F32 bits.
+cfunc Lookup8(codes *byte, count int, table *float32, out *float32, capacity int) int {
+    if count < 1 || count > 81920 || capacity < count || capacity > 81920 { return -1 }
+    i := 0
+    code := 0
+    for i < count {
+        code = int(codes[i])
+        if (code & 127) == 127 { return -2 }
+        i = i + 1
+    }
+    i = 0
+    for i < count {
+        out[i] = table[int(codes[i])]
+        i = i + 1
+    }
+    return 0
+}
+
+cfunc Lookup16(codes *byte, count int, table *float32, out *float32, capacity int) int {
+    if count < 1 || count > 81920 || capacity < count || capacity > 81920 { return -1 }
+    i := 0
+    code := 0
+    for i < count {
+        code = int(codes[i * 2]) | (int(codes[i * 2 + 1]) << 8)
+        if ((code >> 10) & 31) == 31 { return -2 }
+        i = i + 1
+    }
+    i = 0
+    for i < count {
+        code = int(codes[i * 2]) | (int(codes[i * 2 + 1]) << 8)
+        out[i] = table[code]
+        i = i + 1
+    }
+    return 0
+}
+
+func main() int { return 0 }

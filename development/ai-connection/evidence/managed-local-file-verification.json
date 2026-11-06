@@ -1,0 +1,435 @@
+{
+  "schemaVersion": "works-managed-local-file-verification/1",
+  "status": "PASS_INDEPENDENT_MANAGED_LOCAL_FILE_READBACK",
+  "candidateCommit": "a8771513320117a8d20310af84480978665c6252",
+  "loraCommit": "0c27874908638afc748ea2455a2779a16736730b",
+  "diffusionCommit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+  "codecCommit": "2c171a09ccda65c54899f322ae490f1bfcaac6fb",
+  "scope": "Local File input/state/ownership/save/cancel using genuine selected LoRA and four genuine negative Files with explicitly synthetic base/control values",
+  "fixtureScope": "synthetic-manager-control-fixture",
+  "realBase": false,
+  "newRealE1Acceptance": false,
+  "e5Acceptance": false,
+  "modelInference": false,
+  "generationReady": false,
+  "snapshotPublished": false,
+  "browser": "154.0.8037.57",
+  "trialResultSha256": "2b42ba334cc1fcb32fd41a33774cc81a65db0f173155d071c0965b143b9f173d",
+  "sourcePins": {
+    "sdk": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "0c27874908638afc748ea2455a2779a16736730b",
+      "path": "docs/shared/inference/lora/sdk-v2.mjs",
+      "sha256": "c425519eb282f798f4296bc97fd1506664afd850dee9addb17af77dd41e39fa0"
+    },
+    "adapter": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "0c27874908638afc748ea2455a2779a16736730b",
+      "path": "docs/shared/inference/lora/diffusion-diagnostic-adapter.mjs",
+      "sha256": "bcea7b495e819d1e1052543f36cbdad0ed8515e74bd8914cf66dc03b093c6e4f"
+    },
+    "kernel": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "0c27874908638afc748ea2455a2779a16736730b",
+      "path": "docs/shared/inference/lora/kernel/lora.wasm",
+      "sha256": "3ab8e4c5cba71083f5457e7b9d6d0ac6aec92c7d76ec1360b3c1547e16eddb24",
+      "byteLength": 5051
+    },
+    "diffusion": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "438972f30242e0a3bc66edb8591f38eaa0fcd384",
+      "path": "docs/shared/diffusion-models/lora/diagnostic-consumer.mjs",
+      "sha256": "fdac31542f87d68b9e01a1ba674ee9b60433cae685d6670222f8d914dd27f943"
+    },
+    "management": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "a8771513320117a8d20310af84480978665c6252",
+      "path": "docs/shared/ai-connection/adapters/adopted-lora.mjs",
+      "sha256": "16e1cc9be52301c6456fc0754b70874eccc55ad8c27b93039bb98f6a3490843e"
+    },
+    "codec": {
+      "repository": "https://github.com/Kushyameln01/kushyameln-works",
+      "commit": "2c171a09ccda65c54899f322ae490f1bfcaac6fb",
+      "path": "docs/shared/inference/tensor.mjs",
+      "sha256": "4c6992a7b6f44722e84a7184ed5c878312a203071054335827f7f0adcd01c07b"
+    }
+  },
+  "sourceVerification": {
+    "gitBlobFilesVerified": 49,
+    "httpSourceFilesVerified": 45,
+    "allRecordedSourceBytesMatchPinnedGitObjects": true,
+    "allCurrentHTTPSourceFilesMatchCandidate": true,
+    "sourceReceiptSha256": "7ec816de62f61cd541e0ae9eaf71aef211ec9929d3871e64104950ae661df62d",
+    "postTrialNonHTTPWorkingTreeChange": {
+      "path": "tools/ai-connection/run-managed-local-files.mjs",
+      "trailingWhitespaceOnly": true,
+      "candidateExecutionPinPreserved": true
+    }
+  },
+  "numericalReadback": {
+    "cases": 5,
+    "actualWeightValuesRecomputed": 409600,
+    "actualBiasValuesRecomputed": 80,
+    "actualOutputValuesRecomputed": 80,
+    "maxAbsoluteError": {
+      "weight": 2.8759927772625815e-08,
+      "bias": 0.0,
+      "output": 5.960464477539063e-08
+    },
+    "gates": {
+      "baseDecode": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "weight": {
+        "absolute": 1e-05,
+        "relative": 0.0001
+      },
+      "bias": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "projection": {
+        "absolute": 1e-06,
+        "relative": 1e-05
+      }
+    },
+    "allFinite": true,
+    "failedValues": 0,
+    "oracleReferenceFilesVerified": 11,
+    "referenceJsonSha256": "910f2f1d299dd089b7b3aafb5c27b99e11dc2c07b4d49e2fee2a10032cce3434",
+    "casesDetail": [
+      {
+        "label": "local-positive-s0",
+        "strength": 0,
+        "managerRevision": 1,
+        "sdkLocalInputRevision": 1,
+        "weightValues": 81920,
+        "biasValues": 16,
+        "outputValues": 16,
+        "weightMaxAbsoluteError": 0,
+        "biasMaxAbsoluteError": 0,
+        "outputMaxAbsoluteError": 0,
+        "nativeFeedPackageHash": "9678c749eaff16dc1279518f2cdbb1c37e7e7a3f549a5bc45b218c543c62d40a",
+        "actualRawFeedDigestRecomputed": true,
+        "outputSha256": "7cbd62c16f49e44f62142abb0f16a778ddcaae1bdf40bb29d5063f16d4ae0cf7"
+      },
+      {
+        "label": "local-positive-s1",
+        "strength": 1,
+        "managerRevision": 2,
+        "sdkLocalInputRevision": 2,
+        "weightValues": 81920,
+        "biasValues": 16,
+        "outputValues": 16,
+        "weightMaxAbsoluteError": 2.7374881028663367e-08,
+        "biasMaxAbsoluteError": 0,
+        "outputMaxAbsoluteError": 5.960464477539063e-08,
+        "nativeFeedPackageHash": "4423df69081d0c885923375d54a67bd849625bc7e1814f49fe0271d129dd7e4a",
+        "actualRawFeedDigestRecomputed": true,
+        "outputSha256": "09855cd8552e1531b73be97552b7aadbeb468af2919c8c3f8d70b269100967db"
+      },
+      {
+        "label": "local-positive-s-1",
+        "strength": -1,
+        "managerRevision": 3,
+        "sdkLocalInputRevision": 3,
+        "weightValues": 81920,
+        "biasValues": 16,
+        "outputValues": 16,
+        "weightMaxAbsoluteError": 2.8759927772625815e-08,
+        "biasMaxAbsoluteError": 0,
+        "outputMaxAbsoluteError": 5.960464477539063e-08,
+        "nativeFeedPackageHash": "f48371e3e038aefec61c1b724078d6b45fee401ab27d2e30f1c6556a19a6bc3d",
+        "actualRawFeedDigestRecomputed": true,
+        "outputSha256": "0c5d45ed41391d7df1dd2e02d00fa0e15848c29d52c93c8cbb04fd329cec34f8"
+      },
+      {
+        "label": "local-reapply",
+        "strength": 1,
+        "managerRevision": 4,
+        "sdkLocalInputRevision": 4,
+        "weightValues": 81920,
+        "biasValues": 16,
+        "outputValues": 16,
+        "weightMaxAbsoluteError": 2.7374881028663367e-08,
+        "biasMaxAbsoluteError": 0,
+        "outputMaxAbsoluteError": 5.960464477539063e-08,
+        "nativeFeedPackageHash": "4423df69081d0c885923375d54a67bd849625bc7e1814f49fe0271d129dd7e4a",
+        "actualRawFeedDigestRecomputed": true,
+        "outputSha256": "09855cd8552e1531b73be97552b7aadbeb468af2919c8c3f8d70b269100967db"
+      },
+      {
+        "label": "local-cancel-recovery",
+        "strength": 1,
+        "managerRevision": 6,
+        "sdkLocalInputRevision": 7,
+        "weightValues": 81920,
+        "biasValues": 16,
+        "outputValues": 16,
+        "weightMaxAbsoluteError": 2.7374881028663367e-08,
+        "biasMaxAbsoluteError": 0,
+        "outputMaxAbsoluteError": 5.960464477539063e-08,
+        "nativeFeedPackageHash": "4423df69081d0c885923375d54a67bd849625bc7e1814f49fe0271d129dd7e4a",
+        "actualRawFeedDigestRecomputed": true,
+        "outputSha256": "09855cd8552e1531b73be97552b7aadbeb468af2919c8c3f8d70b269100967db"
+      }
+    ],
+    "actualArtifacts": [
+      {
+        "path": "actual/local-positive-s0-weight.f32",
+        "byteLength": 327680,
+        "sha256": "0f9e3272a74ceb5adb452dd2f4a1eaaecfdaf7b3924b89c5e7181e389efb79fa"
+      },
+      {
+        "path": "actual/local-positive-s0-bias.f32",
+        "byteLength": 64,
+        "sha256": "3d37589b3a0002c0855b40b6f2cc2d152409c0beba277b24c966c071e808e0b4"
+      },
+      {
+        "path": "actual/local-positive-s1-weight.f32",
+        "byteLength": 327680,
+        "sha256": "8fd433d1e2591c77a959be5b04920e70b9c0ffeebe192515d8ac75edd7f7297f"
+      },
+      {
+        "path": "actual/local-positive-s1-bias.f32",
+        "byteLength": 64,
+        "sha256": "b56df776137b67e3d42bab614b8e6abfc55b89224391bb36ee9bc40cbc0e0763"
+      },
+      {
+        "path": "actual/local-positive-s-1-weight.f32",
+        "byteLength": 327680,
+        "sha256": "f53687a812fa7ea65f152314f7344e1098d0655d9a1a73858961821a4a7460ef"
+      },
+      {
+        "path": "actual/local-positive-s-1-bias.f32",
+        "byteLength": 64,
+        "sha256": "900169ce542df73297d68fac0245f414b75ea7a489782abcdf4ca681166ab9ed"
+      },
+      {
+        "path": "actual/local-reapply-weight.f32",
+        "byteLength": 327680,
+        "sha256": "8fd433d1e2591c77a959be5b04920e70b9c0ffeebe192515d8ac75edd7f7297f"
+      },
+      {
+        "path": "actual/local-reapply-bias.f32",
+        "byteLength": 64,
+        "sha256": "b56df776137b67e3d42bab614b8e6abfc55b89224391bb36ee9bc40cbc0e0763"
+      },
+      {
+        "path": "actual/local-cancel-recovery-weight.f32",
+        "byteLength": 327680,
+        "sha256": "8fd433d1e2591c77a959be5b04920e70b9c0ffeebe192515d8ac75edd7f7297f"
+      },
+      {
+        "path": "actual/local-cancel-recovery-bias.f32",
+        "byteLength": 64,
+        "sha256": "b56df776137b67e3d42bab614b8e6abfc55b89224391bb36ee9bc40cbc0e0763"
+      }
+    ]
+  },
+  "inputFiles": [
+    {
+      "kind": "positive",
+      "sourceNo": null,
+      "fileName": "Bernini-R_LightX2V_high_noise.safetensors",
+      "byteLength": 1244141856,
+      "sha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+      "independentlyRehashedUnchangedFile": true
+    },
+    {
+      "kind": "negative",
+      "sourceNo": 1,
+      "fileName": "wan2.1-1.3b-control-lora-depth-v0.1_comfy.safetensors",
+      "byteLength": 378400000,
+      "sha256": "c1d81502a7a869a99ab9c0c2cca4d2d9b1e9e5a0d9b072e7fb24009fa02cedeb",
+      "independentlyRehashedUnchangedFile": true
+    },
+    {
+      "kind": "negative",
+      "sourceNo": 2,
+      "fileName": "ltxv-097-ic-lora-depth-control-comfyui.safetensors",
+      "byteLength": 81918064,
+      "sha256": "5240eedddc2173d517d6d374f8612ea1baf6c4a758654d524ce22521798fb71e",
+      "independentlyRehashedUnchangedFile": true
+    },
+    {
+      "kind": "negative",
+      "sourceNo": 2,
+      "fileName": "ltxv-097-ic-lora-depth-control-diffusers.safetensors",
+      "byteLength": 81914256,
+      "sha256": "ba5346cc99cde3ab730f34952c77d1765ee8315e189546b1a559a3efc8bd20b3",
+      "independentlyRehashedUnchangedFile": true
+    },
+    {
+      "kind": "negative",
+      "sourceNo": 3,
+      "fileName": "wan2.1-1.3b-control-lora-tile-v1.1_comfy.safetensors",
+      "byteLength": 378400000,
+      "sha256": "5a3b82f3e4a2f6bebade1c0e61da56af558ffbb292afb04b5446db8ef1e2d988",
+      "independentlyRehashedUnchangedFile": true
+    }
+  ],
+  "inputSelectionMetadataUnchanged": true,
+  "nativeInputState": {
+    "registrationApplied": false,
+    "headerInspectionSourceSha256": null,
+    "fullRuntimeSourceHashVerified": true,
+    "unsupportedNegativeFiles": 4,
+    "negativeNativeCodes": [
+      "UNSUPPORTED_LORA",
+      "UNSUPPORTED_LORA",
+      "UNSUPPORTED_LORA",
+      "UNSUPPORTED_LORA"
+    ],
+    "negativeSources": [
+      1,
+      2,
+      2,
+      3
+    ],
+    "negativeRejectionPreservedCurrentBinding": true,
+    "remoteUrlRejected": true,
+    "remoteUrlNativeCode": "INVALID_LORA_BINDING"
+  },
+  "savedPackage": {
+    "status": "PASS_INDEPENDENT_PACKAGE_READBACK",
+    "files": [
+      {
+        "path": "output.wktensor",
+        "byteLength": 304,
+        "sha256": "c0f9f08909b6a53def1fa7b23dd46a3fb6aa1d6a07abde9e5f0aa87e993e580d",
+        "browserFreshWrite": true,
+        "browserReadbackCount": 3,
+        "independentDiskReadback": true,
+        "jcsVerified": false
+      },
+      {
+        "path": "descriptor.json",
+        "byteLength": 8160,
+        "sha256": "f7ae1c065d441c8797fe27d90dc066c2a7b72ef56fe8314c460e54b8bf1cc269",
+        "browserFreshWrite": true,
+        "browserReadbackCount": 2,
+        "independentDiskReadback": true,
+        "jcsVerified": true
+      },
+      {
+        "path": "evidence.json",
+        "byteLength": 6461,
+        "sha256": "b4fd7078d157d3a8732d7ad4674634e7f3915c6991f6d9c2e8e472b3aef295cd",
+        "browserFreshWrite": true,
+        "browserReadbackCount": 1,
+        "independentDiskReadback": true,
+        "jcsVerified": true
+      },
+      {
+        "path": "trace.json",
+        "byteLength": 1599,
+        "sha256": "9103b568a3baa0a1b976786ff4e43ff6d61deaedb80c96c344239d5295c1bbc8",
+        "browserFreshWrite": true,
+        "browserReadbackCount": 1,
+        "independentDiskReadback": true,
+        "jcsVerified": true
+      },
+      {
+        "path": "snapshot.json",
+        "byteLength": 4,
+        "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "browserFreshWrite": true,
+        "browserReadbackCount": 1,
+        "independentDiskReadback": true,
+        "jcsVerified": true
+      },
+      {
+        "path": "extensions.json",
+        "byteLength": 6639,
+        "sha256": "c5bca0fdd9996f4a813524973def149e61ac29aac780be2a4554e713d7597f75",
+        "browserFreshWrite": true,
+        "browserReadbackCount": 1,
+        "independentDiskReadback": true,
+        "jcsVerified": true
+      },
+      {
+        "path": "manifest.json",
+        "byteLength": 2140,
+        "sha256": "c4b01d6ab3a1ec4e32176611fdb9098055314d1cfa05637484a89621d3b3082f",
+        "browserFreshWrite": true,
+        "browserReadbackCount": 3,
+        "independentDiskReadback": true,
+        "jcsVerified": true
+      },
+      {
+        "path": "receipt.json",
+        "byteLength": 365,
+        "sha256": "75f95ad5389f703ef5e50a4846f57e9d96d12ecce0cf788ba4ed0e2ba9d17446",
+        "browserFreshWrite": true,
+        "browserReadbackCount": 3,
+        "independentDiskReadback": true,
+        "jcsVerified": true
+      }
+    ],
+    "nativeCodec": {
+      "commit": "2c171a09ccda65c54899f322ae490f1bfcaac6fb",
+      "path": "docs/shared/inference/tensor.mjs",
+      "sha256": "4c6992a7b6f44722e84a7184ed5c878312a203071054335827f7f0adcd01c07b",
+      "actualExport": "decodeTensor",
+      "format": "WKTSR001/schemaVersion1",
+      "dtype": "float32",
+      "shape": [
+        1,
+        16
+      ],
+      "layout": "NC",
+      "meaning": "works:diagnostic-q-projection:v1",
+      "payloadByteLength": 64,
+      "payloadSha256": "09855cd8552e1531b73be97552b7aadbeb468af2919c8c3f8d70b269100967db",
+      "valuesCompared": 16
+    },
+    "manifestReceiptBindingVerified": true,
+    "jcsJSONFilesVerified": 7,
+    "applicationEnvelopePreserved": true,
+    "inputIdentityPreserved": true,
+    "evidenceTraceExtensionsPreserved": true,
+    "snapshotNull": true,
+    "originalFileEmbedded": false,
+    "reselectRequired": true,
+    "syntheticBaseExplicit": true,
+    "e5Acceptance": false
+  },
+  "lifecycle": {
+    "prepareCancelCode": "CANCELLED",
+    "boundedHikeBlocksBeforeCancel": 1,
+    "priorManagerRevision": 4,
+    "failedSelectionManagerRevision": 5,
+    "failedSelectionPublished": false,
+    "priorCommittedCohortPreserved": true,
+    "reapplicationAndCancelRecoveryRawWeightsIdentical": true,
+    "sourceAfterUnloadCode": "SOURCE_BINDING_UNAVAILABLE",
+    "independentCopySurvivesPreparedHistoryAndSourceUnload": true,
+    "nativeLease": "N/A: acquired consumer offers independent copies",
+    "cleanup": {
+      "awaitedOperationsTerminal": true,
+      "sdkDisposed": true,
+      "consumerDisposed": true,
+      "ortSessionDisposed": true,
+      "nativeFileModuleDisposed": true,
+      "processPeakMeasured": false
+    }
+  },
+  "negativePackageChecks": {
+    "tamperCode": "ASSET_HASH_MISMATCH",
+    "missingEvidenceCode": "REQUIRED_ASSET_MISSING"
+  },
+  "separateOwnerRealE1Evidence": {
+    "ownerCommit": "0c27874908638afc748ea2455a2779a16736730b",
+    "cases": 20,
+    "verificationSummary": "development/ai-connection/evidence/owner-e1-verification.json",
+    "scope": "Published owner real-PARTIAL results;320 outputs recomputed separately; private raw weight archives not materialized",
+    "notSubstitutedByThisSyntheticBaseTrial": true
+  },
+  "limits": [
+    "No original full base-model File was supplied or verified by this local control trial. Expected base/profile hashes are identity declarations, not proof of real-base compatibility.",
+    "No full-model generation, E5 snapshot acceptance, HIGH/LOW atomic switch, native lease guarantee or OS process peak is claimed.",
+    "The browser run is pinned to the full candidate commit; a later whitespace-only edit to its non-HTTP CLI is recorded separately."
+  ]
+}

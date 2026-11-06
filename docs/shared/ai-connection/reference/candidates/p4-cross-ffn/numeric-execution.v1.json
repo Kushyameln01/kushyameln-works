@@ -1,0 +1,634 @@
+{
+  "schemaVersion": "works-profile-reference/1.0-draft.1",
+  "category": "numeric-execution",
+  "documentVersion": "1.0-draft.1",
+  "status": "documented-draft",
+  "runtimeIntegrated": false,
+  "records": [
+    {
+      "recordId": "EXEC-BERNINI-Q16-F32",
+      "nativeProfileId": "bernini-q16x5120-f32-wasm-v1",
+      "ownerRole": "diffusion_models",
+      "nativeContract": "bernini-diagnostic-registry/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/diagnostic-base.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "28596717182e48aeb23c719c51b6e593edf4e496",
+          "path": "development/ai-connection/E1-ADOPT-RESULT.md"
+        }
+      ],
+      "requiredDeclarations": {
+        "execution": "ORT Web 1.24.3 WASM F32 Gemm then Hike F32 bias",
+        "weightShape": [
+          16,
+          5120
+        ],
+        "biasShape": [
+          16
+        ],
+        "activationShape": [
+          5120
+        ],
+        "outputShape": [
+          16
+        ],
+        "fullWeightShape": [
+          5120,
+          5120
+        ],
+        "originalTarget": "blocks.0.self_attn.q.weight",
+        "bindings": {
+          "weight": "runtime-input:weight",
+          "bias": "hike-parameter:bias"
+        },
+        "coverage": "PARTIAL",
+        "graphSHA256": "af48828a7e93d75f529cee34c9b609cf4c3748f095a2c6fb3d5f1d71424988b0",
+        "lowLevelRpcContract": "diffusion-models/0.1",
+        "lowLevelRpcOperation": "linearProjectionF32",
+        "nativeProviderRows": "16 consecutive rows, rowStart 0..5104; all input columns",
+        "acceptedLoRaDiagnosticRows": [
+          0,
+          16
+        ],
+        "baseIdentity": "native modelHash/graphHash/registryHash; independent whole-file receipt is a separate evidence scope"
+      },
+      "admissionConstraints": {
+        "inputBuffers": "compact ordinary ArrayBuffer-backed finite Float32Array; no shared/detached input",
+        "requiredElements": {
+          "weight": 81920,
+          "bias": 16,
+          "x": 5120,
+          "output": 16
+        },
+        "callerInputRetained": true,
+        "consumerCandidateIsFullModelSession": false,
+        "initializerSubstitutionAllowed": false,
+        "lowRankMultiplicationOwner": "lora",
+        "independentExpected16AndExplicitToleranceRequiredForConsumerValidation": true,
+        "consumerOwnsIndependentCopyBeforePreparedRelease": true,
+        "nativePackageAndRegistryAndManagerSnapshotHashesAreDistinct": true
+      },
+      "evidenceScopes": [
+        "Owner real base slice provider and ORT/Hike consumer evidence",
+        "LoRA owner real four-original PARTIAL joint20 evidence, reused at its fixed pins",
+        "Management real Local File control uses explicitly synthetic immutable base; separate scope"
+      ],
+      "limitations": [
+        "Not attention, one complete model prediction, full-target LoRA application, or generation",
+        "Original FP8 activation/scaled_mm precision equivalence is not established",
+        "Newest owner commit does not silently replace management-adopted Diffusion438 pin",
+        "Runtime-level pointwise limit is not enlarged by this record"
+      ]
+    },
+    {
+      "recordId": "EXEC-FP8-SCALAR-F32",
+      "nativeProfileId": "scaled-e4m3fn-scalar-f32-v1",
+      "ownerRole": "diffusion_models",
+      "nativeContract": "bernini-diagnostic-registry/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/DIAGNOSTIC_API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/lora/diagnostic-base.mjs"
+        }
+      ],
+      "requiredDeclarations": {
+        "storageDtype": "F8_E4M3",
+        "computeDtype": "F32",
+        "scaleStorageDtype": "F32",
+        "scaleScope": "per-tensor scalar",
+        "quantizationConfigExactUtf8": "{\"format\": \"float8_e4m3fn\"}",
+        "quantizationConfigBytes": 27,
+        "numericRule": "W_F32 = F32Multiply(HikeE4M3FNDecode(storageBits), scale)",
+        "biasRule": "Original F16 bias is converted by separate Hike DecodeF16, not FP8 weight scale",
+        "nativeBindingFields": [
+          "modelHash",
+          "graphHash",
+          "registryHash",
+          "fp8ProfileId",
+          "scale key/shape/dtype/value/hash",
+          "source byte offsets and selected row mapping"
+        ]
+      },
+      "admissionConstraints": {
+        "scaleFiniteAndStrictlyPositive": true,
+        "nanWeightCodeAllowed": false,
+        "quantizationConfigAndOriginalDescriptorsMustMatch": true,
+        "unsupportedQuantizationMayFallbackToJavaScript": false,
+        "loraReceivesOwnedF32BlockOnly": true,
+        "wholeFileHashRecomputedByBoundedProvider": false,
+        "priorReceiptIsFreshWholeFileHashProof": false,
+        "requantizationEnabled": false
+      },
+      "evidenceScopes": [
+        "Actual selected base FP8/F16 raw ranges decoded by Hike and compared to independent F32 reference",
+        "Bounded raw-range integrity and registry identity are distinct from whole-file authentication"
+      ],
+      "limitations": [
+        "Not arbitrary FP8/per-channel/block scale/quantization support",
+        "Does not authorize LoRA SDK to accept quantized base bytes directly",
+        "No original GPU FP8/scaled_mm/activation-quantization equivalence claim",
+        "No whole-model residency or full inference acceptance"
+      ]
+    },
+    {
+      "recordId": "EXEC-BERNINI-SIMPLE6-SHIFT5",
+      "nativeProfileId": "bernini-comfy-simple6-shift5-v1",
+      "ownerRole": "diffusion_models",
+      "nativeContract": "diffusion-models/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/scheduler/scheduler-kernel.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/scheduler/scheduler.hike"
+        }
+      ],
+      "requiredDeclarations": {
+        "sourceComfyCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+        "shift": 5,
+        "timesteps": 1000,
+        "multiplier": 1000,
+        "steps": 6,
+        "splitStep": 3,
+        "sigmaBoundaryCount": 7,
+        "tableIndices": [
+          999,
+          833,
+          666,
+          499,
+          333,
+          166
+        ],
+        "highSigmas": "sigmas[0:4]",
+        "lowSigmas": "sigmas[3:7]",
+        "modelTimesteps": "six selected sigmas multiplied by float32(1000)",
+        "numericPrecision": "float32 operations in source order; final sigma is float32(0)",
+        "tableRule": "For table index j=0..999: t=f32(j+1)/f32(1000); t=t*f32(1000); t=t/f32(1000); sigma=(f32(5)*t)/(f32(1)+f32(4)*t)",
+        "primitiveRules": {
+          "noiseMix": "scaledNoise=noiseScale*noise; noisePart=sigma*scaledNoise; latentPart=(1-sigma)*latent; out=noisePart+latentPart; each intermediate F32",
+          "inverseNoiseScale": "out=latent/(1-sigma), F32; sigma=1 rejected",
+          "flowDenoised": "product=velocity*sigma; out=input-product; each intermediate F32"
+        }
+      },
+      "admissionConstraints": {
+        "scheduleRequiresExactNativeProfileId": true,
+        "sigmaFiniteRange": [
+          0,
+          1
+        ],
+        "noiseScaleFiniteAndNonnegative": true,
+        "inputTensorFiniteAndMatchingShape": true,
+        "seedToNoiseImplemented": false,
+        "nativePublicPointwiseMaxElements": 1048576,
+        "internalSchedulerMaxElements": 4194304,
+        "internalSchedulerChunkElements": 4096,
+        "internalCapacityRaisesPublicLimit": false,
+        "generatesNeuralPrediction": false,
+        "noiseScaleFiniteAfterFloat32Conversion": true
+      },
+      "evidenceScopes": [
+        "Real Hike fixed schedule and numerical primitive checks at their pinned build",
+        "No neural-network model prediction performed by scheduler kernel"
+      ],
+      "limitations": [
+        "Not arbitrary scheduler, step count, shift, or split selection",
+        "Neither HIGH/LOW full orchestration nor original stage-boundary correctness follows from sigma generation",
+        "Production latent2096640 exceeds current public pointwise limit",
+        "No implicit APG/CFG algorithm is added"
+      ]
+    },
+    {
+      "recordId": "EXEC-ATTENTION-Q16-ONEHEAD",
+      "nativeProfileId": null,
+      "ownerRole": "diffusion_models",
+      "nativeContract": null,
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/API.md"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5f880fd8eef9e63054bdbf772bc9a525ef3a3bf3",
+          "path": "docs/shared/diffusion-models/ort-bridge/stream-attention/graph.mjs"
+        }
+      ],
+      "requiredDeclarations": {
+        "entryKind": "independent ES module; not native RPC predict/sample",
+        "entryPath": "docs/shared/diffusion-models/ort-bridge/stream-attention/stage.mjs",
+        "factoryExport": "createStreamAttention",
+        "descriptorSchemaVersion": "works-stream-attention/0.1",
+        "inputSourceSchema": "works-postnorm-rope-qkv/0.1",
+        "precisionProfile": "f32-ort-score-exp-hike-recurrence-v1",
+        "scope": "EXPLICIT_Q16_ONE_HEAD_ALL_KEYS",
+        "queryShape": [
+          16,
+          128
+        ],
+        "keyValueLogicalShape": "[keyCount,128] per one head",
+        "keyCountRange": [
+          1,
+          32760
+        ],
+        "logicalTileMax": 64,
+        "fullTestKeyCount": 32760,
+        "lastTileAtFullCount": 56,
+        "attentionScaleRule": "Math.fround(1/Math.sqrt(128))",
+        "numericOwnership": "ORT F32 MatMul/scale/row-max/exp; Hike online max-rescaling sum and value accumulation",
+        "sourceSpaces": {
+          "query": "post-qk-norm-rope",
+          "key": "post-qk-norm-rope",
+          "value": "projected-value"
+        }
+      },
+      "admissionConstraints": {
+        "inputBuffers": "compact ordinary ArrayBuffer-backed finite Float32Array",
+        "mask": "none",
+        "dropout": 0,
+        "sourceProvenanceKindAllowed": [
+          "explicit-fixture",
+          "precomputed-tensors"
+        ],
+        "sourceIdentityAndEachOffsetCountShapeChecked": true,
+        "tailPaddedWithPhantomKeys": false,
+        "productionQKVVerified": false,
+        "fullHeadCountVerified": false,
+        "originalProductionPrecisionVerified": false,
+        "nativeRpcOperationAdded": false,
+        "E8": "BLOCKED"
+      },
+      "evidenceScopes": [
+        "Selected16 query rows, one head, explicit postnorm/RoPE source and all32760 keys including exact56-key tail",
+        "Candidate ORT/Hike numerical boundary and bounded-workspace measurements only"
+      ],
+      "limitations": [
+        "No formally declared executionProfileId; recordId is local reference only",
+        "precisionProfile and input schema are not interchangeable with executionProfileId",
+        "Actual production Q/K/V generation and QK norm/RoPE are outside this boundary",
+        "All query/head and combined staging/copy/Memory are not accepted",
+        "Producer residency and ORT Memory are not fully measured",
+        "Not whole attention/model prediction or generation acceptance"
+      ]
+    },
+    {
+      "recordId": "EXEC-BERNINI-BLOCK0-N2-CROSS-FFN-F32-CANDIDATE-V1",
+      "nativeProfileId": "bernini-block0-n2-cross-ffn-f32-candidate-v1",
+      "ownerRole": "diffusion_models",
+      "nativeContract": "bernini-post-self-attention/0.1",
+      "sourceRefs": [
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5744f700e17b23d5c18d32315fb6dfbd7c49089a",
+          "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/stage.mjs"
+        },
+        {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+          "path": "development/ai-connection/p4-cross-ffn/catalog-submission.json"
+        }
+      ],
+      "evidenceScopes": [
+        "Fixed saved HIGH schedule1 or LOW schedule3 residual/timeAct1 and explicitly bound conditioning cohort",
+        "K4 fixture evidence never authorizes native Text L512"
+      ],
+      "limitations": [
+        "generationReady:false; load/predict/sample NOT_READY",
+        "Manager sidecar semantics are not owner nativeMeaning exports",
+        "Static shape extent is not measured resource peak; actualText numerical acceptance is pending"
+      ],
+      "requiredDeclarations": {
+        "schemaVersion": "bernini-post-self-attention/0.1",
+        "tokens": 2,
+        "hiddenWidth": 5120,
+        "textWidth": 4096,
+        "textRows": [
+          1,
+          512
+        ],
+        "ffnWidth": 13824,
+        "headCount": 40,
+        "headDim": 128,
+        "epsilon": 1e-06,
+        "mask": "none; captured mask retained as provenance",
+        "rope": "none",
+        "timeProjectionChunks": [
+          3,
+          4,
+          5
+        ],
+        "sourceRef": {
+          "repository": "Kushyameln01/kushyameln-works",
+          "commit": "5744f700e17b23d5c18d32315fb6dfbd7c49089a",
+          "path": "docs/shared/diffusion-models/ort-bridge/post-self-attention/stage.mjs"
+        },
+        "buildId": "bernini-p4-cross-ffn/0.1+31cd57300e61ef429de85eefa83f2d5796588b2e94e32a162810b62cdedf408b",
+        "kernelDigest": "4d8518e94bd2de3ab9bf50f09b2fd17b69a5c57e7fd45dc65cd062d7fdbdbc4e",
+        "bridgeWasmSHA256": "ea78e54c34d80dd5872f4d6e5d72fbd6092ed0c8698277c169b22d04d2ea36bd",
+        "attentionWasmSHA256": "b809f614c69be820346d738b46b743b50c624d902141610c28de07ae0cfd159c",
+        "generationReady": false,
+        "load": "NOT_READY",
+        "predict": "NOT_READY",
+        "sample": "NOT_READY"
+      },
+      "admissionConstraints": {
+        "sideCases": {
+          "HIGH": 1,
+          "LOW": 3
+        },
+        "trustedInputsBySide": {
+          "HIGH": {
+            "side": "HIGH",
+            "blockIndex": 0,
+            "scheduleIndex": 1,
+            "tokens": 2,
+            "exportReceiptPath": "development/ai-connection/self-attention-tail/output-export/high-export-receipt.json",
+            "exportReceiptSHA256": "21fd376bf498c411fbcaf4cc68c1ee3a3320d77923a3da107c2550f0698a72c4",
+            "savedArtifactSHA256": "5040656cf0bf6bd9f06bbf007b16d22ae026a25a5080d666758e0b52a10e86bd",
+            "savedArtifactBytes": 1375283,
+            "residualSHA256": "72a7de56a7364122197f4126a996f7131ff4fbda94f7f8201bdacbaad04d85b9",
+            "timeAct1SHA256": "1b69ffc7e86fbc52ea9ae5bd32950d8e62439417089577f9c5f66243e0b734f7",
+            "acceptedTailReceiptSHA256": "759380dcbe016b1f1d9a51579c21a1e1d47545d250e1badc9e93842a4537d62e"
+          },
+          "LOW": {
+            "side": "LOW",
+            "blockIndex": 0,
+            "scheduleIndex": 3,
+            "tokens": 2,
+            "exportReceiptPath": "development/ai-connection/self-attention-tail/output-export/low-export-receipt.json",
+            "exportReceiptSHA256": "98edf8cbc42cfe80989f87a6459cb378ef08c73c7f7bb49688cf903aaa81b9d0",
+            "savedArtifactSHA256": "714d96b41cb9e5ba8349b4a9202722f2f94e3fdeeaa984dbc1850b449190d37d",
+            "savedArtifactBytes": 1384348,
+            "residualSHA256": "0024d0b19db9988d218e2a2ded4cc3713aca32d9517966455d17b34cfee801b6",
+            "timeAct1SHA256": "cf07ca0bf0160886acafb9bf42d22f57f56482cd82a8cad5aa3791901e9938c5",
+            "acceptedTailReceiptSHA256": "93f7c2a03e36ec9a2bc1eaefbd794dc14e16a615bfaf0863ecc83236e206ad96"
+          }
+        },
+        "conditioningCases": {
+          "fixture": {
+            "inputClass": "explicit-fixture",
+            "dtype": "float32",
+            "layout": "BLC",
+            "meaning": "p4-fixture-text-hidden-states:v1",
+            "shape": [
+              1,
+              4,
+              4096
+            ],
+            "rows": 4,
+            "fixtureId": "bernini-p4-explicit-text-l4-dyadic-v1",
+            "dataSHA256": "0cd4fa87e24e6d875207aca52cc214a1b46157a886d4c090fb7c5cfc9a5925ae",
+            "attentionMaskSHA256": "252c0b6b080fa045acfcd1437f693f3be2be2ac8223ea525d492fa19ab028942",
+            "fixtureContractSHA256": "17102144ab54236bc0dc28d3e2d083b5a5c850c48f0ada86aa4b06c89bab6338"
+          },
+          "nativeText": {
+            "dtype": "float32",
+            "layout": "BLC",
+            "meaning": "text_hidden_states",
+            "shape": [
+              1,
+              512,
+              4096
+            ],
+            "rows": 512,
+            "modelSha256": "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+            "tokenizerSha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458",
+            "inputClass": "native-text-encoder",
+            "dataSHA256": "107a34c18fb0389348a205c6e7b58f72f591dfb3371e71cb358bc9273c7171c7",
+            "attentionMaskSHA256": "19ab437aa0f8ac1c6940dee6559b3d98633d013db2ca9cd9876638d4810f0d62",
+            "packetSHA256": "90f9aed262027c5a273a71e2601a953a49d4e55593b34310565cfcd112fc95c9",
+            "packetByteLength": 8390054,
+            "packetSourceRef": {
+              "repository": "Kushyameln01/kushyameln-works",
+              "commit": "f76ebbbc9dcc76e95f17d34338bc6fc1c608ef48",
+              "path": "development/inference/p2-p3-acceptance/plain/evidence/plain-conditioning.wktensor"
+            },
+            "producerExecution": "5537b8932343aa2476b95191817e8913f99dab02"
+          }
+        },
+        "fixtureReferenceRefsBySide": {
+          "HIGH": {
+            "sourceRef": {
+              "repository": "Kushyameln01/kushyameln-works",
+              "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+              "path": "development/ai-connection/p4-cross-ffn/core/reference-freeze.json"
+            },
+            "sha256": "a4226920410738056590a6c0cfcad3b2499d1b49134ced2cad65d71f1c41639c",
+            "byteLength": 2012,
+            "referenceId": "git:Kushyameln01/kushyameln-works@7ee36228030ba3bb544a90b1d4b528702a7bae32:development/ai-connection/p4-cross-ffn/core/reference-freeze.json#fixture-HIGH-local-composed",
+            "side": "HIGH",
+            "blockIndex": 0,
+            "scheduleIndex": 1,
+            "inputClass": "explicit-fixture",
+            "textRows": 4,
+            "conditioningBinding": {
+              "inputClass": "explicit-fixture",
+              "dtype": "float32",
+              "layout": "BLC",
+              "meaning": "p4-fixture-text-hidden-states:v1",
+              "shape": [
+                1,
+                4,
+                4096
+              ],
+              "rows": 4,
+              "fixtureId": "bernini-p4-explicit-text-l4-dyadic-v1",
+              "dataSHA256": "0cd4fa87e24e6d875207aca52cc214a1b46157a886d4c090fb7c5cfc9a5925ae",
+              "attentionMaskSHA256": "252c0b6b080fa045acfcd1437f693f3be2be2ac8223ea525d492fa19ab028942",
+              "fixtureContractSHA256": "17102144ab54236bc0dc28d3e2d083b5a5c850c48f0ada86aa4b06c89bab6338"
+            },
+            "savedInputBindings": {
+              "side": "HIGH",
+              "blockIndex": 0,
+              "scheduleIndex": 1,
+              "tokens": 2,
+              "exportReceiptPath": "development/ai-connection/self-attention-tail/output-export/high-export-receipt.json",
+              "exportReceiptSHA256": "21fd376bf498c411fbcaf4cc68c1ee3a3320d77923a3da107c2550f0698a72c4",
+              "savedArtifactSHA256": "5040656cf0bf6bd9f06bbf007b16d22ae026a25a5080d666758e0b52a10e86bd",
+              "savedArtifactBytes": 1375283,
+              "residualSHA256": "72a7de56a7364122197f4126a996f7131ff4fbda94f7f8201bdacbaad04d85b9",
+              "timeAct1SHA256": "1b69ffc7e86fbc52ea9ae5bd32950d8e62439417089577f9c5f66243e0b734f7",
+              "acceptedTailReceiptSHA256": "759380dcbe016b1f1d9a51579c21a1e1d47545d250e1badc9e93842a4537d62e"
+            },
+            "local": {
+              "sourceRef": {
+                "repository": "Kushyameln01/kushyameln-works",
+                "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+                "path": "development/ai-connection/p4-cross-ffn/reference-baseline/high-local-reference-receipt.json"
+              },
+              "sha256": "bd56e7e2674db6f20ce94956bf038a1d4c2e841c8144de62ba54a7bb05be22f2",
+              "byteLength": 49512,
+              "payloadSha256": "6ca4f9d06bf02101ff3a90e3e05e44d48ec54e564273749683000d6ab1ef8f93",
+              "payloadByteLength": 6588381
+            },
+            "composed": {
+              "sourceRef": {
+                "repository": "Kushyameln01/kushyameln-works",
+                "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+                "path": "development/ai-connection/p4-cross-ffn/reference-baseline/high-composed-reference-receipt.json"
+              },
+              "sha256": "8b2a1d87ff5447ba903b2f2340f99ef9e3bae40d918222a8aa15cbee3dc6996c",
+              "byteLength": 49615,
+              "payloadSha256": "995da631caf7b9d91c6232689b36ddacb33ddf18dd505e21b5274e7c821fba98",
+              "payloadByteLength": 6587916
+            },
+            "identityAuthority": "management-sidecar-for-exact-owner-source-bytes"
+          },
+          "LOW": {
+            "sourceRef": {
+              "repository": "Kushyameln01/kushyameln-works",
+              "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+              "path": "development/ai-connection/p4-cross-ffn/core/reference-freeze.json"
+            },
+            "sha256": "a4226920410738056590a6c0cfcad3b2499d1b49134ced2cad65d71f1c41639c",
+            "byteLength": 2012,
+            "referenceId": "git:Kushyameln01/kushyameln-works@7ee36228030ba3bb544a90b1d4b528702a7bae32:development/ai-connection/p4-cross-ffn/core/reference-freeze.json#fixture-LOW-local-composed",
+            "side": "LOW",
+            "blockIndex": 0,
+            "scheduleIndex": 3,
+            "inputClass": "explicit-fixture",
+            "textRows": 4,
+            "conditioningBinding": {
+              "inputClass": "explicit-fixture",
+              "dtype": "float32",
+              "layout": "BLC",
+              "meaning": "p4-fixture-text-hidden-states:v1",
+              "shape": [
+                1,
+                4,
+                4096
+              ],
+              "rows": 4,
+              "fixtureId": "bernini-p4-explicit-text-l4-dyadic-v1",
+              "dataSHA256": "0cd4fa87e24e6d875207aca52cc214a1b46157a886d4c090fb7c5cfc9a5925ae",
+              "attentionMaskSHA256": "252c0b6b080fa045acfcd1437f693f3be2be2ac8223ea525d492fa19ab028942",
+              "fixtureContractSHA256": "17102144ab54236bc0dc28d3e2d083b5a5c850c48f0ada86aa4b06c89bab6338"
+            },
+            "savedInputBindings": {
+              "side": "LOW",
+              "blockIndex": 0,
+              "scheduleIndex": 3,
+              "tokens": 2,
+              "exportReceiptPath": "development/ai-connection/self-attention-tail/output-export/low-export-receipt.json",
+              "exportReceiptSHA256": "98edf8cbc42cfe80989f87a6459cb378ef08c73c7f7bb49688cf903aaa81b9d0",
+              "savedArtifactSHA256": "714d96b41cb9e5ba8349b4a9202722f2f94e3fdeeaa984dbc1850b449190d37d",
+              "savedArtifactBytes": 1384348,
+              "residualSHA256": "0024d0b19db9988d218e2a2ded4cc3713aca32d9517966455d17b34cfee801b6",
+              "timeAct1SHA256": "cf07ca0bf0160886acafb9bf42d22f57f56482cd82a8cad5aa3791901e9938c5",
+              "acceptedTailReceiptSHA256": "93f7c2a03e36ec9a2bc1eaefbd794dc14e16a615bfaf0863ecc83236e206ad96"
+            },
+            "local": {
+              "sourceRef": {
+                "repository": "Kushyameln01/kushyameln-works",
+                "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+                "path": "development/ai-connection/p4-cross-ffn/reference-baseline/low-local-reference-receipt.json"
+              },
+              "sha256": "f37801fa489065c2c5c763187b6449e676e0e8c9d9e00d16980c776d6e0f142d",
+              "byteLength": 49515,
+              "payloadSha256": "9f5c2a4963114d6e743b51040eaaf2f08bf4663c2e862b605b6bcd642d54ceda",
+              "payloadByteLength": 6634872
+            },
+            "composed": {
+              "sourceRef": {
+                "repository": "Kushyameln01/kushyameln-works",
+                "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+                "path": "development/ai-connection/p4-cross-ffn/reference-baseline/low-composed-reference-receipt.json"
+              },
+              "sha256": "2042e3f9f33f571ed332d52fda9d2869fa6c02bd954094e1baeae9d01585eaea",
+              "byteLength": 49622,
+              "payloadSha256": "1d6e3c70959df05471cc69a19e11b25dc5a5626798c2c7587626f28f86ae1919",
+              "payloadByteLength": 6634670
+            },
+            "identityAuthority": "management-sidecar-for-exact-owner-source-bytes"
+          }
+        },
+        "actualTextReferenceStatus": "EXTERNAL_OWNER_CASE_REQUIRED; no reference embedded in this catalog",
+        "strictDecodedParameterChecks": 29,
+        "noPostObservationGateRelaxation": true,
+        "fixtureGateRef": {
+          "sourceRef": {
+            "repository": "Kushyameln01/kushyameln-works",
+            "commit": "7ee36228030ba3bb544a90b1d4b528702a7bae32",
+            "path": "development/ai-connection/p4-cross-ffn/core/candidate-plan.json"
+          },
+          "sha256": "051b6833be54aed9e1e0c3657bd28aa926b46c238a1c3a06fb298f6cc6427600",
+          "byteLength": 9348,
+          "gateId": "git:Kushyameln01/kushyameln-works@7ee36228030ba3bb544a90b1d4b528702a7bae32:development/ai-connection/p4-cross-ffn/core/candidate-plan.json#/gates",
+          "gates": {
+            "localCut": {
+              "abs": 0.001,
+              "rel": 0.0001
+            },
+            "composed": {
+              "abs": 0.01,
+              "rel": 0.001
+            },
+            "rule": "abs(actual-reference) <= abs + rel*abs(reference); all values, no percentile pass"
+          },
+          "identityAuthority": "management-sidecar-for-exact-owner-source-bytes"
+        },
+        "nativeTextGateStatus": "EXTERNAL_OWNER_CASE_REQUIRED; no fixture gate fallback",
+        "nativeTextModePolicy": {
+          "authority": "management-sidecar; not a native API field",
+          "requiredField": "validationSpec.comparisonModes",
+          "supportedModes": [
+            "local",
+            "composed"
+          ],
+          "selectedModeCount": [
+            1,
+            2
+          ],
+          "duplicatesAllowed": false,
+          "countRule": "25 named output extents times explicitly selected mode count",
+          "priorOwnerPass": "comparisonModes must match the explicitly mapped prior owner scope",
+          "undeclaredMode": "optional metadata retained; no comparison or numerical evidence inferred",
+          "allowedComparisonModes": [
+            [
+              "composed"
+            ],
+            [
+              "local",
+              "composed"
+            ]
+          ]
+        }
+      }
+    }
+  ]
+}

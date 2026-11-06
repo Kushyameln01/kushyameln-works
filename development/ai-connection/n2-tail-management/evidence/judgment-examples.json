@@ -1,0 +1,388 @@
+{
+  "schemaVersion": "works-n2-tail-judgment-examples/0.1",
+  "catalog": {
+    "path": "docs/shared/ai-connection/reference/candidates/n2-tail/catalog.v1.json",
+    "sha256": "aa492b66fc3775b561bd6535290ebb5eabf7328039c47238e009996bd417943b",
+    "byteLength": 9589
+  },
+  "generationReady": false,
+  "records": [
+    {
+      "caseId": "HIGH1-correct-declaration-numeric-pending",
+      "scope": "declaration metadata only; no native or numerical execution",
+      "compatibility": "COMPATIBLE",
+      "validation": [
+        {
+          "scope": "n2-tail:fixed-eight-owner-comparisons:HIGH",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-TRANSACTION",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-ARTIFACT",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-EVIDENCE",
+          "result": "not-verified",
+          "evidenceRefs": []
+        }
+      ],
+      "readiness": {
+        "state": "blocked",
+        "reasons": [
+          "SCOPE_not-verified:n2-tail:fixed-eight-owner-comparisons:HIGH",
+          "SCOPE_not-verified:norm:N-TRANSACTION",
+          "SCOPE_not-verified:norm:N-ARTIFACT",
+          "SCOPE_not-verified:norm:N-EVIDENCE"
+        ]
+      },
+      "checks": []
+    },
+    {
+      "caseId": "LOW3-correct-declaration-numeric-pending",
+      "scope": "declaration metadata only; no native or numerical execution",
+      "compatibility": "COMPATIBLE",
+      "validation": [
+        {
+          "scope": "n2-tail:fixed-eight-owner-comparisons:LOW",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-TRANSACTION",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-ARTIFACT",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-EVIDENCE",
+          "result": "not-verified",
+          "evidenceRefs": []
+        }
+      ],
+      "readiness": {
+        "state": "blocked",
+        "reasons": [
+          "SCOPE_not-verified:n2-tail:fixed-eight-owner-comparisons:LOW",
+          "SCOPE_not-verified:norm:N-TRANSACTION",
+          "SCOPE_not-verified:norm:N-ARTIFACT",
+          "SCOPE_not-verified:norm:N-EVIDENCE"
+        ]
+      },
+      "checks": []
+    },
+    {
+      "caseId": "wrong-mean-meaning",
+      "scope": "declaration metadata only; no native or numerical execution",
+      "compatibility": "INCOMPATIBLE",
+      "validation": [
+        {
+          "scope": "n2-tail:fixed-eight-owner-comparisons:HIGH",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-TRANSACTION",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-ARTIFACT",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-EVIDENCE",
+          "result": "not-verified",
+          "evidenceRefs": []
+        }
+      ],
+      "readiness": {
+        "state": "blocked",
+        "reasons": [
+          "CONTRACT_INCOMPATIBLE",
+          "SCOPE_not-verified:n2-tail:fixed-eight-owner-comparisons:HIGH",
+          "SCOPE_not-verified:norm:N-TRANSACTION",
+          "SCOPE_not-verified:norm:N-ARTIFACT",
+          "SCOPE_not-verified:norm:N-EVIDENCE"
+        ]
+      },
+      "checks": [
+        {
+          "criterion": "native-meaning",
+          "fieldPath": "/tensor/nativeMeaning",
+          "expected": true,
+          "observed": false,
+          "outcome": "mismatch",
+          "code": "SEMANTIC_MISMATCH",
+          "reason": "nativeMeaning must be explicitly defined by the selected versioned semantic registry entry",
+          "owner": "managed:n2-tail:storage",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+            "bernini-self-attention-tail/0.1",
+            "diffusion-models/0.1+bba4dc740028dcecf849a36e395970b24358a6185378336d61d3a063ad72bc74",
+            "works:n2-tail-residual-semantics@1",
+            "bernini-block0-n2-self-attention-residual-f32-v1",
+            "03e18b6116c3d778197e4d34ba0364a7dbe918f6",
+            "works-artifact-package/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false
+        },
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/tensor/nativeMeaning",
+          "expected": "block0-self-attention-residual-token-hidden",
+          "observed": "raw-posterior-mean",
+          "outcome": "mismatch",
+          "code": "N-N2-TAIL-SHAPE_MISMATCH",
+          "reason": "manager-norm: mismatch",
+          "owner": "managed:n2-tail:storage",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+            "bernini-self-attention-tail/0.1",
+            "diffusion-models/0.1+bba4dc740028dcecf849a36e395970b24358a6185378336d61d3a063ad72bc74",
+            "works:n2-tail-residual-semantics@1",
+            "bernini-block0-n2-self-attention-residual-f32-v1",
+            "03e18b6116c3d778197e4d34ba0364a7dbe918f6",
+            "works-artifact-package/1.0-draft.1",
+            "aa492b66fc3775b561bd6535290ebb5eabf7328039c47238e009996bd417943b",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-N2-TAIL-SHAPE"
+        }
+      ]
+    },
+    {
+      "caseId": "missing-native-profile",
+      "scope": "declaration metadata only; no native or numerical execution",
+      "compatibility": "UNVERIFIED",
+      "validation": [
+        {
+          "scope": "n2-tail:fixed-eight-owner-comparisons:HIGH",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-TRANSACTION",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-ARTIFACT",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-EVIDENCE",
+          "result": "not-verified",
+          "evidenceRefs": []
+        }
+      ],
+      "readiness": {
+        "state": "blocked",
+        "reasons": [
+          "CONTRACT_UNVERIFIED",
+          "SCOPE_not-verified:n2-tail:fixed-eight-owner-comparisons:HIGH",
+          "SCOPE_not-verified:norm:N-TRANSACTION",
+          "SCOPE_not-verified:norm:N-ARTIFACT",
+          "SCOPE_not-verified:norm:N-EVIDENCE"
+        ]
+      },
+      "checks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/nativeProfileId",
+          "expected": "bernini-block0-n2-self-attention-residual-f32-v1",
+          "observed": null,
+          "outcome": "unknown",
+          "code": "N-N2-TAIL-SHAPE_MISMATCH",
+          "reason": "manager-norm: unknown",
+          "owner": "managed:n2-tail:storage",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+            "bernini-self-attention-tail/0.1",
+            "diffusion-models/0.1+bba4dc740028dcecf849a36e395970b24358a6185378336d61d3a063ad72bc74",
+            "works:n2-tail-residual-semantics@1",
+            "bernini-block0-n2-self-attention-residual-f32-v1",
+            "03e18b6116c3d778197e4d34ba0364a7dbe918f6",
+            "works-artifact-package/1.0-draft.1",
+            "aa492b66fc3775b561bd6535290ebb5eabf7328039c47238e009996bd417943b",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-N2-TAIL-SHAPE"
+        },
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/nativeProfileId",
+          "expected": "bernini-block0-n2-self-attention-residual-f32-v1",
+          "observed": null,
+          "outcome": "unknown",
+          "code": "N-N2-TAIL-NUMERIC_MISMATCH",
+          "reason": "manager-norm: unknown",
+          "owner": "managed:n2-tail:storage",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+            "bernini-self-attention-tail/0.1",
+            "diffusion-models/0.1+bba4dc740028dcecf849a36e395970b24358a6185378336d61d3a063ad72bc74",
+            "works:n2-tail-residual-semantics@1",
+            "bernini-block0-n2-self-attention-residual-f32-v1",
+            "03e18b6116c3d778197e4d34ba0364a7dbe918f6",
+            "works-artifact-package/1.0-draft.1",
+            "aa492b66fc3775b561bd6535290ebb5eabf7328039c47238e009996bd417943b",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-N2-TAIL-NUMERIC"
+        }
+      ]
+    },
+    {
+      "caseId": "unknown-required-norm",
+      "scope": "declaration metadata only; no native or numerical execution",
+      "compatibility": "UNVERIFIED",
+      "validation": [
+        {
+          "scope": "n2-tail:fixed-eight-owner-comparisons:HIGH",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-TRANSACTION",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-ARTIFACT",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-EVIDENCE",
+          "result": "not-verified",
+          "evidenceRefs": []
+        }
+      ],
+      "readiness": {
+        "state": "blocked",
+        "reasons": [
+          "CONTRACT_UNVERIFIED",
+          "SCOPE_not-verified:n2-tail:fixed-eight-owner-comparisons:HIGH",
+          "SCOPE_not-verified:norm:N-TRANSACTION",
+          "SCOPE_not-verified:norm:N-ARTIFACT",
+          "SCOPE_not-verified:norm:N-EVIDENCE"
+        ]
+      },
+      "checks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/normIds",
+          "expected": true,
+          "observed": null,
+          "outcome": "unknown",
+          "code": "N-N2-TAIL-UNKNOWN_MISMATCH",
+          "reason": "Required norm N-N2-TAIL-UNKNOWN has no finite implementation/reference",
+          "owner": "managed:n2-tail:storage",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+            "bernini-self-attention-tail/0.1",
+            "diffusion-models/0.1+bba4dc740028dcecf849a36e395970b24358a6185378336d61d3a063ad72bc74",
+            "works:n2-tail-residual-semantics@1",
+            "bernini-block0-n2-self-attention-residual-f32-v1",
+            "03e18b6116c3d778197e4d34ba0364a7dbe918f6",
+            "works-artifact-package/1.0-draft.1",
+            "aa492b66fc3775b561bd6535290ebb5eabf7328039c47238e009996bd417943b",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-N2-TAIL-UNKNOWN"
+        }
+      ]
+    },
+    {
+      "caseId": "wrong-schedule",
+      "scope": "declaration metadata only; no native or numerical execution",
+      "compatibility": "INCOMPATIBLE",
+      "validation": [
+        {
+          "scope": "n2-tail:fixed-eight-owner-comparisons:LOW",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-TRANSACTION",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-ARTIFACT",
+          "result": "not-verified",
+          "evidenceRefs": []
+        },
+        {
+          "scope": "norm:N-EVIDENCE",
+          "result": "not-verified",
+          "evidenceRefs": []
+        }
+      ],
+      "readiness": {
+        "state": "blocked",
+        "reasons": [
+          "CONTRACT_INCOMPATIBLE",
+          "SCOPE_not-verified:n2-tail:fixed-eight-owner-comparisons:LOW",
+          "SCOPE_not-verified:norm:N-TRANSACTION",
+          "SCOPE_not-verified:norm:N-ARTIFACT",
+          "SCOPE_not-verified:norm:N-EVIDENCE"
+        ]
+      },
+      "checks": [
+        {
+          "criterion": "manager-norm",
+          "fieldPath": "/referenceContext/nativeDeclarations/producer/scheduleIndex",
+          "expected": 3,
+          "observed": 1,
+          "outcome": "mismatch",
+          "code": "N-N2-TAIL-NUMERIC_MISMATCH",
+          "reason": "manager-norm: mismatch",
+          "owner": "managed:n2-tail:storage",
+          "contractRefs": [
+            "works-module-contract/1.0-draft.1",
+            "a49aac492cc68e2dd6037e0deb4a6954731a847a",
+            "bernini-self-attention-tail/0.1",
+            "diffusion-models/0.1+bba4dc740028dcecf849a36e395970b24358a6185378336d61d3a063ad72bc74",
+            "works:n2-tail-residual-semantics@1",
+            "bernini-block0-n2-self-attention-residual-f32-v1",
+            "03e18b6116c3d778197e4d34ba0364a7dbe918f6",
+            "works-artifact-package/1.0-draft.1",
+            "aa492b66fc3775b561bd6535290ebb5eabf7328039c47238e009996bd417943b",
+            "works-reference-catalog/1.0-draft.1"
+          ],
+          "evidenceRefs": [],
+          "adaptable": false,
+          "normId": "N-N2-TAIL-NUMERIC"
+        }
+      ]
+    }
+  ]
+}
