@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Text・VAE管理 | Kushyameln Works</title>
+  <meta name="description" content="Text EncoderとVAEの設定、実行、テンソルの保存と再利用。">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="../favicon.svg">
+</head>
+<body>
+  <header><h1>Text・VAE管理</h1><span>Kushyameln Works</span></header>
+  <nav><a href="#models-heading">モデル設定</a> · <a href="#input-heading">入力</a> · <a href="#result-heading">結果・保存</a></nav>
+  <main>
+    <p>モデルと入力を選び、ブラウザ内で実行します。結果はテンソル単体、または元入力を含む管理ZIPとして保存できます。</p>
+    <section aria-labelledby="models-heading">
+      <h2 id="models-heading">1. モデルを設定</h2>
+      <p>対応するエクスポーターで作った準備済みフォルダが必要です。元の <code>.safetensors</code> だけでは実行できません。manifestやファイルの対応表を編集する必要はありません。</p>
+      <div class="models">
+        <fieldset>
+          <legend>Text Encoder</legend>
+          <label for="text-bundle">Textの準備済みフォルダ</label>
+          <input id="text-bundle" type="file" webkitdirectory multiple disabled>
+          <p class="small">24層のONNX、最終正規化の重み、embedding行の検証用ファイル、tokenizerの計27資材を含むフォルダを選びます。元のUMT5モデルは下で別に選びます。</p>
+          <p id="text-bundle-info" class="small">フォルダ内のmanifestは使わず、このページの採用済み修正版を使います。元graphなどの資材が一致しなければ設定できません。</p>
+          <label for="text-source">元のUMT5モデル</label>
+          <input id="text-source" type="file" accept=".safetensors" disabled>
+          <p class="small">元モデルはファイルとして保持し、必要なembedding行を読みます。</p>
+          <details><summary>資材を個別に選ぶ</summary><label for="text-assets">準備済み資材（複数選択）</label><input id="text-assets" type="file" multiple disabled><p class="small">フォルダ選択に対応しない場合に、同じ準備済み資材一式を選んでください。</p></details>
+          <div class="actions"><button id="configure-text" disabled>Textを設定</button></div>
+          <p id="text-model-info" class="small">未設定</p>
+          <dl id="text-capabilities" class="metadata"></dl>
+        </fieldset>
+        <fieldset>
+          <legend>VAE</legend>
+          <label for="vae-bundle">VAEの準備済みフォルダ</label>
+          <input id="vae-bundle" type="file" webkitdirectory multiple disabled>
+          <p class="small">エクスポート済みgraph・重みと、対応するmanifest.jsonを含むフォルダを選びます。manifestは自動で読み込みます。</p>
+          <div class="actions"><button id="use-host-vae" hidden disabled>用意されたmanifestを使う</button></div>
+          <p id="vae-manifest-info" class="small">準備済みフォルダを選んでください</p>
+          <details><summary>manifest・資材を個別に選ぶ</summary>
+            <label for="vae-manifest">準備済みmanifest JSON</label>
+            <input id="vae-manifest" type="file" accept=".json,application/json" disabled>
+            <label for="vae-assets">準備済み資材（複数選択）</label>
+            <input id="vae-assets" type="file" multiple disabled>
+            <p class="small">フォルダ選択に対応しない場合に使います。資材と一緒にmanifest.jsonを選べば、自動で読み込みます。</p>
+          </details>
+          <div class="actions"><button id="configure-vae" disabled>VAEを設定</button></div>
+          <p id="vae-model-info" class="small">未設定</p>
+          <dl id="vae-capabilities" class="metadata"></dl>
+        </fieldset>
+      </div>
+    </section>
+    <section aria-labelledby="input-heading">
+      <h2 id="input-heading">2. 入力を選ぶ</h2>
+      <div class="row">
+        <div><label for="module">モジュール</label><select id="module" disabled><option value="text_encoder">Text Encoder</option><option value="vae">VAE</option></select></div>
+        <div><label for="operation">操作</label><select id="operation" disabled><option value="encode">encode</option><option value="decode">decode</option></select></div>
+      </div>
+      <div id="text-inputs">
+        <label for="text-mode">テキスト入力形式</label>
+        <select id="text-mode" disabled><option value="plain-text">通常のテキスト</option><option value="token-ids">Token IDとmask</option></select>
+        <div id="plain-text-input"><label for="prompt">テキスト</label><textarea id="prompt" rows="4" placeholder="テキストを入力" disabled></textarea><p class="small">括弧による重み付けやpromptの自動付加は行いません。</p></div>
+        <div id="token-ids-input" hidden><label for="token-input">Token ID・attention maskのJSON</label><textarea id="token-input" rows="4" spellcheck="false" placeholder='{"tokenIds":[42,1],"attentionMask":[1,1]}' disabled></textarea></div>
+      </div>
+      <div id="vae-inputs" hidden>
+        <label for="input-artifact">入力テンソル</label><select id="input-artifact" disabled><option value="">テンソルを読み込んでください</option></select>
+        <p class="small">encodeには前処理済みRGB、decodeには対応するlatentのWKTを使います。形状と意味は設定したVAEが確認します。</p>
+        <dl id="input-summary" class="metadata"></dl>
+      </div>
+      <details>
+        <summary>テンソル・保存ZIPを読み込む</summary>
+        <label for="tensor-file">Worksテンソル（WKT）</label><input id="tensor-file" type="file" accept=".wktensor,.wkt,application/octet-stream" disabled>
+        <label for="package-file">管理ZIP（現在の履歴を置き換えます）</label><input id="package-file" type="file" accept=".zip,application/zip" disabled>
+        <div id="fixture-inputs" hidden><label for="fixture-select">用意された入力</label><div class="row"><select id="fixture-select" disabled><option value="">入力を選んでください</option></select><button id="load-fixture" disabled>入力を読み込む</button></div></div>
+      </details>
+    </section>
+    <section aria-labelledby="run-heading">
+      <h2 id="run-heading">3. 実行</h2>
+      <div class="actions"><button id="run" class="primary" disabled>実行</button><button id="cancel" disabled>取消</button></div>
+      <p id="status" role="status" aria-live="polite">起動しています</p>
+      <progress id="progress" hidden aria-label="推論の進捗"></progress>
+    </section>
+    <section aria-labelledby="result-heading">
+      <h2 id="result-heading">4. 結果・保存・再利用</h2>
+      <label for="result-artifact">保持しているテンソル</label><select id="result-artifact" disabled><option value="">結果はありません</option></select>
+      <p id="record-count" class="small">0件</p>
+      <dl id="result-summary" class="metadata"><dt>状態</dt><dd>結果はありません</dd></dl>
+      <div class="actions"><button id="use-result" disabled>選択したテンソルを入力に使う</button><button id="download-tensor" disabled>WKTを保存</button><button id="save-package" disabled>管理ZIPを保存</button></div>
+      <p class="small">管理ZIPには、選択した結果と再利用に必要な元入力が含まれます。</p>
+      <p id="rgb-format-help" class="small">VAE decodeのRGB出力はfloat32・NCTHW形式のraw-decoder-rgbテンソルです。値はクリップされていません。WKT・管理ZIPには元の数値を保って保存します。</p>
+      <div class="actions lifecycle"><button id="clear-records" disabled>履歴を消す</button><button id="dispose" disabled>資源を解放</button><button id="reinitialize" disabled>再初期化</button></div>
+    </section>
+  </main>
+  <footer>モデルの設定だけでは推論は実行されません。タブを閉じると、保存していない結果は失われます。</footer>
+  <script type="module" src="app.mjs"></script>
+</body>
+</html>
