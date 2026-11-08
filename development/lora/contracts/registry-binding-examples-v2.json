@@ -1,0 +1,138 @@
+{
+  "contractVersion": "lora-connection/2.0-draft.1",
+  "status": "DIAGNOSTIC_FIXTURE_NOT_REAL_GRAPH",
+  "identities": "The repeated a/b hashes, binding names, execution profile and weight IDs are synthetic fixtures only; never use as accepted real-base descriptors.",
+  "examples": [
+    {
+      "kind": "runtime-input",
+      "registry": {
+        "contractVersion": "lora-connection/2.0-draft.1",
+        "modelHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "graphHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "registryVersion": "fixture-only-v2",
+        "side": "HIGH",
+        "executionProfileId": "diagnostic-fixture/q16-f32",
+        "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+        "targets": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "fixture-q-weight",
+            "module": "diffusion_models",
+            "shape": [
+              5120,
+              5120
+            ],
+            "dtype": "F32",
+            "layout": "row-major",
+            "parameterRole": "weight",
+            "binding": {
+              "kind": "runtime-input",
+              "name": "fixture_q_weight"
+            },
+            "transform": {
+              "kind": "identity"
+            }
+          }
+        ]
+      },
+      "diagnostic": {
+        "targets": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "slice": {
+              "startRow": 0,
+              "rowCount": 16
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "initializer",
+      "registry": {
+        "contractVersion": "lora-connection/2.0-draft.1",
+        "modelHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "graphHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "registryVersion": "fixture-only-v2",
+        "side": "HIGH",
+        "executionProfileId": "diagnostic-fixture/q16-f32",
+        "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+        "targets": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "weightId": "fixture-q-weight",
+            "module": "diffusion_models",
+            "shape": [
+              5120,
+              5120
+            ],
+            "dtype": "F32",
+            "layout": "row-major",
+            "parameterRole": "weight",
+            "binding": {
+              "kind": "initializer",
+              "name": "fixture_Q_initializer"
+            },
+            "transform": {
+              "kind": "identity"
+            }
+          }
+        ]
+      },
+      "diagnostic": {
+        "targets": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.weight",
+            "slice": {
+              "startRow": 0,
+              "rowCount": 16
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "hike-parameter",
+      "registry": {
+        "contractVersion": "lora-connection/2.0-draft.1",
+        "modelHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "graphHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "registryVersion": "fixture-only-v2",
+        "side": "HIGH",
+        "executionProfileId": "diagnostic-fixture/q16-f32",
+        "loaderPolicyId": "comfy-lora-b5a4321-linear-diff-v1",
+        "targets": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "weightId": "fixture-q-bias",
+            "module": "diffusion_models",
+            "shape": [
+              5120
+            ],
+            "dtype": "F32",
+            "layout": "row-major",
+            "parameterRole": "bias",
+            "binding": {
+              "kind": "hike-parameter",
+              "name": "fixture_q_bias"
+            },
+            "transform": {
+              "kind": "identity"
+            }
+          }
+        ]
+      },
+      "diagnostic": {
+        "targets": [
+          {
+            "key": "diffusion_model.blocks.0.self_attn.q.bias",
+            "slice": {
+              "startRow": 0,
+              "rowCount": 16
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

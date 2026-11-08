@@ -1,0 +1,469 @@
+{
+  "schemaVersion": "lora-connection-draft/0.1",
+  "status": "PROPOSAL_NOT_IMPLEMENTED_NOT_AGREED_WITH_DIFFUSION",
+  "dateJST": "2026-10-31",
+  "sourceCommit": "a33b311e45a75a6c683242286fef608c7b3770a9",
+  "scope": {
+    "included": [
+      "current implementation comparison",
+      "original input inventory and whole-file hashes",
+      "proposed weight port and consumer contract",
+      "manager/side state and ownership",
+      "staged acceptance gates"
+    ],
+    "excluded": [
+      "product-code edits",
+      "full-model inference",
+      "two-pair composition",
+      "publication",
+      "claim of bilateral agreement"
+    ]
+  },
+  "facts": {
+    "loraApiVersion": 1,
+    "diffusionProtocol": "diffusion-models/0.1",
+    "diffusionModelInference": false,
+    "existingProjectionWeightBinding": "runtime-input weight[16,5120], not initializer",
+    "existingProjectionBiasBinding": "Hike post-operation, not ONNX bias initializer",
+    "localApplicationRevision": "sdk.mjs generation scoped to one instance; not common manager revision",
+    "currentPanelInstances": 1,
+    "missingAlphaGuard": "current sdk unconditionally defaults to 1 for recognized pairs; no loaderPolicyId enforcement"
+  },
+  "pairs": [
+    {
+      "pairId": "light",
+      "mode": "available-for-single-pair-selection",
+      "sides": {
+        "high": {
+          "fileName": "Bernini-R_LightX2V_high_noise.safetensors",
+          "sourceSha256": "9a7e8d5f9b42b91a069ad98a8d114f66ce11ccf6b21ec5d86e0caf49aef67945",
+          "expectedBase": {
+            "role": "high",
+            "fullSha256": null,
+            "registryHash": null,
+            "compatibility": "NOT_VERIFIED"
+          },
+          "strength": null
+        },
+        "low": {
+          "fileName": "Bernini-R_LightX2V_low_noise.safetensors",
+          "sourceSha256": "86910e35a56af3b782ab8b7f857953c3dfce681ff89386c0a7b6ce764f8b527b",
+          "expectedBase": {
+            "role": "low",
+            "fullSha256": null,
+            "registryHash": null,
+            "compatibility": "NOT_VERIFIED"
+          },
+          "strength": null
+        }
+      }
+    },
+    {
+      "pairId": "detail",
+      "mode": "available-for-single-pair-selection",
+      "sides": {
+        "high": {
+          "fileName": "NSFW-22-H-e8.safetensors",
+          "sourceSha256": "34e2144d3cd65360f97d09ccbe03e1c39a096df6c9234af5fe3899d1b63cda39",
+          "expectedBase": {
+            "role": "high",
+            "fullSha256": null,
+            "registryHash": null,
+            "compatibility": "NOT_VERIFIED"
+          },
+          "strength": null
+        },
+        "low": {
+          "fileName": "NSFW-22-L-e8.safetensors",
+          "sourceSha256": "d6b783742f4d5fd63a0223ae1d5bf64fc995a6b408480ac2a00528ae0d4146db",
+          "expectedBase": {
+            "role": "low",
+            "fullSha256": null,
+            "registryHash": null,
+            "compatibility": "NOT_VERIFIED"
+          },
+          "strength": null
+        }
+      }
+    }
+  ],
+  "sourceVariant": "Structural classification only; trained variant/base compatibility not certified by tensor names or shapes",
+  "supportedCurrentProfile": [
+    "F32 row-major 1D/2D target",
+    "2D down/up or A/B low-rank merge",
+    "additive diff weight/bias",
+    "BF16/F16/F32 source decoding"
+  ],
+  "unsupportedCurrentProfile": [
+    "Conv flattening",
+    "DoRA/rsLoRA/LoHa/LoKr or unknown variants",
+    "FP8 storage base provider and re-quantization",
+    "fused QKV/slice/transpose binding",
+    "runtime-input or Hike-parameter target bindings in current registry",
+    "simultaneous two-pair composition",
+    "paired snapshot publication",
+    "MessagePort weight-provider callback forwarding"
+  ],
+  "loaderPolicy": {
+    "proposalId": "comfy-lora-b5a4321-linear-diff-v1",
+    "sourceCommit": "b5a432157de6b8884f81104cd02926adf4d597e4",
+    "presentAlpha": "strength(side) * alpha/rank",
+    "absentAlpha": "strength(side) * 1 only with explicit approved policy binding; otherwise UNSUPPORTED_SCALE_POLICY",
+    "diffAndBias": "strength(side) * delta, no alpha/rank",
+    "workflowStrengthWarning": "Other workflow LoRA filenames and strength HIGH=3/LOW=1 do not identify these four originals"
+  },
+  "registryDraft": {
+    "requiredIdentity": [
+      "contractVersion",
+      "consumerBuildId",
+      "module",
+      "side",
+      "baseFullSha256",
+      "graphHash",
+      "registryVersion",
+      "registryHash",
+      "sourceLoaderPolicyId",
+      "sourceLoaderCommit",
+      "executionProfileId",
+      "supportedPackageKinds",
+      "supportedVariants",
+      "coverageScope"
+    ],
+    "perTarget": [
+      "logicalKey",
+      "weightId",
+      "parameterRole",
+      "logicalShape",
+      "sourceDtype",
+      "computeDtype",
+      "logicalLayout",
+      "explicitSourceKeyMapping",
+      "transformVersionAndHash",
+      "quantizationProfileAndScaleBindings",
+      "binding",
+      "coverage"
+    ],
+    "bindingKinds": {
+      "initializer": [
+        "initializerName",
+        "externalData.location/offset/length if externalized"
+      ],
+      "runtime-input": [
+        "inputName",
+        "inputShape",
+        "Gemm/MatMul transpose semantics",
+        "mapping to logical full tensor",
+        "explicit diagnostic tile scope"
+      ],
+      "hike-parameter": [
+        "Hike function/argument",
+        "bias/normalization role",
+        "operator order/version/hash"
+      ]
+    },
+    "runtimeGraphWarning": "Do not populate graphInitializer with a runtime input name just to pass current validator"
+  },
+  "executionCandidates": {
+    "recommendedFirst": "partial diagnostic F32 runtime-weight consumer at existing projection boundary; new API required",
+    "futureAlternative": "actual model initializer/external-data package + new session, only if graph supports it",
+    "notSelected": "residual hook inside arbitrary ORT layers, or two-pair merge"
+  },
+  "consumerChanges": [
+    [
+      "target.describe",
+      "maintain readonly identity; change to capability-based binding registry",
+      "actual base/graph correspondence and source profile must be agreed"
+    ],
+    [
+      "baseProvider.readBlock",
+      "maintain immutable owned F32 logical block",
+      "FP8/F16 decode profile, source hash, scales and layout must be explicit; Diffusion owns source decode"
+    ],
+    [
+      "sink.begin",
+      "maintain transaction, including partially failed begin cleanup",
+      "bind snapshot/side/local plan, package kind, expected block coverage and budget"
+    ],
+    [
+      "sink.writeBlock",
+      "maintain bounded owned/copied block with element offsets/checksum",
+      "distinguish weight/bias destinations and runtime versus initializer binding"
+    ],
+    [
+      "sink.finish",
+      "maintain completeness/no gaps/no duplicates/hash validation",
+      "return typed opaque package handle; not proof of session load"
+    ],
+    [
+      "sink.abort",
+      "maintain transaction-specific cleanup",
+      "idempotent; no effect on newer snapshots or independent side"
+    ],
+    [
+      "sink.release",
+      "maintain ownership until successful cleanup and retry",
+      "session owns independent bytes or explicit lifetime lease before prepared handle release"
+    ],
+    [
+      "target.prepareLoad",
+      "maintain isolated candidate creation",
+      "runtime feed-set staging or real model package/session load according to capability"
+    ],
+    [
+      "target.validate",
+      "maintain scoped numerical validation",
+      "return structured evidence in new interface; v1 adapter returns boolean only for agreed scope"
+    ],
+    [
+      "target.commit",
+      "maintain immediate pre-switch identity/abort check",
+      "pair mode commits candidate to private staged snapshot only; manager publishes paired snapshot atomically"
+    ],
+    [
+      "target.rollback",
+      "maintain failed-candidate cleanup including undefined candidate",
+      "compare-and-restore only owned transaction; cannot overwrite newer active snapshot; explicit RECOVERING if restore fails"
+    ],
+    [
+      "target.prepareBase",
+      "maintain restoring original base profile",
+      "reconstruct from immutable source, no subtraction from rounded applied weights"
+    ]
+  ],
+  "snapshotDraft": {
+    "managerFields": [
+      "schemaVersion",
+      "managerSessionId",
+      "managerRevision",
+      "generationId",
+      "snapshotId",
+      "snapshotHash",
+      "pipelineInputBinding",
+      "selectionMode",
+      "pairId",
+      "pairContentHash",
+      "loaderPolicyId",
+      "scope",
+      "validationLevel"
+    ],
+    "sideFields": [
+      "side",
+      "sourceSha256",
+      "baseFullSha256",
+      "graphHash",
+      "registryHash",
+      "executionProfileId",
+      "strength",
+      "effectiveScaleProfileHash",
+      "sdkInstanceId",
+      "localInputRevision",
+      "localApplicationRevision",
+      "planId",
+      "bundleHash",
+      "packageKind",
+      "validatedScope"
+    ],
+    "rules": [
+      "management revision scoped to manager session, independent of SDK counters and Diffusion transport inputRevision",
+      "pairContentHash binds both original file hashes",
+      "mode=single-pair; composition requires separate approved future schema",
+      "one active side instance per high/low with manager-assigned instance identity; two registered pairs do not require four active instances",
+      "new local plan invalidates its side and requires new manager snapshot; cannot mutate a running generation snapshot",
+      "both high and low readiness required before common snapshot publication, not simultaneous session residency",
+      "commit(stage) and publishSnapshot are distinct; every generation request checks pinned snapshot hash",
+      "transport map binds protocol/session/job/inputRevision to management snapshot; no equality assumption between counters",
+      "scope=partial-projection/completeAdapter=false can publish only a labelled diagnostic state, never generation-ready full snapshot"
+    ]
+  },
+  "stateTransitions": {
+    "configuration": [
+      "SELECTED",
+      "INSPECTED",
+      "HASHED",
+      "BASE_BOUND",
+      "PLANNED",
+      "PREPARING",
+      "PREPARED",
+      "CONSUMER_VALIDATED",
+      "PAIR_STAGED",
+      "SNAPSHOT_PUBLISHED",
+      "RETIRED",
+      "RELEASED"
+    ],
+    "failures": [
+      "CANCEL_REQUESTED",
+      "CANCELLED_AFTER_OWNED_WORK_SETTLED",
+      "FAILED",
+      "RECOVERING",
+      "RECOVERY_REQUIRED"
+    ],
+    "perRun": [
+      "PINNED_SNAPSHOT",
+      "HIGH_STAGE",
+      "LOW_STAGE",
+      "OUTPUT_BOUND_TO_SAME_SNAPSHOT"
+    ],
+    "important": [
+      "no READY after only high succeeds",
+      "no new-high/old-low run",
+      "old running generation must finish or be explicitly cancelled before config switch activation",
+      "failed low before publication discards both staged candidates and preserves old active descriptor",
+      "if RAM budget required dropping old session, recover from saved original descriptor and block admission until validated",
+      "old rollback must compare expected active token before restore; otherwise cleanup only"
+    ]
+  },
+  "commitGuard": [
+    "check local plan/generation",
+    "check managerSessionId/revision/snapshotId/hash",
+    "check expected previous active snapshot",
+    "check side/source/base/graph/registry/profile/strength identity",
+    "check cancellation and live candidate ownership",
+    "no async gap between final authoritative check and atomic publication; cross-worker requires authoritative owner CAS/ack"
+  ],
+  "ownership": [
+    "File references caller-owned immutable input, no upload; new selection means new content identity",
+    "WASM pointers remain owner-local; block outputs copied, sink must own/persist before acknowledgement",
+    "prepared package bytes and candidate session separate ownership records",
+    "prepared release blocked during load/validation; session copy or explicit lease survives handle disposal",
+    "release failures retain ownership and permit retry; disposal awaits cooperative operations",
+    "old session retired only after pinned run references end"
+  ],
+  "cancellation": {
+    "lora": "cooperative at next bounded Hike return / async boundary; not instant Worker termination",
+    "diffusion": "existing API cancel terminates its owned Worker; separate acknowledgement",
+    "manager": "stop admission; invalidate snapshot attempt; request both sides, await terminal states; clean only own candidates"
+  },
+  "precision": {
+    "invariant": "immutable original FP8/F16 bytes and metadata unchanged",
+    "candidatePath": "explicit FP8+scale --Diffusion Hike decode--> F32 logical base --LoRA Hike merge/diff/bias--> F32 block --new consumer port--> actual ORT runtime weight input + explicit Hike bias",
+    "warning": "diagnostic dequantized F32 math does not establish original FP8 activation/scaled_mm or whole-model precision equivalence",
+    "requantization": "unsupported unless separately specified scale granularity, recomputation, rounding, saturation, error and resource budget are approved"
+  },
+  "transport": {
+    "initial": "same-page ES module; v1 facade captures immutable manager binding and gate",
+    "portFuture": "opaque source/provider/package/candidate IDs with owner, protocol version, snapshot/side/job IDs, byte descriptor, explicit cancel and ownership ack; no functions/AbortSignal/isCurrent callback or raw pointer cloning"
+  },
+  "verification": {
+    "header4": "VERIFIED_BY_ORIGINAL_READ",
+    "fullSha2564": "VERIFIED_RECOMPUTED_CURRENT",
+    "HikeRealSlices": "EXISTING_EVIDENCE 4x first-layer 2x16 synthetic-zero base only",
+    "testConsumer": "EXISTING_EVIDENCE Node and Chromium fixtures; not real model",
+    "baseCompatibility": "NOT_VERIFIED",
+    "actualRuntimeConsumerWeightApplication": "NOT_IMPLEMENTED_AT_DIFFUSION_PUBLIC_PORT",
+    "fullModelSessionApply": "NOT_VERIFIED",
+    "generationContribution": "NOT_VERIFIED",
+    "twoPairComposition": "NOT_REQUESTED_NOT_VERIFIED",
+    "draftEvaluation": "STATIC_REVIEW_ONLY"
+  },
+  "acceptanceCases": [
+    {
+      "id": "D01",
+      "input": "high local revision7 low local revision2 same management snapshot",
+      "expected": "bind explicitly by identities, not counter equality"
+    },
+    {
+      "id": "D02",
+      "input": "low preparation fails after high stage",
+      "expected": "no publish, no mixed-side generation, owned candidates cleaned"
+    },
+    {
+      "id": "D03",
+      "input": "old rollback returns after newer snapshot publish",
+      "expected": "new active snapshot unchanged"
+    },
+    {
+      "id": "D04",
+      "input": "FP8 base without approved decode/scale profile",
+      "expected": "reject compatibility, no silent F32 or FP8 requantization substitution"
+    },
+    {
+      "id": "D05",
+      "input": "missing alpha without loaderPolicyId",
+      "expected": "reject unknown scale policy, not default all formats to1"
+    },
+    {
+      "id": "D06",
+      "input": "runtime weight input advertised as initializer",
+      "expected": "reject registry/schema inconsistency"
+    },
+    {
+      "id": "D07",
+      "input": "strength change / detach",
+      "expected": "rebuild from immutable base, no incremental sum or inverse subtraction"
+    },
+    {
+      "id": "D08",
+      "input": "release prepared after candidate validation",
+      "expected": "consumer output still correct through owned copy/lease; early release is rejected"
+    },
+    {
+      "id": "D09",
+      "input": "partial projection success with many unbound original targets",
+      "expected": "diagnostic partial only; no whole-adapter or generation acceptance"
+    },
+    {
+      "id": "D10",
+      "input": "all original hashes match but base identity unverified",
+      "expected": "source identity PASS, base compatibility remains NOT VERIFIED"
+    },
+    {
+      "id": "D11",
+      "input": "full real LoRA planned against single partial runtime target",
+      "expected": "current strict planner rejects missing targets; proposed explicit diagnostic plan reports PARTIAL and all exclusions, no full-generation readiness"
+    },
+    {
+      "id": "D12",
+      "input": "internal side stage succeeds but common snapshot not yet published",
+      "expected": "manager UI stays staged; unchanged legacy panel must not present it as applied"
+    }
+  ],
+  "unresolvedForDiffusionAgreement": [
+    "actual per-side base full identity and complete graph registry",
+    "runtime-input/initializer/Hike parameter binding kinds and partial/full scope",
+    "FP8 decode/execution profile and scale precision",
+    "prepared package storage/lifetime and memory budget",
+    "structured validation scope and tolerances predeclared",
+    "manager pair stage/publish CAS and recovery semantics",
+    "actual management-tool integration endpoint/version not provided"
+  ],
+  "contractVersion": "lora-weight-port/0.1-draft",
+  "diagnosticPlan": {
+    "proposedOperation": "planDiagnosticProjection",
+    "implemented": false,
+    "input": [
+      "originalFileSha256",
+      "explicitIncludedSourceTensorNames",
+      "explicitTargetTileMapping",
+      "executionProfileId"
+    ],
+    "report": [
+      "scope=partial-projection",
+      "includedTargets",
+      "excludedTargets",
+      "unsupportedTargets",
+      "completeAdapter=false"
+    ],
+    "constraint": "Current full mapOperations must retain strict whole-input coverage. Diagnostic subset is a new explicit API/view bound to original hash, never silent tensor dropping. Diagnostic pass cannot publish a full generation snapshot or certify full adapter/base compatibility."
+  },
+  "stagingAcknowledgements": {
+    "proposedStates": [
+      "PREPARED",
+      "BOUND_TO_CONSUMER",
+      "VALIDATED_FOR_SCOPE",
+      "STAGED_FOR_SNAPSHOT",
+      "SNAPSHOT_PUBLISHED"
+    ],
+    "versioning": "New versioned manager path; do not silently reinterpret existing v1 apply return as paired publication",
+    "legacyPanel": "Current panel reports applied immediately after v1 apply returns. Do not connect a staging facade to that panel unchanged. Management UI shows staged until authoritative paired publication acknowledgement. Any v1 facade is internal-only and its local apply acknowledgement is not surfaced as published.",
+    "registryCompatibility": "New runtime-input/Hike-parameter bindings require new planner/validator path. Do not encode a runtime input as graphInitializer to satisfy v1; a facade alone does not remove this implementation gap."
+  },
+  "staticReview": {
+    "status": "READY_AS_PROPOSAL_AFTER_CLARIFICATION",
+    "reviewer": "independent read-only contract reviewer",
+    "identifiedAndAddressed": [
+      "explicit diagnostic subset vs strict current full coverage",
+      "versioned staging acknowledgement vs legacy panel applied message"
+    ],
+    "runtimeContractTestStatus": "NOT_RUN_NEW_DESIGN_NOT_IMPLEMENTED"
+  }
+}

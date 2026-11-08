@@ -1,5 +1,11 @@
 # Local-folder LoRA module
 
+The existing `sdk.mjs` remains numeric API version 1. The separately versioned
+`sdk-v2.mjs` entrypoint adds explicit pinned loader policies, discriminated
+bindings and PARTIAL diagnostic plans. See [CONNECTION_V2.md](./CONNECTION_V2.md)
+for the contract, initializer-only v1 adapter and verification limits. V2 fixture
+success does not certify a real Diffusion base, session or generated result.
+
 The user selects a folder on their own terminal. Original `.safetensors` are read using File.slice; neither model upload nor persistent browser registration is performed. Calculation still runs in Hike WASM in the browser/Worker of the consuming tool. This is not a native filesystem daemon: a browser cannot open an arbitrary terminal path without the user's folder permission.
 
 ## Inputs
