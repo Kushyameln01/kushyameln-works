@@ -1,7 +1,7 @@
 import {writeUnityPackage} from '../shared/ft/unity-package.mjs';
 import {splitUnityDocuments,extractReferences} from '../shared/ft/unity-text.mjs';
 
-export const BUILD_ID='parameter-template-1.4.0';
+export const BUILD_ID='parameter-template-1.5.0';
 const encoder=new TextEncoder();
 const decoder=new TextDecoder('utf-8',{fatal:true});
 const rootNames=new Set(['Binary_Root','Smooth_Root']);
@@ -25,11 +25,11 @@ function sourceMotion(value){
 }
 
 export function validateTarget(target){
-  if(typeof target!=='string'||!/^v2\/[\p{L}\p{N}_-]{1,120}$/u.test(target)){
-    throw new Error('v2/ に続けて、文字・数字・_・- の名前を入力してください（120文字まで）。');
+  if(typeof target!=='string'||/[\r\n\u2028\u2029]/u.test(target)||!/^[\p{L}\p{N}_-]{1,120}(?:\/[\p{L}\p{N}_-]{1,120})*$/u.test(target)){
+    throw new Error('文字・数字・_・- の名前を入力してください。/ で名前空間を区切れます（各区切り1〜120文字）。v2/ は必須ではありません。');
   }
-  const name=target.slice(3);
-  if(name==='Parameter')throw new Error('Parameterを、生成するパラメータ名へ変更してください。');
+  // Retain legacy v2 helper/file names; every other namespace remains intact.
+  const name=target.startsWith('v2/')?target.slice(3):target;
   if(/^(?:CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])$/i.test(name))throw new Error('この名前は出力フォルダに使用できません。');
   return name;
 }
@@ -51,26 +51,32 @@ function named(text,leaf){
   return {name,text:text.replace(/^  m_Name: .+$/m,'  m_Name: '+name)};
 }
 
-function replaceParameters(text,leaf){
+function parameterValue(value,names){
+  // One source-token pass: inserted user names containing "Parameter" are
+  // literal values, never another replacement instruction.
+  return value.replace(/v2\/Parameter|Parameter/g,token=>token==='Parameter'?names.helper:names.target);
+}
+
+function replaceParameters(text,names){
   // Replace scalar values, never Unity's field names. Display names are
   // handled separately so a target containing "Parameter" is applied once.
   return text.replace(/^(\s+([A-Za-z_][A-Za-z0-9_]*): )([^\r\n]*)$/gm,(line,prefix,key,value)=>{
-    return key==='m_Name'?line:prefix+value.replaceAll('Parameter',leaf);
+    return key==='m_Name'?line:prefix+parameterValue(value,names);
   });
 }
 
-function clipDocument(clip,id,leaf){
+function clipDocument(clip,id,names){
   let text=clip.text;
   // Only the source template's Animator AAP attributes are renamed. Numeric
   // bindings are updated in their own section, never by global string replace.
   const oldNames=[...text.matchAll(/^    attribute: (.*Parameter.*)$/gm)].map(m=>m[1]);
   const hashes=new Map();
-  for(const old of oldNames)hashes.set(String(crc32(old)),String(crc32(old.replaceAll('Parameter',leaf))));
-  text=replaceParameters(text,leaf);
+  for(const old of oldNames)hashes.set(String(crc32(old)),String(crc32(parameterValue(old,names))));
+  text=replaceParameters(text,names);
   const section=/^  m_ClipBindingConstant:\n[\s\S]*?(?=^  [A-Za-z_])/m;
   if(!section.test(text))throw new Error('TemplateのClip bindingを確認できません。');
   text=text.replace(section,part=>part.replace(/^(      attribute: )(\d+)$/gm,(line,prefix,hash)=>hashes.has(hash)?prefix+hashes.get(hash):line));
-  text=named(text,leaf).text;
+  text=named(text,names.artifact).text;
   return text.replace(/^%YAML 1\.1\n%TAG !u! tag:unity3d.com,2011:\n/,'').replace(/^--- !u!74 &7400000$/m,'--- !u!74 &'+id);
 }
 
@@ -104,7 +110,7 @@ function connectDecodeRoot(text,decodeGuid){
 }
 
 export function generatePackage(target,{template}={}){
-  const leaf=validateTarget(target),index=templateIndex(template),used=new Set(index.keys());
+  const helper=validateTarget(target),names={target,helper,artifact:helper.replaceAll('/','%2F')},leaf=names.artifact,index=templateIndex(template),used=new Set(index.keys());
   const decodeRoots=template.trees.filter(t=>/^  m_Name: Decode_Root$/m.test(t.text));
   if(decodeRoots.length!==1)throw new Error('TemplateのDecode_Rootを一意に確認できません。');
   function newGuid(){
@@ -129,7 +135,7 @@ export function generatePackage(target,{template}={}){
     const sourceName=/^  m_Name: (.+)$/m.exec(tree.text)?.[1];
     const isRoot=rootNames.has(sourceName);
     if(isRoot)foundRoots.add(sourceName);
-    let text=replaceParameters(tree.text,leaf);
+    let text=replaceParameters(tree.text,names);
     if(sourceName==='Binary_Root')text=connectDecodeRoot(text,decodeRoots[0].guid);
     text=text.replace(motion,(_line,indent,key,_separator,value)=>{
       if(key!=='m_Motion')throw new Error('TemplateのMotionフィールド形式に対応していません。');
@@ -148,7 +154,7 @@ export function generatePackage(target,{template}={}){
     const path=(isRoot?folderPath:childPath)+'/'+renamed.name+'.asset';
     if(paths.has(path.toLowerCase()))throw new Error('出力するBlendTree名が重複しています。');paths.add(path.toLowerCase());
     for(const [guid,id] of localClips){
-      text=text.trimEnd()+'\n'+clipDocument(index.get(guid),id,leaf);
+      text=text.trimEnd()+'\n'+clipDocument(index.get(guid),id,names);
       clipCount++;
     }
     const guid=treeGuids.get(tree.guid);

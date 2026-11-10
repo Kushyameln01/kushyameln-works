@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>VRCFT Parameter Template｜Kushyameln Works</title>
-  <meta name="description" content="VRCFT5のパラメータ名を指定し、Clipを内包したBlendTreeをunitypackageで生成します。">
+  <meta name="description" content="パラメータ名を指定し、Clipを内包したBlendTreeをunitypackageで生成します。接頭辞は任意です。">
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="./style.css">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -16,8 +16,8 @@
     <p class="intro">パラメータ名を指定すると、DecodeParameter TemplateからBlendTreeを生成します。処理はブラウザ内で完結します。</p>
     <form id="generator" novalidate>
       <label for="parameter">変換先のパラメータ名</label>
-      <input id="parameter" name="parameter" type="text" placeholder="v2/EyeLidLeft" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="123" aria-describedby="input-help">
-      <p id="input-help" class="small">v2/ に続けて文字・数字・_・- を入力してください（120文字まで）。日本語も使用できます。</p>
+      <input id="parameter" name="parameter" type="text" placeholder="EyeLidLeft" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="input-help">
+      <p id="input-help" class="small">v2/ は必須ではありません。EyeLidLeft、Custom/EyeLidLeft、v2/EyeLidLeftなど、入力した名前をそのまま使います。文字・数字・_・- を使用でき、/ で名前空間を区切れます（各区切り1〜120文字、日本語可）。</p>
       <div class="actions"><button id="generate" type="submit">unitypackageを生成</button><button id="cancel" type="button" hidden>取消</button></div>
     </form>
     <p id="status" role="status" aria-live="polite">パラメータ名を入力してください。</p>
@@ -29,7 +29,8 @@
     <details>
       <summary>変換内容と出力範囲</summary>
       <ul>
-        <li>Clip・BlendTree内の名前に含まれる Parameter を、入力した v2/ 以降の名前へ置換します。Smooth・Function・Proxy系、Clipのキー、表示名も対象です。</li>
+        <li>主要ParameterとBinary Parameterは、接頭辞を補わず入力名どおりに生成します。Decode・Smooth・Function・Proxy系の補助名では、既存互換のため先頭の v2/ だけを除き、その他の名前空間は保持します。Clipのキーと数値bindingも同じ名前に対応させます。</li>
+        <li>ファイル・フォルダ・表示名に使う名前では / を %2F として保存します。Parameter自体の名前は変えません。Windows予約名や、生成ファイル名がUTF-8で255 byteを超える場合は停止します。</li>
         <li>BlendTreeを独立したアセットとして保存し、直接参照するClipを各BlendTree内に格納します。BlendTree同士は外部参照を維持します。</li>
         <li>出力先フォルダは生成結果に表示します。Binary_Root・Smooth_Rootを直下に置き、その他のBlendTreeは子フォルダに格納します。</li>
         <li>毎回新しいGUIDを発行し、表示名には付加しません。Templateの計算値・接続は保持します。</li>

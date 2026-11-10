@@ -27,7 +27,7 @@ function decodeConnection(result){
     assert(guid&&entries.has(guid),'Every Binary child must resolve to a generated Tree');
     return /^  m_Name: (.+)$/m.exec(new TextDecoder().decode(entries.get(guid).asset))[1];
   });
-  const leaf=result.target.slice(3);
+  const leaf=(result.target.startsWith('v2/')?result.target.slice(3):result.target).replaceAll('/','%2F');
   assert.deepEqual(names,[...['1','2','4','8','Negative'].map(suffix=>leaf+'_Binary_Decode'+suffix),leaf+'_Decode_Root']);
   assert.match(children.at(-1),/^    m_DirectBlendParameter: AlwaysOne$/m);
   assert.match(children.at(-1),/^    m_TimeScale: 1$/m);

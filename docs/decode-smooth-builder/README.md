@@ -2,13 +2,15 @@
 
 Parameter名を1行に1つ指定し、「生成する」→「unitypackageを保存」で一括生成します。名前は変更せず、空行は無視し、不正な名前や重複は行番号とともに表示します。処理はページを開いている間のブラウザ内で行います。
 
+`v2/`は必須ではありません。接頭辞なしの名前と任意のnamespaceを指定でき、文字・数字・`_`・`-`の1〜120文字の成分を`/`で区切れます。trimや`v2/`の自動付加は行いません。物理ファイル側のnamespace escape・長さ・衝突条件は[Template API](../parameter-template/README.md)を参照してください。`v2/EyeLidLeft`と`EyeLidLeft`は別Parameterですが、従来のファイル配置を保持するため同じ物理出力先となり、同時指定するとパス衝突で停止します。
+
 既存の共有計算poolにTemplate生成とParameter Registrarを割り当て、実際の中間unitypackageを生成します。Tree・ベースController・Safetyの生成後は、専用画面と同じ[Animator Integrator(VRCFT5)共通API](../shared/animator-integrator/README.md)と専用Workerで統合します。途中の手動アップロードは不要です。
 
 ```js
 import {createDecodeSmoothBuilder} from './pipeline.mjs';
 const builder=createDecodeSmoothBuilder({onProgress:console.log});
 try {
-  const result=await builder.build(['v2/EyeLidLeft','v2/EyeLidRight'],{inputRevision:1});
+  const result=await builder.build(['EyeLidLeft','Custom/EyeLidLeft','v2/EyeLidRight'],{inputRevision:1});
   // result.archive: Uint8Array / result.fileName: DecodeSmooth.unitypackage
   // result.summary: 最終packageを再読込みした件数
   // result.integratorReport: 専用APIが返した参照・Layer対応表と検証結果

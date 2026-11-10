@@ -35,8 +35,8 @@
 
       <form id="generator" novalidate>
         <label for="names">パラメータ名</label>
-        <p id="input-help" class="input-help">1行に1つ入力してください。</p>
-        <textarea id="names" name="names" rows="7" placeholder="v2/EyeLidLeft&#10;v2/EyeLidRight" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="input-help status" required></textarea>
+        <p id="input-help" class="input-help">1行に1つ入力してください。v2/ は必須ではありません。文字・数字・_・- を使用でき、/ で名前空間を区切れます（各区切り1〜120文字）。入力名は変更しません。</p>
+        <textarea id="names" name="names" rows="7" placeholder="EyeLidLeft&#10;Custom/EyeLidLeft&#10;v2/EyeLidRight" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="input-help status" required></textarea>
         <div class="actions">
           <button id="generate" type="submit">生成する <span aria-hidden="true">→</span></button>
           <button id="cancel" class="secondary" type="button" hidden>取消</button>
