@@ -1,218 +1,196 @@
 # 既存LoRAの並列計算拡張 — 設計案
 
-版: 0.2 / 2026-11-09 JST / **設計承認待ち・実装前**
+版: 0.3 / 更新: 2026-11-10 JST / **設計承認待ち・実装前**
 
-## 1. 目的と確定範囲
+基準: Works `36b28b18ede71122e94bc1b3d5802b0369f7d937`。v0.2へのユーザーレビューを反映。
 
-最終目的は、DLP-LoRAの並列計算を参考に、Kushyameln Worksの既存LoRA処理を高速化すること。公開先は既存の `Kushyameln01/kushyameln-works` とし、既存LoRAモジュールの拡張として接続する。
+## 1. 利用者の目的と完成条件
 
-ユーザーは「既存WASM内の最適化に、複数Workerの並列計算まで含める」方式を選択した。以下の具体的なAPI、配置、数値上限、性能判定値は実装担当の設計提案であり、ユーザーが個別に指定した値ではない。
+最終目的は、DLP-LoRAの並列計算を参考に、Kushyameln Worksで利用者が行うLoRA適用・推論の待ち時間を短くすること。公開先は既存の `Kushyameln01/kushyameln-works`、既存LoRAモジュールの拡張として実装する。ユーザーは複数Workerの並列計算を含む方式を選択した。
 
-維持する条件:
+完成条件には、**通常の生成管理画面で実行設定を選び、実モデルに結ばれたLoRA adapterへその設定が届き、実操作で効果を確認できること**を含める。LoRA単独画面や計算benchmarkだけの完成で代替しない。並列経路は実装・通常経路への接続まで行い、inlineが一部条件で有利でも省略しない。
 
-- 入力File/source、HIGH/LOW、light/detail、strength、明示registry・対象行範囲の意味。
-- 不変baseからの再構築、既存のF32積和・patch適用順、finite検査。
-- source・package・要求範囲・実行世代の対応、取消、rollback、commit、独立lease。
-- 同じ入力を扱えること。キャッシュ上限を新たな素材上限へ読み替えない。
-- 並列処理が成立したこと、LoRAの実処理時間が短縮したこと、モデル全体の推論が速くなったことを別々に判定する。
+数値結果、入力範囲、所有権と取消等の必要な互換性を保ち、cache配置・計算境界・Worker数は目的に応じて選ぶ。新しいLLM分類器、top-p選択、学習、ブラウザ操作エージェントは対象に加えない。
 
-今回、新しいLLM分類器、top-pによる自動選択、学習、ブラウザ操作エージェントは追加しない。既存の選択を入力として受け、計算経路を拡張する。画像・動画や他モジュールの処理結果をLoRAへ偽装して渡す変更は行わない。
+## 2. 検証した現状とv0.2の訂正
 
-## 2. 根拠と現在の計算経路
-
-調査・設計基準は Works commit `36b28b18ede71122e94bc1b3d5802b0369f7d937`。隔離作業領域もこの版から作成した。採用ownerは `6d0c8df4cd4992f26745d2d26394f5e194d2567f`、WASM SHA-256は `5117e21d789d01b5dd49d7e8cf9bc8d2f78a51f7d3810aab56e4a40588a0c361`。
-
-| 根拠 | 確認したこと | この設計への適用 |
+| 対象 | 確認事実 | 設計への意味 |
 | --- | --- | --- |
-| 添付論文 arXiv:2410.01497v1、§3.3、pp.4–5 | A/Bの連続配置、選択済みLoRAと係数の索引取得、並列行列演算 | 有界な連続配置・検索索引・ブロック演算へ応用する |
-| DLP-LoRA commit `d68fd38f36d9762f3e60041472193d379257cfb9`、`src/LoraModel.py` | 公開経路は選択LoRAを個別に呼び、結果を加算する。論文のpacked GEMM/HBM hash tableを明示実装した経路は確認できない | 公開コードの完全移植ではなく、論文を参考にしたWorks向け実装として説明する |
-| `native/lora-6d0c8df/.../owned-package.mjs:146–171` | consumerが要求する重み行のdense差分を計算。積とdown因子のキャッシュ、light→detailの逐次加算、逐次block生成 | asyncなpackage読取り境界で並列化する |
-| 同 `kernel/streaming/{host,registry}.mjs` | 既にSIMD128 strict-f32の`LoraProduct16`。Memory 32 MiB。down常駐機能は単一handleだがpackageでは未使用 | SIMDを新規導入したとは説明しない。既存WASM演算を使い、ホスト側の常駐配置・搬送を拡張する |
-| `adapters/lora-standalone/{native,adapter,management}.mjs` | byte固定のowner採用、同期kernel、side内queue、HIGH/LOW一括処理の既存順序、currentness/epoch照合 | 固定原本を書き換えず、新版採用入口を追加する |
-| `shared/compute/{README.md,pool.mjs}` | 既存共有poolはjobごとにWorker/Instanceを終了する | 因子を保持するLoRA専用poolを追加する。共有poolを改造・置換しない |
+| DLP-LoRA論文 arXiv:2410.01497v1、§3.3 | 因子の連続配置、選択済みLoRAの索引取得、行列計算の集約・並列化 | ブラウザの有界な配置・batch計算に応用する。CUDA/HBMの速度をブラウザへ一般化しない |
+| 公開実装 `d68fd38f36d9762f3e60041472193d379257cfb9` | `ParallelSpdUp`は個別LoRAを呼び出して加算。論文のpacked GEMM/HBM hash tableの明示実装は確認できない | 論文を参考にしたWorks向け実装として扱う |
+| 採用LoRA owner `6d0c8df...` | 必要な重み行のdense差分を遅延計算。既存SIMD128 strict-f32、raw積/因子cache、light→detail加算 | 既存経路を比較基準にする。host cacheの配置自体は固定要件にしない |
+| 通常画面 `docs/ai-connection/modules/` | LoRA適用ボタンと生成時の両方がproduct controllerを呼ぶ | 両入口から実行設定を渡す必要がある |
+| `product-management.mjs:88–103,145` | 現在は毎適用でBase復帰・feed閉鎖・再構成・再登録する | 同一入力/同一bindingでの再利用も高速化候補。再登録費用を測定から隠さない |
+| `operational-management.mjs:302–314` | 実feedのregistry、guarded baseProvider/consumerから標準LoRA adapterを構築。並列設定の受渡しはない | **不足は並列設定の接続。実consumerのコード接続は既に存在する** |
+| 採用Diffusion ownerの `api/weight-port.mjs` | 実consumerがpackageをretainし、`readBlock`をRPC経由で読む | 通常経路のデータ搬送も含めて測る。試験consumerへ置換して製品合格にしない |
+| `shared/compute/pool.mjs` | 共有poolはjob終了時にWorkerを終了する | 因子を保持するLoRA用の有界poolを追加し、既存共有poolの意味は変更しない |
 
-現行LoRAはactivationや自然言語tokenを入力にした分岐演算ではなく、必要な重み行を遅延計算する。DLP-LoRAのtoken制約の削減は、モジュール間の`activeToken`やrevision照合を省く根拠にはならない。HBMもブラウザAPIから本設計が選択・保証できる記憶域ではない。
+v0.2の調査はLoRA単独経路に偏っていた。「実consumer未接続」という一般化は、この基準版には適用しない。ただし接続コードの存在、通常生成の実行合格、並列化の実測合格は別であり、現時点では後二者を実施済みとはしない。
 
-## 3. 比較した方式と採用案
+5120×5120のF32積は100 MiB。二組の全行をcache missから計算して返す場合、対象weight一つ・片sideでraw積の累計転送は200 MiBとなる。同時保持量ではなく、cache hitや部分読取りに一律適用する値でもない。この費用を残すか減らすかを比較する。
 
-| 方式 | 利点 | 費用・限界 | 判断 |
-| --- | --- | --- | --- |
-| 既存WASM内で索引・因子常駐・行batchを最適化 | 再転送とJS/WASM往復を減らせる。Worker起動費用がない | 複数CPUコアへ仕事を分配しない | 比較基準として残す |
-| 上記に独立した行ブロックの複数Worker計算を追加 | 同じ要素の加算順を変えずに並列計算できる | 起動・転送・因子複製・結果待ち合わせ・Memoryが増える | **ユーザーが選択。採用案** |
+## 3. 守る契約と調整できる条件
 
-activationごとのLoRA枝を実モデルへ挿入する別方式は、現在の重み読取り契約を越えてconsumerを変更するため、この設計の実装対象にしない。CUDA/HBMの性能倍率を本設計の見込み値には使わない。
-
-## 4. 構成と接続
-
-### 4.1 追加する責務
-
-1. **新版owner由来SDK/package**: plan検証、source/baseの所有、対象索引、raw積cache、async executorへの依頼、既存Hikeによる適用順どおりの加算、完成blockの検査を担当する。
-2. **LoRA executor**: 有界な先読み、job管理、Worker選択、因子の配布・退避、応答照合、要求順への復元を担当する。
-3. **LoRA Workerと同期kernel host**: Worker固有のMemoryへ因子を連続配置し、既存Hikeの`LoraProduct16`/`LoraAdd`/decode/finiteを呼ぶ。JSで数値演算を代替しない。
-4. **管理adapter**: 採用する実行profileと正しいsourceRefを選び、既存のstage・commit・rollback・snapshotを維持する。
-
-提案配置:
-
-| 配置 | 内容 |
+| 区分 | 内容 |
 | --- | --- |
-| `docs/shared/inference/lora-parallel/` | 6d0c8dfから派生した開発正本。SDK/packageの限定拡張、executor、protocol、worker、kernel host、由来台帳、README |
-| `docs/shared/ai-connection/native/lora-parallel-v1/` | 検証済み配布snapshotと独立した`SOURCE.json`。採用元・差分・全file hashを保持 |
-| `docs/shared/ai-connection/adapters/lora-standalone/` | 新版bootstrapと既存adapterの限定されたprofile選択追加 |
-| `docs/ai-connection/lora/` | 既存画面に「標準／並列」の選択を追加。同じFile選択と操作を使う |
-| `tools/lora-parallel/` | 同値性・protocol・寿命・実ブラウザ・性能の検証 |
+| 製品で維持 | File/source、HIGH/LOW、light/detail、strength、対象registry/行範囲、不変base、F32積和とpatch順、finite検査、要求/世代対応、取消・rollback・commit・独立lease、既存保存データの利用 |
+| 実測で調整 | Worker数、pool/Memory/cacheの配分、tile/先読み、deadline、因子/積cacheの配置、Workerがraw積か完成blockを返す境界、通常の再適用時の再利用 |
+| 検証用 | 固定fixture、独立F32参照、全値比較、比較回数、重負荷条件、個別の速度主張条件。利用者へ参照解・事前PASS・benchmark合格資料を要求しない |
+| 製品の完成判定 | 通常管理画面→実feed→LoRA適用→生成・結果回収→Base復帰/終了が成立し、その利用操作で性能と残留資源を評価する |
 
-旧`lora-6d0c8df`のbytes・SOURCE検証・旧SDK・旧bridgeは保持する。新版を旧版sourceとして報告しない。巨大な汎用job frameworkは作らず、追加poolのprotocolはLoRAのブロック計算に限定する。
+上限は必要だが、v0.2のWorker最大4、各cap、受付から30秒、cold/warm双方10%は確定要件ではない。参考値を製品の恒久制限や全操作共通の合格閾値にしない。通常consumerの型・形状・finite・現在性検査は維持する。
 
-### 4.2 profileと注入境界
+## 4. 通常の生成管理経路への接続
 
-既存の`createLoraManagementSide`へ、構築時だけ指定する`executionProfile`と、呼出し元所有の`blockExecutor`を追加する案とする。省略時は現行の標準profile。並列指定時は検証済み新版SDK factoryを選択する。操作ごとの`register/compose/prepare/stage/apply`引数は維持する。
+### 4.1 実際の呼出しと変更範囲
 
-新版`createLoraStandalone`から新版`createOwnedLoraPackage`へexecutorを渡す。**同期`kernel.product()`の戻り値をPromiseへ変える改造はしない。** asyncな`readBlock()`内部でexecutorをawaitする。標準SDKのfactoryや任意sourceの動的注入は公開しない。
-
-executorには次の3実行profileを用意する。`batched-inline`は開発比較用で、製品画面の選択肢を増やさない。
-
-- `standard`: 既存SDK・既存kernel host。
-- `batched-inline`: 新版package・索引・常駐配置・batch、同一realmで実行。
-- `parallel`: 同じ新版packageと数値演算を複数Workerで実行。
-
-並列profileの公開候補は明示選択式にし、既存既定値は標準のままとする。ユーザーが選んだ並列機能は実装・画面接続まで含め、性能結果だけを理由に実装自体を省略しない。
-
-画面でのprofile変更は**次の明示的な適用操作**から有効にし、選択だけで現在のモデルへ自動適用しない。UIはsession内で保持している元File/独立sourceを使い、新adapter/SDKへ必要なsourceを登録する。登録が全部成功するまで旧adapterを置換せず、失敗時は旧profile・現在のconsumer epochを保持する。成功後、idleかつ回復待ちでないことを確認して既存`replaceSide`を使い、同じ明示適用を新adapterへ渡す。新適用が失敗したら既存rollback/recoverを使い、別profileで自動再試行しない。旧packageを保持するconsumer/read leaseは旧SDK dispose後も有効である。選択予定profileと、最後に成功した適用receiptのprofileを混同しない。プログラム利用では呼出し元が元sourceを新factoryへ明示登録し、旧SDKのopaque handleを流用しない。
-
-### 4.3 データの流れ
-
-package作成時に、既存の検証済みoperationを`weightId → 適用順のoperation群`へ索引化する。sourceとscopeは既存のものを使用し、索引で意味を変更しない。
-
-`readBlock(weightId,offset,count)`は元の要求の行境界・最大1,048,576要素を維持し、不変baseをhostで取得する。独立した行tileへ分け、対応するup範囲とdown因子をexecutorへ渡す。`blocks()`は既存の返却blockRows（既定16、1–256）を維持しつつ、有界に先読みする。generatorの早期終了・失敗では、そのgenerator専用の先読みを取消し、全ての元Promiseの終端を回収してから終了する。別の有効leaseやcache共有利用者を巻き込まない。Workerへ移すだけで投入が逐次のままになる構成は採らない。
-
-Worker内ではshape/rankに合う因子を16-byte境界で連続配置し、descriptorにoffset・length・dtype・shapeを保持する。rankが異なるlight/detailを無条件に同形状tensorへstackしない。配置順やpaddingでrankや対象行を変更しない。全モデルの全因子を一度に常駐させず、現在の選択と対象tileに必要な分だけを扱う。
-
-既存Hike WASMのbytesと数値ABIは最初の実装では変更しない。新kernel hostは複数down因子の常駐handleとarenaの境界・重複検査を実装する。連続するup行や独立積を有界batchとして送り、因子の再uploadとWorker往復を減らす。数値kernelの再ビルドや演算変更が必要になった場合は、この設計の同値性・保存互換性への影響を再提示する。
-
-**Workerの応答はpatchごとのstrength非依存raw積であり、base加算済みの完成blockではない。** raw積cacheとin-flight共有は従来どおりhost/package側の所有とする。cache hitはWorker計算を省き、missのproducerだけがexecutorへ計算を依頼する。Workerはdown因子を保持するがdense raw積の別cacheは持たない。hostが回収した積を既存cacheへ渡し、`light → detail`の順に既存Hikeの`apply`で不変baseへ適用して、完成F32 blockを返す。diff/biasの復号・加算も従来のhost Hike経路を使う。batchでまとめた積の返却は、元cache keyの行範囲ごとに切り分け、加算順へは影響させない。
-
-この境界は、raw積の転送を残す代わりに既存cacheの意味と保存契約を保つ設計判断である。raw積を返さず完成blockだけを返すWorker内融合は今回の実装には混ぜない。各cache miss producerのsource/kernel/executor leaseは計算終端まで保持し、ある利用者の取消で、同じin-flight積を待つ別利用者の計算を取り消さない。
-
-raw積cacheはstrengthに依存させず、source hash、WASM hash、因子名・shape、対象行で識別する。現行のcopy所有権、LRUと同一計算のin-flight共有を保つ。cacheや入力source所有のbufferをtransferしてdetachせず、pool所有のsnapshotだけを渡す。
-
-## 5. 数値結果と要求対応の維持
-
-現在の記法に合わせ、各patchの差分は`up[rows,rank] × down[rank,cols]`。結果は不変baseへ**light、detailの順**で適用する。
-
-並列にするのは独立した出力行・対象weightであり、同じ出力要素のrank方向の積和順、scaleのF32化、patch間の丸め順を変えない。AとBをそれぞれ足して掛けるような、交差項を発生させる置換はしない。異なるWorkerの完了順でpatch加算順を決めない。
-
-数値受入は、同じ固定Hike数値buildを使った標準経路との**F32 bytes一致**とする。signed zeroを含む。finite/overflowの拒否結果も対応させる。独立した手計算可能ケースとF32参照でも確認する。誤差許容へ変更して合格にする場合は、根拠と影響を別途提示する。
-
-各jobは、最低限以下を保持・照合する。
-
-- protocol版、executor build、WASM hash、pool/Worker世代、jobId。
-- package handleの世代・packageHash・registryHash・side・base identity。
-- weightId、元要求ID、offset/count、tile index、因子identityと適用順。
-
-応答のdtype・要素数・範囲・finiteを確認し、同じ要求の同じtileとして一度だけ受理する。逆順完了、重複、旧世代、範囲違いの返信を別要求へ流用しない。結果は呼出し元へ元の行順で返す。管理層のrevision・activeToken・consumer epoch検査はそのまま通す。
-
-## 6. 寿命、取消、保存、資源上限
-
-### 6.1 所有と終了
-
-executorは呼出し元所有、packageは独立executor leaseを持つ。SDKのdisposeやprepared creatorのreleaseだけで、consumerがretain中のpackage/read leaseを壊さない。旧leaseの正当な読取りと、取消された操作への古い返信を区別する。
-
-取消対象は当該operation/read/job。SDK cancelをpool全体の停止へ直結しない。待機jobは終端化し、実行中jobの停止が必要なら、そのjobを実行しているWorkerだけを終了して世代を進める。失われた因子は次の明示要求時に再配布する。他のWorker・別leaseの読取りを取り消さない。
-
-jobは成功・失敗・取消のいずれかへ一度だけ終端化する。Worker異常やtimeoutで未解決Promiseを残さず、失敗を透過的な成功再試行へ変えない。途中までの出力をcommitしない。元要求は関連jobの終端と転送所有参照の整理を待ってsettleする。既存SDKのrollback/recover・管理queueのterminal barrierへ接続する。
-
-通常のlease releaseでは利用中因子を退避しない。最後のleaseとin-flight readが終了した後に、因子・cache・Worker・event handler・timeout参照を解放する。root executorがclosingでも既存の有効leaseを許可し、rootからの新規leaseを拒否する。終了失敗は回復必要状態として残す。
-
-### 6.2 有界化の提案値
-
-| 対象 | 初期設計値・扱い |
+| 場所 | 接続内容 |
 | --- | --- |
-| Worker数 | pool全体で既定2、明示設定1–4。HIGH/LOWで共有し、sideごとに無制限に追加しない |
-| WASM Memory | Worker当たり現行と同じ32 MiB。常駐因子はその内側に含まれる |
-| 常駐因子cache | Worker当たり16 MiBを初期capとする。未使用handleをLRU退避し、使用中は退避しない |
-| 先読み | 最大`2 × Worker数`tile。pool所有の転送待ち・応答待ち・並べ替えbuffer合計64 MiBも同時に守る |
-| 要求とjob | 公開read上限は現行維持。1 Worker当たり同時演算1件。内部tileはarenaと搬送budgetに合わせて分割 |
-| timeout | job受付から30秒を初期案とする。失敗を返し、当該Workerを終了。端末で適合を検証する |
+| `docs/ai-connection/modules/index.html` のLoRA欄 | 「自動／単一処理／並列」を選べるようにする。単一処理も最適化候補の製品経路。詳細な資源設定は必要時だけ扱い、DiffusionのWASM threadsと混同しない |
+| 同 `main.mjs` | 適用ボタンと生成runの両方へ、選択LoRAと別にLoRA実行設定を渡す。workspaceのsettingsFieldsにも追加 |
+| `shared/ai-connection/product-management.mjs` | 選択と実行設定を別々に検証し、操作開始時にcapture。`applyLora(selections,{execution})`と`run({...,loraSelections,loraExecution})`の両方に対応。既存一引数APIも維持 |
+| `operational-management.mjs` | `configureModule('lora',{feedIds,execution})`から`createBoundLora`へplainな設定を渡す。ここでexecutor/SDKを生成し、実feedのregistry・guarded base/consumerに束縛する |
+| `adapters/lora-standalone/` | 検証済み新版ownerと実行戦略を選択。requested/actual mode、Worker数、cache/計算境界、理由と実行buildを観測可能にする |
+| `docs/ai-connection/lora/` | 同じ実行設定・SDKを使う補助入口。ここだけの完成を製品経路完成としない |
 
-16 MiBはcache上限であって因子入力上限ではない。常駐capを超える因子は、退避後の一時workspaceへ載せて処理し、常駐させない。複数patchが同時に入らない場合はpatch群を分け、同じ出力を既存順に更新する。追加workspaceのために既存入力を拒否する場合は、**投入前のbudget判定**で当該tileを標準Hike経路へ振り分け、理由を計測記録へ残す。数値失敗・identity不一致・Worker異常をfallbackで隠さない。既存経路も扱えない入力は既存の拒否条件を維持する。
+executor、File権限、feed/session/lease等のruntime capabilityをJSON設定へ埋め込まない。現在のplain入力検査と所有権の境界を維持する。旧固定ownerのbytes・SOURCE検証・旧bridgeは残し、新版のsourceRefを旧版と偽らない。
 
-固定WASM容量は`32 MiB × Worker数`に加え、生存する各sideのcontrol kernelも別途必要。例えばcontrol kernelが2個なら、Worker2個のとき計128 MiB、4個なら192 MiBであり、これにJS heap・source snapshot・caller保持結果等が加わる。64 MiBのpool buffer上限をブラウザ総RAM上限と説明しない。root/lease/Worker/cache別の保持量とhigh-waterを記録する。
+### 4.2 設定のcapture・再構成・復旧
 
-### 6.3 保存互換性
+設定変更は次の明示的な適用/生成から有効にし、実行中のpoolや現在のpackageをその場で変更しない。通常controllerのBase復帰→feed close確認→再構成という既存経路を互換基準として残す。
 
-recipe manifestへWorker ID、runtime handle、実行profileやexecutor版を混入しない。数値WASMの`buildId`、registry、source、適用順と保存形式を維持する。新executor/host/protocolの版とhashは**実行証跡**で別に記録する。
+同じモデル世代、live feed、registry、元sourceの検証済みsnapshot、実行build/資源設定が一致し、回復待ちでなければ、既存SDK・登録・因子を再利用する候補を実装・比較する。strength変更でも不変baseからfresh compositionを作り、前回の丸め済み差分を逆算しない。File名やsizeだけで同一性を推定せず、差替えsourceは正規登録で検証する。異なるside/source/feedや不確実な状態には同一性条件なしで再利用しない。
 
-標準で保存→並列でfresh SDK open/stage、並列で保存→標準でopen/stageを実bytesで試験する。manifestの一致検査やsource hash検査を省略しない。互換性が成立しなければ、その原因を直すまで互換対応済みとは扱わない。数値buildや保存形式の変更が必要なら別の版と明示移行が必要。
+profileやbinding変更時は、既存のlifecycle直列化・元操作終端・rollback/recoverへ接続する。Base復帰やfeed closeに失敗したら回復必要状態を保持し、失敗を別戦略の自動再試行で隠さない。Diffusion再設定/再読込で旧feedを失効させ、旧Worker結果を新モデルへ受理しない。モデル全体の再読込を、LoRA戦略の切替だけのために一律要求しない。
 
-## 7. 評価と完了判定
+workspaceにはplainな選択設定だけを保存する。読戻し後の次のapply/runに実際に渡す。File/session/feed/Worker/leaseは復元せず、既存の再選択手順を保つ。旧bundleで設定が欠ける場合の既定は`auto`とし、実際に選んだ経路を観測できるようにする。旧固定profileは互換確認・復帰用に残す。
 
-### 7.1 機能・同値性・寿命
+## 5. 計算境界とcache配置を比較して選ぶ
 
-| 検証 | 合格条件 |
+開発正本は `docs/shared/inference/lora-parallel/`、採用snapshotは `docs/shared/ai-connection/native/lora-parallel-v1/` と独立SOURCE台帳を提案する。既存SDKの同期`kernel.product()`をPromise返却へ置換せず、新版packageのasyncな`readBlock/blocks`境界からexecutorを使う。対象operationはpackage生成時に索引化する。
+
+### 5.1 実装・比較する候補
+
+| 候補 | 処理境界 | 比較する費用と利点 |
+| --- | --- | --- |
+| A: host raw積cache | Workerはstrength非依存raw積を返す。hostがcacheし、既存Hikeでbaseへ適用 | 従来cacheとin-flight共有を引き継ぎやすい。dense積転送とhost加算/copyが残る。比較基準であり最終方式には固定しない |
+| B: Worker内合成/cache | 不変baseの要求blockとLoRA descriptorを渡し、Workerが既存順で積・scale・加算を行い完成F32 blockを返す。raw積cacheはWorkerまたは計算所有者側へ配置 | raw積のhost往復を減らせる。base搬送、cache配置、再利用、Worker affinity、解放の費用が増える場合がある。新しい加算順や交差項は作らない |
+| C: batched-inline | 同じ有界配置・索引・まとめた計算を同一realmで実行。A/B相当の意味を保つ | Worker起動/転送を避けられる。小要求や低資源端末の製品候補にする |
+
+A/B双方の同値性・寿命を確認し、通常操作で採否を決める。Bを未比較のまま除外しない。Cもbenchmark専用へ隔離しない。不要に異なるcache配置を全部製品へ残す必要はなく、選択根拠と戻せる基準経路を保持する。
+
+既存Hike/WASMは最初の比較基準として利用する。必要なら新しいHikeのbatch/合成entryやhostのMemory配置も実装候補とし、ソース・toolchain・WASM・ABI・数値buildの対応を検証する。既存binary維持そのものを性能改善の制約にしない。JS数値fallbackへは置き換えない。
+
+### 5.2 cacheが守る意味
+
+配置がhostかWorkerかにかかわらず、raw積はsource内容hash、数値build、因子名/shape、対象行で識別し、strengthに依存させない。完成blockのcacheにはbase/registry、composition/strength/適用順と対象範囲のidentityも必要。cache hitを別のbaseや要求へ流用しない。
+
+有界な退避、copy/transferの所有権、同一計算のin-flight共有、独立lease、終了時解放を保つ。Workerが落ちたらそのcacheの失効を記録する。ある待機者の取消で、他の生存待機者が共有する積を取り消さない。cache破棄をsourceや保存済み成果の削除へ波及させない。callerが渡したcacheを無断で移動・detachしない。新版cache capability/配置を明示的に選び、既存API利用者の所有を保つ。
+
+### 5.3 並列性と数値順序
+
+独立した行/対象を複数Workerへ分配し、`blocks()`は有界に先読みする。逆順完了は要求順へ復元する。generator早期終了では自身の先読みを取消し、全元Promiseの終端を回収する。
+
+shape/rank別のdescriptorで因子を連続配置し、異rankを同形状と偽装しない。全モデルの全因子を一度に保持する必要はない。行の分割と、同一要素のrank方向の積和・F32丸め・light→detailのpatch順を変えることを区別する。A/Bを個別に平均して掛ける等の交差項を生む置換はしない。
+
+候補は標準経路の完成F32 bytes・既存拒否規則と一致することを検証する。Worker内加算や新batch entryでも同じ規則を守る。数値意味/許容誤差を緩めて合格にする場合は別の仕様判断として提示する。
+
+## 6. 実行戦略、資源、待機・timeout
+
+### 6.1 自動と明示設定
+
+製品の`auto`は、同値性・寿命を確認したinline/parallel等の候補から、要求規模、利用可能な資源、cache状態と検証済みの性能根拠で選ぶ。未知の端末や条件では保守的なinline/基準経路を使える。操作ごとの比較benchmarkを勝手に走らせず、常時の最適化用ポーリングや外部テレメトリを追加しない。
+
+明示`parallel`を無断でinlineへ変えて成功扱いにしない。Worker利用不可や資源不足は、要求したmodeと実際の能力・理由を返す。`auto`内の資源理由による変更は、計算前に決めて実行証跡へ残す。計算失敗、非finite、identity不一致、stale応答を戦略変更で隠さない。複数Workerの実計算と通常画面への設定伝播は専用に受入確認する。
+
+### 6.2 上限を可変にしても有界性を守る
+
+Worker数、resident/cache/転送/並べ替えbuffer、tile/先読みは一つのresource policyから解決する。使用中モデル/他モジュールの資源と併せて扱う。hardwareConcurrency/deviceMemoryはhintであり、実空きRAMや実コア性能の証明には使わない。
+
+初期比較では1/2/4 Worker、現行32 MiB/Instance、resident 16 MiB等を参考条件に使えるが、製品の恒久最大値にはしない。実装時に有限の既定値と設定範囲、admission計算、計測したpeak/失敗条件を台帳へ記録する。上限なしのWorker生成や無制限queueにはしない。hint欠測時は保守的な有限policyを使う。
+
+resident capを超える因子は一時workspace、tile/patch群の分割、退避で扱う。cache capを入力上限へ転用しない。既存の公開read上限・row alignmentは維持する。予算に収まらない場合のautoの再計画は投入前に行い、明示modeは成立しない理由を返す。通常対応入力を一律拒否する改修はしない。
+
+WASM容量、host/Worker heap、転送用snapshot、raw/完成cache、先読み・caller保持結果を分けて計測する。例えば現行WASMを使う場合の容量は`32 MiB × Worker数`にcontrol kernel分が加わる。pool内の論理byte上限をブラウザ総RAMと呼ばない。
+
+### 6.3 queue待ちと実行の期限
+
+queue待ちと実行を別state・別計時にする。**受付から一律30秒で正常な待機を失敗させる規則は廃止する。** 既定のqueueは容量で制御し、利用者の取消・owner終了に応答する。呼出し元が明示した全体deadline/queue期限がある場合だけ、その意味で期限を適用する。
+
+実行deadlineはWorkerの実行開始後に計時し、startup/因子準備も区分する。正常な大きい入力はtile分割等で処理できるようにし、端末の計算時間に無関係な固定job上限を製品条件にしない。実行watchdogの既定値・変更範囲は代表端末の検証結果からresource policyへ定める。無応答Workerは当該jobだけ失敗終端化し、世代を進める。長い待ち時間を純粋な演算遅延として報告しない。
+
+## 7. 取消・所有権・保存互換性
+
+executorは呼出し元所有、packageは独立executor leaseを持つ。SDK disposeやprepared creator releaseだけで、consumerの有効な旧package/read leaseを壊さない。旧leaseの正当な読取りと取消操作への古い返信を区別する。pool全体の停止へSDK cancelを直結しない。
+
+protocol/build、jobId、Worker世代、package/registry/base/feed identity、weightId、元要求、offset/count、適用順を照合し、dtype・要素数・finite・現在性を検査する。重複/旧世代/範囲違いを受理しない。各jobと元操作のPromiseは一度だけ成功/失敗/取消へ終端化し、関係する実処理と解放の終端を待って既存queue/snapshotへ返す。
+
+feed閉鎖・モデル再構成・recover/disposeへpoolの終了を接続する。使用中の因子や有効なleaseを退避しない。最後のleaseとin-flightが終わった後、Worker・因子/cache・event/timeout参照を解放する。終了失敗は回復必要状態を保持し、再利用可能と偽らない。
+
+保存には選択/入力/registry/数値build/保存形式の正しいidentityを保持する。Worker IDやruntime handleを保存しない。executor/host/protocol版は別の実行証跡へ記録する。
+
+同じ数値buildでは標準/inline/parallelの保存→fresh open/stageを相互確認する。新しいHike buildを採る場合も、既存保存dataを新版readerで検査・利用できる経路を同時に用意する。manifest/hash検査を省いたり新buildを旧buildと偽ったりしない。旧固定runtime向けのexportが必要なら、検証済みの互換形式へ明示変換し、変換元/先を記録する。未知buildを旧SDKが無条件に読めるとはしない。保存意味の変更やデータ損失を必要とする案は別途判断を求める。
+
+## 8. 製品受入と検証を分ける
+
+### 8.1 通常操作を主評価にする
+
+最適化前に同じ入力・操作・開始/終了点・cache状態・比較順を固定する。下記の操作を通常画面から実feed・実consumerへ通す。どれを優先するかは実装前の評価台帳に明記し、結果を見て不利な操作を削除しない。
+
+| 操作 | 主に確認すること |
 | --- | --- |
-| 数値とmapping | 両side、二組/片組/なし、負/0/正strength、異rank、BF16/F16/F32、diff/bias、行端・block境界で標準F32 bytesと一致。重複選択と不正shapeは既存と同様拒否 |
-| 非同期対応 | 実際に複数jobを投入し、逆順完了でも全出力が一致。旧世代・重複・範囲違い・破損応答を受理しない |
-| 寿命と失敗 | 取消・timeout・Worker異常・再生成・新revision・旧read lease・disposeの組合せで、commit取り違えと未終端Promiseがない。最後のlease終了後、専用資源の参照が残らない |
-| budget | 常駐/搬送/先読みcap、cache miss/hit、退避、大因子の非常駐経路、予算による標準tile振分けを検証。既存入力の対応範囲を狭めない |
-| 保存と接続 | 標準↔並列のfresh open/stage、既存管理queue/snapshot/rollbackとHIGH/LOW一括成否を回帰検証。UIでFile投入から結果読戻しまで実行 |
+| 初回のLoRA適用→生成 | startup、source検証/登録、転送、LoRA適用、推論時の要求読取り、結果回収までの待ち時間 |
+| 同じFile/設定で再生成 | cache再利用と不用な再登録/再転送があるか。warmに実用的な改善があるか |
+| strength変更、片組/二組/解除 | 正しいfresh compositionと再利用、Base復帰の時間、他sideへの影響 |
+| 小要求・部分読取り・低資源条件 | inlineとparallelの交差条件、autoの選択、過大な起動/搬送費用 |
+| 取消→再実行、設定変更、保存読戻し、終了 | 正しい設定が次回へ届くこと、失効/回復、体感待ちと保持資源 |
 
-実ブラウザでModule Worker・実WASM・File入力・結果buffer回収を確認する。Nodeやmockだけの合格をブラウザ合格としない。外側のreceiptだけでなく、実F32全出力をstreamingで照合する。継続利用・終了の資源counterを併記し、無期限のリーク不存在は主張しない。
+通常UI→`main`→productのapply/run→operationalのconfigure→実モデルfeedに結ばれたadapter→package実読取り、というtraceを記録する。基準と並列で同じモデル/source・prompt・shape・対応する保存noiseを使用し、推論入力を合わせる。未対応seedや形状・schedulerを試験都合で補作しない。設定表示だけでなく、実際の戦略、Worker jobと返却F32値を回収する。
 
-### 7.2 性能比較
+主要時間は、利用者の操作開始から当該操作の正しい結果を回収するまで。モデル読込、LoRA準備/適用、推論、cache、queue、startup、搬送、照合の内訳を分ける。実モデルの推論中に発生する`readBlock`の回数・量・実時間も測る。重なった区間を単純加算しない。単独のGEMM短縮を操作全体の短縮へ置き換えない。
 
-標準、batched-inline、parallel 1/2/4 Workerを同じ入力・対象範囲・cache条件で比較する。選択済みの全出力をconsumerが読んで検査し終わるまでを主指標とし、kernel単体の短縮だけでは合格にしない。
+cold/warm双方を測るが、両方に同じ10%を要求しない。初回は同程度でも反復が明確に速い実装の価値を評価する。主張は操作/端末/入力/cache条件ごとに、改善・同程度・悪化・未確認を示す。測定順を入れ替え、揺らぎと失敗を含む生データを残す。比較回数や統計判定は検証台帳の条件であり、通常利用者への通過条件にはしない。
 
-事前に固定する代表課題は、少なくとも次の範囲とする。
+### 8.2 補助検証
 
-- 既存canonical targetの5120×5120全行、light/detail相当の異rank（例16/64）の二組。入力が作成fixtureなら明記する。
-- 同じ条件の片組、strength変更後の再利用、小さい行要求、cache退避が起きる複数対象。
-- 利用可能な実LoRA原本と実base/consumerがある場合は、同じ条件で実素材・実接続を別枠で測る。fixtureを実素材と呼ばない。
+5120²全行・異rank・積cache miss等の固定重負荷、独立F32参照と全値比較は、演算の正しさ、転送量、並列性、限界や回帰を調べる補助検証にする。通常利用の代表であると決め付けない。
 
-測定区間:
+数値/mappingは両side、二組/片組/なし、負/0/正strength、異rank、BF16/F16/F32、diff/bias、行端とblock境界、拒否入力を確認する。protocolは逆順/重複/stale/破損、寿命は共有in-flightと取消、旧read leaseと再構成、Worker異常・再生成、generator終了とdisposeを確認する。新しい計算境界ごとに行う。
 
-1. **初回LoRA操作**: File/sourceの登録開始からcompose/prepare/stage、consumerによる宣言範囲の実読取り・検査、操作Promise回収まで。起動、hash、転送を含む。
-2. **再利用時のLoRA操作**: 登録済みsourceから、同じ対象を適用・読取りして結果回収するまで。cache状態を明記する。
-3. **内訳**: 準備、source読取り/復号、因子搬送、待機、演算、結果搬送/並べ替え、検査。重なる区間を単純加算して主指標を捏造しない。
-4. **モデル全体の推論**: 実モデルconsumerが接続できる場合の別指標。未接続ならNOT VERIFIED。
+実ブラウザでModule Worker・実WASM・File投入・実F32出力回収を確認する。Node/mockや試験consumer成功を通常の実モデル接続の代わりにしない。fixture、実LoRA原本、実モデルを区別する。利用可能な接続資料・素材は既存の許可内で調査/確保し、存在する実feed経路を未接続と扱って試験を省かない。実素材等が取得できない特定範囲はBLOCKED/NOT VERIFIEDとして残し、製品完成へ読み替えない。
 
-端末・browser・CPU/Worker数、commit/hash、入力hash、scope、cold/warm、失敗を含む各試行を保存する。比較順を入れ替え、各順序でウォームアップ後5回以上を測る。中央値と分布を提示し、並列区間の重複も記録する。成功試行だけを選ばない。
+### 8.3 完成と速度主張
 
-**初期の速度目標案**は、登録済みsourceから全選択出力を計算・consumer検査する重いLoRA操作（上記2）で、標準に対し総時間中央値10%以上の短縮を比較の両順序で確認すること。主評価ではdense raw積cacheを空にし、実際に積を計算する。**Workerが未起動の初回と、Worker/因子を再利用する後続の両条件でこの目標を満たす**ことを要求し、起動を測定外へ隠さない。source登録/hash自体を含む上記1、dense raw積cache hit、小入力の結果は必ず別掲し、主評価の短縮をそれらへ一般化しない。これら副評価に未達の効果を主張しない。
+- **機能完成**: 並列/inline等の候補、必要な互換性・寿命・保存、通常UIから実feedへの設定伝播と実操作が成立する。
+- **目的への効果**: 事前に選んだ通常操作で、入力/結果を保った待ち時間短縮を実測する。遅くなる条件も示し、auto/profile選択へ反映する。
+- **採用**: 正しさの条件を通した候補について、端末/操作/総時間/メモリの根拠で製品戦略を選ぶ。10%という一律の製品公開gateは置かない。
+- **公開反映**: GitHub Pagesの配信commit/hash、Module/Worker/WASMの読込み、通常管理経路の投入→回収と終了を確認する。
 
-batched-inlineとの差も示し、Worker追加の寄与を判定する。主評価の入力・scope・cache条件は最適化前に固定する。達成しない条件を後から除外したり閾値を緩めたりして「高速化済み」としない。
+実装ができたことと高速化できたことは別。効果が未確認なら「高速化済み」としない。現在の`generationReady:false`等を本改修だけでtrueへ変えない。コード接続があることを実生成受入や性能合格の証拠へ転用しない。
 
-結果の判定は以下を分ける。
+## 9. 実装・評価・配布の進め方
 
-- 並列モジュール実装・接続: 機能/同値性/寿命/保存が合格。
-- LoRA側の高速化: consumerの実読取りを含む総時間で速度条件が合格。
-- 実素材・実モデルでの効果: 対象の実計測が合格。未接続や素材不足なら未確認のまま残す。
-- 公開反映: 配信commit/hash、HTTP/Module Worker/WASM読込み、公開先の入力→出力回収が合格。
+設計承認後に実装計画を作る。まず通常経路の現状時間と搬送を記録し、A/B/Cを同値性・寿命から比較、通常操作の総時間と資源で選ぶ。選んだ計算境界/cache配置、調整した有限policy、比較結果、不利条件、互換/復帰方法、source/build/hashを台帳へ残す。調整可能とした数値の校正のたびにユーザーの再承認を求めない。意味/対応入力/保存契約を変更する場合は区別する。
 
-`generationReady:false`を本改修だけでtrueにしない。全モデルbindingや推論成立を実測せずに報告しない。最終目的をmicrobenchmark合格へ置き換えない。
+GitHub内のレビュー用ブランチで実装・検証してから、既存許可と確認済み差分の範囲で公開する。原本資料・私有sourceをHTTP配信rootへ混入させない。既存Sites仮実装の改修は新たな必須工程にしない。CDLCは実行契約を定義→評価→版付き配布→実利用の観測→該当部分の改善へ適用し、Skill原本を無断で恒久変更しない。
 
-## 8. 実装・配布の進め方と保留事項
+## 10. v0.2へのコメントの処置
 
-設計承認後に実装計画を作成する。機能を段階的に接続し、同値性の失敗は性能評価より先に直す。既存Hike bytes、所有権、通常操作の成功判定を保つ。
+| 指摘 | v0.3での処置 |
+| --- | --- |
+| host raw積cacheに境界を固定 | Worker内合成/cacheとの実装・比較を明記。守るのは数値/所有/再利用の意味であり配置ではない |
+| batched-inlineを開発専用に限定 | 通常製品の選択/auto対象に変更。複数Worker機能は残す |
+| Worker4やcap/受付30秒の過度な固定 | 有限resource policyで校正。queueと実行を分離し、一律の受付30秒を廃止 |
+| cold/warm双方10%、固定重負荷が主評価 | 通常操作を主評価、cold/warm別判定。固定重負荷・独立全値比較は補助検証 |
+| 通常生成管理経路が設計範囲外 | UI/product/operational/実feed/consumerまでの変更点、操作、trace、性能・終了を完成条件へ追加 |
 
-新版owner/host/executor/protocolのhash台帳、旧版との差、検証結果、既知の性能不利条件、標準profileへの復帰方法をそろえて、既存GitHub内へ配布する。既存のSites仮実装への変更は今回の必須工程へ追加しない。公開先では同じ候補の配信・実処理を確認する。
+現状は設計改訂のみ。実装・実ブラウザ実行・性能測定・製品公開は未実施。コメントを実測結果やv0.2の実装承認として扱わない。
 
-CDLCは、実行契約を定義→同値性/境界/旧版/破損/取消を評価→版付き配布→実利用の遅延・失敗・保持量を観測→該当部分だけ改訂する流れに適用する。モデルの学習やSkill原本の恒久変更は行わない。
-
-現時点で承認が必要なのはこの設計案。未実施なのは実装、試験、性能測定、配布。Worker数・メモリcap・10%速度目標は今回の提案値として明示し、実装中の測定結果だけで無断変更しない。細かな内部関数名、test fixtureの追加例、測定器の表示形式は、上記契約を守る範囲で実装担当が決める。
-
-### 設計点検で明確化した判断
-
-実装可能性の別担当点検を受け、v0.2で以下を明記した。いずれもユーザーの新しい指示ではなく、この設計案の具体化である。
-
-- Workerはraw積を返し、既存host cacheとHike加算を保持する。
-- profile変更は次回の明示適用で行い、sourceの新登録が成功するまで旧adapterを保持する。
-- 速度の主評価は登録済みsourceの全選択出力の実計算とconsumer検査。cold/warm Workerの両条件を判定し、登録/hash全体とcache hitを分ける。
-
-v0.2の再点検では、実装計画を妨げる重要な未確定事項は残っていないとの回答を得た。別の目的・手順監査も設計提出を妨げる問題を確認しなかった。これは設計の静的点検であり、実装・数値・性能の試験結果ではない。
+v0.3は別担当の実装可能性点検と、目的・手順の監査を受けた。計画を妨げる重要な未確定事項や、設計提出を妨げる目的逸脱は確認されなかった。これは設計の静的確認であり、動作・性能の合格ではない。
 
 公開参照:
 
 - https://arxiv.org/abs/2410.01497
 - https://github.com/MeCuping/DLP-LoRA/tree/d68fd38f36d9762f3e60041472193d379257cfb9
-- https://github.com/Kushyameln01/kushyameln-works/blob/36b28b18ede71122e94bc1b3d5802b0369f7d937/development/ai-connection/lora-standalone/API.md
-- https://github.com/Kushyameln01/kushyameln-works/blob/36b28b18ede71122e94bc1b3d5802b0369f7d937/docs/shared/compute/README.md
+- https://github.com/Kushyameln01/kushyameln-works/blob/36b28b18ede71122e94bc1b3d5802b0369f7d937/docs/shared/ai-connection/product-management.mjs
+- https://github.com/Kushyameln01/kushyameln-works/blob/36b28b18ede71122e94bc1b3d5802b0369f7d937/docs/shared/ai-connection/operational-management.mjs
