@@ -45,7 +45,7 @@ r6は`stz2`の4/8/16bitサンプルサイズ、末尾top-level `size=0 mdat`、s
 
 ## 対応形式と上限
 
-1ファイルに格納したSBS/TB正距円筒MP4、H.264（avc1）又はH.265/HEVC（hev1/hvc1）、音声なし又はAAC 1トラックが対象です。HEVCの再圧縮しない処理ではhvcC・映像sample・音声sample・時刻・色metadataを保持します。HEVCのHDR/field metadataもcopyでは保持し、画素変換はSDR・非interlaceとブラウザの復号能力が必要です。出力の再圧縮形式は引き続きH.264です。既存メッシュ、魚眼、カメラ固有補正、左右別ファイル、HDRの画素変換、対応する章・時間コード以外の追加データトラック、複雑な編集リストは未対応です。左右別ファイルの将来の同期契約は[固定候補のIMPLEMENTATION.md](https://github.com/Kushyameln01/kushyameln-works/blob/e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60/development/vr180/IMPLEMENTATION.md)にあります。
+1ファイルに格納したSBS/TB正距円筒MP4、H.264（avc1）又はH.265/HEVC（hev1/hvc1）、音声なし又はAAC 1トラックが対象です。HEVCの再圧縮しない処理ではhvcC・映像sample・音声sample・時刻・色metadataを保持します。H.264・HEVCの`fiel`（走査方式・フィールド順序）とHEVCのHDR metadataもcopyでは保持し、画素変換はSDR・非interlaceとブラウザの復号能力が必要です。`fiel`は2バイトのpayloadを検査し、プログレッシブ（1,0）とインターレース（2,1/6/9/14）を区別します。`videoCodecDetails`に`fieldCount`・`fieldDetail`・`interlaced`を記録します。インターレースの切出し変換はデインターレースを実装していないため停止します。出力の再圧縮形式は引き続きH.264です。既存メッシュ、魚眼、カメラ固有補正、左右別ファイル、HDRの画素変換、対応する章・時間コード以外の追加データトラック、複雑な編集リストは未対応です。左右別ファイルの将来の同期契約は[固定候補のIMPLEMENTATION.md](https://github.com/Kushyameln01/kushyameln-works/blob/e6c0245eb72ad676c2297e2d5b7ba5fc592e9e60/development/vr180/IMPLEMENTATION.md)にあります。
 
 トラック参照（tref）はコピーで型・ID列・空参照0・順序を保持します。参照先IDの存在とトラックIDの一意性を検査し、ID列はページ単位で読み込みます。enabled trackからchap参照されたdisabled text/tx3g章トラックは、参照・sample tables・媒体とともに丸ごと保持します。対応するminfはgmhd又はnmhdで、音声は従来通り0/1 AAC、動画は1本、章を含む合計は最大16トラックです。chpl章リストも保持します。textの表示スタイルや章タイトルの意味までは解釈しません。参照や章を持つ入力の切出し・再圧縮は、それらを失うため実行しません。利用者の実ファイル内の参照型や章の有無は未確認です。
 

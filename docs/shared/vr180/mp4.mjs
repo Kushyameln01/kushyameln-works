@@ -53,7 +53,7 @@ const allowed = {
   dinf: new Set(['dref']), dref: new Set(['url ']), edts: new Set(['elst']),
   stbl: new Set(['stsd', 'stts', 'ctts', 'cslg', 'stsc', 'stsz', 'stz2', 'stco', 'co64', 'stss', 'sdtp', 'sgpd', 'sbgp', 'free']),
   stsd: new Set(['avc1', 'hev1', 'hvc1', 'mp4a', 'text', 'tx3g', 'tmcd', 'tc64']),
-  avc1: new Set(['avcC', 'pasp', 'colr', 'btrt', 'st3d', 'sv3d', 'uuid', 'free']),
+  avc1: new Set(['avcC', 'pasp', 'colr', 'fiel', 'btrt', 'st3d', 'sv3d', 'uuid', 'free']),
   hev1: new Set(['hvcC', 'pasp', 'colr', 'mdcv', 'clli', 'fiel', 'btrt', 'st3d', 'sv3d', 'uuid', 'free']),
   hvc1: new Set(['hvcC', 'pasp', 'colr', 'mdcv', 'clli', 'fiel', 'btrt', 'st3d', 'sv3d', 'uuid', 'free']),
   mp4a: new Set(['esds', 'btrt', 'free']),
@@ -344,6 +344,21 @@ function checkAvc(entry) {
   }
   check(at === d.byteLength, 'unrecognized avcC trailing data');
   checkVideoPresentation(entry);
+  return checkFieldMetadata(entry);
+}
+
+// Apple TN2162: the two bytes describe scan type and field order, not a codec.
+// Keep the original box on copy; never treat interlaced input as progressive
+// merely because WebCodecs can decode its compressed samples.
+function checkFieldMetadata(entry) {
+  const fiel = one(entry, 'fiel', false);
+  if (!fiel) return null;
+  const d = body(fiel, 2);
+  check(d.byteLength === 2, 'invalid fiel field metadata length');
+  const fieldCount = d.getUint8(0), fieldDetail = d.getUint8(1);
+  check(fieldCount === 1 && fieldDetail === 0
+    || fieldCount === 2 && [1, 6, 9, 14].includes(fieldDetail), 'unsupported fiel field count/order');
+  return {fieldCount, fieldDetail, interlaced: fieldCount === 2};
 }
 
 // Validate the HEVCDecoderConfigurationRecord without rewriting parameter sets.
@@ -371,15 +386,9 @@ function checkHevc(entry) {
   const mdcv = one(entry, 'mdcv', false), clli = one(entry, 'clli', false);
   if (mdcv) check(body(mdcv, 24).byteLength === 24, 'invalid mdcv color metadata');
   if (clli) check(body(clli, 4).byteLength === 4, 'invalid clli color metadata');
-  const fiel = one(entry, 'fiel', false);
-  let interlaced = false;
-  if (fiel) {
-    const field = body(fiel, 2);
-    check(field.byteLength === 2 && [1, 2].includes(field.getUint8(0)), 'invalid fiel field metadata');
-    interlaced = field.getUint8(0) === 2;
-  }
+  const fields = checkFieldMetadata(entry);
   return {profile: d.getUint8(1) & 31, bitDepthLuma: 8 + (d.getUint8(17) & 7),
-    bitDepthChroma: 8 + (d.getUint8(18) & 7), interlaced,
+    bitDepthChroma: 8 + (d.getUint8(18) & 7), interlaced: false, ...fields,
     hdrOrWideGamut: checkVideoPresentation(entry, {preserveColor: true}) || !!mdcv || !!clli};
 }
 
@@ -729,7 +738,7 @@ async function parse(blob, { signal } = {}) {
     }
     if (kind === 'vide') {
       check(!video && ['avc1', 'hev1', 'hvc1'].includes(entry.type), 'only one AVC/HEVC video codec track is supported');
-      const codecInfo = entry.type === 'avc1' ? (checkAvc(entry), null) : checkHevc(entry);
+      const codecInfo = entry.type === 'avc1' ? checkAvc(entry) : checkHevc(entry);
       if (codecInfo?.hdrOrWideGamut) issues.add('HDR/wide-gamut conversion is outside the SDR scope; metadata-only copy preserves color.');
       if (codecInfo?.interlaced) issues.add('Interlaced conversion requires a deinterlacing step; metadata-only copy preserves fields.');
       const width = e.getUint16(24), height = e.getUint16(26); check(width > 0 && height > 0, 'invalid video dimensions');

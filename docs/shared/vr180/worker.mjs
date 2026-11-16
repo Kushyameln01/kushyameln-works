@@ -8,7 +8,7 @@ import {finalizeDirectOutput} from './file-output.mjs';
 import {bindSaveSummary, createSaveAttempt} from './save-record.mjs';
 import {selectExecutionRoute, LEGACY_PROFILE, INDEXED_PROFILE} from './route-profile.mjs';
 import {buildStereoGeometry} from './geometry.mjs';
-const BUILD = 'vr180-b15-flexible-scale-candidate-1';
+const BUILD = 'vr180-b16-avc-field-metadata-1';
 // Legacy indices stay bounded by admission. Indexed tables use disk pages;
 // retained small metadata, sorting and ownership budgets are enforced separately.
 function validate(info, s, route) {

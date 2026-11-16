@@ -6,7 +6,7 @@ import {OperationScope} from '../shared/vr180/operations.mjs';
 import {saveBlobToFile} from '../shared/vr180/file-output.mjs';
 import {bindSaveSummary, createSaveAttempt, summarizeSaves} from '../shared/vr180/save-record.mjs';
 const $ = id => document.getElementById(id);
-const PAGE_BUILD = 'vr180-b15-flexible-scale-candidate-1';
+const PAGE_BUILD = 'vr180-b16-avc-field-metadata-1';
 const operations = new OperationScope();
 let record = null, sourceInfo = null;
 let inputFailure = null, selectionPhase = null;

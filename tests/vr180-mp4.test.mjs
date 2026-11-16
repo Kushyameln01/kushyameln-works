@@ -4,6 +4,7 @@ import { readFile, mkdtemp, open, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join as pathJoin } from 'node:path';
 import { inspectMp4, tagMp4 } from '../docs/shared/vr180/mp4.mjs';
+import { diagnoseMp4 } from '../docs/shared/vr180/diagnostics.mjs';
 
 const u32 = (n) => { const b = new Uint8Array(4); new DataView(b.buffer).setUint32(0, n); return b; };
 const text = (s) => new TextEncoder().encode(s);
@@ -22,7 +23,7 @@ function fixture(options = {}) {
   const { videoType = 'avc1', audio = true, handler = 'vide', metadataBoxes = [], extraTrack = false,
     extraTop = [], extraMoov = [], external = false, sampleEntries = 1, offset64 = false,
     edits = null, audioEdits = null, audioTimescale = 1000, audioDuration = 1000, movieTimescale = 1000,
-    colr = null, legacy = null, extraStbl = [], width = 16, height = 8 } = options;
+    colr = null, legacy = null, extraStbl = [], width = 16, height = 8, codecConfig = null } = options;
   const ftyp = box('ftyp', text('isom'), u32(0), text('isomiso2avc1mp41'));
   const payload = Uint8Array.from({ length: 19 }, (_, i) => 40 + i);
   const mdat = box('mdat', payload);
@@ -37,7 +38,7 @@ function fixture(options = {}) {
     if (isVideo) { d.setUint16(24, width); d.setUint16(26, height); } else { d.setUint16(16, 2); d.setUint16(18, 16); d.setUint32(24, 48000 * 65536); }
     const desc = (tag, payload) => join(Uint8Array.of(tag, payload.length), payload);
     const aac = desc(3, join(Uint8Array.of(0, 1, 0), desc(4, join(Uint8Array.of(0x40, 0x15), new Uint8Array(11), desc(5, Uint8Array.of(0x11, 0x90)))), desc(6, Uint8Array.of(2))));
-    const entry = isVideo ? box(videoType, header, box('avcC', Uint8Array.of(1, 100, 0, 31, 255, 225, 0, 1, 103, 1, 0, 1, 104)), ...metadataBoxes, ...(colr ? [colr] : []), box('pasp', u32(1), u32(1))) : box('mp4a', header, full('esds', aac));
+    const entry = isVideo ? box(videoType, header, codecConfig ?? box('avcC', Uint8Array.of(1, 100, 0, 31, 255, 225, 0, 1, 103, 1, 0, 1, 104)), ...metadataBoxes, ...(colr ? [colr] : []), box('pasp', u32(1), u32(1))) : box('mp4a', header, full('esds', aac));
     const count = isVideo ? sampleEntries : 1;
     const off = isVideo ? videoOffset : videoOffset + 12;
     const offsets = offset64 ? full('co64', u32(1), u32(0), u32(off)) : full('stco', u32(1), u32(off));
@@ -62,8 +63,64 @@ function children(bytes, start = 0, end = bytes.length) {
   while (start < end) { let size = d.getUint32(start), header = 8; if (size === 1) { size = Number(d.getBigUint64(start + 8)); header = 16; } assert(size >= header); assert(start + size <= end); const type = new TextDecoder().decode(bytes.subarray(start + 4, start + 8)); out.push({ type, start, end: start + size, payload: start + header }); start += size; }
   return out;
 }
-function find(bytes, path) { let a = children(bytes); for (let i = 0; i < path.length; i++) { const b = a.find(x => x.type === path[i]); assert(b, path[i]); if (i === path.length - 1) return b; a = children(bytes, b.payload + (b.type === 'stsd' ? 8 : b.type === 'avc1' ? 78 : 0), b.end); } }
+function find(bytes, path) { let a = children(bytes); for (let i = 0; i < path.length; i++) { const b = a.find(x => x.type === path[i]); assert(b, path[i]); if (i === path.length - 1) return b; a = children(bytes, b.payload + (b.type === 'stsd' ? 8 : ['avc1', 'hev1', 'hvc1'].includes(b.type) ? 78 : 0), b.end); } }
 const videoPath = ['moov', 'trak', 'mdia', 'minf', 'stbl', 'stsd', 'avc1'];
+
+// Container-only HEVC record. These fixtures test admission/preservation, not decoding.
+function fieldFixture(videoType, metadataBoxes) {
+  const config = new Uint8Array(23); config[0] = 1; config[1] = 1; config[21] = 3;
+  return fixture({videoType, metadataBoxes, codecConfig: videoType === 'avc1' ? null : box('hvcC', config)});
+}
+
+test('AVC and HEVC fiel metadata is validated and copied without changing media or tables', async (t) => {
+  for (const codec of ['avc1', 'hev1', 'hvc1']) {
+    for (const [count, detail] of [[1, 0], [2, 1], [2, 6], [2, 9], [2, 14]]) {
+      await t.test(`${codec} fiel ${count}/${detail}`, async () => {
+        const field = box('fiel', Uint8Array.of(count, detail));
+        const input = fieldFixture(codec, [field]);
+        const before = await inspectMp4(input);
+        assert.equal(before.videoCodecDetails.fieldCount, count);
+        assert.equal(before.videoCodecDetails.fieldDetail, detail);
+        assert.equal(before.videoCodecDetails.interlaced, count === 2);
+        assert.equal(before.transcodeSafe, count === 1);
+        if (count === 2) assert.match(before.transcodeIssues.join(' '), /deinterlacing/);
+        const output = await tagMp4(input, {layout: 'sbs'});
+        const after = await inspectMp4(output);
+        assert.deepEqual(after.videoCodecDetails, before.videoCodecDetails);
+        assert.deepEqual(after.sampleCounts, before.sampleCounts);
+        assert.equal(after.stereoMode, 2); assert.deepEqual(after.bounds, bounds180);
+        const a = new Uint8Array(await input.arrayBuffer()), b = new Uint8Array(await output.arrayBuffer());
+        const entryPath = [...videoPath.slice(0, -1), codec];
+        for (const path of [['mdat'], [...entryPath, 'fiel'], [...entryPath, codec === 'avc1' ? 'avcC' : 'hvcC'],
+          ...['stts', 'stsc', 'stsz', 'stco'].map(type => [...videoPath.slice(0, -2), type])]) {
+          const x = find(a, path), y = find(b, path);
+          assert.deepEqual(b.subarray(y.start, y.end), a.subarray(x.start, x.end), path.join('/'));
+          if (path[0] === 'mdat') assert.equal(y.start, x.start);
+        }
+      });
+    }
+  }
+});
+
+test('fiel rejects malformed lengths, unsupported values, duplicates and wrong context', async () => {
+  for (const codec of ['avc1', 'hev1', 'hvc1']) {
+    for (const payload of [[], [1], [1, 0, 0], [0, 0], [3, 0], [1, 9], [2, 0], [2, 255]]) {
+      const input = fieldFixture(codec, [box('fiel', Uint8Array.from(payload))]);
+      await assert.rejects(inspectMp4(input), /fiel/);
+      await assert.rejects(tagMp4(input, {layout: 'sbs'}), /fiel/);
+    }
+    const field = box('fiel', Uint8Array.of(1, 0));
+    await assert.rejects(inspectMp4(fieldFixture(codec, [field, field])), /fiel/);
+    await assert.rejects(inspectMp4(fieldFixture(codec, [field, box('zzzz', u32(0))])), /unsupported zzzz/);
+  }
+  await assert.rejects(inspectMp4(fixture({extraStbl: [box('fiel', Uint8Array.of(1, 0))]})), /unsupported fiel box in stbl/);
+});
+
+test('structural diagnostics recognizes avc1/fiel without granting processing permission', async () => {
+  const diagnosis = await diagnoseMp4(fieldFixture('avc1', [box('fiel', Uint8Array.of(1, 0))]));
+  assert.equal(diagnosis.findings.some(f => f.type === 'fiel'), false);
+  assert.equal(diagnosis.processingAllowed, false);
+});
 
 test('inspect obtains one avc1 track and optional AAC without requiring spherical metadata', async () => {
   const x = await inspectMp4(fixture());

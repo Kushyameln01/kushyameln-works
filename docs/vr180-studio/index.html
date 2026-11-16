@@ -45,10 +45,10 @@
 <tr><th scope="row">媒体位置・管理情報<br><code>stco / co64 / moov</code></th><td>32・64bitの位置表と、先頭・末尾にあるmoovを読み取ります。元の媒体位置を保ち、更新したmoovを末尾へ置きます。</td><td>出力に合う位置表を作成します。moovを先頭へ移すFast Start出力は非対応です。</td></tr>
 <tr><th scope="row">表示時刻・再生時間<br><code>stts / ctts / cslg / edts / elst</code></th><td>受け入れ可能な時刻表と編集リストを保持します。cslgはv0かつsigned cttsと全5値が一致する形式に限ります。</td><td>対応する単純な時間補正を扱います。複数編集・空白区間・静止区間・再生速度変更・任意の切詰めを含む編集リストや、一般的なcslgには対応しません。</td></tr>
 <tr><th scope="row">音声の復号依存情報<br><code>sdtp / sgpd / sbgp（roll・prol）</code></th><td>受け入れ可能な依存情報の表を保持します。</td><td>AACの順序・件数・サイズ・設定・相対時刻が同じ条件で、元の表を引き継ぎます。元映像の依存表を、新しく作った映像へ流用しません。</td></tr>
-<tr><th scope="row">コーデック設定・色情報<br><code>avcC / hvcC / esds / colr 等</code></th><td>H.264（avc1）、H.265（hev1/hvc1）、AACと、対応する色情報を保持します。各トラックの設定は1種類に限ります。</td><td>出力はH.264・SDRです。HDRの画素変換は非対応です。10bit入力の読取りやタグ保持だけで、HDRの色再現を保証するものではありません。</td></tr>
+<tr><th scope="row">コーデック設定・色情報<br><code>avcC / hvcC / esds / colr / fiel 等</code></th><td>H.264（avc1）、H.265（hev1/hvc1）、AACと、対応する色情報を保持します。H.264・H.265のfiel（走査方式・フィールド順序）も保持します。各トラックの設定は1種類に限ります。</td><td>出力はH.264・SDRです。fiel付きのプログレッシブ映像は変換できます。HDRとインターレース映像の画素変換は非対応です。10bit入力の読取りやタグ保持だけで、HDRの色再現を保証するものではありません。</td></tr>
 <tr><th scope="row">左右配置・VR投影<br><code>st3d / sv3d / proj / equi / 既知のSpherical V1 uuid</code></th><td>対応する180°正距円筒映像のVR情報を整えます。既知の旧方式は対応する情報をV2方式へ移します。</td><td>左右・上下配置から左右横並びへ変換し、360°素材は正面180°を切り出します。メッシュ・魚眼・カメラ固有補正は非対応です。</td></tr>
 </tbody></table></div>
 <p><strong>対応しない構造：</strong>fMP4（moof等）と断片索引（sidx/mfra/tfra）、外部データ参照（dref/iloc）、未知のメーカー独自uuid、GoPro等の時間付き撮影情報（gpmd/camm）、一般的な複数音声・字幕、暗号化されたMP4は処理できません。回転・反転を持つtkhd行列、非正方形ピクセルのpasp、有効表示範囲のclapにも対応しません。</p>
 <p class="muted">タグの保持と、再生機器での互換性・HDRの色再現・途中シークの品質は別です。再生先での見え方を確認してください。未対応構造を診断できても、その構造を加工できるとは限りません。</p>
 <p>対応しない形式や処理を選んだ場合は理由を表示します。下のボタンから、入力形式・処理結果・保存状態などの処理記録を保存できます。</p>
-<button id="receipt" disabled>処理記録を保存</button><pre id="diagnostics">vr180-b15-flexible-scale-candidate-1</pre></details></main><footer>VR180 Studio · Kushyameln Works</footer><script type="module" src="./app.mjs"></script></body></html>
+<button id="receipt" disabled>処理記録を保存</button><pre id="diagnostics">vr180-b16-avc-field-metadata-1</pre></details></main><footer>VR180 Studio · Kushyameln Works</footer><script type="module" src="./app.mjs"></script></body></html>
