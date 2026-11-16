@@ -1,0 +1,72 @@
+{
+  "status": "PASS",
+  "scope": "public b16 synthetic progressive AVC fiel UI copy and WebCodecs conversion",
+  "sourceCommit": "a532110ca303d8de687b75a6f71d5efcf64a9125",
+  "originalUserInputTested": false,
+  "cases": {
+    "copy": {
+      "operationId": "0b2e50f4-56fd-4dd2-943f-c9fcd77b97d9",
+      "inputRevision": 2,
+      "inputSha256": "b00d26209cd64816ad9bf541e60a7b1f9936b6d7bf22f3e470434bf24a186ae9",
+      "outputSha256": "cca6a061c653f7f44531941fb48d0055be35b3433f433c5b7a3fbbe541963e58",
+      "outputBytes": 33560,
+      "downloadRecovered": true,
+      "receiptHashMatched": true,
+      "ffmpegFullDecodePassed": true,
+      "aacPacketPayloadsEqual": true,
+      "aacPackets": 95,
+      "sampleCounts": {
+        "video": 60,
+        "audio": 95,
+        "total": 155
+      },
+      "mdatBytesAndOffsetsEqual": true,
+      "sampleTablesEqual": [
+        "track1/stts",
+        "track1/stss",
+        "track1/ctts",
+        "track1/stsc",
+        "track1/stsz",
+        "track1/stco",
+        "track2/stts",
+        "track2/stsc",
+        "track2/stsz",
+        "track2/stco",
+        "track2/sgpd",
+        "track2/sbgp"
+      ],
+      "fielEqual": true,
+      "avcCEqual": true,
+      "paspEqual": true,
+      "sbsCropped180Metadata": true
+    },
+    "convert": {
+      "operationId": "38935f5e-cff9-4713-aae1-e3de3ba65f50",
+      "inputRevision": 3,
+      "inputSha256": "b00d26209cd64816ad9bf541e60a7b1f9936b6d7bf22f3e470434bf24a186ae9",
+      "outputSha256": "d9a936ecc194f235a2ac7d8572906162fba0472c574297e51e07e5498c57625e",
+      "outputBytes": 53238,
+      "downloadRecovered": true,
+      "receiptHashMatched": true,
+      "ffmpegFullDecodePassed": true,
+      "aacPacketPayloadsEqual": true,
+      "aacPackets": 95,
+      "sampleCounts": {
+        "video": 60,
+        "audio": 95,
+        "total": 155
+      },
+      "workerJobIdMatched": true,
+      "decodedFrames": 60,
+      "encodedPackets": 60,
+      "executionRoute": "legacy",
+      "sbsCropped180Metadata": true
+    }
+  },
+  "limitations": [
+    "Synthetic short progressive AVC input only.",
+    "Native OS direct-save and target VR-player playback not verified.",
+    "Raw receipts retain downloadRecovered/saveCompleted false; recovery is independently verified here.",
+    "Initial local/browser upload route failures were superseded by this successful public UI run; see FIEL-2026-11-17.md."
+  ]
+}

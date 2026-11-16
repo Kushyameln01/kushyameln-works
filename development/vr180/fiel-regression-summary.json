@@ -1,0 +1,72 @@
+{
+  "baselineCommit": "80c542f15d7724d3a919804b5338a8d8b0b0d9bc",
+  "codeCommit": "a532110ca303d8de687b75a6f71d5efcf64a9125",
+  "node": "v24.22.1",
+  "command": "node --test --test-timeout=30000 --test-reporter=tap tests/vr180-*.test.mjs",
+  "baseline": [
+    "# tests 233",
+    "# pass 171",
+    "# fail 61",
+    "# cancelled 1",
+    "# skipped 0",
+    "# duration_ms 31861.240353"
+  ],
+  "candidate": [
+    "# tests 251",
+    "# pass 189",
+    "# fail 61",
+    "# cancelled 1",
+    "# skipped 0",
+    "# duration_ms 31825.232536"
+  ],
+  "newFailures": [],
+  "removedFailures": [],
+  "mp4Suite": {
+    "tests": 44,
+    "passed": 44,
+    "failed": 0
+  },
+  "allSuitePassed": false,
+  "timecodeCopy": {
+    "status": "passed",
+    "scope": "Node avc1/fiel 1,0 with ffmpeg-generated tmcd track3",
+    "equalBoxes": [
+      "mdat",
+      "moov/trak/mdia/minf/stbl/stsd/avc1/fiel",
+      "moov/trak/mdia/minf/stbl/stsd/avc1/avcC",
+      "moov/trak/tref"
+    ],
+    "allTrackSampleTablesEqual": true,
+    "timecodeTrackByteEqual": true,
+    "inputBytes": 30928,
+    "outputBytes": 34908,
+    "inputSha256": "0b01dc68ff58a3164c131d2b58d0a8333ed577a306cfe5aa6ddaeead891d3e36",
+    "outputSha256": "70bc697bba0ac4c5ceff08a8f118da2171338c3e399143c8b8213e9c9a6ad632"
+  },
+  "publicFiles": [
+    {
+      "path": "docs/vr180-studio/app.mjs",
+      "equal": true,
+      "sha256": "61632139d7f9f7e92d24fe5c048ba10c4842e4023deb71d12d8980902124e2d6",
+      "bytes": 46238
+    },
+    {
+      "path": "docs/vr180-studio/index.html",
+      "equal": true,
+      "sha256": "40466eb8fa962ebc8a87e205cc9be3cd2ec97c890bf8edb7b01919c7dbd31983",
+      "bytes": 17719
+    },
+    {
+      "path": "docs/shared/vr180/worker.mjs",
+      "equal": true,
+      "sha256": "201defac39b8ed095145cd61583da23900deb0640b02c0839573e8006634b5d8",
+      "bytes": 21425
+    },
+    {
+      "path": "docs/shared/vr180/mp4.mjs",
+      "equal": true,
+      "sha256": "7a0545ff3bb0bf803648965f7c0caa43aa88398c41ab20a67cb76ae34ae8131b",
+      "bytes": 57137
+    }
+  ]
+}
